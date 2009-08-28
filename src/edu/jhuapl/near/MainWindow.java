@@ -2,10 +2,11 @@ package edu.jhuapl.near;
 
 import com.trolltech.qt.core.Qt;
 import com.trolltech.qt.gui.*;
+import com.trolltech.qt.gui.QDockWidget.DockWidgetFeature;
 
 public class MainWindow extends QMainWindow 
 {
-	private ImageViewerTabWidget tabWidget;
+	private ImageViewer imageViewer;
 	private ImageBrowser imageBrowser;
 	private QMenu fileMenu;
     //private QMenu editMenu;
@@ -28,8 +29,8 @@ public class MainWindow extends QMainWindow
         setWindowTitle(tr("Near Lineaments Viewer"));
         //setWindowIcon(new QIcon("classpath:com/trolltech/images/qt-logo.png"));
         
-        tabWidget = new ImageViewerTabWidget();
-        setCentralWidget(tabWidget);
+        imageViewer = new ImageViewer(this);
+        setCentralWidget(imageViewer);
 
         try {
             createActions();
@@ -41,6 +42,7 @@ public class MainWindow extends QMainWindow
         createStatusBar();
         createDockWindows();
 
+        resize(800, 600);
 	}
 	
     private void createActions()
@@ -85,7 +87,9 @@ public class MainWindow extends QMainWindow
     private void createDockWindows()
     {
     	QDockWidget dock = new QDockWidget(tr("Image Browser"), this);
-    	imageBrowser = new ImageBrowser();
+    	dock.setFeatures(DockWidgetFeature.DockWidgetMovable, DockWidgetFeature.DockWidgetFloatable);
+    	imageBrowser = new ImageBrowser(this);
+    	imageBrowser.fitFileDoubleClicked.connect(this.imageViewer, "addNewTab(String)");
     	dock.setWidget(imageBrowser);
     	addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea, dock);
     }
