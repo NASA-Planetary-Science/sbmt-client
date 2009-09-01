@@ -29,6 +29,7 @@ class ImageGLWidget extends QGLWidget
     {
         super(parent);
         
+        new NearImage(filename);
         
         QLabel imageLabel = new QLabel();
         imageLabel.setBackgroundRole(QPalette.ColorRole.Base);

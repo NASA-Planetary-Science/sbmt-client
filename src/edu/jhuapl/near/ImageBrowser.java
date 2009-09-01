@@ -26,9 +26,7 @@ public class ImageBrowser extends QWidget
         dirModel = new QDirModel(this);
         dirModel.setLazyChildCount(true);
         List<String> filterList = new ArrayList<String>();
-        filterList.add("*.txt");
         filterList.add("*.FIT");
-        filterList.add("*.fit");
         dirModel.setNameFilters(filterList);
         dirModel.setFilter(new QDir.Filters(QDir.Filter.AllDirs, QDir.Filter.Files, QDir.Filter.Drives, QDir.Filter.NoDotAndDotDot));
 
