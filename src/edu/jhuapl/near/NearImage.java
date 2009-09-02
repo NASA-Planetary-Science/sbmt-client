@@ -1,8 +1,8 @@
 package edu.jhuapl.near;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.nio.ByteBuffer;
+import java.util.*;
 
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
@@ -49,11 +49,15 @@ public class NearImage
 
         image = new QImage(width, height, QImage.Format.Format_RGB32);
 
+        //HashMap<Float, Integer> values = new HashMap<Float, Integer>();
+        
         float max = 0.0f;
         for (int i=0; i<width; ++i)
         {
             for (int j=0; j<height; ++j)
             {
+            	//values.put(array[j][i], 0);
+            	
             	if (array[j][i] > max)
             		max = array[j][i];
             	if (array[j][i] < 0.0)
@@ -61,6 +65,8 @@ public class NearImage
             }
         }
 
+        //System.out.println("Hash Map size: " + values.size());
+        
         QColor c = new QColor();
         for (int i=0; i<width; ++i)
         {
@@ -96,18 +102,41 @@ public class NearImage
 		parent.setNameFilters(filterList);
         parent.setFilter(new QDir.Filters(QDir.Filter.Files));
         		
-		List<String> list = parent.entryList();
+		List<QFileInfo> list = parent.entryInfoList();
 		System.out.println(list);
 		
 		if (list.size() == 0)
 			throw new IOException("Could not find IMG image corresponding to " + basename);
 
-		String imgFile = list.get(0);
+		QFileInfo imgFileName = list.get(0);
 
-		DataInputStream in = new DataInputStream(new BufferedInputStream(new FileInputStream(imgFile)));
+		//DataInputStream in = new DataInputStream(new BufferedInputStream(new FileInputStream(imgFile.filePath())));
 		
-		
+		QFile imgFile = new QFile(imgFileName.filePath());
+		QFile.OpenMode mode = new QFile.OpenMode();
+		mode.set(QFile.OpenModeFlag.ReadOnly);
+		imgFile.open(mode);
+		QDataStream in = new QDataStream(imgFile);
+
+		float a = in.readFloat();
+
 					
+	}
+	
+	public ByteBuffer getSubImage(int size, int x, int y)
+	{
+		ByteBuffer buffer = ByteBuffer.allocate(size*size);
+		
+        QColor c = new QColor();
+        
+		for (int i=0; i<size; ++i)
+			for (int j=0; j<size; ++j)
+			{
+				int pix = image.pixel(x+i, y+j);
+				c.setRgb(pix);
+				buffer.put((byte)c.red());
+			}
+		return buffer;
 	}
 	
 	public double getLatitude(double x, double y)

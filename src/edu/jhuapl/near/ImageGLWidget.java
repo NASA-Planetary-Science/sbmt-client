@@ -1,14 +1,17 @@
 package edu.jhuapl.near;
 
 import java.io.*;
+import java.nio.*;
 
 import javax.media.opengl.GL;
+import javax.media.opengl.GLContext;
+import javax.media.opengl.GLDrawableFactory;
 
 import com.trolltech.qt.core.QPoint;
 import com.trolltech.qt.core.QSize;
 import com.trolltech.qt.core.Qt;
 import com.trolltech.qt.gui.*;
-import com.trolltech.qt.opengl.QGLWidget;
+import com.trolltech.qt.opengl.*;
 import nom.tam.fits.*;
 
 class ImageGLWidget extends QGLWidget
@@ -19,8 +22,11 @@ class ImageGLWidget extends QGLWidget
     private int zRot = 0;
     private QPoint lastPos = new QPoint();
     private GL func = null;
+    private GLContext ctx = null;
 
-
+    private IntBuffer textureName = IntBuffer.allocate(63);
+    private static final int TEXTURE_SIZE = 64;
+    
     public Signal1<Integer> xRotationChanged = new Signal1<Integer>();
     public Signal1<Integer> yRotationChanged = new Signal1<Integer>();
     public Signal1<Integer> zRotationChanged = new Signal1<Integer>();
@@ -31,15 +37,17 @@ class ImageGLWidget extends QGLWidget
         
         new NearImage(filename);
         
-        QLabel imageLabel = new QLabel();
-        imageLabel.setBackgroundRole(QPalette.ColorRole.Base);
-        imageLabel.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Ignored);
-        imageLabel.setScaledContents(true);
-        //imageLabel.setPixmap(QPixmap.fromImage(image));
-
-        QScrollArea scrollArea = new QScrollArea(this);
-        scrollArea.setBackgroundRole(QPalette.ColorRole.Dark);
-        scrollArea.setWidget(imageLabel);
+//        QLabel imageLabel = new QLabel();
+//        imageLabel.setBackgroundRole(QPalette.ColorRole.Base);
+//        imageLabel.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Ignored);
+//        imageLabel.setScaledContents(true);
+//        //imageLabel.setPixmap(QPixmap.fromImage(image));
+//
+//        QScrollArea scrollArea = new QScrollArea(this);
+//        scrollArea.setBackgroundRole(QPalette.ColorRole.Dark);
+//        scrollArea.setWidget(imageLabel);
+        
+        
     }
 
     @Override
@@ -99,25 +107,35 @@ class ImageGLWidget extends QGLWidget
     @Override
     protected void initializeGL()
     {
-    	/*
         GLDrawableFactory factory = GLDrawableFactory.getFactory();
         ctx = factory.createExternalGLContext();
         func = ctx.getGL();
 
-        qglClearColor(trolltechPurple.darker());
-        object = makeObject();
-
+        func.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         func.glShadeModel(GL.GL_FLAT);
         func.glEnable(GL.GL_DEPTH_TEST);
         func.glEnable(GL.GL_CULL_FACE);
-*/
+
+        func.glPixelStorei(GL.GL_UNPACK_ALIGNMENT, 1);
+
+        func.glGenTextures(63, textureName);
+        func.glBindTexture(GL.GL_TEXTURE_2D, textureName.get(0));
+        
+        //func.glTexImage2D(GL.GL_TEXTURE_2D, 0, GL.GL_LUMINANCE, arg3, 0, arg5, arg6, arg7, arg8)
     }
 
     @Override
     protected void paintGL()
     {
-    	/*
         func.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
+        func.glEnable(GL.GL_TEXTURE_2D);
+        func.glTexEnvf(GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE, GL.GL_REPLACE);
+        for (int i=0; i<TEXTURE_SIZE; ++i)
+        	for (int j=0; j<TEXTURE_SIZE; ++j)
+        	{
+        		
+        	}
+    	/*
         func.glLoadIdentity();
         func.glTranslated(0.0, 0.0, -10.0);
         func.glRotated(xRot / 16.0, 1.0, 0.0, 0.0);
