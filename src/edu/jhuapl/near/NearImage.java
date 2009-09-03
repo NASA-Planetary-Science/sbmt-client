@@ -129,10 +129,12 @@ public class NearImage
 		
         QColor c = new QColor();
         
-		for (int i=0; i<size; ++i)
-			for (int j=0; j<size; ++j)
+		for (int i=x; i<x+size; ++i)
+			for (int j=y; j<y+size; ++j)
 			{
-				int pix = image.pixel(x+i, y+j);
+				int pix = 0;
+				if (i<image.width() && j<image.height())
+					pix = image.pixel(i, j);
 				c.setRgb(pix);
 				buffer.put((byte)c.red());
 			}
@@ -166,12 +168,12 @@ public class NearImage
 	
 	public double getX(double x, double y)
 	{
-		return 0;
+		return x;
 	}
 
 	public double getY(double x, double y)
 	{
-		return 0;
+		return y;
 	}
 
 	public double getZ(double x, double y)

@@ -13,6 +13,7 @@ import com.trolltech.qt.core.Qt;
 import com.trolltech.qt.gui.*;
 import com.trolltech.qt.opengl.*;
 import nom.tam.fits.*;
+import java.nio.ByteBuffer;
 
 class ImageGLWidget extends QGLWidget
 {
@@ -24,8 +25,14 @@ class ImageGLWidget extends QGLWidget
     private GL func = null;
     private GLContext ctx = null;
 
-    private IntBuffer textureName = IntBuffer.allocate(63);
+    private IntBuffer textureNames;
+    private int totalNumTextures = 0;
+    private int numTexturesWidth = 0;
+    private int numTexturesHeight = 0;
+    
     private static final int TEXTURE_SIZE = 64;
+
+    private NearImage nearImage = null;
     
     public Signal1<Integer> xRotationChanged = new Signal1<Integer>();
     public Signal1<Integer> yRotationChanged = new Signal1<Integer>();
@@ -35,7 +42,7 @@ class ImageGLWidget extends QGLWidget
     {
         super(parent);
         
-        new NearImage(filename);
+        nearImage = new NearImage(filename);
         
 //        QLabel imageLabel = new QLabel();
 //        imageLabel.setBackgroundRole(QPalette.ColorRole.Base);
@@ -48,6 +55,113 @@ class ImageGLWidget extends QGLWidget
 //        scrollArea.setWidget(imageLabel);
         
         
+    }
+
+    @Override
+    protected void initializeGL()
+    {
+        GLDrawableFactory factory = GLDrawableFactory.getFactory();
+        ctx = factory.createExternalGLContext();
+        func = ctx.getGL();
+
+        func.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+        func.glShadeModel(GL.GL_FLAT);
+        func.glEnable(GL.GL_DEPTH_TEST);
+        func.glEnable(GL.GL_CULL_FACE);
+
+        func.glPixelStorei(GL.GL_UNPACK_ALIGNMENT, 1);
+
+        numTexturesWidth = (int)Math.ceil((double)NearImage.IMAGE_WIDTH / (double)TEXTURE_SIZE);
+        numTexturesHeight = (int)Math.ceil((double)NearImage.IMAGE_HEIGHT / (double)TEXTURE_SIZE);
+        totalNumTextures = numTexturesWidth * numTexturesHeight;
+        
+        textureNames = IntBuffer.allocate(totalNumTextures);
+        func.glGenTextures(totalNumTextures, textureNames);
+        
+        int c = 0;
+        for (int i=0; i<numTexturesHeight; ++i)
+        	for (int j=0; j<numTexturesWidth; ++j)
+        	{
+                func.glBindTexture(GL.GL_TEXTURE_2D, textureNames.get(c));
+
+                int x = i*TEXTURE_SIZE;
+                int y = j*TEXTURE_SIZE;
+                
+                ByteBuffer buffer = nearImage.getSubImage(TEXTURE_SIZE, x, y);
+                
+                func.glTexImage2D(
+                		GL.GL_TEXTURE_2D, 
+                		0, 
+                		GL.GL_LUMINANCE, 
+                		TEXTURE_SIZE, 
+                		TEXTURE_SIZE, 
+                		0, 
+                		GL.GL_LUMINANCE, 
+                		GL.GL_UNSIGNED_BYTE, 
+                		buffer);
+                
+                ++c;
+        	}
+    }
+
+    @Override
+    protected void paintGL()
+    {
+        func.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
+        func.glEnable(GL.GL_TEXTURE_2D);
+        func.glTexEnvf(GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE, GL.GL_REPLACE);
+
+        int c = 0;
+        for (int i=0; i<numTexturesHeight; ++i)
+        	for (int j=0; j<numTexturesWidth; ++j)
+        	{
+                func.glBindTexture(GL.GL_TEXTURE_2D, textureNames.get(c));
+
+                for (int m=0; m<TEXTURE_SIZE; ++m)
+                {
+                	func.glBegin(GL.GL_TRIANGLE_STRIP);
+        			for (int n=0; n<TEXTURE_SIZE; ++n)
+        			{
+        				double x = nearImage.getX(m, n);
+        				double y = nearImage.getX(m, n);
+        				double z = nearImage.getX(m, n);
+        				
+        			}
+        			func.glEnd();
+                }
+                ++c;
+        	}
+        
+        func.glFlush();
+        func.glDisable(GL.GL_TEXTURE_2D);
+    	/*
+        func.glLoadIdentity();
+        func.glTranslated(0.0, 0.0, -10.0);
+        func.glRotated(xRot / 16.0, 1.0, 0.0, 0.0);
+        func.glRotated(yRot / 16.0, 0.0, 1.0, 0.0);
+        func.glRotated(zRot / 16.0, 0.0, 0.0, 1.0);
+        func.glCallList(object);
+        */
+    }
+
+    @Override
+    protected void resizeGL(int width, int height)
+    {
+    	/*
+        int side = Math.min(width, height);
+        func.glViewport((width - side) / 2, (height - side) / 2, side, side);
+
+        func.glMatrixMode(GL.GL_PROJECTION);
+        func.glLoadIdentity();
+        func.glOrtho(-0.5, +0.5, +0.5, -0.5, 4.0, 15.0);
+        func.glMatrixMode(GL.GL_MODELVIEW);
+        */
+    }
+
+    @Override
+    protected void mousePressEvent(QMouseEvent event)
+    {
+        lastPos = event.pos();
     }
 
     @Override
@@ -102,67 +216,6 @@ class ImageGLWidget extends QGLWidget
             zRotationChanged.emit(zRot);
             updateGL();
         }
-    }
-
-    @Override
-    protected void initializeGL()
-    {
-        GLDrawableFactory factory = GLDrawableFactory.getFactory();
-        ctx = factory.createExternalGLContext();
-        func = ctx.getGL();
-
-        func.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-        func.glShadeModel(GL.GL_FLAT);
-        func.glEnable(GL.GL_DEPTH_TEST);
-        func.glEnable(GL.GL_CULL_FACE);
-
-        func.glPixelStorei(GL.GL_UNPACK_ALIGNMENT, 1);
-
-        func.glGenTextures(63, textureName);
-        func.glBindTexture(GL.GL_TEXTURE_2D, textureName.get(0));
-        
-        //func.glTexImage2D(GL.GL_TEXTURE_2D, 0, GL.GL_LUMINANCE, arg3, 0, arg5, arg6, arg7, arg8)
-    }
-
-    @Override
-    protected void paintGL()
-    {
-        func.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
-        func.glEnable(GL.GL_TEXTURE_2D);
-        func.glTexEnvf(GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE, GL.GL_REPLACE);
-        for (int i=0; i<TEXTURE_SIZE; ++i)
-        	for (int j=0; j<TEXTURE_SIZE; ++j)
-        	{
-        		
-        	}
-    	/*
-        func.glLoadIdentity();
-        func.glTranslated(0.0, 0.0, -10.0);
-        func.glRotated(xRot / 16.0, 1.0, 0.0, 0.0);
-        func.glRotated(yRot / 16.0, 0.0, 1.0, 0.0);
-        func.glRotated(zRot / 16.0, 0.0, 0.0, 1.0);
-        func.glCallList(object);
-        */
-    }
-
-    @Override
-    protected void resizeGL(int width, int height)
-    {
-    	/*
-        int side = Math.min(width, height);
-        func.glViewport((width - side) / 2, (height - side) / 2, side, side);
-
-        func.glMatrixMode(GL.GL_PROJECTION);
-        func.glLoadIdentity();
-        func.glOrtho(-0.5, +0.5, +0.5, -0.5, 4.0, 15.0);
-        func.glMatrixMode(GL.GL_MODELVIEW);
-        */
-    }
-
-    @Override
-    protected void mousePressEvent(QMouseEvent event)
-    {
-        lastPos = event.pos();
     }
 
     @Override
