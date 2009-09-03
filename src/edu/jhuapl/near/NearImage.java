@@ -125,7 +125,7 @@ public class NearImage
 	
 	public ByteBuffer getSubImage(int size, int x, int y)
 	{
-		ByteBuffer buffer = ByteBuffer.allocate(size*size);
+		ByteBuffer buffer = ByteBuffer.allocateDirect(size*size*4);
 		
         QColor c = new QColor();
         
@@ -137,7 +137,11 @@ public class NearImage
 					pix = image.pixel(i, j);
 				c.setRgb(pix);
 				buffer.put((byte)c.red());
+				buffer.put((byte)c.green());
+				buffer.put((byte)c.blue());
+				buffer.put((byte)c.alpha());
 			}
+		buffer.rewind();
 		return buffer;
 	}
 	

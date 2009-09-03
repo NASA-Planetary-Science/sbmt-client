@@ -2,10 +2,12 @@ package edu.jhuapl.near;
 
 import java.io.*;
 import java.nio.*;
+import java.util.*;
 
 import javax.media.opengl.GL;
 import javax.media.opengl.GLContext;
 import javax.media.opengl.GLDrawableFactory;
+import javax.media.opengl.glu.*;
 
 import com.trolltech.qt.core.QPoint;
 import com.trolltech.qt.core.QSize;
@@ -22,9 +24,10 @@ class ImageGLWidget extends QGLWidget
     private int yRot = 0;
     private int zRot = 0;
     private QPoint lastPos = new QPoint();
-    private GL func = null;
+    private GL gl = null;
     private GLContext ctx = null;
-
+    private GLU glu = new GLU();
+    
     private IntBuffer textureNames;
     private int totalNumTextures = 0;
     private int numTexturesWidth = 0;
@@ -38,6 +41,15 @@ class ImageGLWidget extends QGLWidget
     public Signal1<Integer> yRotationChanged = new Signal1<Integer>();
     public Signal1<Integer> zRotationChanged = new Signal1<Integer>();
 
+    ArrayList<TextureInfo> textureInfo = new ArrayList<TextureInfo>();
+
+    private static class TextureInfo
+    {
+    	int x;
+    	int y;
+    }
+    
+    
     public ImageGLWidget(QWidget parent, String filename) throws FitsException, IOException 
     {
         super(parent);
@@ -62,43 +74,57 @@ class ImageGLWidget extends QGLWidget
     {
         GLDrawableFactory factory = GLDrawableFactory.getFactory();
         ctx = factory.createExternalGLContext();
-        func = ctx.getGL();
+        gl = ctx.getGL();
+        
+        
+        gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+        gl.glShadeModel(GL.GL_FLAT);
+        gl.glEnable(GL.GL_DEPTH_TEST);
+        gl.glEnable(GL.GL_CULL_FACE);
 
-        func.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-        func.glShadeModel(GL.GL_FLAT);
-        func.glEnable(GL.GL_DEPTH_TEST);
-        func.glEnable(GL.GL_CULL_FACE);
+        gl.glPixelStorei(GL.GL_UNPACK_ALIGNMENT, 1);
 
-        func.glPixelStorei(GL.GL_UNPACK_ALIGNMENT, 1);
-
-        numTexturesWidth = (int)Math.ceil((double)NearImage.IMAGE_WIDTH / (double)TEXTURE_SIZE);
-        numTexturesHeight = (int)Math.ceil((double)NearImage.IMAGE_HEIGHT / (double)TEXTURE_SIZE);
+        numTexturesWidth = (int)Math.ceil((double)(NearImage.IMAGE_WIDTH-1) / (double)(TEXTURE_SIZE-1));
+        numTexturesHeight = (int)Math.ceil((double)(NearImage.IMAGE_HEIGHT-1) / (double)(TEXTURE_SIZE-1));
         totalNumTextures = numTexturesWidth * numTexturesHeight;
         
+        textureInfo.clear();
+        
         textureNames = IntBuffer.allocate(totalNumTextures);
-        func.glGenTextures(totalNumTextures, textureNames);
+        gl.glGenTextures(totalNumTextures, textureNames);
         
         int c = 0;
         for (int i=0; i<numTexturesHeight; ++i)
         	for (int j=0; j<numTexturesWidth; ++j)
         	{
-                func.glBindTexture(GL.GL_TEXTURE_2D, textureNames.get(c));
+        		System.out.println(c);
+                gl.glBindTexture(GL.GL_TEXTURE_2D, textureNames.get(c));
 
-                int x = i*TEXTURE_SIZE;
-                int y = j*TEXTURE_SIZE;
+                int xcorner = i*(TEXTURE_SIZE-1);
+                int ycorner = j*(TEXTURE_SIZE-1);
+        
+                TextureInfo ti = new TextureInfo();
+                ti.x = xcorner;
+                ti.y = ycorner;
+                textureInfo.add(ti);
                 
-                ByteBuffer buffer = nearImage.getSubImage(TEXTURE_SIZE, x, y);
-                
-                func.glTexImage2D(
+                ByteBuffer buffer = nearImage.getSubImage(TEXTURE_SIZE, xcorner, ycorner);
+                byte [] b = new byte[TEXTURE_SIZE*TEXTURE_SIZE*4];
+        		factory = GLDrawableFactory.getFactory();
+                ctx = factory.createExternalGLContext();
+                gl = ctx.getGL();
+                gl.glTexImage2D(
                 		GL.GL_TEXTURE_2D, 
                 		0, 
-                		GL.GL_LUMINANCE, 
+                		//GL.GL_LUMINANCE, 
+                		GL.GL_RGBA, 
                 		TEXTURE_SIZE, 
                 		TEXTURE_SIZE, 
                 		0, 
-                		GL.GL_LUMINANCE, 
+                		//GL.GL_LUMINANCE, 
+                		GL.GL_RGBA, 
                 		GL.GL_UNSIGNED_BYTE, 
-                		buffer);
+                		0);
                 
                 ++c;
         	}
@@ -107,33 +133,62 @@ class ImageGLWidget extends QGLWidget
     @Override
     protected void paintGL()
     {
-        func.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
-        func.glEnable(GL.GL_TEXTURE_2D);
-        func.glTexEnvf(GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE, GL.GL_REPLACE);
+        gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
+        gl.glEnable(GL.GL_TEXTURE_2D);
+        gl.glTexEnvf(GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE, GL.GL_REPLACE);
 
         int c = 0;
         for (int i=0; i<numTexturesHeight; ++i)
         	for (int j=0; j<numTexturesWidth; ++j)
         	{
-                func.glBindTexture(GL.GL_TEXTURE_2D, textureNames.get(c));
+                gl.glBindTexture(GL.GL_TEXTURE_2D, textureNames.get(c));
 
-                for (int m=0; m<TEXTURE_SIZE; ++m)
+                int xcorner = i*(TEXTURE_SIZE-1);
+                int ycorner = j*(TEXTURE_SIZE-1);
+        
+                
+                for (int m=0; m<TEXTURE_SIZE-1; ++m)
                 {
-                	func.glBegin(GL.GL_TRIANGLE_STRIP);
-        			for (int n=0; n<TEXTURE_SIZE; ++n)
+                	gl.glBegin(GL.GL_TRIANGLE_STRIP);
+
+                	double x = nearImage.getX(xcorner, ycorner+m);
+    				double y = nearImage.getY(xcorner, ycorner+m);
+    				double z = nearImage.getZ(xcorner, ycorner+m);
+    				
+                	gl.glTexCoord2d((double)m/(double)(TEXTURE_SIZE-1), 0.0);
+                	gl.glVertex3d(x, y, z);
+                	
+                	x = nearImage.getX(xcorner, ycorner+m+1);
+    				y = nearImage.getY(xcorner, ycorner+m+1);
+    				z = nearImage.getZ(xcorner, ycorner+m+1);
+    				
+                	gl.glTexCoord2d(0.0, 0.0);
+                	gl.glVertex3d(x, y, z);
+                	
+        			for (int n=0; n<TEXTURE_SIZE-1; ++n)
         			{
-        				double x = nearImage.getX(m, n);
-        				double y = nearImage.getX(m, n);
-        				double z = nearImage.getX(m, n);
+        				x = nearImage.getX(xcorner+m, ycorner+n);
+        				y = nearImage.getY(xcorner+m, ycorner+n);
+        				z = nearImage.getZ(xcorner+m, ycorner+n);
         				
+                    	gl.glTexCoord2d(0.0, 0.0);
+                    	gl.glVertex3d(x, y, z);
+                    	
+        				x = nearImage.getX(xcorner+m, ycorner+n);
+        				y = nearImage.getY(xcorner+m, ycorner+n);
+        				z = nearImage.getZ(xcorner+m, ycorner+n);
+        				
+                    	gl.glTexCoord2d(0.0, 0.0);
+                    	gl.glVertex3d(x, y, z);
         			}
-        			func.glEnd();
+
+        			gl.glEnd();
                 }
                 ++c;
         	}
         
-        func.glFlush();
-        func.glDisable(GL.GL_TEXTURE_2D);
+        gl.glFlush();
+        gl.glDisable(GL.GL_TEXTURE_2D);
     	/*
         func.glLoadIdentity();
         func.glTranslated(0.0, 0.0, -10.0);
@@ -147,15 +202,13 @@ class ImageGLWidget extends QGLWidget
     @Override
     protected void resizeGL(int width, int height)
     {
-    	/*
-        int side = Math.min(width, height);
-        func.glViewport((width - side) / 2, (height - side) / 2, side, side);
-
-        func.glMatrixMode(GL.GL_PROJECTION);
-        func.glLoadIdentity();
-        func.glOrtho(-0.5, +0.5, +0.5, -0.5, 4.0, 15.0);
-        func.glMatrixMode(GL.GL_MODELVIEW);
-        */
+    	gl.glViewport(0, 0, width, height);
+    	gl.glMatrixMode(GL.GL_PROJECTION);
+    	gl.glLoadIdentity();
+    	//glu.gluPerspective(60.0, (double)width/(double)height, 1.0, 30.0);
+    	gl.glMatrixMode(GL.GL_MODELVIEW);
+    	gl.glLoadIdentity();
+    	gl.glTranslated(0.0, 0.0, -100.0);
     }
 
     @Override
@@ -167,7 +220,7 @@ class ImageGLWidget extends QGLWidget
     @Override
     protected void disposed()
     {
-        func.glDeleteLists(object, 1);
+        //gl.glDeleteLists(object, 1);
     }
 
     @Override
