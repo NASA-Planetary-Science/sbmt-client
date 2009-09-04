@@ -33,6 +33,7 @@ public class NearImage
 	private float[][] x = new float[IMAGE_HEIGHT][IMAGE_WIDTH];
 	private float[][] y = new float[IMAGE_HEIGHT][IMAGE_WIDTH];
 	private float[][] z = new float[IMAGE_HEIGHT][IMAGE_WIDTH];
+	private byte[][] imageValues = new byte[IMAGE_HEIGHT][IMAGE_WIDTH];
 	
 	
 	public NearImage(String filename) throws FitsException, IOException
@@ -52,15 +53,15 @@ public class NearImage
         //HashMap<Float, Integer> values = new HashMap<Float, Integer>();
         
         float max = 0.0f;
-        for (int i=0; i<width; ++i)
+        for (int i=0; i<height; ++i)
         {
-            for (int j=0; j<height; ++j)
+            for (int j=0; j<width; ++j)
             {
             	//values.put(array[j][i], 0);
             	
-            	if (array[j][i] > max)
-            		max = array[j][i];
-            	if (array[j][i] < 0.0)
+            	if (array[i][j] > max)
+            		max = array[i][j];
+            	if (array[i][j] < 0.0)
             		System.out.println("Ahhhhh less than zero");
             }
         }
@@ -68,13 +69,27 @@ public class NearImage
         //System.out.println("Hash Map size: " + values.size());
         
         QColor c = new QColor();
-        for (int i=0; i<width; ++i)
+        for (int i=0; i<height; ++i)
         {
-            for (int j=0; j<height; ++j)
+            for (int j=0; j<width; ++j)
             {
-            	int val = (int)(array[j][i] * 255.0f / max);
+            	int val = (int)(array[i][j] * 255.0f / max);
             	c.setRgb(val,val,val);
-            	image.setPixel(i, height-j-1, c.rgb());
+            	image.setPixel(j, height-i-1, c.rgb());
+            }
+        }
+
+        image = image.scaled(IMAGE_WIDTH, IMAGE_HEIGHT, 
+        		Qt.AspectRatioMode.IgnoreAspectRatio, 
+        		Qt.TransformationMode.SmoothTransformation);
+
+        for (int i=0; i<IMAGE_HEIGHT; ++i)
+        {
+            for (int j=0; j<IMAGE_WIDTH; ++j)
+            {
+            	int pix = image.pixel(j, height-i-1);
+            	c.setRgb(pix);
+            	imageValues[i][j] = (byte)c.red();
             }
         }
 
@@ -127,20 +142,18 @@ public class NearImage
 	{
 		ByteBuffer buffer = ByteBuffer.allocateDirect(size*size*4);
 		
-        QColor c = new QColor();
-        
 		for (int i=x; i<x+size; ++i)
 			for (int j=y; j<y+size; ++j)
 			{
-				int pix = 0;
-				if (i<image.width() && j<image.height())
-					pix = image.pixel(i, j);
-				c.setRgb(pix);
-				buffer.put((byte)c.red());
-				buffer.put((byte)c.green());
-				buffer.put((byte)c.blue());
-				buffer.put((byte)c.alpha());
+				byte pix = 0;
+				if (i<IMAGE_HEIGHT && j<IMAGE_WIDTH)
+					pix = imageValues[i][j];;
+				buffer.put(pix);
+				buffer.put(pix);
+				buffer.put(pix);
+				buffer.put((byte)255);
 			}
+		
 		buffer.rewind();
 		return buffer;
 	}

@@ -72,7 +72,8 @@ class ImageGLWidget extends QGLWidget
     @Override
     protected void initializeGL()
     {
-        GLDrawableFactory factory = GLDrawableFactory.getFactory();
+    	System.out.println("initializeGL");
+    	GLDrawableFactory factory = GLDrawableFactory.getFactory();
         ctx = factory.createExternalGLContext();
         gl = ctx.getGL();
         
@@ -109,10 +110,10 @@ class ImageGLWidget extends QGLWidget
                 textureInfo.add(ti);
                 
                 ByteBuffer buffer = nearImage.getSubImage(TEXTURE_SIZE, xcorner, ycorner);
-                byte [] b = new byte[TEXTURE_SIZE*TEXTURE_SIZE*4];
-        		factory = GLDrawableFactory.getFactory();
-                ctx = factory.createExternalGLContext();
-                gl = ctx.getGL();
+                //byte [] b = new byte[TEXTURE_SIZE*TEXTURE_SIZE*4];
+        		//factory = GLDrawableFactory.getFactory();
+                //ctx = factory.createExternalGLContext();
+                //gl = ctx.getGL();
                 gl.glTexImage2D(
                 		GL.GL_TEXTURE_2D, 
                 		0, 
@@ -124,7 +125,7 @@ class ImageGLWidget extends QGLWidget
                 		//GL.GL_LUMINANCE, 
                 		GL.GL_RGBA, 
                 		GL.GL_UNSIGNED_BYTE, 
-                		0);
+                		buffer);
                 
                 ++c;
         	}
@@ -133,10 +134,13 @@ class ImageGLWidget extends QGLWidget
     @Override
     protected void paintGL()
     {
-        gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
+    	System.out.println("paintGL");
+    	gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
         gl.glEnable(GL.GL_TEXTURE_2D);
         gl.glTexEnvf(GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE, GL.GL_REPLACE);
 
+        //gl.glBegin(GL.GL_POLYGON)
+        //gl.glVertex3d(0)
         int c = 0;
         for (int i=0; i<numTexturesHeight; ++i)
         	for (int j=0; j<numTexturesWidth; ++j)
@@ -202,13 +206,15 @@ class ImageGLWidget extends QGLWidget
     @Override
     protected void resizeGL(int width, int height)
     {
+    	System.out.println("resizeGL");
     	gl.glViewport(0, 0, width, height);
     	gl.glMatrixMode(GL.GL_PROJECTION);
     	gl.glLoadIdentity();
+    	gl.glFrustum(-1.0, 1.0, -1.0, 1.0, 1.0, 300.0);
     	//glu.gluPerspective(60.0, (double)width/(double)height, 1.0, 30.0);
     	gl.glMatrixMode(GL.GL_MODELVIEW);
     	gl.glLoadIdentity();
-    	gl.glTranslated(0.0, 0.0, -100.0);
+    	gl.glTranslated(0.0, 0.0, -300.0);
     }
 
     @Override
