@@ -19,14 +19,13 @@ import java.nio.ByteBuffer;
 
 class ImageGLWidget extends QGLWidget
 {
-    private int object = 0;
     private int xRot = 0;
     private int yRot = 0;
     private int zRot = 0;
     private QPoint lastPos = new QPoint();
     private GL gl = null;
     private GLContext ctx = null;
-    private GLU glu = new GLU();
+    private GLU glu = null;
     
     private IntBuffer textureNames;
     private int totalNumTextures = 0;
@@ -41,13 +40,13 @@ class ImageGLWidget extends QGLWidget
     public Signal1<Integer> yRotationChanged = new Signal1<Integer>();
     public Signal1<Integer> zRotationChanged = new Signal1<Integer>();
 
-    ArrayList<TextureInfo> textureInfo = new ArrayList<TextureInfo>();
+    //ArrayList<TextureInfo> textureInfo = new ArrayList<TextureInfo>();
 
-    private static class TextureInfo
-    {
-    	int x;
-    	int y;
-    }
+    //private static class TextureInfo
+    //{
+    //	int x;
+    //	int y;
+    //}
     
     
     public ImageGLWidget(QWidget parent, String filename) throws FitsException, IOException 
@@ -72,24 +71,25 @@ class ImageGLWidget extends QGLWidget
     @Override
     protected void initializeGL()
     {
-    	System.out.println("initializeGL");
-    	GLDrawableFactory factory = GLDrawableFactory.getFactory();
+        GLDrawableFactory factory = GLDrawableFactory.getFactory();
         ctx = factory.createExternalGLContext();
         gl = ctx.getGL();
+        ctx.makeCurrent();
+    	glu = new GLU();
         
         
         gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         gl.glShadeModel(GL.GL_FLAT);
         gl.glEnable(GL.GL_DEPTH_TEST);
-        gl.glEnable(GL.GL_CULL_FACE);
-
+        gl.glPolygonMode(GL.GL_FRONT_AND_BACK, GL.GL_LINE);
+        
         gl.glPixelStorei(GL.GL_UNPACK_ALIGNMENT, 1);
 
         numTexturesWidth = (int)Math.ceil((double)(NearImage.IMAGE_WIDTH-1) / (double)(TEXTURE_SIZE-1));
         numTexturesHeight = (int)Math.ceil((double)(NearImage.IMAGE_HEIGHT-1) / (double)(TEXTURE_SIZE-1));
         totalNumTextures = numTexturesWidth * numTexturesHeight;
-        
-        textureInfo.clear();
+     
+        //textureInfo.clear();
         
         textureNames = IntBuffer.allocate(totalNumTextures);
         gl.glGenTextures(totalNumTextures, textureNames);
@@ -98,92 +98,102 @@ class ImageGLWidget extends QGLWidget
         for (int i=0; i<numTexturesHeight; ++i)
         	for (int j=0; j<numTexturesWidth; ++j)
         	{
-        		System.out.println(c);
-                gl.glBindTexture(GL.GL_TEXTURE_2D, textureNames.get(c));
+        		gl.glBindTexture(GL.GL_TEXTURE_2D, textureNames.get(c));
 
-                int xcorner = i*(TEXTURE_SIZE-1);
-                int ycorner = j*(TEXTURE_SIZE-1);
+        		gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL.GL_CLAMP);
+        		gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL.GL_CLAMP);
+        		gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_LINEAR);
+        		gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR);
+
+                int corner1 = i*(TEXTURE_SIZE-1);
+                int corner2 = j*(TEXTURE_SIZE-1);
         
-                TextureInfo ti = new TextureInfo();
-                ti.x = xcorner;
-                ti.y = ycorner;
-                textureInfo.add(ti);
+                //TextureInfo ti = new TextureInfo();
+                //ti.x = xcorner;
+                //ti.y = ycorner;
+                //textureInfo.add(ti);
                 
-                ByteBuffer buffer = nearImage.getSubImage(TEXTURE_SIZE, xcorner, ycorner);
-                //byte [] b = new byte[TEXTURE_SIZE*TEXTURE_SIZE*4];
-        		//factory = GLDrawableFactory.getFactory();
-                //ctx = factory.createExternalGLContext();
-                //gl = ctx.getGL();
+                ByteBuffer buffer = nearImage.getSubImage(TEXTURE_SIZE, corner1, corner2);
                 gl.glTexImage2D(
                 		GL.GL_TEXTURE_2D, 
                 		0, 
-                		//GL.GL_LUMINANCE, 
                 		GL.GL_RGBA, 
                 		TEXTURE_SIZE, 
                 		TEXTURE_SIZE, 
                 		0, 
-                		//GL.GL_LUMINANCE, 
                 		GL.GL_RGBA, 
                 		GL.GL_UNSIGNED_BYTE, 
                 		buffer);
                 
                 ++c;
         	}
+        
     }
 
     @Override
     protected void paintGL()
     {
-    	System.out.println("paintGL");
     	gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
-        gl.glEnable(GL.GL_TEXTURE_2D);
-        gl.glTexEnvf(GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE, GL.GL_REPLACE);
-
-        //gl.glBegin(GL.GL_POLYGON)
-        //gl.glVertex3d(0)
+    	gl.glEnable(GL.GL_TEXTURE_2D);
+    	gl.glTexEnvf(GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE, GL.GL_REPLACE);
+        gl.glColor3d(0.0, 0.0, 0.0);
+        double x, y, z;
+        
         int c = 0;
         for (int i=0; i<numTexturesHeight; ++i)
         	for (int j=0; j<numTexturesWidth; ++j)
         	{
-                gl.glBindTexture(GL.GL_TEXTURE_2D, textureNames.get(c));
+        		gl.glBindTexture(GL.GL_TEXTURE_2D, textureNames.get(c));
 
-                int xcorner = i*(TEXTURE_SIZE-1);
-                int ycorner = j*(TEXTURE_SIZE-1);
+                int corner1 = i*(TEXTURE_SIZE-1);
+                int corner2 = j*(TEXTURE_SIZE-1);
         
                 
                 for (int m=0; m<TEXTURE_SIZE-1; ++m)
                 {
                 	gl.glBegin(GL.GL_TRIANGLE_STRIP);
 
-                	double x = nearImage.getX(xcorner, ycorner+m);
-    				double y = nearImage.getY(xcorner, ycorner+m);
-    				double z = nearImage.getZ(xcorner, ycorner+m);
-    				
-                	gl.glTexCoord2d((double)m/(double)(TEXTURE_SIZE-1), 0.0);
+                	x = nearImage.getX(corner1+m, corner2);
+    				y = nearImage.getY(corner1+m, corner2);
+    				z = nearImage.getZ(corner1+m, corner2);
+
+    				gl.glTexCoord2d(0.0, (double)(m)/(double)(TEXTURE_SIZE-1));
                 	gl.glVertex3d(x, y, z);
-                	
-                	x = nearImage.getX(xcorner, ycorner+m+1);
-    				y = nearImage.getY(xcorner, ycorner+m+1);
-    				z = nearImage.getZ(xcorner, ycorner+m+1);
+                	//System.out.println("1:  " + x + " " + y + " " + z);
+    				//System.out.println( 0.0 +" , "+ (double)(m)/(double)(TEXTURE_SIZE-1));
     				
-                	gl.glTexCoord2d(0.0, 0.0);
+                	x = nearImage.getX(corner1+m+1, corner2);
+    				y = nearImage.getY(corner1+m+1, corner2);
+    				z = nearImage.getZ(corner1+m+1, corner2);
+    				
+    				gl.glTexCoord2d(0.0, (double)(m+1)/(double)(TEXTURE_SIZE-1));
                 	gl.glVertex3d(x, y, z);
-                	
+                	//System.out.println("2:  " + x + " " + y + " " + z);
+    				//System.out.println(0.0 + " , " + (double)(m+1)/(double)(TEXTURE_SIZE-1)); 
+    						
         			for (int n=0; n<TEXTURE_SIZE-1; ++n)
         			{
-        				x = nearImage.getX(xcorner+m, ycorner+n);
-        				y = nearImage.getY(xcorner+m, ycorner+n);
-        				z = nearImage.getZ(xcorner+m, ycorner+n);
+        				x = nearImage.getX(corner1+m, corner2+n+1);
+        				y = nearImage.getY(corner1+m, corner2+n+1);
+        				z = nearImage.getZ(corner1+m, corner2+n+1);
         				
-                    	gl.glTexCoord2d(0.0, 0.0);
+                    	gl.glTexCoord2d((double)(n+1)/(double)(TEXTURE_SIZE-1),
+                    					(double)(m)/(double)(TEXTURE_SIZE-1));
                     	gl.glVertex3d(x, y, z);
-                    	
-        				x = nearImage.getX(xcorner+m, ycorner+n);
-        				y = nearImage.getY(xcorner+m, ycorner+n);
-        				z = nearImage.getZ(xcorner+m, ycorner+n);
+                    	//System.out.println("3:  " + x + " " + y + " " + z);
+        				//System.out.println((double)(n+1)/(double)(TEXTURE_SIZE-1) + " , " + 
+        				//		(double)(m)/(double)(TEXTURE_SIZE-1));
         				
-                    	gl.glTexCoord2d(0.0, 0.0);
+        				x = nearImage.getX(corner1+m+1, corner2+n+1);
+        				y = nearImage.getY(corner1+m+1, corner2+n+1);
+        				z = nearImage.getZ(corner1+m+1, corner2+n+1);
+        				
+                    	gl.glTexCoord2d((double)(n+1)/(double)(TEXTURE_SIZE-1), 
+                    					(double)(m+1)/(double)(TEXTURE_SIZE-1));
                     	gl.glVertex3d(x, y, z);
+                    	//System.out.println("4:  " + x + " " + y + " " + z);
+        				//System.out.println((double)(n+1)/(double)(TEXTURE_SIZE-1) + " , " +
+        				//		(double)(m+1)/(double)(TEXTURE_SIZE-1));
         			}
 
         			gl.glEnd();
@@ -193,28 +203,20 @@ class ImageGLWidget extends QGLWidget
         
         gl.glFlush();
         gl.glDisable(GL.GL_TEXTURE_2D);
-    	/*
-        func.glLoadIdentity();
-        func.glTranslated(0.0, 0.0, -10.0);
-        func.glRotated(xRot / 16.0, 1.0, 0.0, 0.0);
-        func.glRotated(yRot / 16.0, 0.0, 1.0, 0.0);
-        func.glRotated(zRot / 16.0, 0.0, 0.0, 1.0);
-        func.glCallList(object);
-        */
     }
 
     @Override
     protected void resizeGL(int width, int height)
     {
-    	System.out.println("resizeGL");
     	gl.glViewport(0, 0, width, height);
     	gl.glMatrixMode(GL.GL_PROJECTION);
     	gl.glLoadIdentity();
-    	gl.glFrustum(-1.0, 1.0, -1.0, 1.0, 1.0, 300.0);
-    	//glu.gluPerspective(60.0, (double)width/(double)height, 1.0, 30.0);
+    	//glu.gluPerspective(60.0, (double)width/(double)height, 300.0, 400.0);
+    	gl.glOrtho(-100.0, 600.0, -100.0, 500.0, -1.0, 1.0);
     	gl.glMatrixMode(GL.GL_MODELVIEW);
     	gl.glLoadIdentity();
-    	gl.glTranslated(0.0, 0.0, -300.0);
+    	//gl.glTranslated(-(double)width/2.0, -(double)height/2.0, -392.48);
+    	//gl.glTranslated(0.0, 0.0, -392);
     }
 
     @Override

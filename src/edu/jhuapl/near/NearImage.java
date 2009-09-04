@@ -41,41 +41,58 @@ public class NearImage
         Fits f = new Fits(filename);
         BasicHDU h = f.getHDU(0);
 
-        float[][] array = (float[][])h.getData().getData();
+        float[][] array = null;
+
         int[] axes = h.getAxes();
-        int width = axes[1];
-        int height = axes[0];
-        System.out.println(axes[0]);
-        System.out.println(axes[1]);
+        int originalWidth = axes[1];
+        int originalHeight = axes[0];
 
-        image = new QImage(width, height, QImage.Format.Format_RGB32);
+        //HashMap<Short, Integer> values = new HashMap<Short, Integer>();
 
-        //HashMap<Float, Integer> values = new HashMap<Float, Integer>();
-        
-        float max = 0.0f;
-        for (int i=0; i<height; ++i)
+        // For now only support images with type float or short since that what near images
+        // seem to be in.
+        try
         {
-            for (int j=0; j<width; ++j)
-            {
-            	//values.put(array[j][i], 0);
-            	
-            	if (array[i][j] > max)
-            		max = array[i][j];
-            	if (array[i][j] < 0.0)
-            		System.out.println("Ahhhhh less than zero");
-            }
+        	array = (float[][])h.getData().getData();
+        }
+        catch (ClassCastException e)
+        {
+        	short[][] arrayS = (short[][])h.getData().getData();
+        	array = new float[originalHeight][originalWidth];
+            
+        	for (int i=0; i<originalHeight; ++i)
+                for (int j=0; j<originalWidth; ++j)
+                {
+                	//values.put(arrayS[i][j], 0);
+                	array[i][j] = arrayS[i][j];
+                }
         }
 
         //System.out.println("Hash Map size: " + values.size());
+
+        image = new QImage(originalWidth, originalHeight, QImage.Format.Format_RGB32);
         
-        QColor c = new QColor();
-        for (int i=0; i<height; ++i)
+        float max = -Float.MAX_VALUE;
+        float min = Float.MAX_VALUE;
+        for (int i=0; i<originalHeight; ++i)
         {
-            for (int j=0; j<width; ++j)
+            for (int j=0; j<originalWidth; ++j)
             {
-            	int val = (int)(array[i][j] * 255.0f / max);
+            	if (array[i][j] > max)
+            		max = array[i][j];
+            	if (array[i][j] < min)
+            		min = array[i][j];
+            }
+        }
+
+        QColor c = new QColor();
+        for (int i=0; i<originalHeight; ++i)
+        {
+            for (int j=0; j<originalWidth; ++j)
+            {
+            	int val = (int)((array[i][j]-min) * 255.0f / (max-min));
             	c.setRgb(val,val,val);
-            	image.setPixel(j, height-i-1, c.rgb());
+            	image.setPixel(j, originalHeight-i-1, c.rgb());
             }
         }
 
@@ -87,7 +104,7 @@ public class NearImage
         {
             for (int j=0; j<IMAGE_WIDTH; ++j)
             {
-            	int pix = image.pixel(j, height-i-1);
+            	int pix = image.pixel(j, IMAGE_HEIGHT-i-1);
             	c.setRgb(pix);
             	imageValues[i][j] = (byte)c.red();
             }
@@ -138,16 +155,16 @@ public class NearImage
 					
 	}
 	
-	public ByteBuffer getSubImage(int size, int x, int y)
+	public ByteBuffer getSubImage(int size, int row, int col)
 	{
-		ByteBuffer buffer = ByteBuffer.allocateDirect(size*size*4);
+		ByteBuffer buffer = ByteBuffer.allocate(size*size*4);
 		
-		for (int i=x; i<x+size; ++i)
-			for (int j=y; j<y+size; ++j)
+		for (int i=row; i<row+size; ++i)
+			for (int j=col; j<col+size; ++j)
 			{
 				byte pix = 0;
 				if (i<IMAGE_HEIGHT && j<IMAGE_WIDTH)
-					pix = imageValues[i][j];;
+					pix = imageValues[i][j];
 				buffer.put(pix);
 				buffer.put(pix);
 				buffer.put(pix);
@@ -183,17 +200,17 @@ public class NearImage
 		return 0;
 	}
 	
-	public double getX(double x, double y)
+	public double getX(double row, double col)
 	{
-		return x;
+		return col;
 	}
 
-	public double getY(double x, double y)
+	public double getY(double row, double col)
 	{
-		return y;
+		return row;
 	}
 
-	public double getZ(double x, double y)
+	public double getZ(double row, double col)
 	{
 		return 0;
 	}
