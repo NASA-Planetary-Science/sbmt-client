@@ -10,10 +10,11 @@ public class LineamentModel
 		public String filename;
 		public ArrayList<Double> lat = new ArrayList<Double>();
 		public ArrayList<Double> lon = new ArrayList<Double>();
-		double minLat = Double.MAX_VALUE;
-		double maxLat = Double.MIN_VALUE;
-		double minLon = Double.MAX_VALUE;
-		double maxLon = Double.MIN_VALUE;
+		public ArrayList<Double> rad = new ArrayList<Double>();
+		public ArrayList<Double> x = new ArrayList<Double>();
+		public ArrayList<Double> y = new ArrayList<Double>();
+		public ArrayList<Double> z = new ArrayList<Double>();
+		public BoundingBox bb = new BoundingBox();
 	}
 	
 	private HashMap<Integer, Lineament> idToLineamentMap = new HashMap<Integer, Lineament>();
@@ -21,6 +22,7 @@ public class LineamentModel
 	public LineamentModel()
 	{
 		loadModel();
+		System.out.println("Number of lineaments: " + this.idToLineamentMap.size());
 	}
 	
 	private void loadModel()
@@ -39,7 +41,7 @@ public class LineamentModel
             String line = in.readLine();
             String [] tokens = line.split("\t");
             
-            if (tokens.length < 4)
+            if (tokens.length < 5)
             {
                 System.out.println(tokens.length);
                 for (int i=0;i<tokens.length;++i)
@@ -51,6 +53,7 @@ public class LineamentModel
             Integer id = Integer.parseInt(tokens[1]);
             double lat = Double.parseDouble(tokens[2]);
             double lon = Double.parseDouble(tokens[3]);
+            double rad = Double.parseDouble(tokens[4]);
             
             if (!this.idToLineamentMap.containsKey(id))
             {
@@ -61,16 +64,19 @@ public class LineamentModel
             lin.filename = filename;
             lin.lat.add(lat);
             lin.lon.add(lon);
-            
+            lin.rad.add(rad);
+
+            // Convert to xyz
+            double x = rad * Math.cos( lon ) * Math.cos( lat );
+            double y = rad * Math.sin( lon ) * Math.cos( lat );
+            double z = rad * Math.sin( lat );
+
+            lin.x.add(x);
+            lin.y.add(y);
+            lin.z.add(z);
+
             // Update the bounds of the lineaments
-            if (lin.minLat > lat)
-            	lin.minLat = lat;
-            if (lin.maxLat < lat)
-            	lin.maxLat = lat;
-            if (lin.minLon > lon)
-            	lin.minLon = lon;
-            if (lin.maxLon < lon)
-            	lin.maxLon = lon;
+            lin.bb.update(x, y, z);
         }
 
 	}
