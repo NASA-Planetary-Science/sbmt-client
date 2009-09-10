@@ -5,9 +5,10 @@ import com.trolltech.qt.core.*;
 
 public class LineamentModel 
 {
-	private static class Lineament
+	public static class Lineament
 	{
-		public String filename;
+		public String name = "";
+		public int id;
 		public ArrayList<Double> lat = new ArrayList<Double>();
 		public ArrayList<Double> lon = new ArrayList<Double>();
 		public ArrayList<Double> rad = new ArrayList<Double>();
@@ -49,7 +50,7 @@ public class LineamentModel
                 continue;
             }
 
-            String filename = tokens[0];
+            String name = tokens[0];
             Integer id = Integer.parseInt(tokens[1]);
             double lat = Double.parseDouble(tokens[2]);
             double lon = Double.parseDouble(tokens[3]);
@@ -61,7 +62,8 @@ public class LineamentModel
             }            
             
             Lineament lin = this.idToLineamentMap.get(id);
-            lin.filename = filename;
+            lin.name = name;
+            lin.id = id;
             lin.lat.add(lat);
             lin.lon.add(lon);
             lin.rad.add(rad);
@@ -79,5 +81,17 @@ public class LineamentModel
             lin.bb.update(x, y, z);
         }
 
+	}
+	
+	public List<Lineament> getLineamentsWithinBox(BoundingBox box)
+	{
+		ArrayList<Lineament> array = new ArrayList<Lineament>();
+		for (Integer id : this.idToLineamentMap.keySet())
+		{
+			Lineament lin =	this.idToLineamentMap.get(id);
+			if (lin.bb.intersects(box))
+				array.add(lin);
+		}
+		return array;
 	}
 }

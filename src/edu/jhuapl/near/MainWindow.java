@@ -29,7 +29,7 @@ public class MainWindow extends QMainWindow
         setWindowTitle(tr("Near Lineaments Viewer"));
         //setWindowIcon(new QIcon("classpath:com/trolltech/images/qt-logo.png"));
         
-        imageViewer = new ImageViewer(this);
+        imageViewer = new ImageViewer(lineamentModel, this);
         setCentralWidget(imageViewer);
 
         try {

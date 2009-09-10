@@ -24,6 +24,9 @@ public class NearImage
 	private QImage image;
 	public static final int IMAGE_WIDTH = 537;
 	public static final int IMAGE_HEIGHT = 412;
+	public static final int NUM_LAYERS = 14;
+	
+	public static final float PDS_NA = -1.e32f;
 	
 	private float[][] incidence = new float[IMAGE_HEIGHT][IMAGE_WIDTH];
 	private float[][] emission = new float[IMAGE_HEIGHT][IMAGE_WIDTH];
@@ -33,8 +36,17 @@ public class NearImage
 	private float[][] x = new float[IMAGE_HEIGHT][IMAGE_WIDTH];
 	private float[][] y = new float[IMAGE_HEIGHT][IMAGE_WIDTH];
 	private float[][] z = new float[IMAGE_HEIGHT][IMAGE_WIDTH];
-	private byte[][] imageValues = new byte[IMAGE_HEIGHT][IMAGE_WIDTH];
 	
+	private float[] data = new float[NUM_LAYERS*IMAGE_HEIGHT*IMAGE_WIDTH];
+	
+	private byte[][] imageValues = new byte[IMAGE_HEIGHT][IMAGE_WIDTH];
+
+	private Point center = new Point();
+
+	private BoundingBox bb = new BoundingBox();
+	private String name = ""; // The name is a 9 digit number at the beginning of the filename
+						 	  // (starting after the initial M0). This is how the lineament 
+							  // model names them.
 	
 	public NearImage(String filename) throws FitsException, IOException
 	{
@@ -110,6 +122,9 @@ public class NearImage
             }
         }
 
+        if (filename.length() >= 15)
+        	name = filename.substring(2,11);
+
         loadImgFile(filename);
 	}
 	
@@ -138,11 +153,12 @@ public class NearImage
 		System.out.println(list);
 		
 		if (list.size() == 0)
-			throw new IOException("Could not find IMG image corresponding to " + basename);
+			throw new IOException("Could not find IMG file corresponding to " + basename);
 
 		QFileInfo imgFileName = list.get(0);
 
-		//DataInputStream in = new DataInputStream(new BufferedInputStream(new FileInputStream(imgFile.filePath())));
+		if (imgFileName.size() != 4*NUM_LAYERS*IMAGE_HEIGHT*IMAGE_WIDTH)
+			throw new IOException("Corresponding IMG file is not in the correct format");
 		
 		QFile imgFile = new QFile(imgFileName.filePath());
 		QFile.OpenMode mode = new QFile.OpenMode();
@@ -150,9 +166,42 @@ public class NearImage
 		imgFile.open(mode);
 		QDataStream in = new QDataStream(imgFile);
 
-		float a = in.readFloat();
+		for (int i=0;i<data.length; ++i)
+		{
+			data[i] = swap(in.readFloat());
+		}
 
-					
+		int numValidPixels = 0;
+	    for (int j=0; j<IMAGE_HEIGHT; ++j)
+	    {
+	        for (int i=0; i<IMAGE_WIDTH; ++i)
+	        {
+	        	float xx = data[index(i,j,7)];
+	        	float yy = data[index(i,j,8)];
+	        	float zz = data[index(i,j,9)];
+	        	
+	        	if (xx != PDS_NA && yy != PDS_NA && zz != PDS_NA)
+	        	{
+	        		bb.update(xx, yy, zz);
+	        		center.x += xx;
+	        		center.y += yy;
+	        		center.z += zz;
+	        		
+	        		++numValidPixels;
+	        	}
+	        	
+	        	x[j][i] = xx;
+	        	y[j][i] = yy;
+	        	z[j][i] = zz;  
+	        }
+	    }
+	    
+	    if (numValidPixels > 0)
+	    {
+	    	center.x /= (double)numValidPixels;
+	    	center.y /= (double)numValidPixels;
+	    	center.z /= (double)numValidPixels;
+	    }
 	}
 	
 	public ByteBuffer getSubImage(int size, int row, int col)
@@ -175,6 +224,22 @@ public class NearImage
 		return buffer;
 	}
 	
+	public BoundingBox getBoundingBox()
+	{
+		return bb;
+	}
+	
+	public String getName()
+	{
+		return name;
+	}
+	
+	public Point getCenter()
+	{
+		return center;
+	}
+	
+	/*
 	public double getLatitude(double x, double y)
 	{
 		return 0;
@@ -199,20 +264,66 @@ public class NearImage
 	{
 		return 0;
 	}
+	*/
 	
-	public double getX(double row, double col)
+	public double getX(int row, int col)
 	{
-		return col;
+		//return col;
+		if (row < IMAGE_HEIGHT && col < IMAGE_WIDTH)
+		{
+			//System.out.println(x[row][col]);
+			return x[row][col];
+			
+		}
+		else
+			return 0.0;
 	}
 
-	public double getY(double row, double col)
+	public double getY(int row, int col)
 	{
-		return row;
+		//return row;
+		if (row < IMAGE_HEIGHT && col < IMAGE_WIDTH)
+		{
+			//System.out.println(y[row][col]);
+			return y[row][col];
+		}
+		else
+			return 0.0;
 	}
 
-	public double getZ(double row, double col)
+	public double getZ(int row, int col)
 	{
-		return 0;
+		//return 0;
+		if (row < IMAGE_HEIGHT && col < IMAGE_WIDTH)
+		{
+			//System.out.println(z[row][col]);
+			return z[row][col];
+		}
+		else
+			return 0.0;
 	}
 
+	private int index(int i, int j, int k)
+	{
+		return ((k * IMAGE_HEIGHT + j) * IMAGE_WIDTH + i);
+	}
+	  
+	// This function is taken from http://www.java2s.com/Code/Java/Language-Basics/Utilityforbyteswappingofalljavadatatypes.htm
+	private static int swap(int value)
+	{
+		int b1 = (value >>  0) & 0xff;
+	    int b2 = (value >>  8) & 0xff;
+	    int b3 = (value >> 16) & 0xff;
+	    int b4 = (value >> 24) & 0xff;
+
+	    return b1 << 24 | b2 << 16 | b3 << 8 | b4 << 0;
+	}
+	
+	// This function is taken from http://www.java2s.com/Code/Java/Language-Basics/Utilityforbyteswappingofalljavadatatypes.htm
+	private static float swap(float value)
+	{
+		int intValue = Float.floatToIntBits(value);
+		intValue = swap(intValue);
+		return Float.intBitsToFloat(intValue);
+	}
 }

@@ -6,10 +6,14 @@ import com.trolltech.qt.gui.*;
 public class ImageViewer extends QWidget
 {
 	private QTabWidget tabWidget;
+	private LineamentModel lineamentModel;
 	
-	public ImageViewer(QWidget parent)
+	public ImageViewer(LineamentModel model, QWidget parent)
 	{
 		super(parent);
+		
+		lineamentModel = model;
+		
 		QGridLayout gridLayout = new QGridLayout(this);
         //gridLayout.setSpacing(4);
         //gridLayout.setMargin(4);
@@ -27,7 +31,7 @@ public class ImageViewer extends QWidget
 		
 		try
 		{
-			tabWidget.addTab(new ImageGLWidget(this, filename), fi.baseName());
+			tabWidget.addTab(new ImageGLWidget(filename, lineamentModel, this), fi.baseName());
 			int index = tabWidget.count()-1;
 			tabWidget.setTabToolTip(index, filename);
 			tabWidget.setCurrentIndex(index);

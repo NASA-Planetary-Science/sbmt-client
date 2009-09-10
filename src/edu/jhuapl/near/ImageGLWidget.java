@@ -35,10 +35,12 @@ class ImageGLWidget extends QGLWidget
     private static final int TEXTURE_SIZE = 64;
 
     private NearImage nearImage = null;
+    private LineamentModel lineamentModel;
     
     public Signal1<Integer> xRotationChanged = new Signal1<Integer>();
     public Signal1<Integer> yRotationChanged = new Signal1<Integer>();
     public Signal1<Integer> zRotationChanged = new Signal1<Integer>();
+
 
     //ArrayList<TextureInfo> textureInfo = new ArrayList<TextureInfo>();
 
@@ -49,9 +51,11 @@ class ImageGLWidget extends QGLWidget
     //}
     
     
-    public ImageGLWidget(QWidget parent, String filename) throws FitsException, IOException 
+    public ImageGLWidget(String filename, LineamentModel model, QWidget parent) throws FitsException, IOException 
     {
         super(parent);
+
+        lineamentModel = model;
         
         nearImage = new NearImage(filename);
         
@@ -102,8 +106,8 @@ class ImageGLWidget extends QGLWidget
 
         		gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL.GL_CLAMP);
         		gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL.GL_CLAMP);
-        		gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_LINEAR);
-        		gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR);
+        		gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_NEAREST);
+        		gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_NEAREST);
 
                 int corner1 = i*(TEXTURE_SIZE-1);
                 int corner2 = j*(TEXTURE_SIZE-1);
@@ -136,7 +140,7 @@ class ImageGLWidget extends QGLWidget
     	gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
     	gl.glEnable(GL.GL_TEXTURE_2D);
     	gl.glTexEnvf(GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE, GL.GL_REPLACE);
-        gl.glColor3d(0.0, 0.0, 0.0);
+        gl.glColor4d(0.0, 0.0, 0.0, 0.0);
         double x, y, z;
         
         int c = 0;
@@ -201,6 +205,8 @@ class ImageGLWidget extends QGLWidget
                 ++c;
         	}
         
+        drawLineaments();
+        
         gl.glFlush();
         gl.glDisable(GL.GL_TEXTURE_2D);
     }
@@ -211,14 +217,41 @@ class ImageGLWidget extends QGLWidget
     	gl.glViewport(0, 0, width, height);
     	gl.glMatrixMode(GL.GL_PROJECTION);
     	gl.glLoadIdentity();
-    	//glu.gluPerspective(60.0, (double)width/(double)height, 300.0, 400.0);
-    	gl.glOrtho(-100.0, 600.0, -100.0, 500.0, -1.0, 1.0);
+    	glu.gluPerspective(60.0, (double)width/(double)height, .1, 100000.0);
+    	//gl.glOrtho(-100.0, 600.0, -100.0, 500.0, -1.0, 1.0);
     	gl.glMatrixMode(GL.GL_MODELVIEW);
     	gl.glLoadIdentity();
+    	Point center = nearImage.getCenter();
+    	System.out.println(center.x + " " + center.y + " " + center.z);
+    	glu.gluLookAt(0, 0, 20, center.x, center.y, center.z, 0, 1, 0);
+    	//glu.gluLookAt(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
     	//gl.glTranslated(-(double)width/2.0, -(double)height/2.0, -392.48);
     	//gl.glTranslated(0.0, 0.0, -392);
     }
 
+    private void drawLineaments()
+    {
+    	BoundingBox bb = nearImage.getBoundingBox();
+    	List<LineamentModel.Lineament> list = lineamentModel.getLineamentsWithinBox(bb);
+    	for (LineamentModel.Lineament lin : list)
+    	{
+    		gl.glBegin(GL.GL_LINE_STRIP);
+    		
+    		if (lin.name.equals(nearImage.getName()))
+    			gl.glColor3i(255, 0, 0);
+    		else
+    			gl.glColor3i(0, 255, 0);
+    		
+    		int size = lin.x.size();
+    		for (int i=0;i<size;++i)
+    		{
+    			gl.glVertex3d(lin.x.get(i), lin.y.get(i), lin.z.get(i));
+    		}
+    		
+    		gl.glEnd();
+    	}
+    }
+    
     @Override
     protected void mousePressEvent(QMouseEvent event)
     {
