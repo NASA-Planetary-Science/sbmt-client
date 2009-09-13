@@ -122,9 +122,6 @@ public class NearImage
             }
         }
 
-        if (filename.length() >= 15)
-        	name = filename.substring(2,11);
-
         loadImgFile(filename);
 	}
 	
@@ -139,7 +136,10 @@ public class NearImage
 		int k = basename.indexOf("_");
 		if (k == -1)
 			k = basename.length() - 4;
-		
+
+        if (basename.length() >= 11)
+        	name = basename.substring(2,11);
+
 		String namePrefix = basename.substring(0, k);
 		
         List<String> filterList = new ArrayList<String>();
@@ -160,11 +160,13 @@ public class NearImage
 		if (imgFileName.size() != 4*NUM_LAYERS*IMAGE_HEIGHT*IMAGE_WIDTH)
 			throw new IOException("Corresponding IMG file is not in the correct format");
 		
-		QFile imgFile = new QFile(imgFileName.filePath());
-		QFile.OpenMode mode = new QFile.OpenMode();
-		mode.set(QFile.OpenModeFlag.ReadOnly);
-		imgFile.open(mode);
-		QDataStream in = new QDataStream(imgFile);
+		DataInputStream in = new DataInputStream(new BufferedInputStream(new FileInputStream(imgFileName.filePath())));
+		
+//		QFile imgFile = new QFile(imgFileName.filePath());
+//		QFile.OpenMode mode = new QFile.OpenMode();
+//		mode.set(QFile.OpenModeFlag.ReadOnly);
+//		imgFile.open(mode);
+//		QDataStream in = new QDataStream(imgFile);
 
 		for (int i=0;i<data.length; ++i)
 		{
@@ -172,6 +174,7 @@ public class NearImage
 		}
 
 		int numValidPixels = 0;
+		int numInvalidPixels = 0;
 	    for (int j=0; j<IMAGE_HEIGHT; ++j)
 	    {
 	        for (int i=0; i<IMAGE_WIDTH; ++i)
@@ -189,12 +192,19 @@ public class NearImage
 	        		
 	        		++numValidPixels;
 	        	}
-	        	
+	        	else
+	        	{
+	        		++numInvalidPixels;
+	        	}
+	        		        	
 	        	x[j][i] = xx;
 	        	y[j][i] = yy;
 	        	z[j][i] = zz;  
 	        }
 	    }
+	
+	    System.out.println("numInvalidPixels:  " + numInvalidPixels);
+	    System.out.println("bb:  " + bb);
 	    
 	    if (numValidPixels > 0)
 	    {
@@ -268,39 +278,39 @@ public class NearImage
 	
 	public double getX(int row, int col)
 	{
-		//return col;
-		if (row < IMAGE_HEIGHT && col < IMAGE_WIDTH)
+//		return col;
+//		if (row < IMAGE_HEIGHT && col < IMAGE_WIDTH)
 		{
 			//System.out.println(x[row][col]);
 			return x[row][col];
 			
 		}
-		else
-			return 0.0;
+//		else
+//			return 0.0;
 	}
 
 	public double getY(int row, int col)
 	{
-		//return row;
-		if (row < IMAGE_HEIGHT && col < IMAGE_WIDTH)
+//		return row;
+//		if (row < IMAGE_HEIGHT && col < IMAGE_WIDTH)
 		{
 			//System.out.println(y[row][col]);
 			return y[row][col];
 		}
-		else
-			return 0.0;
+//		else
+//			return 0.0;
 	}
 
 	public double getZ(int row, int col)
 	{
-		//return 0;
-		if (row < IMAGE_HEIGHT && col < IMAGE_WIDTH)
+//		return 0;
+//		if (row < IMAGE_HEIGHT && col < IMAGE_WIDTH)
 		{
 			//System.out.println(z[row][col]);
 			return z[row][col];
 		}
-		else
-			return 0.0;
+//		else
+//			return 0.0;
 	}
 
 	private int index(int i, int j, int k)
@@ -322,7 +332,7 @@ public class NearImage
 	// This function is taken from http://www.java2s.com/Code/Java/Language-Basics/Utilityforbyteswappingofalljavadatatypes.htm
 	private static float swap(float value)
 	{
-		int intValue = Float.floatToIntBits(value);
+		int intValue = Float.floatToRawIntBits(value);
 		intValue = swap(intValue);
 		return Float.intBitsToFloat(intValue);
 	}

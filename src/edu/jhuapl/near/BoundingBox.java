@@ -34,4 +34,12 @@ public class BoundingBox
 		else
 			return false;
 	}
+	
+	public String toString()
+	{
+		return "xmin: " + xmin + " xmax: " + xmax +
+			   " ymin: " + ymin + " ymax: " + ymax +
+			   " zmin: " + zmin + " zmax: " + zmax;
+	}
+	
 }

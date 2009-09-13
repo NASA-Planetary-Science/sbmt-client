@@ -41,15 +41,16 @@ class ImageGLWidget extends QGLWidget
     public Signal1<Integer> yRotationChanged = new Signal1<Integer>();
     public Signal1<Integer> zRotationChanged = new Signal1<Integer>();
 
+    private double eyex;
+    private double eyey;
+    private double eyez;
+    private double centerx;
+    private double centery;
+    private double centerz;
+    private double upx;
+    private double upy;
+    private double upz;
 
-    //ArrayList<TextureInfo> textureInfo = new ArrayList<TextureInfo>();
-
-    //private static class TextureInfo
-    //{
-    //	int x;
-    //	int y;
-    //}
-    
     
     public ImageGLWidget(String filename, LineamentModel model, QWidget parent) throws FitsException, IOException 
     {
@@ -58,18 +59,6 @@ class ImageGLWidget extends QGLWidget
         lineamentModel = model;
         
         nearImage = new NearImage(filename);
-        
-//        QLabel imageLabel = new QLabel();
-//        imageLabel.setBackgroundRole(QPalette.ColorRole.Base);
-//        imageLabel.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Ignored);
-//        imageLabel.setScaledContents(true);
-//        //imageLabel.setPixmap(QPixmap.fromImage(image));
-//
-//        QScrollArea scrollArea = new QScrollArea(this);
-//        scrollArea.setBackgroundRole(QPalette.ColorRole.Dark);
-//        scrollArea.setWidget(imageLabel);
-        
-        
     }
 
     @Override
@@ -86,15 +75,13 @@ class ImageGLWidget extends QGLWidget
         gl.glShadeModel(GL.GL_FLAT);
         gl.glEnable(GL.GL_DEPTH_TEST);
         gl.glPolygonMode(GL.GL_FRONT_AND_BACK, GL.GL_LINE);
-        
         gl.glPixelStorei(GL.GL_UNPACK_ALIGNMENT, 1);
-
+        gl.glLineWidth(4.0f);
+        
         numTexturesWidth = (int)Math.ceil((double)(NearImage.IMAGE_WIDTH-1) / (double)(TEXTURE_SIZE-1));
         numTexturesHeight = (int)Math.ceil((double)(NearImage.IMAGE_HEIGHT-1) / (double)(TEXTURE_SIZE-1));
         totalNumTextures = numTexturesWidth * numTexturesHeight;
      
-        //textureInfo.clear();
-        
         textureNames = IntBuffer.allocate(totalNumTextures);
         gl.glGenTextures(totalNumTextures, textureNames);
         
@@ -112,11 +99,6 @@ class ImageGLWidget extends QGLWidget
                 int corner1 = i*(TEXTURE_SIZE-1);
                 int corner2 = j*(TEXTURE_SIZE-1);
         
-                //TextureInfo ti = new TextureInfo();
-                //ti.x = xcorner;
-                //ti.y = ycorner;
-                //textureInfo.add(ti);
-                
                 ByteBuffer buffer = nearImage.getSubImage(TEXTURE_SIZE, corner1, corner2);
                 gl.glTexImage2D(
                 		GL.GL_TEXTURE_2D, 
@@ -138,30 +120,50 @@ class ImageGLWidget extends QGLWidget
     protected void paintGL()
     {
     	gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
-    	gl.glEnable(GL.GL_TEXTURE_2D);
+    	//gl.glEnable(GL.GL_TEXTURE_2D);
     	gl.glTexEnvf(GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE, GL.GL_REPLACE);
-        gl.glColor4d(0.0, 0.0, 0.0, 0.0);
+        gl.glPolygonMode(GL.GL_FRONT_AND_BACK, GL.GL_LINE);
+    	
+    	gl.glLoadIdentity();
+    	gl.glTranslated(0.0, 0.0, -5.0);
+    	gl.glRotated(xRot / 16.0, 1.0, 0.0, 0.0);
+        gl.glRotated(yRot / 16.0, 0.0, 1.0, 0.0);
+        gl.glRotated(zRot / 16.0, 0.0, 0.0, 1.0);
+
+    	Point center = nearImage.getCenter();
+    	//System.out.println("Center:  " + center.x + " " + center.y + " " + center.z);
+    	//glu.gluLookAt(0, 0, -40, center.x, center.y, center.z, 0, 1, 0);
+    	//glu.gluLookAt(250, 200, 500, 250, 200, 0, 0, 1, 0);
+    	//glu.gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, upx, upy, upz);
+    	//glu.gluLookAt(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
+    	//gl.glTranslated(-(double)width/2.0, -(double)height/2.0, -392.48);
+    	//gl.glTranslated(0.0, 0.0, -392);
+
         double x, y, z;
         
         int c = 0;
         for (int i=0; i<numTexturesHeight; ++i)
         	for (int j=0; j<numTexturesWidth; ++j)
         	{
-        		gl.glBindTexture(GL.GL_TEXTURE_2D, textureNames.get(c));
+        		//gl.glBindTexture(GL.GL_TEXTURE_2D, textureNames.get(c));
 
                 int corner1 = i*(TEXTURE_SIZE-1);
                 int corner2 = j*(TEXTURE_SIZE-1);
         
-                
-                for (int m=0; m<TEXTURE_SIZE-1; ++m)
+                int maxM = TEXTURE_SIZE-1;
+                if (i==numTexturesHeight-1)
+                	maxM = (NearImage.IMAGE_HEIGHT-1) - (numTexturesHeight-1)*(TEXTURE_SIZE-1);
+                for (int m=0; m<maxM; ++m)
                 {
+                	gl.glColor3d(1.0, 0.0, 0.0);
+
                 	gl.glBegin(GL.GL_TRIANGLE_STRIP);
 
                 	x = nearImage.getX(corner1+m, corner2);
     				y = nearImage.getY(corner1+m, corner2);
     				z = nearImage.getZ(corner1+m, corner2);
 
-    				gl.glTexCoord2d(0.0, (double)(m)/(double)(TEXTURE_SIZE-1));
+    				//gl.glTexCoord2d(0.0, (double)(m)/(double)(TEXTURE_SIZE-1));
                 	gl.glVertex3d(x, y, z);
                 	//System.out.println("1:  " + x + " " + y + " " + z);
     				//System.out.println( 0.0 +" , "+ (double)(m)/(double)(TEXTURE_SIZE-1));
@@ -170,19 +172,22 @@ class ImageGLWidget extends QGLWidget
     				y = nearImage.getY(corner1+m+1, corner2);
     				z = nearImage.getZ(corner1+m+1, corner2);
     				
-    				gl.glTexCoord2d(0.0, (double)(m+1)/(double)(TEXTURE_SIZE-1));
+    				//gl.glTexCoord2d(0.0, (double)(m+1)/(double)(TEXTURE_SIZE-1));
                 	gl.glVertex3d(x, y, z);
                 	//System.out.println("2:  " + x + " " + y + " " + z);
     				//System.out.println(0.0 + " , " + (double)(m+1)/(double)(TEXTURE_SIZE-1)); 
     						
-        			for (int n=0; n<TEXTURE_SIZE-1; ++n)
+                    int maxN = TEXTURE_SIZE-1;
+                    if (j==numTexturesWidth-1)
+                    	maxN = (NearImage.IMAGE_WIDTH-1) - (numTexturesWidth-1)*(TEXTURE_SIZE-1);
+        			for (int n=0; n<maxN; ++n)
         			{
         				x = nearImage.getX(corner1+m, corner2+n+1);
         				y = nearImage.getY(corner1+m, corner2+n+1);
         				z = nearImage.getZ(corner1+m, corner2+n+1);
         				
-                    	gl.glTexCoord2d((double)(n+1)/(double)(TEXTURE_SIZE-1),
-                    					(double)(m)/(double)(TEXTURE_SIZE-1));
+        				//gl.glTexCoord2d((double)(n+1)/(double)(TEXTURE_SIZE-1),
+                    	//				(double)(m)/(double)(TEXTURE_SIZE-1));
                     	gl.glVertex3d(x, y, z);
                     	//System.out.println("3:  " + x + " " + y + " " + z);
         				//System.out.println((double)(n+1)/(double)(TEXTURE_SIZE-1) + " , " + 
@@ -192,8 +197,8 @@ class ImageGLWidget extends QGLWidget
         				y = nearImage.getY(corner1+m+1, corner2+n+1);
         				z = nearImage.getZ(corner1+m+1, corner2+n+1);
         				
-                    	gl.glTexCoord2d((double)(n+1)/(double)(TEXTURE_SIZE-1), 
-                    					(double)(m+1)/(double)(TEXTURE_SIZE-1));
+                    	//gl.glTexCoord2d((double)(n+1)/(double)(TEXTURE_SIZE-1), 
+                    	//				(double)(m+1)/(double)(TEXTURE_SIZE-1));
                     	gl.glVertex3d(x, y, z);
                     	//System.out.println("4:  " + x + " " + y + " " + z);
         				//System.out.println((double)(n+1)/(double)(TEXTURE_SIZE-1) + " , " +
@@ -205,10 +210,11 @@ class ImageGLWidget extends QGLWidget
                 ++c;
         	}
         
+        gl.glDisable(GL.GL_TEXTURE_2D);
+
         drawLineaments();
         
         gl.glFlush();
-        gl.glDisable(GL.GL_TEXTURE_2D);
     }
 
     @Override
@@ -217,16 +223,10 @@ class ImageGLWidget extends QGLWidget
     	gl.glViewport(0, 0, width, height);
     	gl.glMatrixMode(GL.GL_PROJECTION);
     	gl.glLoadIdentity();
-    	glu.gluPerspective(60.0, (double)width/(double)height, .1, 100000.0);
+    	//glu.gluPerspective(60.0, (double)width/(double)height, 10.1, 100000.0);
     	//gl.glOrtho(-100.0, 600.0, -100.0, 500.0, -1.0, 1.0);
+    	gl.glOrtho(0.0, 8.0, -7.0, -3.0, 1.0, 100.0);
     	gl.glMatrixMode(GL.GL_MODELVIEW);
-    	gl.glLoadIdentity();
-    	Point center = nearImage.getCenter();
-    	System.out.println(center.x + " " + center.y + " " + center.z);
-    	glu.gluLookAt(0, 0, 20, center.x, center.y, center.z, 0, 1, 0);
-    	//glu.gluLookAt(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
-    	//gl.glTranslated(-(double)width/2.0, -(double)height/2.0, -392.48);
-    	//gl.glTranslated(0.0, 0.0, -392);
     }
 
     private void drawLineaments()
@@ -235,20 +235,25 @@ class ImageGLWidget extends QGLWidget
     	List<LineamentModel.Lineament> list = lineamentModel.getLineamentsWithinBox(bb);
     	for (LineamentModel.Lineament lin : list)
     	{
-    		gl.glBegin(GL.GL_LINE_STRIP);
-    		
+    		//System.out.println(lin.name + " " + nearImage.getName());
     		if (lin.name.equals(nearImage.getName()))
-    			gl.glColor3i(255, 0, 0);
-    		else
-    			gl.glColor3i(0, 255, 0);
+    		{
+    			gl.glColor3f(1.0f, 0f, 0f);
+//    		else
+//    			gl.glColor3f(0f, 1.0f, 0f);
+    		
+    		gl.glBegin(GL.GL_LINE_STRIP);
     		
     		int size = lin.x.size();
     		for (int i=0;i<size;++i)
     		{
     			gl.glVertex3d(lin.x.get(i), lin.y.get(i), lin.z.get(i));
     		}
-    		
+    		System.out.println("x  " +lin.x);
+    		System.out.println("y  " +lin.y);
+    		System.out.println("z  " +lin.z);
     		gl.glEnd();
+    		}
     	}
     }
     
@@ -318,14 +323,25 @@ class ImageGLWidget extends QGLWidget
         int dx = event.x() - lastPos.x();
         int dy = event.y() - lastPos.y();
 
-        if (event.buttons().isSet(Qt.MouseButton.LeftButton)) {
-            setXRotation(xRot + 8 * dy);
+        if (event.buttons().isSet(Qt.MouseButton.LeftButton)) 
+        {
+        	setXRotation(xRot + 8 * dy);
             setYRotation(yRot + 8 * dx);
-        } else if (event.buttons().isSet(Qt.MouseButton.RightButton)) {
+        } 
+//        else if (event.buttons().isSet(Qt.MouseButton.MidButton)) 
+//        {
+//            //setXRotation(xRot + 8 * dy);
+//            //setZRotation(zRot + 8 * dx);
+//        } 
+        else if (event.buttons().isSet(Qt.MouseButton.RightButton)) 
+        {
+        	// Do panning: Move the eye and center points 
+        	
             setXRotation(xRot + 8 * dy);
             setZRotation(zRot + 8 * dx);
         }
         lastPos = event.pos();
+        updateGL();
     }
 
 
