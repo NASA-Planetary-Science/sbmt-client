@@ -3,10 +3,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="third_party"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="lib/gluegen-rt.jar"/>
-	<classpathentry kind="lib" path="lib/qtjambi-4.5.2_01.jar"/>
-	<classpathentry kind="lib" path="lib/qtjambi-linux32-gcc-4.5.2_01.jar"/>
-	<classpathentry kind="lib" path="lib/qtjambi-win32-msvc2005-4.5.2_01.jar"/>
-	<classpathentry kind="lib" path="lib/jogl.jar"/>
+	<classpathentry kind="lib" path="lib/vtk.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

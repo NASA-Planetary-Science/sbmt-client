@@ -1,7 +1,7 @@
 package edu.jhuapl.near;
 
+import java.io.*;
 import java.util.*;
-import com.trolltech.qt.core.*;
 
 public class LineamentModel 
 {
@@ -22,24 +22,27 @@ public class LineamentModel
 	
 	public LineamentModel()
 	{
-		loadModel();
+		try {
+			loadModel();
+		} catch (NumberFormatException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		System.out.println("Number of lineaments: " + this.idToLineamentMap.size());
 	}
 	
-	private void loadModel()
+	private void loadModel() throws NumberFormatException, IOException
 	{
-        QFile file = new QFile("classpath:edu/jhuapl/near/data/LinearFeatures.txt");
-        if (!file.open(new QIODevice.OpenMode(QIODevice.OpenModeFlag.ReadOnly,
-                                              QIODevice.OpenModeFlag.Text)))
-        {
-        	System.out.println("Could not load file");
-            return;
-        }
+		InputStream is = getClass().getResourceAsStream("/edu/jhuapl/near/data/LinearFeatures.txt");
+		InputStreamReader isr = new InputStreamReader(is);
+		BufferedReader in = new BufferedReader(isr);
 
-        QTextStream in = new QTextStream(file);
-        while (!in.atEnd()) 
+		String line;
+        while ((line = in.readLine()) != null)
         {
-            String line = in.readLine();
             String [] tokens = line.split("\t");
             
             if (tokens.length < 5)

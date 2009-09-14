@@ -2,15 +2,13 @@ package edu.jhuapl.near;
 
 import java.io.*;
 import java.nio.ByteBuffer;
-import java.util.*;
+
 
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
 import nom.tam.fits.FitsException;
 
-import com.trolltech.qt.core.*;
-import com.trolltech.qt.gui.QColor;
-import com.trolltech.qt.gui.QImage;
+import vtk.*;
 
 /**
  * This class represents a near image. It allows retrieving the 
@@ -21,7 +19,8 @@ import com.trolltech.qt.gui.QImage;
  */
 public class NearImage 
 {
-	private QImage image;
+//	private QImage image;
+	private vtkImageData image;
 	public static final int IMAGE_WIDTH = 537;
 	public static final int IMAGE_HEIGHT = 412;
 	public static final int NUM_LAYERS = 14;
@@ -47,7 +46,52 @@ public class NearImage
 	private String name = ""; // The name is a 9 digit number at the beginning of the filename
 						 	  // (starting after the initial M0). This is how the lineament 
 							  // model names them.
-	
+
+    private static class IMGFilter implements java.io.FileFilter 
+    {
+    	String prefix;
+    	IMGFilter(String prefix)
+    	{
+    		this.prefix = prefix;
+    	}
+        //Accept all directories and all img files.
+        public boolean accept(File f) 
+        {
+            if (f.isDirectory()) 
+            {
+                return true;
+            }
+
+            String extension = getExtension(f);
+            if (extension != null) 
+            {
+                if (extension.equals("img") && f.getName().startsWith(prefix))
+                {
+                	return true;
+                } 
+                else 
+                {
+                    return false;
+                }
+            }
+
+            return false;
+        }
+
+        private String getExtension(File f) 
+        {
+            String ext = null;
+            String s = f.getName();
+            int i = s.lastIndexOf('.');
+
+            if (i > 0 &&  i < s.length() - 1) 
+            {
+                ext = s.substring(i+1).toLowerCase();
+            }
+            return ext;
+        }
+    }
+
 	public NearImage(String filename) throws FitsException, IOException
 	{
         Fits f = new Fits(filename);
@@ -80,10 +124,6 @@ public class NearImage
                 }
         }
 
-        //System.out.println("Hash Map size: " + values.size());
-
-        image = new QImage(originalWidth, originalHeight, QImage.Format.Format_RGB32);
-        
         float max = -Float.MAX_VALUE;
         float min = Float.MAX_VALUE;
         for (int i=0; i<originalHeight; ++i)
@@ -96,6 +136,54 @@ public class NearImage
             		min = array[i][j];
             }
         }
+
+//        {
+//        	vtkJPEGReader r = new vtkJPEGReader();
+//        	r.SetFileName("/home/kahneg1/src/gmti/tiles/LandSatI3_Iraq_jpeg/8/891/891_1612.jpeg");
+//        	r.Update();
+//        	//System.out.println(r.GetOutput());
+//        	//System.out.println(r.GetOutput().GetScalarTypeAsString());
+//        }
+        
+        System.out.println("Begin vtkImageData create");
+        // Create a vtk image data holding this image
+        image = new vtkImageData();
+        image.SetScalarTypeToUnsignedChar();
+        image.SetDimensions(originalWidth, originalHeight, 1);
+        image.SetSpacing(1, 1, 1);
+        image.SetOrigin(0.0, 0.0, 0.0);
+        image.SetNumberOfScalarComponents(4);
+        for (int i=0; i<originalHeight; ++i)
+        	for (int j=0; j<originalWidth; ++j)
+        	{
+            	int val = (int)((array[i][j]-min) * 255.0f / (max-min));
+        		image.SetScalarComponentFromDouble(j, originalHeight-1-i, 0, 0, val);
+        		image.SetScalarComponentFromDouble(j, originalHeight-1-i, 0, 1, val);
+        		image.SetScalarComponentFromDouble(j, originalHeight-1-i, 0, 2, val);
+        		image.SetScalarComponentFromDouble(j, originalHeight-1-i, 0, 3, 255);
+        	}
+        System.out.println("End vtkImageData create");
+        
+        
+        // Now scale this image
+        vtkImageReslice reslice = new vtkImageReslice();
+        reslice.SetInput(image);
+        reslice.SetInterpolationModeToLinear();
+        reslice.SetOutputSpacing(1.0, (double)originalHeight/(double)IMAGE_HEIGHT, 1.0);
+        reslice.SetOutputOrigin(0.0, 0.0, 0.0);
+        reslice.SetOutputExtent(0, IMAGE_WIDTH-1, 0, IMAGE_HEIGHT-1, 0, 0);
+        reslice.Update();
+        
+        image = reslice.GetOutput();
+        image.SetSpacing(1, 1, 1);
+        
+        //System.out.println(image);
+        
+        //System.out.println("Hash Map size: " + values.size());
+
+        /*
+
+        image = new QImage(originalWidth, originalHeight, QImage.Format.Format_RGB32);
 
         QColor c = new QColor();
         for (int i=0; i<originalHeight; ++i)
@@ -121,18 +209,20 @@ public class NearImage
             	imageValues[i][j] = (byte)c.red();
             }
         }
+	*/
 
         loadImgFile(filename);
 	}
 	
+    
 	private void loadImgFile(String filename) throws IOException
 	{
         // Search for an IMG with the same prefix in the directory containing the FIT image.
-        QFile file = new QFile(filename);
-		QFileInfo fileinfo = new QFileInfo(file);
+        File file = new File(filename);
+		//QFileInfo fileinfo = new QFileInfo(file);
 
 		// Get the part of the file name up to the first underscore
-		String basename = fileinfo.fileName();
+		String basename = file.getName();
 		int k = basename.indexOf("_");
 		if (k == -1)
 			k = basename.length() - 4;
@@ -140,34 +230,26 @@ public class NearImage
         if (basename.length() >= 11)
         	name = basename.substring(2,11);
 
-		String namePrefix = basename.substring(0, k);
-		
-        List<String> filterList = new ArrayList<String>();
-        filterList.add(namePrefix + "*.IMG");
-
-        QDir parent = fileinfo.dir();
-		parent.setNameFilters(filterList);
-        parent.setFilter(new QDir.Filters(QDir.Filter.Files));
+        basename = basename.substring(0, k);
+        File parent = file.getParentFile();
+        System.out.println("basename  " +basename);
+        System.out.println(parent);
         		
-		List<QFileInfo> list = parent.entryInfoList();
-		System.out.println(list);
+        File[] list = parent.listFiles(new IMGFilter(basename));
+        for (File f : list)
+        	System.out.println(f);
 		
-		if (list.size() == 0)
+		if (list.length == 0)
 			throw new IOException("Could not find IMG file corresponding to " + basename);
 
-		QFileInfo imgFileName = list.get(0);
+		File imgFileName = list[0];
 
-		if (imgFileName.size() != 4*NUM_LAYERS*IMAGE_HEIGHT*IMAGE_WIDTH)
+		if (imgFileName.length() != 4*NUM_LAYERS*IMAGE_HEIGHT*IMAGE_WIDTH)
 			throw new IOException("Corresponding IMG file is not in the correct format");
+	
+		System.out.println("Using IMG  " + imgFileName);
+		DataInputStream in = new DataInputStream(new BufferedInputStream(new FileInputStream(imgFileName.getAbsolutePath())));
 		
-		DataInputStream in = new DataInputStream(new BufferedInputStream(new FileInputStream(imgFileName.filePath())));
-		
-//		QFile imgFile = new QFile(imgFileName.filePath());
-//		QFile.OpenMode mode = new QFile.OpenMode();
-//		mode.set(QFile.OpenModeFlag.ReadOnly);
-//		imgFile.open(mode);
-//		QDataStream in = new QDataStream(imgFile);
-
 		for (int i=0;i<data.length; ++i)
 		{
 			data[i] = swap(in.readFloat());
@@ -214,6 +296,20 @@ public class NearImage
 	    }
 	}
 	
+	public vtkImageData getSubImage2(int size, int row, int col)
+	{
+        vtkImageReslice reslice = new vtkImageReslice();
+        reslice.SetInput(image);
+        reslice.SetInterpolationModeToNearestNeighbor();
+        reslice.SetOutputSpacing(1.0, 1.0, 1.0);
+        reslice.SetOutputOrigin(0.0, 0.0, 0.0);
+        reslice.SetOutputExtent(col, col+size-1, row, row+size-1, 0, 0);
+        reslice.Update();
+
+        return reslice.GetOutput();
+	}
+	
+	
 	public ByteBuffer getSubImage(int size, int row, int col)
 	{
 		ByteBuffer buffer = ByteBuffer.allocate(size*size*4);
@@ -250,33 +346,33 @@ public class NearImage
 	}
 	
 	/*
-	public double getLatitude(double x, double y)
+	public float getLatitude(float x, float y)
 	{
 		return 0;
 	}
 	
-	public double getLongitude(double x, double y)
+	public float getLongitude(float x, float y)
 	{
 		return 0;
 	}
 	
-	public double getPhaseAngle(double x, double y)
+	public float getPhaseAngle(float x, float y)
 	{
 		return 0;
 	}
 
-	public double getEmissionAngle(double x, double y)
+	public float getEmissionAngle(float x, float y)
 	{
 		return 0;
 	}
 
-	public double getIncidenceAngle(double x, double y)
+	public float getIncidenceAngle(float x, float y)
 	{
 		return 0;
 	}
 	*/
 	
-	public double getX(int row, int col)
+	public float getX(int row, int col)
 	{
 //		return col;
 //		if (row < IMAGE_HEIGHT && col < IMAGE_WIDTH)
@@ -289,7 +385,7 @@ public class NearImage
 //			return 0.0;
 	}
 
-	public double getY(int row, int col)
+	public float getY(int row, int col)
 	{
 //		return row;
 //		if (row < IMAGE_HEIGHT && col < IMAGE_WIDTH)
@@ -301,7 +397,7 @@ public class NearImage
 //			return 0.0;
 	}
 
-	public double getZ(int row, int col)
+	public float getZ(int row, int col)
 	{
 //		return 0;
 //		if (row < IMAGE_HEIGHT && col < IMAGE_WIDTH)
