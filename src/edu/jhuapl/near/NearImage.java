@@ -54,12 +54,12 @@ public class NearImage
     	{
     		this.prefix = prefix;
     	}
-        //Accept all directories and all img files.
+        //Accept only img files.
         public boolean accept(File f) 
         {
             if (f.isDirectory()) 
             {
-                return true;
+                return false;
             }
 
             String extension = getExtension(f);

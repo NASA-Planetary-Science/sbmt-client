@@ -233,11 +233,17 @@ public class ControlPanel extends JPanel implements ListSelectionListener
         	if (index == 0)
         	{
         		upButton.setEnabled(false);
-        		downButton.setEnabled(true);
+        		if (size > 1)
+        			downButton.setEnabled(true);
+        		else
+        			downButton.setEnabled(false);
         	}
         	else if (index == size-1)
         	{
-        		upButton.setEnabled(true);
+        		if (size > 1)
+        			upButton.setEnabled(true);
+        		else
+        			upButton.setEnabled(false);
         		downButton.setEnabled(false);
         	}
         	else

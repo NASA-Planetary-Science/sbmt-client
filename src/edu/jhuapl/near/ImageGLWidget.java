@@ -21,10 +21,60 @@ class ImageGLWidget extends JPanel
     private static final int TEXTURE_SIZE = 128;
 
     private ArrayList<vtkActor> nearImageActors = new ArrayList<vtkActor>();
-    
+
     static
     {
-    	System.loadLibrary("jawt");
+    	// On windows there are problems finding the dependent libraries,
+    	// so load them all manually. Note they must be loaded in the
+    	// following order
+    	
+    	String name = System.getProperty("os.name");
+    	if (name.toLowerCase().startsWith("windows"))
+    	{
+    		System.loadLibrary("jawt");
+    		System.loadLibrary("vtkzlib");
+    		System.loadLibrary("vtkNetCDF");
+    		System.loadLibrary("vtksys");
+    		System.loadLibrary("vtkalglib");
+    		System.loadLibrary("vtkexoIIc");
+    		System.loadLibrary("vtkexpat");
+    		System.loadLibrary("vtkfreetype");
+    		System.loadLibrary("vtkftgl");
+    		System.loadLibrary("vtkjpeg");
+    		System.loadLibrary("vtklibxml2");
+    		System.loadLibrary("vtkmetaio");
+    		System.loadLibrary("vtkpng");
+    		System.loadLibrary("vtkproj4");
+    		System.loadLibrary("vtktiff");
+    		System.loadLibrary("vtkverdict");
+    		System.loadLibrary("vtkCommon");
+    		System.loadLibrary("vtkCommonJava");
+    		System.loadLibrary("vtkDICOMParser");
+    		System.loadLibrary("vtkFiltering");
+    		System.loadLibrary("vtkFilteringJava");
+    		System.loadLibrary("vtkGraphics");
+    		System.loadLibrary("vtkGraphicsJava");
+    		System.loadLibrary("vtkGenericFiltering");
+    		System.loadLibrary("vtkGenericFilteringJava");
+    		System.loadLibrary("vtkIO");
+    		System.loadLibrary("vtkIOJava");
+    		System.loadLibrary("vtkImaging");
+    		System.loadLibrary("vtkImagingJava");
+    		System.loadLibrary("vtkRendering");
+    		System.loadLibrary("vtkRenderingJava");
+    		System.loadLibrary("vtkHybrid");
+    		System.loadLibrary("vtkHybridJava");
+    		System.loadLibrary("vtkWidgets");
+    		System.loadLibrary("vtkWidgetsJava");
+    		System.loadLibrary("vtkInfovis");
+    		System.loadLibrary("vtkInfovisJava");
+    		System.loadLibrary("vtkViews");
+    		System.loadLibrary("vtkViewsJava");
+    		System.loadLibrary("vtkGeovis");
+    		System.loadLibrary("vtkGeovisJava");
+    		System.loadLibrary("vtkVolumeRendering");
+    		System.loadLibrary("vtkVolumeRenderingJava");
+    	}
     }
     
     public ImageGLWidget(LineamentModel model) 
@@ -37,32 +87,38 @@ class ImageGLWidget extends JPanel
         lineamentModel = model;
 
         polyReader = new vtkPolyDataReader();
-        polyReader.SetFileName("src/edu/jhuapl/near/data/Eros_Dec2006_0.vtk");
+        //System.out.println("begin convert");
+        File file = ConvertResourceToRealFile.convert(this, "/edu/jhuapl/near/data/Eros_Dec2006_0.vtk");
+        //System.out.println("end convert");
+        //polyReader.SetFileName("src/edu/jhuapl/near/data/Eros_Dec2006_0.vtk");
+        polyReader.SetFileName(file.getAbsolutePath());
+        //polyReader.SetFileName(getClass().getResource("/edu/jhuapl/near/data/Eros_Dec2006_0.vtk").getFile());
         polyReader.Update();
 
         {
-        vtkPolyDataMapper coneMapper = new vtkPolyDataMapper();
-        coneMapper.SetInput(polyReader.GetOutput());
+        vtkPolyDataMapper polyMapper = new vtkPolyDataMapper();
+        polyMapper.SetInput(polyReader.GetOutput());
 
         vtkActor polyActor = new vtkActor();
         //polyActor.GetProperty().SetRepresentationToWireframe();
         //polyActor.GetProperty().SetOpacity(0.0);
-        polyActor.SetMapper(coneMapper);
+        polyActor.SetMapper(polyMapper);
 
         renWin.GetRenderer().AddActor(polyActor);
 
         }
         
         {
-            vtkPolyDataMapper coneMapper = new vtkPolyDataMapper();
-            coneMapper.SetInput(lineamentModel.getLineamentsAsPolyData());
+        vtkPolyDataMapper polyMapper = new vtkPolyDataMapper();
+        polyMapper.SetInput(lineamentModel.getLineamentsAsPolyData());
+        //polyMapper.SetResolveCoincidentTopologyToPolygonOffset();
+        //polyMapper.SetResolveCoincidentTopologyPolygonOffsetParameters(-1000.0, -1000.0);
 
-            vtkActor polyActor = new vtkActor();
-            //polyActor.GetProperty().SetRepresentationToWireframe();
-            //polyActor.GetProperty().SetOpacity(0.0);
-            polyActor.SetMapper(coneMapper);
+        vtkActor polyActor = new vtkActor();
+        polyActor.GetProperty().SetColor(1.0, 0.0, 0.0);
+        polyActor.SetMapper(polyMapper);
 
-            renWin.GetRenderer().AddActor(polyActor);
+        renWin.GetRenderer().AddActor(polyActor);
         }
             
         
