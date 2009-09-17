@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<jnlp spec="1.0"
+      codebase="http://near.jhuapl.edu/software"
+      href="near.jnlp">
+
+    <information>
+        <title>NEAR Lineament Viewer</title>
+        <vendor>JHUAPL</vendor>
+        <description>NEAR Lineament Viewer</description>
+        <offline-allowed/>
+    </information>
+
+    <security>
+        <all-permissions/>
+    </security>
+
+    <resources>
+        <j2se href="http://java.sun.com/products/autodl/j2se" version="1.6+" initial-heap-size="512m"
+              max-heap-size="512m"/>
+        <property name="sun.java2d.noddraw" value="true"/>
+        <jar href="near.jar" main="true"/>
+        <jar href="vtk.jar"/>
+    </resources>
+
+	<resources os="Windows" arch="x86">
+      <nativelib href = "vtk-natives-windows-i586.jar" />
+    </resources>
+    <resources os="Linux" arch="i386">
+      <nativelib href = "vtk-natives-linux-i586.jar" />
+    </resources>
+    <resources os="Linux" arch="x86">
+      <nativelib href = "vtk-natives-linux-i586.jar" />
+    </resources>
+
+    <application-desc main-class="edu.jhuapl.near.ErosLineamentViewer"/>
+
+</jnlp>

@@ -1,0 +1,113 @@
+<project default="compile">
+
+    <property name="rootdir" location="${basedir}"/>
+
+    <target name="compile">
+        <echo>$${rootdir}=${rootdir}</echo>
+        <mkdir dir="${rootdir}/build/classes"/>
+        <mkdir dir="${rootdir}/build/classes/edu"/>
+        <mkdir dir="${rootdir}/build/classes/edu/jhuapl"/>
+        <mkdir dir="${rootdir}/build/classes/edu/jhuapl/near"/>
+        <mkdir dir="${rootdir}/build/classes/edu/jhuapl/near/data"/>
+        <copy todir="${rootdir}/build/classes/edu/jhuapl/near/data">
+            <fileset dir="${rootdir}/src/edu/jhuapl/near/data"/>
+        </copy>
+        <javac srcdir="${rootdir}/src" destdir="${rootdir}/build/classes" debug="off" >
+           <classpath>
+			 <pathelement location="${rootdir}/lib/vtk.jar"/>
+           </classpath>
+        </javac> 
+    </target>
+
+    <target name="run">
+        <java classname="edu.jhuapl.near.ErosLineamentViewer" fork="true" maxmemory="512m">
+           <jvmarg value="-Djava.library.path=${rootdir}/lib"/>
+           <jvmarg value="-Dsun.java2d.noddraw=true"/>
+           <classpath>
+			 <pathelement location="${rootdir}/build/classes"/>
+			 <pathelement location="${rootdir}/lib/vtk.jar"/>
+           </classpath>
+        </java>
+    </target>
+
+    <target name="jar" depends="compile">
+        <mkdir dir="${rootdir}/build/jar"/>
+        <jar destfile="${rootdir}/build/jar/near.jar" basedir="${rootdir}/build/classes">
+           <manifest>
+               <attribute name="Class-Path" value="vtk.jar"/>
+               <attribute name="Main-Class" value="edu.jhuapl.near.ErosLineamentViewer"/>
+           </manifest>
+        </jar>
+    </target>
+
+    <target name="nativelinuxvtkjar">
+        <mkdir dir="${rootdir}/build/jar"/>
+        <jar destfile="${rootdir}/build/jar/vtk-natives-linux-i586.jar" basedir="${rootdir}/lib/linux32">
+           <manifest>
+           </manifest>
+        </jar>
+    </target>
+
+    <target name="nativewinvtkjar">
+        <mkdir dir="${rootdir}/build/jar"/>
+        <jar destfile="${rootdir}/build/jar/vtk-natives-windows-i586.jar" basedir="${rootdir}/lib/win32">
+           <manifest>
+           </manifest>
+        </jar>
+    </target>
+
+    <!--
+
+    The next target assumes that you have file named "keystore" in
+    the root directory which was created using the java keytool
+    command with the alias called "mykey". For example, I used the
+    command while in rootdir
+
+    ${JAVA_HOME}/bin/keytool -genkey -keystore keystore -validity 1000000
+
+    -->
+    <target name="signjar" depends="jar">
+        <input message="Please enter keystore password:"
+            addproperty="keypass" />
+        <signjar jar="${rootdir}/build/jar/near.jar"
+            keystore="${rootdir}/keystore" alias="mykey"
+            storepass="${keypass}"/>
+    </target>
+
+    <target name="signvtkjar">
+        <input message="Please enter keystore password:"
+            addproperty="keypass" />
+        <signjar jar="${rootdir}/lib/vtk.jar"
+            keystore="${rootdir}/keystore" alias="mykey"
+            storepass="${keypass}"/>
+    </target>
+
+    <target name="signvtkjar2" depends="nativelinuxvtkjar">
+        <input message="Please enter keystore password:"
+            addproperty="keypass" />
+        <signjar jar="${rootdir}/build/jar/vtk-natives-linux-i586.jar"
+            keystore="${rootdir}/keystore" alias="mykey"
+            storepass="${keypass}"/>
+    </target>
+
+    <target name="signvtkjar3" depends="nativewinvtkjar">
+        <input message="Please enter keystore password:"
+            addproperty="keypass" />
+        <signjar jar="${rootdir}/build/jar/vtk-natives-windows-i586.jar"
+            keystore="${rootdir}/keystore" alias="mykey"
+            storepass="${keypass}"/>
+    </target>
+
+    <target name="runjar">
+        <java jar="${rootdir}/build/jar/near.jar" fork="true"
+               	maxmemory="512m">
+           <jvmarg value="-Djava.library.path=${rootdir}/lib"/>
+           <jvmarg value="-Dsun.java2d.noddraw=true"/>
+        </java>
+    </target>
+
+    <target name="clean">
+        <delete dir="${rootdir}/build"/>
+    </target>
+
+</project>
