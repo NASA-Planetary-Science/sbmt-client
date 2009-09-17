@@ -22,6 +22,11 @@ class ImageGLWidget extends JPanel
 
     private ArrayList<vtkActor> nearImageActors = new ArrayList<vtkActor>();
     
+    static
+    {
+    	System.loadLibrary("jawt");
+    }
+    
     public ImageGLWidget(LineamentModel model) 
     {
     	setLayout(new BorderLayout());
@@ -34,7 +39,8 @@ class ImageGLWidget extends JPanel
         polyReader = new vtkPolyDataReader();
         polyReader.SetFileName("src/edu/jhuapl/near/data/Eros_Dec2006_0.vtk");
         polyReader.Update();
-        
+
+        {
         vtkPolyDataMapper coneMapper = new vtkPolyDataMapper();
         coneMapper.SetInput(polyReader.GetOutput());
 
@@ -45,10 +51,25 @@ class ImageGLWidget extends JPanel
 
         renWin.GetRenderer().AddActor(polyActor);
 
+        }
+        
+        {
+            vtkPolyDataMapper coneMapper = new vtkPolyDataMapper();
+            coneMapper.SetInput(lineamentModel.getLineamentsAsPolyData());
+
+            vtkActor polyActor = new vtkActor();
+            //polyActor.GetProperty().SetRepresentationToWireframe();
+            //polyActor.GetProperty().SetOpacity(0.0);
+            polyActor.SetMapper(coneMapper);
+
+            renWin.GetRenderer().AddActor(polyActor);
+        }
+            
+        
         vtkInteractorStyleTrackballCamera style =
             new vtkInteractorStyleTrackballCamera();
         renWin.setInteractorStyle(style);
-          
+        
         add(renWin, BorderLayout.CENTER);
 
     }
@@ -69,11 +90,12 @@ class ImageGLWidget extends JPanel
         	nearImages.add(image);
     	
         	// Now texture map this image onto the Eros model.
-        	mapImage(image);
+        	mapImage(image, -c*10);
+        	++c;
     	}
     }
     
-    private void mapImage(NearImage nearImage)
+    private void mapImage(NearImage nearImage, double offset)
     {
         int numTexturesWidth = (int)Math.ceil((double)(NearImage.IMAGE_WIDTH-1) / (double)(TEXTURE_SIZE-1));
         int numTexturesHeight = (int)Math.ceil((double)(NearImage.IMAGE_HEIGHT-1) / (double)(TEXTURE_SIZE-1));
@@ -177,14 +199,14 @@ class ImageGLWidget extends JPanel
                 texture.EdgeClampOn();
                 
                 vtkImageData imagePiece = nearImage.getSubImage2(TEXTURE_SIZE, corner1, corner2);
-                System.out.println("\n\n\n\nnext image piece\n\n");
-                System.out.println(imagePiece);
+                //System.out.println("\n\n\n\nnext image piece\n\n");
+                //System.out.println(imagePiece);
                 
                 texture.SetInput(imagePiece);
                 
                 vtkPolyDataMapper pieceMapper = new vtkPolyDataMapper();
                 pieceMapper.SetResolveCoincidentTopologyToPolygonOffset();
-                pieceMapper.SetResolveCoincidentTopologyPolygonOffsetParameters(-1.0, -1.0);
+                pieceMapper.SetResolveCoincidentTopologyPolygonOffsetParameters(-1.0, offset);
                 pieceMapper.SetInput(piece);
                 pieceMapper.Update();
                 

@@ -3,8 +3,16 @@ package edu.jhuapl.near;
 import java.io.*;
 import java.util.*;
 
+import vtk.vtkCellArray;
+import vtk.vtkIdList;
+import vtk.vtkPoints;
+import vtk.vtkPolyData;
+
 public class LineamentModel 
 {
+	private HashMap<Integer, Lineament> idToLineamentMap = new HashMap<Integer, Lineament>();
+	private vtkPolyData lineaments;
+	
 	public static class Lineament
 	{
 		public String name = "";
@@ -17,8 +25,6 @@ public class LineamentModel
 		public ArrayList<Double> z = new ArrayList<Double>();
 		public BoundingBox bb = new BoundingBox();
 	}
-	
-	private HashMap<Integer, Lineament> idToLineamentMap = new HashMap<Integer, Lineament>();
 	
 	public LineamentModel()
 	{
@@ -55,8 +61,8 @@ public class LineamentModel
 
             String name = tokens[0];
             Integer id = Integer.parseInt(tokens[1]);
-            double lat = Double.parseDouble(tokens[2]);
-            double lon = Double.parseDouble(tokens[3]);
+            double lat = Double.parseDouble(tokens[2]) * Math.PI / 180.0;
+            double lon = (360.0-Double.parseDouble(tokens[3])) * Math.PI / 180.0;
             double rad = Double.parseDouble(tokens[4]);
             
             if (!this.idToLineamentMap.containsKey(id))
@@ -96,5 +102,43 @@ public class LineamentModel
 				array.add(lin);
 		}
 		return array;
+	}
+	
+	private void createPolyData()
+	{
+		lineaments = new vtkPolyData();
+        vtkPoints points = new vtkPoints();
+        vtkCellArray lines = new vtkCellArray();
+
+        vtkIdList idList = new vtkIdList();
+
+        int c=0;
+		for (Integer id : this.idToLineamentMap.keySet())
+		{
+			Lineament lin =	this.idToLineamentMap.get(id);
+			
+            int size = lin.x.size();
+            idList.SetNumberOfIds(size);
+            
+            for (int i=0;i<size;++i)
+            {
+            	points.InsertNextPoint(lin.x.get(i), lin.y.get(i), lin.z.get(i));
+            	idList.SetId(i, c);
+            	++c;
+            }
+
+            lines.InsertNextCell(idList);
+		}
+		
+        lineaments.SetPoints(points);
+        lineaments.SetLines(lines);
+	}
+	
+	public vtkPolyData getLineamentsAsPolyData()
+	{
+		if (lineaments == null)
+			createPolyData();
+		
+		return lineaments;
 	}
 }

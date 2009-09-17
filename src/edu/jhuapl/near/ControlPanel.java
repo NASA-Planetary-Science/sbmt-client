@@ -14,8 +14,6 @@ import javax.swing.event.*;
 
 public class ControlPanel extends JPanel implements ListSelectionListener
 {
-//    private JButton iedSelectButton;
-//    private JTextField iedDatabaseTextField;
     private ImageGLWidget viewer;
 	
     private JList list;
@@ -29,38 +27,7 @@ public class ControlPanel extends JPanel implements ListSelectionListener
     private JButton deleteButton;
     private JButton upButton;
     private JButton downButton;
-
-    class DeleteListener implements ActionListener 
-    {
-        public void actionPerformed(ActionEvent e) 
-        {
-            //This method can be called only if
-            //there's a valid selection
-            //so go ahead and remove whatever's selected.
-            int index = list.getSelectedIndex();
-            listModel.remove(index);
-
-            int size = listModel.getSize();
-
-            if (size == 0) 
-            { 
-            	//Nobody's left, disable firing.
-                addButton.setEnabled(false);
-
-            } 
-            else 
-            { //Select an index.
-                if (index == listModel.getSize()) 
-                {
-                    //removed item in last position
-                    index--;
-                }
-
-                list.setSelectedIndex(index);
-                list.ensureIndexIsVisible(index);
-            }
-        }
-    }
+    private ArrayList<File> fileList = new ArrayList<File>();
 
     class AddListener implements ActionListener 
     {
@@ -74,28 +41,71 @@ public class ControlPanel extends JPanel implements ListSelectionListener
         	File file = FITFileChooser.showOpenDialog(panel, "Select FIT File");
         	System.out.println(file);
         	
-        	ArrayList<File> fileList = new ArrayList<File>();
-        	fileList.add(file);
-        	
         	if (file != null)
         	{
-        		try {
-        			viewer.setImages(fileList);
-    			} catch (FitsException e2) {
-    				// TODO Auto-generated catch block
-    				e2.printStackTrace();
-    			} catch (IOException e2) {
-    				// TODO Auto-generated catch block
-    				e2.printStackTrace();
-    			}
+            	listModel.addElement(file.getName());
+            	fileList.add(file);
+            	
+            	int index = listModel.getSize() - 1;
+                list.setSelectedIndex(index);
+                list.ensureIndexIsVisible(index);
+
+                updateButtons();
+                updateRenderedImages();
         	}
         }
     }
     
+    class DeleteListener implements ActionListener 
+    {
+        public void actionPerformed(ActionEvent e) 
+        {
+            int index = list.getSelectedIndex();
+            listModel.remove(index);
+            fileList.remove(index);
+            
+            int size = listModel.getSize();
+
+            if (size > 0) 
+            { 
+                //Select an index.
+                if (index == size) 
+                {
+                    //removed item in last position
+                    index--;
+                }
+
+                list.setSelectedIndex(index);
+                list.ensureIndexIsVisible(index);
+            }
+
+            updateButtons();
+            updateRenderedImages();
+        }
+    }
+
     class UpListener implements ActionListener 
     {
         public void actionPerformed(ActionEvent e) 
         {
+            int index = list.getSelectedIndex();
+
+            if (index > 0)
+            {
+            	File prev = fileList.get(index-1);
+            	
+            	listModel.remove(index-1);
+            	listModel.add(index, prev.getName());
+            	
+            	fileList.remove(index-1);
+            	fileList.add(index, prev);
+            	
+                list.setSelectedIndex(index-1);
+                list.ensureIndexIsVisible(index-1);
+
+                updateButtons();
+            	updateRenderedImages();
+            }
         }
     }
     
@@ -103,6 +113,25 @@ public class ControlPanel extends JPanel implements ListSelectionListener
     {
         public void actionPerformed(ActionEvent e) 
         {
+            int index = list.getSelectedIndex();
+            int size = listModel.getSize();
+
+            if (index < size-1)
+            {
+            	File curr = fileList.get(index);
+            	
+            	listModel.remove(index);
+            	listModel.add(index+1, curr.getName());
+            	
+            	fileList.remove(index);
+            	fileList.add(index+1, curr);
+            	
+                list.setSelectedIndex(index+1);
+                list.ensureIndexIsVisible(index+1);
+
+                updateButtons();
+            	updateRenderedImages();
+            }
         }
     }
     
@@ -113,16 +142,11 @@ public class ControlPanel extends JPanel implements ListSelectionListener
 		this.viewer = viewer;
 
         listModel = new DefaultListModel();
-        //listModel.addElement("Debbie Scott");
-        //listModel.addElement("Scott Hommel");
-        //listModel.addElement("Sharon Zakhour");
 
         //Create the list and put it in a scroll pane.
         list = new JList(listModel);
         list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        //list.setSelectedIndex(0);
         list.addListSelectionListener(this);
-        //list.setVisibleRowCount(5);
         JScrollPane listScrollPane = new JScrollPane(list);
 
         addButton = new JButton(addString);
@@ -155,100 +179,72 @@ public class ControlPanel extends JPanel implements ListSelectionListener
         buttonPane.setLayout(new BoxLayout(buttonPane,
                                            BoxLayout.LINE_AXIS));
         buttonPane.add(addButton);
+        buttonPane.add(Box.createHorizontalStrut(5));
         buttonPane.add(deleteButton);
+        buttonPane.add(Box.createHorizontalStrut(5));
         buttonPane.add(upButton);
+        buttonPane.add(Box.createHorizontalStrut(5));
         buttonPane.add(downButton);
-        //buttonPane.add(Box.createHorizontalStrut(5));
-        //buttonPane.add(new JSeparator(SwingConstants.VERTICAL));
-        //buttonPane.add(Box.createHorizontalStrut(5));
-        //buttonPane.add(employeeName);
-        //buttonPane.add(hireButton);
+
         buttonPane.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
 
         add(buttonPane, BorderLayout.PAGE_START);
         add(listScrollPane, BorderLayout.CENTER);
 
-//        this.setLayout(new GridBagLayout());
-//        
-//    	GridBagConstraints c = new GridBagConstraints();
-//        c.gridwidth = GridBagConstraints.REMAINDER;
-//    	c.fill = GridBagConstraints.BOTH;
-//    	c.weightx = 0.0;
-//    	c.weighty = 0.0;
-//
-//    	JPanel fitFileLoader = new JPanel();
-//    	
-//    	fitFileLoader.setBorder(
-//        		new CompoundBorder(BorderFactory.createEmptyBorder(9, 9, 9, 9), 
-//                                   new TitledBorder("Databases")));
-//
-//        //JPanel loadDatabasesPanel = new JPanel();
-//        //loadDatabasesPanel.setLayout(new BoxLayout(loadDatabasesPanel, BoxLayout.Y_AXIS));
-//        JPanel loadDatabasesPanel = new JPanel(new GridBagLayout());
-//
-//        this.iedSelectButton = new JButton("Select IED Database...");
-//        this.iedSelectButton.setEnabled(true);
-//        this.iedSelectButton.addActionListener(this);
-//
-//        this.iedDatabaseTextField = new JTextField();
-//        this.iedDatabaseTextField.setEnabled(true);
-//        this.iedDatabaseTextField.setEditable(true);
-//        this.iedDatabaseTextField.setPreferredSize(new java.awt.Dimension(150, 22));
-//        
-//        GridBagConstraints c2 = new GridBagConstraints();
-//        c2.gridx = 0;
-//        c2.gridy = 0;
-//        c2.gridwidth = 1;
-//        c2.gridheight = 1;
-//        c2.fill = GridBagConstraints.HORIZONTAL;
-//        
-//        loadDatabasesPanel.add(this.iedSelectButton, c2);
-//        c2.gridy = 1;
-//        //loadDatabasesPanel.add(this.cacheSelectButton, c2);
-//
-//        c2.gridx = 1;
-//        c2.gridy = 0;
-//        c2.gridwidth = 2;
-//        c2.gridheight = 1;
-//        loadDatabasesPanel.add(this.iedDatabaseTextField, c2);
-//        c2.gridy = 1;
-//        //loadDatabasesPanel.add(this.cacheDatabaseTextField, c2);
-//
-//        fitFileLoader.add(loadDatabasesPanel);
 	}
 
     //This method is required by ListSelectionListener.
-    public void valueChanged(ListSelectionEvent e) {
-        if (e.getValueIsAdjusting() == false) {
-
-            if (list.getSelectedIndex() == -1) {
-            //No selection, disable fire button.
-                deleteButton.setEnabled(false);
-
-            } else {
-            //Selection, enable the fire button.
-                deleteButton.setEnabled(true);
-            }
+    public void valueChanged(ListSelectionEvent e) 
+    {
+        if (e.getValueIsAdjusting() == false) 
+        {
+        	updateButtons();
         }
     }
 
-
-    public void actionPerformed(ActionEvent actionEvent)
+    private void updateRenderedImages()
     {
-    	File file = FITFileChooser.showOpenDialog(this, "Select FIT File");
-    	
-    	if (file != null)
-    	{
-//    		try {
-//				//viewer.addImage(file);
-//			} catch (FitsException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			} catch (IOException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-    	}
+		try {
+			viewer.setImages(fileList);
+		} catch (FitsException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		} catch (IOException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
     }
+    
+    private void updateButtons()
+    {
+        int index = list.getSelectedIndex();
+        int size = listModel.getSize();
 
+        if (size == 0 || index == -1)
+        {
+        	deleteButton.setEnabled(false);
+    		upButton.setEnabled(false);
+    		downButton.setEnabled(false);
+        }
+        else
+        {
+        	deleteButton.setEnabled(true);
+
+        	if (index == 0)
+        	{
+        		upButton.setEnabled(false);
+        		downButton.setEnabled(true);
+        	}
+        	else if (index == size-1)
+        	{
+        		upButton.setEnabled(true);
+        		downButton.setEnabled(false);
+        	}
+        	else
+        	{
+        		upButton.setEnabled(true);
+        		downButton.setEnabled(true);
+        	}
+        }
+    }
 }

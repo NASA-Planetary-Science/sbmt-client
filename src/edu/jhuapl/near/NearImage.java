@@ -232,12 +232,12 @@ public class NearImage
 
         basename = basename.substring(0, k);
         File parent = file.getParentFile();
-        System.out.println("basename  " +basename);
-        System.out.println(parent);
+        //System.out.println("basename  " +basename);
+        //System.out.println(parent);
         		
         File[] list = parent.listFiles(new IMGFilter(basename));
-        for (File f : list)
-        	System.out.println(f);
+        //for (File f : list)
+        //	System.out.println(f);
 		
 		if (list.length == 0)
 			throw new IOException("Could not find IMG file corresponding to " + basename);
@@ -285,8 +285,8 @@ public class NearImage
 	        }
 	    }
 	
-	    System.out.println("numInvalidPixels:  " + numInvalidPixels);
-	    System.out.println("bb:  " + bb);
+	    //System.out.println("numInvalidPixels:  " + numInvalidPixels);
+	    //System.out.println("bb:  " + bb);
 	    
 	    if (numValidPixels > 0)
 	    {
