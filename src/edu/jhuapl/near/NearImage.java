@@ -40,8 +40,6 @@ public class NearImage
 	
 	private byte[][] imageValues = new byte[IMAGE_HEIGHT][IMAGE_WIDTH];
 
-	private Point center = new Point();
-
 	private BoundingBox bb = new BoundingBox();
 	private String name = ""; // The name is a 9 digit number at the beginning of the filename
 						 	  // (starting after the initial M0). This is how the lineament 
@@ -174,42 +172,12 @@ public class NearImage
         reslice.SetOutputExtent(0, IMAGE_WIDTH-1, 0, IMAGE_HEIGHT-1, 0, 0);
         reslice.Update();
         
-        image = reslice.GetOutput();
+        image.DeepCopy(reslice.GetOutput());
         image.SetSpacing(1, 1, 1);
         
         //System.out.println(image);
         
         //System.out.println("Hash Map size: " + values.size());
-
-        /*
-
-        image = new QImage(originalWidth, originalHeight, QImage.Format.Format_RGB32);
-
-        QColor c = new QColor();
-        for (int i=0; i<originalHeight; ++i)
-        {
-            for (int j=0; j<originalWidth; ++j)
-            {
-            	int val = (int)((array[i][j]-min) * 255.0f / (max-min));
-            	c.setRgb(val,val,val);
-            	image.setPixel(j, originalHeight-i-1, c.rgb());
-            }
-        }
-
-        image = image.scaled(IMAGE_WIDTH, IMAGE_HEIGHT, 
-        		Qt.AspectRatioMode.IgnoreAspectRatio, 
-        		Qt.TransformationMode.SmoothTransformation);
-
-        for (int i=0; i<IMAGE_HEIGHT; ++i)
-        {
-            for (int j=0; j<IMAGE_WIDTH; ++j)
-            {
-            	int pix = image.pixel(j, IMAGE_HEIGHT-i-1);
-            	c.setRgb(pix);
-            	imageValues[i][j] = (byte)c.red();
-            }
-        }
-	*/
 
         loadImgFile(filename);
 	}
@@ -255,6 +223,14 @@ public class NearImage
 			data[i] = swap(in.readFloat());
 		}
 
+		
+//        vtkImageData tmp = new vtkImageData();
+//        tmp.SetScalarTypeToUnsignedChar();
+//        tmp.SetDimensions(IMAGE_WIDTH, IMAGE_HEIGHT, 1);
+//        tmp.SetSpacing(1, 1, 1);
+//        tmp.SetOrigin(0.0, 0.0, 0.0);
+//        tmp.SetNumberOfScalarComponents(4);
+
 		int numValidPixels = 0;
 		int numInvalidPixels = 0;
 	    for (int j=0; j<IMAGE_HEIGHT; ++j)
@@ -268,9 +244,6 @@ public class NearImage
 	        	if (xx != PDS_NA && yy != PDS_NA && zz != PDS_NA)
 	        	{
 	        		bb.update(xx, yy, zz);
-	        		center.x += xx;
-	        		center.y += yy;
-	        		center.z += zz;
 	        		
 	        		++numValidPixels;
 	        	}
@@ -281,22 +254,28 @@ public class NearImage
 	        		        	
 	        	x[j][i] = xx;
 	        	y[j][i] = yy;
-	        	z[j][i] = zz;  
+	        	z[j][i] = zz;
+	        	
+//	        	int v = xx != PDS_NA ? 255 : 0;
+//	        	tmp.SetScalarComponentFromDouble(i, j, 0, 0, v);
+//        		tmp.SetScalarComponentFromDouble(i, j, 0, 1, v);
+//        		tmp.SetScalarComponentFromDouble(i, j, 0, 2, v);
+//        		tmp.SetScalarComponentFromDouble(i, j, 0, 3, 255);
+
 	        }
 	    }
 	
-	    //System.out.println("numInvalidPixels:  " + numInvalidPixels);
-	    //System.out.println("bb:  " + bb);
-	    
-	    if (numValidPixels > 0)
-	    {
-	    	center.x /= (double)numValidPixels;
-	    	center.y /= (double)numValidPixels;
-	    	center.z /= (double)numValidPixels;
-	    }
+//	    vtkPNGWriter writer = new vtkPNGWriter();
+//	    writer.SetFileName("xx.png");
+//	    writer.SetInput(tmp);
+//	    writer.Write();
+//	    vtkPNGWriter writer2 = new vtkPNGWriter();
+//	    writer2.SetFileName("fit.png");
+//	    writer2.SetInput(image);
+//	    writer2.Write();
 	}
 	
-	public vtkImageData getSubImage2(int size, int row, int col)
+	public vtkImageData getSubImage(int size, int row, int col)
 	{
         vtkImageReslice reslice = new vtkImageReslice();
         reslice.SetInput(image);
@@ -309,27 +288,6 @@ public class NearImage
         return reslice.GetOutput();
 	}
 	
-	
-	public ByteBuffer getSubImage(int size, int row, int col)
-	{
-		ByteBuffer buffer = ByteBuffer.allocate(size*size*4);
-		
-		for (int i=row; i<row+size; ++i)
-			for (int j=col; j<col+size; ++j)
-			{
-				byte pix = 0;
-				if (i<IMAGE_HEIGHT && j<IMAGE_WIDTH)
-					pix = imageValues[i][j];
-				buffer.put(pix);
-				buffer.put(pix);
-				buffer.put(pix);
-				buffer.put((byte)255);
-			}
-		
-		buffer.rewind();
-		return buffer;
-	}
-	
 	public BoundingBox getBoundingBox()
 	{
 		return bb;
@@ -338,11 +296,6 @@ public class NearImage
 	public String getName()
 	{
 		return name;
-	}
-	
-	public Point getCenter()
-	{
-		return center;
 	}
 	
 	/*
@@ -374,39 +327,17 @@ public class NearImage
 	
 	public float getX(int row, int col)
 	{
-//		return col;
-//		if (row < IMAGE_HEIGHT && col < IMAGE_WIDTH)
-		{
-			//System.out.println(x[row][col]);
-			return x[row][col];
-			
-		}
-//		else
-//			return 0.0;
+		return x[row][col];
 	}
 
 	public float getY(int row, int col)
 	{
-//		return row;
-//		if (row < IMAGE_HEIGHT && col < IMAGE_WIDTH)
-		{
-			//System.out.println(y[row][col]);
-			return y[row][col];
-		}
-//		else
-//			return 0.0;
+		return y[row][col];
 	}
 
 	public float getZ(int row, int col)
 	{
-//		return 0;
-//		if (row < IMAGE_HEIGHT && col < IMAGE_WIDTH)
-		{
-			//System.out.println(z[row][col]);
-			return z[row][col];
-		}
-//		else
-//			return 0.0;
+		return z[row][col];
 	}
 
 	private int index(int i, int j, int k)

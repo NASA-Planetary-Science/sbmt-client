@@ -87,12 +87,8 @@ class ImageGLWidget extends JPanel
         lineamentModel = model;
 
         polyReader = new vtkPolyDataReader();
-        //System.out.println("begin convert");
         File file = ConvertResourceToRealFile.convert(this, "/edu/jhuapl/near/data/Eros_Dec2006_0.vtk");
-        //System.out.println("end convert");
-        //polyReader.SetFileName("src/edu/jhuapl/near/data/Eros_Dec2006_0.vtk");
         polyReader.SetFileName(file.getAbsolutePath());
-        //polyReader.SetFileName(getClass().getResource("/edu/jhuapl/near/data/Eros_Dec2006_0.vtk").getFile());
         polyReader.Update();
 
         {
@@ -115,7 +111,7 @@ class ImageGLWidget extends JPanel
         //polyMapper.SetResolveCoincidentTopologyPolygonOffsetParameters(-1000.0, -1000.0);
 
         vtkActor polyActor = new vtkActor();
-        polyActor.GetProperty().SetColor(1.0, 0.0, 0.0);
+        polyActor.GetProperty().SetColor(1.0, 0.0, 1.0);
         polyActor.SetMapper(polyMapper);
 
         renWin.GetRenderer().AddActor(polyActor);
@@ -155,8 +151,10 @@ class ImageGLWidget extends JPanel
     {
         int numTexturesWidth = (int)Math.ceil((double)(NearImage.IMAGE_WIDTH-1) / (double)(TEXTURE_SIZE-1));
         int numTexturesHeight = (int)Math.ceil((double)(NearImage.IMAGE_HEIGHT-1) / (double)(TEXTURE_SIZE-1));
-        int totalNumTextures = numTexturesWidth * numTexturesHeight;
         
+        //int totalNumTextures = numTexturesWidth * numTexturesHeight;
+        //System.out.println("totalNumTextures  " + totalNumTextures);
+
         float x, y, z, s, t;
         int i0, i1, i2, i3;
         
@@ -178,10 +176,10 @@ class ImageGLWidget extends JPanel
                 int c = 0;
                 int maxM = TEXTURE_SIZE;
                 if (i==numTexturesHeight-1)
-                	maxM = (NearImage.IMAGE_HEIGHT) - (numTexturesHeight-1)*(TEXTURE_SIZE);
+                	maxM = (NearImage.IMAGE_HEIGHT) - i*(TEXTURE_SIZE-1);
                 int maxN = TEXTURE_SIZE;
                 if (j==numTexturesWidth-1)
-                	maxN = (NearImage.IMAGE_WIDTH) - (numTexturesWidth-1)*(TEXTURE_SIZE);
+                	maxN = (NearImage.IMAGE_WIDTH) - j*(TEXTURE_SIZE-1);
 
                 //points.SetNumberOfPoints(maxM*maxN);
                 tcoords.SetNumberOfComponents(2);
@@ -254,9 +252,11 @@ class ImageGLWidget extends JPanel
                 texture.RepeatOff();
                 texture.EdgeClampOn();
                 
-                vtkImageData imagePiece = nearImage.getSubImage2(TEXTURE_SIZE, corner1, corner2);
-                //System.out.println("\n\n\n\nnext image piece\n\n");
-                //System.out.println(imagePiece);
+                vtkImageData imagePiece = nearImage.getSubImage(TEXTURE_SIZE, corner1, corner2);
+                //System.out.println("\n\n\n\nnext image piece " + ccc++ + "\n\n");
+                //System.out.println(imagePiece.GetDimensions()[0]);
+                //System.out.println(imagePiece.GetDimensions()[1]);
+                //System.out.println(imagePiece.GetDimensions()[2]);
                 
                 texture.SetInput(imagePiece);
                 

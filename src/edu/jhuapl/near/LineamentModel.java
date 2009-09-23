@@ -63,7 +63,7 @@ public class LineamentModel
             Integer id = Integer.parseInt(tokens[1]);
             double lat = Double.parseDouble(tokens[2]) * Math.PI / 180.0;
             double lon = (360.0-Double.parseDouble(tokens[3])) * Math.PI / 180.0;
-            double rad = Double.parseDouble(tokens[4])+0.05;
+            double rad = Double.parseDouble(tokens[4])+0.075;
             
             if (!this.idToLineamentMap.containsKey(id))
             {
