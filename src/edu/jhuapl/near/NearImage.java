@@ -1,7 +1,6 @@
 package edu.jhuapl.near;
 
 import java.io.*;
-import java.nio.ByteBuffer;
 
 
 import nom.tam.fits.BasicHDU;
@@ -19,7 +18,6 @@ import vtk.*;
  */
 public class NearImage 
 {
-//	private QImage image;
 	private vtkImageData image;
 	public static final int IMAGE_WIDTH = 537;
 	public static final int IMAGE_HEIGHT = 412;
@@ -38,13 +36,13 @@ public class NearImage
 	
 	private float[] data = new float[NUM_LAYERS*IMAGE_HEIGHT*IMAGE_WIDTH];
 	
-	private byte[][] imageValues = new byte[IMAGE_HEIGHT][IMAGE_WIDTH];
-
 	private BoundingBox bb = new BoundingBox();
 	private String name = ""; // The name is a 9 digit number at the beginning of the filename
 						 	  // (starting after the initial M0). This is how the lineament 
 							  // model names them.
 
+	private vtkImageReslice reslice;
+	
     private static class IMGFilter implements java.io.FileFilter 
     {
     	String prefix;
@@ -135,14 +133,6 @@ public class NearImage
             }
         }
 
-//        {
-//        	vtkJPEGReader r = new vtkJPEGReader();
-//        	r.SetFileName("/home/kahneg1/src/gmti/tiles/LandSatI3_Iraq_jpeg/8/891/891_1612.jpeg");
-//        	r.Update();
-//        	//System.out.println(r.GetOutput());
-//        	//System.out.println(r.GetOutput().GetScalarTypeAsString());
-//        }
-        
         System.out.println("Begin vtkImageData create");
         // Create a vtk image data holding this image
         image = new vtkImageData();
@@ -164,7 +154,7 @@ public class NearImage
         
         
         // Now scale this image
-        vtkImageReslice reslice = new vtkImageReslice();
+        reslice = new vtkImageReslice();
         reslice.SetInput(image);
         reslice.SetInterpolationModeToLinear();
         reslice.SetOutputSpacing(1.0, (double)originalHeight/(double)IMAGE_HEIGHT, 1.0);
@@ -187,7 +177,6 @@ public class NearImage
 	{
         // Search for an IMG with the same prefix in the directory containing the FIT image.
         File file = new File(filename);
-		//QFileInfo fileinfo = new QFileInfo(file);
 
 		// Get the part of the file name up to the first underscore
 		String basename = file.getName();
@@ -200,12 +189,8 @@ public class NearImage
 
         basename = basename.substring(0, k);
         File parent = file.getParentFile();
-        //System.out.println("basename  " +basename);
-        //System.out.println(parent);
         		
         File[] list = parent.listFiles(new IMGFilter(basename));
-        //for (File f : list)
-        //	System.out.println(f);
 		
 		if (list.length == 0)
 			throw new IOException("Could not find IMG file corresponding to " + basename);
@@ -277,7 +262,7 @@ public class NearImage
 	
 	public vtkImageData getSubImage(int size, int row, int col)
 	{
-        vtkImageReslice reslice = new vtkImageReslice();
+		reslice = new vtkImageReslice();
         reslice.SetInput(image);
         reslice.SetInterpolationModeToNearestNeighbor();
         reslice.SetOutputSpacing(1.0, 1.0, 1.0);

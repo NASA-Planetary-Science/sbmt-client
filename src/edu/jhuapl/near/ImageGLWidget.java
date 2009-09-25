@@ -75,6 +75,22 @@ class ImageGLWidget extends JPanel
     		System.loadLibrary("vtkVolumeRendering");
     		System.loadLibrary("vtkVolumeRenderingJava");
     	}
+    	else if (name.toLowerCase().startsWith("linux"))
+    	{
+    		System.loadLibrary("vtkCommonJava");
+    		System.loadLibrary("vtkFilteringJava");
+    		System.loadLibrary("vtkGraphicsJava");
+    		System.loadLibrary("vtkGenericFilteringJava");
+    		System.loadLibrary("vtkIOJava");
+    		System.loadLibrary("vtkImagingJava");
+    		System.loadLibrary("vtkRenderingJava");
+    		System.loadLibrary("vtkHybridJava");
+    		System.loadLibrary("vtkWidgetsJava");
+    		System.loadLibrary("vtkInfovisJava");
+    		System.loadLibrary("vtkViewsJava");
+    		System.loadLibrary("vtkGeovisJava");
+    		System.loadLibrary("vtkVolumeRenderingJava");
+    	}
     }
     
     public ImageGLWidget(LineamentModel model) 
