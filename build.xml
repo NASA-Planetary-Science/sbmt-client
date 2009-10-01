@@ -15,17 +15,19 @@
         <javac srcdir="${rootdir}/src" destdir="${rootdir}/build/classes" debug="off" >
            <classpath>
 			 <pathelement location="${rootdir}/lib/vtk.jar"/>
+			 <pathelement location="${rootdir}/lib/jide-oss-2.7.3.jar"/>
            </classpath>
         </javac> 
     </target>
 
     <target name="run" depends="compile">
         <java classname="edu.jhuapl.near.ErosLineamentViewer" fork="true" maxmemory="512m">
-           <jvmarg value="-Djava.library.path=${rootdir}/lib"/>
+           <jvmarg value="-Djava.library.path=${rootdir}/lib/linux32"/>
            <jvmarg value="-Dsun.java2d.noddraw=true"/>
            <classpath>
 			 <pathelement location="${rootdir}/build/classes"/>
 			 <pathelement location="${rootdir}/lib/vtk.jar"/>
+			 <pathelement location="${rootdir}/lib/jide-oss-2.7.3.jar"/>
            </classpath>
         </java>
     </target>
@@ -34,7 +36,8 @@
         <mkdir dir="${rootdir}/build/jar"/>
         <jar destfile="${rootdir}/build/jar/near.jar" basedir="${rootdir}/build/classes">
            <manifest>
-               <attribute name="Class-Path" value="vtk.jar"/>
+               <attribute name="Class-Path" value="vtk.jar
+												   jide-oss-2.7.3.jar"/>
                <attribute name="Main-Class" value="edu.jhuapl.near.ErosLineamentViewer"/>
            </manifest>
         </jar>
@@ -47,6 +50,7 @@
            <jvmarg value="-Dsun.java2d.noddraw=true"/>
            <classpath>
 			 <pathelement location="${rootdir}/lib/vtk.jar"/>
+			 <pathelement location="${rootdir}/lib/jide-oss-2.7.3.jar"/>
 			 <pathelement location="${rootdir}/build/jar/near.jar"/>
            </classpath>
         </java>
@@ -55,6 +59,14 @@
     <target name="nativelinuxvtkjar">
         <mkdir dir="${rootdir}/build/jar"/>
         <jar destfile="${rootdir}/build/jar/vtk-natives-linux-i586.jar" basedir="${rootdir}/lib/linux32">
+           <manifest>
+           </manifest>
+        </jar>
+    </target>
+
+    <target name="nativelinux64vtkjar">
+        <mkdir dir="${rootdir}/build/jar"/>
+        <jar destfile="${rootdir}/build/jar/vtk-natives-linux-amd64.jar" basedir="${rootdir}/lib/linux64">
            <manifest>
            </manifest>
         </jar>
@@ -102,10 +114,26 @@
             storepass="${keypass}"/>
     </target>
 
+    <target name="signnativelinux64vtkjar" depends="nativelinux64vtkjar">
+        <input message="Please enter keystore password:"
+            addproperty="keypass" />
+        <signjar jar="${rootdir}/build/jar/vtk-natives-linux-amd64.jar"
+            keystore="${rootdir}/keystore" alias="mykey"
+            storepass="${keypass}"/>
+    </target>
+
     <target name="signnativewinvtkjar" depends="nativewinvtkjar">
         <input message="Please enter keystore password:"
             addproperty="keypass" />
         <signjar jar="${rootdir}/build/jar/vtk-natives-windows-i586.jar"
+            keystore="${rootdir}/keystore" alias="mykey"
+            storepass="${keypass}"/>
+    </target>
+
+    <target name="signjidejar">
+        <input message="Please enter keystore password:"
+            addproperty="keypass" />
+        <signjar jar="${rootdir}/lib/jide-oss-2.7.3.jar"
             keystore="${rootdir}/keystore" alias="mykey"
             storepass="${keypass}"/>
     </target>

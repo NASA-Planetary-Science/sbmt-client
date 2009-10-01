@@ -22,7 +22,7 @@
         <jar href="vtk.jar"/>
     </resources>
 
-	<resources os="Windows" arch="x86">
+    <resources os="Windows" arch="x86">
       <nativelib href = "vtk-natives-windows-i586.jar" />
     </resources>
     <resources os="Linux" arch="i386">
@@ -30,6 +30,12 @@
     </resources>
     <resources os="Linux" arch="x86">
       <nativelib href = "vtk-natives-linux-i586.jar" />
+    </resources>
+    <resources os="Linux" arch="amd64">
+      <nativelib href = "vtk-natives-linux-amd64.jar" />
+    </resources>
+    <resources os="Linux" arch="x86_64">
+      <nativelib href = "vtk-natives-linux-amd64.jar" />
     </resources>
 
     <application-desc main-class="edu.jhuapl.near.ErosLineamentViewer"/>
