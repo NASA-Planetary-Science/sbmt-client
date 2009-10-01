@@ -2,12 +2,12 @@ package edu.jhuapl.near;
 
 import java.io.*;
 
-
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
 import nom.tam.fits.FitsException;
 
 import vtk.*;
+
 
 /**
  * This class represents a near image. It allows retrieving the 
@@ -18,11 +18,13 @@ import vtk.*;
  */
 public class NearImage 
 {
-	private vtkImageData image;
+	private vtkImageData rawImage;
+	private vtkImageData displayedImage;
+	
 	public static final int IMAGE_WIDTH = 537;
 	public static final int IMAGE_HEIGHT = 412;
 	public static final int NUM_LAYERS = 14;
-	
+
 	public static final float PDS_NA = -1.e32f;
 	
 	private float[][] incidence = new float[IMAGE_HEIGHT][IMAGE_WIDTH];
@@ -36,13 +38,26 @@ public class NearImage
 	
 	private float[] data = new float[NUM_LAYERS*IMAGE_HEIGHT*IMAGE_WIDTH];
 	
-	private BoundingBox bb = new BoundingBox();
+	//private BoundingBox bb = new BoundingBox();
 	private String name = ""; // The name is a 9 digit number at the beginning of the filename
 						 	  // (starting after the initial M0). This is how the lineament 
 							  // model names them.
 
-	private vtkImageReslice reslice;
-	
+	private float minValue;
+	private float maxValue;
+	private Range displayedRange = new Range(1,0);
+
+    public static class Range
+    {
+        public int min;
+        public int max;
+        public Range(int min, int max)
+        {
+        	this.min = min;
+        	this.max = max;
+        }
+    }
+    
     private static class IMGFilter implements java.io.FileFilter 
     {
     	String prefix;
@@ -120,54 +135,39 @@ public class NearImage
                 }
         }
 
-        float max = -Float.MAX_VALUE;
-        float min = Float.MAX_VALUE;
+        rawImage = new vtkImageData();
+        rawImage.SetScalarTypeToFloat();
+        rawImage.SetDimensions(originalWidth, originalHeight, 1);
+        rawImage.SetSpacing(1.0, 1.0, 1.0);
+        rawImage.SetOrigin(0.0, 0.0, 0.0);
+        rawImage.SetNumberOfScalarComponents(1);
+        
+        maxValue = -Float.MAX_VALUE;
+        minValue = Float.MAX_VALUE;
         for (int i=0; i<originalHeight; ++i)
-        {
             for (int j=0; j<originalWidth; ++j)
             {
-            	if (array[i][j] > max)
-            		max = array[i][j];
-            	if (array[i][j] < min)
-            		min = array[i][j];
-            }
-        }
+        		rawImage.SetScalarComponentFromDouble(j, originalHeight-1-i, 0, 0, array[i][j]);
 
-        System.out.println("Begin vtkImageData create");
-        // Create a vtk image data holding this image
-        image = new vtkImageData();
-        image.SetScalarTypeToUnsignedChar();
-        image.SetDimensions(originalWidth, originalHeight, 1);
-        image.SetSpacing(1, 1, 1);
-        image.SetOrigin(0.0, 0.0, 0.0);
-        image.SetNumberOfScalarComponents(4);
-        for (int i=0; i<originalHeight; ++i)
-        	for (int j=0; j<originalWidth; ++j)
-        	{
-            	int val = (int)((array[i][j]-min) * 255.0f / (max-min));
-        		image.SetScalarComponentFromDouble(j, originalHeight-1-i, 0, 0, val);
-        		image.SetScalarComponentFromDouble(j, originalHeight-1-i, 0, 1, val);
-        		image.SetScalarComponentFromDouble(j, originalHeight-1-i, 0, 2, val);
-        		image.SetScalarComponentFromDouble(j, originalHeight-1-i, 0, 3, 255);
-        	}
-        System.out.println("End vtkImageData create");
-        
+        		if (array[i][j] > maxValue)
+            		maxValue = array[i][j];
+            	if (array[i][j] < minValue)
+            		minValue = array[i][j];
+            }
         
         // Now scale this image
-        reslice = new vtkImageReslice();
-        reslice.SetInput(image);
+        vtkImageReslice reslice = new vtkImageReslice();
+        reslice.SetInput(rawImage);
         reslice.SetInterpolationModeToLinear();
         reslice.SetOutputSpacing(1.0, (double)originalHeight/(double)IMAGE_HEIGHT, 1.0);
         reslice.SetOutputOrigin(0.0, 0.0, 0.0);
         reslice.SetOutputExtent(0, IMAGE_WIDTH-1, 0, IMAGE_HEIGHT-1, 0, 0);
         reslice.Update();
         
-        image.DeepCopy(reslice.GetOutput());
-        image.SetSpacing(1, 1, 1);
+        rawImage.DeepCopy(reslice.GetOutput());
+        rawImage.SetSpacing(1, 1, 1);
         
-        //System.out.println(image);
-        
-        //System.out.println("Hash Map size: " + values.size());
+        setDisplayedImageRange(new Range(0, 255));
 
         loadImgFile(filename);
 	}
@@ -209,12 +209,12 @@ public class NearImage
 		}
 
 		
-//        vtkImageData tmp = new vtkImageData();
-//        tmp.SetScalarTypeToUnsignedChar();
-//        tmp.SetDimensions(IMAGE_WIDTH, IMAGE_HEIGHT, 1);
-//        tmp.SetSpacing(1, 1, 1);
-//        tmp.SetOrigin(0.0, 0.0, 0.0);
-//        tmp.SetNumberOfScalarComponents(4);
+        vtkImageData tmp = new vtkImageData();
+        tmp.SetScalarTypeToUnsignedChar();
+        tmp.SetDimensions(IMAGE_WIDTH, IMAGE_HEIGHT, 1);
+        tmp.SetSpacing(1.0, 1.0, 1.0);
+        tmp.SetOrigin(0.0, 0.0, 0.0);
+        tmp.SetNumberOfScalarComponents(4);
 
 		int numValidPixels = 0;
 		int numInvalidPixels = 0;
@@ -228,9 +228,11 @@ public class NearImage
 	        	
 	        	if (xx != PDS_NA && yy != PDS_NA && zz != PDS_NA)
 	        	{
-	        		bb.update(xx, yy, zz);
+	        		//bb.update(xx, yy, zz);
 	        		
 	        		++numValidPixels;
+	        		//if (xx > 100)
+	        			//System.out.println()
 	        	}
 	        	else
 	        	{
@@ -241,29 +243,31 @@ public class NearImage
 	        	y[j][i] = yy;
 	        	z[j][i] = zz;
 	        	
-//	        	int v = xx != PDS_NA ? 255 : 0;
-//	        	tmp.SetScalarComponentFromDouble(i, j, 0, 0, v);
-//        		tmp.SetScalarComponentFromDouble(i, j, 0, 1, v);
-//        		tmp.SetScalarComponentFromDouble(i, j, 0, 2, v);
-//        		tmp.SetScalarComponentFromDouble(i, j, 0, 3, 255);
-
+	        	int v = xx != PDS_NA ? 255 : (int)xx;
+	        	tmp.SetScalarComponentFromDouble(i, j, 0, 0, v);
+        		tmp.SetScalarComponentFromDouble(i, j, 0, 1, v);
+        		tmp.SetScalarComponentFromDouble(i, j, 0, 2, v);
+        		tmp.SetScalarComponentFromDouble(i, j, 0, 3, 255);
+        		//System.out.print(xx + " ");
 	        }
+	        //System.out.println();
 	    }
 	
-//	    vtkPNGWriter writer = new vtkPNGWriter();
-//	    writer.SetFileName("xx.png");
-//	    writer.SetInput(tmp);
-//	    writer.Write();
-//	    vtkPNGWriter writer2 = new vtkPNGWriter();
-//	    writer2.SetFileName("fit.png");
-//	    writer2.SetInput(image);
-//	    writer2.Write();
+	    vtkPNGWriter writer = new vtkPNGWriter();
+	    writer.SetFileName("xx.png");
+	    writer.SetInput(tmp);
+	    writer.Write();
+	}
+	
+	public vtkImageData getRawImage()
+	{
+		return rawImage;
 	}
 	
 	public vtkImageData getSubImage(int size, int row, int col)
 	{
-		reslice = new vtkImageReslice();
-        reslice.SetInput(image);
+		vtkImageReslice reslice = new vtkImageReslice();
+        reslice.SetInput(displayedImage);
         reslice.SetInterpolationModeToNearestNeighbor();
         reslice.SetOutputSpacing(1.0, 1.0, 1.0);
         reslice.SetOutputOrigin(0.0, 0.0, 0.0);
@@ -273,16 +277,16 @@ public class NearImage
         return reslice.GetOutput();
 	}
 	
-	public BoundingBox getBoundingBox()
-	{
-		return bb;
-	}
+//	public BoundingBox getBoundingBox()
+//	{
+//		return bb;
+//	}
 	
 	public String getName()
 	{
 		return name;
 	}
-	
+
 	/*
 	public float getLatitude(float x, float y)
 	{
@@ -323,6 +327,50 @@ public class NearImage
 	public float getZ(int row, int col)
 	{
 		return z[row][col];
+	}
+	
+	public Range getDisplayedRange()
+	{
+		return displayedRange;
+	}
+	
+	public void setDisplayedImageRange(Range range)
+	{
+		if (displayedRange.min != range.min ||
+			displayedRange.max != range.max)
+		{
+			displayedRange = range;
+			
+			float dx = (maxValue-minValue)/255.0f;
+			float min = minValue + range.min*dx;
+			float max = minValue + range.max*dx;
+
+			// Update the displayed image
+	    	vtkLookupTable lut = new vtkLookupTable();
+	    	lut.SetTableRange(min, max);
+	    	lut.SetValueRange(0.0, 1.0);
+	    	lut.SetHueRange(0.0, 0.0);
+	    	lut.SetSaturationRange(0.0, 0.0);
+	    	lut.SetNumberOfTableValues(402);
+	    	lut.SetRampToSCurve();
+	    	lut.Build();
+
+	    	vtkImageMapToColors mapToColors = new vtkImageMapToColors();
+	    	mapToColors.SetInput(rawImage);
+	    	mapToColors.SetOutputFormatToRGB();
+	    	mapToColors.SetLookupTable(lut);
+	    	mapToColors.Update();
+	    	
+	    	if (displayedImage == null)
+	    		displayedImage = new vtkImageData();
+	    	displayedImage.DeepCopy(mapToColors.GetOutput());
+
+		    vtkPNGWriter writer = new vtkPNGWriter();
+		    writer.SetFileName("fit.png");
+		    writer.SetInput(displayedImage);
+		    writer.Write();
+
+		}
 	}
 
 	private int index(int i, int j, int k)

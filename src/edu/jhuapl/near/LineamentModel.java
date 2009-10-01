@@ -11,6 +11,7 @@ import vtk.vtkPolyData;
 public class LineamentModel 
 {
 	private HashMap<Integer, Lineament> idToLineamentMap = new HashMap<Integer, Lineament>();
+	private HashMap<Integer, Lineament> cellIdToLineamentMap = new HashMap<Integer, Lineament>();
 	private vtkPolyData lineaments;
 	
 	public static class Lineament
@@ -23,7 +24,7 @@ public class LineamentModel
 		public ArrayList<Double> x = new ArrayList<Double>();
 		public ArrayList<Double> y = new ArrayList<Double>();
 		public ArrayList<Double> z = new ArrayList<Double>();
-		public BoundingBox bb = new BoundingBox();
+		//public BoundingBox bb = new BoundingBox();
 	}
 	
 	public LineamentModel()
@@ -87,11 +88,12 @@ public class LineamentModel
             lin.z.add(z);
 
             // Update the bounds of the lineaments
-            lin.bb.update(x, y, z);
+            //lin.bb.update(x, y, z);
         }
 
 	}
 	
+	/*
 	public List<Lineament> getLineamentsWithinBox(BoundingBox box)
 	{
 		ArrayList<Lineament> array = new ArrayList<Lineament>();
@@ -103,6 +105,7 @@ public class LineamentModel
 		}
 		return array;
 	}
+	*/
 	
 	private void createPolyData()
 	{
@@ -113,6 +116,7 @@ public class LineamentModel
         vtkIdList idList = new vtkIdList();
 
         int c=0;
+        int cellId = 0;
 		for (Integer id : this.idToLineamentMap.keySet())
 		{
 			Lineament lin =	this.idToLineamentMap.get(id);
@@ -128,6 +132,9 @@ public class LineamentModel
             }
 
             lines.InsertNextCell(idList);
+            
+            cellIdToLineamentMap.put(cellId, lin);
+            ++cellId;
 		}
 		
         lineaments.SetPoints(points);
@@ -140,5 +147,10 @@ public class LineamentModel
 			createPolyData();
 		
 		return lineaments;
+	}
+	
+	public Lineament getLineament(int id)
+	{
+		return this.cellIdToLineamentMap.get(id);
 	}
 }

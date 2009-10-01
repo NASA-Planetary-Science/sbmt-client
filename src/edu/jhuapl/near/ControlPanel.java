@@ -12,7 +12,7 @@ import java.awt.event.*;
 import javax.swing.event.*;
 
 
-public class ControlPanel extends JPanel implements ListSelectionListener
+public class ControlPanel extends JPanel implements ListSelectionListener, ItemListener
 {
     private ImageGLWidget viewer;
 	
@@ -29,6 +29,10 @@ public class ControlPanel extends JPanel implements ListSelectionListener
     private JButton downButton;
     private ArrayList<File> fileList = new ArrayList<File>();
 
+    private JCheckBox modelCheckBox;
+    private JCheckBox lineamentCheckBox;
+    private ContrastChanger contrastChanger;
+    
     class AddListener implements ActionListener 
     {
     	JPanel panel;
@@ -52,6 +56,7 @@ public class ControlPanel extends JPanel implements ListSelectionListener
 
                 updateButtons();
                 updateRenderedImages();
+                updateContrastChanger();
         	}
         }
     }
@@ -81,6 +86,7 @@ public class ControlPanel extends JPanel implements ListSelectionListener
 
             updateButtons();
             updateRenderedImages();
+            updateContrastChanger();
         }
     }
 
@@ -105,6 +111,7 @@ public class ControlPanel extends JPanel implements ListSelectionListener
 
                 updateButtons();
             	updateRenderedImages();
+                updateContrastChanger();
             }
         }
     }
@@ -131,6 +138,7 @@ public class ControlPanel extends JPanel implements ListSelectionListener
 
                 updateButtons();
             	updateRenderedImages();
+                updateContrastChanger();
             }
         }
     }
@@ -191,14 +199,70 @@ public class ControlPanel extends JPanel implements ListSelectionListener
         add(buttonPane, BorderLayout.PAGE_START);
         add(listScrollPane, BorderLayout.CENTER);
 
+        JPanel bottomPane = new JPanel();
+        bottomPane.setLayout(new BorderLayout());
+        bottomPane.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
+        contrastChanger = new ContrastChanger(viewer);
+        
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+
+        modelCheckBox = new JCheckBox();
+        modelCheckBox.setText("Show Model");
+        modelCheckBox.setSelected(true);
+        modelCheckBox.addItemListener(this);
+        
+        lineamentCheckBox = new JCheckBox();
+        lineamentCheckBox.setText("Show Lineaments");
+        lineamentCheckBox.setSelected(true);
+        lineamentCheckBox.addItemListener(this);
+
+        panel.add(modelCheckBox);
+        panel.add(lineamentCheckBox);
+        
+        bottomPane.add(contrastChanger, BorderLayout.CENTER);
+        bottomPane.add(panel, BorderLayout.PAGE_END);
+        
+        add(bottomPane, BorderLayout.PAGE_END);
 	}
 
+	public void itemStateChanged(ItemEvent e) 
+	{
+		if (e.getItemSelectable() == this.modelCheckBox)
+		{
+			if (e.getStateChange() == ItemEvent.DESELECTED)
+				viewer.showModel(false);
+			else
+				viewer.showModel(true);
+		}
+		else if (e.getItemSelectable() == this.lineamentCheckBox)
+		{
+			if (e.getStateChange() == ItemEvent.DESELECTED)
+				viewer.showLineaments(false);
+			else
+				viewer.showLineaments(true);
+		}
+	}
+	
     //This method is required by ListSelectionListener.
     public void valueChanged(ListSelectionEvent e) 
     {
         if (e.getValueIsAdjusting() == false) 
         {
         	updateButtons();
+        	updateContrastChanger();
+        }
+    }
+    
+    private void updateContrastChanger()
+    {
+        int index = list.getSelectedIndex();
+        if (index >= 0)
+        {
+        	File file = fileList.get(index);
+        	NearImage image = viewer.getImage(file);
+        	if (image != null)
+        		contrastChanger.setNearImage(image);
         }
     }
 

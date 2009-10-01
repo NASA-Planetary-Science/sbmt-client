@@ -3,164 +3,146 @@ package edu.jhuapl.near;
 import java.io.*;
 import java.util.*;
 import javax.swing.*;
+
+import edu.jhuapl.near.NearImage.Range;
+
 import java.awt.*;
+import java.awt.event.*;
 
 
 import nom.tam.fits.*;
 
 import vtk.*;
 
-class ImageGLWidget extends JPanel
+class ImageGLWidget extends JPanel implements MouseListener, MouseMotionListener, MouseWheelListener
 {
-
-    private ArrayList<NearImage> nearImages = new ArrayList<NearImage>();
     private LineamentModel lineamentModel;
-    private vtkPolyDataReader polyReader;
+    private StatusBar statusBar;
     private vtkRenderWindowPanel renWin;
 
+    private vtkActor lineamentActor;
+    private vtkActor erosActor;
+    
     private static final int TEXTURE_SIZE = 128;
 
     private ArrayList<vtkActor> nearImageActors = new ArrayList<vtkActor>();
 
-    static
-    {
-    	// On windows there are problems finding the dependent libraries,
-    	// so load them all manually. Note they must be loaded in the
-    	// following order
-    	
-    	String name = System.getProperty("os.name");
-    	if (name.toLowerCase().startsWith("windows"))
-    	{
-    		System.loadLibrary("jawt");
-    		System.loadLibrary("vtkzlib");
-    		System.loadLibrary("vtkNetCDF");
-    		System.loadLibrary("vtksys");
-    		System.loadLibrary("vtkalglib");
-    		System.loadLibrary("vtkexoIIc");
-    		System.loadLibrary("vtkexpat");
-    		System.loadLibrary("vtkfreetype");
-    		System.loadLibrary("vtkftgl");
-    		System.loadLibrary("vtkjpeg");
-    		System.loadLibrary("vtklibxml2");
-    		System.loadLibrary("vtkmetaio");
-    		System.loadLibrary("vtkpng");
-    		System.loadLibrary("vtkproj4");
-    		System.loadLibrary("vtktiff");
-    		System.loadLibrary("vtkverdict");
-    		System.loadLibrary("vtkCommon");
-    		System.loadLibrary("vtkCommonJava");
-    		System.loadLibrary("vtkDICOMParser");
-    		System.loadLibrary("vtkFiltering");
-    		System.loadLibrary("vtkFilteringJava");
-    		System.loadLibrary("vtkGraphics");
-    		System.loadLibrary("vtkGraphicsJava");
-    		System.loadLibrary("vtkGenericFiltering");
-    		System.loadLibrary("vtkGenericFilteringJava");
-    		System.loadLibrary("vtkIO");
-    		System.loadLibrary("vtkIOJava");
-    		System.loadLibrary("vtkImaging");
-    		System.loadLibrary("vtkImagingJava");
-    		System.loadLibrary("vtkRendering");
-    		System.loadLibrary("vtkRenderingJava");
-    		System.loadLibrary("vtkHybrid");
-    		System.loadLibrary("vtkHybridJava");
-    		System.loadLibrary("vtkWidgets");
-    		System.loadLibrary("vtkWidgetsJava");
-    		System.loadLibrary("vtkInfovis");
-    		System.loadLibrary("vtkInfovisJava");
-    		System.loadLibrary("vtkViews");
-    		System.loadLibrary("vtkViewsJava");
-    		System.loadLibrary("vtkGeovis");
-    		System.loadLibrary("vtkGeovisJava");
-    		System.loadLibrary("vtkVolumeRendering");
-    		System.loadLibrary("vtkVolumeRenderingJava");
-    	}
-    	else if (name.toLowerCase().startsWith("linux"))
-    	{
-    		System.loadLibrary("vtkCommonJava");
-    		System.loadLibrary("vtkFilteringJava");
-    		System.loadLibrary("vtkGraphicsJava");
-    		System.loadLibrary("vtkGenericFilteringJava");
-    		System.loadLibrary("vtkIOJava");
-    		System.loadLibrary("vtkImagingJava");
-    		System.loadLibrary("vtkRenderingJava");
-    		System.loadLibrary("vtkHybridJava");
-    		System.loadLibrary("vtkWidgetsJava");
-    		System.loadLibrary("vtkInfovisJava");
-    		System.loadLibrary("vtkViewsJava");
-    		System.loadLibrary("vtkGeovisJava");
-    		System.loadLibrary("vtkVolumeRenderingJava");
-    	}
-    }
+    private HashMap<File, NearImage> fileToImageMap = new HashMap<File, NearImage>();
     
-    public ImageGLWidget(LineamentModel model) 
+    
+    public ImageGLWidget(LineamentModel model, StatusBar statusBar) 
     {
     	setLayout(new BorderLayout());
+    	
+    	this.statusBar = statusBar;
     	
         // Create the buttons.
         renWin = new vtkRenderWindowPanel();
 
+        renWin.addMouseListener(this);
+        renWin.addMouseMotionListener(this);
+        renWin.addMouseWheelListener(this);
+        
         lineamentModel = model;
 
-        polyReader = new vtkPolyDataReader();
+    	vtkPolyDataReader erosReader = new vtkPolyDataReader();
         File file = ConvertResourceToRealFile.convert(this, "/edu/jhuapl/near/data/Eros_Dec2006_0.vtk");
-        polyReader.SetFileName(file.getAbsolutePath());
-        polyReader.Update();
+        erosReader.SetFileName(file.getAbsolutePath());
+        erosReader.Update();
 
-        {
-        vtkPolyDataMapper polyMapper = new vtkPolyDataMapper();
-        polyMapper.SetInput(polyReader.GetOutput());
+        vtkPolyDataMapper erosMapper = new vtkPolyDataMapper();
+        erosMapper.SetInput(erosReader.GetOutput());
 
-        vtkActor polyActor = new vtkActor();
-        //polyActor.GetProperty().SetRepresentationToWireframe();
-        //polyActor.GetProperty().SetOpacity(0.0);
-        polyActor.SetMapper(polyMapper);
+        erosActor = new vtkActor();
+        //erosActor.GetProperty().SetRepresentationToWireframe();
+        //erosActor.GetProperty().SetOpacity(0.0);
+        erosActor.SetMapper(erosMapper);
 
-        renWin.GetRenderer().AddActor(polyActor);
+        renWin.GetRenderer().AddActor(erosActor);
 
-        }
-        
-        {
-        vtkPolyDataMapper polyMapper = new vtkPolyDataMapper();
-        polyMapper.SetInput(lineamentModel.getLineamentsAsPolyData());
-        //polyMapper.SetResolveCoincidentTopologyToPolygonOffset();
-        //polyMapper.SetResolveCoincidentTopologyPolygonOffsetParameters(-1000.0, -1000.0);
+        vtkPolyDataMapper lineamentMapper = new vtkPolyDataMapper();
+        lineamentMapper.SetInput(lineamentModel.getLineamentsAsPolyData());
+        //lineamentMapper.SetResolveCoincidentTopologyToPolygonOffset();
+        //lineamentMapper.SetResolveCoincidentTopologyPolygonOffsetParameters(-1000.0, -1000.0);
 
-        vtkActor polyActor = new vtkActor();
-        polyActor.GetProperty().SetColor(1.0, 0.0, 1.0);
-        polyActor.SetMapper(polyMapper);
+        lineamentActor = new vtkActor();
+        lineamentActor.GetProperty().SetColor(1.0, 0.0, 1.0);
+        lineamentActor.SetMapper(lineamentMapper);
 
-        renWin.GetRenderer().AddActor(polyActor);
-        }
-            
+        renWin.GetRenderer().AddActor(lineamentActor);
+
         
         vtkInteractorStyleTrackballCamera style =
             new vtkInteractorStyleTrackballCamera();
         renWin.setInteractorStyle(style);
         
         add(renWin, BorderLayout.CENTER);
-
     }
-
+    
+    public void showModel(boolean show)
+    {
+    	if (show)
+    	{
+    		if (renWin.GetRenderer().HasViewProp(erosActor) == 0)
+    			renWin.GetRenderer().AddActor(erosActor);
+    	}
+    	else
+    	{
+    		if (renWin.GetRenderer().HasViewProp(erosActor) > 0)
+    			renWin.GetRenderer().RemoveActor(erosActor);
+    	}
+    	renWin.Render();
+    }
+    
+    public void showLineaments(boolean show)
+    {
+    	if (show)
+    	{
+    		if (renWin.GetRenderer().HasViewProp(lineamentActor) == 0)
+    			renWin.GetRenderer().AddActor(lineamentActor);
+    	}
+    	else
+    	{
+    		if (renWin.GetRenderer().HasViewProp(lineamentActor) > 0)
+    			renWin.GetRenderer().RemoveActor(lineamentActor);
+    	}
+    	renWin.Render();
+    }
+    
     public void setImages(ArrayList<File> files) throws FitsException, IOException
     {
     	// First remove all actors
     	for (vtkActor act : this.nearImageActors)
     		renWin.GetRenderer().RemoveActor(act);
+
+    	renWin.Render();
     	
     	nearImageActors.clear();
-
+    	fileToImageMap.clear();
+    	
     	int c = 1;
     	for (File file : files)
     	{
         	NearImage image = new NearImage(file.getAbsolutePath());
 
-        	nearImages.add(image);
-    	
+        	fileToImageMap.put(file, image);
+
         	// Now texture map this image onto the Eros model.
         	mapImage(image, -c*10);
         	++c;
     	}
+    	
+    	renWin.Render();
+    }
+    
+    public NearImage getImage(File file)
+    {
+    	return fileToImageMap.get(file);
+    }
+    
+    public vtkRenderWindowPanel getRenderWindowPanel()
+    {
+    	return renWin;
     }
     
     private void mapImage(NearImage nearImage, double offset)
@@ -267,12 +249,13 @@ class ImageGLWidget extends JPanel
                 texture.InterpolateOn();
                 texture.RepeatOff();
                 texture.EdgeClampOn();
-                
+
                 vtkImageData imagePiece = nearImage.getSubImage(TEXTURE_SIZE, corner1, corner2);
                 //System.out.println("\n\n\n\nnext image piece " + ccc++ + "\n\n");
                 //System.out.println(imagePiece.GetDimensions()[0]);
                 //System.out.println(imagePiece.GetDimensions()[1]);
                 //System.out.println(imagePiece.GetDimensions()[2]);
+
                 
                 texture.SetInput(imagePiece);
                 
@@ -292,6 +275,78 @@ class ImageGLWidget extends JPanel
         	}
     }
     
+	public void setDisplayedImageRange(NearImage image, Range range)
+	{
+		image.setDisplayedImageRange(range);
+		renWin.Render();
+	}
+
+	public void mousePressed(MouseEvent e)
+	{
+		
+	}
+
+	public void mouseClicked(MouseEvent e)
+	{
+		
+	}
+
+	public void mouseEntered(MouseEvent e)
+	{
+		
+	}
+
+	public void mouseExited(MouseEvent e)
+	{
+		
+	}
+
+	public void mouseReleased(MouseEvent e)
+	{
+		
+	}
+
+	public void mouseDragged(MouseEvent e)
+	{
+		
+	}
+
+	public void mouseMoved(MouseEvent e)
+	{
+		//System.out.println("moved  " + e);
+		vtkCellPicker cellPicker = new vtkCellPicker();
+		//System.out.println(cellPicker.GetTolerance());
+		cellPicker.SetTolerance(0.002);
+		int pickSucceeded = cellPicker.Pick(e.getX(), renWin.getIren().GetSize()[1]-e.getY()-1, 0.0, renWin.GetRenderer());
+		if (pickSucceeded != 0 && cellPicker.GetActor() == this.lineamentActor)
+		{
+			LineamentModel.Lineament lin = this.lineamentModel.getLineament(cellPicker.GetCellId());
+			//System.out.println(iii++ + " " + cellPicker.GetCellId());
+			//System.out.println(lin.name);
+			statusBar.setText("Lineament " + lin.id + " mapped on MSI image " + lin.name + " contains " + lin.x.size() + " vertices");
+		}
+	}
+	
+	public void mouseWheelMoved(MouseWheelEvent e)
+	{
+		int ctrlPressed = (e.getModifiers() & InputEvent.CTRL_MASK) == InputEvent.CTRL_MASK ? 1
+				: 0;
+		int shiftPressed = (e.getModifiers() & InputEvent.SHIFT_MASK) == InputEvent.SHIFT_MASK ? 1
+				: 0;
+
+		renWin.getIren().SetEventInformationFlipY(e.getX(), e.getY(), ctrlPressed,
+			        shiftPressed, '0', 0, "0");
+
+		System.out.println("Wheeel");
+		renWin.lock();
+		if (e.getWheelRotation() > 0)
+			renWin.getIren().MouseWheelBackwardEvent();
+		else
+			renWin.getIren().MouseWheelForwardEvent();
+		renWin.unlock();
+	}
+	
+
     private boolean isValidPoint(float x, float y, float z)
     {
     	if (x <= NearImage.PDS_NA || y <= NearImage.PDS_NA || z <= NearImage.PDS_NA)
@@ -300,4 +355,3 @@ class ImageGLWidget extends JPanel
     		return true;
     }
 }
-
