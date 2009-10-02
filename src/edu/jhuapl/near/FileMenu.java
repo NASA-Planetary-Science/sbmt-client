@@ -38,7 +38,8 @@ public class FileMenu extends JMenu
         	{
         		vtkWindowToImageFilter windowToImage = new vtkWindowToImageFilter();
         		windowToImage.SetInput(viewer.getRenderWindowPanel().GetRenderWindow());
-
+        		windowToImage.ShouldRerenderOff(); // setting this to on seems to cause crashes
+        		
         		vtkPNGWriter writer = new vtkPNGWriter();
         		writer.SetFileName(file.getAbsolutePath());
         		writer.SetInputConnection(windowToImage.GetOutputPort());

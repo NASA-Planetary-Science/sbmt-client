@@ -4,8 +4,6 @@ import java.util.*;
 
 import javax.swing.*;
 
-import nom.tam.fits.FitsException;
-
 import java.io.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -55,7 +53,13 @@ public class ControlPanel extends JPanel implements ListSelectionListener, ItemL
                 list.ensureIndexIsVisible(index);
 
                 updateButtons();
-                updateRenderedImages();
+                //updateRenderedImages();
+                try {
+					viewer.addImage(file);
+				} catch (Exception ex) {
+					// TODO Auto-generated catch block
+					ex.printStackTrace();
+				}
                 updateContrastChanger();
         	}
         }
@@ -66,6 +70,7 @@ public class ControlPanel extends JPanel implements ListSelectionListener, ItemL
         public void actionPerformed(ActionEvent e) 
         {
             int index = list.getSelectedIndex();
+            File file = fileList.get(index);
             listModel.remove(index);
             fileList.remove(index);
             
@@ -85,7 +90,8 @@ public class ControlPanel extends JPanel implements ListSelectionListener, ItemL
             }
 
             updateButtons();
-            updateRenderedImages();
+            //updateRenderedImages();
+            viewer.removeImage(file);
             updateContrastChanger();
         }
     }
@@ -189,10 +195,10 @@ public class ControlPanel extends JPanel implements ListSelectionListener, ItemL
         buttonPane.add(addButton);
         buttonPane.add(Box.createHorizontalStrut(5));
         buttonPane.add(deleteButton);
-        buttonPane.add(Box.createHorizontalStrut(5));
-        buttonPane.add(upButton);
-        buttonPane.add(Box.createHorizontalStrut(5));
-        buttonPane.add(downButton);
+        //buttonPane.add(Box.createHorizontalStrut(5));
+        //buttonPane.add(upButton);
+        //buttonPane.add(Box.createHorizontalStrut(5));
+        //buttonPane.add(downButton);
 
         buttonPane.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
 
@@ -203,6 +209,8 @@ public class ControlPanel extends JPanel implements ListSelectionListener, ItemL
         bottomPane.setLayout(new BorderLayout());
         bottomPane.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
         contrastChanger = new ContrastChanger(viewer);
+        
+        LineamentRadialOffsetChanger radialChanger = new LineamentRadialOffsetChanger(viewer.getLineamentModel());
         
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
@@ -220,7 +228,8 @@ public class ControlPanel extends JPanel implements ListSelectionListener, ItemL
         panel.add(modelCheckBox);
         panel.add(lineamentCheckBox);
         
-        bottomPane.add(contrastChanger, BorderLayout.CENTER);
+        bottomPane.add(contrastChanger, BorderLayout.PAGE_START);
+        bottomPane.add(radialChanger, BorderLayout.CENTER);
         bottomPane.add(panel, BorderLayout.PAGE_END);
         
         add(bottomPane, BorderLayout.PAGE_END);
@@ -261,13 +270,17 @@ public class ControlPanel extends JPanel implements ListSelectionListener, ItemL
         {
         	File file = fileList.get(index);
         	NearImage image = viewer.getImage(file);
-        	if (image != null)
-        		contrastChanger.setNearImage(image);
+        	contrastChanger.setNearImage(image);
+        }
+        else
+        {
+        	contrastChanger.setNearImage(null);
         }
     }
 
     private void updateRenderedImages()
     {
+    	/*
 		try {
 			viewer.setImages(fileList);
 		} catch (FitsException e2) {
@@ -277,6 +290,7 @@ public class ControlPanel extends JPanel implements ListSelectionListener, ItemL
 			// TODO Auto-generated catch block
 			e2.printStackTrace();
 		}
+		*/
     }
     
     private void updateButtons()

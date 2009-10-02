@@ -6,11 +6,11 @@ import javax.swing.event.*;
 
 public class ContrastChanger extends JPanel implements ChangeListener
 {
-	RangeSlider slider;
+	private RangeSlider slider;
 	
-	NearImage nearImage;
+	private NearImage nearImage;
 	
-	ImageGLWidget viewer;
+	private ImageGLWidget viewer;
 	
 	public ContrastChanger(ImageGLWidget glWidget)
 	{
@@ -23,7 +23,7 @@ public class ContrastChanger extends JPanel implements ChangeListener
 		slider.setMajorTickSpacing(10);
 		slider.setPaintTrack(true);
 		slider.addChangeListener(this);
-		
+		slider.setEnabled(false);
 		add(slider);
 	}
 	
@@ -35,6 +35,11 @@ public class ContrastChanger extends JPanel implements ChangeListener
 			NearImage.Range range = image.getDisplayedRange();
 			slider.setLowValue(range.min);
 			slider.setHighValue(range.max);
+			slider.setEnabled(true);
+		}
+		else
+		{
+			slider.setEnabled(false);
 		}
 	}
 

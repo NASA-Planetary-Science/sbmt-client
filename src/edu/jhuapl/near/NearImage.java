@@ -209,12 +209,12 @@ public class NearImage
 		}
 
 		
-        vtkImageData tmp = new vtkImageData();
-        tmp.SetScalarTypeToUnsignedChar();
-        tmp.SetDimensions(IMAGE_WIDTH, IMAGE_HEIGHT, 1);
-        tmp.SetSpacing(1.0, 1.0, 1.0);
-        tmp.SetOrigin(0.0, 0.0, 0.0);
-        tmp.SetNumberOfScalarComponents(4);
+        //vtkImageData tmp = new vtkImageData();
+        //tmp.SetScalarTypeToUnsignedChar();
+        //tmp.SetDimensions(IMAGE_WIDTH, IMAGE_HEIGHT, 1);
+        //tmp.SetSpacing(1.0, 1.0, 1.0);
+        //tmp.SetOrigin(0.0, 0.0, 0.0);
+        //tmp.SetNumberOfScalarComponents(4);
 
 		int numValidPixels = 0;
 		int numInvalidPixels = 0;
@@ -243,20 +243,20 @@ public class NearImage
 	        	y[j][i] = yy;
 	        	z[j][i] = zz;
 	        	
-	        	int v = xx != PDS_NA ? 255 : (int)xx;
-	        	tmp.SetScalarComponentFromDouble(i, j, 0, 0, v);
-        		tmp.SetScalarComponentFromDouble(i, j, 0, 1, v);
-        		tmp.SetScalarComponentFromDouble(i, j, 0, 2, v);
-        		tmp.SetScalarComponentFromDouble(i, j, 0, 3, 255);
+	        	//int v = xx != PDS_NA ? 255 : (int)xx;
+	        	//tmp.SetScalarComponentFromDouble(i, j, 0, 0, v);
+        		//tmp.SetScalarComponentFromDouble(i, j, 0, 1, v);
+        		//tmp.SetScalarComponentFromDouble(i, j, 0, 2, v);
+        		//tmp.SetScalarComponentFromDouble(i, j, 0, 3, 255);
         		//System.out.print(xx + " ");
 	        }
 	        //System.out.println();
 	    }
 	
-	    vtkPNGWriter writer = new vtkPNGWriter();
-	    writer.SetFileName("xx.png");
-	    writer.SetInput(tmp);
-	    writer.Write();
+	    //vtkPNGWriter writer = new vtkPNGWriter();
+	    //writer.SetFileName("xx.png");
+	    //writer.SetInput(tmp);
+	    //writer.Write();
 	}
 	
 	public vtkImageData getRawImage()
@@ -351,8 +351,8 @@ public class NearImage
 	    	lut.SetValueRange(0.0, 1.0);
 	    	lut.SetHueRange(0.0, 0.0);
 	    	lut.SetSaturationRange(0.0, 0.0);
-	    	lut.SetNumberOfTableValues(402);
-	    	lut.SetRampToSCurve();
+	    	//lut.SetNumberOfTableValues(402);
+	    	lut.SetRampToLinear();
 	    	lut.Build();
 
 	    	vtkImageMapToColors mapToColors = new vtkImageMapToColors();
@@ -365,10 +365,10 @@ public class NearImage
 	    		displayedImage = new vtkImageData();
 	    	displayedImage.DeepCopy(mapToColors.GetOutput());
 
-		    vtkPNGWriter writer = new vtkPNGWriter();
-		    writer.SetFileName("fit.png");
-		    writer.SetInput(displayedImage);
-		    writer.Write();
+		    //vtkPNGWriter writer = new vtkPNGWriter();
+		    //writer.SetFileName("fit.png");
+		    //writer.SetInput(displayedImage);
+		    //writer.Write();
 
 		}
 	}
