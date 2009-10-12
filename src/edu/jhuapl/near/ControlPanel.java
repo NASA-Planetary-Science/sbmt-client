@@ -216,7 +216,7 @@ public class ControlPanel extends JPanel implements ListSelectionListener, ItemL
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
         modelCheckBox = new JCheckBox();
-        modelCheckBox.setText("Show Model");
+        modelCheckBox.setText("Show Eros");
         modelCheckBox.setSelected(true);
         modelCheckBox.addItemListener(this);
         
