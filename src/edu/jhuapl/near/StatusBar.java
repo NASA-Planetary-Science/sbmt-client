@@ -19,7 +19,7 @@ public class StatusBar extends JPanel
 
 	public void setText(String text)
 	{
-		if (text.isEmpty())
+		if (text.length() == 0)
 			text = " ";
 		label.setText(text);
 	}
