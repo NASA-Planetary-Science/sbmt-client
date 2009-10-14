@@ -30,8 +30,8 @@ public class NearImage
 	private float[][] incidence = new float[IMAGE_HEIGHT][IMAGE_WIDTH];
 	private float[][] emission = new float[IMAGE_HEIGHT][IMAGE_WIDTH];
 	private float[][] phase = new float[IMAGE_HEIGHT][IMAGE_WIDTH];
-	private float[][] lat = new float[IMAGE_HEIGHT][IMAGE_WIDTH];
-	private float[][] lon = new float[IMAGE_HEIGHT][IMAGE_WIDTH];
+	private float[][] latitude = new float[IMAGE_HEIGHT][IMAGE_WIDTH];
+	private float[][] longitude = new float[IMAGE_HEIGHT][IMAGE_WIDTH];
 	private float[][] x = new float[IMAGE_HEIGHT][IMAGE_WIDTH];
 	private float[][] y = new float[IMAGE_HEIGHT][IMAGE_WIDTH];
 	private float[][] z = new float[IMAGE_HEIGHT][IMAGE_WIDTH];
@@ -225,6 +225,8 @@ public class NearImage
 	        	float xx = data[index(i,j,7)];
 	        	float yy = data[index(i,j,8)];
 	        	float zz = data[index(i,j,9)];
+	        	float lat = data[index(i,j,0)];
+	        	float lon = data[index(i,j,1)];
 	        	
 	        	if (xx != PDS_NA && yy != PDS_NA && zz != PDS_NA)
 	        	{
@@ -242,6 +244,8 @@ public class NearImage
 	        	x[j][i] = xx;
 	        	y[j][i] = yy;
 	        	z[j][i] = zz;
+	        	latitude[j][i] = lat;
+	        	longitude[j][i] = lon;
 	        	
 	        	//int v = xx != PDS_NA ? 255 : (int)xx;
 	        	//tmp.SetScalarComponentFromDouble(i, j, 0, 0, v);
@@ -287,28 +291,29 @@ public class NearImage
 		return name;
 	}
 
+	
+	public float getLatitude(int row, int col)
+	{
+		return latitude[row][col];
+	}
+	
+	public float getLongitude(int row, int col)
+	{
+		return longitude[row][col];
+	}
+	
 	/*
-	public float getLatitude(float x, float y)
-	{
-		return 0;
-	}
-	
-	public float getLongitude(float x, float y)
-	{
-		return 0;
-	}
-	
-	public float getPhaseAngle(float x, float y)
+	public float getPhaseAngle(int row, int col)
 	{
 		return 0;
 	}
 
-	public float getEmissionAngle(float x, float y)
+	public float getEmissionAngle(int row, int col)
 	{
 		return 0;
 	}
 
-	public float getIncidenceAngle(float x, float y)
+	public float getIncidenceAngle(int row, int col)
 	{
 		return 0;
 	}
