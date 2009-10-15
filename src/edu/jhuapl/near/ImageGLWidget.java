@@ -354,7 +354,11 @@ class ImageGLWidget extends JPanel implements
 		LineamentModel.Lineament lin = pickLineament(e);
 
 		if (lin != null)
-			statusBar.setText("Lineament " + lin.id + " mapped on MSI image " + lin.name + " contains " + lin.x.size() + " vertices");
+			statusBar.setLeftText("Lineament " + lin.id + " mapped on MSI image " + lin.name + " contains " + lin.x.size() + " vertices");
+
+		LatLon ll = pickEros(e);
+		if (ll != null)
+			statusBar.setRightText("Lineament " + lin.id + " mapped on MSI image " + lin.name + " contains " + lin.x.size() + " vertices");
 	}
 	
 	public void mouseWheelMoved(MouseWheelEvent e)
@@ -398,6 +402,26 @@ class ImageGLWidget extends JPanel implements
 			return this.lineamentModel.getLineament(cellPicker.GetCellId());
 		else
 			return null;
+	}
+
+	private LatLon pickEros(MouseEvent e)
+	{
+		vtkCellPicker cellPicker = new vtkCellPicker();
+		cellPicker.SetTolerance(0.002);
+		int pickSucceeded = cellPicker.Pick(e.getX(), renWin.getIren().GetSize()[1]-e.getY()-1, 0.0, renWin.GetRenderer());
+		if (pickSucceeded != 0/* && cellPicker.GetActor() == this.erosActor*/)
+		{
+			vtkPoints pts = cellPicker.GetPickedPositions();
+			System.out.println(pts.GetNumberOfPoints());
+			for (int i=0;i<cellPicker.GetActors().GetNumberOfItems();++i)
+				System.out.println("--"+(cellPicker.GetActors().GetItemAsObject(i)==this.erosActor));
+			return null;
+		}
+		else
+		{
+			System.out.println(0);
+			return null;
+		}
 	}
 
     public void propertyChange(PropertyChangeEvent e)

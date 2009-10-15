@@ -3,6 +3,8 @@ package edu.jhuapl.near.dbgen;
 import java.io.*;
 import java.util.*;
 
+import vtk.*;
+
 import edu.jhuapl.near.*;
 
 import nom.tam.fits.FitsException;
@@ -94,6 +96,10 @@ public class MSIDatabaseGenerator
 		}
 	}
 
+	void pruneBoundary(ArrayList<LatLon> boundary)
+	{
+		
+	}
 
 	ArrayList<LatLon> getImageBorder(NearImage image)
 	{
@@ -174,6 +180,155 @@ public class MSIDatabaseGenerator
 		
 		return pixels;
 	}
+
+//	void createPolyLineFromLines(vtkPolyData lines)
+//	{
+//		lines.GetLines();
+//		
+//	}
+	
+	ArrayList<LatLon> getImageBorder2(NearImage image)
+	{
+		ArrayList<LatLon> pixels = new ArrayList<LatLon>();
+		
+		// Create a 3d mesh of this image like we do in texture mapping.
+		// Then find the border of this 3d mesh, smooth it, and convert
+		// the vertices to lat-lon.
+		
+		
+		///////////////////////////////////////////////////////////////
+		
+		// First create the mesh
+        vtkPolyData polydata = new vtkPolyData();
+        vtkPoints points = new vtkPoints();
+        vtkCellArray polys = new vtkCellArray();
+        int[][] indices;
+        
+        int c = 0;
+        float x, y, z;
+        int i0, i1, i2, i3;
+        vtkIdList idList = new vtkIdList();
+        idList.SetNumberOfIds(3);
+
+        BoundingBox bb = new BoundingBox();
+
+        //points.SetNumberOfPoints(maxM*maxN);
+        indices = new int[NearImage.IMAGE_HEIGHT][NearImage.IMAGE_WIDTH];
+        
+        // First add points to the vtkPoints array
+        for (int m=0; m<NearImage.IMAGE_HEIGHT; ++m)
+			for (int n=0; n<NearImage.IMAGE_WIDTH; ++n)
+			{
+				x = image.getX(m, n);
+				y = image.getY(m, n);
+				z = image.getZ(m, n);
+		
+				if (isValidPoint(x, y, z))
+				{
+					//points.SetPoint(c, x, y, z);
+					points.InsertNextPoint(x, y, z);
+					
+					indices[m][n] = c;
+
+					bb.update(x, y, z);
+					
+					++c;
+				}
+				else
+				{
+					indices[m][n] = -1;
+				}
+			}
+
+        // Now add connectivity information
+        for (int m=1; m<NearImage.IMAGE_HEIGHT; ++m)
+			for (int n=1; n<NearImage.IMAGE_WIDTH; ++n)
+			{
+				// Get the indices of the 4 corners of the rectangle to the upper left
+				i0 = indices[m-1][n-1];
+				i1 = indices[m][n-1];
+				i2 = indices[m-1][n];
+				i3 = indices[m][n];
+
+				// Add upper left triangle
+				if (i0>=0 && i1>=0 && i2>=0)
+				{
+					idList.SetId(0, i0);
+					idList.SetId(1, i1);
+					idList.SetId(2, i2);
+					polys.InsertNextCell(idList);
+				}
+				// Add bottom right triangle
+				if (i2>=0 && i1>=0 && i3>=0)
+				{
+					idList.SetId(0, i2);
+					idList.SetId(1, i1);
+					idList.SetId(2, i3);
+					polys.InsertNextCell(idList);
+				}
+			}
+
+        // Now map the data to 
+        polydata.SetPoints(points);
+        polydata.SetPolys(polys);
+
+        vtkDecimatePro decimate = new vtkDecimatePro();
+        decimate.SetInput(polydata);
+        decimate.PreserveTopologyOn();
+        decimate.SplittingOff();
+        decimate.BoundaryVertexDeletionOn();
+        decimate.SetMaximumError(1.0e+299);
+        decimate.SetTargetReduction(0.99);
+        decimate.Update();
+        
+        vtkFillHolesFilter fillHoles = new vtkFillHolesFilter();
+        fillHoles.SetInputConnection(decimate.GetOutputPort());
+        fillHoles.SetHoleSize(bb.getLargestSide()/2.0);
+        fillHoles.Update();
+        
+        vtkPolyDataWriter writer1 = new vtkPolyDataWriter();
+        writer1.SetInputConnection(fillHoles.GetOutputPort());
+        writer1.SetFileName("piece1.vtk");
+        writer1.Write();
+        
+        /*
+         * as a test, write out this polydata to a file
+         */
+		
+        /////////////////////////////////////////////////////////////
+        // Next 
+        //vtkExtractEdges edgeExtracter = new vtkExtractEdges();
+        vtkFeatureEdges edgeExtracter = new vtkFeatureEdges();
+        //edgeExtracter.SetInput(polydata);
+        edgeExtracter.SetInputConnection(fillHoles.GetOutputPort());
+        edgeExtracter.BoundaryEdgesOn();
+        edgeExtracter.FeatureEdgesOff();
+        edgeExtracter.NonManifoldEdgesOff();
+        edgeExtracter.ManifoldEdgesOff();
+        edgeExtracter.Update();
+        
+//        //vtkSmoothPolyDataFilter polylineFilter = new vtkSmoothPolyDataFilter();
+//        //vtkWindowedSincPolyDataFilter polylineFilter = new vtkWindowedSincPolyDataFilter();
+//        vtkCleanPolyData polylineFilter = new vtkCleanPolyData();
+//        polylineFilter.SetInputConnection(edgeExtracter.GetOutputPort());
+//        //polylineFilter.FeatureEdgeSmoothingOff();
+//        polylineFilter.Update();
+        
+        vtkPolyData tmp = new vtkPolyData();
+        tmp.DeepCopy(edgeExtracter.GetOutput());
+        tmp.GetCellData().SetScalars(null);
+        
+        vtkPolyDataWriter writer2 = new vtkPolyDataWriter();
+        //writer2.SetInputConnection(edgeExtracter.GetOutputPort());
+        writer2.SetInput(tmp);
+        writer2.SetFileName("boundary1.vtk");
+        writer2.SetFileTypeToBinary();
+        writer2.Write();
+        
+        //System.exit(0);
+        
+		return pixels;
+	}
 	
 	Cell getCellThatIntersectsPoint(double lat, double lon)
 	{
@@ -200,6 +355,14 @@ public class MSIDatabaseGenerator
 		return new ArrayList<Cell>(cellsThatIntersect);
 	}
 	
+    private boolean isValidPoint(float x, float y, float z)
+    {
+    	if (x <= NearImage.PDS_NA || y <= NearImage.PDS_NA || z <= NearImage.PDS_NA)
+    		return false;
+    	else
+    		return true;
+    }
+
     private boolean isValidPixel(float x, float y)
     {
     	if (x <= NearImage.PDS_NA || y <= NearImage.PDS_NA)
@@ -286,6 +449,7 @@ public class MSIDatabaseGenerator
     	else
     		info.iof_cif = 0;
     	
+    	this.getImageBorder2(image);
     	info.boundary = this.getImageBorder(image);
     	
     	info.year = Integer.parseInt(path.substring(1, 5));
@@ -390,7 +554,7 @@ public class MSIDatabaseGenerator
 			}
 			
 			// Now write out the database
-			this.writeDatabase("/home/eli/tmp/msidb");
+			this.writeDatabase("/home/kahneg1/tmp/msidb");
 			
 		} catch (IOException e) {
 			e.printStackTrace();

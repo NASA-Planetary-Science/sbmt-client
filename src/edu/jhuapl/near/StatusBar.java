@@ -6,21 +6,31 @@ import java.awt.*;
 
 public class StatusBar extends JPanel 
 {
-	private JLabel label;
+	private JLabel leftLabel;
+	private JLabel rightLabel;
 	
 	public StatusBar()
 	{
 		setLayout(new BorderLayout());
-		label = new JLabel(" ");
-    	add(label, BorderLayout.CENTER);
+		leftLabel = new JLabel(" ", SwingConstants.LEFT);
+    	add(leftLabel, BorderLayout.CENTER);
+		rightLabel = new JLabel(" ", SwingConstants.RIGHT);
+    	add(rightLabel, BorderLayout.EAST);
 
     	setBorder(new BevelBorder(BevelBorder.LOWERED));
 	}
 
-	public void setText(String text)
+	public void setLeftText(String text)
 	{
 		if (text.length() == 0)
 			text = " ";
-		label.setText(text);
+		leftLabel.setText(text);
+	}
+
+	public void setRightText(String text)
+	{
+		if (text.length() == 0)
+			text = " ";
+		rightLabel.setText(text);
 	}
 }

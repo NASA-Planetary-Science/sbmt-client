@@ -1,6 +1,6 @@
 package edu.jhuapl.near;
 
-class BoundingBoxx 
+public class BoundingBox 
 {
 	public double xmin = Double.MAX_VALUE;
 	public double xmax = -Double.MAX_VALUE;
@@ -25,7 +25,7 @@ class BoundingBoxx
         	zmax = z;
 	}
 	
-	public boolean intersects(BoundingBoxx other)
+	public boolean intersects(BoundingBox other)
 	{
 		if (other.xmax >= xmin && other.xmin <= xmax &&
 			other.ymax >= ymin && other.ymin <= ymax &&
@@ -33,6 +33,11 @@ class BoundingBoxx
 			return true;
 		else
 			return false;
+	}
+	
+	public double getLargestSide()
+	{
+		return Math.max(xmax-xmin, Math.max(ymax-ymin, zmax-zmin));
 	}
 	
 	public String toString()
