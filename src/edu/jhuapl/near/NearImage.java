@@ -47,6 +47,8 @@ public class NearImage
 	private float maxValue;
 	private Range displayedRange = new Range(1,0);
 
+	private String fullpath;
+	
     public static class Range
     {
         public int min;
@@ -105,6 +107,8 @@ public class NearImage
 
 	public NearImage(String filename) throws FitsException, IOException
 	{
+		this.fullpath = filename;
+		
         Fits f = new Fits(filename);
         BasicHDU h = f.getHDU(0);
 
@@ -291,6 +295,10 @@ public class NearImage
 		return name;
 	}
 
+	public String getFullPath()
+	{
+		return fullpath;
+	}
 	
 	public float getLatitude(int row, int col)
 	{

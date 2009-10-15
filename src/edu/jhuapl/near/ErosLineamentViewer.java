@@ -74,79 +74,10 @@ public class ErosLineamentViewer extends JFrame
 //                         tr("(C) 2009 The Johns Hopkins University Applied Physics Laboratory"));
 //    }
 
-    static
-    {
-    	// On windows there are problems finding the dependent libraries,
-    	// so load them all manually. Note they must be loaded in the
-    	// following order
-    	
-    	String name = System.getProperty("os.name");
-    	if (name.toLowerCase().startsWith("windows"))
-    	{
-    		System.loadLibrary("jawt");
-    		System.loadLibrary("vtkzlib");
-    		System.loadLibrary("vtkNetCDF");
-    		System.loadLibrary("vtksys");
-    		System.loadLibrary("vtkalglib");
-    		System.loadLibrary("vtkexoIIc");
-    		System.loadLibrary("vtkexpat");
-    		System.loadLibrary("vtkfreetype");
-    		System.loadLibrary("vtkftgl");
-    		System.loadLibrary("vtkjpeg");
-    		System.loadLibrary("vtklibxml2");
-    		System.loadLibrary("vtkmetaio");
-    		System.loadLibrary("vtkpng");
-    		System.loadLibrary("vtkproj4");
-    		System.loadLibrary("vtktiff");
-    		System.loadLibrary("vtkverdict");
-    		System.loadLibrary("vtkCommon");
-    		System.loadLibrary("vtkCommonJava");
-    		System.loadLibrary("vtkDICOMParser");
-    		System.loadLibrary("vtkFiltering");
-    		System.loadLibrary("vtkFilteringJava");
-    		System.loadLibrary("vtkGraphics");
-    		System.loadLibrary("vtkGraphicsJava");
-    		System.loadLibrary("vtkGenericFiltering");
-    		System.loadLibrary("vtkGenericFilteringJava");
-    		System.loadLibrary("vtkIO");
-    		System.loadLibrary("vtkIOJava");
-    		System.loadLibrary("vtkImaging");
-    		System.loadLibrary("vtkImagingJava");
-    		System.loadLibrary("vtkRendering");
-    		System.loadLibrary("vtkRenderingJava");
-    		System.loadLibrary("vtkHybrid");
-    		System.loadLibrary("vtkHybridJava");
-    		System.loadLibrary("vtkWidgets");
-    		System.loadLibrary("vtkWidgetsJava");
-    		System.loadLibrary("vtkInfovis");
-    		System.loadLibrary("vtkInfovisJava");
-    		System.loadLibrary("vtkViews");
-    		System.loadLibrary("vtkViewsJava");
-    		System.loadLibrary("vtkGeovis");
-    		System.loadLibrary("vtkGeovisJava");
-    		System.loadLibrary("vtkVolumeRendering");
-    		System.loadLibrary("vtkVolumeRenderingJava");
-    	}
-    	else if (name.toLowerCase().startsWith("linux"))
-    	{
-    		System.loadLibrary("vtkCommonJava");
-    		System.loadLibrary("vtkFilteringJava");
-    		System.loadLibrary("vtkGraphicsJava");
-    		System.loadLibrary("vtkGenericFilteringJava");
-    		System.loadLibrary("vtkIOJava");
-    		System.loadLibrary("vtkImagingJava");
-    		System.loadLibrary("vtkRenderingJava");
-    		System.loadLibrary("vtkHybridJava");
-    		System.loadLibrary("vtkWidgetsJava");
-    		System.loadLibrary("vtkInfovisJava");
-    		System.loadLibrary("vtkViewsJava");
-    		System.loadLibrary("vtkGeovisJava");
-    		System.loadLibrary("vtkVolumeRenderingJava");
-    	}
-    }
-
     public static void main(String[] args)
     {
+    	NativeLibraryLoader.loadVtkLibraries();
+    	
         try
         {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
