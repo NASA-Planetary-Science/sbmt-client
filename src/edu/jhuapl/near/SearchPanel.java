@@ -14,8 +14,8 @@ public class SearchPanel extends JPanel implements ActionListener
 {
     private ImageGLWidget viewer;
 
-    private java.util.Date startDate = new DateTime(2005, 1, 1, 0, 0, 0, 0).toDate();
-    private java.util.Date endDate = new DateTime(2010, 1, 1, 0, 0, 0, 0).toDate();
+    private java.util.Date startDate = new DateTime(2000, 1, 11, 0, 0, 0, 0).toDate();
+    private java.util.Date endDate = new DateTime(2001, 2, 13, 0, 0, 0, 0).toDate();
 //    private ShapeBuilderWidget shapePanel;
     private String queryType;
     private JLabel endDateLabel;
@@ -28,7 +28,8 @@ public class SearchPanel extends JPanel implements ActionListener
     private JSpinner startSpinner;
     private JSpinner endSpinner;
     private JSpinner timeIntervalSpinner;
-
+    private JComboBox queryTypeComboBox;
+    
     public SearchPanel(ImageGLWidget viewer) 
     {
         super(new GridBagLayout());
@@ -45,11 +46,16 @@ public class SearchPanel extends JPanel implements ActionListener
                 new CompoundBorder(BorderFactory.createEmptyBorder(9, 9, 9, 9), 
                                    new TitledBorder("Query Editor")));
 
+        String [] options = {"MSI", "NIS", "NLR"};
+        queryTypeComboBox = new JComboBox(options);                                             
+        queryTypeComboBox.setEditable(false);                                                   
+        this.add(queryTypeComboBox, c);                     
+
         JPanel panel = new JPanel();
         this.startDateLabel = new JLabel(START_DATE_LABEL_TEXT);
         panel.add(this.startDateLabel);
         startSpinner = new JSpinner(new SpinnerDateModel(startDate, null, null, Calendar.DAY_OF_MONTH));
-        startSpinner.setEditor(new JSpinner.DateEditor(startSpinner, "dd MMM yyyy"));
+        startSpinner.setEditor(new JSpinner.DateEditor(startSpinner, "yyyy-MMM-dd HH:mm:ss"));
         startSpinner.addChangeListener(new ChangeListener()
             {
                 public void stateChanged(ChangeEvent e)
@@ -68,7 +74,7 @@ public class SearchPanel extends JPanel implements ActionListener
         this.endDateLabel = new JLabel(END_DATE_LABEL_TEXT);
         panel.add(this.endDateLabel);
         endSpinner = new JSpinner(new SpinnerDateModel(endDate, null, null, Calendar.DAY_OF_MONTH));
-        endSpinner.setEditor(new JSpinner.DateEditor(endSpinner, "dd MMM yyyy"));
+        endSpinner.setEditor(new JSpinner.DateEditor(endSpinner, "yyyy-MMM-dd HH:mm:ss"));
         endSpinner.addChangeListener(new ChangeListener()
             {
                 public void stateChanged(ChangeEvent e)
@@ -83,50 +89,6 @@ public class SearchPanel extends JPanel implements ActionListener
         endSpinner.setEnabled(true);
         this.add(panel, c);
 
-        panel = new JPanel();
-        final JLabel timeIntervalLabel = new JLabel("Time Interval (days)");
-        panel.add(timeIntervalLabel);
-        //Spinner timeIntervalSpinner = new JSpinner(new SpinnerNumberModel(this.timeIntervalDays, 0.0, Double.MAX_VALUE, 1.0));
-        timeIntervalSpinner = new JSpinner(new SpinnerNumberModel(this.timeIntervalDays, 0, Integer.MAX_VALUE, 1));
-        timeIntervalSpinner.addChangeListener(new ChangeListener()
-            {
-                public void stateChanged(ChangeEvent e)
-                {
-                	
-                	//Double d = 
-                    //    (Double)((SpinnerNumberModel)timeIntervalSpinner.getModel()).getValue();
-                    Integer d = 
-                        (Integer)((SpinnerNumberModel)timeIntervalSpinner.getModel()).getValue();
-                    if (d != null)
-                    	timeIntervalDays = d;
-                }
-            });
-        panel.add(timeIntervalSpinner);
-        this.add(panel, c);
-        //timeIntervalLabel.setVisible(false);
-        //timeIntervalSpinner.setVisible(false);
-        timeIntervalLabel.setEnabled(false);
-        timeIntervalSpinner.setEnabled(false);
-
-        /*panel = new JPanel();
-        final JLabel radiusLabel = new JLabel("Radius (km)");
-        panel.add(radiusLabel);
-        final JSpinner radiusSpinner = new JSpinner(new SpinnerNumberModel(this.maxSearchRadius, 0.0, Double.MAX_VALUE, 1.0));
-    	radiusSpinner.addChangeListener(new ChangeListener()
-        {
-            public void stateChanged(ChangeEvent e)
-            {
-                Double d = 
-                    (Double)((SpinnerNumberModel)timeIntervalSpinner.getModel()).getValue();
-                if (d != null)
-                	maxSearchRadius = d;
-            }
-        });
-    	radiusSpinner.setPreferredSize(new java.awt.Dimension(80, 20));
-    	panel.add(radiusSpinner);
-    	this.add(panel, c);
-    	radiusSpinner.setEnabled(false);
-    	radiusLabel.setEnabled(false);*/
 
         panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));

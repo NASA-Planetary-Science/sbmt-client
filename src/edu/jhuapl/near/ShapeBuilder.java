@@ -1,46 +1,28 @@
 package edu.jhuapl.near;
 
-import gov.nasa.worldwind.*;
-import gov.nasa.worldwind.event.*;
-import gov.nasa.worldwind.avlist.*;
-import gov.nasa.worldwind.geom.*;
-import gov.nasa.worldwind.layers.*;
-import gov.nasa.worldwind.render.*;
+import vtk.*;
 
 import java.awt.event.*;
-import java.util.*;
 
 /**
  *
  */
-abstract public class ShapeBuilder extends AVListImpl implements MouseListener, 
-														MouseMotionListener, 
-														PositionListener
+abstract public class ShapeBuilder implements MouseListener, MouseMotionListener 
 {
-	private final WorldWindow wwd;
     private boolean armed = false;
-    private final RenderableLayer layer;
     private boolean active = false;
 
+    private vtkPolyData eros;
+    
     /**
      * Construct a new rectangle builder using the specified polyline and layer and drawing events from the specified world
      * window. Either or both the polyline and the layer may be null, in which case the necessary object is created.
      *
      * @param wwd       the world window to draw events from.
      */
-    public ShapeBuilder(final WorldWindow wwd)
+    public ShapeBuilder(vtkPolyData eros)
     {
-        this.wwd = wwd;
-
-        this.layer = new RenderableLayer();
-
-        this.wwd.getModel().getLayers().add(this.layer);
-
-        this.wwd.getInputHandler().addMouseListener(this);
-
-        this.wwd.getInputHandler().addMouseMotionListener(this);
-
-        this.wwd.addPositionListener(this);
+    	this.eros = eros;
     }
 
     public void mousePressed(MouseEvent mouseEvent)
@@ -79,26 +61,12 @@ abstract public class ShapeBuilder extends AVListImpl implements MouseListener,
     {
     }
 
-    public void moved(PositionEvent event)
-    {
-    }
-
-    /**
-     * Returns the layer holding the polyline being created.
-     *
-     * @return the layer containing the polyline.
-     */
-    public RenderableLayer getLayer()
-    {
-        return this.layer;
-    }
-
     /**
      * Returns the layer currently used to display the polyline.
      *
      * @return the layer holding the polyline.
      */
-    abstract public Polyline getPolyline();
+    abstract public vtkPolyData getPolyline();
 
     /**
      * Removes all positions from the polyline.
@@ -145,7 +113,4 @@ abstract public class ShapeBuilder extends AVListImpl implements MouseListener,
     {
         this.active = active;
     }
-
-    abstract public ArrayList<Position> getPositions();
-
 }

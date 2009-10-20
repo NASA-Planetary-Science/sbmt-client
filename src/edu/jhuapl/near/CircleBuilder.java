@@ -1,22 +1,15 @@
 package edu.jhuapl.near;
 
-import gov.nasa.worldwind.*;
-import gov.nasa.worldwind.event.*;
-import gov.nasa.worldwind.geom.*;
-import gov.nasa.worldwind.render.*;
-
 import java.awt.event.MouseEvent;
 import java.util.*;
+import vtk.*;
 
 /**
  *
  */
 public class CircleBuilder extends ShapeBuilder
 {
-    private final WorldWindow wwd;
-    private ArrayList<Position> positions = new ArrayList<Position>();
-    private Polyline circle;
-    protected Position center;
+    private vtkPolyData circle;
     private double radius;
     private CircleCenterValidator validator;
 
@@ -33,9 +26,8 @@ public class CircleBuilder extends ShapeBuilder
      *
      * @param wwd       the world window to draw events from.
      */
-    public CircleBuilder(final WorldWindow wwd)
+    public CircleBuilder(vtkPolyData eros)
     {
-    	this(wwd, null);
     }
 
     public CircleBuilder(final WorldWindow wwd, CircleCenterValidator validator)
@@ -90,14 +82,9 @@ public class CircleBuilder extends ShapeBuilder
      *
      * @return the layer holding the polyline.
      */
-    public Polyline getPolyline()
+    public vtkPolyData getPolyline()
     {
         return this.circle;
-    }
-
-    public ArrayList<Position> getPositions()
-    {
-        return positions;
     }
 
     public Position getCenter()
