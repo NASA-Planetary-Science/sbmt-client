@@ -15,9 +15,10 @@ public class MSIDatabaseGenerator
 	double cellSize = 10.0;
 	Cell[][] cells;
 	
+	/*
 	static class ImageInfo
 	{
-		String path; // E.g. /2000/012/iofdbl/M0123063737F4_2P_IOF_DBL.LBL
+		String name; // E.g. /2000/012/iofdbl/M0123063737F4_2P_IOF_DBL.LBL
 		//double[] scPos;
 		//double[] scDirection;
 		vtkPolyData boundary = null;
@@ -30,7 +31,7 @@ public class MSIDatabaseGenerator
 		
 		public String toString()
 		{
-			String s = path + " ";
+			String s = name + " ";
 			s += year + " ";
 			s += day + " ";
 			s += start_time + " ";
@@ -48,10 +49,19 @@ public class MSIDatabaseGenerator
 			return s;
 		}
 	}
-
+	 */
+	
 	static class Cell
 	{
-		ArrayList<ImageInfo> imageInfos = new ArrayList<ImageInfo>();
+		//ArrayList<ImageInfo> imageInfos = new ArrayList<ImageInfo>();
+		
+		// Images that completely cover this cell
+		ArrayList<String> imagesFull = new ArrayList<String>();
+
+		// Images that are do not completely cover this cell whether or
+		// not they are completely contained in this cell or span multiple cells.
+		ArrayList<String> imagesPartial = new ArrayList<String>();
+
 		int cellId;
 		int row;
 		int col;
@@ -60,6 +70,7 @@ public class MSIDatabaseGenerator
 		double latMax;
 		double lonMax;
 		
+		/*
 		public String toString()
 		{
 			String s = 
@@ -72,8 +83,10 @@ public class MSIDatabaseGenerator
 				"  lonMax: " + lonMax;
 			return s;
 		}
+		*/
 	}
 
+	
 	Cell getCellThatIntersectsPoint(double lat, double lon)
 	{
 		 int row = (int)Math.floor((lat + 90.0) / cellSize);
@@ -81,7 +94,7 @@ public class MSIDatabaseGenerator
 		 return cells[row][col];
 	}
 	
-	ArrayList<Cell> getCellsThatIntersectImage(NearImage image)
+	ArrayList<Cell> getCellsThatIntersectImagePartially(NearImage image)
 	{
 		HashSet<Cell> cellsThatIntersect = new HashSet<Cell>();
 		
@@ -98,6 +111,30 @@ public class MSIDatabaseGenerator
 			}
 		return new ArrayList<Cell>(cellsThatIntersect);
 	}
+
+	ArrayList<Cell> getCellsThatIntersectImageFully(
+			NearImage image, 
+			ArrayList<Cell> partialCells)
+	{
+		HashSet<Cell> cellsThatIntersect = new HashSet<Cell>();
+
+		Iterator<Cell> it = cellsThatIntersect.iterator(); 
+		while(it.hasNext()) 
+		{
+			Cell cell = it.next();
+			
+			int size = (int)(this.cellSize/1.0);
+			for (int i=0; i<size; ++i)
+				for (int j=0; j<size; ++j)
+				{
+					double plat;
+					double plon;
+					PointInPolygon.pointInPolygonGeo(plon, plat, lon, lat)
+				}			
+		}
+		
+		return new ArrayList<Cell>(cellsThatIntersect);
+	}
 	
     private boolean isValidPixel(float x, float y)
     {
@@ -106,37 +143,48 @@ public class MSIDatabaseGenerator
     	else
     		return true;
     }
-
-    ImageInfo getImageInfo(NearImage image, String path) throws IOException
+	
+	void addImageToDataStructure(NearImage image) throws IOException
+	{
+		//ArrayList<Cell> cellsThatIntersect = this.getCellsThatIntersectImage(image);
+		//for (Cell c : cellsThatIntersect)
+		{
+			//c.imageInfos.add(info);
+		}
+	}
+	
+    /*
+    ImageInfo getImageInfo(NearImage image) throws IOException
     {
     	ImageInfo info = new ImageInfo();
 		
-    	info.path = path;
+    	String name = (new File(image.getFullPath())).getName();
+    	info.name = name;
     	
-    	if (path.contains("F1"))
+    	if (name.contains("F1"))
     		info.filter = 1;
-    	else if (path.contains("F2"))
+    	else if (name.contains("F2"))
     		info.filter = 2;
-    	else if (path.contains("F3"))
+    	else if (name.contains("F3"))
     		info.filter = 3;
-    	else if (path.contains("F4"))
+    	else if (name.contains("F4"))
     		info.filter = 4;
-    	else if (path.contains("F5"))
+    	else if (name.contains("F5"))
     		info.filter = 5;
-    	else if (path.contains("F6"))
+    	else if (name.contains("F6"))
     		info.filter = 6;
-    	else if (path.contains("F7"))
+    	else if (name.contains("F7"))
     		info.filter = 7;
 		
-    	if (path.contains("CIF"))
+    	if (name.contains("CIF"))
     		info.iof_cif = 1;
     	else
     		info.iof_cif = 0;
     	
     	info.boundary = image.getImageBorder();
     	
-    	info.year = Integer.parseInt(path.substring(1, 5));
-    	info.day = Integer.parseInt(path.substring(6, 9));
+    	//info.year = Integer.parseInt(path.substring(1, 5));
+    	//info.day = Integer.parseInt(path.substring(6, 9));
     	
     	StringPair startStop = image.getImageStartStopTime();
     	info.start_time = startStop.s1;
@@ -144,7 +192,8 @@ public class MSIDatabaseGenerator
     	
     	return info;
     }
-
+     */
+    /*
     void writeDatabase(String rootDir) throws IOException
     {
     	(new File(rootDir)).mkdirs();
@@ -175,10 +224,10 @@ public class MSIDatabaseGenerator
     		}
     	}
     }
+    */
     
     void writeDatabaseXml(String rootDir) throws IOException
     {
-    	(new File(rootDir)).mkdirs();
 		int rows = (int)(180.0/cellSize);
 		int cols = (int)(360.0/cellSize);
     	for (int i=0; i<rows; ++i)
@@ -188,21 +237,9 @@ public class MSIDatabaseGenerator
     		for (int j=0; j<cols; ++j)
     		{
     			Cell cell = cells[i][j];
-    			ArrayList<ImageInfo> infos = cell.imageInfos;
+    			//ArrayList<ImageInfo> infos = cell.imageInfos;
     			
     			// Create a new file
-    			String filename = currentDir+"/"+j+".txt";
-    			BufferedWriter out = new BufferedWriter(new FileWriter(filename));
-
-				if (infos.size() > 0)
-					System.out.println(filename);
-
-    			for (int k=0; k<infos.size(); ++k)
-    			{
-    				out.write(infos.get(k).toString());
-    				out.write("\n");
-    			}
-				out.close();
     		}
     	}
     }
@@ -249,33 +286,33 @@ public class MSIDatabaseGenerator
 		InputStreamReader isr = new InputStreamReader(fs);
 		BufferedReader in = new BufferedReader(isr);
 
-		
-		String imageBaseDir = "/media/KANGURU2.0/near/data/test";
-		String line;
+		String line = "";
         try 
         {
 			while ((line = in.readLine()) != null)
 			{
-				NearImage image = new NearImage(imageBaseDir+line);
+				NearImage image = new NearImage(line);
 				
-				ImageInfo info = getImageInfo(image, line);
-				
-				ArrayList<Cell> cellsThatIntersect = this.getCellsThatIntersectImage(image);
-				for (Cell c : cellsThatIntersect)
-				{
-					c.imageInfos.add(info);
-				}
+				addImageToDataStructure(image);
 			}
-			
-			// Now write out the database
-			this.writeDatabase("/home/eli/tmp/msidb");
 			
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (FitsException e) {
 			e.printStackTrace();
 		}
-	
+
+		// Now write out the database
+		try 
+		{
+			this.writeDatabaseXml((new File(msiFiles)).getParent() + "/msiSpatialDb.xml");
+		} 
+		catch (IOException e) 
+		{
+			e.printStackTrace();
+		}
+
+
 	}
     
 	/**

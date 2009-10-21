@@ -31,7 +31,7 @@ public class BoundaryGenerator
 		{
 		
 			NearImage image = new NearImage(fitfile);
-			vtkPolyData boundary = image.getImageBorder();
+			vtkPolyData boundary = image.generateImageBorder();
 
 	        String vtkfile = fitfile.substring(0, fitfile.length()-5) + "_BOUNDARY.VTK";
 

@@ -50,7 +50,8 @@ public class NearImage
 	private float maxValue;
 	private Range displayedRange = new Range(1,0);
 
-	private String fullpath;
+	private String fullpath; // The actual path of the image on disk as passed into the constructor	
+	private int filter; // 1 through 7
 	
     public static class Range
     {
@@ -194,6 +195,9 @@ public class NearImage
 		if (k == -1)
 			k = basename.length() - 4;
 
+		// Set the filter name
+		filter = basename.charAt(12);
+		
         if (basename.length() >= 11)
         	name = basename.substring(2,11);
 
@@ -285,6 +289,11 @@ public class NearImage
 	public vtkImageData getRawImage()
 	{
 		return rawImage;
+	}
+	
+	public int getFilter()
+	{
+		return filter;
 	}
 	
 	public vtkImageData getSubImage(int size, int row, int col)
@@ -401,6 +410,18 @@ public class NearImage
 		}
 	}
 
+	public vtkPolyData getImageBorder()
+	{
+    	String filename = getFullPath();
+    	
+    	String lblFilename = filename.substring(0, filename.length()-4) + "_BOUNDARY.vtk";
+
+    	vtkPolyDataReader reader = new vtkPolyDataReader();
+    	reader.SetFileName(lblFilename);
+    	
+	}
+	
+
 	private int index(int i, int j, int k)
 	{
 		return ((k * IMAGE_HEIGHT + j) * IMAGE_WIDTH + i);
@@ -429,8 +450,8 @@ public class NearImage
 	/////////////////////////////////////////////////////////////////
 	// The remaining functions are used in the database generation
 	/////////////////////////////////////////////////////////////////
-	
-	public vtkPolyData getImageBorder()
+
+	public vtkPolyData generateImageBorder()
 	{
 		// First create the mesh
         vtkPolyData polydata = new vtkPolyData();
@@ -796,9 +817,23 @@ public class NearImage
     	
     	return startStop;
     }
-  
 
-    private boolean isValidPoint(float x, float y, float z)
+//    public String getYear()
+//    {
+//    	
+//    }
+//
+//    public String getDayOfYear();
+//    {
+//    	
+//    }
+//    
+//    public int getIofdblOrCifdbl()
+//    {
+//    	
+//    }
+    
+    public boolean isValidPoint(float x, float y, float z)
     {
     	if (x <= NearImage.PDS_NA || y <= NearImage.PDS_NA || z <= NearImage.PDS_NA)
     		return false;
