@@ -1,7 +1,9 @@
 package edu.jhuapl.near.dbgen;
 
 import edu.jhuapl.near.*;
+import edu.jhuapl.near.model.NearImage;
 import edu.jhuapl.near.pair.*;
+import edu.jhuapl.near.util.NativeLibraryLoader;
 
 import java.io.*;
 import java.util.*;
@@ -209,26 +211,34 @@ public class MSITemporalDatabaseGenerator
 		ArrayList<String> imageFailures = new ArrayList<String>();
 		
 		String line = "";
-        try 
-        {
+
+		try 
+		{
 			while ((line = in.readLine()) != null)
 			{
 				System.out.println("\n");
 				System.out.println("Processing image " + count++);
 				System.out.println(line);
-				
-				NearImage image = new NearImage(line);
-				
-				addImageToDataStructure(image);
+
+				try 
+				{
+					NearImage image = new NearImage(line);
+
+					addImageToDataStructure(image);
+				} 
+				catch (Exception e) 
+				{
+					e.printStackTrace();
+					++numberOfFailures;
+					imageFailures.add(line);
+				} 
 			}
-		} 
-        catch (Exception e) 
-        {
-			e.printStackTrace();
-			++numberOfFailures;
-			if (line == null) line = "";
-			imageFailures.add(line);
-		} 
+		}
+		catch (IOException e1) 
+		{
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 
 		// Now write out the database
 		try 
@@ -258,9 +268,9 @@ public class MSITemporalDatabaseGenerator
 	 */
 	public static void main(String[] args) 
 	{
-		NativeLibraryLoader.loadVtkLibraries();
+		NativeLibraryLoader.loadVtkLibrariesLinuxNoX11();
 
-		String msiFiles="/media/KANGURU2.0/near/data/filelist2.txt";// = args[0];
+		String msiFiles = args[0];
 
     	new MSITemporalDatabaseGenerator(msiFiles);
 	}

@@ -6,7 +6,9 @@ import java.util.*;
 import vtk.*;
 
 import edu.jhuapl.near.*;
+import edu.jhuapl.near.model.NearImage;
 import edu.jhuapl.near.pair.*;
+import edu.jhuapl.near.util.NativeLibraryLoader;
 
 import nom.tam.fits.FitsException;
 
@@ -118,6 +120,8 @@ public class MSIDatabaseGenerator
 	{
 		HashSet<Cell> cellsThatIntersect = new HashSet<Cell>();
 
+		//double[] lon = new doubl
+		
 		Iterator<Cell> it = cellsThatIntersect.iterator(); 
 		while(it.hasNext()) 
 		{
@@ -129,7 +133,7 @@ public class MSIDatabaseGenerator
 				{
 					double plat;
 					double plon;
-					PointInPolygon.pointInPolygonGeo(plon, plat, lon, lat)
+					//PointInPolygon.pointInPolygonGeo(plon, plat, lon, lat)
 				}			
 		}
 		
@@ -320,7 +324,7 @@ public class MSIDatabaseGenerator
 	 */
 	public static void main(String[] args) 
 	{
-		NativeLibraryLoader.loadVtkLibraries();
+		NativeLibraryLoader.loadVtkLibrariesLinuxNoX11();
 
 		String msiFiles="/media/KANGURU2.0/near/data/filelist.txt";// = args[0];
 

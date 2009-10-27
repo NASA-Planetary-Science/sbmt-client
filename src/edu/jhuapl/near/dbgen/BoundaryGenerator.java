@@ -1,11 +1,10 @@
 package edu.jhuapl.near.dbgen;
 
-import java.io.*;
-
-import nom.tam.fits.FitsException;
 import vtk.*;
 
 import edu.jhuapl.near.*;
+import edu.jhuapl.near.model.NearImage;
+import edu.jhuapl.near.util.NativeLibraryLoader;
 
 public class BoundaryGenerator 
 {
@@ -17,23 +16,30 @@ public class BoundaryGenerator
 	 */
 	public static void main(String[] args) 
 	{
-		NativeLibraryLoader.loadVtkLibraries();
+		NativeLibraryLoader.loadVtkLibrariesLinuxNoX11();
 
 		String fitfile = args[0];
 		
 		if (!fitfile.toLowerCase().endsWith(".fit"))
 		{
 			System.err.println("The specified file does not have the right extension.");
-			System.exit(1);
+			System.exit(0);
 		}
 		
 		try 
 		{
 		
 			NearImage image = new NearImage(fitfile);
+			
 			vtkPolyData boundary = image.generateImageBorder();
 
-	        String vtkfile = fitfile.substring(0, fitfile.length()-5) + "_BOUNDARY.VTK";
+			if (boundary == null)
+			{
+				System.err.println("Error: Boundary generation failed");
+				System.exit(0);
+			}
+			
+	        String vtkfile = fitfile.substring(0, fitfile.length()-4) + "_BOUNDARY.VTK";
 
 	        vtkPolyDataWriter writer = new vtkPolyDataWriter();
 	        writer.SetInput(boundary);
@@ -41,11 +47,9 @@ public class BoundaryGenerator
 	        writer.SetFileTypeToBinary();
 	        writer.Write();
 				
-		} catch (FitsException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
+		}
+		catch (Exception e) 
+		{
 			e.printStackTrace();
 		}
 

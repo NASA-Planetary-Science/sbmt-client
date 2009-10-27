@@ -1,6 +1,14 @@
 package edu.jhuapl.near;
 
 import javax.swing.*;
+
+import edu.jhuapl.near.gui.ControlPanel;
+import edu.jhuapl.near.gui.FileMenu;
+import edu.jhuapl.near.gui.ImageGLWidget;
+import edu.jhuapl.near.gui.StatusBar;
+import edu.jhuapl.near.model.LineamentModel;
+import edu.jhuapl.near.util.NativeLibraryLoader;
+
 import java.awt.*;
 
 public class ErosLineamentViewer extends JFrame 
