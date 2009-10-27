@@ -80,6 +80,22 @@
         </jar>
     </target>
 
+    <target name="nativemac32vtkjar">
+        <mkdir dir="${rootdir}/build/jar"/>
+        <jar destfile="${rootdir}/build/jar/vtk-natives-macosx-universal.jar" basedir="${rootdir}/lib/mac32">
+           <manifest>
+           </manifest>
+        </jar>
+    </target>
+
+    <target name="nativemac64vtkjar">
+        <mkdir dir="${rootdir}/build/jar"/>
+        <jar destfile="${rootdir}/build/jar/vtk-natives-macosx-x86_64.jar" basedir="${rootdir}/lib/mac64">
+           <manifest>
+           </manifest>
+        </jar>
+    </target>
+
     <!--
 
     The next target assumes that you have file named "keystore" in
@@ -130,10 +146,34 @@
             storepass="${keypass}"/>
     </target>
 
+    <target name="signnativemac32vtkjar" depends="nativemac32vtkjar">
+        <input message="Please enter keystore password:"
+            addproperty="keypass" />
+        <signjar jar="${rootdir}/build/jar/vtk-natives-macosx-universal.jar"
+            keystore="${rootdir}/keystore" alias="mykey"
+            storepass="${keypass}"/>
+    </target>
+
+    <target name="signnativemac64vtkjar" depends="nativemac64vtkjar">
+        <input message="Please enter keystore password:"
+            addproperty="keypass" />
+        <signjar jar="${rootdir}/build/jar/vtk-natives-macosx-x86_64.jar"
+            keystore="${rootdir}/keystore" alias="mykey"
+            storepass="${keypass}"/>
+    </target>
+
     <target name="signjidejar">
         <input message="Please enter keystore password:"
             addproperty="keypass" />
         <signjar jar="${rootdir}/lib/jide-oss-2.7.3.jar"
+            keystore="${rootdir}/keystore" alias="mykey"
+            storepass="${keypass}"/>
+    </target>
+
+    <target name="signjodatimejar">
+        <input message="Please enter keystore password:"
+            addproperty="keypass" />
+        <signjar jar="${rootdir}/lib/joda-time-1.6.jar"
             keystore="${rootdir}/keystore" alias="mykey"
             storepass="${keypass}"/>
     </target>
