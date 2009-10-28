@@ -1,10 +1,6 @@
 package edu.jhuapl.near.gui;
 
 import javax.swing.*;
-
-
-import java.awt.*;
-import java.awt.*;
 import java.awt.event.*;
 
 public class LineamentControlPanel extends JPanel implements ItemListener
@@ -14,7 +10,6 @@ public class LineamentControlPanel extends JPanel implements ItemListener
 
     public LineamentControlPanel(ImageGLWidget viewer) 
     {
-		super(new BorderLayout());
 		this.viewer = viewer;
 
         LineamentRadialOffsetChanger radialChanger = new LineamentRadialOffsetChanger(viewer.getLineamentModel());
@@ -33,7 +28,7 @@ public class LineamentControlPanel extends JPanel implements ItemListener
         pane.add(radialChanger);
 
    
-        add(pane, BorderLayout.CENTER);
+        add(pane);
 	}
 
 	public void itemStateChanged(ItemEvent e) 

@@ -2,13 +2,12 @@ package edu.jhuapl.near.model;
 
 import java.io.*;
 import java.util.*;
-import java.beans.*;
 
 import edu.jhuapl.near.util.Properties;
 
 import vtk.*;
 
-public class LineamentModel 
+public class LineamentModel extends Model 
 {
 	private HashMap<Integer, Lineament> idToLineamentMap = new HashMap<Integer, Lineament>();
 	private HashMap<Integer, Lineament> cellIdToLineamentMap = new HashMap<Integer, Lineament>();
@@ -28,12 +27,6 @@ public class LineamentModel
 		public ArrayList<Double> z = new ArrayList<Double>();
 		//public BoundingBox bb = new BoundingBox();
 	}
-
-	private final PropertyChangeSupport pcs = new PropertyChangeSupport( this );
-    public void addPropertyChangeListener( PropertyChangeListener listener )
-    { this.pcs.addPropertyChangeListener( listener ); }
-    public void removePropertyChangeListener( PropertyChangeListener listener )
-    { this.pcs.removePropertyChangeListener( listener ); }
 
 	public LineamentModel()
 	{

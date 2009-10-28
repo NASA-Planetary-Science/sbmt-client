@@ -1,9 +1,10 @@
 package edu.jhuapl.near.gui;
 
+
 import javax.swing.*;
 import javax.swing.event.*;
-
 import edu.jhuapl.near.model.LineamentModel;
+
 
 public class LineamentRadialOffsetChanger extends JPanel implements ChangeListener
 {
@@ -16,7 +17,6 @@ public class LineamentRadialOffsetChanger extends JPanel implements ChangeListen
 		this.model = model;
 		setBorder(BorderFactory.createTitledBorder("Lineament Radial Offset"));
 
-		//this.setPreferredSize(new Dimension(300,300));
 		slider = new JSlider(0, 30, 15);
 		slider.setPaintTicks(true);
 		slider.setMajorTickSpacing(5);

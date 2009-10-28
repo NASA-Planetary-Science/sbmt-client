@@ -33,24 +33,28 @@ public class SearchPanel extends JPanel implements ActionListener
     
     public SearchPanel(ImageGLWidget viewer) 
     {
-        super(new GridBagLayout());
+        //super(new GridBagLayout());
+    	JPanel pane = new JPanel();
+    	pane.setLayout(new BoxLayout(pane,
+        		BoxLayout.PAGE_AXIS));
+
 		this.viewer = viewer;
 
 
-    	GridBagConstraints c = new GridBagConstraints();
-        c.gridwidth = GridBagConstraints.REMAINDER;
-    	c.fill = GridBagConstraints.BOTH;
-    	c.weightx = 1.0;
-    	c.weighty = 1.0;
+    	//GridBagConstraints c = new GridBagConstraints();
+        //c.gridwidth = GridBagConstraints.REMAINDER;
+    	//c.fill = GridBagConstraints.BOTH;
+    	//c.weightx = 1.0;
+    	//c.weighty = 1.0;
 
-        this.setBorder(
+        pane.setBorder(
                 new CompoundBorder(BorderFactory.createEmptyBorder(9, 9, 9, 9), 
                                    new TitledBorder("Query Editor")));
 
         String [] options = {"MSI", "NIS", "NLR"};
         queryTypeComboBox = new JComboBox(options);                                             
         queryTypeComboBox.setEditable(false);                                                   
-        this.add(queryTypeComboBox, c);                     
+        pane.add(queryTypeComboBox);//, c);                     
 
         JPanel panel = new JPanel();
         this.startDateLabel = new JLabel(START_DATE_LABEL_TEXT);
@@ -69,7 +73,7 @@ public class SearchPanel extends JPanel implements ActionListener
             });
         panel.add(startSpinner);
         startSpinner.setEnabled(true);
-        this.add(panel, c);
+        pane.add(panel);//, c);
 
         panel = new JPanel();
         this.endDateLabel = new JLabel(END_DATE_LABEL_TEXT);
@@ -88,17 +92,17 @@ public class SearchPanel extends JPanel implements ActionListener
             });
         panel.add(endSpinner);
         endSpinner.setEnabled(true);
-        this.add(panel, c);
+        pane.add(panel);//, c);
 
 
-        panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
-        JLabel label = new JLabel("Select Region:");
-        panel.add(label);
+        //panel = new JPanel();
+        //panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
+        //JLabel label = new JLabel("Select Region:");
+        //panel.add(label);
 
         //this.shapePanel = new ShapeBuilderWidget(wwd, this);
         //panel.add(this.shapePanel);
-        this.add(panel, c);
+        //pane.add(panel);//, c);
 
         panel = new JPanel();
         panel.setBorder(BorderFactory.createEmptyBorder(9, 9, 9, 9));
@@ -107,7 +111,9 @@ public class SearchPanel extends JPanel implements ActionListener
         submitButton.addActionListener(this);
 
         panel.add(submitButton);
-        this.add(panel, c);
+        pane.add(panel);//, c);
+        
+        this.add(pane);
     }
 
     public void actionPerformed(ActionEvent actionEvent)
