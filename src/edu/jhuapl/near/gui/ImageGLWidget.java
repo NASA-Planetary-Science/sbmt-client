@@ -38,7 +38,7 @@ public class ImageGLWidget extends JPanel implements
     
     private HashMap<File, NearImage> fileToImageMap = new HashMap<File, NearImage>();
     
-    private PopupMenu popupMenu;
+    private LineamentPopupMenu popupMenu;
     
     public ImageGLWidget(LineamentModel model, StatusBar statusBar) 
     {
@@ -53,7 +53,7 @@ public class ImageGLWidget extends JPanel implements
 
         lineamentModel.addPropertyChangeListener(this);
         
-        popupMenu = new PopupMenu(model);
+        popupMenu = new LineamentPopupMenu(model);
         
     	vtkPolyDataReader erosReader = new vtkPolyDataReader();
         File file = ConvertToRealFile.convertResource(this, "/edu/jhuapl/near/data/Eros_Dec2006_0.vtk");
@@ -90,7 +90,41 @@ public class ImageGLWidget extends JPanel implements
         renWin.addMouseMotionListener(this);
         renWin.addMouseWheelListener(this);
     }
-    
+
+    public void addActor(vtkActor actor)
+    {
+		if (renWin.GetRenderer().HasViewProp(actor) == 0)
+			renWin.GetRenderer().AddActor(actor);
+    	renWin.Render();
+    }
+
+    public void addActors(ArrayList<vtkActor> actors)
+    {
+    	for (vtkActor act : actors)
+    	{
+    		if (renWin.GetRenderer().HasViewProp(act) == 0)
+    			renWin.GetRenderer().AddActor(act);
+    	}
+    	renWin.Render();
+    }
+
+    public void removeActor(vtkActor actor)
+    {
+		if (renWin.GetRenderer().HasViewProp(actor) > 0)
+			renWin.GetRenderer().RemoveActor(actor);
+    	renWin.Render();
+    }
+
+    public void removeActors(ArrayList<vtkActor> actors)
+    {
+    	for (vtkActor act : actors)
+    	{
+    		if (renWin.GetRenderer().HasViewProp(act) > 0)
+    			renWin.GetRenderer().RemoveActor(act);
+    	}
+    	renWin.Render();
+    }
+
     public void showModel(boolean show)
     {
     	if (show)
@@ -172,10 +206,10 @@ public class ImageGLWidget extends JPanel implements
     	fileToImageMap.remove(file);
     }
     
-    public NearImage getImage(File file)
-    {
-    	return fileToImageMap.get(file);
-    }
+//    public NearImage getImage(File file)
+//    {
+//    	return fileToImageMap.get(file);
+//    }
     
     public vtkRenderWindowPanel getRenderWindowPanel()
     {
@@ -318,4 +352,4 @@ public class ImageGLWidget extends JPanel implements
     {
     	return lineamentModel;
     }
-    }
+}

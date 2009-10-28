@@ -30,7 +30,7 @@ public class ControlPanel extends JTabbedPane
 		
 		addTab("Search", searchPanel);
 		addTab("Eros", erosPanel);
-		addTab("MSI", msiPanel);
+		//addTab("MSI", msiPanel);
 		addTab("Lineament", lineamentPanel);
 	}
 }

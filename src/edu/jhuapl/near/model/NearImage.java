@@ -22,15 +22,19 @@ import edu.jhuapl.near.util.BoundingBox;
  */
 public class NearImage 
 {
-	private vtkImageData rawImage;
-	private vtkImageData displayedImage;
 	
 	public static final int IMAGE_WIDTH = 537;
 	public static final int IMAGE_HEIGHT = 412;
 	public static final int NUM_LAYERS = 14;
-    private static final int TEXTURE_SIZE = 128;
+    public static final int TEXTURE_SIZE = 128;
+    public static final float PDS_NA = -1.e32f;
+    public static String START_TIME = "START_TIME";
+    public static String STOP_TIME = "STOP_TIME";
+    public static String TARGET_CENTER_DISTANCE = "TARGET_CENTER_DISTANCE";
+    public static String HORIZONTAL_PIXEL_SCALE = "HORIZONTAL_PIXEL_SCALE";
 
-	public static final float PDS_NA = -1.e32f;
+	private vtkImageData rawImage;
+	private vtkImageData displayedImage;
 	
 	private float[][] incidence = new float[IMAGE_HEIGHT][IMAGE_WIDTH];
 	private float[][] emission = new float[IMAGE_HEIGHT][IMAGE_WIDTH];
@@ -55,7 +59,7 @@ public class NearImage
 	private String fullpath; // The actual path of the image on disk as passed into the constructor	
 	private int filter; // 1 through 7
 	
-    public static class Range
+	public static class Range
     {
         public int min;
         public int max;
@@ -226,13 +230,13 @@ public class NearImage
 		}
 		BufferedInputStream bs = new BufferedInputStream(is);
 		DataInputStream in = new DataInputStream(bs);
-						
 		
 		for (int i=0;i<data.length; ++i)
 		{
 			data[i] = swap(in.readFloat());
 		}
 
+		in.close();
 		
         //vtkImageData tmp = new vtkImageData();
         //tmp.SetScalarTypeToUnsignedChar();
@@ -926,9 +930,6 @@ public class NearImage
     {
     	// Parse through the lbl file till we find the strings "START_TIME"                                                                 
     	// and "STOP_TIME"
-    	String START_TIME = "START_TIME";
-    	String STOP_TIME = "STOP_TIME";
-    	
     	StringPair startStop = new StringPair();
     	String filename = getFullPath();
     	
@@ -970,15 +971,14 @@ public class NearImage
 		    	break;
 		}
 		
-    	
+    	in.close();
+		
     	return startStop;
     }
 
     public double getSpaceCraftDistance() throws IOException
     {
     	// Parse through the lbl file till we find the strings "TARGET_CENTER_DISTANCE"                                                                 
-    	String TARGET_CENTER_DISTANCE = "TARGET_CENTER_DISTANCE";
-
     	String filename = getFullPath();
     	
     	String lblFilename = filename.substring(0, filename.length()-4) + ".LBL";
@@ -1007,7 +1007,68 @@ public class NearImage
 		    }
 		}
     	
+		in.close();
+		
     	return Double.MAX_VALUE;
+    }
+
+    static public HashMap<String, String> parseLblFile(String lblFilename) throws IOException
+    {
+    	HashMap<String, String> imageProperties = new HashMap<String, String>();
+    	
+    	// Parse through the lbl file till we find the relevant strings
+    	
+		FileInputStream fs = null;
+		try {
+			fs = new FileInputStream(lblFilename);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		InputStreamReader isr = new InputStreamReader(fs);
+		BufferedReader in = new BufferedReader(isr);
+
+		String str;
+		while ((str = in.readLine()) != null)
+		{
+		    StringTokenizer st = new StringTokenizer(str);
+		    while (st.hasMoreTokens()) 
+		    {
+		    	String token = st.nextToken();
+		    	if (START_TIME.equals(token))
+		    	{
+		    		st.nextToken();
+		    		imageProperties.put(token, st.nextToken());
+		    	}
+		    	if (STOP_TIME.equals(token))
+		    	{
+		    		st.nextToken();
+		    		imageProperties.put(token, st.nextToken());
+		    	}
+		    	if (TARGET_CENTER_DISTANCE.equals(token))
+		    	{
+		    		st.nextToken();
+		    		imageProperties.put(token, st.nextToken());
+		    	}
+		    	if (HORIZONTAL_PIXEL_SCALE.equals(token))
+		    	{
+		    		st.nextToken();
+		    		imageProperties.put(token, st.nextToken());
+		    	}
+		    }
+		}
+
+		in.close();
+		
+    	return imageProperties;
+    }
+    
+    public HashMap<String, String> parseLblFile() throws IOException
+    {
+    	String filename = getFullPath();
+    	
+    	String lblFilename = filename.substring(0, filename.length()-4) + ".LBL";
+
+    	return parseLblFile(lblFilename);
     }
 
 

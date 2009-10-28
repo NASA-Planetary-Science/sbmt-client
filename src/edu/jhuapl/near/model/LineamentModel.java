@@ -92,6 +92,7 @@ public class LineamentModel extends Model
             //lin.bb.update(x, y, z);
         }
 
+        in.close();
 	}
 	
 	/*

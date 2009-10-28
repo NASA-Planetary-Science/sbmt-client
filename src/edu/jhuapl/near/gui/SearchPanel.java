@@ -5,10 +5,11 @@ import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.border.*;
 
-import java.awt.*;
 import java.awt.event.*;
 
 import org.joda.time.*;
+
+import edu.jhuapl.near.database.MSIDatabase;
 
 
 public class SearchPanel extends JPanel implements ActionListener 
@@ -18,19 +19,15 @@ public class SearchPanel extends JPanel implements ActionListener
     private java.util.Date startDate = new DateTime(2000, 1, 11, 0, 0, 0, 0).toDate();
     private java.util.Date endDate = new DateTime(2001, 2, 13, 0, 0, 0, 0).toDate();
 //    private ShapeBuilderWidget shapePanel;
-    private String queryType;
     private JLabel endDateLabel;
     private JLabel startDateLabel;
     private static final String START_DATE_LABEL_TEXT = "Start Date";
     private static final String END_DATE_LABEL_TEXT = "End Date:";
-    //private double timeIntervalDays = 60.0;
-    private int timeIntervalDays = 60;
-    private double maxSearchRadius = 1.0; // used only for queries searching for ieds near caches and vice versa
     private JSpinner startSpinner;
     private JSpinner endSpinner;
-    private JSpinner timeIntervalSpinner;
     private JComboBox queryTypeComboBox;
-    
+    private SearchResultsPanel resultsPanel;
+
     public SearchPanel(ImageGLWidget viewer) 
     {
         //super(new GridBagLayout());
@@ -114,12 +111,20 @@ public class SearchPanel extends JPanel implements ActionListener
         pane.add(panel);//, c);
         
         this.add(pane);
+
+        resultsPanel = new SearchResultsPanel();
+        
+        add(resultsPanel);
+
     }
 
     public void actionPerformed(ActionEvent actionEvent)
     {
         try
         {
+        	ArrayList<String> results = MSIDatabase.getInstance().runQuery(new LocalDateTime(startDate), new LocalDateTime(endDate));
+        	
+        	resultsPanel.setResults(results);
         }
         catch (Exception e) 
         { 

@@ -10,54 +10,15 @@ import java.util.*;
 
 public class MSITemporalDatabaseGeneratorTxt 
 {
-	/*
-	static class Images
-	{
-		//int iof_or_cif; // 0 for iofdbl, 1 for cifdbl
-		//String suffix;
-		//String prefix;
-		ArrayList<String> names = new ArrayList<String>();
-		ArrayList<String> startTimes = new ArrayList<String>();
-		ArrayList<String> stopTimes = new ArrayList<String>();
-//		Images(int iof_or_cif)
-//		{
-//			this.iof_or_cif = iof_or_cif;
-//			this.prefix = "M0";
-//			if (iof_or_cif == 0)
-//			{
-//				this.suffix = "_2P_IOF_DBL.FIT";
-//			}
-//			else
-//			{
-//				this.suffix = "_2P_CIF_DBL.FIT";
-//			}
-//		}
-	}
 	
-	static class Day
-	{
-		String dayOfYear;
-		Images iofdbl = new Images();
-		Images cifdbl = new Images();
-	}
-	
-	static class Year
-	{
-		TreeMap<String, Day> daysOfYear = new TreeMap<String, Day>();
-		String year;
-	}
-
-	TreeMap<String, Year> years = new TreeMap<String, Year>();
-	*/
-	
-	void addImageToDataStructure(NearImage image, BufferedWriter out) throws IOException
+	void addImageToDataStructure(String filename, BufferedWriter out) throws IOException
 	{
 		int iof_or_cif = -1;
 		String dayOfYearStr = "";
 		String yearStr = "";
 		
-		String fullpath = image.getFullPath();
-        File origFile = new File(fullpath);
+		//String fullpath = image.getFullPath();
+        File origFile = new File(filename);
         File f = origFile;
         
         f = f.getParentFile();
@@ -76,30 +37,8 @@ public class MSITemporalDatabaseGeneratorTxt
         System.out.println("dayofyear: " + dayOfYearStr);
         System.out.println("iof_or_cif: " + iof_or_cif);
         
-//        if (!years.containsKey(yearStr))
-//        	years.put(yearStr, new Year());
-        
-//        Year year = years.get(yearStr);
-//        year.year = yearStr;
-        
-//        if (!year.daysOfYear.containsKey(dayOfYearStr))
-//        	year.daysOfYear.put(dayOfYearStr, new Day());
-        
-//        Day dayOfYear = year.daysOfYear.get(dayOfYearStr);
-//        dayOfYear.dayOfYear = dayOfYearStr;
-    	StringPair startStopTimes = image.getImageStartStopTime();
-//        if (iof_or_cif == 0)
-//        {
-//        	dayOfYear.iofdbl.names.add(origFile.getName().substring(0, 13));
-//        	dayOfYear.iofdbl.startTimes.add(startStopTimes.s1);
-//        	dayOfYear.iofdbl.stopTimes.add(startStopTimes.s2);
-//        }
-//        else if (iof_or_cif == 1)
-//        {
-//        	dayOfYear.cifdbl.names.add(origFile.getName().substring(0, 13));
-//        	dayOfYear.cifdbl.startTimes.add(startStopTimes.s1);
-//        	dayOfYear.cifdbl.stopTimes.add(startStopTimes.s2);
-//        }
+    	String lblFilename = filename.substring(0, filename.length()-4) + ".LBL";
+    	HashMap<String, String> properties = NearImage.parseLblFile(lblFilename);
         
         out.write(
         		origFile.getName().substring(2, 11) + "\t" +
@@ -107,9 +46,10 @@ public class MSITemporalDatabaseGeneratorTxt
         		dayOfYearStr + "\t" +
         		(iof_or_cif==0 ? "iofdbl" : "cifdbl") + "\t" +
         		origFile.getName().substring(12, 13) + "\t" +
-        		startStopTimes.s1 + "\t" +
-        		startStopTimes.s2 + "\t" +
-        		image.getSpaceCraftDistance() + "\n"
+        		properties.get(NearImage.START_TIME) + "\t" +
+        		properties.get(NearImage.STOP_TIME) + "\t" +
+        		properties.get(NearImage.TARGET_CENTER_DISTANCE) + "\t" +
+        		properties.get(NearImage.HORIZONTAL_PIXEL_SCALE) + "\n"
         		);
 	}
     
@@ -144,9 +84,9 @@ public class MSITemporalDatabaseGeneratorTxt
 
 				try 
 				{
-					NearImage image = new NearImage(line);
+					//NearImage image = new NearImage(line);
 
-					addImageToDataStructure(image, out);
+					addImageToDataStructure(line, out);
 				} 
 				catch (Exception e) 
 				{
@@ -163,16 +103,6 @@ public class MSITemporalDatabaseGeneratorTxt
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-
-		// Now write out the database
-//		try 
-//		{
-//			this.writeDatabaseXml((new File(msiFiles)).getParent() + "/msiTemporalDb.xml");
-//		} 
-//		catch (IOException e) 
-//		{
-//			e.printStackTrace();
-//		}
 
 		System.out.println("\n\n\n");
         System.out.println("Warning: " + numberOfFailures + " images could not be processed");
@@ -194,8 +124,8 @@ public class MSITemporalDatabaseGeneratorTxt
 	{
 		NativeLibraryLoader.loadVtkLibrariesLinuxNoX11();
 		
-		String msiFiles="/media/KANGURU2.0/near/data/filelist2.txt";
-		//String msiFiles = args[0];
+		//String msiFiles="/media/KANGURU2.0/near/data/filelist2.txt";
+		String msiFiles = args[0];
 
     	new MSITemporalDatabaseGeneratorTxt(msiFiles);
 	}
