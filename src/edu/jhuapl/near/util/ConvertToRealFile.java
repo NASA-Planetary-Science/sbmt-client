@@ -1,7 +1,6 @@
 package edu.jhuapl.near.util;
 
 import java.io.*;
-import java.net.*;
 
 public class ConvertToRealFile 
 {
@@ -23,36 +22,9 @@ public class ConvertToRealFile
 			{
 				os.write(buff, 0, len);
 			}
-		} 
-		catch (IOException e) 
-		{
-			temp = null;
-			e.printStackTrace();
-		}
-		
-		return temp;
-	}
-	
-	public static File convertURL(Object o, String url)
-	{
-		File temp = null;
-		try 
-		{
-			URL u = new URL(url);
-					
-			temp = File.createTempFile("resource", ".vtk");
-			temp.deleteOnExit();
 			
-			InputStream is = u.openStream();
-
-			FileOutputStream os = new FileOutputStream(temp);
-
-			byte[] buff = new byte[1024];
-			int len;
-			while((len = is.read(buff)) > 0)
-			{
-				os.write(buff, 0, len);
-			}
+			os.close();
+			is.close();
 		} 
 		catch (IOException e) 
 		{
@@ -62,5 +34,4 @@ public class ConvertToRealFile
 		
 		return temp;
 	}
-	
 }
