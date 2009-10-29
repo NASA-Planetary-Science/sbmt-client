@@ -2,6 +2,9 @@ package edu.jhuapl.near.model;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.util.ArrayList;
+
+import vtk.vtkActor;
 
 public abstract class Model 
 {
@@ -10,4 +13,6 @@ public abstract class Model
     { this.pcs.addPropertyChangeListener( listener ); }
     public void removePropertyChangeListener( PropertyChangeListener listener )
     { this.pcs.removePropertyChangeListener( listener ); }
+    
+    public abstract ArrayList<vtkActor> getActors();
 }

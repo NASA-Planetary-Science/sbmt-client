@@ -12,6 +12,8 @@ public class LineamentModel extends Model
 	private HashMap<Integer, Lineament> idToLineamentMap = new HashMap<Integer, Lineament>();
 	private HashMap<Integer, Lineament> cellIdToLineamentMap = new HashMap<Integer, Lineament>();
 	private vtkPolyData lineaments;
+    private ArrayList<vtkActor> lineamentActors = new ArrayList<vtkActor>();
+    private vtkActor lineamentActor;
 	private int[] defaultColor = {255, 0, 255, 255}; // RGBA, default to purple
 	
 	public static class Lineament
@@ -30,8 +32,23 @@ public class LineamentModel extends Model
 
 	public LineamentModel()
 	{
-		try {
+		try 
+		{
 			loadModel();
+
+			createPolyData();
+			
+	        vtkPolyDataMapper lineamentMapper = new vtkPolyDataMapper();
+	        lineamentMapper.SetInput(lineaments);
+	        //lineamentMapper.SetResolveCoincidentTopologyToPolygonOffset();
+	        //lineamentMapper.SetResolveCoincidentTopologyPolygonOffsetParameters(-1000.0, -1000.0);
+	        
+	        lineamentActor = new vtkActor();
+	        lineamentActor.SetMapper(lineamentMapper);
+	        
+	        // By default do not show the lineaments
+	        //lineamentActors.add(lineamentActor);
+
 		} catch (NumberFormatException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -218,5 +235,31 @@ public class LineamentModel extends Model
 
 		lineaments.Modified();
 		this.pcs.firePropertyChange(Properties.LINEAMENT_MODEL_CHANGED, null, null);
+	}
+
+	public void setShowLineaments(boolean show)
+	{
+		if (show)
+		{
+			if (lineamentActors.isEmpty())
+			{
+				lineamentActors.add(lineamentActor);
+				this.pcs.firePropertyChange(Properties.LINEAMENT_MODEL_CHANGED, null, null);
+			}
+		}
+		else
+		{
+			if (!lineamentActors.isEmpty())
+			{
+				lineamentActors.clear();
+				this.pcs.firePropertyChange(Properties.LINEAMENT_MODEL_CHANGED, null, null);
+			}
+		}
+		
+	}
+	
+	public ArrayList<vtkActor> getActors() 
+	{
+		return lineamentActors;
 	}
 }

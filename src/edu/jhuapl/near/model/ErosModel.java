@@ -1,6 +1,7 @@
 package edu.jhuapl.near.model;
 
 import java.io.File;
+import java.util.ArrayList;
 
 import vtk.vtkActor;
 import vtk.vtkPolyDataMapper;
@@ -12,7 +13,7 @@ public class ErosModel extends Model
 {
     private vtkActor erosActor;
     private boolean showLighting = true;
-    //private boolean showWireframe = false;
+    private ArrayList<vtkActor> erosActors = new ArrayList<vtkActor>();
     
 	public ErosModel()
 	{
@@ -28,6 +29,28 @@ public class ErosModel extends Model
         //erosActor.GetProperty().SetRepresentationToWireframe();
         erosActor.SetMapper(erosMapper);
 
+        erosActors.add(erosActor);
+	}
+	
+	public void setShowEros(boolean show)
+	{
+		if (show)
+		{
+			if (erosActors.isEmpty())
+			{
+				erosActors.add(erosActor);
+				this.pcs.firePropertyChange(Properties.EROS_MODEL_CHANGED, null, null);
+			}
+		}
+		else
+		{
+			if (!erosActors.isEmpty())
+			{
+				erosActors.clear();
+				this.pcs.firePropertyChange(Properties.EROS_MODEL_CHANGED, null, null);
+			}
+		}
+		
 	}
 	
 	public void setShowLighting(boolean lighting)
@@ -35,6 +58,11 @@ public class ErosModel extends Model
 		this.showLighting = lighting;
 		this.erosActor.GetProperty().SetLighting(showLighting);
 		this.pcs.firePropertyChange(Properties.EROS_MODEL_CHANGED, null, null);
+	}
+
+	public ArrayList<vtkActor> getActors() 
+	{
+		return erosActors;
 	}
 	
 }

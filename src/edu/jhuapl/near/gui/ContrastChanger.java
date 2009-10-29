@@ -1,12 +1,11 @@
 package edu.jhuapl.near.gui;
 
 import javax.swing.*;
+import javax.swing.event.*;
 import com.jidesoft.swing.*;
 
 import edu.jhuapl.near.model.NearImage;
-import edu.jhuapl.near.model.NearImage.Range;
 
-import javax.swing.event.*;
 
 public class ContrastChanger extends JPanel implements ChangeListener
 {
@@ -14,11 +13,8 @@ public class ContrastChanger extends JPanel implements ChangeListener
 	
 	private NearImage nearImage;
 	
-	private ImageGLWidget viewer;
-	
-	public ContrastChanger(ImageGLWidget glWidget)
+	public ContrastChanger()
 	{
-		this.viewer = glWidget;
 		setBorder(BorderFactory.createTitledBorder("Contrast"));
 
 		//this.setPreferredSize(new Dimension(300,300));
@@ -52,6 +48,6 @@ public class ContrastChanger extends JPanel implements ChangeListener
 		int lowVal = slider.getLowValue();
 		int highVal = slider.getHighValue();
 		if (nearImage != null)
-			viewer.setDisplayedImageRange(nearImage, new NearImage.Range(lowVal, highVal));
+			nearImage.setDisplayedImageRange(new NearImage.Range(lowVal, highVal));
 	}
 }

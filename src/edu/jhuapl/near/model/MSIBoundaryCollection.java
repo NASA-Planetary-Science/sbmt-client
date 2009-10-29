@@ -1,29 +1,35 @@
 package edu.jhuapl.near.model;
 
 import java.util.*;
+import java.io.*;
 
 import vtk.vtkActor;
 import vtk.vtkPolyDataMapper;
 import vtk.vtkPolyDataReader;
-import edu.jhuapl.near.util.ConvertToRealFile;
+import edu.jhuapl.near.util.*;
 import edu.jhuapl.near.util.Properties;
 
-public class MSIBoundaries extends Model
+public class MSIBoundaryCollection extends Model
 {
+    private ArrayList<vtkActor> boundaryActors = new ArrayList<vtkActor>();
+
 	private static class Boundary
 	{
-		Boundary(String path)
+		public vtkActor actor;
+		
+		public Boundary(String path)
 		{
+			File file = FileCache.getFileFromServer(path);
+			
 	    	vtkPolyDataReader boundaryReader = new vtkPolyDataReader();
-	        boundaryReader.SetFileName(path);
+	        boundaryReader.SetFileName(file.getAbsolutePath());
 	        boundaryReader.Update();
 
 	        vtkPolyDataMapper boundaryMapper = new vtkPolyDataMapper();
 	        boundaryMapper.SetInput(boundaryReader.GetOutput());
 
-	        vtkActor boundaryActor = new vtkActor();
-	        boundaryActor.SetMapper(boundaryMapper);
-
+	        actor = new vtkActor();
+	        actor.SetMapper(boundaryMapper);
 		}
 	}
 	
@@ -39,5 +45,10 @@ public class MSIBoundaries extends Model
 		}
 
 		this.pcs.firePropertyChange(Properties.BOUNDARIES_CHANGED, null, null);
+	}
+
+	public ArrayList<vtkActor> getActors() 
+	{
+		return boundaryActors;
 	}
 }

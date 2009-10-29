@@ -3,10 +3,10 @@ package edu.jhuapl.near;
 import javax.swing.*;
 
 import edu.jhuapl.near.gui.ControlPanel;
+import edu.jhuapl.near.gui.ErosRenderer;
 import edu.jhuapl.near.gui.FileMenu;
-import edu.jhuapl.near.gui.ImageGLWidget;
 import edu.jhuapl.near.gui.StatusBar;
-import edu.jhuapl.near.model.LineamentModel;
+import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.util.NativeLibraryLoader;
 
 import java.awt.*;
@@ -14,20 +14,23 @@ import java.awt.*;
 public class ErosLineamentViewer extends JFrame 
 {
 	private JSplitPane splitPane;
-	private ImageGLWidget imageViewer;
+	private ErosRenderer imageViewer;
 	private ControlPanel controlPanel;
-	private StatusBar statusBar = new StatusBar();
+	private StatusBar statusBar;
 	private FileMenu fileMenu;
-	
-    private LineamentModel lineamentModel = new LineamentModel();
+	private ModelManager modelManager;
     
 	public ErosLineamentViewer()
 	{
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-		imageViewer = new ImageGLWidget(lineamentModel, statusBar);
+        createStatusBar();
 
-        controlPanel = new ControlPanel(imageViewer);
+		modelManager = new ModelManager();
+		
+		imageViewer = new ErosRenderer(modelManager, statusBar);
+
+        controlPanel = new ControlPanel(imageViewer, modelManager);
 
 		splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
                 controlPanel, imageViewer);
@@ -40,7 +43,6 @@ public class ErosLineamentViewer extends JFrame
 
 		createMenus(imageViewer);
         createToolBars();
-        createStatusBar();
 
 		this.add(splitPane, BorderLayout.CENTER);
 
@@ -54,8 +56,8 @@ public class ErosLineamentViewer extends JFrame
 //        this.setLocation(x, y);
 //        this.setResizable(true);
 	}
-	
-    private void createMenus(ImageGLWidget imageViewer)
+
+    private void createMenus(ErosRenderer imageViewer)
     {
     	JMenuBar menuBar = new JMenuBar();
 
@@ -72,6 +74,7 @@ public class ErosLineamentViewer extends JFrame
 
     private void createStatusBar()
     {
+    	statusBar = new StatusBar();
     	this.getContentPane().add(statusBar, BorderLayout.PAGE_END);
     }
 
@@ -84,19 +87,23 @@ public class ErosLineamentViewer extends JFrame
 
     public static void main(String[] args)
     {
-    	NativeLibraryLoader.loadVtkLibraries();
-    	
-        try
+    	try
         {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+    		//UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            System.out.println(UIManager.getSystemLookAndFeelClassName());
         } 
-        catch (Exception e) {}
+        catch (Exception e) 
+        {
+        	e.printStackTrace();
+        }
+
+    	NativeLibraryLoader.loadVtkLibraries();
 
         try
         {
         	JPopupMenu.setDefaultLightWeightPopupEnabled(false);
-        	
             final ErosLineamentViewer frame = new ErosLineamentViewer();
+        	
             javax.swing.SwingUtilities.invokeLater(new Runnable()
             {
             	public void run()

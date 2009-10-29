@@ -9,24 +9,28 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.event.*;
 
+import edu.jhuapl.near.model.ModelManager;
+
 
 
 public class ControlPanel extends JTabbedPane
 {
-    private ImageGLWidget viewer;
+    private ErosRenderer viewer;
 	private SearchPanel searchPanel;
 	private ErosControlPanel erosPanel;
 	private MSIControlPanel msiPanel;
 	private LineamentControlPanel lineamentPanel;
-    
-	public ControlPanel(ImageGLWidget viewer)
+    private ModelManager modelManager;
+	
+	public ControlPanel(ErosRenderer viewer, ModelManager modelManager)
 	{
 		this.viewer = viewer;
-
-		searchPanel = new SearchPanel(viewer);
-		erosPanel = new ErosControlPanel(viewer);
-		msiPanel = new MSIControlPanel(viewer);
-		lineamentPanel = new LineamentControlPanel(viewer);
+		this.modelManager = modelManager;
+		
+		searchPanel = new SearchPanel(modelManager);
+		erosPanel = new ErosControlPanel(modelManager);
+		//msiPanel = new MSIControlPanel(viewer);
+		lineamentPanel = new LineamentControlPanel(modelManager);
 		
 		addTab("Search", searchPanel);
 		addTab("Eros", erosPanel);

@@ -11,7 +11,7 @@ import java.awt.event.*;
 
 public class FileMenu extends JMenu 
 {
-    public FileMenu(ImageGLWidget viewer)
+    public FileMenu(ErosRenderer viewer)
     {
         super("File");
 
@@ -24,9 +24,9 @@ public class FileMenu extends JMenu
 
     private static class SaveImageAction extends AbstractAction
     {
-    	ImageGLWidget viewer;
+    	ErosRenderer viewer;
 
-    	public SaveImageAction(ImageGLWidget viewer)
+    	public SaveImageAction(ErosRenderer viewer)
         {
             super("Export to PNG...");
             this.viewer = viewer;

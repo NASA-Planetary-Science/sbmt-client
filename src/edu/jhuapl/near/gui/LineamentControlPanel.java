@@ -1,22 +1,25 @@
 package edu.jhuapl.near.gui;
 
 import javax.swing.*;
+
+import edu.jhuapl.near.model.LineamentModel;
+import edu.jhuapl.near.model.ModelManager;
+
 import java.awt.event.*;
 
 public class LineamentControlPanel extends JPanel implements ItemListener
 {
     private JCheckBox lineamentCheckBox;
-    private ImageGLWidget viewer;
-
-    public LineamentControlPanel(ImageGLWidget viewer) 
+    private LineamentModel lineamentModel;
+    
+    public LineamentControlPanel(ModelManager modelManager) 
     {
-		this.viewer = viewer;
-
-        LineamentRadialOffsetChanger radialChanger = new LineamentRadialOffsetChanger(viewer.getLineamentModel());
+		lineamentModel = (LineamentModel)modelManager.getModel(ModelManager.LINEAMENT);
+        LineamentRadialOffsetChanger radialChanger = new LineamentRadialOffsetChanger(lineamentModel);
 
         lineamentCheckBox = new JCheckBox();
         lineamentCheckBox.setText("Show Lineaments");
-        lineamentCheckBox.setSelected(true);
+        lineamentCheckBox.setSelected(false);
         lineamentCheckBox.addItemListener(this);
 
         JPanel pane = new JPanel();
@@ -36,9 +39,9 @@ public class LineamentControlPanel extends JPanel implements ItemListener
 		if (e.getItemSelectable() == this.lineamentCheckBox)
 		{
 			if (e.getStateChange() == ItemEvent.DESELECTED)
-				viewer.showLineaments(false);
+				lineamentModel.setShowLineaments(false);
 			else
-				viewer.showLineaments(true);
+				lineamentModel.setShowLineaments(true);
 		}	
 	}
 }

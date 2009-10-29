@@ -13,7 +13,7 @@ import edu.jhuapl.near.model.NearImage;
 
 public class MSIControlPanel extends JPanel implements ListSelectionListener
 {
-    private ImageGLWidget viewer;
+    private ErosRenderer viewer;
 	
     private JList list;
     private DefaultListModel listModel;
@@ -53,12 +53,12 @@ public class MSIControlPanel extends JPanel implements ListSelectionListener
 
                 updateButtons();
                 //updateRenderedImages();
-                try {
-					viewer.addImage(file);
-				} catch (Exception ex) {
-					// TODO Auto-generated catch block
-					ex.printStackTrace();
-				}
+//                try {
+//					viewer.addImage(file);
+//				} catch (Exception ex) {
+//					// TODO Auto-generated catch block
+//					ex.printStackTrace();
+//				}
                 updateContrastChanger();
         	}
         }
@@ -90,7 +90,7 @@ public class MSIControlPanel extends JPanel implements ListSelectionListener
 
             updateButtons();
             //updateRenderedImages();
-            viewer.removeImage(file);
+//            viewer.removeImage(file);
             updateContrastChanger();
         }
     }
@@ -148,7 +148,7 @@ public class MSIControlPanel extends JPanel implements ListSelectionListener
         }
     }
     
-	public MSIControlPanel(ImageGLWidget viewer)
+	public MSIControlPanel(ErosRenderer viewer)
 	{
 		super(new BorderLayout());
 
@@ -207,9 +207,9 @@ public class MSIControlPanel extends JPanel implements ListSelectionListener
         JPanel bottomPane = new JPanel();
         bottomPane.setLayout(new BorderLayout());
         bottomPane.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
-        contrastChanger = new ContrastChanger(viewer);
+  //      contrastChanger = new ContrastChanger(viewer);
         
-        bottomPane.add(contrastChanger, BorderLayout.PAGE_START);
+  //      bottomPane.add(contrastChanger, BorderLayout.PAGE_START);
         
         add(bottomPane, BorderLayout.PAGE_END);
 	}
@@ -230,8 +230,8 @@ public class MSIControlPanel extends JPanel implements ListSelectionListener
         if (index >= 0)
         {
         	File file = fileList.get(index);
-        	NearImage image = viewer.getImage(file);
-        	contrastChanger.setNearImage(image);
+//        	NearImage image = viewer.getImage(file);
+//        	contrastChanger.setNearImage(image);
         }
         else
         {

@@ -12,6 +12,7 @@ import vtk.*;
 
 import edu.jhuapl.near.pair.*;
 import edu.jhuapl.near.util.BoundingBox;
+import edu.jhuapl.near.util.FileCache;
 
 /**
  * This class represents a near image. It allows retrieving the 
@@ -120,6 +121,19 @@ public class NearImage
 
 	public NearImage(String filename) throws FitsException, IOException
 	{
+		// Download the image, and all the companion files if necessary.
+		File fitFile = FileCache.getFileFromServer(filename);
+
+		String lblFilename = filename.substring(0, filename.length()-4) + ".LBL";
+		FileCache.getFileFromServer(lblFilename);
+		String imgFilename = filename.substring(0, filename.length()-4) + "_DDR.IMG.gz";
+		FileCache.getFileFromServer(imgFilename);
+		String imgLblFilename = filename.substring(0, filename.length()-4) + "_DDR.LBL";
+		FileCache.getFileFromServer(imgLblFilename);
+		String boundaryFilename = filename.substring(0, filename.length()-4) + "_BOUNDARY.VTK";
+		FileCache.getFileFromServer(boundaryFilename);
+
+		filename = fitFile.getAbsolutePath();
 		this.fullpath = filename;
 		
         Fits f = new Fits(filename);

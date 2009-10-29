@@ -10,12 +10,12 @@ import java.awt.event.*;
 import org.joda.time.*;
 
 import edu.jhuapl.near.database.MSIDatabase;
+import edu.jhuapl.near.model.ModelManager;
 
 
 public class SearchPanel extends JPanel implements ActionListener 
 {
-    private ImageGLWidget viewer;
-
+    private ModelManager modelManager;
     private java.util.Date startDate = new DateTime(2000, 1, 11, 0, 0, 0, 0).toDate();
     private java.util.Date endDate = new DateTime(2001, 2, 13, 0, 0, 0, 0).toDate();
 //    private ShapeBuilderWidget shapePanel;
@@ -28,15 +28,15 @@ public class SearchPanel extends JPanel implements ActionListener
     private JComboBox queryTypeComboBox;
     private SearchResultsPanel resultsPanel;
 
-    public SearchPanel(ImageGLWidget viewer) 
+    public SearchPanel(ModelManager modelManager) 
     {
         //super(new GridBagLayout());
+    	
+    	this.modelManager = modelManager;
+    	
     	JPanel pane = new JPanel();
     	pane.setLayout(new BoxLayout(pane,
         		BoxLayout.PAGE_AXIS));
-
-		this.viewer = viewer;
-
 
     	//GridBagConstraints c = new GridBagConstraints();
         //c.gridwidth = GridBagConstraints.REMAINDER;
