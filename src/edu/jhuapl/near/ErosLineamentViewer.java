@@ -2,6 +2,8 @@ package edu.jhuapl.near;
 
 import javax.swing.*;
 
+import vtk.vtkRenderWindowPanel;
+
 import edu.jhuapl.near.gui.ControlPanel;
 import edu.jhuapl.near.gui.ErosRenderer;
 import edu.jhuapl.near.gui.FileMenu;
@@ -9,7 +11,6 @@ import edu.jhuapl.near.gui.StatusBar;
 import edu.jhuapl.near.gui.pick.PickManager;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.util.NativeLibraryLoader;
-import edu.jhuapl.near.util.Properties;
 
 import java.awt.*;
 
@@ -31,14 +32,15 @@ public class ErosLineamentViewer extends JFrame
 
 		modelManager = new ModelManager();
 	
-		pickManager = new PickManager();
-		
 		imageViewer = new ErosRenderer(modelManager);
+
+		vtkRenderWindowPanel renWin = imageViewer.getRenderWindowPanel();
+		pickManager = new PickManager(renWin, statusBar, modelManager);
+		renWin.addMouseListener(pickManager);
+        renWin.addMouseMotionListener(pickManager);
 
         controlPanel = new ControlPanel(imageViewer, modelManager);
 
-        imageViewer.addPropertyChangeListener(Properties.PICK_OCCURED, pickManager);
-        
 		splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
                 controlPanel, imageViewer);
 		splitPane.setOneTouchExpandable(true);

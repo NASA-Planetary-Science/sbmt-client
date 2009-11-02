@@ -1,7 +1,8 @@
-package edu.jhuapl.near.gui;
+package edu.jhuapl.near.gui.pick;
 
 import javax.swing.*;
 
+import edu.jhuapl.near.gui.ColorChooser;
 import edu.jhuapl.near.model.LineamentModel;
 import edu.jhuapl.near.model.LineamentModel.Lineament;
 
