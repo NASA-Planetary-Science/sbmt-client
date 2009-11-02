@@ -6,8 +6,10 @@ import edu.jhuapl.near.gui.ControlPanel;
 import edu.jhuapl.near.gui.ErosRenderer;
 import edu.jhuapl.near.gui.FileMenu;
 import edu.jhuapl.near.gui.StatusBar;
+import edu.jhuapl.near.gui.pick.PickManager;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.util.NativeLibraryLoader;
+import edu.jhuapl.near.util.Properties;
 
 import java.awt.*;
 
@@ -19,7 +21,8 @@ public class ErosLineamentViewer extends JFrame
 	private StatusBar statusBar;
 	private FileMenu fileMenu;
 	private ModelManager modelManager;
-    
+	private PickManager pickManager;
+	
 	public ErosLineamentViewer()
 	{
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -27,11 +30,15 @@ public class ErosLineamentViewer extends JFrame
         createStatusBar();
 
 		modelManager = new ModelManager();
+	
+		pickManager = new PickManager();
 		
-		imageViewer = new ErosRenderer(modelManager, statusBar);
+		imageViewer = new ErosRenderer(modelManager);
 
         controlPanel = new ControlPanel(imageViewer, modelManager);
 
+        imageViewer.addPropertyChangeListener(Properties.PICK_OCCURED, pickManager);
+        
 		splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
                 controlPanel, imageViewer);
 		splitPane.setOneTouchExpandable(true);
@@ -89,7 +96,7 @@ public class ErosLineamentViewer extends JFrame
     {
     	try
         {
-    		//UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+    		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
             System.out.println(UIManager.getSystemLookAndFeelClassName());
         } 
         catch (Exception e) 
@@ -108,7 +115,7 @@ public class ErosLineamentViewer extends JFrame
             {
             	public void run()
             	{
-                    frame.setTitle("Eros Lineament Viewer");
+                    frame.setTitle("Eros Viewer");
                     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                     frame.pack();
                     frame.setVisible(true);

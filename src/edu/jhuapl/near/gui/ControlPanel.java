@@ -1,16 +1,7 @@
 package edu.jhuapl.near.gui;
 
-import java.util.*;
-
 import javax.swing.*;
-
-import java.io.*;
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.event.*;
-
 import edu.jhuapl.near.model.ModelManager;
-
 
 
 public class ControlPanel extends JTabbedPane
@@ -29,12 +20,12 @@ public class ControlPanel extends JTabbedPane
 		
 		searchPanel = new SearchPanel(modelManager);
 		erosPanel = new ErosControlPanel(modelManager);
-		//msiPanel = new MSIControlPanel(viewer);
+		msiPanel = new MSIControlPanel(modelManager);
 		lineamentPanel = new LineamentControlPanel(modelManager);
 		
 		addTab("Search", searchPanel);
 		addTab("Eros", erosPanel);
-		//addTab("MSI", msiPanel);
+		addTab("MSI", msiPanel);
 		addTab("Lineament", lineamentPanel);
 	}
 }

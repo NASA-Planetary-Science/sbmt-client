@@ -1,6 +1,5 @@
 package edu.jhuapl.near.dbgen;
 
-import edu.jhuapl.near.*;
 import edu.jhuapl.near.model.NearImage;
 import edu.jhuapl.near.pair.*;
 import edu.jhuapl.near.util.NativeLibraryLoader;

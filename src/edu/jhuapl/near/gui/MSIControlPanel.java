@@ -9,12 +9,12 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.event.*;
 
-import edu.jhuapl.near.model.NearImage;
+import edu.jhuapl.near.model.*;
 
 public class MSIControlPanel extends JPanel implements ListSelectionListener
 {
-    private ErosRenderer viewer;
-	
+    private ModelManager modelManager;
+
     private JList list;
     private DefaultListModel listModel;
 
@@ -148,11 +148,17 @@ public class MSIControlPanel extends JPanel implements ListSelectionListener
         }
     }
     
-	public MSIControlPanel(ErosRenderer viewer)
+	public MSIControlPanel(ModelManager mm)
 	{
 		super(new BorderLayout());
 
-		this.viewer = viewer;
+		modelManager = mm;
+
+		JPanel listPane = new JPanel();
+		listPane.setLayout(new BoxLayout(listPane,
+        		BoxLayout.PAGE_AXIS));
+		
+		JLabel label = new JLabel("Mapped MSI Images");
 
         listModel = new DefaultListModel();
 
@@ -161,7 +167,10 @@ public class MSIControlPanel extends JPanel implements ListSelectionListener
         list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         list.addListSelectionListener(this);
         JScrollPane listScrollPane = new JScrollPane(list);
-
+        listPane.add(Box.createVerticalStrut(9));
+        listPane.add(label);
+        listPane.add(listScrollPane);
+        
         addButton = new JButton(addString);
         AddListener addListener = new AddListener(this);
         addButton.setActionCommand(addString);
@@ -191,8 +200,8 @@ public class MSIControlPanel extends JPanel implements ListSelectionListener
         JPanel buttonPane = new JPanel();
         buttonPane.setLayout(new BoxLayout(buttonPane,
                                            BoxLayout.LINE_AXIS));
-        buttonPane.add(addButton);
-        buttonPane.add(Box.createHorizontalStrut(5));
+        //buttonPane.add(addButton);
+        //buttonPane.add(Box.createHorizontalStrut(5));
         buttonPane.add(deleteButton);
         //buttonPane.add(Box.createHorizontalStrut(5));
         //buttonPane.add(upButton);
@@ -202,14 +211,14 @@ public class MSIControlPanel extends JPanel implements ListSelectionListener
         buttonPane.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
 
         add(buttonPane, BorderLayout.PAGE_START);
-        add(listScrollPane, BorderLayout.CENTER);
+        add(listPane, BorderLayout.CENTER);
 
         JPanel bottomPane = new JPanel();
         bottomPane.setLayout(new BorderLayout());
         bottomPane.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
-  //      contrastChanger = new ContrastChanger(viewer);
+        contrastChanger = new ContrastChanger();
         
-  //      bottomPane.add(contrastChanger, BorderLayout.PAGE_START);
+        bottomPane.add(contrastChanger, BorderLayout.PAGE_START);
         
         add(bottomPane, BorderLayout.PAGE_END);
 	}

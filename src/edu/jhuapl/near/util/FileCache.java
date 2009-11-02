@@ -44,12 +44,12 @@ public class FileCache
 		{
 			URL u = new URL(Configuration.getRootURL() + path);
 			
+			InputStream is = u.openStream();
+
 			file = new File(cacheRoot + File.separator + path);
 			
 			file.getParentFile().mkdirs();
 			
-			InputStream is = u.openStream();
-
 			FileOutputStream os = new FileOutputStream(file);
 
 			byte[] buff = new byte[2048];
@@ -58,7 +58,7 @@ public class FileCache
 			{
 				os.write(buff, 0, len);
 			}
-			
+
 			os.close();
 			is.close();
 		} 

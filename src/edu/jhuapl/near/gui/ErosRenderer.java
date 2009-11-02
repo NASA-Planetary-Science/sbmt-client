@@ -6,27 +6,35 @@ import java.beans.*;
 import java.awt.*;
 import java.awt.event.*;
 
+import edu.jhuapl.near.gui.pick.PickEvent;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.util.Properties;
 import vtk.*;
 
 public class ErosRenderer extends JPanel implements 
-			MouseListener, 
-			MouseMotionListener, 
+//			MouseListener, 
+//			MouseMotionListener, 
 			MouseWheelListener,
 			PropertyChangeListener
 {
-    private StatusBar statusBar;
+    //private StatusBar statusBar;
     private vtkRenderWindowPanel renWin;
     private ModelManager modelManager;
     
     //private LineamentPopupMenu popupMenu;
     
-    public ErosRenderer(ModelManager modelManager, StatusBar statusBar) 
+//	protected final PropertyChangeSupport pcs = new PropertyChangeSupport( this );
+//    public void addPropertyChangeListener( String propertyName, PropertyChangeListener listener )
+//    { this.pcs.addPropertyChangeListener( propertyName, listener ); }
+//    public void removePropertyChangeListener( String propertyName, PropertyChangeListener listener )
+//    { this.pcs.removePropertyChangeListener( propertyName, listener ); }
+    
+    
+    public ErosRenderer(ModelManager modelManager) 
     {
     	setLayout(new BorderLayout());
     	
-    	this.statusBar = statusBar;
+    	//this.statusBar = statusBar;
     	
         renWin = new vtkRenderWindowPanel();
 
@@ -42,8 +50,8 @@ public class ErosRenderer extends JPanel implements
         
         add(renWin, BorderLayout.CENTER);
 
-        renWin.addMouseListener(this);
-        renWin.addMouseMotionListener(this);
+        //renWin.addMouseListener(this);
+        //renWin.addMouseMotionListener(this);
         renWin.addMouseWheelListener(this);
 
         setActors(modelManager.getActors());
@@ -172,6 +180,8 @@ public class ErosRenderer extends JPanel implements
 		if (renWin.GetRenderWindow().GetNeverRendered() > 0)
 			return;
 
+		this.pickActors(e);
+		
 		/*
 		LineamentModel.Lineament lin = pickLineament(e);
 
@@ -208,6 +218,7 @@ public class ErosRenderer extends JPanel implements
         {
     		if (renWin.GetRenderWindow().GetNeverRendered() > 0)
     			return;
+    		
     		/*
     		LineamentModel.Lineament lin = pickLineament(e);
     		
@@ -217,6 +228,21 @@ public class ErosRenderer extends JPanel implements
         }
     }
 
+	private void pickActors(MouseEvent e)
+	{
+		vtkCellPicker cellPicker = new vtkCellPicker();
+		cellPicker.SetTolerance(0.002);
+		int pickSucceeded = cellPicker.Pick(e.getX(), renWin.getIren().GetSize()[1]-e.getY()-1, 0.0, renWin.GetRenderer());
+		System.out.println("dfds");
+		if (pickSucceeded != 0)
+		{
+			System.out.println("XXXXXXXXXx");
+			PickEvent pickEvent = new PickEvent(cellPicker, e);
+			this.firePropertyChange(Properties.PICK_OCCURED, null, pickEvent);
+			//this.firePropertyChange(Properties.PICK_OCCURED, null, null);
+		}
+	}
+	
 	/*
 	private LineamentModel.Lineament pickLineament(MouseEvent e)
 	{
@@ -262,10 +288,10 @@ public class ErosRenderer extends JPanel implements
     	}
     }
     
-    public ModelManager getModelManager()
-    {
-    	return modelManager;
-    }
+//    public ModelManager getModelManager()
+//    {
+//    	return modelManager;
+//    }
     
     public void render()
     {

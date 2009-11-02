@@ -11,8 +11,8 @@ import nom.tam.fits.FitsException;
 import vtk.*;
 
 import edu.jhuapl.near.pair.*;
-import edu.jhuapl.near.util.BoundingBox;
-import edu.jhuapl.near.util.FileCache;
+import edu.jhuapl.near.util.*;
+import edu.jhuapl.near.util.Properties;
 
 /**
  * This class represents a near image. It allows retrieving the 
@@ -21,7 +21,7 @@ import edu.jhuapl.near.util.FileCache;
  * @author kahneg1
  *
  */
-public class NearImage 
+public class NearImage extends Model
 {
 	
 	public static final int IMAGE_WIDTH = 537;
@@ -37,9 +37,9 @@ public class NearImage
 	private vtkImageData rawImage;
 	private vtkImageData displayedImage;
 	
-	private float[][] incidence = new float[IMAGE_HEIGHT][IMAGE_WIDTH];
-	private float[][] emission = new float[IMAGE_HEIGHT][IMAGE_WIDTH];
-	private float[][] phase = new float[IMAGE_HEIGHT][IMAGE_WIDTH];
+//	private float[][] incidence = new float[IMAGE_HEIGHT][IMAGE_WIDTH];
+//	private float[][] emission = new float[IMAGE_HEIGHT][IMAGE_WIDTH];
+//	private float[][] phase = new float[IMAGE_HEIGHT][IMAGE_WIDTH];
 	private float[][] latitude = new float[IMAGE_HEIGHT][IMAGE_WIDTH];
 	private float[][] longitude = new float[IMAGE_HEIGHT][IMAGE_WIDTH];
 	private float[][] x = new float[IMAGE_HEIGHT][IMAGE_WIDTH];
@@ -59,6 +59,7 @@ public class NearImage
 
 	private String fullpath; // The actual path of the image on disk as passed into the constructor	
 	private int filter; // 1 through 7
+	private double polygonOffset = -10.0;
 	
 	public static class Range
     {
@@ -124,6 +125,9 @@ public class NearImage
 		// Download the image, and all the companion files if necessary.
 		File fitFile = FileCache.getFileFromServer(filename);
 
+		if (fitFile == null)
+			throw new IOException("Could not download " + filename);
+		
 		String lblFilename = filename.substring(0, filename.length()-4) + ".LBL";
 		FileCache.getFileFromServer(lblFilename);
 		String imgFilename = filename.substring(0, filename.length()-4) + "_DDR.IMG.gz";
@@ -330,7 +334,8 @@ public class NearImage
 	}
 
 	
-    public ArrayList<vtkActor> getMappedImage(double offset)
+	//public ArrayList<vtkActor> getMappedImage(double offset)
+    public ArrayList<vtkActor> getActors()
     {
     	ArrayList<vtkActor> imageActors = new ArrayList<vtkActor>();
     	
@@ -448,7 +453,7 @@ public class NearImage
                 
                 vtkPolyDataMapper pieceMapper = new vtkPolyDataMapper();
                 pieceMapper.SetResolveCoincidentTopologyToPolygonOffset();
-                pieceMapper.SetResolveCoincidentTopologyPolygonOffsetParameters(-1.0, offset);
+                pieceMapper.SetResolveCoincidentTopologyPolygonOffsetParameters(-1.0, polygonOffset);
                 pieceMapper.SetInput(piece);
                 pieceMapper.Update();
                 
@@ -562,9 +567,15 @@ public class NearImage
 		    //writer.SetInput(displayedImage);
 		    //writer.Write();
 
+	    	this.pcs.firePropertyChange(Properties.MSI_CONTRAST_CHANGED, null, null);
 		}
 	}
 
+	public void setPolygonOffset(double offset)
+	{
+		this.polygonOffset = offset;
+	}
+	
 	/*
 	public vtkPolyData getImageBorder()
 	{

@@ -20,6 +20,7 @@ public class Configuration
 	
 	static public String getRootURL()
 	{
-		return "http://near.jhuapl.edu/software/data/";
+		//return "http://near.jhuapl.edu/software/data";
+		return "http://localhost:8080";
 	}
 }

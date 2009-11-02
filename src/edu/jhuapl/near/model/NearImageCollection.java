@@ -1,5 +1,7 @@
 package edu.jhuapl.near.model;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,54 +12,57 @@ import nom.tam.fits.FitsException;
 
 import vtk.vtkActor;
 
-public class NearImageCollection extends Model
+public class NearImageCollection extends Model implements PropertyChangeListener
 {
-//	private ArrayList<NearImage> nearImages = new ArrayList<NearImage>();
-    private ArrayList<vtkActor> allActors = new ArrayList<vtkActor>();
+	private ArrayList<vtkActor> allActors = new ArrayList<vtkActor>();
 
-    private HashMap<NearImage, ArrayList<vtkActor>> nearImageActors = new HashMap<NearImage, ArrayList<vtkActor>>();
-    
-    private HashMap<String, NearImage> fileToImageMap = new HashMap<String, NearImage>();
+	private HashMap<NearImage, ArrayList<vtkActor>> nearImageActors = new HashMap<NearImage, ArrayList<vtkActor>>();
 
-    public void addImage(String path) throws FitsException, IOException
-    {
-    	NearImage image = new NearImage(path);
+	private HashMap<String, NearImage> fileToImageMap = new HashMap<String, NearImage>();
 
-    	fileToImageMap.put(path, image);
-    	nearImageActors.put(image, new ArrayList<vtkActor>());
-    	
-    	// Now texture map this image onto the Eros model.
-    	mapImage(image, -10);
+	public void addImage(String path) throws FitsException, IOException
+	{
+		NearImage image = new NearImage(path);
+
+		image.addPropertyChangeListener(this);
+
+		fileToImageMap.put(path, image);
+		nearImageActors.put(image, new ArrayList<vtkActor>());
+
+		// Now texture map this image onto the Eros model.
+		image.setPolygonOffset(-10.0);
+		mapImage(image);
+
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-    }
-    
-    public void removeImage(String path)
-    {
-    	
-    	//for (vtkActor act : nearImageActors.get(fileToImageMap.get(file)))
-    	//	renWin.GetRenderer().RemoveActor(act);
+	}
 
-    	nearImageActors.remove(fileToImageMap.get(path));
-    	fileToImageMap.remove(path);
+	public void removeImage(String path)
+	{
+		ArrayList<vtkActor> actors = nearImageActors.get(fileToImageMap.get(path));
+		allActors.removeAll(actors);
+		nearImageActors.remove(fileToImageMap.get(path));
+		fileToImageMap.remove(path);
 
-    	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-    }
+		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+	}
 
-    private void mapImage(NearImage nearImage, double offset)
-    {
-    	ArrayList<vtkActor> imagePieces = nearImage.getMappedImage(offset);
-    	
-    	for (vtkActor piece : imagePieces)
-    	{
-    		//renWin.GetRenderer().AddActor(piece);
-            
-    		nearImageActors.get(nearImage).add(piece);
-    	}
-    }
-    
+	private void mapImage(NearImage nearImage)
+	{
+		ArrayList<vtkActor> imagePieces = nearImage.getActors();
+
+		nearImageActors.get(nearImage).addAll(imagePieces);
+
+		allActors.addAll(imagePieces);
+	}
+
 	public ArrayList<vtkActor> getActors() 
 	{
 		return allActors;
+	}
+
+	public void propertyChange(PropertyChangeEvent evt) 
+	{
+		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 	}
 
 }
