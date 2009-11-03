@@ -17,9 +17,12 @@ public class MSIBoundaryCollection extends Model
 	{
 		public vtkActor actor;
 		
-		public Boundary(String path)
+		public Boundary(String path) throws IOException
 		{
 			File file = FileCache.getFileFromServer(path);
+
+			if (file == null)
+				throw new IOException(path + " could not be loaded");
 			
 			vtkPolyDataReader boundaryReader = new vtkPolyDataReader();
 	        boundaryReader.SetFileName(file.getAbsolutePath());
@@ -27,12 +30,22 @@ public class MSIBoundaryCollection extends Model
 
 	        vtkPolyDataMapper boundaryMapper = new vtkPolyDataMapper();
 	        boundaryMapper.SetInput(boundaryReader.GetOutput());
+	        boundaryMapper.SetResolveCoincidentTopologyToPolygonOffset();
+	        boundaryMapper.SetResolveCoincidentTopologyPolygonOffsetParameters(-1.0, -1.0);
 
 	        actor = new vtkActor();
 	        actor.SetMapper(boundaryMapper);
+	        actor.GetProperty().SetColor(1.0, 0.0, 0.0);
+	        actor.GetProperty().SetLineWidth(2.0);
 		}
 	}
 
+	/**
+	 * return this when boundaries are hidden
+	 */
+	private ArrayList<vtkActor> dummyActors = new ArrayList<vtkActor>();
+	private boolean hidden = false;
+	
 	private ArrayList<vtkActor> boundaryActors = new ArrayList<vtkActor>();
 
 	//private HashMap<Boundary, vtkActor> boundaryActors = new HashMap<Boundary, vtkActor>();
@@ -82,8 +95,24 @@ public class MSIBoundaryCollection extends Model
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 	}
 
+	public void removeAllBoundaries()
+	{
+		boundaryActors.clear();
+		fileToBoundaryMap.clear();
+		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+	}
+
+	public void setHidden(boolean hidden)
+	{
+		this.hidden = hidden;
+		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+	}
+	
 	public ArrayList<vtkActor> getActors() 
 	{
-		return boundaryActors;
+		if (!hidden)
+			return boundaryActors;
+		else
+			return dummyActors;
 	}
 }

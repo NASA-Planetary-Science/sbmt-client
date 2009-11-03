@@ -262,4 +262,14 @@ public class LineamentModel extends Model
 	{
 		return lineamentActors;
 	}
+	
+    public String getClickStatusBarText(vtkActor actor, int cellId)
+    {
+		LineamentModel.Lineament lin = getLineament(cellId);
+		if (lin != null)
+			return "Lineament " + lin.id + " mapped on MSI image " + lin.name + " contains " + lin.x.size() + " vertices";
+		else
+			return "";
+    }
+
 }

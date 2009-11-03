@@ -14,6 +14,9 @@ import vtk.vtkActor;
 
 public class NearImageCollection extends Model implements PropertyChangeListener
 {
+	private ArrayList<vtkActor> dummyActors = new ArrayList<vtkActor>();
+	private boolean hidden = false;
+
 	private ArrayList<vtkActor> allActors = new ArrayList<vtkActor>();
 
 	private HashMap<NearImage, ArrayList<vtkActor>> nearImageActors = new HashMap<NearImage, ArrayList<vtkActor>>();
@@ -46,6 +49,15 @@ public class NearImageCollection extends Model implements PropertyChangeListener
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 	}
 
+	public void removeAllImages()
+	{
+		allActors.clear();
+		nearImageActors.clear();
+		fileToImageMap.clear();
+
+		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+	}
+
 	private void mapImage(NearImage nearImage)
 	{
 		ArrayList<vtkActor> imagePieces = nearImage.getActors();
@@ -55,9 +67,18 @@ public class NearImageCollection extends Model implements PropertyChangeListener
 		allActors.addAll(imagePieces);
 	}
 
+	public void setHidden(boolean hidden)
+	{
+		this.hidden = hidden;
+		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+	}
+	
 	public ArrayList<vtkActor> getActors() 
 	{
-		return allActors;
+		if (!hidden)
+			return allActors;
+		else
+			return dummyActors;
 	}
 
 	public void propertyChange(PropertyChangeEvent evt) 

@@ -37,6 +37,12 @@ public class PickManager implements
 
 		mouseMovedCellPicker = new vtkCellPicker();
 		mouseMovedCellPicker.SetTolerance(0.002);
+
+		mousePressCellPicker = new vtkCellPicker();
+		mousePressCellPicker.SetTolerance(0.002);
+		
+		lineamentPopupMenu = 
+			new LineamentPopupMenu((LineamentModel)modelManager.getModel(ModelManager.LINEAMENT));
 	}
 
 	public void mouseClicked(MouseEvent e) 
@@ -53,6 +59,21 @@ public class PickManager implements
 
 	public void mousePressed(MouseEvent e) 
 	{
+		if (renWin.GetRenderWindow().GetNeverRendered() > 0)
+    		return;
+		
+		int pickSucceeded = mousePressCellPicker.Pick(e.getX(), renWin.getIren().GetSize()[1]-e.getY()-1, 0.0, renWin.GetRenderer());
+		if (pickSucceeded == 1)
+		{
+			vtkActor pickedActor = mousePressCellPicker.GetActor();
+			Model model = modelManager.getModel(pickedActor);
+			String text = model.getClickStatusBarText(pickedActor, mousePressCellPicker.GetCellId());
+			statusBar.setLeftText(text);
+		}		
+		else
+		{
+			statusBar.setLeftText(" ");
+		}
 		maybeShowPopup(e);
 	}
 
@@ -134,26 +155,33 @@ public class PickManager implements
         	if (renWin.GetRenderWindow().GetNeverRendered() > 0)
         		return;
     		
-    		/*
-    		LineamentModel.Lineament lin = pickLineament(e);
-    		
-    		if (lin != null)
-            	popupMenu.show(e.getComponent(), e.getX(), e.getY(), lin);
-            */
+    		int pickSucceeded = mousePressCellPicker.Pick(e.getX(), renWin.getIren().GetSize()[1]-e.getY()-1, 0.0, renWin.GetRenderer());
+    		if (pickSucceeded == 1)
+    		{
+    			vtkActor pickedActor = mousePressCellPicker.GetActor();
+    			if (modelManager.getModel(pickedActor) instanceof LineamentModel)
+    			{
+        			LineamentModel linModel = (LineamentModel)modelManager.getModel(ModelManager.LINEAMENT);
+    				LineamentModel.Lineament lin = linModel.getLineament(mousePressCellPicker.GetCellId());
+    	    		if (lin != null)
+    	    			lineamentPopupMenu.show(e.getComponent(), e.getX(), e.getY(), lin);
+    			}
+    			else if (modelManager.getModel(pickedActor) instanceof ErosModel)
+    			{
+    				ErosModel erosModel = (ErosModel)modelManager.getModel(ModelManager.EROS);
+    				
+    			}
+    			else if (modelManager.getModel(pickedActor) instanceof MSIBoundaryCollection)
+    			{
+        			MSIBoundaryCollection msiBoundaries = (MSIBoundaryCollection)modelManager.getModel(ModelManager.MSI_BOUNDARY);
+    				
+    			}
+    			else if (modelManager.getModel(pickedActor) instanceof NearImageCollection)
+    			{
+        			NearImageCollection msiImages = (NearImageCollection)modelManager.getModel(ModelManager.MSI_IMAGES);
+    				
+    			}
+    		}		
         }
     }
-
-	/*
-	private LineamentModel.Lineament pickLineament(MouseEvent e)
-	{
-		LineamentModel lineamentModel = (LineamentModel)modelManager.getModel(ModelManager.LINEAMENT);
-		vtkCellPicker cellPicker = new vtkCellPicker();
-		cellPicker.SetTolerance(0.002);
-		int pickSucceeded = cellPicker.Pick(e.getX(), renWin.getIren().GetSize()[1]-e.getY()-1, 0.0, renWin.GetRenderer());
-		if (pickSucceeded != 0 && cellPicker.GetActor() == this.lineamentActor)
-			return lineamentModel.getLineament(cellPicker.GetCellId());
-		else
-			return null;
-	}
-*/
 }

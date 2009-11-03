@@ -3,6 +3,7 @@ package edu.jhuapl.near.model;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import edu.jhuapl.near.util.Properties;
 
@@ -21,7 +22,10 @@ public class ModelManager extends Model implements PropertyChangeListener
 	private MSIBoundaryCollection msiBoundaries;
 	
     private ArrayList<vtkActor> actors = new ArrayList<vtkActor>();
-
+    private HashMap<vtkActor, Model> actorToModelMap = new HashMap<vtkActor, Model>();
+    
+    private ArrayList<Model> allModels;
+    
     public ModelManager()
     {
     	lineamentModel = new LineamentModel();
@@ -34,7 +38,13 @@ public class ModelManager extends Model implements PropertyChangeListener
     	msiImages.addPropertyChangeListener(this);
     	msiBoundaries.addPropertyChangeListener(this);
     	
-    	updateActors();
+    	allModels = new ArrayList<Model>();
+    	allModels.add(lineamentModel);
+    	allModels.add(erosModel);
+    	allModels.add(msiImages);
+    	allModels.add(msiBoundaries);
+
+		updateActors();
     }
 
     public ArrayList<vtkActor> getActors()
@@ -51,10 +61,20 @@ public class ModelManager extends Model implements PropertyChangeListener
 	private void updateActors()
 	{
 		actors.clear();
-    	actors.addAll(lineamentModel.getActors());
-    	actors.addAll(erosModel.getActors());
-    	actors.addAll(msiImages.getActors());
-    	actors.addAll(msiBoundaries.getActors());
+		actorToModelMap.clear();
+
+		for (Model model : allModels)
+		{
+			actors.addAll(model.getActors());
+
+			for (vtkActor act : model.getActors())
+	    		actorToModelMap.put(act, model);
+		}
+	}
+
+	public Model getModel(vtkActor actor)
+	{
+		return actorToModelMap.get(actor);
 	}
 	
 	public Model getModel(String modelName)

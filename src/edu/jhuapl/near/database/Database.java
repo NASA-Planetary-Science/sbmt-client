@@ -149,16 +149,36 @@ public class Database
 	{
 		ArrayList<String> matchedImages = new ArrayList<String>();
 		
+		if (searchString != null)
+		{
+			for (ImageInfo info: images)
+			{
+				if (info.name == Integer.parseInt(searchString))
+				{
+					matchedImages.add(info.getPath());
+					break;
+				}
+			}
+			return matchedImages;
+		}
+		
 		if (filters.isEmpty() || (iofdbl == false && cifdbl == false))
 			return matchedImages;
 		
+		double minScDistance = Math.min(startDistance, stopDistance);
+		double maxScDistance = Math.max(startDistance, stopDistance);
+		double minResolution = Math.min(startResolution, stopResolution) / 1000.0;
+		double maxResolution = Math.max(startResolution, stopResolution) / 1000.0;
+
 		for (ImageInfo info: images)
 		{
 			if ((iofdbl && info.type.equals("iofdbl")) ||
 					(cifdbl && info.type.equals("cifdbl")))
 			{
 				if (filters.contains(info.filter) &&
-						containsDate(startDate, stopDate, info))
+						containsDate(startDate, stopDate, info) &&
+						info.scDistance >= minScDistance && info.scDistance <= maxScDistance &&
+						info.resolution >= minResolution && info.resolution <= maxResolution)
 				{
 					matchedImages.add(info.getPath());
 				}
