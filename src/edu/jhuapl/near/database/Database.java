@@ -140,7 +140,12 @@ public class Database
 			LocalDateTime stopDate,
 			ArrayList<Integer> filters,
 			boolean iofdbl,
-			boolean cifdbl) 
+			boolean cifdbl,
+			double startDistance,
+			double stopDistance,
+			double startResolution,
+			double stopResolution,
+			String searchString) 
 	{
 		ArrayList<String> matchedImages = new ArrayList<String>();
 		

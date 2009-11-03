@@ -36,8 +36,6 @@ public class ErosLineamentViewer extends JFrame
 
 		vtkRenderWindowPanel renWin = imageViewer.getRenderWindowPanel();
 		pickManager = new PickManager(renWin, statusBar, modelManager);
-		renWin.addMouseListener(pickManager);
-        renWin.addMouseMotionListener(pickManager);
 
         controlPanel = new ControlPanel(imageViewer, modelManager);
 

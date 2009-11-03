@@ -4,6 +4,8 @@ public class LatLon
 {
 	public double lat;
 	public double lon;
+	public double rad;
+
 	public LatLon(double lat, double lon)
 	{
 		this.lat = lat;
@@ -16,56 +18,43 @@ public class LatLon
 	}
 	
 	/**
-	 * Convert cartesian coordinates to lat lon. Copied from spice's reclat_c function.
+	 * Convert cartesian coordinates to lat lon. Copied from spice's reclat function.
 	 * @param xyz
 	 * @return
 	 */
 	static public LatLon recToLatLon(double[] rectan)
 	{
-		double   vmax;
-		double   x1;
-		double   y1;
-		double   z1;
-
-		LatLon ll = new LatLon();
-		/* Function Body */
+		LatLon llr = new LatLon();
 
 		//vmax = MaxAbs(  rectan[0], MaxAbs( rectan[1], rectan[2] )   );
-		vmax = Math.max(  Math.abs(rectan[0]), Math.max( Math.abs(rectan[1]), Math.abs(rectan[2]) ) );
+		double vmax = Math.max(  Math.abs(rectan[0]), Math.max( Math.abs(rectan[1]), Math.abs(rectan[2]) ) );
 
 		if ( vmax > 0.)
 		{
-			x1        = rectan[0] / vmax;
-			y1        = rectan[1] / vmax;
-			z1        = rectan[2] / vmax;
-			//*radius   = vmax * Math.sqrt( x1*x1 + y1*y1 + z1*z1 );
-			ll.lat = Math.atan2(z1, Math.sqrt( x1*x1 + y1*y1 ) );
-
+			double x1 = rectan[0] / vmax;
+			double y1 = rectan[1] / vmax;
+			double z1 = rectan[2] / vmax;
+			llr.rad   = vmax * Math.sqrt( x1*x1 + y1*y1 + z1*z1 );
+			llr.lat   = Math.atan2(z1, Math.sqrt( x1*x1 + y1*y1 ) );
 
 			if ( x1 == 0. && y1 == 0.)
 			{
-				ll.lon = 0.;
+				llr.lon = 0.;
 			}
-
 			else
 			{
-				ll.lon = Math.atan2(y1, x1);
+				llr.lon = Math.atan2(y1, x1);
 			}
-
 		}
-
 		else
 		{
+			// The vector is the zero vector.
 
-			/*
-		      The vector is the zero vector.
-			 */
-
-			//*radius    = 0.;
-			ll.lon = 0.;
-			ll.lat  = 0.;
+			llr.rad = 0.;
+			llr.lon = 0.;
+			llr.lat = 0.;
 		}
 		
-		return ll;
+		return llr;
 	}
 }

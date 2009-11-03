@@ -3,6 +3,7 @@ package edu.jhuapl.near.gui.pick;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.text.DecimalFormat;
 
 import edu.jhuapl.near.gui.*;
 import edu.jhuapl.near.model.*;
@@ -17,7 +18,10 @@ public class PickManager implements
     private LineamentPopupMenu lineamentPopupMenu;
     private StatusBar statusBar;
     private ModelManager modelManager;
-    private vtkPropCollection erosProp;
+    private vtkCellPicker mouseMovedCellPicker;
+    private vtkCellPicker mousePressCellPicker;
+    private DecimalFormat decimalFormatter = new DecimalFormat("##0.000");
+    private DecimalFormat decimalFormatter2 = new DecimalFormat("#0.000");
     
 	public PickManager(
 			vtkRenderWindowPanel renWin, 
@@ -27,32 +31,14 @@ public class PickManager implements
 		this.renWin = renWin;
 		this.statusBar = statusBar;
 		this.modelManager = modelManager;
-		
-		erosProp = new vtkPropCollection();
-		ErosModel eros = (ErosModel)modelManager.getModel(ModelManager.EROS);
-		vtkActor actor = eros.getActors().get(0);
-		erosProp.AddItem(actor);
+
+		renWin.addMouseListener(this);
+        renWin.addMouseMotionListener(this);
+
+		mouseMovedCellPicker = new vtkCellPicker();
+		mouseMovedCellPicker.SetTolerance(0.002);
 	}
 
-	/*
-	public void propertyChange(PropertyChangeEvent evt) 
-	{
-		System.out.println("11XXXXXXXXXx");
-
-		if (evt.getPropertyName().equals(Properties.PICK_OCCURED))
-		{
-			System.out.println("22XXXXXXXXXx");
-			PickEvent pickEvent = (PickEvent)evt.getNewValue();
-			vtkPoints pts = pickEvent.getCellPicker().GetPickedPositions();
-			System.out.println(pts.GetNumberOfPoints());
-			
-			//for (int i=0;i<cellPicker.GetActors().GetNumberOfItems();++i)
-			//	System.out.println("--"+(cellPicker.GetActors().GetItemAsObject(i)==this.erosActor));
-
-		}
-	}
-	 */
-	
 	public void mouseClicked(MouseEvent e) 
 	{
 	}
@@ -77,33 +63,68 @@ public class PickManager implements
 
 	public void mouseDragged(MouseEvent e) 
 	{
+		mouseMoved(e);
 	}
 
 	public void mouseMoved(MouseEvent e) 
 	{
-		vtkPropPicker propPicker = new vtkPropPicker();
-		//propPicker.InitializePickList();
+		if (renWin.GetRenderWindow().GetNeverRendered() > 0)
+    		return;
 		
-		// get the eros actor
-		
-		
-		//propPicker.AddPickList(actor);
-		
-		int pickSucceeded = propPicker.Pick(e.getX(), renWin.getIren().GetSize()[1]-e.getY()-1, 0.0, renWin.GetRenderer());
+		int pickSucceeded = mouseMovedCellPicker.Pick(e.getX(), renWin.getIren().GetSize()[1]-e.getY()-1, 0.0, renWin.GetRenderer());
 		if (pickSucceeded == 1)
 		{
-			double[] pos = propPicker.GetPickPosition();
-			System.out.println(pos);
-			LatLon ll = LatLon.recToLatLon(pos);
-			statusBar.setRightText(ll.lat*180/Math.PI + " " + ll.lon*180/Math.PI);
+			double[] pos = mouseMovedCellPicker.GetPickPosition();
+			LatLon llr = LatLon.recToLatLon(pos);
+
+			// Note \u00B0 is the unicode degree symbol
+			
+			//double sign = 1.0;
+			double lat = llr.lat*180/Math.PI;
+			//if (lat < 0.0)
+			//	sign = -1.0;
+	        String latStr = decimalFormatter.format(lat);
+	        if (latStr.length() == 5)
+	        	latStr = "  " + latStr;
+	        else if (latStr.length() == 6)
+	        	latStr = " " + latStr;
+	        //if (lat >= 0.0)
+	        //	latStr += "\u00B0N";
+	        //else
+	        //	latStr += "\u00B0S";
+	        latStr += "\u00B0";
+	        
+	        // Note that the convention seems to be that longitude
+	        // is never negative. Also by convention the calculated 
+	        // longitude needs to be subtracted from 360.
+	        double lon = llr.lon*180/Math.PI;
+			if (lon < 0.0)
+				lon += 360.0;
+			lon = 360.0 - lon;
+	        String lonStr = decimalFormatter.format(lon);
+	        if (lonStr.length() == 5)
+	        	lonStr = "  " + lonStr;
+	        else if (lonStr.length() == 6)
+	        	lonStr = " " + lonStr;
+	        //if (lon >= 0.0)
+	        //	lonStr += "\u00B0E";
+	        //else
+	        //	lonStr += "\u00B0W";
+	        lonStr += "\u00B0";
+
+	        double rad = llr.rad;
+	        String radStr = decimalFormatter2.format(rad);
+	        if (radStr.length() == 5)
+	        	radStr = " " + radStr;
+	        radStr += "km";
+
+
+			statusBar.setRightText("Lat: " + latStr + "  Lon: " + lonStr + "  Diam: " + radStr + " ");
 		}
 		else
 		{
 			statusBar.setRightText(" ");
-			System.out.println("nothing picked");
 		}
-		
-		
 	}
 
 	private void maybeShowPopup(MouseEvent e) 
