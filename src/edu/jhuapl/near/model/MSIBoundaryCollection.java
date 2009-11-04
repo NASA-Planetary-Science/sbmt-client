@@ -48,36 +48,19 @@ public class MSIBoundaryCollection extends Model
 	
 	private ArrayList<vtkActor> boundaryActors = new ArrayList<vtkActor>();
 
-	//private HashMap<Boundary, vtkActor> boundaryActors = new HashMap<Boundary, vtkActor>();
-
 	private HashMap<String, Boundary> fileToBoundaryMap = new HashMap<String, Boundary>();
+	private HashMap<vtkActor, String> actorToFileMap = new HashMap<vtkActor, String>();
 	
-	//private ArrayList<Boundary> boundaries = new ArrayList<Boundary>();
-
-	/*
-	public void setBoundaries(ArrayList<String> images)
-	{
-		boundaries.clear();
-		boundaryActors.clear();
-		
-		// For each file, download the file from the internet and display it
-		for (String s : images)
-		{
-			// Download this file to a temporary location.
-			Boundary bound = new Boundary(s);
-			boundaries.add(bound);
-			boundaryActors.add(bound.actor);
-		}
-
-		this.pcs.firePropertyChange(Properties.BOUNDARIES_CHANGED, null, null);
-	}
-*/
-
 	public void addBoundary(String path) throws FitsException, IOException
 	{
+		if (fileToBoundaryMap.containsKey(path))
+			return;
+
 		Boundary image = new Boundary(path);
 
 		fileToBoundaryMap.put(path, image);
+		
+		actorToFileMap.put(image.actor, path);
 		
 		boundaryActors.add(image.actor);
 		
@@ -89,6 +72,8 @@ public class MSIBoundaryCollection extends Model
 		vtkActor actor = fileToBoundaryMap.get(path).actor;
 		
 		boundaryActors.remove(actor);
+
+		actorToFileMap.remove(actor);
 		
 		fileToBoundaryMap.remove(path);
 
@@ -98,6 +83,7 @@ public class MSIBoundaryCollection extends Model
 	public void removeAllBoundaries()
 	{
 		boundaryActors.clear();
+		actorToFileMap.clear();
 		fileToBoundaryMap.clear();
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 	}
@@ -115,4 +101,11 @@ public class MSIBoundaryCollection extends Model
 		else
 			return dummyActors;
 	}
+	
+    public String getClickStatusBarText(vtkActor actor, int cellId)
+    {
+    	File file = new File(actorToFileMap.get(actor));
+    	return "Boundary of MSI image " + file.getName().substring(2, 11);
+    }
+
 }

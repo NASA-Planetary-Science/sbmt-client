@@ -22,6 +22,7 @@ public class ModelManager extends Model implements PropertyChangeListener
 	private MSIBoundaryCollection msiBoundaries;
 	
     private ArrayList<vtkActor> actors = new ArrayList<vtkActor>();
+    private ArrayList<vtkActor> actorsExceptEros = new ArrayList<vtkActor>();
     private HashMap<vtkActor, Model> actorToModelMap = new HashMap<vtkActor, Model>();
     
     private ArrayList<Model> allModels;
@@ -52,6 +53,11 @@ public class ModelManager extends Model implements PropertyChangeListener
 		return actors;
 	}
 
+    public ArrayList<vtkActor> getActorsExceptEros()
+	{
+		return actorsExceptEros;
+	}
+
 	public void propertyChange(PropertyChangeEvent arg0) 
 	{
 		updateActors();
@@ -61,14 +67,18 @@ public class ModelManager extends Model implements PropertyChangeListener
 	private void updateActors()
 	{
 		actors.clear();
+		actorsExceptEros.clear();
 		actorToModelMap.clear();
 
 		for (Model model : allModels)
 		{
 			actors.addAll(model.getActors());
-
+						
 			for (vtkActor act : model.getActors())
 	    		actorToModelMap.put(act, model);
+			
+			if (!(model instanceof ErosModel))
+				actorsExceptEros.addAll(model.getActors());
 		}
 	}
 

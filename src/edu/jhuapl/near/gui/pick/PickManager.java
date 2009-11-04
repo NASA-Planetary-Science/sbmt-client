@@ -3,7 +3,10 @@ package edu.jhuapl.near.gui.pick;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 
 import edu.jhuapl.near.gui.*;
 import edu.jhuapl.near.model.*;
@@ -12,7 +15,8 @@ import vtk.*;
 
 public class PickManager implements 
 			MouseListener, 
-			MouseMotionListener 
+			MouseMotionListener,
+			PropertyChangeListener
 {
     private vtkRenderWindowPanel renWin;
     private LineamentPopupMenu lineamentPopupMenu;
@@ -32,14 +36,20 @@ public class PickManager implements
 		this.statusBar = statusBar;
 		this.modelManager = modelManager;
 
+		modelManager.addPropertyChangeListener(this);
+		
 		renWin.addMouseListener(this);
         renWin.addMouseMotionListener(this);
 
 		mouseMovedCellPicker = new vtkCellPicker();
 		mouseMovedCellPicker.SetTolerance(0.002);
 
+		// See comment in the propertyChange function below as to why
+		// we use a custom pick list for this picker.
 		mousePressCellPicker = new vtkCellPicker();
 		mousePressCellPicker.SetTolerance(0.002);
+		mousePressCellPicker.PickFromListOn();
+		mousePressCellPicker.InitializePickList();
 		
 		lineamentPopupMenu = 
 			new LineamentPopupMenu((LineamentModel)modelManager.getModel(ModelManager.LINEAMENT));
@@ -74,6 +84,7 @@ public class PickManager implements
 		{
 			statusBar.setLeftText(" ");
 		}
+
 		maybeShowPopup(e);
 	}
 
@@ -166,11 +177,6 @@ public class PickManager implements
     	    		if (lin != null)
     	    			lineamentPopupMenu.show(e.getComponent(), e.getX(), e.getY(), lin);
     			}
-    			else if (modelManager.getModel(pickedActor) instanceof ErosModel)
-    			{
-    				ErosModel erosModel = (ErosModel)modelManager.getModel(ModelManager.EROS);
-    				
-    			}
     			else if (modelManager.getModel(pickedActor) instanceof MSIBoundaryCollection)
     			{
         			MSIBoundaryCollection msiBoundaries = (MSIBoundaryCollection)modelManager.getModel(ModelManager.MSI_BOUNDARY);
@@ -184,4 +190,24 @@ public class PickManager implements
     		}		
         }
     }
+
+	public void propertyChange(PropertyChangeEvent evt) 
+	{
+		if (evt.getPropertyName().equals(Properties.MODEL_CHANGED))
+		{
+			// Whenever the model actors change, we need to update the pickers 
+			// internal list of all actors to pick from. The Eros actor is excluded
+			// from this list since many other actors occupy the same position
+			// as parts of Eros and we want the picker to pick these other
+			// actors rather than Eros. Note that this exclusion only applies 
+			// the picker used for mouse presses. The picker used for mouse moves
+			// however includes all actors, including Eros.
+			ArrayList<vtkActor> actors = modelManager.getActorsExceptEros();
+			mousePressCellPicker.GetPickList().RemoveAllItems();
+			for (vtkActor act : actors)
+			{
+				mousePressCellPicker.AddPickList(act);
+			}
+		}
+	}
 }

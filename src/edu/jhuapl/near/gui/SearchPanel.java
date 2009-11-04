@@ -74,21 +74,23 @@ public class SearchPanel extends JPanel implements ActionListener, MouseListener
 		//private Component invoker;
 	    private ModelManager modelManager;
 		String currentImage;
+	    JMenuItem showImageIn3DMenuItem;
+	    JMenuItem showBoundaryIn3DMenuItem;
+	    JMenuItem showImageInfoMenuItem;
 	    
 		public PopupMenu(ModelManager modelManager)
 		{
 	    	this.modelManager = modelManager;
 
-			JMenuItem mi; 
-			mi = new JMenuItem(new ShowIn3DAction());
-			mi.setText("Map image to 3D model of Eros");
-			this.add(mi);
-			mi = new JMenuItem(new ShowOutlineIn3DAction());
-			mi.setText("Map image boundary to 3D model of Eros");
-			this.add(mi);
-			//mi = new JMenuItem(new ShowInfoAction());
-			//mi.setText("Show image information");
-			//this.add(mi);
+			showImageIn3DMenuItem = new JMenuItem(new ShowIn3DAction());
+			showImageIn3DMenuItem.setText("Map image to 3D model of Eros");
+			this.add(showImageIn3DMenuItem);
+			showBoundaryIn3DMenuItem = new JMenuItem(new ShowOutlineIn3DAction());
+			showBoundaryIn3DMenuItem.setText("Map image boundary to 3D model of Eros");
+			this.add(showBoundaryIn3DMenuItem);
+			showImageInfoMenuItem = new JMenuItem(new ShowInfoAction());
+			showImageInfoMenuItem.setText("Show image information");
+			this.add(showImageInfoMenuItem);
 		}
 
 		public void show(Component invoker, int x, int y, String imageName)
@@ -140,12 +142,12 @@ public class SearchPanel extends JPanel implements ActionListener, MouseListener
 			}
 		}
 		
-		//private class ShowInfoAction extends AbstractAction
-		//{
-		//	public void actionPerformed(ActionEvent e) 
-		//	{
-		//	}
-		//}
+		private class ShowInfoAction extends AbstractAction
+		{
+			public void actionPerformed(ActionEvent e) 
+			{
+			}
+		}
 		
 	}
 
