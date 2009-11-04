@@ -108,4 +108,8 @@ public class MSIBoundaryCollection extends Model
     	return "Boundary of MSI image " + file.getName().substring(2, 11);
     }
 
+    public String getBoundaryName(vtkActor actor)
+    {
+    	return actorToFileMap.get(actor);
+    }
 }

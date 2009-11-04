@@ -17,6 +17,7 @@ import nom.tam.fits.FitsException;
 import org.joda.time.*;
 
 import edu.jhuapl.near.database.Database;
+import edu.jhuapl.near.gui.popupmenus.MSIPopupMenu;
 import edu.jhuapl.near.model.MSIBoundaryCollection;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.NearImageCollection;
@@ -58,7 +59,7 @@ public class SearchPanel extends JPanel implements ActionListener, MouseListener
     
     private JList resultList;
     private DefaultListModel resultListModel;
-    private PopupMenu popupMenu;
+    private MSIPopupMenu popupMenu;
     private ArrayList<String> rawResults = new ArrayList<String>();
     private JLabel label;
     private JButton nextButton;
@@ -69,87 +70,6 @@ public class SearchPanel extends JPanel implements ActionListener, MouseListener
     private IdPair boundaryIntervalCurrentlyShown = null;
 
     
-	private static class PopupMenu extends JPopupMenu 
-	{
-		//private Component invoker;
-	    private ModelManager modelManager;
-		String currentImage;
-	    JMenuItem showImageIn3DMenuItem;
-	    JMenuItem showBoundaryIn3DMenuItem;
-	    JMenuItem showImageInfoMenuItem;
-	    
-		public PopupMenu(ModelManager modelManager)
-		{
-	    	this.modelManager = modelManager;
-
-			showImageIn3DMenuItem = new JMenuItem(new ShowIn3DAction());
-			showImageIn3DMenuItem.setText("Map image to 3D model of Eros");
-			this.add(showImageIn3DMenuItem);
-			showBoundaryIn3DMenuItem = new JMenuItem(new ShowOutlineIn3DAction());
-			showBoundaryIn3DMenuItem.setText("Map image boundary to 3D model of Eros");
-			this.add(showBoundaryIn3DMenuItem);
-			showImageInfoMenuItem = new JMenuItem(new ShowInfoAction());
-			showImageInfoMenuItem.setText("Show image information");
-			this.add(showImageInfoMenuItem);
-		}
-
-		public void show(Component invoker, int x, int y, String imageName)
-		{
-			System.out.println(imageName);
-			currentImage = imageName;
-			super.show(invoker, x, y);
-		}
-		
-
-		private class ShowIn3DAction extends AbstractAction
-		{
-			public void actionPerformed(ActionEvent e) 
-			{
-				NearImageCollection model = (NearImageCollection)modelManager.getModel(ModelManager.MSI_IMAGES);
-				try 
-				{
-					model.addImage(currentImage);
-				} 
-				catch (FitsException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-				catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-			}
-		}
-		
-		private class ShowOutlineIn3DAction extends AbstractAction
-		{
-			public void actionPerformed(ActionEvent e) 
-			{
-				MSIBoundaryCollection model = (MSIBoundaryCollection)modelManager.getModel(ModelManager.MSI_BOUNDARY);
-				try 
-				{
-					String boundaryName = currentImage.substring(0,currentImage.length()-4) + "_BOUNDARY.VTK";
-					model.addBoundary(boundaryName);
-				} 
-				catch (FitsException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-				catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-			}
-		}
-		
-		private class ShowInfoAction extends AbstractAction
-		{
-			public void actionPerformed(ActionEvent e) 
-			{
-			}
-		}
-		
-	}
 
     public SearchPanel(final ModelManager modelManager) 
     {
@@ -404,7 +324,7 @@ public class SearchPanel extends JPanel implements ActionListener, MouseListener
         
         JPanel resultsPanel = new JPanel(new BorderLayout());
 		
-		popupMenu = new PopupMenu(this.modelManager);
+		popupMenu = new MSIPopupMenu(this.modelManager, 0, this);
 
 		label = new JLabel(" ");
 

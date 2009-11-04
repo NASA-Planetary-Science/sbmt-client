@@ -108,4 +108,13 @@ public class NearImageCollection extends Model implements PropertyChangeListener
     	return "MSI image " + file.getName().substring(2, 11);
     }
 
+    public String getImageName(vtkActor actor)
+    {
+    	return actorToFileMap.get(actor);
+    }
+    
+    public NearImage getImage(String file)
+    {
+    	return fileToImageMap.get(file);
+    }
 }

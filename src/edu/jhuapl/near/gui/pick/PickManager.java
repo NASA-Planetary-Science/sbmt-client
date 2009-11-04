@@ -9,6 +9,8 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import edu.jhuapl.near.gui.*;
+import edu.jhuapl.near.gui.popupmenus.LineamentPopupMenu;
+import edu.jhuapl.near.gui.popupmenus.MSIPopupMenu;
 import edu.jhuapl.near.model.*;
 import edu.jhuapl.near.util.*;
 import vtk.*;
@@ -20,6 +22,8 @@ public class PickManager implements
 {
     private vtkRenderWindowPanel renWin;
     private LineamentPopupMenu lineamentPopupMenu;
+    private MSIPopupMenu msiImagesPopupMenu;
+    private MSIPopupMenu msiBoundariesPopupMenu;
     private StatusBar statusBar;
     private ModelManager modelManager;
     private vtkCellPicker mouseMovedCellPicker;
@@ -53,6 +57,12 @@ public class PickManager implements
 		
 		lineamentPopupMenu = 
 			new LineamentPopupMenu((LineamentModel)modelManager.getModel(ModelManager.LINEAMENT));
+		
+		msiBoundariesPopupMenu= 
+			new MSIPopupMenu(modelManager, 1, renWin);
+		
+		msiImagesPopupMenu = 
+			new MSIPopupMenu(modelManager, 2, renWin);
 	}
 
 	public void mouseClicked(MouseEvent e) 
@@ -180,12 +190,14 @@ public class PickManager implements
     			else if (modelManager.getModel(pickedActor) instanceof MSIBoundaryCollection)
     			{
         			MSIBoundaryCollection msiBoundaries = (MSIBoundaryCollection)modelManager.getModel(ModelManager.MSI_BOUNDARY);
-    				
+        			String name = msiBoundaries.getBoundaryName(pickedActor);
+        			msiBoundariesPopupMenu.show(e.getComponent(), e.getX(), e.getY(), name);
     			}
     			else if (modelManager.getModel(pickedActor) instanceof NearImageCollection)
     			{
         			NearImageCollection msiImages = (NearImageCollection)modelManager.getModel(ModelManager.MSI_IMAGES);
-    				
+        			String name = msiImages.getImageName(pickedActor);
+        			msiBoundariesPopupMenu.show(e.getComponent(), e.getX(), e.getY(), name);
     			}
     		}		
         }
