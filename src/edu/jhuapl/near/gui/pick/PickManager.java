@@ -9,8 +9,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import edu.jhuapl.near.gui.*;
-import edu.jhuapl.near.gui.popupmenus.LineamentPopupMenu;
-import edu.jhuapl.near.gui.popupmenus.MSIPopupMenu;
+import edu.jhuapl.near.gui.popupmenus.*;
 import edu.jhuapl.near.model.*;
 import edu.jhuapl.near.util.*;
 import vtk.*;
@@ -34,7 +33,8 @@ public class PickManager implements
 	public PickManager(
 			vtkRenderWindowPanel renWin, 
 			StatusBar statusBar,
-			ModelManager modelManager)
+			ModelManager modelManager,
+			MSIImageInfoPanelManager infoPanelManager)
 	{
 		this.renWin = renWin;
 		this.statusBar = statusBar;
@@ -59,10 +59,10 @@ public class PickManager implements
 			new LineamentPopupMenu((LineamentModel)modelManager.getModel(ModelManager.LINEAMENT));
 		
 		msiBoundariesPopupMenu= 
-			new MSIPopupMenu(modelManager, 1, renWin);
+			new MSIPopupMenu(modelManager, infoPanelManager, renWin, renWin);
 		
 		msiImagesPopupMenu = 
-			new MSIPopupMenu(modelManager, 2, renWin);
+			new MSIPopupMenu(modelManager, infoPanelManager, renWin, renWin);
 	}
 
 	public void mouseClicked(MouseEvent e) 
@@ -191,13 +191,15 @@ public class PickManager implements
     			{
         			MSIBoundaryCollection msiBoundaries = (MSIBoundaryCollection)modelManager.getModel(ModelManager.MSI_BOUNDARY);
         			String name = msiBoundaries.getBoundaryName(pickedActor);
-        			msiBoundariesPopupMenu.show(e.getComponent(), e.getX(), e.getY(), name);
+        			msiBoundariesPopupMenu.setCurrentImage(name);
+        			msiBoundariesPopupMenu.show(e.getComponent(), e.getX(), e.getY());
     			}
     			else if (modelManager.getModel(pickedActor) instanceof NearImageCollection)
     			{
         			NearImageCollection msiImages = (NearImageCollection)modelManager.getModel(ModelManager.MSI_IMAGES);
         			String name = msiImages.getImageName(pickedActor);
-        			msiBoundariesPopupMenu.show(e.getComponent(), e.getX(), e.getY(), name);
+        			msiImagesPopupMenu.setCurrentImage(name);
+        			msiImagesPopupMenu.show(e.getComponent(), e.getX(), e.getY());
     			}
     		}		
         }

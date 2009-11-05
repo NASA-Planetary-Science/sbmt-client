@@ -10,10 +10,14 @@ public class ControlPanel extends JTabbedPane
 	private ErosControlPanel erosPanel;
 	//private MSIControlPanel msiPanel;
 	private LineamentControlPanel lineamentPanel;
+		
 	
-	public ControlPanel(ErosRenderer viewer, ModelManager modelManager)
+	public ControlPanel(
+			ErosRenderer viewer, 
+			ModelManager modelManager, 
+			MSIImageInfoPanelManager infoPanelManager)
 	{
-		searchPanel = new SearchPanel(modelManager);
+		searchPanel = new SearchPanel(modelManager, infoPanelManager, viewer.getRenderWindowPanel());
 		erosPanel = new ErosControlPanel(modelManager);
 		//msiPanel = new MSIControlPanel(modelManager);
 		lineamentPanel = new LineamentControlPanel(modelManager);

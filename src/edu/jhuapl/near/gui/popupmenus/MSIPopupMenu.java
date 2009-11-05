@@ -9,9 +9,12 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 
+import vtk.vtkRenderWindowPanel;
+
 import nom.tam.fits.FitsException;
-import edu.jhuapl.near.gui.FITFileChooser;
+import edu.jhuapl.near.gui.*;
 import edu.jhuapl.near.model.*;
+import edu.jhuapl.near.util.BoundingBox;
 import edu.jhuapl.near.util.FileCache;
 
 
@@ -19,15 +22,14 @@ public class MSIPopupMenu extends JPopupMenu
 {
 	private Component invoker;
     private ModelManager modelManager;
-    private String currentImage;
-    private JMenuItem showImageIn3DMenuItem;
-    private JMenuItem showBoundaryIn3DMenuItem;
-    private JMenuItem removeImageIn3DMenuItem;
-    private JMenuItem removeBoundaryIn3DMenuItem;
+    private String currentImageOrBoundary;
+    private JMenuItem showRemoveImageIn3DMenuItem;
+    private JMenuItem showRemoveBoundaryIn3DMenuItem;
     private JMenuItem showImageInfoMenuItem;
     private JMenuItem saveToDiskMenuItem;
     private JMenuItem centerImageMenuItem;
-    private int type;
+    private MSIImageInfoPanelManager infoPanelManager;
+    private vtkRenderWindowPanel renWin;
     
     /**
      * 
@@ -36,59 +38,120 @@ public class MSIPopupMenu extends JPopupMenu
      * 1 for right clicks on boundaries mapped on Eros, 2 for right clicks on images
      * mapped to Eros.
      */
-	public MSIPopupMenu(ModelManager modelManager, int type, Component invoker)
+	public MSIPopupMenu(
+			ModelManager modelManager, 
+			MSIImageInfoPanelManager infoPanelManager,
+			vtkRenderWindowPanel renWin,
+			Component invoker)
 	{
     	this.modelManager = modelManager;
-    	this.type = type;
+    	this.infoPanelManager = infoPanelManager;
+    	this.renWin = renWin;
     	this.invoker = invoker;
     	
-		showImageIn3DMenuItem = new JMenuItem(new ShowIn3DAction());
-		showImageIn3DMenuItem.setText("Map Image to 3D model of Eros");
-		this.add(showImageIn3DMenuItem);
-
-		if (this.type != 1)
-		{
-			showBoundaryIn3DMenuItem = new JMenuItem(new ShowOutlineIn3DAction());
-			showBoundaryIn3DMenuItem.setText("Map Image Boundary to 3D Model of Eros");
-			this.add(showBoundaryIn3DMenuItem);
-		}
+		showRemoveImageIn3DMenuItem = new JMenuItem(new ShowRemoveIn3DAction());
+		this.add(showRemoveImageIn3DMenuItem);
 		
-		if (this.type != 2)
+		showRemoveBoundaryIn3DMenuItem = new JMenuItem(new ShowRemoveOutlineIn3DAction());
+		this.add(showRemoveBoundaryIn3DMenuItem);
+		
+		if (this.infoPanelManager != null)
 		{
 			showImageInfoMenuItem = new JMenuItem(new ShowInfoAction());
-			showImageInfoMenuItem.setText("Show Image Information...");
+			showImageInfoMenuItem.setText("Properties...");
 			this.add(showImageInfoMenuItem);
 		}
 		
 		saveToDiskMenuItem = new JMenuItem(new SaveImageAction());
-		saveToDiskMenuItem.setText("Save Image to Disk...");
+		saveToDiskMenuItem.setText("Save Raw FIT Image to Disk...");
 		this.add(saveToDiskMenuItem);
 
 		centerImageMenuItem = new JMenuItem(new CenterImageAction());
-		centerImageMenuItem.setText("Center Image in Window");
-		this.add(centerImageMenuItem);
+		centerImageMenuItem.setText("Center in Window");
+		//this.add(centerImageMenuItem);
 
 	}
 
-	public void show(Component invoker, int x, int y, String imageName)
+	/**
+	 * The reason for this function is that other classes may desire to use
+	 * the menu items of this menu in a non-popup type menu, i.e. in an actual
+	 * menubar type menu. Therefore we provide this function to allow such a
+	 * class to grab the menu items.
+	 * @return
+	 */
+	/*
+	public JMenuItem[] getMenuItems()
 	{
-		System.out.println(imageName);
-		currentImage = imageName;
-		super.show(invoker, x, y);
+		if (infoPanelManager != null)
+		{
+			JMenuItem[] items = {
+					this.showRemoveImageIn3DMenuItem,
+					this.showRemoveBoundaryIn3DMenuItem,
+					this.showImageInfoMenuItem,
+					this.saveToDiskMenuItem,
+					this.centerImageMenuItem 
+			};
+
+			return items;
+		}
+		else
+		{
+			JMenuItem[] items = {
+					this.showRemoveImageIn3DMenuItem,
+					this.showRemoveBoundaryIn3DMenuItem,
+					this.saveToDiskMenuItem,
+					this.centerImageMenuItem 
+			};
+
+			return items;
+		}
+	}
+	*/
+	
+	public void setCurrentImage(String name)
+	{
+		currentImageOrBoundary = name;
+
+		String imageName = name;
+		if (imageName.endsWith("_BOUNDARY.VTK"))
+			imageName = imageName.substring(0, imageName.length()-13) + ".FIT";
+		
+		String boundaryName = name;
+		if (boundaryName.endsWith(".FIT"))
+			boundaryName = boundaryName.substring(0,boundaryName.length()-4) + "_BOUNDARY.VTK";
+		
+		MSIBoundaryCollection msiBoundaries = (MSIBoundaryCollection)modelManager.getModel(ModelManager.MSI_BOUNDARY);
+		if (msiBoundaries.containsBoundary(boundaryName))
+			showRemoveBoundaryIn3DMenuItem.setText("Remove Image Boundary");
+		else
+			showRemoveBoundaryIn3DMenuItem.setText("Show Image Boundary in 3D");
+		
+		NearImageCollection msiImages = (NearImageCollection)modelManager.getModel(ModelManager.MSI_IMAGES);
+		if (msiImages.containsImage(imageName))
+			showRemoveImageIn3DMenuItem.setText("Remove Image");
+		else
+			showRemoveImageIn3DMenuItem.setText("Show Image in 3D");
 	}
 	
 
-	private class ShowIn3DAction extends AbstractAction
+	private class ShowRemoveIn3DAction extends AbstractAction
 	{
 		public void actionPerformed(ActionEvent e) 
 		{
 			NearImageCollection model = (NearImageCollection)modelManager.getModel(ModelManager.MSI_IMAGES);
 			try 
 			{
-				String name = currentImage;
+				String name = currentImageOrBoundary;
 				if (name.endsWith("_BOUNDARY.VTK"))
 					name = name.substring(0, name.length()-13) + ".FIT";
-				model.addImage(name);
+				
+				if (showRemoveImageIn3DMenuItem.getText().startsWith("Show"))
+					model.addImage(name);
+				else
+					model.removeImage(name);
+				
+				// Force an update on the first 2 menu items
+				setCurrentImage(currentImageOrBoundary);
 			} 
 			catch (FitsException e1) {
 				// TODO Auto-generated catch block
@@ -101,17 +164,24 @@ public class MSIPopupMenu extends JPopupMenu
 		}
 	}
 	
-	private class ShowOutlineIn3DAction extends AbstractAction
+	private class ShowRemoveOutlineIn3DAction extends AbstractAction
 	{
 		public void actionPerformed(ActionEvent e) 
 		{
 			MSIBoundaryCollection model = (MSIBoundaryCollection)modelManager.getModel(ModelManager.MSI_BOUNDARY);
 			try 
 			{
-				String name = currentImage;
+				String name = currentImageOrBoundary;
 				if (name.endsWith(".FIT"))
-					name = name.substring(0,currentImage.length()-4) + "_BOUNDARY.VTK";
-				model.addBoundary(name);
+					name = name.substring(0,name.length()-4) + "_BOUNDARY.VTK";
+				
+				if (showRemoveBoundaryIn3DMenuItem.getText().startsWith("Show"))
+					model.addBoundary(name);
+				else
+					model.removeBoundary(name);
+
+				// Force an update on the first 2 menu items
+				setCurrentImage(currentImageOrBoundary);
 			} 
 			catch (FitsException e1) {
 				// TODO Auto-generated catch block
@@ -128,6 +198,21 @@ public class MSIPopupMenu extends JPopupMenu
 	{
 		public void actionPerformed(ActionEvent e) 
 		{
+			String name = currentImageOrBoundary;
+			if (name.endsWith("_BOUNDARY.VTK"))
+				name = name.substring(0, name.length()-13) + ".FIT";
+			
+			try 
+			{
+				infoPanelManager.addImage(NearImage.NearImageFactory.createImage(name));
+			} 
+			catch (FitsException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 		}
 	}
 	
@@ -140,7 +225,7 @@ public class MSIPopupMenu extends JPopupMenu
 			{
 				if (file != null)
 				{
-					File fitFile = FileCache.getFileFromServer(currentImage);
+					File fitFile = FileCache.getFileFromServer(currentImageOrBoundary);
 
 					InputStream in = new FileInputStream(fitFile);
 
@@ -171,6 +256,30 @@ public class MSIPopupMenu extends JPopupMenu
 	{
 		public void actionPerformed(ActionEvent e) 
 		{
+			String name = currentImageOrBoundary;
+			if (name.endsWith("_BOUNDARY.VTK"))
+				name = name.substring(0, name.length()-13) + ".FIT";
+
+			try 
+			{
+				NearImage image = NearImage.NearImageFactory.createImage(name);
+				BoundingBox bb = image.getBoundingBox();
+				renWin.GetRenderer().ResetCamera(
+						bb.xmin,
+						bb.xmax,
+						bb.ymin,
+						bb.ymax,
+						bb.zmin,
+						bb.zmax);
+				renWin.Render();
+			}
+			catch (FitsException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 		}
 	}
 	

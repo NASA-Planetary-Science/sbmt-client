@@ -16,6 +16,7 @@
            <classpath>
 			 <pathelement location="${rootdir}/lib/vtk.jar"/>
 			 <pathelement location="${rootdir}/lib/jide-oss-2.7.3.jar"/>
+			 <pathelement location="${rootdir}/lib/joda-time-1.6.jar"/>
            </classpath>
         </javac> 
     </target>
@@ -28,6 +29,7 @@
 			 <pathelement location="${rootdir}/build/classes"/>
 			 <pathelement location="${rootdir}/lib/vtk.jar"/>
 			 <pathelement location="${rootdir}/lib/jide-oss-2.7.3.jar"/>
+			 <pathelement location="${rootdir}/lib/joda-time-1.6.jar"/>
            </classpath>
         </java>
     </target>
@@ -37,7 +39,8 @@
         <jar destfile="${rootdir}/build/jar/near.jar" basedir="${rootdir}/build/classes">
            <manifest>
                <attribute name="Class-Path" value="vtk.jar
-												   jide-oss-2.7.3.jar"/>
+												   jide-oss-2.7.3.jar
+												   joda-time-1.6.jar"/>
                <attribute name="Main-Class" value="edu.jhuapl.near.ErosLineamentViewer"/>
            </manifest>
         </jar>
@@ -51,6 +54,7 @@
            <classpath>
 			 <pathelement location="${rootdir}/lib/vtk.jar"/>
 			 <pathelement location="${rootdir}/lib/jide-oss-2.7.3.jar"/>
+			 <pathelement location="${rootdir}/lib/joda-time-1.6.jar"/>
 			 <pathelement location="${rootdir}/build/jar/near.jar"/>
            </classpath>
         </java>

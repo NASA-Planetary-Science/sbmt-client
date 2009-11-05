@@ -22,5 +22,6 @@ public class Configuration
 	{
 		return "http://near.jhuapl.edu/software/data";
 		//return "http://localhost:8080";
+		//return "file:///home/kahneg1/.neartool/cache/1";
 	}
 }

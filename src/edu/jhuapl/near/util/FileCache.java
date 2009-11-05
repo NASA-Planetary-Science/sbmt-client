@@ -20,7 +20,7 @@ public class FileCache
 			"cache" + File.separator + cacheVersion;
 		}
 		
-		File file = new File("cacheRoot" + File.separator + path);
+		File file = new File(cacheRoot + File.separator + path);
 		if (file.exists())
 		{
 			return file;

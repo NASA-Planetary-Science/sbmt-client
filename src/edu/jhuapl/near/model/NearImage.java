@@ -48,7 +48,7 @@ public class NearImage extends Model
 	
 	private float[] data = new float[NUM_LAYERS*IMAGE_HEIGHT*IMAGE_WIDTH];
 	
-	//private BoundingBox bb = new BoundingBox();
+	private BoundingBox boundingBox = new BoundingBox();
 	private String name = ""; // The name is a 9 digit number at the beginning of the filename
 						 	  // (starting after the initial M0). This is how the lineament 
 							  // model names them.
@@ -64,18 +64,13 @@ public class NearImage extends Model
 	
 	private int filter; // 1 through 7
 	private double polygonOffset = -10.0;
-	
+
 	/**
-	 * Because instances of NearImage can be expensive, we want to
-	 * there to be no more than one instance of this class per image
-	 * file on the server. Hence this class was created to manage the
-	 * creation and deletion of NearImage's using reference counting. 
-	 * Anyone needing a NearImage should use this factory class to 
-	 * create and destroy NearImages's and should NOT call the 
-	 * constructor directly.
-	 * 
-	 * @author eli
-	 *
+	 * Because instances of NearImage can be expensive, we want to there to be
+	 * no more than one instance of this class per image file on the server.
+	 * Hence this class was created to manage the creation and deletion of
+	 * NearImage's. Anyone needing a NearImage should use this factory class to
+	 * create NearImages's and should NOT call the constructor directly.
 	 */
 	public static class NearImageFactory
 	{
@@ -95,46 +90,9 @@ public class NearImage extends Model
 			return image;
 		}
 	}
-	/*
-	public static class NearImageFactory
-	{
-		static private HashMap<NearImage, Integer> imageRefCount = 
-			new HashMap<NearImage, Integer>();
-		static private HashMap<String, NearImage> nameToImageMap = 
-			new HashMap<String, NearImage>();
-		
-		static public NearImage createImage(String name) throws FitsException, IOException
-		{
-			if (nameToImageMap.containsKey(name))
-			{
-				NearImage image = nameToImageMap.get(name);
-				int size = imageRefCount.get(image);
-				imageRefCount.put(image, size+1);
-				return image;
-			}
-			else
-			{
-				NearImage image = new NearImage(name);
-				nameToImageMap.put(name, image);
-				imageRefCount.put(image, 1);
-				return image;
-			}
-		}
-		
-		static public void deleteImage(NearImage image)
-		{
-			int size = imageRefCount.get(image);
-			imageRefCount.put(image, size-1);
-			
-			if (size == 1)
-			{
-				nameToImageMap.remove(image.getServerPath());
-				imageRefCount.remove(image);
-			}
-		}
-	}
-	*/
-    private static class IMGFilter implements java.io.FileFilter 
+
+	
+	private static class IMGFilter implements java.io.FileFilter 
     {
     	String prefix;
     	IMGFilter(String prefix)
@@ -149,7 +107,6 @@ public class NearImage extends Model
                 return false;
             }
 
-            //String extension = getExtension(f);
             String name = f.getName();
             if (name != null) 
             {
@@ -167,19 +124,6 @@ public class NearImage extends Model
 
             return false;
         }
-
-//        private String getExtension(File f) 
-//        {
-//            String ext = null;
-//            String s = f.getName();
-//            int i = s.lastIndexOf('.');
-//
-//            if (i > 0 &&  i < s.length() - 1) 
-//            {
-//                ext = s.substring(i+1).toLowerCase();
-//            }
-//            return ext;
-//        }
     }
 
 	public NearImage(String filename) throws FitsException, IOException
@@ -203,6 +147,9 @@ public class NearImage extends Model
 
 		filename = fitFile.getAbsolutePath();
 		this.fullpath = filename;
+
+		// Set the filter name
+		filter = Integer.parseInt(fitFile.getName().substring(12,13));
 		
         Fits f = new Fits(filename);
         BasicHDU h = f.getHDU(0);
@@ -283,9 +230,6 @@ public class NearImage extends Model
 		if (k == -1)
 			k = basename.length() - 4;
 
-		// Set the filter name
-		filter = basename.charAt(12);
-		
         if (basename.length() >= 11)
         	name = basename.substring(2,11);
 
@@ -341,7 +285,7 @@ public class NearImage extends Model
 	        	
 	        	if (xx != PDS_NA && yy != PDS_NA && zz != PDS_NA)
 	        	{
-	        		//bb.update(xx, yy, zz);
+	        		boundingBox.update(xx, yy, zz);
 	        		
 	        		++numValidPixels;
 	        		//if (xx > 100)
@@ -538,10 +482,10 @@ public class NearImage extends Model
     }
     
 
-//	public BoundingBox getBoundingBox()
-//	{
-//		return bb;
-//	}
+	public BoundingBox getBoundingBox()
+	{
+		return boundingBox;
+	}
 	
 	public String getName()
 	{
@@ -686,6 +630,81 @@ public class NearImage extends Model
 		intValue = swap(intValue);
 		return Float.intBitsToFloat(intValue);
 	}
+
+    static public HashMap<String, String> parseLblFile(String lblFilename) throws IOException
+    {
+    	HashMap<String, String> imageProperties = new HashMap<String, String>();
+    	
+    	// Parse through the lbl file till we find the relevant strings
+    	
+		FileInputStream fs = null;
+		try {
+			fs = new FileInputStream(lblFilename);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		InputStreamReader isr = new InputStreamReader(fs);
+		BufferedReader in = new BufferedReader(isr);
+
+		String str;
+		while ((str = in.readLine()) != null)
+		{
+		    StringTokenizer st = new StringTokenizer(str);
+		    while (st.hasMoreTokens()) 
+		    {
+		    	String token = st.nextToken();
+		    	if (START_TIME.equals(token))
+		    	{
+		    		st.nextToken();
+		    		imageProperties.put(token, st.nextToken());
+		    	}
+		    	if (STOP_TIME.equals(token))
+		    	{
+		    		st.nextToken();
+		    		imageProperties.put(token, st.nextToken());
+		    	}
+		    	if (TARGET_CENTER_DISTANCE.equals(token))
+		    	{
+		    		st.nextToken();
+		    		imageProperties.put(token, st.nextToken());
+		    	}
+		    	if (HORIZONTAL_PIXEL_SCALE.equals(token))
+		    	{
+		    		st.nextToken();
+		    		imageProperties.put(token, st.nextToken());
+		    	}
+		    }
+		}
+
+		in.close();
+		
+    	return imageProperties;
+    }
+    
+    public HashMap<String, String> getProperties() throws IOException
+    {
+    	String filename = getFullPath();
+    	
+    	String lblFilename = filename.substring(0, filename.length()-4) + ".LBL";
+
+    	HashMap<String, String> properties = parseLblFile(lblFilename);
+    	
+		// The values of the hash map do not include units. Add them for certain properties.
+		for (String key : properties.keySet())
+		{
+			if (key.equals(HORIZONTAL_PIXEL_SCALE))
+				properties.put(key, properties.get(key) + " km/pixel");
+			else if (key.equals(TARGET_CENTER_DISTANCE))
+				properties.put(key, properties.get(key) + " km");
+		}
+		
+		// Add a few more properties
+		properties.put("FILTER", String.valueOf(filter));
+		properties.put("DAY_OF_YEAR", (new File(this.fullpath)).getParentFile().getParentFile().getName());
+		properties.put("YEAR", (new File(this.fullpath)).getParentFile().getParentFile().getParentFile().getName());
+		properties.put("DEBLUR_TYPE", (new File(this.fullpath)).getParentFile().getName());
+    	return properties;
+    }
 
 
 	/////////////////////////////////////////////////////////////////
@@ -1110,66 +1129,6 @@ public class NearImage extends Model
 		
     	return Double.MAX_VALUE;
     }
-
-    static public HashMap<String, String> parseLblFile(String lblFilename) throws IOException
-    {
-    	HashMap<String, String> imageProperties = new HashMap<String, String>();
-    	
-    	// Parse through the lbl file till we find the relevant strings
-    	
-		FileInputStream fs = null;
-		try {
-			fs = new FileInputStream(lblFilename);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-		InputStreamReader isr = new InputStreamReader(fs);
-		BufferedReader in = new BufferedReader(isr);
-
-		String str;
-		while ((str = in.readLine()) != null)
-		{
-		    StringTokenizer st = new StringTokenizer(str);
-		    while (st.hasMoreTokens()) 
-		    {
-		    	String token = st.nextToken();
-		    	if (START_TIME.equals(token))
-		    	{
-		    		st.nextToken();
-		    		imageProperties.put(token, st.nextToken());
-		    	}
-		    	if (STOP_TIME.equals(token))
-		    	{
-		    		st.nextToken();
-		    		imageProperties.put(token, st.nextToken());
-		    	}
-		    	if (TARGET_CENTER_DISTANCE.equals(token))
-		    	{
-		    		st.nextToken();
-		    		imageProperties.put(token, st.nextToken());
-		    	}
-		    	if (HORIZONTAL_PIXEL_SCALE.equals(token))
-		    	{
-		    		st.nextToken();
-		    		imageProperties.put(token, st.nextToken());
-		    	}
-		    }
-		}
-
-		in.close();
-		
-    	return imageProperties;
-    }
-    
-    public HashMap<String, String> parseLblFile() throws IOException
-    {
-    	String filename = getFullPath();
-    	
-    	String lblFilename = filename.substring(0, filename.length()-4) + ".LBL";
-
-    	return parseLblFile(lblFilename);
-    }
-
 
 //    public String getYear()
 //    {

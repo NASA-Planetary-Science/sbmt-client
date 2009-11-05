@@ -4,14 +4,12 @@ import java.util.*;
 import javax.swing.*;
 import java.beans.*;
 import java.awt.*;
-import java.awt.event.*;
 
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.util.Properties;
 import vtk.*;
 
 public class ErosRenderer extends JPanel implements 
-			MouseWheelListener,
 			PropertyChangeListener
 {
     private vtkRenderWindowPanel renWin;
@@ -22,7 +20,7 @@ public class ErosRenderer extends JPanel implements
     {
     	setLayout(new BorderLayout());
     	
-        renWin = new vtkRenderWindowPanel();
+        renWin = new vtkRenderWindowPanelWithMouseWheel();
 
         this.modelManager = modelManager;
 
@@ -33,8 +31,6 @@ public class ErosRenderer extends JPanel implements
         renWin.setInteractorStyle(style);
         
         add(renWin, BorderLayout.CENTER);
-
-        renWin.addMouseWheelListener(this);
 
         setActors(modelManager.getActors());
     }
@@ -177,7 +173,7 @@ public class ErosRenderer extends JPanel implements
 
 	}
 */
-	
+/*	
 	public void mouseWheelMoved(MouseWheelEvent e)
 	{
 		int ctrlPressed = (e.getModifiers() & InputEvent.CTRL_MASK) == InputEvent.CTRL_MASK ? 1
@@ -195,7 +191,7 @@ public class ErosRenderer extends JPanel implements
 			renWin.getIren().MouseWheelForwardEvent();
 		renWin.unlock();
 	}
-
+*/
 	/*
 	private void maybeShowPopup(MouseEvent e) 
 	{

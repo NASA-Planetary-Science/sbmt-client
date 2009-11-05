@@ -53,6 +53,35 @@ public class MSITemporalDatabaseGeneratorTxt
         		);
 	}
     
+	boolean checkIfAllFilesExist(String line)
+	{
+		File file = new File(line);
+		if (!file.exists())
+			return false;
+
+		String name = line.substring(0, line.length()-4) + ".LBL";
+		file = new File(name);
+		if (!file.exists())
+			return false;
+		
+		name = line.substring(0, line.length()-4) + "_DDR.LBL";
+		file = new File(name);
+		if (!file.exists())
+			return false;
+
+		name = line.substring(0, line.length()-4) + "_DDR.IMG.gz";
+		file = new File(name);
+		if (!file.exists())
+			return false;
+		
+		name = line.substring(0, line.length()-4) + "_BOUNDARY.VTK";
+		file = new File(name);
+		if (!file.exists())
+			return false;
+
+		return true;
+	}
+	
 	MSITemporalDatabaseGeneratorTxt(String msiFiles)
 	{
 		// Read in a list of files which we need to process
@@ -85,7 +114,10 @@ public class MSITemporalDatabaseGeneratorTxt
 				try 
 				{
 					//NearImage image = new NearImage(line);
-
+					boolean filesExist = this.checkIfAllFilesExist(line);
+					if (filesExist == false)
+						throw new IOException("Not all 5 files exists");
+					
 					addImageToDataStructure(line, out);
 				} 
 				catch (Exception e) 

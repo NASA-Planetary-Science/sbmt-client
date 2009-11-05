@@ -4,7 +4,6 @@ import javax.swing.*;
 
 import edu.jhuapl.near.gui.ColorChooser;
 import edu.jhuapl.near.model.LineamentModel;
-import edu.jhuapl.near.model.LineamentModel.Lineament;
 
 import java.awt.*;
 import java.awt.event.*;

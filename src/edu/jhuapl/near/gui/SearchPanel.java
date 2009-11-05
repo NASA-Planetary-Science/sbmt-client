@@ -16,6 +16,8 @@ import nom.tam.fits.FitsException;
 
 import org.joda.time.*;
 
+import vtk.vtkRenderWindowPanel;
+
 import edu.jhuapl.near.database.Database;
 import edu.jhuapl.near.gui.popupmenus.MSIPopupMenu;
 import edu.jhuapl.near.model.MSIBoundaryCollection;
@@ -27,8 +29,8 @@ import edu.jhuapl.near.pair.IdPair;
 public class SearchPanel extends JPanel implements ActionListener, MouseListener
 {
     private final ModelManager modelManager;
-    private java.util.Date startDate = new DateTime(2000, 1, 12, 0, 0, 0, 0).toDate();
-    private java.util.Date endDate = new DateTime(2001, 2, 13, 0, 0, 0, 0).toDate();
+    private java.util.Date startDate = new DateTime(2000, 7, 7, 0, 0, 0, 0).toDate();
+    private java.util.Date endDate = new DateTime(2000, 8, 1, 0, 0, 0, 0).toDate();
 //    private ShapeBuilderWidget shapePanel;
     private JLabel endDateLabel;
     private JLabel startDateLabel;
@@ -68,10 +70,12 @@ public class SearchPanel extends JPanel implements ActionListener, MouseListener
     private JButton removeAllImagesButton;
     private JComboBox numberOfBoundariesComboBox;
     private IdPair boundaryIntervalCurrentlyShown = null;
-
     
 
-    public SearchPanel(final ModelManager modelManager) 
+    public SearchPanel(
+    		final ModelManager modelManager, 
+    		MSIImageInfoPanelManager infoPanelManager,
+    		vtkRenderWindowPanel renWin) 
     {
     	setLayout(new BoxLayout(this,
         		BoxLayout.PAGE_AXIS));
@@ -214,15 +218,15 @@ public class SearchPanel extends JPanel implements ActionListener, MouseListener
         JPanel distancePanel = new JPanel();
         distancePanel.setLayout(new BoxLayout(distancePanel,
         		BoxLayout.LINE_AXIS));
-        final JLabel fromDistanceLabel = new JLabel("S/C Distance from");
+        final JLabel fromDistanceLabel = new JLabel("S/C Distance from ");
         fromDistanceTextField = new JFormattedTextField(nf);
-        fromDistanceTextField.setValue(0.0);
-        fromDistanceTextField.setMaximumSize(new Dimension(50, 25));
-        final JLabel toDistanceLabel = new JLabel("km to");
+        fromDistanceTextField.setValue(30.0);
+        fromDistanceTextField.setMaximumSize(new Dimension(50, 23));
+        final JLabel toDistanceLabel = new JLabel(" km to ");
         toDistanceTextField = new JFormattedTextField(nf);
-        toDistanceTextField.setValue(1000.0);
-        toDistanceTextField.setMaximumSize(new Dimension(50, 25));
-        final JLabel endDistanceLabel = new JLabel("km");
+        toDistanceTextField.setValue(40.0);
+        toDistanceTextField.setMaximumSize(new Dimension(50, 23));
+        final JLabel endDistanceLabel = new JLabel(" km");
                 
         distancePanel.add(fromDistanceLabel);
         distancePanel.add(fromDistanceTextField);
@@ -234,16 +238,16 @@ public class SearchPanel extends JPanel implements ActionListener, MouseListener
         JPanel resolutionPanel = new JPanel();
         resolutionPanel.setLayout(new BoxLayout(resolutionPanel,
         		BoxLayout.LINE_AXIS));
-        final JLabel fromResolutionLabel = new JLabel("Resolution from");
+        final JLabel fromResolutionLabel = new JLabel("Resolution from ");
         fromResolutionTextField = new JFormattedTextField(nf);
         fromResolutionTextField.setValue(0.0);
-        fromResolutionTextField.setMaximumSize(new Dimension(50, 25));
-        final JLabel toResolutionLabel = new JLabel("mpp to");
+        fromResolutionTextField.setMaximumSize(new Dimension(50, 23));
+        final JLabel toResolutionLabel = new JLabel(" mpp to ");
         toResolutionLabel.setToolTipText("meters per pixel");
         toResolutionTextField = new JFormattedTextField(nf);
         toResolutionTextField.setValue(5000.0);
-        toResolutionTextField.setMaximumSize(new Dimension(50, 25));
-        final JLabel endResolutionLabel = new JLabel("mpp");
+        toResolutionTextField.setMaximumSize(new Dimension(50, 23));
+        final JLabel endResolutionLabel = new JLabel(" mpp");
         endResolutionLabel.setToolTipText("meters per pixel");
       
         resolutionPanel.add(fromResolutionLabel);
@@ -261,7 +265,7 @@ public class SearchPanel extends JPanel implements ActionListener, MouseListener
         nf = NumberFormat.getIntegerInstance();
         nf.setGroupingUsed(false);
         searchByNumberTextField = new JFormattedTextField(nf);
-        searchByNumberTextField.setMaximumSize(new Dimension(100, 25));
+        searchByNumberTextField.setMaximumSize(new Dimension(100, 23));
         searchByNumberTextField.setEnabled(false);
         searchByNumberCheckBox.addItemListener(new ItemListener()
         {
@@ -310,7 +314,9 @@ public class SearchPanel extends JPanel implements ActionListener, MouseListener
         pane.add(filtersPanel);
         pane.add(iofcifPanel);
         pane.add(distancePanel);
+        pane.add(Box.createVerticalStrut(10));
         pane.add(resolutionPanel);
+        pane.add(Box.createVerticalStrut(10));
         pane.add(searchByNumberPanel);
     	pane.add(submitPanel);
         
@@ -324,7 +330,7 @@ public class SearchPanel extends JPanel implements ActionListener, MouseListener
         
         JPanel resultsPanel = new JPanel(new BorderLayout());
 		
-		popupMenu = new MSIPopupMenu(this.modelManager, 0, this);
+		popupMenu = new MSIPopupMenu(this.modelManager, infoPanelManager, renWin, this);
 
 		label = new JLabel(" ");
 
@@ -351,8 +357,13 @@ public class SearchPanel extends JPanel implements ActionListener, MouseListener
         		BoxLayout.LINE_AXIS));
 
         final JLabel showLabel = new JLabel("Number Boundaries");
-        Object [] options2 = {10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 150, 200, 250};
+        Object [] options2 = {
+        		10, 20, 30, 40, 50, 60, 70, 80, 90, 100,
+        		110, 120, 130, 140, 150, 160, 170, 180, 190, 200,
+        		210, 220, 230, 240, 250
+        		};
 		numberOfBoundariesComboBox = new JComboBox(options2);
+		numberOfBoundariesComboBox.setMaximumSize(new Dimension(150, 23));
 		
 		nextButton = new JButton(">");
         nextButton.setActionCommand(">");
@@ -492,11 +503,11 @@ public class SearchPanel extends JPanel implements ActionListener, MouseListener
         }
     }
     
-	public void setResults(ArrayList<String> results)
+	private void setResults(ArrayList<String> results)
 	{
+    	label.setText(results.size() + " images matched");
     	resultListModel.clear();
     	rawResults = results;
-    	label.setText(results.size() + " images matched");
     	
     	// add the results to the list
     	for (String str : results)
@@ -545,7 +556,8 @@ public class SearchPanel extends JPanel implements ActionListener, MouseListener
         	if (index >= 0 && resultList.getCellBounds(index, index).contains(e.getPoint()))
         	{
         		resultList.setSelectedIndex(index);
-        		popupMenu.show(e.getComponent(), e.getX(), e.getY(), rawResults.get(index));
+        		popupMenu.setCurrentImage(rawResults.get(index));
+        		popupMenu.show(e.getComponent(), e.getX(), e.getY());
         	}
         }
     }

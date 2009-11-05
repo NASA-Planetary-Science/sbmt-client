@@ -7,6 +7,7 @@ import vtk.vtkRenderWindowPanel;
 import edu.jhuapl.near.gui.ControlPanel;
 import edu.jhuapl.near.gui.ErosRenderer;
 import edu.jhuapl.near.gui.FileMenu;
+import edu.jhuapl.near.gui.MSIImageInfoPanelManager;
 import edu.jhuapl.near.gui.StatusBar;
 import edu.jhuapl.near.gui.pick.PickManager;
 import edu.jhuapl.near.model.ModelManager;
@@ -23,6 +24,7 @@ public class ErosLineamentViewer extends JFrame
 	private FileMenu fileMenu;
 	private ModelManager modelManager;
 	private PickManager pickManager;
+	private MSIImageInfoPanelManager infoPanelManager;
 	
 	public ErosLineamentViewer()
 	{
@@ -32,12 +34,14 @@ public class ErosLineamentViewer extends JFrame
 
 		modelManager = new ModelManager();
 	
+		infoPanelManager = new MSIImageInfoPanelManager(modelManager);
+		
 		imageViewer = new ErosRenderer(modelManager);
 
 		vtkRenderWindowPanel renWin = imageViewer.getRenderWindowPanel();
-		pickManager = new PickManager(renWin, statusBar, modelManager);
+		pickManager = new PickManager(renWin, statusBar, modelManager, infoPanelManager);
 
-        controlPanel = new ControlPanel(imageViewer, modelManager);
+        controlPanel = new ControlPanel(imageViewer, modelManager, infoPanelManager);
 
 		splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
                 controlPanel, imageViewer);
