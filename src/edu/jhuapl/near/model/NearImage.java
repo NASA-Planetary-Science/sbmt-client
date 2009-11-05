@@ -55,23 +55,85 @@ public class NearImage extends Model
 
 	private float minValue;
 	private float maxValue;
-	private Range displayedRange = new Range(1,0);
+	private IntensityRange displayedRange = new IntensityRange(1,0);
 
-	private String fullpath; // The actual path of the image on disk as passed into the constructor	
+	private String fullpath; // The actual path of the image stored on the local disk as passed into the constructor
+	private String serverpath; // The path of the image as passed into the constructor. This is not the 
+							   // same as fullpath but instead corresponds to the name needed to download
+							   // the file from the server (excluding the hostname).
+	
 	private int filter; // 1 through 7
 	private double polygonOffset = -10.0;
 	
-	public static class Range
-    {
-        public int min;
-        public int max;
-        public Range(int min, int max)
-        {
-        	this.min = min;
-        	this.max = max;
-        }
-    }
-    
+	/**
+	 * Because instances of NearImage can be expensive, we want to
+	 * there to be no more than one instance of this class per image
+	 * file on the server. Hence this class was created to manage the
+	 * creation and deletion of NearImage's using reference counting. 
+	 * Anyone needing a NearImage should use this factory class to 
+	 * create and destroy NearImages's and should NOT call the 
+	 * constructor directly.
+	 * 
+	 * @author eli
+	 *
+	 */
+	public static class NearImageFactory
+	{
+		static private WeakHashMap<NearImage, Object> images = 
+			new WeakHashMap<NearImage, Object>();
+		
+		static public NearImage createImage(String name) throws FitsException, IOException
+		{
+			for (NearImage image : images.keySet())
+			{
+				if (image.getServerPath().equals(name))
+					return image;
+			}
+
+			NearImage image = new NearImage(name);
+			images.put(image, null);
+			return image;
+		}
+	}
+	/*
+	public static class NearImageFactory
+	{
+		static private HashMap<NearImage, Integer> imageRefCount = 
+			new HashMap<NearImage, Integer>();
+		static private HashMap<String, NearImage> nameToImageMap = 
+			new HashMap<String, NearImage>();
+		
+		static public NearImage createImage(String name) throws FitsException, IOException
+		{
+			if (nameToImageMap.containsKey(name))
+			{
+				NearImage image = nameToImageMap.get(name);
+				int size = imageRefCount.get(image);
+				imageRefCount.put(image, size+1);
+				return image;
+			}
+			else
+			{
+				NearImage image = new NearImage(name);
+				nameToImageMap.put(name, image);
+				imageRefCount.put(image, 1);
+				return image;
+			}
+		}
+		
+		static public void deleteImage(NearImage image)
+		{
+			int size = imageRefCount.get(image);
+			imageRefCount.put(image, size-1);
+			
+			if (size == 1)
+			{
+				nameToImageMap.remove(image.getServerPath());
+				imageRefCount.remove(image);
+			}
+		}
+	}
+	*/
     private static class IMGFilter implements java.io.FileFilter 
     {
     	String prefix;
@@ -122,6 +184,8 @@ public class NearImage extends Model
 
 	public NearImage(String filename) throws FitsException, IOException
 	{
+		this.serverpath = filename;
+		
 		// Download the image, and all the companion files if necessary.
 		File fitFile = FileCache.getFileFromServer(filename);
 
@@ -202,7 +266,7 @@ public class NearImage extends Model
         rawImage.DeepCopy(reslice.GetOutput());
         rawImage.SetSpacing(1, 1, 1);
         
-        setDisplayedImageRange(new Range(0, 255));
+        setDisplayedImageRange(new IntensityRange(0, 255));
 
         loadImgFile(filename);
 	}
@@ -313,6 +377,11 @@ public class NearImage extends Model
 	public vtkImageData getRawImage()
 	{
 		return rawImage;
+	}
+	
+	public vtkImageData getDisplayedImage()
+	{
+		return displayedImage;
 	}
 	
 	public int getFilter()
@@ -484,6 +553,11 @@ public class NearImage extends Model
 		return fullpath;
 	}
 	
+	public String getServerPath()
+	{
+		return serverpath;
+	}
+	
 	public float getLatitude(int row, int col)
 	{
 		return latitude[row][col];
@@ -526,12 +600,12 @@ public class NearImage extends Model
 		return z[row][col];
 	}
 	
-	public Range getDisplayedRange()
+	public IntensityRange getDisplayedRange()
 	{
 		return displayedRange;
 	}
 	
-	public void setDisplayedImageRange(Range range)
+	public void setDisplayedImageRange(IntensityRange range)
 	{
 		if (displayedRange.min != range.min ||
 			displayedRange.max != range.max)

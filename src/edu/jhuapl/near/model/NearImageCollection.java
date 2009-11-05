@@ -29,14 +29,13 @@ public class NearImageCollection extends Model implements PropertyChangeListener
 
 	private HashMap<vtkActor, String> actorToFileMap = new HashMap<vtkActor, String>();
 
-	private HashMap<String, NearImage> fileToImageMap2D = new HashMap<String, NearImage>();
-	
 	public void addImage(String path) throws FitsException, IOException
 	{
 		if (fileToImageMap.containsKey(path))
 			return;
 		
-		NearImage image = new NearImage(path);
+		//NearImage image = new NearImage(path);
+		NearImage image = NearImage.NearImageFactory.createImage(path);
 
 		image.addPropertyChangeListener(this);
 
@@ -116,5 +115,10 @@ public class NearImageCollection extends Model implements PropertyChangeListener
     public NearImage getImage(String file)
     {
     	return fileToImageMap.get(file);
+    }
+    
+    public boolean containsImage(String file)
+    {
+    	return fileToImageMap.containsKey(file);
     }
 }

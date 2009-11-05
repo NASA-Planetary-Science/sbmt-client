@@ -112,4 +112,9 @@ public class MSIBoundaryCollection extends Model
     {
     	return actorToFileMap.get(actor);
     }
+    
+    public boolean containsBoundary(String file)
+    {
+    	return fileToBoundaryMap.containsKey(file);
+    }
 }

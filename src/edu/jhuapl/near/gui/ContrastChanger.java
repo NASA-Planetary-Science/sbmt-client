@@ -5,6 +5,7 @@ import javax.swing.event.*;
 import com.jidesoft.swing.*;
 
 import edu.jhuapl.near.model.NearImage;
+import edu.jhuapl.near.pair.IntensityRange;
 
 
 public class ContrastChanger extends JPanel implements ChangeListener
@@ -32,7 +33,7 @@ public class ContrastChanger extends JPanel implements ChangeListener
 		if (image != null)
 		{
 			nearImage = image;
-			NearImage.Range range = image.getDisplayedRange();
+			IntensityRange range = image.getDisplayedRange();
 			slider.setLowValue(range.min);
 			slider.setHighValue(range.max);
 			slider.setEnabled(true);
@@ -48,6 +49,6 @@ public class ContrastChanger extends JPanel implements ChangeListener
 		int lowVal = slider.getLowValue();
 		int highVal = slider.getHighValue();
 		if (nearImage != null)
-			nearImage.setDisplayedImageRange(new NearImage.Range(lowVal, highVal));
+			nearImage.setDisplayedImageRange(new IntensityRange(lowVal, highVal));
 	}
 }
