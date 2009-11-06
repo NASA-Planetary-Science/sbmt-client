@@ -58,7 +58,9 @@ public class ErosRenderer extends JPanel implements
     			renWin.GetRenderer().AddActor(act);
     	}
 
-    	render();
+		if (renWin.GetRenderWindow().GetNeverRendered() > 0)
+			return;
+		renWin.Render();
     }
 
     /*
@@ -123,140 +125,6 @@ public class ErosRenderer extends JPanel implements
     	return renWin;
     }
     
-    /*
-	public void mousePressed(MouseEvent e)
-	{
-		maybeShowPopup(e);
-	}
-
-	public void mouseReleased(MouseEvent e)
-	{
-		maybeShowPopup(e);
-	}
-
-	public void mouseClicked(MouseEvent e)
-	{
-		
-	}
-
-	public void mouseEntered(MouseEvent e)
-	{
-		
-	}
-
-	public void mouseExited(MouseEvent e)
-	{
-		
-	}
-
-	public void mouseDragged(MouseEvent e)
-	{
-		
-	}
-
-	public void mouseMoved(MouseEvent e)
-	{
-		if (renWin.GetRenderWindow().GetNeverRendered() > 0)
-			return;
-
-		this.pickActors(e);
-		
-		
-//		LineamentModel.Lineament lin = pickLineament(e);
-//
-//		if (lin != null)
-//			statusBar.setLeftText("Lineament " + lin.id + " mapped on MSI image " + lin.name + " contains " + lin.x.size() + " vertices");
-//
-//		LatLon ll = pickEros(e);
-//		if (ll != null)
-//			statusBar.setRightText("Lineament " + lin.id + " mapped on MSI image " + lin.name + " contains " + lin.x.size() + " vertices");
-
-	}
-*/
-/*	
-	public void mouseWheelMoved(MouseWheelEvent e)
-	{
-		int ctrlPressed = (e.getModifiers() & InputEvent.CTRL_MASK) == InputEvent.CTRL_MASK ? 1
-				: 0;
-		int shiftPressed = (e.getModifiers() & InputEvent.SHIFT_MASK) == InputEvent.SHIFT_MASK ? 1
-				: 0;
-
-		renWin.getIren().SetEventInformationFlipY(e.getX(), e.getY(), ctrlPressed,
-			        shiftPressed, '0', 0, "0");
-
-		renWin.lock();
-		if (e.getWheelRotation() > 0)
-			renWin.getIren().MouseWheelBackwardEvent();
-		else
-			renWin.getIren().MouseWheelForwardEvent();
-		renWin.unlock();
-	}
-*/
-	/*
-	private void maybeShowPopup(MouseEvent e) 
-	{
-        if (e.isPopupTrigger()) 
-        {
-    		if (renWin.GetRenderWindow().GetNeverRendered() > 0)
-    			return;
-    		
-    		
-//    		LineamentModel.Lineament lin = pickLineament(e);
-//    		
-//    		if (lin != null)
-//            	popupMenu.show(e.getComponent(), e.getX(), e.getY(), lin);
-            
-        }
-    }
-
-	private void pickActors(MouseEvent e)
-	{
-		vtkCellPicker cellPicker = new vtkCellPicker();
-		cellPicker.SetTolerance(0.002);
-		int pickSucceeded = cellPicker.Pick(e.getX(), renWin.getIren().GetSize()[1]-e.getY()-1, 0.0, renWin.GetRenderer());
-		System.out.println("dfds");
-		if (pickSucceeded != 0)
-		{
-			System.out.println("XXXXXXXXXx");
-			PickEvent pickEvent = new PickEvent(cellPicker, e);
-			this.firePropertyChange(Properties.PICK_OCCURED, null, pickEvent);
-			//this.firePropertyChange(Properties.PICK_OCCURED, null, null);
-		}
-	}
-	*/
-	/*
-	private LineamentModel.Lineament pickLineament(MouseEvent e)
-	{
-		vtkCellPicker cellPicker = new vtkCellPicker();
-		cellPicker.SetTolerance(0.002);
-		int pickSucceeded = cellPicker.Pick(e.getX(), renWin.getIren().GetSize()[1]-e.getY()-1, 0.0, renWin.GetRenderer());
-		if (pickSucceeded != 0 && cellPicker.GetActor() == this.lineamentActor)
-			return this.lineamentModel.getLineament(cellPicker.GetCellId());
-		else
-			return null;
-	}
-
-	private LatLon pickEros(MouseEvent e)
-	{
-		vtkCellPicker cellPicker = new vtkCellPicker();
-		cellPicker.SetTolerance(0.002);
-		int pickSucceeded = cellPicker.Pick(e.getX(), renWin.getIren().GetSize()[1]-e.getY()-1, 0.0, renWin.GetRenderer());
-		if (pickSucceeded != 0 // && cellPicker.GetActor() == this.erosActor
-			)
-		{
-			vtkPoints pts = cellPicker.GetPickedPositions();
-			System.out.println(pts.GetNumberOfPoints());
-			for (int i=0;i<cellPicker.GetActors().GetNumberOfItems();++i)
-				System.out.println("--"+(cellPicker.GetActors().GetItemAsObject(i)==this.erosActor));
-			return null;
-		}
-		else
-		{
-			System.out.println(0);
-			return null;
-		}
-	}
-	*/
     public void propertyChange(PropertyChangeEvent e)
     {
     	if (e.getPropertyName().equals(Properties.MODEL_CHANGED))
@@ -267,17 +135,5 @@ public class ErosRenderer extends JPanel implements
     	{
     		renWin.Render();
     	}
-    }
-    
-//    public ModelManager getModelManager()
-//    {
-//    	return modelManager;
-//    }
-    
-    public void render()
-    {
-		if (renWin.GetRenderWindow().GetNeverRendered() > 0)
-			return;
-		renWin.Render();
     }
 }

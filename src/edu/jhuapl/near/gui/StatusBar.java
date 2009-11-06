@@ -17,7 +17,7 @@ public class StatusBar extends JPanel
 		rightLabel = new JLabel(" ", SwingConstants.RIGHT);
     	add(rightLabel, BorderLayout.EAST);
 
-    	Font font = new Font("Monospaced", Font.BOLD, 14);
+    	Font font = new Font("Monospaced", Font.PLAIN, 13);
     	rightLabel.setFont(font);
     	
     	setBorder(new BevelBorder(BevelBorder.LOWERED));

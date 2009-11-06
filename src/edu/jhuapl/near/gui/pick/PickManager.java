@@ -3,6 +3,8 @@ package edu.jhuapl.near.gui.pick;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.DecimalFormat;
@@ -17,6 +19,7 @@ import vtk.*;
 public class PickManager implements 
 			MouseListener, 
 			MouseMotionListener,
+			MouseWheelListener,
 			PropertyChangeListener
 {
     private vtkRenderWindowPanel renWin;
@@ -44,6 +47,7 @@ public class PickManager implements
 		
 		renWin.addMouseListener(this);
         renWin.addMouseMotionListener(this);
+        renWin.addMouseWheelListener(this);
 
 		mouseMovedCellPicker = new vtkCellPicker();
 		mouseMovedCellPicker.SetTolerance(0.002);
@@ -103,6 +107,11 @@ public class PickManager implements
 		maybeShowPopup(e);
 	}
 
+	public void mouseWheelMoved(MouseWheelEvent e) 
+	{
+		mouseMoved(e);
+	}
+
 	public void mouseDragged(MouseEvent e) 
 	{
 		mouseMoved(e);
@@ -112,8 +121,22 @@ public class PickManager implements
 	{
 		if (renWin.GetRenderWindow().GetNeverRendered() > 0)
     		return;
+
 		
-		int pickSucceeded = mouseMovedCellPicker.Pick(e.getX(), renWin.getIren().GetSize()[1]-e.getY()-1, 0.0, renWin.GetRenderer());
+		double[] cameraPos = renWin.GetRenderer().GetActiveCamera().GetPosition();
+		double distance = Math.sqrt(
+				cameraPos[0]*cameraPos[0] +
+				cameraPos[1]*cameraPos[1] +
+				cameraPos[2]*cameraPos[2]);
+        String distanceStr = decimalFormatter.format(distance);
+        if (distanceStr.length() == 5)
+        	distanceStr = "  " + distanceStr;
+        else if (distanceStr.length() == 6)
+        	distanceStr = " " + distanceStr;
+        distanceStr += "km";
+
+
+        int pickSucceeded = mouseMovedCellPicker.Pick(e.getX(), renWin.getIren().GetSize()[1]-e.getY()-1, 0.0, renWin.GetRenderer());
 		if (pickSucceeded == 1)
 		{
 			double[] pos = mouseMovedCellPicker.GetPickPosition();
@@ -160,12 +183,11 @@ public class PickManager implements
 	        	radStr = " " + radStr;
 	        radStr += "km";
 
-
-			statusBar.setRightText("Lat: " + latStr + "  Lon: " + lonStr + "  Diam: " + radStr + " ");
+	        statusBar.setRightText("Lat: " + latStr + "  Lon: " + lonStr + "  Radius: " + radStr + "  Distance: " + distanceStr + " ");
 		}
 		else
 		{
-			statusBar.setRightText(" ");
+			statusBar.setRightText("Distance: " + distanceStr + " ");
 		}
 	}
 
