@@ -26,7 +26,7 @@ import edu.jhuapl.near.model.NearImageCollection;
 import edu.jhuapl.near.pair.IdPair;
 
 
-public class SearchPanel extends JPanel implements ActionListener, MouseListener
+public class MSISearchPanel extends JPanel implements ActionListener, MouseListener
 {
     private final ModelManager modelManager;
     private java.util.Date startDate = new DateTime(2000, 7, 7, 0, 0, 0, 0).toDate();
@@ -72,7 +72,7 @@ public class SearchPanel extends JPanel implements ActionListener, MouseListener
     private IdPair boundaryIntervalCurrentlyShown = null;
     
 
-    public SearchPanel(
+    public MSISearchPanel(
     		final ModelManager modelManager, 
     		MSIImageInfoPanelManager infoPanelManager,
     		vtkRenderWindowPanel renWin) 
@@ -94,7 +94,7 @@ public class SearchPanel extends JPanel implements ActionListener, MouseListener
         String [] options = {"MSI"};
         queryTypeComboBox = new JComboBox(options);                                             
         queryTypeComboBox.setEditable(false);                                                   
-        pane.add(queryTypeComboBox);                     
+        //pane.add(queryTypeComboBox);                     
 
         JPanel startDatePanel = new JPanel();
         this.startDateLabel = new JLabel(START_DATE_LABEL_TEXT);
