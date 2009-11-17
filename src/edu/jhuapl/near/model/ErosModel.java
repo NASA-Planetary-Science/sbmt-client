@@ -18,7 +18,7 @@ public class ErosModel extends Model
 	public ErosModel()
 	{
     	vtkPolyDataReader erosReader = new vtkPolyDataReader();
-        File file = ConvertToRealFile.convertResource(this, "/edu/jhuapl/near/data/Eros_Dec2006_0.vtk");
+        File file = ConvertToRealFile.convertResourceToTempFile(this, "/edu/jhuapl/near/data/Eros_Dec2006_0.vtk");
         erosReader.SetFileName(file.getAbsolutePath());
         erosReader.Update();
 
