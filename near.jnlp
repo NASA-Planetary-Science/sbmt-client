@@ -42,9 +42,6 @@
     <resources os="Mac OS X" arch="ppc">
       <nativelib href = "vtk-natives-macosx-universal.jar" />
     </resources>
-    <resources os="Mac OS X" arch="x86">
-      <nativelib href = "vtk-natives-macosx-universal.jar" />
-    </resources>
     <resources os="Mac OS X" arch="i386">
       <nativelib href = "vtk-natives-macosx-universal.jar" />
     </resources>
