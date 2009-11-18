@@ -32,6 +32,7 @@
 package edu.jhuapl.near.database;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -145,6 +146,11 @@ public class SqlManager {
         }
     }                                       //void dump( ResultSet rs )
 
+    public PreparedStatement preparedStatement(String st) throws SQLException
+    {
+    	return conn.prepareStatement(st);
+    }
+    
     public static void main(String[] args) {
 
         SqlManager db = null;

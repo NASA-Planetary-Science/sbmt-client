@@ -57,7 +57,7 @@ public class NearImage extends Model
 	private float maxValue;
 	private IntensityRange displayedRange = new IntensityRange(1,0);
 
-	private String fullpath; // The actual path of the image stored on the local disk as passed into the constructor
+	private String fullpath; // The actual path of the image stored on the local disk (after downloading from the server)
 	private String serverpath; // The path of the image as passed into the constructor. This is not the 
 							   // same as fullpath but instead corresponds to the name needed to download
 							   // the file from the server (excluding the hostname).

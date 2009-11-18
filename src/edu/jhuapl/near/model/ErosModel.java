@@ -60,6 +60,17 @@ public class ErosModel extends Model
 		this.pcs.firePropertyChange(Properties.EROS_MODEL_CHANGED, null, null);
 	}
 
+	/*
+	 * Given only the latitude and longitude of a point on the surface of
+	 * Eros, this function finds the xyz coordinates of the point by
+	 * shooting out a ray from the center of Eros and returning the intersection
+	 * point. If more than one point intersects Eros, the first one is returned.
+	 */
+	public double[] latLonToXyz(double lat, double lon)
+	{
+		return null;
+	}
+	
 	public ArrayList<vtkActor> getActors() 
 	{
 		return erosActors;
