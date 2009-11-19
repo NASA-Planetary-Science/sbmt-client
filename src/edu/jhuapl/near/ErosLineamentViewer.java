@@ -7,7 +7,7 @@ import vtk.vtkRenderWindowPanel;
 import edu.jhuapl.near.gui.ControlPanel;
 import edu.jhuapl.near.gui.ErosRenderer;
 import edu.jhuapl.near.gui.FileMenu;
-import edu.jhuapl.near.gui.MSIImageInfoPanelManager;
+import edu.jhuapl.near.gui.ModelInfoWindowManager;
 import edu.jhuapl.near.gui.StatusBar;
 import edu.jhuapl.near.gui.pick.PickManager;
 import edu.jhuapl.near.model.ModelManager;
@@ -24,7 +24,7 @@ public class ErosLineamentViewer extends JFrame
 	private FileMenu fileMenu;
 	private ModelManager modelManager;
 	private PickManager pickManager;
-	private MSIImageInfoPanelManager infoPanelManager;
+	private ModelInfoWindowManager infoPanelManager;
 	
 	public ErosLineamentViewer()
 	{
@@ -34,7 +34,7 @@ public class ErosLineamentViewer extends JFrame
 
 		modelManager = new ModelManager();
 	
-		infoPanelManager = new MSIImageInfoPanelManager(modelManager);
+		infoPanelManager = new ModelInfoWindowManager(modelManager);
 		
 		imageViewer = new ErosRenderer(modelManager);
 

@@ -28,7 +28,7 @@ public class MSIPopupMenu extends JPopupMenu
     private JMenuItem showImageInfoMenuItem;
     private JMenuItem saveToDiskMenuItem;
     private JMenuItem centerImageMenuItem;
-    private MSIImageInfoPanelManager infoPanelManager;
+    private ModelInfoWindowManager infoPanelManager;
     private vtkRenderWindowPanel renWin;
     
     /**
@@ -40,7 +40,7 @@ public class MSIPopupMenu extends JPopupMenu
      */
 	public MSIPopupMenu(
 			ModelManager modelManager, 
-			MSIImageInfoPanelManager infoPanelManager,
+			ModelInfoWindowManager infoPanelManager,
 			vtkRenderWindowPanel renWin,
 			Component invoker)
 	{
@@ -204,12 +204,15 @@ public class MSIPopupMenu extends JPopupMenu
 			
 			try 
 			{
-				infoPanelManager.addImage(NearImage.NearImageFactory.createImage(name));
+				infoPanelManager.addData(NearImage.NearImageFactory.createImage(name));
 			} 
 			catch (FitsException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (Exception e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}

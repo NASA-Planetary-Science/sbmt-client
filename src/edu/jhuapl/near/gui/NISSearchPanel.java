@@ -19,52 +19,45 @@ import org.joda.time.*;
 import vtk.vtkRenderWindowPanel;
 
 import edu.jhuapl.near.database.Database;
-import edu.jhuapl.near.gui.popupmenus.MSIPopupMenu;
-import edu.jhuapl.near.model.MSIBoundaryCollection;
+import edu.jhuapl.near.gui.popupmenus.NISPopupMenu;
 import edu.jhuapl.near.model.ModelManager;
-import edu.jhuapl.near.model.NearImageCollection;
+import edu.jhuapl.near.model.NISSpectraCollection;
 import edu.jhuapl.near.pair.IdPair;
 
 
 public class NISSearchPanel extends JPanel implements ActionListener, MouseListener
 {
+	private final String NIS_REMOVE_ALL_BUTTON_TEXT = "Remove All Footprints";
+	
     private final ModelManager modelManager;
     private java.util.Date startDate = new DateTime(2000, 7, 7, 0, 0, 0, 0).toDate();
     private java.util.Date endDate = new DateTime(2000, 8, 1, 0, 0, 0, 0).toDate();
-//    private ShapeBuilderWidget shapePanel;
     private JLabel endDateLabel;
     private JLabel startDateLabel;
     private static final String START_DATE_LABEL_TEXT = "Start Date";
     private static final String END_DATE_LABEL_TEXT = "End Date:";
     private JSpinner startSpinner;
     private JSpinner endSpinner;
-    private JComboBox queryTypeComboBox;
 
     private JFormattedTextField fromDistanceTextField;
     private JFormattedTextField toDistanceTextField;
 
-    private JFormattedTextField fromResolutionTextField;
-    private JFormattedTextField toResolutionTextField;
-
-    private JFormattedTextField searchByNumberTextField;
-    private JCheckBox searchByNumberCheckBox;
-    
     private JList resultList;
-    private DefaultListModel resultListModel;
-    private MSIPopupMenu popupMenu;
-    private ArrayList<String> rawResults = new ArrayList<String>();
-    private JLabel label;
+    private DefaultListModel nisResultListModel;
+    private NISPopupMenu nisPopupMenu;
+    private ArrayList<String> nisRawResults = new ArrayList<String>();
+    private JLabel resultsLabel;
+    private String nisResultsLabelText = " ";
     private JButton nextButton;
     private JButton prevButton;
-    private JButton removeAllBoundariesButton;
-    private JButton removeAllImagesButton;
+    private JButton removeAllButton;
     private JComboBox numberOfBoundariesComboBox;
-    private IdPair boundaryIntervalCurrentlyShown = null;
-    
+    private IdPair resultIntervalCurrentlyShown = null;
 
+    
     public NISSearchPanel(
     		final ModelManager modelManager, 
-    		MSIImageInfoPanelManager infoPanelManager,
+    		ModelInfoWindowManager infoPanelManager,
     		vtkRenderWindowPanel renWin) 
     {
     	setLayout(new BoxLayout(this,
@@ -80,13 +73,8 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
         //        new CompoundBorder(BorderFactory.createEmptyBorder(9, 9, 9, 9), 
         //                           new TitledBorder("Query Editor")));
 
-        //String [] options = {"MSI", "NIS", "NLR"};
-        String [] options = {"MSI"};
-        queryTypeComboBox = new JComboBox(options);                                             
-        queryTypeComboBox.setEditable(false);                                                   
-        //pane.add(queryTypeComboBox);                     
-
-        JPanel startDatePanel = new JPanel();
+        
+        final JPanel startDatePanel = new JPanel();
         this.startDateLabel = new JLabel(START_DATE_LABEL_TEXT);
         startDatePanel.add(this.startDateLabel);
         startSpinner = new JSpinner(new SpinnerDateModel(startDate, null, null, Calendar.DAY_OF_MONTH));
@@ -105,7 +93,7 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
         startSpinner.setEnabled(true);
         pane.add(startDatePanel);
 
-        JPanel endDatePanel = new JPanel();
+        final JPanel endDatePanel = new JPanel();
         this.endDateLabel = new JLabel(END_DATE_LABEL_TEXT);
         endDatePanel.add(this.endDateLabel);
         endSpinner = new JSpinner(new SpinnerDateModel(endDate, null, null, Calendar.DAY_OF_MONTH));
@@ -125,23 +113,10 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
         pane.add(endDatePanel);
 
 
-        //panel = new JPanel();
-        //panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
-        //JLabel label = new JLabel("Select Region:");
-        //panel.add(label);
-
-        //this.shapePanel = new ShapeBuilderWidget(wwd, this);
-        //panel.add(this.shapePanel);
-        //pane.add(panel);
-
- 	    	
-    	//filtersPanel.setBorder(BorderFactory.createEmptyBorder(9, 9, 9, 9));
-
-
         NumberFormat nf = NumberFormat.getNumberInstance();
         nf.setGroupingUsed(false);
         
-        JPanel distancePanel = new JPanel();
+        final JPanel distancePanel = new JPanel();
         distancePanel.setLayout(new BoxLayout(distancePanel,
         		BoxLayout.LINE_AXIS));
         final JLabel fromDistanceLabel = new JLabel("S/C Distance from ");
@@ -161,65 +136,8 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
         distancePanel.add(endDistanceLabel);
 
         
-        JPanel resolutionPanel = new JPanel();
-        resolutionPanel.setLayout(new BoxLayout(resolutionPanel,
-        		BoxLayout.LINE_AXIS));
-        final JLabel fromResolutionLabel = new JLabel("Resolution from ");
-        fromResolutionTextField = new JFormattedTextField(nf);
-        fromResolutionTextField.setValue(0.0);
-        fromResolutionTextField.setMaximumSize(new Dimension(50, 23));
-        final JLabel toResolutionLabel = new JLabel(" mpp to ");
-        toResolutionLabel.setToolTipText("meters per pixel");
-        toResolutionTextField = new JFormattedTextField(nf);
-        toResolutionTextField.setValue(5000.0);
-        toResolutionTextField.setMaximumSize(new Dimension(50, 23));
-        final JLabel endResolutionLabel = new JLabel(" mpp");
-        endResolutionLabel.setToolTipText("meters per pixel");
-      
-        resolutionPanel.add(fromResolutionLabel);
-        resolutionPanel.add(fromResolutionTextField);
-        resolutionPanel.add(toResolutionLabel);
-        resolutionPanel.add(toResolutionTextField);
-        resolutionPanel.add(endResolutionLabel);
         
-        JPanel searchByNumberPanel = new JPanel();
-        searchByNumberPanel.setLayout(new BoxLayout(searchByNumberPanel,
-        		BoxLayout.LINE_AXIS));
-        searchByNumberCheckBox = new JCheckBox();
-        searchByNumberCheckBox.setText("Search by number");
-        searchByNumberCheckBox.setSelected(false);
-        nf = NumberFormat.getIntegerInstance();
-        nf.setGroupingUsed(false);
-        searchByNumberTextField = new JFormattedTextField(nf);
-        searchByNumberTextField.setMaximumSize(new Dimension(100, 23));
-        searchByNumberTextField.setEnabled(false);
-        searchByNumberCheckBox.addItemListener(new ItemListener()
-        {
-        	public void itemStateChanged(ItemEvent e) 
-        	{
-        		boolean enable = e.getStateChange() == ItemEvent.SELECTED;
-        		searchByNumberTextField.setEnabled(enable);
-        		startDateLabel.setEnabled(!enable);
-        		startSpinner.setEnabled(!enable);
-        		endDateLabel.setEnabled(!enable);
-                endSpinner.setEnabled(!enable);
-                fromDistanceLabel.setEnabled(!enable);
-                fromDistanceTextField.setEnabled(!enable);
-                toDistanceLabel.setEnabled(!enable);
-                toDistanceTextField.setEnabled(!enable);
-                endDistanceLabel.setEnabled(!enable);
-                fromResolutionLabel.setEnabled(!enable);
-                fromResolutionTextField.setEnabled(!enable);
-                toResolutionLabel.setEnabled(!enable);
-                toResolutionTextField.setEnabled(!enable);
-                endResolutionLabel.setEnabled(!enable);
-            }
-        });
-        
-        searchByNumberPanel.add(searchByNumberCheckBox);
-        searchByNumberPanel.add(searchByNumberTextField);
-        
-        JPanel submitPanel = new JPanel();
+        final JPanel submitPanel = new JPanel();
         //panel.setBorder(BorderFactory.createEmptyBorder(9, 9, 9, 9));
         JButton submitButton = new JButton("Update");
         submitButton.setEnabled(true);
@@ -230,9 +148,7 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
 
         pane.add(distancePanel);
         pane.add(Box.createVerticalStrut(10));
-        pane.add(resolutionPanel);
         pane.add(Box.createVerticalStrut(10));
-        pane.add(searchByNumberPanel);
     	pane.add(submitPanel);
         
         this.add(pane);
@@ -245,14 +161,14 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
         
         JPanel resultsPanel = new JPanel(new BorderLayout());
 		
-		popupMenu = new MSIPopupMenu(this.modelManager, infoPanelManager, renWin, this);
+		nisPopupMenu = new NISPopupMenu(this.modelManager, infoPanelManager, renWin);
 
-		label = new JLabel(" ");
+		resultsLabel = new JLabel(" ");
 
-        resultListModel = new DefaultListModel();
+        nisResultListModel = new DefaultListModel();
 
         //Create the list and put it in a scroll pane.
-        resultList = new JList(resultListModel);
+        resultList = new JList(nisResultListModel);
         resultList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         resultList.addMouseListener(this);
         JScrollPane listScrollPane = new JScrollPane(resultList);
@@ -261,12 +177,12 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
         //       new CompoundBorder(BorderFactory.createEmptyBorder(9, 9, 9, 9), 
         //                           new TitledBorder("Query Results")));
 
-        resultsPanel.add(label, BorderLayout.NORTH);
+        resultsPanel.add(resultsLabel, BorderLayout.NORTH);
         resultsPanel.add(listScrollPane, BorderLayout.CENTER);
 
-        JPanel resultControlsPanel = new JPanel(new BorderLayout());
+        final JPanel resultControlsPanel = new JPanel(new BorderLayout());
         
-        JPanel resultSub1ControlsPanel = new JPanel();
+        final JPanel resultSub1ControlsPanel = new JPanel();
         
         resultSub1ControlsPanel.setLayout(new BoxLayout(resultSub1ControlsPanel,
         		BoxLayout.LINE_AXIS));
@@ -286,19 +202,19 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
         {
 			public void actionPerformed(ActionEvent e) 
 			{
-				if (boundaryIntervalCurrentlyShown != null)
+				if (resultIntervalCurrentlyShown != null)
 				{
 					// Only get the next block if there's something left to show.
-					if (boundaryIntervalCurrentlyShown.id2 < rawResults.size())
+					if (resultIntervalCurrentlyShown.id2 < resultList.getModel().getSize())
 					{
-						boundaryIntervalCurrentlyShown.nextBlock((Integer)numberOfBoundariesComboBox.getSelectedItem());
-						showBoundaries(boundaryIntervalCurrentlyShown);
+						resultIntervalCurrentlyShown.nextBlock((Integer)numberOfBoundariesComboBox.getSelectedItem());
+						showNISBoundaries(resultIntervalCurrentlyShown);
 					}
 				}
 				else
 				{
-					boundaryIntervalCurrentlyShown = new IdPair(0, (Integer)numberOfBoundariesComboBox.getSelectedItem());
-			    	showBoundaries(boundaryIntervalCurrentlyShown);
+					resultIntervalCurrentlyShown = new IdPair(0, (Integer)numberOfBoundariesComboBox.getSelectedItem());
+			    	showNISBoundaries(resultIntervalCurrentlyShown);
 				}
 			}
         });
@@ -310,13 +226,13 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
         {
 			public void actionPerformed(ActionEvent e) 
 			{
-				if (boundaryIntervalCurrentlyShown != null)
+				if (resultIntervalCurrentlyShown != null)
 				{
 					// Only get the prev block if there's something left to show.
-					if (boundaryIntervalCurrentlyShown.id1 > 0)
+					if (resultIntervalCurrentlyShown.id1 > 0)
 					{
-						boundaryIntervalCurrentlyShown.prevBlock((Integer)numberOfBoundariesComboBox.getSelectedItem());
-						showBoundaries(boundaryIntervalCurrentlyShown);
+						resultIntervalCurrentlyShown.prevBlock((Integer)numberOfBoundariesComboBox.getSelectedItem());
+						showNISBoundaries(resultIntervalCurrentlyShown);
 					}
 				}
 			}
@@ -332,36 +248,22 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
         JPanel resultSub2ControlsPanel = new JPanel();
         resultSub2ControlsPanel.setLayout(new BoxLayout(resultSub2ControlsPanel,
         		BoxLayout.PAGE_AXIS));
-        removeAllBoundariesButton = new JButton("Remove All Boundaries");
-        removeAllBoundariesButton.setActionCommand("Remove All Boundaries");
-        removeAllBoundariesButton.addActionListener(new ActionListener()
+        removeAllButton = new JButton(NIS_REMOVE_ALL_BUTTON_TEXT);
+        removeAllButton.setActionCommand(NIS_REMOVE_ALL_BUTTON_TEXT);
+        removeAllButton.addActionListener(new ActionListener()
         {
 			public void actionPerformed(ActionEvent e) 
 			{
-				MSIBoundaryCollection model = (MSIBoundaryCollection)modelManager.getModel(ModelManager.MSI_BOUNDARY);
-				model.removeAllBoundaries();
-				boundaryIntervalCurrentlyShown = null;
+				NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelManager.NIS_SPECTRA);
+				model.removeAllImages();
+				resultIntervalCurrentlyShown = null;
 			}
         });
-        removeAllBoundariesButton.setEnabled(true);
-        removeAllBoundariesButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        removeAllButton.setEnabled(true);
+        removeAllButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         
-        removeAllImagesButton = new JButton("Remove All Images");
-        removeAllImagesButton.setActionCommand("Remove All Images");
-        removeAllImagesButton.addActionListener(new ActionListener()
-        {
-			public void actionPerformed(ActionEvent e) 
-			{
-				NearImageCollection model = (NearImageCollection)modelManager.getModel(ModelManager.MSI_IMAGES);
-				model.removeAllImages();
-			}
-        });
-        removeAllImagesButton.setEnabled(true);
-        removeAllImagesButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        resultSub2ControlsPanel.add(removeAllBoundariesButton);
-        resultSub2ControlsPanel.add(removeAllImagesButton);
+        resultSub2ControlsPanel.add(removeAllButton);
         
         resultControlsPanel.add(resultSub1ControlsPanel, BorderLayout.CENTER);
         resultControlsPanel.add(resultSub2ControlsPanel, BorderLayout.SOUTH);
@@ -369,33 +271,27 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
         resultsPanel.add(resultControlsPanel, BorderLayout.SOUTH);
 
         add(resultsPanel);
+        
     }
 
     public void actionPerformed(ActionEvent actionEvent)
     {
         try
         {
-        	ArrayList<Integer> filtersChecked = new ArrayList<Integer>();
-    		
-
-    		String searchField = null;
-    		if (searchByNumberCheckBox.isSelected())
-    			searchField = searchByNumberTextField.getText();
-    		
-/*    		ArrayList<String> results = Database.getInstance().runQuery(
+        	ArrayList<String> results = Database.getInstance().runQuery(
+        			Database.Datatype.NIS,
         			new LocalDateTime(startDate), 
         			new LocalDateTime(endDate),
-        			filtersChecked,
-        			iofdblCheckBox.isSelected(),
-        			cifdblCheckBox.isSelected(),
+        			null,
+        			false,
+        			false,
         			Double.parseDouble(fromDistanceTextField.getText()),
         			Double.parseDouble(toDistanceTextField.getText()),
-        			Double.parseDouble(fromResolutionTextField.getText()),
-        			Double.parseDouble(toResolutionTextField.getText()),
-        			searchField);
-        	
-    		setResults(results);
-    		*/
+        			0.0,
+        			0.0,
+        			null);
+
+        	setNISResults(results);
         }
         catch (Exception e) 
         { 
@@ -405,28 +301,29 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
         }
     }
     
-	private void setResults(ArrayList<String> results)
+
+	private void setNISResults(ArrayList<String> results)
 	{
-    	label.setText(results.size() + " images matched");
-    	resultListModel.clear();
-    	rawResults = results;
+		nisResultsLabelText = results.size() + " spectra matched";
+    	resultsLabel.setText(nisResultsLabelText);
+    	nisResultListModel.clear();
+    	nisRawResults = results;
     	
     	// add the results to the list
     	for (String str : results)
     	{
-    		resultListModel.addElement( 
-    				str.substring(19, 28) 
-    				+ ", day: " + str.substring(6, 9) + "/" + str.substring(1, 5)
-    				+ ", type: " + str.substring(10, 16)
-    				+ ", filter: " + str.substring(29, 30)
+    		System.out.println(str);
+    		nisResultListModel.addElement( 
+    				str.substring(16, 25) 
+    				+ ", day: " + str.substring(10, 13) + "/" + str.substring(5, 9)
     				);
     	}
 
     	// Show the first set of boundaries
-    	this.boundaryIntervalCurrentlyShown = new IdPair(0, (Integer)this.numberOfBoundariesComboBox.getSelectedItem());
-    	this.showBoundaries(boundaryIntervalCurrentlyShown);
+    	this.resultIntervalCurrentlyShown = new IdPair(0, (Integer)this.numberOfBoundariesComboBox.getSelectedItem());
+    	this.showNISBoundaries(resultIntervalCurrentlyShown);
 	}
-
+	
 	public void mouseClicked(MouseEvent e) 
 	{
 	}
@@ -458,32 +355,32 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
         	if (index >= 0 && resultList.getCellBounds(index, index).contains(e.getPoint()))
         	{
         		resultList.setSelectedIndex(index);
-        		popupMenu.setCurrentImage(rawResults.get(index));
-        		popupMenu.show(e.getComponent(), e.getX(), e.getY());
+        		nisPopupMenu.setCurrentSpectrum(nisRawResults.get(index));
+        		nisPopupMenu.show(e.getComponent(), e.getX(), e.getY());
         	}
         }
     }
 	
-	private void showBoundaries(IdPair idPair)
+	private void showNISBoundaries(IdPair idPair)
 	{
 		int startId = idPair.id1;
 		int endId = idPair.id2;
 		
-		MSIBoundaryCollection model = (MSIBoundaryCollection)modelManager.getModel(ModelManager.MSI_BOUNDARY);
-		model.removeAllBoundaries();
+		NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelManager.NIS_SPECTRA);
+		model.removeAllImages();
 		
 		for (int i=startId; i<endId; ++i)
 		{
 			if (i < 0)
 				continue;
-			else if(i >= rawResults.size())
+			else if(i >= nisRawResults.size())
 				break;
 			
 			try 
 			{
-				String currentImage = rawResults.get(i);
-				String boundaryName = currentImage.substring(0,currentImage.length()-4) + "_BOUNDARY.VTK";
-				model.addBoundary(boundaryName);
+				String currentImage = nisRawResults.get(i);
+				String boundaryName = currentImage.substring(0,currentImage.length()-4) + ".NIS";
+				model.addSpectrum(boundaryName);
 			} 
 			catch (FitsException e1) {
 				// TODO Auto-generated catch block

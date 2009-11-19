@@ -42,7 +42,16 @@ public class FileUtil
 		}
 		catch (IOException e) {
 			e.printStackTrace();
-			return null;
+			lines = null;
+		}
+		
+		try 
+		{
+			in.close();
+		} 
+		catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		
 		return lines;
@@ -84,7 +93,16 @@ public class FileUtil
 		}
 		catch (IOException e) {
 			e.printStackTrace();
-			return null;
+			words = null;
+		}
+		
+		try 
+		{
+			in.close();
+		} 
+		catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		
 		return words;

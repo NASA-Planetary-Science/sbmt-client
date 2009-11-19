@@ -6,21 +6,46 @@ public class LatLon
 	public double lon;
 	public double rad;
 
+	public LatLon(double lat, double lon, double rad)
+	{
+		this.lat = lat;
+		this.lon = lon;
+		this.rad = rad;
+	}
+	
 	public LatLon(double lat, double lon)
 	{
 		this.lat = lat;
 		this.lon = lon;
+		this.rad = 1.0;
 	}
 	
 	public LatLon()
 	{
-		
+		this.lat = 0.0;
+		this.lon = 0.0;
+		this.rad = 1.0;
+	}
+	
+	/**
+	 * Convert lat lon to cartesian coordinates.
+	 * @param latLon
+	 * @return xyz
+	 */
+	static public double[] latLonToRec(LatLon latLon)
+	{
+		double xyz[] = new double[3];
+        xyz[0] = latLon.rad * Math.cos( latLon.lon ) * Math.cos( latLon.lat );
+        xyz[1] = latLon.rad * Math.sin( latLon.lon ) * Math.cos( latLon.lat );
+        xyz[2] = latLon.rad * Math.sin( latLon.lat );
+
+        return xyz;
 	}
 	
 	/**
 	 * Convert cartesian coordinates to lat lon. Copied from spice's reclat function.
 	 * @param xyz
-	 * @return
+	 * @return latLon
 	 */
 	static public LatLon recToLatLon(double[] rectan)
 	{

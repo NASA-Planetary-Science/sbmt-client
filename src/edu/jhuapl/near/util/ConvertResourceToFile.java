@@ -2,7 +2,7 @@ package edu.jhuapl.near.util;
 
 import java.io.*;
 
-public class ConvertToRealFile 
+public class ConvertResourceToFile 
 {
 	/**
 	 * Convert a specified resource to a real file to be placed in a certain directory.

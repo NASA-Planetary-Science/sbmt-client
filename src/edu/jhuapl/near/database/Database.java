@@ -1,12 +1,13 @@
 package edu.jhuapl.near.database;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.File;
+import java.sql.SQLException;
 import java.util.*;
 
 import org.joda.time.LocalDateTime;
+
+import edu.jhuapl.near.util.Configuration;
+import edu.jhuapl.near.util.ConvertResourceToFile;
 
 
 /**
@@ -18,49 +19,82 @@ import org.joda.time.LocalDateTime;
  */
 public class Database 
 {
+	public enum Datatype {MSI, NIS, NLR};
+	
 	private static Database ref = null;
 	
 	String version;
+	SqlManager db = null;
 
-	ArrayList<ImageInfo> images = new ArrayList<ImageInfo>();
-	
-	static class ImageInfo
+	private String getMsiPath(ArrayList<Object> result)
 	{
-		int name;
-		short year;
-		short dayOfYear;
-		String type; // either iofdbl or cifdbl
-		int filter;
-		LocalDateTime startTime;
-		LocalDateTime stopTime;
-		float scDistance; // Distance of spacecraft in km from center of Eros at time image was taken.
-		float resolution;
+		int id = (Integer)result.get(0);
+		short year = (Short)result.get(1);
+		short dayOfYear = (Short)result.get(2);
+		byte filter = (Byte)result.get(5);
+		byte type = (Byte)result.get(6);
+		String typeStr;
+		if (type == 0)
+			typeStr = "iofdbl";
+		else
+			typeStr = "cifdbl";
 		
-		String getPath()
-		{
-			String str = "/";
-			str += year + "/";
-			
-			if (dayOfYear < 10)
-				str += "00";
-			else if (dayOfYear < 100)
-				str += "0";
-	
-			str += dayOfYear + "/";
-			
-			str += type + "/";
-			
-			str += "M0" + name + "F" + filter + "_2P_";
-			
-			if (type.equals("iofdbl"))
-				str += "IOF_DBL.FIT";
-			else
-				str += "CIF_DBL.FIT";
-			
-			return str;
-		}
+		return this.getMsiPath(id, year, dayOfYear, typeStr, filter);
 	}
-	
+
+	private String getMsiPath(int name, short year, short dayOfYear, String type, byte filter)
+	{
+		String str = "/MSI/";
+		str += year + "/";
+		
+		if (dayOfYear < 10)
+			str += "00";
+		else if (dayOfYear < 100)
+			str += "0";
+
+		str += dayOfYear + "/";
+		
+		str += type + "/";
+		
+		str += "M0" + name + "F" + filter + "_2P_";
+		
+		if (type.equals("iofdbl"))
+			str += "IOF_DBL.FIT";
+		else
+			str += "CIF_DBL.FIT";
+		
+		return str;
+	}
+
+	private String getNisPath(ArrayList<Object> result)
+	{
+		int id = (Integer)result.get(0);
+//		short year = (Short)result.get(1);
+//		short dayOfYear = (Short)result.get(2);
+		int year = (Integer)result.get(1);
+		int dayOfYear = (Integer)result.get(2);
+		return this.getNisPath(id, (short)year, (short)dayOfYear);
+		
+//		return this.getNisPath(id, year, dayOfYear);
+	}
+
+	private String getNisPath(int name, short year, short dayOfYear)
+	{
+		String str = "/NIS/";
+		str += year + "/";
+		
+		if (dayOfYear < 10)
+			str += "00";
+		else if (dayOfYear < 100)
+			str += "0";
+
+		str += dayOfYear + "/";
+		
+		str += "N0" + name + ".NIS";
+		
+		return str;
+	}
+
 	public static Database getInstance()                                                                                                 
     {                                                                                                                                          
         if (ref == null)                                                                                                                       
@@ -74,59 +108,35 @@ public class Database
         throw new CloneNotSupportedException();                                                                                                
     }                                                                                                                                          
                                                             
-	private Database() {
-		// Create a directory in the user's home space for storing
-		// the cells of the database that get downloaded.
-		
-		try 
-		{
-			this.loadMSIDatabase();
-		} 
-		catch (NumberFormatException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
-	private void loadMSIDatabase() throws NumberFormatException, IOException
+	private Database() 
 	{
-		InputStream is = getClass().getResourceAsStream("/edu/jhuapl/near/data/MsiTemporalDb.txt");
-		InputStreamReader isr = new InputStreamReader(is);
-		BufferedReader in = new BufferedReader(isr);
+		// First save to database files stored in the jar to the user's home directory
+		String[] databaseresources = {
+				"/edu/jhuapl/near/data/neardb/near.backup",
+				"/edu/jhuapl/near/data/neardb/near.data",
+				"/edu/jhuapl/near/data/neardb/near.properties",
+				"/edu/jhuapl/near/data/neardb/near.script"
+		};
+		
+		for (String resourcename : databaseresources)
+		{
+			ConvertResourceToFile.convertResourceToRealFile(
+					this, 
+					resourcename,
+					Configuration.getDatabaseDir());
+		}
 
-		String line;
-        while ((line = in.readLine()) != null)
+        try 
         {
-            String [] tokens = line.split("\t");
-            
-            if (tokens.length < 5)
-            {
-                System.out.println(tokens.length);
-                for (int i=0;i<tokens.length;++i)
-                	System.out.println(tokens[i]);
-                continue;
-            }
-
-            ImageInfo info = new ImageInfo();
-            
-            info.name = Integer.parseInt(tokens[0]);
-            info.year = Short.parseShort(tokens[1]);
-            info.dayOfYear = Short.parseShort(tokens[2]);
-            info.type = tokens[3];
-            info.filter = Byte.parseByte(tokens[4]);
-            info.startTime = new LocalDateTime(tokens[5]);
-            info.stopTime = new LocalDateTime(tokens[6]);
-            info.scDistance = Float.parseFloat(tokens[7]);
-            info.resolution = Float.parseFloat(tokens[8]);
-            
-            images.add(info);
+            db = new SqlManager(Configuration.getDatabaseDir() + File.separator + Configuration.getDatabaseName());
         }
-        
-        in.close();
+        catch (Exception ex1) {
+            ex1.printStackTrace();
+            return;
+        }
+
 	}
+
 	
 	/**
 	 * Run a query which searches for msi images between the specified dates.
@@ -136,6 +146,7 @@ public class Database
 	 * @param endDate
 	 */
 	public ArrayList<String> runQuery(
+			Datatype datatype,
 			LocalDateTime startDate, 
 			LocalDateTime stopDate,
 			ArrayList<Integer> filters,
@@ -148,83 +159,128 @@ public class Database
 			String searchString) 
 	{
 		ArrayList<String> matchedImages = new ArrayList<String>();
+		ArrayList<ArrayList<Object>> results = null;
 		
-		if (searchString != null)
+		switch (datatype)
 		{
-			for (ImageInfo info: images)
+		case MSI:
+			if (searchString != null)
 			{
-				if (info.name == Integer.parseInt(searchString))
+				try
 				{
-					matchedImages.add(info.getPath());
-					break;
-				}
-			}
-			return matchedImages;
-		}
-		
-		if (filters.isEmpty() || (iofdbl == false && cifdbl == false))
-			return matchedImages;
-		
-		double minScDistance = Math.min(startDistance, stopDistance);
-		double maxScDistance = Math.max(startDistance, stopDistance);
-		double minResolution = Math.min(startResolution, stopResolution) / 1000.0;
-		double maxResolution = Math.max(startResolution, stopResolution) / 1000.0;
+					int id = Integer.parseInt(searchString);
 
-		for (ImageInfo info: images)
-		{
-			if ((iofdbl && info.type.equals("iofdbl")) ||
-					(cifdbl && info.type.equals("cifdbl")))
-			{
-				if (filters.contains(info.filter) &&
-						containsDate(startDate, stopDate, info) &&
-						info.scDistance >= minScDistance && info.scDistance <= maxScDistance &&
-						info.resolution >= minResolution && info.resolution <= maxResolution)
+					results = db.query("SELECT * FROM msiimages WHERE id = " + id);
+				}
+				catch (NumberFormatException e)
 				{
-					matchedImages.add(info.getPath());
+					e.printStackTrace();
+				} 
+				catch (SQLException e) 
+				{
+					e.printStackTrace();
+				}
+				
+				if (results != null && results.size() > 0)
+				{
+					String path = this.getMsiPath(results.get(0));
+	
+					matchedImages.add(path);
+				}
+				return matchedImages;
+			}
+
+			if (filters.isEmpty() || (iofdbl == false && cifdbl == false))
+				return matchedImages;
+			
+			try
+			{
+				double minScDistance = Math.min(startDistance, stopDistance);
+				double maxScDistance = Math.max(startDistance, stopDistance);
+				double minResolution = Math.min(startResolution, stopResolution) / 1000.0;
+				double maxResolution = Math.max(startResolution, stopResolution) / 1000.0;
+
+				String query = "SELECT * FROM nisspectra ";
+				query += "WHERE target_center_distance >= " + minScDistance ;
+				query += " AND target_center_distance <= " + maxScDistance;
+				query += " AND horizontal_pixel_scale >= " + minResolution;
+				query += " AND horizontal_pixel_scale <= " + maxResolution;
+				if (iofdbl == false)
+					query += " AND iofcif = 1";
+				else if (cifdbl == false)
+					query += " AND iofcif = 0";
+				query += " AND ( ";
+				for (int i=0; i<filters.size(); ++i)
+				{
+					query += " filter = " + filters.get(i);
+					if (i < filters.size()-1)
+						query += " OR ";
+				}
+				query += " ) AND ";
+				
+				results = db.query(query);
+				
+				for (ArrayList<Object> res : results)
+				{
+					String path = this.getMsiPath(res);
+					
+					matchedImages.add(path);
 				}
 			}
+			catch (SQLException e) 
+			{
+				e.printStackTrace();
+			}
+			
+
+//			for (ImageInfo info: images)
+//			{
+//				if ((iofdbl && info.type.equals("iofdbl")) ||
+//						(cifdbl && info.type.equals("cifdbl")))
+//				{
+//					if (filters.contains(info.filter) &&
+//							containsDate(startDate, stopDate, info) &&
+//							info.scDistance >= minScDistance && info.scDistance <= maxScDistance &&
+//							info.resolution >= minResolution && info.resolution <= maxResolution)
+//					{
+//						matchedImages.add(info.getPath());
+//					}
+//				}
+//			}
+
+			return matchedImages;
+
+		case NIS:
+			try
+			{
+				double minScDistance = Math.min(startDistance, stopDistance);
+				double maxScDistance = Math.max(startDistance, stopDistance);
+
+				String query = "SELECT * FROM nisspectra ";
+				//query += "WHERE starttime >= " + startDate.toString();
+				//query += " AND starttime <= " + stopDate.toString();
+				query += " where range >= " + minScDistance ;
+				query += " AND range <= " + maxScDistance;
+				
+				results = db.query(query);
+				
+				for (ArrayList<Object> res : results)
+				{
+					String path = this.getNisPath(res);
+					
+					matchedImages.add(path);
+				}
+			}
+			catch (SQLException e) 
+			{
+				e.printStackTrace();
+			}
+
+			break;
 		}
 		
 		return matchedImages;
 	}
 
-	/**
-	 * Determines if query time interval intersects with the image time interval
-	 * @param date date to test
-	 * @return true if date matches query, false otherwise.
-	 */
-    private boolean containsDate(
-    		LocalDateTime startDate, 
-    		LocalDateTime stopDate, 
-    		ImageInfo image)
-    {
-    	if (image.startTime.compareTo(stopDate) <= 0 &&
-    		image.stopTime.compareTo(startDate) >= 0)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
 
-    /*
-    private static final GregorianCalendar cal = new GregorianCalendar();
-    private static final double millisInRegularYear = 365.0 * 24.0 * 60.0 * 60.0 * 1000.0;
-    private static final double millisInLeapYear =    366.0 * 24.0 * 60.0 * 60.0 * 1000.0;
-    private static final double millisInDay =                 24.0 * 60.0 * 60.0 * 1000.0;
-    private double convertDateTimeToDouble(LocalDateTime dt)
-    {
-    	int year = dt.getYear();
-    	
-    	double doy = dt.getDayOfYear();
-    	double mod = dt.getMillisOfDay();
-    	double millisInYear = millisInRegularYear;
-    	if (cal.isLeapYear(year))
-    		millisInYear = millisInLeapYear;
-    	
-    	return (double)year + (doy * millisInDay + mod ) / millisInYear;
-    }
-    */
 }

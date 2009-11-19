@@ -65,6 +65,8 @@ public class NearImage extends Model
 	private int filter; // 1 through 7
 	private double polygonOffset = -10.0;
 
+	boolean hasLimb = false;
+	
 	/**
 	 * Because instances of NearImage can be expensive, we want to there to be
 	 * no more than one instance of this class per image file on the server.
@@ -145,7 +147,17 @@ public class NearImage extends Model
 		String boundaryFilename = filename.substring(0, filename.length()-4) + "_BOUNDARY.VTK";
 		FileCache.getFileFromServer(boundaryFilename);
 
-		filename = fitFile.getAbsolutePath();
+		this.initialize(fitFile);
+	}
+	
+	public NearImage(File fitFile) throws FitsException, IOException
+	{
+		this.initialize(fitFile);
+	}
+	
+	private void initialize(File fitFile) throws FitsException, IOException
+	{
+		String filename = fitFile.getAbsolutePath();
 		this.fullpath = filename;
 
 		// Set the filter name
@@ -294,6 +306,7 @@ public class NearImage extends Model
 	        	else
 	        	{
 	        		++numInvalidPixels;
+	        		hasLimb = true;
 	        	}
 	        		        	
 	        	x[j][i] = xx;
@@ -706,6 +719,10 @@ public class NearImage extends Model
     	return properties;
     }
 
+    public boolean containsLimb()
+    {
+    	return hasLimb;
+    }
 
 	/////////////////////////////////////////////////////////////////
 	// The remaining functions are used in the database generation

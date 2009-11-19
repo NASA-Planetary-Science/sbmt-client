@@ -37,7 +37,7 @@ public class PickManager implements
 			vtkRenderWindowPanel renWin, 
 			StatusBar statusBar,
 			ModelManager modelManager,
-			MSIImageInfoPanelManager infoPanelManager)
+			ModelInfoWindowManager infoPanelManager)
 	{
 		this.renWin = renWin;
 		this.statusBar = statusBar;

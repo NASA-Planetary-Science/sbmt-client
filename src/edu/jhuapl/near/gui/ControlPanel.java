@@ -16,7 +16,7 @@ public class ControlPanel extends JTabbedPane
 	public ControlPanel(
 			ErosRenderer viewer, 
 			ModelManager modelManager, 
-			MSIImageInfoPanelManager infoPanelManager)
+			ModelInfoWindowManager infoPanelManager)
 	{
 		JTabbedPane searchPanels = new JTabbedPane();
 		msiSearchPanel = new MSISearchPanel(modelManager, infoPanelManager, viewer.getRenderWindowPanel());

@@ -20,25 +20,30 @@ import vtk.vtkRenderWindowPanel;
 
 import edu.jhuapl.near.database.Database;
 import edu.jhuapl.near.gui.popupmenus.MSIPopupMenu;
+import edu.jhuapl.near.gui.popupmenus.NISPopupMenu;
 import edu.jhuapl.near.model.MSIBoundaryCollection;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.NearImageCollection;
 import edu.jhuapl.near.pair.IdPair;
 
 
-public class MSISearchPanel extends JPanel implements ActionListener, MouseListener
+public class SearchPanel extends JPanel implements ActionListener, MouseListener
 {
 	private final String MSI_REMOVE_ALL_BUTTON_TEXT = "Remove All Boundaries";
+	private final String NIS_REMOVE_ALL_BUTTON_TEXT = "Remove All Spectra";
+	private final String NLR_REMOVE_ALL_BUTTON_TEXT = "Remove All NLR Data";
 	
     private final ModelManager modelManager;
     private java.util.Date startDate = new DateTime(2000, 7, 7, 0, 0, 0, 0).toDate();
     private java.util.Date endDate = new DateTime(2000, 8, 1, 0, 0, 0, 0).toDate();
+//    private ShapeBuilderWidget shapePanel;
     private JLabel endDateLabel;
     private JLabel startDateLabel;
     private static final String START_DATE_LABEL_TEXT = "Start Date";
     private static final String END_DATE_LABEL_TEXT = "End Date:";
     private JSpinner startSpinner;
     private JSpinner endSpinner;
+    private JComboBox queryTypeComboBox;
     private JCheckBox filter1CheckBox;
     private JCheckBox filter2CheckBox;
     private JCheckBox filter3CheckBox;
@@ -61,19 +66,28 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
     
     private JList resultList;
     private DefaultListModel msiResultListModel;
+    private DefaultListModel nisResultListModel;
+    private DefaultListModel nlrResultListModel;
     private MSIPopupMenu msiPopupMenu;
+    private NISPopupMenu nisPopupMenu;
     private ArrayList<String> msiRawResults = new ArrayList<String>();
+    private ArrayList<String> nisRawResults = new ArrayList<String>();
+    private ArrayList<String> nlrRawResults = new ArrayList<String>();
     private JLabel resultsLabel;
     private String msiResultsLabelText = " ";
+    private String nisResultsLabelText = " ";
+    private String nlrResultsLabelText = " ";
     private JButton nextButton;
     private JButton prevButton;
     private JButton removeAllButton;
     private JButton removeAllImagesButton;
     private JComboBox numberOfBoundariesComboBox;
     private IdPair resultIntervalCurrentlyShown = null;
+    private IdPair msiBoundaryIntervalCurrentlyShown = null;
+    private IdPair nisBoundaryIntervalCurrentlyShown = null;
 
     
-    public MSISearchPanel(
+    public SearchPanel(
     		final ModelManager modelManager, 
     		ModelInfoWindowManager infoPanelManager,
     		vtkRenderWindowPanel renWin) 
@@ -91,6 +105,12 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
         //        new CompoundBorder(BorderFactory.createEmptyBorder(9, 9, 9, 9), 
         //                           new TitledBorder("Query Editor")));
 
+        String [] options = {"MSI", "NIS", "NLR"};
+        //String [] options = {"MSI", "NIS"};
+        //String [] options = {"MSI"};
+        queryTypeComboBox = new JComboBox(options);                                             
+        queryTypeComboBox.setEditable(false);
+        pane.add(queryTypeComboBox);                     
 
         
         final JPanel startDatePanel = new JPanel();
@@ -132,6 +152,14 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
         pane.add(endDatePanel);
 
 
+        //panel = new JPanel();
+        //panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
+        //JLabel label = new JLabel("Select Region:");
+        //panel.add(label);
+
+        //this.shapePanel = new ShapeBuilderWidget(wwd, this);
+        //panel.add(this.shapePanel);
+        //pane.add(panel);
 
         final JPanel filtersPanel = new JPanel();
         filtersPanel.setLayout(new BoxLayout(filtersPanel,
@@ -320,10 +348,13 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
         JPanel resultsPanel = new JPanel(new BorderLayout());
 		
 		msiPopupMenu = new MSIPopupMenu(this.modelManager, infoPanelManager, renWin, this);
+		nisPopupMenu = new NISPopupMenu(this.modelManager, infoPanelManager, renWin);
 
 		resultsLabel = new JLabel(" ");
 
         msiResultListModel = new DefaultListModel();
+        nisResultListModel = new DefaultListModel();
+        nlrResultListModel = new DefaultListModel();
 
         //Create the list and put it in a scroll pane.
         resultList = new JList(msiResultListModel);
@@ -444,47 +475,126 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
 
         add(resultsPanel);
         
+        queryTypeComboBox.addActionListener(new ActionListener()
+        {
+			public void actionPerformed(ActionEvent arg0) 
+			{
+				if (queryTypeComboBox.getSelectedItem().equals("MSI"))
+				{
+					removeAllButton.setText(MSI_REMOVE_ALL_BUTTON_TEXT);
+					removeAllImagesButton.setVisible(true);
+					resultList.setModel(msiResultListModel);
+					resultsLabel.setText(msiResultsLabelText);
+					filtersPanel.setVisible(true);
+					iofcifPanel.setVisible(true);
+					searchByNumberPanel.setVisible(true);
+					resolutionPanel.setVisible(true);
+					distancePanel.setVisible(true);
+					startDatePanel.setVisible(true);
+					endDatePanel.setVisible(true);
+					submitPanel.setVisible(true);
+					resultSub1ControlsPanel.setVisible(true);
+				}
+				else if (queryTypeComboBox.getSelectedItem().equals("NIS"))
+				{
+					removeAllButton.setText(NIS_REMOVE_ALL_BUTTON_TEXT);
+					removeAllImagesButton.setVisible(false);
+					resultList.setModel(nisResultListModel);
+					resultsLabel.setText(nisResultsLabelText);
+					filtersPanel.setVisible(false);
+					iofcifPanel.setVisible(false);
+					searchByNumberPanel.setVisible(false);
+					resolutionPanel.setVisible(false);
+					distancePanel.setVisible(true);
+					startDatePanel.setVisible(true);
+					endDatePanel.setVisible(true);
+					submitPanel.setVisible(true);
+					resultSub1ControlsPanel.setVisible(true);
+				}
+				else if (queryTypeComboBox.getSelectedItem().equals("NLR"))
+				{
+					removeAllButton.setText(NLR_REMOVE_ALL_BUTTON_TEXT);
+					removeAllImagesButton.setVisible(false);
+					resultList.setModel(nlrResultListModel);
+					resultsLabel.setText(nlrResultsLabelText);
+					filtersPanel.setVisible(false);
+					iofcifPanel.setVisible(false);
+					searchByNumberPanel.setVisible(false);
+					resolutionPanel.setVisible(false);
+					distancePanel.setVisible(false);
+					startDatePanel.setVisible(false);
+					endDatePanel.setVisible(false);
+					submitPanel.setVisible(false);
+					resultSub1ControlsPanel.setVisible(false);
+				}
+			}
+        	
+        });
     }
 
     public void actionPerformed(ActionEvent actionEvent)
     {
         try
         {
-        	ArrayList<Integer> filtersChecked = new ArrayList<Integer>();
+        	if (queryTypeComboBox.getSelectedItem().equals("MSI"))
+        	{
 
-        	if (filter1CheckBox.isSelected())
-        		filtersChecked.add(1);
-        	if (filter2CheckBox.isSelected())
-        		filtersChecked.add(2);
-        	if (filter3CheckBox.isSelected())
-        		filtersChecked.add(3);
-        	if (filter4CheckBox.isSelected())
-        		filtersChecked.add(4);
-        	if (filter5CheckBox.isSelected())
-        		filtersChecked.add(5);
-        	if (filter6CheckBox.isSelected())
-        		filtersChecked.add(6);
-        	if (filter7CheckBox.isSelected())
-        		filtersChecked.add(7);
+        		ArrayList<Integer> filtersChecked = new ArrayList<Integer>();
 
-        	String searchField = null;
-        	if (searchByNumberCheckBox.isSelected())
-        		searchField = searchByNumberTextField.getText();
+        		if (filter1CheckBox.isSelected())
+        			filtersChecked.add(1);
+        		if (filter2CheckBox.isSelected())
+        			filtersChecked.add(2);
+        		if (filter3CheckBox.isSelected())
+        			filtersChecked.add(3);
+        		if (filter4CheckBox.isSelected())
+        			filtersChecked.add(4);
+        		if (filter5CheckBox.isSelected())
+        			filtersChecked.add(5);
+        		if (filter6CheckBox.isSelected())
+        			filtersChecked.add(6);
+        		if (filter7CheckBox.isSelected())
+        			filtersChecked.add(7);
 
-        	ArrayList<String> results = Database.getInstance().runQuery(
-        			Database.Datatype.MSI,
-        			new LocalDateTime(startDate), 
-        			new LocalDateTime(endDate),
-        			filtersChecked,
-        			iofdblCheckBox.isSelected(),
-        			cifdblCheckBox.isSelected(),
-        			Double.parseDouble(fromDistanceTextField.getText()),
-        			Double.parseDouble(toDistanceTextField.getText()),
-        			Double.parseDouble(fromResolutionTextField.getText()),
-        			Double.parseDouble(toResolutionTextField.getText()),
-        			searchField);
+        		String searchField = null;
+        		if (searchByNumberCheckBox.isSelected())
+        			searchField = searchByNumberTextField.getText();
 
-        	setMSIResults(results);
+        		ArrayList<String> results = Database.getInstance().runQuery(
+        				Database.Datatype.MSI,
+        				new LocalDateTime(startDate), 
+        				new LocalDateTime(endDate),
+        				filtersChecked,
+        				iofdblCheckBox.isSelected(),
+        				cifdblCheckBox.isSelected(),
+        				Double.parseDouble(fromDistanceTextField.getText()),
+        				Double.parseDouble(toDistanceTextField.getText()),
+        				Double.parseDouble(fromResolutionTextField.getText()),
+        				Double.parseDouble(toResolutionTextField.getText()),
+        				searchField);
+
+        		setMSIResults(results);
+			}
+			else if (queryTypeComboBox.getSelectedItem().equals("NIS"))
+			{
+        		ArrayList<String> results = Database.getInstance().runQuery(
+        				Database.Datatype.NIS,
+        				new LocalDateTime(startDate), 
+        				new LocalDateTime(endDate),
+        				null,
+        				false,
+        				false,
+        				Double.parseDouble(fromDistanceTextField.getText()),
+        				Double.parseDouble(toDistanceTextField.getText()),
+        				0.0,
+        				0.0,
+        				null);
+
+        		setNISResults(results);
+			}
+			else if (queryTypeComboBox.getSelectedItem().equals("NLR"))
+			{
+			}
         }
         catch (Exception e) 
         { 
@@ -505,10 +615,10 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
     	for (String str : results)
     	{
     		msiResultListModel.addElement( 
-    				str.substring(23, 32) 
-    				+ ", day: " + str.substring(10, 13) + "/" + str.substring(5, 9)
-    				+ ", type: " + str.substring(14, 20)
-    				+ ", filter: " + str.substring(33, 34)
+    				str.substring(19, 28) 
+    				+ ", day: " + str.substring(6, 9) + "/" + str.substring(1, 5)
+    				+ ", type: " + str.substring(10, 16)
+    				+ ", filter: " + str.substring(29, 30)
     				);
     	}
 
@@ -517,6 +627,33 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
     	this.showMSIBoundaries(resultIntervalCurrentlyShown);
 	}
 
+	private void setNISResults(ArrayList<String> results)
+	{
+		nisResultsLabelText = results.size() + " spectra matched";
+    	resultsLabel.setText(nisResultsLabelText);
+    	nisResultListModel.clear();
+    	nisRawResults = results;
+    	
+    	// add the results to the list
+    	for (String str : results)
+    	{
+    		nisResultListModel.addElement( 
+    				str.substring(19, 28) 
+    				+ ", day: " + str.substring(6, 9) + "/" + str.substring(1, 5)
+    				+ ", type: " + str.substring(10, 16)
+    				+ ", filter: " + str.substring(29, 30)
+    				);
+    	}
+
+    	// Show the first set of boundaries
+    	this.resultIntervalCurrentlyShown = new IdPair(0, (Integer)this.numberOfBoundariesComboBox.getSelectedItem());
+    	this.showMSIBoundaries(resultIntervalCurrentlyShown);
+	}
+	
+	private void setNLRResults(ArrayList<String> results)
+	{
+	}
+	
 	public void mouseClicked(MouseEvent e) 
 	{
 	}

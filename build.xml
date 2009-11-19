@@ -17,6 +17,7 @@
 			 <pathelement location="${rootdir}/lib/vtk.jar"/>
 			 <pathelement location="${rootdir}/lib/jide-oss-2.7.3.jar"/>
 			 <pathelement location="${rootdir}/lib/joda-time-1.6.jar"/>
+			 <pathelement location="${rootdir}/lib/hsqldbmin.jar"/>
            </classpath>
         </javac> 
     </target>
@@ -30,6 +31,7 @@
 			 <pathelement location="${rootdir}/lib/vtk.jar"/>
 			 <pathelement location="${rootdir}/lib/jide-oss-2.7.3.jar"/>
 			 <pathelement location="${rootdir}/lib/joda-time-1.6.jar"/>
+			 <pathelement location="${rootdir}/lib/hsqldbmin.jar"/>
            </classpath>
         </java>
     </target>
@@ -40,7 +42,8 @@
            <manifest>
                <attribute name="Class-Path" value="vtk.jar
 												   jide-oss-2.7.3.jar
-												   joda-time-1.6.jar"/>
+												   joda-time-1.6.jar
+												   hsqldbmin.jar"/>
                <attribute name="Main-Class" value="edu.jhuapl.near.ErosLineamentViewer"/>
            </manifest>
         </jar>
@@ -55,6 +58,7 @@
 			 <pathelement location="${rootdir}/lib/vtk.jar"/>
 			 <pathelement location="${rootdir}/lib/jide-oss-2.7.3.jar"/>
 			 <pathelement location="${rootdir}/lib/joda-time-1.6.jar"/>
+			 <pathelement location="${rootdir}/lib/hsqldbmin.jar"/>
 			 <pathelement location="${rootdir}/build/jar/near.jar"/>
            </classpath>
         </java>
@@ -178,6 +182,14 @@
         <input message="Please enter keystore password:"
             addproperty="keypass" />
         <signjar jar="${rootdir}/lib/joda-time-1.6.jar"
+            keystore="${rootdir}/keystore" alias="mykey"
+            storepass="${keypass}"/>
+    </target>
+
+    <target name="signhsqldbjar">
+        <input message="Please enter keystore password:"
+            addproperty="keypass" />
+        <signjar jar="${rootdir}/lib/hsqldbmin.jar"
             keystore="${rootdir}/keystore" alias="mykey"
             storepass="${keypass}"/>
     </target>

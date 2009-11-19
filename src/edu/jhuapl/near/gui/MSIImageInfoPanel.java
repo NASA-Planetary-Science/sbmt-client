@@ -15,7 +15,7 @@ import edu.jhuapl.near.model.*;
 
 import vtk.*;
 
-public class MSIImageInfoPanel extends JFrame implements PropertyChangeListener
+public class MSIImageInfoPanel extends ModelInfoWindow implements PropertyChangeListener
 {
 	private vtkRenderWindowPanel renWin;
     private ContrastChanger contrastChanger;
@@ -149,7 +149,7 @@ public class MSIImageInfoPanel extends JFrame implements PropertyChangeListener
         setJMenuBar(menuBar);
     }
 
-	public NearImage getNearImage()
+	public Model getModel()
 	{
 		return nearImage;
 	}

@@ -15,7 +15,7 @@ import edu.jhuapl.near.model.*;
 
 import vtk.*;
 
-public class NISSpectrumInfoPanel extends JFrame implements PropertyChangeListener
+public class NISSpectrumInfoPanel extends ModelInfoWindow implements PropertyChangeListener
 {
 	private ModelManager modelManager;
 	
@@ -94,6 +94,12 @@ public class NISSpectrumInfoPanel extends JFrame implements PropertyChangeListen
         pack();
         setVisible(true);
 	}
+
+	public Model getModel()
+	{
+		return null;
+	}
+	
 
 	/**
 	 * The following function is a bit of a hack. We want to reuse the MSIPopupMenu

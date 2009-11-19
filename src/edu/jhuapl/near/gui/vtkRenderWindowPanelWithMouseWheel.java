@@ -6,7 +6,10 @@ import vtk.vtkRenderWindowPanel;
 
 /**
  * The purpose of this class is to add mouse wheel support to vtkRenderWindowPanel
- * which for some reason appears to be missing.
+ * which for some reason appears to be missing. It also prevents the render window
+ * from accepting focus when the mouse hovers over it, which for some reason is
+ * the default in the base class.
+ * 
  * @author kahneg1
  *
  */
@@ -37,6 +40,12 @@ public class vtkRenderWindowPanelWithMouseWheel extends vtkRenderWindowPanel
 		UnLock();
 	}
 
+	/**
+	 * The following function is overridden since for some reason, one of the base classes
+	 * of this class which implements this method causes the render window to always accept focus
+	 * whenever the mouse hovers over the window. We don't want this behavior so override it
+	 * with an empty function.
+	 */
 	public void mouseEntered(MouseEvent e) 
 	{
 		// do nothing

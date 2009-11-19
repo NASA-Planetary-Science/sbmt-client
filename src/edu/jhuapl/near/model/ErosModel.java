@@ -3,33 +3,42 @@ package edu.jhuapl.near.model;
 import java.io.File;
 import java.util.ArrayList;
 
-import vtk.vtkActor;
-import vtk.vtkPolyDataMapper;
-import vtk.vtkPolyDataReader;
-import edu.jhuapl.near.util.ConvertToRealFile;
+import vtk.*;
+import edu.jhuapl.near.util.ConvertResourceToFile;
+import edu.jhuapl.near.util.LatLon;
 import edu.jhuapl.near.util.Properties;
 
 public class ErosModel extends Model 
 {
+    private vtkPolyData erosPolyData;
     private vtkActor erosActor;
     private boolean showLighting = true;
     private ArrayList<vtkActor> erosActors = new ArrayList<vtkActor>();
+    //private vtkCellLocator locator;
+    private vtkOBBTree locator;
+    private vtkPoints intersectPoints;
     
 	public ErosModel()
 	{
     	vtkPolyDataReader erosReader = new vtkPolyDataReader();
-        File file = ConvertToRealFile.convertResourceToTempFile(this, "/edu/jhuapl/near/data/Eros_Dec2006_0.vtk");
+        File file = ConvertResourceToFile.convertResourceToTempFile(this, "/edu/jhuapl/near/data/Eros_Dec2006_0.vtk");
         erosReader.SetFileName(file.getAbsolutePath());
         erosReader.Update();
 
-        vtkPolyDataMapper erosMapper = new vtkPolyDataMapper();
-        erosMapper.SetInput(erosReader.GetOutput());
+        erosPolyData = erosReader.GetOutput();
+        
+        // Initialize the cell locator
+        //locator = new vtkCellLocator();
+        locator = new vtkOBBTree();
+        locator.SetDataSet(erosReader.GetOutput());
+        locator.CacheCellBoundsOn();
+        locator.AutomaticOn();
+        //locator.SetMaxLevel(10);
+        //locator.SetNumberOfCellsPerNode(5);
 
-        erosActor = new vtkActor();
-        //erosActor.GetProperty().SetRepresentationToWireframe();
-        erosActor.SetMapper(erosMapper);
+        locator.BuildLocator();
 
-        erosActors.add(erosActor);
+        intersectPoints = new vtkPoints();
 	}
 	
 	public void setShowEros(boolean show)
@@ -64,15 +73,44 @@ public class ErosModel extends Model
 	 * Given only the latitude and longitude of a point on the surface of
 	 * Eros, this function finds the xyz coordinates of the point by
 	 * shooting out a ray from the center of Eros and returning the intersection
-	 * point. If more than one point intersects Eros, the first one is returned.
+	 * point. If more than one point intersects Eros (unlikely), the first one is returned.
 	 */
 	public double[] latLonToXyz(double lat, double lon)
 	{
+		LatLon ll = new LatLon(lat, lon, 1.0);
+		double xyz[] = LatLon.latLonToRec(ll);
+		
+		// Cast a ray from the origin in the direction of xyz to about 50 km out
+		// which is definitely outside of Eros
+		double distance = 50.0;
+		
+		double[] sourcePnt = {0.0, 0.0, 0.0};
+		double[] destinPnt = {xyz[0]*distance, xyz[1]*distance, xyz[2]*distance};
+
+		intersectPoints.Reset();
+
+		locator.IntersectWithLine(sourcePnt, destinPnt, intersectPoints, null);
+		
+		if (intersectPoints.GetNumberOfPoints() > 0)
+			return intersectPoints.GetPoint(0);
+		
 		return null;
 	}
 	
 	public ArrayList<vtkActor> getActors() 
 	{
+		if (erosActor == null)
+		{
+	        vtkPolyDataMapper erosMapper = new vtkPolyDataMapper();
+	        erosMapper.SetInput(erosPolyData);
+
+	        erosActor = new vtkActor();
+	        //erosActor.GetProperty().SetRepresentationToWireframe();
+	        erosActor.SetMapper(erosMapper);
+
+	        erosActors.add(erosActor);
+		}
+		
 		return erosActors;
 	}
 	
