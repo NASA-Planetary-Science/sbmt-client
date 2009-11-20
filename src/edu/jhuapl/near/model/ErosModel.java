@@ -7,6 +7,7 @@ import vtk.*;
 import edu.jhuapl.near.util.ConvertResourceToFile;
 import edu.jhuapl.near.util.LatLon;
 import edu.jhuapl.near.util.Properties;
+import edu.jhuapl.near.util.Spice;
 
 public class ErosModel extends Model 
 {
@@ -78,7 +79,7 @@ public class ErosModel extends Model
 	public double[] latLonToXyz(double lat, double lon)
 	{
 		LatLon ll = new LatLon(lat, lon, 1.0);
-		double xyz[] = LatLon.latLonToRec(ll);
+		double xyz[] = Spice.latrec(ll);
 		
 		// Cast a ray from the origin in the direction of xyz to about 50 km out
 		// which is definitely outside of Eros

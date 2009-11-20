@@ -140,7 +140,7 @@ public class PickManager implements
 		if (pickSucceeded == 1)
 		{
 			double[] pos = mouseMovedCellPicker.GetPickPosition();
-			LatLon llr = LatLon.recToLatLon(pos);
+			LatLon llr = Spice.reclat(pos);
 
 			// Note \u00B0 is the unicode degree symbol
 			

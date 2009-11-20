@@ -104,6 +104,34 @@ public class NISSpectrum extends Model
 		this.convertLatLonsToVtkPolyData();
 	}
 	
+	private ArrayList<LatLon> subdivideLatLons(ArrayList<LatLon> latLons, double maxAngularSep)
+	{
+		ArrayList<LatLon> origLatLons = new ArrayList<LatLon>(latLons);
+		ArrayList<LatLon> subdividedLatLons = new ArrayList<LatLon>();
+
+		boolean needToSubdivide = true;
+
+		while (needToSubdivide)
+		{
+			subdividedLatLons.add(origLatLons.get(0));
+
+			int N = origLatLons.size() - 1;
+			for (int i=0; i<N; ++i)
+			{
+				LatLon ll1 = origLatLons.get(i);
+				LatLon ll2 = origLatLons.get(i+1);
+
+				LatLon midll = LatLon.midpoint(ll1, ll2);
+
+				subdividedLatLons.add(midll);
+				subdividedLatLons.add(ll2);
+			}
+		}
+
+		return subdividedLatLons;
+	}
+	
+
 	private void convertLatLonsToVtkPolyData()
 	{
 		footprint = new vtkPolyData();

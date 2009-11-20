@@ -27,59 +27,38 @@ public class LatLon
 		this.rad = 1.0;
 	}
 	
-	/**
-	 * Convert lat lon to cartesian coordinates.
-	 * @param latLon
-	 * @return xyz
-	 */
-	static public double[] latLonToRec(LatLon latLon)
+	public LatLon(LatLon other)
 	{
-		double xyz[] = new double[3];
-        xyz[0] = latLon.rad * Math.cos( latLon.lon ) * Math.cos( latLon.lat );
-        xyz[1] = latLon.rad * Math.sin( latLon.lon ) * Math.cos( latLon.lat );
-        xyz[2] = latLon.rad * Math.sin( latLon.lat );
-
-        return xyz;
+		this.lat = other.lat;
+		this.lon = other.lon;
+		this.rad = other.rad;
 	}
 	
 	/**
-	 * Convert cartesian coordinates to lat lon. Copied from spice's reclat function.
-	 * @param xyz
-	 * @return latLon
+	 * Given two LatLons WITH EQUAL RADII, find a new LatLon that 
+	 * equally bisects the two given LatLons.
+	 * 
+	 * The algorithm used is as follows. 
+	 * 
+	 * 1. Convert the 2 points to xyz using latLonToRec.
+	 * 2. Find the midpoint between the 2 points.
+	 * 3. Convert this midpoint back into LatLon using recToLatLon.
+	 * 4. Set the radius of this LatLon to that of the 2 points. 
+	 * 
+	 * @param ll1
+	 * @return
 	 */
-	static public LatLon recToLatLon(double[] rectan)
+	static public LatLon midpoint(LatLon ll1, LatLon ll2)
 	{
-		LatLon llr = new LatLon();
-
-		//vmax = MaxAbs(  rectan[0], MaxAbs( rectan[1], rectan[2] )   );
-		double vmax = Math.max(  Math.abs(rectan[0]), Math.max( Math.abs(rectan[1]), Math.abs(rectan[2]) ) );
-
-		if ( vmax > 0.)
-		{
-			double x1 = rectan[0] / vmax;
-			double y1 = rectan[1] / vmax;
-			double z1 = rectan[2] / vmax;
-			llr.rad   = vmax * Math.sqrt( x1*x1 + y1*y1 + z1*z1 );
-			llr.lat   = Math.atan2(z1, Math.sqrt( x1*x1 + y1*y1 ) );
-
-			if ( x1 == 0. && y1 == 0.)
-			{
-				llr.lon = 0.;
-			}
-			else
-			{
-				llr.lon = Math.atan2(y1, x1);
-			}
-		}
-		else
-		{
-			// The vector is the zero vector.
-
-			llr.rad = 0.;
-			llr.lon = 0.;
-			llr.lat = 0.;
-		}
+		double[] xyz1 = Spice.latrec(ll1);
+		double[] xyz2 = Spice.latrec(ll2);
 		
-		return llr;
+		double[] midxyz = {(xyz1[0]+xyz2[0])/2.0,(xyz1[1]+xyz2[1])/2.0,(xyz1[2]+xyz2[2])/2.0};
+		
+		LatLon midll = Spice.reclat(midxyz);
+		
+		midll.rad = ll1.rad;
+		
+		return midll;
 	}
 }
