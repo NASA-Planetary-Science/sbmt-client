@@ -166,12 +166,12 @@ public class SqlManager
 
                 nextRow.add(o);
 
-                System.out.print(o.toString() + " ");
+                //System.out.print(o.toString() + " ");
             }
 
             results.add(nextRow);
             
-            System.out.println(" ");
+            //System.out.println(" ");
         }
         
         return results;

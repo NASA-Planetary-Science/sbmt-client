@@ -10,27 +10,47 @@ import java.util.*;
 
 import javax.swing.*;
 
-import edu.jhuapl.near.gui.popupmenus.MSIPopupMenu;
+import edu.jhuapl.near.gui.popupmenus.NISPopupMenu;
 import edu.jhuapl.near.model.*;
 
-import vtk.*;
+import org.jfree.chart.*;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.data.category.DefaultCategoryDataset;
+import org.jfree.data.general.DefaultPieDataset;
+import org.jfree.data.xy.*;
+import org.jfree.data.*;
 
 public class NISSpectrumInfoPanel extends ModelInfoWindow implements PropertyChangeListener
 {
 	private ModelManager modelManager;
+	private NISSpectrum nisSpectrum;
 	
-	public NISSpectrumInfoPanel(ModelManager modelManager)
+	public NISSpectrumInfoPanel(NISSpectrum nisSpectrum, ModelManager modelManager)
 	{
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
 		this.modelManager = modelManager;
+		this.nisSpectrum = nisSpectrum;
 		
-		//image.addPropertyChangeListener(this);
-		
-        //vtkImageData displayedImage = image.getDisplayedImage();
-        
         JPanel panel = new JPanel(new BorderLayout());
 		
+        
+        // add the jfreechart graph
+        XYSeries series = new XYSeries("NIS Spectrum");
+        double[] wavelengths = this.nisSpectrum.getBandCenters();
+        double[] spectrum = this.nisSpectrum.getSpectrum();
+        for (int i=0; i<wavelengths.length; ++i)
+        	series.add(wavelengths[i], spectrum[i]);
+        XYDataset xyDataset = new XYSeriesCollection(series);
+        JFreeChart chart = ChartFactory.createXYLineChart
+                ("NIS Calibrated Spectrum", "Wavelength (nm)", "Reflectance",
+                		xyDataset, PlotOrientation.VERTICAL, true, true, false);
+        ChartPanel chartPanel = new ChartPanel(chart);
+        //chartPanel.setSize(300,300);
+        
+        panel.add(chartPanel, BorderLayout.CENTER);
+
+        
 		JPanel bottomPanel = new JPanel();
 		bottomPanel.setLayout(new BoxLayout(bottomPanel,
         		BoxLayout.PAGE_AXIS));
@@ -41,11 +61,11 @@ public class NISSpectrumInfoPanel extends ModelInfoWindow implements PropertyCha
 
 		HashMap<String, String> properties = null;
 		Object[][] data = {	{"", ""} };
-		/*
+		
 		try 
 		{
 			
-			properties = image.getProperties();
+			properties = this.nisSpectrum.getProperties();
 			TreeMap<String, String> sortedProperties = new TreeMap<String, String>(properties);
 			int size = properties.size();
 			data = new Object[size][2];
@@ -63,7 +83,7 @@ public class NISSpectrumInfoPanel extends ModelInfoWindow implements PropertyCha
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-			*/
+		
 		
 
 		JTable table = new JTable(data, columnNames)
@@ -89,8 +109,8 @@ public class NISSpectrumInfoPanel extends ModelInfoWindow implements PropertyCha
         createMenus();
         
         // Finally make the frame visible
-        //setTitle("MSI Image " + image.getName() + " Properties");
-        //this.set
+        setTitle("NIS Spectrum Properties");
+
         pack();
         setVisible(true);
 	}
@@ -109,6 +129,26 @@ public class NISSpectrumInfoPanel extends ModelInfoWindow implements PropertyCha
 	 */
     private void createMenus()
     {
+    	NISPopupMenu msiImagesPopupMenu = 
+			new NISPopupMenu(modelManager, null, null);
+    	
+    	msiImagesPopupMenu.setCurrentSpectrum(nisSpectrum.getServerPath());
+    	
+    	JMenuBar menuBar = new JMenuBar();
+
+    	JMenu menu = new JMenu("Options");
+        menu.setMnemonic('O');
+
+        Component[] components = msiImagesPopupMenu.getComponents();
+        for (Component item : components)
+        {
+        	if (item instanceof JMenuItem)
+        		menu.add(item);
+        }
+        
+        menuBar.add(menu);
+        
+        setJMenuBar(menuBar);
     }
 
 	public void propertyChange(PropertyChangeEvent arg0) 

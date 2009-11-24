@@ -3,19 +3,19 @@ package edu.jhuapl.near.gui;
 
 import javax.swing.*;
 import javax.swing.event.*;
-import edu.jhuapl.near.model.LineamentModel;
+import edu.jhuapl.near.model.*;
 
 
-public class LineamentRadialOffsetChanger extends JPanel implements ChangeListener
+public class RadialOffsetChanger extends JPanel implements ChangeListener
 {
 	private JSlider slider;
 	
-	private LineamentModel model;
+	private Model model;
 
-	public LineamentRadialOffsetChanger(LineamentModel model)
+	public RadialOffsetChanger(Model model, String title)
 	{
 		this.model = model;
-		setBorder(BorderFactory.createTitledBorder("Lineament Radial Offset"));
+		setBorder(BorderFactory.createTitledBorder(title));
 
 		slider = new JSlider(0, 30, 15);
 		slider.setPaintTicks(true);
@@ -33,7 +33,7 @@ public class LineamentRadialOffsetChanger extends JPanel implements ChangeListen
 			int max = slider.getMaximum();
 			int min = slider.getMinimum();
 			double offset = (val - (max-min)/2.0) * 0.025;
-			model.setLineamentRadialOffset(offset);
+			model.setRadialOffset(offset);
 		}
 	}
 }

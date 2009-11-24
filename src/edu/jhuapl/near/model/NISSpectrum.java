@@ -3,9 +3,11 @@ package edu.jhuapl.near.model;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.WeakHashMap;
 
-import org.joda.time.LocalDateTime;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 
 import edu.jhuapl.near.util.FileCache;
 import edu.jhuapl.near.util.FileUtil;
@@ -21,14 +23,18 @@ public class NISSpectrum extends Model
 	   // the file from the server (excluding the hostname).
 
 	static public final int DATE_TIME_OFFSET = 0;
+	static public final int MET_OFFSET = 1;
+	static public final int CURRENT_SEQUENCE_NUM_OFFSET = 1;
 	static public final int DURATION_OFFSET = 3+2;
 	static public final int MET_OFFSET_TO_MIDDLE_OFFSET = 4+2;
+	static public final int CALIBRATED_GE_DATA_OFFSET = 96+2;
+	static public final int CALIBRATED_GE_NOISE_OFFSET = 160+2;
 	static public final int RANGE_OFFSET = 252+2;
 	static public final int POLYGON_TYPE_FLAG_OFFSET = 258+2;
 	static public final int NUMBER_OF_VERTICES_OFFSET = 259+2;
 	static public final int POLYGON_START_COORDINATES_OFFSET = 260+2;
 	
-	private LocalDateTime dateTime;
+	private DateTime dateTime;
 	private double duration;
 	private short polygon_type_flag;
 	private double range;
@@ -37,9 +43,26 @@ public class NISSpectrum extends Model
     private vtkActor footprintActor;
     private ArrayList<vtkActor> footprintActors = new ArrayList<vtkActor>();
     private ErosModel erosModel;
+    private double[] spectrum = new double[64];
+    private double[] spectrumErros = new double[64];
+    
+    // These values were taken from Table 1 of "Spectral properties and geologic
+    // processes on Eros from combined NEAR NIS and MSI data sets" 
+    // by Noam Izenberg et. al.
+    static final private double[] bandCenters = {
+    	816.2,  837.8,  859.4,  881.0,  902.7,  924.3,  945.9,  967.5,
+    	989.1,  1010.7, 1032.3, 1053.9, 1075.5, 1097.1,	1118.8, 1140.4,
+    	1162.0,	1183.6, 1205.2, 1226.8, 1248.4, 1270.0,	1291.6, 1313.2,
+    	1334.9,	1356.5, 1378.1, 1399.7, 1421.3, 1442.9,	1464.5, 1486.1,
+    	1371.8,	1414.9, 1458.0, 1501.1, 1544.2, 1587.3,	1630.4, 1673.6,
+    	1716.7,	1759.8, 1802.9, 1846.0, 1889.1, 1932.2,	1975.3, 2018.4,
+    	2061.5,	2104.7, 2147.8, 2190.9, 2234.0, 2277.1,	2320.2, 2363.3,
+    	2406.4,	2449.5, 2492.6, 2535.8, 2578.9, 2622.0,	2665.1, 2708.2
+    };
+    
     
 	/**
-	 * Because instances of NISSpectrum can be expensive, we want to there to be
+	 * Because instances of NISSpectrum can be expensive, we want there to be
 	 * no more than one instance of this class per image file on the server.
 	 * Hence this class was created to manage the creation and deletion of
 	 * NISSpectrums. Anyone needing a NISSpectrum should use this factory class to
@@ -82,7 +105,7 @@ public class NISSpectrum extends Model
 
 		ArrayList<String> values = FileUtil.getFileWordsAsStringList(fullpath);
 
-		dateTime = new LocalDateTime(values.get(DATE_TIME_OFFSET));
+		dateTime = new DateTime(values.get(DATE_TIME_OFFSET), DateTimeZone.UTC);
 
 		double metOffsetToMiddle = Double.parseDouble(values.get(MET_OFFSET_TO_MIDDLE_OFFSET));
 		dateTime = dateTime.plusMillis((int)metOffsetToMiddle);
@@ -99,6 +122,12 @@ public class NISSpectrum extends Model
 			
 			latLons.add(new LatLon(Double.parseDouble(values.get(latIdx)) * Math.PI / 180.0,
 								   (360.0-Double.parseDouble(values.get(lonIdx))) * Math.PI / 180.0));
+		}
+		
+		for (int i=0; i<64; ++i)
+		{
+			spectrum[i] = Double.parseDouble(values.get(CALIBRATED_GE_DATA_OFFSET + i));
+			spectrumErros[i] = Double.parseDouble(values.get(CALIBRATED_GE_NOISE_OFFSET + i));
 		}
 		
 		this.convertLatLonsToVtkPolyData();
@@ -195,7 +224,7 @@ public class NISSpectrum extends Model
 		return duration;
 	}
 	
-	public LocalDateTime getDateTime()
+	public DateTime getDateTime()
 	{
 		return dateTime;
 	}
@@ -204,4 +233,57 @@ public class NISSpectrum extends Model
 	{
 		return polygon_type_flag;
 	}
+	
+	public double[] getSpectrum()
+	{
+		return spectrum;
+	}
+
+	public double[] getSpectrumErrors()
+	{
+		return spectrumErros;
+	}
+	
+	public double[] getBandCenters()
+	{
+		return bandCenters;
+	}
+	
+    public HashMap<String, String> getProperties() throws IOException
+    {
+    	HashMap<String, String> properties = new HashMap<String, String>();
+    	
+		properties.put("DAY_OF_YEAR", (new File(this.fullpath)).getParentFile().getParentFile().getName());
+		
+		properties.put("YEAR", (new File(this.fullpath)).getParentFile().getParentFile().getParentFile().getName());
+		
+		//properties.put("MET", (new File(this.fullpath)).getName());
+		
+		properties.put("DURATION", Double.toString(duration));
+		
+		properties.put("Date", dateTime.toString());
+		
+		String polygonTypeStr = "Missing value";
+		switch(this.polygon_type_flag)
+		{
+		case 0:
+			polygonTypeStr = "Full (all vertices on shape)";
+			break;
+		case 1:
+			polygonTypeStr = "Partial (single contiguous set of vertices on shape)";
+			break;
+		case 2:
+			polygonTypeStr = "Degenerate (multiple contiguous sets of vertices on shape)";
+			break;
+		case 3:
+			polygonTypeStr = "Empty (no vertices on shape)";
+			break;
+		}
+		properties.put("POLYGON_TYPE_FLAG", polygonTypeStr);
+    	
+		
+		return properties;
+    }
+
+
 }

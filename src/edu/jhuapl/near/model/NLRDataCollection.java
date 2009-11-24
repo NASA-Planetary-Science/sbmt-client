@@ -1,62 +1,19 @@
 package edu.jhuapl.near.model;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-
-import edu.jhuapl.near.util.FileCache;
-import edu.jhuapl.near.util.FileUtil;
 import edu.jhuapl.near.util.Properties;
 
 import vtk.*;
 
-public class NLRData extends Model 
+public class NLRDataCollection extends Model 
 {
-	private static class NLRDataPerDay
-	{
-		public vtkActor actor;
-
-		public NLRDataPerDay(String path) throws IOException
-		{
-			File file = FileCache.getFileFromServer(path);
-
-			if (file == null)
-				throw new IOException(path + " could not be loaded");
-
-			ArrayList<String> lines = FileUtil.getFileLinesAsStringList(file.getAbsolutePath());
-			
-			vtkPoints points = new vtkPoints();
-			vtkCellArray vert = new vtkCellArray();
-			vtkPolyData pd = new vtkPolyData();
-			pd.SetPoints( points );
-			pd.SetVerts( vert );
-			 
-			for (int i=2; i<lines.size(); ++i)
-			{
-	            String [] vals = lines.get(i).split("\\s");
-
-				int id = points.InsertNextPoint(
-						Double.parseDouble(vals[14]),
-						Double.parseDouble(vals[15]),
-						Double.parseDouble(vals[16]));
-			    vert.InsertNextCell(id);
-			}
-
-	        vtkPolyDataMapper pointsMapper = new vtkPolyDataMapper();
-	        pointsMapper.SetInput(pd);
-	        pointsMapper.SetResolveCoincidentTopologyToPolygonOffset();
-	        pointsMapper.SetResolveCoincidentTopologyPolygonOffsetParameters(-1.0, -1.0);
-
-	        actor = new vtkActor();
-	        actor.SetMapper(pointsMapper);
-	        actor.GetProperty().SetColor(0.0, 0.0, 1.0);
-	        actor.GetProperty().SetPointSize(2.0);
-		}
-
-	}
-	
 	private ArrayList<vtkActor> nlrPerDayActors = new ArrayList<vtkActor>();
 
 	private HashMap<String, NLRDataPerDay> fileToNlrPerDayMap = new HashMap<String, NLRDataPerDay>();
@@ -71,16 +28,16 @@ public class NLRData extends Model
 
 		fileToNlrPerDayMap.put(path, image);
 		
-		actorToFileMap.put(image.actor, path);
+		actorToFileMap.put(image.getActors().get(0), path);
 		
-		nlrPerDayActors.add(image.actor);
+		nlrPerDayActors.add(image.getActors().get(0));
 		
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 	}
 
 	public void removeNlrData(String path)
 	{
-		vtkActor actor = fileToNlrPerDayMap.get(path).actor;
+		vtkActor actor = fileToNlrPerDayMap.get(path).getActors().get(0);
 		
 		nlrPerDayActors.remove(actor);
 
@@ -118,6 +75,29 @@ public class NLRData extends Model
     public boolean containsNlrData(String file)
     {
     	return fileToNlrPerDayMap.containsKey(file);
+    }
+    
+    public ArrayList<String> getAllNlrPaths()
+    {
+    	ArrayList<String> paths = new ArrayList<String>();
+    	
+		InputStream is = getClass().getResourceAsStream("/edu/jhuapl/near/data/NlrFiles.txt");
+		InputStreamReader isr = new InputStreamReader(is);
+		BufferedReader in = new BufferedReader(isr);
+
+		String line;
+        try 
+        {
+			while ((line = in.readLine()) != null)
+			{
+				paths.add(line);
+			}
+		}
+        catch (IOException e) {
+			e.printStackTrace();
+		}
+        
+        return paths;
     }
     
 	public void setNlrRadialOffset(double offset)

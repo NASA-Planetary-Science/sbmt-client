@@ -4,7 +4,7 @@ import java.io.File;
 import java.sql.SQLException;
 import java.util.*;
 
-import org.joda.time.LocalDateTime;
+import org.joda.time.DateTime;
 
 import edu.jhuapl.near.util.Configuration;
 import edu.jhuapl.near.util.ConvertResourceToFile;
@@ -29,10 +29,10 @@ public class Database
 	private String getMsiPath(ArrayList<Object> result)
 	{
 		int id = (Integer)result.get(0);
-		short year = (Short)result.get(1);
-		short dayOfYear = (Short)result.get(2);
-		byte filter = (Byte)result.get(5);
-		byte type = (Byte)result.get(6);
+		int year = (Integer)result.get(1);
+		int dayOfYear = (Integer)result.get(2);
+		int filter = (Integer)result.get(5);
+		int type = (Integer)result.get(6);
 		String typeStr;
 		if (type == 0)
 			typeStr = "iofdbl";
@@ -42,7 +42,7 @@ public class Database
 		return this.getMsiPath(id, year, dayOfYear, typeStr, filter);
 	}
 
-	private String getMsiPath(int name, short year, short dayOfYear, String type, byte filter)
+	private String getMsiPath(int name, int year, int dayOfYear, String type, int filter)
 	{
 		String str = "/MSI/";
 		str += year + "/";
@@ -69,16 +69,13 @@ public class Database
 	private String getNisPath(ArrayList<Object> result)
 	{
 		int id = (Integer)result.get(0);
-//		short year = (Short)result.get(1);
-//		short dayOfYear = (Short)result.get(2);
 		int year = (Integer)result.get(1);
 		int dayOfYear = (Integer)result.get(2);
-		return this.getNisPath(id, (short)year, (short)dayOfYear);
-		
-//		return this.getNisPath(id, year, dayOfYear);
+
+		return this.getNisPath(id, year, dayOfYear);
 	}
 
-	private String getNisPath(int name, short year, short dayOfYear)
+	private String getNisPath(int name, int year, int dayOfYear)
 	{
 		String str = "/NIS/";
 		str += year + "/";
@@ -147,8 +144,8 @@ public class Database
 	 */
 	public ArrayList<String> runQuery(
 			Datatype datatype,
-			LocalDateTime startDate, 
-			LocalDateTime stopDate,
+			DateTime startDate, 
+			DateTime stopDate,
 			ArrayList<Integer> filters,
 			boolean iofdbl,
 			boolean cifdbl,
@@ -200,8 +197,10 @@ public class Database
 				double minResolution = Math.min(startResolution, stopResolution) / 1000.0;
 				double maxResolution = Math.max(startResolution, stopResolution) / 1000.0;
 
-				String query = "SELECT * FROM nisspectra ";
-				query += "WHERE target_center_distance >= " + minScDistance ;
+				String query = "SELECT * FROM msiimages ";
+				query += "WHERE starttime <= " + stopDate.getMillis();
+				query += " AND stoptime >= " + startDate.getMillis();
+				query += " AND target_center_distance >= " + minScDistance ;
 				query += " AND target_center_distance <= " + maxScDistance;
 				query += " AND horizontal_pixel_scale >= " + minResolution;
 				query += " AND horizontal_pixel_scale <= " + maxResolution;
@@ -216,7 +215,7 @@ public class Database
 					if (i < filters.size()-1)
 						query += " OR ";
 				}
-				query += " ) AND ";
+				query += " ) ";
 				
 				results = db.query(query);
 				
@@ -257,9 +256,9 @@ public class Database
 				double maxScDistance = Math.max(startDistance, stopDistance);
 
 				String query = "SELECT * FROM nisspectra ";
-				//query += "WHERE starttime >= " + startDate.toString();
-				//query += " AND starttime <= " + stopDate.toString();
-				query += " where range >= " + minScDistance ;
+				query += "WHERE time >= " + startDate.getMillis();
+				query += " AND time <= " + stopDate.getMillis();
+				query += " AND range >= " + minScDistance ;
 				query += " AND range <= " + maxScDistance;
 				
 				results = db.query(query);

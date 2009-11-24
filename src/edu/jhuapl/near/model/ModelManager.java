@@ -16,12 +16,14 @@ public class ModelManager extends Model implements PropertyChangeListener
 	static public final String EROS= "eros";
 	static public final String MSI_BOUNDARY = "msi-boundary";
 	static public final String NIS_SPECTRA = "nis-spectra";
+	static public final String NLR_DATA = "nlr-data";
 	
 	private LineamentModel lineamentModel;
 	private NearImageCollection msiImages;
 	private ErosModel erosModel;
 	private MSIBoundaryCollection msiBoundaries;
 	private NISSpectraCollection nisSpectra;
+	private NLRDataCollection nlrData;
 	
     private ArrayList<vtkActor> actors = new ArrayList<vtkActor>();
     private ArrayList<vtkActor> actorsExceptEros = new ArrayList<vtkActor>();
@@ -36,12 +38,14 @@ public class ModelManager extends Model implements PropertyChangeListener
     	msiImages = new NearImageCollection();
     	msiBoundaries = new MSIBoundaryCollection();
     	nisSpectra = new NISSpectraCollection(erosModel);
+    	nlrData = new NLRDataCollection();
     	
     	lineamentModel.addPropertyChangeListener(this);
     	erosModel.addPropertyChangeListener(this);
     	msiImages.addPropertyChangeListener(this);
     	msiBoundaries.addPropertyChangeListener(this);
     	nisSpectra.addPropertyChangeListener(this);
+    	nlrData.addPropertyChangeListener(this);
     	
     	allModels = new ArrayList<Model>();
     	allModels.add(lineamentModel);
@@ -49,6 +53,7 @@ public class ModelManager extends Model implements PropertyChangeListener
     	allModels.add(msiImages);
     	allModels.add(msiBoundaries);
     	allModels.add(nisSpectra);
+    	allModels.add(nlrData);
     	
 		updateActors();
     }
@@ -104,6 +109,8 @@ public class ModelManager extends Model implements PropertyChangeListener
 			return msiBoundaries;
 		else if (NIS_SPECTRA.equals(modelName))
 			return nisSpectra;
+		else if (NLR_DATA.equals(modelName))
+			return nlrData;
 		else
 			return null;
 	}

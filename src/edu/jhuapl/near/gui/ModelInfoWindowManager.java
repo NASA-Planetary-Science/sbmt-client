@@ -29,7 +29,7 @@ public class ModelInfoWindowManager
 			if (model instanceof NearImage)
 				infoPanel = new MSIImageInfoPanel((NearImage)model, modelManager);
 			else if (model instanceof NISSpectrum)
-				infoPanel = new NISSpectrumInfoPanel(modelManager);
+				infoPanel = new NISSpectrumInfoPanel((NISSpectrum)model, modelManager);
 			else
 			{
 				throw new Exception("The Info Panel Manager cannot handle the model you specified.");

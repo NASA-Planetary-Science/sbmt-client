@@ -34,8 +34,8 @@ public class SearchPanel extends JPanel implements ActionListener, MouseListener
 	private final String NLR_REMOVE_ALL_BUTTON_TEXT = "Remove All NLR Data";
 	
     private final ModelManager modelManager;
-    private java.util.Date startDate = new DateTime(2000, 7, 7, 0, 0, 0, 0).toDate();
-    private java.util.Date endDate = new DateTime(2000, 8, 1, 0, 0, 0, 0).toDate();
+    private java.util.Date startDate = new DateTime(2000, 7, 7, 0, 0, 0, 0, DateTimeZone.UTC).toDate();
+    private java.util.Date endDate = new DateTime(2000, 8, 1, 0, 0, 0, 0, DateTimeZone.UTC).toDate();
 //    private ShapeBuilderWidget shapePanel;
     private JLabel endDateLabel;
     private JLabel startDateLabel;
@@ -562,8 +562,8 @@ public class SearchPanel extends JPanel implements ActionListener, MouseListener
 
         		ArrayList<String> results = Database.getInstance().runQuery(
         				Database.Datatype.MSI,
-        				new LocalDateTime(startDate), 
-        				new LocalDateTime(endDate),
+        				new DateTime(startDate), 
+        				new DateTime(endDate),
         				filtersChecked,
         				iofdblCheckBox.isSelected(),
         				cifdblCheckBox.isSelected(),
@@ -579,8 +579,8 @@ public class SearchPanel extends JPanel implements ActionListener, MouseListener
 			{
         		ArrayList<String> results = Database.getInstance().runQuery(
         				Database.Datatype.NIS,
-        				new LocalDateTime(startDate), 
-        				new LocalDateTime(endDate),
+        				new DateTime(startDate), 
+        				new DateTime(endDate),
         				null,
         				false,
         				false,

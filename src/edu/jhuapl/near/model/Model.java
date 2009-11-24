@@ -28,4 +28,17 @@ public abstract class Model
     {
     	return "";
     }
+    
+    /**
+     * Some models have vertex values that overlap the Eros Model and are thus obscured. 
+     * In these cases it may be helpful to shift the vertices slightly in the radial direction
+     * so they are not obscured. This function, which by default does nothing may be used
+     * by subclasses for this purpose. 
+     * 
+     * @param offset
+     */
+    public void setRadialOffset(double offset)
+    {
+    	// Do nothing
+    }
 }

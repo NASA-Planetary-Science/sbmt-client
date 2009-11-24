@@ -31,8 +31,8 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
 	private final String MSI_REMOVE_ALL_BUTTON_TEXT = "Remove All Boundaries";
 	
     private final ModelManager modelManager;
-    private java.util.Date startDate = new DateTime(2000, 7, 7, 0, 0, 0, 0).toDate();
-    private java.util.Date endDate = new DateTime(2000, 8, 1, 0, 0, 0, 0).toDate();
+    private java.util.Date startDate = new DateTime(2000, 7, 7, 0, 0, 0, 0, DateTimeZone.UTC).toDate();
+    private java.util.Date endDate = new DateTime(2000, 8, 1, 0, 0, 0, 0, DateTimeZone.UTC).toDate();
     private JLabel endDateLabel;
     private JLabel startDateLabel;
     private static final String START_DATE_LABEL_TEXT = "Start Date";
@@ -473,8 +473,8 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
 
         	ArrayList<String> results = Database.getInstance().runQuery(
         			Database.Datatype.MSI,
-        			new LocalDateTime(startDate), 
-        			new LocalDateTime(endDate),
+        			new DateTime(startDate, DateTimeZone.UTC), 
+        			new DateTime(endDate, DateTimeZone.UTC),
         			filtersChecked,
         			iofdblCheckBox.isSelected(),
         			cifdblCheckBox.isSelected(),

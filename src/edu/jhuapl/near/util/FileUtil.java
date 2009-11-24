@@ -1,11 +1,8 @@
 package edu.jhuapl.near.util;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.ArrayList;
+import java.util.zip.GZIPInputStream;
 
 public class FileUtil 
 {
@@ -16,43 +13,23 @@ public class FileUtil
 	 * @return contents of file as list of strings
 	 * @throws IOException 
 	 */
-	public static ArrayList<String> getFileLinesAsStringList(String filename)
+	public static ArrayList<String> getFileLinesAsStringList(String filename) throws IOException
 	{
-		FileInputStream fs = null;
-		try 
-		{
-			fs = new FileInputStream(filename);
-		}
-		catch (FileNotFoundException e) {
-			e.printStackTrace();
-			return null;
-		}
+		InputStream fs = new FileInputStream(filename);
+		if (filename.toLowerCase().endsWith(".gz"))
+			fs = new GZIPInputStream(fs);
 		InputStreamReader isr = new InputStreamReader(fs);
 		BufferedReader in = new BufferedReader(isr);
 
 		ArrayList<String> lines = new ArrayList<String>();
 		String line;
 		
-		try 
+		while ((line = in.readLine()) != null)
 		{
-			while ((line = in.readLine()) != null)
-			{
-				lines.add(line);
-			}
-		}
-		catch (IOException e) {
-			e.printStackTrace();
-			lines = null;
+			lines.add(line);
 		}
 		
-		try 
-		{
-			in.close();
-		} 
-		catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		in.close();
 		
 		return lines;
 	}
@@ -64,46 +41,26 @@ public class FileUtil
 	 * @return contents of file as list of strings
 	 * @throws IOException 
 	 */
-	public static ArrayList<String> getFileWordsAsStringList(String filename)
+	public static ArrayList<String> getFileWordsAsStringList(String filename) throws IOException
 	{
-		FileInputStream fs = null;
-		try 
-		{
-			fs = new FileInputStream(filename);
-		}
-		catch (FileNotFoundException e) {
-			e.printStackTrace();
-			return null;
-		}
+		InputStream fs = new FileInputStream(filename);
+		if (filename.toLowerCase().endsWith(".gz"))
+			fs = new GZIPInputStream(fs);
 		InputStreamReader isr = new InputStreamReader(fs);
 		BufferedReader in = new BufferedReader(isr);
 
 		ArrayList<String> words = new ArrayList<String>();
 		String line;
 		
-		try 
+		while ((line = in.readLine().trim()) != null)
 		{
-			while ((line = in.readLine()) != null)
-			{
-	            String [] tokens = line.split("\\s");
+			String [] tokens = line.split("\\s+");
 
-	            for (String word : tokens)
-	            	words.add(word);
-			}
-		}
-		catch (IOException e) {
-			e.printStackTrace();
-			words = null;
+			for (String word : tokens)
+				words.add(word);
 		}
 		
-		try 
-		{
-			in.close();
-		} 
-		catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		in.close();
 		
 		return words;
 	}

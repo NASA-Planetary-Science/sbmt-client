@@ -3,7 +3,6 @@ package edu.jhuapl.near.dbgen;
 import java.io.*;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.*;
 
 import edu.jhuapl.near.database.*;
@@ -11,6 +10,8 @@ import edu.jhuapl.near.model.*;
 import edu.jhuapl.near.util.*;
 
 import nom.tam.fits.FitsException;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 
 public class DatabaseGeneratorSql 
 {
@@ -30,8 +31,10 @@ public class DatabaseGeneratorSql
             		"id int PRIMARY KEY, " +
             		"year smallint, " +
             		"day smallint, " +
-            		"starttime timestamp, " +
-            		"stoptime timestamp, " +
+            		//"starttime timestamp, " +
+            		//"stoptime timestamp, " +
+            		"starttime bigint, " +
+            		"stoptime bigint, " +
             		"filter tinyint, " +
             		"iofcif tinyint," +
             		"target_center_distance double," +
@@ -60,7 +63,8 @@ public class DatabaseGeneratorSql
             		"id int PRIMARY KEY, " +
             		"year smallint, " +
             		"day smallint, " +
-            		"time timestamp, " +
+            		//"time timestamp, " +
+            		"time bigint, " +
             		"range double, " +
             		"polygon_type_flag smallint)"
                 );
@@ -118,12 +122,13 @@ public class DatabaseGeneratorSql
             		"insert into msiimages values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");                                                                   
             }
 
-            String startTime = properties.get(NearImage.START_TIME);
-            String stopTime = properties.get(NearImage.STOP_TIME);
+            DateTime startTime = new DateTime(properties.get(NearImage.START_TIME), DateTimeZone.UTC);
+            DateTime stopTime = new DateTime(properties.get(NearImage.STOP_TIME), DateTimeZone.UTC);
     		// Replace the "T" with a space
-            startTime = startTime.substring(0, 10) + " " + startTime.substring(11, startTime.length());
-            stopTime = stopTime.substring(0, 10) + " " + stopTime.substring(11, stopTime.length());
-
+            //startTime = startTime.substring(0, 10) + " " + startTime.substring(11, startTime.length());
+            //stopTime = stopTime.substring(0, 10) + " " + stopTime.substring(11, stopTime.length());
+            
+            
     		System.out.println("id: " + Integer.parseInt(origFile.getName().substring(2, 11)));
     		System.out.println("year: " + yearStr);
     		System.out.println("dayofyear: " + dayOfYearStr);
@@ -140,8 +145,10 @@ public class DatabaseGeneratorSql
             msiInsert.setInt(1, Integer.parseInt(origFile.getName().substring(2, 11)));
             msiInsert.setShort(2, Short.parseShort(yearStr));
             msiInsert.setShort(3, Short.parseShort(dayOfYearStr));
-            msiInsert.setTimestamp(4, Timestamp.valueOf(startTime));
-            msiInsert.setTimestamp(5, Timestamp.valueOf(stopTime));
+            //msiInsert.setTimestamp(4, Timestamp.valueOf(startTime));
+            //msiInsert.setTimestamp(5, Timestamp.valueOf(stopTime));
+            msiInsert.setLong(4, startTime.getMillis());
+            msiInsert.setLong(5, stopTime.getMillis());
             msiInsert.setByte(6, Byte.parseByte(origFile.getName().substring(12, 13)));
             msiInsert.setByte(7, iof_or_cif);
             msiInsert.setDouble(8, Double.parseDouble(properties.get(NearImage.TARGET_CENTER_DISTANCE)));
@@ -177,9 +184,9 @@ public class DatabaseGeneratorSql
     					"insert into nisspectra values (?, ?, ?, ?, ?, ?)");                                                                   
     		}
 
-    		String time = nisSpectrum.getDateTime().toString();
+    		DateTime time = new DateTime(nisSpectrum.getDateTime().toString(), DateTimeZone.UTC);
     		// Replace the "T" with a space
-    		time = time.substring(0, 10) + " " + time.substring(11, time.length());
+    		//time = time.substring(0, 10) + " " + time.substring(11, time.length());
     		
     		System.out.println("id: " + Integer.parseInt(origFile.getName().substring(2, 11)));
     		System.out.println("year: " + yearStr);
@@ -193,7 +200,7 @@ public class DatabaseGeneratorSql
     		nisInsert.setInt(1, Integer.parseInt(origFile.getName().substring(2, 11)));
     		nisInsert.setShort(2, Short.parseShort(yearStr));
     		nisInsert.setShort(3, Short.parseShort(dayOfYearStr));
-    		nisInsert.setTimestamp(4, Timestamp.valueOf(time));
+    		nisInsert.setLong(4, time.getMillis());
     		nisInsert.setDouble(5, nisSpectrum.getRange());
     		nisInsert.setShort(6, nisSpectrum.getPolygonTypeFlag());
 
@@ -244,8 +251,14 @@ public class DatabaseGeneratorSql
 		String nisFileList=args[2];
 
 		
-		ArrayList<String> msiFiles = FileUtil.getFileLinesAsStringList(msiFileList);
-		ArrayList<String> nisFiles = FileUtil.getFileLinesAsStringList(nisFileList);
+		ArrayList<String> msiFiles = null;
+		ArrayList<String> nisFiles = null;
+		try {
+			msiFiles = FileUtil.getFileLinesAsStringList(msiFileList);
+			nisFiles = FileUtil.getFileLinesAsStringList(nisFileList);
+		} catch (IOException e2) {
+			e2.printStackTrace();
+		}
 		
         try 
         {

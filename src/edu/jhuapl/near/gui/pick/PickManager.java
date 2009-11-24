@@ -91,8 +91,12 @@ public class PickManager implements
 		{
 			vtkActor pickedActor = mousePressCellPicker.GetActor();
 			Model model = modelManager.getModel(pickedActor);
-			String text = model.getClickStatusBarText(pickedActor, mousePressCellPicker.GetCellId());
-			statusBar.setLeftText(text);
+			System.out.println(model);
+			if (model != null)
+			{
+				String text = model.getClickStatusBarText(pickedActor, mousePressCellPicker.GetCellId());
+				statusBar.setLeftText(text);
+			}
 		}		
 		else
 		{

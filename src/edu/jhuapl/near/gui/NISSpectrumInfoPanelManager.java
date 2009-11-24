@@ -24,7 +24,7 @@ public class NISSpectrumInfoPanelManager
 		}
 		else
 		{
-			NISSpectrumInfoPanel infoPanel = new NISSpectrumInfoPanel(modelManager);
+			NISSpectrumInfoPanel infoPanel = new NISSpectrumInfoPanel(spectrum, modelManager);
 			infoPanel.addWindowListener(new WindowAdapter()
 			{
 				public void windowClosed(WindowEvent e)

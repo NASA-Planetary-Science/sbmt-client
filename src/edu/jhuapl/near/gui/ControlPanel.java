@@ -8,6 +8,7 @@ public class ControlPanel extends JTabbedPane
 {
 	private MSISearchPanel msiSearchPanel;
 	private NISSearchPanel nisSearchPanel;
+	private NLRSearchPanel nlrSearchPanel;
 	private ErosControlPanel erosPanel;
 	//private MSIControlPanel msiPanel;
 	private LineamentControlPanel lineamentPanel;
@@ -21,14 +22,19 @@ public class ControlPanel extends JTabbedPane
 		JTabbedPane searchPanels = new JTabbedPane();
 		msiSearchPanel = new MSISearchPanel(modelManager, infoPanelManager, viewer.getRenderWindowPanel());
 		nisSearchPanel = new NISSearchPanel(modelManager, infoPanelManager, viewer.getRenderWindowPanel());
+		nlrSearchPanel = new NLRSearchPanel(modelManager, infoPanelManager, viewer.getRenderWindowPanel());
 		searchPanels.add("MSI", msiSearchPanel);
 		searchPanels.add("NIS", nisSearchPanel);
+		searchPanels.add("NLR", nlrSearchPanel);
 		
 		erosPanel = new ErosControlPanel(modelManager);
 		//msiPanel = new MSIControlPanel(modelManager);
 		lineamentPanel = new LineamentControlPanel(modelManager);
 		
-		addTab("Search", searchPanels);
+		//addTab("Search", searchPanels);
+		addTab("MSI", msiSearchPanel);
+		addTab("NIS", nisSearchPanel);
+		addTab("NLR", nlrSearchPanel);
 		addTab("Eros", erosPanel);
 		//addTab("MSI", msiPanel);
 		addTab("Lineament", lineamentPanel);

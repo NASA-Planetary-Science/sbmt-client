@@ -22,29 +22,26 @@ public class ConvertResourceToFile
 			parent.mkdirs();
 		
 		File file = new File(parentDir + File.separator + name);
-		if (!file.exists())
+		try 
 		{
-			try 
+			InputStream is = o.getClass().getResourceAsStream(resource);
+
+			FileOutputStream os = new FileOutputStream(file);
+
+			byte[] buff = new byte[2048];
+			int len;
+			while((len = is.read(buff)) > 0)
 			{
-				InputStream is = o.getClass().getResourceAsStream(resource);
-
-				FileOutputStream os = new FileOutputStream(file);
-
-				byte[] buff = new byte[2048];
-				int len;
-				while((len = is.read(buff)) > 0)
-				{
-					os.write(buff, 0, len);
-				}
-
-				os.close();
-				is.close();
-			} 
-			catch (IOException e) 
-			{
-				file = null;
-				e.printStackTrace();
+				os.write(buff, 0, len);
 			}
+
+			os.close();
+			is.close();
+		} 
+		catch (IOException e) 
+		{
+			file = null;
+			e.printStackTrace();
 		}
 		
 		return file;

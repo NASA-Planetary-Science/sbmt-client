@@ -212,7 +212,7 @@ public class LineamentModel extends Model
 		this.pcs.firePropertyChange(Properties.LINEAMENT_MODEL_CHANGED, null, null);
 	}
 
-	public void setLineamentRadialOffset(double offset)
+	public void setRadialOffset(double offset)
 	{
         int ptId=0;
         vtkPoints points = lineaments.GetPoints();

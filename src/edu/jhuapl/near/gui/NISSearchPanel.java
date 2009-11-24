@@ -30,8 +30,8 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
 	private final String NIS_REMOVE_ALL_BUTTON_TEXT = "Remove All Footprints";
 	
     private final ModelManager modelManager;
-    private java.util.Date startDate = new DateTime(2000, 7, 7, 0, 0, 0, 0).toDate();
-    private java.util.Date endDate = new DateTime(2000, 8, 1, 0, 0, 0, 0).toDate();
+    private java.util.Date startDate = new DateTime(2000, 3, 1, 0, 0, 0, 0, DateTimeZone.UTC).toDate();
+    private java.util.Date endDate = new DateTime(2000, 4, 1, 0, 0, 0, 0, DateTimeZone.UTC).toDate();
     private JLabel endDateLabel;
     private JLabel startDateLabel;
     private static final String START_DATE_LABEL_TEXT = "Start Date";
@@ -280,8 +280,8 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
         {
         	ArrayList<String> results = Database.getInstance().runQuery(
         			Database.Datatype.NIS,
-        			new LocalDateTime(startDate), 
-        			new LocalDateTime(endDate),
+        			new DateTime(startDate, DateTimeZone.UTC), 
+        			new DateTime(endDate, DateTimeZone.UTC),
         			null,
         			false,
         			false,
@@ -312,7 +312,7 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
     	// add the results to the list
     	for (String str : results)
     	{
-    		System.out.println(str);
+    		//System.out.println(str);
     		nisResultListModel.addElement( 
     				str.substring(16, 25) 
     				+ ", day: " + str.substring(10, 13) + "/" + str.substring(5, 9)

@@ -68,7 +68,7 @@ public class NearImage extends Model
 	boolean hasLimb = false;
 	
 	/**
-	 * Because instances of NearImage can be expensive, we want to there to be
+	 * Because instances of NearImage can be expensive, we want there to be
 	 * no more than one instance of this class per image file on the server.
 	 * Hence this class was created to manage the creation and deletion of
 	 * NearImage's. Anyone needing a NearImage should use this factory class to
