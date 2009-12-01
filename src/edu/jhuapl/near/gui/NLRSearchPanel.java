@@ -21,7 +21,7 @@ import edu.jhuapl.near.model.NLRDataCollection;
 import edu.jhuapl.near.model.NLRDataPerDay;
 
 
-public class NLRSearchPanel extends JPanel implements /*ActionListener,*/ MouseListener
+public class NLRSearchPanel extends JPanel implements ListSelectionListener
 {
 	private final String NLR_REMOVE_ALL_BUTTON_TEXT = "Remove All NLR Data";
 	
@@ -223,7 +223,8 @@ public class NLRSearchPanel extends JPanel implements /*ActionListener,*/ MouseL
         //Create the list and put it in a scroll pane.
         resultList = new JList(nlrResultListModel);
         resultList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        resultList.addMouseListener(this);
+        //resultList.addMouseListener(this);
+        resultList.addListSelectionListener(this);
         JScrollPane listScrollPane = new JScrollPane(resultList);
 
         //listScrollPane.setBorder(
@@ -256,13 +257,13 @@ public class NLRSearchPanel extends JPanel implements /*ActionListener,*/ MouseL
             			{
             				nlrModel.addNlrData(nlrRawResults.get(index));
 
-            				showHideButton.setText("Hide");
+            				showHideButton.setText("Remove");
             			}
             			else
             			{
             				nlrModel.removeNlrData(nlrRawResults.get(index));
 
-            				showHideButton.setText("Show");
+            				showHideButton.setText("Remove");
             			}
             		}
             		catch (IOException e1) 
@@ -272,7 +273,7 @@ public class NLRSearchPanel extends JPanel implements /*ActionListener,*/ MouseL
 				}
         	}
         });
-        showHideButton.setEnabled(true);
+        showHideButton.setEnabled(false);
 
         
 //        final JLabel showLabel = new JLabel("Number Boundaries");
@@ -413,50 +414,37 @@ public class NLRSearchPanel extends JPanel implements /*ActionListener,*/ MouseL
 //    	this.showNISBoundaries(resultIntervalCurrentlyShown);
 //	}
 	
-	public void mouseClicked(MouseEvent e) 
+	public void valueChanged(ListSelectionEvent arg0) 
 	{
-		maybeShowPopup(e);
-	}
+		if (!arg0.getValueIsAdjusting())
+		{
+			System.out.println(arg0.getFirstIndex());
+			System.out.println(arg0.getLastIndex());
+		}
+		int[] idx = {arg0.getFirstIndex(), arg0.getLastIndex()};
+		for (int index : idx)
+		{
+			if (index >= 0 && resultList.isSelectedIndex(index))
+			{
+				showHideButton.setEnabled(true);
 
-	public void mouseEntered(MouseEvent e) 
-	{
-	}
-
-	public void mouseExited(MouseEvent e) 
-	{
-	}
-
-	public void mousePressed(MouseEvent e) 
-	{
-		//maybeShowPopup(e);
-	}
-
-	public void mouseReleased(MouseEvent e) 
-	{
-		//maybeShowPopup(e);
-	}
-
-	private void maybeShowPopup(MouseEvent e) 
-	{
-        if (e.isPopupTrigger()) 
-        {
-        	int index = resultList.locationToIndex(e.getPoint());
-
-        	if (index >= 0 && resultList.getCellBounds(index, index).contains(e.getPoint()))
-        	{
-        		//resultList.setSelectedIndex(index);
-        		if (nlrModel.containsNlrData(nlrRawResults.get(index)))
-        		{
-        			showHideButton.setText("Hide");
+				//resultList.setSelectedIndex(index);
+				if (nlrModel.containsNlrData(nlrRawResults.get(index)))
+				{
+					showHideButton.setText("Remove");
 				}
-        		else
-        		{
-        			showHideButton.setText("Show");
-        		}
-        	}
-        }
-    }
-	
+				else
+				{
+					showHideButton.setText("Show");
+				}
+				break;
+			}
+			else
+			{
+				showHideButton.setEnabled(false);
+			}
+		}
+	}
 //	private void showNLRData(String nlrPath)
 //	{
 //		NLRDataCollection model = (NLRDataCollection)modelManager.getModel(ModelManager.NLR_DATA);

@@ -64,7 +64,7 @@ public class DatabaseGeneratorSql
             		"year smallint, " +
             		"day smallint, " +
             		//"time timestamp, " +
-            		"time bigint, " +
+            		"midtime bigint, " +
             		"range double, " +
             		"polygon_type_flag smallint)"
                 );
@@ -184,14 +184,14 @@ public class DatabaseGeneratorSql
     					"insert into nisspectra values (?, ?, ?, ?, ?, ?)");                                                                   
     		}
 
-    		DateTime time = new DateTime(nisSpectrum.getDateTime().toString(), DateTimeZone.UTC);
+    		DateTime midtime = new DateTime(nisSpectrum.getDateTime().toString(), DateTimeZone.UTC);
     		// Replace the "T" with a space
     		//time = time.substring(0, 10) + " " + time.substring(11, time.length());
     		
     		System.out.println("id: " + Integer.parseInt(origFile.getName().substring(2, 11)));
     		System.out.println("year: " + yearStr);
     		System.out.println("dayofyear: " + dayOfYearStr);
-    		System.out.println("time: " + time);
+    		System.out.println("midtime: " + midtime);
     		System.out.println("range: " + nisSpectrum.getRange());
     		System.out.println("polygon type: " + nisSpectrum.getPolygonTypeFlag());
     		System.out.println(" ");
@@ -200,7 +200,7 @@ public class DatabaseGeneratorSql
     		nisInsert.setInt(1, Integer.parseInt(origFile.getName().substring(2, 11)));
     		nisInsert.setShort(2, Short.parseShort(yearStr));
     		nisInsert.setShort(3, Short.parseShort(dayOfYearStr));
-    		nisInsert.setLong(4, time.getMillis());
+    		nisInsert.setLong(4, midtime.getMillis());
     		nisInsert.setDouble(5, nisSpectrum.getRange());
     		nisInsert.setShort(6, nisSpectrum.getPolygonTypeFlag());
 

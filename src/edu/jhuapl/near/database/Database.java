@@ -256,10 +256,12 @@ public class Database
 				double maxScDistance = Math.max(startDistance, stopDistance);
 
 				String query = "SELECT * FROM nisspectra ";
-				query += "WHERE time >= " + startDate.getMillis();
-				query += " AND time <= " + stopDate.getMillis();
-				query += " AND range >= " + minScDistance ;
-				query += " AND range <= " + maxScDistance;
+				query += "WHERE midtime >= " + startDate.getMillis();
+				query += " AND midtime <= " + stopDate.getMillis();
+				//query += " AND range >= " + minScDistance ;
+				//query += " AND range <= " + maxScDistance;
+				query += " AND polygon_type_flag >= " + -999.0;
+				query += " AND polygon_type_flag <= " + -999.0;
 				
 				results = db.query(query);
 				

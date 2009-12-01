@@ -53,6 +53,10 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
     private JButton removeAllButton;
     private JComboBox numberOfBoundariesComboBox;
     private IdPair resultIntervalCurrentlyShown = null;
+    private JCheckBox polygonType0CheckBox;
+    private JCheckBox polygonType1CheckBox;
+    private JCheckBox polygonType2CheckBox;
+    private JCheckBox polygonType3CheckBox;
 
     
     public NISSearchPanel(
@@ -112,6 +116,43 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
         endSpinner.setEnabled(true);
         pane.add(endDatePanel);
 
+        
+    	JPanel polygonTypePanel = new JPanel();
+        polygonTypePanel.setLayout(new BoxLayout(polygonTypePanel,
+        		BoxLayout.PAGE_AXIS));
+        JLabel polygonTypeLabel = new JLabel("Field-Of-View Polygon Type");
+        polygonTypeLabel.setAlignmentX(1.0f);
+        
+        polygonType0CheckBox = new JCheckBox();
+        polygonType0CheckBox.setText("Full");
+        polygonType0CheckBox.setSelected(true);
+        polygonType0CheckBox.setToolTipText("All vertices on shape.");
+        polygonType0CheckBox.setAlignmentX(1.0f);
+        polygonType1CheckBox = new JCheckBox();
+        polygonType1CheckBox.setText("Partial");
+        polygonType1CheckBox.setSelected(false);
+        polygonType1CheckBox.setToolTipText("Single contiguous set of vertices on shape.");
+        polygonType1CheckBox.setAlignmentX(1.0f);
+        polygonType2CheckBox = new JCheckBox();
+        polygonType2CheckBox.setText("Degenerate");
+        polygonType2CheckBox.setSelected(false);
+        polygonType2CheckBox.setToolTipText("Multiple contiguous sets of vertices on shape.");
+        polygonType2CheckBox.setAlignmentX(1.0f);
+        polygonType3CheckBox = new JCheckBox();
+        polygonType3CheckBox.setText("Empty");
+        polygonType3CheckBox.setSelected(false);
+        polygonType3CheckBox.setToolTipText("No vertices on shape.");
+        polygonType3CheckBox.setAlignmentX(1.0f);
+
+        polygonTypePanel.add(polygonTypeLabel);
+        polygonTypePanel.add(polygonType0CheckBox);
+        //polygonTypePanel.add(Box.createHorizontalStrut(15));
+        polygonTypePanel.add(polygonType1CheckBox);
+        //polygonTypePanel.add(Box.createHorizontalStrut(15));
+        polygonTypePanel.add(polygonType2CheckBox);
+        //polygonTypePanel.add(Box.createHorizontalStrut(15));
+        polygonTypePanel.add(polygonType3CheckBox);
+
 
         NumberFormat nf = NumberFormat.getNumberInstance();
         nf.setGroupingUsed(false);
@@ -121,11 +162,11 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
         		BoxLayout.LINE_AXIS));
         final JLabel fromDistanceLabel = new JLabel("S/C Distance from ");
         fromDistanceTextField = new JFormattedTextField(nf);
-        fromDistanceTextField.setValue(30.0);
+        fromDistanceTextField.setValue(0.0);
         fromDistanceTextField.setMaximumSize(new Dimension(50, 23));
         final JLabel toDistanceLabel = new JLabel(" km to ");
         toDistanceTextField = new JFormattedTextField(nf);
-        toDistanceTextField.setValue(40.0);
+        toDistanceTextField.setValue(100000.0);
         toDistanceTextField.setMaximumSize(new Dimension(50, 23));
         final JLabel endDistanceLabel = new JLabel(" km");
                 
@@ -148,6 +189,7 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
 
         pane.add(distancePanel);
         pane.add(Box.createVerticalStrut(10));
+        pane.add(polygonTypePanel);
         pane.add(Box.createVerticalStrut(10));
     	pane.add(submitPanel);
         
@@ -321,7 +363,7 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
 
     	// Show the first set of boundaries
     	this.resultIntervalCurrentlyShown = new IdPair(0, (Integer)this.numberOfBoundariesComboBox.getSelectedItem());
-    	this.showNISBoundaries(resultIntervalCurrentlyShown);
+//    	this.showNISBoundaries(resultIntervalCurrentlyShown);
 	}
 	
 	public void mouseClicked(MouseEvent e) 

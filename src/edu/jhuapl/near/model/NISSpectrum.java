@@ -114,8 +114,8 @@ public class NISSpectrum extends Model
 		range = Double.parseDouble(values.get(RANGE_OFFSET));
 		polygon_type_flag = Short.parseShort(values.get(POLYGON_TYPE_FLAG_OFFSET));
 		
-		int polygonSize = Integer.parseInt(values.get(NUMBER_OF_VERTICES_OFFSET));
-		for (int i=0; i<polygonSize; ++i)
+		int footprintSize = Integer.parseInt(values.get(NUMBER_OF_VERTICES_OFFSET));
+		for (int i=0; i<footprintSize; ++i)
 		{
 			int latIdx = POLYGON_START_COORDINATES_OFFSET + i*2;
 			int lonIdx = POLYGON_START_COORDINATES_OFFSET + i*2 + 1;
@@ -130,7 +130,8 @@ public class NISSpectrum extends Model
 			spectrumErros[i] = Double.parseDouble(values.get(CALIBRATED_GE_NOISE_OFFSET + i));
 		}
 		
-		this.convertLatLonsToVtkPolyData();
+		if (!latLons.isEmpty())
+			this.convertLatLonsToVtkPolyData();
 	}
 	
 	private ArrayList<LatLon> subdivideLatLons(ArrayList<LatLon> latLons, double maxAngularSep)
@@ -164,6 +165,7 @@ public class NISSpectrum extends Model
 	private void convertLatLonsToVtkPolyData()
 	{
 		footprint = new vtkPolyData();
+		
         vtkPoints points = new vtkPoints();
         vtkCellArray lines = new vtkCellArray();
         
@@ -191,7 +193,7 @@ public class NISSpectrum extends Model
 	
 	public ArrayList<vtkActor> getActors() 
 	{
-		if (footprintActor == null)
+		if (footprintActor == null && !latLons.isEmpty())
 		{
 			vtkPolyDataMapper footprintMapper = new vtkPolyDataMapper();
 			footprintMapper.SetInput(footprint);
@@ -247,6 +249,11 @@ public class NISSpectrum extends Model
 	public double[] getBandCenters()
 	{
 		return bandCenters;
+	}
+	
+	public ArrayList<LatLon> getFootprint()
+	{
+		return latLons;
 	}
 	
     public HashMap<String, String> getProperties() throws IOException

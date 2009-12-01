@@ -30,33 +30,36 @@ public class LineamentModel extends Model
 		//public BoundingBox bb = new BoundingBox();
 	}
 
-	public LineamentModel()
+	private void initialize()
 	{
-		try 
+		if (lineamentActor == null)
 		{
-			loadModel();
+			try 
+			{
+				loadModel();
 
-			createPolyData();
-			
-	        vtkPolyDataMapper lineamentMapper = new vtkPolyDataMapper();
-	        lineamentMapper.SetInput(lineaments);
-	        //lineamentMapper.SetResolveCoincidentTopologyToPolygonOffset();
-	        //lineamentMapper.SetResolveCoincidentTopologyPolygonOffsetParameters(-1000.0, -1000.0);
-	        
-	        lineamentActor = new vtkActor();
-	        lineamentActor.SetMapper(lineamentMapper);
-	        
-	        // By default do not show the lineaments
-	        //lineamentActors.add(lineamentActor);
+				createPolyData();
 
-		} catch (NumberFormatException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+				vtkPolyDataMapper lineamentMapper = new vtkPolyDataMapper();
+				lineamentMapper.SetInput(lineaments);
+				//lineamentMapper.SetResolveCoincidentTopologyToPolygonOffset();
+				//lineamentMapper.SetResolveCoincidentTopologyPolygonOffsetParameters(-1000.0, -1000.0);
+
+				lineamentActor = new vtkActor();
+				lineamentActor.SetMapper(lineamentMapper);
+
+				// By default do not show the lineaments
+				//lineamentActors.add(lineamentActor);
+
+			} catch (NumberFormatException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			System.out.println("Number of lineaments: " + this.idToLineamentMap.size());
 		}
-		System.out.println("Number of lineaments: " + this.idToLineamentMap.size());
 	}
 	
 	private void loadModel() throws NumberFormatException, IOException
@@ -166,14 +169,6 @@ public class LineamentModel extends Model
         lineaments.GetCellData().SetScalars(colors);
 	}
 	
-	public vtkPolyData getLineamentsAsPolyData()
-	{
-		if (lineaments == null)
-			createPolyData();
-		
-		return lineaments;
-	}
-	
 	public Lineament getLineament(int cellId)
 	{
 		return this.cellIdToLineamentMap.get(cellId);
@@ -243,6 +238,8 @@ public class LineamentModel extends Model
 		{
 			if (lineamentActors.isEmpty())
 			{
+				initialize();
+				
 				lineamentActors.add(lineamentActor);
 				this.pcs.firePropertyChange(Properties.LINEAMENT_MODEL_CHANGED, null, null);
 			}

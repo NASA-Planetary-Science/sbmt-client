@@ -52,9 +52,9 @@ public class FileUtil
 		ArrayList<String> words = new ArrayList<String>();
 		String line;
 		
-		while ((line = in.readLine().trim()) != null)
+		while ((line = in.readLine()) != null)
 		{
-			String [] tokens = line.split("\\s+");
+			String [] tokens = line.trim().split("\\s+");
 
 			for (String word : tokens)
 				words.add(word);
