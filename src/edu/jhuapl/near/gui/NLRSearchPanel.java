@@ -61,7 +61,7 @@ public class NLRSearchPanel extends JPanel implements ListSelectionListener
     	
     	public NlrTimeIntervalChanger()
     	{
-    		setBorder(BorderFactory.createTitledBorder("Time Interval"));
+    		setBorder(BorderFactory.createTitledBorder("Displayed NLR Data"));
 
     		//this.setPreferredSize(new Dimension(300,300));
     		slider = new RangeSlider(0, 255, 0, 255);
@@ -360,8 +360,14 @@ public class NLRSearchPanel extends JPanel implements ListSelectionListener
         
         resultsPanel.add(resultControlsPanel, BorderLayout.SOUTH);
 
-        add(resultsPanel);
+        NlrTimeIntervalChanger timeIntervalChanger = new NlrTimeIntervalChanger();
+        timeIntervalChanger.setEnabled(false);
         
+        RadialOffsetChanger radialOffsetChanger = new RadialOffsetChanger(nlrModel, "Radial Offset");
+        
+        add(resultsPanel);
+        add(timeIntervalChanger);
+        add(radialOffsetChanger);
     }
 
 //    public void actionPerformed(ActionEvent actionEvent)

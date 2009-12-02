@@ -12,6 +12,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.*;
 
+import net.miginfocom.swing.MigLayout;
 import nom.tam.fits.FitsException;
 
 import org.joda.time.*;
@@ -64,15 +65,17 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
     		ModelInfoWindowManager infoPanelManager,
     		vtkRenderWindowPanel renWin) 
     {
-    	setLayout(new BoxLayout(this,
-        		BoxLayout.PAGE_AXIS));
+    	//setLayout(new BoxLayout(this,
+        //		BoxLayout.PAGE_AXIS));
+    	setLayout(new MigLayout("wrap 1, insets 0"));
     	
     	this.modelManager = modelManager;
     	
     	JPanel pane = new JPanel();
-    	pane.setLayout(new BoxLayout(pane,
-        		BoxLayout.PAGE_AXIS));
-
+//    	pane.setLayout(new BoxLayout(pane,
+//        		BoxLayout.PAGE_AXIS));
+    	pane.setLayout(new MigLayout("wrap 1"));
+    	
     	//pane.setBorder(
         //        new CompoundBorder(BorderFactory.createEmptyBorder(9, 9, 9, 9), 
         //                           new TitledBorder("Query Editor")));
@@ -118,36 +121,37 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
 
         
     	JPanel polygonTypePanel = new JPanel();
-        polygonTypePanel.setLayout(new BoxLayout(polygonTypePanel,
-        		BoxLayout.PAGE_AXIS));
-        JLabel polygonTypeLabel = new JLabel("Field-Of-View Polygon Type");
-        polygonTypeLabel.setAlignmentX(1.0f);
+    	//polygonTypePanel.setLayout(new BoxLayout(polygonTypePanel,
+        //		BoxLayout.PAGE_AXIS));
+    	polygonTypePanel.setLayout(new MigLayout("wrap 2"));
+        JLabel polygonTypeLabel = new JLabel("Field-Of-View Polygon Type:");
+        //polygonTypeLabel.setAlignmentX(1.0f);
         
         polygonType0CheckBox = new JCheckBox();
         polygonType0CheckBox.setText("Full");
         polygonType0CheckBox.setSelected(true);
         polygonType0CheckBox.setToolTipText("All vertices on shape.");
-        polygonType0CheckBox.setAlignmentX(1.0f);
+        //polygonType0CheckBox.setAlignmentX(1.0f);
         polygonType1CheckBox = new JCheckBox();
         polygonType1CheckBox.setText("Partial");
         polygonType1CheckBox.setSelected(false);
         polygonType1CheckBox.setToolTipText("Single contiguous set of vertices on shape.");
-        polygonType1CheckBox.setAlignmentX(1.0f);
+        //polygonType1CheckBox.setAlignmentX(1.0f);
         polygonType2CheckBox = new JCheckBox();
         polygonType2CheckBox.setText("Degenerate");
         polygonType2CheckBox.setSelected(false);
         polygonType2CheckBox.setToolTipText("Multiple contiguous sets of vertices on shape.");
-        polygonType2CheckBox.setAlignmentX(1.0f);
+        //polygonType2CheckBox.setAlignmentX(1.0f);
         polygonType3CheckBox = new JCheckBox();
         polygonType3CheckBox.setText("Empty");
         polygonType3CheckBox.setSelected(false);
         polygonType3CheckBox.setToolTipText("No vertices on shape.");
-        polygonType3CheckBox.setAlignmentX(1.0f);
+        //polygonType3CheckBox.setAlignmentX(1.0f);
 
-        polygonTypePanel.add(polygonTypeLabel);
+        polygonTypePanel.add(polygonTypeLabel, "span");
         polygonTypePanel.add(polygonType0CheckBox);
         //polygonTypePanel.add(Box.createHorizontalStrut(15));
-        polygonTypePanel.add(polygonType1CheckBox);
+        polygonTypePanel.add(polygonType1CheckBox, "wrap");
         //polygonTypePanel.add(Box.createHorizontalStrut(15));
         polygonTypePanel.add(polygonType2CheckBox);
         //polygonTypePanel.add(Box.createHorizontalStrut(15));
@@ -162,11 +166,11 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
         		BoxLayout.LINE_AXIS));
         final JLabel fromDistanceLabel = new JLabel("S/C Distance from ");
         fromDistanceTextField = new JFormattedTextField(nf);
-        fromDistanceTextField.setValue(0.0);
+        fromDistanceTextField.setValue(100.0);
         fromDistanceTextField.setMaximumSize(new Dimension(50, 23));
         final JLabel toDistanceLabel = new JLabel(" km to ");
         toDistanceTextField = new JFormattedTextField(nf);
-        toDistanceTextField.setValue(100000.0);
+        toDistanceTextField.setValue(1000.0);
         toDistanceTextField.setMaximumSize(new Dimension(50, 23));
         final JLabel endDistanceLabel = new JLabel(" km");
                 
@@ -188,10 +192,10 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
 
 
         pane.add(distancePanel);
-        pane.add(Box.createVerticalStrut(10));
+        //pane.add(Box.createVerticalStrut(10));
         pane.add(polygonTypePanel);
-        pane.add(Box.createVerticalStrut(10));
-    	pane.add(submitPanel);
+        //pane.add(Box.createVerticalStrut(10));
+    	pane.add(submitPanel, "align center");
         
         this.add(pane);
 
@@ -201,7 +205,7 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
         
         
         
-        JPanel resultsPanel = new JPanel(new BorderLayout());
+        JPanel resultsPanel = new JPanel(new MigLayout("insets 0"));
 		
 		nisPopupMenu = new NISPopupMenu(this.modelManager, infoPanelManager, renWin);
 
@@ -214,13 +218,15 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
         resultList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         resultList.addMouseListener(this);
         JScrollPane listScrollPane = new JScrollPane(resultList);
-
+        listScrollPane.setPreferredSize(new Dimension(10000, 10000));
+        
+        
         //listScrollPane.setBorder(
         //       new CompoundBorder(BorderFactory.createEmptyBorder(9, 9, 9, 9), 
         //                           new TitledBorder("Query Results")));
 
-        resultsPanel.add(resultsLabel, BorderLayout.NORTH);
-        resultsPanel.add(listScrollPane, BorderLayout.CENTER);
+        resultsPanel.add(resultsLabel, "north");
+        resultsPanel.add(listScrollPane, "center");
 
         final JPanel resultControlsPanel = new JPanel(new BorderLayout());
         
@@ -310,9 +316,9 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
         resultControlsPanel.add(resultSub1ControlsPanel, BorderLayout.CENTER);
         resultControlsPanel.add(resultSub2ControlsPanel, BorderLayout.SOUTH);
         
-        resultsPanel.add(resultControlsPanel, BorderLayout.SOUTH);
+        resultsPanel.add(resultControlsPanel, "south");
 
-        add(resultsPanel);
+        add(resultsPanel, "growy");
         
     }
 
