@@ -10,8 +10,6 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.*;
 
-import org.joda.time.*;
-
 import com.jidesoft.swing.RangeSlider;
 
 import vtk.vtkRenderWindowPanel;
@@ -19,51 +17,36 @@ import vtk.vtkRenderWindowPanel;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.NLRDataCollection;
 import edu.jhuapl.near.model.NLRDataPerDay;
+import edu.jhuapl.near.pair.DoublePair;
 
 
 public class NLRSearchPanel extends JPanel implements ListSelectionListener
 {
 	private final String NLR_REMOVE_ALL_BUTTON_TEXT = "Remove All NLR Data";
 	
-    private final ModelManager modelManager;
+//    private final ModelManager modelManager;
     private NLRDataCollection nlrModel;
-    private java.util.Date startDate = new DateTime(2000, 3, 1, 0, 0, 0, 0, DateTimeZone.UTC).toDate();
-    private java.util.Date endDate = new DateTime(2000, 4, 1, 0, 0, 0, 0, DateTimeZone.UTC).toDate();
-    private JLabel endDateLabel;
-    private JLabel startDateLabel;
-    private static final String START_DATE_LABEL_TEXT = "Start Date";
-    private static final String END_DATE_LABEL_TEXT = "End Date:";
-    private JSpinner startSpinner;
-    private JSpinner endSpinner;
-
-    private JFormattedTextField fromDistanceTextField;
-    private JFormattedTextField toDistanceTextField;
-
     private JList resultList;
     private DefaultListModel nlrResultListModel;
     //private NLRPopupMenu nlrPopupMenu;
     private ArrayList<String> nlrRawResults = new ArrayList<String>();
     private JLabel resultsLabel;
-    private String nlrResultsLabelText = " ";
     private JButton showHideButton;
-    //private JButton nextButton;
-    //private JButton prevButton;
     private JButton removeAllButton;
-    //private JComboBox numberOfBoundariesComboBox;
-    //private IdPair resultIntervalCurrentlyShown = null;
-
+    private NlrTimeIntervalChanger timeIntervalChanger;
+    private RadialOffsetChanger radialOffsetChanger;
+    
     
     public class NlrTimeIntervalChanger extends JPanel implements ChangeListener
     {
     	private RangeSlider slider;
     	
-    	private NLRDataCollection nlrImage;
+    	private NLRDataPerDay nlrData;
     	
     	public NlrTimeIntervalChanger()
     	{
     		setBorder(BorderFactory.createTitledBorder("Displayed NLR Data"));
 
-    		//this.setPreferredSize(new Dimension(300,300));
     		slider = new RangeSlider(0, 255, 0, 255);
     		slider.setPaintTicks(true);
     		slider.setMajorTickSpacing(10);
@@ -73,13 +56,14 @@ public class NLRSearchPanel extends JPanel implements ListSelectionListener
     		add(slider);
     	}
     	
-    	void setNearImage(NLRDataCollection image)
+    	void setNLRData(NLRDataPerDay data)
     	{
-    		if (image != null)
+    		if (data != null)
     		{
-    			nlrImage = image;
-    			slider.setLowValue(0);
-    			slider.setHighValue(24);
+    			nlrData = data;
+    			DoublePair pair = data.getPercentageShown();
+    			slider.setLowValue((int)(pair.d1*slider.getMaximum()));
+    			slider.setHighValue((int)(pair.d2*slider.getMaximum()));
     			slider.setEnabled(true);
     		}
     		else
@@ -90,10 +74,10 @@ public class NLRSearchPanel extends JPanel implements ListSelectionListener
 
     	public void stateChanged(ChangeEvent e) 
     	{
-    		int lowVal = slider.getLowValue();
-    		int highVal = slider.getHighValue();
-//    		if (nlrImage != null)
-//    			nlrImage.setDisplayedImageRange(new IntensityRange(lowVal, highVal));
+    		double lowVal = (double)slider.getLowValue()/(double)slider.getMaximum();
+    		double highVal = (double)slider.getHighValue()/(double)slider.getMaximum();
+    		if (nlrData != null)
+    			nlrData.setPercentageShown(lowVal, highVal);
     	}
     }
 
@@ -105,101 +89,8 @@ public class NLRSearchPanel extends JPanel implements ListSelectionListener
     	setLayout(new BoxLayout(this,
         		BoxLayout.PAGE_AXIS));
     	
-    	this.modelManager = modelManager;
+    	//this.modelManager = modelManager;
     	this.nlrModel = (NLRDataCollection)modelManager.getModel(ModelManager.NLR_DATA);
-    	/*
-    	JPanel pane = new JPanel();
-    	pane.setLayout(new BoxLayout(pane,
-        		BoxLayout.PAGE_AXIS));
-
-    	//pane.setBorder(
-        //        new CompoundBorder(BorderFactory.createEmptyBorder(9, 9, 9, 9), 
-        //                           new TitledBorder("Query Editor")));
-
-        
-        final JPanel startDatePanel = new JPanel();
-        this.startDateLabel = new JLabel(START_DATE_LABEL_TEXT);
-        startDatePanel.add(this.startDateLabel);
-        startSpinner = new JSpinner(new SpinnerDateModel(startDate, null, null, Calendar.DAY_OF_MONTH));
-        startSpinner.setEditor(new JSpinner.DateEditor(startSpinner, "yyyy-MMM-dd HH:mm:ss"));
-        startSpinner.addChangeListener(new ChangeListener()
-            {
-                public void stateChanged(ChangeEvent e)
-                {
-                    java.util.Date date = 
-                        ((SpinnerDateModel)startSpinner.getModel()).getDate();
-                    if (date != null)
-                        startDate = date;
-                }
-            });
-        startDatePanel.add(startSpinner);
-        startSpinner.setEnabled(true);
-        pane.add(startDatePanel);
-
-        final JPanel endDatePanel = new JPanel();
-        this.endDateLabel = new JLabel(END_DATE_LABEL_TEXT);
-        endDatePanel.add(this.endDateLabel);
-        endSpinner = new JSpinner(new SpinnerDateModel(endDate, null, null, Calendar.DAY_OF_MONTH));
-        endSpinner.setEditor(new JSpinner.DateEditor(endSpinner, "yyyy-MMM-dd HH:mm:ss"));
-        endSpinner.addChangeListener(new ChangeListener()
-            {
-                public void stateChanged(ChangeEvent e)
-                {
-                    java.util.Date date = 
-                        ((SpinnerDateModel)endSpinner.getModel()).getDate();
-                    if (date != null)
-                        endDate = date;
-                }
-            });
-        endDatePanel.add(endSpinner);
-        endSpinner.setEnabled(true);
-        pane.add(endDatePanel);
-
-
-        NumberFormat nf = NumberFormat.getNumberInstance();
-        nf.setGroupingUsed(false);
-        
-        final JPanel distancePanel = new JPanel();
-        distancePanel.setLayout(new BoxLayout(distancePanel,
-        		BoxLayout.LINE_AXIS));
-        final JLabel fromDistanceLabel = new JLabel("S/C Distance from ");
-        fromDistanceTextField = new JFormattedTextField(nf);
-        fromDistanceTextField.setValue(30.0);
-        fromDistanceTextField.setMaximumSize(new Dimension(50, 23));
-        final JLabel toDistanceLabel = new JLabel(" km to ");
-        toDistanceTextField = new JFormattedTextField(nf);
-        toDistanceTextField.setValue(40.0);
-        toDistanceTextField.setMaximumSize(new Dimension(50, 23));
-        final JLabel endDistanceLabel = new JLabel(" km");
-                
-        distancePanel.add(fromDistanceLabel);
-        distancePanel.add(fromDistanceTextField);
-        distancePanel.add(toDistanceLabel);
-        distancePanel.add(toDistanceTextField);
-        distancePanel.add(endDistanceLabel);
-
-        
-        
-        final JPanel submitPanel = new JPanel();
-        //panel.setBorder(BorderFactory.createEmptyBorder(9, 9, 9, 9));
-        JButton submitButton = new JButton("Update");
-        submitButton.setEnabled(true);
-        submitButton.addActionListener(this);
-
-        submitPanel.add(submitButton);
-
-
-        pane.add(distancePanel);
-        pane.add(Box.createVerticalStrut(10));
-        pane.add(Box.createVerticalStrut(10));
-    	pane.add(submitPanel);
-        
-        this.add(pane);
-    	 */
-        
-        
-        
-        
         
         
         JPanel resultsPanel = new JPanel(new BorderLayout());
@@ -213,7 +104,6 @@ public class NLRSearchPanel extends JPanel implements ListSelectionListener
         nlrRawResults = nlrModel.getAllNlrPaths();
     	for (String str : nlrRawResults)
     	{
-    		//System.out.println(str);
     		nlrResultListModel.addElement( 
     				str.substring(5, 13) 
     				+ ", day: " + str.substring(8, 11) + "/20" + str.substring(6, 8)
@@ -223,13 +113,8 @@ public class NLRSearchPanel extends JPanel implements ListSelectionListener
         //Create the list and put it in a scroll pane.
         resultList = new JList(nlrResultListModel);
         resultList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        //resultList.addMouseListener(this);
         resultList.addListSelectionListener(this);
         JScrollPane listScrollPane = new JScrollPane(resultList);
-
-        //listScrollPane.setBorder(
-        //       new CompoundBorder(BorderFactory.createEmptyBorder(9, 9, 9, 9), 
-        //                           new TitledBorder("Query Results")));
 
         resultsPanel.add(resultsLabel, BorderLayout.NORTH);
         resultsPanel.add(listScrollPane, BorderLayout.CENTER);
@@ -258,12 +143,14 @@ public class NLRSearchPanel extends JPanel implements ListSelectionListener
             				nlrModel.addNlrData(nlrRawResults.get(index));
 
             				showHideButton.setText("Remove");
+        					timeIntervalChanger.setNLRData(nlrModel.getNlrData(nlrRawResults.get(index)));
             			}
             			else
             			{
             				nlrModel.removeNlrData(nlrRawResults.get(index));
 
-            				showHideButton.setText("Remove");
+            				showHideButton.setText("Show");
+        					timeIntervalChanger.setNLRData(null);
             			}
             		}
             		catch (IOException e1) 
@@ -274,65 +161,7 @@ public class NLRSearchPanel extends JPanel implements ListSelectionListener
         	}
         });
         showHideButton.setEnabled(false);
-
         
-//        final JLabel showLabel = new JLabel("Number Boundaries");
-//        Object [] options2 = {
-//        		10, 20, 30, 40, 50, 60, 70, 80, 90, 100,
-//        		110, 120, 130, 140, 150, 160, 170, 180, 190, 200,
-//        		210, 220, 230, 240, 250
-//        		};
-//		numberOfBoundariesComboBox = new JComboBox(options2);
-//		numberOfBoundariesComboBox.setMaximumSize(new Dimension(150, 23));
-//		
-//		nextButton = new JButton(">");
-//        nextButton.setActionCommand(">");
-//        nextButton.addActionListener(new ActionListener()
-//        {
-//			public void actionPerformed(ActionEvent e) 
-//			{
-//				if (resultIntervalCurrentlyShown != null)
-//				{
-//					// Only get the next block if there's something left to show.
-//					if (resultIntervalCurrentlyShown.id2 < resultList.getModel().getSize())
-//					{
-//						resultIntervalCurrentlyShown.nextBlock((Integer)numberOfBoundariesComboBox.getSelectedItem());
-//						showNISBoundaries(resultIntervalCurrentlyShown);
-//					}
-//				}
-//				else
-//				{
-//					resultIntervalCurrentlyShown = new IdPair(0, (Integer)numberOfBoundariesComboBox.getSelectedItem());
-//			    	showNISBoundaries(resultIntervalCurrentlyShown);
-//				}
-//			}
-//        });
-//        nextButton.setEnabled(true);
-//
-//        prevButton = new JButton("<");
-//        prevButton.setActionCommand("<");
-//        prevButton.addActionListener(new ActionListener()
-//        {
-//			public void actionPerformed(ActionEvent e) 
-//			{
-//				if (resultIntervalCurrentlyShown != null)
-//				{
-//					// Only get the prev block if there's something left to show.
-//					if (resultIntervalCurrentlyShown.id1 > 0)
-//					{
-//						resultIntervalCurrentlyShown.prevBlock((Integer)numberOfBoundariesComboBox.getSelectedItem());
-//						showNISBoundaries(resultIntervalCurrentlyShown);
-//					}
-//				}
-//			}
-//        });
-//        prevButton.setEnabled(true);
-
-        //resultSub1ControlsPanel.add(showLabel);
-        //resultSub1ControlsPanel.add(numberOfBoundariesComboBox);
-        //resultSub1ControlsPanel.add(Box.createHorizontalStrut(10));
-        //resultSub1ControlsPanel.add(prevButton);
-        //resultSub1ControlsPanel.add(nextButton);
 
         JPanel resultSub2ControlsPanel = new JPanel();
         resultSub2ControlsPanel.setLayout(new BoxLayout(resultSub2ControlsPanel,
@@ -345,7 +174,9 @@ public class NLRSearchPanel extends JPanel implements ListSelectionListener
 			{
 				NLRDataCollection model = (NLRDataCollection)modelManager.getModel(ModelManager.NLR_DATA);
 				model.removeAllNlrData();
-				//resultIntervalCurrentlyShown = null;
+
+				showHideButton.setText("Show");
+				timeIntervalChanger.setNLRData(null);
 			}
         });
         removeAllButton.setEnabled(true);
@@ -360,88 +191,35 @@ public class NLRSearchPanel extends JPanel implements ListSelectionListener
         
         resultsPanel.add(resultControlsPanel, BorderLayout.SOUTH);
 
-        NlrTimeIntervalChanger timeIntervalChanger = new NlrTimeIntervalChanger();
-        timeIntervalChanger.setEnabled(false);
+        timeIntervalChanger = new NlrTimeIntervalChanger();
         
-        RadialOffsetChanger radialOffsetChanger = new RadialOffsetChanger(nlrModel, "Radial Offset");
+        radialOffsetChanger = new RadialOffsetChanger(nlrModel, "Radial Offset");
         
         add(resultsPanel);
         add(timeIntervalChanger);
         add(radialOffsetChanger);
     }
 
-//    public void actionPerformed(ActionEvent actionEvent)
-//    {
-//        try
-//        {
-//        	ArrayList<String> results = Database.getInstance().runQuery(
-//        			Database.Datatype.NIS,
-//        			new DateTime(startDate, DateTimeZone.UTC), 
-//        			new DateTime(endDate, DateTimeZone.UTC),
-//        			null,
-//        			false,
-//        			false,
-//        			Double.parseDouble(fromDistanceTextField.getText()),
-//        			Double.parseDouble(toDistanceTextField.getText()),
-//        			0.0,
-//        			0.0,
-//        			null);
-//
-//        	setNISResults(results);
-//        }
-//        catch (Exception e) 
-//        { 
-//            e.printStackTrace();
-//            System.out.println(e);
-//            return;
-//        }
-//    }
-    
-
-//	private void setNISResults(ArrayList<String> results)
-//	{
-//		nlrResultsLabelText = results.size() + " spectra matched";
-//    	resultsLabel.setText(nlrResultsLabelText);
-//    	nlrResultListModel.clear();
-//    	nlrRawResults = results;
-//    	
-//    	// add the results to the list
-//    	for (String str : results)
-//    	{
-//    		//System.out.println(str);
-//    		nlrResultListModel.addElement( 
-//    				str.substring(16, 25) 
-//    				+ ", day: " + str.substring(10, 13) + "/" + str.substring(5, 9)
-//    				);
-//    	}
-//
-//    	// Show the first set of boundaries
-//    	this.resultIntervalCurrentlyShown = new IdPair(0, (Integer)this.numberOfBoundariesComboBox.getSelectedItem());
-//    	this.showNISBoundaries(resultIntervalCurrentlyShown);
-//	}
 	
 	public void valueChanged(ListSelectionEvent arg0) 
 	{
-		if (!arg0.getValueIsAdjusting())
-		{
-			System.out.println(arg0.getFirstIndex());
-			System.out.println(arg0.getLastIndex());
-		}
 		int[] idx = {arg0.getFirstIndex(), arg0.getLastIndex()};
 		for (int index : idx)
 		{
 			if (index >= 0 && resultList.isSelectedIndex(index))
 			{
 				showHideButton.setEnabled(true);
-
+				
 				//resultList.setSelectedIndex(index);
 				if (nlrModel.containsNlrData(nlrRawResults.get(index)))
 				{
 					showHideButton.setText("Remove");
+					timeIntervalChanger.setNLRData(nlrModel.getNlrData(nlrRawResults.get(index)));
 				}
 				else
 				{
 					showHideButton.setText("Show");
+					timeIntervalChanger.setNLRData(null);
 				}
 				break;
 			}
@@ -451,21 +229,5 @@ public class NLRSearchPanel extends JPanel implements ListSelectionListener
 			}
 		}
 	}
-//	private void showNLRData(String nlrPath)
-//	{
-//		NLRDataCollection model = (NLRDataCollection)modelManager.getModel(ModelManager.NLR_DATA);
-//		model.removeAllNlrData();
-//		
-//		if (nlrPath != null)
-//		{
-//			try 
-//			{
-//				model.addNlrData(nlrPath);
-//			} 
-//			catch (IOException e1) {
-//				// TODO Auto-generated catch block
-//				e1.printStackTrace();
-//			}
-//		}
-//	}
+
 }

@@ -12,6 +12,8 @@ public class RadialOffsetChanger extends JPanel implements ChangeListener
 	
 	private Model model;
 
+	private double offsetScale = 0.025;
+	
 	public RadialOffsetChanger(Model model, String title)
 	{
 		this.model = model;
@@ -25,6 +27,10 @@ public class RadialOffsetChanger extends JPanel implements ChangeListener
 		add(slider);
 	}
 	
+	public void setOffsetScale(double scale)
+	{
+		this.offsetScale = scale;
+	}
 	public void stateChanged(ChangeEvent e) 
 	{
 		if (slider.getValueIsAdjusting())
@@ -32,7 +38,7 @@ public class RadialOffsetChanger extends JPanel implements ChangeListener
 			int val = slider.getValue();
 			int max = slider.getMaximum();
 			int min = slider.getMinimum();
-			double offset = (val - (max-min)/2.0) * 0.025;
+			double offset = (val - (max-min)/2.0) * offsetScale;
 			model.setRadialOffset(offset);
 		}
 	}

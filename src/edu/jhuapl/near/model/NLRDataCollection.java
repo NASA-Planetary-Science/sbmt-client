@@ -1,7 +1,8 @@
 package edu.jhuapl.near.model;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -12,25 +13,30 @@ import edu.jhuapl.near.util.Properties;
 
 import vtk.*;
 
-public class NLRDataCollection extends Model 
+public class NLRDataCollection extends Model implements PropertyChangeListener 
 {
 	private ArrayList<vtkActor> nlrPerDayActors = new ArrayList<vtkActor>();
 
 	private HashMap<String, NLRDataPerDay> fileToNlrPerDayMap = new HashMap<String, NLRDataPerDay>();
 	private HashMap<vtkActor, String> actorToFileMap = new HashMap<vtkActor, String>();
+	private double radialOffset = 0.0;
 	
 	public void addNlrData(String path) throws IOException
 	{
 		if (fileToNlrPerDayMap.containsKey(path))
 			return;
 
-		NLRDataPerDay image = new NLRDataPerDay(path);
+		NLRDataPerDay nlrData = new NLRDataPerDay(path);
 
-		fileToNlrPerDayMap.put(path, image);
+		nlrData.addPropertyChangeListener(this);
 		
-		actorToFileMap.put(image.getActors().get(0), path);
+		fileToNlrPerDayMap.put(path, nlrData);
 		
-		nlrPerDayActors.add(image.getActors().get(0));
+		actorToFileMap.put(nlrData.getActors().get(0), path);
+		
+		nlrPerDayActors.add(nlrData.getActors().get(0));
+	
+		this.setRadialOffset(radialOffset);
 		
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 	}
@@ -56,6 +62,11 @@ public class NLRDataCollection extends Model
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 	}
 
+	public NLRDataPerDay getNlrData(String path)
+	{
+		return fileToNlrPerDayMap.get(path);
+	}
+	
 	public ArrayList<vtkActor> getActors() 
 	{
 		return nlrPerDayActors;
@@ -63,8 +74,8 @@ public class NLRDataCollection extends Model
 	
     public String getClickStatusBarText(vtkActor actor, int cellId)
     {
-    	File file = new File(actorToFileMap.get(actor));
-    	return "NLR Data " + file.getName().substring(2, 11);
+    	NLRDataPerDay data = fileToNlrPerDayMap.get(actorToFileMap.get(actor));
+    	return data.getClickStatusBarText(actor, cellId);
     }
 
     public String getNlrName(vtkActor actor)
@@ -100,29 +111,25 @@ public class NLRDataCollection extends Model
         return paths;
     }
     
-	public void setNlrRadialOffset(double offset)
+	public void propertyChange(PropertyChangeEvent evt) 
 	{
-//        int ptId=0;
-//        vtkPoints points = lineaments.GetPoints();
-//        
-//		for (Integer id : this.idToLineamentMap.keySet())
-//		{
-//			Lineament lin =	this.idToLineamentMap.get(id);
-//
-//            int size = lin.x.size();
-//
-//            for (int i=0;i<size;++i)
-//            {
-//                double x = (lin.rad.get(i)+offset) * Math.cos( lin.lon.get(i) ) * Math.cos( lin.lat.get(i) );
-//                double y = (lin.rad.get(i)+offset) * Math.sin( lin.lon.get(i) ) * Math.cos( lin.lat.get(i) );
-//                double z = (lin.rad.get(i)+offset) * Math.sin( lin.lat.get(i) );
-//            	points.SetPoint(ptId, x, y, z);
-//            	++ptId;
-//            }
-//		}		
-//
-//		lineaments.Modified();
-//		this.pcs.firePropertyChange(Properties.LINEAMENT_MODEL_CHANGED, null, null);
+		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+	}
+
+	public void setRadialOffset(double offset)
+	{
+		radialOffset = offset;
+		
+    	if (fileToNlrPerDayMap.isEmpty())
+    		return;
+
+    	for (String key : fileToNlrPerDayMap.keySet())
+    	{
+    		NLRDataPerDay data = fileToNlrPerDayMap.get(key);
+    		data.setRadialOffset(offset);
+    	}
+    	
+    	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 	}
 
 
