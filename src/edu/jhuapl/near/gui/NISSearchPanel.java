@@ -42,6 +42,13 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
 
     private JFormattedTextField fromDistanceTextField;
     private JFormattedTextField toDistanceTextField;
+    private JFormattedTextField fromIncidenceTextField;
+    private JFormattedTextField toIncidenceTextField;
+    private JFormattedTextField fromEmissionTextField;
+    private JFormattedTextField toEmissionTextField;
+    private JFormattedTextField fromPhaseTextField;
+    private JFormattedTextField toPhaseTextField;
+
 
     private JList resultList;
     private DefaultListModel nisResultListModel;
@@ -180,8 +187,39 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
         distancePanel.add(toDistanceTextField);
         distancePanel.add(endDistanceLabel);
 
-        
-        
+        fromIncidenceTextField = new JFormattedTextField(nf);
+        toIncidenceTextField = new JFormattedTextField(nf);
+        JPanel incidencePanel = SearchPanelUtil.createFromToPanel(
+        		fromIncidenceTextField, 
+        		toIncidenceTextField, 
+        		0.0, 
+        		180.0, 
+        		"Incidence from", 
+        		"to", 
+        		"degrees");
+
+        fromEmissionTextField = new JFormattedTextField(nf);
+        toEmissionTextField = new JFormattedTextField(nf);
+        JPanel emissionPanel = SearchPanelUtil.createFromToPanel(
+        		fromEmissionTextField, 
+        		toEmissionTextField, 
+        		0.0, 
+        		180.0, 
+        		"Emissiom from", 
+        		"to", 
+        		"degrees");
+
+        fromPhaseTextField = new JFormattedTextField(nf);
+        toPhaseTextField = new JFormattedTextField(nf);
+        JPanel phasePanel = SearchPanelUtil.createFromToPanel(
+        		fromPhaseTextField, 
+        		toPhaseTextField, 
+        		0.0, 
+        		180.0, 
+        		"Phase from", 
+        		"to", 
+        		"degrees");
+
         final JPanel submitPanel = new JPanel();
         //panel.setBorder(BorderFactory.createEmptyBorder(9, 9, 9, 9));
         JButton submitButton = new JButton("Update");
@@ -192,6 +230,9 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
 
 
         pane.add(distancePanel);
+        pane.add(incidencePanel);
+        pane.add(emissionPanel);
+        pane.add(phasePanel);
         //pane.add(Box.createVerticalStrut(10));
         pane.add(polygonTypePanel);
         //pane.add(Box.createVerticalStrut(10));
