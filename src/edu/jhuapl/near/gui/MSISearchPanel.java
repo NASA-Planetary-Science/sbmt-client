@@ -482,7 +482,8 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
         			Double.parseDouble(toDistanceTextField.getText()),
         			Double.parseDouble(fromResolutionTextField.getText()),
         			Double.parseDouble(toResolutionTextField.getText()),
-        			searchField);
+        			searchField,
+        			null);
 
         	setMSIResults(results);
         }

@@ -153,7 +153,8 @@ public class Database
 			double stopDistance,
 			double startResolution,
 			double stopResolution,
-			String searchString) 
+			String searchString,
+			ArrayList<Integer> polygonTypes) 
 	{
 		ArrayList<String> matchedImages = new ArrayList<String>();
 		ArrayList<ArrayList<Object>> results = null;
@@ -258,10 +259,22 @@ public class Database
 				String query = "SELECT * FROM nisspectra ";
 				query += "WHERE midtime >= " + startDate.getMillis();
 				query += " AND midtime <= " + stopDate.getMillis();
-				//query += " AND range >= " + minScDistance ;
-				//query += " AND range <= " + maxScDistance;
-				query += " AND polygon_type_flag >= " + -999.0;
-				query += " AND polygon_type_flag <= " + -999.0;
+				query += " AND range >= " + minScDistance ;
+				query += " AND range <= " + maxScDistance;
+				if (!polygonTypes.isEmpty())
+				{
+					query += " AND ( ";
+					int count = 0;
+					for (Integer i : polygonTypes)
+					{
+						if (count++ > 0)
+							query += " OR ";
+						query += " polygon_type_flag = " + i;
+					}
+					query += " ) ";
+				}
+
+				System.out.println(query);
 				
 				results = db.query(query);
 				

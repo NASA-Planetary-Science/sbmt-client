@@ -326,6 +326,17 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
     {
         try
         {
+        	ArrayList<Integer> polygonTypesChecked = new ArrayList<Integer>();
+
+        	if (polygonType0CheckBox.isSelected())
+        		polygonTypesChecked.add(0);
+        	if (polygonType1CheckBox.isSelected())
+        		polygonTypesChecked.add(1);
+        	if (polygonType2CheckBox.isSelected())
+        		polygonTypesChecked.add(2);
+        	if (polygonType3CheckBox.isSelected())
+        		polygonTypesChecked.add(3);
+
         	ArrayList<String> results = Database.getInstance().runQuery(
         			Database.Datatype.NIS,
         			new DateTime(startDate, DateTimeZone.UTC), 
@@ -337,7 +348,8 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
         			Double.parseDouble(toDistanceTextField.getText()),
         			0.0,
         			0.0,
-        			null);
+        			null,
+        			polygonTypesChecked);
 
         	setNISResults(results);
         }
@@ -369,7 +381,7 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
 
     	// Show the first set of boundaries
     	this.resultIntervalCurrentlyShown = new IdPair(0, (Integer)this.numberOfBoundariesComboBox.getSelectedItem());
-//    	this.showNISBoundaries(resultIntervalCurrentlyShown);
+    	this.showNISBoundaries(resultIntervalCurrentlyShown);
 	}
 	
 	public void mouseClicked(MouseEvent e) 
