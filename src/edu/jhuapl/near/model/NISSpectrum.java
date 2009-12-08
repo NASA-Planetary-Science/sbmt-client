@@ -29,6 +29,9 @@ public class NISSpectrum extends Model
 	static public final int MET_OFFSET_TO_MIDDLE_OFFSET = 4+2;
 	static public final int CALIBRATED_GE_DATA_OFFSET = 96+2;
 	static public final int CALIBRATED_GE_NOISE_OFFSET = 160+2;
+	static public final int INCIDENCE_OFFSET = 242+2;
+	static public final int EMISSION_OFFSET = 245+2;
+	static public final int PHASE_OFFSET = 248+2;
 	static public final int RANGE_OFFSET = 252+2;
 	static public final int POLYGON_TYPE_FLAG_OFFSET = 258+2;
 	static public final int NUMBER_OF_VERTICES_OFFSET = 259+2;
@@ -45,6 +48,12 @@ public class NISSpectrum extends Model
     private ErosModel erosModel;
     private double[] spectrum = new double[64];
     private double[] spectrumEros = new double[64];
+    private double minIncidence; 
+    private double maxIncidence; 
+    private double minEmission; 
+    private double maxEmission; 
+    private double minPhase; 
+    private double maxPhase; 
     
     // These values were taken from Table 1 of "Spectral properties and geologic
     // processes on Eros from combined NEAR NIS and MSI data sets" 
@@ -111,6 +120,12 @@ public class NISSpectrum extends Model
 		dateTime = dateTime.plusMillis((int)metOffsetToMiddle);
 		
 		duration = Double.parseDouble(values.get(DURATION_OFFSET));
+		minIncidence = Double.parseDouble(values.get(INCIDENCE_OFFSET+1));
+		maxIncidence = Double.parseDouble(values.get(INCIDENCE_OFFSET+2));
+		minEmission= Double.parseDouble(values.get(EMISSION_OFFSET+1));
+		maxEmission = Double.parseDouble(values.get(EMISSION_OFFSET+2));
+		minPhase = Double.parseDouble(values.get(PHASE_OFFSET+1));
+		maxPhase= Double.parseDouble(values.get(PHASE_OFFSET+2));
 		range = Double.parseDouble(values.get(RANGE_OFFSET));
 		polygon_type_flag = Short.parseShort(values.get(POLYGON_TYPE_FLAG_OFFSET));
 		
@@ -135,7 +150,8 @@ public class NISSpectrum extends Model
 		if (!latLons.isEmpty())
 			this.convertLatLonsToVtkPolyData();
 	}
-	
+
+	/*
 	private ArrayList<LatLon> subdivideLatLons(ArrayList<LatLon> latLons, double maxAngularSep)
 	{
 		ArrayList<LatLon> origLatLons = new ArrayList<LatLon>(latLons);
@@ -162,7 +178,7 @@ public class NISSpectrum extends Model
 
 		return subdividedLatLons;
 	}
-	
+	*/
 
 	private void convertLatLonsToVtkPolyData()
 	{
@@ -294,5 +310,40 @@ public class NISSpectrum extends Model
 		return properties;
     }
 
+    
+    public void setChannelToColorBy(int channel)
+    {
+    	
+    }
+
+	public double getMinIncidence() 
+	{
+		return minIncidence;
+	}
+
+	public double getMaxIncidence() 
+	{
+		return maxIncidence;
+	}
+
+	public double getMinEmission() 
+	{
+		return minEmission;
+	}
+
+	public double getMaxEmission() 
+	{
+		return maxEmission;
+	}
+
+	public double getMinPhase() 
+	{
+		return minPhase;
+	}
+
+	public double getMaxPhase() 
+	{
+		return maxPhase;
+	}
 
 }

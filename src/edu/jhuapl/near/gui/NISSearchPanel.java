@@ -49,6 +49,7 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
     private JFormattedTextField fromPhaseTextField;
     private JFormattedTextField toPhaseTextField;
 
+    private JComboBox channelComboBox;
 
     private JList resultList;
     private DefaultListModel nisResultListModel;
@@ -220,6 +221,8 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
         		"to", 
         		"degrees");
 
+
+		
         final JPanel submitPanel = new JPanel();
         //panel.setBorder(BorderFactory.createEmptyBorder(9, 9, 9, 9));
         JButton submitButton = new JButton("Update");
@@ -353,7 +356,30 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
 
         
         resultSub2ControlsPanel.add(removeAllButton);
-        
+
+        JPanel channelPanel = new JPanel();
+		channelPanel.setLayout(new BoxLayout(channelPanel,
+				BoxLayout.LINE_AXIS));
+
+        JLabel channelLabel = new JLabel("Color by Channel");
+        Object[] channels = new Object[64];
+        for (int i=1; i<=64; ++i)
+        	channels[i-1] = new Integer(i);
+		channelComboBox = new JComboBox(channels);
+		channelComboBox.addActionListener(new ActionListener()
+        {
+			public void actionPerformed(ActionEvent e) 
+			{
+				NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelManager.NIS_SPECTRA);
+				
+			}
+        });
+		
+		channelPanel.add(channelLabel);
+		channelPanel.add(channelComboBox);
+
+		resultSub2ControlsPanel.add(channelPanel);
+
         resultControlsPanel.add(resultSub1ControlsPanel, BorderLayout.CENTER);
         resultControlsPanel.add(resultSub2ControlsPanel, BorderLayout.SOUTH);
         
@@ -390,7 +416,13 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
         			0.0,
         			0.0,
         			null,
-        			polygonTypesChecked);
+        			polygonTypesChecked,
+        			Double.parseDouble(fromIncidenceTextField.getText()),
+        			Double.parseDouble(toIncidenceTextField.getText()),
+        			Double.parseDouble(fromEmissionTextField.getText()),
+        			Double.parseDouble(toEmissionTextField.getText()),
+        			Double.parseDouble(fromPhaseTextField.getText()),
+        			Double.parseDouble(toPhaseTextField.getText()));
 
         	setNISResults(results);
         }

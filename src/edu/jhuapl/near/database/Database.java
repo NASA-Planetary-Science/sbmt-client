@@ -154,7 +154,13 @@ public class Database
 			double startResolution,
 			double stopResolution,
 			String searchString,
-			ArrayList<Integer> polygonTypes) 
+			ArrayList<Integer> polygonTypes,
+			double minIncidence,
+			double maxIncidence,
+			double minEmission,
+			double maxEmission,
+			double minPhase,
+			double maxPhase) 
 	{
 		ArrayList<String> matchedImages = new ArrayList<String>();
 		ArrayList<ArrayList<Object>> results = null;

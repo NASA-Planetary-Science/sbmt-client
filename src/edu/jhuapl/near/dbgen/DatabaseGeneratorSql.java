@@ -65,6 +65,12 @@ public class DatabaseGeneratorSql
             		"day smallint, " +
             		//"time timestamp, " +
             		"midtime bigint, " +
+            		"minincidence double," +
+            		"maxincidence double," +
+            		"minemission double," +
+            		"maxemission double," +
+            		"minphase double," +
+            		"maxphase double," +
             		"range double, " +
             		"polygon_type_flag smallint)"
                 );
@@ -181,7 +187,7 @@ public class DatabaseGeneratorSql
     		if (nisInsert == null)
     		{
     			nisInsert = db.preparedStatement(                                                                                    
-    					"insert into nisspectra values (?, ?, ?, ?, ?, ?)");                                                                   
+    					"insert into nisspectra values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");                                                                   
     		}
 
     		DateTime midtime = new DateTime(nisSpectrum.getDateTime().toString(), DateTimeZone.UTC);
@@ -192,6 +198,12 @@ public class DatabaseGeneratorSql
     		System.out.println("year: " + yearStr);
     		System.out.println("dayofyear: " + dayOfYearStr);
     		System.out.println("midtime: " + midtime);
+    		System.out.println("minIncidence: " + nisSpectrum.getMinIncidence());
+    		System.out.println("maxIncidence: " + nisSpectrum.getMaxIncidence());
+    		System.out.println("minEmission: " + nisSpectrum.getMinEmission());
+    		System.out.println("maxEmission: " + nisSpectrum.getMaxEmission());
+    		System.out.println("minPhase: " + nisSpectrum.getMinPhase());
+    		System.out.println("maxPhase: " + nisSpectrum.getMaxPhase());
     		System.out.println("range: " + nisSpectrum.getRange());
     		System.out.println("polygon type: " + nisSpectrum.getPolygonTypeFlag());
     		System.out.println(" ");
@@ -201,8 +213,14 @@ public class DatabaseGeneratorSql
     		nisInsert.setShort(2, Short.parseShort(yearStr));
     		nisInsert.setShort(3, Short.parseShort(dayOfYearStr));
     		nisInsert.setLong(4, midtime.getMillis());
-    		nisInsert.setDouble(5, nisSpectrum.getRange());
-    		nisInsert.setShort(6, nisSpectrum.getPolygonTypeFlag());
+    		nisInsert.setDouble(5, nisSpectrum.getMinIncidence());
+    		nisInsert.setDouble(6, nisSpectrum.getMaxIncidence());
+    		nisInsert.setDouble(7, nisSpectrum.getMinEmission());
+    		nisInsert.setDouble(8, nisSpectrum.getMaxEmission());
+    		nisInsert.setDouble(9, nisSpectrum.getMinPhase());
+    		nisInsert.setDouble(10, nisSpectrum.getMaxPhase());
+    		nisInsert.setDouble(11, nisSpectrum.getRange());
+    		nisInsert.setShort(12, nisSpectrum.getPolygonTypeFlag());
 
     		nisInsert.executeUpdate();
     	}
