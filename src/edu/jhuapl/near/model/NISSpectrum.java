@@ -44,7 +44,7 @@ public class NISSpectrum extends Model
     private ArrayList<vtkActor> footprintActors = new ArrayList<vtkActor>();
     private ErosModel erosModel;
     private double[] spectrum = new double[64];
-    private double[] spectrumErros = new double[64];
+    private double[] spectrumEros = new double[64];
     
     // These values were taken from Table 1 of "Spectral properties and geologic
     // processes on Eros from combined NEAR NIS and MSI data sets" 
@@ -124,10 +124,12 @@ public class NISSpectrum extends Model
 								   (360.0-Double.parseDouble(values.get(lonIdx))) * Math.PI / 180.0));
 		}
 		
+		//this.subdivideLatLons(latLons, 100);
+		
 		for (int i=0; i<64; ++i)
 		{
 			spectrum[i] = Double.parseDouble(values.get(CALIBRATED_GE_DATA_OFFSET + i));
-			spectrumErros[i] = Double.parseDouble(values.get(CALIBRATED_GE_NOISE_OFFSET + i));
+			spectrumEros[i] = Double.parseDouble(values.get(CALIBRATED_GE_NOISE_OFFSET + i));
 		}
 		
 		if (!latLons.isEmpty())
@@ -243,7 +245,7 @@ public class NISSpectrum extends Model
 
 	public double[] getSpectrumErrors()
 	{
-		return spectrumErros;
+		return spectrumEros;
 	}
 	
 	public double[] getBandCenters()
@@ -259,14 +261,14 @@ public class NISSpectrum extends Model
     public HashMap<String, String> getProperties() throws IOException
     {
     	HashMap<String, String> properties = new HashMap<String, String>();
-    	
-		properties.put("DAY_OF_YEAR", (new File(this.fullpath)).getParentFile().getParentFile().getName());
+    	System.out.println(this.fullpath);
+		properties.put("DAY_OF_YEAR", (new File(this.fullpath)).getParentFile().getName());
 		
-		properties.put("YEAR", (new File(this.fullpath)).getParentFile().getParentFile().getParentFile().getName());
+		//properties.put("YEAR", (new File(this.fullpath)).getParentFile().getParentFile().getName());
 		
-		//properties.put("MET", (new File(this.fullpath)).getName());
+		properties.put("MET", (new File(this.fullpath)).getName().substring(2,11));
 		
-		properties.put("DURATION", Double.toString(duration));
+		properties.put("DURATION", Double.toString(duration) + " seconds");
 		
 		properties.put("Date", dateTime.toString());
 		

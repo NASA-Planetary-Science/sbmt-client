@@ -27,7 +27,7 @@ public class ErosRenderer extends JPanel implements
         modelManager.addPropertyChangeListener(this);
         
         vtkInteractorStyleTrackballCamera style =
-            new vtkInteractorStyleTrackballCamera();
+        	new vtkInteractorStyleTrackballCamera();
         renWin.setInteractorStyle(style);
         
         add(renWin, BorderLayout.CENTER);

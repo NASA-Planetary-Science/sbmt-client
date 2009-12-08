@@ -16,23 +16,30 @@ public class SearchPanelUtil
 			String labelTextRight
 	)
 	{
-		JPanel distancePanel = new JPanel();
-		distancePanel.setLayout(new BoxLayout(distancePanel,
+		JPanel panel = new JPanel();
+		panel.setLayout(new BoxLayout(panel,
 				BoxLayout.LINE_AXIS));
-		JLabel fromDistanceLabel = new JLabel(labelTextLeft + " ");
+
+		JLabel fromLabel = new JLabel(labelTextLeft + " ");
+		
 		fromField.setValue(fromValue);
 		fromField.setMaximumSize(new Dimension(50, 23));
-		JLabel toDistanceLabel = new JLabel(" " + labelTextMiddle + " ");
+		fromField.setColumns(5);
+		
+		JLabel toLabel = new JLabel(" " + labelTextMiddle + " ");
+		
 		toField.setValue(toValue);
 		toField.setMaximumSize(new Dimension(50, 23));
-		JLabel endDistanceLabel = new JLabel(" " + labelTextRight);
+		toField.setColumns(5);
+		
+		JLabel endLabel = new JLabel(" " + labelTextRight);
 
-		distancePanel.add(fromDistanceLabel);
-		distancePanel.add(fromField);
-		distancePanel.add(toDistanceLabel);
-		distancePanel.add(toField);
-		distancePanel.add(endDistanceLabel);
+		panel.add(fromLabel);
+		panel.add(fromField);
+		panel.add(toLabel);
+		panel.add(toField);
+		panel.add(endLabel);
 
-		return distancePanel;
+		return panel;
 	}
 }

@@ -175,7 +175,7 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
         fromDistanceTextField = new JFormattedTextField(nf);
         fromDistanceTextField.setValue(100.0);
         fromDistanceTextField.setMaximumSize(new Dimension(50, 23));
-        final JLabel toDistanceLabel = new JLabel(" km to ");
+        final JLabel toDistanceLabel = new JLabel(" to ");
         toDistanceTextField = new JFormattedTextField(nf);
         toDistanceTextField.setValue(1000.0);
         toDistanceTextField.setMaximumSize(new Dimension(50, 23));

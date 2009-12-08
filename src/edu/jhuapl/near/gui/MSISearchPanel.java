@@ -211,7 +211,7 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
         fromDistanceTextField = new JFormattedTextField(nf);
         fromDistanceTextField.setValue(30.0);
         fromDistanceTextField.setMaximumSize(new Dimension(50, 23));
-        final JLabel toDistanceLabel = new JLabel(" km to ");
+        final JLabel toDistanceLabel = new JLabel(" to ");
         toDistanceTextField = new JFormattedTextField(nf);
         toDistanceTextField.setValue(40.0);
         toDistanceTextField.setMaximumSize(new Dimension(50, 23));
@@ -231,8 +231,7 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
         fromResolutionTextField = new JFormattedTextField(nf);
         fromResolutionTextField.setValue(0.0);
         fromResolutionTextField.setMaximumSize(new Dimension(50, 23));
-        final JLabel toResolutionLabel = new JLabel(" mpp to ");
-        toResolutionLabel.setToolTipText("meters per pixel");
+        final JLabel toResolutionLabel = new JLabel(" to ");
         toResolutionTextField = new JFormattedTextField(nf);
         toResolutionTextField.setValue(5000.0);
         toResolutionTextField.setMaximumSize(new Dimension(50, 23));
