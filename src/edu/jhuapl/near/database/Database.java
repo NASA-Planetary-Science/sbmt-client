@@ -155,12 +155,12 @@ public class Database
 			double stopResolution,
 			String searchString,
 			ArrayList<Integer> polygonTypes,
-			double minIncidence,
-			double maxIncidence,
-			double minEmission,
-			double maxEmission,
-			double minPhase,
-			double maxPhase) 
+			double fromIncidence,
+			double toIncidence,
+			double fromEmission,
+			double toEmission,
+			double fromPhase,
+			double toPhase) 
 	{
 		ArrayList<String> matchedImages = new ArrayList<String>();
 		ArrayList<ArrayList<Object>> results = null;
@@ -261,7 +261,13 @@ public class Database
 			{
 				double minScDistance = Math.min(startDistance, stopDistance);
 				double maxScDistance = Math.max(startDistance, stopDistance);
-
+				double minIncidence = Math.min(fromIncidence, toIncidence);
+				double maxIncidence = Math.max(fromIncidence, toIncidence);
+				double minEmission = Math.min(fromEmission, toEmission);
+				double maxEmission = Math.max(fromEmission, toEmission);
+				double minPhase = Math.min(fromPhase, toPhase);
+				double maxPhase = Math.max(fromPhase, toPhase);
+				
 				String query = "SELECT * FROM nisspectra ";
 				query += "WHERE midtime >= " + startDate.getMillis();
 				query += " AND midtime <= " + stopDate.getMillis();
@@ -279,6 +285,12 @@ public class Database
 					}
 					query += " ) ";
 				}
+//				query += " AND minincidence <= " + maxIncidence;
+//				query += " AND maxincidence >= " + minIncidence;
+//				query += " AND minemission <= " + maxEmission;
+//				query += " AND maxemission >= " + minEmission;
+//				query += " AND minphase <= " + maxPhase;
+//				query += " AND maxphase >= " + minPhase;
 
 				System.out.println(query);
 				
