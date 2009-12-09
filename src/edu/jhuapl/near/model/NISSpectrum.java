@@ -11,6 +11,7 @@ import org.joda.time.DateTimeZone;
 
 import edu.jhuapl.near.util.FileCache;
 import edu.jhuapl.near.util.FileUtil;
+import edu.jhuapl.near.util.IntersectionUtil;
 import edu.jhuapl.near.util.LatLon;
 
 import vtk.*;
@@ -29,6 +30,8 @@ public class NISSpectrum extends Model
 	static public final int MET_OFFSET_TO_MIDDLE_OFFSET = 4+2;
 	static public final int CALIBRATED_GE_DATA_OFFSET = 96+2;
 	static public final int CALIBRATED_GE_NOISE_OFFSET = 160+2;
+	static public final int SPACECRAFT_POSITION_OFFSET = 224+2;
+	static public final int FRUSTUM_OFFSET = 230+2;
 	static public final int INCIDENCE_OFFSET = 242+2;
 	static public final int EMISSION_OFFSET = 245+2;
 	static public final int PHASE_OFFSET = 248+2;
@@ -48,6 +51,11 @@ public class NISSpectrum extends Model
     private ErosModel erosModel;
     private double[] spectrum = new double[64];
     private double[] spectrumEros = new double[64];
+    private double[] spacecraftPosition = new double[3];
+    private double[] frustum1 = new double[3];
+    private double[] frustum2 = new double[3];
+    private double[] frustum3 = new double[3];
+    private double[] frustum4 = new double[3];
     private double minIncidence; 
     private double maxIncidence; 
     private double minEmission; 
@@ -146,7 +154,18 @@ public class NISSpectrum extends Model
 			spectrum[i] = Double.parseDouble(values.get(CALIBRATED_GE_DATA_OFFSET + i));
 			spectrumEros[i] = Double.parseDouble(values.get(CALIBRATED_GE_NOISE_OFFSET + i));
 		}
-		
+
+		for (int i=0; i<3; ++i)
+			spacecraftPosition[i] = Double.parseDouble(values.get(SPACECRAFT_POSITION_OFFSET + i));
+		for (int i=0; i<3; ++i)
+			frustum1[i] = Double.parseDouble(values.get(FRUSTUM_OFFSET + i));
+		for (int i=0; i<3; ++i)
+			frustum2[i] = Double.parseDouble(values.get(FRUSTUM_OFFSET + 3 + i));
+		for (int i=0; i<3; ++i)
+			frustum3[i] = Double.parseDouble(values.get(FRUSTUM_OFFSET + 6 + i));
+		for (int i=0; i<3; ++i)
+			frustum4[i] = Double.parseDouble(values.get(FRUSTUM_OFFSET + 9 + i));
+
 		if (!latLons.isEmpty())
 			this.convertLatLonsToVtkPolyData();
 	}
@@ -182,6 +201,10 @@ public class NISSpectrum extends Model
 
 	private void convertLatLonsToVtkPolyData()
 	{
+		footprint = erosModel.computeFrustumIntersection(spacecraftPosition, 
+				frustum1, frustum2, frustum3, frustum4);
+		
+		/*
 		footprint = new vtkPolyData();
 		
         vtkPoints points = new vtkPoints();
@@ -206,7 +229,7 @@ public class NISSpectrum extends Model
     	
     	footprint.SetPoints(points);
         footprint.SetLines(lines);
-        
+        */
 	}
 	
 	public ArrayList<vtkActor> getActors() 
@@ -267,11 +290,6 @@ public class NISSpectrum extends Model
 	public double[] getBandCenters()
 	{
 		return bandCenters;
-	}
-	
-	public ArrayList<LatLon> getFootprint()
-	{
-		return latLons;
 	}
 	
     public HashMap<String, String> getProperties() throws IOException

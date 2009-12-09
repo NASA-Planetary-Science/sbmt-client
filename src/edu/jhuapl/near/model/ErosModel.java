@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import vtk.*;
 import edu.jhuapl.near.util.ConvertResourceToFile;
+import edu.jhuapl.near.util.IntersectionUtil;
 import edu.jhuapl.near.util.LatLon;
 import edu.jhuapl.near.util.Properties;
 import edu.jhuapl.near.util.Spice;
@@ -96,6 +97,16 @@ public class ErosModel extends Model
 			return intersectPoints.GetPoint(0);
 		
 		return null;
+	}
+
+	public vtkPolyData computeFrustumIntersection(
+			double[] origin, 
+			double[] ul, 
+			double[] ur,
+			double[] lr,
+			double[] ll)
+	{
+		return IntersectionUtil.computeFrustumIntersection(erosPolyData, origin, ul, ur, lr, ll);
 	}
 	
 	public ArrayList<vtkActor> getActors() 
