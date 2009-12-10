@@ -106,7 +106,7 @@ public class ErosModel extends Model
 			double[] lr,
 			double[] ll)
 	{
-		return IntersectionUtil.computeFrustumIntersection(erosPolyData, origin, ul, ur, lr, ll);
+		return IntersectionUtil.computeFrustumIntersection(erosPolyData, locator, origin, ul, ur, lr, ll);
 	}
 	
 	public ArrayList<vtkActor> getActors() 

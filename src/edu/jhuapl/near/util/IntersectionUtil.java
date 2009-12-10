@@ -6,6 +6,11 @@ public class IntersectionUtil
 {
 	static vtkMath math = null;
 	
+	static void printpt(double[] p, String s)
+	{
+		System.out.println(s + " " + p[0] + " " + p[1] + " " + p[2]);
+	}
+	
 	/**
 	 * Given a <code>polyData</code>, a vertex and two rays extending from that vertex forming a plane
 	 * that intersects the polydata, compute the intersection of that plane (bounded by the 2 rays) and 
@@ -26,7 +31,8 @@ public class IntersectionUtil
 	}
 	
 	public static vtkPolyData computeFrustumIntersection(
-			vtkPolyData polyData, 
+			vtkPolyData polyData,
+			vtkAbstractCellLocator locator,
 			double[] origin, 
 			double[] ul, 
 			double[] ur,
@@ -36,11 +42,18 @@ public class IntersectionUtil
 		if (math == null)
 			math = new vtkMath();
 
+		//vtkPolyData origPolyData = polyData;
+
+		printpt(ul, "ul");
+		printpt(ur, "ur");
+		printpt(lr, "lr");
+		printpt(ll, "ll");
 //		math.Normalize(ul);
 //		math.Normalize(ur);
 //		math.Normalize(lr);
 //		math.Normalize(ll);
 		
+		//printpt()
 		// First compute the normals of the 6 planes.
 		// Start with computing the normals of the 4 side planes of the frustum.
 		double[] top = new double[3];
@@ -102,6 +115,7 @@ public class IntersectionUtil
 		clipPolyData.SetInput(polyData);
 		clipPolyData.SetClipFunction(implicitPlanes);
 		clipPolyData.SetInsideOut(1);
+		//clipPolyData.GetLocator().SetTolerance(0.0001);
 		
 		vtkPolyDataNormals normalsFilter = new vtkPolyDataNormals();
 		normalsFilter.SetInputConnection(clipPolyData.GetOutputPort());
@@ -168,7 +182,8 @@ public class IntersectionUtil
 		connectivityFilter.Update();
 		int numRegions = connectivityFilter.GetNumberOfExtractedRegions();
 		System.out.println("numRegions: " + numRegions);
-		if (numRegions == 1)
+		//if (numRegions == 1)
+		if (true)
 		{
 			polyData = new vtkPolyData();
 			polyData.DeepCopy(connectivityFilter.GetOutput());
@@ -179,40 +194,64 @@ public class IntersectionUtil
 		polyData.DeepCopy(cleanPoly.GetOutput());
 		polyData.BuildLinks(0);
 
-		vtkOBBTree locator;
+//		vtkOBBTree locator;
 		vtkPoints intersectPoints;
-        locator = new vtkOBBTree();
-        locator.SetDataSet(polyData);
-        locator.CacheCellBoundsOn();
-        locator.AutomaticOn();
-        //locator.SetMaxLevel(10);
-        //locator.SetNumberOfCellsPerNode(5);
-
-        locator.BuildLocator();
+//        locator = new vtkOBBTree();
+//        locator.SetDataSet(origPolyData);
+//        locator.CacheCellBoundsOn();
+//        locator.AutomaticOn();
+//        //locator.SetMaxLevel(10);
+//        //locator.SetNumberOfCellsPerNode(5);
+//
+//        locator.BuildLocator();
 
         intersectPoints = new vtkPoints();
+//		System.out.println("deleted cell");
 
 		points = polyData.GetPoints();
 		int numPoints = points.GetNumberOfPoints();
 		for (int i=0; i<numPoints; ++i)
 		{
 			double[] sourcePnt = points.GetPoint(i);
+			//double[] p = sourcePnt;
+			//System.out.println("source pnt " + p[0] + " " + p[1] + " " + p[2]);
 
 			intersectPoints.Reset();
 
-			locator.IntersectWithLine(sourcePnt, origin, intersectPoints, null);
-			
-			if (intersectPoints.GetNumberOfPoints() > 0)
+			/*int v =*/ locator.IntersectWithLine(origin, sourcePnt, intersectPoints, null);
+			//System.out.println("v " + v);
+			if (intersectPoints.GetNumberOfPoints() >= 1)
 			{
+				// If there's only 1 intersection make sure the intersection point is
+				// not sourcePnt
+				if (intersectPoints.GetNumberOfPoints() == 1)
+				{
+					double[] pt = intersectPoints.GetPoint(0);
+					if (math.Distance2BetweenPoints(sourcePnt, pt) < 1e-10)
+					{
+						//System.out.println("bad");
+						continue;
+					}
+				}
+				else
+				{
+					//System.out.println("not bad");
+				}
+				
 				polyData.GetPointCells(i, idList);
+				
+				//p = intersectPoints.GetPoint(0);
+				//System.out.println("intersect pt " + intersectPoints.GetNumberOfPoints() + "  "  + p[0] + " " + p[1] + " " + p[2]);
 				int numPtCells = idList.GetNumberOfIds();
 				for (int j=0; j<numPtCells; ++j)
 				{
 					polyData.DeleteCell(idList.GetId(j));
+					//System.out.println("deleted cell");
 				}
 			}
 
 		}
+		polyData.RemoveDeletedCells();
 		
 		return polyData;
 	}
