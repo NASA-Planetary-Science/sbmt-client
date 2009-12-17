@@ -20,32 +20,45 @@ public class DatabaseGeneratorSql
 	static PreparedStatement nisInsert = null;
 	static ErosModel erosModel;
 	
-    static void createMSITables()
+    private static void createMSITables()
     {
     	System.out.println("creating msi");
         try {
 
             //make a table
+        	try
+        	{
+        		db.dropTable("msiimages");
+        	}
+        	catch(Exception e)
+        	{
+        		e.printStackTrace();
+        	}
+        	
             db.update(
-            		"create cached table msiimages(" +
+            		"create table msiimages(" +
             		"id int PRIMARY KEY, " +
             		"year smallint, " +
             		"day smallint, " +
-            		//"starttime timestamp, " +
-            		//"stoptime timestamp, " +
             		"starttime bigint, " +
             		"stoptime bigint, " +
             		"filter tinyint, " +
             		"iofcif tinyint," +
             		"target_center_distance double," +
             		"horizontal_pixel_scale double," +
-            		"has_limb boolean" +
+            		"has_limb boolean," +
+            		"minincidence double," +
+            		"maxincidence double," +
+            		"minemission double," +
+            		"maxemission double," +
+            		"minphase double," +
+            		"maxphase double" +
             		")"
                 );
         } catch (SQLException ex2) {
 
             //ignore
-            ex2.printStackTrace();  // second time we run program
+        	ex2.printStackTrace();  // second time we run program
             //  should throw execption since table
             // already there
             //
@@ -53,17 +66,25 @@ public class DatabaseGeneratorSql
         }
     }
     
-    static void createNISTables()
+    private static void createNISTables()
     {
         try {
 
             //make a table
-            db.update(
-            		"create cached table nisspectra(" +
+        	try
+        	{
+            	db.dropTable("nisspectra");
+        	}
+        	catch(Exception e)
+        	{
+        		e.printStackTrace();
+        	}
+
+        	db.update(
+            		"create table nisspectra(" +
             		"id int PRIMARY KEY, " +
             		"year smallint, " +
             		"day smallint, " +
-            		//"time timestamp, " +
             		"midtime bigint, " +
             		"minincidence double," +
             		"maxincidence double," +
@@ -85,9 +106,9 @@ public class DatabaseGeneratorSql
         }
     }
     
-    static void populateMSITables(ArrayList<String> msiFiles) throws IOException, SQLException, FitsException
+    private static void populateMSITables(ArrayList<String> msiFiles) throws IOException, SQLException, FitsException
     {
-    	int count = 1;
+    	int count = 0;
     	
     	for (String filename : msiFiles)
     	{
@@ -125,7 +146,7 @@ public class DatabaseGeneratorSql
             if (msiInsert == null)
             {
             	msiInsert = db.preparedStatement(                                                                                    
-            		"insert into msiimages values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");                                                                   
+            		"insert into msiimages values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");                                                                   
             }
 
             DateTime startTime = new DateTime(properties.get(NearImage.START_TIME), DateTimeZone.UTC);
@@ -146,13 +167,17 @@ public class DatabaseGeneratorSql
     		System.out.println("TARGET_CENTER_DISTANCE: " + properties.get(NearImage.TARGET_CENTER_DISTANCE));
     		System.out.println("HORIZONTAL_PIXEL_SCALE: " + properties.get(NearImage.HORIZONTAL_PIXEL_SCALE));
     		System.out.println("hasLimb: " + image.containsLimb());
+    		System.out.println("minIncidence: " + image.getMinIncidence());
+    		System.out.println("maxIncidence: " + image.getMaxIncidence());
+    		System.out.println("minEmission: " + image.getMinEmission());
+    		System.out.println("maxEmission: " + image.getMaxEmission());
+    		System.out.println("minPhase: " + image.getMinPhase());
+    		System.out.println("maxPhase: " + image.getMaxPhase());
     		System.out.println(" ");
 
             msiInsert.setInt(1, Integer.parseInt(origFile.getName().substring(2, 11)));
             msiInsert.setShort(2, Short.parseShort(yearStr));
             msiInsert.setShort(3, Short.parseShort(dayOfYearStr));
-            //msiInsert.setTimestamp(4, Timestamp.valueOf(startTime));
-            //msiInsert.setTimestamp(5, Timestamp.valueOf(stopTime));
             msiInsert.setLong(4, startTime.getMillis());
             msiInsert.setLong(5, stopTime.getMillis());
             msiInsert.setByte(6, Byte.parseByte(origFile.getName().substring(12, 13)));
@@ -160,15 +185,24 @@ public class DatabaseGeneratorSql
             msiInsert.setDouble(8, Double.parseDouble(properties.get(NearImage.TARGET_CENTER_DISTANCE)));
             msiInsert.setDouble(9, Double.parseDouble(properties.get(NearImage.HORIZONTAL_PIXEL_SCALE)));
             msiInsert.setBoolean(10, image.containsLimb());
+    		msiInsert.setDouble(11, image.getMinIncidence());
+    		msiInsert.setDouble(12, image.getMaxIncidence());
+    		msiInsert.setDouble(13, image.getMinEmission());
+    		msiInsert.setDouble(14, image.getMaxEmission());
+    		msiInsert.setDouble(15, image.getMinPhase());
+    		msiInsert.setDouble(16, image.getMaxPhase());
             
             msiInsert.executeUpdate();
     	}
     }
     
-    static void populateNISTables(ArrayList<String> nisFiles) throws SQLException, IOException
+    private static void populateNISTables(ArrayList<String> nisFiles) throws SQLException, IOException
     {
+    	int count = 0;
     	for (String filename : nisFiles)
     	{
+			System.out.println("starting nis " + count++);
+			
     		String dayOfYearStr = "";
     		String yearStr = "";
 
@@ -226,7 +260,7 @@ public class DatabaseGeneratorSql
     	}
     }
 
-	static boolean checkIfAllFilesExist(String line)
+    private static boolean checkIfAllFilesExist(String line)
 	{
 		File file = new File(line);
 		if (!file.exists())

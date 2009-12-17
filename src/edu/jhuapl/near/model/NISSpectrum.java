@@ -11,7 +11,6 @@ import org.joda.time.DateTimeZone;
 
 import edu.jhuapl.near.util.FileCache;
 import edu.jhuapl.near.util.FileUtil;
-import edu.jhuapl.near.util.IntersectionUtil;
 import edu.jhuapl.near.util.LatLon;
 
 import vtk.*;
@@ -40,12 +39,14 @@ public class NISSpectrum extends Model
 	static public final int NUMBER_OF_VERTICES_OFFSET = 259+2;
 	static public final int POLYGON_START_COORDINATES_OFFSET = 260+2;
 	
+	static private vtkMath math = null;
+	
 	private DateTime dateTime;
 	private double duration;
 	private short polygon_type_flag;
 	private double range;
 	private ArrayList<LatLon> latLons = new ArrayList<LatLon>();
-	private vtkPolyData footprint;
+	//private vtkPolyData footprint;
     private vtkActor footprintActor;
     private ArrayList<vtkActor> footprintActors = new ArrayList<vtkActor>();
     private ErosModel erosModel;
@@ -62,6 +63,8 @@ public class NISSpectrum extends Model
     private double maxEmission; 
     private double minPhase; 
     private double maxPhase; 
+    private boolean showFrustum = false;
+    private int channelToColorBy = 0;
     
     // These values were taken from Table 1 of "Spectral properties and geologic
     // processes on Eros from combined NEAR NIS and MSI data sets" 
@@ -119,6 +122,8 @@ public class NISSpectrum extends Model
 		String filename = nisFile.getAbsolutePath();
 		this.fullpath = filename;
 
+		if (math == null)
+			math = new vtkMath();
 
 		ArrayList<String> values = FileUtil.getFileWordsAsStringList(fullpath);
 
@@ -147,11 +152,10 @@ public class NISSpectrum extends Model
 								   (360.0-Double.parseDouble(values.get(lonIdx))) * Math.PI / 180.0));
 		}
 		
-		//this.subdivideLatLons(latLons, 100);
-		
 		for (int i=0; i<64; ++i)
 		{
-			spectrum[i] = Double.parseDouble(values.get(CALIBRATED_GE_DATA_OFFSET + i));
+			// The following min and max clamps the value between 0 and 1.
+			spectrum[i] = Math.min(1.0, Math.max(0.0, Double.parseDouble(values.get(CALIBRATED_GE_DATA_OFFSET + i))));
 			spectrumEros[i] = Double.parseDouble(values.get(CALIBRATED_GE_NOISE_OFFSET + i));
 		}
 
@@ -165,88 +169,140 @@ public class NISSpectrum extends Model
 			frustum3[i] = Double.parseDouble(values.get(FRUSTUM_OFFSET + 6 + i));
 		for (int i=0; i<3; ++i)
 			frustum4[i] = Double.parseDouble(values.get(FRUSTUM_OFFSET + 9 + i));
-
-		if (!latLons.isEmpty())
-			this.convertLatLonsToVtkPolyData();
+		math.Normalize(frustum1);
+		math.Normalize(frustum2);
+		math.Normalize(frustum3);
+		math.Normalize(frustum4);
 	}
 
-	/*
-	private ArrayList<LatLon> subdivideLatLons(ArrayList<LatLon> latLons, double maxAngularSep)
+	public vtkPolyData generateFootprint()
 	{
-		ArrayList<LatLon> origLatLons = new ArrayList<LatLon>(latLons);
-		ArrayList<LatLon> subdividedLatLons = new ArrayList<LatLon>();
-
-		boolean needToSubdivide = true;
-
-		while (needToSubdivide)
+		if (!latLons.isEmpty())
 		{
-			subdividedLatLons.add(origLatLons.get(0));
-
-			int N = origLatLons.size() - 1;
-			for (int i=0; i<N; ++i)
-			{
-				LatLon ll1 = origLatLons.get(i);
-				LatLon ll2 = origLatLons.get(i+1);
-
-				LatLon midll = LatLon.midpoint(ll1, ll2);
-
-				subdividedLatLons.add(midll);
-				subdividedLatLons.add(ll2);
-			}
+			return erosModel.computeFrustumIntersection(spacecraftPosition, 
+					frustum1, frustum2, frustum3, frustum4);
+		}
+		else
+		{
+			return null;
+		}
+	}
+	
+	private vtkPolyData loadFootprint()
+	{
+		String footprintFilename = serverpath.substring(0, serverpath.length()-4) + "_FOOTPRINT.VTK";
+		File file = FileCache.getFileFromServer(footprintFilename);
+		
+		if (file == null)
+		{
+			return null;
 		}
 
-		return subdividedLatLons;
-	}
-	*/
-
-	private void convertLatLonsToVtkPolyData()
-	{
-		footprint = erosModel.computeFrustumIntersection(spacecraftPosition, 
-				frustum1, frustum2, frustum3, frustum4);
-		
-		/*
-		footprint = new vtkPolyData();
-		
-        vtkPoints points = new vtkPoints();
-        vtkCellArray lines = new vtkCellArray();
+		vtkPolyDataReader footprintReader = new vtkPolyDataReader();
+        footprintReader.SetFileName(file.getAbsolutePath());
+        footprintReader.Update();
         
-        vtkIdList idList = new vtkIdList();
-        idList.SetNumberOfIds(latLons.size() + 1);
-        points.SetNumberOfPoints(latLons.size());
-        
-        int i=0;
-        for (LatLon ll : latLons)
-        {
-        	//double[] xyz = LatLon.latLonToRec(ll);
-        	double[] xyz = erosModel.latLonToXyz(ll.lat, ll.lon);
-        	points.SetPoint(i, xyz);
-        	idList.SetId(i, i);
-        	++i;
-        }
-    	idList.SetId(i, 0);
-    	
-    	lines.InsertNextCell(idList);
-    	
-    	footprint.SetPoints(points);
-        footprint.SetLines(lines);
-        */
+        return footprintReader.GetOutput();
 	}
 	
 	public ArrayList<vtkActor> getActors() 
 	{
 		if (footprintActor == null && !latLons.isEmpty())
 		{
-			vtkPolyDataMapper footprintMapper = new vtkPolyDataMapper();
-			footprintMapper.SetInput(footprint);
-			//footprintMapper.SetResolveCoincidentTopologyToPolygonOffset();
-			//footprintMapper.SetResolveCoincidentTopologyPolygonOffsetParameters(-1000.0, -1000.0);
+			vtkPolyData footprint = loadFootprint();
+			if (footprint != null)
+			{
+				vtkPolyDataMapper footprintMapper = new vtkPolyDataMapper();
+				footprintMapper.SetInput(footprint);
+				footprintMapper.SetResolveCoincidentTopologyToPolygonOffset();
+				footprintMapper.SetResolveCoincidentTopologyPolygonOffsetParameters(-.002, -2.0);
+				footprintMapper.Update();
+				
+				footprintActor = new vtkActor();
+				footprintActor.SetMapper(footprintMapper);
+				footprintActor.GetProperty().SetColor(0.0, 1.0, 0.0);
+				//footprintActor.GetProperty().SetColor(
+				//		getChannelColor(channelToColorBy),
+				//		getChannelColor(channelToColorBy),
+				//		getChannelColor(channelToColorBy));
+				footprintActor.GetProperty().SetLineWidth(2.0);
+				
+				footprintActors.add(footprintActor);
 
-			footprintActor = new vtkActor();
-			footprintActor.SetMapper(footprintMapper);
-	        footprintActor.GetProperty().SetColor(0.0, 1.0, 0.0);
-	        footprintActor.GetProperty().SetLineWidth(2.0);
+				// Compute the bounding edges of this surface
+		        vtkFeatureEdges edgeExtracter = new vtkFeatureEdges();
+		        edgeExtracter.SetInput(footprint);
+		        edgeExtracter.BoundaryEdgesOn();
+		        edgeExtracter.FeatureEdgesOff();
+		        edgeExtracter.NonManifoldEdgesOff();
+		        edgeExtracter.ManifoldEdgesOff();
+		        edgeExtracter.Update();
 
-			footprintActors.add(footprintActor);
+				vtkPolyDataMapper edgeMapper = new vtkPolyDataMapper();
+				edgeMapper.SetInputConnection(edgeExtracter.GetOutputPort());
+				edgeMapper.ScalarVisibilityOff();
+				edgeMapper.SetResolveCoincidentTopologyToPolygonOffset();
+				edgeMapper.SetResolveCoincidentTopologyPolygonOffsetParameters(-.004, -4.0);
+				edgeMapper.Update();
+				
+				vtkActor edgeActor = new vtkActor();
+				edgeActor.SetMapper(edgeMapper);
+				edgeActor.GetProperty().SetColor(0.0, 0.39, 0.0);
+				edgeActor.GetProperty().SetLineWidth(2.0);
+				edgeActor.GetProperty().LightingOff();
+				footprintActors.add(edgeActor);
+			}
+			
+			if (showFrustum)
+			{
+				vtkPolyData frus = new vtkPolyData();
+				
+		        vtkPoints points = new vtkPoints();
+		        vtkCellArray lines = new vtkCellArray();
+		        
+		        vtkIdList idList = new vtkIdList();
+		        idList.SetNumberOfIds(2);
+		        
+		        double dx = math.Norm(spacecraftPosition);
+				double[] origin = spacecraftPosition;
+				double[] UL = {origin[0]+frustum1[0]*dx, origin[1]+frustum1[1]*dx, origin[2]+frustum1[2]*dx};
+				double[] UR = {origin[0]+frustum2[0]*dx, origin[1]+frustum2[1]*dx, origin[2]+frustum2[2]*dx};
+				double[] LL = {origin[0]+frustum3[0]*dx, origin[1]+frustum3[1]*dx, origin[2]+frustum3[2]*dx};
+				double[] LR = {origin[0]+frustum4[0]*dx, origin[1]+frustum4[1]*dx, origin[2]+frustum4[2]*dx};
+
+		        points.InsertNextPoint(spacecraftPosition);
+		        points.InsertNextPoint(UL);
+		        points.InsertNextPoint(UR);
+		        points.InsertNextPoint(LL);
+		        points.InsertNextPoint(LR);
+
+		    	idList.SetId(0, 0);
+		    	idList.SetId(1, 1);
+		    	lines.InsertNextCell(idList);
+		    	idList.SetId(0, 0);
+		    	idList.SetId(1, 2);
+		    	lines.InsertNextCell(idList);
+		    	idList.SetId(0, 0);
+		    	idList.SetId(1, 3);
+		    	lines.InsertNextCell(idList);
+		    	idList.SetId(0, 0);
+		    	idList.SetId(1, 4);
+		    	lines.InsertNextCell(idList);
+		    	
+		    	frus.SetPoints(points);
+		        frus.SetLines(lines);
+
+
+		        vtkPolyDataMapper frusMapper = new vtkPolyDataMapper();
+				frusMapper.SetInput(frus);
+
+				vtkActor frusActor = new vtkActor();
+				frusActor.SetMapper(frusMapper);
+		        frusActor.GetProperty().SetColor(0.0, 1.0, 0.0);
+		        frusActor.GetProperty().SetLineWidth(2.0);
+
+				footprintActors.add(frusActor);
+			}
 		}
 		
 		return footprintActors;
@@ -324,6 +380,14 @@ public class NISSpectrum extends Model
 		}
 		properties.put("POLYGON_TYPE_FLAG", polygonTypeStr);
     	
+		// Note \u00B0 is the unicode degree symbol
+		String deg = "\u00B0";
+		properties.put("Minimum Incidence", Double.toString(minIncidence)+deg);
+		properties.put("Maximum Incidence", Double.toString(maxIncidence)+deg);
+		properties.put("Minimum Emission", Double.toString(minEmission)+deg);
+		properties.put("Maximum Emission", Double.toString(maxIncidence)+deg);
+		properties.put("Minimum Phase", Double.toString(minPhase)+deg);
+		properties.put("Maximum Phase", Double.toString(maxPhase)+deg);
 		
 		return properties;
     }
@@ -331,7 +395,11 @@ public class NISSpectrum extends Model
     
     public void setChannelToColorBy(int channel)
     {
-    	
+    	channelToColorBy = channel;
+		footprintActor.GetProperty().SetColor(
+				getChannelColor(channelToColorBy),
+				getChannelColor(channelToColorBy),
+				getChannelColor(channelToColorBy));
     }
 
 	public double getMinIncidence() 
@@ -364,4 +432,8 @@ public class NISSpectrum extends Model
 		return maxPhase;
 	}
 
+	private double getChannelColor(int channel)
+	{
+		return spectrum[channel];
+	}
 }

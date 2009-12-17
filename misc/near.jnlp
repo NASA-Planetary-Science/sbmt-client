@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<jnlp spec="1.0"
+      codebase="http://near.jhuapl.edu/software"
+      href="near.jnlp">
+
+    <information>
+        <title>NEAR Lineament Viewer</title>
+        <vendor>JHUAPL</vendor>
+        <description>NEAR Lineament Viewer</description>
+        <offline-allowed/>
+    </information>
+
+    <security>
+        <all-permissions/>
+    </security>
+
+    <resources>
+        <j2se href="http://java.sun.com/products/autodl/j2se" version="1.5+" initial-heap-size="512m"
+              max-heap-size="512m"/>
+        <property name="sun.java2d.noddraw" value="true"/>
+        <jar href="near.jar" main="true"/>
+        <jar href="vtk.jar"/>
+        <jar href="jide-oss-2.7.3.jar"/>
+        <jar href="joda-time-1.6.jar"/>
+    </resources>
+
+    <resources os="Windows" arch="x86">
+      <nativelib href = "vtk-natives-windows-i586.jar" />
+    </resources>
+    <resources os="Linux" arch="i386">
+      <nativelib href = "vtk-natives-linux-i586.jar" />
+    </resources>
+    <resources os="Linux" arch="x86">
+      <nativelib href = "vtk-natives-linux-i586.jar" />
+    </resources>
+    <resources os="Linux" arch="amd64">
+      <nativelib href = "vtk-natives-linux-amd64.jar" />
+    </resources>
+    <resources os="Linux" arch="x86_64">
+      <nativelib href = "vtk-natives-linux-amd64.jar" />
+    </resources>
+    <resources os="Mac OS X" arch="ppc">
+      <nativelib href = "vtk-natives-macosx-universal.jar" />
+    </resources>
+    <resources os="Mac OS X" arch="i386">
+      <nativelib href = "vtk-natives-macosx-universal.jar" />
+    </resources>
+    <resources os="Mac OS X" arch="x86_64">
+      <nativelib href = "vtk-natives-macosx-x86_64.jar" />
+    </resources>
+
+    <application-desc main-class="edu.jhuapl.near.ErosLineamentViewer"/>
+
+</jnlp>

@@ -2,7 +2,6 @@ package edu.jhuapl.near.model;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-//import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -94,8 +93,9 @@ public class NISSpectraCollection extends Model implements PropertyChangeListene
 
     public String getClickStatusBarText(vtkActor actor, int cellId)
     {
-    	//File file = new File(actorToFileMap.get(actor));
-    	return "NIS Spectrum";// " + file.getName().substring(2, 11);
+    	String filename = actorToFileMap.get(actor);
+    	NISSpectrum spectrum = this.fileToSpectrumMap.get(filename);
+    	return "NIS Spectrum " + filename.substring(16, 25) + " acquired at " + spectrum.getDateTime().toString();
     }
 
     public String getSpectrumName(vtkActor actor)
@@ -111,5 +111,15 @@ public class NISSpectraCollection extends Model implements PropertyChangeListene
     public boolean containsSpectrum(String file)
     {
     	return fileToSpectrumMap.containsKey(file);
+    }
+    
+    public void setChannelToColorBy(int channel)
+    {
+    	for (String file : this.fileToSpectrumMap.keySet())
+    	{
+    		this.fileToSpectrumMap.get(file).setChannelToColorBy(channel);
+    	}
+
+    	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 }

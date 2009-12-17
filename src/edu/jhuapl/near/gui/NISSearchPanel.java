@@ -31,8 +31,8 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
 	private final String NIS_REMOVE_ALL_BUTTON_TEXT = "Remove All Footprints";
 	
     private final ModelManager modelManager;
-    private java.util.Date startDate = new DateTime(2000, 3, 1, 0, 0, 0, 0, DateTimeZone.UTC).toDate();
-    private java.util.Date endDate = new DateTime(2000, 4, 1, 0, 0, 0, 0, DateTimeZone.UTC).toDate();
+    private java.util.Date startDate = new GregorianCalendar(2000, 4, 1, 0, 0, 0).getTime();
+    private java.util.Date endDate = new GregorianCalendar(2000, 4, 14, 0, 0, 0).getTime();
     private JLabel endDateLabel;
     private JLabel startDateLabel;
     private static final String START_DATE_LABEL_TEXT = "Start Date";
@@ -52,7 +52,6 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
     private JComboBox channelComboBox;
 
     private JList resultList;
-    private DefaultListModel nisResultListModel;
     private NISPopupMenu nisPopupMenu;
     private ArrayList<String> nisRawResults = new ArrayList<String>();
     private JLabel resultsLabel;
@@ -174,12 +173,14 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
         		BoxLayout.LINE_AXIS));
         final JLabel fromDistanceLabel = new JLabel("S/C Distance from ");
         fromDistanceTextField = new JFormattedTextField(nf);
-        fromDistanceTextField.setValue(100.0);
+        fromDistanceTextField.setValue(0.0);
         fromDistanceTextField.setMaximumSize(new Dimension(50, 23));
+		fromDistanceTextField.setColumns(5);
         final JLabel toDistanceLabel = new JLabel(" to ");
         toDistanceTextField = new JFormattedTextField(nf);
-        toDistanceTextField.setValue(1000.0);
+        toDistanceTextField.setValue(500.0);
         toDistanceTextField.setMaximumSize(new Dimension(50, 23));
+        toDistanceTextField.setColumns(5);
         final JLabel endDistanceLabel = new JLabel(" km");
                 
         distancePanel.add(fromDistanceLabel);
@@ -225,7 +226,7 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
 		
         final JPanel submitPanel = new JPanel();
         //panel.setBorder(BorderFactory.createEmptyBorder(9, 9, 9, 9));
-        JButton submitButton = new JButton("Update");
+        JButton submitButton = new JButton("Search");
         submitButton.setEnabled(true);
         submitButton.addActionListener(this);
 
@@ -255,10 +256,8 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
 
 		resultsLabel = new JLabel(" ");
 
-        nisResultListModel = new DefaultListModel();
-
         //Create the list and put it in a scroll pane.
-        resultList = new JList(nisResultListModel);
+        resultList = new JList();
         resultList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         resultList.addMouseListener(this);
         JScrollPane listScrollPane = new JScrollPane(resultList);
@@ -371,14 +370,14 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
 			public void actionPerformed(ActionEvent e) 
 			{
 				NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelManager.NIS_SPECTRA);
-				
+				model.setChannelToColorBy(channelComboBox.getSelectedIndex());
 			}
         });
 		
 		channelPanel.add(channelLabel);
 		channelPanel.add(channelComboBox);
 
-		resultSub2ControlsPanel.add(channelPanel);
+		//resultSub2ControlsPanel.add(channelPanel);
 
         resultControlsPanel.add(resultSub1ControlsPanel, BorderLayout.CENTER);
         resultControlsPanel.add(resultSub2ControlsPanel, BorderLayout.SOUTH);
@@ -404,10 +403,34 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
         	if (polygonType3CheckBox.isSelected())
         		polygonTypesChecked.add(3);
 
+        	GregorianCalendar startDateGreg = new GregorianCalendar();
+        	GregorianCalendar endDateGreg = new GregorianCalendar();
+        	startDateGreg.setTime(startDate);
+        	endDateGreg.setTime(endDate);
+        	DateTime startDateJoda = new DateTime(
+        			startDateGreg.get(GregorianCalendar.YEAR),
+        			startDateGreg.get(GregorianCalendar.MONTH)+1,
+        			startDateGreg.get(GregorianCalendar.DAY_OF_MONTH),
+        			startDateGreg.get(GregorianCalendar.HOUR_OF_DAY),
+        			startDateGreg.get(GregorianCalendar.MINUTE),
+        			startDateGreg.get(GregorianCalendar.SECOND),
+        			startDateGreg.get(GregorianCalendar.MILLISECOND),
+        			DateTimeZone.UTC);
+        	DateTime endDateJoda = new DateTime(
+        			endDateGreg.get(GregorianCalendar.YEAR),
+        			endDateGreg.get(GregorianCalendar.MONTH)+1,
+        			endDateGreg.get(GregorianCalendar.DAY_OF_MONTH),
+        			endDateGreg.get(GregorianCalendar.HOUR_OF_DAY),
+        			endDateGreg.get(GregorianCalendar.MINUTE),
+        			endDateGreg.get(GregorianCalendar.SECOND),
+        			endDateGreg.get(GregorianCalendar.MILLISECOND),
+        			DateTimeZone.UTC);
+
+        	
         	ArrayList<String> results = Database.getInstance().runQuery(
         			Database.Datatype.NIS,
-        			new DateTime(startDate, DateTimeZone.UTC), 
-        			new DateTime(endDate, DateTimeZone.UTC),
+        			startDateJoda,
+        			endDateJoda,
         			null,
         			false,
         			false,
@@ -439,18 +462,23 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
 	{
 		nisResultsLabelText = results.size() + " spectra matched";
     	resultsLabel.setText(nisResultsLabelText);
-    	nisResultListModel.clear();
     	nisRawResults = results;
     	
+    	String[] formattedResults = new String[results.size()];
+
     	// add the results to the list
+    	int i=0;
     	for (String str : results)
     	{
-    		//System.out.println(str);
-    		nisResultListModel.addElement( 
+    		formattedResults[i] = new String(
     				str.substring(16, 25) 
     				+ ", day: " + str.substring(10, 13) + "/" + str.substring(5, 9)
     				);
+    		
+    		++i;
     	}
+    	
+    	resultList.setListData(formattedResults);
 
     	// Show the first set of boundaries
     	this.resultIntervalCurrentlyShown = new IdPair(0, (Integer)this.numberOfBoundariesComboBox.getSelectedItem());

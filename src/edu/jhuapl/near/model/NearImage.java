@@ -37,17 +37,24 @@ public class NearImage extends Model
 	private vtkImageData rawImage;
 	private vtkImageData displayedImage;
 	
-//	private float[][] incidence = new float[IMAGE_HEIGHT][IMAGE_WIDTH];
-//	private float[][] emission = new float[IMAGE_HEIGHT][IMAGE_WIDTH];
-//	private float[][] phase = new float[IMAGE_HEIGHT][IMAGE_WIDTH];
-	private float[][] latitude = new float[IMAGE_HEIGHT][IMAGE_WIDTH];
-	private float[][] longitude = new float[IMAGE_HEIGHT][IMAGE_WIDTH];
+	//private float[][] incidence = new float[IMAGE_HEIGHT][IMAGE_WIDTH];
+	//private float[][] emission = new float[IMAGE_HEIGHT][IMAGE_WIDTH];
+	//private float[][] phase = new float[IMAGE_HEIGHT][IMAGE_WIDTH];
+	//private float[][] latitude = new float[IMAGE_HEIGHT][IMAGE_WIDTH];
+	//private float[][] longitude = new float[IMAGE_HEIGHT][IMAGE_WIDTH];
 	private float[][] x = new float[IMAGE_HEIGHT][IMAGE_WIDTH];
 	private float[][] y = new float[IMAGE_HEIGHT][IMAGE_WIDTH];
 	private float[][] z = new float[IMAGE_HEIGHT][IMAGE_WIDTH];
 	
 	private float[] data = new float[NUM_LAYERS*IMAGE_HEIGHT*IMAGE_WIDTH];
-	
+
+    private double minIncidence = Double.MAX_VALUE;
+    private double maxIncidence = -Double.MAX_VALUE;
+    private double minEmission = Double.MAX_VALUE;
+    private double maxEmission = -Double.MAX_VALUE;
+    private double minPhase = Double.MAX_VALUE;
+    private double maxPhase = -Double.MAX_VALUE;
+
 	private BoundingBox boundingBox = new BoundingBox();
 	private String name = ""; // The name is a 9 digit number at the beginning of the filename
 						 	  // (starting after the initial M0). This is how the lineament 
@@ -292,16 +299,30 @@ public class NearImage extends Model
 	        	float xx = data[index(i,j,7)];
 	        	float yy = data[index(i,j,8)];
 	        	float zz = data[index(i,j,9)];
-	        	float lat = data[index(i,j,0)];
-	        	float lon = data[index(i,j,1)];
+	        	//float lat = data[index(i,j,0)];
+	        	//float lon = data[index(i,j,1)];
+	        	float inc = data[index(i,j,4)];
+	        	float emi = data[index(i,j,3)];
+	        	float pha = data[index(i,j,2)];
 	        	
 	        	if (xx != PDS_NA && yy != PDS_NA && zz != PDS_NA)
 	        	{
 	        		boundingBox.update(xx, yy, zz);
-	        		
+
+	        		if (inc < minIncidence)
+	        			minIncidence = inc;
+	        		if (inc > maxIncidence)
+	        			maxIncidence = inc;
+	        		if (emi < minEmission)
+	        			minEmission = emi;
+	        		if (emi > maxEmission)
+	        			maxEmission = emi;
+	        		if (pha < minPhase)
+	        			minPhase = pha;
+	        		if (pha > maxPhase)
+	        			maxPhase = pha;
+
 	        		++numValidPixels;
-	        		//if (xx > 100)
-	        			//System.out.println()
 	        	}
 	        	else
 	        	{
@@ -312,8 +333,8 @@ public class NearImage extends Model
 	        	x[j][i] = xx;
 	        	y[j][i] = yy;
 	        	z[j][i] = zz;
-	        	latitude[j][i] = lat;
-	        	longitude[j][i] = lon;
+	        	//latitude[j][i] = lat;
+	        	//longitude[j][i] = lon;
 	        	
 	        	//int v = xx != PDS_NA ? 255 : (int)xx;
 	        	//tmp.SetScalarComponentFromDouble(i, j, 0, 0, v);
@@ -515,6 +536,7 @@ public class NearImage extends Model
 		return serverpath;
 	}
 	
+	/*
 	public float getLatitude(int row, int col)
 	{
 		return latitude[row][col];
@@ -525,7 +547,6 @@ public class NearImage extends Model
 		return longitude[row][col];
 	}
 	
-	/*
 	public float getPhaseAngle(int row, int col)
 	{
 		return 0;
@@ -557,6 +578,36 @@ public class NearImage extends Model
 		return z[row][col];
 	}
 	
+	public double getMinIncidence() 
+	{
+		return minIncidence;
+	}
+
+	public double getMaxIncidence() 
+	{
+		return maxIncidence;
+	}
+
+	public double getMinEmission() 
+	{
+		return minEmission;
+	}
+
+	public double getMaxEmission() 
+	{
+		return maxEmission;
+	}
+
+	public double getMinPhase() 
+	{
+		return minPhase;
+	}
+
+	public double getMaxPhase() 
+	{
+		return maxPhase;
+	}
+
 	public IntensityRange getDisplayedRange()
 	{
 		return displayedRange;
@@ -716,6 +767,16 @@ public class NearImage extends Model
 		properties.put("DAY_OF_YEAR", (new File(this.fullpath)).getParentFile().getParentFile().getName());
 		properties.put("YEAR", (new File(this.fullpath)).getParentFile().getParentFile().getParentFile().getName());
 		properties.put("DEBLUR_TYPE", (new File(this.fullpath)).getParentFile().getName());
+		
+		// Note \u00B0 is the unicode degree symbol
+		String deg = "\u00B0";
+		properties.put("Minimum Incidence", Double.toString(minIncidence)+deg);
+		properties.put("Maximum Incidence", Double.toString(maxIncidence)+deg);
+		properties.put("Minimum Emission", Double.toString(minEmission)+deg);
+		properties.put("Maximum Emission", Double.toString(maxIncidence)+deg);
+		properties.put("Minimum Phase", Double.toString(minPhase)+deg);
+		properties.put("Maximum Phase", Double.toString(maxPhase)+deg);
+
     	return properties;
     }
 

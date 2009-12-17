@@ -26,6 +26,7 @@ public class PickManager implements
     private LineamentPopupMenu lineamentPopupMenu;
     private MSIPopupMenu msiImagesPopupMenu;
     private MSIPopupMenu msiBoundariesPopupMenu;
+    private NISPopupMenu nisSpectraPopupMenu;
     private StatusBar statusBar;
     private ModelManager modelManager;
     private vtkCellPicker mouseMovedCellPicker;
@@ -67,6 +68,10 @@ public class PickManager implements
 		
 		msiImagesPopupMenu = 
 			new MSIPopupMenu(modelManager, infoPanelManager, renWin, renWin);
+		
+		nisSpectraPopupMenu = 
+			new NISPopupMenu(modelManager, infoPanelManager, renWin);
+
 	}
 
 	public void mouseClicked(MouseEvent e) 
@@ -226,6 +231,13 @@ public class PickManager implements
         			String name = msiImages.getImageName(pickedActor);
         			msiImagesPopupMenu.setCurrentImage(name);
         			msiImagesPopupMenu.show(e.getComponent(), e.getX(), e.getY());
+    			}
+    			else if (modelManager.getModel(pickedActor) instanceof NISSpectraCollection)
+    			{
+    				NISSpectraCollection msiImages = (NISSpectraCollection)modelManager.getModel(ModelManager.NIS_SPECTRA);
+        			String name = msiImages.getSpectrumName(pickedActor);
+        			nisSpectraPopupMenu.setCurrentSpectrum(name);
+        			nisSpectraPopupMenu.show(e.getComponent(), e.getX(), e.getY());
     			}
     		}		
         }

@@ -31,8 +31,8 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
 	private final String MSI_REMOVE_ALL_BUTTON_TEXT = "Remove All Boundaries";
 	
     private final ModelManager modelManager;
-    private java.util.Date startDate = new DateTime(2000, 7, 7, 0, 0, 0, 0, DateTimeZone.UTC).toDate();
-    private java.util.Date endDate = new DateTime(2000, 8, 1, 0, 0, 0, 0, DateTimeZone.UTC).toDate();
+    private java.util.Date startDate = new GregorianCalendar(2000, 6, 7, 0, 0, 0).getTime();
+    private java.util.Date endDate = new GregorianCalendar(2000, 7, 1, 0, 0, 0).getTime();
     private JLabel endDateLabel;
     private JLabel startDateLabel;
     private static final String START_DATE_LABEL_TEXT = "Start Date";
@@ -52,15 +52,19 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
 
     private JFormattedTextField fromDistanceTextField;
     private JFormattedTextField toDistanceTextField;
-
     private JFormattedTextField fromResolutionTextField;
     private JFormattedTextField toResolutionTextField;
+    private JFormattedTextField fromIncidenceTextField;
+    private JFormattedTextField toIncidenceTextField;
+    private JFormattedTextField fromEmissionTextField;
+    private JFormattedTextField toEmissionTextField;
+    private JFormattedTextField fromPhaseTextField;
+    private JFormattedTextField toPhaseTextField;
 
     private JFormattedTextField searchByNumberTextField;
     private JCheckBox searchByNumberCheckBox;
     
     private JList resultList;
-    private DefaultListModel msiResultListModel;
     private MSIPopupMenu msiPopupMenu;
     private ArrayList<String> msiRawResults = new ArrayList<String>();
     private JLabel resultsLabel;
@@ -244,6 +248,41 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
         resolutionPanel.add(toResolutionTextField);
         resolutionPanel.add(endResolutionLabel);
         
+        
+        fromIncidenceTextField = new JFormattedTextField(nf);
+        toIncidenceTextField = new JFormattedTextField(nf);
+        final JPanel incidencePanel = SearchPanelUtil.createFromToPanel(
+        		fromIncidenceTextField, 
+        		toIncidenceTextField, 
+        		0.0, 
+        		180.0, 
+        		"Incidence from", 
+        		"to", 
+        		"degrees");
+
+        fromEmissionTextField = new JFormattedTextField(nf);
+        toEmissionTextField = new JFormattedTextField(nf);
+        final JPanel emissionPanel = SearchPanelUtil.createFromToPanel(
+        		fromEmissionTextField, 
+        		toEmissionTextField, 
+        		0.0, 
+        		180.0, 
+        		"Emissiom from", 
+        		"to", 
+        		"degrees");
+
+        fromPhaseTextField = new JFormattedTextField(nf);
+        toPhaseTextField = new JFormattedTextField(nf);
+        final JPanel phasePanel = SearchPanelUtil.createFromToPanel(
+        		fromPhaseTextField, 
+        		toPhaseTextField, 
+        		0.0, 
+        		180.0, 
+        		"Phase from", 
+        		"to", 
+        		"degrees");
+
+        
         final JPanel searchByNumberPanel = new JPanel();
         searchByNumberPanel.setLayout(new BoxLayout(searchByNumberPanel,
         		BoxLayout.LINE_AXIS));
@@ -284,6 +323,12 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
                 toResolutionLabel.setEnabled(!enable);
                 toResolutionTextField.setEnabled(!enable);
                 endResolutionLabel.setEnabled(!enable);
+                for (Component comp : incidencePanel.getComponents())
+                	comp.setEnabled(!enable);
+                for (Component comp : emissionPanel.getComponents())
+                	comp.setEnabled(!enable);
+                for (Component comp : phasePanel.getComponents())
+                	comp.setEnabled(!enable);
             }
         });
         
@@ -292,7 +337,7 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
         
         final JPanel submitPanel = new JPanel();
         //panel.setBorder(BorderFactory.createEmptyBorder(9, 9, 9, 9));
-        JButton submitButton = new JButton("Update");
+        JButton submitButton = new JButton("Search");
         submitButton.setEnabled(true);
         submitButton.addActionListener(this);
 
@@ -302,8 +347,10 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
         pane.add(filtersPanel);
         pane.add(iofcifPanel);
         pane.add(distancePanel);
-        pane.add(Box.createVerticalStrut(10));
         pane.add(resolutionPanel);
+        pane.add(incidencePanel);
+        pane.add(emissionPanel);
+        pane.add(phasePanel);
         pane.add(Box.createVerticalStrut(10));
         pane.add(searchByNumberPanel);
     	pane.add(submitPanel);
@@ -322,10 +369,8 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
 
 		resultsLabel = new JLabel(" ");
 
-        msiResultListModel = new DefaultListModel();
-
         //Create the list and put it in a scroll pane.
-        resultList = new JList(msiResultListModel);
+        resultList = new JList();
         resultList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         resultList.addMouseListener(this);
         JScrollPane listScrollPane = new JScrollPane(resultList);
@@ -470,10 +515,33 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
         	if (searchByNumberCheckBox.isSelected())
         		searchField = searchByNumberTextField.getText();
 
+        	GregorianCalendar startDateGreg = new GregorianCalendar();
+        	GregorianCalendar endDateGreg = new GregorianCalendar();
+        	startDateGreg.setTime(startDate);
+        	endDateGreg.setTime(endDate);
+        	DateTime startDateJoda = new DateTime(
+        			startDateGreg.get(GregorianCalendar.YEAR),
+        			startDateGreg.get(GregorianCalendar.MONTH)+1,
+        			startDateGreg.get(GregorianCalendar.DAY_OF_MONTH),
+        			startDateGreg.get(GregorianCalendar.HOUR_OF_DAY),
+        			startDateGreg.get(GregorianCalendar.MINUTE),
+        			startDateGreg.get(GregorianCalendar.SECOND),
+        			startDateGreg.get(GregorianCalendar.MILLISECOND),
+        			DateTimeZone.UTC);
+        	DateTime endDateJoda = new DateTime(
+        			endDateGreg.get(GregorianCalendar.YEAR),
+        			endDateGreg.get(GregorianCalendar.MONTH)+1,
+        			endDateGreg.get(GregorianCalendar.DAY_OF_MONTH),
+        			endDateGreg.get(GregorianCalendar.HOUR_OF_DAY),
+        			endDateGreg.get(GregorianCalendar.MINUTE),
+        			endDateGreg.get(GregorianCalendar.SECOND),
+        			endDateGreg.get(GregorianCalendar.MILLISECOND),
+        			DateTimeZone.UTC);
+
         	ArrayList<String> results = Database.getInstance().runQuery(
         			Database.Datatype.MSI,
-        			new DateTime(startDate, DateTimeZone.UTC), 
-        			new DateTime(endDate, DateTimeZone.UTC),
+        			startDateJoda, 
+        			endDateJoda,
         			filtersChecked,
         			iofdblCheckBox.isSelected(),
         			cifdblCheckBox.isSelected(),
@@ -482,7 +550,13 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
         			Double.parseDouble(fromResolutionTextField.getText()),
         			Double.parseDouble(toResolutionTextField.getText()),
         			searchField,
-        			null, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+        			null,
+        			Double.parseDouble(fromIncidenceTextField.getText()),
+        			Double.parseDouble(toIncidenceTextField.getText()),
+        			Double.parseDouble(fromEmissionTextField.getText()),
+        			Double.parseDouble(toEmissionTextField.getText()),
+        			Double.parseDouble(fromPhaseTextField.getText()),
+        			Double.parseDouble(toPhaseTextField.getText()));
 
         	setMSIResults(results);
         }
@@ -498,19 +572,25 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
 	{
 		msiResultsLabelText = results.size() + " images matched";
     	resultsLabel.setText(msiResultsLabelText);
-    	msiResultListModel.clear();
     	msiRawResults = results;
     	
+    	String[] formattedResults = new String[results.size()];
+
     	// add the results to the list
+    	int i=0;
     	for (String str : results)
     	{
-    		msiResultListModel.addElement( 
+    		formattedResults[i] = new String(
     				str.substring(23, 32) 
     				+ ", day: " + str.substring(10, 13) + "/" + str.substring(5, 9)
     				+ ", type: " + str.substring(14, 20)
     				+ ", filter: " + str.substring(33, 34)
     				);
+    		
+    		++i;
     	}
+
+    	resultList.setListData(formattedResults);
 
     	// Show the first set of boundaries
     	this.resultIntervalCurrentlyShown = new IdPair(0, (Integer)this.numberOfBoundariesComboBox.getSelectedItem());

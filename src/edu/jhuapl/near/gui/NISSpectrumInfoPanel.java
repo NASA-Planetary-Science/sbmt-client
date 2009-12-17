@@ -115,9 +115,10 @@ public class NISSpectrumInfoPanel extends ModelInfoWindow implements PropertyCha
         setVisible(true);
 	}
 
+	
 	public Model getModel()
 	{
-		return null;
+		return nisSpectrum;
 	}
 	
 

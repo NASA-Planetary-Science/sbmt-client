@@ -7,7 +7,6 @@ import java.util.*;
 import org.joda.time.DateTime;
 
 import edu.jhuapl.near.util.Configuration;
-import edu.jhuapl.near.util.ConvertResourceToFile;
 
 
 /**
@@ -31,8 +30,8 @@ public class Database
 		int id = (Integer)result.get(0);
 		int year = (Integer)result.get(1);
 		int dayOfYear = (Integer)result.get(2);
-		int filter = (Integer)result.get(5);
-		int type = (Integer)result.get(6);
+		int filter = (Integer)result.get(3);
+		int type = (Integer)result.get(4);
 		String typeStr;
 		if (type == 0)
 			typeStr = "iofdbl";
@@ -107,21 +106,6 @@ public class Database
                                                             
 	private Database() 
 	{
-		// First save to database files stored in the jar to the user's home directory
-		String[] databaseresources = {
-				"/edu/jhuapl/near/data/neardb/near.backup",
-				"/edu/jhuapl/near/data/neardb/near.data",
-				"/edu/jhuapl/near/data/neardb/near.properties",
-				"/edu/jhuapl/near/data/neardb/near.script"
-		};
-		
-		for (String resourcename : databaseresources)
-		{
-			ConvertResourceToFile.convertResourceToRealFile(
-					this, 
-					resourcename,
-					Configuration.getDatabaseDir());
-		}
 
         try 
         {
@@ -162,9 +146,19 @@ public class Database
 			double fromPhase,
 			double toPhase) 
 	{
+		System.gc();
+		
+		
 		ArrayList<String> matchedImages = new ArrayList<String>();
 		ArrayList<ArrayList<Object>> results = null;
-		
+
+		double minIncidence = Math.min(fromIncidence, toIncidence);
+		double maxIncidence = Math.max(fromIncidence, toIncidence);
+		double minEmission = Math.min(fromEmission, toEmission);
+		double maxEmission = Math.max(fromEmission, toEmission);
+		double minPhase = Math.min(fromPhase, toPhase);
+		double maxPhase = Math.max(fromPhase, toPhase);
+
 		switch (datatype)
 		{
 		case MSI:
@@ -174,7 +168,7 @@ public class Database
 				{
 					int id = Integer.parseInt(searchString);
 
-					results = db.query("SELECT * FROM msiimages WHERE id = " + id);
+					results = db.query("SELECT id, year, day, filter, iofcif FROM msiimages WHERE id = " + id);
 				}
 				catch (NumberFormatException e)
 				{
@@ -204,10 +198,10 @@ public class Database
 				double minResolution = Math.min(startResolution, stopResolution) / 1000.0;
 				double maxResolution = Math.max(startResolution, stopResolution) / 1000.0;
 
-				String query = "SELECT * FROM msiimages ";
+				String query = "SELECT id, year, day, filter, iofcif FROM msiimages ";
 				query += "WHERE starttime <= " + stopDate.getMillis();
 				query += " AND stoptime >= " + startDate.getMillis();
-				query += " AND target_center_distance >= " + minScDistance ;
+				query += " AND target_center_distance >= " + minScDistance;
 				query += " AND target_center_distance <= " + maxScDistance;
 				query += " AND horizontal_pixel_scale >= " + minResolution;
 				query += " AND horizontal_pixel_scale <= " + maxResolution;
@@ -223,7 +217,16 @@ public class Database
 						query += " OR ";
 				}
 				query += " ) ";
-				
+
+				query += " AND minincidence <= " + maxIncidence;
+				query += " AND maxincidence >= " + minIncidence;
+				query += " AND minemission <= " + maxEmission;
+				query += " AND maxemission >= " + minEmission;
+				query += " AND minphase <= " + maxPhase;
+				query += " AND maxphase >= " + minPhase;
+
+				System.out.println(query);
+
 				results = db.query(query);
 				
 				for (ArrayList<Object> res : results)
@@ -261,17 +264,11 @@ public class Database
 			{
 				double minScDistance = Math.min(startDistance, stopDistance);
 				double maxScDistance = Math.max(startDistance, stopDistance);
-				double minIncidence = Math.min(fromIncidence, toIncidence);
-				double maxIncidence = Math.max(fromIncidence, toIncidence);
-				double minEmission = Math.min(fromEmission, toEmission);
-				double maxEmission = Math.max(fromEmission, toEmission);
-				double minPhase = Math.min(fromPhase, toPhase);
-				double maxPhase = Math.max(fromPhase, toPhase);
 				
-				String query = "SELECT * FROM nisspectra ";
+				String query = "SELECT id, year, day FROM nisspectra ";
 				query += "WHERE midtime >= " + startDate.getMillis();
 				query += " AND midtime <= " + stopDate.getMillis();
-				query += " AND range >= " + minScDistance ;
+				query += " AND range >= " + minScDistance;
 				query += " AND range <= " + maxScDistance;
 				if (!polygonTypes.isEmpty())
 				{
@@ -285,12 +282,12 @@ public class Database
 					}
 					query += " ) ";
 				}
-//				query += " AND minincidence <= " + maxIncidence;
-//				query += " AND maxincidence >= " + minIncidence;
-//				query += " AND minemission <= " + maxEmission;
-//				query += " AND maxemission >= " + minEmission;
-//				query += " AND minphase <= " + maxPhase;
-//				query += " AND maxphase >= " + minPhase;
+				query += " AND minincidence <= " + maxIncidence;
+				query += " AND maxincidence >= " + minIncidence;
+				query += " AND minemission <= " + maxEmission;
+				query += " AND maxemission >= " + minEmission;
+				query += " AND minphase <= " + maxPhase;
+				query += " AND maxphase >= " + minPhase;
 
 				System.out.println(query);
 				
@@ -310,6 +307,8 @@ public class Database
 
 			break;
 		}
+		
+		System.out.println("finished NIS query");
 		
 		return matchedImages;
 	}

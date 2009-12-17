@@ -131,7 +131,7 @@ public class NLRDataPerDay extends Model
     {
     	cellId = geometryFilter.GetPointMinimum() + cellId;
     	File file = new File(filepath);
-    	return "NLR Data " + file.getName().substring(0, 12) + ",  " + times.get(cellId);
+    	return "NLR " + file.getName().substring(0, 8) + " acquired at " + times.get(cellId);
     }
 
 	public ArrayList<vtkActor> getActors() 

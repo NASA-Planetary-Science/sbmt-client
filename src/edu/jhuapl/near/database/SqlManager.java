@@ -40,7 +40,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.*;
 
-//import org.hsqldb.jdbc.jdbcDataSource;
 
 /**
  * Title:        Testdb
@@ -75,25 +74,32 @@ public class SqlManager
         //conn = dataSource.getConnection("sa", "");
         
         try {
-            Class.forName("org.hsqldb.jdbcDriver" );
-        } catch (Exception e) {
+            //Class.forName("org.hsqldb.jdbcDriver" );
+            Class.forName("com.mysql.jdbc.Driver");
+       } catch (Exception e) {
             System.out.println("ERROR: failed to load HSQLDB JDBC driver.");
             e.printStackTrace();
             return;
         }
 
-        conn = DriverManager.getConnection("jdbc:hsqldb:file:" + db_file_name_prefix, "sa", "");
+	   String username = "";
+       String password = "";
+       
+       //conn = DriverManager.getConnection("jdbc:hsqldb:file:" + db_file_name_prefix, "sa", "");
+        conn = DriverManager.getConnection("jdbc:mysql://sd-mysql.jhuapl.edu:3308/near?" +
+        "user=" + username + "&password=" + password);
+
     }
 
     public void shutdown() throws SQLException 
     {
 
-        Statement st = conn.createStatement();
+//        Statement st = conn.createStatement();
 
         // db writes out to files and performs clean shuts down
         // otherwise there will be an unclean shutdown
         // when program ends
-        st.execute("SHUTDOWN");
+//        st.execute("SHUTDOWN");
         conn.close();    // if there are no other open connection
     }
 
@@ -139,6 +145,13 @@ public class SqlManager
 
         st.close();
     }    // void update()
+
+    
+    public synchronized void dropTable(String table) throws SQLException 
+    {
+    	update("DROP TABLE IF EXISTS " + table);
+    }
+
 
     public static ArrayList<ArrayList<Object>> dump(ResultSet rs) throws SQLException 
     {

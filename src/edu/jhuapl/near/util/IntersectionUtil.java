@@ -4,30 +4,11 @@ import vtk.*;
 
 public class IntersectionUtil 
 {
-	static vtkMath math = null;
+	private static vtkMath math = null;
 	
-	static void printpt(double[] p, String s)
+	private static void printpt(double[] p, String s)
 	{
 		System.out.println(s + " " + p[0] + " " + p[1] + " " + p[2]);
-	}
-	
-	/**
-	 * Given a <code>polyData</code>, a vertex and two rays extending from that vertex forming a plane
-	 * that intersects the polydata, compute the intersection of that plane (bounded by the 2 rays) and 
-	 * the polydata. This intersection should be in the form of a polyline.
-	 * @param polyData
-	 * @param vertex
-	 * @param ray1
-	 * @param ray2
-	 * @return
-	 */
-	public static double[] computeIntersectionPolyLinee(
-			vtkPolyData polyData, 
-			double[] vertex, 
-			double[] ray1, 
-			double[] ray2)
-	{
-		return null;
 	}
 	
 	public static vtkPolyData computeFrustumIntersection(
@@ -42,18 +23,12 @@ public class IntersectionUtil
 		if (math == null)
 			math = new vtkMath();
 
-		//vtkPolyData origPolyData = polyData;
-
+		printpt(origin, "origin");
 		printpt(ul, "ul");
 		printpt(ur, "ur");
 		printpt(lr, "lr");
 		printpt(ll, "ll");
-//		math.Normalize(ul);
-//		math.Normalize(ur);
-//		math.Normalize(lr);
-//		math.Normalize(ll);
 		
-		//printpt()
 		// First compute the normals of the 6 planes.
 		// Start with computing the normals of the 4 side planes of the frustum.
 		double[] top = new double[3];
@@ -88,37 +63,58 @@ public class IntersectionUtil
 		double[] farY = {farUR[0]-farLR[0], farUR[1]-farLR[1], farUR[2]-farLR[2]};
 		math.Cross(farX, farY, far);
 		
-		vtkPoints frustumPoints = new vtkPoints();
-		frustumPoints.SetNumberOfPoints(6);
-		frustumPoints.SetPoint(0, origin);
-		frustumPoints.SetPoint(1, origin);
-		frustumPoints.SetPoint(2, origin);
-		frustumPoints.SetPoint(3, origin);
-		frustumPoints.SetPoint(4, nearLL);
-		frustumPoints.SetPoint(5, farLR);
+		dx = math.Norm(origin);
+		double[] UL2 = {origin[0]+ul[0]*dx, origin[1]+ul[1]*dx, origin[2]+ul[2]*dx};
+		double[] UR2 = {origin[0]+ur[0]*dx, origin[1]+ur[1]*dx, origin[2]+ur[2]*dx};
+		double[] LL2 = {origin[0]+ll[0]*dx, origin[1]+ll[1]*dx, origin[2]+ll[2]*dx};
+		double[] LR2 = {origin[0]+lr[0]*dx, origin[1]+lr[1]*dx, origin[2]+lr[2]*dx};
 		
-		vtkDoubleArray frustumNormals = new vtkDoubleArray();
-		frustumNormals.SetNumberOfComponents(3);
-		frustumNormals.SetNumberOfTuples(6);
-		frustumNormals.SetTuple3(0, top[0], top[1], top[2]);
-		frustumNormals.SetTuple3(1, right[0], right[1], right[2]);
-		frustumNormals.SetTuple3(2, bottom[0], bottom[1], bottom[2]);
-		frustumNormals.SetTuple3(3, left[0], left[1], left[2]);
-		frustumNormals.SetTuple3(4, near[0], near[1], near[2]);
-		frustumNormals.SetTuple3(5, far[0], far[1], far[2]);
 
-		vtkPlanes implicitPlanes = new vtkPlanes();
-		implicitPlanes.SetPoints(frustumPoints);
-		implicitPlanes.SetNormals(frustumNormals);
+		vtkPlane plane1 = new vtkPlane();
+		plane1.SetOrigin(UL2);
+		plane1.SetNormal(top);
+		vtkPlane plane2 = new vtkPlane();
+		plane2.SetOrigin(UR2);
+		plane2.SetNormal(right);
+		vtkPlane plane3 = new vtkPlane();
+		plane3.SetOrigin(LR2);
+		plane3.SetNormal(bottom);
+		vtkPlane plane4 = new vtkPlane();
+		plane4.SetOrigin(LL2);
+		plane4.SetNormal(left);
+//		vtkPlane plane5 = new vtkPlane();
+//		plane5.SetOrigin(nearLL);
+//		plane5.SetNormal(near);
+//		vtkPlane plane6 = new vtkPlane();
+//		plane6.SetOrigin(UL2);
+//		plane6.SetNormal(farLR);
 		
-		vtkClipPolyData clipPolyData = new vtkClipPolyData();
-		clipPolyData.SetInput(polyData);
-		clipPolyData.SetClipFunction(implicitPlanes);
-		clipPolyData.SetInsideOut(1);
-		//clipPolyData.GetLocator().SetTolerance(0.0001);
+		// I found that the results are MUCH better when you use a separate vtkClipPolyData
+		// for each plane of the frustum rather than trying to use a single vtkClipPolyData
+		// with an vtkImplicitBoolean or vtkPlanes that combines all the planes together.
+		vtkClipPolyData clipPolyData1 = new vtkClipPolyData();
+		clipPolyData1.SetInput(polyData);
+		clipPolyData1.SetClipFunction(plane1);
+		clipPolyData1.SetInsideOut(1);
+		vtkClipPolyData clipPolyData2 = new vtkClipPolyData();
+		clipPolyData2.SetInputConnection(clipPolyData1.GetOutputPort());
+		clipPolyData2.SetClipFunction(plane2);
+		clipPolyData2.SetInsideOut(1);
+		vtkClipPolyData clipPolyData3 = new vtkClipPolyData();
+		clipPolyData3.SetInputConnection(clipPolyData2.GetOutputPort());
+		clipPolyData3.SetClipFunction(plane3);
+		clipPolyData3.SetInsideOut(1);
+		vtkClipPolyData clipPolyData4 = new vtkClipPolyData();
+		clipPolyData4.SetInputConnection(clipPolyData3.GetOutputPort());
+		clipPolyData4.SetClipFunction(plane4);
+		clipPolyData4.SetInsideOut(1);
+		clipPolyData4.Update();
+		
+		if (clipPolyData4.GetOutput().GetNumberOfCells() == 0)
+			return null;
 		
 		vtkPolyDataNormals normalsFilter = new vtkPolyDataNormals();
-		normalsFilter.SetInputConnection(clipPolyData.GetOutputPort());
+		normalsFilter.SetInputConnection(clipPolyData4.GetOutputPort());
 		normalsFilter.SetComputeCellNormals(1);
 		normalsFilter.SetComputePointNormals(0);
 		normalsFilter.Update();
@@ -152,11 +148,16 @@ public class IntersectionUtil
 		}
 		
 		polyData.RemoveDeletedCells();
+		polyData.GetCellData().SetNormals(null);
 		
 		vtkCleanPolyData cleanPoly = new vtkCleanPolyData();
 		cleanPoly.SetInput(polyData);
+		cleanPoly.Update();
 		
-		// If the eros body was a convex shape we would be done now.
+		polyData = new vtkPolyData();
+		polyData.DeepCopy(cleanPoly.GetOutput());
+		
+		// If the Eros body was a convex shape we would be done now.
 		// Unfortunately, since it's not, it's possible for the polydata to have multiple connected
 		// pieces in view of the camera and some of these pieces are obscured by other pieces. 
 		// Thus first check how many connected pieces there are in the clipped polydata. 
@@ -182,76 +183,60 @@ public class IntersectionUtil
 		connectivityFilter.Update();
 		int numRegions = connectivityFilter.GetNumberOfExtractedRegions();
 		System.out.println("numRegions: " + numRegions);
-		//if (numRegions == 1)
-		if (true)
+		if (numRegions == 1)
 		{
-			polyData = new vtkPolyData();
-			polyData.DeepCopy(connectivityFilter.GetOutput());
 			return polyData;
 		}
 
-		polyData = new vtkPolyData();
-		polyData.DeepCopy(cleanPoly.GetOutput());
 		polyData.BuildLinks(0);
 
-//		vtkOBBTree locator;
-		vtkPoints intersectPoints;
-//        locator = new vtkOBBTree();
-//        locator.SetDataSet(origPolyData);
-//        locator.CacheCellBoundsOn();
-//        locator.AutomaticOn();
-//        //locator.SetMaxLevel(10);
-//        //locator.SetNumberOfCellsPerNode(5);
-//
-//        locator.BuildLocator();
-
-        intersectPoints = new vtkPoints();
-//		System.out.println("deleted cell");
+		vtkPoints intersectPoints = new vtkPoints();
 
 		points = polyData.GetPoints();
 		int numPoints = points.GetNumberOfPoints();
+		
 		for (int i=0; i<numPoints; ++i)
 		{
 			double[] sourcePnt = points.GetPoint(i);
-			//double[] p = sourcePnt;
-			//System.out.println("source pnt " + p[0] + " " + p[1] + " " + p[2]);
 
 			intersectPoints.Reset();
 
-			/*int v =*/ locator.IntersectWithLine(origin, sourcePnt, intersectPoints, null);
-			//System.out.println("v " + v);
+			locator.IntersectWithLine(origin, sourcePnt, intersectPoints, null);
+
 			if (intersectPoints.GetNumberOfPoints() >= 1)
 			{
-				// If there's only 1 intersection make sure the intersection point is
+				// If there's only 1 intersection point make sure the intersection point is
 				// not sourcePnt
 				if (intersectPoints.GetNumberOfPoints() == 1)
 				{
 					double[] pt = intersectPoints.GetPoint(0);
-					if (math.Distance2BetweenPoints(sourcePnt, pt) < 1e-10)
+					if (math.Distance2BetweenPoints(sourcePnt, pt) < 1e-6)
 					{
-						//System.out.println("bad");
 						continue;
 					}
-				}
-				else
-				{
-					//System.out.println("not bad");
 				}
 				
 				polyData.GetPointCells(i, idList);
 				
-				//p = intersectPoints.GetPoint(0);
-				//System.out.println("intersect pt " + intersectPoints.GetNumberOfPoints() + "  "  + p[0] + " " + p[1] + " " + p[2]);
 				int numPtCells = idList.GetNumberOfIds();
 				for (int j=0; j<numPtCells; ++j)
 				{
 					polyData.DeleteCell(idList.GetId(j));
-					//System.out.println("deleted cell");
 				}
 			}
-
 		}
 		polyData.RemoveDeletedCells();
+
+		System.out.println("before clean  " + polyData.GetNumberOfPoints());
+
+		cleanPoly = new vtkCleanPolyData();
+		cleanPoly.SetInput(polyData);
+		cleanPoly.Update();
+
+		polyData = new vtkPolyData();
+		polyData.DeepCopy(cleanPoly.GetOutput());
+
+		System.out.println("after clean  " + polyData.GetNumberOfPoints());
 		
 		return polyData;
 	}
