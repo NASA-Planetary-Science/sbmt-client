@@ -43,9 +43,14 @@ public class Configuration
 	/**
 	 * @return Return the url of the server where data is downloaded from.
 	 */
-	static public String getRootURL()
+	static public String getDataRootURL()
 	{
 		return "http://near.jhuapl.edu/software/data2";
-		//return "http://localhost:8080";
 	}
+	
+	static public String getQueryRootURL()
+	{
+		return "http://near.jhuapl.edu/software/query";
+	}
+
 }

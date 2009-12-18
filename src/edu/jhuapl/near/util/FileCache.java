@@ -42,7 +42,7 @@ public class FileCache
 		File file = null;
 		try 
 		{
-			URL u = new URL(Configuration.getRootURL() + path);
+			URL u = new URL(Configuration.getDataRootURL() + path);
 			
 			InputStream is = u.openStream();
 
