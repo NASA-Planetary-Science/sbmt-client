@@ -17,7 +17,10 @@
 			 <pathelement location="${rootdir}/lib/vtk.jar"/>
 			 <pathelement location="${rootdir}/lib/jide-oss-2.7.3.jar"/>
 			 <pathelement location="${rootdir}/lib/joda-time-1.6.jar"/>
-			 <pathelement location="${rootdir}/lib/hsqldbmin.jar"/>
+			 <pathelement location="${rootdir}/lib/jcommon-1.0.16.jar"/>
+                         <pathelement location="${rootdir}/lib/jfreechart-1.0.13.jar"/>
+                         <pathelement location="${rootdir}/lib/miglayout-3.7.1-swing.jar"/>
+                         <pathelement location="${rootdir}/lib/mysql-connector-java-5.1.10-bin.jar.jar"/>
            </classpath>
         </javac> 
     </target>
@@ -31,7 +34,10 @@
 			 <pathelement location="${rootdir}/lib/vtk.jar"/>
 			 <pathelement location="${rootdir}/lib/jide-oss-2.7.3.jar"/>
 			 <pathelement location="${rootdir}/lib/joda-time-1.6.jar"/>
-			 <pathelement location="${rootdir}/lib/hsqldbmin.jar"/>
+                         <pathelement location="${rootdir}/lib/jcommon-1.0.16.jar"/>
+                         <pathelement location="${rootdir}/lib/jfreechart-1.0.13.jar"/>
+                         <pathelement location="${rootdir}/lib/miglayout-3.7.1-swing.jar"/>
+                         <pathelement location="${rootdir}/lib/mysql-connector-java-5.1.10-bin.jar.jar"/>
            </classpath>
         </java>
     </target>
@@ -41,9 +47,12 @@
         <jar destfile="${rootdir}/build/jar/near.jar" basedir="${rootdir}/build/classes">
            <manifest>
                <attribute name="Class-Path" value="vtk.jar
-												   jide-oss-2.7.3.jar
-												   joda-time-1.6.jar
-												   hsqldbmin.jar"/>
+						   jide-oss-2.7.3.jar
+						   joda-time-1.6.jar
+                                                   jcommon-1.0.16.jar
+                                                   jfreechart-1.0.13.jar
+                                                   miglayout-3.7.1-swing.jar
+                                                   mysql-connector-java-5.1.10-bin.jar"/>
                <attribute name="Main-Class" value="edu.jhuapl.near.ErosLineamentViewer"/>
            </manifest>
         </jar>
@@ -58,7 +67,10 @@
 			 <pathelement location="${rootdir}/lib/vtk.jar"/>
 			 <pathelement location="${rootdir}/lib/jide-oss-2.7.3.jar"/>
 			 <pathelement location="${rootdir}/lib/joda-time-1.6.jar"/>
-			 <pathelement location="${rootdir}/lib/hsqldbmin.jar"/>
+			 <pathelement location="${rootdir}/lib/jcommon-1.0.16.jar"/>
+                         <pathelement location="${rootdir}/lib/jfreechart-1.0.13.jar"/>
+                         <pathelement location="${rootdir}/lib/miglayout-3.7.1-swing.jar"/>
+                         <pathelement location="${rootdir}/lib/mysql-connector-java-5.1.10-bin.jar.jar"/>
 			 <pathelement location="${rootdir}/build/jar/near.jar"/>
            </classpath>
         </java>
@@ -186,10 +198,34 @@
             storepass="${keypass}"/>
     </target>
 
-    <target name="signhsqldbjar">
+    <target name="signjcommon">
         <input message="Please enter keystore password:"
             addproperty="keypass" />
-        <signjar jar="${rootdir}/lib/hsqldbmin.jar"
+        <signjar jar="${rootdir}/lib/jcommon-1.0.16.jar"
+            keystore="${rootdir}/keystore" alias="mykey"
+            storepass="${keypass}"/>
+    </target>
+
+    <target name="signjfreechart">
+        <input message="Please enter keystore password:"
+            addproperty="keypass" />
+        <signjar jar="${rootdir}/lib/jfreechart-1.0.13.jar"
+            keystore="${rootdir}/keystore" alias="mykey"
+            storepass="${keypass}"/>
+    </target>
+
+    <target name="signmiglayout">
+        <input message="Please enter keystore password:"
+            addproperty="keypass" />
+        <signjar jar="${rootdir}/lib/miglayout-3.7.1-swing.jar"
+            keystore="${rootdir}/keystore" alias="mykey"
+            storepass="${keypass}"/>
+    </target>
+
+    <target name="signmysqlconnector">
+        <input message="Please enter keystore password:"
+            addproperty="keypass" />
+        <signjar jar="${rootdir}/lib/mysql-connector-java-5.1.10-bin.jar"
             keystore="${rootdir}/keystore" alias="mykey"
             storepass="${keypass}"/>
     </target>
