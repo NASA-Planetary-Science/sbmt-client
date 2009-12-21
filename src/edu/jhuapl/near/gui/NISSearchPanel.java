@@ -162,7 +162,7 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
         //polygonTypePanel.add(Box.createHorizontalStrut(15));
         polygonTypePanel.add(polygonType2CheckBox);
         //polygonTypePanel.add(Box.createHorizontalStrut(15));
-        polygonTypePanel.add(polygonType3CheckBox);
+        //polygonTypePanel.add(polygonType3CheckBox);
 
 
         NumberFormat nf = NumberFormat.getNumberInstance();
@@ -377,7 +377,7 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
 		channelPanel.add(channelLabel);
 		channelPanel.add(channelComboBox);
 
-		//resultSub2ControlsPanel.add(channelPanel);
+		resultSub2ControlsPanel.add(channelPanel);
 
         resultControlsPanel.add(resultSub1ControlsPanel, BorderLayout.CENTER);
         resultControlsPanel.add(resultSub2ControlsPanel, BorderLayout.SOUTH);

@@ -45,7 +45,7 @@ public class Configuration
 	 */
 	static public String getDataRootURL()
 	{
-		return "http://near.jhuapl.edu/software/data2";
+		return "http://near.jhuapl.edu/software/data";
 	}
 	
 	static public String getQueryRootURL()

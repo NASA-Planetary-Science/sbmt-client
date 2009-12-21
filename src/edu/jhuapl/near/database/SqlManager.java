@@ -59,8 +59,6 @@ public class SqlManager
     // we dont want this garbage collected until we are done
     public SqlManager(String db_file_name_prefix) throws Exception    // note more general exception
     {
-    	System.out.println(db_file_name_prefix);
-    	
         // connect to the database.   This will load the db files and start the
         // database if it is not alread running.
         // db_file_name_prefix is used to open or create files that hold the state

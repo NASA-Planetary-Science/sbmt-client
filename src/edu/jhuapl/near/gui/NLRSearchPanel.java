@@ -97,7 +97,7 @@ public class NLRSearchPanel extends JPanel implements ListSelectionListener
 		
 		//nlrPopupMenu = new NISPopupMenu(this.modelManager, infoPanelManager, renWin);
 
-		resultsLabel = new JLabel(" ");
+		resultsLabel = new JLabel("Available Files");
 
         nlrResultListModel = new DefaultListModel();
 

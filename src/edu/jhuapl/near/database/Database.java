@@ -1,7 +1,7 @@
 package edu.jhuapl.near.database;
 
-import java.io.*;
-import java.net.URL;
+import java.io.File;
+import java.sql.SQLException;
 import java.util.*;
 
 import org.joda.time.DateTime;
@@ -23,67 +23,15 @@ public class Database
 	private static Database ref = null;
 	
 	String version;
+	SqlManager db = null;
 
-	private ArrayList<ArrayList<String>> doQuery(String url)
+	private String getMsiPath(ArrayList<Object> result)
 	{
-		ArrayList<ArrayList<String>> results = new ArrayList<ArrayList<String>>();
-		
-		try 
-		{
-			URL u = new URL(Configuration.getQueryRootURL() + "/" + url);
-			
-			InputStream is = u.openStream();
-			InputStreamReader isr = new InputStreamReader(is);
-			BufferedReader in = new BufferedReader(isr);
-
-			String line;
-			
-			while ((line = in.readLine()) != null)
-			{
-				String[] tokens = line.trim().split("\\s+");
-				ArrayList<String> words = new ArrayList<String>();
-				for (String word : tokens)
-					words.add(word);
-				results.add(words);
-			}
-
-			in.close();
-		} 
-		catch (IOException e) 
-		{
-			e.printStackTrace();
-		}
-
-		return results;
-	}
-	
-	private String constructUrlArguments(HashMap<String, String> args)
-	{
-		String str = "";
-		
-		boolean firstKey = true;
-		for (String key : args.keySet())
-		{
-			if (firstKey == true)
-				str += "?";
-			else
-				str += "&";
-			
-			str += key + "=" + args.get(key);
-			
-			firstKey = false;
-		}
-		
-		return str;
-	}
-	
-	private String getMsiPath(ArrayList<String> result)
-	{
-		int id = Integer.parseInt(result.get(0));
-		int year = Integer.parseInt(result.get(1));
-		int dayOfYear = Integer.parseInt(result.get(2));
-		int filter = Integer.parseInt(result.get(3));
-		int type = Integer.parseInt(result.get(4));
+		int id = (Integer)result.get(0);
+		int year = (Integer)result.get(1);
+		int dayOfYear = (Integer)result.get(2);
+		int filter = (Integer)result.get(3);
+		int type = (Integer)result.get(4);
 		String typeStr;
 		if (type == 0)
 			typeStr = "iofdbl";
@@ -117,11 +65,11 @@ public class Database
 		return str;
 	}
 
-	private String getNisPath(ArrayList<String> result)
+	private String getNisPath(ArrayList<Object> result)
 	{
-		int id = Integer.parseInt(result.get(0));
-		int year = Integer.parseInt(result.get(1));
-		int dayOfYear = Integer.parseInt(result.get(2));
+		int id = (Integer)result.get(0);
+		int year = (Integer)result.get(1);
+		int dayOfYear = (Integer)result.get(2);
 
 		return this.getNisPath(id, year, dayOfYear);
 	}
@@ -158,6 +106,16 @@ public class Database
                                                             
 	private Database() 
 	{
+
+        try 
+        {
+            db = new SqlManager(Configuration.getDatabaseDir() + File.separator + Configuration.getDatabaseName());
+        }
+        catch (Exception ex1) {
+            ex1.printStackTrace();
+            return;
+        }
+
 	}
 
 	
@@ -192,7 +150,7 @@ public class Database
 		
 		
 		ArrayList<String> matchedImages = new ArrayList<String>();
-		ArrayList<ArrayList<String>> results = null;
+		ArrayList<ArrayList<Object>> results = null;
 
 		double minIncidence = Math.min(fromIncidence, toIncidence);
 		double maxIncidence = Math.max(fromIncidence, toIncidence);
@@ -210,15 +168,16 @@ public class Database
 				{
 					int id = Integer.parseInt(searchString);
 
-					HashMap<String, String> args = new HashMap<String, String>();
-					args.put("id", String.valueOf(id));
-					
-					results = doQuery("searchmsi_id.php" + constructUrlArguments(args));
+					results = db.query("SELECT id, year, day, filter, iofcif FROM msiimages WHERE id = " + id);
 				}
 				catch (NumberFormatException e)
 				{
 					e.printStackTrace();
 				} 
+				catch (SQLException e) 
+				{
+					e.printStackTrace();
+				}
 				
 				if (results != null && results.size() > 0)
 				{
@@ -239,72 +198,65 @@ public class Database
 				double minResolution = Math.min(startResolution, stopResolution) / 1000.0;
 				double maxResolution = Math.max(startResolution, stopResolution) / 1000.0;
 
-//				String query = "SELECT id, year, day, filter, iofcif FROM msiimages ";
-//				query += "WHERE starttime <= " + stopDate.getMillis();
-//				query += " AND stoptime >= " + startDate.getMillis();
-//				query += " AND target_center_distance >= " + minScDistance;
-//				query += " AND target_center_distance <= " + maxScDistance;
-//				query += " AND horizontal_pixel_scale >= " + minResolution;
-//				query += " AND horizontal_pixel_scale <= " + maxResolution;
-//				if (iofdbl == false)
-//					query += " AND iofcif = 1";
-//				else if (cifdbl == false)
-//					query += " AND iofcif = 0";
-//				query += " AND ( ";
-//				for (int i=0; i<filters.size(); ++i)
-//				{
-//					query += " filter = " + filters.get(i);
-//					if (i < filters.size()-1)
-//						query += " OR ";
-//				}
-//				query += " ) ";
-//
-//				query += " AND minincidence <= " + maxIncidence;
-//				query += " AND maxincidence >= " + minIncidence;
-//				query += " AND minemission <= " + maxEmission;
-//				query += " AND maxemission >= " + minEmission;
-//				query += " AND minphase <= " + maxPhase;
-//				query += " AND maxphase >= " + minPhase;
-//
-//				System.out.println(query);
-
-				HashMap<String, String> args = new HashMap<String, String>();
-				args.put("minResolution", String.valueOf(minResolution));
-				args.put("maxResolution", String.valueOf(maxResolution));
-				args.put("minScDistance", String.valueOf(minScDistance));
-				args.put("maxScDistance", String.valueOf(maxScDistance));
-				args.put("startDate", String.valueOf(startDate.getMillis()));
-				args.put("stopDate", String.valueOf(stopDate.getMillis()));
-				args.put("minIncidence", String.valueOf(minIncidence));
-				args.put("maxIncidence", String.valueOf(maxIncidence));
-				args.put("minEmission", String.valueOf(minEmission));
-				args.put("maxEmission", String.valueOf(maxEmission));
-				args.put("minPhase", String.valueOf(minPhase));
-				args.put("maxPhase", String.valueOf(maxPhase));
-				args.put("iofdbl", iofdbl==true ? "1" : "0");
-				args.put("cifdbl", cifdbl==true ? "1" : "0");
-				for (int i=1; i<=7; ++i)
+				String query = "SELECT id, year, day, filter, iofcif FROM msiimages ";
+				query += "WHERE starttime <= " + stopDate.getMillis();
+				query += " AND stoptime >= " + startDate.getMillis();
+				query += " AND target_center_distance >= " + minScDistance;
+				query += " AND target_center_distance <= " + maxScDistance;
+				query += " AND horizontal_pixel_scale >= " + minResolution;
+				query += " AND horizontal_pixel_scale <= " + maxResolution;
+				if (iofdbl == false)
+					query += " AND iofcif = 1";
+				else if (cifdbl == false)
+					query += " AND iofcif = 0";
+				query += " AND ( ";
+				for (int i=0; i<filters.size(); ++i)
 				{
-					if (filters.contains(i))
-						args.put("filterType"+i, "1");
-					else
-						args.put("filterType"+i, "0");
+					query += " filter = " + filters.get(i);
+					if (i < filters.size()-1)
+						query += " OR ";
 				}
+				query += " ) ";
 
-				results = doQuery("searchmsi.php" + constructUrlArguments(args));
+				query += " AND minincidence <= " + maxIncidence;
+				query += " AND maxincidence >= " + minIncidence;
+				query += " AND minemission <= " + maxEmission;
+				query += " AND maxemission >= " + minEmission;
+				query += " AND minphase <= " + maxPhase;
+				query += " AND maxphase >= " + minPhase;
+
+				//System.out.println(query);
+
+				results = db.query(query);
 				
-				for (ArrayList<String> res : results)
+				for (ArrayList<Object> res : results)
 				{
 					String path = this.getMsiPath(res);
 					
 					matchedImages.add(path);
 				}
 			}
-			catch (Exception e) 
+			catch (SQLException e) 
 			{
 				e.printStackTrace();
 			}
 			
+
+//			for (ImageInfo info: images)
+//			{
+//				if ((iofdbl && info.type.equals("iofdbl")) ||
+//						(cifdbl && info.type.equals("cifdbl")))
+//				{
+//					if (filters.contains(info.filter) &&
+//							containsDate(startDate, stopDate, info) &&
+//							info.scDistance >= minScDistance && info.scDistance <= maxScDistance &&
+//							info.resolution >= minResolution && info.resolution <= maxResolution)
+//					{
+//						matchedImages.add(info.getPath());
+//					}
+//				}
+//			}
+
 			return matchedImages;
 
 		case NIS:
@@ -313,61 +265,42 @@ public class Database
 				double minScDistance = Math.min(startDistance, stopDistance);
 				double maxScDistance = Math.max(startDistance, stopDistance);
 				
-//				String query = "SELECT id, year, day FROM nisspectra ";
-//				query += "WHERE midtime >= " + startDate.getMillis();
-//				query += " AND midtime <= " + stopDate.getMillis();
-//				query += " AND range >= " + minScDistance;
-//				query += " AND range <= " + maxScDistance;
-//				if (!polygonTypes.isEmpty())
-//				{
-//					query += " AND ( ";
-//					int count = 0;
-//					for (Integer i : polygonTypes)
-//					{
-//						if (count++ > 0)
-//							query += " OR ";
-//						query += " polygon_type_flag = " + i;
-//					}
-//					query += " ) ";
-//				}
-//				query += " AND minincidence <= " + maxIncidence;
-//				query += " AND maxincidence >= " + minIncidence;
-//				query += " AND minemission <= " + maxEmission;
-//				query += " AND maxemission >= " + minEmission;
-//				query += " AND minphase <= " + maxPhase;
-//				query += " AND maxphase >= " + minPhase;
-//
-//				System.out.println(query);
-				
-				HashMap<String, String> args = new HashMap<String, String>();
-				args.put("startDate", String.valueOf(startDate.getMillis()));
-				args.put("stopDate", String.valueOf(stopDate.getMillis()));
-				args.put("minScDistance", String.valueOf(minScDistance));
-				args.put("maxScDistance", String.valueOf(maxScDistance));
-				args.put("minIncidence", String.valueOf(minIncidence));
-				args.put("maxIncidence", String.valueOf(maxIncidence));
-				args.put("minEmission", String.valueOf(minEmission));
-				args.put("maxEmission", String.valueOf(maxEmission));
-				args.put("minPhase", String.valueOf(minPhase));
-				args.put("maxPhase", String.valueOf(maxPhase));
-				for (int i=0; i<4; ++i)
+				String query = "SELECT id, year, day FROM nisspectra ";
+				query += "WHERE midtime >= " + startDate.getMillis();
+				query += " AND midtime <= " + stopDate.getMillis();
+				query += " AND range >= " + minScDistance;
+				query += " AND range <= " + maxScDistance;
+				if (!polygonTypes.isEmpty())
 				{
-					if (polygonTypes.contains(i))
-						args.put("polygonType"+i, "1");
-					else
-						args.put("polygonType"+i, "0");
+					query += " AND ( ";
+					int count = 0;
+					for (Integer i : polygonTypes)
+					{
+						if (count++ > 0)
+							query += " OR ";
+						query += " polygon_type_flag = " + i;
+					}
+					query += " ) ";
 				}
+				query += " AND minincidence <= " + maxIncidence;
+				query += " AND maxincidence >= " + minIncidence;
+				query += " AND minemission <= " + maxEmission;
+				query += " AND maxemission >= " + minEmission;
+				query += " AND minphase <= " + maxPhase;
+				query += " AND maxphase >= " + minPhase;
 
-				results = doQuery("searchnis.php" + constructUrlArguments(args));
+				//System.out.println(query);
 				
-				for (ArrayList<String> res : results)
+				results = db.query(query);
+				
+				for (ArrayList<Object> res : results)
 				{
 					String path = this.getNisPath(res);
 					
 					matchedImages.add(path);
 				}
 			}
-			catch (Exception e) 
+			catch (SQLException e) 
 			{
 				e.printStackTrace();
 			}
