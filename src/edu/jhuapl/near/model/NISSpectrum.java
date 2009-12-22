@@ -64,12 +64,14 @@ public class NISSpectrum extends Model
     private double minPhase; 
     private double maxPhase; 
     private boolean showFrustum = false;
-    private int channelToColorBy = 0;
+    static private int channelToColorBy = 0;
+    static private double channelColoringMinValue= 0.0;
+    static private double channelColoringMaxValue = 0.05;
     
     // These values were taken from Table 1 of "Spectral properties and geologic
     // processes on Eros from combined NEAR NIS and MSI data sets" 
     // by Noam Izenberg et. al.
-    static final private double[] bandCenters = {
+    static final public double[] bandCenters = {
     	816.2,  837.8,  859.4,  881.0,  902.7,  924.3,  945.9,  967.5,
     	989.1,  1010.7, 1032.3, 1053.9, 1075.5, 1097.1,	1118.8, 1140.4,
     	1162.0,	1183.6, 1205.2, 1226.8, 1248.4, 1270.0,	1291.6, 1313.2,
@@ -220,12 +222,12 @@ public class NISSpectrum extends Model
 				
 				footprintActor = new vtkActor();
 				footprintActor.SetMapper(footprintMapper);
-				footprintActor.GetProperty().SetColor(0.0, 1.0, 0.0);
-				//footprintActor.GetProperty().SetColor(
-				//		getChannelColor(channelToColorBy),
-				//		getChannelColor(channelToColorBy),
-				//		getChannelColor(channelToColorBy));
+				footprintActor.GetProperty().SetColor(
+						getChannelColor(),
+						getChannelColor(),
+						getChannelColor());
 				footprintActor.GetProperty().SetLineWidth(2.0);
+				footprintActor.GetProperty().LightingOff();
 				
 				footprintActors.add(footprintActor);
 
@@ -391,15 +393,35 @@ public class NISSpectrum extends Model
 		
 		return properties;
     }
-
     
-    public void setChannelToColorBy(int channel)
+    static public void setChannelColoring(int channel, double min, double max)
     {
     	channelToColorBy = channel;
+    	channelColoringMinValue = min;
+    	channelColoringMaxValue = max;
+    }
+    
+    static public int getChannelToColorBy()
+    {
+    	return channelToColorBy;
+    }
+
+    static public double getChannelColoringMinValue()
+    {
+    	return channelColoringMinValue;
+    }
+
+    static public double getChannelColoringMaxValue()
+    {
+    	return channelColoringMaxValue;
+    }
+
+    public void updateChannelColoring()
+    {
 		footprintActor.GetProperty().SetColor(
-				getChannelColor(channelToColorBy),
-				getChannelColor(channelToColorBy),
-				getChannelColor(channelToColorBy));
+				getChannelColor(),
+				getChannelColor(),
+				getChannelColor());
     }
 
 	public double getMinIncidence() 
@@ -432,8 +454,15 @@ public class NISSpectrum extends Model
 		return maxPhase;
 	}
 
-	private double getChannelColor(int channel)
+	private double getChannelColor()
 	{
-		return spectrum[channel];
+		double val = spectrum[channelToColorBy];
+		if (val < 0.0)
+			val = 0.0;
+		else if (val > 1.0)
+			val = 1.0;
+		
+		double slope = 1.0 / (channelColoringMaxValue - channelColoringMinValue);
+		return slope * (val - channelColoringMinValue);
 	}
 }

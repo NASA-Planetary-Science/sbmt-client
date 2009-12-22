@@ -23,6 +23,7 @@ import edu.jhuapl.near.database.Database;
 import edu.jhuapl.near.gui.popupmenus.NISPopupMenu;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.NISSpectraCollection;
+import edu.jhuapl.near.model.NISSpectrum;
 import edu.jhuapl.near.pair.IdPair;
 
 
@@ -48,6 +49,8 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
     private JFormattedTextField toEmissionTextField;
     private JFormattedTextField fromPhaseTextField;
     private JFormattedTextField toPhaseTextField;
+    private JSpinner minChannelValueTextField;
+    private JSpinner maxChannelValueTextField;
 
     private JComboBox channelComboBox;
 
@@ -271,7 +274,7 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
         resultsPanel.add(resultsLabel, "north");
         resultsPanel.add(listScrollPane, "center");
 
-        final JPanel resultControlsPanel = new JPanel(new BorderLayout());
+        final JPanel resultControlsPanel = new JPanel(new MigLayout());
         
         final JPanel resultSub1ControlsPanel = new JPanel();
         
@@ -336,9 +339,7 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
         resultSub1ControlsPanel.add(prevButton);
         resultSub1ControlsPanel.add(nextButton);
 
-        JPanel resultSub2ControlsPanel = new JPanel();
-        resultSub2ControlsPanel.setLayout(new BoxLayout(resultSub2ControlsPanel,
-        		BoxLayout.PAGE_AXIS));
+        JPanel resultSub2ControlsPanel = new JPanel(new MigLayout("insets 0"));
         removeAllButton = new JButton(NIS_REMOVE_ALL_BUTTON_TEXT);
         removeAllButton.setActionCommand(NIS_REMOVE_ALL_BUTTON_TEXT);
         removeAllButton.addActionListener(new ActionListener()
@@ -351,35 +352,78 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
 			}
         });
         removeAllButton.setEnabled(true);
-        removeAllButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         
-        resultSub2ControlsPanel.add(removeAllButton);
-
-        JPanel channelPanel = new JPanel();
-		channelPanel.setLayout(new BoxLayout(channelPanel,
-				BoxLayout.LINE_AXIS));
+        resultSub2ControlsPanel.add(removeAllButton, "span, align center");
 
         JLabel channelLabel = new JLabel("Color by Channel");
-        Object[] channels = new Object[64];
+        String[] channels = new String[64];
         for (int i=1; i<=64; ++i)
-        	channels[i-1] = new Integer(i);
+        	channels[i-1] = new String("(" + i + ") " + NISSpectrum.bandCenters[i-1] + " nm");
 		channelComboBox = new JComboBox(channels);
+		channelComboBox.setSelectedIndex(NISSpectrum.getChannelToColorBy());
 		channelComboBox.addActionListener(new ActionListener()
         {
 			public void actionPerformed(ActionEvent e) 
 			{
+                Double minVal = (Double)minChannelValueTextField.getValue();
+                Double maxVal = (Double)maxChannelValueTextField.getValue();
 				NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelManager.NIS_SPECTRA);
-				model.setChannelToColorBy(channelComboBox.getSelectedIndex());
+				model.setChannelColoring(channelComboBox.getSelectedIndex(), minVal, maxVal);
 			}
         });
 		
-		channelPanel.add(channelLabel);
-		channelPanel.add(channelComboBox);
+        JLabel minChannelValueLabel = new JLabel("Min");
+        minChannelValueTextField = new JSpinner(new SpinnerNumberModel(0.0, 0.0, 1.0, 0.01));
+        minChannelValueTextField.setValue(NISSpectrum.getChannelColoringMinValue());
+		minChannelValueTextField.setPreferredSize(new Dimension(80, 23));
+        minChannelValueTextField.addChangeListener(new ChangeListener()
+        {
+        	public void stateChanged(ChangeEvent e) 
+        	{
+                Double minVal = (Double)minChannelValueTextField.getValue();
+                Double maxVal = (Double)maxChannelValueTextField.getValue();
+                if (minVal > maxVal)
+                	minChannelValueTextField.setValue(minChannelValueTextField.getPreviousValue());
+                else
+                {
+    				NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelManager.NIS_SPECTRA);
+    				model.setChannelColoring(channelComboBox.getSelectedIndex(), minVal, maxVal);
+                }
+            }
+        });
 
-		resultSub2ControlsPanel.add(channelPanel);
+		
+        JLabel maxChannelValueLabel = new JLabel("Max");
+		maxChannelValueTextField = new JSpinner(new SpinnerNumberModel(0.05, 0.0, 1.0, 0.01));
+		maxChannelValueTextField.setValue(NISSpectrum.getChannelColoringMaxValue());
+		maxChannelValueTextField.setPreferredSize(new Dimension(80, 23));
+		maxChannelValueTextField.addChangeListener(new ChangeListener()
+        {
+        	public void stateChanged(ChangeEvent e) 
+        	{
+                Double minVal = (Double)minChannelValueTextField.getValue();
+                Double maxVal = (Double)maxChannelValueTextField.getValue();
+                if (minVal > maxVal)
+                	maxChannelValueTextField.setValue(maxChannelValueTextField.getPreviousValue());
+                else
+                {
+    				NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelManager.NIS_SPECTRA);
+    				model.setChannelColoring(channelComboBox.getSelectedIndex(), minVal, maxVal);
+                }
+            }
+        });
 
-        resultControlsPanel.add(resultSub1ControlsPanel, BorderLayout.CENTER);
+		resultSub2ControlsPanel.add(channelLabel, "span 2");
+		resultSub2ControlsPanel.add(channelComboBox, "span 2,wrap");
+		resultSub2ControlsPanel.add(minChannelValueLabel);
+		resultSub2ControlsPanel.add(minChannelValueTextField);
+		resultSub2ControlsPanel.add(maxChannelValueLabel);
+		resultSub2ControlsPanel.add(maxChannelValueTextField);
+
+		resultSub2ControlsPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        resultControlsPanel.add(resultSub1ControlsPanel, "wrap");
         resultControlsPanel.add(resultSub2ControlsPanel, BorderLayout.SOUTH);
         
         resultsPanel.add(resultControlsPanel, "south");

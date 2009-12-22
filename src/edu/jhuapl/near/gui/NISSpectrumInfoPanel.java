@@ -15,10 +15,10 @@ import edu.jhuapl.near.model.*;
 
 import org.jfree.chart.*;
 import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.data.category.DefaultCategoryDataset;
-import org.jfree.data.general.DefaultPieDataset;
+import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.xy.XYItemRenderer;
+import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.xy.*;
-import org.jfree.data.*;
 
 public class NISSpectrumInfoPanel extends ModelInfoWindow implements PropertyChangeListener
 {
@@ -46,7 +46,15 @@ public class NISSpectrumInfoPanel extends ModelInfoWindow implements PropertyCha
                 ("NIS Calibrated Spectrum", "Wavelength (nm)", "Reflectance",
                 		xyDataset, PlotOrientation.VERTICAL, true, true, false);
         ChartPanel chartPanel = new ChartPanel(chart);
-        //chartPanel.setSize(300,300);
+
+        XYPlot plot = (XYPlot) chart.getPlot();
+        XYItemRenderer r = plot.getRenderer();                                                                                                 
+        if (r instanceof XYLineAndShapeRenderer) {                                                                                             
+            XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) r;                                                                      
+            renderer.setBaseShapesVisible(true);                                                                                               
+            renderer.setBaseShapesFilled(true);                                                                                                
+            renderer.setDrawSeriesLineAsPath(true);
+        }
         
         panel.add(chartPanel, BorderLayout.CENTER);
 

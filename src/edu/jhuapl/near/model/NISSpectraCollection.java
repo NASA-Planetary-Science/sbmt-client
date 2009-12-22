@@ -113,11 +113,12 @@ public class NISSpectraCollection extends Model implements PropertyChangeListene
     	return fileToSpectrumMap.containsKey(file);
     }
     
-    public void setChannelToColorBy(int channel)
+    public void setChannelColoring(int channel, double min, double max)
     {
+    	NISSpectrum.setChannelColoring(channel, min, max);
     	for (String file : this.fileToSpectrumMap.keySet())
     	{
-    		this.fileToSpectrumMap.get(file).setChannelToColorBy(channel);
+    		this.fileToSpectrumMap.get(file).updateChannelColoring();
     	}
 
     	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
