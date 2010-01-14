@@ -46,7 +46,7 @@ public class NISSpectrum extends Model
 	private short polygon_type_flag;
 	private double range;
 	private ArrayList<LatLon> latLons = new ArrayList<LatLon>();
-	//private vtkPolyData footprint;
+	private vtkPolyData footprint;
     private vtkActor footprintActor;
     private ArrayList<vtkActor> footprintActors = new ArrayList<vtkActor>();
     private ErosModel erosModel;
@@ -206,12 +206,22 @@ public class NISSpectrum extends Model
         
         return footprintReader.GetOutput();
 	}
+
+	public vtkPolyData getFootprint()
+	{
+		if (footprint == null)
+			footprint = loadFootprint();
+
+		return footprint;
+	}
 	
 	public ArrayList<vtkActor> getActors() 
 	{
 		if (footprintActor == null && !latLons.isEmpty())
 		{
-			vtkPolyData footprint = loadFootprint();
+			if (footprint == null)
+				footprint = loadFootprint();
+			
 			if (footprint != null)
 			{
 				vtkPolyDataMapper footprintMapper = new vtkPolyDataMapper();

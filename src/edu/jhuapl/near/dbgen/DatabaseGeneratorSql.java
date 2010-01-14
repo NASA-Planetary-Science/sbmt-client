@@ -13,12 +13,78 @@ import nom.tam.fits.FitsException;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
+import vtk.vtkPoints;
+
 public class DatabaseGeneratorSql 
 {
+	private static class ErosCells
+	{
+		public BoundingBox erosBB;
+		double cellSize = 1.0;
+		int numCellsX;
+		int numCellsY;
+		int numCellsZ;
+		
+		public ErosCells(ErosModel eros)
+		{
+			erosBB = eros.computeBoundingBox();
+			numCellsX = (int)(Math.ceil(erosBB.xmax - erosBB.xmin) / cellSize);
+			numCellsY = (int)(Math.ceil(erosBB.ymax - erosBB.ymin) / cellSize);
+			numCellsZ = (int)(Math.ceil(erosBB.zmax - erosBB.zmin) / cellSize);
+		}
+		
+		public int getCellId(double[] pt)
+		{
+			double x = pt[0];
+			double y = pt[1];
+			double z = pt[2];
+			
+			return (int)Math.floor((x - erosBB.xmin) / cellSize) +
+			(int)Math.floor((y - erosBB.ymin) / cellSize)*numCellsX +
+			(int)Math.floor((z - erosBB.zmin) / cellSize)*numCellsX*numCellsY; 
+		}
+		
+		public TreeSet<Integer> getIntersectingCells(NISSpectrum spectrum)
+		{
+			TreeSet<Integer> cellIds = new TreeSet<Integer>();
+			
+			vtkPoints points = spectrum.getFootprint().GetPoints();
+			int numberPoints = points.GetNumberOfPoints();
+			for (int i=0; i<numberPoints; ++i)
+			{
+				double[] pt = points.GetPoint(i);
+				cellIds.add(getCellId(pt));
+			}
+			
+			return cellIds;
+		}
+
+		/*
+		public TreeSet<Integer> getIntersectingCells(NearImage image)
+		{
+			TreeSet<Integer> cellIds = new TreeSet<Integer>();
+			
+			for (int i=0; i<NearImage.IMAGE_HEIGHT; ++i)
+				for (int j=0; j<NearImage.IMAGE_WIDTH; ++j)
+				{
+					double x = image.getX(i, j);
+					double y = image.getY(i, j);
+					double z = image.getZ(i, j);
+					double[] pt = {x, y, z};
+					cellIds.add(getCellId(pt));
+				}
+			
+			return cellIds;
+		}
+		*/
+}
+	
 	static SqlManager db = null;
 	static PreparedStatement msiInsert = null;
 	static PreparedStatement nisInsert = null;
+	static PreparedStatement nisInsert2 = null;
 	static ErosModel erosModel;
+	static ErosCells erosCells;
 	
     private static void createMSITables()
     {
@@ -94,6 +160,38 @@ public class DatabaseGeneratorSql
             		"maxphase double," +
             		"range double, " +
             		"polygon_type_flag smallint)"
+                );
+        } catch (SQLException ex2) {
+
+            //ignore
+        	ex2.printStackTrace();  // second time we run program
+            //  should throw execption since table
+            // already there
+            //
+            // this will have no effect on the db
+        }
+    }
+    
+    private static void createNISTables2()
+    {
+        try {
+
+            //make a table
+        	try
+        	{
+            	db.dropTable("niscells");
+        	}
+        	catch(Exception e)
+        	{
+        		e.printStackTrace();
+        	}
+
+        	db.update(
+            		"create table niscells(" +
+            		"id int PRIMARY KEY, " +
+            		"nisspectrumid int, " +
+            		"cellid int, " +
+            		"intersectiontype smallint)"
                 );
         } catch (SQLException ex2) {
 
@@ -260,6 +358,54 @@ public class DatabaseGeneratorSql
     	}
     }
 
+    private static void populateNISTables2(ArrayList<String> nisFiles) throws SQLException, IOException
+    {
+    	int count = 0;
+    	for (String filename : nisFiles)
+    	{
+			System.out.println("starting nis " + count);
+			
+//    		String dayOfYearStr = "";
+//    		String yearStr = "";
+
+    		File origFile = new File(filename);
+//    		File f = origFile;
+
+//    		f = f.getParentFile();
+//    		dayOfYearStr = f.getName();
+
+//    		f = f.getParentFile();
+//    		yearStr = f.getName();
+
+
+    		NISSpectrum nisSpectrum = new NISSpectrum(origFile, erosModel);
+    		
+    		if (nisInsert2 == null)
+    		{
+    			nisInsert2 = db.preparedStatement(                                                                                    
+    					"insert into nisspectra values (?, ?, ?, ?)");                                                                   
+    		}
+
+    		TreeSet<Integer> cellIds = erosCells.getIntersectingCells(nisSpectrum);
+    		for (Integer i : cellIds)
+    		{
+        		System.out.println("id: " + count);
+        		System.out.println("nis id: " + Integer.parseInt(origFile.getName().substring(2, 11)));
+        		System.out.println("cellId: " + i);
+        		System.out.println("type: " + 0);
+
+    			nisInsert.setInt(1, count);
+        		nisInsert.setInt(2, Integer.parseInt(origFile.getName().substring(2, 11)));
+        		nisInsert.setInt(3, i);
+        		nisInsert.setShort(4, (short)0);
+
+    			nisInsert.executeUpdate();
+
+    			++count;
+    		}
+    	}
+    }
+
     private static boolean checkIfAllFilesExist(String line)
 	{
 		File file = new File(line);
@@ -322,14 +468,16 @@ public class DatabaseGeneratorSql
         }
 
 		
-		createMSITables();
-		createNISTables();
+        //createMSITables();
+		//createNISTables();
+		createNISTables2();
 
 		
 		try 
 		{
-			populateMSITables(msiFiles);
-			populateNISTables(nisFiles);
+			//populateMSITables(msiFiles);
+			//populateNISTables(nisFiles);
+			populateNISTables2(nisFiles);
 		}
 		catch (Exception e1) {
 			e1.printStackTrace();

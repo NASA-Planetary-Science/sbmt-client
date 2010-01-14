@@ -80,8 +80,8 @@ public class SqlManager
             return;
         }
 
-	   String username = "";
-       String password = "";
+	   String username = "nearuser";
+       String password = "n3ar!usr";
        
        //conn = DriverManager.getConnection("jdbc:hsqldb:file:" + db_file_name_prefix, "sa", "");
         conn = DriverManager.getConnection("jdbc:mysql://sd-mysql.jhuapl.edu:3308/near?" +

@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 
 import vtk.*;
+import edu.jhuapl.near.util.BoundingBox;
 import edu.jhuapl.near.util.ConvertResourceToFile;
 import edu.jhuapl.near.util.IntersectionUtil;
 import edu.jhuapl.near.util.LatLon;
@@ -126,4 +127,17 @@ public class ErosModel extends Model
 		return erosActors;
 	}
 	
+	public BoundingBox computeBoundingBox()
+	{
+		BoundingBox bb = new BoundingBox();
+		vtkPoints points = erosPolyData.GetPoints();
+		int numberPoints = points.GetNumberOfPoints();
+		for (int i=0; i<numberPoints; ++i)
+		{
+			double[] pt = points.GetPoint(i);
+			bb.update(pt[0], pt[1], pt[2]);
+		}
+		
+		return bb;
+	}
 }

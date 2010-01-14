@@ -22,6 +22,17 @@ public class PickManager implements
 			MouseWheelListener,
 			PropertyChangeListener
 {
+	public enum PickMode
+	{
+		DEFAULT, 
+		POINT_SELECTION, 
+		RECTANGLE_SELECTION, 
+		LINEAMENT_MAPPER, 
+		CIRCLE_MAPPER
+	}
+	
+	private PickMode pickMode = PickMode.DEFAULT;
+	private ErosRenderer erosRenderer;
     private vtkRenderWindowPanel renWin;
     private LineamentPopupMenu lineamentPopupMenu;
     private MSIPopupMenu msiImagesPopupMenu;
@@ -35,12 +46,14 @@ public class PickManager implements
     private DecimalFormat decimalFormatter2 = new DecimalFormat("#0.000");
     
 	public PickManager(
-			vtkRenderWindowPanel renWin, 
+			//vtkRenderWindowPanel renWin, 
+			ErosRenderer erosRenderer, 
 			StatusBar statusBar,
 			ModelManager modelManager,
 			ModelInfoWindowManager infoPanelManager)
 	{
-		this.renWin = renWin;
+		this.erosRenderer = erosRenderer;
+		this.renWin = erosRenderer.getRenderWindowPanel();
 		this.statusBar = statusBar;
 		this.modelManager = modelManager;
 
@@ -71,11 +84,28 @@ public class PickManager implements
 		
 		nisSpectraPopupMenu = 
 			new NISPopupMenu(modelManager, infoPanelManager, renWin);
-
 	}
 
+	public void setPickMode(PickMode pickMode)
+	{
+		this.pickMode = pickMode;
+		switch(pickMode)
+		{
+		case DEFAULT:
+			erosRenderer.setInteractorToDefault();
+			break;
+		case LINEAMENT_MAPPER:
+			erosRenderer.setInteractorToNone();
+			break;
+		case CIRCLE_MAPPER:
+			erosRenderer.setInteractorToNone();
+			break;
+		}
+	}
+	
 	public void mouseClicked(MouseEvent e) 
 	{
+		System.out.println("clicked "+e.getClickCount());
 	}
 
 	public void mouseEntered(MouseEvent e) 
@@ -88,32 +118,40 @@ public class PickManager implements
 
 	public void mousePressed(MouseEvent e) 
 	{
+		System.out.println("pressed "+e.getClickCount());
 		if (renWin.GetRenderWindow().GetNeverRendered() > 0)
     		return;
 		
 		int pickSucceeded = mousePressCellPicker.Pick(e.getX(), renWin.getIren().GetSize()[1]-e.getY()-1, 0.0, renWin.GetRenderer());
-		if (pickSucceeded == 1)
+		
+		if (pickMode == PickMode.DEFAULT)
 		{
-			vtkActor pickedActor = mousePressCellPicker.GetActor();
-			Model model = modelManager.getModel(pickedActor);
-
-			if (model != null)
+			if (pickSucceeded == 1)
 			{
-				String text = model.getClickStatusBarText(pickedActor, mousePressCellPicker.GetCellId());
-				statusBar.setLeftText(text);
-			}
-		}		
-		else
-		{
-			statusBar.setLeftText(" ");
-		}
+				vtkActor pickedActor = mousePressCellPicker.GetActor();
+				Model model = modelManager.getModel(pickedActor);
 
-		maybeShowPopup(e);
+				if (model != null)
+				{
+					String text = model.getClickStatusBarText(pickedActor, mousePressCellPicker.GetCellId());
+					statusBar.setLeftText(text);
+				}
+			}		
+			else
+			{
+				statusBar.setLeftText(" ");
+			}
+
+			maybeShowPopup(e);
+		}
 	}
 
 	public void mouseReleased(MouseEvent e) 
 	{
-		maybeShowPopup(e);
+		if (pickMode == PickMode.DEFAULT)
+		{
+			maybeShowPopup(e);
+		}
 	}
 
 	public void mouseWheelMoved(MouseWheelEvent e) 
@@ -123,6 +161,11 @@ public class PickManager implements
 
 	public void mouseDragged(MouseEvent e) 
 	{
+		System.out.println("dragged");
+		if (pickMode == PickMode.LINEAMENT_MAPPER)
+		{
+		}
+
 		mouseMoved(e);
 	}
 

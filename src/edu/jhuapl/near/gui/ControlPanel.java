@@ -1,6 +1,8 @@
 package edu.jhuapl.near.gui;
 
 import javax.swing.*;
+
+import edu.jhuapl.near.gui.pick.PickManager;
 import edu.jhuapl.near.model.ModelManager;
 
 
@@ -10,33 +12,28 @@ public class ControlPanel extends JTabbedPane
 	private NISSearchPanel nisSearchPanel;
 	private NLRSearchPanel nlrSearchPanel;
 	private ErosControlPanel erosPanel;
-	//private MSIControlPanel msiPanel;
 	private LineamentControlPanel lineamentPanel;
+	private StructureMapperControlPanel structureMapperPanel;
 		
 	
 	public ControlPanel(
 			ErosRenderer viewer, 
 			ModelManager modelManager, 
-			ModelInfoWindowManager infoPanelManager)
+			ModelInfoWindowManager infoPanelManager,
+			PickManager pickManager)
 	{
-		JTabbedPane searchPanels = new JTabbedPane();
 		msiSearchPanel = new MSISearchPanel(modelManager, infoPanelManager, viewer.getRenderWindowPanel());
 		nisSearchPanel = new NISSearchPanel(modelManager, infoPanelManager, viewer.getRenderWindowPanel());
 		nlrSearchPanel = new NLRSearchPanel(modelManager, infoPanelManager, viewer.getRenderWindowPanel());
-		searchPanels.add("MSI", msiSearchPanel);
-		searchPanels.add("NIS", nisSearchPanel);
-		searchPanels.add("NLR", nlrSearchPanel);
-		
 		erosPanel = new ErosControlPanel(modelManager);
-		//msiPanel = new MSIControlPanel(modelManager);
 		lineamentPanel = new LineamentControlPanel(modelManager);
+		structureMapperPanel = new StructureMapperControlPanel(modelManager, pickManager);
 		
-		//addTab("Search", searchPanels);
 		addTab("MSI", msiSearchPanel);
 		addTab("NIS", nisSearchPanel);
 		addTab("NLR", nlrSearchPanel);
 		addTab("Eros", erosPanel);
-		//addTab("MSI", msiPanel);
 		addTab("Lineament", lineamentPanel);
+		addTab("Map Structures", structureMapperPanel);
 	}
 }

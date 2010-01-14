@@ -2,13 +2,12 @@ package edu.jhuapl.near;
 
 import javax.swing.*;
 
-import vtk.vtkRenderWindowPanel;
-
 import edu.jhuapl.near.gui.ControlPanel;
 import edu.jhuapl.near.gui.ErosRenderer;
 import edu.jhuapl.near.gui.FileMenu;
 import edu.jhuapl.near.gui.ModelInfoWindowManager;
 import edu.jhuapl.near.gui.StatusBar;
+import edu.jhuapl.near.gui.ToolBar;
 import edu.jhuapl.near.gui.pick.PickManager;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.util.NativeLibraryLoader;
@@ -21,6 +20,7 @@ public class ErosLineamentViewer extends JFrame
 	private ErosRenderer imageViewer;
 	private ControlPanel controlPanel;
 	private StatusBar statusBar;
+	private ToolBar toolBar;
 	private FileMenu fileMenu;
 	private ModelManager modelManager;
 	private PickManager pickManager;
@@ -38,10 +38,9 @@ public class ErosLineamentViewer extends JFrame
 		
 		imageViewer = new ErosRenderer(modelManager);
 
-		vtkRenderWindowPanel renWin = imageViewer.getRenderWindowPanel();
-		pickManager = new PickManager(renWin, statusBar, modelManager, infoPanelManager);
+		pickManager = new PickManager(imageViewer, statusBar, modelManager, infoPanelManager);
 
-        controlPanel = new ControlPanel(imageViewer, modelManager, infoPanelManager);
+        controlPanel = new ControlPanel(imageViewer, modelManager, infoPanelManager, pickManager);
 
 		splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
                 controlPanel, imageViewer);
@@ -53,7 +52,7 @@ public class ErosLineamentViewer extends JFrame
         controlPanel.setPreferredSize(new Dimension(300, 700));
 
 		createMenus(imageViewer);
-        createToolBars();
+        //createToolBars();
 
 		this.add(splitPane, BorderLayout.CENTER);
 
@@ -81,6 +80,8 @@ public class ErosLineamentViewer extends JFrame
 
     private void createToolBars()
     {
+    	toolBar = new ToolBar();
+    	this.getContentPane().add(toolBar, BorderLayout.PAGE_START);
     }
 
     private void createStatusBar()

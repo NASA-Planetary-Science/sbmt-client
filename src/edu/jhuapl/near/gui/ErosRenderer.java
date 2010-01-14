@@ -14,7 +14,8 @@ public class ErosRenderer extends JPanel implements
 {
     private vtkRenderWindowPanel renWin;
     private ModelManager modelManager;
-    
+    private vtkInteractorStyleTrackballCamera defaultInteractorStyle;
+    private vtkInteractorStyleRubberBand3D rubberBandInteractorStyle;
     
     public ErosRenderer(ModelManager modelManager) 
     {
@@ -26,9 +27,12 @@ public class ErosRenderer extends JPanel implements
 
         modelManager.addPropertyChangeListener(this);
         
-        vtkInteractorStyleTrackballCamera style =
-        	new vtkInteractorStyleTrackballCamera();
-        renWin.setInteractorStyle(style);
+        defaultInteractorStyle = new vtkInteractorStyleTrackballCamera();
+        rubberBandInteractorStyle = new vtkInteractorStyleRubberBand3D();
+//        vtkInteractorStyleRubberBandPick style =
+//        	new vtkInteractorStyleRubberBandPick();
+        
+        renWin.setInteractorStyle(defaultInteractorStyle);
         
         add(renWin, BorderLayout.CENTER);
 
@@ -135,5 +139,20 @@ public class ErosRenderer extends JPanel implements
     	{
     		renWin.Render();
     	}
+    }
+    
+    public void setInteractorToRubberBand()
+    {
+        renWin.setInteractorStyle(rubberBandInteractorStyle);
+    }
+
+    public void setInteractorToDefault()
+    {
+        renWin.setInteractorStyle(defaultInteractorStyle);
+    }
+    
+    public void setInteractorToNone()
+    {
+        renWin.setInteractorStyle(null);
     }
 }
