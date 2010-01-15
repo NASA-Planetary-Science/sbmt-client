@@ -105,7 +105,6 @@ public class PickManager implements
 	
 	public void mouseClicked(MouseEvent e) 
 	{
-		System.out.println("clicked "+e.getClickCount());
 	}
 
 	public void mouseEntered(MouseEvent e) 
@@ -161,7 +160,6 @@ public class PickManager implements
 
 	public void mouseDragged(MouseEvent e) 
 	{
-		System.out.println("dragged");
 		if (pickMode == PickMode.LINEAMENT_MAPPER)
 		{
 		}

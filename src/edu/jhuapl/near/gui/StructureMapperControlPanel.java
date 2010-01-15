@@ -19,6 +19,7 @@ public class StructureMapperControlPanel extends JPanel implements ItemListener,
     private JButton mapLineButton;
     private JButton mapCircleButton;
     private JButton saveStructuresButton;
+    private JButton stopDrawingButton;
     private File structuresFile;
     
     public StructureMapperControlPanel(ModelManager modelManager, final PickManager pickManager) 
@@ -27,7 +28,7 @@ public class StructureMapperControlPanel extends JPanel implements ItemListener,
 
 		setLayout(new MigLayout("wrap 2, insets 0"));
 
-        this.loadStructuresButton = new JButton("Load Structure File...");
+        this.loadStructuresButton = new JButton("Load Structures File...");
         this.loadStructuresButton.setEnabled(true);
         this.loadStructuresButton.addActionListener(this);
 
@@ -38,6 +39,7 @@ public class StructureMapperControlPanel extends JPanel implements ItemListener,
         add(this.loadStructuresButton);
         add(this.structuresFileTextField);
         
+        mapLineButton = new JButton();
         mapLineButton.setToolTipText("Draw a lineament");
         mapLineButton.addActionListener(new ActionListener()
         {
@@ -65,7 +67,20 @@ public class StructureMapperControlPanel extends JPanel implements ItemListener,
 
         add(mapCircleButton);
 
-        this.saveStructuresButton= new JButton("Load Structure File...");
+        stopDrawingButton = new JButton();
+        stopDrawingButton.setToolTipText("Stop Drawing a line or circle and return to default mouse interaction");
+        stopDrawingButton.addActionListener(new ActionListener()
+        {
+			public void actionPerformed(ActionEvent e) 
+			{
+				pickManager.setPickMode(PickManager.PickMode.DEFAULT);
+			}
+        });
+        stopDrawingButton.setText("Stop Drawing");
+
+        add(stopDrawingButton, "wrap");
+
+        this.saveStructuresButton= new JButton("Save");
         this.saveStructuresButton.setEnabled(true);
         this.saveStructuresButton.addActionListener(this);
 
