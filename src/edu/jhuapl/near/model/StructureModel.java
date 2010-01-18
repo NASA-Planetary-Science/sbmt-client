@@ -14,11 +14,16 @@ import org.w3c.dom.NodeList;
 import com.sun.org.apache.xml.internal.serialize.OutputFormat;
 import com.sun.org.apache.xml.internal.serialize.XMLSerializer;
 
-import edu.jhuapl.near.util.*;
 import edu.jhuapl.near.util.Properties;
 
 import vtk.*;
 
+/**
+ * Model of structures drawn on Eros such as lineaments and circles.
+ * 
+ * @author 
+ *
+ */
 public class StructureModel extends Model 
 {
 	private HashMap<Integer, Lineament> idToLineamentMap = new HashMap<Integer, Lineament>();
@@ -430,6 +435,21 @@ public class StructureModel extends Model
 			return struc.getClickStatusBarText();
 		else
 			return "";
+    }
+
+    public void updateLineamentVertex(int cellId, int vertexId, double[] newPoint)
+    {
+    	
+    }
+    
+    public void addLineamentVertex(int cellId, double[] newPoint)
+    {
+    	
+    }
+
+    public void removeLineamentVertex(int cellId, int vertexId)
+    {
+    	
     }
 
 }
