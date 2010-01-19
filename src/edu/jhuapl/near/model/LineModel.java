@@ -6,7 +6,9 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import edu.jhuapl.near.util.LatLon;
 import edu.jhuapl.near.util.Properties;
+import edu.jhuapl.near.util.Spice;
 
 import vtk.*;
 
@@ -297,7 +299,38 @@ public class LineModel extends Model
 
     public void addNewLineament(double[] pt1, double[] pt2)
     {
-		lineamentsPolyData.Modified();
+        vtkPoints points = lineamentsPolyData.GetPoints();
+        vtkCellArray lines = lineamentsPolyData.GetLines();
+        vtkUnsignedCharArray colors = (vtkUnsignedCharArray)lineamentsPolyData.GetCellData().GetScalars();
+        
+        LatLon ll1 = Spice.reclat(pt1);
+        LatLon ll2 = Spice.reclat(pt2);
+        
+        Lineament lin = new Lineament();
+        lin.lat.add(ll1.lat);
+        lin.lon.add(ll1.lon);
+        lin.rad.add(ll1.rad);
+        lin.lat.add(ll2.lat);
+        lin.lon.add(ll2.lon);
+        lin.rad.add(ll2.rad);
+
+        lineaments.add(lin);
+        
+        vtkIdList idList = new vtkIdList();
+        idList.SetNumberOfIds(2);
+
+        idList.SetId(0, points.GetNumberOfPoints());
+        lin.pointIds.add(points.GetNumberOfPoints());
+        points.InsertNextPoint(pt1);
+        idList.SetId(1, points.GetNumberOfPoints());
+        lin.pointIds.add(points.GetNumberOfPoints());
+        points.InsertNextPoint(pt2);
+
+        lin.cellId = lines.GetNumberOfCells();
+        lines.InsertNextCell(idList);
+    	colors.InsertNextTuple4(defaultColor[0],defaultColor[1],defaultColor[2],defaultColor[3]);
+
+        lineamentsPolyData.Modified();
 		this.pcs.firePropertyChange(Properties.LINEAMENT_MODEL_CHANGED, null, null);
     }
     
@@ -306,6 +339,11 @@ public class LineModel extends Model
         vtkPoints points = lineamentsPolyData.GetPoints();
         
         Lineament lin = lineaments.get(cellId);
+        LatLon ll = Spice.reclat(newPoint);
+        lin.lat.set(vertexId, ll.lat);
+        lin.lon.set(vertexId, ll.lon);
+        lin.rad.set(vertexId, ll.rad);
+        
         int ptId = lin.pointIds.get(vertexId);
         points.SetPoint(ptId, newPoint);
         
@@ -315,12 +353,24 @@ public class LineModel extends Model
     
     public void addLineamentVertex(int cellId, double[] newPoint)
     {
-		lineamentsPolyData.Modified();
+        vtkPoints points = lineamentsPolyData.GetPoints();
+        vtkCellArray lines = lineamentsPolyData.GetLines();
+
+        Lineament lin = lineaments.get(cellId);
+        LatLon ll = Spice.reclat(newPoint);
+        lin.lat.add(ll.lat);
+        lin.lon.add(ll.lon);
+        lin.rad.add(ll.rad);
+
+        
+        lineamentsPolyData.Modified();
 		this.pcs.firePropertyChange(Properties.LINEAMENT_MODEL_CHANGED, null, null);
     }
 
     public void removeLineamentVertex(int cellId, int vertexId)
     {
+    	lineaments.remove(cellId);
+    	
 		lineamentsPolyData.Modified();
 		this.pcs.firePropertyChange(Properties.LINEAMENT_MODEL_CHANGED, null, null);
     }
