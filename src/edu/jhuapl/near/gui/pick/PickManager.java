@@ -44,6 +44,7 @@ public class PickManager implements
     private vtkCellPicker mousePressCellPicker;
     private DecimalFormat decimalFormatter = new DecimalFormat("##0.000");
     private DecimalFormat decimalFormatter2 = new DecimalFormat("#0.000");
+    private LineamentMapper lineamentMapper;
     
 	public PickManager(
 			//vtkRenderWindowPanel renWin, 
@@ -84,6 +85,8 @@ public class PickManager implements
 		
 		nisSpectraPopupMenu = 
 			new NISPopupMenu(modelManager, infoPanelManager, renWin);
+		
+		lineamentMapper = new LineamentMapper(erosRenderer, modelManager);
 	}
 
 	public void setPickMode(PickMode pickMode)
@@ -117,14 +120,13 @@ public class PickManager implements
 
 	public void mousePressed(MouseEvent e) 
 	{
-		System.out.println("pressed "+e.getClickCount());
 		if (renWin.GetRenderWindow().GetNeverRendered() > 0)
     		return;
 		
-		int pickSucceeded = mousePressCellPicker.Pick(e.getX(), renWin.getIren().GetSize()[1]-e.getY()-1, 0.0, renWin.GetRenderer());
-		
 		if (pickMode == PickMode.DEFAULT)
 		{
+			int pickSucceeded = mousePressCellPicker.Pick(e.getX(), renWin.getIren().GetSize()[1]-e.getY()-1, 0.0, renWin.GetRenderer());
+			
 			if (pickSucceeded == 1)
 			{
 				vtkActor pickedActor = mousePressCellPicker.GetActor();
@@ -143,6 +145,10 @@ public class PickManager implements
 
 			maybeShowPopup(e);
 		}
+		else if (pickMode == PickMode.LINEAMENT_MAPPER)
+		{
+			lineamentMapper.mousePressed(e);
+		}
 	}
 
 	public void mouseReleased(MouseEvent e) 
@@ -151,20 +157,25 @@ public class PickManager implements
 		{
 			maybeShowPopup(e);
 		}
+		else if (pickMode == PickMode.LINEAMENT_MAPPER)
+		{
+			lineamentMapper.mouseReleased(e);
+		}
 	}
 
 	public void mouseWheelMoved(MouseWheelEvent e) 
 	{
-		mouseMoved(e);
+		showPositionInfoInStatusBar(e);
 	}
 
 	public void mouseDragged(MouseEvent e) 
 	{
 		if (pickMode == PickMode.LINEAMENT_MAPPER)
 		{
+			lineamentMapper.mouseDragged(e);
 		}
 
-		mouseMoved(e);
+		showPositionInfoInStatusBar(e);
 	}
 
 	public void mouseMoved(MouseEvent e) 
@@ -172,7 +183,82 @@ public class PickManager implements
 		if (renWin.GetRenderWindow().GetNeverRendered() > 0)
     		return;
 
-		
+		if (pickMode == PickMode.LINEAMENT_MAPPER)
+		{
+			lineamentMapper.mouseMoved(e);
+		}
+
+		showPositionInfoInStatusBar(e);
+	}
+
+	private void maybeShowPopup(MouseEvent e) 
+	{
+        if (e.isPopupTrigger()) 
+        {
+        	if (renWin.GetRenderWindow().GetNeverRendered() > 0)
+        		return;
+    		
+    		int pickSucceeded = mousePressCellPicker.Pick(e.getX(), renWin.getIren().GetSize()[1]-e.getY()-1, 0.0, renWin.GetRenderer());
+    		if (pickSucceeded == 1)
+    		{
+    			vtkActor pickedActor = mousePressCellPicker.GetActor();
+    			if (modelManager.getModel(pickedActor) instanceof LineamentModel)
+    			{
+        			LineamentModel linModel = (LineamentModel)modelManager.getModel(ModelManager.LINEAMENT);
+    				LineamentModel.Lineament lin = linModel.getLineament(mousePressCellPicker.GetCellId());
+    	    		if (lin != null)
+    	    			lineamentPopupMenu.show(e.getComponent(), e.getX(), e.getY(), lin);
+    			}
+    			else if (modelManager.getModel(pickedActor) instanceof MSIBoundaryCollection)
+    			{
+        			MSIBoundaryCollection msiBoundaries = (MSIBoundaryCollection)modelManager.getModel(ModelManager.MSI_BOUNDARY);
+        			String name = msiBoundaries.getBoundaryName(pickedActor);
+        			msiBoundariesPopupMenu.setCurrentImage(name);
+        			msiBoundariesPopupMenu.show(e.getComponent(), e.getX(), e.getY());
+    			}
+    			else if (modelManager.getModel(pickedActor) instanceof NearImageCollection)
+    			{
+        			NearImageCollection msiImages = (NearImageCollection)modelManager.getModel(ModelManager.MSI_IMAGES);
+        			String name = msiImages.getImageName(pickedActor);
+        			msiImagesPopupMenu.setCurrentImage(name);
+        			msiImagesPopupMenu.show(e.getComponent(), e.getX(), e.getY());
+    			}
+    			else if (modelManager.getModel(pickedActor) instanceof NISSpectraCollection)
+    			{
+    				NISSpectraCollection msiImages = (NISSpectraCollection)modelManager.getModel(ModelManager.NIS_SPECTRA);
+        			String name = msiImages.getSpectrumName(pickedActor);
+        			nisSpectraPopupMenu.setCurrentSpectrum(name);
+        			nisSpectraPopupMenu.show(e.getComponent(), e.getX(), e.getY());
+    			}
+    		}		
+        }
+    }
+
+	public void propertyChange(PropertyChangeEvent evt) 
+	{
+		if (evt.getPropertyName().equals(Properties.MODEL_CHANGED))
+		{
+			// Whenever the model actors change, we need to update the pickers 
+			// internal list of all actors to pick from. The Eros actor is excluded
+			// from this list since many other actors occupy the same position
+			// as parts of Eros and we want the picker to pick these other
+			// actors rather than Eros. Note that this exclusion only applies 
+			// the picker used for mouse presses. The picker used for mouse moves
+			// however includes all actors, including Eros.
+			ArrayList<vtkActor> actors = modelManager.getActorsExceptEros();
+			mousePressCellPicker.GetPickList().RemoveAllItems();
+			for (vtkActor act : actors)
+			{
+				mousePressCellPicker.AddPickList(act);
+			}
+		}
+	}
+	
+	private void showPositionInfoInStatusBar(MouseEvent e)
+	{
+		if (renWin.GetRenderWindow().GetNeverRendered() > 0)
+    		return;
+
 		double[] cameraPos = renWin.GetRenderer().GetActiveCamera().GetPosition();
 		double distance = Math.sqrt(
 				cameraPos[0]*cameraPos[0] +
@@ -238,69 +324,6 @@ public class PickManager implements
 		else
 		{
 			statusBar.setRightText("Distance: " + distanceStr + " ");
-		}
-	}
-
-	private void maybeShowPopup(MouseEvent e) 
-	{
-        if (e.isPopupTrigger()) 
-        {
-        	if (renWin.GetRenderWindow().GetNeverRendered() > 0)
-        		return;
-    		
-    		int pickSucceeded = mousePressCellPicker.Pick(e.getX(), renWin.getIren().GetSize()[1]-e.getY()-1, 0.0, renWin.GetRenderer());
-    		if (pickSucceeded == 1)
-    		{
-    			vtkActor pickedActor = mousePressCellPicker.GetActor();
-    			if (modelManager.getModel(pickedActor) instanceof LineamentModel)
-    			{
-        			LineamentModel linModel = (LineamentModel)modelManager.getModel(ModelManager.LINEAMENT);
-    				LineamentModel.Lineament lin = linModel.getLineament(mousePressCellPicker.GetCellId());
-    	    		if (lin != null)
-    	    			lineamentPopupMenu.show(e.getComponent(), e.getX(), e.getY(), lin);
-    			}
-    			else if (modelManager.getModel(pickedActor) instanceof MSIBoundaryCollection)
-    			{
-        			MSIBoundaryCollection msiBoundaries = (MSIBoundaryCollection)modelManager.getModel(ModelManager.MSI_BOUNDARY);
-        			String name = msiBoundaries.getBoundaryName(pickedActor);
-        			msiBoundariesPopupMenu.setCurrentImage(name);
-        			msiBoundariesPopupMenu.show(e.getComponent(), e.getX(), e.getY());
-    			}
-    			else if (modelManager.getModel(pickedActor) instanceof NearImageCollection)
-    			{
-        			NearImageCollection msiImages = (NearImageCollection)modelManager.getModel(ModelManager.MSI_IMAGES);
-        			String name = msiImages.getImageName(pickedActor);
-        			msiImagesPopupMenu.setCurrentImage(name);
-        			msiImagesPopupMenu.show(e.getComponent(), e.getX(), e.getY());
-    			}
-    			else if (modelManager.getModel(pickedActor) instanceof NISSpectraCollection)
-    			{
-    				NISSpectraCollection msiImages = (NISSpectraCollection)modelManager.getModel(ModelManager.NIS_SPECTRA);
-        			String name = msiImages.getSpectrumName(pickedActor);
-        			nisSpectraPopupMenu.setCurrentSpectrum(name);
-        			nisSpectraPopupMenu.show(e.getComponent(), e.getX(), e.getY());
-    			}
-    		}		
-        }
-    }
-
-	public void propertyChange(PropertyChangeEvent evt) 
-	{
-		if (evt.getPropertyName().equals(Properties.MODEL_CHANGED))
-		{
-			// Whenever the model actors change, we need to update the pickers 
-			// internal list of all actors to pick from. The Eros actor is excluded
-			// from this list since many other actors occupy the same position
-			// as parts of Eros and we want the picker to pick these other
-			// actors rather than Eros. Note that this exclusion only applies 
-			// the picker used for mouse presses. The picker used for mouse moves
-			// however includes all actors, including Eros.
-			ArrayList<vtkActor> actors = modelManager.getActorsExceptEros();
-			mousePressCellPicker.GetPickList().RemoveAllItems();
-			for (vtkActor act : actors)
-			{
-				mousePressCellPicker.AddPickList(act);
-			}
 		}
 	}
 }

@@ -25,14 +25,13 @@ public class LineModel extends Model
 	private ArrayList<Lineament> lineaments = new ArrayList<Lineament>();
 	private vtkPolyData lineamentsPolyData;
     private ArrayList<vtkActor> lineamentsActors = new ArrayList<vtkActor>();
-    //private vtkActor structuresActor;
 	private int[] defaultColor = {255, 0, 255, 255}; // RGBA, default to purple
 	static public String LINEAMENTS = "lineaments";
 
 	public static class Lineament extends StructureModel.Structure
 	{
-		public int cellId;
-		public ArrayList<Integer> pointIds = new ArrayList<Integer>();
+		//public int cellId;
+		//public ArrayList<Integer> pointIds = new ArrayList<Integer>();
 		
 		public String name = "";
 		public int id;
@@ -132,41 +131,48 @@ public class LineModel extends Model
 			}
 		}
 
-		createPolyData();
-
-		vtkPolyDataMapper lineamentMapper = new vtkPolyDataMapper();
-		lineamentMapper.SetInput(lineamentsPolyData);
-		//lineamentMapper.SetResolveCoincidentTopologyToPolygonOffset();
-		//lineamentMapper.SetResolveCoincidentTopologyPolygonOffsetParameters(-1000.0, -1000.0);
-
-		vtkActor lineamentActor = new vtkActor();
-		lineamentActor.SetMapper(lineamentMapper);
-
-		lineamentsActors.clear();
-		lineamentsActors.add(lineamentActor);
+		updatePolyData();
 
 		System.out.println("Number of lineaments: " + this.lineaments.size());
     }
     
 	
 
-	private void createPolyData()
+	private void updatePolyData()
 	{
-		lineamentsPolyData = new vtkPolyData();
-        vtkPoints points = new vtkPoints();
-        vtkCellArray lines = new vtkCellArray();
-        vtkUnsignedCharArray colors = new vtkUnsignedCharArray();
+		if (lineamentsPolyData == null)
+		{
+			lineamentsPolyData = new vtkPolyData();
+			vtkPoints points = new vtkPoints();
+			vtkCellArray lines = new vtkCellArray();
+			vtkUnsignedCharArray colors = new vtkUnsignedCharArray();
+
+	        lineamentsPolyData.SetPoints(points);
+	        lineamentsPolyData.SetLines(lines);
+	        lineamentsPolyData.GetCellData().SetScalars(colors);
+		}
+
+        vtkPoints points = lineamentsPolyData.GetPoints();
+        vtkCellArray lines = lineamentsPolyData.GetLines();
+        vtkUnsignedCharArray colors = (vtkUnsignedCharArray)lineamentsPolyData.GetCellData().GetScalars();
+
+        points.SetNumberOfPoints(0);
+        lines.SetNumberOfCells(0);
+        colors.SetNumberOfTuples(0);
+        //points.Reset();
+        //lines.Reset();
+        //colors.Reset();
         
         colors.SetNumberOfComponents(4);
         
         vtkIdList idList = new vtkIdList();
 
         int c=0;
-        int cellId = 0;
+        //int cellId = 0;
 		for (Lineament lin : this.lineaments)
 		{
-			lin.cellId = cellId;
-			lin.pointIds.clear();
+			//lin.cellId = cellId;
+			//lin.pointIds.clear();
 			
             int size = lin.lat.size();
             idList.SetNumberOfIds(size);
@@ -182,25 +188,62 @@ public class LineModel extends Model
 
                 points.InsertNextPoint(x, y, z);
             	idList.SetId(i, c);
-            	lin.pointIds.add(c);
+            	//lin.pointIds.add(c);
             	++c;
             }
 
             lines.InsertNextCell(idList);
         	colors.InsertNextTuple4(defaultColor[0],defaultColor[1],defaultColor[2],defaultColor[3]);
             
-            ++cellId;
+            //++cellId;
+		}
+
+		if (lineamentsActors.isEmpty())
+		{
+			vtkPolyDataMapper lineamentMapper = new vtkPolyDataMapper();
+			lineamentMapper.SetInput(lineamentsPolyData);
+			lineamentMapper.SetResolveCoincidentTopologyToPolygonOffset();
+			lineamentMapper.SetResolveCoincidentTopologyPolygonOffsetParameters(-0.002, -2.0);
+
+			vtkActor lineamentActor = new vtkActor();
+			lineamentActor.SetMapper(lineamentMapper);
+			lineamentActor.GetProperty().SetLineWidth(2.0);
+			
+			lineamentsActors.add(lineamentActor);
+		}
+	}
+
+	/*
+	private void updateCellData()
+	{
+        vtkCellArray lines = lineamentsPolyData.GetLines();
+        lines.Reset();
+        
+        vtkIdList idList = new vtkIdList();
+
+        int c=0;
+		for (Lineament lin : this.lineaments)
+		{
+            int size = lin.lat.size();
+            idList.SetNumberOfIds(size);
+            
+            for (int i=0;i<size;++i)
+            {
+            	idList.SetId(i, c);
+            	++c;
+            }
+
+            lines.InsertNextCell(idList);
 		}
 		
-        lineamentsPolyData.SetPoints(points);
         lineamentsPolyData.SetLines(lines);
-        lineamentsPolyData.GetCellData().SetScalars(colors);
 	}
+	*/
 	
-	public StructureModel.Structure getStructure(int idx)
-	{
-		return this.lineaments.get(idx);
-	}
+//	public StructureModel.Structure getStructure(int idx)
+//	{
+//		return this.lineaments.get(idx);
+//	}
 		
 	/*
 	public void setLineamentColor(int cellId, int[] color)
@@ -290,19 +333,20 @@ public class LineModel extends Model
 	
     public String getClickStatusBarText(vtkActor actor, int cellId)
     {
-    	StructureModel.Structure struc = getStructure(cellId);
-		if (struc != null)
-			return struc.getClickStatusBarText();
+    	Lineament lin = this.lineaments.get(cellId);
+		if (lin != null)
+			return lin.getClickStatusBarText();
 		else
 			return "";
     }
 
+    public int getNumberOfLineaments()
+    {
+    	return lineaments.size();
+    }
+    
     public void addNewLineament(double[] pt1, double[] pt2)
     {
-        vtkPoints points = lineamentsPolyData.GetPoints();
-        vtkCellArray lines = lineamentsPolyData.GetLines();
-        vtkUnsignedCharArray colors = (vtkUnsignedCharArray)lineamentsPolyData.GetCellData().GetScalars();
-        
         LatLon ll1 = Spice.reclat(pt1);
         LatLon ll2 = Spice.reclat(pt2);
         
@@ -315,20 +359,25 @@ public class LineModel extends Model
         lin.rad.add(ll2.rad);
 
         lineaments.add(lin);
+
+        /*
+        vtkPoints points = lineamentsPolyData.GetPoints();
+        vtkCellArray lines = lineamentsPolyData.GetLines();
+        vtkUnsignedCharArray colors = (vtkUnsignedCharArray)lineamentsPolyData.GetCellData().GetScalars();
         
         vtkIdList idList = new vtkIdList();
         idList.SetNumberOfIds(2);
 
         idList.SetId(0, points.GetNumberOfPoints());
-        lin.pointIds.add(points.GetNumberOfPoints());
         points.InsertNextPoint(pt1);
         idList.SetId(1, points.GetNumberOfPoints());
-        lin.pointIds.add(points.GetNumberOfPoints());
         points.InsertNextPoint(pt2);
 
-        lin.cellId = lines.GetNumberOfCells();
         lines.InsertNextCell(idList);
     	colors.InsertNextTuple4(defaultColor[0],defaultColor[1],defaultColor[2],defaultColor[3]);
+		*/
+        
+        updatePolyData();
 
         lineamentsPolyData.Modified();
 		this.pcs.firePropertyChange(Properties.LINEAMENT_MODEL_CHANGED, null, null);
@@ -336,7 +385,7 @@ public class LineModel extends Model
     
     public void updateLineamentVertex(int cellId, int vertexId, double[] newPoint)
     {
-        vtkPoints points = lineamentsPolyData.GetPoints();
+        //vtkPoints points = lineamentsPolyData.GetPoints();
         
         Lineament lin = lineaments.get(cellId);
         LatLon ll = Spice.reclat(newPoint);
@@ -344,8 +393,9 @@ public class LineModel extends Model
         lin.lon.set(vertexId, ll.lon);
         lin.rad.set(vertexId, ll.rad);
         
-        int ptId = lin.pointIds.get(vertexId);
-        points.SetPoint(ptId, newPoint);
+        updatePolyData();
+        //int ptId = lineamentsPolyData.GetCell(cellId).GetPointId(vertexId);
+        //points.SetPoint(ptId, newPoint);
         
 		lineamentsPolyData.Modified();
 		this.pcs.firePropertyChange(Properties.LINEAMENT_MODEL_CHANGED, null, null);
@@ -353,15 +403,13 @@ public class LineModel extends Model
     
     public void addLineamentVertex(int cellId, double[] newPoint)
     {
-        vtkPoints points = lineamentsPolyData.GetPoints();
-        vtkCellArray lines = lineamentsPolyData.GetLines();
-
         Lineament lin = lineaments.get(cellId);
         LatLon ll = Spice.reclat(newPoint);
         lin.lat.add(ll.lat);
         lin.lon.add(ll.lon);
         lin.rad.add(ll.rad);
 
+        updatePolyData();
         
         lineamentsPolyData.Modified();
 		this.pcs.firePropertyChange(Properties.LINEAMENT_MODEL_CHANGED, null, null);
@@ -370,7 +418,9 @@ public class LineModel extends Model
     public void removeLineamentVertex(int cellId, int vertexId)
     {
     	lineaments.remove(cellId);
-    	
+
+        updatePolyData();
+
 		lineamentsPolyData.Modified();
 		this.pcs.firePropertyChange(Properties.LINEAMENT_MODEL_CHANGED, null, null);
     }
