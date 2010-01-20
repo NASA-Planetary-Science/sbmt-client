@@ -84,7 +84,7 @@ public class SqlManager
        String password = "n3ar!usr";
        
        //conn = DriverManager.getConnection("jdbc:hsqldb:file:" + db_file_name_prefix, "sa", "");
-        conn = DriverManager.getConnection("jdbc:mysql://sd-mysql.jhuapl.edu:3308/near?" +
+        conn = DriverManager.getConnection("jdbc:mysql://sd-mysql.jhuapl.edu:3306/near?" +
         "user=" + username + "&password=" + password);
 
     }

@@ -1,6 +1,10 @@
 package edu.jhuapl.near.model;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 import vtk.*;
@@ -20,6 +24,20 @@ public class ErosModel extends Model
     //private vtkCellLocator locator;
     private vtkOBBTree locator;
     private vtkPoints intersectPoints;
+    private vtkFloatArray elevationValues;
+    private vtkFloatArray gravAccValues;
+    private vtkFloatArray gravPotValues;
+    private vtkFloatArray slopeValues;
+    
+    public enum ColoringType { 
+    	NONE, 
+    	ELEVATION, 
+    	GRAVITATIONAL_ACCELERATION,
+    	GRAVITATIONAL_POTENTIAL,
+    	SLOPE
+    }
+    
+    private ColoringType coloringType;
     
 	public ErosModel()
 	{
@@ -65,6 +83,79 @@ public class ErosModel extends Model
 		
 	}
 	
+	private void loadColoring(ColoringType type) throws IOException
+	{
+		if (elevationValues == null)
+		{
+			elevationValues = new vtkFloatArray();
+			gravAccValues = new vtkFloatArray();
+			gravPotValues = new vtkFloatArray();
+			slopeValues = new vtkFloatArray();
+		}
+		else
+		{
+			return;
+		}
+		
+		String[] coloringFiles = {
+				"/edu/jhuapl/near/data/Eros_Dec2006_0_Elevation.txt",
+				"/edu/jhuapl/near/data/Eros_Dec2006_0_GravitationalAcceleration.txt",
+				"/edu/jhuapl/near/data/Eros_Dec2006_0_GravitationalPotential.txt",
+				"/edu/jhuapl/near/data/Eros_Dec2006_0_Slope.txt"
+		};
+		vtkFloatArray[] arrays = {
+				this.elevationValues,
+				this.gravAccValues,
+				this.gravPotValues,
+				this.slopeValues
+		};
+		
+		for (int i=0; i<4; ++i)
+		{
+			String file = coloringFiles[i];
+			vtkFloatArray array = arrays[i];
+			
+			array.SetNumberOfComponents(1);
+			array.SetNumberOfTuples(erosPolyData.GetNumberOfPoints());
+			
+			InputStream is = getClass().getResourceAsStream(file);
+			InputStreamReader isr = new InputStreamReader(is);
+			BufferedReader in = new BufferedReader(isr);
+
+			String line;
+			int j = 0;
+			while ((line = in.readLine()) != null)
+			{
+				array.SetTuple1(j, Float.parseFloat(line));
+				++j;
+			}
+		}
+	}
+	
+	public void setColorBy(ColoringType type)
+	{
+		if (coloringType == type)
+			return;
+		
+		coloringType = type;
+		
+		switch(type)
+		{
+		case NONE:
+			break;
+		case ELEVATION:
+			break;
+		case GRAVITATIONAL_ACCELERATION:
+			break;
+		case GRAVITATIONAL_POTENTIAL:
+			break;
+		case SLOPE:
+			break;
+		}
+		
+		this.pcs.firePropertyChange(Properties.EROS_MODEL_CHANGED, null, null);
+	}
+	
 	public void setShowLighting(boolean lighting)
 	{
 		this.showLighting = lighting;
@@ -108,6 +199,14 @@ public class ErosModel extends Model
 			double[] ll)
 	{
 		return IntersectionUtil.computeFrustumIntersection(erosPolyData, locator, origin, ul, ur, lr, ll);
+	}
+
+	public vtkPolyData computePlaneIntersection(
+			double[] origin, 
+			double[] pt1,
+			double[] pt2)
+	{
+		return IntersectionUtil.computePlaneIntersection(erosPolyData, locator, origin, pt1, pt2);
 	}
 	
 	public ArrayList<vtkActor> getActors() 

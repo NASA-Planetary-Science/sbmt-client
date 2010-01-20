@@ -43,7 +43,7 @@ public class ModelManager extends Model implements PropertyChangeListener
     	msiBoundaries = new MSIBoundaryCollection();
     	nisSpectra = new NISSpectraCollection(erosModel);
     	nlrData = new NLRDataCollection();
-    	lineModel = new LineModel();
+    	lineModel = new LineModel(erosModel);
     	circleModel = new CircleModel();
     	
     	lineamentModel.addPropertyChangeListener(this);

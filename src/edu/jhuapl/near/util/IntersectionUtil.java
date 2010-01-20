@@ -241,4 +241,81 @@ public class IntersectionUtil
 		return polyData;
 	}
 
+	public static vtkPolyData computeConeIntersection(
+			vtkPolyData polyData,
+			vtkAbstractCellLocator locator,
+			double[] origin, 
+			double[] vec,
+			double angle)
+	{
+		if (math == null)
+			math = new vtkMath();
+
+//		double[] vec1 = {pt1[0]-origin[0], pt1[1]-origin[1], pt1[2]-origin[2]};
+//		double[] vec2 = {pt2[0]-origin[0], pt2[1]-origin[1], pt2[2]-origin[2]};
+//		double[] normal = new double[3];
+//		math.Cross(vec1, vec2, normal);
+//		math.Normalize(normal);
+
+		vtkCone cone = new vtkCone();
+		cone.SetAngle(angle);
+		
+		vtkTransform transform = new vtkTransform();
+		
+		cone.SetTransform(transform);
+		
+		vtkClipPolyData clipPolyData = new vtkClipPolyData();
+		clipPolyData.SetInput(polyData);
+		clipPolyData.SetClipFunction(cone);
+		clipPolyData.SetInsideOut(1);
+		clipPolyData.Update();
+		
+		polyData = new vtkPolyData();
+		polyData.DeepCopy(clipPolyData.GetOutput());
+		
+        vtkPolyDataWriter writer = new vtkPolyDataWriter();
+        writer.SetInput(polyData);
+        writer.SetFileName("/tmp/coneeros.vtk");
+        //writer.SetFileTypeToBinary();
+        writer.Write();
+
+		return polyData;
+	}
+
+	public static vtkPolyData computePlaneIntersection(
+			vtkPolyData polyData,
+			vtkAbstractCellLocator locator,
+			double[] origin, 
+			double[] pt1,
+			double[] pt2)
+	{
+		if (math == null)
+			math = new vtkMath();
+
+		double[] vec1 = {pt1[0]-origin[0], pt1[1]-origin[1], pt1[2]-origin[2]};
+		double[] vec2 = {pt2[0]-origin[0], pt2[1]-origin[1], pt2[2]-origin[2]};
+		double[] normal = new double[3];
+		math.Cross(vec1, vec2, normal);
+		math.Normalize(normal);
+
+		vtkPlane plane = new vtkPlane();
+		plane.SetOrigin(pt1);
+		plane.SetNormal(normal);
+
+		vtkCutter clipPolyData = new vtkCutter();
+		clipPolyData.SetInput(polyData);
+		clipPolyData.SetCutFunction(plane);
+		clipPolyData.Update();
+		
+		polyData = new vtkPolyData();
+		polyData.DeepCopy(clipPolyData.GetOutput());
+		
+        vtkPolyDataWriter writer = new vtkPolyDataWriter();
+        writer.SetInput(polyData);
+        writer.SetFileName("/tmp/cuteros.vtk");
+        //writer.SetFileTypeToBinary();
+        writer.Write();
+
+		return polyData;
+	}
 }

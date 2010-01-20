@@ -42,7 +42,7 @@ public class StructureModel extends Model implements PropertyChangeListener
 	
 	public StructureModel()
 	{
-		lineModel = new LineModel();
+		//lineModel = new LineModel();
 		circleModel = new CircleModel();
 		lineModel.addPropertyChangeListener(this);
 		circleModel.addPropertyChangeListener(this);
