@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import vtk.*;
 import edu.jhuapl.near.util.BoundingBox;
 import edu.jhuapl.near.util.ConvertResourceToFile;
-import edu.jhuapl.near.util.IntersectionUtil;
+import edu.jhuapl.near.util.PolyDataUtil;
 import edu.jhuapl.near.util.LatLon;
 import edu.jhuapl.near.util.Properties;
 import edu.jhuapl.near.util.Spice;
@@ -266,7 +266,7 @@ public class ErosModel extends Model
 			double[] lr,
 			double[] ll)
 	{
-		return IntersectionUtil.computeFrustumIntersection(erosPolyData, locator, origin, ul, ur, lr, ll);
+		return PolyDataUtil.computeFrustumIntersection(erosPolyData, locator, origin, ul, ur, lr, ll);
 	}
 
 	public vtkPolyData computePlaneIntersection(
@@ -274,7 +274,7 @@ public class ErosModel extends Model
 			double[] pt1,
 			double[] pt2)
 	{
-		return IntersectionUtil.computePlaneIntersection(erosPolyData, locator, origin, pt1, pt2);
+		return PolyDataUtil.computePlaneIntersection(erosPolyData, locator, origin, pt1, pt2);
 	}
 	
 	public ArrayList<vtkProp> getProps() 

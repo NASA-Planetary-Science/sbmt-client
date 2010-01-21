@@ -6,7 +6,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import edu.jhuapl.near.util.IntersectionUtil;
+import edu.jhuapl.near.util.PolyDataUtil;
 import edu.jhuapl.near.util.LatLon;
 import edu.jhuapl.near.util.Properties;
 import edu.jhuapl.near.util.Spice;

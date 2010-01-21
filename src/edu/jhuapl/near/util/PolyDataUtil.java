@@ -2,7 +2,12 @@ package edu.jhuapl.near.util;
 
 import vtk.*;
 
-public class IntersectionUtil 
+/**
+ * This class contains various utility functions for operating on vtkPolyData
+ * @author kahneg1
+ *
+ */
+public class PolyDataUtil 
 {
 	private static vtkMath math = null;
 	
