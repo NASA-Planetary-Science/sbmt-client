@@ -48,7 +48,7 @@ public class NISSpectrum extends Model
 	private ArrayList<LatLon> latLons = new ArrayList<LatLon>();
 	private vtkPolyData footprint;
     private vtkActor footprintActor;
-    private ArrayList<vtkActor> footprintActors = new ArrayList<vtkActor>();
+    private ArrayList<vtkProp> footprintActors = new ArrayList<vtkProp>();
     private ErosModel erosModel;
     private double[] spectrum = new double[64];
     private double[] spectrumEros = new double[64];
@@ -215,7 +215,7 @@ public class NISSpectrum extends Model
 		return footprint;
 	}
 	
-	public ArrayList<vtkActor> getActors() 
+	public ArrayList<vtkProp> getProps() 
 	{
 		if (footprintActor == null && !latLons.isEmpty())
 		{

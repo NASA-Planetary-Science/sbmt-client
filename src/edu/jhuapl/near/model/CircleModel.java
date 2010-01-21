@@ -22,7 +22,7 @@ public class CircleModel extends Model
 	//private HashMap<Integer, Circle> cellIdToLineamentMap = new HashMap<Integer, Circle>();
 	private ArrayList<Circle> circles = new ArrayList<Circle>();
 	private vtkPolyData circlesPolyData;
-    private ArrayList<vtkActor> circlesActors = new ArrayList<vtkActor>();
+    private ArrayList<vtkProp> circlesActors = new ArrayList<vtkProp>();
     //private vtkActor structuresActor;
 	private int[] defaultColor = {255, 0, 255, 255}; // RGBA, default to purple
 	static public String CIRCLES = "cicles";
@@ -252,12 +252,12 @@ public class CircleModel extends Model
 	}
 
 	
-	public ArrayList<vtkActor> getActors() 
+	public ArrayList<vtkProp> getProps() 
 	{
 		return circlesActors;
 	}
 	
-    public String getClickStatusBarText(vtkActor actor, int cellId)
+    public String getClickStatusBarText(vtkProp prop, int cellId)
     {
     	StructureModel.Structure struc = getStructure(cellId);
 		if (struc != null)

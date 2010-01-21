@@ -5,9 +5,7 @@ import java.io.*;
 
 import nom.tam.fits.FitsException;
 
-import vtk.vtkActor;
-import vtk.vtkPolyDataMapper;
-import vtk.vtkPolyDataReader;
+import vtk.*;
 import edu.jhuapl.near.util.*;
 import edu.jhuapl.near.util.Properties;
 
@@ -43,13 +41,13 @@ public class MSIBoundaryCollection extends Model
 	/**
 	 * return this when boundaries are hidden
 	 */
-	private ArrayList<vtkActor> dummyActors = new ArrayList<vtkActor>();
+	private ArrayList<vtkProp> dummyActors = new ArrayList<vtkProp>();
 	private boolean hidden = false;
 	
-	private ArrayList<vtkActor> boundaryActors = new ArrayList<vtkActor>();
+	private ArrayList<vtkProp> boundaryActors = new ArrayList<vtkProp>();
 
 	private HashMap<String, Boundary> fileToBoundaryMap = new HashMap<String, Boundary>();
-	private HashMap<vtkActor, String> actorToFileMap = new HashMap<vtkActor, String>();
+	private HashMap<vtkProp, String> actorToFileMap = new HashMap<vtkProp, String>();
 	
 	public void addBoundary(String path) throws FitsException, IOException
 	{
@@ -94,7 +92,7 @@ public class MSIBoundaryCollection extends Model
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 	}
 	
-	public ArrayList<vtkActor> getActors() 
+	public ArrayList<vtkProp> getProps() 
 	{
 		if (!hidden)
 			return boundaryActors;
@@ -102,9 +100,9 @@ public class MSIBoundaryCollection extends Model
 			return dummyActors;
 	}
 	
-    public String getClickStatusBarText(vtkActor actor, int cellId)
+    public String getClickStatusBarText(vtkProp prop, int cellId)
     {
-    	File file = new File(actorToFileMap.get(actor));
+    	File file = new File(actorToFileMap.get(prop));
     	return "Boundary of MSI image " + file.getName().substring(2, 11);
     }
 

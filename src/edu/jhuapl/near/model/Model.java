@@ -4,7 +4,7 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 
-import vtk.vtkActor;
+import vtk.*;
 
 public abstract class Model 
 {
@@ -14,17 +14,17 @@ public abstract class Model
     public void removePropertyChangeListener( PropertyChangeListener listener )
     { this.pcs.removePropertyChangeListener( listener ); }
     
-    public abstract ArrayList<vtkActor> getActors();
+    public abstract ArrayList<vtkProp> getProps();
     
     /**
      * Return what text should be displayed if the user clicks on one of the
-     * actors of this model and the specified cellId. By default an empty string
+     * props of this model and the specified cellId. By default an empty string
      * is returned. Subclasses may override this behavior.
-     * @param actor
+     * @param prop
      * @param cellId
      * @return
      */
-    public String getClickStatusBarText(vtkActor actor, int cellId)
+    public String getClickStatusBarText(vtkProp prop, int cellId)
     {
     	return "";
     }

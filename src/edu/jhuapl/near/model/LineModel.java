@@ -25,7 +25,7 @@ public class LineModel extends Model
 	//private HashMap<Integer, Lineament> cellIdToLineamentMap = new HashMap<Integer, Lineament>();
 	private ArrayList<Lineament> lineaments = new ArrayList<Lineament>();
 	private vtkPolyData lineamentsPolyData;
-    private ArrayList<vtkActor> lineamentsActors = new ArrayList<vtkActor>();
+    private ArrayList<vtkProp> lineamentsActors = new ArrayList<vtkProp>();
 	private int[] defaultColor = {255, 0, 255, 255}; // RGBA, default to purple
     private ErosModel erosModel;
 
@@ -342,7 +342,7 @@ public class LineModel extends Model
 	}
 	*/
 	
-	public ArrayList<vtkActor> getActors() 
+	public ArrayList<vtkProp> getProps() 
 	{
 //		if (lineamentsPolyData == null)
 //		{
@@ -359,7 +359,7 @@ public class LineModel extends Model
 		return lineamentsActors;
 	}
 	
-    public String getClickStatusBarText(vtkActor actor, int cellId)
+    public String getClickStatusBarText(vtkProp prop, int cellId)
     {
     	Lineament lin = this.lineaments.get(cellId);
 		if (lin != null)

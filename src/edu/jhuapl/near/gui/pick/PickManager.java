@@ -245,9 +245,9 @@ public class PickManager implements
 			// actors rather than Eros. Note that this exclusion only applies 
 			// the picker used for mouse presses. The picker used for mouse moves
 			// however includes all actors, including Eros.
-			ArrayList<vtkActor> actors = modelManager.getActorsExceptEros();
+			ArrayList<vtkProp> actors = modelManager.getPropsExceptEros();
 			mousePressCellPicker.GetPickList().RemoveAllItems();
-			for (vtkActor act : actors)
+			for (vtkProp act : actors)
 			{
 				mousePressCellPicker.AddPickList(act);
 			}

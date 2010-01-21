@@ -48,7 +48,7 @@ public class NISPopupMenu extends JPopupMenu
 		if (this.infoPanelManager != null)
 		{
 			showSpectrumInfoMenuItem = new JMenuItem(new ShowInfoAction());
-			showSpectrumInfoMenuItem.setText("Properties...");
+			showSpectrumInfoMenuItem.setText("Spectrum...");
 			this.add(showSpectrumInfoMenuItem);
 		}
 		

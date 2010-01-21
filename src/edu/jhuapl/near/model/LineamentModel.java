@@ -12,7 +12,7 @@ public class LineamentModel extends Model
 	private HashMap<Integer, Lineament> idToLineamentMap = new HashMap<Integer, Lineament>();
 	private HashMap<Integer, Lineament> cellIdToLineamentMap = new HashMap<Integer, Lineament>();
 	private vtkPolyData lineaments;
-    private ArrayList<vtkActor> lineamentActors = new ArrayList<vtkActor>();
+    private ArrayList<vtkProp> lineamentActors = new ArrayList<vtkProp>();
     private vtkActor lineamentActor;
 	private int[] defaultColor = {255, 0, 255, 255}; // RGBA, default to purple
 	
@@ -316,12 +316,12 @@ public class LineamentModel extends Model
 		
 	}
 	
-	public ArrayList<vtkActor> getActors() 
+	public ArrayList<vtkProp> getProps() 
 	{
 		return lineamentActors;
 	}
 	
-    public String getClickStatusBarText(vtkActor actor, int cellId)
+    public String getClickStatusBarText(vtkProp prop, int cellId)
     {
 		LineamentModel.Lineament lin = getLineament(cellId);
 		if (lin != null)

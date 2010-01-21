@@ -30,7 +30,7 @@ public class StructureModel extends Model implements PropertyChangeListener
 {
 	private LineModel lineModel;
 	private CircleModel circleModel;
-    private ArrayList<vtkActor> actors = new ArrayList<vtkActor>();
+    private ArrayList<vtkProp> actors = new ArrayList<vtkProp>();
 	static public String STRUCTURES = "structures";
 
 	public static abstract class Structure
@@ -140,20 +140,20 @@ public class StructureModel extends Model implements PropertyChangeListener
 		return circleModel;
 	}
 	
-	public ArrayList<vtkActor> getActors() 
+	public ArrayList<vtkProp> getProps() 
 	{
 		actors.clear();
-		actors.addAll(lineModel.getActors());
-		actors.addAll(circleModel.getActors());
+		actors.addAll(lineModel.getProps());
+		actors.addAll(circleModel.getProps());
 		return actors;
 	}
 	
-    public String getClickStatusBarText(vtkActor actor, int cellId)
+    public String getClickStatusBarText(vtkProp prop, int cellId)
     {
-    	if (lineModel.getActors().contains(actor))
-    		return lineModel.getClickStatusBarText(actor, cellId);
-    	else if (circleModel.getActors().contains(actor))
-    		return circleModel.getClickStatusBarText(actor, cellId);
+    	if (lineModel.getProps().contains(prop))
+    		return lineModel.getClickStatusBarText(prop, cellId);
+    	else if (circleModel.getProps().contains(prop))
+    		return circleModel.getClickStatusBarText(prop, cellId);
     	else
     		return "";
     }

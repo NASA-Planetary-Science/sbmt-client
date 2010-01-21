@@ -10,17 +10,17 @@ import edu.jhuapl.near.util.Properties;
 
 import nom.tam.fits.FitsException;
 
-import vtk.vtkActor;
+import vtk.*;
 
 public class NISSpectraCollection extends Model implements PropertyChangeListener
 {
-	private ArrayList<vtkActor> allActors = new ArrayList<vtkActor>();
+	private ArrayList<vtkProp> allActors = new ArrayList<vtkProp>();
 
-	private HashMap<NISSpectrum, ArrayList<vtkActor>> spectraActors = new HashMap<NISSpectrum, ArrayList<vtkActor>>();
+	private HashMap<NISSpectrum, ArrayList<vtkProp>> spectraActors = new HashMap<NISSpectrum, ArrayList<vtkProp>>();
 
 	private HashMap<String, NISSpectrum> fileToSpectrumMap = new HashMap<String, NISSpectrum>();
 
-	private HashMap<vtkActor, String> actorToFileMap = new HashMap<vtkActor, String>();
+	private HashMap<vtkProp, String> actorToFileMap = new HashMap<vtkProp, String>();
 	private ErosModel erosModel;
 	
 	public NISSpectraCollection(ErosModel eros) 
@@ -39,16 +39,16 @@ public class NISSpectraCollection extends Model implements PropertyChangeListene
 		spectrum.addPropertyChangeListener(this);
 
 		fileToSpectrumMap.put(path, spectrum);
-		spectraActors.put(spectrum, new ArrayList<vtkActor>());
+		spectraActors.put(spectrum, new ArrayList<vtkProp>());
 				
 		// Now texture map this image onto the Eros model.
 		//spectrum.setPolygonOffset(-10.0);
 
-		ArrayList<vtkActor> imagePieces = spectrum.getActors();
+		ArrayList<vtkProp> imagePieces = spectrum.getProps();
 
 		spectraActors.get(spectrum).addAll(imagePieces);
 
-		for (vtkActor act : imagePieces)
+		for (vtkProp act : imagePieces)
 			actorToFileMap.put(act, path);
 		
 		allActors.addAll(imagePieces);
@@ -58,10 +58,10 @@ public class NISSpectraCollection extends Model implements PropertyChangeListene
 
 	public void removeImage(String path)
 	{
-		ArrayList<vtkActor> actors = spectraActors.get(fileToSpectrumMap.get(path));
+		ArrayList<vtkProp> actors = spectraActors.get(fileToSpectrumMap.get(path));
 		allActors.removeAll(actors);
 		
-		for (vtkActor act : actors)
+		for (vtkProp act : actors)
 			actorToFileMap.remove(act);
 
 		spectraActors.remove(fileToSpectrumMap.get(path));
@@ -81,7 +81,7 @@ public class NISSpectraCollection extends Model implements PropertyChangeListene
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 	}
 
-	public ArrayList<vtkActor> getActors() 
+	public ArrayList<vtkProp> getProps() 
 	{
 		return allActors;
 	}
@@ -91,14 +91,14 @@ public class NISSpectraCollection extends Model implements PropertyChangeListene
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 	}
 
-    public String getClickStatusBarText(vtkActor actor, int cellId)
+    public String getClickStatusBarText(vtkProp prop, int cellId)
     {
-    	String filename = actorToFileMap.get(actor);
+    	String filename = actorToFileMap.get(prop);
     	NISSpectrum spectrum = this.fileToSpectrumMap.get(filename);
     	return "NIS Spectrum " + filename.substring(16, 25) + " acquired at " + spectrum.getDateTime().toString();
     }
 
-    public String getSpectrumName(vtkActor actor)
+    public String getSpectrumName(vtkProp actor)
     {
     	return actorToFileMap.get(actor);
     }

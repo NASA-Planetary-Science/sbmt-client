@@ -11,23 +11,23 @@ import edu.jhuapl.near.util.Properties;
 
 import nom.tam.fits.FitsException;
 
-import vtk.vtkActor;
+import vtk.*;
 
 public class NearImageCollection extends Model implements PropertyChangeListener
 {
 	/**
 	 * return this when images are hidden
 	 */
-	private ArrayList<vtkActor> dummyActors = new ArrayList<vtkActor>();
+	private ArrayList<vtkProp> dummyActors = new ArrayList<vtkProp>();
 	private boolean hidden = false;
 
-	private ArrayList<vtkActor> allActors = new ArrayList<vtkActor>();
+	private ArrayList<vtkProp> allActors = new ArrayList<vtkProp>();
 
-	private HashMap<NearImage, ArrayList<vtkActor>> nearImageActors = new HashMap<NearImage, ArrayList<vtkActor>>();
+	private HashMap<NearImage, ArrayList<vtkProp>> nearImageActors = new HashMap<NearImage, ArrayList<vtkProp>>();
 
 	private HashMap<String, NearImage> fileToImageMap = new HashMap<String, NearImage>();
 
-	private HashMap<vtkActor, String> actorToFileMap = new HashMap<vtkActor, String>();
+	private HashMap<vtkProp, String> actorToFileMap = new HashMap<vtkProp, String>();
 
 	public void addImage(String path) throws FitsException, IOException
 	{
@@ -40,16 +40,16 @@ public class NearImageCollection extends Model implements PropertyChangeListener
 		image.addPropertyChangeListener(this);
 
 		fileToImageMap.put(path, image);
-		nearImageActors.put(image, new ArrayList<vtkActor>());
+		nearImageActors.put(image, new ArrayList<vtkProp>());
 				
 		// Now texture map this image onto the Eros model.
 		image.setPolygonOffset(-10.0);
 
-		ArrayList<vtkActor> imagePieces = image.getActors();
+		ArrayList<vtkProp> imagePieces = image.getProps();
 
 		nearImageActors.get(image).addAll(imagePieces);
 
-		for (vtkActor act : imagePieces)
+		for (vtkProp act : imagePieces)
 			actorToFileMap.put(act, path);
 		
 		allActors.addAll(imagePieces);
@@ -59,10 +59,10 @@ public class NearImageCollection extends Model implements PropertyChangeListener
 
 	public void removeImage(String path)
 	{
-		ArrayList<vtkActor> actors = nearImageActors.get(fileToImageMap.get(path));
+		ArrayList<vtkProp> actors = nearImageActors.get(fileToImageMap.get(path));
 		allActors.removeAll(actors);
 		
-		for (vtkActor act : actors)
+		for (vtkProp act : actors)
 			actorToFileMap.remove(act);
 
 		nearImageActors.remove(fileToImageMap.get(path));
@@ -88,7 +88,7 @@ public class NearImageCollection extends Model implements PropertyChangeListener
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 	}
 	
-	public ArrayList<vtkActor> getActors() 
+	public ArrayList<vtkProp> getProps() 
 	{
 		if (!hidden)
 			return allActors;
@@ -101,9 +101,9 @@ public class NearImageCollection extends Model implements PropertyChangeListener
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 	}
 
-    public String getClickStatusBarText(vtkActor actor, int cellId)
+    public String getClickStatusBarText(vtkProp prop, int cellId)
     {
-    	File file = new File(actorToFileMap.get(actor));
+    	File file = new File(actorToFileMap.get(prop));
     	return "MSI image " + file.getName().substring(2, 11);
     }
 

@@ -15,10 +15,10 @@ import vtk.*;
 
 public class NLRDataCollection extends Model implements PropertyChangeListener 
 {
-	private ArrayList<vtkActor> nlrPerDayActors = new ArrayList<vtkActor>();
+	private ArrayList<vtkProp> nlrPerDayActors = new ArrayList<vtkProp>();
 
 	private HashMap<String, NLRDataPerDay> fileToNlrPerDayMap = new HashMap<String, NLRDataPerDay>();
-	private HashMap<vtkActor, String> actorToFileMap = new HashMap<vtkActor, String>();
+	private HashMap<vtkProp, String> actorToFileMap = new HashMap<vtkProp, String>();
 	private double radialOffset = 0.0;
 	
 	public void addNlrData(String path) throws IOException
@@ -32,9 +32,9 @@ public class NLRDataCollection extends Model implements PropertyChangeListener
 		
 		fileToNlrPerDayMap.put(path, nlrData);
 		
-		actorToFileMap.put(nlrData.getActors().get(0), path);
+		actorToFileMap.put(nlrData.getProps().get(0), path);
 		
-		nlrPerDayActors.add(nlrData.getActors().get(0));
+		nlrPerDayActors.add(nlrData.getProps().get(0));
 	
 		this.setRadialOffset(radialOffset);
 		
@@ -43,7 +43,7 @@ public class NLRDataCollection extends Model implements PropertyChangeListener
 
 	public void removeNlrData(String path)
 	{
-		vtkActor actor = fileToNlrPerDayMap.get(path).getActors().get(0);
+		vtkProp actor = fileToNlrPerDayMap.get(path).getProps().get(0);
 		
 		nlrPerDayActors.remove(actor);
 
@@ -67,15 +67,15 @@ public class NLRDataCollection extends Model implements PropertyChangeListener
 		return fileToNlrPerDayMap.get(path);
 	}
 	
-	public ArrayList<vtkActor> getActors() 
+	public ArrayList<vtkProp> getProps() 
 	{
 		return nlrPerDayActors;
 	}
 	
-    public String getClickStatusBarText(vtkActor actor, int cellId)
+    public String getClickStatusBarText(vtkProp prop, int cellId)
     {
-    	NLRDataPerDay data = fileToNlrPerDayMap.get(actorToFileMap.get(actor));
-    	return data.getClickStatusBarText(actor, cellId);
+    	NLRDataPerDay data = fileToNlrPerDayMap.get(actorToFileMap.get(prop));
+    	return data.getClickStatusBarText(prop, cellId);
     }
 
     public String getNlrName(vtkActor actor)

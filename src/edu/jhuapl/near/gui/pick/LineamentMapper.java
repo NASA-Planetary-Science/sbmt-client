@@ -3,9 +3,7 @@ package edu.jhuapl.near.gui.pick;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
-import vtk.vtkActor;
-import vtk.vtkCellPicker;
-import vtk.vtkRenderWindowPanel;
+import vtk.*;
 
 import edu.jhuapl.near.gui.ErosRenderer;
 import edu.jhuapl.near.model.*;
@@ -40,9 +38,9 @@ public class LineamentMapper
 		erosPicker.PickFromListOn();
 		erosPicker.InitializePickList();
 		erosModel = (ErosModel)modelManager.getModel(ModelManager.EROS);
-		ArrayList<vtkActor> actors = erosModel.getActors();
+		ArrayList<vtkProp> actors = erosModel.getProps();
 		erosPicker.GetPickList().RemoveAllItems();
-		for (vtkActor act : actors)
+		for (vtkProp act : actors)
 		{
 			erosPicker.AddPickList(act);
 		}
@@ -51,9 +49,9 @@ public class LineamentMapper
 		lineModelPicker.SetTolerance(0.002);
 		lineModelPicker.PickFromListOn();
 		lineModelPicker.InitializePickList();
-		actors = lineModel.getActors();
+		actors = lineModel.getProps();
 		lineModelPicker.GetPickList().RemoveAllItems();
-		for (vtkActor act : actors)
+		for (vtkProp act : actors)
 		{
 			lineModelPicker.AddPickList(act);
 		}

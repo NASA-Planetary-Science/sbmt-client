@@ -382,9 +382,9 @@ public class NearImage extends Model
 
 	
 	//public ArrayList<vtkActor> getMappedImage(double offset)
-    public ArrayList<vtkActor> getActors()
+    public ArrayList<vtkProp> getProps()
     {
-    	ArrayList<vtkActor> imageActors = new ArrayList<vtkActor>();
+    	ArrayList<vtkProp> imageActors = new ArrayList<vtkProp>();
     	
         int numTexturesWidth = (int)Math.ceil((double)(NearImage.IMAGE_WIDTH-1) / (double)(TEXTURE_SIZE-1));
         int numTexturesHeight = (int)Math.ceil((double)(NearImage.IMAGE_HEIGHT-1) / (double)(TEXTURE_SIZE-1));

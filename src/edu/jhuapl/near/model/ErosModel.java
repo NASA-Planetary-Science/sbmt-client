@@ -19,8 +19,9 @@ public class ErosModel extends Model
 {
     private vtkPolyData erosPolyData;
     private vtkActor erosActor;
+    private vtkPolyDataMapper erosMapper;
     private boolean showLighting = true;
-    private ArrayList<vtkActor> erosActors = new ArrayList<vtkActor>();
+    private ArrayList<vtkProp> erosActors = new ArrayList<vtkProp>();
     //private vtkCellLocator locator;
     private vtkOBBTree locator;
     private vtkPoints intersectPoints;
@@ -83,7 +84,7 @@ public class ErosModel extends Model
 		
 	}
 	
-	private void loadColoring(ColoringType type) throws IOException
+	private void loadColoring() throws IOException
 	{
 		if (elevationValues == null)
 		{
@@ -116,7 +117,7 @@ public class ErosModel extends Model
 			vtkFloatArray array = arrays[i];
 			
 			array.SetNumberOfComponents(1);
-			array.SetNumberOfTuples(erosPolyData.GetNumberOfPoints());
+			array.SetNumberOfTuples(erosPolyData.GetNumberOfCells());
 			
 			InputStream is = getClass().getResourceAsStream(file);
 			InputStreamReader isr = new InputStreamReader(is);
@@ -132,26 +133,49 @@ public class ErosModel extends Model
 		}
 	}
 	
-	public void setColorBy(ColoringType type)
+	public void setColorBy(ColoringType type) throws IOException
 	{
 		if (coloringType == type)
 			return;
 		
+		loadColoring();
+		
 		coloringType = type;
+		
+		vtkFloatArray array = null;
 		
 		switch(type)
 		{
 		case NONE:
+			array = null;
 			break;
 		case ELEVATION:
+			array = this.elevationValues;
 			break;
 		case GRAVITATIONAL_ACCELERATION:
+			array = this.gravAccValues;
 			break;
 		case GRAVITATIONAL_POTENTIAL:
+			array = this.gravPotValues;
 			break;
 		case SLOPE:
+			array = this.slopeValues;
 			break;
 		}
+
+		this.erosPolyData.GetCellData().SetScalars(array);
+		if (type == ColoringType.NONE)
+		{
+			erosMapper.ScalarVisibilityOff();
+			erosMapper.SetScalarModeToDefault();
+		}
+		else
+		{
+			erosMapper.ScalarVisibilityOn();
+			erosMapper.SetScalarModeToUseCellData();
+			erosMapper.GetLookupTable().SetRange(array.GetRange());
+		}
+		this.erosPolyData.Modified();
 		
 		this.pcs.firePropertyChange(Properties.EROS_MODEL_CHANGED, null, null);
 	}
@@ -209,15 +233,17 @@ public class ErosModel extends Model
 		return IntersectionUtil.computePlaneIntersection(erosPolyData, locator, origin, pt1, pt2);
 	}
 	
-	public ArrayList<vtkActor> getActors() 
+	public ArrayList<vtkProp> getProps() 
 	{
 		if (erosActor == null)
 		{
-	        vtkPolyDataMapper erosMapper = new vtkPolyDataMapper();
+	        erosMapper = new vtkPolyDataMapper();
 	        erosMapper.SetInput(erosPolyData);
-
+			vtkLookupTable lookupTable = new vtkLookupTable();
+			erosMapper.SetLookupTable(lookupTable);
+	        erosMapper.UseLookupTableScalarRangeOn();
+			
 	        erosActor = new vtkActor();
-	        //erosActor.GetProperty().SetRepresentationToWireframe();
 	        erosActor.SetMapper(erosMapper);
 
 	        erosActors.add(erosActor);

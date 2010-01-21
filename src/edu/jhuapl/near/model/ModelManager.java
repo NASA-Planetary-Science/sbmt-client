@@ -7,7 +7,7 @@ import java.util.HashMap;
 
 import edu.jhuapl.near.util.Properties;
 
-import vtk.vtkActor;
+import vtk.*;
 
 public class ModelManager extends Model implements PropertyChangeListener
 {
@@ -29,9 +29,9 @@ public class ModelManager extends Model implements PropertyChangeListener
 	private LineModel lineModel;
 	private CircleModel circleModel;
 	
-    private ArrayList<vtkActor> actors = new ArrayList<vtkActor>();
-    private ArrayList<vtkActor> actorsExceptEros = new ArrayList<vtkActor>();
-    private HashMap<vtkActor, Model> actorToModelMap = new HashMap<vtkActor, Model>();
+    private ArrayList<vtkProp> props = new ArrayList<vtkProp>();
+    private ArrayList<vtkProp> propsExceptEros = new ArrayList<vtkProp>();
+    private HashMap<vtkProp, Model> propToModelMap = new HashMap<vtkProp, Model>();
     
     private ArrayList<Model> allModels;
     
@@ -65,46 +65,46 @@ public class ModelManager extends Model implements PropertyChangeListener
     	allModels.add(lineModel);
     	allModels.add(circleModel);
     	
-		updateActors();
+		updateProps();
     }
 
-    public ArrayList<vtkActor> getActors()
+    public ArrayList<vtkProp> getProps()
 	{
-		return actors;
+		return props;
 	}
 
-    public ArrayList<vtkActor> getActorsExceptEros()
+    public ArrayList<vtkProp> getPropsExceptEros()
 	{
-		return actorsExceptEros;
+		return propsExceptEros;
 	}
 
 	public void propertyChange(PropertyChangeEvent arg0) 
 	{
-		updateActors();
+		updateProps();
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 	}
 	
-	private void updateActors()
+	private void updateProps()
 	{
-		actors.clear();
-		actorsExceptEros.clear();
-		actorToModelMap.clear();
+		props.clear();
+		propsExceptEros.clear();
+		propToModelMap.clear();
 
 		for (Model model : allModels)
 		{
-			actors.addAll(model.getActors());
+			props.addAll(model.getProps());
 						
-			for (vtkActor act : model.getActors())
-	    		actorToModelMap.put(act, model);
+			for (vtkProp prop : model.getProps())
+	    		propToModelMap.put(prop, model);
 			
 			if (!(model instanceof ErosModel))
-				actorsExceptEros.addAll(model.getActors());
+				propsExceptEros.addAll(model.getProps());
 		}
 	}
 
-	public Model getModel(vtkActor actor)
+	public Model getModel(vtkProp prop)
 	{
-		return actorToModelMap.get(actor);
+		return propToModelMap.get(prop);
 	}
 	
 	public Model getModel(String modelName)

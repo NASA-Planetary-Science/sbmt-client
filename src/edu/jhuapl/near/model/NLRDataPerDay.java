@@ -16,7 +16,7 @@ public class NLRDataPerDay extends Model
 {
 	private vtkPolyData polydata;
 	private vtkPoints originalPoints;
-    private ArrayList<vtkActor> actors = new ArrayList<vtkActor>();
+    private ArrayList<vtkProp> actors = new ArrayList<vtkProp>();
 	private double startPercentage = 0.0;
 	private double stopPercentage = 1.0;
 	private vtkGeometryFilter geometryFilter;
@@ -127,14 +127,14 @@ public class NLRDataPerDay extends Model
         polydata.Modified();
 	}
 
-    public String getClickStatusBarText(vtkActor actor, int cellId)
+    public String getClickStatusBarText(vtkProp prop, int cellId)
     {
     	cellId = geometryFilter.GetPointMinimum() + cellId;
     	File file = new File(filepath);
     	return "NLR " + file.getName().substring(0, 8) + " acquired at " + times.get(cellId);
     }
 
-	public ArrayList<vtkActor> getActors() 
+	public ArrayList<vtkProp> getProps() 
 	{
 		return actors;
 	}

@@ -36,30 +36,30 @@ public class ErosRenderer extends JPanel implements
         
         add(renWin, BorderLayout.CENTER);
 
-        setActors(modelManager.getActors());
+        setProps(modelManager.getProps());
     }
 
-    public void setActors(ArrayList<vtkActor> actors)
+    public void setProps(ArrayList<vtkProp> props)
     {
-    	// Go through the actors and if an actor is already in the renderer,
-    	// do nothing. If not, add it. If an actor not listed is
+    	// Go through the props and if an prop is already in the renderer,
+    	// do nothing. If not, add it. If an prop not listed is
     	// in the renderer, remove it from the renderer.
     	
-    	// First remove the actors not in the specified list that are currently rendered.
-    	vtkActorCollection actorCollection = renWin.GetRenderer().GetActors();
-    	int size = actorCollection.GetNumberOfItems();
-    	HashSet<vtkActor> renderedActors = new HashSet<vtkActor>();
+    	// First remove the props not in the specified list that are currently rendered.
+    	vtkPropCollection propCollection = renWin.GetRenderer().GetViewProps();
+    	int size = propCollection.GetNumberOfItems();
+    	HashSet<vtkProp> renderedProps = new HashSet<vtkProp>();
     	for (int i=0; i<size; ++i)
-    		renderedActors.add((vtkActor)actorCollection.GetItemAsObject(i));
-    	renderedActors.removeAll(actors);
-    	for (vtkActor act : renderedActors)
-			renWin.GetRenderer().RemoveActor(act);
+    		renderedProps.add((vtkProp)propCollection.GetItemAsObject(i));
+    	renderedProps.removeAll(props);
+    	for (vtkProp prop : renderedProps)
+			renWin.GetRenderer().RemoveViewProp(prop);
 
-    	// Next add the new actors.
-    	for (vtkActor act : actors)
+    	// Next add the new props.
+    	for (vtkProp prop : props)
     	{
-    		if (renWin.GetRenderer().HasViewProp(act) == 0)
-    			renWin.GetRenderer().AddActor(act);
+    		if (renWin.GetRenderer().HasViewProp(prop) == 0)
+    			renWin.GetRenderer().AddViewProp(prop);
     	}
 
 		if (renWin.GetRenderWindow().GetNeverRendered() > 0)
@@ -133,7 +133,7 @@ public class ErosRenderer extends JPanel implements
     {
     	if (e.getPropertyName().equals(Properties.MODEL_CHANGED))
     	{
-    		this.setActors(modelManager.getActors());
+    		this.setProps(modelManager.getProps());
     	}
     	else
     	{
