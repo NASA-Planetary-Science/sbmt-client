@@ -217,8 +217,8 @@ public class LineModel extends Model
 		{
 			vtkPolyDataMapper lineamentMapper = new vtkPolyDataMapper();
 			lineamentMapper.SetInput(lineamentsPolyData);
-			lineamentMapper.SetResolveCoincidentTopologyToPolygonOffset();
-			lineamentMapper.SetResolveCoincidentTopologyPolygonOffsetParameters(-0.002, -2.0);
+			//lineamentMapper.SetResolveCoincidentTopologyToPolygonOffset();
+			//lineamentMapper.SetResolveCoincidentTopologyPolygonOffsetParameters(-0.002, -2.0);
 
 			vtkActor lineamentActor = new vtkActor();
 			lineamentActor.SetMapper(lineamentMapper);

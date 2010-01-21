@@ -323,4 +323,84 @@ public class PolyDataUtil
 
 		return polyData;
 	}
+	
+	public static void shiftPolyDataInNormalDirection(vtkPolyData polyData, double shiftAmount)
+	{
+		vtkPolyDataNormals normalsFilter = new vtkPolyDataNormals();
+		normalsFilter.SetInput(polyData);
+		normalsFilter.SetComputeCellNormals(0);
+		normalsFilter.SetComputePointNormals(1);
+		normalsFilter.Update();
+		
+		vtkDataArray pointNormals = normalsFilter.GetOutput().GetPointData().GetNormals();
+		vtkPoints points = polyData.GetPoints();
+		
+		int numPoints = points.GetNumberOfPoints();
+		
+		for (int i=0; i<numPoints; ++i)
+		{
+			double[] point = points.GetPoint(i);
+			double[] normal = pointNormals.GetTuple3(i);
+			
+			point[0] += normal[0]*shiftAmount;
+			point[1] += normal[1]*shiftAmount;
+			point[2] += normal[2]*shiftAmount;
+			
+			points.SetPoint(i, point);
+		}
+		
+		polyData.Modified();
+	}
+
+	/*
+	public static void shiftPolyLineInNormalDirectionOfPolyData(
+			vtkPolyData polyLine,
+			vtkPolyData polyData,
+			double shiftAmount)
+	{
+		vtkPolyDataNormals normalsFilter = new vtkPolyDataNormals();
+		normalsFilter.SetInput(polyData);
+		normalsFilter.SetComputeCellNormals(0);
+		normalsFilter.SetComputePointNormals(1);
+		normalsFilter.Update();
+		
+		vtkDataArray pointNormals = normalsFilter.GetOutput().GetPointData().GetNormals();
+		vtkPoints points = polyData.GetPoints();
+		
+		int numPoints = points.GetNumberOfPoints();
+		
+		for (int i=0; i<numPoints; ++i)
+		{
+			double[] point = points.GetPoint(i);
+			double[] normal = pointNormals.GetTuple3(i);
+			
+			point[0] += normal[0]*shiftAmount;
+			point[1] += normal[1]*shiftAmount;
+			point[2] += normal[2]*shiftAmount;
+			
+			points.SetPoint(i, point);
+		}
+		
+		polyData.Modified();
+	}
+	
+	public static vtkPoints vtkPointToDouble(vtkPoints inPoints)
+	{
+		vtkPoints outPoints = new vtkPoints();
+		outPoints.SetDataTypeToDouble();
+
+		int numPoints = inPoints.GetNumberOfPoints();
+		
+		outPoints.SetNumberOfPoints(numPoints);
+
+		
+		for (int i=0; i<numPoints; ++i)
+		{
+			double[] point = inPoints.GetPoint(i);
+			outPoints.SetPoint(i, point);
+		}
+	
+		return outPoints;
+	}
+	*/
 }

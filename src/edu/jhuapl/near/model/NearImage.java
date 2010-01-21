@@ -484,6 +484,8 @@ public class NearImage extends Model
                 piece.SetPolys(polys);
                 piece.GetPointData().SetTCoords(tcoords);
 
+                PolyDataUtil.shiftPolyDataInNormalDirection(piece, -0.001);
+                
                 vtkTexture texture = new vtkTexture();
                 texture.InterpolateOn();
                 texture.RepeatOff();
@@ -499,8 +501,8 @@ public class NearImage extends Model
                 texture.SetInput(imagePiece);
                 
                 vtkPolyDataMapper pieceMapper = new vtkPolyDataMapper();
-                pieceMapper.SetResolveCoincidentTopologyToPolygonOffset();
-                pieceMapper.SetResolveCoincidentTopologyPolygonOffsetParameters(-1.0, polygonOffset);
+                //pieceMapper.SetResolveCoincidentTopologyToPolygonOffset();
+                //pieceMapper.SetResolveCoincidentTopologyPolygonOffsetParameters(-1.0, polygonOffset);
                 pieceMapper.SetInput(piece);
                 pieceMapper.Update();
                 

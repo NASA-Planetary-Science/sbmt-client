@@ -56,8 +56,8 @@ public class ModelManager extends Model implements PropertyChangeListener
     	circleModel.addPropertyChangeListener(this);
     	
     	allModels = new ArrayList<Model>();
-    	allModels.add(lineamentModel);
     	allModels.add(erosModel);
+    	allModels.add(lineamentModel);
     	allModels.add(msiImages);
     	allModels.add(msiBoundaries);
     	allModels.add(nisSpectra);

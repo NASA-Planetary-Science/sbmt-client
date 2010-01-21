@@ -28,8 +28,8 @@ public class MSIBoundaryCollection extends Model
 
 	        vtkPolyDataMapper boundaryMapper = new vtkPolyDataMapper();
 	        boundaryMapper.SetInput(boundaryReader.GetOutput());
-	        boundaryMapper.SetResolveCoincidentTopologyToPolygonOffset();
-	        boundaryMapper.SetResolveCoincidentTopologyPolygonOffsetParameters(-1.0, -1.0);
+	        //boundaryMapper.SetResolveCoincidentTopologyToPolygonOffset();
+	        //boundaryMapper.SetResolveCoincidentTopologyPolygonOffsetParameters(-1.0, -1.0);
 
 	        actor = new vtkActor();
 	        actor.SetMapper(boundaryMapper);

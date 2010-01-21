@@ -72,8 +72,8 @@ public class NLRDataPerDay extends Model
 		
         vtkPolyDataMapper pointsMapper = new vtkPolyDataMapper();
         pointsMapper.SetInput(geometryFilter.GetOutput());
-        pointsMapper.SetResolveCoincidentTopologyToPolygonOffset();
-        pointsMapper.SetResolveCoincidentTopologyPolygonOffsetParameters(-1.0, -1.0);
+        //pointsMapper.SetResolveCoincidentTopologyToPolygonOffset();
+        //pointsMapper.SetResolveCoincidentTopologyPolygonOffsetParameters(-1.0, -1.0);
 
         vtkActor actor = new vtkActor();
         actor.SetMapper(pointsMapper);

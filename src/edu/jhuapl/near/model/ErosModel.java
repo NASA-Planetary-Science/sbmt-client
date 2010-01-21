@@ -56,7 +56,14 @@ public class ErosModel extends Model
         File file = ConvertResourceToFile.convertResourceToTempFile(this, "/edu/jhuapl/near/data/Eros_Dec2006_0.vtk");
         erosReader.SetFileName(file.getAbsolutePath());
         erosReader.Update();
+        
+		//vtkPolyDataNormals normalsFilter = new vtkPolyDataNormals();
+		//normalsFilter.SetInputConnection(erosReader.GetOutputPort());
+		//normalsFilter.SetComputeCellNormals(0);
+		//normalsFilter.SetComputePointNormals(1);
+		//normalsFilter.Update();
 
+		//erosPolyData = normalsFilter.GetOutput();
         erosPolyData = erosReader.GetOutput();
         
         // Initialize the cell locator

@@ -12,6 +12,7 @@ import org.joda.time.DateTimeZone;
 import edu.jhuapl.near.util.FileCache;
 import edu.jhuapl.near.util.FileUtil;
 import edu.jhuapl.near.util.LatLon;
+import edu.jhuapl.near.util.PolyDataUtil;
 
 import vtk.*;
 
@@ -204,7 +205,12 @@ public class NISSpectrum extends Model
         footprintReader.SetFileName(file.getAbsolutePath());
         footprintReader.Update();
         
-        return footprintReader.GetOutput();
+        vtkPolyData polyData = new vtkPolyData();
+		polyData.DeepCopy(footprintReader.GetOutput());
+		
+		PolyDataUtil.shiftPolyDataInNormalDirection(polyData, 0.001);
+		
+		return polyData;
 	}
 
 	public vtkPolyData getFootprint()
@@ -226,8 +232,8 @@ public class NISSpectrum extends Model
 			{
 				vtkPolyDataMapper footprintMapper = new vtkPolyDataMapper();
 				footprintMapper.SetInput(footprint);
-				footprintMapper.SetResolveCoincidentTopologyToPolygonOffset();
-				footprintMapper.SetResolveCoincidentTopologyPolygonOffsetParameters(-.002, -2.0);
+				//footprintMapper.SetResolveCoincidentTopologyToPolygonOffset();
+				//footprintMapper.SetResolveCoincidentTopologyPolygonOffsetParameters(-.002, -2.0);
 				footprintMapper.Update();
 				
 				footprintActor = new vtkActor();
@@ -253,8 +259,8 @@ public class NISSpectrum extends Model
 				vtkPolyDataMapper edgeMapper = new vtkPolyDataMapper();
 				edgeMapper.SetInputConnection(edgeExtracter.GetOutputPort());
 				edgeMapper.ScalarVisibilityOff();
-				edgeMapper.SetResolveCoincidentTopologyToPolygonOffset();
-				edgeMapper.SetResolveCoincidentTopologyPolygonOffsetParameters(-.004, -4.0);
+				//edgeMapper.SetResolveCoincidentTopologyToPolygonOffset();
+				//edgeMapper.SetResolveCoincidentTopologyPolygonOffsetParameters(-.004, -4.0);
 				edgeMapper.Update();
 				
 				vtkActor edgeActor = new vtkActor();
