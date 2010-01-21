@@ -21,10 +21,6 @@ public class ErosControlPanel extends JPanel implements ItemListener
     private JRadioButton slopeButton;
     private ButtonGroup buttonGroup;
     
-    static private String elevStr = "Elevation";
-    static private String gravAccStr = "Gravitational Acceleration";
-    static private String gravPotStr = "Gravitational Potential";
-    static private String slopeStr = "Slope";
 
     public ErosControlPanel(ModelManager modelManager) 
     {
@@ -44,23 +40,23 @@ public class ErosControlPanel extends JPanel implements ItemListener
 		showColoringCheckBox.setSelected(false);
 		showColoringCheckBox.addItemListener(this);
 
-		elevationButton = new JRadioButton(elevStr);
-		elevationButton.setActionCommand(elevStr);
+		elevationButton = new JRadioButton(ErosModel.ElevStr);
+		elevationButton.setActionCommand(ErosModel.ElevStr);
 		elevationButton.addItemListener(this);
 		elevationButton.setEnabled(false);
 		
-		gravitationalAccelerationButton = new JRadioButton(gravAccStr);
-		gravitationalAccelerationButton.setActionCommand(gravAccStr);
+		gravitationalAccelerationButton = new JRadioButton(ErosModel.GravAccStr);
+		gravitationalAccelerationButton.setActionCommand(ErosModel.GravAccStr);
 		gravitationalAccelerationButton.addItemListener(this);
 		gravitationalAccelerationButton.setEnabled(false);
 		
-		gravitationalPotentialButton = new JRadioButton(gravPotStr);
-		gravitationalPotentialButton.setActionCommand(gravPotStr);
+		gravitationalPotentialButton = new JRadioButton(ErosModel.GravPotStr);
+		gravitationalPotentialButton.setActionCommand(ErosModel.GravPotStr);
 		gravitationalPotentialButton.addItemListener(this);
 		gravitationalPotentialButton.setEnabled(false);
 		
-		slopeButton = new JRadioButton(slopeStr);
-		slopeButton.setActionCommand(slopeStr);
+		slopeButton = new JRadioButton(ErosModel.SlopeStr);
+		slopeButton.setActionCommand(ErosModel.SlopeStr);
 		slopeButton.addItemListener(this);
 		slopeButton.setEnabled(false);
 		

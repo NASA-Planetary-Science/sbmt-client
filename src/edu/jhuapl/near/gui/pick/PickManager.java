@@ -40,8 +40,9 @@ public class PickManager implements
     private NISPopupMenu nisSpectraPopupMenu;
     private StatusBar statusBar;
     private ModelManager modelManager;
-    private vtkCellPicker mouseMovedCellPicker;
-    private vtkCellPicker mousePressCellPicker;
+    private vtkCellPicker mouseMovedCellPicker; // includes all props including Eros
+    private vtkCellPicker mousePressNonErosCellPicker; // includes all props EXCEPT Eros
+    private vtkCellPicker mousePressErosCellPicker; // only includes Eros prop
     private DecimalFormat decimalFormatter = new DecimalFormat("##0.000");
     private DecimalFormat decimalFormatter2 = new DecimalFormat("#0.000");
     private LineamentMapper lineamentMapper;
@@ -68,11 +69,16 @@ public class PickManager implements
 		mouseMovedCellPicker.SetTolerance(0.002);
 
 		// See comment in the propertyChange function below as to why
-		// we use a custom pick list for this picker.
-		mousePressCellPicker = new vtkCellPicker();
-		mousePressCellPicker.SetTolerance(0.002);
-		mousePressCellPicker.PickFromListOn();
-		mousePressCellPicker.InitializePickList();
+		// we use a custom pick list for these pickers.
+		mousePressNonErosCellPicker = new vtkCellPicker();
+		mousePressNonErosCellPicker.SetTolerance(0.002);
+		mousePressNonErosCellPicker.PickFromListOn();
+		mousePressNonErosCellPicker.InitializePickList();
+
+		mousePressErosCellPicker = new vtkCellPicker();
+		mousePressErosCellPicker.SetTolerance(0.002);
+		mousePressErosCellPicker.PickFromListOn();
+		mousePressErosCellPicker.InitializePickList();
 		
 		lineamentPopupMenu = 
 			new LineamentPopupMenu((LineamentModel)modelManager.getModel(ModelManager.LINEAMENT));
@@ -125,22 +131,40 @@ public class PickManager implements
 		
 		if (pickMode == PickMode.DEFAULT)
 		{
-			int pickSucceeded = mousePressCellPicker.Pick(e.getX(), renWin.getIren().GetSize()[1]-e.getY()-1, 0.0, renWin.GetRenderer());
+			// First try picking on the non-eros picker. If that fails try the eros picker.
+			int pickSucceeded = mousePressNonErosCellPicker.Pick(e.getX(), renWin.getIren().GetSize()[1]-e.getY()-1, 0.0, renWin.GetRenderer());
 			
 			if (pickSucceeded == 1)
 			{
-				vtkActor pickedActor = mousePressCellPicker.GetActor();
+				vtkActor pickedActor = mousePressNonErosCellPicker.GetActor();
 				Model model = modelManager.getModel(pickedActor);
 
 				if (model != null)
 				{
-					String text = model.getClickStatusBarText(pickedActor, mousePressCellPicker.GetCellId());
+					String text = model.getClickStatusBarText(pickedActor, mousePressNonErosCellPicker.GetCellId());
 					statusBar.setLeftText(text);
 				}
 			}		
 			else
 			{
-				statusBar.setLeftText(" ");
+				// If the non-eros picker failed, see if the user clicked on eros itself.
+				pickSucceeded = mousePressErosCellPicker.Pick(e.getX(), renWin.getIren().GetSize()[1]-e.getY()-1, 0.0, renWin.GetRenderer());
+				
+				if (pickSucceeded == 1)
+				{
+					vtkActor pickedActor = mousePressErosCellPicker.GetActor();
+					Model model = modelManager.getModel(pickedActor);
+
+					if (model != null)
+					{
+						String text = model.getClickStatusBarText(pickedActor, mousePressErosCellPicker.GetCellId());
+						statusBar.setLeftText(text);
+					}
+				}		
+				else
+				{
+					statusBar.setLeftText(" ");
+				}
 			}
 
 			maybeShowPopup(e);
@@ -198,14 +222,14 @@ public class PickManager implements
         	if (renWin.GetRenderWindow().GetNeverRendered() > 0)
         		return;
     		
-    		int pickSucceeded = mousePressCellPicker.Pick(e.getX(), renWin.getIren().GetSize()[1]-e.getY()-1, 0.0, renWin.GetRenderer());
+    		int pickSucceeded = mousePressNonErosCellPicker.Pick(e.getX(), renWin.getIren().GetSize()[1]-e.getY()-1, 0.0, renWin.GetRenderer());
     		if (pickSucceeded == 1)
     		{
-    			vtkActor pickedActor = mousePressCellPicker.GetActor();
+    			vtkActor pickedActor = mousePressNonErosCellPicker.GetActor();
     			if (modelManager.getModel(pickedActor) instanceof LineamentModel)
     			{
         			LineamentModel linModel = (LineamentModel)modelManager.getModel(ModelManager.LINEAMENT);
-    				LineamentModel.Lineament lin = linModel.getLineament(mousePressCellPicker.GetCellId());
+    				LineamentModel.Lineament lin = linModel.getLineament(mousePressNonErosCellPicker.GetCellId());
     	    		if (lin != null)
     	    			lineamentPopupMenu.show(e.getComponent(), e.getX(), e.getY(), lin);
     			}
@@ -243,13 +267,21 @@ public class PickManager implements
 			// from this list since many other actors occupy the same position
 			// as parts of Eros and we want the picker to pick these other
 			// actors rather than Eros. Note that this exclusion only applies 
-			// the picker used for mouse presses. The picker used for mouse moves
-			// however includes all actors, including Eros.
+			// to the following picker.
 			ArrayList<vtkProp> actors = modelManager.getPropsExceptEros();
-			mousePressCellPicker.GetPickList().RemoveAllItems();
+			mousePressNonErosCellPicker.GetPickList().RemoveAllItems();
 			for (vtkProp act : actors)
 			{
-				mousePressCellPicker.AddPickList(act);
+				mousePressNonErosCellPicker.AddPickList(act);
+			}
+
+			// Note that this picker includes only the eros prop so that if the
+			// the previous picker, we then invoke this picker on eros itself.
+			actors = modelManager.getModel(ModelManager.EROS).getProps();
+			mousePressErosCellPicker.GetPickList().RemoveAllItems();
+			for (vtkProp act : actors)
+			{
+				mousePressErosCellPicker.AddPickList(act);
 			}
 		}
 	}
@@ -269,7 +301,7 @@ public class PickManager implements
         	distanceStr = "  " + distanceStr;
         else if (distanceStr.length() == 6)
         	distanceStr = " " + distanceStr;
-        distanceStr += "km";
+        distanceStr += " km";
 
 
         int pickSucceeded = mouseMovedCellPicker.Pick(e.getX(), renWin.getIren().GetSize()[1]-e.getY()-1, 0.0, renWin.GetRenderer());
@@ -317,7 +349,7 @@ public class PickManager implements
 	        String radStr = decimalFormatter2.format(rad);
 	        if (radStr.length() == 5)
 	        	radStr = " " + radStr;
-	        radStr += "km";
+	        radStr += " km";
 
 	        statusBar.setRightText("Lat: " + latStr + "  Lon: " + lonStr + "  Radius: " + radStr + "  Distance: " + distanceStr + " ");
 		}

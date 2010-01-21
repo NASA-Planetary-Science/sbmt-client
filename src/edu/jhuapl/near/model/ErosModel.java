@@ -29,6 +29,7 @@ public class ErosModel extends Model
     private vtkFloatArray gravAccValues;
     private vtkFloatArray gravPotValues;
     private vtkFloatArray slopeValues;
+    private vtkScalarBarActor scalarBarActor;
     
     public enum ColoringType { 
     	NONE, 
@@ -38,7 +39,16 @@ public class ErosModel extends Model
     	SLOPE
     }
     
-    private ColoringType coloringType;
+    static public String ElevStr = "Elevation";
+    static public String GravAccStr = "Gravitational Acceleration";
+    static public String GravPotStr = "Gravitational Potential";
+    static public String SlopeStr = "Slope";
+    static public String ElevUnitsStr = "m";
+    static public String GravAccUnitsStr = "m/s^2";
+    static public String GravPotUnitsStr = "J/kg";
+    static public String SlopeUnitsStr = "deg";
+    
+    private ColoringType coloringType = ColoringType.NONE;
     
 	public ErosModel()
 	{
@@ -67,7 +77,7 @@ public class ErosModel extends Model
 	{
 		if (show)
 		{
-			if (erosActors.isEmpty())
+			if (!erosActors.contains(erosActor))
 			{
 				erosActors.add(erosActor);
 				this.pcs.firePropertyChange(Properties.EROS_MODEL_CHANGED, null, null);
@@ -75,9 +85,9 @@ public class ErosModel extends Model
 		}
 		else
 		{
-			if (!erosActors.isEmpty())
+			if (erosActors.contains(erosActor))
 			{
-				erosActors.clear();
+				erosActors.remove(erosActor);
 				this.pcs.firePropertyChange(Properties.EROS_MODEL_CHANGED, null, null);
 			}
 		}
@@ -132,6 +142,27 @@ public class ErosModel extends Model
 			}
 		}
 	}
+
+	/**
+	 * Invert the lookup table so that red is high values 
+	 * and blue is low values (rather than the reverse).
+	 */
+	private void invertLookupTable()
+	{
+		vtkUnsignedCharArray table = ((vtkLookupTable)erosMapper.GetLookupTable()).GetTable();
+		
+		int numberOfValues = table.GetNumberOfTuples();
+		for (int i=0; i<numberOfValues/2; ++i)
+		{
+			double[] v1 = table.GetTuple4(i);
+			double[] v2 = table.GetTuple4(numberOfValues-i-1);
+			table.SetTuple4(i, v2[0], v2[1], v2[2], v2[3]);
+			table.SetTuple4(numberOfValues-i-1, v1[0], v1[1], v1[2], v1[3]);
+		}
+		
+		((vtkLookupTable)erosMapper.GetLookupTable()).SetTable(table);
+		erosMapper.Modified();
+	}
 	
 	public void setColorBy(ColoringType type) throws IOException
 	{
@@ -151,15 +182,19 @@ public class ErosModel extends Model
 			break;
 		case ELEVATION:
 			array = this.elevationValues;
+			scalarBarActor.SetTitle(ElevStr + " (" + ElevUnitsStr + ")");
 			break;
 		case GRAVITATIONAL_ACCELERATION:
 			array = this.gravAccValues;
+			scalarBarActor.SetTitle(GravAccStr + " (" + GravAccUnitsStr + ")");
 			break;
 		case GRAVITATIONAL_POTENTIAL:
 			array = this.gravPotValues;
+			scalarBarActor.SetTitle(GravPotStr + " (" + GravPotUnitsStr + ")");
 			break;
 		case SLOPE:
 			array = this.slopeValues;
+			scalarBarActor.SetTitle(SlopeStr + " (" + SlopeUnitsStr + ")");
 			break;
 		}
 
@@ -168,12 +203,21 @@ public class ErosModel extends Model
 		{
 			erosMapper.ScalarVisibilityOff();
 			erosMapper.SetScalarModeToDefault();
+			if (erosActors.contains(scalarBarActor))
+				erosActors.remove(scalarBarActor);
 		}
 		else
 		{
 			erosMapper.ScalarVisibilityOn();
 			erosMapper.SetScalarModeToUseCellData();
 			erosMapper.GetLookupTable().SetRange(array.GetRange());
+			((vtkLookupTable)erosMapper.GetLookupTable()).ForceBuild();
+			this.invertLookupTable();
+			
+			if (!erosActors.contains(scalarBarActor))
+				erosActors.add(scalarBarActor);
+			
+			scalarBarActor.SetLookupTable(erosMapper.GetLookupTable());
 		}
 		this.erosPolyData.Modified();
 		
@@ -247,6 +291,16 @@ public class ErosModel extends Model
 	        erosActor.SetMapper(erosMapper);
 
 	        erosActors.add(erosActor);
+	        
+	        scalarBarActor = new vtkScalarBarActor();
+	        scalarBarActor.GetPositionCoordinate().SetCoordinateSystemToNormalizedViewport();
+	        scalarBarActor.GetPositionCoordinate().SetValue(0.2, 0.01);
+	        scalarBarActor.SetOrientationToHorizontal();
+	        scalarBarActor.SetWidth(0.6);
+	        scalarBarActor.SetHeight(0.1275);
+	        vtkTextProperty tp = new vtkTextProperty();
+	        tp.SetFontSize(10);
+	        scalarBarActor.SetTitleTextProperty(tp);
 		}
 		
 		return erosActors;
@@ -265,4 +319,26 @@ public class ErosModel extends Model
 		
 		return bb;
 	}
+	
+    public String getClickStatusBarText(vtkProp prop, int cellId)
+    {
+    	float value = 0;
+    	if (coloringType != ColoringType.NONE)
+    		value = (float)erosPolyData.GetCellData().GetScalars().GetTuple1(cellId);
+    	
+		switch(coloringType)
+		{
+		case ELEVATION:
+			return ElevStr + ": " + value + " " + ElevUnitsStr;
+		case GRAVITATIONAL_ACCELERATION:
+			return GravAccStr + ": " + value + " " + GravAccUnitsStr;
+		case GRAVITATIONAL_POTENTIAL:
+			return GravPotStr + ": " + value + " " + GravPotUnitsStr;
+		case SLOPE:
+			return SlopeStr + ": " + value + "\u00B0"; //(\u00B0 is the unicode degree symbol)
+		}
+
+		return "";
+    }
+
 }
