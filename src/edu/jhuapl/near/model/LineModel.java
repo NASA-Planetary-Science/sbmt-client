@@ -38,13 +38,17 @@ public class LineModel extends Model
 		
 		public String name = "";
 		public int id;
+		
+		// Note the lat, lon, and alt is what gets stored in the saved file
 		public ArrayList<Double> lat = new ArrayList<Double>();
 		public ArrayList<Double> lon = new ArrayList<Double>();
 		public ArrayList<Double> rad = new ArrayList<Double>();
-		//public ArrayList<Double> x = new ArrayList<Double>();
-		//public ArrayList<Double> y = new ArrayList<Double>();
-		//public ArrayList<Double> z = new ArrayList<Double>();
-		//public BoundingBox bb = new BoundingBox();
+		
+		// Note x, y, z is what's displayed. There will usually be more of these points than
+		// lat, lon, alt in order to ensure the line is right above the surface of eros.
+		public ArrayList<Double> x = new ArrayList<Double>();
+		public ArrayList<Double> y = new ArrayList<Double>();
+		public ArrayList<Double> z = new ArrayList<Double>();
 		
 		static public String LINEAMENT = "lineament";
 		static public String ID = "id";
@@ -98,6 +102,20 @@ public class LineModel extends Model
 	    	return "Lineament " + id + " mapped on MSI image " + name + " contains " + lat.size() + " vertices";
 	    }
 
+	    public void convertLatLonRadToXyz(ErosModel erosModel)
+	    {
+	    	int size = lat.size() - 1;
+	    	for (int i=0; i<size; ++i)
+	    	{
+	    		LatLon ll1 = new LatLon(lat.get(i), lon.get(i), rad.get(i));
+	    		LatLon ll2 = new LatLon(lat.get(i+1), lon.get(i+1), rad.get(i+1));
+	    		double pt1[] = Spice.latrec(ll1);
+	    		double pt2[] = Spice.latrec(ll2);
+	    		double origin[] = {0.0,0.0,0.0};
+	    		erosModel.computePlaneIntersection(origin, pt1, pt2);
+	    		
+	    	}
+	    }
 	}
 
 	public LineModel(ErosModel erosModel)
@@ -189,7 +207,8 @@ public class LineModel extends Model
 			//lin.cellId = cellId;
 			//lin.pointIds.clear();
 			
-            int size = lin.lat.size();
+			int size = lin.lat.size();
+            //int size = lin.x.size();
             idList.SetNumberOfIds(size);
             
             for (int i=0;i<size;++i)
@@ -200,6 +219,10 @@ public class LineModel extends Model
                 double x = rad * Math.cos( lon ) * Math.cos( lat );
                 double y = rad * Math.sin( lon ) * Math.cos( lat );
                 double z = rad * Math.sin( lat );
+
+                //double x = lin.x.get(i);
+            	//double y = lin.y.get(i);
+            	//double z = lin.z.get(i);
 
                 points.InsertNextPoint(x, y, z);
             	idList.SetId(i, c);

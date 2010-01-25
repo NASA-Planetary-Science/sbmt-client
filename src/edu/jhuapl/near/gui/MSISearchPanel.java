@@ -141,25 +141,25 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
         filtersPanel.setLayout(new BoxLayout(filtersPanel,
         		BoxLayout.LINE_AXIS));
         filter1CheckBox = new JCheckBox();
-    	filter1CheckBox.setText("Filter 1");
+    	filter1CheckBox.setText("Filter 1 (550 nm)");
     	filter1CheckBox.setSelected(true);
         filter2CheckBox = new JCheckBox();
-    	filter2CheckBox.setText("Filter 2");
+    	filter2CheckBox.setText("Filter 2 (450 nm)");
     	filter2CheckBox.setSelected(true);
         filter3CheckBox = new JCheckBox();
-    	filter3CheckBox.setText("Filter 3");
+    	filter3CheckBox.setText("Filter 3 (760 nm)");
     	filter3CheckBox.setSelected(true);
         filter4CheckBox = new JCheckBox();
-    	filter4CheckBox.setText("Filter 4");
+    	filter4CheckBox.setText("Filter 4 (950 nm)");
     	filter4CheckBox.setSelected(true);
         filter5CheckBox = new JCheckBox();
-    	filter5CheckBox.setText("Filter 5");
+    	filter5CheckBox.setText("Filter 5 (900 nm)");
     	filter5CheckBox.setSelected(true);
         filter6CheckBox = new JCheckBox();
-    	filter6CheckBox.setText("Filter 6");
+    	filter6CheckBox.setText("Filter 6 (1000 nm)");
     	filter6CheckBox.setSelected(true);
         filter7CheckBox = new JCheckBox();
-    	filter7CheckBox.setText("Filter 7");
+    	filter7CheckBox.setText("Filter 7 (1050 nm)");
     	filter7CheckBox.setSelected(true);
     	
     	JPanel filtersSub1Panel = new JPanel();
@@ -168,24 +168,18 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
     	filtersSub1Panel.add(filter1CheckBox);
     	filtersSub1Panel.add(filter2CheckBox);
         filtersSub1Panel.add(filter3CheckBox);
+        filtersSub1Panel.add(filter4CheckBox);
     	
     	JPanel filtersSub2Panel = new JPanel();
         filtersSub2Panel.setLayout(new BoxLayout(filtersSub2Panel,
         		BoxLayout.PAGE_AXIS));
-        filtersSub2Panel.add(filter4CheckBox);
     	filtersSub2Panel.add(filter5CheckBox);
     	filtersSub2Panel.add(filter6CheckBox);
-
-    	JPanel filtersSub3Panel = new JPanel();
-        filtersSub3Panel.setLayout(new BoxLayout(filtersSub3Panel,
-        		BoxLayout.PAGE_AXIS));
-    	filtersSub3Panel.add(filter7CheckBox);
+    	filtersSub2Panel.add(filter7CheckBox);
 
     	filtersPanel.add(filtersSub1Panel);
         filtersPanel.add(Box.createHorizontalStrut(15));
     	filtersPanel.add(filtersSub2Panel);
-        filtersPanel.add(Box.createHorizontalStrut(15));
-    	filtersPanel.add(filtersSub3Panel);
     	    	
     	//filtersPanel.setBorder(BorderFactory.createEmptyBorder(9, 9, 9, 9));
 

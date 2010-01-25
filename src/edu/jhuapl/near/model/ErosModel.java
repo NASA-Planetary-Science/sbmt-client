@@ -244,6 +244,7 @@ public class ErosModel extends Model
 	 * shooting out a ray from the center of Eros and returning the intersection
 	 * point. If more than one point intersects Eros (unlikely), the first one is returned.
 	 */
+	/*
 	public double[] latLonToXyz(double lat, double lon)
 	{
 		LatLon ll = new LatLon(lat, lon, 1.0);
@@ -265,6 +266,7 @@ public class ErosModel extends Model
 		
 		return null;
 	}
+	*/
 
 	public vtkPolyData computeFrustumIntersection(
 			double[] origin, 
@@ -281,7 +283,7 @@ public class ErosModel extends Model
 			double[] pt1,
 			double[] pt2)
 	{
-		return PolyDataUtil.computePlaneIntersection(erosPolyData, locator, origin, pt1, pt2);
+		return PolyDataUtil.computePlaneIntersectionBetween2Points(erosPolyData, locator, origin, pt1, pt2);
 	}
 	
 	public ArrayList<vtkProp> getProps() 

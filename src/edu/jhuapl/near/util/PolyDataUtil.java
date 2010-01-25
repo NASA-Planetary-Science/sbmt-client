@@ -287,7 +287,9 @@ public class PolyDataUtil
 		return polyData;
 	}
 
-	public static vtkPolyData computePlaneIntersection(
+    private static vtkOBBTree lineLocator;
+
+	public static vtkPolyData computePlaneIntersectionBetween2Points(
 			vtkPolyData polyData,
 			vtkAbstractCellLocator locator,
 			double[] origin, 
@@ -296,7 +298,16 @@ public class PolyDataUtil
 	{
 		if (math == null)
 			math = new vtkMath();
-
+		if (lineLocator == null)
+		{
+			lineLocator = new vtkOBBTree();
+			lineLocator.CacheCellBoundsOn();
+			lineLocator.AutomaticOn();
+	        //lineLocator.SetMaxLevel(10);
+	        //lineLocator.SetNumberOfCellsPerNode(5);
+			lineLocator.BuildLocator();
+		}
+		
 		double[] vec1 = {pt1[0]-origin[0], pt1[1]-origin[1], pt1[2]-origin[2]};
 		double[] vec2 = {pt2[0]-origin[0], pt2[1]-origin[1], pt2[2]-origin[2]};
 		double[] normal = new double[3];
@@ -311,6 +322,9 @@ public class PolyDataUtil
 		clipPolyData.SetInput(polyData);
 		clipPolyData.SetCutFunction(plane);
 		clipPolyData.Update();
+		
+		// Get the cells closest to pt1 and p2
+		locator.FindCell(pt1);
 		
 		polyData = new vtkPolyData();
 		polyData.DeepCopy(clipPolyData.GetOutput());
