@@ -6,7 +6,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import edu.jhuapl.near.util.Point;
+import edu.jhuapl.near.util.Point3D;
 import edu.jhuapl.near.util.PolyDataUtil;
 import edu.jhuapl.near.util.LatLon;
 import edu.jhuapl.near.util.Properties;
@@ -52,7 +52,7 @@ public class LineModel extends Model
 		//public ArrayList<Double> z = new ArrayList<Double>();
 		//public ArrayList<vtkPoints> xyzPointsList = new ArrayList<vtkPoints>();
 		//public vtkPoints xyzPointList = new vtkPoints();
-		public ArrayList<Point> xyzPointList = new ArrayList<Point>();
+		public ArrayList<Point3D> xyzPointList = new ArrayList<Point3D>();
 		public ArrayList<Integer> controlPointIds = new ArrayList<Integer>();
 		
 		static public String LINEAMENT = "lineament";
@@ -149,8 +149,8 @@ public class LineModel extends Model
     		int id2 = controlPointIds.get(segment+1);
     		
     		// Set the 2 control points
-    		xyzPointList.set(id1, new Point(pt1));
-    		xyzPointList.set(id2, new Point(pt2));
+    		xyzPointList.set(id1, new Point3D(pt1));
+    		xyzPointList.set(id2, new Point3D(pt2));
     		
     		// Remove points BETWEEN the 2 control points
     		for (int i=0; i<id2-id1-1; ++i)
@@ -162,7 +162,7 @@ public class LineModel extends Model
     		int numNewPoints = points.GetNumberOfPoints();
     		for (int i=1; i<numNewPoints-1; ++i)
     		{
-    			xyzPointList.add(id1+i, new Point(points.GetPoint(i)));
+    			xyzPointList.add(id1+i, new Point3D(points.GetPoint(i)));
     		}
     		
     		// Shift the control points ids from segment+1 till the end by the right amount.
@@ -473,8 +473,8 @@ public class LineModel extends Model
         lin.lon.add(ll2.lon);
         lin.rad.add(ll2.rad);
 
-        lin.xyzPointList.add(new Point(pt1));
-        lin.xyzPointList.add(new Point(pt2));
+        lin.xyzPointList.add(new Point3D(pt1));
+        lin.xyzPointList.add(new Point3D(pt2));
         lin.controlPointIds.add(0);
         lin.controlPointIds.add(1);
         lin.updateSegment(erosModel, 0);
@@ -575,7 +575,7 @@ public class LineModel extends Model
         lin.lon.add(ll.lon);
         lin.rad.add(ll.rad);
 
-        lin.xyzPointList.add(new Point(newPoint));
+        lin.xyzPointList.add(new Point3D(newPoint));
         lin.controlPointIds.add(lin.xyzPointList.size()-1);
 
         updatePolyData();
