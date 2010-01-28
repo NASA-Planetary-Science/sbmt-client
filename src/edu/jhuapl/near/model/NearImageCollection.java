@@ -43,7 +43,7 @@ public class NearImageCollection extends Model implements PropertyChangeListener
 		nearImageActors.put(image, new ArrayList<vtkProp>());
 				
 		// Now texture map this image onto the Eros model.
-		image.setPolygonOffset(-10.0);
+		//image.setPolygonOffset(-10.0);
 
 		ArrayList<vtkProp> imagePieces = image.getProps();
 

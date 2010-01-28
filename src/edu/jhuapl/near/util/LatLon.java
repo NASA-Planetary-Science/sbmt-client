@@ -1,6 +1,5 @@
 package edu.jhuapl.near.util;
 
-import com.sun.xml.internal.bind.v2.runtime.RuntimeUtil.ToStringAdapter;
 
 public class LatLon
 {

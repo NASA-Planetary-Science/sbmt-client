@@ -7,7 +7,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 import edu.jhuapl.near.util.Point3D;
-import edu.jhuapl.near.util.PolyDataUtil;
 import edu.jhuapl.near.util.LatLon;
 import edu.jhuapl.near.util.Properties;
 import edu.jhuapl.near.util.Spice;
@@ -284,6 +283,8 @@ public class LineModel extends Model
         	colors.InsertNextTuple4(defaultColor[0],defaultColor[1],defaultColor[2],defaultColor[3]);
             
 		}
+
+		erosModel.shiftPolyLineInNormalDirection(lineamentsPolyData, 0.002);
 
 //		if (lineamentsActors.isEmpty())
 		{

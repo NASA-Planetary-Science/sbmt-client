@@ -6,7 +6,7 @@ import edu.jhuapl.near.pair.IdPair;
 import vtk.*;
 
 /**
- * This class contains various utility functions for operating on vtkPolyData
+ * This class contains various utility functions for operating on a vtkPolyData.
  * @author kahneg1
  *
  */
@@ -290,34 +290,28 @@ public class PolyDataUtil
 		return polyData;
 	}
 
-	//private static vtkOBBTree lineLocator;
-    //private static vtkKdTreePointLocator lineLocator;
-
 	public static vtkPolyData drawPathOnPolyData(
 			vtkPolyData polyData,
-			vtkAbstractCellLocator locator,
-			double[] origin, 
+			vtkAbstractPointLocator pointLocator,
 			double[] pt1,
 			double[] pt2)
 	{
 		if (math == null)
 			math = new vtkMath();
-		//if (lineLocator == null)
-		{
-			//lineLocator = new vtkOBBTree();
-			//lineLocator = new vtkKdTreePointLocator();
-			//lineLocator.CacheCellBoundsOn();
-			//lineLocator.AutomaticOn();
-	        //lineLocator.SetMaxLevel(10);
-	        //lineLocator.SetNumberOfCellsPerNode(5);
-			//lineLocator.BuildLocator();
-		}
 
+		double[] normal1 = getPolyDataNormalAtPoint(pt1, polyData, pointLocator);
+		double[] normal2 = getPolyDataNormalAtPoint(pt2, polyData, pointLocator);
+		
+		double[] avgNormal = new double[3];
+		avgNormal[0] = (normal1[0] + normal2[0])/2.0;
+		avgNormal[1] = (normal1[1] + normal2[1])/2.0;
+		avgNormal[2] = (normal1[2] + normal2[2])/2.0;
 
-		double[] vec1 = {pt1[0]-origin[0], pt1[1]-origin[1], pt1[2]-origin[2]};
-		double[] vec2 = {pt2[0]-origin[0], pt2[1]-origin[1], pt2[2]-origin[2]};
+		double[] vec1 = {pt1[0]-pt2[0], pt1[1]-pt2[1], pt1[2]-pt2[2]};
+		double[] vec2 = {pt2[0]-pt1[0], pt2[1]-pt1[1], pt2[2]-pt1[2]};
+
 		double[] normal = new double[3];
-		math.Cross(vec1, vec2, normal);
+		math.Cross(vec1, avgNormal, normal);
 		math.Normalize(normal);
 
 		vtkPlane cutPlane = new vtkPlane();
@@ -330,16 +324,14 @@ public class PolyDataUtil
 		cutPolyData.Update();
 		
 		// Clip off from the two points and in the opposite direction
-		double[] norm1 = {pt1[0]-pt2[0], pt1[1]-pt2[1], pt1[2]-pt2[2]};
-		double[] norm2 = {pt2[0]-pt1[0], pt2[1]-pt1[1], pt2[2]-pt1[2]};
 
 		vtkPlane clipPlane1 = new vtkPlane();
 		clipPlane1.SetOrigin(pt1);
-		clipPlane1.SetNormal(norm1);
+		clipPlane1.SetNormal(vec1);
 		
 		vtkPlane clipPlane2 = new vtkPlane();
 		clipPlane2.SetOrigin(pt2);
-		clipPlane2.SetNormal(norm2);
+		clipPlane2.SetNormal(vec2);
 
 		vtkClipPolyData clipPolyData1 = new vtkClipPolyData();
 		clipPolyData1.SetInputConnection(cutPolyData.GetOutputPort());
@@ -357,28 +349,20 @@ public class PolyDataUtil
 		connectivityFilter.SetClosestPoint(pt1);
 		connectivityFilter.Update();
 
-		// Get the cells closest to pt1 and p2
-//		lineLocator.SetDataSet(cutPolyData.GetOutput());
-//		lineLocator.BuildLocator();
-//		vtkIdList idList = new vtkIdList();
-//		idList.SetNumberOfIds(2);
-//		lineLocator.FindClosestNPoints(2, pt1, idList);
-//		lineLocator.FindClosestNPoints(2, pt1, idList);
-//		System.out.println("id1 " + idList.GetId(0));
-//		System.out.println("id2 " + idList.GetId(1));
 		
-		polyData = new vtkPolyData();
-		polyData.DeepCopy(connectivityFilter.GetOutput());
-		
-		System.out.println("number points: " + polyData.GetNumberOfPoints());
-		
-        vtkPolyDataWriter writer = new vtkPolyDataWriter();
-        writer.SetInput(polyData);
-        writer.SetFileName("/tmp/cuteros.vtk");
-        //writer.SetFileTypeToBinary();
-        writer.Write();
+		vtkPolyData polyLine = new vtkPolyData();
+		polyLine.DeepCopy(connectivityFilter.GetOutput());
 
-		return polyData;
+		convertLinesToPolyLine(polyLine, pt1);
+		
+		//System.out.println("number points: " + polyLine.GetNumberOfPoints());
+		
+        //vtkPolyDataWriter writer = new vtkPolyDataWriter();
+        //writer.SetInput(polyLine);
+        //writer.SetFileName("/tmp/cuteros.vtk");
+        //writer.Write();
+
+		return polyLine;
 	}
 	
 	public static void shiftPolyDataInNormalDirection(vtkPolyData polyData, double shiftAmount)
@@ -440,54 +424,44 @@ public class PolyDataUtil
 		polyLine.Modified();
 	}
 	
-	/*
-	public static vtkPoints vtkPointToDouble(vtkPoints inPoints)
+	/** 
+	 * The boundary generated in getImageBorder is great, unfortunately the
+	 * border consists of many lines of 2 vertices each. We, however, need a
+	 * single polyline consisting of all the points. I was not able to find
+	 * something in vtk that can convert this, so we will have to implement it
+	 * here. Fortunately, the algorithm is pretty simple (assuming the list of
+	 * lines has no intersections or other anomalies):
+	 * Start with the first 2-vertex line segment. These 2 points will
+	 * be the first 2 points of our new polyline we're creating. 
+	 * Choose the second point. Now
+	 * in addition to this line segment, there is only one other line segment 
+	 * that contains the second point. Search for that line segment and let the
+	 * other point in that line segment be the 3rd point of our polyline. Repeat
+	 * this till we've formed the polyline.
+	 * 
+	 * @param polyline
+	 * @param startPoint
+	 * @return
+	 */
+	public static boolean convertLinesToPolyLine(vtkPolyData polyline, double[] startPoint)
 	{
-		vtkPoints outPoints = new vtkPoints();
-		outPoints.SetDataTypeToDouble();
-
-		int numPoints = inPoints.GetNumberOfPoints();
-		
-		outPoints.SetNumberOfPoints(numPoints);
-
-		
-		for (int i=0; i<numPoints; ++i)
-		{
-			double[] point = inPoints.GetPoint(i);
-			outPoints.SetPoint(i, point);
-		}
 	
-		return outPoints;
-	}
-	*/
-	
-	public static boolean convertLinesToPolyLine(vtkPolyData polydata, int startIdx)
-	{
-		// The boundary generated in getImageBorder is great, unfortunately the
-		// border consists of many lines of 2 vertices each. We, however, need a
-		// single polyline consisting of all the points. I was not able to find
-		// something in vtk that can convert this, so we will have to implement it
-		// here. Fortunately, the algorithm is pretty simple (assuming the list of
-		// lines forms a true closed loop with no intersections or other anomalies):
-		// Start with the first 2-vertex line segment. These 2 points will
-		// be the first 2 points of our new polyline we're creating. 
-		// Choose the second point. Now
-		// in addition to this line segment, there is only one other line segment 
-		// that contains the second point. Search for that line segment and let the
-		// other point in that line segment be the 3rd point of our polyline. Repeat
-		// this till we've formed the polyline.
+		int startIdx = polyline.FindPoint(startPoint);
 		
-		vtkCellArray lines_orig = polydata.GetLines();
-		vtkPoints points_orig = polydata.GetPoints();
+		vtkCellArray lines_orig = polyline.GetLines();
+		vtkPoints points_orig = polyline.GetPoints();
 
 		vtkIdTypeArray idArray = lines_orig.GetData();
 		int size = idArray.GetNumberOfTuples();
 		//System.out.println(size);
 		//System.out.println(idArray.GetNumberOfComponents());
 
-		if (size < 9 || points_orig.GetNumberOfPoints() < 3)
+		if (points_orig.GetNumberOfPoints() < 2)
+			return true;
+			
+		if (size < 3)
 		{
-			System.out.println("Error: polydata too small");
+			System.out.println("Error: polydata corrupted");
 			return false;
 		}
 		
@@ -497,18 +471,40 @@ public class PolyDataUtil
 			//System.out.println(idArray.GetValue(i));
 			if (idArray.GetValue(i) != 2)
 			{
-				System.out.println("Big problem");
+				System.out.println("Big problem: polydata corrupted");
 				return false;
 			}
 			lines.add(new IdPair(idArray.GetValue(i+1), idArray.GetValue(i+2)));
 		}
+		
+		// Find which line segment contains the startIdx, and move this line segment first.
+		// Also make sure startIdx is the first id of the pair
+		for (int i=0; i<lines.size(); ++i)
+		{
+			IdPair line = lines.get(i);
+			
+			if (line.id1 == startIdx || line.id2 == startIdx)
+			{
+				if (line.id2 == startIdx)
+				{
+					// swap the pair
+					line.id2 = line.id1;
+					line.id1 = startIdx;
+				}
+				
+				lines.remove(i);
+				lines.add(0, line);
+				break;
+			}
+		}
+		
 
         vtkIdList idList = new vtkIdList();
         IdPair line = lines.get(0);
         idList.InsertNextId(line.id1);
         idList.InsertNextId(line.id2);
         
-        int numPoints = polydata.GetNumberOfPoints();
+        int numPoints = polyline.GetNumberOfPoints();
         for (int i=2; i<numPoints; ++i)
         {
         	int id = line.id2;
@@ -546,7 +542,10 @@ public class PolyDataUtil
         	}
         }
 
-        idList.InsertNextId(idList.GetId(0));
+        // If the following is true, that means the polyline is a closed loop,
+        // so add the first id to close it.
+        if (lines_orig.GetNumberOfCells() == points_orig.GetNumberOfPoints())
+        	idList.InsertNextId(idList.GetId(0));
         
         // It would be nice if the points were in the order they are drawn rather
         // than some other arbitrary order. Therefore reorder the points so that
@@ -562,20 +561,54 @@ public class PolyDataUtil
         {
         	idList.SetId(i, i);
         }
-    	idList.SetId(numPoints, 0);
+
+        // Again, if the following is true, that means the polyline is a closed loop,
+        // so add the first id to close it.
+        if (lines_orig.GetNumberOfCells() == points_orig.GetNumberOfPoints())
+        	idList.SetId(numPoints, 0);
         
-    	polydata.SetPoints(null);
-    	polydata.SetPoints(points);
+    	polyline.SetPoints(null);
+    	polyline.SetPoints(points);
     	
-        System.out.println("num points: " + numPoints);
-        System.out.println("num ids: " + idList.GetNumberOfIds());
-        polydata.SetLines(null);
+        //System.out.println("num points: " + numPoints);
+        //System.out.println("num ids: " + idList.GetNumberOfIds());
+        polyline.SetLines(null);
         vtkCellArray new_lines = new vtkCellArray();
         new_lines.InsertNextCell(idList);
-        polydata.SetLines(new_lines);
+        polyline.SetLines(new_lines);
         
         return true;
 	}
 
+    public static double[] getPolyDataNormalAtPoint(
+    		double[] pt,
+    		vtkPolyData polyData,
+    		vtkAbstractPointLocator pointLocator)
+    {
+    	vtkIdList idList = new vtkIdList();
+    	pointLocator.FindClosestNPoints(10, pt, idList);
+    	
+    	// Average the normals
+    	double[] normal = {0.0, 0.0, 0.0};
+
+    	int N = idList.GetNumberOfIds();
+    	if (N < 1)
+    		return null;
+    	
+    	vtkDataArray normals = polyData.GetPointData().GetNormals();
+    	for (int i=0; i<N; ++i)
+    	{
+    		double[] tmp = normals.GetTuple3(idList.GetId(i));
+    		normal[0] += tmp[0];
+    		normal[1] += tmp[1];
+    		normal[2] += tmp[2];
+    	}
+    	
+    	normal[0] /= N;
+    	normal[1] /= N;
+    	normal[2] /= N;
+
+    	return normal;
+    }
 
 }

@@ -11,9 +11,7 @@ import vtk.*;
 import edu.jhuapl.near.util.BoundingBox;
 import edu.jhuapl.near.util.ConvertResourceToFile;
 import edu.jhuapl.near.util.PolyDataUtil;
-//import edu.jhuapl.near.util.LatLon;
 import edu.jhuapl.near.util.Properties;
-//import edu.jhuapl.near.util.Spice;
 
 public class ErosModel extends Model 
 {
@@ -22,9 +20,8 @@ public class ErosModel extends Model
     private vtkPolyDataMapper erosMapper;
     private boolean showLighting = true;
     private ArrayList<vtkProp> erosActors = new ArrayList<vtkProp>();
-    //private vtkCellLocator locator;
-    private vtkOBBTree locator;
-    //private vtkPoints intersectPoints;
+    private vtkOBBTree cellLocator;
+    private vtkKdTreePointLocator pointLocator;
     private vtkFloatArray elevationValues;
     private vtkFloatArray gravAccValues;
     private vtkFloatArray gravPotValues;
@@ -67,17 +64,18 @@ public class ErosModel extends Model
         //erosPolyData = erosReader.GetOutput();
         
         // Initialize the cell locator
-        //locator = new vtkCellLocator();
-        locator = new vtkOBBTree();
-        locator.SetDataSet(erosReader.GetOutput());
-        locator.CacheCellBoundsOn();
-        locator.AutomaticOn();
-        //locator.SetMaxLevel(10);
-        //locator.SetNumberOfCellsPerNode(5);
+        cellLocator = new vtkOBBTree();
+        cellLocator.SetDataSet(erosReader.GetOutput());
+        cellLocator.CacheCellBoundsOn();
+        cellLocator.AutomaticOn();
+        //cellLocator.SetMaxLevel(10);
+        //cellLocator.SetNumberOfCellsPerNode(5);
 
-        locator.BuildLocator();
+        cellLocator.BuildLocator();
 
-        //intersectPoints = new vtkPoints();
+        pointLocator = new vtkKdTreePointLocator();
+        pointLocator.SetDataSet(erosReader.GetOutput());
+        pointLocator.BuildLocator();
 	}
 	
 	public void setShowEros(boolean show)
@@ -238,36 +236,6 @@ public class ErosModel extends Model
 		this.pcs.firePropertyChange(Properties.EROS_MODEL_CHANGED, null, null);
 	}
 
-	/*
-	 * Given only the latitude and longitude of a point on the surface of
-	 * Eros, this function finds the xyz coordinates of the point by
-	 * shooting out a ray from the center of Eros and returning the intersection
-	 * point. If more than one point intersects Eros (unlikely), the first one is returned.
-	 */
-	/*
-	public double[] latLonToXyz(double lat, double lon)
-	{
-		LatLon ll = new LatLon(lat, lon, 1.0);
-		double xyz[] = Spice.latrec(ll);
-		
-		// Cast a ray from the origin in the direction of xyz to about 50 km out
-		// which is definitely outside of Eros
-		double distance = 50.0;
-		
-		double[] sourcePnt = {0.0, 0.0, 0.0};
-		double[] destinPnt = {xyz[0]*distance, xyz[1]*distance, xyz[2]*distance};
-
-		intersectPoints.Reset();
-
-		locator.IntersectWithLine(sourcePnt, destinPnt, intersectPoints, null);
-		
-		if (intersectPoints.GetNumberOfPoints() > 0)
-			return intersectPoints.GetPoint(0);
-		
-		return null;
-	}
-	*/
-
 	public vtkPolyData computeFrustumIntersection(
 			double[] origin, 
 			double[] ul, 
@@ -275,7 +243,7 @@ public class ErosModel extends Model
 			double[] lr,
 			double[] ll)
 	{
-		return PolyDataUtil.computeFrustumIntersection(erosPolyData, locator, origin, ul, ur, lr, ll);
+		return PolyDataUtil.computeFrustumIntersection(erosPolyData, cellLocator, origin, ul, ur, lr, ll);
 	}
 
 	/**
@@ -290,8 +258,14 @@ public class ErosModel extends Model
 			double[] pt1,
 			double[] pt2)
 	{
-		double origin[] = {0.0,0.0,0.0};
-		return PolyDataUtil.drawPathOnPolyData(erosPolyData, locator, origin, pt1, pt2);
+		return PolyDataUtil.drawPathOnPolyData(erosPolyData, pointLocator, pt1, pt2);
+	}
+
+	public void shiftPolyLineInNormalDirection(
+			vtkPolyData polyLine,
+			double shiftAmount)
+	{
+		PolyDataUtil.shiftPolyLineInNormalDirectionOfPolyData(polyLine, erosPolyData, shiftAmount);
 	}
 	
 	public ArrayList<vtkProp> getProps() 

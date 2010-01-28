@@ -70,7 +70,7 @@ public class NearImage extends Model
 							   // the file from the server (excluding the hostname).
 	
 	private int filter; // 1 through 7
-	private double polygonOffset = -10.0;
+	//private double polygonOffset = -10.0;
 
 	boolean hasLimb = false;
 	
@@ -655,10 +655,10 @@ public class NearImage extends Model
 		}
 	}
 
-	public void setPolygonOffset(double offset)
-	{
-		this.polygonOffset = offset;
-	}
+	//public void setPolygonOffset(double offset)
+	//{
+	//	this.polygonOffset = offset;
+	//}
 	
 	/*
 	public vtkPolyData getImageBorder()
