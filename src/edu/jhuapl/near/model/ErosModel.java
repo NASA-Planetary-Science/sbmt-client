@@ -11,9 +11,9 @@ import vtk.*;
 import edu.jhuapl.near.util.BoundingBox;
 import edu.jhuapl.near.util.ConvertResourceToFile;
 import edu.jhuapl.near.util.PolyDataUtil;
-import edu.jhuapl.near.util.LatLon;
+//import edu.jhuapl.near.util.LatLon;
 import edu.jhuapl.near.util.Properties;
-import edu.jhuapl.near.util.Spice;
+//import edu.jhuapl.near.util.Spice;
 
 public class ErosModel extends Model 
 {
@@ -24,7 +24,7 @@ public class ErosModel extends Model
     private ArrayList<vtkProp> erosActors = new ArrayList<vtkProp>();
     //private vtkCellLocator locator;
     private vtkOBBTree locator;
-    private vtkPoints intersectPoints;
+    //private vtkPoints intersectPoints;
     private vtkFloatArray elevationValues;
     private vtkFloatArray gravAccValues;
     private vtkFloatArray gravPotValues;
@@ -57,14 +57,14 @@ public class ErosModel extends Model
         erosReader.SetFileName(file.getAbsolutePath());
         erosReader.Update();
         
-		//vtkPolyDataNormals normalsFilter = new vtkPolyDataNormals();
-		//normalsFilter.SetInputConnection(erosReader.GetOutputPort());
-		//normalsFilter.SetComputeCellNormals(0);
-		//normalsFilter.SetComputePointNormals(1);
-		//normalsFilter.Update();
+		vtkPolyDataNormals normalsFilter = new vtkPolyDataNormals();
+		normalsFilter.SetInputConnection(erosReader.GetOutputPort());
+		normalsFilter.SetComputeCellNormals(0);
+		normalsFilter.SetComputePointNormals(1);
+		normalsFilter.Update();
 
-		//erosPolyData = normalsFilter.GetOutput();
-        erosPolyData = erosReader.GetOutput();
+		erosPolyData = normalsFilter.GetOutput();
+        //erosPolyData = erosReader.GetOutput();
         
         // Initialize the cell locator
         //locator = new vtkCellLocator();
@@ -77,7 +77,7 @@ public class ErosModel extends Model
 
         locator.BuildLocator();
 
-        intersectPoints = new vtkPoints();
+        //intersectPoints = new vtkPoints();
 	}
 	
 	public void setShowEros(boolean show)
@@ -278,12 +278,20 @@ public class ErosModel extends Model
 		return PolyDataUtil.computeFrustumIntersection(erosPolyData, locator, origin, ul, ur, lr, ll);
 	}
 
-	public vtkPolyData computePlaneIntersection(
-			double[] origin, 
+	/**
+	 * Given 2 points on the surface of Eros, draw a nice looking path between the 2 
+	 * that is not obscured anywhere or too distant from the surface. Return this
+	 * path as a vtkPolyData
+	 * @param pt1
+	 * @param pt2
+	 * @return
+	 */
+	public vtkPolyData drawPath(
 			double[] pt1,
 			double[] pt2)
 	{
-		return PolyDataUtil.computePlaneIntersectionBetween2Points(erosPolyData, locator, origin, pt1, pt2);
+		double origin[] = {0.0,0.0,0.0};
+		return PolyDataUtil.drawPathOnPolyData(erosPolyData, locator, origin, pt1, pt2);
 	}
 	
 	public ArrayList<vtkProp> getProps() 

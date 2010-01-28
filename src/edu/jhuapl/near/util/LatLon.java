@@ -1,5 +1,7 @@
 package edu.jhuapl.near.util;
 
+import com.sun.xml.internal.bind.v2.runtime.RuntimeUtil.ToStringAdapter;
+
 public class LatLon
 {
 	public double lat;
@@ -32,6 +34,11 @@ public class LatLon
 		this.lat = other.lat;
 		this.lon = other.lon;
 		this.rad = other.rad;
+	}
+	
+	public String toString()
+	{
+		return "lat: " + lat + " lon: " + lon + " rad: " + rad;
 	}
 	
 	/**

@@ -181,10 +181,10 @@ public class PickManager implements
 		{
 			maybeShowPopup(e);
 		}
-		else if (pickMode == PickMode.LINEAMENT_MAPPER)
-		{
-			lineamentMapper.mouseReleased(e);
-		}
+//		else if (pickMode == PickMode.LINEAMENT_MAPPER)
+//		{
+//			lineamentMapper.mouseReleased(e);
+//		}
 	}
 
 	public void mouseWheelMoved(MouseWheelEvent e) 
@@ -194,10 +194,10 @@ public class PickManager implements
 
 	public void mouseDragged(MouseEvent e) 
 	{
-		if (pickMode == PickMode.LINEAMENT_MAPPER)
-		{
-			lineamentMapper.mouseDragged(e);
-		}
+//		if (pickMode == PickMode.LINEAMENT_MAPPER)
+//		{
+//			lineamentMapper.mouseDragged(e);
+//		}
 
 		showPositionInfoInStatusBar(e);
 	}

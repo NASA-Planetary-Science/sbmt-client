@@ -20,8 +20,8 @@ public class LineamentMapper
     private vtkCellPicker lineModelPicker;
 
     private boolean currentlyDrawing = false;
-    private int vertexIdBeingEdited = 0;
-    private int lineIdBeingEdited = 0;
+    private int vertexIdBeingEdited = -1;
+    private int lineIdBeingEdited = -1;
     
     public LineamentMapper(
 			ErosRenderer erosRenderer, 
@@ -62,10 +62,10 @@ public class LineamentMapper
 	{
 		// If we pressed a point on Eros, begin drawing a new line.
 		// If we pressed a vertex of an existing lineament, begin dragging that vertex.
+		// If we double clicked, end drawing the line
 		
-		System.err.println("A111111");
 		int pickSucceeded = erosPicker.Pick(e.getX(), renWin.getIren().GetSize()[1]-e.getY()-1, 0.0, renWin.GetRenderer());
-		System.err.println("B2222222");
+
 		if (pickSucceeded == 1)
 		{
 			vtkActor pickedActor = erosPicker.GetActor();
@@ -74,38 +74,46 @@ public class LineamentMapper
 			if (model == erosModel)
 			{
 				double[] pos = erosPicker.GetPickPosition();
-				if (currentlyDrawing)
+				if (e.getClickCount() == 1)
+				{
+					if (currentlyDrawing)
+					{
+						lineModel.addLineamentVertex(lineIdBeingEdited, pos);
+						++vertexIdBeingEdited;
+					}
+					else
+					{
+						lineIdBeingEdited = lineModel.getNumberOfLineaments();
+						lineModel.addNewLineament(pos, pos);
+						currentlyDrawing = true;
+						vertexIdBeingEdited = 1;
+						System.out.println("new");
+					}
+				}
+				else if (e.getClickCount() > 1)
 				{
 					lineModel.addLineamentVertex(lineIdBeingEdited, pos);
-					++vertexIdBeingEdited;
-				}
-				else
-				{
-					lineIdBeingEdited = lineModel.getNumberOfLineaments();
-					lineModel.addNewLineament(pos, pos);
-					currentlyDrawing = true;
-					vertexIdBeingEdited = 1;
+					stopEditing();
 				}
 			}
 		}		
 
 	}
 	
-	public void mouseReleased(MouseEvent e) 
-	{
-	}
-	
-	public void mouseDragged(MouseEvent e) 
-	{
-	}
+//	public void mouseReleased(MouseEvent e) 
+//	{
+//	}
+//	
+//	public void mouseDragged(MouseEvent e) 
+//	{
+//	}
 
 	public void mouseMoved(MouseEvent e) 
 	{
 		if (currentlyDrawing)
 		{
-			System.err.println("C3333333");
 			int pickSucceeded = erosPicker.Pick(e.getX(), renWin.getIren().GetSize()[1]-e.getY()-1, 0.0, renWin.GetRenderer());
-			System.err.println("D4444444");
+
 			if (pickSucceeded == 1)
 			{
 				vtkActor pickedActor = erosPicker.GetActor();
@@ -123,5 +131,7 @@ public class LineamentMapper
 	public void stopEditing()
 	{
 		currentlyDrawing = false;
+		lineIdBeingEdited = -1;
+		vertexIdBeingEdited = -1;
 	}
 }
