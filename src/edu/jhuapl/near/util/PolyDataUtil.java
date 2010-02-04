@@ -249,12 +249,11 @@ public class PolyDataUtil
 		return polyData;
 	}
 
-	public static vtkPolyData computeConeIntersection(
+	public static vtkPolyData drawCircleOnPolyData(
 			vtkPolyData polyData,
 			vtkAbstractCellLocator locator,
-			double[] origin, 
-			double[] vec,
-			double angle)
+			double[] center, 
+			double radius)
 	{
 		if (math == null)
 			math = new vtkMath();
@@ -265,16 +264,17 @@ public class PolyDataUtil
 //		math.Cross(vec1, vec2, normal);
 //		math.Normalize(normal);
 
-		vtkCone cone = new vtkCone();
-		cone.SetAngle(angle);
+		vtkCylinder cylinder = new vtkCylinder();
+		cylinder.SetRadius(radius);
+		cylinder.SetCenter(center);
 		
 		vtkTransform transform = new vtkTransform();
 		
-		cone.SetTransform(transform);
+		cylinder.SetTransform(transform);
 		
 		vtkClipPolyData clipPolyData = new vtkClipPolyData();
 		clipPolyData.SetInput(polyData);
-		clipPolyData.SetClipFunction(cone);
+		clipPolyData.SetClipFunction(cylinder);
 		clipPolyData.SetInsideOut(1);
 		clipPolyData.Update();
 		

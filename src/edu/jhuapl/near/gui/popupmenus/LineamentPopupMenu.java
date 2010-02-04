@@ -57,6 +57,10 @@ public class LineamentPopupMenu extends JPopupMenu
         public void actionPerformed(ActionEvent actionEvent)
         {
         	Color color = ColorChooser.showColorChooser(invoker);
+        	
+        	if (color == null)
+        		return;
+        	
         	int[] c = new int[4];
         	c[0] = color.getRed();
         	c[1] = color.getGreen();

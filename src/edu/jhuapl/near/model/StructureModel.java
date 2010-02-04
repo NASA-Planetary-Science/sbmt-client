@@ -29,23 +29,23 @@ import vtk.*;
 public class StructureModel extends Model implements PropertyChangeListener
 {
 	private LineModel lineModel;
-	private CircleModel circleModel;
+	//private CircleModel circleModel;
     private ArrayList<vtkProp> actors = new ArrayList<vtkProp>();
 	static public String STRUCTURES = "structures";
 
 	public static abstract class Structure
 	{
 		public abstract Element toXmlDomElement(Document dom);
-	    public abstract void fromXmlDomElement(Element element);
+	    public abstract void fromXmlDomElement(Element element, ErosModel erosModel);
 	    public abstract String getClickStatusBarText();
 	}
 	
-	public StructureModel()
+	public StructureModel(ErosModel erosModel)
 	{
-		//lineModel = new LineModel();
-		circleModel = new CircleModel();
+		lineModel = new LineModel(erosModel);
+		//circleModel = new CircleModel();
 		lineModel.addPropertyChangeListener(this);
-		circleModel.addPropertyChangeListener(this);
+		//circleModel.addPropertyChangeListener(this);
 	}
 
 	public void loadModel(File file) throws NumberFormatException, IOException
@@ -65,16 +65,18 @@ public class StructureModel extends Model implements PropertyChangeListener
 			Element docEle = dom.getDocumentElement();
 
 			//get a nodelist of  elements
-			NodeList nl = docEle.getChildNodes();
-			if(nl != null && nl.getLength() == 2)
+			NodeList nl = docEle.getElementsByTagName(LineModel.LINES);
+			System.out.println(nl.getLength());
+			if(nl != null && nl.getLength() <= 2)
 			{
 				Element el = (Element)nl.item(0);
-				if (LineModel.LINEAMENTS.equals(el.getTagName()))
+				System.out.println(el);
+				if (LineModel.LINES.equals(el.getTagName()))
 					lineModel.fromXmlDomElement(el);
 				
-				el = (Element)nl.item(1);
-				if (CircleModel.CIRCLES.equals(el.getTagName()))
-					circleModel.fromXmlDomElement(el);
+				//el = (Element)nl.item(1);
+				//if (CircleModel.CIRCLES.equals(el.getTagName()))
+				//	circleModel.fromXmlDomElement(el);
 			}
 
 		}
@@ -107,7 +109,7 @@ public class StructureModel extends Model implements PropertyChangeListener
 	    	dom.appendChild(rootEle);
 
 	    	rootEle.appendChild(lineModel.toXmlDomElement(dom));
-	    	rootEle.appendChild(circleModel.toXmlDomElement(dom));
+	    	//rootEle.appendChild(circleModel.toXmlDomElement(dom));
 
 			OutputFormat format = new OutputFormat(dom);
 			format.setIndenting(true);
@@ -135,16 +137,16 @@ public class StructureModel extends Model implements PropertyChangeListener
 		return lineModel;
 	}
 	
-	public CircleModel getCircleModel()
-	{
-		return circleModel;
-	}
+	//public CircleModel getCircleModel()
+	//{
+	//	return circleModel;
+	//}
 	
 	public ArrayList<vtkProp> getProps() 
 	{
 		actors.clear();
 		actors.addAll(lineModel.getProps());
-		actors.addAll(circleModel.getProps());
+		//actors.addAll(circleModel.getProps());
 		return actors;
 	}
 	
@@ -152,8 +154,8 @@ public class StructureModel extends Model implements PropertyChangeListener
     {
     	if (lineModel.getProps().contains(prop))
     		return lineModel.getClickStatusBarText(prop, cellId);
-    	else if (circleModel.getProps().contains(prop))
-    		return circleModel.getClickStatusBarText(prop, cellId);
+    	//else if (circleModel.getProps().contains(prop))
+    	//	return circleModel.getClickStatusBarText(prop, cellId);
     	else
     		return "";
     }

@@ -29,9 +29,7 @@ public class ErosRenderer extends JPanel implements
         
         defaultInteractorStyle = new vtkInteractorStyleTrackballCamera();
         rubberBandInteractorStyle = new vtkInteractorStyleRubberBand3D();
-//        vtkInteractorStyleRubberBandPick style =
-//        	new vtkInteractorStyleRubberBandPick();
-        
+
         renWin.setInteractorStyle(defaultInteractorStyle);
         
         add(renWin, BorderLayout.CENTER);

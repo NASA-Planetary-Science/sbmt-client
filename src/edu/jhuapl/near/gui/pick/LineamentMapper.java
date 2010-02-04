@@ -7,8 +7,9 @@ import vtk.*;
 
 import edu.jhuapl.near.gui.ErosRenderer;
 import edu.jhuapl.near.model.*;
+import edu.jhuapl.near.util.Properties;
 
-public class LineamentMapper 
+public class LineamentMapper extends Picker
 {
     private ModelManager modelManager;
 	//private ErosRenderer erosRenderer;
@@ -31,7 +32,7 @@ public class LineamentMapper
 		//this.erosRenderer = erosRenderer;
 		this.renWin = erosRenderer.getRenderWindowPanel();
 		this.modelManager = modelManager;
-		this.lineModel = (LineModel)modelManager.getModel(ModelManager.LINE_STRUCTURES);
+		this.lineModel = ((StructureModel)modelManager.getModel(ModelManager.STRUCTURES)).getLineModel();
 		
 		erosPicker = new vtkCellPicker();
 		erosPicker.SetTolerance(0.002);
@@ -63,7 +64,10 @@ public class LineamentMapper
 		// If we pressed a point on Eros, begin drawing a new line.
 		// If we pressed a vertex of an existing lineament, begin dragging that vertex.
 		// If we double clicked, end drawing the line
-		
+
+		if (e.getButton() != MouseEvent.BUTTON1)
+			return;
+			
 		int pickSucceeded = erosPicker.Pick(e.getX(), renWin.getIren().GetSize()[1]-e.getY()-1, 0.0, renWin.GetRenderer());
 
 		if (pickSucceeded == 1)
@@ -78,21 +82,20 @@ public class LineamentMapper
 				{
 					if (currentlyDrawing)
 					{
-						lineModel.addLineamentVertex(lineIdBeingEdited, pos);
+						lineModel.addVertexToLine(lineIdBeingEdited, pos);
 						++vertexIdBeingEdited;
 					}
 					else
 					{
-						lineIdBeingEdited = lineModel.getNumberOfLineaments();
-						lineModel.addNewLineament(pos, pos);
+						lineIdBeingEdited = lineModel.getNumberOfLines();
+						lineModel.addNewLine(pos);
 						currentlyDrawing = true;
 						vertexIdBeingEdited = 1;
-						System.out.println("new");
 					}
 				}
 				else if (e.getClickCount() > 1)
 				{
-					lineModel.addLineamentVertex(lineIdBeingEdited, pos);
+					lineModel.addVertexToLine(lineIdBeingEdited, pos);
 					stopEditing();
 				}
 			}
@@ -108,6 +111,7 @@ public class LineamentMapper
 //	{
 //	}
 
+	/*
 	public void mouseMoved(MouseEvent e) 
 	{
 		if (currentlyDrawing)
@@ -122,16 +126,19 @@ public class LineamentMapper
 				if (model == erosModel)
 				{
 					double[] pos = erosPicker.GetPickPosition();
-					lineModel.updateLineamentVertex(lineIdBeingEdited, vertexIdBeingEdited, pos);
+					lineModel.updateLineVertex(lineIdBeingEdited, vertexIdBeingEdited, pos);
 				}
 			}		
 		}
 	}
+	*/
 	
 	public void stopEditing()
 	{
 		currentlyDrawing = false;
 		lineIdBeingEdited = -1;
 		vertexIdBeingEdited = -1;
+
+		//this.pcs.firePropertyChange(Properties.FINISHED_DRAWING_LINE, null, null);
 	}
 }

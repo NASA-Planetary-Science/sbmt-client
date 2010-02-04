@@ -64,7 +64,7 @@ public class CircleModel extends Model
 	    	return circleEle;
 	    }
 	    
-	    public void fromXmlDomElement(Element element)
+	    public void fromXmlDomElement(Element element, ErosModel erosModel)
 	    {
 	    	id = Integer.parseInt(element.getAttribute(ID));
 	    	name = element.getAttribute(MSI_IMAGE);
@@ -96,8 +96,6 @@ public class CircleModel extends Model
     {
     	Element rootEle = dom.createElement(CIRCLES);
 
-    	dom.appendChild(rootEle);
-
 		for (Circle cir : this.circles)
 		{
 			rootEle.appendChild(cir.toXmlDomElement(dom));
@@ -119,7 +117,7 @@ public class CircleModel extends Model
 
 				Circle cir = new Circle();
 				
-				cir.fromXmlDomElement(el);
+				cir.fromXmlDomElement(el, null);
 
 				this.circles.add(cir);
 			}

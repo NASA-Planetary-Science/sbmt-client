@@ -14,54 +14,48 @@ import edu.jhuapl.near.util.Spice;
 import vtk.*;
 
 /**
- * Model of structures drawn on Eros such as lineaments and circles.
+ * Model of line structures drawn on Eros.
  * 
  * @author 
  *
  */
 public class LineModel extends Model 
 {
-	//private HashMap<Integer, Lineament> idToLineamentMap = new HashMap<Integer, Lineament>();
-	//private HashMap<Integer, Lineament> cellIdToLineamentMap = new HashMap<Integer, Lineament>();
-	private ArrayList<Lineament> lineaments = new ArrayList<Lineament>();
-	private vtkPolyData lineamentsPolyData;
-    private ArrayList<vtkProp> lineamentsActors = new ArrayList<vtkProp>();
+	private ArrayList<Line> lines = new ArrayList<Line>();
+	private vtkPolyData linesPolyData;
+    private ArrayList<vtkProp> actors = new ArrayList<vtkProp>();
+    private vtkActor lineActor;
+    private vtkActor lineSelectionActor;
 	private int[] defaultColor = {255, 0, 255, 255}; // RGBA, default to purple
     private ErosModel erosModel;
+    private int selectedLine = -1;
+    
+	static public String LINES = "lines";
 
-	static public String LINEAMENTS = "lineaments";
-
-	public static class Lineament extends StructureModel.Structure
+	public static class Line extends StructureModel.Structure
 	{
-		//public int cellId;
-		//public ArrayList<Integer> pointIds = new ArrayList<Integer>();
-		
 		public String name = "";
 		public int id;
 		
-		// Note the lat, lon, and alt is what gets stored in the saved file
+		// Note the lat, lon, and alt is what gets stored in the saved file.
+		// These are the control points.
 		public ArrayList<Double> lat = new ArrayList<Double>();
 		public ArrayList<Double> lon = new ArrayList<Double>();
 		public ArrayList<Double> rad = new ArrayList<Double>();
 		
-		// Note x, y, z is what's displayed. There will usually be more of these points than
+		// Note xyzPointList is what's displayed. There will usually be more of these points than
 		// lat, lon, alt in order to ensure the line is right above the surface of eros.
-		//public ArrayList<Double> x = new ArrayList<Double>();
-		//public ArrayList<Double> y = new ArrayList<Double>();
-		//public ArrayList<Double> z = new ArrayList<Double>();
-		//public ArrayList<vtkPoints> xyzPointsList = new ArrayList<vtkPoints>();
-		//public vtkPoints xyzPointList = new vtkPoints();
 		public ArrayList<Point3D> xyzPointList = new ArrayList<Point3D>();
 		public ArrayList<Integer> controlPointIds = new ArrayList<Integer>();
 		
-		static public String LINEAMENT = "lineament";
+		static public String LINE = "line";
 		static public String ID = "id";
 		static public String MSI_IMAGE = "msi-image";
 		static public String VERTICES = "vertices";
 		
 	    public Element toXmlDomElement(Document dom)
 	    {
-	    	Element linEle = dom.createElement(LINEAMENT);
+	    	Element linEle = dom.createElement(LINE);
 	    	linEle.setAttribute(ID, String.valueOf(id));
 	    	linEle.setAttribute(MSI_IMAGE, String.valueOf(name));
 
@@ -70,7 +64,7 @@ public class LineModel extends Model
             
             for (int i=0;i<size;++i)
             {
-            	vertices += lat.get(i) + " " + lon.get(i) + " " + rad.get(i);
+            	vertices += lat.get(i)*180.0/Math.PI + " " + lon.get(i)*180.0/Math.PI + " " + rad.get(i);
             	
             	if (i < size-1)
             		vertices += " ";
@@ -81,7 +75,7 @@ public class LineModel extends Model
 	    	return linEle;
 	    }
 
-	    public void fromXmlDomElement(Element element)
+	    public void fromXmlDomElement(Element element, ErosModel erosModel)
 	    {
 	    	id = Integer.parseInt(element.getAttribute(ID));
 	    	name = element.getAttribute(MSI_IMAGE);
@@ -92,36 +86,33 @@ public class LineModel extends Model
 	    	lat.clear();
 	    	lon.clear();
 	    	rad.clear();
+	    	int count = 0;
 	    	for (int i=0; i<tokens.length;)
 	    	{
-	    		lat.add(Double.parseDouble(tokens[i++]));
-	    		lon.add(Double.parseDouble(tokens[i++]));
+	    		lat.add(Double.parseDouble(tokens[i++])*Math.PI/180.0);
+	    		lon.add(Double.parseDouble(tokens[i++])*Math.PI/180.0);
 	    		rad.add(Double.parseDouble(tokens[i++]));
+	    		
+	    		controlPointIds.add(count);
+	    		
+	    		// Note, this point will be replaced with the correct value
+	    		// when we call updateSegment
+	    		double[] dummy = {0.0, 0.0, 0.0};
+	    		xyzPointList.add(new Point3D(dummy));
+	    		
+	    		if (count > 0)
+	    			this.updateSegment(erosModel, count-1);
+	    		
+	    		++count;
 	    	}
 	    	
 	    }
 
 	    public String getClickStatusBarText()
 	    {
-	    	return "Lineament " + id + " mapped on MSI image " + name + " contains " + lat.size() + " vertices";
+	    	return "Line " + id + " contains " + lat.size() + " vertices";
 	    }
 
-	    /*
-	    public void convertLatLonRadToXyz(ErosModel erosModel)
-	    {
-	    	int size = lat.size() - 1;
-	    	for (int i=0; i<size; ++i)
-	    	{
-	    		LatLon ll1 = new LatLon(lat.get(i), lon.get(i), rad.get(i));
-	    		LatLon ll2 = new LatLon(lat.get(i+1), lon.get(i+1), rad.get(i+1));
-	    		double pt1[] = Spice.latrec(ll1);
-	    		double pt2[] = Spice.latrec(ll2);
-	    		erosModel.drawPath(pt1, pt2);
-	    		
-	    	}
-	    }
-	    */
-	    
 	    public void updateSegment(ErosModel erosModel, int segment)
 	    {
     		LatLon ll1 = new LatLon(lat.get(segment), lon.get(segment), rad.get(segment));
@@ -181,11 +172,9 @@ public class LineModel extends Model
 
     public Element toXmlDomElement(Document dom)
     {
-    	Element rootEle = dom.createElement(LINEAMENTS);
+    	Element rootEle = dom.createElement(LINES);
 
-    	dom.appendChild(rootEle);
-
-		for (Lineament lin : this.lineaments)
+		for (Line lin : this.lines)
 		{
 			rootEle.appendChild(lin.toXmlDomElement(dom));
 		}
@@ -195,278 +184,124 @@ public class LineModel extends Model
     
     public void fromXmlDomElement(Element element)
     {
-    	this.lineaments.clear();
+    	this.lines.clear();
     	
-		NodeList nl = element.getElementsByTagName(Lineament.LINEAMENT);
+		NodeList nl = element.getElementsByTagName(Line.LINE);
 		if(nl != null && nl.getLength() > 0)
 		{
 			for(int i = 0 ; i < nl.getLength();i++) 
 			{
 				Element el = (Element)nl.item(i);
 
-				Lineament lin = new Lineament();
+				Line lin = new Line();
 				
-				lin.fromXmlDomElement(el);
+				lin.fromXmlDomElement(el, erosModel);
 
-				this.lineaments.add(lin);
+				this.lines.add(lin);
 			}
 		}
 
 		updatePolyData();
+		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 
-		System.out.println("Number of lineaments: " + this.lineaments.size());
+		System.out.println("Number of lines: " + this.lines.size());
     }
     
-	
-
 	private void updatePolyData()
 	{
-//		if (lineamentsPolyData == null)
-//		{
-			lineamentsPolyData = new vtkPolyData();
-			vtkPoints points = new vtkPoints();
-			vtkCellArray lines = new vtkCellArray();
-			vtkUnsignedCharArray colors = new vtkUnsignedCharArray();
+		linesPolyData = new vtkPolyData();
+		vtkPoints points = new vtkPoints();
+		vtkCellArray lines = new vtkCellArray();
+		vtkUnsignedCharArray colors = new vtkUnsignedCharArray();
 
-	        lineamentsPolyData.SetPoints(points);
-	        lineamentsPolyData.SetLines(lines);
-	        lineamentsPolyData.GetCellData().SetScalars(colors);
-//		}
+		linesPolyData.SetPoints(points);
+		linesPolyData.SetLines(lines);
+		linesPolyData.GetCellData().SetScalars(colors);
 
-//        vtkPoints points = lineamentsPolyData.GetPoints();
-//        vtkCellArray lines = lineamentsPolyData.GetLines();
-//        vtkUnsignedCharArray colors = (vtkUnsignedCharArray)lineamentsPolyData.GetCellData().GetScalars();
-        
-        //colors.SetNumberOfComponents(4);
-        //points.SetNumberOfPoints(0);
-        //lines.SetNumberOfCells(0);
-        //colors.SetNumberOfTuples(0);
-        //int numberOfPoints = this.getTotalNumberOfPoints();
-        //if (points.GetNumberOfPoints() != numberOfPoints)
-        //	points.SetNumberOfPoints(numberOfPoints);
-        //if (colors.GetNumberOfTuples() != this.lineaments.size())
-        //	colors.SetNumberOfTuples(this.lineaments.size());
+		colors.SetNumberOfComponents(4);
 
-        //points.Reset();
-        //lines.Reset();
-        //lines.Allocate(1000, 1000);
-        //colors.Reset();
-        
-        colors.SetNumberOfComponents(4);
-        
-        vtkIdList idList = new vtkIdList();
+		vtkIdList idList = new vtkIdList();
 
-        int c=0;
-		for (Lineament lin : this.lineaments)
+		int c=0;
+		for (Line lin : this.lines)
 		{
-			
-			//int size = lin.lat.size();
-            int size = lin.xyzPointList.size();
-            idList.SetNumberOfIds(size);
-            
-            for (int i=0;i<size;++i)
-            {
-            	//double lat = lin.lat.get(i);
-            	//double lon = lin.lon.get(i);
-            	//double rad = lin.rad.get(i);
-                //double x = rad * Math.cos( lon ) * Math.cos( lat );
-                //double y = rad * Math.sin( lon ) * Math.cos( lat );
-                //double z = rad * Math.sin( lat );
+			int size = lin.xyzPointList.size();
+			idList.SetNumberOfIds(size);
 
-            	//points.InsertNextPoint(x, y, z);
-                points.InsertNextPoint(lin.xyzPointList.get(i).xyz);
-            	idList.SetId(i, c);
-            	++c;
-            }
-
-            lines.InsertNextCell(idList);
-        	colors.InsertNextTuple4(defaultColor[0],defaultColor[1],defaultColor[2],defaultColor[3]);
-            
-		}
-
-		erosModel.shiftPolyLineInNormalDirection(lineamentsPolyData, 0.002);
-
-//		if (lineamentsActors.isEmpty())
-		{
-			vtkPolyDataMapper lineamentMapper = new vtkPolyDataMapper();
-			lineamentMapper.SetInput(lineamentsPolyData);
-			//lineamentMapper.SetResolveCoincidentTopologyToPolygonOffset();
-			//lineamentMapper.SetResolveCoincidentTopologyPolygonOffsetParameters(-0.002, -2.0);
-
-			vtkActor lineamentActor = new vtkActor();
-			lineamentActor.SetMapper(lineamentMapper);
-			lineamentActor.GetProperty().SetLineWidth(2.0);
-			
-			lineamentsActors.clear();
-			lineamentsActors.add(lineamentActor);
-		}
-	}
-
-	/*
-	private void updateCellData()
-	{
-        vtkCellArray lines = lineamentsPolyData.GetLines();
-        lines.Reset();
-        
-        vtkIdList idList = new vtkIdList();
-
-        int c=0;
-		for (Lineament lin : this.lineaments)
-		{
-            int size = lin.lat.size();
-            idList.SetNumberOfIds(size);
-            
-            for (int i=0;i<size;++i)
-            {
-            	idList.SetId(i, c);
-            	++c;
-            }
-
-            lines.InsertNextCell(idList);
-		}
-		
-        lineamentsPolyData.SetLines(lines);
-	}
-	*/
-	
-//	public StructureModel.Structure getStructure(int idx)
-//	{
-//		return this.lineaments.get(idx);
-//	}
-		
-	/*
-	public void setLineamentColor(int cellId, int[] color)
-	{
-		structuresPolyData.GetCellData().GetScalars().SetTuple4(cellId, color[0], color[1], color[2], color[3]);
-		structuresPolyData.Modified();
-		this.pcs.firePropertyChange(Properties.LINEAMENT_MODEL_CHANGED, null, null);
-	}
-
-	public void setsAllLineamentsColor(int[] color)
-	{
-		int numLineaments = this.cellIdToLineamentMap.size();
-		vtkDataArray colors = structuresPolyData.GetCellData().GetScalars();
-		
-		for (int i=0; i<numLineaments; ++i)
-			colors.SetTuple4(i, color[0], color[1], color[2], color[3]);
-		
-		structuresPolyData.Modified();
-		this.pcs.firePropertyChange(Properties.LINEAMENT_MODEL_CHANGED, null, null);
-	}
-	
-	public void setMSIImageLineamentsColor(int cellId, int[] color)
-	{
-		int numLineaments = this.cellIdToLineamentMap.size();
-		String name = cellIdToLineamentMap.get(cellId).name;
-		vtkDataArray colors = structuresPolyData.GetCellData().GetScalars();
-		
-		for (int i=0; i<numLineaments; ++i)
-			if (cellIdToLineamentMap.get(i).name.equals(name))
-					colors.SetTuple4(i, color[0], color[1], color[2], color[3]);
-
-		structuresPolyData.Modified();
-		this.pcs.firePropertyChange(Properties.LINEAMENT_MODEL_CHANGED, null, null);
-	}
-	 */
-
-	/*
-	public void setRadialOffset(double offset)
-	{
-        int ptId=0;
-        vtkPoints points = lineamentsPolyData.GetPoints();
-        
-		for (Lineament lin : this.lineaments)
-		{
-            int size = lin.lat.size();
-
-            for (int i=0;i<size;++i)
-            {
-                double x = (lin.rad.get(i)+offset) * Math.cos( lin.lon.get(i) ) * Math.cos( lin.lat.get(i) );
-                double y = (lin.rad.get(i)+offset) * Math.sin( lin.lon.get(i) ) * Math.cos( lin.lat.get(i) );
-                double z = (lin.rad.get(i)+offset) * Math.sin( lin.lat.get(i) );
-            	points.SetPoint(ptId, x, y, z);
-            	++ptId;
-            }
-		}		
-
-		lineamentsPolyData.Modified();
-		this.pcs.firePropertyChange(Properties.LINEAMENT_MODEL_CHANGED, null, null);
-	}
-*/
-	/*
-	public void setShowStructures(boolean show)
-	{
-		if (show)
-		{
-			if (lineamentsActors.isEmpty())
+			for (int i=0;i<size;++i)
 			{
-				lineamentsActors.add(structuresActor);
-				this.pcs.firePropertyChange(Properties.LINEAMENT_MODEL_CHANGED, null, null);
+				points.InsertNextPoint(lin.xyzPointList.get(i).xyz);
+				idList.SetId(i, c);
+				++c;
 			}
+
+			lines.InsertNextCell(idList);
+			colors.InsertNextTuple4(defaultColor[0],defaultColor[1],defaultColor[2],defaultColor[3]);
+
 		}
-		else
-		{
-			if (!lineamentsActors.isEmpty())
-			{
-				lineamentsActors.clear();
-				this.pcs.firePropertyChange(Properties.LINEAMENT_MODEL_CHANGED, null, null);
-			}
-		}
-		
+
+		erosModel.shiftPolyLineInNormalDirection(linesPolyData, 0.002);
+
+		vtkPolyDataMapper lineMapper = new vtkPolyDataMapper();
+		lineMapper.SetInput(linesPolyData);
+
+		if (actors.contains(lineActor))
+			actors.remove(lineActor);
+
+		lineActor = new vtkActor();
+		lineActor.SetMapper(lineMapper);
+		lineActor.GetProperty().SetLineWidth(2.0);
+
+		actors.add(lineActor);
 	}
-	*/
 	
 	public ArrayList<vtkProp> getProps() 
 	{
-//		if (lineamentsPolyData == null)
-//		{
-//			lineamentsPolyData = new vtkPolyData();
-//			vtkPoints points = new vtkPoints();
-//			vtkCellArray lines = new vtkCellArray();
-//			vtkUnsignedCharArray colors = new vtkUnsignedCharArray();
-//
-//	        lineamentsPolyData.SetPoints(points);
-//	        lineamentsPolyData.SetLines(lines);
-//	        //lineamentsPolyData.GetCellData().SetScalars(colors);
-//		}
-
-		return lineamentsActors;
+		return actors;
 	}
 	
     public String getClickStatusBarText(vtkProp prop, int cellId)
     {
-    	Lineament lin = this.lineaments.get(cellId);
-		if (lin != null)
-			return lin.getClickStatusBarText();
-		else
-			return "";
+    	if (prop == lineActor)
+    	{
+    		Line lin = this.lines.get(cellId);
+    		if (lin != null)
+    			return lin.getClickStatusBarText();
+    		else
+    			return "";
+    	}
+    	else
+    	{
+    		return "";
+    	}
     }
 
-    public int getNumberOfLineaments()
+    public int getNumberOfLines()
     {
-    	return lineaments.size();
+    	return lines.size();
     }
     
     /**
-     * Return the total number of points in all the lineaments combined.
+     * Return the total number of points in all the lines combined.
      * @return
      */
     public int getTotalNumberOfPoints()
     {
     	int numberOfPoints = 0;
-		for (Lineament lin : this.lineaments)
+		for (Line lin : this.lines)
 		{
 			numberOfPoints += lin.lat.size();
 		}    	
     	return numberOfPoints;
     }
-    
-    public void addNewLineament(double[] pt1, double[] pt2)
+
+    /*
+    public void addNewLine(double[] pt1, double[] pt2)
     {
         LatLon ll1 = Spice.reclat(pt1);
         LatLon ll2 = Spice.reclat(pt2);
         
-        Lineament lin = new Lineament();
+        Line lin = new Line();
         lin.lat.add(ll1.lat);
         lin.lon.add(ll1.lon);
         lin.rad.add(ll1.rad);
@@ -479,42 +314,37 @@ public class LineModel extends Model
         lin.controlPointIds.add(0);
         lin.controlPointIds.add(1);
         lin.updateSegment(erosModel, 0);
-        lineaments.add(lin);
-
-        /*
-        vtkPoints points = lineamentsPolyData.GetPoints();
-        vtkCellArray lines = lineamentsPolyData.GetLines();
-        //vtkUnsignedCharArray colors = (vtkUnsignedCharArray)lineamentsPolyData.GetCellData().GetScalars();
-        
-        vtkIdList idList = new vtkIdList();
-        idList.SetNumberOfIds(2);
-
-        idList.SetId(0, points.GetNumberOfPoints());
-        points.InsertNextPoint(pt1);
-        idList.SetId(1, points.GetNumberOfPoints());
-        points.InsertNextPoint(pt2);
-
-        lines.InsertNextCell(idList);
-    	//colors.InsertNextTuple4(defaultColor[0],defaultColor[1],defaultColor[2],defaultColor[3]);
-		
-        lineamentsPolyData.SetPoints(points);
-        lineamentsPolyData.SetLines(lines);
-
-        points.Modified();
-        lines.Modified();
-        */
+        lines.add(lin);
         
         updatePolyData();
         
-//        lineamentsPolyData.Modified();
-		this.pcs.firePropertyChange(Properties.LINEAMENT_MODEL_CHANGED, null, null);
+		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+    }
+    */
+    
+    public void addNewLine(double[] pt1)
+    {
+        LatLon ll1 = Spice.reclat(pt1);
+        
+        Line lin = new Line();
+        lin.lat.add(ll1.lat);
+        lin.lon.add(ll1.lon);
+        lin.rad.add(ll1.rad);
+
+        lin.xyzPointList.add(new Point3D(pt1));
+        lin.controlPointIds.add(0);
+        lines.add(lin);
+        
+        updatePolyData();
+        
+        selectLine(lines.size()-1);
+        
+		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
     
-    public void updateLineamentVertex(int cellId, int vertexId, double[] newPoint)
+    public void updateLineVertex(int cellId, int vertexId, double[] newPoint)
     {
-        //vtkPoints points = lineamentsPolyData.GetPoints();
-        
-        Lineament lin = lineaments.get(cellId);
+        Line lin = lines.get(cellId);
         
         int numVertices = lin.lat.size();
 
@@ -530,29 +360,13 @@ public class LineModel extends Model
         }
         
         updatePolyData();
-		this.pcs.firePropertyChange(Properties.LINEAMENT_MODEL_CHANGED, null, null);
-
-		/*
-		int ptId = lineamentsPolyData.GetCell(cellId).GetPointId(vertexId);
-        //System.out.println(ptId + " " + points.GetNumberOfPoints() + " " + cellId + " " + vertexId);
-    
-        points.SetPoint(ptId, newPoint);
-        //lineamentsPolyData.SetPoints(points);
-        points.Modified();
-		lineamentsPolyData.Modified();
-		this.pcs.firePropertyChange(Properties.LINEAMENT_MODEL_CHANGED, null, null);
-		
-		LatLon ll1 = new LatLon(lin.lat.get(vertexId-1), lin.lon.get(vertexId-1), lin.rad.get(vertexId-1));
-		LatLon ll2 = new LatLon(lin.lat.get(vertexId), lin.lon.get(vertexId), lin.rad.get(vertexId));
-		double pt1[] = Spice.latrec(ll1);
-		double pt2[] = Spice.latrec(ll2);
-		erosModel.drawPath(pt1, pt2);
-		*/
+		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
     
-    public void addLineamentVertex(int cellId, double[] newPoint)
+    /*
+    public void addVertexToLine(int cellId, double[] newPoint)
     {
-        Lineament lin = lineaments.get(cellId);
+        Line lin = lines.get(cellId);
         LatLon ll = Spice.reclat(newPoint);
         
         // If the added point is the same as the current last point, return doing nothing.
@@ -580,20 +394,89 @@ public class LineModel extends Model
         lin.controlPointIds.add(lin.xyzPointList.size()-1);
 
         updatePolyData();
+		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+    }
+    */
+
+    public void addVertexToLine(int cellId, double[] newPoint)
+    {
+        Line lin = lines.get(cellId);
+        LatLon ll = Spice.reclat(newPoint);
         
-//        lineamentsPolyData.Modified();
-		this.pcs.firePropertyChange(Properties.LINEAMENT_MODEL_CHANGED, null, null);
+        lin.lat.add(ll.lat);
+        lin.lon.add(ll.lon);
+        lin.rad.add(ll.rad);
+
+        lin.xyzPointList.add(new Point3D(newPoint));
+        lin.controlPointIds.add(lin.xyzPointList.size()-1);
+
+    	lin.updateSegment(erosModel, lin.lat.size()-2);
+
+        updatePolyData();
+        
+        updateLineSelection();
+        
+		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
     /*
-    public void removeLineamentVertex(int cellId, int vertexId)
+    public void removeLineVertex(int cellId, int vertexId)
     {
-    	lineaments.remove(cellId);
+    	lines.remove(cellId);
 
         updatePolyData();
-
-//		lineamentsPolyData.Modified();
-		this.pcs.firePropertyChange(Properties.LINEAMENT_MODEL_CHANGED, null, null);
+		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 	*/
+    
+    private void updateLineSelection()
+    {
+        Line lin = lines.get(selectedLine);
+
+		vtkPolyData polydata = new vtkPolyData();
+		vtkPoints points = new vtkPoints();
+		vtkCellArray vert = new vtkCellArray();
+		polydata.SetPoints( points );
+		polydata.SetVerts( vert );
+
+		int numPoints = lin.controlPointIds.size();
+
+        points.SetNumberOfPoints(numPoints);
+
+		vtkIdList idList = new vtkIdList();
+        idList.SetNumberOfIds(1);
+        
+		for (int i=0; i<numPoints; ++i)
+		{
+			int idx = lin.controlPointIds.get(i);
+            points.SetPoint(i, lin.xyzPointList.get(idx).xyz);
+        	idList.SetId(0, i);
+		    vert.InsertNextCell(idList);
+		}
+
+		erosModel.shiftPolyLineInNormalDirection(polydata, 0.1);
+		
+        vtkPolyDataMapper pointsMapper = new vtkPolyDataMapper();
+        pointsMapper.SetInput(polydata);
+
+        if (actors.contains(lineSelectionActor))
+        	actors.remove(lineSelectionActor);
+        
+        lineSelectionActor = new vtkActor();
+        lineSelectionActor.SetMapper(pointsMapper);
+        lineSelectionActor.GetProperty().SetColor(1.0, 0.0, 0.0);
+        lineSelectionActor.GetProperty().SetPointSize(7.0);
+        
+        actors.add(lineSelectionActor);
+    }
+    
+    public void selectLine(int cellId)
+    {
+    	if (selectedLine == cellId)
+    		return;
+    	
+    	selectedLine = cellId;
+
+    	updateLineSelection();
+    }
 }
