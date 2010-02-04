@@ -115,60 +115,6 @@ public class LineamentModel extends Model
         in.close();
 	}
 
-	private void saveModel() throws NumberFormatException, IOException
-	{
-		InputStream is = getClass().getResourceAsStream("/edu/jhuapl/near/data/LinearFeatures.txt");
-		InputStreamReader isr = new InputStreamReader(is);
-		BufferedReader in = new BufferedReader(isr);
-
-		String line;
-        while ((line = in.readLine()) != null)
-        {
-            String [] tokens = line.split("\t");
-            
-            if (tokens.length < 5)
-            {
-                System.out.println(tokens.length);
-                for (int i=0;i<tokens.length;++i)
-                	System.out.println(tokens[i]);
-                continue;
-            }
-
-            String name = tokens[0];
-            Integer id = Integer.parseInt(tokens[1]);
-            double lat = Double.parseDouble(tokens[2]) * Math.PI / 180.0;
-            double lon = (360.0-Double.parseDouble(tokens[3])) * Math.PI / 180.0;
-            double rad = Double.parseDouble(tokens[4]);
-            
-            if (!this.idToLineamentMap.containsKey(id))
-            {
-            	this.idToLineamentMap.put(id, new Lineament());
-            }            
-            
-            Lineament lin = this.idToLineamentMap.get(id);
-            lin.name = name;
-            lin.id = id;
-            lin.lat.add(lat);
-            lin.lon.add(lon);
-            lin.rad.add(rad);
-
-            // Convert to xyz
-            //double x = rad * Math.cos( lon ) * Math.cos( lat );
-            //double y = rad * Math.sin( lon ) * Math.cos( lat );
-            //double z = rad * Math.sin( lat );
-
-            //lin.x.add(x);
-            //lin.y.add(y);
-            //lin.z.add(z);
-
-            // Update the bounds of the lineaments
-            //lin.bb.update(x, y, z);
-        }
-
-        in.close();
-	}
-	
-
 	/*
 	public List<Lineament> getLineamentsWithinBox(BoundingBox box)
 	{
