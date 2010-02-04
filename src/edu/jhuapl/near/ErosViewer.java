@@ -14,7 +14,7 @@ import edu.jhuapl.near.util.NativeLibraryLoader;
 
 import java.awt.*;
 
-public class ErosLineamentViewer extends JFrame 
+public class ErosViewer extends JFrame 
 {
 	private JSplitPane splitPane;
 	private ErosRenderer imageViewer;
@@ -26,7 +26,7 @@ public class ErosLineamentViewer extends JFrame
 	private PickManager pickManager;
 	private ModelInfoWindowManager infoPanelManager;
 	
-	public ErosLineamentViewer()
+	public ErosViewer()
 	{
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -114,7 +114,7 @@ public class ErosLineamentViewer extends JFrame
         try
         {
         	JPopupMenu.setDefaultLightWeightPopupEnabled(false);
-            final ErosLineamentViewer frame = new ErosLineamentViewer();
+            final ErosViewer frame = new ErosViewer();
         	
             javax.swing.SwingUtilities.invokeLater(new Runnable()
             {
