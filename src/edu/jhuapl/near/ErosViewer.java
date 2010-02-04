@@ -7,7 +7,6 @@ import edu.jhuapl.near.gui.ErosRenderer;
 import edu.jhuapl.near.gui.FileMenu;
 import edu.jhuapl.near.gui.ModelInfoWindowManager;
 import edu.jhuapl.near.gui.StatusBar;
-import edu.jhuapl.near.gui.ToolBar;
 import edu.jhuapl.near.gui.pick.PickManager;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.util.NativeLibraryLoader;
@@ -20,7 +19,6 @@ public class ErosViewer extends JFrame
 	private ErosRenderer imageViewer;
 	private ControlPanel controlPanel;
 	private StatusBar statusBar;
-	private ToolBar toolBar;
 	private FileMenu fileMenu;
 	private ModelManager modelManager;
 	private PickManager pickManager;
@@ -52,7 +50,6 @@ public class ErosViewer extends JFrame
         controlPanel.setPreferredSize(new Dimension(300, 700));
 
 		createMenus(imageViewer);
-        //createToolBars();
 
 		this.add(splitPane, BorderLayout.CENTER);
 
@@ -78,12 +75,6 @@ public class ErosViewer extends JFrame
         setJMenuBar(menuBar);
     }
 
-    private void createToolBars()
-    {
-    	toolBar = new ToolBar();
-    	this.getContentPane().add(toolBar, BorderLayout.PAGE_START);
-    }
-
     private void createStatusBar()
     {
     	statusBar = new StatusBar();
@@ -93,7 +84,7 @@ public class ErosViewer extends JFrame
 //    public void about()
 //    {
 //        QMessageBox.about(this,
-//                         tr("About Near Lineaments Viewer"),
+//                         tr("About Near Viewer"),
 //                         tr("(C) 2009 The Johns Hopkins University Applied Physics Laboratory"));
 //    }
 
