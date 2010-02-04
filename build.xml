@@ -26,7 +26,7 @@
     </target>
 
     <target name="run" depends="compile">
-        <java classname="edu.jhuapl.near.ErosLineamentViewer" fork="true" maxmemory="512m">
+        <java classname="edu.jhuapl.near.ErosViewer" fork="true" maxmemory="512m">
            <jvmarg value="-Djava.library.path=${rootdir}/lib/linux32"/>
            <jvmarg value="-Dsun.java2d.noddraw=true"/>
            <classpath>
@@ -53,13 +53,13 @@
                                                    jfreechart-1.0.13.jar
                                                    miglayout-3.7.1-swing.jar
                                                    mysql-connector-java-5.1.10-bin.jar"/>
-               <attribute name="Main-Class" value="edu.jhuapl.near.ErosLineamentViewer"/>
+               <attribute name="Main-Class" value="edu.jhuapl.near.ErosViewer"/>
            </manifest>
         </jar>
     </target>
 
     <target name="runjar" depends="jar">
-        <java classname="edu.jhuapl.near.ErosLineamentViewer" fork="true"
+        <java classname="edu.jhuapl.near.ErosViewer" fork="true"
                	maxmemory="512m">
            <jvmarg value="-Djava.library.path=${rootdir}/lib/linux32"/>
            <jvmarg value="-Dsun.java2d.noddraw=true"/>

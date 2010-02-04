@@ -53,6 +53,6 @@
       <nativelib href = "vtk-natives-macosx-x86_64.jar" />
     </resources>
 
-    <application-desc main-class="edu.jhuapl.near.ErosLineamentViewer"/>
+    <application-desc main-class="edu.jhuapl.near.ErosViewer"/>
 
 </jnlp>
