@@ -126,7 +126,7 @@ public class MSIPopupMenu extends JPopupMenu
 		else
 			showRemoveBoundaryIn3DMenuItem.setText("Show Image Boundary in 3D");
 		
-		NearImageCollection msiImages = (NearImageCollection)modelManager.getModel(ModelManager.MSI_IMAGES);
+		MSIImageCollection msiImages = (MSIImageCollection)modelManager.getModel(ModelManager.MSI_IMAGES);
 		if (msiImages.containsImage(imageName))
 			showRemoveImageIn3DMenuItem.setText("Remove Image");
 		else
@@ -138,7 +138,7 @@ public class MSIPopupMenu extends JPopupMenu
 	{
 		public void actionPerformed(ActionEvent e) 
 		{
-			NearImageCollection model = (NearImageCollection)modelManager.getModel(ModelManager.MSI_IMAGES);
+			MSIImageCollection model = (MSIImageCollection)modelManager.getModel(ModelManager.MSI_IMAGES);
 			try 
 			{
 				String name = currentImageOrBoundary;
@@ -204,7 +204,7 @@ public class MSIPopupMenu extends JPopupMenu
 			
 			try 
 			{
-				infoPanelManager.addData(NearImage.NearImageFactory.createImage(name));
+				infoPanelManager.addData(MSIImage.MSIImageFactory.createImage(name));
 			} 
 			catch (FitsException e1) {
 				// TODO Auto-generated catch block
@@ -265,7 +265,7 @@ public class MSIPopupMenu extends JPopupMenu
 
 			try 
 			{
-				NearImage image = NearImage.NearImageFactory.createImage(name);
+				MSIImage image = MSIImage.MSIImageFactory.createImage(name);
 				BoundingBox bb = image.getBoundingBox();
 				renWin.GetRenderer().ResetCamera(
 						bb.xmin,

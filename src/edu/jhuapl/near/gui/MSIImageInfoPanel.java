@@ -19,14 +19,14 @@ public class MSIImageInfoPanel extends ModelInfoWindow implements PropertyChange
 {
 	private vtkRenderWindowPanel renWin;
     private ContrastChanger contrastChanger;
-	private NearImage nearImage;
+	private MSIImage msiImage;
 	private ModelManager modelManager;
 	
-	public MSIImageInfoPanel(NearImage image, ModelManager modelManager)
+	public MSIImageInfoPanel(MSIImage image, ModelManager modelManager)
 	{
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-		nearImage = image;
+		msiImage = image;
 		this.modelManager = modelManager;
 		
 		image.addPropertyChangeListener(this);
@@ -40,13 +40,13 @@ public class MSIImageInfoPanel extends ModelInfoWindow implements PropertyChange
         vtkImageData displayedImage = image.getDisplayedImage();
         
         vtkImageActor actor = new vtkImageActor();
-        //actor.SetDisplayExtent(0, NearImage.IMAGE_WIDTH-1, 0, NearImage.IMAGE_HEIGHT-1, 0, 0);
+        //actor.SetDisplayExtent(0, MSIImage.IMAGE_WIDTH-1, 0, MSIImage.IMAGE_HEIGHT-1, 0, 0);
         actor.SetInput(displayedImage);                     
         
         renWin.GetRenderer().AddActor(actor);
         
-		//renWin.GetRenderWindow().SetSize(NearImage.IMAGE_WIDTH, NearImage.IMAGE_HEIGHT);
-		renWin.setSize(NearImage.IMAGE_WIDTH, NearImage.IMAGE_HEIGHT);
+		//renWin.GetRenderWindow().SetSize(MSIImage.IMAGE_WIDTH, MSIImage.IMAGE_HEIGHT);
+		renWin.setSize(MSIImage.IMAGE_WIDTH, MSIImage.IMAGE_HEIGHT);
 
         JPanel panel = new JPanel(new BorderLayout());
 		
@@ -100,7 +100,7 @@ public class MSIImageInfoPanel extends ModelInfoWindow implements PropertyChange
 		// Add the contrast changer
         contrastChanger = new ContrastChanger();
 
-        contrastChanger.setNearImage(image);
+        contrastChanger.setMSIImage(image);
         
         bottomPanel.add(Box.createVerticalStrut(10));
         bottomPanel.add(scrollPane);
@@ -130,7 +130,7 @@ public class MSIImageInfoPanel extends ModelInfoWindow implements PropertyChange
     	MSIPopupMenu msiImagesPopupMenu = 
 			new MSIPopupMenu(modelManager, null, renWin, this);
     	
-    	msiImagesPopupMenu.setCurrentImage(nearImage.getServerPath());
+    	msiImagesPopupMenu.setCurrentImage(msiImage.getServerPath());
     	
     	JMenuBar menuBar = new JMenuBar();
 
@@ -151,7 +151,7 @@ public class MSIImageInfoPanel extends ModelInfoWindow implements PropertyChange
 
 	public Model getModel()
 	{
-		return nearImage;
+		return msiImage;
 	}
 	
 	public void propertyChange(PropertyChangeEvent arg0) 

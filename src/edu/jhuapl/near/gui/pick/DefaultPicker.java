@@ -173,9 +173,9 @@ public class DefaultPicker extends Picker
         			msiBoundariesPopupMenu.setCurrentImage(name);
         			msiBoundariesPopupMenu.show(e.getComponent(), e.getX(), e.getY());
     			}
-    			else if (modelManager.getModel(pickedActor) instanceof NearImageCollection)
+    			else if (modelManager.getModel(pickedActor) instanceof MSIImageCollection)
     			{
-        			NearImageCollection msiImages = (NearImageCollection)modelManager.getModel(ModelManager.MSI_IMAGES);
+        			MSIImageCollection msiImages = (MSIImageCollection)modelManager.getModel(ModelManager.MSI_IMAGES);
         			String name = msiImages.getImageName(pickedActor);
         			msiImagesPopupMenu.setCurrentImage(name);
         			msiImagesPopupMenu.show(e.getComponent(), e.getX(), e.getY());

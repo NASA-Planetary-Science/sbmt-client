@@ -22,7 +22,7 @@ public class ModelManager extends Model implements PropertyChangeListener
 	static public final String STRUCTURES = "structures";
 	
 	private LineamentModel lineamentModel;
-	private NearImageCollection msiImages;
+	private MSIImageCollection msiImages;
 	private ErosModel erosModel;
 	private MSIBoundaryCollection msiBoundaries;
 	private NISSpectraCollection nisSpectra;
@@ -41,7 +41,7 @@ public class ModelManager extends Model implements PropertyChangeListener
     {
     	lineamentModel = new LineamentModel();
     	erosModel = new ErosModel();
-    	msiImages = new NearImageCollection();
+    	msiImages = new MSIImageCollection();
     	msiBoundaries = new MSIBoundaryCollection();
     	nisSpectra = new NISSpectraCollection(erosModel);
     	nlrData = new NLRDataCollection();

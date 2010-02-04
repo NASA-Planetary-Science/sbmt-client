@@ -3,7 +3,7 @@ package edu.jhuapl.near.dbgen;
 import vtk.*;
 
 import edu.jhuapl.near.*;
-import edu.jhuapl.near.model.NearImage;
+import edu.jhuapl.near.model.MSIImage;
 import edu.jhuapl.near.util.NativeLibraryLoader;
 
 public class BoundaryGenerator 
@@ -29,7 +29,7 @@ public class BoundaryGenerator
 		try 
 		{
 		
-			NearImage image = new NearImage(fitfile);
+			MSIImage image = new MSIImage(fitfile);
 			
 			vtkPolyData boundary = image.generateImageBorder();
 

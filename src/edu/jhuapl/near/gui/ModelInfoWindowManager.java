@@ -26,8 +26,8 @@ public class ModelInfoWindowManager
 		{
 			ModelInfoWindow infoPanel = null;
 			
-			if (model instanceof NearImage)
-				infoPanel = new MSIImageInfoPanel((NearImage)model, modelManager);
+			if (model instanceof MSIImage)
+				infoPanel = new MSIImageInfoPanel((MSIImage)model, modelManager);
 			else if (model instanceof NISSpectrum)
 				infoPanel = new NISSpectrumInfoPanel((NISSpectrum)model, modelManager);
 			else

@@ -21,7 +21,7 @@ import edu.jhuapl.near.util.Properties;
  * @author kahneg1
  *
  */
-public class NearImage extends Model
+public class MSIImage extends Model
 {
 	
 	public static final int IMAGE_WIDTH = 537;
@@ -75,26 +75,26 @@ public class NearImage extends Model
 	boolean hasLimb = false;
 	
 	/**
-	 * Because instances of NearImage can be expensive, we want there to be
+	 * Because instances of MSIImage can be expensive, we want there to be
 	 * no more than one instance of this class per image file on the server.
 	 * Hence this class was created to manage the creation and deletion of
-	 * NearImage's. Anyone needing a NearImage should use this factory class to
-	 * create NearImages's and should NOT call the constructor directly.
+	 * MSIImage's. Anyone needing a MSIImage should use this factory class to
+	 * create MSIImages's and should NOT call the constructor directly.
 	 */
-	public static class NearImageFactory
+	public static class MSIImageFactory
 	{
-		static private WeakHashMap<NearImage, Object> images = 
-			new WeakHashMap<NearImage, Object>();
+		static private WeakHashMap<MSIImage, Object> images = 
+			new WeakHashMap<MSIImage, Object>();
 		
-		static public NearImage createImage(String name) throws FitsException, IOException
+		static public MSIImage createImage(String name) throws FitsException, IOException
 		{
-			for (NearImage image : images.keySet())
+			for (MSIImage image : images.keySet())
 			{
 				if (image.getServerPath().equals(name))
 					return image;
 			}
 
-			NearImage image = new NearImage(name);
+			MSIImage image = new MSIImage(name);
 			images.put(image, null);
 			return image;
 		}
@@ -135,7 +135,7 @@ public class NearImage extends Model
         }
     }
 
-	public NearImage(String filename) throws FitsException, IOException
+	public MSIImage(String filename) throws FitsException, IOException
 	{
 		this.serverpath = filename;
 		
@@ -157,7 +157,7 @@ public class NearImage extends Model
 		this.initialize(fitFile);
 	}
 	
-	public NearImage(File fitFile) throws FitsException, IOException
+	public MSIImage(File fitFile) throws FitsException, IOException
 	{
 		this.initialize(fitFile);
 	}
@@ -386,8 +386,8 @@ public class NearImage extends Model
     {
     	ArrayList<vtkProp> imageActors = new ArrayList<vtkProp>();
     	
-        int numTexturesWidth = (int)Math.ceil((double)(NearImage.IMAGE_WIDTH-1) / (double)(TEXTURE_SIZE-1));
-        int numTexturesHeight = (int)Math.ceil((double)(NearImage.IMAGE_HEIGHT-1) / (double)(TEXTURE_SIZE-1));
+        int numTexturesWidth = (int)Math.ceil((double)(MSIImage.IMAGE_WIDTH-1) / (double)(TEXTURE_SIZE-1));
+        int numTexturesHeight = (int)Math.ceil((double)(MSIImage.IMAGE_HEIGHT-1) / (double)(TEXTURE_SIZE-1));
         
         //int totalNumTextures = numTexturesWidth * numTexturesHeight;
         //System.out.println("totalNumTextures  " + totalNumTextures);
@@ -413,10 +413,10 @@ public class NearImage extends Model
                 int c = 0;
                 int maxM = TEXTURE_SIZE;
                 if (i==numTexturesHeight-1)
-                	maxM = (NearImage.IMAGE_HEIGHT) - i*(TEXTURE_SIZE-1);
+                	maxM = (MSIImage.IMAGE_HEIGHT) - i*(TEXTURE_SIZE-1);
                 int maxN = TEXTURE_SIZE;
                 if (j==numTexturesWidth-1)
-                	maxN = (NearImage.IMAGE_WIDTH) - j*(TEXTURE_SIZE-1);
+                	maxN = (MSIImage.IMAGE_WIDTH) - j*(TEXTURE_SIZE-1);
 
                 //points.SetNumberOfPoints(maxM*maxN);
                 tcoords.SetNumberOfComponents(2);
@@ -815,11 +815,11 @@ public class NearImage extends Model
         BoundingBox bb = new BoundingBox();
 
         //points.SetNumberOfPoints(maxM*maxN);
-        indices = new int[NearImage.IMAGE_HEIGHT][NearImage.IMAGE_WIDTH];
+        indices = new int[MSIImage.IMAGE_HEIGHT][MSIImage.IMAGE_WIDTH];
         
         // First add points to the vtkPoints array
-        for (int m=0; m<NearImage.IMAGE_HEIGHT; ++m)
-			for (int n=0; n<NearImage.IMAGE_WIDTH; ++n)
+        for (int m=0; m<MSIImage.IMAGE_HEIGHT; ++m)
+			for (int n=0; n<MSIImage.IMAGE_WIDTH; ++n)
 			{
 				x = getX(m, n);
 				y = getY(m, n);
@@ -843,8 +843,8 @@ public class NearImage extends Model
 			}
 
         // Now add connectivity information
-        for (int m=1; m<NearImage.IMAGE_HEIGHT; ++m)
-			for (int n=1; n<NearImage.IMAGE_WIDTH; ++n)
+        for (int m=1; m<MSIImage.IMAGE_HEIGHT; ++m)
+			for (int n=1; n<MSIImage.IMAGE_WIDTH; ++n)
 			{
 				// Get the indices of the 4 corners of the rectangle to the upper left
 				i0 = indices[m-1][n-1];
@@ -935,14 +935,14 @@ public class NearImage extends Model
 		// downward till we hit a valid pixel
 		
 		int farthestDown = 0;
-		int farthestLeft = NearImage.IMAGE_WIDTH-1;
-		int farthestUp = NearImage.IMAGE_HEIGHT-1;
+		int farthestLeft = MSIImage.IMAGE_WIDTH-1;
+		int farthestUp = MSIImage.IMAGE_HEIGHT-1;
 		//int farthestRight = 0;
 		
 		// Top
-		for (int i=0; i<NearImage.IMAGE_WIDTH; ++i)
+		for (int i=0; i<MSIImage.IMAGE_WIDTH; ++i)
 		{
-			for (int j=0; j<NearImage.IMAGE_HEIGHT; ++j)
+			for (int j=0; j<MSIImage.IMAGE_HEIGHT; ++j)
 			{
 				float lat = getLatitude(j, i);
 				float lon = getLongitude(j, i);
@@ -959,9 +959,9 @@ public class NearImage extends Model
 			return pixels;
 		
 		// Right
-		for (int i=farthestDown; i<NearImage.IMAGE_HEIGHT; ++i)
+		for (int i=farthestDown; i<MSIImage.IMAGE_HEIGHT; ++i)
 		{
-			for (int j=NearImage.IMAGE_WIDTH-1; j>=0; --j)
+			for (int j=MSIImage.IMAGE_WIDTH-1; j>=0; --j)
 			{
 				float lat = getLatitude(i, j);
 				float lon = getLongitude(i, j);
@@ -976,7 +976,7 @@ public class NearImage extends Model
 		// Bottom
 		for (int i=farthestLeft; i>=0; --i)
 		{
-			for (int j=NearImage.IMAGE_HEIGHT-1; j>=0; --j)
+			for (int j=MSIImage.IMAGE_HEIGHT-1; j>=0; --j)
 			{
 				float lat = getLatitude(j, i);
 				float lon = getLongitude(j, i);
@@ -991,7 +991,7 @@ public class NearImage extends Model
 		// Left
 		for (int i=farthestUp; i>=0; --i)
 		{
-			for (int j=0; j<NearImage.IMAGE_WIDTH; ++j)
+			for (int j=0; j<MSIImage.IMAGE_WIDTH; ++j)
 			{
 				float lat = getLatitude(i, j);
 				float lon = getLongitude(i, j);
@@ -1227,7 +1227,7 @@ public class NearImage extends Model
     
     public boolean isValidPoint(float x, float y, float z)
     {
-    	if (x <= NearImage.PDS_NA || y <= NearImage.PDS_NA || z <= NearImage.PDS_NA)
+    	if (x <= MSIImage.PDS_NA || y <= MSIImage.PDS_NA || z <= MSIImage.PDS_NA)
     		return false;
     	else
     		return true;

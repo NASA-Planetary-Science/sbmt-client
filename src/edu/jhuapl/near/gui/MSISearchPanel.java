@@ -22,7 +22,7 @@ import edu.jhuapl.near.database.Database;
 import edu.jhuapl.near.gui.popupmenus.MSIPopupMenu;
 import edu.jhuapl.near.model.MSIBoundaryCollection;
 import edu.jhuapl.near.model.ModelManager;
-import edu.jhuapl.near.model.NearImageCollection;
+import edu.jhuapl.near.model.MSIImageCollection;
 import edu.jhuapl.near.pair.IdPair;
 
 
@@ -465,7 +465,7 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
         {
 			public void actionPerformed(ActionEvent e) 
 			{
-				NearImageCollection model = (NearImageCollection)modelManager.getModel(ModelManager.MSI_IMAGES);
+				MSIImageCollection model = (MSIImageCollection)modelManager.getModel(ModelManager.MSI_IMAGES);
 				model.removeAllImages();
 			}
         });

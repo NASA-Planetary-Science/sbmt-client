@@ -60,12 +60,12 @@ public class DatabaseGeneratorSql
 		}
 
 		/*
-		public TreeSet<Integer> getIntersectingCells(NearImage image)
+		public TreeSet<Integer> getIntersectingCells(MSIImage image)
 		{
 			TreeSet<Integer> cellIds = new TreeSet<Integer>();
 			
-			for (int i=0; i<NearImage.IMAGE_HEIGHT; ++i)
-				for (int j=0; j<NearImage.IMAGE_WIDTH; ++j)
+			for (int i=0; i<MSIImage.IMAGE_HEIGHT; ++i)
+				for (int j=0; j<MSIImage.IMAGE_WIDTH; ++j)
 				{
 					double x = image.getX(i, j);
 					double y = image.getY(i, j);
@@ -235,11 +235,11 @@ public class DatabaseGeneratorSql
     		f = f.getParentFile();
     		yearStr = f.getName();
 
-    		NearImage image = new NearImage(origFile);
+    		MSIImage image = new MSIImage(origFile);
     		//HashMap<String, String> properties = image.getProperties();
 
     		String lblFilename = filename.substring(0, filename.length()-4) + ".LBL";
-    		HashMap<String, String> properties = NearImage.parseLblFile(lblFilename);
+    		HashMap<String, String> properties = MSIImage.parseLblFile(lblFilename);
     		
             if (msiInsert == null)
             {
@@ -247,8 +247,8 @@ public class DatabaseGeneratorSql
             		"insert into msiimages values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");                                                                   
             }
 
-            DateTime startTime = new DateTime(properties.get(NearImage.START_TIME), DateTimeZone.UTC);
-            DateTime stopTime = new DateTime(properties.get(NearImage.STOP_TIME), DateTimeZone.UTC);
+            DateTime startTime = new DateTime(properties.get(MSIImage.START_TIME), DateTimeZone.UTC);
+            DateTime stopTime = new DateTime(properties.get(MSIImage.STOP_TIME), DateTimeZone.UTC);
     		// Replace the "T" with a space
             //startTime = startTime.substring(0, 10) + " " + startTime.substring(11, startTime.length());
             //stopTime = stopTime.substring(0, 10) + " " + stopTime.substring(11, stopTime.length());
@@ -262,8 +262,8 @@ public class DatabaseGeneratorSql
     		System.out.println("stoptime: " + stopTime);
     		System.out.println("filter: " + Integer.parseInt(origFile.getName().substring(12, 13)));
     		System.out.println("iof_or_cif: " + iof_or_cif);
-    		System.out.println("TARGET_CENTER_DISTANCE: " + properties.get(NearImage.TARGET_CENTER_DISTANCE));
-    		System.out.println("HORIZONTAL_PIXEL_SCALE: " + properties.get(NearImage.HORIZONTAL_PIXEL_SCALE));
+    		System.out.println("TARGET_CENTER_DISTANCE: " + properties.get(MSIImage.TARGET_CENTER_DISTANCE));
+    		System.out.println("HORIZONTAL_PIXEL_SCALE: " + properties.get(MSIImage.HORIZONTAL_PIXEL_SCALE));
     		System.out.println("hasLimb: " + image.containsLimb());
     		System.out.println("minIncidence: " + image.getMinIncidence());
     		System.out.println("maxIncidence: " + image.getMaxIncidence());
@@ -280,8 +280,8 @@ public class DatabaseGeneratorSql
             msiInsert.setLong(5, stopTime.getMillis());
             msiInsert.setByte(6, Byte.parseByte(origFile.getName().substring(12, 13)));
             msiInsert.setByte(7, iof_or_cif);
-            msiInsert.setDouble(8, Double.parseDouble(properties.get(NearImage.TARGET_CENTER_DISTANCE)));
-            msiInsert.setDouble(9, Double.parseDouble(properties.get(NearImage.HORIZONTAL_PIXEL_SCALE)));
+            msiInsert.setDouble(8, Double.parseDouble(properties.get(MSIImage.TARGET_CENTER_DISTANCE)));
+            msiInsert.setDouble(9, Double.parseDouble(properties.get(MSIImage.HORIZONTAL_PIXEL_SCALE)));
             msiInsert.setBoolean(10, image.containsLimb());
     		msiInsert.setDouble(11, image.getMinIncidence());
     		msiInsert.setDouble(12, image.getMaxIncidence());
