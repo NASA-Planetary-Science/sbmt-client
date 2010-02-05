@@ -9,7 +9,7 @@ import edu.jhuapl.near.gui.ErosRenderer;
 import edu.jhuapl.near.model.*;
 import edu.jhuapl.near.util.Properties;
 
-public class LineamentMapper extends Picker
+public class LinePicker extends Picker
 {
     private ModelManager modelManager;
 	//private ErosRenderer erosRenderer;
@@ -24,7 +24,7 @@ public class LineamentMapper extends Picker
     private int vertexIdBeingEdited = -1;
     private int lineIdBeingEdited = -1;
     
-    public LineamentMapper(
+    public LinePicker(
 			ErosRenderer erosRenderer, 
 			ModelManager modelManager
 			) 

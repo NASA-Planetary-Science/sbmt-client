@@ -32,8 +32,11 @@ public class LineModel extends Model
     
 	static public String LINES = "lines";
 
+	
 	public static class Line extends StructureModel.Structure
 	{
+		static private int maxId = 0;
+		
 		public String name = "";
 		public int id;
 		
@@ -52,6 +55,11 @@ public class LineModel extends Model
 		static public String ID = "id";
 		static public String MSI_IMAGE = "msi-image";
 		static public String VERTICES = "vertices";
+		
+		public Line()
+		{
+			id = ++maxId;
+		}
 		
 	    public Element toXmlDomElement(Document dom)
 	    {
@@ -78,6 +86,10 @@ public class LineModel extends Model
 	    public void fromXmlDomElement(Element element, ErosModel erosModel)
 	    {
 	    	id = Integer.parseInt(element.getAttribute(ID));
+	    	
+	    	if (id > maxId)
+	    		maxId = id;
+	    	
 	    	name = element.getAttribute(MSI_IMAGE);
 	    	String tmp = element.getAttribute(VERTICES);
 

@@ -11,14 +11,14 @@ public class PickManager extends Picker
 		DEFAULT, 
 		POINT_SELECTION, 
 		RECTANGLE_SELECTION, 
-		LINEAMENT_MAPPER, 
-		CIRCLE_MAPPER
+		LINE_DRAW, 
+		CIRCLE_DRAW
 	}
 	
 	private PickMode pickMode = PickMode.DEFAULT;
 	private ErosRenderer erosRenderer;
     private vtkRenderWindowPanel renWin;
-    private LineamentMapper lineamentMapper;
+    private LinePicker linePicker;
     private DefaultPicker defaultPicker;
     
 	public PickManager(
@@ -36,7 +36,7 @@ public class PickManager extends Picker
         renWin.addMouseMotionListener(this);
         renWin.addMouseWheelListener(this);
 
-		lineamentMapper = new LineamentMapper(erosRenderer, modelManager);
+		linePicker = new LinePicker(erosRenderer, modelManager);
 		
 		defaultPicker = new DefaultPicker(erosRenderer, statusBar, modelManager, infoPanelManager);
 
@@ -54,11 +54,11 @@ public class PickManager extends Picker
 		case DEFAULT:
 			erosRenderer.setInteractorToDefault();
 			defaultPicker.setSuppressPopups(false);
-			removePicker(lineamentMapper);
+			removePicker(linePicker);
 	        break;
-		case LINEAMENT_MAPPER:
+		case LINE_DRAW:
 			defaultPicker.setSuppressPopups(true);
-			addPicker(lineamentMapper);
+			addPicker(linePicker);
 			break;
 		//case CIRCLE_MAPPER:
 		//	break;
@@ -67,7 +67,7 @@ public class PickManager extends Picker
 	
 	public Picker getLineamentPicker()
 	{
-		return this.lineamentMapper;
+		return this.linePicker;
 	}
 	
 	private void addPicker(Picker picker)

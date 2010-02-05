@@ -7,13 +7,13 @@ import vtk.vtkRenderWindowPanel;
 import edu.jhuapl.near.gui.ErosRenderer;
 import edu.jhuapl.near.model.ModelManager;
 
-public class CircleMapper extends Picker
+public class CirclePicker extends Picker
 {
     private ModelManager modelManager;
 	private ErosRenderer erosRenderer;
     private vtkRenderWindowPanel renWin;
 
-    public CircleMapper(
+    public CirclePicker(
 			ErosRenderer erosRenderer, 
 			ModelManager modelManager
 			) 

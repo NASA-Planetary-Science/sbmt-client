@@ -15,8 +15,8 @@ import edu.jhuapl.near.util.*;
 import edu.jhuapl.near.util.Properties;
 
 /**
- * This class represents a near image. It allows retrieving the 
- * image itself as well as the associated IMG file
+ * This class represents an image of the NEAR MSI instrument. It allows 
+ * retrieving the image itself as well as the associated IMG file.
  * 
  * @author kahneg1
  *
@@ -181,7 +181,7 @@ public class MSIImage extends Model
 
         //HashMap<Short, Integer> values = new HashMap<Short, Integer>();
 
-        // For now only support images with type float or short since that what near images
+        // For now only support images with type float or short since that what MSI images
         // seem to be in.
         try
         {

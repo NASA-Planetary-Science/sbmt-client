@@ -11,15 +11,13 @@ import edu.jhuapl.near.util.Properties;
 import vtk.*;
 
 /**
- * Model of structures drawn on Eros such as lineaments and circles.
+ * Model of circle structures drawn on Eros.
  * 
  * @author 
  *
  */
 public class CircleModel extends Model 
 {
-	//private HashMap<Integer, Circle> idToLineamentMap = new HashMap<Integer, Circle>();
-	//private HashMap<Integer, Circle> cellIdToLineamentMap = new HashMap<Integer, Circle>();
 	private ArrayList<Circle> circles = new ArrayList<Circle>();
 	private vtkPolyData circlesPolyData;
     private ArrayList<vtkProp> circlesActors = new ArrayList<vtkProp>();
@@ -125,18 +123,18 @@ public class CircleModel extends Model
 
 		createPolyData();
 
-		vtkPolyDataMapper lineamentMapper = new vtkPolyDataMapper();
-		lineamentMapper.SetInput(circlesPolyData);
-		//lineamentMapper.SetResolveCoincidentTopologyToPolygonOffset();
-		//lineamentMapper.SetResolveCoincidentTopologyPolygonOffsetParameters(-1000.0, -1000.0);
+		vtkPolyDataMapper circleMapper = new vtkPolyDataMapper();
+		circleMapper.SetInput(circlesPolyData);
+		//circleMapper.SetResolveCoincidentTopologyToPolygonOffset();
+		//circleMapper.SetResolveCoincidentTopologyPolygonOffsetParameters(-1000.0, -1000.0);
 
-		vtkActor lineamentActor = new vtkActor();
-		lineamentActor.SetMapper(lineamentMapper);
+		vtkActor circleActor = new vtkActor();
+		circleActor.SetMapper(circleMapper);
 
 		circlesActors.clear();
-		circlesActors.add(lineamentActor);
+		circlesActors.add(circleActor);
 
-		System.out.println("Number of lineaments: " + this.circles.size());
+		System.out.println("Number of circles: " + this.circles.size());
     }
 
 	private void createPolyData()
@@ -150,7 +148,7 @@ public class CircleModel extends Model
         
         vtkIdList idList = new vtkIdList();
 
-        int c=0;
+//        int c=0;
         int cellId = 0;
 		for (Circle lin : circles)
 		{
@@ -189,67 +187,7 @@ public class CircleModel extends Model
 		return this.circles.get(idx);
 	}
 		
-	/*
-	public void setLineamentColor(int cellId, int[] color)
-	{
-		structuresPolyData.GetCellData().GetScalars().SetTuple4(cellId, color[0], color[1], color[2], color[3]);
-		structuresPolyData.Modified();
-		this.pcs.firePropertyChange(Properties.LINEAMENT_MODEL_CHANGED, null, null);
-	}
-
-	public void setsAllLineamentsColor(int[] color)
-	{
-		int numLineaments = this.cellIdToLineamentMap.size();
-		vtkDataArray colors = structuresPolyData.GetCellData().GetScalars();
 		
-		for (int i=0; i<numLineaments; ++i)
-			colors.SetTuple4(i, color[0], color[1], color[2], color[3]);
-		
-		structuresPolyData.Modified();
-		this.pcs.firePropertyChange(Properties.LINEAMENT_MODEL_CHANGED, null, null);
-	}
-	
-	public void setMSIImageLineamentsColor(int cellId, int[] color)
-	{
-		int numLineaments = this.cellIdToLineamentMap.size();
-		String name = cellIdToLineamentMap.get(cellId).name;
-		vtkDataArray colors = structuresPolyData.GetCellData().GetScalars();
-		
-		for (int i=0; i<numLineaments; ++i)
-			if (cellIdToLineamentMap.get(i).name.equals(name))
-					colors.SetTuple4(i, color[0], color[1], color[2], color[3]);
-
-		structuresPolyData.Modified();
-		this.pcs.firePropertyChange(Properties.LINEAMENT_MODEL_CHANGED, null, null);
-	}
-	 */
-	
-	public void setRadialOffset(double offset)
-	{
-        int ptId=0;
-        vtkPoints points = circlesPolyData.GetPoints();
-        /*
-		for (Integer id : this.idToLineamentMap.keySet())
-		{
-			Circle lin =	this.idToLineamentMap.get(id);
-
-            int size = lin.lat.size();
-
-            for (int i=0;i<size;++i)
-            {
-                double x = (lin.rad.get(i)+offset) * Math.cos( lin.lon.get(i) ) * Math.cos( lin.lat.get(i) );
-                double y = (lin.rad.get(i)+offset) * Math.sin( lin.lon.get(i) ) * Math.cos( lin.lat.get(i) );
-                double z = (lin.rad.get(i)+offset) * Math.sin( lin.lat.get(i) );
-            	points.SetPoint(ptId, x, y, z);
-            	++ptId;
-            }
-		}		
-*/
-		circlesPolyData.Modified();
-		this.pcs.firePropertyChange(Properties.LINEAMENT_MODEL_CHANGED, null, null);
-	}
-
-	
 	public ArrayList<vtkProp> getProps() 
 	{
 		return circlesActors;
