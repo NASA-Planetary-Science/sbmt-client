@@ -9,6 +9,8 @@ import java.io.File;
 import java.io.IOException;
 
 import edu.jhuapl.near.gui.pick.PickManager;
+import edu.jhuapl.near.gui.popupmenus.MSIPopupMenu;
+import edu.jhuapl.near.gui.popupmenus.StructuresPopupMenu;
 import edu.jhuapl.near.model.*;
 import edu.jhuapl.near.util.Properties;
 import net.miginfocom.swing.MigLayout;
@@ -16,7 +18,7 @@ import net.miginfocom.swing.MigLayout;
 public class StructureMapperControlPanel extends JPanel implements 
 	ItemListener, 
 	ActionListener, 
-	PropertyChangeListener 
+	PropertyChangeListener, MouseListener 
 {
     private ModelManager modelManager;
     private PickManager pickManager;
@@ -26,8 +28,10 @@ public class StructureMapperControlPanel extends JPanel implements
     private JToggleButton mapCircleButton;
     private JButton saveStructuresButton;
     private JButton saveAsStructuresButton;
-    //private JButton stopDrawingButton;
+    private JList structuresList;
     private File structuresFile;
+    private StructuresPopupMenu structuresPopupMenu;
+    private JToggleButton editButton;
     
     public StructureMapperControlPanel(ModelManager modelManager, final PickManager pickManager) 
     {
@@ -60,6 +64,65 @@ public class StructureMapperControlPanel extends JPanel implements
 
         add(this.structuresFileTextField, "wrap");
         
+        JLabel structureTypeText = new JLabel("Structure Type ");
+        add(structureTypeText);
+        
+        String[] options = {"Line"};
+        JComboBox structureTypeComboBox = new JComboBox(options);
+        
+        add(structureTypeComboBox, "wrap");
+        
+        structuresList = new JList();
+        structuresList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        structuresList.addMouseListener(this);
+        JScrollPane listScrollPane = new JScrollPane(structuresList);
+
+        structuresPopupMenu = new StructuresPopupMenu(this.modelManager, this.pickManager, this);
+
+        add(listScrollPane, "span");
+
+        final JButton newButton = new JButton("New");
+
+        newButton.addActionListener(new ActionListener()
+        {
+			public void actionPerformed(ActionEvent e) 
+			{
+				pickManager.setPickMode(PickManager.PickMode.LINEAMENT_MAPPER);
+				editButton.setSelected(true);
+			}
+        });
+
+        add(newButton);
+        
+
+        editButton = new JToggleButton("Edit");
+        editButton.addActionListener(new ActionListener()
+        {
+			public void actionPerformed(ActionEvent e) 
+			{
+				if (editButton.isSelected())
+				{
+					pickManager.setPickMode(PickManager.PickMode.LINEAMENT_MAPPER);
+				}
+				else
+				{
+					pickManager.setPickMode(PickManager.PickMode.DEFAULT);
+				}
+			}
+        });
+        add(editButton);
+        
+        JButton deleteButton = new JButton("Delete");
+        deleteButton.addActionListener(new ActionListener()
+        {
+			public void actionPerformed(ActionEvent e) 
+			{
+				editButton.setSelected(false);
+			}
+        });
+        add(deleteButton);
+        
+        /*
         mapLineButton = new JToggleButton();
         mapLineButton.setToolTipText("Draw a lineament");
         mapLineButton.addActionListener(new ActionListener()
@@ -118,7 +181,7 @@ public class StructureMapperControlPanel extends JPanel implements
         //stopDrawingButton.setText("Stop Drawing");
 
         //add(stopDrawingButton, "wrap");
-
+         */
 	}
 
 	public void itemStateChanged(ItemEvent e) 
@@ -177,4 +240,45 @@ public class StructureMapperControlPanel extends JPanel implements
 		}
 	}
 
+	public void mouseClicked(MouseEvent e)
+	{
+	}
+
+	public void mouseEntered(MouseEvent e)
+	{
+	}
+
+	public void mouseExited(MouseEvent e)
+	{
+	}
+
+	public void mousePressed(MouseEvent e)
+	{
+		maybeShowPopup(e);
+	}
+
+	public void mouseReleased(MouseEvent e)
+	{
+		maybeShowPopup(e);
+	}
+
+	private void maybeShowPopup(MouseEvent e) 
+	{
+        if (e.isPopupTrigger()) 
+        {
+        	int index = structuresList.locationToIndex(e.getPoint());
+
+        	if (index >= 0 && structuresList.getCellBounds(index, index).contains(e.getPoint()))
+        	{
+        		structuresList.setSelectedIndex(index);
+        		//structuresPopupMenu.setCurrentStructure(msiRawResults.get(index));
+        		structuresPopupMenu.show(e.getComponent(), e.getX(), e.getY());
+        	}
+        }
+    }
+	
+	private void updateStructureList()
+	{
+		
+	}
 }

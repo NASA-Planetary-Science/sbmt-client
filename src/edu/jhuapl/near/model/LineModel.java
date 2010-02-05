@@ -281,6 +281,11 @@ public class LineModel extends Model
     	return lines.size();
     }
     
+    public Line getLine(int cellId)
+    {
+    	return lines.get(cellId);
+    }
+    
     /**
      * Return the total number of points in all the lines combined.
      * @return
@@ -321,6 +326,13 @@ public class LineModel extends Model
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
     */
+    
+    public void addNewLine()
+    {
+        Line lin = new Line();
+        lines.add(lin);
+        selectLine(lines.size()-1);
+    }
     
     public void addNewLine(double[] pt1)
     {
@@ -410,7 +422,8 @@ public class LineModel extends Model
         lin.xyzPointList.add(new Point3D(newPoint));
         lin.controlPointIds.add(lin.xyzPointList.size()-1);
 
-    	lin.updateSegment(erosModel, lin.lat.size()-2);
+        if (lin.controlPointIds.size() >= 2)
+        	lin.updateSegment(erosModel, lin.lat.size()-2);
 
         updatePolyData();
         
@@ -419,20 +432,29 @@ public class LineModel extends Model
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
-    /*
-    public void removeLineVertex(int cellId, int vertexId)
+    
+    public void removeLine(int cellId)
     {
     	lines.remove(cellId);
 
         updatePolyData();
+        selectLine(-1);
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
-	*/
+	
     
     private void updateLineSelection()
     {
+    	if (selectedLine == -1)
+    	{
+            if (actors.contains(lineSelectionActor))
+            	actors.remove(lineSelectionActor);
+            
+            return;
+    	}
+    	
         Line lin = lines.get(selectedLine);
-
+        
 		vtkPolyData polydata = new vtkPolyData();
 		vtkPoints points = new vtkPoints();
 		vtkCellArray vert = new vtkCellArray();
