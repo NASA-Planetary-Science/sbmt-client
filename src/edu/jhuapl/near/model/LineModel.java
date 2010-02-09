@@ -257,14 +257,20 @@ public class LineModel extends Model
 		vtkPolyDataMapper lineMapper = new vtkPolyDataMapper();
 		lineMapper.SetInput(linesPolyData);
 
-		if (actors.contains(lineActor))
-			actors.remove(lineActor);
+		//if (actors.contains(lineActor))
+		//	actors.remove(lineActor);
 
-		lineActor = new vtkActor();
+		if (lineActor == null)
+		{
+			lineActor = new vtkActor();
+			lineActor.GetProperty().SetLineWidth(2.0);
+			actors.add(lineActor);
+		}
+
 		lineActor.SetMapper(lineMapper);
-		lineActor.GetProperty().SetLineWidth(2.0);
-
-		actors.add(lineActor);
+        lineActor.Modified();
+		
+		//actors.add(lineActor);
 	}
 	
 	public ArrayList<vtkProp> getProps() 
@@ -296,6 +302,24 @@ public class LineModel extends Model
     public Line getLine(int cellId)
     {
     	return lines.get(cellId);
+    }
+    
+    public Line getSelectedLine()
+    {
+    	if (selectedLine >= 0 && selectedLine < lines.size())
+    		return lines.get(selectedLine);
+    	else
+    		return null;
+    }
+    
+    public vtkActor getLineActor()
+    {
+    	return lineActor;
+    }
+    
+    public vtkActor getLineSelectionActor()
+    {
+    	return lineSelectionActor;
     }
     
     /**
@@ -366,25 +390,40 @@ public class LineModel extends Model
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
     
-    public void updateLineVertex(int cellId, int vertexId, double[] newPoint)
+    
+    public void updateSelectedLineVertex(int vertexId, double[] newPoint)
     {
-        Line lin = lines.get(cellId);
+        Line lin = lines.get(selectedLine);
         
         int numVertices = lin.lat.size();
+
+    	LatLon ll = Spice.reclat(newPoint);
+    	lin.lat.set(vertexId, ll.lat);
+    	lin.lon.set(vertexId, ll.lon);
+    	lin.rad.set(vertexId, ll.rad);
 
         // If we're modifying the last vertex
         if (vertexId == numVertices - 1)
         {
-        	LatLon ll = Spice.reclat(newPoint);
-        	lin.lat.set(vertexId, ll.lat);
-        	lin.lon.set(vertexId, ll.lon);
-        	lin.rad.set(vertexId, ll.rad);
-        	
         	lin.updateSegment(erosModel, vertexId-1);
+        }
+        // If we're modifying the first vertex
+        else if (vertexId == 0)
+        {
+        	lin.updateSegment(erosModel, vertexId);
+        }
+        // If we're modifying a middle vertex
+        else
+        {
+        	lin.updateSegment(erosModel, vertexId-1);
+        	lin.updateSegment(erosModel, vertexId);
         }
         
         updatePolyData();
-		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+
+        updateLineSelection();
+        
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
     
     /*
@@ -422,9 +461,9 @@ public class LineModel extends Model
     }
     */
 
-    public void addVertexToLine(int cellId, double[] newPoint)
+    public void addVertexToSelectedLine(double[] newPoint)
     {
-        Line lin = lines.get(cellId);
+        Line lin = lines.get(selectedLine);
         LatLon ll = Spice.reclat(newPoint);
         
         lin.lat.add(ll.lat);
@@ -450,7 +489,10 @@ public class LineModel extends Model
     	lines.remove(cellId);
 
         updatePolyData();
-        selectLine(-1);
+        
+        if (cellId == selectedLine)
+        	selectLine(-1);
+        
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 	
@@ -488,20 +530,28 @@ public class LineModel extends Model
 		    vert.InsertNextCell(idList);
 		}
 
-		erosModel.shiftPolyLineInNormalDirection(polydata, 0.1);
+		erosModel.shiftPolyLineInNormalDirection(polydata, 0.001);
 		
         vtkPolyDataMapper pointsMapper = new vtkPolyDataMapper();
         pointsMapper.SetInput(polydata);
 
-        if (actors.contains(lineSelectionActor))
-        	actors.remove(lineSelectionActor);
-        
-        lineSelectionActor = new vtkActor();
+        //if (actors.contains(lineSelectionActor))
+        //	actors.remove(lineSelectionActor);
+
+        if (lineSelectionActor == null)
+        {
+        	lineSelectionActor = new vtkActor();
+        	lineSelectionActor.GetProperty().SetColor(1.0, 0.0, 0.0);
+        	lineSelectionActor.GetProperty().SetPointSize(7.0);
+        }
+
+        if (!actors.contains(lineSelectionActor))
+        	actors.add(lineSelectionActor);
+
         lineSelectionActor.SetMapper(pointsMapper);
-        lineSelectionActor.GetProperty().SetColor(1.0, 0.0, 0.0);
-        lineSelectionActor.GetProperty().SetPointSize(7.0);
+        lineSelectionActor.Modified();
         
-        actors.add(lineSelectionActor);
+        //actors.add(lineSelectionActor);
     }
     
     public void selectLine(int cellId)

@@ -18,11 +18,23 @@ public class LinePicker extends Picker
     private LineModel lineModel;
     
     private vtkCellPicker erosPicker;
-    private vtkCellPicker lineModelPicker;
+    private vtkCellPicker linePicker;
+    private vtkCellPicker lineSelectionPicker;
 
-    private boolean currentlyDrawing = false;
     private int vertexIdBeingEdited = -1;
-    private int lineIdBeingEdited = -1;
+    //private int lineIdBeingEdited = -1;
+    //private LineModel.Line lineBeingEdited;
+    
+    // There are 2 types of line editing possible: 
+    //   1. Dragging an existing vertex to a new locations
+    //   2. Extending a line by adding new vertices
+	public enum EditMode
+	{
+		VERTEX_DRAG,
+		VERTEX_ADD
+	}
+
+	private EditMode currentEditMode;
     
     public LinePicker(
 			ErosRenderer erosRenderer, 
@@ -46,61 +58,66 @@ public class LinePicker extends Picker
 			erosPicker.AddPickList(act);
 		}
 
-		lineModelPicker = new vtkCellPicker();
-		lineModelPicker.SetTolerance(0.002);
-		lineModelPicker.PickFromListOn();
-		lineModelPicker.InitializePickList();
-		actors = lineModel.getProps();
-		lineModelPicker.GetPickList().RemoveAllItems();
-		for (vtkProp act : actors)
-		{
-			lineModelPicker.AddPickList(act);
-		}
+		linePicker = new vtkCellPicker();
+		linePicker.SetTolerance(0.002);
+		linePicker.PickFromListOn();
+		linePicker.InitializePickList();
+		linePicker.GetPickList().RemoveAllItems();
+		linePicker.AddPickList(lineModel.getLineActor());
 
+		lineSelectionPicker = new vtkCellPicker();
+		lineSelectionPicker.SetTolerance(0.002);
+		lineSelectionPicker.PickFromListOn();
+		lineSelectionPicker.InitializePickList();
+		lineSelectionPicker.GetPickList().RemoveAllItems();
+		lineSelectionPicker.AddPickList(lineModel.getLineSelectionActor());
 	}
 	
 	public void mousePressed(MouseEvent e) 
 	{
-		// If we pressed a point on Eros, begin drawing a new line.
 		// If we pressed a vertex of an existing lineament, begin dragging that vertex.
-		// If we double clicked, end drawing the line
+		// If we pressed a point on Eros, begin drawing a new line.
 
 		if (e.getButton() != MouseEvent.BUTTON1)
 			return;
-			
-		int pickSucceeded = erosPicker.Pick(e.getX(), renWin.getIren().GetSize()[1]-e.getY()-1, 0.0, renWin.GetRenderer());
-
-		if (pickSucceeded == 1)
+		
+		if (this.currentEditMode == EditMode.VERTEX_DRAG)
 		{
-			vtkActor pickedActor = erosPicker.GetActor();
-			Model model = modelManager.getModel(pickedActor);
-
-			if (model == erosModel)
+			int pickSucceeded = lineSelectionPicker.Pick(e.getX(), renWin.getIren().GetSize()[1]-e.getY()-1, 0.0, renWin.GetRenderer());
+			if (pickSucceeded == 1)
 			{
-				double[] pos = erosPicker.GetPickPosition();
-				if (e.getClickCount() == 1)
+				vtkActor pickedActor = lineSelectionPicker.GetActor();
+
+				if (pickedActor == lineModel.getLineSelectionActor())
 				{
-					if (currentlyDrawing)
-					{
-						lineModel.addVertexToLine(lineIdBeingEdited, pos);
-						++vertexIdBeingEdited;
-					}
-					else
-					{
-						lineIdBeingEdited = lineModel.getNumberOfLines();
-						lineModel.addNewLine(pos);
-						currentlyDrawing = true;
-						vertexIdBeingEdited = 1;
-					}
-				}
-				else if (e.getClickCount() > 1)
-				{
-					lineModel.addVertexToLine(lineIdBeingEdited, pos);
-					stopEditing();
+					this.vertexIdBeingEdited = lineSelectionPicker.GetCellId();
+
+					double[] pos = lineSelectionPicker.GetPickPosition();
+
+					lineModel.updateSelectedLineVertex(vertexIdBeingEdited, pos);
 				}
 			}
-		}		
+		}
+		else if (this.currentEditMode == EditMode.VERTEX_ADD)
+		{
+			int pickSucceeded = erosPicker.Pick(e.getX(), renWin.getIren().GetSize()[1]-e.getY()-1, 0.0, renWin.GetRenderer());
 
+			if (pickSucceeded == 1)
+			{
+				vtkActor pickedActor = erosPicker.GetActor();
+				Model model = modelManager.getModel(pickedActor);
+
+				if (model == erosModel)
+				{
+					double[] pos = erosPicker.GetPickPosition();
+					if (e.getClickCount() == 1)
+					{
+						lineModel.addVertexToSelectedLine(pos);
+						++vertexIdBeingEdited;
+					}
+				}
+			}		
+		}
 	}
 	
 //	public void mouseReleased(MouseEvent e) 
@@ -133,12 +150,17 @@ public class LinePicker extends Picker
 	}
 	*/
 	
-	public void stopEditing()
+//	public void stopEditing()
+//	{
+//		currentlyDrawing = false;
+//		lineIdBeingEdited = -1;
+//		vertexIdBeingEdited = -1;
+//
+//		//this.pcs.firePropertyChange(Properties.FINISHED_DRAWING_LINE, null, null);
+//	}
+	
+	public void setEditMode(EditMode mode)
 	{
-		currentlyDrawing = false;
-		lineIdBeingEdited = -1;
-		vertexIdBeingEdited = -1;
-
-		//this.pcs.firePropertyChange(Properties.FINISHED_DRAWING_LINE, null, null);
+		this.currentEditMode = mode;
 	}
 }

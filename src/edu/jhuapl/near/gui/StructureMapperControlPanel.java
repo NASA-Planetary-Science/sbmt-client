@@ -93,11 +93,11 @@ public class StructureMapperControlPanel extends JPanel implements
         {
 			public void actionPerformed(ActionEvent e) 
 			{
+				lineModel.addNewLine();
 				pickManager.setPickMode(PickManager.PickMode.LINE_DRAW);
 				editButton.setSelected(true);
 				updateStructureList();
 				structuresList.setSelectedIndex(lineModel.getNumberOfLines()-1);
-				lineModel.addNewLine();
 			}
         });
 
