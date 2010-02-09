@@ -180,6 +180,13 @@ public class LineModel extends Model
 	public LineModel(ErosModel erosModel)
 	{
 		this.erosModel = erosModel;
+
+		lineActor = new vtkActor();
+		lineActor.GetProperty().SetLineWidth(2.0);
+
+		lineSelectionActor = new vtkActor();
+    	lineSelectionActor.GetProperty().SetColor(1.0, 0.0, 0.0);
+    	lineSelectionActor.GetProperty().SetPointSize(7.0);
 	}
 
     public Element toXmlDomElement(Document dom)
@@ -257,20 +264,11 @@ public class LineModel extends Model
 		vtkPolyDataMapper lineMapper = new vtkPolyDataMapper();
 		lineMapper.SetInput(linesPolyData);
 
-		//if (actors.contains(lineActor))
-		//	actors.remove(lineActor);
+        if (!actors.contains(lineActor))
+        	actors.add(lineActor);
 
-		if (lineActor == null)
-		{
-			lineActor = new vtkActor();
-			lineActor.GetProperty().SetLineWidth(2.0);
-			actors.add(lineActor);
-		}
-
-		lineActor.SetMapper(lineMapper);
+        lineActor.SetMapper(lineMapper);
         lineActor.Modified();
-		
-		//actors.add(lineActor);
 	}
 	
 	public ArrayList<vtkProp> getProps() 
@@ -535,23 +533,11 @@ public class LineModel extends Model
         vtkPolyDataMapper pointsMapper = new vtkPolyDataMapper();
         pointsMapper.SetInput(polydata);
 
-        //if (actors.contains(lineSelectionActor))
-        //	actors.remove(lineSelectionActor);
-
-        if (lineSelectionActor == null)
-        {
-        	lineSelectionActor = new vtkActor();
-        	lineSelectionActor.GetProperty().SetColor(1.0, 0.0, 0.0);
-        	lineSelectionActor.GetProperty().SetPointSize(7.0);
-        }
-
         if (!actors.contains(lineSelectionActor))
         	actors.add(lineSelectionActor);
 
         lineSelectionActor.SetMapper(pointsMapper);
         lineSelectionActor.Modified();
-        
-        //actors.add(lineSelectionActor);
     }
     
     public void selectLine(int cellId)
