@@ -353,7 +353,7 @@ public class PolyDataUtil
 		vtkPolyData polyLine = new vtkPolyData();
 		polyLine.DeepCopy(connectivityFilter.GetOutput());
 
-		convertLinesToPolyLine(polyLine, pt1);
+		boolean okay = convertLinesToPolyLine(polyLine);
 		
 		//System.out.println("number points: " + polyLine.GetNumberOfPoints());
 		
@@ -362,7 +362,10 @@ public class PolyDataUtil
         //writer.SetFileName("/tmp/cuteros.vtk");
         //writer.Write();
 
-		return polyLine;
+		if (okay)
+			return polyLine;
+		else
+			return null;
 	}
 	
 	public static void shiftPolyDataInNormalDirection(vtkPolyData polyData, double shiftAmount)
@@ -443,11 +446,8 @@ public class PolyDataUtil
 	 * @param startPoint
 	 * @return
 	 */
-	public static boolean convertLinesToPolyLine(vtkPolyData polyline, double[] startPoint)
+	public static boolean convertLinesToPolyLine(vtkPolyData polyline)
 	{
-	
-		int startIdx = polyline.FindPoint(startPoint);
-		
 		vtkCellArray lines_orig = polyline.GetLines();
 		vtkPoints points_orig = polyline.GetPoints();
 
@@ -477,6 +477,38 @@ public class PolyDataUtil
 			lines.add(new IdPair(idArray.GetValue(i+1), idArray.GetValue(i+2)));
 		}
 		
+		// We need to find the point id of one of the endpoints of the line. For closed loops there is no 
+		// such point so we simply choose 0. But for open polylines there are 2 such points. To find one
+		// of these points go through all the indices in the lines object and return the first point
+		// that only appears once.
+		int startIdx = 0;
+        int numPoints = polyline.GetNumberOfPoints();
+        for (int i=0; i<numPoints; ++i)
+        {
+        	int count = 0;
+        	
+        	for (int j=0; j<lines.size(); ++j)
+        	{
+        		IdPair line = lines.get(j);
+        		if (line.id1 == i || line.id2 == i)
+        		{
+        			++count;
+        			if (count > 1) 
+        				break;
+        		}
+        	}
+        	
+        	if (count == 1)
+        	{
+        		startIdx = i;
+        		break;
+        	}
+        	else if (count == 0 || count > 2)
+        	{
+				System.out.println("Big problem: A point is used " + count + " times");
+        	}
+        }
+        
 		// Find which line segment contains the startIdx, and move this line segment first.
 		// Also make sure startIdx is the first id of the pair
 		for (int i=0; i<lines.size(); ++i)
@@ -498,13 +530,11 @@ public class PolyDataUtil
 			}
 		}
 		
-
         vtkIdList idList = new vtkIdList();
         IdPair line = lines.get(0);
         idList.InsertNextId(line.id1);
         idList.InsertNextId(line.id2);
         
-        int numPoints = polyline.GetNumberOfPoints();
         for (int i=2; i<numPoints; ++i)
         {
         	int id = line.id2;
@@ -537,6 +567,14 @@ public class PolyDataUtil
         		{
         			System.out.println("Error: Could not find other line segment");
         			System.out.println("i, j = " + i + " " + j);
+        			System.out.println("numPoints = " + numPoints);
+        			System.out.println("lines.size() = " + lines.size());
+        			System.out.println("startIdx = " + startIdx);
+        			for (int k=0; k<lines.size(); ++k)
+        			{
+        				System.out.println("line " + k + " - " + lines.get(k).id1 + " " + lines.get(k).id2);
+        			}
+
         			return false;
         		}
         	}

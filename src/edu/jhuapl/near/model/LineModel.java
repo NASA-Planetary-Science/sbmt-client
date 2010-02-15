@@ -132,6 +132,13 @@ public class LineModel extends Model
     		double pt1[] = Spice.latrec(ll1);
     		double pt2[] = Spice.latrec(ll2);
     		
+    		int id1 = controlPointIds.get(segment);
+    		int id2 = controlPointIds.get(segment+1);
+    		
+    		// Set the 2 control points
+    		xyzPointList.set(id1, new Point3D(pt1));
+    		xyzPointList.set(id2, new Point3D(pt2));
+    		
     		vtkPoints points = null;
             if (Math.abs(lat.get(segment) - lat.get(segment+1)) < 1e-8 &&
                 	Math.abs(lon.get(segment) - lon.get(segment+1)) < 1e-8 &&
@@ -144,15 +151,11 @@ public class LineModel extends Model
             else
             {
         		vtkPolyData poly = erosModel.drawPath(pt1, pt2);
+        		if (poly == null)
+        			return;
+        			
         		points = poly.GetPoints();
             }
-    		
-    		int id1 = controlPointIds.get(segment);
-    		int id2 = controlPointIds.get(segment+1);
-    		
-    		// Set the 2 control points
-    		xyzPointList.set(id1, new Point3D(pt1));
-    		xyzPointList.set(id2, new Point3D(pt2));
     		
     		// Remove points BETWEEN the 2 control points
     		for (int i=0; i<id2-id1-1; ++i)
