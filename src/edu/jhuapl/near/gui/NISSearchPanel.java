@@ -281,7 +281,7 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
         resultSub1ControlsPanel.setLayout(new BoxLayout(resultSub1ControlsPanel,
         		BoxLayout.LINE_AXIS));
 
-        final JLabel showLabel = new JLabel("Number Boundaries");
+        final JLabel showLabel = new JLabel("Number Footprints");
         Object [] options2 = {
         		10, 20, 30, 40, 50, 60, 70, 80, 90, 100,
         		110, 120, 130, 140, 150, 160, 170, 180, 190, 200,

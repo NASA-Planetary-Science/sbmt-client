@@ -57,6 +57,7 @@ public class PickManager extends Picker
 			removePicker(linePicker);
 	        break;
 		case LINE_DRAW:
+			erosRenderer.setInteractorToNone();
 			defaultPicker.setSuppressPopups(true);
 			addPicker(linePicker);
 			break;
@@ -65,7 +66,7 @@ public class PickManager extends Picker
 		}
 	}
 	
-	public Picker getLineamentPicker()
+	public LinePicker getLineamentPicker()
 	{
 		return this.linePicker;
 	}

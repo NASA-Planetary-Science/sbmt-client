@@ -2,12 +2,14 @@ package edu.jhuapl.near.gui;
 
 import javax.swing.*;
 
+import java.awt.Dimension;
 import java.awt.event.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 
+import edu.jhuapl.near.gui.pick.LinePicker;
 import edu.jhuapl.near.gui.pick.PickManager;
 import edu.jhuapl.near.gui.popupmenus.StructuresPopupMenu;
 import edu.jhuapl.near.model.*;
@@ -32,7 +34,7 @@ public class StructureMapperControlPanel extends JPanel implements
     private StructuresPopupMenu structuresPopupMenu;
     private JToggleButton editButton;
     private JComboBox structureTypeComboBox;
-    private int selectedIndex = -1;
+    //private int selectedIndex = -1;
     
     public StructureMapperControlPanel(final ModelManager modelManager, final PickManager pickManager) 
     {
@@ -82,7 +84,8 @@ public class StructureMapperControlPanel extends JPanel implements
         structuresList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         structuresList.addMouseListener(this);
         JScrollPane listScrollPane = new JScrollPane(structuresList);
-
+        listScrollPane.setPreferredSize(new Dimension(10000, 10000));
+        
         structuresPopupMenu = new StructuresPopupMenu(this.modelManager, this.pickManager, this);
 
         add(listScrollPane, "span");
@@ -95,9 +98,9 @@ public class StructureMapperControlPanel extends JPanel implements
 			{
 				lineModel.addNewLine();
 				pickManager.setPickMode(PickManager.PickMode.LINE_DRAW);
+				pickManager.getLineamentPicker().setEditMode(LinePicker.EditMode.VERTEX_ADD);
 				editButton.setSelected(true);
 				updateStructureList();
-				structuresList.setSelectedIndex(lineModel.getNumberOfLines()-1);
 			}
         });
 
@@ -109,14 +112,29 @@ public class StructureMapperControlPanel extends JPanel implements
         {
 			public void actionPerformed(ActionEvent e) 
 			{
+				int selectedIndex = structuresList.getSelectedIndex();
 				if (editButton.isSelected())
 				{
-					pickManager.setPickMode(PickManager.PickMode.LINE_DRAW);
+					if (selectedIndex >= 0)
+					{
+						pickManager.setPickMode(PickManager.PickMode.LINE_DRAW);
+						pickManager.getLineamentPicker().setEditMode(LinePicker.EditMode.VERTEX_DRAG);
+						lineModel.selectLine(selectedIndex);
+					}
+					else
+					{
+						editButton.setSelected(false);
+					}
 				}
 				else
 				{
 					pickManager.setPickMode(PickManager.PickMode.DEFAULT);
+					lineModel.selectLine(-1);
 				}
+				
+				// The item in the list might get deselected so select it again here.
+				if (selectedIndex >= 0)
+					structuresList.setSelectedIndex(selectedIndex);
 			}
         });
         add(editButton);
@@ -128,6 +146,7 @@ public class StructureMapperControlPanel extends JPanel implements
 			{
 				editButton.setSelected(false);
 				
+				int selectedIndex = structuresList.getSelectedIndex();
 				if (selectedIndex >= 0 && selectedIndex < lineModel.getNumberOfLines())
 				{
 					lineModel.removeLine(selectedIndex);
@@ -283,7 +302,7 @@ public class StructureMapperControlPanel extends JPanel implements
 
 	private void maybeShowPopup(MouseEvent e) 
 	{
-		selectedIndex = structuresList.locationToIndex(e.getPoint());
+		int selectedIndex = structuresList.locationToIndex(e.getPoint());
 
 		if (selectedIndex >= 0 && structuresList.getCellBounds(selectedIndex, selectedIndex).contains(e.getPoint()))
 		{
@@ -316,11 +335,13 @@ public class StructureMapperControlPanel extends JPanel implements
 			{
 				LineModel.Line line = lineModel.getLine(i);
 	    		formattedResults[i] = new String(
-	    				"Id: " + line.id + ", " 
-	    				+ line.controlPointIds.size() + " vertices");
+	    				"Id: " + line.id + ", Number of vertices: " + line.controlPointIds.size());
 			}
 			
 			structuresList.setListData(formattedResults);
+			
+			if (lineModel.getSelectedLineIndex() >= 0)
+				structuresList.setSelectedIndex(lineModel.getSelectedLineIndex());
 		}
 	}
 }

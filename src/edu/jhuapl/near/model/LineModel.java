@@ -309,6 +309,11 @@ public class LineModel extends Model
     	else
     		return null;
     }
+
+    public int getSelectedLineIndex()
+    {
+    	return selectedLine;
+    }
     
     public vtkActor getLineActor()
     {
@@ -384,8 +389,6 @@ public class LineModel extends Model
         updatePolyData();
         
         selectLine(lines.size()-1);
-        
-		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
     
     
@@ -490,8 +493,8 @@ public class LineModel extends Model
         
         if (cellId == selectedLine)
         	selectLine(-1);
-        
-		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+        else
+        	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 	
     
@@ -504,7 +507,7 @@ public class LineModel extends Model
             
             return;
     	}
-    	
+
         Line lin = lines.get(selectedLine);
         
 		vtkPolyData polydata = new vtkPolyData();
@@ -548,5 +551,7 @@ public class LineModel extends Model
     	selectedLine = cellId;
 
     	updateLineSelection();
+
+    	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 }

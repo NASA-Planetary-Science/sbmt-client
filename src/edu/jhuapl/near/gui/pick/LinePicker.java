@@ -80,21 +80,25 @@ public class LinePicker extends Picker
 
 		if (e.getButton() != MouseEvent.BUTTON1)
 			return;
-		
+
+		vertexIdBeingEdited = -1;
+
 		if (this.currentEditMode == EditMode.VERTEX_DRAG)
 		{
 			int pickSucceeded = lineSelectionPicker.Pick(e.getX(), renWin.getIren().GetSize()[1]-e.getY()-1, 0.0, renWin.GetRenderer());
 			if (pickSucceeded == 1)
 			{
 				vtkActor pickedActor = lineSelectionPicker.GetActor();
+				System.out.println("ps1");
 
 				if (pickedActor == lineModel.getLineSelectionActor())
 				{
+					System.out.println("ps2");
 					this.vertexIdBeingEdited = lineSelectionPicker.GetCellId();
 
-					double[] pos = lineSelectionPicker.GetPickPosition();
+					//double[] pos = lineSelectionPicker.GetPickPosition();
 
-					lineModel.updateSelectedLineVertex(vertexIdBeingEdited, pos);
+					//lineModel.updateSelectedLineVertex(vertexIdBeingEdited, pos);
 				}
 			}
 		}
@@ -113,20 +117,43 @@ public class LinePicker extends Picker
 					if (e.getClickCount() == 1)
 					{
 						lineModel.addVertexToSelectedLine(pos);
-						++vertexIdBeingEdited;
 					}
 				}
 			}		
 		}
 	}
 	
-//	public void mouseReleased(MouseEvent e) 
-//	{
-//	}
-//	
-//	public void mouseDragged(MouseEvent e) 
-//	{
-//	}
+	public void mouseReleased(MouseEvent e) 
+	{
+		vertexIdBeingEdited = -1;
+	}
+	
+	public void mouseDragged(MouseEvent e) 
+	{
+		//if (e.getButton() != MouseEvent.BUTTON1)
+		//	return;
+
+		
+		if (this.currentEditMode == EditMode.VERTEX_DRAG &&
+			vertexIdBeingEdited >= 0)
+		{
+			int pickSucceeded = erosPicker.Pick(e.getX(), renWin.getIren().GetSize()[1]-e.getY()-1, 0.0, renWin.GetRenderer());
+			if (pickSucceeded == 1)
+			{
+				System.out.println("Dragged1");
+				vtkActor pickedActor = erosPicker.GetActor();
+				Model model = modelManager.getModel(pickedActor);
+
+				if (model == erosModel)
+				{
+					double[] pos = erosPicker.GetPickPosition();
+
+					lineModel.updateSelectedLineVertex(vertexIdBeingEdited, pos);
+				}
+				System.out.println("Dragged2");
+			}
+		}
+	}
 
 	/*
 	public void mouseMoved(MouseEvent e) 
@@ -162,5 +189,6 @@ public class LinePicker extends Picker
 	public void setEditMode(EditMode mode)
 	{
 		this.currentEditMode = mode;
+		vertexIdBeingEdited = -1;
 	}
 }
