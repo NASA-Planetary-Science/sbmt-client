@@ -23,6 +23,7 @@ public class LineModel extends Model
 {
 	private ArrayList<Line> lines = new ArrayList<Line>();
 	private vtkPolyData linesPolyData;
+	private vtkPolyData selectionPolyData;
     private ArrayList<vtkProp> actors = new ArrayList<vtkProp>();
     private vtkActor lineActor;
     private vtkActor lineSelectionActor;
@@ -500,6 +501,13 @@ public class LineModel extends Model
         	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 	
+    public void moveSelectionVertex(int vertexId, double[] newPoint)
+    {
+    	vtkPoints points = selectionPolyData.GetPoints();
+    	points.SetPoint(vertexId, newPoint);
+    	selectionPolyData.Modified();
+		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+    }
     
     private void updateLineSelection()
     {
@@ -513,11 +521,11 @@ public class LineModel extends Model
 
         Line lin = lines.get(selectedLine);
         
-		vtkPolyData polydata = new vtkPolyData();
+		selectionPolyData = new vtkPolyData();
 		vtkPoints points = new vtkPoints();
 		vtkCellArray vert = new vtkCellArray();
-		polydata.SetPoints( points );
-		polydata.SetVerts( vert );
+		selectionPolyData.SetPoints( points );
+		selectionPolyData.SetVerts( vert );
 
 		int numPoints = lin.controlPointIds.size();
 
@@ -534,10 +542,10 @@ public class LineModel extends Model
 		    vert.InsertNextCell(idList);
 		}
 
-		erosModel.shiftPolyLineInNormalDirection(polydata, 0.001);
+		erosModel.shiftPolyLineInNormalDirection(selectionPolyData, 0.001);
 		
         vtkPolyDataMapper pointsMapper = new vtkPolyDataMapper();
-        pointsMapper.SetInput(polydata);
+        pointsMapper.SetInput(selectionPolyData);
 
         if (!actors.contains(lineSelectionActor))
         	actors.add(lineSelectionActor);

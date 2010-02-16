@@ -7,7 +7,6 @@ import vtk.*;
 
 import edu.jhuapl.near.gui.ErosRenderer;
 import edu.jhuapl.near.model.*;
-import edu.jhuapl.near.util.Properties;
 
 public class LinePicker extends Picker
 {
@@ -35,7 +34,9 @@ public class LinePicker extends Picker
 	}
 
 	private EditMode currentEditMode;
-    
+
+	private double[] lastDragPosition;
+	
     public LinePicker(
 			ErosRenderer erosRenderer, 
 			ModelManager modelManager
@@ -85,7 +86,9 @@ public class LinePicker extends Picker
 
 		if (this.currentEditMode == EditMode.VERTEX_DRAG)
 		{
+			renWin.lock();
 			int pickSucceeded = lineSelectionPicker.Pick(e.getX(), renWin.getIren().GetSize()[1]-e.getY()-1, 0.0, renWin.GetRenderer());
+			renWin.unlock();
 			if (pickSucceeded == 1)
 			{
 				vtkActor pickedActor = lineSelectionPicker.GetActor();
@@ -104,7 +107,9 @@ public class LinePicker extends Picker
 		}
 		else if (this.currentEditMode == EditMode.VERTEX_ADD)
 		{
+			renWin.lock();
 			int pickSucceeded = erosPicker.Pick(e.getX(), renWin.getIren().GetSize()[1]-e.getY()-1, 0.0, renWin.GetRenderer());
+			renWin.unlock();
 
 			if (pickSucceeded == 1)
 			{
@@ -125,6 +130,13 @@ public class LinePicker extends Picker
 	
 	public void mouseReleased(MouseEvent e) 
 	{
+		System.out.println("mouse released");
+		if (this.currentEditMode == EditMode.VERTEX_DRAG &&
+				vertexIdBeingEdited >= 0)
+		{
+			lineModel.updateSelectedLineVertex(vertexIdBeingEdited, lastDragPosition);
+		}
+
 		vertexIdBeingEdited = -1;
 	}
 	
@@ -137,7 +149,9 @@ public class LinePicker extends Picker
 		if (this.currentEditMode == EditMode.VERTEX_DRAG &&
 			vertexIdBeingEdited >= 0)
 		{
+			renWin.lock();
 			int pickSucceeded = erosPicker.Pick(e.getX(), renWin.getIren().GetSize()[1]-e.getY()-1, 0.0, renWin.GetRenderer());
+			renWin.unlock();
 			if (pickSucceeded == 1)
 			{
 				System.out.println("Dragged1");
@@ -146,9 +160,9 @@ public class LinePicker extends Picker
 
 				if (model == erosModel)
 				{
-					double[] pos = erosPicker.GetPickPosition();
+					lastDragPosition = erosPicker.GetPickPosition();
 
-					lineModel.updateSelectedLineVertex(vertexIdBeingEdited, pos);
+					lineModel.moveSelectionVertex(vertexIdBeingEdited, lastDragPosition);
 				}
 				System.out.println("Dragged2");
 			}
@@ -160,7 +174,9 @@ public class LinePicker extends Picker
 	{
 		if (currentlyDrawing)
 		{
+			renWin.lock();
 			int pickSucceeded = erosPicker.Pick(e.getX(), renWin.getIren().GetSize()[1]-e.getY()-1, 0.0, renWin.GetRenderer());
+			renWin.unlock();
 
 			if (pickSucceeded == 1)
 			{

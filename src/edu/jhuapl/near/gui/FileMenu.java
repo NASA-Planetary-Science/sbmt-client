@@ -37,14 +37,15 @@ public class FileMenu extends JMenu
         	File file = PNGFileChooser.showSaveDialog(viewer, "Export to PNG");
         	if (file != null)
         	{
+        		viewer.getRenderWindowPanel().lock();
         		vtkWindowToImageFilter windowToImage = new vtkWindowToImageFilter();
         		windowToImage.SetInput(viewer.getRenderWindowPanel().GetRenderWindow());
-        		windowToImage.ShouldRerenderOff(); // setting this to on seems to cause crashes
         		
         		vtkPNGWriter writer = new vtkPNGWriter();
         		writer.SetFileName(file.getAbsolutePath());
         		writer.SetInputConnection(windowToImage.GetOutputPort());
         		writer.Write();
+        		viewer.getRenderWindowPanel().unlock();
         	}
         }
     }
