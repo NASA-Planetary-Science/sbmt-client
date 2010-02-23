@@ -1,5 +1,6 @@
 package edu.jhuapl.near.gui.pick;
 
+import java.awt.Cursor;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
@@ -42,7 +43,7 @@ public class LinePicker extends Picker
 			ModelManager modelManager
 			) 
 	{
-		//this.erosRenderer = erosRenderer;
+    	//this.erosRenderer = erosRenderer;
 		this.renWin = erosRenderer.getRenderWindowPanel();
 		this.modelManager = modelManager;
 		this.lineModel = ((StructureModel)modelManager.getModel(ModelManager.STRUCTURES)).getLineModel();
@@ -169,29 +170,25 @@ public class LinePicker extends Picker
 		}
 	}
 
-	/*
+	
 	public void mouseMoved(MouseEvent e) 
 	{
-		if (currentlyDrawing)
+		renWin.lock();
+		int pickSucceeded = lineSelectionPicker.Pick(e.getX(), renWin.getIren().GetSize()[1]-e.getY()-1, 0.0, renWin.GetRenderer());
+		renWin.unlock();
+		if (pickSucceeded == 1 &&
+			lineSelectionPicker.GetActor() == lineModel.getLineSelectionActor())
 		{
-			renWin.lock();
-			int pickSucceeded = erosPicker.Pick(e.getX(), renWin.getIren().GetSize()[1]-e.getY()-1, 0.0, renWin.GetRenderer());
-			renWin.unlock();
-
-			if (pickSucceeded == 1)
-			{
-				vtkActor pickedActor = erosPicker.GetActor();
-				Model model = modelManager.getModel(pickedActor);
-
-				if (model == erosModel)
-				{
-					double[] pos = erosPicker.GetPickPosition();
-					lineModel.updateLineVertex(lineIdBeingEdited, vertexIdBeingEdited, pos);
-				}
-			}		
+			if (renWin.getCursor().getType() != Cursor.HAND_CURSOR)
+				renWin.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		}
+		else
+		{
+			if (renWin.getCursor().getType() != Cursor.DEFAULT_CURSOR)
+				renWin.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 		}
 	}
-	*/
+	
 	
 //	public void stopEditing()
 //	{

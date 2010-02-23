@@ -267,6 +267,7 @@ public class MSIPopupMenu extends JPopupMenu
 			{
 				MSIImage image = MSIImage.MSIImageFactory.createImage(name);
 				BoundingBox bb = image.getBoundingBox();
+				renWin.lock();
 				renWin.GetRenderer().ResetCamera(
 						bb.xmin,
 						bb.xmax,
@@ -274,6 +275,7 @@ public class MSIPopupMenu extends JPopupMenu
 						bb.ymax,
 						bb.zmin,
 						bb.zmax);
+				renWin.unlock();
 				renWin.Render();
 			}
 			catch (FitsException e1) {

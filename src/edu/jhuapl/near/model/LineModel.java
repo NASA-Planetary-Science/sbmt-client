@@ -30,6 +30,7 @@ public class LineModel extends Model
 	private int[] defaultColor = {255, 0, 255, 255}; // RGBA, default to purple
     private ErosModel erosModel;
     private int selectedLine = -1;
+    private int currentLineVertex = -1;
     
 	static public String LINES = "lines";
 
@@ -476,6 +477,29 @@ public class LineModel extends Model
         lin.rad.add(ll.rad);
 
         lin.xyzPointList.add(new Point3D(newPoint));
+        lin.controlPointIds.add(lin.xyzPointList.size()-1);
+
+        if (lin.controlPointIds.size() >= 2)
+        	lin.updateSegment(erosModel, lin.lat.size()-2);
+
+        updatePolyData();
+        
+        updateLineSelection();
+        
+		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+    }
+
+    
+    public void insertVertexIntoSelectedLine(double[] newPoint)
+    {
+        Line lin = lines.get(selectedLine);
+        LatLon ll = Spice.reclat(newPoint);
+        
+        lin.lat.add(currentLineVertex+1, ll.lat);
+        lin.lon.add(currentLineVertex+1, ll.lon);
+        lin.rad.add(currentLineVertex+1, ll.rad);
+
+        lin.xyzPointList.add(currentLineVertex+1, new Point3D(newPoint));
         lin.controlPointIds.add(lin.xyzPointList.size()-1);
 
         if (lin.controlPointIds.size() >= 2)

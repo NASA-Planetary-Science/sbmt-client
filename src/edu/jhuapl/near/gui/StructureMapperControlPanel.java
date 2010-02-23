@@ -33,7 +33,7 @@ public class StructureMapperControlPanel extends JPanel implements
     private File structuresFile;
     private StructuresPopupMenu structuresPopupMenu;
     private JToggleButton editButton;
-    private JComboBox structureTypeComboBox;
+    //private JComboBox structureTypeComboBox;
     //private int selectedIndex = -1;
     
     public StructureMapperControlPanel(final ModelManager modelManager, final PickManager pickManager) 
@@ -72,25 +72,8 @@ public class StructureMapperControlPanel extends JPanel implements
 
         add(this.structuresFileTextField, "wrap");
         
-        JLabel structureTypeText = new JLabel("Structure Type ");
-        add(structureTypeText);
-        
-        String[] options = {LineModel.LINES};
-        structureTypeComboBox = new JComboBox(options);
-        
-        add(structureTypeComboBox, "wrap");
-        
-        structuresList = new JList();
-        structuresList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        structuresList.addMouseListener(this);
-        JScrollPane listScrollPane = new JScrollPane(structuresList);
-        listScrollPane.setPreferredSize(new Dimension(10000, 10000));
-        
-        structuresPopupMenu = new StructuresPopupMenu(this.modelManager, this.pickManager, this);
 
-        add(listScrollPane, "span");
-
-        final JButton newButton = new JButton("New");
+        final JButton newButton = new JButton("New Path");
 
         newButton.addActionListener(new ActionListener()
         {
@@ -107,7 +90,7 @@ public class StructureMapperControlPanel extends JPanel implements
         add(newButton);
         
 
-        editButton = new JToggleButton("Edit");
+        editButton = new JToggleButton("Edit Path");
         editButton.addActionListener(new ActionListener()
         {
 			public void actionPerformed(ActionEvent e) 
@@ -139,7 +122,7 @@ public class StructureMapperControlPanel extends JPanel implements
         });
         add(editButton);
         
-        JButton deleteButton = new JButton("Delete");
+        JButton deleteButton = new JButton("Delete Path");
         deleteButton.addActionListener(new ActionListener()
         {
 			public void actionPerformed(ActionEvent e) 
@@ -155,6 +138,26 @@ public class StructureMapperControlPanel extends JPanel implements
 			}
         });
         add(deleteButton);
+
+        
+        //JLabel structureTypeText = new JLabel("Structure Type ");
+        //add(structureTypeText);
+        
+        //String[] options = {LineModel.LINES};
+        //structureTypeComboBox = new JComboBox(options);
+        
+        //add(structureTypeComboBox, "wrap");
+        
+        structuresList = new JList();
+        structuresList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        structuresList.addMouseListener(this);
+        JScrollPane listScrollPane = new JScrollPane(structuresList);
+        listScrollPane.setPreferredSize(new Dimension(10000, 10000));
+        
+        structuresPopupMenu = new StructuresPopupMenu(this.modelManager, this.pickManager, this);
+
+        add(listScrollPane, "span");
+
         
         /*
         mapLineButton = new JToggleButton();
@@ -321,8 +324,8 @@ public class StructureMapperControlPanel extends JPanel implements
 	
 	private void updateStructureList()
 	{
-		String item = (String)structureTypeComboBox.getSelectedItem();
-		if (LineModel.LINES.equals(item))
+		//String item = (String)structureTypeComboBox.getSelectedItem();
+		//if (LineModel.LINES.equals(item))
 		{
 			LineModel lineModel = 
 				((StructureModel)modelManager.getModel(ModelManager.STRUCTURES)).getLineModel();
