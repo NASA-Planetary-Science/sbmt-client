@@ -500,7 +500,15 @@ public class LineModel extends Model
         lin.rad.add(currentLineVertex+1, ll.rad);
 
         lin.xyzPointList.add(currentLineVertex+1, new Point3D(newPoint));
-        lin.controlPointIds.add(lin.xyzPointList.size()-1);
+        lin.controlPointIds.add(currentLineVertex+1, lin.xyzPointList.size()-1);
+
+        ++currentLineVertex;
+        
+		// Shift the control points ids from currentLineVertex till the end by 1.
+		for (int i=currentLineVertex+1; i<lin.controlPointIds.size(); ++i)
+		{
+			lin.controlPointIds.set(i, lin.controlPointIds.get(i) + 1);
+		}
 
         if (lin.controlPointIds.size() >= 2)
         	lin.updateSegment(erosModel, lin.lat.size()-2);
