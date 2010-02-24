@@ -131,7 +131,8 @@ public class LinePicker extends Picker
 	{
 		System.out.println("mouse released");
 		if (this.currentEditMode == EditMode.VERTEX_DRAG &&
-				vertexIdBeingEdited >= 0)
+				vertexIdBeingEdited >= 0 &&
+				lastDragPosition != null)
 		{
 			lineModel.updateSelectedLineVertex(vertexIdBeingEdited, lastDragPosition);
 		}

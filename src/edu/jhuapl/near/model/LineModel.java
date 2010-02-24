@@ -408,6 +408,8 @@ public class LineModel extends Model
         
         int numVertices = lin.lat.size();
 
+        System.out.println("newPoint " + newPoint);
+        
     	LatLon ll = Spice.reclat(newPoint);
     	lin.lat.set(vertexId, ll.lat);
     	lin.lon.set(vertexId, ll.lon);
@@ -500,7 +502,7 @@ public class LineModel extends Model
     {
         Line lin = lines.get(selectedLine);
 
-    	if (currentLineVertex < -1 || currentLineVertex >= lin.lat.size())
+    	if (currentLineVertex < -1 || currentLineVertex >= lin.controlPointIds.size())
     		System.out.println("Error: currentLineVertex is invalid");
     	
     	System.out.println("currentLineVertex " + currentLineVertex);
@@ -511,14 +513,33 @@ public class LineModel extends Model
         lin.lon.add(currentLineVertex+1, ll.lon);
         lin.rad.add(currentLineVertex+1, ll.rad);
 
-        lin.xyzPointList.add(currentLineVertex+1, new Point3D(newPoint));
-        lin.controlPointIds.add(currentLineVertex+1, lin.xyzPointList.size()-1);
+		// Remove points BETWEEN the 2 control points (If we're adding a point in the middle)
+        if (currentLineVertex < lin.controlPointIds.size()-1)
+        {
+        	int id1 = lin.controlPointIds.get(currentLineVertex);
+        	int id2 = lin.controlPointIds.get(currentLineVertex+1);
+        	System.out.println("id1 " + id1);
+        	System.out.println("id2 " + id2);
+        	int numberPointsRemoved = id2-id1-1;
+        	for (int i=0; i<id2-id1-1; ++i)
+        	{
+        		lin.xyzPointList.remove(id1+1);
+        	}
 
-		// Shift the control points ids from currentLineVertex till the end by -1.
-		for (int i=currentLineVertex+1; i<lin.controlPointIds.size(); ++i)
-		{
-			lin.controlPointIds.set(i, lin.controlPointIds.get(i) - 1);
-		}
+        	lin.xyzPointList.add(id1+1, new Point3D(newPoint));
+        	lin.controlPointIds.add(currentLineVertex+1, id1+1);
+
+        	// Shift the control points ids from currentLineVertex+2 till the end by the right amount.
+        	for (int i=currentLineVertex+2; i<lin.controlPointIds.size(); ++i)
+        	{
+        		lin.controlPointIds.set(i, lin.controlPointIds.get(i) - (numberPointsRemoved-1));
+        	}
+        }
+        else
+        {
+        	lin.xyzPointList.add(new Point3D(newPoint));
+        	lin.controlPointIds.add(lin.xyzPointList.size()-1);
+        }
 
         if (lin.controlPointIds.size() >= 2)
         {
@@ -526,7 +547,7 @@ public class LineModel extends Model
         	{
         		// Do nothing
         	}
-        	else if (currentLineVertex < lin.lat.size()-2)
+        	else if (currentLineVertex < lin.controlPointIds.size()-2)
         	{
         		lin.updateSegment(erosModel, currentLineVertex);
         		lin.updateSegment(erosModel, currentLineVertex+1);
@@ -542,13 +563,17 @@ public class LineModel extends Model
         updatePolyData();
         
         updateLineSelection();
-        
+
+        System.out.println(lin.controlPointIds);
+        System.out.println(lin.xyzPointList);
+
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
     
     public void removeLine(int cellId)
     {
+    	System.out.println("removing line " + cellId);
     	lines.remove(cellId);
 
         updatePolyData();
