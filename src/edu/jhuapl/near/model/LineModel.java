@@ -27,10 +27,12 @@ public class LineModel extends Model
     private ArrayList<vtkProp> actors = new ArrayList<vtkProp>();
     private vtkActor lineActor;
     private vtkActor lineSelectionActor;
-	private int[] defaultColor = {255, 0, 255, 255}; // RGBA, default to purple
+	private int[] purpleColor = {255, 0, 255, 255}; // RGBA purple
+	private int[] redColor = {255, 0, 0, 255}; // RGBA red
+	private int[] blueColor = {0, 0, 255, 255}; // RGBA blue
     private ErosModel erosModel;
     private int selectedLine = -1;
-    private int currentLineVertex = -1;
+    private int currentLineVertex = -1000;
     
 	static public String LINES = "lines";
 
@@ -129,6 +131,8 @@ public class LineModel extends Model
 
 	    public void updateSegment(ErosModel erosModel, int segment)
 	    {
+	    	System.out.println("segment " + segment);
+	    	
     		LatLon ll1 = new LatLon(lat.get(segment), lon.get(segment), rad.get(segment));
     		LatLon ll2 = new LatLon(lat.get(segment+1), lon.get(segment+1), rad.get(segment+1));
     		double pt1[] = Spice.latrec(ll1);
@@ -260,7 +264,7 @@ public class LineModel extends Model
 			}
 
 			lines.InsertNextCell(idList);
-			colors.InsertNextTuple4(defaultColor[0],defaultColor[1],defaultColor[2],defaultColor[3]);
+			colors.InsertNextTuple4(purpleColor[0],purpleColor[1],purpleColor[2],purpleColor[3]);
 
 		}
 
@@ -378,6 +382,7 @@ public class LineModel extends Model
         selectLine(lines.size()-1);
     }
     
+    /*
     public void addNewLine(double[] pt1)
     {
         LatLon ll1 = Spice.reclat(pt1);
@@ -395,7 +400,7 @@ public class LineModel extends Model
         
         selectLine(lines.size()-1);
     }
-    
+    */
     
     public void updateSelectedLineVertex(int vertexId, double[] newPoint)
     {
@@ -467,6 +472,7 @@ public class LineModel extends Model
     }
     */
 
+    /*
     public void addVertexToSelectedLine(double[] newPoint)
     {
         Line lin = lines.get(selectedLine);
@@ -488,11 +494,17 @@ public class LineModel extends Model
         
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
-
+     */
     
     public void insertVertexIntoSelectedLine(double[] newPoint)
     {
         Line lin = lines.get(selectedLine);
+
+    	if (currentLineVertex < -1 || currentLineVertex >= lin.lat.size())
+    		System.out.println("Error: currentLineVertex is invalid");
+    	
+    	System.out.println("currentLineVertex " + currentLineVertex);
+
         LatLon ll = Spice.reclat(newPoint);
         
         lin.lat.add(currentLineVertex+1, ll.lat);
@@ -502,17 +514,31 @@ public class LineModel extends Model
         lin.xyzPointList.add(currentLineVertex+1, new Point3D(newPoint));
         lin.controlPointIds.add(currentLineVertex+1, lin.xyzPointList.size()-1);
 
-        ++currentLineVertex;
-        
-		// Shift the control points ids from currentLineVertex till the end by 1.
+		// Shift the control points ids from currentLineVertex till the end by -1.
 		for (int i=currentLineVertex+1; i<lin.controlPointIds.size(); ++i)
 		{
-			lin.controlPointIds.set(i, lin.controlPointIds.get(i) + 1);
+			lin.controlPointIds.set(i, lin.controlPointIds.get(i) - 1);
 		}
 
         if (lin.controlPointIds.size() >= 2)
-        	lin.updateSegment(erosModel, lin.lat.size()-2);
+        {
+        	if (currentLineVertex < 0)
+        	{
+        		// Do nothing
+        	}
+        	else if (currentLineVertex < lin.lat.size()-2)
+        	{
+        		lin.updateSegment(erosModel, currentLineVertex);
+        		lin.updateSegment(erosModel, currentLineVertex+1);
+        	}
+        	else
+        	{
+        		lin.updateSegment(erosModel, currentLineVertex);
+        	}
+        }
 
+        ++currentLineVertex;
+        
         updatePolyData();
         
         updateLineSelection();
@@ -556,8 +582,13 @@ public class LineModel extends Model
 		selectionPolyData = new vtkPolyData();
 		vtkPoints points = new vtkPoints();
 		vtkCellArray vert = new vtkCellArray();
+        vtkUnsignedCharArray colors = new vtkUnsignedCharArray();
+
 		selectionPolyData.SetPoints( points );
 		selectionPolyData.SetVerts( vert );
+		selectionPolyData.GetCellData().SetScalars(colors);
+
+        colors.SetNumberOfComponents(4);
 
 		int numPoints = lin.controlPointIds.size();
 
@@ -572,6 +603,10 @@ public class LineModel extends Model
             points.SetPoint(i, lin.xyzPointList.get(idx).xyz);
         	idList.SetId(0, i);
 		    vert.InsertNextCell(idList);
+		    if (i == this.currentLineVertex)
+		    	colors.InsertNextTuple4(blueColor[0],blueColor[1],blueColor[2],blueColor[3]);
+		    else
+		    	colors.InsertNextTuple4(redColor[0],redColor[1],redColor[2],redColor[3]);
 		}
 
 		erosModel.shiftPolyLineInNormalDirection(selectionPolyData, 0.001);
@@ -593,6 +628,25 @@ public class LineModel extends Model
     	
     	selectedLine = cellId;
 
+    	if (cellId >= 0)
+    	{
+    		Line lin = lines.get(selectedLine);
+    		currentLineVertex = lin.controlPointIds.size()-1;
+    	}
+    	else
+    	{
+    		currentLineVertex = -1000;
+    	}
+    	
+    	updateLineSelection();
+
+    	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+    }
+    
+    public void selectCurrentLineVertex(int idx)
+    {
+    	currentLineVertex = idx;
+    	
     	updateLineSelection();
 
     	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);

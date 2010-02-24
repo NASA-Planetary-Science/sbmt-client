@@ -34,7 +34,7 @@ public class LinePicker extends Picker
 		VERTEX_ADD
 	}
 
-	private EditMode currentEditMode;
+	private EditMode currentEditMode = EditMode.VERTEX_ADD;
 
 	private double[] lastDragPosition;
 	
@@ -100,9 +100,7 @@ public class LinePicker extends Picker
 					System.out.println("ps2");
 					this.vertexIdBeingEdited = lineSelectionPicker.GetCellId();
 
-					//double[] pos = lineSelectionPicker.GetPickPosition();
-
-					//lineModel.updateSelectedLineVertex(vertexIdBeingEdited, pos);
+					lineModel.selectCurrentLineVertex(vertexIdBeingEdited);
 				}
 			}
 		}
@@ -122,7 +120,7 @@ public class LinePicker extends Picker
 					double[] pos = erosPicker.GetPickPosition();
 					if (e.getClickCount() == 1)
 					{
-						lineModel.addVertexToSelectedLine(pos);
+						lineModel.insertVertexIntoSelectedLine(pos);
 					}
 				}
 			}		
@@ -181,11 +179,15 @@ public class LinePicker extends Picker
 		{
 			if (renWin.getCursor().getType() != Cursor.HAND_CURSOR)
 				renWin.setCursor(new Cursor(Cursor.HAND_CURSOR));
+			
+			currentEditMode = EditMode.VERTEX_DRAG;
 		}
 		else
 		{
 			if (renWin.getCursor().getType() != Cursor.DEFAULT_CURSOR)
 				renWin.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+			
+			currentEditMode = EditMode.VERTEX_ADD;
 		}
 	}
 	
@@ -198,10 +200,11 @@ public class LinePicker extends Picker
 //
 //		//this.pcs.firePropertyChange(Properties.FINISHED_DRAWING_LINE, null, null);
 //	}
-	
+	/*
 	public void setEditMode(EditMode mode)
 	{
 		this.currentEditMode = mode;
 		vertexIdBeingEdited = -1;
 	}
+	*/
 }

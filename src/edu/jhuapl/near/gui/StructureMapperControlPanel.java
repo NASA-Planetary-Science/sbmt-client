@@ -9,7 +9,6 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 
-import edu.jhuapl.near.gui.pick.LinePicker;
 import edu.jhuapl.near.gui.pick.PickManager;
 import edu.jhuapl.near.gui.popupmenus.StructuresPopupMenu;
 import edu.jhuapl.near.model.*;
@@ -81,7 +80,6 @@ public class StructureMapperControlPanel extends JPanel implements
 			{
 				lineModel.addNewLine();
 				pickManager.setPickMode(PickManager.PickMode.LINE_DRAW);
-				pickManager.getLineamentPicker().setEditMode(LinePicker.EditMode.VERTEX_ADD);
 				editButton.setSelected(true);
 				updateStructureList();
 			}
@@ -101,7 +99,6 @@ public class StructureMapperControlPanel extends JPanel implements
 					if (selectedIndex >= 0)
 					{
 						pickManager.setPickMode(PickManager.PickMode.LINE_DRAW);
-						pickManager.getLineamentPicker().setEditMode(LinePicker.EditMode.VERTEX_DRAG);
 						lineModel.selectLine(selectedIndex);
 					}
 					else
