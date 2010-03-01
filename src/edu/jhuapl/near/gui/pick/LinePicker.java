@@ -30,7 +30,7 @@ public class LinePicker extends Picker
     //   2. Extending a line by adding new vertices
 	public enum EditMode
 	{
-		VERTEX_DRAG,
+		VERTEX_DRAG_OR_DELETE,
 		VERTEX_ADD
 	}
 
@@ -66,9 +66,9 @@ public class LinePicker extends Picker
 		linePicker.InitializePickList();
 		linePicker.GetPickList().RemoveAllItems();
 		linePicker.AddPickList(lineModel.getLineActor());
-
+		
 		lineSelectionPicker = new vtkCellPicker();
-		lineSelectionPicker.SetTolerance(0.002);
+		lineSelectionPicker.SetTolerance(0.008);
 		lineSelectionPicker.PickFromListOn();
 		lineSelectionPicker.InitializePickList();
 		lineSelectionPicker.GetPickList().RemoveAllItems();
@@ -80,13 +80,15 @@ public class LinePicker extends Picker
 		// If we pressed a vertex of an existing lineament, begin dragging that vertex.
 		// If we pressed a point on Eros, begin drawing a new line.
 
-		if (e.getButton() != MouseEvent.BUTTON1)
-			return;
 
 		vertexIdBeingEdited = -1;
-
-		if (this.currentEditMode == EditMode.VERTEX_DRAG)
+		lastDragPosition = null;
+		
+		if (this.currentEditMode == EditMode.VERTEX_DRAG_OR_DELETE)
 		{
+			if (e.getButton() != MouseEvent.BUTTON1 && e.getButton() != MouseEvent.BUTTON3)
+				return;
+
 			renWin.lock();
 			int pickSucceeded = lineSelectionPicker.Pick(e.getX(), renWin.getIren().GetSize()[1]-e.getY()-1, 0.0, renWin.GetRenderer());
 			renWin.unlock();
@@ -98,14 +100,24 @@ public class LinePicker extends Picker
 				if (pickedActor == lineModel.getLineSelectionActor())
 				{
 					System.out.println("ps2");
-					this.vertexIdBeingEdited = lineSelectionPicker.GetCellId();
+					if (e.getButton() == MouseEvent.BUTTON1)
+					{
+						this.vertexIdBeingEdited = lineSelectionPicker.GetCellId();
 
-					lineModel.selectCurrentLineVertex(vertexIdBeingEdited);
+						lineModel.selectCurrentLineVertex(vertexIdBeingEdited);
+					}
+					else
+					{
+						vertexIdBeingEdited = -1;
+					}
 				}
 			}
 		}
 		else if (this.currentEditMode == EditMode.VERTEX_ADD)
 		{
+			if (e.getButton() != MouseEvent.BUTTON1)
+				return;
+
 			renWin.lock();
 			int pickSucceeded = erosPicker.Pick(e.getX(), renWin.getIren().GetSize()[1]-e.getY()-1, 0.0, renWin.GetRenderer());
 			renWin.unlock();
@@ -130,7 +142,7 @@ public class LinePicker extends Picker
 	public void mouseReleased(MouseEvent e) 
 	{
 		System.out.println("mouse released");
-		if (this.currentEditMode == EditMode.VERTEX_DRAG &&
+		if (this.currentEditMode == EditMode.VERTEX_DRAG_OR_DELETE &&
 				vertexIdBeingEdited >= 0 &&
 				lastDragPosition != null)
 		{
@@ -146,7 +158,7 @@ public class LinePicker extends Picker
 		//	return;
 
 		
-		if (this.currentEditMode == EditMode.VERTEX_DRAG &&
+		if (this.currentEditMode == EditMode.VERTEX_DRAG_OR_DELETE &&
 			vertexIdBeingEdited >= 0)
 		{
 			renWin.lock();
@@ -181,7 +193,7 @@ public class LinePicker extends Picker
 			if (renWin.getCursor().getType() != Cursor.HAND_CURSOR)
 				renWin.setCursor(new Cursor(Cursor.HAND_CURSOR));
 			
-			currentEditMode = EditMode.VERTEX_DRAG;
+			currentEditMode = EditMode.VERTEX_DRAG_OR_DELETE;
 		}
 		else
 		{

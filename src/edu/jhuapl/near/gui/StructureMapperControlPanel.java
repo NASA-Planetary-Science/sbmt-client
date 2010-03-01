@@ -61,18 +61,37 @@ public class StructureMapperControlPanel extends JPanel implements
         this.saveAsStructuresButton.setEnabled(true);
         this.saveAsStructuresButton.addActionListener(this);
 
-        this.structuresFileTextField = new JLabel("File: <none>");
+        this.structuresFileTextField = new JLabel("<no file loaded>");
         this.structuresFileTextField.setEnabled(true);
         this.structuresFileTextField.setPreferredSize(new java.awt.Dimension(150, 22));
         
-        add(this.loadStructuresButton);
-        add(this.saveStructuresButton);
-        add(this.saveAsStructuresButton);
-
-        add(this.structuresFileTextField, "wrap");
+        add(this.structuresFileTextField, "span");
         
+        add(this.loadStructuresButton, "w 100!");
+        add(this.saveStructuresButton, "w 100!");
+        add(this.saveAsStructuresButton, "w 100!, wrap 15px");
 
-        final JButton newButton = new JButton("New Path");
+        JLabel structureTypeText = new JLabel("  List of Paths");
+        add(structureTypeText, "span");
+        
+        //String[] options = {LineModel.LINES};
+        //structureTypeComboBox = new JComboBox(options);
+        
+        //add(structureTypeComboBox, "wrap");
+        
+        structuresList = new JList();
+        structuresList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        structuresList.addMouseListener(this);
+        JScrollPane listScrollPane = new JScrollPane(structuresList);
+        listScrollPane.setPreferredSize(new Dimension(10000, 10000));
+        
+        structuresPopupMenu = new StructuresPopupMenu(this.modelManager, this.pickManager, this);
+
+        add(listScrollPane, "span");
+
+
+
+        final JButton newButton = new JButton("New");
 
         newButton.addActionListener(new ActionListener()
         {
@@ -85,10 +104,10 @@ public class StructureMapperControlPanel extends JPanel implements
 			}
         });
 
-        add(newButton);
+        add(newButton, "w 100!");
         
 
-        editButton = new JToggleButton("Edit Path");
+        editButton = new JToggleButton("Edit");
         editButton.addActionListener(new ActionListener()
         {
 			public void actionPerformed(ActionEvent e) 
@@ -117,9 +136,9 @@ public class StructureMapperControlPanel extends JPanel implements
 					structuresList.setSelectedIndex(selectedIndex);
 			}
         });
-        add(editButton);
+        add(editButton, "w 100!");
         
-        JButton deleteButton = new JButton("Delete Path");
+        JButton deleteButton = new JButton("Delete");
         deleteButton.addActionListener(new ActionListener()
         {
 			public void actionPerformed(ActionEvent e) 
@@ -130,31 +149,15 @@ public class StructureMapperControlPanel extends JPanel implements
 				if (selectedIndex >= 0 && selectedIndex < lineModel.getNumberOfLines())
 				{
 					lineModel.removeLine(selectedIndex);
+					pickManager.setPickMode(PickManager.PickMode.DEFAULT);
+					lineModel.selectLine(-1);
 					updateStructureList();
 				}
 			}
         });
-        add(deleteButton);
+        add(deleteButton, "w 100!");
 
         
-        //JLabel structureTypeText = new JLabel("Structure Type ");
-        //add(structureTypeText);
-        
-        //String[] options = {LineModel.LINES};
-        //structureTypeComboBox = new JComboBox(options);
-        
-        //add(structureTypeComboBox, "wrap");
-        
-        structuresList = new JList();
-        structuresList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        structuresList.addMouseListener(this);
-        JScrollPane listScrollPane = new JScrollPane(structuresList);
-        listScrollPane.setPreferredSize(new Dimension(10000, 10000));
-        
-        structuresPopupMenu = new StructuresPopupMenu(this.modelManager, this.pickManager, this);
-
-        add(listScrollPane, "span");
-
         
         /*
         mapLineButton = new JToggleButton();
@@ -242,14 +245,17 @@ public class StructureMapperControlPanel extends JPanel implements
 				e.printStackTrace();
 			}
         }
-        else if (source == this.saveStructuresButton)
+        else if (source == this.saveStructuresButton || source == this.saveAsStructuresButton)
         {
-        	if (structuresFile == null)
+        	if (structuresFile == null || source == this.saveAsStructuresButton)
         	{
             	structuresFile = AnyFileChooser.showSaveDialog(this, "Select File");
             	if (structuresFile != null)
             		this.structuresFileTextField.setText(structuresFile.getAbsolutePath());
-
+        	}
+        	
+        	if (structuresFile != null)
+        	{
 				try {
 					((StructureModel)modelManager.getModel(ModelManager.STRUCTURES)).saveModel(structuresFile);
 				} catch (NumberFormatException e) {
@@ -259,7 +265,6 @@ public class StructureMapperControlPanel extends JPanel implements
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-
         	}
         }
     }

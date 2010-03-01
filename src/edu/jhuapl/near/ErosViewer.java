@@ -46,8 +46,8 @@ public class ErosViewer extends JFrame
 
         imageViewer.setMinimumSize(new Dimension(100, 100));
         imageViewer.setPreferredSize(new Dimension(700, 700));
-        controlPanel.setMinimumSize(new Dimension(300, 100));
-        controlPanel.setPreferredSize(new Dimension(300, 700));
+        controlPanel.setMinimumSize(new Dimension(320, 100));
+        controlPanel.setPreferredSize(new Dimension(320, 700));
 
 		createMenus(imageViewer);
 

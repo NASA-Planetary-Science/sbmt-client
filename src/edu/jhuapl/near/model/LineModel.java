@@ -89,6 +89,12 @@ public class LineModel extends Model
 
 	    public void fromXmlDomElement(Element element, ErosModel erosModel)
 	    {
+	    	lat.clear();
+	    	lon.clear();
+	    	rad.clear();
+	    	controlPointIds.clear();
+	    	xyzPointList.clear();
+
 	    	id = Integer.parseInt(element.getAttribute(ID));
 	    	
 	    	if (id > maxId)
@@ -97,11 +103,11 @@ public class LineModel extends Model
 	    	name = element.getAttribute(MSI_IMAGE);
 	    	String tmp = element.getAttribute(VERTICES);
 
+	    	if (tmp.length() == 0)
+	    		return;
+	    	
 	    	String[] tokens = tmp.split(" ");
-
-	    	lat.clear();
-	    	lon.clear();
-	    	rad.clear();
+	    	
 	    	int count = 0;
 	    	for (int i=0; i<tokens.length;)
 	    	{
@@ -109,7 +115,7 @@ public class LineModel extends Model
 	    		lon.add(Double.parseDouble(tokens[i++])*Math.PI/180.0);
 	    		rad.add(Double.parseDouble(tokens[i++]));
 	    		
-	    		controlPointIds.add(count);
+	    		controlPointIds.add(xyzPointList.size());
 	    		
 	    		// Note, this point will be replaced with the correct value
 	    		// when we call updateSegment
@@ -131,8 +137,6 @@ public class LineModel extends Model
 
 	    public void updateSegment(ErosModel erosModel, int segment)
 	    {
-	    	System.out.println("segment " + segment);
-	    	
     		LatLon ll1 = new LatLon(lat.get(segment), lon.get(segment), rad.get(segment));
     		LatLon ll2 = new LatLon(lat.get(segment+1), lon.get(segment+1), rad.get(segment+1));
     		double pt1[] = Spice.latrec(ll1);
@@ -231,8 +235,6 @@ public class LineModel extends Model
 
 		updatePolyData();
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-
-		System.out.println("Number of lines: " + this.lines.size());
     }
     
 	private void updatePolyData()
@@ -408,8 +410,6 @@ public class LineModel extends Model
         
         int numVertices = lin.lat.size();
 
-        System.out.println("newPoint " + newPoint);
-        
     	LatLon ll = Spice.reclat(newPoint);
     	lin.lat.set(vertexId, ll.lat);
     	lin.lon.set(vertexId, ll.lon);
@@ -505,8 +505,6 @@ public class LineModel extends Model
     	if (currentLineVertex < -1 || currentLineVertex >= lin.controlPointIds.size())
     		System.out.println("Error: currentLineVertex is invalid");
     	
-    	System.out.println("currentLineVertex " + currentLineVertex);
-
         LatLon ll = Spice.reclat(newPoint);
         
         lin.lat.add(currentLineVertex+1, ll.lat);
@@ -518,8 +516,6 @@ public class LineModel extends Model
         {
         	int id1 = lin.controlPointIds.get(currentLineVertex);
         	int id2 = lin.controlPointIds.get(currentLineVertex+1);
-        	System.out.println("id1 " + id1);
-        	System.out.println("id2 " + id2);
         	int numberPointsRemoved = id2-id1-1;
         	for (int i=0; i<id2-id1-1; ++i)
         	{
@@ -564,16 +560,12 @@ public class LineModel extends Model
         
         updateLineSelection();
 
-        System.out.println(lin.controlPointIds);
-        System.out.println(lin.xyzPointList);
-
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
     
     public void removeLine(int cellId)
     {
-    	System.out.println("removing line " + cellId);
     	lines.remove(cellId);
 
         updatePolyData();
@@ -676,4 +668,115 @@ public class LineModel extends Model
 
     	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
+    
+    
+    public void removeVertexFromLine(int vertexId)
+    {
+        Line lin = lines.get(selectedLine);
+
+        lin.lat.remove(vertexId);
+        lin.lon.remove(vertexId);
+        lin.rad.remove(vertexId);
+
+        // If one of the end points is being removed, then we only need to remove the line connecting the
+        // end point to the adjacent point. If we're removing a non-end point, we need to remove the line
+        // segments connecting the 2 adjacent control points and in addition, we need to draw a new line
+        // connecting the 2 adjacent control points.
+		// Remove points BETWEEN the 2 adjacent control points (If we're removing a point in the middle)
+        if (lin.controlPointIds.size() > 1)
+        {
+        	if (vertexId == 0)
+        	{
+        		int id2 = lin.controlPointIds.get(vertexId+1);
+                int numberPointsRemoved = id2;
+        		for (int i=0; i<numberPointsRemoved; ++i)
+        		{
+        			lin.xyzPointList.remove(0);
+        		}
+                lin.controlPointIds.remove(vertexId);
+
+                for (int i=vertexId+1; i<lin.controlPointIds.size(); ++i)
+            		lin.controlPointIds.set(i, lin.controlPointIds.get(i) - (numberPointsRemoved-1));
+        	}
+        	if (vertexId == lin.controlPointIds.size()-1)
+        	{
+        		int id1 = lin.controlPointIds.get(vertexId-1);
+        		int id2 = lin.controlPointIds.get(vertexId);
+                int numberPointRemoved = id2-id1;
+        		for (int i=0; i<numberPointRemoved; ++i)
+        		{
+        			lin.xyzPointList.remove(id1+1);
+        		}
+                lin.controlPointIds.remove(vertexId);
+        	}
+        	else
+        	{
+        		int id1 = lin.controlPointIds.get(vertexId-1);
+        		int id2 = lin.controlPointIds.get(vertexId+1);
+        		for (int i=id1+1; i<id2; ++i)
+        		{
+        			lin.xyzPointList.remove(id1+1);
+        		}
+                lin.controlPointIds.remove(vertexId);
+        		lin.updateSegment(erosModel, vertexId-1);
+        	}
+        }
+
+        if (currentLineVertex < lin.controlPointIds.size()-1)
+        {
+        	int id1 = lin.controlPointIds.get(currentLineVertex);
+        	int id2 = lin.controlPointIds.get(currentLineVertex+1);
+        	int numberPointsRemoved = id2-id1-1;
+        	for (int i=0; i<id2-id1-1; ++i)
+        	{
+        		lin.xyzPointList.remove(id1+1);
+        	}
+
+        	lin.xyzPointList.add(id1+1, new Point3D(newPoint));
+        	lin.controlPointIds.add(currentLineVertex+1, id1+1);
+
+        	// Shift the control points ids from currentLineVertex+2 till the end by the right amount.
+        	for (int i=currentLineVertex+2; i<lin.controlPointIds.size(); ++i)
+        	{
+        		lin.controlPointIds.set(i, lin.controlPointIds.get(i) - (numberPointsRemoved-1));
+        	}
+        }
+        else
+        {
+        	lin.xyzPointList.add(new Point3D(newPoint));
+        	lin.controlPointIds.add(lin.xyzPointList.size()-1);
+        }
+
+        if (lin.controlPointIds.size() >= 2)
+        {
+        	if (vertexId == 0)
+        	{
+        		lin.updateSegment(erosModel, vertexId);
+        	}
+        	else if (currentLineVertex < lin.controlPointIds.size()-2)
+        	{
+        		lin.updateSegment(erosModel, currentLineVertex);
+        		lin.updateSegment(erosModel, currentLineVertex+1);
+        	}
+        	else
+        	{
+        		lin.updateSegment(erosModel, currentLineVertex);
+        	}
+        }
+
+        if (vertexId == currentLineVertex)
+        {
+        	--currentLineVertex;
+        	if (currentLineVertex < 0 && lin.controlPointIds.size() > 0)
+        		currentLineVertex = 0;
+        }
+        
+        updatePolyData();
+        
+        updateLineSelection();
+
+		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+    	
+    }
+    
 }
