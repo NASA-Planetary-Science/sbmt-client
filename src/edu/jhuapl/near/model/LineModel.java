@@ -25,6 +25,8 @@ public class LineModel extends Model
 	private vtkPolyData linesPolyData;
 	private vtkPolyData selectionPolyData;
     private ArrayList<vtkProp> actors = new ArrayList<vtkProp>();
+    private vtkPolyDataMapper lineMapper;
+    private vtkPolyDataMapper lineSelectionMapper;
     private vtkActor lineActor;
     private vtkActor lineSelectionActor;
 	private int[] purpleColor = {255, 0, 255, 255}; // RGBA purple
@@ -272,9 +274,11 @@ public class LineModel extends Model
 
 		erosModel.shiftPolyLineInNormalDirection(linesPolyData, 0.002);
 
-		vtkPolyDataMapper lineMapper = new vtkPolyDataMapper();
+		if (lineMapper == null)
+			lineMapper = new vtkPolyDataMapper();
 		lineMapper.SetInput(linesPolyData);
-
+		lineMapper.Update();
+		
         if (!actors.contains(lineActor))
         	actors.add(lineActor);
 
@@ -628,13 +632,15 @@ public class LineModel extends Model
 
 		erosModel.shiftPolyLineInNormalDirection(selectionPolyData, 0.001);
 		
-        vtkPolyDataMapper pointsMapper = new vtkPolyDataMapper();
-        pointsMapper.SetInput(selectionPolyData);
-
+		if (lineSelectionMapper == null)
+			lineSelectionMapper = new vtkPolyDataMapper();
+        lineSelectionMapper.SetInput(selectionPolyData);
+        lineSelectionMapper.Update();
+        
         if (!actors.contains(lineSelectionActor))
         	actors.add(lineSelectionActor);
 
-        lineSelectionActor.SetMapper(pointsMapper);
+        lineSelectionActor.SetMapper(lineSelectionMapper);
         lineSelectionActor.Modified();
     }
     
@@ -669,7 +675,7 @@ public class LineModel extends Model
     	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
     
-    
+    /*
     public void removeVertexFromLine(int vertexId)
     {
         Line lin = lines.get(selectedLine);
@@ -778,5 +784,5 @@ public class LineModel extends Model
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     	
     }
-    
+    */
 }
