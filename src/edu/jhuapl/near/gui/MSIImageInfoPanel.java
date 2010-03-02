@@ -119,21 +119,25 @@ public class MSIImageInfoPanel extends ModelInfoWindow implements PropertyChange
         setVisible(true);
 	}
 
-	/**
-	 * The following function is a bit of a hack. We want to reuse the MSIPopupMenu
-	 * class, but instead of having a right-click popup menu, we want instead to use
-	 * it as an actual menu in a menu bar. Therefore we simply grab the menu items
-	 * from that class and put these in our new JMenu.
-	 */
     private void createMenus()
     {
+    	JMenuBar menuBar = new JMenuBar();
+
+    	FileMenu fileMenu = new FileMenu(renWin, false);
+        fileMenu.setMnemonic('F');
+        menuBar.add(fileMenu);
+
+    	/**
+    	 * The following is a bit of a hack. We want to reuse the MSIPopupMenu
+    	 * class, but instead of having a right-click popup menu, we want instead to use
+    	 * it as an actual menu in a menu bar. Therefore we simply grab the menu items
+    	 * from that class and put these in our new JMenu.
+    	 */
     	MSIPopupMenu msiImagesPopupMenu = 
 			new MSIPopupMenu(modelManager, null, renWin, this);
     	
     	msiImagesPopupMenu.setCurrentImage(msiImage.getServerPath());
     	
-    	JMenuBar menuBar = new JMenuBar();
-
     	JMenu menu = new JMenu("Options");
         menu.setMnemonic('O');
 

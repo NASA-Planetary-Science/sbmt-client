@@ -1,6 +1,7 @@
 package edu.jhuapl.near.gui;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 
 import java.awt.Dimension;
 import java.awt.event.*;
@@ -10,7 +11,7 @@ import java.io.File;
 import java.io.IOException;
 
 import edu.jhuapl.near.gui.pick.PickManager;
-import edu.jhuapl.near.gui.popupmenus.StructuresPopupMenu;
+//import edu.jhuapl.near.gui.popupmenus.StructuresPopupMenu;
 import edu.jhuapl.near.model.*;
 import edu.jhuapl.near.util.Properties;
 import net.miginfocom.swing.MigLayout;
@@ -28,9 +29,10 @@ public class StructureMapperControlPanel extends JPanel implements
     private JToggleButton mapCircleButton;
     private JButton saveStructuresButton;
     private JButton saveAsStructuresButton;
-    private JList structuresList;
+    //private JList structuresList;
+    private JTable structuresTable;
     private File structuresFile;
-    private StructuresPopupMenu structuresPopupMenu;
+    //private StructuresPopupMenu structuresPopupMenu;
     private JToggleButton editButton;
     //private JComboBox structureTypeComboBox;
     //private int selectedIndex = -1;
@@ -71,7 +73,7 @@ public class StructureMapperControlPanel extends JPanel implements
         add(this.saveStructuresButton, "w 100!");
         add(this.saveAsStructuresButton, "w 100!, wrap 15px");
 
-        JLabel structureTypeText = new JLabel("  List of Paths");
+        JLabel structureTypeText = new JLabel(" Structures");
         add(structureTypeText, "span");
         
         //String[] options = {LineModel.LINES};
@@ -79,13 +81,43 @@ public class StructureMapperControlPanel extends JPanel implements
         
         //add(structureTypeComboBox, "wrap");
         
+        String[] columnNames = {"Id",
+                "Type",
+                "Name",
+                "Details"};
+
+        /*
         structuresList = new JList();
         structuresList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         structuresList.addMouseListener(this);
         JScrollPane listScrollPane = new JScrollPane(structuresList);
+        */
+
+        Object[][] data = new Object[0][4];
+
+		structuresTable = new JTable(new DefaultTableModel(data, columnNames)
+		{
+			public boolean isCellEditable(int row, int column)
+			{
+				if (column == 2)
+					return true;
+				else
+					return false;
+			}
+		});
+
+		structuresTable.setBorder(BorderFactory.createTitledBorder(""));
+		//table.setPreferredScrollableViewportSize(new Dimension(500, 130));
+        structuresTable.setColumnSelectionAllowed(false);
+        structuresTable.setRowSelectionAllowed(true);
+        structuresTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+//        structuresTable.getColumnModel().getColumn(0).setPreferredWidth(30);
+        
+        
+        JScrollPane listScrollPane = new JScrollPane(structuresTable);
         listScrollPane.setPreferredSize(new Dimension(10000, 10000));
         
-        structuresPopupMenu = new StructuresPopupMenu(this.modelManager, this.pickManager, this);
+        //structuresPopupMenu = new StructuresPopupMenu(this.modelManager, this.pickManager, this);
 
         add(listScrollPane, "span");
 
@@ -112,7 +144,7 @@ public class StructureMapperControlPanel extends JPanel implements
         {
 			public void actionPerformed(ActionEvent e) 
 			{
-				int selectedIndex = structuresList.getSelectedIndex();
+				int selectedIndex = structuresTable.getSelectedRow();
 				if (editButton.isSelected())
 				{
 					if (selectedIndex >= 0)
@@ -133,7 +165,7 @@ public class StructureMapperControlPanel extends JPanel implements
 				
 				// The item in the list might get deselected so select it again here.
 				if (selectedIndex >= 0)
-					structuresList.setSelectedIndex(selectedIndex);
+					structuresTable.setRowSelectionInterval(selectedIndex, selectedIndex);
 			}
         });
         add(editButton, "w 100!");
@@ -145,7 +177,7 @@ public class StructureMapperControlPanel extends JPanel implements
 			{
 				editButton.setSelected(false);
 				
-				int selectedIndex = structuresList.getSelectedIndex();
+				int selectedIndex = structuresTable.getSelectedRow();
 				if (selectedIndex >= 0 && selectedIndex < lineModel.getNumberOfLines())
 				{
 					lineModel.removeLine(selectedIndex);
@@ -307,6 +339,7 @@ public class StructureMapperControlPanel extends JPanel implements
 
 	private void maybeShowPopup(MouseEvent e) 
 	{
+		/*
 		int selectedIndex = structuresList.locationToIndex(e.getPoint());
 
 		if (selectedIndex >= 0 && structuresList.getCellBounds(selectedIndex, selectedIndex).contains(e.getPoint()))
@@ -322,6 +355,7 @@ public class StructureMapperControlPanel extends JPanel implements
 				structuresPopupMenu.show(e.getComponent(), e.getX(), e.getY());
         	}
         }
+        */
     }
 	
 	private void updateStructureList()
@@ -334,19 +368,20 @@ public class StructureMapperControlPanel extends JPanel implements
 			
 			int numLines = lineModel.getNumberOfLines();
 			
-	    	String[] formattedResults = new String[numLines];
-
+			((DefaultTableModel)structuresTable.getModel()).setRowCount(numLines);
 			for (int i=0; i<numLines; ++i)
 			{
 				LineModel.Line line = lineModel.getLine(i);
-	    		formattedResults[i] = new String(
-	    				"Id: " + line.id + ", Number of vertices: " + line.controlPointIds.size());
+				structuresTable.setValueAt(line.id, i, 0);
+				structuresTable.setValueAt("Polyline", i, 1);
+				structuresTable.setValueAt(line.name, i, 2);
+				structuresTable.setValueAt(line.controlPointIds.size() + " vertices", i, 3);
 			}
 			
-			structuresList.setListData(formattedResults);
-			
 			if (lineModel.getSelectedLineIndex() >= 0)
-				structuresList.setSelectedIndex(lineModel.getSelectedLineIndex());
+				structuresTable.setRowSelectionInterval(
+						lineModel.getSelectedLineIndex(),
+						lineModel.getSelectedLineIndex());
 		}
 	}
 }

@@ -34,6 +34,6 @@ public class ControlPanel extends JTabbedPane
 		addTab("NLR", nlrSearchPanel);
 		addTab("Eros", erosPanel);
 		addTab("Lineament", lineamentPanel);
-		addTab("Paths", structureMapperPanel);
+		addTab("Structures", structureMapperPanel);
 	}
 }

@@ -68,7 +68,7 @@ public class ErosViewer extends JFrame
     {
     	JMenuBar menuBar = new JMenuBar();
 
-    	fileMenu = new FileMenu(imageViewer);
+    	fileMenu = new FileMenu(imageViewer.getRenderWindowPanel(), true);
         fileMenu.setMnemonic('F');
         menuBar.add(fileMenu);
 
