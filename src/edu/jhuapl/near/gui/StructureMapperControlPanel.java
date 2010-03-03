@@ -133,6 +133,9 @@ public class StructureMapperControlPanel extends JPanel implements
 				pickManager.setPickMode(PickManager.PickMode.LINE_DRAW);
 				editButton.setSelected(true);
 				updateStructureList();
+
+				int numLines = structuresTable.getRowCount();
+				structuresTable.setRowSelectionInterval(numLines-1, numLines-1);
 			}
         });
 
@@ -144,13 +147,13 @@ public class StructureMapperControlPanel extends JPanel implements
         {
 			public void actionPerformed(ActionEvent e) 
 			{
-				int selectedIndex = structuresTable.getSelectedRow();
+				int idx = structuresTable.getSelectedRow();
 				if (editButton.isSelected())
 				{
-					if (selectedIndex >= 0)
+					if (idx >= 0)
 					{
 						pickManager.setPickMode(PickManager.PickMode.LINE_DRAW);
-						lineModel.selectLine(selectedIndex);
+						lineModel.selectLine(idx);
 					}
 					else
 					{
@@ -164,8 +167,9 @@ public class StructureMapperControlPanel extends JPanel implements
 				}
 				
 				// The item in the list might get deselected so select it again here.
-				if (selectedIndex >= 0)
-					structuresTable.setRowSelectionInterval(selectedIndex, selectedIndex);
+				int numLines = structuresTable.getRowCount();
+				if (idx >= 0 && idx < numLines)
+					structuresTable.setRowSelectionInterval(idx, idx);
 			}
         });
         add(editButton, "w 100!");
@@ -177,80 +181,29 @@ public class StructureMapperControlPanel extends JPanel implements
 			{
 				editButton.setSelected(false);
 				
-				int selectedIndex = structuresTable.getSelectedRow();
-				if (selectedIndex >= 0 && selectedIndex < lineModel.getNumberOfLines())
+				int numLines = lineModel.getNumberOfLines();
+				int idx = structuresTable.getSelectedRow();
+				if (idx >= 0 && idx < numLines)
 				{
-					lineModel.removeLine(selectedIndex);
+					lineModel.removeLine(idx);
 					pickManager.setPickMode(PickManager.PickMode.DEFAULT);
 					lineModel.selectLine(-1);
 					updateStructureList();
+
+					numLines = lineModel.getNumberOfLines();
+					if (numLines > 0)
+					{
+						if (idx < 0)
+							structuresTable.setRowSelectionInterval(0, 0);
+						else if (idx > numLines-1)
+							structuresTable.setRowSelectionInterval(numLines-1, numLines-1);
+						else
+							structuresTable.setRowSelectionInterval(idx, idx);
+					}
 				}
 			}
         });
         add(deleteButton, "w 100!");
-
-        
-        
-        /*
-        mapLineButton = new JToggleButton();
-        mapLineButton.setToolTipText("Draw a lineament");
-        mapLineButton.addActionListener(new ActionListener()
-        {
-			public void actionPerformed(ActionEvent e) 
-			{
-				if (mapLineButton.isSelected())
-				{
-					pickManager.setPickMode(PickManager.PickMode.LINE_DRAW);
-					mapCircleButton.setSelected(false);
-				}
-				else
-				{
-					pickManager.setPickMode(PickManager.PickMode.DEFAULT);
-				}
-			}
-        });
-        //URL imageURL = ToolBar.class.getResource("/edu/jhuapl/near/data/point.png");
-        //mapLineButton.setIcon(new ImageIcon(imageURL));
-        mapLineButton.setText("Draw Line");
-
-        add(mapLineButton);
-
-        mapCircleButton = new JToggleButton();
-        mapCircleButton.setToolTipText("Draw a circle");
-        mapCircleButton.addActionListener(new ActionListener()
-        {
-			public void actionPerformed(ActionEvent e) 
-			{
-				if (mapCircleButton.isSelected())
-				{
-					pickManager.setPickMode(PickManager.PickMode.CIRCLE_MAPPER);
-					mapLineButton.setSelected(false);
-				}
-				else
-				{
-					pickManager.setPickMode(PickManager.PickMode.DEFAULT);
-				}
-			}
-        });
-        //imageURL = ToolBar.class.getResource("/edu/jhuapl/near/data/rectangle.png");
-        //mapCircleButton.setIcon(new ImageIcon(imageURL));
-        mapCircleButton.setText("Draw Circle");
-
-        add(mapCircleButton);
-
-        //stopDrawingButton = new JButton();
-        //stopDrawingButton.setToolTipText("Stop Drawing a line or circle and return to default mouse interaction");
-        //stopDrawingButton.addActionListener(new ActionListener()
-        //{
-		//	public void actionPerformed(ActionEvent e) 
-		//	{
-		//		pickManager.setPickMode(PickManager.PickMode.DEFAULT);
-		//	}
-        //});
-        //stopDrawingButton.setText("Stop Drawing");
-
-        //add(stopDrawingButton, "wrap");
-         */
 	}
 
 	public void itemStateChanged(ItemEvent e) 
@@ -377,11 +330,6 @@ public class StructureMapperControlPanel extends JPanel implements
 				structuresTable.setValueAt(line.name, i, 2);
 				structuresTable.setValueAt(line.controlPointIds.size() + " vertices", i, 3);
 			}
-			
-			if (lineModel.getSelectedLineIndex() >= 0)
-				structuresTable.setRowSelectionInterval(
-						lineModel.getSelectedLineIndex(),
-						lineModel.getSelectedLineIndex());
 		}
 	}
 }

@@ -111,7 +111,7 @@ public class ErosViewer extends JFrame
             {
             	public void run()
             	{
-                    frame.setTitle("Eros Viewer");
+                    frame.setTitle("Small Body Mapping Tool");
                     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                     frame.pack();
                     frame.setVisible(true);
