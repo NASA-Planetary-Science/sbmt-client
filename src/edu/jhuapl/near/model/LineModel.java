@@ -19,7 +19,7 @@ import vtk.*;
  * @author 
  *
  */
-public class LineModel extends Model 
+public class LineModel extends StructureModel 
 {
 	private ArrayList<Line> lines = new ArrayList<Line>();
 	private vtkPolyData linesPolyData;
@@ -41,8 +41,6 @@ public class LineModel extends Model
 	
 	public static class Line extends StructureModel.Structure
 	{
-		static private int maxId = 0;
-		
 		public String name = "";
 		public int id;
 		
@@ -65,6 +63,26 @@ public class LineModel extends Model
 		public Line()
 		{
 			id = ++maxId;
+		}
+
+		public int getId()
+		{
+			return id;
+		}
+
+		public String getName()
+		{
+			return name;
+		}
+
+		public String getType()
+		{
+			return LINE;
+		}
+		
+		public String getInfo()
+		{
+			return controlPointIds.size() + " vertices";
 		}
 		
 	    public Element toXmlDomElement(Document dom)
@@ -307,12 +325,12 @@ public class LineModel extends Model
     	}
     }
 
-    public int getNumberOfLines()
+    public int getNumberOfStructures()
     {
     	return lines.size();
     }
     
-    public Line getLine(int cellId)
+    public Structure getStructure(int cellId)
     {
     	return lines.get(cellId);
     }
@@ -381,11 +399,11 @@ public class LineModel extends Model
     }
     */
     
-    public void addNewLine()
+    public void addNewStructure()
     {
         Line lin = new Line();
         lines.add(lin);
-        selectLine(lines.size()-1);
+        selectStructure(lines.size()-1);
     }
     
     /*
@@ -568,14 +586,14 @@ public class LineModel extends Model
     }
 
     
-    public void removeLine(int cellId)
+    public void removeStructure(int cellId)
     {
     	lines.remove(cellId);
 
         updatePolyData();
         
         if (cellId == selectedLine)
-        	selectLine(-1);
+        	selectStructure(-1);
         else
         	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
@@ -644,7 +662,7 @@ public class LineModel extends Model
         lineSelectionActor.Modified();
     }
     
-    public void selectLine(int cellId)
+    public void selectStructure(int cellId)
     {
     	if (selectedLine == cellId)
     		return;

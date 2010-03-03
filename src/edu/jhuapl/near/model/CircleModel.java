@@ -16,7 +16,7 @@ import vtk.*;
  * @author 
  *
  */
-public class CircleModel extends Model 
+public class CircleModel extends StructureModel 
 {
 	private ArrayList<Circle> circles = new ArrayList<Circle>();
 	private vtkPolyData circlesPolyData;
@@ -49,6 +49,26 @@ public class CircleModel extends Model
 		static public String CENTER = "center";
 		static public String NORMAL = "normal";
 		static public String RADIUS = "radius";
+
+		public int getId()
+		{
+			return id;
+		}
+
+		public String getName()
+		{
+			return name;
+		}
+
+		public String getType()
+		{
+			return "Circle";
+		}
+		
+		public String getInfo()
+		{
+			return CIRCLE;
+		}
 		
 	    public Element toXmlDomElement(Document dom)
 	    {
@@ -85,7 +105,7 @@ public class CircleModel extends Model
 
 	    public String getClickStatusBarText()
 	    {
-	    	return "Circle " + id + " mapped on MSI image " + name;
+	    	return "Circle " + id + ", " + name;
 	    }
 	}
 
@@ -202,6 +222,7 @@ public class CircleModel extends Model
 			return "";
     }
 
+    /*
     public void addNewCircle(double[] center, double radius)
     {
     	circlesPolyData.Modified();
@@ -219,11 +240,27 @@ public class CircleModel extends Model
     	circlesPolyData.Modified();
 		this.pcs.firePropertyChange(Properties.CIRCLE_MODEL_CHANGED, null, null);
     }
+    */
 
-    public void removeCircle(int cellId)
+    public void removeStructure(int cellId)
     {
     	circlesPolyData.Modified();
 		this.pcs.firePropertyChange(Properties.CIRCLE_MODEL_CHANGED, null, null);
     }
+
+	public void addNewStructure()
+	{
+		
+	}
+
+	public int getNumberOfStructures()
+	{
+		return 0;
+	}
+
+	public void selectStructure(int idx)
+	{
+		
+	}
 
 }

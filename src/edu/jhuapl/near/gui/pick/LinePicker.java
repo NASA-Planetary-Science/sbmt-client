@@ -46,7 +46,7 @@ public class LinePicker extends Picker
     	//this.erosRenderer = erosRenderer;
 		this.renWin = erosRenderer.getRenderWindowPanel();
 		this.modelManager = modelManager;
-		this.lineModel = ((StructureModel)modelManager.getModel(ModelManager.STRUCTURES)).getLineModel();
+		this.lineModel = (LineModel)modelManager.getModel(ModelManager.LINE_STRUCTURES);
 		
 		erosPicker = new vtkCellPicker();
 		erosPicker.SetTolerance(0.002);

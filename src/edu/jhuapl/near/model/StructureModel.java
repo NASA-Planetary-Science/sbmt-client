@@ -26,6 +26,32 @@ import vtk.*;
  * @author 
  *
  */
+public abstract class StructureModel extends Model
+{
+	public static abstract class Structure
+	{
+		static protected int maxId = 0;
+		
+		public abstract Element toXmlDomElement(Document dom);
+	    public abstract void fromXmlDomElement(Element element, ErosModel erosModel);
+	    public abstract String getClickStatusBarText();
+	    public abstract int getId();
+	    public abstract String getName();
+	    public abstract String getType();
+	    public abstract String getInfo();
+	}
+	
+	public abstract void addNewStructure();
+	
+	public abstract void selectStructure(int idx);
+	
+	public abstract int getNumberOfStructures();
+	
+	public abstract void removeStructure(int idx);
+	
+	public abstract Structure getStructure(int idx);
+}
+/*
 public class StructureModel extends Model implements PropertyChangeListener
 {
 	private LineModel lineModel;
@@ -165,3 +191,4 @@ public class StructureModel extends Model implements PropertyChangeListener
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 	}
 }
+*/

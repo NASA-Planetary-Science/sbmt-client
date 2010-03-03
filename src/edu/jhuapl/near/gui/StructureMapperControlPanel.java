@@ -17,16 +17,13 @@ import edu.jhuapl.near.util.Properties;
 import net.miginfocom.swing.MigLayout;
 
 public class StructureMapperControlPanel extends JPanel implements 
-	ItemListener, 
 	ActionListener, 
-	PropertyChangeListener, MouseListener 
+	PropertyChangeListener 
 {
-    private ModelManager modelManager;
-    private PickManager pickManager;
+    //private ModelManager modelManager;
+    //private PickManager pickManager;
     private JButton loadStructuresButton;
     private JLabel structuresFileTextField;
-    private JToggleButton mapLineButton;
-    private JToggleButton mapCircleButton;
     private JButton saveStructuresButton;
     private JButton saveAsStructuresButton;
     //private JList structuresList;
@@ -36,18 +33,19 @@ public class StructureMapperControlPanel extends JPanel implements
     private JToggleButton editButton;
     //private JComboBox structureTypeComboBox;
     //private int selectedIndex = -1;
+    private StructureModel structureModel;
     
-    public StructureMapperControlPanel(final ModelManager modelManager, final PickManager pickManager) 
+    public StructureMapperControlPanel(
+    		final ModelManager modelManager,
+    		final StructureModel structureModel,
+    		final PickManager pickManager,
+    		final PickManager.PickMode pickMode) 
     {
-		this.modelManager = modelManager;
-		this.pickManager = pickManager;
-
-		final LineModel lineModel = 
-			((StructureModel)modelManager.getModel(ModelManager.STRUCTURES)).getLineModel();
-
-		lineModel.addPropertyChangeListener(this);
+		//this.modelManager = modelManager;
+		//this.pickManager = pickManager;
+		this.structureModel = structureModel;
 		
-		pickManager.getLineamentPicker().addPropertyChangeListener(this);
+		structureModel.addPropertyChangeListener(this);
 		
 		setLayout(new MigLayout("wrap 3, insets 0"));
 
@@ -76,10 +74,11 @@ public class StructureMapperControlPanel extends JPanel implements
         JLabel structureTypeText = new JLabel(" Structures");
         add(structureTypeText, "span");
         
-        //String[] options = {LineModel.LINES};
+        //String[] options = {LineModel.LINES, CircleModel.CIRCLES};
         //structureTypeComboBox = new JComboBox(options);
         
         //add(structureTypeComboBox, "wrap");
+        
         
         String[] columnNames = {"Id",
                 "Type",
@@ -114,12 +113,12 @@ public class StructureMapperControlPanel extends JPanel implements
 //        structuresTable.getColumnModel().getColumn(0).setPreferredWidth(30);
         
         
-        JScrollPane listScrollPane = new JScrollPane(structuresTable);
-        listScrollPane.setPreferredSize(new Dimension(10000, 10000));
+        JScrollPane tableScrollPane = new JScrollPane(structuresTable);
+        tableScrollPane.setPreferredSize(new Dimension(10000, 10000));
         
         //structuresPopupMenu = new StructuresPopupMenu(this.modelManager, this.pickManager, this);
 
-        add(listScrollPane, "span");
+        add(tableScrollPane, "span");
 
 
 
@@ -129,31 +128,31 @@ public class StructureMapperControlPanel extends JPanel implements
         {
 			public void actionPerformed(ActionEvent e) 
 			{
-				lineModel.addNewLine();
-				pickManager.setPickMode(PickManager.PickMode.LINE_DRAW);
+				structureModel.addNewStructure();
+				pickManager.setPickMode(pickMode);
 				editButton.setSelected(true);
-				updateStructureList();
+				updateStructureTable();
 
-				int numLines = structuresTable.getRowCount();
-				structuresTable.setRowSelectionInterval(numLines-1, numLines-1);
+				int numStructures = structuresTable.getRowCount();
+				structuresTable.setRowSelectionInterval(numStructures-1, numStructures-1);
 			}
         });
 
         add(newButton, "w 100!");
         
-
         editButton = new JToggleButton("Edit");
         editButton.addActionListener(new ActionListener()
         {
 			public void actionPerformed(ActionEvent e) 
 			{
 				int idx = structuresTable.getSelectedRow();
+				
 				if (editButton.isSelected())
 				{
 					if (idx >= 0)
 					{
-						pickManager.setPickMode(PickManager.PickMode.LINE_DRAW);
-						lineModel.selectLine(idx);
+						pickManager.setPickMode(pickMode);
+						structureModel.selectStructure(idx);
 					}
 					else
 					{
@@ -163,12 +162,12 @@ public class StructureMapperControlPanel extends JPanel implements
 				else
 				{
 					pickManager.setPickMode(PickManager.PickMode.DEFAULT);
-					lineModel.selectLine(-1);
+					structureModel.selectStructure(-1);
 				}
 				
-				// The item in the list might get deselected so select it again here.
-				int numLines = structuresTable.getRowCount();
-				if (idx >= 0 && idx < numLines)
+				// The item in the table might get deselected so select it again here.
+				int numStructures = structuresTable.getRowCount();
+				if (idx >= 0 && idx < numStructures)
 					structuresTable.setRowSelectionInterval(idx, idx);
 			}
         });
@@ -181,22 +180,20 @@ public class StructureMapperControlPanel extends JPanel implements
 			{
 				editButton.setSelected(false);
 				
-				int numLines = lineModel.getNumberOfLines();
+				int numStructures = structuresTable.getRowCount();
 				int idx = structuresTable.getSelectedRow();
-				if (idx >= 0 && idx < numLines)
+				if (idx >= 0 && idx < numStructures)
 				{
-					lineModel.removeLine(idx);
+					structureModel.removeStructure(idx);
 					pickManager.setPickMode(PickManager.PickMode.DEFAULT);
-					lineModel.selectLine(-1);
-					updateStructureList();
+					structureModel.selectStructure(-1);
+					updateStructureTable();
 
-					numLines = lineModel.getNumberOfLines();
-					if (numLines > 0)
+					numStructures = structuresTable.getRowCount();
+					if (numStructures > 0)
 					{
-						if (idx < 0)
-							structuresTable.setRowSelectionInterval(0, 0);
-						else if (idx > numLines-1)
-							structuresTable.setRowSelectionInterval(numLines-1, numLines-1);
+						if (idx > numStructures-1)
+							structuresTable.setRowSelectionInterval(numStructures-1, numStructures-1);
 						else
 							structuresTable.setRowSelectionInterval(idx, idx);
 					}
@@ -204,10 +201,6 @@ public class StructureMapperControlPanel extends JPanel implements
 			}
         });
         add(deleteButton, "w 100!");
-	}
-
-	public void itemStateChanged(ItemEvent e) 
-	{
 	}
 
     public void actionPerformed(ActionEvent actionEvent)
@@ -219,7 +212,7 @@ public class StructureMapperControlPanel extends JPanel implements
         	structuresFile = AnyFileChooser.showOpenDialog(this, "Select File");
         	if (structuresFile != null)
         		this.structuresFileTextField.setText(structuresFile.getAbsolutePath());
-        	
+        	/*
         	try {
 				((StructureModel)modelManager.getModel(ModelManager.STRUCTURES)).loadModel(structuresFile);
 			} catch (NumberFormatException e) {
@@ -229,6 +222,7 @@ public class StructureMapperControlPanel extends JPanel implements
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			*/
         }
         else if (source == this.saveStructuresButton || source == this.saveAsStructuresButton)
         {
@@ -241,6 +235,7 @@ public class StructureMapperControlPanel extends JPanel implements
         	
         	if (structuresFile != null)
         	{
+        		/*
 				try {
 					((StructureModel)modelManager.getModel(ModelManager.STRUCTURES)).saveModel(structuresFile);
 				} catch (NumberFormatException e) {
@@ -250,86 +245,31 @@ public class StructureMapperControlPanel extends JPanel implements
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				*/
         	}
         }
     }
 
 	public void propertyChange(PropertyChangeEvent evt) 
 	{
-		if (Properties.FINISHED_DRAWING_LINE.equals(evt.getPropertyName()))
+		if (Properties.MODEL_CHANGED.equals(evt.getPropertyName()))
 		{
-			pickManager.setPickMode(PickManager.PickMode.DEFAULT);
-			mapCircleButton.setSelected(false);
-			mapLineButton.setSelected(false);
-		}
-		else if (Properties.MODEL_CHANGED.equals(evt.getPropertyName()))
-		{
-			updateStructureList();
+			updateStructureTable();
 		}
 	}
-
-	public void mouseClicked(MouseEvent e)
-	{
-	}
-
-	public void mouseEntered(MouseEvent e)
-	{
-	}
-
-	public void mouseExited(MouseEvent e)
-	{
-	}
-
-	public void mousePressed(MouseEvent e)
-	{
-		maybeShowPopup(e);
-	}
-
-	public void mouseReleased(MouseEvent e)
-	{
-		maybeShowPopup(e);
-	}
-
-	private void maybeShowPopup(MouseEvent e) 
-	{
-		/*
-		int selectedIndex = structuresList.locationToIndex(e.getPoint());
-
-		if (selectedIndex >= 0 && structuresList.getCellBounds(selectedIndex, selectedIndex).contains(e.getPoint()))
-		{
-			structuresList.setSelectedIndex(selectedIndex);
-			//structuresPopupMenu.setCurrentStructure(msiRawResults.get(index));
-
-			LineModel lineModel = 
-				((StructureModel)modelManager.getModel(ModelManager.STRUCTURES)).getLineModel();
-
-			if (e.isPopupTrigger()) 
-			{
-				structuresPopupMenu.show(e.getComponent(), e.getX(), e.getY());
-        	}
-        }
-        */
-    }
 	
-	private void updateStructureList()
+	private void updateStructureTable()
 	{
-		//String item = (String)structureTypeComboBox.getSelectedItem();
-		//if (LineModel.LINES.equals(item))
+		int numStructures = structureModel.getNumberOfStructures();
+
+		((DefaultTableModel)structuresTable.getModel()).setRowCount(numStructures);
+		for (int i=0; i<numStructures; ++i)
 		{
-			LineModel lineModel = 
-				((StructureModel)modelManager.getModel(ModelManager.STRUCTURES)).getLineModel();
-			
-			int numLines = lineModel.getNumberOfLines();
-			
-			((DefaultTableModel)structuresTable.getModel()).setRowCount(numLines);
-			for (int i=0; i<numLines; ++i)
-			{
-				LineModel.Line line = lineModel.getLine(i);
-				structuresTable.setValueAt(line.id, i, 0);
-				structuresTable.setValueAt("Polyline", i, 1);
-				structuresTable.setValueAt(line.name, i, 2);
-				structuresTable.setValueAt(line.controlPointIds.size() + " vertices", i, 3);
-			}
+			StructureModel.Structure structure = structureModel.getStructure(i);
+			structuresTable.setValueAt(structure.getId(), i, 0);
+			structuresTable.setValueAt(structure.getType(), i, 1);
+			structuresTable.setValueAt(structure.getName(), i, 2);
+			structuresTable.setValueAt(structure.getInfo(), i, 3);
 		}
 	}
 }

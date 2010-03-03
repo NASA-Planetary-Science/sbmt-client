@@ -3,7 +3,7 @@ package edu.jhuapl.near.gui;
 import javax.swing.*;
 
 import edu.jhuapl.near.gui.pick.PickManager;
-import edu.jhuapl.near.model.ModelManager;
+import edu.jhuapl.near.model.*;
 
 
 public class ControlPanel extends JTabbedPane
@@ -13,7 +13,8 @@ public class ControlPanel extends JTabbedPane
 	private NISSearchPanel nisSearchPanel;
 	private NLRSearchPanel nlrSearchPanel;
 	private LineamentControlPanel lineamentPanel;
-	private StructureMapperControlPanel structureMapperPanel;
+	private StructureMapperControlPanel lineStructuresMapperPanel;
+	private StructureMapperControlPanel circleStructuresMapperPanel;
 		
 	
 	public ControlPanel(
@@ -27,13 +28,29 @@ public class ControlPanel extends JTabbedPane
 		nisSearchPanel = new NISSearchPanel(modelManager, infoPanelManager, viewer.getRenderWindowPanel());
 		nlrSearchPanel = new NLRSearchPanel(modelManager, infoPanelManager, viewer.getRenderWindowPanel());
 		lineamentPanel = new LineamentControlPanel(modelManager);
-		structureMapperPanel = new StructureMapperControlPanel(modelManager, pickManager);
+
+		StructureModel structureModel = 
+			(StructureModel)modelManager.getModel(ModelManager.LINE_STRUCTURES);
+		lineStructuresMapperPanel = new StructureMapperControlPanel(
+				modelManager,
+				structureModel,
+				pickManager,
+				PickManager.PickMode.LINE_DRAW);
+
+		structureModel = 
+			(StructureModel)modelManager.getModel(ModelManager.CIRCLE_STRUCTURES);
+		circleStructuresMapperPanel = new StructureMapperControlPanel(
+				modelManager,
+				structureModel,
+				pickManager,
+				PickManager.PickMode.CIRCLE_DRAW);
 		
 		addTab("Eros", erosPanel);
 		addTab("MSI", msiSearchPanel);
 		addTab("NIS", nisSearchPanel);
 		addTab("NLR", nlrSearchPanel);
 		addTab("Lineament", lineamentPanel);
-		addTab("Structures", structureMapperPanel);
+		addTab("Paths", lineStructuresMapperPanel);
+		addTab("Circles", circleStructuresMapperPanel);
 	}
 }
