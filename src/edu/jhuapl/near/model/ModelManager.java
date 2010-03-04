@@ -19,6 +19,7 @@ public class ModelManager extends Model implements PropertyChangeListener
 	static public final String NLR_DATA = "nlr-data";
 	static public final String LINE_STRUCTURES = "line-structures";
 	static public final String CIRCLE_STRUCTURES = "circle-structures";
+	static public final String POINT_STRUCTURES = "point-structures";
 	//static public final String STRUCTURES = "structures";
 	
 	private LineamentModel lineamentModel;
@@ -29,6 +30,7 @@ public class ModelManager extends Model implements PropertyChangeListener
 	private NLRDataCollection nlrData;
 	private LineModel lineModel;
 	private CircleModel circleModel;
+	private PointModel pointModel;
 	//private StructureModel structureModel;
 	
     private ArrayList<vtkProp> props = new ArrayList<vtkProp>();
@@ -47,6 +49,7 @@ public class ModelManager extends Model implements PropertyChangeListener
     	nlrData = new NLRDataCollection();
     	lineModel = new LineModel(erosModel);
     	circleModel = new CircleModel();
+    	pointModel = new PointModel();
     	//structureModel = new StructureModel(erosModel);
     	
     	lineamentModel.addPropertyChangeListener(this);
@@ -57,6 +60,7 @@ public class ModelManager extends Model implements PropertyChangeListener
     	nlrData.addPropertyChangeListener(this);
     	lineModel.addPropertyChangeListener(this);
     	circleModel.addPropertyChangeListener(this);
+    	pointModel.addPropertyChangeListener(this);
     	//structureModel.addPropertyChangeListener(this);
     	
     	allModels = new ArrayList<Model>();
@@ -68,6 +72,7 @@ public class ModelManager extends Model implements PropertyChangeListener
     	allModels.add(nlrData);
     	allModels.add(lineModel);
     	allModels.add(circleModel);
+    	allModels.add(pointModel);
     	//allModels.add(structureModel);
     	
 		updateProps();
@@ -130,6 +135,8 @@ public class ModelManager extends Model implements PropertyChangeListener
 			return lineModel;
 		else if (CIRCLE_STRUCTURES.equals(modelName))
 			return circleModel;
+		else if (POINT_STRUCTURES.equals(modelName))
+			return pointModel;
 		//else if (STRUCTURES.equals(modelName))
 		//	return structureModel;
 		else

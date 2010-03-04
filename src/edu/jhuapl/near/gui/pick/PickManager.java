@@ -12,7 +12,8 @@ public class PickManager extends Picker
 		POINT_SELECTION, 
 		RECTANGLE_SELECTION, 
 		LINE_DRAW, 
-		CIRCLE_DRAW
+		CIRCLE_DRAW,
+		POINT_DRAW
 	}
 	
 	private PickMode pickMode = PickMode.DEFAULT;

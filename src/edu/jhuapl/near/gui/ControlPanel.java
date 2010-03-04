@@ -15,6 +15,7 @@ public class ControlPanel extends JTabbedPane
 	private LineamentControlPanel lineamentPanel;
 	private StructureMapperControlPanel lineStructuresMapperPanel;
 	private StructureMapperControlPanel circleStructuresMapperPanel;
+	private StructureMapperControlPanel pointsStructuresMapperPanel;
 		
 	
 	public ControlPanel(
@@ -44,6 +45,14 @@ public class ControlPanel extends JTabbedPane
 				structureModel,
 				pickManager,
 				PickManager.PickMode.CIRCLE_DRAW);
+		
+		structureModel = 
+			(StructureModel)modelManager.getModel(ModelManager.POINT_STRUCTURES);
+		pointsStructuresMapperPanel = new StructureMapperControlPanel(
+				modelManager,
+				structureModel,
+				pickManager,
+				PickManager.PickMode.POINT_DRAW);
 		
 		addTab("Eros", erosPanel);
 		addTab("MSI", msiSearchPanel);
