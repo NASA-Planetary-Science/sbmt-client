@@ -22,8 +22,6 @@ public class LinePicker extends Picker
     private vtkCellPicker lineSelectionPicker;
 
     private int vertexIdBeingEdited = -1;
-    //private int lineIdBeingEdited = -1;
-    //private LineModel.Line lineBeingEdited;
     
     // There are 2 types of line editing possible: 
     //   1. Dragging an existing vertex to a new locations

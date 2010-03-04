@@ -251,41 +251,80 @@ public class PolyDataUtil
 
 	public static vtkPolyData drawCircleOnPolyData(
 			vtkPolyData polyData,
-			vtkAbstractCellLocator locator,
+			vtkAbstractPointLocator pointLocator,
 			double[] center, 
-			double radius)
+			double radius,
+			boolean filled)
 	{
 		if (math == null)
 			math = new vtkMath();
 
-//		double[] vec1 = {pt1[0]-origin[0], pt1[1]-origin[1], pt1[2]-origin[2]};
-//		double[] vec2 = {pt2[0]-origin[0], pt2[1]-origin[1], pt2[2]-origin[2]};
-//		double[] normal = new double[3];
-//		math.Cross(vec1, vec2, normal);
-//		math.Normalize(normal);
+		double[] normal = getPolyDataNormalAtPoint(center, polyData, pointLocator);
 
+		
 		vtkCylinder cylinder = new vtkCylinder();
 		cylinder.SetRadius(radius);
 		cylinder.SetCenter(center);
 		
+		// Note the cylinder has its axis pointing to the y-axis (0,1,0). 
+		// Create a transform that rotates this axis to normal.
+		// To do this we need to first find the axis of rotation
+		// (note don't confuse this with the axis of the cylindar. 
+		// We're using the word axis to refer to 2 different things)
+		// which is the cross product between the y-axis and normal.
+		double[] originalCylindarAxis = {0.0, 1.0, 0.0};
+		double[] axisOfRotation = new double[3];
+		//math.Cross(originalCylindarAxis, normal, axisOfRotation);
+		math.Cross(normal, originalCylindarAxis, axisOfRotation);
+		math.Normalize(axisOfRotation);
+		
+		// Now compute the angle between these 2 cylinder axes.
+		double angle = Spice.vsep(originalCylindarAxis, normal) * 180.0 / Math.PI;
+		
+//		axisOfRotation = originalCylindarAxis;
+//		angle = 0.0;
 		vtkTransform transform = new vtkTransform();
+		transform.Translate(center);
+		transform.RotateWXYZ(angle, axisOfRotation);
+		transform.Translate(-center[0],-center[1],-center[2]);
 		
 		cylinder.SetTransform(transform);
+
+		vtkPolyDataAlgorithm filter = null;
 		
-		vtkClipPolyData clipPolyData = new vtkClipPolyData();
-		clipPolyData.SetInput(polyData);
-		clipPolyData.SetClipFunction(cylinder);
-		clipPolyData.SetInsideOut(1);
-		clipPolyData.Update();
+		if(filled)
+		{
+			vtkClipPolyData clipPolyData = new vtkClipPolyData();
+			clipPolyData.SetInput(polyData);
+			clipPolyData.SetClipFunction(cylinder);
+			clipPolyData.SetInsideOut(1);
+			clipPolyData.Update();
+			filter = clipPolyData;
+		}
+		else
+		{
+			vtkCutter cutPolyData = new vtkCutter();
+			cutPolyData.SetInput(polyData);
+			cutPolyData.SetCutFunction(cylinder);
+			cutPolyData.Update();
+			filter = cutPolyData;
+		}
+
+		vtkPolyDataConnectivityFilter connectivityFilter = new vtkPolyDataConnectivityFilter();
+		connectivityFilter.SetInputConnection(filter.GetOutputPort());
+		connectivityFilter.SetExtractionModeToClosestPointRegion();
+		connectivityFilter.SetClosestPoint(center);
+		connectivityFilter.Update();
 		
 		polyData = new vtkPolyData();
-		polyData.DeepCopy(clipPolyData.GetOutput());
+		polyData.DeepCopy(connectivityFilter.GetOutput());
+
 		
-        vtkPolyDataWriter writer = new vtkPolyDataWriter();
-        writer.SetInput(polyData);
-        writer.SetFileName("/tmp/coneeros.vtk");
-        //writer.SetFileTypeToBinary();
-        writer.Write();
+//        vtkPolyDataWriter writer = new vtkPolyDataWriter();
+//        writer.SetInput(polyData);
+//        writer.SetFileName("/tmp/coneeros.vtk");
+//        //writer.SetFileTypeToBinary();
+//        writer.Write();
 
 		return polyData;
 	}

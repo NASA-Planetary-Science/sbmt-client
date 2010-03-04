@@ -61,5 +61,6 @@ public class ControlPanel extends JTabbedPane
 		addTab("Lineament", lineamentPanel);
 		addTab("Paths", lineStructuresMapperPanel);
 		addTab("Circles", circleStructuresMapperPanel);
+		addTab("Points", pointsStructuresMapperPanel);
 	}
 }

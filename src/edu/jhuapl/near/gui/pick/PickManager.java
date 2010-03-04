@@ -21,6 +21,7 @@ public class PickManager extends Picker
     private vtkRenderWindowPanel renWin;
     private LinePicker linePicker;
     private CirclePicker circlePicker;
+    private PointPicker pointPicker;
     private DefaultPicker defaultPicker;
     
 	public PickManager(
@@ -40,6 +41,7 @@ public class PickManager extends Picker
 
 		linePicker = new LinePicker(erosRenderer, modelManager);
 		circlePicker = new CirclePicker(erosRenderer, modelManager);
+		pointPicker = new PointPicker(erosRenderer, modelManager);
 		
 		defaultPicker = new DefaultPicker(erosRenderer, statusBar, modelManager, infoPanelManager);
 
@@ -59,26 +61,36 @@ public class PickManager extends Picker
 			defaultPicker.setSuppressPopups(false);
 			removePicker(linePicker);
 			removePicker(circlePicker);
+			removePicker(pointPicker);
 	        break;
 		case LINE_DRAW:
 			erosRenderer.setInteractorToNone();
 			defaultPicker.setSuppressPopups(true);
 			removePicker(circlePicker);
+			removePicker(pointPicker);
 			addPicker(linePicker);
 			break;
 		case CIRCLE_DRAW:
 			erosRenderer.setInteractorToNone();
 			defaultPicker.setSuppressPopups(true);
 			removePicker(linePicker);
+			removePicker(pointPicker);
 			addPicker(circlePicker);
+			break;
+		case POINT_DRAW:
+			erosRenderer.setInteractorToNone();
+			defaultPicker.setSuppressPopups(true);
+			removePicker(linePicker);
+			removePicker(circlePicker);
+			addPicker(pointPicker);
 			break;
 		}
 	}
 	
-	public LinePicker getLineamentPicker()
-	{
-		return this.linePicker;
-	}
+//	public LinePicker getLineamentPicker()
+//	{
+//		return this.linePicker;
+//	}
 	
 	private void addPicker(Picker picker)
 	{

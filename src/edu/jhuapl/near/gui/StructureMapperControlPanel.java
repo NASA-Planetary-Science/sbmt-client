@@ -134,7 +134,8 @@ public class StructureMapperControlPanel extends JPanel implements
 				updateStructureTable();
 
 				int numStructures = structuresTable.getRowCount();
-				structuresTable.setRowSelectionInterval(numStructures-1, numStructures-1);
+				if (numStructures > 0)
+					structuresTable.setRowSelectionInterval(numStructures-1, numStructures-1);
 			}
         });
 

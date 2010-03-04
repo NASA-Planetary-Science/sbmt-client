@@ -11,44 +11,44 @@ import edu.jhuapl.near.util.Properties;
 import vtk.*;
 
 /**
- * Model of circle structures drawn on Eros.
+ * Model of line structures drawn on Eros.
  * 
  * @author 
  *
  */
 public class PointModel extends StructureModel 
 {
-	private ArrayList<Circle> circles = new ArrayList<Circle>();
-	private vtkPolyData circlesPolyData;
-    private ArrayList<vtkProp> circlesActors = new ArrayList<vtkProp>();
-    //private vtkActor structuresActor;
-	private int[] defaultColor = {255, 0, 255, 255}; // RGBA, default to purple
-	static public String CIRCLES = "cicles";
+	private ArrayList<Point> points = new ArrayList<Point>();
+	private vtkPolyData pointsPolyData;
+    private ArrayList<vtkProp> actors = new ArrayList<vtkProp>();
+    private vtkPolyDataMapper pointsMapper;
+    private vtkActor pointActor;
+	private int[] purpleColor = {255, 0, 255, 255}; // RGBA purple
+	private int[] redColor = {255, 0, 0, 255}; // RGBA red
+	private int[] blueColor = {0, 0, 255, 255}; // RGBA blue
+    private ErosModel erosModel;
+    private double currentRadius = 0.1;
+    
+	static public String POINTS = "points";
 
-
-	public static class Circle extends StructureModel.Structure
+	
+	public static class Point extends StructureModel.Structure
 	{
-		public int cellId;
-		public ArrayList<Integer> pointIds = new ArrayList<Integer>();
-
 		public String name = "";
 		public int id;
-		public double centerLat;
-		public double centerLon;
-		public double centerRad;
-		public double radius;
-		public double[] normal = new double[3];
-		//public ArrayList<Double> x = new ArrayList<Double>();
-		//public ArrayList<Double> y = new ArrayList<Double>();
-		//public ArrayList<Double> z = new ArrayList<Double>();
-		//public BoundingBox bb = new BoundingBox();
 
-		static public String CIRCLE = "circle";
+		public double[] center;
+		public double radius;
+		
+		public vtkPolyData polyData;
+		
+		static public String POINT = "point";
 		static public String ID = "id";
-		static public String MSI_IMAGE = "msi-image";
-		static public String CENTER = "center";
-		static public String NORMAL = "normal";
-		static public String RADIUS = "radius";
+		
+		public Point()
+		{
+			id = ++maxId;
+		}
 
 		public int getId()
 		{
@@ -62,61 +62,55 @@ public class PointModel extends StructureModel
 
 		public String getType()
 		{
-			return "Circle";
+			return POINT;
 		}
 		
 		public String getInfo()
 		{
-			return CIRCLE;
+			return "";
 		}
-		
-	    public Element toXmlDomElement(Document dom)
-	    {
-	    	Element circleEle = dom.createElement(CIRCLE);
-	    	circleEle.setAttribute(ID, String.valueOf(id));
-	    	circleEle.setAttribute(MSI_IMAGE, String.valueOf(name));
-	    	circleEle.setAttribute(RADIUS, String.valueOf(radius));
-	    	circleEle.setAttribute(CENTER, centerLat + " " + centerLon + " " + centerRad);
-	    	circleEle.setAttribute(NORMAL, normal[0] + " " + normal[1] + " " + normal[2]);
 
-	    	return circleEle;
+	    public void updateCircle(ErosModel erosModel, double[] center, double radius)
+	    {
+	    	this.center = center;
+	    	this.radius = radius;
+	    	
+	    	this.polyData = erosModel.drawDisk(center, radius);
 	    }
 	    
+	    public Element toXmlDomElement(Document dom)
+	    {
+	    	Element linEle = dom.createElement(POINT);
+	    	return linEle;
+	    }
+
 	    public void fromXmlDomElement(Element element, ErosModel erosModel)
 	    {
-	    	id = Integer.parseInt(element.getAttribute(ID));
-	    	name = element.getAttribute(MSI_IMAGE);
-	    	radius = Double.parseDouble(element.getAttribute(RADIUS));
-
-	    	String tmp = element.getAttribute(CENTER);
-	    	String[] tokens = tmp.split(" ");
-
-	    	centerLat = Double.parseDouble(tokens[0]);
-	    	centerLon = Double.parseDouble(tokens[1]);
-	    	centerRad = Double.parseDouble(tokens[2]);
-
-	    	tmp = element.getAttribute(NORMAL);
-	    	tokens = tmp.split(" ");
-
-	    	normal[0] = Double.parseDouble(tokens[0]);
-	    	normal[1] = Double.parseDouble(tokens[1]);
-	    	normal[2] = Double.parseDouble(tokens[2]);
 	    }
 
 	    public String getClickStatusBarText()
 	    {
-	    	return "Circle " + id + ", " + name;
+	    	return "Point " + id;
 	    }
+
 	}
 
-	
+	public PointModel(ErosModel erosModel)
+	{
+		this.erosModel = erosModel;
+
+		pointActor = new vtkActor();
+		pointActor.GetProperty().LightingOff();
+		pointActor.GetProperty().SetColor(1.0, 0.0, 1.0);
+	}
+
     public Element toXmlDomElement(Document dom)
     {
-    	Element rootEle = dom.createElement(CIRCLES);
+    	Element rootEle = dom.createElement(POINTS);
 
-		for (Circle cir : this.circles)
+		for (Point lin : this.points)
 		{
-			rootEle.appendChild(cir.toXmlDomElement(dom));
+			rootEle.appendChild(lin.toXmlDomElement(dom));
 		}
 
 		return rootEle;
@@ -124,143 +118,145 @@ public class PointModel extends StructureModel
     
     public void fromXmlDomElement(Element element)
     {
-    	this.circles.clear();
+    	this.points.clear();
     	
-		NodeList nl = element.getElementsByTagName(Circle.CIRCLE);
+		NodeList nl = element.getElementsByTagName(Point.POINT);
 		if(nl != null && nl.getLength() > 0)
 		{
 			for(int i = 0 ; i < nl.getLength();i++) 
 			{
 				Element el = (Element)nl.item(i);
 
-				Circle cir = new Circle();
+				Point lin = new Point();
 				
-				cir.fromXmlDomElement(el, null);
+				lin.fromXmlDomElement(el, erosModel);
 
-				this.circles.add(cir);
+				this.points.add(lin);
 			}
 		}
 
-		createPolyData();
-
-		vtkPolyDataMapper circleMapper = new vtkPolyDataMapper();
-		circleMapper.SetInput(circlesPolyData);
-		//circleMapper.SetResolveCoincidentTopologyToPolygonOffset();
-		//circleMapper.SetResolveCoincidentTopologyPolygonOffsetParameters(-1000.0, -1000.0);
-
-		vtkActor circleActor = new vtkActor();
-		circleActor.SetMapper(circleMapper);
-
-		circlesActors.clear();
-		circlesActors.add(circleActor);
-
-		System.out.println("Number of circles: " + this.circles.size());
+		updatePolyData();
+		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
-
-	private void createPolyData()
+    
+	private void updatePolyData()
 	{
-		circlesPolyData = new vtkPolyData();
-        vtkPoints points = new vtkPoints();
-        vtkCellArray lines = new vtkCellArray();
-        vtkUnsignedCharArray colors = new vtkUnsignedCharArray();
-        
-        colors.SetNumberOfComponents(4);
-        
-        vtkIdList idList = new vtkIdList();
+		vtkAppendPolyData append = new vtkAppendPolyData();
 
-//        int c=0;
-        int cellId = 0;
-		for (Circle lin : circles)
+		for (Point pt : this.points)
 		{
-			lin.cellId = cellId;
-/*			
-            int size = lin.lat.size();
-            idList.SetNumberOfIds(size);
-            
-            for (int i=0;i<size;++i)
-            {
-            	double lat = lin.lat.get(i);
-            	double lon = lin.lon.get(i);
-            	double rad = lin.rad.get(i);
-                double x = rad * Math.cos( lon ) * Math.cos( lat );
-                double y = rad * Math.sin( lon ) * Math.cos( lat );
-                double z = rad * Math.sin( lat );
-
-                points.InsertNextPoint(x, y, z);
-            	idList.SetId(i, c);
-            	++c;
-            }
-*/
-            lines.InsertNextCell(idList);
-        	colors.InsertNextTuple4(defaultColor[0],defaultColor[1],defaultColor[2],defaultColor[3]);
-            
-            ++cellId;
+			append.AddInput(pt.polyData);
 		}
+
+		append.Update();
 		
-        circlesPolyData.SetPoints(points);
-        circlesPolyData.SetLines(lines);
-        circlesPolyData.GetCellData().SetScalars(colors);
+		if (pointsPolyData == null)
+			pointsPolyData = new vtkPolyData();
+		
+		pointsPolyData.DeepCopy(append.GetOutput());
+		
+
+		erosModel.shiftPolyLineInNormalDirection(pointsPolyData, 0.002);
+
+		if (pointsMapper == null)
+			pointsMapper = new vtkPolyDataMapper();
+		pointsMapper.SetInput(pointsPolyData);
+		pointsMapper.Update();
+
+		pointsMapper.ScalarVisibilityOff();
+		pointsMapper.SetScalarModeToDefault();
+		
+        if (!actors.contains(pointActor))
+        	actors.add(pointActor);
+
+        pointActor.SetMapper(pointsMapper);
+        pointActor.Modified();
 	}
 	
-	public StructureModel.Structure getStructure(int idx)
-	{
-		return this.circles.get(idx);
-	}
-		
-		
 	public ArrayList<vtkProp> getProps() 
 	{
-		return circlesActors;
+		return actors;
 	}
 	
     public String getClickStatusBarText(vtkProp prop, int cellId)
     {
-    	StructureModel.Structure struc = getStructure(cellId);
-		if (struc != null)
-			return struc.getClickStatusBarText();
-		else
-			return "";
+    	if (prop == pointActor)
+    	{
+//    		Point lin = this.points.get(cellId);
+//    		if (lin != null)
+//    			return lin.getClickStatusBarText();
+//    		else
+    			return "";
+    	}
+    	else
+    	{
+    		return "";
+    	}
     }
 
-    /*
-    public void addNewCircle(double[] center, double radius)
+    public int getNumberOfStructures()
     {
-    	circlesPolyData.Modified();
-		this.pcs.firePropertyChange(Properties.CIRCLE_MODEL_CHANGED, null, null);
+    	return points.size();
     }
     
-    public void updateCircleCenter(int cellId, double[] newCenter)
+    public Structure getStructure(int cellId)
     {
-    	circlesPolyData.Modified();
-		this.pcs.firePropertyChange(Properties.CIRCLE_MODEL_CHANGED, null, null);
+    	return points.get(cellId);
     }
     
-    public void updateCircelRadius(int cellId, double newRadius)
+    
+    public vtkActor getPointActor()
     {
-    	circlesPolyData.Modified();
-		this.pcs.firePropertyChange(Properties.CIRCLE_MODEL_CHANGED, null, null);
+    	return pointActor;
     }
-    */
+    
+    public void addNewStructure()
+    {
+    	// do nothing
+    }
+    
+    public void addNewStructure(double[] pos)
+    {
+        Point pt = new Point();
+        points.add(pt);
 
+        pt.updateCircle(erosModel, pos, currentRadius);
+        updatePolyData();
+        
+		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+    }
+    
     public void removeStructure(int cellId)
     {
-    	circlesPolyData.Modified();
-		this.pcs.firePropertyChange(Properties.CIRCLE_MODEL_CHANGED, null, null);
+    	points.remove(cellId);
+
+        updatePolyData();
+        
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+    }
+	
+    public void movePoint(int vertexId, double[] newPoint)
+    {
+    	Point pt = points.get(vertexId);
+        pt.updateCircle(erosModel, newPoint, currentRadius);
+        updatePolyData();
+		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
-	public void addNewStructure()
-	{
-		
-	}
-
-	public int getNumberOfStructures()
-	{
-		return 0;
-	}
-
+    public void changeAllPointSizes(double newSize)
+    {
+        updatePolyData();
+        
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+    }
+    
 	public void selectStructure(int idx)
 	{
-		
+		// Do nothing. PointModel does not support selection.
 	}
-
+	
+	public void setCurrentRadius(double radius)
+	{
+		this.currentRadius = radius;
+	}
 }

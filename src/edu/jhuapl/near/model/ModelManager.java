@@ -49,7 +49,7 @@ public class ModelManager extends Model implements PropertyChangeListener
     	nlrData = new NLRDataCollection();
     	lineModel = new LineModel(erosModel);
     	circleModel = new CircleModel();
-    	pointModel = new PointModel();
+    	pointModel = new PointModel(erosModel);
     	//structureModel = new StructureModel(erosModel);
     	
     	lineamentModel.addPropertyChangeListener(this);
