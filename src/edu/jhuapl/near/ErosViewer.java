@@ -7,8 +7,8 @@ import edu.jhuapl.near.gui.ErosRenderer;
 import edu.jhuapl.near.gui.FileMenu;
 import edu.jhuapl.near.gui.ModelInfoWindowManager;
 import edu.jhuapl.near.gui.StatusBar;
-import edu.jhuapl.near.gui.pick.PickManager;
 import edu.jhuapl.near.model.ModelManager;
+import edu.jhuapl.near.pick.PickManager;
 import edu.jhuapl.near.util.NativeLibraryLoader;
 
 import java.awt.*;
@@ -111,6 +111,8 @@ public class ErosViewer extends JFrame
             {
             	public void run()
             	{
+            		ImageIcon erosIcon = new ImageIcon(getClass().getResource("/edu/jhuapl/near/data/eros.png"));
+                    frame.setIconImage(erosIcon.getImage());
                     frame.setTitle("Small Body Mapping Tool");
                     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                     frame.pack();

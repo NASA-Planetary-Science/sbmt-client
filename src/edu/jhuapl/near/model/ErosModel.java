@@ -265,14 +265,14 @@ public class ErosModel extends Model
 			double[] center,
 			double radius)
 	{
-		return PolyDataUtil.drawCircleOnPolyData(erosPolyData, pointLocator, center, radius, false);
+		return PolyDataUtil.drawPolygonOnPolyData(erosPolyData, pointLocator, center, radius, false);
 	}
 
 	public vtkPolyData drawDisk(
 			double[] center,
 			double radius)
 	{
-		return PolyDataUtil.drawCircleOnPolyData(erosPolyData, pointLocator, center, radius, true);
+		return PolyDataUtil.drawPolygonOnPolyData(erosPolyData, pointLocator, center, radius, true);
 	}
 
 	public void shiftPolyLineInNormalDirection(

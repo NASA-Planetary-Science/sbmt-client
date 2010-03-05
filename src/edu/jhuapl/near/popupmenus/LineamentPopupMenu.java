@@ -1,4 +1,4 @@
-package edu.jhuapl.near.gui.popupmenus;
+package edu.jhuapl.near.popupmenus;
 
 import javax.swing.*;
 

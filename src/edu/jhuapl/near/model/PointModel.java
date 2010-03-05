@@ -27,7 +27,7 @@ public class PointModel extends StructureModel
 	private int[] redColor = {255, 0, 0, 255}; // RGBA red
 	private int[] blueColor = {0, 0, 255, 255}; // RGBA blue
     private ErosModel erosModel;
-    private double currentRadius = 0.1;
+    private double currentRadius = 0.25;
     
 	static public String POINTS = "points";
 
@@ -102,6 +102,7 @@ public class PointModel extends StructureModel
 		pointActor = new vtkActor();
 		pointActor.GetProperty().LightingOff();
 		pointActor.GetProperty().SetColor(1.0, 0.0, 1.0);
+		pointActor.GetProperty().SetLineWidth(2.0);
 	}
 
     public Element toXmlDomElement(Document dom)
@@ -141,30 +142,37 @@ public class PointModel extends StructureModel
     
 	private void updatePolyData()
 	{
-		vtkAppendPolyData append = new vtkAppendPolyData();
-
-		for (Point pt : this.points)
-		{
-			append.AddInput(pt.polyData);
-		}
-
-		append.Update();
-		
 		if (pointsPolyData == null)
 			pointsPolyData = new vtkPolyData();
 		
-		pointsPolyData.DeepCopy(append.GetOutput());
-		
+		if (points.size() > 0)
+		{
+			vtkAppendPolyData append = new vtkAppendPolyData();
 
-		erosModel.shiftPolyLineInNormalDirection(pointsPolyData, 0.002);
+			for (Point pt : this.points)
+			{
+				append.AddInput(pt.polyData);
+			}
+
+			append.Update();
+
+			pointsPolyData.DeepCopy(append.GetOutput());
+
+			erosModel.shiftPolyLineInNormalDirection(pointsPolyData, 0.002);
+		}
+		else
+		{
+			pointsPolyData = new vtkPolyData();
+		}
+
 
 		if (pointsMapper == null)
 			pointsMapper = new vtkPolyDataMapper();
 		pointsMapper.SetInput(pointsPolyData);
-		pointsMapper.Update();
-
 		pointsMapper.ScalarVisibilityOff();
 		pointsMapper.SetScalarModeToDefault();
+		pointsMapper.Update();
+
 		
         if (!actors.contains(pointActor))
         	actors.add(pointActor);
@@ -257,6 +265,39 @@ public class PointModel extends StructureModel
 	
 	public void setCurrentRadius(double radius)
 	{
+		if (radius == this.currentRadius)
+			return;
+		
 		this.currentRadius = radius;
+		for (Point pt : points)
+		{
+			pt.radius = radius;
+			pt.updateCircle(erosModel, pt.center, radius);
+		}
+
+		updatePolyData();
+		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+	}
+	
+	public double getCurrentRadius()
+	{
+		return currentRadius;
+	}
+	
+	/** 
+	 * A picker picking the actor of this model will return a 
+	 * cellId. But since there are many cells per Point, we need to be
+	 * able to figure out which Point was picked
+	 */
+	public int getPointIdFromCellId(int cellId)
+	{
+		int numberCellsSoFar = 0;
+		for (int i=0; i<points.size(); ++i)
+		{
+			numberCellsSoFar += points.get(i).polyData.GetNumberOfCells();
+			if (cellId < numberCellsSoFar)
+				return i;
+		}
+		return -1;
 	}
 }

@@ -2,8 +2,8 @@ package edu.jhuapl.near.gui;
 
 import javax.swing.*;
 
-import edu.jhuapl.near.gui.pick.PickManager;
 import edu.jhuapl.near.model.*;
+import edu.jhuapl.near.pick.PickManager;
 
 
 public class ControlPanel extends JTabbedPane
@@ -13,9 +13,7 @@ public class ControlPanel extends JTabbedPane
 	private NISSearchPanel nisSearchPanel;
 	private NLRSearchPanel nlrSearchPanel;
 	private LineamentControlPanel lineamentPanel;
-	private StructureMapperControlPanel lineStructuresMapperPanel;
-	private StructureMapperControlPanel circleStructuresMapperPanel;
-	private StructureMapperControlPanel pointsStructuresMapperPanel;
+	private StructuresControlPanel structuresPanel;
 		
 	
 	public ControlPanel(
@@ -29,38 +27,13 @@ public class ControlPanel extends JTabbedPane
 		nisSearchPanel = new NISSearchPanel(modelManager, infoPanelManager, viewer.getRenderWindowPanel());
 		nlrSearchPanel = new NLRSearchPanel(modelManager, infoPanelManager, viewer.getRenderWindowPanel());
 		lineamentPanel = new LineamentControlPanel(modelManager);
-
-		StructureModel structureModel = 
-			(StructureModel)modelManager.getModel(ModelManager.LINE_STRUCTURES);
-		lineStructuresMapperPanel = new StructureMapperControlPanel(
-				modelManager,
-				structureModel,
-				pickManager,
-				PickManager.PickMode.LINE_DRAW);
-
-		structureModel = 
-			(StructureModel)modelManager.getModel(ModelManager.CIRCLE_STRUCTURES);
-		circleStructuresMapperPanel = new StructureMapperControlPanel(
-				modelManager,
-				structureModel,
-				pickManager,
-				PickManager.PickMode.CIRCLE_DRAW);
-		
-		structureModel = 
-			(StructureModel)modelManager.getModel(ModelManager.POINT_STRUCTURES);
-		pointsStructuresMapperPanel = new StructureMapperControlPanel(
-				modelManager,
-				structureModel,
-				pickManager,
-				PickManager.PickMode.POINT_DRAW);
+		structuresPanel = new StructuresControlPanel(modelManager, pickManager);
 		
 		addTab("Eros", erosPanel);
 		addTab("MSI", msiSearchPanel);
 		addTab("NIS", nisSearchPanel);
 		addTab("NLR", nlrSearchPanel);
 		addTab("Lineament", lineamentPanel);
-		addTab("Paths", lineStructuresMapperPanel);
-		addTab("Circles", circleStructuresMapperPanel);
-		addTab("Points", pointsStructuresMapperPanel);
+		addTab("Structures", structuresPanel);
 	}
 }

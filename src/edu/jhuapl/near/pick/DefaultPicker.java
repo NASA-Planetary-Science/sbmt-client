@@ -1,4 +1,4 @@
-package edu.jhuapl.near.gui.pick;
+package edu.jhuapl.near.pick;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
@@ -7,8 +7,8 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import edu.jhuapl.near.gui.*;
-import edu.jhuapl.near.gui.popupmenus.*;
 import edu.jhuapl.near.model.*;
+import edu.jhuapl.near.popupmenus.*;
 import edu.jhuapl.near.util.*;
 import vtk.*;
 
@@ -24,6 +24,7 @@ public class DefaultPicker extends Picker
     private MSIPopupMenu msiImagesPopupMenu;
     private MSIPopupMenu msiBoundariesPopupMenu;
     private NISPopupMenu nisSpectraPopupMenu;
+    private StructuresPopupMenu structuresPopupMenu;
     private StatusBar statusBar;
     private ModelManager modelManager;
     private vtkCellPicker mouseMovedCellPicker; // includes all props including Eros
@@ -71,6 +72,9 @@ public class DefaultPicker extends Picker
 		
 		nisSpectraPopupMenu = 
 			new NISPopupMenu(modelManager, infoPanelManager, renWin);
+		
+		structuresPopupMenu =
+			new StructuresPopupMenu();
 	}
 
 	public void setSuppressPopups(boolean b)
@@ -192,6 +196,15 @@ public class DefaultPicker extends Picker
         			String name = msiImages.getSpectrumName(pickedActor);
         			nisSpectraPopupMenu.setCurrentSpectrum(name);
         			nisSpectraPopupMenu.show(e.getComponent(), e.getX(), e.getY());
+    			}
+    			else if (modelManager.getModel(pickedActor) instanceof StructureModel)
+    			{
+    				//NISSpectraCollection msiImages = (NISSpectraCollection)modelManager.getModel(ModelManager.NIS_SPECTRA);
+        			//String name = msiImages.getSpectrumName(pickedActor);
+        			//nisSpectraPopupMenu.setCurrentSpectrum(name);
+    				structuresPopupMenu.setModel((StructureModel)modelManager.getModel(pickedActor),
+    						mousePressNonErosCellPicker.GetCellId());
+        			structuresPopupMenu.show(e.getComponent(), e.getX(), e.getY());
     			}
     		}		
         }

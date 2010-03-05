@@ -1,6 +1,8 @@
 package edu.jhuapl.near.util;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Random;
 
 import edu.jhuapl.near.pair.IdPair;
 import vtk.*;
@@ -249,6 +251,11 @@ public class PolyDataUtil
 		return polyData;
 	}
 
+	/*
+	 * This is an older version of that uses a vtkCylinder to do
+	 * the intersection rather than a series of planes. Unfortunately, the results
+	 * look crappy. Use drawPolygonOnPolyData instead.
+	 */
 	public static vtkPolyData drawCircleOnPolyData(
 			vtkPolyData polyData,
 			vtkAbstractPointLocator pointLocator,
@@ -261,6 +268,9 @@ public class PolyDataUtil
 
 		double[] normal = getPolyDataNormalAtPoint(center, polyData, pointLocator);
 
+		radius += 0.5;
+		if (radius < 1.0)
+			radius = 1.0;
 		
 		vtkCylinder cylinder = new vtkCylinder();
 		cylinder.SetRadius(radius);
@@ -274,15 +284,12 @@ public class PolyDataUtil
 		// which is the cross product between the y-axis and normal.
 		double[] originalCylindarAxis = {0.0, 1.0, 0.0};
 		double[] axisOfRotation = new double[3];
-		//math.Cross(originalCylindarAxis, normal, axisOfRotation);
 		math.Cross(normal, originalCylindarAxis, axisOfRotation);
 		math.Normalize(axisOfRotation);
 		
 		// Now compute the angle between these 2 cylinder axes.
 		double angle = Spice.vsep(originalCylindarAxis, normal) * 180.0 / Math.PI;
 		
-//		axisOfRotation = originalCylindarAxis;
-//		angle = 0.0;
 		vtkTransform transform = new vtkTransform();
 		transform.Translate(center);
 		transform.RotateWXYZ(angle, axisOfRotation);
@@ -325,6 +332,124 @@ public class PolyDataUtil
 //        writer.SetFileName("/tmp/coneeros.vtk");
 //        //writer.SetFileTypeToBinary();
 //        writer.Write();
+
+		return polyData;
+	}
+	
+
+	public static vtkPolyData drawPolygonOnPolyData(
+			vtkPolyData polyData,
+			vtkAbstractPointLocator pointLocator,
+			double[] center, 
+			double radius,
+			boolean filled)
+	{
+		if (math == null)
+			math = new vtkMath();
+
+		// Reduce the size of the polydata we need to process by only
+		// considering cells within twice radius of center.
+		vtkSphere sphere = new vtkSphere();
+		sphere.SetCenter(center);
+		sphere.SetRadius(radius >= 0.1 ? 2.0*radius : 0.2);
+		
+		vtkExtractPolyDataGeometry extract = new vtkExtractPolyDataGeometry();
+		extract.SetImplicitFunction(sphere);
+		extract.SetExtractInside(1);
+		extract.SetExtractBoundaryCells(1);
+		extract.SetInput(polyData);
+		extract.Update();
+		polyData = extract.GetOutput();
+		
+		
+		int numberOfSides = 20;
+		double[] normal = getPolyDataNormalAtPoint(center, polyData, pointLocator);
+
+		vtkRegularPolygonSource polygonSource = new vtkRegularPolygonSource();
+		polygonSource.SetCenter(center);
+		polygonSource.SetRadius(radius);
+		polygonSource.SetNormal(normal);
+		polygonSource.SetNumberOfSides(numberOfSides);
+		polygonSource.SetGeneratePolygon(0);
+		polygonSource.SetGeneratePolyline(0);
+		polygonSource.Update();
+
+		
+		// randomly shuffling the order of the sides we process can speed things up
+		ArrayList<Integer> sides = new ArrayList<Integer>();
+		for (int i=0; i<numberOfSides; ++i)
+			sides.add(i);
+		Collections.shuffle(sides);
+		
+		vtkPolyData nextInput = polyData;
+		vtkClipPolyData clipPolyData = null;
+		vtkPoints points = polygonSource.GetOutput().GetPoints();
+		for (int i : sides)
+		{
+			// compute normal to plane formed by this side of polygon
+			double[] currentPoint = points.GetPoint(i);
+			
+			double[] nextPoint = null;
+			if (i < numberOfSides-1)
+				nextPoint = points.GetPoint(i+1);
+			else
+				nextPoint = points.GetPoint(0);
+			
+			double[] vec = {nextPoint[0]-currentPoint[0],
+					nextPoint[1]-currentPoint[1], 
+					nextPoint[2]-currentPoint[2]};
+
+			double[] planeNormal = new double[3];
+			math.Cross(normal, vec, planeNormal);
+			math.Normalize(planeNormal);
+
+			
+			vtkPlane plane = new vtkPlane();
+			plane.SetOrigin(currentPoint);
+			plane.SetNormal(planeNormal);
+			
+			clipPolyData = new vtkClipPolyData();
+			clipPolyData.SetInput(nextInput);
+			clipPolyData.SetClipFunction(plane);
+			clipPolyData.SetInsideOut(1);
+			
+			nextInput = clipPolyData.GetOutput();
+		}
+		
+		
+
+		vtkPolyDataConnectivityFilter connectivityFilter = new vtkPolyDataConnectivityFilter();
+		connectivityFilter.SetInputConnection(clipPolyData.GetOutputPort());
+		connectivityFilter.SetExtractionModeToClosestPointRegion();
+		connectivityFilter.SetClosestPoint(center);
+		connectivityFilter.Update();
+
+		if (filled)
+		{
+			polyData = new vtkPolyData();
+			polyData.DeepCopy(connectivityFilter.GetOutput());
+		}
+		else
+		{
+			// Compute the bounding edges of this surface
+	        vtkFeatureEdges edgeExtracter = new vtkFeatureEdges();
+	        edgeExtracter.SetInput(connectivityFilter.GetOutput());
+	        edgeExtracter.BoundaryEdgesOn();
+	        edgeExtracter.FeatureEdgesOff();
+	        edgeExtracter.NonManifoldEdgesOff();
+	        edgeExtracter.ManifoldEdgesOff();
+	        edgeExtracter.Update();
+
+			polyData = new vtkPolyData();
+			polyData.DeepCopy(edgeExtracter.GetOutput());
+		}
+
+		
+        //vtkPolyDataWriter writer = new vtkPolyDataWriter();
+        //writer.SetInput(polygonSource.GetOutput());
+        //writer.SetFileName("/tmp/coneeros.vtk");
+        //writer.SetFileTypeToBinary();
+        //writer.Write();
 
 		return polyData;
 	}

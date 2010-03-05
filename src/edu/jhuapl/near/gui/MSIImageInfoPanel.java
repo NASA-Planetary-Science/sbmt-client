@@ -10,8 +10,8 @@ import java.util.*;
 
 import javax.swing.*;
 
-import edu.jhuapl.near.gui.popupmenus.MSIPopupMenu;
 import edu.jhuapl.near.model.*;
+import edu.jhuapl.near.popupmenus.MSIPopupMenu;
 
 import vtk.*;
 

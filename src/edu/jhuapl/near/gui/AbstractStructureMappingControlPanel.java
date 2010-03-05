@@ -10,13 +10,13 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 
-import edu.jhuapl.near.gui.pick.PickManager;
 //import edu.jhuapl.near.gui.popupmenus.StructuresPopupMenu;
 import edu.jhuapl.near.model.*;
+import edu.jhuapl.near.pick.PickManager;
 import edu.jhuapl.near.util.Properties;
 import net.miginfocom.swing.MigLayout;
 
-public class StructureMapperControlPanel extends JPanel implements 
+public abstract class AbstractStructureMappingControlPanel extends JPanel implements 
 	ActionListener, 
 	PropertyChangeListener 
 {
@@ -35,11 +35,12 @@ public class StructureMapperControlPanel extends JPanel implements
     //private int selectedIndex = -1;
     private StructureModel structureModel;
     
-    public StructureMapperControlPanel(
+    public AbstractStructureMappingControlPanel(
     		final ModelManager modelManager,
     		final StructureModel structureModel,
     		final PickManager pickManager,
-    		final PickManager.PickMode pickMode) 
+    		final PickManager.PickMode pickMode,
+    		boolean showNewButton) 
     {
 		//this.modelManager = modelManager;
 		//this.pickManager = pickManager;
@@ -121,59 +122,78 @@ public class StructureMapperControlPanel extends JPanel implements
         add(tableScrollPane, "span");
 
 
-
-        final JButton newButton = new JButton("New");
-
-        newButton.addActionListener(new ActionListener()
+        if (showNewButton)
         {
-			public void actionPerformed(ActionEvent e) 
-			{
-				structureModel.addNewStructure();
-				pickManager.setPickMode(pickMode);
-				editButton.setSelected(true);
-				updateStructureTable();
+        	final JButton newButton = new JButton("New");
+        	newButton.addActionListener(new ActionListener()
+        	{
+        		public void actionPerformed(ActionEvent e) 
+        		{
+        			structureModel.addNewStructure();
+        			pickManager.setPickMode(pickMode);
+        			editButton.setSelected(true);
+        			updateStructureTable();
 
-				int numStructures = structuresTable.getRowCount();
-				if (numStructures > 0)
-					structuresTable.setRowSelectionInterval(numStructures-1, numStructures-1);
-			}
-        });
+        			int numStructures = structuresTable.getRowCount();
+        			if (numStructures > 0)
+        				structuresTable.setRowSelectionInterval(numStructures-1, numStructures-1);
+        		}
+        	});
+        	add(newButton, "w 100!");
 
-        add(newButton, "w 100!");
-        
-        editButton = new JToggleButton("Edit");
-        editButton.addActionListener(new ActionListener()
+        	editButton = new JToggleButton("Edit");
+        	editButton.addActionListener(new ActionListener()
+        	{
+        		public void actionPerformed(ActionEvent e) 
+        		{
+        			int idx = structuresTable.getSelectedRow();
+
+        			if (editButton.isSelected())
+        			{
+        				if (idx >= 0)
+        				{
+        					pickManager.setPickMode(pickMode);
+        					structureModel.selectStructure(idx);
+        				}
+        				else
+        				{
+        					editButton.setSelected(false);
+        				}
+        			}
+        			else
+        			{
+        				pickManager.setPickMode(PickManager.PickMode.DEFAULT);
+        				structureModel.selectStructure(-1);
+        			}
+
+        			// The item in the table might get deselected so select it again here.
+        			int numStructures = structuresTable.getRowCount();
+        			if (idx >= 0 && idx < numStructures)
+        				structuresTable.setRowSelectionInterval(idx, idx);
+        		}
+        	});
+        	add(editButton, "w 100!");
+        }
+        else
         {
-			public void actionPerformed(ActionEvent e) 
-			{
-				int idx = structuresTable.getSelectedRow();
-				
-				if (editButton.isSelected())
-				{
-					if (idx >= 0)
-					{
-						pickManager.setPickMode(pickMode);
-						structureModel.selectStructure(idx);
-					}
-					else
-					{
-						editButton.setSelected(false);
-					}
-				}
-				else
-				{
-					pickManager.setPickMode(PickManager.PickMode.DEFAULT);
-					structureModel.selectStructure(-1);
-				}
-				
-				// The item in the table might get deselected so select it again here.
-				int numStructures = structuresTable.getRowCount();
-				if (idx >= 0 && idx < numStructures)
-					structuresTable.setRowSelectionInterval(idx, idx);
-			}
-        });
-        add(editButton, "w 100!");
-        
+        	editButton = new JToggleButton("Edit");
+        	editButton.addActionListener(new ActionListener()
+        	{
+        		public void actionPerformed(ActionEvent e) 
+        		{
+        			if (editButton.isSelected())
+        			{
+        				pickManager.setPickMode(pickMode);
+        			}
+        			else
+        			{
+        				pickManager.setPickMode(PickManager.PickMode.DEFAULT);
+        			}
+        		}
+        	});
+        	add(editButton, "w 100!");
+        }
+
         JButton deleteButton = new JButton("Delete");
         deleteButton.addActionListener(new ActionListener()
         {
@@ -201,7 +221,7 @@ public class StructureMapperControlPanel extends JPanel implements
 				}
 			}
         });
-        add(deleteButton, "w 100!");
+        add(deleteButton, "w 100!, wrap");
 	}
 
     public void actionPerformed(ActionEvent actionEvent)

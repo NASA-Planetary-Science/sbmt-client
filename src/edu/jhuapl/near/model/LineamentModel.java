@@ -216,6 +216,9 @@ public class LineamentModel extends Model
 
 	public void setRadialOffset(double offset)
 	{
+		if (lineamentActors.isEmpty())
+			initialize();
+		
         int ptId=0;
         vtkPoints points = lineaments.GetPoints();
         

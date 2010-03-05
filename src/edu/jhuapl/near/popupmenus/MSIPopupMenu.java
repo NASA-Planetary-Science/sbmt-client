@@ -1,4 +1,4 @@
-package edu.jhuapl.near.gui.popupmenus;
+package edu.jhuapl.near.popupmenus;
 
 import java.awt.Component;
 import java.awt.event.ActionEvent;

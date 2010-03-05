@@ -1,4 +1,4 @@
-package edu.jhuapl.near.gui.pick;
+package edu.jhuapl.near.pick;
 
 import java.awt.event.MouseEvent;
 

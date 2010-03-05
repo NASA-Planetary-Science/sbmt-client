@@ -10,8 +10,8 @@ import java.util.*;
 
 import javax.swing.*;
 
-import edu.jhuapl.near.gui.popupmenus.NISPopupMenu;
 import edu.jhuapl.near.model.*;
+import edu.jhuapl.near.popupmenus.NISPopupMenu;
 
 import org.jfree.chart.*;
 import org.jfree.chart.plot.PlotOrientation;
