@@ -1,10 +1,18 @@
 package edu.jhuapl.near.model;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.*;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+
+import com.sun.org.apache.xml.internal.serialize.OutputFormat;
+import com.sun.org.apache.xml.internal.serialize.XMLSerializer;
 
 import edu.jhuapl.near.util.Point3D;
 import edu.jhuapl.near.util.LatLon;
@@ -41,7 +49,9 @@ public class LineModel extends StructureModel
 	
 	public static class Line extends StructureModel.Structure
 	{
-		public String name = "";
+		static protected int maxId = 0;
+		
+		public String name = "default";
 		public int id;
 		
 		// Note the lat, lon, and alt is what gets stored in the saved file.
@@ -57,7 +67,7 @@ public class LineModel extends StructureModel
 		
 		static public String LINE = "line";
 		static public String ID = "id";
-		static public String MSI_IMAGE = "msi-image";
+		static public String NAME = "name";
 		static public String VERTICES = "vertices";
 		
 		public Line()
@@ -75,6 +85,11 @@ public class LineModel extends StructureModel
 			return name;
 		}
 
+		public void setName(String name)
+		{
+			this.name = name;
+		}
+
 		public String getType()
 		{
 			return LINE;
@@ -89,7 +104,7 @@ public class LineModel extends StructureModel
 	    {
 	    	Element linEle = dom.createElement(LINE);
 	    	linEle.setAttribute(ID, String.valueOf(id));
-	    	linEle.setAttribute(MSI_IMAGE, String.valueOf(name));
+	    	linEle.setAttribute(NAME, String.valueOf(name));
 
 	    	String vertices = "";
             int size = lat.size();
@@ -120,7 +135,7 @@ public class LineModel extends StructureModel
 	    	if (id > maxId)
 	    		maxId = id;
 	    	
-	    	name = element.getAttribute(MSI_IMAGE);
+	    	name = element.getAttribute(NAME);
 	    	String tmp = element.getAttribute(VERTICES);
 
 	    	if (tmp.length() == 0)
@@ -152,7 +167,7 @@ public class LineModel extends StructureModel
 
 	    public String getClickStatusBarText()
 	    {
-	    	return "Line " + id + " contains " + lat.size() + " vertices";
+	    	return "Path, Id = " + id + ", Number of Vertices = " + lat.size();
 	    }
 
 	    public void updateSegment(ErosModel erosModel, int segment)
@@ -343,7 +358,7 @@ public class LineModel extends StructureModel
     		return null;
     }
 
-    public int getSelectedLineIndex()
+    public int getSelectedStructureIndex()
     {
     	return selectedLine;
     }
@@ -522,6 +537,9 @@ public class LineModel extends StructureModel
     
     public void insertVertexIntoSelectedLine(double[] newPoint)
     {
+    	if (selectedLine < 0)
+    		return;
+    	
         Line lin = lines.get(selectedLine);
 
     	if (currentLineVertex < -1 || currentLineVertex >= lin.controlPointIds.size())
@@ -692,7 +710,53 @@ public class LineModel extends StructureModel
 
     	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
+
+	public void loadModel(File file) throws Exception
+	{
+		//get the factory
+		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+
+		//Using factory get an instance of document builder
+		DocumentBuilder db = dbf.newDocumentBuilder();
+
+		//parse using builder to get DOM representation of the XML file
+		Document dom = db.parse(file);
+
+		//get the root element
+		Element docEle = dom.getDocumentElement();
+
+		if (LineModel.LINES.equals(docEle.getTagName()))
+			fromXmlDomElement(docEle);
+	}
+
+	public void saveModel(File file) throws Exception
+	{
+		//get an instance of factory
+		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+
+		//get an instance of builder
+		DocumentBuilder db = dbf.newDocumentBuilder();
+
+		//create an instance of DOM
+		Document dom = db.newDocument();
+
+		dom.appendChild(toXmlDomElement(dom));
+		
+		OutputFormat format = new OutputFormat(dom);
+		format.setIndenting(true);
+
+		XMLSerializer serializer = new XMLSerializer(
+				new FileOutputStream(file), format);
+
+		serializer.serialize(dom);
+	}
+
+	public boolean supportsSelection()
+	{
+		return true;
+	}
     
+	
     /*
     public void removeVertexFromLine(int vertexId)
     {

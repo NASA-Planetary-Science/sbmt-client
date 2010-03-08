@@ -1,12 +1,14 @@
 package edu.jhuapl.near.gui;
 
 import javax.swing.JTabbedPane;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.StructureModel;
 import edu.jhuapl.near.pick.PickManager;
 
-public class StructuresControlPanel extends JTabbedPane
+public class StructuresControlPanel extends JTabbedPane implements ChangeListener
 {
 	private AbstractStructureMappingControlPanel lineStructuresMapperPanel;
 	private AbstractStructureMappingControlPanel circleStructuresMapperPanel;
@@ -22,8 +24,7 @@ public class StructuresControlPanel extends JTabbedPane
 				modelManager,
 				structureModel,
 				pickManager,
-				PickManager.PickMode.LINE_DRAW,
-				true) {});
+				PickManager.PickMode.LINE_DRAW) {});
 
 		structureModel = 
 			(StructureModel)modelManager.getModel(ModelManager.CIRCLE_STRUCTURES);
@@ -31,8 +32,7 @@ public class StructuresControlPanel extends JTabbedPane
 				modelManager,
 				structureModel,
 				pickManager,
-				PickManager.PickMode.CIRCLE_DRAW,
-				true) {});
+				PickManager.PickMode.CIRCLE_DRAW) {});
 				
 		pointsStructuresMapperPanel = new PointsMappingControlPanel(
 				modelManager,
@@ -41,6 +41,14 @@ public class StructuresControlPanel extends JTabbedPane
 		addTab("Paths", lineStructuresMapperPanel);
 		addTab("Circles", circleStructuresMapperPanel);
 		addTab("Points", pointsStructuresMapperPanel);
+		
+		addChangeListener(this);
 	}
 
+	public void stateChanged(ChangeEvent e)
+	{
+		lineStructuresMapperPanel.setEditingEnabled(false);
+		circleStructuresMapperPanel.setEditingEnabled(false);
+		pointsStructuresMapperPanel.setEditingEnabled(false);
+	}
 }

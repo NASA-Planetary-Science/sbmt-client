@@ -1,5 +1,10 @@
 package edu.jhuapl.near.util;
 
+/**
+ * This interface lists all properties that get fired in firePropertyChange calls.
+ * All such properties should be listed here rather than in the
+ * class that does the firing.
+ */
 public interface Properties 
 {
 	final String MODEL_CHANGED = "model-changed";

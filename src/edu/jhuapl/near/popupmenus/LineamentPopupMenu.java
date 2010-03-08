@@ -2,13 +2,16 @@ package edu.jhuapl.near.popupmenus;
 
 import javax.swing.*;
 
+import vtk.vtkProp;
+
 import edu.jhuapl.near.gui.ColorChooser;
 import edu.jhuapl.near.model.LineamentModel;
+import edu.jhuapl.near.model.ModelManager;
 
 import java.awt.*;
 import java.awt.event.*;
 
-public class LineamentPopupMenu extends JPopupMenu 
+public class LineamentPopupMenu extends PopupMenu 
 {
 	private enum ColoringType
 	{
@@ -21,9 +24,9 @@ public class LineamentPopupMenu extends JPopupMenu
 	private LineamentModel.Lineament lineament;
 	private Component invoker;
 	
-	public LineamentPopupMenu(LineamentModel model)
+	public LineamentPopupMenu(ModelManager modelManager)
 	{        
-		this.model = model;
+		this.model = (LineamentModel)modelManager.getModel(ModelManager.LINEAMENT);
 
 		JMenuItem mi; 
 		mi = new JMenuItem(new ChangeLineamentColorAction(ColoringType.ONE_LINEAMENT));
@@ -36,13 +39,6 @@ public class LineamentPopupMenu extends JPopupMenu
 		mi.setText("Change color of all lineaments");
 		this.add(mi);
 		
-	}
-	
-	public void show(Component invoker, int x, int y, LineamentModel.Lineament lin)
-	{
-		this.invoker = invoker;
-		lineament = lin;
-		super.show(invoker, x, y);
 	}
 	
     private class ChangeLineamentColorAction extends AbstractAction
@@ -82,4 +78,15 @@ public class LineamentPopupMenu extends JPopupMenu
         }
     }
 
+	public void showPopup(MouseEvent e, vtkProp pickedProp, int pickedCellId,
+			double[] pickedPosition)
+	{
+		LineamentModel.Lineament lin = model.getLineament(pickedCellId);
+		if (lin != null)
+		{
+			invoker = e.getComponent();
+			lineament = lin;
+			super.show(invoker, e.getX(), e.getY());
+		}
+	}
 }

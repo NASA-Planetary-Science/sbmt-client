@@ -7,18 +7,17 @@ import javax.swing.AbstractAction;
 import javax.swing.JMenuItem;
 
 import vtk.vtkProp;
+import edu.jhuapl.near.model.LineModel;
 import edu.jhuapl.near.model.ModelManager;
-import edu.jhuapl.near.model.StructureModel;
 
-public class StructuresPopupMenu extends PopupMenu
+public class LinesPopupMenu extends PopupMenu
 {
-	private StructureModel model = null;
 	private int cellIdLastClicked = -1;
-	private ModelManager modelManager;
+	private LineModel model = null;
 	
-	public StructuresPopupMenu(ModelManager modelManager)
+	public LinesPopupMenu(ModelManager modelManager)
 	{
-		this.modelManager = modelManager;
+		this.model = (LineModel)modelManager.getModel(ModelManager.LINE_STRUCTURES);
 		
 		JMenuItem mi; 
 		mi = new JMenuItem(new EditAction());
@@ -28,18 +27,12 @@ public class StructuresPopupMenu extends PopupMenu
 		mi.setText("Delete");
 		this.add(mi);
 	}
-
-	public void setModel(StructureModel model, int cellId)
-	{
-		this.model = model;
-		this.cellIdLastClicked = cellId;
-	}
 	
 	private class EditAction extends AbstractAction
 	{
 		public void actionPerformed(ActionEvent e) 
 		{
-			//model
+			model.selectStructure(cellIdLastClicked);
 		}
 	}
 
@@ -47,14 +40,22 @@ public class StructuresPopupMenu extends PopupMenu
 	{
 		public void actionPerformed(ActionEvent e) 
 		{
+			model.removeStructure(cellIdLastClicked);
 		}
 	}
 
 	public void showPopup(MouseEvent e, vtkProp pickedProp, int pickedCellId,
 			double[] pickedPosition)
 	{
-		setModel((StructureModel)modelManager.getModel(pickedProp),
-				pickedCellId);
-		show(e.getComponent(), e.getX(), e.getY());
+		if (model.getLineActor() == pickedProp)
+		{
+			this.cellIdLastClicked = pickedCellId;
+			show(e.getComponent(), e.getX(), e.getY());
+		}
+		else if (model.getLineSelectionActor() == pickedProp)
+		{
+			this.cellIdLastClicked = model.getSelectedStructureIndex();
+			show(e.getComponent(), e.getX(), e.getY());
+		}
 	}
 }

@@ -1,24 +1,9 @@
 package edu.jhuapl.near.model;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.*;
-import java.util.*;
-
-import javax.swing.JOptionPane;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 
-import com.sun.org.apache.xml.internal.serialize.OutputFormat;
-import com.sun.org.apache.xml.internal.serialize.XMLSerializer;
-
-import edu.jhuapl.near.util.Properties;
-
-import vtk.*;
 
 /**
  * Model of structures drawn on Eros such as lineaments and circles.
@@ -30,26 +15,33 @@ public abstract class StructureModel extends Model
 {
 	public static abstract class Structure
 	{
-		static protected int maxId = 0;
-		
 		public abstract Element toXmlDomElement(Document dom);
 	    public abstract void fromXmlDomElement(Element element, ErosModel erosModel);
 	    public abstract String getClickStatusBarText();
 	    public abstract int getId();
 	    public abstract String getName();
+	    public abstract void setName(String name);
 	    public abstract String getType();
 	    public abstract String getInfo();
 	}
 	
 	public abstract void addNewStructure();
+
+	public abstract boolean supportsSelection();
 	
 	public abstract void selectStructure(int idx);
+	
+	public abstract int getSelectedStructureIndex();
 	
 	public abstract int getNumberOfStructures();
 	
 	public abstract void removeStructure(int idx);
 	
 	public abstract Structure getStructure(int idx);
+	
+	public abstract void loadModel(File file) throws Exception;
+
+	public abstract void saveModel(File file) throws Exception;
 }
 /*
 public class StructureModel extends Model implements PropertyChangeListener

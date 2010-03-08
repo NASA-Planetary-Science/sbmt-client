@@ -9,6 +9,7 @@ import edu.jhuapl.near.gui.ModelInfoWindowManager;
 import edu.jhuapl.near.gui.StatusBar;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.pick.PickManager;
+import edu.jhuapl.near.popupmenus.PopupManager;
 import edu.jhuapl.near.util.NativeLibraryLoader;
 
 import java.awt.*;
@@ -16,12 +17,13 @@ import java.awt.*;
 public class ErosViewer extends JFrame 
 {
 	private JSplitPane splitPane;
-	private ErosRenderer imageViewer;
+	private ErosRenderer renderer;
 	private ControlPanel controlPanel;
 	private StatusBar statusBar;
 	private FileMenu fileMenu;
 	private ModelManager modelManager;
 	private PickManager pickManager;
+	private PopupManager popupManager;
 	private ModelInfoWindowManager infoPanelManager;
 	
 	public ErosViewer()
@@ -34,22 +36,24 @@ public class ErosViewer extends JFrame
 	
 		infoPanelManager = new ModelInfoWindowManager(modelManager);
 		
-		imageViewer = new ErosRenderer(modelManager);
+		renderer = new ErosRenderer(modelManager);
 
-		pickManager = new PickManager(imageViewer, statusBar, modelManager, infoPanelManager);
+		popupManager = new PopupManager(renderer, modelManager, infoPanelManager);
 
-        controlPanel = new ControlPanel(imageViewer, modelManager, infoPanelManager, pickManager);
+		pickManager = new PickManager(renderer, statusBar, modelManager, infoPanelManager, popupManager);
+
+        controlPanel = new ControlPanel(renderer, modelManager, infoPanelManager, pickManager);
 
 		splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
-                controlPanel, imageViewer);
+                controlPanel, renderer);
 		splitPane.setOneTouchExpandable(true);
 
-        imageViewer.setMinimumSize(new Dimension(100, 100));
-        imageViewer.setPreferredSize(new Dimension(700, 700));
+        renderer.setMinimumSize(new Dimension(100, 100));
+        renderer.setPreferredSize(new Dimension(700, 700));
         controlPanel.setMinimumSize(new Dimension(320, 100));
         controlPanel.setPreferredSize(new Dimension(320, 700));
 
-		createMenus(imageViewer);
+		createMenus(renderer);
 
 		this.add(splitPane, BorderLayout.CENTER);
 

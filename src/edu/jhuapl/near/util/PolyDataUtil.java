@@ -2,7 +2,6 @@ package edu.jhuapl.near.util;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Random;
 
 import edu.jhuapl.near.pair.IdPair;
 import vtk.*;
@@ -337,42 +336,70 @@ public class PolyDataUtil
 	}
 	
 
+	/**
+	 * The reason for these static variables is that the following function can potentially
+	 * be called many times within the program and we don't want to keep reallocating vtk data
+	 * for them. Thus we declare all the vtk classes as static and they are declared once 
+	 * and always reused with new inputs. Another reason for these static variables is that
+	 * since this function may be used as part of a pipeline, we don't want filters or 
+	 * other vtk objects to get garbage collected if the pipeline is still active following 
+	 * this function call. Each variable has the letter f, a number and an underscore prepended
+	 * to the name so that a given set of variables has 
+	 */
+	static private ArrayList<vtkClipPolyData> f1_clipFilters = new ArrayList<vtkClipPolyData>();
+	static private ArrayList<vtkPlane> f1_clipPlanes = new ArrayList<vtkPlane>();
+	static private ArrayList<vtkPolyData> f1_clipOutputs = new ArrayList<vtkPolyData>(); // not sure is this one is really needed
+	static private vtkSphere f1_sphere;
+	static private vtkExtractPolyDataGeometry f1_extract;
+	static private vtkRegularPolygonSource f1_polygonSource;
+	static private vtkPolyDataConnectivityFilter f1_connectivityFilter;
+	static private vtkFeatureEdges f1_edgeExtracter;
+	static private vtkPolyData f1_outputPolyData;
 	public static vtkPolyData drawPolygonOnPolyData(
 			vtkPolyData polyData,
 			vtkAbstractPointLocator pointLocator,
 			double[] center, 
 			double radius,
+			int numberOfSides,
 			boolean filled)
 	{
 		if (math == null)
 			math = new vtkMath();
 
-		// Reduce the size of the polydata we need to process by only
-		// considering cells within twice radius of center.
-		vtkSphere sphere = new vtkSphere();
-		sphere.SetCenter(center);
-		sphere.SetRadius(radius >= 0.1 ? 2.0*radius : 0.2);
-		
-		vtkExtractPolyDataGeometry extract = new vtkExtractPolyDataGeometry();
-		extract.SetImplicitFunction(sphere);
-		extract.SetExtractInside(1);
-		extract.SetExtractBoundaryCells(1);
-		extract.SetInput(polyData);
-		extract.Update();
-		polyData = extract.GetOutput();
-		
-		
-		int numberOfSides = 20;
 		double[] normal = getPolyDataNormalAtPoint(center, polyData, pointLocator);
 
-		vtkRegularPolygonSource polygonSource = new vtkRegularPolygonSource();
-		polygonSource.SetCenter(center);
-		polygonSource.SetRadius(radius);
-		polygonSource.SetNormal(normal);
-		polygonSource.SetNumberOfSides(numberOfSides);
-		polygonSource.SetGeneratePolygon(0);
-		polygonSource.SetGeneratePolyline(0);
-		polygonSource.Update();
+		
+		// Reduce the size of the polydata we need to process by only
+		// considering cells within twice radius of center.
+		//vtkSphere sphere = new vtkSphere();
+		if (f1_sphere == null)
+			f1_sphere = new vtkSphere();
+		f1_sphere.SetCenter(center);
+		f1_sphere.SetRadius(radius >= 0.1 ? 2.0*radius : 0.2);
+		
+		//vtkExtractPolyDataGeometry extract = new vtkExtractPolyDataGeometry();
+		if (f1_extract == null)
+			f1_extract = new vtkExtractPolyDataGeometry();
+		f1_extract.SetImplicitFunction(f1_sphere);
+		f1_extract.SetExtractInside(1);
+		f1_extract.SetExtractBoundaryCells(1);
+		f1_extract.SetInput(polyData);
+		f1_extract.Update();
+		polyData = f1_extract.GetOutput();
+		
+		
+		//vtkRegularPolygonSource polygonSource = new vtkRegularPolygonSource();
+		if (f1_polygonSource == null)
+			f1_polygonSource = new vtkRegularPolygonSource();
+		f1_polygonSource.SetCenter(center);
+		f1_polygonSource.SetRadius(radius);
+		f1_polygonSource.SetNormal(normal);
+		f1_polygonSource.SetNumberOfSides(numberOfSides);
+		f1_polygonSource.SetGeneratePolygon(0);
+		f1_polygonSource.SetGeneratePolyline(0);
+		f1_polygonSource.Update();
+
+		vtkPoints points = f1_polygonSource.GetOutput().GetPoints();
 
 		
 		// randomly shuffling the order of the sides we process can speed things up
@@ -383,15 +410,16 @@ public class PolyDataUtil
 		
 		vtkPolyData nextInput = polyData;
 		vtkClipPolyData clipPolyData = null;
-		vtkPoints points = polygonSource.GetOutput().GetPoints();
-		for (int i : sides)
+		for (int i=0; i<sides.size(); ++i)	
 		{
+			int side = sides.get(i);
+			
 			// compute normal to plane formed by this side of polygon
-			double[] currentPoint = points.GetPoint(i);
+			double[] currentPoint = points.GetPoint(side);
 			
 			double[] nextPoint = null;
-			if (i < numberOfSides-1)
-				nextPoint = points.GetPoint(i+1);
+			if (side < numberOfSides-1)
+				nextPoint = points.GetPoint(side+1);
 			else
 				nextPoint = points.GetPoint(0);
 			
@@ -403,45 +431,65 @@ public class PolyDataUtil
 			math.Cross(normal, vec, planeNormal);
 			math.Normalize(planeNormal);
 
-			
-			vtkPlane plane = new vtkPlane();
+			if (i > f1_clipPlanes.size()-1)
+				f1_clipPlanes.add(new vtkPlane());
+			vtkPlane plane = f1_clipPlanes.get(i);
+//			vtkPlane plane = new vtkPlane();
 			plane.SetOrigin(currentPoint);
 			plane.SetNormal(planeNormal);
 			
-			clipPolyData = new vtkClipPolyData();
+			if (i > f1_clipFilters.size()-1)
+				f1_clipFilters.add(new vtkClipPolyData());
+			clipPolyData = f1_clipFilters.get(i);
+//			clipPolyData = new vtkClipPolyData();
 			clipPolyData.SetInput(nextInput);
 			clipPolyData.SetClipFunction(plane);
 			clipPolyData.SetInsideOut(1);
+			//clipPolyData.Update();
 			
 			nextInput = clipPolyData.GetOutput();
+			
+			if (i > f1_clipOutputs.size()-1)
+				f1_clipOutputs.add(nextInput);
+			f1_clipOutputs.set(i, nextInput);
+			
+//			System.gc();
+//			System.runFinalization();
 		}
-		
-		
 
-		vtkPolyDataConnectivityFilter connectivityFilter = new vtkPolyDataConnectivityFilter();
-		connectivityFilter.SetInputConnection(clipPolyData.GetOutputPort());
-		connectivityFilter.SetExtractionModeToClosestPointRegion();
-		connectivityFilter.SetClosestPoint(center);
-		connectivityFilter.Update();
+
+		//vtkPolyDataConnectivityFilter connectivityFilter = new vtkPolyDataConnectivityFilter();
+		if (f1_connectivityFilter == null)
+			f1_connectivityFilter = new vtkPolyDataConnectivityFilter();
+		f1_connectivityFilter.SetInputConnection(clipPolyData.GetOutputPort());
+		f1_connectivityFilter.SetExtractionModeToClosestPointRegion();
+		f1_connectivityFilter.SetClosestPoint(center);
+		f1_connectivityFilter.Update();
+
+//		polyData = new vtkPolyData();
+		if (f1_outputPolyData == null)
+			f1_outputPolyData = new vtkPolyData();
 
 		if (filled)
 		{
-			polyData = new vtkPolyData();
-			polyData.DeepCopy(connectivityFilter.GetOutput());
+//			polyData.DeepCopy(f1_connectivityFilter.GetOutput());
+			f1_outputPolyData.DeepCopy(f1_connectivityFilter.GetOutput());
 		}
 		else
 		{
 			// Compute the bounding edges of this surface
-	        vtkFeatureEdges edgeExtracter = new vtkFeatureEdges();
-	        edgeExtracter.SetInput(connectivityFilter.GetOutput());
-	        edgeExtracter.BoundaryEdgesOn();
-	        edgeExtracter.FeatureEdgesOff();
-	        edgeExtracter.NonManifoldEdgesOff();
-	        edgeExtracter.ManifoldEdgesOff();
-	        edgeExtracter.Update();
+			//vtkFeatureEdges edgeExtracter = new vtkFeatureEdges();
+			if (f1_edgeExtracter == null)
+				f1_edgeExtracter = new vtkFeatureEdges();
+	        f1_edgeExtracter.SetInput(f1_connectivityFilter.GetOutput());
+	        f1_edgeExtracter.BoundaryEdgesOn();
+	        f1_edgeExtracter.FeatureEdgesOff();
+	        f1_edgeExtracter.NonManifoldEdgesOff();
+	        f1_edgeExtracter.ManifoldEdgesOff();
+	        f1_edgeExtracter.Update();
 
-			polyData = new vtkPolyData();
-			polyData.DeepCopy(edgeExtracter.GetOutput());
+	        //polyData.DeepCopy(edgeExtracter.GetOutput());
+			f1_outputPolyData.DeepCopy(f1_edgeExtracter.GetOutput());
 		}
 
 		
@@ -451,7 +499,8 @@ public class PolyDataUtil
         //writer.SetFileTypeToBinary();
         //writer.Write();
 
-		return polyData;
+		//return polyData;
+		return f1_outputPolyData;
 	}
 
 	public static vtkPolyData drawPathOnPolyData(
@@ -518,7 +567,7 @@ public class PolyDataUtil
 		polyLine.DeepCopy(connectivityFilter.GetOutput());
 
 		boolean okay = convertLinesToPolyLine(polyLine);
-		
+		System.gc();
 		//System.out.println("number points: " + polyLine.GetNumberOfPoints());
 		
         //vtkPolyDataWriter writer = new vtkPolyDataWriter();
@@ -532,15 +581,18 @@ public class PolyDataUtil
 			return null;
 	}
 	
+	static private vtkPolyDataNormals f2_normalsFilter;
 	public static void shiftPolyDataInNormalDirection(vtkPolyData polyData, double shiftAmount)
 	{
-		vtkPolyDataNormals normalsFilter = new vtkPolyDataNormals();
-		normalsFilter.SetInput(polyData);
-		normalsFilter.SetComputeCellNormals(0);
-		normalsFilter.SetComputePointNormals(1);
-		normalsFilter.Update();
+		//vtkPolyDataNormals normalsFilter = new vtkPolyDataNormals();
+		if (f2_normalsFilter == null)
+			f2_normalsFilter = new vtkPolyDataNormals();
+		f2_normalsFilter.SetInput(polyData);
+		f2_normalsFilter.SetComputeCellNormals(0);
+		f2_normalsFilter.SetComputePointNormals(1);
+		f2_normalsFilter.Update();
 		
-		vtkDataArray pointNormals = normalsFilter.GetOutput().GetPointData().GetNormals();
+		vtkDataArray pointNormals = f2_normalsFilter.GetOutput().GetPointData().GetNormals();
 		vtkPoints points = polyData.GetPoints();
 		
 		int numPoints = points.GetNumberOfPoints();
@@ -782,25 +834,30 @@ public class PolyDataUtil
         return true;
 	}
 
+	static private vtkIdList f3_idList;
     public static double[] getPolyDataNormalAtPoint(
     		double[] pt,
     		vtkPolyData polyData,
     		vtkAbstractPointLocator pointLocator)
     {
-    	vtkIdList idList = new vtkIdList();
-    	pointLocator.FindClosestNPoints(10, pt, idList);
+    	//vtkIdList idList = new vtkIdList();
+    	if (f3_idList == null)
+    		f3_idList = new vtkIdList();
+    	f3_idList.Reset();
+    	
+    	pointLocator.FindClosestNPoints(10, pt, f3_idList);
     	
     	// Average the normals
     	double[] normal = {0.0, 0.0, 0.0};
 
-    	int N = idList.GetNumberOfIds();
+    	int N = f3_idList.GetNumberOfIds();
     	if (N < 1)
     		return null;
     	
     	vtkDataArray normals = polyData.GetPointData().GetNormals();
     	for (int i=0; i<N; ++i)
     	{
-    		double[] tmp = normals.GetTuple3(idList.GetId(i));
+    		double[] tmp = normals.GetTuple3(f3_idList.GetId(i));
     		normal[0] += tmp[0];
     		normal[1] += tmp[1];
     		normal[2] += tmp[2];

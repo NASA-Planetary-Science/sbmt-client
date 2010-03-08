@@ -261,18 +261,13 @@ public class ErosModel extends Model
 		return PolyDataUtil.drawPathOnPolyData(erosPolyData, pointLocator, pt1, pt2);
 	}
 
-	public vtkPolyData drawCircle(
+	public vtkPolyData drawPolygon(
 			double[] center,
-			double radius)
+			double radius,
+			int numberOfSides,
+			boolean filled)
 	{
-		return PolyDataUtil.drawPolygonOnPolyData(erosPolyData, pointLocator, center, radius, false);
-	}
-
-	public vtkPolyData drawDisk(
-			double[] center,
-			double radius)
-	{
-		return PolyDataUtil.drawPolygonOnPolyData(erosPolyData, pointLocator, center, radius, true);
+		return PolyDataUtil.drawPolygonOnPolyData(erosPolyData, pointLocator, center, radius, numberOfSides, filled);
 	}
 
 	public void shiftPolyLineInNormalDirection(

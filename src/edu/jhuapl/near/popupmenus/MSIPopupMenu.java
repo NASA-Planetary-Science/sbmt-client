@@ -2,13 +2,15 @@ package edu.jhuapl.near.popupmenus;
 
 import java.awt.Component;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseEvent;
 import java.io.*;
 
 import javax.swing.AbstractAction;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import javax.swing.JPopupMenu;
 
+import vtk.vtkActor;
+import vtk.vtkProp;
 import vtk.vtkRenderWindowPanel;
 
 import nom.tam.fits.FitsException;
@@ -18,7 +20,7 @@ import edu.jhuapl.near.util.BoundingBox;
 import edu.jhuapl.near.util.FileCache;
 
 
-public class MSIPopupMenu extends JPopupMenu 
+public class MSIPopupMenu extends PopupMenu 
 {
 	private Component invoker;
     private ModelManager modelManager;
@@ -284,6 +286,28 @@ public class MSIPopupMenu extends JPopupMenu
 			} catch (IOException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
+			}
+		}
+	}
+
+	public void showPopup(MouseEvent e, vtkProp pickedProp, int pickedCellId,
+			double[] pickedPosition)
+	{
+		if (pickedProp instanceof vtkActor)
+		{
+			if (modelManager.getModel(pickedProp) instanceof MSIBoundaryCollection)
+			{
+				MSIBoundaryCollection msiBoundaries = (MSIBoundaryCollection)modelManager.getModel(ModelManager.MSI_BOUNDARY);
+				String name = msiBoundaries.getBoundaryName((vtkActor)pickedProp);
+				setCurrentImage(name);
+				show(e.getComponent(), e.getX(), e.getY());
+			}
+			else if (modelManager.getModel(pickedProp) instanceof MSIImageCollection)
+			{
+				MSIImageCollection msiImages = (MSIImageCollection)modelManager.getModel(ModelManager.MSI_IMAGES);
+				String name = msiImages.getImageName((vtkActor)pickedProp);
+				setCurrentImage(name);
+				show(e.getComponent(), e.getX(), e.getY());
 			}
 		}
 	}

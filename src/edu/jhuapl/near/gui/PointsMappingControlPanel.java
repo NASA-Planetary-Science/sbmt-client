@@ -11,10 +11,8 @@ import edu.jhuapl.near.pick.PickManager;
 public class PointsMappingControlPanel extends
 		AbstractStructureMappingControlPanel implements ChangeListener
 {
-	//private JSlider slider;
 	private JSpinner spinner;
 	private PointModel pointModel;
-	private double sizeScale = 0.01;
 	
 	public PointsMappingControlPanel(
 			ModelManager modelManager,
@@ -23,8 +21,7 @@ public class PointsMappingControlPanel extends
 		super(modelManager,
 				(StructureModel)modelManager.getModel(ModelManager.POINT_STRUCTURES),
 				pickManager,
-				PickManager.PickMode.POINT_DRAW,
-				false);
+				PickManager.PickMode.POINT_DRAW);
 		
 		pointModel = (PointModel)modelManager.getModel(ModelManager.POINT_STRUCTURES);
 
@@ -54,7 +51,6 @@ public class PointsMappingControlPanel extends
 	public void stateChanged(ChangeEvent e) 
 	{
 		Number val = (Number)spinner.getValue();
-		System.out.println(val);
 		pointModel.setCurrentRadius(val.doubleValue());
 	}
 }

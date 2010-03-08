@@ -48,7 +48,7 @@ public class ModelManager extends Model implements PropertyChangeListener
     	nisSpectra = new NISSpectraCollection(erosModel);
     	nlrData = new NLRDataCollection();
     	lineModel = new LineModel(erosModel);
-    	circleModel = new CircleModel();
+    	circleModel = new CircleModel(erosModel);
     	pointModel = new PointModel(erosModel);
     	//structureModel = new StructureModel(erosModel);
     	

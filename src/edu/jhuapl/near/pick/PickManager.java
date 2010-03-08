@@ -2,6 +2,7 @@ package edu.jhuapl.near.pick;
 
 import edu.jhuapl.near.gui.*;
 import edu.jhuapl.near.model.*;
+import edu.jhuapl.near.popupmenus.PopupManager;
 import vtk.*;
 
 public class PickManager extends Picker
@@ -28,7 +29,8 @@ public class PickManager extends Picker
 			ErosRenderer erosRenderer, 
 			StatusBar statusBar,
 			ModelManager modelManager,
-			ModelInfoWindowManager infoPanelManager)
+			ModelInfoWindowManager infoPanelManager,
+			PopupManager popupManager)
 	{
 		this.erosRenderer = erosRenderer;
 		this.renWin = erosRenderer.getRenderWindowPanel();
@@ -43,7 +45,7 @@ public class PickManager extends Picker
 		circlePicker = new CirclePicker(erosRenderer, modelManager);
 		pointPicker = new PointPicker(erosRenderer, modelManager);
 		
-		defaultPicker = new DefaultPicker(erosRenderer, statusBar, modelManager, infoPanelManager);
+		defaultPicker = new DefaultPicker(erosRenderer, statusBar, modelManager, infoPanelManager, popupManager);
 
 		addPicker(defaultPicker);
 	}
@@ -58,39 +60,34 @@ public class PickManager extends Picker
 		{
 		case DEFAULT:
 			erosRenderer.setInteractorToDefault();
-			defaultPicker.setSuppressPopups(false);
+			//defaultPicker.setSuppressPopups(false);
 			removePicker(linePicker);
 			removePicker(circlePicker);
 			removePicker(pointPicker);
 	        break;
 		case LINE_DRAW:
 			erosRenderer.setInteractorToNone();
-			defaultPicker.setSuppressPopups(true);
+			//defaultPicker.setSuppressPopups(true);
 			removePicker(circlePicker);
 			removePicker(pointPicker);
 			addPicker(linePicker);
 			break;
 		case CIRCLE_DRAW:
 			erosRenderer.setInteractorToNone();
-			defaultPicker.setSuppressPopups(true);
+			//defaultPicker.setSuppressPopups(true);
 			removePicker(linePicker);
 			removePicker(pointPicker);
 			addPicker(circlePicker);
 			break;
 		case POINT_DRAW:
 			erosRenderer.setInteractorToNone();
-			defaultPicker.setSuppressPopups(true);
+			//defaultPicker.setSuppressPopups(true);
 			removePicker(linePicker);
 			removePicker(circlePicker);
 			addPicker(pointPicker);
 			break;
 		}
 	}
-	
-//	public LinePicker getLineamentPicker()
-//	{
-//		return this.linePicker;
-//	}
 	
 	private void addPicker(Picker picker)
 	{

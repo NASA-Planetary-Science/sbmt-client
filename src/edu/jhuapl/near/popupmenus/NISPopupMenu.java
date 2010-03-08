@@ -1,12 +1,14 @@
 package edu.jhuapl.near.popupmenus;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseEvent;
 import java.io.*;
 
 import javax.swing.AbstractAction;
 import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
 
+import vtk.vtkActor;
+import vtk.vtkProp;
 import vtk.vtkRenderWindowPanel;
 
 import nom.tam.fits.FitsException;
@@ -14,7 +16,7 @@ import edu.jhuapl.near.gui.*;
 import edu.jhuapl.near.model.*;
 
 
-public class NISPopupMenu extends JPopupMenu 
+public class NISPopupMenu extends PopupMenu 
 {
     private ModelManager modelManager;
     private String currentSpectrum;
@@ -22,7 +24,7 @@ public class NISPopupMenu extends JPopupMenu
     private JMenuItem showSpectrumInfoMenuItem;
     private JMenuItem centerSpectrumMenuItem;
     private ModelInfoWindowManager infoPanelManager;
-    private vtkRenderWindowPanel renWin;
+    //private vtkRenderWindowPanel renWin;
     private ErosModel erosModel;
     
     /**
@@ -39,7 +41,7 @@ public class NISPopupMenu extends JPopupMenu
 	{
     	this.modelManager = modelManager;
     	this.infoPanelManager = infoPanelManager;
-    	this.renWin = renWin;
+    	//this.renWin = renWin;
     	this.erosModel = (ErosModel)modelManager.getModel(ModelManager.EROS);
     	
 		showRemoveSpectrumIn3DMenuItem = new JMenuItem(new ShowRemoveIn3DAction());
@@ -127,6 +129,18 @@ public class NISPopupMenu extends JPopupMenu
 		{
 		}
 	}
-	
 
+
+	public void showPopup(MouseEvent e, vtkProp pickedProp, int pickedCellId,
+			double[] pickedPosition)
+	{
+		if (pickedProp instanceof vtkActor)
+		{
+			NISSpectraCollection msiImages = (NISSpectraCollection)modelManager.getModel(ModelManager.NIS_SPECTRA);
+			String name = msiImages.getSpectrumName((vtkActor)pickedProp);
+			setCurrentSpectrum(name);
+			show(e.getComponent(), e.getX(), e.getY());
+		}
+	}
+	
 }

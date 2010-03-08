@@ -93,11 +93,9 @@ public class LinePicker extends Picker
 			if (pickSucceeded == 1)
 			{
 				vtkActor pickedActor = lineSelectionPicker.GetActor();
-				System.out.println("ps1");
 
 				if (pickedActor == lineModel.getLineSelectionActor())
 				{
-					System.out.println("ps2");
 					if (e.getButton() == MouseEvent.BUTTON1)
 					{
 						this.vertexIdBeingEdited = lineSelectionPicker.GetCellId();
@@ -139,7 +137,6 @@ public class LinePicker extends Picker
 	
 	public void mouseReleased(MouseEvent e) 
 	{
-		System.out.println("mouse released");
 		if (this.currentEditMode == EditMode.VERTEX_DRAG_OR_DELETE &&
 				vertexIdBeingEdited >= 0 &&
 				lastDragPosition != null)
@@ -164,7 +161,6 @@ public class LinePicker extends Picker
 			renWin.unlock();
 			if (pickSucceeded == 1)
 			{
-				System.out.println("Dragged1");
 				vtkActor pickedActor = erosPicker.GetActor();
 				Model model = modelManager.getModel(pickedActor);
 
@@ -174,7 +170,6 @@ public class LinePicker extends Picker
 
 					lineModel.moveSelectionVertex(vertexIdBeingEdited, lastDragPosition);
 				}
-				System.out.println("Dragged2");
 			}
 		}
 	}

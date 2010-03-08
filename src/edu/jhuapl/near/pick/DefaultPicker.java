@@ -20,13 +20,14 @@ import vtk.*;
 public class DefaultPicker extends Picker
 {
     private vtkRenderWindowPanel renWin;
-    private LineamentPopupMenu lineamentPopupMenu;
-    private MSIPopupMenu msiImagesPopupMenu;
-    private MSIPopupMenu msiBoundariesPopupMenu;
-    private NISPopupMenu nisSpectraPopupMenu;
-    private StructuresPopupMenu structuresPopupMenu;
+    //private LineamentPopupMenu lineamentPopupMenu;
+    //private MSIPopupMenu msiImagesPopupMenu;
+    //private MSIPopupMenu msiBoundariesPopupMenu;
+    //private NISPopupMenu nisSpectraPopupMenu;
+    //private StructuresPopupMenu structuresPopupMenu;
     private StatusBar statusBar;
     private ModelManager modelManager;
+    private PopupManager popupManager;
     private vtkCellPicker mouseMovedCellPicker; // includes all props including Eros
     private vtkCellPicker mousePressNonErosCellPicker; // includes all props EXCEPT Eros
     private vtkCellPicker mousePressErosCellPicker; // only includes Eros prop
@@ -38,11 +39,13 @@ public class DefaultPicker extends Picker
 			ErosRenderer erosRenderer, 
 			StatusBar statusBar,
 			ModelManager modelManager,
-			ModelInfoWindowManager infoPanelManager)
+			ModelInfoWindowManager infoPanelManager,
+			PopupManager popupManager)
 	{
 		this.renWin = erosRenderer.getRenderWindowPanel();
 		this.statusBar = statusBar;
 		this.modelManager = modelManager;
+		this.popupManager = popupManager;
 
 		modelManager.addPropertyChangeListener(this);
 		
@@ -60,7 +63,7 @@ public class DefaultPicker extends Picker
 		mousePressErosCellPicker.SetTolerance(0.002);
 		mousePressErosCellPicker.PickFromListOn();
 		mousePressErosCellPicker.InitializePickList();
-		
+		/*
 		lineamentPopupMenu = 
 			new LineamentPopupMenu((LineamentModel)modelManager.getModel(ModelManager.LINEAMENT));
 		
@@ -75,6 +78,7 @@ public class DefaultPicker extends Picker
 		
 		structuresPopupMenu =
 			new StructuresPopupMenu();
+			*/
 	}
 
 	public void setSuppressPopups(boolean b)
@@ -169,6 +173,14 @@ public class DefaultPicker extends Picker
     		if (pickSucceeded == 1)
     		{
     			vtkActor pickedActor = mousePressNonErosCellPicker.GetActor();
+    			popupManager.showPopup(
+    					e,
+    					pickedActor,
+    					mousePressNonErosCellPicker.GetCellId(),
+    					mousePressNonErosCellPicker.GetPickPosition());
+    					
+    			
+    			/*
     			if (modelManager.getModel(pickedActor) instanceof LineamentModel)
     			{
         			LineamentModel linModel = (LineamentModel)modelManager.getModel(ModelManager.LINEAMENT);
@@ -206,6 +218,7 @@ public class DefaultPicker extends Picker
     						mousePressNonErosCellPicker.GetCellId());
         			structuresPopupMenu.show(e.getComponent(), e.getX(), e.getY());
     			}
+    			*/
     		}		
         }
     }

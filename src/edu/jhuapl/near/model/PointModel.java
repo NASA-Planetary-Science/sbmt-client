@@ -1,12 +1,19 @@
 package edu.jhuapl.near.model;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import edu.jhuapl.near.util.FileUtil;
+import edu.jhuapl.near.util.LatLon;
 import edu.jhuapl.near.util.Properties;
+import edu.jhuapl.near.util.Spice;
 
 import vtk.*;
 
@@ -23,18 +30,22 @@ public class PointModel extends StructureModel
     private ArrayList<vtkProp> actors = new ArrayList<vtkProp>();
     private vtkPolyDataMapper pointsMapper;
     private vtkActor pointActor;
-	private int[] purpleColor = {255, 0, 255, 255}; // RGBA purple
-	private int[] redColor = {255, 0, 0, 255}; // RGBA red
-	private int[] blueColor = {0, 0, 255, 255}; // RGBA blue
+//	private int[] purpleColor = {255, 0, 255, 255}; // RGBA purple
+//	private int[] redColor = {255, 0, 0, 255}; // RGBA red
+//	private int[] blueColor = {0, 0, 255, 255}; // RGBA blue
     private ErosModel erosModel;
     private double currentRadius = 0.25;
+    private vtkAppendPolyData appendFilter;
+    private vtkPolyData emptyPolyData;
     
 	static public String POINTS = "points";
 
 	
 	public static class Point extends StructureModel.Structure
 	{
-		public String name = "";
+		static protected int maxId = 0;
+		
+		public String name = "default";
 		public int id;
 
 		public double[] center;
@@ -48,6 +59,7 @@ public class PointModel extends StructureModel
 		public Point()
 		{
 			id = ++maxId;
+			polyData = new vtkPolyData();
 		}
 
 		public int getId()
@@ -58,6 +70,11 @@ public class PointModel extends StructureModel
 		public String getName()
 		{
 			return name;
+		}
+
+		public void setName(String name)
+		{
+			this.name = name;
 		}
 
 		public String getType()
@@ -75,7 +92,7 @@ public class PointModel extends StructureModel
 	    	this.center = center;
 	    	this.radius = radius;
 	    	
-	    	this.polyData = erosModel.drawDisk(center, radius);
+	    	this.polyData.DeepCopy(erosModel.drawPolygon(center, radius, 4, true));
 	    }
 	    
 	    public Element toXmlDomElement(Document dom)
@@ -90,7 +107,7 @@ public class PointModel extends StructureModel
 
 	    public String getClickStatusBarText()
 	    {
-	    	return "Point " + id;
+	    	return "Point, Id = " + id + ", Radius = " + radius + " km";
 	    }
 
 	}
@@ -103,6 +120,8 @@ public class PointModel extends StructureModel
 		pointActor.GetProperty().LightingOff();
 		pointActor.GetProperty().SetColor(1.0, 0.0, 1.0);
 		pointActor.GetProperty().SetLineWidth(2.0);
+		
+		emptyPolyData = new vtkPolyData();
 	}
 
     public Element toXmlDomElement(Document dom)
@@ -147,23 +166,55 @@ public class PointModel extends StructureModel
 		
 		if (points.size() > 0)
 		{
-			vtkAppendPolyData append = new vtkAppendPolyData();
-
-			for (Point pt : this.points)
+			//vtkAppendPolyData appendFilter = new vtkAppendPolyData();
+			if (appendFilter == null)
 			{
-				append.AddInput(pt.polyData);
+				appendFilter = new vtkAppendPolyData();
+				appendFilter.UserManagedInputsOn();
+			}
+			
+			appendFilter.SetNumberOfInputs(points.size());
+			
+			//for (Circle cir : this.circles)
+			for (int i=0; i<points.size(); ++i)
+			{
+				vtkPolyData poly = points.get(i).polyData;
+				if (poly != null)
+					appendFilter.SetInputByNumber(i, poly);
 			}
 
-			append.Update();
+			appendFilter.Update();
 
-			pointsPolyData.DeepCopy(append.GetOutput());
+			pointsPolyData.DeepCopy(appendFilter.GetOutput());
 
 			erosModel.shiftPolyLineInNormalDirection(pointsPolyData, 0.002);
 		}
 		else
 		{
-			pointsPolyData = new vtkPolyData();
+			pointsPolyData.DeepCopy(emptyPolyData);
 		}
+//		if (pointsPolyData == null)
+//			pointsPolyData = new vtkPolyData();
+//		
+//		if (points.size() > 0)
+//		{
+//			vtkAppendPolyData append = new vtkAppendPolyData();
+//
+//			for (Point pt : this.points)
+//			{
+//				append.AddInput(pt.polyData);
+//			}
+//
+//			append.Update();
+//
+//			pointsPolyData.DeepCopy(append.GetOutput());
+//
+//			erosModel.shiftPolyLineInNormalDirection(pointsPolyData, 0.002);
+//		}
+//		else
+//		{
+//			pointsPolyData = new vtkPolyData();
+//		}
 
 
 		if (pointsMapper == null)
@@ -190,11 +241,9 @@ public class PointModel extends StructureModel
     {
     	if (prop == pointActor)
     	{
-//    		Point lin = this.points.get(cellId);
-//    		if (lin != null)
-//    			return lin.getClickStatusBarText();
-//    		else
-    			return "";
+        	int pointId = this.getPointIdFromCellId(cellId);
+        	Point pt = points.get(pointId);
+        	return pt.getClickStatusBarText();
     	}
     	else
     	{
@@ -236,6 +285,7 @@ public class PointModel extends StructureModel
     
     public void removeStructure(int cellId)
     {
+    	System.out.println(cellId);
     	points.remove(cellId);
 
         updatePolyData();
@@ -299,5 +349,80 @@ public class PointModel extends StructureModel
 				return i;
 		}
 		return -1;
+	}
+
+	public void loadModel(File file) throws IOException
+	{
+		ArrayList<String> words = FileUtil.getFileWordsAsStringList(file.getAbsolutePath());
+		
+		ArrayList<Point> newPoints = new ArrayList<Point>();
+		for (int i=0; i<words.size();)
+		{
+			Point pt = new Point();
+			pt.center = new double[3];
+			
+			pt.id = Integer.parseInt(words.get(i++));
+			pt.name = words.get(i++);
+			pt.center[0] = Double.parseDouble(words.get(i++));
+			pt.center[1] = Double.parseDouble(words.get(i++));
+			pt.center[2] = Double.parseDouble(words.get(i++));
+			
+			// Note the next 3 words in the line (the point in spherical coordinates) are not used
+			++i;
+			++i;
+			++i;
+
+	    	if (pt.id > Point.maxId)
+	    		Point.maxId = pt.id;
+	    	
+	        pt.updateCircle(erosModel, pt.center, currentRadius);
+			newPoints.add(pt);
+		}
+
+		// Only if we reach here and no exception is thrown do we modify this class
+		points = newPoints;
+
+		updatePolyData();
+        
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+	}
+
+	public void saveModel(File file) throws IOException
+	{
+		FileWriter fstream = new FileWriter(file);
+        BufferedWriter out = new BufferedWriter(fstream);
+
+		for (Point pt : points)
+		{
+			String name = pt.name;
+			if (name.length() == 0)
+				name = "default";
+	
+			LatLon llr = Spice.reclat(pt.center);
+			
+			String str = 
+				pt.id + " " + 
+				name + " " + 
+				pt.center[0] + " " + 
+				pt.center[1] + " " + 
+				pt.center[2] + " " +
+				llr.lat + " " +
+				llr.lon + " " +
+				llr.rad + "\n";
+
+			out.write(str);
+		}
+		
+		out.close();
+	}
+
+	public int getSelectedStructureIndex()
+	{
+		return -1;
+	}
+
+	public boolean supportsSelection()
+	{
+		return false;
 	}
 }
