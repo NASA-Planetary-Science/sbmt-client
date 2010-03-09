@@ -10,7 +10,6 @@ import nom.tam.fits.FitsException;
 
 import vtk.*;
 
-import edu.jhuapl.near.pair.*;
 import edu.jhuapl.near.util.*;
 import edu.jhuapl.near.util.Properties;
 
