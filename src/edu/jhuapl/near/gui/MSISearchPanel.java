@@ -22,8 +22,8 @@ import edu.jhuapl.near.database.Database;
 import edu.jhuapl.near.model.MSIBoundaryCollection;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.MSIImageCollection;
-import edu.jhuapl.near.pair.IdPair;
 import edu.jhuapl.near.popupmenus.MSIPopupMenu;
+import edu.jhuapl.near.util.IdPair;
 
 
 public class MSISearchPanel extends JPanel implements ActionListener, MouseListener

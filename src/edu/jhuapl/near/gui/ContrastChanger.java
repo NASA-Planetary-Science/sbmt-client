@@ -5,7 +5,7 @@ import javax.swing.event.*;
 import com.jidesoft.swing.*;
 
 import edu.jhuapl.near.model.MSIImage;
-import edu.jhuapl.near.pair.IntensityRange;
+import edu.jhuapl.near.util.IntensityRange;
 
 
 public class ContrastChanger extends JPanel implements ChangeListener

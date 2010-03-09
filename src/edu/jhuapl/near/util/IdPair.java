@@ -1,4 +1,4 @@
-package edu.jhuapl.near.pair;
+package edu.jhuapl.near.util;
 
 public class IdPair
 {

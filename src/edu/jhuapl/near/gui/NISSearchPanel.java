@@ -23,8 +23,8 @@ import edu.jhuapl.near.database.Database;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.NISSpectraCollection;
 import edu.jhuapl.near.model.NISSpectrum;
-import edu.jhuapl.near.pair.IdPair;
 import edu.jhuapl.near.popupmenus.NISPopupMenu;
+import edu.jhuapl.near.util.IdPair;
 
 
 public class NISSearchPanel extends JPanel implements ActionListener, MouseListener

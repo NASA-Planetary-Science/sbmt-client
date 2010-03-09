@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import vtk.*;
-import edu.jhuapl.near.pair.DoublePair;
+import edu.jhuapl.near.util.DoublePair;
 import edu.jhuapl.near.util.FileCache;
 import edu.jhuapl.near.util.FileUtil;
 import edu.jhuapl.near.util.LatLon;

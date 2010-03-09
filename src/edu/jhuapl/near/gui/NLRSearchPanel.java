@@ -17,7 +17,7 @@ import vtk.vtkRenderWindowPanel;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.NLRDataCollection;
 import edu.jhuapl.near.model.NLRDataPerDay;
-import edu.jhuapl.near.pair.DoublePair;
+import edu.jhuapl.near.util.DoublePair;
 
 
 public class NLRSearchPanel extends JPanel implements ListSelectionListener

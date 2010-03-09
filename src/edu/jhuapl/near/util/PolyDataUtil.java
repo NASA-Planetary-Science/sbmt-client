@@ -3,7 +3,6 @@ package edu.jhuapl.near.util;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import edu.jhuapl.near.pair.IdPair;
 import vtk.*;
 
 /**
