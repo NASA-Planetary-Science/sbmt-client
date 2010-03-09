@@ -65,7 +65,7 @@ public class LineModel extends StructureModel
 		public ArrayList<Point3D> xyzPointList = new ArrayList<Point3D>();
 		public ArrayList<Integer> controlPointIds = new ArrayList<Integer>();
 		
-		static public String LINE = "line";
+		static public String PATH = "path";
 		static public String ID = "id";
 		static public String NAME = "name";
 		static public String VERTICES = "vertices";
@@ -92,7 +92,7 @@ public class LineModel extends StructureModel
 
 		public String getType()
 		{
-			return LINE;
+			return PATH;
 		}
 		
 		public String getInfo()
@@ -102,7 +102,7 @@ public class LineModel extends StructureModel
 		
 	    public Element toXmlDomElement(Document dom)
 	    {
-	    	Element linEle = dom.createElement(LINE);
+	    	Element linEle = dom.createElement(PATH);
 	    	linEle.setAttribute(ID, String.valueOf(id));
 	    	linEle.setAttribute(NAME, String.valueOf(name));
 
@@ -111,7 +111,12 @@ public class LineModel extends StructureModel
             
             for (int i=0;i<size;++i)
             {
-            	vertices += lat.get(i)*180.0/Math.PI + " " + lon.get(i)*180.0/Math.PI + " " + rad.get(i);
+            	double latitude = lat.get(i)*180.0/Math.PI;
+            	double longitude = lon.get(i)*180.0/Math.PI;
+            	if (longitude < 0.0)
+            		longitude += 360.0;
+            	
+            	vertices += latitude + " " + longitude + " " + rad.get(i);
             	
             	if (i < size-1)
             		vertices += " ";
@@ -253,7 +258,7 @@ public class LineModel extends StructureModel
     {
     	this.lines.clear();
     	
-		NodeList nl = element.getElementsByTagName(Line.LINE);
+		NodeList nl = element.getElementsByTagName(Line.PATH);
 		if(nl != null && nl.getLength() > 0)
 		{
 			for(int i = 0 ; i < nl.getLength();i++) 

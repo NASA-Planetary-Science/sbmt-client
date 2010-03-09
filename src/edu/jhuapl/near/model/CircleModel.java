@@ -85,7 +85,7 @@ public class CircleModel extends StructureModel
 		
 		public String getInfo()
 		{
-			return "Radius = " + radius + " km";
+			return "Diameter = " + 2.0*radius + " km";
 		}
 
 	    public void updateCircle(ErosModel erosModel, double[] center, double radius)
@@ -108,7 +108,7 @@ public class CircleModel extends StructureModel
 
 	    public String getClickStatusBarText()
 	    {
-	    	return "Circle, Id = " + id + ", Radius = " + radius + " km";
+	    	return "Circle, Id = " + id + ", Diameter = " + 2.0*radius + " km";
 	    }
 
 	}
@@ -317,7 +317,7 @@ public class CircleModel extends StructureModel
 
 	public void loadModel(File file) throws IOException
 	{
-		ArrayList<String> words = FileUtil.getFileWordsAsStringList(file.getAbsolutePath());
+		ArrayList<String> words = FileUtil.getFileWordsAsStringList(file.getAbsolutePath(), "\t");
 		
 		ArrayList<Circle> newCircles = new ArrayList<Circle>();
 		for (int i=0; i<words.size();)
@@ -336,7 +336,7 @@ public class CircleModel extends StructureModel
 			++i;
 			++i;
 
-			cir.radius = Double.parseDouble(words.get(i++));
+			cir.radius = Double.parseDouble(words.get(i++)) / 2.0; // read in diameter not radius
 			
 	    	if (cir.id > Circle.maxId)
 	    		Circle.maxId = cir.id;
@@ -365,17 +365,21 @@ public class CircleModel extends StructureModel
 				name = "default";
 
 			LatLon llr = Spice.reclat(cir.center);
+			double lat = llr.lat*180.0/Math.PI;
+			double lon = llr.lon*180.0/Math.PI;
+			if (lon < 0.0)
+				lon += 360.0;
 			
 			String str = 
-				cir.id + " " + 
-				name + " " + 
-				cir.center[0] + " " + 
-				cir.center[1] + " " + 
-				cir.center[2] + " " +
-				llr.lat + " " +
-				llr.lon + " " +
-				llr.rad + " " +
-				cir.radius + "\n";
+				cir.id + "\t" + 
+				name + "\t" + 
+				cir.center[0] + "\t" + 
+				cir.center[1] + "\t" + 
+				cir.center[2] + "\t" +
+				lat + "\t" +
+				lon + "\t" +
+				llr.rad + "\t" +
+				2.0*cir.radius + "\n"; // save out as diameter, not radius
 
 			out.write(str);
 		}

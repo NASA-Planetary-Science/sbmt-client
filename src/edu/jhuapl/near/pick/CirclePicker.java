@@ -160,7 +160,7 @@ public class CirclePicker extends Picker
 				{
 					lastDragPosition = erosPicker.GetPickPosition();
 
-					if (e.isControlDown())
+					if (e.isControlDown() || e.isShiftDown())
 						circleModel.changeRadiusOfCircle(vertexIdBeingEdited, lastDragPosition);
 					else
 						circleModel.moveCircle(vertexIdBeingEdited, lastDragPosition);

@@ -25,16 +25,16 @@ public class PointsMappingControlPanel extends
 		
 		pointModel = (PointModel)modelManager.getModel(ModelManager.POINT_STRUCTURES);
 
-		double radius = pointModel.getCurrentRadius();
+		double diameter = 2.0 * pointModel.getCurrentRadius();
 
 		JPanel panel = new JPanel();
 
-		JLabel radiusLabel = new JLabel("Radius");
+		JLabel radiusLabel = new JLabel("Diameter");
 		panel.add(radiusLabel);
 		
-		SpinnerModel model = new SpinnerNumberModel(radius, //initial value
+		SpinnerModel model = new SpinnerNumberModel(diameter, //initial value
                 0.01,   //min
-                2.0,    //max
+                4.0,    //max
                 0.01);  //step
 		
 		spinner = new JSpinner(model);
@@ -51,6 +51,6 @@ public class PointsMappingControlPanel extends
 	public void stateChanged(ChangeEvent e) 
 	{
 		Number val = (Number)spinner.getValue();
-		pointModel.setCurrentRadius(val.doubleValue());
+		pointModel.setCurrentRadius(val.doubleValue()/2.0);
 	}
 }

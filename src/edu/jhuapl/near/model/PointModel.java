@@ -107,7 +107,8 @@ public class PointModel extends StructureModel
 
 	    public String getClickStatusBarText()
 	    {
-	    	return "Point, Id = " + id + ", Radius = " + radius + " km";
+	    	//return "Point, Id = " + id + ", Diameter = " + 2.0*radius + " km";
+	    	return "Point, Id = " + id;
 	    }
 
 	}
@@ -353,7 +354,7 @@ public class PointModel extends StructureModel
 
 	public void loadModel(File file) throws IOException
 	{
-		ArrayList<String> words = FileUtil.getFileWordsAsStringList(file.getAbsolutePath());
+		ArrayList<String> words = FileUtil.getFileWordsAsStringList(file.getAbsolutePath(), "\t");
 		
 		ArrayList<Point> newPoints = new ArrayList<Point>();
 		for (int i=0; i<words.size();)
@@ -399,15 +400,19 @@ public class PointModel extends StructureModel
 				name = "default";
 	
 			LatLon llr = Spice.reclat(pt.center);
-			
+			double lat = llr.lat*180.0/Math.PI;
+			double lon = llr.lon*180.0/Math.PI;
+			if (lon < 0.0)
+				lon += 360.0;
+
 			String str = 
-				pt.id + " " + 
-				name + " " + 
-				pt.center[0] + " " + 
-				pt.center[1] + " " + 
-				pt.center[2] + " " +
-				llr.lat + " " +
-				llr.lon + " " +
+				pt.id + "\t" + 
+				name + "\t" + 
+				pt.center[0] + "\t" + 
+				pt.center[1] + "\t" + 
+				pt.center[2] + "\t" +
+				lat + "\t" +
+				lon + "\t" +
 				llr.rad + "\n";
 
 			out.write(str);

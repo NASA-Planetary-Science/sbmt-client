@@ -252,18 +252,20 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
 			if (structureModel.supportsSelection())
 			{
 				int idx = structureModel.getSelectedStructureIndex();
-				
 				if (idx >= 0)
 				{
 					pickManager.setPickMode(pickMode);
 					if (!editButton.isSelected())
 						editButton.setSelected(true);
 					structuresTable.setRowSelectionInterval(idx, idx);
+					structuresTable.setEnabled(false);
 				}
 				else
 				{
+					pickManager.setPickMode(PickManager.PickMode.DEFAULT);
 					if (editButton.isSelected())
 						editButton.setSelected(false);
+					structuresTable.setEnabled(true);
 				}
 			}
 		}

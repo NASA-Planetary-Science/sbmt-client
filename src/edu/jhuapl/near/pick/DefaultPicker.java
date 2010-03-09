@@ -295,12 +295,10 @@ public class DefaultPicker extends Picker
 	        latStr += "\u00B0";
 	        
 	        // Note that the convention seems to be that longitude
-	        // is never negative. Also by convention the calculated 
-	        // longitude needs to be subtracted from 360.
+	        // is never negative and is shown as E. longitude.
 	        double lon = llr.lon*180/Math.PI;
 			if (lon < 0.0)
 				lon += 360.0;
-			lon = 360.0 - lon;
 	        String lonStr = decimalFormatter.format(lon);
 	        if (lonStr.length() == 5)
 	        	lonStr = "  " + lonStr;

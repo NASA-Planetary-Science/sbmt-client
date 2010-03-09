@@ -64,5 +64,29 @@ public class FileUtil
 		
 		return words;
 	}
-	
+
+	public static ArrayList<String> getFileWordsAsStringList(String filename, String separator) throws IOException
+	{
+		InputStream fs = new FileInputStream(filename);
+		if (filename.toLowerCase().endsWith(".gz"))
+			fs = new GZIPInputStream(fs);
+		InputStreamReader isr = new InputStreamReader(fs);
+		BufferedReader in = new BufferedReader(isr);
+
+		ArrayList<String> words = new ArrayList<String>();
+		String line;
+		
+		while ((line = in.readLine()) != null)
+		{
+			String [] tokens = line.trim().split(separator);
+
+			for (String word : tokens)
+				words.add(word);
+		}
+		
+		in.close();
+		
+		return words;
+	}
+
 }
