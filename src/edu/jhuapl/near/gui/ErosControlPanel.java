@@ -19,7 +19,10 @@ public class ErosControlPanel extends JPanel implements ItemListener
     private JRadioButton gravitationalAccelerationButton;
     private JRadioButton gravitationalPotentialButton;
     private JRadioButton slopeButton;
-    private ButtonGroup buttonGroup;
+    private JRadioButton flatShadingButton;
+    private JRadioButton smoothShadingButton;
+    private ButtonGroup coloringButtonGroup;
+    private ButtonGroup shadingButtonGroup;
     
 
     public ErosControlPanel(ModelManager modelManager) 
@@ -60,19 +63,39 @@ public class ErosControlPanel extends JPanel implements ItemListener
 		slopeButton.addItemListener(this);
 		slopeButton.setEnabled(false);
 		
-		buttonGroup = new ButtonGroup();
-        buttonGroup.add(elevationButton);
-        buttonGroup.add(gravitationalAccelerationButton);
-        buttonGroup.add(gravitationalPotentialButton);
-        buttonGroup.add(slopeButton);
-        buttonGroup.setSelected(elevationButton.getModel(), true);
+		coloringButtonGroup = new ButtonGroup();
+        coloringButtonGroup.add(elevationButton);
+        coloringButtonGroup.add(gravitationalAccelerationButton);
+        coloringButtonGroup.add(gravitationalPotentialButton);
+        coloringButtonGroup.add(slopeButton);
+        coloringButtonGroup.setSelected(elevationButton.getModel(), true);
+
+        JLabel shadingLabel = new JLabel("Shading");
         
+        flatShadingButton = new JRadioButton(ErosModel.FlatShadingStr);
+		flatShadingButton.setActionCommand(ErosModel.FlatShadingStr);
+		flatShadingButton.addItemListener(this);
+		flatShadingButton.setEnabled(true);
+		
+		smoothShadingButton = new JRadioButton(ErosModel.SmoothShadingStr);
+		smoothShadingButton.setActionCommand(ErosModel.SmoothShadingStr);
+		smoothShadingButton.addItemListener(this);
+		smoothShadingButton.setEnabled(true);
+		
+		shadingButtonGroup = new ButtonGroup();
+		shadingButtonGroup.add(flatShadingButton);
+		shadingButtonGroup.add(smoothShadingButton);
+		shadingButtonGroup.setSelected(smoothShadingButton.getModel(), true);
+
     	panel.add(modelCheckBox, "wrap");
     	panel.add(showColoringCheckBox, "wrap");
     	panel.add(elevationButton, "wrap, gapleft 25");
     	panel.add(gravitationalAccelerationButton, "wrap, gapleft 25");
     	panel.add(gravitationalPotentialButton, "wrap, gapleft 25");
     	panel.add(slopeButton, "wrap, gapleft 25");
+    	panel.add(shadingLabel, "wrap");
+    	panel.add(flatShadingButton, "wrap, gapleft 25");
+    	panel.add(smoothShadingButton, "wrap, gapleft 25");
     	
     	add(panel, BorderLayout.CENTER);
 	}
@@ -87,6 +110,16 @@ public class ErosControlPanel extends JPanel implements ItemListener
 				erosModel.setShowEros(false);
 			else
 				erosModel.setShowEros(true);
+		}
+		else if (e.getItemSelectable() == this.flatShadingButton)
+		{
+			if (this.flatShadingButton.isSelected())
+				erosModel.setShadingToFlat();
+		}
+		else if (e.getItemSelectable() == this.smoothShadingButton)
+		{
+			if (this.smoothShadingButton.isSelected())
+				erosModel.setShadingToSmooth();
 		}
 		else if (e.getItemSelectable() == this.showColoringCheckBox)
 		{
@@ -126,22 +159,22 @@ public class ErosControlPanel extends JPanel implements ItemListener
 
 		try 
 		{
-			if (buttonGroup.getSelection() == this.elevationButton.getModel())
+			if (coloringButtonGroup.getSelection() == this.elevationButton.getModel())
 			{
 				if (this.showColoringCheckBox.isSelected())
 					erosModel.setColorBy(ErosModel.ColoringType.ELEVATION);
 			}
-			else if (buttonGroup.getSelection() == this.gravitationalAccelerationButton.getModel())
+			else if (coloringButtonGroup.getSelection() == this.gravitationalAccelerationButton.getModel())
 			{
 				if (this.showColoringCheckBox.isSelected())
 					erosModel.setColorBy(ErosModel.ColoringType.GRAVITATIONAL_ACCELERATION);
 			}
-			else if (buttonGroup.getSelection() == this.gravitationalPotentialButton.getModel())
+			else if (coloringButtonGroup.getSelection() == this.gravitationalPotentialButton.getModel())
 			{
 				if (this.showColoringCheckBox.isSelected())
 					erosModel.setColorBy(ErosModel.ColoringType.GRAVITATIONAL_POTENTIAL);	
 			}
-			else if (buttonGroup.getSelection() == this.slopeButton.getModel())
+			else if (coloringButtonGroup.getSelection() == this.slopeButton.getModel())
 			{
 				if (this.showColoringCheckBox.isSelected())
 					erosModel.setColorBy(ErosModel.ColoringType.SLOPE);	

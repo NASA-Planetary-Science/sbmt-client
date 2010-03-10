@@ -27,6 +27,8 @@ public class ErosModel extends Model
     private vtkFloatArray gravPotValues;
     private vtkFloatArray slopeValues;
     private vtkScalarBarActor scalarBarActor;
+    private vtkPolyDataReader erosReader;
+    private vtkPolyDataNormals normalsFilter;
     
     public enum ColoringType { 
     	NONE, 
@@ -34,6 +36,11 @@ public class ErosModel extends Model
     	GRAVITATIONAL_ACCELERATION,
     	GRAVITATIONAL_POTENTIAL,
     	SLOPE
+    }
+
+    public enum ShadingType {
+    	FLAT,
+    	SMOOTH,
     }
     
     static public String ElevStr = "Elevation";
@@ -44,23 +51,26 @@ public class ErosModel extends Model
     static public String GravAccUnitsStr = "m/s^2";
     static public String GravPotUnitsStr = "J/kg";
     static public String SlopeUnitsStr = "deg";
+    static public String FlatShadingStr = "Flat";
+    static public String SmoothShadingStr = "Smooth";
     
     private ColoringType coloringType = ColoringType.NONE;
     
 	public ErosModel()
 	{
-    	vtkPolyDataReader erosReader = new vtkPolyDataReader();
+    	erosReader = new vtkPolyDataReader();
         File file = ConvertResourceToFile.convertResourceToTempFile(this, "/edu/jhuapl/near/data/Eros_Dec2006_0.vtk");
         erosReader.SetFileName(file.getAbsolutePath());
         erosReader.Update();
         
-		vtkPolyDataNormals normalsFilter = new vtkPolyDataNormals();
+		normalsFilter = new vtkPolyDataNormals();
 		normalsFilter.SetInputConnection(erosReader.GetOutputPort());
 		normalsFilter.SetComputeCellNormals(0);
 		normalsFilter.SetComputePointNormals(1);
 		normalsFilter.Update();
 
-		erosPolyData = normalsFilter.GetOutput();
+		erosPolyData = new vtkPolyData();
+		erosPolyData.DeepCopy(normalsFilter.GetOutput());
         //erosPolyData = erosReader.GetOutput();
         
         // Initialize the cell locator
@@ -289,7 +299,8 @@ public class ErosModel extends Model
 			
 	        erosActor = new vtkActor();
 	        erosActor.SetMapper(erosMapper);
-
+	        erosActor.GetProperty().SetInterpolationToPhong();
+	        
 	        erosActors.add(erosActor);
 	        
 	        scalarBarActor = new vtkScalarBarActor();
@@ -304,6 +315,18 @@ public class ErosModel extends Model
 		}
 		
 		return erosActors;
+	}
+	
+	public void setShadingToFlat()
+	{
+        erosActor.GetProperty().SetInterpolationToFlat();
+		this.pcs.firePropertyChange(Properties.EROS_MODEL_CHANGED, null, null);
+	}
+	
+	public void setShadingToSmooth()
+	{
+        erosActor.GetProperty().SetInterpolationToPhong();
+		this.pcs.firePropertyChange(Properties.EROS_MODEL_CHANGED, null, null);
 	}
 	
 	public BoundingBox computeBoundingBox()
