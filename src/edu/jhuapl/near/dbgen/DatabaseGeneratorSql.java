@@ -13,13 +13,14 @@ import nom.tam.fits.FitsException;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
-import vtk.vtkPoints;
+import vtk.vtkPolyData;
 
 public class DatabaseGeneratorSql 
 {
 	private static class ErosCells
 	{
 		public BoundingBox erosBB;
+		ArrayList<BoundingBox> allCells = new ArrayList<BoundingBox>();
 		double cellSize = 1.0;
 		int numCellsX;
 		int numCellsY;
@@ -31,8 +32,73 @@ public class DatabaseGeneratorSql
 			numCellsX = (int)(Math.ceil(erosBB.xmax - erosBB.xmin) / cellSize);
 			numCellsY = (int)(Math.ceil(erosBB.ymax - erosBB.ymin) / cellSize);
 			numCellsZ = (int)(Math.ceil(erosBB.zmax - erosBB.zmin) / cellSize);
+			
+			for (int k=0; k<numCellsZ; ++k)
+			{
+				double zmin = k * cellSize;
+				double zmax = (k+1) * cellSize;
+				for (int j=0; j<numCellsY; ++j)
+				{
+					double ymin = j * cellSize;
+					double ymax = (j+1) * cellSize;
+					for (int i=0; i<numCellsX; ++i)
+					{
+						double xmin = i * cellSize;
+						double xmax = (i+1) * cellSize;
+						BoundingBox bb = new BoundingBox();
+						bb.xmin = xmin;
+						bb.xmax = xmax;
+						bb.ymin = ymin;
+						bb.ymax = ymax;
+						bb.zmin = zmin;
+						bb.zmax = zmax;
+						allCells.add(bb);
+					}
+				}
+			}
 		}
 		
+		public BoundingBox getCellBoundingBox(int cellId)
+		{
+			return allCells.get(cellId);
+		}
+		
+		public TreeSet<Integer> getIntersectingCells(NISSpectrum spectrum)
+		{
+			TreeSet<Integer> cellIds = new TreeSet<Integer>();
+
+			// Iterate through each cell and check if it intersects
+			// with the bounding box of any of the polygons of the footprint
+			vtkPolyData footprint = spectrum.getFootprint();
+			BoundingBox spectrumBB = new BoundingBox(footprint.GetBounds());
+			double[] bounds = new double[6];
+			
+			int numberCells = numCellsX * numCellsY * numCellsZ;
+			for (int i=0; i<numberCells; ++i)
+			{
+				// Before checking each polygon individually, first see if the
+				// footprint as a whole intersects the cell
+				BoundingBox cellBB = getCellBoundingBox(i);
+				if (cellBB.intersects(spectrumBB))
+				{
+					int numberPolygons = footprint.GetNumberOfCells();
+					for (int j=0; j<numberPolygons; ++j)
+					{
+						footprint.GetCellBounds(j, bounds);
+						BoundingBox polyBB = new BoundingBox(bounds);
+						if (cellBB.intersects(polyBB))
+						{
+							cellIds.add(i);
+							break;
+						}
+					}
+				}
+			}
+			
+			return cellIds;
+		}
+
+		/*
 		public int getCellId(double[] pt)
 		{
 			double x = pt[0];
@@ -58,7 +124,7 @@ public class DatabaseGeneratorSql
 			
 			return cellIds;
 		}
-
+		*/
 		/*
 		public TreeSet<Integer> getIntersectingCells(MSIImage image)
 		{
@@ -77,7 +143,7 @@ public class DatabaseGeneratorSql
 			return cellIds;
 		}
 		*/
-}
+	}
 	
 	static SqlManager db = null;
 	static PreparedStatement msiInsert = null;
@@ -190,8 +256,7 @@ public class DatabaseGeneratorSql
             		"create table niscells(" +
             		"id int PRIMARY KEY, " +
             		"nisspectrumid int, " +
-            		"cellid int, " +
-            		"intersectiontype smallint)"
+            		"cellid int)"
                 );
         } catch (SQLException ex2) {
 
@@ -383,7 +448,7 @@ public class DatabaseGeneratorSql
     		if (nisInsert2 == null)
     		{
     			nisInsert2 = db.preparedStatement(                                                                                    
-    					"insert into nisspectra values (?, ?, ?, ?)");                                                                   
+    					"insert into nisspectra values (?, ?, ?)");
     		}
 
     		TreeSet<Integer> cellIds = erosCells.getIntersectingCells(nisSpectrum);
@@ -392,12 +457,10 @@ public class DatabaseGeneratorSql
         		System.out.println("id: " + count);
         		System.out.println("nis id: " + Integer.parseInt(origFile.getName().substring(2, 11)));
         		System.out.println("cellId: " + i);
-        		System.out.println("type: " + 0);
-
+        		
     			nisInsert.setInt(1, count);
         		nisInsert.setInt(2, Integer.parseInt(origFile.getName().substring(2, 11)));
         		nisInsert.setInt(3, i);
-        		nisInsert.setShort(4, (short)0);
 
     			nisInsert.executeUpdate();
 

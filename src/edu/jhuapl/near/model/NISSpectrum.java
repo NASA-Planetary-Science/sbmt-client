@@ -208,8 +208,6 @@ public class NISSpectrum extends Model
         vtkPolyData polyData = new vtkPolyData();
 		polyData.DeepCopy(footprintReader.GetOutput());
 		
-		PolyDataUtil.shiftPolyDataInNormalDirection(polyData, 0.001);
-		
 		return polyData;
 	}
 
@@ -226,7 +224,11 @@ public class NISSpectrum extends Model
 		if (footprintActor == null && !latLons.isEmpty())
 		{
 			if (footprint == null)
+			{
 				footprint = loadFootprint();
+				if (footprint != null)
+					PolyDataUtil.shiftPolyDataInNormalDirection(footprint, 0.001);
+			}
 			
 			if (footprint != null)
 			{

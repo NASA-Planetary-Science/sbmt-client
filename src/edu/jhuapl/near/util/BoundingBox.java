@@ -9,6 +9,20 @@ public class BoundingBox
 	public double zmin = Double.MAX_VALUE;
 	public double zmax = -Double.MAX_VALUE;
 	
+	public BoundingBox()
+	{
+	}
+	
+	public BoundingBox(double[] bounds)
+	{
+		xmin = bounds[0];
+		xmax = bounds[1];
+		ymin = bounds[2];
+		ymax = bounds[3];
+		zmin = bounds[4];
+		zmax = bounds[5];
+	}
+	
 	public void update(double x, double y, double z)
 	{
         if (xmin > x)

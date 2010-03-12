@@ -86,6 +86,8 @@ public class ErosModel extends Model
         pointLocator = new vtkKdTreePointLocator();
         pointLocator.SetDataSet(erosReader.GetOutput());
         pointLocator.BuildLocator();
+        
+        this.computeLargestSmallestEdgeLength();
 	}
 	
 	public void setShowEros(boolean show)
@@ -364,4 +366,38 @@ public class ErosModel extends Model
 		return "";
     }
 
+    public void computeLargestSmallestEdgeLength()
+    {
+    	double minLength = Double.MAX_VALUE;
+    	double maxLength = 0.0;
+
+    	vtkMath math = new vtkMath();
+
+		System.out.println(erosPolyData.GetNumberOfCells());
+
+		for (int i=0; i<erosPolyData.GetNumberOfCells(); ++i)
+    	{
+    		double[] pt0 = erosPolyData.GetCell(i).GetPoints().GetPoint(0);
+    		double[] pt1 = erosPolyData.GetCell(i).GetPoints().GetPoint(1);
+    		double[] pt2 = erosPolyData.GetCell(i).GetPoints().GetPoint(2);
+    		double dist0 = Math.sqrt(math.Distance2BetweenPoints(pt0, pt1));
+    		double dist1 = Math.sqrt(math.Distance2BetweenPoints(pt1, pt2));
+    		double dist2 = Math.sqrt(math.Distance2BetweenPoints(pt2, pt0));
+    		if (dist0 < minLength)
+    			minLength = dist0;
+    		if (dist0 > maxLength)
+    			maxLength = dist0;
+    		if (dist1 < minLength)
+    			minLength = dist1;
+    		if (dist1 > maxLength)
+    			maxLength = dist1;
+    		if (dist2 < minLength)
+    			minLength = dist2;
+    		if (dist2 > maxLength)
+    			maxLength = dist2;
+    	}
+		
+		System.out.println("minLength  " + minLength);
+		System.out.println("maxLength  " + maxLength);
+    }
 }
