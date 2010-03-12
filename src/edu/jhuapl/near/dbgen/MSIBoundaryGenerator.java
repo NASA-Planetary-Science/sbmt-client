@@ -2,11 +2,10 @@ package edu.jhuapl.near.dbgen;
 
 import vtk.*;
 
-import edu.jhuapl.near.*;
 import edu.jhuapl.near.model.MSIImage;
 import edu.jhuapl.near.util.NativeLibraryLoader;
 
-public class BoundaryGenerator 
+public class MSIBoundaryGenerator 
 {
 
 	/**

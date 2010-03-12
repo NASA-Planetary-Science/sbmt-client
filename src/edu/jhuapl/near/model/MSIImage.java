@@ -32,7 +32,12 @@ public class MSIImage extends Model
     public static String STOP_TIME = "STOP_TIME";
     public static String TARGET_CENTER_DISTANCE = "TARGET_CENTER_DISTANCE";
     public static String HORIZONTAL_PIXEL_SCALE = "HORIZONTAL_PIXEL_SCALE";
-
+    public static String SPACECRAFT_POSITION = "SPACECRAFT_POSITION";
+    public static String MSI_FRUSTUM1 = "MSI_FRUSTUM1";
+    public static String MSI_FRUSTUM2 = "MSI_FRUSTUM2";
+    public static String MSI_FRUSTUM3 = "MSI_FRUSTUM3";
+    public static String MSI_FRUSTUM4 = "MSI_FRUSTUM4";
+    
 	private vtkImageData rawImage;
 	private vtkImageData displayedImage;
 	
@@ -71,7 +76,13 @@ public class MSIImage extends Model
 	private int filter; // 1 through 7
 	//private double polygonOffset = -10.0;
 
+    private double[] spacecraftPosition = new double[3];
+    private double[] frustum1 = new double[3];
+    private double[] frustum2 = new double[3];
+    private double[] frustum3 = new double[3];
+    private double[] frustum4 = new double[3];
 	boolean hasLimb = false;
+
 	
 	/**
 	 * Because instances of MSIImage can be expensive, we want there to be
@@ -737,6 +748,21 @@ public class MSIImage extends Model
 		    	{
 		    		st.nextToken();
 		    		imageProperties.put(token, st.nextToken());
+		    	}
+		    	if (SPACECRAFT_POSITION.equals(token) ||
+		    			MSI_FRUSTUM1.equals(token) ||
+		    			MSI_FRUSTUM2.equals(token) ||
+		    			MSI_FRUSTUM3.equals(token) ||
+		    			MSI_FRUSTUM4.equals(token))
+		    	{
+		    		st.nextToken();
+		    		st.nextToken();
+		    		String x = st.nextToken();
+		    		st.nextToken();
+		    		String y = st.nextToken();
+		    		st.nextToken();
+		    		String z = st.nextToken();
+		    		imageProperties.put(token, x + " " + y + " " + z);
 		    	}
 		    }
 		}
