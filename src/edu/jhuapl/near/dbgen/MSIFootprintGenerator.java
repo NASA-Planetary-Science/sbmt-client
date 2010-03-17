@@ -47,7 +47,9 @@ public class MSIFootprintGenerator
     		//MSIImage image = new MSIImage(origFile);
     		//HashMap<String, String> properties = image.getProperties();
 
-    		String lblFilename = filename.substring(0, filename.length()-4) + ".LBL";
+    		String lblFilename = filename.substring(0, filename.length()-4) + "_DDR.LBL";
+    		
+    		System.out.println("lblFilename " + lblFilename);
     		HashMap<String, String> properties = MSIImage.parseLblFile(lblFilename);
     		
     		double[] spacecraftPosition = new double[3];
@@ -85,7 +87,7 @@ public class MSIFootprintGenerator
     		System.out.println(" ");
     	
     		vtkPolyData footprint = erosModel.computeFrustumIntersection(spacecraftPosition, 
-					frustum1, frustum2, frustum3, frustum4);
+					frustum1, frustum3, frustum4, frustum2);
 
 			if (footprint == null)
 			{

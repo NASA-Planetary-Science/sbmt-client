@@ -128,7 +128,10 @@ public class PolyDataUtil
 		clipPolyData4_f4.Update();
 		
 		if (clipPolyData4_f4.GetOutput().GetNumberOfCells() == 0)
+		{
+			System.out.println("clipped data is empty");
 			return null;
+		}
 		
 		if (normalsFilter_f4 == null) normalsFilter_f4 = new vtkPolyDataNormals();
 		normalsFilter_f4.SetInputConnection(clipPolyData4_f4.GetOutputPort());
