@@ -469,7 +469,7 @@ public class DatabaseGeneratorSql
     	}
     }
 
-    private static boolean checkIfAllFilesExist(String line)
+    static boolean checkIfAllFilesExist(String line)
 	{
 		File file = new File(line);
 		if (!file.exists())

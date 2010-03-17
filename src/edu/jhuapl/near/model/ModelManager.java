@@ -20,7 +20,7 @@ public class ModelManager extends Model implements PropertyChangeListener
 	static public final String LINE_STRUCTURES = "line-structures";
 	static public final String CIRCLE_STRUCTURES = "circle-structures";
 	static public final String POINT_STRUCTURES = "point-structures";
-	//static public final String STRUCTURES = "structures";
+	static public final String CIRCLE_SELECTION = "circle-selection";
 	
 	private LineamentModel lineamentModel;
 	private MSIImageCollection msiImages;
@@ -28,10 +28,10 @@ public class ModelManager extends Model implements PropertyChangeListener
 	private MSIBoundaryCollection msiBoundaries;
 	private NISSpectraCollection nisSpectra;
 	private NLRDataCollection nlrData;
-	private LineModel lineModel;
-	private CircleModel circleModel;
-	private PointModel pointModel;
-	//private StructureModel structureModel;
+	private LineModel lineStructuresModel;
+	private CircleModel circleStructuresModel;
+	private PointModel pointStructuresModel;
+	private CircleModel circleSelectionModel;
 	
     private ArrayList<vtkProp> props = new ArrayList<vtkProp>();
     private ArrayList<vtkProp> propsExceptEros = new ArrayList<vtkProp>();
@@ -47,21 +47,10 @@ public class ModelManager extends Model implements PropertyChangeListener
     	msiBoundaries = new MSIBoundaryCollection();
     	nisSpectra = new NISSpectraCollection(erosModel);
     	nlrData = new NLRDataCollection();
-    	lineModel = new LineModel(erosModel);
-    	circleModel = new CircleModel(erosModel);
-    	pointModel = new PointModel(erosModel);
-    	//structureModel = new StructureModel(erosModel);
-    	
-    	lineamentModel.addPropertyChangeListener(this);
-    	erosModel.addPropertyChangeListener(this);
-    	msiImages.addPropertyChangeListener(this);
-    	msiBoundaries.addPropertyChangeListener(this);
-    	nisSpectra.addPropertyChangeListener(this);
-    	nlrData.addPropertyChangeListener(this);
-    	lineModel.addPropertyChangeListener(this);
-    	circleModel.addPropertyChangeListener(this);
-    	pointModel.addPropertyChangeListener(this);
-    	//structureModel.addPropertyChangeListener(this);
+    	lineStructuresModel = new LineModel(erosModel);
+    	circleStructuresModel = new CircleModel(erosModel);
+    	pointStructuresModel = new PointModel(erosModel);
+    	circleSelectionModel = new CircleModel(erosModel);
     	
     	allModels = new ArrayList<Model>();
     	allModels.add(erosModel);
@@ -70,10 +59,13 @@ public class ModelManager extends Model implements PropertyChangeListener
     	allModels.add(msiBoundaries);
     	allModels.add(nisSpectra);
     	allModels.add(nlrData);
-    	allModels.add(lineModel);
-    	allModels.add(circleModel);
-    	allModels.add(pointModel);
-    	//allModels.add(structureModel);
+    	allModels.add(lineStructuresModel);
+    	allModels.add(circleStructuresModel);
+    	allModels.add(pointStructuresModel);
+    	allModels.add(circleSelectionModel);
+
+    	for (Model model : allModels)
+    		model.addPropertyChangeListener(this);
     	
 		updateProps();
     }
@@ -132,13 +124,13 @@ public class ModelManager extends Model implements PropertyChangeListener
 		else if (NLR_DATA.equals(modelName))
 			return nlrData;
 		else if (LINE_STRUCTURES.equals(modelName))
-			return lineModel;
+			return lineStructuresModel;
 		else if (CIRCLE_STRUCTURES.equals(modelName))
-			return circleModel;
+			return circleStructuresModel;
 		else if (POINT_STRUCTURES.equals(modelName))
-			return pointModel;
-		//else if (STRUCTURES.equals(modelName))
-		//	return structureModel;
+			return pointStructuresModel;
+		else if (CIRCLE_SELECTION.equals(modelName))
+			return circleSelectionModel;
 		else
 			return null;
 	}

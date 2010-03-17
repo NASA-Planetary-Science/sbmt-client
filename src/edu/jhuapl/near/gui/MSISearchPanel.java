@@ -22,6 +22,7 @@ import edu.jhuapl.near.database.Database;
 import edu.jhuapl.near.model.MSIBoundaryCollection;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.MSIImageCollection;
+import edu.jhuapl.near.pick.PickManager;
 import edu.jhuapl.near.popupmenus.MSIPopupMenu;
 import edu.jhuapl.near.util.IdPair;
 
@@ -80,6 +81,7 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
     public MSISearchPanel(
     		final ModelManager modelManager, 
     		ModelInfoWindowManager infoPanelManager,
+    		final PickManager pickManager,
     		vtkRenderWindowPanel renWin) 
     {
     	setLayout(new BoxLayout(this,
@@ -329,6 +331,20 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
         searchByNumberPanel.add(searchByNumberCheckBox);
         searchByNumberPanel.add(searchByNumberTextField);
         
+        final JPanel selectRegionPanel = new JPanel();
+        //panel.setBorder(BorderFactory.createEmptyBorder(9, 9, 9, 9));
+        JToggleButton selectRegionButton = new JToggleButton("Select Region");
+        selectRegionButton.setEnabled(true);
+        selectRegionButton.addActionListener(new ActionListener()
+        {
+			public void actionPerformed(ActionEvent e) 
+			{
+			}
+        });
+
+        selectRegionPanel.add(selectRegionButton);
+
+        
         final JPanel submitPanel = new JPanel();
         //panel.setBorder(BorderFactory.createEmptyBorder(9, 9, 9, 9));
         JButton submitButton = new JButton("Search");
@@ -347,6 +363,7 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
         pane.add(phasePanel);
         pane.add(Box.createVerticalStrut(10));
         pane.add(searchByNumberPanel);
+    	pane.add(selectRegionPanel);
     	pane.add(submitPanel);
         
         this.add(pane);

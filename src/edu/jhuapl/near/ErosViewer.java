@@ -49,9 +49,9 @@ public class ErosViewer extends JFrame
 		splitPane.setOneTouchExpandable(true);
 
         renderer.setMinimumSize(new Dimension(100, 100));
-        renderer.setPreferredSize(new Dimension(700, 700));
+        renderer.setPreferredSize(new Dimension(800, 800));
         controlPanel.setMinimumSize(new Dimension(320, 100));
-        controlPanel.setPreferredSize(new Dimension(320, 700));
+        controlPanel.setPreferredSize(new Dimension(320, 800));
 
 		createMenus(renderer);
 
