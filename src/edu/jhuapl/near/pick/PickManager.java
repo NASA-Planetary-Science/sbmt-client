@@ -10,8 +10,7 @@ public class PickManager extends Picker
 	public enum PickMode
 	{
 		DEFAULT, 
-		POINT_SELECTION, 
-		RECTANGLE_SELECTION, 
+		CIRCLE_SELECTION, 
 		LINE_DRAW, 
 		CIRCLE_DRAW,
 		POINT_DRAW
@@ -20,10 +19,12 @@ public class PickManager extends Picker
 	private PickMode pickMode = PickMode.DEFAULT;
 	private ErosRenderer erosRenderer;
     private vtkRenderWindowPanel renWin;
+    
     private LinePicker linePicker;
     private CirclePicker circlePicker;
     private PointPicker pointPicker;
     private DefaultPicker defaultPicker;
+    private CircleSelectionPicker circleSelectionPicker;
     
 	public PickManager(
 			ErosRenderer erosRenderer, 
@@ -44,6 +45,8 @@ public class PickManager extends Picker
 		linePicker = new LinePicker(erosRenderer, modelManager);
 		circlePicker = new CirclePicker(erosRenderer, modelManager);
 		pointPicker = new PointPicker(erosRenderer, modelManager);
+
+		circleSelectionPicker = new CircleSelectionPicker(erosRenderer, modelManager);
 		
 		defaultPicker = new DefaultPicker(erosRenderer, statusBar, modelManager, infoPanelManager, popupManager);
 
@@ -60,31 +63,38 @@ public class PickManager extends Picker
 		{
 		case DEFAULT:
 			erosRenderer.setInteractorToDefault();
-			//defaultPicker.setSuppressPopups(false);
 			removePicker(linePicker);
 			removePicker(circlePicker);
 			removePicker(pointPicker);
+			removePicker(circleSelectionPicker);
 	        break;
 		case LINE_DRAW:
 			erosRenderer.setInteractorToNone();
-			//defaultPicker.setSuppressPopups(true);
 			removePicker(circlePicker);
 			removePicker(pointPicker);
+			removePicker(circleSelectionPicker);
 			addPicker(linePicker);
 			break;
 		case CIRCLE_DRAW:
 			erosRenderer.setInteractorToNone();
-			//defaultPicker.setSuppressPopups(true);
 			removePicker(linePicker);
 			removePicker(pointPicker);
+			removePicker(circleSelectionPicker);
 			addPicker(circlePicker);
 			break;
 		case POINT_DRAW:
 			erosRenderer.setInteractorToNone();
-			//defaultPicker.setSuppressPopups(true);
 			removePicker(linePicker);
 			removePicker(circlePicker);
+			removePicker(circleSelectionPicker);
 			addPicker(pointPicker);
+			break;
+		case CIRCLE_SELECTION:
+			erosRenderer.setInteractorToNone();
+			removePicker(linePicker);
+			removePicker(pointPicker);
+			removePicker(circlePicker);
+			addPicker(circleSelectionPicker);
 			break;
 		}
 	}
@@ -102,5 +112,4 @@ public class PickManager extends Picker
         renWin.removeMouseMotionListener(picker);
         renWin.removeMouseWheelListener(picker);
 	}
-	
 }

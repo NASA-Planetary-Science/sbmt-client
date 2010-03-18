@@ -23,6 +23,7 @@ import edu.jhuapl.near.model.MSIBoundaryCollection;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.MSIImageCollection;
 import edu.jhuapl.near.pick.PickManager;
+import edu.jhuapl.near.pick.PickManager.PickMode;
 import edu.jhuapl.near.popupmenus.MSIPopupMenu;
 import edu.jhuapl.near.util.IdPair;
 
@@ -331,14 +332,18 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
         searchByNumberPanel.add(searchByNumberCheckBox);
         searchByNumberPanel.add(searchByNumberTextField);
         
-        final JPanel selectRegionPanel = new JPanel();
+        JPanel selectRegionPanel = new JPanel();
         //panel.setBorder(BorderFactory.createEmptyBorder(9, 9, 9, 9));
-        JToggleButton selectRegionButton = new JToggleButton("Select Region");
+        final JToggleButton selectRegionButton = new JToggleButton("Select Region");
         selectRegionButton.setEnabled(true);
         selectRegionButton.addActionListener(new ActionListener()
         {
 			public void actionPerformed(ActionEvent e) 
 			{
+				if (selectRegionButton.isSelected())
+					pickManager.setPickMode(PickMode.CIRCLE_SELECTION);
+				else
+					pickManager.setPickMode(PickMode.DEFAULT);
 			}
         });
 

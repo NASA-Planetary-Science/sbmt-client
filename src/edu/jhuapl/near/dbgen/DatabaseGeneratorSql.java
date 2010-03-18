@@ -13,144 +13,14 @@ import nom.tam.fits.FitsException;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
-import vtk.vtkPolyData;
-
 public class DatabaseGeneratorSql 
 {
-	private static class ErosCells
-	{
-		public BoundingBox erosBB;
-		ArrayList<BoundingBox> allCells = new ArrayList<BoundingBox>();
-		double cellSize = 1.0;
-		int numCellsX;
-		int numCellsY;
-		int numCellsZ;
-		
-		public ErosCells(ErosModel eros)
-		{
-			erosBB = eros.computeBoundingBox();
-			numCellsX = (int)(Math.ceil(erosBB.xmax - erosBB.xmin) / cellSize);
-			numCellsY = (int)(Math.ceil(erosBB.ymax - erosBB.ymin) / cellSize);
-			numCellsZ = (int)(Math.ceil(erosBB.zmax - erosBB.zmin) / cellSize);
-			
-			for (int k=0; k<numCellsZ; ++k)
-			{
-				double zmin = k * cellSize;
-				double zmax = (k+1) * cellSize;
-				for (int j=0; j<numCellsY; ++j)
-				{
-					double ymin = j * cellSize;
-					double ymax = (j+1) * cellSize;
-					for (int i=0; i<numCellsX; ++i)
-					{
-						double xmin = i * cellSize;
-						double xmax = (i+1) * cellSize;
-						BoundingBox bb = new BoundingBox();
-						bb.xmin = xmin;
-						bb.xmax = xmax;
-						bb.ymin = ymin;
-						bb.ymax = ymax;
-						bb.zmin = zmin;
-						bb.zmax = zmax;
-						allCells.add(bb);
-					}
-				}
-			}
-		}
-		
-		public BoundingBox getCellBoundingBox(int cellId)
-		{
-			return allCells.get(cellId);
-		}
-		
-		public TreeSet<Integer> getIntersectingCells(NISSpectrum spectrum)
-		{
-			TreeSet<Integer> cellIds = new TreeSet<Integer>();
-
-			// Iterate through each cell and check if it intersects
-			// with the bounding box of any of the polygons of the footprint
-			vtkPolyData footprint = spectrum.getFootprint();
-			BoundingBox spectrumBB = new BoundingBox(footprint.GetBounds());
-			double[] bounds = new double[6];
-			
-			int numberCells = numCellsX * numCellsY * numCellsZ;
-			for (int i=0; i<numberCells; ++i)
-			{
-				// Before checking each polygon individually, first see if the
-				// footprint as a whole intersects the cell
-				BoundingBox cellBB = getCellBoundingBox(i);
-				if (cellBB.intersects(spectrumBB))
-				{
-					int numberPolygons = footprint.GetNumberOfCells();
-					for (int j=0; j<numberPolygons; ++j)
-					{
-						footprint.GetCellBounds(j, bounds);
-						BoundingBox polyBB = new BoundingBox(bounds);
-						if (cellBB.intersects(polyBB))
-						{
-							cellIds.add(i);
-							break;
-						}
-					}
-				}
-			}
-			
-			return cellIds;
-		}
-
-		/*
-		public int getCellId(double[] pt)
-		{
-			double x = pt[0];
-			double y = pt[1];
-			double z = pt[2];
-			
-			return (int)Math.floor((x - erosBB.xmin) / cellSize) +
-			(int)Math.floor((y - erosBB.ymin) / cellSize)*numCellsX +
-			(int)Math.floor((z - erosBB.zmin) / cellSize)*numCellsX*numCellsY; 
-		}
-		
-		public TreeSet<Integer> getIntersectingCells(NISSpectrum spectrum)
-		{
-			TreeSet<Integer> cellIds = new TreeSet<Integer>();
-			
-			vtkPoints points = spectrum.getFootprint().GetPoints();
-			int numberPoints = points.GetNumberOfPoints();
-			for (int i=0; i<numberPoints; ++i)
-			{
-				double[] pt = points.GetPoint(i);
-				cellIds.add(getCellId(pt));
-			}
-			
-			return cellIds;
-		}
-		*/
-		/*
-		public TreeSet<Integer> getIntersectingCells(MSIImage image)
-		{
-			TreeSet<Integer> cellIds = new TreeSet<Integer>();
-			
-			for (int i=0; i<MSIImage.IMAGE_HEIGHT; ++i)
-				for (int j=0; j<MSIImage.IMAGE_WIDTH; ++j)
-				{
-					double x = image.getX(i, j);
-					double y = image.getY(i, j);
-					double z = image.getZ(i, j);
-					double[] pt = {x, y, z};
-					cellIds.add(getCellId(pt));
-				}
-			
-			return cellIds;
-		}
-		*/
-	}
-	
 	static SqlManager db = null;
 	static PreparedStatement msiInsert = null;
 	static PreparedStatement nisInsert = null;
 	static PreparedStatement nisInsert2 = null;
 	static ErosModel erosModel;
-	static ErosCells erosCells;
+	static ErosCubes erosCubes;
 	
     private static void createMSITables()
     {
@@ -245,7 +115,7 @@ public class DatabaseGeneratorSql
             //make a table
         	try
         	{
-            	db.dropTable("niscells");
+            	db.dropTable("niscubes");
         	}
         	catch(Exception e)
         	{
@@ -253,10 +123,10 @@ public class DatabaseGeneratorSql
         	}
 
         	db.update(
-            		"create table niscells(" +
+            		"create table niscubes(" +
             		"id int PRIMARY KEY, " +
             		"nisspectrumid int, " +
-            		"cellid int)"
+            		"cubeid int)"
                 );
         } catch (SQLException ex2) {
 
@@ -451,12 +321,12 @@ public class DatabaseGeneratorSql
     					"insert into nisspectra values (?, ?, ?)");
     		}
 
-    		TreeSet<Integer> cellIds = erosCells.getIntersectingCells(nisSpectrum);
-    		for (Integer i : cellIds)
+    		TreeSet<Integer> cubeIds = erosCubes.getIntersectingCubes(nisSpectrum.getFootprint());
+    		for (Integer i : cubeIds)
     		{
         		System.out.println("id: " + count);
         		System.out.println("nis id: " + Integer.parseInt(origFile.getName().substring(2, 11)));
-        		System.out.println("cellId: " + i);
+        		System.out.println("cubeId: " + i);
         		
     			nisInsert.setInt(1, count);
         		nisInsert.setInt(2, Integer.parseInt(origFile.getName().substring(2, 11)));

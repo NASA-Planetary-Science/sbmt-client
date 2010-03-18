@@ -87,7 +87,7 @@ public class ErosModel extends Model
         pointLocator.SetDataSet(erosReader.GetOutput());
         pointLocator.BuildLocator();
         
-        this.computeLargestSmallestEdgeLength();
+        //this.computeLargestSmallestEdgeLength();
 	}
 	
 	public void setShowEros(boolean show)
