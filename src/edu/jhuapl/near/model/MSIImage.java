@@ -706,6 +706,78 @@ public class MSIImage extends Model
 		intValue = swap(intValue);
 		return Float.intBitsToFloat(intValue);
 	}
+	
+	private void loadImageInfo() throws NumberFormatException, IOException
+	{
+    	String filename = getFullPath();
+    	
+		String lblFilename = filename.substring(0, filename.length()-4) + "_DDR.LBL";
+
+    	FileInputStream fs = null;
+		try {
+			fs = new FileInputStream(lblFilename);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		InputStreamReader isr = new InputStreamReader(fs);
+		BufferedReader in = new BufferedReader(isr);
+
+		String str;
+		while ((str = in.readLine()) != null)
+		{
+		    StringTokenizer st = new StringTokenizer(str);
+		    while (st.hasMoreTokens()) 
+		    {
+		    	String token = st.nextToken();
+		    	if (SPACECRAFT_POSITION.equals(token) ||
+		    			MSI_FRUSTUM1.equals(token) ||
+		    			MSI_FRUSTUM2.equals(token) ||
+		    			MSI_FRUSTUM3.equals(token) ||
+		    			MSI_FRUSTUM4.equals(token))
+		    	{
+		    		st.nextToken();
+		    		st.nextToken();
+		    		String x = st.nextToken();
+		    		st.nextToken();
+		    		String y = st.nextToken();
+		    		st.nextToken();
+		    		String z = st.nextToken();
+		    		if (SPACECRAFT_POSITION.equals(token))
+		    		{
+		    			spacecraftPosition[0] = Double.parseDouble(x);
+		    			spacecraftPosition[1] = Double.parseDouble(y);
+		    			spacecraftPosition[2] = Double.parseDouble(z);
+		    		}
+		    		else if (MSI_FRUSTUM1.equals(token))
+		    		{
+		    			frustum1[0] = Double.parseDouble(x);
+		    			frustum1[1] = Double.parseDouble(y);
+		    			frustum1[2] = Double.parseDouble(z);
+		    		}
+		    		else if (MSI_FRUSTUM2.equals(token))
+		    		{
+		    			frustum2[0] = Double.parseDouble(x);
+		    			frustum2[1] = Double.parseDouble(y);
+		    			frustum2[2] = Double.parseDouble(z);
+		    		}
+		    		else if (MSI_FRUSTUM3.equals(token))
+		    		{
+		    			frustum3[0] = Double.parseDouble(x);
+		    			frustum3[1] = Double.parseDouble(y);
+		    			frustum3[2] = Double.parseDouble(z);
+		    		}
+		    		else if (MSI_FRUSTUM4.equals(token))
+		    		{
+		    			frustum4[0] = Double.parseDouble(x);
+		    			frustum4[1] = Double.parseDouble(y);
+		    			frustum4[2] = Double.parseDouble(z);
+		    		}
+		    	}
+		    }
+		}
+
+		in.close();
+	}
 
     static public HashMap<String, String> parseLblFile(String lblFilename) throws IOException
     {
