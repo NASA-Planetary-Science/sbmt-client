@@ -83,6 +83,9 @@ public class MSIImage extends Model
     private double[] frustum4 = new double[3];
 	boolean hasLimb = false;
 
+	private boolean showFrustum = true;
+	static private vtkMath math = null;
+
 	
 	/**
 	 * Because instances of MSIImage can be expensive, we want there to be
@@ -245,6 +248,9 @@ public class MSIImage extends Model
         setDisplayedImageRange(new IntensityRange(0, 255));
 
         loadImgFile(filename);
+        
+        if (showFrustum)
+        	loadImageInfo();
 	}
 	
     
@@ -524,6 +530,60 @@ public class MSIImage extends Model
                 imageActors.add(pieceActor);
         	}
         
+		if (showFrustum)
+		{
+			vtkPolyData frus = new vtkPolyData();
+			
+	        vtkPoints points = new vtkPoints();
+	        vtkCellArray lines = new vtkCellArray();
+	        
+	        idList = new vtkIdList();
+	        idList.SetNumberOfIds(2);
+	        
+	        if (math == null)
+	        	math = new vtkMath();
+	        
+	        double dx = math.Norm(spacecraftPosition);
+			double[] origin = spacecraftPosition;
+			double[] UL = {origin[0]+frustum1[0]*dx, origin[1]+frustum1[1]*dx, origin[2]+frustum1[2]*dx};
+			double[] UR = {origin[0]+frustum2[0]*dx, origin[1]+frustum2[1]*dx, origin[2]+frustum2[2]*dx};
+			double[] LL = {origin[0]+frustum3[0]*dx, origin[1]+frustum3[1]*dx, origin[2]+frustum3[2]*dx};
+			double[] LR = {origin[0]+frustum4[0]*dx, origin[1]+frustum4[1]*dx, origin[2]+frustum4[2]*dx};
+
+	        points.InsertNextPoint(spacecraftPosition);
+	        points.InsertNextPoint(UL);
+	        points.InsertNextPoint(UR);
+	        points.InsertNextPoint(LL);
+	        points.InsertNextPoint(LR);
+
+	    	idList.SetId(0, 0);
+	    	idList.SetId(1, 1);
+	    	lines.InsertNextCell(idList);
+	    	idList.SetId(0, 0);
+	    	idList.SetId(1, 2);
+	    	lines.InsertNextCell(idList);
+	    	idList.SetId(0, 0);
+	    	idList.SetId(1, 3);
+	    	lines.InsertNextCell(idList);
+	    	idList.SetId(0, 0);
+	    	idList.SetId(1, 4);
+	    	lines.InsertNextCell(idList);
+	    	
+	    	frus.SetPoints(points);
+	        frus.SetLines(lines);
+
+
+	        vtkPolyDataMapper frusMapper = new vtkPolyDataMapper();
+			frusMapper.SetInput(frus);
+
+			vtkActor frusActor = new vtkActor();
+			frusActor.SetMapper(frusMapper);
+	        frusActor.GetProperty().SetColor(0.0, 1.0, 0.0);
+	        frusActor.GetProperty().SetLineWidth(2.0);
+
+	        imageActors.add(frusActor);
+		}
+
         return imageActors;
     }
     
@@ -737,40 +797,40 @@ public class MSIImage extends Model
 		    	{
 		    		st.nextToken();
 		    		st.nextToken();
-		    		String x = st.nextToken();
+		    		double x = Double.parseDouble(st.nextToken());
 		    		st.nextToken();
-		    		String y = st.nextToken();
+		    		double y = Double.parseDouble(st.nextToken());
 		    		st.nextToken();
-		    		String z = st.nextToken();
+		    		double z = Double.parseDouble(st.nextToken());
 		    		if (SPACECRAFT_POSITION.equals(token))
 		    		{
-		    			spacecraftPosition[0] = Double.parseDouble(x);
-		    			spacecraftPosition[1] = Double.parseDouble(y);
-		    			spacecraftPosition[2] = Double.parseDouble(z);
+		    			spacecraftPosition[0] = x;
+		    			spacecraftPosition[1] = y;
+		    			spacecraftPosition[2] = z;
 		    		}
 		    		else if (MSI_FRUSTUM1.equals(token))
 		    		{
-		    			frustum1[0] = Double.parseDouble(x);
-		    			frustum1[1] = Double.parseDouble(y);
-		    			frustum1[2] = Double.parseDouble(z);
+		    			frustum1[0] = x;
+		    			frustum1[1] = y;
+		    			frustum1[2] = z;
 		    		}
 		    		else if (MSI_FRUSTUM2.equals(token))
 		    		{
-		    			frustum2[0] = Double.parseDouble(x);
-		    			frustum2[1] = Double.parseDouble(y);
-		    			frustum2[2] = Double.parseDouble(z);
+		    			frustum2[0] = x;
+		    			frustum2[1] = y;
+		    			frustum2[2] = z;
 		    		}
 		    		else if (MSI_FRUSTUM3.equals(token))
 		    		{
-		    			frustum3[0] = Double.parseDouble(x);
-		    			frustum3[1] = Double.parseDouble(y);
-		    			frustum3[2] = Double.parseDouble(z);
+		    			frustum3[0] = x;
+		    			frustum3[1] = y;
+		    			frustum3[2] = z;
 		    		}
 		    		else if (MSI_FRUSTUM4.equals(token))
 		    		{
-		    			frustum4[0] = Double.parseDouble(x);
-		    			frustum4[1] = Double.parseDouble(y);
-		    			frustum4[2] = Double.parseDouble(z);
+		    			frustum4[0] = x;
+		    			frustum4[1] = y;
+		    			frustum4[2] = z;
 		    		}
 		    	}
 		    }

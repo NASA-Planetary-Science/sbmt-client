@@ -28,7 +28,7 @@ public class CircleSelectionPicker extends Picker
     	//this.erosRenderer = erosRenderer;
 		this.renWin = erosRenderer.getRenderWindowPanel();
 		this.modelManager = modelManager;
-		this.circleModel = (CircleModel)modelManager.getModel(ModelManager.CIRCLE_STRUCTURES);
+		this.circleModel = (CircleModel)modelManager.getModel(ModelManager.CIRCLE_SELECTION);
 		
 		erosPicker = new vtkCellPicker();
 		erosPicker.SetTolerance(0.002);
@@ -45,11 +45,14 @@ public class CircleSelectionPicker extends Picker
 
     public void mousePressed(MouseEvent e) 
     {
+    	//if (e.getButton() != MouseEvent.BUTTON1)
+    	//	return;
+
     	vertexIdBeingEdited = -1;
-
-    	if (e.getButton() != MouseEvent.BUTTON1)
-    		return;
-
+    	
+    	for (int i=circleModel.getNumberOfStructures()-1; i>=0; --i)
+    		circleModel.removeStructure(i);
+    	
     	renWin.lock();
     	int pickSucceeded = erosPicker.Pick(e.getX(), renWin.getIren().GetSize()[1]-e.getY()-1, 0.0, renWin.GetRenderer());
     	renWin.unlock();
