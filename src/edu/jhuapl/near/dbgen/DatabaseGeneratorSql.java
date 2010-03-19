@@ -13,10 +13,14 @@ import nom.tam.fits.FitsException;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
+import vtk.vtkPolyData;
+import vtk.vtkPolyDataReader;
+
 public class DatabaseGeneratorSql 
 {
 	static SqlManager db = null;
 	static PreparedStatement msiInsert = null;
+	static PreparedStatement msiInsert2 = null;
 	static PreparedStatement nisInsert = null;
 	static PreparedStatement nisInsert2 = null;
 	static ErosModel erosModel;
@@ -108,7 +112,38 @@ public class DatabaseGeneratorSql
         }
     }
     
-    private static void createNISTables2()
+    private static void createMSITablesCubes()
+    {
+        try {
+
+            //make a table
+        	try
+        	{
+            	db.dropTable("msicubes");
+        	}
+        	catch(Exception e)
+        	{
+        		e.printStackTrace();
+        	}
+
+        	db.update(
+            		"create table msicubes(" +
+            		"id int PRIMARY KEY, " +
+            		"imageid int, " +
+            		"cubeid int)"
+                );
+        } catch (SQLException ex2) {
+
+            //ignore
+        	ex2.printStackTrace();  // second time we run program
+            //  should throw execption since table
+            // already there
+            //
+            // this will have no effect on the db
+        }
+    }
+    
+    private static void createNISTablesCubes()
     {
         try {
 
@@ -293,7 +328,63 @@ public class DatabaseGeneratorSql
     	}
     }
 
-    private static void populateNISTables2(ArrayList<String> nisFiles) throws SQLException, IOException
+    private static void populateMSITablesCubes(ArrayList<String> msiFiles) throws SQLException, IOException
+    {
+    	int count = 0;
+    	for (String filename : msiFiles)
+    	{
+			boolean filesExist = checkIfAllFilesExist(filename);
+			if (filesExist == false)
+				continue;
+
+			System.out.println("starting msi " + count);
+			
+//    		String dayOfYearStr = "";
+//    		String yearStr = "";
+
+    		File origFile = new File(filename);
+//    		File f = origFile;
+
+//    		f = f.getParentFile();
+//    		dayOfYearStr = f.getName();
+
+//    		f = f.getParentFile();
+//    		yearStr = f.getName();
+
+	        String vtkfile = filename.substring(0, filename.length()-4) + "_FOOTPRINT.VTK";
+  
+			vtkPolyDataReader footprintReader = new vtkPolyDataReader();
+	        footprintReader.SetFileName(vtkfile);
+	        footprintReader.Update();
+	        
+	        vtkPolyData polyData = new vtkPolyData();
+			polyData.DeepCopy(footprintReader.GetOutput());
+
+    		if (msiInsert2 == null)
+    		{
+    			msiInsert2 = db.preparedStatement(                                                                                    
+    					"insert into msicubes values (?, ?, ?)");
+    		}
+
+    		TreeSet<Integer> cubeIds = erosCubes.getIntersectingCubes(polyData);
+    		for (Integer i : cubeIds)
+    		{
+        		System.out.println("id: " + count);
+        		System.out.println("msi id: " + Integer.parseInt(origFile.getName().substring(2, 11)));
+        		System.out.println("cubeId: " + i);
+        		
+    			msiInsert.setInt(1, count);
+    			msiInsert.setInt(2, Integer.parseInt(origFile.getName().substring(2, 11)));
+        		msiInsert.setInt(3, i);
+
+        		msiInsert.executeUpdate();
+
+    			++count;
+    		}
+    	}
+    }
+
+    private static void populateNISTablesCubes(ArrayList<String> nisFiles) throws SQLException, IOException
     {
     	int count = 0;
     	for (String filename : nisFiles)
@@ -318,7 +409,7 @@ public class DatabaseGeneratorSql
     		if (nisInsert2 == null)
     		{
     			nisInsert2 = db.preparedStatement(                                                                                    
-    					"insert into nisspectra values (?, ?, ?)");
+    					"insert into niscubes values (?, ?, ?)");
     		}
 
     		TreeSet<Integer> cubeIds = erosCubes.getIntersectingCubes(nisSpectrum.getFootprint());
@@ -377,6 +468,7 @@ public class DatabaseGeneratorSql
 		NativeLibraryLoader.loadVtkLibrariesLinuxNoX11();
 
 		erosModel = new ErosModel();
+		erosCubes = new ErosCubes(erosModel);
 		
 		String msiFileList=args[1];
 		String nisFileList=args[2];
@@ -403,14 +495,16 @@ public class DatabaseGeneratorSql
 		
         //createMSITables();
 		//createNISTables();
-		createNISTables2();
+		createMSITablesCubes();
+		createNISTablesCubes();
 
 		
 		try 
 		{
 			//populateMSITables(msiFiles);
 			//populateNISTables(nisFiles);
-			populateNISTables2(nisFiles);
+			populateMSITablesCubes(msiFiles);
+			populateNISTablesCubes(nisFiles);
 		}
 		catch (Exception e1) {
 			e1.printStackTrace();
