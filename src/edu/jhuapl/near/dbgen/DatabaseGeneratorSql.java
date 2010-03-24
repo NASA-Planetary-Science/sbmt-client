@@ -337,7 +337,7 @@ public class DatabaseGeneratorSql
 			if (filesExist == false)
 				continue;
 
-			System.out.println("starting msi " + count);
+			System.out.println("\n\nstarting msi " + filename);
 			
 //    		String dayOfYearStr = "";
 //    		String yearStr = "";
@@ -367,17 +367,20 @@ public class DatabaseGeneratorSql
     		}
 
     		TreeSet<Integer> cubeIds = erosCubes.getIntersectingCubes(polyData);
+    		System.out.println("cubeIds:  " + cubeIds);
+    		System.out.println("number of cubes: " + cubeIds.size());
+    		System.out.println("id: " + count);
+    		//System.out.println("msi id: " + Integer.parseInt(origFile.getName().substring(2, 11)));
+    		//System.out.println("cubeId: " + i);
+    		
     		for (Integer i : cubeIds)
     		{
-        		System.out.println("id: " + count);
-        		System.out.println("msi id: " + Integer.parseInt(origFile.getName().substring(2, 11)));
-        		System.out.println("cubeId: " + i);
         		
-    			msiInsert.setInt(1, count);
-    			msiInsert.setInt(2, Integer.parseInt(origFile.getName().substring(2, 11)));
-        		msiInsert.setInt(3, i);
+    			msiInsert2.setInt(1, count);
+    			msiInsert2.setInt(2, Integer.parseInt(origFile.getName().substring(2, 11)));
+        		msiInsert2.setInt(3, i);
 
-        		msiInsert.executeUpdate();
+        		msiInsert2.executeUpdate();
 
     			++count;
     		}
@@ -389,7 +392,7 @@ public class DatabaseGeneratorSql
     	int count = 0;
     	for (String filename : nisFiles)
     	{
-			System.out.println("starting nis " + count);
+			System.out.println("\n\nstarting nis " + filename);
 			
 //    		String dayOfYearStr = "";
 //    		String yearStr = "";
@@ -413,17 +416,21 @@ public class DatabaseGeneratorSql
     		}
 
     		TreeSet<Integer> cubeIds = erosCubes.getIntersectingCubes(nisSpectrum.getFootprint());
+    		System.out.println("cubeIds:  " + cubeIds);
+    		System.out.println("number of cubes: " + cubeIds.size());
+    		System.out.println("id: " + count);
+    		//System.out.println("id: " + count);
+    		//System.out.println("nis id: " + Integer.parseInt(origFile.getName().substring(2, 11)));
+    		//System.out.println("cubeId: " + i);
+
     		for (Integer i : cubeIds)
     		{
-        		System.out.println("id: " + count);
-        		System.out.println("nis id: " + Integer.parseInt(origFile.getName().substring(2, 11)));
-        		System.out.println("cubeId: " + i);
         		
-    			nisInsert.setInt(1, count);
-        		nisInsert.setInt(2, Integer.parseInt(origFile.getName().substring(2, 11)));
-        		nisInsert.setInt(3, i);
+    			nisInsert2.setInt(1, count);
+        		nisInsert2.setInt(2, Integer.parseInt(origFile.getName().substring(2, 11)));
+        		nisInsert2.setInt(3, i);
 
-    			nisInsert.executeUpdate();
+    			nisInsert2.executeUpdate();
 
     			++count;
     		}

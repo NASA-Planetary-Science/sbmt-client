@@ -90,6 +90,11 @@ public class ErosModel extends Model
         //this.computeLargestSmallestEdgeLength();
 	}
 	
+	public vtkPolyData getErosPolyData()
+	{
+		return erosPolyData;
+	}
+	
 	public void setShowEros(boolean show)
 	{
 		if (show)

@@ -9,20 +9,30 @@ import edu.jhuapl.near.util.BoundingBox;
 
 public class ErosCubes
 {
-	public BoundingBox erosBB;
-	ArrayList<BoundingBox> allCubes = new ArrayList<BoundingBox>();
-	double cubeSize = 1.0;
-	int numCubesX;
-	int numCubesY;
-	int numCubesZ;
+	private BoundingBox erosBB;
+	private ArrayList<BoundingBox> allCubes = new ArrayList<BoundingBox>();
+	private double cubeSize = 0.5;
 	
 	public ErosCubes(ErosModel eros)
 	{
 		erosBB = eros.computeBoundingBox();
-		numCubesX = (int)(Math.ceil(erosBB.xmax - erosBB.xmin) / cubeSize);
-		numCubesY = (int)(Math.ceil(erosBB.ymax - erosBB.ymin) / cubeSize);
-		numCubesZ = (int)(Math.ceil(erosBB.zmax - erosBB.zmin) / cubeSize);
+
+		double buffer = 0.01;
+		erosBB.xmax += buffer;
+		erosBB.xmin -= buffer;
+		erosBB.ymax += buffer;
+		erosBB.ymin -= buffer;
+		erosBB.zmax += buffer;
+		erosBB.zmin -= buffer;
 		
+		int numCubesX = (int)(Math.ceil(erosBB.xmax - erosBB.xmin) / cubeSize);
+		int numCubesY = (int)(Math.ceil(erosBB.ymax - erosBB.ymin) / cubeSize);
+		int numCubesZ = (int)(Math.ceil(erosBB.zmax - erosBB.zmin) / cubeSize);
+		
+		System.out.println("numCubesX " + numCubesX);
+		System.out.println("numCubesY " + numCubesY);
+		System.out.println("numCubesZ " + numCubesZ);
+
 		for (int k=0; k<numCubesZ; ++k)
 		{
 			double zmin = k * cubeSize;
@@ -46,6 +56,19 @@ public class ErosCubes
 				}
 			}
 		}
+
+		System.out.println("total cubes before reduction = " + allCubes.size());
+
+		// We can remove from allCubes all cubes that do not intersect the asteroid
+		TreeSet<Integer> intersectingCubes = getIntersectingCubes(eros.getErosPolyData());
+		ArrayList<BoundingBox> tmpCubes = new ArrayList<BoundingBox>();
+		for (Integer i : intersectingCubes)
+		{
+			tmpCubes.add(allCubes.get(i));
+		}
+		allCubes = tmpCubes;
+		
+		System.out.println("finished initializing cubes, total = " + allCubes.size());
 	}
 	
 	public BoundingBox getCube(int cubeId)
@@ -62,7 +85,7 @@ public class ErosCubes
 		BoundingBox spectrumBB = new BoundingBox(polydata.GetBounds());
 		double[] bounds = new double[6];
 		
-		int numberCubes = numCubesX * numCubesY * numCubesZ;
+		int numberCubes = allCubes.size();
 		for (int i=0; i<numberCubes; ++i)
 		{
 			// Before checking each polygon individually, first see if the
