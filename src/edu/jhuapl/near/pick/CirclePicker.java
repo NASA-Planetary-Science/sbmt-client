@@ -80,7 +80,7 @@ public class CirclePicker extends Picker
 				return;
 
 			renWin.lock();
-			int pickSucceeded = circlePicker.Pick(e.getX(), renWin.getIren().GetSize()[1]-e.getY()-1, 0.0, renWin.GetRenderer());
+			int pickSucceeded = circlePicker.Pick(e.getX(), renWin.getHeight()-e.getY()-1, 0.0, renWin.GetRenderer());
 			renWin.unlock();
 			if (pickSucceeded == 1)
 			{
@@ -107,7 +107,7 @@ public class CirclePicker extends Picker
 				return;
 
 			renWin.lock();
-			int pickSucceeded = erosPicker.Pick(e.getX(), renWin.getIren().GetSize()[1]-e.getY()-1, 0.0, renWin.GetRenderer());
+			int pickSucceeded = erosPicker.Pick(e.getX(), renWin.getHeight()-e.getY()-1, 0.0, renWin.GetRenderer());
 			renWin.unlock();
 
 			if (pickSucceeded == 1)
@@ -149,7 +149,7 @@ public class CirclePicker extends Picker
 			vertexIdBeingEdited >= 0)
 		{
 			renWin.lock();
-			int pickSucceeded = erosPicker.Pick(e.getX(), renWin.getIren().GetSize()[1]-e.getY()-1, 0.0, renWin.GetRenderer());
+			int pickSucceeded = erosPicker.Pick(e.getX(), renWin.getHeight()-e.getY()-1, 0.0, renWin.GetRenderer());
 			renWin.unlock();
 			if (pickSucceeded == 1)
 			{
@@ -173,7 +173,7 @@ public class CirclePicker extends Picker
 	public void mouseMoved(MouseEvent e) 
 	{
 		renWin.lock();
-		int pickSucceeded = circlePicker.Pick(e.getX(), renWin.getIren().GetSize()[1]-e.getY()-1, 0.0, renWin.GetRenderer());
+		int pickSucceeded = circlePicker.Pick(e.getX(), renWin.getHeight()-e.getY()-1, 0.0, renWin.GetRenderer());
 		renWin.unlock();
 		if (pickSucceeded == 1 &&
 				circlePicker.GetActor() == circleModel.getCircleActor())

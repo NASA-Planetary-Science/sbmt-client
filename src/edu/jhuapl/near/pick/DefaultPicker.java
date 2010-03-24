@@ -93,7 +93,7 @@ public class DefaultPicker extends Picker
 
 		// First try picking on the non-eros picker. If that fails try the eros picker.
 		renWin.lock();
-		int pickSucceeded = mousePressNonErosCellPicker.Pick(e.getX(), renWin.getIren().GetSize()[1]-e.getY()-1, 0.0, renWin.GetRenderer());
+		int pickSucceeded = mousePressNonErosCellPicker.Pick(e.getX(), renWin.getHeight()-e.getY()-1, 0.0, renWin.GetRenderer());
 		renWin.unlock();
 		
 		if (pickSucceeded == 1)
@@ -111,7 +111,7 @@ public class DefaultPicker extends Picker
 		{
 			// If the non-eros picker failed, see if the user clicked on eros itself.
 			renWin.lock();
-			pickSucceeded = mousePressErosCellPicker.Pick(e.getX(), renWin.getIren().GetSize()[1]-e.getY()-1, 0.0, renWin.GetRenderer());
+			pickSucceeded = mousePressErosCellPicker.Pick(e.getX(), renWin.getHeight()-e.getY()-1, 0.0, renWin.GetRenderer());
 			renWin.unlock();
 
 			if (pickSucceeded == 1)
@@ -168,7 +168,7 @@ public class DefaultPicker extends Picker
         		return;
     		
     		renWin.lock();
-    		int pickSucceeded = mousePressNonErosCellPicker.Pick(e.getX(), renWin.getIren().GetSize()[1]-e.getY()-1, 0.0, renWin.GetRenderer());
+    		int pickSucceeded = mousePressNonErosCellPicker.Pick(e.getX(), renWin.getHeight()-e.getY()-1, 0.0, renWin.GetRenderer());
     		renWin.unlock();
     		if (pickSucceeded == 1)
     		{
@@ -268,9 +268,8 @@ public class DefaultPicker extends Picker
         	distanceStr = " " + distanceStr;
         distanceStr += " km";
 
-System.out.println(e.getX() +  " " + renWin.getIren().GetSize()[1] + " " + e.getY() + " " + renWin.getWidth() + " " + renWin.getHeight());
 		renWin.lock();
-        int pickSucceeded = mouseMovedCellPicker.Pick(e.getX(), renWin.getIren().GetSize()[1]-e.getY()-1, 0.0, renWin.GetRenderer());
+        int pickSucceeded = mouseMovedCellPicker.Pick(e.getX(), renWin.getHeight()-e.getY()-1, 0.0, renWin.GetRenderer());
 		renWin.unlock();
 		if (pickSucceeded == 1)
 		{

@@ -54,7 +54,7 @@ public class CircleSelectionPicker extends Picker
     		circleModel.removeStructure(i);
     	
     	renWin.lock();
-    	int pickSucceeded = erosPicker.Pick(e.getX(), renWin.getIren().GetSize()[1]-e.getY()-1, 0.0, renWin.GetRenderer());
+    	int pickSucceeded = erosPicker.Pick(e.getX(), renWin.getHeight()-e.getY()-1, 0.0, renWin.GetRenderer());
     	renWin.unlock();
 
     	if (pickSucceeded == 1)
@@ -88,7 +88,7 @@ public class CircleSelectionPicker extends Picker
 		if (vertexIdBeingEdited >= 0)
 		{
 			renWin.lock();
-			int pickSucceeded = erosPicker.Pick(e.getX(), renWin.getIren().GetSize()[1]-e.getY()-1, 0.0, renWin.GetRenderer());
+			int pickSucceeded = erosPicker.Pick(e.getX(), renWin.getHeight()-e.getY()-1, 0.0, renWin.GetRenderer());
 			renWin.unlock();
 			if (pickSucceeded == 1)
 			{
