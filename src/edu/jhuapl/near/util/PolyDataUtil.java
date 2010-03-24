@@ -367,14 +367,14 @@ public class PolyDataUtil
 	static private vtkRegularPolygonSource polygonSource_f1;
 	static private vtkPolyDataConnectivityFilter connectivityFilter_f1;
 	static private vtkFeatureEdges edgeExtracter_f1;
-	static private vtkPolyData outputPolyData_f1;
-	public static vtkPolyData drawPolygonOnPolyData(
+	public static void drawPolygonOnPolyData(
 			vtkPolyData polyData,
 			vtkAbstractPointLocator pointLocator,
 			double[] center, 
 			double radius,
 			int numberOfSides,
-			boolean filled)
+			vtkPolyData outputInterior,
+			vtkPolyData outputBoundary)
 	{
 		if (math == null)
 			math = new vtkMath();
@@ -480,15 +480,16 @@ public class PolyDataUtil
 		connectivityFilter_f1.Update();
 
 //		polyData = new vtkPolyData();
-		if (outputPolyData_f1 == null)
-			outputPolyData_f1 = new vtkPolyData();
+		//if (outputPolyData_f1 == null)
+		//	outputPolyData_f1 = new vtkPolyData();
 
-		if (filled)
+		if (outputInterior != null)
 		{
 //			polyData.DeepCopy(f1_connectivityFilter.GetOutput());
-			outputPolyData_f1.DeepCopy(connectivityFilter_f1.GetOutput());
+			outputInterior.DeepCopy(connectivityFilter_f1.GetOutput());
 		}
-		else
+		
+		if (outputBoundary != null)
 		{
 			// Compute the bounding edges of this surface
 			//vtkFeatureEdges edgeExtracter = new vtkFeatureEdges();
@@ -502,7 +503,7 @@ public class PolyDataUtil
 	        edgeExtracter_f1.Update();
 
 	        //polyData.DeepCopy(edgeExtracter.GetOutput());
-			outputPolyData_f1.DeepCopy(edgeExtracter_f1.GetOutput());
+			outputBoundary.DeepCopy(edgeExtracter_f1.GetOutput());
 		}
 
 		
@@ -513,7 +514,7 @@ public class PolyDataUtil
         //writer.Write();
 
 		//return polyData;
-		return outputPolyData_f1;
+		//return outputPolyData_f1;
 	}
 
 	public static vtkPolyData drawPathOnPolyData(

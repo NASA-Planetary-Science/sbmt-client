@@ -50,7 +50,8 @@ public class RegularPolygonModel extends StructureModel
 		public double[] center;
 		public double radius;
 		
-		public vtkPolyData polyData;
+		public vtkPolyData boundaryPolyData;
+		public vtkPolyData interiorPolyData;
 		public int numberOfSides;
 		public boolean filled;
 		public String type;
@@ -59,7 +60,8 @@ public class RegularPolygonModel extends StructureModel
 		public RegularPolygon(int numberOfSides, boolean filled, String type)
 		{
 			id = ++maxId;
-			polyData = new vtkPolyData();
+			boundaryPolyData = new vtkPolyData();
+			interiorPolyData = new vtkPolyData();
 			this.type = type;
 		}
 
@@ -87,13 +89,23 @@ public class RegularPolygonModel extends StructureModel
 		{
 			return "Diameter = " + 2.0*radius + " km";
 		}
+		
+		public vtkPolyData getBoundaryPolyData()
+		{
+			return boundaryPolyData;
+		}
 
-	    public void updatePolygon(ErosModel erosModel, double[] center, double radius)
+		public vtkPolyData getInteriorPolyData()
+		{
+			return interiorPolyData;
+		}
+
+		public void updatePolygon(ErosModel erosModel, double[] center, double radius)
 	    {
 	    	this.center = center;
 	    	this.radius = radius;
 	    	
-	    	this.polyData.DeepCopy(erosModel.drawPolygon(center, radius, numberOfSides, filled));
+	    	erosModel.drawPolygon(center, radius, numberOfSides, interiorPolyData, boundaryPolyData);
 	    }
 	    
 	    public Element toXmlDomElement(Document dom)
@@ -175,7 +187,7 @@ public class RegularPolygonModel extends StructureModel
 			
 			for (int i=0; i<polygons.size(); ++i)
 			{
-				vtkPolyData poly = polygons.get(i).polyData;
+				vtkPolyData poly = polygons.get(i).boundaryPolyData;
 				if (poly != null)
 					appendFilter.SetInputByNumber(i, poly);
 			}
@@ -304,7 +316,7 @@ public class RegularPolygonModel extends StructureModel
 		int numberCellsSoFar = 0;
 		for (int i=0; i<polygons.size(); ++i)
 		{
-			numberCellsSoFar += polygons.get(i).polyData.GetNumberOfCells();
+			numberCellsSoFar += polygons.get(i).boundaryPolyData.GetNumberOfCells();
 			if (cellId < numberCellsSoFar)
 				return i;
 		}

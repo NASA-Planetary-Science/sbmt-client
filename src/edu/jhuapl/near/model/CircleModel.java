@@ -93,7 +93,7 @@ public class CircleModel extends StructureModel
 	    	this.center = center;
 	    	this.radius = radius;
 	    	
-	    	this.polyData.DeepCopy(erosModel.drawPolygon(center, radius, 20, false));
+	    	erosModel.drawPolygon(center, radius, 20, null, polyData);
 	    }
 	    
 	    public Element toXmlDomElement(Document dom)

@@ -92,7 +92,7 @@ public class PointModel extends StructureModel
 	    	this.center = center;
 	    	this.radius = radius;
 	    	
-	    	this.polyData.DeepCopy(erosModel.drawPolygon(center, radius, 4, true));
+	    	erosModel.drawPolygon(center, radius, 4, polyData, null);
 	    }
 	    
 	    public Element toXmlDomElement(Document dom)
