@@ -88,6 +88,7 @@ public class ErosModel extends Model
         pointLocator.BuildLocator();
         
         //this.computeLargestSmallestEdgeLength();
+        //this.computeSurfaceArea();
 	}
 	
 	public vtkPolyData getErosPolyData()
@@ -346,6 +347,9 @@ public class ErosModel extends Model
 	
 	public BoundingBox computeBoundingBox()
 	{
+		erosPolyData.ComputeBounds();
+		return new BoundingBox(erosPolyData.GetBounds());
+		/*
 		BoundingBox bb = new BoundingBox();
 		vtkPoints points = erosPolyData.GetPoints();
 		int numberPoints = points.GetNumberOfPoints();
@@ -356,6 +360,7 @@ public class ErosModel extends Model
 		}
 		
 		return bb;
+		*/
 	}
 	
     public String getClickStatusBarText(vtkProp prop, int cellId)
@@ -412,5 +417,15 @@ public class ErosModel extends Model
 		
 		System.out.println("minLength  " + minLength);
 		System.out.println("maxLength  " + maxLength);
+    }
+
+    public void computeSurfaceArea()
+    {
+    	vtkMassProperties massProp = new vtkMassProperties();
+    	massProp.SetInput(erosPolyData);
+    	massProp.Update();
+    	
+    	System.out.println("Surface area " + massProp.GetSurfaceArea());
+    	System.out.println("Volume " + massProp.GetVolume());
     }
 }

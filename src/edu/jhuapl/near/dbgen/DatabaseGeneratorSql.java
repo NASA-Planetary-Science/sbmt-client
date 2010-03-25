@@ -180,7 +180,7 @@ public class DatabaseGeneratorSql
     	
     	for (String filename : msiFiles)
     	{
-			boolean filesExist = checkIfAllFilesExist(filename);
+			boolean filesExist = checkIfAllMsiFilesExist(filename);
 			if (filesExist == false)
 				continue;
 
@@ -269,6 +269,9 @@ public class DatabaseGeneratorSql
     	int count = 0;
     	for (String filename : nisFiles)
     	{
+    		// Don't check if all Nis files exist here, since we want to allow searches on spectra
+    		// that don't intersect the asteroid
+    		
 			System.out.println("starting nis " + count++);
 			
     		String dayOfYearStr = "";
@@ -333,7 +336,7 @@ public class DatabaseGeneratorSql
     	int count = 0;
     	for (String filename : msiFiles)
     	{
-			boolean filesExist = checkIfAllFilesExist(filename);
+			boolean filesExist = checkIfAllMsiFilesExist(filename);
 			if (filesExist == false)
 				continue;
 
@@ -359,7 +362,8 @@ public class DatabaseGeneratorSql
 	        
 	        vtkPolyData polyData = new vtkPolyData();
 			polyData.DeepCopy(footprintReader.GetOutput());
-
+			polyData.ComputeBounds();
+			
     		if (msiInsert2 == null)
     		{
     			msiInsert2 = db.preparedStatement(                                                                                    
@@ -370,12 +374,10 @@ public class DatabaseGeneratorSql
     		System.out.println("cubeIds:  " + cubeIds);
     		System.out.println("number of cubes: " + cubeIds.size());
     		System.out.println("id: " + count);
-    		//System.out.println("msi id: " + Integer.parseInt(origFile.getName().substring(2, 11)));
-    		//System.out.println("cubeId: " + i);
+    		System.out.println("number of cells in polydata " + polyData.GetNumberOfCells());
     		
     		for (Integer i : cubeIds)
     		{
-        		
     			msiInsert2.setInt(1, count);
     			msiInsert2.setInt(2, Integer.parseInt(origFile.getName().substring(2, 11)));
         		msiInsert2.setInt(3, i);
@@ -392,6 +394,10 @@ public class DatabaseGeneratorSql
     	int count = 0;
     	for (String filename : nisFiles)
     	{
+			boolean filesExist = checkIfAllNisFilesExist(filename);
+			if (filesExist == false)
+				continue;
+
 			System.out.println("\n\nstarting nis " + filename);
 			
 //    		String dayOfYearStr = "";
@@ -407,7 +413,16 @@ public class DatabaseGeneratorSql
 //    		yearStr = f.getName();
 
 
-    		NISSpectrum nisSpectrum = new NISSpectrum(origFile, erosModel);
+	        String vtkfile = filename.substring(0, filename.length()-4) + "_FOOTPRINT.VTK";
+	        
+			vtkPolyDataReader footprintReader = new vtkPolyDataReader();
+	        footprintReader.SetFileName(vtkfile);
+	        footprintReader.Update();
+	        
+	        vtkPolyData polyData = new vtkPolyData();
+			polyData.DeepCopy(footprintReader.GetOutput());
+			polyData.ComputeBounds();
+			
     		
     		if (nisInsert2 == null)
     		{
@@ -415,17 +430,14 @@ public class DatabaseGeneratorSql
     					"insert into niscubes values (?, ?, ?)");
     		}
 
-    		TreeSet<Integer> cubeIds = erosCubes.getIntersectingCubes(nisSpectrum.getFootprint());
+    		TreeSet<Integer> cubeIds = erosCubes.getIntersectingCubes(polyData);
     		System.out.println("cubeIds:  " + cubeIds);
     		System.out.println("number of cubes: " + cubeIds.size());
     		System.out.println("id: " + count);
-    		//System.out.println("id: " + count);
-    		//System.out.println("nis id: " + Integer.parseInt(origFile.getName().substring(2, 11)));
-    		//System.out.println("cubeId: " + i);
+    		System.out.println("number of cells in polydata " + polyData.GetNumberOfCells());
 
     		for (Integer i : cubeIds)
     		{
-        		
     			nisInsert2.setInt(1, count);
         		nisInsert2.setInt(2, Integer.parseInt(origFile.getName().substring(2, 11)));
         		nisInsert2.setInt(3, i);
@@ -437,7 +449,7 @@ public class DatabaseGeneratorSql
     	}
     }
 
-    static boolean checkIfAllFilesExist(String line)
+    static boolean checkIfAllMsiFilesExist(String line)
 	{
 		File file = new File(line);
 		if (!file.exists())
@@ -463,9 +475,27 @@ public class DatabaseGeneratorSql
 		if (!file.exists())
 			return false;
 
+		name = line.substring(0, line.length()-4) + "_FOOTPRINT.VTK";
+		file = new File(name);
+		if (!file.exists())
+			return false;
+
 		return true;
 	}
 	
+    static boolean checkIfAllNisFilesExist(String line)
+	{
+		File file = new File(line);
+		if (!file.exists())
+			return false;
+
+		String name = line.substring(0, line.length()-4) + "_FOOTPRINT.VTK";
+		file = new File(name);
+		if (!file.exists())
+			return false;
+
+		return true;
+	}
 
 	/**
 	 * @param args

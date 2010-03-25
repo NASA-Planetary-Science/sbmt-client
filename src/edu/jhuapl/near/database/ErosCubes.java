@@ -11,7 +11,7 @@ public class ErosCubes
 {
 	private BoundingBox erosBB;
 	private ArrayList<BoundingBox> allCubes = new ArrayList<BoundingBox>();
-	private double cubeSize = 0.5;
+	private double cubeSize = 1.0;
 	
 	public ErosCubes(ErosModel eros)
 	{
@@ -35,16 +35,16 @@ public class ErosCubes
 
 		for (int k=0; k<numCubesZ; ++k)
 		{
-			double zmin = k * cubeSize;
-			double zmax = (k+1) * cubeSize;
+			double zmin = erosBB.zmin + k * cubeSize;
+			double zmax = erosBB.zmin + (k+1) * cubeSize;
 			for (int j=0; j<numCubesY; ++j)
 			{
-				double ymin = j * cubeSize;
-				double ymax = (j+1) * cubeSize;
+				double ymin = erosBB.ymin + j * cubeSize;
+				double ymax = erosBB.ymin + (j+1) * cubeSize;
 				for (int i=0; i<numCubesX; ++i)
 				{
-					double xmin = i * cubeSize;
-					double xmax = (i+1) * cubeSize;
+					double xmin = erosBB.xmin + i * cubeSize;
+					double xmax = erosBB.xmin + (i+1) * cubeSize;
 					BoundingBox bb = new BoundingBox();
 					bb.xmin = xmin;
 					bb.xmax = xmax;
@@ -82,23 +82,26 @@ public class ErosCubes
 
 		// Iterate through each cube and check if it intersects
 		// with the bounding box of any of the polygons of the polydata
-		BoundingBox spectrumBB = new BoundingBox(polydata.GetBounds());
-		double[] bounds = new double[6];
+
+		BoundingBox polydataBB = new BoundingBox(polydata.GetBounds());
+		int numberPolygons = polydata.GetNumberOfCells();
 		
+		double[] cellBounds = new double[6];
+		BoundingBox polyCellBB = new BoundingBox();
+
 		int numberCubes = allCubes.size();
 		for (int i=0; i<numberCubes; ++i)
 		{
 			// Before checking each polygon individually, first see if the
 			// polydata as a whole intersects the cube
 			BoundingBox cube = getCube(i);
-			if (cube.intersects(spectrumBB))
+			if (cube.intersects(polydataBB))
 			{
-				int numberPolygons = polydata.GetNumberOfCells();
 				for (int j=0; j<numberPolygons; ++j)
 				{
-					polydata.GetCellBounds(j, bounds);
-					BoundingBox polyBB = new BoundingBox(bounds);
-					if (cube.intersects(polyBB))
+					polydata.GetCellBounds(j, cellBounds);
+					polyCellBB.setBounds(cellBounds);
+					if (cube.intersects(polyCellBB))
 					{
 						cubeIds.add(i);
 						break;

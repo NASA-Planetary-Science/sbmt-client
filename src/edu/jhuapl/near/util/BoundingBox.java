@@ -15,6 +15,11 @@ public class BoundingBox
 	
 	public BoundingBox(double[] bounds)
 	{
+		setBounds(bounds);
+	}
+	
+	public void setBounds(double[] bounds)
+	{
 		xmin = bounds[0];
 		xmax = bounds[1];
 		ymin = bounds[2];

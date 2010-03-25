@@ -24,7 +24,7 @@ public class MSIFootprintGenerator
     	int count = 0;
     	for (String filename : msiFiles)
     	{
-			boolean filesExist = DatabaseGeneratorSql.checkIfAllFilesExist(filename);
+			boolean filesExist = DatabaseGeneratorSql.checkIfAllMsiFilesExist(filename);
 			if (filesExist == false)
 				continue;
 
