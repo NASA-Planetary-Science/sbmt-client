@@ -20,9 +20,13 @@ import org.joda.time.*;
 import vtk.vtkRenderWindowPanel;
 
 import edu.jhuapl.near.database.Database;
+import edu.jhuapl.near.model.CircleModel;
+import edu.jhuapl.near.model.ErosModel;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.NISSpectraCollection;
 import edu.jhuapl.near.model.NISSpectrum;
+import edu.jhuapl.near.pick.PickManager;
+import edu.jhuapl.near.pick.PickManager.PickMode;
 import edu.jhuapl.near.popupmenus.NISPopupMenu;
 import edu.jhuapl.near.util.IdPair;
 
@@ -73,6 +77,7 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
     public NISSearchPanel(
     		final ModelManager modelManager, 
     		ModelInfoWindowManager infoPanelManager,
+    		final PickManager pickManager,
     		vtkRenderWindowPanel renWin) 
     {
     	//setLayout(new BoxLayout(this,
@@ -226,7 +231,34 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
         		"degrees");
 
 
-		
+        JPanel selectRegionPanel = new JPanel();
+        //selectRegionPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        final JToggleButton selectRegionButton = new JToggleButton("Select Region");
+        selectRegionButton.setEnabled(true);
+        selectRegionButton.addActionListener(new ActionListener()
+        {
+			public void actionPerformed(ActionEvent e) 
+			{
+				if (selectRegionButton.isSelected())
+					pickManager.setPickMode(PickMode.CIRCLE_SELECTION);
+				else
+					pickManager.setPickMode(PickMode.DEFAULT);
+			}
+        });
+        selectRegionPanel.add(selectRegionButton);
+
+        final JButton clearRegionButton = new JButton("Clear Region");
+        clearRegionButton.addActionListener(new ActionListener()
+        {
+			public void actionPerformed(ActionEvent e) 
+			{
+				CircleModel selectionModel = (CircleModel)modelManager.getModel(ModelManager.CIRCLE_SELECTION);
+				selectionModel.removeAllStructures();
+			}
+        });
+        selectRegionPanel.add(clearRegionButton);
+
+        
         final JPanel submitPanel = new JPanel();
         //panel.setBorder(BorderFactory.createEmptyBorder(9, 9, 9, 9));
         JButton submitButton = new JButton("Search");
@@ -243,6 +275,7 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
         //pane.add(Box.createVerticalStrut(10));
         pane.add(polygonTypePanel);
         //pane.add(Box.createVerticalStrut(10));
+    	pane.add(selectRegionPanel, "align center");
     	pane.add(submitPanel, "align center");
         
         this.add(pane);
@@ -470,6 +503,14 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
         			endDateGreg.get(GregorianCalendar.MILLISECOND),
         			DateTimeZone.UTC);
 
+			TreeSet<Integer> cubeList = null;
+			CircleModel selectionModel = (CircleModel)modelManager.getModel(ModelManager.CIRCLE_SELECTION);
+			ErosModel erosModel = (ErosModel)modelManager.getModel(ModelManager.EROS);
+			if (selectionModel.getNumberOfStructures() > 0)
+			{
+				CircleModel.Circle region = (CircleModel.Circle)selectionModel.getStructure(0);
+				cubeList = erosModel.getIntersectingCubes(region.polyData);
+			}
         	
         	ArrayList<String> results = Database.getInstance().runQuery(
         			Database.Datatype.NIS,
@@ -489,7 +530,8 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
         			Double.parseDouble(fromEmissionTextField.getText()),
         			Double.parseDouble(toEmissionTextField.getText()),
         			Double.parseDouble(fromPhaseTextField.getText()),
-        			Double.parseDouble(toPhaseTextField.getText()));
+        			Double.parseDouble(toPhaseTextField.getText()),
+        			cubeList);
 
         	setNISResults(results);
         }

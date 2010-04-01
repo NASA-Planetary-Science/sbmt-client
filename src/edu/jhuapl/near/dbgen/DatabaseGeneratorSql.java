@@ -18,13 +18,14 @@ import vtk.vtkPolyDataReader;
 
 public class DatabaseGeneratorSql 
 {
-	static SqlManager db = null;
-	static PreparedStatement msiInsert = null;
-	static PreparedStatement msiInsert2 = null;
-	static PreparedStatement nisInsert = null;
-	static PreparedStatement nisInsert2 = null;
-	static ErosModel erosModel;
-	static ErosCubes erosCubes;
+	static private SqlManager db = null;
+	static private PreparedStatement msiInsert = null;
+	static private PreparedStatement msiInsert2 = null;
+	static private PreparedStatement nisInsert = null;
+	static private PreparedStatement nisInsert2 = null;
+	static private ErosModel erosModel;
+	static private vtkPolyDataReader footprintReader;
+	static private vtkPolyData footprintPolyData;
 	
     private static void createMSITables()
     {
@@ -356,13 +357,15 @@ public class DatabaseGeneratorSql
 
 	        String vtkfile = filename.substring(0, filename.length()-4) + "_FOOTPRINT.VTK";
   
-			vtkPolyDataReader footprintReader = new vtkPolyDataReader();
+	        if (footprintReader == null)
+	        	footprintReader = new vtkPolyDataReader();
 	        footprintReader.SetFileName(vtkfile);
 	        footprintReader.Update();
 	        
-	        vtkPolyData polyData = new vtkPolyData();
-			polyData.DeepCopy(footprintReader.GetOutput());
-			polyData.ComputeBounds();
+	        if (footprintPolyData == null)
+	        	footprintPolyData = new vtkPolyData();
+			footprintPolyData.DeepCopy(footprintReader.GetOutput());
+			footprintPolyData.ComputeBounds();
 			
     		if (msiInsert2 == null)
     		{
@@ -370,11 +373,11 @@ public class DatabaseGeneratorSql
     					"insert into msicubes values (?, ?, ?)");
     		}
 
-    		TreeSet<Integer> cubeIds = erosCubes.getIntersectingCubes(polyData);
+    		TreeSet<Integer> cubeIds = erosModel.getIntersectingCubes(footprintPolyData);
     		System.out.println("cubeIds:  " + cubeIds);
     		System.out.println("number of cubes: " + cubeIds.size());
     		System.out.println("id: " + count);
-    		System.out.println("number of cells in polydata " + polyData.GetNumberOfCells());
+    		System.out.println("number of cells in polydata " + footprintPolyData.GetNumberOfCells());
     		
     		for (Integer i : cubeIds)
     		{
@@ -415,13 +418,15 @@ public class DatabaseGeneratorSql
 
 	        String vtkfile = filename.substring(0, filename.length()-4) + "_FOOTPRINT.VTK";
 	        
-			vtkPolyDataReader footprintReader = new vtkPolyDataReader();
+	        if (footprintReader == null)
+	        	footprintReader = new vtkPolyDataReader();
 	        footprintReader.SetFileName(vtkfile);
 	        footprintReader.Update();
 	        
-	        vtkPolyData polyData = new vtkPolyData();
-			polyData.DeepCopy(footprintReader.GetOutput());
-			polyData.ComputeBounds();
+	        if (footprintPolyData == null)
+	        	footprintPolyData = new vtkPolyData();
+			footprintPolyData.DeepCopy(footprintReader.GetOutput());
+			footprintPolyData.ComputeBounds();
 			
     		
     		if (nisInsert2 == null)
@@ -430,11 +435,11 @@ public class DatabaseGeneratorSql
     					"insert into niscubes values (?, ?, ?)");
     		}
 
-    		TreeSet<Integer> cubeIds = erosCubes.getIntersectingCubes(polyData);
+    		TreeSet<Integer> cubeIds = erosModel.getIntersectingCubes(footprintPolyData);
     		System.out.println("cubeIds:  " + cubeIds);
     		System.out.println("number of cubes: " + cubeIds.size());
     		System.out.println("id: " + count);
-    		System.out.println("number of cells in polydata " + polyData.GetNumberOfCells());
+    		System.out.println("number of cells in polydata " + footprintPolyData.GetNumberOfCells());
 
     		for (Integer i : cubeIds)
     		{
@@ -505,7 +510,6 @@ public class DatabaseGeneratorSql
 		NativeLibraryLoader.loadVtkLibrariesLinuxNoX11();
 
 		erosModel = new ErosModel();
-		erosCubes = new ErosCubes(erosModel);
 		
 		String msiFileList=args[1];
 		String nisFileList=args[2];

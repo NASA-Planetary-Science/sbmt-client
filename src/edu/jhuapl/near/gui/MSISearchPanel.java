@@ -19,6 +19,8 @@ import org.joda.time.*;
 import vtk.vtkRenderWindowPanel;
 
 import edu.jhuapl.near.database.Database;
+import edu.jhuapl.near.model.CircleModel;
+import edu.jhuapl.near.model.ErosModel;
 import edu.jhuapl.near.model.MSIBoundaryCollection;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.MSIImageCollection;
@@ -333,7 +335,7 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
         searchByNumberPanel.add(searchByNumberTextField);
         
         JPanel selectRegionPanel = new JPanel();
-        //panel.setBorder(BorderFactory.createEmptyBorder(9, 9, 9, 9));
+        //selectRegionPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         final JToggleButton selectRegionButton = new JToggleButton("Select Region");
         selectRegionButton.setEnabled(true);
         selectRegionButton.addActionListener(new ActionListener()
@@ -346,8 +348,18 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
 					pickManager.setPickMode(PickMode.DEFAULT);
 			}
         });
-
         selectRegionPanel.add(selectRegionButton);
+
+        final JButton clearRegionButton = new JButton("Clear Region");
+        clearRegionButton.addActionListener(new ActionListener()
+        {
+			public void actionPerformed(ActionEvent e) 
+			{
+				CircleModel selectionModel = (CircleModel)modelManager.getModel(ModelManager.CIRCLE_SELECTION);
+				selectionModel.removeAllStructures();
+			}
+        });
+        selectRegionPanel.add(clearRegionButton);
 
         
         final JPanel submitPanel = new JPanel();
@@ -553,6 +565,15 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
         			endDateGreg.get(GregorianCalendar.SECOND),
         			endDateGreg.get(GregorianCalendar.MILLISECOND),
         			DateTimeZone.UTC);
+        	
+			TreeSet<Integer> cubeList = null;
+			CircleModel selectionModel = (CircleModel)modelManager.getModel(ModelManager.CIRCLE_SELECTION);
+			ErosModel erosModel = (ErosModel)modelManager.getModel(ModelManager.EROS);
+			if (selectionModel.getNumberOfStructures() > 0)
+			{
+				CircleModel.Circle region = (CircleModel.Circle)selectionModel.getStructure(0);
+				cubeList = erosModel.getIntersectingCubes(region.polyData);
+			}
 
         	ArrayList<String> results = Database.getInstance().runQuery(
         			Database.Datatype.MSI,
@@ -572,7 +593,8 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
         			Double.parseDouble(fromEmissionTextField.getText()),
         			Double.parseDouble(toEmissionTextField.getText()),
         			Double.parseDouble(fromPhaseTextField.getText()),
-        			Double.parseDouble(toPhaseTextField.getText()));
+        			Double.parseDouble(toPhaseTextField.getText()),
+        			cubeList);
 
         	setMSIResults(results);
         }

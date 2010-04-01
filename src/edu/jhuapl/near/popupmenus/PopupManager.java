@@ -70,6 +70,7 @@ public class PopupManager
     public void showPopup(MouseEvent e, vtkProp pickedProp, int pickedCellId, double[] pickedPosition)
     {
     	PopupMenu popup = modelToPopupMap.get(modelManager.getModel(pickedProp));
-    	popup.showPopup(e, pickedProp, pickedCellId, pickedPosition);
+    	if (popup != null)
+    		popup.showPopup(e, pickedProp, pickedCellId, pickedPosition);
     }
 }

@@ -6,8 +6,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.TreeSet;
 
 import vtk.*;
+import edu.jhuapl.near.database.ErosCubes;
 import edu.jhuapl.near.util.BoundingBox;
 import edu.jhuapl.near.util.ConvertResourceToFile;
 import edu.jhuapl.near.util.PolyDataUtil;
@@ -29,7 +31,8 @@ public class ErosModel extends Model
     private vtkScalarBarActor scalarBarActor;
     private vtkPolyDataReader erosReader;
     private vtkPolyDataNormals normalsFilter;
-    
+	private ErosCubes erosCubes;
+
     public enum ColoringType { 
     	NONE, 
     	ELEVATION, 
@@ -86,14 +89,23 @@ public class ErosModel extends Model
         pointLocator = new vtkKdTreePointLocator();
         pointLocator.SetDataSet(erosReader.GetOutput());
         pointLocator.BuildLocator();
-        
+
         //this.computeLargestSmallestEdgeLength();
         //this.computeSurfaceArea();
+		erosCubes = new ErosCubes(this);
 	}
 	
 	public vtkPolyData getErosPolyData()
 	{
 		return erosPolyData;
+	}
+	
+	public TreeSet<Integer> getIntersectingCubes(vtkPolyData polydata)
+	{
+		if (erosCubes == null)
+			erosCubes = new ErosCubes(this);
+			
+		return erosCubes.getIntersectingCubes(polydata);
 	}
 	
 	public void setShowEros(boolean show)

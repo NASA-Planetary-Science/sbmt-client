@@ -24,7 +24,7 @@ public class ControlPanel extends JTabbedPane
 	{
 		erosPanel = new ErosControlPanel(modelManager);
 		msiSearchPanel = new MSISearchPanel(modelManager, infoPanelManager, pickManager, viewer.getRenderWindowPanel());
-		nisSearchPanel = new NISSearchPanel(modelManager, infoPanelManager, viewer.getRenderWindowPanel());
+		nisSearchPanel = new NISSearchPanel(modelManager, infoPanelManager, pickManager, viewer.getRenderWindowPanel());
 		nlrSearchPanel = new NLRSearchPanel(modelManager, infoPanelManager, viewer.getRenderWindowPanel());
 		lineamentPanel = new LineamentControlPanel(modelManager);
 		structuresPanel = new StructuresControlPanel(modelManager, pickManager);

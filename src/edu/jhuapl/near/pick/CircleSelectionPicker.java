@@ -49,9 +49,8 @@ public class CircleSelectionPicker extends Picker
     	//	return;
 
     	vertexIdBeingEdited = -1;
-    	
-    	for (int i=circleModel.getNumberOfStructures()-1; i>=0; --i)
-    		circleModel.removeStructure(i);
+
+    	circleModel.removeAllStructures();
     	
     	renWin.lock();
     	int pickSucceeded = erosPicker.Pick(e.getX(), renWin.getHeight()-e.getY()-1, 0.0, renWin.GetRenderer());
