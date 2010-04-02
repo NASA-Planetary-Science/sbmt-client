@@ -61,7 +61,7 @@ public class ErosCubes
 		// Change the following to false to actually compute the 
 		// values stored in the erosIntersectingCubes array. This can take
 		// a long time which is why we hard code the values into this class.
-		boolean useHardCodedValues = false;
+		boolean useHardCodedValues = true;
 		if (useHardCodedValues)
 		{
 			ArrayList<BoundingBox> tmpCubes = new ArrayList<BoundingBox>();

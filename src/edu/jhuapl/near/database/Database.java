@@ -2,6 +2,7 @@ package edu.jhuapl.near.database;
 
 import java.io.*;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.*;
 
 import org.joda.time.DateTime;
@@ -25,16 +26,24 @@ public class Database
 	String version;
 
 	
-	private ArrayList<ArrayList<String>> doQuery(String url)
+	private ArrayList<ArrayList<String>> doQuery(String phpScript, String data)
 	{
 		ArrayList<ArrayList<String>> results = new ArrayList<ArrayList<String>>();
 		
 		try 
 		{
-			URL u = new URL(Configuration.getQueryRootURL() + "/" + url);
+			URL u = new URL(Configuration.getQueryRootURL() + "/" + phpScript);
+			URLConnection conn = u.openConnection();
+			conn.setDoOutput(true);
+			conn.setUseCaches(false);
+			
+			OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
+			wr.write(data);
+			wr.flush();
+			
+			System.out.println(data);
 			System.out.println(u);
-			InputStream is = u.openStream();
-			InputStreamReader isr = new InputStreamReader(is);
+			InputStreamReader isr = new InputStreamReader(conn.getInputStream());
 			BufferedReader in = new BufferedReader(isr);
 
 			String line;
@@ -70,13 +79,11 @@ public class Database
 		for (String key : args.keySet())
 		{
 			if (firstKey == true)
-				str += "?";
+				firstKey = false;
 			else
 				str += "&";
 			
 			str += key + "=" + args.get(key);
-			
-			firstKey = false;
 		}
 		
 		return str;
@@ -216,7 +223,7 @@ public class Database
 					HashMap<String, String> args = new HashMap<String, String>();
 					args.put("id", String.valueOf(id));
 					
-					results = doQuery("searchmsi_id.php" + constructUrlArguments(args));
+					results = doQuery("searchmsi_id.php", constructUrlArguments(args));
 				}
 				catch (NumberFormatException e)
 				{
@@ -293,8 +300,22 @@ public class Database
 					else
 						args.put("filterType"+i, "0");
 				}
-
-				results = doQuery("searchmsi.php" + constructUrlArguments(args));
+				if (cubeList != null && cubeList.size() > 0)
+				{
+					String cubes = "";
+					int size = cubeList.size();
+					int count = 0;
+					for (Integer i : cubeList)
+					{
+						cubes += "" + i;
+						if (count < size-1)
+							cubes += ",";
+						++count;
+					}
+					args.put("cubes", cubes);
+				}
+				
+				results = doQuery("searchmsi.php", constructUrlArguments(args));
 				
 				for (ArrayList<String> res : results)
 				{
@@ -360,8 +381,22 @@ public class Database
 					else
 						args.put("polygonType"+i, "0");
 				}
+				if (cubeList != null && cubeList.size() > 0)
+				{
+					String cubesStr = "";
+					int size = cubeList.size();
+					int count = 0;
+					for (Integer i : cubeList)
+					{
+						cubesStr += "" + i;
+						if (count < size-1)
+							cubesStr += ",";
+						++count;
+					}
+					args.put("cubes", cubesStr);
+				}
 
-				results = doQuery("searchnis.php" + constructUrlArguments(args));
+				results = doQuery("searchnis.php", constructUrlArguments(args));
 				
 				for (ArrayList<String> res : results)
 				{

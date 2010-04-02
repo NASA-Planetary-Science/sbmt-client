@@ -14,7 +14,7 @@ public class CircleSelectionPicker extends Picker
 	//private ErosRenderer erosRenderer;
     private vtkRenderWindowPanel renWin;
     private ErosModel erosModel;
-    private CircleModel circleModel;
+    private RegularPolygonModel circleModel;
     
     private vtkCellPicker erosPicker;
 
@@ -28,7 +28,7 @@ public class CircleSelectionPicker extends Picker
     	//this.erosRenderer = erosRenderer;
 		this.renWin = erosRenderer.getRenderWindowPanel();
 		this.modelManager = modelManager;
-		this.circleModel = (CircleModel)modelManager.getModel(ModelManager.CIRCLE_SELECTION);
+		this.circleModel = (RegularPolygonModel)modelManager.getModel(ModelManager.CIRCLE_SELECTION);
 		
 		erosPicker = new vtkCellPicker();
 		erosPicker.SetTolerance(0.002);
@@ -98,7 +98,7 @@ public class CircleSelectionPicker extends Picker
 				{
 					double[] lastDragPosition = erosPicker.GetPickPosition();
 
-					circleModel.changeRadiusOfCircle(vertexIdBeingEdited, lastDragPosition);
+					circleModel.changeRadiusOfPolygon(vertexIdBeingEdited, lastDragPosition);
 				}
 			}
 		}

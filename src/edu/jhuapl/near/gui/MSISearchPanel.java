@@ -19,7 +19,7 @@ import org.joda.time.*;
 import vtk.vtkRenderWindowPanel;
 
 import edu.jhuapl.near.database.Database;
-import edu.jhuapl.near.model.CircleModel;
+import edu.jhuapl.near.model.RegularPolygonModel;
 import edu.jhuapl.near.model.ErosModel;
 import edu.jhuapl.near.model.MSIBoundaryCollection;
 import edu.jhuapl.near.model.ModelManager;
@@ -355,7 +355,7 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
         {
 			public void actionPerformed(ActionEvent e) 
 			{
-				CircleModel selectionModel = (CircleModel)modelManager.getModel(ModelManager.CIRCLE_SELECTION);
+				RegularPolygonModel selectionModel = (RegularPolygonModel)modelManager.getModel(ModelManager.CIRCLE_SELECTION);
 				selectionModel.removeAllStructures();
 			}
         });
@@ -567,12 +567,12 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
         			DateTimeZone.UTC);
         	
 			TreeSet<Integer> cubeList = null;
-			CircleModel selectionModel = (CircleModel)modelManager.getModel(ModelManager.CIRCLE_SELECTION);
+			RegularPolygonModel selectionModel = (RegularPolygonModel)modelManager.getModel(ModelManager.CIRCLE_SELECTION);
 			ErosModel erosModel = (ErosModel)modelManager.getModel(ModelManager.EROS);
 			if (selectionModel.getNumberOfStructures() > 0)
 			{
-				CircleModel.Circle region = (CircleModel.Circle)selectionModel.getStructure(0);
-				cubeList = erosModel.getIntersectingCubes(region.polyData);
+				RegularPolygonModel.RegularPolygon region = (RegularPolygonModel.RegularPolygon)selectionModel.getStructure(0);
+				cubeList = erosModel.getIntersectingCubes(region.interiorPolyData);
 			}
 
         	ArrayList<String> results = Database.getInstance().runQuery(

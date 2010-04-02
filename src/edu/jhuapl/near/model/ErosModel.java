@@ -92,7 +92,6 @@ public class ErosModel extends Model
 
         //this.computeLargestSmallestEdgeLength();
         //this.computeSurfaceArea();
-		erosCubes = new ErosCubes(this);
 	}
 	
 	public vtkPolyData getErosPolyData()

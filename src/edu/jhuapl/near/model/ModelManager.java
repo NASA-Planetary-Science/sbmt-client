@@ -31,7 +31,7 @@ public class ModelManager extends Model implements PropertyChangeListener
 	private LineModel lineStructuresModel;
 	private CircleModel circleStructuresModel;
 	private PointModel pointStructuresModel;
-	private CircleModel circleSelectionModel;
+	private RegularPolygonModel circleSelectionModel;
 	
     private ArrayList<vtkProp> props = new ArrayList<vtkProp>();
     private ArrayList<vtkProp> propsExceptEros = new ArrayList<vtkProp>();
@@ -50,7 +50,11 @@ public class ModelManager extends Model implements PropertyChangeListener
     	lineStructuresModel = new LineModel(erosModel);
     	circleStructuresModel = new CircleModel(erosModel);
     	pointStructuresModel = new PointModel(erosModel);
-    	circleSelectionModel = new CircleModel(erosModel);
+    	circleSelectionModel = new RegularPolygonModel(
+    			erosModel,
+    			20,
+    			false,
+    			"Selection");
     	
     	allModels = new ArrayList<Model>();
     	allModels.add(erosModel);
