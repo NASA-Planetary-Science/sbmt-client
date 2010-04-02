@@ -83,7 +83,7 @@ public class MSIImage extends Model
     private double[] frustum4 = new double[3];
 	boolean hasLimb = false;
 
-	private boolean showFrustum = true;
+	private boolean showFrustum = false;
 	static private vtkMath math = null;
 
 	

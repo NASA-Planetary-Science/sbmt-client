@@ -62,7 +62,7 @@ public class PointPicker extends Picker
 		pointPicker.PickFromListOn();
 		pointPicker.InitializePickList();
 		pointPicker.GetPickList().RemoveAllItems();
-		pointPicker.AddPickList(pointModel.getPointActor());
+		pointPicker.AddPickList(pointModel.getInteriorActor());
 	}
 	
 	public void mousePressed(MouseEvent e) 
@@ -86,12 +86,12 @@ public class PointPicker extends Picker
 			{
 				vtkActor pickedActor = pointPicker.GetActor();
 
-				if (pickedActor == pointModel.getPointActor())
+				if (pickedActor == pointModel.getInteriorActor())
 				{
 					if (e.getButton() == MouseEvent.BUTTON1)
 					{
 						int cellId = pointPicker.GetCellId();
-						int pointId = pointModel.getPointIdFromCellId(cellId);
+						int pointId = pointModel.getPolygonIdFromInteriorCellId(cellId);
 						this.vertexIdBeingEdited = pointId;
 					}
 					else
@@ -160,7 +160,7 @@ public class PointPicker extends Picker
 				{
 					lastDragPosition = erosPicker.GetPickPosition();
 
-					pointModel.movePoint(vertexIdBeingEdited, lastDragPosition);
+					pointModel.movePolygon(vertexIdBeingEdited, lastDragPosition);
 				}
 			}
 		}
@@ -173,7 +173,7 @@ public class PointPicker extends Picker
 		int pickSucceeded = pointPicker.Pick(e.getX(), renWin.getHeight()-e.getY()-1, 0.0, renWin.GetRenderer());
 		renWin.unlock();
 		if (pickSucceeded == 1 &&
-				pointPicker.GetActor() == pointModel.getPointActor())
+				pointPicker.GetActor() == pointModel.getInteriorActor())
 		{
 			if (renWin.getCursor().getType() != Cursor.HAND_CURSOR)
 				renWin.setCursor(new Cursor(Cursor.HAND_CURSOR));

@@ -29,7 +29,7 @@ public class CirclesPopupMenu extends PopupMenu
 	{
 		public void actionPerformed(ActionEvent e) 
 		{
-			int idx = model.getCircleIdFromCellId(cellIdLastClicked);
+			int idx = model.getPolygonIdFromBoundaryCellId(cellIdLastClicked);
 			model.removeStructure(idx);
 		}
 	}

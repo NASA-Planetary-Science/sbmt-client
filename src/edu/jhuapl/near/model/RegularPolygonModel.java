@@ -42,8 +42,10 @@ public class RegularPolygonModel extends StructureModel
     private ErosModel erosModel;
     private double defaultRadius = 0.25; // radius for new polygons drawn
     private int numberOfSides = 4;
-    private double[] boundaryColor = {1.0, 0.0, 1.0};
-    private double[] interiorColor = {1.0, 0.0, 1.0};
+//    private double[] boundaryColor = {0.0, 0.0, 1.0};
+//    private double[] interiorColor = {0.0, 0.0, 1.0};
+    private double[] boundaryColor = {0.0/255.0, 191.0/255.0, 255.0/255.0};
+    private double[] interiorColor = {0.0/255.0, 191.0/255.0, 255.0/255.0};
     private double interiorOpacity = 0.3;
     private String type;
     private boolean saveRadiusToOutput = true;
@@ -376,7 +378,7 @@ public class RegularPolygonModel extends StructureModel
 	 * cellId. But since there are many cells per RegularPolygon, we need to be
 	 * able to figure out which RegularPolygon was picked
 	 */
-	public int getPolygonIdFromCellId(int cellId, boolean interior)
+	private int getPolygonIdFromCellId(int cellId, boolean interior)
 	{
 		int numberCellsSoFar = 0;
 		for (int i=0; i<polygons.size(); ++i)
@@ -391,6 +393,16 @@ public class RegularPolygonModel extends StructureModel
 		return -1;
 	}
 
+	public int getPolygonIdFromBoundaryCellId(int cellId)
+	{
+		return this.getPolygonIdFromCellId(cellId, false);
+	}
+	
+	public int getPolygonIdFromInteriorCellId(int cellId)
+	{
+		return this.getPolygonIdFromCellId(cellId, true);
+	}
+	
 	public void loadModel(File file) throws IOException
 	{
 		ArrayList<String> words = FileUtil.getFileWordsAsStringList(file.getAbsolutePath(), "\t");

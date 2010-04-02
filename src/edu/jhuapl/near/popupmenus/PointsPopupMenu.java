@@ -29,7 +29,7 @@ public class PointsPopupMenu extends PopupMenu
 	{
 		public void actionPerformed(ActionEvent e) 
 		{
-			int idx = model.getPointIdFromCellId(cellIdLastClicked);
+			int idx = model.getPolygonIdFromInteriorCellId(cellIdLastClicked);
 			model.removeStructure(idx);
 		}
 	}

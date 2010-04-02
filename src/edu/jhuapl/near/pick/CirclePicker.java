@@ -62,7 +62,7 @@ public class CirclePicker extends Picker
 		circlePicker.PickFromListOn();
 		circlePicker.InitializePickList();
 		circlePicker.GetPickList().RemoveAllItems();
-		circlePicker.AddPickList(circleModel.getCircleActor());
+		circlePicker.AddPickList(circleModel.getBoundaryActor());
 	}
 	
 	public void mousePressed(MouseEvent e) 
@@ -86,12 +86,12 @@ public class CirclePicker extends Picker
 			{
 				vtkActor pickedActor = circlePicker.GetActor();
 
-				if (pickedActor == circleModel.getCircleActor())
+				if (pickedActor == circleModel.getBoundaryActor())
 				{
 					if (e.getButton() == MouseEvent.BUTTON1)
 					{
 						int cellId = circlePicker.GetCellId();
-						int pointId = circleModel.getCircleIdFromCellId(cellId);
+						int pointId = circleModel.getPolygonIdFromBoundaryCellId(cellId);
 						this.vertexIdBeingEdited = pointId;
 					}
 					else
@@ -161,9 +161,9 @@ public class CirclePicker extends Picker
 					lastDragPosition = erosPicker.GetPickPosition();
 
 					if (e.isControlDown() || e.isShiftDown())
-						circleModel.changeRadiusOfCircle(vertexIdBeingEdited, lastDragPosition);
+						circleModel.changeRadiusOfPolygon(vertexIdBeingEdited, lastDragPosition);
 					else
-						circleModel.moveCircle(vertexIdBeingEdited, lastDragPosition);
+						circleModel.movePolygon(vertexIdBeingEdited, lastDragPosition);
 				}
 			}
 		}
@@ -176,7 +176,7 @@ public class CirclePicker extends Picker
 		int pickSucceeded = circlePicker.Pick(e.getX(), renWin.getHeight()-e.getY()-1, 0.0, renWin.GetRenderer());
 		renWin.unlock();
 		if (pickSucceeded == 1 &&
-				circlePicker.GetActor() == circleModel.getCircleActor())
+				circlePicker.GetActor() == circleModel.getBoundaryActor())
 		{
 			if (renWin.getCursor().getType() != Cursor.HAND_CURSOR)
 				renWin.setCursor(new Cursor(Cursor.HAND_CURSOR));

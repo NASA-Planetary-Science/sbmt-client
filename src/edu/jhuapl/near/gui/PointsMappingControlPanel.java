@@ -25,7 +25,7 @@ public class PointsMappingControlPanel extends
 		
 		pointModel = (PointModel)modelManager.getModel(ModelManager.POINT_STRUCTURES);
 
-		double diameter = 2.0 * pointModel.getCurrentRadius();
+		double diameter = 2.0 * pointModel.getDefaultRadius();
 
 		JPanel panel = new JPanel();
 
@@ -51,6 +51,7 @@ public class PointsMappingControlPanel extends
 	public void stateChanged(ChangeEvent e) 
 	{
 		Number val = (Number)spinner.getValue();
-		pointModel.setCurrentRadius(val.doubleValue()/2.0);
+		pointModel.setDefaultRadius(val.doubleValue()/2.0);
+		pointModel.changeRadiusOfAllPolygons(val.doubleValue()/2.0);
 	}
 }
