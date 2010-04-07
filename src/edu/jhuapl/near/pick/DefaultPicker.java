@@ -63,22 +63,6 @@ public class DefaultPicker extends Picker
 		mousePressErosCellPicker.SetTolerance(0.002);
 		mousePressErosCellPicker.PickFromListOn();
 		mousePressErosCellPicker.InitializePickList();
-		/*
-		lineamentPopupMenu = 
-			new LineamentPopupMenu((LineamentModel)modelManager.getModel(ModelManager.LINEAMENT));
-		
-		msiBoundariesPopupMenu= 
-			new MSIPopupMenu(modelManager, infoPanelManager, renWin, renWin);
-		
-		msiImagesPopupMenu = 
-			new MSIPopupMenu(modelManager, infoPanelManager, renWin, renWin);
-		
-		nisSpectraPopupMenu = 
-			new NISPopupMenu(modelManager, infoPanelManager, renWin);
-		
-		structuresPopupMenu =
-			new StructuresPopupMenu();
-			*/
 	}
 
 	public void setSuppressPopups(boolean b)
@@ -103,8 +87,13 @@ public class DefaultPicker extends Picker
 
 			if (model != null)
 			{
-				String text = model.getClickStatusBarText(pickedActor, mousePressNonErosCellPicker.GetCellId());
+				int cellId = mousePressNonErosCellPicker.GetCellId();
+				String text = model.getClickStatusBarText(pickedActor, cellId);
 				statusBar.setLeftText(text);
+				pcs.firePropertyChange(
+						Properties.MODEL_PICKED,
+						null,
+						new PickEvent(e, pickedActor, cellId, mousePressNonErosCellPicker.GetPickPosition()));
 			}
 		}		
 		else
@@ -121,8 +110,13 @@ public class DefaultPicker extends Picker
 
 				if (model != null)
 				{
-					String text = model.getClickStatusBarText(pickedActor, mousePressErosCellPicker.GetCellId());
+					int cellId = mousePressErosCellPicker.GetCellId();
+					String text = model.getClickStatusBarText(pickedActor, cellId);
 					statusBar.setLeftText(text);
+					pcs.firePropertyChange(
+							Properties.MODEL_PICKED,
+							null,
+							new PickEvent(e, pickedActor, cellId, mousePressErosCellPicker.GetPickPosition()));
 				}
 			}		
 			else
@@ -178,47 +172,6 @@ public class DefaultPicker extends Picker
     					pickedActor,
     					mousePressNonErosCellPicker.GetCellId(),
     					mousePressNonErosCellPicker.GetPickPosition());
-    					
-    			
-    			/*
-    			if (modelManager.getModel(pickedActor) instanceof LineamentModel)
-    			{
-        			LineamentModel linModel = (LineamentModel)modelManager.getModel(ModelManager.LINEAMENT);
-    				LineamentModel.Lineament lin = linModel.getLineament(mousePressNonErosCellPicker.GetCellId());
-    	    		if (lin != null)
-    	    			lineamentPopupMenu.show(e.getComponent(), e.getX(), e.getY(), lin);
-    			}
-    			else if (modelManager.getModel(pickedActor) instanceof MSIBoundaryCollection)
-    			{
-        			MSIBoundaryCollection msiBoundaries = (MSIBoundaryCollection)modelManager.getModel(ModelManager.MSI_BOUNDARY);
-        			String name = msiBoundaries.getBoundaryName(pickedActor);
-        			msiBoundariesPopupMenu.setCurrentImage(name);
-        			msiBoundariesPopupMenu.show(e.getComponent(), e.getX(), e.getY());
-    			}
-    			else if (modelManager.getModel(pickedActor) instanceof MSIImageCollection)
-    			{
-        			MSIImageCollection msiImages = (MSIImageCollection)modelManager.getModel(ModelManager.MSI_IMAGES);
-        			String name = msiImages.getImageName(pickedActor);
-        			msiImagesPopupMenu.setCurrentImage(name);
-        			msiImagesPopupMenu.show(e.getComponent(), e.getX(), e.getY());
-    			}
-    			else if (modelManager.getModel(pickedActor) instanceof NISSpectraCollection)
-    			{
-    				NISSpectraCollection msiImages = (NISSpectraCollection)modelManager.getModel(ModelManager.NIS_SPECTRA);
-        			String name = msiImages.getSpectrumName(pickedActor);
-        			nisSpectraPopupMenu.setCurrentSpectrum(name);
-        			nisSpectraPopupMenu.show(e.getComponent(), e.getX(), e.getY());
-    			}
-    			else if (modelManager.getModel(pickedActor) instanceof StructureModel)
-    			{
-    				//NISSpectraCollection msiImages = (NISSpectraCollection)modelManager.getModel(ModelManager.NIS_SPECTRA);
-        			//String name = msiImages.getSpectrumName(pickedActor);
-        			//nisSpectraPopupMenu.setCurrentSpectrum(name);
-    				structuresPopupMenu.setModel((StructureModel)modelManager.getModel(pickedActor),
-    						mousePressNonErosCellPicker.GetCellId());
-        			structuresPopupMenu.show(e.getComponent(), e.getX(), e.getY());
-    			}
-    			*/
     		}		
         }
     }

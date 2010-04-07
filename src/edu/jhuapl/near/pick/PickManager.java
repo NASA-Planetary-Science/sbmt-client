@@ -99,6 +99,11 @@ public class PickManager extends Picker
 		}
 	}
 	
+	public DefaultPicker getDefaultPicker()
+	{
+		return defaultPicker;
+	}
+	
 	private void addPicker(Picker picker)
 	{
 		renWin.addMouseListener(picker);

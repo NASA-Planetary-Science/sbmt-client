@@ -1,6 +1,8 @@
 package edu.jhuapl.near.gui;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
@@ -13,6 +15,7 @@ import java.io.File;
 
 //import edu.jhuapl.near.gui.popupmenus.StructuresPopupMenu;
 import edu.jhuapl.near.model.*;
+import edu.jhuapl.near.pick.PickEvent;
 import edu.jhuapl.near.pick.PickManager;
 import edu.jhuapl.near.util.Properties;
 import net.miginfocom.swing.MigLayout;
@@ -20,9 +23,9 @@ import net.miginfocom.swing.MigLayout;
 public abstract class AbstractStructureMappingControlPanel extends JPanel implements 
 	ActionListener,
 	PropertyChangeListener,
-	TableModelListener
+	TableModelListener, ListSelectionListener
 {
-    //private ModelManager modelManager;
+    private ModelManager modelManager;
     //private PickManager pickManager;
     private JButton loadStructuresButton;
     private JLabel structuresFileTextField;
@@ -45,13 +48,22 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
     		final PickManager pickManager,
     		final PickManager.PickMode pickMode) 
     {
-		//this.modelManager = modelManager;
+		this.modelManager = modelManager;
 		//this.pickManager = pickManager;
 		this.structureModel = structureModel;
 		this.pickManager = pickManager;
 		this.pickMode = pickMode;
 		
 		structureModel.addPropertyChangeListener(this);
+		this.addComponentListener(new ComponentAdapter() 
+		{
+			public void componentHidden(ComponentEvent e)
+			{
+				setEditingEnabled(false);
+			}
+		});
+		
+		pickManager.getDefaultPicker().addPropertyChangeListener(this);
 		
 		setLayout(new MigLayout("wrap 3, insets 0"));
 
@@ -119,6 +131,7 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
         structuresTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 //        structuresTable.getColumnModel().getColumn(0).setPreferredWidth(30);
         structuresTable.getModel().addTableModelListener(this);
+        structuresTable.getSelectionModel().addListSelectionListener(this);
         
         JScrollPane tableScrollPane = new JScrollPane(structuresTable);
         tableScrollPane.setPreferredSize(new Dimension(10000, 10000));
@@ -269,6 +282,17 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
 				}
 			}
 		}
+		else if (Properties.MODEL_PICKED.equals(evt.getPropertyName()))
+		{
+			PickEvent e = (PickEvent)evt.getNewValue();
+			if (modelManager.getModel(e.getPickedProp()) == structureModel)
+			{
+				int idx = structureModel.getStructureIndexFromCellId(e.getPickedCellId(), e.getPickedProp());
+				
+				structuresTable.setRowSelectionInterval(idx, idx);
+				structuresTable.scrollRectToVisible(structuresTable.getCellRect(idx, 0, true));
+			}
+		}
 	}
 	
 	private void updateStructureTable()
@@ -298,6 +322,14 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
 			{
 				structure.setName(name);
 			}			
+		}
+	}
+	
+	public void valueChanged(ListSelectionEvent e)
+	{
+		if (e.getValueIsAdjusting() == false)
+		{
+			structureModel.highlightStructure(structuresTable.getSelectedRow());
 		}
 	}
 	

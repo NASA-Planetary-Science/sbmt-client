@@ -13,10 +13,8 @@ public class CircleModel extends RegularPolygonModel
 	public CircleModel(ErosModel erosModel)
 	{
 		super(erosModel, 20, true, "circle");
-		setInteriorOpacity(1.0);
-		double[] boundaryColor = {1.0, 0.0, 1.0};
-		setBoundaryColor(boundaryColor);
-		double[] interiorColor = {0.0, 0.0, 0.0};
-		setInteriorColor(interiorColor);
+		setInteriorOpacity(0.0);
+		int[] color = {255, 0, 255};
+		setDefaultColor(color);
 	}
 }

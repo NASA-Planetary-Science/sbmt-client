@@ -10,6 +10,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import edu.jhuapl.near.util.FileUtil;
+import edu.jhuapl.near.util.IdPair;
 import edu.jhuapl.near.util.LatLon;
 import edu.jhuapl.near.util.Properties;
 import edu.jhuapl.near.util.Spice;
@@ -38,22 +39,25 @@ public class RegularPolygonModel extends StructureModel
     private vtkPolyDataMapper interiorMapper;
     private vtkActor interiorActor;
 
+    private vtkUnsignedCharArray boundaryColors;
+    private vtkUnsignedCharArray interiorColors;
+
     private vtkPolyData emptyPolyData;
     private ErosModel erosModel;
     private double defaultRadius = 0.25; // radius for new polygons drawn
     private int numberOfSides = 4;
-//    private double[] boundaryColor = {0.0, 0.0, 1.0};
-//    private double[] interiorColor = {0.0, 0.0, 1.0};
-    private double[] boundaryColor = {0.0/255.0, 191.0/255.0, 255.0/255.0};
-    private double[] interiorColor = {0.0/255.0, 191.0/255.0, 255.0/255.0};
+    private int[] defaultColor = {0, 191, 255};
+//    private int[] defaultBoundaryColor = {0, 191, 255};
+//    private int[] defaultInteriorColor = {0, 191, 255};
     private double interiorOpacity = 0.3;
     private String type;
     private boolean saveRadiusToOutput = true;
+    private int highlightedStructure = -1;
+    private int[] highlightColor = {0, 0, 255};
+	private int maxPolygonId = 0;
     
-	public static class RegularPolygon extends StructureModel.Structure
+	public class RegularPolygon extends StructureModel.Structure
 	{
-		static protected int maxId = 0;
-		
 		public String name = "default";
 		public int id;
 
@@ -64,15 +68,16 @@ public class RegularPolygonModel extends StructureModel
 		public vtkPolyData interiorPolyData;
 		public int numberOfSides;
 		public String type;
+		public int[] color;
 		
-		
-		public RegularPolygon(int numberOfSides, String type)
+		public RegularPolygon(int numberOfSides, String type, int[] color)
 		{
-			id = ++maxId;
+			id = ++maxPolygonId;
 			boundaryPolyData = new vtkPolyData();
 			interiorPolyData = new vtkPolyData();
 			this.numberOfSides = numberOfSides;
 			this.type = type;
+			this.color = color;
 		}
 
 		public int getId()
@@ -147,16 +152,19 @@ public class RegularPolygonModel extends StructureModel
 		this.numberOfSides = numberOfSides;
 		this.saveRadiusToOutput = saveRadiusToOutput;
 		this.type = type;
-
+		
+		boundaryColors = new vtkUnsignedCharArray();
+		boundaryColors.SetNumberOfComponents(3);
+		
+		interiorColors = new vtkUnsignedCharArray();
+		interiorColors.SetNumberOfComponents(3);
+		
 		boundaryPolyData = new vtkPolyData();
 		boundaryAppendFilter = new vtkAppendPolyData();
 		boundaryAppendFilter.UserManagedInputsOn();
 		boundaryMapper = new vtkPolyDataMapper();
-		boundaryMapper.ScalarVisibilityOff();
-		boundaryMapper.SetScalarModeToDefault();
 		boundaryActor = new vtkActor();
 		boundaryActor.GetProperty().LightingOff();
-		boundaryActor.GetProperty().SetColor(boundaryColor);
 		boundaryActor.GetProperty().SetLineWidth(2.0);
 
 		actors.add(boundaryActor);
@@ -165,42 +173,56 @@ public class RegularPolygonModel extends StructureModel
 		interiorAppendFilter = new vtkAppendPolyData();
 		interiorAppendFilter.UserManagedInputsOn();
 		interiorMapper = new vtkPolyDataMapper();
-		interiorMapper.ScalarVisibilityOff();
-		interiorMapper.SetScalarModeToDefault();
 		interiorActor = new vtkActor();
 		interiorActor.GetProperty().LightingOff();
-		interiorActor.GetProperty().SetColor(interiorColor);
 		interiorActor.GetProperty().SetOpacity(interiorOpacity);
 		//interiorActor.GetProperty().SetLineWidth(2.0);
 
 		actors.add(interiorActor);
 	}
 	
+	public void setDefaultColor(int[] color)
+	{
+		this.defaultColor = color;
+	}
+
+	public int[] getDefaultColor()
+	{
+		return defaultColor;
+	}
+
+	public void setPolygonColor(int i, int[] color)
+	{
+		this.polygons.get(i).color  = color;
+	}
 	
-	public double[] getBoundaryColor()
+	public int[] getPolygonColor(int i)
 	{
-		return boundaryColor;
+		return this.polygons.get(i).color;
+	}
+	
+	/*
+	public int[] getDefaultBoundaryColor()
+	{
+		return defaultBoundaryColor;
 	}
 
 
-	public void setBoundaryColor(double[] color)
+	public void setDefaultBoundaryColor(int[] color)
 	{
-		this.boundaryColor = color;
-		boundaryActor.GetProperty().SetColor(color);
-		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+		this.defaultBoundaryColor = color;
 	}
 
-	public double[] getInteriorColor()
+	public int[] getDefaultInteriorColor()
 	{
-		return interiorColor;
+		return defaultInteriorColor;
 	}
 
-	public void setInteriorColor(double[] color)
+	public void setDefaultInteriorColor(int[] color)
 	{
-		this.interiorColor = color;
-		interiorActor.GetProperty().SetColor(color);
-		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+		this.defaultInteriorColor = color;
 	}
+	*/
 
 	public double getInteriorOpacity()
 	{
@@ -210,7 +232,7 @@ public class RegularPolygonModel extends StructureModel
 	public void setInteriorOpacity(double opacity)
 	{
 		this.interiorOpacity = opacity;
-		boundaryActor.GetProperty().SetOpacity(opacity);
+		interiorActor.GetProperty().SetOpacity(opacity);
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 	}
 
@@ -251,6 +273,26 @@ public class RegularPolygonModel extends StructureModel
 
 			erosModel.shiftPolyLineInNormalDirection(boundaryPolyData, 0.003);
 			erosModel.shiftPolyLineInNormalDirection(interiorPolyData, 0.002);
+			
+			boundaryColors.SetNumberOfTuples(boundaryPolyData.GetNumberOfCells());
+			interiorColors.SetNumberOfTuples(interiorPolyData.GetNumberOfCells());
+			for (int i=0; i<polygons.size(); ++i)
+			{
+				int[] color = polygons.get(i).color;
+				
+				if (i == this.highlightedStructure)
+					color = highlightColor;
+				
+				IdPair range = this.getCellIdRangeOfPolygon(i, false);
+				for (int j=range.id1; j<range.id2; ++j)
+					boundaryColors.SetTuple3(j, color[0], color[1], color[2]);
+
+				range = this.getCellIdRangeOfPolygon(i, true);
+				for (int j=range.id1; j<range.id2; ++j)
+					interiorColors.SetTuple3(j, color[0], color[1], color[2]);
+			}
+			boundaryPolyData.GetCellData().SetScalars(boundaryColors);
+			interiorPolyData.GetCellData().SetScalars(interiorColors);
 		}
 		else
 		{
@@ -316,13 +358,14 @@ public class RegularPolygonModel extends StructureModel
     
     public void addNewStructure(double[] pos)
     {
-        RegularPolygon pol = new RegularPolygon(numberOfSides, type);
+        RegularPolygon pol = this.new RegularPolygon(numberOfSides, type, defaultColor);
         polygons.add(pol);
 
         pol.updatePolygon(erosModel, pos, defaultRadius);
         updatePolyData();
         
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+		this.pcs.firePropertyChange(Properties.STRUCTURE_ADDED, null, null);
     }
     
     public void removeStructure(int polygonId)
@@ -403,6 +446,26 @@ public class RegularPolygonModel extends StructureModel
 		return this.getPolygonIdFromCellId(cellId, true);
 	}
 	
+	private IdPair getCellIdRangeOfPolygon(int polygonId, boolean interior)
+	{
+		int startCell = 0;
+		for (int i=0; i<polygonId; ++i)
+		{
+			if (interior)
+				startCell += polygons.get(i).interiorPolyData.GetNumberOfCells();
+			else
+				startCell += polygons.get(i).boundaryPolyData.GetNumberOfCells();
+		}
+		
+		int endCell = startCell;
+		if (interior)
+			endCell += polygons.get(polygonId).interiorPolyData.GetNumberOfCells();
+		else
+			endCell += polygons.get(polygonId).boundaryPolyData.GetNumberOfCells();
+
+		return new IdPair(startCell, endCell);
+	}
+	
 	public void loadModel(File file) throws IOException
 	{
 		ArrayList<String> words = FileUtil.getFileWordsAsStringList(file.getAbsolutePath(), "\t");
@@ -410,7 +473,7 @@ public class RegularPolygonModel extends StructureModel
 		ArrayList<RegularPolygon> newPolygons = new ArrayList<RegularPolygon>();
 		for (int i=0; i<words.size();)
 		{
-			RegularPolygon pol = new RegularPolygon(numberOfSides, type);
+			RegularPolygon pol = this.new RegularPolygon(numberOfSides, type, defaultColor);
 			pol.center = new double[3];
 			
 			pol.id = Integer.parseInt(words.get(i++));
@@ -429,8 +492,8 @@ public class RegularPolygonModel extends StructureModel
 			else
 				pol.radius = defaultRadius;
 			
-	    	if (pol.id > RegularPolygon.maxId)
-	    		RegularPolygon.maxId = pol.id;
+	    	if (pol.id > maxPolygonId)
+	    		maxPolygonId = pol.id;
 	    	
 	    	pol.updatePolygon(erosModel, pol.center, pol.radius);
 	        newPolygons.add(pol);
@@ -502,4 +565,29 @@ public class RegularPolygonModel extends StructureModel
 		this.defaultRadius = radius;
 	}
 
+	public void highlightStructure(int idx)
+	{
+		this.highlightedStructure = idx;
+		updatePolyData();
+		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+	}
+	
+	public int getHighlightedStructure()
+	{
+		return highlightedStructure;
+	}
+
+	public int getStructureIndexFromCellId(int cellId, vtkProp prop)
+	{
+		if (prop == boundaryActor)
+		{
+			return getPolygonIdFromBoundaryCellId(cellId);
+		}
+		else if (prop == interiorActor)
+		{
+			return getPolygonIdFromInteriorCellId(cellId);
+		}
+
+		return -1;
+	}
 }

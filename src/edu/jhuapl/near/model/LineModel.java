@@ -424,6 +424,7 @@ public class LineModel extends StructureModel
         Line lin = new Line();
         lines.add(lin);
         selectStructure(lines.size()-1);
+		this.pcs.firePropertyChange(Properties.STRUCTURE_ADDED, null, null);
     }
     
     /*
@@ -759,6 +760,11 @@ public class LineModel extends StructureModel
 	public boolean supportsSelection()
 	{
 		return true;
+	}
+
+	public int getStructureIndexFromCellId(int cellId, vtkProp notUsed)
+	{
+		return cellId;
 	}
     
 	

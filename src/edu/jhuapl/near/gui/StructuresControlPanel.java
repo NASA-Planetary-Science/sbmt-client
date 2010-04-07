@@ -1,14 +1,15 @@
 package edu.jhuapl.near.gui;
 
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+
 import javax.swing.JTabbedPane;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.StructureModel;
 import edu.jhuapl.near.pick.PickManager;
 
-public class StructuresControlPanel extends JTabbedPane implements ChangeListener
+public class StructuresControlPanel extends JTabbedPane
 {
 	private AbstractStructureMappingControlPanel lineStructuresMapperPanel;
 	private AbstractStructureMappingControlPanel circleStructuresMapperPanel;
@@ -42,13 +43,14 @@ public class StructuresControlPanel extends JTabbedPane implements ChangeListene
 		addTab("Circles", circleStructuresMapperPanel);
 		addTab("Points", pointsStructuresMapperPanel);
 		
-		addChangeListener(this);
-	}
-
-	public void stateChanged(ChangeEvent e)
-	{
-		lineStructuresMapperPanel.setEditingEnabled(false);
-		circleStructuresMapperPanel.setEditingEnabled(false);
-		pointsStructuresMapperPanel.setEditingEnabled(false);
+		this.addComponentListener(new ComponentAdapter() 
+		{
+			public void componentHidden(ComponentEvent e)
+			{
+				lineStructuresMapperPanel.setEditingEnabled(false);
+				circleStructuresMapperPanel.setEditingEnabled(false);
+				pointsStructuresMapperPanel.setEditingEnabled(false);
+			}
+		});
 	}
 }

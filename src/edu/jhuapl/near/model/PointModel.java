@@ -13,7 +13,7 @@ public class PointModel extends RegularPolygonModel
 	{
 		super(erosModel, 4, false, "point");
 		setInteriorOpacity(1.0);
-		double[] color = {1.0, 0.0, 1.0};
-		setInteriorColor(color);
+		int[] color = {255, 0, 255};
+		setDefaultColor(color);
 	}
 }

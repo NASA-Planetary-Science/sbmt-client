@@ -36,6 +36,7 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
 	private final String NIS_REMOVE_ALL_BUTTON_TEXT = "Remove All Footprints";
 	
     private final ModelManager modelManager;
+    private PickManager pickManager;
     private java.util.Date startDate = new GregorianCalendar(2000, 4, 1, 0, 0, 0).getTime();
     private java.util.Date endDate = new GregorianCalendar(2000, 4, 14, 0, 0, 0).getTime();
     private JLabel endDateLabel;
@@ -72,6 +73,7 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
     private JCheckBox polygonType1CheckBox;
     private JCheckBox polygonType2CheckBox;
     private JCheckBox polygonType3CheckBox;
+    private JToggleButton selectRegionButton;
 
     
     public NISSearchPanel(
@@ -85,7 +87,17 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
     	setLayout(new MigLayout("wrap 1, insets 0"));
     	
     	this.modelManager = modelManager;
-    	
+    	this.pickManager = pickManager;
+
+		this.addComponentListener(new ComponentAdapter() 
+		{
+			public void componentHidden(ComponentEvent e)
+			{
+		    	selectRegionButton.setSelected(false);
+				pickManager.setPickMode(PickMode.DEFAULT);
+			}
+		});
+
     	JPanel pane = new JPanel();
 //    	pane.setLayout(new BoxLayout(pane,
 //        		BoxLayout.PAGE_AXIS));
@@ -233,7 +245,7 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
 
         JPanel selectRegionPanel = new JPanel();
         //selectRegionPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-        final JToggleButton selectRegionButton = new JToggleButton("Select Region");
+        selectRegionButton = new JToggleButton("Select Region");
         selectRegionButton.setEnabled(true);
         selectRegionButton.addActionListener(new ActionListener()
         {
@@ -469,7 +481,10 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
     {
         try
         {
-        	ArrayList<Integer> polygonTypesChecked = new ArrayList<Integer>();
+        	selectRegionButton.setSelected(false);
+			pickManager.setPickMode(PickMode.DEFAULT);
+
+			ArrayList<Integer> polygonTypesChecked = new ArrayList<Integer>();
 
         	if (polygonType0CheckBox.isSelected())
         		polygonTypesChecked.add(0);

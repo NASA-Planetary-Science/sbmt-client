@@ -35,6 +35,7 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
 	private final String MSI_REMOVE_ALL_BUTTON_TEXT = "Remove All Boundaries";
 	
     private final ModelManager modelManager;
+    private PickManager pickManager;
     private java.util.Date startDate = new GregorianCalendar(2000, 6, 7, 0, 0, 0).getTime();
     private java.util.Date endDate = new GregorianCalendar(2000, 7, 1, 0, 0, 0).getTime();
     private JLabel endDateLabel;
@@ -65,6 +66,8 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
     private JFormattedTextField fromPhaseTextField;
     private JFormattedTextField toPhaseTextField;
 
+    private JToggleButton selectRegionButton;
+    
     private JFormattedTextField searchByNumberTextField;
     private JCheckBox searchByNumberCheckBox;
     
@@ -91,7 +94,17 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
         		BoxLayout.PAGE_AXIS));
     	
     	this.modelManager = modelManager;
+    	this.pickManager = pickManager;
     	
+		this.addComponentListener(new ComponentAdapter() 
+		{
+			public void componentHidden(ComponentEvent e)
+			{
+		    	selectRegionButton.setSelected(false);
+				pickManager.setPickMode(PickMode.DEFAULT);
+			}
+		});
+
     	JPanel pane = new JPanel();
     	pane.setLayout(new BoxLayout(pane,
         		BoxLayout.PAGE_AXIS));
@@ -336,7 +349,7 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
         
         JPanel selectRegionPanel = new JPanel();
         //selectRegionPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-        final JToggleButton selectRegionButton = new JToggleButton("Select Region");
+        selectRegionButton = new JToggleButton("Select Region");
         selectRegionButton.setEnabled(true);
         selectRegionButton.addActionListener(new ActionListener()
         {
@@ -522,7 +535,10 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
     {
         try
         {
-        	ArrayList<Integer> filtersChecked = new ArrayList<Integer>();
+        	selectRegionButton.setSelected(false);
+			pickManager.setPickMode(PickMode.DEFAULT);
+
+			ArrayList<Integer> filtersChecked = new ArrayList<Integer>();
 
         	if (filter1CheckBox.isSelected())
         		filtersChecked.add(1);
