@@ -19,7 +19,7 @@ import org.joda.time.*;
 
 import vtk.vtkRenderWindowPanel;
 
-import edu.jhuapl.near.database.Query;
+import edu.jhuapl.near.query.Query;
 import edu.jhuapl.near.model.RegularPolygonModel;
 import edu.jhuapl.near.model.ErosModel;
 import edu.jhuapl.near.model.ModelManager;

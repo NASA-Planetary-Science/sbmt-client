@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.TreeSet;
 
 import vtk.*;
-import edu.jhuapl.near.database.ErosCubes;
+import edu.jhuapl.near.query.ErosCubes;
 import edu.jhuapl.near.util.BoundingBox;
 import edu.jhuapl.near.util.ConvertResourceToFile;
 import edu.jhuapl.near.util.PolyDataUtil;
