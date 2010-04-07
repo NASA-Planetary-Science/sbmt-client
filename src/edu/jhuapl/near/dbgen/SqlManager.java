@@ -29,7 +29,7 @@
  */
 
 
-package edu.jhuapl.near.database;
+package edu.jhuapl.near.dbgen;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
