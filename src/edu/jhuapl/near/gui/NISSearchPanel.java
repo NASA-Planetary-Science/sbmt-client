@@ -19,7 +19,7 @@ import org.joda.time.*;
 
 import vtk.vtkRenderWindowPanel;
 
-import edu.jhuapl.near.database.Database;
+import edu.jhuapl.near.database.Query;
 import edu.jhuapl.near.model.RegularPolygonModel;
 import edu.jhuapl.near.model.ErosModel;
 import edu.jhuapl.near.model.ModelManager;
@@ -527,8 +527,8 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
 				cubeList = erosModel.getIntersectingCubes(region.interiorPolyData);
 			}
         	
-        	ArrayList<String> results = Database.getInstance().runQuery(
-        			Database.Datatype.NIS,
+        	ArrayList<String> results = Query.getInstance().runQuery(
+        			Query.Datatype.NIS,
         			startDateJoda,
         			endDateJoda,
         			null,

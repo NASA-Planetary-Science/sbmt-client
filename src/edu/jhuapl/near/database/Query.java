@@ -17,11 +17,11 @@ import edu.jhuapl.near.util.Configuration;
  * @author kahneg1
  * 
  */
-public class Database
+public class Query
 {
 	public enum Datatype {MSI, NIS, NLR};
 	
-	private static Database ref = null;
+	private static Query ref = null;
 	
 	String version;
 
@@ -155,10 +155,10 @@ public class Database
 		return str;
 	}
 
-	public static Database getInstance()                                                                                                 
+	public static Query getInstance()                                                                                                 
     {                                                                                                                                          
         if (ref == null)                                                                                                                       
-            ref = new Database();                                                                                                        
+            ref = new Query();                                                                                                        
         return ref;                                                                                                                            
     }                                                                                                                                          
                                                                                                                                                
@@ -168,7 +168,7 @@ public class Database
         throw new CloneNotSupportedException();                                                                                                
     }                                                                                                                                          
                                                             
-	private Database() 
+	private Query() 
 	{
 	}
 
