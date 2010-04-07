@@ -5,7 +5,6 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.*;
 
-import edu.jhuapl.near.database.*;
 import edu.jhuapl.near.model.*;
 import edu.jhuapl.near.util.*;
 
