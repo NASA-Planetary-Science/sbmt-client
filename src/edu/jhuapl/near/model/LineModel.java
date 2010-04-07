@@ -762,9 +762,14 @@ public class LineModel extends StructureModel
 		return true;
 	}
 
-	public int getStructureIndexFromCellId(int cellId, vtkProp notUsed)
+	public int getStructureIndexFromCellId(int cellId, vtkProp prop)
 	{
-		return cellId;
+		if (prop == lineActor)
+			return cellId;
+		else if (prop == lineSelectionActor)
+			return selectedLine;
+		else
+			return -1;
 	}
     
 	

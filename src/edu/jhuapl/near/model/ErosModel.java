@@ -114,7 +114,7 @@ public class ErosModel extends Model
 			if (!erosActors.contains(erosActor))
 			{
 				erosActors.add(erosActor);
-				this.pcs.firePropertyChange(Properties.EROS_MODEL_CHANGED, null, null);
+				this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 			}
 		}
 		else
@@ -122,7 +122,7 @@ public class ErosModel extends Model
 			if (erosActors.contains(erosActor))
 			{
 				erosActors.remove(erosActor);
-				this.pcs.firePropertyChange(Properties.EROS_MODEL_CHANGED, null, null);
+				this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 			}
 		}
 		
@@ -255,14 +255,14 @@ public class ErosModel extends Model
 		}
 		this.erosPolyData.Modified();
 		
-		this.pcs.firePropertyChange(Properties.EROS_MODEL_CHANGED, null, null);
+		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 	}
 	
 	public void setShowLighting(boolean lighting)
 	{
 		this.showLighting = lighting;
 		this.erosActor.GetProperty().SetLighting(showLighting);
-		this.pcs.firePropertyChange(Properties.EROS_MODEL_CHANGED, null, null);
+		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 	}
 
 	public vtkPolyData computeFrustumIntersection(
@@ -347,13 +347,13 @@ public class ErosModel extends Model
 	public void setShadingToFlat()
 	{
         erosActor.GetProperty().SetInterpolationToFlat();
-		this.pcs.firePropertyChange(Properties.EROS_MODEL_CHANGED, null, null);
+		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 	}
 	
 	public void setShadingToSmooth()
 	{
         erosActor.GetProperty().SetInterpolationToPhong();
-		this.pcs.firePropertyChange(Properties.EROS_MODEL_CHANGED, null, null);
+		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 	}
 	
 	public BoundingBox computeBoundingBox()

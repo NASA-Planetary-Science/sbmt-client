@@ -84,10 +84,13 @@ public class ModelManager extends Model implements PropertyChangeListener
 		return propsExceptEros;
 	}
 
-	public void propertyChange(PropertyChangeEvent arg0) 
+	public void propertyChange(PropertyChangeEvent evt) 
 	{
-		updateProps();
-		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+		if (Properties.MODEL_CHANGED.equals(evt.getPropertyName()))
+		{
+			updateProps();
+			this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+		}
 	}
 	
 	private void updateProps()

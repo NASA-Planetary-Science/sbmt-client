@@ -15,10 +15,10 @@ public class LineamentControlPanel extends JPanel implements ItemListener
     public LineamentControlPanel(ModelManager modelManager) 
     {
 		lineamentModel = (LineamentModel)modelManager.getModel(ModelManager.LINEAMENT);
-        RadialOffsetChanger radialChanger = new RadialOffsetChanger(lineamentModel, "Lineament Radial Offset");
+        RadialOffsetChanger radialChanger = new RadialOffsetChanger(lineamentModel, "Radial Offset");
 
         lineamentCheckBox = new JCheckBox();
-        lineamentCheckBox.setText("Show Default Lineaments");
+        lineamentCheckBox.setText("Show Lineaments");
         lineamentCheckBox.setSelected(false);
         lineamentCheckBox.addItemListener(this);
 

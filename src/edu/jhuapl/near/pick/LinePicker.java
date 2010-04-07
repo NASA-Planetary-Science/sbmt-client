@@ -196,21 +196,4 @@ public class LinePicker extends Picker
 			currentEditMode = EditMode.VERTEX_ADD;
 		}
 	}
-	
-	
-//	public void stopEditing()
-//	{
-//		currentlyDrawing = false;
-//		lineIdBeingEdited = -1;
-//		vertexIdBeingEdited = -1;
-//
-//		//this.pcs.firePropertyChange(Properties.FINISHED_DRAWING_LINE, null, null);
-//	}
-	/*
-	public void setEditMode(EditMode mode)
-	{
-		this.currentEditMode = mode;
-		vertexIdBeingEdited = -1;
-	}
-	*/
 }

@@ -284,6 +284,13 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
 		}
 		else if (Properties.MODEL_PICKED.equals(evt.getPropertyName()))
 		{
+			// If we're editing, say, a path, return immediately.
+			if (structureModel.supportsSelection() &&
+					editButton.isSelected())
+			{
+				return;
+			}
+			
 			PickEvent e = (PickEvent)evt.getNewValue();
 			if (modelManager.getModel(e.getPickedProp()) == structureModel)
 			{
@@ -292,6 +299,18 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
 				structuresTable.setRowSelectionInterval(idx, idx);
 				structuresTable.scrollRectToVisible(structuresTable.getCellRect(idx, 0, true));
 			}
+			else
+			{
+				int count = structuresTable.getRowCount();
+				if (count > 0)
+					structuresTable.removeRowSelectionInterval(0, count-1);
+			}
+		}
+		else if (Properties.STRUCTURE_ADDED.equals(evt.getPropertyName()))
+		{
+			int idx = structureModel.getNumberOfStructures() - 1;
+			structuresTable.setRowSelectionInterval(idx, idx);
+			structuresTable.scrollRectToVisible(structuresTable.getCellRect(idx, 0, true));
 		}
 	}
 	

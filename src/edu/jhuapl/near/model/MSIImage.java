@@ -721,7 +721,7 @@ public class MSIImage extends Model
 		    //writer.SetInput(displayedImage);
 		    //writer.Write();
 
-	    	this.pcs.firePropertyChange(Properties.MSI_CONTRAST_CHANGED, null, null);
+	    	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 		}
 	}
 

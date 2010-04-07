@@ -185,7 +185,7 @@ public class LineamentModel extends Model
 	{
 		lineaments.GetCellData().GetScalars().SetTuple4(cellId, color[0], color[1], color[2], color[3]);
 		lineaments.Modified();
-		this.pcs.firePropertyChange(Properties.LINEAMENT_MODEL_CHANGED, null, null);
+		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 	}
 
 	public void setsAllLineamentsColor(int[] color)
@@ -197,7 +197,7 @@ public class LineamentModel extends Model
 			colors.SetTuple4(i, color[0], color[1], color[2], color[3]);
 		
 		lineaments.Modified();
-		this.pcs.firePropertyChange(Properties.LINEAMENT_MODEL_CHANGED, null, null);
+		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 	}
 	
 	public void setMSIImageLineamentsColor(int cellId, int[] color)
@@ -211,7 +211,7 @@ public class LineamentModel extends Model
 					colors.SetTuple4(i, color[0], color[1], color[2], color[3]);
 
 		lineaments.Modified();
-		this.pcs.firePropertyChange(Properties.LINEAMENT_MODEL_CHANGED, null, null);
+		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 	}
 
 	public void setRadialOffset(double offset)
@@ -239,7 +239,7 @@ public class LineamentModel extends Model
 		}		
 
 		lineaments.Modified();
-		this.pcs.firePropertyChange(Properties.LINEAMENT_MODEL_CHANGED, null, null);
+		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 	}
 
 	public void setShowLineaments(boolean show)
@@ -251,7 +251,7 @@ public class LineamentModel extends Model
 				initialize();
 				
 				lineamentActors.add(lineamentActor);
-				this.pcs.firePropertyChange(Properties.LINEAMENT_MODEL_CHANGED, null, null);
+				this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 			}
 		}
 		else
@@ -259,7 +259,7 @@ public class LineamentModel extends Model
 			if (!lineamentActors.isEmpty())
 			{
 				lineamentActors.clear();
-				this.pcs.firePropertyChange(Properties.LINEAMENT_MODEL_CHANGED, null, null);
+				this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 			}
 		}
 		
