@@ -41,8 +41,6 @@ public class Query
 			wr.write(data);
 			wr.flush();
 			
-			System.out.println(data);
-			System.out.println(u);
 			InputStreamReader isr = new InputStreamReader(conn.getInputStream());
 			BufferedReader in = new BufferedReader(isr);
 
@@ -412,8 +410,6 @@ public class Query
 
 			break;
 		}
-		
-		System.out.println("finished NIS query");
 		
 		return matchedImages;
 	}

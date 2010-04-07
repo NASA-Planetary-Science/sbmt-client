@@ -40,17 +40,26 @@ public class Configuration
 		return "near";
 	}
 
+	static private String getCredentials()
+	{
+		// Using a character array rather than a string to hold the username and
+		// password makes them less visible in the compiled .class file. Security
+		// through obscurity.
+		char[] str = {'a','s','t','e','r','o','i','d',':','c','r','a','t','e','r','@'};
+		return new String(str);
+	}
+	
 	/**
 	 * @return Return the url of the server where data is downloaded from.
 	 */
 	static public String getDataRootURL()
 	{
-		return "http://near.jhuapl.edu/software/data";
+		return "http://" + getCredentials() + "near.jhuapl.edu/software/data";
 	}
 	
 	static public String getQueryRootURL()
 	{
-		return "http://near.jhuapl.edu/software/query";
+		return "http://" + getCredentials() + "near.jhuapl.edu/software/query";
 	}
 
 }
