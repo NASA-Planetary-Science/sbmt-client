@@ -362,6 +362,7 @@ public class RegularPolygonModel extends StructureModel
         polygons.add(pol);
 
         pol.updatePolygon(erosModel, pos, defaultRadius);
+        highlightedStructure = polygons.size()-1;
         updatePolyData();
         
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
@@ -567,9 +568,12 @@ public class RegularPolygonModel extends StructureModel
 
 	public void highlightStructure(int idx)
 	{
-		this.highlightedStructure = idx;
-		updatePolyData();
-		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+		if (highlightedStructure != idx)
+		{
+			this.highlightedStructure = idx;
+			updatePolyData();
+			this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+		}
 	}
 	
 	public int getHighlightedStructure()

@@ -802,9 +802,12 @@ public class LineModel extends StructureModel
     
 	public void highlightStructure(int idx)
 	{
-		this.highlightedStructure = idx;
-		updatePolyData();
-		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+		if (highlightedStructure != idx)
+		{
+			this.highlightedStructure = idx;
+			updatePolyData();
+			this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+		}
 	}
 	
 	public int getHighlightedStructure()
