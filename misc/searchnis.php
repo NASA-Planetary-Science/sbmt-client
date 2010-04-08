@@ -1,19 +1,20 @@
 <?
 
-$startDate=$_GET['startDate'] + 0;
-$stopDate=$_GET['stopDate'] + 0;
-$minScDistance=(float)$_GET['minScDistance'];
-$maxScDistance=(float)$_GET['maxScDistance'];
-$minIncidence=(float)$_GET['minIncidence'];
-$maxIncidence=(float)$_GET['maxIncidence'];
-$minEmission=(float)$_GET['minEmission'];
-$maxEmission=(float)$_GET['maxEmission'];
-$minPhase=(float)$_GET['minPhase'];
-$maxPhase=(float)$_GET['maxPhase'];
-$polygonType0=$_GET['polygonType0'] + 0;
-$polygonType1=$_GET['polygonType1'] + 0;
-$polygonType2=$_GET['polygonType2'] + 0;
-$polygonType3=$_GET['polygonType3'] + 0;
+$startDate=$_POST['startDate'] + 0;
+$stopDate=$_POST['stopDate'] + 0;
+$minScDistance=(float)$_POST['minScDistance'];
+$maxScDistance=(float)$_POST['maxScDistance'];
+$minIncidence=(float)$_POST['minIncidence'];
+$maxIncidence=(float)$_POST['maxIncidence'];
+$minEmission=(float)$_POST['minEmission'];
+$maxEmission=(float)$_POST['maxEmission'];
+$minPhase=(float)$_POST['minPhase'];
+$maxPhase=(float)$_POST['maxPhase'];
+$polygonType0=$_POST['polygonType0'] + 0;
+$polygonType1=$_POST['polygonType1'] + 0;
+$polygonType2=$_POST['polygonType2'] + 0;
+$polygonType3=$_POST['polygonType3'] + 0;
+$cubesStr=$_POST['cubes'];
 
 $polygonTypes = array();
 if ($polygonType0 == 1)
@@ -26,15 +27,19 @@ if ($polygonType3 == 1)
 	$polygonTypes[] = 3;
 
 
-$username="";
-$password="";
+$username="nearuser";
+$password="n3ar!usr";
 $database="near";
-$host="sd-mysql.jhuapl.edu:3308";
+$host="sd-mysql.jhuapl.edu:3306";
 
 mysql_connect($host,$username,$password);
 @mysql_select_db($database) or die();
 
-$query = "SELECT id, year, day FROM nisspectra ";
+$query = "SELECT DISTINCT nisspectra.id, year, day FROM nisspectra ";
+if (strlen($cubesStr) > 0)
+{
+	$query .= " JOIN niscubes ON nisspectra.id = niscubes.nisspectrumid ";
+}
 $query .= "WHERE midtime >= " . $startDate;
 $query .= " AND midtime <= " . $stopDate;
 $query .= " AND range >= " . $minScDistance;
@@ -46,7 +51,7 @@ if (count($polygonTypes) > 0)
 	{
 		if ($i > 0)
 			$query .= " OR ";
-		$query .= " polygon_type_flag = " . $polygonTypes[i];
+		$query .= " polygon_type_flag = " . $polygonTypes[$i];
 	}
 	$query .= " ) ";
 }
@@ -57,6 +62,26 @@ $query .= " AND maxemission >= " . $minEmission;
 $query .= " AND minphase <= " . $maxPhase;
 $query .= " AND maxphase >= " . $minPhase;
 
+if (strlen($cubesStr) > 0)
+{
+	// Split up the cubes list
+	$cubes = explode(",", $cubesStr);
+
+	$query .= " AND niscubes.cubeid IN (";
+
+	for ($i = 0; $i < count($cubes); $i++)
+	{
+		$cubeid = $cubes[$i] + 0;
+		$query .= "" . $cubeid;
+		if ($i < count($cubes)-1)
+		{
+			$query .= ",";
+		}
+	}
+
+	$query .= ")";
+}
+
 $result=mysql_query($query);
 
 $num=mysql_numrows($result);
@@ -66,14 +91,17 @@ mysql_close();
 $i=0;
 while ($i < $num) 
 {
-	
-	$id = mysql_result($result,$i,"id");
-	$year = mysql_result($result,$i,"year");
-	$day = mysql_result($result,$i,"day");
-	
+	$row = mysql_fetch_row($result);	
+	$id   = $row[0];
+	$year = $row[1];
+	$day  = $row[2];
+
 	echo "$id $year $day\n";
 	
 	$i++;
 }
 
+#echo "$query";
+
 ?>
+

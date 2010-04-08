@@ -1,26 +1,27 @@
 <?
 
-$startDate=$_GET['startDate'] + 0;
-$stopDate=$_GET['stopDate'] + 0;
-$minScDistance=(float)$_GET['minScDistance'];
-$maxScDistance=(float)$_GET['maxScDistance'];
-$minResolution=(float)$_GET['minResolution'];
-$maxResolution=(float)$_GET['maxResolution'];
-$minIncidence=(float)$_GET['minIncidence'];
-$maxIncidence=(float)$_GET['maxIncidence'];
-$minEmission=(float)$_GET['minEmission'];
-$maxEmission=(float)$_GET['maxEmission'];
-$minPhase=(float)$_GET['minPhase'];
-$maxPhase=(float)$_GET['maxPhase'];
-$iofdbl=$_GET['iofdbl'] + 0;
-$cifdbl=$_GET['cifdbl'] + 0;
-$filterType1=$_GET['filterType1'] + 0;
-$filterType2=$_GET['filterType2'] + 0;
-$filterType3=$_GET['filterType3'] + 0;
-$filterType4=$_GET['filterType4'] + 0;
-$filterType5=$_GET['filterType5'] + 0;
-$filterType6=$_GET['filterType6'] + 0;
-$filterType7=$_GET['filterType7'] + 0;
+$startDate=$_POST['startDate'] + 0;
+$stopDate=$_POST['stopDate'] + 0;
+$minScDistance=(float)$_POST['minScDistance'];
+$maxScDistance=(float)$_POST['maxScDistance'];
+$minResolution=(float)$_POST['minResolution'];
+$maxResolution=(float)$_POST['maxResolution'];
+$minIncidence=(float)$_POST['minIncidence'];
+$maxIncidence=(float)$_POST['maxIncidence'];
+$minEmission=(float)$_POST['minEmission'];
+$maxEmission=(float)$_POST['maxEmission'];
+$minPhase=(float)$_POST['minPhase'];
+$maxPhase=(float)$_POST['maxPhase'];
+$iofdbl=$_POST['iofdbl'] + 0;
+$cifdbl=$_POST['cifdbl'] + 0;
+$filterType1=$_POST['filterType1'] + 0;
+$filterType2=$_POST['filterType2'] + 0;
+$filterType3=$_POST['filterType3'] + 0;
+$filterType4=$_POST['filterType4'] + 0;
+$filterType5=$_POST['filterType5'] + 0;
+$filterType6=$_POST['filterType6'] + 0;
+$filterType7=$_POST['filterType7'] + 0;
+$cubesStr=$_POST['cubes'];
 
 $filterTypes = array();
 if ($filterType1 == 1)
@@ -39,21 +40,28 @@ if ($filterType7 == 1)
 	$filterTypes[] = 7;
 
 
-$username="";
-$password="";
+$username="nearuser";
+$password="n3ar!usr";
 $database="near";
-$host="sd-mysql.jhuapl.edu:3308";
+$host="sd-mysql.jhuapl.edu:3306";
 
-mysql_connect($host,$username,$password);
-@mysql_select_db($database) or die();
+$link = mysql_connect($host,$username,$password);
+if (!$link) {
+    die('Could not connect: ' . mysql_error());
+}
+@mysql_select_db($database) or die("died!");
 
-$query = "SELECT id, year, day, filter, iofcif FROM msiimages ";
-$query .= "WHERE starttime >= " . $stopDate;
-$query .= " AND stoptime <= " . $startDate;
-$query .= " AND target_center_distance >= " . minScDistance;
-$query .= " AND target_center_distance <= " . maxScDistance;
-$query .= " AND horizontal_pixel_scale >= " . minResolution;
-$query .= " AND horizontal_pixel_scale <= " . maxResolution;
+$query = "SELECT DISTINCT msiimages.id, year, day, filter, iofcif FROM msiimages ";
+if (strlen($cubesStr) > 0)
+{
+	$query .= " JOIN msicubes ON msiimages.id = msicubes.imageid ";
+}
+$query .= "WHERE starttime <= " . $stopDate;
+$query .= " AND stoptime >= " . $startDate;
+$query .= " AND target_center_distance >= " . $minScDistance;
+$query .= " AND target_center_distance <= " . $maxScDistance;
+$query .= " AND horizontal_pixel_scale >= " . $minResolution;
+$query .= " AND horizontal_pixel_scale <= " . $maxResolution;
 
 if ($iofdbl == 0)
 	$query .= " AND iofcif = 1";
@@ -67,7 +75,7 @@ if (count($filterTypes) > 0)
 	{
 		if ($i > 0)
 			$query .= " OR ";
-		$query .= " filter_type_flag = " . $filterTypes[i];
+		$query .= " filter = " . $filterTypes[$i];
 	}
 	$query .= " ) ";
 }
@@ -79,6 +87,26 @@ $query .= " AND maxemission >= " . $minEmission;
 $query .= " AND minphase <= " . $maxPhase;
 $query .= " AND maxphase >= " . $minPhase;
 
+if (strlen($cubesStr) > 0)
+{
+	// Split up the cubes list
+	$cubes = explode(",", $cubesStr);
+
+	$query .= " AND msicubes.cubeid IN (";
+
+	for ($i = 0; $i < count($cubes); $i++)
+	{
+		$cubeid = $cubes[$i] + 0;
+		$query .= "" . $cubeid;
+		if ($i < count($cubes)-1)
+		{
+			$query .= ",";
+		}
+	}
+
+	$query .= ")";
+}
+
 $result=mysql_query($query);
 
 $num=mysql_numrows($result);
@@ -88,16 +116,23 @@ mysql_close();
 $i=0;
 while ($i < $num) 
 {
+	$row = mysql_fetch_row($result);	
+	$id   = $row[0];
+	$year = $row[1];
+	$day  = $row[2];
+	$filter   = $row[3];
+	$iofcif   = $row[4];
 	
-	$id = mysql_result($result,$i,"id");
-	$year = mysql_result($result,$i,"year");
-	$day = mysql_result($result,$i,"day");
-	$filter = mysql_result($result,$i,"filter");
-	$iofcif = mysql_result($result,$i,"iofcif");
-	
+
 	echo "$id $year $day $filter $iofcif\n";
 	
 	$i++;
 }
 
+#echo "$query";
+
 ?>
+
+
+
+

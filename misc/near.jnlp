@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <jnlp spec="1.0"
-      codebase="http://near.jhuapl.edu/software/erosviewer"
+      codebase="http://near.jhuapl.edu/software/sbmt"
       href="near.jnlp">
 
     <information>
-        <title>Eros Viewer</title>
+        <title>Small Body Mapping Tool</title>
         <vendor>JHUAPL</vendor>
-        <description>Eros Viewer</description>
+        <description>Small Body Mapping Tool</description>
         <offline-allowed/>
     </information>
 
@@ -25,7 +25,6 @@
         <jar href="jcommon-1.0.16.jar"/>
         <jar href="jfreechart-1.0.13.jar"/>
         <jar href="miglayout-3.7.1-swing.jar"/>
-        <jar href="mysql-connector-java-5.1.10-bin.jar"/>
     </resources>
 
     <resources os="Windows" arch="x86">

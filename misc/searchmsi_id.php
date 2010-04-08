@@ -1,12 +1,12 @@
 <?
 
-$id=$_GET['id'] + 0;
+$id=$_POST['id'] + 0;
 
 
-$username="";
-$password="";
+$username="nearuser";
+$password="n3ar!usr";
 $database="near";
-$host="sd-mysql.jhuapl.edu:3308";
+$host="sd-mysql.jhuapl.edu:3306";
 
 mysql_connect($host,$username,$password);
 @mysql_select_db($database) or die();
@@ -23,11 +23,12 @@ mysql_close();
 $i=0;
 while ($i < $num) 
 {
-	$id = mysql_result($result,$i,"id");
-	$year = mysql_result($result,$i,"year");
-	$day = mysql_result($result,$i,"day");
-	$filter = mysql_result($result,$i,"filter");
-	$iofcif = mysql_result($result,$i,"iofcif");
+	$row = mysql_fetch_row($result);	
+	$id   = $row[0];
+	$year = $row[1];
+	$day  = $row[2];
+	$filter   = $row[3];
+	$iofcif   = $row[4];
 	
 	echo "$id $year $day $filter $iofcif\n";
 	
