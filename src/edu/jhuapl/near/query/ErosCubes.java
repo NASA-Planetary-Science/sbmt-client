@@ -12,12 +12,12 @@ public class ErosCubes
 	private BoundingBox erosBB;
 	private ArrayList<BoundingBox> allCubes = new ArrayList<BoundingBox>();
 	private double cubeSize = 1.0;
+	private double buffer = 0.01;
 	
 	public ErosCubes(ErosModel eros)
 	{
 		erosBB = eros.computeBoundingBox();
 
-		double buffer = 0.01;
 		erosBB.xmax += buffer;
 		erosBB.xmin -= buffer;
 		erosBB.ymax += buffer;
@@ -30,10 +30,6 @@ public class ErosCubes
 		int numCubesY = (int)(Math.ceil(erosBB.ymax - erosBB.ymin) / cubeSize);
 		int numCubesZ = (int)(Math.ceil(erosBB.zmax - erosBB.zmin) / cubeSize);
 		
-		System.out.println("numCubesX " + numCubesX);
-		System.out.println("numCubesY " + numCubesY);
-		System.out.println("numCubesZ " + numCubesZ);
-
 		for (int k=0; k<numCubesZ; ++k)
 		{
 			double zmin = erosBB.zmin + k * cubeSize;
@@ -73,6 +69,10 @@ public class ErosCubes
 		}
 		else
 		{
+			System.out.println("numCubesX " + numCubesX);
+			System.out.println("numCubesY " + numCubesY);
+			System.out.println("numCubesZ " + numCubesZ);
+
 			System.out.println("total cubes before reduction = " + allCubes.size());
 			System.out.println("int[] erosIntersectingCubes = {");
 
