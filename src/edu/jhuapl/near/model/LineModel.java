@@ -2,6 +2,7 @@ package edu.jhuapl.near.model;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.text.DecimalFormat;
 import java.util.*;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -43,7 +44,9 @@ public class LineModel extends StructureModel
     private ErosModel erosModel;
     private int selectedLine = -1;
     private int currentLineVertex = -1000;
-    
+    private int highlightedStructure = -1;
+    private int[] highlightColor = {0, 0, 255, 255};
+
 	static public String LINES = "lines";
 
 	
@@ -69,7 +72,9 @@ public class LineModel extends StructureModel
 		static public String ID = "id";
 		static public String NAME = "name";
 		static public String VERTICES = "vertices";
-		
+	
+	    private static DecimalFormat decimalFormatter = new DecimalFormat("#.###");
+
 		public Line()
 		{
 			id = ++maxId;
@@ -97,7 +102,7 @@ public class LineModel extends StructureModel
 		
 		public String getInfo()
 		{
-			return controlPointIds.size() + " vertices";
+			return decimalFormatter.format(getPathLength()) + " km, " + controlPointIds.size() + " vertices";
 		}
 		
 	    public Element toXmlDomElement(Document dom)
@@ -172,9 +177,25 @@ public class LineModel extends StructureModel
 
 	    public String getClickStatusBarText()
 	    {
-	    	return "Path, Id = " + id + ", Number of Vertices = " + lat.size();
+	    	return "Path, Id = " + id
+	    	+ ", Length = " + decimalFormatter.format(getPathLength()) + " km"
+	    	+ ", Number of Vertices = " + lat.size();
 	    }
 
+	    public double getPathLength()
+	    {
+			int size = xyzPointList.size();
+			double length = 0.0;
+			
+			for (int i=1;i<size;++i)
+			{
+				double dist = xyzPointList.get(i-1).distanceTo(xyzPointList.get(i));
+				length += dist;
+			}
+	    	
+			return length;
+	    }
+	    
 	    public void updateSegment(ErosModel erosModel, int segment)
 	    {
     		LatLon ll1 = new LatLon(lat.get(segment), lon.get(segment), rad.get(segment));
@@ -281,11 +302,11 @@ public class LineModel extends StructureModel
 	{
 		linesPolyData = new vtkPolyData();
 		vtkPoints points = new vtkPoints();
-		vtkCellArray lines = new vtkCellArray();
+		vtkCellArray lineCells = new vtkCellArray();
 		vtkUnsignedCharArray colors = new vtkUnsignedCharArray();
 
 		linesPolyData.SetPoints(points);
-		linesPolyData.SetLines(lines);
+		linesPolyData.SetLines(lineCells);
 		linesPolyData.GetCellData().SetScalars(colors);
 
 		colors.SetNumberOfComponents(4);
@@ -293,8 +314,15 @@ public class LineModel extends StructureModel
 		vtkIdList idList = new vtkIdList();
 
 		int c=0;
-		for (Line lin : this.lines)
+		for (int j=0; j<this.lines.size(); ++j)
 		{
+			Line lin = this.lines.get(j);
+			
+			int[] color = purpleColor;
+
+			if (j == this.highlightedStructure)
+				color = highlightColor;
+
 			int size = lin.xyzPointList.size();
 			idList.SetNumberOfIds(size);
 
@@ -305,8 +333,8 @@ public class LineModel extends StructureModel
 				++c;
 			}
 
-			lines.InsertNextCell(idList);
-			colors.InsertNextTuple4(purpleColor[0],purpleColor[1],purpleColor[2],purpleColor[3]);
+			lineCells.InsertNextCell(idList);
+			colors.InsertNextTuple4(color[0],color[1],color[2],color[3]);
 
 		}
 
@@ -772,6 +800,18 @@ public class LineModel extends StructureModel
 			return -1;
 	}
     
+	public void highlightStructure(int idx)
+	{
+		this.highlightedStructure = idx;
+		updatePolyData();
+		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+	}
+	
+	public int getHighlightedStructure()
+	{
+		return highlightedStructure;
+	}
+
 	
     /*
     public void removeVertexFromLine(int vertexId)

@@ -22,7 +22,7 @@ public class LinesPopupMenu extends PopupMenu
 		JMenuItem mi; 
 		mi = new JMenuItem(new EditAction());
 		mi.setText("Edit");
-		this.add(mi);
+		//this.add(mi); // don't show for now
 		mi = new JMenuItem(new DeleteAction());
 		mi.setText("Delete");
 		this.add(mi);

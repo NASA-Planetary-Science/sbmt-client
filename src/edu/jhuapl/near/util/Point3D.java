@@ -15,4 +15,13 @@ public class Point3D
 	{
 		return "(" + xyz[0] + "," + xyz[1] + "," + xyz[2] + ")";
 	}
+	
+	public double distanceTo(Point3D pt)
+	{
+		return Math.sqrt(
+				(pt.xyz[0]-xyz[0])*(pt.xyz[0]-xyz[0]) +
+				(pt.xyz[1]-xyz[1])*(pt.xyz[1]-xyz[1]) +
+				(pt.xyz[2]-xyz[2])*(pt.xyz[2]-xyz[2])
+				);
+	}
 }

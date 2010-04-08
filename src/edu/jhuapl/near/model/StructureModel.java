@@ -35,14 +35,9 @@ public abstract class StructureModel extends Model
 	
 	public abstract int getSelectedStructureIndex();
 	
-	public void highlightStructure(int idx)
-	{
-	}
+	public abstract void highlightStructure(int idx);
 	
-	public int getHighlightedStructure()
-	{
-		return -1;
-	}
+	public abstract int getHighlightedStructure();
 	
 	public abstract int getNumberOfStructures();
 	
