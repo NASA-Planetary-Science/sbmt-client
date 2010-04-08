@@ -105,45 +105,6 @@ public class ErosCubes
 	{
 		return allCubes.get(cubeId);
 	}
-	
-	/*
-	public TreeSet<Integer> getIntersectingCubes(vtkPolyData polydata)
-	{
-		TreeSet<Integer> cubeIds = new TreeSet<Integer>();
-
-		// Iterate through each cube and check if it intersects
-		// with the bounding box of any of the polygons of the polydata
-
-		BoundingBox polydataBB = new BoundingBox(polydata.GetBounds());
-		int numberPolygons = polydata.GetNumberOfCells();
-		
-		double[] cellBounds = new double[6];
-		BoundingBox polyCellBB = new BoundingBox();
-
-		int numberCubes = allCubes.size();
-		for (int i=0; i<numberCubes; ++i)
-		{
-			// Before checking each polygon individually, first see if the
-			// polydata as a whole intersects the cube
-			BoundingBox cube = getCube(i);
-			if (cube.intersects(polydataBB))
-			{
-				for (int j=0; j<numberPolygons; ++j)
-				{
-					polydata.GetCellBounds(j, cellBounds);
-					polyCellBB.setBounds(cellBounds);
-					if (cube.intersects(polyCellBB))
-					{
-						cubeIds.add(i);
-						break;
-					}
-				}
-			}
-		}
-		
-		return cubeIds;
-	}
-	*/
 
 	public TreeSet<Integer> getIntersectingCubes(vtkPolyData polydata)
 	{
