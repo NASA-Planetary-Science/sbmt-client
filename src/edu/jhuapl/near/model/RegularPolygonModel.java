@@ -519,6 +519,9 @@ public class RegularPolygonModel extends StructureModel
 			if (name.length() == 0)
 				name = "default";
 
+			// Since tab is used as the delimiter, replace any tabs in the name with spaces.
+			name = name.replace('\t', ' ');
+			
 			LatLon llr = Spice.reclat(pol.center);
 			double lat = llr.lat*180.0/Math.PI;
 			double lon = llr.lon*180.0/Math.PI;
