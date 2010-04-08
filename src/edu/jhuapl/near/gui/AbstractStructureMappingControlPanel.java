@@ -258,12 +258,7 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
 
 	public void propertyChange(PropertyChangeEvent evt) 
 	{
-		// Note only respond to model changed events if this panel is visible.
-		// If a model changed event does occur when the panel is not visible (which
-		// can happen if say you click on a line while drawing circles causing the line to get highlighted) then the type
-		// of change that did occur is only a visual change, not a change in the actual
-		// geometry, so don't respond to it since it might revert the pick mode back to default.
-		if (Properties.MODEL_CHANGED.equals(evt.getPropertyName()) && isVisible())
+		if (Properties.MODEL_CHANGED.equals(evt.getPropertyName()))
 		{
 			updateStructureTable();
 			
@@ -280,7 +275,11 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
 				}
 				else
 				{
-					pickManager.setPickMode(PickManager.PickMode.DEFAULT);
+					// Don't change the picker if this tab is not in view since
+					// it's possible we could be in the middle of drawing other
+					// objects.
+					if (isVisible())
+						pickManager.setPickMode(PickManager.PickMode.DEFAULT);
 					if (editButton.isSelected())
 						editButton.setSelected(false);
 					structuresTable.setEnabled(true);
