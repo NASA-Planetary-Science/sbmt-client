@@ -1,6 +1,8 @@
 package edu.jhuapl.near.util;
 
 import java.io.File;
+import java.net.Authenticator;
+import java.net.PasswordAuthentication;
 
 public class Configuration 
 {
@@ -46,7 +48,21 @@ public class Configuration
 		// password makes them less visible in the compiled .class file. Security
 		// through obscurity.
 		char[] str = {'a','s','t','e','r','o','i','d',':','c','r','a','t','e','r','@'};
-		return new String(str);
+		//return new String(str);
+		return "";
+	}
+	
+	static public void setupCredentials()
+	{
+		Authenticator.setDefault(new Authenticator()
+		{
+			protected PasswordAuthentication getPasswordAuthentication()
+			{
+				char[] username = {'a','s','t','e','r','o','i','d'};
+				char[] password = {'c','r','a','t','e','r'};
+				return new PasswordAuthentication(new String(username), password); 
+			}
+		});
 	}
 	
 	/**
