@@ -42,6 +42,7 @@ public class MSIImage extends Model
 
 	private vtkPolyData footprint;
     private vtkActor footprintActor;
+    private ArrayList<vtkProp> footprintActors = new ArrayList<vtkProp>();
 
 	//private float[][] incidence = new float[IMAGE_HEIGHT][IMAGE_WIDTH];
 	//private float[][] emission = new float[IMAGE_HEIGHT][IMAGE_WIDTH];
@@ -86,7 +87,6 @@ public class MSIImage extends Model
 	boolean hasLimb = false;
 
 	private boolean showFrustum = true;
-	static private vtkMath math = null;
 
 	
 	/**
@@ -277,8 +277,6 @@ public class MSIImage extends Model
 	//public ArrayList<vtkActor> getMappedImage(double offset)
     public ArrayList<vtkProp> getProps()
     {
-    	ArrayList<vtkProp> imageActors = new ArrayList<vtkProp>();
-    	
     	if (footprintActor == null)
     	{
     		if (footprint == null)
@@ -288,9 +286,6 @@ public class MSIImage extends Model
 
     		if (footprint != null)
     		{
-    	        if (math == null)
-    	        	math = new vtkMath();
-
     			int numberOfPoints = footprint.GetNumberOfPoints();
     			
     			vtkFloatArray tcoords = new vtkFloatArray();
@@ -299,6 +294,8 @@ public class MSIImage extends Model
                 
                 vtkPoints points = footprint.GetPoints();
 
+                /*
+                 // for testing
                 if (erosModel == null)
                 	erosModel = new ErosModel();
                 vtkPolyData footprint2 = erosModel.computeFrustumIntersection(spacecraftPosition, 
@@ -308,43 +305,10 @@ public class MSIImage extends Model
                 writer.SetFileName("/tmp/footprint.vtk");
                 //writer.SetFileTypeToBinary();
                 writer.Write();
+                 */
 
-                /*
-                // First compute the vector that bisects two opposite corners of
-                // the frustum. I.e. the "boresight" direction that points in the
-                // direction of the center of the frustum. The following assumes
-                // the frustum vectors all have unit length.
-                double[] boresight = {
-                		(frustum1[0]+frustum3[0])/2.0,
-                		(frustum1[1]+frustum3[1])/2.0,
-                		(frustum1[2]+frustum3[2])/2.0
-                };
-                math.Normalize(boresight);
-
-                // Next compute the rotation matrix that rotates the boresight 
-                // to the z axis.
-                double[] zaxis = {0.0, 0.0, 1.0};
-                double[] axisOfRotation = new double[3];
-                math.Cross(boresight, zaxis, axisOfRotation);
-        		math.Normalize(axisOfRotation);
-
-        		double angle = Spice.vsep(boresight, zaxis) * 180.0 / Math.PI;
-        		vtkTransform transform = new vtkTransform();
-        		//transform.Translate(center);
-        		transform.RotateWXYZ(angle, axisOfRotation);
-        		//transform.Translate(-center[0],-center[1],-center[2]);
-
-        		System.out.println(math.Distance2BetweenPoints(frustum1, frustum3));
-
-                double[] vec1 = {
-                		frustum2[0] - frustum1[0],
-                		frustum2[1] - frustum1[1],
-                		frustum2[2] - frustum1[2]
-                };
-        		*/
-
-        		double b = Spice.vsep(frustum1, frustum2);
         		double a = Spice.vsep(frustum1, frustum3);
+        		double b = Spice.vsep(frustum1, frustum2);
 
         		double[] vec = new double[3];
         		
@@ -355,7 +319,7 @@ public class MSIImage extends Model
                 	vec[0] = pt[0] - spacecraftPosition[0];
                 	vec[1] = pt[1] - spacecraftPosition[1];
                 	vec[2] = pt[2] - spacecraftPosition[2];
-                	math.Normalize(vec);
+                	Spice.unorm(vec, vec);
                 	
                 	double d1 = Spice.vsep(vec, frustum1);
                 	double d2 = Spice.vsep(vec, frustum2);
@@ -388,8 +352,7 @@ public class MSIImage extends Model
     			footprintActor.SetTexture(texture);
     			footprintActor.GetProperty().LightingOff();
 
-    			imageActors.add(footprintActor);
-
+    			footprintActors.add(footprintActor);
     		}
     	}
 		
@@ -403,10 +366,7 @@ public class MSIImage extends Model
 	        vtkIdList idList = new vtkIdList();
 	        idList.SetNumberOfIds(2);
 	        
-	        if (math == null)
-	        	math = new vtkMath();
-	        
-	        double dx = math.Norm(spacecraftPosition)*2;
+	        double dx = Spice.vnorm(spacecraftPosition)*2;
 			double[] origin = spacecraftPosition;
 			double[] UL = {origin[0]+frustum1[0]*dx, origin[1]+frustum1[1]*dx, origin[2]+frustum1[2]*dx};
 			double[] UR = {origin[0]+frustum2[0]*dx, origin[1]+frustum2[1]*dx, origin[2]+frustum2[2]*dx};
@@ -444,10 +404,10 @@ public class MSIImage extends Model
 	        frusActor.GetProperty().SetColor(0.0, 1.0, 0.0);
 	        frusActor.GetProperty().SetLineWidth(2.0);
 
-	        imageActors.add(frusActor);
+	        footprintActors.add(frusActor);
 		}
 
-        return imageActors;
+        return footprintActors;
     }
     
 
