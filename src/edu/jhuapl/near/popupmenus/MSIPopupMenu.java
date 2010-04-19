@@ -206,7 +206,8 @@ public class MSIPopupMenu extends PopupMenu
 			
 			try 
 			{
-				infoPanelManager.addData(MSIImage.MSIImageFactory.createImage(name));
+				ErosModel eros = (ErosModel)modelManager.getModel(ModelManager.EROS);
+				infoPanelManager.addData(MSIImage.MSIImageFactory.createImage(name, eros));
 			} 
 			catch (FitsException e1) {
 				// TODO Auto-generated catch block
@@ -267,7 +268,8 @@ public class MSIPopupMenu extends PopupMenu
 
 			try 
 			{
-				MSIImage image = MSIImage.MSIImageFactory.createImage(name);
+				ErosModel eros = (ErosModel)modelManager.getModel(ModelManager.EROS);
+				MSIImage image = MSIImage.MSIImageFactory.createImage(name, eros);
 				BoundingBox bb = image.getBoundingBox();
 				renWin.lock();
 				renWin.GetRenderer().ResetCamera(

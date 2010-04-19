@@ -35,7 +35,9 @@ public class MSIImage extends Model
     public static final String MSI_FRUSTUM2 = "MSI_FRUSTUM2";
     public static final String MSI_FRUSTUM3 = "MSI_FRUSTUM3";
     public static final String MSI_FRUSTUM4 = "MSI_FRUSTUM4";
-    
+
+    private ErosModel erosModel;
+
 	private vtkImageData rawImage;
 	private vtkImageData displayedImage;
 
@@ -72,10 +74,12 @@ public class MSIImage extends Model
     private double[] frustum2 = new double[3];
     private double[] frustum3 = new double[3];
     private double[] frustum4 = new double[3];
-	boolean hasLimb = false;
+	private boolean hasLimb = false;
 
 	private boolean showFrustum = true;
 
+	private String startTime = "";
+	private String stopTime = "";
 	
 	/**
 	 * Because instances of MSIImage can be expensive, we want there to be
@@ -89,7 +93,7 @@ public class MSIImage extends Model
 		static private WeakHashMap<MSIImage, Object> images = 
 			new WeakHashMap<MSIImage, Object>();
 		
-		static public MSIImage createImage(String name) throws FitsException, IOException
+		static public MSIImage createImage(String name, ErosModel eros) throws FitsException, IOException
 		{
 			for (MSIImage image : images.keySet())
 			{
@@ -97,15 +101,22 @@ public class MSIImage extends Model
 					return image;
 			}
 
-			MSIImage image = new MSIImage(name);
+			MSIImage image = new MSIImage(name, eros);
 			images.put(image, null);
 			return image;
 		}
 	}
 
 	
-
-	public MSIImage(String filename) throws FitsException, IOException
+	/**
+	 * This constructor should only be used in the GUI program since
+	 * this constructor makes sure the relevant files get downloaded
+	 * from the server.
+	 * @param filename name of fit file
+	 * @throws FitsException
+	 * @throws IOException
+	 */
+	public MSIImage(String filename, ErosModel eros) throws FitsException, IOException
 	{
 		this.serverpath = filename;
 		
@@ -115,8 +126,8 @@ public class MSIImage extends Model
 		if (fitFile == null)
 			throw new IOException("Could not download " + filename);
 		
-		String lblFilename = filename.substring(0, filename.length()-4) + ".LBL";
-		FileCache.getFileFromServer(lblFilename);
+		//String lblFilename = filename.substring(0, filename.length()-4) + ".LBL";
+		//FileCache.getFileFromServer(lblFilename);
 		//String imgFilename = filename.substring(0, filename.length()-4) + "_DDR.IMG.gz";
 		//FileCache.getFileFromServer(imgFilename);
 		String imgLblFilename = filename.substring(0, filename.length()-4) + "_DDR.LBL";
@@ -124,11 +135,21 @@ public class MSIImage extends Model
 		//String boundaryFilename = filename.substring(0, filename.length()-4) + "_BOUNDARY.VTK";
 		//FileCache.getFileFromServer(boundaryFilename);
 
+		this.erosModel = eros;
 		this.initialize(fitFile);
 	}
 	
-	public MSIImage(File fitFile) throws FitsException, IOException
+	/**
+	 * This constructor should only be used in the database/server generation/processing
+	 * where there is no need to download files from the server (since we're running on
+	 * server)
+	 * @param fitFile
+	 * @throws FitsException
+	 * @throws IOException
+	 */
+	public MSIImage(File fitFile, ErosModel eros) throws FitsException, IOException
 	{
+		this.erosModel = eros;
 		this.initialize(fitFile);
 	}
 	
@@ -204,8 +225,7 @@ public class MSIImage extends Model
         
         setDisplayedImageRange(new IntensityRange(0, 255));
 
-        //if (showFrustum)
-        	loadImageInfo();
+        loadImageInfo();
 	}
 	
     
@@ -246,7 +266,6 @@ public class MSIImage extends Model
 	}
 
 
-	private static ErosModel erosModel;
 	public ArrayList<vtkProp> getProps()
 	{
 		if (footprintActor == null)
@@ -521,6 +540,16 @@ public class MSIImage extends Model
 		    while (st.hasMoreTokens()) 
 		    {
 		    	String token = st.nextToken();
+		    	if (START_TIME.equals(token))
+		    	{
+		    		st.nextToken();
+		    		startTime = st.nextToken();
+		    	}
+		    	if (STOP_TIME.equals(token))
+		    	{
+		    		st.nextToken();
+		    		stopTime = st.nextToken();
+		    	}
 		    	if (SPACECRAFT_POSITION.equals(token) ||
 		    			MSI_FRUSTUM1.equals(token) ||
 		    			MSI_FRUSTUM2.equals(token) ||
@@ -571,6 +600,7 @@ public class MSIImage extends Model
 		in.close();
 	}
 
+	/*
     static public HashMap<String, String> parseLblFile(String lblFilename) throws IOException
     {
     	HashMap<String, String> imageProperties = new HashMap<String, String>();
@@ -635,15 +665,18 @@ public class MSIImage extends Model
 		
     	return imageProperties;
     }
+    */
     
     public HashMap<String, String> getProperties() throws IOException
     {
-    	String filename = getFullPath();
+    	//String filename = getFullPath();
     	
-    	String lblFilename = filename.substring(0, filename.length()-4) + ".LBL";
+    	//String lblFilename = filename.substring(0, filename.length()-4) + ".LBL";
 
-    	HashMap<String, String> properties = parseLblFile(lblFilename);
-    	
+    	//HashMap<String, String> properties = parseLblFile(lblFilename);
+    	HashMap<String, String> properties = new HashMap<String, String>();
+
+    	/*
 		// The values of the hash map do not include units. Add them for certain properties.
 		for (String key : properties.keySet())
 		{
@@ -652,8 +685,11 @@ public class MSIImage extends Model
 			else if (key.equals(TARGET_CENTER_DISTANCE))
 				properties.put(key, properties.get(key) + " km");
 		}
+		*/
 		
-		// Add a few more properties
+    	properties.put("Spacecraft Distance", String.valueOf(getSpacecraftDistance()));
+		properties.put(START_TIME, startTime);
+		properties.put(STOP_TIME, stopTime);
 		properties.put("FILTER", String.valueOf(filter));
 		properties.put("DAY_OF_YEAR", (new File(this.fullpath)).getParentFile().getParentFile().getName());
 		properties.put("YEAR", (new File(this.fullpath)).getParentFile().getParentFile().getParentFile().getName());
@@ -676,92 +712,12 @@ public class MSIImage extends Model
     	return hasLimb;
     }
 
-    public StringPair getImageStartStopTime() throws IOException
-    {
-    	// Parse through the lbl file till we find the strings "START_TIME"                                                                 
-    	// and "STOP_TIME"
-    	StringPair startStop = new StringPair();
-    	String filename = getFullPath();
-    	
-    	String lblFilename = filename.substring(0, filename.length()-4) + ".LBL";
-
-		FileInputStream fs = null;
-		try {
-			fs = new FileInputStream(lblFilename);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-		InputStreamReader isr = new InputStreamReader(fs);
-		BufferedReader in = new BufferedReader(isr);
-
-		String str;
-		while ((str = in.readLine()) != null)
-		{
-			boolean breakedOut = false;
-			
-		    StringTokenizer st = new StringTokenizer(str);
-		    while (st.hasMoreTokens()) 
-		    {
-		    	String token = st.nextToken();
-		    	if (START_TIME.equals(token))
-		    	{
-		    		st.nextToken();
-		    		startStop.s1 = st.nextToken();
-		    	}
-		    	if (STOP_TIME.equals(token))
-		    	{
-		    		st.nextToken();
-		    		startStop.s2 = st.nextToken();
-		    		breakedOut = true;
-		    		break;
-		    	}
-		    }
-
-		    if (breakedOut)
-		    	break;
-		}
-		
-    	in.close();
-		
-    	return startStop;
-    }
-
-    public double getSpaceCraftDistance() throws IOException
-    {
-    	// Parse through the lbl file till we find the strings "TARGET_CENTER_DISTANCE"                                                                 
-    	String filename = getFullPath();
-    	
-    	String lblFilename = filename.substring(0, filename.length()-4) + ".LBL";
-
-		FileInputStream fs = null;
-		try {
-			fs = new FileInputStream(lblFilename);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-		InputStreamReader isr = new InputStreamReader(fs);
-		BufferedReader in = new BufferedReader(isr);
-
-		String str;
-		while ((str = in.readLine()) != null)
-		{
-		    StringTokenizer st = new StringTokenizer(str);
-		    while (st.hasMoreTokens()) 
-		    {
-		    	String token = st.nextToken();
-		    	if (TARGET_CENTER_DISTANCE.equals(token))
-		    	{
-		    		st.nextToken();
-		    		return Double.parseDouble(st.nextToken());
-		    	}
-		    }
-		}
-    	
-		in.close();
-		
-    	return Double.MAX_VALUE;
-    }
-
+	public vtkPolyData generateFootprint()
+	{
+		return erosModel.computeFrustumIntersection(spacecraftPosition, 
+				frustum1, frustum2, frustum3, frustum4);
+	}
+	
 	public vtkPolyData generateImageBorder()
 	{
 		vtkPolyData polyData = loadFootprint();
@@ -778,4 +734,42 @@ public class MSIImage extends Model
 
 		return polyData;
 	}
+
+	public String getStartTime()
+	{
+		return startTime;
+	}
+
+	public String getStopTime()
+	{
+		return stopTime;
+	}
+	
+	public double getMinimumHorizontalPixelScale()
+	{
+		return 0.0;
+	}
+	
+	public double getMaximumHorizontalPixelScale()
+	{
+		return 0.0;
+	}
+	
+	public double getMinimumVerticalPixelScale()
+	{
+		return 0.0;
+	}
+	
+	public double getMaximumVerticalPixelScale()
+	{
+		return 0.0;
+	}
+	
+	public double getSpacecraftDistance()
+	{
+		return Math.sqrt(
+    			spacecraftPosition[0]*spacecraftPosition[0] +
+    			spacecraftPosition[1]*spacecraftPosition[1] +
+    			spacecraftPosition[2]*spacecraftPosition[2]);
+ 	}
 }

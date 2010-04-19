@@ -51,7 +51,10 @@ public class DatabaseGeneratorSql
             		"filter tinyint, " +
             		"iofcif tinyint," +
             		"target_center_distance double," +
-            		"horizontal_pixel_scale double," +
+            		"min_horizontal_pixel_scale double," +
+            		"max_horizontal_pixel_scale double," +
+            		"min_vertical_pixel_scale double," +
+            		"max_vertical_pixel_scale double," +
             		"has_limb boolean," +
             		"minincidence double," +
             		"maxincidence double," +
@@ -205,20 +208,20 @@ public class DatabaseGeneratorSql
     		f = f.getParentFile();
     		yearStr = f.getName();
 
-    		MSIImage image = new MSIImage(origFile);
+    		MSIImage image = new MSIImage(origFile, erosModel);
     		//HashMap<String, String> properties = image.getProperties();
 
-    		String lblFilename = filename.substring(0, filename.length()-4) + ".LBL";
-    		HashMap<String, String> properties = MSIImage.parseLblFile(lblFilename);
+    		//String lblFilename = filename.substring(0, filename.length()-4) + ".LBL";
+    		//HashMap<String, String> properties = MSIImage.parseLblFile(lblFilename);
     		
             if (msiInsert == null)
             {
             	msiInsert = db.preparedStatement(                                                                                    
-            		"insert into msiimages values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");                                                                   
+            		"insert into msiimages values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");                                                                   
             }
 
-            DateTime startTime = new DateTime(properties.get(MSIImage.START_TIME), DateTimeZone.UTC);
-            DateTime stopTime = new DateTime(properties.get(MSIImage.STOP_TIME), DateTimeZone.UTC);
+            DateTime startTime = new DateTime(image.getStartTime(), DateTimeZone.UTC);
+            DateTime stopTime = new DateTime(image.getStopTime(), DateTimeZone.UTC);
     		// Replace the "T" with a space
             //startTime = startTime.substring(0, 10) + " " + startTime.substring(11, startTime.length());
             //stopTime = stopTime.substring(0, 10) + " " + stopTime.substring(11, stopTime.length());
@@ -232,8 +235,11 @@ public class DatabaseGeneratorSql
     		System.out.println("stoptime: " + stopTime);
     		System.out.println("filter: " + Integer.parseInt(origFile.getName().substring(12, 13)));
     		System.out.println("iof_or_cif: " + iof_or_cif);
-    		System.out.println("TARGET_CENTER_DISTANCE: " + properties.get(MSIImage.TARGET_CENTER_DISTANCE));
-    		System.out.println("HORIZONTAL_PIXEL_SCALE: " + properties.get(MSIImage.HORIZONTAL_PIXEL_SCALE));
+    		System.out.println("TARGET_CENTER_DISTANCE: " + image.getSpacecraftDistance());
+    		System.out.println("Min HORIZONTAL_PIXEL_SCALE: " + image.getMinimumHorizontalPixelScale());
+    		System.out.println("Max HORIZONTAL_PIXEL_SCALE: " + image.getMaximumHorizontalPixelScale());
+    		System.out.println("Min VERTICAL_PIXEL_SCALE: " + image.getMinimumVerticalPixelScale());
+    		System.out.println("Max VERTICAL_PIXEL_SCALE: " + image.getMaximumVerticalPixelScale());
     		System.out.println("hasLimb: " + image.containsLimb());
     		System.out.println("minIncidence: " + image.getMinIncidence());
     		System.out.println("maxIncidence: " + image.getMaxIncidence());
@@ -250,15 +256,18 @@ public class DatabaseGeneratorSql
             msiInsert.setLong(5, stopTime.getMillis());
             msiInsert.setByte(6, Byte.parseByte(origFile.getName().substring(12, 13)));
             msiInsert.setByte(7, iof_or_cif);
-            msiInsert.setDouble(8, Double.parseDouble(properties.get(MSIImage.TARGET_CENTER_DISTANCE)));
-            msiInsert.setDouble(9, Double.parseDouble(properties.get(MSIImage.HORIZONTAL_PIXEL_SCALE)));
-            msiInsert.setBoolean(10, image.containsLimb());
-    		msiInsert.setDouble(11, image.getMinIncidence());
-    		msiInsert.setDouble(12, image.getMaxIncidence());
-    		msiInsert.setDouble(13, image.getMinEmission());
-    		msiInsert.setDouble(14, image.getMaxEmission());
-    		msiInsert.setDouble(15, image.getMinPhase());
-    		msiInsert.setDouble(16, image.getMaxPhase());
+            msiInsert.setDouble(8, image.getSpacecraftDistance());
+            msiInsert.setDouble(9, image.getMinimumHorizontalPixelScale());
+            msiInsert.setDouble(10, image.getMaximumHorizontalPixelScale());
+            msiInsert.setDouble(11, image.getMinimumVerticalPixelScale());
+            msiInsert.setDouble(12, image.getMaximumVerticalPixelScale());
+            msiInsert.setBoolean(13, image.containsLimb());
+    		msiInsert.setDouble(14, image.getMinIncidence());
+    		msiInsert.setDouble(15, image.getMaxIncidence());
+    		msiInsert.setDouble(16, image.getMinEmission());
+    		msiInsert.setDouble(17, image.getMaxEmission());
+    		msiInsert.setDouble(18, image.getMinPhase());
+    		msiInsert.setDouble(19, image.getMaxPhase());
             
             msiInsert.executeUpdate();
     	}

@@ -20,7 +20,8 @@ public class MSIImageCollection extends Model implements PropertyChangeListener
 	 */
 	private ArrayList<vtkProp> dummyActors = new ArrayList<vtkProp>();
 	private boolean hidden = false;
-
+	private ErosModel erosModel;
+	
 	private ArrayList<vtkProp> allActors = new ArrayList<vtkProp>();
 
 	private HashMap<MSIImage, ArrayList<vtkProp>> msiImageActors = new HashMap<MSIImage, ArrayList<vtkProp>>();
@@ -29,13 +30,18 @@ public class MSIImageCollection extends Model implements PropertyChangeListener
 
 	private HashMap<vtkProp, String> actorToFileMap = new HashMap<vtkProp, String>();
 
+	public MSIImageCollection(ErosModel eros)
+	{
+		this.erosModel = eros;
+	}
+	
 	public void addImage(String path) throws FitsException, IOException
 	{
 		if (fileToImageMap.containsKey(path))
 			return;
 		
 		//MSIImage image = new MSIImage(path);
-		MSIImage image = MSIImage.MSIImageFactory.createImage(path);
+		MSIImage image = MSIImage.MSIImageFactory.createImage(path, erosModel);
 
 		image.addPropertyChangeListener(this);
 

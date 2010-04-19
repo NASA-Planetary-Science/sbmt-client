@@ -3,7 +3,6 @@ package edu.jhuapl.near.dbgen;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import nom.tam.fits.FitsException;
 
@@ -44,9 +43,10 @@ public class MSIFootprintGenerator
     		f = f.getParentFile();
     		yearStr = f.getName();
 
-    		//MSIImage image = new MSIImage(origFile);
+    		MSIImage image = new MSIImage(origFile, erosModel);
     		//HashMap<String, String> properties = image.getProperties();
 
+    		/*
     		String lblFilename = filename.substring(0, filename.length()-4) + "_DDR.LBL";
     		
     		System.out.println("lblFilename " + lblFilename);
@@ -78,6 +78,7 @@ public class MSIFootprintGenerator
     		frustum4[0] = Double.parseDouble(tmp[0]);
     		frustum4[1] = Double.parseDouble(tmp[1]);
     		frustum4[2] = Double.parseDouble(tmp[2]);
+    		*/
     		
     		//DateTime midtime = new DateTime(nisSpectrum.getDateTime().toString(), DateTimeZone.UTC);
     		System.out.println("id: " + Integer.parseInt(origFile.getName().substring(2, 11)));
@@ -86,9 +87,10 @@ public class MSIFootprintGenerator
     		//System.out.println("midtime: " + midtime);
     		System.out.println(" ");
     	
-    		vtkPolyData footprint = erosModel.computeFrustumIntersection(spacecraftPosition, 
-					frustum1, frustum3, frustum4, frustum2);
-
+    		//vtkPolyData footprint = erosModel.computeFrustumIntersection(spacecraftPosition, 
+			//		frustum1, frustum3, frustum4, frustum2);
+    		vtkPolyData footprint = image.generateFootprint();
+    		
 			if (footprint == null)
 			{
 				System.err.println("Error: Footprint generation failed");
