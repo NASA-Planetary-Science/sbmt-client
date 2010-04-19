@@ -26,7 +26,6 @@ public class MSIImage extends Model
 	public static final int IMAGE_HEIGHT = 412;
 	public static final int NUM_LAYERS = 14;
     public static final int TEXTURE_SIZE = 128;
-    //public static final float PDS_NA = -1.e32f;
     public static final String START_TIME = "START_TIME";
     public static final String STOP_TIME = "STOP_TIME";
     public static final String TARGET_CENTER_DISTANCE = "TARGET_CENTER_DISTANCE";
@@ -43,17 +42,6 @@ public class MSIImage extends Model
 	private vtkPolyData footprint;
     private vtkActor footprintActor;
     private ArrayList<vtkProp> footprintActors = new ArrayList<vtkProp>();
-
-	//private float[][] incidence = new float[IMAGE_HEIGHT][IMAGE_WIDTH];
-	//private float[][] emission = new float[IMAGE_HEIGHT][IMAGE_WIDTH];
-	//private float[][] phase = new float[IMAGE_HEIGHT][IMAGE_WIDTH];
-	//private float[][] latitude = new float[IMAGE_HEIGHT][IMAGE_WIDTH];
-	//private float[][] longitude = new float[IMAGE_HEIGHT][IMAGE_WIDTH];
-	//private float[][] x = new float[IMAGE_HEIGHT][IMAGE_WIDTH];
-	//private float[][] y = new float[IMAGE_HEIGHT][IMAGE_WIDTH];
-	//private float[][] z = new float[IMAGE_HEIGHT][IMAGE_WIDTH];
-	
-//	private float[] data = new float[NUM_LAYERS*IMAGE_HEIGHT*IMAGE_WIDTH];
 
     private double minIncidence = Double.MAX_VALUE;
     private double maxIncidence = -Double.MAX_VALUE;
@@ -133,8 +121,8 @@ public class MSIImage extends Model
 		//FileCache.getFileFromServer(imgFilename);
 		String imgLblFilename = filename.substring(0, filename.length()-4) + "_DDR.LBL";
 		FileCache.getFileFromServer(imgLblFilename);
-		String boundaryFilename = filename.substring(0, filename.length()-4) + "_BOUNDARY.VTK";
-		FileCache.getFileFromServer(boundaryFilename);
+		//String boundaryFilename = filename.substring(0, filename.length()-4) + "_BOUNDARY.VTK";
+		//FileCache.getFileFromServer(boundaryFilename);
 
 		this.initialize(fitFile);
 	}
@@ -237,21 +225,6 @@ public class MSIImage extends Model
 		return filter;
 	}
 
-	/*
-	public vtkImageData getSubImage(int size, int row, int col)
-	{
-		vtkImageReslice reslice = new vtkImageReslice();
-        reslice.SetInput(displayedImage);
-        reslice.SetInterpolationModeToNearestNeighbor();
-        reslice.SetOutputSpacing(1.0, 1.0, 1.0);
-        reslice.SetOutputOrigin(0.0, 0.0, 0.0);
-        reslice.SetOutputExtent(col, col+size-1, row, row+size-1, 0, 0);
-        reslice.Update();
-
-        return reslice.GetOutput();
-	}
-	*/
-
 	private vtkPolyData loadFootprint()
 	{
 		String footprintFilename = serverpath.substring(0, serverpath.length()-4) + "_FOOTPRINT.VTK";
@@ -274,27 +247,26 @@ public class MSIImage extends Model
 
 
 	private static ErosModel erosModel;
-	//public ArrayList<vtkActor> getMappedImage(double offset)
-    public ArrayList<vtkProp> getProps()
-    {
-    	if (footprintActor == null)
-    	{
-    		if (footprint == null)
-    		{
-    			footprint = loadFootprint();
-    		}
+	public ArrayList<vtkProp> getProps()
+	{
+		if (footprintActor == null)
+		{
+			if (footprint == null)
+			{
+				footprint = loadFootprint();
+			}
 
-    		if (footprint != null)
-    		{
-    			int numberOfPoints = footprint.GetNumberOfPoints();
-    			
-    			vtkFloatArray tcoords = new vtkFloatArray();
-                tcoords.SetNumberOfComponents(2);
-                tcoords.SetNumberOfTuples(numberOfPoints);
-                
-                vtkPoints points = footprint.GetPoints();
+			if (footprint != null)
+			{
+				int numberOfPoints = footprint.GetNumberOfPoints();
 
-                /*
+				vtkFloatArray tcoords = new vtkFloatArray();
+				tcoords.SetNumberOfComponents(2);
+				tcoords.SetNumberOfTuples(numberOfPoints);
+
+				vtkPoints points = footprint.GetPoints();
+
+				
                  // for testing
                 if (erosModel == null)
                 	erosModel = new ErosModel();
@@ -305,110 +277,110 @@ public class MSIImage extends Model
                 writer.SetFileName("/tmp/footprint.vtk");
                 //writer.SetFileTypeToBinary();
                 writer.Write();
-                 */
+				
 
-        		double a = Spice.vsep(frustum1, frustum3);
-        		double b = Spice.vsep(frustum1, frustum2);
+				double a = Spice.vsep(frustum1, frustum3);
+				double b = Spice.vsep(frustum1, frustum2);
 
-        		double[] vec = new double[3];
-        		
-                for (int i=0; i<numberOfPoints; ++i)
-                {
-                	double[] pt = points.GetPoint(i);
-                	
-                	vec[0] = pt[0] - spacecraftPosition[0];
-                	vec[1] = pt[1] - spacecraftPosition[1];
-                	vec[2] = pt[2] - spacecraftPosition[2];
-                	Spice.unorm(vec, vec);
-                	
-                	double d1 = Spice.vsep(vec, frustum1);
-                	double d2 = Spice.vsep(vec, frustum2);
-                	
-                	double v = (d1*d1 + b*b - d2*d2) / (2*b);
-                	double u = Math.sqrt(d1*d1 - v*v);
-                	
-                	//System.out.println(v/b + " " + u/a);
-                	tcoords.SetTuple2(i, v/b, u/a);
-                }
-                
+				double[] vec = new double[3];
 
-    			// Now map the data to 
-    			footprint.GetPointData().SetTCoords(tcoords);
+				for (int i=0; i<numberOfPoints; ++i)
+				{
+					double[] pt = points.GetPoint(i);
 
-    			PolyDataUtil.shiftPolyDataInNormalDirection(footprint, 0.002);
+					vec[0] = pt[0] - spacecraftPosition[0];
+					vec[1] = pt[1] - spacecraftPosition[1];
+					vec[2] = pt[2] - spacecraftPosition[2];
+					Spice.unorm(vec, vec);
 
-    			vtkTexture texture = new vtkTexture();
-    			texture.InterpolateOn();
-    			texture.RepeatOff();
-    			texture.EdgeClampOn();
-    			texture.SetInput(displayedImage);
+					double d1 = Spice.vsep(vec, frustum1);
+					double d2 = Spice.vsep(vec, frustum2);
 
-    			vtkPolyDataMapper footprintMapper = new vtkPolyDataMapper();
-    			footprintMapper.SetInput(footprint);
-    			footprintMapper.Update();
+					double v = (d1*d1 + b*b - d2*d2) / (2*b);
+					double u = Math.sqrt(d1*d1 - v*v);
 
-    			footprintActor = new vtkActor();
-    			footprintActor.SetMapper(footprintMapper);
-    			footprintActor.SetTexture(texture);
-    			footprintActor.GetProperty().LightingOff();
+					//System.out.println(v/b + " " + u/a);
+					tcoords.SetTuple2(i, v/b, u/a);
+				}
 
-    			footprintActors.add(footprintActor);
-    		}
-    	}
-		
+
+				// Now map the data to 
+				footprint.GetPointData().SetTCoords(tcoords);
+
+				PolyDataUtil.shiftPolyDataInNormalDirection(footprint, 0.002);
+
+				vtkTexture texture = new vtkTexture();
+				texture.InterpolateOn();
+				texture.RepeatOff();
+				texture.EdgeClampOn();
+				texture.SetInput(displayedImage);
+
+				vtkPolyDataMapper footprintMapper = new vtkPolyDataMapper();
+				footprintMapper.SetInput(footprint);
+				footprintMapper.Update();
+
+				footprintActor = new vtkActor();
+				footprintActor.SetMapper(footprintMapper);
+				footprintActor.SetTexture(texture);
+				footprintActor.GetProperty().LightingOff();
+
+				footprintActors.add(footprintActor);
+			}
+		}
+
 		if (showFrustum)
 		{
 			vtkPolyData frus = new vtkPolyData();
-			
+
 			vtkPoints points = new vtkPoints();
-	        vtkCellArray lines = new vtkCellArray();
-	        
-	        vtkIdList idList = new vtkIdList();
-	        idList.SetNumberOfIds(2);
-	        
-	        double dx = Spice.vnorm(spacecraftPosition)*2;
+			vtkCellArray lines = new vtkCellArray();
+
+			vtkIdList idList = new vtkIdList();
+			idList.SetNumberOfIds(2);
+
+			double dx = Spice.vnorm(spacecraftPosition)*2;
 			double[] origin = spacecraftPosition;
 			double[] UL = {origin[0]+frustum1[0]*dx, origin[1]+frustum1[1]*dx, origin[2]+frustum1[2]*dx};
 			double[] UR = {origin[0]+frustum2[0]*dx, origin[1]+frustum2[1]*dx, origin[2]+frustum2[2]*dx};
 			double[] LL = {origin[0]+frustum3[0]*dx, origin[1]+frustum3[1]*dx, origin[2]+frustum3[2]*dx};
 			double[] LR = {origin[0]+frustum4[0]*dx, origin[1]+frustum4[1]*dx, origin[2]+frustum4[2]*dx};
 
-	        points.InsertNextPoint(spacecraftPosition);
-	        points.InsertNextPoint(UL);
-	        points.InsertNextPoint(UR);
-	        points.InsertNextPoint(LL);
-	        points.InsertNextPoint(LR);
+			points.InsertNextPoint(spacecraftPosition);
+			points.InsertNextPoint(UL);
+			points.InsertNextPoint(UR);
+			points.InsertNextPoint(LL);
+			points.InsertNextPoint(LR);
 
-	    	idList.SetId(0, 0);
-	    	idList.SetId(1, 1);
-	    	lines.InsertNextCell(idList);
-	    	idList.SetId(0, 0);
-	    	idList.SetId(1, 2);
-	    	lines.InsertNextCell(idList);
-	    	idList.SetId(0, 0);
-	    	idList.SetId(1, 3);
-	    	lines.InsertNextCell(idList);
-	    	idList.SetId(0, 0);
-	    	idList.SetId(1, 4);
-	    	lines.InsertNextCell(idList);
-	    	
-	    	frus.SetPoints(points);
-	        frus.SetLines(lines);
+			idList.SetId(0, 0);
+			idList.SetId(1, 1);
+			lines.InsertNextCell(idList);
+			idList.SetId(0, 0);
+			idList.SetId(1, 2);
+			lines.InsertNextCell(idList);
+			idList.SetId(0, 0);
+			idList.SetId(1, 3);
+			lines.InsertNextCell(idList);
+			idList.SetId(0, 0);
+			idList.SetId(1, 4);
+			lines.InsertNextCell(idList);
+
+			frus.SetPoints(points);
+			frus.SetLines(lines);
 
 
-	        vtkPolyDataMapper frusMapper = new vtkPolyDataMapper();
+			vtkPolyDataMapper frusMapper = new vtkPolyDataMapper();
 			frusMapper.SetInput(frus);
 
 			vtkActor frusActor = new vtkActor();
 			frusActor.SetMapper(frusMapper);
-	        frusActor.GetProperty().SetColor(0.0, 1.0, 0.0);
-	        frusActor.GetProperty().SetLineWidth(2.0);
+			frusActor.GetProperty().SetColor(0.0, 1.0, 0.0);
+			frusActor.GetProperty().SetLineWidth(2.0);
 
-	        footprintActors.add(frusActor);
+			footprintActors.add(frusActor);
 		}
 
-        return footprintActors;
-    }
+		return footprintActors;
+	}
     
 
 	public BoundingBox getBoundingBox()
@@ -430,51 +402,6 @@ public class MSIImage extends Model
 	{
 		return serverpath;
 	}
-	
-	/*
-	public float getLatitude(int row, int col)
-	{
-		return latitude[row][col];
-	}
-	
-	public float getLongitude(int row, int col)
-	{
-		return longitude[row][col];
-	}
-	
-	public float getPhaseAngle(int row, int col)
-	{
-		return 0;
-	}
-
-	public float getEmissionAngle(int row, int col)
-	{
-		return 0;
-	}
-
-	public float getIncidenceAngle(int row, int col)
-	{
-		return 0;
-	}
-	*/
-	
-	/*
-	public float getX(int row, int col)
-	{
-		return x[row][col];
-	}
-
-	public float getY(int row, int col)
-	{
-		return y[row][col];
-	}
-
-	public float getZ(int row, int col)
-	{
-		return z[row][col];
-	}
-	*/
-	
 	
 	public double getMinIncidence() 
 	{
@@ -506,7 +433,6 @@ public class MSIImage extends Model
 		return maxPhase;
 	}
 	
-
 	public IntensityRange getDisplayedRange()
 	{
 		return displayedRange;
@@ -515,60 +441,42 @@ public class MSIImage extends Model
 	public void setDisplayedImageRange(IntensityRange range)
 	{
 		if (displayedRange.min != range.min ||
-			displayedRange.max != range.max)
+				displayedRange.max != range.max)
 		{
 			displayedRange = range;
-			
+
 			float dx = (maxValue-minValue)/255.0f;
 			float min = minValue + range.min*dx;
 			float max = minValue + range.max*dx;
 
 			// Update the displayed image
-	    	vtkLookupTable lut = new vtkLookupTable();
-	    	lut.SetTableRange(min, max);
-	    	lut.SetValueRange(0.0, 1.0);
-	    	lut.SetHueRange(0.0, 0.0);
-	    	lut.SetSaturationRange(0.0, 0.0);
-	    	//lut.SetNumberOfTableValues(402);
-	    	lut.SetRampToLinear();
-	    	lut.Build();
+			vtkLookupTable lut = new vtkLookupTable();
+			lut.SetTableRange(min, max);
+			lut.SetValueRange(0.0, 1.0);
+			lut.SetHueRange(0.0, 0.0);
+			lut.SetSaturationRange(0.0, 0.0);
+			//lut.SetNumberOfTableValues(402);
+			lut.SetRampToLinear();
+			lut.Build();
 
-	    	vtkImageMapToColors mapToColors = new vtkImageMapToColors();
-	    	mapToColors.SetInput(rawImage);
-	    	mapToColors.SetOutputFormatToRGB();
-	    	mapToColors.SetLookupTable(lut);
-	    	mapToColors.Update();
-	    	
-	    	if (displayedImage == null)
-	    		displayedImage = new vtkImageData();
-	    	displayedImage.DeepCopy(mapToColors.GetOutput());
+			vtkImageMapToColors mapToColors = new vtkImageMapToColors();
+			mapToColors.SetInput(rawImage);
+			mapToColors.SetOutputFormatToRGB();
+			mapToColors.SetLookupTable(lut);
+			mapToColors.Update();
 
-		    //vtkPNGWriter writer = new vtkPNGWriter();
-		    //writer.SetFileName("fit.png");
-		    //writer.SetInput(displayedImage);
-		    //writer.Write();
+			if (displayedImage == null)
+				displayedImage = new vtkImageData();
+			displayedImage.DeepCopy(mapToColors.GetOutput());
 
-	    	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+			//vtkPNGWriter writer = new vtkPNGWriter();
+			//writer.SetFileName("fit.png");
+			//writer.SetInput(displayedImage);
+			//writer.Write();
+
+			this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 		}
 	}
-
-	//public void setPolygonOffset(double offset)
-	//{
-	//	this.polygonOffset = offset;
-	//}
-	
-	/*
-	public vtkPolyData getImageBorder()
-	{
-    	String filename = getFullPath();
-    	
-    	String lblFilename = filename.substring(0, filename.length()-4) + "_BOUNDARY.vtk";
-
-    	vtkPolyDataReader reader = new vtkPolyDataReader();
-    	reader.SetFileName(lblFilename);
-    	
-	}
-	*/
 
 	/*
 	// This function is taken from http://www.java2s.com/Code/Java/Language-Basics/Utilityforbyteswappingofalljavadatatypes.htm
@@ -768,10 +676,6 @@ public class MSIImage extends Model
     	return hasLimb;
     }
 
-	/////////////////////////////////////////////////////////////////
-	// The remaining functions are used in the database generation
-	/////////////////////////////////////////////////////////////////
-
     public StringPair getImageStartStopTime() throws IOException
     {
     	// Parse through the lbl file till we find the strings "START_TIME"                                                                 
@@ -860,18 +764,18 @@ public class MSIImage extends Model
 
 	public vtkPolyData generateImageBorder()
 	{
-		// TODO Auto-generated method stub
-		return null;
+		vtkPolyData polyData = loadFootprint();
+
+		vtkFeatureEdges edgeExtracter = new vtkFeatureEdges();
+        edgeExtracter.SetInput(polyData);
+        edgeExtracter.BoundaryEdgesOn();
+        edgeExtracter.FeatureEdgesOff();
+        edgeExtracter.NonManifoldEdgesOff();
+        edgeExtracter.ManifoldEdgesOff();
+        edgeExtracter.Update();
+        
+        polyData.DeepCopy(edgeExtracter.GetOutput());
+
+		return polyData;
 	}
-
-    /*
-    public boolean isValidPoint(float x, float y, float z)
-    {
-    	if (x <= MSIImage.PDS_NA || y <= MSIImage.PDS_NA || z <= MSIImage.PDS_NA)
-    		return false;
-    	else
-    		return true;
-    }
-    */
-
 }

@@ -44,7 +44,7 @@ public class ModelManager extends Model implements PropertyChangeListener
     	lineamentModel = new LineamentModel();
     	erosModel = new ErosModel();
     	msiImages = new MSIImageCollection();
-    	msiBoundaries = new MSIBoundaryCollection();
+    	msiBoundaries = new MSIBoundaryCollection(erosModel);
     	nisSpectra = new NISSpectraCollection(erosModel);
     	nlrData = new NLRDataCollection();
     	lineStructuresModel = new LineModel(erosModel);

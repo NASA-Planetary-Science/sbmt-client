@@ -42,27 +42,24 @@ public class Configuration
 		return "near";
 	}
 
-	static private String getCredentials()
+	static
 	{
-		// Using a character array rather than a string to hold the username and
-		// password makes them less visible in the compiled .class file. Security
-		// through obscurity.
-		char[] str = {'a','s','t','e','r','o','i','d',':','c','r','a','t','e','r','@'};
-		//return new String(str);
-		return "";
-	}
-	
-	static public void setupCredentials()
-	{
-		Authenticator.setDefault(new Authenticator()
+		try
 		{
-			protected PasswordAuthentication getPasswordAuthentication()
+			Authenticator.setDefault(new Authenticator()
 			{
-				char[] username = {'a','s','t','e','r','o','i','d'};
-				char[] password = {'c','r','a','t','e','r'};
-				return new PasswordAuthentication(new String(username), password); 
-			}
-		});
+				protected PasswordAuthentication getPasswordAuthentication()
+				{
+					char[] username = {'a','s','t','e','r','o','i','d'};
+					char[] password = {'c','r','a','t','e','r'};
+					return new PasswordAuthentication(new String(username), password); 
+				}
+			});
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
 	
 	/**
@@ -70,12 +67,12 @@ public class Configuration
 	 */
 	static public String getDataRootURL()
 	{
-		return "http://" + getCredentials() + "near.jhuapl.edu/software/data";
+		return "http://near.jhuapl.edu/software/data";
 	}
 	
 	static public String getQueryRootURL()
 	{
-		return "http://" + getCredentials() + "near.jhuapl.edu/software/query";
+		return "http://near.jhuapl.edu/software/query";
 	}
 
 }

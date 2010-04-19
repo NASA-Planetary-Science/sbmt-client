@@ -11,7 +11,7 @@ import edu.jhuapl.near.util.Properties;
 
 public class MSIBoundaryCollection extends Model
 {
-	private static class Boundary
+	private class Boundary
 	{
 		public vtkActor actor;
 		
@@ -25,9 +25,13 @@ public class MSIBoundaryCollection extends Model
 			vtkPolyDataReader boundaryReader = new vtkPolyDataReader();
 	        boundaryReader.SetFileName(file.getAbsolutePath());
 	        boundaryReader.Update();
+	        
+	        vtkPolyData boundary = new vtkPolyData();
+	        boundary.DeepCopy(boundaryReader.GetOutput());
+			PolyDataUtil.shiftPolyLineInNormalDirectionOfPolyData(boundary, erosModel.getErosPolyData(), 0.003);
 
 	        vtkPolyDataMapper boundaryMapper = new vtkPolyDataMapper();
-	        boundaryMapper.SetInput(boundaryReader.GetOutput());
+	        boundaryMapper.SetInput(boundary);
 	        //boundaryMapper.SetResolveCoincidentTopologyToPolygonOffset();
 	        //boundaryMapper.SetResolveCoincidentTopologyPolygonOffsetParameters(-1.0, -1.0);
 
@@ -48,6 +52,12 @@ public class MSIBoundaryCollection extends Model
 
 	private HashMap<String, Boundary> fileToBoundaryMap = new HashMap<String, Boundary>();
 	private HashMap<vtkProp, String> actorToFileMap = new HashMap<vtkProp, String>();
+	private ErosModel erosModel;
+	
+	public MSIBoundaryCollection(ErosModel erosModel)
+	{
+		this.erosModel = erosModel;
+	}
 	
 	public void addBoundary(String path) throws FitsException, IOException
 	{
