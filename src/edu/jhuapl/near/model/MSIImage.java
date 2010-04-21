@@ -24,17 +24,18 @@ public class MSIImage extends Model
 	
 	public static final int IMAGE_WIDTH = 537;
 	public static final int IMAGE_HEIGHT = 412;
-	public static final int NUM_LAYERS = 14;
-    public static final int TEXTURE_SIZE = 128;
+	//public static final int NUM_LAYERS = 14;
+    //public static final int TEXTURE_SIZE = 128;
     public static final String START_TIME = "START_TIME";
     public static final String STOP_TIME = "STOP_TIME";
-    public static final String TARGET_CENTER_DISTANCE = "TARGET_CENTER_DISTANCE";
-    public static final String HORIZONTAL_PIXEL_SCALE = "HORIZONTAL_PIXEL_SCALE";
+    //public static final String TARGET_CENTER_DISTANCE = "TARGET_CENTER_DISTANCE";
+    //public static final String HORIZONTAL_PIXEL_SCALE = "HORIZONTAL_PIXEL_SCALE";
     public static final String SPACECRAFT_POSITION = "SPACECRAFT_POSITION";
     public static final String MSI_FRUSTUM1 = "MSI_FRUSTUM1";
     public static final String MSI_FRUSTUM2 = "MSI_FRUSTUM2";
     public static final String MSI_FRUSTUM3 = "MSI_FRUSTUM3";
     public static final String MSI_FRUSTUM4 = "MSI_FRUSTUM4";
+    public static final String SUN_POSITION_LT = "SUN_POSITION_LT";
 
     private ErosModel erosModel;
 
@@ -45,12 +46,18 @@ public class MSIImage extends Model
     private vtkActor footprintActor;
     private ArrayList<vtkProp> footprintActors = new ArrayList<vtkProp>();
 
+    private vtkPolyDataNormals normalsFilter;
+
     private double minIncidence = Double.MAX_VALUE;
     private double maxIncidence = -Double.MAX_VALUE;
     private double minEmission = Double.MAX_VALUE;
     private double maxEmission = -Double.MAX_VALUE;
     private double minPhase = Double.MAX_VALUE;
     private double maxPhase = -Double.MAX_VALUE;
+    private double minHorizontalPixelScale = Double.MAX_VALUE;
+    private double maxHorizontalPixelScale = -Double.MAX_VALUE;
+    private double minVerticalPixelScale = Double.MAX_VALUE;
+    private double maxVerticalPixelScale = -Double.MAX_VALUE;
 
 	private BoundingBox boundingBox = new BoundingBox();
 	private String name = ""; // The name is a 9 digit number at the beginning of the filename
@@ -75,8 +82,9 @@ public class MSIImage extends Model
     private double[] frustum3 = new double[3];
     private double[] frustum4 = new double[3];
 	private boolean hasLimb = false;
+    private double[] sunPosition = new double[3];
 
-	private boolean showFrustum = true;
+	private boolean showFrustum = false;
 
 	private String startTime = "";
 	private String stopTime = "";
@@ -247,6 +255,7 @@ public class MSIImage extends Model
 
 	private vtkPolyData loadFootprint()
 	{
+		/*
 		String footprintFilename = serverpath.substring(0, serverpath.length()-4) + "_FOOTPRINT.VTK";
 		File file = FileCache.getFileFromServer(footprintFilename);
 		
@@ -263,6 +272,23 @@ public class MSIImage extends Model
 		polyData.DeepCopy(footprintReader.GetOutput());
 		
 		return polyData;
+		*/
+
+        // for testing
+        if (erosModel == null)
+        	erosModel = new ErosModel();
+        vtkPolyData footprint2 = erosModel.computeFrustumIntersection(spacecraftPosition, 
+				frustum1, frustum3, frustum4, frustum2);
+        //vtkPolyDataWriter writer = new vtkPolyDataWriter();
+        //writer.SetInput(footprint2);
+        //writer.SetFileName("/tmp/footprint.vtk");
+        ////writer.SetFileTypeToBinary();
+        //writer.Write();
+
+        vtkPolyData polyData = new vtkPolyData();
+		polyData.DeepCopy(footprint2);
+
+        return polyData;
 	}
 
 
@@ -277,25 +303,13 @@ public class MSIImage extends Model
 
 			if (footprint != null)
 			{
-				int numberOfPoints = footprint.GetNumberOfPoints();
+                int numberOfPoints = footprint.GetNumberOfPoints();
 
 				vtkFloatArray tcoords = new vtkFloatArray();
 				tcoords.SetNumberOfComponents(2);
 				tcoords.SetNumberOfTuples(numberOfPoints);
 
 				vtkPoints points = footprint.GetPoints();
-
-				
-                 // for testing
-                if (erosModel == null)
-                	erosModel = new ErosModel();
-                vtkPolyData footprint2 = erosModel.computeFrustumIntersection(spacecraftPosition, 
-    					frustum1, frustum3, frustum4, frustum2);
-                vtkPolyDataWriter writer = new vtkPolyDataWriter();
-                writer.SetInput(footprint2);
-                writer.SetFileName("/tmp/footprint.vtk");
-                //writer.SetFileTypeToBinary();
-                writer.Write();
 				
 
 				double a = Spice.vsep(frustum1, frustum3);
@@ -315,11 +329,24 @@ public class MSIImage extends Model
 					double d1 = Spice.vsep(vec, frustum1);
 					double d2 = Spice.vsep(vec, frustum2);
 
-					double v = (d1*d1 + b*b - d2*d2) / (2*b);
-					double u = Math.sqrt(d1*d1 - v*v);
+					double v = (d1*d1 + b*b - d2*d2) / (2.0*b);
+					double u = d1*d1 - v*v;
+					if (u <= 0.0)
+						u = 0.0;
+					else
+						u = Math.sqrt(u);
 
-					//System.out.println(v/b + " " + u/a);
-					tcoords.SetTuple2(i, v/b, u/a);
+					//System.out.println(v/b + " " + u/a + " " + d1 + " " + d2);
+					
+					v = v/b;
+					u = u/a;
+					
+					if (v < 0.0) v = 0.0;
+					if (v > 1.0) v = 1.0;
+					if (u < 0.0) u = 0.0;
+					if (u > 1.0) u = 1.0;
+					
+					tcoords.SetTuple2(i, v, u);
 				}
 
 
@@ -554,7 +581,8 @@ public class MSIImage extends Model
 		    			MSI_FRUSTUM1.equals(token) ||
 		    			MSI_FRUSTUM2.equals(token) ||
 		    			MSI_FRUSTUM3.equals(token) ||
-		    			MSI_FRUSTUM4.equals(token))
+		    			MSI_FRUSTUM4.equals(token) ||
+		    			SUN_POSITION_LT.equals(token))
 		    	{
 		    		st.nextToken();
 		    		st.nextToken();
@@ -592,6 +620,12 @@ public class MSIImage extends Model
 		    			frustum4[0] = x;
 		    			frustum4[1] = y;
 		    			frustum4[2] = z;
+		    		}
+		    		if (SUN_POSITION_LT.equals(token))
+		    		{
+		    			sunPosition[0] = x;
+		    			sunPosition[1] = y;
+		    			sunPosition[2] = z;
 		    		}
 		    	}
 		    }
@@ -718,7 +752,7 @@ public class MSIImage extends Model
 				frustum1, frustum2, frustum3, frustum4);
 	}
 	
-	public vtkPolyData generateImageBorder()
+	public vtkPolyData generateBoundary()
 	{
 		vtkPolyData polyData = loadFootprint();
 
@@ -747,22 +781,22 @@ public class MSIImage extends Model
 	
 	public double getMinimumHorizontalPixelScale()
 	{
-		return 0.0;
+		return minHorizontalPixelScale;
 	}
 	
 	public double getMaximumHorizontalPixelScale()
 	{
-		return 0.0;
+		return maxHorizontalPixelScale;
 	}
 	
 	public double getMinimumVerticalPixelScale()
 	{
-		return 0.0;
+		return minVerticalPixelScale;
 	}
 	
 	public double getMaximumVerticalPixelScale()
 	{
-		return 0.0;
+		return maxVerticalPixelScale;
 	}
 	
 	public double getSpacecraftDistance()
@@ -772,4 +806,130 @@ public class MSIImage extends Model
     			spacecraftPosition[1]*spacecraftPosition[1] +
     			spacecraftPosition[2]*spacecraftPosition[2]);
  	}
+	
+	private void computeCellNormals()
+	{
+		if (normalsFilter != null)
+		{
+			normalsFilter = new vtkPolyDataNormals();
+			normalsFilter.SetInput(footprint);
+			normalsFilter.SetComputeCellNormals(1);
+			normalsFilter.SetComputePointNormals(0);
+			normalsFilter.Update();
+
+			footprint.DeepCopy(normalsFilter.GetOutput());
+		}
+	}
+	
+	private void computeIlluminationAngles()
+	{
+		computeCellNormals();
+		
+        int numberOfCells = footprint.GetNumberOfCells();
+
+		vtkPoints points = footprint.GetPoints();
+		vtkDataArray normals = footprint.GetCellData().GetNormals();
+		
+		this.minEmission  =  Double.MAX_VALUE;
+		this.maxEmission  = -Double.MAX_VALUE;
+		this.minIncidence =  Double.MAX_VALUE;
+		this.maxIncidence = -Double.MAX_VALUE;
+		this.minPhase     =  Double.MAX_VALUE;
+		this.maxPhase     = -Double.MAX_VALUE;
+
+		double[] scvec = new double[3];
+		double[] sunvec = new double[3];
+
+		for (int i=0; i<numberOfCells; ++i)
+		{
+			vtkCell cell = footprint.GetCell(i);
+    		double[] pt0 = points.GetPoint( cell.GetPointId(0) );
+    		double[] pt1 = points.GetPoint( cell.GetPointId(1) );
+    		double[] pt2 = points.GetPoint( cell.GetPointId(2) );
+    		double[] centroid = {
+    				(pt0[0] + pt1[0] + pt2[0]) / 3.0,
+    				(pt0[1] + pt1[1] + pt2[1]) / 3.0,
+    				(pt0[2] + pt1[2] + pt2[2]) / 3.0
+    		};
+    		double[] normal = normals.GetTuple3(i);
+    		
+    		scvec[0] = spacecraftPosition[0] - centroid[0];
+			scvec[1] = spacecraftPosition[1] - centroid[1];
+			scvec[2] = spacecraftPosition[2] - centroid[2];
+			
+			sunvec[0] = sunPosition[0] - centroid[0];
+			sunvec[1] = sunPosition[1] - centroid[1];
+			sunvec[2] = sunPosition[2] - centroid[2];
+			
+			double incidence = Spice.vsep(normal, sunvec);
+			double emission = Spice.vsep(normal, scvec);
+			double phase = Spice.vsep(sunvec, scvec);
+			
+			if (incidence < minIncidence)
+				minIncidence = incidence;
+			if (incidence > maxIncidence)
+				maxIncidence = incidence;
+			if (emission < minEmission)
+				minEmission = emission;
+			if (emission > maxEmission)
+				maxEmission = emission;
+			if (phase < minPhase)
+				minPhase = phase;
+			if (phase > maxPhase)
+				maxPhase = phase;
+		}		
+	}
+	
+	private void computePixelScale()
+	{
+        int numberOfPoints = footprint.GetNumberOfPoints();
+
+		vtkPoints points = footprint.GetPoints();
+		
+		minHorizontalPixelScale = Double.MAX_VALUE;
+	    maxHorizontalPixelScale = -Double.MAX_VALUE;
+	    minVerticalPixelScale = Double.MAX_VALUE;
+	    maxVerticalPixelScale = -Double.MAX_VALUE;
+
+		double horizScaleFactor = 2.0 * Math.tan( Spice.vsep(frustum1, frustum3) / 2.0 ) / IMAGE_HEIGHT;
+		double vertScaleFactor = 2.0 * Math.tan( Spice.vsep(frustum1, frustum2) / 2.0 ) / IMAGE_WIDTH;
+
+	    double[] vec = new double[3];
+
+		for (int i=0; i<numberOfPoints; ++i)
+		{
+			double[] pt = points.GetPoint(i);
+
+			vec[0] = pt[0] - spacecraftPosition[0];
+			vec[1] = pt[1] - spacecraftPosition[1];
+			vec[2] = pt[2] - spacecraftPosition[2];
+			double dist = Spice.vnorm(vec);
+
+			double horizPixelScale = dist * horizScaleFactor;
+			double vertPixelScale = dist * vertScaleFactor;
+
+			if (horizPixelScale < minHorizontalPixelScale)
+				minHorizontalPixelScale = horizPixelScale;
+			if (horizPixelScale > maxHorizontalPixelScale)
+				maxHorizontalPixelScale = horizPixelScale;
+			if (vertPixelScale < minVerticalPixelScale)
+				minVerticalPixelScale = vertPixelScale;
+			if (vertPixelScale > maxVerticalPixelScale)
+				maxVerticalPixelScale = vertPixelScale;
+		}		
+	}
+	
+	private float[] generateBackPlanes()
+	{
+		int numLayers = 8;
+		float[] data = new float[numLayers*IMAGE_HEIGHT*IMAGE_WIDTH];
+
+		for (int i=0; i<IMAGE_HEIGHT; ++i)
+			for (int j=0; j<IMAGE_WIDTH; ++j)
+			{
+				
+			}
+		
+		return null;
+	}
 }

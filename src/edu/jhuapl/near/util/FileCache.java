@@ -6,7 +6,7 @@ import java.net.URL;
 public class FileCache 
 {
 	static private String cacheRoot = null;
-	static private String cacheVersion = "1";
+	static private String cacheVersion = "2";
 	
 	static public File getFileFromServer(String path)
 	{

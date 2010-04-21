@@ -1,6 +1,7 @@
 package edu.jhuapl.near.util;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 
 import vtk.*;
@@ -34,6 +35,8 @@ public class PolyDataUtil
 	private static vtkCleanPolyData cleanPoly_f4;
 	private static vtkPolyDataConnectivityFilter connectivityFilter_f4;
 	private static vtkPoints intersectPoints_f4;
+	private static vtkIdList intersectCells_f4;
+	private static vtkOBBTree cellLocator_f4;
 	public static vtkPolyData computeFrustumIntersection(
 			vtkPolyData polyData,
 			vtkAbstractCellLocator locator,
@@ -186,9 +189,10 @@ public class PolyDataUtil
 		// obscured cells. To remove
 		// cells that are obscured by other cells we do the following: Go through every point in the
 		// polydata and form a line segment connecting it to the origin (i.e. the camera
-		// location). If this line segment intersects any other cell in the polydata, then we can remove
-		// all cells that contain this point. Now you may argue that it's possible that such
-		// cells are only partially obscured, not fully obscured and therefore we should split
+		// location). Remove all cells for which all three of its points are obscured.
+		// Now you may argue that it's possible that such
+		// cells are only partially obscured (if say only one of its points are obscured),
+		// not fully obscured and therefore we should split
 		// these cells into pieces and only throw out the pieces that are fully obscured.
 		// However, doing this would require a lot more computation and I don't think
 		// going this far is really necessary. You might also argue that it's possible
@@ -209,40 +213,68 @@ public class PolyDataUtil
 			return tmpPolyData_f4;
 		}
 
+		
 		tmpPolyData_f4.BuildLinks(0);
 
+		if (cellLocator_f4 == null) cellLocator_f4 = new vtkOBBTree();
+        cellLocator_f4.SetDataSet(tmpPolyData_f4);
+        cellLocator_f4.CacheCellBoundsOn();
+        cellLocator_f4.AutomaticOn();
+        //cellLocator.SetMaxLevel(10);
+        //cellLocator.SetNumberOfCellsPerNode(5);
+        cellLocator_f4.BuildLocator();
+
 		if (intersectPoints_f4 == null) intersectPoints_f4 = new vtkPoints();
+		if (intersectCells_f4 == null) intersectCells_f4 = new vtkIdList();
 
 		points = tmpPolyData_f4.GetPoints();
 		int numPoints = points.GetNumberOfPoints();
+		
+		int[] numberOfObscuredPointsPerCell = new int[tmpPolyData_f4.GetNumberOfCells()];
+		Arrays.fill(numberOfObscuredPointsPerCell, 0);
 		
 		for (int i=0; i<numPoints; ++i)
 		{
 			double[] sourcePnt = points.GetPoint(i);
 
 			intersectPoints_f4.Reset();
-
-			locator.IntersectWithLine(origin, sourcePnt, intersectPoints_f4, null);
-
+			intersectCells_f4.Reset();
+			
+//			locator.IntersectWithLine(origin, sourcePnt, intersectPoints_f4, null);
+			cellLocator_f4.IntersectWithLine(origin, sourcePnt, intersectPoints_f4, intersectCells_f4);
+//			locator.IntersectWithLine(origin, sourcePnt, intersectPoints_f4, intersectCells_f4);
+			
 			if (intersectPoints_f4.GetNumberOfPoints() >= 1)
 			{
+				tmpPolyData_f4.GetPointCells(i, idList_f4);
+				int numPtCells = idList_f4.GetNumberOfIds();
+
 				// If there's only 1 intersection point make sure the intersection point is
 				// not sourcePnt
 				if (intersectPoints_f4.GetNumberOfPoints() == 1)
 				{
-					double[] pt = intersectPoints_f4.GetPoint(0);
-					if (math.Distance2BetweenPoints(sourcePnt, pt) < 1e-6)
+//					double[] pt = intersectPoints_f4.GetPoint(0);
+//					System.out.println(i + " " + intersectCells_f4.GetId(0) + " " + intersectCells_f4.GetNumberOfIds() + " " + Math.sqrt(math.Distance2BetweenPoints(sourcePnt, pt)));
+//					if (Math.sqrt(math.Distance2BetweenPoints(sourcePnt, pt)) < 1.0e-3)
+//					{
+//						continue;
+//					}
+
+					if (idList_f4.IsId(intersectCells_f4.GetId(0)) >= 0)
 					{
+//						System.out.println("Too close  " + i);
 						continue;
 					}
 				}
 				
-				tmpPolyData_f4.GetPointCells(i, idList_f4);
-				
-				int numPtCells = idList_f4.GetNumberOfIds();
 				for (int j=0; j<numPtCells; ++j)
 				{
-					tmpPolyData_f4.DeleteCell(idList_f4.GetId(j));
+					// The following makes sure that only cells for which ALL three of its
+					// points are obscured get deleted
+					int cellId = idList_f4.GetId(j);
+					++numberOfObscuredPointsPerCell[cellId];
+					if (numberOfObscuredPointsPerCell[cellId] == 3)
+						tmpPolyData_f4.DeleteCell(cellId);
 				}
 			}
 		}
