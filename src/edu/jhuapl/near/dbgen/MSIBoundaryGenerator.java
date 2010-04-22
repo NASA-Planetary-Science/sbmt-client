@@ -27,6 +27,7 @@ public class MSIBoundaryGenerator
 			if (filesExist == false)
 				continue;
 
+    		System.out.println("\n\n");
 			System.out.println("starting msi " + count++);
 			
     		String dayOfYearStr = "";
@@ -50,7 +51,6 @@ public class MSIBoundaryGenerator
     		System.out.println("year: " + yearStr);
     		System.out.println("dayofyear: " + dayOfYearStr);
     		//System.out.println("midtime: " + midtime);
-    		System.out.println(" ");
     	
     		vtkPolyData boundary = image.generateBoundary();
     		

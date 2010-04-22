@@ -142,6 +142,8 @@ public class MSIImage extends Model
 		FileCache.getFileFromServer(imgLblFilename);
 		//String boundaryFilename = filename.substring(0, filename.length()-4) + "_BOUNDARY.VTK";
 		//FileCache.getFileFromServer(boundaryFilename);
+		String footprintFilename = filename.substring(0, filename.length()-4) + "_FOOTPRINT.VTK";
+		FileCache.getFileFromServer(footprintFilename);
 
 		this.erosModel = eros;
 		this.initialize(fitFile);
@@ -255,12 +257,15 @@ public class MSIImage extends Model
 
 	private vtkPolyData loadFootprint()
 	{
-		/*
-		String footprintFilename = serverpath.substring(0, serverpath.length()-4) + "_FOOTPRINT.VTK";
-		File file = FileCache.getFileFromServer(footprintFilename);
+    	String filename = getFullPath();
+    	
+		String footprintFilename = filename.substring(0, filename.length()-4) + "_FOOTPRINT.VTK";
 		
-		if (file == null)
+		File file = new File(footprintFilename);
+		
+		if (!file.exists())
 		{
+			System.out.println("Warning: " + footprintFilename + " not found");
 			return null;
 		}
 
@@ -272,13 +277,13 @@ public class MSIImage extends Model
 		polyData.DeepCopy(footprintReader.GetOutput());
 		
 		return polyData;
-		*/
+		
 
+		/*
         // for testing
-        if (erosModel == null)
-        	erosModel = new ErosModel();
         vtkPolyData footprint2 = erosModel.computeFrustumIntersection(spacecraftPosition, 
 				frustum1, frustum3, frustum4, frustum2);
+        
         //vtkPolyDataWriter writer = new vtkPolyDataWriter();
         //writer.SetInput(footprint2);
         //writer.SetFileName("/tmp/footprint.vtk");
@@ -289,6 +294,7 @@ public class MSIImage extends Model
 		polyData.DeepCopy(footprint2);
 
         return polyData;
+        */
 	}
 
 
@@ -730,13 +736,17 @@ public class MSIImage extends Model
 		properties.put("DEBLUR_TYPE", (new File(this.fullpath)).getParentFile().getName());
 		
 		// Note \u00B0 is the unicode degree symbol
-		//String deg = "\u00B0";
-		//properties.put("Minimum Incidence", Double.toString(minIncidence)+deg);
-		//properties.put("Maximum Incidence", Double.toString(maxIncidence)+deg);
-		//properties.put("Minimum Emission", Double.toString(minEmission)+deg);
-		//properties.put("Maximum Emission", Double.toString(maxIncidence)+deg);
-		//properties.put("Minimum Phase", Double.toString(minPhase)+deg);
-		//properties.put("Maximum Phase", Double.toString(maxPhase)+deg);
+		String deg = "\u00B0";
+		properties.put("Minimum Incidence", Double.toString(minIncidence)+deg);
+		properties.put("Maximum Incidence", Double.toString(maxIncidence)+deg);
+		properties.put("Minimum Emission", Double.toString(minEmission)+deg);
+		properties.put("Maximum Emission", Double.toString(maxIncidence)+deg);
+		properties.put("Minimum Phase", Double.toString(minPhase)+deg);
+		properties.put("Maximum Phase", Double.toString(maxPhase)+deg);
+		properties.put("Minimum Horizontal Pixel Scale", Double.toString(minHorizontalPixelScale) + "km/pixel");
+		properties.put("Maximum Horizontal Pixel Scale", Double.toString(maxHorizontalPixelScale) + "km/pixel");
+		properties.put("Minimum Vertical Pixel Scale", Double.toString(minVerticalPixelScale) + "km/pixel");
+		properties.put("Maximum Vertical Pixel Scale", Double.toString(maxVerticalPixelScale) + "km/pixel");
 
     	return properties;
     }
@@ -749,7 +759,7 @@ public class MSIImage extends Model
 	public vtkPolyData generateFootprint()
 	{
 		return erosModel.computeFrustumIntersection(spacecraftPosition, 
-				frustum1, frustum2, frustum3, frustum4);
+				frustum1, frustum3, frustum4, frustum2);
 	}
 	
 	public vtkPolyData generateBoundary()
