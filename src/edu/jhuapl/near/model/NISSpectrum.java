@@ -13,6 +13,7 @@ import edu.jhuapl.near.util.FileCache;
 import edu.jhuapl.near.util.FileUtil;
 import edu.jhuapl.near.util.LatLon;
 import edu.jhuapl.near.util.PolyDataUtil;
+import edu.jhuapl.near.util.Spice;
 
 import vtk.*;
 
@@ -39,8 +40,6 @@ public class NISSpectrum extends Model
 	static public final int POLYGON_TYPE_FLAG_OFFSET = 258+2;
 	static public final int NUMBER_OF_VERTICES_OFFSET = 259+2;
 	static public final int POLYGON_START_COORDINATES_OFFSET = 260+2;
-	
-	static private vtkMath math = null;
 	
 	private DateTime dateTime;
 	private double duration;
@@ -125,9 +124,6 @@ public class NISSpectrum extends Model
 		String filename = nisFile.getAbsolutePath();
 		this.fullpath = filename;
 
-		if (math == null)
-			math = new vtkMath();
-
 		ArrayList<String> values = FileUtil.getFileWordsAsStringList(fullpath);
 
 		dateTime = new DateTime(values.get(DATE_TIME_OFFSET), DateTimeZone.UTC);
@@ -172,10 +168,10 @@ public class NISSpectrum extends Model
 			frustum3[i] = Double.parseDouble(values.get(FRUSTUM_OFFSET + 6 + i));
 		for (int i=0; i<3; ++i)
 			frustum4[i] = Double.parseDouble(values.get(FRUSTUM_OFFSET + 9 + i));
-		math.Normalize(frustum1);
-		math.Normalize(frustum2);
-		math.Normalize(frustum3);
-		math.Normalize(frustum4);
+		Spice.vhat(frustum1, frustum1);
+		Spice.vhat(frustum2, frustum2);
+		Spice.vhat(frustum3, frustum3);
+		Spice.vhat(frustum4, frustum4);
 	}
 
 	public vtkPolyData generateFootprint()
@@ -283,7 +279,7 @@ public class NISSpectrum extends Model
 		        vtkIdList idList = new vtkIdList();
 		        idList.SetNumberOfIds(2);
 		        
-		        double dx = math.Norm(spacecraftPosition);
+		        double dx = Spice.vnorm(spacecraftPosition);
 				double[] origin = spacecraftPosition;
 				double[] UL = {origin[0]+frustum1[0]*dx, origin[1]+frustum1[1]*dx, origin[2]+frustum1[2]*dx};
 				double[] UR = {origin[0]+frustum2[0]*dx, origin[1]+frustum2[1]*dx, origin[2]+frustum2[2]*dx};

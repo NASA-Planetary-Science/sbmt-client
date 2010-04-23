@@ -84,7 +84,7 @@ public class MSIImage extends Model
 	private boolean hasLimb = false;
     private double[] sunPosition = new double[3];
 
-	private boolean showFrustum = false;
+	private boolean showFrustum = true;
 
 	private String startTime = "";
 	private String stopTime = "";
@@ -134,14 +134,8 @@ public class MSIImage extends Model
 		if (fitFile == null)
 			throw new IOException("Could not download " + filename);
 		
-		//String lblFilename = filename.substring(0, filename.length()-4) + ".LBL";
-		//FileCache.getFileFromServer(lblFilename);
-		//String imgFilename = filename.substring(0, filename.length()-4) + "_DDR.IMG.gz";
-		//FileCache.getFileFromServer(imgFilename);
 		String imgLblFilename = filename.substring(0, filename.length()-4) + "_DDR.LBL";
 		FileCache.getFileFromServer(imgLblFilename);
-		//String boundaryFilename = filename.substring(0, filename.length()-4) + "_BOUNDARY.VTK";
-		//FileCache.getFileFromServer(boundaryFilename);
 		String footprintFilename = filename.substring(0, filename.length()-4) + "_FOOTPRINT.VTK";
 		FileCache.getFileFromServer(footprintFilename);
 
@@ -168,6 +162,8 @@ public class MSIImage extends Model
 		String filename = fitFile.getAbsolutePath();
 		this.fullpath = filename;
 
+		name = fitFile.getName().substring(2, 11);
+		
 		// Set the filter name
 		filter = Integer.parseInt(fitFile.getName().substring(12,13));
 		
@@ -257,9 +253,7 @@ public class MSIImage extends Model
 
 	private vtkPolyData loadFootprint()
 	{
-    	String filename = getFullPath();
-    	
-		String footprintFilename = filename.substring(0, filename.length()-4) + "_FOOTPRINT.VTK";
+		String footprintFilename = fullpath.substring(0, fullpath.length()-4) + "_FOOTPRINT.VTK";
 		
 		File file = new File(footprintFilename);
 		
@@ -330,7 +324,7 @@ public class MSIImage extends Model
 					vec[0] = pt[0] - spacecraftPosition[0];
 					vec[1] = pt[1] - spacecraftPosition[1];
 					vec[2] = pt[2] - spacecraftPosition[2];
-					Spice.unorm(vec, vec);
+					Spice.vhat(vec, vec);
 
 					double d1 = Spice.vsep(vec, frustum1);
 					double d2 = Spice.vsep(vec, frustum2);
@@ -390,7 +384,7 @@ public class MSIImage extends Model
 			vtkIdList idList = new vtkIdList();
 			idList.SetNumberOfIds(2);
 
-			double dx = Spice.vnorm(spacecraftPosition)*2;
+			double dx = Spice.vnorm(spacecraftPosition)*2.0;
 			double[] origin = spacecraftPosition;
 			double[] UL = {origin[0]+frustum1[0]*dx, origin[1]+frustum1[1]*dx, origin[2]+frustum1[2]*dx};
 			double[] UR = {origin[0]+frustum2[0]*dx, origin[1]+frustum2[1]*dx, origin[2]+frustum2[2]*dx};
@@ -553,9 +547,7 @@ public class MSIImage extends Model
 	
 	private void loadImageInfo() throws NumberFormatException, IOException
 	{
-    	String filename = getFullPath();
-    	
-		String lblFilename = filename.substring(0, filename.length()-4) + "_DDR.LBL";
+		String lblFilename = fullpath.substring(0, fullpath.length()-4) + "_DDR.LBL";
 
     	FileInputStream fs = null;
 		try {
@@ -608,24 +600,28 @@ public class MSIImage extends Model
 		    			frustum1[0] = x;
 		    			frustum1[1] = y;
 		    			frustum1[2] = z;
+		    			Spice.vhat(frustum1, frustum1);
 		    		}
 		    		else if (MSI_FRUSTUM2.equals(token))
 		    		{
 		    			frustum2[0] = x;
 		    			frustum2[1] = y;
 		    			frustum2[2] = z;
+		    			Spice.vhat(frustum2, frustum2);
 		    		}
 		    		else if (MSI_FRUSTUM3.equals(token))
 		    		{
 		    			frustum3[0] = x;
 		    			frustum3[1] = y;
 		    			frustum3[2] = z;
+		    			Spice.vhat(frustum3, frustum3);
 		    		}
 		    		else if (MSI_FRUSTUM4.equals(token))
 		    		{
 		    			frustum4[0] = x;
 		    			frustum4[1] = y;
 		    			frustum4[2] = z;
+		    			Spice.vhat(frustum4, frustum4);
 		    		}
 		    		if (SUN_POSITION_LT.equals(token))
 		    		{
@@ -640,100 +636,25 @@ public class MSIImage extends Model
 		in.close();
 	}
 
-	/*
-    static public HashMap<String, String> parseLblFile(String lblFilename) throws IOException
-    {
-    	HashMap<String, String> imageProperties = new HashMap<String, String>();
-    	
-    	// Parse through the lbl file till we find the relevant strings
-    	
-		FileInputStream fs = null;
-		try {
-			fs = new FileInputStream(lblFilename);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-		InputStreamReader isr = new InputStreamReader(fs);
-		BufferedReader in = new BufferedReader(isr);
-
-		String str;
-		while ((str = in.readLine()) != null)
-		{
-		    StringTokenizer st = new StringTokenizer(str);
-		    while (st.hasMoreTokens()) 
-		    {
-		    	String token = st.nextToken();
-		    	if (START_TIME.equals(token))
-		    	{
-		    		st.nextToken();
-		    		imageProperties.put(token, st.nextToken());
-		    	}
-		    	if (STOP_TIME.equals(token))
-		    	{
-		    		st.nextToken();
-		    		imageProperties.put(token, st.nextToken());
-		    	}
-		    	if (TARGET_CENTER_DISTANCE.equals(token))
-		    	{
-		    		st.nextToken();
-		    		imageProperties.put(token, st.nextToken());
-		    	}
-		    	if (HORIZONTAL_PIXEL_SCALE.equals(token))
-		    	{
-		    		st.nextToken();
-		    		imageProperties.put(token, st.nextToken());
-		    	}
-		    	if (SPACECRAFT_POSITION.equals(token) ||
-		    			MSI_FRUSTUM1.equals(token) ||
-		    			MSI_FRUSTUM2.equals(token) ||
-		    			MSI_FRUSTUM3.equals(token) ||
-		    			MSI_FRUSTUM4.equals(token))
-		    	{
-		    		st.nextToken();
-		    		st.nextToken();
-		    		String x = st.nextToken();
-		    		st.nextToken();
-		    		String y = st.nextToken();
-		    		st.nextToken();
-		    		String z = st.nextToken();
-		    		imageProperties.put(token, x + " " + y + " " + z);
-		    	}
-		    }
-		}
-
-		in.close();
-		
-    	return imageProperties;
-    }
-    */
     
     public HashMap<String, String> getProperties() throws IOException
     {
-    	//String filename = getFullPath();
-    	
-    	//String lblFilename = filename.substring(0, filename.length()-4) + ".LBL";
-
-    	//HashMap<String, String> properties = parseLblFile(lblFilename);
     	HashMap<String, String> properties = new HashMap<String, String>();
+    	
+    	if (maxPhase < minPhase)
+    	{
+    		this.computeIlluminationAngles();
+    		this.computePixelScale();
+    	}
 
-    	/*
-		// The values of the hash map do not include units. Add them for certain properties.
-		for (String key : properties.keySet())
-		{
-			if (key.equals(HORIZONTAL_PIXEL_SCALE))
-				properties.put(key, properties.get(key) + " km/pixel");
-			else if (key.equals(TARGET_CENTER_DISTANCE))
-				properties.put(key, properties.get(key) + " km");
-		}
-		*/
-		
-    	properties.put("Spacecraft Distance", String.valueOf(getSpacecraftDistance()));
-		properties.put(START_TIME, startTime);
-		properties.put(STOP_TIME, stopTime);
-		properties.put("FILTER", String.valueOf(filter));
-		properties.put("DAY_OF_YEAR", (new File(this.fullpath)).getParentFile().getParentFile().getName());
-		properties.put("YEAR", (new File(this.fullpath)).getParentFile().getParentFile().getParentFile().getName());
-		properties.put("DEBLUR_TYPE", (new File(this.fullpath)).getParentFile().getName());
+    	properties.put("Spacecraft Distance", String.valueOf(getSpacecraftDistance()) + " km");
+    	properties.put("Name", name);
+    	properties.put("Start Time", startTime);
+		properties.put("Stop Time", stopTime);
+		properties.put("Filter", String.valueOf(filter));
+		properties.put("Day of Year", (new File(this.fullpath)).getParentFile().getParentFile().getName());
+		properties.put("Year", (new File(this.fullpath)).getParentFile().getParentFile().getParentFile().getName());
+		properties.put("Deblur Type", (new File(this.fullpath)).getParentFile().getName());
 		
 		// Note \u00B0 is the unicode degree symbol
 		String deg = "\u00B0";
@@ -743,10 +664,10 @@ public class MSIImage extends Model
 		properties.put("Maximum Emission", Double.toString(maxIncidence)+deg);
 		properties.put("Minimum Phase", Double.toString(minPhase)+deg);
 		properties.put("Maximum Phase", Double.toString(maxPhase)+deg);
-		properties.put("Minimum Horizontal Pixel Scale", Double.toString(minHorizontalPixelScale) + "km/pixel");
-		properties.put("Maximum Horizontal Pixel Scale", Double.toString(maxHorizontalPixelScale) + "km/pixel");
-		properties.put("Minimum Vertical Pixel Scale", Double.toString(minVerticalPixelScale) + "km/pixel");
-		properties.put("Maximum Vertical Pixel Scale", Double.toString(maxVerticalPixelScale) + "km/pixel");
+		properties.put("Minimum Horizontal Pixel Scale", Double.toString(1000.0*minHorizontalPixelScale) + " meters/pixel");
+		properties.put("Maximum Horizontal Pixel Scale", Double.toString(1000.0*maxHorizontalPixelScale) + " meters/pixel");
+		properties.put("Minimum Vertical Pixel Scale", Double.toString(1000.0*minVerticalPixelScale) + " meters/pixel");
+		properties.put("Maximum Vertical Pixel Scale", Double.toString(1000.0*maxVerticalPixelScale) + " meters/pixel");
 
     	return properties;
     }
@@ -811,15 +732,12 @@ public class MSIImage extends Model
 	
 	public double getSpacecraftDistance()
 	{
-		return Math.sqrt(
-    			spacecraftPosition[0]*spacecraftPosition[0] +
-    			spacecraftPosition[1]*spacecraftPosition[1] +
-    			spacecraftPosition[2]*spacecraftPosition[2]);
+		return Spice.vnorm(spacecraftPosition);
  	}
 	
 	private void computeCellNormals()
 	{
-		if (normalsFilter != null)
+		if (normalsFilter == null)
 		{
 			normalsFilter = new vtkPolyDataNormals();
 			normalsFilter.SetInput(footprint);
@@ -833,13 +751,16 @@ public class MSIImage extends Model
 	
 	private void computeIlluminationAngles()
 	{
+		if (footprint == null)
+			footprint = loadFootprint();
+
 		computeCellNormals();
 		
         int numberOfCells = footprint.GetNumberOfCells();
 
 		vtkPoints points = footprint.GetPoints();
 		vtkDataArray normals = footprint.GetCellData().GetNormals();
-		
+
 		this.minEmission  =  Double.MAX_VALUE;
 		this.maxEmission  = -Double.MAX_VALUE;
 		this.minIncidence =  Double.MAX_VALUE;
@@ -871,9 +792,9 @@ public class MSIImage extends Model
 			sunvec[1] = sunPosition[1] - centroid[1];
 			sunvec[2] = sunPosition[2] - centroid[2];
 			
-			double incidence = Spice.vsep(normal, sunvec);
-			double emission = Spice.vsep(normal, scvec);
-			double phase = Spice.vsep(sunvec, scvec);
+			double incidence = Spice.vsep(normal, sunvec) * 180.0 / Math.PI;
+			double emission = Spice.vsep(normal, scvec) * 180.0 / Math.PI;
+			double phase = Spice.vsep(sunvec, scvec) * 180.0 / Math.PI;
 			
 			if (incidence < minIncidence)
 				minIncidence = incidence;
@@ -892,7 +813,10 @@ public class MSIImage extends Model
 	
 	private void computePixelScale()
 	{
-        int numberOfPoints = footprint.GetNumberOfPoints();
+		if (footprint == null)
+			footprint = loadFootprint();
+
+		int numberOfPoints = footprint.GetNumberOfPoints();
 
 		vtkPoints points = footprint.GetPoints();
 		
@@ -926,7 +850,7 @@ public class MSIImage extends Model
 				minVerticalPixelScale = vertPixelScale;
 			if (vertPixelScale > maxVerticalPixelScale)
 				maxVerticalPixelScale = vertPixelScale;
-		}		
+		}
 	}
 	
 	private float[] generateBackPlanes()

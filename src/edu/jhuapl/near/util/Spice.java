@@ -217,4 +217,39 @@ public class Spice
 		   return vsep;
 
 	}
+
+	static public void vhat( double[] v1, double[] vout )
+	{
+		   /*                                                                                                                                                                                        
+		   Local variables                                                                                                                                                                           
+		   */
+		   double                        vmag;
+
+
+		   /*                                                                                                                                                                                        
+		   Obtain the magnitude of v1.                                                                                                                                                               
+		   */
+		   vmag = vnorm(v1);
+
+		   /*                                                                                                                                                                                        
+		   If vmag is nonzero, then unitize.  Note that this process is                                                                                                                              
+		   numerically stable: overflow could only happen if vmag were small,                                                                                                                        
+		   but this could only happen if each component of v1 were small.                                                                                                                            
+		   In fact, the magnitude of any vector is never less than the                                                                                                                               
+		   magnitude of any component.                                                                                                                                                               
+		   */
+
+		   if ( vmag > 0.0 )
+		      {
+		      vout[0] = v1[0] / vmag;
+		      vout[1] = v1[1] / vmag;
+		      vout[2] = v1[2] / vmag;
+		      }
+		   else
+		      {
+		      vout[0] = 0.0;
+		      vout[1] = 0.0;
+		      vout[2] = 0.0;
+		      }
+	}
 }

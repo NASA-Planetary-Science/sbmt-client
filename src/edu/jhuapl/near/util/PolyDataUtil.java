@@ -80,7 +80,7 @@ public class PolyDataUtil
 		math.Cross(nearX, nearY, near);
 		
 		// let the far clipping plane be a multiple of the distance to the origin
-		dx = 2.0 * math.Norm(origin);
+		dx = 2.0 * Spice.vnorm(origin);
 		//double[] farUL = {origin[0]+ul[0]*dx, origin[1]+ul[1]*dx, origin[2]+ul[2]*dx};
 		double[] farUR = {origin[0]+ur[0]*dx, origin[1]+ur[1]*dx, origin[2]+ur[2]*dx};
 		double[] farLL = {origin[0]+ll[0]*dx, origin[1]+ll[1]*dx, origin[2]+ll[2]*dx};
@@ -89,7 +89,7 @@ public class PolyDataUtil
 		double[] farY = {farUR[0]-farLR[0], farUR[1]-farLR[1], farUR[2]-farLR[2]};
 		math.Cross(farX, farY, far);
 		
-		dx = math.Norm(origin);
+		dx = Spice.vnorm(origin);
 		double[] UL2 = {origin[0]+ul[0]*dx, origin[1]+ul[1]*dx, origin[2]+ul[2]*dx};
 		double[] UR2 = {origin[0]+ur[0]*dx, origin[1]+ur[1]*dx, origin[2]+ur[2]*dx};
 		double[] LL2 = {origin[0]+ll[0]*dx, origin[1]+ll[1]*dx, origin[2]+ll[2]*dx};
@@ -157,14 +157,14 @@ public class PolyDataUtil
 		for (int i=0; i<numCells; ++i)
 		{
 			double[] n = cellNormals.GetTuple3(i);
-			math.Normalize(n);
+			Spice.vhat(n, n);
 			
 			// Compute the direction to the viewer from one of the point of the cell.
 			tmpPolyData_f4.GetCellPoints(i, idList_f4);
 			double[] pt = points.GetPoint(idList_f4.GetId(0));
 			
 			double[] viewDir = {origin[0] - pt[0], origin[1] - pt[1], origin[2] - pt[2]};
-			math.Normalize(viewDir);
+			Spice.vhat(viewDir, viewDir);
 			
 			double dot = math.Dot(n, viewDir);
 			if (dot <= 0.0)
@@ -329,7 +329,7 @@ public class PolyDataUtil
 		double[] originalCylindarAxis = {0.0, 1.0, 0.0};
 		double[] axisOfRotation = new double[3];
 		math.Cross(normal, originalCylindarAxis, axisOfRotation);
-		math.Normalize(axisOfRotation);
+		Spice.vhat(axisOfRotation,axisOfRotation);
 		
 		// Now compute the angle between these 2 cylinder axes.
 		double angle = Spice.vsep(originalCylindarAxis, normal) * 180.0 / Math.PI;
@@ -474,8 +474,8 @@ public class PolyDataUtil
 
 			double[] planeNormal = new double[3];
 			math.Cross(normal, vec, planeNormal);
-			math.Normalize(planeNormal);
-
+			Spice.vhat(planeNormal, planeNormal);
+			
 			if (i > clipPlanes_f1.size()-1)
 				clipPlanes_f1.add(new vtkPlane());
 			vtkPlane plane = clipPlanes_f1.get(i);
@@ -571,8 +571,8 @@ public class PolyDataUtil
 
 		double[] normal = new double[3];
 		math.Cross(vec1, avgNormal, normal);
-		math.Normalize(normal);
-
+		Spice.vhat(normal, normal);
+		
 		vtkPlane cutPlane = new vtkPlane();
 		cutPlane.SetOrigin(pt1);
 		cutPlane.SetNormal(normal);
