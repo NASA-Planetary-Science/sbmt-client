@@ -17,14 +17,33 @@ public class MSIFootprintGenerator
 {
 	private static ErosModel erosModel;
 	
+	private static boolean checkIfMsiFilesExist(String line)
+	{
+		File file = new File(line);
+		if (!file.exists())
+			return false;
+
+		String name = line.substring(0, line.length()-4) + ".LBL";
+		file = new File(name);
+		if (!file.exists())
+			return false;
+		
+		name = line.substring(0, line.length()-4) + "_DDR.LBL";
+		file = new File(name);
+		if (!file.exists())
+			return false;
+
+		return true;
+	}
+
 	private static void generateMSIFootprints(ArrayList<String> msiFiles) throws IOException, FitsException
     {
 		vtkPolyDataWriter writer = new vtkPolyDataWriter();
     	int count = 0;
     	for (String filename : msiFiles)
     	{
-			boolean filesExist = DatabaseGeneratorSql.checkIfAllMsiFilesExist(filename);
-			if (filesExist == false)
+			boolean filesExist = checkIfMsiFilesExist(filename);
+			if (filesExist == true)
 				continue;
 
 			System.out.println("starting msi " + count++);

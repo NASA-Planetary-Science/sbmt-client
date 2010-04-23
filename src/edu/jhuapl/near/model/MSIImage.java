@@ -1,6 +1,7 @@
 package edu.jhuapl.near.model;
 
 import java.io.*;
+import java.text.DecimalFormat;
 import java.util.*;
 
 import nom.tam.fits.BasicHDU;
@@ -84,7 +85,7 @@ public class MSIImage extends Model
 	private boolean hasLimb = false;
     private double[] sunPosition = new double[3];
 
-	private boolean showFrustum = true;
+	private boolean showFrustum = false;
 
 	private String startTime = "";
 	private String stopTime = "";
@@ -647,7 +648,9 @@ public class MSIImage extends Model
     		this.computePixelScale();
     	}
 
-    	properties.put("Spacecraft Distance", String.valueOf(getSpacecraftDistance()) + " km");
+    	DecimalFormat df = new DecimalFormat("#.######");
+
+    	properties.put("Spacecraft Distance", df.format(getSpacecraftDistance()) + " km");
     	properties.put("Name", name);
     	properties.put("Start Time", startTime);
 		properties.put("Stop Time", stopTime);
@@ -658,16 +661,16 @@ public class MSIImage extends Model
 		
 		// Note \u00B0 is the unicode degree symbol
 		String deg = "\u00B0";
-		properties.put("Minimum Incidence", Double.toString(minIncidence)+deg);
-		properties.put("Maximum Incidence", Double.toString(maxIncidence)+deg);
-		properties.put("Minimum Emission", Double.toString(minEmission)+deg);
-		properties.put("Maximum Emission", Double.toString(maxIncidence)+deg);
-		properties.put("Minimum Phase", Double.toString(minPhase)+deg);
-		properties.put("Maximum Phase", Double.toString(maxPhase)+deg);
-		properties.put("Minimum Horizontal Pixel Scale", Double.toString(1000.0*minHorizontalPixelScale) + " meters/pixel");
-		properties.put("Maximum Horizontal Pixel Scale", Double.toString(1000.0*maxHorizontalPixelScale) + " meters/pixel");
-		properties.put("Minimum Vertical Pixel Scale", Double.toString(1000.0*minVerticalPixelScale) + " meters/pixel");
-		properties.put("Maximum Vertical Pixel Scale", Double.toString(1000.0*maxVerticalPixelScale) + " meters/pixel");
+		properties.put("Minimum Incidence", df.format(minIncidence)+deg);
+		properties.put("Maximum Incidence", df.format(maxIncidence)+deg);
+		properties.put("Minimum Emission", df.format(minEmission)+deg);
+		properties.put("Maximum Emission", df.format(maxIncidence)+deg);
+		properties.put("Minimum Phase", df.format(minPhase)+deg);
+		properties.put("Maximum Phase", df.format(maxPhase)+deg);
+		properties.put("Minimum Horizontal Pixel Scale", df.format(1000.0*minHorizontalPixelScale) + " meters/pixel");
+		properties.put("Maximum Horizontal Pixel Scale", df.format(1000.0*maxHorizontalPixelScale) + " meters/pixel");
+		properties.put("Minimum Vertical Pixel Scale", df.format(1000.0*minVerticalPixelScale) + " meters/pixel");
+		properties.put("Maximum Vertical Pixel Scale", df.format(1000.0*maxVerticalPixelScale) + " meters/pixel");
 
     	return properties;
     }

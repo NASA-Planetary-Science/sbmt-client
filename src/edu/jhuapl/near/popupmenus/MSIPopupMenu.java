@@ -126,13 +126,13 @@ public class MSIPopupMenu extends PopupMenu
 		if (msiBoundaries.containsBoundary(boundaryName))
 			showRemoveBoundaryIn3DMenuItem.setText("Remove Image Boundary");
 		else
-			showRemoveBoundaryIn3DMenuItem.setText("Show Image Boundary in 3D");
+			showRemoveBoundaryIn3DMenuItem.setText("Show Image Boundary");
 		
 		MSIImageCollection msiImages = (MSIImageCollection)modelManager.getModel(ModelManager.MSI_IMAGES);
 		if (msiImages.containsImage(imageName))
 			showRemoveImageIn3DMenuItem.setText("Remove Image");
 		else
-			showRemoveImageIn3DMenuItem.setText("Show Image in 3D");
+			showRemoveImageIn3DMenuItem.setText("Show Image");
 	}
 	
 

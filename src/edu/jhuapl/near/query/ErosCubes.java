@@ -13,8 +13,22 @@ public class ErosCubes
 	private ArrayList<BoundingBox> allCubes = new ArrayList<BoundingBox>();
 	private double cubeSize = 1.0;
 	private double buffer = 0.01;
+	private boolean useHardCodedValues = true;
+	
+	public ErosCubes(ErosModel eros, double cubeSize, double buffer)
+	{
+		this.cubeSize = cubeSize;
+		this.buffer = buffer;
+		this.useHardCodedValues = false;
+		initialize(eros);
+	}
 	
 	public ErosCubes(ErosModel eros)
+	{
+		this.initialize(eros);
+	}
+	
+	private void initialize(ErosModel eros)
 	{
 		erosBB = eros.computeBoundingBox();
 
@@ -57,7 +71,6 @@ public class ErosCubes
 		// Change the following to false to actually compute the 
 		// values stored in the erosIntersectingCubes array. This can take
 		// a long time which is why we hard code the values into this class.
-		boolean useHardCodedValues = true;
 		if (useHardCodedValues)
 		{
 			ArrayList<BoundingBox> tmpCubes = new ArrayList<BoundingBox>();
