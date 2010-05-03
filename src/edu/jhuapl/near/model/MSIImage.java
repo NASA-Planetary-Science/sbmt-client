@@ -25,6 +25,7 @@ public class MSIImage extends Model
 	
 	public static final int IMAGE_WIDTH = 537;
 	public static final int IMAGE_HEIGHT = 412;
+    public static final float PDS_NA = -1.e32f;
 	//public static final int NUM_LAYERS = 14;
     //public static final int TEXTURE_SIZE = 128;
     public static final String START_TIME = "START_TIME";
@@ -752,6 +753,34 @@ public class MSIImage extends Model
 		}
 	}
 	
+	// Computes the incidence, emission, and phase at a point with a given normal.
+	// The output is a 3-vector with the first component equal to the incidence,
+	// the second component equal to the emission and the third component equal to
+	// the phase.
+	private double[] computeIlluminationAnglesAtPoint(
+			double[] pt,
+			double[] normal)
+	{
+		double[] scvec = {
+			spacecraftPosition[0] - pt[0],
+			spacecraftPosition[1] - pt[1],
+			spacecraftPosition[2] - pt[2]};
+		                                      
+		
+		double[] sunvec = {
+				sunPosition[0] - pt[0],
+				sunPosition[1] - pt[1],
+				sunPosition[2] - pt[2]};
+		
+		double incidence = GeometryUtil.vsep(normal, sunvec) * 180.0 / Math.PI;
+		double emission = GeometryUtil.vsep(normal, scvec) * 180.0 / Math.PI;
+		double phase = GeometryUtil.vsep(sunvec, scvec) * 180.0 / Math.PI;
+
+		double[] angles = {incidence, emission, phase};
+		
+		return angles;
+	}
+	
 	private void computeIlluminationAngles()
 	{
 		if (footprint == null)
@@ -787,17 +816,10 @@ public class MSIImage extends Model
     		};
     		double[] normal = normals.GetTuple3(i);
     		
-    		scvec[0] = spacecraftPosition[0] - centroid[0];
-			scvec[1] = spacecraftPosition[1] - centroid[1];
-			scvec[2] = spacecraftPosition[2] - centroid[2];
-			
-			sunvec[0] = sunPosition[0] - centroid[0];
-			sunvec[1] = sunPosition[1] - centroid[1];
-			sunvec[2] = sunPosition[2] - centroid[2];
-			
-			double incidence = GeometryUtil.vsep(normal, sunvec) * 180.0 / Math.PI;
-			double emission = GeometryUtil.vsep(normal, scvec) * 180.0 / Math.PI;
-			double phase = GeometryUtil.vsep(sunvec, scvec) * 180.0 / Math.PI;
+			double[] angles = computeIlluminationAnglesAtPoint(centroid, normal);
+			double incidence = angles[0];
+			double emission  = angles[1];
+			double phase     = angles[2];
 			
 			if (incidence < minIncidence)
 				minIncidence = incidence;
@@ -860,23 +882,21 @@ public class MSIImage extends Model
 	
 	private float[] generateBackPlanes()
 	{
-		
-		int numLayers = 8;
+		int numLayers = 11;
 		float[] data = new float[numLayers*IMAGE_HEIGHT*IMAGE_WIDTH];
 
-//		vtkOBBTree cellLocator_f4 = new vtkOBBTree();
-		vtkCellLocator cellLocator_f4 = new vtkCellLocator();
-        cellLocator_f4.SetDataSet(footprint);
-//        cellLocator_f4.SetDataSet(erosModel.getErosPolyData());
-        cellLocator_f4.CacheCellBoundsOn();
-        cellLocator_f4.AutomaticOn();
-        //cellLocator_f4.SetMaxLevel(10);
-        cellLocator_f4.SetNumberOfCellsPerNode(15);
-        cellLocator_f4.BuildLocator();
+		vtkOBBTree cellLocator = new vtkOBBTree();
+        cellLocator.SetDataSet(footprint);
+        cellLocator.CacheCellBoundsOn();
+        cellLocator.AutomaticOn();
+        //cellLocator.SetMaxLevel(10);
+        //cellLocator.SetNumberOfCellsPerNode(15);
+        cellLocator.BuildLocator();
 
 		long t1 = System.currentTimeMillis();
 
-        vtkPoints intersectPoints_f4 = new vtkPoints();
+        vtkPoints intersectPoints = new vtkPoints();
+        vtkIdList intersectCells = new vtkIdList();
         
 		// For each pixel in the image we need to compute the vector
 		// from the spacecraft pointing in the direction of that pixel.
@@ -899,11 +919,6 @@ public class MSIImage extends Model
 				spacecraftPosition[1] + frustum3[1],
 				spacecraftPosition[2] + frustum3[2]
 		};
-//		double[] corner4 = {
-//				spacecraftPosition[0] + frustum4[0],
-//				spacecraftPosition[1] + frustum4[1],
-//				spacecraftPosition[2] + frustum4[2]
-//		};
 		double[] vec12 = {
 				corner2[0] - corner1[0],
 				corner2[1] - corner1[1],
@@ -914,30 +929,26 @@ public class MSIImage extends Model
 				corner3[1] - corner1[1],
 				corner3[2] - corner1[2]
 		};
-//		double[] vec24 = {
-//				corner4[0] - corner2[0],
-//				corner4[1] - corner2[1],
-//				corner4[2] - corner2[2]
-//		};
-//		double dist12 = Spice.vnorm(vec12);
-//		double dist13 = Spice.vnorm(vec13);
-//		double dist24 = Spice.vnorm(vec24);
 		
+		double horizScaleFactor = 2.0 * Math.tan( GeometryUtil.vsep(frustum1, frustum3) / 2.0 ) / IMAGE_HEIGHT;
+		double vertScaleFactor = 2.0 * Math.tan( GeometryUtil.vsep(frustum1, frustum2) / 2.0 ) / IMAGE_WIDTH;
+
 		double scdist = GeometryUtil.vnorm(spacecraftPosition);
+
+		vtkDataArray normals = footprint.GetCellData().GetNormals();
 		
 		for (int i=0; i<IMAGE_HEIGHT; ++i)
 		{
-			// Compute the vector on the left and right of the row.
+			// Compute the vector on the left of the row.
 			double fracHeight = ((double)i / (double)(IMAGE_HEIGHT-1));
 			double[] left = {
 					corner1[0] + fracHeight*vec13[0],
 					corner1[1] + fracHeight*vec13[1],
 					corner1[2] + fracHeight*vec13[2]
 			};
-			
+
 			for (int j=0; j<IMAGE_WIDTH; ++j)
 			{
-				// Compute the vector on the left and right of the row.
 				double fracWidth = ((double)j / (double)(IMAGE_WIDTH-1));
 				double[] vec = {
 						left[0] + fracWidth*vec12[0],
@@ -948,20 +959,78 @@ public class MSIImage extends Model
 				vec[1] -= spacecraftPosition[1];
 				vec[2] -= spacecraftPosition[2];
 				GeometryUtil.unorm(vec, vec);
-				
+
 				double[] lookPt = {
-					spacecraftPosition[0] + 1*scdist*vec[0],	
-					spacecraftPosition[1] + 1*scdist*vec[1],	
-					spacecraftPosition[2] + 1*scdist*vec[2]
+						spacecraftPosition[0] + 2.0*scdist*vec[0],	
+						spacecraftPosition[1] + 2.0*scdist*vec[1],	
+						spacecraftPosition[2] + 2.0*scdist*vec[2]
 				};
-				
-				cellLocator_f4.IntersectWithLine(spacecraftPosition, lookPt, intersectPoints_f4, null);
-				if (intersectPoints_f4.GetNumberOfPoints() == 0)
-					System.out.println(i + " " + j + " " + intersectPoints_f4.GetNumberOfPoints());
+
+				cellLocator.IntersectWithLine(spacecraftPosition, lookPt, intersectPoints, intersectCells);
+				//if (intersectPoints_f4.GetNumberOfPoints() == 0)
+				//	System.out.println(i + " " + j + " " + intersectPoints_f4.GetNumberOfPoints());
+
+				int numberOfPoints = intersectPoints.GetNumberOfPoints();
+
+				if (numberOfPoints > 0)
+				{
+					double[] closestPoint = intersectPoints.GetPoint(0);
+					int closestCell = intersectCells.GetId(0);
+					double closestDist = GeometryUtil.distanceBetween(closestPoint, spacecraftPosition);
+					
+					// compute the closest point to the spacecraft of all the intersecting points.
+					if (numberOfPoints > 1)
+					{
+						for (int k=1; k<numberOfPoints; ++k)
+						{
+							double[] pt = intersectPoints.GetPoint(k);
+							double dist = GeometryUtil.distanceBetween(pt, spacecraftPosition);
+							if (dist < closestDist)
+							{
+								closestDist = dist;
+								closestCell = intersectCells.GetId(k);
+								closestPoint = pt;
+							}
+						}
+					}
+
+					LatLon llr = GeometryUtil.reclat(closestPoint);
+					double lon = llr.lon*180/Math.PI;
+					if (lon < 0.0)
+						lon += 360.0;
+
+					double[] normal = normals.GetTuple3(closestCell);
+					double[] illumAngles = computeIlluminationAnglesAtPoint(closestPoint, normal);
+
+					double horizPixelScale = closestDist * horizScaleFactor;
+					double vertPixelScale = closestDist * vertScaleFactor;
+
+					data[index(j,i,0)] = (float)closestPoint[0];
+					data[index(j,i,1)] = (float)closestPoint[1];
+					data[index(j,i,2)] = (float)closestPoint[2];
+					data[index(j,i,3)] = (float)(llr.lat * 180.0 / Math.PI);
+					data[index(j,i,4)] = (float)(lon);
+					data[index(j,i,5)] = (float)(llr.rad);
+					data[index(j,i,6)] = (float)(illumAngles[0] * 180.0 / Math.PI);
+					data[index(j,i,7)] = (float)(illumAngles[1] * 180.0 / Math.PI);
+					data[index(j,i,8)] = (float)(illumAngles[2] * 180.0 / Math.PI);
+					data[index(j,i,9)] = (float)(horizPixelScale);
+					data[index(j,i,10)] = (float)(vertPixelScale);
+				}
+				else
+				{
+					for (int k=1; k<numLayers; ++k)
+						data[index(j,i,k)] = PDS_NA;
+				}
 			}
 		}
 
 		System.out.println((System.currentTimeMillis() - t1)/1000.0);
 		return null;
+	}
+	
+	private int index(int i, int j, int k)
+	{
+		return ((k * IMAGE_HEIGHT + j) * IMAGE_WIDTH + i);
 	}
 }

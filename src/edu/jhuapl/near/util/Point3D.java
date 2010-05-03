@@ -18,26 +18,11 @@ public class Point3D
 	
 	public double distanceTo(Point3D pt)
 	{
-		double[] vec = {
-				pt.xyz[0]-xyz[0],
-				pt.xyz[1]-xyz[1],
-				pt.xyz[2]-xyz[2]
-		};
-		return GeometryUtil.vnorm(vec);
-//		return Math.sqrt(
-//				(pt.xyz[0]-xyz[0])*(pt.xyz[0]-xyz[0]) +
-//				(pt.xyz[1]-xyz[1])*(pt.xyz[1]-xyz[1]) +
-//				(pt.xyz[2]-xyz[2])*(pt.xyz[2]-xyz[2])
-//				);
+		return GeometryUtil.distanceBetween(xyz, pt.xyz);
 	}
 
 	static public double distanceBetween(Point3D pt1, Point3D pt2)
 	{
-		double[] vec = {
-				pt2.xyz[0]-pt1.xyz[0],
-				pt2.xyz[1]-pt1.xyz[1],
-				pt2.xyz[2]-pt1.xyz[2]
-		};
-		return GeometryUtil.vnorm(vec);
+		return GeometryUtil.distanceBetween(pt1.xyz, pt2.xyz);
 	}
 }
