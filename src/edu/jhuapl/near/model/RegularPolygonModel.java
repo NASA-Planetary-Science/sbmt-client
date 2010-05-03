@@ -13,7 +13,7 @@ import edu.jhuapl.near.util.FileUtil;
 import edu.jhuapl.near.util.IdPair;
 import edu.jhuapl.near.util.LatLon;
 import edu.jhuapl.near.util.Properties;
-import edu.jhuapl.near.util.Spice;
+import edu.jhuapl.near.util.GeometryUtil;
 
 import vtk.*;
 
@@ -522,7 +522,7 @@ public class RegularPolygonModel extends StructureModel
 			// Since tab is used as the delimiter, replace any tabs in the name with spaces.
 			name = name.replace('\t', ' ');
 			
-			LatLon llr = Spice.reclat(pol.center);
+			LatLon llr = GeometryUtil.reclat(pol.center);
 			double lat = llr.lat*180.0/Math.PI;
 			double lon = llr.lon*180.0/Math.PI;
 			if (lon < 0.0)

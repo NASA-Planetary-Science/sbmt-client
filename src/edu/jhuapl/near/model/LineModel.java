@@ -18,7 +18,7 @@ import com.sun.org.apache.xml.internal.serialize.XMLSerializer;
 import edu.jhuapl.near.util.Point3D;
 import edu.jhuapl.near.util.LatLon;
 import edu.jhuapl.near.util.Properties;
-import edu.jhuapl.near.util.Spice;
+import edu.jhuapl.near.util.GeometryUtil;
 
 import vtk.*;
 
@@ -200,8 +200,8 @@ public class LineModel extends StructureModel
 	    {
     		LatLon ll1 = new LatLon(lat.get(segment), lon.get(segment), rad.get(segment));
     		LatLon ll2 = new LatLon(lat.get(segment+1), lon.get(segment+1), rad.get(segment+1));
-    		double pt1[] = Spice.latrec(ll1);
-    		double pt2[] = Spice.latrec(ll2);
+    		double pt1[] = GeometryUtil.latrec(ll1);
+    		double pt2[] = GeometryUtil.latrec(ll2);
     		
     		int id1 = controlPointIds.get(segment);
     		int id2 = controlPointIds.get(segment+1);
@@ -481,7 +481,7 @@ public class LineModel extends StructureModel
         
         int numVertices = lin.lat.size();
 
-    	LatLon ll = Spice.reclat(newPoint);
+    	LatLon ll = GeometryUtil.reclat(newPoint);
     	lin.lat.set(vertexId, ll.lat);
     	lin.lon.set(vertexId, ll.lon);
     	lin.rad.set(vertexId, ll.rad);
@@ -579,7 +579,7 @@ public class LineModel extends StructureModel
     	if (currentLineVertex < -1 || currentLineVertex >= lin.controlPointIds.size())
     		System.out.println("Error: currentLineVertex is invalid");
     	
-        LatLon ll = Spice.reclat(newPoint);
+        LatLon ll = GeometryUtil.reclat(newPoint);
         
         lin.lat.add(currentLineVertex+1, ll.lat);
         lin.lon.add(currentLineVertex+1, ll.lon);

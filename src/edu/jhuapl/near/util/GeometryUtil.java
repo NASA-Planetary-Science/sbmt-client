@@ -1,11 +1,12 @@
 package edu.jhuapl.near.util;
 
 /**
- * This class contains various Spice functions that have been ported to Java.
+ * This class contains miscellaneous geometry functions. Many of these functions
+ * are from the SPICE toolkit that have been ported to Java.
  * @author eli
  *
  */
-public class Spice 
+public class GeometryUtil 
 {
 	/**
 	 * Convert lat lon to cartesian coordinates.
@@ -63,6 +64,11 @@ public class Spice
 		return llr;
 	}
 
+	/**
+	 * Copied from SPICE
+	 * @param v1
+	 * @return
+	 */
 	static public double vnorm(double[] v1)
 	{
 		   /*                                                                                                                         
@@ -104,6 +110,7 @@ public class Spice
 	}
 	
 	/**
+	 * Copied from spice.
 	 * Note unlike the original spice which takes a 3rd argument as output, here we return it from the function.
 	 * @param v1
 	 * @param vout
@@ -145,11 +152,23 @@ public class Spice
 		   return vmag;
 	}
 
+	/**
+	 * Copied from spice
+	 * @param v1
+	 * @param v2
+	 * @return
+	 */
 	static public double vdot( double[] v1, double[] v2 )
 	{
 		return ( v1[0]*v2[0] + v1[1]*v2[1] + v1[2]*v2[2] );
 	}
 	
+	/**
+	 * Copied from spice
+	 * @param v1
+	 * @param v2
+	 * @return
+	 */
 	static public double vsep( double[] v1, double[] v2 )
 	{
 		   /*
@@ -218,6 +237,11 @@ public class Spice
 
 	}
 
+	/**
+	 * Copied from spice
+	 * @param v1
+	 * @param vout
+	 */
 	static public void vhat( double[] v1, double[] vout )
 	{
 		   /*                                                                                                                                                                                        
@@ -253,7 +277,12 @@ public class Spice
 		      }
 	}
 
-
+	/**
+	 * Compute the distance between 2 3D points
+	 * @param pt1
+	 * @param pt2
+	 * @return
+	 */
 	static public double distanceBetween(double[] pt1, double[] pt2)
 	{
 		double[] vec = {
@@ -261,6 +290,6 @@ public class Spice
 				pt2[1]-pt1[1],
 				pt2[2]-pt1[2]
 		};
-		return Spice.vnorm(vec);
+		return GeometryUtil.vnorm(vec);
 	}
 }

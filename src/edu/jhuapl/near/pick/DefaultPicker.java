@@ -227,7 +227,7 @@ public class DefaultPicker extends Picker
 		if (pickSucceeded == 1)
 		{
 			double[] pos = mouseMovedCellPicker.GetPickPosition();
-			LatLon llr = Spice.reclat(pos);
+			LatLon llr = GeometryUtil.reclat(pos);
 
 			// Note \u00B0 is the unicode degree symbol
 			

@@ -313,8 +313,8 @@ public class MSIImage extends Model
 				vtkPoints points = footprint.GetPoints();
 				
 
-				double a = Spice.vsep(frustum1, frustum3);
-				double b = Spice.vsep(frustum1, frustum2);
+				double a = GeometryUtil.vsep(frustum1, frustum3);
+				double b = GeometryUtil.vsep(frustum1, frustum2);
 
 				double[] vec = new double[3];
 
@@ -325,10 +325,10 @@ public class MSIImage extends Model
 					vec[0] = pt[0] - spacecraftPosition[0];
 					vec[1] = pt[1] - spacecraftPosition[1];
 					vec[2] = pt[2] - spacecraftPosition[2];
-					Spice.vhat(vec, vec);
+					GeometryUtil.vhat(vec, vec);
 
-					double d1 = Spice.vsep(vec, frustum1);
-					double d2 = Spice.vsep(vec, frustum2);
+					double d1 = GeometryUtil.vsep(vec, frustum1);
+					double d2 = GeometryUtil.vsep(vec, frustum2);
 
 					double v = (d1*d1 + b*b - d2*d2) / (2.0*b);
 					double u = d1*d1 - v*v;
@@ -385,7 +385,7 @@ public class MSIImage extends Model
 			vtkIdList idList = new vtkIdList();
 			idList.SetNumberOfIds(2);
 
-			double dx = Spice.vnorm(spacecraftPosition)*2.0;
+			double dx = GeometryUtil.vnorm(spacecraftPosition)*2.0;
 			double[] origin = spacecraftPosition;
 			double[] UL = {origin[0]+frustum1[0]*dx, origin[1]+frustum1[1]*dx, origin[2]+frustum1[2]*dx};
 			double[] UR = {origin[0]+frustum2[0]*dx, origin[1]+frustum2[1]*dx, origin[2]+frustum2[2]*dx};
@@ -601,28 +601,28 @@ public class MSIImage extends Model
 		    			frustum1[0] = x;
 		    			frustum1[1] = y;
 		    			frustum1[2] = z;
-		    			Spice.vhat(frustum1, frustum1);
+		    			GeometryUtil.vhat(frustum1, frustum1);
 		    		}
 		    		else if (MSI_FRUSTUM2.equals(token))
 		    		{
 		    			frustum2[0] = x;
 		    			frustum2[1] = y;
 		    			frustum2[2] = z;
-		    			Spice.vhat(frustum2, frustum2);
+		    			GeometryUtil.vhat(frustum2, frustum2);
 		    		}
 		    		else if (MSI_FRUSTUM3.equals(token))
 		    		{
 		    			frustum3[0] = x;
 		    			frustum3[1] = y;
 		    			frustum3[2] = z;
-		    			Spice.vhat(frustum3, frustum3);
+		    			GeometryUtil.vhat(frustum3, frustum3);
 		    		}
 		    		else if (MSI_FRUSTUM4.equals(token))
 		    		{
 		    			frustum4[0] = x;
 		    			frustum4[1] = y;
 		    			frustum4[2] = z;
-		    			Spice.vhat(frustum4, frustum4);
+		    			GeometryUtil.vhat(frustum4, frustum4);
 		    		}
 		    		if (SUN_POSITION_LT.equals(token))
 		    		{
@@ -735,7 +735,7 @@ public class MSIImage extends Model
 	
 	public double getSpacecraftDistance()
 	{
-		return Spice.vnorm(spacecraftPosition);
+		return GeometryUtil.vnorm(spacecraftPosition);
  	}
 	
 	private void computeCellNormals()
@@ -795,9 +795,9 @@ public class MSIImage extends Model
 			sunvec[1] = sunPosition[1] - centroid[1];
 			sunvec[2] = sunPosition[2] - centroid[2];
 			
-			double incidence = Spice.vsep(normal, sunvec) * 180.0 / Math.PI;
-			double emission = Spice.vsep(normal, scvec) * 180.0 / Math.PI;
-			double phase = Spice.vsep(sunvec, scvec) * 180.0 / Math.PI;
+			double incidence = GeometryUtil.vsep(normal, sunvec) * 180.0 / Math.PI;
+			double emission = GeometryUtil.vsep(normal, scvec) * 180.0 / Math.PI;
+			double phase = GeometryUtil.vsep(sunvec, scvec) * 180.0 / Math.PI;
 			
 			if (incidence < minIncidence)
 				minIncidence = incidence;
@@ -830,8 +830,8 @@ public class MSIImage extends Model
 	    minVerticalPixelScale = Double.MAX_VALUE;
 	    maxVerticalPixelScale = -Double.MAX_VALUE;
 
-		double horizScaleFactor = 2.0 * Math.tan( Spice.vsep(frustum1, frustum3) / 2.0 ) / IMAGE_HEIGHT;
-		double vertScaleFactor = 2.0 * Math.tan( Spice.vsep(frustum1, frustum2) / 2.0 ) / IMAGE_WIDTH;
+		double horizScaleFactor = 2.0 * Math.tan( GeometryUtil.vsep(frustum1, frustum3) / 2.0 ) / IMAGE_HEIGHT;
+		double vertScaleFactor = 2.0 * Math.tan( GeometryUtil.vsep(frustum1, frustum2) / 2.0 ) / IMAGE_WIDTH;
 
 	    double[] vec = new double[3];
 
@@ -842,7 +842,7 @@ public class MSIImage extends Model
 			vec[0] = pt[0] - spacecraftPosition[0];
 			vec[1] = pt[1] - spacecraftPosition[1];
 			vec[2] = pt[2] - spacecraftPosition[2];
-			double dist = Spice.vnorm(vec);
+			double dist = GeometryUtil.vnorm(vec);
 
 			double horizPixelScale = dist * horizScaleFactor;
 			double vertPixelScale = dist * vertScaleFactor;
@@ -923,7 +923,7 @@ public class MSIImage extends Model
 //		double dist13 = Spice.vnorm(vec13);
 //		double dist24 = Spice.vnorm(vec24);
 		
-		double scdist = Spice.vnorm(spacecraftPosition);
+		double scdist = GeometryUtil.vnorm(spacecraftPosition);
 		
 		for (int i=0; i<IMAGE_HEIGHT; ++i)
 		{
@@ -947,7 +947,7 @@ public class MSIImage extends Model
 				vec[0] -= spacecraftPosition[0];
 				vec[1] -= spacecraftPosition[1];
 				vec[2] -= spacecraftPosition[2];
-				Spice.unorm(vec, vec);
+				GeometryUtil.unorm(vec, vec);
 				
 				double[] lookPt = {
 					spacecraftPosition[0] + 1*scdist*vec[0],	

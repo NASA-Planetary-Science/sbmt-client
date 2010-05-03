@@ -10,7 +10,7 @@ import edu.jhuapl.near.util.FileCache;
 import edu.jhuapl.near.util.FileUtil;
 import edu.jhuapl.near.util.LatLon;
 import edu.jhuapl.near.util.Properties;
-import edu.jhuapl.near.util.Spice;
+import edu.jhuapl.near.util.GeometryUtil;
 
 public class NLRDataPerDay extends Model
 {
@@ -118,9 +118,9 @@ public class NLRDataPerDay extends Model
         for (int i=0;i<numberOfPoints;++i)
         {
         	double[] pt = originalPoints.GetPoint(i);
-        	LatLon lla = Spice.reclat(pt);
+        	LatLon lla = GeometryUtil.reclat(pt);
         	lla.rad += offset;
-        	pt = Spice.latrec(lla);
+        	pt = GeometryUtil.latrec(lla);
         	points.SetPoint(i, pt);
 		}		
 

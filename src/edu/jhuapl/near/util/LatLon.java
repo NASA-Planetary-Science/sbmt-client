@@ -56,12 +56,12 @@ public class LatLon
 	 */
 	static public LatLon midpoint(LatLon ll1, LatLon ll2)
 	{
-		double[] xyz1 = Spice.latrec(ll1);
-		double[] xyz2 = Spice.latrec(ll2);
+		double[] xyz1 = GeometryUtil.latrec(ll1);
+		double[] xyz2 = GeometryUtil.latrec(ll2);
 		
 		double[] midxyz = {(xyz1[0]+xyz2[0])/2.0,(xyz1[1]+xyz2[1])/2.0,(xyz1[2]+xyz2[2])/2.0};
 		
-		LatLon midll = Spice.reclat(midxyz);
+		LatLon midll = GeometryUtil.reclat(midxyz);
 		
 		midll.rad = ll1.rad;
 		

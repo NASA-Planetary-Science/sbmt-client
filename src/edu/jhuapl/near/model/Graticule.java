@@ -3,7 +3,7 @@ package edu.jhuapl.near.model;
 import java.util.ArrayList;
 
 import edu.jhuapl.near.util.LatLon;
-import edu.jhuapl.near.util.Spice;
+import edu.jhuapl.near.util.GeometryUtil;
 
 import vtk.vtkCutter;
 import vtk.vtkPlane;
@@ -26,7 +26,7 @@ public class Graticule extends Model
 		for (int i=0; i<numberLonCircles; ++i)
 		{
 			double lon = longitudeSpacing * (double)i * Math.PI / 180.0;
-			double[] vec = Spice.latrec(new LatLon(0.0, lon, 1.0));
+			double[] vec = GeometryUtil.latrec(new LatLon(0.0, lon, 1.0));
 			double[] normal = new double[3];
 			
 			

@@ -23,7 +23,7 @@ public class Point3D
 				pt.xyz[1]-xyz[1],
 				pt.xyz[2]-xyz[2]
 		};
-		return Spice.vnorm(vec);
+		return GeometryUtil.vnorm(vec);
 //		return Math.sqrt(
 //				(pt.xyz[0]-xyz[0])*(pt.xyz[0]-xyz[0]) +
 //				(pt.xyz[1]-xyz[1])*(pt.xyz[1]-xyz[1]) +
@@ -38,6 +38,6 @@ public class Point3D
 				pt2.xyz[1]-pt1.xyz[1],
 				pt2.xyz[2]-pt1.xyz[2]
 		};
-		return Spice.vnorm(vec);
+		return GeometryUtil.vnorm(vec);
 	}
 }
