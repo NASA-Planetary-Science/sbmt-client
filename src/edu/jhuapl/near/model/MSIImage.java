@@ -819,6 +819,8 @@ public class MSIImage extends Model
 		if (footprint == null)
 			footprint = loadFootprint();
 
+		this.generateBackPlanes();
+		
 		int numberOfPoints = footprint.GetNumberOfPoints();
 
 		vtkPoints points = footprint.GetPoints();
@@ -858,15 +860,108 @@ public class MSIImage extends Model
 	
 	private float[] generateBackPlanes()
 	{
+		
 		int numLayers = 8;
 		float[] data = new float[numLayers*IMAGE_HEIGHT*IMAGE_WIDTH];
 
+//		vtkOBBTree cellLocator_f4 = new vtkOBBTree();
+		vtkCellLocator cellLocator_f4 = new vtkCellLocator();
+        cellLocator_f4.SetDataSet(footprint);
+//        cellLocator_f4.SetDataSet(erosModel.getErosPolyData());
+        cellLocator_f4.CacheCellBoundsOn();
+        cellLocator_f4.AutomaticOn();
+        //cellLocator_f4.SetMaxLevel(10);
+        cellLocator_f4.SetNumberOfCellsPerNode(15);
+        cellLocator_f4.BuildLocator();
+
+		long t1 = System.currentTimeMillis();
+
+        vtkPoints intersectPoints_f4 = new vtkPoints();
+        
+		// For each pixel in the image we need to compute the vector
+		// from the spacecraft pointing in the direction of that pixel.
+		// To do this, for each row in the image compute the left and
+		// right vectors of the entire row. Then for each pixel in 
+		// the row use the two vectors from either side to compute
+		// the vector of that pixel.
+		double[] corner1 = {
+				spacecraftPosition[0] + frustum1[0],
+				spacecraftPosition[1] + frustum1[1],
+				spacecraftPosition[2] + frustum1[2]
+		};
+		double[] corner2 = {
+				spacecraftPosition[0] + frustum2[0],
+				spacecraftPosition[1] + frustum2[1],
+				spacecraftPosition[2] + frustum2[2]
+		};
+		double[] corner3 = {
+				spacecraftPosition[0] + frustum3[0],
+				spacecraftPosition[1] + frustum3[1],
+				spacecraftPosition[2] + frustum3[2]
+		};
+//		double[] corner4 = {
+//				spacecraftPosition[0] + frustum4[0],
+//				spacecraftPosition[1] + frustum4[1],
+//				spacecraftPosition[2] + frustum4[2]
+//		};
+		double[] vec12 = {
+				corner2[0] - corner1[0],
+				corner2[1] - corner1[1],
+				corner2[2] - corner1[2]
+		};
+		double[] vec13 = {
+				corner3[0] - corner1[0],
+				corner3[1] - corner1[1],
+				corner3[2] - corner1[2]
+		};
+//		double[] vec24 = {
+//				corner4[0] - corner2[0],
+//				corner4[1] - corner2[1],
+//				corner4[2] - corner2[2]
+//		};
+//		double dist12 = Spice.vnorm(vec12);
+//		double dist13 = Spice.vnorm(vec13);
+//		double dist24 = Spice.vnorm(vec24);
+		
+		double scdist = Spice.vnorm(spacecraftPosition);
+		
 		for (int i=0; i<IMAGE_HEIGHT; ++i)
+		{
+			// Compute the vector on the left and right of the row.
+			double fracHeight = ((double)i / (double)(IMAGE_HEIGHT-1));
+			double[] left = {
+					corner1[0] + fracHeight*vec13[0],
+					corner1[1] + fracHeight*vec13[1],
+					corner1[2] + fracHeight*vec13[2]
+			};
+			
 			for (int j=0; j<IMAGE_WIDTH; ++j)
 			{
+				// Compute the vector on the left and right of the row.
+				double fracWidth = ((double)j / (double)(IMAGE_WIDTH-1));
+				double[] vec = {
+						left[0] + fracWidth*vec12[0],
+						left[1] + fracWidth*vec12[1],
+						left[2] + fracWidth*vec12[2]
+				};
+				vec[0] -= spacecraftPosition[0];
+				vec[1] -= spacecraftPosition[1];
+				vec[2] -= spacecraftPosition[2];
+				Spice.unorm(vec, vec);
 				
+				double[] lookPt = {
+					spacecraftPosition[0] + 1*scdist*vec[0],	
+					spacecraftPosition[1] + 1*scdist*vec[1],	
+					spacecraftPosition[2] + 1*scdist*vec[2]
+				};
+				
+				cellLocator_f4.IntersectWithLine(spacecraftPosition, lookPt, intersectPoints_f4, null);
+				if (intersectPoints_f4.GetNumberOfPoints() == 0)
+					System.out.println(i + " " + j + " " + intersectPoints_f4.GetNumberOfPoints());
 			}
-		
+		}
+
+		System.out.println((System.currentTimeMillis() - t1)/1000.0);
 		return null;
 	}
 }

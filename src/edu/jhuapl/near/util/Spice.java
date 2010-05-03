@@ -252,4 +252,15 @@ public class Spice
 		      vout[2] = 0.0;
 		      }
 	}
+
+
+	static public double distanceBetween(double[] pt1, double[] pt2)
+	{
+		double[] vec = {
+				pt2[0]-pt1[0],
+				pt2[1]-pt1[1],
+				pt2[2]-pt1[2]
+		};
+		return Spice.vnorm(vec);
+	}
 }
