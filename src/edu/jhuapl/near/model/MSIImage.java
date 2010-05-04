@@ -841,8 +841,6 @@ public class MSIImage extends Model
 		if (footprint == null)
 			footprint = loadFootprint();
 
-		this.generateBackPlanes();
-		
 		int numberOfPoints = footprint.GetNumberOfPoints();
 
 		vtkPoints points = footprint.GetPoints();
@@ -880,8 +878,13 @@ public class MSIImage extends Model
 		}
 	}
 	
-	private float[] generateBackPlanes()
+	public float[] generateBackplanes()
 	{
+		if (footprint == null)
+			footprint = loadFootprint();
+
+		computeCellNormals();
+		
 		int numLayers = 11;
 		float[] data = new float[numLayers*IMAGE_HEIGHT*IMAGE_WIDTH];
 
@@ -1023,10 +1026,12 @@ public class MSIImage extends Model
 						data[index(j,i,k)] = PDS_NA;
 				}
 			}
+			
+			this.pcs.firePropertyChange(Properties.MSI_IMAGE_BACKPLANE_GENERATION_UPDATE, -1, i);
 		}
 
 		System.out.println((System.currentTimeMillis() - t1)/1000.0);
-		return null;
+		return data;
 	}
 	
 	private int index(int i, int j, int k)
