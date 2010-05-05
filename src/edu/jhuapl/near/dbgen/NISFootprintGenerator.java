@@ -62,8 +62,6 @@ public class NISFootprintGenerator
 	        writer.SetFileName(vtkfile);
 	        writer.SetFileTypeToBinary();
 	        writer.Write();
-	        
-	        System.gc();
     	}
     }
 

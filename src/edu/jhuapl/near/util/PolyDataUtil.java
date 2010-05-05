@@ -497,9 +497,6 @@ public class PolyDataUtil
 			if (i > clipOutputs_f1.size()-1)
 				clipOutputs_f1.add(nextInput);
 			clipOutputs_f1.set(i, nextInput);
-			
-//			System.gc();
-//			System.runFinalization();
 		}
 
 
@@ -613,7 +610,6 @@ public class PolyDataUtil
 		polyLine.DeepCopy(connectivityFilter.GetOutput());
 
 		boolean okay = convertLinesToPolyLine(polyLine);
-		System.gc();
 		//System.out.println("number points: " + polyLine.GetNumberOfPoints());
 		
         //vtkPolyDataWriter writer = new vtkPolyDataWriter();
