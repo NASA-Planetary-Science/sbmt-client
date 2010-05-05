@@ -800,9 +800,6 @@ public class MSIImage extends Model
 		this.minPhase     =  Double.MAX_VALUE;
 		this.maxPhase     = -Double.MAX_VALUE;
 
-		double[] scvec = new double[3];
-		double[] sunvec = new double[3];
-
 		for (int i=0; i<numberOfCells; ++i)
 		{
 			vtkCell cell = footprint.GetCell(i);
@@ -885,7 +882,7 @@ public class MSIImage extends Model
 
 		computeCellNormals();
 		
-		int numLayers = 11;
+		int numLayers = 12;
 		float[] data = new float[numLayers*IMAGE_HEIGHT*IMAGE_WIDTH];
 
 		vtkOBBTree cellLocator = new vtkOBBTree();
@@ -895,8 +892,6 @@ public class MSIImage extends Model
         //cellLocator.SetMaxLevel(10);
         //cellLocator.SetNumberOfCellsPerNode(15);
         cellLocator.BuildLocator();
-
-		long t1 = System.currentTimeMillis();
 
         vtkPoints intersectPoints = new vtkPoints();
         vtkIdList intersectCells = new vtkIdList();
@@ -970,8 +965,8 @@ public class MSIImage extends Model
 				};
 
 				cellLocator.IntersectWithLine(spacecraftPosition, lookPt, intersectPoints, intersectCells);
-				//if (intersectPoints_f4.GetNumberOfPoints() == 0)
-				//	System.out.println(i + " " + j + " " + intersectPoints_f4.GetNumberOfPoints());
+				//if (intersectPoints.GetNumberOfPoints() == 0)
+				//	System.out.println(i + " " + j + " " + intersectPoints.GetNumberOfPoints());
 
 				int numberOfPoints = intersectPoints.GetNumberOfPoints();
 
@@ -1008,33 +1003,31 @@ public class MSIImage extends Model
 					double horizPixelScale = closestDist * horizScaleFactor;
 					double vertPixelScale = closestDist * vertScaleFactor;
 
-					data[index(j,i,0)] = (float)closestPoint[0];
-					data[index(j,i,1)] = (float)closestPoint[1];
-					data[index(j,i,2)] = (float)closestPoint[2];
-					data[index(j,i,3)] = (float)(llr.lat * 180.0 / Math.PI);
-					data[index(j,i,4)] = (float)(lon);
-					data[index(j,i,5)] = (float)(llr.rad);
-					data[index(j,i,6)] = (float)(illumAngles[0] * 180.0 / Math.PI);
-					data[index(j,i,7)] = (float)(illumAngles[1] * 180.0 / Math.PI);
-					data[index(j,i,8)] = (float)(illumAngles[2] * 180.0 / Math.PI);
-					data[index(j,i,9)] = (float)(horizPixelScale);
-					data[index(j,i,10)] = (float)(vertPixelScale);
+					data[index(j,i,0)]  = (float)rawImage.GetScalarComponentAsFloat(j, i, 0, 0);
+					data[index(j,i,1)]  = (float)closestPoint[0];
+					data[index(j,i,2)]  = (float)closestPoint[1];
+					data[index(j,i,3)]  = (float)closestPoint[2];
+					data[index(j,i,4)]  = (float)(llr.lat * 180.0 / Math.PI);
+					data[index(j,i,5)]  = (float)(lon);
+					data[index(j,i,6)]  = (float)(llr.rad);
+					data[index(j,i,7)]  = (float)(illumAngles[0] * 180.0 / Math.PI);
+					data[index(j,i,8)]  = (float)(illumAngles[1] * 180.0 / Math.PI);
+					data[index(j,i,9)]  = (float)(illumAngles[2] * 180.0 / Math.PI);
+					data[index(j,i,10)] = (float)(horizPixelScale);
+					data[index(j,i,11)] = (float)(vertPixelScale);
 				}
 				else
 				{
-					for (int k=1; k<numLayers; ++k)
+					for (int k=0; k<numLayers; ++k)
 						data[index(j,i,k)] = PDS_NA;
 				}
 			}
-			
-			this.pcs.firePropertyChange(Properties.MSI_IMAGE_BACKPLANE_GENERATION_UPDATE, -1, i);
 		}
 
-		System.out.println((System.currentTimeMillis() - t1)/1000.0);
 		return data;
 	}
 	
-	private int index(int i, int j, int k)
+	public int index(int i, int j, int k)
 	{
 		return ((k * IMAGE_HEIGHT + j) * IMAGE_WIDTH + i);
 	}

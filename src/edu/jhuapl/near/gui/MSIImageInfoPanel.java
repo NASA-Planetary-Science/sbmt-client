@@ -42,6 +42,21 @@ public class MSIImageInfoPanel extends ModelInfoWindow implements PropertyChange
         vtkImageActor actor = new vtkImageActor();
         //actor.SetDisplayExtent(0, MSIImage.IMAGE_WIDTH-1, 0, MSIImage.IMAGE_HEIGHT-1, 0, 0);
         actor.SetInput(displayedImage);                     
+
+// for testing backplane generation        
+//        {
+//        	vtkImageData plane = new vtkImageData();
+//        	plane.DeepCopy(displayedImage);
+//        	float[] bp = image.generateBackplanes();
+//        	for (int i=0; i<MSIImage.IMAGE_HEIGHT; ++i)
+//            	for (int j=0; j<MSIImage.IMAGE_WIDTH; ++j)
+//            	{
+//            		plane.SetScalarComponentFromFloat(j, i, 0, 0, 1000*bp[image.index(j, i, 0)]);
+//            		plane.SetScalarComponentFromFloat(j, i, 0, 1, 1000*bp[image.index(j, i, 0)]);
+//            		plane.SetScalarComponentFromFloat(j, i, 0, 2, 1000*bp[image.index(j, i, 0)]);
+//            	}
+//        	actor.SetInput(plane);
+//        }
         
         renWin.GetRenderer().AddActor(actor);
         

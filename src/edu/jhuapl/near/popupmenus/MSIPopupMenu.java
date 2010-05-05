@@ -1,22 +1,13 @@
 package edu.jhuapl.near.popupmenus;
 
-import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.*;
 
 import javax.swing.AbstractAction;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JProgressBar;
 
 import vtk.vtkActor;
 import vtk.vtkProp;
@@ -27,7 +18,6 @@ import edu.jhuapl.near.gui.*;
 import edu.jhuapl.near.model.*;
 import edu.jhuapl.near.util.BoundingBox;
 import edu.jhuapl.near.util.FileCache;
-import edu.jhuapl.near.util.Properties;
 
 
 public class MSIPopupMenu extends PopupMenu 
@@ -89,42 +79,6 @@ public class MSIPopupMenu extends PopupMenu
 
 	}
 
-	/**
-	 * The reason for this function is that other classes may desire to use
-	 * the menu items of this menu in a non-popup type menu, i.e. in an actual
-	 * menubar type menu. Therefore we provide this function to allow such a
-	 * class to grab the menu items.
-	 * @return
-	 */
-	/*
-	public JMenuItem[] getMenuItems()
-	{
-		if (infoPanelManager != null)
-		{
-			JMenuItem[] items = {
-					this.showRemoveImageIn3DMenuItem,
-					this.showRemoveBoundaryIn3DMenuItem,
-					this.showImageInfoMenuItem,
-					this.saveToDiskMenuItem,
-					this.centerImageMenuItem 
-			};
-
-			return items;
-		}
-		else
-		{
-			JMenuItem[] items = {
-					this.showRemoveImageIn3DMenuItem,
-					this.showRemoveBoundaryIn3DMenuItem,
-					this.saveToDiskMenuItem,
-					this.centerImageMenuItem 
-			};
-
-			return items;
-		}
-	}
-	*/
-	
 	public void setCurrentImage(String name)
 	{
 		currentImageOrBoundary = name;
@@ -307,31 +261,8 @@ public class MSIPopupMenu extends PopupMenu
 		}
 	}
 
-	private class SaveBackplanesAction extends AbstractAction implements PropertyChangeListener
+	private class SaveBackplanesAction extends AbstractAction
 	{
-		private JProgressBar progressBar;
-		private JDialog dialog;
-
-		public SaveBackplanesAction()
-		{
-			progressBar = new JProgressBar(0, MSIImage.IMAGE_HEIGHT);
-			progressBar.setPreferredSize(new Dimension(175,20));
-			//progressBar.setStringPainted(true);
-			//progressBar.setString("");
-
-
-			JLabel label = new JLabel("Progress: ");
-
-			JPanel center_panel = new JPanel();
-			center_panel.add(label);
-			center_panel.add(progressBar);
-
-			dialog = new JDialog((JFrame)null, "Working ...");
-			dialog.getContentPane().add(center_panel, BorderLayout.CENTER);
-			//dialog.setModal(true);
-			dialog.pack();
-		}
-
 		public void actionPerformed(ActionEvent e) 
 		{
 			File file = AnyFileChooser.showSaveDialog(invoker, "Save Backplanes");
@@ -346,16 +277,9 @@ public class MSIPopupMenu extends PopupMenu
 					if (name.endsWith("_BOUNDARY.VTK"))
 						name = name.substring(0, name.length()-13) + ".FIT";
 
-					progressBar.setValue(0);
-					dialog.setVisible(true);
-					dialog.setLocationRelativeTo(invoker);
-					dialog.toFront();
-
 					ErosModel eros = (ErosModel)modelManager.getModel(ModelManager.EROS);
 					MSIImage image = MSIImage.MSIImageFactory.createImage(name, eros);
 
-					image.addPropertyChangeListener(this);
-					
 					float[] backplanes = image.generateBackplanes();
 
 					byte[] buf = new byte[4 * backplanes.length];
@@ -378,15 +302,6 @@ public class MSIPopupMenu extends PopupMenu
 						"Error Saving File",
 						JOptionPane.ERROR_MESSAGE);
 				ex.printStackTrace();
-			}
-		}
-
-		public void propertyChange(PropertyChangeEvent evt)
-		{
-			if (evt.getPropertyName().equals(Properties.MSI_IMAGE_BACKPLANE_GENERATION_UPDATE))
-			{
-				System.out.println(evt.getNewValue());
-				progressBar.setValue((Integer)evt.getNewValue());
 			}
 		}
 	}
@@ -412,6 +327,5 @@ public class MSIPopupMenu extends PopupMenu
 			}
 		}
 	}
-	
 
 }
