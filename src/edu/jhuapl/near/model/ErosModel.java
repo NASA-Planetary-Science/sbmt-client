@@ -56,42 +56,52 @@ public class ErosModel extends Model
     static public String SlopeUnitsStr = "deg";
     static public String FlatShadingStr = "Flat";
     static public String SmoothShadingStr = "Smooth";
+    static public String LowResModelStr = "Low (49152 plates)";
+    static public String MedResModelStr = "Medium (196608 plates)";
+    static public String HighResModelStr = "High (786432 plates)";
+    static public String VeryHighResModelStr = "Very High (3145728 plates)";
     
     private ColoringType coloringType = ColoringType.NONE;
     
 	public ErosModel()
 	{
     	erosReader = new vtkPolyDataReader();
-        File file = ConvertResourceToFile.convertResourceToTempFile(this, "/edu/jhuapl/near/data/Eros_Dec2006_0.vtk");
-        erosReader.SetFileName(file.getAbsolutePath());
-        erosReader.Update();
-        
 		normalsFilter = new vtkPolyDataNormals();
+		erosPolyData = new vtkPolyData();
+		cellLocator = new vtkOBBTree();
+		pointLocator = new vtkKdTreePointLocator();
+		
+		initialize();
+	}
+	
+	private void initialize()
+	{
+		File file = ConvertResourceToFile.convertResourceToTempFile(this, "/edu/jhuapl/near/data/Eros_Dec2006_0.vtk");
+		//File file = ConvertResourceToFile.convertResourceToTempFile(this, "/edu/jhuapl/near/data/ver512q.vtk");
+		erosReader.SetFileName(file.getAbsolutePath());
+		erosReader.Update();
+
 		normalsFilter.SetInputConnection(erosReader.GetOutputPort());
 		normalsFilter.SetComputeCellNormals(0);
 		normalsFilter.SetComputePointNormals(1);
 		normalsFilter.Update();
 
-		erosPolyData = new vtkPolyData();
 		erosPolyData.DeepCopy(normalsFilter.GetOutput());
-        //erosPolyData = erosReader.GetOutput();
-        
-        // Initialize the cell locator
-        cellLocator = new vtkOBBTree();
-        cellLocator.SetDataSet(erosReader.GetOutput());
-        cellLocator.CacheCellBoundsOn();
-        cellLocator.AutomaticOn();
-        //cellLocator.SetMaxLevel(10);
-        //cellLocator.SetNumberOfCellsPerNode(5);
+		//erosPolyData = erosReader.GetOutput();
 
-        cellLocator.BuildLocator();
+		// Initialize the cell locator
+		cellLocator.SetDataSet(erosReader.GetOutput());
+		cellLocator.CacheCellBoundsOn();
+		cellLocator.AutomaticOn();
+		//cellLocator.SetMaxLevel(10);
+		//cellLocator.SetNumberOfCellsPerNode(5);
+		cellLocator.BuildLocator();
 
-        pointLocator = new vtkKdTreePointLocator();
-        pointLocator.SetDataSet(erosReader.GetOutput());
-        pointLocator.BuildLocator();
+		pointLocator.SetDataSet(erosReader.GetOutput());
+		pointLocator.BuildLocator();
 
-        //this.computeLargestSmallestEdgeLength();
-        //this.computeSurfaceArea();
+		//this.computeLargestSmallestEdgeLength();
+		//this.computeSurfaceArea();
 	}
 	
 	public vtkPolyData getErosPolyData()
@@ -438,5 +448,14 @@ public class ErosModel extends Model
     	
     	System.out.println("Surface area " + massProp.GetSurfaceArea());
     	System.out.println("Volume " + massProp.GetVolume());
+    }
+    
+    public void setModelResolution(int level)
+    {
+    	erosCubes = null;
+		elevationValues = null;
+		gravAccValues = null;
+		gravPotValues = null;
+		slopeValues = null;
     }
 }
