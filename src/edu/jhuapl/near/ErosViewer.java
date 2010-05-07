@@ -2,6 +2,8 @@ package edu.jhuapl.near;
 
 import javax.swing.*;
 
+import vtk.vtkJavaGarbageCollector;
+
 import edu.jhuapl.near.gui.ControlPanel;
 import edu.jhuapl.near.gui.ErosRenderer;
 import edu.jhuapl.near.gui.FileMenu;
@@ -13,6 +15,7 @@ import edu.jhuapl.near.popupmenus.PopupManager;
 import edu.jhuapl.near.util.NativeLibraryLoader;
 
 import java.awt.*;
+import java.util.concurrent.TimeUnit;
 
 public class ErosViewer extends JFrame 
 {
@@ -25,6 +28,7 @@ public class ErosViewer extends JFrame
 	private PickManager pickManager;
 	private PopupManager popupManager;
 	private ModelInfoWindowManager infoPanelManager;
+	private static vtkJavaGarbageCollector garbageCollector;
 	
 	public ErosViewer()
 	{
@@ -106,6 +110,11 @@ public class ErosViewer extends JFrame
 
     	NativeLibraryLoader.loadVtkLibraries();
 
+    	garbageCollector = new vtkJavaGarbageCollector();
+    	//garbageCollector.SetDebug(true);
+    	garbageCollector.SetScheduleTime(5, TimeUnit.SECONDS);
+    	garbageCollector.SetAutoGarbageCollection(true);
+    	
         try
         {
         	JPopupMenu.setDefaultLightWeightPopupEnabled(false);

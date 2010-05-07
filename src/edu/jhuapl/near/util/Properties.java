@@ -11,4 +11,5 @@ public interface Properties
 	final String MODEL_PICKED = "model-picked";
 	final String STRUCTURE_ADDED = "structure-added";
 	final String MSI_IMAGE_BACKPLANE_GENERATION_UPDATE = "msi-image-backplane-generation-update";
+	final String MODEL_RESOLUTION_CHANGED = "model-resolution-changed";
 }

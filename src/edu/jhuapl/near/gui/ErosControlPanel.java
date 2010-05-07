@@ -43,6 +43,48 @@ public class ErosControlPanel extends JPanel implements ItemListener
     	modelCheckBox.setSelected(true);
     	modelCheckBox.addItemListener(this);
 
+        JLabel resolutionLabel = new JLabel("Resolution");
+        
+        lowResModelButton = new JRadioButton(ErosModel.LowResModelStr);
+        lowResModelButton.setActionCommand(ErosModel.LowResModelStr);
+        lowResModelButton.addItemListener(this);
+        lowResModelButton.setEnabled(true);
+        lowResModelButton.setToolTipText(
+        		"<html>Click here to show a low resolution model of Eros <br />" +
+        		"containing 49152 plates or triangles</html>");
+		
+        medResModelButton = new JRadioButton(ErosModel.MedResModelStr);
+        medResModelButton.setActionCommand(ErosModel.MedResModelStr);
+        medResModelButton.addItemListener(this);
+        medResModelButton.setEnabled(true);
+        medResModelButton.setToolTipText(
+        		"<html>Click here to show a medium resolution model of Eros <br />" +
+        		"containing 196608 plates or triangles</html>");
+		
+        highResModelButton = new JRadioButton(ErosModel.HighResModelStr);
+        highResModelButton.setActionCommand(ErosModel.HighResModelStr);
+        highResModelButton.addItemListener(this);
+        highResModelButton.setEnabled(true);
+        highResModelButton.setToolTipText(
+        		"<html>Click here to show a high resolution model of Eros <br />" +
+        		"containing 786432 plates or triangles</html>");
+
+        veryHighResModelButton = new JRadioButton(ErosModel.VeryHighResModelStr);
+        veryHighResModelButton.setActionCommand(ErosModel.VeryHighResModelStr);
+        veryHighResModelButton.addItemListener(this);
+        veryHighResModelButton.setEnabled(true);
+        veryHighResModelButton.setToolTipText(
+        		"<html>Click here to show a very high resolution model of Eros <br />" +
+        		"containing 3145728 plates or triangles <br />" +
+        		"Warning: A high-end graphics card and several gigabytes of RAM are required for best performance.</html>");
+		
+		resolutionButtonGroup = new ButtonGroup();
+		resolutionButtonGroup.add(lowResModelButton);
+		resolutionButtonGroup.add(medResModelButton);
+		resolutionButtonGroup.add(highResModelButton);
+		resolutionButtonGroup.add(veryHighResModelButton);
+		resolutionButtonGroup.setSelected(lowResModelButton.getModel(), true);
+
 		showColoringCheckBox = new JCheckBox();
 		showColoringCheckBox.setText("Color Eros by");
 		showColoringCheckBox.setSelected(false);
@@ -92,35 +134,6 @@ public class ErosControlPanel extends JPanel implements ItemListener
 		shadingButtonGroup.add(smoothShadingButton);
 		shadingButtonGroup.setSelected(smoothShadingButton.getModel(), true);
 
-        JLabel resolutionLabel = new JLabel("Resolution");
-        
-        lowResModelButton = new JRadioButton(ErosModel.LowResModelStr);
-        lowResModelButton.setActionCommand(ErosModel.LowResModelStr);
-        lowResModelButton.addItemListener(this);
-        lowResModelButton.setEnabled(true);
-		
-        medResModelButton = new JRadioButton(ErosModel.MedResModelStr);
-        medResModelButton.setActionCommand(ErosModel.MedResModelStr);
-        medResModelButton.addItemListener(this);
-        medResModelButton.setEnabled(true);
-		
-        highResModelButton = new JRadioButton(ErosModel.HighResModelStr);
-        highResModelButton.setActionCommand(ErosModel.HighResModelStr);
-        highResModelButton.addItemListener(this);
-        highResModelButton.setEnabled(true);
-		
-        veryHighResModelButton = new JRadioButton(ErosModel.VeryHighResModelStr);
-        veryHighResModelButton.setActionCommand(ErosModel.VeryHighResModelStr);
-        veryHighResModelButton.addItemListener(this);
-        veryHighResModelButton.setEnabled(true);
-		
-		resolutionButtonGroup = new ButtonGroup();
-		resolutionButtonGroup.add(lowResModelButton);
-		resolutionButtonGroup.add(medResModelButton);
-		resolutionButtonGroup.add(highResModelButton);
-		resolutionButtonGroup.add(veryHighResModelButton);
-		resolutionButtonGroup.setSelected(lowResModelButton.getModel(), true);
-
     	panel.add(modelCheckBox, "wrap");
     	panel.add(resolutionLabel, "wrap");
     	panel.add(lowResModelButton, "wrap, gapleft 25");
@@ -163,22 +176,38 @@ public class ErosControlPanel extends JPanel implements ItemListener
 		else if (e.getItemSelectable() == this.lowResModelButton)
 		{
 			if (this.lowResModelButton.isSelected())
-				;//erosModel
+				try {
+					erosModel.setModelResolution(0);
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
 		}
 		else if (e.getItemSelectable() == this.medResModelButton)
 		{
 			if (this.medResModelButton.isSelected())
-				;//erosModel
+				try {
+					erosModel.setModelResolution(1);
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
 		}
 		else if (e.getItemSelectable() == this.highResModelButton)
 		{
 			if (this.highResModelButton.isSelected())
-				;//erosModel
+				try {
+					erosModel.setModelResolution(2);
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
 		}
 		else if (e.getItemSelectable() == this.veryHighResModelButton)
 		{
 			if (this.veryHighResModelButton.isSelected())
-				;//erosModel
+				try {
+					erosModel.setModelResolution(3);
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
 		}
 		else if (e.getItemSelectable() == this.showColoringCheckBox)
 		{

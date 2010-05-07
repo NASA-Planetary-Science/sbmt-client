@@ -6,42 +6,47 @@ import java.net.PasswordAuthentication;
 
 public class Configuration 
 {
+	static private String appDir = null;
+	static private String cacheDir = null;
+	static private String cacheVersion = "2";
+
 	/**
 	 * @return Return the location where all application specific files should be stored. This is within
 	 * the .neartool folder located in the users home directory.
 	 */
 	static public String getApplicationDataDir()
 	{
-		String appdir = System.getProperty("user.home") + File.separator + ".neartool";
-		
-		// if the directory does not exist, create it
-		File dir = new File(appdir);
-		if (!dir.exists())
+		if (appDir == null)
 		{
-			dir.mkdir();
+			appDir = System.getProperty("user.home") + File.separator + ".neartool";
+
+			// if the directory does not exist, create it
+			File dir = new File(appDir);
+			if (!dir.exists())
+			{
+				dir.mkdir();
+			}
+		}
+
+		return appDir;
+	}
+	
+	/**
+	 * The cache folder is where files downloaded from the server are placed. The
+	 * URL of server is returned by getDataRootURL()
+	 * @return
+	 */
+	static public String getCacheDir()
+	{
+		if (cacheDir == null)
+		{
+			cacheDir = Configuration.getApplicationDataDir() + File.separator + 
+			"cache" + File.separator + cacheVersion;
 		}
 		
-		return appdir;
+		return cacheDir;
 	}
 	
-	/**
-	 * @return Return the path where the database files are (or should be) stored.
-	 */
-	static public String getDatabaseDir()
-	{
-		return Configuration.getApplicationDataDir() + File.separator + "neardb";
-	}
-	
-	/**
-	 * @return Return the name of the database. For the HyperSQL database which is currently being
-	 * used, the database name is the prefix of all files located in the database directory
-	 * (this directory is returned by the getDatabaseDir function).
-	 */
-	static public String getDatabaseName()
-	{
-		return "near";
-	}
-
 	static
 	{
 		try

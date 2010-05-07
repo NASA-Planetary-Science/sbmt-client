@@ -235,6 +235,7 @@ public class MSIPopupMenu extends PopupMenu
 			if (name.endsWith("_BOUNDARY.VTK"))
 				name = name.substring(0, name.length()-13) + ".FIT";
 
+			/*
 			try 
 			{
 				ErosModel eros = (ErosModel)modelManager.getModel(ModelManager.EROS);
@@ -258,6 +259,7 @@ public class MSIPopupMenu extends PopupMenu
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
+			*/
 		}
 	}
 

@@ -12,27 +12,12 @@ import vtk.*;
 import edu.jhuapl.near.query.ErosCubes;
 import edu.jhuapl.near.util.BoundingBox;
 import edu.jhuapl.near.util.ConvertResourceToFile;
+import edu.jhuapl.near.util.FileCache;
 import edu.jhuapl.near.util.PolyDataUtil;
 import edu.jhuapl.near.util.Properties;
 
 public class ErosModel extends Model 
 {
-    private vtkPolyData erosPolyData;
-    private vtkActor erosActor;
-    private vtkPolyDataMapper erosMapper;
-    private boolean showLighting = true;
-    private ArrayList<vtkProp> erosActors = new ArrayList<vtkProp>();
-    private vtksbmtCellLocator cellLocator;
-    private vtkKdTreePointLocator pointLocator;
-    private vtkFloatArray elevationValues;
-    private vtkFloatArray gravAccValues;
-    private vtkFloatArray gravPotValues;
-    private vtkFloatArray slopeValues;
-    private vtkScalarBarActor scalarBarActor;
-    private vtkPolyDataReader erosReader;
-    private vtkPolyDataNormals normalsFilter;
-	private ErosCubes erosCubes;
-
     public enum ColoringType { 
     	NONE, 
     	ELEVATION, 
@@ -46,45 +31,67 @@ public class ErosModel extends Model
     	SMOOTH,
     }
     
-    static public String ElevStr = "Elevation";
-    static public String GravAccStr = "Gravitational Acceleration";
-    static public String GravPotStr = "Gravitational Potential";
-    static public String SlopeStr = "Slope";
-    static public String ElevUnitsStr = "m";
-    static public String GravAccUnitsStr = "m/s^2";
-    static public String GravPotUnitsStr = "J/kg";
-    static public String SlopeUnitsStr = "deg";
-    static public String FlatShadingStr = "Flat";
-    static public String SmoothShadingStr = "Smooth";
-    static public String LowResModelStr = "Low (49152 plates)";
-    static public String MedResModelStr = "Medium (196608 plates)";
-    static public String HighResModelStr = "High (786432 plates)";
-    static public String VeryHighResModelStr = "Very High (3145728 plates)";
-    
+    static public final String ElevStr = "Elevation";
+    static public final String GravAccStr = "Gravitational Acceleration";
+    static public final String GravPotStr = "Gravitational Potential";
+    static public final String SlopeStr = "Slope";
+    static public final String ElevUnitsStr = "m";
+    static public final String GravAccUnitsStr = "m/s^2";
+    static public final String GravPotUnitsStr = "J/kg";
+    static public final String SlopeUnitsStr = "deg";
+    static public final String FlatShadingStr = "Flat";
+    static public final String SmoothShadingStr = "Smooth";
+    static public final String LowResModelStr = "Low (49152 plates)";
+    static public final String MedResModelStr = "Medium (196608 plates)";
+    static public final String HighResModelStr = "High (786432 plates)";
+    static public final String VeryHighResModelStr = "Very High (3145728 plates)";
+
+    private vtkPolyData erosPolyData;
+    private vtkActor erosActor;
+    private vtkPolyDataMapper erosMapper;
+    private boolean showLighting = true;
+    private ArrayList<vtkProp> erosActors = new ArrayList<vtkProp>();
+    private vtkCellLocator cellLocator;
+    private vtkKdTreePointLocator pointLocator;
+    private vtkFloatArray elevationValues;
+    private vtkFloatArray gravAccValues;
+    private vtkFloatArray gravPotValues;
+    private vtkFloatArray slopeValues;
+    private vtkScalarBarActor scalarBarActor;
+    private vtkPolyDataReader erosReader;
+    private vtkPolyDataNormals normalsFilter;
+	private ErosCubes erosCubes;
     private ColoringType coloringType = ColoringType.NONE;
+    private File defaultModelFile;
+    private int resolutionLevel = 0;
     
 	public ErosModel()
 	{
     	erosReader = new vtkPolyDataReader();
 		normalsFilter = new vtkPolyDataNormals();
 		erosPolyData = new vtkPolyData();
-		cellLocator = new vtksbmtCellLocator();
+		cellLocator = new vtkCellLocator();
 		pointLocator = new vtkKdTreePointLocator();
 		
-		initialize();
+		defaultModelFile = ConvertResourceToFile.convertResourceToTempFile(this, "/edu/jhuapl/near/data/Eros_Dec2006_0.vtk");
+		System.out.println(defaultModelFile);
+		//defaultModelFile = ConvertResourceToFile.convertResourceToTempFile(this, "/edu/jhuapl/near/data/ver512q.vtk");
+
+		initialize(defaultModelFile);
 	}
 	
-	private void initialize()
+	private void initialize(File modelFile)
 	{
-		//File file = ConvertResourceToFile.convertResourceToTempFile(this, "/edu/jhuapl/near/data/Eros_Dec2006_0.vtk");
-		File file = ConvertResourceToFile.convertResourceToTempFile(this, "/edu/jhuapl/near/data/ver512q.vtk");
-		erosReader.SetFileName(file.getAbsolutePath());
+		long t1 = System.currentTimeMillis();
+		erosReader.SetFileName(modelFile.getAbsolutePath());
 		erosReader.Update();
+System.out.println(System.currentTimeMillis()-t1);
 
 		normalsFilter.SetInputConnection(erosReader.GetOutputPort());
 		normalsFilter.SetComputeCellNormals(0);
 		normalsFilter.SetComputePointNormals(1);
 		normalsFilter.Update();
+		System.out.println(System.currentTimeMillis()-t1);
 
 		erosPolyData.DeepCopy(normalsFilter.GetOutput());
 
@@ -95,9 +102,11 @@ public class ErosModel extends Model
 		//cellLocator.SetMaxLevel(10);
 		//cellLocator.SetNumberOfCellsPerNode(5);
 		cellLocator.BuildLocator();
+		System.out.println(System.currentTimeMillis()-t1);
 
 		pointLocator.SetDataSet(erosPolyData);
 		pointLocator.BuildLocator();
+		System.out.println(System.currentTimeMillis()-t1);
 
 		//this.computeLargestSmallestEdgeLength();
 		//this.computeSurfaceArea();
@@ -214,7 +223,7 @@ public class ErosModel extends Model
 	
 	public void setColorBy(ColoringType type) throws IOException
 	{
-		if (coloringType == type)
+		if (coloringType == type || resolutionLevel != 0)
 			return;
 		
 		loadColoring();
@@ -454,12 +463,40 @@ public class ErosModel extends Model
     	System.out.println("Volume " + massProp.GetVolume());
     }
     
-    public void setModelResolution(int level)
+    public void setModelResolution(int level) throws IOException
     {
+    	resolutionLevel = level;
+    	if (level < 0)
+    		resolutionLevel = 0;
+    	else if (level > 3)
+    		resolutionLevel = 3;
+    	
     	erosCubes = null;
 		elevationValues = null;
 		gravAccValues = null;
 		gravPotValues = null;
 		slopeValues = null;
+	
+		File erosFile = defaultModelFile;
+		switch(level)
+		{
+		case 1:
+			erosFile = FileCache.getFileFromServer("/EROS/ver128q.vtk.gz");
+			break;
+		case 2:
+			erosFile = FileCache.getFileFromServer("/EROS/ver256q.vtk.gz");
+			break;
+		case 3:
+			erosFile = FileCache.getFileFromServer("/EROS/ver512q.vtk.gz");
+			break;
+		}
+
+		if (resolutionLevel != 0)
+			setColorBy(ColoringType.NONE);
+		
+		this.initialize(erosFile);
+		
+		this.pcs.firePropertyChange(Properties.MODEL_RESOLUTION_CHANGED, null, null);
+		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 }

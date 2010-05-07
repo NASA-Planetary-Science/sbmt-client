@@ -2,25 +2,21 @@ package edu.jhuapl.near.util;
 
 import java.io.*;
 import java.net.URL;
+import java.util.zip.GZIPInputStream;
 
 public class FileCache 
 {
-	static private String cacheRoot = null;
-	static private String cacheVersion = "2";
-	
 	static public File getFileFromServer(String path)
 	{
 		// First check the cache to see if the file is there.
 		// If not place the file in the cache. The cache should mirror
 		// the file hierarchy on the server.
 	
-		if (cacheRoot == null)
-		{
-			cacheRoot = Configuration.getApplicationDataDir() + File.separator + 
-			"cache" + File.separator + cacheVersion;
-		}
+		String unzippedPath = path;
+		if (unzippedPath.toLowerCase().endsWith(".gz"))
+			unzippedPath = unzippedPath.substring(0, unzippedPath.length()-3);
 		
-		File file = new File(cacheRoot + File.separator + path);
+		File file = new File(Configuration.getCacheDir() + File.separator + unzippedPath);
 		if (file.exists())
 		{
 			return file;
@@ -37,6 +33,10 @@ public class FileCache
 	//	
 	//}
 	
+	/**
+	 * When adding to cache, gzipped files are always uncompressed and saved
+	 * without the ".gz" extension.
+	 */
 	static private File addToCache(String path)
 	{
 		File file = null;
@@ -45,8 +45,14 @@ public class FileCache
 			URL u = new URL(Configuration.getDataRootURL() + path);
 			
 			InputStream is = u.openStream();
+			
+			if (path.toLowerCase().endsWith(".gz"))
+				is = new GZIPInputStream(is);
 
-			file = new File(cacheRoot + File.separator + path);
+			if (path.toLowerCase().endsWith(".gz"))
+				path = path.substring(0, path.length()-3);
+			
+			file = new File(Configuration.getCacheDir() + File.separator + path);
 			
 			file.getParentFile().mkdirs();
 			

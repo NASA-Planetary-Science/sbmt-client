@@ -1,5 +1,7 @@
 package edu.jhuapl.near.model;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.*;
 import java.text.DecimalFormat;
 import java.util.*;
@@ -20,7 +22,7 @@ import edu.jhuapl.near.util.Properties;
  * @author kahneg1
  *
  */
-public class MSIImage extends Model
+public class MSIImage extends Model implements PropertyChangeListener
 {
 	
 	public static final int IMAGE_WIDTH = 537;
@@ -61,7 +63,6 @@ public class MSIImage extends Model
     private double minVerticalPixelScale = Double.MAX_VALUE;
     private double maxVerticalPixelScale = -Double.MAX_VALUE;
 
-	private BoundingBox boundingBox = new BoundingBox();
 	private String name = ""; // The name is a 9 digit number at the beginning of the filename
 						 	  // (starting after the initial M0). This is how the lineament 
 							  // model names them.
@@ -131,6 +132,7 @@ public class MSIImage extends Model
 		this.serverpath = filename;
 		
 		// Download the image, and all the companion files if necessary.
+		System.out.println(filename);
 		File fitFile = FileCache.getFileFromServer(filename);
 
 		if (fitFile == null)
@@ -168,6 +170,8 @@ public class MSIImage extends Model
 		
 		// Set the filter name
 		filter = Integer.parseInt(fitFile.getName().substring(12,13));
+		
+		erosModel.addPropertyChangeListener(this);
 		
         Fits f = new Fits(filename);
         BasicHDU h = f.getHDU(0);
@@ -431,11 +435,6 @@ public class MSIImage extends Model
 	}
     
 
-	public BoundingBox getBoundingBox()
-	{
-		return boundingBox;
-	}
-	
 	public String getName()
 	{
 		return name;
@@ -885,8 +884,8 @@ public class MSIImage extends Model
 		int numLayers = 12;
 		float[] data = new float[numLayers*IMAGE_HEIGHT*IMAGE_WIDTH];
 
-//		vtkCellLocator cellLocator = new vtkCellLocator();
-		vtksbmtCellLocator cellLocator = new vtksbmtCellLocator();
+		vtkCellLocator cellLocator = new vtkCellLocator();
+		//vtksbmtCellLocator cellLocator = new vtksbmtCellLocator();
         cellLocator.SetDataSet(footprint);
         cellLocator.CacheCellBoundsOn();
         cellLocator.AutomaticOn();
@@ -976,7 +975,7 @@ public class MSIImage extends Model
 				//System.out.println("A");
 				//cellLocator.testfunc();
 				//System.out.println("B");
-				int result = cellLocator.IntersectWithLine(spacecraftPosition, lookPt, tol, t, x, pcoords, subId, cellId, cell);
+				int result = 0;//cellLocator.IntersectWithLine(spacecraftPosition, lookPt, tol, t, x, pcoords, subId, cellId, cell);
 				//System.out.println("C");
 						
 				//if (intersectPoints.GetNumberOfPoints() == 0)
@@ -1048,5 +1047,14 @@ public class MSIImage extends Model
 	public int index(int i, int j, int k)
 	{
 		return ((k * IMAGE_HEIGHT + j) * IMAGE_WIDTH + i);
+	}
+
+	public void propertyChange(PropertyChangeEvent evt)
+	{
+		if (Properties.MODEL_RESOLUTION_CHANGED.equals(evt.getPropertyName()))
+		{
+			
+			this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+		}
 	}
 }
