@@ -57,6 +57,7 @@ public class LinePicker extends Picker
 		{
 			erosPicker.AddPickList(act);
 		}
+		erosPicker.AddLocator(erosModel.getLocator());
 
 		linePicker = new vtkCellPicker();
 		linePicker.SetTolerance(0.002);

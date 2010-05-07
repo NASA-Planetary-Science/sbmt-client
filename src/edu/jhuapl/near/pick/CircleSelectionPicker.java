@@ -41,6 +41,7 @@ public class CircleSelectionPicker extends Picker
 		{
 			erosPicker.AddPickList(act);
 		}
+		erosPicker.AddLocator(erosModel.getLocator());
 	}
 
     public void mousePressed(MouseEvent e) 

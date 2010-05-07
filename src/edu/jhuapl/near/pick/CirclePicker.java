@@ -44,7 +44,7 @@ public class CirclePicker extends Picker
 		this.renWin = erosRenderer.getRenderWindowPanel();
 		this.modelManager = modelManager;
 		this.circleModel = (CircleModel)modelManager.getModel(ModelManager.CIRCLE_STRUCTURES);
-		
+
 		erosPicker = new vtkCellPicker();
 		erosPicker.SetTolerance(0.002);
 		erosPicker.PickFromListOn();
@@ -56,7 +56,8 @@ public class CirclePicker extends Picker
 		{
 			erosPicker.AddPickList(act);
 		}
-
+		erosPicker.AddLocator(erosModel.getLocator());
+		
 		circlePicker = new vtkCellPicker();
 		circlePicker.SetTolerance(0.002);
 		circlePicker.PickFromListOn();

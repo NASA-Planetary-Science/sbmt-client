@@ -49,9 +49,11 @@ public class DefaultPicker extends Picker
 
 		modelManager.addPropertyChangeListener(this);
 		
+		ErosModel erosModel = (ErosModel)modelManager.getModel(ModelManager.EROS);
 		mouseMovedCellPicker = new vtkCellPicker();
 		mouseMovedCellPicker.SetTolerance(0.002);
-
+		mouseMovedCellPicker.AddLocator(erosModel.getLocator());
+		
 		// See comment in the propertyChange function below as to why
 		// we use a custom pick list for these pickers.
 		mousePressNonErosCellPicker = new vtkCellPicker();
@@ -63,6 +65,7 @@ public class DefaultPicker extends Picker
 		mousePressErosCellPicker.SetTolerance(0.002);
 		mousePressErosCellPicker.PickFromListOn();
 		mousePressErosCellPicker.InitializePickList();
+		mousePressErosCellPicker.AddLocator(erosModel.getLocator());
 	}
 
 	public void setSuppressPopups(boolean b)

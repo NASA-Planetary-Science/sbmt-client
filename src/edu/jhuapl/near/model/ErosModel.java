@@ -22,7 +22,7 @@ public class ErosModel extends Model
     private vtkPolyDataMapper erosMapper;
     private boolean showLighting = true;
     private ArrayList<vtkProp> erosActors = new ArrayList<vtkProp>();
-    private vtkOBBTree cellLocator;
+    private vtksbmtCellLocator cellLocator;
     private vtkKdTreePointLocator pointLocator;
     private vtkFloatArray elevationValues;
     private vtkFloatArray gravAccValues;
@@ -68,7 +68,7 @@ public class ErosModel extends Model
     	erosReader = new vtkPolyDataReader();
 		normalsFilter = new vtkPolyDataNormals();
 		erosPolyData = new vtkPolyData();
-		cellLocator = new vtkOBBTree();
+		cellLocator = new vtksbmtCellLocator();
 		pointLocator = new vtkKdTreePointLocator();
 		
 		initialize();
@@ -76,8 +76,8 @@ public class ErosModel extends Model
 	
 	private void initialize()
 	{
-		File file = ConvertResourceToFile.convertResourceToTempFile(this, "/edu/jhuapl/near/data/Eros_Dec2006_0.vtk");
-		//File file = ConvertResourceToFile.convertResourceToTempFile(this, "/edu/jhuapl/near/data/ver512q.vtk");
+		//File file = ConvertResourceToFile.convertResourceToTempFile(this, "/edu/jhuapl/near/data/Eros_Dec2006_0.vtk");
+		File file = ConvertResourceToFile.convertResourceToTempFile(this, "/edu/jhuapl/near/data/ver512q.vtk");
 		erosReader.SetFileName(file.getAbsolutePath());
 		erosReader.Update();
 
@@ -87,17 +87,16 @@ public class ErosModel extends Model
 		normalsFilter.Update();
 
 		erosPolyData.DeepCopy(normalsFilter.GetOutput());
-		//erosPolyData = erosReader.GetOutput();
 
 		// Initialize the cell locator
-		cellLocator.SetDataSet(erosReader.GetOutput());
+		cellLocator.SetDataSet(erosPolyData);
 		cellLocator.CacheCellBoundsOn();
 		cellLocator.AutomaticOn();
 		//cellLocator.SetMaxLevel(10);
 		//cellLocator.SetNumberOfCellsPerNode(5);
 		cellLocator.BuildLocator();
 
-		pointLocator.SetDataSet(erosReader.GetOutput());
+		pointLocator.SetDataSet(erosPolyData);
 		pointLocator.BuildLocator();
 
 		//this.computeLargestSmallestEdgeLength();
@@ -107,6 +106,11 @@ public class ErosModel extends Model
 	public vtkPolyData getErosPolyData()
 	{
 		return erosPolyData;
+	}
+	
+	public vtkCellLocator getLocator()
+	{
+		return cellLocator;
 	}
 	
 	public TreeSet<Integer> getIntersectingCubes(vtkPolyData polydata)

@@ -56,6 +56,7 @@ public class PointPicker extends Picker
 		{
 			erosPicker.AddPickList(act);
 		}
+		erosPicker.AddLocator(erosModel.getLocator());
 
 		pointPicker = new vtkCellPicker();
 		pointPicker.SetTolerance(0.002);

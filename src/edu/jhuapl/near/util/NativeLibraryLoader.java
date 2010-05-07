@@ -94,6 +94,7 @@ public class NativeLibraryLoader
     		System.loadLibrary("vtkViewsJava");
     		System.loadLibrary("vtkGeovisJava");
     		System.loadLibrary("vtkVolumeRenderingJava");
+    		System.loadLibrary("vtksbmtUnsortedJava");
     	}
     }
 

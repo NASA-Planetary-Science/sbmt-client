@@ -885,7 +885,8 @@ public class MSIImage extends Model
 		int numLayers = 12;
 		float[] data = new float[numLayers*IMAGE_HEIGHT*IMAGE_WIDTH];
 
-		vtkOBBTree cellLocator = new vtkOBBTree();
+//		vtkCellLocator cellLocator = new vtkCellLocator();
+		vtksbmtCellLocator cellLocator = new vtksbmtCellLocator();
         cellLocator.SetDataSet(footprint);
         cellLocator.CacheCellBoundsOn();
         cellLocator.AutomaticOn();
@@ -893,8 +894,9 @@ public class MSIImage extends Model
         //cellLocator.SetNumberOfCellsPerNode(15);
         cellLocator.BuildLocator();
 
-        vtkPoints intersectPoints = new vtkPoints();
-        vtkIdList intersectCells = new vtkIdList();
+        //vtkPoints intersectPoints = new vtkPoints();
+        //vtkIdList intersectCells = new vtkIdList();
+		vtkGenericCell cell = new vtkGenericCell();
         
 		// For each pixel in the image we need to compute the vector
 		// from the spacecraft pointing in the direction of that pixel.
@@ -964,18 +966,33 @@ public class MSIImage extends Model
 						spacecraftPosition[2] + 2.0*scdist*vec[2]
 				};
 
-				cellLocator.IntersectWithLine(spacecraftPosition, lookPt, intersectPoints, intersectCells);
+				//cellLocator.IntersectWithLine(spacecraftPosition, lookPt, intersectPoints, intersectCells);
+				double tol = 1e-6;
+				double[] t = new double[1];
+				double[] x = new double[3];
+				double[] pcoords = new double[3];
+				int[] subId = new int[1];
+				int[] cellId = new int[1];
+				//System.out.println("A");
+				//cellLocator.testfunc();
+				//System.out.println("B");
+				int result = cellLocator.IntersectWithLine(spacecraftPosition, lookPt, tol, t, x, pcoords, subId, cellId, cell);
+				//System.out.println("C");
+						
 				//if (intersectPoints.GetNumberOfPoints() == 0)
 				//	System.out.println(i + " " + j + " " + intersectPoints.GetNumberOfPoints());
 
-				int numberOfPoints = intersectPoints.GetNumberOfPoints();
+				//int numberOfPoints = intersectPoints.GetNumberOfPoints();
 
-				if (numberOfPoints > 0)
+				if (result > 0)
 				{
-					double[] closestPoint = intersectPoints.GetPoint(0);
-					int closestCell = intersectCells.GetId(0);
+					//double[] closestPoint = intersectPoints.GetPoint(0);
+					//int closestCell = intersectCells.GetId(0);
+					double[] closestPoint = x;
+					int closestCell = cellId[0];
 					double closestDist = GeometryUtil.distanceBetween(closestPoint, spacecraftPosition);
 					
+					/*
 					// compute the closest point to the spacecraft of all the intersecting points.
 					if (numberOfPoints > 1)
 					{
@@ -991,6 +1008,7 @@ public class MSIImage extends Model
 							}
 						}
 					}
+					*/
 
 					LatLon llr = GeometryUtil.reclat(closestPoint);
 					double lon = llr.lon*180/Math.PI;
