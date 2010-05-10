@@ -1,6 +1,7 @@
 <project default="compile">
 
   <property name="rootdir" location="${basedir}"/>
+  <property name="vtkrootdir" location="/home/kahneg1/src/near/vtk_all_platforms"/>
 
   <target name="compile">
     <echo>$${rootdir}=${rootdir}</echo>
@@ -17,6 +18,7 @@
 		   excludes="edu/jhuapl/near/dbgen/**"
 		   debug="off" >
       <classpath>
+		<pathelement location="${rootdir}/lib/vtksb.jar"/>
 		<pathelement location="${rootdir}/lib/vtk.jar"/>
 		<pathelement location="${rootdir}/lib/jide-oss-2.7.3.jar"/>
 		<pathelement location="${rootdir}/lib/joda-time-1.6.jar"/>
@@ -33,6 +35,7 @@
       <jvmarg value="-Dsun.java2d.noddraw=true"/>
       <classpath>
 		<pathelement location="${rootdir}/build/classes"/>
+		<pathelement location="${rootdir}/lib/vtksb.jar"/>
 		<pathelement location="${rootdir}/lib/vtk.jar"/>
 		<pathelement location="${rootdir}/lib/jide-oss-2.7.3.jar"/>
 		<pathelement location="${rootdir}/lib/joda-time-1.6.jar"/>
@@ -47,7 +50,8 @@
     <mkdir dir="${rootdir}/build/jar"/>
     <jar destfile="${rootdir}/build/jar/near.jar" basedir="${rootdir}/build/classes">
       <manifest>
-        <attribute name="Class-Path" value="vtk.jar
+        <attribute name="Class-Path" value="vtksb.jar
+											vtk.jar
 											jide-oss-2.7.3.jar
 											joda-time-1.6.jar
                                             jcommon-1.0.16.jar
@@ -64,6 +68,7 @@
       <jvmarg value="-Djava.library.path=${rootdir}/lib/linux32"/>
       <jvmarg value="-Dsun.java2d.noddraw=true"/>
       <classpath>
+		<pathelement location="${rootdir}/lib/vtksb.jar"/>
 		<pathelement location="${rootdir}/lib/vtk.jar"/>
 		<pathelement location="${rootdir}/lib/jide-oss-2.7.3.jar"/>
 		<pathelement location="${rootdir}/lib/joda-time-1.6.jar"/>
@@ -77,7 +82,7 @@
 
   <target name="nativelinuxvtkjar">
     <mkdir dir="${rootdir}/build/jar"/>
-    <jar destfile="${rootdir}/build/jar/vtk-natives-linux-i586.jar" basedir="${rootdir}/lib/linux32">
+    <jar destfile="${rootdir}/build/jar/vtk-natives-linux-i586.jar" basedir="${vtkrootdir}/linux32">
       <manifest>
       </manifest>
     </jar>
@@ -85,7 +90,7 @@
 
   <target name="nativelinux64vtkjar">
     <mkdir dir="${rootdir}/build/jar"/>
-    <jar destfile="${rootdir}/build/jar/vtk-natives-linux-amd64.jar" basedir="${rootdir}/lib/linux64">
+    <jar destfile="${rootdir}/build/jar/vtk-natives-linux-amd64.jar" basedir="${vtkrootdir}/linux64">
       <manifest>
       </manifest>
     </jar>
@@ -93,24 +98,48 @@
 
   <target name="nativewinvtkjar">
     <mkdir dir="${rootdir}/build/jar"/>
-    <jar destfile="${rootdir}/build/jar/vtk-natives-windows-i586.jar" basedir="${rootdir}/lib/win32">
+    <jar destfile="${rootdir}/build/jar/vtk-natives-windows-i586.jar" basedir="${vtkrootdir}/win32">
       <manifest>
       </manifest>
     </jar>
   </target>
 
+  <!--
   <target name="nativemac32vtkjar">
     <mkdir dir="${rootdir}/build/jar"/>
-    <jar destfile="${rootdir}/build/jar/vtk-natives-macosx-universal.jar" basedir="${rootdir}/lib/mac32">
+    <jar destfile="${rootdir}/build/jar/vtk-natives-macosx-universal.jar" basedir="${vtkrootdir}/mac32">
       <manifest>
       </manifest>
     </jar>
   </target>
+    -->
 
   <target name="nativemac64vtkjar">
     <mkdir dir="${rootdir}/build/jar"/>
-    <jar destfile="${rootdir}/build/jar/vtk-natives-macosx-x86_64.jar" basedir="${rootdir}/lib/mac64">
+    <jar destfile="${rootdir}/build/jar/vtk-natives-macosx-x86_64.jar" basedir="${vtkrootdir}/mac64">
       <manifest>
+      </manifest>
+    </jar>
+  </target>
+
+  <target name="compilevtksb">
+    <echo>$${rootdir}=${rootdir}</echo>
+    <mkdir dir="${rootdir}/build/vtksbclasses"/>
+    <mkdir dir="${rootdir}/build/vtksbclasses/vtk"/>
+    <javac srcdir="${vtkrootdir}/java"
+		   destdir="${rootdir}/build/vtksbclasses"
+		   debug="off" >
+      <classpath>
+		<pathelement location="${rootdir}/lib/vtk.jar"/>
+      </classpath>
+    </javac> 
+  </target>
+
+  <target name="vtksbjar" depends="compilevtksb">
+    <mkdir dir="${rootdir}/build/jar"/>
+    <jar destfile="${rootdir}/build/jar/vtksb.jar" basedir="${rootdir}/build/vtksbclasses">
+      <manifest>
+        <attribute name="Class-Path" value="vtk.jar"/>
       </manifest>
     </jar>
   </target>
@@ -165,6 +194,7 @@
              storepass="${keypass}"/>
   </target>
 
+  <!--
   <target name="signnativemac32vtkjar" depends="nativemac32vtkjar">
     <input message="Please enter keystore password:"
            addproperty="keypass" />
@@ -172,6 +202,7 @@
              keystore="${rootdir}/keystore" alias="mykey"
              storepass="${keypass}"/>
   </target>
+  -->
 
   <target name="signnativemac64vtkjar" depends="nativemac64vtkjar">
     <input message="Please enter keystore password:"
@@ -217,6 +248,14 @@
     <input message="Please enter keystore password:"
            addproperty="keypass" />
     <signjar jar="${rootdir}/lib/miglayout-3.7.1-swing.jar"
+             keystore="${rootdir}/keystore" alias="mykey"
+             storepass="${keypass}"/>
+  </target>
+
+  <target name="signvtksb" depends="vtksbjar">
+    <input message="Please enter keystore password:"
+           addproperty="keypass" />
+    <signjar jar="${rootdir}/build/jar/vtksb.jar"
              keystore="${rootdir}/keystore" alias="mykey"
              storepass="${keypass}"/>
   </target>
