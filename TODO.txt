@@ -1,0 +1,8 @@
+1. Improve NLR. Show plot of range of spacecraft to asteroid vs time.
+   Also show plot of potential vs distance (range) traveled. Allow from these
+   plots to highlight data in renderer and vs versa. 
+   
+2. Save LBL file when saving DDR. By default name should be same as original fit file
+   with _DDR.IMG suffix. 
+   
+3. Fix bug with 
