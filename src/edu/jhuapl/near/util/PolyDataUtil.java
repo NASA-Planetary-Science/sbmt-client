@@ -140,6 +140,7 @@ public class PolyDataUtil
 		normalsFilter_f4.SetInputConnection(clipPolyData4_f4.GetOutputPort());
 		normalsFilter_f4.SetComputeCellNormals(1);
 		normalsFilter_f4.SetComputePointNormals(0);
+		normalsFilter_f4.SplittingOff();
 		normalsFilter_f4.Update();
 		
 		if (tmpPolyData_f4 == null) tmpPolyData_f4 = new vtkPolyData();
@@ -632,6 +633,7 @@ public class PolyDataUtil
 		normalsFilter_f2.SetInput(polyData);
 		normalsFilter_f2.SetComputeCellNormals(0);
 		normalsFilter_f2.SetComputePointNormals(1);
+		normalsFilter_f2.SplittingOff();
 		normalsFilter_f2.Update();
 		
 		vtkDataArray pointNormals = normalsFilter_f2.GetOutput().GetPointData().GetNormals();

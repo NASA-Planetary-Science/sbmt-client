@@ -755,6 +755,7 @@ public class MSIImage extends Model implements PropertyChangeListener
 			normalsFilter.SetInput(footprint);
 			normalsFilter.SetComputeCellNormals(1);
 			normalsFilter.SetComputePointNormals(0);
+			normalsFilter.SplittingOff();
 			normalsFilter.Update();
 
 			footprint.DeepCopy(normalsFilter.GetOutput());

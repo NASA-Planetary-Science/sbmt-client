@@ -89,6 +89,7 @@ public class ErosModel extends Model
 		//normalsFilter.SetInputConnection(erosReader.GetOutputPort());
 		//normalsFilter.SetComputeCellNormals(0);
 		//normalsFilter.SetComputePointNormals(1);
+		//normalsFilter.SplittingOff();
 		//normalsFilter.Update();
 
 		//erosPolyData.DeepCopy(normalsFilter.GetOutput());
