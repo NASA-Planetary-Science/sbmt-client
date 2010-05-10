@@ -1,5 +1,7 @@
 package edu.jhuapl.near.model;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.text.DecimalFormat;
@@ -28,7 +30,7 @@ import vtk.*;
  * @author 
  *
  */
-public class LineModel extends StructureModel 
+public class LineModel extends StructureModel implements PropertyChangeListener 
 {
 	private ArrayList<Line> lines = new ArrayList<Line>();
 	private vtkPolyData linesPolyData;
@@ -255,6 +257,8 @@ public class LineModel extends StructureModel
 	{
 		this.erosModel = erosModel;
 
+		this.erosModel.addPropertyChangeListener(this);
+		
 		lineActor = new vtkActor();
 		lineActor.GetProperty().SetLineWidth(2.0);
 
@@ -926,4 +930,33 @@ public class LineModel extends StructureModel
     	
     }
     */
+
+	public void redrawAllStructures()
+	{
+        for (Line lin : this.lines)
+		{
+    		// When the resolution changes, the control points, might no longer
+    		// be touching the asteroid. Therefore shift each control to the closest
+    		// point on the asteroid.
+        	for (int i=0; i<lin.controlPointIds.size()-1; ++i)
+        		;
+        	
+        	for (int i=0; i<lin.controlPointIds.size()-1; ++i)
+        		lin.updateSegment(erosModel, i);
+		}
+
+		updatePolyData();
+
+        updateLineSelection();
+
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+	}
+
+	public void propertyChange(PropertyChangeEvent evt)
+	{
+		if (Properties.MODEL_RESOLUTION_CHANGED.equals(evt.getPropertyName()))
+		{
+			redrawAllStructures();
+		}	
+	}
 }

@@ -59,7 +59,7 @@ public class ErosModel extends Model
     private vtkFloatArray slopeValues;
     private vtkScalarBarActor scalarBarActor;
     private vtkPolyDataReader erosReader;
-    private vtkPolyDataNormals normalsFilter;
+    //private vtkPolyDataNormals normalsFilter;
 	private ErosCubes erosCubes;
     private ColoringType coloringType = ColoringType.NONE;
     private File defaultModelFile;
@@ -68,14 +68,13 @@ public class ErosModel extends Model
 	public ErosModel()
 	{
     	erosReader = new vtkPolyDataReader();
-		normalsFilter = new vtkPolyDataNormals();
+		//normalsFilter = new vtkPolyDataNormals();
 		erosPolyData = new vtkPolyData();
 		cellLocator = new vtkCellLocator();
 		pointLocator = new vtkKdTreePointLocator();
 		
-		defaultModelFile = ConvertResourceToFile.convertResourceToTempFile(this, "/edu/jhuapl/near/data/Eros_Dec2006_0.vtk");
-		System.out.println(defaultModelFile);
-		//defaultModelFile = ConvertResourceToFile.convertResourceToTempFile(this, "/edu/jhuapl/near/data/ver512q.vtk");
+		//defaultModelFile = ConvertResourceToFile.convertResourceToTempFile(this, "/edu/jhuapl/near/data/Eros_Dec2006_0.vtk");
+		defaultModelFile = ConvertResourceToFile.convertResourceToTempFile(this, "/edu/jhuapl/near/data/ver64q.vtk");
 
 		initialize(defaultModelFile);
 	}
@@ -85,17 +84,26 @@ public class ErosModel extends Model
 		long t1 = System.currentTimeMillis();
 		erosReader.SetFileName(modelFile.getAbsolutePath());
 		erosReader.Update();
-System.out.println(System.currentTimeMillis()-t1);
+		System.out.println("Time to load " + (System.currentTimeMillis()-t1));
 
-		normalsFilter.SetInputConnection(erosReader.GetOutputPort());
-		normalsFilter.SetComputeCellNormals(0);
-		normalsFilter.SetComputePointNormals(1);
-		normalsFilter.Update();
+		//normalsFilter.SetInputConnection(erosReader.GetOutputPort());
+		//normalsFilter.SetComputeCellNormals(0);
+		//normalsFilter.SetComputePointNormals(1);
+		//normalsFilter.Update();
+
+		//erosPolyData.DeepCopy(normalsFilter.GetOutput());
+		erosPolyData.DeepCopy(erosReader.GetOutput());
+
+		//vtkPolyDataWriter writer = new vtkPolyDataWriter();
+		//writer.SetInput(erosPolyData);
+		//writer.SetFileName("/tmp/" + modelFile.getName());
+		//writer.SetFileTypeToBinary();
+		//writer.Write();
 		System.out.println(System.currentTimeMillis()-t1);
 
-		erosPolyData.DeepCopy(normalsFilter.GetOutput());
 
 		// Initialize the cell locator
+		cellLocator.FreeSearchStructure();
 		cellLocator.SetDataSet(erosPolyData);
 		cellLocator.CacheCellBoundsOn();
 		cellLocator.AutomaticOn();
@@ -104,6 +112,7 @@ System.out.println(System.currentTimeMillis()-t1);
 		cellLocator.BuildLocator();
 		System.out.println(System.currentTimeMillis()-t1);
 
+		pointLocator.FreeSearchStructure();
 		pointLocator.SetDataSet(erosPolyData);
 		pointLocator.BuildLocator();
 		System.out.println(System.currentTimeMillis()-t1);
@@ -465,6 +474,9 @@ System.out.println(System.currentTimeMillis()-t1);
     
     public void setModelResolution(int level) throws IOException
     {
+    	if (level == resolutionLevel)
+    		return;
+    	
     	resolutionLevel = level;
     	if (level < 0)
     		resolutionLevel = 0;
@@ -498,5 +510,10 @@ System.out.println(System.currentTimeMillis()-t1);
 		
 		this.pcs.firePropertyChange(Properties.MODEL_RESOLUTION_CHANGED, null, null);
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+    }
+    
+    public int getModelResolution()
+    {
+    	return resolutionLevel;
     }
 }

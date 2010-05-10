@@ -71,9 +71,10 @@ public class MSIFootprintGenerator
     		//System.out.println("midtime: " + midtime);
     		System.out.println(" ");
     	
-    		vtkPolyData footprint = image.generateFootprint();
+    		image.generateFootprint();
+    		vtkPolyData footprint = image.getUnshiftedFootprint();
     		
-			if (footprint == null)
+			if (footprint == null || footprint.GetNumberOfPoints() == 0)
 			{
 				System.err.println("Error: Footprint generation failed");
 				continue;

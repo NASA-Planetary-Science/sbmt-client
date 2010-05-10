@@ -1,5 +1,7 @@
 package edu.jhuapl.near.model;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -24,7 +26,7 @@ import vtk.*;
  *
  */
 
-public class RegularPolygonModel extends StructureModel 
+public class RegularPolygonModel extends StructureModel implements PropertyChangeListener 
 {
 	private ArrayList<RegularPolygon> polygons = new ArrayList<RegularPolygon>();
     private ArrayList<vtkProp> actors = new ArrayList<vtkProp>();
@@ -147,6 +149,8 @@ public class RegularPolygonModel extends StructureModel
 	{
 		this.erosModel = erosModel;
 
+		this.erosModel.addPropertyChangeListener(this);
+		
 		emptyPolyData = new vtkPolyData();
 		
 		this.numberOfSides = numberOfSides;
@@ -596,5 +600,25 @@ public class RegularPolygonModel extends StructureModel
 		}
 
 		return -1;
+	}
+
+	public void redrawAllStructures()
+	{
+		for (RegularPolygon pol : this.polygons)
+		{
+	        pol.updatePolygon(erosModel, pol.center, pol.radius);
+		}
+
+		updatePolyData();
+
+		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+	}
+
+	public void propertyChange(PropertyChangeEvent evt)
+	{
+		if (Properties.MODEL_RESOLUTION_CHANGED.equals(evt.getPropertyName()))
+		{
+			redrawAllStructures();
+		}	
 	}
 }

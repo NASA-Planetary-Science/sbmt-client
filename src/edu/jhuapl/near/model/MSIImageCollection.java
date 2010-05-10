@@ -104,7 +104,8 @@ public class MSIImageCollection extends Model implements PropertyChangeListener
 
 	public void propertyChange(PropertyChangeEvent evt) 
 	{
-		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+		if (Properties.MODEL_CHANGED.equals(evt.getPropertyName()))
+			this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 	}
 
     public String getClickStatusBarText(vtkProp prop, int cellId)

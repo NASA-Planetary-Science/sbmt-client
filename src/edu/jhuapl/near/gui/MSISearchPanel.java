@@ -706,7 +706,8 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
 			try 
 			{
 				String currentImage = msiRawResults.get(i);
-				String boundaryName = currentImage.substring(0,currentImage.length()-4) + "_BOUNDARY.VTK";
+				//String boundaryName = currentImage.substring(0,currentImage.length()-4) + "_BOUNDARY.VTK";
+				String boundaryName = currentImage.substring(0,currentImage.length()-4) + "_BOUNDARY";
 				model.addBoundary(boundaryName);
 			} 
 			catch (FitsException e1) {

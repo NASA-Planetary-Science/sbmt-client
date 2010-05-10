@@ -1,6 +1,8 @@
 package edu.jhuapl.near.model;
 
 import java.util.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.*;
 
 import nom.tam.fits.FitsException;
@@ -9,36 +11,74 @@ import vtk.*;
 import edu.jhuapl.near.util.*;
 import edu.jhuapl.near.util.Properties;
 
-public class MSIBoundaryCollection extends Model
+public class MSIBoundaryCollection extends Model implements PropertyChangeListener
 {
-	private class Boundary
+	private class Boundary extends Model implements PropertyChangeListener
 	{
-		public vtkActor actor;
-		
+		private vtkActor actor;
+		private vtkPolyDataReader boundaryReader;
+        private vtkPolyData boundary;
+        private vtkPolyDataMapper boundaryMapper;
+        
+        // The path on the server to the boundary excluding the _RES?.VTK ending.
+        private String basePath;
+        
 		public Boundary(String path) throws IOException
+		{
+			this.basePath = path;
+			
+			boundaryReader = new vtkPolyDataReader();
+	        boundary = new vtkPolyData();
+	        boundaryMapper = new vtkPolyDataMapper();
+	        actor = new vtkActor();
+	    
+	        erosModel.addPropertyChangeListener(this);
+	        
+//	        initialize(basePath + "_RES" + erosModel.getModelResolution() + ".VTK");
+	        initialize(basePath + ".VTK");
+		}
+		
+		private void initialize(String path)
 		{
 			File file = FileCache.getFileFromServer(path);
 
 			if (file == null)
-				throw new IOException(path + " could not be loaded");
-			
-			vtkPolyDataReader boundaryReader = new vtkPolyDataReader();
+			{
+				System.err.println(path + " could not be loaded");
+				(new Exception()).printStackTrace();
+			}
+				
 	        boundaryReader.SetFileName(file.getAbsolutePath());
 	        boundaryReader.Update();
 	        
-	        vtkPolyData boundary = new vtkPolyData();
 	        boundary.DeepCopy(boundaryReader.GetOutput());
 			PolyDataUtil.shiftPolyLineInNormalDirectionOfPolyData(boundary, erosModel.getErosPolyData(), 0.003);
 
-	        vtkPolyDataMapper boundaryMapper = new vtkPolyDataMapper();
 	        boundaryMapper.SetInput(boundary);
 	        //boundaryMapper.SetResolveCoincidentTopologyToPolygonOffset();
 	        //boundaryMapper.SetResolveCoincidentTopologyPolygonOffsetParameters(-1.0, -1.0);
 
-	        actor = new vtkActor();
 	        actor.SetMapper(boundaryMapper);
 	        actor.GetProperty().SetColor(1.0, 0.0, 0.0);
 	        actor.GetProperty().SetLineWidth(2.0);
+		}
+
+		public void propertyChange(PropertyChangeEvent evt)
+		{
+			if (Properties.MODEL_RESOLUTION_CHANGED.equals(evt.getPropertyName()))
+			{
+				//initialize(basePath + "_RES" + erosModel.getModelResolution() + ".VTK");
+				initialize(basePath + ".VTK");
+				this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+			}
+		}
+
+		@Override
+		public ArrayList<vtkProp> getProps()
+		{
+			ArrayList<vtkProp> props = new ArrayList<vtkProp>();
+			props.add(actor);
+			return props;
 		}
 	}
 
@@ -66,18 +106,20 @@ public class MSIBoundaryCollection extends Model
 
 		Boundary image = new Boundary(path);
 
+		image.addPropertyChangeListener(this);
+		
 		fileToBoundaryMap.put(path, image);
 		
-		actorToFileMap.put(image.actor, path);
+		actorToFileMap.put(image.getProps().get(0), path);
 		
-		boundaryActors.add(image.actor);
+		boundaryActors.add(image.getProps().get(0));
 		
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 	}
 
 	public void removeBoundary(String path)
 	{
-		vtkActor actor = fileToBoundaryMap.get(path).actor;
+		vtkActor actor = (vtkActor)fileToBoundaryMap.get(path).getProps().get(0);
 		
 		boundaryActors.remove(actor);
 
@@ -125,4 +167,10 @@ public class MSIBoundaryCollection extends Model
     {
     	return fileToBoundaryMap.containsKey(file);
     }
+
+	public void propertyChange(PropertyChangeEvent evt)
+	{
+		if (Properties.MODEL_CHANGED.equals(evt.getPropertyName()))
+			this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+	}
 }

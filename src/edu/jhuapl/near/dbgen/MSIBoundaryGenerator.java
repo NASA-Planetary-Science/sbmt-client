@@ -16,6 +16,7 @@ import edu.jhuapl.near.util.NativeLibraryLoader;
 public class MSIBoundaryGenerator 
 {
 	private static ErosModel erosModel;
+	private static int resolutionLevel = 0;
 	
 	private static boolean checkIfMsiFilesExist(String line)
 	{
@@ -78,13 +79,13 @@ public class MSIBoundaryGenerator
     	
     		vtkPolyData boundary = image.generateBoundary();
     		
-			if (boundary == null)
+			if (boundary == null || boundary.GetNumberOfPoints() == 0)
 			{
 				System.err.println("Error: Boundary generation failed");
 				continue;
 			}
 			
-	        String vtkfile = filename.substring(0, filename.length()-4) + "_BOUNDARY.VTK";
+	        String vtkfile = filename.substring(0, filename.length()-4) + "_BOUNDARY_RES" + resolutionLevel + ".VTK";
 
 	        writer.SetInput(boundary);
 	        writer.SetFileName(vtkfile);
@@ -102,10 +103,17 @@ public class MSIBoundaryGenerator
 	{
 		NativeLibraryLoader.loadVtkLibrariesLinuxNoX11();
 
-		erosModel = new ErosModel();
-		
-		String msiFileList=args[0];
+		String msiFileList = args[0];
 
+		erosModel = new ErosModel();
+		resolutionLevel = Integer.parseInt(args[1]);
+		try {
+			erosModel.setModelResolution(resolutionLevel);
+		} catch (IOException e) {
+			e.printStackTrace();
+			return;
+		}
+		
 		
 		ArrayList<String> msiFiles = null;
 		try {
@@ -124,60 +132,3 @@ public class MSIBoundaryGenerator
 	}
 
 }
-
-/*
-public class MSIBoundaryGenerator 
-{
-	private static ErosModel erosModel;
-
-	
-	 //This program takes a path to a FIT image and generates a vtk file containing the
-	 //boundary of the image in the same directory as the original file. 
-	 //@param args
-	public static void main(String[] args) 
-	{
-		NativeLibraryLoader.loadVtkLibrariesLinuxNoX11();
-
-		erosModel = new ErosModel();
-
-		String filename = args[0];
-		
-		if (!filename.toLowerCase().endsWith(".fit"))
-		{
-			System.err.println("The specified file does not have the right extension.");
-			System.exit(0);
-		}
-		
-		File fitfile = new File(args[0]);
-		
-		try 
-		{
-		
-			MSIImage image = new MSIImage(fitfile, erosModel);
-			
-			vtkPolyData boundary = image.generateImageBorder();
-
-			if (boundary == null)
-			{
-				System.err.println("Error: Boundary generation failed");
-				System.exit(0);
-			}
-			
-	        String vtkfile = filename.substring(0, filename.length()-4) + "_BOUNDARY.VTK";
-
-	        vtkPolyDataWriter writer = new vtkPolyDataWriter();
-	        writer.SetInput(boundary);
-	        writer.SetFileName(vtkfile);
-	        writer.SetFileTypeToBinary();
-	        writer.Write();
-				
-		}
-		catch (Exception e) 
-		{
-			e.printStackTrace();
-		}
-
-	}
-
-}
-*/

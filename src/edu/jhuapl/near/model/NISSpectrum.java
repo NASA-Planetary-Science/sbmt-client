@@ -1,5 +1,7 @@
 package edu.jhuapl.near.model;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -14,10 +16,11 @@ import edu.jhuapl.near.util.FileUtil;
 import edu.jhuapl.near.util.LatLon;
 import edu.jhuapl.near.util.PolyDataUtil;
 import edu.jhuapl.near.util.GeometryUtil;
+import edu.jhuapl.near.util.Properties;
 
 import vtk.*;
 
-public class NISSpectrum extends Model
+public class NISSpectrum extends Model implements PropertyChangeListener
 {
 	private String fullpath; // The actual path of the spectrum stored on the local disk (after downloading from the server)
 	private String serverpath; // The path of the spectrum as passed into the constructor. This is not the 
@@ -47,6 +50,7 @@ public class NISSpectrum extends Model
 	private double range;
 	private ArrayList<LatLon> latLons = new ArrayList<LatLon>();
 	private vtkPolyData footprint;
+	private vtkPolyData shiftedFootprint;
     private vtkActor footprintActor;
     private ArrayList<vtkProp> footprintActors = new ArrayList<vtkProp>();
     private ErosModel erosModel;
@@ -124,6 +128,8 @@ public class NISSpectrum extends Model
 		String filename = nisFile.getAbsolutePath();
 		this.fullpath = filename;
 
+		eros.addPropertyChangeListener(this);
+
 		ArrayList<String> values = FileUtil.getFileWordsAsStringList(fullpath);
 
 		dateTime = new DateTime(values.get(DATE_TIME_OFFSET), DateTimeZone.UTC);
@@ -172,102 +178,93 @@ public class NISSpectrum extends Model
 		GeometryUtil.vhat(frustum2, frustum2);
 		GeometryUtil.vhat(frustum3, frustum3);
 		GeometryUtil.vhat(frustum4, frustum4);
+
+		footprint = new vtkPolyData();
+		shiftedFootprint = new vtkPolyData();
 	}
 
-	public vtkPolyData generateFootprint()
+	public void generateFootprint()
 	{
 		if (!latLons.isEmpty())
 		{
-			return erosModel.computeFrustumIntersection(spacecraftPosition, 
+			vtkPolyData tmp = erosModel.computeFrustumIntersection(spacecraftPosition, 
 					frustum1, frustum2, frustum3, frustum4);
-		}
-		else
-		{
-			return null;
+			
+			if (tmp != null)
+			{
+				footprint.DeepCopy(tmp);
+				
+				shiftedFootprint.DeepCopy(tmp);
+				PolyDataUtil.shiftPolyDataInNormalDirection(shiftedFootprint, 0.001);
+			}
 		}
 	}
 	
-	private vtkPolyData loadFootprint()
-	{
-		String footprintFilename = serverpath.substring(0, serverpath.length()-4) + "_FOOTPRINT.VTK";
-		File file = FileCache.getFileFromServer(footprintFilename);
-		
-		if (file == null)
-		{
-			return null;
-		}
+//	private vtkPolyData loadFootprint()
+//	{
+//		String footprintFilename = serverpath.substring(0, serverpath.length()-4) + "_FOOTPRINT.VTK";
+//		File file = FileCache.getFileFromServer(footprintFilename);
+//		
+//		if (file == null)
+//		{
+//			return null;
+//		}
+//
+//		vtkPolyDataReader footprintReader = new vtkPolyDataReader();
+//        footprintReader.SetFileName(file.getAbsolutePath());
+//        footprintReader.Update();
+//        
+//        vtkPolyData polyData = new vtkPolyData();
+//		polyData.DeepCopy(footprintReader.GetOutput());
+//		
+//		return polyData;
+//	}
 
-		vtkPolyDataReader footprintReader = new vtkPolyDataReader();
-        footprintReader.SetFileName(file.getAbsolutePath());
-        footprintReader.Update();
-        
-        vtkPolyData polyData = new vtkPolyData();
-		polyData.DeepCopy(footprintReader.GetOutput());
-		
-		return polyData;
-	}
-
-	public vtkPolyData getFootprint()
-	{
-		if (footprint == null)
-			footprint = loadFootprint();
-
-		return footprint;
-	}
-	
 	public ArrayList<vtkProp> getProps() 
 	{
 		if (footprintActor == null && !latLons.isEmpty())
 		{
-			if (footprint == null)
-			{
-				footprint = loadFootprint();
-				if (footprint != null)
-					PolyDataUtil.shiftPolyDataInNormalDirection(footprint, 0.001);
-			}
-			
-			if (footprint != null)
-			{
-				vtkPolyDataMapper footprintMapper = new vtkPolyDataMapper();
-				footprintMapper.SetInput(footprint);
-				//footprintMapper.SetResolveCoincidentTopologyToPolygonOffset();
-				//footprintMapper.SetResolveCoincidentTopologyPolygonOffsetParameters(-.002, -2.0);
-				footprintMapper.Update();
-				
-				footprintActor = new vtkActor();
-				footprintActor.SetMapper(footprintMapper);
-				footprintActor.GetProperty().SetColor(
-						getChannelColor(),
-						getChannelColor(),
-						getChannelColor());
-				footprintActor.GetProperty().SetLineWidth(2.0);
-				footprintActor.GetProperty().LightingOff();
-				
-				footprintActors.add(footprintActor);
+			generateFootprint();
 
-				// Compute the bounding edges of this surface
-		        vtkFeatureEdges edgeExtracter = new vtkFeatureEdges();
-		        edgeExtracter.SetInput(footprint);
-		        edgeExtracter.BoundaryEdgesOn();
-		        edgeExtracter.FeatureEdgesOff();
-		        edgeExtracter.NonManifoldEdgesOff();
-		        edgeExtracter.ManifoldEdgesOff();
-		        edgeExtracter.Update();
+			vtkPolyDataMapper footprintMapper = new vtkPolyDataMapper();
+			footprintMapper.SetInput(shiftedFootprint);
+			//footprintMapper.SetResolveCoincidentTopologyToPolygonOffset();
+			//footprintMapper.SetResolveCoincidentTopologyPolygonOffsetParameters(-.002, -2.0);
+			footprintMapper.Update();
 
-				vtkPolyDataMapper edgeMapper = new vtkPolyDataMapper();
-				edgeMapper.SetInputConnection(edgeExtracter.GetOutputPort());
-				edgeMapper.ScalarVisibilityOff();
-				//edgeMapper.SetResolveCoincidentTopologyToPolygonOffset();
-				//edgeMapper.SetResolveCoincidentTopologyPolygonOffsetParameters(-.004, -4.0);
-				edgeMapper.Update();
-				
-				vtkActor edgeActor = new vtkActor();
-				edgeActor.SetMapper(edgeMapper);
-				edgeActor.GetProperty().SetColor(0.0, 0.39, 0.0);
-				edgeActor.GetProperty().SetLineWidth(2.0);
-				edgeActor.GetProperty().LightingOff();
-				footprintActors.add(edgeActor);
-			}
+			footprintActor = new vtkActor();
+			footprintActor.SetMapper(footprintMapper);
+			footprintActor.GetProperty().SetColor(
+					getChannelColor(),
+					getChannelColor(),
+					getChannelColor());
+			footprintActor.GetProperty().SetLineWidth(2.0);
+			footprintActor.GetProperty().LightingOff();
+
+			footprintActors.add(footprintActor);
+
+			// Compute the bounding edges of this surface
+			vtkFeatureEdges edgeExtracter = new vtkFeatureEdges();
+			edgeExtracter.SetInput(shiftedFootprint);
+			edgeExtracter.BoundaryEdgesOn();
+			edgeExtracter.FeatureEdgesOff();
+			edgeExtracter.NonManifoldEdgesOff();
+			edgeExtracter.ManifoldEdgesOff();
+			edgeExtracter.Update();
+
+			vtkPolyDataMapper edgeMapper = new vtkPolyDataMapper();
+			edgeMapper.SetInputConnection(edgeExtracter.GetOutputPort());
+			edgeMapper.ScalarVisibilityOff();
+			//edgeMapper.SetResolveCoincidentTopologyToPolygonOffset();
+			//edgeMapper.SetResolveCoincidentTopologyPolygonOffsetParameters(-.004, -4.0);
+			edgeMapper.Update();
+
+			vtkActor edgeActor = new vtkActor();
+			edgeActor.SetMapper(edgeMapper);
+			edgeActor.GetProperty().SetColor(0.0, 0.39, 0.0);
+			edgeActor.GetProperty().SetLineWidth(2.0);
+			edgeActor.GetProperty().LightingOff();
+			footprintActors.add(edgeActor);
 			
 			if (showFrustum)
 			{
@@ -478,5 +475,37 @@ public class NISSpectrum extends Model
 		
 		double slope = 1.0 / (channelColoringMaxValue - channelColoringMinValue);
 		return slope * (val - channelColoringMinValue);
+	}
+
+	public void propertyChange(PropertyChangeEvent evt)
+	{
+		if (Properties.MODEL_RESOLUTION_CHANGED.equals(evt.getPropertyName()))
+		{
+			System.out.println("updating nis image");
+			generateFootprint();
+			
+			this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+		}
+	}
+	
+	/**
+	 * The shifted footprint is the original footprint shifted slightly in the
+	 * normal direction so that it will be rendered correctly and not obscured
+	 * by the asteroid.
+	 * @return
+	 */
+	public vtkPolyData getShiftedFootprint()
+	{
+		return shiftedFootprint;
+	}
+
+	/**
+	 * The original footprint whose cells exactly overlap the original asteroid.
+	 * If rendered as is, it would interfere with the asteroid.
+	 * @return
+	 */
+	public vtkPolyData getUnshiftedFootprint()
+	{
+		return footprint;
 	}
 }

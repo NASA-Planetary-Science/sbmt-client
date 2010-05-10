@@ -47,11 +47,17 @@ public class MSIImage extends Model implements PropertyChangeListener
 	private vtkImageData displayedImage;
 
 	private vtkPolyData footprint;
+	private vtkPolyData shiftedFootprint;
     private vtkActor footprintActor;
     private ArrayList<vtkProp> footprintActors = new ArrayList<vtkProp>();
 
     private vtkPolyDataNormals normalsFilter;
 
+    private vtkFloatArray textureCoords;
+    
+    private boolean footprintGenerated = false;
+    private boolean normalsGenerated = false;
+    
     private double minIncidence = Double.MAX_VALUE;
     private double maxIncidence = -Double.MAX_VALUE;
     private double minEmission = Double.MAX_VALUE;
@@ -238,6 +244,11 @@ public class MSIImage extends Model implements PropertyChangeListener
         setDisplayedImageRange(new IntensityRange(0, 255));
 
         loadImageInfo();
+
+		footprint = new vtkPolyData();
+		shiftedFootprint = new vtkPolyData();
+		textureCoords = new vtkFloatArray();
+		normalsFilter = new vtkPolyDataNormals();
 	}
 	
     
@@ -257,127 +268,70 @@ public class MSIImage extends Model implements PropertyChangeListener
 		return filter;
 	}
 
-	private vtkPolyData loadFootprint()
-	{
-		String footprintFilename = fullpath.substring(0, fullpath.length()-4) + "_FOOTPRINT.VTK";
-		
-		File file = new File(footprintFilename);
-		
-		if (!file.exists())
-		{
-			System.out.println("Warning: " + footprintFilename + " not found");
-			return null;
-		}
-
-		vtkPolyDataReader footprintReader = new vtkPolyDataReader();
-        footprintReader.SetFileName(file.getAbsolutePath());
-        footprintReader.Update();
-        
-        vtkPolyData polyData = new vtkPolyData();
-		polyData.DeepCopy(footprintReader.GetOutput());
-		
-		return polyData;
-		
-
-		/*
-        // for testing
-        vtkPolyData footprint2 = erosModel.computeFrustumIntersection(spacecraftPosition, 
-				frustum1, frustum3, frustum4, frustum2);
-        
-        //vtkPolyDataWriter writer = new vtkPolyDataWriter();
-        //writer.SetInput(footprint2);
-        //writer.SetFileName("/tmp/footprint.vtk");
-        ////writer.SetFileTypeToBinary();
-        //writer.Write();
-
-        vtkPolyData polyData = new vtkPolyData();
-		polyData.DeepCopy(footprint2);
-
-        return polyData;
-        */
-	}
-
+//	private vtkPolyData loadFootprint()
+//	{
+//		/*
+//		String footprintFilename = fullpath.substring(0, fullpath.length()-4) + "_FOOTPRINT.VTK";
+//		
+//		File file = new File(footprintFilename);
+//		
+//		if (!file.exists())
+//		{
+//			System.out.println("Warning: " + footprintFilename + " not found");
+//			return null;
+//		}
+//
+//		vtkPolyDataReader footprintReader = new vtkPolyDataReader();
+//        footprintReader.SetFileName(file.getAbsolutePath());
+//        footprintReader.Update();
+//        
+//        vtkPolyData polyData = new vtkPolyData();
+//		polyData.DeepCopy(footprintReader.GetOutput());
+//		
+//		return polyData;
+//		*/
+//
+//		/*
+//        // for testing
+//        vtkPolyData footprint2 = this.generateFootprint();
+//        System.out.println("Generating footprint");
+//        //vtkPolyDataWriter writer = new vtkPolyDataWriter();
+//        //writer.SetInput(footprint2);
+//        //writer.SetFileName("/tmp/footprint.vtk");
+//        ////writer.SetFileTypeToBinary();
+//        //writer.Write();
+//
+//        vtkPolyData polyData = new vtkPolyData();
+//		  polyData.DeepCopy(footprint2);
+//
+//        return polyData;
+//        */
+//		
+//		return null;
+//	}
 
 	public ArrayList<vtkProp> getProps()
 	{
 		if (footprintActor == null)
 		{
-			if (footprint == null)
-			{
-				footprint = loadFootprint();
-			}
+			generateFootprint();
 
-			if (footprint != null)
-			{
-                int numberOfPoints = footprint.GetNumberOfPoints();
+			vtkTexture texture = new vtkTexture();
+			texture.InterpolateOn();
+			texture.RepeatOff();
+			texture.EdgeClampOn();
+			texture.SetInput(displayedImage);
 
-				vtkFloatArray tcoords = new vtkFloatArray();
-				tcoords.SetNumberOfComponents(2);
-				tcoords.SetNumberOfTuples(numberOfPoints);
+			vtkPolyDataMapper footprintMapper = new vtkPolyDataMapper();
+			footprintMapper.SetInput(shiftedFootprint);
+			footprintMapper.Update();
 
-				vtkPoints points = footprint.GetPoints();
-				
+			footprintActor = new vtkActor();
+			footprintActor.SetMapper(footprintMapper);
+			footprintActor.SetTexture(texture);
+			footprintActor.GetProperty().LightingOff();
 
-				double a = GeometryUtil.vsep(frustum1, frustum3);
-				double b = GeometryUtil.vsep(frustum1, frustum2);
-
-				double[] vec = new double[3];
-
-				for (int i=0; i<numberOfPoints; ++i)
-				{
-					double[] pt = points.GetPoint(i);
-
-					vec[0] = pt[0] - spacecraftPosition[0];
-					vec[1] = pt[1] - spacecraftPosition[1];
-					vec[2] = pt[2] - spacecraftPosition[2];
-					GeometryUtil.vhat(vec, vec);
-
-					double d1 = GeometryUtil.vsep(vec, frustum1);
-					double d2 = GeometryUtil.vsep(vec, frustum2);
-
-					double v = (d1*d1 + b*b - d2*d2) / (2.0*b);
-					double u = d1*d1 - v*v;
-					if (u <= 0.0)
-						u = 0.0;
-					else
-						u = Math.sqrt(u);
-
-					//System.out.println(v/b + " " + u/a + " " + d1 + " " + d2);
-					
-					v = v/b;
-					u = u/a;
-					
-					if (v < 0.0) v = 0.0;
-					if (v > 1.0) v = 1.0;
-					if (u < 0.0) u = 0.0;
-					if (u > 1.0) u = 1.0;
-					
-					tcoords.SetTuple2(i, v, u);
-				}
-
-
-				// Now map the data to 
-				footprint.GetPointData().SetTCoords(tcoords);
-
-				PolyDataUtil.shiftPolyDataInNormalDirection(footprint, 0.002);
-
-				vtkTexture texture = new vtkTexture();
-				texture.InterpolateOn();
-				texture.RepeatOff();
-				texture.EdgeClampOn();
-				texture.SetInput(displayedImage);
-
-				vtkPolyDataMapper footprintMapper = new vtkPolyDataMapper();
-				footprintMapper.SetInput(footprint);
-				footprintMapper.Update();
-
-				footprintActor = new vtkActor();
-				footprintActor.SetMapper(footprintMapper);
-				footprintActor.SetTexture(texture);
-				footprintActor.GetProperty().LightingOff();
-
-				footprintActors.add(footprintActor);
-			}
+			footprintActors.add(footprintActor);
 		}
 
 		if (showFrustum)
@@ -680,27 +634,83 @@ public class MSIImage extends Model implements PropertyChangeListener
     	return hasLimb;
     }
 
-	public vtkPolyData generateFootprint()
+	public void generateFootprint()
 	{
-		return erosModel.computeFrustumIntersection(spacecraftPosition, 
+		vtkPolyData tmp = erosModel.computeFrustumIntersection(spacecraftPosition, 
 				frustum1, frustum3, frustum4, frustum2);
+
+		footprint.DeepCopy(tmp);
+		
+        int numberOfPoints = footprint.GetNumberOfPoints();
+
+		textureCoords.SetNumberOfComponents(2);
+		textureCoords.SetNumberOfTuples(numberOfPoints);
+
+		vtkPoints points = footprint.GetPoints();
+		
+
+		double a = GeometryUtil.vsep(frustum1, frustum3);
+		double b = GeometryUtil.vsep(frustum1, frustum2);
+
+		double[] vec = new double[3];
+
+		for (int i=0; i<numberOfPoints; ++i)
+		{
+			double[] pt = points.GetPoint(i);
+
+			vec[0] = pt[0] - spacecraftPosition[0];
+			vec[1] = pt[1] - spacecraftPosition[1];
+			vec[2] = pt[2] - spacecraftPosition[2];
+			GeometryUtil.vhat(vec, vec);
+
+			double d1 = GeometryUtil.vsep(vec, frustum1);
+			double d2 = GeometryUtil.vsep(vec, frustum2);
+
+			double v = (d1*d1 + b*b - d2*d2) / (2.0*b);
+			double u = d1*d1 - v*v;
+			if (u <= 0.0)
+				u = 0.0;
+			else
+				u = Math.sqrt(u);
+
+			//System.out.println(v/b + " " + u/a + " " + d1 + " " + d2);
+			
+			v = v/b;
+			u = u/a;
+			
+			if (v < 0.0) v = 0.0;
+			if (v > 1.0) v = 1.0;
+			if (u < 0.0) u = 0.0;
+			if (u > 1.0) u = 1.0;
+			
+			textureCoords.SetTuple2(i, v, u);
+		}
+
+
+		footprint.GetPointData().SetTCoords(textureCoords);
+
+		shiftedFootprint.DeepCopy(footprint);
+		PolyDataUtil.shiftPolyDataInNormalDirection(shiftedFootprint, 0.002);
+
+		footprintGenerated = true;
 	}
 	
 	public vtkPolyData generateBoundary()
 	{
-		vtkPolyData polyData = loadFootprint();
+		generateFootprint();
 
 		vtkFeatureEdges edgeExtracter = new vtkFeatureEdges();
-        edgeExtracter.SetInput(polyData);
+        edgeExtracter.SetInput(footprint);
         edgeExtracter.BoundaryEdgesOn();
         edgeExtracter.FeatureEdgesOff();
         edgeExtracter.NonManifoldEdgesOff();
         edgeExtracter.ManifoldEdgesOff();
         edgeExtracter.Update();
         
-        polyData.DeepCopy(edgeExtracter.GetOutput());
+        vtkPolyData boundary = new vtkPolyData();
+        boundary.DeepCopy(edgeExtracter.GetOutput());
 
-		return polyData;
+		return boundary;
 	}
 
 	public String getStartTime()
@@ -740,15 +750,15 @@ public class MSIImage extends Model implements PropertyChangeListener
 	
 	private void computeCellNormals()
 	{
-		if (normalsFilter == null)
+		if (normalsGenerated == false)
 		{
-			normalsFilter = new vtkPolyDataNormals();
 			normalsFilter.SetInput(footprint);
 			normalsFilter.SetComputeCellNormals(1);
 			normalsFilter.SetComputePointNormals(0);
 			normalsFilter.Update();
 
 			footprint.DeepCopy(normalsFilter.GetOutput());
+			normalsGenerated = true;
 		}
 	}
 	
@@ -782,8 +792,8 @@ public class MSIImage extends Model implements PropertyChangeListener
 	
 	private void computeIlluminationAngles()
 	{
-		if (footprint == null)
-			footprint = loadFootprint();
+		if (footprintGenerated == false)
+			generateFootprint();
 
 		computeCellNormals();
 		
@@ -834,8 +844,8 @@ public class MSIImage extends Model implements PropertyChangeListener
 	
 	private void computePixelScale()
 	{
-		if (footprint == null)
-			footprint = loadFootprint();
+		if (footprintGenerated == false)
+			generateFootprint();
 
 		int numberOfPoints = footprint.GetNumberOfPoints();
 
@@ -876,16 +886,19 @@ public class MSIImage extends Model implements PropertyChangeListener
 	
 	public float[] generateBackplanes()
 	{
-		if (footprint == null)
-			footprint = loadFootprint();
+		if (footprintGenerated == false)
+			generateFootprint();
 
 		computeCellNormals();
+		
+		//vtkBar2 cellLocator = new vtkBar2();
+		//vbar.testme();
 		
 		int numLayers = 12;
 		float[] data = new float[numLayers*IMAGE_HEIGHT*IMAGE_WIDTH];
 
-		vtkCellLocator cellLocator = new vtkCellLocator();
-		//vtksbmtCellLocator cellLocator = new vtksbmtCellLocator();
+		//vtkCellLocator cellLocator = new vtkCellLocator();
+		vtksbCellLocator cellLocator = new vtksbCellLocator();
         cellLocator.SetDataSet(footprint);
         cellLocator.CacheCellBoundsOn();
         cellLocator.AutomaticOn();
@@ -975,7 +988,7 @@ public class MSIImage extends Model implements PropertyChangeListener
 				//System.out.println("A");
 				//cellLocator.testfunc();
 				//System.out.println("B");
-				int result = 0;//cellLocator.IntersectWithLine(spacecraftPosition, lookPt, tol, t, x, pcoords, subId, cellId, cell);
+				int result = cellLocator.IntersectWithLine(spacecraftPosition, lookPt, tol, t, x, pcoords, subId, cellId, cell);
 				//System.out.println("C");
 						
 				//if (intersectPoints.GetNumberOfPoints() == 0)
@@ -1053,8 +1066,42 @@ public class MSIImage extends Model implements PropertyChangeListener
 	{
 		if (Properties.MODEL_RESOLUTION_CHANGED.equals(evt.getPropertyName()))
 		{
+			System.out.println("updating msi image");
+			generateFootprint();
+			normalsGenerated = false;
+			this.minEmission  =  Double.MAX_VALUE;
+			this.maxEmission  = -Double.MAX_VALUE;
+			this.minIncidence =  Double.MAX_VALUE;
+			this.maxIncidence = -Double.MAX_VALUE;
+			this.minPhase     =  Double.MAX_VALUE;
+			this.maxPhase     = -Double.MAX_VALUE;
+			this.minHorizontalPixelScale = Double.MAX_VALUE;
+			this.maxHorizontalPixelScale = -Double.MAX_VALUE;
+			this.minVerticalPixelScale = Double.MAX_VALUE;
+			this.maxVerticalPixelScale = -Double.MAX_VALUE;
 			
 			this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 		}
+	}
+	
+	/**
+	 * The shifted footprint is the original footprint shifted slightly in the
+	 * normal direction so that it will be rendered correctly and not obscured
+	 * by the asteroid.
+	 * @return
+	 */
+	public vtkPolyData getShiftedFootprint()
+	{
+		return shiftedFootprint;
+	}
+
+	/**
+	 * The original footprint whose cells exactly overlap the original asteroid.
+	 * If rendered as is, it would interfere with the asteroid.
+	 * @return
+	 */
+	public vtkPolyData getUnshiftedFootprint()
+	{
+		return footprint;
 	}
 }

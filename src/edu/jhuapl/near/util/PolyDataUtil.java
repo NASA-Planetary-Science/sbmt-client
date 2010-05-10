@@ -887,7 +887,7 @@ public class PolyDataUtil
     		idList_f3 = new vtkIdList();
     	idList_f3.Reset();
     	
-    	pointLocator.FindClosestNPoints(10, pt, idList_f3);
+    	pointLocator.FindClosestNPoints(20, pt, idList_f3);
     	
     	// Average the normals
     	double[] normal = {0.0, 0.0, 0.0};

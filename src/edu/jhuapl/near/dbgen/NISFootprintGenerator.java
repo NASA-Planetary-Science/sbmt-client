@@ -46,10 +46,11 @@ public class NISFootprintGenerator
     		System.out.println("dayofyear: " + dayOfYearStr);
     		System.out.println("midtime: " + midtime);
     		System.out.println(" ");
+
+    		nisSpectrum.generateFootprint();
+    		vtkPolyData footprint = nisSpectrum.getUnshiftedFootprint();
     		
-    		vtkPolyData footprint = nisSpectrum.generateFootprint();
-    		
-			if (footprint == null)
+			if (footprint == null || footprint.GetNumberOfPoints() == 0)
 			{
 				System.err.println("Error: Footprint generation failed");
 				continue;
