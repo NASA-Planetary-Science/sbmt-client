@@ -8,9 +8,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-
 import edu.jhuapl.near.util.FileUtil;
 import edu.jhuapl.near.util.IdPair;
 import edu.jhuapl.near.util.LatLon;
@@ -125,15 +122,6 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
 	    	erosModel.drawPolygon(center, radius, numberOfSides, interiorPolyData, boundaryPolyData);
 	    }
 	    
-	    public Element toXmlDomElement(Document dom)
-	    {
-	    	return null;
-	    }
-
-	    public void fromXmlDomElement(Element element, ErosModel erosModel)
-	    {
-	    }
-
 	    public String getClickStatusBarText()
 	    {
 	    	return type + ", Id = " + id + ", Diameter = " + 2.0*radius + " km";
@@ -241,17 +229,6 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
 	}
 
 
-
-
-	public Element toXmlDomElement(Document dom)
-    {
-    	return null;
-    }
-    
-    public void fromXmlDomElement(Element element)
-    {
-    }
-    
 	private void updatePolyData()
 	{
 		if (polygons.size() > 0)

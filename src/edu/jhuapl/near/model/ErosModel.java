@@ -51,7 +51,7 @@ public class ErosModel extends Model
     private vtkPolyDataMapper erosMapper;
     private boolean showLighting = true;
     private ArrayList<vtkProp> erosActors = new ArrayList<vtkProp>();
-    private vtkCellLocator cellLocator;
+    private vtksbCellLocator cellLocator;
     private vtkKdTreePointLocator pointLocator;
     private vtkFloatArray elevationValues;
     private vtkFloatArray gravAccValues;
@@ -64,14 +64,16 @@ public class ErosModel extends Model
     private ColoringType coloringType = ColoringType.NONE;
     private File defaultModelFile;
     private int resolutionLevel = 0;
+    private vtkGenericCell genericCell;
     
 	public ErosModel()
 	{
     	erosReader = new vtkPolyDataReader();
 		//normalsFilter = new vtkPolyDataNormals();
 		erosPolyData = new vtkPolyData();
-		cellLocator = new vtkCellLocator();
+		cellLocator = new vtksbCellLocator();
 		pointLocator = new vtkKdTreePointLocator();
+		genericCell = new vtkGenericCell();
 		
 		//defaultModelFile = ConvertResourceToFile.convertResourceToTempFile(this, "/edu/jhuapl/near/data/Eros_Dec2006_0.vtk");
 		defaultModelFile = ConvertResourceToFile.convertResourceToTempFile(this, "/edu/jhuapl/near/data/ver64q.vtk");
@@ -347,6 +349,24 @@ public class ErosModel extends Model
 		PolyDataUtil.shiftPolyLineInNormalDirectionOfPolyData(polyLine, erosPolyData, shiftAmount);
 	}
 	
+	/**
+	 * This returns the closest point to the model to pt. Note the returned point need
+	 * not be a vertex of the model and can lie anywhere on a plate.
+	 * @param pt
+	 * @return
+	 */
+	public double[] findClosestPoint(double[] pt)
+	{
+		double[] closestPoint = new double[3];
+		int[] cellId = new int[1];
+		int[] subId = new int[1];
+		double[] dist2 = new double[1];
+		
+		cellLocator.FindClosestPoint(pt, closestPoint, genericCell, cellId, subId, dist2);
+		
+		return closestPoint;
+	}
+	
 	public ArrayList<vtkProp> getProps() 
 	{
 		if (erosActor == null)
@@ -516,5 +536,23 @@ public class ErosModel extends Model
     public int getModelResolution()
     {
     	return resolutionLevel;
+    }
+    
+    public String getModelName()
+    {
+		switch(resolutionLevel)
+		{
+		case 0:
+			return "NEAR-A-MSI-5-EROSSHAPE-V1.0 ver64q";
+		case 1:
+			return "NEAR-A-MSI-5-EROSSHAPE-V1.0 ver128q";
+		case 2:
+			return "NEAR-A-MSI-5-EROSSHAPE-V1.0 ver256q";
+		case 3:
+			return "NEAR-A-MSI-5-EROSSHAPE-V1.0 ver512q";
+		}
+		
+		// Bug if we reach here
+		return null;
     }
 }

@@ -986,11 +986,7 @@ public class MSIImage extends Model implements PropertyChangeListener
 				double[] pcoords = new double[3];
 				int[] subId = new int[1];
 				int[] cellId = new int[1];
-				//System.out.println("A");
-				//cellLocator.testfunc();
-				//System.out.println("B");
 				int result = cellLocator.IntersectWithLine(spacecraftPosition, lookPt, tol, t, x, pcoords, subId, cellId, cell);
-				//System.out.println("C");
 						
 				//if (intersectPoints.GetNumberOfPoints() == 0)
 				//	System.out.println(i + " " + j + " " + intersectPoints.GetNumberOfPoints());

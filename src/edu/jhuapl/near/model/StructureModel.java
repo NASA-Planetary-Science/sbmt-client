@@ -1,8 +1,6 @@
 package edu.jhuapl.near.model;
 
 import java.io.*;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 import vtk.vtkProp;
 
@@ -17,8 +15,6 @@ public abstract class StructureModel extends Model
 {
 	public static abstract class Structure
 	{
-		public abstract Element toXmlDomElement(Document dom);
-	    public abstract void fromXmlDomElement(Element element, ErosModel erosModel);
 	    public abstract String getClickStatusBarText();
 	    public abstract int getId();
 	    public abstract String getName();

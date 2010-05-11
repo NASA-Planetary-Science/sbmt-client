@@ -74,6 +74,8 @@ public class NativeLibraryLoader
     		System.loadLibrary("vtkGeovisJava");
     		System.loadLibrary("vtkVolumeRendering");
     		System.loadLibrary("vtkVolumeRenderingJava");
+    		System.loadLibrary("vtksbUnsorted");
+    		System.loadLibrary("vtksbUnsortedJava");
     	}
     	else
     	{
@@ -110,5 +112,6 @@ public class NativeLibraryLoader
 		System.loadLibrary("vtkGenericFilteringJava");
 		System.loadLibrary("vtkIOJava");
 		System.loadLibrary("vtkImagingJava");
+		System.loadLibrary("vtksbUnsortedJava");
     }
 }

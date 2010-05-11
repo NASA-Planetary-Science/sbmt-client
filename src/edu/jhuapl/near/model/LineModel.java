@@ -4,18 +4,26 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.text.DecimalFormat;
 import java.util.*;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Result;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-
-import com.sun.org.apache.xml.internal.serialize.OutputFormat;
-import com.sun.org.apache.xml.internal.serialize.XMLSerializer;
 
 import edu.jhuapl.near.util.Point3D;
 import edu.jhuapl.near.util.LatLon;
@@ -49,13 +57,21 @@ public class LineModel extends StructureModel implements PropertyChangeListener
     private int highlightedStructure = -1;
     private int[] highlightColor = {0, 0, 255, 255};
 
-	static public String LINES = "lines";
+	private static String LINES = "lines";
 
+	private static int maxId = 0;
+
+	public static String PATH = "path";
+	public static String ID = "id";
+	public static String NAME = "name";
+	public static String VERTICES = "vertices";
+	public static String LENGTH = "length";
+	public static String SHAPE_MODEL_NAME = "shapemodel";
 	
-	public static class Line extends StructureModel.Structure
+    private static DecimalFormat decimalFormatter = new DecimalFormat("#.###");
+	
+	public class Line extends StructureModel.Structure
 	{
-		static protected int maxId = 0;
-		
 		public String name = "default";
 		public int id;
 		
@@ -70,12 +86,6 @@ public class LineModel extends StructureModel implements PropertyChangeListener
 		public ArrayList<Point3D> xyzPointList = new ArrayList<Point3D>();
 		public ArrayList<Integer> controlPointIds = new ArrayList<Integer>();
 		
-		static public String PATH = "path";
-		static public String ID = "id";
-		static public String NAME = "name";
-		static public String VERTICES = "vertices";
-	
-	    private static DecimalFormat decimalFormatter = new DecimalFormat("#.###");
 
 		public Line()
 		{
@@ -111,8 +121,9 @@ public class LineModel extends StructureModel implements PropertyChangeListener
 	    {
 	    	Element linEle = dom.createElement(PATH);
 	    	linEle.setAttribute(ID, String.valueOf(id));
-	    	linEle.setAttribute(NAME, String.valueOf(name));
-
+	    	linEle.setAttribute(NAME, name);
+	    	linEle.setAttribute(LENGTH, String.valueOf(getPathLength()));
+	    	
 	    	String vertices = "";
             int size = lat.size();
             
@@ -134,7 +145,7 @@ public class LineModel extends StructureModel implements PropertyChangeListener
 	    	return linEle;
 	    }
 
-	    public void fromXmlDomElement(Element element, ErosModel erosModel)
+	    public void fromXmlDomElement(Element element, String shapeModelName)
 	    {
 	    	lat.clear();
 	    	lon.clear();
@@ -162,6 +173,9 @@ public class LineModel extends StructureModel implements PropertyChangeListener
 	    		lon.add(Double.parseDouble(tokens[i++])*Math.PI/180.0);
 	    		rad.add(Double.parseDouble(tokens[i++]));
 	    		
+	    		if (shapeModelName == null || !shapeModelName.equals(erosModel.getModelName()))
+	    			shiftPointOnPathToClosestPointOnAsteroid(count);
+
 	    		controlPointIds.add(xyzPointList.size());
 	    		
 	    		// Note, this point will be replaced with the correct value
@@ -170,7 +184,7 @@ public class LineModel extends StructureModel implements PropertyChangeListener
 	    		xyzPointList.add(new Point3D(dummy));
 	    		
 	    		if (count > 0)
-	    			this.updateSegment(erosModel, count-1);
+	    			this.updateSegment(count-1);
 	    		
 	    		++count;
 	    	}
@@ -198,7 +212,7 @@ public class LineModel extends StructureModel implements PropertyChangeListener
 			return length;
 	    }
 	    
-	    public void updateSegment(ErosModel erosModel, int segment)
+	    public void updateSegment(int segment)
 	    {
     		LatLon ll1 = new LatLon(lat.get(segment), lon.get(segment), rad.get(segment));
     		LatLon ll2 = new LatLon(lat.get(segment+1), lon.get(segment+1), rad.get(segment+1));
@@ -251,6 +265,21 @@ public class LineModel extends StructureModel implements PropertyChangeListener
     		}
     		
 	    }
+
+		private void shiftPointOnPathToClosestPointOnAsteroid(int idx)
+		{
+			System.out.println("shifted point " + idx);
+			// When the resolution changes, the control points, might no longer
+			// be touching the asteroid. Therefore shift each control to the closest
+			// point on the asteroid.
+			LatLon llr = new LatLon(lat.get(idx), lon.get(idx), rad.get(idx));
+			double pt[] = GeometryUtil.latrec(llr);
+			double[] closestPoint = erosModel.findClosestPoint(pt);
+			LatLon ll = GeometryUtil.reclat(closestPoint);
+			lat.set(idx, ll.lat);
+			lon.set(idx, ll.lon);
+			rad.set(idx, ll.rad);
+		}
 	}
 
 	public LineModel(ErosModel erosModel)
@@ -270,6 +299,7 @@ public class LineModel extends StructureModel implements PropertyChangeListener
     public Element toXmlDomElement(Document dom)
     {
     	Element rootEle = dom.createElement(LINES);
+    	rootEle.setAttribute(SHAPE_MODEL_NAME, erosModel.getModelName());
 
 		for (Line lin : this.lines)
 		{
@@ -282,8 +312,12 @@ public class LineModel extends StructureModel implements PropertyChangeListener
     public void fromXmlDomElement(Element element)
     {
     	this.lines.clear();
-    	
-		NodeList nl = element.getElementsByTagName(Line.PATH);
+
+    	String shapeModelName = null;
+    	if (element.hasAttribute(SHAPE_MODEL_NAME))
+    		shapeModelName= element.getAttribute(SHAPE_MODEL_NAME);
+
+		NodeList nl = element.getElementsByTagName(PATH);
 		if(nl != null && nl.getLength() > 0)
 		{
 			for(int i = 0 ; i < nl.getLength();i++) 
@@ -292,7 +326,7 @@ public class LineModel extends StructureModel implements PropertyChangeListener
 
 				Line lin = new Line();
 				
-				lin.fromXmlDomElement(el, erosModel);
+				lin.fromXmlDomElement(el, shapeModelName);
 
 				this.lines.add(lin);
 			}
@@ -493,18 +527,18 @@ public class LineModel extends StructureModel implements PropertyChangeListener
         // If we're modifying the last vertex
         if (vertexId == numVertices - 1)
         {
-        	lin.updateSegment(erosModel, vertexId-1);
+        	lin.updateSegment(vertexId-1);
         }
         // If we're modifying the first vertex
         else if (vertexId == 0)
         {
-        	lin.updateSegment(erosModel, vertexId);
+        	lin.updateSegment(vertexId);
         }
         // If we're modifying a middle vertex
         else
         {
-        	lin.updateSegment(erosModel, vertexId-1);
-        	lin.updateSegment(erosModel, vertexId);
+        	lin.updateSegment(vertexId-1);
+        	lin.updateSegment(vertexId);
         }
         
         updatePolyData();
@@ -563,7 +597,7 @@ public class LineModel extends StructureModel implements PropertyChangeListener
         lin.controlPointIds.add(lin.xyzPointList.size()-1);
 
         if (lin.controlPointIds.size() >= 2)
-        	lin.updateSegment(erosModel, lin.lat.size()-2);
+        	lin.updateSegment(lin.lat.size()-2);
 
         updatePolyData();
         
@@ -623,12 +657,12 @@ public class LineModel extends StructureModel implements PropertyChangeListener
         	}
         	else if (currentLineVertex < lin.controlPointIds.size()-2)
         	{
-        		lin.updateSegment(erosModel, currentLineVertex);
-        		lin.updateSegment(erosModel, currentLineVertex+1);
+        		lin.updateSegment(currentLineVertex);
+        		lin.updateSegment(currentLineVertex+1);
         	}
         	else
         	{
-        		lin.updateSegment(erosModel, currentLineVertex);
+        		lin.updateSegment(currentLineVertex);
         	}
         }
 
@@ -780,13 +814,29 @@ public class LineModel extends StructureModel implements PropertyChangeListener
 
 		dom.appendChild(toXmlDomElement(dom));
 		
-		OutputFormat format = new OutputFormat(dom);
-		format.setIndenting(true);
+		try
+		{
+			Source source = new DOMSource(dom);
 
-		XMLSerializer serializer = new XMLSerializer(
-				new FileOutputStream(file), format);
+			OutputStream fout= new FileOutputStream(file);
+			Result result = new StreamResult(new OutputStreamWriter(fout, "utf-8"));
+			
+			TransformerFactory tf = TransformerFactory.newInstance();
+			tf.setAttribute("indent-number", new Integer(4));
+			
+			Transformer xformer = tf.newTransformer();
+			xformer.setOutputProperty(OutputKeys.INDENT, "yes");
 
-		serializer.serialize(dom);
+			xformer.transform(source, result);
+		}
+		catch (TransformerConfigurationException e)
+		{
+			e.printStackTrace();
+		}
+		catch (TransformerException e)
+		{
+			e.printStackTrace();
+		} 
 	}
 
 	public boolean supportsSelection()
@@ -869,7 +919,7 @@ public class LineModel extends StructureModel implements PropertyChangeListener
         			lin.xyzPointList.remove(id1+1);
         		}
                 lin.controlPointIds.remove(vertexId);
-        		lin.updateSegment(erosModel, vertexId-1);
+        		lin.updateSegment(vertexId-1);
         	}
         }
 
@@ -902,16 +952,16 @@ public class LineModel extends StructureModel implements PropertyChangeListener
         {
         	if (vertexId == 0)
         	{
-        		lin.updateSegment(erosModel, vertexId);
+        		lin.updateSegment(vertexId);
         	}
         	else if (currentLineVertex < lin.controlPointIds.size()-2)
         	{
-        		lin.updateSegment(erosModel, currentLineVertex);
-        		lin.updateSegment(erosModel, currentLineVertex+1);
+        		lin.updateSegment(currentLineVertex);
+        		lin.updateSegment(currentLineVertex+1);
         	}
         	else
         	{
-        		lin.updateSegment(erosModel, currentLineVertex);
+        		lin.updateSegment(currentLineVertex);
         	}
         }
 
@@ -930,19 +980,16 @@ public class LineModel extends StructureModel implements PropertyChangeListener
     	
     }
     */
-
+	
 	public void redrawAllStructures()
 	{
         for (Line lin : this.lines)
 		{
-    		// When the resolution changes, the control points, might no longer
-    		// be touching the asteroid. Therefore shift each control to the closest
-    		// point on the asteroid.
-        	for (int i=0; i<lin.controlPointIds.size()-1; ++i)
-        		;
+        	for (int i=0; i<lin.controlPointIds.size(); ++i)
+        		lin.shiftPointOnPathToClosestPointOnAsteroid(i);
         	
         	for (int i=0; i<lin.controlPointIds.size()-1; ++i)
-        		lin.updateSegment(erosModel, i);
+        		lin.updateSegment(i);
 		}
 
 		updatePolyData();

@@ -34,9 +34,9 @@ public class PolyDataUtil
 	private static vtkIdList idList_f4;
 	private static vtkCleanPolyData cleanPoly_f4;
 	private static vtkPolyDataConnectivityFilter connectivityFilter_f4;
-	private static vtkPoints intersectPoints_f4;
-	private static vtkIdList intersectCells_f4;
-	private static vtkOBBTree cellLocator_f4;
+	//private static vtkPoints intersectPoints_f4;
+	//private static vtkIdList intersectCells_f4;
+	private static vtksbCellLocator cellLocator_f4;
 	public static vtkPolyData computeFrustumIntersection(
 			vtkPolyData polyData,
 			vtkAbstractCellLocator locator,
@@ -217,7 +217,7 @@ public class PolyDataUtil
 		
 		tmpPolyData_f4.BuildLinks(0);
 
-		if (cellLocator_f4 == null) cellLocator_f4 = new vtkOBBTree();
+		if (cellLocator_f4 == null) cellLocator_f4 = new vtksbCellLocator();
         cellLocator_f4.SetDataSet(tmpPolyData_f4);
         cellLocator_f4.CacheCellBoundsOn();
         cellLocator_f4.AutomaticOn();
@@ -225,8 +225,10 @@ public class PolyDataUtil
         //cellLocator.SetNumberOfCellsPerNode(5);
         cellLocator_f4.BuildLocator();
 
-		if (intersectPoints_f4 == null) intersectPoints_f4 = new vtkPoints();
-		if (intersectCells_f4 == null) intersectCells_f4 = new vtkIdList();
+		vtkGenericCell cell = new vtkGenericCell();
+
+		//if (intersectPoints_f4 == null) intersectPoints_f4 = new vtkPoints();
+		//if (intersectCells_f4 == null) intersectCells_f4 = new vtkIdList();
 
 		points = tmpPolyData_f4.GetPoints();
 		int numPoints = points.GetNumberOfPoints();
@@ -238,34 +240,27 @@ public class PolyDataUtil
 		{
 			double[] sourcePnt = points.GetPoint(i);
 
-			intersectPoints_f4.Reset();
-			intersectCells_f4.Reset();
+			//intersectPoints_f4.Reset();
+			//intersectCells_f4.Reset();
 			
-//			locator.IntersectWithLine(origin, sourcePnt, intersectPoints_f4, null);
-			cellLocator_f4.IntersectWithLine(origin, sourcePnt, intersectPoints_f4, intersectCells_f4);
-//			locator.IntersectWithLine(origin, sourcePnt, intersectPoints_f4, intersectCells_f4);
+			//cellLocator_f4.IntersectWithLine(origin, sourcePnt, intersectPoints_f4, intersectCells_f4);
+			double tol = 1e-6;
+			double[] t = new double[1];
+			double[] x = new double[3];
+			double[] pcoords = new double[3];
+			int[] subId = new int[1];
+			int[] cell_id = new int[1];
+			int result = cellLocator_f4.IntersectWithLine(origin, sourcePnt, tol, t, x, pcoords, subId, cell_id, cell);
 			
-			if (intersectPoints_f4.GetNumberOfPoints() >= 1)
+			if (result == 1)
 			{
 				tmpPolyData_f4.GetPointCells(i, idList_f4);
 				int numPtCells = idList_f4.GetNumberOfIds();
 
-				// If there's only 1 intersection point make sure the intersection point is
-				// not sourcePnt
-				if (intersectPoints_f4.GetNumberOfPoints() == 1)
+				if (idList_f4.IsId(cell_id[0]) >= 0)
 				{
-//					double[] pt = intersectPoints_f4.GetPoint(0);
-//					System.out.println(i + " " + intersectCells_f4.GetId(0) + " " + intersectCells_f4.GetNumberOfIds() + " " + Math.sqrt(math.Distance2BetweenPoints(sourcePnt, pt)));
-//					if (Math.sqrt(math.Distance2BetweenPoints(sourcePnt, pt)) < 1.0e-3)
-//					{
-//						continue;
-//					}
-
-					if (idList_f4.IsId(intersectCells_f4.GetId(0)) >= 0)
-					{
-//						System.out.println("Too close  " + i);
-						continue;
-					}
+					//System.out.println("Too close  " + i);
+					continue;
 				}
 				
 				for (int j=0; j<numPtCells; ++j)
