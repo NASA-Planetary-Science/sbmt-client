@@ -500,6 +500,104 @@ public class MSIImage extends Model implements PropertyChangeListener
 	}
 	*/
 	
+	static public void loadImageInfo(
+			String lblFilename,
+			String[] startTime,
+			String[] stopTime,
+			double[] spacecraftPosition,
+			double[] sunPosition,
+			double[] frustum1,
+			double[] frustum2,
+			double[] frustum3,
+			double[] frustum4) throws NumberFormatException, IOException
+	{
+    	FileInputStream fs = null;
+		try {
+			fs = new FileInputStream(lblFilename);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		InputStreamReader isr = new InputStreamReader(fs);
+		BufferedReader in = new BufferedReader(isr);
+
+		String str;
+		while ((str = in.readLine()) != null)
+		{
+		    StringTokenizer st = new StringTokenizer(str);
+		    while (st.hasMoreTokens()) 
+		    {
+		    	String token = st.nextToken();
+		    	if (START_TIME.equals(token))
+		    	{
+		    		st.nextToken();
+		    		startTime[0] = st.nextToken();
+		    	}
+		    	if (STOP_TIME.equals(token))
+		    	{
+		    		st.nextToken();
+		    		stopTime[0] = st.nextToken();
+		    	}
+		    	if (SPACECRAFT_POSITION.equals(token) ||
+		    			MSI_FRUSTUM1.equals(token) ||
+		    			MSI_FRUSTUM2.equals(token) ||
+		    			MSI_FRUSTUM3.equals(token) ||
+		    			MSI_FRUSTUM4.equals(token) ||
+		    			SUN_POSITION_LT.equals(token))
+		    	{
+		    		st.nextToken();
+		    		st.nextToken();
+		    		double x = Double.parseDouble(st.nextToken());
+		    		st.nextToken();
+		    		double y = Double.parseDouble(st.nextToken());
+		    		st.nextToken();
+		    		double z = Double.parseDouble(st.nextToken());
+		    		if (SPACECRAFT_POSITION.equals(token))
+		    		{
+		    			spacecraftPosition[0] = x;
+		    			spacecraftPosition[1] = y;
+		    			spacecraftPosition[2] = z;
+		    		}
+		    		else if (MSI_FRUSTUM1.equals(token))
+		    		{
+		    			frustum1[0] = x;
+		    			frustum1[1] = y;
+		    			frustum1[2] = z;
+		    			GeometryUtil.vhat(frustum1, frustum1);
+		    		}
+		    		else if (MSI_FRUSTUM2.equals(token))
+		    		{
+		    			frustum2[0] = x;
+		    			frustum2[1] = y;
+		    			frustum2[2] = z;
+		    			GeometryUtil.vhat(frustum2, frustum2);
+		    		}
+		    		else if (MSI_FRUSTUM3.equals(token))
+		    		{
+		    			frustum3[0] = x;
+		    			frustum3[1] = y;
+		    			frustum3[2] = z;
+		    			GeometryUtil.vhat(frustum3, frustum3);
+		    		}
+		    		else if (MSI_FRUSTUM4.equals(token))
+		    		{
+		    			frustum4[0] = x;
+		    			frustum4[1] = y;
+		    			frustum4[2] = z;
+		    			GeometryUtil.vhat(frustum4, frustum4);
+		    		}
+		    		if (SUN_POSITION_LT.equals(token))
+		    		{
+		    			sunPosition[0] = x;
+		    			sunPosition[1] = y;
+		    			sunPosition[2] = z;
+		    		}
+		    	}
+		    }
+		}
+
+		in.close();
+	}
+
 	private void loadImageInfo() throws NumberFormatException, IOException
 	{
 		String lblFilename = fullpath.substring(0, fullpath.length()-4) + "_DDR.LBL";
@@ -639,6 +737,9 @@ public class MSIImage extends Model implements PropertyChangeListener
 		vtkPolyData tmp = erosModel.computeFrustumIntersection(spacecraftPosition, 
 				frustum1, frustum3, frustum4, frustum2);
 
+		if (tmp == null)
+			return;
+		
 		footprint.DeepCopy(tmp);
 		
         int numberOfPoints = footprint.GetNumberOfPoints();
@@ -699,6 +800,9 @@ public class MSIImage extends Model implements PropertyChangeListener
 	{
 		generateFootprint();
 
+		if (footprint.GetNumberOfPoints() == 0)
+			return null;
+		
 		vtkFeatureEdges edgeExtracter = new vtkFeatureEdges();
         edgeExtracter.SetInput(footprint);
         edgeExtracter.BoundaryEdgesOn();
@@ -1053,7 +1157,47 @@ public class MSIImage extends Model implements PropertyChangeListener
 
 		return data;
 	}
-	
+
+	public String generateBackplanesLabel()
+	{
+		StringBuffer str = new StringBuffer("");
+
+		String nl = System.getProperty("line.separator");
+
+		str.append("PDS_VERSION_ID               = PDS3").append(nl);
+		str.append("").append(nl);
+		str.append("/* DDR Identification */").append(nl);
+		str.append("").append(nl);
+		str.append("INSTRUMENT_HOST_NAME         = \"NEAR EARTH ASTEROID RENDEZVOUS\"").append(nl);
+		str.append("SPACECRAFT_ID                = NEAR").append(nl);
+		str.append("INSTRUMENT_NAME              = \"MULTI-SPECTRAL IMAGER\"").append(nl);
+		str.append("INSTRUMENT_ID                = MSI").append(nl);
+		str.append("TARGET_NAME                  = EROS").append(nl);
+		str.append("PRODUCT_TYPE                 = DDR").append(nl);
+		str.append("PRODUCT_CREATION_TIME        = ").append(nl);
+		str.append("START_TIME                   = ").append(nl);
+		str.append("STOP_TIME                    = ").append(nl);
+		str.append("SPACECRAFT_CLOCK_START_COUNT = ").append(nl);
+		str.append("SPACECRAFT_CLOCK_STOP_COUNT  = ").append(nl);
+		str.append("").append(nl);
+		str.append("").append(nl);
+		str.append("").append(nl);
+		str.append("").append(nl);
+		str.append("").append(nl);
+		str.append("").append(nl);
+		str.append("").append(nl);
+		str.append("").append(nl);
+		str.append("").append(nl);
+		str.append("").append(nl);
+		str.append("").append(nl);
+		str.append("").append(nl);
+		str.append("").append(nl);
+		str.append("").append(nl);
+		str.append("").append(nl);
+		str.append("").append(nl);
+		return str.toString();
+	}
+
 	public int index(int i, int j, int k)
 	{
 		return ((k * IMAGE_HEIGHT + j) * IMAGE_WIDTH + i);
@@ -1101,4 +1245,15 @@ public class MSIImage extends Model implements PropertyChangeListener
 	{
 		return footprint;
 	}
+
+	public void Delete()
+    {
+		displayedImage.Delete();
+    	rawImage.Delete();
+    	footprint.Delete();
+    	shiftedFootprint.Delete();
+    	textureCoords.Delete();
+    	normalsFilter.Delete();
+    }
+	
 }

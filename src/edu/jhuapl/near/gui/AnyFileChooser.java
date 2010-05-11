@@ -52,7 +52,14 @@ public class AnyFileChooser
     
     public static File showSaveDialog(Component parent, String title)
     {
+    	return showSaveDialog(parent, title, null);
+    }
+    
+    public static File showSaveDialog(Component parent, String title, String defaultName)
+    {
     	fc.setDialogTitle(title);
+    	if (defaultName != null)
+    		fc.setSelectedFile(new File(defaultName));
     	int returnVal = fc.showSaveDialog(parent);
         if (returnVal == JFileChooser.APPROVE_OPTION) 
         {

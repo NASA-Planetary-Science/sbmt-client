@@ -34,10 +34,10 @@ public class MSIBoundaryGenerator
 		if (!file.exists())
 			return false;
 
-		name = line.substring(0, line.length()-4) + "_FOOTPRINT.VTK";
-		file = new File(name);
-		if (!file.exists())
-			return false;
+		//name = line.substring(0, line.length()-4) + "_FOOTPRINT.VTK";
+		//file = new File(name);
+		//if (!file.exists())
+		//	return false;
 
 		return true;
 	}
@@ -45,11 +45,14 @@ public class MSIBoundaryGenerator
 	private static void generateMSIBoundaries(ArrayList<String> msiFiles) throws IOException, FitsException
     {
 		vtkPolyDataWriter writer = new vtkPolyDataWriter();
-    	int count = 0;
-    	for (String filename : msiFiles)
+
+		int count = 0;
+    	for (int i=msiFiles.size()-1; i >= 0; --i)
+    	//for (String filename : msiFiles)
     	{
+    		String filename = msiFiles.get(i);
 			boolean filesExist = checkIfMsiFilesExist(filename);
-			if (filesExist == true)
+			if (filesExist == false)
 				continue;
 
     		System.out.println("\n\n");
@@ -82,15 +85,25 @@ public class MSIBoundaryGenerator
 			if (boundary == null || boundary.GetNumberOfPoints() == 0)
 			{
 				System.err.println("Error: Boundary generation failed");
+		        image.Delete();
+		        System.gc();
+		        System.out.println("deleted " + vtkGlobalJavaHash.GC());
 				continue;
 			}
 			
 	        String vtkfile = filename.substring(0, filename.length()-4) + "_BOUNDARY_RES" + resolutionLevel + ".VTK";
 
+	        boundary.GetPointData().Reset();
+	        boundary.GetCellData().Reset();
+
 	        writer.SetInput(boundary);
 	        writer.SetFileName(vtkfile);
 	        writer.SetFileTypeToBinary();
 	        writer.Write();
+	        
+	        image.Delete();
+	        System.gc();
+	        System.out.println("deleted " + vtkGlobalJavaHash.GC());
     	}
     }
 

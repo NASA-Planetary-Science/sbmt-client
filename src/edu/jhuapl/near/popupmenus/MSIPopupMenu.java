@@ -267,7 +267,10 @@ public class MSIPopupMenu extends PopupMenu
 	{
 		public void actionPerformed(ActionEvent e) 
 		{
-			File file = AnyFileChooser.showSaveDialog(invoker, "Save Backplanes");
+			String defaultName = currentImageOrBoundary.substring(0,currentImageOrBoundary.length()-4) + "_DDR.IMG";
+			if (currentImageOrBoundary.endsWith("_BOUNDARY.VTK"))
+				defaultName = currentImageOrBoundary.substring(0, currentImageOrBoundary.length()-13) + "_DDR.IMG";
+			File file = AnyFileChooser.showSaveDialog(invoker, "Save Backplanes", defaultName);
 
 			try 
 			{

@@ -43,7 +43,7 @@ public class MSIFootprintGenerator
     	for (String filename : msiFiles)
     	{
 			boolean filesExist = checkIfMsiFilesExist(filename);
-			if (filesExist == true)
+			if (filesExist == false)
 				continue;
 
 			System.out.println("starting msi " + count++);
@@ -81,6 +81,9 @@ public class MSIFootprintGenerator
 			}
 			
 	        String vtkfile = filename.substring(0, filename.length()-4) + "_FOOTPRINT.VTK";
+
+	        footprint.GetPointData().Reset();
+	        footprint.GetCellData().Reset();
 
 	        writer.SetInput(footprint);
 	        writer.SetFileName(vtkfile);
