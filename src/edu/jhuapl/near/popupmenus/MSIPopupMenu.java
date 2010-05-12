@@ -34,6 +34,14 @@ public class MSIPopupMenu extends PopupMenu
     private ModelInfoWindowManager infoPanelManager;
     private vtkRenderWindowPanel renWin;
     
+    // Is the popup over and image of boundary
+    private enum MSIType
+    {
+    	IMAGE,
+    	BOUNDARY
+    }
+    MSIType msiType;
+    
     /**
      * 
      * @param modelManager
@@ -112,8 +120,9 @@ public class MSIPopupMenu extends PopupMenu
 			MSIImageCollection model = (MSIImageCollection)modelManager.getModel(ModelManager.MSI_IMAGES);
 			try 
 			{
+				System.out.println(currentImageOrBoundary);
 				String name = currentImageOrBoundary;
-				if (name.endsWith("_BOUNDARY.VTK"))
+				if (msiType == MSIType.BOUNDARY)
 					name = name.substring(0, name.length()-13) + ".FIT";
 				
 				if (showRemoveImageIn3DMenuItem.getText().startsWith("Show"))
@@ -359,6 +368,7 @@ public class MSIPopupMenu extends PopupMenu
 			{
 				MSIBoundaryCollection msiBoundaries = (MSIBoundaryCollection)modelManager.getModel(ModelManager.MSI_BOUNDARY);
 				String name = msiBoundaries.getBoundaryName((vtkActor)pickedProp);
+				msiType = MSIType.BOUNDARY;
 				setCurrentImage(name);
 				show(e.getComponent(), e.getX(), e.getY());
 			}
@@ -366,6 +376,7 @@ public class MSIPopupMenu extends PopupMenu
 			{
 				MSIImageCollection msiImages = (MSIImageCollection)modelManager.getModel(ModelManager.MSI_IMAGES);
 				String name = msiImages.getImageName((vtkActor)pickedProp);
+				msiType = MSIType.IMAGE;
 				setCurrentImage(name);
 				show(e.getComponent(), e.getX(), e.getY());
 			}

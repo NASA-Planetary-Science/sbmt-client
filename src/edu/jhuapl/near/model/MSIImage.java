@@ -146,8 +146,8 @@ public class MSIImage extends Model implements PropertyChangeListener
 		
 		String imgLblFilename = filename.substring(0, filename.length()-4) + "_DDR.LBL";
 		FileCache.getFileFromServer(imgLblFilename);
-		String footprintFilename = filename.substring(0, filename.length()-4) + "_FOOTPRINT.VTK";
-		FileCache.getFileFromServer(footprintFilename);
+		//String footprintFilename = filename.substring(0, filename.length()-4) + "_FOOTPRINT.VTK";
+		//FileCache.getFileFromServer(footprintFilename);
 
 		this.erosModel = eros;
 		this.initialize(fitFile);
@@ -500,6 +500,10 @@ public class MSIImage extends Model implements PropertyChangeListener
 	}
 	*/
 	
+	/**
+	 * 	Make this static so it can be called without needing access
+	 * 	to and MSIImage object. 
+	 */
 	static public void loadImageInfo(
 			String lblFilename,
 			String[] startTime,
@@ -602,6 +606,23 @@ public class MSIImage extends Model implements PropertyChangeListener
 	{
 		String lblFilename = fullpath.substring(0, fullpath.length()-4) + "_DDR.LBL";
 
+		String[] start = new String[1];
+		String[] stop = new String[1];
+		loadImageInfo(
+				lblFilename,
+				start,
+				stop,
+				spacecraftPosition,
+				sunPosition,
+				frustum1,
+				frustum2,
+				frustum3,
+				frustum4);
+		
+		startTime = start[0];
+		stopTime = stop[0];
+		
+		/*
     	FileInputStream fs = null;
 		try {
 			fs = new FileInputStream(lblFilename);
@@ -687,6 +708,7 @@ public class MSIImage extends Model implements PropertyChangeListener
 		}
 
 		in.close();
+		*/
 	}
 
     

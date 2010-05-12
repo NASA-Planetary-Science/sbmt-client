@@ -129,7 +129,7 @@ public class ErosModel extends Model
 		return erosPolyData;
 	}
 	
-	public vtkCellLocator getLocator()
+	public vtksbCellLocator getLocator()
 	{
 		return cellLocator;
 	}
