@@ -1158,15 +1158,85 @@ public class MSIImage extends Model implements PropertyChangeListener
 		return data;
 	}
 
-	public String generateBackplanesLabel()
+	public String generateBackplanesLabel() throws IOException
 	{
+		String lblFilename = fullpath.substring(0, fullpath.length()-4) + "_DDR.LBL";
+
+    	FileInputStream fs = null;
+		try {
+			fs = new FileInputStream(lblFilename);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+			return "";
+		}
+		InputStreamReader isr = new InputStreamReader(fs);
+		BufferedReader in = new BufferedReader(isr);
+
+		StringBuffer strbuf = new StringBuffer("");
+
+		String str;
+		while ((str = in.readLine()) != null)
+		{
+			// The software name and version in the downloaded ddr is not correct
+			if (str.trim().startsWith("SOFTWARE_NAME"))
+			{
+				strbuf.append("SOFTWARE_NAME                = \"Small Body Mapping Tool\"\r\n");
+				continue;
+			}
+
+			if (str.trim().startsWith("SOFTWARE_VERSION_ID"))
+			{
+				strbuf.append("SOFTWARE_VERSION_ID          = \"2.0\"\r\n");
+				continue;
+			}
+
+			// The planes in the downloaded ddr are all wrong
+			if (str.trim().startsWith("BANDS"))
+			{
+				strbuf.append("    BANDS                    = 12\r\n");
+				strbuf.append("    BAND_STORAGE_TYPE        = BAND_SEQUENTIAL\r\n");
+				strbuf.append("    BAND_NAME                = (\"MSI pixel value\",\r\n");
+				strbuf.append("                                \"x coordinate of center of pixel, body fixed coordinate system, km\",\r\n");
+				strbuf.append("                                \"y coordinate of center of pixel, body fixed coordinate system, km\",\r\n");
+				strbuf.append("                                \"z coordinate of center of pixel, body fixed coordinate system, km\",\r\n");
+				strbuf.append("                                \"Latitude, deg\",\r\n");
+				strbuf.append("                                \"Longitude, deg\",\r\n");
+				strbuf.append("                                \"Distance from center of body, km\",\r\n");
+				strbuf.append("                                \"Incidence angle, measured against the plate model, deg\",\r\n");
+				strbuf.append("                                \"Emission angle, measured against the plate model, deg\",\r\n");
+				strbuf.append("                                \"Phase angle, measured against the plate model, deg\",\r\n");
+				strbuf.append("                                \"Horizontal pixel scale, km per pixel\",\r\n");
+				strbuf.append("                                \"Vertical pixel scale, km per pixel\")\r\n");
+				strbuf.append("\r\n");
+				strbuf.append("  END_OBJECT                 = IMAGE\r\n");
+				strbuf.append("\r\n");
+				strbuf.append("END_OBJECT                   = FILE\r\n");
+				strbuf.append("\r\n");
+				strbuf.append("END\r\n");
+			
+				break;
+			}
+
+			strbuf.append(str).append("\r\n");
+			
+			// Add the shape model used for generating the ddr right aftet the sun position
+			// since this is not in the label file on the server
+			if (str.trim().startsWith("SUN_POSITION_LT"))
+				strbuf.append("\r\nSHAPE_MODEL = \"" + erosModel.getModelName() + "\"\r\n");
+		}
+		
+		return strbuf.toString();
+		
+		/*
+		 TODO consider generating the entire lbl file on the fly
+		 
 		StringBuffer str = new StringBuffer("");
 
 		String nl = System.getProperty("line.separator");
 
 		str.append("PDS_VERSION_ID               = PDS3").append(nl);
 		str.append("").append(nl);
-		str.append("/* DDR Identification */").append(nl);
+		str.append("/* DDR Identification *//*").append(nl);
 		str.append("").append(nl);
 		str.append("INSTRUMENT_HOST_NAME         = \"NEAR EARTH ASTEROID RENDEZVOUS\"").append(nl);
 		str.append("SPACECRAFT_ID                = NEAR").append(nl);
@@ -1180,22 +1250,9 @@ public class MSIImage extends Model implements PropertyChangeListener
 		str.append("SPACECRAFT_CLOCK_START_COUNT = ").append(nl);
 		str.append("SPACECRAFT_CLOCK_STOP_COUNT  = ").append(nl);
 		str.append("").append(nl);
-		str.append("").append(nl);
-		str.append("").append(nl);
-		str.append("").append(nl);
-		str.append("").append(nl);
-		str.append("").append(nl);
-		str.append("").append(nl);
-		str.append("").append(nl);
-		str.append("").append(nl);
-		str.append("").append(nl);
-		str.append("").append(nl);
-		str.append("").append(nl);
-		str.append("").append(nl);
-		str.append("").append(nl);
-		str.append("").append(nl);
-		str.append("").append(nl);
+		
 		return str.toString();
+		*/
 	}
 
 	public int index(int i, int j, int k)

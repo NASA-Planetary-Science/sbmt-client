@@ -542,6 +542,14 @@ public class PolyDataUtil
 		//return outputPolyData_f1;
 	}
 
+	static vtkPlane cutPlane_f5;
+	static vtkCutter cutPolyData_f5;
+	static vtkPlane clipPlane1_f5;
+	static vtkPlane clipPlane2_f5;
+	static vtkClipPolyData clipPolyData1_f5;
+	static vtkClipPolyData clipPolyData2_f5;
+	static vtkPolyDataConnectivityFilter connectivityFilter_f5;
+	static vtkPolyData polyLine_f5;
 	public static vtkPolyData drawPathOnPolyData(
 			vtkPolyData polyData,
 			vtkAbstractPointLocator pointLocator,
@@ -566,46 +574,55 @@ public class PolyDataUtil
 		math.Cross(vec1, avgNormal, normal);
 		GeometryUtil.vhat(normal, normal);
 		
-		vtkPlane cutPlane = new vtkPlane();
-		cutPlane.SetOrigin(pt1);
-		cutPlane.SetNormal(normal);
+		if (cutPlane_f5 == null)
+			cutPlane_f5 = new vtkPlane();
+		cutPlane_f5.SetOrigin(pt1);
+		cutPlane_f5.SetNormal(normal);
 
-		vtkCutter cutPolyData = new vtkCutter();
-		cutPolyData.SetInput(polyData);
-		cutPolyData.SetCutFunction(cutPlane);
-		cutPolyData.Update();
+		if (cutPolyData_f5 == null)
+			cutPolyData_f5 = new vtkCutter();
+		cutPolyData_f5.SetInput(polyData);
+		cutPolyData_f5.SetCutFunction(cutPlane_f5);
+		cutPolyData_f5.Update();
 		
 		// Clip off from the two points and in the opposite direction
 
-		vtkPlane clipPlane1 = new vtkPlane();
-		clipPlane1.SetOrigin(pt1);
-		clipPlane1.SetNormal(vec1);
+		if (clipPlane1_f5 == null)
+			clipPlane1_f5 = new vtkPlane();
+		clipPlane1_f5.SetOrigin(pt1);
+		clipPlane1_f5.SetNormal(vec1);
+
+		if (clipPlane2_f5 == null)
+			clipPlane2_f5 = new vtkPlane();
+		clipPlane2_f5.SetOrigin(pt2);
+		clipPlane2_f5.SetNormal(vec2);
+
+		if (clipPolyData1_f5 == null)
+			clipPolyData1_f5 = new vtkClipPolyData();
+		clipPolyData1_f5.SetInputConnection(cutPolyData_f5.GetOutputPort());
+		clipPolyData1_f5.SetClipFunction(clipPlane1_f5);
+		clipPolyData1_f5.SetInsideOut(1);
 		
-		vtkPlane clipPlane2 = new vtkPlane();
-		clipPlane2.SetOrigin(pt2);
-		clipPlane2.SetNormal(vec2);
+		if (clipPolyData2_f5 == null)
+			clipPolyData2_f5 = new vtkClipPolyData();
+		clipPolyData2_f5.SetInputConnection(clipPolyData1_f5.GetOutputPort());
+		clipPolyData2_f5.SetClipFunction(clipPlane2_f5);
+		clipPolyData2_f5.SetInsideOut(1);
+		clipPolyData2_f5.Update();
 
-		vtkClipPolyData clipPolyData1 = new vtkClipPolyData();
-		clipPolyData1.SetInputConnection(cutPolyData.GetOutputPort());
-		clipPolyData1.SetClipFunction(clipPlane1);
-		clipPolyData1.SetInsideOut(1);
-		vtkClipPolyData clipPolyData2 = new vtkClipPolyData();
-		clipPolyData2.SetInputConnection(clipPolyData1.GetOutputPort());
-		clipPolyData2.SetClipFunction(clipPlane2);
-		clipPolyData2.SetInsideOut(1);
-		clipPolyData2.Update();
-
-		vtkPolyDataConnectivityFilter connectivityFilter = new vtkPolyDataConnectivityFilter();
-		connectivityFilter.SetInputConnection(clipPolyData2.GetOutputPort());
-		connectivityFilter.SetExtractionModeToClosestPointRegion();
-		connectivityFilter.SetClosestPoint(pt1);
-		connectivityFilter.Update();
+		if (connectivityFilter_f5 == null)
+			connectivityFilter_f5 = new vtkPolyDataConnectivityFilter();
+		connectivityFilter_f5.SetInputConnection(clipPolyData2_f5.GetOutputPort());
+		connectivityFilter_f5.SetExtractionModeToClosestPointRegion();
+		connectivityFilter_f5.SetClosestPoint(pt1);
+		connectivityFilter_f5.Update();
 
 		
-		vtkPolyData polyLine = new vtkPolyData();
-		polyLine.DeepCopy(connectivityFilter.GetOutput());
+		if (polyLine_f5 == null)
+			polyLine_f5 = new vtkPolyData();
+		polyLine_f5.DeepCopy(connectivityFilter_f5.GetOutput());
 
-		boolean okay = convertLinesToPolyLine(polyLine);
+		boolean okay = convertLinesToPolyLine(polyLine_f5);
 		//System.out.println("number points: " + polyLine.GetNumberOfPoints());
 		
         //vtkPolyDataWriter writer = new vtkPolyDataWriter();
@@ -614,7 +631,7 @@ public class PolyDataUtil
         //writer.Write();
 
 		if (okay)
-			return polyLine;
+			return polyLine_f5;
 		else
 			return null;
 	}
@@ -682,6 +699,10 @@ public class PolyDataUtil
 		polyLine.Modified();
 	}
 	
+	
+	static vtkIdList idList_f6;
+	static vtkPoints points_f6;
+	static vtkCellArray new_lines_f6;
 	/** 
 	 * The boundary generated in getImageBorder is great, unfortunately the
 	 * border consists of many lines of 2 vertices each. We, however, need a
@@ -785,10 +806,11 @@ public class PolyDataUtil
 			}
 		}
 		
-        vtkIdList idList = new vtkIdList();
+		if (idList_f6 == null)
+			idList_f6 = new vtkIdList();
         IdPair line = lines.get(0);
-        idList.InsertNextId(line.id1);
-        idList.InsertNextId(line.id2);
+        idList_f6.InsertNextId(line.id1);
+        idList_f6.InsertNextId(line.id2);
         
         for (int i=2; i<numPoints; ++i)
         {
@@ -800,14 +822,14 @@ public class PolyDataUtil
         		IdPair nextLine = lines.get(j);
         		if (id == nextLine.id1)
         		{
-        			idList.InsertNextId(nextLine.id2);
+        			idList_f6.InsertNextId(nextLine.id2);
         			
         			line = nextLine;
         			break;
         		}
         		else if (id == nextLine.id2 && line.id1 != nextLine.id1)
         		{
-        			idList.InsertNextId(nextLine.id1);
+        			idList_f6.InsertNextId(nextLine.id1);
 
         			// swap the ids
         			int tmp = nextLine.id1;
@@ -838,37 +860,40 @@ public class PolyDataUtil
         // If the following is true, that means the polyline is a closed loop,
         // so add the first id to close it.
         if (lines_orig.GetNumberOfCells() == points_orig.GetNumberOfPoints())
-        	idList.InsertNextId(idList.GetId(0));
+        	idList_f6.InsertNextId(idList_f6.GetId(0));
         
         // It would be nice if the points were in the order they are drawn rather
         // than some other arbitrary order. Therefore reorder the points so that
         // the id list will just be increasing numbers in order
-        vtkPoints points = new vtkPoints();
-        points.SetNumberOfPoints(numPoints);
+        if (points_f6 == null)
+        	points_f6 = new vtkPoints();
+        points_f6.SetNumberOfPoints(numPoints);
         for (int i=0; i<numPoints; ++i)
         {
-        	int id = idList.GetId(i);
-        	points.SetPoint(i, points_orig.GetPoint(id));
+        	int id = idList_f6.GetId(i);
+        	points_f6.SetPoint(i, points_orig.GetPoint(id));
         }
         for (int i=0; i<numPoints; ++i)
         {
-        	idList.SetId(i, i);
+        	idList_f6.SetId(i, i);
         }
 
         // Again, if the following is true, that means the polyline is a closed loop,
         // so add the first id to close it.
         if (lines_orig.GetNumberOfCells() == points_orig.GetNumberOfPoints())
-        	idList.SetId(numPoints, 0);
+        	idList_f6.SetId(numPoints, 0);
         
     	polyline.SetPoints(null);
-    	polyline.SetPoints(points);
+    	polyline.SetPoints(points_f6);
     	
         //System.out.println("num points: " + numPoints);
         //System.out.println("num ids: " + idList.GetNumberOfIds());
         polyline.SetLines(null);
-        vtkCellArray new_lines = new vtkCellArray();
-        new_lines.InsertNextCell(idList);
-        polyline.SetLines(new_lines);
+        
+        if (new_lines_f6 == null)
+        	new_lines_f6 = new vtkCellArray();
+        new_lines_f6.InsertNextCell(idList_f6);
+        polyline.SetLines(new_lines_f6);
         
         return true;
 	}

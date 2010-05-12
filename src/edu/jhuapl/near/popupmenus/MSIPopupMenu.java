@@ -267,10 +267,12 @@ public class MSIPopupMenu extends PopupMenu
 	{
 		public void actionPerformed(ActionEvent e) 
 		{
+			// First generate the DDR
+			
 			String defaultName = currentImageOrBoundary.substring(0,currentImageOrBoundary.length()-4) + "_DDR.IMG";
 			if (currentImageOrBoundary.endsWith("_BOUNDARY.VTK"))
 				defaultName = currentImageOrBoundary.substring(0, currentImageOrBoundary.length()-13) + "_DDR.IMG";
-			File file = AnyFileChooser.showSaveDialog(invoker, "Save Backplanes", defaultName);
+			File file = AnyFileChooser.showSaveDialog(invoker, "Save Backplanes DDR", defaultName);
 
 			try 
 			{
@@ -308,6 +310,43 @@ public class MSIPopupMenu extends PopupMenu
 						JOptionPane.ERROR_MESSAGE);
 				ex.printStackTrace();
 			}
+
+			// Then generate the LBL file
+			
+			defaultName = currentImageOrBoundary.substring(0,currentImageOrBoundary.length()-4) + "_DDR.LBL";
+			if (currentImageOrBoundary.endsWith("_BOUNDARY.VTK"))
+				defaultName = currentImageOrBoundary.substring(0, currentImageOrBoundary.length()-13) + "_DDR.LBL";
+			file = AnyFileChooser.showSaveDialog(invoker, "Save Backplanes Label", defaultName);
+
+			try 
+			{
+				if (file != null)
+				{
+					OutputStream out = new FileOutputStream(file);
+
+					String name = currentImageOrBoundary;
+					if (name.endsWith("_BOUNDARY.VTK"))
+						name = name.substring(0, name.length()-13) + ".FIT";
+
+					ErosModel eros = (ErosModel)modelManager.getModel(ModelManager.EROS);
+					MSIImage image = MSIImage.MSIImageFactory.createImage(name, eros);
+
+					String lblstr = image.generateBackplanesLabel();
+
+					byte[] bytes = lblstr.getBytes();
+					out.write(bytes, 0, bytes.length);
+					out.close();
+				}
+			}
+			catch (Exception ex)
+			{
+				JOptionPane.showMessageDialog(invoker,
+						"Unable to save file to " + file.getAbsolutePath(),
+						"Error Saving File",
+						JOptionPane.ERROR_MESSAGE);
+				ex.printStackTrace();
+			}
+			
 		}
 	}
 	
