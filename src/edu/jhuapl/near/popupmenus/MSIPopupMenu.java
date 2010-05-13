@@ -34,14 +34,6 @@ public class MSIPopupMenu extends PopupMenu
     private ModelInfoWindowManager infoPanelManager;
     private vtkRenderWindowPanel renWin;
     
-    // Is the popup over and image of boundary
-    private enum MSIType
-    {
-    	IMAGE,
-    	BOUNDARY
-    }
-    MSIType msiType;
-    
     /**
      * 
      * @param modelManager
@@ -90,23 +82,15 @@ public class MSIPopupMenu extends PopupMenu
 	public void setCurrentImage(String name)
 	{
 		currentImageOrBoundary = name;
-
-		String imageName = name;
-		if (imageName.endsWith("_BOUNDARY.VTK"))
-			imageName = imageName.substring(0, imageName.length()-13) + ".FIT";
-		
-		String boundaryName = name;
-		if (boundaryName.endsWith(".FIT"))
-			boundaryName = boundaryName.substring(0,boundaryName.length()-4) + "_BOUNDARY.VTK";
 		
 		MSIBoundaryCollection msiBoundaries = (MSIBoundaryCollection)modelManager.getModel(ModelManager.MSI_BOUNDARY);
-		if (msiBoundaries.containsBoundary(boundaryName))
+		if (msiBoundaries.containsBoundary(currentImageOrBoundary))
 			showRemoveBoundaryIn3DMenuItem.setText("Remove Image Boundary");
 		else
 			showRemoveBoundaryIn3DMenuItem.setText("Show Image Boundary");
 		
 		MSIImageCollection msiImages = (MSIImageCollection)modelManager.getModel(ModelManager.MSI_IMAGES);
-		if (msiImages.containsImage(imageName))
+		if (msiImages.containsImage(currentImageOrBoundary))
 			showRemoveImageIn3DMenuItem.setText("Remove Image");
 		else
 			showRemoveImageIn3DMenuItem.setText("Show Image");
@@ -120,15 +104,10 @@ public class MSIPopupMenu extends PopupMenu
 			MSIImageCollection model = (MSIImageCollection)modelManager.getModel(ModelManager.MSI_IMAGES);
 			try 
 			{
-				System.out.println(currentImageOrBoundary);
-				String name = currentImageOrBoundary;
-				if (msiType == MSIType.BOUNDARY)
-					name = name.substring(0, name.length()-13) + ".FIT";
-				
 				if (showRemoveImageIn3DMenuItem.getText().startsWith("Show"))
-					model.addImage(name);
+					model.addImage(currentImageOrBoundary);
 				else
-					model.removeImage(name);
+					model.removeImage(currentImageOrBoundary);
 				
 				// Force an update on the first 2 menu items
 				setCurrentImage(currentImageOrBoundary);
@@ -151,14 +130,10 @@ public class MSIPopupMenu extends PopupMenu
 			MSIBoundaryCollection model = (MSIBoundaryCollection)modelManager.getModel(ModelManager.MSI_BOUNDARY);
 			try 
 			{
-				String name = currentImageOrBoundary;
-				if (name.endsWith(".FIT"))
-					name = name.substring(0,name.length()-4) + "_BOUNDARY.VTK";
-				
 				if (showRemoveBoundaryIn3DMenuItem.getText().startsWith("Show"))
-					model.addBoundary(name);
+					model.addBoundary(currentImageOrBoundary);
 				else
-					model.removeBoundary(name);
+					model.removeBoundary(currentImageOrBoundary);
 
 				// Force an update on the first 2 menu items
 				setCurrentImage(currentImageOrBoundary);
@@ -178,14 +153,10 @@ public class MSIPopupMenu extends PopupMenu
 	{
 		public void actionPerformed(ActionEvent e) 
 		{
-			String name = currentImageOrBoundary;
-			if (name.endsWith("_BOUNDARY.VTK"))
-				name = name.substring(0, name.length()-13) + ".FIT";
-			
 			try 
 			{
 				ErosModel eros = (ErosModel)modelManager.getModel(ModelManager.EROS);
-				infoPanelManager.addData(MSIImage.MSIImageFactory.createImage(name, eros));
+				infoPanelManager.addData(MSIImage.MSIImageFactory.createImage(currentImageOrBoundary, eros));
 			} 
 			catch (FitsException e1) {
 				// TODO Auto-generated catch block
@@ -204,12 +175,12 @@ public class MSIPopupMenu extends PopupMenu
 	{
 		public void actionPerformed(ActionEvent e) 
 		{
-			File file = FITFileChooser.showSaveDialog(invoker, "Save FIT file");
+			File file = FITFileChooser.showSaveDialog(invoker, "Save FIT file", currentImageOrBoundary + ".FIT");
 			try
 			{
 				if (file != null)
 				{
-					File fitFile = FileCache.getFileFromServer(currentImageOrBoundary);
+					File fitFile = FileCache.getFileFromServer(currentImageOrBoundary + ".FIT");
 
 					InputStream in = new FileInputStream(fitFile);
 
@@ -240,15 +211,11 @@ public class MSIPopupMenu extends PopupMenu
 	{
 		public void actionPerformed(ActionEvent e) 
 		{
-			String name = currentImageOrBoundary;
-			if (name.endsWith("_BOUNDARY.VTK"))
-				name = name.substring(0, name.length()-13) + ".FIT";
-
 			/*
 			try 
 			{
 				ErosModel eros = (ErosModel)modelManager.getModel(ModelManager.EROS);
-				MSIImage image = MSIImage.MSIImageFactory.createImage(name, eros);
+				MSIImage image = MSIImage.MSIImageFactory.createImage(currentImageOrBoundary, eros);
 				BoundingBox bb = image.getBoundingBox();
 				renWin.lock();
 				renWin.GetRenderer().ResetCamera(
@@ -278,10 +245,7 @@ public class MSIPopupMenu extends PopupMenu
 		{
 			// First generate the DDR
 			
-			String defaultName = currentImageOrBoundary.substring(0,currentImageOrBoundary.length()-4) + "_DDR.IMG";
-			if (currentImageOrBoundary.endsWith("_BOUNDARY.VTK"))
-				defaultName = currentImageOrBoundary.substring(0, currentImageOrBoundary.length()-13) + "_DDR.IMG";
-			File file = AnyFileChooser.showSaveDialog(invoker, "Save Backplanes DDR", defaultName);
+			File file = AnyFileChooser.showSaveDialog(invoker, "Save Backplanes DDR", currentImageOrBoundary + "_DDR.IMG");
 
 			try 
 			{
@@ -289,12 +253,8 @@ public class MSIPopupMenu extends PopupMenu
 				{
 					OutputStream out = new FileOutputStream(file);
 
-					String name = currentImageOrBoundary;
-					if (name.endsWith("_BOUNDARY.VTK"))
-						name = name.substring(0, name.length()-13) + ".FIT";
-
 					ErosModel eros = (ErosModel)modelManager.getModel(ModelManager.EROS);
-					MSIImage image = MSIImage.MSIImageFactory.createImage(name, eros);
+					MSIImage image = MSIImage.MSIImageFactory.createImage(currentImageOrBoundary, eros);
 
 					float[] backplanes = image.generateBackplanes();
 
@@ -322,10 +282,7 @@ public class MSIPopupMenu extends PopupMenu
 
 			// Then generate the LBL file
 			
-			defaultName = currentImageOrBoundary.substring(0,currentImageOrBoundary.length()-4) + "_DDR.LBL";
-			if (currentImageOrBoundary.endsWith("_BOUNDARY.VTK"))
-				defaultName = currentImageOrBoundary.substring(0, currentImageOrBoundary.length()-13) + "_DDR.LBL";
-			file = AnyFileChooser.showSaveDialog(invoker, "Save Backplanes Label", defaultName);
+			file = AnyFileChooser.showSaveDialog(invoker, "Save Backplanes Label", currentImageOrBoundary + "_DDR.LBL");
 
 			try 
 			{
@@ -333,12 +290,8 @@ public class MSIPopupMenu extends PopupMenu
 				{
 					OutputStream out = new FileOutputStream(file);
 
-					String name = currentImageOrBoundary;
-					if (name.endsWith("_BOUNDARY.VTK"))
-						name = name.substring(0, name.length()-13) + ".FIT";
-
 					ErosModel eros = (ErosModel)modelManager.getModel(ModelManager.EROS);
-					MSIImage image = MSIImage.MSIImageFactory.createImage(name, eros);
+					MSIImage image = MSIImage.MSIImageFactory.createImage(currentImageOrBoundary, eros);
 
 					String lblstr = image.generateBackplanesLabel();
 
@@ -368,7 +321,6 @@ public class MSIPopupMenu extends PopupMenu
 			{
 				MSIBoundaryCollection msiBoundaries = (MSIBoundaryCollection)modelManager.getModel(ModelManager.MSI_BOUNDARY);
 				String name = msiBoundaries.getBoundaryName((vtkActor)pickedProp);
-				msiType = MSIType.BOUNDARY;
 				setCurrentImage(name);
 				show(e.getComponent(), e.getX(), e.getY());
 			}
@@ -376,7 +328,6 @@ public class MSIPopupMenu extends PopupMenu
 			{
 				MSIImageCollection msiImages = (MSIImageCollection)modelManager.getModel(ModelManager.MSI_IMAGES);
 				String name = msiImages.getImageName((vtkActor)pickedProp);
-				msiType = MSIType.IMAGE;
 				setCurrentImage(name);
 				show(e.getComponent(), e.getX(), e.getY());
 			}

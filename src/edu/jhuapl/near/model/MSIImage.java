@@ -80,7 +80,7 @@ public class MSIImage extends Model implements PropertyChangeListener
 	private String fullpath; // The actual path of the image stored on the local disk (after downloading from the server)
 	private String serverpath; // The path of the image as passed into the constructor. This is not the 
 							   // same as fullpath but instead corresponds to the name needed to download
-							   // the file from the server (excluding the hostname).
+							   // the file from the server (excluding the hostname and extension).
 	
 	private int filter; // 1 through 7
 	//private double polygonOffset = -10.0;
@@ -114,7 +114,7 @@ public class MSIImage extends Model implements PropertyChangeListener
 		{
 			for (MSIImage image : images.keySet())
 			{
-				if (image.getServerPath().equals(name))
+				if (image.serverpath.equals(name))
 					return image;
 			}
 
@@ -138,14 +138,14 @@ public class MSIImage extends Model implements PropertyChangeListener
 		this.serverpath = filename;
 		
 		// Download the image, and all the companion files if necessary.
-		System.out.println(filename);
-		File fitFile = FileCache.getFileFromServer(filename);
+		File fitFile = FileCache.getFileFromServer(filename + ".FIT");
 
 		if (fitFile == null)
 			throw new IOException("Could not download " + filename);
 		
-		String imgLblFilename = filename.substring(0, filename.length()-4) + "_DDR.LBL";
+		String imgLblFilename = filename + "_DDR.LBL";
 		FileCache.getFileFromServer(imgLblFilename);
+
 		//String footprintFilename = filename.substring(0, filename.length()-4) + "_FOOTPRINT.VTK";
 		//FileCache.getFileFromServer(footprintFilename);
 

@@ -24,15 +24,10 @@ public class MSIBoundaryCollection extends Model implements PropertyChangeListen
         private double[] frustum3 = new double[3];
         private double[] frustum4 = new double[3];
         private double[] sunPosition = new double[3];
-
-        // The path on the server to the boundary excluding the _RES?.VTK ending.
-        private String basePath;
         
 		public Boundary(String path) throws IOException
 		{
-			this.basePath = path;
-			
-			File lblFile = FileCache.getFileFromServer(path);
+			File lblFile = FileCache.getFileFromServer(path + "_DDR.LBL");
 
 			if (lblFile == null)
 				throw new IOException("Could not download " + path);
@@ -60,7 +55,6 @@ public class MSIBoundaryCollection extends Model implements PropertyChangeListen
 					frustum3,
 					frustum4);
 
-//	        initialize(basePath + "_RES" + erosModel.getModelResolution() + ".VTK");
 	        initialize();
 		}
 		
@@ -163,8 +157,6 @@ public class MSIBoundaryCollection extends Model implements PropertyChangeListen
 					if (result > 0)
 					{
 						double[] closestPoint = x;
-						//int closestCell = cellId[0];
-						//double closestDist = GeometryUtil.distanceBetween(closestPoint, spacecraftPosition);
 						
 						//double horizPixelScale = closestDist * horizScaleFactor;
 						//double vertPixelScale = closestDist * vertScaleFactor;
@@ -177,7 +169,6 @@ public class MSIBoundaryCollection extends Model implements PropertyChangeListen
 					}
 				}
 			}
-
 			
 	        
 			PolyDataUtil.shiftPolyLineInNormalDirectionOfPolyData(boundary, erosModel.getErosPolyData(), 0.003);
@@ -186,14 +177,13 @@ public class MSIBoundaryCollection extends Model implements PropertyChangeListen
 
 	        actor.SetMapper(boundaryMapper);
 	        actor.GetProperty().SetColor(1.0, 0.0, 0.0);
-	        actor.GetProperty().SetLineWidth(2.0);
+	        actor.GetProperty().SetPointSize(1.0);
 		}
 
 		public void propertyChange(PropertyChangeEvent evt)
 		{
 			if (Properties.MODEL_RESOLUTION_CHANGED.equals(evt.getPropertyName()))
 			{
-				//initialize(basePath + "_RES" + erosModel.getModelResolution() + ".VTK");
 				initialize();
 				this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 			}
@@ -208,74 +198,6 @@ public class MSIBoundaryCollection extends Model implements PropertyChangeListen
 		}
 	}
 
-	private class Boundary_old extends Model implements PropertyChangeListener
-	{
-		private vtkActor actor;
-		private vtkPolyDataReader boundaryReader;
-        private vtkPolyData boundary;
-        private vtkPolyDataMapper boundaryMapper;
-        
-        // The path on the server to the boundary excluding the _RES?.VTK ending.
-        private String basePath;
-        
-		public Boundary_old(String path) throws IOException
-		{
-			this.basePath = path;
-			
-			boundaryReader = new vtkPolyDataReader();
-	        boundary = new vtkPolyData();
-	        boundaryMapper = new vtkPolyDataMapper();
-	        actor = new vtkActor();
-	    
-	        erosModel.addPropertyChangeListener(this);
-	        
-//	        initialize(basePath + "_RES" + erosModel.getModelResolution() + ".VTK");
-	        initialize(basePath + ".VTK");
-		}
-		
-		private void initialize(String path)
-		{
-			File file = FileCache.getFileFromServer(path);
-
-			if (file == null)
-			{
-				System.err.println(path + " could not be loaded");
-				(new Exception()).printStackTrace();
-			}
-				
-	        boundaryReader.SetFileName(file.getAbsolutePath());
-	        boundaryReader.Update();
-	        
-	        boundary.DeepCopy(boundaryReader.GetOutput());
-			PolyDataUtil.shiftPolyLineInNormalDirectionOfPolyData(boundary, erosModel.getErosPolyData(), 0.003);
-
-	        boundaryMapper.SetInput(boundary);
-	        //boundaryMapper.SetResolveCoincidentTopologyToPolygonOffset();
-	        //boundaryMapper.SetResolveCoincidentTopologyPolygonOffsetParameters(-1.0, -1.0);
-
-	        actor.SetMapper(boundaryMapper);
-	        actor.GetProperty().SetColor(1.0, 0.0, 0.0);
-	        actor.GetProperty().SetLineWidth(2.0);
-		}
-
-		public void propertyChange(PropertyChangeEvent evt)
-		{
-			if (Properties.MODEL_RESOLUTION_CHANGED.equals(evt.getPropertyName()))
-			{
-				//initialize(basePath + "_RES" + erosModel.getModelResolution() + ".VTK");
-				initialize(basePath + ".VTK");
-				this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-			}
-		}
-
-		@Override
-		public ArrayList<vtkProp> getProps()
-		{
-			ArrayList<vtkProp> props = new ArrayList<vtkProp>();
-			props.add(actor);
-			return props;
-		}
-	}
 
 	/**
 	 * return this when boundaries are hidden

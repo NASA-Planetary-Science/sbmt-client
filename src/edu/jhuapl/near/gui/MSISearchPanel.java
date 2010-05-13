@@ -682,7 +682,8 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
         	if (index >= 0 && resultList.getCellBounds(index, index).contains(e.getPoint()))
         	{
         		resultList.setSelectedIndex(index);
-        		msiPopupMenu.setCurrentImage(msiRawResults.get(index));
+        		String name = msiRawResults.get(index);
+        		msiPopupMenu.setCurrentImage(name.substring(0, name.length()-4));
         		msiPopupMenu.show(e.getComponent(), e.getX(), e.getY());
         	}
         }
@@ -707,7 +708,8 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
 			{
 				String currentImage = msiRawResults.get(i);
 				//String boundaryName = currentImage.substring(0,currentImage.length()-4) + "_BOUNDARY.VTK";
-				String boundaryName = currentImage.substring(0,currentImage.length()-4) + "_DDR.LBL";
+				//String boundaryName = currentImage.substring(0,currentImage.length()-4) + "_DDR.LBL";
+				String boundaryName = currentImage.substring(0,currentImage.length()-4);
 				model.addBoundary(boundaryName);
 			} 
 			catch (FitsException e1) {
