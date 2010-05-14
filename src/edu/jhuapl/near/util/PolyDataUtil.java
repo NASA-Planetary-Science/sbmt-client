@@ -416,7 +416,7 @@ public class PolyDataUtil
 		if (sphere_f1 == null)
 			sphere_f1 = new vtkSphere();
 		sphere_f1.SetCenter(center);
-		sphere_f1.SetRadius(radius >= 0.1 ? 2.0*radius : 0.2);
+		sphere_f1.SetRadius(radius >= 0.2 ? 1.2*radius : 1.2*0.2);
 		
 		//vtkExtractPolyDataGeometry extract = new vtkExtractPolyDataGeometry();
 		if (extract_f1 == null)
@@ -542,16 +542,16 @@ public class PolyDataUtil
 		//return outputPolyData_f1;
 	}
 
-	static vtkPlane cutPlane_f5;
-	static vtkCutter cutPolyData_f5;
-	static vtkPlane clipPlane1_f5;
-	static vtkPlane clipPlane2_f5;
-	static vtkClipPolyData clipPolyData1_f5;
-	static vtkClipPolyData clipPolyData2_f5;
-	static vtkPolyDataConnectivityFilter connectivityFilter_f5;
-	static vtkPolyData polyLine_f5;
-	static vtkExtractPolyDataGeometry extract1_f5;
-	static vtkExtractPolyDataGeometry extract2_f5;
+
+	private static vtkPlane cutPlane_f5;
+	private static vtkCutter cutPolyData_f5;
+	private static vtkPolyData polyLine_f5;
+	private static vtkExtractPolyDataGeometry extract1_f5;
+	private static vtkExtractPolyDataGeometry extract2_f5;
+	private static vtkIdList idList_f5;
+	private static vtkGenericCell genericCell1_f5;
+	private static vtkGenericCell genericCell2_f5;
+	private static vtksbCellLocator cellLocator_f5;
 	public static vtkPolyData drawPathOnPolyData(
 			vtkPolyData polyData,
 			vtkAbstractPointLocator pointLocator,
@@ -570,7 +570,7 @@ public class PolyDataUtil
 		avgNormal[2] = (normal1[2] + normal2[2])/2.0;
 
 		double[] vec1 = {pt1[0]-pt2[0], pt1[1]-pt2[1], pt1[2]-pt2[2]};
-		double[] vec2 = {pt2[0]-pt1[0], pt2[1]-pt1[1], pt2[2]-pt1[2]};
+		//double[] vec2 = {pt2[0]-pt1[0], pt2[1]-pt1[1], pt2[2]-pt1[2]};
 
 		double[] normal = new double[3];
 		math.Cross(vec1, avgNormal, normal);
@@ -581,8 +581,7 @@ public class PolyDataUtil
 		cutPlane_f5.SetOrigin(pt1);
 		cutPlane_f5.SetNormal(normal);
 
-		System.out.println(polyData.GetNumberOfCells());
-		//vtkExtractPolyDataGeometry extract = new vtkExtractPolyDataGeometry();
+
 		if (extract1_f5 == null)
 			extract1_f5 = new vtkExtractPolyDataGeometry();
 		extract1_f5.SetImplicitFunction(cutPlane_f5);
@@ -590,12 +589,8 @@ public class PolyDataUtil
 		extract1_f5.SetExtractBoundaryCells(1);
 		extract1_f5.SetInput(polyData);
 		extract1_f5.Update();
-		//polyData = extract_f5.GetOutput();
 
-		normal[0] = -normal[0];
-		normal[1] = -normal[1];
-		normal[2] = -normal[2];
-		//cutPlane_f5.SetNormal(normal);
+		
 		if (extract2_f5 == null)
 			extract2_f5 = new vtkExtractPolyDataGeometry();
 		extract2_f5.SetImplicitFunction(cutPlane_f5);
@@ -604,128 +599,66 @@ public class PolyDataUtil
 		extract2_f5.SetInputConnection(extract1_f5.GetOutputPort());
 		extract2_f5.Update();
 
-		System.out.println(extract2_f5.GetOutput().GetNumberOfCells());
-
-		long t0 = System.currentTimeMillis();
 
 		if (cutPolyData_f5 == null)
-		{
 			cutPolyData_f5 = new vtkCutter();
-			//cutPolyData_f5.SetInput(polyData);
-			cutPolyData_f5.SetInputConnection(extract2_f5.GetOutputPort());
-			cutPolyData_f5.CreateDefaultLocator();
-		}
-		
+		cutPolyData_f5.SetInputConnection(extract2_f5.GetOutputPort());
+		cutPolyData_f5.CreateDefaultLocator();
 		cutPolyData_f5.SetCutFunction(cutPlane_f5);
 		cutPolyData_f5.Update();
-		System.out.println("time to cut " + (System.currentTimeMillis()-t0));
 
 		if (polyLine_f5 == null)
 			polyLine_f5 = new vtkPolyData();
 		polyLine_f5.DeepCopy(cutPolyData_f5.GetOutput());
 
 		// Take this line and put it into a cell locator so we can find the cells
-		// closest to the end points 
-		vtksbCellLocator cellLocator = new vtksbCellLocator();
-        cellLocator.SetDataSet(polyLine_f5);
-        cellLocator.CacheCellBoundsOn();
-        cellLocator.AutomaticOn();
-        cellLocator.BuildLocator();
+		// closest to the end points
+		if (cellLocator_f5 == null)
+			cellLocator_f5 = new vtksbCellLocator();
+        cellLocator_f5.SetDataSet(polyLine_f5);
+        cellLocator_f5.CacheCellBoundsOn();
+        cellLocator_f5.AutomaticOn();
+        cellLocator_f5.BuildLocator();
         
         // Search for the cells closest to the 2 endpoints
 		double[] closestPoint1 = new double[3];
 		double[] closestPoint2 = new double[3];
-		vtkGenericCell genericCell1 = new vtkGenericCell();
-		vtkGenericCell genericCell2 = new vtkGenericCell();
+		if (genericCell1_f5 == null)
+			genericCell1_f5 = new vtkGenericCell();
+		if (genericCell2_f5 == null)
+			genericCell2_f5 = new vtkGenericCell();
 		int[] cellId1 = new int[1];
 		int[] cellId2 = new int[1];
 		int[] subId = new int[1];
 		double[] dist2 = new double[1];
 		
-		cellLocator.FindClosestPoint(pt1, closestPoint1, genericCell1, cellId1, subId, dist2);
-		cellLocator.FindClosestPoint(pt2, closestPoint2, genericCell2, cellId2, subId, dist2);
+		cellLocator_f5.FindClosestPoint(pt1, closestPoint1, genericCell1_f5, cellId1, subId, dist2);
+		cellLocator_f5.FindClosestPoint(pt2, closestPoint2, genericCell2_f5, cellId2, subId, dist2);
 
-		/*
-		if (cellId1[0] != cellId2[0])
+		
+		// In the rare case where both points are on the same cell, simply 
+		// return a single line connecting them
+		if (cellId1[0] == cellId2[0])
 		{
-			// Split each of these cells in two
-			{
-			polyLine_f5.GetPoints().InsertNextPoint(closestPoint1);
-			int id1 = genericCell1.GetPointId(0);
-			int id2 = genericCell1.GetPointId(1);
-			int newPointId = polyLine_f5.GetNumberOfPoints()-1;
-			vtkIdList idList_f5 = new vtkIdList();
-			idList_f5.SetNumberOfIds(2);
-	        idList_f5.SetId(0, id1);
-	        idList_f5.SetId(1, newPointId);
-	        polyLine_f5.GetLines().InsertNextCell(idList_f5);
-	        idList_f5.SetId(0, newPointId);
-	        idList_f5.SetId(1, id2);
-	        polyLine_f5.GetLines().InsertNextCell(idList_f5);
-			polyLine_f5.DeleteCell(cellId1[0]);
-			}
-			{
-			polyLine_f5.GetPoints().InsertNextPoint(closestPoint2);
-			int id1 = genericCell2.GetPointId(0);
-			int id2 = genericCell2.GetPointId(1);
-			int newPointId = polyLine_f5.GetNumberOfPoints()-1;
-			vtkIdList idList_f5 = new vtkIdList();
-			idList_f5.SetNumberOfIds(2);
-			idList_f5.SetId(0, id1);
-			idList_f5.SetId(1, newPointId);
-			polyLine_f5.GetLines().InsertNextCell(idList_f5);
-			idList_f5.SetId(0, newPointId);
-			idList_f5.SetId(1, id2);
-			polyLine_f5.GetLines().InsertNextCell(idList_f5);
-			polyLine_f5.DeleteCell(cellId2[0]);
-			}
+			vtkPoints points = polyLine_f5.GetPoints();
+			points.SetNumberOfPoints(2);
+			points.SetPoint(0, closestPoint1);
+			points.SetPoint(1, closestPoint2);
 			
-			polyLine_f5.RemoveDeletedCells();
+			vtkCellArray lines = polyLine_f5.GetLines();
+			lines.SetNumberOfCells(0);
+			
+			if (idList_f5 == null)
+				idList_f5 = new vtkIdList();
+			idList_f5.SetNumberOfIds(2);
+			idList_f5.SetId(0, 0);
+			idList_f5.SetId(1, 1);
+
+			lines.InsertNextCell(idList_f5);
+			
+			return polyLine_f5;
 		}
 
-		 */
-		// Now starting from one of the endpoints, move along the path in both directions
-		// until we come to the other endpoint. The smallest road is the one returned.
-		
-		
-		
-		// Clip off from the two points and in the opposite direction
-		/*
-		if (clipPlane1_f5 == null)
-			clipPlane1_f5 = new vtkPlane();
-		clipPlane1_f5.SetOrigin(pt1);
-		clipPlane1_f5.SetNormal(vec1);
-
-		if (clipPlane2_f5 == null)
-			clipPlane2_f5 = new vtkPlane();
-		clipPlane2_f5.SetOrigin(pt2);
-		clipPlane2_f5.SetNormal(vec2);
-
-		if (clipPolyData1_f5 == null)
-			clipPolyData1_f5 = new vtkClipPolyData();
-		clipPolyData1_f5.SetInputConnection(cutPolyData_f5.GetOutputPort());
-		clipPolyData1_f5.SetClipFunction(clipPlane1_f5);
-		clipPolyData1_f5.SetInsideOut(1);
-		
-		if (clipPolyData2_f5 == null)
-			clipPolyData2_f5 = new vtkClipPolyData();
-		clipPolyData2_f5.SetInputConnection(clipPolyData1_f5.GetOutputPort());
-		clipPolyData2_f5.SetClipFunction(clipPlane2_f5);
-		clipPolyData2_f5.SetInsideOut(1);
-		clipPolyData2_f5.Update();
-
-		if (connectivityFilter_f5 == null)
-			connectivityFilter_f5 = new vtkPolyDataConnectivityFilter();
-		connectivityFilter_f5.SetInputConnection(clipPolyData2_f5.GetOutputPort());
-		connectivityFilter_f5.SetExtractionModeToClosestPointRegion();
-		connectivityFilter_f5.SetClosestPoint(pt1);
-		connectivityFilter_f5.Update();
-	
-		
-		if (polyLine_f5 == null)
-			polyLine_f5 = new vtkPolyData();
-		polyLine_f5.DeepCopy(connectivityFilter_f5.GetOutput());
-	*/
 
 		boolean okay = convertPartOfLinesToPolyLineWithSplitting(polyLine_f5, closestPoint1, cellId1[0], closestPoint2, cellId2[0]);
 		
@@ -806,9 +739,26 @@ public class PolyDataUtil
 	}
 	
 	
-	static vtkIdList idList_f6;
-	static vtkPoints points_f6;
-	static vtkCellArray new_lines_f6;
+	private static double computePathLength(vtkPoints points, ArrayList<Integer> ids)
+	{
+		int size = ids.size();
+		double length = 0.0;
+		
+		double[] pt1 = points.GetPoint(ids.get(0));
+		for (int i=1;i<size;++i)
+		{
+			double[] pt2 = points.GetPoint(ids.get(i));
+			double dist = GeometryUtil.distanceBetween(pt1, pt2);
+			length += dist;
+			pt1 = pt2;
+		}
+    	
+		return length;
+	}
+	
+	private static vtkIdList idList_f6;
+	private static vtkPoints points_f6;
+	private static vtkCellArray new_lines_f6;
 	/** 
 	 * The boundary generated in getImageBorder is great, unfortunately the
 	 * border consists of many lines of 2 vertices each. We, however, need a
@@ -828,383 +778,6 @@ public class PolyDataUtil
 	 * @param startPoint
 	 * @return
 	 */
-	/*
-	public static boolean convertLinesToPolyLine(vtkPolyData polyline)
-	{
-		vtkCellArray lines_orig = polyline.GetLines();
-		vtkPoints points_orig = polyline.GetPoints();
-
-		vtkIdTypeArray idArray = lines_orig.GetData();
-		int size = idArray.GetNumberOfTuples();
-		//System.out.println(size);
-		//System.out.println(idArray.GetNumberOfComponents());
-
-		if (points_orig.GetNumberOfPoints() < 2)
-			return true;
-			
-		if (size < 3)
-		{
-			System.out.println("Error: polydata corrupted");
-			return false;
-		}
-		
-		ArrayList<IdPair> lines = new ArrayList<IdPair>();
-		for (int i=0; i<size; i+=3)
-		{
-			//System.out.println(idArray.GetValue(i));
-			if (idArray.GetValue(i) != 2)
-			{
-				System.out.println("Big problem: polydata corrupted");
-				return false;
-			}
-			lines.add(new IdPair(idArray.GetValue(i+1), idArray.GetValue(i+2)));
-		}
-		
-		// We need to find the point id of one of the endpoints of the line. For closed loops there is no 
-		// such point so we simply choose 0. But for open polylines there are 2 such points. To find one
-		// of these points go through all the indices in the lines object and return the first point
-		// that only appears once.
-		int startIdx = 0;
-        int numPoints = polyline.GetNumberOfPoints();
-        for (int i=0; i<numPoints; ++i)
-        {
-        	int count = 0;
-        	
-        	for (int j=0; j<lines.size(); ++j)
-        	{
-        		IdPair line = lines.get(j);
-        		if (line.id1 == i || line.id2 == i)
-        		{
-        			++count;
-        			if (count > 1) 
-        				break;
-        		}
-        	}
-        	
-        	if (count == 1)
-        	{
-        		startIdx = i;
-        		break;
-        	}
-        	else if (count == 0 || count > 2)
-        	{
-				System.out.println("Big problem: A point is used " + count + " times");
-        	}
-        }
-        
-		// Find which line segment contains the startIdx, and move this line segment first.
-		// Also make sure startIdx is the first id of the pair
-		for (int i=0; i<lines.size(); ++i)
-		{
-			IdPair line = lines.get(i);
-			
-			if (line.id1 == startIdx || line.id2 == startIdx)
-			{
-				if (line.id2 == startIdx)
-				{
-					// swap the pair
-					line.id2 = line.id1;
-					line.id1 = startIdx;
-				}
-				
-				lines.remove(i);
-				lines.add(0, line);
-				break;
-			}
-		}
-		
-		if (idList_f6 == null)
-			idList_f6 = new vtkIdList();
-        IdPair line = lines.get(0);
-        idList_f6.InsertNextId(line.id1);
-        idList_f6.InsertNextId(line.id2);
-        
-        for (int i=2; i<numPoints; ++i)
-        {
-        	int id = line.id2;
-
-        	// Find the other line segment that contains id
-        	for (int j=1; j<lines.size(); ++j)
-        	{
-        		IdPair nextLine = lines.get(j);
-        		if (id == nextLine.id1)
-        		{
-        			idList_f6.InsertNextId(nextLine.id2);
-        			
-        			line = nextLine;
-        			break;
-        		}
-        		else if (id == nextLine.id2 && line.id1 != nextLine.id1)
-        		{
-        			idList_f6.InsertNextId(nextLine.id1);
-
-        			// swap the ids
-        			int tmp = nextLine.id1;
-        			nextLine.id1 = nextLine.id2;
-        			nextLine.id2 = tmp;
-        			
-        			line = nextLine;
-        			break;
-        		}
-        
-        		if (j==lines.size()-1)
-        		{
-        			System.out.println("Error: Could not find other line segment");
-        			System.out.println("i, j = " + i + " " + j);
-        			System.out.println("numPoints = " + numPoints);
-        			System.out.println("lines.size() = " + lines.size());
-        			System.out.println("startIdx = " + startIdx);
-        			for (int k=0; k<lines.size(); ++k)
-        			{
-        				System.out.println("line " + k + " - " + lines.get(k).id1 + " " + lines.get(k).id2);
-        			}
-
-        			return false;
-        		}
-        	}
-        }
-
-        // If the following is true, that means the polyline is a closed loop,
-        // so add the first id to close it.
-        if (lines_orig.GetNumberOfCells() == points_orig.GetNumberOfPoints())
-        	idList_f6.InsertNextId(idList_f6.GetId(0));
-        
-        // It would be nice if the points were in the order they are drawn rather
-        // than some other arbitrary order. Therefore reorder the points so that
-        // the id list will just be increasing numbers in order
-        if (points_f6 == null)
-        	points_f6 = new vtkPoints();
-        points_f6.SetNumberOfPoints(numPoints);
-        for (int i=0; i<numPoints; ++i)
-        {
-        	int id = idList_f6.GetId(i);
-        	points_f6.SetPoint(i, points_orig.GetPoint(id));
-        }
-        for (int i=0; i<numPoints; ++i)
-        {
-        	idList_f6.SetId(i, i);
-        }
-
-        // Again, if the following is true, that means the polyline is a closed loop,
-        // so add the first id to close it.
-        if (lines_orig.GetNumberOfCells() == points_orig.GetNumberOfPoints())
-        	idList_f6.SetId(numPoints, 0);
-        
-    	polyline.SetPoints(null);
-    	polyline.SetPoints(points_f6);
-    	
-        //System.out.println("num points: " + numPoints);
-        //System.out.println("num ids: " + idList.GetNumberOfIds());
-        polyline.SetLines(null);
-        
-        if (new_lines_f6 == null)
-        	new_lines_f6 = new vtkCellArray();
-        new_lines_f6.InsertNextCell(idList_f6);
-        polyline.SetLines(new_lines_f6);
-        
-        return true;
-	}
-
-	public static boolean convertPartOfLinesToPolyLine(vtkPolyData polyline, int id0, int id1)
-	{
-		vtkCellArray lines_orig = polyline.GetLines();
-		vtkPoints points_orig = polyline.GetPoints();
-
-		vtkIdTypeArray idArray = lines_orig.GetData();
-		int size = idArray.GetNumberOfTuples();
-		//System.out.println(size);
-		//System.out.println(idArray.GetNumberOfComponents());
-
-		if (points_orig.GetNumberOfPoints() < 2)
-			return true;
-			
-		if (size < 3)
-		{
-			System.out.println("Error: polydata corrupted");
-			return false;
-		}
-		
-		ArrayList<IdPair> lines = new ArrayList<IdPair>();
-		for (int i=0; i<size; i+=3)
-		{
-			//System.out.println(idArray.GetValue(i));
-			if (idArray.GetValue(i) != 2)
-			{
-				System.out.println("Big problem: polydata corrupted");
-				return false;
-			}
-			lines.add(new IdPair(idArray.GetValue(i+1), idArray.GetValue(i+2)));
-		}
-		
-		int startIdx = id0;
-        int numPoints = polyline.GetNumberOfPoints();
-        
-        
-		// Find which line segment contains the startIdx, and move this line segment first.
-		// Also make sure startIdx is the first id of the pair
-		for (int i=0; i<lines.size(); ++i)
-		{
-			IdPair line = lines.get(i);
-			
-			if (line.id1 == startIdx || line.id2 == startIdx)
-			{
-				if (line.id2 == startIdx)
-				{
-					// swap the pair
-					line.id2 = line.id1;
-					line.id1 = startIdx;
-				}
-				
-				lines.remove(i);
-				lines.add(0, line);
-				break;
-			}
-		}
-		
-		
-		// First do first direction ("left")
-        IdPair line = lines.get(0);
-        ArrayList<Integer> idListLeft = new ArrayList<Integer>();
-		idListLeft.add(line.id1);
-		idListLeft.add(line.id2);
-		
-        for (int i=2; i<numPoints; ++i)
-        {
-        	int id = line.id2;
-
-        	if (id1 == idListLeft.get(idListLeft.size()-1))
-        		break;
-        	// Find the other line segment that contains id
-        	for (int j=1; j<lines.size(); ++j)
-        	{
-        		IdPair nextLine = lines.get(j);
-        		if (id == nextLine.id1)
-        		{
-        			idListLeft.add(nextLine.id2);
-        			
-        			line = nextLine;
-        			break;
-        		}
-        		else if (id == nextLine.id2 && line.id1 != nextLine.id1)
-        		{
-        			idListLeft.add(nextLine.id1);
-
-        			// swap the ids
-        			int tmp = nextLine.id1;
-        			nextLine.id1 = nextLine.id2;
-        			nextLine.id2 = tmp;
-        			
-        			line = nextLine;
-        			break;
-        		}
-        
-        		if (j==lines.size()-1)
-        		{
-        			System.out.println("Error: Could not find other line segment");
-        			System.out.println("i, j = " + i + " " + j);
-        			System.out.println("numPoints = " + numPoints);
-        			System.out.println("lines.size() = " + lines.size());
-        			System.out.println("startIdx = " + startIdx);
-        			for (int k=0; k<lines.size(); ++k)
-        			{
-        				System.out.println("line " + k + " - " + lines.get(k).id1 + " " + lines.get(k).id2);
-        			}
-
-        			return false;
-        		}
-        	}
-        }
-		
-		// Then do second direction ("right")
-        line = lines.get(0);
-		ArrayList<Integer> idListRight = new ArrayList<Integer>();
-		idListRight.add(line.id1);
-		
-        for (int i=1; i<numPoints; ++i)
-        {
-        	int id = line.id1;
-
-        	if (id1 == idListRight.get(idListRight.size()-1))
-        		break;
-        	// Find the other line segment that contains id
-        	for (int j=1; j<lines.size(); ++j)
-        	{
-        		IdPair nextLine = lines.get(j);
-        		if (id == nextLine.id1)
-        		{
-        			idListRight.add(nextLine.id2);
-        			
-        			line = nextLine;
-        			break;
-        		}
-        		else if (id == nextLine.id2 && line.id1 != nextLine.id1)
-        		{
-        			idListRight.add(nextLine.id1);
-
-        			// swap the ids
-        			int tmp = nextLine.id1;
-        			nextLine.id1 = nextLine.id2;
-        			nextLine.id2 = tmp;
-        			
-        			line = nextLine;
-        			break;
-        		}
-        
-        		if (j==lines.size()-1)
-        		{
-        			System.out.println("Error: Could not find other line segment");
-        			System.out.println("i, j = " + i + " " + j);
-        			System.out.println("numPoints = " + numPoints);
-        			System.out.println("lines.size() = " + lines.size());
-        			System.out.println("startIdx = " + startIdx);
-        			for (int k=0; k<lines.size(); ++k)
-        			{
-        				System.out.println("line " + k + " - " + lines.get(k).id1 + " " + lines.get(k).id2);
-        			}
-
-        			return false;
-        		}
-        	}
-        }
-
-        
-        ArrayList<Integer> idList = idListRight;
-        if (idListLeft.size() < idListRight.size())
-        	idList = idListLeft;
-        	
-        
-        // It would be nice if the points were in the order they are drawn rather
-        // than some other arbitrary order. Therefore reorder the points so that
-        // the id list will just be increasing numbers in order
-        if (points_f6 == null)
-        	points_f6 = new vtkPoints();
-        points_f6.SetNumberOfPoints(numPoints);
-        for (int i=0; i<idList.size(); ++i)
-        {
-        	int id = idList.get(i);
-        	points_f6.SetPoint(i, points_orig.GetPoint(id));
-        }
-        for (int i=0; i<idList.size(); ++i)
-        {
-        	idList_f6.SetId(i, i);
-        }
-
-        
-    	polyline.SetPoints(null);
-    	polyline.SetPoints(points_f6);
-    	
-        //System.out.println("num points: " + numPoints);
-        //System.out.println("num ids: " + idList.GetNumberOfIds());
-        polyline.SetLines(null);
-        
-        if (new_lines_f6 == null)
-        	new_lines_f6 = new vtkCellArray();
-        new_lines_f6.InsertNextCell(idList_f6);
-        polyline.SetLines(new_lines_f6);
-        
-        return true;
-	}
-	*/
 
 	/**
 	 * This function takes a polyline
@@ -1405,12 +978,14 @@ public class PolyDataUtil
         	}
         }
 
-        System.out.println("id left  " + idListLeft);
-        System.out.println("id right " + idListRight);
+        //System.out.println("id left  " + idListLeft);
+        //System.out.println("id right " + idListRight);
         ArrayList<Integer> idList = idListRight;
-        if (idListLeft.size() < idListRight.size())
+        //if (idListLeft.size() < idListRight.size())
+        //	idList = idListLeft;
+        if (computePathLength(points_orig, idListLeft) < computePathLength(points_orig, idListRight))
         	idList = idListLeft;
-        	
+        
         // It would be nice if the points were in the order they are drawn rather
         // than some other arbitrary order. Therefore reorder the points so that
         // the id list will just be increasing numbers in order
@@ -1428,9 +1003,9 @@ public class PolyDataUtil
         	idList_f6.SetId(i, i);
         }
 
-        System.out.println("num points: " + numPoints);
-        System.out.println("num ids: " + idList_f6.GetNumberOfIds());
-        System.out.println(idList.size());
+        //System.out.println("num points: " + numPoints);
+        //System.out.println("num ids: " + idList_f6.GetNumberOfIds());
+        //System.out.println(idList.size());
         
     	polyline.SetPoints(null);
     	polyline.SetPoints(points_f6);
