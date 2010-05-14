@@ -268,7 +268,6 @@ public class LineModel extends StructureModel implements PropertyChangeListener
 
 		private void shiftPointOnPathToClosestPointOnAsteroid(int idx)
 		{
-			System.out.println("shifted point " + idx);
 			// When the resolution changes, the control points, might no longer
 			// be touching the asteroid. Therefore shift each control to the closest
 			// point on the asteroid.

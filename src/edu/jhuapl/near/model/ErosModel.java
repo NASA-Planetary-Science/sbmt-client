@@ -83,10 +83,8 @@ public class ErosModel extends Model
 	
 	private void initialize(File modelFile)
 	{
-		long t1 = System.currentTimeMillis();
 		erosReader.SetFileName(modelFile.getAbsolutePath());
 		erosReader.Update();
-		System.out.println("Time to load " + (System.currentTimeMillis()-t1));
 
 		//normalsFilter.SetInputConnection(erosReader.GetOutputPort());
 		//normalsFilter.SetComputeCellNormals(0);
@@ -102,7 +100,6 @@ public class ErosModel extends Model
 		//writer.SetFileName("/tmp/" + modelFile.getName());
 		//writer.SetFileTypeToBinary();
 		//writer.Write();
-		System.out.println(System.currentTimeMillis()-t1);
 
 
 		// Initialize the cell locator
@@ -113,12 +110,10 @@ public class ErosModel extends Model
 		//cellLocator.SetMaxLevel(10);
 		//cellLocator.SetNumberOfCellsPerNode(5);
 		cellLocator.BuildLocator();
-		System.out.println(System.currentTimeMillis()-t1);
 
 		pointLocator.FreeSearchStructure();
 		pointLocator.SetDataSet(erosPolyData);
 		pointLocator.BuildLocator();
-		System.out.println(System.currentTimeMillis()-t1);
 
 		//this.computeLargestSmallestEdgeLength();
 		//this.computeSurfaceArea();
