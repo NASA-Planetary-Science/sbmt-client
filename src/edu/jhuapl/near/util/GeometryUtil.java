@@ -276,6 +276,19 @@ public class GeometryUtil
 		      vout[2] = 0.0;
 		      }
 	}
+	
+	static public void vcrss(double[] v1, double[] v2, double[] vout)
+	{
+		double[] vtemp = new double[3];
+		
+		vtemp[0] = v1[1]*v2[2] - v1[2]*v2[1];                                                                                                       
+		vtemp[1] = v1[2]*v2[0] - v1[0]*v2[2];                                                                                                       
+		vtemp[2] = v1[0]*v2[1] - v1[1]*v2[0];
+		
+		vout[0] = vtemp[0];
+		vout[1] = vtemp[1];
+		vout[2] = vtemp[2];
+	}
 
 	/**
 	 * Compute the distance between 2 3D points
