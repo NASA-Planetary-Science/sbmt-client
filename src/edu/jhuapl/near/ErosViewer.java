@@ -17,6 +17,13 @@ import edu.jhuapl.near.util.NativeLibraryLoader;
 import java.awt.*;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * This class contains the "main" function called at the start of the program.
+ * This class sets up the top level window and instantiates all the "managers" used
+ * through out the program. 
+ * @author kahneg1
+ *
+ */
 public class ErosViewer extends JFrame 
 {
 	private JSplitPane splitPane;
