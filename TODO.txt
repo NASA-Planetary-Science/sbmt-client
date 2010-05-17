@@ -1,10 +1,23 @@
-1. Improve NLR. Show plot of range of spacecraft to asteroid vs time.
+ - Improve NLR. Show plot of range of spacecraft to asteroid vs time.
    Also show plot of potential vs distance (range) traveled. Allow from these
    plots to highlight data in renderer and vs versa. 
-   
-2. Save LBL file when saving DDR. By default name should be same as original fit file
+
+ - Allow search region to work for NLR
+ 
+ - Make NLR GUI more similar to MSI and NIS
+    
+ - Save LBL file when saving DDR. By default name should be same as original fit file
    with _DDR.IMG suffix. 
    
-3. Fix bug with drawing lines
+ - Fix bug with drawing lines
 
-4. Disable ability to save and load from file while drawing a path
+ - Disable ability to save and load from file while drawing a path
+
+ - Improve lighting of shape model so as to better make out the topography.
+   Perhaps provide controls for modifying it.
+   
+ - Undo feature
+ 
+ - overlay lat/lon grid
+ 
+ 
