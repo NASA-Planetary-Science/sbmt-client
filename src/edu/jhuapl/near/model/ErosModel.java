@@ -337,6 +337,25 @@ public class ErosModel extends Model
 				outputBoundary);
 	}
 
+	public void drawCone(
+			double[] vertex,
+			double[] axis,
+			double angle,
+			int numberOfSides,
+			vtkPolyData outputInterior,
+			vtkPolyData outputBoundary)
+	{
+		PolyDataUtil.drawConeOnPolyData(
+				erosPolyData,
+				pointLocator,
+				vertex,
+				axis,
+				angle,
+				numberOfSides,
+				outputInterior,
+				outputBoundary);
+	}
+	
 	public void shiftPolyLineInNormalDirection(
 			vtkPolyData polyLine,
 			double shiftAmount)

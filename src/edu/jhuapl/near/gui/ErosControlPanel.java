@@ -28,6 +28,7 @@ public class ErosControlPanel extends JPanel implements ItemListener
     private ButtonGroup coloringButtonGroup;
     private ButtonGroup shadingButtonGroup;
     private ButtonGroup resolutionButtonGroup;
+    private JCheckBox gridCheckBox;
     
 
     public ErosControlPanel(ModelManager modelManager) 
@@ -134,6 +135,11 @@ public class ErosControlPanel extends JPanel implements ItemListener
 		shadingButtonGroup.add(smoothShadingButton);
 		shadingButtonGroup.setSelected(smoothShadingButton.getModel(), true);
 
+		gridCheckBox = new JCheckBox();
+    	gridCheckBox.setText("Show Coordinate Grid");
+    	gridCheckBox.setSelected(false);
+    	gridCheckBox.addItemListener(this);
+
     	panel.add(modelCheckBox, "wrap");
     	panel.add(resolutionLabel, "wrap");
     	panel.add(lowResModelButton, "wrap, gapleft 25");
@@ -148,6 +154,7 @@ public class ErosControlPanel extends JPanel implements ItemListener
     	panel.add(shadingLabel, "wrap");
     	panel.add(flatShadingButton, "wrap, gapleft 25");
     	panel.add(smoothShadingButton, "wrap, gapleft 25");
+    	panel.add(gridCheckBox, "wrap");
     	
     	add(panel, BorderLayout.CENTER);
 	}
@@ -158,10 +165,29 @@ public class ErosControlPanel extends JPanel implements ItemListener
 
 		if (e.getItemSelectable() == this.modelCheckBox)
 		{
-			if (e.getStateChange() == ItemEvent.DESELECTED)
-				erosModel.setShowEros(false);
-			else
+			// In the following we ensure that the graticule is shown
+			// only if the shape model is shown
+			Graticule graticule = (Graticule)modelManager.getModel(ModelManager.GRATICULE);
+			if (e.getStateChange() == ItemEvent.SELECTED)
+			{
 				erosModel.setShowEros(true);
+				if (gridCheckBox.isSelected())
+					graticule.setShowGraticule(true);
+			}
+			else
+			{
+				erosModel.setShowEros(false);
+				if (gridCheckBox.isSelected())
+					graticule.setShowGraticule(false);
+			}
+		}
+		if (e.getItemSelectable() == this.gridCheckBox)
+		{
+			Graticule graticule = (Graticule)modelManager.getModel(ModelManager.GRATICULE);
+			if (e.getStateChange() == ItemEvent.SELECTED)
+				graticule.setShowGraticule(true);
+			else
+				graticule.setShowGraticule(false);
 		}
 		else if (e.getItemSelectable() == this.flatShadingButton)
 		{

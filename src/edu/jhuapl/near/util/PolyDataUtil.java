@@ -674,6 +674,175 @@ public class PolyDataUtil
 		else
 			return null;
 	}
+
+	
+	static private ArrayList<vtkClipPolyData> clipFilters_f7 = new ArrayList<vtkClipPolyData>();
+	static private ArrayList<vtkPlane> clipPlanes_f7 = new ArrayList<vtkPlane>();
+	static private ArrayList<vtkPolyData> clipOutputs_f7 = new ArrayList<vtkPolyData>(); // not sure is this one is really needed
+	//static private vtkSphere sphere_f7;
+	//static private vtkExtractPolyDataGeometry extract_f7;
+	static private vtkRegularPolygonSource polygonSource_f7;
+	static private vtkPolyDataConnectivityFilter connectivityFilter_f7;
+	static private vtkFeatureEdges edgeExtracter_f7;
+	public static void drawConeOnPolyData(
+			vtkPolyData polyData,
+			vtkAbstractPointLocator pointLocator,
+			double[] vertex,
+			double[] axis, // must be unit vector
+			double angle,
+			int numberOfSides,
+			vtkPolyData outputInterior,
+			vtkPolyData outputBoundary)
+	{
+		/*
+		double[] normal = getPolyDataNormalAtPoint(center, polyData, pointLocator);
+
+		
+		// Reduce the size of the polydata we need to process by only
+		// considering cells within twice radius of center.
+		//vtkSphere sphere = new vtkSphere();
+		if (sphere_f7 == null)
+			sphere_f7 = new vtkSphere();
+		sphere_f7.SetCenter(center);
+		sphere_f7.SetRadius(radius >= 0.2 ? 1.2*radius : 1.2*0.2);
+		
+		//vtkExtractPolyDataGeometry extract = new vtkExtractPolyDataGeometry();
+		if (extract_f7 == null)
+			extract_f7 = new vtkExtractPolyDataGeometry();
+		extract_f7.SetImplicitFunction(sphere_f7);
+		extract_f7.SetExtractInside(1);
+		extract_f7.SetExtractBoundaryCells(1);
+		extract_f7.SetInput(polyData);
+		extract_f7.Update();
+		polyData = extract_f7.GetOutput();
+		*/
+		
+		double radius = Math.tan(angle);
+		double[] polygonCenter = {
+				vertex[0] + axis[0],
+				vertex[1] + axis[1],
+				vertex[2] + axis[2]
+		};
+		
+		//vtkRegularPolygonSource polygonSource = new vtkRegularPolygonSource();
+		if (polygonSource_f7 == null)
+			polygonSource_f7 = new vtkRegularPolygonSource();
+		polygonSource_f7.SetCenter(polygonCenter);
+		polygonSource_f7.SetRadius(radius);
+		polygonSource_f7.SetNormal(axis);
+		polygonSource_f7.SetNumberOfSides(numberOfSides);
+		polygonSource_f7.SetGeneratePolygon(0);
+		polygonSource_f7.SetGeneratePolyline(0);
+		polygonSource_f7.Update();
+
+		vtkPoints points = polygonSource_f7.GetOutput().GetPoints();
+
+		
+		// randomly shuffling the order of the sides we process can speed things up
+		ArrayList<Integer> sides = new ArrayList<Integer>();
+		for (int i=0; i<numberOfSides; ++i)
+			sides.add(i);
+		Collections.shuffle(sides);
+		
+		vtkPolyData nextInput = polyData;
+		vtkClipPolyData clipPolyData = null;
+		for (int i=0; i<sides.size(); ++i)	
+		{
+			int side = sides.get(i);
+			
+			// compute normal to plane formed by this side of polygon
+			double[] currentPoint = points.GetPoint(side);
+			
+			double[] nextPoint = null;
+			if (side < numberOfSides-1)
+				nextPoint = points.GetPoint(side+1);
+			else
+				nextPoint = points.GetPoint(0);
+			
+			double[] vec = {nextPoint[0]-currentPoint[0],
+					nextPoint[1]-currentPoint[1], 
+					nextPoint[2]-currentPoint[2]};
+
+			double[] vec2 = {
+					currentPoint[0] - vertex[0],
+					currentPoint[1] - vertex[1],
+					currentPoint[2] - vertex[2]
+			};
+			double[] planeNormal = new double[3];
+			GeometryUtil.vcrss(vec2, vec, planeNormal);
+			GeometryUtil.vhat(planeNormal, planeNormal);
+			
+			if (i > clipPlanes_f7.size()-1)
+				clipPlanes_f7.add(new vtkPlane());
+			vtkPlane plane = clipPlanes_f7.get(i);
+//			vtkPlane plane = new vtkPlane();
+			plane.SetOrigin(currentPoint);
+			plane.SetNormal(planeNormal);
+			
+			if (i > clipFilters_f7.size()-1)
+				clipFilters_f7.add(new vtkClipPolyData());
+			clipPolyData = clipFilters_f7.get(i);
+//			clipPolyData = new vtkClipPolyData();
+			clipPolyData.SetInput(nextInput);
+			clipPolyData.SetClipFunction(plane);
+			clipPolyData.SetInsideOut(1);
+			//clipPolyData.Update();
+			
+			nextInput = clipPolyData.GetOutput();
+			
+			if (i > clipOutputs_f7.size()-1)
+				clipOutputs_f7.add(nextInput);
+			clipOutputs_f7.set(i, nextInput);
+		}
+
+
+		//vtkPolyDataConnectivityFilter connectivityFilter = new vtkPolyDataConnectivityFilter();
+		if (connectivityFilter_f7 == null)
+			connectivityFilter_f7 = new vtkPolyDataConnectivityFilter();
+		connectivityFilter_f7.SetInputConnection(clipPolyData.GetOutputPort());
+		connectivityFilter_f7.SetExtractionModeToClosestPointRegion();
+		connectivityFilter_f7.SetClosestPoint(polygonCenter);
+		connectivityFilter_f7.Update();
+
+//		polyData = new vtkPolyData();
+		//if (outputPolyData_f7 == null)
+		//	outputPolyData_f7 = new vtkPolyData();
+
+		if (outputInterior != null)
+		{
+//			polyData.DeepCopy(f1_connectivityFilter.GetOutput());
+			outputInterior.DeepCopy(connectivityFilter_f7.GetOutput());
+		}
+		
+		if (outputBoundary != null)
+		{
+			// Compute the bounding edges of this surface
+			//vtkFeatureEdges edgeExtracter = new vtkFeatureEdges();
+			if (edgeExtracter_f7 == null)
+				edgeExtracter_f7 = new vtkFeatureEdges();
+	        edgeExtracter_f7.SetInput(connectivityFilter_f7.GetOutput());
+	        edgeExtracter_f7.BoundaryEdgesOn();
+	        edgeExtracter_f7.FeatureEdgesOff();
+	        edgeExtracter_f7.NonManifoldEdgesOff();
+	        edgeExtracter_f7.ManifoldEdgesOff();
+	        edgeExtracter_f7.Update();
+
+	        //polyData.DeepCopy(edgeExtracter.GetOutput());
+			outputBoundary.DeepCopy(edgeExtracter_f7.GetOutput());
+		}
+
+		
+        //vtkPolyDataWriter writer = new vtkPolyDataWriter();
+        //writer.SetInput(polygonSource.GetOutput());
+        //writer.SetFileName("/tmp/coneeros.vtk");
+        //writer.SetFileTypeToBinary();
+        //writer.Write();
+
+		//return polyData;
+		//return outputPolyData_f7;
+	}
+
+
 	
 	static private vtkPolyDataNormals normalsFilter_f2;
 	public static void shiftPolyDataInNormalDirection(vtkPolyData polyData, double shiftAmount)

@@ -13,7 +13,7 @@ public class ModelManager extends Model implements PropertyChangeListener
 {
 	static public final String LINEAMENT = "lineament";
 	static public final String MSI_IMAGES = "msi-images";
-	static public final String EROS= "eros";
+	static public final String EROS = "eros";
 	static public final String MSI_BOUNDARY = "msi-boundary";
 	static public final String NIS_SPECTRA = "nis-spectra";
 	static public final String NLR_DATA = "nlr-data";
@@ -21,6 +21,7 @@ public class ModelManager extends Model implements PropertyChangeListener
 	static public final String CIRCLE_STRUCTURES = "circle-structures";
 	static public final String POINT_STRUCTURES = "point-structures";
 	static public final String CIRCLE_SELECTION = "circle-selection";
+	static public final String GRATICULE = "graticule";
 	
 	private LineamentModel lineamentModel;
 	private MSIImageCollection msiImages;
@@ -32,6 +33,7 @@ public class ModelManager extends Model implements PropertyChangeListener
 	private CircleModel circleStructuresModel;
 	private PointModel pointStructuresModel;
 	private RegularPolygonModel circleSelectionModel;
+	private Graticule graticule;
 	
     private ArrayList<vtkProp> props = new ArrayList<vtkProp>();
     private ArrayList<vtkProp> propsExceptEros = new ArrayList<vtkProp>();
@@ -55,6 +57,7 @@ public class ModelManager extends Model implements PropertyChangeListener
     			20,
     			false,
     			"Selection");
+    	graticule = new Graticule(erosModel);
     	
     	allModels = new ArrayList<Model>();
     	allModels.add(erosModel);
@@ -67,6 +70,7 @@ public class ModelManager extends Model implements PropertyChangeListener
     	allModels.add(circleStructuresModel);
     	allModels.add(pointStructuresModel);
     	allModels.add(circleSelectionModel);
+    	allModels.add(graticule);
 
     	for (Model model : allModels)
     		model.addPropertyChangeListener(this);
@@ -138,6 +142,8 @@ public class ModelManager extends Model implements PropertyChangeListener
 			return pointStructuresModel;
 		else if (CIRCLE_SELECTION.equals(modelName))
 			return circleSelectionModel;
+		else if (GRATICULE.equals(modelName))
+				return graticule;
 		else
 			return null;
 	}
