@@ -4,6 +4,8 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 
+import edu.jhuapl.near.util.Properties;
+
 import vtk.*;
 
 public abstract class Model 
@@ -13,6 +15,22 @@ public abstract class Model
     { this.pcs.addPropertyChangeListener( listener ); }
     public void removePropertyChangeListener( PropertyChangeListener listener )
     { this.pcs.removePropertyChangeListener( listener ); }
+
+    private boolean visible = true;
+    
+    public boolean isVisible()
+    {
+    	return visible;
+    }
+    
+    public void setVisible(boolean b)
+    {
+    	if (this.visible != b)
+    	{
+    		this.visible = b;
+			this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+    	}
+    }
     
     public abstract ArrayList<vtkProp> getProps();
     

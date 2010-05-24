@@ -105,13 +105,16 @@ public class ModelManager extends Model implements PropertyChangeListener
 
 		for (Model model : allModels)
 		{
-			props.addAll(model.getProps());
-						
-			for (vtkProp prop : model.getProps())
-	    		propToModelMap.put(prop, model);
-			
-			if (!(model instanceof ErosModel))
-				propsExceptEros.addAll(model.getProps());
+			if (model.isVisible())
+			{
+				props.addAll(model.getProps());
+
+				for (vtkProp prop : model.getProps())
+					propToModelMap.put(prop, model);
+
+				if (!(model instanceof ErosModel))
+					propsExceptEros.addAll(model.getProps());
+			}
 		}
 	}
 
