@@ -14,6 +14,9 @@ public class ErosCubes
 	private double cubeSize = 1.0;
 	private double buffer = 0.01;
 	private boolean useHardCodedValues = true;
+	private int numCubesX;
+	private int numCubesY;
+	private int numCubesZ;
 	
 	public ErosCubes(ErosModel eros, double cubeSize, double buffer)
 	{
@@ -40,9 +43,9 @@ public class ErosCubes
 		erosBB.zmin -= buffer;
 		
 		
-		int numCubesX = (int)(Math.ceil(erosBB.xmax - erosBB.xmin) / cubeSize);
-		int numCubesY = (int)(Math.ceil(erosBB.ymax - erosBB.ymin) / cubeSize);
-		int numCubesZ = (int)(Math.ceil(erosBB.zmax - erosBB.zmin) / cubeSize);
+		numCubesX = (int)(Math.ceil(erosBB.xmax - erosBB.xmin) / cubeSize);
+		numCubesY = (int)(Math.ceil(erosBB.ymax - erosBB.ymin) / cubeSize);
+		numCubesZ = (int)(Math.ceil(erosBB.zmax - erosBB.zmin) / cubeSize);
 		
 		for (int k=0; k<numCubesZ; ++k)
 		{
@@ -67,7 +70,7 @@ public class ErosCubes
 				}
 			}
 		}
-
+		
 		// Change the following to false to actually compute the 
 		// values stored in the erosIntersectingCubes array. This can take
 		// a long time which is why we hard code the values into this class.
@@ -164,18 +167,34 @@ public class ErosCubes
 		return cubeIds;
 	}
 
-	/*
+	
 	public int getCubeId(double[] pt)
 	{
-		double x = pt[0];
-		double y = pt[1];
-		double z = pt[2];
+		if (!erosBB.contains(pt))
+			return -1;
 		
-		return (int)Math.floor((x - erosBB.xmin) / cubeSize) +
-		(int)Math.floor((y - erosBB.ymin) / cubeSize)*numCubesX +
-		(int)Math.floor((z - erosBB.zmin) / cubeSize)*numCubesX*numCubesY; 
+		int numberCubes = allCubes.size();
+		for (int i=0; i<numberCubes; ++i)
+		{
+			BoundingBox cube = getCube(i);
+			if (cube.contains(pt))
+				return i;
+		}
+
+		// If we reach here something is wrong
+		System.err.println("Error: could not find cube");
+		
+		return -1;
+		
+//		double x = pt[0];
+//		double y = pt[1];
+//		double z = pt[2];
+//		
+//		return (int)Math.floor((x - erosBB.xmin) / cubeSize) +
+//		(int)Math.floor((y - erosBB.ymin) / cubeSize)*numCubesX +
+//		(int)Math.floor((z - erosBB.zmin) / cubeSize)*numCubesX*numCubesY; 
 	}
-	*/
+	
 	
 	static private final int[] erosIntersectingCubes = {
 			124,125,126,153,154,155,156,157,158,159,183,184,185,186,187,

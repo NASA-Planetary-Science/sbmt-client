@@ -54,9 +54,28 @@ public class BoundingBox
 			return false;
 	}
 	
+	/**
+	 * Returns the largest side of the box.
+	 * @return
+	 */
 	public double getLargestSide()
 	{
 		return Math.max(xmax-xmin, Math.max(ymax-ymin, zmax-zmin));
+	}
+	
+	/**
+	 * Returns whether or not the given point is contained in the box. 
+	 * @param pt
+	 * @return
+	 */
+	public boolean contains(double[] pt)
+	{
+		if (pt[0] <= xmin || pt[0] > xmax ||
+			pt[1] <= ymin || pt[1] > ymax ||
+			pt[2] <= zmin || pt[2] > zmax)
+			return false;
+		else
+			return true;
 	}
 	
 	public String toString()
