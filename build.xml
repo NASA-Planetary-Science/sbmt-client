@@ -10,6 +10,7 @@
     <mkdir dir="${rootdir}/build/classes/edu/jhuapl"/>
     <mkdir dir="${rootdir}/build/classes/edu/jhuapl/near"/>
     <mkdir dir="${rootdir}/build/classes/edu/jhuapl/near/data"/>
+	<exec executable="svnversion" output="build/classes/svn.version" failifexecutionfails="false"/>
     <copy todir="${rootdir}/build/classes/edu/jhuapl/near/data">
       <fileset dir="${rootdir}/src/edu/jhuapl/near/data"/>
     </copy>

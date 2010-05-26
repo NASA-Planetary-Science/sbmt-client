@@ -96,13 +96,6 @@ public class ErosViewer extends JFrame
     	this.getContentPane().add(statusBar, BorderLayout.PAGE_END);
     }
 
-//    public void about()
-//    {
-//        QMessageBox.about(this,
-//                         tr("About Near Viewer"),
-//                         tr("(C) 2009 The Johns Hopkins University Applied Physics Laboratory"));
-//    }
-
     public static void main(String[] args)
     {
     	try

@@ -16,6 +16,9 @@ public class FileMenu extends JMenu
 
         JMenuItem mi = new JMenuItem(new SaveImageAction(viewer));
         this.add(mi);
+    	this.addSeparator();
+    	mi = new JMenuItem(new AboutAction(viewer));
+        this.add(mi);
         
         if (showExit)
         {
@@ -108,4 +111,36 @@ public class FileMenu extends JMenu
         }
     }
 
+    private static class AboutAction extends AbstractAction
+    {
+    	vtkRenderWindowPanel viewer;
+    	public static final String COPYRIGHT  = "\u00a9";
+
+    	public AboutAction(vtkRenderWindowPanel viewer)
+        {
+            super("About Small Body Mapping Tool");
+            this.viewer = viewer;
+        }
+
+        public void actionPerformed(ActionEvent actionEvent)
+        {
+        	String versionString = "\n";
+        	try
+        	{
+        		InputStream is = this.getClass().getResourceAsStream("/svn.version");
+        		byte[] data = new byte[16];
+        		is.read(data, 0, data.length);
+        		versionString = "Version: " + (new String(data)).trim() + "\n\n";
+        	}
+        	catch (Exception e)
+        	{
+        	}
+        	
+			JOptionPane.showMessageDialog(viewer,
+					"Small Body Mapping Tool\n" + versionString +
+				    COPYRIGHT + " 2010 The Johns Hopkins University Applied Physics Laboratory \n",
+				    "About Small Body Mapping Tool",
+				    JOptionPane.PLAIN_MESSAGE);
+        }
+    }
 }
