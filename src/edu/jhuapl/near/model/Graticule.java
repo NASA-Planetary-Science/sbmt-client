@@ -2,8 +2,11 @@ package edu.jhuapl.near.model;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
 import java.util.ArrayList;
 
+import edu.jhuapl.near.util.ConvertResourceToFile;
+import edu.jhuapl.near.util.FileCache;
 import edu.jhuapl.near.util.LatLon;
 import edu.jhuapl.near.util.GeometryUtil;
 import edu.jhuapl.near.util.Properties;
@@ -16,6 +19,7 @@ import vtk.vtkImplicitFunction;
 import vtk.vtkPlane;
 import vtk.vtkPolyData;
 import vtk.vtkPolyDataMapper;
+import vtk.vtkPolyDataReader;
 import vtk.vtkProp;
 import vtk.vtkTransform;
 
@@ -32,26 +36,28 @@ public class Graticule extends Model implements PropertyChangeListener
     private vtkCone cone;
     private vtkCutter cutPolyData;
     private vtkTransform transform;
-    
+    private vtkPolyDataReader reader;
+    private File defaultModelFile;
+
 	public Graticule(ErosModel erosModel)
 	{
-		this.erosModel = erosModel;
-		erosModel.addPropertyChangeListener(this);
-
+		if (erosModel != null)
+		{
+			this.erosModel = erosModel;
+			erosModel.addPropertyChangeListener(this);
+		}
+		
 		appendFilter = new vtkAppendPolyData();
 		plane = new vtkPlane();
 		cone = new vtkCone();
 		cutPolyData = new vtkCutter();
 		transform = new vtkTransform();
 		polyData = new vtkPolyData();
+		reader = new vtkPolyDataReader();
 	}
 	
-	private void update()
+	public void generateGrid(vtkPolyData erosPolyData)
 	{
-		// There is no need to regenerate the data if generated is true
-		if (generated)
-			return;
-		
 		double longitudeSpacing = 10.0;
 		double latitudeSpacing = 10.0;
 		
@@ -65,7 +71,7 @@ public class Graticule extends Model implements PropertyChangeListener
 		appendFilter.SetNumberOfInputs(numberLatCircles + numberLonCircles);
 		vtkPolyData[] tmps = new vtkPolyData[numberLatCircles + numberLonCircles];
 
-		cutPolyData.SetInput(erosModel.getErosPolyData());
+		cutPolyData.SetInput(erosPolyData);
 
 		// First do the longitudes.
 		for (int i=0; i<numberLonCircles; ++i)
@@ -117,7 +123,51 @@ public class Graticule extends Model implements PropertyChangeListener
 		appendFilter.Update();
 	
 		polyData.DeepCopy(appendFilter.GetOutput());
+	}
+	
+	/**
+	 * Returns the grid as a vtkPolyData. Note that generateGrid() must be called first.
+	 * @return
+	 */
+	public vtkPolyData getGridAsPolyData()
+	{
+		return polyData;
+	}
+	
+	private void update()
+	{
+		// There is no need to regenerate the data if generated is true
+		if (generated)
+			return;
 
+		//this.generateGrid(erosModel.getErosPolyData());
+		int level = erosModel.getModelResolution();
+
+		
+		File modelFile = null;
+		switch(level)
+		{
+		case 1:
+			modelFile = FileCache.getFileFromServer("/EROS/coordinate_grid_res1.vtk.gz");
+			break;
+		case 2:
+			modelFile = FileCache.getFileFromServer("/EROS/coordinate_grid_res2.vtk.gz");
+			break;
+		case 3:
+			modelFile = FileCache.getFileFromServer("/EROS/coordinate_grid_res1.vtk.gz");
+			break;
+		default:
+			if (defaultModelFile == null)
+				defaultModelFile = ConvertResourceToFile.convertResourceToTempFile(this, "/edu/jhuapl/near/data/coordinate_grid_res0.vtk");
+			modelFile = defaultModelFile;
+			break;
+		}
+
+		reader.SetFileName(modelFile.getAbsolutePath());
+		reader.Update();
+
+		polyData.DeepCopy(reader.GetOutput());
+		
 		erosModel.shiftPolyLineInNormalDirection(polyData, 0.005);
 
 		if (mapper == null)
