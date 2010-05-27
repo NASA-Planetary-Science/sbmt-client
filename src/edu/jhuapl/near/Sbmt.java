@@ -3,9 +3,11 @@ package edu.jhuapl.near;
 import javax.swing.*;
 
 import vtk.vtkJavaGarbageCollector;
+import vtk.vtkRenderWindowPanel;
 
 import edu.jhuapl.near.gui.ControlPanel;
 import edu.jhuapl.near.gui.ErosRenderer;
+import edu.jhuapl.near.gui.ErosViewer;
 import edu.jhuapl.near.gui.FileMenu;
 import edu.jhuapl.near.gui.ModelInfoWindowManager;
 import edu.jhuapl.near.gui.StatusBar;
@@ -24,50 +26,57 @@ import java.util.concurrent.TimeUnit;
  * @author kahneg1
  *
  */
-public class ErosViewer extends JFrame 
+public class Sbmt extends JFrame 
 {
-	private JSplitPane splitPane;
-	private ErosRenderer renderer;
-	private ControlPanel controlPanel;
+	//private JSplitPane splitPane;
+	//private ErosRenderer renderer;
+	//private ControlPanel controlPanel;
 	private StatusBar statusBar;
 	private FileMenu fileMenu;
-	private ModelManager modelManager;
-	private PickManager pickManager;
-	private PopupManager popupManager;
-	private ModelInfoWindowManager infoPanelManager;
+	//private ModelManager modelManager;
+	//private PickManager pickManager;
+	//private PopupManager popupManager;
+	//private ModelInfoWindowManager infoPanelManager;
 	private static vtkJavaGarbageCollector garbageCollector;
 	
-	public ErosViewer()
+	public Sbmt()
 	{
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         createStatusBar();
 
-		modelManager = new ModelManager();
+        JPanel rootPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+        
+        ErosViewer erosViewer = new ErosViewer(statusBar);
+        
+		//modelManager = new ModelManager();
 	
-		infoPanelManager = new ModelInfoWindowManager(modelManager);
+		//infoPanelManager = new ModelInfoWindowManager(modelManager);
 		
-		renderer = new ErosRenderer(modelManager);
+		//renderer = new ErosRenderer(modelManager);
 
-		popupManager = new PopupManager(renderer, modelManager, infoPanelManager);
+		//popupManager = new PopupManager(renderer, modelManager, infoPanelManager);
 
-		pickManager = new PickManager(renderer, statusBar, modelManager, infoPanelManager, popupManager);
+		//pickManager = new PickManager(renderer, statusBar, modelManager, infoPanelManager, popupManager);
 
-        controlPanel = new ControlPanel(renderer, modelManager, infoPanelManager, pickManager);
+        //controlPanel = new ControlPanel(renderer, modelManager, infoPanelManager, pickManager);
 
-		splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
-                controlPanel, renderer);
-		splitPane.setOneTouchExpandable(true);
+		//splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
+        //        controlPanel, renderer);
+		//splitPane.setOneTouchExpandable(true);
 
-        renderer.setMinimumSize(new Dimension(100, 100));
-        renderer.setPreferredSize(new Dimension(800, 800));
-        controlPanel.setMinimumSize(new Dimension(320, 100));
-        controlPanel.setPreferredSize(new Dimension(320, 800));
+        //renderer.setMinimumSize(new Dimension(100, 100));
+        //renderer.setPreferredSize(new Dimension(800, 800));
+        //controlPanel.setMinimumSize(new Dimension(320, 100));
+        //controlPanel.setPreferredSize(new Dimension(320, 800));
 
-		createMenus(renderer);
+		createMenus(erosViewer.getRenderWindowPanel());
 
-		this.add(splitPane, BorderLayout.CENTER);
-
+		rootPanel.setLayout(new CardLayout());
+		rootPanel.add(erosViewer, "a");
+		
+		this.add(rootPanel, BorderLayout.CENTER);
+		
 //        // Center the application on the screen.
 //        Dimension prefSize = this.getPreferredSize();
 //        Dimension parentSize;
@@ -79,11 +88,11 @@ public class ErosViewer extends JFrame
 //        this.setResizable(true);
 	}
 
-    private void createMenus(ErosRenderer imageViewer)
+    private void createMenus(vtkRenderWindowPanel renderer)
     {
     	JMenuBar menuBar = new JMenuBar();
 
-    	fileMenu = new FileMenu(imageViewer.getRenderWindowPanel(), true);
+    	fileMenu = new FileMenu(renderer, true);
         fileMenu.setMnemonic('F');
         menuBar.add(fileMenu);
 
@@ -118,7 +127,7 @@ public class ErosViewer extends JFrame
         try
         {
         	JPopupMenu.setDefaultLightWeightPopupEnabled(false);
-            final ErosViewer frame = new ErosViewer();
+            final Sbmt frame = new Sbmt();
         	
             javax.swing.SwingUtilities.invokeLater(new Runnable()
             {
