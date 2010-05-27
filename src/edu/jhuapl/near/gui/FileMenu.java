@@ -30,7 +30,7 @@ public class FileMenu extends JMenu
 
     private static class SaveImageAction extends AbstractAction
     {
-    	vtkRenderWindowPanel viewer;
+    	private vtkRenderWindowPanel viewer;
 
     	public SaveImageAction(vtkRenderWindowPanel viewer)
         {
@@ -113,8 +113,8 @@ public class FileMenu extends JMenu
 
     private static class AboutAction extends AbstractAction
     {
-    	vtkRenderWindowPanel viewer;
-    	public static final String COPYRIGHT  = "\u00a9";
+    	private vtkRenderWindowPanel viewer;
+    	private static final String COPYRIGHT  = "\u00a9";
 
     	public AboutAction(vtkRenderWindowPanel viewer)
         {
@@ -128,9 +128,9 @@ public class FileMenu extends JMenu
         	try
         	{
         		InputStream is = this.getClass().getResourceAsStream("/svn.version");
-        		byte[] data = new byte[16];
+        		byte[] data = new byte[128];
         		is.read(data, 0, data.length);
-        		versionString = "Version: " + (new String(data)).trim() + "\n\n";
+        		versionString = (new String(data)).trim() + "\n\n";
         	}
         	catch (Exception e)
         	{
@@ -138,7 +138,7 @@ public class FileMenu extends JMenu
         	
 			JOptionPane.showMessageDialog(viewer,
 					"Small Body Mapping Tool\n" + versionString +
-				    COPYRIGHT + " 2010 The Johns Hopkins University Applied Physics Laboratory \n",
+				    COPYRIGHT + " 2010 The Johns Hopkins University Applied Physics Laboratory\n",
 				    "About Small Body Mapping Tool",
 				    JOptionPane.PLAIN_MESSAGE);
         }
