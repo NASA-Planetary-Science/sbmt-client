@@ -50,9 +50,14 @@ public class ErosRenderer extends JPanel implements
     	for (int i=0; i<size; ++i)
     		renderedProps.add((vtkProp)propCollection.GetItemAsObject(i));
     	renderedProps.removeAll(props);
-    	for (vtkProp prop : renderedProps)
-			renWin.GetRenderer().RemoveViewProp(prop);
-
+    	if (!renderedProps.isEmpty())
+    	{
+    		renWin.lock();
+    		for (vtkProp prop : renderedProps)
+    			renWin.GetRenderer().RemoveViewProp(prop);
+    		renWin.unlock();
+    	}
+    	
     	// Next add the new props.
     	for (vtkProp prop : props)
     	{
