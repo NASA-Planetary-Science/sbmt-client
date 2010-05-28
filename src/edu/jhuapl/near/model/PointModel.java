@@ -2,16 +2,16 @@ package edu.jhuapl.near.model;
 
 
 /**
- * Model of line structures drawn on Eros.
+ * Model of line structures drawn on a body.
  * 
  * @author 
  *
  */
 public class PointModel extends RegularPolygonModel 
 {
-	public PointModel(ErosModel erosModel)
+	public PointModel(SmallBodyModel smallBodyModel)
 	{
-		super(erosModel, 4, false, "point");
+		super(smallBodyModel, 4, false, "point");
 		setInteriorOpacity(1.0);
 		int[] color = {255, 0, 255};
 		setDefaultColor(color);

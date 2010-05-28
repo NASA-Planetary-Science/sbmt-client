@@ -1,7 +1,7 @@
 package edu.jhuapl.near.pick;
 
 import edu.jhuapl.near.gui.*;
-import edu.jhuapl.near.model.*;
+import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.popupmenus.PopupManager;
 import vtk.*;
 
@@ -17,7 +17,7 @@ public class PickManager extends Picker
 	}
 	
 	private PickMode pickMode = PickMode.DEFAULT;
-	private ErosRenderer erosRenderer;
+	private Renderer renderer;
     private vtkRenderWindowPanel renWin;
     
     private LinePicker linePicker;
@@ -27,14 +27,13 @@ public class PickManager extends Picker
     private CircleSelectionPicker circleSelectionPicker;
     
 	public PickManager(
-			ErosRenderer erosRenderer, 
+			Renderer renderer, 
 			StatusBar statusBar,
 			ModelManager modelManager,
-			ModelInfoWindowManager infoPanelManager,
 			PopupManager popupManager)
 	{
-		this.erosRenderer = erosRenderer;
-		this.renWin = erosRenderer.getRenderWindowPanel();
+		this.renderer = renderer;
+		this.renWin = renderer.getRenderWindowPanel();
 
 		modelManager.addPropertyChangeListener(this);
 		
@@ -42,13 +41,13 @@ public class PickManager extends Picker
         renWin.addMouseMotionListener(this);
         renWin.addMouseWheelListener(this);
 
-		linePicker = new LinePicker(erosRenderer, modelManager);
-		circlePicker = new CirclePicker(erosRenderer, modelManager);
-		pointPicker = new PointPicker(erosRenderer, modelManager);
+		linePicker = new LinePicker(renderer, modelManager);
+		circlePicker = new CirclePicker(renderer, modelManager);
+		pointPicker = new PointPicker(renderer, modelManager);
 
-		circleSelectionPicker = new CircleSelectionPicker(erosRenderer, modelManager);
+		circleSelectionPicker = new CircleSelectionPicker(renderer, modelManager);
 		
-		defaultPicker = new DefaultPicker(erosRenderer, statusBar, modelManager, infoPanelManager, popupManager);
+		defaultPicker = new DefaultPicker(renderer, statusBar, modelManager, popupManager);
 
 		addPicker(defaultPicker);
 	}
@@ -62,35 +61,35 @@ public class PickManager extends Picker
 		switch(this.pickMode)
 		{
 		case DEFAULT:
-			erosRenderer.setInteractorToDefault();
+			renderer.setInteractorToDefault();
 			removePicker(linePicker);
 			removePicker(circlePicker);
 			removePicker(pointPicker);
 			removePicker(circleSelectionPicker);
 	        break;
 		case LINE_DRAW:
-			erosRenderer.setInteractorToNone();
+			renderer.setInteractorToNone();
 			removePicker(circlePicker);
 			removePicker(pointPicker);
 			removePicker(circleSelectionPicker);
 			addPicker(linePicker);
 			break;
 		case CIRCLE_DRAW:
-			erosRenderer.setInteractorToNone();
+			renderer.setInteractorToNone();
 			removePicker(linePicker);
 			removePicker(pointPicker);
 			removePicker(circleSelectionPicker);
 			addPicker(circlePicker);
 			break;
 		case POINT_DRAW:
-			erosRenderer.setInteractorToNone();
+			renderer.setInteractorToNone();
 			removePicker(linePicker);
 			removePicker(circlePicker);
 			removePicker(circleSelectionPicker);
 			addPicker(pointPicker);
 			break;
 		case CIRCLE_SELECTION:
-			erosRenderer.setInteractorToNone();
+			renderer.setInteractorToNone();
 			removePicker(linePicker);
 			removePicker(pointPicker);
 			removePicker(circlePicker);

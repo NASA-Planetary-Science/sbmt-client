@@ -17,7 +17,7 @@ public class CirclesPopupMenu extends PopupMenu
 	
 	public CirclesPopupMenu(ModelManager modelManager)
 	{
-		this.model = (CircleModel)modelManager.getModel(ModelManager.CIRCLE_STRUCTURES);
+		this.model = modelManager.getCircleStructuresModel();
 		
 		JMenuItem mi; 
 		mi = new JMenuItem(new DeleteAction());

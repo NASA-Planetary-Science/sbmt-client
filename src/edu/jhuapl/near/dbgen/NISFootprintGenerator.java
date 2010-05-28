@@ -9,8 +9,8 @@ import org.joda.time.DateTimeZone;
 
 import vtk.*;
 
-import edu.jhuapl.near.model.ErosModel;
-import edu.jhuapl.near.model.NISSpectrum;
+import edu.jhuapl.near.model.eros.ErosModel;
+import edu.jhuapl.near.model.eros.NISSpectrum;
 import edu.jhuapl.near.util.FileUtil;
 import edu.jhuapl.near.util.NativeLibraryLoader;
 

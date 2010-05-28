@@ -2,7 +2,7 @@ package edu.jhuapl.near.model;
 
 
 /**
- * Model of circle structures drawn on Eros.
+ * Model of circle structures drawn on a body.
  * 
  * @author 
  *
@@ -10,9 +10,9 @@ package edu.jhuapl.near.model;
 
 public class CircleModel extends RegularPolygonModel 
 {
-	public CircleModel(ErosModel erosModel)
+	public CircleModel(SmallBodyModel smallBodyModel)
 	{
-		super(erosModel, 20, true, "circle");
+		super(smallBodyModel, 20, true, "circle");
 		setInteriorOpacity(0.0);
 		int[] color = {255, 0, 255};
 		setDefaultColor(color);

@@ -17,7 +17,7 @@ public class LinesPopupMenu extends PopupMenu
 	
 	public LinesPopupMenu(ModelManager modelManager)
 	{
-		this.model = (LineModel)modelManager.getModel(ModelManager.LINE_STRUCTURES);
+		this.model = modelManager.getLineStructuresModel();
 		
 		JMenuItem mi; 
 		mi = new JMenuItem(new EditAction());

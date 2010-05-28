@@ -5,15 +5,9 @@ import javax.swing.*;
 import vtk.vtkJavaGarbageCollector;
 import vtk.vtkRenderWindowPanel;
 
-import edu.jhuapl.near.gui.ControlPanel;
-import edu.jhuapl.near.gui.ErosRenderer;
-import edu.jhuapl.near.gui.ErosViewer;
 import edu.jhuapl.near.gui.FileMenu;
-import edu.jhuapl.near.gui.ModelInfoWindowManager;
 import edu.jhuapl.near.gui.StatusBar;
-import edu.jhuapl.near.model.ModelManager;
-import edu.jhuapl.near.pick.PickManager;
-import edu.jhuapl.near.popupmenus.PopupManager;
+import edu.jhuapl.near.gui.eros.ErosViewer;
 import edu.jhuapl.near.util.NativeLibraryLoader;
 
 import java.awt.*;
@@ -45,9 +39,11 @@ public class Sbmt extends JFrame
 
         createStatusBar();
 
-        JPanel rootPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+        JPanel rootPanel = new JPanel(new BorderLayout());
+        rootPanel.setBorder(BorderFactory.createEmptyBorder());
         
         ErosViewer erosViewer = new ErosViewer(statusBar);
+        ErosViewer itokawaViewer = new ErosViewer(statusBar);
         
 		//modelManager = new ModelManager();
 	
@@ -74,6 +70,7 @@ public class Sbmt extends JFrame
 
 		rootPanel.setLayout(new CardLayout());
 		rootPanel.add(erosViewer, "a");
+		rootPanel.add(itokawaViewer, "b");
 		
 		this.add(rootPanel, BorderLayout.CENTER);
 		

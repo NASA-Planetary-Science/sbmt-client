@@ -8,8 +8,8 @@ import nom.tam.fits.FitsException;
 
 import vtk.*;
 
-import edu.jhuapl.near.model.ErosModel;
-import edu.jhuapl.near.model.MSIImage;
+import edu.jhuapl.near.model.eros.ErosModel;
+import edu.jhuapl.near.model.eros.MSIImage;
 import edu.jhuapl.near.util.FileUtil;
 import edu.jhuapl.near.util.NativeLibraryLoader;
 

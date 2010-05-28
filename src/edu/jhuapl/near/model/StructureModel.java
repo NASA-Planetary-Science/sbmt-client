@@ -6,7 +6,7 @@ import vtk.vtkProp;
 
 
 /**
- * Model of structures drawn on Eros such as lineaments and circles.
+ * Model of structures drawn on a body such as lines and circles.
  * 
  * @author 
  *

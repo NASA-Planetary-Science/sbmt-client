@@ -5,7 +5,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import edu.jhuapl.near.model.ErosModel;
+import edu.jhuapl.near.model.eros.ErosModel;
 import edu.jhuapl.near.query.ErosCubes;
 import edu.jhuapl.near.util.FileUtil;
 import edu.jhuapl.near.util.NativeLibraryLoader;

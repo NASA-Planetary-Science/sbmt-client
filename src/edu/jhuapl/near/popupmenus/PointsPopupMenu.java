@@ -17,7 +17,7 @@ public class PointsPopupMenu extends PopupMenu
 	
 	public PointsPopupMenu(ModelManager modelManager)
 	{
-		this.model = (PointModel)modelManager.getModel(ModelManager.POINT_STRUCTURES);
+		this.model = modelManager.getPointStructuresModel();
 		
 		JMenuItem mi;
 		mi = new JMenuItem(new DeleteAction());

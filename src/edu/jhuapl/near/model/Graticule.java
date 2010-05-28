@@ -25,7 +25,7 @@ import vtk.vtkTransform;
 
 public class Graticule extends Model implements PropertyChangeListener
 {
-	private ErosModel erosModel;
+	private SmallBodyModel smallBodyModel;
     private ArrayList<vtkProp> actors = new ArrayList<vtkProp>();
     private vtkActor actor;
     private boolean generated = false;
@@ -38,15 +38,17 @@ public class Graticule extends Model implements PropertyChangeListener
     private vtkTransform transform;
     private vtkPolyDataReader reader;
     private File defaultModelFile;
-
-	public Graticule(ErosModel erosModel)
+    private String[] gridFiles;
+    
+	public Graticule(SmallBodyModel smallBodyModel, String[] gridFiles)
 	{
-		if (erosModel != null)
+		if (smallBodyModel != null)
 		{
-			this.erosModel = erosModel;
-			erosModel.addPropertyChangeListener(this);
+			this.smallBodyModel = smallBodyModel;
+			smallBodyModel.addPropertyChangeListener(this);
 		}
-		
+	
+		this.gridFiles = gridFiles;
 		appendFilter = new vtkAppendPolyData();
 		plane = new vtkPlane();
 		cone = new vtkCone();
@@ -56,7 +58,7 @@ public class Graticule extends Model implements PropertyChangeListener
 		reader = new vtkPolyDataReader();
 	}
 	
-	public void generateGrid(vtkPolyData erosPolyData)
+	public void generateGrid(vtkPolyData smallBodyPolyData)
 	{
 		double longitudeSpacing = 10.0;
 		double latitudeSpacing = 10.0;
@@ -71,7 +73,7 @@ public class Graticule extends Model implements PropertyChangeListener
 		appendFilter.SetNumberOfInputs(numberLatCircles + numberLonCircles);
 		vtkPolyData[] tmps = new vtkPolyData[numberLatCircles + numberLonCircles];
 
-		cutPolyData.SetInput(erosPolyData);
+		cutPolyData.SetInput(smallBodyPolyData);
 
 		// First do the longitudes.
 		for (int i=0; i<numberLonCircles; ++i)
@@ -140,25 +142,25 @@ public class Graticule extends Model implements PropertyChangeListener
 		if (generated)
 			return;
 
-		//this.generateGrid(erosModel.getErosPolyData());
-		int level = erosModel.getModelResolution();
+		//this.generateGrid(smallBodyModel.getErosPolyData());
+		int level = smallBodyModel.getModelResolution();
 
 		
 		File modelFile = null;
 		switch(level)
 		{
 		case 1:
-			modelFile = FileCache.getFileFromServer("/EROS/coordinate_grid_res1.vtk.gz");
+			modelFile = FileCache.getFileFromServer(gridFiles[1]);
 			break;
 		case 2:
-			modelFile = FileCache.getFileFromServer("/EROS/coordinate_grid_res2.vtk.gz");
+			modelFile = FileCache.getFileFromServer(gridFiles[2]);
 			break;
 		case 3:
-			modelFile = FileCache.getFileFromServer("/EROS/coordinate_grid_res1.vtk.gz");
+			modelFile = FileCache.getFileFromServer(gridFiles[3]);
 			break;
 		default:
 			if (defaultModelFile == null)
-				defaultModelFile = ConvertResourceToFile.convertResourceToTempFile(this, "/edu/jhuapl/near/data/coordinate_grid_res0.vtk");
+				defaultModelFile = ConvertResourceToFile.convertResourceToTempFile(this, gridFiles[0]);
 			modelFile = defaultModelFile;
 			break;
 		}
@@ -168,7 +170,7 @@ public class Graticule extends Model implements PropertyChangeListener
 
 		polyData.DeepCopy(reader.GetOutput());
 		
-		erosModel.shiftPolyLineInNormalDirection(polyData, 0.005);
+		smallBodyModel.shiftPolyLineInNormalDirection(polyData, 0.005);
 
 		if (mapper == null)
 			mapper = new vtkPolyDataMapper();

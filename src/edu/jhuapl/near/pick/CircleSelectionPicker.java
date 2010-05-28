@@ -5,43 +5,41 @@ import java.util.ArrayList;
 
 import vtk.*;
 
-import edu.jhuapl.near.gui.ErosRenderer;
+import edu.jhuapl.near.gui.Renderer;
 import edu.jhuapl.near.model.*;
 
 public class CircleSelectionPicker extends Picker
 {
     private ModelManager modelManager;
-	//private ErosRenderer erosRenderer;
     private vtkRenderWindowPanel renWin;
-    private ErosModel erosModel;
+    private SmallBodyModel smallBodyModel;
     private RegularPolygonModel circleModel;
     
-    private vtkCellPicker erosPicker;
+    private vtkCellPicker smallBodyPicker;
 
     private int vertexIdBeingEdited = -1;
 	
     public CircleSelectionPicker(
-			ErosRenderer erosRenderer, 
+			Renderer renderer, 
 			ModelManager modelManager
 			) 
 	{
-    	//this.erosRenderer = erosRenderer;
-		this.renWin = erosRenderer.getRenderWindowPanel();
+		this.renWin = renderer.getRenderWindowPanel();
 		this.modelManager = modelManager;
-		this.circleModel = (RegularPolygonModel)modelManager.getModel(ModelManager.CIRCLE_SELECTION);
+		this.circleModel = modelManager.getCircleSelectionModel();
 		
-		erosPicker = new vtkCellPicker();
-		erosPicker.SetTolerance(0.002);
-		erosPicker.PickFromListOn();
-		erosPicker.InitializePickList();
-		erosModel = (ErosModel)modelManager.getModel(ModelManager.EROS);
-		ArrayList<vtkProp> actors = erosModel.getProps();
-		erosPicker.GetPickList().RemoveAllItems();
+		smallBodyPicker = new vtkCellPicker();
+		smallBodyPicker.SetTolerance(0.002);
+		smallBodyPicker.PickFromListOn();
+		smallBodyPicker.InitializePickList();
+		smallBodyModel = modelManager.getSmallBodyModel();
+		ArrayList<vtkProp> actors = smallBodyModel.getProps();
+		smallBodyPicker.GetPickList().RemoveAllItems();
 		for (vtkProp act : actors)
 		{
-			erosPicker.AddPickList(act);
+			smallBodyPicker.AddPickList(act);
 		}
-		erosPicker.AddLocator(erosModel.getLocator());
+		smallBodyPicker.AddLocator(smallBodyModel.getLocator());
 	}
 
     public void mousePressed(MouseEvent e) 
@@ -54,17 +52,17 @@ public class CircleSelectionPicker extends Picker
     	circleModel.removeAllStructures();
     	
     	renWin.lock();
-    	int pickSucceeded = erosPicker.Pick(e.getX(), renWin.getHeight()-e.getY()-1, 0.0, renWin.GetRenderer());
+    	int pickSucceeded = smallBodyPicker.Pick(e.getX(), renWin.getHeight()-e.getY()-1, 0.0, renWin.GetRenderer());
     	renWin.unlock();
 
     	if (pickSucceeded == 1)
     	{
-    		vtkActor pickedActor = erosPicker.GetActor();
+    		vtkActor pickedActor = smallBodyPicker.GetActor();
     		Model model = modelManager.getModel(pickedActor);
 
-    		if (model == erosModel)
+    		if (model == smallBodyModel)
     		{
-    			double[] pos = erosPicker.GetPickPosition();
+    			double[] pos = smallBodyPicker.GetPickPosition();
     			if (e.getClickCount() == 1)
     			{
     				circleModel.addNewStructure(pos);
@@ -88,16 +86,16 @@ public class CircleSelectionPicker extends Picker
 		if (vertexIdBeingEdited >= 0)
 		{
 			renWin.lock();
-			int pickSucceeded = erosPicker.Pick(e.getX(), renWin.getHeight()-e.getY()-1, 0.0, renWin.GetRenderer());
+			int pickSucceeded = smallBodyPicker.Pick(e.getX(), renWin.getHeight()-e.getY()-1, 0.0, renWin.GetRenderer());
 			renWin.unlock();
 			if (pickSucceeded == 1)
 			{
-				vtkActor pickedActor = erosPicker.GetActor();
+				vtkActor pickedActor = smallBodyPicker.GetActor();
 				Model model = modelManager.getModel(pickedActor);
 
-				if (model == erosModel)
+				if (model == smallBodyModel)
 				{
-					double[] lastDragPosition = erosPicker.GetPickPosition();
+					double[] lastDragPosition = smallBodyPicker.GetPickPosition();
 
 					circleModel.changeRadiusOfPolygon(vertexIdBeingEdited, lastDragPosition);
 				}

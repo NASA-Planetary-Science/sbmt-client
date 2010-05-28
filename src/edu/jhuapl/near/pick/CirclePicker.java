@@ -6,18 +6,17 @@ import java.util.ArrayList;
 
 import vtk.*;
 
-import edu.jhuapl.near.gui.ErosRenderer;
+import edu.jhuapl.near.gui.Renderer;
 import edu.jhuapl.near.model.*;
 
 public class CirclePicker extends Picker
 {
     private ModelManager modelManager;
-	//private ErosRenderer erosRenderer;
     private vtkRenderWindowPanel renWin;
-    private ErosModel erosModel;
+    private SmallBodyModel smallBodyModel;
     private CircleModel circleModel;
     
-    private vtkCellPicker erosPicker;
+    private vtkCellPicker smallBodyPicker;
     private vtkCellPicker circlePicker;
 
     private int vertexIdBeingEdited = -1;
@@ -36,27 +35,26 @@ public class CirclePicker extends Picker
 	private double[] lastDragPosition;
 	
     public CirclePicker(
-			ErosRenderer erosRenderer, 
+			Renderer renderer, 
 			ModelManager modelManager
 			) 
 	{
-    	//this.erosRenderer = erosRenderer;
-		this.renWin = erosRenderer.getRenderWindowPanel();
+		this.renWin = renderer.getRenderWindowPanel();
 		this.modelManager = modelManager;
-		this.circleModel = (CircleModel)modelManager.getModel(ModelManager.CIRCLE_STRUCTURES);
+		this.circleModel = modelManager.getCircleStructuresModel();
 
-		erosPicker = new vtkCellPicker();
-		erosPicker.SetTolerance(0.002);
-		erosPicker.PickFromListOn();
-		erosPicker.InitializePickList();
-		erosModel = (ErosModel)modelManager.getModel(ModelManager.EROS);
-		ArrayList<vtkProp> actors = erosModel.getProps();
-		erosPicker.GetPickList().RemoveAllItems();
+		smallBodyPicker = new vtkCellPicker();
+		smallBodyPicker.SetTolerance(0.002);
+		smallBodyPicker.PickFromListOn();
+		smallBodyPicker.InitializePickList();
+		smallBodyModel = modelManager.getSmallBodyModel();
+		ArrayList<vtkProp> actors = smallBodyModel.getProps();
+		smallBodyPicker.GetPickList().RemoveAllItems();
 		for (vtkProp act : actors)
 		{
-			erosPicker.AddPickList(act);
+			smallBodyPicker.AddPickList(act);
 		}
-		erosPicker.AddLocator(erosModel.getLocator());
+		smallBodyPicker.AddLocator(smallBodyModel.getLocator());
 		
 		circlePicker = new vtkCellPicker();
 		circlePicker.SetTolerance(0.002);
@@ -69,7 +67,7 @@ public class CirclePicker extends Picker
 	public void mousePressed(MouseEvent e) 
 	{
 		// If we pressed a vertex of an existing circle, begin dragging that vertex.
-		// If we pressed a point on Eros, begin drawing a new circle.
+		// If we pressed a point on the asteroid, begin drawing a new circle.
 
 
 		vertexIdBeingEdited = -1;
@@ -108,17 +106,17 @@ public class CirclePicker extends Picker
 				return;
 
 			renWin.lock();
-			int pickSucceeded = erosPicker.Pick(e.getX(), renWin.getHeight()-e.getY()-1, 0.0, renWin.GetRenderer());
+			int pickSucceeded = smallBodyPicker.Pick(e.getX(), renWin.getHeight()-e.getY()-1, 0.0, renWin.GetRenderer());
 			renWin.unlock();
 
 			if (pickSucceeded == 1)
 			{
-				vtkActor pickedActor = erosPicker.GetActor();
+				vtkActor pickedActor = smallBodyPicker.GetActor();
 				Model model = modelManager.getModel(pickedActor);
 
-				if (model == erosModel)
+				if (model == smallBodyModel)
 				{
-					double[] pos = erosPicker.GetPickPosition();
+					double[] pos = smallBodyPicker.GetPickPosition();
 					if (e.getClickCount() == 1)
 					{
 						circleModel.addNewStructure(pos);
@@ -150,16 +148,16 @@ public class CirclePicker extends Picker
 			vertexIdBeingEdited >= 0)
 		{
 			renWin.lock();
-			int pickSucceeded = erosPicker.Pick(e.getX(), renWin.getHeight()-e.getY()-1, 0.0, renWin.GetRenderer());
+			int pickSucceeded = smallBodyPicker.Pick(e.getX(), renWin.getHeight()-e.getY()-1, 0.0, renWin.GetRenderer());
 			renWin.unlock();
 			if (pickSucceeded == 1)
 			{
-				vtkActor pickedActor = erosPicker.GetActor();
+				vtkActor pickedActor = smallBodyPicker.GetActor();
 				Model model = modelManager.getModel(pickedActor);
 
-				if (model == erosModel)
+				if (model == smallBodyModel)
 				{
-					lastDragPosition = erosPicker.GetPickPosition();
+					lastDragPosition = smallBodyPicker.GetPickPosition();
 
 					if (e.isControlDown() || e.isShiftDown())
 						circleModel.changeRadiusOfPolygon(vertexIdBeingEdited, lastDragPosition);

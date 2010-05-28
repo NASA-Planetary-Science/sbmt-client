@@ -17,7 +17,7 @@ import edu.jhuapl.near.util.GeometryUtil;
 import vtk.*;
 
 /**
- * Model of regular polygon structures drawn on Eros.
+ * Model of regular polygon structures drawn on a body.
  * 
  * @author 
  *
@@ -42,7 +42,7 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
     private vtkUnsignedCharArray interiorColors;
 
     private vtkPolyData emptyPolyData;
-    private ErosModel erosModel;
+    private SmallBodyModel smallBodyModel;
     private double defaultRadius = 0.25; // radius for new polygons drawn
     private int numberOfSides = 4;
     private int[] defaultColor = {0, 191, 255};
@@ -114,12 +114,12 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
 			return interiorPolyData;
 		}
 
-		public void updatePolygon(ErosModel erosModel, double[] center, double radius)
+		public void updatePolygon(SmallBodyModel sbModel, double[] center, double radius)
 	    {
 	    	this.center = center;
 	    	this.radius = radius;
 	    	
-	    	erosModel.drawPolygon(center, radius, numberOfSides, interiorPolyData, boundaryPolyData);
+	    	sbModel.drawPolygon(center, radius, numberOfSides, interiorPolyData, boundaryPolyData);
 	    }
 	    
 	    public String getClickStatusBarText()
@@ -130,14 +130,14 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
 	}
 
 	public RegularPolygonModel(
-			ErosModel erosModel,
+			SmallBodyModel smallBodyModel,
 			int numberOfSides,
 			boolean saveRadiusToOutput,
 			String type)
 	{
-		this.erosModel = erosModel;
+		this.smallBodyModel = smallBodyModel;
 
-		this.erosModel.addPropertyChangeListener(this);
+		this.smallBodyModel.addPropertyChangeListener(this);
 		
 		emptyPolyData = new vtkPolyData();
 		
@@ -252,8 +252,8 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
 			boundaryPolyData.DeepCopy(boundaryAppendFilter.GetOutput());
 			interiorPolyData.DeepCopy(interiorAppendFilter.GetOutput());
 
-			erosModel.shiftPolyLineInNormalDirection(boundaryPolyData, 0.003);
-			erosModel.shiftPolyLineInNormalDirection(interiorPolyData, 0.002);
+			smallBodyModel.shiftPolyLineInNormalDirection(boundaryPolyData, 0.003);
+			smallBodyModel.shiftPolyLineInNormalDirection(interiorPolyData, 0.002);
 			
 			boundaryColors.SetNumberOfTuples(boundaryPolyData.GetNumberOfCells());
 			interiorColors.SetNumberOfTuples(interiorPolyData.GetNumberOfCells());
@@ -342,7 +342,7 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
         RegularPolygon pol = this.new RegularPolygon(numberOfSides, type, defaultColor);
         polygons.add(pol);
 
-        pol.updatePolygon(erosModel, pos, defaultRadius);
+        pol.updatePolygon(smallBodyModel, pos, defaultRadius);
         highlightedStructure = polygons.size()-1;
         updatePolyData();
         
@@ -362,7 +362,7 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
     public void movePolygon(int polygonId, double[] newCenter)
     {
     	RegularPolygon pol = polygons.get(polygonId);
-        pol.updatePolygon(erosModel, newCenter, pol.radius);
+        pol.updatePolygon(smallBodyModel, newCenter, pol.radius);
         updatePolyData();
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
@@ -377,7 +377,7 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
     	if (newRadius > 5.0)
     		newRadius = 5.0;
     	
-        pol.updatePolygon(erosModel, pol.center, newRadius);
+        pol.updatePolygon(smallBodyModel, pol.center, newRadius);
         updatePolyData();
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
@@ -386,7 +386,7 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
 	{
 		for (RegularPolygon pol : this.polygons)
 		{
-	        pol.updatePolygon(erosModel, pol.center, newRadius);
+	        pol.updatePolygon(smallBodyModel, pol.center, newRadius);
 		}
 
 		updatePolyData();
@@ -477,7 +477,7 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
 	    	if (pol.id > maxPolygonId)
 	    		maxPolygonId = pol.id;
 	    	
-	    	pol.updatePolygon(erosModel, pol.center, pol.radius);
+	    	pol.updatePolygon(smallBodyModel, pol.center, pol.radius);
 	        newPolygons.add(pol);
 		}
 		
@@ -583,7 +583,7 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
 	{
 		for (RegularPolygon pol : this.polygons)
 		{
-	        pol.updatePolygon(erosModel, pol.center, pol.radius);
+	        pol.updatePolygon(smallBodyModel, pol.center, pol.radius);
 		}
 
 		updatePolyData();

@@ -6,18 +6,18 @@ import java.util.ArrayList;
 
 import vtk.*;
 
-import edu.jhuapl.near.gui.ErosRenderer;
+import edu.jhuapl.near.gui.Renderer;
 import edu.jhuapl.near.model.*;
+import edu.jhuapl.near.model.ModelManager;
 
 public class LinePicker extends Picker
 {
     private ModelManager modelManager;
-	//private ErosRenderer erosRenderer;
     private vtkRenderWindowPanel renWin;
-    private ErosModel erosModel;
+    private SmallBodyModel smallBodyModel;
     private LineModel lineModel;
     
-    private vtkCellPicker erosPicker;
+    private vtkCellPicker smallBodyPicker;
     private vtkCellPicker linePicker;
     private vtkCellPicker lineSelectionPicker;
 
@@ -37,27 +37,26 @@ public class LinePicker extends Picker
 	private double[] lastDragPosition;
 	
     public LinePicker(
-			ErosRenderer erosRenderer, 
+			Renderer renderer, 
 			ModelManager modelManager
 			) 
 	{
-    	//this.erosRenderer = erosRenderer;
-		this.renWin = erosRenderer.getRenderWindowPanel();
+		this.renWin = renderer.getRenderWindowPanel();
 		this.modelManager = modelManager;
-		this.lineModel = (LineModel)modelManager.getModel(ModelManager.LINE_STRUCTURES);
+		this.lineModel = modelManager.getLineStructuresModel();
 		
-		erosPicker = new vtkCellPicker();
-		erosPicker.SetTolerance(0.002);
-		erosPicker.PickFromListOn();
-		erosPicker.InitializePickList();
-		erosModel = (ErosModel)modelManager.getModel(ModelManager.EROS);
-		ArrayList<vtkProp> actors = erosModel.getProps();
-		erosPicker.GetPickList().RemoveAllItems();
+		smallBodyPicker = new vtkCellPicker();
+		smallBodyPicker.SetTolerance(0.002);
+		smallBodyPicker.PickFromListOn();
+		smallBodyPicker.InitializePickList();
+		smallBodyModel = modelManager.getSmallBodyModel();
+		ArrayList<vtkProp> actors = smallBodyModel.getProps();
+		smallBodyPicker.GetPickList().RemoveAllItems();
 		for (vtkProp act : actors)
 		{
-			erosPicker.AddPickList(act);
+			smallBodyPicker.AddPickList(act);
 		}
-		erosPicker.AddLocator(erosModel.getLocator());
+		smallBodyPicker.AddLocator(smallBodyModel.getLocator());
 
 		linePicker = new vtkCellPicker();
 		linePicker.SetTolerance(0.002);
@@ -77,7 +76,7 @@ public class LinePicker extends Picker
 	public void mousePressed(MouseEvent e) 
 	{
 		// If we pressed a vertex of an existing lineament, begin dragging that vertex.
-		// If we pressed a point on Eros, begin drawing a new line.
+		// If we pressed a point on the body, begin drawing a new line.
 
 
 		vertexIdBeingEdited = -1;
@@ -116,17 +115,17 @@ public class LinePicker extends Picker
 				return;
 
 			renWin.lock();
-			int pickSucceeded = erosPicker.Pick(e.getX(), renWin.getHeight()-e.getY()-1, 0.0, renWin.GetRenderer());
+			int pickSucceeded = smallBodyPicker.Pick(e.getX(), renWin.getHeight()-e.getY()-1, 0.0, renWin.GetRenderer());
 			renWin.unlock();
 
 			if (pickSucceeded == 1)
 			{
-				vtkActor pickedActor = erosPicker.GetActor();
+				vtkActor pickedActor = smallBodyPicker.GetActor();
 				Model model = modelManager.getModel(pickedActor);
 
-				if (model == erosModel)
+				if (model == smallBodyModel)
 				{
-					double[] pos = erosPicker.GetPickPosition();
+					double[] pos = smallBodyPicker.GetPickPosition();
 					if (e.getClickCount() == 1)
 					{
 						lineModel.insertVertexIntoSelectedLine(pos);
@@ -158,16 +157,16 @@ public class LinePicker extends Picker
 			vertexIdBeingEdited >= 0)
 		{
 			renWin.lock();
-			int pickSucceeded = erosPicker.Pick(e.getX(), renWin.getHeight()-e.getY()-1, 0.0, renWin.GetRenderer());
+			int pickSucceeded = smallBodyPicker.Pick(e.getX(), renWin.getHeight()-e.getY()-1, 0.0, renWin.GetRenderer());
 			renWin.unlock();
 			if (pickSucceeded == 1)
 			{
-				vtkActor pickedActor = erosPicker.GetActor();
+				vtkActor pickedActor = smallBodyPicker.GetActor();
 				Model model = modelManager.getModel(pickedActor);
 
-				if (model == erosModel)
+				if (model == smallBodyModel)
 				{
-					lastDragPosition = erosPicker.GetPickPosition();
+					lastDragPosition = smallBodyPicker.GetPickPosition();
 
 					lineModel.moveSelectionVertex(vertexIdBeingEdited, lastDragPosition);
 				}

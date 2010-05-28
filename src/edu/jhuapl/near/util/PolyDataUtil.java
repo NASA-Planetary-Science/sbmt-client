@@ -182,7 +182,7 @@ public class PolyDataUtil
 		//polyData = new vtkPolyData();
 		tmpPolyData_f4.DeepCopy(cleanPoly_f4.GetOutput());
 		
-		// If the Eros body was a convex shape we would be done now.
+		// If the body was a convex shape we would be done now.
 		// Unfortunately, since it's not, it's possible for the polydata to have multiple connected
 		// pieces in view of the camera and some of these pieces are obscured by other pieces. 
 		// Thus first check how many connected pieces there are in the clipped polydata. 

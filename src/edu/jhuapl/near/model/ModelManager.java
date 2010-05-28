@@ -9,83 +9,35 @@ import edu.jhuapl.near.util.Properties;
 
 import vtk.*;
 
-public class ModelManager extends Model implements PropertyChangeListener
+public abstract class ModelManager extends Model implements PropertyChangeListener
 {
-	static public final String LINEAMENT = "lineament";
-	static public final String MSI_IMAGES = "msi-images";
-	static public final String EROS = "eros";
-	static public final String MSI_BOUNDARY = "msi-boundary";
-	static public final String NIS_SPECTRA = "nis-spectra";
-	static public final String NLR_DATA = "nlr-data";
-	static public final String LINE_STRUCTURES = "line-structures";
-	static public final String CIRCLE_STRUCTURES = "circle-structures";
-	static public final String POINT_STRUCTURES = "point-structures";
-	static public final String CIRCLE_SELECTION = "circle-selection";
-	static public final String GRATICULE = "graticule";
-	
-	private LineamentModel lineamentModel;
-	private MSIImageCollection msiImages;
-	private ErosModel erosModel;
-	private MSIBoundaryCollection msiBoundaries;
-	private NISSpectraCollection nisSpectra;
-	private NLRDataCollection nlrData;
-	private LineModel lineStructuresModel;
-	private CircleModel circleStructuresModel;
-	private PointModel pointStructuresModel;
-	private RegularPolygonModel circleSelectionModel;
-	private Graticule graticule;
-	
     private ArrayList<vtkProp> props = new ArrayList<vtkProp>();
-    private ArrayList<vtkProp> propsExceptEros = new ArrayList<vtkProp>();
+    private ArrayList<vtkProp> propsExceptSmallBody = new ArrayList<vtkProp>();
     private HashMap<vtkProp, Model> propToModelMap = new HashMap<vtkProp, Model>();
-    
     private ArrayList<Model> allModels;
     
     public ModelManager()
     {
-    	lineamentModel = new LineamentModel();
-    	erosModel = new ErosModel();
-    	msiImages = new MSIImageCollection(erosModel);
-    	msiBoundaries = new MSIBoundaryCollection(erosModel);
-    	nisSpectra = new NISSpectraCollection(erosModel);
-    	nlrData = new NLRDataCollection();
-    	lineStructuresModel = new LineModel(erosModel);
-    	circleStructuresModel = new CircleModel(erosModel);
-    	pointStructuresModel = new PointModel(erosModel);
-    	circleSelectionModel = new RegularPolygonModel(
-    			erosModel,
-    			20,
-    			false,
-    			"Selection");
-    	graticule = new Graticule(erosModel);
-    	
-    	allModels = new ArrayList<Model>();
-    	allModels.add(erosModel);
-    	allModels.add(lineamentModel);
-    	allModels.add(msiImages);
-    	allModels.add(msiBoundaries);
-    	allModels.add(nisSpectra);
-    	allModels.add(nlrData);
-    	allModels.add(lineStructuresModel);
-    	allModels.add(circleStructuresModel);
-    	allModels.add(pointStructuresModel);
-    	allModels.add(circleSelectionModel);
-    	allModels.add(graticule);
+    }
+
+    protected void setModels(ArrayList<Model> models)
+    {
+    	allModels = models;
 
     	for (Model model : allModels)
     		model.addPropertyChangeListener(this);
     	
 		updateProps();
     }
-
+    
     public ArrayList<vtkProp> getProps()
 	{
 		return props;
 	}
 
-    public ArrayList<vtkProp> getPropsExceptEros()
+    public ArrayList<vtkProp> getPropsExceptSmallBody()
 	{
-		return propsExceptEros;
+		return propsExceptSmallBody;
 	}
 
 	public void propertyChange(PropertyChangeEvent evt) 
@@ -100,7 +52,7 @@ public class ModelManager extends Model implements PropertyChangeListener
 	private void updateProps()
 	{
 		props.clear();
-		propsExceptEros.clear();
+		propsExceptSmallBody.clear();
 		propToModelMap.clear();
 
 		for (Model model : allModels)
@@ -112,8 +64,8 @@ public class ModelManager extends Model implements PropertyChangeListener
 				for (vtkProp prop : model.getProps())
 					propToModelMap.put(prop, model);
 
-				if (!(model instanceof ErosModel))
-					propsExceptEros.addAll(model.getProps());
+				if (!(model instanceof SmallBodyModel))
+					propsExceptSmallBody.addAll(model.getProps());
 			}
 		}
 	}
@@ -123,31 +75,17 @@ public class ModelManager extends Model implements PropertyChangeListener
 		return propToModelMap.get(prop);
 	}
 	
-	public Model getModel(String modelName)
-	{
-		if (LINEAMENT.equals(modelName))
-			return lineamentModel;
-		else if (EROS.equals(modelName))
-			return erosModel;
-		else if (MSI_IMAGES.equals(modelName))
-			return msiImages;
-		else if (MSI_BOUNDARY.equals(modelName))
-			return msiBoundaries;
-		else if (NIS_SPECTRA.equals(modelName))
-			return nisSpectra;
-		else if (NLR_DATA.equals(modelName))
-			return nlrData;
-		else if (LINE_STRUCTURES.equals(modelName))
-			return lineStructuresModel;
-		else if (CIRCLE_STRUCTURES.equals(modelName))
-			return circleStructuresModel;
-		else if (POINT_STRUCTURES.equals(modelName))
-			return pointStructuresModel;
-		else if (CIRCLE_SELECTION.equals(modelName))
-			return circleSelectionModel;
-		else if (GRATICULE.equals(modelName))
-				return graticule;
-		else
-			return null;
-	}
+	public abstract Model getModel(String modelName);
+	
+	public abstract SmallBodyModel getSmallBodyModel();
+
+	public abstract Graticule getGraticuleModel();
+
+	public abstract LineModel getLineStructuresModel();
+
+	public abstract CircleModel getCircleStructuresModel();
+
+	public abstract PointModel getPointStructuresModel();
+
+	public abstract RegularPolygonModel getCircleSelectionModel();
 }

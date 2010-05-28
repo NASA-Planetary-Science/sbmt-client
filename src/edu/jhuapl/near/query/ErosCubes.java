@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.TreeSet;
 
 import vtk.vtkPolyData;
-import edu.jhuapl.near.model.ErosModel;
+import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.util.BoundingBox;
 
 public class ErosCubes
@@ -18,7 +18,7 @@ public class ErosCubes
 	private int numCubesY;
 	private int numCubesZ;
 	
-	public ErosCubes(ErosModel eros, double cubeSize, double buffer)
+	public ErosCubes(SmallBodyModel eros, double cubeSize, double buffer)
 	{
 		this.cubeSize = cubeSize;
 		this.buffer = buffer;
@@ -26,12 +26,12 @@ public class ErosCubes
 		initialize(eros);
 	}
 	
-	public ErosCubes(ErosModel eros)
+	public ErosCubes(SmallBodyModel eros)
 	{
 		this.initialize(eros);
 	}
 	
-	private void initialize(ErosModel eros)
+	private void initialize(SmallBodyModel eros)
 	{
 		erosBB = eros.computeBoundingBox();
 
@@ -94,7 +94,7 @@ public class ErosCubes
 
 			// Remove from allCubes all cubes that do not intersect the asteroid
 			long t0 = System.currentTimeMillis();
-			TreeSet<Integer> intersectingCubes = getIntersectingCubes(eros.getErosPolyData());
+			TreeSet<Integer> intersectingCubes = getIntersectingCubes(eros.getSmallBodyPolyData());
 			System.out.println("Time elapsed:  " + ((double)System.currentTimeMillis()-t0)/1000.0);
 
 			ArrayList<BoundingBox> tmpCubes = new ArrayList<BoundingBox>();

@@ -33,7 +33,7 @@ import edu.jhuapl.near.util.GeometryUtil;
 import vtk.*;
 
 /**
- * Model of line structures drawn on Eros.
+ * Model of line structures drawn on a body.
  * 
  * @author 
  *
@@ -51,7 +51,7 @@ public class LineModel extends StructureModel implements PropertyChangeListener
 	private int[] purpleColor = {255, 0, 255, 255}; // RGBA purple
 	private int[] redColor = {255, 0, 0, 255}; // RGBA red
 	private int[] blueColor = {0, 0, 255, 255}; // RGBA blue
-    private ErosModel erosModel;
+    private SmallBodyModel smallBodyModel;
     private int selectedLine = -1;
     private int currentLineVertex = -1000;
     private int highlightedStructure = -1;
@@ -82,7 +82,7 @@ public class LineModel extends StructureModel implements PropertyChangeListener
 		public ArrayList<Double> rad = new ArrayList<Double>();
 		
 		// Note xyzPointList is what's displayed. There will usually be more of these points than
-		// lat, lon, alt in order to ensure the line is right above the surface of eros.
+		// lat, lon, alt in order to ensure the line is right above the surface of the asteroid.
 		public ArrayList<Point3D> xyzPointList = new ArrayList<Point3D>();
 		public ArrayList<Integer> controlPointIds = new ArrayList<Integer>();
 		
@@ -173,7 +173,7 @@ public class LineModel extends StructureModel implements PropertyChangeListener
 	    		lon.add(Double.parseDouble(tokens[i++])*Math.PI/180.0);
 	    		rad.add(Double.parseDouble(tokens[i++]));
 	    		
-	    		if (shapeModelName == null || !shapeModelName.equals(erosModel.getModelName()))
+	    		if (shapeModelName == null || !shapeModelName.equals(smallBodyModel.getModelName()))
 	    			shiftPointOnPathToClosestPointOnAsteroid(count);
 
 	    		controlPointIds.add(xyzPointList.size());
@@ -237,7 +237,7 @@ public class LineModel extends StructureModel implements PropertyChangeListener
             }
             else
             {
-        		vtkPolyData poly = erosModel.drawPath(pt1, pt2);
+        		vtkPolyData poly = smallBodyModel.drawPath(pt1, pt2);
         		if (poly == null)
         			return;
         			
@@ -273,7 +273,7 @@ public class LineModel extends StructureModel implements PropertyChangeListener
 			// point on the asteroid.
 			LatLon llr = new LatLon(lat.get(idx), lon.get(idx), rad.get(idx));
 			double pt[] = GeometryUtil.latrec(llr);
-			double[] closestPoint = erosModel.findClosestPoint(pt);
+			double[] closestPoint = smallBodyModel.findClosestPoint(pt);
 			LatLon ll = GeometryUtil.reclat(closestPoint);
 			lat.set(idx, ll.lat);
 			lon.set(idx, ll.lon);
@@ -281,11 +281,11 @@ public class LineModel extends StructureModel implements PropertyChangeListener
 		}
 	}
 
-	public LineModel(ErosModel erosModel)
+	public LineModel(SmallBodyModel smallBodyModel)
 	{
-		this.erosModel = erosModel;
+		this.smallBodyModel = smallBodyModel;
 
-		this.erosModel.addPropertyChangeListener(this);
+		this.smallBodyModel.addPropertyChangeListener(this);
 		
 		lineActor = new vtkActor();
 		lineActor.GetProperty().SetLineWidth(2.0);
@@ -298,7 +298,7 @@ public class LineModel extends StructureModel implements PropertyChangeListener
     public Element toXmlDomElement(Document dom)
     {
     	Element rootEle = dom.createElement(LINES);
-    	rootEle.setAttribute(SHAPE_MODEL_NAME, erosModel.getModelName());
+    	rootEle.setAttribute(SHAPE_MODEL_NAME, smallBodyModel.getModelName());
 
 		for (Line lin : this.lines)
 		{
@@ -375,7 +375,7 @@ public class LineModel extends StructureModel implements PropertyChangeListener
 
 		}
 
-		erosModel.shiftPolyLineInNormalDirection(linesPolyData, 0.002);
+		smallBodyModel.shiftPolyLineInNormalDirection(linesPolyData, 0.002);
 
 		if (lineMapper == null)
 			lineMapper = new vtkPolyDataMapper();
@@ -475,7 +475,7 @@ public class LineModel extends StructureModel implements PropertyChangeListener
         lin.xyzPointList.add(new Point3D(pt2));
         lin.controlPointIds.add(0);
         lin.controlPointIds.add(1);
-        lin.updateSegment(erosModel, 0);
+        lin.updateSegment(smallBodyModel, 0);
         lines.add(lin);
         
         updatePolyData();
@@ -737,7 +737,7 @@ public class LineModel extends StructureModel implements PropertyChangeListener
 		    	colors.InsertNextTuple4(redColor[0],redColor[1],redColor[2],redColor[3]);
 		}
 
-		erosModel.shiftPolyLineInNormalDirection(selectionPolyData, 0.001);
+		smallBodyModel.shiftPolyLineInNormalDirection(selectionPolyData, 0.001);
 		
 		if (lineSelectionMapper == null)
 			lineSelectionMapper = new vtkPolyDataMapper();

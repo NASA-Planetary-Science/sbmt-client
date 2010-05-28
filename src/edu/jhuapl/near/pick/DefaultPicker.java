@@ -28,44 +28,43 @@ public class DefaultPicker extends Picker
     private StatusBar statusBar;
     private ModelManager modelManager;
     private PopupManager popupManager;
-    private vtkCellPicker mouseMovedCellPicker; // includes all props including Eros
-    private vtkCellPicker mousePressNonErosCellPicker; // includes all props EXCEPT Eros
-    private vtkCellPicker mousePressErosCellPicker; // only includes Eros prop
+    private vtkCellPicker mouseMovedCellPicker; // includes all props including the small body
+    private vtkCellPicker mousePressNonSmallBodyCellPicker; // includes all props EXCEPT the small body
+    private vtkCellPicker mousePressSmallBodyCellPicker; // only includes small body prop
     private DecimalFormat decimalFormatter = new DecimalFormat("##0.000");
     private DecimalFormat decimalFormatter2 = new DecimalFormat("#0.000");
     private boolean suppressPopups = false;
     
 	public DefaultPicker(
-			ErosRenderer erosRenderer, 
+			Renderer renderer, 
 			StatusBar statusBar,
 			ModelManager modelManager,
-			ModelInfoWindowManager infoPanelManager,
 			PopupManager popupManager)
 	{
-		this.renWin = erosRenderer.getRenderWindowPanel();
+		this.renWin = renderer.getRenderWindowPanel();
 		this.statusBar = statusBar;
 		this.modelManager = modelManager;
 		this.popupManager = popupManager;
 
 		modelManager.addPropertyChangeListener(this);
 		
-		ErosModel erosModel = (ErosModel)modelManager.getModel(ModelManager.EROS);
+		SmallBodyModel smallBodyModel = modelManager.getSmallBodyModel();
 		mouseMovedCellPicker = new vtkCellPicker();
 		mouseMovedCellPicker.SetTolerance(0.002);
-		mouseMovedCellPicker.AddLocator(erosModel.getLocator());
+		mouseMovedCellPicker.AddLocator(smallBodyModel.getLocator());
 		
 		// See comment in the propertyChange function below as to why
 		// we use a custom pick list for these pickers.
-		mousePressNonErosCellPicker = new vtkCellPicker();
-		mousePressNonErosCellPicker.SetTolerance(0.002);
-		mousePressNonErosCellPicker.PickFromListOn();
-		mousePressNonErosCellPicker.InitializePickList();
+		mousePressNonSmallBodyCellPicker = new vtkCellPicker();
+		mousePressNonSmallBodyCellPicker.SetTolerance(0.002);
+		mousePressNonSmallBodyCellPicker.PickFromListOn();
+		mousePressNonSmallBodyCellPicker.InitializePickList();
 
-		mousePressErosCellPicker = new vtkCellPicker();
-		mousePressErosCellPicker.SetTolerance(0.002);
-		mousePressErosCellPicker.PickFromListOn();
-		mousePressErosCellPicker.InitializePickList();
-		mousePressErosCellPicker.AddLocator(erosModel.getLocator());
+		mousePressSmallBodyCellPicker = new vtkCellPicker();
+		mousePressSmallBodyCellPicker.SetTolerance(0.002);
+		mousePressSmallBodyCellPicker.PickFromListOn();
+		mousePressSmallBodyCellPicker.InitializePickList();
+		mousePressSmallBodyCellPicker.AddLocator(smallBodyModel.getLocator());
 	}
 
 	public void setSuppressPopups(boolean b)
@@ -78,48 +77,48 @@ public class DefaultPicker extends Picker
 		if (renWin.GetRenderWindow().GetNeverRendered() > 0)
 			return;
 
-		// First try picking on the non-eros picker. If that fails try the eros picker.
+		// First try picking on the non-small-body picker. If that fails try the small body picker.
 		renWin.lock();
-		int pickSucceeded = mousePressNonErosCellPicker.Pick(e.getX(), renWin.getHeight()-e.getY()-1, 0.0, renWin.GetRenderer());
+		int pickSucceeded = mousePressNonSmallBodyCellPicker.Pick(e.getX(), renWin.getHeight()-e.getY()-1, 0.0, renWin.GetRenderer());
 		renWin.unlock();
 		
 		if (pickSucceeded == 1)
 		{
-			vtkActor pickedActor = mousePressNonErosCellPicker.GetActor();
+			vtkActor pickedActor = mousePressNonSmallBodyCellPicker.GetActor();
 			Model model = modelManager.getModel(pickedActor);
 
 			if (model != null)
 			{
-				int cellId = mousePressNonErosCellPicker.GetCellId();
+				int cellId = mousePressNonSmallBodyCellPicker.GetCellId();
 				String text = model.getClickStatusBarText(pickedActor, cellId);
 				statusBar.setLeftText(text);
 				pcs.firePropertyChange(
 						Properties.MODEL_PICKED,
 						null,
-						new PickEvent(e, pickedActor, cellId, mousePressNonErosCellPicker.GetPickPosition()));
+						new PickEvent(e, pickedActor, cellId, mousePressNonSmallBodyCellPicker.GetPickPosition()));
 			}
 		}		
 		else
 		{
-			// If the non-eros picker failed, see if the user clicked on eros itself.
+			// If the non-small-body picker failed, see if the user clicked on the small body itself.
 			renWin.lock();
-			pickSucceeded = mousePressErosCellPicker.Pick(e.getX(), renWin.getHeight()-e.getY()-1, 0.0, renWin.GetRenderer());
+			pickSucceeded = mousePressSmallBodyCellPicker.Pick(e.getX(), renWin.getHeight()-e.getY()-1, 0.0, renWin.GetRenderer());
 			renWin.unlock();
 
 			if (pickSucceeded == 1)
 			{
-				vtkActor pickedActor = mousePressErosCellPicker.GetActor();
+				vtkActor pickedActor = mousePressSmallBodyCellPicker.GetActor();
 				Model model = modelManager.getModel(pickedActor);
 
 				if (model != null)
 				{
-					int cellId = mousePressErosCellPicker.GetCellId();
+					int cellId = mousePressSmallBodyCellPicker.GetCellId();
 					String text = model.getClickStatusBarText(pickedActor, cellId);
 					statusBar.setLeftText(text);
 					pcs.firePropertyChange(
 							Properties.MODEL_PICKED,
 							null,
-							new PickEvent(e, pickedActor, cellId, mousePressErosCellPicker.GetPickPosition()));
+							new PickEvent(e, pickedActor, cellId, mousePressSmallBodyCellPicker.GetPickPosition()));
 				}
 			}		
 			else
@@ -165,16 +164,16 @@ public class DefaultPicker extends Picker
         		return;
     		
     		renWin.lock();
-    		int pickSucceeded = mousePressNonErosCellPicker.Pick(e.getX(), renWin.getHeight()-e.getY()-1, 0.0, renWin.GetRenderer());
+    		int pickSucceeded = mousePressNonSmallBodyCellPicker.Pick(e.getX(), renWin.getHeight()-e.getY()-1, 0.0, renWin.GetRenderer());
     		renWin.unlock();
     		if (pickSucceeded == 1)
     		{
-    			vtkActor pickedActor = mousePressNonErosCellPicker.GetActor();
+    			vtkActor pickedActor = mousePressNonSmallBodyCellPicker.GetActor();
     			popupManager.showPopup(
     					e,
     					pickedActor,
-    					mousePressNonErosCellPicker.GetCellId(),
-    					mousePressNonErosCellPicker.GetPickPosition());
+    					mousePressNonSmallBodyCellPicker.GetCellId(),
+    					mousePressNonSmallBodyCellPicker.GetPickPosition());
     		}		
         }
     }
@@ -184,25 +183,25 @@ public class DefaultPicker extends Picker
 		if (evt.getPropertyName().equals(Properties.MODEL_CHANGED))
 		{
 			// Whenever the model actors change, we need to update the pickers 
-			// internal list of all actors to pick from. The Eros actor is excluded
+			// internal list of all actors to pick from. The small body actor is excluded
 			// from this list since many other actors occupy the same position
-			// as parts of Eros and we want the picker to pick these other
-			// actors rather than Eros. Note that this exclusion only applies 
+			// as parts of the small body and we want the picker to pick these other
+			// actors rather than the small body. Note that this exclusion only applies 
 			// to the following picker.
-			ArrayList<vtkProp> actors = modelManager.getPropsExceptEros();
-			mousePressNonErosCellPicker.GetPickList().RemoveAllItems();
+			ArrayList<vtkProp> actors = modelManager.getPropsExceptSmallBody();
+			mousePressNonSmallBodyCellPicker.GetPickList().RemoveAllItems();
 			for (vtkProp act : actors)
 			{
-				mousePressNonErosCellPicker.AddPickList(act);
+				mousePressNonSmallBodyCellPicker.AddPickList(act);
 			}
 
-			// Note that this picker includes only the eros prop so that if the
-			// the previous picker, we then invoke this picker on eros itself.
-			actors = modelManager.getModel(ModelManager.EROS).getProps();
-			mousePressErosCellPicker.GetPickList().RemoveAllItems();
+			// Note that this picker includes only the small body prop so that if the
+			// the previous picker, we then invoke this picker on small body itself.
+			actors = modelManager.getSmallBodyModel().getProps();
+			mousePressSmallBodyCellPicker.GetPickList().RemoveAllItems();
 			for (vtkProp act : actors)
 			{
-				mousePressErosCellPicker.AddPickList(act);
+				mousePressSmallBodyCellPicker.AddPickList(act);
 			}
 		}
 	}
