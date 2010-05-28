@@ -2,8 +2,8 @@ package edu.jhuapl.near.model;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.TreeSet;
@@ -69,7 +69,11 @@ public abstract class SmallBodyModel extends Model
     private String[] modelFiles;
 	private String[] coloringFiles;
     
-	public SmallBodyModel(String[] modelNames, String[] modelFiles, String[] coloringFiles)
+	public SmallBodyModel(
+			String[] modelNames,
+			String[] modelFiles,
+			String[] coloringFiles,
+			boolean lowestResolutionModelStoredInResource)
 	{
 		this.modelNames = modelNames;
 		this.modelFiles = modelFiles;
@@ -82,7 +86,10 @@ public abstract class SmallBodyModel extends Model
 		pointLocator = new vtkKdTreePointLocator();
 		genericCell = new vtkGenericCell();
 		
-		defaultModelFile = ConvertResourceToFile.convertResourceToTempFile(this, modelFiles[0]);
+		if (lowestResolutionModelStoredInResource)
+			defaultModelFile = ConvertResourceToFile.convertResourceToTempFile(this, modelFiles[0]);
+		else
+			defaultModelFile = FileCache.getFileFromServer(modelFiles[0]);
 
 		initialize(defaultModelFile);
 	}
@@ -173,14 +180,14 @@ public abstract class SmallBodyModel extends Model
 		
 		for (int i=0; i<4; ++i)
 		{
-			String file = coloringFiles[i];
+			File file = FileCache.getFileFromServer(coloringFiles[i]);
 			vtkFloatArray array = arrays[i];
 			
 			array.SetNumberOfComponents(1);
 			array.SetNumberOfTuples(smallBodyPolyData.GetNumberOfCells());
 			
-			InputStream is = getClass().getResourceAsStream(file);
-			InputStreamReader isr = new InputStreamReader(is);
+	    	FileInputStream fs =  new FileInputStream(file);
+			InputStreamReader isr = new InputStreamReader(fs);
 			BufferedReader in = new BufferedReader(isr);
 
 			String line;
@@ -537,6 +544,8 @@ public abstract class SmallBodyModel extends Model
     {
     	return resolutionLevel;
     }
+    
+    public abstract int getNumberResolutionLevels();
     
     public String getModelName()
     {

@@ -141,11 +141,14 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener
     	gridCheckBox.addItemListener(this);
 
     	panel.add(modelCheckBox, "wrap");
-    	panel.add(resolutionLabel, "wrap");
-    	panel.add(lowResModelButton, "wrap, gapleft 25");
-    	panel.add(medResModelButton, "wrap, gapleft 25");
-    	panel.add(highResModelButton, "wrap, gapleft 25");
-    	panel.add(veryHighResModelButton, "wrap, gapleft 25");
+    	if (modelManager.getSmallBodyModel().getNumberResolutionLevels() > 1)
+    	{
+    		panel.add(resolutionLabel, "wrap");
+    		panel.add(lowResModelButton, "wrap, gapleft 25");
+    		panel.add(medResModelButton, "wrap, gapleft 25");
+    		panel.add(highResModelButton, "wrap, gapleft 25");
+    		panel.add(veryHighResModelButton, "wrap, gapleft 25");
+    	}
     	panel.add(showColoringCheckBox, "wrap");
     	panel.add(elevationButton, "wrap, gapleft 25");
     	panel.add(gravitationalAccelerationButton, "wrap, gapleft 25");

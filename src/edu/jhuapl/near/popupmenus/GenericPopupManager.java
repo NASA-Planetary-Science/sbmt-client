@@ -3,6 +3,7 @@ package edu.jhuapl.near.popupmenus;
 import java.util.HashMap;
 
 import edu.jhuapl.near.model.Model;
+import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.eros.ErosModelManager;
 import edu.jhuapl.near.popupmenus.CirclesPopupMenu;
 import edu.jhuapl.near.popupmenus.LinesPopupMenu;
@@ -26,7 +27,7 @@ public class GenericPopupManager extends PopupManager
     	new HashMap<Model, PopupMenu>();
     
 	public GenericPopupManager(
-				ErosModelManager modelManager)
+			ModelManager modelManager)
 	{
 		super(modelManager);
 		

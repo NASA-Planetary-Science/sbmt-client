@@ -1,4 +1,4 @@
-package edu.jhuapl.near.gui;
+package edu.jhuapl.near.gui.deimos;
 
 import javax.swing.*;
 
@@ -6,11 +6,10 @@ import vtk.vtkRenderWindowPanel;
 
 import edu.jhuapl.near.gui.Renderer;
 import edu.jhuapl.near.gui.StatusBar;
-import edu.jhuapl.near.gui.eros.ControlPanel;
-import edu.jhuapl.near.gui.eros.ModelInfoWindowManager;
-import edu.jhuapl.near.model.eros.ErosModelManager;
+import edu.jhuapl.near.gui.View;
+import edu.jhuapl.near.model.deimos.DeimosModelManager;
 import edu.jhuapl.near.pick.PickManager;
-import edu.jhuapl.near.popupmenus.eros.ErosPopupManager;
+import edu.jhuapl.near.popupmenus.GenericPopupManager;
 
 import java.awt.*;
 
@@ -21,31 +20,35 @@ import java.awt.*;
  * @author kahneg1
  *
  */
-public class DeimosViewer extends JPanel 
+public class DeimosViewer extends View 
 {
+	public static final String NAME = "Deimos";
+
 	private JSplitPane splitPane;
 	private Renderer renderer;
-	private ControlPanel controlPanel;
-	private ErosModelManager modelManager;
+	private DeimosControlPanel controlPanel;
+	private DeimosModelManager modelManager;
 	private PickManager pickManager;
-	private ErosPopupManager popupManager;
-	private ModelInfoWindowManager infoPanelManager;
-	
+	private GenericPopupManager popupManager;
+	private StatusBar statusBar;
+		
 	public DeimosViewer(StatusBar statusBar)
 	{
 		super(new BorderLayout());
-
-		modelManager = new ErosModelManager();
+		this.statusBar = statusBar;
+	}
 	
-		infoPanelManager = new ModelInfoWindowManager(modelManager);
-		
+	public void initialize()
+	{
+		modelManager = new DeimosModelManager();
+	
 		renderer = new Renderer(modelManager);
 
-		popupManager = new ErosPopupManager(renderer, modelManager, infoPanelManager);
+		popupManager = new GenericPopupManager(modelManager);
 
 		pickManager = new PickManager(renderer, statusBar, modelManager, popupManager);
 
-        controlPanel = new ControlPanel(renderer, modelManager, infoPanelManager, pickManager);
+        controlPanel = new DeimosControlPanel(modelManager, pickManager);
 
 		splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
                 controlPanel, renderer);
@@ -62,5 +65,10 @@ public class DeimosViewer extends JPanel
 	public vtkRenderWindowPanel getRenderWindowPanel()
 	{
 		return renderer.getRenderWindowPanel();
+	}
+
+	public String getName()
+	{
+		return NAME;
 	}
 }

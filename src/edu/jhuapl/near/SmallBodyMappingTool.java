@@ -5,12 +5,16 @@ import javax.swing.*;
 import vtk.vtkJavaGarbageCollector;
 import vtk.vtkRenderWindowPanel;
 
+import edu.jhuapl.near.gui.deimos.DeimosViewer;
 import edu.jhuapl.near.gui.FileMenu;
 import edu.jhuapl.near.gui.StatusBar;
+import edu.jhuapl.near.gui.View;
+import edu.jhuapl.near.gui.ViewMenu;
 import edu.jhuapl.near.gui.eros.ErosViewer;
 import edu.jhuapl.near.util.NativeLibraryLoader;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -20,57 +24,36 @@ import java.util.concurrent.TimeUnit;
  * @author kahneg1
  *
  */
-public class Sbmt extends JFrame 
+public class SmallBodyMappingTool extends JFrame 
 {
-	//private JSplitPane splitPane;
-	//private ErosRenderer renderer;
-	//private ControlPanel controlPanel;
 	private StatusBar statusBar;
 	private FileMenu fileMenu;
-	//private ModelManager modelManager;
-	//private PickManager pickManager;
-	//private PopupManager popupManager;
-	//private ModelInfoWindowManager infoPanelManager;
+	private ViewMenu viewMenu;
+	private JPanel rootPanel;
+	private ArrayList<View> views;
 	private static vtkJavaGarbageCollector garbageCollector;
 	
-	public Sbmt()
+	public SmallBodyMappingTool()
 	{
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         createStatusBar();
 
-        JPanel rootPanel = new JPanel(new BorderLayout());
+        rootPanel = new JPanel(new BorderLayout());
         rootPanel.setBorder(BorderFactory.createEmptyBorder());
-        
+
         ErosViewer erosViewer = new ErosViewer(statusBar);
-        ErosViewer itokawaViewer = new ErosViewer(statusBar);
+        DeimosViewer deimosViewer = new DeimosViewer(statusBar);
         
-		//modelManager = new ModelManager();
-	
-		//infoPanelManager = new ModelInfoWindowManager(modelManager);
-		
-		//renderer = new ErosRenderer(modelManager);
-
-		//popupManager = new PopupManager(renderer, modelManager, infoPanelManager);
-
-		//pickManager = new PickManager(renderer, statusBar, modelManager, infoPanelManager, popupManager);
-
-        //controlPanel = new ControlPanel(renderer, modelManager, infoPanelManager, pickManager);
-
-		//splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
-        //        controlPanel, renderer);
-		//splitPane.setOneTouchExpandable(true);
-
-        //renderer.setMinimumSize(new Dimension(100, 100));
-        //renderer.setPreferredSize(new Dimension(800, 800));
-        //controlPanel.setMinimumSize(new Dimension(320, 100));
-        //controlPanel.setPreferredSize(new Dimension(320, 800));
-
+        views = new ArrayList<View>();
+        views.add(erosViewer);
+        views.add(deimosViewer);
+        
 		createMenus(erosViewer.getRenderWindowPanel());
 
 		rootPanel.setLayout(new CardLayout());
-		rootPanel.add(erosViewer, "a");
-		rootPanel.add(itokawaViewer, "b");
+		rootPanel.add(erosViewer, ErosViewer.NAME);
+		rootPanel.add(deimosViewer, DeimosViewer.NAME);
 		
 		this.add(rootPanel, BorderLayout.CENTER);
 		
@@ -92,6 +75,10 @@ public class Sbmt extends JFrame
     	fileMenu = new FileMenu(renderer, true);
         fileMenu.setMnemonic('F');
         menuBar.add(fileMenu);
+
+        viewMenu = new ViewMenu(rootPanel, views);
+        viewMenu.setMnemonic('V');
+        menuBar.add(viewMenu);
 
         setJMenuBar(menuBar);
     }
@@ -124,7 +111,7 @@ public class Sbmt extends JFrame
         try
         {
         	JPopupMenu.setDefaultLightWeightPopupEnabled(false);
-            final Sbmt frame = new Sbmt();
+            final SmallBodyMappingTool frame = new SmallBodyMappingTool();
         	
             javax.swing.SwingUtilities.invokeLater(new Runnable()
             {

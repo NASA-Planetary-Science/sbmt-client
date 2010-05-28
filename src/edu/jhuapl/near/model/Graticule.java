@@ -5,7 +5,6 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.util.ArrayList;
 
-import edu.jhuapl.near.util.ConvertResourceToFile;
 import edu.jhuapl.near.util.FileCache;
 import edu.jhuapl.near.util.LatLon;
 import edu.jhuapl.near.util.GeometryUtil;
@@ -37,7 +36,6 @@ public class Graticule extends Model implements PropertyChangeListener
     private vtkCutter cutPolyData;
     private vtkTransform transform;
     private vtkPolyDataReader reader;
-    private File defaultModelFile;
     private String[] gridFiles;
     
 	public Graticule(SmallBodyModel smallBodyModel, String[] gridFiles)
@@ -159,9 +157,7 @@ public class Graticule extends Model implements PropertyChangeListener
 			modelFile = FileCache.getFileFromServer(gridFiles[3]);
 			break;
 		default:
-			if (defaultModelFile == null)
-				defaultModelFile = ConvertResourceToFile.convertResourceToTempFile(this, gridFiles[0]);
-			modelFile = defaultModelFile;
+			modelFile = FileCache.getFileFromServer(gridFiles[0]);
 			break;
 		}
 

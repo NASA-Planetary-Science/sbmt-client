@@ -128,9 +128,11 @@ public class FileMenu extends JMenu
         	try
         	{
         		InputStream is = this.getClass().getResourceAsStream("/svn.version");
-        		byte[] data = new byte[128];
+        		byte[] data = new byte[256];
         		is.read(data, 0, data.length);
-        		versionString = (new String(data)).trim() + "\n\n";
+        		String[] tmp = (new String(data)).trim().split("\\s+");
+        		tmp[3] = tmp[3].replace('-', '.');
+        		versionString = "Version: " + tmp[3] + "\n\n";
         	}
         	catch (Exception e)
         	{

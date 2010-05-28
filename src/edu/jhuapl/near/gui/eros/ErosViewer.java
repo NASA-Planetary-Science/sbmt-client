@@ -6,6 +6,7 @@ import vtk.vtkRenderWindowPanel;
 
 import edu.jhuapl.near.gui.Renderer;
 import edu.jhuapl.near.gui.StatusBar;
+import edu.jhuapl.near.gui.View;
 import edu.jhuapl.near.model.eros.ErosModelManager;
 import edu.jhuapl.near.pick.PickManager;
 import edu.jhuapl.near.popupmenus.eros.ErosPopupManager;
@@ -19,8 +20,10 @@ import java.awt.*;
  * @author kahneg1
  *
  */
-public class ErosViewer extends JPanel 
+public class ErosViewer extends View
 {
+	public static final String NAME = "Eros";
+
 	private JSplitPane splitPane;
 	private Renderer renderer;
 	private ControlPanel controlPanel;
@@ -60,5 +63,10 @@ public class ErosViewer extends JPanel
 	public vtkRenderWindowPanel getRenderWindowPanel()
 	{
 		return renderer.getRenderWindowPanel();
+	}
+
+	public String getName()
+	{
+		return NAME;
 	}
 }

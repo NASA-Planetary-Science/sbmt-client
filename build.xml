@@ -12,7 +12,7 @@
     <mkdir dir="${rootdir}/build/classes/edu/jhuapl/near/data"/>
     <exec executable="sh" output="build/classes/svn.version" failifexecutionfails="false">
       <arg value="-c"/>
-      <arg value="svn info | grep -i revision"/>
+      <arg value="svn info | grep -i 'Last Changed Date'"/>
     </exec>
     <copy todir="${rootdir}/build/classes/edu/jhuapl/near/data">
       <fileset dir="${rootdir}/src/edu/jhuapl/near/data"/>

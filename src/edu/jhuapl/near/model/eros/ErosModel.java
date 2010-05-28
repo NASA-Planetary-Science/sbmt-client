@@ -11,19 +11,24 @@ public class ErosModel extends SmallBodyModel
 		"NEAR-A-MSI-5-EROSSHAPE-V1.0 ver512q"};
 
 	private static String[] modelFiles = {
-		"/edu/jhuapl/near/data/ver64q.vtk",
+		"/edu/jhuapl/near/data/Eros_ver64q.vtk",
 		"/EROS/ver128q.vtk.gz",
 		"/EROS/ver256q.vtk.gz",
 		"/EROS/ver512q.vtk.gz"};
 
 	private static String[] coloringFiles = {
-		"/edu/jhuapl/near/data/Eros_Dec2006_0_Elevation.txt",
-		"/edu/jhuapl/near/data/Eros_Dec2006_0_GravitationalAcceleration.txt",
-		"/edu/jhuapl/near/data/Eros_Dec2006_0_GravitationalPotential.txt",
-		"/edu/jhuapl/near/data/Eros_Dec2006_0_Slope.txt"};
+		"/EROS/Eros_Dec2006_0_Elevation.txt.gz",
+		"/EROS/Eros_Dec2006_0_GravitationalAcceleration.txt.gz",
+		"/EROS/Eros_Dec2006_0_GravitationalPotential.txt.gz",
+		"/EROS/Eros_Dec2006_0_Slope.txt.gz"};
 
 	public ErosModel()
 	{
-		super(modelNames, modelFiles, coloringFiles);
+		super(modelNames, modelFiles, coloringFiles, true);
+	}
+
+	public int getNumberResolutionLevels()
+	{
+		return modelFiles.length;
 	}
 }
