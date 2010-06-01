@@ -9,7 +9,7 @@ CFLAGS = -Wall -ansi -pedantic -g -static
 
 MSI_PROG = near_ddr
 
-OBJS = writeDdr.o writeLabel.o getEt.o convertString.o getScOrientation.o getSunPosition.o
+OBJS = writeLabel.o getEt.o convertString.o getScOrientation.o getSunPosition.o
 
 all: $(MSI_PROG)
 

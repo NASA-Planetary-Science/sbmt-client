@@ -11,7 +11,6 @@ double getEt(char *lblfile,
 			 char *startSC, char *stopSC);
 void getScOrientation(double et, double scposb[3], double boredir[3], double updir[3], double frustum[12]);
 void getSunPosition(double et, double sunpos[3]);
-void writeDdr(double et, char *ddrfile);
 void writeLabel(char *ddrFile, char *pname, char *pversion,
 				char* startEt, char* stopEt,
 				char* startSC, char* stopSC,
@@ -19,9 +18,7 @@ void writeLabel(char *ddrFile, char *pname, char *pversion,
 				double sunpos[3]);
 
 /*
-  This program generates an IMG volume for each NEAR MSI image. See
-  writeDdr.c for a description of the planes in this volume. The IMG
-  file is compressed using gzip to save space.
+  This program generates a label file for each NEAR MSI image.
  */
 int main(int argc, char** argv)
 {
@@ -63,25 +60,18 @@ int main(int argc, char** argv)
 	char* progName;
 	char* progVersion = "1.0";
 	char ckKernel[256];
-	char compressCommand[512];
-	char compressedFilename[512];
-	struct stat stFileInfo;
 	double scposb[3];
 	double boredir[3];
 	double updir[3];
 	double frustum[12];
 	double sunpos[3];
-	int onlyWriteLabel = 1;
 	
 	if (argc < 3) 
 	{
-	    fprintf(stderr, "usage: near_ddr CK_KERNEL LBL_FILE [onlyWriteLabel]\n");
+	    fprintf(stderr, "usage: near_ddr CK_KERNEL LBL_FILE\n");
 	    exit(1);
 	}
 
-	if (argc > 3)
-		onlyWriteLabel = 1;
-	
 	progName = basename(argv[0]);
 	strncpy(ckKernel, argv[1], 256);
 
@@ -105,29 +95,6 @@ int main(int argc, char** argv)
 	printf("%s\n",ddrFile);
 	printf("%f\n",et);
 
-	/* If the gzipped file already exists, do not overwrite it. */
-	strcpy(compressedFilename, ddrFile);
-	strcat(compressedFilename, ".gz");
-
-	if (onlyWriteLabel == 0)
-	{
-
-		if (stat(compressedFilename, &stFileInfo) == 0)
-		{
-			printf("%s already exists. Not overwriting\n", compressedFilename);
-			exit(0);
-		}
-
-	}
-	else
-	{
-		if (stat(compressedFilename, &stFileInfo) != 0)
-		{
-			printf("%s does not exist. Not creating new label file\n", compressedFilename);
-			exit(0);
-		}
-	}
-	
 	/*--------------------------------------*/
 	/* Load kernels                         */
 	/*--------------------------------------*/
@@ -152,15 +119,6 @@ int main(int argc, char** argv)
 	et = getEt(lblFile, startEt, stopEt, startSC, stopSC);
 	    
 	/*--------------------------------------*/
-	/* Create IMG file                      */
-	/*--------------------------------------*/
-
-	if (onlyWriteLabel == 0)
-	{
-		writeDdr(et, ddrFile);
-	}
-	
-	/*--------------------------------------*/
 	/* Create LBL file                      */
 	/*--------------------------------------*/
 
@@ -173,18 +131,5 @@ int main(int argc, char** argv)
 			   scposb, boredir, updir, frustum,
 			   sunpos);
 
-	/*--------------------------------------*/
-	/* Compress IMG file to save space      */
-	/*--------------------------------------*/
-
-	strcpy(compressCommand, "gzip -f ");
-	strcat(compressCommand, ddrFile);
-	printf("%s\n",compressCommand);
-
-	if (onlyWriteLabel == 0)
-	{
-		system(compressCommand);
-	}
-	
 	return 0;
 }
