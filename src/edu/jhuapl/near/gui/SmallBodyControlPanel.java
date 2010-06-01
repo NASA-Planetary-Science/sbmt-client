@@ -149,11 +149,14 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener
     		panel.add(highResModelButton, "wrap, gapleft 25");
     		panel.add(veryHighResModelButton, "wrap, gapleft 25");
     	}
-    	panel.add(showColoringCheckBox, "wrap");
-    	panel.add(elevationButton, "wrap, gapleft 25");
-    	panel.add(gravitationalAccelerationButton, "wrap, gapleft 25");
-    	panel.add(gravitationalPotentialButton, "wrap, gapleft 25");
-    	panel.add(slopeButton, "wrap, gapleft 25");
+    	if (modelManager.getSmallBodyModel().isColoringDataAvailable())
+    	{
+    		panel.add(showColoringCheckBox, "wrap");
+    		panel.add(elevationButton, "wrap, gapleft 25");
+    		panel.add(gravitationalAccelerationButton, "wrap, gapleft 25");
+    		panel.add(gravitationalPotentialButton, "wrap, gapleft 25");
+    		panel.add(slopeButton, "wrap, gapleft 25");
+    	}
     	panel.add(shadingLabel, "wrap");
     	panel.add(flatShadingButton, "wrap, gapleft 25");
     	panel.add(smoothShadingButton, "wrap, gapleft 25");

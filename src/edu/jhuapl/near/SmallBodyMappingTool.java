@@ -11,6 +11,7 @@ import edu.jhuapl.near.gui.StatusBar;
 import edu.jhuapl.near.gui.View;
 import edu.jhuapl.near.gui.ViewMenu;
 import edu.jhuapl.near.gui.eros.ErosViewer;
+import edu.jhuapl.near.gui.itokawa.ItokawaViewer;
 import edu.jhuapl.near.util.NativeLibraryLoader;
 
 import java.awt.*;
@@ -44,16 +45,19 @@ public class SmallBodyMappingTool extends JFrame
 
         ErosViewer erosViewer = new ErosViewer(statusBar);
         DeimosViewer deimosViewer = new DeimosViewer(statusBar);
+        ItokawaViewer itokawaViewer = new ItokawaViewer(statusBar);
         
         views = new ArrayList<View>();
         views.add(erosViewer);
         views.add(deimosViewer);
+        views.add(itokawaViewer);
         
 		createMenus(erosViewer.getRenderWindowPanel());
 
 		rootPanel.setLayout(new CardLayout());
 		rootPanel.add(erosViewer, ErosViewer.NAME);
 		rootPanel.add(deimosViewer, DeimosViewer.NAME);
+		rootPanel.add(itokawaViewer, ItokawaViewer.NAME);
 		
 		this.add(rootPanel, BorderLayout.CENTER);
 		

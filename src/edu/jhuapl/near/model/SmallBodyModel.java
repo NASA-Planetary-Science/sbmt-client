@@ -554,4 +554,9 @@ public abstract class SmallBodyModel extends Model
     	else
     		return null;
     }
+    
+    public boolean isColoringDataAvailable()
+    {
+    	return coloringFiles != null && coloringFiles.length == 4;
+    }
 }

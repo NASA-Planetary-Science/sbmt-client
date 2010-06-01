@@ -5,9 +5,11 @@ import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 
 import javax.swing.AbstractAction;
+import javax.swing.ButtonGroup;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JRadioButtonMenuItem;
 
 public class ViewMenu extends JMenu 
 {
@@ -18,10 +20,15 @@ public class ViewMenu extends JMenu
         super("View");
         
         this.rootPanel = rootPanel;
-        
+
+        ButtonGroup group = new ButtonGroup();
+
         for (int i=0; i < views.size(); ++i)
         {
-        	JMenuItem mi = new JMenuItem(new ShowBodyAction(views.get(i).getName(), views.get(i)));
+        	JMenuItem mi = new JRadioButtonMenuItem(new ShowBodyAction(views.get(i).getName(), views.get(i)));
+        	if (i==0)
+        		mi.setSelected(true);
+        	group.add(mi);
         	this.add(mi);
         }
     }
