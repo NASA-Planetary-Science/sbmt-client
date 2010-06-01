@@ -7,17 +7,17 @@ SINC = -I$(SDIR)/include
 SLIB =  $(SDIR)/lib/platelib.a $(SDIR)/lib/spicelib.a $(SDIR)/lib/support.a -lgfortran -lm
 CFLAGS = -Wall -ansi -pedantic -g -static
 
-MSI_PROG = near_ddr
+NIS_PROG = near_nis
 
-OBJS = writeDdr.o writeLabel.o getEt.o convertString.o getScOrientation.o getSunPosition.o
+OBJS = convertString.o
 
-all: $(MSI_PROG)
+all: $(NIS_PROG)
 
-$(MSI_PROG): $(OBJS) $(MSI_PROG).o
+$(NIS_PROG): $(OBJS) $(NIS_PROG).o
 	$(CC) -static -o $@ $^ $(SLIB)
 
 .c.o:
 	$(CC) $(CFLAGS) $(SINC) -c $<
 
 clean:
-	$(RM) $(MSI_PROG) $(OBJS) $(MSI_PROG).o
+	$(RM) $(NIS_PROG) $(OBJS) $(NIS_PROG).o
