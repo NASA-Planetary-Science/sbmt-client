@@ -13,6 +13,8 @@ import edu.jhuapl.near.query.ErosCubes;
 import edu.jhuapl.near.util.BoundingBox;
 import edu.jhuapl.near.util.ConvertResourceToFile;
 import edu.jhuapl.near.util.FileCache;
+import edu.jhuapl.near.util.GeometryUtil;
+import edu.jhuapl.near.util.LatLon;
 import edu.jhuapl.near.util.PolyDataUtil;
 import edu.jhuapl.near.util.Properties;
 
@@ -68,16 +70,21 @@ public abstract class SmallBodyModel extends Model
     private String[] modelNames;
     private String[] modelFiles;
 	private String[] coloringFiles;
-    
+	private String imageMap;
+    private boolean showImageMap = false;
+	private vtkTexture imageMapTexture;
+	
 	public SmallBodyModel(
 			String[] modelNames,
 			String[] modelFiles,
 			String[] coloringFiles,
+			String imageMap,
 			boolean lowestResolutionModelStoredInResource)
 	{
 		this.modelNames = modelNames;
 		this.modelFiles = modelFiles;
 		this.coloringFiles = coloringFiles;
+		this.imageMap = imageMap;
 		
     	smallBodyReader = new vtkPolyDataReader();
 		//normalsFilter = new vtkPolyDataNormals();
@@ -385,6 +392,7 @@ public abstract class SmallBodyModel extends Model
 	        smallBodyMapper.UseLookupTableScalarRangeOn();
 			
 	        smallBodyActor = new vtkActor();
+	        smallBodyActor.SetTexture(imageMapTexture);
 	        smallBodyActor.SetMapper(smallBodyMapper);
 	        smallBodyActor.GetProperty().SetInterpolationToPhong();
 	        
@@ -558,5 +566,132 @@ public abstract class SmallBodyModel extends Model
     public boolean isColoringDataAvailable()
     {
     	return coloringFiles != null && coloringFiles.length == 4;
+    }
+    
+    protected void generateImageMapValuesForAllCells()
+    {
+    	File imageFile = FileCache.getFileFromServer(imageMap);
+    	vtkPNGReader reader = new vtkPNGReader();
+    	reader.SetFileName(imageFile.getAbsolutePath());
+    	reader.Update();
+    	
+    	vtkImageData image = reader.GetOutput();
+    	System.out.println(image);
+    	
+        vtkFloatArray textureCoords;
+		textureCoords = new vtkFloatArray();
+
+		imageMapTexture = new vtkTexture();
+		imageMapTexture.InterpolateOn();
+		imageMapTexture.RepeatOn();
+		imageMapTexture.EdgeClampOn();
+		imageMapTexture.SetInput(image);
+
+        int numberOfPoints = smallBodyPolyData.GetNumberOfPoints();
+
+		textureCoords.SetNumberOfComponents(2);
+		textureCoords.SetNumberOfTuples(numberOfPoints);
+
+		vtkPoints points = smallBodyPolyData.GetPoints();
+    
+		for (int i=0; i<numberOfPoints; ++i)
+		{
+			double[] pt = points.GetPoint(i);
+
+			LatLon ll = GeometryUtil.reclat(pt);
+	
+			double u = ll.lon;
+			if (u < 0.0)
+				u += 2.0 * Math.PI;
+			u /= 2.0 * Math.PI;
+			double v = (ll.lat + Math.PI/2.0) / Math.PI;
+			if (u == 1110.0 || u > 1.0)
+				System.out.println(i);
+			
+			if (u < 0.0) u = 0.0;
+			else if (u > 1.0) u = 1.0;
+			if (v < 0.0) v = 0.0;
+			else if (v > 1.0) v = 1.0;
+			
+			textureCoords.SetTuple2(i, u, v);
+		}
+
+		// The plates that cross the zero longitude meridian might be messed up
+		// since some of the points might be to the left and some to right. Fix
+		// this here to make all the points either on the left or on the right.
+		int numberOfCells = smallBodyPolyData.GetNumberOfCells();
+		for (int i=0; i<numberOfCells; ++i)
+    	{
+    		int id0 = smallBodyPolyData.GetCell(i).GetPointId(0);
+    		int id1 = smallBodyPolyData.GetCell(i).GetPointId(1);
+    		int id2 = smallBodyPolyData.GetCell(i).GetPointId(2);
+    		double[] lon = new double[3];
+    		lon[0] = textureCoords.GetTuple2(id0)[0];
+    		lon[1] = textureCoords.GetTuple2(id1)[0];
+    		lon[2] = textureCoords.GetTuple2(id2)[0];
+    		
+    		if ( Math.abs(lon[0] - lon[1]) > 0.5 ||
+    			 Math.abs(lon[1] - lon[2]) > 0.5 ||
+    			 Math.abs(lon[2] - lon[0]) > 0.5)
+    		{
+        		double[] lat = new double[3];
+        		lat[0] = textureCoords.GetTuple2(id0)[1];
+        		lat[1] = textureCoords.GetTuple2(id1)[1];
+        		lat[2] = textureCoords.GetTuple2(id2)[1];
+
+        		System.out.println("messed up " + i);
+    			System.out.println(lon[0] - lon[1]);
+    			System.out.println(lon[1] - lon[2]);
+    			System.out.println(lon[2] - lon[0]);
+    			// First determine which side we're on
+    			
+    			// Do this by first determining which point is the greatest distance from the
+    			// meridian
+    			double[] dist = {-1000.0, -1000.0, -1000.0};
+    			int maxIdx = -1;
+    			double maxDist = -1000.0;
+    			for (int j=0; j<3; ++j)
+    			{
+    				if (lon[j] > 0.5)
+    					dist[j] = 1.0 - lon[j];
+    				else
+    					dist[j] = lon[j];
+    				
+    				if (dist[j] > maxDist)
+    				{
+    					maxDist = dist[j];
+    					maxIdx = j;
+    				}
+    			}
+    			
+    			if (lon[maxIdx] < 0.5) // If true, we're on left
+    			{
+    				// Make sure all the coordinates are on left
+    				for (int j=0; j<3; ++j)
+        			{
+        				if (lon[j] > 0.5)
+        					lon[j] = 0.0;
+        			}
+    			}
+    			else
+    			{
+    				// Make sure all the coordinates are on right
+    				for (int j=0; j<3; ++j)
+        			{
+        				if (lon[j] < 0.5)
+        					lon[j] = 1.0;
+        			}
+    			}
+				textureCoords.SetTuple2(id0, lon[0], lat[0]);
+				textureCoords.SetTuple2(id1, lon[1], lat[1]);
+				textureCoords.SetTuple2(id2, lon[2], lat[2]);
+    		}
+    	}
+		smallBodyPolyData.GetPointData().SetTCoords(textureCoords);
+    }
+    
+    public void setShowImageMap(boolean b)
+    {
+    	showImageMap = b;
     }
 }

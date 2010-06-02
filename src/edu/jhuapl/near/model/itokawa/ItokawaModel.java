@@ -20,7 +20,7 @@ public class ItokawaModel extends SmallBodyModel
 
 	public ItokawaModel()
 	{
-		super(modelNames, modelFiles, coloringFiles, false);
+		super(modelNames, modelFiles, coloringFiles, null, false);
 	}
 
 	public int getNumberResolutionLevels()

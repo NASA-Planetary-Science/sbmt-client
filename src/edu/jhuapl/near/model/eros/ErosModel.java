@@ -24,7 +24,7 @@ public class ErosModel extends SmallBodyModel
 
 	public ErosModel()
 	{
-		super(modelNames, modelFiles, coloringFiles, true);
+		super(modelNames, modelFiles, coloringFiles, null, true);
 	}
 
 	public int getNumberResolutionLevels()

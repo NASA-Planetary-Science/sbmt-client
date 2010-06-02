@@ -16,9 +16,12 @@ public class DeimosModel extends SmallBodyModel
 		"/DEIMOS/DEIMOS_GravitationalPotential.txt.gz",
 		"/DEIMOS/DEIMOS_Slope.txt.gz"};
 
+	private static String imageMap = "/DEIMOS/deimos_image_map.png";
+	
 	public DeimosModel()
 	{
-		super(modelNames, modelFiles, coloringFiles, false);
+		super(modelNames, modelFiles, coloringFiles, imageMap, false);
+		this.generateImageMapValuesForAllCells();
 	}
 
 	public int getNumberResolutionLevels()
