@@ -70,9 +70,9 @@ public abstract class SmallBodyModel extends Model
     private String[] modelNames;
     private String[] modelFiles;
 	private String[] coloringFiles;
-	private String imageMap;
+	private String imageMap = null;
     private boolean showImageMap = false;
-	private vtkTexture imageMapTexture;
+	private vtkTexture imageMapTexture = null;
 	
 	public SmallBodyModel(
 			String[] modelNames,
@@ -381,6 +381,24 @@ public abstract class SmallBodyModel extends Model
 		return closestPoint;
 	}
 	
+    /**
+     * This returns the index of the closest cell in the model to pt.
+     * @param pt
+     * @return
+     */
+    public int findClosestCell(double[] pt)
+    {
+        double[] closestPoint = new double[3];
+        int[] cellId = new int[1];
+        int[] subId = new int[1];
+        double[] dist2 = new double[1];
+     
+        // Use FindClosestPoint rather the FindCell since not sure what tolerance to use in the latter.
+        cellLocator.FindClosestPoint(pt, closestPoint, genericCell, cellId, subId, dist2);
+        
+        return cellId[0];
+    }
+    
 	public ArrayList<vtkProp> getProps() 
 	{
 		if (smallBodyActor == null)
@@ -392,7 +410,6 @@ public abstract class SmallBodyModel extends Model
 	        smallBodyMapper.UseLookupTableScalarRangeOn();
 			
 	        smallBodyActor = new vtkActor();
-	        smallBodyActor.SetTexture(imageMapTexture);
 	        smallBodyActor.SetMapper(smallBodyMapper);
 	        smallBodyActor.GetProperty().SetInterpolationToPhong();
 	        
@@ -568,7 +585,7 @@ public abstract class SmallBodyModel extends Model
     	return coloringFiles != null && coloringFiles.length == 4;
     }
     
-    protected void generateImageMapValuesForAllCells()
+    protected void generateImageMapTextureCoordinates()
     {
     	File imageFile = FileCache.getFileFromServer(imageMap);
     	vtkPNGReader reader = new vtkPNGReader();
@@ -576,14 +593,13 @@ public abstract class SmallBodyModel extends Model
     	reader.Update();
     	
     	vtkImageData image = reader.GetOutput();
-    	System.out.println(image);
+    	//System.out.println(image);
     	
-        vtkFloatArray textureCoords;
-		textureCoords = new vtkFloatArray();
+        vtkFloatArray textureCoords = new vtkFloatArray();
 
 		imageMapTexture = new vtkTexture();
 		imageMapTexture.InterpolateOn();
-		imageMapTexture.RepeatOn();
+		imageMapTexture.RepeatOff();
 		imageMapTexture.EdgeClampOn();
 		imageMapTexture.SetInput(image);
 
@@ -605,17 +621,16 @@ public abstract class SmallBodyModel extends Model
 				u += 2.0 * Math.PI;
 			u /= 2.0 * Math.PI;
 			double v = (ll.lat + Math.PI/2.0) / Math.PI;
-			if (u == 1110.0 || u > 1.0)
-				System.out.println(i);
 			
 			if (u < 0.0) u = 0.0;
 			else if (u > 1.0) u = 1.0;
 			if (v < 0.0) v = 0.0;
 			else if (v > 1.0) v = 1.0;
-			
+
 			textureCoords.SetTuple2(i, u, v);
 		}
 
+		/*
 		// The plates that cross the zero longitude meridian might be messed up
 		// since some of the points might be to the left and some to right. Fix
 		// this here to make all the points either on the left or on the right.
@@ -687,11 +702,77 @@ public abstract class SmallBodyModel extends Model
 				textureCoords.SetTuple2(id2, lon[2], lat[2]);
     		}
     	}
+    	*/
+    	
 		smallBodyPolyData.GetPointData().SetTCoords(textureCoords);
+    }
+
+    public boolean isImageMapAvailable()
+    {
+    	return imageMap != null;
     }
     
     public void setShowImageMap(boolean b)
     {
     	showImageMap = b;
+    	
+    	if (showImageMap)
+    	{
+    		if (imageMapTexture == null)
+    			generateImageMapTextureCoordinates();
+    		
+    		smallBodyActor.SetTexture(imageMapTexture);
+    	}
+    	else
+    	{
+    		smallBodyActor.SetTexture(null);
+    	}
+    	
+		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
+    
+    /**
+     * Get the elevation value at a particular point
+     * @param cellId
+     * @return
+     */
+    public double getElevation(double[] pt)
+    {
+    	int cellId = findClosestCell(pt);
+    	return elevationValues.GetTuple1(cellId);
+    }
+
+    /**
+     * Get the gravitational acceleration value at a particular point
+     * @param cellId
+     * @return
+     */
+    public double getGravitationalAcceleration(double[] pt)
+    {
+    	int cellId = findClosestCell(pt);
+    	return gravAccValues.GetTuple1(cellId);
+    }
+
+    /**
+     * Get the gravitational potential value at a particular point
+     * @param cellId
+     * @return
+     */
+    public double getGravitationalPotential(double[] pt)
+    {
+    	int cellId = findClosestCell(pt);
+    	return gravPotValues.GetTuple1(cellId);
+    }
+
+    /**
+     * Get the slope value at a particular point
+     * @param cellId
+     * @return
+     */
+    public double getSlope(double[] pt)
+    {
+    	int cellId = findClosestCell(pt);
+    	return slopeValues.GetTuple1(cellId);
+    }
+
 }

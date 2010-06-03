@@ -21,7 +21,6 @@ public class DeimosModel extends SmallBodyModel
 	public DeimosModel()
 	{
 		super(modelNames, modelFiles, coloringFiles, imageMap, false);
-		this.generateImageMapValuesForAllCells();
 	}
 
 	public int getNumberResolutionLevels()

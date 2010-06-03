@@ -29,6 +29,7 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener
     private ButtonGroup shadingButtonGroup;
     private ButtonGroup resolutionButtonGroup;
     private JCheckBox gridCheckBox;
+    private JCheckBox imageMapCheckBox;
     
 
     public SmallBodyControlPanel(ModelManager modelManager, String bodyName) 
@@ -140,6 +141,11 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener
     	gridCheckBox.setSelected(false);
     	gridCheckBox.addItemListener(this);
 
+    	imageMapCheckBox = new JCheckBox();
+    	imageMapCheckBox.setText("Show Image Map");
+    	imageMapCheckBox.setSelected(false);
+    	imageMapCheckBox.addItemListener(this);
+
     	panel.add(modelCheckBox, "wrap");
     	if (modelManager.getSmallBodyModel().getNumberResolutionLevels() > 1)
     	{
@@ -160,6 +166,10 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener
     	panel.add(shadingLabel, "wrap");
     	panel.add(flatShadingButton, "wrap, gapleft 25");
     	panel.add(smoothShadingButton, "wrap, gapleft 25");
+    	if (modelManager.getSmallBodyModel().isImageMapAvailable())
+    	{
+    		panel.add(imageMapCheckBox, "wrap");
+    	}
     	panel.add(gridCheckBox, "wrap");
     	
     	add(panel, BorderLayout.CENTER);
@@ -187,13 +197,20 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener
 					graticule.setShowGraticule(false);
 			}
 		}
-		if (e.getItemSelectable() == this.gridCheckBox)
+		else if (e.getItemSelectable() == this.gridCheckBox)
 		{
 			Graticule graticule = modelManager.getGraticuleModel();
 			if (e.getStateChange() == ItemEvent.SELECTED)
 				graticule.setShowGraticule(true);
 			else
 				graticule.setShowGraticule(false);
+		}
+		else if (e.getItemSelectable() == this.imageMapCheckBox)
+		{
+			if (e.getStateChange() == ItemEvent.SELECTED)
+				smallBodyModel.setShowImageMap(true);
+			else
+				smallBodyModel.setShowImageMap(false);
 		}
 		else if (e.getItemSelectable() == this.flatShadingButton)
 		{
