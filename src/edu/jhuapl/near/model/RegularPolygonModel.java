@@ -450,32 +450,33 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
 	
 	public void loadModel(File file) throws IOException
 	{
-		ArrayList<String> words = FileUtil.getFileWordsAsStringList(file.getAbsolutePath(), "\t");
+		ArrayList<String> lines = FileUtil.getFileLinesAsStringList(file.getAbsolutePath());
 		
 		ArrayList<RegularPolygon> newPolygons = new ArrayList<RegularPolygon>();
-		for (int i=0; i<words.size();)
+		for (int i=0; i<lines.size(); ++i)
 		{
 			RegularPolygon pol = this.new RegularPolygon(numberOfSides, type, defaultColor);
 			pol.center = new double[3];
-			
-			pol.id = Integer.parseInt(words.get(i++));
-			pol.name = words.get(i++);
-			pol.center[0] = Double.parseDouble(words.get(i++));
-			pol.center[1] = Double.parseDouble(words.get(i++));
-			pol.center[2] = Double.parseDouble(words.get(i++));
+
+			String[] words = lines.get(i).trim().split("\\s+");
+
+			pol.id = Integer.parseInt(words[0]);
+			pol.name = words[1];
+			pol.center[0] = Double.parseDouble(words[2]);
+			pol.center[1] = Double.parseDouble(words[3]);
+			pol.center[2] = Double.parseDouble(words[4]);
 			
 			// Note the next 3 words in the line (the point in spherical coordinates) are not used
-			++i;
-			++i;
-			++i;
 
 			if (saveRadiusToOutput)
-				pol.radius = Double.parseDouble(words.get(i++)) / 2.0; // read in diameter not radius
+				pol.radius = Double.parseDouble(words[8]) / 2.0; // read in diameter not radius
 			else
 				pol.radius = defaultRadius;
 			
 	    	if (pol.id > maxPolygonId)
 	    		maxPolygonId = pol.id;
+	    	
+	    	// The remainder of the line (if there is one) is not used
 	    	
 	    	pol.updatePolygon(smallBodyModel, pol.center, pol.radius);
 	        newPolygons.add(pol);
@@ -521,7 +522,13 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
 			
 			if (saveRadiusToOutput)
 				str += "\t" + 2.0*pol.radius; // save out as diameter, not radius
-
+			else
+			{
+				str += "\t" + smallBodyModel.getElevation(pol.center) + "\t";
+				str += smallBodyModel.getGravitationalAcceleration(pol.center) + "\t";
+				str += smallBodyModel.getGravitationalPotential(pol.center) + "\t";
+				str += smallBodyModel.getSlope(pol.center);
+			}
 			str += "\n";
 
 			out.write(str);
