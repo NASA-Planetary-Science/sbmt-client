@@ -524,10 +524,10 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
 				str += "\t" + 2.0*pol.radius; // save out as diameter, not radius
 			else
 			{
-				str += "\t" + smallBodyModel.getElevation(pol.center) + "\t";
+				str += "\t" + smallBodyModel.getSlope(pol.center) + "\t";
+				str += smallBodyModel.getElevation(pol.center) + "\t";
 				str += smallBodyModel.getGravitationalAcceleration(pol.center) + "\t";
-				str += smallBodyModel.getGravitationalPotential(pol.center) + "\t";
-				str += smallBodyModel.getSlope(pol.center);
+				str += smallBodyModel.getGravitationalPotential(pol.center);
 			}
 			str += "\n";
 

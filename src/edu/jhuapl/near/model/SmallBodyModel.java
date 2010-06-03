@@ -735,9 +735,13 @@ public abstract class SmallBodyModel extends Model
      * Get the elevation value at a particular point
      * @param cellId
      * @return
+     * @throws IOException 
      */
-    public double getElevation(double[] pt)
+    public double getElevation(double[] pt) throws IOException
     {
+    	if (elevationValues == null)
+    		loadColoring();
+    	
     	int cellId = findClosestCell(pt);
     	return elevationValues.GetTuple1(cellId);
     }
@@ -746,9 +750,13 @@ public abstract class SmallBodyModel extends Model
      * Get the gravitational acceleration value at a particular point
      * @param cellId
      * @return
+     * @throws IOException 
      */
-    public double getGravitationalAcceleration(double[] pt)
+    public double getGravitationalAcceleration(double[] pt) throws IOException
     {
+    	if (gravAccValues == null)
+    		loadColoring();
+
     	int cellId = findClosestCell(pt);
     	return gravAccValues.GetTuple1(cellId);
     }
@@ -757,9 +765,13 @@ public abstract class SmallBodyModel extends Model
      * Get the gravitational potential value at a particular point
      * @param cellId
      * @return
+     * @throws IOException 
      */
-    public double getGravitationalPotential(double[] pt)
+    public double getGravitationalPotential(double[] pt) throws IOException
     {
+    	if (gravPotValues == null)
+    		loadColoring();
+
     	int cellId = findClosestCell(pt);
     	return gravPotValues.GetTuple1(cellId);
     }
@@ -768,9 +780,13 @@ public abstract class SmallBodyModel extends Model
      * Get the slope value at a particular point
      * @param cellId
      * @return
+     * @throws IOException 
      */
-    public double getSlope(double[] pt)
+    public double getSlope(double[] pt) throws IOException
     {
+    	if (slopeValues == null)
+    		loadColoring();
+
     	int cellId = findClosestCell(pt);
     	return slopeValues.GetTuple1(cellId);
     }
