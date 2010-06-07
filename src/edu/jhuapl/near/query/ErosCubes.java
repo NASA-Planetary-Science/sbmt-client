@@ -33,7 +33,7 @@ public class ErosCubes
 	
 	private void initialize(SmallBodyModel eros)
 	{
-		erosBB = eros.computeBoundingBox();
+		erosBB = eros.getBoundingBox();
 
 		erosBB.xmax += buffer;
 		erosBB.xmin -= buffer;

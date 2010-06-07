@@ -1,6 +1,8 @@
 package edu.jhuapl.near.gui;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -10,7 +12,7 @@ import java.io.IOException;
 
 import edu.jhuapl.near.model.*;
 
-public class SmallBodyControlPanel extends JPanel implements ItemListener 
+public class SmallBodyControlPanel extends JPanel implements ItemListener, ChangeListener 
 {
     private JCheckBox modelCheckBox;
     private ModelManager modelManager;
@@ -30,7 +32,9 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener
     private ButtonGroup resolutionButtonGroup;
     private JCheckBox gridCheckBox;
     private JCheckBox imageMapCheckBox;
-    
+    private JLabel opacityLabel;
+	private JSlider imageMapOpacitySlider;
+
 
     public SmallBodyControlPanel(ModelManager modelManager, String bodyName) 
     {
@@ -146,6 +150,15 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener
     	imageMapCheckBox.setSelected(false);
     	imageMapCheckBox.addItemListener(this);
 
+    	opacityLabel = new JLabel("Opacity (%)");
+		imageMapOpacitySlider = new JSlider(0, 100, 50);
+		imageMapOpacitySlider.setPaintTicks(true);
+		imageMapOpacitySlider.setMajorTickSpacing(5);
+		imageMapOpacitySlider.setPaintTrack(true);
+		imageMapOpacitySlider.addChangeListener(this);
+		opacityLabel.setEnabled(false);
+		imageMapOpacitySlider.setEnabled(false);
+
     	panel.add(modelCheckBox, "wrap");
     	if (modelManager.getSmallBodyModel().getNumberResolutionLevels() > 1)
     	{
@@ -169,6 +182,8 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener
     	if (modelManager.getSmallBodyModel().isImageMapAvailable())
     	{
     		panel.add(imageMapCheckBox, "wrap");
+    		panel.add(opacityLabel, "gapleft 25, split 2");
+    		panel.add(imageMapOpacitySlider, "wrap");
     	}
     	panel.add(gridCheckBox, "wrap");
     	
@@ -208,9 +223,17 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener
 		else if (e.getItemSelectable() == this.imageMapCheckBox)
 		{
 			if (e.getStateChange() == ItemEvent.SELECTED)
+			{
 				smallBodyModel.setShowImageMap(true);
+				opacityLabel.setEnabled(true);
+				imageMapOpacitySlider.setEnabled(true);
+			}
 			else
+			{
 				smallBodyModel.setShowImageMap(false);
+				opacityLabel.setEnabled(false);
+				imageMapOpacitySlider.setEnabled(false);
+			}
 		}
 		else if (e.getItemSelectable() == this.flatShadingButton)
 		{
@@ -320,6 +343,20 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener
 		catch (IOException e1) 
 		{
 			e1.printStackTrace();
+		}
+	}
+
+	public void stateChanged(ChangeEvent e)
+	{
+		if (imageMapOpacitySlider.getValueIsAdjusting())
+		{
+			SmallBodyModel smallBodyModel = modelManager.getSmallBodyModel();
+
+			int val = imageMapOpacitySlider.getValue();
+			int max = imageMapOpacitySlider.getMaximum();
+			int min = imageMapOpacitySlider.getMinimum();
+			//double offset = (val - (max-min)/2.0) * offsetScale;
+			//smallBodyModel.setRadialOffset(offset);
 		}
 	}
 }

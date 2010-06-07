@@ -28,6 +28,11 @@ public abstract class SmallBodyModel extends Model
     	SLOPE
     }
 
+    public enum ColoringMethod {
+    	CELL_DATA,
+    	TEXTURE
+    }
+    
     public enum ShadingType {
     	FLAT,
     	SMOOTH,
@@ -55,36 +60,45 @@ public abstract class SmallBodyModel extends Model
     private ArrayList<vtkProp> smallBodyActors = new ArrayList<vtkProp>();
     private vtksbCellLocator cellLocator;
     private vtkKdTreePointLocator pointLocator;
-    private vtkFloatArray elevationValues;
-    private vtkFloatArray gravAccValues;
-    private vtkFloatArray gravPotValues;
-    private vtkFloatArray slopeValues;
+    private vtkFloatArray elevationCellDataValues;
+    private vtkFloatArray gravAccCellDataValues;
+    private vtkFloatArray gravPotCellDataValues;
+    private vtkFloatArray slopeCellDataValues;
+    private vtkImageData elevationImage;
+    private vtkImageData gravAccImage;
+    private vtkImageData gravPotImage;
+    private vtkImageData slopeImage;
+    private vtkImageData imageMap;
+    private vtkImageData blendedImageMapColoring;
     private vtkScalarBarActor scalarBarActor;
     private vtkPolyDataReader smallBodyReader;
     //private vtkPolyDataNormals normalsFilter;
 	private ErosCubes smallBodyCubes;
     private ColoringType coloringType = ColoringType.NONE;
+    private ColoringMethod coloringMethod = ColoringMethod.CELL_DATA;
     private File defaultModelFile;
     private int resolutionLevel = 0;
     private vtkGenericCell genericCell;
     private String[] modelNames;
     private String[] modelFiles;
 	private String[] coloringFiles;
-	private String imageMap = null;
+	private String imageMapName = null;
     private boolean showImageMap = false;
 	private vtkTexture imageMapTexture = null;
+	private BoundingBox boundingBox = null;
+	private double imageMapOpacity = 0.50;
 	
 	public SmallBodyModel(
 			String[] modelNames,
 			String[] modelFiles,
 			String[] coloringFiles,
-			String imageMap,
+			String imageMapName,
 			boolean lowestResolutionModelStoredInResource)
 	{
 		this.modelNames = modelNames;
 		this.modelFiles = modelFiles;
 		this.coloringFiles = coloringFiles;
-		this.imageMap = imageMap;
+		this.imageMapName = imageMapName;
 		
     	smallBodyReader = new vtkPolyDataReader();
 		//normalsFilter = new vtkPolyDataNormals();
@@ -164,14 +178,18 @@ public abstract class SmallBodyModel extends Model
 		
 	}
 	
-	private void loadColoring() throws IOException
+	/**
+	 * This file loads the coloring used when the coloring method is cell data
+	 * @throws IOException
+	 */
+	private void loadColoringCellData() throws IOException
 	{
-		if (elevationValues == null)
+		if (elevationCellDataValues == null)
 		{
-			elevationValues = new vtkFloatArray();
-			gravAccValues = new vtkFloatArray();
-			gravPotValues = new vtkFloatArray();
-			slopeValues = new vtkFloatArray();
+			elevationCellDataValues = new vtkFloatArray();
+			gravAccCellDataValues = new vtkFloatArray();
+			gravPotCellDataValues = new vtkFloatArray();
+			slopeCellDataValues = new vtkFloatArray();
 		}
 		else
 		{
@@ -179,10 +197,10 @@ public abstract class SmallBodyModel extends Model
 		}
 		
 		vtkFloatArray[] arrays = {
-				this.elevationValues,
-				this.gravAccValues,
-				this.gravPotValues,
-				this.slopeValues
+				this.elevationCellDataValues,
+				this.gravAccCellDataValues,
+				this.gravPotCellDataValues,
+				this.slopeCellDataValues
 		};
 		
 		for (int i=0; i<4; ++i)
@@ -208,13 +226,66 @@ public abstract class SmallBodyModel extends Model
 	}
 
 	/**
-	 * Invert the lookup table so that red is high values 
-	 * and blue is low values (rather than the reverse).
+	 * This file loads the coloring used when the coloring method is texture
+	 * @throws IOException
 	 */
-	private void invertLookupTable()
+	private void loadColoringTexture() throws IOException
 	{
-		vtkUnsignedCharArray table = ((vtkLookupTable)smallBodyMapper.GetLookupTable()).GetTable();
+		if (elevationImage == null)
+		{
+			loadColoringCellData();
+			
+			elevationImage = new vtkImageData();
+			gravAccImage = new vtkImageData();
+			gravPotImage = new vtkImageData();
+			slopeImage = new vtkImageData();
+		}
+		else
+		{
+			return;
+		}
 		
+		vtkImageData[] images = {
+				this.elevationImage,
+				this.gravAccImage,
+				this.gravPotImage,
+				this.slopeImage
+		};
+		vtkFloatArray[] arrays = {
+				this.elevationCellDataValues,
+				this.gravAccCellDataValues,
+				this.gravPotCellDataValues,
+				this.slopeCellDataValues
+		};
+		
+		for (int i=0; i<4; ++i)
+		{
+			int length = coloringFiles[i].length();
+			File file = FileCache.getFileFromServer(coloringFiles[i].substring(0, length-4) + "vti");
+			
+			vtkImageData image = images[i];
+
+	    	vtkXMLImageDataReader reader = new vtkXMLImageDataReader();
+	    	reader.SetFileName(file.getAbsolutePath());
+	    	reader.Update();
+	    	
+	    	vtkLookupTable lookupTable = new vtkLookupTable();
+	        lookupTable.SetRange(arrays[i].GetRange());
+	        lookupTable.Build();
+	        invertLookupTableCharArray(lookupTable.GetTable());
+	        
+	    	vtkImageMapToColors mapToColors = new vtkImageMapToColors();
+	        mapToColors.SetInputConnection(reader.GetOutputPort());
+	        mapToColors.SetLookupTable(lookupTable);
+	        mapToColors.SetOutputFormatToRGB();
+	        mapToColors.Update();
+	        
+	    	image.DeepCopy(mapToColors.GetOutput());
+		}
+	}
+
+	private void invertLookupTableCharArray(vtkUnsignedCharArray table)
+	{
 		int numberOfValues = table.GetNumberOfTuples();
 		for (int i=0; i<numberOfValues/2; ++i)
 		{
@@ -223,6 +294,25 @@ public abstract class SmallBodyModel extends Model
 			table.SetTuple4(i, v2[0], v2[1], v2[2], v2[3]);
 			table.SetTuple4(numberOfValues-i-1, v1[0], v1[1], v1[2], v1[3]);
 		}
+	}
+	
+	/**
+	 * Invert the lookup table so that red is high values 
+	 * and blue is low values (rather than the reverse).
+	 */
+	private void invertLookupTable()
+	{
+		vtkUnsignedCharArray table = ((vtkLookupTable)smallBodyMapper.GetLookupTable()).GetTable();
+		
+		invertLookupTableCharArray(table);
+//		int numberOfValues = table.GetNumberOfTuples();
+//		for (int i=0; i<numberOfValues/2; ++i)
+//		{
+//			double[] v1 = table.GetTuple4(i);
+//			double[] v2 = table.GetTuple4(numberOfValues-i-1);
+//			table.SetTuple4(i, v2[0], v2[1], v2[2], v2[3]);
+//			table.SetTuple4(numberOfValues-i-1, v1[0], v1[1], v1[2], v1[3]);
+//		}
 		
 		((vtkLookupTable)smallBodyMapper.GetLookupTable()).SetTable(table);
 		smallBodyMapper.Modified();
@@ -230,62 +320,78 @@ public abstract class SmallBodyModel extends Model
 	
 	public void setColorBy(ColoringType type) throws IOException
 	{
-		if (coloringType == type || resolutionLevel != 0)
-			return;
-		
-		loadColoring();
-		
-		coloringType = type;
-		
-		vtkFloatArray array = null;
-		
-		switch(type)
+		if (coloringMethod == ColoringMethod.CELL_DATA)
 		{
-		case NONE:
-			array = null;
-			break;
-		case ELEVATION:
-			array = this.elevationValues;
-			scalarBarActor.SetTitle(ElevStr + " (" + ElevUnitsStr + ")");
-			break;
-		case GRAVITATIONAL_ACCELERATION:
-			array = this.gravAccValues;
-			scalarBarActor.SetTitle(GravAccStr + " (" + GravAccUnitsStr + ")");
-			break;
-		case GRAVITATIONAL_POTENTIAL:
-			array = this.gravPotValues;
-			scalarBarActor.SetTitle(GravPotStr + " (" + GravPotUnitsStr + ")");
-			break;
-		case SLOPE:
-			array = this.slopeValues;
-			scalarBarActor.SetTitle(SlopeStr + " (" + SlopeUnitsStr + ")");
-			break;
-		}
+			if (coloringType == type || resolutionLevel != 0)
+				return;
 
-		this.smallBodyPolyData.GetCellData().SetScalars(array);
-		if (type == ColoringType.NONE)
-		{
-			smallBodyMapper.ScalarVisibilityOff();
-			smallBodyMapper.SetScalarModeToDefault();
-			if (smallBodyActors.contains(scalarBarActor))
-				smallBodyActors.remove(scalarBarActor);
+			loadColoringCellData();
+
+			coloringType = type;
+
+			vtkFloatArray array = null;
+
+			switch(type)
+			{
+			case NONE:
+				array = null;
+				break;
+			case ELEVATION:
+				array = this.elevationCellDataValues;
+				scalarBarActor.SetTitle(ElevStr + " (" + ElevUnitsStr + ")");
+				break;
+			case GRAVITATIONAL_ACCELERATION:
+				array = this.gravAccCellDataValues;
+				scalarBarActor.SetTitle(GravAccStr + " (" + GravAccUnitsStr + ")");
+				break;
+			case GRAVITATIONAL_POTENTIAL:
+				array = this.gravPotCellDataValues;
+				scalarBarActor.SetTitle(GravPotStr + " (" + GravPotUnitsStr + ")");
+				break;
+			case SLOPE:
+				array = this.slopeCellDataValues;
+				scalarBarActor.SetTitle(SlopeStr + " (" + SlopeUnitsStr + ")");
+				break;
+			}
+
+			this.smallBodyPolyData.GetCellData().SetScalars(array);
+			if (type == ColoringType.NONE)
+			{
+				smallBodyMapper.ScalarVisibilityOff();
+				smallBodyMapper.SetScalarModeToDefault();
+				if (smallBodyActors.contains(scalarBarActor))
+					smallBodyActors.remove(scalarBarActor);
+			}
+			else
+			{
+				smallBodyMapper.ScalarVisibilityOn();
+				smallBodyMapper.SetScalarModeToUseCellData();
+				smallBodyMapper.GetLookupTable().SetRange(array.GetRange());
+				((vtkLookupTable)smallBodyMapper.GetLookupTable()).ForceBuild();
+				this.invertLookupTable();
+
+				if (!smallBodyActors.contains(scalarBarActor))
+					smallBodyActors.add(scalarBarActor);
+
+				scalarBarActor.SetLookupTable(smallBodyMapper.GetLookupTable());
+			}
+			this.smallBodyPolyData.Modified();
+
+			this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 		}
 		else
 		{
-			smallBodyMapper.ScalarVisibilityOn();
-			smallBodyMapper.SetScalarModeToUseCellData();
-			smallBodyMapper.GetLookupTable().SetRange(array.GetRange());
-			((vtkLookupTable)smallBodyMapper.GetLookupTable()).ForceBuild();
-			this.invertLookupTable();
-			
-			if (!smallBodyActors.contains(scalarBarActor))
-				smallBodyActors.add(scalarBarActor);
-			
-			scalarBarActor.SetLookupTable(smallBodyMapper.GetLookupTable());
+			if (coloringType == type || resolutionLevel != 0)
+				return;
+
+			loadColoringTexture();
+
+			coloringType = type;
+			this.smallBodyPolyData.GetCellData().SetScalars(null);
+			smallBodyMapper.ScalarVisibilityOff();
+			smallBodyMapper.SetScalarModeToDefault();
+
 		}
-		this.smallBodyPolyData.Modified();
-		
-		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 	}
 	
 	public void setShowLighting(boolean lighting)
@@ -441,10 +547,16 @@ public abstract class SmallBodyModel extends Model
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 	}
 	
-	public BoundingBox computeBoundingBox()
+	public BoundingBox getBoundingBox()
 	{
-		smallBodyPolyData.ComputeBounds();
-		return new BoundingBox(smallBodyPolyData.GetBounds());
+		if (boundingBox == null)
+		{
+			smallBodyPolyData.ComputeBounds();
+			boundingBox = new BoundingBox(smallBodyPolyData.GetBounds());
+		}
+		
+		return boundingBox;
+		
 		/*
 		BoundingBox bb = new BoundingBox();
 		vtkPoints points = smallBodyPolyData.GetPoints();
@@ -537,10 +649,10 @@ public abstract class SmallBodyModel extends Model
     		resolutionLevel = 3;
     	
     	smallBodyCubes = null;
-		elevationValues = null;
-		gravAccValues = null;
-		gravPotValues = null;
-		slopeValues = null;
+		elevationCellDataValues = null;
+		gravAccCellDataValues = null;
+		gravPotCellDataValues = null;
+		slopeCellDataValues = null;
 	
 		File smallBodyFile = defaultModelFile;
 		switch(level)
@@ -585,23 +697,69 @@ public abstract class SmallBodyModel extends Model
     	return coloringFiles != null && coloringFiles.length == 4;
     }
     
-    protected void generateImageMapTextureCoordinates()
+    private void loadImageMap()
     {
-    	File imageFile = FileCache.getFileFromServer(imageMap);
+    	File imageFile = FileCache.getFileFromServer(imageMapName);
     	vtkPNGReader reader = new vtkPNGReader();
     	reader.SetFileName(imageFile.getAbsolutePath());
     	reader.Update();
     	
-    	vtkImageData image = reader.GetOutput();
-    	//System.out.println(image);
+    	imageMap.DeepCopy(reader.GetOutput());
     	
-        vtkFloatArray textureCoords = new vtkFloatArray();
+    }
+    
+    private void blendImageMapWithColoring()
+    {
+    	if (blendedImageMapColoring == null)
+    	{
+    		blendedImageMapColoring = new vtkImageData();
+    	}
 
-		imageMapTexture = new vtkTexture();
-		imageMapTexture.InterpolateOn();
-		imageMapTexture.RepeatOff();
-		imageMapTexture.EdgeClampOn();
-		imageMapTexture.SetInput(image);
+    	if (imageMapTexture == null)
+    	{
+    		imageMapTexture = new vtkTexture();
+    		imageMapTexture.InterpolateOn();
+    		imageMapTexture.RepeatOff();
+    		imageMapTexture.EdgeClampOn();
+    		imageMapTexture.SetInput(blendedImageMapColoring);
+    	}
+
+    	vtkImageData image = null;
+    	
+		switch(coloringType)
+		{
+//		case NONE:
+//			break;
+		case ELEVATION:
+			image = this.elevationImage;
+			scalarBarActor.SetTitle(ElevStr + " (" + ElevUnitsStr + ")");
+			break;
+		case GRAVITATIONAL_ACCELERATION:
+			image = this.gravAccImage;
+			scalarBarActor.SetTitle(GravAccStr + " (" + GravAccUnitsStr + ")");
+			break;
+		case GRAVITATIONAL_POTENTIAL:
+			image = this.gravPotImage;
+			scalarBarActor.SetTitle(GravPotStr + " (" + GravPotUnitsStr + ")");
+			break;
+		case SLOPE:
+			image = this.slopeImage;
+			scalarBarActor.SetTitle(SlopeStr + " (" + SlopeUnitsStr + ")");
+			break;
+		}
+
+    	vtkImageBlend blend = new vtkImageBlend();
+        blend.AddInput(imageMap);
+        blend.AddInput(image);
+        blend.Update();
+        
+        blendedImageMapColoring.DeepCopy(blend.GetOutput());
+
+    }
+    
+    private void generateTextureCoordinates()
+    {
+        vtkFloatArray textureCoords = new vtkFloatArray();
 
         int numberOfPoints = smallBodyPolyData.GetNumberOfPoints();
 
@@ -709,7 +867,7 @@ public abstract class SmallBodyModel extends Model
 
     public boolean isImageMapAvailable()
     {
-    	return imageMap != null;
+    	return imageMapName != null;
     }
     
     public void setShowImageMap(boolean b)
@@ -719,7 +877,7 @@ public abstract class SmallBodyModel extends Model
     	if (showImageMap)
     	{
     		if (imageMapTexture == null)
-    			generateImageMapTextureCoordinates();
+    			generateTextureCoordinates();
     		
     		smallBodyActor.SetTexture(imageMapTexture);
     	}
@@ -739,11 +897,11 @@ public abstract class SmallBodyModel extends Model
      */
     public double getElevation(double[] pt) throws IOException
     {
-    	if (elevationValues == null)
-    		loadColoring();
+    	if (elevationCellDataValues == null)
+    		loadColoringCellData();
     	
     	int cellId = findClosestCell(pt);
-    	return elevationValues.GetTuple1(cellId);
+    	return elevationCellDataValues.GetTuple1(cellId);
     }
 
     /**
@@ -754,11 +912,11 @@ public abstract class SmallBodyModel extends Model
      */
     public double getGravitationalAcceleration(double[] pt) throws IOException
     {
-    	if (gravAccValues == null)
-    		loadColoring();
+    	if (gravAccCellDataValues == null)
+    		loadColoringCellData();
 
     	int cellId = findClosestCell(pt);
-    	return gravAccValues.GetTuple1(cellId);
+    	return gravAccCellDataValues.GetTuple1(cellId);
     }
 
     /**
@@ -769,11 +927,11 @@ public abstract class SmallBodyModel extends Model
      */
     public double getGravitationalPotential(double[] pt) throws IOException
     {
-    	if (gravPotValues == null)
-    		loadColoring();
+    	if (gravPotCellDataValues == null)
+    		loadColoringCellData();
 
     	int cellId = findClosestCell(pt);
-    	return gravPotValues.GetTuple1(cellId);
+    	return gravPotCellDataValues.GetTuple1(cellId);
     }
 
     /**
@@ -784,11 +942,62 @@ public abstract class SmallBodyModel extends Model
      */
     public double getSlope(double[] pt) throws IOException
     {
-    	if (slopeValues == null)
-    		loadColoring();
+    	if (slopeCellDataValues == null)
+    		loadColoringCellData();
 
     	int cellId = findClosestCell(pt);
-    	return slopeValues.GetTuple1(cellId);
+    	return slopeCellDataValues.GetTuple1(cellId);
     }
+
+    /**
+     * Compute the point on the asteroid that has the specified latitude and longitude. Returns the
+     * cell id of the cell containing that point. This is done by shooting a ray from the origin in the
+     * specified direction.  
+     * @param lat
+     * @param lon
+     * @param intersectPoint
+     * @return the cellId of the cell containing the intersect point
+     */
+    public int getPointAndCellIdFromLatLon(double lat, double lon, double[] intersectPoint)
+    {
+    	LatLon lla = new LatLon(lat, lon);
+    	double[] lookPt = GeometryUtil.latrec(lla);
+    	
+    	// Move in the direction of lookPt until we are definitely outside the asteroid
+    	BoundingBox bb = getBoundingBox();
+    	double largestSide = bb.getLargestSide() * 1.1;
+    	lookPt[0] *= largestSide;
+    	lookPt[1] *= largestSide;
+    	lookPt[2] *= largestSide;
+    	
+    	double[] origin = {0.0, 0.0, 0.0};
+		double tol = 1e-6;
+		double[] t = new double[1];
+		double[] x = new double[3];
+		double[] pcoords = new double[3];
+		int[] subId = new int[1];
+		int[] cellId = new int[1];
+		
+		int result = cellLocator.IntersectWithLine(origin, lookPt, tol, t, x, pcoords, subId, cellId, genericCell);
+		
+		intersectPoint[0] = x[0];
+		intersectPoint[1] = x[1];
+		intersectPoint[2] = x[2];
+		
+		if (result > 0)
+			return cellId[0];
+		else
+			return -1;
+    }
+
+	public double getImageMapOpacity()
+	{
+		return imageMapOpacity;
+	}
+
+	public void setImageMapOpacity(double imageMapOpacity)
+	{
+		this.imageMapOpacity = imageMapOpacity;
+	}
 
 }
