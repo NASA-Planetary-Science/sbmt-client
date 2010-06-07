@@ -48,8 +48,8 @@ public class ColoringImageMapGenerator
 			System.out.println("line " + i);
 			for (int j=0; j<width; ++j)
 			{
-				double lat = (Math.PI/180.0) * ((i / 1800.0) * 180.0 - 90.0);
-				double lon = (Math.PI/180.0) * ((j / 3600.0) * 360.0);
+				double lat = (Math.PI/180.0) * (((double)i / ((double)height-1.0)) * 180.0 - 90.0);
+				double lon = (Math.PI/180.0) * (((double)j / ((double)width-1.0)) * 360.0);
 				//System.out.println(i + " " + lat + " " + j + " " + lon);
 				
 				int cellId = model.getPointAndCellIdFromLatLon(lat, lon, point);
