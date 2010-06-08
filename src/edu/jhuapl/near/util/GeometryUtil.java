@@ -339,9 +339,9 @@ public class GeometryUtil
 		double totalArea = area1 + area2 + area3;
 		if (totalArea <= 0.0)
 		{
-			bcoords[0] = -1.0;
-			bcoords[1] = -1.0;
-			bcoords[2] = -1.0;
+			bcoords[0] = 1.0;
+			bcoords[1] = 0.0;
+			bcoords[2] = 0.0;
 			return;
 		}
 		bcoords[0] = area1 / totalArea;
