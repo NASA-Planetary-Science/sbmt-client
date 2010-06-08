@@ -79,6 +79,7 @@ public abstract class SmallBodyModel extends Model
 	private vtkTexture imageMapTexture = null;
 	private BoundingBox boundingBox = null;
 	private double imageMapOpacity = 0.50;
+	private vtkImageBlend blendFilter;
 	
 	public SmallBodyModel(
 			String[] modelNames,
@@ -677,13 +678,22 @@ public abstract class SmallBodyModel extends Model
 			break;
 		}
 
-    	vtkImageBlend blend = new vtkImageBlend();
-        blend.AddInput(originalImageMap);
-        blend.AddInput(image);
-        blend.SetOpacity(1, imageMapOpacity);
-        blend.Update();
+		if (blendFilter == null)
+		{
+			blendFilter = new vtkImageBlend();
+			blendFilter.AddInput(originalImageMap);
+			blendFilter.AddInput(image);
+		}
+		else
+		{
+			blendFilter.SetInput(0, originalImageMap);
+			blendFilter.SetInput(1, image);
+			blendFilter.Modified();
+		}
+        blendFilter.SetOpacity(1, 1.0 - imageMapOpacity);
+        blendFilter.Update();
         
-        displayedImageMap.DeepCopy(blend.GetOutput());
+        displayedImageMap.DeepCopy(blendFilter.GetOutput());
     }
     
     private void generateTextureCoordinates()

@@ -33,7 +33,7 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
     private JCheckBox gridCheckBox;
     private JCheckBox imageMapCheckBox;
     private JLabel opacityLabel;
-	private JSlider imageMapOpacitySlider;
+	private JSpinner imageMapOpacitySpinner;
 
 
     public SmallBodyControlPanel(ModelManager modelManager, String bodyName) 
@@ -150,14 +150,13 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
     	imageMapCheckBox.setSelected(false);
     	imageMapCheckBox.addItemListener(this);
 
-    	opacityLabel = new JLabel("Opacity (%)");
-		imageMapOpacitySlider = new JSlider(0, 100, 50);
-		imageMapOpacitySlider.setPaintTicks(true);
-		imageMapOpacitySlider.setMajorTickSpacing(5);
-		imageMapOpacitySlider.setPaintTrack(true);
-		imageMapOpacitySlider.addChangeListener(this);
+    	opacityLabel = new JLabel("Opacity");
+    	imageMapOpacitySpinner = new JSpinner(new SpinnerNumberModel(0.50, 0.0, 1.0, 0.1));
+    	imageMapOpacitySpinner.setEditor(new JSpinner.NumberEditor(imageMapOpacitySpinner, "0.00"));
+		imageMapOpacitySpinner.setPreferredSize(new Dimension(80, 21));
+		imageMapOpacitySpinner.addChangeListener(this);
 		opacityLabel.setEnabled(false);
-		imageMapOpacitySlider.setEnabled(false);
+		imageMapOpacitySpinner.setEnabled(false);
 
     	panel.add(modelCheckBox, "wrap");
     	if (modelManager.getSmallBodyModel().getNumberResolutionLevels() > 1)
@@ -180,7 +179,7 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
     	{
     		panel.add(imageMapCheckBox, "wrap");
     		panel.add(opacityLabel, "gapleft 25, split 2");
-    		panel.add(imageMapOpacitySlider, "wrap");
+    		panel.add(imageMapOpacitySpinner, "wrap");
     	}
     	panel.add(gridCheckBox, "wrap");
     	panel.add(shadingLabel, "wrap");
@@ -228,14 +227,14 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
 				if (this.showColoringCheckBox.isSelected())
 				{
 					opacityLabel.setEnabled(true);
-					imageMapOpacitySlider.setEnabled(true);
+					imageMapOpacitySpinner.setEnabled(true);
 				}
 			}
 			else
 			{
 				smallBodyModel.setShowImageMap(false);
 				opacityLabel.setEnabled(false);
-				imageMapOpacitySlider.setEnabled(false);
+				imageMapOpacitySpinner.setEnabled(false);
 			}
 		}
 		else if (e.getItemSelectable() == this.flatShadingButton)
@@ -301,7 +300,7 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
 				}
 				
 				opacityLabel.setEnabled(false);
-				imageMapOpacitySlider.setEnabled(false);
+				imageMapOpacitySpinner.setEnabled(false);
 			}
 			else
 			{
@@ -314,7 +313,7 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
 				if (imageMapCheckBox.isSelected())
 				{
 					opacityLabel.setEnabled(true);
-					imageMapOpacitySlider.setEnabled(true);
+					imageMapOpacitySpinner.setEnabled(true);
 				}
 			}
 		}
@@ -360,15 +359,10 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
 
 	public void stateChanged(ChangeEvent e)
 	{
-		if (!imageMapOpacitySlider.getValueIsAdjusting())
-		{
-			SmallBodyModel smallBodyModel = modelManager.getSmallBodyModel();
+		SmallBodyModel smallBodyModel = modelManager.getSmallBodyModel();
 
-			double val = (double)imageMapOpacitySlider.getValue();
-			double max = (double)imageMapOpacitySlider.getMaximum();
-			double min = (double)imageMapOpacitySlider.getMinimum();
-			
-			smallBodyModel.setImageMapOpacity(val/(max - min));
-		}
+		double val = (Double)imageMapOpacitySpinner.getValue();
+
+		smallBodyModel.setImageMapOpacity(val);
 	}
 }
