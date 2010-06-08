@@ -305,4 +305,61 @@ public class GeometryUtil
 		};
 		return GeometryUtil.vnorm(vec);
 	}
+	
+	static public double distance2Between(double[] pt1, double[] pt2)
+	{
+		double[] vec = {
+				pt2[0]-pt1[0],
+				pt2[1]-pt1[1],
+				pt2[2]-pt1[2]
+		};
+		return GeometryUtil.vdot(vec, vec);
+	}
+
+	/**
+	 * Adapted from VTK's version
+	 * @param p1
+	 * @param p2
+	 * @param p3
+	 * @return
+	 */
+	static public double triangleArea(double[] p1, double[] p2, double[] p3)
+	{
+		double a = distance2Between(p1,p2);
+		double b = distance2Between(p2,p3);
+		double c = distance2Between(p3,p1);
+		return (0.25* Math.sqrt(Math.abs(4.0*a*c - (a-b+c)*(a-b+c))));
+	}
+	
+	static public void barycentricCoords(double[] x, double[] p1, double[] p2, double[] p3, double[] bcoords)
+	{
+		double area1 = triangleArea(x, p2, p3);
+		double area2 = triangleArea(x, p1, p3);
+		double area3 = triangleArea(x, p1, p2);
+		double totalArea = area1 + area2 + area3;
+		if (totalArea <= 0.0)
+		{
+			bcoords[0] = -1.0;
+			bcoords[1] = -1.0;
+			bcoords[2] = -1.0;
+			return;
+		}
+		bcoords[0] = area1 / totalArea;
+		bcoords[1] = area2 / totalArea;
+		bcoords[2] = area3 / totalArea;
+	}
+	
+	static public double interpolateWithinTriangle(
+			double[] x,
+			double[] p1,
+			double[] p2,
+			double[] p3,
+			double v1,
+			double v2,
+			double v3)
+	{
+		double[] bcoords = new double[3];
+		barycentricCoords(x, p1, p2, p3, bcoords);
+		return v1*bcoords[0] + v2*bcoords[1] + v3*bcoords[2];
+	}
 }

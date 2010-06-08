@@ -176,9 +176,6 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
     		panel.add(gravitationalPotentialButton, "wrap, gapleft 25");
     		panel.add(slopeButton, "wrap, gapleft 25");
     	}
-    	panel.add(shadingLabel, "wrap");
-    	panel.add(flatShadingButton, "wrap, gapleft 25");
-    	panel.add(smoothShadingButton, "wrap, gapleft 25");
     	if (modelManager.getSmallBodyModel().isImageMapAvailable())
     	{
     		panel.add(imageMapCheckBox, "wrap");
@@ -186,6 +183,9 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
     		panel.add(imageMapOpacitySlider, "wrap");
     	}
     	panel.add(gridCheckBox, "wrap");
+    	panel.add(shadingLabel, "wrap");
+    	panel.add(flatShadingButton, "wrap, gapleft 25");
+    	panel.add(smoothShadingButton, "wrap, gapleft 25");
     	
     	add(panel, BorderLayout.CENTER);
 	}
@@ -225,8 +225,11 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
 			if (e.getStateChange() == ItemEvent.SELECTED)
 			{
 				smallBodyModel.setShowImageMap(true);
-				opacityLabel.setEnabled(true);
-				imageMapOpacitySlider.setEnabled(true);
+				if (this.showColoringCheckBox.isSelected())
+				{
+					opacityLabel.setEnabled(true);
+					imageMapOpacitySlider.setEnabled(true);
+				}
 			}
 			else
 			{
@@ -296,6 +299,9 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
 				catch (IOException e1) {
 					e1.printStackTrace();
 				}
+				
+				opacityLabel.setEnabled(false);
+				imageMapOpacitySlider.setEnabled(false);
 			}
 			else
 			{
@@ -304,6 +310,12 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
 				gravitationalPotentialButton.setEnabled(true);
 				slopeButton.setEnabled(true);
 				setColoring();
+
+				if (imageMapCheckBox.isSelected())
+				{
+					opacityLabel.setEnabled(true);
+					imageMapOpacitySlider.setEnabled(true);
+				}
 			}
 		}
 		else
@@ -348,15 +360,15 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
 
 	public void stateChanged(ChangeEvent e)
 	{
-		if (imageMapOpacitySlider.getValueIsAdjusting())
+		if (!imageMapOpacitySlider.getValueIsAdjusting())
 		{
 			SmallBodyModel smallBodyModel = modelManager.getSmallBodyModel();
 
-			int val = imageMapOpacitySlider.getValue();
-			int max = imageMapOpacitySlider.getMaximum();
-			int min = imageMapOpacitySlider.getMinimum();
-			//double offset = (val - (max-min)/2.0) * offsetScale;
-			//smallBodyModel.setRadialOffset(offset);
+			double val = (double)imageMapOpacitySlider.getValue();
+			double max = (double)imageMapOpacitySlider.getMaximum();
+			double min = (double)imageMapOpacitySlider.getMinimum();
+			
+			smallBodyModel.setImageMapOpacity(val/(max - min));
 		}
 	}
 }

@@ -1224,4 +1224,39 @@ public class PolyDataUtil
     	return normal;
     }
 
+    /**
+     * This function takes 
+     * @param polydata
+     * @param celldata
+     * @return
+     */
+    static public void generatePointScalarsFromCellScalars(vtkPolyData polydata)
+    {
+    	polydata.BuildLinks(0);
+    	int numberOfPoints = polydata.GetNumberOfPoints();
+
+    	vtkIdList idList = new vtkIdList();
+    	
+    	vtkFloatArray pointScalars = new vtkFloatArray();
+    	pointScalars.SetNumberOfComponents(1);
+    	pointScalars.SetNumberOfTuples(numberOfPoints);
+
+    	vtkDataArray cellScalars = polydata.GetCellData().GetScalars();
+    	
+    	for (int i=0; i<numberOfPoints; ++i)
+    	{
+			polydata.GetPointCells(i, idList);
+			int numberOfCells = idList.GetNumberOfIds();
+			double pointValue = 0.0;
+			for (int j=0; j<numberOfCells; ++j)
+			{
+				pointValue += cellScalars.GetTuple1(idList.GetId(j));
+			}
+			
+			pointValue /= (double)numberOfCells;
+			pointScalars.SetTuple1(i, pointValue);
+    	}
+
+    	polydata.GetPointData().SetScalars(pointScalars);
+    }
 }
