@@ -991,7 +991,7 @@ public abstract class SmallBodyModel extends Model
 	    	if (imageMapTexture == null)
 	    	{
 	    		imageMapTexture = new vtkTexture();
-	    		//imageMapTexture.InterpolateOn();
+	    		imageMapTexture.InterpolateOn();
 	    		imageMapTexture.RepeatOff();
 	    		imageMapTexture.EdgeClampOn();
 	    		imageMapTexture.SetInput(displayedImageMap);
