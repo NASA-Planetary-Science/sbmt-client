@@ -2,6 +2,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <algorithm>
 #include <stdlib.h>
 extern "C"
 {
@@ -11,7 +12,7 @@ extern "C"
 
 struct TimeMatrix
 {
-    double et;
+    std::string utc;
     double mat[3][3];
 };
 
@@ -56,23 +57,14 @@ std::vector<std::string> loadFileList(const std::string& filelist)
 
 
 void loadSumFile(const std::string& sumfile,
-                 double& et,
+		 std::string& utc,
                  double mat[3][3])
 {
-    mat[0][0] = 1.0;
-    mat[0][1] = 0.0;
-    mat[0][2] = 0.0;
-    mat[1][0] = 0.0;
-    mat[1][1] = 1.0;
-    mat[1][2] = 0.0;
-    mat[2][0] = 0.0;
-    mat[2][1] = 0.0;
-    mat[2][2] = 1.0;
-    
     std::ifstream fin(sumfile.c_str());
 
     if (fin.is_open())
     {
+        double et;
         double scpos[3];
         double cx[3];
         double cy[3];
@@ -80,14 +72,16 @@ void loadSumFile(const std::string& sumfile,
 
         std::string name;
         std::string dummy;
-        std::string datetime;
         
         std::getline(fin, name);
         trim(name);
 
-        std::getline(fin, datetime);
-        trim(datetime);
-        
+        std::getline(fin, utc);
+        trim(utc);
+	
+	// Replace spaces with dashes in the utc string
+	std::replace(utc.begin(), utc.end(), ' ', '-');
+
         for (int i=0; i<7; ++i) fin >> dummy;
         for (int i=0; i<5; ++i) fin >> dummy;
         fin >> scpos[0];
@@ -108,10 +102,34 @@ void loadSumFile(const std::string& sumfile,
         fin >> dummy;
         for (int i=0; i<4; ++i) fin >> dummy;
 
-        std::cout << datetime << std::endl;
-        utc2et_c(datetime.c_str(), &et);
+        std::cout << utc << std::endl;
+        utc2et_c(utc.c_str(), &et);
         std::cout << et << std::endl;
-        
+
+	double msi_to_eros[3][3];
+	msi_to_eros[0][0] = cx[0];
+	msi_to_eros[0][1] = cx[1];
+	msi_to_eros[0][2] = cx[2];
+	msi_to_eros[1][0] = cy[0];
+	msi_to_eros[1][1] = cy[1];
+	msi_to_eros[1][2] = cy[2];
+	msi_to_eros[2][0] = cz[0];
+	msi_to_eros[2][1] = cz[1];
+	msi_to_eros[2][2] = cz[2];
+
+	double sc_bus_prime_to_msi[3][3];
+	pxform_c("NEAR_SC_BUS_PRIME", "NEAR_MSI", et, sc_bus_prime_to_msi);
+
+	double eros_to_j2000[3][3];
+	pxform_c("IAU_EROS", "J2000", et, eros_to_j2000);
+
+	double tmp[3][3];
+	mxm_c(eros_to_j2000, msi_to_eros, tmp);
+
+	double tmp2[3][3];
+	mxm_c(tmp, sc_bus_prime_to_msi, tmp2);
+
+	invert_c(tmp2, mat);
     }
     else
     {
@@ -153,7 +171,7 @@ void createMsopckSetupFile()
     fout << "INSTRUMENT_ID          = -93000\n";
     fout << "REFERENCE_FRAME_NAME   = 'J2000'\n";
     fout << "ANGULAR_RATE_PRESENT   = 'NO'\n";
-    fout << "INPUT_TIME_TYPE        = 'ET'\n";
+    fout << "INPUT_TIME_TYPE        = 'UTC'\n";
     fout << "INPUT_DATA_TYPE        = 'MATRICES'\n";
     fout << "PRODUCER_ID            = 'E. Kahn, JHUAPL'\n";
 
@@ -176,7 +194,7 @@ void createMsopckInputDataFile(const std::vector<TimeMatrix>& data)
     for (unsigned int i=0; i<data.size(); ++i)
     {
         const TimeMatrix& tm = data[i];
-        fout << std::scientific << tm.et << " ";
+        fout << std::scientific << tm.utc << " ";
         fout << std::scientific << tm.mat[0][0] << " ";
         fout << std::scientific << tm.mat[0][1] << " ";
         fout << std::scientific << tm.mat[0][2] << " ";
@@ -216,7 +234,7 @@ int main(int argc, char** argv)
     {
         TimeMatrix tm;
 
-        loadSumFile(sumfiles[i], tm.et, tm.mat);
+        loadSumFile(sumfiles[i], tm.utc, tm.mat);
         
         data.push_back(tm);
     }
