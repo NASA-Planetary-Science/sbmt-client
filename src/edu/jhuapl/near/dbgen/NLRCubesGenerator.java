@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import edu.jhuapl.near.model.eros.ErosModel;
-import edu.jhuapl.near.query.ErosCubes;
+import edu.jhuapl.near.util.SmallBodyCubes;
 import edu.jhuapl.near.util.FileUtil;
 import edu.jhuapl.near.util.NativeLibraryLoader;
 
@@ -42,7 +42,7 @@ public class NLRCubesGenerator
 			e2.printStackTrace();
 		}
 
-		ErosCubes cubes = new ErosCubes(erosModel, 1.0, 1.0);
+		SmallBodyCubes cubes = new SmallBodyCubes(erosModel, 1.0, 1.0);
 		
 		// First go through all the data and determine which cubes are not empty. We only need to
 		// create files for nonempty cubes

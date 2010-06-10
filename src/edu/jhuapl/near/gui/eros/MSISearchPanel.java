@@ -19,6 +19,7 @@ import org.joda.time.*;
 import vtk.vtkRenderWindowPanel;
 
 import edu.jhuapl.near.query.Query;
+import edu.jhuapl.near.query.Query.MSISource;
 import edu.jhuapl.near.model.RegularPolygonModel;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.eros.ErosModelManager;
@@ -36,6 +37,7 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
 	
     private final ErosModelManager modelManager;
     private PickManager pickManager;
+    private JComboBox msiSourceComboBox;
     private java.util.Date startDate = new GregorianCalendar(2000, 6, 7, 0, 0, 0).getTime();
     private java.util.Date endDate = new GregorianCalendar(2000, 7, 1, 0, 0, 0).getTime();
     private JLabel endDateLabel;
@@ -82,7 +84,11 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
     private JButton removeAllImagesButton;
     private JComboBox numberOfBoundariesComboBox;
     private IdPair resultIntervalCurrentlyShown = null;
-
+    
+    /**
+     * The source of the msi images of the most recently executed query
+     */
+    private Query.MSISource msiSourceOfLastQuery = Query.MSISource.PDS;
     
     public MSISearchPanel(
     		final ErosModelManager modelManager, 
@@ -105,7 +111,7 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
 			}
 		});
 
-    	JPanel pane = new JPanel();
+		JPanel pane = new JPanel();
     	pane.setLayout(new BoxLayout(pane,
         		BoxLayout.PAGE_AXIS));
 
@@ -113,8 +119,14 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
         //        new CompoundBorder(BorderFactory.createEmptyBorder(9, 9, 9, 9), 
         //                           new TitledBorder("Query Editor")));
 
-
-        
+        final JPanel msiSourcePanel = new JPanel();
+        JLabel msiSourceLabel = new JLabel("MSI Source");
+    	Object[] msiSourceOptions = {Query.MSISource.PDS, Query.MSISource.GASKELL};
+    	msiSourceComboBox = new JComboBox(msiSourceOptions);
+    	msiSourcePanel.add(msiSourceLabel);
+    	msiSourcePanel.add(msiSourceComboBox);
+    	pane.add(msiSourcePanel);
+    	
         final JPanel startDatePanel = new JPanel();
         this.startDateLabel = new JLabel(START_DATE_LABEL_TEXT);
         startDatePanel.add(this.startDateLabel);
@@ -590,7 +602,13 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
 				RegularPolygonModel.RegularPolygon region = (RegularPolygonModel.RegularPolygon)selectionModel.getStructure(0);
 				cubeList = erosModel.getIntersectingCubes(region.interiorPolyData);
 			}
-
+			
+			Query.MSISource msiSource = null;
+			if (msiSourceComboBox.getSelectedItem().equals(MSISource.PDS))
+			    msiSource = MSISource.PDS;
+			else
+			    msiSource = MSISource.GASKELL;
+			
         	ArrayList<String> results = Query.getInstance().runQuery(
         			Query.Datatype.MSI,
         			startDateJoda, 
@@ -610,7 +628,13 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
         			Double.parseDouble(toEmissionTextField.getText()),
         			Double.parseDouble(fromPhaseTextField.getText()),
         			Double.parseDouble(toPhaseTextField.getText()),
-        			cubeList);
+        			cubeList,
+        			msiSource);
+
+            if (msiSourceComboBox.getSelectedItem().equals(MSISource.PDS))
+                msiSourceOfLastQuery = MSISource.PDS;
+            else
+                msiSourceOfLastQuery = MSISource.GASKELL;
 
         	setMSIResults(results);
         }
@@ -638,7 +662,8 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
     				str.substring(23, 32) 
     				+ ", day: " + str.substring(10, 13) + "/" + str.substring(5, 9)
     				+ ", type: " + str.substring(14, 20)
-    				+ ", filter: " + str.substring(33, 34)
+                    + ", filter: " + str.substring(33, 34)
+                    + ", source: " + msiSourceOfLastQuery
     				);
     		
     		++i;

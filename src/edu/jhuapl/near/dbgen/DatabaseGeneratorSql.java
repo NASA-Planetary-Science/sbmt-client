@@ -487,15 +487,15 @@ public class DatabaseGeneratorSql
 		//if (!file.exists())
 		//	return false;
 		
-		name = line.substring(0, line.length()-4) + "_BOUNDARY.VTK";
-		file = new File(name);
-		if (!file.exists())
-			return false;
+		//name = line.substring(0, line.length()-4) + "_BOUNDARY.VTK";
+		//file = new File(name);
+		//if (!file.exists())
+		//	return false;
 
-		name = line.substring(0, line.length()-4) + "_FOOTPRINT.VTK";
-		file = new File(name);
-		if (!file.exists())
-			return false;
+		//name = line.substring(0, line.length()-4) + "_FOOTPRINT.VTK";
+		//file = new File(name);
+		//if (!file.exists())
+		//	return false;
 
 		return true;
 	}

@@ -20,6 +20,21 @@ import edu.jhuapl.near.util.Configuration;
 public class Query
 {
 	public enum Datatype {MSI, NIS, NLR};
+	public enum MSISource
+	{
+	    PDS {
+	        public String toString()
+	        {
+	            return "PDS derived";
+	        }
+	    },
+	    GASKELL {
+            public String toString()
+            {
+                return "Gaskell derived";
+            }
+	    }
+	};
 	
 	private static Query ref = null;
 	
@@ -197,7 +212,8 @@ public class Query
 			double toEmission,
 			double fromPhase,
 			double toPhase,
-			TreeSet<Integer> cubeList) 
+			TreeSet<Integer> cubeList,
+			MSISource msiSource) 
 	{
 		ArrayList<String> matchedImages = new ArrayList<String>();
 		ArrayList<ArrayList<String>> results = null;
@@ -219,6 +235,7 @@ public class Query
 					int id = Integer.parseInt(searchString);
 
 					HashMap<String, String> args = new HashMap<String, String>();
+                    args.put("msiSource", msiSource.toString());
 					args.put("id", String.valueOf(id));
 					
 					results = doQuery("searchmsi_id.php", constructUrlArguments(args));
@@ -277,6 +294,7 @@ public class Query
 //				System.out.println(query);
 
 				HashMap<String, String> args = new HashMap<String, String>();
+                args.put("msiSource", msiSource.toString());
 				args.put("minResolution", String.valueOf(minResolution));
 				args.put("maxResolution", String.valueOf(maxResolution));
 				args.put("minScDistance", String.valueOf(minScDistance));

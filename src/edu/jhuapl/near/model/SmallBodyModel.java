@@ -9,9 +9,9 @@ import java.util.ArrayList;
 import java.util.TreeSet;
 
 import vtk.*;
-import edu.jhuapl.near.query.ErosCubes;
 import edu.jhuapl.near.util.BoundingBox;
 import edu.jhuapl.near.util.ConvertResourceToFile;
+import edu.jhuapl.near.util.SmallBodyCubes;
 import edu.jhuapl.near.util.FileCache;
 import edu.jhuapl.near.util.GeometryUtil;
 import edu.jhuapl.near.util.LatLon;
@@ -66,7 +66,7 @@ public abstract class SmallBodyModel extends Model
     private vtkImageData displayedImageMap;
     private vtkScalarBarActor scalarBarActor;
     private vtkPolyDataReader smallBodyReader;
-	private ErosCubes smallBodyCubes;
+	private SmallBodyCubes smallBodyCubes;
     private ColoringType coloringType = ColoringType.NONE;
     private File defaultModelFile;
     private int resolutionLevel = 0;
@@ -144,7 +144,7 @@ public abstract class SmallBodyModel extends Model
 	public TreeSet<Integer> getIntersectingCubes(vtkPolyData polydata)
 	{
 		if (smallBodyCubes == null)
-			smallBodyCubes = new ErosCubes(this);
+			smallBodyCubes = new SmallBodyCubes(this);
 			
 		return smallBodyCubes.getIntersectingCubes(polydata);
 	}
@@ -1020,4 +1020,8 @@ public abstract class SmallBodyModel extends Model
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 	}
 	
+	public int[] getIntersectingCubes()
+	{
+	    return null;
+	}
 }

@@ -95,32 +95,33 @@ public class SmallBodyMappingTool extends JFrame
 
     public static void main(String[] args)
     {
-    	try
-        {
-    		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-            System.out.println(UIManager.getSystemLookAndFeelClassName());
-        } 
-        catch (Exception e) 
-        {
-        	e.printStackTrace();
-        }
-
-    	NativeLibraryLoader.loadVtkLibraries();
-
-    	garbageCollector = new vtkJavaGarbageCollector();
-    	//garbageCollector.SetDebug(true);
-    	garbageCollector.SetScheduleTime(5, TimeUnit.SECONDS);
-    	garbageCollector.SetAutoGarbageCollection(true);
-    	
         try
         {
-        	JPopupMenu.setDefaultLightWeightPopupEnabled(false);
-            final SmallBodyMappingTool frame = new SmallBodyMappingTool();
-        	
             javax.swing.SwingUtilities.invokeLater(new Runnable()
             {
             	public void run()
             	{
+                	try
+                    {
+                		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+                        System.out.println(UIManager.getSystemLookAndFeelClassName());
+                    } 
+                    catch (Exception e) 
+                    {
+                    	e.printStackTrace();
+                    }
+
+                	NativeLibraryLoader.loadVtkLibraries();
+
+                	garbageCollector = new vtkJavaGarbageCollector();
+                	//garbageCollector.SetDebug(true);
+                	garbageCollector.SetScheduleTime(5, TimeUnit.SECONDS);
+                	garbageCollector.SetAutoGarbageCollection(true);
+                	
+                	JPopupMenu.setDefaultLightWeightPopupEnabled(false);
+                    
+                	SmallBodyMappingTool frame = new SmallBodyMappingTool();
+                	
             		ImageIcon erosIcon = new ImageIcon(getClass().getResource("/edu/jhuapl/near/data/eros.png"));
                     frame.setIconImage(erosIcon.getImage());
                     frame.setTitle("Small Body Mapping Tool");
