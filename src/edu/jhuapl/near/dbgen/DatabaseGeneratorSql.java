@@ -28,7 +28,7 @@ public class DatabaseGeneratorSql
 	static private vtkPolyDataReader footprintReader;
 	static private vtkPolyData footprintPolyData;
 	
-    private static void createMSITables()
+    private static void createMSITables(String msiTableName)
     {
     	System.out.println("creating msi");
         try {
@@ -36,7 +36,8 @@ public class DatabaseGeneratorSql
             //make a table
         	try
         	{
-        		db.dropTable("msiimages");
+        		//db.dropTable("msiimages");
+        		db.dropTable(msiTableName);
         	}
         	catch(Exception e)
         	{
@@ -44,7 +45,7 @@ public class DatabaseGeneratorSql
         	}
         	
             db.update(
-            		"create table msiimages(" +
+            		"create table " + msiTableName + "(" +
             		"id int PRIMARY KEY, " +
             		"year smallint, " +
             		"day smallint, " +
@@ -179,7 +180,7 @@ public class DatabaseGeneratorSql
         }
     }
     
-    private static void populateMSITables(ArrayList<String> msiFiles) throws IOException, SQLException, FitsException
+    private static void populateMSITables(ArrayList<String> msiFiles, String msiTableName) throws IOException, SQLException, FitsException
     {
     	int count = 0;
     	
@@ -218,8 +219,9 @@ public class DatabaseGeneratorSql
     		
             if (msiInsert == null)
             {
-            	msiInsert = db.preparedStatement(                                                                                    
-            		"insert into msiimages values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");                                                                   
+            	msiInsert = db.preparedStatement(
+//            		"insert into msiimages values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");                                                                   
+            		"insert into " + msiTableName + " values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");                                                                   
             }
 
             DateTime startTime = new DateTime(image.getStartTime(), DateTimeZone.UTC);
@@ -522,13 +524,16 @@ public class DatabaseGeneratorSql
 		erosModel = new ErosModel();
 		
 		String msiFileList=args[1];
-		String nisFileList=args[2];
+		String msiGaskellFileList=args[2];
+		String nisFileList=args[3];
 
 		
 		ArrayList<String> msiFiles = null;
+		ArrayList<String> msiGaskellFiles = null;
 		ArrayList<String> nisFiles = null;
 		try {
 			msiFiles = FileUtil.getFileLinesAsStringList(msiFileList);
+			msiGaskellFiles = FileUtil.getFileLinesAsStringList(msiGaskellFileList);
 			nisFiles = FileUtil.getFileLinesAsStringList(nisFileList);
 		} catch (IOException e2) {
 			e2.printStackTrace();
@@ -544,15 +549,17 @@ public class DatabaseGeneratorSql
         }
 
 		
-        //createMSITables();
+        //createMSITables("msiimages");
+        createMSITables("msiimages_gaskell");
 		//createNISTables();
-		createMSITablesCubes();
+        createMSITablesCubes();
 		createNISTablesCubes();
 
 		
 		try 
 		{
-			//populateMSITables(msiFiles);
+			//populateMSITables(msiFiles, "msiimages");
+			populateMSITables(msiGaskellFiles, "msiimages_gaskell");
 			//populateNISTables(nisFiles);
 			populateMSITablesCubes(msiFiles);
 			populateNISTablesCubes(nisFiles);
