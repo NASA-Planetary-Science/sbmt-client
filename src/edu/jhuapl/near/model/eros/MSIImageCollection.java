@@ -43,7 +43,7 @@ public class MSIImageCollection extends Model implements PropertyChangeListener
 			return;
 		
 		//MSIImage image = new MSIImage(path);
-		MSIImage image = MSIImage.MSIImageFactory.createImage(path, erosModel);
+		MSIImage image = null;//MSIImage.MSIImageFactory.createImage(path, erosModel);
 
 		image.addPropertyChangeListener(this);
 

@@ -144,7 +144,7 @@ public abstract class SmallBodyModel extends Model
 	public TreeSet<Integer> getIntersectingCubes(vtkPolyData polydata)
 	{
 		if (smallBodyCubes == null)
-			smallBodyCubes = new SmallBodyCubes(this);
+			smallBodyCubes = new SmallBodyCubes(this, this.getIntersectingCubes());
 			
 		return smallBodyCubes.getIntersectingCubes(polydata);
 	}

@@ -99,7 +99,25 @@ public class MSIImage extends Model implements PropertyChangeListener
 
 	private String startTime = "";
 	private String stopTime = "";
+
+	private MSISource source;
 	
+	public enum MSISource
+	{
+	    PDS {
+	        public String toString()
+	        {
+	            return "PDS derived";
+	        }
+	    },
+	    GASKELL {
+	        public String toString()
+	        {
+	            return "Gaskell derived";
+	        }
+	    }
+	};
+	    
 	/**
 	 * Because instances of MSIImage can be expensive, we want there to be
 	 * no more than one instance of this class per image file on the server.
@@ -125,8 +143,7 @@ public class MSIImage extends Model implements PropertyChangeListener
 			return image;
 		}
 	}
-
-	
+    	
 	/**
 	 * This constructor should only be used in the GUI program since
 	 * this constructor makes sure the relevant files get downloaded

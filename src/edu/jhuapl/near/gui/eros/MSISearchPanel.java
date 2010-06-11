@@ -19,11 +19,11 @@ import org.joda.time.*;
 import vtk.vtkRenderWindowPanel;
 
 import edu.jhuapl.near.query.Query;
-import edu.jhuapl.near.query.Query.MSISource;
 import edu.jhuapl.near.model.RegularPolygonModel;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.eros.ErosModelManager;
 import edu.jhuapl.near.model.eros.MSIBoundaryCollection;
+import edu.jhuapl.near.model.eros.MSIImage;
 import edu.jhuapl.near.model.eros.MSIImageCollection;
 import edu.jhuapl.near.pick.PickManager;
 import edu.jhuapl.near.pick.PickManager.PickMode;
@@ -88,7 +88,7 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
     /**
      * The source of the msi images of the most recently executed query
      */
-    private Query.MSISource msiSourceOfLastQuery = Query.MSISource.PDS;
+    private MSIImage.MSISource msiSourceOfLastQuery = MSIImage.MSISource.PDS;
     
     public MSISearchPanel(
     		final ErosModelManager modelManager, 
@@ -121,7 +121,7 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
 
         final JPanel msiSourcePanel = new JPanel();
         JLabel msiSourceLabel = new JLabel("MSI Source");
-    	Object[] msiSourceOptions = {Query.MSISource.PDS, Query.MSISource.GASKELL};
+    	Object[] msiSourceOptions = {MSIImage.MSISource.PDS, MSIImage.MSISource.GASKELL};
     	msiSourceComboBox = new JComboBox(msiSourceOptions);
     	msiSourcePanel.add(msiSourceLabel);
     	msiSourcePanel.add(msiSourceComboBox);
@@ -603,11 +603,11 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
 				cubeList = erosModel.getIntersectingCubes(region.interiorPolyData);
 			}
 			
-			Query.MSISource msiSource = null;
-			if (msiSourceComboBox.getSelectedItem().equals(MSISource.PDS))
-			    msiSource = MSISource.PDS;
+			MSIImage.MSISource msiSource = null;
+			if (msiSourceComboBox.getSelectedItem().equals(MSIImage.MSISource.PDS))
+			    msiSource = MSIImage.MSISource.PDS;
 			else
-			    msiSource = MSISource.GASKELL;
+			    msiSource = MSIImage.MSISource.GASKELL;
 			
         	ArrayList<String> results = Query.getInstance().runQuery(
         			Query.Datatype.MSI,
@@ -631,10 +631,10 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
         			cubeList,
         			msiSource);
 
-            if (msiSourceComboBox.getSelectedItem().equals(MSISource.PDS))
-                msiSourceOfLastQuery = MSISource.PDS;
+            if (msiSourceComboBox.getSelectedItem().equals(MSIImage.MSISource.PDS))
+                msiSourceOfLastQuery = MSIImage.MSISource.PDS;
             else
-                msiSourceOfLastQuery = MSISource.GASKELL;
+                msiSourceOfLastQuery = MSIImage.MSISource.GASKELL;
 
         	setMSIResults(results);
         }

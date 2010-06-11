@@ -18,22 +18,54 @@ public class SmallBodyCubes
 	private ArrayList<BoundingBox> allCubes = new ArrayList<BoundingBox>();
 	private double cubeSize = 1.0;
 	private double buffer = 0.01;
-//	private boolean useHardCodedValues = true;
 	private int numCubesX;
 	private int numCubesY;
 	private int numCubesZ;
 
-	public SmallBodyCubes(SmallBodyModel smallBodyModel, double cubeSize, double buffer)
+	/**
+	 * Create a cube set structure for the given model, where each cube has side <tt>cubeSize</tt>
+	 * and <tt>buffer</tt> is added to all sides of the bounding box of the model. Cubes
+	 * that do not intersect the asteroid at all are removed.
+	 * 
+	 * @param smallBodyModel
+	 * @param cubeSize
+	 * @param buffer
+	 */
+	public SmallBodyCubes(
+	        SmallBodyModel smallBodyModel,
+	        double cubeSize,
+	        double buffer)
 	{
 		this.cubeSize = cubeSize;
 		this.buffer = buffer;
-//		this.useHardCodedValues = false;
+
 		initialize(smallBodyModel);
+		removeEmptyCubes(smallBodyModel);
 	}
 	
-	public SmallBodyCubes(SmallBodyModel smallBodyModel)
+	/**
+	 * Create a cube set structure for the given model using a default value of 1 for the
+	 * cube size and a default value of 0.01 for the buffer. If <tt>cubesToKeep</tt> is not
+	 * null, then only those cubes are kept by this class, all others are discarded.
+	 *  
+	 * @param smallBodyModel
+	 * @param cubesToKeep
+	 */
+	public SmallBodyCubes(
+	        SmallBodyModel smallBodyModel,
+	        int[] cubesToKeep)
 	{
-		this.initialize(smallBodyModel);
+	    initialize(smallBodyModel);
+		
+		if (cubesToKeep != null)
+		{
+		    ArrayList<BoundingBox> tmpCubes = new ArrayList<BoundingBox>();
+		    for (int i : cubesToKeep)
+		    {
+		        tmpCubes.add(allCubes.get(i));
+		    }
+		    allCubes = tmpCubes;
+		}
 	}
 	
 	private void initialize(SmallBodyModel smallBodyModel)
@@ -75,51 +107,39 @@ public class SmallBodyCubes
 				}
 			}
 		}
-		
-		// Change the following to false to actually compute the 
-		// values stored in the erosIntersectingCubes array. This can take
-		// a long time which is why we hard code the values into this class.
-//		if (useHardCodedValues)
-//		{
-//			ArrayList<BoundingBox> tmpCubes = new ArrayList<BoundingBox>();
-//			for (int i : erosIntersectingCubes)
-//			{
-//				tmpCubes.add(allCubes.get(i));
-//			}
-//			allCubes = tmpCubes;
-//		}
-//		else
-		{
-			System.out.println("numCubesX " + numCubesX);
-			System.out.println("numCubesY " + numCubesY);
-			System.out.println("numCubesZ " + numCubesZ);
+	}
+	
+	private void removeEmptyCubes(SmallBodyModel smallBodyModel)
+	{
+	    System.out.println("numCubesX " + numCubesX);
+	    System.out.println("numCubesY " + numCubesY);
+	    System.out.println("numCubesZ " + numCubesZ);
 
-			System.out.println("total cubes before reduction = " + allCubes.size());
-			System.out.println("int[] erosIntersectingCubes = {");
+	    System.out.println("total cubes before reduction = " + allCubes.size());
+	    System.out.println("int[] erosIntersectingCubes = {");
 
-			// Remove from allCubes all cubes that do not intersect the asteroid
-			long t0 = System.currentTimeMillis();
-			TreeSet<Integer> intersectingCubes = getIntersectingCubes(smallBodyModel.getSmallBodyPolyData());
-			System.out.println("Time elapsed:  " + ((double)System.currentTimeMillis()-t0)/1000.0);
+	    // Remove from allCubes all cubes that do not intersect the asteroid
+	    long t0 = System.currentTimeMillis();
+	    TreeSet<Integer> intersectingCubes = getIntersectingCubes(smallBodyModel.getSmallBodyPolyData());
+	    System.out.println("Time elapsed:  " + ((double)System.currentTimeMillis()-t0)/1000.0);
 
-			ArrayList<BoundingBox> tmpCubes = new ArrayList<BoundingBox>();
-			int count = 0;
-			for (Integer i : intersectingCubes)
-			{
-				tmpCubes.add(allCubes.get(i));
-				System.out.print(i);
-				if (count < intersectingCubes.size()-1)
-					System.out.print(",");
-				++count;
-				if (count % 15 == 0)
-					System.out.println("");
-			}
-			System.out.println("};");
+	    ArrayList<BoundingBox> tmpCubes = new ArrayList<BoundingBox>();
+	    int count = 0;
+	    for (Integer i : intersectingCubes)
+	    {
+	        tmpCubes.add(allCubes.get(i));
+	        System.out.print(i);
+	        if (count < intersectingCubes.size()-1)
+	            System.out.print(",");
+	        ++count;
+	        if (count % 15 == 0)
+	            System.out.println("");
+	    }
+	    System.out.println("};");
 
-			allCubes = tmpCubes;
+	    allCubes = tmpCubes;
 
-			System.out.println("finished initializing cubes, total = " + allCubes.size());
-		}
+	    System.out.println("finished initializing cubes, total = " + allCubes.size());
 	}
 	
 	public BoundingBox getCube(int cubeId)
@@ -127,6 +147,11 @@ public class SmallBodyCubes
 		return allCubes.get(cubeId);
 	}
 
+	/**
+	 * Get all the cubes that intersect with <tt>polydata</tt>
+	 * @param polydata
+	 * @return
+	 */
 	public TreeSet<Integer> getIntersectingCubes(vtkPolyData polydata)
 	{
 		TreeSet<Integer> cubeIds = new TreeSet<Integer>();
@@ -172,17 +197,21 @@ public class SmallBodyCubes
 		return cubeIds;
 	}
 
-	
-	public int getCubeId(double[] pt)
+	/**
+	 * Get the id of the cube containing <tt>point</tt>
+	 * @param point
+	 * @return
+	 */
+	public int getCubeId(double[] point)
 	{
-		if (!boundingBox.contains(pt))
+		if (!boundingBox.contains(point))
 			return -1;
 		
 		int numberCubes = allCubes.size();
 		for (int i=0; i<numberCubes; ++i)
 		{
 			BoundingBox cube = getCube(i);
-			if (cube.contains(pt))
+			if (cube.contains(point))
 				return i;
 		}
 

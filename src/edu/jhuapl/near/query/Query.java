@@ -7,6 +7,7 @@ import java.util.*;
 
 import org.joda.time.DateTime;
 
+import edu.jhuapl.near.model.eros.MSIImage;
 import edu.jhuapl.near.util.Configuration;
 
 
@@ -20,21 +21,6 @@ import edu.jhuapl.near.util.Configuration;
 public class Query
 {
 	public enum Datatype {MSI, NIS, NLR};
-	public enum MSISource
-	{
-	    PDS {
-	        public String toString()
-	        {
-	            return "PDS derived";
-	        }
-	    },
-	    GASKELL {
-            public String toString()
-            {
-                return "Gaskell derived";
-            }
-	    }
-	};
 	
 	private static Query ref = null;
 	
@@ -213,7 +199,7 @@ public class Query
 			double fromPhase,
 			double toPhase,
 			TreeSet<Integer> cubeList,
-			MSISource msiSource) 
+			MSIImage.MSISource msiSource) 
 	{
 		ArrayList<String> matchedImages = new ArrayList<String>();
 		ArrayList<ArrayList<String>> results = null;
