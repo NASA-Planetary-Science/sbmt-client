@@ -31,6 +31,7 @@ public class MSIPopupMenu extends PopupMenu
 	private Component invoker;
     private ErosModelManager modelManager;
     private String currentImageOrBoundary;
+    private MSIImage.MSISource currentImageOrBoundarySource;
     private JMenuItem showRemoveImageIn3DMenuItem;
     private JMenuItem showRemoveBoundaryIn3DMenuItem;
     private JMenuItem showImageInfoMenuItem;
@@ -85,9 +86,10 @@ public class MSIPopupMenu extends PopupMenu
 
 	}
 
-	public void setCurrentImage(String name)
+	public void setCurrentImage(String name, MSIImage.MSISource msiSource)
 	{
 		currentImageOrBoundary = name;
+		currentImageOrBoundarySource = msiSource;
 		
 		MSIBoundaryCollection msiBoundaries = (MSIBoundaryCollection)modelManager.getModel(ErosModelManager.MSI_BOUNDARY);
 		if (msiBoundaries.containsBoundary(currentImageOrBoundary))
@@ -116,7 +118,7 @@ public class MSIPopupMenu extends PopupMenu
 					model.removeImage(currentImageOrBoundary);
 				
 				// Force an update on the first 2 menu items
-				setCurrentImage(currentImageOrBoundary);
+				setCurrentImage(currentImageOrBoundary, currentImageOrBoundarySource);
 			} 
 			catch (FitsException e1) {
 				// TODO Auto-generated catch block
@@ -142,7 +144,7 @@ public class MSIPopupMenu extends PopupMenu
 					model.removeBoundary(currentImageOrBoundary);
 
 				// Force an update on the first 2 menu items
-				setCurrentImage(currentImageOrBoundary);
+				setCurrentImage(currentImageOrBoundary, currentImageOrBoundarySource);
 			} 
 			catch (FitsException e1) {
 				// TODO Auto-generated catch block
@@ -162,7 +164,7 @@ public class MSIPopupMenu extends PopupMenu
 			try 
 			{
 				SmallBodyModel eros = (SmallBodyModel)modelManager.getModel(ErosModelManager.EROS);
-				infoPanelManager.addData(MSIImage.MSIImageFactory.createImage(currentImageOrBoundary, eros));
+				infoPanelManager.addData(MSIImage.MSIImageFactory.createImage(currentImageOrBoundary, eros, currentImageOrBoundarySource));
 			} 
 			catch (FitsException e1) {
 				// TODO Auto-generated catch block
@@ -260,7 +262,7 @@ public class MSIPopupMenu extends PopupMenu
 					OutputStream out = new FileOutputStream(file);
 
 					SmallBodyModel eros = (SmallBodyModel)modelManager.getModel(ErosModelManager.EROS);
-					MSIImage image = MSIImage.MSIImageFactory.createImage(currentImageOrBoundary, eros);
+					MSIImage image = MSIImage.MSIImageFactory.createImage(currentImageOrBoundary, eros, currentImageOrBoundarySource);
 
 					float[] backplanes = image.generateBackplanes();
 
@@ -297,7 +299,7 @@ public class MSIPopupMenu extends PopupMenu
 					OutputStream out = new FileOutputStream(file);
 
 					SmallBodyModel eros = (SmallBodyModel)modelManager.getModel(ErosModelManager.EROS);
-					MSIImage image = MSIImage.MSIImageFactory.createImage(currentImageOrBoundary, eros);
+					MSIImage image = MSIImage.MSIImageFactory.createImage(currentImageOrBoundary, eros, currentImageOrBoundarySource);
 
 					String lblstr = image.generateBackplanesLabel();
 

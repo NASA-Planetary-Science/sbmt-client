@@ -130,15 +130,15 @@ public class MSIImage extends Model implements PropertyChangeListener
 		static private WeakHashMap<MSIImage, Object> images = 
 			new WeakHashMap<MSIImage, Object>();
 		
-		static public MSIImage createImage(String name, SmallBodyModel eros) throws FitsException, IOException
+		static public MSIImage createImage(String name, SmallBodyModel eros, MSISource source) throws FitsException, IOException
 		{
 			for (MSIImage image : images.keySet())
 			{
-				if (image.serverpath.equals(name))
+				if (image.serverpath.equals(name) && image.getSource() == source)
 					return image;
 			}
 
-			MSIImage image = new MSIImage(name, eros);
+			MSIImage image = new MSIImage(name, eros, source);
 			images.put(image, null);
 			return image;
 		}
@@ -152,7 +152,7 @@ public class MSIImage extends Model implements PropertyChangeListener
 	 * @throws FitsException
 	 * @throws IOException
 	 */
-	public MSIImage(String filename, SmallBodyModel eros) throws FitsException, IOException
+	public MSIImage(String filename, SmallBodyModel eros, MSISource source) throws FitsException, IOException
 	{
 		this.serverpath = filename;
 		
@@ -169,6 +169,7 @@ public class MSIImage extends Model implements PropertyChangeListener
 		//FileCache.getFileFromServer(footprintFilename);
 
 		this.erosModel = eros;
+        this.source = source;
 		this.initialize(fitFile);
 	}
 	
@@ -180,9 +181,10 @@ public class MSIImage extends Model implements PropertyChangeListener
 	 * @throws FitsException
 	 * @throws IOException
 	 */
-	public MSIImage(File fitFile, SmallBodyModel eros) throws FitsException, IOException
+	public MSIImage(File fitFile, SmallBodyModel eros, MSISource source) throws FitsException, IOException
 	{
 		this.erosModel = eros;
+		this.source = source;
 		this.initialize(fitFile);
 	}
 	
@@ -270,7 +272,10 @@ public class MSIImage extends Model implements PropertyChangeListener
 		normalsFilter = new vtkPolyDataNormals();
 	}
 	
-    
+    public MSISource getSource()
+    {
+        return source;
+    }
 	
 	public vtkImageData getRawImage()
 	{
