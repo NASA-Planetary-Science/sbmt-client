@@ -10,12 +10,13 @@ import nom.tam.fits.FitsException;
 import vtk.*;
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.SmallBodyModel;
+import edu.jhuapl.near.model.eros.MSIImage.MSIKey;
 import edu.jhuapl.near.util.*;
 import edu.jhuapl.near.util.Properties;
 
 public class MSIBoundaryCollection extends Model implements PropertyChangeListener
 {
-	private class Boundary extends Model implements PropertyChangeListener
+	public class Boundary extends Model implements PropertyChangeListener
 	{
 		private vtkActor actor;
         private vtkPolyData boundary;
@@ -26,13 +27,16 @@ public class MSIBoundaryCollection extends Model implements PropertyChangeListen
         private double[] frustum3 = new double[3];
         private double[] frustum4 = new double[3];
         private double[] sunPosition = new double[3];
+        private MSIKey key;
         
-		public Boundary(String path) throws IOException
+		public Boundary(MSIKey key) throws IOException
 		{
-			File lblFile = FileCache.getFileFromServer(path + "_DDR.LBL");
+		    this.key = key;
+		    
+			File lblFile = FileCache.getFileFromServer(key.name + "_DDR.LBL");
 
 			if (lblFile == null)
-				throw new IOException("Could not download " + path);
+				throw new IOException("Could not download " + key.name);
 			
 	        boundary = new vtkPolyData();
 	        boundary.SetPoints(new vtkPoints());
@@ -198,93 +202,111 @@ public class MSIBoundaryCollection extends Model implements PropertyChangeListen
 			props.add(actor);
 			return props;
 		}
+		
+		public MSIKey getKey()
+		{
+		    return key;
+		}
 	}
 
 
-	/**
-	 * return this when boundaries are hidden
-	 */
-	private ArrayList<vtkProp> dummyActors = new ArrayList<vtkProp>();
-	private boolean hidden = false;
-	
-	private ArrayList<vtkProp> boundaryActors = new ArrayList<vtkProp>();
-
-	private HashMap<String, Boundary> fileToBoundaryMap = new HashMap<String, Boundary>();
-	private HashMap<vtkProp, String> actorToFileMap = new HashMap<vtkProp, String>();
+    private HashMap<Boundary, ArrayList<vtkProp>> boundaryToActorsMap = new HashMap<Boundary, ArrayList<vtkProp>>();
+	private HashMap<vtkProp, Boundary> actorToBoundaryMap = new HashMap<vtkProp, Boundary>();
 	private SmallBodyModel erosModel;
 	
 	public MSIBoundaryCollection(SmallBodyModel erosModel)
 	{
 		this.erosModel = erosModel;
 	}
-	
-	public void addBoundary(String path) throws FitsException, IOException
+
+	private boolean containsKey(MSIKey key)
 	{
-		if (fileToBoundaryMap.containsKey(path))
+	    for (Boundary boundary : boundaryToActorsMap.keySet())
+	    {
+	        if (boundary.key.equals(key))
+	            return true;
+	    }
+
+	    return false;
+	}
+
+	private Boundary getBoundaryFromKey(MSIKey key)
+	{
+	    for (Boundary boundary : boundaryToActorsMap.keySet())
+	    {
+	        if (boundary.key.equals(key))
+	            return boundary;
+	    }
+
+	    return null;
+	}
+
+
+	public void addBoundary(MSIKey key) throws FitsException, IOException
+	{
+		if (containsKey(key))
 			return;
 
-		Boundary image = new Boundary(path);
+		Boundary boundary = new Boundary(key);
 
-		image.addPropertyChangeListener(this);
+		boundary.addPropertyChangeListener(this);
 		
-		fileToBoundaryMap.put(path, image);
-		
-		actorToFileMap.put(image.getProps().get(0), path);
-		
-		boundaryActors.add(image.getProps().get(0));
-		
+		boundaryToActorsMap.put(boundary, new ArrayList<vtkProp>());
+        
+        ArrayList<vtkProp> boundaryPieces = boundary.getProps();
+
+        boundaryToActorsMap.get(boundary).addAll(boundaryPieces);
+
+        for (vtkProp act : boundaryPieces)
+            actorToBoundaryMap.put(act, boundary);
+        
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 	}
 
-	public void removeBoundary(String path)
+	public void removeBoundary(MSIKey key)
 	{
-		vtkActor actor = (vtkActor)fileToBoundaryMap.get(path).getProps().get(0);
-		
-		boundaryActors.remove(actor);
+        ArrayList<vtkProp> actors = boundaryToActorsMap.get(getBoundaryFromKey(key));
+        
+        for (vtkProp act : actors)
+            actorToBoundaryMap.remove(act);
 
-		actorToFileMap.remove(actor);
-		
-		fileToBoundaryMap.remove(path);
+        boundaryToActorsMap.remove(getBoundaryFromKey(key));
 
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 	}
 
 	public void removeAllBoundaries()
 	{
-		boundaryActors.clear();
-		actorToFileMap.clear();
-		fileToBoundaryMap.clear();
-		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+        actorToBoundaryMap.clear();
+        boundaryToActorsMap.clear();
+
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 	}
 
-	public void setHidden(boolean hidden)
-	{
-		this.hidden = hidden;
-		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-	}
-	
 	public ArrayList<vtkProp> getProps() 
 	{
-		if (!hidden)
-			return boundaryActors;
-		else
-			return dummyActors;
+        return new ArrayList<vtkProp>(actorToBoundaryMap.keySet());
 	}
 	
     public String getClickStatusBarText(vtkProp prop, int cellId)
     {
-    	File file = new File(actorToFileMap.get(prop));
+    	File file = new File(actorToBoundaryMap.get(prop).key.name);
     	return "Boundary of MSI image " + file.getName().substring(2, 11);
     }
 
     public String getBoundaryName(vtkActor actor)
     {
-    	return actorToFileMap.get(actor);
+    	return actorToBoundaryMap.get(actor).key.name;
     }
     
-    public boolean containsBoundary(String file)
+    public Boundary getBoundary(vtkActor actor)
     {
-    	return fileToBoundaryMap.containsKey(file);
+        return actorToBoundaryMap.get(actor);
+    }
+    
+    public boolean containsBoundary(MSIKey key)
+    {
+    	return containsKey(key);
     }
 
 	public void propertyChange(PropertyChangeEvent evt)

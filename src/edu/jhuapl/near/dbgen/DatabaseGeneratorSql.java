@@ -180,7 +180,7 @@ public class DatabaseGeneratorSql
         }
     }
     
-    private static void populateMSITables(ArrayList<String> msiFiles, String msiTableName) throws IOException, SQLException, FitsException
+    private static void populateMSITables(ArrayList<String> msiFiles, String msiTableName, MSIImage.MSISource msiSource) throws IOException, SQLException, FitsException
     {
     	int count = 0;
     	
@@ -211,7 +211,7 @@ public class DatabaseGeneratorSql
     		f = f.getParentFile();
     		yearStr = f.getName();
 
-    		MSIImage image = new MSIImage(origFile, erosModel);
+    		MSIImage image = new MSIImage(origFile, erosModel, msiSource);
     		//HashMap<String, String> properties = image.getProperties();
 
     		//String lblFilename = filename.substring(0, filename.length()-4) + ".LBL";
@@ -558,8 +558,8 @@ public class DatabaseGeneratorSql
 		
 		try 
 		{
-			//populateMSITables(msiFiles, "msiimages");
-			populateMSITables(msiGaskellFiles, "msiimages_gaskell");
+			//populateMSITables(msiFiles, "msiimages", MSIImage.MSISource.PDS);
+			populateMSITables(msiGaskellFiles, "msiimages_gaskell", MSIImage.MSISource.GASKELL);
 			//populateNISTables(nisFiles);
 			populateMSITablesCubes(msiFiles);
 			populateNISTablesCubes(nisFiles);

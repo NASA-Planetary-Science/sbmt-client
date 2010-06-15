@@ -162,15 +162,15 @@ public class MSIImage extends Model implements PropertyChangeListener
 		static private WeakHashMap<MSIImage, Object> images = 
 			new WeakHashMap<MSIImage, Object>();
 		
-		static public MSIImage createImage(String name, SmallBodyModel eros, MSISource source) throws FitsException, IOException
+		static public MSIImage createImage(MSIKey key, SmallBodyModel eros) throws FitsException, IOException
 		{
 			for (MSIImage image : images.keySet())
 			{
-				if (image.key.name.equals(name) && image.key.source == source)
+				if (image.key.equals(key))
 					return image;
 			}
 
-			MSIImage image = new MSIImage(name, eros, source);
+			MSIImage image = new MSIImage(key, eros);
 			images.put(image, null);
 			return image;
 		}
@@ -184,18 +184,17 @@ public class MSIImage extends Model implements PropertyChangeListener
 	 * @throws FitsException
 	 * @throws IOException
 	 */
-	public MSIImage(String filename, SmallBodyModel eros, MSISource source) throws FitsException, IOException
+	public MSIImage(MSIKey key, SmallBodyModel eros) throws FitsException, IOException
 	{
-		this.key.name = filename;
-		this.key.source = source;
-		
+	    this.key = key;
+	    
 		// Download the image, and all the companion files if necessary.
-		File fitFile = FileCache.getFileFromServer(filename + ".FIT");
+		File fitFile = FileCache.getFileFromServer(key.name + ".FIT");
 
 		if (fitFile == null)
-			throw new IOException("Could not download " + filename);
+			throw new IOException("Could not download " + key.name);
 		
-		String imgLblFilename = filename + "_DDR.LBL";
+		String imgLblFilename = key.name + "_DDR.LBL";
 		FileCache.getFileFromServer(imgLblFilename);
 
 		//String footprintFilename = filename.substring(0, filename.length()-4) + "_FOOTPRINT.VTK";
@@ -216,6 +215,7 @@ public class MSIImage extends Model implements PropertyChangeListener
 	public MSIImage(File fitFile, SmallBodyModel eros, MSISource source) throws FitsException, IOException
 	{
 		this.erosModel = eros;
+		this.key.source = source;
 		this.initialize(fitFile);
 	}
 	

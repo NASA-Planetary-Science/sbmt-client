@@ -21,6 +21,8 @@ import edu.jhuapl.near.model.eros.ErosModelManager;
 import edu.jhuapl.near.model.eros.MSIBoundaryCollection;
 import edu.jhuapl.near.model.eros.MSIImage;
 import edu.jhuapl.near.model.eros.MSIImageCollection;
+import edu.jhuapl.near.model.eros.MSIBoundaryCollection.Boundary;
+import edu.jhuapl.near.model.eros.MSIImage.MSIKey;
 import edu.jhuapl.near.popupmenus.PopupMenu;
 import edu.jhuapl.near.util.BoundingBox;
 import edu.jhuapl.near.util.FileCache;
@@ -30,8 +32,7 @@ public class MSIPopupMenu extends PopupMenu
 {
 	private Component invoker;
     private ErosModelManager modelManager;
-    private String currentImageOrBoundary;
-    private MSIImage.MSISource currentImageOrBoundarySource;
+    private MSIKey msiKey;
     private JMenuItem showRemoveImageIn3DMenuItem;
     private JMenuItem showRemoveBoundaryIn3DMenuItem;
     private JMenuItem showImageInfoMenuItem;
@@ -86,19 +87,18 @@ public class MSIPopupMenu extends PopupMenu
 
 	}
 
-	public void setCurrentImage(String name, MSIImage.MSISource msiSource)
+	public void setCurrentImage(MSIKey key)
 	{
-		currentImageOrBoundary = name;
-		currentImageOrBoundarySource = msiSource;
+		msiKey = key;
 		
 		MSIBoundaryCollection msiBoundaries = (MSIBoundaryCollection)modelManager.getModel(ErosModelManager.MSI_BOUNDARY);
-		if (msiBoundaries.containsBoundary(currentImageOrBoundary))
+		if (msiBoundaries.containsBoundary(msiKey))
 			showRemoveBoundaryIn3DMenuItem.setText("Remove Image Boundary");
 		else
 			showRemoveBoundaryIn3DMenuItem.setText("Show Image Boundary");
 		
 		MSIImageCollection msiImages = (MSIImageCollection)modelManager.getModel(ErosModelManager.MSI_IMAGES);
-		if (msiImages.containsImage(currentImageOrBoundary))
+		if (msiImages.containsImage(msiKey))
 			showRemoveImageIn3DMenuItem.setText("Remove Image");
 		else
 			showRemoveImageIn3DMenuItem.setText("Show Image");
@@ -113,12 +113,12 @@ public class MSIPopupMenu extends PopupMenu
 			try 
 			{
 				if (showRemoveImageIn3DMenuItem.getText().startsWith("Show"))
-					model.addImage(currentImageOrBoundary);
+					model.addImage(msiKey);
 				else
-					model.removeImage(currentImageOrBoundary);
+					model.removeImage(msiKey);
 				
 				// Force an update on the first 2 menu items
-				setCurrentImage(currentImageOrBoundary, currentImageOrBoundarySource);
+				setCurrentImage(msiKey);
 			} 
 			catch (FitsException e1) {
 				// TODO Auto-generated catch block
@@ -139,12 +139,12 @@ public class MSIPopupMenu extends PopupMenu
 			try 
 			{
 				if (showRemoveBoundaryIn3DMenuItem.getText().startsWith("Show"))
-					model.addBoundary(currentImageOrBoundary);
+					model.addBoundary(msiKey);
 				else
-					model.removeBoundary(currentImageOrBoundary);
+					model.removeBoundary(msiKey);
 
 				// Force an update on the first 2 menu items
-				setCurrentImage(currentImageOrBoundary, currentImageOrBoundarySource);
+				setCurrentImage(msiKey);
 			} 
 			catch (FitsException e1) {
 				// TODO Auto-generated catch block
@@ -164,7 +164,7 @@ public class MSIPopupMenu extends PopupMenu
 			try 
 			{
 				SmallBodyModel eros = (SmallBodyModel)modelManager.getModel(ErosModelManager.EROS);
-				infoPanelManager.addData(MSIImage.MSIImageFactory.createImage(currentImageOrBoundary, eros, currentImageOrBoundarySource));
+				infoPanelManager.addData(MSIImage.MSIImageFactory.createImage(msiKey, eros));
 			} 
 			catch (FitsException e1) {
 				// TODO Auto-generated catch block
@@ -183,12 +183,12 @@ public class MSIPopupMenu extends PopupMenu
 	{
 		public void actionPerformed(ActionEvent e) 
 		{
-			File file = FITFileChooser.showSaveDialog(invoker, "Save FIT file", currentImageOrBoundary + ".FIT");
+			File file = FITFileChooser.showSaveDialog(invoker, "Save FIT file", msiKey.name + ".FIT");
 			try
 			{
 				if (file != null)
 				{
-					File fitFile = FileCache.getFileFromServer(currentImageOrBoundary + ".FIT");
+					File fitFile = FileCache.getFileFromServer(msiKey.name + ".FIT");
 
 					InputStream in = new FileInputStream(fitFile);
 
@@ -253,7 +253,7 @@ public class MSIPopupMenu extends PopupMenu
 		{
 			// First generate the DDR
 			
-			File file = AnyFileChooser.showSaveDialog(invoker, "Save Backplanes DDR", currentImageOrBoundary + "_DDR.IMG");
+			File file = AnyFileChooser.showSaveDialog(invoker, "Save Backplanes DDR", msiKey.name + "_DDR.IMG");
 
 			try 
 			{
@@ -262,7 +262,7 @@ public class MSIPopupMenu extends PopupMenu
 					OutputStream out = new FileOutputStream(file);
 
 					SmallBodyModel eros = (SmallBodyModel)modelManager.getModel(ErosModelManager.EROS);
-					MSIImage image = MSIImage.MSIImageFactory.createImage(currentImageOrBoundary, eros, currentImageOrBoundarySource);
+					MSIImage image = MSIImage.MSIImageFactory.createImage(msiKey, eros);
 
 					float[] backplanes = image.generateBackplanes();
 
@@ -290,7 +290,7 @@ public class MSIPopupMenu extends PopupMenu
 
 			// Then generate the LBL file
 			
-			file = AnyFileChooser.showSaveDialog(invoker, "Save Backplanes Label", currentImageOrBoundary + "_DDR.LBL");
+			file = AnyFileChooser.showSaveDialog(invoker, "Save Backplanes Label", msiKey.name + "_DDR.LBL");
 
 			try 
 			{
@@ -299,7 +299,7 @@ public class MSIPopupMenu extends PopupMenu
 					OutputStream out = new FileOutputStream(file);
 
 					SmallBodyModel eros = (SmallBodyModel)modelManager.getModel(ErosModelManager.EROS);
-					MSIImage image = MSIImage.MSIImageFactory.createImage(currentImageOrBoundary, eros, currentImageOrBoundarySource);
+					MSIImage image = MSIImage.MSIImageFactory.createImage(msiKey, eros);
 
 					String lblstr = image.generateBackplanesLabel();
 
@@ -328,15 +328,15 @@ public class MSIPopupMenu extends PopupMenu
 			if (modelManager.getModel(pickedProp) instanceof MSIBoundaryCollection)
 			{
 				MSIBoundaryCollection msiBoundaries = (MSIBoundaryCollection)modelManager.getModel(ErosModelManager.MSI_BOUNDARY);
-				String name = msiBoundaries.getBoundaryName((vtkActor)pickedProp);
-				setCurrentImage(name);
+				Boundary boundary = msiBoundaries.getBoundary((vtkActor)pickedProp);
+				setCurrentImage(boundary.getKey());
 				show(e.getComponent(), e.getX(), e.getY());
 			}
 			else if (modelManager.getModel(pickedProp) instanceof MSIImageCollection)
 			{
 				MSIImageCollection msiImages = (MSIImageCollection)modelManager.getModel(ErosModelManager.MSI_IMAGES);
-				String name = msiImages.getImageName((vtkActor)pickedProp);
-				setCurrentImage(name);
+				MSIImage image = msiImages.getImage((vtkActor)pickedProp);
+				setCurrentImage(image.getKey());
 				show(e.getComponent(), e.getX(), e.getY());
 			}
 		}

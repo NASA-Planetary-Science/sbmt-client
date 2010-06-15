@@ -20,9 +20,7 @@ public class MSIImageCollection extends Model implements PropertyChangeListener
 {
 	private SmallBodyModel erosModel;
 	
-	private ArrayList<vtkProp> allActors = new ArrayList<vtkProp>();
-
-	private HashMap<MSIImage, ArrayList<vtkProp>> msiImageActors = new HashMap<MSIImage, ArrayList<vtkProp>>();
+	private HashMap<MSIImage, ArrayList<vtkProp>> imageToActorsMap = new HashMap<MSIImage, ArrayList<vtkProp>>();
 
 	private HashMap<vtkProp, MSIImage> actorToImageMap = new HashMap<vtkProp, MSIImage>();
 
@@ -33,7 +31,7 @@ public class MSIImageCollection extends Model implements PropertyChangeListener
 	
 	private boolean containsKey(MSIKey key)
 	{
-		for (MSIImage image : msiImageActors.keySet())
+		for (MSIImage image : imageToActorsMap.keySet())
 		{
 			if (image.getKey().equals(key))
 				return true;
@@ -44,7 +42,7 @@ public class MSIImageCollection extends Model implements PropertyChangeListener
 	
 	private MSIImage getImageFromKey(MSIKey key)
 	{
-		for (MSIImage image : msiImageActors.keySet())
+		for (MSIImage image : imageToActorsMap.keySet())
 		{
 			if (image.getKey().equals(key))
 				return image;
@@ -58,49 +56,45 @@ public class MSIImageCollection extends Model implements PropertyChangeListener
 		if (containsKey(key))
 			return;
 		
-		MSIImage image = MSIImage.MSIImageFactory.createImage(key.name, erosModel, key.source);
+		MSIImage image = MSIImage.MSIImageFactory.createImage(key, erosModel);
 
 		image.addPropertyChangeListener(this);
 
-		msiImageActors.put(image, new ArrayList<vtkProp>());
+		imageToActorsMap.put(image, new ArrayList<vtkProp>());
 				
 		ArrayList<vtkProp> imagePieces = image.getProps();
 
-		msiImageActors.get(image).addAll(imagePieces);
+		imageToActorsMap.get(image).addAll(imagePieces);
 
 		for (vtkProp act : imagePieces)
 			actorToImageMap.put(act, image);
 		
-		allActors.addAll(imagePieces);
-
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 	}
 
 	public void removeImage(MSIKey key)
 	{
-		ArrayList<vtkProp> actors = msiImageActors.get(getImageFromKey(key));
-		allActors.removeAll(actors);
+		ArrayList<vtkProp> actors = imageToActorsMap.get(getImageFromKey(key));
 		
 		for (vtkProp act : actors)
 			actorToImageMap.remove(act);
 
-		msiImageActors.remove(getImageFromKey(key));
+		imageToActorsMap.remove(getImageFromKey(key));
 		
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 	}
 
 	public void removeAllImages()
 	{
-		allActors.clear();
 		actorToImageMap.clear();
-		msiImageActors.clear();
+		imageToActorsMap.clear();
 
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 	}
 
 	public ArrayList<vtkProp> getProps() 
 	{
-		return allActors;
+		return new ArrayList<vtkProp>(actorToImageMap.keySet());
 	}
 
 	public void propertyChange(PropertyChangeEvent evt) 
@@ -118,6 +112,11 @@ public class MSIImageCollection extends Model implements PropertyChangeListener
     public String getImageName(vtkActor actor)
     {
     	return actorToImageMap.get(actor).getKey().name;
+    }
+    
+    public MSIImage getImage(vtkActor actor)
+    {
+        return actorToImageMap.get(actor);
     }
     
     public MSIImage getImage(MSIKey key)

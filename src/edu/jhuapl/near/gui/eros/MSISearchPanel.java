@@ -25,6 +25,7 @@ import edu.jhuapl.near.model.eros.ErosModelManager;
 import edu.jhuapl.near.model.eros.MSIBoundaryCollection;
 import edu.jhuapl.near.model.eros.MSIImage;
 import edu.jhuapl.near.model.eros.MSIImageCollection;
+import edu.jhuapl.near.model.eros.MSIImage.MSIKey;
 import edu.jhuapl.near.pick.PickManager;
 import edu.jhuapl.near.pick.PickManager.PickMode;
 import edu.jhuapl.near.popupmenus.eros.MSIPopupMenu;
@@ -708,7 +709,7 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
         	{
         		resultList.setSelectedIndex(index);
         		String name = msiRawResults.get(index);
-        		msiPopupMenu.setCurrentImage(name.substring(0, name.length()-4), msiSourceOfLastQuery);
+        		msiPopupMenu.setCurrentImage(new MSIKey(name.substring(0, name.length()-4), msiSourceOfLastQuery));
         		msiPopupMenu.show(e.getComponent(), e.getX(), e.getY());
         	}
         }
@@ -735,7 +736,7 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
 				//String boundaryName = currentImage.substring(0,currentImage.length()-4) + "_BOUNDARY.VTK";
 				//String boundaryName = currentImage.substring(0,currentImage.length()-4) + "_DDR.LBL";
 				String boundaryName = currentImage.substring(0,currentImage.length()-4);
-				model.addBoundary(boundaryName);
+				model.addBoundary(new MSIKey(boundaryName, msiSourceOfLastQuery));
 			} 
 			catch (FitsException e1) {
 				// TODO Auto-generated catch block
