@@ -9,6 +9,7 @@ import java.util.HashMap;
 
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.SmallBodyModel;
+import edu.jhuapl.near.model.eros.MSIImage.MSIKey;
 import edu.jhuapl.near.util.Properties;
 
 import nom.tam.fits.FitsException;
@@ -17,91 +18,89 @@ import vtk.*;
 
 public class MSIImageCollection extends Model implements PropertyChangeListener
 {
-	/**
-	 * return this when images are hidden
-	 */
-	private ArrayList<vtkProp> dummyActors = new ArrayList<vtkProp>();
-	private boolean hidden = false;
 	private SmallBodyModel erosModel;
 	
 	private ArrayList<vtkProp> allActors = new ArrayList<vtkProp>();
 
 	private HashMap<MSIImage, ArrayList<vtkProp>> msiImageActors = new HashMap<MSIImage, ArrayList<vtkProp>>();
 
-	private HashMap<String, MSIImage> fileToImageMap = new HashMap<String, MSIImage>();
-
-	private HashMap<vtkProp, String> actorToFileMap = new HashMap<vtkProp, String>();
+	private HashMap<vtkProp, MSIImage> actorToImageMap = new HashMap<vtkProp, MSIImage>();
 
 	public MSIImageCollection(SmallBodyModel eros)
 	{
 		this.erosModel = eros;
 	}
 	
-	public void addImage(String path) throws FitsException, IOException
+	private boolean containsKey(MSIKey key)
 	{
-		if (fileToImageMap.containsKey(path))
+		for (MSIImage image : msiImageActors.keySet())
+		{
+			if (image.getKey().equals(key))
+				return true;
+		}
+	
+		return false;
+	}
+	
+	private MSIImage getImageFromKey(MSIKey key)
+	{
+		for (MSIImage image : msiImageActors.keySet())
+		{
+			if (image.getKey().equals(key))
+				return image;
+		}
+	
+		return null;
+	}
+	
+	public void addImage(MSIKey key) throws FitsException, IOException
+	{
+		if (containsKey(key))
 			return;
 		
-		//MSIImage image = new MSIImage(path);
-		MSIImage image = null;//MSIImage.MSIImageFactory.createImage(path, erosModel);
+		MSIImage image = MSIImage.MSIImageFactory.createImage(key.name, erosModel, key.source);
 
 		image.addPropertyChangeListener(this);
 
-		fileToImageMap.put(path, image);
 		msiImageActors.put(image, new ArrayList<vtkProp>());
 				
-		// Now texture map this image onto the Eros model.
-		//image.setPolygonOffset(-10.0);
-
 		ArrayList<vtkProp> imagePieces = image.getProps();
 
 		msiImageActors.get(image).addAll(imagePieces);
 
 		for (vtkProp act : imagePieces)
-			actorToFileMap.put(act, path);
+			actorToImageMap.put(act, image);
 		
 		allActors.addAll(imagePieces);
 
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 	}
 
-	public void removeImage(String path)
+	public void removeImage(MSIKey key)
 	{
-		ArrayList<vtkProp> actors = msiImageActors.get(fileToImageMap.get(path));
+		ArrayList<vtkProp> actors = msiImageActors.get(getImageFromKey(key));
 		allActors.removeAll(actors);
 		
 		for (vtkProp act : actors)
-			actorToFileMap.remove(act);
+			actorToImageMap.remove(act);
 
-		msiImageActors.remove(fileToImageMap.get(path));
+		msiImageActors.remove(getImageFromKey(key));
 		
-		fileToImageMap.remove(path);
-
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 	}
 
 	public void removeAllImages()
 	{
 		allActors.clear();
-		actorToFileMap.clear();
+		actorToImageMap.clear();
 		msiImageActors.clear();
-		fileToImageMap.clear();
 
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 	}
 
-	public void setHidden(boolean hidden)
-	{
-		this.hidden = hidden;
-		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-	}
-	
 	public ArrayList<vtkProp> getProps() 
 	{
-		if (!hidden)
-			return allActors;
-		else
-			return dummyActors;
+		return allActors;
 	}
 
 	public void propertyChange(PropertyChangeEvent evt) 
@@ -112,22 +111,22 @@ public class MSIImageCollection extends Model implements PropertyChangeListener
 
     public String getClickStatusBarText(vtkProp prop, int cellId)
     {
-    	File file = new File(actorToFileMap.get(prop));
+    	File file = new File(actorToImageMap.get(prop).getKey().name);
     	return "MSI image " + file.getName().substring(2, 11);
     }
 
     public String getImageName(vtkActor actor)
     {
-    	return actorToFileMap.get(actor);
+    	return actorToImageMap.get(actor).getKey().name;
     }
     
-    public MSIImage getImage(String file)
+    public MSIImage getImage(MSIKey key)
     {
-    	return fileToImageMap.get(file);
+    	return getImageFromKey(key);
     }
     
-    public boolean containsImage(String file)
+    public boolean containsImage(MSIKey key)
     {
-    	return fileToImageMap.containsKey(file);
+    	return containsKey(key);
     }
 }

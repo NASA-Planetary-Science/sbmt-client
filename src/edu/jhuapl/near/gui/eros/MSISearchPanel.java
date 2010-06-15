@@ -708,7 +708,7 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
         	{
         		resultList.setSelectedIndex(index);
         		String name = msiRawResults.get(index);
-        		msiPopupMenu.setCurrentImage(name.substring(0, name.length()-4));
+        		msiPopupMenu.setCurrentImage(name.substring(0, name.length()-4), msiSourceOfLastQuery);
         		msiPopupMenu.show(e.getComponent(), e.getX(), e.getY());
         	}
         }

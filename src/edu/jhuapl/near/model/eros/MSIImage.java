@@ -80,7 +80,7 @@ public class MSIImage extends Model implements PropertyChangeListener
 	private IntensityRange displayedRange = new IntensityRange(1,0);
 
 	private String fullpath; // The actual path of the image stored on the local disk (after downloading from the server)
-	private String serverpath; // The path of the image as passed into the constructor. This is not the 
+//	private String serverpath; // The path of the image as passed into the constructor. This is not the 
 							   // same as fullpath but instead corresponds to the name needed to download
 							   // the file from the server (excluding the hostname and extension).
 	
@@ -100,7 +100,7 @@ public class MSIImage extends Model implements PropertyChangeListener
 	private String startTime = "";
 	private String stopTime = "";
 
-	private MSISource source;
+	private MSIKey key;
 	
 	public enum MSISource
 	{
@@ -117,7 +117,39 @@ public class MSIImage extends Model implements PropertyChangeListener
 	        }
 	    }
 	};
-	    
+
+	/**
+	 * An MSIKey should be used to uniquely distinguish one MSI image from another.
+	 * No two MSI images will have the same values for the fields of this class.
+	 * @author kahn
+	 *
+	 */
+	public static class MSIKey
+	{
+		// The path of the image as passed into the constructor. This is not the 
+		// same as fullpath but instead corresponds to the name needed to download
+		// the file from the server (excluding the hostname and extension).
+		public String name;
+		
+		public MSISource source;
+		
+		public MSIKey()
+		{
+		}
+		
+		public MSIKey(String name, MSISource source)
+		{
+			this.name = name;
+			this.source = source;
+		}
+		
+		@Override
+		public boolean equals(Object obj)
+		{
+			return name.equals(((MSIKey)obj).name) && source == ((MSIKey)obj).source;
+		}
+	}
+	
 	/**
 	 * Because instances of MSIImage can be expensive, we want there to be
 	 * no more than one instance of this class per image file on the server.
@@ -134,7 +166,7 @@ public class MSIImage extends Model implements PropertyChangeListener
 		{
 			for (MSIImage image : images.keySet())
 			{
-				if (image.serverpath.equals(name) && image.getSource() == source)
+				if (image.key.name.equals(name) && image.key.source == source)
 					return image;
 			}
 
@@ -154,7 +186,8 @@ public class MSIImage extends Model implements PropertyChangeListener
 	 */
 	public MSIImage(String filename, SmallBodyModel eros, MSISource source) throws FitsException, IOException
 	{
-		this.serverpath = filename;
+		this.key.name = filename;
+		this.key.source = source;
 		
 		// Download the image, and all the companion files if necessary.
 		File fitFile = FileCache.getFileFromServer(filename + ".FIT");
@@ -169,7 +202,6 @@ public class MSIImage extends Model implements PropertyChangeListener
 		//FileCache.getFileFromServer(footprintFilename);
 
 		this.erosModel = eros;
-        this.source = source;
 		this.initialize(fitFile);
 	}
 	
@@ -184,7 +216,6 @@ public class MSIImage extends Model implements PropertyChangeListener
 	public MSIImage(File fitFile, SmallBodyModel eros, MSISource source) throws FitsException, IOException
 	{
 		this.erosModel = eros;
-		this.source = source;
 		this.initialize(fitFile);
 	}
 	
@@ -272,9 +303,9 @@ public class MSIImage extends Model implements PropertyChangeListener
 		normalsFilter = new vtkPolyDataNormals();
 	}
 	
-    public MSISource getSource()
+    public MSIKey getKey()
     {
-        return source;
+        return key;
     }
 	
 	public vtkImageData getRawImage()
@@ -425,7 +456,7 @@ public class MSIImage extends Model implements PropertyChangeListener
 	
 	public String getServerPath()
 	{
-		return serverpath;
+		return key.name;
 	}
 	
 	public double getMinIncidence() 
