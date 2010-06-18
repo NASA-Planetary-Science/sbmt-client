@@ -101,6 +101,13 @@ public class SmallBodyMappingTool extends JFrame
             {
             	public void run()
             	{
+                    NativeLibraryLoader.loadVtkLibraries();
+
+                    garbageCollector = new vtkJavaGarbageCollector();
+                    //garbageCollector.SetDebug(true);
+                    garbageCollector.SetScheduleTime(5, TimeUnit.SECONDS);
+                    garbageCollector.SetAutoGarbageCollection(true);
+                    
                 	try
                     {
                 		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -111,15 +118,9 @@ public class SmallBodyMappingTool extends JFrame
                     	e.printStackTrace();
                     }
 
-                	NativeLibraryLoader.loadVtkLibraries();
-
-                	garbageCollector = new vtkJavaGarbageCollector();
-                	//garbageCollector.SetDebug(true);
-                	garbageCollector.SetScheduleTime(5, TimeUnit.SECONDS);
-                	garbageCollector.SetAutoGarbageCollection(true);
-                	
                 	JPopupMenu.setDefaultLightWeightPopupEnabled(false);
-                    
+                    ToolTipManager.sharedInstance().setLightWeightPopupEnabled(false);
+                	
                 	SmallBodyMappingTool frame = new SmallBodyMappingTool();
                 	
             		ImageIcon erosIcon = new ImageIcon(getClass().getResource("/edu/jhuapl/near/data/eros.png"));
