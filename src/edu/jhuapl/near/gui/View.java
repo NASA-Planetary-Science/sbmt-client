@@ -4,6 +4,8 @@ import java.awt.LayoutManager;
 
 import javax.swing.JPanel;
 
+import vtk.vtkRenderWindowPanel;
+
 /**
  * A view is a container which contains a control panel and renderer
  * as well as a collection of managers. A view is unique to a specific
@@ -31,4 +33,6 @@ public abstract class View extends JPanel
 	}
 	
 	public abstract String getName();
+	
+    public abstract Renderer getRenderer();
 }

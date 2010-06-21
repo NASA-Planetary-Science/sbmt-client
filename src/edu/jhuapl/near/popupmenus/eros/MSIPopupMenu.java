@@ -11,7 +11,6 @@ import javax.swing.JOptionPane;
 
 import vtk.vtkActor;
 import vtk.vtkProp;
-import vtk.vtkRenderWindowPanel;
 
 import nom.tam.fits.FitsException;
 import edu.jhuapl.near.gui.*;
@@ -24,7 +23,6 @@ import edu.jhuapl.near.model.eros.MSIImageCollection;
 import edu.jhuapl.near.model.eros.MSIBoundaryCollection.Boundary;
 import edu.jhuapl.near.model.eros.MSIImage.MSIKey;
 import edu.jhuapl.near.popupmenus.PopupMenu;
-import edu.jhuapl.near.util.BoundingBox;
 import edu.jhuapl.near.util.FileCache;
 
 
@@ -40,7 +38,7 @@ public class MSIPopupMenu extends PopupMenu
     private JMenuItem saveBackplanesMenuItem;
     private JMenuItem centerImageMenuItem;
     private ModelInfoWindowManager infoPanelManager;
-    private vtkRenderWindowPanel renWin;
+    //private Renderer renderer;
     
     /**
      * 
@@ -52,12 +50,12 @@ public class MSIPopupMenu extends PopupMenu
 	public MSIPopupMenu(
 			ErosModelManager modelManager, 
 			ModelInfoWindowManager infoPanelManager,
-			vtkRenderWindowPanel renWin,
+			Renderer renderer,
 			Component invoker)
 	{
     	this.modelManager = modelManager;
     	this.infoPanelManager = infoPanelManager;
-    	this.renWin = renWin;
+    	//this.renderer = renderer;
     	this.invoker = invoker;
     	
 		showRemoveImageIn3DMenuItem = new JMenuItem(new ShowRemoveIn3DAction());

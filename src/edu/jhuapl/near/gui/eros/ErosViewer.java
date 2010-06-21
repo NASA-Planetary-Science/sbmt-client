@@ -2,8 +2,6 @@ package edu.jhuapl.near.gui.eros;
 
 import javax.swing.*;
 
-import vtk.vtkRenderWindowPanel;
-
 import edu.jhuapl.near.gui.Renderer;
 import edu.jhuapl.near.gui.StatusBar;
 import edu.jhuapl.near.gui.View;
@@ -60,9 +58,9 @@ public class ErosViewer extends View
 		this.add(splitPane, BorderLayout.CENTER);
 	}
 	
-	public vtkRenderWindowPanel getRenderWindowPanel()
+	public Renderer getRenderer()
 	{
-		return renderer.getRenderWindowPanel();
+		return renderer;
 	}
 
 	public String getName()

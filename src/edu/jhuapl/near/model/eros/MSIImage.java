@@ -95,7 +95,7 @@ public class MSIImage extends Model implements PropertyChangeListener
 	private boolean hasLimb = false;
     private double[] sunPosition = new double[3];
 
-	private boolean showFrustum = false;
+	private boolean showFrustum = true;
 
 	private String startTime = "";
 	private String stopTime = "";
@@ -568,7 +568,12 @@ public class MSIImage extends Model implements PropertyChangeListener
 		return Float.intBitsToFloat(intValue);
 	}
 	*/
-	
+
+	private static void printpt(double[] p, String s)
+	{
+	    System.out.println(s + " " + p[0] + " " + p[1] + " " + p[2]);
+	}
+
 	/**
 	 * 	Make this static so it can be called without needing access
 	 * 	to and MSIImage object. 
@@ -691,93 +696,14 @@ public class MSIImage extends Model implements PropertyChangeListener
 		startTime = start[0];
 		stopTime = stop[0];
 		
-		/*
-    	FileInputStream fs = null;
-		try {
-			fs = new FileInputStream(lblFilename);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-		InputStreamReader isr = new InputStreamReader(fs);
-		BufferedReader in = new BufferedReader(isr);
-
-		String str;
-		while ((str = in.readLine()) != null)
-		{
-		    StringTokenizer st = new StringTokenizer(str);
-		    while (st.hasMoreTokens()) 
-		    {
-		    	String token = st.nextToken();
-		    	if (START_TIME.equals(token))
-		    	{
-		    		st.nextToken();
-		    		startTime = st.nextToken();
-		    	}
-		    	if (STOP_TIME.equals(token))
-		    	{
-		    		st.nextToken();
-		    		stopTime = st.nextToken();
-		    	}
-		    	if (SPACECRAFT_POSITION.equals(token) ||
-		    			MSI_FRUSTUM1.equals(token) ||
-		    			MSI_FRUSTUM2.equals(token) ||
-		    			MSI_FRUSTUM3.equals(token) ||
-		    			MSI_FRUSTUM4.equals(token) ||
-		    			SUN_POSITION_LT.equals(token))
-		    	{
-		    		st.nextToken();
-		    		st.nextToken();
-		    		double x = Double.parseDouble(st.nextToken());
-		    		st.nextToken();
-		    		double y = Double.parseDouble(st.nextToken());
-		    		st.nextToken();
-		    		double z = Double.parseDouble(st.nextToken());
-		    		if (SPACECRAFT_POSITION.equals(token))
-		    		{
-		    			spacecraftPosition[0] = x;
-		    			spacecraftPosition[1] = y;
-		    			spacecraftPosition[2] = z;
-		    		}
-		    		else if (MSI_FRUSTUM1.equals(token))
-		    		{
-		    			frustum1[0] = x;
-		    			frustum1[1] = y;
-		    			frustum1[2] = z;
-		    			GeometryUtil.vhat(frustum1, frustum1);
-		    		}
-		    		else if (MSI_FRUSTUM2.equals(token))
-		    		{
-		    			frustum2[0] = x;
-		    			frustum2[1] = y;
-		    			frustum2[2] = z;
-		    			GeometryUtil.vhat(frustum2, frustum2);
-		    		}
-		    		else if (MSI_FRUSTUM3.equals(token))
-		    		{
-		    			frustum3[0] = x;
-		    			frustum3[1] = y;
-		    			frustum3[2] = z;
-		    			GeometryUtil.vhat(frustum3, frustum3);
-		    		}
-		    		else if (MSI_FRUSTUM4.equals(token))
-		    		{
-		    			frustum4[0] = x;
-		    			frustum4[1] = y;
-		    			frustum4[2] = z;
-		    			GeometryUtil.vhat(frustum4, frustum4);
-		    		}
-		    		if (SUN_POSITION_LT.equals(token))
-		    		{
-		    			sunPosition[0] = x;
-		    			sunPosition[1] = y;
-		    			sunPosition[2] = z;
-		    		}
-		    	}
-		    }
-		}
-
-		in.close();
-		*/
+        printpt(frustum1, "pds frustum1 ");
+        printpt(frustum2, "pds frustum2 ");
+        printpt(frustum3, "pds frustum3 ");
+        printpt(frustum4, "pds frustum4 ");
+        
+        double[] v1 = {1.0,   0.019744857140,   0.025753661240};
+        double[] v2 = {1.0,   0.019744857140,   -0.025753661240};
+        System.out.println("vsep " + GeometryUtil.vsep(v1, v2)*180.0/Math.PI);
 	}
 
 	public static void loadSumfile(
@@ -803,9 +729,9 @@ public class MSIImage extends Model implements PropertyChangeListener
 		in.readLine();
 
 		String[] tmp = in.readLine().trim().split("\\s+");
-		spacecraftPosition[0] = Double.parseDouble(tmp[0]);
-		spacecraftPosition[1] = Double.parseDouble(tmp[1]);
-		spacecraftPosition[2] = Double.parseDouble(tmp[2]);
+		spacecraftPosition[0] = -Double.parseDouble(tmp[0]);
+		spacecraftPosition[1] = -Double.parseDouble(tmp[1]);
+		spacecraftPosition[2] = -Double.parseDouble(tmp[2]);
 		
 		double[] cx = new double[3];
 		double[] cy = new double[3];
@@ -826,24 +752,42 @@ public class MSIImage extends Model implements PropertyChangeListener
 		cz[1] = Double.parseDouble(tmp[1]);
 		cz[2] = Double.parseDouble(tmp[2]);
 		
-		double fx = 1.0;
-		double fy = 1.0;
-		double fz = 1.0;
-		frustum1[0] = spacecraftPosition[0] + fx*cx[0] + fy*cy[0] + fz*cz[0];
-		frustum1[1] = spacecraftPosition[1] + fx*cx[1] + fy*cy[1] + fz*cz[1];
-		frustum1[2] = spacecraftPosition[2] + fx*cx[2] + fy*cy[2] + fz*cz[2];
+        final double zo = -0.025753661240;
+        final double yo = -0.019744857140;
+//        final double zo = -0.021753661240;
+//        final double yo = -0.015744857140;
+        double fx = zo;
+		double fy = yo;
+        double fz = 1.0;
+		frustum3[0] = fx*cx[0] + fy*cy[0] + fz*cz[0];
+		frustum3[1] = fx*cx[1] + fy*cy[1] + fz*cz[1];
+		frustum3[2] = fx*cx[2] + fy*cy[2] + fz*cz[2];
 		
-		frustum2[0] = spacecraftPosition[0] + fx*cx[0] + fy*cy[0] + fz*cz[0];
-		frustum2[1] = spacecraftPosition[1] + fx*cx[1] + fy*cy[1] + fz*cz[1];
-		frustum2[2] = spacecraftPosition[2] + fx*cx[2] + fy*cy[2] + fz*cz[2];
+        fx = -zo;
+		fy = yo;
+        fz = 1.0;
+		frustum4[0] = fx*cx[0] + fy*cy[0] + fz*cz[0];
+		frustum4[1] = fx*cx[1] + fy*cy[1] + fz*cz[1];
+		frustum4[2] = fx*cx[2] + fy*cy[2] + fz*cz[2];
 
-		frustum3[0] = spacecraftPosition[0] + fx*cx[0] + fy*cy[0] + fz*cz[0];
-		frustum3[1] = spacecraftPosition[1] + fx*cx[1] + fy*cy[1] + fz*cz[1];
-		frustum3[2] = spacecraftPosition[2] + fx*cx[2] + fy*cy[2] + fz*cz[2];
+        fx = zo;
+        fy = -yo;
+        fz = 1.0;
+		frustum1[0] = fx*cx[0] + fy*cy[0] + fz*cz[0];
+		frustum1[1] = fx*cx[1] + fy*cy[1] + fz*cz[1];
+		frustum1[2] = fx*cx[2] + fy*cy[2] + fz*cz[2];
 
-		frustum4[0] = spacecraftPosition[0] + fx*cx[0] + fy*cy[0] + fz*cz[0];
-		frustum4[1] = spacecraftPosition[1] + fx*cx[1] + fy*cy[1] + fz*cz[1];
-		frustum4[2] = spacecraftPosition[2] + fx*cx[2] + fy*cy[2] + fz*cz[2];
+        fx = -zo;
+        fy = -yo;
+        fz = 1.0;
+		frustum2[0] = fx*cx[0] + fy*cy[0] + fz*cz[0];
+		frustum2[1] = fx*cx[1] + fy*cy[1] + fz*cz[1];
+		frustum2[2] = fx*cx[2] + fy*cy[2] + fz*cz[2];
+
+		GeometryUtil.vhat(frustum1, frustum1);
+        GeometryUtil.vhat(frustum2, frustum2);
+        GeometryUtil.vhat(frustum3, frustum3);
+        GeometryUtil.vhat(frustum4, frustum4);
 	}
     
 	private void loadSumfile() throws NumberFormatException, IOException
@@ -868,6 +812,11 @@ public class MSIImage extends Model implements PropertyChangeListener
 		
 		startTime = start[0];
 		stopTime = stop[0];
+
+        printpt(frustum1, "gas frustum1 ");
+        printpt(frustum2, "gas frustum2 ");
+        printpt(frustum3, "gas frustum3 ");
+        printpt(frustum4, "gas frustum4 ");
 	}
 	
     public HashMap<String, String> getProperties() throws IOException

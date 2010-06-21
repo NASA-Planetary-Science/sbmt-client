@@ -1,9 +1,11 @@
 package edu.jhuapl.near;
 
 import javax.swing.*;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 import vtk.vtkJavaGarbageCollector;
-import vtk.vtkRenderWindowPanel;
 
 import edu.jhuapl.near.gui.deimos.DeimosViewer;
 import edu.jhuapl.near.gui.FileMenu;
@@ -14,9 +16,6 @@ import edu.jhuapl.near.gui.eros.ErosViewer;
 import edu.jhuapl.near.gui.itokawa.ItokawaViewer;
 import edu.jhuapl.near.util.NativeLibraryLoader;
 
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.concurrent.TimeUnit;
 
 /**
  * This class contains the "main" function called at the start of the program.
@@ -52,7 +51,7 @@ public class SmallBodyMappingTool extends JFrame
         views.add(deimosViewer);
         views.add(itokawaViewer);
         
-		createMenus(erosViewer.getRenderWindowPanel());
+		createMenus();
 
 		rootPanel.setLayout(new CardLayout());
 		rootPanel.add(erosViewer, ErosViewer.NAME);
@@ -72,18 +71,18 @@ public class SmallBodyMappingTool extends JFrame
 //        this.setResizable(true);
 	}
 
-    private void createMenus(vtkRenderWindowPanel renderer)
+    private void createMenus()
     {
     	JMenuBar menuBar = new JMenuBar();
 
-    	fileMenu = new FileMenu(renderer, true);
+    	fileMenu = new FileMenu(rootPanel, true);
         fileMenu.setMnemonic('F');
         menuBar.add(fileMenu);
 
         viewMenu = new ViewMenu(rootPanel, views);
         viewMenu.setMnemonic('V');
         menuBar.add(viewMenu);
-
+        
         setJMenuBar(menuBar);
     }
 

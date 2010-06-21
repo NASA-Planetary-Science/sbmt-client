@@ -2,7 +2,6 @@ package edu.jhuapl.near.popupmenus.eros;
 
 import java.util.HashMap;
 
-import vtk.vtkRenderWindowPanel;
 import edu.jhuapl.near.gui.Renderer;
 import edu.jhuapl.near.gui.eros.ModelInfoWindowManager;
 import edu.jhuapl.near.model.Model;
@@ -39,22 +38,20 @@ public class ErosPopupManager extends PopupManager
 	{
 		super(modelManager);
 		
-		vtkRenderWindowPanel renWin = erosRenderer.getRenderWindowPanel();
-		
 		lineamentPopupMenu = 
 			new LineamentPopupMenu(modelManager);
 		modelToPopupMap.put(modelManager.getModel(ErosModelManager.LINEAMENT), lineamentPopupMenu);
 		
 		msiBoundariesPopupMenu= 
-			new MSIPopupMenu(modelManager, infoPanelManager, renWin, renWin);
+			new MSIPopupMenu(modelManager, infoPanelManager, erosRenderer, erosRenderer);
 		modelToPopupMap.put(modelManager.getModel(ErosModelManager.MSI_BOUNDARY), msiBoundariesPopupMenu);
 		
 		msiImagesPopupMenu = 
-			new MSIPopupMenu(modelManager, infoPanelManager, renWin, renWin);
+			new MSIPopupMenu(modelManager, infoPanelManager, erosRenderer, erosRenderer);
 		modelToPopupMap.put(modelManager.getModel(ErosModelManager.MSI_IMAGES), msiImagesPopupMenu);
 		
 		nisSpectraPopupMenu = 
-			new NISPopupMenu(modelManager, infoPanelManager, renWin);
+			new NISPopupMenu(modelManager, infoPanelManager);
 		modelToPopupMap.put(modelManager.getModel(ErosModelManager.NIS_SPECTRA), nisSpectraPopupMenu);
 		
 		linesPopupMenu =

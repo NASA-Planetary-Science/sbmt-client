@@ -21,7 +21,7 @@ public class ControlPanel extends JTabbedPane
 		
 	
 	public ControlPanel(
-			Renderer viewer, 
+			Renderer renderer, 
 			ErosModelManager modelManager, 
 			ModelInfoWindowManager infoPanelManager,
 			PickManager pickManager)
@@ -29,10 +29,10 @@ public class ControlPanel extends JTabbedPane
         setBorder(BorderFactory.createEmptyBorder());
         
 		erosPanel = new SmallBodyControlPanel(modelManager, "Eros");
-		msiSearchPanel = new MSISearchPanel(modelManager, infoPanelManager, pickManager, viewer.getRenderWindowPanel());
-		nisSearchPanel = new NISSearchPanel(modelManager, infoPanelManager, pickManager, viewer.getRenderWindowPanel());
-        nlrSearchPanel = new NLRSearchPanel(modelManager, infoPanelManager, viewer.getRenderWindowPanel());
-        nlr2SearchPanel = new NLR2SearchPanel(modelManager, infoPanelManager, pickManager, viewer.getRenderWindowPanel());
+		msiSearchPanel = new MSISearchPanel(modelManager, infoPanelManager, pickManager, renderer);
+		nisSearchPanel = new NISSearchPanel(modelManager, infoPanelManager, pickManager);
+        nlrSearchPanel = new NLRSearchPanel(modelManager, infoPanelManager);
+        nlr2SearchPanel = new NLR2SearchPanel(modelManager, infoPanelManager, pickManager);
 		lineamentPanel = new LineamentControlPanel(modelManager);
 		structuresPanel = new StructuresControlPanel(modelManager, pickManager);
 		

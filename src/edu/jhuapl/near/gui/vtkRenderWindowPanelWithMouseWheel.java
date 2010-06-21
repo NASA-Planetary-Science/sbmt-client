@@ -1,8 +1,16 @@
 package edu.jhuapl.near.gui;
 
 import java.awt.event.*;
+import java.io.File;
 
+import vtk.vtkBMPWriter;
+import vtk.vtkJPEGWriter;
+import vtk.vtkPNGWriter;
+import vtk.vtkPNMWriter;
+import vtk.vtkPostScriptWriter;
 import vtk.vtkRenderWindowPanel;
+import vtk.vtkTIFFWriter;
+import vtk.vtkWindowToImageFilter;
 
 /**
  * The purpose of this class is to add mouse wheel support to vtkRenderWindowPanel
@@ -50,4 +58,63 @@ public class vtkRenderWindowPanelWithMouseWheel extends vtkRenderWindowPanel
 	{
 		// do nothing
 	}
+	
+    public void saveToFile()
+    {
+        File file = ImageFileChooser.showSaveDialog(this, "Export to Image");
+        if (file != null)
+        {
+            lock();
+            vtkWindowToImageFilter windowToImage = new vtkWindowToImageFilter();
+            windowToImage.SetInput(GetRenderWindow());
+            
+            String filename = file.getAbsolutePath();
+            if (filename.toLowerCase().endsWith("bmp"))
+            {
+                vtkBMPWriter writer = new vtkBMPWriter();
+                writer.SetFileName(filename);
+                writer.SetInputConnection(windowToImage.GetOutputPort());
+                writer.Write();
+            }
+            else if (filename.toLowerCase().endsWith("jpg") ||
+                    filename.toLowerCase().endsWith("jpeg"))
+            {
+                vtkJPEGWriter writer = new vtkJPEGWriter();
+                writer.SetFileName(filename);
+                writer.SetInputConnection(windowToImage.GetOutputPort());
+                writer.Write();
+            }
+            else if (filename.toLowerCase().endsWith("png"))
+            {
+                vtkPNGWriter writer = new vtkPNGWriter();
+                writer.SetFileName(filename);
+                writer.SetInputConnection(windowToImage.GetOutputPort());
+                writer.Write();
+            }
+            else if (filename.toLowerCase().endsWith("pnm"))
+            {
+                vtkPNMWriter writer = new vtkPNMWriter();
+                writer.SetFileName(filename);
+                writer.SetInputConnection(windowToImage.GetOutputPort());
+                writer.Write();
+            }
+            else if (filename.toLowerCase().endsWith("ps"))
+            {
+                vtkPostScriptWriter writer = new vtkPostScriptWriter();
+                writer.SetFileName(filename);
+                writer.SetInputConnection(windowToImage.GetOutputPort());
+                writer.Write();
+            }
+            else if (filename.toLowerCase().endsWith("tif") ||
+                    filename.toLowerCase().endsWith("tiff"))
+            {
+                vtkTIFFWriter writer = new vtkTIFFWriter();
+                writer.SetFileName(filename);
+                writer.SetInputConnection(windowToImage.GetOutputPort());
+                writer.SetCompressionToNoCompression();
+                writer.Write();
+            }
+            unlock();
+        }
+    }
 }

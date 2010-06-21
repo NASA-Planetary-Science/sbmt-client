@@ -3,6 +3,7 @@ package edu.jhuapl.near.gui.eros;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
@@ -10,7 +11,6 @@ import java.util.*;
 
 import javax.swing.*;
 
-import edu.jhuapl.near.gui.FileMenu;
 import edu.jhuapl.near.gui.vtkRenderWindowPanelWithMouseWheel;
 import edu.jhuapl.near.model.*;
 import edu.jhuapl.near.model.eros.ErosModelManager;
@@ -21,7 +21,7 @@ import vtk.*;
 
 public class MSIImageInfoPanel extends ModelInfoWindow implements PropertyChangeListener
 {
-	private vtkRenderWindowPanel renWin;
+	private vtkRenderWindowPanelWithMouseWheel renWin;
     private ContrastChanger contrastChanger;
 	private MSIImage msiImage;
 	private ErosModelManager modelManager;
@@ -142,7 +142,15 @@ public class MSIImageInfoPanel extends ModelInfoWindow implements PropertyChange
     {
     	JMenuBar menuBar = new JMenuBar();
 
-    	FileMenu fileMenu = new FileMenu(renWin, false);
+    	JMenu fileMenu = new JMenu("File");
+        JMenuItem mi = new JMenuItem(new AbstractAction("Export to Image...")
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                renWin.saveToFile();
+            }
+        });
+        fileMenu.add(mi);
         fileMenu.setMnemonic('F');
         menuBar.add(fileMenu);
 
@@ -153,7 +161,7 @@ public class MSIImageInfoPanel extends ModelInfoWindow implements PropertyChange
     	 * from that class and put these in our new JMenu.
     	 */
     	MSIPopupMenu msiImagesPopupMenu = 
-			new MSIPopupMenu(modelManager, null, renWin, this);
+			new MSIPopupMenu(modelManager, null, null, this);
     	
     	msiImagesPopupMenu.setCurrentImage(msiImage.getKey());
     	

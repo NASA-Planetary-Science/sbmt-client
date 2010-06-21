@@ -14,8 +14,6 @@ import java.awt.event.*;
 
 import com.jidesoft.swing.RangeSlider;
 
-import vtk.vtkRenderWindowPanel;
-
 import edu.jhuapl.near.gui.RadialOffsetChanger;
 import edu.jhuapl.near.model.RegularPolygonModel;
 import edu.jhuapl.near.model.eros.ErosModelManager;
@@ -99,8 +97,7 @@ public class NLR2SearchPanel extends JPanel implements ListSelectionListener, Ac
     public NLR2SearchPanel(
     		final ErosModelManager modelManager, 
     		ModelInfoWindowManager infoPanelManager,
-            final PickManager pickManager,
-    		vtkRenderWindowPanel renWin) 
+            final PickManager pickManager) 
     {
     	setLayout(new BoxLayout(this,
         		BoxLayout.PAGE_AXIS));
@@ -190,8 +187,6 @@ public class NLR2SearchPanel extends JPanel implements ListSelectionListener, Ac
         /*
         JPanel browsePanel = new JPanel(new BorderLayout());
 		
-		//nlrPopupMenu = new NISPopupMenu(this.modelManager, infoPanelManager, renWin);
-
 		resultsLabel = new JLabel("Available Files");
 
         nlrResultListModel = new DefaultListModel();

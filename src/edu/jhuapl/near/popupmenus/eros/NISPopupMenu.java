@@ -9,10 +9,8 @@ import javax.swing.JMenuItem;
 
 import vtk.vtkActor;
 import vtk.vtkProp;
-import vtk.vtkRenderWindowPanel;
 
 import nom.tam.fits.FitsException;
-import edu.jhuapl.near.gui.*;
 import edu.jhuapl.near.gui.eros.ModelInfoWindowManager;
 import edu.jhuapl.near.model.*;
 import edu.jhuapl.near.model.eros.ErosModelManager;
@@ -29,7 +27,6 @@ public class NISPopupMenu extends PopupMenu
     private JMenuItem showSpectrumInfoMenuItem;
     private JMenuItem centerSpectrumMenuItem;
     private ModelInfoWindowManager infoPanelManager;
-    //private vtkRenderWindowPanel renWin;
     private SmallBodyModel erosModel;
     
     /**
@@ -41,12 +38,10 @@ public class NISPopupMenu extends PopupMenu
      */
 	public NISPopupMenu(
 			ErosModelManager modelManager, 
-			ModelInfoWindowManager infoPanelManager,
-			vtkRenderWindowPanel renWin)
+			ModelInfoWindowManager infoPanelManager)
 	{
     	this.modelManager = modelManager;
     	this.infoPanelManager = infoPanelManager;
-    	//this.renWin = renWin;
     	this.erosModel = (SmallBodyModel)modelManager.getModel(ErosModelManager.EROS);
     	
 		showRemoveSpectrumIn3DMenuItem = new JMenuItem(new ShowRemoveIn3DAction());

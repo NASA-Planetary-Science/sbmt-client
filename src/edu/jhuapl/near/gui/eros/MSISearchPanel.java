@@ -16,8 +16,6 @@ import nom.tam.fits.FitsException;
 
 import org.joda.time.*;
 
-import vtk.vtkRenderWindowPanel;
-
 import edu.jhuapl.near.query.Query;
 import edu.jhuapl.near.model.RegularPolygonModel;
 import edu.jhuapl.near.model.SmallBodyModel;
@@ -30,6 +28,7 @@ import edu.jhuapl.near.pick.PickManager;
 import edu.jhuapl.near.pick.PickManager.PickMode;
 import edu.jhuapl.near.popupmenus.eros.MSIPopupMenu;
 import edu.jhuapl.near.util.IdPair;
+import edu.jhuapl.near.gui.Renderer;
 
 
 public class MSISearchPanel extends JPanel implements ActionListener, MouseListener
@@ -95,7 +94,7 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
     		final ErosModelManager modelManager, 
     		ModelInfoWindowManager infoPanelManager,
     		final PickManager pickManager,
-    		vtkRenderWindowPanel renWin) 
+    		Renderer renWin) 
     {
     	setLayout(new BoxLayout(this,
         		BoxLayout.PAGE_AXIS));

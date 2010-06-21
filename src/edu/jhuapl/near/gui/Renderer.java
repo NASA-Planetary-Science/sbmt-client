@@ -12,7 +12,7 @@ import vtk.*;
 public class Renderer extends JPanel implements 
 			PropertyChangeListener
 {
-    private vtkRenderWindowPanel renWin;
+    private vtkRenderWindowPanelWithMouseWheel renWin;
     private ModelManager modelManager;
     private vtkInteractorStyleTrackballCamera defaultInteractorStyle;
     private vtkInteractorStyleRubberBand3D rubberBandInteractorStyle;
@@ -126,6 +126,11 @@ public class Renderer extends JPanel implements
     	renWin.Render();
     }
     */
+
+    public void saveToFile()
+    {
+        renWin.saveToFile();
+    }
     
     public vtkRenderWindowPanel getRenderWindowPanel()
     {

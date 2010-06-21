@@ -2,8 +2,6 @@ package edu.jhuapl.near.gui.deimos;
 
 import javax.swing.*;
 
-import vtk.vtkRenderWindowPanel;
-
 import edu.jhuapl.near.gui.Renderer;
 import edu.jhuapl.near.gui.StatusBar;
 import edu.jhuapl.near.gui.View;
@@ -62,9 +60,9 @@ public class DeimosViewer extends View
 		this.add(splitPane, BorderLayout.CENTER);
 	}
 	
-	public vtkRenderWindowPanel getRenderWindowPanel()
+	public Renderer getRenderer()
 	{
-		return renderer.getRenderWindowPanel();
+		return renderer;
 	}
 
 	public String getName()

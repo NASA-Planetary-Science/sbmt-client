@@ -17,8 +17,6 @@ import nom.tam.fits.FitsException;
 
 import org.joda.time.*;
 
-import vtk.vtkRenderWindowPanel;
-
 import edu.jhuapl.near.query.Query;
 import edu.jhuapl.near.model.RegularPolygonModel;
 import edu.jhuapl.near.model.SmallBodyModel;
@@ -79,8 +77,7 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
     public NISSearchPanel(
     		final ErosModelManager modelManager, 
     		ModelInfoWindowManager infoPanelManager,
-    		final PickManager pickManager,
-    		vtkRenderWindowPanel renWin) 
+    		final PickManager pickManager) 
     {
     	//setLayout(new BoxLayout(this,
         //		BoxLayout.PAGE_AXIS));
@@ -300,7 +297,7 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
         
         JPanel resultsPanel = new JPanel(new MigLayout("insets 0"));
 		
-		nisPopupMenu = new NISPopupMenu(this.modelManager, infoPanelManager, renWin);
+		nisPopupMenu = new NISPopupMenu(this.modelManager, infoPanelManager);
 
 		resultsLabel = new JLabel(" ");
 
