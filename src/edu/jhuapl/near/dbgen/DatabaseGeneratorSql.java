@@ -212,7 +212,9 @@ public class DatabaseGeneratorSql
     		yearStr = f.getName();
 
     		MSIImage image = new MSIImage(origFile, erosModel, msiSource);
-    		//HashMap<String, String> properties = image.getProperties();
+    		
+    		// Calling this forces the calculation of incidence, emission, phase, and pixel scale
+    		image.getProperties();
 
     		//String lblFilename = filename.substring(0, filename.length()-4) + ".LBL";
     		//HashMap<String, String> properties = MSIImage.parseLblFile(lblFilename);

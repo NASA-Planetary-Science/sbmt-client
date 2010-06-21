@@ -197,6 +197,12 @@ public class MSIImage extends Model implements PropertyChangeListener
 		String imgLblFilename = key.name + "_DDR.LBL";
 		FileCache.getFileFromServer(imgLblFilename);
 
+		// Try to load a sumfile if there is one
+		File tmp = new File(key.name);
+		String sumFilename = "/MSI/sumfiles/" + tmp.getName().substring(0, 11) + ".SUM";
+		FileCache.getFileFromServer(sumFilename);
+		System.out.println("sumfile " + sumFilename);
+
 		//String footprintFilename = filename.substring(0, filename.length()-4) + "_FOOTPRINT.VTK";
 		//FileCache.getFileFromServer(footprintFilename);
 
@@ -296,7 +302,15 @@ public class MSIImage extends Model implements PropertyChangeListener
         setDisplayedImageRange(new IntensityRange(0, 255));
 
         loadImageInfo();
-
+        try
+        {
+        	loadSumfile();
+        }
+        catch(IOException ex)
+        {
+        	System.out.println("Sumfile not available");
+        }
+        
 		footprint = new vtkPolyData();
 		shiftedFootprint = new vtkPolyData();
 		textureCoords = new vtkFloatArray();
@@ -766,7 +780,96 @@ public class MSIImage extends Model implements PropertyChangeListener
 		*/
 	}
 
+	public static void loadSumfile(
+			String sumfilename,
+			String[] startTime,
+			String[] stopTime,
+			double[] spacecraftPosition,
+			double[] frustum1,
+			double[] frustum2,
+			double[] frustum3,
+			double[] frustum4) throws IOException
+	{
+    	FileInputStream fs = new FileInputStream(sumfilename);
+		InputStreamReader isr = new InputStreamReader(fs);
+		BufferedReader in = new BufferedReader(isr);
+
+		in.readLine();
+		String utc = in.readLine().trim().replace(' ', '-');
+		startTime[0] = utc;
+		stopTime[0] = utc;
+		
+		in.readLine();
+		in.readLine();
+
+		String[] tmp = in.readLine().trim().split("\\s+");
+		spacecraftPosition[0] = Double.parseDouble(tmp[0]);
+		spacecraftPosition[1] = Double.parseDouble(tmp[1]);
+		spacecraftPosition[2] = Double.parseDouble(tmp[2]);
+		
+		double[] cx = new double[3];
+		double[] cy = new double[3];
+		double[] cz = new double[3];
+		
+		tmp = in.readLine().trim().split("\\s+");
+		cx[0] = Double.parseDouble(tmp[0]);
+		cx[1] = Double.parseDouble(tmp[1]);
+		cx[2] = Double.parseDouble(tmp[2]);
+		
+		tmp = in.readLine().trim().split("\\s+");
+		cy[0] = Double.parseDouble(tmp[0]);
+		cy[1] = Double.parseDouble(tmp[1]);
+		cy[2] = Double.parseDouble(tmp[2]);
+
+		tmp = in.readLine().trim().split("\\s+");
+		cz[0] = Double.parseDouble(tmp[0]);
+		cz[1] = Double.parseDouble(tmp[1]);
+		cz[2] = Double.parseDouble(tmp[2]);
+		
+		double fx = 1.0;
+		double fy = 1.0;
+		double fz = 1.0;
+		frustum1[0] = spacecraftPosition[0] + fx*cx[0] + fy*cy[0] + fz*cz[0];
+		frustum1[1] = spacecraftPosition[1] + fx*cx[1] + fy*cy[1] + fz*cz[1];
+		frustum1[2] = spacecraftPosition[2] + fx*cx[2] + fy*cy[2] + fz*cz[2];
+		
+		frustum2[0] = spacecraftPosition[0] + fx*cx[0] + fy*cy[0] + fz*cz[0];
+		frustum2[1] = spacecraftPosition[1] + fx*cx[1] + fy*cy[1] + fz*cz[1];
+		frustum2[2] = spacecraftPosition[2] + fx*cx[2] + fy*cy[2] + fz*cz[2];
+
+		frustum3[0] = spacecraftPosition[0] + fx*cx[0] + fy*cy[0] + fz*cz[0];
+		frustum3[1] = spacecraftPosition[1] + fx*cx[1] + fy*cy[1] + fz*cz[1];
+		frustum3[2] = spacecraftPosition[2] + fx*cx[2] + fy*cy[2] + fz*cz[2];
+
+		frustum4[0] = spacecraftPosition[0] + fx*cx[0] + fy*cy[0] + fz*cz[0];
+		frustum4[1] = spacecraftPosition[1] + fx*cx[1] + fy*cy[1] + fz*cz[1];
+		frustum4[2] = spacecraftPosition[2] + fx*cx[2] + fy*cy[2] + fz*cz[2];
+	}
     
+	private void loadSumfile() throws NumberFormatException, IOException
+	{
+		File sumfile = new File(fullpath);
+		String sumname = sumfile.getName().substring(0, 11);
+		sumfile = sumfile.getParentFile().getParentFile().getParentFile().getParentFile();
+		String sumfilename = sumfile.getAbsolutePath() + "/sumfiles/" + sumname + ".SUM";
+		System.out.println(sumfilename);
+		
+		String[] start = new String[1];
+		String[] stop = new String[1];
+		loadSumfile(
+				sumfilename,
+				start,
+				stop,
+				spacecraftPosition,
+				frustum1,
+				frustum2,
+				frustum3,
+				frustum4);
+		
+		startTime = start[0];
+		stopTime = stop[0];
+	}
+	
     public HashMap<String, String> getProperties() throws IOException
     {
     	HashMap<String, String> properties = new HashMap<String, String>();
