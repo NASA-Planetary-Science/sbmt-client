@@ -132,6 +132,21 @@ public class Renderer extends JPanel implements
         renWin.saveToFile();
     }
     
+    public void setCameraOrientation(
+            double[] position,
+            double[] focalPoint,
+            double[] upVector)
+    {
+        renWin.lock();
+        vtkCamera cam = renWin.GetRenderer().GetActiveCamera();
+        cam.SetPosition(position);
+        cam.SetFocalPoint(focalPoint);
+        cam.SetViewUp(upVector);
+        renWin.unlock();
+        renWin.resetCameraClippingRange();
+        renWin.Render();
+    }
+    
     public vtkRenderWindowPanel getRenderWindowPanel()
     {
     	return renWin;

@@ -202,12 +202,14 @@ public class MSIImage extends Model implements PropertyChangeListener
 		String imgLblFilename = key.name + "_DDR.LBL";
 		FileCache.getFileFromServer(imgLblFilename);
 
-		// Try to load a sumfile if there is one
-		File tmp = new File(key.name);
-		String sumFilename = "/MSI/sumfiles/" + tmp.getName().substring(0, 11) + ".SUM";
-		FileCache.getFileFromServer(sumFilename);
-		System.out.println("sumfile " + sumFilename);
-
+		if (key.source.equals(MSISource.GASKELL))
+		{
+		    // Try to load a sumfile if there is one
+		    File tmp = new File(key.name);
+		    String sumFilename = "/MSI/sumfiles/" + tmp.getName().substring(0, 11) + ".SUM";
+		    FileCache.getFileFromServer(sumFilename);
+		}
+		
 		//String footprintFilename = filename.substring(0, filename.length()-4) + "_FOOTPRINT.VTK";
 		//FileCache.getFileFromServer(footprintFilename);
 
@@ -307,15 +309,21 @@ public class MSIImage extends Model implements PropertyChangeListener
         setDisplayedImageRange(new IntensityRange(0, 255));
 
         loadImageInfo();
-//        try
-//        {
-//        	loadSumfile();
-//        }
-//        catch(IOException ex)
-//        {
-//        	System.out.println("Sumfile not available");
-//        }
-        
+
+        // If the sumfile exists, then load it after we load the LBL file
+        // so as to overwrite whatever was loaded from the LBL file.
+        if (key.source.equals(MSISource.GASKELL))
+        {
+            try
+            {
+                loadSumfile();
+            }
+            catch(IOException ex)
+            {
+                System.out.println("Sumfile not available");
+            }
+        }
+
 		footprint = new vtkPolyData();
 		shiftedFootprint = new vtkPolyData();
 		textureCoords = new vtkFloatArray();
@@ -723,10 +731,6 @@ public class MSIImage extends Model implements PropertyChangeListener
         printpt(frustum2, "pds frustum2 ");
         printpt(frustum3, "pds frustum3 ");
         printpt(frustum4, "pds frustum4 ");
-        
-        double[] v1 = {1.0,   0.019744857140,   0.025753661240};
-        double[] v2 = {1.0,   0.019744857140,   -0.025753661240};
-        System.out.println("vsep " + GeometryUtil.vsep(v1, v2)*180.0/Math.PI);
 	}
 
 	public static void loadSumfile(
@@ -824,7 +828,6 @@ public class MSIImage extends Model implements PropertyChangeListener
 		String sumname = sumfile.getName().substring(0, 11);
 		sumfile = sumfile.getParentFile().getParentFile().getParentFile().getParentFile();
 		String sumfilename = sumfile.getAbsolutePath() + "/sumfiles/" + sumname + ".SUM";
-		System.out.println(sumfilename);
 		
 		String[] start = new String[1];
 		String[] stop = new String[1];
@@ -1472,4 +1475,14 @@ public class MSIImage extends Model implements PropertyChangeListener
     	normalsFilter.Delete();
     }
 	
+	public void getCameraOrientation(double[] spacecraftPosition,
+	        double[] boresightDirection, double[] upVector)
+	{
+	    for (int i=0; i<3; ++i)
+	    {
+	        spacecraftPosition[i] = this.spacecraftPosition[i];
+	        boresightDirection[i] = this.boresightDirection[i];
+	        upVector[i] = this.upVector[i];
+	    }
+	}
 }

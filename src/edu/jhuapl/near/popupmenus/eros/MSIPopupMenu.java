@@ -24,6 +24,7 @@ import edu.jhuapl.near.model.eros.MSIBoundaryCollection.Boundary;
 import edu.jhuapl.near.model.eros.MSIImage.MSIKey;
 import edu.jhuapl.near.popupmenus.PopupMenu;
 import edu.jhuapl.near.util.FileCache;
+import edu.jhuapl.near.util.GeometryUtil;
 
 
 public class MSIPopupMenu extends PopupMenu 
@@ -38,7 +39,7 @@ public class MSIPopupMenu extends PopupMenu
     private JMenuItem saveBackplanesMenuItem;
     private JMenuItem centerImageMenuItem;
     private ModelInfoWindowManager infoPanelManager;
-    //private Renderer renderer;
+    private Renderer renderer;
     
     /**
      * 
@@ -55,7 +56,7 @@ public class MSIPopupMenu extends PopupMenu
 	{
     	this.modelManager = modelManager;
     	this.infoPanelManager = infoPanelManager;
-    	//this.renderer = renderer;
+    	this.renderer = renderer;
     	this.invoker = invoker;
     	
 		showRemoveImageIn3DMenuItem = new JMenuItem(new ShowRemoveIn3DAction());
@@ -80,8 +81,8 @@ public class MSIPopupMenu extends PopupMenu
 		this.add(saveBackplanesMenuItem);
 
 		centerImageMenuItem = new JMenuItem(new CenterImageAction());
-		centerImageMenuItem.setText("Center in Window");
-		//this.add(centerImageMenuItem);
+		centerImageMenuItem.setText("Center Image in Window");
+		this.add(centerImageMenuItem);
 
 	}
 
@@ -100,6 +101,11 @@ public class MSIPopupMenu extends PopupMenu
 			showRemoveImageIn3DMenuItem.setText("Remove Image");
 		else
 			showRemoveImageIn3DMenuItem.setText("Show Image");
+		
+		if (msiBoundaries.containsBoundary(msiKey) || msiImages.containsImage(msiKey))
+		    centerImageMenuItem.setEnabled(true);
+		else
+		    centerImageMenuItem.setEnabled(false);
 	}
 	
 
@@ -217,31 +223,40 @@ public class MSIPopupMenu extends PopupMenu
 	{
 		public void actionPerformed(ActionEvent e) 
 		{
-			/*
-			try 
-			{
-				ErosModel eros = (ErosModel)modelManager.getModel(ModelManager.EROS);
-				MSIImage image = MSIImage.MSIImageFactory.createImage(currentImageOrBoundary, eros);
-				BoundingBox bb = image.getBoundingBox();
-				renWin.lock();
-				renWin.GetRenderer().ResetCamera(
-						bb.xmin,
-						bb.xmax,
-						bb.ymin,
-						bb.ymax,
-						bb.zmin,
-						bb.zmax);
-				renWin.unlock();
-				renWin.Render();
-			}
-			catch (FitsException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-			*/
+            double[] spacecraftPosition = new double[3];
+            double[] boresightDirection = new double[3];
+            double[] upVector = new double[3];
+
+            MSIBoundaryCollection msiBoundaries = (MSIBoundaryCollection)modelManager.getModel(ErosModelManager.MSI_BOUNDARY);
+	        MSIImageCollection msiImages = (MSIImageCollection)modelManager.getModel(ErosModelManager.MSI_IMAGES);
+	        if (msiBoundaries.containsBoundary(msiKey))
+	        {
+	            Boundary boundary = msiBoundaries.getBoundary(msiKey);
+                boundary.getCameraOrientation(spacecraftPosition, boresightDirection, upVector);
+	        }
+	        else if (msiImages.containsImage(msiKey))
+	        {
+                MSIImage image = msiImages.getImage(msiKey);
+                image.getCameraOrientation(spacecraftPosition, boresightDirection, upVector);
+	        }
+	        else
+	        {
+	            return;
+	        }
+	        
+	        final double norm = GeometryUtil.vnorm(spacecraftPosition);
+	        double[] position = {
+	                spacecraftPosition[0] + 0.6*norm*boresightDirection[0],
+	                spacecraftPosition[1] + 0.6*norm*boresightDirection[1],
+	                spacecraftPosition[2] + 0.6*norm*boresightDirection[2]
+	        };
+	        double[] focalPoint = {
+	                position[0] + 0.25*norm*boresightDirection[0],
+	                position[1] + 0.25*norm*boresightDirection[1],
+	                position[2] + 0.25*norm*boresightDirection[2]
+	        };
+
+            renderer.setCameraOrientation(position, focalPoint, upVector);
 		}
 	}
 

@@ -11,6 +11,7 @@ import vtk.*;
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.eros.MSIImage.MSIKey;
+import edu.jhuapl.near.model.eros.MSIImage.MSISource;
 import edu.jhuapl.near.util.*;
 import edu.jhuapl.near.util.Properties;
 
@@ -65,6 +66,25 @@ public class MSIBoundaryCollection extends Model implements PropertyChangeListen
 					boresightDirection,
 					upVector);
 
+	        if (key.source.equals(MSISource.GASKELL))
+	        {
+	            // Try to load a sumfile if there is one
+	            File tmp = new File(key.name);
+	            String sumFilename = "/MSI/sumfiles/" + tmp.getName().substring(0, 11) + ".SUM";
+	            File sumfile = FileCache.getFileFromServer(sumFilename);
+
+	            MSIImage.loadSumfile(sumfile.getAbsolutePath(),
+	                    startTime,
+	                    stopTime,
+	                    spacecraftPosition,
+	                    frustum1,
+	                    frustum2,
+	                    frustum3,
+	                    frustum4,
+	                    boresightDirection,
+	                    upVector);
+	        }
+	        
 	        initialize();
 		}
 		
@@ -211,6 +231,17 @@ public class MSIBoundaryCollection extends Model implements PropertyChangeListen
 		{
 		    return key;
 		}
+		
+		public void getCameraOrientation(double[] spacecraftPosition,
+		        double[] boresightDirection, double[] upVector)
+		{
+		    for (int i=0; i<3; ++i)
+		    {
+		        spacecraftPosition[i] = this.spacecraftPosition[i];
+		        boresightDirection[i] = this.boresightDirection[i];
+		        upVector[i] = this.upVector[i];
+		    }
+		}
 	}
 
 
@@ -306,6 +337,11 @@ public class MSIBoundaryCollection extends Model implements PropertyChangeListen
     public Boundary getBoundary(vtkActor actor)
     {
         return actorToBoundaryMap.get(actor);
+    }
+    
+    public Boundary getBoundary(MSIKey key)
+    {
+        return getBoundaryFromKey(key);
     }
     
     public boolean containsBoundary(MSIKey key)

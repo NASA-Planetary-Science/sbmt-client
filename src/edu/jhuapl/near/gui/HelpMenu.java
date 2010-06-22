@@ -9,6 +9,9 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextPane;
+
 
 public class HelpMenu extends JMenu
 {
@@ -30,16 +33,50 @@ public class HelpMenu extends JMenu
 
     private class ShowHelpContentsAction extends AbstractAction
     {
-    	public ShowHelpContentsAction()
+        private JFrame frame = null;
+        private final String helpContents = "<html>" +
+            "Small Body Mapping Tool Help<br><br>" +
+            "NAVIGATION:<br>" +
+            "Left Mouse Button: rotate camera<br>" +
+            "Middle Mouse Button: pan camera<br>" +
+            "Right Mouse Button: zoom camera<br>" +
+            "Mousewheel: zoom camera<br>" +
+            "Shift + Left Mouse Button: pan camera<br>" +
+            "Ctrl + Left Mouse Button: spin camera<br>" +
+            "Keypress 3: toggle stereo mode<br>" +
+            "Keypress f: fly to point most recently clicked<br>" +
+            "Keypress r: reset camera<br>" +
+            "Keypress s: modify objects in scene to be shown as surfaces<br>" +
+            "Keypress w: modify objects in scene to be shown as wireframe<br>" +
+            "</html>";
+
+        public ShowHelpContentsAction()
         {
             super("Help Contents");
         }
 
         public void actionPerformed(ActionEvent actionEvent)
         {
-        	JFrame frame = new JFrame();
-        	frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+            if (frame == null)
+            {
+                frame = new JFrame();
+                
+                JTextPane label = new JTextPane();
+                label.setEditable(false);
+                label.setContentType("text/html");
+                label.setText(helpContents);
+                
+                JScrollPane scrollPane = new JScrollPane(label);
+                
+                frame.add(scrollPane);
 
+                frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+                frame.setTitle("Help Contents");
+                frame.pack();
+            }
+
+            frame.setVisible(true);
+            frame.toFront();
         }
     }
 
