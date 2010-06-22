@@ -94,7 +94,7 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
     		final ErosModelManager modelManager, 
     		ModelInfoWindowManager infoPanelManager,
     		final PickManager pickManager,
-    		Renderer renWin) 
+    		Renderer renderer) 
     {
     	setLayout(new BoxLayout(this,
         		BoxLayout.PAGE_AXIS));
@@ -418,7 +418,7 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
         
         JPanel resultsPanel = new JPanel(new BorderLayout());
 		
-		msiPopupMenu = new MSIPopupMenu(this.modelManager, infoPanelManager, renWin, this);
+		msiPopupMenu = new MSIPopupMenu(this.modelManager, infoPanelManager, renderer, this);
 
 		resultsLabel = new JLabel(" ");
 

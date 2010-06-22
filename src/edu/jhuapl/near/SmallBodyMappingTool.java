@@ -9,6 +9,7 @@ import vtk.vtkJavaGarbageCollector;
 
 import edu.jhuapl.near.gui.deimos.DeimosViewer;
 import edu.jhuapl.near.gui.FileMenu;
+import edu.jhuapl.near.gui.HelpMenu;
 import edu.jhuapl.near.gui.StatusBar;
 import edu.jhuapl.near.gui.View;
 import edu.jhuapl.near.gui.ViewMenu;
@@ -29,6 +30,7 @@ public class SmallBodyMappingTool extends JFrame
 	private StatusBar statusBar;
 	private FileMenu fileMenu;
 	private ViewMenu viewMenu;
+	private HelpMenu helpMenu;
 	private JPanel rootPanel;
 	private ArrayList<View> views;
 	private static vtkJavaGarbageCollector garbageCollector;
@@ -75,7 +77,7 @@ public class SmallBodyMappingTool extends JFrame
     {
     	JMenuBar menuBar = new JMenuBar();
 
-    	fileMenu = new FileMenu(rootPanel, true);
+    	fileMenu = new FileMenu(rootPanel);
         fileMenu.setMnemonic('F');
         menuBar.add(fileMenu);
 
@@ -83,6 +85,10 @@ public class SmallBodyMappingTool extends JFrame
         viewMenu.setMnemonic('V');
         menuBar.add(viewMenu);
         
+    	helpMenu = new HelpMenu(rootPanel);
+        helpMenu.setMnemonic('H');
+        menuBar.add(helpMenu);
+
         setJMenuBar(menuBar);
     }
 
