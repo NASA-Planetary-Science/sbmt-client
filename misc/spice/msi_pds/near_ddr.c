@@ -46,7 +46,6 @@ int main(int argc, char** argv)
 		"../../kernels/SPK/DE403S.BSP",
 		"../../kernels/SPK/STATIONS.BSP"
 	};
-	char* platemodel = "../../eros-data/Eros_Dec2006_0.bpe";
 
 	int ii;
 	int len;
@@ -109,8 +108,6 @@ int main(int argc, char** argv)
 	printf("%s\n", ckKernel);
 	furnsh_(ckKernel, strlen(ckKernel));
 	
-	rdplat_(platemodel, strlen(platemodel));
-
 	
 	/*--------------------------------------*/
 	/* Get Ephemeris time from LBL file   */
