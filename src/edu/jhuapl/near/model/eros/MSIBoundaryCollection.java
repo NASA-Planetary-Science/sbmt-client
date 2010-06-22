@@ -27,6 +27,8 @@ public class MSIBoundaryCollection extends Model implements PropertyChangeListen
         private double[] frustum3 = new double[3];
         private double[] frustum4 = new double[3];
         private double[] sunPosition = new double[3];
+        private double[] boresightDirection = new double[3];
+        private double[] upVector = new double[3];
         private MSIKey key;
         
 		public Boundary(MSIKey key) throws IOException
@@ -59,7 +61,9 @@ public class MSIBoundaryCollection extends Model implements PropertyChangeListen
 					frustum1,
 					frustum2,
 					frustum3,
-					frustum4);
+					frustum4,
+					boresightDirection,
+					upVector);
 
 	        initialize();
 		}

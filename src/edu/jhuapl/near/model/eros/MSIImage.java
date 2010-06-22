@@ -41,6 +41,8 @@ public class MSIImage extends Model implements PropertyChangeListener
     public static final String MSI_FRUSTUM2 = "MSI_FRUSTUM2";
     public static final String MSI_FRUSTUM3 = "MSI_FRUSTUM3";
     public static final String MSI_FRUSTUM4 = "MSI_FRUSTUM4";
+    public static final String MSI_BORESIGHT_DIRECTION = "MSI_BORESIGHT_DIRECTION";
+    public static final String MSI_UP_DIRECTION = "MSI_UP_DIRECTION";
     public static final String SUN_POSITION_LT = "SUN_POSITION_LT";
 
     private SmallBodyModel erosModel;
@@ -95,6 +97,9 @@ public class MSIImage extends Model implements PropertyChangeListener
 	private boolean hasLimb = false;
     private double[] sunPosition = new double[3];
 
+    private double[] boresightDirection = new double[3];
+    private double[] upVector = new double[3];
+    
 	private boolean showFrustum = true;
 
 	private String startTime = "";
@@ -302,14 +307,14 @@ public class MSIImage extends Model implements PropertyChangeListener
         setDisplayedImageRange(new IntensityRange(0, 255));
 
         loadImageInfo();
-        try
-        {
-        	loadSumfile();
-        }
-        catch(IOException ex)
-        {
-        	System.out.println("Sumfile not available");
-        }
+//        try
+//        {
+//        	loadSumfile();
+//        }
+//        catch(IOException ex)
+//        {
+//        	System.out.println("Sumfile not available");
+//        }
         
 		footprint = new vtkPolyData();
 		shiftedFootprint = new vtkPolyData();
@@ -587,7 +592,9 @@ public class MSIImage extends Model implements PropertyChangeListener
 			double[] frustum1,
 			double[] frustum2,
 			double[] frustum3,
-			double[] frustum4) throws NumberFormatException, IOException
+			double[] frustum4,
+			double[] boresightDirection,
+			double[] upVector) throws NumberFormatException, IOException
 	{
     	FileInputStream fs = null;
 		try {
@@ -620,7 +627,9 @@ public class MSIImage extends Model implements PropertyChangeListener
 		    			MSI_FRUSTUM2.equals(token) ||
 		    			MSI_FRUSTUM3.equals(token) ||
 		    			MSI_FRUSTUM4.equals(token) ||
-		    			SUN_POSITION_LT.equals(token))
+		    			SUN_POSITION_LT.equals(token) ||
+		    			MSI_BORESIGHT_DIRECTION.equals(token) ||
+		    			MSI_UP_DIRECTION.equals(token))
 		    	{
 		    		st.nextToken();
 		    		st.nextToken();
@@ -669,6 +678,18 @@ public class MSIImage extends Model implements PropertyChangeListener
 		    			sunPosition[1] = y;
 		    			sunPosition[2] = z;
 		    		}
+		    		if (MSI_BORESIGHT_DIRECTION.equals(token))
+		    		{
+		    			boresightDirection[0] = x;
+		    			boresightDirection[1] = y;
+		    			boresightDirection[2] = z;
+		    		}
+		    		if (MSI_UP_DIRECTION.equals(token))
+		    		{
+		    			upVector[0] = x;
+		    			upVector[1] = y;
+		    			upVector[2] = z;
+		    		}
 		    	}
 		    }
 		}
@@ -691,7 +712,9 @@ public class MSIImage extends Model implements PropertyChangeListener
 				frustum1,
 				frustum2,
 				frustum3,
-				frustum4);
+				frustum4,
+				boresightDirection,
+				upVector);
 		
 		startTime = start[0];
 		stopTime = stop[0];
@@ -714,7 +737,9 @@ public class MSIImage extends Model implements PropertyChangeListener
 			double[] frustum1,
 			double[] frustum2,
 			double[] frustum3,
-			double[] frustum4) throws IOException
+			double[] frustum4,
+			double[] boresightDirection,
+			double[] upVector) throws IOException
 	{
     	FileInputStream fs = new FileInputStream(sumfilename);
 		InputStreamReader isr = new InputStreamReader(fs);
@@ -788,6 +813,9 @@ public class MSIImage extends Model implements PropertyChangeListener
         GeometryUtil.vhat(frustum2, frustum2);
         GeometryUtil.vhat(frustum3, frustum3);
         GeometryUtil.vhat(frustum4, frustum4);
+        
+        GeometryUtil.vhat(cz, boresightDirection);
+        GeometryUtil.vhat(cx, upVector);
 	}
     
 	private void loadSumfile() throws NumberFormatException, IOException
@@ -808,7 +836,9 @@ public class MSIImage extends Model implements PropertyChangeListener
 				frustum1,
 				frustum2,
 				frustum3,
-				frustum4);
+				frustum4,
+				boresightDirection,
+				upVector);
 		
 		startTime = start[0];
 		stopTime = stop[0];
