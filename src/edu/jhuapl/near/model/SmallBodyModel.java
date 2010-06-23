@@ -49,11 +49,13 @@ public abstract class SmallBodyModel extends Model
     static public final String VeryHighResModelStr = "Very High (3145728 plates)";
 
     private vtkPolyData smallBodyPolyData;
+    private vtkPolyData lowResSmallBodyPolyData;
     private vtkActor smallBodyActor;
     private vtkPolyDataMapper smallBodyMapper;
     private ArrayList<vtkProp> smallBodyActors = new ArrayList<vtkProp>();
     private vtksbCellLocator cellLocator;
     private vtkKdTreePointLocator pointLocator;
+    private vtkKdTreePointLocator lowResPointLocator;
     private vtkFloatArray elevationCellDataValues;
     private vtkFloatArray gravAccCellDataValues;
     private vtkFloatArray gravPotCellDataValues;
@@ -130,7 +132,7 @@ public abstract class SmallBodyModel extends Model
 		//this.computeLargestSmallestEdgeLength();
 		//this.computeSurfaceArea();
 	}
-	
+
 	public vtkPolyData getSmallBodyPolyData()
 	{
 		return smallBodyPolyData;
@@ -177,7 +179,7 @@ public abstract class SmallBodyModel extends Model
 			double[] lr,
 			double[] ll)
 	{
-		return PolyDataUtil.computeFrustumIntersection(smallBodyPolyData, cellLocator, origin, ul, ur, lr, ll);
+		return PolyDataUtil.ComputeFrustumIntersection.func(smallBodyPolyData, cellLocator, origin, ul, ur, lr, ll);
 	}
 
 	/**
@@ -192,7 +194,7 @@ public abstract class SmallBodyModel extends Model
 			double[] pt1,
 			double[] pt2)
 	{
-		return PolyDataUtil.drawPathOnPolyData(smallBodyPolyData, pointLocator, pt1, pt2);
+		return PolyDataUtil.DrawPathOnPolyData.func(smallBodyPolyData, pointLocator, pt1, pt2);
 	}
 
 	public void drawPolygon(
@@ -202,9 +204,45 @@ public abstract class SmallBodyModel extends Model
 			vtkPolyData outputInterior,
 			vtkPolyData outputBoundary)
 	{
-		PolyDataUtil.drawPolygonOnPolyData(
+		PolyDataUtil.DrawPolygonOnPolyData.func(
 				smallBodyPolyData,
 				pointLocator,
+				center,
+				radius,
+				numberOfSides,
+				outputInterior,
+				outputBoundary);
+	}
+
+	public void drawPolygonLowRes(
+			double[] center,
+			double radius,
+			int numberOfSides,
+			vtkPolyData outputInterior,
+			vtkPolyData outputBoundary)
+	{
+		if (resolutionLevel == 0)
+		{
+			drawPolygon(center, radius, numberOfSides, outputInterior, outputBoundary);
+			return;
+		}
+		
+		if (lowResPointLocator == null)
+		{
+			lowResSmallBodyPolyData = new vtkPolyData();
+			smallBodyReader.SetFileName(defaultModelFile.getAbsolutePath());
+			smallBodyReader.Update();
+
+			lowResSmallBodyPolyData.DeepCopy(smallBodyReader.GetOutput());
+			
+			lowResPointLocator = new vtkKdTreePointLocator();
+			lowResPointLocator.SetDataSet(lowResSmallBodyPolyData);
+			lowResPointLocator.BuildLocator();
+		}
+
+		PolyDataUtil.DrawPolygonOnPolyData.func(
+				lowResSmallBodyPolyData,
+				lowResPointLocator,
 				center,
 				radius,
 				numberOfSides,
@@ -220,7 +258,7 @@ public abstract class SmallBodyModel extends Model
 			vtkPolyData outputInterior,
 			vtkPolyData outputBoundary)
 	{
-		PolyDataUtil.drawConeOnPolyData(
+		PolyDataUtil.DrawConeOnPolyData.func(
 				smallBodyPolyData,
 				pointLocator,
 				vertex,
@@ -235,7 +273,7 @@ public abstract class SmallBodyModel extends Model
 			vtkPolyData polyLine,
 			double shiftAmount)
 	{
-		PolyDataUtil.shiftPolyLineInNormalDirectionOfPolyData(polyLine, smallBodyPolyData, shiftAmount);
+		PolyDataUtil.ShiftPolyLineInNormalDirectionOfPolyData.func(polyLine, smallBodyPolyData, shiftAmount);
 	}
 	
 	/**

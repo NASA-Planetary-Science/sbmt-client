@@ -953,7 +953,7 @@ public class MSIImage extends Model implements PropertyChangeListener
 		footprint.GetPointData().SetTCoords(textureCoords);
 
 		shiftedFootprint.DeepCopy(footprint);
-		PolyDataUtil.shiftPolyDataInNormalDirection(shiftedFootprint, 0.002);
+		PolyDataUtil.ShiftPolyDataInNormalDirection.func(shiftedFootprint, 0.002);
 
 		footprintGenerated = true;
 	}

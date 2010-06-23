@@ -44,9 +44,6 @@ public class NLRCubesGenerator
 
 		SmallBodyCubes cubes = new SmallBodyCubes(erosModel, 1.0, 1.0);
 		
-		// First go through all the data and determine which cubes are not empty. We only need to
-		// create files for nonempty cubes
-		
 		double[] pt = new double[3];
 		
 		try
