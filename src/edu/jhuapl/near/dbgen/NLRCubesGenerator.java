@@ -31,7 +31,7 @@ public class NLRCubesGenerator
 		NativeLibraryLoader.loadVtkLibrariesLinuxNoX11();
 
 		ErosModel erosModel = new ErosModel();
-		System.out.println(args[0]);
+
 		String nlrFileList = args[0];
 		String outputFolder = args[1];
 		
@@ -42,14 +42,17 @@ public class NLRCubesGenerator
 			e2.printStackTrace();
 		}
 
-		SmallBodyCubes cubes = new SmallBodyCubes(erosModel, 1.0, 1.0);
+		SmallBodyCubes cubes = new SmallBodyCubes(erosModel, 1.0, 1.0, false);
 		
 		double[] pt = new double[3];
 		
 		try
 		{
+		    int count = 1;
 			for (String filename : nlrFiles)
 			{
+			    System.out.println("Begin processing file " + filename + " - " + count++ + " / " + nlrFiles.size());
+			    
 				ArrayList<String> lines = FileUtil.getFileLinesAsStringList(filename);
 				for (int i=2; i<lines.size(); ++i)
 				{

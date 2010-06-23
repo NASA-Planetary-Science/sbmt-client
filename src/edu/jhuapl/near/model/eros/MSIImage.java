@@ -228,7 +228,7 @@ public class MSIImage extends Model implements PropertyChangeListener
 	public MSIImage(File fitFile, SmallBodyModel eros, MSISource source) throws FitsException, IOException
 	{
 		this.erosModel = eros;
-		this.key.source = source;
+		this.key = new MSIKey(null, source);
 		this.initialize(fitFile);
 	}
 	
@@ -733,6 +733,19 @@ public class MSIImage extends Model implements PropertyChangeListener
         printpt(frustum4, "pds frustum4 ");
 	}
 
+	/**
+	 * Sometimes Bob Gaskell sumfiles contain numbers of the form
+	 * .1192696009D+03 rather than .1192696009E+03 (i.e. a D instead
+	 * of an E). This function replaces D's with E's.
+	 * @param s
+	 * @return
+	 */
+	private static void replaceDwithE(String[] s)
+	{
+	    for (int i=0; i<s.length; ++i)
+	        s[i] = s[i].replace('D', 'E');
+	}
+	
 	public static void loadSumfile(
 			String sumfilename,
 			String[] startTime,
@@ -758,6 +771,7 @@ public class MSIImage extends Model implements PropertyChangeListener
 		in.readLine();
 
 		String[] tmp = in.readLine().trim().split("\\s+");
+		replaceDwithE(tmp);
 		spacecraftPosition[0] = -Double.parseDouble(tmp[0]);
 		spacecraftPosition[1] = -Double.parseDouble(tmp[1]);
 		spacecraftPosition[2] = -Double.parseDouble(tmp[2]);
@@ -767,16 +781,19 @@ public class MSIImage extends Model implements PropertyChangeListener
 		double[] cz = new double[3];
 		
 		tmp = in.readLine().trim().split("\\s+");
+        replaceDwithE(tmp);
 		cx[0] = Double.parseDouble(tmp[0]);
 		cx[1] = Double.parseDouble(tmp[1]);
 		cx[2] = Double.parseDouble(tmp[2]);
 		
 		tmp = in.readLine().trim().split("\\s+");
+        replaceDwithE(tmp);
 		cy[0] = Double.parseDouble(tmp[0]);
 		cy[1] = Double.parseDouble(tmp[1]);
 		cy[2] = Double.parseDouble(tmp[2]);
 
 		tmp = in.readLine().trim().split("\\s+");
+        replaceDwithE(tmp);
 		cz[0] = Double.parseDouble(tmp[0]);
 		cz[1] = Double.parseDouble(tmp[1]);
 		cz[2] = Double.parseDouble(tmp[2]);
@@ -843,8 +860,8 @@ public class MSIImage extends Model implements PropertyChangeListener
 				boresightDirection,
 				upVector);
 		
-		startTime = start[0];
-		stopTime = stop[0];
+		//startTime = start[0];
+		//stopTime = stop[0];
 
         printpt(frustum1, "gas frustum1 ");
         printpt(frustum2, "gas frustum2 ");

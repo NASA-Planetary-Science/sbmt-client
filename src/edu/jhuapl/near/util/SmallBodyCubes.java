@@ -34,13 +34,16 @@ public class SmallBodyCubes
 	public SmallBodyCubes(
 	        SmallBodyModel smallBodyModel,
 	        double cubeSize,
-	        double buffer)
+	        double buffer,
+	        boolean removeEmptyCubes)
 	{
 		this.cubeSize = cubeSize;
 		this.buffer = buffer;
 
 		initialize(smallBodyModel);
-		removeEmptyCubes(smallBodyModel);
+		
+		if (removeEmptyCubes)
+		    removeEmptyCubes(smallBodyModel);
 	}
 	
 	/**

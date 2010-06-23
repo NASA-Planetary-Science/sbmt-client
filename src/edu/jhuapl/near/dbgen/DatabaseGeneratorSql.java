@@ -8,17 +8,27 @@ import java.util.*;
 import edu.jhuapl.near.model.eros.ErosModel;
 import edu.jhuapl.near.model.eros.MSIImage;
 import edu.jhuapl.near.model.eros.NISSpectrum;
+import edu.jhuapl.near.model.eros.MSIImage.MSISource;
 import edu.jhuapl.near.util.*;
 
 import nom.tam.fits.FitsException;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
+import vtk.vtkGlobalJavaHash;
 import vtk.vtkPolyData;
 import vtk.vtkPolyDataReader;
 
 public class DatabaseGeneratorSql 
 {
+    static private final String MsiImagesPdsTable = "msiimages_beta";
+    static private final String MsiImagesGaskellTable = "msiimages_gaskell_beta";
+    static private final String MsiCubesPdsTable = "msicubes_beta";
+    static private final String MsiCubesGaskellTable = "msicubes_gaskell_beta";
+
+    static private final String NisSpectraTable = "nisspectra_beta";
+    static private final String NisCubesTable = "niscubes_beta";
+    
 	static private SqlManager db = null;
 	static private PreparedStatement msiInsert = null;
 	static private PreparedStatement msiInsert2 = null;
@@ -36,7 +46,6 @@ public class DatabaseGeneratorSql
             //make a table
         	try
         	{
-        		//db.dropTable("msiimages");
         		db.dropTable(msiTableName);
         	}
         	catch(Exception e)
@@ -85,7 +94,7 @@ public class DatabaseGeneratorSql
             //make a table
         	try
         	{
-            	db.dropTable("nisspectra");
+            	db.dropTable(NisSpectraTable);
         	}
         	catch(Exception e)
         	{
@@ -93,7 +102,7 @@ public class DatabaseGeneratorSql
         	}
 
         	db.update(
-            		"create table nisspectra(" +
+            		"create table " + NisSpectraTable + "(" +
             		"id int PRIMARY KEY, " +
             		"year smallint, " +
             		"day smallint, " +
@@ -118,14 +127,14 @@ public class DatabaseGeneratorSql
         }
     }
     
-    private static void createMSITablesCubes()
+    private static void createMSITablesCubes(String msiTableName)
     {
         try {
 
             //make a table
         	try
         	{
-            	db.dropTable("msicubes");
+            	db.dropTable(msiTableName);
         	}
         	catch(Exception e)
         	{
@@ -133,7 +142,7 @@ public class DatabaseGeneratorSql
         	}
 
         	db.update(
-            		"create table msicubes(" +
+            		"create table " + msiTableName + "(" +
             		"id int PRIMARY KEY, " +
             		"imageid int, " +
             		"cubeid int)"
@@ -156,7 +165,7 @@ public class DatabaseGeneratorSql
             //make a table
         	try
         	{
-            	db.dropTable("niscubes");
+            	db.dropTable(NisCubesTable);
         	}
         	catch(Exception e)
         	{
@@ -164,7 +173,7 @@ public class DatabaseGeneratorSql
         	}
 
         	db.update(
-            		"create table niscubes(" +
+            		"create table " + NisCubesTable + "(" +
             		"id int PRIMARY KEY, " +
             		"nisspectrumid int, " +
             		"cubeid int)"
@@ -180,17 +189,20 @@ public class DatabaseGeneratorSql
         }
     }
     
-    private static void populateMSITables(ArrayList<String> msiFiles, String msiTableName, MSIImage.MSISource msiSource) throws IOException, SQLException, FitsException
+    private static void populateMSITables(
+            ArrayList<String> msiFiles,
+            String msiTableName,
+            MSIImage.MSISource msiSource) throws IOException, SQLException, FitsException
     {
     	int count = 0;
     	
     	for (String filename : msiFiles)
     	{
-			boolean filesExist = checkIfAllMsiFilesExist(filename);
+			boolean filesExist = checkIfAllMsiFilesExist(filename, msiSource);
 			if (filesExist == false)
 				continue;
 
-			System.out.println("starting msi " + count++);
+			System.out.println("starting msi " + count++ + "  " + filename);
 			
     		byte iof_or_cif = -1;
     		String dayOfYearStr = "";
@@ -276,6 +288,10 @@ public class DatabaseGeneratorSql
     		msiInsert.setDouble(19, image.getMaxPhase());
             
             msiInsert.executeUpdate();
+            
+            image.Delete();
+            System.gc();
+            System.out.println("deleted " + vtkGlobalJavaHash.GC());
     	}
     }
     
@@ -287,7 +303,7 @@ public class DatabaseGeneratorSql
     		// Don't check if all Nis files exist here, since we want to allow searches on spectra
     		// that don't intersect the asteroid
     		
-			System.out.println("starting nis " + count++);
+			System.out.println("starting nis " + count++ + "  " + filename);
 			
     		String dayOfYearStr = "";
     		String yearStr = "";
@@ -307,7 +323,7 @@ public class DatabaseGeneratorSql
     		if (nisInsert == null)
     		{
     			nisInsert = db.preparedStatement(                                                                                    
-    					"insert into nisspectra values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");                                                                   
+    					"insert into " + NisSpectraTable + " values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");                                                                   
     		}
 
     		DateTime midtime = new DateTime(nisSpectrum.getDateTime().toString(), DateTimeZone.UTC);
@@ -346,12 +362,15 @@ public class DatabaseGeneratorSql
     	}
     }
 
-    private static void populateMSITablesCubes(ArrayList<String> msiFiles) throws SQLException, IOException
+    private static void populateMSITablesCubes(
+            ArrayList<String> msiFiles,
+            String msiTableName,
+            MSIImage.MSISource msiSource) throws SQLException, IOException, FitsException
     {
     	int count = 0;
     	for (String filename : msiFiles)
     	{
-			boolean filesExist = checkIfAllMsiFilesExist(filename);
+			boolean filesExist = checkIfAllMsiFilesExist(filename, msiSource);
 			if (filesExist == false)
 				continue;
 
@@ -369,22 +388,27 @@ public class DatabaseGeneratorSql
 //    		f = f.getParentFile();
 //    		yearStr = f.getName();
 
-	        String vtkfile = filename.substring(0, filename.length()-4) + "_FOOTPRINT.VTK";
-  
-	        if (footprintReader == null)
-	        	footprintReader = new vtkPolyDataReader();
-	        footprintReader.SetFileName(vtkfile);
-	        footprintReader.Update();
-	        
-	        if (footprintPolyData == null)
-	        	footprintPolyData = new vtkPolyData();
-			footprintPolyData.DeepCopy(footprintReader.GetOutput());
-			footprintPolyData.ComputeBounds();
+//	        String vtkfile = filename.substring(0, filename.length()-4) + "_FOOTPRINT.VTK";
+//  
+//	        if (footprintReader == null)
+//	        	footprintReader = new vtkPolyDataReader();
+//	        footprintReader.SetFileName(vtkfile);
+//	        footprintReader.Update();
+//	        
+    		if (footprintPolyData == null)
+    		    footprintPolyData = new vtkPolyData();
+//			footprintPolyData.DeepCopy(footprintReader.GetOutput());
+//			footprintPolyData.ComputeBounds();
+
+			MSIImage image = new MSIImage(origFile, erosModel, msiSource);
+
+			image.generateFootprint();
+			footprintPolyData.DeepCopy(image.getUnshiftedFootprint());
 			
     		if (msiInsert2 == null)
     		{
-    			msiInsert2 = db.preparedStatement(                                                                                    
-    					"insert into msicubes values (?, ?, ?)");
+    			msiInsert2 = db.preparedStatement(
+    					"insert into " + msiTableName + " values (?, ?, ?)");
     		}
 
     		TreeSet<Integer> cubeIds = erosModel.getIntersectingCubes(footprintPolyData);
@@ -403,6 +427,10 @@ public class DatabaseGeneratorSql
 
     			++count;
     		}
+    		
+            image.Delete();
+            System.gc();
+            System.out.println("deleted " + vtkGlobalJavaHash.GC());
     	}
     }
 
@@ -446,7 +474,7 @@ public class DatabaseGeneratorSql
     		if (nisInsert2 == null)
     		{
     			nisInsert2 = db.preparedStatement(                                                                                    
-    					"insert into niscubes values (?, ?, ?)");
+    					"insert into " + NisCubesTable + " values (?, ?, ?)");
     		}
 
     		TreeSet<Integer> cubeIds = erosModel.getIntersectingCubes(footprintPolyData);
@@ -468,7 +496,7 @@ public class DatabaseGeneratorSql
     	}
     }
 
-    static boolean checkIfAllMsiFilesExist(String line)
+    static boolean checkIfAllMsiFilesExist(String line, MSIImage.MSISource source)
 	{
 		File file = new File(line);
 		if (!file.exists())
@@ -484,6 +512,17 @@ public class DatabaseGeneratorSql
 		if (!file.exists())
 			return false;
 
+		// Check for the sumfile if source is Gaskell
+		if (source.equals(MSISource.GASKELL))
+		{
+		    File msirootdir = (new File(line)).getParentFile().getParentFile().getParentFile().getParentFile();
+		    String msiId = (new File(line)).getName().substring(0, 11);
+	        name = msirootdir.getAbsolutePath() + "/sumfiles/" + msiId + ".SUM";
+	        file = new File(name);
+	        if (!file.exists())
+	            return false;
+		}
+		
 		//name = line.substring(0, line.length()-4) + "_DDR.IMG.gz";
 		//file = new File(name);
 		//if (!file.exists())
@@ -508,10 +547,10 @@ public class DatabaseGeneratorSql
 		if (!file.exists())
 			return false;
 
-		String name = line.substring(0, line.length()-4) + "_FOOTPRINT.VTK";
-		file = new File(name);
-		if (!file.exists())
-			return false;
+//		String name = line.substring(0, line.length()-4) + "_FOOTPRINT.VTK";
+//		file = new File(name);
+//		if (!file.exists())
+//			return false;
 
 		return true;
 	}
@@ -525,17 +564,14 @@ public class DatabaseGeneratorSql
 
 		erosModel = new ErosModel();
 		
-		String msiFileList=args[1];
-		String msiGaskellFileList=args[2];
-		String nisFileList=args[3];
+		String msiFileList=args[0];
+		String nisFileList=args[1];
 
 		
 		ArrayList<String> msiFiles = null;
-		ArrayList<String> msiGaskellFiles = null;
 		ArrayList<String> nisFiles = null;
 		try {
 			msiFiles = FileUtil.getFileLinesAsStringList(msiFileList);
-			msiGaskellFiles = FileUtil.getFileLinesAsStringList(msiGaskellFileList);
 			nisFiles = FileUtil.getFileLinesAsStringList(nisFileList);
 		} catch (IOException e2) {
 			e2.printStackTrace();
@@ -543,7 +579,7 @@ public class DatabaseGeneratorSql
 		
         try 
         {
-            db = new SqlManager(args[0]);
+            db = new SqlManager(null);
         }
         catch (Exception ex1) {
             ex1.printStackTrace();
@@ -551,20 +587,22 @@ public class DatabaseGeneratorSql
         }
 
 		
-        //createMSITables("msiimages");
-        createMSITables("msiimages_gaskell");
-		//createNISTables();
-        createMSITablesCubes();
-		createNISTablesCubes();
+        //createMSITables(MsiImagesPdsTable);
+        createMSITables(MsiImagesGaskellTable);
+        //createMSITablesCubes(MsiCubesPdsTable);
+        //createMSITablesCubes(MsiCubesGaskellTable);
+        //createNISTables();
+		//createNISTablesCubes();
 
 		
 		try 
 		{
-			//populateMSITables(msiFiles, "msiimages", MSIImage.MSISource.PDS);
-			populateMSITables(msiGaskellFiles, "msiimages_gaskell", MSIImage.MSISource.GASKELL);
-			//populateNISTables(nisFiles);
-			populateMSITablesCubes(msiFiles);
-			populateNISTablesCubes(nisFiles);
+		    //populateMSITables(msiFiles, MsiImagesPdsTable, MSIImage.MSISource.PDS);
+			populateMSITables(msiFiles, MsiImagesGaskellTable, MSIImage.MSISource.GASKELL);
+            //populateMSITablesCubes(msiFiles, MsiCubesPdsTable, MSIImage.MSISource.PDS);
+            //populateMSITablesCubes(msiFiles, MsiCubesGaskellTable, MSIImage.MSISource.GASKELL);
+            //populateNISTables(nisFiles);
+			//populateNISTablesCubes(nisFiles);
 		}
 		catch (Exception e1) {
 			e1.printStackTrace();

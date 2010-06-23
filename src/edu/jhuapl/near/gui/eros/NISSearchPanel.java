@@ -17,6 +17,8 @@ import nom.tam.fits.FitsException;
 
 import org.joda.time.*;
 
+import vtk.vtkPolyData;
+
 import edu.jhuapl.near.query.Query;
 import edu.jhuapl.near.model.RegularPolygonModel;
 import edu.jhuapl.near.model.SmallBodyModel;
@@ -521,7 +523,20 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
 			if (selectionModel.getNumberOfStructures() > 0)
 			{
 				RegularPolygonModel.RegularPolygon region = (RegularPolygonModel.RegularPolygon)selectionModel.getStructure(0);
-				cubeList = erosModel.getIntersectingCubes(region.interiorPolyData);
+
+                // Always use the lowest resolution model for getting the intersection cubes list.
+                // Therefore, if the selection region was created using a higher resolution model,
+                // we need to recompute the selection region using the low res model.
+                if (erosModel.getModelResolution() > 0)
+                {
+                    vtkPolyData interiorPoly = new vtkPolyData();
+                    erosModel.drawPolygonLowRes(region.center, region.radius, region.numberOfSides, interiorPoly, null);
+                    cubeList = erosModel.getIntersectingCubes(interiorPoly);
+                }
+                else
+                {
+                    cubeList = erosModel.getIntersectingCubes(region.interiorPolyData);
+                }
 			}
         	
         	ArrayList<String> results = Query.getInstance().runQuery(
