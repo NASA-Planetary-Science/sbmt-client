@@ -748,8 +748,6 @@ public class MSIImage extends Model implements PropertyChangeListener
 	
 	public static void loadSumfile(
 			String sumfilename,
-			String[] startTime,
-			String[] stopTime,
 			double[] spacecraftPosition,
 			double[] frustum1,
 			double[] frustum2,
@@ -763,10 +761,7 @@ public class MSIImage extends Model implements PropertyChangeListener
 		BufferedReader in = new BufferedReader(isr);
 
 		in.readLine();
-		String utc = in.readLine().trim().replace(' ', '-');
-		startTime[0] = utc;
-		stopTime[0] = utc;
-		
+		in.readLine();
 		in.readLine();
 		in.readLine();
 
@@ -846,12 +841,8 @@ public class MSIImage extends Model implements PropertyChangeListener
 		sumfile = sumfile.getParentFile().getParentFile().getParentFile().getParentFile();
 		String sumfilename = sumfile.getAbsolutePath() + "/sumfiles/" + sumname + ".SUM";
 		
-		String[] start = new String[1];
-		String[] stop = new String[1];
 		loadSumfile(
 				sumfilename,
-				start,
-				stop,
 				spacecraftPosition,
 				frustum1,
 				frustum2,
@@ -860,9 +851,6 @@ public class MSIImage extends Model implements PropertyChangeListener
 				boresightDirection,
 				upVector);
 		
-		//startTime = start[0];
-		//stopTime = stop[0];
-
         printpt(frustum1, "gas frustum1 ");
         printpt(frustum2, "gas frustum2 ");
         printpt(frustum3, "gas frustum3 ");
