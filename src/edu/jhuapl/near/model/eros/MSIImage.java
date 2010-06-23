@@ -795,8 +795,6 @@ public class MSIImage extends Model implements PropertyChangeListener
 		
         final double zo = -0.025753661240;
         final double yo = -0.019744857140;
-//        final double zo = -0.021753661240;
-//        final double yo = -0.015744857140;
         double fx = zo;
 		double fy = yo;
         double fz = 1.0;
