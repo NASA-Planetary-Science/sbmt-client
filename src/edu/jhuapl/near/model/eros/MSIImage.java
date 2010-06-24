@@ -94,7 +94,6 @@ public class MSIImage extends Model implements PropertyChangeListener
     private double[] frustum2 = new double[3];
     private double[] frustum3 = new double[3];
     private double[] frustum4 = new double[3];
-	private boolean hasLimb = false;
     private double[] sunPosition = new double[3];
 
     private double[] boresightDirection = new double[3];
@@ -894,7 +893,13 @@ public class MSIImage extends Model implements PropertyChangeListener
 
     public boolean containsLimb()
     {
-    	return hasLimb;
+    	//TODO Speed this up: Determine if there is a limb without computing the entire backplane.
+    	
+    	float[] bp = generateBackplanes(true);
+    	if (bp == null)
+    		return true;
+    	else
+    		return false;
     }
 
 	public void generateFootprint()
@@ -1156,6 +1161,22 @@ public class MSIImage extends Model implements PropertyChangeListener
 	
 	public float[] generateBackplanes()
 	{
+		return generateBackplanes(false);
+	}
+
+	/**
+	 * If <code>returnNullIfContainsLimb</code> then return null if any ray
+	 * in the direction of a pixel in the image does not intersect the asteroid.
+	 * By setting this boolean to true, you can (usually) determine whether or not the
+	 * image contains a limb without having to compute the entire backplane. Note
+	 * that this is a bit of a hack and a better way is needed to quickly determine
+	 * if there is a limb.
+	 * 
+	 * @param returnNullIfContainsLimb
+	 * @return
+	 */
+	private float[] generateBackplanes(boolean returnNullIfContainsLimb)
+	{
 		if (footprintGenerated == false)
 			generateFootprint();
 
@@ -1314,6 +1335,9 @@ public class MSIImage extends Model implements PropertyChangeListener
 				}
 				else
 				{
+					if (returnNullIfContainsLimb)
+						return null;
+					
 					for (int k=0; k<numLayers; ++k)
 						data[index(j,i,k)] = PDS_NA;
 				}

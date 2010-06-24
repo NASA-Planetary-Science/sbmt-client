@@ -37,7 +37,8 @@ public class DatabaseGeneratorSql
 	static private ErosModel erosModel;
 	static private vtkPolyDataReader footprintReader;
 	static private vtkPolyData footprintPolyData;
-	
+	static private double[] meanPlateSizes;
+
     private static void createMSITables(String msiTableName)
     {
     	System.out.println("creating msi");
@@ -228,8 +229,15 @@ public class DatabaseGeneratorSql
     		// Calling this forces the calculation of incidence, emission, phase, and pixel scale
     		image.getProperties();
 
-    		//String lblFilename = filename.substring(0, filename.length()-4) + ".LBL";
-    		//HashMap<String, String> properties = MSIImage.parseLblFile(lblFilename);
+    		int res = findOptimalResolution(image);
+    		
+    		System.out.println("Optimal resolution " + res);
+    		
+    		if (res != erosModel.getModelResolution())
+    		{
+    			erosModel.setModelResolution(res);
+        		image.getProperties();
+    		}
     		
             if (msiInsert == null)
             {
@@ -258,7 +266,7 @@ public class DatabaseGeneratorSql
     		System.out.println("Max HORIZONTAL_PIXEL_SCALE: " + image.getMaximumHorizontalPixelScale());
     		System.out.println("Min VERTICAL_PIXEL_SCALE: " + image.getMinimumVerticalPixelScale());
     		System.out.println("Max VERTICAL_PIXEL_SCALE: " + image.getMaximumVerticalPixelScale());
-    		System.out.println("hasLimb: " + image.containsLimb());
+    		System.out.println("hasLimb: " /*+ image.containsLimb()*/);
     		System.out.println("minIncidence: " + image.getMinIncidence());
     		System.out.println("maxIncidence: " + image.getMaxIncidence());
     		System.out.println("minEmission: " + image.getMinEmission());
@@ -367,7 +375,9 @@ public class DatabaseGeneratorSql
             String msiTableName,
             MSIImage.MSISource msiSource) throws SQLException, IOException, FitsException
     {
-    	int count = 0;
+		erosModel.setModelResolution(0);
+
+		int count = 0;
     	for (String filename : msiFiles)
     	{
 			boolean filesExist = checkIfAllMsiFilesExist(filename, msiSource);
@@ -555,14 +565,50 @@ public class DatabaseGeneratorSql
 		return true;
 	}
 
+    private static void computeMeanPlateSizeAtAllResolutions() throws IOException
+    {
+    	int numRes = erosModel.getNumberResolutionLevels();
+
+    	meanPlateSizes = new double[numRes];
+    	
+    	for (int i=0; i<numRes; ++i)
+    	{
+    		erosModel.setModelResolution(i);
+    		
+    		meanPlateSizes[i] = erosModel.computeLargestSmallestMeanEdgeLength()[2];
+    	}
+    }
+    
+	private static int findOptimalResolution(MSIImage image)
+	{
+		// First get the pixel size.
+		double horiz = image.getMinimumHorizontalPixelScale();
+		double vert = image.getMinimumVerticalPixelScale();
+		double pixelSize = Math.min(horiz, vert);
+		
+		int numRes = erosModel.getNumberResolutionLevels();
+    	for (int i=0; i<numRes; ++i)
+    	{
+    		if (pixelSize >= meanPlateSizes[i])
+    			return i;
+    	}
+		
+		return numRes - 1;
+	}
+	
+
 	/**
 	 * @param args
+	 * @throws IOException 
 	 */
-	public static void main(String[] args) 
+	public static void main(String[] args) throws IOException 
 	{
+		java.awt.Toolkit.getDefaultToolkit();
 		NativeLibraryLoader.loadVtkLibrariesLinuxNoX11();
 
 		erosModel = new ErosModel();
+		
+		computeMeanPlateSizeAtAllResolutions();
 		
 		String msiFileList=args[0];
 		String nisFileList=args[1];
@@ -575,6 +621,7 @@ public class DatabaseGeneratorSql
 			nisFiles = FileUtil.getFileLinesAsStringList(nisFileList);
 		} catch (IOException e2) {
 			e2.printStackTrace();
+			return;
 		}
 		
         try 

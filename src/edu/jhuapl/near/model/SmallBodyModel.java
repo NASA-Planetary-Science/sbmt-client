@@ -440,23 +440,27 @@ public abstract class SmallBodyModel extends Model
 		return "";
     }
 
-    public void computeLargestSmallestEdgeLength()
+    public double[] computeLargestSmallestMeanEdgeLength()
     {
+    	double[] largestSmallestMean = new double[3];
+    	
     	double minLength = Double.MAX_VALUE;
     	double maxLength = 0.0;
+    	double meanLength = 0.0;
 
-    	vtkMath math = new vtkMath();
+    	int numberOfCells = smallBodyPolyData.GetNumberOfCells();
+		
+    	System.out.println(numberOfCells);
 
-		System.out.println(smallBodyPolyData.GetNumberOfCells());
-
-		for (int i=0; i<smallBodyPolyData.GetNumberOfCells(); ++i)
+		for (int i=0; i<numberOfCells; ++i)
     	{
-    		double[] pt0 = smallBodyPolyData.GetCell(i).GetPoints().GetPoint(0);
-    		double[] pt1 = smallBodyPolyData.GetCell(i).GetPoints().GetPoint(1);
-    		double[] pt2 = smallBodyPolyData.GetCell(i).GetPoints().GetPoint(2);
-    		double dist0 = Math.sqrt(math.Distance2BetweenPoints(pt0, pt1));
-    		double dist1 = Math.sqrt(math.Distance2BetweenPoints(pt1, pt2));
-    		double dist2 = Math.sqrt(math.Distance2BetweenPoints(pt2, pt0));
+			vtkPoints points = smallBodyPolyData.GetCell(i).GetPoints();
+    		double[] pt0 = points.GetPoint(0);
+    		double[] pt1 = points.GetPoint(1);
+    		double[] pt2 = points.GetPoint(2);
+    		double dist0 = GeometryUtil.distanceBetween(pt0, pt1);
+    		double dist1 = GeometryUtil.distanceBetween(pt1, pt2);
+    		double dist2 = GeometryUtil.distanceBetween(pt2, pt0);
     		if (dist0 < minLength)
     			minLength = dist0;
     		if (dist0 > maxLength)
@@ -469,10 +473,21 @@ public abstract class SmallBodyModel extends Model
     			minLength = dist2;
     		if (dist2 > maxLength)
     			maxLength = dist2;
+    		
+    		meanLength += (dist0 + dist1 + dist2);
     	}
+		
+		meanLength /= ((double)(numberOfCells * 3));
 		
 		System.out.println("minLength  " + minLength);
 		System.out.println("maxLength  " + maxLength);
+		System.out.println("meanLength  " + meanLength);
+		
+		largestSmallestMean[0] = minLength;
+		largestSmallestMean[1] = maxLength;
+		largestSmallestMean[2] = meanLength;
+
+		return largestSmallestMean;
     }
 
     public void computeSurfaceArea()

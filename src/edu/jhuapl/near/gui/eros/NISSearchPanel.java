@@ -41,7 +41,7 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
     private java.util.Date endDate = new GregorianCalendar(2000, 4, 14, 0, 0, 0).getTime();
     private JLabel endDateLabel;
     private JLabel startDateLabel;
-    private static final String START_DATE_LABEL_TEXT = "Start Date";
+    private static final String START_DATE_LABEL_TEXT = "Start Date:";
     private static final String END_DATE_LABEL_TEXT = "End Date:";
     private JSpinner startSpinner;
     private JSpinner endSpinner;

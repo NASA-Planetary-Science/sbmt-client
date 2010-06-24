@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import edu.jhuapl.near.model.eros.ErosModel;
+import edu.jhuapl.near.util.GeometryUtil;
 import edu.jhuapl.near.util.SmallBodyCubes;
 import edu.jhuapl.near.util.FileUtil;
 import edu.jhuapl.near.util.NativeLibraryLoader;
@@ -46,6 +47,9 @@ public class NLRCubesGenerator
 		
 		double[] pt = new double[3];
 		
+		// If a point is farther than MAX_DIST from the asteroid, then throw it out.
+		final double MAX_DIST = 1.0;
+		
 		try
 		{
 		    int count = 1;
@@ -62,7 +66,14 @@ public class NLRCubesGenerator
         			pt[1] = Double.parseDouble(vals[15])/1000.0;
         			pt[2] = Double.parseDouble(vals[16])/1000.0;
 
-        			int cubeid = cubes.getCubeId(pt);
+        			double[] closestPt = erosModel.findClosestPoint(pt);
+        			
+        			double dist = GeometryUtil.distanceBetween(pt, closestPt);
+        			
+        			if (dist > MAX_DIST)
+        				continue;
+        			
+        			int cubeid = cubes.getCubeId(closestPt);
 
         			if (cubeid >= 0)
         			{

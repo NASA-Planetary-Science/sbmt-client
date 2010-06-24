@@ -44,7 +44,7 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
     private java.util.Date endDate = new GregorianCalendar(2000, 7, 1, 0, 0, 0).getTime();
     private JLabel endDateLabel;
     private JLabel startDateLabel;
-    private static final String START_DATE_LABEL_TEXT = "Start Date";
+    private static final String START_DATE_LABEL_TEXT = "Start Date:";
     private static final String END_DATE_LABEL_TEXT = "End Date:";
     private JSpinner startSpinner;
     private JSpinner endSpinner;
@@ -58,6 +58,8 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
 
     private JCheckBox iofdblCheckBox;
     private JCheckBox cifdblCheckBox;
+
+    private JComboBox hasLimbCheckBox;
 
     private JFormattedTextField fromDistanceTextField;
     private JFormattedTextField toDistanceTextField;
@@ -98,6 +100,10 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
     		final PickManager pickManager,
     		Renderer renderer) 
     {
+		JPanel topPanel = new JPanel();
+		topPanel.setLayout(new BoxLayout(topPanel,
+        		BoxLayout.PAGE_AXIS));
+		
     	setLayout(new BoxLayout(this,
         		BoxLayout.PAGE_AXIS));
     	
@@ -122,9 +128,10 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
         //                           new TitledBorder("Query Editor")));
 
         final JPanel msiSourcePanel = new JPanel();
-        JLabel msiSourceLabel = new JLabel("MSI Source");
+        JLabel msiSourceLabel = new JLabel("MSI Source:");
     	Object[] msiSourceOptions = {MSIImage.MSISource.PDS, MSIImage.MSISource.GASKELL};
     	msiSourceComboBox = new JComboBox(msiSourceOptions);
+    	//msiSourceComboBox.setMaximumSize(new Dimension(1000, 23));
     	msiSourcePanel.add(msiSourceLabel);
     	msiSourcePanel.add(msiSourceComboBox);
     	pane.add(msiSourcePanel);
@@ -230,6 +237,20 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
         iofcifPanel.add(iofdblCheckBox);
         iofcifPanel.add(Box.createHorizontalStrut(15));
         iofcifPanel.add(cifdblCheckBox);
+
+        iofcifPanel.add(Box.createHorizontalStrut(25));
+
+    	final JPanel hasLimbPanel = new JPanel();
+        hasLimbPanel.setLayout(new BoxLayout(hasLimbPanel,
+        		BoxLayout.LINE_AXIS));
+
+        final JLabel hasLimbLabel = new JLabel("Limb: ");
+    	Object[] hasLimbOptions = {"with or without", "with only", "without only"};
+        hasLimbCheckBox = new JComboBox(hasLimbOptions);
+        hasLimbCheckBox.setMaximumSize(new Dimension(150, 23));
+
+        hasLimbPanel.add(hasLimbLabel);
+        hasLimbPanel.add(hasLimbCheckBox);
 
         NumberFormat nf = NumberFormat.getNumberInstance();
         nf.setGroupingUsed(false);
@@ -339,6 +360,8 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
                 filter7CheckBox.setEnabled(!enable);
                 iofdblCheckBox.setEnabled(!enable);
                 cifdblCheckBox.setEnabled(!enable);
+                hasLimbLabel.setEnabled(!enable);
+                hasLimbCheckBox.setEnabled(!enable);
                 fromDistanceLabel.setEnabled(!enable);
                 fromDistanceTextField.setEnabled(!enable);
                 toDistanceLabel.setEnabled(!enable);
@@ -400,6 +423,7 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
 
         pane.add(filtersPanel);
         pane.add(iofcifPanel);
+        pane.add(hasLimbPanel);
         pane.add(distancePanel);
         pane.add(resolutionPanel);
         pane.add(incidencePanel);
@@ -410,7 +434,7 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
     	pane.add(selectRegionPanel);
     	pane.add(submitPanel);
         
-        this.add(pane);
+        topPanel.add(pane);
 
         
         
@@ -429,7 +453,8 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
         resultList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         resultList.addMouseListener(this);
         JScrollPane listScrollPane = new JScrollPane(resultList);
-
+        listScrollPane.setPreferredSize(new Dimension(300, 200));
+        
         //listScrollPane.setBorder(
         //       new CompoundBorder(BorderFactory.createEmptyBorder(9, 9, 9, 9), 
         //                           new TitledBorder("Query Results")));
@@ -451,7 +476,7 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
         		210, 220, 230, 240, 250
         		};
 		numberOfBoundariesComboBox = new JComboBox(options2);
-		numberOfBoundariesComboBox.setMaximumSize(new Dimension(150, 23));
+		numberOfBoundariesComboBox.setMaximumSize(new Dimension(100, 23));
 		
 		nextButton = new JButton(">");
         nextButton.setActionCommand(">");
@@ -541,8 +566,12 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
         
         resultsPanel.add(resultControlsPanel, BorderLayout.SOUTH);
 
-        add(resultsPanel);
+        topPanel.add(resultsPanel);
+
+        JScrollPane topScrollPane = new JScrollPane(topPanel);
         
+        add(topScrollPane);
+
     }
 
     public void actionPerformed(ActionEvent actionEvent)

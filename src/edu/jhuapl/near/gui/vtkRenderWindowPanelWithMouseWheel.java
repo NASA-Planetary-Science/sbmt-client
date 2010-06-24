@@ -4,6 +4,7 @@ import java.awt.event.*;
 import java.io.File;
 
 import vtk.vtkBMPWriter;
+import vtk.vtkCamera;
 import vtk.vtkJPEGWriter;
 import vtk.vtkPNGWriter;
 import vtk.vtkPNMWriter;
@@ -58,7 +59,72 @@ public class vtkRenderWindowPanelWithMouseWheel extends vtkRenderWindowPanel
 	{
 		// do nothing
 	}
-	
+
+	/*
+	public void keyPressed(KeyEvent e)
+	{
+		System.out.println(e);
+		if (ren.VisibleActorCount() == 0) return;
+		char keyChar = e.getKeyText(e.getKeyCode()).charAt(0);
+		
+
+		if ('x' == keyChar || 'y' == keyChar || 'z' == keyChar)
+		{
+			double[] bounds = new double[6];
+			ren.ComputeVisiblePropBounds(bounds);
+			lock();
+			vtkCamera cam = ren.GetActiveCamera();
+			cam.SetFocalPoint(0.0, 0.0, 0.0);
+
+			ctrlPressed = (e.getModifiers() & InputEvent.CTRL_MASK) == InputEvent.CTRL_MASK ? 1
+					: 0;
+			shiftPressed = (e.getModifiers() & InputEvent.SHIFT_MASK) == InputEvent.SHIFT_MASK ? 1
+					: 0;
+
+			if ('x' == keyChar && (ctrlPressed == 1 || shiftPressed == 1))
+			{
+				System.out.println(1);
+				cam.SetPosition(2.0*bounds[0], 0.0, 0.0);
+				cam.SetViewUp(0.0, 1.0, 0.0);
+			}
+			else if ('x' == keyChar)
+			{
+				System.out.println(2);
+				cam.SetPosition(2.0*bounds[1], 0.0, 0.0);
+				cam.SetViewUp(0.0, 1.0, 0.0);
+			}
+			else if ('y' == keyChar && (ctrlPressed == 1 || shiftPressed == 1))
+			{
+				cam.SetPosition(0.0, 2.0*bounds[2], 0.0);
+				cam.SetViewUp(1.0, 0.0, 0.0);
+			}
+			else if ('y' == keyChar)
+			{
+				cam.SetPosition(0.0, 2.0*bounds[3], 0.0);
+				cam.SetViewUp(1.0, 0.0, 0.0);
+			}
+			else if ('z' == keyChar && (ctrlPressed == 1 || shiftPressed == 1))
+			{
+				cam.SetPosition(0.0, 0.0, 2.0*bounds[4]);
+				cam.SetViewUp(0.0, 1.0, 0.0);
+			}
+			else if ('z' == keyChar)
+			{
+				cam.SetPosition(0.0, 0.0, 2.0*bounds[5]);
+				cam.SetViewUp(0.0, 1.0, 0.0);
+			}
+
+			unlock();
+			resetCameraClippingRange();
+			this.Render();
+		}
+		else
+		{
+			super.keyPressed(e);
+		}
+	}
+	*/
+	  
     public void saveToFile()
     {
         File file = ImageFileChooser.showSaveDialog(this, "Export to Image");
