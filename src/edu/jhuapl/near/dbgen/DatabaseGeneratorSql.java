@@ -235,7 +235,10 @@ public class DatabaseGeneratorSql
     		
     		if (res != erosModel.getModelResolution())
     		{
+    		    System.out.println("Changing resolution to " + res);
     			erosModel.setModelResolution(res);
+                image.Delete();
+    			image = new MSIImage(origFile, erosModel, msiSource);
         		image.getProperties();
     		}
     		
@@ -273,7 +276,6 @@ public class DatabaseGeneratorSql
     		System.out.println("maxEmission: " + image.getMaxEmission());
     		System.out.println("minPhase: " + image.getMinPhase());
     		System.out.println("maxPhase: " + image.getMaxPhase());
-    		System.out.println(" ");
 
             msiInsert.setInt(1, Integer.parseInt(origFile.getName().substring(2, 11)));
             msiInsert.setShort(2, Short.parseShort(yearStr));
@@ -296,10 +298,13 @@ public class DatabaseGeneratorSql
     		msiInsert.setDouble(19, image.getMaxPhase());
             
             msiInsert.executeUpdate();
+
             
             image.Delete();
             System.gc();
             System.out.println("deleted " + vtkGlobalJavaHash.GC());
+            System.out.println(" ");
+            System.out.println(" ");
     	}
     }
     
@@ -577,6 +582,8 @@ public class DatabaseGeneratorSql
     		
     		meanPlateSizes[i] = erosModel.computeLargestSmallestMeanEdgeLength()[2];
     	}
+
+    	erosModel.setModelResolution(0);
     }
     
 	private static int findOptimalResolution(MSIImage image)
@@ -586,6 +593,7 @@ public class DatabaseGeneratorSql
 		double vert = image.getMinimumVerticalPixelScale();
 		double pixelSize = Math.min(horiz, vert);
 		
+		System.out.println("pixel size " + pixelSize);
 		int numRes = erosModel.getNumberResolutionLevels();
     	for (int i=0; i<numRes; ++i)
     	{
@@ -603,7 +611,6 @@ public class DatabaseGeneratorSql
 	 */
 	public static void main(String[] args) throws IOException 
 	{
-		java.awt.Toolkit.getDefaultToolkit();
 		NativeLibraryLoader.loadVtkLibrariesLinuxNoX11();
 
 		erosModel = new ErosModel();

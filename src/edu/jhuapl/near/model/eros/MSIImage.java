@@ -213,6 +213,9 @@ public class MSIImage extends Model implements PropertyChangeListener
 		//FileCache.getFileFromServer(footprintFilename);
 
 		this.erosModel = eros;
+
+		erosModel.addPropertyChangeListener(this);
+	        
 		this.initialize(fitFile);
 	}
 	
@@ -240,8 +243,6 @@ public class MSIImage extends Model implements PropertyChangeListener
 		
 		// Set the filter name
 		filter = Integer.parseInt(fitFile.getName().substring(12,13));
-		
-		erosModel.addPropertyChangeListener(this);
 		
         Fits f = new Fits(filename);
         BasicHDU h = f.getHDU(0);
@@ -726,10 +727,10 @@ public class MSIImage extends Model implements PropertyChangeListener
 		startTime = start[0];
 		stopTime = stop[0];
 		
-        printpt(frustum1, "pds frustum1 ");
-        printpt(frustum2, "pds frustum2 ");
-        printpt(frustum3, "pds frustum3 ");
-        printpt(frustum4, "pds frustum4 ");
+//        printpt(frustum1, "pds frustum1 ");
+//        printpt(frustum2, "pds frustum2 ");
+//        printpt(frustum3, "pds frustum3 ");
+//        printpt(frustum4, "pds frustum4 ");
 	}
 
 	/**
@@ -848,10 +849,10 @@ public class MSIImage extends Model implements PropertyChangeListener
 				boresightDirection,
 				upVector);
 		
-        printpt(frustum1, "gas frustum1 ");
-        printpt(frustum2, "gas frustum2 ");
-        printpt(frustum3, "gas frustum3 ");
-        printpt(frustum4, "gas frustum4 ");
+//        printpt(frustum1, "gas frustum1 ");
+//        printpt(frustum2, "gas frustum2 ");
+//        printpt(frustum3, "gas frustum3 ");
+//        printpt(frustum4, "gas frustum4 ");
 	}
 	
     public HashMap<String, String> getProperties() throws IOException

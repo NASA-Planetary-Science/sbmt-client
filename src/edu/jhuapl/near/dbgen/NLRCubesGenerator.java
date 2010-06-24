@@ -21,14 +21,6 @@ public class NLRCubesGenerator
 {
 	public static void main(String[] args) 
 	{
-		javax.swing.SwingUtilities.invokeLater(new Runnable()
-        {
-        	public void run()
-        	{
-        		// do nothing
-        	}
-        });
-		
 		NativeLibraryLoader.loadVtkLibrariesLinuxNoX11();
 
 		ErosModel erosModel = new ErosModel();
@@ -43,7 +35,7 @@ public class NLRCubesGenerator
 			e2.printStackTrace();
 		}
 
-		SmallBodyCubes cubes = new SmallBodyCubes(erosModel, 1.0, 1.0, false);
+		SmallBodyCubes cubes = new SmallBodyCubes(erosModel, 1.0, 1.0, true);
 		
 		double[] pt = new double[3];
 		
@@ -90,7 +82,7 @@ public class NLRCubesGenerator
 		}
 		catch (Exception e)
 		{
-
+		    e.printStackTrace();
 		}
 	}
 }
