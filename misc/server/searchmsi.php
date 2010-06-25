@@ -22,6 +22,7 @@ $filterType5=$_POST['filterType5'] + 0;
 $filterType6=$_POST['filterType6'] + 0;
 $filterType7=$_POST['filterType7'] + 0;
 $cubesStr=$_POST['cubes'];
+$msiSource=$_POST['msiSource'];
 $limbType=$_POST['limbType'] + 0;
 
 $filterTypes = array();
@@ -72,8 +73,8 @@ $query .= "WHERE starttime <= " . $stopDate;
 $query .= " AND stoptime >= " . $startDate;
 $query .= " AND target_center_distance >= " . $minScDistance;
 $query .= " AND target_center_distance <= " . $maxScDistance;
-$query .= " AND horizontal_pixel_scale >= " . $minResolution;
-$query .= " AND horizontal_pixel_scale <= " . $maxResolution;
+$query .= " AND min_horizontal_pixel_scale <= " . $maxResolution;
+$query .= " AND max_horizontal_pixel_scale >= " . $minResolution;
 
 if ($iofdbl == 0)
 	$query .= " AND iofcif = 1";
