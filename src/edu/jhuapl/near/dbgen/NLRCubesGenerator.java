@@ -49,7 +49,12 @@ public class NLRCubesGenerator
 			{
 			    System.out.println("Begin processing file " + filename + " - " + count++ + " / " + nlrFiles.size());
 			    
-				ArrayList<String> lines = FileUtil.getFileLinesAsStringList(filename);
+			    ArrayList<String> lines = FileUtil.getFileLinesAsStringList(filename);
+			    
+			    int[] cubeIdOfPoints = new int[lines.size()];
+                cubeIdOfPoints[0] = -1;
+                cubeIdOfPoints[1] = -1;
+                
 				for (int i=2; i<lines.size(); ++i)
 				{
 					String[] vals = lines.get(i).trim().split("\\s+");
@@ -63,9 +68,13 @@ public class NLRCubesGenerator
         			double dist = GeometryUtil.distanceBetween(pt, closestPt);
         			
         			if (dist > MAX_DIST)
+        			{
+        			    cubeIdOfPoints[i] = -1;
         				continue;
+        			}
         			
         			int cubeid = cubes.getCubeId(closestPt);
+                    cubeIdOfPoints[i] = cubeid;
 
         			if (cubeid >= 0)
         			{
@@ -78,6 +87,15 @@ public class NLRCubesGenerator
             			out.close();
         			}
 				}
+				
+				// Save out the cube ids of each line to a new file
+                FileWriter fstream = new FileWriter(filename.substring(0, filename.length()-3)+ ".cubeids");
+                BufferedWriter out = new BufferedWriter(fstream);
+
+                for (int i=0; i<cubeIdOfPoints.length; ++i)
+                    out.write(String.valueOf(cubeIdOfPoints[i]) + "\n");
+                
+                out.close();
 			}
 		}
 		catch (Exception e)
