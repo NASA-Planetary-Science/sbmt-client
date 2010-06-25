@@ -6,11 +6,6 @@
  
  - Make NLR GUI more similar to MSI and NIS
     
- - Save LBL file when saving DDR. By default name should be same as original fit file
-   with _DDR.IMG suffix. 
-   
- - Fix bug with drawing lines
-
  - Disable ability to save and load from file while drawing a path
 
  - Improve lighting of shape model so as to better make out the topography.
@@ -18,6 +13,29 @@
    
  - Undo feature
  
- - overlay lat/lon grid
+ - overlay lat/lon labels when lat/lon grid is shown
  
+ - replace joda time with orekit's time handling. Will require regenerating the databases
+ 
+ - if an msi image was shown and then removed and then the resolution level changes, the msi
+   image not being shown will still recompute itself for the new resolution level. Prevent this
+   from happening.
+   
+ - reduce memory usage, especially when large models are shown.
+ 
+ - improve speed of intersecting a frustum with the asteroid, especially important for
+   large models. Possible things to consider:
+   1. ignore the largest connected component which consists of, say, at least 90% of the entire image
+   	  when doing the intersection calculations
+   2. run a vtkExtractPolyDataGeometry prior to vtkClipPolyData
+   
+ - modify the shape models so that a "seam" does not appear when texture mapping an image
+   to the entire model at once, which is what happened with Deimos
+   
+ - Add ability to load a new shape model at runtime in a new View
+ 
+ - fix problem where if you right click and create a popup menu, you continue to zoom in
+   and out
+   
+ - add ability to reorient the camera along any of the axes as requested by Carolyn
  
