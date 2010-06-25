@@ -39,3 +39,7 @@
    
  - add ability to reorient the camera along any of the axes as requested by Carolyn
  
+ - fix crash which occurs sometimes if you click with mouse on the renderer while
+   a resolution change is taking place
+   
+ 
