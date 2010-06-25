@@ -35,7 +35,7 @@ public class NLRCubesGenerator
 			e2.printStackTrace();
 		}
 
-		SmallBodyCubes cubes = new SmallBodyCubes(erosModel, 1.0, 1.0, true);
+		SmallBodyCubes cubes = new SmallBodyCubes(erosModel.getSmallBodyPolyData(), 1.0, 1.0, true);
 		
 		double[] pt = new double[3];
 		

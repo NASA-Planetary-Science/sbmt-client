@@ -133,11 +133,34 @@ public abstract class SmallBodyModel extends Model
 		//this.computeSurfaceArea();
 	}
 
+	private void initializeLowResData()
+	{
+        if (lowResPointLocator == null)
+        {
+            lowResSmallBodyPolyData = new vtkPolyData();
+            smallBodyReader.SetFileName(defaultModelFile.getAbsolutePath());
+            smallBodyReader.Update();
+
+            lowResSmallBodyPolyData.DeepCopy(smallBodyReader.GetOutput());
+            
+            lowResPointLocator = new vtkKdTreePointLocator();
+            lowResPointLocator.SetDataSet(lowResSmallBodyPolyData);
+            lowResPointLocator.BuildLocator();
+        }
+	}
+	
 	public vtkPolyData getSmallBodyPolyData()
 	{
 		return smallBodyPolyData;
 	}
 	
+    public vtkPolyData getLowResSmallBodyPolyData()
+    {
+        initializeLowResData();
+        
+        return smallBodyPolyData;
+    }
+    
 	public vtksbCellLocator getLocator()
 	{
 		return cellLocator;
@@ -146,8 +169,12 @@ public abstract class SmallBodyModel extends Model
 	public TreeSet<Integer> getIntersectingCubes(vtkPolyData polydata)
 	{
 		if (smallBodyCubes == null)
-			smallBodyCubes = new SmallBodyCubes(this, this.getIntersectingCubes());
-			
+		{
+			smallBodyCubes = new SmallBodyCubes(
+			        getLowResSmallBodyPolyData(),
+			        this.getIntersectingCubes());
+		}
+		
 		return smallBodyCubes.getIntersectingCubes(polydata);
 	}
 	
@@ -226,19 +253,8 @@ public abstract class SmallBodyModel extends Model
 			drawPolygon(center, radius, numberOfSides, outputInterior, outputBoundary);
 			return;
 		}
-		
-		if (lowResPointLocator == null)
-		{
-			lowResSmallBodyPolyData = new vtkPolyData();
-			smallBodyReader.SetFileName(defaultModelFile.getAbsolutePath());
-			smallBodyReader.Update();
 
-			lowResSmallBodyPolyData.DeepCopy(smallBodyReader.GetOutput());
-			
-			lowResPointLocator = new vtkKdTreePointLocator();
-			lowResPointLocator.SetDataSet(lowResSmallBodyPolyData);
-			lowResPointLocator.BuildLocator();
-		}
+		initializeLowResData();
 
 		PolyDataUtil.DrawPolygonOnPolyData.func(
 				lowResSmallBodyPolyData,

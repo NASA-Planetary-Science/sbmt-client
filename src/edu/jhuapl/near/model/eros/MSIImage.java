@@ -1297,6 +1297,12 @@ public class MSIImage extends Model implements PropertyChangeListener
 
 				if (result > 0)
 				{
+				    // If we're just trying to know if there is a limb, do not
+				    // compute the values of the backplane (It will crash since
+				    // we don't have normals of the asteroid itself)
+			        if (returnNullIfContainsLimb)
+			            continue;
+			        
 					//double[] closestPoint = intersectPoints.GetPoint(0);
 					//int closestCell = intersectCells.GetId(0);
 					double[] closestPoint = x;

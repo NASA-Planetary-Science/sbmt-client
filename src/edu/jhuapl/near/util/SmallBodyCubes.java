@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.TreeSet;
 
 import vtk.vtkPolyData;
-import edu.jhuapl.near.model.SmallBodyModel;
 
 /**
  * This class is used to subdivide the bounding box of a shape model
@@ -27,12 +26,12 @@ public class SmallBodyCubes
 	 * and <tt>buffer</tt> is added to all sides of the bounding box of the model. Cubes
 	 * that do not intersect the asteroid at all are removed.
 	 * 
-	 * @param smallBodyModel
+	 * @param smallBodyPolyData
 	 * @param cubeSize
 	 * @param buffer
 	 */
 	public SmallBodyCubes(
-	        SmallBodyModel smallBodyModel,
+	        vtkPolyData smallBodyPolyData,
 	        double cubeSize,
 	        double buffer,
 	        boolean removeEmptyCubes)
@@ -40,25 +39,26 @@ public class SmallBodyCubes
 		this.cubeSize = cubeSize;
 		this.buffer = buffer;
 
-		initialize(smallBodyModel);
+		initialize(smallBodyPolyData);
 		
 		if (removeEmptyCubes)
-		    removeEmptyCubes(smallBodyModel);
+		    removeEmptyCubes(smallBodyPolyData);
 	}
 	
 	/**
 	 * Create a cube set structure for the given model using a default value of 1 for the
 	 * cube size and a default value of 0.01 for the buffer. If <tt>cubesToKeep</tt> is not
-	 * null, then only those cubes are kept by this class, all others are discarded.
+	 * null, then only those cubes are kept by this class, all others are discarded. If
+	 * <tt>cubesToKeep</tt> is null, then we compute the empty cubes and discard those. 
 	 *  
-	 * @param smallBodyModel
+	 * @param smallBodyPolyData
 	 * @param cubesToKeep
 	 */
 	public SmallBodyCubes(
-	        SmallBodyModel smallBodyModel,
+	        vtkPolyData smallBodyPolyData,
 	        int[] cubesToKeep)
 	{
-	    initialize(smallBodyModel);
+	    initialize(smallBodyPolyData);
 		
 		if (cubesToKeep != null)
 		{
@@ -69,11 +69,16 @@ public class SmallBodyCubes
 		    }
 		    allCubes = tmpCubes;
 		}
+		else
+		{
+		    removeEmptyCubes(smallBodyPolyData);
+		}
 	}
 	
-	private void initialize(SmallBodyModel smallBodyModel)
+	private void initialize(vtkPolyData smallBodyPolyData)
 	{
-		boundingBox = smallBodyModel.getBoundingBox();
+	    smallBodyPolyData.ComputeBounds();
+        boundingBox = new BoundingBox(smallBodyPolyData.GetBounds());
 
 		boundingBox.xmax += buffer;
 		boundingBox.xmin -= buffer;
@@ -112,7 +117,7 @@ public class SmallBodyCubes
 		}
 	}
 	
-	private void removeEmptyCubes(SmallBodyModel smallBodyModel)
+	private void removeEmptyCubes(vtkPolyData smallBodyPolyData)
 	{
 	    System.out.println("numCubesX " + numCubesX);
 	    System.out.println("numCubesY " + numCubesY);
@@ -123,7 +128,7 @@ public class SmallBodyCubes
 
 	    // Remove from allCubes all cubes that do not intersect the asteroid
 	    long t0 = System.currentTimeMillis();
-	    TreeSet<Integer> intersectingCubes = getIntersectingCubes(smallBodyModel.getSmallBodyPolyData());
+	    TreeSet<Integer> intersectingCubes = getIntersectingCubes(smallBodyPolyData);
 	    System.out.println("Time elapsed:  " + ((double)System.currentTimeMillis()-t0)/1000.0);
 
 	    ArrayList<BoundingBox> tmpCubes = new ArrayList<BoundingBox>();
