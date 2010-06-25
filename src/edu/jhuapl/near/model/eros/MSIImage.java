@@ -1264,6 +1264,18 @@ public class MSIImage extends Model implements PropertyChangeListener
 
 			for (int j=0; j<IMAGE_WIDTH; ++j)
 			{
+                // If we're just trying to know if there is a limb, we
+			    // only need to do intersections around the boundary of
+			    // the backplane, not the interior pixels.
+                if (returnNullIfContainsLimb)
+                {
+                    if (j == 1 && i > 0 && i < IMAGE_HEIGHT-1)
+                    {
+                        j = IMAGE_WIDTH-2;
+                        continue;
+                    }
+                }
+
 				double fracWidth = ((double)j / (double)(IMAGE_WIDTH-1));
 				double[] vec = {
 						left[0] + fracWidth*vec12[0],

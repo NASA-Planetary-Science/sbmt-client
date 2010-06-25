@@ -103,8 +103,8 @@ public class MSIBoundaryCollection extends Model implements PropertyChangeListen
 
 			vtkGenericCell cell = new vtkGenericCell();
 			
-			final int IMAGE_WIDTH = 537;
-			final int IMAGE_HEIGHT = 412;
+			final int IMAGE_WIDTH = MSIImage.IMAGE_WIDTH;
+			final int IMAGE_HEIGHT = MSIImage.IMAGE_HEIGHT;
 
 			int count = 0;
 			
