@@ -195,6 +195,7 @@ public class DatabaseGeneratorSql
             String msiTableName,
             MSIImage.MSISource msiSource) throws IOException, SQLException, FitsException
     {
+		erosModel.setModelResolution(0);
     	int count = 0;
     	
     	for (String filename : msiFiles)
@@ -582,8 +583,6 @@ public class DatabaseGeneratorSql
     		
     		meanPlateSizes[i] = erosModel.computeLargestSmallestMeanEdgeLength()[2];
     	}
-
-    	erosModel.setModelResolution(0);
     }
     
 	private static int findOptimalResolution(MSIImage image)
@@ -619,7 +618,7 @@ public class DatabaseGeneratorSql
 		
 		String msiFileList=args[0];
 		String nisFileList=args[1];
-
+		int mode = Integer.parseInt(args[2]);
 		
 		ArrayList<String> msiFiles = null;
 		ArrayList<String> nisFiles = null;
@@ -640,23 +639,34 @@ public class DatabaseGeneratorSql
             return;
         }
 
-		
-        //createMSITables(MsiImagesPdsTable);
-        createMSITables(MsiImagesGaskellTable);
-        //createMSITablesCubes(MsiCubesPdsTable);
-        //createMSITablesCubes(MsiCubesGaskellTable);
-        //createNISTables();
-		//createNISTablesCubes();
+		if (mode == 1 || mode == 0)
+			createMSITables(MsiImagesPdsTable);
+		else if (mode == 2 || mode == 0)
+			createMSITables(MsiImagesGaskellTable);
+		else if (mode == 3 || mode == 0)
+			createMSITablesCubes(MsiCubesPdsTable);
+		else if (mode == 4 || mode == 0)
+			createMSITablesCubes(MsiCubesGaskellTable);
+		else if (mode == 5)
+			createNISTables();
+		else if (mode == 6)
+			createNISTablesCubes();
 
 		
 		try 
 		{
-		    //populateMSITables(msiFiles, MsiImagesPdsTable, MSIImage.MSISource.PDS);
-			populateMSITables(msiFiles, MsiImagesGaskellTable, MSIImage.MSISource.GASKELL);
-            //populateMSITablesCubes(msiFiles, MsiCubesPdsTable, MSIImage.MSISource.PDS);
-            //populateMSITablesCubes(msiFiles, MsiCubesGaskellTable, MSIImage.MSISource.GASKELL);
-            //populateNISTables(nisFiles);
-			//populateNISTablesCubes(nisFiles);
+			if (mode == 1 || mode == 0)
+				populateMSITables(msiFiles, MsiImagesPdsTable, MSIImage.MSISource.PDS);
+			else if (mode == 2 || mode == 0)
+				populateMSITables(msiFiles, MsiImagesGaskellTable, MSIImage.MSISource.GASKELL);
+			else if (mode == 3 || mode == 0)
+				populateMSITablesCubes(msiFiles, MsiCubesPdsTable, MSIImage.MSISource.PDS);
+			else if (mode == 4 || mode == 0)
+				populateMSITablesCubes(msiFiles, MsiCubesGaskellTable, MSIImage.MSISource.GASKELL);
+			else if (mode == 5)
+				populateNISTables(nisFiles);
+			else if (mode == 6)
+				populateNISTablesCubes(nisFiles);
 		}
 		catch (Exception e1) {
 			e1.printStackTrace();

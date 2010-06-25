@@ -582,10 +582,10 @@ public class MSIImage extends Model implements PropertyChangeListener
 	}
 	*/
 
-	private static void printpt(double[] p, String s)
-	{
-	    System.out.println(s + " " + p[0] + " " + p[1] + " " + p[2]);
-	}
+//	private static void printpt(double[] p, String s)
+//	{
+//	    System.out.println(s + " " + p[0] + " " + p[1] + " " + p[2]);
+//	}
 
 	/**
 	 * 	Make this static so it can be called without needing access
@@ -1189,15 +1189,26 @@ public class MSIImage extends Model implements PropertyChangeListener
 		int numLayers = 12;
 		float[] data = new float[numLayers*IMAGE_HEIGHT*IMAGE_WIDTH];
 
-		//vtkCellLocator cellLocator = new vtkCellLocator();
-		vtksbCellLocator cellLocator = new vtksbCellLocator();
-        cellLocator.SetDataSet(footprint);
-        cellLocator.CacheCellBoundsOn();
-        cellLocator.AutomaticOn();
-        //cellLocator.SetMaxLevel(10);
-        //cellLocator.SetNumberOfCellsPerNode(15);
-        cellLocator.BuildLocator();
-
+		// If we are searching for a limb, use the locator of eros itself
+		// since the locator of the footprint might not intersect along the boundary
+		// even if there is no limb.
+		vtksbCellLocator cellLocator = null;
+		if (returnNullIfContainsLimb)
+		{
+			cellLocator = erosModel.getLocator();
+		}
+		else
+		{
+			//vtkCellLocator cellLocator = new vtkCellLocator();
+			cellLocator = new vtksbCellLocator();
+			cellLocator.SetDataSet(footprint);
+			cellLocator.CacheCellBoundsOn();
+			cellLocator.AutomaticOn();
+			//cellLocator.SetMaxLevel(10);
+			//cellLocator.SetNumberOfCellsPerNode(15);
+			cellLocator.BuildLocator();
+		}
+		
         //vtkPoints intersectPoints = new vtkPoints();
         //vtkIdList intersectCells = new vtkIdList();
 		vtkGenericCell cell = new vtkGenericCell();

@@ -199,7 +199,8 @@ public class Query
 			double fromPhase,
 			double toPhase,
 			TreeSet<Integer> cubeList,
-			MSIImage.MSISource msiSource) 
+			MSIImage.MSISource msiSource,
+			int limbType) 
 	{
 		ArrayList<String> matchedImages = new ArrayList<String>();
 		ArrayList<ArrayList<String>> results = null;
@@ -293,6 +294,7 @@ public class Query
 				args.put("maxEmission", String.valueOf(maxEmission));
 				args.put("minPhase", String.valueOf(minPhase));
 				args.put("maxPhase", String.valueOf(maxPhase));
+				args.put("limbType", String.valueOf(limbType));
 				args.put("iofdbl", iofdbl==true ? "1" : "0");
 				args.put("cifdbl", cifdbl==true ? "1" : "0");
 				for (int i=1; i<=7; ++i)

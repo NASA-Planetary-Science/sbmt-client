@@ -59,7 +59,7 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
     private JCheckBox iofdblCheckBox;
     private JCheckBox cifdblCheckBox;
 
-    private JComboBox hasLimbCheckBox;
+    private JComboBox hasLimbComboBox;
 
     private JFormattedTextField fromDistanceTextField;
     private JFormattedTextField toDistanceTextField;
@@ -246,11 +246,11 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
 
         final JLabel hasLimbLabel = new JLabel("Limb: ");
     	Object[] hasLimbOptions = {"with or without", "with only", "without only"};
-        hasLimbCheckBox = new JComboBox(hasLimbOptions);
-        hasLimbCheckBox.setMaximumSize(new Dimension(150, 23));
+        hasLimbComboBox = new JComboBox(hasLimbOptions);
+        hasLimbComboBox.setMaximumSize(new Dimension(150, 23));
 
         hasLimbPanel.add(hasLimbLabel);
-        hasLimbPanel.add(hasLimbCheckBox);
+        hasLimbPanel.add(hasLimbComboBox);
 
         NumberFormat nf = NumberFormat.getNumberInstance();
         nf.setGroupingUsed(false);
@@ -361,7 +361,7 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
                 iofdblCheckBox.setEnabled(!enable);
                 cifdblCheckBox.setEnabled(!enable);
                 hasLimbLabel.setEnabled(!enable);
-                hasLimbCheckBox.setEnabled(!enable);
+                hasLimbComboBox.setEnabled(!enable);
                 fromDistanceLabel.setEnabled(!enable);
                 fromDistanceTextField.setEnabled(!enable);
                 toDistanceLabel.setEnabled(!enable);
@@ -652,7 +652,7 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
 			    msiSource = MSIImage.MSISource.PDS;
 			else
 			    msiSource = MSIImage.MSISource.GASKELL;
-			
+			System.out.println(msiSource.toString());
         	ArrayList<String> results = Query.getInstance().runQuery(
         			Query.Datatype.MSI,
         			startDateJoda, 
@@ -673,7 +673,8 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
         			Double.parseDouble(fromPhaseTextField.getText()),
         			Double.parseDouble(toPhaseTextField.getText()),
         			cubeList,
-        			msiSource);
+        			msiSource,
+        			hasLimbComboBox.getSelectedIndex());
 
             if (msiSourceComboBox.getSelectedItem().equals(MSIImage.MSISource.PDS))
                 msiSourceOfLastQuery = MSIImage.MSISource.PDS;

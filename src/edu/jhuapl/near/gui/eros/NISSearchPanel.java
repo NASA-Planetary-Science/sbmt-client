@@ -559,7 +559,8 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
         			Double.parseDouble(fromPhaseTextField.getText()),
         			Double.parseDouble(toPhaseTextField.getText()),
         			cubeList,
-        			null);
+        			null,
+        			-1);
 
         	setNISResults(results);
         }

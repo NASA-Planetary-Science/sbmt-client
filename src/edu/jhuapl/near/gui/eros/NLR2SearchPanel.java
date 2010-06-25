@@ -6,16 +6,20 @@ import java.util.*;
 import javax.swing.*;
 import javax.swing.event.*;
 
+import vtk.vtkPolyData;
+
 import net.miginfocom.swing.MigLayout;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.event.*;
 
 import com.jidesoft.swing.RangeSlider;
 
 import edu.jhuapl.near.gui.RadialOffsetChanger;
 import edu.jhuapl.near.model.RegularPolygonModel;
+import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.eros.ErosModelManager;
 import edu.jhuapl.near.model.eros.NLRDataCollection;
 import edu.jhuapl.near.model.eros.NLRDataPerDay;
@@ -28,7 +32,7 @@ public class NLR2SearchPanel extends JPanel implements ListSelectionListener, Ac
 {
 	private final String NLR_REMOVE_ALL_BUTTON_TEXT = "Remove All NLR Data";
 	
-//    private final ModelManager modelManager;
+    private final ErosModelManager modelManager;
     private NLRDataCollection nlrModel;
     private JList resultList;
     private DefaultListModel nlrResultListModel;
@@ -102,7 +106,7 @@ public class NLR2SearchPanel extends JPanel implements ListSelectionListener, Ac
     	setLayout(new BoxLayout(this,
         		BoxLayout.PAGE_AXIS));
     	
-    	//this.modelManager = modelManager;
+    	this.modelManager = modelManager;
     	this.nlrModel = (NLRDataCollection)modelManager.getModel(ErosModelManager.NLR_DATA);
     	
         JPanel pane = new JPanel();
@@ -329,8 +333,28 @@ public class NLR2SearchPanel extends JPanel implements ListSelectionListener, Ac
 
     public void actionPerformed(ActionEvent e)
     {
-        // TODO Auto-generated method stub
-        
+		TreeSet<Integer> cubeList = null;
+		RegularPolygonModel selectionModel = (RegularPolygonModel)modelManager.getModel(ErosModelManager.CIRCLE_SELECTION);
+		SmallBodyModel erosModel = (SmallBodyModel)modelManager.getModel(ErosModelManager.EROS);
+		if (selectionModel.getNumberOfStructures() > 0)
+		{
+			RegularPolygonModel.RegularPolygon region = (RegularPolygonModel.RegularPolygon)selectionModel.getStructure(0);
+			
+			// Always use the lowest resolution model for getting the intersection cubes list.
+			// Therefore, if the selection region was created using a higher resolution model,
+			// we need to recompute the selection region using the low res model.
+			if (erosModel.getModelResolution() > 0)
+			{
+				vtkPolyData interiorPoly = new vtkPolyData();
+				erosModel.drawPolygonLowRes(region.center, region.radius, region.numberOfSides, interiorPoly, null);
+				cubeList = erosModel.getIntersectingCubes(interiorPoly);
+			}
+			else
+			{
+				cubeList = erosModel.getIntersectingCubes(region.interiorPolyData);
+			}
+		}
+
     }
 
 }

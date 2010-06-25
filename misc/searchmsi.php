@@ -22,6 +22,7 @@ $filterType5=$_POST['filterType5'] + 0;
 $filterType6=$_POST['filterType6'] + 0;
 $filterType7=$_POST['filterType7'] + 0;
 $cubesStr=$_POST['cubes'];
+$limbType=$_POST['limbType'] + 0;
 
 $filterTypes = array();
 if ($filterType1 == 1)
@@ -45,16 +46,27 @@ $password="n3ar!usr";
 $database="near";
 $host="sd-mysql.jhuapl.edu:3306";
 
+if (substr($msiSource, 0, 3) == "PDS")
+{
+	$msiimages="msiimages";
+	$msicubes="msicubes";
+}
+else
+{
+	$msiimages="msiimages_gaskell";
+	$msicubes="msicubes_gaskell";
+}
+
 $link = mysql_connect($host,$username,$password);
 if (!$link) {
     die('Could not connect: ' . mysql_error());
 }
 @mysql_select_db($database) or die("died!");
 
-$query = "SELECT DISTINCT msiimages.id, year, day, filter, iofcif FROM msiimages ";
+$query = "SELECT DISTINCT $msiimages.id, year, day, filter, iofcif FROM $msiimages ";
 if (strlen($cubesStr) > 0)
 {
-	$query .= " JOIN msicubes ON msiimages.id = msicubes.imageid ";
+	$query .= " JOIN $msicubes ON $msiimages.id = $msicubes.imageid ";
 }
 $query .= "WHERE starttime <= " . $stopDate;
 $query .= " AND stoptime >= " . $startDate;
@@ -80,6 +92,11 @@ if (count($filterTypes) > 0)
 	$query .= " ) ";
 }
 
+if ($limbType == 1)
+	$query .= " AND has_limb = 1";
+elseif ($limbType == 2)
+	$query .= " AND has_limb = 0";
+
 $query .= " AND minincidence <= " . $maxIncidence;
 $query .= " AND maxincidence >= " . $minIncidence;
 $query .= " AND minemission <= " . $maxEmission;
@@ -92,7 +109,7 @@ if (strlen($cubesStr) > 0)
 	// Split up the cubes list
 	$cubes = explode(",", $cubesStr);
 
-	$query .= " AND msicubes.cubeid IN (";
+	$query .= " AND $msicubes.cubeid IN (";
 
 	for ($i = 0; $i < count($cubes); $i++)
 	{
