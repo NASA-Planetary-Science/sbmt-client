@@ -30,7 +30,7 @@ public class ErosModelManager extends ModelManager
 	private ErosModel erosModel;
 	private MSIBoundaryCollection msiBoundaries;
 	private NISSpectraCollection nisSpectra;
-	private NLRDataCollection nlrData;
+	private NLRDataCollection2 nlrData;
 	private LineModel lineStructuresModel;
 	private CircleModel circleStructuresModel;
 	private PointModel pointStructuresModel;
@@ -44,7 +44,7 @@ public class ErosModelManager extends ModelManager
     	msiImages = new MSIImageCollection(erosModel);
     	msiBoundaries = new MSIBoundaryCollection(erosModel);
     	nisSpectra = new NISSpectraCollection(erosModel);
-    	nlrData = new NLRDataCollection();
+    	nlrData = new NLRDataCollection2(erosModel);
     	lineStructuresModel = new LineModel(erosModel);
     	circleStructuresModel = new CircleModel(erosModel);
     	pointStructuresModel = new PointModel(erosModel);

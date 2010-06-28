@@ -2,6 +2,7 @@ package edu.jhuapl.near.gui.eros;
 
 import java.io.IOException;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import javax.swing.*;
@@ -27,7 +28,7 @@ import edu.jhuapl.near.pick.PickManager.PickMode;
 
 public class NLR2SearchPanel extends JPanel implements ActionListener
 {
-	private final String NLR_REMOVE_ALL_BUTTON_TEXT = "Remove All NLR Data";
+	private final String NLR_REMOVE_ALL_BUTTON_TEXT = "Clear Data";
 	
     private final ErosModelManager modelManager;
     private NLRDataCollection2 nlrModel;
@@ -49,22 +50,28 @@ public class NLR2SearchPanel extends JPanel implements ActionListener
     private TreeSet<Integer> cubeList = new TreeSet<Integer>();
     private JComboBox shownResultsShowComboBox;
     private PickManager pickManager;
-    
+    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MMM-d HH:mm:ss.SSS", Locale.US);
+
     private enum DisplayedResultsOptions
     {
-    	ALL              ("all",              NLRMaskType.NONE,        -1.0),
-    	NEXT_POINT       ("next point",       NLRMaskType.BY_NUMBER,   1.0),
-    	NEXT_10_POINTS   ("next 10 points",   NLRMaskType.BY_NUMBER,   10.0),
-    	NEXT_100_POINTS  ("next 100 points",  NLRMaskType.BY_NUMBER,   100.0),
-    	NEXT_1000_POINTS ("next 1000 points", NLRMaskType.BY_NUMBER,   1000.0),
-    	NEXT_SECOND      ("next second",      NLRMaskType.BY_TIME,     1),
-    	NEXT_MINUTE      ("next minute",      NLRMaskType.BY_TIME,     60),
-    	NEXT_HOUR        ("next hour",        NLRMaskType.BY_TIME,     3600),
-    	NEXT_DAY         ("next day",         NLRMaskType.BY_TIME,     86400),
-    	NEXT_METER       ("next meter",       NLRMaskType.BY_DISTANCE, 0.001),
-    	NEXT_10_METERS   ("next 10 meters",   NLRMaskType.BY_DISTANCE, 0.01),
-    	NEXT_100_METERS  ("next 100 meters",  NLRMaskType.BY_DISTANCE, 0.1),
-    	NEXT_1000_METERS ("next kilometer",   NLRMaskType.BY_DISTANCE, 1.0);
+    	ALL                 ("all",            NLRMaskType.NONE,        -1.0),
+    	NEXT_POINT          ("1 point",        NLRMaskType.BY_NUMBER,   1.0),
+    	NEXT_10_POINTS      ("10 points",      NLRMaskType.BY_NUMBER,   10.0),
+    	NEXT_100_POINTS     ("100 points",     NLRMaskType.BY_NUMBER,   100.0),
+    	NEXT_1000_POINTS    ("1000 points",    NLRMaskType.BY_NUMBER,   1000.0),
+    	NEXT_SECOND         ("1 second",       NLRMaskType.BY_TIME,     1),
+    	NEXT_MINUTE         ("1 minute",       NLRMaskType.BY_TIME,     60),
+    	NEXT_HOUR           ("1 hour",         NLRMaskType.BY_TIME,     3600),
+        NEXT_12_HOURS       ("12 hours",       NLRMaskType.BY_TIME,     43200),
+    	NEXT_DAY            ("1 day",          NLRMaskType.BY_TIME,     86400),
+    	NEXT_METER          ("1 meter",        NLRMaskType.BY_DISTANCE, 0.001),
+    	NEXT_10_METERS      ("10 meters",      NLRMaskType.BY_DISTANCE, 0.01),
+    	NEXT_100_METERS     ("100 meters",     NLRMaskType.BY_DISTANCE, 0.1),
+    	NEXT_KILOMETER      ("1 kilometer",    NLRMaskType.BY_DISTANCE, 1.0),
+        NEXT_5_KILOMETERS   ("5 kilometers",   NLRMaskType.BY_DISTANCE, 5.0),
+        NEXT_10_KILOMETERS  ("10 kilometers",  NLRMaskType.BY_DISTANCE, 10.0),
+        NEXT_50_KILOMETERS  ("50 kilometers",  NLRMaskType.BY_DISTANCE, 50.0),
+        NEXT_100_KILOMETERS ("100 kilometers", NLRMaskType.BY_DISTANCE, 100.0);
     
     	private final String name;
     	private final NLRMaskType type;
@@ -180,13 +187,14 @@ public class NLR2SearchPanel extends JPanel implements ActionListener
             {
                 RegularPolygonModel selectionModel = (RegularPolygonModel)modelManager.getModel(ErosModelManager.CIRCLE_SELECTION);
                 selectionModel.removeAllStructures();
+                cubeList.clear();
             }
         });
         selectRegionPanel.add(clearRegionButton);
 
         final JPanel submitPanel = new JPanel();
         //panel.setBorder(BorderFactory.createEmptyBorder(9, 9, 9, 9));
-        JButton submitButton = new JButton("Search");
+        JButton submitButton = new JButton("Show Data");
         submitButton.setEnabled(true);
         submitButton.addActionListener(this);
 
@@ -196,7 +204,7 @@ public class NLR2SearchPanel extends JPanel implements ActionListener
         pane.add(submitPanel, "align center");
 
 		resultsLabel = new JLabel("<html><br><br></html>");
-		resultsLabel.setPreferredSize(new Dimension(250, 80));
+		resultsLabel.setPreferredSize(new Dimension(300, 200));
 		resultsLabel.setBorder(BorderFactory.createEtchedBorder());
 		
         removeAllButton = new JButton(NLR_REMOVE_ALL_BUTTON_TEXT);
@@ -228,7 +236,7 @@ public class NLR2SearchPanel extends JPanel implements ActionListener
         {
 			public void actionPerformed(ActionEvent e) 
 			{
-				showData(1);
+				showData(1, false);
 			}
         });
         nextButton.setEnabled(true);
@@ -239,7 +247,7 @@ public class NLR2SearchPanel extends JPanel implements ActionListener
         {
 			public void actionPerformed(ActionEvent e) 
 			{
-				showData(-1);
+				showData(-1, false);
 			}
         });
         prevButton.setEnabled(true);
@@ -290,10 +298,10 @@ public class NLR2SearchPanel extends JPanel implements ActionListener
 			}
 		}
 
-		showData(1);
+		showData(1, true);
     }
 
-    private void showData(int i)
+    private void showData(int direction, boolean reset)
 	{
     	DisplayedResultsOptions option = (DisplayedResultsOptions)shownResultsShowComboBox.getSelectedItem();
     	
@@ -304,7 +312,7 @@ public class NLR2SearchPanel extends JPanel implements ActionListener
 
     	try
 		{
-			nlrModel.setNlrData(startCal, stopCal, cubeList, option.getType(), i*option.getValue());
+			nlrModel.setNlrData(startCal, stopCal, cubeList, option.getType(), direction*option.getValue(), reset);
 		}
 		catch (IOException e)
 		{
@@ -316,8 +324,25 @@ public class NLR2SearchPanel extends JPanel implements ActionListener
 		}
 
 		int[] range = nlrModel.getMaskedPointRange();
-		resultsLabel.setText("<html>" + nlrModel.getNumberOfPoints() + " points matched<br>" +
-				"Showing points " + range[0] + " through " + range[1] + "<br></html>");
+
+        String resultsText = 
+            "<html>" + nlrModel.getNumberOfPoints() + " points matched<br><br>";
+        
+        if (nlrModel.getNumberOfPoints() > 0)
+        {
+            long t0 = nlrModel.getTimeOfPoint(range[0]);
+            long t1 = nlrModel.getTimeOfPoint(range[1]);
+
+            resultsText += "Showing points " + (range[0]+1) + " through " + (range[1]+1) + ", " +
+            " from " + sdf.format(new Date(t0)) + " until " + sdf.format(new Date(t1)) + "<br><br>" +
+            "Number of points shown: " + (range[1] - range[0] + 1) + "<br>" +
+            "Time range: " + ((double)(t1-t0)/1000.0) + " seconds<br>" +
+            "Distance: " + (float)nlrModel.getLengthOfMaskedPoints() + " km";
+        }
+        
+        resultsText += "</html>";
+        
+        resultsLabel.setText(resultsText);
 	}
 
 }

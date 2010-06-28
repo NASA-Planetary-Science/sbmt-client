@@ -26,7 +26,7 @@ public class NLRDataCollection2 extends Model
 	private vtkPolyData polydata;
 	private ArrayList<NLRPoint> originalPoints = new ArrayList<NLRPoint>();
     private ArrayList<vtkProp> actors = new ArrayList<vtkProp>();
-	private vtkGeometryFilter geometryFilter;
+    private vtkGeometryFilter geometryFilter;
     private vtkPolyDataMapper pointsMapper;
     private vtkActor actor;
 	private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-DDD'T'HH:mm:ss.SSS", Locale.US);
@@ -42,10 +42,10 @@ public class NLRDataCollection2 extends Model
 	private ErosModel erosModel;
 	private SmallBodyCubes smallBodyCubes;
 
-	private int currentPointId = 0;
-	private int firstPointShown = 0;
-	private int lastPointShown = 0;
+	private int firstPointShown = -1;
+	private int lastPointShown = -1;
 
+	private boolean needToResetMask = true;
 	
 	public enum NLRMaskType
 	{
@@ -99,7 +99,8 @@ public class NLRDataCollection2 extends Model
 			GregorianCalendar stopDate,
 			TreeSet<Integer> cubeList,
 			NLRMaskType maskType,
-			double maskValue) throws IOException, ParseException
+			double maskValue,
+			boolean reset) throws IOException, ParseException
 	{
 		if (!startDate.equals(this.startDate) ||
 				!stopDate.equals(this.stopDate) ||
@@ -108,7 +109,7 @@ public class NLRDataCollection2 extends Model
 			loadNlrData(startDate, stopDate, cubeList);
 		}
 		
-		applyMask(maskType, maskValue);
+		applyMask(maskType, maskValue, reset);
 		
 		geometryFilter.SetPointMinimum(firstPointShown);
 		geometryFilter.SetPointMaximum(lastPointShown);
@@ -259,6 +260,10 @@ public class NLRDataCollection2 extends Model
 						continue;
 					}
 					
+					// don't include outliers
+					if (Integer.valueOf(linescubes.get(i)) == -1)
+					    continue;
+					
 					double[] point = {
 							Double.parseDouble(vals[14])/1000.0,
 							Double.parseDouble(vals[15])/1000.0,
@@ -315,84 +320,150 @@ public class NLRDataCollection2 extends Model
 		}
 	}
 	
-	private void applyMask(NLRMaskType maskType, double maskValue)
+	private void applyMask(NLRMaskType maskType, double maskValue, boolean reset)
 	{
-		if ( (maskValue >= 0 && lastPointShown  >= polydata.GetNumberOfPoints()-1) ||
-			 (maskValue <  0 && firstPointShown <= 0) )
+        int totalNumberPoints = originalPoints.size();
+
+        if (reset || needToResetMask)
+        {
+            // If we are resetting the mask, make sure maskValue is positive
+            if (maskValue < 0)
+                maskValue = -maskValue;
+        }
+        
+        if (maskType == NLRMaskType.NONE)
+        {
+            firstPointShown = 0;
+            lastPointShown = totalNumberPoints - 1;
+            return;
+        }
+
+        if ( reset == false && needToResetMask == false &&
+                ( (maskValue >= 0 && lastPointShown  >= totalNumberPoints-1) ||
+                  (maskValue <  0 && firstPointShown <= 0) ) )
 		{
 			return;
 		}
 
-		if (maskType == NLRMaskType.NONE)
-		{
-			firstPointShown = 0;
-			lastPointShown = polydata.GetNumberOfPoints() - 1;
-		}
-		else if (maskType == NLRMaskType.BY_NUMBER)
+        if (maskType == NLRMaskType.BY_NUMBER)
 		{
 			if (maskValue >= 0)
 			{
-				firstPointShown = lastPointShown + 1;
-				lastPointShown = lastPointShown + (int)maskValue - 1;
-				if (lastPointShown > polydata.GetNumberOfPoints()-1)
-					lastPointShown = polydata.GetNumberOfPoints()-1;
+			    if (reset || needToResetMask)
+			    {
+			        firstPointShown = 0;
+			        lastPointShown = (int)maskValue - 1;
+			    }
+			    else
+			    {
+			        firstPointShown = lastPointShown + 1;
+			        lastPointShown = lastPointShown + (int)maskValue;
+			    }
+				if (lastPointShown > totalNumberPoints-1)
+					lastPointShown = totalNumberPoints-1;
 			}
 			else
 			{
 				lastPointShown = firstPointShown - 1;
-				firstPointShown = firstPointShown + (int)maskValue - 1;
+				firstPointShown = firstPointShown + (int)maskValue;
 				if (firstPointShown < 0)
 					firstPointShown = 0;
 			}
 		}
 		else if (maskType == NLRMaskType.BY_TIME)
 		{
-			int totalNumberPoints = polydata.GetNumberOfPoints();
+			// Find the last point ahead (or behind) the current shown points which
+			// is within the value specified by maskValue of the last (first) point shown
 
-			// Find the last point ahead (or behind) the current point which
-			// is within the value specified by maskValue of the currentPoint
-			long currentTime = originalPoints.get(currentPointId).time;
-			long value = 1000 * (long)maskValue;
-			int nextPointId = currentPointId;
+			long milliseconds = 1000 * (long)maskValue;
+			long initialTime = -1;
+			int pointer = 0;
+			if (maskValue >= 0)
+			{
+                if (reset || needToResetMask)
+                    firstPointShown = 0;
+                else
+                    firstPointShown = lastPointShown;
+			    initialTime = originalPoints.get(firstPointShown).time;
+			    pointer = firstPointShown;
+			}
+			else
+			{
+                lastPointShown = firstPointShown;
+                initialTime = originalPoints.get(lastPointShown).time;
+                pointer = lastPointShown;
+			}			
+
 			while(true)
 			{
-				if (value > 0)
-					++nextPointId;
+				if (milliseconds > 0)
+					++pointer;
 				else
-					--nextPointId;
+					--pointer;
 			
-				if (nextPointId < 0 || nextPointId >= totalNumberPoints)
+				if (pointer < 0)
+				{
+				    pointer = 0;
 					break;
+				}
+				else if (pointer >= totalNumberPoints)
+				{
+                    pointer = totalNumberPoints-1;
+                    break;
+				}				    
 				
-				long nextTime = originalPoints.get(nextPointId).time;
+				long nextTime = originalPoints.get(pointer).time;
 				
-				if (Math.abs(nextTime - currentTime) > Math.abs(value))
+				if (Math.abs(nextTime - initialTime) > Math.abs(milliseconds))
 					break;
 			}
 
-			firstPointShown = currentPointId;
-			lastPointShown = nextPointId;
-			this.currentPointId = nextPointId + 1;
+            if (milliseconds > 0)
+                lastPointShown = pointer;
+            else
+                firstPointShown = pointer;
 		}
 		else if (maskType == NLRMaskType.BY_DISTANCE)
 		{
-			int totalNumberPoints = polydata.GetNumberOfPoints();
+			double[] initialPoint = null;
+            int pointer = 0;
+            if (maskValue >= 0)
+            {
+                if (reset || needToResetMask)
+                    firstPointShown = 0;
+                else
+                    firstPointShown = lastPointShown;
+                initialPoint = originalPoints.get(firstPointShown).point;
+                pointer = firstPointShown;
+            }
+            else
+            {
+                lastPointShown = firstPointShown;
+                initialPoint = originalPoints.get(lastPointShown).point;
+                pointer = lastPointShown;
+            }           
 
-			double[] currentPoint = polydata.GetPoint(currentPointId);
-			double[] prevPoint = currentPoint;
-			int nextPointId = currentPointId;
+			double[] prevPoint = initialPoint;
 			double currentDist = 0.0;
 			while(true)
 			{
 				if (maskValue > 0)
-					++nextPointId;
+					++pointer;
 				else
-					--nextPointId;
+					--pointer;
 			
-				if (nextPointId < 0 || nextPointId >= totalNumberPoints)
-					break;
+                if (pointer < 0)
+                {
+                    pointer = 0;
+                    break;
+                }
+                else if (pointer >= totalNumberPoints)
+                {
+                    pointer = totalNumberPoints-1;
+                    break;
+                }                   
 		
-				double[] nextPoint = polydata.GetPoint(nextPointId);
+				double[] nextPoint = originalPoints.get(pointer).point;
 				currentDist += GeometryUtil.distanceBetween(nextPoint, prevPoint);
 				
 				if (currentDist > Math.abs(maskValue))
@@ -401,19 +472,21 @@ public class NLRDataCollection2 extends Model
 				prevPoint = nextPoint;
 			}
 
-			firstPointShown = currentPointId;
-			lastPointShown = nextPointId;
-			this.currentPointId = nextPointId + 1;
+            if (maskValue > 0)
+                lastPointShown = pointer;
+            else
+                firstPointShown = pointer;
 		}
+        
+        needToResetMask = false;
 	}
 
 	public void removeAllNlrData()
 	{
-		vtkPoints points = polydata.GetPoints();
-		vtkCellArray vert = polydata.GetVerts();
+        needToResetMask = true;
 
-		points.SetNumberOfPoints(0);
-		vert.SetNumberOfCells(0);
+        geometryFilter.SetPointMinimum(Integer.MAX_VALUE);
+        geometryFilter.SetPointMaximum(Integer.MAX_VALUE);
 
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 	}
@@ -517,8 +590,28 @@ public class NLRDataCollection2 extends Model
 	
 	public int[] getMaskedPointRange()
 	{
-		int[] range = {firstPointShown+1, lastPointShown+1};
+        int[] range = {firstPointShown, lastPointShown};
 		return range;
 	}
+
+    public long getTimeOfPoint(int i)
+    {
+        return originalPoints.get(i).time;
+    }
 	
+    public double getLengthOfMaskedPoints()
+    {
+        double length = 0.0;
+        
+        for (int i=firstPointShown+1; i<=lastPointShown; ++i)
+        {
+            double[] prevPoint = originalPoints.get(i-1).point;
+            double[] currentPoint = originalPoints.get(i).point;
+            double dist = GeometryUtil.distanceBetween(prevPoint, currentPoint);
+            length += dist;
+        }
+        
+        return length;
+    }
+    
 }
