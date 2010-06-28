@@ -47,12 +47,10 @@ public class PolyDataUtil
 		private static vtkIdList idList_f4;
 		private static vtkCleanPolyData cleanPoly_f4;
 		private static vtkPolyDataConnectivityFilter connectivityFilter_f4;
-		//private static vtkPoints intersectPoints_f4;
-		//private static vtkIdList intersectCells_f4;
-		private static vtksbCellLocator cellLocator_f4;
+		private static vtkGenericCell cell_f4;
 		public static vtkPolyData func(
 				vtkPolyData polyData,
-				vtkAbstractCellLocator locator,
+				vtksbCellLocator locator,
 				double[] origin, 
 				double[] ul, 
 				double[] ur,
@@ -228,20 +226,9 @@ public class PolyDataUtil
 			}
 
 
-			tmpPolyData_f4.BuildLinks(0);
 
-			if (cellLocator_f4 == null) cellLocator_f4 = new vtksbCellLocator();
-			cellLocator_f4.SetDataSet(tmpPolyData_f4);
-			cellLocator_f4.CacheCellBoundsOn();
-			cellLocator_f4.AutomaticOn();
-			//cellLocator.SetMaxLevel(10);
-			//cellLocator.SetNumberOfCellsPerNode(5);
-			cellLocator_f4.BuildLocator();
-
-			vtkGenericCell cell = new vtkGenericCell();
-
-			//if (intersectPoints_f4 == null) intersectPoints_f4 = new vtkPoints();
-			//if (intersectCells_f4 == null) intersectCells_f4 = new vtkIdList();
+			if (cell_f4 == null)
+			    cell_f4 = new vtkGenericCell();
 
 			points = tmpPolyData_f4.GetPoints();
 			int numPoints = points.GetNumberOfPoints();
@@ -253,29 +240,32 @@ public class PolyDataUtil
 			{
 				double[] sourcePnt = points.GetPoint(i);
 
-				//intersectPoints_f4.Reset();
-				//intersectCells_f4.Reset();
-
-				//cellLocator_f4.IntersectWithLine(origin, sourcePnt, intersectPoints_f4, intersectCells_f4);
 				double tol = 1e-6;
 				double[] t = new double[1];
 				double[] x = new double[3];
 				double[] pcoords = new double[3];
 				int[] subId = new int[1];
 				int[] cell_id = new int[1];
-				int result = cellLocator_f4.IntersectWithLine(origin, sourcePnt, tol, t, x, pcoords, subId, cell_id, cell);
+                int result = locator.IntersectWithLine(origin, sourcePnt, tol, t, x, pcoords, subId, cell_id, cell_f4);
 
 				if (result == 1)
 				{
+				    int ptid = polyData.FindPoint(sourcePnt);
+				    polyData.GetPointCells(ptid, idList_f4);
+				    
+				    // The following check makes sure we don't delete any cells
+				    // if the intersection point happens to coincides with sourcePnt.
+				    // To do this we test to see of the intersected cell 
+				    // is one of the cells which share a point with sourcePnt.
+				    // If it is we skip to the next point.
+                    if (idList_f4.IsId(cell_id[0]) >= 0)
+                    {
+                        //System.out.println("Too close  " + i);
+                        continue;
+                    }
+				    
 					tmpPolyData_f4.GetPointCells(i, idList_f4);
-					int numPtCells = idList_f4.GetNumberOfIds();
-
-					if (idList_f4.IsId(cell_id[0]) >= 0)
-					{
-						//System.out.println("Too close  " + i);
-						continue;
-					}
-
+                    int numPtCells = idList_f4.GetNumberOfIds();
 					for (int j=0; j<numPtCells; ++j)
 					{
 						// The following makes sure that only cells for which ALL three of its
@@ -289,16 +279,12 @@ public class PolyDataUtil
 			}
 			tmpPolyData_f4.RemoveDeletedCells();
 
-			System.out.println("before clean  " + tmpPolyData_f4.GetNumberOfPoints());
-
 			//cleanPoly_f4 = new vtkCleanPolyData();
 			cleanPoly_f4.SetInput(tmpPolyData_f4);
 			cleanPoly_f4.Update();
 
 			//polyData = new vtkPolyData();
 			tmpPolyData_f4.DeepCopy(cleanPoly_f4.GetOutput());
-
-			System.out.println("after clean  " + tmpPolyData_f4.GetNumberOfPoints());
 
 			return tmpPolyData_f4;
 		}
