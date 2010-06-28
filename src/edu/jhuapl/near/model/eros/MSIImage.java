@@ -99,7 +99,7 @@ public class MSIImage extends Model implements PropertyChangeListener
     private double[] boresightDirection = new double[3];
     private double[] upVector = new double[3];
     
-	private boolean showFrustum = true;
+	private boolean showFrustum = false;
 
 	private String startTime = "";
 	private String stopTime = "";
