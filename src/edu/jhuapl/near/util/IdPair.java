@@ -32,4 +32,17 @@ public class IdPair
 		id1 -= size;
 	}
 	
+	@Override
+	public boolean equals(Object o)
+	{
+		int otherId1 = ((IdPair)o).id1;
+		int otherId2 = ((IdPair)o).id2;
+		return id1 == otherId1 && id2 == otherId2;
+	}
+	
+	@Override
+	public String toString()
+	{
+		return id1 + " " + id2;
+	}
 }

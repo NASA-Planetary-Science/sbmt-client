@@ -78,11 +78,6 @@ public class FileCache
             return null;
 	}
 	
-	//static private void deleteOldCaches()
-	//{
-	//	
-	//}
-	
 	/**
 	 * When adding to the cache, gzipped files are always uncompressed and saved
 	 * without the ".gz" extension.
@@ -96,7 +91,12 @@ public class FileCache
 		if (path.toLowerCase().endsWith(".gz"))
 			path = path.substring(0, path.length()-3);
 
-		File file = new File(Configuration.getCacheDir() + File.separator + path);
+		// While we are downloading the file, the file should be named on disk
+		// with a ".part_sbmt" suffix so that if the user forcibly kills the program
+		// during a download, the file will not be used when the program is restarted.
+		// After the download is successful, rename the file to the correct name.
+		String realFilename = Configuration.getCacheDir() + File.separator + path;
+		File file = new File(realFilename + ".sbmt_tool");
 
 		file.getParentFile().mkdirs();
 
@@ -116,6 +116,18 @@ public class FileCache
 		if (urlLastModified > 0)
 			file.setLastModified(urlLastModified);
 
-		return file;	
+		// Okay, now rename the file to the real name.
+		File realFile = new File(realFilename);
+		realFile.delete();
+		file.renameTo(realFile);
+		
+		// Change the modified time again just in case the process of
+		// renaming the file caused the modified time to change.
+		// (On Linux, changing the filename, does not change the modified
+		// time so this is not necessary, but I'm not sure about other platforms)
+		if (urlLastModified > 0)
+			realFile.setLastModified(urlLastModified);
+
+		return realFile;	
 	}
 }
