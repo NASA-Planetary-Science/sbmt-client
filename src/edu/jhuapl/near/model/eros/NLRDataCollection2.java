@@ -36,7 +36,7 @@ public class NLRDataCollection2 extends Model
 	
 	private GregorianCalendar startDate;
 	private GregorianCalendar stopDate;
-	private TreeSet<Integer> cubeList = new TreeSet<Integer>();
+	private TreeSet<Integer> cubeList;
 
 	private HashMap<String, String> nlrDoyToPathMap = null;
 	private ErosModel erosModel;
@@ -102,12 +102,7 @@ public class NLRDataCollection2 extends Model
 			double maskValue,
 			boolean reset) throws IOException, ParseException
 	{
-		if (!startDate.equals(this.startDate) ||
-				!stopDate.equals(this.stopDate) ||
-				!cubeList.equals(this.cubeList))
-		{
-			loadNlrData(startDate, stopDate, cubeList);
-		}
+		loadNlrData(startDate, stopDate, cubeList);
 		
 		applyMask(maskType, maskValue, reset);
 		
@@ -191,6 +186,7 @@ public class NLRDataCollection2 extends Model
 		return validDays;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void loadNlrData(
 			GregorianCalendar startDate,
 			GregorianCalendar stopDate,
@@ -203,9 +199,11 @@ public class NLRDataCollection2 extends Model
 			return;
 		}
 		
-		this.startDate = startDate;
-		this.stopDate = stopDate;
-		this.cubeList = cubeList;
+		// Make clones since otherwise the previous if statement might
+		// evaluate to true even if something changed.
+		this.startDate = (GregorianCalendar)startDate.clone();
+		this.stopDate = (GregorianCalendar)stopDate.clone();
+		this.cubeList = (TreeSet<Integer>)cubeList.clone();
 		
 		long start = startDate.getTimeInMillis();
 		long stop = stopDate.getTimeInMillis();
@@ -272,7 +270,9 @@ public class NLRDataCollection2 extends Model
 					idList.SetId(0, id++);
 					vert.InsertNextCell(idList);
 
-					originalPoints.add(new NLRPoint(point, time, 0));
+					double potential = Double.parseDouble(vals[18]);
+
+					originalPoints.add(new NLRPoint(point, time, potential));
 				}
 			}
 		}
@@ -301,7 +301,9 @@ public class NLRDataCollection2 extends Model
 							Double.parseDouble(vals[15])/1000.0,
 							Double.parseDouble(vals[16])/1000.0};
 
-					originalPoints.add(new NLRPoint(point, time, 0));
+					double potential = Double.parseDouble(vals[18]);
+
+					originalPoints.add(new NLRPoint(point, time, potential));
 				}
 			}
 			
@@ -500,7 +502,8 @@ public class NLRDataCollection2 extends Model
     {
     	cellId = geometryFilter.GetPointMinimum() + cellId;
     	Date date = new Date(originalPoints.get(cellId).time);
-    	return "NLR acquired at " + sdf2.format(date);
+    	return "NLR acquired at " + sdf2.format(date) 
+    		+ ", Potential: " + originalPoints.get(cellId).potential + " J/kg";
     }
 
     // Create a mapping from dayOfYear/Year pair to path to nlr data
@@ -614,4 +617,53 @@ public class NLRDataCollection2 extends Model
         return length;
     }
     
+    /**
+     * Returns the potential plotted as a function of distance for the masked points
+     * @param potential
+     * @param distance
+     */
+    public void getPotentialVsDistance(ArrayList<Double> potential, ArrayList<Double> distance)
+    {
+    	potential.clear();
+    	distance.clear();
+    	
+    	if (originalPoints.size() == 0)
+    		return;
+    	
+        double length = 0.0;
+        
+        potential.add(originalPoints.get(firstPointShown).potential);
+        distance.add(0.0);
+        
+        for (int i=firstPointShown+1; i<=lastPointShown; ++i)
+        {
+            double[] prevPoint = originalPoints.get(i-1).point;
+            double[] currentPoint = originalPoints.get(i).point;
+            double dist = GeometryUtil.distanceBetween(prevPoint, currentPoint);
+            length += dist;
+
+            potential.add(originalPoints.get(i).potential);
+            distance.add(length);
+        }
+    }
+
+    /**
+     * Returns the potential plotted as a function of time for the masked points
+     * @param potential
+     * @param time
+     */
+    public void getPotentialVsTime(ArrayList<Double> potential, ArrayList<Long> time)
+    {
+    	potential.clear();
+    	time.clear();
+    	
+    	if (originalPoints.size() == 0)
+    		return;
+    	
+        for (int i=firstPointShown; i<=lastPointShown; ++i)
+        {
+            potential.add(originalPoints.get(i).potential);
+            time.add(originalPoints.get(i).time);
+        }
+    }
 }

@@ -59,6 +59,8 @@ public class NLR2SearchPanel extends JPanel implements ActionListener
     	NEXT_10_POINTS      ("10 points",      NLRMaskType.BY_NUMBER,   10.0),
     	NEXT_100_POINTS     ("100 points",     NLRMaskType.BY_NUMBER,   100.0),
     	NEXT_1000_POINTS    ("1000 points",    NLRMaskType.BY_NUMBER,   1000.0),
+    	NEXT_5000_POINTS    ("5000 points",    NLRMaskType.BY_NUMBER,   5000.0),
+    	NEXT_10000_POINTS   ("10000 points",   NLRMaskType.BY_NUMBER,   10000.0),
     	NEXT_SECOND         ("1 second",       NLRMaskType.BY_TIME,     1),
     	NEXT_MINUTE         ("1 minute",       NLRMaskType.BY_TIME,     60),
     	NEXT_HOUR           ("1 hour",         NLRMaskType.BY_TIME,     3600),
@@ -257,11 +259,32 @@ public class NLR2SearchPanel extends JPanel implements ActionListener
         
         pane.add(removeAllButton, "align center");
 		
-//        JButton plotPotentialPlotVsTimeButton = new JButton("Plot Potential vs. Time");
-//        JButton plotPotentialPlotVsDistanceButton = new JButton("Plot Potential vs. Distance");
-//
-//        pane.add(plotPotentialPlotVsTimeButton, "align center");
-//        pane.add(plotPotentialPlotVsDistanceButton, "align center");
+        JButton plotPotentialVsTimeButton = new JButton("Plot Potential vs. Time");
+        plotPotentialVsTimeButton.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				ArrayList<Double> potential = new ArrayList<Double>();
+				ArrayList<Long> time = new ArrayList<Long>();
+				nlrModel.getPotentialVsTime(potential, time);
+				NLRPlot.plotPotentialVsTime(potential, time);
+			}
+		});
+        
+        JButton plotPotentialVsDistanceButton = new JButton("Plot Potential vs. Distance");
+        plotPotentialVsDistanceButton.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				ArrayList<Double> potential = new ArrayList<Double>();
+				ArrayList<Double> distance = new ArrayList<Double>();
+				nlrModel.getPotentialVsDistance(potential, distance);
+				NLRPlot.plotPotentialVsDistance(potential, distance);
+			}
+		});
+
+        pane.add(plotPotentialVsTimeButton, "align center");
+        pane.add(plotPotentialVsDistanceButton, "align center");
         
         radialOffsetChanger = new RadialOffsetChanger(nlrModel, "Radial Offset");
 
