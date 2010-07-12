@@ -214,16 +214,16 @@ public class PolyDataUtil
 			// not worth the trouble.
 
 			// So now, first count the number of connected pieces.
-			if (connectivityFilter_f4 == null) connectivityFilter_f4 = new vtkPolyDataConnectivityFilter();
-			connectivityFilter_f4.SetInputConnection(cleanPoly_f4.GetOutputPort());
-			connectivityFilter_f4.SetExtractionModeToAllRegions();
-			connectivityFilter_f4.Update();
-			int numRegions = connectivityFilter_f4.GetNumberOfExtractedRegions();
-			System.out.println("numRegions: " + numRegions);
-			if (numRegions == 1)
-			{
-				return tmpPolyData_f4;
-			}
+//			if (connectivityFilter_f4 == null) connectivityFilter_f4 = new vtkPolyDataConnectivityFilter();
+//			connectivityFilter_f4.SetInputConnection(cleanPoly_f4.GetOutputPort());
+//			connectivityFilter_f4.SetExtractionModeToAllRegions();
+//			connectivityFilter_f4.Update();
+//			int numRegions = connectivityFilter_f4.GetNumberOfExtractedRegions();
+//			System.out.println("numRegions: " + numRegions);
+//			if (numRegions == 1)
+//			{
+//				return tmpPolyData_f4;
+//			}
 
 
 
