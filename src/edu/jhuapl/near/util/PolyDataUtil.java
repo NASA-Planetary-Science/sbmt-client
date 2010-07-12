@@ -46,7 +46,7 @@ public class PolyDataUtil
 		private static vtkPolyData tmpPolyData_f4;
 		private static vtkIdList idList_f4;
 		private static vtkCleanPolyData cleanPoly_f4;
-		private static vtkPolyDataConnectivityFilter connectivityFilter_f4;
+		//private static vtkPolyDataConnectivityFilter connectivityFilter_f4;
 		private static vtkGenericCell cell_f4;
 		public static vtkPolyData func(
 				vtkPolyData polyData,
