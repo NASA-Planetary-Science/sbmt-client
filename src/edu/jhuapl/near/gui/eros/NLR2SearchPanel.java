@@ -267,7 +267,7 @@ public class NLR2SearchPanel extends JPanel implements ActionListener
 				ArrayList<Double> potential = new ArrayList<Double>();
 				ArrayList<Long> time = new ArrayList<Long>();
 				nlrModel.getPotentialVsTime(potential, time);
-				NLRPlot.plotPotentialVsTime(potential, time);
+				NLRPlot.plotPotentialVsTime(potential, time, nlrModel);
 			}
 		});
         
@@ -279,7 +279,7 @@ public class NLR2SearchPanel extends JPanel implements ActionListener
 				ArrayList<Double> potential = new ArrayList<Double>();
 				ArrayList<Double> distance = new ArrayList<Double>();
 				nlrModel.getPotentialVsDistance(potential, distance);
-				NLRPlot.plotPotentialVsDistance(potential, distance);
+				NLRPlot.plotPotentialVsDistance(potential, distance, nlrModel);
 			}
 		});
 

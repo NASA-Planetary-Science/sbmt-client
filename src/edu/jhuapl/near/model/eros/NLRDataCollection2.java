@@ -47,6 +47,8 @@ public class NLRDataCollection2 extends Model
 
 	private boolean needToResetMask = true;
 	
+	private int selectedPoint = -1;
+	
 	public enum NLRMaskType
 	{
 		NONE,
@@ -665,5 +667,13 @@ public class NLRDataCollection2 extends Model
             potential.add(originalPoints.get(i).potential);
             time.add(originalPoints.get(i).time);
         }
+    }
+    
+    public void selectPoint(int ptId)
+    {
+        if (ptId == selectedPoint)
+            return;
+        
+        selectedPoint = ptId;
     }
 }
