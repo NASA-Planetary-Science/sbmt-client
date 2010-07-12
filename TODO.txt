@@ -42,4 +42,7 @@
  - fix crash which occurs sometimes if you click with mouse on the renderer while
    a resolution change is taking place
    
+ - in backplane generation, add the elevation, slope, etc values as new planes
+ 
+ - use interpolation within a plate for the elevation, slope etc. (similar to smooth shading)
  
