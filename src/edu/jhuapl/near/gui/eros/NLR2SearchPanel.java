@@ -51,7 +51,8 @@ public class NLR2SearchPanel extends JPanel implements ActionListener
     private JComboBox shownResultsShowComboBox;
     private PickManager pickManager;
     private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MMM-d HH:mm:ss.SSS", Locale.US);
-
+    private NLRPlot nlrPlot;
+    
     private enum DisplayedResultsOptions
     {
     	ALL                 ("all",            NLRMaskType.NONE,        -1.0),
@@ -259,32 +260,35 @@ public class NLR2SearchPanel extends JPanel implements ActionListener
         
         pane.add(removeAllButton, "align center");
 		
-        JButton plotPotentialVsTimeButton = new JButton("Plot Potential vs. Time");
+        JButton plotPotentialVsTimeButton = new JButton("Plot Potential");
         plotPotentialVsTimeButton.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
 			{
-				ArrayList<Double> potential = new ArrayList<Double>();
-				ArrayList<Long> time = new ArrayList<Long>();
-				nlrModel.getPotentialVsTime(potential, time);
-				NLRPlot.plotPotentialVsTime(potential, time, nlrModel);
+//				ArrayList<Double> potential = new ArrayList<Double>();
+//				ArrayList<Long> time = new ArrayList<Long>();
+//				nlrModel.getPotentialVsTime(potential, time);
+//				NLRPlot.plotPotentialVsTime(potential, time, nlrModel);
+				if (nlrPlot == null)
+				    nlrPlot = new NLRPlot(nlrModel);
+				nlrPlot.setVisible(true);
 			}
 		});
         
-        JButton plotPotentialVsDistanceButton = new JButton("Plot Potential vs. Distance");
-        plotPotentialVsDistanceButton.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent e)
-			{
-				ArrayList<Double> potential = new ArrayList<Double>();
-				ArrayList<Double> distance = new ArrayList<Double>();
-				nlrModel.getPotentialVsDistance(potential, distance);
-				NLRPlot.plotPotentialVsDistance(potential, distance, nlrModel);
-			}
-		});
+//        JButton plotPotentialVsDistanceButton = new JButton("Plot Potential vs. Distance");
+//        plotPotentialVsDistanceButton.addActionListener(new ActionListener()
+//		{
+//			public void actionPerformed(ActionEvent e)
+//			{
+//				ArrayList<Double> potential = new ArrayList<Double>();
+//				ArrayList<Double> distance = new ArrayList<Double>();
+//				nlrModel.getPotentialVsDistance(potential, distance);
+//				NLRPlot.plotPotentialVsDistance(potential, distance, nlrModel);
+//			}
+//		});
 
         pane.add(plotPotentialVsTimeButton, "align center");
-        pane.add(plotPotentialVsDistanceButton, "align center");
+        //pane.add(plotPotentialVsDistanceButton, "align center");
         
         radialOffsetChanger = new RadialOffsetChanger(nlrModel, "Radial Offset");
 
@@ -366,6 +370,9 @@ public class NLR2SearchPanel extends JPanel implements ActionListener
         resultsText += "</html>";
         
         resultsLabel.setText(resultsText);
+        
+        if (nlrPlot != null)
+            nlrPlot.updateData();
 	}
 
 }
