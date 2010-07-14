@@ -56,7 +56,7 @@ public class DefaultPicker extends Picker
 		// See comment in the propertyChange function below as to why
 		// we use a custom pick list for these pickers.
 		mousePressNonSmallBodyCellPicker = new vtkCellPicker();
-		mousePressNonSmallBodyCellPicker.SetTolerance(0.001);
+		mousePressNonSmallBodyCellPicker.SetTolerance(0.002);
 		mousePressNonSmallBodyCellPicker.PickFromListOn();
 		mousePressNonSmallBodyCellPicker.InitializePickList();
 
@@ -78,9 +78,7 @@ public class DefaultPicker extends Picker
 			return;
 
 		// First try picking on the non-small-body picker. If that fails try the small body picker.
-		renWin.lock();
-		int pickSucceeded = mousePressNonSmallBodyCellPicker.Pick(e.getX(), renWin.getHeight()-e.getY()-1, 0.0, renWin.GetRenderer());
-		renWin.unlock();
+		int pickSucceeded = doPick(e, mousePressNonSmallBodyCellPicker);
 		
 		if (pickSucceeded == 1)
 		{
@@ -163,9 +161,7 @@ public class DefaultPicker extends Picker
         	if (renWin.GetRenderWindow().GetNeverRendered() > 0)
         		return;
     		
-    		renWin.lock();
-    		int pickSucceeded = mousePressNonSmallBodyCellPicker.Pick(e.getX(), renWin.getHeight()-e.getY()-1, 0.0, renWin.GetRenderer());
-    		renWin.unlock();
+            int pickSucceeded = doPick(e, mousePressNonSmallBodyCellPicker);
     		if (pickSucceeded == 1)
     		{
     			vtkActor pickedActor = mousePressNonSmallBodyCellPicker.GetActor();
@@ -280,5 +276,36 @@ public class DefaultPicker extends Picker
 		{
 			statusBar.setRightText("Distance: " + distanceStr + " ");
 		}
+	}
+	
+	private int doPick(MouseEvent e, vtkCellPicker picker)
+	{
+        // When picking, choosing the right tolerance is not simple. If it's too small, then
+        // the pick will only work well if we are zoomed in very close to the object. If it's
+        // too large, the pick will only work well when we are zoomed out a lot. To deal
+        // with this situation, do a series of picks starting out with a low tolerance
+        // and increase the tolerance after each new pick. Stop as soon as the pick succeeds
+        // or we reach the maximum tolerance.
+        int pickSucceeded = 0;
+        double tolerance = 0.0002;
+        final double originalTolerance = picker.GetTolerance();
+        final double maxTolerance = 0.002;
+        final double incr = 0.0002;
+        renWin.lock();
+        picker.SetTolerance(tolerance);
+        while (tolerance <= maxTolerance)
+        {
+            picker.SetTolerance(tolerance);
+            pickSucceeded = picker.Pick(e.getX(), renWin.getHeight()-e.getY()-1, 0.0, renWin.GetRenderer());
+            
+            if (pickSucceeded == 1)
+                break;
+
+            tolerance += incr;
+        }
+        picker.SetTolerance(originalTolerance);
+        renWin.unlock();
+        
+        return pickSucceeded;
 	}
 }
