@@ -24,11 +24,14 @@ import vtk.*;
 public class NLRDataCollection2 extends Model 
 {
 	private vtkPolyData polydata;
+	private vtkPolyData selectedPointPolydata;
 	private ArrayList<NLRPoint> originalPoints = new ArrayList<NLRPoint>();
     private ArrayList<vtkProp> actors = new ArrayList<vtkProp>();
     private vtkGeometryFilter geometryFilter;
     private vtkPolyDataMapper pointsMapper;
+    private vtkPolyDataMapper selectedPointMapper;
     private vtkActor actor;
+    private vtkActor selectedPointActor;
 	private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-DDD'T'HH:mm:ss.SSS", Locale.US);
 	private SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MMM-d HH:mm:ss.SSS", Locale.US);
 
@@ -88,6 +91,12 @@ public class NLRDataCollection2 extends Model
 		polydata.SetPoints( points );
 		polydata.SetVerts( vert );
 
+		selectedPointPolydata = new vtkPolyData();
+		points = new vtkPoints();
+		vert = new vtkCellArray();
+		selectedPointPolydata.SetPoints( points );
+		selectedPointPolydata.SetVerts( vert );
+
 		geometryFilter = new vtkGeometryFilter();
 		geometryFilter.SetInput(polydata);
 		geometryFilter.PointClippingOn();
@@ -115,6 +124,9 @@ public class NLRDataCollection2 extends Model
 		{
 			pointsMapper = new vtkPolyDataMapper();
 			pointsMapper.SetInput(geometryFilter.GetOutput());
+
+			selectedPointMapper = new vtkPolyDataMapper();
+			selectedPointMapper.SetInput(selectedPointPolydata);
 		}
 
 		if (actor == null)
@@ -125,10 +137,19 @@ public class NLRDataCollection2 extends Model
 			actor.GetProperty().SetPointSize(2.0);
         
 			actors.add(actor);
+
+			selectedPointActor = new vtkActor();
+			selectedPointActor.SetMapper(selectedPointMapper);
+			selectedPointActor.GetProperty().SetColor(0.1, 0.1, 1.0);
+			selectedPointActor.GetProperty().SetPointSize(7.0);
+
+			actors.add(selectedPointActor);
 		}
 		
 		setRadialOffset(radialOffset);
 
+		selectPoint(-1);
+		
     	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 	}
 	
@@ -492,6 +513,8 @@ public class NLRDataCollection2 extends Model
         geometryFilter.SetPointMinimum(Integer.MAX_VALUE);
         geometryFilter.SetPointMaximum(Integer.MAX_VALUE);
 
+        selectPoint(-1);
+        
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 	}
 
@@ -573,6 +596,9 @@ public class NLRDataCollection2 extends Model
 		}		
 
         polydata.Modified();
+
+    	// Force an update on the selected point
+    	selectPoint(selectedPoint);
 
     	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 	}
@@ -668,12 +694,36 @@ public class NLRDataCollection2 extends Model
             time.add(originalPoints.get(i).time);
         }
     }
-    
+
     public void selectPoint(int ptId)
     {
-        if (ptId == selectedPoint)
-            return;
+//        if (ptId == selectedPoint)
+//            return;
         
         selectedPoint = ptId;
+
+		vtkPoints points = selectedPointPolydata.GetPoints();
+		vtkCellArray vert = selectedPointPolydata.GetVerts();
+
+		points.SetNumberOfPoints(0);
+		vert.SetNumberOfCells(0);
+
+        if (ptId >= 0)
+        {
+    		points.SetNumberOfPoints(1);
+
+    		vtkIdList idList = new vtkIdList();
+    		idList.SetNumberOfIds(1);
+
+        	ptId = geometryFilter.GetPointMinimum() + ptId;
+
+			points.SetPoint(0, polydata.GetPoints().GetPoint(ptId));
+			idList.SetId(0, 0);
+			vert.InsertNextCell(idList);
+        }
+
+        selectedPointPolydata.Modified();
+        
+    	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 }

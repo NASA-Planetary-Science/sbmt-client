@@ -15,6 +15,8 @@ import net.miginfocom.swing.MigLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 import edu.jhuapl.near.gui.RadialOffsetChanger;
 import edu.jhuapl.near.model.RegularPolygonModel;
@@ -22,12 +24,14 @@ import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.eros.ErosModelManager;
 import edu.jhuapl.near.model.eros.NLRDataCollection2;
 import edu.jhuapl.near.model.eros.NLRDataCollection2.NLRMaskType;
+import edu.jhuapl.near.pick.PickEvent;
 import edu.jhuapl.near.pick.PickManager;
 import edu.jhuapl.near.pick.PickManager.PickMode;
+import edu.jhuapl.near.util.Properties;
 
 
-public class NLR2SearchPanel extends JPanel implements ActionListener
-{
+public class NLR2SearchPanel extends JPanel implements ActionListener, PropertyChangeListener
+{	
 	private final String NLR_REMOVE_ALL_BUTTON_TEXT = "Clear Data";
 	
     private final ErosModelManager modelManager;
@@ -123,6 +127,9 @@ public class NLR2SearchPanel extends JPanel implements ActionListener
 				pickManager.setPickMode(PickMode.DEFAULT);
 			}
 		});
+		
+		pickManager.getDefaultPicker().addPropertyChangeListener(this);
+
 
 		this.nlrModel = (NLRDataCollection2)modelManager.getModel(ErosModelManager.NLR_DATA);
     	
@@ -373,6 +380,28 @@ public class NLR2SearchPanel extends JPanel implements ActionListener
         
         if (nlrPlot != null)
             nlrPlot.updateData();
+	}
+
+	public void propertyChange(PropertyChangeEvent evt)
+	{
+		if (Properties.MODEL_PICKED.equals(evt.getPropertyName()))
+		{
+			PickEvent e = (PickEvent)evt.getNewValue();
+			if (modelManager.getModel(e.getPickedProp()) == nlrModel)
+			{
+				int id = e.getPickedCellId();
+				System.out.println(id);
+				nlrModel.selectPoint(id);
+				if (nlrPlot != null)
+					nlrPlot.selectPoint(id);
+			}
+			else
+			{
+				nlrModel.selectPoint(-1);
+				if (nlrPlot != null)
+					nlrPlot.selectPoint(-1);
+			}
+		}
 	}
 
 }

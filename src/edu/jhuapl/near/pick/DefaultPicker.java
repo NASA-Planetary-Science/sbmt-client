@@ -56,7 +56,7 @@ public class DefaultPicker extends Picker
 		// See comment in the propertyChange function below as to why
 		// we use a custom pick list for these pickers.
 		mousePressNonSmallBodyCellPicker = new vtkCellPicker();
-		mousePressNonSmallBodyCellPicker.SetTolerance(0.002);
+		mousePressNonSmallBodyCellPicker.SetTolerance(0.001);
 		mousePressNonSmallBodyCellPicker.PickFromListOn();
 		mousePressNonSmallBodyCellPicker.InitializePickList();
 

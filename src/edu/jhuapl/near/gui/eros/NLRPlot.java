@@ -1,6 +1,7 @@
 package edu.jhuapl.near.gui.eros;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.util.ArrayList;
 
 import javax.swing.JFrame;
@@ -11,6 +12,8 @@ import org.jfree.chart.ChartMouseEvent;
 import org.jfree.chart.ChartMouseListener;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.entity.ChartEntity;
+import org.jfree.chart.entity.XYItemEntity;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
@@ -27,6 +30,10 @@ public class NLRPlot extends JFrame implements ChartMouseListener
     private NLRDataCollection2 nlrModel;
     private XYDataset potentialDistanceDataset;
     private XYDataset potentialTimeDataset;
+    private XYSeries potentialDistanceDataSeries;
+    private XYSeries potentialTimeDataSeries;
+    private XYSeries potentialDistanceSelectionSeries;
+    private XYSeries potentialTimeSelectionSeries;
 
     public NLRPlot(NLRDataCollection2 nlrModel)
     {
@@ -37,8 +44,12 @@ public class NLRPlot extends JFrame implements ChartMouseListener
         JPanel panel = new JPanel(new BorderLayout());
         
         {
-            XYSeries series = new XYSeries("NLR Selection");
-            potentialDistanceDataset = new XYSeriesCollection(series);
+            potentialDistanceSelectionSeries = new XYSeries("NLR Selection");
+            potentialDistanceDataSeries = new XYSeries("NLR Potential");
+
+            potentialDistanceDataset = new XYSeriesCollection();
+            ((XYSeriesCollection)potentialDistanceDataset).addSeries(potentialDistanceSelectionSeries);
+            ((XYSeriesCollection)potentialDistanceDataset).addSeries(potentialDistanceDataSeries);
 
             JFreeChart chart1 = ChartFactory.createXYLineChart
             ("NLR Potential vs. Distance", "Distance (km)", "Potential (J/kg)",
@@ -56,6 +67,8 @@ public class NLRPlot extends JFrame implements ChartMouseListener
                 renderer.setBaseShapesVisible(true);                                                                                               
                 renderer.setBaseShapesFilled(true);                                                                                                
                 renderer.setDrawSeriesLineAsPath(true);
+                renderer.setSeriesPaint(0, Color.BLACK);
+                renderer.setSeriesPaint(1, Color.RED);
             }
 
             panel.add(chartPanel, BorderLayout.CENTER);
@@ -63,8 +76,12 @@ public class NLRPlot extends JFrame implements ChartMouseListener
         }
         
         {
-            XYSeries series = new XYSeries("NLR Selection");
-            potentialTimeDataset = new XYSeriesCollection(series);
+            potentialTimeSelectionSeries = new XYSeries("NLR Selection");
+            potentialTimeDataSeries = new XYSeries("NLR Potential");
+
+            potentialTimeDataset = new XYSeriesCollection();
+            ((XYSeriesCollection)potentialTimeDataset).addSeries(potentialTimeSelectionSeries);
+            ((XYSeriesCollection)potentialTimeDataset).addSeries(potentialTimeDataSeries);
 
             JFreeChart chart2 = ChartFactory.createXYLineChart
                     ("NLR Potential vs. Time", "Time (sec)", "Potential (J/kg)",
@@ -85,6 +102,8 @@ public class NLRPlot extends JFrame implements ChartMouseListener
                 renderer.setBaseShapesVisible(true);                                                                                               
                 renderer.setBaseShapesFilled(true);                                                                                                
                 renderer.setDrawSeriesLineAsPath(true);
+                renderer.setSeriesPaint(0, Color.BLACK);
+                renderer.setSeriesPaint(1, Color.RED);
             }
 
             panel.add(chartPanel, BorderLayout.SOUTH);
@@ -107,44 +126,60 @@ public class NLRPlot extends JFrame implements ChartMouseListener
         ArrayList<Double> distance = new ArrayList<Double>();
         nlrModel.getPotentialVsDistance(potential, distance);
 
-        XYSeries series = new XYSeries("NLR Potential");
+        potentialDistanceDataSeries.clear();
         for (int i=0; i<potential.size(); ++i)
-            series.add(distance.get(i), potential.get(i));
-        
-        if (((XYSeriesCollection)potentialDistanceDataset).getSeriesCount() > 1)
-            ((XYSeriesCollection)potentialDistanceDataset).removeSeries(1);
-        
-        ((XYSeriesCollection)potentialDistanceDataset).addSeries(series);
+            potentialDistanceDataSeries.add(distance.get(i), potential.get(i), false);
+        potentialDistanceDataSeries.fireSeriesChanged();
 
         
+
         potential.clear();
         ArrayList<Long> time = new ArrayList<Long>();
         nlrModel.getPotentialVsTime(potential, time);
 
         long t0 = time.get(0);
-        series = new XYSeries("NLR Potential");
+        potentialTimeDataSeries.clear();
         for (int i=0; i<potential.size(); ++i)
-            series.add((double)(time.get(i)-t0)/1000.0, potential.get(i));
-
-        if (((XYSeriesCollection)potentialTimeDataset).getSeriesCount() > 1)
-            ((XYSeriesCollection)potentialTimeDataset).removeSeries(1);
-
-        ((XYSeriesCollection)potentialTimeDataset).addSeries(series);
+            potentialTimeDataSeries.add((double)(time.get(i)-t0)/1000.0, potential.get(i), false);
+        potentialTimeDataSeries.fireSeriesChanged();
     }
 
 
     public void selectPoint(int ptId)
     {
+        potentialDistanceSelectionSeries.clear();
+    	if (ptId >= 0)
+    	{
+    		potentialDistanceSelectionSeries.add(
+    				potentialDistanceDataSeries.getX(ptId),
+    				potentialDistanceDataSeries.getY(ptId), true);
+    	}
+
         
+
+        potentialTimeSelectionSeries.clear();
+        if (ptId >= 0)
+        {
+    		potentialTimeSelectionSeries.add(
+    				potentialTimeDataSeries.getX(ptId),
+    				potentialTimeDataSeries.getY(ptId), true);
+        }
     }
     
     public void chartMouseClicked(ChartMouseEvent arg0)
     {
-        System.out.println(arg0.getEntity());
+    	ChartEntity entity = arg0.getEntity();
+    	
+    	if (entity instanceof XYItemEntity)
+    	{
+    		int id = ((XYItemEntity)entity).getItem();
+    		selectPoint(id);
+    		nlrModel.selectPoint(id);
+    	}
+    	
     }
 
     public void chartMouseMoved(ChartMouseEvent arg0)
     {
-        //System.out.println(arg0);
     }
 }
