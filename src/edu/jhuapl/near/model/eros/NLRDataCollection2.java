@@ -510,6 +510,8 @@ public class NLRDataCollection2 extends Model
 	{
         needToResetMask = true;
 
+    	firstPointShown = -1;
+    	lastPointShown = -1;
         geometryFilter.SetPointMinimum(Integer.MAX_VALUE);
         geometryFilter.SetPointMaximum(Integer.MAX_VALUE);
 
@@ -655,7 +657,7 @@ public class NLRDataCollection2 extends Model
     	potential.clear();
     	distance.clear();
     	
-    	if (originalPoints.size() == 0)
+    	if (originalPoints.size() == 0 || firstPointShown < 0 || lastPointShown < 0)
     		return;
     	
         double length = 0.0;
@@ -685,7 +687,7 @@ public class NLRDataCollection2 extends Model
     	potential.clear();
     	time.clear();
     	
-    	if (originalPoints.size() == 0)
+    	if (originalPoints.size() == 0 || firstPointShown < 0 || lastPointShown < 0)
     		return;
     	
         for (int i=firstPointShown; i<=lastPointShown; ++i)

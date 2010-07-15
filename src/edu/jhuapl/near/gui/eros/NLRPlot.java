@@ -122,13 +122,18 @@ public class NLRPlot extends JFrame implements ChartMouseListener
     
     public void updateData()
     {
+        selectPoint(-1);
+
         ArrayList<Double> potential = new ArrayList<Double>();
         ArrayList<Double> distance = new ArrayList<Double>();
         nlrModel.getPotentialVsDistance(potential, distance);
 
         potentialDistanceDataSeries.clear();
-        for (int i=0; i<potential.size(); ++i)
-            potentialDistanceDataSeries.add(distance.get(i), potential.get(i), false);
+        if (potential.size() > 0 && distance.size() > 0)
+        {
+        	for (int i=0; i<potential.size(); ++i)
+        		potentialDistanceDataSeries.add(distance.get(i), potential.get(i), false);
+        }
         potentialDistanceDataSeries.fireSeriesChanged();
 
         
@@ -137,10 +142,13 @@ public class NLRPlot extends JFrame implements ChartMouseListener
         ArrayList<Long> time = new ArrayList<Long>();
         nlrModel.getPotentialVsTime(potential, time);
 
-        long t0 = time.get(0);
         potentialTimeDataSeries.clear();
-        for (int i=0; i<potential.size(); ++i)
-            potentialTimeDataSeries.add((double)(time.get(i)-t0)/1000.0, potential.get(i), false);
+        if (potential.size() > 0 && time.size() > 0)
+        {
+        	long t0 = time.get(0);
+        	for (int i=0; i<potential.size(); ++i)
+        		potentialTimeDataSeries.add((double)(time.get(i)-t0)/1000.0, potential.get(i), false);
+        }
         potentialTimeDataSeries.fireSeriesChanged();
     }
 
