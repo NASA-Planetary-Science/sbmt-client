@@ -236,16 +236,17 @@ public class PolyDataUtil
 			int[] numberOfObscuredPointsPerCell = new int[tmpPolyData_f4.GetNumberOfCells()];
 			Arrays.fill(numberOfObscuredPointsPerCell, 0);
 
+            double tol = 1e-6;
+            double[] t = new double[1];
+            double[] x = new double[3];
+            double[] pcoords = new double[3];
+            int[] subId = new int[1];
+            int[] cell_id = new int[1];
+            
 			for (int i=0; i<numPoints; ++i)
 			{
 				double[] sourcePnt = points.GetPoint(i);
 
-				double tol = 1e-6;
-				double[] t = new double[1];
-				double[] x = new double[3];
-				double[] pcoords = new double[3];
-				int[] subId = new int[1];
-				int[] cell_id = new int[1];
                 int result = locator.IntersectWithLine(origin, sourcePnt, tol, t, x, pcoords, subId, cell_id, cell_f4);
 
 				if (result == 1)
