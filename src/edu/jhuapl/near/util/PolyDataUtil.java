@@ -166,6 +166,7 @@ public class PolyDataUtil
 			if (idList_f4 == null) idList_f4 = new vtkIdList();
 			idList_f4.SetNumberOfIds(0);
 
+			double[] viewDir = new double[3];
 			for (int i=0; i<numCells; ++i)
 			{
 				double[] n = cellNormals.GetTuple3(i);
@@ -175,7 +176,9 @@ public class PolyDataUtil
 				tmpPolyData_f4.GetCellPoints(i, idList_f4);
 				double[] pt = points.GetPoint(idList_f4.GetId(0));
 
-				double[] viewDir = {origin[0] - pt[0], origin[1] - pt[1], origin[2] - pt[2]};
+				viewDir[0] = origin[0] - pt[0];
+				viewDir[1] = origin[1] - pt[1];
+				viewDir[2] = origin[2] - pt[2];
 				GeometryUtil.vhat(viewDir, viewDir);
 
 				double dot = math.Dot(n, viewDir);
