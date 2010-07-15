@@ -77,7 +77,7 @@ public class Configuration
 	
 	static public String getQueryRootURL()
 	{
-		return "http://near.jhuapl.edu/software/query";
+		return "http://near.jhuapl.edu/software/query2";
 	}
 
 }
