@@ -372,19 +372,13 @@ public class NLR2SearchPanel extends JPanel implements ActionListener, PropertyC
 		if (Properties.MODEL_PICKED.equals(evt.getPropertyName()))
 		{
 			PickEvent e = (PickEvent)evt.getNewValue();
-			if (modelManager.getModel(e.getPickedProp()) == nlrModel)
+			if (modelManager.getModel(e.getPickedProp()) == nlrModel &&
+			        nlrModel.isDataPointsProp(e.getPickedProp()))
 			{
 				int id = e.getPickedCellId();
-				System.out.println(id);
 				nlrModel.selectPoint(id);
 				if (nlrPlot != null)
 					nlrPlot.selectPoint(id);
-			}
-			else
-			{
-				nlrModel.selectPoint(-1);
-				if (nlrPlot != null)
-					nlrPlot.selectPoint(-1);
 			}
 		}
 	}

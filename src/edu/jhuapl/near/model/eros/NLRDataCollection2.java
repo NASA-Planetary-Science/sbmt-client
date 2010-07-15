@@ -524,6 +524,17 @@ public class NLRDataCollection2 extends Model
 	{
 		return actors;
 	}
+
+	/**
+	 *  Returns whether or not <tt>prop</tt> is the prop used for the actual data points
+     *  as opposed the selection prop which is used for showing only the selected point.
+	 * @param prop
+	 * @return
+	 */
+	public boolean isDataPointsProp(vtkProp prop)
+	{
+	    return prop == actor;
+	}
 	
     public String getClickStatusBarText(vtkProp prop, int cellId)
     {
