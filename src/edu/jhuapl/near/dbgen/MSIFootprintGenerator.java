@@ -52,16 +52,15 @@ public class MSIFootprintGenerator
 	private static void generateMSIFootprints(
 	        ArrayList<String> msiFiles, MSIImage.MSISource msiSource) throws IOException, FitsException
     {
-		vtkXMLPolyDataWriter writer = new vtkXMLPolyDataWriter();
     	int count = 0;
     	for (String filename : msiFiles)
     	{
+            System.out.println("starting msi " + count++ + " / " + msiFiles.size() + " " + filename + "\n");
+            
 			boolean filesExist = checkIfMsiFilesExist(filename, msiSource);
 			if (filesExist == false)
 				continue;
 
-            System.out.println("starting msi " + count++ + "  " + filename);
-			
     		String dayOfYearStr = "";
     		String yearStr = "";
 
@@ -98,7 +97,7 @@ public class MSIFootprintGenerator
     		System.out.println("dayofyear: " + dayOfYearStr);
     		//System.out.println("midtime: " + midtime);
     	
-    		image.generateFootprint();
+    		image.loadFootprint();
     		vtkPolyData footprint = image.getUnshiftedFootprint();
     		
 			if (footprint == null || footprint.GetNumberOfPoints() == 0)
@@ -106,11 +105,13 @@ public class MSIFootprintGenerator
 				System.err.println("Error: Footprint generation failed");
 				continue;
 			}
-			
-	        footprint.GetPointData().Reset();
-	        footprint.GetCellData().Reset();
+
+//			footprint.GetPointData().SetTCoords(null);
+//	        footprint.GetPointData().Reset();
+//	        footprint.GetCellData().Reset();
 
 	        // Use a tmp name while saving the file in case we abort during the saving
+	        vtkXMLPolyDataWriter writer = new vtkXMLPolyDataWriter();
 	        writer.SetInput(footprint);
 	        writer.SetFileName(vtkfile + "_tmp");
 	        writer.SetCompressorTypeToZLib();
@@ -122,6 +123,7 @@ public class MSIFootprintGenerator
 	        realVtkFile.delete();
 	        tmpFile.renameTo(realVtkFile);
 
+	        writer.Delete();
 	        image.Delete();
             System.gc();
             System.out.println("deleted " + vtkGlobalJavaHash.GC());
@@ -150,7 +152,7 @@ public class MSIFootprintGenerator
             return;
         }
 
-
+        MSIImage.setGenerateFootprint(true);
 		
 		ArrayList<String> msiFiles = null;
 		try {

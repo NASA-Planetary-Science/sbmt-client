@@ -21,10 +21,14 @@ import vtk.vtkPolyDataReader;
 
 public class DatabaseGeneratorSql 
 {
-    static private final String MsiImagesPdsTable = "msiimages_beta";
-    static private final String MsiImagesGaskellTable = "msiimages_gaskell_beta";
-    static private final String MsiCubesPdsTable = "msicubes_beta";
-    static private final String MsiCubesGaskellTable = "msicubes_gaskell_beta";
+    static private final String MsiImagesPdsTable = "msiimages_beta2";
+    static private final String MsiImagesGaskellTable = "msiimages_gaskell_beta2";
+    static private final String MsiCubesPdsTable = "msicubes_beta2";
+    static private final String MsiCubesGaskellTable = "msicubes_gaskell_beta2";
+//     static private final String MsiImagesPdsTable = "msiimages";
+//     static private final String MsiImagesGaskellTable = "msiimages_gaskell";
+//     static private final String MsiCubesPdsTable = "msicubes";
+//     static private final String MsiCubesGaskellTable = "msicubes_gaskell";
 
     static private final String NisSpectraTable = "nisspectra_beta";
     static private final String NisCubesTable = "niscubes_beta";
@@ -195,7 +199,10 @@ public class DatabaseGeneratorSql
             String msiTableName,
             MSIImage.MSISource msiSource) throws IOException, SQLException, FitsException
     {
-		erosModel.setModelResolution(0);
+		erosModel.setModelResolution(3);
+        MSIImage.setGenerateFootprint(false);
+        MSIImage.setFootprintIsOnLocalDisk(true);
+
     	int count = 0;
     	
     	for (String filename : msiFiles)
@@ -230,6 +237,7 @@ public class DatabaseGeneratorSql
     		// Calling this forces the calculation of incidence, emission, phase, and pixel scale
     		image.getProperties();
 
+    		/*
     		int res = findOptimalResolution(image);
     		
     		System.out.println("Optimal resolution " + res);
@@ -242,6 +250,7 @@ public class DatabaseGeneratorSql
     			image = new MSIImage(origFile, erosModel, msiSource);
         		image.getProperties();
     		}
+    		*/
     		
             if (msiInsert == null)
             {
@@ -382,6 +391,8 @@ public class DatabaseGeneratorSql
             MSIImage.MSISource msiSource) throws SQLException, IOException, FitsException
     {
 		erosModel.setModelResolution(0);
+        MSIImage.setGenerateFootprint(false);
+        MSIImage.setFootprintIsOnLocalDisk(true);
 
 		int count = 0;
     	for (String filename : msiFiles)
@@ -418,7 +429,7 @@ public class DatabaseGeneratorSql
 
 			MSIImage image = new MSIImage(origFile, erosModel, msiSource);
 
-			image.generateFootprint();
+			image.loadFootprint();
 			footprintPolyData.DeepCopy(image.getUnshiftedFootprint());
 			
     		if (msiInsert2 == null)
@@ -614,7 +625,7 @@ public class DatabaseGeneratorSql
 
 		erosModel = new ErosModel();
 		
-		computeMeanPlateSizeAtAllResolutions();
+//		computeMeanPlateSizeAtAllResolutions();
 		
 		String msiFileList=args[0];
 		String nisFileList=args[1];
@@ -647,10 +658,10 @@ public class DatabaseGeneratorSql
 			createMSITablesCubes(MsiCubesPdsTable);
 		else if (mode == 4 || mode == 0)
 			createMSITablesCubes(MsiCubesGaskellTable);
-		else if (mode == 5)
-			createNISTables();
-		else if (mode == 6)
-			createNISTablesCubes();
+//		else if (mode == 5)
+//			createNISTables();
+//		else if (mode == 6)
+//			createNISTablesCubes();
 
 		
 		try 
@@ -663,10 +674,10 @@ public class DatabaseGeneratorSql
 				populateMSITablesCubes(msiFiles, MsiCubesPdsTable, MSIImage.MSISource.PDS);
 			else if (mode == 4 || mode == 0)
 				populateMSITablesCubes(msiFiles, MsiCubesGaskellTable, MSIImage.MSISource.GASKELL);
-			else if (mode == 5)
-				populateNISTables(nisFiles);
-			else if (mode == 6)
-				populateNISTablesCubes(nisFiles);
+//			else if (mode == 5)
+//				populateNISTables(nisFiles);
+//			else if (mode == 6)
+//				populateNISTablesCubes(nisFiles);
 		}
 		catch (Exception e1) {
 			e1.printStackTrace();
