@@ -5,6 +5,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -16,6 +19,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.TreeSet;
 
+import edu.jhuapl.near.dbgen.SqlManager;
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.util.*;
 
@@ -23,6 +27,8 @@ import vtk.*;
 
 public class NLRDataCollection2 extends Model 
 {
+	static private SqlManager db = null;
+
 	private vtkPolyData polydata;
 	private vtkPolyData selectedPointPolydata;
 	private ArrayList<NLRPoint> originalPoints = new ArrayList<NLRPoint>();
@@ -82,7 +88,17 @@ public class NLRDataCollection2 extends Model
 	public NLRDataCollection2(ErosModel erosModel)
 	{
 		this.erosModel = erosModel;
-		
+	
+		try
+		{
+			if (db == null)
+				db = new SqlManager("org.h2.Driver", "jdbc:h2:~/tmp/test-h2/nlr");
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+
 		createDoyToPathMap();
 
 		polydata = new vtkPolyData();
@@ -113,7 +129,7 @@ public class NLRDataCollection2 extends Model
 			double maskValue,
 			boolean reset) throws IOException, ParseException
 	{
-		loadNlrData(startDate, stopDate, cubeList);
+		loadNlrDataSql(startDate, stopDate, cubeList);
 		
 		applyMask(maskType, maskValue, reset);
 		
@@ -342,6 +358,101 @@ public class NLRDataCollection2 extends Model
 				idList.SetId(0, i);
 				vert.InsertNextCell(idList);
 			}
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public void loadNlrDataSql(
+			GregorianCalendar startDate,
+			GregorianCalendar stopDate,
+			TreeSet<Integer> cubeList) throws IOException, ParseException
+	{
+		if (startDate.equals(this.startDate) &&
+				stopDate.equals(this.stopDate) &&
+				cubeList.equals(this.cubeList))
+		{
+			return;
+		}
+		
+		// Make clones since otherwise the previous if statement might
+		// evaluate to true even if something changed.
+		this.startDate = (GregorianCalendar)startDate.clone();
+		this.stopDate = (GregorianCalendar)stopDate.clone();
+		this.cubeList = (TreeSet<Integer>)cubeList.clone();
+		
+		long start = startDate.getTime().getTime();
+		long stop = stopDate.getTime().getTime();
+
+		// First calculate the days the given dates span
+		ArrayList<IdPair> validDays = getValidIntersectingDays(startDate, stopDate);
+
+		vtkPoints points = polydata.GetPoints();
+		vtkCellArray vert = polydata.GetVerts();
+
+		points.SetNumberOfPoints(0);
+		vert.SetNumberOfCells(0);
+		originalPoints.clear();
+		
+		vtkIdList idList = new vtkIdList();
+		idList.SetNumberOfIds(1);
+
+        Statement st = null;
+        ResultSet rs = null;
+        
+        String statement = 
+        	"SELECT UTC, Eros_x, Eros_y, Eros_z, U FROM nlr WHERE" +
+        	" UTC >= " + start + " AND UTC <= " + stop;
+        if (cubeList.size() > 0)
+        {
+        	statement += " AND ( ";
+        	int i=0;
+			for (Integer cubeid : cubeList)
+			{
+				statement += " cube_id = " + cubeid;
+				if (i < cubeList.size()-1)
+					statement += " OR ";
+			}
+        	statement += " )";
+        }
+
+        System.out.println(statement);
+		try
+		{
+			st = db.createStatement();
+	        rs = st.executeQuery(statement);
+	        
+	        while(rs.next())
+	        {
+	        	long time = rs.getLong(1);
+	        	double[] point = new double[3];
+	        	point[0] = rs.getFloat(2)/1000.0;
+	        	point[1] = rs.getFloat(3)/1000.0;
+	        	point[2] = rs.getFloat(4)/1000.0;
+	        	float potential = rs.getFloat(5);
+
+				originalPoints.add(new NLRPoint(point, time, potential));
+				//System.out.println(time);
+	        }
+	        
+	        st.close();
+		}
+		catch (SQLException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		// Now sort all the points in time order and place them into polydata
+
+		points.SetNumberOfPoints(originalPoints.size());
+		
+		Collections.sort(originalPoints);
+		int numPoints = originalPoints.size();
+		for (int i=0; i<numPoints; ++i)
+		{
+			points.SetPoint(i, originalPoints.get(i).point);
+			idList.SetId(0, i);
+			vert.InsertNextCell(idList);
 		}
 	}
 	

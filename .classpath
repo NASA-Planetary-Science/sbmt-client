@@ -10,5 +10,6 @@
 	<classpathentry kind="lib" path="lib/mysql-connector-java-5.1.10-bin.jar"/>
 	<classpathentry kind="lib" path="lib/vtk.jar"/>
 	<classpathentry kind="lib" path="lib/vtksb.jar"/>
+	<classpathentry kind="lib" path="lib/h2-1.2.142.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

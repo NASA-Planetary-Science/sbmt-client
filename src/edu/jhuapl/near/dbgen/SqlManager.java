@@ -89,6 +89,21 @@ public class SqlManager
 
     }
 
+    public SqlManager(String driver, String connectionString) throws Exception
+    {
+    	try
+    	{
+    		Class.forName(driver);
+    	}
+    	catch (Exception e) {
+    		System.out.println("ERROR: failed to load JDBC driver.");
+    		e.printStackTrace();
+    		return;
+    	}
+
+    	conn = DriverManager.getConnection(connectionString);
+    }
+
     public void shutdown() throws SQLException 
     {
 
@@ -192,7 +207,14 @@ public class SqlManager
     {
     	return conn.prepareStatement(st);
     }
+
     
+    public Statement createStatement() throws SQLException
+    {
+    	return conn.createStatement();
+    }
+    
+
     public static void main(String[] args) {
 
         SqlManager db = null;

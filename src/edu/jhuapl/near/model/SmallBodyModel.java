@@ -381,7 +381,7 @@ public abstract class SmallBodyModel extends Model
 			
 	        smallBodyActor = new vtkActor();
 	        smallBodyActor.SetMapper(smallBodyMapper);
-	        smallBodyActor.GetProperty().SetInterpolationToPhong();
+	        smallBodyActor.GetProperty().SetInterpolationToGouraud();
 	        
 	        smallBodyActors.add(smallBodyActor);
 	        
@@ -407,7 +407,7 @@ public abstract class SmallBodyModel extends Model
 	
 	public void setShadingToSmooth()
 	{
-        smallBodyActor.GetProperty().SetInterpolationToPhong();
+        smallBodyActor.GetProperty().SetInterpolationToGouraud();
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 	}
 	
