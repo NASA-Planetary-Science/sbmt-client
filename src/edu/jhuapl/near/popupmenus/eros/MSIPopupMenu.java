@@ -24,6 +24,7 @@ import edu.jhuapl.near.model.eros.MSIBoundaryCollection.Boundary;
 import edu.jhuapl.near.model.eros.MSIImage.MSIKey;
 import edu.jhuapl.near.popupmenus.PopupMenu;
 import edu.jhuapl.near.util.FileCache;
+import edu.jhuapl.near.util.FileUtil;
 import edu.jhuapl.near.util.GeometryUtil;
 
 
@@ -194,18 +195,7 @@ public class MSIPopupMenu extends PopupMenu
 				{
 					File fitFile = FileCache.getFileFromServer(msiKey.name + ".FIT");
 
-					InputStream in = new FileInputStream(fitFile);
-
-					OutputStream out = new FileOutputStream(file);
-
-					byte[] buf = new byte[2048];
-					int len;
-					while ((len = in.read(buf)) > 0)
-					{
-						out.write(buf, 0, len);
-					}
-					in.close();
-					out.close();
+					FileUtil.copyFile(fitFile, file);
 				}
 			}
 			catch(Exception ex)
