@@ -68,12 +68,11 @@ public class NLRSqlDatabaseGenerator
         	
             db.update(
             		"create table nlr(" +
-            		"id int PRIMARY KEY, " +
+            		"UTC bigint PRIMARY KEY, " +
             		"longitudeE real, " +
             		"latitudeN real, " +
             		"Eros_rad real, " +
             		"ET_J2000 double, " +
-            		"UTC bigint, " +
             		"Range real," +
             		"t tinyint," +
             		"a tinyint," +
@@ -88,7 +87,6 @@ public class NLRSqlDatabaseGenerator
             		"Eros_z real," +
             		"Omega real," +
             		"U real," +
-            		"filename smallint," +
             		"cube_id int" +
             		")"
                 );
@@ -135,7 +133,7 @@ public class NLRSqlDatabaseGenerator
 			createTable();
 			
 	    	msiInsert = db.preparedStatement(
-    		"insert into nlr values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    		"insert into nlr values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
 	    	int count = 0;
 	    	short filecount = 0;
@@ -165,29 +163,26 @@ public class NLRSqlDatabaseGenerator
         				cubeid = cubes.getCubeId(closestPt);
         			}
         			
-                    msiInsert.setInt(1, count);
+                    msiInsert.setLong(1, sdf.parse(vals[4]).getTime());
                     msiInsert.setFloat(2, Float.parseFloat(vals[0]));
                     msiInsert.setFloat(3, Float.parseFloat(vals[1]));
                     msiInsert.setFloat(4, Float.parseFloat(vals[2]));
                     msiInsert.setDouble(5, Double.parseDouble(vals[3]));
-                    System.out.println(sdf.parse(vals[4]).getTime());
-                    msiInsert.setLong(6, sdf.parse(vals[4]).getTime());
-                    msiInsert.setFloat(7, Float.parseFloat(vals[5]));
-                    msiInsert.setByte(8, Byte.parseByte(vals[6]));
-                    msiInsert.setShort(9, Short.parseShort(vals[7]));
-                    msiInsert.setFloat(10, Float.parseFloat(vals[8]));
-                    msiInsert.setFloat(11, Float.parseFloat(vals[9]));
-                    msiInsert.setFloat(12, Float.parseFloat(vals[10]));
-                    msiInsert.setFloat(13, Float.parseFloat(vals[11]));
-                    msiInsert.setFloat(14, Float.parseFloat(vals[12]));
-                    msiInsert.setDouble(15, Double.parseDouble(vals[13]));
-                    msiInsert.setFloat(16, Float.parseFloat(vals[14]));
-                    msiInsert.setFloat(17, Float.parseFloat(vals[15]));
-                    msiInsert.setFloat(18, Float.parseFloat(vals[16]));
-                    msiInsert.setFloat(19, Float.parseFloat(vals[17]));
-                    msiInsert.setFloat(20, Float.parseFloat(vals[18]));
-                    msiInsert.setShort(21, filecount);
-                    msiInsert.setInt(22, cubeid);
+                    msiInsert.setFloat(6, Float.parseFloat(vals[5]));
+                    msiInsert.setByte(7, Byte.parseByte(vals[6]));
+                    msiInsert.setShort(8, Short.parseShort(vals[7]));
+                    msiInsert.setFloat(9, Float.parseFloat(vals[8]));
+                    msiInsert.setFloat(10, Float.parseFloat(vals[9]));
+                    msiInsert.setFloat(11, Float.parseFloat(vals[10]));
+                    msiInsert.setFloat(12, Float.parseFloat(vals[11]));
+                    msiInsert.setFloat(13, Float.parseFloat(vals[12]));
+                    msiInsert.setDouble(14, Double.parseDouble(vals[13]));
+                    msiInsert.setFloat(15, Float.parseFloat(vals[14]));
+                    msiInsert.setFloat(16, Float.parseFloat(vals[15]));
+                    msiInsert.setFloat(17, Float.parseFloat(vals[16]));
+                    msiInsert.setFloat(18, Float.parseFloat(vals[17]));
+                    msiInsert.setFloat(19, Float.parseFloat(vals[18]));
+                    msiInsert.setInt(20, cubeid);
 
                     msiInsert.executeUpdate();
 

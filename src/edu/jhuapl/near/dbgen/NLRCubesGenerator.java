@@ -5,6 +5,13 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import vtk.vtkCellArray;
+import vtk.vtkIdList;
+import vtk.vtkPoints;
+import vtk.vtkPolyData;
+import vtk.vtkPolyDataWriter;
+import vtk.vtkXMLPolyDataWriter;
+
 import edu.jhuapl.near.model.eros.ErosModel;
 import edu.jhuapl.near.util.GeometryUtil;
 import edu.jhuapl.near.util.SmallBodyCubes;
@@ -21,7 +28,7 @@ public class NLRCubesGenerator
 {
 	public static void main(String[] args) 
 	{
-		NativeLibraryLoader.loadVtkLibrariesLinuxNoX11();
+		NativeLibraryLoader.loadVtkLibraries();
 
 		ErosModel erosModel = new ErosModel();
 
@@ -41,13 +48,23 @@ public class NLRCubesGenerator
 		
 		// If a point is farther than MAX_DIST from the asteroid, then throw it out.
 		final double MAX_DIST = 1.0;
-		
+	
+		vtkPolyData polydata = new vtkPolyData();
+		vtkPoints points = new vtkPoints();
+		vtkCellArray vert = new vtkCellArray();
+		polydata.SetPoints( points );
+		polydata.SetVerts( vert );
+        
+		vtkIdList idList = new vtkIdList();
+        idList.SetNumberOfIds(1);
+
 		try
 		{
-		    int count = 1;
+			int count = 0;
+		    int filecount = 1;
 			for (String filename : nlrFiles)
 			{
-			    System.out.println("Begin processing file " + filename + " - " + count++ + " / " + nlrFiles.size());
+			    System.out.println("Begin processing file " + filename + " - " + filecount++ + " / " + nlrFiles.size());
 			    
 			    ArrayList<String> lines = FileUtil.getFileLinesAsStringList(filename);
 			    
@@ -63,6 +80,14 @@ public class NLRCubesGenerator
         			pt[1] = Double.parseDouble(vals[15])/1000.0;
         			pt[2] = Double.parseDouble(vals[16])/1000.0;
 
+        			points.InsertNextPoint(pt);
+                	idList.SetId(0, count);
+        		    vert.InsertNextCell(idList);
+        			++count;
+
+        			if (true)
+        				continue;
+        			
         			double[] closestPt = erosModel.findClosestPoint(pt);
         			
         			double dist = GeometryUtil.distanceBetween(pt, closestPt);
@@ -97,6 +122,18 @@ public class NLRCubesGenerator
                 
                 out.close();
 			}
+
+//	        vtkXMLPolyDataWriter writer = new vtkXMLPolyDataWriter();
+//	        writer.SetInput(polydata);
+//	        writer.SetFileName("nlrdata.vtp");
+//	        writer.SetCompressorTypeToZLib();
+//	        writer.SetDataModeToBinary();
+//	        writer.Write();
+	        vtkPolyDataWriter writer = new vtkPolyDataWriter();
+	        writer.SetInput(polydata);
+	        writer.SetFileName("nlrdata.vtk");
+	        writer.SetFileTypeToBinary();
+	        writer.Write();
 		}
 		catch (Exception e)
 		{

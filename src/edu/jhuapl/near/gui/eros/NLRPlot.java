@@ -22,12 +22,12 @@ import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
-import edu.jhuapl.near.model.eros.NLRDataCollection2;
+import edu.jhuapl.near.model.eros.NLRSearchDataCollection;
 
 
 public class NLRPlot extends JFrame implements ChartMouseListener
 {
-    private NLRDataCollection2 nlrModel;
+    private NLRSearchDataCollection nlrModel;
     private XYDataset potentialDistanceDataset;
     private XYDataset potentialTimeDataset;
     private XYSeries potentialDistanceDataSeries;
@@ -35,7 +35,7 @@ public class NLRPlot extends JFrame implements ChartMouseListener
     private XYSeries potentialDistanceSelectionSeries;
     private XYSeries potentialTimeSelectionSeries;
 
-    public NLRPlot(NLRDataCollection2 nlrModel)
+    public NLRPlot(NLRSearchDataCollection nlrModel)
     {
         this.nlrModel = nlrModel;
         

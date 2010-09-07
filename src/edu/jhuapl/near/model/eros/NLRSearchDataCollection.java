@@ -1,10 +1,13 @@
 package edu.jhuapl.near.model.eros;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -25,7 +28,7 @@ import edu.jhuapl.near.util.*;
 
 import vtk.*;
 
-public class NLRDataCollection2 extends Model 
+public class NLRSearchDataCollection extends Model 
 {
 	static private SqlManager db = null;
 
@@ -66,7 +69,7 @@ public class NLRDataCollection2 extends Model
 		BY_DISTANCE
 	}
 	
-	public static class NLRPoint implements Comparable<NLRPoint>
+	private static class NLRPoint implements Comparable<NLRPoint>
 	{
 		public double[] point;
 		public Long time;
@@ -84,21 +87,56 @@ public class NLRDataCollection2 extends Model
 			return time.compareTo(o.time);
 		}
 	}
+
+	/*
+	private static class NLROriginalPoints
+	{
+		private vtkPolyData polydata;
+		private vtkDoubleArray potential;
+		private vtkDoubleArray time;
+		
+		public NLROriginalPoints()
+		{
+			polydata = new vtkPolyData();
+			vtkPoints points = new vtkPoints();
+			vtkCellArray vert = new vtkCellArray();
+			polydata.SetPoints( points );
+			polydata.SetVerts( vert );
+			
+			potential = new vtkDoubleArray();
+			potential.SetNumberOfComponents(1);
+
+			time = new vtkDoubleArray();
+			time.SetNumberOfComponents(1);
+		}
+		
+		public void addPoint(double[] point, long time, double potential)
+		{
+			polydata.GetPoints().InsertNextPoint(point);
+			this.potential.InsertNextTuple1(potential);
+			this.time.InsertNextTuple1(time);
+		}
+		
+		public int size()
+		{
+			return polydata.GetNumberOfPoints();
+		}
+		
+		public NLRPoint get(int i)
+		{
+			return new NLRPoint(polydata.GetPoint(i), (long)time.GetTuple1(i), potential.GetTuple1(i));
+		}
+		
+		public void clear()
+		{
+		}
+	}
+	*/
 	
-	public NLRDataCollection2(ErosModel erosModel)
+	public NLRSearchDataCollection(ErosModel erosModel)
 	{
 		this.erosModel = erosModel;
 	
-		try
-		{
-			if (db == null)
-				db = new SqlManager("org.h2.Driver", "jdbc:h2:~/tmp/test-h2/nlr");
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-
 		createDoyToPathMap();
 
 		polydata = new vtkPolyData();
@@ -129,7 +167,7 @@ public class NLRDataCollection2 extends Model
 			double maskValue,
 			boolean reset) throws IOException, ParseException
 	{
-		loadNlrDataSql(startDate, stopDate, cubeList);
+		loadNlrData(startDate, stopDate, cubeList);
 		
 		applyMask(maskType, maskValue, reset);
 		
@@ -168,6 +206,7 @@ public class NLRDataCollection2 extends Model
 		
     	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 	}
+	
 	
 	private ArrayList<IdPair> getValidIntersectingDays(GregorianCalendar startDate, GregorianCalendar stopDate)
 	{
@@ -225,8 +264,10 @@ public class NLRDataCollection2 extends Model
 		return validDays;
 	}
 	
+	
+	
 	@SuppressWarnings("unchecked")
-	public void loadNlrData(
+	private void loadNlrData(
 			GregorianCalendar startDate,
 			GregorianCalendar stopDate,
 			TreeSet<Integer> cubeList) throws IOException, ParseException
@@ -360,9 +401,10 @@ public class NLRDataCollection2 extends Model
 			}
 		}
 	}
+	
 
 	@SuppressWarnings("unchecked")
-	public void loadNlrDataSql(
+	private void loadNlrDataSql(
 			GregorianCalendar startDate,
 			GregorianCalendar stopDate,
 			TreeSet<Integer> cubeList) throws IOException, ParseException
@@ -374,6 +416,16 @@ public class NLRDataCollection2 extends Model
 			return;
 		}
 		
+		try
+		{
+			if (db == null)
+				db = new SqlManager("org.h2.Driver", "jdbc:h2:~/tmp/test-h2/nlr;ACCESS_MODE_DATA=r");
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+
 		// Make clones since otherwise the previous if statement might
 		// evaluate to true even if something changed.
 		this.startDate = (GregorianCalendar)startDate.clone();
@@ -382,9 +434,6 @@ public class NLRDataCollection2 extends Model
 		
 		long start = startDate.getTime().getTime();
 		long stop = stopDate.getTime().getTime();
-
-		// First calculate the days the given dates span
-		ArrayList<IdPair> validDays = getValidIntersectingDays(startDate, stopDate);
 
 		vtkPoints points = polydata.GetPoints();
 		vtkCellArray vert = polydata.GetVerts();
@@ -400,27 +449,43 @@ public class NLRDataCollection2 extends Model
         ResultSet rs = null;
         
         String statement = 
-        	"SELECT UTC, Eros_x, Eros_y, Eros_z, U FROM nlr WHERE" +
+        	"SELECT UTC, Eros_x, Eros_y, Eros_z, U, cube_id FROM nlr WHERE" +
         	" UTC >= " + start + " AND UTC <= " + stop;
+//        if (cubeList.size() > 0)
+//        {
+//        	statement += " AND (";
+//        	int i=0;
+//			for (Integer cubeid : cubeList)
+//			{
+//				statement += " cube_id = " + cubeid;
+//				if (i < cubeList.size()-1)
+//					statement += " OR";
+//				++i;
+//			}
+//        	statement += " )";
+//        }
         if (cubeList.size() > 0)
         {
-        	statement += " AND ( ";
+        	statement += " AND cube_id IN (";
         	int i=0;
 			for (Integer cubeid : cubeList)
 			{
-				statement += " cube_id = " + cubeid;
+				statement += cubeid;
 				if (i < cubeList.size()-1)
-					statement += " OR ";
+					statement += ", ";
+				++i;
 			}
         	statement += " )";
         }
-
+        
         System.out.println(statement);
 		try
 		{
 			st = db.createStatement();
 	        rs = st.executeQuery(statement);
 	        
+	        System.out.println("finished executing query");
+	        int count = 0;
 	        while(rs.next())
 	        {
 	        	long time = rs.getLong(1);
@@ -432,9 +497,17 @@ public class NLRDataCollection2 extends Model
 
 				originalPoints.add(new NLRPoint(point, time, potential));
 				//System.out.println(time);
+				
+				if (count % 1000 == 0)
+					System.out.println(count);
+
+				++count;
 	        }
-	        
+
 	        st.close();
+
+	        System.out.println("finished retrieving data from db");
+
 		}
 		catch (SQLException e)
 		{
@@ -676,7 +749,7 @@ public class NLRDataCollection2 extends Model
     	}
     }
     
-    public ArrayList<String> getAllNlrPaths()
+    private ArrayList<String> getAllNlrPaths()
     {
     	ArrayList<String> paths = new ArrayList<String>();
     	
@@ -850,4 +923,82 @@ public class NLRDataCollection2 extends Model
         
     	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
+    
+	public void saveNlrData(File outFile) throws IOException, ParseException
+	{
+		if (firstPointShown < 0 || lastPointShown < 0)
+			return;
+	}
+	
+	public void saveNlrDataSql(File outFile) throws IOException, ParseException
+	{
+		if (firstPointShown < 0 || lastPointShown < 0)
+			return;
+		
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        
+		try
+		{
+			FileWriter fstream = new FileWriter(outFile);
+	        BufferedWriter out = new BufferedWriter(fstream);
+
+	        st = db.preparedStatement("SELECT * FROM nlr WHERE UTC = ?");
+	        String newline = System.getProperty("line.separator");
+	        
+	        StringBuilder sb = new StringBuilder();
+	        
+	        int count = 0;
+			int numPoints = originalPoints.size();
+			System.out.println("numPOint " + numPoints);
+			for (int i=0; i<numPoints; ++i)
+			{
+				if (i < firstPointShown || i > lastPointShown)
+					continue;
+				
+				st.setLong(1, originalPoints.get(i).time);
+		        rs = st.executeQuery();
+		        
+		        boolean hasNext = rs.next();
+		        if (hasNext == false)
+		        	continue;
+		        
+		        sb.append(rs.getFloat(2)); sb.append(' ');
+		        sb.append(rs.getFloat(3)); sb.append(' ');
+		        sb.append(rs.getFloat(4)); sb.append(' ');
+		        sb.append(rs.getDouble(5)); sb.append(' ');
+		        sb.append(sdf.format(new Date(rs.getLong(1)))); sb.append(' ');
+		        sb.append(rs.getFloat(6)); sb.append(' ');
+		        sb.append(rs.getByte(7)); sb.append(' ');
+		        sb.append(rs.getByte(8)); sb.append(' ');
+		        sb.append(rs.getFloat(9)); sb.append(' ');
+		        sb.append(rs.getFloat(10)); sb.append(' ');
+		        sb.append(rs.getFloat(11)); sb.append(' ');
+		        sb.append(rs.getFloat(12)); sb.append(' ');
+		        sb.append(rs.getFloat(13)); sb.append(' ');
+		        sb.append(rs.getDouble(14)); sb.append(' ');
+		        sb.append(rs.getFloat(15)); sb.append(' ');
+		        sb.append(rs.getFloat(16)); sb.append(' ');
+		        sb.append(rs.getFloat(17)); sb.append(' ');
+		        sb.append(rs.getFloat(18)); sb.append(' ');
+		        sb.append(rs.getFloat(19));
+		        sb.append(newline);
+
+		        out.write(sb.toString());
+		        
+		        if (count % 1000 == 0)
+		        	System.out.println(count);
+		        ++count;
+			}
+			
+
+	        st.close();
+		}
+		catch (SQLException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
 }

@@ -18,7 +18,8 @@ public class ErosModelManager extends ModelManager
 	static public final String EROS = "eros";
 	static public final String MSI_BOUNDARY = "msi-boundary";
 	static public final String NIS_SPECTRA = "nis-spectra";
-	static public final String NLR_DATA = "nlr-data";
+	static public final String NLR_DATA_BROWSE = "nlr-data-browse";
+	static public final String NLR_DATA_SEARCH = "nlr-data-search";
 	static public final String LINE_STRUCTURES = "line-structures";
 	static public final String CIRCLE_STRUCTURES = "circle-structures";
 	static public final String POINT_STRUCTURES = "point-structures";
@@ -30,7 +31,8 @@ public class ErosModelManager extends ModelManager
 	private ErosModel erosModel;
 	private MSIBoundaryCollection msiBoundaries;
 	private NISSpectraCollection nisSpectra;
-	private NLRDataCollection2 nlrData;
+	private NLRBrowseDataCollection nlrDataBrowse;
+	private NLRSearchDataCollection nlrDataSearch;
 	private LineModel lineStructuresModel;
 	private CircleModel circleStructuresModel;
 	private PointModel pointStructuresModel;
@@ -44,7 +46,8 @@ public class ErosModelManager extends ModelManager
     	msiImages = new MSIImageCollection(erosModel);
     	msiBoundaries = new MSIBoundaryCollection(erosModel);
     	nisSpectra = new NISSpectraCollection(erosModel);
-    	nlrData = new NLRDataCollection2(erosModel);
+    	nlrDataBrowse = new NLRBrowseDataCollection();
+    	nlrDataSearch = new NLRSearchDataCollection(erosModel);
     	lineStructuresModel = new LineModel(erosModel);
     	circleStructuresModel = new CircleModel(erosModel);
     	pointStructuresModel = new PointModel(erosModel);
@@ -61,7 +64,8 @@ public class ErosModelManager extends ModelManager
     	allModels.add(msiImages);
     	allModels.add(msiBoundaries);
     	allModels.add(nisSpectra);
-    	allModels.add(nlrData);
+    	allModels.add(nlrDataBrowse);
+    	allModels.add(nlrDataSearch);
     	allModels.add(lineStructuresModel);
     	allModels.add(circleStructuresModel);
     	allModels.add(pointStructuresModel);
@@ -83,8 +87,10 @@ public class ErosModelManager extends ModelManager
 			return msiBoundaries;
 		else if (NIS_SPECTRA.equals(modelName))
 			return nisSpectra;
-		else if (NLR_DATA.equals(modelName))
-			return nlrData;
+		else if (NLR_DATA_BROWSE.equals(modelName))
+			return nlrDataBrowse;
+		else if (NLR_DATA_SEARCH.equals(modelName))
+			return nlrDataSearch;
 		else if (LINE_STRUCTURES.equals(modelName))
 			return lineStructuresModel;
 		else if (CIRCLE_STRUCTURES.equals(modelName))

@@ -14,7 +14,7 @@ import edu.jhuapl.near.util.Properties;
 
 import vtk.*;
 
-public class NLRDataCollection extends Model implements PropertyChangeListener 
+public class NLRBrowseDataCollection extends Model implements PropertyChangeListener 
 {
 	private ArrayList<vtkProp> nlrPerDayActors = new ArrayList<vtkProp>();
 
@@ -132,6 +132,4 @@ public class NLRDataCollection extends Model implements PropertyChangeListener
     	
     	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 	}
-
-
 }
