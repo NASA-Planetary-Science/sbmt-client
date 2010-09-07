@@ -89,4 +89,24 @@ public class FileUtil
 		return words;
 	}
 
+	/**
+	 * @param in
+	 * @param out
+	 * @throws IOException
+	 */
+	public static void copyFile(File inFile, File outFile) throws IOException
+	{
+		InputStream in = new FileInputStream(inFile);
+		OutputStream out = new FileOutputStream(outFile);
+
+		byte[] buf = new byte[2048];
+		int len;
+		while ((len = in.read(buf)) > 0)
+		{
+			out.write(buf, 0, len);
+		}
+		in.close();
+		out.close();
+	}
+
 }
