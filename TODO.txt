@@ -9,7 +9,8 @@
  - Disable ability to save and load from file while drawing a path
 
  - Improve lighting of shape model so as to better make out the topography.
-   Perhaps provide controls for modifying it.
+   Perhaps provide controls for modifying it. In particular, remove the glaring
+   effect especially noticeable at the ends of eros
    
  - Undo feature
  
@@ -44,5 +45,38 @@
    
  - in backplane generation, add the elevation, slope, etc values as new planes
  
+ - for people using macs, the width of the control panel is too narrow
+ 
  - use interpolation within a plate for the elevation, slope etc. (similar to smooth shading)
  
+ - add options for changing colors of drawn structures such as circles and lines.
+   perhaps save the color to each line of the file. also provide controls for
+   changing color of individual structures. 
+ 
+ - improve NLR tab: fix performance. Allow showing all data at once. Allow exporting data.
+   Show original tab also (perhaps one for browsing and one for searching)
+ 
+ - develop new high res topography tool: this will work as follows. Create a new tab which
+   provides the options to select a point (in lat, west lon) by drawing a circle.
+   A ddr cube will be generated at that area using Bob Gaskell's fortran program
+   for generating high resolution topography. Bob Gaskell's program takes the
+   following input:
+    1. a name
+    2. lat lon (note lon is west longitude not east as is used by the tool)
+    3. half width: i.e. the number of pixels in half the size of width of a plane
+    	 of the cube. The maximum is 512 pixels (or 1023 (must be odd) in full length)
+    4. size of horizontal pixel in meters per pixel
+   Currently the program is interactive. we will need to modify it so all options can be run
+   on the command line. 
+   Once the ddr is generated, allow user to save it to any location. Also provide option
+   for generating profiles (i.e. plot of height vs distance). See the screenshot Carolyn
+   sent. Try to reproduce it: show the isosurface lines superimposed on the shaded
+   relief map on the left.
+   On the asteroid, show the outline of the ddr (similar to how outlines of msi images
+   are shown when searching). Provide ability to save outline to file.
+   If possible it should be possible to load in this outline and ddr and continue work
+   from there (i.e. to be able to generate new profiles) in situations where user
+   closes tool and would like to resume work later.
+   It will be necessary to first download all topographic data to users machine before
+   first use.
+   
