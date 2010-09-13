@@ -9,7 +9,8 @@ public class Configuration
 	static private String appDir = null;
 	static private String cacheDir = null;
 	static private String cacheVersion = "2";
-
+	static private String mapMaperDir = null;
+	
 	/**
 	 * @return Return the location where all application specific files should be stored. This is within
 	 * the .neartool folder located in the users home directory.
@@ -80,4 +81,13 @@ public class Configuration
 		return "http://near.jhuapl.edu/software/query2";
 	}
 
+	static public String getMapmakerDir()
+	{
+		return mapMaperDir;
+	}
+	
+	static public void setMapmakerDir(String folder)
+	{
+		mapMaperDir = folder;
+	}
 }

@@ -1,0 +1,4 @@
+#!/bin/sh
+
+# Usage: ./runmapmaker pathToMapmaker name lat lon 
+MAPMAKER=$1

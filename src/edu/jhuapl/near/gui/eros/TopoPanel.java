@@ -142,6 +142,7 @@ public class TopoPanel extends JPanel implements ActionListener
 		// Next download the entire map maker suite to the users computer 
 		// if it has never been downloaded before.
 		// Ask the user beforhand if it's okay to continue.
+		
 		String executablePath;
 		String outputFolder;
 		
