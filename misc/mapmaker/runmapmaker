@@ -1,4 +1,15 @@
 #!/bin/sh
 
-# Usage: ./runmapmaker pathToMapmaker name lat lon 
+# Usage: ./runmapmaker pathToMapmakerExecutable name metersPerPixel lat lon 
+
 MAPMAKER=$1
+NAME=$2
+METERS_PER_PIXEL=$3
+LAT=$4
+LON=$5
+
+DIR=`dirname $MAPMAKER`
+DIR=`dirname $DIR`
+cd $DIR
+
+echo -e "$NAME\n512 $METERS_PER_PIXEL\nL\n$LAT,$LON\nn\nn\nn\nn\nn\nn\n" | $MAPMAKER
