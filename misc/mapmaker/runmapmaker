@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Usage: ./runmapmaker pathToMapmakerExecutable name metersPerPixel lat lon 
 
@@ -8,8 +8,11 @@ METERS_PER_PIXEL=$3
 LAT=$4
 LON=$5
 
-DIR=`dirname $MAPMAKER`
-DIR=`dirname $DIR`
+EXECDIR=`dirname $MAPMAKER`
+DIR=`dirname $EXECDIR`
 cd $DIR
+
+export LD_LIBRARY_PATH=$EXECDIR:$LD_LIBRARY_PATH
+export DYLD_LIBRARY_PATH=$EXECDIR:$DYLD_LIBRARY_PATH
 
 echo -e "$NAME\n512 $METERS_PER_PIXEL\nL\n$LAT,$LON\nn\nn\nn\nn\nn\nn\n" | $MAPMAKER
