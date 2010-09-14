@@ -2,7 +2,10 @@ package edu.jhuapl.near.util;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.zip.GZIPInputStream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 public class FileUtil 
 {
@@ -89,16 +92,8 @@ public class FileUtil
 		return words;
 	}
 
-	/**
-	 * @param in
-	 * @param out
-	 * @throws IOException
-	 */
-	public static void copyFile(File inFile, File outFile) throws IOException
+	public static void copyInputStream(InputStream in, OutputStream out) throws IOException
 	{
-		InputStream in = new FileInputStream(inFile);
-		OutputStream out = new FileOutputStream(outFile);
-
 		byte[] buf = new byte[2048];
 		int len;
 		while ((len = in.read(buf)) > 0)
@@ -109,4 +104,57 @@ public class FileUtil
 		out.close();
 	}
 
+
+	/**
+	 * @param in
+	 * @param out
+	 * @throws IOException
+	 */
+	public static void copyFile(File inFile, File outFile) throws IOException
+	{
+		InputStream in = new FileInputStream(inFile);
+		OutputStream out = new FileOutputStream(outFile);
+
+		copyInputStream(in, out);
+	}
+
+	/**
+	 * The following function is adapted from http://www.devx.com/getHelpOn/10MinuteSolution/20447
+	 * @param file
+	 */
+	public static void unzipFile(File file, String extractToFolder)
+	{
+		Enumeration entries;
+		ZipFile zipFile;
+
+		try 
+		{
+			zipFile = new ZipFile(file);
+
+			entries = zipFile.entries();
+
+			while(entries.hasMoreElements())
+			{
+				ZipEntry entry = (ZipEntry)entries.nextElement();
+
+				if(entry.isDirectory())
+				{
+					System.err.println("Extracting directory: " + entry.getName());
+					(new File(extractToFolder + File.separator + entry.getName())).mkdirs();
+					continue;
+				}
+
+				System.err.println("Extracting file: " + entry.getName());
+				copyInputStream(zipFile.getInputStream(entry),
+						new BufferedOutputStream(new FileOutputStream(extractToFolder + File.separator + entry.getName())));
+			}
+
+			zipFile.close();
+		}
+		catch (IOException ioe) {
+			System.err.println("Unhandled exception:");
+			ioe.printStackTrace();
+			return;
+		}
+	}
 }

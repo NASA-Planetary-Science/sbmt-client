@@ -1,16 +1,35 @@
 package edu.jhuapl.near.util;
 
+import java.io.File;
+import java.util.ArrayList;
+
+
 public class Mapmaker
 {
+	private String mapmakerRootDir;
+	private ProcessBuilder processBuilder;
+	private ArrayList<String> processCommand = new ArrayList<String>();
 	private double latitude;
 	private double longitude;
 	private int halfWidth;
 	private double pixelSize;
+	private String name;
 
+	public Mapmaker()
+	{
+		File file = FileCache.getFileFromServer("/MSI/mapmaker.zip");
+		mapmakerRootDir = file.getParent() + File.separator + "mapmaker";
+		
+		processBuilder = new ProcessBuilder(processCommand);
+	}
+	
 	public void runMapmaker()
 	{
-		
+		processCommand.clear();
+		//processCommand.add
+//		processCommand.add(halfWidth);
 	}
+	
 	public double getLatitude()
 	{
 		return latitude;
