@@ -72,6 +72,11 @@
    for generating profiles (i.e. plot of height vs distance). See the screenshot Carolyn
    sent. Try to reproduce it: show the isosurface lines superimposed on the shaded
    relief map on the left.
+   Show multiple profiles at once on the plot. Perhaps show each in a different color to
+   distinguish clearly. Perhaps show A at the start of the profile and A' at the end so
+   as to distinguish the beginning and end of a profile.
+   Provide ability to export profiles to a text file. Probably a single profile per
+   file.
    On the asteroid, show the outline of the ddr (similar to how outlines of msi images
    are shown when searching). Provide ability to save outline to file.
    If possible it should be possible to load in this outline and ddr and continue work
