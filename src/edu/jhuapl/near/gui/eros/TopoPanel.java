@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.io.IOException;
 import java.util.TreeSet;
 
 import javax.swing.BoxLayout;
@@ -22,6 +23,9 @@ import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.eros.ErosModelManager;
 import edu.jhuapl.near.pick.PickManager;
 import edu.jhuapl.near.pick.PickManager.PickMode;
+import edu.jhuapl.near.util.GeometryUtil;
+import edu.jhuapl.near.util.LatLon;
+import edu.jhuapl.near.util.Mapmaker;
 
 public class TopoPanel extends JPanel implements ActionListener
 {
@@ -143,11 +147,23 @@ public class TopoPanel extends JPanel implements ActionListener
 		// if it has never been downloaded before.
 		// Ask the user beforhand if it's okay to continue.
 		
-		String executablePath;
-		String outputFolder;
-		
 		// Next run the mapmaker tool
-		
+		try
+		{
+			Mapmaker mapmaker = new Mapmaker();
+			mapmaker.setName(name);
+			LatLon ll = GeometryUtil.reclat(centerPoint);
+			mapmaker.setLatitude(ll.lat);
+			mapmaker.setLongitude(ll.lon);
+			mapmaker.setPixelSize(1000.0 * 1.5 * radius / 512.0);
+			
+			mapmaker.runMapmaker();
+		}
+		catch (Exception e1)
+		{
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		
 	}
 }
