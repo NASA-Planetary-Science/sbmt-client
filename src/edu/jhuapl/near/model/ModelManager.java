@@ -14,20 +14,20 @@ public abstract class ModelManager extends Model implements PropertyChangeListen
     private ArrayList<vtkProp> props = new ArrayList<vtkProp>();
     private ArrayList<vtkProp> propsExceptSmallBody = new ArrayList<vtkProp>();
     private HashMap<vtkProp, Model> propToModelMap = new HashMap<vtkProp, Model>();
-    private ArrayList<Model> allModels;
+//    private ArrayList<Model> allModels;
+    private HashMap<String, Model> allModels = new HashMap<String, Model>();
     
-    public ModelManager()
-    {
-    }
-
-    protected void setModels(ArrayList<Model> models)
+    protected void setModels(HashMap<String, Model> models)
     {
     	allModels = models;
 
-    	for (Model model : allModels)
+    	for (String modelName : allModels.keySet())
+    	{
+    		Model model = allModels.get(modelName);
     		model.addPropertyChangeListener(this);
-    	
-		updateProps();
+    	}    	
+
+    	updateProps();
     }
     
     public ArrayList<vtkProp> getProps()
@@ -55,8 +55,9 @@ public abstract class ModelManager extends Model implements PropertyChangeListen
 		propsExceptSmallBody.clear();
 		propToModelMap.clear();
 
-		for (Model model : allModels)
+		for (String modelName : allModels.keySet())
 		{
+			Model model = allModels.get(modelName);
 			if (model.isVisible())
 			{
 				props.addAll(model.getProps());
@@ -75,17 +76,10 @@ public abstract class ModelManager extends Model implements PropertyChangeListen
 		return propToModelMap.get(prop);
 	}
 	
-	public abstract Model getModel(String modelName);
+	public Model getModel(String modelName)
+	{
+		return allModels.get(modelName);
+	}
 	
 	public abstract SmallBodyModel getSmallBodyModel();
-
-	public abstract Graticule getGraticuleModel();
-
-	public abstract LineModel getLineStructuresModel();
-
-	public abstract CircleModel getCircleStructuresModel();
-
-	public abstract PointModel getPointStructuresModel();
-
-	public abstract RegularPolygonModel getCircleSelectionModel();
 }

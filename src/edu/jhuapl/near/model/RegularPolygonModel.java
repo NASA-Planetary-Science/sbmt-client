@@ -133,8 +133,11 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
 			SmallBodyModel smallBodyModel,
 			int numberOfSides,
 			boolean saveRadiusToOutput,
-			String type)
+			String type,
+			String name)
 	{
+		super(name);
+		
 		this.smallBodyModel = smallBodyModel;
 
 		this.smallBodyModel.addPropertyChangeListener(this);

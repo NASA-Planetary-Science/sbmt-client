@@ -1,5 +1,6 @@
 package edu.jhuapl.near.model.eros;
 
+import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.SmallBodyModel;
 
 public class ErosModel extends SmallBodyModel
@@ -24,7 +25,7 @@ public class ErosModel extends SmallBodyModel
 
 	public ErosModel()
 	{
-		super(modelNames, modelFiles, coloringFiles, null, true);
+		super(modelNames, modelFiles, coloringFiles, null, true, ModelNames.EROS);
 	}
 
 	public int getNumberResolutionLevels()

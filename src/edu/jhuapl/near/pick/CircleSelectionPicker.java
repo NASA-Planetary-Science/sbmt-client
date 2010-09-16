@@ -26,7 +26,7 @@ public class CircleSelectionPicker extends Picker
 	{
 		this.renWin = renderer.getRenderWindowPanel();
 		this.modelManager = modelManager;
-		this.circleModel = modelManager.getCircleSelectionModel();
+		this.circleModel = (RegularPolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
 		
 		smallBodyPicker = new vtkCellPicker();
 		smallBodyPicker.SetTolerance(0.002);

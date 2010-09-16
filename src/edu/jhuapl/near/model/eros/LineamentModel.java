@@ -4,6 +4,7 @@ import java.io.*;
 import java.util.*;
 
 import edu.jhuapl.near.model.Model;
+import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.util.Properties;
 
 import vtk.*;
@@ -29,6 +30,11 @@ public class LineamentModel extends Model
 		//public ArrayList<Double> y = new ArrayList<Double>();
 		//public ArrayList<Double> z = new ArrayList<Double>();
 		//public BoundingBox bb = new BoundingBox();
+	}
+
+	public LineamentModel()
+	{
+		super(ModelNames.LINEAMENT);
 	}
 
 	private void initialize()

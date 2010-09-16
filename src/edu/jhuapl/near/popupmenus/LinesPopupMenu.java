@@ -9,6 +9,7 @@ import javax.swing.JMenuItem;
 import vtk.vtkProp;
 import edu.jhuapl.near.model.LineModel;
 import edu.jhuapl.near.model.ModelManager;
+import edu.jhuapl.near.model.ModelNames;
 
 public class LinesPopupMenu extends PopupMenu
 {
@@ -17,7 +18,7 @@ public class LinesPopupMenu extends PopupMenu
 	
 	public LinesPopupMenu(ModelManager modelManager)
 	{
-		this.model = modelManager.getLineStructuresModel();
+		this.model = (LineModel)modelManager.getModel(ModelNames.LINE_STRUCTURES);
 		
 		JMenuItem mi; 
 		mi = new JMenuItem(new EditAction());

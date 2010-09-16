@@ -8,7 +8,6 @@ import vtk.*;
 
 import edu.jhuapl.near.gui.Renderer;
 import edu.jhuapl.near.model.*;
-import edu.jhuapl.near.model.ModelManager;
 
 public class LinePicker extends Picker
 {
@@ -43,7 +42,7 @@ public class LinePicker extends Picker
 	{
 		this.renWin = renderer.getRenderWindowPanel();
 		this.modelManager = modelManager;
-		this.lineModel = modelManager.getLineStructuresModel();
+		this.lineModel = (LineModel)modelManager.getModel(ModelNames.LINE_STRUCTURES);
 		
 		smallBodyPicker = new vtkCellPicker();
 		smallBodyPicker.SetTolerance(0.002);

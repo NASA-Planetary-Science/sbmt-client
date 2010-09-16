@@ -20,6 +20,7 @@ import org.joda.time.*;
 import vtk.vtkPolyData;
 
 import edu.jhuapl.near.query.Query;
+import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.RegularPolygonModel;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.eros.ErosModelManager;
@@ -263,7 +264,7 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
         {
 			public void actionPerformed(ActionEvent e) 
 			{
-				RegularPolygonModel selectionModel = (RegularPolygonModel)modelManager.getModel(ErosModelManager.CIRCLE_SELECTION);
+				RegularPolygonModel selectionModel = (RegularPolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
 				selectionModel.removeAllStructures();
 			}
         });
@@ -390,7 +391,7 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
         {
 			public void actionPerformed(ActionEvent e) 
 			{
-				NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ErosModelManager.NIS_SPECTRA);
+				NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelNames.NIS_SPECTRA);
 				model.removeAllImages();
 				resultIntervalCurrentlyShown = null;
 			}
@@ -412,7 +413,7 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
 			{
                 Double minVal = (Double)minChannelValueTextField.getValue();
                 Double maxVal = (Double)maxChannelValueTextField.getValue();
-				NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ErosModelManager.NIS_SPECTRA);
+				NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelNames.NIS_SPECTRA);
 				model.setChannelColoring(channelComboBox.getSelectedIndex(), minVal, maxVal);
 			}
         });
@@ -431,7 +432,7 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
                 	minChannelValueTextField.setValue(minChannelValueTextField.getPreviousValue());
                 else
                 {
-    				NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ErosModelManager.NIS_SPECTRA);
+    				NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelNames.NIS_SPECTRA);
     				model.setChannelColoring(channelComboBox.getSelectedIndex(), minVal, maxVal);
                 }
             }
@@ -452,7 +453,7 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
                 	maxChannelValueTextField.setValue(maxChannelValueTextField.getPreviousValue());
                 else
                 {
-    				NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ErosModelManager.NIS_SPECTRA);
+    				NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelNames.NIS_SPECTRA);
     				model.setChannelColoring(channelComboBox.getSelectedIndex(), minVal, maxVal);
                 }
             }
@@ -518,8 +519,8 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
         			DateTimeZone.UTC);
 
 			TreeSet<Integer> cubeList = null;
-			RegularPolygonModel selectionModel = (RegularPolygonModel)modelManager.getModel(ErosModelManager.CIRCLE_SELECTION);
-			SmallBodyModel erosModel = (SmallBodyModel)modelManager.getModel(ErosModelManager.EROS);
+			RegularPolygonModel selectionModel = (RegularPolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
+			SmallBodyModel erosModel = (SmallBodyModel)modelManager.getModel(ModelNames.EROS);
 			if (selectionModel.getNumberOfStructures() > 0)
 			{
 				RegularPolygonModel.RegularPolygon region = (RegularPolygonModel.RegularPolygon)selectionModel.getStructure(0);
@@ -642,7 +643,7 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
 		int startId = idPair.id1;
 		int endId = idPair.id2;
 		
-		NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ErosModelManager.NIS_SPECTRA);
+		NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelNames.NIS_SPECTRA);
 		model.removeAllImages();
 		
 		for (int i=startId; i<endId; ++i)

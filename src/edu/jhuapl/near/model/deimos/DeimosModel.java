@@ -1,5 +1,6 @@
 package edu.jhuapl.near.model.deimos;
 
+import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.SmallBodyModel;
 
 public class DeimosModel extends SmallBodyModel
@@ -20,7 +21,7 @@ public class DeimosModel extends SmallBodyModel
 	
 	public DeimosModel()
 	{
-		super(modelNames, modelFiles, coloringFiles, imageMap, false);
+		super(modelNames, modelFiles, coloringFiles, imageMap, false, ModelNames.DEIMOS);
 	}
 
 	public int getNumberResolutionLevels()

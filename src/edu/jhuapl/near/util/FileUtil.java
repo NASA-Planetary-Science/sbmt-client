@@ -139,12 +139,12 @@ public class FileUtil
 
 				if(entry.isDirectory())
 				{
-					System.err.println("Extracting directory: " + entry.getName());
+					//System.err.println("Extracting directory: " + entry.getName());
 					(new File(extractToFolder + File.separator + entry.getName())).mkdirs();
 					continue;
 				}
 
-				System.err.println("Extracting file: " + entry.getName());
+				//System.err.println("Extracting file: " + entry.getName());
 				copyInputStream(zipFile.getInputStream(entry),
 						new BufferedOutputStream(new FileOutputStream(extractToFolder + File.separator + entry.getName())));
 			}

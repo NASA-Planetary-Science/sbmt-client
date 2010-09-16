@@ -197,7 +197,7 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
 		{
 			// In the following we ensure that the graticule is shown
 			// only if the shape model is shown
-			Graticule graticule = modelManager.getGraticuleModel();
+			Graticule graticule = (Graticule)modelManager.getModel(ModelNames.GRATICULE);
 			if (e.getStateChange() == ItemEvent.SELECTED)
 			{
 				smallBodyModel.setShowSmallBody(true);
@@ -213,7 +213,7 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
 		}
 		else if (e.getItemSelectable() == this.gridCheckBox)
 		{
-			Graticule graticule = modelManager.getGraticuleModel();
+			Graticule graticule = (Graticule)modelManager.getModel(ModelNames.GRATICULE);
 			if (e.getStateChange() == ItemEvent.SELECTED)
 				graticule.setShowGraticule(true);
 			else

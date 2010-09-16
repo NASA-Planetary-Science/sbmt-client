@@ -1,5 +1,6 @@
 package edu.jhuapl.near.model.itokawa;
 
+import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.SmallBodyModel;
 
 public class ItokawaModel extends SmallBodyModel
@@ -20,7 +21,7 @@ public class ItokawaModel extends SmallBodyModel
 
 	public ItokawaModel()
 	{
-		super(modelNames, modelFiles, coloringFiles, null, false);
+		super(modelNames, modelFiles, coloringFiles, null, false, ModelNames.ITOKAWA);
 	}
 
 	public int getNumberResolutionLevels()

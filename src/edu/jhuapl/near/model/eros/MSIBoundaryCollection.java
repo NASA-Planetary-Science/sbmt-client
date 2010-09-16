@@ -9,6 +9,7 @@ import nom.tam.fits.FitsException;
 
 import vtk.*;
 import edu.jhuapl.near.model.Model;
+import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.eros.MSIImage.MSIKey;
 import edu.jhuapl.near.model.eros.MSIImage.MSISource;
@@ -249,6 +250,8 @@ public class MSIBoundaryCollection extends Model implements PropertyChangeListen
 	
 	public MSIBoundaryCollection(SmallBodyModel erosModel)
 	{
+		super(ModelNames.MSI_BOUNDARY);
+		
 		this.erosModel = erosModel;
 	}
 

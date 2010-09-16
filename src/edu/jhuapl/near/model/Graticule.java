@@ -41,6 +41,8 @@ public class Graticule extends Model implements PropertyChangeListener
     
 	public Graticule(SmallBodyModel smallBodyModel, String[] gridFiles)
 	{
+		super(ModelNames.GRATICULE);
+		
 		if (smallBodyModel != null)
 		{
 			this.smallBodyModel = smallBodyModel;

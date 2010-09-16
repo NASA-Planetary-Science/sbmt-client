@@ -18,6 +18,7 @@ import javax.swing.JToggleButton;
 
 import net.miginfocom.swing.MigLayout;
 
+import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.RegularPolygonModel;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.eros.ErosModelManager;
@@ -76,7 +77,7 @@ public class TopoPanel extends JPanel implements ActionListener
         {
             public void actionPerformed(ActionEvent e) 
             {
-                RegularPolygonModel selectionModel = (RegularPolygonModel)modelManager.getModel(ErosModelManager.CIRCLE_SELECTION);
+                RegularPolygonModel selectionModel = (RegularPolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
                 selectionModel.removeAllStructures();
             }
         });
@@ -115,8 +116,8 @@ public class TopoPanel extends JPanel implements ActionListener
 		double [] centerPoint = null;
 		double radius = 0.0;
 		
-        RegularPolygonModel selectionModel = (RegularPolygonModel)modelManager.getModel(ErosModelManager.CIRCLE_SELECTION);
-		SmallBodyModel erosModel = (SmallBodyModel)modelManager.getModel(ErosModelManager.EROS);
+        RegularPolygonModel selectionModel = (RegularPolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
+		SmallBodyModel erosModel = (SmallBodyModel)modelManager.getModel(ModelNames.EROS);
 		if (selectionModel.getNumberOfStructures() > 0)
 		{
 			RegularPolygonModel.RegularPolygon region = (RegularPolygonModel.RegularPolygon)selectionModel.getStructure(0);
@@ -158,6 +159,8 @@ public class TopoPanel extends JPanel implements ActionListener
 			mapmaker.setPixelSize(1000.0 * 1.5 * radius / 512.0);
 			
 			mapmaker.runMapmaker();
+			
+			new TopoViewer(mapmaker.getCubeFile().getAbsolutePath());
 		}
 		catch (Exception e1)
 		{

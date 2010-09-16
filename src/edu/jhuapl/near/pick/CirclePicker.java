@@ -41,7 +41,7 @@ public class CirclePicker extends Picker
 	{
 		this.renWin = renderer.getRenderWindowPanel();
 		this.modelManager = modelManager;
-		this.circleModel = modelManager.getCircleStructuresModel();
+		this.circleModel = (CircleModel)modelManager.getModel(ModelNames.CIRCLE_STRUCTURES);
 
 		smallBodyPicker = new vtkCellPicker();
 		smallBodyPicker.SetTolerance(0.002);

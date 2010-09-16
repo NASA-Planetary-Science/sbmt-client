@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelManager;
-import edu.jhuapl.near.model.eros.ErosModelManager;
+import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.popupmenus.CirclesPopupMenu;
 import edu.jhuapl.near.popupmenus.LinesPopupMenu;
 import edu.jhuapl.near.popupmenus.PointsPopupMenu;
@@ -33,15 +33,15 @@ public class GenericPopupManager extends PopupManager
 		
 		linesPopupMenu =
 			new LinesPopupMenu(modelManager);
-		modelToPopupMap.put(modelManager.getModel(ErosModelManager.LINE_STRUCTURES), linesPopupMenu);
+		modelToPopupMap.put(modelManager.getModel(ModelNames.LINE_STRUCTURES), linesPopupMenu);
 		
 		circlesPopupMenu =
 			new CirclesPopupMenu(modelManager);
-		modelToPopupMap.put(modelManager.getModel(ErosModelManager.CIRCLE_STRUCTURES), circlesPopupMenu);
+		modelToPopupMap.put(modelManager.getModel(ModelNames.CIRCLE_STRUCTURES), circlesPopupMenu);
 
 		pointsPopupMenu =
 			new PointsPopupMenu(modelManager);
-		modelToPopupMap.put(modelManager.getModel(ErosModelManager.POINT_STRUCTURES), pointsPopupMenu);
+		modelToPopupMap.put(modelManager.getModel(ModelNames.POINT_STRUCTURES), pointsPopupMenu);
 	}
 	
 	protected HashMap<Model, PopupMenu> getModelToPopupMap()

@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import edu.jhuapl.near.model.Model;
+import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.util.Properties;
 
 import vtk.*;
@@ -22,6 +23,11 @@ public class NLRBrowseDataCollection extends Model implements PropertyChangeList
 	private HashMap<vtkProp, String> actorToFileMap = new HashMap<vtkProp, String>();
 	private double radialOffset = 0.0;
 	
+	public NLRBrowseDataCollection()
+	{
+		super(ModelNames.NLR_DATA_BROWSE);
+	}
+
 	public void addNlrData(String path) throws IOException
 	{
 		if (fileToNlrPerDayMap.containsKey(path))

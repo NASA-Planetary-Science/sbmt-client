@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import edu.jhuapl.near.model.Model;
+import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.eros.MSIImage.MSIKey;
 import edu.jhuapl.near.util.Properties;
@@ -26,6 +27,8 @@ public class MSIImageCollection extends Model implements PropertyChangeListener
 
 	public MSIImageCollection(SmallBodyModel eros)
 	{
+		super(ModelNames.MSI_IMAGES);
+		
 		this.erosModel = eros;
 	}
 	

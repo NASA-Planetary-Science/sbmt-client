@@ -42,7 +42,7 @@ public class NISPopupMenu extends PopupMenu
 	{
     	this.modelManager = modelManager;
     	this.infoPanelManager = infoPanelManager;
-    	this.erosModel = (SmallBodyModel)modelManager.getModel(ErosModelManager.EROS);
+    	this.erosModel = (SmallBodyModel)modelManager.getModel(ModelNames.EROS);
     	
 		showRemoveSpectrumIn3DMenuItem = new JMenuItem(new ShowRemoveIn3DAction());
 		this.add(showRemoveSpectrumIn3DMenuItem);
@@ -65,7 +65,7 @@ public class NISPopupMenu extends PopupMenu
 	{
 		currentSpectrum = name;
 
-		NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ErosModelManager.NIS_SPECTRA);		
+		NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelNames.NIS_SPECTRA);		
 		if (model.containsSpectrum(name))
 			showRemoveSpectrumIn3DMenuItem.setText("Remove Footprint");
 		else
@@ -77,7 +77,7 @@ public class NISPopupMenu extends PopupMenu
 	{
 		public void actionPerformed(ActionEvent e) 
 		{
-			NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ErosModelManager.NIS_SPECTRA);		
+			NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelNames.NIS_SPECTRA);		
 			try 
 			{
 				if (showRemoveSpectrumIn3DMenuItem.getText().startsWith("Show"))
@@ -136,7 +136,7 @@ public class NISPopupMenu extends PopupMenu
 	{
 		if (pickedProp instanceof vtkActor)
 		{
-			NISSpectraCollection msiImages = (NISSpectraCollection)modelManager.getModel(ErosModelManager.NIS_SPECTRA);
+			NISSpectraCollection msiImages = (NISSpectraCollection)modelManager.getModel(ModelNames.NIS_SPECTRA);
 			String name = msiImages.getSpectrumName((vtkActor)pickedProp);
 			setCurrentSpectrum(name);
 			show(e.getComponent(), e.getX(), e.getY());

@@ -5,6 +5,7 @@ import java.util.HashMap;
 import edu.jhuapl.near.gui.Renderer;
 import edu.jhuapl.near.gui.eros.ModelInfoWindowManager;
 import edu.jhuapl.near.model.Model;
+import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.eros.ErosModelManager;
 import edu.jhuapl.near.popupmenus.CirclesPopupMenu;
 import edu.jhuapl.near.popupmenus.LinesPopupMenu;
@@ -40,31 +41,31 @@ public class ErosPopupManager extends PopupManager
 		
 		lineamentPopupMenu = 
 			new LineamentPopupMenu(modelManager);
-		modelToPopupMap.put(modelManager.getModel(ErosModelManager.LINEAMENT), lineamentPopupMenu);
+		modelToPopupMap.put(modelManager.getModel(ModelNames.LINEAMENT), lineamentPopupMenu);
 		
 		msiBoundariesPopupMenu= 
 			new MSIPopupMenu(modelManager, infoPanelManager, erosRenderer, erosRenderer);
-		modelToPopupMap.put(modelManager.getModel(ErosModelManager.MSI_BOUNDARY), msiBoundariesPopupMenu);
+		modelToPopupMap.put(modelManager.getModel(ModelNames.MSI_BOUNDARY), msiBoundariesPopupMenu);
 		
 		msiImagesPopupMenu = 
 			new MSIPopupMenu(modelManager, infoPanelManager, erosRenderer, erosRenderer);
-		modelToPopupMap.put(modelManager.getModel(ErosModelManager.MSI_IMAGES), msiImagesPopupMenu);
+		modelToPopupMap.put(modelManager.getModel(ModelNames.MSI_IMAGES), msiImagesPopupMenu);
 		
 		nisSpectraPopupMenu = 
 			new NISPopupMenu(modelManager, infoPanelManager);
-		modelToPopupMap.put(modelManager.getModel(ErosModelManager.NIS_SPECTRA), nisSpectraPopupMenu);
+		modelToPopupMap.put(modelManager.getModel(ModelNames.NIS_SPECTRA), nisSpectraPopupMenu);
 		
 		linesPopupMenu =
 			new LinesPopupMenu(modelManager);
-		modelToPopupMap.put(modelManager.getModel(ErosModelManager.LINE_STRUCTURES), linesPopupMenu);
+		modelToPopupMap.put(modelManager.getModel(ModelNames.LINE_STRUCTURES), linesPopupMenu);
 		
 		circlesPopupMenu =
 			new CirclesPopupMenu(modelManager);
-		modelToPopupMap.put(modelManager.getModel(ErosModelManager.CIRCLE_STRUCTURES), circlesPopupMenu);
+		modelToPopupMap.put(modelManager.getModel(ModelNames.CIRCLE_STRUCTURES), circlesPopupMenu);
 
 		pointsPopupMenu =
 			new PointsPopupMenu(modelManager);
-		modelToPopupMap.put(modelManager.getModel(ErosModelManager.POINT_STRUCTURES), pointsPopupMenu);
+		modelToPopupMap.put(modelManager.getModel(ModelNames.POINT_STRUCTURES), pointsPopupMenu);
 	}
 	
 	protected HashMap<Model, PopupMenu> getModelToPopupMap()

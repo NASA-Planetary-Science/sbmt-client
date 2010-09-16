@@ -91,13 +91,13 @@ public class MSIPopupMenu extends PopupMenu
 	{
 		msiKey = key;
 		
-		MSIBoundaryCollection msiBoundaries = (MSIBoundaryCollection)modelManager.getModel(ErosModelManager.MSI_BOUNDARY);
+		MSIBoundaryCollection msiBoundaries = (MSIBoundaryCollection)modelManager.getModel(ModelNames.MSI_BOUNDARY);
 		if (msiBoundaries.containsBoundary(msiKey))
 			showRemoveBoundaryIn3DMenuItem.setText("Remove Image Boundary");
 		else
 			showRemoveBoundaryIn3DMenuItem.setText("Show Image Boundary");
 		
-		MSIImageCollection msiImages = (MSIImageCollection)modelManager.getModel(ErosModelManager.MSI_IMAGES);
+		MSIImageCollection msiImages = (MSIImageCollection)modelManager.getModel(ModelNames.MSI_IMAGES);
 		if (msiImages.containsImage(msiKey))
 			showRemoveImageIn3DMenuItem.setText("Remove Image");
 		else
@@ -114,7 +114,7 @@ public class MSIPopupMenu extends PopupMenu
 	{
 		public void actionPerformed(ActionEvent e) 
 		{
-			MSIImageCollection model = (MSIImageCollection)modelManager.getModel(ErosModelManager.MSI_IMAGES);
+			MSIImageCollection model = (MSIImageCollection)modelManager.getModel(ModelNames.MSI_IMAGES);
 			try 
 			{
 				if (showRemoveImageIn3DMenuItem.getText().startsWith("Show"))
@@ -140,7 +140,7 @@ public class MSIPopupMenu extends PopupMenu
 	{
 		public void actionPerformed(ActionEvent e) 
 		{
-			MSIBoundaryCollection model = (MSIBoundaryCollection)modelManager.getModel(ErosModelManager.MSI_BOUNDARY);
+			MSIBoundaryCollection model = (MSIBoundaryCollection)modelManager.getModel(ModelNames.MSI_BOUNDARY);
 			try 
 			{
 				if (showRemoveBoundaryIn3DMenuItem.getText().startsWith("Show"))
@@ -168,7 +168,7 @@ public class MSIPopupMenu extends PopupMenu
 		{
 			try 
 			{
-				SmallBodyModel eros = (SmallBodyModel)modelManager.getModel(ErosModelManager.EROS);
+				SmallBodyModel eros = (SmallBodyModel)modelManager.getModel(ModelNames.EROS);
 				infoPanelManager.addData(MSIImage.MSIImageFactory.createImage(msiKey, eros));
 			} 
 			catch (FitsException e1) {
@@ -217,8 +217,8 @@ public class MSIPopupMenu extends PopupMenu
             double[] boresightDirection = new double[3];
             double[] upVector = new double[3];
 
-            MSIBoundaryCollection msiBoundaries = (MSIBoundaryCollection)modelManager.getModel(ErosModelManager.MSI_BOUNDARY);
-	        MSIImageCollection msiImages = (MSIImageCollection)modelManager.getModel(ErosModelManager.MSI_IMAGES);
+            MSIBoundaryCollection msiBoundaries = (MSIBoundaryCollection)modelManager.getModel(ModelNames.MSI_BOUNDARY);
+	        MSIImageCollection msiImages = (MSIImageCollection)modelManager.getModel(ModelNames.MSI_IMAGES);
 	        if (msiBoundaries.containsBoundary(msiKey))
 	        {
 	            Boundary boundary = msiBoundaries.getBoundary(msiKey);
@@ -264,7 +264,7 @@ public class MSIPopupMenu extends PopupMenu
 				{
 					OutputStream out = new FileOutputStream(file);
 
-					SmallBodyModel eros = (SmallBodyModel)modelManager.getModel(ErosModelManager.EROS);
+					SmallBodyModel eros = (SmallBodyModel)modelManager.getModel(ModelNames.EROS);
 					MSIImage image = MSIImage.MSIImageFactory.createImage(msiKey, eros);
 
 					float[] backplanes = image.generateBackplanes();
@@ -301,7 +301,7 @@ public class MSIPopupMenu extends PopupMenu
 				{
 					OutputStream out = new FileOutputStream(file);
 
-					SmallBodyModel eros = (SmallBodyModel)modelManager.getModel(ErosModelManager.EROS);
+					SmallBodyModel eros = (SmallBodyModel)modelManager.getModel(ModelNames.EROS);
 					MSIImage image = MSIImage.MSIImageFactory.createImage(msiKey, eros);
 
 					String lblstr = image.generateBackplanesLabel();
@@ -330,14 +330,14 @@ public class MSIPopupMenu extends PopupMenu
 		{
 			if (modelManager.getModel(pickedProp) instanceof MSIBoundaryCollection)
 			{
-				MSIBoundaryCollection msiBoundaries = (MSIBoundaryCollection)modelManager.getModel(ErosModelManager.MSI_BOUNDARY);
+				MSIBoundaryCollection msiBoundaries = (MSIBoundaryCollection)modelManager.getModel(ModelNames.MSI_BOUNDARY);
 				Boundary boundary = msiBoundaries.getBoundary((vtkActor)pickedProp);
 				setCurrentImage(boundary.getKey());
 				show(e.getComponent(), e.getX(), e.getY());
 			}
 			else if (modelManager.getModel(pickedProp) instanceof MSIImageCollection)
 			{
-				MSIImageCollection msiImages = (MSIImageCollection)modelManager.getModel(ErosModelManager.MSI_IMAGES);
+				MSIImageCollection msiImages = (MSIImageCollection)modelManager.getModel(ModelNames.MSI_IMAGES);
 				MSIImage image = msiImages.getImage((vtkActor)pickedProp);
 				setCurrentImage(image.getKey());
 				show(e.getComponent(), e.getX(), e.getY());

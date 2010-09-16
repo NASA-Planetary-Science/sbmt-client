@@ -283,6 +283,8 @@ public class LineModel extends StructureModel implements PropertyChangeListener
 
 	public LineModel(SmallBodyModel smallBodyModel)
 	{
+		super(ModelNames.LINE_STRUCTURES);
+		
 		this.smallBodyModel = smallBodyModel;
 
 		this.smallBodyModel.addPropertyChangeListener(this);

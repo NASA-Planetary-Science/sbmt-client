@@ -6,6 +6,7 @@ import java.awt.event.ComponentEvent;
 import javax.swing.JTabbedPane;
 
 import edu.jhuapl.near.model.ModelManager;
+import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.StructureModel;
 import edu.jhuapl.near.pick.PickManager;
 
@@ -20,7 +21,7 @@ public class StructuresControlPanel extends JTabbedPane
 			PickManager pickManager)
 	{
 		StructureModel structureModel = 
-			(StructureModel)modelManager.getLineStructuresModel();
+			(StructureModel)modelManager.getModel(ModelNames.LINE_STRUCTURES);
 		lineStructuresMapperPanel = (new AbstractStructureMappingControlPanel(
 				modelManager,
 				structureModel,
@@ -28,7 +29,7 @@ public class StructuresControlPanel extends JTabbedPane
 				PickManager.PickMode.LINE_DRAW) {});
 
 		structureModel = 
-			(StructureModel)modelManager.getCircleStructuresModel();
+			(StructureModel)modelManager.getModel(ModelNames.CIRCLE_STRUCTURES);
 		circleStructuresMapperPanel = (new AbstractStructureMappingControlPanel(
 				modelManager,
 				structureModel,

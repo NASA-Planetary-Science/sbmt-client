@@ -8,6 +8,7 @@ import javax.swing.JMenuItem;
 
 import vtk.vtkProp;
 import edu.jhuapl.near.model.ModelManager;
+import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.PointModel;
 
 public class PointsPopupMenu extends PopupMenu
@@ -17,7 +18,7 @@ public class PointsPopupMenu extends PopupMenu
 	
 	public PointsPopupMenu(ModelManager modelManager)
 	{
-		this.model = modelManager.getPointStructuresModel();
+		this.model = (PointModel)modelManager.getModel(ModelNames.POINT_STRUCTURES);
 		
 		JMenuItem mi;
 		mi = new JMenuItem(new DeleteAction());

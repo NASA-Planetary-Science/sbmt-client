@@ -27,7 +27,7 @@ public class TopoViewer extends JFrame
     private static int WIDTH = 1027;
     private static int HEIGHT = 1027;
     
-	public TopoViewer()
+	public TopoViewer(String filename) throws IOException
 	{
 		ImageIcon erosIcon = new ImageIcon(getClass().getResource("/edu/jhuapl/near/data/eros.png"));
 		setIconImage(erosIcon.getImage());
@@ -48,6 +48,13 @@ public class TopoViewer extends JFrame
 
         dem.SetPoints(points);
         dem.SetPolys(polys);
+
+        setCubeFile(filename);
+        
+        // Finally make the frame visible
+        setTitle("Mapmaker View");
+        pack();
+        setVisible(true);
 	}
 
 	public void setCubeFile(String filename) throws IOException
@@ -65,7 +72,6 @@ public class TopoViewer extends JFrame
 
 		in.close();
 
-		
 		vtkPoints points = dem.GetPoints();
 		vtkCellArray polys = dem.GetPolys();
 
@@ -85,7 +91,7 @@ public class TopoViewer extends JFrame
 				y = data[index(m,n,4)];
 				z = data[index(m,n,5)];
 		
-				if (isValidPoint(x, y, z))
+				if (isValidPoint(x, y, z) && m > 0 && m < WIDTH-1 && n > 0 && n < HEIGHT-1)
 				{
 					//points.SetPoint(c, x, y, z);
 					points.InsertNextPoint(x, y, z);

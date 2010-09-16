@@ -5,6 +5,7 @@ import javax.swing.*;
 import vtk.vtkProp;
 
 import edu.jhuapl.near.gui.ColorChooser;
+import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.eros.ErosModelManager;
 import edu.jhuapl.near.model.eros.LineamentModel;
 import edu.jhuapl.near.popupmenus.PopupMenu;
@@ -27,7 +28,7 @@ public class LineamentPopupMenu extends PopupMenu
 	
 	public LineamentPopupMenu(ErosModelManager modelManager)
 	{        
-		this.model = (LineamentModel)modelManager.getModel(ErosModelManager.LINEAMENT);
+		this.model = (LineamentModel)modelManager.getModel(ModelNames.LINEAMENT);
 
 		JMenuItem mi; 
 		mi = new JMenuItem(new ChangeLineamentColorAction(ColoringType.ONE_LINEAMENT));

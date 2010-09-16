@@ -19,6 +19,7 @@ import org.joda.time.*;
 import vtk.vtkPolyData;
 
 import edu.jhuapl.near.query.Query;
+import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.RegularPolygonModel;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.eros.ErosModelManager;
@@ -405,7 +406,7 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
         {
 			public void actionPerformed(ActionEvent e) 
 			{
-				RegularPolygonModel selectionModel = (RegularPolygonModel)modelManager.getModel(ErosModelManager.CIRCLE_SELECTION);
+				RegularPolygonModel selectionModel = (RegularPolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
 				selectionModel.removeAllStructures();
 			}
         });
@@ -536,7 +537,7 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
         {
 			public void actionPerformed(ActionEvent e) 
 			{
-				MSIBoundaryCollection model = (MSIBoundaryCollection)modelManager.getModel(ErosModelManager.MSI_BOUNDARY);
+				MSIBoundaryCollection model = (MSIBoundaryCollection)modelManager.getModel(ModelNames.MSI_BOUNDARY);
 				model.removeAllBoundaries();
 				resultIntervalCurrentlyShown = null;
 			}
@@ -551,7 +552,7 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
         {
 			public void actionPerformed(ActionEvent e) 
 			{
-				MSIImageCollection model = (MSIImageCollection)modelManager.getModel(ErosModelManager.MSI_IMAGES);
+				MSIImageCollection model = (MSIImageCollection)modelManager.getModel(ModelNames.MSI_IMAGES);
 				model.removeAllImages();
 			}
         });
@@ -626,8 +627,8 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
         			DateTimeZone.UTC);
         	
 			TreeSet<Integer> cubeList = null;
-			RegularPolygonModel selectionModel = (RegularPolygonModel)modelManager.getModel(ErosModelManager.CIRCLE_SELECTION);
-			SmallBodyModel erosModel = (SmallBodyModel)modelManager.getModel(ErosModelManager.EROS);
+			RegularPolygonModel selectionModel = (RegularPolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
+			SmallBodyModel erosModel = (SmallBodyModel)modelManager.getModel(ModelNames.EROS);
 			if (selectionModel.getNumberOfStructures() > 0)
 			{
 				RegularPolygonModel.RegularPolygon region = (RegularPolygonModel.RegularPolygon)selectionModel.getStructure(0);
@@ -764,7 +765,7 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
 		int startId = idPair.id1;
 		int endId = idPair.id2;
 		
-		MSIBoundaryCollection model = (MSIBoundaryCollection)modelManager.getModel(ErosModelManager.MSI_BOUNDARY);
+		MSIBoundaryCollection model = (MSIBoundaryCollection)modelManager.getModel(ModelNames.MSI_BOUNDARY);
 		model.removeAllBoundaries();
 		
 		for (int i=startId; i<endId; ++i)

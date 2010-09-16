@@ -15,6 +15,7 @@ import com.jidesoft.swing.RangeSlider;
 
 import edu.jhuapl.near.gui.AnyFileChooser;
 import edu.jhuapl.near.gui.RadialOffsetChanger;
+import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.eros.ErosModelManager;
 import edu.jhuapl.near.model.eros.NLRBrowseDataCollection;
 import edu.jhuapl.near.model.eros.NLRDataPerDay;
@@ -92,7 +93,7 @@ public class NLRBrowsePanel extends JPanel implements ListSelectionListener
         		BoxLayout.PAGE_AXIS));
     	
     	//this.modelManager = modelManager;
-    	this.nlrModel = (NLRBrowseDataCollection)modelManager.getModel(ErosModelManager.NLR_DATA_BROWSE);
+    	this.nlrModel = (NLRBrowseDataCollection)modelManager.getModel(ModelNames.NLR_DATA_BROWSE);
         
         
         JPanel resultsPanel = new JPanel(new BorderLayout());
@@ -211,7 +212,7 @@ public class NLRBrowsePanel extends JPanel implements ListSelectionListener
         {
 			public void actionPerformed(ActionEvent e) 
 			{
-				NLRBrowseDataCollection model = (NLRBrowseDataCollection)modelManager.getModel(ErosModelManager.NLR_DATA_BROWSE);
+				NLRBrowseDataCollection model = (NLRBrowseDataCollection)modelManager.getModel(ModelNames.NLR_DATA_BROWSE);
 				model.removeAllNlrData();
 
 				showHideButton.setText("Show");

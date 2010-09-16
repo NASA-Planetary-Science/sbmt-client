@@ -21,6 +21,7 @@ import java.beans.PropertyChangeListener;
 
 import edu.jhuapl.near.gui.AnyFileChooser;
 import edu.jhuapl.near.gui.RadialOffsetChanger;
+import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.RegularPolygonModel;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.eros.ErosModelManager;
@@ -132,7 +133,7 @@ public class NLRSearchPanel extends JPanel implements ActionListener, PropertyCh
 		pickManager.getDefaultPicker().addPropertyChangeListener(this);
 
 
-		this.nlrModel = (NLRSearchDataCollection)modelManager.getModel(ErosModelManager.NLR_DATA_SEARCH);
+		this.nlrModel = (NLRSearchDataCollection)modelManager.getModel(ModelNames.NLR_DATA_SEARCH);
     	
         JPanel pane = new JPanel();
         pane.setLayout(new MigLayout("wrap 1"));
@@ -196,7 +197,7 @@ public class NLRSearchPanel extends JPanel implements ActionListener, PropertyCh
         {
             public void actionPerformed(ActionEvent e) 
             {
-                RegularPolygonModel selectionModel = (RegularPolygonModel)modelManager.getModel(ErosModelManager.CIRCLE_SELECTION);
+                RegularPolygonModel selectionModel = (RegularPolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
                 selectionModel.removeAllStructures();
                 cubeList.clear();
             }
@@ -224,7 +225,7 @@ public class NLRSearchPanel extends JPanel implements ActionListener, PropertyCh
         {
 			public void actionPerformed(ActionEvent e) 
 			{
-				NLRSearchDataCollection model = (NLRSearchDataCollection)modelManager.getModel(ErosModelManager.NLR_DATA_SEARCH);
+				NLRSearchDataCollection model = (NLRSearchDataCollection)modelManager.getModel(ModelNames.NLR_DATA_SEARCH);
 				model.removeAllNlrData();
 		        if (nlrPlot != null)
 		            nlrPlot.updateData();
@@ -333,8 +334,8 @@ public class NLRSearchPanel extends JPanel implements ActionListener, PropertyCh
     	selectRegionButton.setSelected(false);
         pickManager.setPickMode(PickMode.DEFAULT);
 
-        RegularPolygonModel selectionModel = (RegularPolygonModel)modelManager.getModel(ErosModelManager.CIRCLE_SELECTION);
-		SmallBodyModel erosModel = (SmallBodyModel)modelManager.getModel(ErosModelManager.EROS);
+        RegularPolygonModel selectionModel = (RegularPolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
+		SmallBodyModel erosModel = (SmallBodyModel)modelManager.getModel(ModelNames.EROS);
 		if (selectionModel.getNumberOfStructures() > 0)
 		{
 			RegularPolygonModel.RegularPolygon region = (RegularPolygonModel.RegularPolygon)selectionModel.getStructure(0);

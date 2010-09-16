@@ -3,6 +3,7 @@ package edu.jhuapl.near.gui;
 import javax.swing.*;
 import javax.swing.event.*;
 
+import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.PointModel;
 import edu.jhuapl.near.model.StructureModel;
 import edu.jhuapl.near.model.ModelManager;
@@ -19,11 +20,11 @@ public class PointsMappingControlPanel extends
 			PickManager pickManager)
 	{
 		super(modelManager,
-				(StructureModel)modelManager.getPointStructuresModel(),
+				(StructureModel)modelManager.getModel(ModelNames.POINT_STRUCTURES),
 				pickManager,
 				PickManager.PickMode.POINT_DRAW);
 		
-		pointModel = (PointModel)modelManager.getPointStructuresModel();
+		pointModel = (PointModel)modelManager.getModel(ModelNames.POINT_STRUCTURES);
 
 		double diameter = 2.0 * pointModel.getDefaultRadius();
 

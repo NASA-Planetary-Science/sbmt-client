@@ -41,7 +41,7 @@ public class PointPicker extends Picker
 	{
 		this.renWin = renderer.getRenderWindowPanel();
 		this.modelManager = modelManager;
-		this.pointModel = modelManager.getPointStructuresModel();
+		this.pointModel = (PointModel)modelManager.getModel(ModelNames.POINT_STRUCTURES);
 		
 		smallBodyPicker = new vtkCellPicker();
 		smallBodyPicker.SetTolerance(0.002);

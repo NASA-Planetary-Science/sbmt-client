@@ -24,6 +24,7 @@ import java.util.TreeSet;
 
 import edu.jhuapl.near.dbgen.SqlManager;
 import edu.jhuapl.near.model.Model;
+import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.util.*;
 
 import vtk.*;
@@ -135,6 +136,8 @@ public class NLRSearchDataCollection extends Model
 	
 	public NLRSearchDataCollection(ErosModel erosModel)
 	{
+		super(ModelNames.NLR_DATA_SEARCH);
+		
 		this.erosModel = erosModel;
 	
 		createDoyToPathMap();

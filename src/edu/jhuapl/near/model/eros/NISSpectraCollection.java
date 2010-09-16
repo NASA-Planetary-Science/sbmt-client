@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import edu.jhuapl.near.model.Model;
+import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.util.Properties;
 
@@ -27,6 +28,8 @@ public class NISSpectraCollection extends Model implements PropertyChangeListene
 	
 	public NISSpectraCollection(SmallBodyModel eros) 
 	{
+		super(ModelNames.NIS_SPECTRA);
+		
 		this.erosModel = eros;
 	}
 

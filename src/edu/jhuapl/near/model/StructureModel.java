@@ -23,6 +23,11 @@ public abstract class StructureModel extends Model
 	    public abstract String getInfo();
 	}
 	
+	public StructureModel(String name)
+	{
+		super(name);
+	}
+	
 	public abstract void addNewStructure();
 
 	public abstract boolean supportsSelection();

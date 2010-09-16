@@ -9,6 +9,7 @@ import javax.swing.JMenuItem;
 import vtk.vtkProp;
 import edu.jhuapl.near.model.CircleModel;
 import edu.jhuapl.near.model.ModelManager;
+import edu.jhuapl.near.model.ModelNames;
 
 public class CirclesPopupMenu extends PopupMenu
 {
@@ -17,7 +18,7 @@ public class CirclesPopupMenu extends PopupMenu
 	
 	public CirclesPopupMenu(ModelManager modelManager)
 	{
-		this.model = modelManager.getCircleStructuresModel();
+		this.model = (CircleModel)modelManager.getModel(ModelNames.CIRCLE_STRUCTURES);
 		
 		JMenuItem mi; 
 		mi = new JMenuItem(new DeleteAction());

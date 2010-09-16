@@ -17,6 +17,16 @@ public abstract class Model
     { this.pcs.removePropertyChangeListener( listener ); }
 
     private boolean visible = true;
+    private String name = null;
+    
+    public Model()
+	{
+	}
+
+    public Model(String name)
+	{
+    	this.name = name;
+	}
     
     public boolean isVisible()
     {
@@ -59,4 +69,9 @@ public abstract class Model
     {
     	// Do nothing
     }
+    
+	public String getName()
+	{
+		return name;
+	}
 }
