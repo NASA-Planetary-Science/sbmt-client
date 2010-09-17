@@ -10,8 +10,10 @@ import vtk.vtkIdList;
 import vtk.vtkPoints;
 import vtk.vtkPolyData;
 import vtk.vtkPolyDataWriter;
-import vtk.vtkXMLPolyDataWriter;
+//import vtk.vtkXMLPolyDataWriter;
 
+import edu.jhuapl.near.model.ModelFactory;
+import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.util.GeometryUtil;
 import edu.jhuapl.near.util.SmallBodyCubes;
 import edu.jhuapl.near.util.FileUtil;
@@ -29,7 +31,7 @@ public class NLRCubesGenerator
 	{
 		NativeLibraryLoader.loadVtkLibraries();
 
-		ErosModel erosModel = new ErosModel();
+		SmallBodyModel erosModel = ModelFactory.createErosBodyModel();
 
 		String nlrFileList = args[0];
 		String outputFolder = args[1];

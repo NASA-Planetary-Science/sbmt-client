@@ -13,6 +13,8 @@ import vtk.vtkPolyDataNormals;
 import vtk.vtkPolyDataReader;
 import vtk.vtkPolyDataWriter;
 
+import edu.jhuapl.near.model.Graticule;
+import edu.jhuapl.near.model.ModelFactory;
 import edu.jhuapl.near.util.NativeLibraryLoader;
 
 public class DeimosModelGenerator {
@@ -121,7 +123,7 @@ public class DeimosModelGenerator {
 				vtkPolyData erosPolyData = new vtkPolyData();
 				erosPolyData.DeepCopy(erosReader.GetOutput());
 
-				ErosGraticule grid = new ErosGraticule(null);
+				Graticule grid = ModelFactory.createErosGraticuleModel(null);
 				grid.generateGrid(erosPolyData);
 
 				writer = new vtkPolyDataWriter();

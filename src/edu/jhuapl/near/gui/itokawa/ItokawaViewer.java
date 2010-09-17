@@ -11,6 +11,7 @@ import edu.jhuapl.near.model.CircleModel;
 import edu.jhuapl.near.model.Graticule;
 import edu.jhuapl.near.model.LineModel;
 import edu.jhuapl.near.model.Model;
+import edu.jhuapl.near.model.ModelFactory;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.PointModel;
@@ -78,32 +79,11 @@ public class ItokawaViewer extends View
 	{
 		modelManager = new ModelManager();
 
-		final String[] modelNames = {
-			"HAY_A_AMICA_5_ITOKAWASHAPE_V1_0 ver64q",
-			"HAY_A_AMICA_5_ITOKAWASHAPE_V1_0 ver128q",
-			"HAY_A_AMICA_5_ITOKAWASHAPE_V1_0 ver256q",
-			"HAY_A_AMICA_5_ITOKAWASHAPE_V1_0 ver512q"};
-
-		final String[] modelFiles = {
-			"/ITOKAWA/ver64q.vtk.gz",
-			"/ITOKAWA/ver128q.vtk.gz",
-			"/ITOKAWA/ver256q.vtk.gz",
-			"/ITOKAWA/ver512q.vtk.gz"};
-
-		final String[] coloringFiles = null;
-
-		final String[] gridFiles = {
-			"/ITOKAWA/coordinate_grid_res0.vtk.gz",
-			"/ITOKAWA/coordinate_grid_res1.vtk.gz",
-			"/ITOKAWA/coordinate_grid_res2.vtk.gz",
-			"/ITOKAWA/coordinate_grid_res3.vtk.gz"};
-
-		SmallBodyModel itokawaModel = new SmallBodyModel(modelNames, modelFiles, coloringFiles, null, false, ModelNames.ITOKAWA);
-    	Graticule graticule = new Graticule(itokawaModel, gridFiles);
-    	graticule.setShiftAmount(0.0005);
+		SmallBodyModel itokawaModel = ModelFactory.createItokawaBodyModel();
+    	Graticule graticule = ModelFactory.createItokawaGraticuleModel(itokawaModel);
     	
         HashMap<String, Model> allModels = new HashMap<String, Model>();
-        allModels.put(ModelNames.ITOKAWA, itokawaModel);
+        allModels.put(ModelNames.SMALL_BODY, itokawaModel);
     	allModels.put(ModelNames.LINE_STRUCTURES, new LineModel(itokawaModel));
     	allModels.put(ModelNames.CIRCLE_STRUCTURES, new CircleModel(itokawaModel));
     	allModels.put(ModelNames.POINT_STRUCTURES, new PointModel(itokawaModel));

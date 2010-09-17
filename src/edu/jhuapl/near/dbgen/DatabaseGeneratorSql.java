@@ -5,6 +5,8 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.*;
 
+import edu.jhuapl.near.model.ModelFactory;
+import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.eros.MSIImage;
 import edu.jhuapl.near.model.eros.NISSpectrum;
 import edu.jhuapl.near.model.eros.MSIImage.MSISource;
@@ -37,7 +39,7 @@ public class DatabaseGeneratorSql
 	static private PreparedStatement msiInsert2 = null;
 	static private PreparedStatement nisInsert = null;
 	static private PreparedStatement nisInsert2 = null;
-	static private ErosModel erosModel;
+	static private SmallBodyModel erosModel;
 	static private vtkPolyDataReader footprintReader;
 	static private vtkPolyData footprintPolyData;
 	static private double[] meanPlateSizes;
@@ -622,7 +624,7 @@ public class DatabaseGeneratorSql
 	{
 		NativeLibraryLoader.loadVtkLibrariesLinuxNoX11();
 
-		erosModel = new ErosModel();
+		erosModel = ModelFactory.createErosBodyModel();
 		
 //		computeMeanPlateSizeAtAllResolutions();
 		

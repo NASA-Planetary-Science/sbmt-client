@@ -11,6 +11,7 @@ import edu.jhuapl.near.model.CircleModel;
 import edu.jhuapl.near.model.Graticule;
 import edu.jhuapl.near.model.LineModel;
 import edu.jhuapl.near.model.Model;
+import edu.jhuapl.near.model.ModelFactory;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.PointModel;
@@ -88,35 +89,11 @@ public class ErosViewer extends View
 	{
 		modelManager = new ModelManager();
 
-		final String[] modelNames = {
-			"NEAR-A-MSI-5-EROSSHAPE-V1.0 ver64q",
-			"NEAR-A-MSI-5-EROSSHAPE-V1.0 ver128q",
-			"NEAR-A-MSI-5-EROSSHAPE-V1.0 ver256q",
-			"NEAR-A-MSI-5-EROSSHAPE-V1.0 ver512q"};
-
-		final String[] modelFiles = {
-			"/edu/jhuapl/near/data/Eros_ver64q.vtk",
-			"/EROS/ver128q.vtk.gz",
-			"/EROS/ver256q.vtk.gz",
-			"/EROS/ver512q.vtk.gz"};
-
-		final String[] coloringFiles = {
-			"/EROS/Eros_Dec2006_0_Elevation.txt.gz",
-			"/EROS/Eros_Dec2006_0_GravitationalAcceleration.txt.gz",
-			"/EROS/Eros_Dec2006_0_GravitationalPotential.txt.gz",
-			"/EROS/Eros_Dec2006_0_Slope.txt.gz"};
-
-		final String[] gridFiles = {
-				"/EROS/coordinate_grid_res0.vtk.gz",
-				"/EROS/coordinate_grid_res1.vtk.gz",
-				"/EROS/coordinate_grid_res2.vtk.gz",
-				"/EROS/coordinate_grid_res3.vtk.gz"};
-		
-		SmallBodyModel erosModel = new SmallBodyModel(modelNames, modelFiles, coloringFiles, null, true, ModelNames.EROS);
-    	Graticule graticule = new Graticule(erosModel, gridFiles);
+		SmallBodyModel erosModel = ModelFactory.createErosBodyModel();
+    	Graticule graticule = ModelFactory.createErosGraticuleModel(erosModel);
 		
         HashMap<String, Model> allModels = new HashMap<String, Model>();
-        allModels.put(ModelNames.EROS, erosModel);
+        allModels.put(ModelNames.SMALL_BODY, erosModel);
     	allModels.put(ModelNames.LINEAMENT, new LineamentModel());
         allModels.put(ModelNames.MSI_IMAGES, new MSIImageCollection(erosModel));
         allModels.put(ModelNames.MSI_BOUNDARY, new MSIBoundaryCollection(erosModel));

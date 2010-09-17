@@ -335,7 +335,7 @@ public class NLRSearchPanel extends JPanel implements ActionListener, PropertyCh
         pickManager.setPickMode(PickMode.DEFAULT);
 
         RegularPolygonModel selectionModel = (RegularPolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
-		SmallBodyModel erosModel = (SmallBodyModel)modelManager.getModel(ModelNames.EROS);
+		SmallBodyModel erosModel = (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
 		if (selectionModel.getNumberOfStructures() > 0)
 		{
 			RegularPolygonModel.RegularPolygon region = (RegularPolygonModel.RegularPolygon)selectionModel.getStructure(0);

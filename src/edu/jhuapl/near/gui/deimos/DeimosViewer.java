@@ -11,6 +11,7 @@ import edu.jhuapl.near.model.CircleModel;
 import edu.jhuapl.near.model.Graticule;
 import edu.jhuapl.near.model.LineModel;
 import edu.jhuapl.near.model.Model;
+import edu.jhuapl.near.model.ModelFactory;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.PointModel;
@@ -78,28 +79,11 @@ public class DeimosViewer extends View
 	{
 		modelManager = new ModelManager();
 
-		final String[] modelNames = {
-		"DEIMOS"};
-
-		final String[] modelFiles = {
-		"/DEIMOS/DEIMOS.vtk.gz"};
-
-		final String[] coloringFiles = {
-				"/DEIMOS/DEIMOS_Elevation.txt.gz",
-				"/DEIMOS/DEIMOS_GravitationalAcceleration.txt.gz",
-				"/DEIMOS/DEIMOS_GravitationalPotential.txt.gz",
-		"/DEIMOS/DEIMOS_Slope.txt.gz"};
-
-		final String[] gridFiles = {
-		"/DEIMOS/coordinate_grid_res0.vtk.gz"};
-
-		final String imageMap = "/DEIMOS/deimos_image_map.png";
-
-		SmallBodyModel deimosModel = new SmallBodyModel(modelNames, modelFiles, coloringFiles, imageMap, false, ModelNames.DEIMOS);
-    	Graticule graticule = new Graticule(deimosModel, gridFiles);
+		SmallBodyModel deimosModel = ModelFactory.createDeimosBodyModel();
+    	Graticule graticule = ModelFactory.createDeimosGraticuleModel(deimosModel);
 
         HashMap<String, Model> allModels = new HashMap<String, Model>();
-        allModels.put(ModelNames.DEIMOS, deimosModel);
+        allModels.put(ModelNames.SMALL_BODY, deimosModel);
     	allModels.put(ModelNames.LINE_STRUCTURES, new LineModel(deimosModel));
     	allModels.put(ModelNames.CIRCLE_STRUCTURES, new CircleModel(deimosModel));
     	allModels.put(ModelNames.POINT_STRUCTURES, new PointModel(deimosModel));

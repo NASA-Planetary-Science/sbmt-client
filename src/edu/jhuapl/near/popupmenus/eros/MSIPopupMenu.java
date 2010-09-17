@@ -167,7 +167,7 @@ public class MSIPopupMenu extends PopupMenu
 		{
 			try 
 			{
-				SmallBodyModel eros = (SmallBodyModel)modelManager.getModel(ModelNames.EROS);
+				SmallBodyModel eros = (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
 				infoPanelManager.addData(MSIImage.MSIImageFactory.createImage(msiKey, eros));
 			} 
 			catch (FitsException e1) {
@@ -263,7 +263,7 @@ public class MSIPopupMenu extends PopupMenu
 				{
 					OutputStream out = new FileOutputStream(file);
 
-					SmallBodyModel eros = (SmallBodyModel)modelManager.getModel(ModelNames.EROS);
+					SmallBodyModel eros = (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
 					MSIImage image = MSIImage.MSIImageFactory.createImage(msiKey, eros);
 
 					float[] backplanes = image.generateBackplanes();
@@ -300,7 +300,7 @@ public class MSIPopupMenu extends PopupMenu
 				{
 					OutputStream out = new FileOutputStream(file);
 
-					SmallBodyModel eros = (SmallBodyModel)modelManager.getModel(ModelNames.EROS);
+					SmallBodyModel eros = (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
 					MSIImage image = MSIImage.MSIImageFactory.createImage(msiKey, eros);
 
 					String lblstr = image.generateBackplanesLabel();

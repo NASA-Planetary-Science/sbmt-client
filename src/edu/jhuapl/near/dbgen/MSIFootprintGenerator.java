@@ -8,6 +8,8 @@ import nom.tam.fits.FitsException;
 
 import vtk.*;
 
+import edu.jhuapl.near.model.ModelFactory;
+import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.eros.MSIImage;
 import edu.jhuapl.near.model.eros.MSIImage.MSISource;
 import edu.jhuapl.near.util.FileUtil;
@@ -15,7 +17,7 @@ import edu.jhuapl.near.util.NativeLibraryLoader;
 
 public class MSIFootprintGenerator 
 {
-	private static ErosModel erosModel;
+	private static SmallBodyModel erosModel;
     private static int resolutionLevel = 0;
 	
 	private static boolean checkIfMsiFilesExist(String line, MSIImage.MSISource source)
@@ -142,7 +144,7 @@ public class MSIFootprintGenerator
 
         String msiFileList=args[0];
 
-        erosModel = new ErosModel();
+		erosModel = ModelFactory.createErosBodyModel();
         resolutionLevel = Integer.parseInt(args[1]);
         try {
             erosModel.setModelResolution(resolutionLevel);

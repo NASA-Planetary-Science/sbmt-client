@@ -41,7 +41,7 @@ public class NISPopupMenu extends PopupMenu
 	{
     	this.modelManager = modelManager;
     	this.infoPanelManager = infoPanelManager;
-    	this.erosModel = (SmallBodyModel)modelManager.getModel(ModelNames.EROS);
+    	this.erosModel = (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
     	
 		showRemoveSpectrumIn3DMenuItem = new JMenuItem(new ShowRemoveIn3DAction());
 		this.add(showRemoveSpectrumIn3DMenuItem);
