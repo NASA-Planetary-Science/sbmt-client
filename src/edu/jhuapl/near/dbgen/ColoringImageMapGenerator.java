@@ -1,7 +1,6 @@
 package edu.jhuapl.near.dbgen;
 
 import vtk.*;
-import edu.jhuapl.near.model.deimos.DeimosModel;
 import edu.jhuapl.near.util.NativeLibraryLoader;
 
 public class ColoringImageMapGenerator

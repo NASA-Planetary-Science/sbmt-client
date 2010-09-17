@@ -5,8 +5,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.io.IOException;
-import java.util.TreeSet;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -18,10 +16,10 @@ import javax.swing.JToggleButton;
 
 import net.miginfocom.swing.MigLayout;
 
+import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.RegularPolygonModel;
 import edu.jhuapl.near.model.SmallBodyModel;
-import edu.jhuapl.near.model.eros.ErosModelManager;
 import edu.jhuapl.near.pick.PickManager;
 import edu.jhuapl.near.pick.PickManager.PickMode;
 import edu.jhuapl.near.util.GeometryUtil;
@@ -30,12 +28,12 @@ import edu.jhuapl.near.util.Mapmaker;
 
 public class TopoPanel extends JPanel implements ActionListener
 {
-	private ErosModelManager modelManager;
+	private ModelManager modelManager;
 	private PickManager pickManager;
 	private JToggleButton selectRegionButton;
     private JFormattedTextField nameTextField;
     
-	public TopoPanel(final ErosModelManager modelManager,
+	public TopoPanel(final ModelManager modelManager,
 			final PickManager pickManager)
 	{
     	setLayout(new BoxLayout(this,

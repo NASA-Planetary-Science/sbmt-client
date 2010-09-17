@@ -15,8 +15,8 @@ import com.jidesoft.swing.RangeSlider;
 
 import edu.jhuapl.near.gui.AnyFileChooser;
 import edu.jhuapl.near.gui.RadialOffsetChanger;
+import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
-import edu.jhuapl.near.model.eros.ErosModelManager;
 import edu.jhuapl.near.model.eros.NLRBrowseDataCollection;
 import edu.jhuapl.near.model.eros.NLRDataPerDay;
 import edu.jhuapl.near.util.DoublePair;
@@ -87,7 +87,7 @@ public class NLRBrowsePanel extends JPanel implements ListSelectionListener
     }
 
     public NLRBrowsePanel(
-    		final ErosModelManager modelManager) 
+    		final ModelManager modelManager) 
     {
     	setLayout(new BoxLayout(this,
         		BoxLayout.PAGE_AXIS));

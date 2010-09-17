@@ -5,7 +5,6 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.*;
 
-import edu.jhuapl.near.model.eros.ErosModel;
 import edu.jhuapl.near.model.eros.MSIImage;
 import edu.jhuapl.near.model.eros.NISSpectrum;
 import edu.jhuapl.near.model.eros.MSIImage.MSISource;

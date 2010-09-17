@@ -9,22 +9,22 @@ import edu.jhuapl.near.util.Properties;
 
 import vtk.*;
 
-public abstract class ModelManager extends Model implements PropertyChangeListener
+public class ModelManager extends Model implements PropertyChangeListener
 {
     private ArrayList<vtkProp> props = new ArrayList<vtkProp>();
     private ArrayList<vtkProp> propsExceptSmallBody = new ArrayList<vtkProp>();
     private HashMap<vtkProp, Model> propToModelMap = new HashMap<vtkProp, Model>();
-//    private ArrayList<Model> allModels;
     private HashMap<String, Model> allModels = new HashMap<String, Model>();
     
-    protected void setModels(HashMap<String, Model> models)
+    public void setModels(HashMap<String, Model> models)
     {
-    	allModels = models;
+    	allModels.clear();
 
-    	for (String modelName : allModels.keySet())
+    	for (String modelName : models.keySet())
     	{
-    		Model model = allModels.get(modelName);
+    		Model model = models.get(modelName);
     		model.addPropertyChangeListener(this);
+    		allModels.put(modelName, model);
     	}    	
 
     	updateProps();
@@ -81,5 +81,15 @@ public abstract class ModelManager extends Model implements PropertyChangeListen
 		return allModels.get(modelName);
 	}
 	
-	public abstract SmallBodyModel getSmallBodyModel();
+	public SmallBodyModel getSmallBodyModel()
+	{
+		for (String modelName : allModels.keySet())
+		{
+			Model model = allModels.get(modelName);
+			if (model instanceof SmallBodyModel)
+				return (SmallBodyModel)model;
+		}
+		
+		return null;
+	}
 }

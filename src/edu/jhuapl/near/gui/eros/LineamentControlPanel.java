@@ -3,8 +3,8 @@ package edu.jhuapl.near.gui.eros;
 import javax.swing.*;
 
 import edu.jhuapl.near.gui.RadialOffsetChanger;
+import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
-import edu.jhuapl.near.model.eros.ErosModelManager;
 import edu.jhuapl.near.model.eros.LineamentModel;
 
 import java.awt.event.*;
@@ -14,7 +14,7 @@ public class LineamentControlPanel extends JPanel implements ItemListener
     private JCheckBox lineamentCheckBox;
     private LineamentModel lineamentModel;
     
-    public LineamentControlPanel(ErosModelManager modelManager) 
+    public LineamentControlPanel(ModelManager modelManager) 
     {
 		lineamentModel = (LineamentModel)modelManager.getModel(ModelNames.LINEAMENT);
         RadialOffsetChanger radialChanger = new RadialOffsetChanger(lineamentModel, "Radial Offset");

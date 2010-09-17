@@ -5,8 +5,8 @@ import java.util.HashMap;
 import edu.jhuapl.near.gui.Renderer;
 import edu.jhuapl.near.gui.eros.ModelInfoWindowManager;
 import edu.jhuapl.near.model.Model;
+import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
-import edu.jhuapl.near.model.eros.ErosModelManager;
 import edu.jhuapl.near.popupmenus.CirclesPopupMenu;
 import edu.jhuapl.near.popupmenus.LinesPopupMenu;
 import edu.jhuapl.near.popupmenus.PointsPopupMenu;
@@ -34,7 +34,7 @@ public class ErosPopupManager extends PopupManager
     
 	public ErosPopupManager(
 				Renderer erosRenderer, 
-				ErosModelManager modelManager,
+				ModelManager modelManager,
 				ModelInfoWindowManager infoPanelManager)
 	{
 		super(modelManager);

@@ -11,7 +11,6 @@ import java.util.*;
 import javax.swing.*;
 
 import edu.jhuapl.near.model.*;
-import edu.jhuapl.near.model.eros.ErosModelManager;
 import edu.jhuapl.near.model.eros.NISSpectrum;
 import edu.jhuapl.near.popupmenus.eros.NISPopupMenu;
 
@@ -24,10 +23,10 @@ import org.jfree.data.xy.*;
 
 public class NISSpectrumInfoPanel extends ModelInfoWindow implements PropertyChangeListener
 {
-	private ErosModelManager modelManager;
+	private ModelManager modelManager;
 	private NISSpectrum nisSpectrum;
 	
-	public NISSpectrumInfoPanel(NISSpectrum nisSpectrum, ErosModelManager modelManager)
+	public NISSpectrumInfoPanel(NISSpectrum nisSpectrum, ModelManager modelManager)
 	{
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 

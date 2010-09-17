@@ -13,7 +13,6 @@ import vtk.vtkProp;
 import nom.tam.fits.FitsException;
 import edu.jhuapl.near.gui.eros.ModelInfoWindowManager;
 import edu.jhuapl.near.model.*;
-import edu.jhuapl.near.model.eros.ErosModelManager;
 import edu.jhuapl.near.model.eros.NISSpectraCollection;
 import edu.jhuapl.near.model.eros.NISSpectrum;
 import edu.jhuapl.near.popupmenus.PopupMenu;
@@ -21,7 +20,7 @@ import edu.jhuapl.near.popupmenus.PopupMenu;
 
 public class NISPopupMenu extends PopupMenu 
 {
-    private ErosModelManager modelManager;
+    private ModelManager modelManager;
     private String currentSpectrum;
     private JMenuItem showRemoveSpectrumIn3DMenuItem;
     private JMenuItem showSpectrumInfoMenuItem;
@@ -37,7 +36,7 @@ public class NISPopupMenu extends PopupMenu
      * mapped to Eros.
      */
 	public NISPopupMenu(
-			ErosModelManager modelManager, 
+			ModelManager modelManager, 
 			ModelInfoWindowManager infoPanelManager)
 	{
     	this.modelManager = modelManager;

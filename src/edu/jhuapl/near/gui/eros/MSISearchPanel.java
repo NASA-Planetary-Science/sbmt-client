@@ -19,10 +19,10 @@ import org.joda.time.*;
 import vtk.vtkPolyData;
 
 import edu.jhuapl.near.query.Query;
+import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.RegularPolygonModel;
 import edu.jhuapl.near.model.SmallBodyModel;
-import edu.jhuapl.near.model.eros.ErosModelManager;
 import edu.jhuapl.near.model.eros.MSIBoundaryCollection;
 import edu.jhuapl.near.model.eros.MSIImage;
 import edu.jhuapl.near.model.eros.MSIImageCollection;
@@ -38,7 +38,7 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
 {
 	private final String MSI_REMOVE_ALL_BUTTON_TEXT = "Remove All Boundaries";
 	
-    private final ErosModelManager modelManager;
+    private final ModelManager modelManager;
     private PickManager pickManager;
     private JComboBox msiSourceComboBox;
     private java.util.Date startDate = new GregorianCalendar(2000, 6, 7, 0, 0, 0).getTime();
@@ -96,7 +96,7 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
     private MSIImage.MSISource msiSourceOfLastQuery = MSIImage.MSISource.PDS;
     
     public MSISearchPanel(
-    		final ErosModelManager modelManager, 
+    		final ModelManager modelManager, 
     		ModelInfoWindowManager infoPanelManager,
     		final PickManager pickManager,
     		Renderer renderer) 

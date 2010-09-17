@@ -18,7 +18,7 @@ import edu.jhuapl.near.util.LatLon;
 import edu.jhuapl.near.util.PolyDataUtil;
 import edu.jhuapl.near.util.Properties;
 
-public abstract class SmallBodyModel extends Model 
+public class SmallBodyModel extends Model 
 {
     public enum ColoringType { 
     	NONE, 
@@ -564,8 +564,11 @@ public abstract class SmallBodyModel extends Model
     	return resolutionLevel;
     }
     
-    public abstract int getNumberResolutionLevels();
-    
+    public int getNumberResolutionLevels()
+	{
+		return modelFiles.length;
+	}
+
     public String getModelName()
     {
     	if (resolutionLevel >= 0 && resolutionLevel < 4)

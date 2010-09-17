@@ -16,7 +16,6 @@ import nom.tam.fits.FitsException;
 import edu.jhuapl.near.gui.*;
 import edu.jhuapl.near.gui.eros.ModelInfoWindowManager;
 import edu.jhuapl.near.model.*;
-import edu.jhuapl.near.model.eros.ErosModelManager;
 import edu.jhuapl.near.model.eros.MSIBoundaryCollection;
 import edu.jhuapl.near.model.eros.MSIImage;
 import edu.jhuapl.near.model.eros.MSIImageCollection;
@@ -31,7 +30,7 @@ import edu.jhuapl.near.util.GeometryUtil;
 public class MSIPopupMenu extends PopupMenu 
 {
 	private Component invoker;
-    private ErosModelManager modelManager;
+    private ModelManager modelManager;
     private MSIKey msiKey;
     private JMenuItem showRemoveImageIn3DMenuItem;
     private JMenuItem showRemoveBoundaryIn3DMenuItem;
@@ -50,7 +49,7 @@ public class MSIPopupMenu extends PopupMenu
      * mapped to Eros.
      */
 	public MSIPopupMenu(
-			ErosModelManager modelManager, 
+			ModelManager modelManager, 
 			ModelInfoWindowManager infoPanelManager,
 			Renderer renderer,
 			Component invoker)

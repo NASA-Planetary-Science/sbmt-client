@@ -25,6 +25,7 @@ import java.util.TreeSet;
 import edu.jhuapl.near.dbgen.SqlManager;
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelNames;
+import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.util.*;
 
 import vtk.*;
@@ -52,7 +53,7 @@ public class NLRSearchDataCollection extends Model
 	private TreeSet<Integer> cubeList;
 
 	private HashMap<String, String> nlrDoyToPathMap = null;
-	private ErosModel erosModel;
+	private SmallBodyModel erosModel;
 	private SmallBodyCubes smallBodyCubes;
 
 	private int firstPointShown = -1;
@@ -134,7 +135,7 @@ public class NLRSearchDataCollection extends Model
 	}
 	*/
 	
-	public NLRSearchDataCollection(ErosModel erosModel)
+	public NLRSearchDataCollection(SmallBodyModel erosModel)
 	{
 		super(ModelNames.NLR_DATA_SEARCH);
 		

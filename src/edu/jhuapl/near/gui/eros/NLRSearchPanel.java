@@ -21,10 +21,10 @@ import java.beans.PropertyChangeListener;
 
 import edu.jhuapl.near.gui.AnyFileChooser;
 import edu.jhuapl.near.gui.RadialOffsetChanger;
+import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.RegularPolygonModel;
 import edu.jhuapl.near.model.SmallBodyModel;
-import edu.jhuapl.near.model.eros.ErosModelManager;
 import edu.jhuapl.near.model.eros.NLRSearchDataCollection;
 import edu.jhuapl.near.model.eros.NLRSearchDataCollection.NLRMaskType;
 import edu.jhuapl.near.pick.PickEvent;
@@ -37,7 +37,7 @@ public class NLRSearchPanel extends JPanel implements ActionListener, PropertyCh
 {	
 	private final String NLR_REMOVE_ALL_BUTTON_TEXT = "Clear Data";
 	
-    private final ErosModelManager modelManager;
+    private final ModelManager modelManager;
     private NLRSearchDataCollection nlrModel;
     private JLabel resultsLabel;
     private JButton removeAllButton;
@@ -112,7 +112,7 @@ public class NLRSearchPanel extends JPanel implements ActionListener, PropertyCh
     
 
     public NLRSearchPanel(
-    		final ErosModelManager modelManager,
+    		final ModelManager modelManager,
             final PickManager pickManager) 
     {
     	setLayout(new BoxLayout(this,

@@ -20,10 +20,10 @@ import org.joda.time.*;
 import vtk.vtkPolyData;
 
 import edu.jhuapl.near.query.Query;
+import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.RegularPolygonModel;
 import edu.jhuapl.near.model.SmallBodyModel;
-import edu.jhuapl.near.model.eros.ErosModelManager;
 import edu.jhuapl.near.model.eros.NISSpectraCollection;
 import edu.jhuapl.near.model.eros.NISSpectrum;
 import edu.jhuapl.near.pick.PickManager;
@@ -36,7 +36,7 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
 {
 	private final String NIS_REMOVE_ALL_BUTTON_TEXT = "Remove All Footprints";
 	
-    private final ErosModelManager modelManager;
+    private final ModelManager modelManager;
     private PickManager pickManager;
     private java.util.Date startDate = new GregorianCalendar(2000, 4, 1, 0, 0, 0).getTime();
     private java.util.Date endDate = new GregorianCalendar(2000, 4, 14, 0, 0, 0).getTime();
@@ -78,7 +78,7 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
 
     
     public NISSearchPanel(
-    		final ErosModelManager modelManager, 
+    		final ModelManager modelManager, 
     		ModelInfoWindowManager infoPanelManager,
     		final PickManager pickManager) 
     {

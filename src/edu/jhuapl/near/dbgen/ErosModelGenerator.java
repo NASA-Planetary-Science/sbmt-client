@@ -13,7 +13,6 @@ import vtk.vtkPolyDataNormals;
 import vtk.vtkPolyDataReader;
 import vtk.vtkPolyDataWriter;
 
-import edu.jhuapl.near.model.eros.ErosGraticule;
 import edu.jhuapl.near.util.NativeLibraryLoader;
 
 public class ErosModelGenerator {

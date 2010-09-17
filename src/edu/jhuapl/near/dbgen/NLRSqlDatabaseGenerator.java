@@ -7,7 +7,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Locale;
 
-import edu.jhuapl.near.model.eros.ErosModel;
 import edu.jhuapl.near.util.GeometryUtil;
 import edu.jhuapl.near.util.SmallBodyCubes;
 import edu.jhuapl.near.util.FileUtil;

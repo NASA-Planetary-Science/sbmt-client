@@ -4,7 +4,6 @@ import java.awt.event.*;
 import java.util.*;
 
 import edu.jhuapl.near.model.*;
-import edu.jhuapl.near.model.eros.ErosModelManager;
 import edu.jhuapl.near.model.eros.MSIImage;
 import edu.jhuapl.near.model.eros.NISSpectrum;
 
@@ -13,9 +12,9 @@ public class ModelInfoWindowManager
 	HashMap<Model, ModelInfoWindow> infoPanels = 
 		new HashMap<Model, ModelInfoWindow>();
 	
-	ErosModelManager modelManager;
+	ModelManager modelManager;
 	
-	public ModelInfoWindowManager(ErosModelManager modelManager) 
+	public ModelInfoWindowManager(ModelManager modelManager) 
 	{
 		this.modelManager = modelManager;
 	}

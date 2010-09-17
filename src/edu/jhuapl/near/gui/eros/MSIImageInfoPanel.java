@@ -13,7 +13,6 @@ import javax.swing.*;
 
 import edu.jhuapl.near.gui.vtkRenderWindowPanelWithMouseWheel;
 import edu.jhuapl.near.model.*;
-import edu.jhuapl.near.model.eros.ErosModelManager;
 import edu.jhuapl.near.model.eros.MSIImage;
 import edu.jhuapl.near.popupmenus.eros.MSIPopupMenu;
 
@@ -24,9 +23,9 @@ public class MSIImageInfoPanel extends ModelInfoWindow implements PropertyChange
 	private vtkRenderWindowPanelWithMouseWheel renWin;
     private ContrastChanger contrastChanger;
 	private MSIImage msiImage;
-	private ErosModelManager modelManager;
+	private ModelManager modelManager;
 	
-	public MSIImageInfoPanel(MSIImage image, ErosModelManager modelManager)
+	public MSIImageInfoPanel(MSIImage image, ModelManager modelManager)
 	{
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
