@@ -88,10 +88,9 @@ public class SmallBodyModel extends Model
 			String[] modelFiles,
 			String[] coloringFiles,
 			String imageMapName,
-			boolean lowestResolutionModelStoredInResource,
-			String name)
+			boolean lowestResolutionModelStoredInResource)
 	{
-		super(name);
+		super(ModelNames.SMALL_BODY);
 		
 		this.modelNames = modelNames;
 		this.modelFiles = modelFiles;

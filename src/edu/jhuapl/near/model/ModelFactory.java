@@ -25,7 +25,7 @@ public class ModelFactory
 				"/EROS/Eros_Dec2006_0_Slope.txt.gz"
 		};
 
-		return new SmallBodyModel(modelNames, modelFiles, coloringFiles, null, true, ModelNames.SMALL_BODY);
+		return new SmallBodyModel(modelNames, modelFiles, coloringFiles, null, true);
 	}
 
 	static public SmallBodyModel createDeimosBodyModel()
@@ -47,7 +47,7 @@ public class ModelFactory
 
 		final String imageMap = "/DEIMOS/deimos_image_map.png";
 
-		return new SmallBodyModel(modelNames, modelFiles, coloringFiles, imageMap, false, ModelNames.SMALL_BODY);
+		return new SmallBodyModel(modelNames, modelFiles, coloringFiles, imageMap, false);
 	}
 	
 	static public SmallBodyModel createItokawaBodyModel()
@@ -68,7 +68,7 @@ public class ModelFactory
 
 		final String[] coloringFiles = null;
 
-		return new SmallBodyModel(modelNames, modelFiles, coloringFiles, null, false, ModelNames.SMALL_BODY);
+		return new SmallBodyModel(modelNames, modelFiles, coloringFiles, null, false);
 	}
 
 	static public Graticule createErosGraticuleModel(SmallBodyModel smallBodyModel)
