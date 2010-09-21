@@ -408,8 +408,9 @@ C          cube(i,j,3)=gd(i,j)
       I=SLEN(BIGMAP)
       OUTFILE='OUTPUT/'//BIGMAP(1:I)//'.cub'
       write(6,*) 'Writing ', OUTFILE
-      open(unit=15, file=OUTFILE,form="unformatted")
-      write(unit=15) cube
+      open(unit=15, file=OUTFILE,form="unformatted", access='direct',
+     .     recl=((2*NTMP+1)*(2*NTMP+1)*6*4))
+      write(unit=15, rec=1) cube
       close(unit=15)
       OUTFILE='OUTPUT/'//BIGMAP(1:I)//'.lbl'
       write(6,*) 'Writing ', OUTFILE
