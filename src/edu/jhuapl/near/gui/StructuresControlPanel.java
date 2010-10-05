@@ -26,7 +26,8 @@ public class StructuresControlPanel extends JTabbedPane
 				modelManager,
 				structureModel,
 				pickManager,
-				PickManager.PickMode.LINE_DRAW) {});
+				PickManager.PickMode.LINE_DRAW,
+				false) {});
 
 		structureModel = 
 			(StructureModel)modelManager.getModel(ModelNames.CIRCLE_STRUCTURES);
@@ -34,7 +35,8 @@ public class StructuresControlPanel extends JTabbedPane
 				modelManager,
 				structureModel,
 				pickManager,
-				PickManager.PickMode.CIRCLE_DRAW) {});
+				PickManager.PickMode.CIRCLE_DRAW,
+				false) {});
 				
 		pointsStructuresMapperPanel = new PointsMappingControlPanel(
 				modelManager,

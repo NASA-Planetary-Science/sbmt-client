@@ -22,7 +22,8 @@ public class PointsMappingControlPanel extends
 		super(modelManager,
 				(StructureModel)modelManager.getModel(ModelNames.POINT_STRUCTURES),
 				pickManager,
-				PickManager.PickMode.POINT_DRAW);
+				PickManager.PickMode.POINT_DRAW,
+				false);
 		
 		pointModel = (PointModel)modelManager.getModel(ModelNames.POINT_STRUCTURES);
 

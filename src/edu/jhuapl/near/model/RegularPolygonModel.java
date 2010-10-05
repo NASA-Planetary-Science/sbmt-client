@@ -104,6 +104,16 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
 			return "Diameter = " + 2.0*radius + " km";
 		}
 		
+		public int[] getColor()
+		{
+			return color;
+		}
+		
+		public void setColor(int[] color)
+		{
+			this.color = color;
+		}
+		
 		public vtkPolyData getBoundaryPolyData()
 		{
 			return boundaryPolyData;
@@ -607,5 +617,12 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
 		{
 			redrawAllStructures();
 		}	
+	}
+
+	public void setStructureColor(int idx, int[] color)
+	{
+		polygons.get(idx).setColor(color);
+		updatePolyData();
+		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 	}
 }

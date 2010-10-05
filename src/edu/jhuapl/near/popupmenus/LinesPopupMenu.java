@@ -11,7 +11,7 @@ import edu.jhuapl.near.model.LineModel;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 
-public class LinesPopupMenu extends PopupMenu
+public class LinesPopupMenu extends StructuresPopupMenu
 {
 	private int cellIdLastClicked = -1;
 	private LineModel model = null;
@@ -24,6 +24,9 @@ public class LinesPopupMenu extends PopupMenu
 		mi = new JMenuItem(new EditAction());
 		mi.setText("Edit");
 		//this.add(mi); // don't show for now
+		
+		super.addMenuItems(model);
+
 		mi = new JMenuItem(new DeleteAction());
 		mi.setText("Delete");
 		this.add(mi);
@@ -51,6 +54,8 @@ public class LinesPopupMenu extends PopupMenu
 		if (model.getLineActor() == pickedProp)
 		{
 			this.cellIdLastClicked = pickedCellId;
+			getChangeColorAction().setInvoker(e.getComponent());
+			getChangeColorAction().setStructureIndex(cellIdLastClicked);
 			show(e.getComponent(), e.getX(), e.getY());
 		}
 		else if (model.getLineSelectionActor() == pickedProp)

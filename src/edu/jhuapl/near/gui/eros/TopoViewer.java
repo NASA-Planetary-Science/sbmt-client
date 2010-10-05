@@ -1,47 +1,46 @@
 package edu.jhuapl.near.gui.eros;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.HashMap;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import vtk.vtkActor;
 import vtk.vtkCellArray;
 import vtk.vtkIdList;
 import vtk.vtkPoints;
 import vtk.vtkPolyData;
-import vtk.vtkPolyDataMapper;
+import vtk.vtkPolyDataNormals;
 
-import edu.jhuapl.near.gui.vtkRenderWindowPanelWithMouseWheel;
+import edu.jhuapl.near.gui.AbstractStructureMappingControlPanel;
+import edu.jhuapl.near.gui.Renderer;
+import edu.jhuapl.near.gui.StatusBar;
+import edu.jhuapl.near.model.CircleModel;
+import edu.jhuapl.near.model.LineModel;
+import edu.jhuapl.near.model.Model;
+import edu.jhuapl.near.model.ModelManager;
+import edu.jhuapl.near.model.ModelNames;
+import edu.jhuapl.near.model.PointModel;
+import edu.jhuapl.near.model.RegularPolygonModel;
+import edu.jhuapl.near.model.SmallBodyModel;
+import edu.jhuapl.near.model.StructureModel;
+import edu.jhuapl.near.pick.PickManager;
+import edu.jhuapl.near.popupmenus.GenericPopupManager;
 
 public class TopoViewer extends JFrame
 {
-	private vtkRenderWindowPanelWithMouseWheel renWin;
 	private vtkPolyData dem;
-    private static final float PDS_NA = -1.e32f;
     private static int WIDTH = 1027;
     private static int HEIGHT = 1027;
     
 	public TopoViewer(String filename) throws IOException
 	{
-		ImageIcon erosIcon = new ImageIcon(getClass().getResource("/edu/jhuapl/near/data/eros.png"));
-		setIconImage(erosIcon.getImage());
-
-		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-
-		renWin = new vtkRenderWindowPanelWithMouseWheel();
-
-        JPanel panel = new JPanel(new BorderLayout());
-		
-		panel.add(renWin, BorderLayout.CENTER);
-
-		add(panel, BorderLayout.CENTER);
-		
         dem = new vtkPolyData();
         vtkPoints points = new vtkPoints();
         vtkCellArray polys = new vtkCellArray();
@@ -51,12 +50,70 @@ public class TopoViewer extends JFrame
 
         setCubeFile(filename);
         
+        setupGui();
+	}
+	
+	private void setupGui()
+	{
+		ImageIcon erosIcon = new ImageIcon(getClass().getResource("/edu/jhuapl/near/data/eros.png"));
+		setIconImage(erosIcon.getImage());
+
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+    	StatusBar statusBar = new StatusBar();
+    	add(statusBar, BorderLayout.PAGE_END);
+    	
+		ModelManager modelManager = new ModelManager();
+        HashMap<String, Model> allModels = new HashMap<String, Model>();
+        SmallBodyModel body = new SmallBodyModel(dem);
+        LineModel lineModel = new LineModel(body);
+        lineModel.setMaximumVerticesPerLine(2);
+        allModels.put(ModelNames.SMALL_BODY, body);
+    	allModels.put(ModelNames.LINE_STRUCTURES, lineModel);
+    	allModels.put(ModelNames.CIRCLE_STRUCTURES, new CircleModel(body));
+    	allModels.put(ModelNames.POINT_STRUCTURES, new PointModel(body));
+    	allModels.put(ModelNames.CIRCLE_SELECTION, new RegularPolygonModel(body,20,false,"Selection",ModelNames.CIRCLE_SELECTION));
+    	modelManager.setModels(allModels);
+
+		Renderer renderer = new Renderer(modelManager);
+
+		GenericPopupManager popupManager = new GenericPopupManager(modelManager);
+
+		PickManager pickManager = new PickManager(renderer, statusBar, modelManager, popupManager);
+
+        renderer.setMinimumSize(new Dimension(100, 100));
+        renderer.setPreferredSize(new Dimension(400, 400));
+
+        JPanel panel = new JPanel(new BorderLayout());
+		
+		panel.add(renderer, BorderLayout.CENTER);
+
+		TopoPlot plot = new TopoPlot(lineModel);
+		plot.setMinimumSize(new Dimension(100, 100));
+        plot.setPreferredSize(new Dimension(400, 400));
+		
+		panel.add(plot, BorderLayout.EAST);
+		
+		StructureModel structureModel = 
+			(StructureModel)modelManager.getModel(ModelNames.LINE_STRUCTURES);
+		JPanel lineStructuresMapperPanel = (new AbstractStructureMappingControlPanel(
+				modelManager,
+				structureModel,
+				pickManager,
+				PickManager.PickMode.LINE_DRAW,
+				true) {});
+
+		panel.add(lineStructuresMapperPanel, BorderLayout.SOUTH);
+
+		add(panel, BorderLayout.CENTER);
+
         // Finally make the frame visible
         setTitle("Mapmaker View");
         pack();
         setVisible(true);
 	}
-
+	
+	
 	public void setCubeFile(String filename) throws IOException
 	{
 		FileInputStream fs = new FileInputStream(filename);
@@ -90,8 +147,8 @@ public class TopoViewer extends JFrame
 				x = data[index(m,n,3)];
 				y = data[index(m,n,4)];
 				z = data[index(m,n,5)];
-		
-				if (isValidPoint(x, y, z) && m > 0 && m < WIDTH-1 && n > 0 && n < HEIGHT-1)
+
+				if (m > 0 && m < WIDTH-1 && n > 0 && n < HEIGHT-1)
 				{
 					//points.SetPoint(c, x, y, z);
 					points.InsertNextPoint(x, y, z);
@@ -134,14 +191,15 @@ public class TopoViewer extends JFrame
 				}
 			}
         
-        vtkPolyDataMapper demMapper = new vtkPolyDataMapper();
-        demMapper.SetInput(dem);
-        demMapper.Update();
-        
-        vtkActor demActor = new vtkActor();
-        demActor.SetMapper(demMapper);
-
-		renWin.GetRenderer().AddViewProp(demActor);
+		vtkPolyDataNormals normalsFilter = new vtkPolyDataNormals();
+		normalsFilter.SetInput(dem);
+		normalsFilter.SetComputeCellNormals(0);
+		normalsFilter.SetComputePointNormals(1);
+		normalsFilter.SplittingOff();
+		normalsFilter.FlipNormalsOn();
+		normalsFilter.Update();
+		
+		dem.DeepCopy(normalsFilter.GetOutput());
 	}
 
 	// This function is taken from http://www.java2s.com/Code/Java/Language-Basics/Utilityforbyteswappingofalljavadatatypes.htm
@@ -167,12 +225,4 @@ public class TopoViewer extends JFrame
 	{
 		return ((k * HEIGHT + j) * WIDTH + i);
 	}
-
-	private static boolean isValidPoint(float x, float y, float z)
-    {
-    	if (x <= PDS_NA || y <= PDS_NA || z <= PDS_NA)
-    		return false;
-    	else
-    		return true;
-    }
 }

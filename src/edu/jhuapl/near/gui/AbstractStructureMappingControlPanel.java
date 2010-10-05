@@ -46,7 +46,8 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
     		final ModelManager modelManager,
     		final StructureModel structureModel,
     		final PickManager pickManager,
-    		final PickManager.PickMode pickMode) 
+    		final PickManager.PickMode pickMode,
+    		boolean compactMode)
     {
 		this.modelManager = modelManager;
 		//this.pickManager = pickManager;
@@ -83,14 +84,18 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
         this.structuresFileTextField.setEnabled(true);
         this.structuresFileTextField.setPreferredSize(new java.awt.Dimension(150, 22));
         
-        add(this.structuresFileTextField, "span");
-        
-        add(this.loadStructuresButton, "w 100!");
-        add(this.saveStructuresButton, "w 100!");
-        add(this.saveAsStructuresButton, "w 100!, wrap 15px");
+        if (!compactMode)
+        {
+        	add(this.structuresFileTextField, "span");
 
+        	add(this.loadStructuresButton, "w 100!");
+        	add(this.saveStructuresButton, "w 100!");
+        	add(this.saveAsStructuresButton, "w 100!, wrap 15px");
+        }
+        
         JLabel structureTypeText = new JLabel(" Structures");
-        add(structureTypeText, "span");
+        if (!compactMode)
+        	add(structureTypeText, "span");
         
         //String[] options = {LineModel.LINES, CircleModel.CIRCLES};
         //structureTypeComboBox = new JComboBox(options);
@@ -138,7 +143,8 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
         
         //structuresPopupMenu = new StructuresPopupMenu(this.modelManager, this.pickManager, this);
 
-        add(tableScrollPane, "span");
+        if (!compactMode)
+        	add(tableScrollPane, "span");
 
 
         if (structureModel.supportsSelection())

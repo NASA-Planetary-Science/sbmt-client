@@ -21,6 +21,8 @@ public abstract class StructureModel extends Model
 	    public abstract void setName(String name);
 	    public abstract String getType();
 	    public abstract String getInfo();
+	    public abstract int[] getColor();
+	    public abstract void setColor(int[] color);
 	}
 	
 	public StructureModel(String name)
@@ -57,4 +59,6 @@ public abstract class StructureModel extends Model
 	public abstract void loadModel(File file) throws Exception;
 
 	public abstract void saveModel(File file) throws Exception;
+	
+	public abstract void setStructureColor(int idx, int[] color);
 }

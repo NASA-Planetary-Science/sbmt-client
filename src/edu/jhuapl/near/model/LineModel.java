@@ -43,7 +43,8 @@ public class LineModel extends StructureModel implements PropertyChangeListener
 	private ArrayList<Line> lines = new ArrayList<Line>();
 	private vtkPolyData linesPolyData;
 	private vtkPolyData selectionPolyData;
-    private ArrayList<vtkProp> actors = new ArrayList<vtkProp>();
+
+	private ArrayList<vtkProp> actors = new ArrayList<vtkProp>();
     private vtkPolyDataMapper lineMapper;
     private vtkPolyDataMapper lineSelectionMapper;
     private vtkActor lineActor;
@@ -56,7 +57,8 @@ public class LineModel extends StructureModel implements PropertyChangeListener
     private int currentLineVertex = -1000;
     private int highlightedStructure = -1;
     private int[] highlightColor = {0, 0, 255, 255};
-
+    private int maximumVerticesPerLine = Integer.MAX_VALUE;
+    
 	private static String LINES = "lines";
 
 	private static int maxId = 0;
@@ -85,11 +87,12 @@ public class LineModel extends StructureModel implements PropertyChangeListener
 		// lat, lon, alt in order to ensure the line is right above the surface of the asteroid.
 		public ArrayList<Point3D> xyzPointList = new ArrayList<Point3D>();
 		public ArrayList<Integer> controlPointIds = new ArrayList<Integer>();
-		
+		public int[] color;
 
 		public Line()
 		{
 			id = ++maxId;
+			color = purpleColor;
 		}
 
 		public int getId()
@@ -115,6 +118,16 @@ public class LineModel extends StructureModel implements PropertyChangeListener
 		public String getInfo()
 		{
 			return decimalFormatter.format(getPathLength()) + " km, " + controlPointIds.size() + " vertices";
+		}
+
+		public int[] getColor()
+		{
+			return color;
+		}
+		
+		public void setColor(int[] color)
+		{
+			this.color = color;
 		}
 		
 	    public Element toXmlDomElement(Document dom)
@@ -357,7 +370,7 @@ public class LineModel extends StructureModel implements PropertyChangeListener
 		{
 			Line lin = this.lines.get(j);
 			
-			int[] color = purpleColor;
+			int[] color = lin.color;
 
 			if (j == this.highlightedStructure)
 				color = highlightColor;
@@ -546,7 +559,7 @@ public class LineModel extends StructureModel implements PropertyChangeListener
 
         updateLineSelection();
         
-        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, Properties.VERTEX_POSITION_CHANGED);
     }
     
     /*
@@ -615,6 +628,9 @@ public class LineModel extends StructureModel implements PropertyChangeListener
     	
         Line lin = lines.get(selectedLine);
 
+        if (lin.controlPointIds.size() == maximumVerticesPerLine)
+        	return;
+        
     	if (currentLineVertex < -1 || currentLineVertex >= lin.controlPointIds.size())
     		System.out.println("Error: currentLineVertex is invalid");
     	
@@ -673,7 +689,7 @@ public class LineModel extends StructureModel implements PropertyChangeListener
         
         updateLineSelection();
 
-		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, Properties.VERTEX_INSERTED_INTO_LINE);
     }
 
     
@@ -781,7 +797,7 @@ public class LineModel extends StructureModel implements PropertyChangeListener
     	
     	updateLineSelection();
 
-    	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+    	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, Properties.LINE_SELECTED);
     }
 
 	public void loadModel(File file) throws Exception
@@ -1006,5 +1022,17 @@ public class LineModel extends StructureModel implements PropertyChangeListener
 		{
 			redrawAllStructures();
 		}	
+	}
+	
+	public void setMaximumVerticesPerLine(int max)
+	{
+		maximumVerticesPerLine = max;
+	}
+
+	public void setStructureColor(int idx, int[] color)
+	{
+		lines.get(idx).setColor(color);
+		updatePolyData();
+		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 	}
 }

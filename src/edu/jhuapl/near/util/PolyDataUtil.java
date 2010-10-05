@@ -1044,7 +1044,8 @@ public class PolyDataUtil
 			ArrayList<Integer> idListLeft = new ArrayList<Integer>();
 			idListLeft.add(line.id1);
 			idListLeft.add(line.id2);
-
+			boolean leftDirectionSuccess = true;
+			
 			for (int i=2; i<numPoints; ++i)
 			{
 				int id = line.id2;
@@ -1077,6 +1078,7 @@ public class PolyDataUtil
 
 					if (j==lines.size()-1)
 					{
+						/*
 						System.out.println("Error: Could not find other line segment");
 						System.out.println("i, j = " + i + " " + j);
 						System.out.println("numPoints = " + numPoints);
@@ -1086,16 +1088,22 @@ public class PolyDataUtil
 						{
 							System.out.println("line " + k + " - " + lines.get(k).id1 + " " + lines.get(k).id2);
 						}
+						*/
 
-						return false;
+						leftDirectionSuccess = false;
+						break;
 					}
 				}
+				
+				if (!leftDirectionSuccess)
+					break;
 			}
 
 			// Then do second direction ("right")
 			line = lines.get(0);
 			ArrayList<Integer> idListRight = new ArrayList<Integer>();
 			idListRight.add(line.id1);
+			boolean rightDirectionSuccess = true;
 
 			for (int i=1; i<numPoints; ++i)
 			{
@@ -1129,6 +1137,7 @@ public class PolyDataUtil
 
 					if (j==lines.size()-1)
 					{
+						/*
 						System.out.println("Error: Could not find other line segment");
 						System.out.println("i, j = " + i + " " + j);
 						System.out.println("numPoints = " + numPoints);
@@ -1138,19 +1147,36 @@ public class PolyDataUtil
 						{
 							System.out.println("line " + k + " - " + lines.get(k).id1 + " " + lines.get(k).id2);
 						}
+						*/
 
-						return false;
+						rightDirectionSuccess = false;
+						break;
 					}
 				}
+
+				if (!rightDirectionSuccess)
+					break;
 			}
 
 			//System.out.println("id left  " + idListLeft);
 			//System.out.println("id right " + idListRight);
-			ArrayList<Integer> idList = idListRight;
 			//if (idListLeft.size() < idListRight.size())
 			//	idList = idListLeft;
-			if (computePathLength(points_orig, idListLeft) < computePathLength(points_orig, idListRight))
+			ArrayList<Integer> idList = idListRight;
+			if (leftDirectionSuccess && rightDirectionSuccess)
+			{
+				if (computePathLength(points_orig, idListLeft) < computePathLength(points_orig, idListRight))
+					idList = idListLeft;
+			}
+			else if (leftDirectionSuccess && !rightDirectionSuccess)
+			{
 				idList = idListLeft;
+			}
+			else if (!leftDirectionSuccess && !rightDirectionSuccess)
+			{
+				System.out.println("Error: Could not find other line segment");
+				return false;
+			}
 
 			// It would be nice if the points were in the order they are drawn rather
 			// than some other arbitrary order. Therefore reorder the points so that

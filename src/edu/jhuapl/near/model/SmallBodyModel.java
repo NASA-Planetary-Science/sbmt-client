@@ -83,6 +83,16 @@ public class SmallBodyModel extends Model
 	private double imageMapOpacity = 0.50;
 	private vtkImageBlend blendFilter;
 	
+	public SmallBodyModel(vtkPolyData polydata)
+	{
+		smallBodyPolyData = new vtkPolyData();
+		genericCell = new vtkGenericCell();
+
+		smallBodyPolyData.DeepCopy(polydata);
+
+		initializeLocators();
+	}
+			
 	public SmallBodyModel(
 			String[] modelNames,
 			String[] modelFiles,
@@ -99,8 +109,6 @@ public class SmallBodyModel extends Model
 		
     	smallBodyReader = new vtkPolyDataReader();
 		smallBodyPolyData = new vtkPolyData();
-		cellLocator = new vtksbCellLocator();
-		pointLocator = new vtkKdTreePointLocator();
 		genericCell = new vtkGenericCell();
 		
 		if (lowestResolutionModelStoredInResource)
@@ -118,6 +126,20 @@ public class SmallBodyModel extends Model
 
 		smallBodyPolyData.DeepCopy(smallBodyReader.GetOutput());
 
+		initializeLocators();
+		
+		//this.computeLargestSmallestEdgeLength();
+		//this.computeSurfaceArea();
+	}
+
+	private void initializeLocators()
+	{
+		if (cellLocator == null)
+		{
+			cellLocator = new vtksbCellLocator();
+			pointLocator = new vtkKdTreePointLocator();
+		}
+		
 		// Initialize the cell locator
 		cellLocator.FreeSearchStructure();
 		cellLocator.SetDataSet(smallBodyPolyData);
@@ -130,11 +152,8 @@ public class SmallBodyModel extends Model
 		pointLocator.FreeSearchStructure();
 		pointLocator.SetDataSet(smallBodyPolyData);
 		pointLocator.BuildLocator();
-
-		//this.computeLargestSmallestEdgeLength();
-		//this.computeSurfaceArea();
 	}
-
+	
 	private void initializeLowResData()
 	{
         if (lowResPointLocator == null)

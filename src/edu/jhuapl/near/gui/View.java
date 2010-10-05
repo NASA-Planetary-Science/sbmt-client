@@ -4,7 +4,6 @@ import java.awt.LayoutManager;
 
 import javax.swing.JPanel;
 
-import vtk.vtkRenderWindowPanel;
 
 /**
  * A view is a container which contains a control panel and renderer
