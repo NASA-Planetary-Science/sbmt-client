@@ -55,10 +55,13 @@ public class TopoPlot extends JPanel implements ChartMouseListener, PropertyChan
 
         // add the jfreechart graph
         ChartPanel chartPanel = new ChartPanel(chart1);
-
+        chartPanel.setMouseWheelEnabled(true);
         chartPanel.addChartMouseListener(this);
 
         XYPlot plot = (XYPlot) chart1.getPlot();
+        plot.setDomainPannable(true);
+        plot.setRangePannable(true);
+        
         XYItemRenderer r = plot.getRenderer();                                                                                                 
         if (r instanceof XYLineAndShapeRenderer) {                                                                                             
             XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) r;                                                                      

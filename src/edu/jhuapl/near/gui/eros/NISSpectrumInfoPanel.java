@@ -47,8 +47,12 @@ public class NISSpectrumInfoPanel extends ModelInfoWindow implements PropertyCha
                 ("NIS Calibrated Spectrum", "Wavelength (nm)", "Reflectance",
                 		xyDataset, PlotOrientation.VERTICAL, true, true, false);
         ChartPanel chartPanel = new ChartPanel(chart);
-
+        chartPanel.setMouseWheelEnabled(true);
+        
         XYPlot plot = (XYPlot) chart.getPlot();
+        plot.setDomainPannable(true);
+        plot.setRangePannable(true);
+        
         XYItemRenderer r = plot.getRenderer();                                                                                                 
         if (r instanceof XYLineAndShapeRenderer) {                                                                                             
             XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) r;                                                                      

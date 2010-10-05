@@ -57,10 +57,13 @@ public class NLRPlot extends JFrame implements ChartMouseListener
 
             // add the jfreechart graph
             ChartPanel chartPanel = new ChartPanel(chart1);
-
+            chartPanel.setMouseWheelEnabled(true);
             chartPanel.addChartMouseListener(this);
 
             XYPlot plot = (XYPlot) chart1.getPlot();
+            plot.setDomainPannable(true);
+            plot.setRangePannable(true);
+            
             XYItemRenderer r = plot.getRenderer();                                                                                                 
             if (r instanceof XYLineAndShapeRenderer) {                                                                                             
                 XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) r;                                                                      
@@ -92,10 +95,13 @@ public class NLRPlot extends JFrame implements ChartMouseListener
 
             // add the jfreechart graph
             ChartPanel chartPanel = new ChartPanel(chart2);
-
+            chartPanel.setMouseWheelEnabled(true);
             chartPanel.addChartMouseListener(this);
 
             XYPlot plot = (XYPlot) chart2.getPlot();
+            plot.setDomainPannable(true);
+            plot.setRangePannable(true);
+            
             XYItemRenderer r = plot.getRenderer();                                                                                                 
             if (r instanceof XYLineAndShapeRenderer) {                                                                                             
                 XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) r;                                                                      
