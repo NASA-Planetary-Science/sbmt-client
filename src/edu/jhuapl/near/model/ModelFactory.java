@@ -71,6 +71,28 @@ public class ModelFactory
 		return new SmallBodyModel(modelNames, modelFiles, coloringFiles, null, false);
 	}
 
+	static public SmallBodyModel createVestaBodyModel()
+	{
+		final String[] modelNames = {
+				"DEIMOS"
+		};
+
+		final String[] modelFiles = {
+				"/DEIMOS/DEIMOS.vtk.gz"
+		};
+
+		final String[] coloringFiles = {
+				"/DEIMOS/DEIMOS_Elevation.txt.gz",
+				"/DEIMOS/DEIMOS_GravitationalAcceleration.txt.gz",
+				"/DEIMOS/DEIMOS_GravitationalPotential.txt.gz",
+				"/DEIMOS/DEIMOS_Slope.txt.gz"
+		};
+
+		final String imageMap = "/DEIMOS/deimos_image_map.png";
+
+		return new SmallBodyModel(modelNames, modelFiles, coloringFiles, imageMap, false);
+	}
+	
 	static public Graticule createErosGraticuleModel(SmallBodyModel smallBodyModel)
 	{
 		final String[] gridFiles = {
@@ -106,4 +128,14 @@ public class ModelFactory
 
 		return graticule;
 	}
+
+	static public Graticule createVestaGraticuleModel(SmallBodyModel smallBodyModel)
+	{
+		final String[] gridFiles = {
+				"/DEIMOS/coordinate_grid_res0.vtk.gz"
+		};
+
+		return new Graticule(smallBodyModel, gridFiles);
+	}
+
 }

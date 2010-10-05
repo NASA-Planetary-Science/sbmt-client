@@ -11,6 +11,7 @@ import java.util.*;
 
 import javax.swing.*;
 
+import edu.jhuapl.near.gui.ModelInfoWindow;
 import edu.jhuapl.near.gui.vtkRenderWindowPanelWithMouseWheel;
 import edu.jhuapl.near.model.*;
 import edu.jhuapl.near.model.eros.MSIImage;

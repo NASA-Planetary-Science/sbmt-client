@@ -11,7 +11,7 @@ import vtk.vtkActor;
 import vtk.vtkProp;
 
 import nom.tam.fits.FitsException;
-import edu.jhuapl.near.gui.eros.ModelInfoWindowManager;
+import edu.jhuapl.near.gui.ModelInfoWindowManager;
 import edu.jhuapl.near.model.*;
 import edu.jhuapl.near.model.eros.NISSpectraCollection;
 import edu.jhuapl.near.model.eros.NISSpectrum;

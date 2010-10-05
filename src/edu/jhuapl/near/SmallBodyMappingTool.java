@@ -15,6 +15,7 @@ import edu.jhuapl.near.gui.View;
 import edu.jhuapl.near.gui.ViewMenu;
 import edu.jhuapl.near.gui.eros.ErosViewer;
 import edu.jhuapl.near.gui.itokawa.ItokawaViewer;
+import edu.jhuapl.near.gui.vesta.VestaViewer;
 import edu.jhuapl.near.util.NativeLibraryLoader;
 
 
@@ -47,11 +48,13 @@ public class SmallBodyMappingTool extends JFrame
         ErosViewer erosViewer = new ErosViewer(statusBar);
         DeimosViewer deimosViewer = new DeimosViewer(statusBar);
         ItokawaViewer itokawaViewer = new ItokawaViewer(statusBar);
+        VestaViewer vestaViewer = new VestaViewer(statusBar);
         
         views = new ArrayList<View>();
         views.add(erosViewer);
         views.add(deimosViewer);
         views.add(itokawaViewer);
+        views.add(vestaViewer);
         
 		createMenus();
 
@@ -59,6 +62,7 @@ public class SmallBodyMappingTool extends JFrame
 		rootPanel.add(erosViewer, ErosViewer.NAME);
 		rootPanel.add(deimosViewer, DeimosViewer.NAME);
 		rootPanel.add(itokawaViewer, ItokawaViewer.NAME);
+		rootPanel.add(vestaViewer, VestaViewer.NAME);
 		
 		this.add(rootPanel, BorderLayout.CENTER);
 		

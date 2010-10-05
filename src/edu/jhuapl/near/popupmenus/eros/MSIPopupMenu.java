@@ -14,7 +14,6 @@ import vtk.vtkProp;
 
 import nom.tam.fits.FitsException;
 import edu.jhuapl.near.gui.*;
-import edu.jhuapl.near.gui.eros.ModelInfoWindowManager;
 import edu.jhuapl.near.model.*;
 import edu.jhuapl.near.model.eros.MSIBoundaryCollection;
 import edu.jhuapl.near.model.eros.MSIImage;

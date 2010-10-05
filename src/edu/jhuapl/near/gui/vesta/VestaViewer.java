@@ -1,4 +1,4 @@
-package edu.jhuapl.near.gui.eros;
+package edu.jhuapl.near.gui.vesta;
 
 import javax.swing.*;
 
@@ -19,16 +19,8 @@ import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.PointModel;
 import edu.jhuapl.near.model.RegularPolygonModel;
 import edu.jhuapl.near.model.SmallBodyModel;
-import edu.jhuapl.near.model.eros.LineamentModel;
-import edu.jhuapl.near.model.eros.MSIBoundaryCollection;
-import edu.jhuapl.near.model.eros.MSIImage;
-import edu.jhuapl.near.model.eros.MSIImageCollection;
-import edu.jhuapl.near.model.eros.NISSpectraCollection;
-import edu.jhuapl.near.model.eros.NISSpectrum;
-import edu.jhuapl.near.model.eros.NLRBrowseDataCollection;
-import edu.jhuapl.near.model.eros.NLRSearchDataCollection;
 import edu.jhuapl.near.pick.PickManager;
-import edu.jhuapl.near.popupmenus.eros.ErosPopupManager;
+import edu.jhuapl.near.popupmenus.GenericPopupManager;
 
 import java.awt.*;
 import java.util.HashMap;
@@ -40,55 +32,52 @@ import java.util.HashMap;
  * @author kahneg1
  *
  */
-public class ErosViewer extends View
+public class VestaViewer extends View 
 {
-	public static final String NAME = "Eros";
+	public static final String NAME = "Vesta";
 
 	private JSplitPane splitPane;
 	private Renderer renderer;
 	private JTabbedPane controlPanel;
 	private ModelManager modelManager;
 	private PickManager pickManager;
-	private ErosPopupManager popupManager;
+	private GenericPopupManager popupManager;
+	private StatusBar statusBar;
 	private ModelInfoWindowManager infoPanelManager;
-	
-	public ErosViewer(StatusBar statusBar)
+		
+	public VestaViewer(StatusBar statusBar)
 	{
 		super(new BorderLayout());
-
+		this.statusBar = statusBar;
+	}
+	
+	public void initialize()
+	{
 		setupModelManager();
-		
+
 		infoPanelManager = new ModelInfoWindowManager(modelManager)
 		{
 			public ModelInfoWindow createModelInfoWindow(Model model,
 					ModelManager modelManager)
 			{
-				if (model instanceof MSIImage)
-					return new MSIImageInfoPanel((MSIImage)model, modelManager);
-				else if (model instanceof NISSpectrum)
-					return new NISSpectrumInfoPanel((NISSpectrum)model, modelManager);
-				else
-					return null;
-			}
+				return null;
+			}	
 		};
-		
+
 		renderer = new Renderer(modelManager);
 
-		popupManager = new ErosPopupManager(renderer, modelManager, infoPanelManager);
+		popupManager = new GenericPopupManager(modelManager);
 
 		pickManager = new PickManager(renderer, statusBar, modelManager, popupManager);
 
 		controlPanel = new JTabbedPane();
 		controlPanel.setBorder(BorderFactory.createEmptyBorder());
-		controlPanel.addTab("Eros", new SmallBodyControlPanel(modelManager, "Eros"));
-		controlPanel.addTab("MSI", new MSISearchPanel(modelManager, infoPanelManager, pickManager, renderer));
-		controlPanel.addTab("NIS", new NISSearchPanel(modelManager, infoPanelManager, pickManager));
-		controlPanel.addTab("NLR", new NLRPanel(modelManager, pickManager));
-		controlPanel.addTab("Lineament", new LineamentControlPanel(modelManager));
+		controlPanel.addTab("Vesta", new SmallBodyControlPanel(modelManager, "Vesta"));
+		controlPanel.addTab("FC", new FCSearchPanel(modelManager, infoPanelManager, pickManager, renderer));
+		controlPanel.addTab("VIR", new VIRSearchPanel(modelManager, infoPanelManager, pickManager));
+		controlPanel.addTab("GRaND", new GRaNDSearchPanel(modelManager, infoPanelManager, pickManager));
 		controlPanel.addTab("Structures", new StructuresControlPanel(modelManager, pickManager));
-		controlPanel.addTab("Topo", new TopoPanel(modelManager, pickManager));
 
-		
 		splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
                 controlPanel, renderer);
 		splitPane.setOneTouchExpandable(true);
@@ -105,24 +94,19 @@ public class ErosViewer extends View
 	{
 		modelManager = new ModelManager();
 
-		SmallBodyModel erosModel = ModelFactory.createErosBodyModel();
-    	Graticule graticule = ModelFactory.createErosGraticuleModel(erosModel);
-		
+		SmallBodyModel vestaModel = ModelFactory.createVestaBodyModel();
+    	Graticule graticule = ModelFactory.createVestaGraticuleModel(vestaModel);
+
         HashMap<String, Model> allModels = new HashMap<String, Model>();
-        allModels.put(ModelNames.SMALL_BODY, erosModel);
-    	allModels.put(ModelNames.LINEAMENT, new LineamentModel());
-        allModels.put(ModelNames.MSI_IMAGES, new MSIImageCollection(erosModel));
-        allModels.put(ModelNames.MSI_BOUNDARY, new MSIBoundaryCollection(erosModel));
-        allModels.put(ModelNames.NIS_SPECTRA, new NISSpectraCollection(erosModel));
-        allModels.put(ModelNames.NLR_DATA_BROWSE, new NLRBrowseDataCollection());
-        allModels.put(ModelNames.NLR_DATA_SEARCH, new NLRSearchDataCollection(erosModel));
-    	allModels.put(ModelNames.LINE_STRUCTURES, new LineModel(erosModel));
-    	allModels.put(ModelNames.CIRCLE_STRUCTURES, new CircleModel(erosModel));
-    	allModels.put(ModelNames.POINT_STRUCTURES, new PointModel(erosModel));
-    	allModels.put(ModelNames.CIRCLE_SELECTION, new RegularPolygonModel(erosModel,20,false,"Selection",ModelNames.CIRCLE_SELECTION));
+        allModels.put(ModelNames.SMALL_BODY, vestaModel);
+    	allModels.put(ModelNames.LINE_STRUCTURES, new LineModel(vestaModel));
+    	allModels.put(ModelNames.CIRCLE_STRUCTURES, new CircleModel(vestaModel));
+    	allModels.put(ModelNames.POINT_STRUCTURES, new PointModel(vestaModel));
+    	allModels.put(ModelNames.CIRCLE_SELECTION, new RegularPolygonModel(vestaModel,20,false,"Selection",ModelNames.CIRCLE_SELECTION));
     	allModels.put(ModelNames.GRATICULE, graticule);
 
     	modelManager.setModels(allModels);
+
 	}
 	
 	public Renderer getRenderer()

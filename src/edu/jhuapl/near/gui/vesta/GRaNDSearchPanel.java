@@ -1,4 +1,4 @@
-package edu.jhuapl.near.gui.eros;
+package edu.jhuapl.near.gui.vesta;
 
 import java.io.IOException;
 import java.text.NumberFormat;
@@ -33,14 +33,14 @@ import edu.jhuapl.near.popupmenus.eros.NISPopupMenu;
 import edu.jhuapl.near.util.IdPair;
 
 
-public class NISSearchPanel extends JPanel implements ActionListener, MouseListener
+public class GRaNDSearchPanel extends JPanel implements ActionListener, MouseListener
 {
 	private final String NIS_REMOVE_ALL_BUTTON_TEXT = "Remove All Footprints";
 	
     private final ModelManager modelManager;
     private PickManager pickManager;
-    private java.util.Date startDate = new GregorianCalendar(2000, 4, 1, 0, 0, 0).getTime();
-    private java.util.Date endDate = new GregorianCalendar(2000, 4, 14, 0, 0, 0).getTime();
+    private java.util.Date startDate = new GregorianCalendar(2011, 6, 1, 0, 0, 0).getTime();
+    private java.util.Date endDate = new GregorianCalendar(2012, 7, 1, 0, 0, 0).getTime();
     private JLabel endDateLabel;
     private JLabel startDateLabel;
     private static final String START_DATE_LABEL_TEXT = "Start Date:";
@@ -78,7 +78,7 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
     private JToggleButton selectRegionButton;
 
     
-    public NISSearchPanel(
+    public GRaNDSearchPanel(
     		final ModelManager modelManager, 
     		ModelInfoWindowManager infoPanelManager,
     		final PickManager pickManager) 
@@ -199,7 +199,7 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
 		fromDistanceTextField.setColumns(5);
         final JLabel toDistanceLabel = new JLabel(" to ");
         toDistanceTextField = new JFormattedTextField(nf);
-        toDistanceTextField.setValue(500.0);
+        toDistanceTextField.setValue(3000.0);
         toDistanceTextField.setMaximumSize(new Dimension(50, 23));
         toDistanceTextField.setColumns(5);
         final JLabel endDistanceLabel = new JLabel(" km");
@@ -275,7 +275,7 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
         final JPanel submitPanel = new JPanel();
         //panel.setBorder(BorderFactory.createEmptyBorder(9, 9, 9, 9));
         JButton submitButton = new JButton("Search");
-        submitButton.setEnabled(true);
+        submitButton.setEnabled(false);
         submitButton.addActionListener(this);
 
         submitPanel.add(submitButton);
@@ -348,13 +348,13 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
 					if (resultIntervalCurrentlyShown.id2 < resultList.getModel().getSize())
 					{
 						resultIntervalCurrentlyShown.nextBlock((Integer)numberOfBoundariesComboBox.getSelectedItem());
-						showNISBoundaries(resultIntervalCurrentlyShown);
+						//showNISBoundaries(resultIntervalCurrentlyShown);
 					}
 				}
 				else
 				{
 					resultIntervalCurrentlyShown = new IdPair(0, (Integer)numberOfBoundariesComboBox.getSelectedItem());
-			    	showNISBoundaries(resultIntervalCurrentlyShown);
+			    	//showNISBoundaries(resultIntervalCurrentlyShown);
 				}
 			}
         });
@@ -372,7 +372,7 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
 					if (resultIntervalCurrentlyShown.id1 > 0)
 					{
 						resultIntervalCurrentlyShown.prevBlock((Integer)numberOfBoundariesComboBox.getSelectedItem());
-						showNISBoundaries(resultIntervalCurrentlyShown);
+						//showNISBoundaries(resultIntervalCurrentlyShown);
 					}
 				}
 			}
@@ -470,7 +470,7 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
 		resultSub2ControlsPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         resultControlsPanel.add(resultSub1ControlsPanel, "wrap");
-        resultControlsPanel.add(resultSub2ControlsPanel);
+        //resultControlsPanel.add(resultSub2ControlsPanel);
         
         resultsPanel.add(resultControlsPanel, "south");
 

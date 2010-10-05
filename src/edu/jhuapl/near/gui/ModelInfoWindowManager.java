@@ -1,13 +1,11 @@
-package edu.jhuapl.near.gui.eros;
+package edu.jhuapl.near.gui;
 
 import java.awt.event.*;
 import java.util.*;
 
 import edu.jhuapl.near.model.*;
-import edu.jhuapl.near.model.eros.MSIImage;
-import edu.jhuapl.near.model.eros.NISSpectrum;
 
-public class ModelInfoWindowManager 
+abstract public class ModelInfoWindowManager 
 {
 	HashMap<Model, ModelInfoWindow> infoPanels = 
 		new HashMap<Model, ModelInfoWindow>();
@@ -26,13 +24,9 @@ public class ModelInfoWindowManager
 		}
 		else
 		{
-			ModelInfoWindow infoPanel = null;
-			
-			if (model instanceof MSIImage)
-				infoPanel = new MSIImageInfoPanel((MSIImage)model, modelManager);
-			else if (model instanceof NISSpectrum)
-				infoPanel = new NISSpectrumInfoPanel((NISSpectrum)model, modelManager);
-			else
+			ModelInfoWindow infoPanel = createModelInfoWindow(model, modelManager);
+
+			if (infoPanel == null)
 			{
 				throw new Exception("The Info Panel Manager cannot handle the model you specified.");
 			}
@@ -49,4 +43,6 @@ public class ModelInfoWindowManager
 			infoPanels.put(model, infoPanel);
 		}
 	}
+	
+	abstract public ModelInfoWindow createModelInfoWindow(Model model, ModelManager modelManager);
 }

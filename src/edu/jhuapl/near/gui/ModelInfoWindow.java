@@ -1,4 +1,4 @@
-package edu.jhuapl.near.gui.eros;
+package edu.jhuapl.near.gui;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
