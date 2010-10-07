@@ -245,6 +245,7 @@ public class NISSpectrum extends Model implements PropertyChangeListener
 
 			footprintActors.add(footprintActor);
 
+			/*
 			// Compute the bounding edges of this surface
 			vtkFeatureEdges edgeExtracter = new vtkFeatureEdges();
 			edgeExtracter.SetInput(shiftedFootprint);
@@ -267,6 +268,7 @@ public class NISSpectrum extends Model implements PropertyChangeListener
 			edgeActor.GetProperty().SetLineWidth(2.0);
 			edgeActor.GetProperty().LightingOff();
 			footprintActors.add(edgeActor);
+			*/
 			
 			if (showFrustum)
 			{
