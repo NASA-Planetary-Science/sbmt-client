@@ -39,7 +39,7 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
 	
     private final ModelManager modelManager;
     private PickManager pickManager;
-    private java.util.Date startDate = new GregorianCalendar(2000, 4, 1, 0, 0, 0).getTime();
+    private java.util.Date startDate = new GregorianCalendar(2000, 1, 14, 0, 0, 0).getTime();
     private java.util.Date endDate = new GregorianCalendar(2000, 4, 14, 0, 0, 0).getTime();
     private JLabel endDateLabel;
     private JLabel startDateLabel;
@@ -199,7 +199,7 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
 		fromDistanceTextField.setColumns(5);
         final JLabel toDistanceLabel = new JLabel(" to ");
         toDistanceTextField = new JFormattedTextField(nf);
-        toDistanceTextField.setValue(500.0);
+        toDistanceTextField.setValue(100.0);
         toDistanceTextField.setMaximumSize(new Dimension(50, 23));
         toDistanceTextField.setColumns(5);
         final JLabel endDistanceLabel = new JLabel(" km");

@@ -43,8 +43,8 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
     private final ModelManager modelManager;
     private PickManager pickManager;
     private JComboBox msiSourceComboBox;
-    private java.util.Date startDate = new GregorianCalendar(2000, 6, 7, 0, 0, 0).getTime();
-    private java.util.Date endDate = new GregorianCalendar(2000, 7, 1, 0, 0, 0).getTime();
+    private java.util.Date startDate = new GregorianCalendar(2000, 1, 14, 0, 0, 0).getTime();
+    private java.util.Date endDate = new GregorianCalendar(2001, 1, 13, 0, 0, 0).getTime();
     private JLabel endDateLabel;
     private JLabel startDateLabel;
     private static final String START_DATE_LABEL_TEXT = "Start Date:";
@@ -263,11 +263,11 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
         		BoxLayout.LINE_AXIS));
         final JLabel fromDistanceLabel = new JLabel("S/C Distance from ");
         fromDistanceTextField = new JFormattedTextField(nf);
-        fromDistanceTextField.setValue(30.0);
+        fromDistanceTextField.setValue(0.0);
         fromDistanceTextField.setMaximumSize(new Dimension(50, 23));
         final JLabel toDistanceLabel = new JLabel(" to ");
         toDistanceTextField = new JFormattedTextField(nf);
-        toDistanceTextField.setValue(40.0);
+        toDistanceTextField.setValue(100.0);
         toDistanceTextField.setMaximumSize(new Dimension(50, 23));
         final JLabel endDistanceLabel = new JLabel(" km");
                 
@@ -287,7 +287,7 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
         fromResolutionTextField.setMaximumSize(new Dimension(50, 23));
         final JLabel toResolutionLabel = new JLabel(" to ");
         toResolutionTextField = new JFormattedTextField(nf);
-        toResolutionTextField.setValue(5000.0);
+        toResolutionTextField.setValue(50.0);
         toResolutionTextField.setMaximumSize(new Dimension(50, 23));
         final JLabel endResolutionLabel = new JLabel(" mpp");
         endResolutionLabel.setToolTipText("meters per pixel");
