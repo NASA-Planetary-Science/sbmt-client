@@ -510,4 +510,11 @@ public class NISSpectrum extends Model implements PropertyChangeListener
 	{
 		return footprint;
 	}
+	
+	public void Delete()
+    {
+		footprint.Delete();
+		shiftedFootprint.Delete();
+    }
+	
 }
