@@ -287,7 +287,7 @@ public class FCSearchPanel extends JPanel implements ActionListener, MouseListen
         fromResolutionTextField.setMaximumSize(new Dimension(50, 23));
         final JLabel toResolutionLabel = new JLabel(" to ");
         toResolutionTextField = new JFormattedTextField(nf);
-        toResolutionTextField.setValue(5000.0);
+        toResolutionTextField.setValue(300.0);
         toResolutionTextField.setMaximumSize(new Dimension(50, 23));
         final JLabel endResolutionLabel = new JLabel(" mpp");
         endResolutionLabel.setToolTipText("meters per pixel");
