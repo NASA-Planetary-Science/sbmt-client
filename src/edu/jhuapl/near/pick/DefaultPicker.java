@@ -1,5 +1,6 @@
 package edu.jhuapl.near.pick;
 
+import java.awt.event.InputEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.beans.PropertyChangeEvent;
@@ -124,13 +125,23 @@ public class DefaultPicker extends Picker
 				statusBar.setLeftText(" ");
 			}
 		}
-
-		maybeShowPopup(e);
 	}
 
-	public void mouseReleased(MouseEvent e) 
+	public void mouseClicked(MouseEvent e)
 	{
-		maybeShowPopup(e);
+	    // Note that in general when a popup should appear is system dependent. On some systems
+		// popups are triggered on mouse press and on others on mouse release.
+	    // However, in the renderer, we always want the popup to appear on mouse RELEASE
+	    // not mouse press regardless of platform, because otherwise the popup will interfere
+	    // with renderer's zoom in and out feature. Therefore, to avoid this whole
+		// issue we only show the popup within the mouseClicked call when the right
+		// mouse button was pressed, since the mouseClicked event is only thrown
+		// when the mouse is released.
+		if (e.getClickCount() == 1 &&
+				(e.getModifiers() & InputEvent.BUTTON3_MASK) == InputEvent.BUTTON3_MASK)
+		{
+			maybeShowPopup(e);
+		}
 	}
 
 	public void mouseWheelMoved(MouseWheelEvent e) 
@@ -156,22 +167,19 @@ public class DefaultPicker extends Picker
 		if (suppressPopups)
 			return;
 		
-        if (e.isPopupTrigger()) 
-        {
-        	if (renWin.GetRenderWindow().GetNeverRendered() > 0)
-        		return;
-    		
-            int pickSucceeded = doPick(e, mousePressNonSmallBodyCellPicker);
-    		if (pickSucceeded == 1)
-    		{
-    			vtkActor pickedActor = mousePressNonSmallBodyCellPicker.GetActor();
-    			popupManager.showPopup(
-    					e,
-    					pickedActor,
-    					mousePressNonSmallBodyCellPicker.GetCellId(),
-    					mousePressNonSmallBodyCellPicker.GetPickPosition());
-    		}		
-        }
+		if (renWin.GetRenderWindow().GetNeverRendered() > 0)
+			return;
+
+		int pickSucceeded = doPick(e, mousePressNonSmallBodyCellPicker);
+		if (pickSucceeded == 1)
+		{
+			vtkActor pickedActor = mousePressNonSmallBodyCellPicker.GetActor();
+			popupManager.showPopup(
+					e,
+					pickedActor,
+					mousePressNonSmallBodyCellPicker.GetCellId(),
+					mousePressNonSmallBodyCellPicker.GetPickPosition());
+		}		
     }
 
 	public void propertyChange(PropertyChangeEvent evt) 
