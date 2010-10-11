@@ -6,7 +6,7 @@ package edu.jhuapl.near.util;
  * @author eli
  *
  */
-public class GeometryUtil 
+public class MathUtil 
 {
 	/**
 	 * Convert lat lon to cartesian coordinates.

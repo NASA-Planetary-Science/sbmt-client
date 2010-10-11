@@ -91,7 +91,7 @@ public class PolyDataUtil
 			math.Cross(nearX, nearY, near);
 
 			// let the far clipping plane be a multiple of the distance to the origin
-			dx = 2.0 * GeometryUtil.vnorm(origin);
+			dx = 2.0 * MathUtil.vnorm(origin);
 			//double[] farUL = {origin[0]+ul[0]*dx, origin[1]+ul[1]*dx, origin[2]+ul[2]*dx};
 			double[] farUR = {origin[0]+ur[0]*dx, origin[1]+ur[1]*dx, origin[2]+ur[2]*dx};
 			double[] farLL = {origin[0]+ll[0]*dx, origin[1]+ll[1]*dx, origin[2]+ll[2]*dx};
@@ -100,7 +100,7 @@ public class PolyDataUtil
 			double[] farY = {farUR[0]-farLR[0], farUR[1]-farLR[1], farUR[2]-farLR[2]};
 			math.Cross(farX, farY, far);
 
-			dx = GeometryUtil.vnorm(origin);
+			dx = MathUtil.vnorm(origin);
 			double[] UL2 = {origin[0]+ul[0]*dx, origin[1]+ul[1]*dx, origin[2]+ul[2]*dx};
 			double[] UR2 = {origin[0]+ur[0]*dx, origin[1]+ur[1]*dx, origin[2]+ur[2]*dx};
 			double[] LL2 = {origin[0]+ll[0]*dx, origin[1]+ll[1]*dx, origin[2]+ll[2]*dx};
@@ -170,7 +170,7 @@ public class PolyDataUtil
 			for (int i=0; i<numCells; ++i)
 			{
 				double[] n = cellNormals.GetTuple3(i);
-				GeometryUtil.vhat(n, n);
+				MathUtil.vhat(n, n);
 
 				// Compute the direction to the viewer from one of the point of the cell.
 				tmpPolyData_f4.GetCellPoints(i, idList_f4);
@@ -179,7 +179,7 @@ public class PolyDataUtil
 				viewDir[0] = origin[0] - pt[0];
 				viewDir[1] = origin[1] - pt[1];
 				viewDir[2] = origin[2] - pt[2];
-				GeometryUtil.vhat(viewDir, viewDir);
+				MathUtil.vhat(viewDir, viewDir);
 
 				double dot = math.Dot(n, viewDir);
 				if (dot <= 0.0)
@@ -470,7 +470,7 @@ public class PolyDataUtil
 
 				double[] planeNormal = new double[3];
 				math.Cross(normal, vec, planeNormal);
-				GeometryUtil.vhat(planeNormal, planeNormal);
+				MathUtil.vhat(planeNormal, planeNormal);
 
 				if (i > clipPlanes_f1.size()-1)
 					clipPlanes_f1.add(new vtkPlane());
@@ -577,7 +577,7 @@ public class PolyDataUtil
 
 			double[] normal = new double[3];
 			math.Cross(vec1, avgNormal, normal);
-			GeometryUtil.vhat(normal, normal);
+			MathUtil.vhat(normal, normal);
 
 			if (cutPlane_f5 == null)
 				cutPlane_f5 = new vtkPlane();
@@ -775,8 +775,8 @@ public class PolyDataUtil
 						currentPoint[2] - vertex[2]
 				};
 				double[] planeNormal = new double[3];
-				GeometryUtil.vcrss(vec2, vec, planeNormal);
-				GeometryUtil.vhat(planeNormal, planeNormal);
+				MathUtil.vcrss(vec2, vec, planeNormal);
+				MathUtil.vhat(planeNormal, planeNormal);
 
 				if (i > clipPlanes_f7.size()-1)
 					clipPlanes_f7.add(new vtkPlane());
@@ -1220,7 +1220,7 @@ public class PolyDataUtil
 			for (int i=1;i<size;++i)
 			{
 				double[] pt2 = points.GetPoint(ids.get(i));
-				double dist = GeometryUtil.distanceBetween(pt1, pt2);
+				double dist = MathUtil.distanceBetween(pt1, pt2);
 				length += dist;
 				pt1 = pt2;
 			}

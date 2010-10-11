@@ -23,7 +23,7 @@ import edu.jhuapl.near.model.eros.MSIImage.MSIKey;
 import edu.jhuapl.near.popupmenus.PopupMenu;
 import edu.jhuapl.near.util.FileCache;
 import edu.jhuapl.near.util.FileUtil;
-import edu.jhuapl.near.util.GeometryUtil;
+import edu.jhuapl.near.util.MathUtil;
 
 
 public class MSIPopupMenu extends PopupMenu 
@@ -232,7 +232,7 @@ public class MSIPopupMenu extends PopupMenu
 	            return;
 	        }
 	        
-	        final double norm = GeometryUtil.vnorm(spacecraftPosition);
+	        final double norm = MathUtil.vnorm(spacecraftPosition);
 	        double[] position = {
 	                spacecraftPosition[0] + 0.6*norm*boresightDirection[0],
 	                spacecraftPosition[1] + 0.6*norm*boresightDirection[1],

@@ -138,7 +138,7 @@ public class MSIBoundaryCollection extends Model implements PropertyChangeListen
 			//double horizScaleFactor = 2.0 * Math.tan( GeometryUtil.vsep(frustum1, frustum3) / 2.0 ) / IMAGE_HEIGHT;
 			//double vertScaleFactor = 2.0 * Math.tan( GeometryUtil.vsep(frustum1, frustum2) / 2.0 ) / IMAGE_WIDTH;
 
-			double scdist = GeometryUtil.vnorm(spacecraftPosition);
+			double scdist = MathUtil.vnorm(spacecraftPosition);
 
 			for (int i=0; i<IMAGE_HEIGHT; ++i)
 			{
@@ -167,7 +167,7 @@ public class MSIBoundaryCollection extends Model implements PropertyChangeListen
 					vec[0] -= spacecraftPosition[0];
 					vec[1] -= spacecraftPosition[1];
 					vec[2] -= spacecraftPosition[2];
-					GeometryUtil.unorm(vec, vec);
+					MathUtil.unorm(vec, vec);
 
 					double[] lookPt = {
 							spacecraftPosition[0] + 2.0*scdist*vec[0],	

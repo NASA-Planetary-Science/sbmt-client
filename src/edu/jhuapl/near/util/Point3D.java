@@ -18,11 +18,11 @@ public class Point3D
 	
 	public double distanceTo(Point3D pt)
 	{
-		return GeometryUtil.distanceBetween(xyz, pt.xyz);
+		return MathUtil.distanceBetween(xyz, pt.xyz);
 	}
 
 	static public double distanceBetween(Point3D pt1, Point3D pt2)
 	{
-		return GeometryUtil.distanceBetween(pt1.xyz, pt2.xyz);
+		return MathUtil.distanceBetween(pt1.xyz, pt2.xyz);
 	}
 }

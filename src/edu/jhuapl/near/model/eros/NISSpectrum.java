@@ -17,7 +17,7 @@ import edu.jhuapl.near.util.FileCache;
 import edu.jhuapl.near.util.FileUtil;
 import edu.jhuapl.near.util.LatLon;
 import edu.jhuapl.near.util.PolyDataUtil;
-import edu.jhuapl.near.util.GeometryUtil;
+import edu.jhuapl.near.util.MathUtil;
 import edu.jhuapl.near.util.Properties;
 
 import vtk.*;
@@ -176,10 +176,10 @@ public class NISSpectrum extends Model implements PropertyChangeListener
 			frustum3[i] = Double.parseDouble(values.get(FRUSTUM_OFFSET + 6 + i));
 		for (int i=0; i<3; ++i)
 			frustum4[i] = Double.parseDouble(values.get(FRUSTUM_OFFSET + 9 + i));
-		GeometryUtil.vhat(frustum1, frustum1);
-		GeometryUtil.vhat(frustum2, frustum2);
-		GeometryUtil.vhat(frustum3, frustum3);
-		GeometryUtil.vhat(frustum4, frustum4);
+		MathUtil.vhat(frustum1, frustum1);
+		MathUtil.vhat(frustum2, frustum2);
+		MathUtil.vhat(frustum3, frustum3);
+		MathUtil.vhat(frustum4, frustum4);
 
 		footprint = new vtkPolyData();
 		shiftedFootprint = new vtkPolyData();
@@ -280,7 +280,7 @@ public class NISSpectrum extends Model implements PropertyChangeListener
 		        vtkIdList idList = new vtkIdList();
 		        idList.SetNumberOfIds(2);
 		        
-		        double dx = GeometryUtil.vnorm(spacecraftPosition);
+		        double dx = MathUtil.vnorm(spacecraftPosition);
 				double[] origin = spacecraftPosition;
 				double[] UL = {origin[0]+frustum1[0]*dx, origin[1]+frustum1[1]*dx, origin[2]+frustum1[2]*dx};
 				double[] UR = {origin[0]+frustum2[0]*dx, origin[1]+frustum2[1]*dx, origin[2]+frustum2[2]*dx};

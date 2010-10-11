@@ -13,7 +13,7 @@ import vtk.vtkPoints;
 import vtk.vtkPolyData;
 import vtk.vtkPolyDataNormals;
 import edu.jhuapl.near.model.SmallBodyModel;
-import edu.jhuapl.near.util.GeometryUtil;
+import edu.jhuapl.near.util.MathUtil;
 import edu.jhuapl.near.util.Point3D;
 
 public class DEMModel extends SmallBodyModel
@@ -191,11 +191,11 @@ public class DEMModel extends SmallBodyModel
     		double v1 = data.GetTuple1(idList.GetId(0));
     		double v2 = data.GetTuple1(idList.GetId(1));
     		double v3 = data.GetTuple1(idList.GetId(2));
-    		double val = GeometryUtil.interpolateWithinTriangle(p.xyz, p1, p2, p3, v1, v2, v3);
+    		double val = MathUtil.interpolateWithinTriangle(p.xyz, p1, p2, p3, v1, v2, v3);
     		heights.add(val);
     		
-    		GeometryUtil.nplnpt(first, lindir, p.xyz, pnear, notused);
-    		double dist = GeometryUtil.distanceBetween(first, pnear);
+    		MathUtil.nplnpt(first, lindir, p.xyz, pnear, notused);
+    		double dist = MathUtil.distanceBetween(first, pnear);
     		distances.add(dist);
     	}
     }

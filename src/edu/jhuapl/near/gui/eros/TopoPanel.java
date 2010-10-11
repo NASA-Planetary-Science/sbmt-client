@@ -22,7 +22,7 @@ import edu.jhuapl.near.model.RegularPolygonModel;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.pick.PickManager;
 import edu.jhuapl.near.pick.PickManager.PickMode;
-import edu.jhuapl.near.util.GeometryUtil;
+import edu.jhuapl.near.util.MathUtil;
 import edu.jhuapl.near.util.LatLon;
 import edu.jhuapl.near.util.Mapmaker;
 
@@ -151,7 +151,7 @@ public class TopoPanel extends JPanel implements ActionListener
 		{
 			Mapmaker mapmaker = new Mapmaker();
 			mapmaker.setName(name);
-			LatLon ll = GeometryUtil.reclat(centerPoint);
+			LatLon ll = MathUtil.reclat(centerPoint);
 			mapmaker.setLatitude(ll.lat);
 			mapmaker.setLongitude(ll.lon);
 			mapmaker.setPixelSize(1000.0 * 1.5 * radius / 512.0);

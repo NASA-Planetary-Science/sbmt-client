@@ -677,7 +677,7 @@ public class NLRSearchDataCollection extends Model
                 }                   
 		
 				double[] nextPoint = originalPoints.get(pointer).point;
-				currentDist += GeometryUtil.distanceBetween(nextPoint, prevPoint);
+				currentDist += MathUtil.distanceBetween(nextPoint, prevPoint);
 				
 				if (currentDist > Math.abs(maskValue))
 					break;
@@ -790,9 +790,9 @@ public class NLRSearchDataCollection extends Model
         for (int i=0;i<numberOfPoints;++i)
         {
         	double[] pt = originalPoints.get(i).point;
-        	LatLon lla = GeometryUtil.reclat(pt);
+        	LatLon lla = MathUtil.reclat(pt);
         	lla.rad += offset;
-        	pt = GeometryUtil.latrec(lla);
+        	pt = MathUtil.latrec(lla);
         	points.SetPoint(i, pt);
 		}		
 
@@ -839,7 +839,7 @@ public class NLRSearchDataCollection extends Model
         {
             double[] prevPoint = originalPoints.get(i-1).point;
             double[] currentPoint = originalPoints.get(i).point;
-            double dist = GeometryUtil.distanceBetween(prevPoint, currentPoint);
+            double dist = MathUtil.distanceBetween(prevPoint, currentPoint);
             length += dist;
         }
         
@@ -868,7 +868,7 @@ public class NLRSearchDataCollection extends Model
         {
             double[] prevPoint = originalPoints.get(i-1).point;
             double[] currentPoint = originalPoints.get(i).point;
-            double dist = GeometryUtil.distanceBetween(prevPoint, currentPoint);
+            double dist = MathUtil.distanceBetween(prevPoint, currentPoint);
             length += dist;
 
             potential.add(originalPoints.get(i).potential);

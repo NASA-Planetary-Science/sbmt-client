@@ -28,7 +28,7 @@ import org.w3c.dom.NodeList;
 import edu.jhuapl.near.util.Point3D;
 import edu.jhuapl.near.util.LatLon;
 import edu.jhuapl.near.util.Properties;
-import edu.jhuapl.near.util.GeometryUtil;
+import edu.jhuapl.near.util.MathUtil;
 
 import vtk.*;
 
@@ -231,8 +231,8 @@ public class LineModel extends StructureModel implements PropertyChangeListener
 	    {
     		LatLon ll1 = new LatLon(lat.get(segment), lon.get(segment), rad.get(segment));
     		LatLon ll2 = new LatLon(lat.get(segment+1), lon.get(segment+1), rad.get(segment+1));
-    		double pt1[] = GeometryUtil.latrec(ll1);
-    		double pt2[] = GeometryUtil.latrec(ll2);
+    		double pt1[] = MathUtil.latrec(ll1);
+    		double pt2[] = MathUtil.latrec(ll2);
     		
     		int id1 = controlPointIds.get(segment);
     		int id2 = controlPointIds.get(segment+1);
@@ -287,9 +287,9 @@ public class LineModel extends StructureModel implements PropertyChangeListener
 			// be touching the asteroid. Therefore shift each control to the closest
 			// point on the asteroid.
 			LatLon llr = new LatLon(lat.get(idx), lon.get(idx), rad.get(idx));
-			double pt[] = GeometryUtil.latrec(llr);
+			double pt[] = MathUtil.latrec(llr);
 			double[] closestPoint = smallBodyModel.findClosestPoint(pt);
-			LatLon ll = GeometryUtil.reclat(closestPoint);
+			LatLon ll = MathUtil.reclat(closestPoint);
 			lat.set(idx, ll.lat);
 			lon.set(idx, ll.lon);
 			rad.set(idx, ll.rad);
@@ -555,7 +555,7 @@ public class LineModel extends StructureModel implements PropertyChangeListener
         
         int numVertices = lin.lat.size();
 
-    	LatLon ll = GeometryUtil.reclat(newPoint);
+    	LatLon ll = MathUtil.reclat(newPoint);
     	lin.lat.set(vertexId, ll.lat);
     	lin.lon.set(vertexId, ll.lon);
     	lin.rad.set(vertexId, ll.rad);
@@ -656,7 +656,7 @@ public class LineModel extends StructureModel implements PropertyChangeListener
     	if (currentLineVertex < -1 || currentLineVertex >= lin.controlPointIds.size())
     		System.out.println("Error: currentLineVertex is invalid");
     	
-        LatLon ll = GeometryUtil.reclat(newPoint);
+        LatLon ll = MathUtil.reclat(newPoint);
         
         lin.lat.add(currentLineVertex+1, ll.lat);
         lin.lon.add(currentLineVertex+1, ll.lon);

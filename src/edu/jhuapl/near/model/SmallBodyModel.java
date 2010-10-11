@@ -13,7 +13,7 @@ import edu.jhuapl.near.util.BoundingBox;
 import edu.jhuapl.near.util.ConvertResourceToFile;
 import edu.jhuapl.near.util.SmallBodyCubes;
 import edu.jhuapl.near.util.FileCache;
-import edu.jhuapl.near.util.GeometryUtil;
+import edu.jhuapl.near.util.MathUtil;
 import edu.jhuapl.near.util.LatLon;
 import edu.jhuapl.near.util.PolyDataUtil;
 import edu.jhuapl.near.util.Properties;
@@ -361,7 +361,7 @@ public class SmallBodyModel extends Model
     public int getPointAndCellIdFromLatLon(double lat, double lon, double[] intersectPoint)
     {
     	LatLon lla = new LatLon(lat, lon);
-    	double[] lookPt = GeometryUtil.latrec(lla);
+    	double[] lookPt = MathUtil.latrec(lla);
     	
     	// Move in the direction of lookPt until we are definitely outside the asteroid
     	BoundingBox bb = getBoundingBox();
@@ -495,9 +495,9 @@ public class SmallBodyModel extends Model
     		double[] pt0 = points.GetPoint(0);
     		double[] pt1 = points.GetPoint(1);
     		double[] pt2 = points.GetPoint(2);
-    		double dist0 = GeometryUtil.distanceBetween(pt0, pt1);
-    		double dist1 = GeometryUtil.distanceBetween(pt1, pt2);
-    		double dist2 = GeometryUtil.distanceBetween(pt2, pt0);
+    		double dist0 = MathUtil.distanceBetween(pt0, pt1);
+    		double dist1 = MathUtil.distanceBetween(pt1, pt2);
+    		double dist2 = MathUtil.distanceBetween(pt2, pt0);
     		if (dist0 < minLength)
     			minLength = dist0;
     		if (dist0 > maxLength)
@@ -804,7 +804,7 @@ public class SmallBodyModel extends Model
 		{
 			double[] pt = points.GetPoint(i);
 
-			LatLon ll = GeometryUtil.reclat(pt);
+			LatLon ll = MathUtil.reclat(pt);
 	
 			double u = ll.lon;
 			if (u < 0.0)

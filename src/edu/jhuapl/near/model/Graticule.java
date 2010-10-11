@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 import edu.jhuapl.near.util.FileCache;
 import edu.jhuapl.near.util.LatLon;
-import edu.jhuapl.near.util.GeometryUtil;
+import edu.jhuapl.near.util.MathUtil;
 import edu.jhuapl.near.util.Properties;
 
 import vtk.vtkActor;
@@ -85,9 +85,9 @@ public class Graticule extends Model implements PropertyChangeListener
 		for (int i=0; i<numberLonCircles; ++i)
 		{
 			double lon = longitudeSpacing * (double)i * Math.PI / 180.0;
-			double[] vec = GeometryUtil.latrec(new LatLon(0.0, lon, 1.0));
+			double[] vec = MathUtil.latrec(new LatLon(0.0, lon, 1.0));
 			double[] normal = new double[3];
-			GeometryUtil.vcrss(vec, zaxis, normal);
+			MathUtil.vcrss(vec, zaxis, normal);
 			
 			plane.SetOrigin(origin);
 			plane.SetNormal(normal);

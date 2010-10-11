@@ -14,7 +14,7 @@ import vtk.vtkPolyDataWriter;
 
 import edu.jhuapl.near.model.ModelFactory;
 import edu.jhuapl.near.model.SmallBodyModel;
-import edu.jhuapl.near.util.GeometryUtil;
+import edu.jhuapl.near.util.MathUtil;
 import edu.jhuapl.near.util.SmallBodyCubes;
 import edu.jhuapl.near.util.FileUtil;
 import edu.jhuapl.near.util.NativeLibraryLoader;
@@ -91,7 +91,7 @@ public class NLRCubesGenerator
         			
         			double[] closestPt = erosModel.findClosestPoint(pt);
         			
-        			double dist = GeometryUtil.distanceBetween(pt, closestPt);
+        			double dist = MathUtil.distanceBetween(pt, closestPt);
         			
         			if (dist > MAX_DIST)
         			{
