@@ -26,13 +26,8 @@ public class DatabaseGeneratorSql
     static private final String MsiImagesGaskellTable = "msiimages_gaskell_beta2";
     static private final String MsiCubesPdsTable = "msicubes_beta2";
     static private final String MsiCubesGaskellTable = "msicubes_gaskell_beta2";
-//     static private final String MsiImagesPdsTable = "msiimages";
-//     static private final String MsiImagesGaskellTable = "msiimages_gaskell";
-//     static private final String MsiCubesPdsTable = "msicubes";
-//     static private final String MsiCubesGaskellTable = "msicubes_gaskell";
-
-    static private final String NisSpectraTable = "nisspectra_beta";
-    static private final String NisCubesTable = "niscubes_beta";
+    static private final String NisSpectraTable = "nisspectra_beta2";
+    static private final String NisCubesTable = "niscubes_beta2";
     
 	static private SqlManager db = null;
 	static private PreparedStatement msiInsert = null;
@@ -465,13 +460,14 @@ public class DatabaseGeneratorSql
     private static void populateNISTablesCubes(ArrayList<String> nisFiles) throws SQLException, IOException
     {
     	int count = 0;
+    	int filecount = 0;
     	for (String filename : nisFiles)
     	{
 			boolean filesExist = checkIfAllNisFilesExist(filename);
 			if (filesExist == false)
 				continue;
 
-			System.out.println("\n\nstarting nis " + filename);
+			System.out.println("\n\nstarting nis " + filename + " " + filecount++ + "/" + nisFiles.size());
 			
 //    		String dayOfYearStr = "";
 //    		String yearStr = "";
@@ -485,17 +481,13 @@ public class DatabaseGeneratorSql
 //    		f = f.getParentFile();
 //    		yearStr = f.getName();
 
+    		NISSpectrum nisSpectrum = new NISSpectrum(origFile, erosModel);
 
-	        String vtkfile = filename.substring(0, filename.length()-4) + "_FOOTPRINT.VTK";
-	        
-	        if (footprintReader == null)
-	        	footprintReader = new vtkPolyDataReader();
-	        footprintReader.SetFileName(vtkfile);
-	        footprintReader.Update();
-	        
+    		nisSpectrum.generateFootprint();
+    		
 	        if (footprintPolyData == null)
 	        	footprintPolyData = new vtkPolyData();
-			footprintPolyData.DeepCopy(footprintReader.GetOutput());
+			footprintPolyData.DeepCopy(nisSpectrum.getUnshiftedFootprint());
 			footprintPolyData.ComputeBounds();
 			
     		
@@ -521,6 +513,12 @@ public class DatabaseGeneratorSql
 
     			++count;
     		}
+
+    		nisSpectrum.Delete();
+    		//System.gc();
+            System.out.println("deleted " + vtkGlobalJavaHash.GC());
+            System.out.println(" ");
+            System.out.println(" ");
     	}
     }
 
@@ -659,10 +657,10 @@ public class DatabaseGeneratorSql
 			createMSITablesCubes(MsiCubesPdsTable);
 		else if (mode == 4 || mode == 0)
 			createMSITablesCubes(MsiCubesGaskellTable);
-//		else if (mode == 5)
-//			createNISTables();
-//		else if (mode == 6)
-//			createNISTablesCubes();
+        else if (mode == 5 || mode == 0)
+			createNISTables();
+		else if (mode == 6 || mode == 0)
+			createNISTablesCubes();
 
 		
 		try 
@@ -675,10 +673,10 @@ public class DatabaseGeneratorSql
 				populateMSITablesCubes(msiFiles, MsiCubesPdsTable, MSIImage.MSISource.PDS);
 			else if (mode == 4 || mode == 0)
 				populateMSITablesCubes(msiFiles, MsiCubesGaskellTable, MSIImage.MSISource.GASKELL);
-//			else if (mode == 5)
-//				populateNISTables(nisFiles);
-//			else if (mode == 6)
-//				populateNISTablesCubes(nisFiles);
+			else if (mode == 5 || mode == 0)
+				populateNISTables(nisFiles);
+			else if (mode == 6 || mode == 0)
+				populateNISTablesCubes(nisFiles);
 		}
 		catch (Exception e1) {
 			e1.printStackTrace();
