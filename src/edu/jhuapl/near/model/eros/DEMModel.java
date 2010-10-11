@@ -49,7 +49,7 @@ public class DEMModel extends SmallBodyModel
 
 		for (int i=0;i<data.length; ++i)
 		{
-			data[i] = swap(in.readFloat());
+			data[i] = MathUtil.swap(in.readFloat());
 		}
 
 		in.close();
@@ -126,25 +126,6 @@ public class DEMModel extends SmallBodyModel
 		dem.DeepCopy(normalsFilter.GetOutput());
 		
 		return dem;
-	}
-
-	// This function is taken from http://www.java2s.com/Code/Java/Language-Basics/Utilityforbyteswappingofalljavadatatypes.htm
-	private static int swap(int value)
-	{
-		int b1 = (value >>  0) & 0xff;
-	    int b2 = (value >>  8) & 0xff;
-	    int b3 = (value >> 16) & 0xff;
-	    int b4 = (value >> 24) & 0xff;
-
-	    return b1 << 24 | b2 << 16 | b3 << 8 | b4 << 0;
-	}
-	
-	// This function is taken from http://www.java2s.com/Code/Java/Language-Basics/Utilityforbyteswappingofalljavadatatypes.htm
-	private static float swap(float value)
-	{
-		int intValue = Float.floatToRawIntBits(value);
-		intValue = swap(intValue);
-		return Float.intBitsToFloat(intValue);
 	}
 
 	private static int index(int i, int j, int k)
