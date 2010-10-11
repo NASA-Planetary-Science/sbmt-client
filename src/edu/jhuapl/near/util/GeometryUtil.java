@@ -289,8 +289,112 @@ public class GeometryUtil
 		vout[1] = vtemp[1];
 		vout[2] = vtemp[2];
 	}
+	
+	static public void vsub(double[] v1, double[] v2, double[] vout)
+	{
+		vout[0] = v1[0] - v2[0];
+		vout[1] = v1[1] - v2[1];
+		vout[2] = v1[2] - v2[2];
+	}
 
-	/**
+    static public void vadd(double[] v1, double[] v2, double[] vout)
+    {
+    	vout[0] = v1[0] + v2[0];
+    	vout[1] = v1[1] + v2[1];
+    	vout[2] = v1[2] + v2[2];
+    }
+
+    static public void vscl(double s, double[] v1, double[] vout)
+    {
+    	vout[0] = s * v1[0];
+    	vout[1] = s * v1[1];
+    	vout[2] = s * v1[2];
+    }
+
+    static public void vproj(double[] a, double[] b, double[] p)
+    {
+    	/*                                                                                                                                                                       
+      Local variables                                                                                                                                                          
+    	 */
+
+    	double     biga;
+    	double     bigb;
+    	double[]   r = new double[3];
+    	double[]   t = new double[3];
+    	double     scale;
+
+
+    	biga = Math.max ( Math.abs(a[0]) , Math.max ( Math.abs(a[1]), Math.abs(a[2]) ) );
+    	bigb = Math.max ( Math.abs(b[0]) , Math.max ( Math.abs(b[1]), Math.abs(b[2]) ) );
+
+
+    	/*                                                                                                                                                                       
+      If a or b is zero, return the zero vector.                                                                                                                               
+    	 */
+
+    	if ( biga == 0 || bigb == 0 )
+    	{
+    		p[0] = 0.0;
+    		p[1] = 0.0;
+    		p[2] = 0.0;
+    		return;
+    	}
+
+
+    	vscl ( 1./biga, a, t );
+    	vscl ( 1./bigb, b, r );
+
+    	scale = vdot (t,r) * biga  / vdot (r,r);
+
+    	vscl ( scale, r, p );
+    }
+    
+    static public boolean vzero ( double[] v )
+    {
+      return  ( v[0] == 0. && v[1] == 0. && v[2] == 0.) ;
+    }
+    
+    static public void nplnpt ( double[]    linpt,
+    		double[]    lindir,
+    		double[]    point,
+    		double[]    pnear,
+    		double[]    dist)
+    {
+    	/*                                                                                                                                                                       
+      Local variables                                                                                                                                                          
+    	 */
+    	double[]             trans = new double[3];
+
+
+
+    	/*                                                                                                                                                                       
+      We need a real direction vector to work with.                                                                                                                            
+    	 */
+    	if (  vzero (lindir)  )
+    	{
+    		//chkin_c  ( "nplnpt_c"                           );
+    		System.out.println( "Direction vector must be non-zero." );
+    		//sigerr_c ( "SPICE(ZEROVECTOR)"                  );
+    		//chkout_c ( "nplnpt_c"                           );
+    		return;
+    	}
+
+
+    	/*                                                                                                                                                                       
+      We translate line and input point so as to put the line through                                                                                                          
+      the origin.  Then the nearest point on the translated line to the                                                                                                        
+      translated point TRANS is the projection of TRANS onto the line.                                                                                                         
+    	 */
+
+    	vsub  ( point,  linpt,  trans );
+    	vproj ( trans,  lindir, pnear );
+    	vadd  ( pnear,  linpt,  pnear );
+
+    	dist[0] = distanceBetween ( pnear,  point );
+
+    }
+
+    /**
 	 * Compute the distance between 2 3D points
 	 * @param pt1
 	 * @param pt2
@@ -303,7 +407,7 @@ public class GeometryUtil
 				pt2[1]-pt1[1],
 				pt2[2]-pt1[2]
 		};
-		return GeometryUtil.vnorm(vec);
+		return vnorm(vec);
 	}
 	
 	static public double distance2Between(double[] pt1, double[] pt2)
@@ -313,7 +417,7 @@ public class GeometryUtil
 				pt2[1]-pt1[1],
 				pt2[2]-pt1[2]
 		};
-		return GeometryUtil.vdot(vec, vec);
+		return vdot(vec, vec);
 	}
 
 	/**
