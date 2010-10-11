@@ -4,11 +4,9 @@ import vtk.vtkCellArray;
 import vtk.vtkIdList;
 import vtk.vtkPoints;
 import vtk.vtkPolyData;
-import vtk.vtkPolyDataMapper;
 import vtk.vtkUnsignedCharArray;
 import edu.jhuapl.near.model.LineModel;
 import edu.jhuapl.near.model.SmallBodyModel;
-import edu.jhuapl.near.model.LineModel.Line;
 
 /**
  * This class modifies its parent class by making the control
@@ -23,73 +21,65 @@ import edu.jhuapl.near.model.LineModel.Line;
 public class ProfileLineModel extends LineModel
 {
 	private SmallBodyModel smallBodyModel;
-	
+	private vtkIdList idList;
+	private int[] greenColor = {0, 255, 0, 255}; // RGBA green
+	private int[] redColor = {255, 0, 0, 255}; // RGBA red
+
 	public ProfileLineModel(SmallBodyModel smallBodyModel)
 	{
 		super(smallBodyModel);
 		
 		this.smallBodyModel = smallBodyModel;
 		setMaximumVerticesPerLine(2);
-	}
-	/*
-    private void updateLineSelection()
-    {
-    	if (selectedLine == -1)
-    	{
-            if (actors.contains(lineSelectionActor))
-            	actors.remove(lineSelectionActor);
-            
-            return;
-    	}
-
-        Line lin = lines.get(selectedLine);
-        
-        vtkPolyData selectionPolyData = new vtkPolyData();
-		vtkPoints points = new vtkPoints();
-		vtkCellArray vert = new vtkCellArray();
-        vtkUnsignedCharArray colors = new vtkUnsignedCharArray();
-
-		selectionPolyData.SetPoints( points );
-		selectionPolyData.SetVerts( vert );
-		selectionPolyData.GetCellData().SetScalars(colors);
-
-        colors.SetNumberOfComponents(4);
-
-		int numPoints = lin.controlPointIds.size();
-
-        points.SetNumberOfPoints(numPoints);
-
-		vtkIdList idList = new vtkIdList();
+		
+		idList = new vtkIdList();
         idList.SetNumberOfIds(1);
+	}
 
+    protected void updateLineSelection()
+    {
+        vtkPolyData selectionPolyData = getSelectionPolyData();
+        selectionPolyData.DeepCopy(getEmptyPolyData());
+		vtkPoints points = selectionPolyData.GetPoints();
+		vtkCellArray vert = selectionPolyData.GetVerts();
+		vtkUnsignedCharArray colors = (vtkUnsignedCharArray)selectionPolyData.GetCellData().GetScalars();
+
+        int count = 0;
         int numLines = getNumberOfStructures();
         for (int j=0; j<numLines; ++j)
         {
-        	for (int i=0; i<numPoints; ++i)
+        	Line lin = (Line)getStructure(j);
+
+        	for (int i=0; i<lin.controlPointIds.size(); ++i)
         	{
         		int idx = lin.controlPointIds.get(i);
-        		points.SetPoint(i, lin.xyzPointList.get(idx).xyz);
-        		idList.SetId(0, i);
+
+        		points.InsertNextPoint(lin.xyzPointList.get(idx).xyz);
+        		idList.SetId(0, count++);
         		vert.InsertNextCell(idList);
-        		if (i == this.currentLineVertex)
-        			colors.InsertNextTuple4(blueColor[0],blueColor[1],blueColor[2],blueColor[3]);
+        		if (i == 0)
+        			colors.InsertNextTuple4(greenColor[0],greenColor[1],greenColor[2],greenColor[3]);
         		else
         			colors.InsertNextTuple4(redColor[0],redColor[1],redColor[2],redColor[3]);
         	}
         }
 
 		smallBodyModel.shiftPolyLineInNormalDirection(selectionPolyData, 0.001);
-		
-		if (lineSelectionMapper == null)
-			lineSelectionMapper = new vtkPolyDataMapper();
-        lineSelectionMapper.SetInput(selectionPolyData);
-        lineSelectionMapper.Update();
-        
-        if (!actors.contains(lineSelectionActor))
-        	actors.add(lineSelectionActor);
-
-        lineSelectionActor.SetMapper(lineSelectionMapper);
-        lineSelectionActor.Modified();
     }
-*/
+
+	public int getVertexIdFromSelectionCellId(int idx)
+	{
+		int count = 0;
+        int numLines = getNumberOfStructures();
+        for (int j=0; j<numLines; ++j)
+        {
+        	if (idx < count)
+        		return j;
+            Line lin = (Line)getStructure(j);
+            int size = lin.controlPointIds.size();
+            count += size;
+        }
+        
+        return -1;
+	}
 }

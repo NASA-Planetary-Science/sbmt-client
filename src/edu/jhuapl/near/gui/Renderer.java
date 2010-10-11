@@ -34,8 +34,8 @@ public class Renderer extends JPanel implements
         
         renWin.GetRenderer().AutomaticLightCreationOff();
         vtkLightKit lightKit = new vtkLightKit();
-        lightKit.SetKeyToBackRatio(5);
-        lightKit.SetKeyToHeadRatio(5);
+        //lightKit.SetKeyToBackRatio(5);
+        //lightKit.SetKeyToHeadRatio(5);
         lightKit.AddLightsToRenderer(renWin.GetRenderer());
 
         add(renWin, BorderLayout.CENTER);

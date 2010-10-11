@@ -25,6 +25,7 @@ import org.jfree.data.xy.XYSeriesCollection;
 
 import edu.jhuapl.near.model.LineModel;
 import edu.jhuapl.near.model.LineModel.Line;
+import edu.jhuapl.near.model.eros.DEMModel;
 import edu.jhuapl.near.util.Properties;
 
 
@@ -37,12 +38,14 @@ public class TopoPlot extends JPanel implements ChartMouseListener, PropertyChan
 //    private XYSeries potentialTimeDataSeries;
 //    private XYSeries potentialDistanceSelectionSeries;
 //    private XYSeries potentialTimeSelectionSeries;
-    private ArrayList<XYSeries> allSeries;
     private LineModel lineModel;
+    private DEMModel demModel;
     
-    public TopoPlot(LineModel lineModel)
+    public TopoPlot(LineModel lineModel, DEMModel demModel)
     {
     	this.lineModel = lineModel;
+    	this.demModel = demModel;
+    	
     	lineModel.addPropertyChangeListener(this);
 
         JPanel panel = new JPanel(new BorderLayout());
@@ -212,15 +215,12 @@ public class TopoPlot extends JPanel implements ChartMouseListener, PropertyChan
     }
     */
     
-    private void generateProfile(Line line, ArrayList<Double> height, ArrayList<Double> distance)
+    private void addProfile()
     {
-    }
-    
-    private void addProfile(int lineId)
-    {
-    	XYSeries series = new XYSeries("Profile " + lineId);
-    	allSeries.add(series);
+    	int lineId = lineModel.getNumberOfStructures()-1;
+    	XYSeries series = new XYSeries("Profile " + lineModel.getStructure(lineId).hashCode());
         ((XYSeriesCollection)heightDistanceDataset).addSeries(series);
+        updateProfile(lineId);
     }
     
     private void updateProfile(int lineId)
@@ -228,13 +228,23 @@ public class TopoPlot extends JPanel implements ChartMouseListener, PropertyChan
     	Line line = (Line)lineModel.getStructure(lineId);
     	ArrayList<Double> height = new ArrayList<Double>(); 
     	ArrayList<Double> distance = new ArrayList<Double>(); 
-    	generateProfile(line, height, distance);
+    	demModel.generateProfile(line.xyzPointList, height, distance);
+    	
+    	XYSeries series = ((XYSeriesCollection)heightDistanceDataset).getSeries(lineId);
+    	series.clear();
+    	int N = height.size();
+        for (int i=0; i<N; ++i)
+        	series.add(distance.get(i), height.get(i), false);
+        series.fireSeriesChanged();
     }
     
     private void removeProfile(int lineId)
     {
-    	allSeries.remove(lineId);
         ((XYSeriesCollection)heightDistanceDataset).removeSeries(lineId);
+    }
+
+    private void exportProfile(int lineId)
+    {
     }
     
     public void chartMouseClicked(ChartMouseEvent arg0)

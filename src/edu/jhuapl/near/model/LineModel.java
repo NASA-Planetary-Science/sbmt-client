@@ -59,6 +59,8 @@ public class LineModel extends StructureModel implements PropertyChangeListener
     private int[] highlightColor = {0, 0, 255, 255};
     private int maximumVerticesPerLine = Integer.MAX_VALUE;
     
+    private vtkPolyData emptyPolyData;
+
 	private static String LINES = "lines";
 
 	private static int maxId = 0;
@@ -308,6 +310,32 @@ public class LineModel extends StructureModel implements PropertyChangeListener
 		lineSelectionActor = new vtkActor();
     	lineSelectionActor.GetProperty().SetColor(1.0, 0.0, 0.0);
     	lineSelectionActor.GetProperty().SetPointSize(7.0);
+
+    	// Initialize an empty polydata for resetting
+		emptyPolyData = new vtkPolyData();
+		vtkPoints points = new vtkPoints();
+		vtkCellArray cells = new vtkCellArray();
+		vtkUnsignedCharArray colors = new vtkUnsignedCharArray();
+		colors.SetNumberOfComponents(4);
+		emptyPolyData.SetPoints(points);
+		emptyPolyData.SetLines(cells);
+		emptyPolyData.SetVerts(cells);
+		emptyPolyData.GetCellData().SetScalars(colors);
+
+		linesPolyData = new vtkPolyData();
+		linesPolyData.DeepCopy(emptyPolyData);
+
+		selectionPolyData = new vtkPolyData();
+		selectionPolyData.DeepCopy(emptyPolyData);
+
+		lineSelectionMapper = new vtkPolyDataMapper();
+        lineSelectionMapper.SetInput(selectionPolyData);
+        lineSelectionMapper.Update();
+        
+        lineSelectionActor.SetMapper(lineSelectionMapper);
+        lineSelectionActor.Modified();
+        
+    	actors.add(lineSelectionActor);
 	}
 
     public Element toXmlDomElement(Document dom)
@@ -352,16 +380,10 @@ public class LineModel extends StructureModel implements PropertyChangeListener
     
 	private void updatePolyData()
 	{
-		linesPolyData = new vtkPolyData();
-		vtkPoints points = new vtkPoints();
-		vtkCellArray lineCells = new vtkCellArray();
-		vtkUnsignedCharArray colors = new vtkUnsignedCharArray();
-
-		linesPolyData.SetPoints(points);
-		linesPolyData.SetLines(lineCells);
-		linesPolyData.GetCellData().SetScalars(colors);
-
-		colors.SetNumberOfComponents(4);
+		linesPolyData.DeepCopy(emptyPolyData);
+		vtkPoints points = linesPolyData.GetPoints();
+		vtkCellArray lineCells = linesPolyData.GetLines();
+		vtkUnsignedCharArray colors = (vtkUnsignedCharArray)linesPolyData.GetCellData().GetScalars();
 
 		vtkIdList idList = new vtkIdList();
 
@@ -713,7 +735,7 @@ public class LineModel extends StructureModel implements PropertyChangeListener
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
     
-    private void updateLineSelection()
+    protected void updateLineSelection()
     {
     	if (selectedLine == -1)
     	{
@@ -725,16 +747,10 @@ public class LineModel extends StructureModel implements PropertyChangeListener
 
         Line lin = lines.get(selectedLine);
         
-		selectionPolyData = new vtkPolyData();
-		vtkPoints points = new vtkPoints();
-		vtkCellArray vert = new vtkCellArray();
-        vtkUnsignedCharArray colors = new vtkUnsignedCharArray();
-
-		selectionPolyData.SetPoints( points );
-		selectionPolyData.SetVerts( vert );
-		selectionPolyData.GetCellData().SetScalars(colors);
-
-        colors.SetNumberOfComponents(4);
+        selectionPolyData.DeepCopy(emptyPolyData);
+		vtkPoints points = selectionPolyData.GetPoints();
+		vtkCellArray vert = selectionPolyData.GetVerts();
+		vtkUnsignedCharArray colors = (vtkUnsignedCharArray)selectionPolyData.GetCellData().GetScalars();
 
 		int numPoints = lin.controlPointIds.size();
 
@@ -757,16 +773,8 @@ public class LineModel extends StructureModel implements PropertyChangeListener
 
 		smallBodyModel.shiftPolyLineInNormalDirection(selectionPolyData, 0.001);
 		
-		if (lineSelectionMapper == null)
-			lineSelectionMapper = new vtkPolyDataMapper();
-        lineSelectionMapper.SetInput(selectionPolyData);
-        lineSelectionMapper.Update();
-        
         if (!actors.contains(lineSelectionActor))
         	actors.add(lineSelectionActor);
-
-        lineSelectionActor.SetMapper(lineSelectionMapper);
-        lineSelectionActor.Modified();
     }
     
     public void selectStructure(int cellId)
@@ -1035,4 +1043,20 @@ public class LineModel extends StructureModel implements PropertyChangeListener
 		updatePolyData();
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 	}
+	
+	protected vtkPolyData getSelectionPolyData()
+	{
+		return selectionPolyData;
+	}
+	
+	protected vtkPolyData getEmptyPolyData()
+	{
+		return emptyPolyData;
+	}
+	
+	public int getVertexIdFromSelectionCellId(int idx)
+	{
+		return idx;
+	}
+	
 }
