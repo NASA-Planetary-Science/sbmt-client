@@ -60,57 +60,60 @@ public class vtkRenderWindowPanelWithMouseWheel extends vtkRenderWindowPanel
 		// do nothing
 	}
 
-	/*
+	
 	public void keyPressed(KeyEvent e)
 	{
-		System.out.println(e);
 		if (ren.VisibleActorCount() == 0) return;
-		char keyChar = e.getKeyText(e.getKeyCode()).charAt(0);
-		
+		char keyChar = e.getKeyChar();
 
-		if ('x' == keyChar || 'y' == keyChar || 'z' == keyChar)
+		if ('x' == keyChar || 'y' == keyChar || 'z' == keyChar ||
+				'X' == keyChar || 'Y' == keyChar || 'Z' == keyChar)
 		{
 			double[] bounds = new double[6];
 			ren.ComputeVisiblePropBounds(bounds);
 			lock();
 			vtkCamera cam = ren.GetActiveCamera();
 			cam.SetFocalPoint(0.0, 0.0, 0.0);
-
-			ctrlPressed = (e.getModifiers() & InputEvent.CTRL_MASK) == InputEvent.CTRL_MASK ? 1
-					: 0;
-			shiftPressed = (e.getModifiers() & InputEvent.SHIFT_MASK) == InputEvent.SHIFT_MASK ? 1
-					: 0;
-
-			if ('x' == keyChar && (ctrlPressed == 1 || shiftPressed == 1))
+			
+			double xSize = Math.abs(bounds[1] - bounds[0]);
+			double ySize = Math.abs(bounds[3] - bounds[2]);
+			double zSize = Math.abs(bounds[5] - bounds[4]);
+			double maxSize = Math.max(Math.max(xSize, ySize), zSize);
+			
+			if ('X' == keyChar)
 			{
-				System.out.println(1);
-				cam.SetPosition(2.0*bounds[0], 0.0, 0.0);
+				double xpos = xSize / Math.tan(Math.PI/6.0) + 2.0*maxSize;
+				cam.SetPosition(xpos, 0.0, 0.0);
 				cam.SetViewUp(0.0, 1.0, 0.0);
 			}
 			else if ('x' == keyChar)
 			{
-				System.out.println(2);
-				cam.SetPosition(2.0*bounds[1], 0.0, 0.0);
+				double xpos = -xSize / Math.tan(Math.PI/6.0) - 2.0*maxSize;
+				cam.SetPosition(xpos, 0.0, 0.0);
 				cam.SetViewUp(0.0, 1.0, 0.0);
 			}
-			else if ('y' == keyChar && (ctrlPressed == 1 || shiftPressed == 1))
+			else if ('Y' == keyChar)
 			{
-				cam.SetPosition(0.0, 2.0*bounds[2], 0.0);
+				double ypos = ySize / Math.tan(Math.PI/6.0) + 2.0*maxSize;
+				cam.SetPosition(0.0, ypos, 0.0);
 				cam.SetViewUp(1.0, 0.0, 0.0);
 			}
 			else if ('y' == keyChar)
 			{
-				cam.SetPosition(0.0, 2.0*bounds[3], 0.0);
+				double ypos = -ySize / Math.tan(Math.PI/6.0) - 2.0*maxSize;
+				cam.SetPosition(0.0, ypos, 0.0);
 				cam.SetViewUp(1.0, 0.0, 0.0);
 			}
-			else if ('z' == keyChar && (ctrlPressed == 1 || shiftPressed == 1))
+			else if ('Z' == keyChar)
 			{
-				cam.SetPosition(0.0, 0.0, 2.0*bounds[4]);
+				double zpos = zSize / Math.tan(Math.PI/6.0) + 2.0*maxSize;
+				cam.SetPosition(0.0, 0.0, zpos);
 				cam.SetViewUp(0.0, 1.0, 0.0);
 			}
 			else if ('z' == keyChar)
 			{
-				cam.SetPosition(0.0, 0.0, 2.0*bounds[5]);
+				double zpos = -zSize / Math.tan(Math.PI/6.0) - 2.0*maxSize;
+				cam.SetPosition(0.0, 0.0, zpos);
 				cam.SetViewUp(0.0, 1.0, 0.0);
 			}
 
@@ -123,7 +126,7 @@ public class vtkRenderWindowPanelWithMouseWheel extends vtkRenderWindowPanel
 			super.keyPressed(e);
 		}
 	}
-	*/
+	
 	  
     public void saveToFile()
     {
