@@ -12,7 +12,7 @@ import java.util.*;
 import javax.swing.*;
 
 import edu.jhuapl.near.gui.ModelInfoWindow;
-import edu.jhuapl.near.gui.vtkRenderWindowPanelWithMouseWheel;
+import edu.jhuapl.near.gui.vtkEnhancedRenderWindowPanel;
 import edu.jhuapl.near.model.*;
 import edu.jhuapl.near.model.eros.MSIImage;
 import edu.jhuapl.near.popupmenus.eros.MSIPopupMenu;
@@ -21,7 +21,7 @@ import vtk.*;
 
 public class MSIImageInfoPanel extends ModelInfoWindow implements PropertyChangeListener
 {
-	private vtkRenderWindowPanelWithMouseWheel renWin;
+	private vtkEnhancedRenderWindowPanel renWin;
     private ContrastChanger contrastChanger;
 	private MSIImage msiImage;
 	private ModelManager modelManager;
@@ -35,7 +35,7 @@ public class MSIImageInfoPanel extends ModelInfoWindow implements PropertyChange
 		
 		image.addPropertyChangeListener(this);
 		
-		renWin = new vtkRenderWindowPanelWithMouseWheel();
+		renWin = new vtkEnhancedRenderWindowPanel();
 		
         vtkInteractorStyleImage style =
             new vtkInteractorStyleImage();

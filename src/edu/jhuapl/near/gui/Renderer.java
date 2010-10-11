@@ -12,7 +12,7 @@ import vtk.*;
 public class Renderer extends JPanel implements 
 			PropertyChangeListener
 {
-    private vtkRenderWindowPanelWithMouseWheel renWin;
+    private vtkEnhancedRenderWindowPanel renWin;
     private ModelManager modelManager;
     private vtkInteractorStyleTrackballCamera defaultInteractorStyle;
     private vtkInteractorStyleRubberBand3D rubberBandInteractorStyle;
@@ -21,7 +21,7 @@ public class Renderer extends JPanel implements
     {
     	setLayout(new BorderLayout());
     	
-        renWin = new vtkRenderWindowPanelWithMouseWheel();
+        renWin = new vtkEnhancedRenderWindowPanel();
 
         this.modelManager = modelManager;
 

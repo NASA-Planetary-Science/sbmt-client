@@ -22,11 +22,11 @@ import vtk.vtkWindowToImageFilter;
  * @author kahneg1
  *
  */
-public class vtkRenderWindowPanelWithMouseWheel extends vtkRenderWindowPanel 
+public class vtkEnhancedRenderWindowPanel extends vtkRenderWindowPanel 
 												implements 
 												MouseWheelListener
 {
-	public vtkRenderWindowPanelWithMouseWheel() 
+	public vtkEnhancedRenderWindowPanel() 
 	{
 		addMouseWheelListener(this);
 	}
