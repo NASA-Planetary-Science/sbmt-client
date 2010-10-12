@@ -23,6 +23,7 @@ import edu.jhuapl.near.model.StructureModel;
 import edu.jhuapl.near.model.eros.DEMModel;
 import edu.jhuapl.near.model.eros.ProfileLineModel;
 import edu.jhuapl.near.pick.PickManager;
+import edu.jhuapl.near.pick.ProfileLinePicker;
 import edu.jhuapl.near.popupmenus.GenericPopupManager;
 
 public class TopoViewer extends JFrame
@@ -54,7 +55,8 @@ public class TopoViewer extends JFrame
 		GenericPopupManager popupManager = new GenericPopupManager(modelManager);
 
 		PickManager pickManager = new PickManager(renderer, statusBar, modelManager, popupManager);
-
+		pickManager.setLinePicker(new ProfileLinePicker(renderer, modelManager));
+		
         renderer.setMinimumSize(new Dimension(100, 100));
         renderer.setPreferredSize(new Dimension(400, 400));
 

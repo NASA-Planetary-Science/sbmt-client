@@ -82,4 +82,10 @@ public class ProfileLineModel extends LineModel
         
         return -1;
 	}
+	
+	@Override
+	public boolean supportsSelection()
+	{
+		return false;
+	}
 }
