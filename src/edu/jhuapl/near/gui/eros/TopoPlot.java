@@ -24,7 +24,7 @@ import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
 import edu.jhuapl.near.model.LineModel;
-import edu.jhuapl.near.model.LineModel.Line;
+import edu.jhuapl.near.model.Line;
 import edu.jhuapl.near.model.eros.DEMModel;
 import edu.jhuapl.near.util.Properties;
 

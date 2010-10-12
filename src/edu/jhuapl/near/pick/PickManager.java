@@ -20,11 +20,11 @@ public class PickManager extends Picker
 	private Renderer renderer;
     private vtkRenderWindowPanel renWin;
     
-    private LinePicker linePicker;
-    private CirclePicker circlePicker;
-    private PointPicker pointPicker;
+    private Picker linePicker;
+    private Picker circlePicker;
+    private Picker pointPicker;
     private DefaultPicker defaultPicker;
-    private CircleSelectionPicker circleSelectionPicker;
+    private Picker circleSelectionPicker;
     
 	public PickManager(
 			Renderer renderer, 
@@ -52,7 +52,7 @@ public class PickManager extends Picker
 		addPicker(defaultPicker);
 	}
 	
-	public void setLinePicker(LinePicker linePicker)
+	public void setLinePicker(Picker linePicker)
 	{
 		this.linePicker = linePicker;
 	}

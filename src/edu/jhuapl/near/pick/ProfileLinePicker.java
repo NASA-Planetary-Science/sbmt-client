@@ -10,7 +10,7 @@ import edu.jhuapl.near.gui.Renderer;
 import edu.jhuapl.near.model.*;
 import edu.jhuapl.near.model.eros.ProfileLineModel;
 
-public class ProfileLinePicker extends LinePicker
+public class ProfileLinePicker extends Picker
 {
     private ModelManager modelManager;
     private vtkRenderWindowPanel renWin;
@@ -44,8 +44,6 @@ public class ProfileLinePicker extends LinePicker
 			ModelManager modelManager
 			) 
 	{
-    	super(renderer, modelManager);
-    	
 		this.renWin = renderer.getRenderWindowPanel();
 		this.modelManager = modelManager;
 		this.lineModel = (ProfileLineModel)modelManager.getModel(ModelNames.LINE_STRUCTURES);
@@ -105,12 +103,18 @@ public class ProfileLinePicker extends LinePicker
 					if (e.getButton() == MouseEvent.BUTTON1)
 					{
 						int cellId = lineSelectionPicker.GetCellId();
-						this.vertexIdBeingEdited = lineModel.getVertexIdFromSelectionCellId(cellId);
+						//this.vertexIdBeingEdited = lineModel.getVertexIdFromSelectionCellId(cellId);
+						this.lineIdBeingEdited = lineModel.getLineIdFromSelectionCellId(cellId);
+						lineModel.selectStructure(lineIdBeingEdited);
+						//lineModel.selectCurrentLineVertex(vertexIdBeingEdited);
+
+						this.vertexIdBeingEdited = lineSelectionPicker.GetCellId();
 						lineModel.selectCurrentLineVertex(vertexIdBeingEdited);
 					}
 					else
 					{
 						vertexIdBeingEdited = -1;
+						lineModel.selectStructure(-1);
 					}
 				}
 			}
@@ -134,6 +138,8 @@ public class ProfileLinePicker extends LinePicker
 					double[] pos = smallBodyPicker.GetPickPosition();
 					if (e.getClickCount() == 1)
 					{
+						System.err.println(lineModel.getNumberOfStructures());
+						System.err.println(lineModel.getSelectedStructureIndex());
 						lineModel.insertVertexIntoSelectedLine(pos);
 					}
 				}

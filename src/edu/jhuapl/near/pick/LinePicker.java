@@ -97,8 +97,7 @@ public class LinePicker extends Picker
 				{
 					if (e.getButton() == MouseEvent.BUTTON1)
 					{
-						int cellId = lineSelectionPicker.GetCellId();
-						this.vertexIdBeingEdited = lineModel.getVertexIdFromSelectionCellId(cellId);
+						this.vertexIdBeingEdited = lineSelectionPicker.GetCellId();
 						lineModel.selectCurrentLineVertex(vertexIdBeingEdited);
 					}
 					else

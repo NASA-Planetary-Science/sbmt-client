@@ -5,6 +5,7 @@ import vtk.vtkIdList;
 import vtk.vtkPoints;
 import vtk.vtkPolyData;
 import vtk.vtkUnsignedCharArray;
+import edu.jhuapl.near.model.Line;
 import edu.jhuapl.near.model.LineModel;
 import edu.jhuapl.near.model.SmallBodyModel;
 
@@ -67,25 +68,55 @@ public class ProfileLineModel extends LineModel
 		smallBodyModel.shiftPolyLineInNormalDirection(selectionPolyData, 0.001);
     }
 
+    /**
+     * Get the vertex id of the line the selected vertex belongs.
+     * Only 0 or 1 can be returned.
+     * @param idx
+     * @return
+     */
 	public int getVertexIdFromSelectionCellId(int idx)
+	{
+        int numLines = getNumberOfStructures();
+        for (int j=0; j<numLines; ++j)
+        {
+            Line lin = (Line)getStructure(j);
+            int size = lin.controlPointIds.size();
+
+            if (idx == 0)
+            {
+        		return 0;
+            }
+        	else if (idx == 1 && size == 2)
+        	{
+        		return 1;
+        	}
+        	else
+        	{
+        		idx -= size;
+        	}
+        }
+        
+        return -1;
+	}
+
+    /**
+     * Get which line the specified vertex belongs to
+     * @param idx
+     * @return
+     */
+	public int getLineIdFromSelectionCellId(int idx)
 	{
 		int count = 0;
         int numLines = getNumberOfStructures();
         for (int j=0; j<numLines; ++j)
         {
-        	if (idx < count)
-        		return j;
             Line lin = (Line)getStructure(j);
             int size = lin.controlPointIds.size();
             count += size;
+        	if (idx < count)
+        		return j;
         }
         
         return -1;
-	}
-	
-	@Override
-	public boolean supportsSelection()
-	{
-		return false;
 	}
 }
