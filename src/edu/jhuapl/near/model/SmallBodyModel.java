@@ -187,6 +187,11 @@ public class SmallBodyModel extends Model
 		return cellLocator;
 	}
 	
+	public vtkAbstractPointLocator getPointLocator()
+	{
+		return pointLocator;
+	}
+	
 	public TreeSet<Integer> getIntersectingCubes(vtkPolyData polydata)
 	{
 		if (smallBodyCubes == null)
@@ -310,7 +315,7 @@ public class SmallBodyModel extends Model
 			vtkPolyData polyLine,
 			double shiftAmount)
 	{
-		PolyDataUtil.ShiftPolyLineInNormalDirectionOfPolyData.func(polyLine, smallBodyPolyData, shiftAmount);
+		PolyDataUtil.ShiftPolyLineInNormalDirectionOfPolyData.func(polyLine, smallBodyPolyData, pointLocator, shiftAmount);
 	}
 	
 	/**

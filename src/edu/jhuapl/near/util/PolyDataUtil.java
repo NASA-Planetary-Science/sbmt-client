@@ -891,6 +891,7 @@ public class PolyDataUtil
 		public static void func(
 				vtkPolyData polyLine,
 				vtkPolyData polyData,
+				vtkAbstractPointLocator pointLocator,
 				double shiftAmount)
 		{
 			vtkDataArray pointNormals = polyData.GetPointData().GetNormals();
@@ -901,7 +902,7 @@ public class PolyDataUtil
 			for (int i=0; i<numPoints; ++i)
 			{
 				double[] point = points.GetPoint(i);
-				int idx = polyData.FindPoint(point);
+				int idx = pointLocator.FindClosestPoint(point);
 
 				if (idx < 0)
 					continue;
