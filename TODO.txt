@@ -6,12 +6,38 @@
  
  - Make NLR GUI more similar to MSI and NIS
     
+ - improve NLR tab: fix performance. Allow showing all data at once. Allow exporting data.
+   Show original tab also (perhaps one for browsing and one for searching)
+
+ - In NLR tool, provide ability to click on a point and then search for the entire
+   track which contains that point. Tracks can be distinguished based on time (i.e. if there
+   is a long break in time, then you know the track ended). Allow user to:
+   1. highlight the track
+   2. remove the track
+   3. export the track
+   4. plot the track
+   
+ - In NLR tab, default start and stop times should include entire mission. Since the data
+   returned would be too large for such a search, provide a popup warning urging user to select
+   a region.
+   
+ - Provide new summary tab in NLR showing all the NLR data
+  
+ - In NLR Plots, don't show lines connecting the points, just show the points
+ 
+ - In NLR tab, provide checkbox for not showing points whose invalid flag is true (i.e. filter on invalid flag)
+ 
+ - In NLR tab, when showing the plots, add a new 3D plot just showing the points and a set of axes (XYZ)
+ 
+ - In NLR tab, when plotting potential vs distance, the distance should be computed by fitting
+   a straight line through the points (using least squares), and then projecting the point onto
+   the line. The distance along this line is what should be plotted, not the euclidean distance
+   between points as is done now.
+   
+ - Show a popup progress bar dialog for long running operations which leave the tool hanging
+ 
  - Disable ability to save and load from file while drawing a path
 
- - Improve lighting of shape model so as to better make out the topography.
-   Perhaps provide controls for modifying it. In particular, remove the glaring
-   effect especially noticeable at the ends of eros
-   
  - Undo feature
  
  - overlay lat/lon labels when lat/lon grid is shown
@@ -35,9 +61,6 @@
    
  - Add ability to load a new shape model at runtime in a new View
  
- - fix problem where if you right click and create a popup menu, you continue to zoom in
-   and out
-   
  - add ability to reorient the camera along any of the axes as requested by Carolyn
  
  - fix crash which occurs sometimes if you click with mouse on the renderer while
@@ -53,8 +76,17 @@
    perhaps save the color to each line of the file. also provide controls for
    changing color of individual structures. 
  
- - improve NLR tab: fix performance. Allow showing all data at once. Allow exporting data.
-   Show original tab also (perhaps one for browsing and one for searching)
+ - In NIS tab, allow coloring of footprints using 3 channels (currently only 1 channel is
+   supported) thus enabling full RGB color footprints. Also provide checkbox option for dividing
+   spectrum by the cosine of the incidence (cos I)
+   
+ - In path structures drawing, allow deletion of single vertex, (currently only
+   deleting the entire path is supported)
+
+ - In structures tab, provide new structure tab called Polygons for drawing arbitrary polygons.
+   This will be very similar to paths tab plus the following features:
+   1. Polygons will be filled in
+   2. (possibly) double clicking somehow finishes the drawing (not sure exactly)
  
  - develop new high res topography tool: this will work as follows. Create a new tab which
    provides the options to select a point (in lat, west lon) by drawing a circle.
@@ -85,3 +117,18 @@
    It will be necessary to first download all topographic data to users machine before
    first use.
    
+ - In NIS and MSI allow creation of mosiacs by specifically specifying the offset size for each
+   footprint or image. Provide menu option in popup for "bring to front" like in Powerpoint
+
+ - In NIS, provide export of data. Use the following format: First a header in a key = value format
+   format, then a table of the wavelengths and reflectances:
+   	MET = blah
+   	X = 3
+   	Y = 4
+   	Z = 5
+   	Wavelength, Reflectance, ...
+   	1, 2, ...
+   	...
+   	...
+   	
+ - provide option (e.g. a checkbox) to show frustum in renderer for msi and nis footprints
