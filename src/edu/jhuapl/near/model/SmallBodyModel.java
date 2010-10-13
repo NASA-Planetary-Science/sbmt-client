@@ -54,8 +54,8 @@ public class SmallBodyModel extends Model
     private vtkPolyDataMapper smallBodyMapper;
     private ArrayList<vtkProp> smallBodyActors = new ArrayList<vtkProp>();
     private vtksbCellLocator cellLocator;
-    private vtkKdTreePointLocator pointLocator;
-    private vtkKdTreePointLocator lowResPointLocator;
+    private vtkPointLocator pointLocator;
+    private vtkPointLocator lowResPointLocator;
     private vtkFloatArray elevationCellDataValues;
     private vtkFloatArray gravAccCellDataValues;
     private vtkFloatArray gravPotCellDataValues;
@@ -137,7 +137,7 @@ public class SmallBodyModel extends Model
 		if (cellLocator == null)
 		{
 			cellLocator = new vtksbCellLocator();
-			pointLocator = new vtkKdTreePointLocator();
+			pointLocator = new vtkPointLocator();
 		}
 		
 		// Initialize the cell locator
@@ -164,7 +164,7 @@ public class SmallBodyModel extends Model
 
             lowResSmallBodyPolyData.DeepCopy(smallBodyReader.GetOutput());
             
-            lowResPointLocator = new vtkKdTreePointLocator();
+            lowResPointLocator = new vtkPointLocator();
             lowResPointLocator.SetDataSet(lowResSmallBodyPolyData);
             lowResPointLocator.BuildLocator();
         }
