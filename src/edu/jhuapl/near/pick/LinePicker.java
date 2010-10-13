@@ -22,6 +22,8 @@ public class LinePicker extends Picker
 
     private int vertexIdBeingEdited = -1;
     
+	private boolean profileMode = false;
+
     // There are 2 types of line editing possible: 
     //   1. Dragging an existing vertex to a new locations
     //   2. Extending a line by adding new vertices
@@ -43,6 +45,8 @@ public class LinePicker extends Picker
 		this.renWin = renderer.getRenderWindowPanel();
 		this.modelManager = modelManager;
 		this.lineModel = (LineModel)modelManager.getModel(ModelNames.LINE_STRUCTURES);
+
+		profileMode = lineModel.hasProfileMode();
 		
 		smallBodyPicker = new vtkCellPicker();
 		smallBodyPicker.SetTolerance(0.002);
@@ -97,12 +101,21 @@ public class LinePicker extends Picker
 				{
 					if (e.getButton() == MouseEvent.BUTTON1)
 					{
-						this.vertexIdBeingEdited = lineSelectionPicker.GetCellId();
+						vertexIdBeingEdited = lineSelectionPicker.GetCellId();
+						
+						if (profileMode)
+						{
+							int lineId = lineModel.getLineIdFromSelectionCellId(vertexIdBeingEdited);
+							lineModel.selectStructure(lineId);
+						}
+
 						lineModel.selectCurrentLineVertex(vertexIdBeingEdited);
 					}
 					else
 					{
 						vertexIdBeingEdited = -1;
+						if (profileMode)
+							lineModel.selectStructure(-1);
 					}
 				}
 			}
@@ -139,7 +152,12 @@ public class LinePicker extends Picker
 				vertexIdBeingEdited >= 0 &&
 				lastDragPosition != null)
 		{
-			lineModel.updateSelectedLineVertex(vertexIdBeingEdited, lastDragPosition);
+			int vertexId = vertexIdBeingEdited;
+			
+			if (profileMode)
+				vertexId = lineModel.getVertexIdFromSelectionCellId(vertexIdBeingEdited);
+
+			lineModel.updateSelectedLineVertex(vertexId, lastDragPosition);
 		}
 
 		vertexIdBeingEdited = -1;

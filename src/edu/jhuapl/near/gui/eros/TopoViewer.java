@@ -41,7 +41,7 @@ public class TopoViewer extends JFrame
 		ModelManager modelManager = new ModelManager();
         HashMap<String, Model> allModels = new HashMap<String, Model>();
         DEMModel body = new DEMModel(filename);
-        LineModel lineModel = new ProfileLineModel(body);
+        LineModel lineModel = new LineModel(body, true);
         lineModel.setMaximumVerticesPerLine(2);
         allModels.put(ModelNames.SMALL_BODY, body);
     	allModels.put(ModelNames.LINE_STRUCTURES, lineModel);
@@ -55,7 +55,6 @@ public class TopoViewer extends JFrame
 		GenericPopupManager popupManager = new GenericPopupManager(modelManager);
 
 		PickManager pickManager = new PickManager(renderer, statusBar, modelManager, popupManager);
-		pickManager.setLinePicker(new ProfileLinePicker(renderer, modelManager));
 		
         renderer.setMinimumSize(new Dimension(100, 100));
         renderer.setPreferredSize(new Dimension(400, 400));

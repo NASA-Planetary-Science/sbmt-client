@@ -54,23 +54,37 @@ public class LineModel extends StructureModel implements PropertyChangeListener
     private int highlightedStructure = -1;
     private int[] highlightColor = {0, 0, 255, 255};
     private int maximumVerticesPerLine = Integer.MAX_VALUE;
+	private vtkIdList idList;
     
     private vtkPolyData emptyPolyData;
 
+	private boolean profileMode = false;
+	
 	private static final String LINES = "lines";
 	private static final String SHAPE_MODEL_NAME = "shapemodel";
 	private static final int[] redColor = {255, 0, 0, 255}; // RGBA red
+	private static final int[] greenColor = {0, 255, 0, 255}; // RGBA green
 	private static final int[] blueColor = {0, 0, 255, 255}; // RGBA blue
 	
-
 	public LineModel(SmallBodyModel smallBodyModel)
+	{
+		this(smallBodyModel, false);
+	}
+	
+	public LineModel(SmallBodyModel smallBodyModel, boolean profileMode)
 	{
 		super(ModelNames.LINE_STRUCTURES);
 		
 		this.smallBodyModel = smallBodyModel;
+		this.profileMode = profileMode;
 
-		this.smallBodyModel.addPropertyChangeListener(this);
+		if (profileMode)
+			setMaximumVerticesPerLine(2);
 		
+		this.smallBodyModel.addPropertyChangeListener(this);
+
+		idList = new vtkIdList();
+
 		lineActor = new vtkActor();
 		lineActor.GetProperty().SetLineWidth(2.0);
 
@@ -151,8 +165,6 @@ public class LineModel extends StructureModel implements PropertyChangeListener
 		vtkPoints points = linesPolyData.GetPoints();
 		vtkCellArray lineCells = linesPolyData.GetLines();
 		vtkUnsignedCharArray colors = (vtkUnsignedCharArray)linesPolyData.GetCellData().GetScalars();
-
-		vtkIdList idList = new vtkIdList();
 
 		int c=0;
 		for (int j=0; j<this.lines.size(); ++j)
@@ -348,7 +360,8 @@ public class LineModel extends StructureModel implements PropertyChangeListener
 
         updateLineSelection();
         
-        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, Properties.VERTEX_POSITION_CHANGED);
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+        this.pcs.firePropertyChange(Properties.VERTEX_POSITION_CHANGED, null, selectedLine);
     }
     
     /*
@@ -478,7 +491,8 @@ public class LineModel extends StructureModel implements PropertyChangeListener
         
         updateLineSelection();
 
-		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, Properties.VERTEX_INSERTED_INTO_LINE);
+		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+		this.pcs.firePropertyChange(Properties.VERTEX_INSERTED_INTO_LINE, null, selectedLine);
     }
 
     
@@ -492,6 +506,8 @@ public class LineModel extends StructureModel implements PropertyChangeListener
         	selectStructure(-1);
         else
         	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+
+        this.pcs.firePropertyChange(Properties.STRUCTURE_REMOVED, null, cellId);
     }
 	
     public void moveSelectionVertex(int vertexId, double[] newPoint)
@@ -504,46 +520,80 @@ public class LineModel extends StructureModel implements PropertyChangeListener
     
     protected void updateLineSelection()
     {
-    	if (selectedLine == -1)
+    	if (profileMode)
     	{
-            if (actors.contains(lineSelectionActor))
-            	actors.remove(lineSelectionActor);
-            
-            return;
+    		selectionPolyData.DeepCopy(emptyPolyData);
+    		vtkPoints points = selectionPolyData.GetPoints();
+    		vtkCellArray vert = selectionPolyData.GetVerts();
+    		vtkUnsignedCharArray colors = (vtkUnsignedCharArray)selectionPolyData.GetCellData().GetScalars();
+
+    		idList.SetNumberOfIds(1);
+
+    		int count = 0;
+    		int numLines = getNumberOfStructures();
+    		for (int j=0; j<numLines; ++j)
+    		{
+    			Line lin = lines.get(j);
+
+    			for (int i=0; i<lin.controlPointIds.size(); ++i)
+    			{
+    				int idx = lin.controlPointIds.get(i);
+
+    				points.InsertNextPoint(lin.xyzPointList.get(idx).xyz);
+    				idList.SetId(0, count++);
+    				vert.InsertNextCell(idList);
+    				if (i == 0)
+    					colors.InsertNextTuple4(greenColor[0],greenColor[1],greenColor[2],greenColor[3]);
+    				else
+    					colors.InsertNextTuple4(redColor[0],redColor[1],redColor[2],redColor[3]);
+    			}
+    		}
+
+    		smallBodyModel.shiftPolyLineInNormalDirection(selectionPolyData, 0.001);
+
     	}
+    	else
+    	{
+    		if (selectedLine == -1)
+    		{
+    			if (actors.contains(lineSelectionActor))
+    				actors.remove(lineSelectionActor);
 
-        Line lin = lines.get(selectedLine);
-        
-        selectionPolyData.DeepCopy(emptyPolyData);
-		vtkPoints points = selectionPolyData.GetPoints();
-		vtkCellArray vert = selectionPolyData.GetVerts();
-		vtkUnsignedCharArray colors = (vtkUnsignedCharArray)selectionPolyData.GetCellData().GetScalars();
+    			return;
+    		}
 
-		int numPoints = lin.controlPointIds.size();
+    		Line lin = lines.get(selectedLine);
 
-        points.SetNumberOfPoints(numPoints);
+    		selectionPolyData.DeepCopy(emptyPolyData);
+    		vtkPoints points = selectionPolyData.GetPoints();
+    		vtkCellArray vert = selectionPolyData.GetVerts();
+    		vtkUnsignedCharArray colors = (vtkUnsignedCharArray)selectionPolyData.GetCellData().GetScalars();
 
-		vtkIdList idList = new vtkIdList();
-        idList.SetNumberOfIds(1);
-        
-		for (int i=0; i<numPoints; ++i)
-		{
-			int idx = lin.controlPointIds.get(i);
-            points.SetPoint(i, lin.xyzPointList.get(idx).xyz);
-        	idList.SetId(0, i);
-		    vert.InsertNextCell(idList);
-		    if (i == this.currentLineVertex)
-		    	colors.InsertNextTuple4(blueColor[0],blueColor[1],blueColor[2],blueColor[3]);
-		    else
-		    	colors.InsertNextTuple4(redColor[0],redColor[1],redColor[2],redColor[3]);
-		}
+    		int numPoints = lin.controlPointIds.size();
 
-		smallBodyModel.shiftPolyLineInNormalDirection(selectionPolyData, 0.001);
-		
-        if (!actors.contains(lineSelectionActor))
-        	actors.add(lineSelectionActor);
+    		points.SetNumberOfPoints(numPoints);
+
+    		idList.SetNumberOfIds(1);
+
+    		for (int i=0; i<numPoints; ++i)
+    		{
+    			int idx = lin.controlPointIds.get(i);
+    			points.SetPoint(i, lin.xyzPointList.get(idx).xyz);
+    			idList.SetId(0, i);
+    			vert.InsertNextCell(idList);
+    			if (i == this.currentLineVertex)
+    				colors.InsertNextTuple4(blueColor[0],blueColor[1],blueColor[2],blueColor[3]);
+    			else
+    				colors.InsertNextTuple4(redColor[0],redColor[1],redColor[2],redColor[3]);
+    		}
+
+    		smallBodyModel.shiftPolyLineInNormalDirection(selectionPolyData, 0.001);
+
+    		if (!actors.contains(lineSelectionActor))
+    			actors.add(lineSelectionActor);
+    	}
     }
-    
+
     public void selectStructure(int cellId)
     {
     	if (selectedLine == cellId)
@@ -572,7 +622,7 @@ public class LineModel extends StructureModel implements PropertyChangeListener
     	
     	updateLineSelection();
 
-    	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, Properties.LINE_SELECTED);
+    	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
 	public void loadModel(File file) throws Exception
@@ -820,5 +870,63 @@ public class LineModel extends StructureModel implements PropertyChangeListener
 	{
 		return emptyPolyData;
 	}
+
+	public boolean hasProfileMode()
+	{
+		return profileMode;
+	}
 	
+    /**
+     * PROFILE MODE ONLY!!
+     * Get the vertex id of the line the selected vertex belongs.
+     * Only 0 or 1 can be returned.
+     * @param idx
+     * @return
+     */
+	public int getVertexIdFromSelectionCellId(int idx)
+	{
+        int numLines = getNumberOfStructures();
+        for (int j=0; j<numLines; ++j)
+        {
+            Line lin = lines.get(j);
+            int size = lin.controlPointIds.size();
+
+            if (idx == 0)
+            {
+        		return 0;
+            }
+        	else if (idx == 1 && size == 2)
+        	{
+        		return 1;
+        	}
+        	else
+        	{
+        		idx -= size;
+        	}
+        }
+        
+        return -1;
+	}
+
+    /**
+     * PROFILE MODE ONLY!!
+     * Get which line the specified vertex belongs to
+     * @param idx
+     * @return
+     */
+	public int getLineIdFromSelectionCellId(int idx)
+	{
+		int count = 0;
+        int numLines = getNumberOfStructures();
+        for (int j=0; j<numLines; ++j)
+        {
+            Line lin = lines.get(j);
+            int size = lin.controlPointIds.size();
+            count += size;
+        	if (idx < count)
+        		return j;
+        }
+        
+        return -1;
+	}
 }

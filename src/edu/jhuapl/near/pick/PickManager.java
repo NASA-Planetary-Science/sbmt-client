@@ -52,11 +52,6 @@ public class PickManager extends Picker
 		addPicker(defaultPicker);
 	}
 	
-	public void setLinePicker(Picker linePicker)
-	{
-		this.linePicker = linePicker;
-	}
-
 	public void setPickMode(PickMode mode)
 	{
 		if (this.pickMode == mode)
