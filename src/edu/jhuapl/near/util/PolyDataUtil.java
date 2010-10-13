@@ -51,6 +51,7 @@ public class PolyDataUtil
 		public static vtkPolyData func(
 				vtkPolyData polyData,
 				vtksbCellLocator locator,
+				vtkAbstractPointLocator pointLocator,
 				double[] origin, 
 				double[] ul, 
 				double[] ur,
@@ -254,7 +255,7 @@ public class PolyDataUtil
 
 				if (result == 1)
 				{
-				    int ptid = polyData.FindPoint(sourcePnt);
+				    int ptid = pointLocator.FindClosestPoint(sourcePnt);
 				    polyData.GetPointCells(ptid, idList_f4);
 				    
 				    // The following check makes sure we don't delete any cells

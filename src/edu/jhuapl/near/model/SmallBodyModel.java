@@ -232,7 +232,7 @@ public class SmallBodyModel extends Model
 			double[] lr,
 			double[] ll)
 	{
-		return PolyDataUtil.ComputeFrustumIntersection.func(smallBodyPolyData, cellLocator, origin, ul, ur, lr, ll);
+		return PolyDataUtil.ComputeFrustumIntersection.func(smallBodyPolyData, cellLocator, pointLocator, origin, ul, ur, lr, ll);
 	}
 
 	/**
