@@ -54,7 +54,7 @@ public class CirclePicker extends Picker
 		{
 			smallBodyPicker.AddPickList(act);
 		}
-		smallBodyPicker.AddLocator(smallBodyModel.getLocator());
+		smallBodyPicker.AddLocator(smallBodyModel.getCellLocator());
 		
 		circlePicker = new vtkCellPicker();
 		circlePicker.SetTolerance(0.002);

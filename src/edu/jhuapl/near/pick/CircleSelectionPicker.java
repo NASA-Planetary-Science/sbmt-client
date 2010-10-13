@@ -39,7 +39,7 @@ public class CircleSelectionPicker extends Picker
 		{
 			smallBodyPicker.AddPickList(act);
 		}
-		smallBodyPicker.AddLocator(smallBodyModel.getLocator());
+		smallBodyPicker.AddLocator(smallBodyModel.getCellLocator());
 	}
 
     public void mousePressed(MouseEvent e) 

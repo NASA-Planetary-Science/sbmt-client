@@ -54,7 +54,7 @@ public class PointPicker extends Picker
 		{
 			smallBodyPicker.AddPickList(act);
 		}
-		smallBodyPicker.AddLocator(smallBodyModel.getLocator());
+		smallBodyPicker.AddLocator(smallBodyModel.getCellLocator());
 
 		pointPicker = new vtkCellPicker();
 		pointPicker.SetTolerance(0.002);

@@ -59,7 +59,7 @@ public class LinePicker extends Picker
 		{
 			smallBodyPicker.AddPickList(act);
 		}
-		smallBodyPicker.AddLocator(smallBodyModel.getLocator());
+		smallBodyPicker.AddLocator(smallBodyModel.getCellLocator());
 
 		linePicker = new vtkCellPicker();
 		linePicker.SetTolerance(0.002);

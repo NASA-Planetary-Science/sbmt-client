@@ -1190,7 +1190,7 @@ public class MSIImage extends Model implements PropertyChangeListener
 		vtksbCellLocator cellLocator = null;
 		if (returnNullIfContainsLimb)
 		{
-			cellLocator = erosModel.getLocator();
+			cellLocator = erosModel.getCellLocator();
 		}
 		else
 		{

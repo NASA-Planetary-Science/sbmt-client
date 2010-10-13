@@ -100,7 +100,7 @@ public class MSIBoundaryCollection extends Model implements PropertyChangeListen
 			vtkIdList idList = new vtkIdList();
 	        idList.SetNumberOfIds(1);
 			
-			vtksbCellLocator cellLocator = erosModel.getLocator();
+			vtksbCellLocator cellLocator = erosModel.getCellLocator();
 
 			vtkGenericCell cell = new vtkGenericCell();
 			

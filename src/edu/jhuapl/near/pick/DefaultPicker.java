@@ -52,7 +52,7 @@ public class DefaultPicker extends Picker
 		SmallBodyModel smallBodyModel = modelManager.getSmallBodyModel();
 		mouseMovedCellPicker = new vtkCellPicker();
 		mouseMovedCellPicker.SetTolerance(0.002);
-		mouseMovedCellPicker.AddLocator(smallBodyModel.getLocator());
+		mouseMovedCellPicker.AddLocator(smallBodyModel.getCellLocator());
 		
 		// See comment in the propertyChange function below as to why
 		// we use a custom pick list for these pickers.
@@ -65,7 +65,7 @@ public class DefaultPicker extends Picker
 		mousePressSmallBodyCellPicker.SetTolerance(0.002);
 		mousePressSmallBodyCellPicker.PickFromListOn();
 		mousePressSmallBodyCellPicker.InitializePickList();
-		mousePressSmallBodyCellPicker.AddLocator(smallBodyModel.getLocator());
+		mousePressSmallBodyCellPicker.AddLocator(smallBodyModel.getCellLocator());
 	}
 
 	public void setSuppressPopups(boolean b)
