@@ -23,6 +23,7 @@ import edu.jhuapl.near.model.eros.LineamentModel;
 import edu.jhuapl.near.model.eros.MSIBoundaryCollection;
 import edu.jhuapl.near.model.eros.MSIImage;
 import edu.jhuapl.near.model.eros.MSIImageCollection;
+import edu.jhuapl.near.model.eros.MapletBoundaryCollection;
 import edu.jhuapl.near.model.eros.NISSpectraCollection;
 import edu.jhuapl.near.model.eros.NISSpectrum;
 import edu.jhuapl.near.model.eros.NLRBrowseDataCollection;
@@ -86,7 +87,7 @@ public class ErosViewer extends View
 		controlPanel.addTab("NLR", new NLRPanel(modelManager, pickManager));
 		controlPanel.addTab("Lineament", new LineamentControlPanel(modelManager));
 		controlPanel.addTab("Structures", new StructuresControlPanel(modelManager, pickManager));
-		controlPanel.addTab("Topo", new TopoPanel(modelManager, pickManager));
+		controlPanel.addTab("Mapmaker", new TopoPanel(modelManager, pickManager));
 
 		
 		splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
@@ -121,6 +122,7 @@ public class ErosViewer extends View
     	allModels.put(ModelNames.POINT_STRUCTURES, new PointModel(erosModel));
     	allModels.put(ModelNames.CIRCLE_SELECTION, new RegularPolygonModel(erosModel,20,false,"Selection",ModelNames.CIRCLE_SELECTION));
     	allModels.put(ModelNames.GRATICULE, graticule);
+        allModels.put(ModelNames.MAPLET_BOUNDARY, new MapletBoundaryCollection(erosModel));
 
     	modelManager.setModels(allModels);
 	}

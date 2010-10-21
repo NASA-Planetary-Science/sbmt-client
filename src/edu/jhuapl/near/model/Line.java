@@ -82,7 +82,7 @@ public class Line extends StructureModel.Structure
 	
 	public void setColor(int[] color)
 	{
-		this.color = color;
+		this.color = (int[])color.clone();
 	}
 	
     public Element toXmlDomElement(Document dom)

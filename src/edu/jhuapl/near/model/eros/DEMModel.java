@@ -15,30 +15,43 @@ import vtk.vtkPolyDataNormals;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.util.MathUtil;
 import edu.jhuapl.near.util.Point3D;
+import edu.jhuapl.near.util.PolyDataUtil;
 
 public class DEMModel extends SmallBodyModel
 {
     private static int WIDTH = 1027;
     private static int HEIGHT = 1027;
     private vtkIdList idList;
-
+    private vtkPolyData dem;
+    private vtkPolyData boundary;
+    private vtkFloatArray heights;
+    
     public DEMModel(String filename) throws IOException
 	{
-		super(initializeDEM(filename));
-
 		idList = new vtkIdList();
+		dem = new vtkPolyData();
+		boundary = new vtkPolyData();
+		heights = new vtkFloatArray();
+		
+		initializeDEM(filename);
+
+		setSmallBodyPolyData(dem, null, null, null, null);
 	}
 
-    static private vtkPolyData initializeDEM(String filename) throws IOException
+    private vtkPolyData initializeDEM(String filename) throws IOException
 	{
-		vtkPolyData dem = new vtkPolyData();
         vtkPoints points = new vtkPoints();
         vtkCellArray polys = new vtkCellArray();
-        vtkFloatArray heights = new vtkFloatArray();
+        //vtkFloatArray heights = new vtkFloatArray();
         dem.SetPoints(points);
         dem.SetPolys(polys);
-        dem.GetPointData().SetScalars(heights);
-		
+        //dem.GetPointData().SetScalars(heights);
+
+        vtkPoints boundaryPoints = new vtkPoints();
+        vtkCellArray boundaryPolys = new vtkCellArray();
+        boundary.SetPoints(boundaryPoints);
+        boundary.SetVerts(boundaryPolys);
+
         heights.SetNumberOfComponents(1);
         
 		FileInputStream fs = new FileInputStream(filename);
@@ -54,11 +67,12 @@ public class DEMModel extends SmallBodyModel
 
 		in.close();
 
-        vtkIdList idList = new vtkIdList();
-        idList.SetNumberOfIds(3);
+		idList = new vtkIdList();
+        idList.SetNumberOfIds(1);
 
         int[][] indices = new int[WIDTH][HEIGHT];
         int c = 0;
+        int d = 0;
         float x, y, z, h;
         int i0, i1, i2, i3;
 
@@ -73,6 +87,14 @@ public class DEMModel extends SmallBodyModel
 				
 				if (m > 0 && m < WIDTH-1 && n > 0 && n < HEIGHT-1)
 				{
+					if (m == 1 || m == WIDTH-2 || n == 1 || n == HEIGHT-2)
+					{
+						boundaryPoints.InsertNextPoint(x, y, z);
+						idList.SetId(0, d);
+						boundaryPolys.InsertNextCell(idList);
+						++d;
+					}
+					
 					//points.SetPoint(c, x, y, z);
 					points.InsertNextPoint(x, y, z);
 					heights.InsertNextTuple1(h);
@@ -86,6 +108,8 @@ public class DEMModel extends SmallBodyModel
 					indices[m][n] = -1;
 				}
 			}
+
+        idList.SetNumberOfIds(3);
 
         // Now add connectivity information
         for (int m=1; m<WIDTH; ++m)
@@ -127,6 +151,11 @@ public class DEMModel extends SmallBodyModel
 		
 		return dem;
 	}
+    
+    public vtkPolyData getBoundary()
+    {
+    	return boundary;
+    }
 
 	private static int index(int i, int j, int k)
 	{
@@ -134,14 +163,13 @@ public class DEMModel extends SmallBodyModel
 	}
 
     public void generateProfile(ArrayList<Point3D> xyzPointList,
-    		ArrayList<Double> heights, ArrayList<Double> distances)
+    		ArrayList<Double> profileHeights, ArrayList<Double> profileDistances)
     {
-    	heights.clear();
-    	distances.clear();
+    	profileHeights.clear();
+    	profileDistances.clear();
     	
-    	vtkPolyData dem = getSmallBodyPolyData();
     	vtkPoints points = dem.GetPoints();
-    	vtkFloatArray data = (vtkFloatArray)dem.GetPointData().GetScalars();
+    	//vtkFloatArray data = (vtkFloatArray)dem.GetPointData().GetScalars();
     	
     	// For each point in xyzPointList, find the cell containing that
     	// point and then, using barycentric coordinates find the value
@@ -159,25 +187,30 @@ public class DEMModel extends SmallBodyModel
         lindir[1] = last[1] - first[1];
         lindir[2] = last[2] - first[2];
         
+        // The following can be true if the user clicks on the same point twice
+        boolean zeroLineDir = MathUtil.vzero(lindir);
+        
         double[] pnear = new double[3];
         double[] notused = new double[1];
         
     	for (Point3D p : xyzPointList)
     	{
     		int cellId = findClosestCell(p.xyz);
-    		dem.GetCellPoints(cellId, idList);
-    		double[] p1 = points.GetPoint(idList.GetId(0));
-    		double[] p2 = points.GetPoint(idList.GetId(1));
-    		double[] p3 = points.GetPoint(idList.GetId(2));
-    		double v1 = data.GetTuple1(idList.GetId(0));
-    		double v2 = data.GetTuple1(idList.GetId(1));
-    		double v3 = data.GetTuple1(idList.GetId(2));
-    		double val = MathUtil.interpolateWithinTriangle(p.xyz, p1, p2, p3, v1, v2, v3);
-    		heights.add(val);
     		
-    		MathUtil.nplnpt(first, lindir, p.xyz, pnear, notused);
-    		double dist = MathUtil.distanceBetween(first, pnear);
-    		distances.add(dist);
+    		double val = PolyDataUtil.InterpolateWithinCell.func(dem, heights, cellId, p.xyz);
+    		
+    		profileHeights.add(val);
+    		
+            if (zeroLineDir)
+            {
+        		profileDistances.add(0.0);
+            }
+            else
+            {
+            	MathUtil.nplnpt(first, lindir, p.xyz, pnear, notused);
+            	double dist = MathUtil.distanceBetween(first, pnear);
+            	profileDistances.add(dist);
+            }
     	}
     }
 }

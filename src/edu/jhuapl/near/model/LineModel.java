@@ -88,6 +88,9 @@ public class LineModel extends StructureModel implements PropertyChangeListener
 		lineActor = new vtkActor();
 		lineActor.GetProperty().SetLineWidth(2.0);
 
+		if (profileMode)
+			lineActor.GetProperty().SetLineWidth(3.0);
+			
 		lineSelectionActor = new vtkActor();
     	lineSelectionActor.GetProperty().SetColor(1.0, 0.0, 0.0);
     	lineSelectionActor.GetProperty().SetPointSize(7.0);
@@ -188,10 +191,9 @@ public class LineModel extends StructureModel implements PropertyChangeListener
 
 			lineCells.InsertNextCell(idList);
 			colors.InsertNextTuple4(color[0],color[1],color[2],color[3]);
-
 		}
 
-		smallBodyModel.shiftPolyLineInNormalDirection(linesPolyData, 0.002);
+		smallBodyModel.shiftPolyLineInNormalDirection(linesPolyData, 0.009);
 
 		if (lineMapper == null)
 			lineMapper = new vtkPolyDataMapper();
@@ -501,6 +503,9 @@ public class LineModel extends StructureModel implements PropertyChangeListener
     	lines.remove(cellId);
 
         updatePolyData();
+        
+        if (profileMode)
+        	updateLineSelection();
         
         if (cellId == selectedLine)
         	selectStructure(-1);
@@ -858,7 +863,7 @@ public class LineModel extends StructureModel implements PropertyChangeListener
 	{
 		lines.get(idx).setColor(color);
 		updatePolyData();
-		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+		this.pcs.firePropertyChange(Properties.COLOR_CHANGED, null, idx);
 	}
 	
 	protected vtkPolyData getSelectionPolyData()

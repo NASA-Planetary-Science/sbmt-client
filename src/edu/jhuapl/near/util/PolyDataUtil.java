@@ -1271,43 +1271,133 @@ public class PolyDataUtil
 		}
 	}
 
+	/**
+	 * Get the area of a given cell. Assumes cells are triangles.
+	 * @author eli
+	 *
+	 */
+	public static class GetCellArea
+	{
+		static private vtkIdList idList;
+		static public double func(vtkPolyData polydata, int cellId)
+		{
+			if (idList == null)
+				idList = new vtkIdList();
 
+			polydata.GetCellPoints(cellId, idList);
+			
+			int numberOfCells = idList.GetNumberOfIds();
+			if (numberOfCells != 3)
+			{
+				System.err.println("Error: Cells must have equactly 3 vertices!");
+				return 0.0;
+			}
+			
+			double[] pt0 = polydata.GetPoint(idList.GetId(0));
+			double[] pt1 = polydata.GetPoint(idList.GetId(1));
+			double[] pt2 = polydata.GetPoint(idList.GetId(2));
+
+			return MathUtil.triangleArea(pt0, pt1, pt2);
+		}
+	}
+	
+	public static class InterpolateWithinCell
+	{
+		static private vtkIdList idList;
+		static public double func(
+				vtkPolyData polydata,
+				vtkDataArray pointdata,
+				int cellId,
+				double[] pt)
+		{
+			if (idList == null)
+				idList = new vtkIdList();
+
+			polydata.GetCellPoints(cellId, idList);
+			
+			int numberOfCells = idList.GetNumberOfIds();
+			if (numberOfCells != 3)
+			{
+				System.err.println("Error: Cells must have equactly 3 vertices!");
+				return 0.0;
+			}
+			
+			double[] p1 = polydata.GetPoint(idList.GetId(0));
+			double[] p2 = polydata.GetPoint(idList.GetId(1));
+			double[] p3 = polydata.GetPoint(idList.GetId(2));
+    		double v1 = pointdata.GetTuple1(idList.GetId(0));
+    		double v2 = pointdata.GetTuple1(idList.GetId(1));
+    		double v3 = pointdata.GetTuple1(idList.GetId(2));
+    		
+    		return MathUtil.interpolateWithinTriangle(pt, p1, p2, p3, v1, v2, v3);
+		}
+	}
+	
 	public static class GeneratePointScalarsFromCellScalars
 	{
+		static private vtkIdList idList;
+		
 		/**
-		 * This function takes 
+		 * This function takes cell data and computes point data from it
+		 * by computing an average over all cells that share that point.
+		 * Cells that are large carry more weight than those that are smaller.
 		 * @param polydata
-		 * @param celldata
-		 * @return
+		 * @param cellScalars
+		 * @param pointScalars
 		 */
-		static public void func(vtkPolyData polydata)
+		static public void func(vtkPolyData polydata,
+				vtkFloatArray cellScalars,
+				vtkFloatArray pointScalars)
 		{
 			polydata.BuildLinks(0);
 			int numberOfPoints = polydata.GetNumberOfPoints();
 
-			vtkIdList idList = new vtkIdList();
+			if (idList == null)
+				idList = new vtkIdList();
 
-			vtkFloatArray pointScalars = new vtkFloatArray();
 			pointScalars.SetNumberOfComponents(1);
 			pointScalars.SetNumberOfTuples(numberOfPoints);
-
-			vtkDataArray cellScalars = polydata.GetCellData().GetScalars();
 
 			for (int i=0; i<numberOfPoints; ++i)
 			{
 				polydata.GetPointCells(i, idList);
 				int numberOfCells = idList.GetNumberOfIds();
-				double pointValue = 0.0;
+				
+				/*
+				 // After writing the following, wasn't sure if it was mathematically correct.
+				double totalArea = 0.0;
+				double[] areas = new double[numberOfCells];
+				
 				for (int j=0; j<numberOfCells; ++j)
 				{
-					pointValue += cellScalars.GetTuple1(idList.GetId(j));
+					areas[j] = GetCellArea.func(polydata, idList.GetId(j));
+					totalArea += areas[j];
 				}
 
+				double pointValue = 0.0;
+				if (totalArea > 0.0)
+				{
+					for (int j=0; j<numberOfCells; ++j)
+						pointValue += (areas[j]/totalArea) * cellScalars.GetTuple1(idList.GetId(j));
+				}
+				else
+				{
+					for (int j=0; j<numberOfCells; ++j)
+						pointValue += cellScalars.GetTuple1(idList.GetId(j));
+
+					pointValue /= (double)numberOfCells;
+				}
+				*/
+				
+				double pointValue = 0.0;
+
+				for (int j=0; j<numberOfCells; ++j)
+					pointValue += cellScalars.GetTuple1(idList.GetId(j));
+
 				pointValue /= (double)numberOfCells;
+
 				pointScalars.SetTuple1(i, pointValue);
 			}
-
-			polydata.GetPointData().SetScalars(pointScalars);
 		}
 	}
 }

@@ -83,14 +83,13 @@ public class SmallBodyModel extends Model
 	private double imageMapOpacity = 0.50;
 	private vtkImageBlend blendFilter;
 	
-	public SmallBodyModel(vtkPolyData polydata)
+	/**
+	 * Default constructor. Must be followed by a call to setSmallBodyPolyData.
+	 */
+	public SmallBodyModel()
 	{
 		smallBodyPolyData = new vtkPolyData();
 		genericCell = new vtkGenericCell();
-
-		smallBodyPolyData.DeepCopy(polydata);
-
-		initializeLocators();
 	}
 			
 	public SmallBodyModel(
@@ -118,7 +117,22 @@ public class SmallBodyModel extends Model
 
 		initialize(defaultModelFile);
 	}
-	
+
+	public void setSmallBodyPolyData(vtkPolyData polydata,
+			vtkFloatArray elevationCellDataValues,
+			vtkFloatArray gravAccCellDataValues,
+			vtkFloatArray gravPotCellDataValues,
+			vtkFloatArray slopeCellDataValues)
+	{
+		smallBodyPolyData.DeepCopy(polydata);
+		this.elevationCellDataValues = elevationCellDataValues;
+		this.gravAccCellDataValues = gravAccCellDataValues;
+		this.gravPotCellDataValues = gravPotCellDataValues;
+		this.slopeCellDataValues = slopeCellDataValues;
+
+		initializeLocators();
+	}
+
 	private void initialize(File modelFile)
 	{
 		smallBodyReader.SetFileName(modelFile.getAbsolutePath());
@@ -999,7 +1013,7 @@ public class SmallBodyModel extends Model
 		}
 	}
 
-	public void paintBody() throws IOException
+	private void paintBody() throws IOException
 	{
 		if (resolutionLevel != 0)
 			return;

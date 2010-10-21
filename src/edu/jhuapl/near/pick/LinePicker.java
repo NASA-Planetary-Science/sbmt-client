@@ -196,8 +196,26 @@ public class LinePicker extends Picker
 		renWin.lock();
 		int pickSucceeded = lineSelectionPicker.Pick(e.getX(), renWin.getHeight()-e.getY()-1, 0.0, renWin.GetRenderer());
 		renWin.unlock();
+		
+		// If we're in profile mode, then do not allow dragging of a vertex if we're
+		// in the middle of creating a new profile. We can determine if we're in the
+		// middle of creating one if the last line in the LineModel has fewer than 2
+		// vertices.
+		boolean profileModeOkToDrag = true;
+		if (profileMode)
+		{
+			int lineId = lineModel.getNumberOfStructures() - 1;
+			if (lineId >= 0)
+			{
+				Line line = (Line)lineModel.getStructure(lineId);
+				if (line.controlPointIds.size() < 2)
+					profileModeOkToDrag = false;
+			}
+		}
+		
 		if (pickSucceeded == 1 &&
-			lineSelectionPicker.GetActor() == lineModel.getLineSelectionActor())
+			lineSelectionPicker.GetActor() == lineModel.getLineSelectionActor() &&
+			profileModeOkToDrag)
 		{
 			if (renWin.getCursor().getType() != Cursor.HAND_CURSOR)
 				renWin.setCursor(new Cursor(Cursor.HAND_CURSOR));

@@ -14,4 +14,5 @@ public interface ModelNames
 	static public final String POINT_STRUCTURES = "point-structures";
 	static public final String CIRCLE_SELECTION = "circle-selection";
 	static public final String GRATICULE = "graticule";
+	static public final String MAPLET_BOUNDARY = "maplet-boundary";
 }

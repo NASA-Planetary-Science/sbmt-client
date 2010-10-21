@@ -1,35 +1,78 @@
 package edu.jhuapl.near.gui.eros;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JSplitPane;
+import javax.swing.JToggleButton;
 
-import edu.jhuapl.near.gui.AbstractStructureMappingControlPanel;
+import org.jfree.chart.plot.DefaultDrawingSupplier;
+
+import edu.jhuapl.near.gui.AnyFileChooser;
 import edu.jhuapl.near.gui.Renderer;
 import edu.jhuapl.near.gui.StatusBar;
 import edu.jhuapl.near.model.CircleModel;
+import edu.jhuapl.near.model.Line;
 import edu.jhuapl.near.model.LineModel;
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.PointModel;
 import edu.jhuapl.near.model.RegularPolygonModel;
-import edu.jhuapl.near.model.StructureModel;
 import edu.jhuapl.near.model.eros.DEMModel;
-import edu.jhuapl.near.model.eros.ProfileLineModel;
+import edu.jhuapl.near.model.eros.MapletBoundaryCollection;
 import edu.jhuapl.near.pick.PickManager;
-import edu.jhuapl.near.pick.ProfileLinePicker;
+import edu.jhuapl.near.pick.PickManager.PickMode;
 import edu.jhuapl.near.popupmenus.GenericPopupManager;
+import edu.jhuapl.near.util.LatLon;
+import edu.jhuapl.near.util.MathUtil;
 
 public class TopoViewer extends JFrame
 {
-	public TopoViewer(String filename) throws IOException
+    private JButton newButton;
+    private JToggleButton editButton;
+    private JButton deleteAllButton;
+    private JButton saveButton;
+    private JButton loadButton;
+    private LineModel lineModel;
+	private PickManager pickManager;
+	private TopoPlot plot;
+	private int currentColorIndex = 0;
+	private MapletBoundaryCollection mapletBoundaries;
+
+	private static final String Profile = "Profile";
+	private static final String StartLatitude = "StartLatitude";
+	private static final String StartLongitude = "StartLongitude";
+	private static final String StartRadius = "StartRadius";
+	private static final String EndLatitude = "EndLatitude";
+	private static final String EndLongitude = "EndLongitude";
+	private static final String EndRadius = "EndRadius";
+	private static final String Color = "Color";
+
+	
+    public TopoViewer(File cubFile, MapletBoundaryCollection mapletBoundaries) throws IOException
 	{
+    	this.mapletBoundaries = mapletBoundaries;
+    	
 		ImageIcon erosIcon = new ImageIcon(getClass().getResource("/edu/jhuapl/near/data/eros.png"));
 		setIconImage(erosIcon.getImage());
 
@@ -38,10 +81,11 @@ public class TopoViewer extends JFrame
     	StatusBar statusBar = new StatusBar();
     	add(statusBar, BorderLayout.PAGE_END);
     	
+    	String filename = cubFile.getAbsolutePath();
 		ModelManager modelManager = new ModelManager();
         HashMap<String, Model> allModels = new HashMap<String, Model>();
-        DEMModel body = new DEMModel(filename);
-        LineModel lineModel = new LineModel(body, true);
+        final DEMModel body = new DEMModel(filename);
+        lineModel = new LineModel(body, true);
         lineModel.setMaximumVerticesPerLine(2);
         allModels.put(ModelNames.SMALL_BODY, body);
     	allModels.put(ModelNames.LINE_STRUCTURES, lineModel);
@@ -51,40 +95,263 @@ public class TopoViewer extends JFrame
     	modelManager.setModels(allModels);
 
 		Renderer renderer = new Renderer(modelManager);
+        
 
 		GenericPopupManager popupManager = new GenericPopupManager(modelManager);
 
-		PickManager pickManager = new PickManager(renderer, statusBar, modelManager, popupManager);
+		pickManager = new PickManager(renderer, statusBar, modelManager, popupManager);
 		
         renderer.setMinimumSize(new Dimension(100, 100));
         renderer.setPreferredSize(new Dimension(400, 400));
 
+        JPanel rendererPanel = new JPanel(new BorderLayout());
+        rendererPanel.add(renderer, BorderLayout.CENTER);
+
         JPanel panel = new JPanel(new BorderLayout());
 		
-		panel.add(renderer, BorderLayout.CENTER);
+        plot = new TopoPlot(lineModel, body);
+		plot.getChartPanel().setMinimumSize(new Dimension(100, 100));
+		plot.getChartPanel().setPreferredSize(new Dimension(400, 400));
+      
+		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
+                renderer, plot.getChartPanel());
 
-		TopoPlot plot = new TopoPlot(lineModel, body);
-		plot.setMinimumSize(new Dimension(100, 100));
-        plot.setPreferredSize(new Dimension(400, 400));
-		
-		panel.add(plot, BorderLayout.EAST);
-		
-		StructureModel structureModel = 
-			(StructureModel)modelManager.getModel(ModelNames.LINE_STRUCTURES);
-		JPanel lineStructuresMapperPanel = (new AbstractStructureMappingControlPanel(
-				modelManager,
-				structureModel,
-				pickManager,
-				PickManager.PickMode.LINE_DRAW,
-				true) {});
+		splitPane.setResizeWeight(0.5);
+		splitPane.setOneTouchExpandable(true);
 
-		panel.add(lineStructuresMapperPanel, BorderLayout.SOUTH);
+		panel.add(splitPane, BorderLayout.CENTER);
+		panel.add(createButtonsPanel(), BorderLayout.SOUTH);
 
 		add(panel, BorderLayout.CENTER);
 
+		mapletBoundaries.addBoundary(body);
+		
+		addWindowListener(new WindowAdapter()
+		{
+			public void windowClosing(WindowEvent e)
+			{
+				TopoViewer.this.mapletBoundaries.removeBoundary(body);
+			}
+		});
+		
         // Finally make the frame visible
         setTitle("Mapmaker View");
         pack();
         setVisible(true);
+	}
+	
+	private JPanel createButtonsPanel()
+	{
+        JPanel panel = new JPanel();
+
+        newButton = new JButton("New Profile");
+    	newButton.addActionListener(new ActionListener()
+    	{
+    		public void actionPerformed(ActionEvent e) 
+    		{
+    			lineModel.addNewStructure();
+    			
+    			// Set the color of this new structure
+    			int idx = lineModel.getNumberOfStructures() - 1;
+    			lineModel.setStructureColor(idx, getNextColor());
+    			
+    			pickManager.setPickMode(PickMode.LINE_DRAW);
+    			editButton.setSelected(true);
+    		}
+    	});
+    	panel.add(newButton);
+    	
+        editButton = new JToggleButton("Edit Profiles");
+        editButton.addActionListener(new ActionListener()
+        {
+        	public void actionPerformed(ActionEvent e) 
+        	{
+    			if (editButton.isSelected())
+					pickManager.setPickMode(PickMode.LINE_DRAW);
+    			else
+    				pickManager.setPickMode(PickMode.DEFAULT);
+        	}
+        });
+        panel.add(editButton);
+
+        deleteAllButton = new JButton("Delete All Profiles");
+        deleteAllButton.addActionListener(new ActionListener()
+    	{
+    		public void actionPerformed(ActionEvent e) 
+    		{
+    			removeAllProfiles();
+    		}
+    	});
+    	panel.add(deleteAllButton);
+
+        saveButton = new JButton("Save...");
+        saveButton.addActionListener(new ActionListener()
+    	{
+    		public void actionPerformed(ActionEvent e) 
+    		{
+    			File file = null;
+    			try 
+    			{
+    				file = AnyFileChooser.showSaveDialog(TopoViewer.this, "Save Profiles", "profiles.txt");
+    				if (file != null)
+    				{
+    					saveViewer(file);
+    				}
+    			}
+    			catch (Exception ex)
+    			{
+    				JOptionPane.showMessageDialog(TopoViewer.this,
+    						"Unable to save file to " + file.getAbsolutePath(),
+    						"Error Saving File",
+    						JOptionPane.ERROR_MESSAGE);
+    				ex.printStackTrace();
+    			}
+    		}
+    	});
+    	panel.add(saveButton);
+
+        loadButton = new JButton("Load...");
+        loadButton.addActionListener(new ActionListener()
+    	{
+    		public void actionPerformed(ActionEvent e) 
+    		{
+    			File file = null;
+    			try 
+    			{
+    				file = AnyFileChooser.showOpenDialog(TopoViewer.this, "Load Profiles");
+    				if (file != null)
+    				{
+    					loadViewer(file);
+    				}
+    			}
+    			catch (Exception ex)
+    			{
+    				JOptionPane.showMessageDialog(TopoViewer.this,
+    						"Unable to load file " + file.getAbsolutePath(),
+    						"Error Loading File",
+    						JOptionPane.ERROR_MESSAGE);
+    				ex.printStackTrace();
+    			}
+    		}
+    	});
+    	panel.add(loadButton);
+
+        return panel;
+	}
+	
+	private int[] getNextColor()
+	{
+		int numColors = DefaultDrawingSupplier.DEFAULT_PAINT_SEQUENCE.length;
+		if (currentColorIndex >= numColors)
+			currentColorIndex = 0;
+		Color c = (Color)DefaultDrawingSupplier.DEFAULT_PAINT_SEQUENCE[currentColorIndex];
+		++currentColorIndex;
+		return new int[] {c.getRed(), c.getGreen(), c.getBlue(), c.getAlpha()};
+	}
+	
+	private void saveViewer(File file) throws IOException
+	{
+		FileWriter fstream = new FileWriter(file);
+        BufferedWriter out = new BufferedWriter(fstream);
+
+        String eol = System.getProperty("line.separator");
+
+        int numProfiles = lineModel.getNumberOfStructures();
+        for (int i=0; i<numProfiles; ++i)
+        {
+        	Line line = (Line)lineModel.getStructure(i);
+        	out.write(eol + Profile + "=" + i + eol);
+        	out.write(StartLatitude + "=" + line.lat.get(0) + eol);
+        	out.write(StartLongitude + "=" + line.lon.get(0) + eol);
+        	out.write(StartRadius + "=" + line.rad.get(0) + eol);
+        	out.write(EndLatitude + "=" + line.lat.get(1) + eol);
+        	out.write(EndLongitude + "=" + line.lon.get(1) + eol);
+        	out.write(EndRadius + "=" + line.rad.get(1) + eol);
+        	out.write(Color + "=" + 
+        			line.color[0] + " " + 
+        			line.color[1] + " " + 
+        			line.color[2] + " " + 
+        			line.color[3] + eol);
+        	out.write(plot.getProfileAsString(i));
+        }
+        
+		out.close();
+	}
+
+	private void loadViewer(File file) throws IOException
+	{
+		removeAllProfiles();
+		
+		InputStream fs = new FileInputStream(file);
+		InputStreamReader isr = new InputStreamReader(fs);
+		BufferedReader in = new BufferedReader(isr);
+
+		String line;
+		
+		LatLon start = new LatLon();
+		LatLon end = new LatLon();
+		int lineId = 0;
+		
+		while ((line = in.readLine()) != null)
+		{
+			line = line.trim();
+			if (line.isEmpty())
+				continue;
+			String[] tokens = line.trim().split("=");
+			if (tokens.length != 2)
+				throw new IOException("Error parsing file");
+			//System.out.println(tokens[0]);
+			
+			String key = tokens[0].trim();
+			String value = tokens[1].trim();
+
+			if (StartLatitude.equals(key))
+				start.lat = Double.parseDouble(value);
+			else if (StartLongitude.equals(key))
+				start.lon = Double.parseDouble(value);
+			else if (StartRadius.equals(key))
+				start.rad = Double.parseDouble(value);
+			else if (EndLatitude.equals(key))
+				end.lat = Double.parseDouble(value);
+			else if (EndLongitude.equals(key))
+				end.lon = Double.parseDouble(value);
+			else if (EndRadius.equals(key))
+				end.rad = Double.parseDouble(value);
+			else if (Color.equals(key))
+			{
+				String[] c = value.split("\\s+");
+
+				int[] color = new int[4];
+				color[0] = Integer.parseInt(c[0]);
+				color[1] = Integer.parseInt(c[1]);
+				color[2] = Integer.parseInt(c[2]);
+				color[3] = Integer.parseInt(c[3]);
+				
+				double[] p1 = MathUtil.latrec(start);
+				double[] p2 = MathUtil.latrec(end);
+				
+				lineModel.addNewStructure();
+				lineModel.selectStructure(lineId);
+				lineModel.setStructureColor(lineId, color);
+				lineModel.insertVertexIntoSelectedLine(p1);
+				lineModel.insertVertexIntoSelectedLine(p2);
+				
+				++lineId;
+				
+				// Force an increment of the color index. Note this
+				// might not work so well since there may be no relationship
+				// between the colors loaded from the file and the color index.
+				getNextColor();
+			}
+		}
+		
+		in.close();
+	}
+
+	private void removeAllProfiles()
+	{
+		lineModel.removeAllStructures();
+		pickManager.setPickMode(PickMode.DEFAULT);
+		editButton.setSelected(false);
 	}
 }

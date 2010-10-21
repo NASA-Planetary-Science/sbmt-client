@@ -16,7 +16,10 @@ public class Mapmaker
 	private double longitude;
 //	private int halfWidth;
 	private double pixelSize;
-
+	private File outputFolder;
+	private File cubeFile;
+	private File lblFile;
+	
 	public Mapmaker() throws IOException
 	{
 		File file = FileCache.getFileFromServer("/MSI/mapmaker.zip");
@@ -69,6 +72,16 @@ public class Mapmaker
 		stdin.close();
 		
 		process.waitFor();
+		
+		// Copy output files to output folder
+		File origCubeFile = new File(mapmakerRootDir + File.separator + "OUTPUT" + File.separator + name + ".cub");
+		File origLblFile = new File(mapmakerRootDir + File.separator + "OUTPUT" + File.separator + name + ".lbl");
+
+		cubeFile = new File(outputFolder + File.separator + name + ".cub");
+		lblFile = new File(outputFolder + File.separator + name + ".lbl");
+		
+		FileUtil.copyFile(origCubeFile, cubeFile);
+		FileUtil.copyFile(origLblFile, lblFile);
 	}
 	
 	public String getName()
@@ -134,11 +147,22 @@ public class Mapmaker
 
 	public File getCubeFile()
 	{
-		return new File(mapmakerRootDir + File.separator + "OUTPUT" + File.separator + name + ".cub");
+		return cubeFile;
 	}
 	
 	public File getLabelFile()
 	{
-		return new File(mapmakerRootDir + File.separator + "OUTPUT" + File.separator + name + ".lbl");
+		return lblFile;
 	}
+
+	public File getOutputFolder()
+	{
+		return outputFolder;
+	}
+
+	public void setOutputFolder(File outputFolder)
+	{
+		this.outputFolder = outputFolder;
+	}
+
 }

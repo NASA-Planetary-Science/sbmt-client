@@ -1,18 +1,13 @@
 package edu.jhuapl.near.gui.eros;
 
-import java.awt.BorderLayout;
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import org.jfree.chart.ChartColor;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartMouseEvent;
 import org.jfree.chart.ChartMouseListener;
@@ -28,18 +23,20 @@ import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
-import edu.jhuapl.near.gui.AnyFileChooser;
 import edu.jhuapl.near.model.LineModel;
 import edu.jhuapl.near.model.Line;
 import edu.jhuapl.near.model.eros.DEMModel;
 import edu.jhuapl.near.util.Properties;
 
 
-public class TopoPlot extends JPanel implements ChartMouseListener, PropertyChangeListener
+public class TopoPlot implements ChartMouseListener, PropertyChangeListener
 {
     private XYDataset heightDistanceDataset;
     private LineModel lineModel;
     private DEMModel demModel;
+    private ChartPanel chartPanel;
+    
+    private int numberOfProfilesCreated = 0;
     
     public TopoPlot(LineModel lineModel, DEMModel demModel)
     {
@@ -48,8 +45,6 @@ public class TopoPlot extends JPanel implements ChartMouseListener, PropertyChan
     	
     	lineModel.addPropertyChangeListener(this);
 
-        JPanel panel = new JPanel(new BorderLayout());
-
         heightDistanceDataset = new XYSeriesCollection();
 
         JFreeChart chart1 = ChartFactory.createXYLineChart
@@ -57,7 +52,7 @@ public class TopoPlot extends JPanel implements ChartMouseListener, PropertyChan
                 heightDistanceDataset, PlotOrientation.VERTICAL, false, true, false);
 
         // add the jfreechart graph
-        ChartPanel chartPanel = new ChartPanel(chart1);
+        chartPanel = new ChartPanel(chart1);
         chartPanel.setMouseWheelEnabled(true);
         chartPanel.addChartMouseListener(this);
 
@@ -68,25 +63,33 @@ public class TopoPlot extends JPanel implements ChartMouseListener, PropertyChan
         XYItemRenderer r = plot.getRenderer();                                                                                                 
         if (r instanceof XYLineAndShapeRenderer) {                                                                                             
             XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) r;                                                                      
-            renderer.setBaseShapesVisible(true);
+            renderer.setBaseShapesVisible(false);
             renderer.setBaseShapesFilled(true);
-            renderer.setDrawSeriesLineAsPath(true);
-//            renderer.setSeriesPaint(0, Color.BLACK);
-//            renderer.setSeriesPaint(1, Color.RED);
         }
-
-        panel.add(chartPanel, BorderLayout.CENTER);
-
-        add(panel, BorderLayout.CENTER);
-
+    }
+    
+    public JPanel getChartPanel()
+    {
+    	return chartPanel;
+    }
+    
+    private void setSeriesColor(int lineId)
+    {
+    	Line line = (Line)lineModel.getStructure(lineId);
+    	int[] c = line.color;
+    	((XYPlot)chartPanel.getChart().getPlot()).getRenderer().setSeriesPaint(
+    			lineId, new Color(c[0], c[1], c[2], c[3]));
     }
     
     private void addProfile()
     {
     	int lineId = lineModel.getNumberOfStructures()-1;
-    	XYSeries series = new XYSeries("Profile " + lineModel.getStructure(lineId).hashCode());
-        ((XYSeriesCollection)heightDistanceDataset).addSeries(series);
-        updateProfile(lineId);
+    	XYSeries series = new XYSeries("Profile " + numberOfProfilesCreated++);
+    	((XYSeriesCollection)heightDistanceDataset).addSeries(series);
+    	setSeriesColor(lineId);
+    	((XYPlot)chartPanel.getChart().getPlot()).getRenderer().setSeriesStroke(
+    			lineId, new BasicStroke(2.0f)); // set line thickness
+    	updateProfile(lineId);
     }
     
     private void updateProfile(int lineId)
@@ -109,36 +112,29 @@ public class TopoPlot extends JPanel implements ChartMouseListener, PropertyChan
         ((XYSeriesCollection)heightDistanceDataset).removeSeries(lineId);
     }
 
-    private void exportProfile(int lineId)
+    public String getProfileAsString(int lineId)
     {
-    	File file = AnyFileChooser.showSaveDialog(this, "Export Profile", "profile-" + lineId + ".txt");
+    	StringBuilder buffer = new StringBuilder();
+    	
+		XYSeries series = ((XYSeriesCollection)heightDistanceDataset).getSeries(lineId);
+		
+        String eol = System.getProperty("line.separator");
 
-		try 
-		{
-			if (file != null)
-			{
-				OutputStream out = new FileOutputStream(file);
+		int N = series.getItemCount();
 
-		    	XYSeries series = ((XYSeriesCollection)heightDistanceDataset).getSeries(lineId);
-		    	int N = series.getMaximumItemCount();
-		        for (int i=0; i<N; ++i)
-		        {
-		        	
-		        }
+		buffer.append("Distance = ");
+		for (int i=0; i<N; ++i)
+			buffer.append(series.getX(i) + " ");
 
-//				byte[] bytes = lblstr.getBytes();
-//				out.write(bytes, 0, bytes.length);
-				out.close();
-			}
-		}
-		catch (Exception ex)
-		{
-			JOptionPane.showMessageDialog(this,
-					"Unable to save file to " + file.getAbsolutePath(),
-					"Error Saving File",
-					JOptionPane.ERROR_MESSAGE);
-			ex.printStackTrace();
-		}
+		buffer.append(eol);
+
+		buffer.append("Height = ");
+		for (int i=0; i<N; ++i)
+			buffer.append(series.getY(i) + " ");
+
+		buffer.append(eol);
+
+		return buffer.toString();
     }
     
     public void chartMouseClicked(ChartMouseEvent arg0)
@@ -174,6 +170,11 @@ public class TopoPlot extends JPanel implements ChartMouseListener, PropertyChan
 		{
 			int lineId = (Integer)evt.getNewValue();
 			removeProfile(lineId);
+		}
+		else if (Properties.COLOR_CHANGED.equals(evt.getPropertyName()))
+		{
+			int lineId = (Integer)evt.getNewValue();
+			setSeriesColor(lineId);
 		}
 	}
 }
