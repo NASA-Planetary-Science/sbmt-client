@@ -56,10 +56,10 @@ public class SmallBodyModel extends Model
     private vtksbCellLocator cellLocator;
     private vtkPointLocator pointLocator;
     private vtkPointLocator lowResPointLocator;
-    private vtkFloatArray elevationCellDataValues;
-    private vtkFloatArray gravAccCellDataValues;
-    private vtkFloatArray gravPotCellDataValues;
-    private vtkFloatArray slopeCellDataValues;
+    private vtkFloatArray elevationPointDataValues;
+    private vtkFloatArray gravAccPointDataValues;
+    private vtkFloatArray gravPotPointDataValues;
+    private vtkFloatArray slopePointDataValues;
     private vtkImageData elevationImage;
     private vtkImageData gravAccImage;
     private vtkImageData gravPotImage;
@@ -119,16 +119,16 @@ public class SmallBodyModel extends Model
 	}
 
 	public void setSmallBodyPolyData(vtkPolyData polydata,
-			vtkFloatArray elevationCellDataValues,
-			vtkFloatArray gravAccCellDataValues,
-			vtkFloatArray gravPotCellDataValues,
-			vtkFloatArray slopeCellDataValues)
+			vtkFloatArray elevationPointDataValues,
+			vtkFloatArray gravAccPointDataValues,
+			vtkFloatArray gravPotPointDataValues,
+			vtkFloatArray slopePointDataValues)
 	{
 		smallBodyPolyData.DeepCopy(polydata);
-		this.elevationCellDataValues = elevationCellDataValues;
-		this.gravAccCellDataValues = gravAccCellDataValues;
-		this.gravPotCellDataValues = gravPotCellDataValues;
-		this.slopeCellDataValues = slopeCellDataValues;
+		this.elevationPointDataValues = elevationPointDataValues;
+		this.gravAccPointDataValues = gravAccPointDataValues;
+		this.gravPotPointDataValues = gravPotPointDataValues;
+		this.slopePointDataValues = slopePointDataValues;
 
 		initializeLocators();
 	}
@@ -352,12 +352,13 @@ public class SmallBodyModel extends Model
 	
     /**
      * This returns the index of the closest cell in the model to pt.
+     * The closest point within the cell is returned in closestPoint
      * @param pt
+     * @param closestPoint the closest point within the cell is returned here
      * @return
      */
-    public int findClosestCell(double[] pt)
+    public int findClosestCell(double[] pt, double[] closestPoint)
     {
-        double[] closestPoint = new double[3];
         int[] cellId = new int[1];
         int[] subId = new int[1];
         double[] dist2 = new double[1];
@@ -366,6 +367,17 @@ public class SmallBodyModel extends Model
         cellLocator.FindClosestPoint(pt, closestPoint, genericCell, cellId, subId, dist2);
         
         return cellId[0];
+    }
+
+    /**
+     * This returns the index of the closest cell in the model to pt.
+     * @param pt
+     * @return
+     */
+    public int findClosestCell(double[] pt)
+    {
+        double[] closestPoint = new double[3];
+        return findClosestCell(pt, closestPoint);
     }
     
     /**
@@ -409,8 +421,8 @@ public class SmallBodyModel extends Model
 			return -1;
     }
 
-	public ArrayList<vtkProp> getProps() 
-	{
+    protected void initializeActorsAndMappers()
+    {
 		if (smallBodyActor == null)
 		{
 	        smallBodyMapper = new vtkPolyDataMapper();
@@ -435,19 +447,28 @@ public class SmallBodyModel extends Model
 	        tp.SetFontSize(10);
 	        scalarBarActor.SetTitleTextProperty(tp);
 		}
+    }
+    
+	public ArrayList<vtkProp> getProps() 
+	{
+		initializeActorsAndMappers();
 		
 		return smallBodyActors;
 	}
 	
 	public void setShadingToFlat()
 	{
+		initializeActorsAndMappers();
+		
         smallBodyActor.GetProperty().SetInterpolationToFlat();
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 	}
 	
 	public void setShadingToSmooth()
 	{
-        smallBodyActor.GetProperty().SetInterpolationToGouraud();
+		initializeActorsAndMappers();
+
+		smallBodyActor.GetProperty().SetInterpolationToGouraud();
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 	}
 	
@@ -475,24 +496,33 @@ public class SmallBodyModel extends Model
 		*/
 	}
 	
-    public String getClickStatusBarText(vtkProp prop, int cellId)
+    public String getClickStatusBarText(vtkProp prop, int cellId, double[] pickPosition)
     {
     	float value = 0;
-    	if (coloringType != ColoringType.NONE)
-    		value = (float)smallBodyPolyData.GetCellData().GetScalars().GetTuple1(cellId);
-    	
-		switch(coloringType)
-		{
-		case ELEVATION:
-			return ElevStr + ": " + value + " " + ElevUnitsStr;
-		case GRAVITATIONAL_ACCELERATION:
-			return GravAccStr + ": " + value + " " + GravAccUnitsStr;
-		case GRAVITATIONAL_POTENTIAL:
-			return GravPotStr + ": " + value + " " + GravPotUnitsStr;
-		case SLOPE:
-			return SlopeStr + ": " + value + "\u00B0"; //(\u00B0 is the unicode degree symbol)
-		}
 
+    	// Coloring is currently only supported in the lowest resolution level
+    	if (resolutionLevel == 0)
+    	{
+    		switch(coloringType)
+    		{
+    		case ELEVATION:
+    			value = (float)PolyDataUtil.InterpolateWithinCell.func(
+    					smallBodyPolyData, elevationPointDataValues, cellId, pickPosition);
+    			return ElevStr + ": " + value + " " + ElevUnitsStr;
+    		case GRAVITATIONAL_ACCELERATION:
+    			value = (float)PolyDataUtil.InterpolateWithinCell.func(
+    					smallBodyPolyData, gravAccPointDataValues, cellId, pickPosition);
+    			return GravAccStr + ": " + value + " " + GravAccUnitsStr;
+    		case GRAVITATIONAL_POTENTIAL:
+    			value = (float)PolyDataUtil.InterpolateWithinCell.func(
+    					smallBodyPolyData, gravPotPointDataValues, cellId, pickPosition);
+    			return GravPotStr + ": " + value + " " + GravPotUnitsStr;
+    		case SLOPE:
+    			value = (float)PolyDataUtil.InterpolateWithinCell.func(
+    					smallBodyPolyData, slopePointDataValues, cellId, pickPosition);
+    			return SlopeStr + ": " + value + "\u00B0"; //(\u00B0 is the unicode degree symbol)
+    		}
+    	}
 		return "";
     }
 
@@ -568,10 +598,10 @@ public class SmallBodyModel extends Model
     		resolutionLevel = 3;
     	
     	smallBodyCubes = null;
-		elevationCellDataValues = null;
-		gravAccCellDataValues = null;
-		gravPotCellDataValues = null;
-		slopeCellDataValues = null;
+		elevationPointDataValues = null;
+		gravAccPointDataValues = null;
+		gravPotPointDataValues = null;
+		slopePointDataValues = null;
 	
 		File smallBodyFile = defaultModelFile;
 		switch(level)
@@ -615,17 +645,17 @@ public class SmallBodyModel extends Model
     }
     
 	/**
-	 * This file loads the coloring used when the coloring method is cell data
+	 * This file loads the coloring used when the coloring method is point data
 	 * @throws IOException
 	 */
-	private void loadColoringCellData() throws IOException
+	private void loadColoringPointData() throws IOException
 	{
-		if (elevationCellDataValues == null)
+		if (elevationPointDataValues == null)
 		{
-			elevationCellDataValues = new vtkFloatArray();
-			gravAccCellDataValues = new vtkFloatArray();
-			gravPotCellDataValues = new vtkFloatArray();
-			slopeCellDataValues = new vtkFloatArray();
+			elevationPointDataValues = new vtkFloatArray();
+			gravAccPointDataValues = new vtkFloatArray();
+			gravPotPointDataValues = new vtkFloatArray();
+			slopePointDataValues = new vtkFloatArray();
 		}
 		else
 		{
@@ -633,10 +663,10 @@ public class SmallBodyModel extends Model
 		}
 		
 		vtkFloatArray[] arrays = {
-				this.elevationCellDataValues,
-				this.gravAccCellDataValues,
-				this.gravPotCellDataValues,
-				this.slopeCellDataValues
+				this.elevationPointDataValues,
+				this.gravAccPointDataValues,
+				this.gravPotPointDataValues,
+				this.slopePointDataValues
 		};
 		
 		for (int i=0; i<4; ++i)
@@ -645,7 +675,7 @@ public class SmallBodyModel extends Model
 			vtkFloatArray array = arrays[i];
 			
 			array.SetNumberOfComponents(1);
-			array.SetNumberOfTuples(smallBodyPolyData.GetNumberOfCells());
+			array.SetNumberOfTuples(smallBodyPolyData.GetNumberOfPoints());
 			
 	    	FileInputStream fs =  new FileInputStream(file);
 			InputStreamReader isr = new InputStreamReader(fs);
@@ -658,6 +688,8 @@ public class SmallBodyModel extends Model
 				array.SetTuple1(j, Float.parseFloat(line));
 				++j;
 			}
+			
+			in.close();
 		}
 	}
 
@@ -669,7 +701,7 @@ public class SmallBodyModel extends Model
 	{
 		if (elevationImage == null)
 		{
-			loadColoringCellData();
+			loadColoringPointData();
 			
 			elevationImage = new vtkImageData();
 			gravAccImage = new vtkImageData();
@@ -688,10 +720,10 @@ public class SmallBodyModel extends Model
 				this.slopeImage
 		};
 		vtkFloatArray[] arrays = {
-				this.elevationCellDataValues,
-				this.gravAccCellDataValues,
-				this.gravPotCellDataValues,
-				this.slopeCellDataValues
+				this.elevationPointDataValues,
+				this.gravAccPointDataValues,
+				this.gravPotPointDataValues,
+				this.slopePointDataValues
 		};
 		
 		for (int i=0; i<4; ++i)
@@ -756,9 +788,13 @@ public class SmallBodyModel extends Model
 	
 	public void setColorBy(ColoringType type) throws IOException
 	{
-		coloringType = type;
+    	// Coloring is currently only supported in the lowest resolution level
+		if (resolutionLevel == 0)
+		{
+			coloringType = type;
 
-		paintBody();
+			paintBody();
+		}
 	}
 	
     public boolean isColoringDataAvailable()
@@ -934,65 +970,69 @@ public class SmallBodyModel extends Model
 			e.printStackTrace();
 		}
     }
+
+    private double getColoringValue(double[] pt, vtkFloatArray pointData) throws IOException
+    {
+        double[] closestPoint = new double[3];
+    	int cellId = findClosestCell(pt, closestPoint);
+    	return PolyDataUtil.InterpolateWithinCell.func(
+    			smallBodyPolyData, pointData, cellId, closestPoint);
+    }
     
     /**
      * Get the elevation value at a particular point
-     * @param cellId
-     * @return
+     * @param pt
+     * @return elevation
      * @throws IOException 
      */
     public double getElevation(double[] pt) throws IOException
     {
-    	if (elevationCellDataValues == null)
-    		loadColoringCellData();
+    	if (elevationPointDataValues == null)
+    		loadColoringPointData();
     	
-    	int cellId = findClosestCell(pt);
-    	return elevationCellDataValues.GetTuple1(cellId);
+    	return getColoringValue(pt, elevationPointDataValues);
     }
 
     /**
      * Get the gravitational acceleration value at a particular point
-     * @param cellId
-     * @return
+     * @param pt
+     * @return gravitational acceleration
      * @throws IOException 
      */
     public double getGravitationalAcceleration(double[] pt) throws IOException
     {
-    	if (gravAccCellDataValues == null)
-    		loadColoringCellData();
+    	if (gravAccPointDataValues == null)
+    		loadColoringPointData();
 
-    	int cellId = findClosestCell(pt);
-    	return gravAccCellDataValues.GetTuple1(cellId);
+    	return getColoringValue(pt, gravAccPointDataValues);
     }
 
     /**
      * Get the gravitational potential value at a particular point
-     * @param cellId
-     * @return
+     * @param pt
+     * @return gravitational potential
      * @throws IOException 
      */
     public double getGravitationalPotential(double[] pt) throws IOException
     {
-    	if (gravPotCellDataValues == null)
-    		loadColoringCellData();
+    	if (gravPotPointDataValues == null)
+    		loadColoringPointData();
 
-    	int cellId = findClosestCell(pt);
-    	return gravPotCellDataValues.GetTuple1(cellId);
+    	return getColoringValue(pt, gravPotPointDataValues);
     }
 
     /**
      * Get the slope value at a particular point
-     * @param cellId
-     * @return
+     * @param pt
+     * @return slope
      * @throws IOException 
      */
     public double getSlope(double[] pt) throws IOException
     {
-    	if (slopeCellDataValues == null)
-    		loadColoringCellData();
+    	if (slopePointDataValues == null)
+    		loadColoringPointData();
 
-    	int cellId = findClosestCell(pt);
-    	return slopeCellDataValues.GetTuple1(cellId);
+    	return getColoringValue(pt, slopePointDataValues);
     }
 
 	public double getImageMapOpacity()
@@ -1018,7 +1058,9 @@ public class SmallBodyModel extends Model
 		if (resolutionLevel != 0)
 			return;
 
-		loadColoringCellData();
+		initializeActorsAndMappers();
+
+		loadColoringPointData();
 
 		vtkFloatArray array = null;
 
@@ -1028,24 +1070,24 @@ public class SmallBodyModel extends Model
 			array = null;
 			break;
 		case ELEVATION:
-			array = this.elevationCellDataValues;
+			array = this.elevationPointDataValues;
 			scalarBarActor.SetTitle(ElevStr + " (" + ElevUnitsStr + ")");
 			break;
 		case GRAVITATIONAL_ACCELERATION:
-			array = this.gravAccCellDataValues;
+			array = this.gravAccPointDataValues;
 			scalarBarActor.SetTitle(GravAccStr + " (" + GravAccUnitsStr + ")");
 			break;
 		case GRAVITATIONAL_POTENTIAL:
-			array = this.gravPotCellDataValues;
+			array = this.gravPotPointDataValues;
 			scalarBarActor.SetTitle(GravPotStr + " (" + GravPotUnitsStr + ")");
 			break;
 		case SLOPE:
-			array = this.slopeCellDataValues;
+			array = this.slopePointDataValues;
 			scalarBarActor.SetTitle(SlopeStr + " (" + SlopeUnitsStr + ")");
 			break;
 		}
 
-		this.smallBodyPolyData.GetCellData().SetScalars(array);
+		this.smallBodyPolyData.GetPointData().SetScalars(array);
 		if (coloringType == ColoringType.NONE)
 		{
 			if (smallBodyActors.contains(scalarBarActor))
@@ -1076,7 +1118,7 @@ public class SmallBodyModel extends Model
 			else
 			{
 				smallBodyMapper.ScalarVisibilityOn();
-				smallBodyMapper.SetScalarModeToUseCellData();
+				smallBodyMapper.SetScalarModeToUsePointData();
 			}
 		}
 		else 

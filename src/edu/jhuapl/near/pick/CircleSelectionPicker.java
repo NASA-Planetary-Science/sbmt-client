@@ -51,9 +51,7 @@ public class CircleSelectionPicker extends Picker
 
     	circleModel.removeAllStructures();
     	
-    	renWin.lock();
-    	int pickSucceeded = smallBodyPicker.Pick(e.getX(), renWin.getHeight()-e.getY()-1, 0.0, renWin.GetRenderer());
-    	renWin.unlock();
+		int pickSucceeded = doPick(e, smallBodyPicker, renWin);
 
     	if (pickSucceeded == 1)
     	{
@@ -85,9 +83,7 @@ public class CircleSelectionPicker extends Picker
 		
 		if (vertexIdBeingEdited >= 0)
 		{
-			renWin.lock();
-			int pickSucceeded = smallBodyPicker.Pick(e.getX(), renWin.getHeight()-e.getY()-1, 0.0, renWin.GetRenderer());
-			renWin.unlock();
+			int pickSucceeded = doPick(e, smallBodyPicker, renWin);
 			if (pickSucceeded == 1)
 			{
 				vtkActor pickedActor = smallBodyPicker.GetActor();

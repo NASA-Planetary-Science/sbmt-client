@@ -46,13 +46,14 @@ public abstract class Model
     
     /**
      * Return what text should be displayed if the user clicks on one of the
-     * props of this model and the specified cellId. By default an empty string
+     * props of this model and the specified cellId and point. By default an empty string
      * is returned. Subclasses may override this behavior.
      * @param prop
      * @param cellId
+     * @param pickPosition 
      * @return
      */
-    public String getClickStatusBarText(vtkProp prop, int cellId)
+    public String getClickStatusBarText(vtkProp prop, int cellId, double[] pickPosition)
     {
     	return "";
     }

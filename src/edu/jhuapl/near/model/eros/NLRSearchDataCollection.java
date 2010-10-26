@@ -724,7 +724,7 @@ public class NLRSearchDataCollection extends Model
 	    return prop == actor;
 	}
 	
-    public String getClickStatusBarText(vtkProp prop, int cellId)
+    public String getClickStatusBarText(vtkProp prop, int cellId, double[] pickPosition)
     {
     	cellId = geometryFilter.GetPointMinimum() + cellId;
     	Date date = new Date(originalPoints.get(cellId).time);

@@ -132,3 +132,6 @@
    	...
    	
  - provide option (e.g. a checkbox) to show frustum in renderer for msi and nis footprints
+ 
+ - In SmallBodyModel replace the 4 coloring arrays with a hashmap that maps color names to
+   the coloring data. What if we eventually want to add a fifth coloring type?

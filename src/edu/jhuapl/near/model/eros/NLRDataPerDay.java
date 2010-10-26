@@ -128,7 +128,7 @@ public class NLRDataPerDay extends Model
         polydata.Modified();
 	}
 
-    public String getClickStatusBarText(vtkProp prop, int cellId)
+    public String getClickStatusBarText(vtkProp prop, int cellId, double[] pickPosition)
     {
     	cellId = geometryFilter.GetPointMinimum() + cellId;
     	File file = new File(filepath);

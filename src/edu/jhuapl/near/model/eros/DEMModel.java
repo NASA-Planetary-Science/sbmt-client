@@ -35,7 +35,8 @@ public class DEMModel extends SmallBodyModel
 		
 		initializeDEM(filename);
 
-		setSmallBodyPolyData(dem, null, null, null, null);
+		setSmallBodyPolyData(dem, heights, null, null, null);
+		setColorBy(ColoringType.ELEVATION);
 	}
 
     private vtkPolyData initializeDEM(String filename) throws IOException
@@ -83,7 +84,7 @@ public class DEMModel extends SmallBodyModel
 				x = data[index(m,n,3)];
 				y = data[index(m,n,4)];
 				z = data[index(m,n,5)];
-				h = data[index(m,n,0)];
+				h = 1000.0f * data[index(m,n,0)];
 				
 				if (m > 0 && m < WIDTH-1 && n > 0 && n < HEIGHT-1)
 				{
@@ -168,9 +169,6 @@ public class DEMModel extends SmallBodyModel
     	profileHeights.clear();
     	profileDistances.clear();
     	
-    	vtkPoints points = dem.GetPoints();
-    	//vtkFloatArray data = (vtkFloatArray)dem.GetPointData().GetScalars();
-    	
     	// For each point in xyzPointList, find the cell containing that
     	// point and then, using barycentric coordinates find the value
     	// of the height at that point
@@ -208,7 +206,7 @@ public class DEMModel extends SmallBodyModel
             else
             {
             	MathUtil.nplnpt(first, lindir, p.xyz, pnear, notused);
-            	double dist = MathUtil.distanceBetween(first, pnear);
+            	double dist = 1000.0f * MathUtil.distanceBetween(first, pnear);
             	profileDistances.add(dist);
             }
     	}

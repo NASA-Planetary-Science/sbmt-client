@@ -212,7 +212,7 @@ public class LineModel extends StructureModel implements PropertyChangeListener
 		return actors;
 	}
 	
-    public String getClickStatusBarText(vtkProp prop, int cellId)
+    public String getClickStatusBarText(vtkProp prop, int cellId, double[] pickPosition)
     {
     	if (prop == lineActor)
     	{

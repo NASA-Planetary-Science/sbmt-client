@@ -48,7 +48,7 @@ public class TopoPlot implements ChartMouseListener, PropertyChangeListener
         heightDistanceDataset = new XYSeriesCollection();
 
         JFreeChart chart1 = ChartFactory.createXYLineChart
-        ("Height vs. Distance", "Distance (km)", "Height (km)",
+        ("Elevation vs. Distance", "Distance (m)", "Elevation (m)",
                 heightDistanceDataset, PlotOrientation.VERTICAL, false, true, false);
 
         // add the jfreechart graph
@@ -128,7 +128,7 @@ public class TopoPlot implements ChartMouseListener, PropertyChangeListener
 
 		buffer.append(eol);
 
-		buffer.append("Height = ");
+		buffer.append("Elevation = ");
 		for (int i=0; i<N; ++i)
 			buffer.append(series.getY(i) + " ");
 

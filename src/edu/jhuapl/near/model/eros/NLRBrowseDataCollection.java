@@ -79,10 +79,10 @@ public class NLRBrowseDataCollection extends Model implements PropertyChangeList
 		return nlrPerDayActors;
 	}
 	
-    public String getClickStatusBarText(vtkProp prop, int cellId)
+    public String getClickStatusBarText(vtkProp prop, int cellId, double[] pickPosition)
     {
     	NLRDataPerDay data = fileToNlrPerDayMap.get(actorToFileMap.get(prop));
-    	return data.getClickStatusBarText(prop, cellId);
+    	return data.getClickStatusBarText(prop, cellId, pickPosition);
     }
 
     public String getNlrName(vtkActor actor)

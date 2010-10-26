@@ -164,7 +164,7 @@ public class MapletBoundaryCollection extends Model implements PropertyChangeLis
         return new ArrayList<vtkProp>(actorToBoundaryMap.keySet());
 	}
 	
-    public String getClickStatusBarText(vtkProp prop, int cellId)
+    public String getClickStatusBarText(vtkProp prop, int cellId, double[] pickPosition)
     {
     	return "Boundary of maplet";
     }

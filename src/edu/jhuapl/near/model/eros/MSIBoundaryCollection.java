@@ -325,7 +325,7 @@ public class MSIBoundaryCollection extends Model implements PropertyChangeListen
         return new ArrayList<vtkProp>(actorToBoundaryMap.keySet());
 	}
 	
-    public String getClickStatusBarText(vtkProp prop, int cellId)
+    public String getClickStatusBarText(vtkProp prop, int cellId, double[] pickPosition)
     {
     	File file = new File(actorToBoundaryMap.get(prop).key.name);
     	return "Boundary of MSI image " + file.getName().substring(2, 11);

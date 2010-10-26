@@ -96,7 +96,7 @@ public class NISSpectraCollection extends Model implements PropertyChangeListene
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 	}
 
-    public String getClickStatusBarText(vtkProp prop, int cellId)
+    public String getClickStatusBarText(vtkProp prop, int cellId, double[] pickPosition)
     {
     	String filename = actorToFileMap.get(prop);
     	NISSpectrum spectrum = this.fileToSpectrumMap.get(filename);

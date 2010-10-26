@@ -277,7 +277,7 @@ public class LineamentModel extends Model
 		return lineamentActors;
 	}
 	
-    public String getClickStatusBarText(vtkProp prop, int cellId)
+    public String getClickStatusBarText(vtkProp prop, int cellId, double[] pickPosition)
     {
 		LineamentModel.Lineament lin = getLineament(cellId);
 		if (lin != null)

@@ -19,10 +19,10 @@ public class ModelFactory
 		};
 
 		final String[] coloringFiles = {
-				"/EROS/Eros_Dec2006_0_Elevation.txt.gz",
-				"/EROS/Eros_Dec2006_0_GravitationalAcceleration.txt.gz",
-				"/EROS/Eros_Dec2006_0_GravitationalPotential.txt.gz",
-				"/EROS/Eros_Dec2006_0_Slope.txt.gz"
+				"/EROS/Eros_Dec2006_0_Elevation_PointData.txt.gz",
+				"/EROS/Eros_Dec2006_0_GravitationalAcceleration_PointData.txt.gz",
+				"/EROS/Eros_Dec2006_0_GravitationalPotential_PointData.txt.gz",
+				"/EROS/Eros_Dec2006_0_Slope_PointData.txt.gz"
 		};
 
 		return new SmallBodyModel(modelNames, modelFiles, coloringFiles, null, true);
@@ -74,21 +74,16 @@ public class ModelFactory
 	static public SmallBodyModel createVestaBodyModel()
 	{
 		final String[] modelNames = {
-				"DEIMOS"
+				"VESTA"
 		};
 
 		final String[] modelFiles = {
-				"/DEIMOS/DEIMOS.vtk.gz"
+				"/VESTA/vesta.vtk.gz"
 		};
 
-		final String[] coloringFiles = {
-				"/DEIMOS/DEIMOS_Elevation.txt.gz",
-				"/DEIMOS/DEIMOS_GravitationalAcceleration.txt.gz",
-				"/DEIMOS/DEIMOS_GravitationalPotential.txt.gz",
-				"/DEIMOS/DEIMOS_Slope.txt.gz"
-		};
+		final String[] coloringFiles = null;
 
-		final String imageMap = "/DEIMOS/deimos_image_map.png";
+		final String imageMap = null;
 
 		return new SmallBodyModel(modelNames, modelFiles, coloringFiles, imageMap, false);
 	}
@@ -132,7 +127,7 @@ public class ModelFactory
 	static public Graticule createVestaGraticuleModel(SmallBodyModel smallBodyModel)
 	{
 		final String[] gridFiles = {
-				"/DEIMOS/coordinate_grid_res0.vtk.gz"
+				"/VESTA/coordinate_grid_res0.vtk.gz"
 		};
 
 		return new Graticule(smallBodyModel, gridFiles);

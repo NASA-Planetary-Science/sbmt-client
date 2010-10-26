@@ -311,7 +311,7 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
 		return actors;
 	}
 	
-    public String getClickStatusBarText(vtkProp prop, int cellId)
+    public String getClickStatusBarText(vtkProp prop, int cellId, double[] pickPosition)
     {
     	if (prop == boundaryActor || prop == interiorActor)
     	{

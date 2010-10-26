@@ -79,7 +79,7 @@ public class DefaultPicker extends Picker
 			return;
 
 		// First try picking on the non-small-body picker. If that fails try the small body picker.
-		int pickSucceeded = doPick(e, mousePressNonSmallBodyCellPicker);
+		int pickSucceeded = doPick(e, mousePressNonSmallBodyCellPicker, renWin);
 		
 		if (pickSucceeded == 1)
 		{
@@ -89,20 +89,19 @@ public class DefaultPicker extends Picker
 			if (model != null)
 			{
 				int cellId = mousePressNonSmallBodyCellPicker.GetCellId();
-				String text = model.getClickStatusBarText(pickedActor, cellId);
+				double[] pickPosition = mousePressNonSmallBodyCellPicker.GetPickPosition();
+				String text = model.getClickStatusBarText(pickedActor, cellId, pickPosition);
 				statusBar.setLeftText(text);
 				pcs.firePropertyChange(
 						Properties.MODEL_PICKED,
 						null,
-						new PickEvent(e, pickedActor, cellId, mousePressNonSmallBodyCellPicker.GetPickPosition()));
+						new PickEvent(e, pickedActor, cellId, pickPosition));
 			}
 		}		
 		else
 		{
 			// If the non-small-body picker failed, see if the user clicked on the small body itself.
-			renWin.lock();
-			pickSucceeded = mousePressSmallBodyCellPicker.Pick(e.getX(), renWin.getHeight()-e.getY()-1, 0.0, renWin.GetRenderer());
-			renWin.unlock();
+			pickSucceeded = doPick(e, mousePressSmallBodyCellPicker, renWin);
 
 			if (pickSucceeded == 1)
 			{
@@ -112,12 +111,13 @@ public class DefaultPicker extends Picker
 				if (model != null)
 				{
 					int cellId = mousePressSmallBodyCellPicker.GetCellId();
-					String text = model.getClickStatusBarText(pickedActor, cellId);
+					double[] pickPosition = mousePressSmallBodyCellPicker.GetPickPosition();
+					String text = model.getClickStatusBarText(pickedActor, cellId, pickPosition);
 					statusBar.setLeftText(text);
 					pcs.firePropertyChange(
 							Properties.MODEL_PICKED,
 							null,
-							new PickEvent(e, pickedActor, cellId, mousePressSmallBodyCellPicker.GetPickPosition()));
+							new PickEvent(e, pickedActor, cellId, pickPosition));
 				}
 			}		
 			else
@@ -170,7 +170,7 @@ public class DefaultPicker extends Picker
 		if (renWin.GetRenderWindow().GetNeverRendered() > 0)
 			return;
 
-		int pickSucceeded = doPick(e, mousePressNonSmallBodyCellPicker);
+		int pickSucceeded = doPick(e, mousePressNonSmallBodyCellPicker, renWin);
 		if (pickSucceeded == 1)
 		{
 			vtkActor pickedActor = mousePressNonSmallBodyCellPicker.GetActor();
@@ -231,9 +231,8 @@ public class DefaultPicker extends Picker
         	distanceStr = " " + distanceStr;
         distanceStr += " km";
 
-		renWin.lock();
-        int pickSucceeded = mouseMovedCellPicker.Pick(e.getX(), renWin.getHeight()-e.getY()-1, 0.0, renWin.GetRenderer());
-		renWin.unlock();
+		int pickSucceeded = doPick(e, mouseMovedCellPicker, renWin);
+
 		if (pickSucceeded == 1)
 		{
 			double[] pos = mouseMovedCellPicker.GetPickPosition();
@@ -286,34 +285,4 @@ public class DefaultPicker extends Picker
 		}
 	}
 	
-	private int doPick(MouseEvent e, vtkCellPicker picker)
-	{
-        // When picking, choosing the right tolerance is not simple. If it's too small, then
-        // the pick will only work well if we are zoomed in very close to the object. If it's
-        // too large, the pick will only work well when we are zoomed out a lot. To deal
-        // with this situation, do a series of picks starting out with a low tolerance
-        // and increase the tolerance after each new pick. Stop as soon as the pick succeeds
-        // or we reach the maximum tolerance.
-        int pickSucceeded = 0;
-        double tolerance = 0.0002;
-        final double originalTolerance = picker.GetTolerance();
-        final double maxTolerance = 0.002;
-        final double incr = 0.0002;
-        renWin.lock();
-        picker.SetTolerance(tolerance);
-        while (tolerance <= maxTolerance)
-        {
-            picker.SetTolerance(tolerance);
-            pickSucceeded = picker.Pick(e.getX(), renWin.getHeight()-e.getY()-1, 0.0, renWin.GetRenderer());
-            
-            if (pickSucceeded == 1)
-                break;
-
-            tolerance += incr;
-        }
-        picker.SetTolerance(originalTolerance);
-        renWin.unlock();
-        
-        return pickSucceeded;
-	}
 }

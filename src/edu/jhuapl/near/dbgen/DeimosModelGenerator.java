@@ -131,6 +131,18 @@ public class DeimosModelGenerator {
 				writer.SetFileName(gridfile);
 				writer.SetFileTypeToBinary();
 				writer.Write();
+
+				if (i == 0)
+				{
+					String coloringfile = datadir + "/DEIMOS_Elevation.txt";
+					ModelGeneratorUtil.convertCellDataToPointData(erosPolyData, coloringfile);
+					coloringfile = datadir + "/DEIMOS_GravitationalAcceleration.txt";
+					ModelGeneratorUtil.convertCellDataToPointData(erosPolyData, coloringfile);
+					coloringfile = datadir + "/DEIMOS_GravitationalPotential.txt";
+					ModelGeneratorUtil.convertCellDataToPointData(erosPolyData, coloringfile);
+					coloringfile = datadir + "/DEIMOS_Slope.txt";
+					ModelGeneratorUtil.convertCellDataToPointData(erosPolyData, coloringfile);
+				}
 			}
 		}
 		catch (IOException e)

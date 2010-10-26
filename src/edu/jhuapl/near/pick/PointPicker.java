@@ -78,9 +78,7 @@ public class PointPicker extends Picker
 			if (e.getButton() != MouseEvent.BUTTON1 && e.getButton() != MouseEvent.BUTTON3)
 				return;
 
-			renWin.lock();
-			int pickSucceeded = pointPicker.Pick(e.getX(), renWin.getHeight()-e.getY()-1, 0.0, renWin.GetRenderer());
-			renWin.unlock();
+			int pickSucceeded = doPick(e, pointPicker, renWin);
 			if (pickSucceeded == 1)
 			{
 				vtkActor pickedActor = pointPicker.GetActor();
@@ -105,9 +103,7 @@ public class PointPicker extends Picker
 			if (e.getButton() != MouseEvent.BUTTON1)
 				return;
 
-			renWin.lock();
-			int pickSucceeded = smallBodyPicker.Pick(e.getX(), renWin.getHeight()-e.getY()-1, 0.0, renWin.GetRenderer());
-			renWin.unlock();
+			int pickSucceeded = doPick(e, smallBodyPicker, renWin);
 
 			if (pickSucceeded == 1)
 			{
@@ -147,9 +143,7 @@ public class PointPicker extends Picker
 		if (this.currentEditMode == EditMode.VERTEX_DRAG_OR_DELETE &&
 			vertexIdBeingEdited >= 0)
 		{
-			renWin.lock();
-			int pickSucceeded = smallBodyPicker.Pick(e.getX(), renWin.getHeight()-e.getY()-1, 0.0, renWin.GetRenderer());
-			renWin.unlock();
+			int pickSucceeded = doPick(e, smallBodyPicker, renWin);
 			if (pickSucceeded == 1)
 			{
 				vtkActor pickedActor = smallBodyPicker.GetActor();
@@ -168,9 +162,7 @@ public class PointPicker extends Picker
 	
 	public void mouseMoved(MouseEvent e) 
 	{
-		renWin.lock();
-		int pickSucceeded = pointPicker.Pick(e.getX(), renWin.getHeight()-e.getY()-1, 0.0, renWin.GetRenderer());
-		renWin.unlock();
+		int pickSucceeded = doPick(e, pointPicker, renWin);
 		if (pickSucceeded == 1 &&
 				pointPicker.GetActor() == pointModel.getInteriorActor())
 		{
