@@ -120,7 +120,6 @@ public class SmallBodyMappingTool extends JFrame
                 	try
                     {
                 		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-                        System.out.println(UIManager.getSystemLookAndFeelClassName());
                     } 
                     catch (Exception e) 
                     {
