@@ -44,6 +44,7 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
     private vtkPolyData emptyPolyData;
     private SmallBodyModel smallBodyModel;
     private double defaultRadius = 0.25; // radius for new polygons drawn
+    private double maxRadius = 5.0;
     private int numberOfSides = 4;
     private int[] defaultColor = {0, 191, 255};
 //    private int[] defaultBoundaryColor = {0, 191, 255};
@@ -150,6 +151,9 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
 		
 		this.smallBodyModel = smallBodyModel;
 
+		defaultRadius = smallBodyModel.getBoundingBoxDiagonalLength() / 155.0;
+		maxRadius = smallBodyModel.getBoundingBoxDiagonalLength() / 8.0;
+		
 		this.smallBodyModel.addPropertyChangeListener(this);
 		
 		emptyPolyData = new vtkPolyData();
@@ -265,8 +269,8 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
 			boundaryPolyData.DeepCopy(boundaryAppendFilter.GetOutput());
 			interiorPolyData.DeepCopy(interiorAppendFilter.GetOutput());
 
-			smallBodyModel.shiftPolyLineInNormalDirection(boundaryPolyData, 0.003);
-			smallBodyModel.shiftPolyLineInNormalDirection(interiorPolyData, 0.002);
+			smallBodyModel.shiftPolyLineInNormalDirection(boundaryPolyData, 3.0);
+			smallBodyModel.shiftPolyLineInNormalDirection(interiorPolyData, 2.0);
 			
 			boundaryColors.SetNumberOfTuples(boundaryPolyData.GetNumberOfCells());
 			interiorColors.SetNumberOfTuples(interiorPolyData.GetNumberOfCells());
@@ -387,8 +391,8 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
     			(pol.center[0]-newPointOnPerimeter[0])*(pol.center[0]-newPointOnPerimeter[0]) +
     			(pol.center[1]-newPointOnPerimeter[1])*(pol.center[1]-newPointOnPerimeter[1]) +
     			(pol.center[2]-newPointOnPerimeter[2])*(pol.center[2]-newPointOnPerimeter[2]));
-    	if (newRadius > 5.0)
-    		newRadius = 5.0;
+    	if (newRadius > maxRadius)
+    		newRadius = maxRadius;
     	
         pol.updatePolygon(smallBodyModel, pol.center, newRadius);
         updatePolyData();

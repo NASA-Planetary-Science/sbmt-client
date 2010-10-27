@@ -37,7 +37,7 @@ public class Graticule extends Model implements PropertyChangeListener
     private vtkTransform transform;
     private vtkPolyDataReader reader;
     private String[] gridFiles;
-    private double shiftAmount = 0.005;
+    private double shiftFactor = 5.0;
     
 	public Graticule(SmallBodyModel smallBodyModel, String[] gridFiles)
 	{
@@ -59,9 +59,9 @@ public class Graticule extends Model implements PropertyChangeListener
 		reader = new vtkPolyDataReader();
 	}
 	
-	public void setShiftAmount(double amount)
+	public void setShiftFactor(double factor)
 	{
-		shiftAmount = amount;
+		shiftFactor = factor;
 	}
 	
 	public void generateGrid(vtkPolyData smallBodyPolyData)
@@ -174,7 +174,7 @@ public class Graticule extends Model implements PropertyChangeListener
 
 		polyData.DeepCopy(reader.GetOutput());
 		
-		smallBodyModel.shiftPolyLineInNormalDirection(polyData, shiftAmount);
+		smallBodyModel.shiftPolyLineInNormalDirection(polyData, shiftFactor);
 
 		if (mapper == null)
 			mapper = new vtkPolyDataMapper();

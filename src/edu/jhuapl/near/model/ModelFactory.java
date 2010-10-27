@@ -118,10 +118,7 @@ public class ModelFactory
 				"/ITOKAWA/coordinate_grid_res3.vtk.gz"
 		};
 
-		Graticule graticule = new Graticule(smallBodyModel, gridFiles);
-		graticule.setShiftAmount(0.0005);
-
-		return graticule;
+		return new Graticule(smallBodyModel, gridFiles);
 	}
 
 	static public Graticule createVestaGraticuleModel(SmallBodyModel smallBodyModel)

@@ -410,26 +410,30 @@ public class PolyDataUtil
 
 			double[] normal = GetPolyDataNormalAtPoint.func(center, polyData, pointLocator);
 
+			// If the number of points are too small, then vtkExtractPolyDataGeometry
+			// as used here might fail, so skip this part (which is just an optimization
+			// not really needed when the points are few) in this case.
+			if (polyData.GetNumberOfPoints() >= 10000)
+			{
+				// Reduce the size of the polydata we need to process by only
+				// considering cells within twice radius of center.
+				//vtkSphere sphere = new vtkSphere();
+				if (sphere_f1 == null)
+					sphere_f1 = new vtkSphere();
+				sphere_f1.SetCenter(center);
+				sphere_f1.SetRadius(radius >= 0.2 ? 1.2*radius : 1.2*0.2);
 
-			// Reduce the size of the polydata we need to process by only
-			// considering cells within twice radius of center.
-			//vtkSphere sphere = new vtkSphere();
-			if (sphere_f1 == null)
-				sphere_f1 = new vtkSphere();
-			sphere_f1.SetCenter(center);
-			sphere_f1.SetRadius(radius >= 0.2 ? 1.2*radius : 1.2*0.2);
-
-			//vtkExtractPolyDataGeometry extract = new vtkExtractPolyDataGeometry();
-			if (extract_f1 == null)
-				extract_f1 = new vtkExtractPolyDataGeometry();
-			extract_f1.SetImplicitFunction(sphere_f1);
-			extract_f1.SetExtractInside(1);
-			extract_f1.SetExtractBoundaryCells(1);
-			extract_f1.SetInput(polyData);
-			extract_f1.Update();
-			polyData = extract_f1.GetOutput();
-
-
+				//vtkExtractPolyDataGeometry extract = new vtkExtractPolyDataGeometry();
+				if (extract_f1 == null)
+					extract_f1 = new vtkExtractPolyDataGeometry();
+				extract_f1.SetImplicitFunction(sphere_f1);
+				extract_f1.SetExtractInside(1);
+				extract_f1.SetExtractBoundaryCells(1);
+				extract_f1.SetInput(polyData);
+				extract_f1.Update();
+				polyData = extract_f1.GetOutput();
+			}
+			
 			//vtkRegularPolygonSource polygonSource = new vtkRegularPolygonSource();
 			if (polygonSource_f1 == null)
 				polygonSource_f1 = new vtkRegularPolygonSource();

@@ -63,6 +63,17 @@ public class BoundingBox
 		return Math.max(xmax-xmin, Math.max(ymax-ymin, zmax-zmin));
 	}
 	
+	public double getDiagonalLength()
+	{
+		double[] vec = {
+				xmax-xmin,
+				ymax-ymin,
+				zmax-zmin
+		};
+		
+		return MathUtil.vnorm(vec);
+	}
+	
 	/**
 	 * Returns whether or not the given point is contained in the box. 
 	 * @param pt

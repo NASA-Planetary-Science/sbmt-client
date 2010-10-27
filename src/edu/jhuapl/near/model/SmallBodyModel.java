@@ -327,9 +327,13 @@ public class SmallBodyModel extends Model
 	
 	public void shiftPolyLineInNormalDirection(
 			vtkPolyData polyLine,
-			double shiftAmount)
+			double shiftFactor)
 	{
-		PolyDataUtil.ShiftPolyLineInNormalDirectionOfPolyData.func(polyLine, smallBodyPolyData, pointLocator, shiftAmount);
+		PolyDataUtil.ShiftPolyLineInNormalDirectionOfPolyData.func(
+				polyLine,
+				smallBodyPolyData,
+				pointLocator,
+				shiftFactor * getMinShiftAmount());
 	}
 	
 	/**
@@ -494,6 +498,22 @@ public class SmallBodyModel extends Model
 		
 		return bb;
 		*/
+	}
+	
+	public double getBoundingBoxDiagonalLength()
+	{
+		return getBoundingBox().getDiagonalLength();
+	}
+	
+	/**
+	 * Get the minimum shift amount needed so shift an object away from
+	 * the model so it is not obscured by the model and looks like it's
+	 * laying on the model
+	 * @return
+	 */
+	public double getMinShiftAmount()
+	{
+		return getBoundingBoxDiagonalLength() / 38660.0;
 	}
 	
     public String getClickStatusBarText(vtkProp prop, int cellId, double[] pickPosition)

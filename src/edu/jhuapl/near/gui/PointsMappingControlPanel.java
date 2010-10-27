@@ -34,10 +34,15 @@ public class PointsMappingControlPanel extends
 		JLabel radiusLabel = new JLabel("Diameter");
 		panel.add(radiusLabel);
 		
+		double bbLength = modelManager.getSmallBodyModel().getBoundingBoxDiagonalLength();
+		double min = bbLength / 4000.0;
+		double max =bbLength / 10.0;
+		double step = max / 40.0;
+
 		SpinnerModel model = new SpinnerNumberModel(diameter, //initial value
-                0.01,   //min
-                4.0,    //max
-                0.01);  //step
+                min,
+                max,
+                step);
 		
 		spinner = new JSpinner(model);
 		spinner.addChangeListener(this);

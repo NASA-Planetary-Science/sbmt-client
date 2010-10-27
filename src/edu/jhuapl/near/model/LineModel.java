@@ -193,7 +193,7 @@ public class LineModel extends StructureModel implements PropertyChangeListener
 			colors.InsertNextTuple4(color[0],color[1],color[2],color[3]);
 		}
 
-		smallBodyModel.shiftPolyLineInNormalDirection(linesPolyData, 0.009);
+		smallBodyModel.shiftPolyLineInNormalDirection(linesPolyData, 9.0);
 
 		if (lineMapper == null)
 			lineMapper = new vtkPolyDataMapper();
@@ -554,7 +554,7 @@ public class LineModel extends StructureModel implements PropertyChangeListener
     			}
     		}
 
-    		smallBodyModel.shiftPolyLineInNormalDirection(selectionPolyData, 0.001);
+    		smallBodyModel.shiftPolyLineInNormalDirection(selectionPolyData, 1.0);
 
     	}
     	else
@@ -592,7 +592,7 @@ public class LineModel extends StructureModel implements PropertyChangeListener
     				colors.InsertNextTuple4(redColor[0],redColor[1],redColor[2],redColor[3]);
     		}
 
-    		smallBodyModel.shiftPolyLineInNormalDirection(selectionPolyData, 0.001);
+    		smallBodyModel.shiftPolyLineInNormalDirection(selectionPolyData, 1.0);
 
     		if (!actors.contains(lineSelectionActor))
     			actors.add(lineSelectionActor);
