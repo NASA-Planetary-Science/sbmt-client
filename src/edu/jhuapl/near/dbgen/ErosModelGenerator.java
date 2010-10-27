@@ -139,6 +139,18 @@ public class ErosModelGenerator {
 				writer.SetFileName(gridfile);
 				writer.SetFileTypeToBinary();
 				writer.Write();
+
+				if (i == 0)
+				{
+					String coloringfile = datadir + "/Eros_Dec2006_0_Elevation.txt";
+					ModelGeneratorUtil.convertCellDataToPointData(erosPolyData, coloringfile);
+					coloringfile = datadir + "/Eros_Dec2006_0_GravitationalAcceleration.txt";
+					ModelGeneratorUtil.convertCellDataToPointData(erosPolyData, coloringfile);
+					coloringfile = datadir + "/Eros_Dec2006_0_GravitationalPotential.txt";
+					ModelGeneratorUtil.convertCellDataToPointData(erosPolyData, coloringfile);
+					coloringfile = datadir + "/Eros_Dec2006_0_Slope.txt";
+					ModelGeneratorUtil.convertCellDataToPointData(erosPolyData, coloringfile);
+				}
 			}
 		}
 		catch (IOException e)

@@ -39,10 +39,10 @@ public class ModelFactory
 		};
 
 		final String[] coloringFiles = {
-				"/DEIMOS/DEIMOS_Elevation.txt.gz",
-				"/DEIMOS/DEIMOS_GravitationalAcceleration.txt.gz",
-				"/DEIMOS/DEIMOS_GravitationalPotential.txt.gz",
-				"/DEIMOS/DEIMOS_Slope.txt.gz"
+				"/DEIMOS/DEIMOS_Elevation_PointData.txt.gz",
+				"/DEIMOS/DEIMOS_GravitationalAcceleration_PointData.txt.gz",
+				"/DEIMOS/DEIMOS_GravitationalPotential_PointData.txt.gz",
+				"/DEIMOS/DEIMOS_Slope_PointData.txt.gz"
 		};
 
 		final String imageMap = "/DEIMOS/deimos_image_map.png";

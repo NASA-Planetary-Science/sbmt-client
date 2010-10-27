@@ -76,19 +76,19 @@ public class ColoringImageMapGenerator
 		//writer.SetDataModeToAscii();
 		writer.SetDataModeToBinary();
 		
-		writer.SetFileName("DEIMOS_Slope.vti");
+		writer.SetFileName("DEIMOS_Slope_PointData.vti");
 		writer.SetInput(slopeImage);
 		writer.Write();
 		
-		writer.SetFileName("DEIMOS_Elevation.vti");
+		writer.SetFileName("DEIMOS_Elevation_PointData.vti");
 		writer.SetInput(elevImage);
 		writer.Write();
 
-		writer.SetFileName("DEIMOS_GravitationalAcceleration.vti");
+		writer.SetFileName("DEIMOS_GravitationalAcceleration_PointData.vti");
 		writer.SetInput(gravAccImage);
 		writer.Write();
 
-		writer.SetFileName("DEIMOS_GravitationalPotential.vti");
+		writer.SetFileName("DEIMOS_GravitationalPotential_PointData.vti");
 		writer.SetInput(gravPotImage);
 		writer.Write();
 	}
