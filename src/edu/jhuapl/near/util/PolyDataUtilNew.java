@@ -81,64 +81,64 @@ public class PolyDataUtilNew
 		double[] LR2 = {origin[0]+lr[0]*dx, origin[1]+lr[1]*dx, origin[2]+lr[2]*dx};
 
 
-		vtkPlane plane1_f4 = new vtkPlane();
-		plane1_f4.SetOrigin(UL2);
-		plane1_f4.SetNormal(top);
-		vtkPlane plane2_f4 = new vtkPlane();
-		plane2_f4.SetOrigin(UR2);
-		plane2_f4.SetNormal(right);
-		vtkPlane plane3_f4 = new vtkPlane();
-		plane3_f4.SetOrigin(LR2);
-		plane3_f4.SetNormal(bottom);
-		vtkPlane plane4_f4 = new vtkPlane();
-		plane4_f4.SetOrigin(LL2);
-		plane4_f4.SetNormal(left);
+		vtkPlane plane1 = new vtkPlane();
+		plane1.SetOrigin(UL2);
+		plane1.SetNormal(top);
+		vtkPlane plane2 = new vtkPlane();
+		plane2.SetOrigin(UR2);
+		plane2.SetNormal(right);
+		vtkPlane plane3 = new vtkPlane();
+		plane3.SetOrigin(LR2);
+		plane3.SetNormal(bottom);
+		vtkPlane plane4 = new vtkPlane();
+		plane4.SetOrigin(LL2);
+		plane4.SetNormal(left);
 
 		// I found that the results are MUCH better when you use a separate vtkClipPolyData
 		// for each plane of the frustum rather than trying to use a single vtkClipPolyData
 		// with an vtkImplicitBoolean or vtkPlanes that combines all the planes together.
-		vtkClipPolyData clipPolyData1_f4 = new vtkClipPolyData();
-		clipPolyData1_f4.SetInput(polyData);
-		clipPolyData1_f4.SetClipFunction(plane1_f4);
-		clipPolyData1_f4.SetInsideOut(1);
-		vtkClipPolyData clipPolyData2_f4 = new vtkClipPolyData();
-		clipPolyData2_f4.SetInputConnection(clipPolyData1_f4.GetOutputPort());
-		clipPolyData2_f4.SetClipFunction(plane2_f4);
-		clipPolyData2_f4.SetInsideOut(1);
-		vtkClipPolyData clipPolyData3_f4 = new vtkClipPolyData();
-		clipPolyData3_f4.SetInputConnection(clipPolyData2_f4.GetOutputPort());
-		clipPolyData3_f4.SetClipFunction(plane3_f4);
-		clipPolyData3_f4.SetInsideOut(1);
-		vtkClipPolyData clipPolyData4_f4 = new vtkClipPolyData();
-		clipPolyData4_f4.SetInputConnection(clipPolyData3_f4.GetOutputPort());
-		clipPolyData4_f4.SetClipFunction(plane4_f4);
-		clipPolyData4_f4.SetInsideOut(1);
-		clipPolyData4_f4.Update();
+		vtkClipPolyData clipPolyData1 = new vtkClipPolyData();
+		clipPolyData1.SetInput(polyData);
+		clipPolyData1.SetClipFunction(plane1);
+		clipPolyData1.SetInsideOut(1);
+		vtkClipPolyData clipPolyData2 = new vtkClipPolyData();
+		clipPolyData2.SetInputConnection(clipPolyData1.GetOutputPort());
+		clipPolyData2.SetClipFunction(plane2);
+		clipPolyData2.SetInsideOut(1);
+		vtkClipPolyData clipPolyData3 = new vtkClipPolyData();
+		clipPolyData3.SetInputConnection(clipPolyData2.GetOutputPort());
+		clipPolyData3.SetClipFunction(plane3);
+		clipPolyData3.SetInsideOut(1);
+		vtkClipPolyData clipPolyData4 = new vtkClipPolyData();
+		clipPolyData4.SetInputConnection(clipPolyData3.GetOutputPort());
+		clipPolyData4.SetClipFunction(plane4);
+		clipPolyData4.SetInsideOut(1);
+		clipPolyData4.Update();
 
-		if (clipPolyData4_f4.GetOutput().GetNumberOfCells() == 0)
+		if (clipPolyData4.GetOutput().GetNumberOfCells() == 0)
 		{
 			System.out.println("clipped data is empty");
 			return null;
 		}
 
-		vtkPolyDataNormals normalsFilter_f4 = new vtkPolyDataNormals();
-		normalsFilter_f4.SetInputConnection(clipPolyData4_f4.GetOutputPort());
-		normalsFilter_f4.SetComputeCellNormals(1);
-		normalsFilter_f4.SetComputePointNormals(0);
-		normalsFilter_f4.SplittingOff();
-		normalsFilter_f4.Update();
+		vtkPolyDataNormals normalsFilter = new vtkPolyDataNormals();
+		normalsFilter.SetInputConnection(clipPolyData4.GetOutputPort());
+		normalsFilter.SetComputeCellNormals(1);
+		normalsFilter.SetComputePointNormals(0);
+		normalsFilter.SplittingOff();
+		normalsFilter.Update();
 
-		vtkPolyData tmpPolyData_f4 = new vtkPolyData();
-		tmpPolyData_f4.DeepCopy(normalsFilter_f4.GetOutput());
+		vtkPolyData tmpPolyData = new vtkPolyData();
+		tmpPolyData.DeepCopy(normalsFilter.GetOutput());
 
 		// Now remove from this clipped poly data all the cells that are facing away from the viewer.
-		vtkDataArray cellNormals = tmpPolyData_f4.GetCellData().GetNormals();
-		vtkPoints points = tmpPolyData_f4.GetPoints();
+		vtkDataArray cellNormals = tmpPolyData.GetCellData().GetNormals();
+		vtkPoints points = tmpPolyData.GetPoints();
 
 		int numCells = cellNormals.GetNumberOfTuples();
 
-		vtkIdList idList_f4 = new vtkIdList();
-		idList_f4.SetNumberOfIds(0);
+		vtkIdList idList = new vtkIdList();
+		idList.SetNumberOfIds(0);
 
 		double[] viewDir = new double[3];
 		for (int i=0; i<numCells; ++i)
@@ -147,8 +147,8 @@ public class PolyDataUtilNew
 			MathUtil.vhat(n, n);
 
 			// Compute the direction to the viewer from one of the point of the cell.
-			tmpPolyData_f4.GetCellPoints(i, idList_f4);
-			double[] pt = points.GetPoint(idList_f4.GetId(0));
+			tmpPolyData.GetCellPoints(i, idList);
+			double[] pt = points.GetPoint(idList.GetId(0));
 
 			viewDir[0] = origin[0] - pt[0];
 			viewDir[1] = origin[1] - pt[1];
@@ -157,18 +157,18 @@ public class PolyDataUtilNew
 
 			double dot = math.Dot(n, viewDir);
 			if (dot <= 0.0)
-				tmpPolyData_f4.DeleteCell(i);
+				tmpPolyData.DeleteCell(i);
 		}
 
-		tmpPolyData_f4.RemoveDeletedCells();
-		tmpPolyData_f4.GetCellData().SetNormals(null);
+		tmpPolyData.RemoveDeletedCells();
+		tmpPolyData.GetCellData().SetNormals(null);
 
-		vtkCleanPolyData cleanPoly_f4 = new vtkCleanPolyData();
-		cleanPoly_f4.SetInput(tmpPolyData_f4);
-		cleanPoly_f4.Update();
+		vtkCleanPolyData cleanPoly = new vtkCleanPolyData();
+		cleanPoly.SetInput(tmpPolyData);
+		cleanPoly.Update();
 
 		//polyData = new vtkPolyData();
-		tmpPolyData_f4.DeepCopy(cleanPoly_f4.GetOutput());
+		tmpPolyData.DeepCopy(cleanPoly.GetOutput());
 
 		// If the body was a convex shape we would be done now.
 		// Unfortunately, since it's not, it's possible for the polydata to have multiple connected
@@ -191,25 +191,25 @@ public class PolyDataUtilNew
 		// not worth the trouble.
 
 		// So now, first count the number of connected pieces.
-		//			if (connectivityFilter_f4 == null) connectivityFilter_f4 = new vtkPolyDataConnectivityFilter();
-		//			connectivityFilter_f4.SetInputConnection(cleanPoly_f4.GetOutputPort());
-		//			connectivityFilter_f4.SetExtractionModeToAllRegions();
-		//			connectivityFilter_f4.Update();
-		//			int numRegions = connectivityFilter_f4.GetNumberOfExtractedRegions();
+		//			if (connectivityFilter == null) connectivityFilter = new vtkPolyDataConnectivityFilter();
+		//			connectivityFilter.SetInputConnection(cleanPoly.GetOutputPort());
+		//			connectivityFilter.SetExtractionModeToAllRegions();
+		//			connectivityFilter.Update();
+		//			int numRegions = connectivityFilter.GetNumberOfExtractedRegions();
 		//			System.out.println("numRegions: " + numRegions);
 		//			if (numRegions == 1)
 		//			{
-		//				return tmpPolyData_f4;
+		//				return tmpPolyData;
 		//			}
 
 
 
-		vtkGenericCell cell_f4 = new vtkGenericCell();
+		vtkGenericCell cell = new vtkGenericCell();
 
-		points = tmpPolyData_f4.GetPoints();
+		points = tmpPolyData.GetPoints();
 		int numPoints = points.GetNumberOfPoints();
 
-		int[] numberOfObscuredPointsPerCell = new int[tmpPolyData_f4.GetNumberOfCells()];
+		int[] numberOfObscuredPointsPerCell = new int[tmpPolyData.GetNumberOfCells()];
 		Arrays.fill(numberOfObscuredPointsPerCell, 0);
 
 		double tol = 1e-6;
@@ -223,47 +223,47 @@ public class PolyDataUtilNew
 		{
 			double[] sourcePnt = points.GetPoint(i);
 
-			int result = locator.IntersectWithLine(origin, sourcePnt, tol, t, x, pcoords, subId, cell_id, cell_f4);
+			int result = locator.IntersectWithLine(origin, sourcePnt, tol, t, x, pcoords, subId, cell_id, cell);
 
 			if (result == 1)
 			{
 				int ptid = pointLocator.FindClosestPoint(sourcePnt);
-				polyData.GetPointCells(ptid, idList_f4);
+				polyData.GetPointCells(ptid, idList);
 
 				// The following check makes sure we don't delete any cells
 				// if the intersection point happens to coincides with sourcePnt.
 				// To do this we test to see of the intersected cell 
 				// is one of the cells which share a point with sourcePnt.
 				// If it is we skip to the next point.
-				if (idList_f4.IsId(cell_id[0]) >= 0)
+				if (idList.IsId(cell_id[0]) >= 0)
 				{
 					//System.out.println("Too close  " + i);
 					continue;
 				}
 
-				tmpPolyData_f4.GetPointCells(i, idList_f4);
-				int numPtCells = idList_f4.GetNumberOfIds();
+				tmpPolyData.GetPointCells(i, idList);
+				int numPtCells = idList.GetNumberOfIds();
 				for (int j=0; j<numPtCells; ++j)
 				{
 					// The following makes sure that only cells for which ALL three of its
 					// points are obscured get deleted
-					int cellId = idList_f4.GetId(j);
+					int cellId = idList.GetId(j);
 					++numberOfObscuredPointsPerCell[cellId];
 					if (numberOfObscuredPointsPerCell[cellId] == 3)
-						tmpPolyData_f4.DeleteCell(cellId);
+						tmpPolyData.DeleteCell(cellId);
 				}
 			}
 		}
-		tmpPolyData_f4.RemoveDeletedCells();
+		tmpPolyData.RemoveDeletedCells();
 
-		//cleanPoly_f4 = new vtkCleanPolyData();
-		cleanPoly_f4.SetInput(tmpPolyData_f4);
-		cleanPoly_f4.Update();
+		//cleanPoly = new vtkCleanPolyData();
+		cleanPoly.SetInput(tmpPolyData);
+		cleanPoly.Update();
 
 		//polyData = new vtkPolyData();
-		tmpPolyData_f4.DeepCopy(cleanPoly_f4.GetOutput());
+		tmpPolyData.DeepCopy(cleanPoly.GetOutput());
 
-		return tmpPolyData_f4;
+		return tmpPolyData;
 	}
 
 	/*
@@ -375,33 +375,33 @@ public class PolyDataUtilNew
 		{
 			// Reduce the size of the polydata we need to process by only
 			// considering cells within twice radius of center.
-			vtkSphere sphere_f1 = new vtkSphere();
-			sphere_f1.SetCenter(center);
-			sphere_f1.SetRadius(radius >= 0.2 ? 1.2*radius : 1.2*0.2);
+			vtkSphere sphere = new vtkSphere();
+			sphere.SetCenter(center);
+			sphere.SetRadius(radius >= 0.2 ? 1.2*radius : 1.2*0.2);
 
-			vtkExtractPolyDataGeometry extract_f1 = new vtkExtractPolyDataGeometry();
-			extract_f1.SetImplicitFunction(sphere_f1);
-			extract_f1.SetExtractInside(1);
-			extract_f1.SetExtractBoundaryCells(1);
-			extract_f1.SetInput(polyData);
-			extract_f1.Update();
-			polyData = extract_f1.GetOutput();
+			vtkExtractPolyDataGeometry extract = new vtkExtractPolyDataGeometry();
+			extract.SetImplicitFunction(sphere);
+			extract.SetExtractInside(1);
+			extract.SetExtractBoundaryCells(1);
+			extract.SetInput(polyData);
+			extract.Update();
+			polyData = extract.GetOutput();
 		}
 
-		vtkRegularPolygonSource polygonSource_f1 = new vtkRegularPolygonSource();
-		polygonSource_f1.SetCenter(center);
-		polygonSource_f1.SetRadius(radius);
-		polygonSource_f1.SetNormal(normal);
-		polygonSource_f1.SetNumberOfSides(numberOfSides);
-		polygonSource_f1.SetGeneratePolygon(0);
-		polygonSource_f1.SetGeneratePolyline(0);
-		polygonSource_f1.Update();
+		vtkRegularPolygonSource polygonSource = new vtkRegularPolygonSource();
+		polygonSource.SetCenter(center);
+		polygonSource.SetRadius(radius);
+		polygonSource.SetNormal(normal);
+		polygonSource.SetNumberOfSides(numberOfSides);
+		polygonSource.SetGeneratePolygon(0);
+		polygonSource.SetGeneratePolyline(0);
+		polygonSource.Update();
 
-		vtkPoints points = polygonSource_f1.GetOutput().GetPoints();
+		vtkPoints points = polygonSource.GetOutput().GetPoints();
 
-		ArrayList<vtkPlane> clipPlanes_f1 = new ArrayList<vtkPlane>();
-		ArrayList<vtkClipPolyData> clipFilters_f1 = new ArrayList<vtkClipPolyData>();
-		ArrayList<vtkPolyData> clipOutputs_f1 = new ArrayList<vtkPolyData>();
+		ArrayList<vtkPlane> clipPlanes = new ArrayList<vtkPlane>();
+		ArrayList<vtkClipPolyData> clipFilters = new ArrayList<vtkClipPolyData>();
+		ArrayList<vtkPolyData> clipOutputs = new ArrayList<vtkPolyData>();
 
 		// randomly shuffling the order of the sides we process can speed things up
 		ArrayList<Integer> sides = new ArrayList<Integer>();
@@ -432,16 +432,16 @@ public class PolyDataUtilNew
 			math.Cross(normal, vec, planeNormal);
 			MathUtil.vhat(planeNormal, planeNormal);
 
-			if (i > clipPlanes_f1.size()-1)
-				clipPlanes_f1.add(new vtkPlane());
-			vtkPlane plane = clipPlanes_f1.get(i);
+			if (i > clipPlanes.size()-1)
+				clipPlanes.add(new vtkPlane());
+			vtkPlane plane = clipPlanes.get(i);
 			//			vtkPlane plane = new vtkPlane();
 			plane.SetOrigin(currentPoint);
 			plane.SetNormal(planeNormal);
 
-			if (i > clipFilters_f1.size()-1)
-				clipFilters_f1.add(new vtkClipPolyData());
-			clipPolyData = clipFilters_f1.get(i);
+			if (i > clipFilters.size()-1)
+				clipFilters.add(new vtkClipPolyData());
+			clipPolyData = clipFilters.get(i);
 			//			clipPolyData = new vtkClipPolyData();
 			clipPolyData.SetInput(nextInput);
 			clipPolyData.SetClipFunction(plane);
@@ -450,41 +450,41 @@ public class PolyDataUtilNew
 
 			nextInput = clipPolyData.GetOutput();
 
-			if (i > clipOutputs_f1.size()-1)
-				clipOutputs_f1.add(nextInput);
-			clipOutputs_f1.set(i, nextInput);
+			if (i > clipOutputs.size()-1)
+				clipOutputs.add(nextInput);
+			clipOutputs.set(i, nextInput);
 		}
 
 
-		vtkPolyDataConnectivityFilter connectivityFilter_f1 = new vtkPolyDataConnectivityFilter();
-		connectivityFilter_f1.SetInputConnection(clipPolyData.GetOutputPort());
-		connectivityFilter_f1.SetExtractionModeToClosestPointRegion();
-		connectivityFilter_f1.SetClosestPoint(center);
-		connectivityFilter_f1.Update();
+		vtkPolyDataConnectivityFilter connectivityFilter = new vtkPolyDataConnectivityFilter();
+		connectivityFilter.SetInputConnection(clipPolyData.GetOutputPort());
+		connectivityFilter.SetExtractionModeToClosestPointRegion();
+		connectivityFilter.SetClosestPoint(center);
+		connectivityFilter.Update();
 
 		//		polyData = new vtkPolyData();
-		//if (outputPolyData_f1 == null)
-		//	outputPolyData_f1 = new vtkPolyData();
+		//if (outputPolyData == null)
+		//	outputPolyData = new vtkPolyData();
 
 		if (outputInterior != null)
 		{
-			//			polyData.DeepCopy(f1_connectivityFilter.GetOutput());
-			outputInterior.DeepCopy(connectivityFilter_f1.GetOutput());
+			//			polyData.DeepCopy(connectivityFilter.GetOutput());
+			outputInterior.DeepCopy(connectivityFilter.GetOutput());
 		}
 
 		if (outputBoundary != null)
 		{
 			// Compute the bounding edges of this surface
-			vtkFeatureEdges edgeExtracter_f1 = new vtkFeatureEdges();
-			edgeExtracter_f1.SetInput(connectivityFilter_f1.GetOutput());
-			edgeExtracter_f1.BoundaryEdgesOn();
-			edgeExtracter_f1.FeatureEdgesOff();
-			edgeExtracter_f1.NonManifoldEdgesOff();
-			edgeExtracter_f1.ManifoldEdgesOff();
-			edgeExtracter_f1.Update();
+			vtkFeatureEdges edgeExtracter = new vtkFeatureEdges();
+			edgeExtracter.SetInput(connectivityFilter.GetOutput());
+			edgeExtracter.BoundaryEdgesOn();
+			edgeExtracter.FeatureEdgesOff();
+			edgeExtracter.NonManifoldEdgesOff();
+			edgeExtracter.ManifoldEdgesOff();
+			edgeExtracter.Update();
 
 			//polyData.DeepCopy(edgeExtracter.GetOutput());
-			outputBoundary.DeepCopy(edgeExtracter_f1.GetOutput());
+			outputBoundary.DeepCopy(edgeExtracter.GetOutput());
 		}
 
 
@@ -495,7 +495,7 @@ public class PolyDataUtilNew
 		//writer.Write();
 
 		//return polyData;
-		//return outputPolyData_f1;
+		//return outputPolyData;
 	}
 
 
@@ -523,82 +523,82 @@ public class PolyDataUtilNew
 		math.Cross(vec1, avgNormal, normal);
 		MathUtil.vhat(normal, normal);
 
-		vtkPlane cutPlane_f5 = new vtkPlane();
-		cutPlane_f5.SetOrigin(pt1);
-		cutPlane_f5.SetNormal(normal);
+		vtkPlane cutPlane = new vtkPlane();
+		cutPlane.SetOrigin(pt1);
+		cutPlane.SetNormal(normal);
 
 
-		vtkExtractPolyDataGeometry extract1_f5 = new vtkExtractPolyDataGeometry();
-		extract1_f5.SetImplicitFunction(cutPlane_f5);
-		extract1_f5.SetExtractInside(1);
-		extract1_f5.SetExtractBoundaryCells(1);
-		extract1_f5.SetInput(polyData);
-		extract1_f5.Update();
+		vtkExtractPolyDataGeometry extract1 = new vtkExtractPolyDataGeometry();
+		extract1.SetImplicitFunction(cutPlane);
+		extract1.SetExtractInside(1);
+		extract1.SetExtractBoundaryCells(1);
+		extract1.SetInput(polyData);
+		extract1.Update();
 
 
-		vtkExtractPolyDataGeometry extract2_f5 = new vtkExtractPolyDataGeometry();
-		extract2_f5.SetImplicitFunction(cutPlane_f5);
-		extract2_f5.SetExtractInside(0);
-		extract2_f5.SetExtractBoundaryCells(1);
-		extract2_f5.SetInputConnection(extract1_f5.GetOutputPort());
-		extract2_f5.Update();
+		vtkExtractPolyDataGeometry extract2 = new vtkExtractPolyDataGeometry();
+		extract2.SetImplicitFunction(cutPlane);
+		extract2.SetExtractInside(0);
+		extract2.SetExtractBoundaryCells(1);
+		extract2.SetInputConnection(extract1.GetOutputPort());
+		extract2.Update();
 
 
-		vtkCutter cutPolyData_f5 = new vtkCutter();
-		cutPolyData_f5.SetInputConnection(extract2_f5.GetOutputPort());
-		cutPolyData_f5.CreateDefaultLocator();
-		cutPolyData_f5.SetCutFunction(cutPlane_f5);
-		cutPolyData_f5.Update();
+		vtkCutter cutPolyData = new vtkCutter();
+		cutPolyData.SetInputConnection(extract2.GetOutputPort());
+		cutPolyData.CreateDefaultLocator();
+		cutPolyData.SetCutFunction(cutPlane);
+		cutPolyData.Update();
 
-		vtkPolyData polyLine_f5 = new vtkPolyData();
-		polyLine_f5.DeepCopy(cutPolyData_f5.GetOutput());
+		vtkPolyData polyLine = new vtkPolyData();
+		polyLine.DeepCopy(cutPolyData.GetOutput());
 
 		// Take this line and put it into a cell locator so we can find the cells
 		// closest to the end points
-		vtksbCellLocator cellLocator_f5 = new vtksbCellLocator();
-		cellLocator_f5.SetDataSet(polyLine_f5);
-		cellLocator_f5.CacheCellBoundsOn();
-		cellLocator_f5.AutomaticOn();
-		cellLocator_f5.BuildLocator();
+		vtksbCellLocator cellLocator = new vtksbCellLocator();
+		cellLocator.SetDataSet(polyLine);
+		cellLocator.CacheCellBoundsOn();
+		cellLocator.AutomaticOn();
+		cellLocator.BuildLocator();
 
 		// Search for the cells closest to the 2 endpoints
 		double[] closestPoint1 = new double[3];
 		double[] closestPoint2 = new double[3];
-		vtkGenericCell genericCell1_f5 = new vtkGenericCell();
-		vtkGenericCell genericCell2_f5 = new vtkGenericCell();
+		vtkGenericCell genericCell1 = new vtkGenericCell();
+		vtkGenericCell genericCell2 = new vtkGenericCell();
 		int[] cellId1 = new int[1];
 		int[] cellId2 = new int[1];
 		int[] subId = new int[1];
 		double[] dist2 = new double[1];
 
-		cellLocator_f5.FindClosestPoint(pt1, closestPoint1, genericCell1_f5, cellId1, subId, dist2);
-		cellLocator_f5.FindClosestPoint(pt2, closestPoint2, genericCell2_f5, cellId2, subId, dist2);
+		cellLocator.FindClosestPoint(pt1, closestPoint1, genericCell1, cellId1, subId, dist2);
+		cellLocator.FindClosestPoint(pt2, closestPoint2, genericCell2, cellId2, subId, dist2);
 
 
 		// In the rare case where both points are on the same cell, simply 
 		// return a single line connecting them
 		if (cellId1[0] == cellId2[0])
 		{
-			vtkPoints points = polyLine_f5.GetPoints();
+			vtkPoints points = polyLine.GetPoints();
 			points.SetNumberOfPoints(2);
 			points.SetPoint(0, closestPoint1);
 			points.SetPoint(1, closestPoint2);
 
-			vtkCellArray lines = polyLine_f5.GetLines();
+			vtkCellArray lines = polyLine.GetLines();
 			lines.SetNumberOfCells(0);
 
-			vtkIdList idList_f5 = new vtkIdList();
-			idList_f5.SetNumberOfIds(2);
-			idList_f5.SetId(0, 0);
-			idList_f5.SetId(1, 1);
+			vtkIdList idList = new vtkIdList();
+			idList.SetNumberOfIds(2);
+			idList.SetId(0, 0);
+			idList.SetId(1, 1);
 
-			lines.InsertNextCell(idList_f5);
+			lines.InsertNextCell(idList);
 
-			return polyLine_f5;
+			return polyLine;
 		}
 
 
-		boolean okay = convertPartOfLinesToPolyLineWithSplitting(polyLine_f5, closestPoint1, cellId1[0], closestPoint2, cellId2[0]);
+		boolean okay = convertPartOfLinesToPolyLineWithSplitting(polyLine, closestPoint1, cellId1[0], closestPoint2, cellId2[0]);
 
 		//System.out.println("number points: " + polyLine.GetNumberOfPoints());
 
@@ -608,7 +608,7 @@ public class PolyDataUtilNew
 		//writer.Write();
 
 		if (okay)
-			return polyLine_f5;
+			return polyLine;
 		else
 			return null;
 	}
@@ -631,20 +631,20 @@ public class PolyDataUtilNew
 		// Reduce the size of the polydata we need to process by only
 		// considering cells within twice radius of center.
 		//vtkSphere sphere = new vtkSphere();
-		if (sphere_f7 == null)
-			sphere_f7 = new vtkSphere();
-		sphere_f7.SetCenter(center);
-		sphere_f7.SetRadius(radius >= 0.2 ? 1.2*radius : 1.2*0.2);
+		if (sphere == null)
+			sphere = new vtkSphere();
+		sphere.SetCenter(center);
+		sphere.SetRadius(radius >= 0.2 ? 1.2*radius : 1.2*0.2);
 
 		//vtkExtractPolyDataGeometry extract = new vtkExtractPolyDataGeometry();
-		if (extract_f7 == null)
-			extract_f7 = new vtkExtractPolyDataGeometry();
-		extract_f7.SetImplicitFunction(sphere_f7);
-		extract_f7.SetExtractInside(1);
-		extract_f7.SetExtractBoundaryCells(1);
-		extract_f7.SetInput(polyData);
-		extract_f7.Update();
-		polyData = extract_f7.GetOutput();
+		if (extract == null)
+			extract = new vtkExtractPolyDataGeometry();
+		extract.SetImplicitFunction(sphere);
+		extract.SetExtractInside(1);
+		extract.SetExtractBoundaryCells(1);
+		extract.SetInput(polyData);
+		extract.Update();
+		polyData = extract.GetOutput();
 		 */
 
 		double radius = Math.tan(angle);
@@ -654,20 +654,20 @@ public class PolyDataUtilNew
 				vertex[2] + axis[2]
 		};
 
-		vtkRegularPolygonSource polygonSource_f7 = new vtkRegularPolygonSource();
-		polygonSource_f7.SetCenter(polygonCenter);
-		polygonSource_f7.SetRadius(radius);
-		polygonSource_f7.SetNormal(axis);
-		polygonSource_f7.SetNumberOfSides(numberOfSides);
-		polygonSource_f7.SetGeneratePolygon(0);
-		polygonSource_f7.SetGeneratePolyline(0);
-		polygonSource_f7.Update();
+		vtkRegularPolygonSource polygonSource = new vtkRegularPolygonSource();
+		polygonSource.SetCenter(polygonCenter);
+		polygonSource.SetRadius(radius);
+		polygonSource.SetNormal(axis);
+		polygonSource.SetNumberOfSides(numberOfSides);
+		polygonSource.SetGeneratePolygon(0);
+		polygonSource.SetGeneratePolyline(0);
+		polygonSource.Update();
 
-		vtkPoints points = polygonSource_f7.GetOutput().GetPoints();
+		vtkPoints points = polygonSource.GetOutput().GetPoints();
 
-		ArrayList<vtkClipPolyData> clipFilters_f7 = new ArrayList<vtkClipPolyData>();
-		ArrayList<vtkPlane> clipPlanes_f7 = new ArrayList<vtkPlane>();
-		ArrayList<vtkPolyData> clipOutputs_f7 = new ArrayList<vtkPolyData>(); // not sure is this one is really needed
+		ArrayList<vtkClipPolyData> clipFilters = new ArrayList<vtkClipPolyData>();
+		ArrayList<vtkPlane> clipPlanes = new ArrayList<vtkPlane>();
+		ArrayList<vtkPolyData> clipOutputs = new ArrayList<vtkPolyData>(); // not sure is this one is really needed
 
 		// randomly shuffling the order of the sides we process can speed things up
 		ArrayList<Integer> sides = new ArrayList<Integer>();
@@ -703,16 +703,16 @@ public class PolyDataUtilNew
 			MathUtil.vcrss(vec2, vec, planeNormal);
 			MathUtil.vhat(planeNormal, planeNormal);
 
-			if (i > clipPlanes_f7.size()-1)
-				clipPlanes_f7.add(new vtkPlane());
-			vtkPlane plane = clipPlanes_f7.get(i);
+			if (i > clipPlanes.size()-1)
+				clipPlanes.add(new vtkPlane());
+			vtkPlane plane = clipPlanes.get(i);
 			//			vtkPlane plane = new vtkPlane();
 			plane.SetOrigin(currentPoint);
 			plane.SetNormal(planeNormal);
 
-			if (i > clipFilters_f7.size()-1)
-				clipFilters_f7.add(new vtkClipPolyData());
-			clipPolyData = clipFilters_f7.get(i);
+			if (i > clipFilters.size()-1)
+				clipFilters.add(new vtkClipPolyData());
+			clipPolyData = clipFilters.get(i);
 			//			clipPolyData = new vtkClipPolyData();
 			clipPolyData.SetInput(nextInput);
 			clipPolyData.SetClipFunction(plane);
@@ -721,41 +721,41 @@ public class PolyDataUtilNew
 
 			nextInput = clipPolyData.GetOutput();
 
-			if (i > clipOutputs_f7.size()-1)
-				clipOutputs_f7.add(nextInput);
-			clipOutputs_f7.set(i, nextInput);
+			if (i > clipOutputs.size()-1)
+				clipOutputs.add(nextInput);
+			clipOutputs.set(i, nextInput);
 		}
 
 
-		vtkPolyDataConnectivityFilter connectivityFilter_f7 = new vtkPolyDataConnectivityFilter();
-		connectivityFilter_f7.SetInputConnection(clipPolyData.GetOutputPort());
-		connectivityFilter_f7.SetExtractionModeToClosestPointRegion();
-		connectivityFilter_f7.SetClosestPoint(polygonCenter);
-		connectivityFilter_f7.Update();
+		vtkPolyDataConnectivityFilter connectivityFilter = new vtkPolyDataConnectivityFilter();
+		connectivityFilter.SetInputConnection(clipPolyData.GetOutputPort());
+		connectivityFilter.SetExtractionModeToClosestPointRegion();
+		connectivityFilter.SetClosestPoint(polygonCenter);
+		connectivityFilter.Update();
 
 		//		polyData = new vtkPolyData();
-		//if (outputPolyData_f7 == null)
-		//	outputPolyData_f7 = new vtkPolyData();
+		//if (outputPolyData == null)
+		//	outputPolyData = new vtkPolyData();
 
 		if (outputInterior != null)
 		{
-			//			polyData.DeepCopy(f1_connectivityFilter.GetOutput());
-			outputInterior.DeepCopy(connectivityFilter_f7.GetOutput());
+			//			polyData.DeepCopy(connectivityFilter.GetOutput());
+			outputInterior.DeepCopy(connectivityFilter.GetOutput());
 		}
 
 		if (outputBoundary != null)
 		{
 			// Compute the bounding edges of this surface
-			vtkFeatureEdges edgeExtracter_f7 = new vtkFeatureEdges();
-			edgeExtracter_f7.SetInput(connectivityFilter_f7.GetOutput());
-			edgeExtracter_f7.BoundaryEdgesOn();
-			edgeExtracter_f7.FeatureEdgesOff();
-			edgeExtracter_f7.NonManifoldEdgesOff();
-			edgeExtracter_f7.ManifoldEdgesOff();
-			edgeExtracter_f7.Update();
+			vtkFeatureEdges edgeExtracter = new vtkFeatureEdges();
+			edgeExtracter.SetInput(connectivityFilter.GetOutput());
+			edgeExtracter.BoundaryEdgesOn();
+			edgeExtracter.FeatureEdgesOff();
+			edgeExtracter.NonManifoldEdgesOff();
+			edgeExtracter.ManifoldEdgesOff();
+			edgeExtracter.Update();
 
 			//polyData.DeepCopy(edgeExtracter.GetOutput());
-			outputBoundary.DeepCopy(edgeExtracter_f7.GetOutput());
+			outputBoundary.DeepCopy(edgeExtracter.GetOutput());
 		}
 
 
@@ -766,20 +766,20 @@ public class PolyDataUtilNew
 		//writer.Write();
 
 		//return polyData;
-		//return outputPolyData_f7;
+		//return outputPolyData;
 	}
 
 
 	public static void shiftPolyDataInNormalDirection(vtkPolyData polyData, double shiftAmount)
 	{
-		vtkPolyDataNormals normalsFilter_f2 = new vtkPolyDataNormals();
-		normalsFilter_f2.SetInput(polyData);
-		normalsFilter_f2.SetComputeCellNormals(0);
-		normalsFilter_f2.SetComputePointNormals(1);
-		normalsFilter_f2.SplittingOff();
-		normalsFilter_f2.Update();
+		vtkPolyDataNormals normalsFilter = new vtkPolyDataNormals();
+		normalsFilter.SetInput(polyData);
+		normalsFilter.SetComputeCellNormals(0);
+		normalsFilter.SetComputePointNormals(1);
+		normalsFilter.SplittingOff();
+		normalsFilter.Update();
 
-		vtkDataArray pointNormals = normalsFilter_f2.GetOutput().GetPointData().GetNormals();
+		vtkDataArray pointNormals = normalsFilter.GetOutput().GetPointData().GetNormals();
 		vtkPoints points = polyData.GetPoints();
 
 		int numPoints = points.GetNumberOfPoints();
@@ -1089,28 +1089,28 @@ public class PolyDataUtilNew
 		// than some other arbitrary order. Therefore reorder the points so that
 		// the id list will just be increasing numbers in order
 		int numIds = idList.size();
-		vtkIdList idList_f6 = new vtkIdList();
-		vtkPoints points_f6 = new vtkPoints();
-		points_f6.SetNumberOfPoints(numIds);
-		idList_f6.SetNumberOfIds(numIds);
+		vtkIdList idList2 = new vtkIdList();
+		vtkPoints points = new vtkPoints();
+		points.SetNumberOfPoints(numIds);
+		idList2.SetNumberOfIds(numIds);
 		for (int i=0; i<numIds; ++i)
 		{
 			int id = idList.get(i);
-			points_f6.SetPoint(i, points_orig.GetPoint(id));
-			idList_f6.SetId(i, i);
+			points.SetPoint(i, points_orig.GetPoint(id));
+			idList2.SetId(i, i);
 		}
 
 		//System.out.println("num points: " + numPoints);
-		//System.out.println("num ids: " + idList_f6.GetNumberOfIds());
+		//System.out.println("num ids: " + idList.GetNumberOfIds());
 		//System.out.println(idList.size());
 
 		polyline.SetPoints(null);
-		polyline.SetPoints(points_f6);
+		polyline.SetPoints(points);
 
 		polyline.SetLines(null);
-		vtkCellArray new_lines_f6 = new vtkCellArray();
-		new_lines_f6.InsertNextCell(idList_f6);
-		polyline.SetLines(new_lines_f6);
+		vtkCellArray new_lines = new vtkCellArray();
+		new_lines.InsertNextCell(idList2);
+		polyline.SetLines(new_lines);
 
 		return true;
 	}
@@ -1138,21 +1138,21 @@ public class PolyDataUtilNew
 			vtkPolyData polyData,
 			vtkAbstractPointLocator pointLocator)
 	{
-		vtkIdList idList_f3 = new vtkIdList();
+		vtkIdList idList = new vtkIdList();
 
-		pointLocator.FindClosestNPoints(20, pt, idList_f3);
+		pointLocator.FindClosestNPoints(20, pt, idList);
 
 		// Average the normals
 		double[] normal = {0.0, 0.0, 0.0};
 
-		int N = idList_f3.GetNumberOfIds();
+		int N = idList.GetNumberOfIds();
 		if (N < 1)
 			return null;
 
 		vtkDataArray normals = polyData.GetPointData().GetNormals();
 		for (int i=0; i<N; ++i)
 		{
-			double[] tmp = normals.GetTuple3(idList_f3.GetId(i));
+			double[] tmp = normals.GetTuple3(idList.GetId(i));
 			normal[0] += tmp[0];
 			normal[1] += tmp[1];
 			normal[2] += tmp[2];
