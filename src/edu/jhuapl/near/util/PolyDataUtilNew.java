@@ -8,17 +8,6 @@ import vtk.*;
 
 /**
  * This class contains various utility functions for operating on a vtkPolyData.
- *
- * Note this class is written in the following crazy style. Each public function
- * is in it's own static class. The reason for this is so that each function can
- * use static variables.
- * The reason for these static variables is that the functions in this file can potentially
- * be called many times within the program and we don't want to keep reallocating vtk data
- * for them. Thus we declare all the vtk classes as static and they are declared once 
- * and always reused with new inputs. Another reason for these static variables is that
- * since these functions may be used as part of a pipeline, we don't want filters or 
- * other vtk objects to get garbage collected if the pipeline is still active following 
- * this function call. 
  * 
  * @author kahneg1
  *
@@ -32,8 +21,6 @@ public class PolyDataUtilNew
 		System.out.println(s + " " + p[0] + " " + p[1] + " " + p[2]);
 	}
 
-	public static class ComputeFrustumIntersection
-	{
 		public static vtkPolyData computeFrustumIntersection(
 				vtkPolyData polyData,
 				vtksbCellLocator locator,
@@ -278,7 +265,6 @@ public class PolyDataUtilNew
 
 			return tmpPolyData_f4;
 		}
-	}
 
 	/*
 	 * This is an older version of that uses a vtkCylinder to do
@@ -287,8 +273,6 @@ public class PolyDataUtilNew
 	 */
 	/*
 
-	public static class DrawCircleOnPolyData
-	{
 	public static vtkPolyData drawCircleOnPolyData(
 			vtkPolyData polyData,
 			vtkAbstractPointLocator pointLocator,
@@ -368,11 +352,8 @@ public class PolyDataUtilNew
 
 		return polyData;
 	}
-	}
 	 */
 
-	public static class DrawPolygonOnPolyData
-	{
 		public static void drawPolygonOnPolyData(
 				vtkPolyData polyData,
 				vtkAbstractPointLocator pointLocator,
@@ -385,7 +366,7 @@ public class PolyDataUtilNew
 			if (math == null)
 				math = new vtkMath();
 
-			double[] normal = GetPolyDataNormalAtPoint.getPolyDataNormalAtPoint(center, polyData, pointLocator);
+			double[] normal = getPolyDataNormalAtPoint(center, polyData, pointLocator);
 
 			// If the number of points are too small, then vtkExtractPolyDataGeometry
 			// as used here might fail, so skip this part (which is just an optimization
@@ -516,11 +497,8 @@ public class PolyDataUtilNew
 			//return polyData;
 			//return outputPolyData_f1;
 		}
-	}
 
 
-	public static class DrawPathOnPolyData
-	{
 		public static vtkPolyData drawPathOnPolyData(
 				vtkPolyData polyData,
 				vtkAbstractPointLocator pointLocator,
@@ -530,8 +508,8 @@ public class PolyDataUtilNew
 			if (math == null)
 				math = new vtkMath();
 
-			double[] normal1 = GetPolyDataNormalAtPoint.getPolyDataNormalAtPoint(pt1, polyData, pointLocator);
-			double[] normal2 = GetPolyDataNormalAtPoint.getPolyDataNormalAtPoint(pt2, polyData, pointLocator);
+			double[] normal1 = getPolyDataNormalAtPoint(pt1, polyData, pointLocator);
+			double[] normal2 = getPolyDataNormalAtPoint(pt2, polyData, pointLocator);
 
 			double[] avgNormal = new double[3];
 			avgNormal[0] = (normal1[0] + normal2[0])/2.0;
@@ -620,7 +598,7 @@ public class PolyDataUtilNew
 			}
 
 
-			boolean okay = ConvertPartOfLinesToPolyLineWithSplitting.convertPartOfLinesToPolyLineWithSplitting(polyLine_f5, closestPoint1, cellId1[0], closestPoint2, cellId2[0]);
+			boolean okay = convertPartOfLinesToPolyLineWithSplitting(polyLine_f5, closestPoint1, cellId1[0], closestPoint2, cellId2[0]);
 
 			//System.out.println("number points: " + polyLine.GetNumberOfPoints());
 
@@ -634,11 +612,8 @@ public class PolyDataUtilNew
 			else
 				return null;
 		}
-	}
 
 
-	public static class DrawConeOnPolyData
-	{
 		public static void drawConeOnPolyData(
 				vtkPolyData polyData,
 				vtkAbstractPointLocator pointLocator,
@@ -650,7 +625,7 @@ public class PolyDataUtilNew
 				vtkPolyData outputBoundary)
 		{
 			/*
-		double[] normal = GetPolyDataNormalAtPoint.func(center, polyData, pointLocator);
+		double[] normal = getPolyDataNormalAtPoint(center, polyData, pointLocator);
 
 
 		// Reduce the size of the polydata we need to process by only
@@ -793,11 +768,8 @@ public class PolyDataUtilNew
 			//return polyData;
 			//return outputPolyData_f7;
 		}
-	}
 
 
-	public static class ShiftPolyDataInNormalDirection
-	{
 		public static void shiftPolyDataInNormalDirection(vtkPolyData polyData, double shiftAmount)
 		{
 			vtkPolyDataNormals normalsFilter_f2 = new vtkPolyDataNormals();
@@ -826,11 +798,8 @@ public class PolyDataUtilNew
 
 			polyData.Modified();
 		}
-	}
 
 
-	public static class ShiftPolyLineInNormalDirectionOfPolyData
-	{
 		public static void shiftPolyLineInNormalDirectionOfPolyData(
 				vtkPolyData polyLine,
 				vtkPolyData polyData,
@@ -861,11 +830,8 @@ public class PolyDataUtilNew
 
 			polyLine.Modified();
 		}
-	}
 
 
-	public static class ConvertPartOfLinesToPolyLineWithSplitting
-	{
 		/** 
 		 * The boundary generated in getImageBorder is great, unfortunately the
 		 * border consists of many lines of 2 vertices each. We, however, need a
@@ -1165,12 +1131,9 @@ public class PolyDataUtilNew
 
 			return length;
 		}
-	}
 
 
-	private static class GetPolyDataNormalAtPoint
-	{
-		public static double[] getPolyDataNormalAtPoint(
+		private static double[] getPolyDataNormalAtPoint(
 				double[] pt,
 				vtkPolyData polyData,
 				vtkAbstractPointLocator pointLocator)
@@ -1201,7 +1164,7 @@ public class PolyDataUtilNew
 
 			return normal;
 		}
-	}
+
 
 	/**
 	 * Get the area of a given cell. Assumes cells are triangles.
@@ -1209,11 +1172,9 @@ public class PolyDataUtilNew
 	 *
 	 */
 	/*
-	public static class GetCellArea
-	{
 		// The idList parameter is needed only to avoid repeated memory
 		// allocation when this function is called within a loop.
-		static public double func(vtkPolyData polydata, int cellId, vtkIdList idList)
+		static public double getCellArea(vtkPolyData polydata, int cellId, vtkIdList idList)
 		{
 			polydata.GetCellPoints(cellId, idList);
 			
@@ -1230,11 +1191,9 @@ public class PolyDataUtilNew
 
 			return MathUtil.triangleArea(pt0, pt1, pt2);
 		}
-	}
 	*/
 	
-	public static class InterpolateWithinCell
-	{
+
 		/**
 		 * 
 		 * @param polydata
@@ -1245,7 +1204,7 @@ public class PolyDataUtilNew
 		 * 		  allocation when this function is called within a loop.
 		 * @return
 		 */
-		static public double func(
+		static public double interpolateWithinCell(
 				vtkPolyData polydata,
 				vtkDataArray pointdata,
 				int cellId,
@@ -1270,10 +1229,8 @@ public class PolyDataUtilNew
     		
     		return MathUtil.interpolateWithinTriangle(pt, p1, p2, p3, v1, v2, v3);
 		}
-	}
 	
-	public static class GeneratePointScalarsFromCellScalars
-	{
+
 		/**
 		 * This function takes cell data and computes point data from it
 		 * by computing an average over all cells that share that point.
@@ -1306,7 +1263,7 @@ public class PolyDataUtilNew
 				
 				for (int j=0; j<numberOfCells; ++j)
 				{
-					areas[j] = GetCellArea.func(polydata, idList.GetId(j));
+					areas[j] = getCellArea(polydata, idList.GetId(j));
 					totalArea += areas[j];
 				}
 
@@ -1335,5 +1292,4 @@ public class PolyDataUtilNew
 				pointScalars.SetTuple1(i, pointValue);
 			}
 		}
-	}
 }
