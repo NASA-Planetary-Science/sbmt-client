@@ -14,8 +14,6 @@ import vtk.*;
  */
 public class PolyDataUtilNew
 {
-	private static vtkMath math = null;
-
 	private static void printpt(double[] p, String s)
 	{
 		System.out.println(s + " " + p[0] + " " + p[1] + " " + p[2]);
@@ -31,9 +29,6 @@ public class PolyDataUtilNew
 			double[] lr,
 			double[] ll)
 	{
-		if (math == null)
-			math = new vtkMath();
-
 		printpt(origin, "origin");
 		printpt(ul, "ul");
 		printpt(ur, "ur");
@@ -49,10 +44,10 @@ public class PolyDataUtilNew
 		double[] near = new double[3];
 		double[] far = new double[3];
 
-		math.Cross(ur, ul, top);
-		math.Cross(lr, ur, right);
-		math.Cross(ll, lr, bottom);
-		math.Cross(ul, ll, left);
+		MathUtil.vcrss(ur, ul, top);
+		MathUtil.vcrss(lr, ur, right);
+		MathUtil.vcrss(ll, lr, bottom);
+		MathUtil.vcrss(ul, ll, left);
 
 		// let the near clipping plane be very close to the origin
 		double dx = 0.1;
@@ -62,7 +57,7 @@ public class PolyDataUtilNew
 		double[] nearLR = {origin[0]+lr[0]*dx, origin[1]+lr[1]*dx, origin[2]+lr[2]*dx};
 		double[] nearX = {nearLR[0]-nearLL[0], nearLR[1]-nearLL[1], nearLR[2]-nearLL[2]};
 		double[] nearY = {nearUL[0]-nearLL[0], nearUL[1]-nearLL[1], nearUL[2]-nearLL[2]};
-		math.Cross(nearX, nearY, near);
+		MathUtil.vcrss(nearX, nearY, near);
 
 		// let the far clipping plane be a multiple of the distance to the origin
 		dx = 2.0 * MathUtil.vnorm(origin);
@@ -72,7 +67,7 @@ public class PolyDataUtilNew
 		double[] farLR = {origin[0]+lr[0]*dx, origin[1]+lr[1]*dx, origin[2]+lr[2]*dx};
 		double[] farX = {farLL[0]-farLR[0], farLL[1]-farLR[1], farLL[2]-farLR[2]};
 		double[] farY = {farUR[0]-farLR[0], farUR[1]-farLR[1], farUR[2]-farLR[2]};
-		math.Cross(farX, farY, far);
+		MathUtil.vcrss(farX, farY, far);
 
 		dx = MathUtil.vnorm(origin);
 		double[] UL2 = {origin[0]+ul[0]*dx, origin[1]+ul[1]*dx, origin[2]+ul[2]*dx};
@@ -155,7 +150,7 @@ public class PolyDataUtilNew
 			viewDir[2] = origin[2] - pt[2];
 			MathUtil.vhat(viewDir, viewDir);
 
-			double dot = math.Dot(n, viewDir);
+			double dot = MathUtil.vdot(n, viewDir);
 			if (dot <= 0.0)
 				tmpPolyData.DeleteCell(i);
 		}
@@ -280,9 +275,6 @@ public class PolyDataUtilNew
 			double radius,
 			boolean filled)
 	{
-		if (math == null)
-			math = new vtkMath();
-
 		double[] normal = getPolyDataNormalAtPoint(center, polyData, pointLocator);
 
 		radius += 0.5;
@@ -301,7 +293,7 @@ public class PolyDataUtilNew
 		// which is the cross product between the y-axis and normal.
 		double[] originalCylindarAxis = {0.0, 1.0, 0.0};
 		double[] axisOfRotation = new double[3];
-		math.Cross(normal, originalCylindarAxis, axisOfRotation);
+		MathUtil.vcrss(normal, originalCylindarAxis, axisOfRotation);
 		Spice.vhat(axisOfRotation,axisOfRotation);
 
 		// Now compute the angle between these 2 cylinder axes.
@@ -363,9 +355,6 @@ public class PolyDataUtilNew
 			vtkPolyData outputInterior,
 			vtkPolyData outputBoundary)
 	{
-		if (math == null)
-			math = new vtkMath();
-
 		double[] normal = getPolyDataNormalAtPoint(center, polyData, pointLocator);
 
 		// If the number of points are too small, then vtkExtractPolyDataGeometry
@@ -429,7 +418,7 @@ public class PolyDataUtilNew
 					nextPoint[2]-currentPoint[2]};
 
 			double[] planeNormal = new double[3];
-			math.Cross(normal, vec, planeNormal);
+			MathUtil.vcrss(normal, vec, planeNormal);
 			MathUtil.vhat(planeNormal, planeNormal);
 
 			if (i > clipPlanes.size()-1)
@@ -505,9 +494,6 @@ public class PolyDataUtilNew
 			double[] pt1,
 			double[] pt2)
 	{
-		if (math == null)
-			math = new vtkMath();
-
 		double[] normal1 = getPolyDataNormalAtPoint(pt1, polyData, pointLocator);
 		double[] normal2 = getPolyDataNormalAtPoint(pt2, polyData, pointLocator);
 
@@ -520,7 +506,7 @@ public class PolyDataUtilNew
 		//double[] vec2 = {pt2[0]-pt1[0], pt2[1]-pt1[1], pt2[2]-pt1[2]};
 
 		double[] normal = new double[3];
-		math.Cross(vec1, avgNormal, normal);
+		MathUtil.vcrss(vec1, avgNormal, normal);
 		MathUtil.vhat(normal, normal);
 
 		vtkPlane cutPlane = new vtkPlane();
