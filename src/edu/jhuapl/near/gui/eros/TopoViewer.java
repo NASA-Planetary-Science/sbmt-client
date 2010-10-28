@@ -19,6 +19,7 @@ import java.util.HashMap;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -26,6 +27,8 @@ import javax.swing.JSplitPane;
 import javax.swing.JToggleButton;
 
 import org.jfree.chart.plot.DefaultDrawingSupplier;
+
+import vtk.vtkGlobalJavaHash;
 
 import edu.jhuapl.near.gui.AnyFileChooser;
 import edu.jhuapl.near.gui.Renderer;
@@ -38,6 +41,7 @@ import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.PointModel;
 import edu.jhuapl.near.model.RegularPolygonModel;
+import edu.jhuapl.near.model.SmallBodyModel.ColoringType;
 import edu.jhuapl.near.model.eros.DEMModel;
 import edu.jhuapl.near.model.eros.MapletBoundaryCollection;
 import edu.jhuapl.near.pick.PickManager;
@@ -58,7 +62,9 @@ public class TopoViewer extends JFrame
 	private TopoPlot plot;
 	private int currentColorIndex = 0;
 	private MapletBoundaryCollection mapletBoundaries;
-
+    private JComboBox coloringTypeComboBox;
+    private DEMModel dem;
+    
 	private static final String Profile = "Profile";
 	private static final String StartLatitude = "StartLatitude";
 	private static final String StartLongitude = "StartLongitude";
@@ -82,16 +88,16 @@ public class TopoViewer extends JFrame
     	add(statusBar, BorderLayout.PAGE_END);
     	
     	String filename = cubFile.getAbsolutePath();
-		ModelManager modelManager = new ModelManager();
+		final ModelManager modelManager = new ModelManager();
         HashMap<String, Model> allModels = new HashMap<String, Model>();
-        final DEMModel body = new DEMModel(filename);
-        lineModel = new LineModel(body, true);
+        dem = new DEMModel(filename);
+        lineModel = new LineModel(dem, true);
         lineModel.setMaximumVerticesPerLine(2);
-        allModels.put(ModelNames.SMALL_BODY, body);
+        allModels.put(ModelNames.SMALL_BODY, dem);
     	allModels.put(ModelNames.LINE_STRUCTURES, lineModel);
-    	allModels.put(ModelNames.CIRCLE_STRUCTURES, new CircleModel(body));
-    	allModels.put(ModelNames.POINT_STRUCTURES, new PointModel(body));
-    	allModels.put(ModelNames.CIRCLE_SELECTION, new RegularPolygonModel(body,20,false,"Selection",ModelNames.CIRCLE_SELECTION));
+    	allModels.put(ModelNames.CIRCLE_STRUCTURES, new CircleModel(dem));
+    	allModels.put(ModelNames.POINT_STRUCTURES, new PointModel(dem));
+    	allModels.put(ModelNames.CIRCLE_SELECTION, new RegularPolygonModel(dem,20,false,"Selection",ModelNames.CIRCLE_SELECTION));
     	modelManager.setModels(allModels);
 
 		Renderer renderer = new Renderer(modelManager);
@@ -109,7 +115,7 @@ public class TopoViewer extends JFrame
 
         JPanel panel = new JPanel(new BorderLayout());
 		
-        plot = new TopoPlot(lineModel, body);
+        plot = new TopoPlot(lineModel, dem);
 		plot.getChartPanel().setMinimumSize(new Dimension(100, 100));
 		plot.getChartPanel().setPreferredSize(new Dimension(400, 400));
       
@@ -124,13 +130,15 @@ public class TopoViewer extends JFrame
 
 		add(panel, BorderLayout.CENTER);
 
-		mapletBoundaries.addBoundary(body);
+		mapletBoundaries.addBoundary(dem);
 		
 		addWindowListener(new WindowAdapter()
 		{
 			public void windowClosing(WindowEvent e)
 			{
-				TopoViewer.this.mapletBoundaries.removeBoundary(body);
+				TopoViewer.this.mapletBoundaries.removeBoundary(dem);
+				System.gc();
+				vtkGlobalJavaHash.GC();
 			}
 		});
 		
@@ -144,6 +152,36 @@ public class TopoViewer extends JFrame
 	{
         JPanel panel = new JPanel();
 
+    	Object[] coloringOptions = {
+    			"Color by elevation",
+    			//"Color by height relative to normal plane",
+    			"Color by slope",
+    			"No coloring"};
+        coloringTypeComboBox = new JComboBox(coloringOptions);
+        coloringTypeComboBox.setMaximumSize(new Dimension(150, 23));
+        coloringTypeComboBox.addActionListener(new ActionListener()
+		{
+        	public void actionPerformed(ActionEvent e)
+        	{
+        		try
+        		{
+        			int index = coloringTypeComboBox.getSelectedIndex();
+        			if (index == 0)
+        				dem.setColorBy(ColoringType.ELEVATION);
+        			else if (index == 1)
+        				dem.setColorBy(ColoringType.SLOPE);
+        			else if (index == 2)
+        				dem.setColorBy(ColoringType.NONE);
+        		}
+        		catch (IOException e1)
+        		{
+        			// TODO Auto-generated catch block
+        			e1.printStackTrace();
+        		}
+        	}
+		});
+        panel.add(coloringTypeComboBox);
+        
         newButton = new JButton("New Profile");
     	newButton.addActionListener(new ActionListener()
     	{

@@ -75,4 +75,9 @@ public abstract class Model
 	{
 		return name;
 	}
+	
+	public void delete()
+	{
+		
+	}
 }

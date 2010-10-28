@@ -25,6 +25,7 @@ public class DEMModel extends SmallBodyModel
     private vtkPolyData dem;
     private vtkPolyData boundary;
     private vtkFloatArray heights;
+    private vtkFloatArray slopes;
     
     public DEMModel(String filename) throws IOException
 	{
@@ -32,10 +33,11 @@ public class DEMModel extends SmallBodyModel
 		dem = new vtkPolyData();
 		boundary = new vtkPolyData();
 		heights = new vtkFloatArray();
+		slopes = new vtkFloatArray();
 		
 		initializeDEM(filename);
 
-		setSmallBodyPolyData(dem, heights, null, null, null);
+		setSmallBodyPolyData(dem, heights, null, null, slopes);
 		setColorBy(ColoringType.ELEVATION);
 	}
 
@@ -54,6 +56,7 @@ public class DEMModel extends SmallBodyModel
         boundary.SetVerts(boundaryPolys);
 
         heights.SetNumberOfComponents(1);
+        slopes.SetNumberOfComponents(1);
         
 		FileInputStream fs = new FileInputStream(filename);
 		BufferedInputStream bs = new BufferedInputStream(fs);
@@ -74,7 +77,7 @@ public class DEMModel extends SmallBodyModel
         int[][] indices = new int[WIDTH][HEIGHT];
         int c = 0;
         int d = 0;
-        float x, y, z, h;
+        float x, y, z, h, s;
         int i0, i1, i2, i3;
 
         // First add points to the vtkPoints array
@@ -85,6 +88,7 @@ public class DEMModel extends SmallBodyModel
 				y = data[index(m,n,4)];
 				z = data[index(m,n,5)];
 				h = 1000.0f * data[index(m,n,0)];
+				s = (float)(180.0/Math.PI) * data[index(m,n,2)];
 				
 				if (m > 0 && m < WIDTH-1 && n > 0 && n < HEIGHT-1)
 				{
@@ -99,6 +103,7 @@ public class DEMModel extends SmallBodyModel
 					//points.SetPoint(c, x, y, z);
 					points.InsertNextPoint(x, y, z);
 					heights.InsertNextTuple1(h);
+					slopes.InsertNextTuple1(s);
 					
 					indices[m][n] = c;
 
@@ -210,5 +215,15 @@ public class DEMModel extends SmallBodyModel
             	profileDistances.add(dist);
             }
     	}
+    }
+    
+    public void delete()
+    {
+		idList.Delete();
+		dem.Delete();
+		boundary.Delete();
+		heights.Delete();
+		slopes.Delete();
+		super.delete();
     }
 }

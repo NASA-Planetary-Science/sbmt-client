@@ -122,13 +122,13 @@ public class TopoPlot implements ChartMouseListener, PropertyChangeListener
 
 		int N = series.getItemCount();
 
-		buffer.append("Distance = ");
+		buffer.append("Distance=");
 		for (int i=0; i<N; ++i)
 			buffer.append(series.getX(i) + " ");
 
 		buffer.append(eol);
 
-		buffer.append("Elevation = ");
+		buffer.append("Elevation=");
 		for (int i=0; i<N; ++i)
 			buffer.append(series.getY(i) + " ");
 

@@ -749,11 +749,12 @@ public class SmallBodyModel extends Model
 		for (int i=0; i<4; ++i)
 		{
 			int length = coloringFiles[i].length();
-			File file = FileCache.getFileFromServer(coloringFiles[i].substring(0, length-6) + "vti");
+			File file = FileCache.getFileFromServer(coloringFiles[i].substring(0, length-6) + "vtk");
 			
 			vtkImageData image = images[i];
 
-	    	vtkXMLImageDataReader reader = new vtkXMLImageDataReader();
+			//vtkXMLImageDataReader reader = new vtkXMLImageDataReader();
+	    	vtkStructuredPointsReader reader = new vtkStructuredPointsReader();
 	    	reader.SetFileName(file.getAbsolutePath());
 	    	reader.Update();
 	    	
@@ -1197,5 +1198,33 @@ public class SmallBodyModel extends Model
 	public int[] getIntersectingCubes()
 	{
 	    return null;
+	}
+
+	public void delete()
+	{
+		if (smallBodyPolyData != null) smallBodyPolyData.Delete();
+		if (lowResSmallBodyPolyData != null) lowResSmallBodyPolyData.Delete();
+		if (smallBodyActor != null) smallBodyActor.Delete();
+		if (smallBodyMapper != null) smallBodyMapper.Delete();
+	    for (vtkProp prop : smallBodyActors)
+	    	if (prop != null) prop.Delete();
+	    if (cellLocator != null) cellLocator.Delete();
+	    if (pointLocator != null) pointLocator.Delete();
+	    if (lowResPointLocator != null) lowResPointLocator.Delete();
+	    if (elevationPointDataValues != null) elevationPointDataValues.Delete();
+	    if (gravAccPointDataValues != null) gravAccPointDataValues.Delete();
+	    if (gravPotPointDataValues != null) gravPotPointDataValues.Delete();
+	    if (slopePointDataValues != null) slopePointDataValues.Delete();
+	    if (elevationImage != null) elevationImage.Delete();
+	    if (gravAccImage != null) gravAccImage.Delete();
+	    if (gravPotImage != null) gravPotImage.Delete();
+	    if (slopeImage != null) slopeImage.Delete();
+	    if (originalImageMap != null) originalImageMap.Delete();
+	    if (displayedImageMap != null) displayedImageMap.Delete();
+	    if (scalarBarActor != null) scalarBarActor.Delete();
+	    if (smallBodyReader != null) smallBodyReader.Delete();
+	    if (genericCell != null) genericCell.Delete();
+	    if (imageMapTexture != null) imageMapTexture.Delete();
+	    if (blendFilter != null) blendFilter.Delete();
 	}
 }

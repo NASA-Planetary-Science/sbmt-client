@@ -92,4 +92,10 @@ public class ModelManager extends Model implements PropertyChangeListener
 		
 		return null;
 	}
+	
+	public void deleteAllModels()
+	{
+		for (String modelName : allModels.keySet())
+			allModels.get(modelName).delete();
+	}
 }

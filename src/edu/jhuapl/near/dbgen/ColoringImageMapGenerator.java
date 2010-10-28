@@ -72,23 +72,24 @@ public class ColoringImageMapGenerator
 			}
 		}
 		
-		vtkXMLImageDataWriter writer = new vtkXMLImageDataWriter();
-		//writer.SetDataModeToAscii();
-		writer.SetDataModeToBinary();
+		//vtkXMLImageDataWriter writer = new vtkXMLImageDataWriter();
+		//writer.SetDataModeToBinary();
+		vtkStructuredPointsWriter writer = new vtkStructuredPointsWriter();
+		writer.SetFileTypeToBinary();
 		
-		writer.SetFileName("DEIMOS_Slope_PointData.vti");
+		writer.SetFileName("DEIMOS_Slope_PointData.vtk");
 		writer.SetInput(slopeImage);
 		writer.Write();
 		
-		writer.SetFileName("DEIMOS_Elevation_PointData.vti");
+		writer.SetFileName("DEIMOS_Elevation_PointData.vtk");
 		writer.SetInput(elevImage);
 		writer.Write();
 
-		writer.SetFileName("DEIMOS_GravitationalAcceleration_PointData.vti");
+		writer.SetFileName("DEIMOS_GravitationalAcceleration_PointData.vtk");
 		writer.SetInput(gravAccImage);
 		writer.Write();
 
-		writer.SetFileName("DEIMOS_GravitationalPotential_PointData.vti");
+		writer.SetFileName("DEIMOS_GravitationalPotential_PointData.vtk");
 		writer.SetInput(gravPotImage);
 		writer.Write();
 	}
