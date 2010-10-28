@@ -1293,7 +1293,7 @@ public class PolyDataUtil
 			int numberOfCells = idList.GetNumberOfIds();
 			if (numberOfCells != 3)
 			{
-				System.err.println("Error: Cells must have equactly 3 vertices!");
+				System.err.println("Error: Cells must have exactly 3 vertices!");
 				return 0.0;
 			}
 			
@@ -1322,7 +1322,7 @@ public class PolyDataUtil
 			int numberOfCells = idList.GetNumberOfIds();
 			if (numberOfCells != 3)
 			{
-				System.err.println("Error: Cells must have equactly 3 vertices!");
+				System.err.println("Error: Cells must have exactly 3 vertices!");
 				return 0.0;
 			}
 			
