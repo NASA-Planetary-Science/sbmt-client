@@ -34,21 +34,7 @@ public class PolyDataUtilNew
 
 	public static class ComputeFrustumIntersection
 	{
-//		private static vtkPlane plane1_f4;
-//		private static vtkPlane plane2_f4;
-//		private static vtkPlane plane3_f4;
-//		private static vtkPlane plane4_f4;
-//		private static vtkClipPolyData clipPolyData1_f4;
-//		private static vtkClipPolyData clipPolyData2_f4;
-//		private static vtkClipPolyData clipPolyData3_f4;
-//		private static vtkClipPolyData clipPolyData4_f4;
-//		private static vtkPolyDataNormals normalsFilter_f4;
-//		private static vtkPolyData tmpPolyData_f4;
-//		private static vtkIdList idList_f4;
-//		private static vtkCleanPolyData cleanPoly_f4;
-//		//private static vtkPolyDataConnectivityFilter connectivityFilter_f4;
-//		private static vtkGenericCell cell_f4;
-		public static vtkPolyData func(
+		public static vtkPolyData computeFrustumIntersection(
 				vtkPolyData polyData,
 				vtksbCellLocator locator,
 				vtkAbstractPointLocator pointLocator,
@@ -303,7 +289,7 @@ public class PolyDataUtilNew
 
 	public static class DrawCircleOnPolyData
 	{
-	public static vtkPolyData func(
+	public static vtkPolyData drawCircleOnPolyData(
 			vtkPolyData polyData,
 			vtkAbstractPointLocator pointLocator,
 			double[] center, 
@@ -387,15 +373,7 @@ public class PolyDataUtilNew
 
 	public static class DrawPolygonOnPolyData
 	{
-//		static private ArrayList<vtkClipPolyData> clipFilters_f1 = new ArrayList<vtkClipPolyData>();
-//		static private ArrayList<vtkPlane> clipPlanes_f1 = new ArrayList<vtkPlane>();
-//		static private ArrayList<vtkPolyData> clipOutputs_f1 = new ArrayList<vtkPolyData>(); // not sure is this one is really needed
-//		static private vtkSphere sphere_f1;
-//		static private vtkExtractPolyDataGeometry extract_f1;
-//		static private vtkRegularPolygonSource polygonSource_f1;
-//		static private vtkPolyDataConnectivityFilter connectivityFilter_f1;
-//		static private vtkFeatureEdges edgeExtracter_f1;
-		public static void func(
+		public static void drawPolygonOnPolyData(
 				vtkPolyData polyData,
 				vtkAbstractPointLocator pointLocator,
 				double[] center, 
@@ -407,7 +385,7 @@ public class PolyDataUtilNew
 			if (math == null)
 				math = new vtkMath();
 
-			double[] normal = GetPolyDataNormalAtPoint.func(center, polyData, pointLocator);
+			double[] normal = GetPolyDataNormalAtPoint.getPolyDataNormalAtPoint(center, polyData, pointLocator);
 
 			// If the number of points are too small, then vtkExtractPolyDataGeometry
 			// as used here might fail, so skip this part (which is just an optimization
@@ -543,16 +521,7 @@ public class PolyDataUtilNew
 
 	public static class DrawPathOnPolyData
 	{
-//		private static vtkPlane cutPlane_f5;
-//		private static vtkCutter cutPolyData_f5;
-//		private static vtkPolyData polyLine_f5;
-//		private static vtkExtractPolyDataGeometry extract1_f5;
-//		private static vtkExtractPolyDataGeometry extract2_f5;
-//		private static vtkIdList idList_f5;
-//		private static vtkGenericCell genericCell1_f5;
-//		private static vtkGenericCell genericCell2_f5;
-//		private static vtksbCellLocator cellLocator_f5;
-		public static vtkPolyData func(
+		public static vtkPolyData drawPathOnPolyData(
 				vtkPolyData polyData,
 				vtkAbstractPointLocator pointLocator,
 				double[] pt1,
@@ -561,8 +530,8 @@ public class PolyDataUtilNew
 			if (math == null)
 				math = new vtkMath();
 
-			double[] normal1 = GetPolyDataNormalAtPoint.func(pt1, polyData, pointLocator);
-			double[] normal2 = GetPolyDataNormalAtPoint.func(pt2, polyData, pointLocator);
+			double[] normal1 = GetPolyDataNormalAtPoint.getPolyDataNormalAtPoint(pt1, polyData, pointLocator);
+			double[] normal2 = GetPolyDataNormalAtPoint.getPolyDataNormalAtPoint(pt2, polyData, pointLocator);
 
 			double[] avgNormal = new double[3];
 			avgNormal[0] = (normal1[0] + normal2[0])/2.0;
@@ -651,7 +620,7 @@ public class PolyDataUtilNew
 			}
 
 
-			boolean okay = ConvertPartOfLinesToPolyLineWithSplitting.func(polyLine_f5, closestPoint1, cellId1[0], closestPoint2, cellId2[0]);
+			boolean okay = ConvertPartOfLinesToPolyLineWithSplitting.convertPartOfLinesToPolyLineWithSplitting(polyLine_f5, closestPoint1, cellId1[0], closestPoint2, cellId2[0]);
 
 			//System.out.println("number points: " + polyLine.GetNumberOfPoints());
 
@@ -670,15 +639,7 @@ public class PolyDataUtilNew
 
 	public static class DrawConeOnPolyData
 	{
-//		static private ArrayList<vtkClipPolyData> clipFilters_f7 = new ArrayList<vtkClipPolyData>();
-//		static private ArrayList<vtkPlane> clipPlanes_f7 = new ArrayList<vtkPlane>();
-//		static private ArrayList<vtkPolyData> clipOutputs_f7 = new ArrayList<vtkPolyData>(); // not sure is this one is really needed
-//		//static private vtkSphere sphere_f7;
-//		//static private vtkExtractPolyDataGeometry extract_f7;
-//		static private vtkRegularPolygonSource polygonSource_f7;
-//		static private vtkPolyDataConnectivityFilter connectivityFilter_f7;
-//		static private vtkFeatureEdges edgeExtracter_f7;
-		public static void func(
+		public static void drawConeOnPolyData(
 				vtkPolyData polyData,
 				vtkAbstractPointLocator pointLocator,
 				double[] vertex,
@@ -837,8 +798,7 @@ public class PolyDataUtilNew
 
 	public static class ShiftPolyDataInNormalDirection
 	{
-//		static private vtkPolyDataNormals normalsFilter_f2;
-		public static void func(vtkPolyData polyData, double shiftAmount)
+		public static void shiftPolyDataInNormalDirection(vtkPolyData polyData, double shiftAmount)
 		{
 			vtkPolyDataNormals normalsFilter_f2 = new vtkPolyDataNormals();
 			normalsFilter_f2.SetInput(polyData);
@@ -871,7 +831,7 @@ public class PolyDataUtilNew
 
 	public static class ShiftPolyLineInNormalDirectionOfPolyData
 	{
-		public static void func(
+		public static void shiftPolyLineInNormalDirectionOfPolyData(
 				vtkPolyData polyLine,
 				vtkPolyData polyData,
 				vtkAbstractPointLocator pointLocator,
@@ -906,9 +866,6 @@ public class PolyDataUtilNew
 
 	public static class ConvertPartOfLinesToPolyLineWithSplitting
 	{
-//		private static vtkIdList idList_f6;
-//		private static vtkPoints points_f6;
-//		private static vtkCellArray new_lines_f6;
 		/** 
 		 * The boundary generated in getImageBorder is great, unfortunately the
 		 * border consists of many lines of 2 vertices each. We, however, need a
@@ -938,7 +895,7 @@ public class PolyDataUtilNew
 		 * @param id2
 		 * @return
 		 */
-		public static boolean func(
+		public static boolean convertPartOfLinesToPolyLineWithSplitting(
 				vtkPolyData polyline,
 				double[] pt1,
 				int id1,
@@ -1211,18 +1168,14 @@ public class PolyDataUtilNew
 	}
 
 
-	public static class GetPolyDataNormalAtPoint
+	private static class GetPolyDataNormalAtPoint
 	{
-		static private vtkIdList idList_f3;
-		public static double[] func(
+		public static double[] getPolyDataNormalAtPoint(
 				double[] pt,
 				vtkPolyData polyData,
 				vtkAbstractPointLocator pointLocator)
 		{
-			//vtkIdList idList = new vtkIdList();
-			if (idList_f3 == null)
-				idList_f3 = new vtkIdList();
-			idList_f3.Reset();
+			vtkIdList idList_f3 = new vtkIdList();
 
 			pointLocator.FindClosestNPoints(20, pt, idList_f3);
 
@@ -1255,20 +1208,19 @@ public class PolyDataUtilNew
 	 * @author eli
 	 *
 	 */
+	/*
 	public static class GetCellArea
 	{
-		static private vtkIdList idList;
-		static public double func(vtkPolyData polydata, int cellId)
+		// The idList parameter is needed only to avoid repeated memory
+		// allocation when this function is called within a loop.
+		static public double func(vtkPolyData polydata, int cellId, vtkIdList idList)
 		{
-			if (idList == null)
-				idList = new vtkIdList();
-
 			polydata.GetCellPoints(cellId, idList);
 			
 			int numberOfCells = idList.GetNumberOfIds();
 			if (numberOfCells != 3)
 			{
-				System.err.println("Error: Cells must have equactly 3 vertices!");
+				System.err.println("Error: Cells must have exactly 3 vertices!");
 				return 0.0;
 			}
 			
@@ -1279,25 +1231,33 @@ public class PolyDataUtilNew
 			return MathUtil.triangleArea(pt0, pt1, pt2);
 		}
 	}
+	*/
 	
 	public static class InterpolateWithinCell
 	{
-		static private vtkIdList idList;
+		/**
+		 * 
+		 * @param polydata
+		 * @param pointdata
+		 * @param cellId
+		 * @param pt
+		 * @param idList this parameter is needed only to avoid repeated memory
+		 * 		  allocation when this function is called within a loop.
+		 * @return
+		 */
 		static public double func(
 				vtkPolyData polydata,
 				vtkDataArray pointdata,
 				int cellId,
-				double[] pt)
+				double[] pt,
+				vtkIdList idList)
 		{
-			if (idList == null)
-				idList = new vtkIdList();
-
 			polydata.GetCellPoints(cellId, idList);
 			
 			int numberOfCells = idList.GetNumberOfIds();
 			if (numberOfCells != 3)
 			{
-				System.err.println("Error: Cells must have equactly 3 vertices!");
+				System.err.println("Error: Cells must have exactly 3 vertices!");
 				return 0.0;
 			}
 			
@@ -1314,8 +1274,6 @@ public class PolyDataUtilNew
 	
 	public static class GeneratePointScalarsFromCellScalars
 	{
-//		static private vtkIdList idList;
-		
 		/**
 		 * This function takes cell data and computes point data from it
 		 * by computing an average over all cells that share that point.
@@ -1324,7 +1282,7 @@ public class PolyDataUtilNew
 		 * @param cellScalars
 		 * @param pointScalars
 		 */
-		static public void func(vtkPolyData polydata,
+		static public void generatePointScalarsFromCellScalars(vtkPolyData polydata,
 				vtkFloatArray cellScalars,
 				vtkFloatArray pointScalars)
 		{
