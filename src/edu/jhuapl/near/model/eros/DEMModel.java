@@ -195,12 +195,13 @@ public class DEMModel extends SmallBodyModel
         
         double[] pnear = new double[3];
         double[] notused = new double[1];
+        vtkIdList idList = new vtkIdList();
         
     	for (Point3D p : xyzPointList)
     	{
     		int cellId = findClosestCell(p.xyz);
     		
-    		double val = PolyDataUtil.InterpolateWithinCell.func(dem, heights, cellId, p.xyz);
+    		double val = PolyDataUtil.interpolateWithinCell(dem, heights, cellId, p.xyz, idList);
     		
     		profileHeights.add(val);
     		

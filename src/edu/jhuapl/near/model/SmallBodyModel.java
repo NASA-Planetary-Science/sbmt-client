@@ -82,6 +82,7 @@ public class SmallBodyModel extends Model
 	private BoundingBox boundingBox = null;
 	private double imageMapOpacity = 0.50;
 	private vtkImageBlend blendFilter;
+	private vtkIdList idList; // to avoid repeated allocations
 	
 	/**
 	 * Default constructor. Must be followed by a call to setSmallBodyPolyData.
@@ -90,6 +91,7 @@ public class SmallBodyModel extends Model
 	{
 		smallBodyPolyData = new vtkPolyData();
 		genericCell = new vtkGenericCell();
+		idList = new vtkIdList();
 	}
 			
 	public SmallBodyModel(
@@ -109,6 +111,7 @@ public class SmallBodyModel extends Model
     	smallBodyReader = new vtkPolyDataReader();
 		smallBodyPolyData = new vtkPolyData();
 		genericCell = new vtkGenericCell();
+		idList = new vtkIdList();
 		
 		if (lowestResolutionModelStoredInResource)
 			defaultModelFile = ConvertResourceToFile.convertResourceToTempFile(this, modelFiles[0]);
@@ -246,7 +249,7 @@ public class SmallBodyModel extends Model
 			double[] lr,
 			double[] ll)
 	{
-		return PolyDataUtil.ComputeFrustumIntersection.func(smallBodyPolyData, cellLocator, pointLocator, origin, ul, ur, lr, ll);
+		return PolyDataUtil.computeFrustumIntersection(smallBodyPolyData, cellLocator, pointLocator, origin, ul, ur, lr, ll);
 	}
 
 	/**
@@ -261,7 +264,7 @@ public class SmallBodyModel extends Model
 			double[] pt1,
 			double[] pt2)
 	{
-		return PolyDataUtil.DrawPathOnPolyData.func(smallBodyPolyData, pointLocator, pt1, pt2);
+		return PolyDataUtil.drawPathOnPolyData(smallBodyPolyData, pointLocator, pt1, pt2);
 	}
 
 	public void drawPolygon(
@@ -271,7 +274,7 @@ public class SmallBodyModel extends Model
 			vtkPolyData outputInterior,
 			vtkPolyData outputBoundary)
 	{
-		PolyDataUtil.DrawPolygonOnPolyData.func(
+		PolyDataUtil.drawPolygonOnPolyData(
 				smallBodyPolyData,
 				pointLocator,
 				center,
@@ -296,7 +299,7 @@ public class SmallBodyModel extends Model
 
 		initializeLowResData();
 
-		PolyDataUtil.DrawPolygonOnPolyData.func(
+		PolyDataUtil.drawPolygonOnPolyData(
 				lowResSmallBodyPolyData,
 				lowResPointLocator,
 				center,
@@ -314,7 +317,7 @@ public class SmallBodyModel extends Model
 			vtkPolyData outputInterior,
 			vtkPolyData outputBoundary)
 	{
-		PolyDataUtil.DrawConeOnPolyData.func(
+		PolyDataUtil.drawConeOnPolyData(
 				smallBodyPolyData,
 				pointLocator,
 				vertex,
@@ -329,7 +332,7 @@ public class SmallBodyModel extends Model
 			vtkPolyData polyLine,
 			double shiftFactor)
 	{
-		PolyDataUtil.ShiftPolyLineInNormalDirectionOfPolyData.func(
+		PolyDataUtil.shiftPolyLineInNormalDirectionOfPolyData(
 				polyLine,
 				smallBodyPolyData,
 				pointLocator,
@@ -526,20 +529,20 @@ public class SmallBodyModel extends Model
     		switch(coloringType)
     		{
     		case ELEVATION:
-    			value = (float)PolyDataUtil.InterpolateWithinCell.func(
-    					smallBodyPolyData, elevationPointDataValues, cellId, pickPosition);
+    			value = (float)PolyDataUtil.interpolateWithinCell(
+    					smallBodyPolyData, elevationPointDataValues, cellId, pickPosition, idList);
     			return ElevStr + ": " + value + " " + ElevUnitsStr;
     		case GRAVITATIONAL_ACCELERATION:
-    			value = (float)PolyDataUtil.InterpolateWithinCell.func(
-    					smallBodyPolyData, gravAccPointDataValues, cellId, pickPosition);
+    			value = (float)PolyDataUtil.interpolateWithinCell(
+    					smallBodyPolyData, gravAccPointDataValues, cellId, pickPosition, idList);
     			return GravAccStr + ": " + value + " " + GravAccUnitsStr;
     		case GRAVITATIONAL_POTENTIAL:
-    			value = (float)PolyDataUtil.InterpolateWithinCell.func(
-    					smallBodyPolyData, gravPotPointDataValues, cellId, pickPosition);
+    			value = (float)PolyDataUtil.interpolateWithinCell(
+    					smallBodyPolyData, gravPotPointDataValues, cellId, pickPosition, idList);
     			return GravPotStr + ": " + value + " " + GravPotUnitsStr;
     		case SLOPE:
-    			value = (float)PolyDataUtil.InterpolateWithinCell.func(
-    					smallBodyPolyData, slopePointDataValues, cellId, pickPosition);
+    			value = (float)PolyDataUtil.interpolateWithinCell(
+    					smallBodyPolyData, slopePointDataValues, cellId, pickPosition, idList);
     			return SlopeStr + ": " + value + "\u00B0"; //(\u00B0 is the unicode degree symbol)
     		}
     	}
@@ -996,8 +999,8 @@ public class SmallBodyModel extends Model
     {
         double[] closestPoint = new double[3];
     	int cellId = findClosestCell(pt, closestPoint);
-    	return PolyDataUtil.InterpolateWithinCell.func(
-    			smallBodyPolyData, pointData, cellId, closestPoint);
+    	return PolyDataUtil.interpolateWithinCell(
+    			smallBodyPolyData, pointData, cellId, closestPoint, idList);
     }
     
     /**

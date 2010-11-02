@@ -197,7 +197,7 @@ public class NISSpectrum extends Model implements PropertyChangeListener
 				footprint.DeepCopy(tmp);
 				
 				shiftedFootprint.DeepCopy(tmp);
-				PolyDataUtil.ShiftPolyDataInNormalDirection.func(shiftedFootprint, 0.001);
+				PolyDataUtil.shiftPolyDataInNormalDirection(shiftedFootprint, 0.001);
 			}
 		}
 	}

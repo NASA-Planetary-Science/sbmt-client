@@ -38,7 +38,7 @@ public class ModelGeneratorUtil
 			in.close();
 			
 			vtkFloatArray pointData = new vtkFloatArray();
-			PolyDataUtil.GeneratePointScalarsFromCellScalars.func(polydata, cellData, pointData);
+			PolyDataUtil.generatePointScalarsFromCellScalars(polydata, cellData, pointData);
 			
 			int l = cellDataFile.length();
 			FileWriter fstream = new FileWriter(cellDataFile.substring(0, l-4) + "_PointData.txt");

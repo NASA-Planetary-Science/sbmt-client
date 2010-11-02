@@ -957,7 +957,7 @@ public class MSIImage extends Model implements PropertyChangeListener
 	    
 		
 		shiftedFootprint.DeepCopy(footprint);
-		PolyDataUtil.ShiftPolyDataInNormalDirection.func(shiftedFootprint, 0.002);
+		PolyDataUtil.shiftPolyDataInNormalDirection(shiftedFootprint, 0.002);
 
 		footprintGenerated = true;
 	}

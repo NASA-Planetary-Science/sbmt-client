@@ -200,7 +200,7 @@ public class MSIBoundaryCollection extends Model implements PropertyChangeListen
 			}
 			
 	        
-			PolyDataUtil.ShiftPolyLineInNormalDirectionOfPolyData.func(
+			PolyDataUtil.shiftPolyLineInNormalDirectionOfPolyData(
 					boundary, erosModel.getSmallBodyPolyData(), erosModel.getPointLocator(), 0.003);
 
 	        boundaryMapper.SetInput(boundary);
