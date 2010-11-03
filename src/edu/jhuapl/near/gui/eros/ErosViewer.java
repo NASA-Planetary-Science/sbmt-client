@@ -87,7 +87,7 @@ public class ErosViewer extends View
 		controlPanel.addTab("NLR", new NLRPanel(modelManager, pickManager));
 		controlPanel.addTab("Lineament", new LineamentControlPanel(modelManager));
 		controlPanel.addTab("Structures", new StructuresControlPanel(modelManager, pickManager));
-		controlPanel.addTab("Mapmaker", new TopoPanel(modelManager, pickManager));
+		//controlPanel.addTab("Mapmaker", new TopoPanel(modelManager, pickManager));
 
 		
 		splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
