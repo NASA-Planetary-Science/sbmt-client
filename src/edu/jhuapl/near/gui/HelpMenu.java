@@ -48,6 +48,12 @@ public class HelpMenu extends JMenu
             "Keypress r: reset camera<br>" +
             "Keypress s: modify objects in scene to be shown as surfaces<br>" +
             "Keypress w: modify objects in scene to be shown as wireframe<br>" +
+            "Keypress x (lowercase): reorient camera to point in positive x direction<br>" +
+            "Keypress X (uppercase): reorient camera to point in negative x direction<br>" +
+            "Keypress y (lowercase): reorient camera to point in positive y direction<br>" +
+            "Keypress Y (uppercase): reorient camera to point in negative y direction<br>" +
+            "Keypress z (lowercase): reorient camera to point in positive z direction<br>" +
+            "Keypress Z (uppercase): reorient camera to point in negative z direction<br>" +
             "</html>";
 
         public ShowHelpContentsAction()
