@@ -43,7 +43,7 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
     private final ModelManager modelManager;
     private PickManager pickManager;
     private JComboBox msiSourceComboBox;
-    private java.util.Date startDate = new GregorianCalendar(2000, 1, 14, 0, 0, 0).getTime();
+    private java.util.Date startDate = new GregorianCalendar(2000, 0, 12, 0, 0, 0).getTime();
     private java.util.Date endDate = new GregorianCalendar(2001, 1, 13, 0, 0, 0).getTime();
     private JLabel endDateLabel;
     private JLabel startDateLabel;
