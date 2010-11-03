@@ -33,7 +33,7 @@ public class VestaModelGenerator {
 	 * vtk file.
 	 * 
 	 * To run this program, 2 arguments are required:
-	 * - the folder containing the 4vesta.tab file
+	 * - the folder containing the .tab file
 	 * - the folder where you want to save the generated files
 	 * 
 	 * @param args

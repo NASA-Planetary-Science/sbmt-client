@@ -78,10 +78,15 @@ public class ModelFactory
 		};
 
 		final String[] modelFiles = {
-				"/VESTA/vesta.vtk.gz"
+				"/VESTA/VESTA.vtk.gz"
 		};
 
-		final String[] coloringFiles = null;
+		final String[] coloringFiles = {
+				"/VESTA/VESTA_Elevation_PointData.txt.gz",
+				"/VESTA/VESTA_GravitationalAcceleration_PointData.txt.gz",
+				"/VESTA/VESTA_GravitationalPotential_PointData.txt.gz",
+				"/VESTA/VESTA_Slope_PointData.txt.gz"
+		};
 
 		final String imageMap = null;
 
