@@ -84,25 +84,25 @@ public class vtkEnhancedRenderWindowPanel extends vtkRenderWindowPanel
 			{
 				double xpos = xSize / Math.tan(Math.PI/6.0) + 2.0*maxSize;
 				cam.SetPosition(xpos, 0.0, 0.0);
-				cam.SetViewUp(0.0, 1.0, 0.0);
+				cam.SetViewUp(0.0, 0.0, 1.0);
 			}
 			else if ('x' == keyChar)
 			{
 				double xpos = -xSize / Math.tan(Math.PI/6.0) - 2.0*maxSize;
 				cam.SetPosition(xpos, 0.0, 0.0);
-				cam.SetViewUp(0.0, 1.0, 0.0);
+				cam.SetViewUp(0.0, 0.0, 1.0);
 			}
 			else if ('Y' == keyChar)
 			{
 				double ypos = ySize / Math.tan(Math.PI/6.0) + 2.0*maxSize;
 				cam.SetPosition(0.0, ypos, 0.0);
-				cam.SetViewUp(1.0, 0.0, 0.0);
+				cam.SetViewUp(0.0, 0.0, 1.0);
 			}
 			else if ('y' == keyChar)
 			{
 				double ypos = -ySize / Math.tan(Math.PI/6.0) - 2.0*maxSize;
 				cam.SetPosition(0.0, ypos, 0.0);
-				cam.SetViewUp(1.0, 0.0, 0.0);
+				cam.SetViewUp(0.0, 0.0, 1.0);
 			}
 			else if ('Z' == keyChar)
 			{
