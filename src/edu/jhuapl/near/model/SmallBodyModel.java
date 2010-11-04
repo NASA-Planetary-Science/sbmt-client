@@ -196,7 +196,7 @@ public class SmallBodyModel extends Model
     {
         initializeLowResData();
         
-        return smallBodyPolyData;
+        return lowResSmallBodyPolyData;
     }
     
 	public vtksbCellLocator getCellLocator()
