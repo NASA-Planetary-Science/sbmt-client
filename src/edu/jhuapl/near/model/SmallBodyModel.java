@@ -543,15 +543,22 @@ public class SmallBodyModel extends Model
 	
     public String getClickStatusBarText(vtkProp prop, int cellId, double[] pickPosition)
     {
-    	float value = 0;
-
     	// Coloring is currently only supported in the lowest resolution level
     	if (resolutionLevel == 0)
     	{
     		if (coloringIndex >= 0)
     		{
-    			value = (float)getColoringValue(coloringIndex, pickPosition);
+    			float value = (float)getColoringValue(coloringIndex, pickPosition);
     			return coloringNames[coloringIndex] + ": " + value + " " + coloringUnits[coloringIndex];
+    		}
+    		else if (useFalseColoring)
+    		{
+    			float red = (float)getColoringValue(redFalseColor, pickPosition);
+    			float green = (float)getColoringValue(greenFalseColor, pickPosition);
+    			float blue = (float)getColoringValue(blueFalseColor, pickPosition);
+    			return coloringNames[redFalseColor] + ": " + red + " " + coloringUnits[redFalseColor] + ", " +
+    			coloringNames[greenFalseColor] + ": " + green + " " + coloringUnits[greenFalseColor] +  ", " +
+    			coloringNames[blueFalseColor] + ": " + blue + " " + coloringUnits[blueFalseColor];
     		}
     	}
 		return "";
