@@ -1,7 +1,18 @@
 package edu.jhuapl.near.model;
 
+import edu.jhuapl.near.model.SmallBodyModel.ColoringValueType;
+
 public class ModelFactory
 {
+	static private final String SlopeStr = "Slope";
+	static private final String ElevStr = "Elevation";
+	static private final String GravAccStr = "Gravitational Acceleration";
+	static private final String GravPotStr = "Gravitational Potential";
+	static private final String SlopeUnitsStr = "deg";
+	static private final String ElevUnitsStr = "m";
+	static private final String GravAccUnitsStr = "m/s^2";
+	static private final String GravPotUnitsStr = "J/kg";
+
 	static public SmallBodyModel createErosBodyModel()
 	{
 		final String[] modelNames = {
@@ -19,13 +30,31 @@ public class ModelFactory
 		};
 
 		final String[] coloringFiles = {
-				"/EROS/Eros_Dec2006_0_Elevation_PointData.txt.gz",
-				"/EROS/Eros_Dec2006_0_GravitationalAcceleration_PointData.txt.gz",
-				"/EROS/Eros_Dec2006_0_GravitationalPotential_PointData.txt.gz",
-				"/EROS/Eros_Dec2006_0_Slope_PointData.txt.gz"
+				"/EROS/Eros_Dec2006_0_Slope.txt.gz",
+				"/EROS/Eros_Dec2006_0_Elevation.txt.gz",
+				"/EROS/Eros_Dec2006_0_GravitationalAcceleration.txt.gz",
+				"/EROS/Eros_Dec2006_0_GravitationalPotential.txt.gz"
 		};
 
-		return new SmallBodyModel(modelNames, modelFiles, coloringFiles, null, true);
+		final String[] coloringNames = {
+				SlopeStr, ElevStr, GravAccStr, GravPotStr
+		};
+
+		final String[] coloringUnits = {
+				SlopeUnitsStr, ElevUnitsStr, GravAccUnitsStr, GravPotUnitsStr
+		};
+
+		return new SmallBodyModel(
+				modelNames,
+				modelFiles,
+				coloringFiles,
+				coloringNames,
+				coloringUnits,
+				null,
+				false,
+				null,
+				ColoringValueType.CELLDATA,
+				true);
 	}
 
 	static public SmallBodyModel createDeimosBodyModel()
@@ -39,15 +68,33 @@ public class ModelFactory
 		};
 
 		final String[] coloringFiles = {
-				"/DEIMOS/DEIMOS_Elevation_PointData.txt.gz",
-				"/DEIMOS/DEIMOS_GravitationalAcceleration_PointData.txt.gz",
-				"/DEIMOS/DEIMOS_GravitationalPotential_PointData.txt.gz",
-				"/DEIMOS/DEIMOS_Slope_PointData.txt.gz"
+				"/DEIMOS/DEIMOS_Slope.txt.gz",
+				"/DEIMOS/DEIMOS_Elevation.txt.gz",
+				"/DEIMOS/DEIMOS_GravitationalAcceleration.txt.gz",
+				"/DEIMOS/DEIMOS_GravitationalPotential.txt.gz"
 		};
 
 		final String imageMap = "/DEIMOS/deimos_image_map.png";
 
-		return new SmallBodyModel(modelNames, modelFiles, coloringFiles, imageMap, false);
+		final String[] coloringNames = {
+				SlopeStr, ElevStr, GravAccStr, GravPotStr
+		};
+
+		final String[] coloringUnits = {
+				SlopeUnitsStr, ElevUnitsStr, GravAccUnitsStr, GravPotUnitsStr
+		};
+
+		return new SmallBodyModel(
+				modelNames,
+				modelFiles,
+				coloringFiles,
+				coloringNames,
+				coloringUnits,
+				null,
+				false,
+				imageMap,
+				ColoringValueType.CELLDATA,
+				false);
 	}
 	
 	static public SmallBodyModel createItokawaBodyModel()
@@ -66,9 +113,7 @@ public class ModelFactory
 				"/ITOKAWA/ver512q.vtk.gz"
 		};
 
-		final String[] coloringFiles = null;
-
-		return new SmallBodyModel(modelNames, modelFiles, coloringFiles, null, false);
+		return new SmallBodyModel(modelNames, modelFiles, null, null, null, null, false, null, ColoringValueType.CELLDATA, false);
 	}
 
 	static public SmallBodyModel createVestaBodyModel()
@@ -82,15 +127,39 @@ public class ModelFactory
 		};
 
 		final String[] coloringFiles = {
-				"/VESTA/VESTA_Elevation_PointData.txt.gz",
-				"/VESTA/VESTA_GravitationalAcceleration_PointData.txt.gz",
-				"/VESTA/VESTA_GravitationalPotential_PointData.txt.gz",
-				"/VESTA/VESTA_Slope_PointData.txt.gz"
+				"/VESTA/VESTA_Slope.txt.gz",
+				"/VESTA/VESTA_Elevation.txt.gz",
+				"/VESTA/VESTA_GravitationalAcceleration.txt.gz",
+				"/VESTA/VESTA_GravitationalPotential.txt.gz",
+				"/VESTA/VESTA_439.txt.gz",
+				"/VESTA/VESTA_673.txt.gz",
+				"/VESTA/VESTA_953.txt.gz",
+				"/VESTA/VESTA_1042.txt.gz"
 		};
 
-		final String imageMap = null;
+		final String[] coloringNames = {
+				SlopeStr, ElevStr, GravAccStr, GravPotStr, "439 nm", "673 nm", "953 nm", "1042 nm"
+		};
 
-		return new SmallBodyModel(modelNames, modelFiles, coloringFiles, imageMap, false);
+		final String[] coloringUnits = {
+				SlopeUnitsStr, ElevUnitsStr, GravAccUnitsStr, GravPotUnitsStr, "", "", "", ""
+		};
+		
+		final boolean[] coloringHasNulls = {
+				false, false, false, false, true, true, true, true
+		};
+
+		return new SmallBodyModel(
+				modelNames,
+				modelFiles,
+				coloringFiles,
+				coloringNames,
+				coloringUnits,
+				coloringHasNulls,
+				true,
+				null,
+				ColoringValueType.CELLDATA,
+				false);
 	}
 	
 	static public Graticule createErosGraticuleModel(SmallBodyModel smallBodyModel)

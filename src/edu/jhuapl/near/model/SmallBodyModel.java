@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.TreeSet;
 
 import vtk.*;
@@ -20,27 +21,17 @@ import edu.jhuapl.near.util.Properties;
 
 public class SmallBodyModel extends Model 
 {
-    public enum ColoringType { 
-    	NONE, 
-    	ELEVATION, 
-    	GRAVITATIONAL_ACCELERATION,
-    	GRAVITATIONAL_POTENTIAL,
-    	SLOPE
-    }
+
+	public enum ColoringValueType {
+		POINT_DATA,
+		CELLDATA
+	}
 
     public enum ShadingType {
     	FLAT,
     	SMOOTH,
     }
     
-    static public final String ElevStr = "Elevation";
-    static public final String GravAccStr = "Gravitational Acceleration";
-    static public final String GravPotStr = "Gravitational Potential";
-    static public final String SlopeStr = "Slope";
-    static public final String ElevUnitsStr = "m";
-    static public final String GravAccUnitsStr = "m/s^2";
-    static public final String GravPotUnitsStr = "J/kg";
-    static public final String SlopeUnitsStr = "deg";
     static public final String FlatShadingStr = "Flat";
     static public final String SmoothShadingStr = "Smooth";
     static public final String LowResModelStr = "Low (49152 plates)";
@@ -48,6 +39,12 @@ public class SmallBodyModel extends Model
     static public final String HighResModelStr = "High (786432 plates)";
     static public final String VeryHighResModelStr = "Very High (3145728 plates)";
 
+    private String[] coloringNames;
+    private String[] coloringUnits;
+    // If true the coloring can contain a null value. Meaning the lowest value
+    // of the data is should be interperted as no data available at that location,
+    // not as a real value. This affects the color table.
+    private boolean[] coloringHasNulls;
     private vtkPolyData smallBodyPolyData;
     private vtkPolyData lowResSmallBodyPolyData;
     private vtkActor smallBodyActor;
@@ -56,20 +53,15 @@ public class SmallBodyModel extends Model
     private vtksbCellLocator cellLocator;
     private vtkPointLocator pointLocator;
     private vtkPointLocator lowResPointLocator;
-    private vtkFloatArray elevationPointDataValues;
-    private vtkFloatArray gravAccPointDataValues;
-    private vtkFloatArray gravPotPointDataValues;
-    private vtkFloatArray slopePointDataValues;
-    private vtkImageData elevationImage;
-    private vtkImageData gravAccImage;
-    private vtkImageData gravPotImage;
-    private vtkImageData slopeImage;
+    private vtkFloatArray[] coloringValues;
+    private vtkImageData[] coloringImages;
+    private ColoringValueType coloringValueType;
     private vtkImageData originalImageMap;
     private vtkImageData displayedImageMap;
     private vtkScalarBarActor scalarBarActor;
     private vtkPolyDataReader smallBodyReader;
 	private SmallBodyCubes smallBodyCubes;
-    private ColoringType coloringType = ColoringType.NONE;
+    private int coloringIndex = -1;
     private File defaultModelFile;
     private int resolutionLevel = 0;
     private vtkGenericCell genericCell;
@@ -83,6 +75,17 @@ public class SmallBodyModel extends Model
 	private double imageMapOpacity = 0.50;
 	private vtkImageBlend blendFilter;
 	private vtkIdList idList; // to avoid repeated allocations
+
+	// Does this class support false coloring
+	private boolean supportsFalseColoring = false;
+	// If true, a false color will be used by using 3 of the existing
+	// colors for the red, green, and blue channels
+	private boolean useFalseColoring = false;
+	private int redFalseColor = -1; // red channel for false coloring
+	private int greenFalseColor = -1; // green channel for false coloring
+	private int blueFalseColor = -1; // blue channel for false coloring
+	private vtkUnsignedCharArray falseColorArray;
+	
 	
 	/**
 	 * Default constructor. Must be followed by a call to setSmallBodyPolyData.
@@ -98,7 +101,12 @@ public class SmallBodyModel extends Model
 			String[] modelNames,
 			String[] modelFiles,
 			String[] coloringFiles,
+			String[] coloringNames,
+			String[] coloringUnits,
+			boolean[] coloringHasNulls,
+			boolean supportsFalseColoring,
 			String imageMapName,
+			ColoringValueType coloringValueType,
 			boolean lowestResolutionModelStoredInResource)
 	{
 		super(ModelNames.SMALL_BODY);
@@ -106,8 +114,26 @@ public class SmallBodyModel extends Model
 		this.modelNames = modelNames;
 		this.modelFiles = modelFiles;
 		this.coloringFiles = coloringFiles;
+		this.coloringNames = coloringNames;
+		this.coloringUnits = coloringUnits;
+		this.coloringHasNulls = coloringHasNulls;
+		this.supportsFalseColoring = supportsFalseColoring;
 		this.imageMapName = imageMapName;
-		
+		this.coloringValueType = coloringValueType;
+		if (coloringNames != null)
+		{
+			this.coloringValues = new vtkFloatArray[coloringNames.length];
+			this.coloringImages = new vtkImageData[coloringNames.length];
+			
+			// If coloringHasNulls is null, assume false for all coloring (i.e. all data
+			// is real data, with no missing data)
+			if (coloringHasNulls == null)
+			{
+				coloringHasNulls = new boolean[coloringNames.length];
+				Arrays.fill(coloringHasNulls, false);
+			}
+		}
+
     	smallBodyReader = new vtkPolyDataReader();
 		smallBodyPolyData = new vtkPolyData();
 		genericCell = new vtkGenericCell();
@@ -122,17 +148,13 @@ public class SmallBodyModel extends Model
 	}
 
 	public void setSmallBodyPolyData(vtkPolyData polydata,
-			vtkFloatArray elevationPointDataValues,
-			vtkFloatArray gravAccPointDataValues,
-			vtkFloatArray gravPotPointDataValues,
-			vtkFloatArray slopePointDataValues)
+			vtkFloatArray[] coloringValues,
+			ColoringValueType coloringValueType)
 	{
 		smallBodyPolyData.DeepCopy(polydata);
-		this.elevationPointDataValues = elevationPointDataValues;
-		this.gravAccPointDataValues = gravAccPointDataValues;
-		this.gravPotPointDataValues = gravPotPointDataValues;
-		this.slopePointDataValues = slopePointDataValues;
-
+		this.coloringValues = coloringValues;
+		this.coloringValueType = coloringValueType;
+		
 		initializeLocators();
 	}
 
@@ -215,7 +237,7 @@ public class SmallBodyModel extends Model
 		{
 			smallBodyCubes = new SmallBodyCubes(
 			        getLowResSmallBodyPolyData(),
-			        this.getIntersectingCubes());
+			        null);
 		}
 		
 		return smallBodyCubes.getIntersectingCubes(polydata);
@@ -526,24 +548,10 @@ public class SmallBodyModel extends Model
     	// Coloring is currently only supported in the lowest resolution level
     	if (resolutionLevel == 0)
     	{
-    		switch(coloringType)
+    		if (coloringIndex >= 0)
     		{
-    		case ELEVATION:
-    			value = (float)PolyDataUtil.interpolateWithinCell(
-    					smallBodyPolyData, elevationPointDataValues, cellId, pickPosition, idList);
-    			return ElevStr + ": " + value + " " + ElevUnitsStr;
-    		case GRAVITATIONAL_ACCELERATION:
-    			value = (float)PolyDataUtil.interpolateWithinCell(
-    					smallBodyPolyData, gravAccPointDataValues, cellId, pickPosition, idList);
-    			return GravAccStr + ": " + value + " " + GravAccUnitsStr;
-    		case GRAVITATIONAL_POTENTIAL:
-    			value = (float)PolyDataUtil.interpolateWithinCell(
-    					smallBodyPolyData, gravPotPointDataValues, cellId, pickPosition, idList);
-    			return GravPotStr + ": " + value + " " + GravPotUnitsStr;
-    		case SLOPE:
-    			value = (float)PolyDataUtil.interpolateWithinCell(
-    					smallBodyPolyData, slopePointDataValues, cellId, pickPosition, idList);
-    			return SlopeStr + ": " + value + "\u00B0"; //(\u00B0 is the unicode degree symbol)
+    			value = (float)getColoringValue(coloringIndex, pickPosition);
+    			return coloringNames[coloringIndex] + ": " + value + " " + coloringUnits[coloringIndex];
     		}
     	}
 		return "";
@@ -621,11 +629,12 @@ public class SmallBodyModel extends Model
     		resolutionLevel = 3;
     	
     	smallBodyCubes = null;
-		elevationPointDataValues = null;
-		gravAccPointDataValues = null;
-		gravPotPointDataValues = null;
-		slopePointDataValues = null;
-	
+    	if (coloringValues != null)
+    	{
+    		for (int i=0; i<coloringValues.length; ++i)
+    			coloringValues[i] = null;
+    	}
+    	
 		File smallBodyFile = defaultModelFile;
 		switch(level)
 		{
@@ -641,7 +650,7 @@ public class SmallBodyModel extends Model
 		}
 
 		if (resolutionLevel != 0)
-			setColorBy(ColoringType.NONE);
+			setColoringIndex(-1);
 		
 		this.initialize(smallBodyFile);
 		
@@ -671,34 +680,28 @@ public class SmallBodyModel extends Model
 	 * This file loads the coloring used when the coloring method is point data
 	 * @throws IOException
 	 */
-	private void loadColoringPointData() throws IOException
+	private void loadColoringData() throws IOException
 	{
-		if (elevationPointDataValues == null)
+		if (coloringValues != null && coloringValues.length > 0 && coloringValues[0] == null)
 		{
-			elevationPointDataValues = new vtkFloatArray();
-			gravAccPointDataValues = new vtkFloatArray();
-			gravPotPointDataValues = new vtkFloatArray();
-			slopePointDataValues = new vtkFloatArray();
+			for (int i=0; i<coloringValues.length; ++i)
+				coloringValues[i] = new vtkFloatArray();
 		}
 		else
 		{
 			return;
 		}
 		
-		vtkFloatArray[] arrays = {
-				this.elevationPointDataValues,
-				this.gravAccPointDataValues,
-				this.gravPotPointDataValues,
-				this.slopePointDataValues
-		};
-		
-		for (int i=0; i<4; ++i)
+		for (int i=0; i<coloringValues.length; ++i)
 		{
 			File file = FileCache.getFileFromServer(coloringFiles[i]);
-			vtkFloatArray array = arrays[i];
+			vtkFloatArray array = coloringValues[i];
 			
 			array.SetNumberOfComponents(1);
-			array.SetNumberOfTuples(smallBodyPolyData.GetNumberOfPoints());
+			if (coloringValueType == ColoringValueType.POINT_DATA)
+				array.SetNumberOfTuples(smallBodyPolyData.GetNumberOfPoints());
+			else
+				array.SetNumberOfTuples(smallBodyPolyData.GetNumberOfCells());
 			
 	    	FileInputStream fs =  new FileInputStream(file);
 			InputStreamReader isr = new InputStreamReader(fs);
@@ -722,57 +725,44 @@ public class SmallBodyModel extends Model
 	 */
 	private void loadColoringTexture() throws IOException
 	{
-		if (elevationImage == null)
+		if (coloringImages != null && coloringImages.length > 0 && coloringImages[0] == null)
 		{
-			loadColoringPointData();
+			loadColoringData();
 			
-			elevationImage = new vtkImageData();
-			gravAccImage = new vtkImageData();
-			gravPotImage = new vtkImageData();
-			slopeImage = new vtkImageData();
+			for (int i=0; i<coloringImages.length; ++i)
+				coloringImages[i] = new vtkImageData();
 		}
 		else
 		{
 			return;
 		}
 		
-		vtkImageData[] images = {
-				this.elevationImage,
-				this.gravAccImage,
-				this.gravPotImage,
-				this.slopeImage
-		};
-		vtkFloatArray[] arrays = {
-				this.elevationPointDataValues,
-				this.gravAccPointDataValues,
-				this.gravPotPointDataValues,
-				this.slopePointDataValues
-		};
-		
-		for (int i=0; i<4; ++i)
+		for (int i=0; i<coloringImages.length; ++i)
 		{
 			int length = coloringFiles[i].length();
-			File file = FileCache.getFileFromServer(coloringFiles[i].substring(0, length-6) + "vtk");
+			File file = FileCache.getFileFromServer(coloringFiles[i].substring(0, length-6) + "vti");
 			
-			vtkImageData image = images[i];
+			vtkImageData image = coloringImages[i];
 
-			//vtkXMLImageDataReader reader = new vtkXMLImageDataReader();
-	    	vtkStructuredPointsReader reader = new vtkStructuredPointsReader();
+			vtkXMLImageDataReader reader = new vtkXMLImageDataReader();
+	    	//vtkStructuredPointsReader reader = new vtkStructuredPointsReader();
 	    	reader.SetFileName(file.getAbsolutePath());
 	    	reader.Update();
-	    	
-	    	vtkLookupTable lookupTable = new vtkLookupTable();
-	        lookupTable.SetRange(arrays[i].GetRange());
-	        lookupTable.Build();
-	        invertLookupTableCharArray(lookupTable.GetTable());
-	        
-	    	vtkImageMapToColors mapToColors = new vtkImageMapToColors();
-	        mapToColors.SetInputConnection(reader.GetOutputPort());
-	        mapToColors.SetLookupTable(lookupTable);
-	        mapToColors.SetOutputFormatToRGB();
-	        mapToColors.Update();
-	        
-	    	image.DeepCopy(mapToColors.GetOutput());
+
+	    	image.DeepCopy(reader.GetOutput());
+
+//	    	vtkLookupTable lookupTable = new vtkLookupTable();
+//	        lookupTable.SetRange(coloringValues[i].GetRange());
+//	        lookupTable.Build();
+//	        invertLookupTableCharArray(lookupTable.GetTable());
+//	        
+//	    	vtkImageMapToColors mapToColors = new vtkImageMapToColors();
+//	        mapToColors.SetInputConnection(reader.GetOutputPort());
+//	        mapToColors.SetLookupTable(lookupTable);
+//	        mapToColors.SetOutputFormatToRGB();
+//	        mapToColors.Update();
+//	        
+//	    	image.DeepCopy(mapToColors.GetOutput());
 		}
 	}
 
@@ -810,45 +800,101 @@ public class SmallBodyModel extends Model
 		smallBodyMapper.Modified();
 	}
 	
-	public void setColorBy(ColoringType type) throws IOException
+	public void setColoringIndex(int index) throws IOException
 	{
+//		if (coloringIndex == index)
+//			return;
+//		
     	// Coloring is currently only supported in the lowest resolution level
 		if (resolutionLevel == 0)
 		{
-			coloringType = type;
-
+			coloringIndex = index;
+			useFalseColoring = false;
+			
+			paintBody();
+		}
+	}
+	
+	public void setFalseColoring(int redChannel, int greenChannel, int blueChannel) throws IOException
+	{
+//		if (redFalseColor == redChannel &&
+//				greenFalseColor == greenChannel &&
+//				blueFalseColor == blueChannel &&
+//				useFalseColoring == true)
+//		{
+//			return;
+//		}
+//		
+    	// Coloring is currently only supported in the lowest resolution level
+		if (resolutionLevel == 0)
+		{
+			coloringIndex = -1;
+			useFalseColoring = true;
+			redFalseColor = redChannel;
+			greenFalseColor = greenChannel;
+			blueFalseColor = blueChannel;
+			
 			paintBody();
 		}
 	}
 	
     public boolean isColoringDataAvailable()
     {
-    	return coloringFiles != null && coloringFiles.length == 4;
+    	return coloringFiles != null;
     }
     
     private void blendImageMapWithColoring()
     {
     	vtkImageData image = null;
     	
-		switch(coloringType)
-		{
-		case ELEVATION:
-			image = this.elevationImage;
-			scalarBarActor.SetTitle(ElevStr + " (" + ElevUnitsStr + ")");
-			break;
-		case GRAVITATIONAL_ACCELERATION:
-			image = this.gravAccImage;
-			scalarBarActor.SetTitle(GravAccStr + " (" + GravAccUnitsStr + ")");
-			break;
-		case GRAVITATIONAL_POTENTIAL:
-			image = this.gravPotImage;
-			scalarBarActor.SetTitle(GravPotStr + " (" + GravPotUnitsStr + ")");
-			break;
-		case SLOPE:
-			image = this.slopeImage;
-			scalarBarActor.SetTitle(SlopeStr + " (" + SlopeUnitsStr + ")");
-			break;
-		}
+    	if (coloringIndex >= 0)
+    	{
+	    	vtkLookupTable lookupTable = new vtkLookupTable();
+	    	//lookupTable.SetRange(coloringValues[coloringIndex].GetRange());
+	        lookupTable.SetRange(computeRange(coloringIndex, true));
+	        lookupTable.Build();
+	        invertLookupTableCharArray(lookupTable.GetTable());
+			// If there's missing data, map them to white
+			if (coloringHasNulls != null && coloringHasNulls[coloringIndex])
+				((vtkLookupTable)smallBodyMapper.GetLookupTable()).SetTableValue(0, 1.0, 1.0, 1.0, 1.0);
+
+	    	vtkImageMapToColors mapToColors = new vtkImageMapToColors();
+	        mapToColors.SetInput(coloringImages[coloringIndex]);
+	        mapToColors.SetLookupTable(lookupTable);
+	        mapToColors.SetOutputFormatToRGB();
+	        mapToColors.Update();
+
+	        //image = this.coloringImages[coloringIndex];
+	        image = mapToColors.GetOutput();
+    		scalarBarActor.SetTitle(coloringNames[coloringIndex] + " (" + coloringUnits[coloringIndex] + ")");
+    	}
+    	else if (useFalseColoring)
+    	{
+    		vtkImageAppendComponents appendComponents = new vtkImageAppendComponents();
+    		
+    		int[] components = {redFalseColor, greenFalseColor, blueFalseColor};
+    		for (int c : components)
+    		{
+    			//double[] range = coloringValues[c].GetRange();
+        		double[] range = computeRange(c, false);
+        		double extent = range[1] - range[0];
+
+        		vtkImageShiftScale shiftScale = new vtkImageShiftScale();
+        		shiftScale.SetShift(-range[0]);
+        		shiftScale.SetScale(255.0 / extent);
+        		shiftScale.SetInput(coloringImages[c]);
+        		shiftScale.SetOutputScalarTypeToUnsignedChar();
+        		shiftScale.Update();
+        		
+        		// TODO in this situation, invalid data get mapped to black, not white, as
+        		// is the convention throughout the rest of this class. Fix this if desired.
+        		
+        		appendComponents.AddInputConnection(shiftScale.GetOutputPort());
+    		}
+    		
+    		appendComponents.Update();
+    		image = appendComponents.GetOutput();
+    	}
 
 		if (blendFilter == null)
 		{
@@ -995,69 +1041,58 @@ public class SmallBodyModel extends Model
 		}
     }
 
-    private double getColoringValue(double[] pt, vtkFloatArray pointData) throws IOException
+	public int getNumberOfColors()
+	{
+		if (coloringNames == null)
+			return 0;
+		else
+			return coloringNames.length;
+	}
+	
+	public String getColoringName(int i)
+	{
+		if (coloringNames != null && i < coloringNames.length)
+			return coloringNames[i];
+		else
+			return null;
+	}
+	
+	public boolean isFalseColoringSupported()
+	{
+		return supportsFalseColoring;
+	}
+	
+    private double getColoringValue(double[] pt, vtkFloatArray pointOrCellData)
     {
         double[] closestPoint = new double[3];
     	int cellId = findClosestCell(pt, closestPoint);
-    	return PolyDataUtil.interpolateWithinCell(
-    			smallBodyPolyData, pointData, cellId, closestPoint, idList);
+    	if (coloringValueType == ColoringValueType.POINT_DATA)
+    	{
+    		return PolyDataUtil.interpolateWithinCell(
+    				smallBodyPolyData, pointOrCellData, cellId, closestPoint, idList);
+    	}
+    	else
+    	{
+    		return pointOrCellData.GetTuple1(cellId);
+    	}
     }
-    
-    /**
-     * Get the elevation value at a particular point
-     * @param pt
-     * @return elevation
-     * @throws IOException 
-     */
-    public double getElevation(double[] pt) throws IOException
+
+    public double getColoringValue(int index, double[] pt)
     {
-    	if (elevationPointDataValues == null)
-    		loadColoringPointData();
+    	try
+    	{
+    		if (coloringValues != null && index < coloringValues.length && coloringValues[index] == null)
+    			loadColoringData();
+    	}
+    	catch (IOException e)
+    	{
+    		// TODO Auto-generated catch block
+    		e.printStackTrace();
+    	}
     	
-    	return getColoringValue(pt, elevationPointDataValues);
+    	return getColoringValue(pt, coloringValues[index]);
     }
 
-    /**
-     * Get the gravitational acceleration value at a particular point
-     * @param pt
-     * @return gravitational acceleration
-     * @throws IOException 
-     */
-    public double getGravitationalAcceleration(double[] pt) throws IOException
-    {
-    	if (gravAccPointDataValues == null)
-    		loadColoringPointData();
-
-    	return getColoringValue(pt, gravAccPointDataValues);
-    }
-
-    /**
-     * Get the gravitational potential value at a particular point
-     * @param pt
-     * @return gravitational potential
-     * @throws IOException 
-     */
-    public double getGravitationalPotential(double[] pt) throws IOException
-    {
-    	if (gravPotPointDataValues == null)
-    		loadColoringPointData();
-
-    	return getColoringValue(pt, gravPotPointDataValues);
-    }
-
-    /**
-     * Get the slope value at a particular point
-     * @param pt
-     * @return slope
-     * @throws IOException 
-     */
-    public double getSlope(double[] pt) throws IOException
-    {
-    	if (slopePointDataValues == null)
-    		loadColoringPointData();
-
-    	return getColoringValue(pt, slopePointDataValues);
-    }
 
 	public double getImageMapOpacity()
 	{
@@ -1077,6 +1112,83 @@ public class SmallBodyModel extends Model
 		}
 	}
 
+	// Compute the range of an array but account for the fact that for some datasets,
+	// some of the data is missing as represented by the lowest valued. So compute
+	// the range ignoring this lowest value (i.e take the lowest value to be the value
+	// just higher than the lowest value).
+	private double[] computeRange(int index, boolean adjustForColorTable)
+	{
+		double[] range = new double[2];
+		coloringValues[index].GetRange(range);
+		
+		if (coloringHasNulls == null || !coloringHasNulls[index])
+		{
+			return range;
+		}
+		else
+		{
+			vtkFloatArray array = coloringValues[index];
+			int numberValues = array.GetNumberOfTuples();
+			double adjustedMin = range[1];
+			for (int i=0; i<numberValues; ++i)
+			{
+				double v = array.GetValue(i);
+				if (v < adjustedMin && v > range[0])
+					adjustedMin = v;
+			}
+
+			// Subtract a little amount from the adjustedMin. This adds an extra value in the lookup table
+			// for the invalid data, which we can map to the color white. The value of 254 seems to work well,
+			// for current data, but may need tweaking for future data.
+			if (adjustForColorTable)
+				adjustedMin -= (range[1]-adjustedMin)/254.0;
+			
+			range[0] = adjustedMin;
+
+			return range; 
+		}
+	}
+	
+	/**
+	 *  Update the false color point or cell data if
+	 */
+	private void updateFalseColorArray()
+	{
+		if (falseColorArray == null)
+		{
+			falseColorArray = new vtkUnsignedCharArray();
+			falseColorArray.SetNumberOfComponents(3);
+		}
+		
+		vtkFloatArray red = coloringValues[redFalseColor];
+		vtkFloatArray green = coloringValues[greenFalseColor];
+		vtkFloatArray blue = coloringValues[blueFalseColor];
+		
+		double[] redRange = computeRange(redFalseColor, false);
+		double[] greenRange = computeRange(greenFalseColor, false);
+		double[] blueRange = computeRange(blueFalseColor, false);
+		double redExtent = redRange[1] - redRange[0];
+		double greenExtent = greenRange[1] - greenRange[0];
+		double blueExtent = blueRange[1] - blueRange[0];
+
+		int numberTuples = red.GetNumberOfTuples();
+		falseColorArray.SetNumberOfTuples(numberTuples);
+		
+		for (int i=0; i<numberTuples; ++i)
+		{
+			double redValue = 255.0 * (red.GetTuple1(i) - redRange[0]) / redExtent;
+			double greenValue = 255.0 * (green.GetTuple1(i) - greenRange[0]) / greenExtent;
+			double blueValue = 255.0 * (blue.GetTuple1(i) - blueRange[0]) / blueExtent;
+
+			// Map invalid data to white
+			if (redValue < 0.0)   redValue   = 255.0;
+			if (greenValue < 0.0) greenValue = 255.0;
+			if (blueValue < 0.0)  blueValue  = 255.0;
+
+			falseColorArray.SetTuple3(i, redValue, greenValue, blueValue);
+		}
+	}
+	
 	private void paintBody() throws IOException
 	{
 		if (resolutionLevel != 0)
@@ -1084,44 +1196,41 @@ public class SmallBodyModel extends Model
 
 		initializeActorsAndMappers();
 
-		loadColoringPointData();
+		loadColoringData();
 
-		vtkFloatArray array = null;
+		vtkDataArray array = null;
 
-		switch(coloringType)
+		if (coloringIndex >= 0)
 		{
-		case NONE:
-			array = null;
-			break;
-		case ELEVATION:
-			array = this.elevationPointDataValues;
-			scalarBarActor.SetTitle(ElevStr + " (" + ElevUnitsStr + ")");
-			break;
-		case GRAVITATIONAL_ACCELERATION:
-			array = this.gravAccPointDataValues;
-			scalarBarActor.SetTitle(GravAccStr + " (" + GravAccUnitsStr + ")");
-			break;
-		case GRAVITATIONAL_POTENTIAL:
-			array = this.gravPotPointDataValues;
-			scalarBarActor.SetTitle(GravPotStr + " (" + GravPotUnitsStr + ")");
-			break;
-		case SLOPE:
-			array = this.slopePointDataValues;
-			scalarBarActor.SetTitle(SlopeStr + " (" + SlopeUnitsStr + ")");
-			break;
+			array = coloringValues[coloringIndex];
+			scalarBarActor.SetTitle(coloringNames[coloringIndex] + " (" + coloringUnits[coloringIndex] + ")");
+		}
+		else if (useFalseColoring)
+		{
+			updateFalseColorArray();
+			array = falseColorArray;
 		}
 
-		this.smallBodyPolyData.GetPointData().SetScalars(array);
-		if (coloringType == ColoringType.NONE)
+		if (coloringValueType == ColoringValueType.POINT_DATA)
+			this.smallBodyPolyData.GetPointData().SetScalars(array);
+		else
+			this.smallBodyPolyData.GetCellData().SetScalars(array);
+		
+		if (coloringIndex < 0)
 		{
 			if (smallBodyActors.contains(scalarBarActor))
 				smallBodyActors.remove(scalarBarActor);
 		}
 		else
 		{
-			smallBodyMapper.GetLookupTable().SetRange(array.GetRange());
+			//smallBodyMapper.GetLookupTable().SetRange(array.GetRange());
+			smallBodyMapper.GetLookupTable().SetRange(computeRange(coloringIndex, true));
 			((vtkLookupTable)smallBodyMapper.GetLookupTable()).ForceBuild();
 			this.invertLookupTable();
+			
+			// If there's missing data, map them to white
+			if (coloringHasNulls != null && coloringHasNulls[coloringIndex])
+				((vtkLookupTable)smallBodyMapper.GetLookupTable()).SetTableValue(0, 1.0, 1.0, 1.0, 1.0);
 
 			if (!smallBodyActors.contains(scalarBarActor))
 				smallBodyActors.add(scalarBarActor);
@@ -1134,7 +1243,7 @@ public class SmallBodyModel extends Model
 		{
 			smallBodyActor.SetTexture(null);
 
-			if (coloringType == ColoringType.NONE)
+			if (coloringIndex < 0 && useFalseColoring == false)
 			{
 				smallBodyMapper.ScalarVisibilityOff();
 				smallBodyMapper.SetScalarModeToDefault();
@@ -1142,7 +1251,10 @@ public class SmallBodyModel extends Model
 			else
 			{
 				smallBodyMapper.ScalarVisibilityOn();
-				smallBodyMapper.SetScalarModeToUsePointData();
+				if (coloringValueType == ColoringValueType.POINT_DATA)
+					smallBodyMapper.SetScalarModeToUsePointData();
+				else
+					smallBodyMapper.SetScalarModeToUseCellData();
 			}
 		}
 		else 
@@ -1182,7 +1294,7 @@ public class SmallBodyModel extends Model
 			smallBodyMapper.ScalarVisibilityOff();
 			smallBodyMapper.SetScalarModeToDefault();
 
-			if (coloringType == ColoringType.NONE)
+			if (coloringIndex < 0 && useFalseColoring == false)
 			{
 				displayedImageMap.DeepCopy(originalImageMap);
 			}
@@ -1198,11 +1310,6 @@ public class SmallBodyModel extends Model
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 	}
 	
-	public int[] getIntersectingCubes()
-	{
-	    return null;
-	}
-
 	public void delete()
 	{
 		if (smallBodyPolyData != null) smallBodyPolyData.Delete();
@@ -1214,14 +1321,6 @@ public class SmallBodyModel extends Model
 	    if (cellLocator != null) cellLocator.Delete();
 	    if (pointLocator != null) pointLocator.Delete();
 	    if (lowResPointLocator != null) lowResPointLocator.Delete();
-	    if (elevationPointDataValues != null) elevationPointDataValues.Delete();
-	    if (gravAccPointDataValues != null) gravAccPointDataValues.Delete();
-	    if (gravPotPointDataValues != null) gravPotPointDataValues.Delete();
-	    if (slopePointDataValues != null) slopePointDataValues.Delete();
-	    if (elevationImage != null) elevationImage.Delete();
-	    if (gravAccImage != null) gravAccImage.Delete();
-	    if (gravPotImage != null) gravPotImage.Delete();
-	    if (slopeImage != null) slopeImage.Delete();
 	    if (originalImageMap != null) originalImageMap.Delete();
 	    if (displayedImageMap != null) displayedImageMap.Delete();
 	    if (scalarBarActor != null) scalarBarActor.Delete();

@@ -9,6 +9,7 @@ import net.miginfocom.swing.MigLayout;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import edu.jhuapl.near.model.*;
 
@@ -17,10 +18,13 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
     private JCheckBox modelCheckBox;
     private ModelManager modelManager;
     private JCheckBox showColoringCheckBox;
-    private JRadioButton elevationButton;
-    private JRadioButton gravitationalAccelerationButton;
-    private JRadioButton gravitationalPotentialButton;
-    private JRadioButton slopeButton;
+    private ArrayList<JRadioButton> coloringButtons = new ArrayList<JRadioButton>();
+    private JComboBox customColorRedComboBox;
+    private JComboBox customColorGreenComboBox;
+    private JComboBox customColorBlueComboBox;
+    private JLabel customColorRedLabel;
+    private JLabel customColorGreenLabel;
+    private JLabel customColorBlueLabel;
     private JRadioButton flatShadingButton;
     private JRadioButton smoothShadingButton;
     private JRadioButton lowResModelButton;
@@ -96,32 +100,56 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
 		showColoringCheckBox.setSelected(false);
 		showColoringCheckBox.addItemListener(this);
 
-		elevationButton = new JRadioButton(SmallBodyModel.ElevStr);
-		elevationButton.setActionCommand(SmallBodyModel.ElevStr);
-		elevationButton.addItemListener(this);
-		elevationButton.setEnabled(false);
+		SmallBodyModel smallBodyModel = modelManager.getSmallBodyModel();
+		for (int i=0; i<smallBodyModel.getNumberOfColors(); ++i)
+		{
+			JRadioButton button = new JRadioButton(smallBodyModel.getColoringName(i));
+			button.setActionCommand(smallBodyModel.getColoringName(i));
+			button.addItemListener(this);
+			button.setEnabled(false);
+			coloringButtons.add(button);
+		}
 		
-		gravitationalAccelerationButton = new JRadioButton(SmallBodyModel.GravAccStr);
-		gravitationalAccelerationButton.setActionCommand(SmallBodyModel.GravAccStr);
-		gravitationalAccelerationButton.addItemListener(this);
-		gravitationalAccelerationButton.setEnabled(false);
-		
-		gravitationalPotentialButton = new JRadioButton(SmallBodyModel.GravPotStr);
-		gravitationalPotentialButton.setActionCommand(SmallBodyModel.GravPotStr);
-		gravitationalPotentialButton.addItemListener(this);
-		gravitationalPotentialButton.setEnabled(false);
-		
-		slopeButton = new JRadioButton(SmallBodyModel.SlopeStr);
-		slopeButton.setActionCommand(SmallBodyModel.SlopeStr);
-		slopeButton.addItemListener(this);
-		slopeButton.setEnabled(false);
+		if (smallBodyModel.isFalseColoringSupported())
+		{
+			final String customColor = "Custom";
+			JRadioButton button = new JRadioButton(customColor);
+			button.setActionCommand(customColor);
+			button.addItemListener(this);
+			button.setEnabled(false);
+			coloringButtons.add(button);
+
+	        customColorRedLabel = new JLabel("Red: ");
+	        customColorGreenLabel = new JLabel("Green: ");
+	        customColorBlueLabel = new JLabel("Blue: ");
+
+	        Object[] coloringOptions = new Object[smallBodyModel.getNumberOfColors()];
+	    	for (int i=0; i<smallBodyModel.getNumberOfColors(); ++i)
+	    		coloringOptions[i] = smallBodyModel.getColoringName(i);
+	        
+	    	customColorRedComboBox = new JComboBox(coloringOptions);
+	        customColorRedComboBox.setMaximumSize(new Dimension(175, 23));
+	        customColorRedComboBox.addItemListener(this);
+	    	customColorGreenComboBox = new JComboBox(coloringOptions);
+	        customColorGreenComboBox.setMaximumSize(new Dimension(175, 23));
+	        customColorGreenComboBox.addItemListener(this);
+	    	customColorBlueComboBox = new JComboBox(coloringOptions);
+	        customColorBlueComboBox.setMaximumSize(new Dimension(175, 23));
+	        customColorBlueComboBox.addItemListener(this);
+
+    		customColorRedComboBox.setEnabled(false);
+    	    customColorGreenComboBox.setEnabled(false);
+    	    customColorBlueComboBox.setEnabled(false);
+    	    customColorRedLabel.setEnabled(false);
+    	    customColorGreenLabel.setEnabled(false);
+    	    customColorBlueLabel.setEnabled(false);
+		}
 		
 		coloringButtonGroup = new ButtonGroup();
-        coloringButtonGroup.add(elevationButton);
-        coloringButtonGroup.add(gravitationalAccelerationButton);
-        coloringButtonGroup.add(gravitationalPotentialButton);
-        coloringButtonGroup.add(slopeButton);
-        coloringButtonGroup.setSelected(elevationButton.getModel(), true);
+		for (int i=0; i<coloringButtons.size(); ++i)
+	        coloringButtonGroup.add(coloringButtons.get(i));
+		if (coloringButtons.size() > 0)
+			coloringButtonGroup.setSelected(coloringButtons.get(0).getModel(), true);
 
         JLabel shadingLabel = new JLabel("Shading");
         
@@ -170,10 +198,19 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
     	if (modelManager.getSmallBodyModel().isColoringDataAvailable())
     	{
     		panel.add(showColoringCheckBox, "wrap");
-    		panel.add(elevationButton, "wrap, gapleft 25");
-    		panel.add(gravitationalAccelerationButton, "wrap, gapleft 25");
-    		panel.add(gravitationalPotentialButton, "wrap, gapleft 25");
-    		panel.add(slopeButton, "wrap, gapleft 25");
+    		for (int i=0; i<smallBodyModel.getNumberOfColors(); ++i)
+        		panel.add(coloringButtons.get(i), "wrap, gapleft 25");
+    		if (smallBodyModel.isFalseColoringSupported())
+    		{
+    			panel.add(coloringButtons.get(coloringButtons.size()-1), "wrap, gapleft 25");
+    			
+    			panel.add(customColorRedLabel, "gapleft 50, split 2, align right");
+    			panel.add(customColorRedComboBox, "wrap");
+    			panel.add(customColorGreenLabel, "gapleft 50, split 2, align right");
+    			panel.add(customColorGreenComboBox, "wrap");
+    			panel.add(customColorBlueLabel, "gapleft 50, split 2, align right");
+    			panel.add(customColorBlueComboBox, "wrap");
+    		}
     	}
     	if (modelManager.getSmallBodyModel().isImageMapAvailable())
     	{
@@ -287,13 +324,21 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
 		{
 			if (e.getStateChange() == ItemEvent.DESELECTED)
 			{
-				elevationButton.setEnabled(false);
-				gravitationalAccelerationButton.setEnabled(false);
-				gravitationalPotentialButton.setEnabled(false);
-				slopeButton.setEnabled(false);
+	    		for (int i=0; i<coloringButtons.size(); ++i)
+	    			coloringButtons.get(i).setEnabled(false);
+	    		if (smallBodyModel.isFalseColoringSupported())
+	    		{
+	    			customColorRedComboBox.setEnabled(false);
+	    			customColorGreenComboBox.setEnabled(false);
+	    			customColorBlueComboBox.setEnabled(false);
+	    			customColorRedLabel.setEnabled(false);
+	    			customColorGreenLabel.setEnabled(false);
+	    			customColorBlueLabel.setEnabled(false);
+	    		}
+	    		
 				try 
 				{
-					smallBodyModel.setColorBy(SmallBodyModel.ColoringType.NONE);
+					smallBodyModel.setColoringIndex(-1);
 				} 
 				catch (IOException e1) {
 					e1.printStackTrace();
@@ -304,10 +349,18 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
 			}
 			else
 			{
-				elevationButton.setEnabled(true);
-				gravitationalAccelerationButton.setEnabled(true);
-				gravitationalPotentialButton.setEnabled(true);
-				slopeButton.setEnabled(true);
+	    		for (int i=0; i<coloringButtons.size(); ++i)
+	    			coloringButtons.get(i).setEnabled(true);
+	    		if (smallBodyModel.isFalseColoringSupported())
+	    		{
+	    			customColorRedComboBox.setEnabled(true);
+	    			customColorGreenComboBox.setEnabled(true);
+	    			customColorBlueComboBox.setEnabled(true);
+	    			customColorRedLabel.setEnabled(true);
+	    			customColorGreenLabel.setEnabled(true);
+	    			customColorBlueLabel.setEnabled(true);
+	    		}
+
 				setColoring();
 
 				if (imageMapCheckBox.isSelected())
@@ -330,26 +383,29 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
 
 		try 
 		{
-			if (coloringButtonGroup.getSelection() == this.elevationButton.getModel())
+			if (this.showColoringCheckBox.isSelected())
 			{
-				if (this.showColoringCheckBox.isSelected())
-					smallBodyModel.setColorBy(SmallBodyModel.ColoringType.ELEVATION);
+				for (int i=0; i<smallBodyModel.getNumberOfColors(); ++i)
+				{
+					if (coloringButtonGroup.getSelection() == this.coloringButtons.get(i).getModel())
+					{
+						smallBodyModel.setColoringIndex(i);
+						return;
+					}
+				}
+				
+				// If the false coloring option is selected (which is the last radio button
+				// and is not included in the previous for loop)
+				if (coloringButtonGroup.getSelection() ==
+					this.coloringButtons.get(smallBodyModel.getNumberOfColors()).getModel())
+				{
+					smallBodyModel.setFalseColoring(
+							customColorRedComboBox.getSelectedIndex(),
+							customColorGreenComboBox.getSelectedIndex(),
+							customColorBlueComboBox.getSelectedIndex());
+				}
 			}
-			else if (coloringButtonGroup.getSelection() == this.gravitationalAccelerationButton.getModel())
-			{
-				if (this.showColoringCheckBox.isSelected())
-					smallBodyModel.setColorBy(SmallBodyModel.ColoringType.GRAVITATIONAL_ACCELERATION);
-			}
-			else if (coloringButtonGroup.getSelection() == this.gravitationalPotentialButton.getModel())
-			{
-				if (this.showColoringCheckBox.isSelected())
-					smallBodyModel.setColorBy(SmallBodyModel.ColoringType.GRAVITATIONAL_POTENTIAL);	
-			}
-			else if (coloringButtonGroup.getSelection() == this.slopeButton.getModel())
-			{
-				if (this.showColoringCheckBox.isSelected())
-					smallBodyModel.setColorBy(SmallBodyModel.ColoringType.SLOPE);	
-			}
+
 		} 
 		catch (IOException e1) 
 		{

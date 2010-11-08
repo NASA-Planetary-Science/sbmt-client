@@ -41,7 +41,6 @@ import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.PointModel;
 import edu.jhuapl.near.model.RegularPolygonModel;
-import edu.jhuapl.near.model.SmallBodyModel.ColoringType;
 import edu.jhuapl.near.model.eros.DEMModel;
 import edu.jhuapl.near.model.eros.MapletBoundaryCollection;
 import edu.jhuapl.near.pick.PickManager;
@@ -166,12 +165,13 @@ public class TopoViewer extends JFrame
         		try
         		{
         			int index = coloringTypeComboBox.getSelectedIndex();
-        			if (index == 0)
-        				dem.setColorBy(ColoringType.ELEVATION);
-        			else if (index == 1)
-        				dem.setColorBy(ColoringType.SLOPE);
-        			else if (index == 2)
-        				dem.setColorBy(ColoringType.NONE);
+//        			if (index == 0)
+//        				dem.setColorBy(ColoringType.ELEVATION);
+//        			else if (index == 1)
+//        				dem.setColorBy(ColoringType.SLOPE);
+//        			else if (index == 2)
+//        				dem.setColorBy(ColoringType.NONE);
+    				dem.setColoringIndex(index);
         		}
         		catch (IOException e1)
         		{

@@ -37,8 +37,13 @@ public class DEMModel extends SmallBodyModel
 		
 		initializeDEM(filename);
 
-		setSmallBodyPolyData(dem, heights, null, null, slopes);
-		setColorBy(ColoringType.ELEVATION);
+		vtkFloatArray[] coloringValues =
+		{
+				heights, slopes
+		};
+		
+		setSmallBodyPolyData(dem, coloringValues, ColoringValueType.POINT_DATA);
+		setColoringIndex(0);
 	}
 
     private vtkPolyData initializeDEM(String filename) throws IOException

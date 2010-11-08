@@ -60,10 +60,10 @@ public class ColoringImageMapGenerator
 					throw new Exception("Problem converting lat lon");
 				}
 				
-				double slope = model.getSlope(point);
-				double elev = model.getElevation(point);
-				double gravAcc = model.getGravitationalAcceleration(point);
-				double gravPot = model.getGravitationalPotential(point);
+				double slope = model.getColoringValue(0, point);
+				double elev = model.getColoringValue(1, point);
+				double gravAcc = model.getColoringValue(2, point);
+				double gravPot = model.getColoringValue(3, point);
 				
 				slopeImage.SetScalarComponentFromDouble(j, i, 0, 0, slope);
 				elevImage.SetScalarComponentFromDouble(j, i, 0, 0, elev);
