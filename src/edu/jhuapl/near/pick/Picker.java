@@ -80,7 +80,7 @@ public abstract class Picker implements
         int pickSucceeded = 0;
         double tolerance = 0.0002;
         final double originalTolerance = picker.GetTolerance();
-        final double maxTolerance = 0.002;
+        final double maxTolerance = 0.004;
         final double incr = 0.0002;
         renWin.lock();
         picker.SetTolerance(tolerance);
