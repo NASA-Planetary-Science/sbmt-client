@@ -49,7 +49,7 @@ public class MapletBoundaryCollection extends Model implements PropertyChangeLis
 	        boundaryMapper.SetInput(boundary);
 
 	        actor.SetMapper(boundaryMapper);
-	        actor.GetProperty().SetColor(1.0, 0.0, 0.0);
+	        actor.GetProperty().SetColor(0.0, 0.392, 0.0);
 	        actor.GetProperty().SetPointSize(1.0);
 		}
 
@@ -139,7 +139,7 @@ public class MapletBoundaryCollection extends Model implements PropertyChangeLis
 		Boundary boundary = getBoundaryFromDEM(dem);
 		
 		boundary.removePropertyChangeListener(this);
-        erosModel.addPropertyChangeListener(boundary);
+        erosModel.removePropertyChangeListener(boundary);
 		
         ArrayList<vtkProp> actors = boundaryToActorsMap.get(boundary);
         
