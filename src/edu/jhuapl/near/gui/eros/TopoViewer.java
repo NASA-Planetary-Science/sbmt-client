@@ -152,8 +152,8 @@ public class TopoViewer extends JFrame
         JPanel panel = new JPanel();
 
     	Object[] coloringOptions = {
-    			"Color by elevation",
-    			//"Color by height relative to normal plane",
+    			"Color by elevation relative to gravity",
+    			"Color by elevation relative to normal plane",
     			"Color by slope",
     			"No coloring"};
         coloringTypeComboBox = new JComboBox(coloringOptions);
@@ -165,13 +165,10 @@ public class TopoViewer extends JFrame
         		try
         		{
         			int index = coloringTypeComboBox.getSelectedIndex();
-//        			if (index == 0)
-//        				dem.setColorBy(ColoringType.ELEVATION);
-//        			else if (index == 1)
-//        				dem.setColorBy(ColoringType.SLOPE);
-//        			else if (index == 2)
-//        				dem.setColorBy(ColoringType.NONE);
-    				dem.setColoringIndex(index);
+        			if (index == 3)
+        				dem.setColoringIndex(-1);
+        			else
+        				dem.setColoringIndex(index);
         		}
         		catch (IOException e1)
         		{

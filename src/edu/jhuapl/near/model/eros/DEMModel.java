@@ -24,7 +24,8 @@ public class DEMModel extends SmallBodyModel
     private vtkIdList idList;
     private vtkPolyData dem;
     private vtkPolyData boundary;
-    private vtkFloatArray heights;
+    private vtkFloatArray heightsGravity;
+    private vtkFloatArray heightsPlane;
     private vtkFloatArray slopes;
     
     public DEMModel(String filename) throws IOException
@@ -32,17 +33,27 @@ public class DEMModel extends SmallBodyModel
 		idList = new vtkIdList();
 		dem = new vtkPolyData();
 		boundary = new vtkPolyData();
-		heights = new vtkFloatArray();
+		heightsGravity = new vtkFloatArray();
+		heightsPlane = new vtkFloatArray();
 		slopes = new vtkFloatArray();
 		
 		initializeDEM(filename);
 
 		vtkFloatArray[] coloringValues =
 		{
-				heights, slopes
+				heightsGravity, heightsPlane, slopes
 		};
 		
-		setSmallBodyPolyData(dem, coloringValues, ColoringValueType.POINT_DATA);
+		String[] coloringNames = {
+				"Elevation Relative to Gravity",
+				"Elevation Relative to Plane",
+				"Slope"
+		};
+		String[] coloringUnits = {
+				"m", "m", "deg"
+		};
+		
+		setSmallBodyPolyData(dem, coloringValues, coloringNames, coloringUnits, ColoringValueType.POINT_DATA);
 		setColoringIndex(0);
 	}
 
@@ -60,7 +71,8 @@ public class DEMModel extends SmallBodyModel
         boundary.SetPoints(boundaryPoints);
         boundary.SetVerts(boundaryPolys);
 
-        heights.SetNumberOfComponents(1);
+        heightsGravity.SetNumberOfComponents(1);
+        heightsPlane.SetNumberOfComponents(1);
         slopes.SetNumberOfComponents(1);
         
 		FileInputStream fs = new FileInputStream(filename);
@@ -82,7 +94,7 @@ public class DEMModel extends SmallBodyModel
         int[][] indices = new int[WIDTH][HEIGHT];
         int c = 0;
         int d = 0;
-        float x, y, z, h, s;
+        float x, y, z, h, h2, s;
         int i0, i1, i2, i3;
 
         // First add points to the vtkPoints array
@@ -93,6 +105,7 @@ public class DEMModel extends SmallBodyModel
 				y = data[index(m,n,4)];
 				z = data[index(m,n,5)];
 				h = 1000.0f * data[index(m,n,0)];
+				h2 = 1000.0f * data[index(m,n,1)];
 				s = (float)(180.0/Math.PI) * data[index(m,n,2)];
 				
 				if (m > 0 && m < WIDTH-1 && n > 0 && n < HEIGHT-1)
@@ -107,7 +120,8 @@ public class DEMModel extends SmallBodyModel
 					
 					//points.SetPoint(c, x, y, z);
 					points.InsertNextPoint(x, y, z);
-					heights.InsertNextTuple1(h);
+					heightsGravity.InsertNextTuple1(h);
+					heightsPlane.InsertNextTuple1(h2);
 					slopes.InsertNextTuple1(s);
 					
 					indices[m][n] = c;
@@ -206,7 +220,7 @@ public class DEMModel extends SmallBodyModel
     	{
     		int cellId = findClosestCell(p.xyz);
     		
-    		double val = PolyDataUtil.interpolateWithinCell(dem, heights, cellId, p.xyz, idList);
+    		double val = PolyDataUtil.interpolateWithinCell(dem, heightsGravity, cellId, p.xyz, idList);
     		
     		profileHeights.add(val);
     		
@@ -228,7 +242,8 @@ public class DEMModel extends SmallBodyModel
 		idList.Delete();
 		dem.Delete();
 		boundary.Delete();
-		heights.Delete();
+		heightsGravity.Delete();
+		heightsPlane.Delete();
 		slopes.Delete();
 		super.delete();
     }

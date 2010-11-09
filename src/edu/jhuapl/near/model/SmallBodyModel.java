@@ -149,10 +149,14 @@ public class SmallBodyModel extends Model
 
 	public void setSmallBodyPolyData(vtkPolyData polydata,
 			vtkFloatArray[] coloringValues,
+			String[] coloringNames,
+			String[] coloringUnits,
 			ColoringValueType coloringValueType)
 	{
 		smallBodyPolyData.DeepCopy(polydata);
 		this.coloringValues = coloringValues;
+		this.coloringNames = coloringNames;
+		this.coloringUnits = coloringUnits;
 		this.coloringValueType = coloringValueType;
 		
 		initializeLocators();
