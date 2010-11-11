@@ -98,6 +98,8 @@ public class DEMModel extends SmallBodyModel
         int i0, i1, i2, i3;
 
         // First add points to the vtkPoints array
+//        for (int m=0; m<WIDTH-500; ++m)
+//			for (int n=0; n<HEIGHT-500; ++n)
         for (int m=0; m<WIDTH; ++m)
 			for (int n=0; n<HEIGHT; ++n)
 			{
@@ -137,6 +139,8 @@ public class DEMModel extends SmallBodyModel
         idList.SetNumberOfIds(3);
 
         // Now add connectivity information
+//        for (int m=1; m<WIDTH-500; ++m)
+//			for (int n=1; n<HEIGHT-500; ++n)
         for (int m=1; m<WIDTH; ++m)
 			for (int n=1; n<HEIGHT; ++n)
 			{

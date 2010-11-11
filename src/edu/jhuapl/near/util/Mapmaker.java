@@ -54,7 +54,8 @@ public class Mapmaker
     	}
     	else
     	{
-    		throw new IOException("Operating system not supported");
+			processName = execDir + File.separator + "MAPMAKERO.win32";
+			//throw new IOException("Operating system not supported");
     	}
     	
     	new File(processName).setExecutable(true);

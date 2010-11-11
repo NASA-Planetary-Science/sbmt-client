@@ -5,6 +5,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 
@@ -16,10 +18,12 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
+import javax.swing.SwingWorker;
 
 import net.miginfocom.swing.MigLayout;
 
 import edu.jhuapl.near.gui.CustomExtensionFileChooser;
+import edu.jhuapl.near.gui.FileDownloadSwingWorker;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.RegularPolygonModel;
@@ -37,6 +41,8 @@ public class TopoPanel extends JPanel implements ActionListener
     private JFormattedTextField nameTextField;
 	private JFormattedTextField outputFolderTextField;
     private JFileChooser dirChooser;
+	private JButton submitButton;
+	private JButton loadButton;
 	
 	public TopoPanel(final ModelManager modelManager,
 			final PickManager pickManager)
@@ -96,7 +102,7 @@ public class TopoPanel extends JPanel implements ActionListener
 
 	    dirChooser = new JFileChooser();
 	    dirChooser.setCurrentDirectory(null);
-        JPanel outputFolderPanel = new JPanel();
+        JPanel outputFolderPanel = new JPanel(new MigLayout("wrap 2"));
         final JButton outputFolderButton = new JButton("Output Folder...");
         outputFolderTextField = new JFormattedTextField();
         outputFolderTextField.setPreferredSize(new Dimension(150, 24));
@@ -120,7 +126,7 @@ public class TopoPanel extends JPanel implements ActionListener
         
         final JPanel submitPanel = new JPanel();
         //panel.setBorder(BorderFactory.createEmptyBorder(9, 9, 9, 9));
-        JButton submitButton = new JButton("Submit");
+        submitButton = new JButton("Submit");
         submitButton.setEnabled(true);
         submitButton.addActionListener(this);
         pane.add(submitPanel, "align center");
@@ -128,7 +134,7 @@ public class TopoPanel extends JPanel implements ActionListener
         submitPanel.add(submitButton);
 
         final JPanel loadPanel = new JPanel();
-        JButton loadButton = new JButton("Load Cube File...");
+        loadButton = new JButton("Load Cube File...");
         loadButton.setEnabled(true);
         loadButton.addActionListener(new ActionListener()
 		{
@@ -176,7 +182,10 @@ public class TopoPanel extends JPanel implements ActionListener
 			return;
 		}
 		
-		String name = this.nameTextField.getText();
+		final double[] centerPointFinal = centerPoint;
+		final double radiusFinal = radius;
+		
+		final String name = this.nameTextField.getText();
 		if (name == null || name.length() == 0)
 		{
 			JOptionPane.showMessageDialog(this,
@@ -218,29 +227,60 @@ public class TopoPanel extends JPanel implements ActionListener
 		// Next download the entire map maker suite to the users computer 
 		// if it has never been downloaded before.
 		// Ask the user beforehand if it's okay to continue.
+		final FileDownloadSwingWorker fileWorker = new FileDownloadSwingWorker(this, "/MSI/mapmaker.zip");
 		
-		// Next run the mapmaker tool
-		try
+		// If we need to download, promt the user that it will take a long time
+		if (fileWorker.getIfNeedToDownload())
 		{
-			Mapmaker mapmaker = new Mapmaker();
-			mapmaker.setName(name);
-			LatLon ll = MathUtil.reclat(centerPoint);
-			mapmaker.setLatitude(ll.lat);
-			mapmaker.setLongitude(ll.lon);
-			mapmaker.setPixelSize(1000.0 * 1.5 * radius / 512.0);
-			mapmaker.setOutputFolder(new File(outputFolderTextField.getText()));
-			
-			mapmaker.runMapmaker();
-			
-			new TopoViewer(mapmaker.getCubeFile(),
-					(MapletBoundaryCollection) modelManager.getModel(ModelNames.MAPLET_BOUNDARY));
+			int result = JOptionPane.showConfirmDialog(this,
+					"Before Mapmaker can be run for the first time, a large 700 MB file needs to be downloaded.\n" +
+					"This may take several minutes. Would you like to continue?",
+					"Confirm Download",
+					JOptionPane.YES_NO_OPTION);
+			if (result == JOptionPane.NO_OPTION)
+				return;
 		}
-		catch (Exception e1)
-		{
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+
+		submitButton.setEnabled(false);
+		loadButton.setEnabled(false);
 		
+		fileWorker.addPropertyChangeListener(new PropertyChangeListener()
+		{
+			public void propertyChange(PropertyChangeEvent evt)
+			{
+				if (evt.getNewValue().equals(SwingWorker.StateValue.DONE))
+				{
+					// Next run the mapmaker tool
+					try
+					{
+						submitButton.setEnabled(true);
+						loadButton.setEnabled(true);
+						
+						if (fileWorker.isCancelled())
+							return;
+						
+						Mapmaker mapmaker = new Mapmaker();
+						mapmaker.setName(name);
+						LatLon ll = MathUtil.reclat(centerPointFinal);
+						mapmaker.setLatitude(ll.lat);
+						mapmaker.setLongitude(ll.lon);
+						mapmaker.setPixelSize(1000.0 * 1.5 * radiusFinal / 512.0);
+						mapmaker.setOutputFolder(new File(outputFolderTextField.getText()));
+						
+						mapmaker.runMapmaker();
+						
+						new TopoViewer(mapmaker.getCubeFile(),
+								(MapletBoundaryCollection) modelManager.getModel(ModelNames.MAPLET_BOUNDARY));
+					}
+					catch (Exception e1)
+					{
+						e1.printStackTrace();
+					}
+				}
+			}
+		});
+
+		fileWorker.execute();
 	}
 	
 	private void loadCubeFile()
