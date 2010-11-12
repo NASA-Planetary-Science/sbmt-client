@@ -23,16 +23,12 @@ import javax.swing.SwingWorker;
 import net.miginfocom.swing.MigLayout;
 
 import edu.jhuapl.near.gui.CustomExtensionFileChooser;
-import edu.jhuapl.near.gui.FileDownloadSwingWorker;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.RegularPolygonModel;
 import edu.jhuapl.near.model.eros.MapletBoundaryCollection;
 import edu.jhuapl.near.pick.PickManager;
 import edu.jhuapl.near.pick.PickManager.PickMode;
-import edu.jhuapl.near.util.MathUtil;
-import edu.jhuapl.near.util.LatLon;
-import edu.jhuapl.near.util.Mapmaker;
 
 public class TopoPanel extends JPanel implements ActionListener
 {
@@ -43,6 +39,7 @@ public class TopoPanel extends JPanel implements ActionListener
     private JFileChooser dirChooser;
 	private JButton submitButton;
 	private JButton loadButton;
+	private PickManager pickManager;
 	
 	public TopoPanel(final ModelManager modelManager,
 			final PickManager pickManager)
@@ -51,7 +48,8 @@ public class TopoPanel extends JPanel implements ActionListener
         		BoxLayout.PAGE_AXIS));
 
     	this.modelManager = modelManager;
-
+    	this.pickManager = pickManager;
+    	
 		this.addComponentListener(new ComponentAdapter() 
 		{
 			public void componentHidden(ComponentEvent e)
@@ -159,6 +157,12 @@ public class TopoPanel extends JPanel implements ActionListener
 
 	public void actionPerformed(ActionEvent e)
 	{
+		if (!checkIfPlatformSupported())
+			return;
+
+        pickManager.setPickMode(PickMode.DEFAULT);
+        selectRegionButton.setSelected(false);
+        
 		// Run Bob Gaskell's map maker fortran program
 		
 		// First get the center point and radius of the selection circle
@@ -181,9 +185,6 @@ public class TopoPanel extends JPanel implements ActionListener
 					JOptionPane.ERROR_MESSAGE);
 			return;
 		}
-		
-		final double[] centerPointFinal = centerPoint;
-		final double radiusFinal = radius;
 		
 		final String name = this.nameTextField.getText();
 		if (name == null || name.length() == 0)
@@ -227,10 +228,11 @@ public class TopoPanel extends JPanel implements ActionListener
 		// Next download the entire map maker suite to the users computer 
 		// if it has never been downloaded before.
 		// Ask the user beforehand if it's okay to continue.
-		final FileDownloadSwingWorker fileWorker = new FileDownloadSwingWorker(this, "/MSI/mapmaker.zip");
+		final MapmakerSwingWorker mapmakerWorker =
+			new MapmakerSwingWorker(this, "Running Mapmaker", "/MSI/mapmaker.zip");
 		
 		// If we need to download, promt the user that it will take a long time
-		if (fileWorker.getIfNeedToDownload())
+		if (mapmakerWorker.getIfNeedToDownload())
 		{
 			int result = JOptionPane.showConfirmDialog(this,
 					"Before Mapmaker can be run for the first time, a large 700 MB file needs to be downloaded.\n" +
@@ -243,8 +245,15 @@ public class TopoPanel extends JPanel implements ActionListener
 
 		submitButton.setEnabled(false);
 		loadButton.setEnabled(false);
+
+		mapmakerWorker.setCenterPoint(centerPoint);
+		mapmakerWorker.setName(name);
+		mapmakerWorker.setRadius(radius);
+		mapmakerWorker.setOutputFolder(outputFolder);
 		
-		fileWorker.addPropertyChangeListener(new PropertyChangeListener()
+		mapmakerWorker.showDialog();
+		
+		mapmakerWorker.addPropertyChangeListener(new PropertyChangeListener()
 		{
 			public void propertyChange(PropertyChangeEvent evt)
 			{
@@ -256,20 +265,10 @@ public class TopoPanel extends JPanel implements ActionListener
 						submitButton.setEnabled(true);
 						loadButton.setEnabled(true);
 						
-						if (fileWorker.isCancelled())
+						if (mapmakerWorker.isCancelled())
 							return;
 						
-						Mapmaker mapmaker = new Mapmaker();
-						mapmaker.setName(name);
-						LatLon ll = MathUtil.reclat(centerPointFinal);
-						mapmaker.setLatitude(ll.lat);
-						mapmaker.setLongitude(ll.lon);
-						mapmaker.setPixelSize(1000.0 * 1.5 * radiusFinal / 512.0);
-						mapmaker.setOutputFolder(new File(outputFolderTextField.getText()));
-						
-						mapmaker.runMapmaker();
-						
-						new TopoViewer(mapmaker.getCubeFile(),
+						new TopoViewer(mapmakerWorker.getCubeFile(),
 								(MapletBoundaryCollection) modelManager.getModel(ModelNames.MAPLET_BOUNDARY));
 					}
 					catch (Exception e1)
@@ -280,7 +279,7 @@ public class TopoPanel extends JPanel implements ActionListener
 			}
 		});
 
-		fileWorker.execute();
+		mapmakerWorker.execute();
 	}
 	
 	private void loadCubeFile()
@@ -301,5 +300,22 @@ public class TopoPanel extends JPanel implements ActionListener
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	
+	private boolean checkIfPlatformSupported()
+	{
+    	String name = System.getProperty("os.name");
+    	if (name.toLowerCase().startsWith("windows"))
+    	{
+			JOptionPane.showMessageDialog(this,
+					"This feature is currently not supported in Windows platforms. Please try using Linux\n" +
+					"or Mac OS X instead. We apologize for any inconvenience.",
+					"Error",
+					JOptionPane.ERROR_MESSAGE);
+    		
+    		return false;
+    	}
+    	
+    	return true;
 	}
 }

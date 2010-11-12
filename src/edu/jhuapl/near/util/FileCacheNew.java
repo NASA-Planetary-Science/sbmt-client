@@ -12,6 +12,7 @@ public class FileCacheNew
 	private static ConcurrentHashMap<String, Object> downloadedFiles =
 		new ConcurrentHashMap<String, Object>();
 	private static volatile boolean abortDownload = false;
+	private static volatile double downloadProgress = 0.0;
 
 	public static class FileInfo
 	{
@@ -81,7 +82,7 @@ public class FileCacheNew
 			{
 				if (doDownloadIfNeeded)
 				{
-					file = addToCache(path, conn.getInputStream(), urlLastModified);
+					file = addToCache(path, conn.getInputStream(), urlLastModified, conn.getContentLength());
 					if (file != null) // file can be null if the user aborted the download
 					{
 						downloadedFiles.put(path, "");
@@ -200,7 +201,7 @@ public class FileCacheNew
 	 * 
 	 * @throws IOException
 	 */
-	static private File addToCache(String path, InputStream is, long urlLastModified) throws IOException
+	static private File addToCache(String path, InputStream is, long urlLastModified, long contentLength) throws IOException
 	{
 		if (path.toLowerCase().endsWith(".gz"))
 			is = new GZIPInputStream(is);
@@ -221,22 +222,31 @@ public class FileCacheNew
 
 		abortDownload = false;
 		boolean downloadAborted = false;
+		downloadProgress = 0.0;
 		
-		byte[] buff = new byte[2048];
+		int amountDownloadedSoFar = 0;
+		
+		final int bufferSize = 2048;
+		byte[] buff = new byte[bufferSize];
 		int len;
 		while((len = is.read(buff)) > 0)
 		{
+			amountDownloadedSoFar += len;
+			downloadProgress = 100.0 * (double)amountDownloadedSoFar / (double)contentLength;
+			
 			if (abortDownload)
 			{
 				downloadAborted = true;
 				break;
 			}
-
+			
 			os.write(buff, 0, len);
 		}
 
 		os.close();
 		is.close();
+
+		downloadProgress = 100.0;
 
 		if (downloadAborted)
 		{
@@ -260,8 +270,8 @@ public class FileCacheNew
 		if (urlLastModified > 0)
 			realFile.setLastModified(urlLastModified);
 
-		if (path.toLowerCase().endsWith(".zip"))
-			FileUtil.unzipFile(realFile, realFile.getParent());
+		//if (path.toLowerCase().endsWith(".zip"))
+		//	FileUtil.unzipFile(realFile, realFile.getParent());
 		
 		return realFile;	
 	}
@@ -270,5 +280,15 @@ public class FileCacheNew
 	{
 		System.out.println("aborted");
 		abortDownload = true;
+	}
+
+	static public double getDownloadProgess()
+	{
+		return downloadProgress;
+	}
+
+	static public void resetDownloadProgess()
+	{
+		downloadProgress = 0.0;
 	}
 }

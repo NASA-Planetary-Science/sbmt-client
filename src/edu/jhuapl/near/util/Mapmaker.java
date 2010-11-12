@@ -54,7 +54,7 @@ public class Mapmaker
     	}
     	else
     	{
-			processName = execDir + File.separator + "MAPMAKERO.win32";
+			processName = execDir + File.separator + "MAPMAKERO.win32.exe";
 			//throw new IOException("Operating system not supported");
     	}
     	
@@ -62,7 +62,7 @@ public class Mapmaker
     	processCommand.add(processName);
 	}
 	
-	public void runMapmaker() throws IOException, InterruptedException
+	public Process runMapmaker() throws IOException, InterruptedException
 	{
 		Process process = processBuilder.start();
 		OutputStream stdin = process.getOutputStream();
@@ -72,7 +72,7 @@ public class Mapmaker
 		stdin.flush();
 		stdin.close();
 		
-		process.waitFor();
+		//process.waitFor();
 		
 		// Copy output files to output folder
 		File origCubeFile = new File(mapmakerRootDir + File.separator + "OUTPUT" + File.separator + name + ".cub");
@@ -83,6 +83,8 @@ public class Mapmaker
 		
 		FileUtil.copyFile(origCubeFile, cubeFile);
 		FileUtil.copyFile(origLblFile, lblFile);
+		
+		return process;
 	}
 	
 	public String getName()

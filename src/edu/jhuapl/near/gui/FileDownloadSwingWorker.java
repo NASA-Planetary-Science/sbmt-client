@@ -4,15 +4,17 @@ import java.awt.Component;
 import java.io.File;
 
 import edu.jhuapl.near.util.FileCacheNew;
+import edu.jhuapl.near.util.FileUtil;
 
-public class FileDownloadSwingWorker extends ProgressMonitorSwingWorker
+public class FileDownloadSwingWorker extends ProgressBarSwingWorker
 {
 	private String filename;
 
-	public FileDownloadSwingWorker(Component c, String filename)
+	public FileDownloadSwingWorker(Component c, String title, String filename)
 	{
-		super(c);
+		super(c, title);
 		this.filename = filename;
+    	setLabelText("<html>Downloading file<br>Completed 0%</html>");
 	}
 	
 	public boolean getIfNeedToDownload()
@@ -32,32 +34,39 @@ public class FileDownloadSwingWorker extends ProgressMonitorSwingWorker
 		File tempFile = new File(fi.file.getAbsolutePath() + FileCacheNew.getTemporarySuffix());
 		tempFile.delete();
 		
+		FileCacheNew.resetDownloadProgess();
+		FileUtil.resetUnzipProgress();
+
 		Runnable runner = new Runnable()
 		{
 			public void run()
 			{
-				FileCacheNew.getFileFromServer(filename);
+				File file = FileCacheNew.getFileFromServer(filename);
+				FileUtil.unzipFile(file, file.getParent());
 			}
 		};
 		Thread downloadThread = new Thread(runner);
 		downloadThread.start();
 
-		long fileLength = fi.length;
-		int progress = 0;
         setProgress(0);
         try
         {
             while (downloadThread.isAlive() && !isCancelled())
             {
-                //Sleep for one second.
-                Thread.sleep(1000);
-                long amountSoFar = FileCacheNew.getAmountOfFileDownloadedSoFar(filename);
-                long percentage = Math.round(100.0 * ((double)amountSoFar / (double)fileLength));
-                if (percentage > progress)
+                int downloadProgress = (int)Math.floor(FileCacheNew.getDownloadProgess());
+                int unzipProgress = (int)Math.floor(FileUtil.getUnzipProgress());
+                if (downloadProgress < 100)
                 {
-                	progress = (int) percentage;
-                	setProgress(Math.min(progress, 99));
+                	setLabelText("<html>Downloading Mapmaker<br>Completed " + downloadProgress + "%</html>");
+                	setProgress(Math.min(downloadProgress, 99));
                 }
+                else if (unzipProgress < 100)
+                {
+                	setLabelText("<html>Unzipping Mapmaker<br>Completed " + unzipProgress + "%</html>");
+                	setProgress(Math.min(unzipProgress, 99));
+                }
+                
+                Thread.sleep(333);
             }
         }
         catch (InterruptedException ignore)
@@ -68,10 +77,7 @@ public class FileDownloadSwingWorker extends ProgressMonitorSwingWorker
         if (isCancelled())
         {
         	FileCacheNew.abortDownload();
-        }
-        else
-        {
-        	setProgress(100);
+        	FileUtil.abortUnzipping();
         }
         
         return null;

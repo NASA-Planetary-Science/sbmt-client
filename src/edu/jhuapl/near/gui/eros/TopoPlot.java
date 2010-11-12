@@ -94,6 +94,9 @@ public class TopoPlot implements ChartMouseListener, PropertyChangeListener
     
     private void updateProfile(int lineId)
     {
+    	if (lineId >= ((XYSeriesCollection)heightDistanceDataset).getSeriesCount())
+    		return;
+    		
     	Line line = (Line)lineModel.getStructure(lineId);
     	ArrayList<Double> height = new ArrayList<Double>(); 
     	ArrayList<Double> distance = new ArrayList<Double>(); 
@@ -109,7 +112,8 @@ public class TopoPlot implements ChartMouseListener, PropertyChangeListener
     
     private void removeProfile(int lineId)
     {
-        ((XYSeriesCollection)heightDistanceDataset).removeSeries(lineId);
+    	if (lineId < ((XYSeriesCollection)heightDistanceDataset).getSeriesCount())
+    		((XYSeriesCollection)heightDistanceDataset).removeSeries(lineId);
     }
 
     public String getProfileAsString(int lineId)

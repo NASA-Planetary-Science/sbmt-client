@@ -184,6 +184,8 @@ public class TopoViewer extends JFrame
     	{
     		public void actionPerformed(ActionEvent e) 
     		{
+    			removeFaultyProfiles();
+    			
     			lineModel.addNewStructure();
     			
     			// Set the color of this new structure
@@ -201,6 +203,8 @@ public class TopoViewer extends JFrame
         {
         	public void actionPerformed(ActionEvent e) 
         	{
+    			removeFaultyProfiles();
+
     			if (editButton.isSelected())
 					pickManager.setPickMode(PickMode.LINE_DRAW);
     			else
@@ -295,6 +299,9 @@ public class TopoViewer extends JFrame
         for (int i=0; i<numProfiles; ++i)
         {
         	Line line = (Line)lineModel.getStructure(i);
+        	if (line.controlPointIds.size() != 2)
+        		continue;
+        	
         	out.write(eol + Profile + "=" + i + eol);
         	out.write(StartLatitude + "=" + line.lat.get(0) + eol);
         	out.write(StartLongitude + "=" + line.lon.get(0) + eol);
@@ -383,6 +390,20 @@ public class TopoViewer extends JFrame
 		in.close();
 	}
 
+	// It's possible that sometimes, faulty lines without 2 vertices get created.
+	// Remove them here.
+	private void removeFaultyProfiles()
+	{
+        int numProfiles = lineModel.getNumberOfStructures();
+        for (int i=numProfiles-1; i>=0; --i)
+        {
+        	Line line = (Line)lineModel.getStructure(i);
+        	if (line.controlPointIds.size() != 2)
+        		lineModel.removeStructure(i);
+        }
+        
+	}
+	
 	private void removeAllProfiles()
 	{
 		lineModel.removeAllStructures();

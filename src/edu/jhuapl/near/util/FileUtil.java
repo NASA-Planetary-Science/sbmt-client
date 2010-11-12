@@ -9,6 +9,9 @@ import java.util.zip.ZipFile;
 
 public class FileUtil 
 {
+	private static volatile boolean abortUnzipping = false;
+	private static volatile double unzipProgress = 0.0;
+	
 	/**
 	 * The function takes a file and returns its contents as a list of strings, 
 	 * one line per string.
@@ -133,8 +136,20 @@ public class FileUtil
 
 			entries = zipFile.entries();
 
+			unzipProgress = 0.0;
+			
+			int count = 0;
+			int totalEntries = zipFile.size();
+			
 			while(entries.hasMoreElements())
 			{
+				unzipProgress = 100.0 * (double)count / (double)totalEntries;
+				
+				if (abortUnzipping)
+				{
+					break;
+				}
+
 				ZipEntry entry = (ZipEntry)entries.nextElement();
 
 				if(entry.isDirectory())
@@ -147,14 +162,34 @@ public class FileUtil
 				//System.err.println("Extracting file: " + entry.getName());
 				copyInputStream(zipFile.getInputStream(entry),
 						new BufferedOutputStream(new FileOutputStream(extractToFolder + File.separator + entry.getName())));
+				
+				++count;
 			}
 
 			zipFile.close();
+			
+			unzipProgress = 100.0;
 		}
 		catch (IOException ioe) {
 			System.err.println("Unhandled exception:");
 			ioe.printStackTrace();
 			return;
 		}
+	}
+
+	static public void abortUnzipping()
+	{
+		System.out.println("aborted");
+		abortUnzipping = true;
+	}
+	
+	static public double getUnzipProgress()
+	{
+		return unzipProgress;
+	}
+
+	static public void resetUnzipProgress()
+	{
+		unzipProgress = 0.0;
 	}
 }
