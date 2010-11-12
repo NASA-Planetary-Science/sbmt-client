@@ -256,6 +256,14 @@
              storepass="${keypass}"/>
   </target>
 
+  <target name="signcommonsio">
+    <input message="Please enter keystore password:"
+           addproperty="keypass" />
+    <signjar jar="${rootdir}/lib/commons-io-2.0.jar"
+             keystore="${rootdir}/keystore" alias="mykey"
+             storepass="${keypass}"/>
+  </target>
+
   <target name="signvtksb" depends="vtksbjar">
     <input message="Please enter keystore password:"
            addproperty="keypass" />

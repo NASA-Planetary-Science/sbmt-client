@@ -47,27 +47,7 @@ public class Configuration
 		
 		return cacheDir;
 	}
-	
-	static
-	{
-		try
-		{
-			Authenticator.setDefault(new Authenticator()
-			{
-				protected PasswordAuthentication getPasswordAuthentication()
-				{
-					char[] username = {'a','s','t','e','r','o','i','d'};
-					char[] password = {'c','r','a','t','e','r'};
-					return new PasswordAuthentication(new String(username), password); 
-				}
-			});
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-	}
-	
+
 	/**
 	 * @return Return the url of the server where data is downloaded from.
 	 */
