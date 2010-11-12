@@ -1,8 +1,6 @@
 package edu.jhuapl.near.util;
 
 import java.io.File;
-import java.net.Authenticator;
-import java.net.PasswordAuthentication;
 
 public class Configuration 
 {
@@ -10,6 +8,28 @@ public class Configuration
 	static private String cacheDir = null;
 	static private String cacheVersion = "2";
 	static private String mapMaperDir = null;
+	
+	/*
+	static
+	{
+		try
+		{
+			java.net.Authenticator.setDefault(new java.net.Authenticator()
+			{
+				protected java.net.PasswordAuthentication getPasswordAuthentication()
+				{
+					String username = "";
+					String password = "";
+					return new java.net.PasswordAuthentication(username, password.toCharArray()); 
+				}
+			});
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+	*/
 	
 	/**
 	 * @return Return the location where all application specific files should be stored. This is within
