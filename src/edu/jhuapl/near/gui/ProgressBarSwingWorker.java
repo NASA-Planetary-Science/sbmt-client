@@ -107,7 +107,6 @@ abstract public class ProgressBarSwingWorker extends SwingWorker<Void, Void>
         
         if (evt.getNewValue().equals(SwingWorker.StateValue.DONE))
 		{
-			System.out.println("Compeled task!");
 	        dialog.setVisible(false);
 			dialog.dispose();
 		}
