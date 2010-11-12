@@ -135,3 +135,5 @@
  
  - In SmallBodyModel replace the 4 coloring arrays with a hashmap that maps color names to
    the coloring data. What if we eventually want to add a fifth coloring type?
+   
+ - Consolidate all file choosers into a single class
