@@ -4,6 +4,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.Dialog;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
@@ -46,7 +47,7 @@ abstract public class ProgressBarSwingWorker extends SwingWorker<Void, Void>
 			cancelButton = new JButton("Cancel");
 	        cancelButton.addActionListener(this);
 
-	    	setModalityType(java.awt.Dialog.ModalityType.APPLICATION_MODAL);
+	    	setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
 	        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 	        panel.add(cancelButton, "align center");
 
