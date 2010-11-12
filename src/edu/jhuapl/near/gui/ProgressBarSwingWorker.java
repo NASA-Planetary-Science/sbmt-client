@@ -46,7 +46,7 @@ abstract public class ProgressBarSwingWorker extends SwingWorker<Void, Void>
 			cancelButton = new JButton("Cancel");
 	        cancelButton.addActionListener(this);
 
-	        //setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
+	    	setModalityType(java.awt.Dialog.ModalityType.APPLICATION_MODAL);
 	        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 	        panel.add(cancelButton, "align center");
 
@@ -73,10 +73,17 @@ abstract public class ProgressBarSwingWorker extends SwingWorker<Void, Void>
         addPropertyChangeListener(this);
 	}
 	
-	public void showDialog()
+	/**
+	 * Executes the worker and shows the dialog. Also updates the dialog text
+	 * if setLabelText was called.
+	 */
+	public void executeDialog()
 	{
     	label.setText(labelText);
 
+    	// Note execute must be called BEFORE setVisible. Otherwise, the worker thread
+    	// won't run
+    	execute();
     	dialog.setVisible(true);
 	}
 	

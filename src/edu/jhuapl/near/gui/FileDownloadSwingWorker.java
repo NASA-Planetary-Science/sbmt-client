@@ -2,6 +2,7 @@ package edu.jhuapl.near.gui;
 
 import java.awt.Component;
 import java.io.File;
+import java.text.DecimalFormat;
 
 import edu.jhuapl.near.util.FileCacheNew;
 import edu.jhuapl.near.util.FileUtil;
@@ -9,6 +10,7 @@ import edu.jhuapl.near.util.FileUtil;
 public class FileDownloadSwingWorker extends ProgressBarSwingWorker
 {
 	private String filename;
+    private DecimalFormat decimalFormatter = new DecimalFormat("0.000");
 
 	public FileDownloadSwingWorker(Component c, String title, String filename)
 	{
@@ -42,7 +44,8 @@ public class FileDownloadSwingWorker extends ProgressBarSwingWorker
 			public void run()
 			{
 				File file = FileCacheNew.getFileFromServer(filename);
-				FileUtil.unzipFile(file, file.getParent());
+				if (file != null)
+					FileUtil.unzipFile(file, file.getParent());
 			}
 		};
 		Thread downloadThread = new Thread(runner);
@@ -53,17 +56,19 @@ public class FileDownloadSwingWorker extends ProgressBarSwingWorker
         {
             while (downloadThread.isAlive() && !isCancelled())
             {
-                int downloadProgress = (int)Math.floor(FileCacheNew.getDownloadProgess());
-                int unzipProgress = (int)Math.floor(FileUtil.getUnzipProgress());
-                if (downloadProgress < 100)
+                double downloadProgress = FileCacheNew.getDownloadProgess();
+                double unzipProgress = FileUtil.getUnzipProgress();
+                if (downloadProgress < 100.0)
                 {
-                	setLabelText("<html>Downloading Mapmaker<br>Completed " + downloadProgress + "%</html>");
-                	setProgress(Math.min(downloadProgress, 99));
+                	setLabelText("<html>Downloading Mapmaker<br>Completed " +
+                			decimalFormatter.format(downloadProgress) + "%</html>");
+                	setProgress(Math.min((int)downloadProgress, 99));
                 }
-                else if (unzipProgress < 100)
+                else if (unzipProgress < 100.0)
                 {
-                	setLabelText("<html>Unzipping Mapmaker<br>Completed " + unzipProgress + "%</html>");
-                	setProgress(Math.min(unzipProgress, 99));
+                	setLabelText("<html>Unzipping Mapmaker<br>Completed " +
+                			decimalFormatter.format(unzipProgress) + "%</html>");
+                	setProgress(Math.min((int)unzipProgress, 99));
                 }
                 
                 Thread.sleep(333);

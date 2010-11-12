@@ -11,6 +11,7 @@ public class FileCacheNew
 	// Stores files already downloaded in this process
 	private static ConcurrentHashMap<String, Object> downloadedFiles =
 		new ConcurrentHashMap<String, Object>();
+
 	private static volatile boolean abortDownload = false;
 	private static volatile double downloadProgress = 0.0;
 
@@ -88,6 +89,10 @@ public class FileCacheNew
 						downloadedFiles.put(path, "");
 						fi.length = file.length();
 					}
+					else
+					{
+						return null;
+					}
 				}
 				else
 				{
@@ -124,75 +129,73 @@ public class FileCacheNew
 	static public File getFileFromServer(String path)
 	{
 		FileInfo fi = getFileInfoFromServer(path, true);
-		return fi.file;
-	}
-
-	static public File getFileFromServerWithoutDownload(String path)
-	{
-		String unzippedPath = path;
-		if (unzippedPath.toLowerCase().endsWith(".gz"))
-			unzippedPath = unzippedPath.substring(0, unzippedPath.length() - 3);
-
-		File file = new File(Configuration.getCacheDir() + File.separator
-				+ unzippedPath);
-
-		return file;
-	}
-	
-	/**
-	 * Return whether or not we need to download the file from the server or
-	 * if we can already use the file in the cache
-	 * @param path
-	 * @return true, if the file needs to be downloaded, false if we can use the version in the cache
-	 */
-	static public boolean getIfNeedToDownloadFileFromServer(String path)
-	{
-		FileInfo fi = getFileInfoFromServer(path, false);
-		return fi.needToDownload;
-	}
-
-	/**
-	 * The size of the file on the server without downloading it. If the file
-	 * exists and does not need to be downloaded, simply return the file's size.
-	 * @param path
-	 * @return
-	 */
-	static public long getFileSizeFromServer(String path)
-	{
-		FileInfo fi = getFileInfoFromServer(path, false);
-		return fi.length;
-	}
-
-	static public String getTemporarySuffix()
-	{
-		return ".sbmt_tool";
-	}
-	
-	static public long getAmountOfFileDownloadedSoFar(String path)
-	{
-		if (path.toLowerCase().endsWith(".gz"))
-			path = path.substring(0, path.length()-3);
-		
-		String realFilename = Configuration.getCacheDir() + File.separator + path;
-		File file = new File(realFilename + getTemporarySuffix());
-		
-		if (file.exists())
-		{
-			return file.length();
-		}
+		if (fi != null)
+			return fi.file;
 		else
-		{
-			// If the temp file does not exist, then there are 2 possibilities, either
-			// we haven't yet started the download or we finished the download. 
-			// Therefore, check if we need to download the file. If we do, return 0,
-			// and if not return the file size.
-			boolean needToDownload = getFileInfoFromServer(path).needToDownload;
-			if (needToDownload)
-				return 0;
-			else
-				return new File(realFilename).length();
-		}
+			return null;
 	}
+
+//	static public File getFileFromServerWithoutDownload(String path)
+//	{
+//		String unzippedPath = path;
+//		if (unzippedPath.toLowerCase().endsWith(".gz"))
+//			unzippedPath = unzippedPath.substring(0, unzippedPath.length() - 3);
+//
+//		File file = new File(Configuration.getCacheDir() + File.separator
+//				+ unzippedPath);
+//
+//		return file;
+//	}
+//	
+//	/**
+//	 * Return whether or not we need to download the file from the server or
+//	 * if we can already use the file in the cache
+//	 * @param path
+//	 * @return true, if the file needs to be downloaded, false if we can use the version in the cache
+//	 */
+//	static public boolean getIfNeedToDownloadFileFromServer(String path)
+//	{
+//		FileInfo fi = getFileInfoFromServer(path, false);
+//		return fi.needToDownload;
+//	}
+//
+//	/**
+//	 * The size of the file on the server without downloading it. If the file
+//	 * exists and does not need to be downloaded, simply return the file's size.
+//	 * @param path
+//	 * @return
+//	 */
+//	static public long getFileSizeFromServer(String path)
+//	{
+//		FileInfo fi = getFileInfoFromServer(path, false);
+//		return fi.length;
+//	}
+//
+//	static public long getAmountOfFileDownloadedSoFar(String path)
+//	{
+//		if (path.toLowerCase().endsWith(".gz"))
+//			path = path.substring(0, path.length()-3);
+//		
+//		String realFilename = Configuration.getCacheDir() + File.separator + path;
+//		File file = new File(realFilename + getTemporarySuffix());
+//		
+//		if (file.exists())
+//		{
+//			return file.length();
+//		}
+//		else
+//		{
+//			// If the temp file does not exist, then there are 2 possibilities, either
+//			// we haven't yet started the download or we finished the download. 
+//			// Therefore, check if we need to download the file. If we do, return 0,
+//			// and if not return the file size.
+//			boolean needToDownload = getFileInfoFromServer(path).needToDownload;
+//			if (needToDownload)
+//				return 0;
+//			else
+//				return new File(realFilename).length();
+//		}
+//	}
 	
 	/**
 	 * When adding to the cache, gzipped files are always uncompressed and saved
@@ -270,15 +273,16 @@ public class FileCacheNew
 		if (urlLastModified > 0)
 			realFile.setLastModified(urlLastModified);
 
-		//if (path.toLowerCase().endsWith(".zip"))
-		//	FileUtil.unzipFile(realFile, realFile.getParent());
-		
 		return realFile;	
+	}
+	
+	static public String getTemporarySuffix()
+	{
+		return ".sbmt_tool";
 	}
 	
 	static public void abortDownload()
 	{
-		System.out.println("aborted");
 		abortDownload = true;
 	}
 

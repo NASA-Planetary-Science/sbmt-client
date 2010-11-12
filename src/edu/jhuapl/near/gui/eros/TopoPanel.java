@@ -251,8 +251,6 @@ public class TopoPanel extends JPanel implements ActionListener
 		mapmakerWorker.setRadius(radius);
 		mapmakerWorker.setOutputFolder(outputFolder);
 		
-		mapmakerWorker.showDialog();
-		
 		mapmakerWorker.addPropertyChangeListener(new PropertyChangeListener()
 		{
 			public void propertyChange(PropertyChangeEvent evt)
@@ -279,7 +277,7 @@ public class TopoPanel extends JPanel implements ActionListener
 			}
 		});
 
-		mapmakerWorker.execute();
+		mapmakerWorker.executeDialog();
 	}
 	
 	private void loadCubeFile()

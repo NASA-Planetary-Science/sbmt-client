@@ -7,6 +7,8 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import org.apache.commons.io.FileUtils;
+
 public class FileUtil 
 {
 	private static volatile boolean abortUnzipping = false;
@@ -137,7 +139,8 @@ public class FileUtil
 			entries = zipFile.entries();
 
 			unzipProgress = 0.0;
-			
+
+			boolean unzipAborted = false;
 			int count = 0;
 			int totalEntries = zipFile.size();
 			
@@ -147,6 +150,7 @@ public class FileUtil
 				
 				if (abortUnzipping)
 				{
+					unzipAborted = true;
 					break;
 				}
 
@@ -168,6 +172,11 @@ public class FileUtil
 
 			zipFile.close();
 			
+			if (unzipAborted)
+			{
+				FileUtils.deleteDirectory(new File(extractToFolder));
+			}
+			
 			unzipProgress = 100.0;
 		}
 		catch (IOException ioe) {
@@ -179,7 +188,6 @@ public class FileUtil
 
 	static public void abortUnzipping()
 	{
-		System.out.println("aborted");
 		abortUnzipping = true;
 	}
 	
