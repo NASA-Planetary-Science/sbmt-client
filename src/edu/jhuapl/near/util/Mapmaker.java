@@ -72,8 +72,11 @@ public class Mapmaker
 		stdin.flush();
 		stdin.close();
 		
-		//process.waitFor();
-		
+		return process;
+	}
+	
+	public void copyGeneratedFilesToOutputFolder() throws IOException
+	{
 		// Copy output files to output folder
 		File origCubeFile = new File(mapmakerRootDir + File.separator + "OUTPUT" + File.separator + name + ".cub");
 		File origLblFile = new File(mapmakerRootDir + File.separator + "OUTPUT" + File.separator + name + ".lbl");
@@ -83,8 +86,6 @@ public class Mapmaker
 		
 		FileUtil.copyFile(origCubeFile, cubeFile);
 		FileUtil.copyFile(origLblFile, lblFile);
-		
-		return process;
 	}
 	
 	public String getName()

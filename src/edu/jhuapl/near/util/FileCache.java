@@ -132,9 +132,6 @@ public class FileCache
 		if (urlLastModified > 0)
 			realFile.setLastModified(urlLastModified);
 
-		if (path.toLowerCase().endsWith(".zip"))
-			FileUtil.unzipFile(realFile, realFile.getParent());
-		
 		return realFile;	
 	}
 }

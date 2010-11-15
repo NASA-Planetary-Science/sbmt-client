@@ -66,6 +66,7 @@ public class PickManager extends Picker
 			removePicker(circlePicker);
 			removePicker(pointPicker);
 			removePicker(circleSelectionPicker);
+			defaultPicker.setSuppressPopups(false);
 	        break;
 		case LINE_DRAW:
 			renderer.setInteractorToNone();
@@ -73,6 +74,7 @@ public class PickManager extends Picker
 			removePicker(pointPicker);
 			removePicker(circleSelectionPicker);
 			addPicker(linePicker);
+			defaultPicker.setSuppressPopups(true);
 			break;
 		case CIRCLE_DRAW:
 			renderer.setInteractorToNone();
@@ -80,6 +82,7 @@ public class PickManager extends Picker
 			removePicker(pointPicker);
 			removePicker(circleSelectionPicker);
 			addPicker(circlePicker);
+			defaultPicker.setSuppressPopups(true);
 			break;
 		case POINT_DRAW:
 			renderer.setInteractorToNone();
@@ -87,6 +90,7 @@ public class PickManager extends Picker
 			removePicker(circlePicker);
 			removePicker(circleSelectionPicker);
 			addPicker(pointPicker);
+			defaultPicker.setSuppressPopups(true);
 			break;
 		case CIRCLE_SELECTION:
 			renderer.setInteractorToNone();
@@ -94,6 +98,7 @@ public class PickManager extends Picker
 			removePicker(pointPicker);
 			removePicker(circlePicker);
 			addPicker(circleSelectionPicker);
+			defaultPicker.setSuppressPopups(true);
 			break;
 		}
 	}

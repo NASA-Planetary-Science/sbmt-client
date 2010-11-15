@@ -278,7 +278,7 @@ public class FileCacheNew
 	
 	static public String getTemporarySuffix()
 	{
-		return ".sbmt_tool";
+		return FileUtil.getTemporarySuffix();
 	}
 	
 	static public void abortDownload()

@@ -11,7 +11,7 @@ import org.apache.commons.io.FileUtils;
 
 public class FileUtil 
 {
-	private static volatile boolean abortUnzipping = false;
+	private static volatile boolean abortUnzip = false;
 	private static volatile double unzipProgress = 0.0;
 	
 	/**
@@ -123,21 +123,41 @@ public class FileUtil
 		copyInputStream(in, out);
 	}
 
+	static public String getTemporarySuffix()
+	{
+		return ".sbmt_tool";
+	}
+
 	/**
 	 * The following function is adapted from http://www.devx.com/getHelpOn/10MinuteSolution/20447
+	 * 
+	 * This function assumes the zip file contains a single top level folder of the same name as the
+	 * zip file without the .zip extension. E.g. if the zip file is called mapmaker.zip, then 
+	 * when unzipped, there will be a single folder called mapmaker in the same folder as mapmaker.zip.
+	 * 
 	 * @param file
 	 */
-	public static void unzipFile(File file, String extractToFolder)
+	@SuppressWarnings("unchecked")
+	public static void unzipFile(File file)
 	{
 		Enumeration entries;
 		ZipFile zipFile;
 
+		String zipContainingFolder = file.getParent();
+		String zipTopLevelFolderName = file.getName().substring(0, file.getName().length()-4);
+		String zipTopLevelFolder = zipContainingFolder + File.separator + zipTopLevelFolderName;
+		String tempExtractToFolder = zipTopLevelFolder + getTemporarySuffix();
+		
 		try 
 		{
+			FileUtils.deleteQuietly(new File(zipTopLevelFolder));
+			FileUtils.deleteQuietly(new File(tempExtractToFolder));
+
 			zipFile = new ZipFile(file);
 
 			entries = zipFile.entries();
 
+			abortUnzip = false;
 			unzipProgress = 0.0;
 
 			boolean unzipAborted = false;
@@ -148,7 +168,7 @@ public class FileUtil
 			{
 				unzipProgress = 100.0 * (double)count / (double)totalEntries;
 				
-				if (abortUnzipping)
+				if (abortUnzip)
 				{
 					unzipAborted = true;
 					break;
@@ -159,24 +179,27 @@ public class FileUtil
 				if(entry.isDirectory())
 				{
 					//System.err.println("Extracting directory: " + entry.getName());
-					(new File(extractToFolder + File.separator + entry.getName())).mkdirs();
+					(new File(tempExtractToFolder + File.separator + entry.getName())).mkdirs();
 					continue;
 				}
 
 				//System.err.println("Extracting file: " + entry.getName());
 				copyInputStream(zipFile.getInputStream(entry),
-						new BufferedOutputStream(new FileOutputStream(extractToFolder + File.separator + entry.getName())));
+						new BufferedOutputStream(new FileOutputStream(tempExtractToFolder + File.separator + entry.getName())));
 				
 				++count;
 			}
 
 			zipFile.close();
 			
-			if (unzipAborted)
+			if (!unzipAborted)
 			{
-				FileUtils.deleteDirectory(new File(extractToFolder));
+				String tempTopLevelFolder = tempExtractToFolder + File.separator + zipTopLevelFolderName;
+				FileUtils.moveDirectory(new File(tempTopLevelFolder), new File(zipTopLevelFolder));
 			}
-			
+
+			FileUtils.deleteQuietly(new File(tempExtractToFolder));
+
 			unzipProgress = 100.0;
 		}
 		catch (IOException ioe) {
@@ -186,9 +209,9 @@ public class FileUtil
 		}
 	}
 
-	static public void abortUnzipping()
+	static public void abortUnzip()
 	{
-		abortUnzipping = true;
+		abortUnzip = true;
 	}
 	
 	static public double getUnzipProgress()

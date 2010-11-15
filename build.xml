@@ -29,6 +29,7 @@
 		<pathelement location="${rootdir}/lib/jcommon-1.0.16.jar"/>
 		<pathelement location="${rootdir}/lib/jfreechart-1.0.13.jar"/>
 		<pathelement location="${rootdir}/lib/miglayout-3.7.1-swing.jar"/>
+		<pathelement location="${rootdir}/lib/commons-io-2.0.jar"/>
       </classpath>
     </javac> 
   </target>
@@ -46,6 +47,7 @@
 		<pathelement location="${rootdir}/lib/jcommon-1.0.16.jar"/>
 		<pathelement location="${rootdir}/lib/jfreechart-1.0.13.jar"/>
 		<pathelement location="${rootdir}/lib/miglayout-3.7.1-swing.jar"/>
+		<pathelement location="${rootdir}/lib/commons-io-2.0.jar"/>
       </classpath>
     </java>
   </target>
@@ -60,7 +62,8 @@
 											joda-time-1.6.jar
                                             jcommon-1.0.16.jar
                                             jfreechart-1.0.13.jar
-                                            miglayout-3.7.1-swing.jar"/>
+                                            miglayout-3.7.1-swing.jar
+                                            commons-io-2.0.jar"/>
         <attribute name="Main-Class" value="edu.jhuapl.near.ErosViewer"/>
       </manifest>
     </jar>
@@ -79,6 +82,7 @@
 		<pathelement location="${rootdir}/lib/jcommon-1.0.16.jar"/>
         <pathelement location="${rootdir}/lib/jfreechart-1.0.13.jar"/>
         <pathelement location="${rootdir}/lib/miglayout-3.7.1-swing.jar"/>
+        <pathelement location="${rootdir}/lib/commons-io-2.0.jar"/>
 		<pathelement location="${rootdir}/build/jar/near.jar"/>
       </classpath>
     </java>

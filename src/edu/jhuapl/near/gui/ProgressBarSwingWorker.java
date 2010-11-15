@@ -51,7 +51,7 @@ abstract public class ProgressBarSwingWorker extends SwingWorker<Void, Void>
 	        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 	        panel.add(cancelButton, "align center");
 
-	        setLocationRelativeTo(c);
+	        setLocationRelativeTo(JOptionPane.getFrameForComponent(c));
 
 	        add(panel);
 	        pack();
@@ -83,7 +83,7 @@ abstract public class ProgressBarSwingWorker extends SwingWorker<Void, Void>
     	label.setText(labelText);
 
     	// Note execute must be called BEFORE setVisible. Otherwise, the worker thread
-    	// won't run
+    	// won't run since setVisible blocks until the dialog closes.
     	execute();
     	dialog.setVisible(true);
 	}

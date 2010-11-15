@@ -7,6 +7,7 @@ import java.text.DecimalFormat;
 import edu.jhuapl.near.util.FileCacheNew;
 import edu.jhuapl.near.util.FileUtil;
 
+
 public class FileDownloadSwingWorker extends ProgressBarSwingWorker
 {
 	private String filename;
@@ -24,47 +25,53 @@ public class FileDownloadSwingWorker extends ProgressBarSwingWorker
 		return FileCacheNew.getFileInfoFromServer(filename).needToDownload;
 	}
 
+	public boolean getIfNeedToUnzip()
+	{
+		String zipfile = FileCacheNew.getFileInfoFromServer(filename).file.getAbsolutePath();
+		File zipRootFolder = new File(zipfile.substring(0, zipfile.length()-4));
+		
+		return !zipRootFolder.exists() && zipfile.endsWith(".zip");
+	}
+
 	@Override
 	protected Void doInBackground()
 	{
-		FileCacheNew.FileInfo fi = FileCacheNew.getFileInfoFromServer(filename);
-		if (fi.needToDownload == false)
+		final boolean needToDownload = getIfNeedToDownload();
+		final boolean needToUnzip = getIfNeedToUnzip();
+		if (!needToDownload && !needToUnzip)
 			return null;
 
-		// Delete the temporary file if it exists for some reason (e.g. the program crashed during
-		// a previous download)
-		File tempFile = new File(fi.file.getAbsolutePath() + FileCacheNew.getTemporarySuffix());
-		tempFile.delete();
-		
-		FileCacheNew.resetDownloadProgess();
-		FileUtil.resetUnzipProgress();
+    	if (needToDownload)
+    		FileCacheNew.resetDownloadProgess();
+    	if (needToUnzip)
+    		FileUtil.resetUnzipProgress();
 
 		Runnable runner = new Runnable()
 		{
 			public void run()
 			{
 				File file = FileCacheNew.getFileFromServer(filename);
-				if (file != null)
-					FileUtil.unzipFile(file, file.getParent());
+
+				if (file != null && needToUnzip)
+					FileUtil.unzipFile(file);
 			}
 		};
 		Thread downloadThread = new Thread(runner);
 		downloadThread.start();
 
-        setProgress(0);
         try
         {
             while (downloadThread.isAlive() && !isCancelled())
             {
                 double downloadProgress = FileCacheNew.getDownloadProgess();
                 double unzipProgress = FileUtil.getUnzipProgress();
-                if (downloadProgress < 100.0)
+                if (downloadProgress < 100.0 && needToDownload)
                 {
                 	setLabelText("<html>Downloading Mapmaker<br>Completed " +
                 			decimalFormatter.format(downloadProgress) + "%</html>");
                 	setProgress(Math.min((int)downloadProgress, 99));
                 }
-                else if (unzipProgress < 100.0)
+                else if (unzipProgress < 100.0 && needToUnzip)
                 {
                 	setLabelText("<html>Unzipping Mapmaker<br>Completed " +
                 			decimalFormatter.format(unzipProgress) + "%</html>");
@@ -81,8 +88,10 @@ public class FileDownloadSwingWorker extends ProgressBarSwingWorker
 
         if (isCancelled())
         {
-        	FileCacheNew.abortDownload();
-        	FileUtil.abortUnzipping();
+        	if (needToDownload)
+        		FileCacheNew.abortDownload();
+        	if (needToUnzip)
+        		FileUtil.abortUnzip();
         }
         
         return null;

@@ -100,6 +100,7 @@ public class MapmakerSwingWorker extends FileDownloadSwingWorker
             	Thread.sleep(333);
             }
 
+            mapmaker.copyGeneratedFilesToOutputFolder();
 			cubeFile = mapmaker.getCubeFile();
 		}
 		catch (IOException e)

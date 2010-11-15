@@ -5,8 +5,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 
@@ -18,7 +16,6 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
-import javax.swing.SwingWorker;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -124,7 +121,7 @@ public class TopoPanel extends JPanel implements ActionListener
         
         final JPanel submitPanel = new JPanel();
         //panel.setBorder(BorderFactory.createEmptyBorder(9, 9, 9, 9));
-        submitButton = new JButton("Submit");
+        submitButton = new JButton("Run Mapmaker");
         submitButton.setEnabled(true);
         submitButton.addActionListener(this);
         pane.add(submitPanel, "align center");
@@ -179,7 +176,7 @@ public class TopoPanel extends JPanel implements ActionListener
 		}
 		else
 		{
-			JOptionPane.showMessageDialog(this,
+			JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
 					"Please select a region on the asteroid.",
 					"Error",
 					JOptionPane.ERROR_MESSAGE);
@@ -189,7 +186,7 @@ public class TopoPanel extends JPanel implements ActionListener
 		final String name = this.nameTextField.getText();
 		if (name == null || name.length() == 0)
 		{
-			JOptionPane.showMessageDialog(this,
+			JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
 					"Please enter a name.",
 					"Error",
 					JOptionPane.ERROR_MESSAGE);
@@ -199,7 +196,7 @@ public class TopoPanel extends JPanel implements ActionListener
 		String outputFolderStr = outputFolderTextField.getText();
 		if (outputFolderStr == null || outputFolderStr.isEmpty())
 		{
-			JOptionPane.showMessageDialog(this,
+			JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
 					"Please enter an output folder.",
 					"Error",
 					JOptionPane.ERROR_MESSAGE);
@@ -209,7 +206,7 @@ public class TopoPanel extends JPanel implements ActionListener
 		File outputFolder = new File(outputFolderStr);
 		if (!outputFolder.exists())
 		{
-			JOptionPane.showMessageDialog(this,
+			JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
 					"The output folder does not exists.",
 					"Error",
 					JOptionPane.ERROR_MESSAGE);
@@ -218,7 +215,7 @@ public class TopoPanel extends JPanel implements ActionListener
 
 		if (!outputFolder.canWrite())
 		{
-			JOptionPane.showMessageDialog(this,
+			JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
 					"The output folder is not writable.",
 					"Error",
 					JOptionPane.ERROR_MESSAGE);
@@ -234,7 +231,7 @@ public class TopoPanel extends JPanel implements ActionListener
 		// If we need to download, promt the user that it will take a long time
 		if (mapmakerWorker.getIfNeedToDownload())
 		{
-			int result = JOptionPane.showConfirmDialog(this,
+			int result = JOptionPane.showConfirmDialog(JOptionPane.getFrameForComponent(this),
 					"Before Mapmaker can be run for the first time, a large 700 MB file needs to be downloaded.\n" +
 					"This may take several minutes. Would you like to continue?",
 					"Confirm Download",
@@ -243,41 +240,25 @@ public class TopoPanel extends JPanel implements ActionListener
 				return;
 		}
 
-		submitButton.setEnabled(false);
-		loadButton.setEnabled(false);
-
 		mapmakerWorker.setCenterPoint(centerPoint);
 		mapmakerWorker.setName(name);
 		mapmakerWorker.setRadius(radius);
 		mapmakerWorker.setOutputFolder(outputFolder);
-		
-		mapmakerWorker.addPropertyChangeListener(new PropertyChangeListener()
-		{
-			public void propertyChange(PropertyChangeEvent evt)
-			{
-				if (evt.getNewValue().equals(SwingWorker.StateValue.DONE))
-				{
-					// Next run the mapmaker tool
-					try
-					{
-						submitButton.setEnabled(true);
-						loadButton.setEnabled(true);
-						
-						if (mapmakerWorker.isCancelled())
-							return;
-						
-						new TopoViewer(mapmakerWorker.getCubeFile(),
-								(MapletBoundaryCollection) modelManager.getModel(ModelNames.MAPLET_BOUNDARY));
-					}
-					catch (Exception e1)
-					{
-						e1.printStackTrace();
-					}
-				}
-			}
-		});
 
 		mapmakerWorker.executeDialog();
+
+		if (mapmakerWorker.isCancelled())
+			return;
+		
+		try
+		{
+			new TopoViewer(mapmakerWorker.getCubeFile(),
+					(MapletBoundaryCollection) modelManager.getModel(ModelNames.MAPLET_BOUNDARY));
+		}
+		catch (IOException e1)
+		{
+			e1.printStackTrace();
+		}
 	}
 	
 	private void loadCubeFile()
@@ -305,7 +286,7 @@ public class TopoPanel extends JPanel implements ActionListener
     	String name = System.getProperty("os.name");
     	if (name.toLowerCase().startsWith("windows"))
     	{
-			JOptionPane.showMessageDialog(this,
+			JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
 					"This feature is currently not supported in Windows platforms. Please try using Linux\n" +
 					"or Mac OS X instead. We apologize for any inconvenience.",
 					"Error",
