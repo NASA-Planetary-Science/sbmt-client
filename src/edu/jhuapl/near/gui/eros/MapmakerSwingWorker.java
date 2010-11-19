@@ -65,6 +65,7 @@ public class MapmakerSwingWorker extends FileDownloadSwingWorker
 
 		setLabelText("<html>Running Mapmaker<br> </html>");
     	setIndeterminate(true);
+    	setCancelButtonEnabled(false);
     	setProgress(1);
 		
 		Process mapmakerProcess = null;

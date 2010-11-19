@@ -27,6 +27,7 @@ abstract public class ProgressBarSwingWorker extends SwingWorker<Void, Void>
 	private ProgressDialog dialog;
 	private volatile boolean indeterminate = false;
 	private volatile String labelText = " ";
+	private volatile boolean enableCancelButton = true;
 	
 	private class ProgressDialog extends JDialog implements ActionListener
 	{
@@ -111,6 +112,9 @@ abstract public class ProgressBarSwingWorker extends SwingWorker<Void, Void>
         		progressBar.setValue(progress);
         	
         	label.setText(labelText);
+        	
+        	if (cancelButton.isEnabled() != enableCancelButton)
+        		cancelButton.setEnabled(enableCancelButton);
         }
         
         if (evt.getNewValue().equals(SwingWorker.StateValue.DONE))
@@ -120,4 +124,8 @@ abstract public class ProgressBarSwingWorker extends SwingWorker<Void, Void>
 		}
     }
 
+	public void setCancelButtonEnabled(boolean b)
+	{
+		enableCancelButton = b;
+	}
 }
