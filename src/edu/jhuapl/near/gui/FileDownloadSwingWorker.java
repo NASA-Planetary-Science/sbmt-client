@@ -37,7 +37,7 @@ public class FileDownloadSwingWorker extends ProgressBarSwingWorker
 	protected Void doInBackground()
 	{
 		final boolean needToDownload = getIfNeedToDownload();
-		final boolean needToUnzip = getIfNeedToUnzip();
+		final boolean needToUnzip = needToDownload || getIfNeedToUnzip();
 		if (!needToDownload && !needToUnzip)
 			return null;
 
