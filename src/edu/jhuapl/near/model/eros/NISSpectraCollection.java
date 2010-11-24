@@ -63,27 +63,28 @@ public class NISSpectraCollection extends Model implements PropertyChangeListene
 
 	public void removeImage(String path)
 	{
-		ArrayList<vtkProp> actors = spectraActors.get(fileToSpectrumMap.get(path));
+		NISSpectrum spectrum = fileToSpectrumMap.get(path);
+		
+		ArrayList<vtkProp> actors = spectraActors.get(spectrum);
 		allActors.removeAll(actors);
 		
 		for (vtkProp act : actors)
 			actorToFileMap.remove(act);
 
-		spectraActors.remove(fileToSpectrumMap.get(path));
+		spectraActors.remove(spectrum);
 		
 		fileToSpectrumMap.remove(path);
 
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+		this.pcs.firePropertyChange(Properties.MODEL_REMOVED, null, spectrum);
 	}
 
+	@SuppressWarnings("unchecked")
 	public void removeAllImages()
 	{
-		allActors.clear();
-		actorToFileMap.clear();
-		spectraActors.clear();
-		fileToSpectrumMap.clear();
-
-		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+		HashMap<String, NISSpectrum> map = (HashMap<String, NISSpectrum>)fileToSpectrumMap.clone();
+		for (String path : map.keySet())
+			removeImage(path);
 	}
 
 	public ArrayList<vtkProp> getProps() 

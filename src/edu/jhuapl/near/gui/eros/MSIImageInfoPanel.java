@@ -33,8 +33,6 @@ public class MSIImageInfoPanel extends ModelInfoWindow implements PropertyChange
 		msiImage = image;
 		this.modelManager = modelManager;
 		
-		image.addPropertyChangeListener(this);
-		
 		renWin = new vtkEnhancedRenderWindowPanel();
 		
         vtkInteractorStyleImage style =
@@ -183,6 +181,11 @@ public class MSIImageInfoPanel extends ModelInfoWindow implements PropertyChange
 	public Model getModel()
 	{
 		return msiImage;
+	}
+	
+	public Model getCollectionModel()
+	{
+		return modelManager.getModel(ModelNames.MSI_IMAGES);
 	}
 	
 	public void propertyChange(PropertyChangeEvent arg0) 

@@ -77,14 +77,17 @@ public class MSIImageCollection extends Model implements PropertyChangeListener
 
 	public void removeImage(MSIKey key)
 	{
-		ArrayList<vtkProp> actors = imageToActorsMap.get(getImageFromKey(key));
+		MSIImage image = getImageFromKey(key);
+		
+		ArrayList<vtkProp> actors = imageToActorsMap.get(image);
 		
 		for (vtkProp act : actors)
 			actorToImageMap.remove(act);
 
-		imageToActorsMap.remove(getImageFromKey(key));
-		
+		imageToActorsMap.remove(image);
+
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+		this.pcs.firePropertyChange(Properties.MODEL_REMOVED, null, image);
 	}
 
 	public void removeAllImages()

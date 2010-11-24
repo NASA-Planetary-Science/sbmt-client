@@ -1,11 +1,14 @@
 package edu.jhuapl.near.gui;
 
 import java.awt.event.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.*;
 
 import edu.jhuapl.near.model.*;
+import edu.jhuapl.near.util.Properties;
 
-abstract public class ModelInfoWindowManager 
+abstract public class ModelInfoWindowManager implements PropertyChangeListener
 {
 	HashMap<Model, ModelInfoWindow> infoPanels = 
 		new HashMap<Model, ModelInfoWindow>();
@@ -16,7 +19,7 @@ abstract public class ModelInfoWindowManager
 	{
 		this.modelManager = modelManager;
 	}
-	public void addData(Model model) throws Exception
+	public void addData(final Model model) throws Exception
 	{
 		if (infoPanels.containsKey(model))
 		{
@@ -24,8 +27,13 @@ abstract public class ModelInfoWindowManager
 		}
 		else
 		{
-			ModelInfoWindow infoPanel = createModelInfoWindow(model, modelManager);
-
+			final ModelInfoWindow infoPanel = createModelInfoWindow(model, modelManager);
+		
+			final Model collectionModel = infoPanel.getCollectionModel();
+			
+			model.addPropertyChangeListener(infoPanel);
+			collectionModel.addPropertyChangeListener(this);
+			
 			if (infoPanel == null)
 			{
 				throw new Exception("The Info Panel Manager cannot handle the model you specified.");
@@ -35,14 +43,30 @@ abstract public class ModelInfoWindowManager
 			{
 				public void windowClosed(WindowEvent e)
 				{
-					Model mod = ((ModelInfoWindow)e.getComponent()).getModel();
+					Model mod = infoPanel.getModel();
 					infoPanels.remove(mod);
+					model.removePropertyChangeListener(infoPanel);
+					collectionModel.removePropertyChangeListener(ModelInfoWindowManager.this);
 				}
 			});
 			
 			infoPanels.put(model, infoPanel);
 		}
 	}
-	
+
+	public void propertyChange(PropertyChangeEvent e) 
+	{
+    	if (e.getPropertyName().equals(Properties.MODEL_REMOVED))
+    	{
+    		Object model = e.getNewValue();
+    		if (infoPanels.containsKey(model))
+    		{
+    			ModelInfoWindow frame = infoPanels.get(model);
+    			frame.setVisible(false);
+    			frame.dispose();
+    		}
+    	}
+	}
+
 	abstract public ModelInfoWindow createModelInfoWindow(Model model, ModelManager modelManager);
 }

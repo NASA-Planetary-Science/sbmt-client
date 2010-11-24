@@ -135,6 +135,11 @@ public class NISSpectrumInfoPanel extends ModelInfoWindow implements PropertyCha
 		return nisSpectrum;
 	}
 	
+	public Model getCollectionModel()
+	{
+		return modelManager.getModel(ModelNames.NIS_SPECTRA);
+	}
+	
 
 	/**
 	 * The following function is a bit of a hack. We want to reuse the MSIPopupMenu
