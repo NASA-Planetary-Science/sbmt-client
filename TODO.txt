@@ -137,3 +137,7 @@
    the coloring data. What if we eventually want to add a fifth coloring type?
    
  - Consolidate all file choosers into a single class
+
+ - In the Eros, Deimos, Itokawa, and Vesta tabs, show some statistics
+   about the asteroid such as number of plates, points, volume,
+   surface area, mean size of plate, bounding box etc.
