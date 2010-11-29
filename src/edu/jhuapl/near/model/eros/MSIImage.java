@@ -55,6 +55,8 @@ public class MSIImage extends Model implements PropertyChangeListener
     private vtkActor footprintActor;
     private ArrayList<vtkProp> footprintActors = new ArrayList<vtkProp>();
 
+    private vtkActor frustumActor;
+
     private vtkPolyDataNormals normalsFilter;
 
     private vtkFloatArray textureCoords;
@@ -171,7 +173,7 @@ public class MSIImage extends Model implements PropertyChangeListener
 		static private WeakHashMap<MSIImage, Object> images = 
 			new WeakHashMap<MSIImage, Object>();
 		
-		static public MSIImage createImage(MSIKey key, SmallBodyModel eros) throws FitsException, IOException
+		static /*public*/ MSIImage createImage(MSIKey key, SmallBodyModel eros) throws FitsException, IOException
 		{
 			for (MSIImage image : images.keySet())
 			{
@@ -219,8 +221,6 @@ public class MSIImage extends Model implements PropertyChangeListener
 
 		this.erosModel = eros;
 
-		erosModel.addPropertyChangeListener(this);
-	        
 		this.initialize(fitFile);
 	}
 	
@@ -389,7 +389,7 @@ public class MSIImage extends Model implements PropertyChangeListener
 			footprintActors.add(footprintActor);
 		}
 
-		if (showFrustum)
+		if (frustumActor == null)
 		{
 			vtkPolyData frus = new vtkPolyData();
 
@@ -399,7 +399,7 @@ public class MSIImage extends Model implements PropertyChangeListener
 			vtkIdList idList = new vtkIdList();
 			idList.SetNumberOfIds(2);
 
-			double dx = MathUtil.vnorm(spacecraftPosition)*2.0;
+			double dx = MathUtil.vnorm(spacecraftPosition) + erosModel.getBoundingBoxDiagonalLength();
 			double[] origin = spacecraftPosition;
 			double[] UL = {origin[0]+frustum1[0]*dx, origin[1]+frustum1[1]*dx, origin[2]+frustum1[2]*dx};
 			double[] UR = {origin[0]+frustum2[0]*dx, origin[1]+frustum2[1]*dx, origin[2]+frustum2[2]*dx};
@@ -432,17 +432,36 @@ public class MSIImage extends Model implements PropertyChangeListener
 			vtkPolyDataMapper frusMapper = new vtkPolyDataMapper();
 			frusMapper.SetInput(frus);
 
-			vtkActor frusActor = new vtkActor();
-			frusActor.SetMapper(frusMapper);
-			frusActor.GetProperty().SetColor(0.0, 1.0, 0.0);
-			frusActor.GetProperty().SetLineWidth(2.0);
-
-			footprintActors.add(frusActor);
+			frustumActor = new vtkActor();
+			frustumActor.SetMapper(frusMapper);
+			frustumActor.GetProperty().SetColor(0.0, 1.0, 0.0);
+			frustumActor.GetProperty().SetLineWidth(2.0);
+			frustumActor.VisibilityOff();
+			
+			footprintActors.add(frustumActor);
 		}
 
 		return footprintActors;
 	}
     
+	public void setShowFrustum(boolean b)
+	{
+		showFrustum = b;
+		
+		if (showFrustum)
+		{
+			frustumActor.VisibilityOn();
+		}
+		else
+		{
+			frustumActor.VisibilityOff();
+		}
+	}
+	
+	public boolean isFrustumShowing()
+	{
+		return showFrustum;
+	}
 
 	public String getName()
 	{

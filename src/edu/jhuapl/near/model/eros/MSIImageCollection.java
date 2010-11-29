@@ -61,6 +61,7 @@ public class MSIImageCollection extends Model implements PropertyChangeListener
 		
 		MSIImage image = MSIImage.MSIImageFactory.createImage(key, erosModel);
 
+		erosModel.addPropertyChangeListener(image);
 		image.addPropertyChangeListener(this);
 
 		imageToActorsMap.put(image, new ArrayList<vtkProp>());
@@ -85,6 +86,10 @@ public class MSIImageCollection extends Model implements PropertyChangeListener
 			actorToImageMap.remove(act);
 
 		imageToActorsMap.remove(image);
+
+		image.removePropertyChangeListener(this);
+		erosModel.removePropertyChangeListener(image);
+		image.setShowFrustum(false);
 
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 		this.pcs.firePropertyChange(Properties.MODEL_REMOVED, null, image);
@@ -133,4 +138,12 @@ public class MSIImageCollection extends Model implements PropertyChangeListener
     {
     	return containsKey(key);
     }
+    
+	public void setShowFrustums(boolean b)
+	{
+		for (MSIImage image : imageToActorsMap.keySet())
+			image.setShowFrustum(b);
+		
+		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+	}
 }

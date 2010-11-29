@@ -533,6 +533,7 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
         JPanel resultSub2ControlsPanel = new JPanel();
         resultSub2ControlsPanel.setLayout(new BoxLayout(resultSub2ControlsPanel,
         		BoxLayout.PAGE_AXIS));
+        
         removeAllButton = new JButton(MSI_REMOVE_ALL_BUTTON_TEXT);
         removeAllButton.setActionCommand("Remove All Boundaries");
         removeAllButton.addActionListener(new ActionListener()
@@ -561,6 +562,17 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
         removeAllImagesButton.setEnabled(true);
         removeAllImagesButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
+//        final JCheckBox showFrustumsCheckBox = new JCheckBox("Show Frustums");
+//        showFrustumsCheckBox.addActionListener(new ActionListener()
+//        {
+//        	public void actionPerformed(ActionEvent e)
+//        	{
+//        		MSIImageCollection model = (MSIImageCollection)modelManager.getModel(ModelNames.MSI_IMAGES);
+//        		model.setShowFrustums(showFrustumsCheckBox.isSelected());
+//        	}
+//        });
+//
+//        resultSub2ControlsPanel.add(showFrustumsCheckBox); // for now don't show this
         resultSub2ControlsPanel.add(removeAllButton);
         resultSub2ControlsPanel.add(removeAllImagesButton);
         

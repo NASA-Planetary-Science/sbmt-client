@@ -11,7 +11,6 @@ import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.util.Properties;
 
-import nom.tam.fits.FitsException;
 
 import vtk.*;
 
@@ -33,7 +32,7 @@ public class NISSpectraCollection extends Model implements PropertyChangeListene
 		this.erosModel = eros;
 	}
 
-	public void addSpectrum(String path) throws FitsException, IOException
+	public void addSpectrum(String path) throws IOException
 	{
 		if (fileToSpectrumMap.containsKey(path))
 			return;
@@ -41,6 +40,7 @@ public class NISSpectraCollection extends Model implements PropertyChangeListene
 		//NISSpectrum spectrum = new NISSpectrum(path, erosModel);
 		NISSpectrum spectrum = NISSpectrum.NISSpectrumFactory.createSpectrum(path, erosModel);		
 		
+		erosModel.addPropertyChangeListener(spectrum);
 		spectrum.addPropertyChangeListener(this);
 
 		fileToSpectrumMap.put(path, spectrum);
@@ -75,11 +75,14 @@ public class NISSpectraCollection extends Model implements PropertyChangeListene
 		
 		fileToSpectrumMap.remove(path);
 
+		spectrum.removePropertyChangeListener(this);
+		erosModel.removePropertyChangeListener(spectrum);
+		spectrum.setShowFrustum(false);
+
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 		this.pcs.firePropertyChange(Properties.MODEL_REMOVED, null, spectrum);
 	}
 
-	@SuppressWarnings("unchecked")
 	public void removeAllImages()
 	{
 		HashMap<String, NISSpectrum> map = (HashMap<String, NISSpectrum>)fileToSpectrumMap.clone();

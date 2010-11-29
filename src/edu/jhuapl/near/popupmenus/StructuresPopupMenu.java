@@ -8,14 +8,12 @@ import javax.swing.AbstractAction;
 import javax.swing.JMenuItem;
 
 import edu.jhuapl.near.gui.ColorChooser;
-import edu.jhuapl.near.model.LineModel;
 import edu.jhuapl.near.model.StructureModel;
 
 abstract public class StructuresPopupMenu extends PopupMenu
 {
 	private ChangeColorAction changeColorAction;
 	private int cellIdLastClicked = -1;
-	private StructureModel model = null;
 
 	protected void addMenuItems(StructureModel model)
 	{
@@ -34,9 +32,9 @@ abstract public class StructuresPopupMenu extends PopupMenu
 	{
     	private StructureModel structureModel;
 
-    	public DeleteAction(StructureModel model)
+    	public DeleteAction(StructureModel mod)
 		{
-			this.structureModel = structureModel;
+			this.structureModel = mod;
 		}
 		
 		public void actionPerformed(ActionEvent e) 

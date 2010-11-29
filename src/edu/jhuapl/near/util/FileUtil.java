@@ -137,7 +137,6 @@ public class FileUtil
 	 * 
 	 * @param file
 	 */
-	@SuppressWarnings("unchecked")
 	public static void unzipFile(File file)
 	{
 		Enumeration entries;

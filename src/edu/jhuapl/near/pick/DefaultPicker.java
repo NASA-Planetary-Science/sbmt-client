@@ -215,10 +215,6 @@ public class DefaultPicker extends Picker
 		if (renWin.GetRenderWindow().GetNeverRendered() > 0)
     		return;
 		
-		// Don't respond if the event is more than a third of a second old
-		if (System.currentTimeMillis() - e.getWhen() > 333)
-			return;
-
 		double[] cameraPos = renWin.GetRenderer().GetActiveCamera().GetPosition();
 		double distance = Math.sqrt(
 				cameraPos[0]*cameraPos[0] +

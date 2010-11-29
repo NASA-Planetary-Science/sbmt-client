@@ -54,6 +54,7 @@ public class NISSpectrum extends Model implements PropertyChangeListener
 	private vtkPolyData footprint;
 	private vtkPolyData shiftedFootprint;
     private vtkActor footprintActor;
+	private vtkActor frustumActor;
     private ArrayList<vtkProp> footprintActors = new ArrayList<vtkProp>();
     private SmallBodyModel erosModel;
     private double[] spectrum = new double[64];
@@ -101,7 +102,7 @@ public class NISSpectrum extends Model implements PropertyChangeListener
 		static private WeakHashMap<NISSpectrum, Object> spectra = 
 			new WeakHashMap<NISSpectrum, Object>();
 		
-		static public NISSpectrum createSpectrum(String name, SmallBodyModel eros) throws IOException
+		static /*public*/ NISSpectrum createSpectrum(String name, SmallBodyModel eros) throws IOException
 		{
 			for (NISSpectrum spectrum : spectra.keySet())
 			{
@@ -129,8 +130,6 @@ public class NISSpectrum extends Model implements PropertyChangeListener
 		
 		String filename = nisFile.getAbsolutePath();
 		this.fullpath = filename;
-
-		eros.addPropertyChangeListener(this);
 
 		ArrayList<String> values = FileUtil.getFileWordsAsStringList(fullpath);
 
@@ -269,61 +268,82 @@ public class NISSpectrum extends Model implements PropertyChangeListener
 			edgeActor.GetProperty().LightingOff();
 			footprintActors.add(edgeActor);
 			*/
-			
-			if (showFrustum)
-			{
-				vtkPolyData frus = new vtkPolyData();
-				
-		        vtkPoints points = new vtkPoints();
-		        vtkCellArray lines = new vtkCellArray();
-		        
-		        vtkIdList idList = new vtkIdList();
-		        idList.SetNumberOfIds(2);
-		        
-		        double dx = MathUtil.vnorm(spacecraftPosition);
-				double[] origin = spacecraftPosition;
-				double[] UL = {origin[0]+frustum1[0]*dx, origin[1]+frustum1[1]*dx, origin[2]+frustum1[2]*dx};
-				double[] UR = {origin[0]+frustum2[0]*dx, origin[1]+frustum2[1]*dx, origin[2]+frustum2[2]*dx};
-				double[] LL = {origin[0]+frustum3[0]*dx, origin[1]+frustum3[1]*dx, origin[2]+frustum3[2]*dx};
-				double[] LR = {origin[0]+frustum4[0]*dx, origin[1]+frustum4[1]*dx, origin[2]+frustum4[2]*dx};
+		}
+		
+		if (frustumActor == null)
+		{
+			vtkPolyData frus = new vtkPolyData();
 
-		        points.InsertNextPoint(spacecraftPosition);
-		        points.InsertNextPoint(UL);
-		        points.InsertNextPoint(UR);
-		        points.InsertNextPoint(LL);
-		        points.InsertNextPoint(LR);
+			vtkPoints points = new vtkPoints();
+			vtkCellArray lines = new vtkCellArray();
 
-		    	idList.SetId(0, 0);
-		    	idList.SetId(1, 1);
-		    	lines.InsertNextCell(idList);
-		    	idList.SetId(0, 0);
-		    	idList.SetId(1, 2);
-		    	lines.InsertNextCell(idList);
-		    	idList.SetId(0, 0);
-		    	idList.SetId(1, 3);
-		    	lines.InsertNextCell(idList);
-		    	idList.SetId(0, 0);
-		    	idList.SetId(1, 4);
-		    	lines.InsertNextCell(idList);
-		    	
-		    	frus.SetPoints(points);
-		        frus.SetLines(lines);
+			vtkIdList idList = new vtkIdList();
+			idList.SetNumberOfIds(2);
+
+			double dx = MathUtil.vnorm(spacecraftPosition) + erosModel.getBoundingBoxDiagonalLength();
+			double[] origin = spacecraftPosition;
+			double[] UL = {origin[0]+frustum1[0]*dx, origin[1]+frustum1[1]*dx, origin[2]+frustum1[2]*dx};
+			double[] UR = {origin[0]+frustum2[0]*dx, origin[1]+frustum2[1]*dx, origin[2]+frustum2[2]*dx};
+			double[] LL = {origin[0]+frustum3[0]*dx, origin[1]+frustum3[1]*dx, origin[2]+frustum3[2]*dx};
+			double[] LR = {origin[0]+frustum4[0]*dx, origin[1]+frustum4[1]*dx, origin[2]+frustum4[2]*dx};
+
+			points.InsertNextPoint(spacecraftPosition);
+			points.InsertNextPoint(UL);
+			points.InsertNextPoint(UR);
+			points.InsertNextPoint(LL);
+			points.InsertNextPoint(LR);
+
+			idList.SetId(0, 0);
+			idList.SetId(1, 1);
+			lines.InsertNextCell(idList);
+			idList.SetId(0, 0);
+			idList.SetId(1, 2);
+			lines.InsertNextCell(idList);
+			idList.SetId(0, 0);
+			idList.SetId(1, 3);
+			lines.InsertNextCell(idList);
+			idList.SetId(0, 0);
+			idList.SetId(1, 4);
+			lines.InsertNextCell(idList);
+
+			frus.SetPoints(points);
+			frus.SetLines(lines);
 
 
-		        vtkPolyDataMapper frusMapper = new vtkPolyDataMapper();
-				frusMapper.SetInput(frus);
+			vtkPolyDataMapper frusMapper = new vtkPolyDataMapper();
+			frusMapper.SetInput(frus);
 
-				vtkActor frusActor = new vtkActor();
-				frusActor.SetMapper(frusMapper);
-		        frusActor.GetProperty().SetColor(0.0, 1.0, 0.0);
-		        frusActor.GetProperty().SetLineWidth(2.0);
+			frustumActor = new vtkActor();
+			frustumActor.SetMapper(frusMapper);
+			frustumActor.GetProperty().SetColor(0.0, 1.0, 0.0);
+			frustumActor.GetProperty().SetLineWidth(2.0);
+			frustumActor.VisibilityOff();
 
-				footprintActors.add(frusActor);
-			}
+			footprintActors.add(frustumActor);
 		}
 		
 		return footprintActors;
 	}
+	
+	public void setShowFrustum(boolean b)
+	{
+		showFrustum = b;
+		
+		if (showFrustum)
+		{
+			frustumActor.VisibilityOn();
+		}
+		else
+		{
+			frustumActor.VisibilityOff();
+		}
+	}
+	
+	public boolean isFrustumShowing()
+	{
+		return showFrustum;
+	}
+
 
 	public String getServerPath()
 	{

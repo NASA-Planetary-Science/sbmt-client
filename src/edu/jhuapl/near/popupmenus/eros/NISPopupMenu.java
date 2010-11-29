@@ -5,12 +5,12 @@ import java.awt.event.MouseEvent;
 import java.io.*;
 
 import javax.swing.AbstractAction;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenuItem;
 
 import vtk.vtkActor;
 import vtk.vtkProp;
 
-import nom.tam.fits.FitsException;
 import edu.jhuapl.near.gui.ModelInfoWindowManager;
 import edu.jhuapl.near.model.*;
 import edu.jhuapl.near.model.eros.NISSpectraCollection;
@@ -25,8 +25,9 @@ public class NISPopupMenu extends PopupMenu
     private JMenuItem showRemoveSpectrumIn3DMenuItem;
     private JMenuItem showSpectrumInfoMenuItem;
     private JMenuItem centerSpectrumMenuItem;
+    private JMenuItem showFrustumMenuItem;
     private ModelInfoWindowManager infoPanelManager;
-    private SmallBodyModel erosModel;
+    //private SmallBodyModel erosModel;
     
     /**
      * 
@@ -41,9 +42,10 @@ public class NISPopupMenu extends PopupMenu
 	{
     	this.modelManager = modelManager;
     	this.infoPanelManager = infoPanelManager;
-    	this.erosModel = (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
+    	//this.erosModel = (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
     	
-		showRemoveSpectrumIn3DMenuItem = new JMenuItem(new ShowRemoveIn3DAction());
+		showRemoveSpectrumIn3DMenuItem = new JCheckBoxMenuItem(new ShowRemoveIn3DAction());
+		showRemoveSpectrumIn3DMenuItem.setText("Show Footprint");
 		this.add(showRemoveSpectrumIn3DMenuItem);
 		
 		if (this.infoPanelManager != null)
@@ -57,6 +59,9 @@ public class NISPopupMenu extends PopupMenu
 		centerSpectrumMenuItem.setText("Center in Window");
 		//this.add(centerImageMenuItem);
 
+		showFrustumMenuItem = new JCheckBoxMenuItem(new ShowFrustumAction());
+		showFrustumMenuItem.setText("Show Frustum");
+		this.add(showFrustumMenuItem);
 	}
 
 	
@@ -64,11 +69,30 @@ public class NISPopupMenu extends PopupMenu
 	{
 		currentSpectrum = name;
 
-		NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelNames.NIS_SPECTRA);		
-		if (model.containsSpectrum(name))
-			showRemoveSpectrumIn3DMenuItem.setText("Remove Footprint");
+		updateMenuItems();
+	}
+	
+	private void updateMenuItems()
+	{
+		NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelNames.NIS_SPECTRA);
+		
+		boolean containsSpectrum = model.containsSpectrum(currentSpectrum);
+		showRemoveSpectrumIn3DMenuItem.setSelected(containsSpectrum);
+		
+		if (showSpectrumInfoMenuItem != null)
+			showSpectrumInfoMenuItem.setEnabled(containsSpectrum);
+		
+		if (containsSpectrum)
+		{
+			NISSpectrum image = model.getSpectrum(currentSpectrum);
+			showFrustumMenuItem.setSelected(image.isFrustumShowing());
+			showFrustumMenuItem.setEnabled(true);
+		}
 		else
-			showRemoveSpectrumIn3DMenuItem.setText("Show Footprint");
+		{
+			showFrustumMenuItem.setSelected(false);
+			showFrustumMenuItem.setEnabled(false);
+		}
 	}
 	
 
@@ -79,20 +103,14 @@ public class NISPopupMenu extends PopupMenu
 			NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelNames.NIS_SPECTRA);		
 			try 
 			{
-				if (showRemoveSpectrumIn3DMenuItem.getText().startsWith("Show"))
+				if (showRemoveSpectrumIn3DMenuItem.isSelected())
 					model.addSpectrum(currentSpectrum);
 				else
 					model.removeImage(currentSpectrum);
 				
-				// Force an update on the first 2 menu items
-				setCurrentSpectrum(currentSpectrum);
+				updateMenuItems();
 			} 
-			catch (FitsException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
 			catch (IOException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 		}
@@ -102,20 +120,17 @@ public class NISPopupMenu extends PopupMenu
 	{
 		public void actionPerformed(ActionEvent e) 
 		{
-			String name = currentSpectrum;
-			
 			try 
 			{
-				infoPanelManager.addData(NISSpectrum.NISSpectrumFactory.createSpectrum(name, erosModel));
-			} 
-			catch (FitsException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
+				NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelNames.NIS_SPECTRA);
+				model.addSpectrum(currentSpectrum);
+				infoPanelManager.addData(model.getSpectrum(currentSpectrum));
+
+				updateMenuItems();
+			}
+			catch (IOException e1) {
 				e1.printStackTrace();
 			} catch (Exception e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 		}
@@ -129,6 +144,27 @@ public class NISPopupMenu extends PopupMenu
 		}
 	}
 
+	private class ShowFrustumAction extends AbstractAction
+	{
+		public void actionPerformed(ActionEvent e) 
+		{
+			try
+			{
+				NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelNames.NIS_SPECTRA);
+				model.addSpectrum(currentSpectrum);
+				NISSpectrum spectrum = model.getSpectrum(currentSpectrum);
+				
+				spectrum.setShowFrustum(showFrustumMenuItem.isSelected());
+				
+				updateMenuItems();
+			}
+			catch (Exception ex)
+			{
+				ex.printStackTrace();
+			}
+			
+		}
+	}
 
 	public void showPopup(MouseEvent e, vtkProp pickedProp, int pickedCellId,
 			double[] pickedPosition)

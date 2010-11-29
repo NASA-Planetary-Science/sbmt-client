@@ -12,7 +12,6 @@ import java.awt.Dimension;
 import java.awt.event.*;
 
 import net.miginfocom.swing.MigLayout;
-import nom.tam.fits.FitsException;
 
 import org.joda.time.*;
 
@@ -659,10 +658,6 @@ public class VIRSearchPanel extends JPanel implements ActionListener, MouseListe
 				String currentImage = nisRawResults.get(i);
 				String boundaryName = currentImage.substring(0,currentImage.length()-4) + ".NIS";
 				model.addSpectrum(boundaryName);
-			} 
-			catch (FitsException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
 			}
 			catch (IOException e1) {
 				// TODO Auto-generated catch block

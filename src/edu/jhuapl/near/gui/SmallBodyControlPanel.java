@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import edu.jhuapl.near.model.*;
+import edu.jhuapl.near.pick.Picker;
 
 public class SmallBodyControlPanel extends JPanel implements ItemListener, ChangeListener 
 {
@@ -228,6 +229,8 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
 
 	public void itemStateChanged(ItemEvent e) 
 	{
+		Picker.setPickingEnabled(false);
+		
 		SmallBodyModel smallBodyModel = modelManager.getSmallBodyModel();
 
 		if (e.getItemSelectable() == this.modelCheckBox)
@@ -375,6 +378,8 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
 			if (this.showColoringCheckBox.isSelected())
 				setColoring();
 		}
+
+		Picker.setPickingEnabled(true);
 	}
 
 	private void setColoring()

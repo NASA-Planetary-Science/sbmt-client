@@ -1,5 +1,7 @@
 package edu.jhuapl.near.pick;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -8,6 +10,8 @@ import java.awt.event.MouseWheelListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+
+import javax.swing.Timer;
 
 import vtk.vtkCellPicker;
 import vtk.vtkRenderWindowPanel;
@@ -32,6 +36,44 @@ public abstract class Picker implements
     { this.pcs.addPropertyChangeListener( listener ); }
     public void removePropertyChangeListener( PropertyChangeListener listener )
     { this.pcs.removePropertyChangeListener( listener ); }
+
+    // not sure if volatile is really needed, but just to be sure
+    private static volatile boolean pickingEnabled = true;
+
+    /**
+     * Unfortunately, crashes sometimes occur if the user drags around the mouse during
+     * a long running operation (e.g. changing to a high resolution). To prevent this,
+     * the following global function is provided to allow disabling of picking during such
+     * operations. Note that if the picking is requested to be enabled, a delay of half
+     * a second is made before enabling picking.
+     * 
+     * TODO This is just a hack, investigate the cause of the crash more fully.
+     * 
+     * @param b
+     */
+	public static void setPickingEnabled(boolean b)
+	{
+		if (b == false)
+		{
+			pickingEnabled = false;
+		}
+		else
+		{
+			// Delay half a second before enabling picking. This helps prevent some crashes.
+			
+			int delay = 500; //milliseconds
+			ActionListener taskPerformer = new ActionListener() {
+				public void actionPerformed(ActionEvent evt)
+				{
+					pickingEnabled = true;
+				}
+			};
+			
+			Timer timer = new Timer(delay, taskPerformer);
+			timer.setRepeats(false);
+			timer.start();
+		}
+	}
 
 	public void mouseClicked(MouseEvent e)
 	{
@@ -71,12 +113,24 @@ public abstract class Picker implements
 
 	protected int doPick(MouseEvent e, vtkCellPicker picker, vtkRenderWindowPanel renWin)
 	{
+		if (pickingEnabled == false)
+			return 0;
+		
+		// Don't do a pick if the event is more than a third of a second old
+		final long currentTime = System.currentTimeMillis();
+		final long when = e.getWhen();
+		
+		//System.err.println("elapsed time " + (currentTime - when));
+		if (currentTime - when > 333)
+			return 0;
+
         // When picking, choosing the right tolerance is not simple. If it's too small, then
         // the pick will only work well if we are zoomed in very close to the object. If it's
         // too large, the pick will only work well when we are zoomed out a lot. To deal
         // with this situation, do a series of picks starting out with a low tolerance
         // and increase the tolerance after each new pick. Stop as soon as the pick succeeds
         // or we reach the maximum tolerance.
+		
         int pickSucceeded = 0;
         double tolerance = 0.0002;
         final double originalTolerance = picker.GetTolerance();
@@ -87,6 +141,7 @@ public abstract class Picker implements
         while (tolerance <= maxTolerance)
         {
             picker.SetTolerance(tolerance);
+
             pickSucceeded = picker.Pick(e.getX(), renWin.getHeight()-e.getY()-1, 0.0, renWin.GetRenderer());
             
             if (pickSucceeded == 1)

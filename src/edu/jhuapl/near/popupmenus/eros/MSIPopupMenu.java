@@ -6,6 +6,7 @@ import java.awt.event.MouseEvent;
 import java.io.*;
 
 import javax.swing.AbstractAction;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
@@ -37,6 +38,7 @@ public class MSIPopupMenu extends PopupMenu
     private JMenuItem saveToDiskMenuItem;
     private JMenuItem saveBackplanesMenuItem;
     private JMenuItem centerImageMenuItem;
+    private JMenuItem showFrustumMenuItem;
     private ModelInfoWindowManager infoPanelManager;
     private Renderer renderer;
     
@@ -58,10 +60,12 @@ public class MSIPopupMenu extends PopupMenu
     	this.renderer = renderer;
     	this.invoker = invoker;
     	
-		showRemoveImageIn3DMenuItem = new JMenuItem(new ShowRemoveIn3DAction());
+		showRemoveImageIn3DMenuItem = new JCheckBoxMenuItem(new ShowRemoveIn3DAction());
+		showRemoveImageIn3DMenuItem.setText("Show Image");
 		this.add(showRemoveImageIn3DMenuItem);
 		
-		showRemoveBoundaryIn3DMenuItem = new JMenuItem(new ShowRemoveOutlineIn3DAction());
+		showRemoveBoundaryIn3DMenuItem = new JCheckBoxMenuItem(new ShowRemoveOutlineIn3DAction());
+		showRemoveBoundaryIn3DMenuItem.setText("Show Image Boundary");
 		this.add(showRemoveBoundaryIn3DMenuItem);
 		
 		if (this.infoPanelManager != null)
@@ -79,9 +83,16 @@ public class MSIPopupMenu extends PopupMenu
 		saveBackplanesMenuItem.setText("Generate Backplanes...");
 		this.add(saveBackplanesMenuItem);
 
-		centerImageMenuItem = new JMenuItem(new CenterImageAction());
-		centerImageMenuItem.setText("Center Image in Window");
-		this.add(centerImageMenuItem);
+		if (renderer != null)
+		{
+			centerImageMenuItem = new JMenuItem(new CenterImageAction());
+			centerImageMenuItem.setText("Center in Window");
+			this.add(centerImageMenuItem);
+		}
+		
+		showFrustumMenuItem = new JCheckBoxMenuItem(new ShowFrustumAction());
+		showFrustumMenuItem.setText("Show Frustum");
+		this.add(showFrustumMenuItem);
 
 	}
 
@@ -89,22 +100,46 @@ public class MSIPopupMenu extends PopupMenu
 	{
 		msiKey = key;
 		
+		updateMenuItems();
+	}
+	
+	private void updateMenuItems()
+	{
 		MSIBoundaryCollection msiBoundaries = (MSIBoundaryCollection)modelManager.getModel(ModelNames.MSI_BOUNDARY);
-		if (msiBoundaries.containsBoundary(msiKey))
-			showRemoveBoundaryIn3DMenuItem.setText("Remove Image Boundary");
-		else
-			showRemoveBoundaryIn3DMenuItem.setText("Show Image Boundary");
-		
 		MSIImageCollection msiImages = (MSIImageCollection)modelManager.getModel(ModelNames.MSI_IMAGES);
-		if (msiImages.containsImage(msiKey))
-			showRemoveImageIn3DMenuItem.setText("Remove Image");
-		else
-			showRemoveImageIn3DMenuItem.setText("Show Image");
+
+		boolean containsImage = msiImages.containsImage(msiKey);
+		boolean containsBoundary = msiBoundaries.containsBoundary(msiKey);
+			
+		showRemoveBoundaryIn3DMenuItem.setSelected(containsBoundary);
 		
-		if (msiBoundaries.containsBoundary(msiKey) || msiImages.containsImage(msiKey))
-		    centerImageMenuItem.setEnabled(true);
+		showRemoveImageIn3DMenuItem.setSelected(containsImage);
+		
+		if (centerImageMenuItem != null)
+		{
+			if (containsBoundary || containsImage)
+				centerImageMenuItem.setEnabled(true);
+			else
+				centerImageMenuItem.setEnabled(false);
+		}
+
+		if (showImageInfoMenuItem != null)
+			showImageInfoMenuItem.setEnabled(containsImage);
+		
+		saveBackplanesMenuItem.setEnabled(containsImage);
+		saveToDiskMenuItem.setEnabled(containsImage);
+		
+		if (containsImage)
+		{
+			MSIImage image = msiImages.getImage(msiKey);
+			showFrustumMenuItem.setSelected(image.isFrustumShowing());
+			showFrustumMenuItem.setEnabled(true);
+		}
 		else
-		    centerImageMenuItem.setEnabled(false);
+		{
+			showFrustumMenuItem.setSelected(false);
+			showFrustumMenuItem.setEnabled(false);
+		}
 	}
 	
 
@@ -115,20 +150,17 @@ public class MSIPopupMenu extends PopupMenu
 			MSIImageCollection model = (MSIImageCollection)modelManager.getModel(ModelNames.MSI_IMAGES);
 			try 
 			{
-				if (showRemoveImageIn3DMenuItem.getText().startsWith("Show"))
+				if (showRemoveImageIn3DMenuItem.isSelected())
 					model.addImage(msiKey);
 				else
 					model.removeImage(msiKey);
 				
-				// Force an update on the first 2 menu items
-				setCurrentImage(msiKey);
+				updateMenuItems();
 			} 
 			catch (FitsException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 			catch (IOException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 		}
@@ -141,20 +173,17 @@ public class MSIPopupMenu extends PopupMenu
 			MSIBoundaryCollection model = (MSIBoundaryCollection)modelManager.getModel(ModelNames.MSI_BOUNDARY);
 			try 
 			{
-				if (showRemoveBoundaryIn3DMenuItem.getText().startsWith("Show"))
+				if (showRemoveBoundaryIn3DMenuItem.isSelected())
 					model.addBoundary(msiKey);
 				else
 					model.removeBoundary(msiKey);
 
-				// Force an update on the first 2 menu items
-				setCurrentImage(msiKey);
+				updateMenuItems();
 			} 
 			catch (FitsException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 			catch (IOException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 		}
@@ -166,17 +195,17 @@ public class MSIPopupMenu extends PopupMenu
 		{
 			try 
 			{
-				SmallBodyModel eros = (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
-				infoPanelManager.addData(MSIImage.MSIImageFactory.createImage(msiKey, eros));
+		        MSIImageCollection msiImages = (MSIImageCollection)modelManager.getModel(ModelNames.MSI_IMAGES);
+		        msiImages.addImage(msiKey);
+		        infoPanelManager.addData(msiImages.getImage(msiKey));
+
+				updateMenuItems();
 			} 
 			catch (FitsException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			} catch (IOException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			} catch (Exception e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 		}
@@ -262,8 +291,11 @@ public class MSIPopupMenu extends PopupMenu
 				{
 					OutputStream out = new FileOutputStream(file);
 
-					SmallBodyModel eros = (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
-					MSIImage image = MSIImage.MSIImageFactory.createImage(msiKey, eros);
+			        MSIImageCollection msiImages = (MSIImageCollection)modelManager.getModel(ModelNames.MSI_IMAGES);
+			        msiImages.addImage(msiKey);
+			        MSIImage image = msiImages.getImage(msiKey);
+
+					updateMenuItems();
 
 					float[] backplanes = image.generateBackplanes();
 
@@ -299,8 +331,11 @@ public class MSIPopupMenu extends PopupMenu
 				{
 					OutputStream out = new FileOutputStream(file);
 
-					SmallBodyModel eros = (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
-					MSIImage image = MSIImage.MSIImageFactory.createImage(msiKey, eros);
+			        MSIImageCollection msiImages = (MSIImageCollection)modelManager.getModel(ModelNames.MSI_IMAGES);
+			        msiImages.addImage(msiKey);
+			        MSIImage image = msiImages.getImage(msiKey);
+
+					updateMenuItems();
 
 					String lblstr = image.generateBackplanesLabel();
 
@@ -315,6 +350,27 @@ public class MSIPopupMenu extends PopupMenu
 						"Unable to save file to " + file.getAbsolutePath(),
 						"Error Saving File",
 						JOptionPane.ERROR_MESSAGE);
+				ex.printStackTrace();
+			}
+			
+		}
+	}
+
+	private class ShowFrustumAction extends AbstractAction
+	{
+		public void actionPerformed(ActionEvent e) 
+		{
+			try
+			{
+				MSIImageCollection msiImages = (MSIImageCollection)modelManager.getModel(ModelNames.MSI_IMAGES);
+				msiImages.addImage(msiKey);
+				MSIImage image = msiImages.getImage(msiKey);
+				image.setShowFrustum(showFrustumMenuItem.isSelected());
+				
+				updateMenuItems();
+			}
+			catch (Exception ex)
+			{
 				ex.printStackTrace();
 			}
 			

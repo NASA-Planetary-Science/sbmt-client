@@ -270,7 +270,6 @@ public class NLRSearchDataCollection extends Model
 	
 	
 	
-	@SuppressWarnings("unchecked")
 	private void loadNlrData(
 			GregorianCalendar startDate,
 			GregorianCalendar stopDate,
@@ -407,7 +406,6 @@ public class NLRSearchDataCollection extends Model
 	}
 	
 
-	@SuppressWarnings("unchecked")
 	private void loadNlrDataSql(
 			GregorianCalendar startDate,
 			GregorianCalendar stopDate,

@@ -49,8 +49,6 @@ public class MSIBoundaryCollection extends Model implements PropertyChangeListen
 	        boundaryMapper = new vtkPolyDataMapper();
 	        actor = new vtkActor();
 	    
-	        erosModel.addPropertyChangeListener(this);
-
 			String[] startTime = new String[1];
 			String[] stopTime = new String[1];
 
@@ -286,6 +284,7 @@ public class MSIBoundaryCollection extends Model implements PropertyChangeListen
 
 		Boundary boundary = new Boundary(key);
 
+        erosModel.addPropertyChangeListener(boundary);
 		boundary.addPropertyChangeListener(this);
 		
 		boundaryToActorsMap.put(boundary, new ArrayList<vtkProp>());
@@ -302,22 +301,26 @@ public class MSIBoundaryCollection extends Model implements PropertyChangeListen
 
 	public void removeBoundary(MSIKey key)
 	{
-        ArrayList<vtkProp> actors = boundaryToActorsMap.get(getBoundaryFromKey(key));
+		Boundary boundary = getBoundaryFromKey(key);
+		
+        ArrayList<vtkProp> actors = boundaryToActorsMap.get(boundary);
         
         for (vtkProp act : actors)
             actorToBoundaryMap.remove(act);
 
-        boundaryToActorsMap.remove(getBoundaryFromKey(key));
+        boundaryToActorsMap.remove(boundary);
+
+		boundary.removePropertyChangeListener(this);
+        erosModel.removePropertyChangeListener(boundary);
 
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 	}
 
 	public void removeAllBoundaries()
 	{
-        actorToBoundaryMap.clear();
-        boundaryToActorsMap.clear();
-
-        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+		HashMap<Boundary, ArrayList<vtkProp>> map = (HashMap<Boundary, ArrayList<vtkProp>>)boundaryToActorsMap.clone();
+	    for (Boundary boundary : map.keySet())
+	    	removeBoundary(boundary.key);
 	}
 
 	public ArrayList<vtkProp> getProps() 
