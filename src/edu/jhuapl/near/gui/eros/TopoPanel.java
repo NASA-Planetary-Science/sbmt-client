@@ -15,7 +15,9 @@ import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JSpinner;
 import javax.swing.JToggleButton;
+import javax.swing.SpinnerNumberModel;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -37,7 +39,8 @@ public class TopoPanel extends JPanel implements ActionListener
 	private JButton submitButton;
 	private JButton loadButton;
 	private PickManager pickManager;
-	
+    private JSpinner halfSizeSpinner;
+
 	public TopoPanel(final ModelManager modelManager,
 			final PickManager pickManager)
 	{
@@ -95,6 +98,14 @@ public class TopoPanel extends JPanel implements ActionListener
         namePanel.add(nameLabel);
         namePanel.add(nameTextField);
 
+        final JLabel halfSizeLabel = new JLabel("Half Size (pixels)");
+        halfSizeSpinner = new JSpinner(new SpinnerNumberModel(513, 1, 513, 1));
+        halfSizeSpinner.setMaximumSize(new Dimension(50, 23));
+        JPanel halfSizePanel = new JPanel();
+        halfSizePanel.add(halfSizeLabel);
+        halfSizePanel.add(halfSizeSpinner);
+        
+        
 	    dirChooser = new JFileChooser();
 	    dirChooser.setCurrentDirectory(null);
         JPanel outputFolderPanel = new JPanel(new MigLayout("wrap 2"));
@@ -144,6 +155,7 @@ public class TopoPanel extends JPanel implements ActionListener
 
         pane.add(selectRegionPanel, "align center");
         pane.add(namePanel);
+        pane.add(halfSizePanel);
         pane.add(outputFolderPanel);
         pane.add(submitPanel, "align center");
         pane.add(loadPanel, "align center");
@@ -243,6 +255,7 @@ public class TopoPanel extends JPanel implements ActionListener
 		mapmakerWorker.setCenterPoint(centerPoint);
 		mapmakerWorker.setName(name);
 		mapmakerWorker.setRadius(radius);
+		mapmakerWorker.setHalfSize((Integer)halfSizeSpinner.getValue());
 		mapmakerWorker.setOutputFolder(outputFolder);
 
 		mapmakerWorker.executeDialog();
@@ -252,7 +265,7 @@ public class TopoPanel extends JPanel implements ActionListener
 		
 		try
 		{
-			new TopoViewer(mapmakerWorker.getCubeFile(),
+			new TopoViewer(mapmakerWorker.getCubeFile(), mapmakerWorker.getLabelFile(),
 					(MapletBoundaryCollection) modelManager.getModel(ModelNames.MAPLET_BOUNDARY));
 		}
 		catch (IOException e1)
@@ -269,9 +282,11 @@ public class TopoPanel extends JPanel implements ActionListener
 			return;
 		}
 		
+		String filename = file.getAbsolutePath();
+		File lblFile = new File(filename.substring(0, filename.length()-3) + "lbl");
 		try
 		{
-			new TopoViewer(file,
+			new TopoViewer(file, lblFile,
 					(MapletBoundaryCollection) modelManager.getModel(ModelNames.MAPLET_BOUNDARY));
 		}
 		catch (IOException e)

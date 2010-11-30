@@ -74,7 +74,7 @@ public class TopoViewer extends JFrame
 	private static final String Color = "Color";
 
 	
-    public TopoViewer(File cubFile, MapletBoundaryCollection mapletBoundaries) throws IOException
+    public TopoViewer(File cubFile, File lblFile, MapletBoundaryCollection mapletBoundaries) throws IOException
 	{
     	this.mapletBoundaries = mapletBoundaries;
     	
@@ -87,9 +87,10 @@ public class TopoViewer extends JFrame
     	add(statusBar, BorderLayout.PAGE_END);
     	
     	String filename = cubFile.getAbsolutePath();
+    	String lblfilename = lblFile.getAbsolutePath();
 		final ModelManager modelManager = new ModelManager();
         HashMap<String, Model> allModels = new HashMap<String, Model>();
-        dem = new DEMModel(filename);
+        dem = new DEMModel(filename, lblfilename);
         lineModel = new LineModel(dem, true);
         lineModel.setMaximumVerticesPerLine(2);
         allModels.put(ModelNames.SMALL_BODY, dem);

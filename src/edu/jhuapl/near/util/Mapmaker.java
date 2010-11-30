@@ -14,7 +14,7 @@ public class Mapmaker
 	private String name;
 	private double latitude;
 	private double longitude;
-//	private int halfWidth;
+	private int halfSize = 513;
 	private double pixelSize;
 	private File outputFolder;
 	private File cubeFile;
@@ -66,8 +66,8 @@ public class Mapmaker
 	{
 		Process process = processBuilder.start();
 		OutputStream stdin = process.getOutputStream();
-		
-		String arguments = name + "\n512 " + pixelSize + "\nL\n" + latitude + "," + longitude + "\nn\nn\nn\nn\nn\nn\n";
+
+		String arguments = name + "\n" + halfSize + " " + pixelSize + "\nL\n" + latitude + "," + longitude + "\nn\nn\nn\nn\nn\nn\n";
 		stdin.write(arguments.getBytes());
 		stdin.flush();
 		stdin.close();
@@ -129,15 +129,15 @@ public class Mapmaker
 			this.longitude += 360.0;
 	}
 
-//	public int getHalfWidth()
-//	{
-//		return halfWidth;
-//	}
-//
-//	public void setHalfWidth(int halfWidth)
-//	{
-//		this.halfWidth = halfWidth;
-//	}
+	public int getHalfSize()
+	{
+		return halfSize;
+	}
+
+	public void setHalfSize(int halfSize)
+	{
+		this.halfSize = halfSize;
+	}
 
 	public double getPixelSize()
 	{
