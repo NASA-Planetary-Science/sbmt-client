@@ -168,24 +168,24 @@ public class MSIImage extends Model implements PropertyChangeListener
 	 * MSIImage's. Anyone needing a MSIImage should use this factory class to
 	 * create MSIImages's and should NOT call the constructor directly.
 	 */
-	public static class MSIImageFactory
-	{
-		static private WeakHashMap<MSIImage, Object> images = 
-			new WeakHashMap<MSIImage, Object>();
-		
-		static /*public*/ MSIImage createImage(MSIKey key, SmallBodyModel eros) throws FitsException, IOException
-		{
-			for (MSIImage image : images.keySet())
-			{
-				if (image.key.equals(key))
-					return image;
-			}
-
-			MSIImage image = new MSIImage(key, eros);
-			images.put(image, null);
-			return image;
-		}
-	}
+//	public static class MSIImageFactory
+//	{
+//		static private WeakHashMap<MSIImage, Object> images = 
+//			new WeakHashMap<MSIImage, Object>();
+//		
+//		static /*public*/ MSIImage createImage(MSIKey key, SmallBodyModel eros) throws FitsException, IOException
+//		{
+//			for (MSIImage image : images.keySet())
+//			{
+//				if (image.key.equals(key))
+//					return image;
+//			}
+//
+//			MSIImage image = new MSIImage(key, eros);
+//			images.put(image, null);
+//			return image;
+//		}
+//	}
     	
 	/**
 	 * This constructor should only be used in the GUI program since

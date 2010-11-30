@@ -59,7 +59,8 @@ public class MSIImageCollection extends Model implements PropertyChangeListener
 		if (containsKey(key))
 			return;
 		
-		MSIImage image = MSIImage.MSIImageFactory.createImage(key, erosModel);
+//		MSIImage image = MSIImage.MSIImageFactory.createImage(key, erosModel);
+		MSIImage image = new MSIImage(key, erosModel);
 
 		erosModel.addPropertyChangeListener(image);
 		image.addPropertyChangeListener(this);

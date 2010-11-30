@@ -37,8 +37,8 @@ public class NISSpectraCollection extends Model implements PropertyChangeListene
 		if (fileToSpectrumMap.containsKey(path))
 			return;
 		
-		//NISSpectrum spectrum = new NISSpectrum(path, erosModel);
-		NISSpectrum spectrum = NISSpectrum.NISSpectrumFactory.createSpectrum(path, erosModel);		
+		//NISSpectrum spectrum = NISSpectrum.NISSpectrumFactory.createSpectrum(path, erosModel);		
+		NISSpectrum spectrum = new NISSpectrum(path, erosModel);
 		
 		erosModel.addPropertyChangeListener(spectrum);
 		spectrum.addPropertyChangeListener(this);

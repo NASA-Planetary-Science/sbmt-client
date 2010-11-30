@@ -97,24 +97,24 @@ public class NISSpectrum extends Model implements PropertyChangeListener
 	 * NISSpectrums. Anyone needing a NISSpectrum should use this factory class to
 	 * create NISSpectrums and should NOT call the constructor directly.
 	 */
-	public static class NISSpectrumFactory
-	{
-		static private WeakHashMap<NISSpectrum, Object> spectra = 
-			new WeakHashMap<NISSpectrum, Object>();
-		
-		static /*public*/ NISSpectrum createSpectrum(String name, SmallBodyModel eros) throws IOException
-		{
-			for (NISSpectrum spectrum : spectra.keySet())
-			{
-				if (spectrum.getServerPath().equals(name))
-					return spectrum;
-			}
-
-			NISSpectrum spectrum = new NISSpectrum(name, eros);
-			spectra.put(spectrum, null);
-			return spectrum;
-		}
-	}
+//	public static class NISSpectrumFactory
+//	{
+//		static private WeakHashMap<NISSpectrum, Object> spectra = 
+//			new WeakHashMap<NISSpectrum, Object>();
+//		
+//		static /*public*/ NISSpectrum createSpectrum(String name, SmallBodyModel eros) throws IOException
+//		{
+//			for (NISSpectrum spectrum : spectra.keySet())
+//			{
+//				if (spectrum.getServerPath().equals(name))
+//					return spectrum;
+//			}
+//
+//			NISSpectrum spectrum = new NISSpectrum(name, eros);
+//			spectra.put(spectrum, null);
+//			return spectrum;
+//		}
+//	}
 
 	
 	public NISSpectrum(String filename, SmallBodyModel eros) throws IOException
