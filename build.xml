@@ -30,6 +30,7 @@
 		<pathelement location="${rootdir}/lib/jfreechart-1.0.13.jar"/>
 		<pathelement location="${rootdir}/lib/miglayout-3.7.1-swing.jar"/>
 		<pathelement location="${rootdir}/lib/commons-io-2.0.jar"/>
+		<pathelement location="${rootdir}/lib/fits-1.04.0.jar"/>
       </classpath>
     </javac> 
   </target>
@@ -48,6 +49,7 @@
 		<pathelement location="${rootdir}/lib/jfreechart-1.0.13.jar"/>
 		<pathelement location="${rootdir}/lib/miglayout-3.7.1-swing.jar"/>
 		<pathelement location="${rootdir}/lib/commons-io-2.0.jar"/>
+		<pathelement location="${rootdir}/lib/fits-1.04.0.jar"/>
       </classpath>
     </java>
   </target>
@@ -63,7 +65,8 @@
                                             jcommon-1.0.16.jar
                                             jfreechart-1.0.13.jar
                                             miglayout-3.7.1-swing.jar
-                                            commons-io-2.0.jar"/>
+                                            commons-io-2.0.jar
+                                            fits-1.04.0.jar"/>
         <attribute name="Main-Class" value="edu.jhuapl.near.ErosViewer"/>
       </manifest>
     </jar>
@@ -83,6 +86,7 @@
         <pathelement location="${rootdir}/lib/jfreechart-1.0.13.jar"/>
         <pathelement location="${rootdir}/lib/miglayout-3.7.1-swing.jar"/>
         <pathelement location="${rootdir}/lib/commons-io-2.0.jar"/>
+        <pathelement location="${rootdir}/lib/fits-1.04.0.jar"/>
 		<pathelement location="${rootdir}/build/jar/near.jar"/>
       </classpath>
     </java>
@@ -264,6 +268,14 @@
     <input message="Please enter keystore password:"
            addproperty="keypass" />
     <signjar jar="${rootdir}/lib/commons-io-2.0.jar"
+             keystore="${rootdir}/keystore" alias="mykey"
+             storepass="${keypass}"/>
+  </target>
+
+  <target name="signfits">
+    <input message="Please enter keystore password:"
+           addproperty="keypass" />
+    <signjar jar="${rootdir}/lib/fits-1.04.0.jar"
              keystore="${rootdir}/keystore" alias="mykey"
              storepass="${keypass}"/>
   </target>
