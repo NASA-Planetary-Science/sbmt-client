@@ -141,3 +141,13 @@
  - In the Eros, Deimos, Itokawa, and Vesta tabs, show some statistics
    about the asteroid such as number of plates, points, volume,
    surface area, mean size of plate, bounding box etc.
+
+ - when loading a maplet, add error dialog if we cannot find the lbl file
+ 
+ - (Scott Murchie suggestion) when searching for MSI images, provide options for searching for
+   a specific sequence as documented in a spreadsheet he provided
+  
+ - (Scott Murchie suggestion) when texture mapping MSI images, don't show the black band on 
+   the left or right
+    
+ - add ability to temporary hide a given actor   
