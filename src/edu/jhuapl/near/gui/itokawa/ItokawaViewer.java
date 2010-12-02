@@ -6,7 +6,7 @@ import edu.jhuapl.near.gui.Renderer;
 import edu.jhuapl.near.gui.SmallBodyControlPanel;
 import edu.jhuapl.near.gui.StatusBar;
 import edu.jhuapl.near.gui.StructuresControlPanel;
-import edu.jhuapl.near.gui.View;
+import edu.jhuapl.near.gui.Viewer;
 import edu.jhuapl.near.model.CircleModel;
 import edu.jhuapl.near.model.Graticule;
 import edu.jhuapl.near.model.LineModel;
@@ -30,7 +30,7 @@ import java.util.HashMap;
  * @author kahneg1
  *
  */
-public class ItokawaViewer extends View 
+public class ItokawaViewer extends Viewer 
 {
 	public static final String NAME = "Itokawa";
 
@@ -41,6 +41,7 @@ public class ItokawaViewer extends View
 	private PickManager pickManager;
 	private GenericPopupManager popupManager;
 	private StatusBar statusBar;
+	private boolean initialized = false;
 		
 	public ItokawaViewer(StatusBar statusBar)
 	{
@@ -50,6 +51,9 @@ public class ItokawaViewer extends View
 	
 	public void initialize()
 	{
+		if (initialized)
+			return;
+
 		setupModelManager();
 
 		renderer = new Renderer(modelManager);
@@ -73,6 +77,8 @@ public class ItokawaViewer extends View
         controlPanel.setPreferredSize(new Dimension(320, 800));
 
 		this.add(splitPane, BorderLayout.CENTER);
+		
+		initialized = true;
 	}
 	
 	private void setupModelManager()

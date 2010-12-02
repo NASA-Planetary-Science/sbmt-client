@@ -1,21 +1,18 @@
 package edu.jhuapl.near.gui;
 
-import java.awt.CardLayout;
 import java.awt.event.ActionEvent;
-import java.util.ArrayList;
 
 import javax.swing.AbstractAction;
 import javax.swing.ButtonGroup;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
-import javax.swing.JPanel;
 import javax.swing.JRadioButtonMenuItem;
 
 public class ViewMenu extends JMenu 
 {
-	private JPanel rootPanel;
+	private ViewerManager rootPanel;
 	
-    public ViewMenu(JPanel rootPanel, ArrayList<View> views)
+    public ViewMenu(ViewerManager rootPanel)
     {
         super("View");
         
@@ -23,9 +20,10 @@ public class ViewMenu extends JMenu
 
         ButtonGroup group = new ButtonGroup();
 
-        for (int i=0; i < views.size(); ++i)
+        for (int i=0; i < rootPanel.getNumberOfViewers(); ++i)
         {
-        	JMenuItem mi = new JRadioButtonMenuItem(new ShowBodyAction(views.get(i).getName(), views.get(i)));
+        	Viewer viewer = rootPanel.getViewer(i);
+        	JMenuItem mi = new JRadioButtonMenuItem(new ShowBodyAction(viewer));
         	if (i==0)
         		mi.setSelected(true);
         	group.add(mi);
@@ -35,27 +33,17 @@ public class ViewMenu extends JMenu
     
     private class ShowBodyAction extends AbstractAction
     {
-    	private String name;
-    	private View view;
-    	private boolean initializedCalled = false;
+    	private Viewer viewer;
         
-    	public ShowBodyAction(String name, View view)
+    	public ShowBodyAction(Viewer viewer)
         {
-            super(name);
-            this.name = name;
-            this.view = view;
+            super(viewer.getName());
+            this.viewer = viewer;
         }
 
         public void actionPerformed(ActionEvent actionEvent)
         {
-        	if (!initializedCalled)
-        	{
-        		view.initialize();
-        		initializedCalled = true;
-        	}
-        	
-        	CardLayout cardLayout = (CardLayout)(rootPanel.getLayout());
-        	cardLayout.show(rootPanel, name);
+        	rootPanel.setCurrentViewer(viewer);
         }
     }
 }

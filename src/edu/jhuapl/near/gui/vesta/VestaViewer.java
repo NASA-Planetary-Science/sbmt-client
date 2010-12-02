@@ -8,7 +8,7 @@ import edu.jhuapl.near.gui.Renderer;
 import edu.jhuapl.near.gui.SmallBodyControlPanel;
 import edu.jhuapl.near.gui.StatusBar;
 import edu.jhuapl.near.gui.StructuresControlPanel;
-import edu.jhuapl.near.gui.View;
+import edu.jhuapl.near.gui.Viewer;
 import edu.jhuapl.near.model.CircleModel;
 import edu.jhuapl.near.model.Graticule;
 import edu.jhuapl.near.model.LineModel;
@@ -32,7 +32,7 @@ import java.util.HashMap;
  * @author kahneg1
  *
  */
-public class VestaViewer extends View 
+public class VestaViewer extends Viewer 
 {
 	public static final String NAME = "Vesta";
 
@@ -44,6 +44,7 @@ public class VestaViewer extends View
 	private GenericPopupManager popupManager;
 	private StatusBar statusBar;
 	private ModelInfoWindowManager infoPanelManager;
+	private boolean initialized = false;
 		
 	public VestaViewer(StatusBar statusBar)
 	{
@@ -53,6 +54,9 @@ public class VestaViewer extends View
 	
 	public void initialize()
 	{
+		if (initialized)
+			return;
+		
 		setupModelManager();
 
 		infoPanelManager = new ModelInfoWindowManager(modelManager)
@@ -88,6 +92,8 @@ public class VestaViewer extends View
         controlPanel.setPreferredSize(new Dimension(320, 800));
 
 		this.add(splitPane, BorderLayout.CENTER);
+
+		initialized = true;
 	}
 
 	private void setupModelManager()

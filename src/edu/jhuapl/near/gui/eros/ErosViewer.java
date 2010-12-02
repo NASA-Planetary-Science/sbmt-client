@@ -8,7 +8,7 @@ import edu.jhuapl.near.gui.Renderer;
 import edu.jhuapl.near.gui.SmallBodyControlPanel;
 import edu.jhuapl.near.gui.StatusBar;
 import edu.jhuapl.near.gui.StructuresControlPanel;
-import edu.jhuapl.near.gui.View;
+import edu.jhuapl.near.gui.Viewer;
 import edu.jhuapl.near.model.CircleModel;
 import edu.jhuapl.near.model.Graticule;
 import edu.jhuapl.near.model.LineModel;
@@ -41,7 +41,7 @@ import java.util.HashMap;
  * @author kahneg1
  *
  */
-public class ErosViewer extends View
+public class ErosViewer extends Viewer
 {
 	public static final String NAME = "Eros";
 

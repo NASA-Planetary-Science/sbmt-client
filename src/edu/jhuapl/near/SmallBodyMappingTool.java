@@ -2,20 +2,15 @@ package edu.jhuapl.near;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 import vtk.vtkJavaGarbageCollector;
 
-import edu.jhuapl.near.gui.deimos.DeimosViewer;
 import edu.jhuapl.near.gui.FileMenu;
 import edu.jhuapl.near.gui.HelpMenu;
 import edu.jhuapl.near.gui.StatusBar;
-import edu.jhuapl.near.gui.View;
 import edu.jhuapl.near.gui.ViewMenu;
-import edu.jhuapl.near.gui.eros.ErosViewer;
-import edu.jhuapl.near.gui.itokawa.ItokawaViewer;
-import edu.jhuapl.near.gui.vesta.VestaViewer;
+import edu.jhuapl.near.gui.ViewerManager;
 import edu.jhuapl.near.util.NativeLibraryLoader;
 
 
@@ -32,8 +27,7 @@ public class SmallBodyMappingTool extends JFrame
 	private FileMenu fileMenu;
 	private ViewMenu viewMenu;
 	private HelpMenu helpMenu;
-	private JPanel rootPanel;
-	private ArrayList<View> views;
+	private ViewerManager rootPanel;
 	private static vtkJavaGarbageCollector garbageCollector;
 	
 	public SmallBodyMappingTool()
@@ -42,28 +36,10 @@ public class SmallBodyMappingTool extends JFrame
 
         createStatusBar();
 
-        rootPanel = new JPanel(new BorderLayout());
-        rootPanel.setBorder(BorderFactory.createEmptyBorder());
-
-        ErosViewer erosViewer = new ErosViewer(statusBar);
-        DeimosViewer deimosViewer = new DeimosViewer(statusBar);
-        ItokawaViewer itokawaViewer = new ItokawaViewer(statusBar);
-        VestaViewer vestaViewer = new VestaViewer(statusBar);
-        
-        views = new ArrayList<View>();
-        views.add(erosViewer);
-        views.add(deimosViewer);
-        views.add(itokawaViewer);
-        views.add(vestaViewer);
+        rootPanel = new ViewerManager(statusBar);
         
 		createMenus();
 
-		rootPanel.setLayout(new CardLayout());
-		rootPanel.add(erosViewer, ErosViewer.NAME);
-		rootPanel.add(deimosViewer, DeimosViewer.NAME);
-		rootPanel.add(itokawaViewer, ItokawaViewer.NAME);
-		rootPanel.add(vestaViewer, VestaViewer.NAME);
-		
 		this.add(rootPanel, BorderLayout.CENTER);
 		
 //        // Center the application on the screen.
@@ -85,7 +61,7 @@ public class SmallBodyMappingTool extends JFrame
         fileMenu.setMnemonic('F');
         menuBar.add(fileMenu);
 
-        viewMenu = new ViewMenu(rootPanel, views);
+        viewMenu = new ViewMenu(rootPanel);
         viewMenu.setMnemonic('V');
         menuBar.add(viewMenu);
         

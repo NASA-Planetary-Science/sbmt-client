@@ -21,6 +21,9 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
@@ -33,6 +36,7 @@ import vtk.vtkGlobalJavaHash;
 import edu.jhuapl.near.gui.AnyFileChooser;
 import edu.jhuapl.near.gui.Renderer;
 import edu.jhuapl.near.gui.StatusBar;
+import edu.jhuapl.near.gui.actions.SaveImageAction;
 import edu.jhuapl.near.model.CircleModel;
 import edu.jhuapl.near.model.Line;
 import edu.jhuapl.near.model.LineModel;
@@ -63,6 +67,7 @@ public class TopoViewer extends JFrame
 	private MapletBoundaryCollection mapletBoundaries;
     private JComboBox coloringTypeComboBox;
     private DEMModel dem;
+    private Renderer renderer;
     
 	private static final String Profile = "Profile";
 	private static final String StartLatitude = "StartLatitude";
@@ -100,7 +105,7 @@ public class TopoViewer extends JFrame
     	allModels.put(ModelNames.CIRCLE_SELECTION, new RegularPolygonModel(dem,20,false,"Selection",ModelNames.CIRCLE_SELECTION));
     	modelManager.setModels(allModels);
 
-		Renderer renderer = new Renderer(modelManager);
+    	renderer = new Renderer(modelManager);
         
 
 		GenericPopupManager popupManager = new GenericPopupManager(modelManager);
@@ -141,6 +146,8 @@ public class TopoViewer extends JFrame
 				vtkGlobalJavaHash.GC();
 			}
 		});
+
+		createMenus();
 		
         // Finally make the frame visible
         setTitle("Mapmaker View");
@@ -148,6 +155,19 @@ public class TopoViewer extends JFrame
         setVisible(true);
 	}
 	
+    private void createMenus()
+    {
+    	JMenuBar menuBar = new JMenuBar();
+
+    	JMenu fileMenu = new JMenu("File");
+        JMenuItem mi = new JMenuItem(new SaveImageAction(renderer));
+        fileMenu.add(mi);
+        fileMenu.setMnemonic('F');
+        menuBar.add(fileMenu);
+
+    	setJMenuBar(menuBar);
+	}
+    
 	private JPanel createButtonsPanel()
 	{
         JPanel panel = new JPanel();
