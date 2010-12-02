@@ -12,5 +12,6 @@
 	<classpathentry kind="lib" path="lib/vtksb.jar"/>
 	<classpathentry kind="lib" path="lib/h2-1.2.142.jar"/>
 	<classpathentry kind="lib" path="lib/commons-io-2.0.jar"/>
+	<classpathentry kind="lib" path="lib/fits-1.04.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
