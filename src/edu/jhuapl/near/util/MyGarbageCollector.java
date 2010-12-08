@@ -43,7 +43,7 @@ public class MyGarbageCollector {
    */
   public MyGarbageCollector() {
     // Default settings
-    debug = false;
+    debug = true;
     periodTime = 1;
     timeUnit = TimeUnit.SECONDS;
     autoCollectionRunning = false;
