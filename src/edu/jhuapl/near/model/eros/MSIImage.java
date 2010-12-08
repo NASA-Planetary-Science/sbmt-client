@@ -1200,7 +1200,7 @@ public class MSIImage extends Model implements PropertyChangeListener
 		//vtkBar2 cellLocator = new vtkBar2();
 		//vbar.testme();
 		
-		int numLayers = 12;
+		int numLayers = 16;
 		float[] data = new float[numLayers*IMAGE_HEIGHT*IMAGE_WIDTH];
 
 		// If we are searching for a limb, use the locator of eros itself
@@ -1364,6 +1364,8 @@ public class MSIImage extends Model implements PropertyChangeListener
 					double horizPixelScale = closestDist * horizScaleFactor;
 					double vertPixelScale = closestDist * vertScaleFactor;
 
+					double[] coloringValues = erosModel.getAllColoringValues(closestPoint);
+
 					data[index(j,i,0)]  = (float)rawImage.GetScalarComponentAsFloat(j, i, 0, 0);
 					data[index(j,i,1)]  = (float)closestPoint[0];
 					data[index(j,i,2)]  = (float)closestPoint[1];
@@ -1376,6 +1378,10 @@ public class MSIImage extends Model implements PropertyChangeListener
 					data[index(j,i,9)]  = (float)(illumAngles[2] * 180.0 / Math.PI);
 					data[index(j,i,10)] = (float)(horizPixelScale);
 					data[index(j,i,11)] = (float)(vertPixelScale);
+					data[index(j,i,12)] = (float)coloringValues[0]; // slope
+					data[index(j,i,13)] = (float)coloringValues[1]; // elevation;
+					data[index(j,i,14)] = (float)coloringValues[2]; // grav acc;
+					data[index(j,i,15)] = (float)coloringValues[3]; // grav pot;
 				}
 				else
 				{
@@ -1426,7 +1432,7 @@ public class MSIImage extends Model implements PropertyChangeListener
 			// The planes in the downloaded ddr are all wrong
 			if (str.trim().startsWith("BANDS"))
 			{
-				strbuf.append("    BANDS                    = 12\r\n");
+				strbuf.append("    BANDS                    = 16\r\n");
 				strbuf.append("    BAND_STORAGE_TYPE        = BAND_SEQUENTIAL\r\n");
 				strbuf.append("    BAND_NAME                = (\"MSI pixel value\",\r\n");
 				strbuf.append("                                \"x coordinate of center of pixel, body fixed coordinate system, km\",\r\n");
@@ -1439,7 +1445,11 @@ public class MSIImage extends Model implements PropertyChangeListener
 				strbuf.append("                                \"Emission angle, measured against the plate model, deg\",\r\n");
 				strbuf.append("                                \"Phase angle, measured against the plate model, deg\",\r\n");
 				strbuf.append("                                \"Horizontal pixel scale, km per pixel\",\r\n");
-				strbuf.append("                                \"Vertical pixel scale, km per pixel\")\r\n");
+				strbuf.append("                                \"Vertical pixel scale, km per pixel\",\r\n");
+				strbuf.append("                                \"Slope, deg\",\r\n");
+				strbuf.append("                                \"Elevation, m\",\r\n");
+				strbuf.append("                                \"Gravitational acceleration, m/s^2\",\r\n");
+				strbuf.append("                                \"Gravitational potential, J/kg\")\r\n");
 				strbuf.append("\r\n");
 				strbuf.append("  END_OBJECT                 = IMAGE\r\n");
 				strbuf.append("\r\n");

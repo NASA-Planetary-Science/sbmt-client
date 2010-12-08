@@ -1088,6 +1088,26 @@ public class SmallBodyModel extends Model
     	}
     }
 
+    /**
+     * Get value assuming pt is exactly on the asteroid and cellId is provided
+     * @param pt
+     * @param pointOrCellData
+     * @param cellId
+     * @return
+     */
+    private double getColoringValue(double[] pt, vtkFloatArray pointOrCellData, int cellId)
+    {
+    	if (coloringValueType == ColoringValueType.POINT_DATA)
+    	{
+    		return PolyDataUtil.interpolateWithinCell(
+    				smallBodyPolyData, pointOrCellData, cellId, pt, idList);
+    	}
+    	else
+    	{
+    		return pointOrCellData.GetTuple1(cellId);
+    	}
+    }
+
     public double getColoringValue(int index, double[] pt)
     {
     	try
@@ -1104,6 +1124,29 @@ public class SmallBodyModel extends Model
     	return getColoringValue(pt, coloringValues[index]);
     }
 
+    public double[] getAllColoringValues(double[] pt)
+    {
+    	try
+    	{
+    		loadColoringData();
+    	}
+    	catch (IOException e)
+    	{
+    		// TODO Auto-generated catch block
+    		e.printStackTrace();
+    	}
+
+        double[] closestPoint = new double[3];
+    	int cellId = findClosestCell(pt, closestPoint);
+
+    	double[] values = new double[coloringValues.length];
+		for (int i=0; i<coloringValues.length; ++i)
+		{
+			values[i] = getColoringValue(closestPoint, coloringValues[i], cellId);
+		}
+		
+    	return values;
+    }
 
 	public double getImageMapOpacity()
 	{
