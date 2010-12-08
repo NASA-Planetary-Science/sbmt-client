@@ -3,6 +3,7 @@ package edu.jhuapl.near.gui;
 
 import java.io.File;
 import java.awt.*;
+
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 
@@ -11,24 +12,34 @@ import javax.swing.filechooser.FileFilter;
  * @author kahneg1
  *
  */
-public class FITFileChooser
+public class CustomFileChooser
 {
     private static final JFileChooser fc = new JFileChooser();
 
-    private static class FITFilter extends FileFilter 
+    private static class CustomExtensionFilter extends FileFilter 
     {
-        //Accept all directories and all fit files.
+    	private String extension;
+    	
+    	public CustomExtensionFilter(String extension)
+    	{
+    		if (extension != null)
+    			extension = extension.toLowerCase();
+    		
+    		this.extension = extension;
+    	}
+    	
+        //Accept all directories and all files with specified extension.
         public boolean accept(File f) 
         {
-            if (f.isDirectory()) 
+            if (f.isDirectory() || (extension == null || extension.isEmpty())) 
             {
                 return true;
             }
 
-            String extension = getExtension(f);
-            if (extension != null) 
+            String ext = getExtension(f);
+            if (ext != null) 
             {
-                if (extension.equals("fit"))
+                if (ext.equals(extension))
                 {
                 	return true;
                 } 
@@ -44,7 +55,10 @@ public class FITFileChooser
         //The description of this filter
         public String getDescription() 
         {
-            return "FIT Files";
+        	if (extension == null || extension.isEmpty())
+        		return "All Files";
+        	else
+        		return extension.toUpperCase() + " Files";
         }
         
         private String getExtension(File f) 
@@ -63,13 +77,18 @@ public class FITFileChooser
 
     static
     {
-    	fc.setFileFilter(new FITFilter());
     	fc.setAcceptAllFileFilterUsed(false);    	
     }
-    
+
     public static File showOpenDialog(Component parent, String title)
     {
+    	return showOpenDialog(parent, title, null);
+    }
+    
+    public static File showOpenDialog(Component parent, String title, String extension)
+    {
     	fc.setDialogTitle(title);
+    	fc.setFileFilter(new CustomExtensionFilter(extension));
     	int returnVal = fc.showOpenDialog(parent);
         if (returnVal == JFileChooser.APPROVE_OPTION) 
         {
@@ -80,17 +99,28 @@ public class FITFileChooser
         	return null;
         }
     }
+
+    public static File showSaveDialog(Component parent, String title)
+    {
+    	return showSaveDialog(parent, title, null, null);
+    }
     
-    public static File showSaveDialog(Component parent, String title, String defaultName)
+    public static File showSaveDialog(Component parent, String title, String defaultFilename)
+    {
+    	return showSaveDialog(parent, title, defaultFilename, null);
+    }
+    
+    public static File showSaveDialog(Component parent, String title, String defaultFilename, String extension)
     {
     	fc.setDialogTitle(title);
-    	if (defaultName != null)
-    		fc.setSelectedFile(new File(defaultName));
+    	fc.setFileFilter(new CustomExtensionFilter(extension));
+    	if (defaultFilename != null)
+    		fc.setSelectedFile(new File(defaultFilename));
     	int returnVal = fc.showSaveDialog(parent);
         if (returnVal == JFileChooser.APPROVE_OPTION) 
         {
             File file = fc.getSelectedFile();
-            if (file.exists ()) 
+            if (file.exists()) 
             {
                 int response = JOptionPane.showConfirmDialog (null,
                   "Overwrite existing file?","Confirm Overwrite",
@@ -101,8 +131,11 @@ public class FITFileChooser
             }
             
         	String filename = file.getAbsolutePath();
-        	if (!filename.toLowerCase().endsWith(".fit"))
-        		filename += ".fit";
+        	if (extension != null && !extension.isEmpty())
+        	{
+        		if (!filename.toLowerCase().endsWith("." + extension))
+        			filename += "." + extension;
+        	}
         	return new File(filename);
         }	
         else
@@ -110,5 +143,4 @@ public class FITFileChooser
         	return null;
         }
     }
-    
 }

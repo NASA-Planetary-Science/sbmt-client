@@ -1,17 +1,14 @@
 package edu.jhuapl.near.gui.eros;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.*;
 
 import javax.swing.*;
-import javax.swing.event.*;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.event.*;
 
-import edu.jhuapl.near.gui.AnyFileChooser;
+import edu.jhuapl.near.gui.CustomFileChooser;
 import edu.jhuapl.near.gui.RadialOffsetChanger;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
@@ -71,7 +68,7 @@ public class NLRSummaryPanel extends JPanel
         		if (index >= 0)
         		{
         			File tmp = new File(nlrRawResults.get(index));
-        			File file = AnyFileChooser.showSaveDialog(
+        			File file = CustomFileChooser.showSaveDialog(
         					saveButton.getParent(),
         					"Save NLR data",
         					tmp.getName().substring(0, tmp.getName().length()-3));

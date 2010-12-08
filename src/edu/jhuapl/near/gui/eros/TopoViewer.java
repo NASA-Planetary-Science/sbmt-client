@@ -33,7 +33,7 @@ import org.jfree.chart.plot.DefaultDrawingSupplier;
 
 import vtk.vtkGlobalJavaHash;
 
-import edu.jhuapl.near.gui.AnyFileChooser;
+import edu.jhuapl.near.gui.CustomFileChooser;
 import edu.jhuapl.near.gui.Renderer;
 import edu.jhuapl.near.gui.StatusBar;
 import edu.jhuapl.near.gui.actions.SaveImageAction;
@@ -252,7 +252,7 @@ public class TopoViewer extends JFrame
     			File file = null;
     			try 
     			{
-    				file = AnyFileChooser.showSaveDialog(TopoViewer.this, "Save Profiles", "profiles.txt");
+    				file = CustomFileChooser.showSaveDialog(TopoViewer.this, "Save Profiles", "profiles.txt");
     				if (file != null)
     				{
     					saveViewer(file);
@@ -278,7 +278,7 @@ public class TopoViewer extends JFrame
     			File file = null;
     			try 
     			{
-    				file = AnyFileChooser.showOpenDialog(TopoViewer.this, "Load Profiles");
+    				file = CustomFileChooser.showOpenDialog(TopoViewer.this, "Load Profiles");
     				if (file != null)
     				{
     					loadViewer(file);

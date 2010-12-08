@@ -13,7 +13,7 @@ import java.awt.event.*;
 
 import com.jidesoft.swing.RangeSlider;
 
-import edu.jhuapl.near.gui.AnyFileChooser;
+import edu.jhuapl.near.gui.CustomFileChooser;
 import edu.jhuapl.near.gui.RadialOffsetChanger;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
@@ -174,7 +174,7 @@ public class NLRBrowsePanel extends JPanel implements ListSelectionListener
         		if (index >= 0)
         		{
         			File tmp = new File(nlrRawResults.get(index));
-        			File file = AnyFileChooser.showSaveDialog(
+        			File file = CustomFileChooser.showSaveDialog(
         					saveButton.getParent(),
         					"Save NLR data",
         					tmp.getName().substring(0, tmp.getName().length()-3));

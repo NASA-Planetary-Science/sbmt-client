@@ -215,7 +215,7 @@ public class MSIPopupMenu extends PopupMenu
 	{
 		public void actionPerformed(ActionEvent e) 
 		{
-			File file = FITFileChooser.showSaveDialog(invoker, "Save FIT file", msiKey.name + ".FIT");
+			File file = CustomFileChooser.showSaveDialog(invoker, "Save FIT file", msiKey.name + ".FIT", "fit");
 			try
 			{
 				if (file != null)
@@ -283,7 +283,7 @@ public class MSIPopupMenu extends PopupMenu
 		{
 			// First generate the DDR
 			
-			File file = AnyFileChooser.showSaveDialog(invoker, "Save Backplanes DDR", msiKey.name + "_DDR.IMG");
+			File file = CustomFileChooser.showSaveDialog(invoker, "Save Backplanes DDR", msiKey.name + "_DDR.IMG");
 
 			try 
 			{
@@ -323,7 +323,7 @@ public class MSIPopupMenu extends PopupMenu
 
 			// Then generate the LBL file
 			
-			file = AnyFileChooser.showSaveDialog(invoker, "Save Backplanes Label", msiKey.name + "_DDR.LBL");
+			file = CustomFileChooser.showSaveDialog(invoker, "Save Backplanes Label", msiKey.name + "_DDR.LBL");
 
 			try 
 			{

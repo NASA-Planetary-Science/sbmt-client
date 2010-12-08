@@ -19,7 +19,7 @@ import java.awt.event.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
-import edu.jhuapl.near.gui.AnyFileChooser;
+import edu.jhuapl.near.gui.CustomFileChooser;
 import edu.jhuapl.near.gui.RadialOffsetChanger;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
@@ -293,7 +293,7 @@ public class NLRSearchPanel extends JPanel implements ActionListener, PropertyCh
         		int index = 1;
         		if (index >= 0)
         		{
-        			File file = AnyFileChooser.showSaveDialog(
+        			File file = CustomFileChooser.showSaveDialog(
         					saveButton.getParent(),
         					"Save NLR data");
         			

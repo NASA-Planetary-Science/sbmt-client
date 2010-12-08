@@ -21,7 +21,7 @@ import javax.swing.SpinnerNumberModel;
 
 import net.miginfocom.swing.MigLayout;
 
-import edu.jhuapl.near.gui.CustomExtensionFileChooser;
+import edu.jhuapl.near.gui.CustomFileChooser;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.RegularPolygonModel;
@@ -276,7 +276,7 @@ public class TopoPanel extends JPanel implements ActionListener
 	
 	private void loadCubeFile()
 	{
-		File file = CustomExtensionFileChooser.showOpenDialog(TopoPanel.this, "Load Cube File", "cub");
+		File file = CustomFileChooser.showOpenDialog(TopoPanel.this, "Load Cube File", "cub");
 		if (file == null)
 		{
 			return;
