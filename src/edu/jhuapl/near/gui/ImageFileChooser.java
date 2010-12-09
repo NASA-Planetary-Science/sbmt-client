@@ -149,7 +149,7 @@ public class ImageFileChooser
         			!filename.toLowerCase().endsWith(".tif") &&
         			!filename.toLowerCase().endsWith(".tiff"))
         	{
-        		filename += ".tif";
+        		filename += ".tiff";
         	}
         	
         	File file = new File(filename);
