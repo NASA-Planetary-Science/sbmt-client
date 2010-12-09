@@ -34,7 +34,8 @@ public class CircleSelectionPicker extends Picker
 		smallBodyPicker.InitializePickList();
 		smallBodyModel = modelManager.getSmallBodyModel();
 		ArrayList<vtkProp> actors = smallBodyModel.getProps();
-		smallBodyPicker.GetPickList().RemoveAllItems();
+		vtkPropCollection smallBodyPickList = smallBodyPicker.GetPickList();
+		smallBodyPickList.RemoveAllItems();
 		for (vtkProp act : actors)
 		{
 			smallBodyPicker.AddPickList(act);

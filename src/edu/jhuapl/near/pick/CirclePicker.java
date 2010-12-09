@@ -49,7 +49,8 @@ public class CirclePicker extends Picker
 		smallBodyPicker.InitializePickList();
 		smallBodyModel = modelManager.getSmallBodyModel();
 		ArrayList<vtkProp> actors = smallBodyModel.getProps();
-		smallBodyPicker.GetPickList().RemoveAllItems();
+		vtkPropCollection smallBodyPickList = smallBodyPicker.GetPickList();
+		smallBodyPickList.RemoveAllItems();
 		for (vtkProp act : actors)
 		{
 			smallBodyPicker.AddPickList(act);
@@ -60,7 +61,8 @@ public class CirclePicker extends Picker
 		circlePicker.SetTolerance(0.002);
 		circlePicker.PickFromListOn();
 		circlePicker.InitializePickList();
-		circlePicker.GetPickList().RemoveAllItems();
+		vtkPropCollection circlePickList = circlePicker.GetPickList();
+		circlePickList.RemoveAllItems();
 		circlePicker.AddPickList(circleModel.getBoundaryActor());
 	}
 	

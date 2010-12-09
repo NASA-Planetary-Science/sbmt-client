@@ -193,7 +193,8 @@ public class DefaultPicker extends Picker
 			// actors rather than the small body. Note that this exclusion only applies 
 			// to the following picker.
 			ArrayList<vtkProp> actors = modelManager.getPropsExceptSmallBody();
-			mousePressNonSmallBodyCellPicker.GetPickList().RemoveAllItems();
+			vtkPropCollection mousePressNonSmallBodyCellPickList = mousePressNonSmallBodyCellPicker.GetPickList();
+			mousePressNonSmallBodyCellPickList.RemoveAllItems();
 			for (vtkProp act : actors)
 			{
 				mousePressNonSmallBodyCellPicker.AddPickList(act);
@@ -202,7 +203,8 @@ public class DefaultPicker extends Picker
 			// Note that this picker includes only the small body prop so that if the
 			// the previous picker, we then invoke this picker on small body itself.
 			actors = modelManager.getSmallBodyModel().getProps();
-			mousePressSmallBodyCellPicker.GetPickList().RemoveAllItems();
+			vtkPropCollection mousePressSmallBodyCellPickList = mousePressSmallBodyCellPicker.GetPickList();
+			mousePressSmallBodyCellPickList.RemoveAllItems();
 			for (vtkProp act : actors)
 			{
 				mousePressSmallBodyCellPicker.AddPickList(act);
@@ -215,7 +217,8 @@ public class DefaultPicker extends Picker
 		if (renWin.GetRenderWindow().GetNeverRendered() > 0)
     		return;
 		
-		double[] cameraPos = renWin.GetRenderer().GetActiveCamera().GetPosition();
+		vtkCamera activeCamera = renWin.GetRenderer().GetActiveCamera();
+		double[] cameraPos = activeCamera.GetPosition();
 		double distance = Math.sqrt(
 				cameraPos[0]*cameraPos[0] +
 				cameraPos[1]*cameraPos[1] +

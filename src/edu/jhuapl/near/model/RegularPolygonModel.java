@@ -173,8 +173,9 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
 		boundaryAppendFilter.UserManagedInputsOn();
 		boundaryMapper = new vtkPolyDataMapper();
 		boundaryActor = new vtkActor();
-		boundaryActor.GetProperty().LightingOff();
-		boundaryActor.GetProperty().SetLineWidth(2.0);
+		vtkProperty boundaryProperty = boundaryActor.GetProperty();
+		boundaryProperty.LightingOff();
+		boundaryProperty.SetLineWidth(2.0);
 
 		actors.add(boundaryActor);
 
@@ -183,9 +184,10 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
 		interiorAppendFilter.UserManagedInputsOn();
 		interiorMapper = new vtkPolyDataMapper();
 		interiorActor = new vtkActor();
-		interiorActor.GetProperty().LightingOff();
-		interiorActor.GetProperty().SetOpacity(interiorOpacity);
-		//interiorActor.GetProperty().SetLineWidth(2.0);
+		vtkProperty interiorProperty = interiorActor.GetProperty();
+		interiorProperty.LightingOff();
+		interiorProperty.SetOpacity(interiorOpacity);
+		//interiorProperty.SetLineWidth(2.0);
 
 		actors.add(interiorActor);
 	}
@@ -266,8 +268,10 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
 			boundaryAppendFilter.Update();
 			interiorAppendFilter.Update();
 
-			boundaryPolyData.DeepCopy(boundaryAppendFilter.GetOutput());
-			interiorPolyData.DeepCopy(interiorAppendFilter.GetOutput());
+			vtkPolyData boundaryAppendFilterOutput = boundaryAppendFilter.GetOutput();
+			vtkPolyData interiorAppendFilterOutput = interiorAppendFilter.GetOutput();
+			boundaryPolyData.DeepCopy(boundaryAppendFilterOutput);
+			interiorPolyData.DeepCopy(interiorAppendFilterOutput);
 
 			smallBodyModel.shiftPolyLineInNormalDirection(boundaryPolyData, 3.0);
 			smallBodyModel.shiftPolyLineInNormalDirection(interiorPolyData, 2.0);
@@ -289,8 +293,10 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
 				for (int j=range.id1; j<range.id2; ++j)
 					interiorColors.SetTuple3(j, color[0], color[1], color[2]);
 			}
-			boundaryPolyData.GetCellData().SetScalars(boundaryColors);
-			interiorPolyData.GetCellData().SetScalars(interiorColors);
+			vtkCellData boundaryCellData = boundaryPolyData.GetCellData();
+			vtkCellData interiorCellData = interiorPolyData.GetCellData();
+			boundaryCellData.SetScalars(boundaryColors);
+			interiorCellData.SetScalars(interiorColors);
 		}
 		else
 		{

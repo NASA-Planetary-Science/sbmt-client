@@ -59,7 +59,6 @@ public class SmallBodyModel extends Model
     private vtkImageData originalImageMap;
     private vtkImageData displayedImageMap;
     private vtkScalarBarActor scalarBarActor;
-    private vtkPolyDataReader smallBodyReader;
 	private SmallBodyCubes smallBodyCubes;
     private int coloringIndex = -1;
     private File defaultModelFile;
@@ -134,7 +133,6 @@ public class SmallBodyModel extends Model
 			}
 		}
 
-    	smallBodyReader = new vtkPolyDataReader();
 		smallBodyPolyData = new vtkPolyData();
 		genericCell = new vtkGenericCell();
 		idList = new vtkIdList();
@@ -164,10 +162,14 @@ public class SmallBodyModel extends Model
 
 	private void initialize(File modelFile)
 	{
+		vtkPolyDataReader smallBodyReader = new vtkPolyDataReader();
 		smallBodyReader.SetFileName(modelFile.getAbsolutePath());
 		smallBodyReader.Update();
 
-		smallBodyPolyData.DeepCopy(smallBodyReader.GetOutput());
+		vtkPolyData output = smallBodyReader.GetOutput();
+		smallBodyPolyData.DeepCopy(output);
+
+		smallBodyReader.Delete();
 
 		initializeLocators();
 		
@@ -202,11 +204,16 @@ public class SmallBodyModel extends Model
         if (lowResPointLocator == null)
         {
             lowResSmallBodyPolyData = new vtkPolyData();
+
+            vtkPolyDataReader smallBodyReader = new vtkPolyDataReader();
             smallBodyReader.SetFileName(defaultModelFile.getAbsolutePath());
             smallBodyReader.Update();
 
-            lowResSmallBodyPolyData.DeepCopy(smallBodyReader.GetOutput());
+    		vtkPolyData output = smallBodyReader.GetOutput();
+            lowResSmallBodyPolyData.DeepCopy(output);
             
+    		smallBodyReader.Delete();
+
             lowResPointLocator = new vtkPointLocator();
             lowResPointLocator.SetDataSet(lowResSmallBodyPolyData);
             lowResPointLocator.BuildLocator();
@@ -466,13 +473,15 @@ public class SmallBodyModel extends Model
 			
 	        smallBodyActor = new vtkActor();
 	        smallBodyActor.SetMapper(smallBodyMapper);
-	        smallBodyActor.GetProperty().SetInterpolationToGouraud();
+	        vtkProperty smallBodyProperty = smallBodyActor.GetProperty();
+	        smallBodyProperty.SetInterpolationToGouraud();
 	        
 	        smallBodyActors.add(smallBodyActor);
 	        
 	        scalarBarActor = new vtkScalarBarActor();
-	        scalarBarActor.GetPositionCoordinate().SetCoordinateSystemToNormalizedViewport();
-	        scalarBarActor.GetPositionCoordinate().SetValue(0.2, 0.01);
+	        vtkCoordinate coordinate = scalarBarActor.GetPositionCoordinate();
+	        coordinate.SetCoordinateSystemToNormalizedViewport();
+	        coordinate.SetValue(0.2, 0.01);
 	        scalarBarActor.SetOrientationToHorizontal();
 	        scalarBarActor.SetWidth(0.6);
 	        scalarBarActor.SetHeight(0.1275);
@@ -493,7 +502,8 @@ public class SmallBodyModel extends Model
 	{
 		initializeActorsAndMappers();
 		
-        smallBodyActor.GetProperty().SetInterpolationToFlat();
+		vtkProperty property = smallBodyActor.GetProperty();
+		property.SetInterpolationToFlat();
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 	}
 	
@@ -501,7 +511,8 @@ public class SmallBodyModel extends Model
 	{
 		initializeActorsAndMappers();
 
-		smallBodyActor.GetProperty().SetInterpolationToGouraud();
+		vtkProperty property = smallBodyActor.GetProperty();
+		property.SetInterpolationToGouraud();
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 	}
 	
@@ -582,7 +593,8 @@ public class SmallBodyModel extends Model
 
 		for (int i=0; i<numberOfCells; ++i)
     	{
-			vtkPoints points = smallBodyPolyData.GetCell(i).GetPoints();
+			vtkCell cell = smallBodyPolyData.GetCell(i);
+			vtkPoints points = cell.GetPoints();
     		double[] pt0 = points.GetPoint(0);
     		double[] pt1 = points.GetPoint(1);
     		double[] pt2 = points.GetPoint(2);
@@ -760,7 +772,8 @@ public class SmallBodyModel extends Model
 	    	reader.SetFileName(file.getAbsolutePath());
 	    	reader.Update();
 
-	    	image.DeepCopy(reader.GetOutput());
+	    	vtkImageData readerOutput = reader.GetOutput();
+	    	image.DeepCopy(readerOutput);
 
 //	    	vtkLookupTable lookupTable = new vtkLookupTable();
 //	        lookupTable.SetRange(coloringValues[i].GetRange());
@@ -795,7 +808,8 @@ public class SmallBodyModel extends Model
 	 */
 	private void invertLookupTable()
 	{
-		vtkUnsignedCharArray table = ((vtkLookupTable)smallBodyMapper.GetLookupTable()).GetTable();
+		vtkLookupTable lookupTable = (vtkLookupTable)smallBodyMapper.GetLookupTable();
+		vtkUnsignedCharArray table = lookupTable.GetTable();
 		
 		invertLookupTableCharArray(table);
 //		int numberOfValues = table.GetNumberOfTuples();
@@ -807,7 +821,7 @@ public class SmallBodyModel extends Model
 //			table.SetTuple4(numberOfValues-i-1, v1[0], v1[1], v1[2], v1[3]);
 //		}
 		
-		((vtkLookupTable)smallBodyMapper.GetLookupTable()).SetTable(table);
+		lookupTable.SetTable(table);
 		smallBodyMapper.Modified();
 	}
 	
@@ -900,7 +914,8 @@ public class SmallBodyModel extends Model
         		// TODO in this situation, invalid data get mapped to black, not white, as
         		// is the convention throughout the rest of this class. Fix this if desired.
         		
-        		appendComponents.AddInputConnection(shiftScale.GetOutputPort());
+        		vtkAlgorithmOutput outputPort = shiftScale.GetOutputPort();
+        		appendComponents.AddInputConnection(outputPort);
     		}
     		
     		appendComponents.Update();
@@ -922,7 +937,8 @@ public class SmallBodyModel extends Model
         blendFilter.SetOpacity(1, 1.0 - imageMapOpacity);
         blendFilter.Update();
         
-        displayedImageMap.DeepCopy(blendFilter.GetOutput());
+        vtkImageData output = blendFilter.GetOutput();
+        displayedImageMap.DeepCopy(output);
     }
     
     private void generateTextureCoordinates()
@@ -1322,9 +1338,10 @@ public class SmallBodyModel extends Model
 				vtkPNGReader reader = new vtkPNGReader();
 				reader.SetFileName(imageFile.getAbsolutePath());
 				reader.Update();
+				vtkImageData readerOutput = reader.GetOutput();
 
 				originalImageMap = new vtkImageData();
-				originalImageMap.DeepCopy(reader.GetOutput());
+				originalImageMap.DeepCopy(readerOutput);
 			}	    	
 
 	    	if (displayedImageMap == null)
@@ -1378,7 +1395,6 @@ public class SmallBodyModel extends Model
 	    if (originalImageMap != null) originalImageMap.Delete();
 	    if (displayedImageMap != null) displayedImageMap.Delete();
 	    if (scalarBarActor != null) scalarBarActor.Delete();
-	    if (smallBodyReader != null) smallBodyReader.Delete();
 	    if (genericCell != null) genericCell.Delete();
 	    if (imageMapTexture != null) imageMapTexture.Delete();
 	    if (blendFilter != null) blendFilter.Delete();

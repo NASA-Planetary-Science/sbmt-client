@@ -54,7 +54,8 @@ public class LinePicker extends Picker
 		smallBodyPicker.InitializePickList();
 		smallBodyModel = modelManager.getSmallBodyModel();
 		ArrayList<vtkProp> actors = smallBodyModel.getProps();
-		smallBodyPicker.GetPickList().RemoveAllItems();
+		vtkPropCollection smallBodyPickList = smallBodyPicker.GetPickList();
+		smallBodyPickList.RemoveAllItems();
 		for (vtkProp act : actors)
 		{
 			smallBodyPicker.AddPickList(act);
@@ -65,14 +66,16 @@ public class LinePicker extends Picker
 		linePicker.SetTolerance(0.002);
 		linePicker.PickFromListOn();
 		linePicker.InitializePickList();
-		linePicker.GetPickList().RemoveAllItems();
+		vtkPropCollection linePickList = linePicker.GetPickList();
+		linePickList.RemoveAllItems();
 		linePicker.AddPickList(lineModel.getLineActor());
 		
 		lineSelectionPicker = new vtkCellPicker();
 		lineSelectionPicker.SetTolerance(0.008);
 		lineSelectionPicker.PickFromListOn();
 		lineSelectionPicker.InitializePickList();
-		lineSelectionPicker.GetPickList().RemoveAllItems();
+		vtkPropCollection lineSelectionPickList = lineSelectionPicker.GetPickList();
+		lineSelectionPickList.RemoveAllItems();
 		lineSelectionPicker.AddPickList(lineModel.getLineSelectionActor());
 	}
 	

@@ -792,7 +792,8 @@ public class PolyDataUtil
 			vtkAbstractPointLocator pointLocator,
 			double shiftAmount)
 	{
-		vtkDataArray pointNormals = polyData.GetPointData().GetNormals();
+		vtkPointData pointData = polyData.GetPointData();
+		vtkDataArray pointNormals = pointData.GetNormals();
 		vtkPoints points = polyLine.GetPoints();
 
 		int numPoints = points.GetNumberOfPoints();

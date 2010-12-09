@@ -86,14 +86,17 @@ public class LineModel extends StructureModel implements PropertyChangeListener
 		idList = new vtkIdList();
 
 		lineActor = new vtkActor();
-		lineActor.GetProperty().SetLineWidth(2.0);
+		vtkProperty lineProperty = lineActor.GetProperty();
+		
+		lineProperty.SetLineWidth(2.0);
 
 		if (profileMode)
-			lineActor.GetProperty().SetLineWidth(3.0);
+			lineProperty.SetLineWidth(3.0);
 			
 		lineSelectionActor = new vtkActor();
-    	lineSelectionActor.GetProperty().SetColor(1.0, 0.0, 0.0);
-    	lineSelectionActor.GetProperty().SetPointSize(7.0);
+		vtkProperty lineSelectionProperty = lineSelectionActor.GetProperty();
+		lineSelectionProperty.SetColor(1.0, 0.0, 0.0);
+		lineSelectionProperty.SetPointSize(7.0);
 
     	// Initialize an empty polydata for resetting
 		emptyPolyData = new vtkPolyData();
@@ -104,7 +107,8 @@ public class LineModel extends StructureModel implements PropertyChangeListener
 		emptyPolyData.SetPoints(points);
 		emptyPolyData.SetLines(cells);
 		emptyPolyData.SetVerts(cells);
-		emptyPolyData.GetCellData().SetScalars(colors);
+		vtkCellData cellData = emptyPolyData.GetCellData();
+		cellData.SetScalars(colors);
 
 		linesPolyData = new vtkPolyData();
 		linesPolyData.DeepCopy(emptyPolyData);
@@ -167,7 +171,8 @@ public class LineModel extends StructureModel implements PropertyChangeListener
 		linesPolyData.DeepCopy(emptyPolyData);
 		vtkPoints points = linesPolyData.GetPoints();
 		vtkCellArray lineCells = linesPolyData.GetLines();
-		vtkUnsignedCharArray colors = (vtkUnsignedCharArray)linesPolyData.GetCellData().GetScalars();
+		vtkCellData cellData = linesPolyData.GetCellData();
+		vtkUnsignedCharArray colors = (vtkUnsignedCharArray)cellData.GetScalars();
 
 		int c=0;
 		for (int j=0; j<this.lines.size(); ++j)
@@ -530,7 +535,8 @@ public class LineModel extends StructureModel implements PropertyChangeListener
     		selectionPolyData.DeepCopy(emptyPolyData);
     		vtkPoints points = selectionPolyData.GetPoints();
     		vtkCellArray vert = selectionPolyData.GetVerts();
-    		vtkUnsignedCharArray colors = (vtkUnsignedCharArray)selectionPolyData.GetCellData().GetScalars();
+    		vtkCellData cellData = selectionPolyData.GetCellData();
+    		vtkUnsignedCharArray colors = (vtkUnsignedCharArray)cellData.GetScalars();
 
     		idList.SetNumberOfIds(1);
 
@@ -572,7 +578,8 @@ public class LineModel extends StructureModel implements PropertyChangeListener
     		selectionPolyData.DeepCopy(emptyPolyData);
     		vtkPoints points = selectionPolyData.GetPoints();
     		vtkCellArray vert = selectionPolyData.GetVerts();
-    		vtkUnsignedCharArray colors = (vtkUnsignedCharArray)selectionPolyData.GetCellData().GetScalars();
+    		vtkCellData cellData = selectionPolyData.GetCellData();
+    		vtkUnsignedCharArray colors = (vtkUnsignedCharArray)cellData.GetScalars();
 
     		int numPoints = lin.controlPointIds.size();
 

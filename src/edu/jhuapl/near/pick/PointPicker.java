@@ -49,7 +49,8 @@ public class PointPicker extends Picker
 		smallBodyPicker.InitializePickList();
 		smallBodyModel = modelManager.getSmallBodyModel();
 		ArrayList<vtkProp> actors = smallBodyModel.getProps();
-		smallBodyPicker.GetPickList().RemoveAllItems();
+		vtkPropCollection smallBodyPickList = smallBodyPicker.GetPickList();
+		smallBodyPickList.RemoveAllItems();
 		for (vtkProp act : actors)
 		{
 			smallBodyPicker.AddPickList(act);
@@ -60,7 +61,8 @@ public class PointPicker extends Picker
 		pointPicker.SetTolerance(0.002);
 		pointPicker.PickFromListOn();
 		pointPicker.InitializePickList();
-		pointPicker.GetPickList().RemoveAllItems();
+		vtkPropCollection pointPickList = pointPicker.GetPickList();
+		pointPickList.RemoveAllItems();
 		pointPicker.AddPickList(pointModel.getInteriorActor());
 	}
 	
