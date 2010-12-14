@@ -26,10 +26,10 @@ public class FileCacheNew
 	 * This function retrieves the specifed file from the server and places it
 	 * in the cache. It first checks the cache to see if the file is already
 	 * there. The cache mirrors the file hierarchy on the server.
-	 * 
+	 *
 	 * The rules for determining whether or not we download the file from the
 	 * server or use the file already in the cache are as follows:
-	 * 
+	 *
 	 * - If the file does not exist in the cache, download it. - If the file
 	 * does exist, and was already downloaded by this very process (files
 	 * already downloaded are stored in the downloadedFiles hash set), then
@@ -40,7 +40,7 @@ public class FileCacheNew
 	 * cached file. - If there was a failure connecting to the server simply
 	 * return the file if it exists in the cache. - If the file could not be
 	 * retrieved for any reason, null is returned.
-	 * 
+	 *
 	 * @param path
 	 * @return
 	 */
@@ -186,7 +186,7 @@ public class FileCacheNew
 //		else
 //		{
 //			// If the temp file does not exist, then there are 2 possibilities, either
-//			// we haven't yet started the download or we finished the download. 
+//			// we haven't yet started the download or we finished the download.
 //			// Therefore, check if we need to download the file. If we do, return 0,
 //			// and if not return the file size.
 //			boolean needToDownload = getFileInfoFromServer(path).needToDownload;
@@ -201,7 +201,7 @@ public class FileCacheNew
 	 * When adding to the cache, gzipped files are always uncompressed and saved
 	 * without the ".gz" extension.
 	 * Zip files are also unzipped, but the original zip file is NOT deleted.
-	 * 
+	 *
 	 * @throws IOException
 	 */
 	static private File addToCache(String path, InputStream is, long urlLastModified, long contentLength) throws IOException

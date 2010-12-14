@@ -15,16 +15,16 @@ public class LinePicker extends Picker
     private vtkRenderWindowPanel renWin;
     private SmallBodyModel smallBodyModel;
     private LineModel lineModel;
-    
+
     private vtkCellPicker smallBodyPicker;
     private vtkCellPicker linePicker;
     private vtkCellPicker lineSelectionPicker;
 
     private int vertexIdBeingEdited = -1;
-    
+
 	private boolean profileMode = false;
 
-    // There are 2 types of line editing possible: 
+    // There are 2 types of line editing possible:
     //   1. Dragging an existing vertex to a new locations
     //   2. Extending a line by adding new vertices
 	public enum EditMode
@@ -38,9 +38,9 @@ public class LinePicker extends Picker
 	private double[] lastDragPosition;
 	
     public LinePicker(
-			Renderer renderer, 
+			Renderer renderer,
 			ModelManager modelManager
-			) 
+			)
 	{
 		this.renWin = renderer.getRenderWindowPanel();
 		this.modelManager = modelManager;
@@ -79,7 +79,7 @@ public class LinePicker extends Picker
 		lineSelectionPicker.AddPickList(lineModel.getLineSelectionActor());
 	}
 	
-	public void mousePressed(MouseEvent e) 
+	public void mousePressed(MouseEvent e)
 	{
 		// If we pressed a vertex of an existing lineament, begin dragging that vertex.
 		// If we pressed a point on the body, begin drawing a new line.
@@ -145,7 +145,7 @@ public class LinePicker extends Picker
 		}
 	}
 	
-	public void mouseReleased(MouseEvent e) 
+	public void mouseReleased(MouseEvent e)
 	{
 		if (this.currentEditMode == EditMode.VERTEX_DRAG_OR_DELETE &&
 				vertexIdBeingEdited >= 0 &&
@@ -162,7 +162,7 @@ public class LinePicker extends Picker
 		vertexIdBeingEdited = -1;
 	}
 	
-	public void mouseDragged(MouseEvent e) 
+	public void mouseDragged(MouseEvent e)
 	{
 		//if (e.getButton() != MouseEvent.BUTTON1)
 		//	return;
@@ -188,7 +188,7 @@ public class LinePicker extends Picker
 	}
 
 	
-	public void mouseMoved(MouseEvent e) 
+	public void mouseMoved(MouseEvent e)
 	{
 		int pickSucceeded = doPick(e, lineSelectionPicker, renWin);
 		

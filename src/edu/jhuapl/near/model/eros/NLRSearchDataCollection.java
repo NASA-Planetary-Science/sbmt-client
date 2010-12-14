@@ -30,7 +30,7 @@ import edu.jhuapl.near.util.*;
 
 import vtk.*;
 
-public class NLRSearchDataCollection extends Model 
+public class NLRSearchDataCollection extends Model
 {
 	static private SqlManager db = null;
 
@@ -193,7 +193,7 @@ public class NLRSearchDataCollection extends Model
 			actor.SetMapper(pointsMapper);
 			actor.GetProperty().SetColor(0.0, 0.0, 1.0);
 			actor.GetProperty().SetPointSize(2.0);
-        
+
 			actors.add(actor);
 
 			selectedPointActor = new vtkActor();
@@ -449,8 +449,8 @@ public class NLRSearchDataCollection extends Model
 
         Statement st = null;
         ResultSet rs = null;
-        
-        String statement = 
+
+        String statement =
         	"SELECT UTC, Eros_x, Eros_y, Eros_z, U, cube_id FROM nlr WHERE" +
         	" UTC >= " + start + " AND UTC <= " + stop;
 //        if (cubeList.size() > 0)
@@ -479,13 +479,13 @@ public class NLRSearchDataCollection extends Model
 			}
         	statement += " )";
         }
-        
+
         System.out.println(statement);
 		try
 		{
 			st = db.createStatement();
 	        rs = st.executeQuery(statement);
-	        
+	
 	        System.out.println("finished executing query");
 	        int count = 0;
 	        while(rs.next())
@@ -541,7 +541,7 @@ public class NLRSearchDataCollection extends Model
             if (maskValue < 0)
                 maskValue = -maskValue;
         }
-        
+
         if (maskType == NLRMaskType.NONE)
         {
             firstPointShown = 0;
@@ -621,7 +621,7 @@ public class NLRSearchDataCollection extends Model
 				{
                     pointer = totalNumberPoints-1;
                     break;
-				}				    
+				}				
 				
 				long nextTime = originalPoints.get(pointer).time;
 				
@@ -652,7 +652,7 @@ public class NLRSearchDataCollection extends Model
                 lastPointShown = firstPointShown;
                 initialPoint = originalPoints.get(lastPointShown).point;
                 pointer = lastPointShown;
-            }           
+            }
 
 			double[] prevPoint = initialPoint;
 			double currentDist = 0.0;
@@ -672,7 +672,7 @@ public class NLRSearchDataCollection extends Model
                 {
                     pointer = totalNumberPoints-1;
                     break;
-                }                   
+                }
 		
 				double[] nextPoint = originalPoints.get(pointer).point;
 				currentDist += MathUtil.distanceBetween(nextPoint, prevPoint);
@@ -688,7 +688,7 @@ public class NLRSearchDataCollection extends Model
             else
                 firstPointShown = pointer;
 		}
-        
+
         needToResetMask = false;
 	}
 
@@ -702,11 +702,11 @@ public class NLRSearchDataCollection extends Model
         geometryFilter.SetPointMaximum(Integer.MAX_VALUE);
 
         selectPoint(-1);
-        
+
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 	}
 
-	public ArrayList<vtkProp> getProps() 
+	public ArrayList<vtkProp> getProps()
 	{
 		return actors;
 	}
@@ -726,7 +726,7 @@ public class NLRSearchDataCollection extends Model
     {
     	cellId = geometryFilter.GetPointMinimum() + cellId;
     	Date date = new Date(originalPoints.get(cellId).time);
-    	return "NLR acquired at " + sdf2.format(date) 
+    	return "NLR acquired at " + sdf2.format(date)
     		+ ", Potential: " + originalPoints.get(cellId).potential + " J/kg";
     }
 
@@ -750,7 +750,7 @@ public class NLRSearchDataCollection extends Model
     		nlrDoyToPathMap.put((new IdPair(doy, year)).toString(), path);
     	}
     }
-    
+
     private ArrayList<String> getAllNlrPaths()
     {
     	ArrayList<String> paths = new ArrayList<String>();
@@ -760,7 +760,7 @@ public class NLRSearchDataCollection extends Model
 		BufferedReader in = new BufferedReader(isr);
 
 		String line;
-        try 
+        try
         {
 			while ((line = in.readLine()) != null)
 			{
@@ -770,10 +770,10 @@ public class NLRSearchDataCollection extends Model
         catch (IOException e) {
 			e.printStackTrace();
 		}
-        
+
         return paths;
     }
-    
+
 	public void setRadialOffset(double offset)
 	{
 		if (offset == radialOffset)
@@ -782,9 +782,9 @@ public class NLRSearchDataCollection extends Model
 		radialOffset = offset;
 
         vtkPoints points = polydata.GetPoints();
-        
+
         int numberOfPoints = points.GetNumberOfPoints();
-        
+
         for (int i=0;i<numberOfPoints;++i)
         {
         	double[] pt = originalPoints.get(i).point;
@@ -832,7 +832,7 @@ public class NLRSearchDataCollection extends Model
     public double getLengthOfMaskedPoints()
     {
         double length = 0.0;
-        
+
         for (int i=firstPointShown+1; i<=lastPointShown; ++i)
         {
             double[] prevPoint = originalPoints.get(i-1).point;
@@ -840,10 +840,10 @@ public class NLRSearchDataCollection extends Model
             double dist = MathUtil.distanceBetween(prevPoint, currentPoint);
             length += dist;
         }
-        
+
         return length;
     }
-    
+
     /**
      * Returns the potential plotted as a function of distance for the masked points
      * @param potential
@@ -858,10 +858,10 @@ public class NLRSearchDataCollection extends Model
     		return;
     	
         double length = 0.0;
-        
+
         potential.add(originalPoints.get(firstPointShown).potential);
         distance.add(0.0);
-        
+
         for (int i=firstPointShown+1; i<=lastPointShown; ++i)
         {
             double[] prevPoint = originalPoints.get(i-1).point;
@@ -898,7 +898,7 @@ public class NLRSearchDataCollection extends Model
     {
 //        if (ptId == selectedPoint)
 //            return;
-        
+
         selectedPoint = ptId;
 
 		vtkPoints points = selectedPointPolydata.GetPoints();
@@ -922,10 +922,10 @@ public class NLRSearchDataCollection extends Model
         }
 
         selectedPointPolydata.Modified();
-        
+
     	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
-    
+
 	public void saveNlrData(File outFile) throws IOException, ParseException
 	{
 		if (firstPointShown < 0 || lastPointShown < 0)
@@ -939,7 +939,7 @@ public class NLRSearchDataCollection extends Model
 		
         PreparedStatement st = null;
         ResultSet rs = null;
-        
+
 		try
 		{
 			FileWriter fstream = new FileWriter(outFile);
@@ -947,9 +947,9 @@ public class NLRSearchDataCollection extends Model
 
 	        st = db.preparedStatement("SELECT * FROM nlr WHERE UTC = ?");
 	        String newline = System.getProperty("line.separator");
-	        
+	
 	        StringBuilder sb = new StringBuilder();
-	        
+	
 	        int count = 0;
 			int numPoints = originalPoints.size();
 			System.out.println("numPOint " + numPoints);
@@ -960,11 +960,11 @@ public class NLRSearchDataCollection extends Model
 				
 				st.setLong(1, originalPoints.get(i).time);
 		        rs = st.executeQuery();
-		        
+		
 		        boolean hasNext = rs.next();
 		        if (hasNext == false)
 		        	continue;
-		        
+		
 		        sb.append(rs.getFloat(2)); sb.append(' ');
 		        sb.append(rs.getFloat(3)); sb.append(' ');
 		        sb.append(rs.getFloat(4)); sb.append(' ');
@@ -987,7 +987,7 @@ public class NLRSearchDataCollection extends Model
 		        sb.append(newline);
 
 		        out.write(sb.toString());
-		        
+		
 		        if (count % 1000 == 0)
 		        	System.out.println(count);
 		        ++count;

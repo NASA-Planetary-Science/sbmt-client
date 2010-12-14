@@ -37,7 +37,7 @@ abstract public class StructuresPopupMenu extends PopupMenu
 			this.structureModel = mod;
 		}
 		
-		public void actionPerformed(ActionEvent e) 
+		public void actionPerformed(ActionEvent e)
 		{
 			structureModel.removeStructure(cellIdLastClicked);
 		}
@@ -76,7 +76,7 @@ abstract public class StructuresPopupMenu extends PopupMenu
         	c[1] = color.getGreen();
         	c[2] = color.getBlue();
         	c[3] = color.getAlpha();
-        
+
         	structureModel.setStructureColor(structureIndex, c);
         }
     }

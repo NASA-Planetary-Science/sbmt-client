@@ -17,11 +17,11 @@ import edu.jhuapl.near.util.NativeLibraryLoader;
 /**
  * This class contains the "main" function called at the start of the program.
  * This class sets up the top level window and instantiates all the "managers" used
- * through out the program. 
+ * through out the program.
  * @author kahneg1
  *
  */
-public class SmallBodyMappingTool extends JFrame 
+public class SmallBodyMappingTool extends JFrame
 {
 	private StatusBar statusBar;
 	private FileMenu fileMenu;
@@ -37,7 +37,7 @@ public class SmallBodyMappingTool extends JFrame
         createStatusBar();
 
         rootPanel = new ViewerManager(statusBar);
-        
+
 		createMenus();
 
 		this.add(rootPanel, BorderLayout.CENTER);
@@ -64,7 +64,7 @@ public class SmallBodyMappingTool extends JFrame
         viewMenu = new ViewMenu(rootPanel);
         viewMenu.setMnemonic('V');
         menuBar.add(viewMenu);
-        
+
     	helpMenu = new HelpMenu(rootPanel);
         helpMenu.setMnemonic('H');
         menuBar.add(helpMenu);
@@ -92,12 +92,12 @@ public class SmallBodyMappingTool extends JFrame
                     //garbageCollector.SetDebug(true);
                     garbageCollector.SetScheduleTime(5, TimeUnit.SECONDS);
                     garbageCollector.SetAutoGarbageCollection(true);
-                    
+
                 	try
                     {
                 		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-                    } 
-                    catch (Exception e) 
+                    }
+                    catch (Exception e)
                     {
                     	e.printStackTrace();
                     }
@@ -121,5 +121,5 @@ public class SmallBodyMappingTool extends JFrame
             e.printStackTrace();
         }
     }
-    
+
 }

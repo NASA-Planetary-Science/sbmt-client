@@ -3,11 +3,11 @@ package edu.jhuapl.near.model;
 
 /**
  * Model of line structures drawn on a body.
- * 
- * @author 
+ *
+ * @author
  *
  */
-public class PointModel extends RegularPolygonModel 
+public class PointModel extends RegularPolygonModel
 {
 	public PointModel(SmallBodyModel smallBodyModel)
 	{

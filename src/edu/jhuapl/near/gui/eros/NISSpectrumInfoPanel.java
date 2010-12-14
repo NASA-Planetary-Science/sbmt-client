@@ -36,7 +36,7 @@ public class NISSpectrumInfoPanel extends ModelInfoWindow implements PropertyCha
 		
         JPanel panel = new JPanel(new BorderLayout());
 		
-        
+
         // add the jfreechart graph
         XYSeries series = new XYSeries("NIS Spectrum");
         double[] wavelengths = this.nisSpectrum.getBandCenters();
@@ -49,22 +49,22 @@ public class NISSpectrumInfoPanel extends ModelInfoWindow implements PropertyCha
                 		xyDataset, PlotOrientation.VERTICAL, true, true, false);
         ChartPanel chartPanel = new ChartPanel(chart);
         chartPanel.setMouseWheelEnabled(true);
-        
+
         XYPlot plot = (XYPlot) chart.getPlot();
         plot.setDomainPannable(true);
         plot.setRangePannable(true);
-        
-        XYItemRenderer r = plot.getRenderer();                                                                                                 
-        if (r instanceof XYLineAndShapeRenderer) {                                                                                             
-            XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) r;                                                                      
-            renderer.setBaseShapesVisible(true);                                                                                               
-            renderer.setBaseShapesFilled(true);                                                                                                
+
+        XYItemRenderer r = plot.getRenderer();
+        if (r instanceof XYLineAndShapeRenderer) {
+            XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) r;
+            renderer.setBaseShapesVisible(true);
+            renderer.setBaseShapesFilled(true);
             renderer.setDrawSeriesLineAsPath(true);
         }
-        
+
         panel.add(chartPanel, BorderLayout.CENTER);
 
-        
+
 		JPanel bottomPanel = new JPanel();
 		bottomPanel.setLayout(new BoxLayout(bottomPanel,
         		BoxLayout.PAGE_AXIS));
@@ -76,7 +76,7 @@ public class NISSpectrumInfoPanel extends ModelInfoWindow implements PropertyCha
 		HashMap<String, String> properties = null;
 		Object[][] data = {	{"", ""} };
 		
-		try 
+		try
 		{
 			
 			properties = this.nisSpectrum.getProperties();
@@ -115,13 +115,13 @@ public class NISSpectrumInfoPanel extends ModelInfoWindow implements PropertyCha
 		
         bottomPanel.add(Box.createVerticalStrut(10));
         bottomPanel.add(scrollPane);
-        
+
         panel.add(bottomPanel, BorderLayout.SOUTH);
-        
+
         add(panel, BorderLayout.CENTER);
-        
+
         createMenus();
-        
+
         // Finally make the frame visible
         setTitle("NIS Spectrum Properties");
 
@@ -149,7 +149,7 @@ public class NISSpectrumInfoPanel extends ModelInfoWindow implements PropertyCha
 	 */
     private void createMenus()
     {
-    	NISPopupMenu msiImagesPopupMenu = 
+    	NISPopupMenu msiImagesPopupMenu =
 			new NISPopupMenu(modelManager, null);
     	
     	msiImagesPopupMenu.setCurrentSpectrum(nisSpectrum.getServerPath());
@@ -165,13 +165,13 @@ public class NISSpectrumInfoPanel extends ModelInfoWindow implements PropertyCha
         	if (item instanceof JMenuItem)
         		menu.add(item);
         }
-        
+
         menuBar.add(menu);
-        
+
         setJMenuBar(menuBar);
     }
 
-	public void propertyChange(PropertyChangeEvent arg0) 
+	public void propertyChange(PropertyChangeEvent arg0)
 	{
 	}
 }

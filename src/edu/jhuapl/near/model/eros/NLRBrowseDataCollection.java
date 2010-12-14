@@ -15,7 +15,7 @@ import edu.jhuapl.near.util.Properties;
 
 import vtk.*;
 
-public class NLRBrowseDataCollection extends Model implements PropertyChangeListener 
+public class NLRBrowseDataCollection extends Model implements PropertyChangeListener
 {
 	private ArrayList<vtkProp> nlrPerDayActors = new ArrayList<vtkProp>();
 
@@ -74,7 +74,7 @@ public class NLRBrowseDataCollection extends Model implements PropertyChangeList
 		return fileToNlrPerDayMap.get(path);
 	}
 	
-	public ArrayList<vtkProp> getProps() 
+	public ArrayList<vtkProp> getProps()
 	{
 		return nlrPerDayActors;
 	}
@@ -89,12 +89,12 @@ public class NLRBrowseDataCollection extends Model implements PropertyChangeList
     {
     	return actorToFileMap.get(actor);
     }
-    
+
     public boolean containsNlrData(String file)
     {
     	return fileToNlrPerDayMap.containsKey(file);
     }
-    
+
     public ArrayList<String> getAllNlrPaths()
     {
     	ArrayList<String> paths = new ArrayList<String>();
@@ -104,7 +104,7 @@ public class NLRBrowseDataCollection extends Model implements PropertyChangeList
 		BufferedReader in = new BufferedReader(isr);
 
 		String line;
-        try 
+        try
         {
 			while ((line = in.readLine()) != null)
 			{
@@ -114,11 +114,11 @@ public class NLRBrowseDataCollection extends Model implements PropertyChangeList
         catch (IOException e) {
 			e.printStackTrace();
 		}
-        
+
         return paths;
     }
-    
-	public void propertyChange(PropertyChangeEvent evt) 
+
+	public void propertyChange(PropertyChangeEvent evt)
 	{
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 	}

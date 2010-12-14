@@ -2,7 +2,7 @@ package edu.jhuapl.near.util;
 
 import java.io.File;
 
-public class Configuration 
+public class Configuration
 {
 	static private String appDir = null;
 	static private String cacheDir = null;
@@ -20,7 +20,7 @@ public class Configuration
 				{
 					String username = "";
 					String password = "";
-					return new java.net.PasswordAuthentication(username, password.toCharArray()); 
+					return new java.net.PasswordAuthentication(username, password.toCharArray());
 				}
 			});
 		}
@@ -61,7 +61,7 @@ public class Configuration
 	{
 		if (cacheDir == null)
 		{
-			cacheDir = Configuration.getApplicationDataDir() + File.separator + 
+			cacheDir = Configuration.getApplicationDataDir() + File.separator +
 			"cache" + File.separator + cacheVersion;
 		}
 		

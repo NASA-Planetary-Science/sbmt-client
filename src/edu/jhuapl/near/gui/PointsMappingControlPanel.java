@@ -55,7 +55,7 @@ public class PointsMappingControlPanel extends
 		add(panel, "span");
 	}
 
-	public void stateChanged(ChangeEvent e) 
+	public void stateChanged(ChangeEvent e)
 	{
 		Number val = (Number)spinner.getValue();
 		pointModel.setDefaultRadius(val.doubleValue()/2.0);

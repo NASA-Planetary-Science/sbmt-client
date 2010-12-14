@@ -33,11 +33,11 @@ import vtk.*;
 
 /**
  * Model of line structures drawn on a body.
- * 
- * @author 
+ *
+ * @author
  *
  */
-public class LineModel extends StructureModel implements PropertyChangeListener 
+public class LineModel extends StructureModel implements PropertyChangeListener
 {
 	private ArrayList<Line> lines = new ArrayList<Line>();
 	private vtkPolyData linesPolyData;
@@ -55,7 +55,7 @@ public class LineModel extends StructureModel implements PropertyChangeListener
     private int[] highlightColor = {0, 0, 255, 255};
     private int maximumVerticesPerLine = Integer.MAX_VALUE;
 	private vtkIdList idList;
-    
+
     private vtkPolyData emptyPolyData;
 
 	private boolean profileMode = false;
@@ -119,10 +119,10 @@ public class LineModel extends StructureModel implements PropertyChangeListener
 		lineSelectionMapper = new vtkPolyDataMapper();
         lineSelectionMapper.SetInput(selectionPolyData);
         lineSelectionMapper.Update();
-        
+
         lineSelectionActor.SetMapper(lineSelectionMapper);
         lineSelectionActor.Modified();
-        
+
     	actors.add(lineSelectionActor);
 	}
 
@@ -138,7 +138,7 @@ public class LineModel extends StructureModel implements PropertyChangeListener
 
 		return rootEle;
     }
-    
+
     public void fromXmlDomElement(Element element)
     {
     	this.lines.clear();
@@ -150,7 +150,7 @@ public class LineModel extends StructureModel implements PropertyChangeListener
 		NodeList nl = element.getElementsByTagName(Line.PATH);
 		if(nl != null && nl.getLength() > 0)
 		{
-			for(int i = 0 ; i < nl.getLength();i++) 
+			for(int i = 0 ; i < nl.getLength();i++)
 			{
 				Element el = (Element)nl.item(i);
 
@@ -165,7 +165,7 @@ public class LineModel extends StructureModel implements PropertyChangeListener
 		updatePolyData();
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
-    
+
 	private void updatePolyData()
 	{
 		linesPolyData.DeepCopy(emptyPolyData);
@@ -212,7 +212,7 @@ public class LineModel extends StructureModel implements PropertyChangeListener
         lineActor.Modified();
 	}
 	
-	public ArrayList<vtkProp> getProps() 
+	public ArrayList<vtkProp> getProps()
 	{
 		return actors;
 	}
@@ -237,12 +237,12 @@ public class LineModel extends StructureModel implements PropertyChangeListener
     {
     	return lines.size();
     }
-    
+
     public Structure getStructure(int cellId)
     {
     	return lines.get(cellId);
     }
-    
+
     public Line getSelectedLine()
     {
     	if (selectedLine >= 0 && selectedLine < lines.size())
@@ -255,17 +255,17 @@ public class LineModel extends StructureModel implements PropertyChangeListener
     {
     	return selectedLine;
     }
-    
+
     public vtkActor getLineActor()
     {
     	return lineActor;
     }
-    
+
     public vtkActor getLineSelectionActor()
     {
     	return lineSelectionActor;
     }
-    
+
     /**
      * Return the total number of points in all the lines combined.
      * @return
@@ -285,7 +285,7 @@ public class LineModel extends StructureModel implements PropertyChangeListener
     {
         LatLon ll1 = Spice.reclat(pt1);
         LatLon ll2 = Spice.reclat(pt2);
-        
+
         Line lin = new Line();
         lin.lat.add(ll1.lat);
         lin.lon.add(ll1.lon);
@@ -300,13 +300,13 @@ public class LineModel extends StructureModel implements PropertyChangeListener
         lin.controlPointIds.add(1);
         lin.updateSegment(smallBodyModel, 0);
         lines.add(lin);
-        
+
         updatePolyData();
-        
+
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
     */
-    
+
     public void addNewStructure()
     {
         Line lin = new Line(smallBodyModel);
@@ -314,12 +314,12 @@ public class LineModel extends StructureModel implements PropertyChangeListener
         selectStructure(lines.size()-1);
 		this.pcs.firePropertyChange(Properties.STRUCTURE_ADDED, null, null);
     }
-    
+
     /*
     public void addNewLine(double[] pt1)
     {
         LatLon ll1 = Spice.reclat(pt1);
-        
+
         Line lin = new Line();
         lin.lat.add(ll1.lat);
         lin.lon.add(ll1.lon);
@@ -328,17 +328,17 @@ public class LineModel extends StructureModel implements PropertyChangeListener
         lin.xyzPointList.add(new Point3D(pt1));
         lin.controlPointIds.add(0);
         lines.add(lin);
-        
+
         updatePolyData();
-        
+
         selectLine(lines.size()-1);
     }
     */
-    
+
     public void updateSelectedLineVertex(int vertexId, double[] newPoint)
     {
         Line lin = lines.get(selectedLine);
-        
+
         int numVertices = lin.lat.size();
 
     	LatLon ll = MathUtil.reclat(newPoint);
@@ -362,21 +362,21 @@ public class LineModel extends StructureModel implements PropertyChangeListener
         	lin.updateSegment(vertexId-1);
         	lin.updateSegment(vertexId);
         }
-        
+
         updatePolyData();
 
         updateLineSelection();
-        
+
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
         this.pcs.firePropertyChange(Properties.VERTEX_POSITION_CHANGED, null, selectedLine);
     }
-    
+
     /*
     public void addVertexToLine(int cellId, double[] newPoint)
     {
         Line lin = lines.get(cellId);
         LatLon ll = Spice.reclat(newPoint);
-        
+
         // If the added point is the same as the current last point, return doing nothing.
         System.out.println(lin.lat.size());
         int lastIdx = lin.lat.size() - 1;
@@ -393,7 +393,7 @@ public class LineModel extends StructureModel implements PropertyChangeListener
         	System.out.println("Warning: new vertex same as last vertex");
 //        	return;
         }
-        
+
         lin.lat.add(ll.lat);
         lin.lon.add(ll.lon);
         lin.rad.add(ll.rad);
@@ -411,7 +411,7 @@ public class LineModel extends StructureModel implements PropertyChangeListener
     {
         Line lin = lines.get(selectedLine);
         LatLon ll = Spice.reclat(newPoint);
-        
+
         lin.lat.add(ll.lat);
         lin.lon.add(ll.lon);
         lin.rad.add(ll.rad);
@@ -423,13 +423,13 @@ public class LineModel extends StructureModel implements PropertyChangeListener
         	lin.updateSegment(lin.lat.size()-2);
 
         updatePolyData();
-        
+
         updateLineSelection();
-        
+
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
      */
-    
+
     public void insertVertexIntoSelectedLine(double[] newPoint)
     {
     	if (selectedLine < 0)
@@ -439,12 +439,12 @@ public class LineModel extends StructureModel implements PropertyChangeListener
 
         if (lin.controlPointIds.size() == maximumVerticesPerLine)
         	return;
-        
+
     	if (currentLineVertex < -1 || currentLineVertex >= lin.controlPointIds.size())
     		System.out.println("Error: currentLineVertex is invalid");
     	
         LatLon ll = MathUtil.reclat(newPoint);
-        
+
         lin.lat.add(currentLineVertex+1, ll.lat);
         lin.lon.add(currentLineVertex+1, ll.lon);
         lin.rad.add(currentLineVertex+1, ll.rad);
@@ -493,25 +493,25 @@ public class LineModel extends StructureModel implements PropertyChangeListener
         }
 
         ++currentLineVertex;
-        
+
         updatePolyData();
-        
+
         updateLineSelection();
 
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 		this.pcs.firePropertyChange(Properties.VERTEX_INSERTED_INTO_LINE, null, selectedLine);
     }
 
-    
+
     public void removeStructure(int cellId)
     {
     	lines.remove(cellId);
 
         updatePolyData();
-        
+
         if (profileMode)
         	updateLineSelection();
-        
+
         if (cellId == selectedLine)
         	selectStructure(-1);
         else
@@ -527,7 +527,7 @@ public class LineModel extends StructureModel implements PropertyChangeListener
     	selectionPolyData.Modified();
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
-    
+
     protected void updateLineSelection()
     {
     	if (profileMode)
@@ -627,7 +627,7 @@ public class LineModel extends StructureModel implements PropertyChangeListener
 
     	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
-    
+
     public void selectCurrentLineVertex(int idx)
     {
     	currentLineVertex = idx;
@@ -690,7 +690,7 @@ public class LineModel extends StructureModel implements PropertyChangeListener
 		catch (TransformerException e)
 		{
 			e.printStackTrace();
-		} 
+		}
 	}
 
 	public boolean supportsSelection()
@@ -707,7 +707,7 @@ public class LineModel extends StructureModel implements PropertyChangeListener
 		else
 			return -1;
 	}
-    
+
 	public void highlightStructure(int idx)
 	{
 		if (highlightedStructure != idx)
@@ -825,9 +825,9 @@ public class LineModel extends StructureModel implements PropertyChangeListener
         	if (currentLineVertex < 0 && lin.controlPointIds.size() > 0)
         		currentLineVertex = 0;
         }
-        
+
         updatePolyData();
-        
+
         updateLineSelection();
 
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
@@ -916,7 +916,7 @@ public class LineModel extends StructureModel implements PropertyChangeListener
         		idx -= size;
         	}
         }
-        
+
         return -1;
 	}
 
@@ -938,7 +938,7 @@ public class LineModel extends StructureModel implements PropertyChangeListener
         	if (idx < count)
         		return j;
         }
-        
+
         return -1;
 	}
 }

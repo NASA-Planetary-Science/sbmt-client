@@ -25,7 +25,7 @@ public class NISSpectraCollection extends Model implements PropertyChangeListene
 	private HashMap<vtkProp, String> actorToFileMap = new HashMap<vtkProp, String>();
 	private SmallBodyModel erosModel;
 	
-	public NISSpectraCollection(SmallBodyModel eros) 
+	public NISSpectraCollection(SmallBodyModel eros)
 	{
 		super(ModelNames.NIS_SPECTRA);
 		
@@ -90,12 +90,12 @@ public class NISSpectraCollection extends Model implements PropertyChangeListene
 			removeImage(path);
 	}
 
-	public ArrayList<vtkProp> getProps() 
+	public ArrayList<vtkProp> getProps()
 	{
 		return allActors;
 	}
 
-	public void propertyChange(PropertyChangeEvent evt) 
+	public void propertyChange(PropertyChangeEvent evt)
 	{
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 	}
@@ -111,17 +111,17 @@ public class NISSpectraCollection extends Model implements PropertyChangeListene
     {
     	return actorToFileMap.get(actor);
     }
-    
+
     public NISSpectrum getSpectrum(String file)
     {
     	return fileToSpectrumMap.get(file);
     }
-    
+
     public boolean containsSpectrum(String file)
     {
     	return fileToSpectrumMap.containsKey(file);
     }
-    
+
     public void setChannelColoring(int channel, double min, double max)
     {
     	NISSpectrum.setChannelColoring(channel, min, max);

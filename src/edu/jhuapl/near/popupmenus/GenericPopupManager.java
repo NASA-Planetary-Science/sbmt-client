@@ -22,10 +22,10 @@ public class GenericPopupManager extends PopupManager
     private LinesPopupMenu linesPopupMenu;
     private CirclesPopupMenu circlesPopupMenu;
     private PointsPopupMenu pointsPopupMenu;
-    
+
     private HashMap<Model, PopupMenu> modelToPopupMap =
     	new HashMap<Model, PopupMenu>();
-    
+
 	public GenericPopupManager(
 			ModelManager modelManager)
 	{

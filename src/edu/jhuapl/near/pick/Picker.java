@@ -21,12 +21,12 @@ import vtk.vtkRenderWindowPanel;
  * responds appropriately. There can be more than 1 picker active at any
  * given time. The PickManager class (also a subclass of this) is responsible
  * for initializing and managing all the pickers.
- * 
+ *
  * @author eli
  *
  */
-public abstract class Picker implements 
-	MouseListener, 
+public abstract class Picker implements
+	MouseListener,
 	MouseMotionListener,
 	MouseWheelListener,
 	PropertyChangeListener
@@ -46,9 +46,9 @@ public abstract class Picker implements
      * the following global function is provided to allow disabling of picking during such
      * operations. Note that if the picking is requested to be enabled, a delay of half
      * a second is made before enabling picking.
-     * 
+     *
      * TODO This is just a hack, investigate the cause of the crash more fully.
-     * 
+     *
      * @param b
      */
 	public static void setPickingEnabled(boolean b)
@@ -143,7 +143,7 @@ public abstract class Picker implements
             picker.SetTolerance(tolerance);
 
             pickSucceeded = picker.Pick(e.getX(), renWin.getHeight()-e.getY()-1, 0.0, renWin.GetRenderer());
-            
+
             if (pickSucceeded == 1)
                 break;
 
@@ -151,7 +151,7 @@ public abstract class Picker implements
         }
         picker.SetTolerance(originalTolerance);
         renWin.unlock();
-        
+
         return pickSucceeded;
 	}
 

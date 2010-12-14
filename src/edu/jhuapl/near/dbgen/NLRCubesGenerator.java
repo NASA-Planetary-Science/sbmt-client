@@ -27,7 +27,7 @@ import edu.jhuapl.near.util.NativeLibraryLoader;
  */
 public class NLRCubesGenerator
 {
-	public static void main(String[] args) 
+	public static void main(String[] args)
 	{
 		NativeLibraryLoader.loadVtkLibraries();
 
@@ -55,7 +55,7 @@ public class NLRCubesGenerator
 		vtkCellArray vert = new vtkCellArray();
 		polydata.SetPoints( points );
 		polydata.SetVerts( vert );
-        
+
 		vtkIdList idList = new vtkIdList();
         idList.SetNumberOfIds(1);
 
@@ -66,13 +66,13 @@ public class NLRCubesGenerator
 			for (String filename : nlrFiles)
 			{
 			    System.out.println("Begin processing file " + filename + " - " + filecount++ + " / " + nlrFiles.size());
-			    
+			
 			    ArrayList<String> lines = FileUtil.getFileLinesAsStringList(filename);
-			    
+			
 			    int[] cubeIdOfPoints = new int[lines.size()];
                 cubeIdOfPoints[0] = -1;
                 cubeIdOfPoints[1] = -1;
-                
+
 				for (int i=2; i<lines.size(); ++i)
 				{
 					String[] vals = lines.get(i).trim().split("\\s+");
@@ -120,7 +120,7 @@ public class NLRCubesGenerator
 
                 for (int i=0; i<cubeIdOfPoints.length; ++i)
                     out.write(String.valueOf(cubeIdOfPoints[i]) + "\n");
-                
+
                 out.close();
 			}
 

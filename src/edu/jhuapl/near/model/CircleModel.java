@@ -3,12 +3,12 @@ package edu.jhuapl.near.model;
 
 /**
  * Model of circle structures drawn on a body.
- * 
- * @author 
+ *
+ * @author
  *
  */
 
-public class CircleModel extends RegularPolygonModel 
+public class CircleModel extends RegularPolygonModel
 {
 	public CircleModel(SmallBodyModel smallBodyModel)
 	{

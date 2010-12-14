@@ -100,7 +100,7 @@ public class MyGarbageCollector {
   /**
    * Set the schedule time that should be used to send a garbage collection
    * request to the EDT.
-   * 
+   *
    * @param period
    * @param timeUnit
    */
@@ -141,7 +141,7 @@ public class MyGarbageCollector {
   public Runnable GetDeleteRunnable() {
     return deleteRunnable;
   }
-  
+
   private static List<Field> getAllFields(Class<?> type)
   {
       List<Field> fields = new ArrayList<Field>();

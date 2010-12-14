@@ -28,7 +28,7 @@ public class PointsPopupMenu extends PopupMenu
 
 	private class DeleteAction extends AbstractAction
 	{
-		public void actionPerformed(ActionEvent e) 
+		public void actionPerformed(ActionEvent e)
 		{
 			int idx = model.getPolygonIdFromInteriorCellId(cellIdLastClicked);
 			model.removeStructure(idx);

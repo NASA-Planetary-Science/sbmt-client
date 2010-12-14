@@ -77,7 +77,7 @@ public class FileDownloadSwingWorker extends ProgressBarSwingWorker
                 			decimalFormatter.format(unzipProgress) + "%</html>");
                 	setProgress(Math.min((int)unzipProgress, 99));
                 }
-                
+
                 Thread.sleep(333);
             }
         }
@@ -93,7 +93,7 @@ public class FileDownloadSwingWorker extends ProgressBarSwingWorker
         	if (needToUnzip)
         		FileUtil.abortUnzip();
         }
-        
+
         return null;
 	}
 }

@@ -9,15 +9,15 @@ import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.util.Properties;
 import vtk.*;
 
-public class Renderer extends JPanel implements 
+public class Renderer extends JPanel implements
 			PropertyChangeListener
 {
     private vtkEnhancedRenderWindowPanel renWin;
     private ModelManager modelManager;
     private vtkInteractorStyleTrackballCamera defaultInteractorStyle;
     private vtkInteractorStyleRubberBand3D rubberBandInteractorStyle;
-    
-    public Renderer(ModelManager modelManager) 
+
+    public Renderer(ModelManager modelManager)
     {
     	setLayout(new BorderLayout());
     	
@@ -26,12 +26,12 @@ public class Renderer extends JPanel implements
         this.modelManager = modelManager;
 
         modelManager.addPropertyChangeListener(this);
-        
+
         defaultInteractorStyle = new vtkInteractorStyleTrackballCamera();
         rubberBandInteractorStyle = new vtkInteractorStyleRubberBand3D();
 
         renWin.setInteractorStyle(defaultInteractorStyle);
-        
+
         renWin.GetRenderer().AutomaticLightCreationOff();
         vtkLightKit lightKit = new vtkLightKit();
         lightKit.SetKeyToFillRatio(1.0);
@@ -137,7 +137,7 @@ public class Renderer extends JPanel implements
     {
         renWin.saveToFile();
     }
-    
+
     public void setCameraOrientation(
             double[] position,
             double[] focalPoint,
@@ -152,12 +152,12 @@ public class Renderer extends JPanel implements
         renWin.resetCameraClippingRange();
         renWin.Render();
     }
-    
+
     public vtkRenderWindowPanel getRenderWindowPanel()
     {
     	return renWin;
     }
-    
+
     public void propertyChange(PropertyChangeEvent e)
     {
     	if (e.getPropertyName().equals(Properties.MODEL_CHANGED))
@@ -169,7 +169,7 @@ public class Renderer extends JPanel implements
     		renWin.Render();
     	}
     }
-    
+
     public void setInteractorToRubberBand()
     {
         renWin.setInteractorStyle(rubberBandInteractorStyle);
@@ -179,7 +179,7 @@ public class Renderer extends JPanel implements
     {
         renWin.setInteractorStyle(defaultInteractorStyle);
     }
-    
+
     public void setInteractorToNone()
     {
         renWin.setInteractorStyle(null);

@@ -8,14 +8,14 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JRadioButtonMenuItem;
 
-public class ViewMenu extends JMenu 
+public class ViewMenu extends JMenu
 {
 	private ViewerManager rootPanel;
 	
     public ViewMenu(ViewerManager rootPanel)
     {
         super("View");
-        
+
         this.rootPanel = rootPanel;
 
         ButtonGroup group = new ButtonGroup();
@@ -30,11 +30,11 @@ public class ViewMenu extends JMenu
         	this.add(mi);
         }
     }
-    
+
     private class ShowBodyAction extends AbstractAction
     {
     	private Viewer viewer;
-        
+
     	public ShowBodyAction(Viewer viewer)
         {
             super(viewer.getName());

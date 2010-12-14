@@ -32,11 +32,11 @@ public class MSIBoundaryCollection extends Model implements PropertyChangeListen
         private double[] boresightDirection = new double[3];
         private double[] upVector = new double[3];
         private MSIKey key;
-        
+
 		public Boundary(MSIKey key) throws IOException
 		{
 		    this.key = key;
-		    
+		
 			File lblFile = FileCache.getFileFromServer(key.name + "_DDR.LBL");
 
 			if (lblFile == null)
@@ -48,7 +48,7 @@ public class MSIBoundaryCollection extends Model implements PropertyChangeListen
 
 	        boundaryMapper = new vtkPolyDataMapper();
 	        actor = new vtkActor();
-	    
+	
 			String[] startTime = new String[1];
 			String[] stopTime = new String[1];
 
@@ -81,7 +81,7 @@ public class MSIBoundaryCollection extends Model implements PropertyChangeListen
 	                    boresightDirection,
 	                    upVector);
 	        }
-	        
+	
 	        initialize();
 		}
 		
@@ -197,7 +197,7 @@ public class MSIBoundaryCollection extends Model implements PropertyChangeListen
 				}
 			}
 			
-	        
+	
 			PolyDataUtil.shiftPolyLineInNormalDirectionOfPolyData(
 					boundary, erosModel.getSmallBodyPolyData(), erosModel.getPointLocator(), 0.003);
 
@@ -288,14 +288,14 @@ public class MSIBoundaryCollection extends Model implements PropertyChangeListen
 		boundary.addPropertyChangeListener(this);
 		
 		boundaryToActorsMap.put(boundary, new ArrayList<vtkProp>());
-        
+
         ArrayList<vtkProp> boundaryPieces = boundary.getProps();
 
         boundaryToActorsMap.get(boundary).addAll(boundaryPieces);
 
         for (vtkProp act : boundaryPieces)
             actorToBoundaryMap.put(act, boundary);
-        
+
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 	}
 
@@ -304,7 +304,7 @@ public class MSIBoundaryCollection extends Model implements PropertyChangeListen
 		Boundary boundary = getBoundaryFromKey(key);
 		
         ArrayList<vtkProp> actors = boundaryToActorsMap.get(boundary);
-        
+
         for (vtkProp act : actors)
             actorToBoundaryMap.remove(act);
 
@@ -323,7 +323,7 @@ public class MSIBoundaryCollection extends Model implements PropertyChangeListen
 	    	removeBoundary(boundary.key);
 	}
 
-	public ArrayList<vtkProp> getProps() 
+	public ArrayList<vtkProp> getProps()
 	{
         return new ArrayList<vtkProp>(actorToBoundaryMap.keySet());
 	}
@@ -338,17 +338,17 @@ public class MSIBoundaryCollection extends Model implements PropertyChangeListen
     {
     	return actorToBoundaryMap.get(actor).key.name;
     }
-    
+
     public Boundary getBoundary(vtkActor actor)
     {
         return actorToBoundaryMap.get(actor);
     }
-    
+
     public Boundary getBoundary(MSIKey key)
     {
         return getBoundaryFromKey(key);
     }
-    
+
     public boolean containsBoundary(MSIKey key)
     {
     	return containsKey(key);

@@ -8,7 +8,7 @@ import vtk.*;
 
 /**
  * This class contains various utility functions for operating on a vtkPolyData.
- * 
+ *
  * @author kahneg1
  *
  */
@@ -37,8 +37,8 @@ public class PolyDataUtil
 			vtkPolyData polyData,
 			vtksbCellLocator locator,
 			vtkAbstractPointLocator pointLocator,
-			double[] origin, 
-			double[] ul, 
+			double[] origin,
+			double[] ul,
 			double[] ur,
 			double[] lr,
 			double[] ll)
@@ -181,9 +181,9 @@ public class PolyDataUtil
 
 		// If the body was a convex shape we would be done now.
 		// Unfortunately, since it's not, it's possible for the polydata to have multiple connected
-		// pieces in view of the camera and some of these pieces are obscured by other pieces. 
-		// Thus first check how many connected pieces there are in the clipped polydata. 
-		// If there's only one, we're done. If there's more than one, we need to remove the 
+		// pieces in view of the camera and some of these pieces are obscured by other pieces.
+		// Thus first check how many connected pieces there are in the clipped polydata.
+		// If there's only one, we're done. If there's more than one, we need to remove the
 		// obscured cells. To remove
 		// cells that are obscured by other cells we do the following: Go through every point in the
 		// polydata and form a line segment connecting it to the origin (i.e. the camera
@@ -241,7 +241,7 @@ public class PolyDataUtil
 
 				// The following check makes sure we don't delete any cells
 				// if the intersection point happens to coincides with sourcePnt.
-				// To do this we test to see of the intersected cell 
+				// To do this we test to see of the intersected cell
 				// is one of the cells which share a point with sourcePnt.
 				// If it is we skip to the next point.
 				if (idList.IsId(cell_id[0]) >= 0)
@@ -285,7 +285,7 @@ public class PolyDataUtil
 	public static vtkPolyData drawCircleOnPolyData(
 			vtkPolyData polyData,
 			vtkAbstractPointLocator pointLocator,
-			double[] center, 
+			double[] center,
 			double radius,
 			boolean filled)
 	{
@@ -299,10 +299,10 @@ public class PolyDataUtil
 		cylinder.SetRadius(radius);
 		cylinder.SetCenter(center);
 
-		// Note the cylinder has its axis pointing to the y-axis (0,1,0). 
+		// Note the cylinder has its axis pointing to the y-axis (0,1,0).
 		// Create a transform that rotates this axis to normal.
 		// To do this we need to first find the axis of rotation
-		// (note don't confuse this with the axis of the cylindar. 
+		// (note don't confuse this with the axis of the cylindar.
 		// We're using the word axis to refer to 2 different things)
 		// which is the cross product between the y-axis and normal.
 		double[] originalCylindarAxis = {0.0, 1.0, 0.0};
@@ -363,7 +363,7 @@ public class PolyDataUtil
 	public static void drawPolygonOnPolyData(
 			vtkPolyData polyData,
 			vtkAbstractPointLocator pointLocator,
-			double[] center, 
+			double[] center,
 			double radius,
 			int numberOfSides,
 			vtkPolyData outputInterior,
@@ -428,7 +428,7 @@ public class PolyDataUtil
 				nextPoint = points.GetPoint(0);
 
 			double[] vec = {nextPoint[0]-currentPoint[0],
-					nextPoint[1]-currentPoint[1], 
+					nextPoint[1]-currentPoint[1],
 					nextPoint[2]-currentPoint[2]};
 
 			double[] planeNormal = new double[3];
@@ -575,7 +575,7 @@ public class PolyDataUtil
 		cellLocator.FindClosestPoint(pt2, closestPoint2, genericCell2, cellId2, subId, dist2);
 
 
-		// In the rare case where both points are on the same cell, simply 
+		// In the rare case where both points are on the same cell, simply
 		// return a single line connecting them
 		if (cellId1[0] == cellId2[0])
 		{
@@ -691,7 +691,7 @@ public class PolyDataUtil
 				nextPoint = points.GetPoint(0);
 
 			double[] vec = {nextPoint[0]-currentPoint[0],
-					nextPoint[1]-currentPoint[1], 
+					nextPoint[1]-currentPoint[1],
 					nextPoint[2]-currentPoint[2]};
 
 			double[] vec2 = {
@@ -833,7 +833,7 @@ public class PolyDataUtil
 	}
 
 
-	/** 
+	/**
 	 * The boundary generated in getImageBorder is great, unfortunately the
 	 * border consists of many lines of 2 vertices each. We, however, need a
 	 * single polyline consisting of all the points. I was not able to find
@@ -841,13 +841,13 @@ public class PolyDataUtil
 	 * here. Fortunately, the algorithm is pretty simple (assuming the list of
 	 * lines has no intersections or other anomalies):
 	 * Start with the first 2-vertex line segment. These 2 points will
-	 * be the first 2 points of our new polyline we're creating. 
+	 * be the first 2 points of our new polyline we're creating.
 	 * Choose the second point. Now
-	 * in addition to this line segment, there is only one other line segment 
+	 * in addition to this line segment, there is only one other line segment
 	 * that contains the second point. Search for that line segment and let the
 	 * other point in that line segment be the 3rd point of our polyline. Repeat
 	 * this till we've formed the polyline.
-	 * 
+	 *
 	 * @param polyline
 	 * @param startPoint
 	 * @return
@@ -1196,7 +1196,7 @@ public class PolyDataUtil
 
 
 	/**
-	 * 
+	 *
 	 * @param polydata
 	 * @param pointdata
 	 * @param cellId

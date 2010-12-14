@@ -23,23 +23,23 @@ public class ErosModelGenerator {
 	 * This program converts a Bob Gaskell shape models that can be downloaded
 	 * from http://sbn.psi.edu/pds/asteroid/NEAR_A_MSI_5_EROSSHAPE_V1_0.zip to
 	 * vtk format. This program can convert these 4 files:
-	 * 
+	 *
 	 * 1. NEAR_A_MSI_5_EROSSHAPE_V1_0/data/vertex/ver64q.tab
 	 * 2. NEAR_A_MSI_5_EROSSHAPE_V1_0/data/vertex/ver128q.tab
 	 * 3. NEAR_A_MSI_5_EROSSHAPE_V1_0/data/vertex/ver256q.tab
 	 * 4. NEAR_A_MSI_5_EROSSHAPE_V1_0/data/vertex/ver512q.tab
-	 * 
+	 *
 	 * This program can also be used to convert Itokawa shape models as well.
 	 * (download at http://sbn.psi.edu/pds/asteroid/HAY_A_AMICA_5_ITOKAWASHAPE_V1_0.zip)
-	 * 
+	 *
 	 * In addition this program generates normals and saves it to the vtk file.
 	 * In addition this program generates a coordinate grid and saves it to
 	 * vtk files for each resolution.
-	 * 
+	 *
 	 * To run this program, 2 arguments are required:
 	 * - the folder containing the ver*q.tab files
 	 * - the folder where you want to save the generated files.
-	 * 
+	 *
 	 * @param args
 	 */
 	public static void main(String[] args)

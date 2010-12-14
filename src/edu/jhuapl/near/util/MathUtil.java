@@ -6,7 +6,7 @@ package edu.jhuapl.near.util;
  * @author eli
  *
  */
-public class MathUtil 
+public class MathUtil
 {
 	/**
 	 * Convert lat lon to cartesian coordinates.
@@ -71,9 +71,9 @@ public class MathUtil
 	 */
 	static public double vnorm(double[] v1)
 	{
-		   /*                                                                                                                         
-		   Local variables                                                                                                            
-		   */                                                                                                                         
+		   /*
+		   Local variables
+		   */
 		   double                        normSqr;
 		   double                        tmp0;
 		   double                        tmp1;
@@ -116,7 +116,7 @@ public class MathUtil
 	 * @param vout
 	 * @return
 	 */
-	static public double unorm(double[] v1, 
+	static public double unorm(double[] v1,
 							   double[] vout)
 	{
 		   /*
@@ -126,8 +126,8 @@ public class MathUtil
 
 		   double vmag = vnorm( v1 );
 
-		   
-		   
+		
+		
 		   /*
 		   If *vmag is nonzero, then normalize.  Note that this process is
 		   numerically stable: overflow could only happen if vmag were small,
@@ -148,7 +148,7 @@ public class MathUtil
 		      vout[1] = 0.;
 		      vout[2] = 0.;
 		      }
-		   
+		
 		   return vmag;
 	}
 
@@ -200,7 +200,7 @@ public class MathUtil
 		      vsep = 0.0;
 		      return vsep;
 		      }
-		 
+		
 		      dmag2 = unorm ( v2, u2 );
 
 		   if ( dmag2 == 0.0 )
@@ -208,22 +208,22 @@ public class MathUtil
 		      vsep = 0.0;
 		      return vsep;
 		      }
-		 
+		
 		   if ( vdot(u1,u2) > 0. )
 		      {
 		      vtemp[0] = u1[0] - u2[0];
 		      vtemp[1] = u1[1] - u2[1];
 		      vtemp[2] = u1[2] - u2[2];
-		 
+		
 		      vsep = 2.00 * Math.asin (0.50 * vnorm(vtemp));
 		      }
-		 
+		
 		   else if ( vdot(u1,u2) < 0. )
 		      {
 		      vtemp[0] = u1[0] + u2[0];
 		      vtemp[1] = u1[1] + u2[1];
 		      vtemp[2] = u1[2] + u2[2];
-		 
+		
 		      vsep = Math.PI - 2.00 * Math.asin (0.50 * vnorm(vtemp));
 		      }
 
@@ -231,7 +231,7 @@ public class MathUtil
 		      {
 		      vsep = 0.5 * Math.PI;
 		      }
-		 
+		
 
 		   return vsep;
 
@@ -244,23 +244,23 @@ public class MathUtil
 	 */
 	static public void vhat( double[] v1, double[] vout )
 	{
-		   /*                                                                                                                                                                                        
-		   Local variables                                                                                                                                                                           
+		   /*
+		   Local variables
 		   */
 		   double                        vmag;
 
 
-		   /*                                                                                                                                                                                        
-		   Obtain the magnitude of v1.                                                                                                                                                               
+		   /*
+		   Obtain the magnitude of v1.
 		   */
 		   vmag = vnorm(v1);
 
-		   /*                                                                                                                                                                                        
-		   If vmag is nonzero, then unitize.  Note that this process is                                                                                                                              
-		   numerically stable: overflow could only happen if vmag were small,                                                                                                                        
-		   but this could only happen if each component of v1 were small.                                                                                                                            
-		   In fact, the magnitude of any vector is never less than the                                                                                                                               
-		   magnitude of any component.                                                                                                                                                               
+		   /*
+		   If vmag is nonzero, then unitize.  Note that this process is
+		   numerically stable: overflow could only happen if vmag were small,
+		   but this could only happen if each component of v1 were small.
+		   In fact, the magnitude of any vector is never less than the
+		   magnitude of any component.
 		   */
 
 		   if ( vmag > 0.0 )
@@ -281,8 +281,8 @@ public class MathUtil
 	{
 		double[] vtemp = new double[3];
 		
-		vtemp[0] = v1[1]*v2[2] - v1[2]*v2[1];                                                                                                       
-		vtemp[1] = v1[2]*v2[0] - v1[0]*v2[2];                                                                                                       
+		vtemp[0] = v1[1]*v2[2] - v1[2]*v2[1];
+		vtemp[1] = v1[2]*v2[0] - v1[0]*v2[2];
 		vtemp[2] = v1[0]*v2[1] - v1[1]*v2[0];
 		
 		vout[0] = vtemp[0];
@@ -313,8 +313,8 @@ public class MathUtil
 
     static public void vproj(double[] a, double[] b, double[] p)
     {
-    	/*                                                                                                                                                                       
-      Local variables                                                                                                                                                          
+    	/*
+      Local variables
     	 */
 
     	double     biga;
@@ -328,8 +328,8 @@ public class MathUtil
     	bigb = Math.max ( Math.abs(b[0]) , Math.max ( Math.abs(b[1]), Math.abs(b[2]) ) );
 
 
-    	/*                                                                                                                                                                       
-      If a or b is zero, return the zero vector.                                                                                                                               
+    	/*
+      If a or b is zero, return the zero vector.
     	 */
 
     	if ( biga == 0 || bigb == 0 )
@@ -348,27 +348,27 @@ public class MathUtil
 
     	vscl ( scale, r, p );
     }
-    
+
     static public boolean vzero ( double[] v )
     {
       return  ( v[0] == 0. && v[1] == 0. && v[2] == 0.) ;
     }
-    
+
     static public void nplnpt ( double[]    linpt,
     		double[]    lindir,
     		double[]    point,
     		double[]    pnear,
     		double[]    dist)
     {
-    	/*                                                                                                                                                                       
-      Local variables                                                                                                                                                          
+    	/*
+      Local variables
     	 */
     	double[]             trans = new double[3];
 
 
 
-    	/*                                                                                                                                                                       
-      We need a real direction vector to work with.                                                                                                                            
+    	/*
+      We need a real direction vector to work with.
     	 */
     	if (  vzero (lindir)  )
     	{
@@ -380,10 +380,10 @@ public class MathUtil
     	}
 
 
-    	/*                                                                                                                                                                       
-      We translate line and input point so as to put the line through                                                                                                          
-      the origin.  Then the nearest point on the translated line to the                                                                                                        
-      translated point TRANS is the projection of TRANS onto the line.                                                                                                         
+    	/*
+      We translate line and input point so as to put the line through
+      the origin.  Then the nearest point on the translated line to the
+      translated point TRANS is the projection of TRANS onto the line.
     	 */
 
     	vsub  ( point,  linpt,  trans );

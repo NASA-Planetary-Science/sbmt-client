@@ -19,15 +19,15 @@ public class MapletBoundaryCollection extends Model implements PropertyChangeLis
         private vtkPolyData boundary;
         private vtkPolyDataMapper boundaryMapper;
         private DEMModel dem;
-        
+
 		public Boundary(DEMModel dem)
 		{
 		    this.dem = dem;
-		    
+		
 	        boundary = new vtkPolyData();
 	        boundaryMapper = new vtkPolyDataMapper();
 	        actor = new vtkActor();
-	    
+	
 	        initialize();
 		}
 		
@@ -123,7 +123,7 @@ public class MapletBoundaryCollection extends Model implements PropertyChangeLis
 		boundary.addPropertyChangeListener(this);
 
 		boundaryToActorsMap.put(boundary, new ArrayList<vtkProp>());
-        
+
         ArrayList<vtkProp> boundaryPieces = boundary.getProps();
 
         boundaryToActorsMap.get(boundary).addAll(boundaryPieces);
@@ -142,7 +142,7 @@ public class MapletBoundaryCollection extends Model implements PropertyChangeLis
         erosModel.removePropertyChangeListener(boundary);
 		
         ArrayList<vtkProp> actors = boundaryToActorsMap.get(boundary);
-        
+
         for (vtkProp act : actors)
             actorToBoundaryMap.remove(act);
 
@@ -159,7 +159,7 @@ public class MapletBoundaryCollection extends Model implements PropertyChangeLis
 //        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 //	}
 
-	public ArrayList<vtkProp> getProps() 
+	public ArrayList<vtkProp> getProps()
 	{
         return new ArrayList<vtkProp>(actorToBoundaryMap.keySet());
 	}
@@ -173,12 +173,12 @@ public class MapletBoundaryCollection extends Model implements PropertyChangeLis
     {
         return actorToBoundaryMap.get(actor);
     }
-    
+
     public Boundary getBoundary(DEMModel dem)
     {
         return getBoundaryFromDEM(dem);
     }
-    
+
     public boolean containsBoundary(DEMModel dem)
     {
     	return containsDEM(dem);

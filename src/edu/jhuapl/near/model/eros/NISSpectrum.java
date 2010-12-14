@@ -24,7 +24,7 @@ import vtk.*;
 public class NISSpectrum extends Model implements PropertyChangeListener
 {
 	private String fullpath; // The actual path of the spectrum stored on the local disk (after downloading from the server)
-	private String serverpath; // The path of the spectrum as passed into the constructor. This is not the 
+	private String serverpath; // The path of the spectrum as passed into the constructor. This is not the
 	   // same as fullpath but instead corresponds to the name needed to download
 	   // the file from the server (excluding the hostname).
 
@@ -63,19 +63,19 @@ public class NISSpectrum extends Model implements PropertyChangeListener
     private double[] frustum2 = new double[3];
     private double[] frustum3 = new double[3];
     private double[] frustum4 = new double[3];
-    private double minIncidence; 
-    private double maxIncidence; 
-    private double minEmission; 
-    private double maxEmission; 
-    private double minPhase; 
-    private double maxPhase; 
+    private double minIncidence;
+    private double maxIncidence;
+    private double minEmission;
+    private double maxEmission;
+    private double minPhase;
+    private double maxPhase;
     private boolean showFrustum = false;
     static private int channelToColorBy = 0;
     static private double channelColoringMinValue= 0.0;
     static private double channelColoringMaxValue = 0.05;
-    
+
     // These values were taken from Table 1 of "Spectral properties and geologic
-    // processes on Eros from combined NEAR NIS and MSI data sets" 
+    // processes on Eros from combined NEAR NIS and MSI data sets"
     // by Noam Izenberg et. al.
     static final public double[] bandCenters = {
     	816.2,  837.8,  859.4,  881.0,  902.7,  924.3,  945.9,  967.5,
@@ -87,8 +87,8 @@ public class NISSpectrum extends Model implements PropertyChangeListener
     	2061.5,	2104.7, 2147.8, 2190.9, 2234.0, 2277.1,	2320.2, 2363.3,
     	2406.4,	2449.5, 2492.6, 2535.8, 2578.9, 2622.0,	2665.1, 2708.2
     };
-    
-    
+
+
 	/**
 	 * Because instances of NISSpectrum can be expensive, we want there to be
 	 * no more than one instance of this class per image file on the server.
@@ -98,7 +98,7 @@ public class NISSpectrum extends Model implements PropertyChangeListener
 	 */
 //	public static class NISSpectrumFactory
 //	{
-//		static private WeakHashMap<NISSpectrum, Object> spectra = 
+//		static private WeakHashMap<NISSpectrum, Object> spectra =
 //			new WeakHashMap<NISSpectrum, Object>();
 //		
 //		static /*public*/ NISSpectrum createSpectrum(String name, SmallBodyModel eros) throws IOException
@@ -187,7 +187,7 @@ public class NISSpectrum extends Model implements PropertyChangeListener
 	{
 		if (!latLons.isEmpty())
 		{
-			vtkPolyData tmp = erosModel.computeFrustumIntersection(spacecraftPosition, 
+			vtkPolyData tmp = erosModel.computeFrustumIntersection(spacecraftPosition,
 					frustum1, frustum2, frustum3, frustum4);
 			
 			if (tmp != null)
@@ -213,14 +213,14 @@ public class NISSpectrum extends Model implements PropertyChangeListener
 //		vtkPolyDataReader footprintReader = new vtkPolyDataReader();
 //        footprintReader.SetFileName(file.getAbsolutePath());
 //        footprintReader.Update();
-//        
+//
 //        vtkPolyData polyData = new vtkPolyData();
 //		polyData.DeepCopy(footprintReader.GetOutput());
 //		
 //		return polyData;
 //	}
 
-	public ArrayList<vtkProp> getProps() 
+	public ArrayList<vtkProp> getProps()
 	{
 		if (footprintActor == null && !latLons.isEmpty())
 		{
@@ -429,14 +429,14 @@ public class NISSpectrum extends Model implements PropertyChangeListener
 		
 		return properties;
     }
-    
+
     static public void setChannelColoring(int channel, double min, double max)
     {
     	channelToColorBy = channel;
     	channelColoringMinValue = min;
     	channelColoringMaxValue = max;
     }
-    
+
     static public int getChannelToColorBy()
     {
     	return channelToColorBy;
@@ -461,32 +461,32 @@ public class NISSpectrum extends Model implements PropertyChangeListener
 				getChannelColor());
     }
 
-	public double getMinIncidence() 
+	public double getMinIncidence()
 	{
 		return minIncidence;
 	}
 
-	public double getMaxIncidence() 
+	public double getMaxIncidence()
 	{
 		return maxIncidence;
 	}
 
-	public double getMinEmission() 
+	public double getMinEmission()
 	{
 		return minEmission;
 	}
 
-	public double getMaxEmission() 
+	public double getMaxEmission()
 	{
 		return maxEmission;
 	}
 
-	public double getMinPhase() 
+	public double getMinPhase()
 	{
 		return minPhase;
 	}
 
-	public double getMaxPhase() 
+	public double getMaxPhase()
 	{
 		return maxPhase;
 	}

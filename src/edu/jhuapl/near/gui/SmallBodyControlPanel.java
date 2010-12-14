@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import edu.jhuapl.near.model.*;
 import edu.jhuapl.near.pick.Picker;
 
-public class SmallBodyControlPanel extends JPanel implements ItemListener, ChangeListener 
+public class SmallBodyControlPanel extends JPanel implements ItemListener, ChangeListener
 {
     private JCheckBox modelCheckBox;
     private ModelManager modelManager;
@@ -41,7 +41,7 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
 	private JSpinner imageMapOpacitySpinner;
 
 
-    public SmallBodyControlPanel(ModelManager modelManager, String bodyName) 
+    public SmallBodyControlPanel(ModelManager modelManager, String bodyName)
     {
 		super(new BorderLayout());
 		this.modelManager = modelManager;
@@ -55,7 +55,7 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
     	modelCheckBox.addItemListener(this);
 
         JLabel resolutionLabel = new JLabel("Resolution");
-        
+
         lowResModelButton = new JRadioButton(SmallBodyModel.LowResModelStr);
         lowResModelButton.setActionCommand(SmallBodyModel.LowResModelStr);
         lowResModelButton.addItemListener(this);
@@ -127,7 +127,7 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
 	        Object[] coloringOptions = new Object[smallBodyModel.getNumberOfColors()];
 	    	for (int i=0; i<smallBodyModel.getNumberOfColors(); ++i)
 	    		coloringOptions[i] = smallBodyModel.getColoringName(i);
-	        
+	
 	    	customColorRedComboBox = new JComboBox(coloringOptions);
 	        customColorRedComboBox.setMaximumSize(new Dimension(175, 23));
 	        customColorRedComboBox.addItemListener(this);
@@ -153,7 +153,7 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
 			coloringButtonGroup.setSelected(coloringButtons.get(0).getModel(), true);
 
         JLabel shadingLabel = new JLabel("Shading");
-        
+
         flatShadingButton = new JRadioButton(SmallBodyModel.FlatShadingStr);
 		flatShadingButton.setActionCommand(SmallBodyModel.FlatShadingStr);
 		flatShadingButton.addItemListener(this);
@@ -227,7 +227,7 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
     	add(panel, BorderLayout.CENTER);
 	}
 
-	public void itemStateChanged(ItemEvent e) 
+	public void itemStateChanged(ItemEvent e)
 	{
 		Picker.setPickingEnabled(false);
 		
@@ -339,10 +339,10 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
 	    			customColorBlueLabel.setEnabled(false);
 	    		}
 	    		
-				try 
+				try
 				{
 					smallBodyModel.setColoringIndex(-1);
-				} 
+				}
 				catch (IOException e1) {
 					e1.printStackTrace();
 				}
@@ -386,7 +386,7 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
 	{
 		SmallBodyModel smallBodyModel = modelManager.getSmallBodyModel();
 
-		try 
+		try
 		{
 			if (this.showColoringCheckBox.isSelected())
 			{
@@ -411,8 +411,8 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
 				}
 			}
 
-		} 
-		catch (IOException e1) 
+		}
+		catch (IOException e1)
 		{
 			e1.printStackTrace();
 		}

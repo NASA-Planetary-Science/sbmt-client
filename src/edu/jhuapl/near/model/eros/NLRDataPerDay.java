@@ -40,11 +40,11 @@ public class NLRDataPerDay extends Model
 		vtkCellArray vert = new vtkCellArray();
 		polydata.SetPoints( points );
 		polydata.SetVerts( vert );
-        
+
 		vtkIdList idList = new vtkIdList();
         idList.SetNumberOfIds(1);
         points.SetNumberOfPoints(lines.size()-2);
-        
+
 		for (int i=2; i<lines.size(); ++i)
 		{
             String[] vals = lines.get(i).trim().split("\\s+");
@@ -55,7 +55,7 @@ public class NLRDataPerDay extends Model
             			Double.parseDouble(vals[16])/1000.0);
         	idList.SetId(0, i-2);
 		    vert.InsertNextCell(idList);
-		    
+		
 		    times.add(vals[4]);
 		}
 
@@ -80,7 +80,7 @@ public class NLRDataPerDay extends Model
         actor.SetMapper(pointsMapper);
         actor.GetProperty().SetColor(0.0, 0.0, 1.0);
         actor.GetProperty().SetPointSize(2.0);
-        
+
         actors.add(actor);
 	}
 
@@ -113,9 +113,9 @@ public class NLRDataPerDay extends Model
 	public void setRadialOffset(double offset)
 	{
         vtkPoints points = polydata.GetPoints();
-        
+
         int numberOfPoints = points.GetNumberOfPoints();
-        
+
         for (int i=0;i<numberOfPoints;++i)
         {
         	double[] pt = originalPoints.GetPoint(i);
@@ -135,7 +135,7 @@ public class NLRDataPerDay extends Model
     	return "NLR " + file.getName().substring(0, 8) + " acquired at " + times.get(cellId);
     }
 
-	public ArrayList<vtkProp> getProps() 
+	public ArrayList<vtkProp> getProps()
 	{
 		return actors;
 	}

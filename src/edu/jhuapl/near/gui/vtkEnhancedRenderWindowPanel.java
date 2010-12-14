@@ -18,20 +18,20 @@ import vtk.vtkWindowToImageFilter;
  * which for some reason appears to be missing. It also prevents the render window
  * from accepting focus when the mouse hovers over it, which for some reason is
  * the default in the base class.
- * 
+ *
  * @author kahneg1
  *
  */
-public class vtkEnhancedRenderWindowPanel extends vtkRenderWindowPanel 
-												implements 
+public class vtkEnhancedRenderWindowPanel extends vtkRenderWindowPanel
+												implements
 												MouseWheelListener
 {
-	public vtkEnhancedRenderWindowPanel() 
+	public vtkEnhancedRenderWindowPanel()
 	{
 		addMouseWheelListener(this);
 	}
 
-	public void mouseWheelMoved(MouseWheelEvent e) 
+	public void mouseWheelMoved(MouseWheelEvent e)
 	{
 		ctrlPressed = (e.getModifiers() & InputEvent.CTRL_MASK) == InputEvent.CTRL_MASK ? 1
 				: 0;
@@ -55,7 +55,7 @@ public class vtkEnhancedRenderWindowPanel extends vtkRenderWindowPanel
 	 * whenever the mouse hovers over the window. We don't want this behavior so override it
 	 * with an empty function.
 	 */
-	public void mouseEntered(MouseEvent e) 
+	public void mouseEntered(MouseEvent e)
 	{
 		// do nothing
 	}
@@ -127,7 +127,7 @@ public class vtkEnhancedRenderWindowPanel extends vtkRenderWindowPanel
 		}
 	}
 	
-	  
+	
     public void saveToFile()
     {
         File file = ImageFileChooser.showSaveDialog(this, "Export to Image");
@@ -136,7 +136,7 @@ public class vtkEnhancedRenderWindowPanel extends vtkRenderWindowPanel
             lock();
             vtkWindowToImageFilter windowToImage = new vtkWindowToImageFilter();
             windowToImage.SetInput(GetRenderWindow());
-            
+
             String filename = file.getAbsolutePath();
             if (filename.toLowerCase().endsWith("bmp"))
             {

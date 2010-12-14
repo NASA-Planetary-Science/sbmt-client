@@ -15,7 +15,7 @@ import edu.jhuapl.near.model.eros.MSIImage.MSISource;
 import edu.jhuapl.near.util.FileUtil;
 import edu.jhuapl.near.util.NativeLibraryLoader;
 
-public class MSIFootprintGenerator 
+public class MSIFootprintGenerator
 {
 	private static SmallBodyModel erosModel;
     private static int resolutionLevel = 0;
@@ -57,7 +57,7 @@ public class MSIFootprintGenerator
     	for (String filename : msiFiles)
     	{
             System.out.println("starting msi " + count++ + " / " + msiFiles.size() + " " + filename + "\n");
-            
+
 			boolean filesExist = checkIfMsiFilesExist(filename, msiSource);
 			if (filesExist == false)
 				continue;
@@ -135,10 +135,10 @@ public class MSIFootprintGenerator
 
 	/**
 	 * This program takes a file containing a list if FIT images and generates a vtk file containing the
-	 * footprint of the image in the same directory as the original file. 
+	 * footprint of the image in the same directory as the original file.
 	 * @param args
 	 */
-	public static void main(String[] args) 
+	public static void main(String[] args)
 	{
 		NativeLibraryLoader.loadVtkLibrariesLinuxNoX11();
 
@@ -162,7 +162,7 @@ public class MSIFootprintGenerator
 			e2.printStackTrace();
 		}
 		
-		try 
+		try
 		{
             generateMSIFootprints(msiFiles, MSISource.PDS);
             generateMSIFootprints(msiFiles, MSISource.GASKELL);

@@ -50,7 +50,7 @@ public class TopoPanel extends JPanel implements ActionListener
     	this.modelManager = modelManager;
     	this.pickManager = pickManager;
     	
-		this.addComponentListener(new ComponentAdapter() 
+		this.addComponentListener(new ComponentAdapter()
 		{
 			public void componentHidden(ComponentEvent e)
 			{
@@ -68,7 +68,7 @@ public class TopoPanel extends JPanel implements ActionListener
         selectRegionButton.setEnabled(true);
         selectRegionButton.addActionListener(new ActionListener()
         {
-            public void actionPerformed(ActionEvent e) 
+            public void actionPerformed(ActionEvent e)
             {
                 if (selectRegionButton.isSelected())
                     pickManager.setPickMode(PickMode.CIRCLE_SELECTION);
@@ -81,7 +81,7 @@ public class TopoPanel extends JPanel implements ActionListener
         final JButton clearRegionButton = new JButton("Clear Region");
         clearRegionButton.addActionListener(new ActionListener()
         {
-            public void actionPerformed(ActionEvent e) 
+            public void actionPerformed(ActionEvent e)
             {
                 RegularPolygonModel selectionModel = (RegularPolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
                 selectionModel.removeAllStructures();
@@ -93,7 +93,7 @@ public class TopoPanel extends JPanel implements ActionListener
         nameTextField = new JFormattedTextField();
         nameTextField.setPreferredSize(new Dimension(125, 24));
         nameTextField.setText("map");
-        
+
         JPanel namePanel = new JPanel();
         namePanel.add(nameLabel);
         namePanel.add(nameTextField);
@@ -104,8 +104,8 @@ public class TopoPanel extends JPanel implements ActionListener
         JPanel halfSizePanel = new JPanel();
         halfSizePanel.add(halfSizeLabel);
         halfSizePanel.add(halfSizeSpinner);
-        
-        
+
+
 	    dirChooser = new JFileChooser();
 	    dirChooser.setCurrentDirectory(null);
         JPanel outputFolderPanel = new JPanel(new MigLayout("wrap 2"));
@@ -129,7 +129,7 @@ public class TopoPanel extends JPanel implements ActionListener
 		});
         outputFolderPanel.add(outputFolderButton);
         outputFolderPanel.add(outputFolderTextField);
-        
+
         final JPanel submitPanel = new JPanel();
         //panel.setBorder(BorderFactory.createEmptyBorder(9, 9, 9, 9));
         submitButton = new JButton("Run Mapmaker");
@@ -171,7 +171,7 @@ public class TopoPanel extends JPanel implements ActionListener
 
         pickManager.setPickMode(PickMode.DEFAULT);
         selectRegionButton.setSelected(false);
-        
+
 		// Run Bob Gaskell's map maker fortran program
 		
 		// First get the center point and radius of the selection circle
@@ -234,7 +234,7 @@ public class TopoPanel extends JPanel implements ActionListener
 			return;
 		}
 
-		// Next download the entire map maker suite to the users computer 
+		// Next download the entire map maker suite to the users computer
 		// if it has never been downloaded before.
 		// Ask the user beforehand if it's okay to continue.
 		final MapmakerSwingWorker mapmakerWorker =

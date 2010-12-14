@@ -8,7 +8,7 @@ import edu.jhuapl.near.gui.actions.SaveImageAction;
 
 
 
-public class FileMenu extends JMenu 
+public class FileMenu extends JMenu
 {
     public FileMenu(ViewerManager rootPanel)
     {
@@ -22,7 +22,7 @@ public class FileMenu extends JMenu
         mi = new JMenuItem(new ExitAction());
         this.add(mi);
     }
-    
+
     private class ExitAction extends AbstractAction
     {
         public ExitAction()

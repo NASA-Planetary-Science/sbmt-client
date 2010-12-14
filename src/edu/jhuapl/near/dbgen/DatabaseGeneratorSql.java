@@ -20,7 +20,7 @@ import vtk.vtkGlobalJavaHash;
 import vtk.vtkPolyData;
 import vtk.vtkPolyDataReader;
 
-public class DatabaseGeneratorSql 
+public class DatabaseGeneratorSql
 {
     static private final String MsiImagesPdsTable = "msiimages_beta2";
     static private final String MsiImagesGaskellTable = "msiimages_gaskell_beta2";
@@ -28,7 +28,7 @@ public class DatabaseGeneratorSql
     static private final String MsiCubesGaskellTable = "msicubes_gaskell_beta2";
     static private final String NisSpectraTable = "nisspectra_beta2";
     static private final String NisCubesTable = "niscubes_beta2";
-    
+
 	static private SqlManager db = null;
 	static private PreparedStatement msiInsert = null;
 	static private PreparedStatement msiInsert2 = null;
@@ -87,7 +87,7 @@ public class DatabaseGeneratorSql
             // this will have no effect on the db
         }
     }
-    
+
     private static void createNISTables()
     {
         try {
@@ -127,7 +127,7 @@ public class DatabaseGeneratorSql
             // this will have no effect on the db
         }
     }
-    
+
     private static void createMSITablesCubes(String msiTableName)
     {
         try {
@@ -158,7 +158,7 @@ public class DatabaseGeneratorSql
             // this will have no effect on the db
         }
     }
-    
+
     private static void createNISTablesCubes()
     {
         try {
@@ -189,7 +189,7 @@ public class DatabaseGeneratorSql
             // this will have no effect on the db
         }
     }
-    
+
     private static void populateMSITables(
             ArrayList<String> msiFiles,
             String msiTableName,
@@ -251,8 +251,8 @@ public class DatabaseGeneratorSql
             if (msiInsert == null)
             {
             	msiInsert = db.preparedStatement(
-//            		"insert into msiimages values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");                                                                   
-            		"insert into " + msiTableName + " values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");                                                                   
+//            		"insert into msiimages values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            		"insert into " + msiTableName + " values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
             }
 
             DateTime startTime = new DateTime(image.getStartTime(), DateTimeZone.UTC);
@@ -260,8 +260,8 @@ public class DatabaseGeneratorSql
     		// Replace the "T" with a space
             //startTime = startTime.substring(0, 10) + " " + startTime.substring(11, startTime.length());
             //stopTime = stopTime.substring(0, 10) + " " + stopTime.substring(11, stopTime.length());
-            
-            
+
+
     		System.out.println("id: " + Integer.parseInt(origFile.getName().substring(2, 11)));
     		System.out.println("year: " + yearStr);
     		System.out.println("dayofyear: " + dayOfYearStr);
@@ -302,10 +302,10 @@ public class DatabaseGeneratorSql
     		msiInsert.setDouble(17, image.getMaxEmission());
     		msiInsert.setDouble(18, image.getMinPhase());
     		msiInsert.setDouble(19, image.getMaxPhase());
-            
+
             msiInsert.executeUpdate();
 
-            
+
             image.Delete();
             System.gc();
             System.out.println("deleted " + vtkGlobalJavaHash.GC());
@@ -313,7 +313,7 @@ public class DatabaseGeneratorSql
             System.out.println(" ");
     	}
     }
-    
+
     private static void populateNISTables(ArrayList<String> nisFiles) throws SQLException, IOException
     {
     	int count = 0;
@@ -341,8 +341,8 @@ public class DatabaseGeneratorSql
     		
     		if (nisInsert == null)
     		{
-    			nisInsert = db.preparedStatement(                                                                                    
-    					"insert into " + NisSpectraTable + " values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");                                                                   
+    			nisInsert = db.preparedStatement(
+    					"insert into " + NisSpectraTable + " values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
     		}
 
     		DateTime midtime = new DateTime(nisSpectrum.getDateTime().toString(), DateTimeZone.UTC);
@@ -412,12 +412,12 @@ public class DatabaseGeneratorSql
 //    		yearStr = f.getName();
 
 //	        String vtkfile = filename.substring(0, filename.length()-4) + "_FOOTPRINT.VTK";
-//  
+//
 //	        if (footprintReader == null)
 //	        	footprintReader = new vtkPolyDataReader();
 //	        footprintReader.SetFileName(vtkfile);
 //	        footprintReader.Update();
-//	        
+//	
     		if (footprintPolyData == null)
     		    footprintPolyData = new vtkPolyData();
 //			footprintPolyData.DeepCopy(footprintReader.GetOutput());
@@ -493,7 +493,7 @@ public class DatabaseGeneratorSql
     		
     		if (nisInsert2 == null)
     		{
-    			nisInsert2 = db.preparedStatement(                                                                                    
+    			nisInsert2 = db.preparedStatement(
     					"insert into " + NisCubesTable + " values (?, ?, ?)");
     		}
 
@@ -594,7 +594,7 @@ public class DatabaseGeneratorSql
     		meanPlateSizes[i] = erosModel.computeLargestSmallestMeanEdgeLength()[2];
     	}
     }
-    
+
 	private static int findOptimalResolution(MSIImage image)
 	{
 		// First get the pixel size.
@@ -616,9 +616,9 @@ public class DatabaseGeneratorSql
 
 	/**
 	 * @param args
-	 * @throws IOException 
+	 * @throws IOException
 	 */
-	public static void main(String[] args) throws IOException 
+	public static void main(String[] args) throws IOException
 	{
 		NativeLibraryLoader.loadVtkLibrariesLinuxNoX11();
 
@@ -640,7 +640,7 @@ public class DatabaseGeneratorSql
 			return;
 		}
 		
-        try 
+        try
         {
             db = new SqlManager(null);
         }
@@ -663,7 +663,7 @@ public class DatabaseGeneratorSql
 			createNISTablesCubes();
 
 		
-		try 
+		try
 		{
 			if (mode == 1 || mode == 0)
 				populateMSITables(msiFiles, MsiImagesPdsTable, MSIImage.MSISource.PDS);
@@ -683,7 +683,7 @@ public class DatabaseGeneratorSql
 		}
 		
 		
-        try 
+        try
         {
 			db.shutdown();
 		}

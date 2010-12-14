@@ -27,42 +27,42 @@ public class NLRSummaryPanel extends JPanel
     private JButton showHideButton;
     private JButton saveButton;
     private RadialOffsetChanger radialOffsetChanger;
-    
+
 
     public NLRSummaryPanel(
-    		final ModelManager modelManager) 
+    		final ModelManager modelManager)
     {
     	setLayout(new BoxLayout(this,
         		BoxLayout.PAGE_AXIS));
     	
     	//this.modelManager = modelManager;
     	this.nlrModel = (NLRBrowseDataCollection)modelManager.getModel(ModelNames.NLR_DATA_BROWSE);
-        
-        
+
+
     	final JPanel resultControlsPanel = new JPanel(new BorderLayout());
-        
+
         final JPanel resultSub1ControlsPanel = new JPanel();
-        
+
         resultSub1ControlsPanel.setLayout(new BoxLayout(resultSub1ControlsPanel,
         		BoxLayout.PAGE_AXIS));
 
-        
+
         showHideButton = new JButton("Show");
         showHideButton.setActionCommand("Show");
         showHideButton.addActionListener(new ActionListener()
         {
-        	public void actionPerformed(ActionEvent e) 
+        	public void actionPerformed(ActionEvent e)
         	{
         	}
         });
         showHideButton.setEnabled(false);
-        
+
 
         saveButton = new JButton("Save...");
         saveButton.setActionCommand("Save...");
         saveButton.addActionListener(new ActionListener()
         {
-        	public void actionPerformed(ActionEvent e) 
+        	public void actionPerformed(ActionEvent e)
         	{
         		int index = resultList.getSelectedIndex();
         		if (index >= 0)
@@ -96,19 +96,19 @@ public class NLRSummaryPanel extends JPanel
         });
         saveButton.setEnabled(false);
 
-        
+
         JPanel resultSub2ControlsPanel = new JPanel();
         resultSub2ControlsPanel.setLayout(new BoxLayout(resultSub2ControlsPanel,
         		BoxLayout.LINE_AXIS));
-        
+
         resultSub2ControlsPanel.add(showHideButton);
         resultSub2ControlsPanel.add(saveButton);
-        
+
         resultControlsPanel.add(resultSub1ControlsPanel, BorderLayout.CENTER);
         resultControlsPanel.add(resultSub2ControlsPanel, BorderLayout.SOUTH);
-        
+
         radialOffsetChanger = new RadialOffsetChanger(nlrModel, "Radial Offset");
-        
+
         add(radialOffsetChanger);
     }
 

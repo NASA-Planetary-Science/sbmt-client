@@ -20,7 +20,7 @@ public class CirclesPopupMenu extends PopupMenu
 	{
 		this.model = (CircleModel)modelManager.getModel(ModelNames.CIRCLE_STRUCTURES);
 		
-		JMenuItem mi; 
+		JMenuItem mi;
 		mi = new JMenuItem(new DeleteAction());
 		mi.setText("Delete");
 		this.add(mi);
@@ -28,7 +28,7 @@ public class CirclesPopupMenu extends PopupMenu
 
 	private class DeleteAction extends AbstractAction
 	{
-		public void actionPerformed(ActionEvent e) 
+		public void actionPerformed(ActionEvent e)
 		{
 			int idx = model.getPolygonIdFromBoundaryCellId(cellIdLastClicked);
 			model.removeStructure(idx);

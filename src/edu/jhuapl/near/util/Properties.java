@@ -5,7 +5,7 @@ package edu.jhuapl.near.util;
  * All such properties should be listed here rather than in the
  * class that does the firing.
  */
-public interface Properties 
+public interface Properties
 {
 	final String MODEL_CHANGED = "model-changed";
 	final String MODEL_PICKED = "model-picked";

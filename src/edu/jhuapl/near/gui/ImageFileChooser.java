@@ -21,8 +21,8 @@ public class ImageFileChooser
     private static String PNM_DESCRIPTION = "PNM Files";
     private static String PS_DESCRIPTION = "PostScript Files";
     private static String TIFF_DESCRIPTION = "TIFF Files";
-    
-    private static class ImageFilter extends FileFilter 
+
+    private static class ImageFilter extends FileFilter
     {
     	private String[] extensions;
     	private String description;
@@ -34,15 +34,15 @@ public class ImageFileChooser
     	}
     	
         //Accept all directories and all png files.
-        public boolean accept(File f) 
+        public boolean accept(File f)
         {
-            if (f.isDirectory()) 
+            if (f.isDirectory())
             {
                 return true;
             }
 
             String extension = getExtension(f);
-            if (extension != null) 
+            if (extension != null)
             {
             	for (String str : extensions)
             	{
@@ -51,7 +51,7 @@ public class ImageFileChooser
             			return true;
             		}
             	}
-                
+
                 return false;
             }
 
@@ -59,18 +59,18 @@ public class ImageFileChooser
         }
 
         //The description of this filter
-        public String getDescription() 
+        public String getDescription()
         {
         	return description;
         }
-        
-        private String getExtension(File f) 
+
+        private String getExtension(File f)
         {
             String ext = null;
             String s = f.getName();
             int i = s.lastIndexOf('.');
 
-            if (i > 0 &&  i < s.length() - 1) 
+            if (i > 0 &&  i < s.length() - 1)
             {
                 ext = s.substring(i+1).toLowerCase();
             }
@@ -95,12 +95,12 @@ public class ImageFileChooser
     	String[] tiff = {"tif", "tiff"};
     	fc.addChoosableFileFilter(new ImageFilter(tiff, TIFF_DESCRIPTION));
     }
-    
+
     public static File showOpenDialog(Component parent, String title)
     {
     	fc.setDialogTitle(title);
     	int returnVal = fc.showOpenDialog(parent);
-        if (returnVal == JFileChooser.APPROVE_OPTION) 
+        if (returnVal == JFileChooser.APPROVE_OPTION)
         {
         	return fc.getSelectedFile();
         }	
@@ -109,43 +109,43 @@ public class ImageFileChooser
         	return null;
         }
     }
-    
+
     public static File showSaveDialog(Component parent, String title)
     {
     	fc.setDialogTitle(title);
     	int returnVal = fc.showSaveDialog(parent);
-        if (returnVal == JFileChooser.APPROVE_OPTION) 
+        if (returnVal == JFileChooser.APPROVE_OPTION)
         {
             String filename = fc.getSelectedFile().getAbsolutePath();
 
             String desc = fc.getFileFilter().getDescription();
-        	if (BMP_DESCRIPTION.equals(desc) && 
+        	if (BMP_DESCRIPTION.equals(desc) &&
         			!filename.toLowerCase().endsWith(".bmp"))
         	{
         		filename += ".bmp";
         	}
-        	else if (JPEG_DESCRIPTION.equals(desc) && 
+        	else if (JPEG_DESCRIPTION.equals(desc) &&
         			!filename.toLowerCase().endsWith(".jpg") &&
         			!filename.toLowerCase().endsWith(".jpeg") )
         	{
         		filename += ".jpg";
         	}
-        	else if (PNG_DESCRIPTION.equals(desc) && 
+        	else if (PNG_DESCRIPTION.equals(desc) &&
         			!filename.toLowerCase().endsWith(".png"))
         	{
         		filename += ".png";
         	}
-        	else if (PNM_DESCRIPTION.equals(desc) && 
+        	else if (PNM_DESCRIPTION.equals(desc) &&
         			!filename.toLowerCase().endsWith(".pnm"))
         	{
         		filename += ".pnm";
         	}
-        	else if (PS_DESCRIPTION.equals(desc) && 
+        	else if (PS_DESCRIPTION.equals(desc) &&
         			!filename.toLowerCase().endsWith(".ps"))
         	{
         		filename += ".ps";
         	}
-        	else if (TIFF_DESCRIPTION.equals(desc) && 
+        	else if (TIFF_DESCRIPTION.equals(desc) &&
         			!filename.toLowerCase().endsWith(".tif") &&
         			!filename.toLowerCase().endsWith(".tiff"))
         	{
@@ -153,13 +153,13 @@ public class ImageFileChooser
         	}
         	
         	File file = new File(filename);
-        	if (file.exists ()) 
+        	if (file.exists ())
             {
                 int response = JOptionPane.showConfirmDialog (null,
                   "Overwrite " + file.getName() + "?","Confirm Overwrite",
                    JOptionPane.OK_CANCEL_OPTION,
                    JOptionPane.QUESTION_MESSAGE);
-                if (response == JOptionPane.CANCEL_OPTION) 
+                if (response == JOptionPane.CANCEL_OPTION)
                 	return null;
             }
 
@@ -170,5 +170,5 @@ public class ImageFileChooser
         	return null;
         }
     }
-    
+
 }

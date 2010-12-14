@@ -31,7 +31,7 @@ public class RadialOffsetChanger extends JPanel implements ChangeListener
 	{
 		this.offsetScale = scale;
 	}
-	public void stateChanged(ChangeEvent e) 
+	public void stateChanged(ChangeEvent e)
 	{
 		if (slider.getValueIsAdjusting())
 		{

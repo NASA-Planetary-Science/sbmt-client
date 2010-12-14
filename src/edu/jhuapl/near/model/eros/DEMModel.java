@@ -33,7 +33,7 @@ public class DEMModel extends SmallBodyModel
     private int liveSize;
     //private int height;
     private int startPixel;
-    
+
     public DEMModel(String filename, String lblfilename) throws IOException
 	{
 		idList = new vtkIdList();
@@ -82,7 +82,7 @@ public class DEMModel extends SmallBodyModel
         heightsGravity.SetNumberOfComponents(1);
         heightsPlane.SetNumberOfComponents(1);
         slopes.SetNumberOfComponents(1);
-        
+
 		FileInputStream fs = new FileInputStream(filename);
 		BufferedInputStream bs = new BufferedInputStream(fs);
 		DataInputStream in = new DataInputStream(bs);
@@ -106,7 +106,7 @@ public class DEMModel extends SmallBodyModel
         int i0, i1, i2, i3;
 
         int endPixel = startPixel + liveSize - 1;
-        
+
         // First add points to the vtkPoints array
 //        for (int m=0; m<WIDTH-500; ++m)
 //			for (int n=0; n<HEIGHT-500; ++n)
@@ -181,7 +181,7 @@ public class DEMModel extends SmallBodyModel
 					polys.InsertNextCell(idList);
 				}
 			}
-        
+
 		vtkPolyDataNormals normalsFilter = new vtkPolyDataNormals();
 		normalsFilter.SetInput(dem);
 		normalsFilter.SetComputeCellNormals(0);
@@ -195,7 +195,7 @@ public class DEMModel extends SmallBodyModel
 		
 		return dem;
 	}
-    
+
     public vtkPolyData getBoundary()
     {
     	return boundary;
@@ -227,14 +227,14 @@ public class DEMModel extends SmallBodyModel
         lindir[0] = last[0] - first[0];
         lindir[1] = last[1] - first[1];
         lindir[2] = last[2] - first[2];
-        
+
         // The following can be true if the user clicks on the same point twice
         boolean zeroLineDir = MathUtil.vzero(lindir);
-        
+
         double[] pnear = new double[3];
         double[] notused = new double[1];
         vtkIdList idList = new vtkIdList();
-        
+
     	for (Point3D p : xyzPointList)
     	{
     		int cellId = findClosestCell(p.xyz);
@@ -255,7 +255,7 @@ public class DEMModel extends SmallBodyModel
             }
     	}
     }
-    
+
 	private void loadLblFile(String file) throws IOException
 	{
 		InputStream fs = new FileInputStream(file);

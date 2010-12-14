@@ -9,7 +9,7 @@ import edu.jhuapl.near.util.Properties;
 
 import vtk.*;
 
-public class LineamentModel extends Model 
+public class LineamentModel extends Model
 {
 	private HashMap<Integer, Lineament> idToLineamentMap = new HashMap<Integer, Lineament>();
 	private HashMap<Integer, Lineament> cellIdToLineamentMap = new HashMap<Integer, Lineament>();
@@ -41,7 +41,7 @@ public class LineamentModel extends Model
 	{
 		if (lineamentActor == null)
 		{
-			try 
+			try
 			{
 				loadModel();
 
@@ -79,7 +79,7 @@ public class LineamentModel extends Model
         while ((line = in.readLine()) != null)
         {
             String [] tokens = line.split("\t");
-            
+
             if (tokens.length < 5)
             {
                 System.out.println(tokens.length);
@@ -93,12 +93,12 @@ public class LineamentModel extends Model
             double lat = Double.parseDouble(tokens[2]) * Math.PI / 180.0;
             double lon = (360.0-Double.parseDouble(tokens[3])) * Math.PI / 180.0;
             double rad = Double.parseDouble(tokens[4]);
-            
+
             if (!this.idToLineamentMap.containsKey(id))
             {
             	this.idToLineamentMap.put(id, new Lineament());
-            }            
-            
+            }
+
             Lineament lin = this.idToLineamentMap.get(id);
             lin.name = name;
             lin.id = id;
@@ -142,9 +142,9 @@ public class LineamentModel extends Model
         vtkPoints points = new vtkPoints();
         vtkCellArray lines = new vtkCellArray();
         vtkUnsignedCharArray colors = new vtkUnsignedCharArray();
-        
+
         colors.SetNumberOfComponents(4);
-        
+
         vtkIdList idList = new vtkIdList();
 
         int c=0;
@@ -156,7 +156,7 @@ public class LineamentModel extends Model
 			
             int size = lin.lat.size();
             idList.SetNumberOfIds(size);
-            
+
             for (int i=0;i<size;++i)
             {
             	double lat = lin.lat.get(i);
@@ -173,7 +173,7 @@ public class LineamentModel extends Model
 
             lines.InsertNextCell(idList);
         	colors.InsertNextTuple4(defaultColor[0],defaultColor[1],defaultColor[2],defaultColor[3]);
-            
+
             cellIdToLineamentMap.put(cellId, lin);
             ++cellId;
 		}
@@ -228,7 +228,7 @@ public class LineamentModel extends Model
 		
         int ptId=0;
         vtkPoints points = lineaments.GetPoints();
-        
+
 		for (Integer id : this.idToLineamentMap.keySet())
 		{
 			Lineament lin =	this.idToLineamentMap.get(id);
@@ -272,7 +272,7 @@ public class LineamentModel extends Model
 		
 	}
 	
-	public ArrayList<vtkProp> getProps() 
+	public ArrayList<vtkProp> getProps()
 	{
 		return lineamentActors;
 	}

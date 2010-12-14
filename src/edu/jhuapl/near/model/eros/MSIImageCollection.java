@@ -103,12 +103,12 @@ public class MSIImageCollection extends Model implements PropertyChangeListener
 			removeImage(image.getKey());
 	}
 
-	public ArrayList<vtkProp> getProps() 
+	public ArrayList<vtkProp> getProps()
 	{
 		return new ArrayList<vtkProp>(actorToImageMap.keySet());
 	}
 
-	public void propertyChange(PropertyChangeEvent evt) 
+	public void propertyChange(PropertyChangeEvent evt)
 	{
 		if (Properties.MODEL_CHANGED.equals(evt.getPropertyName()))
 			this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
@@ -124,22 +124,22 @@ public class MSIImageCollection extends Model implements PropertyChangeListener
     {
     	return actorToImageMap.get(actor).getKey().name;
     }
-    
+
     public MSIImage getImage(vtkActor actor)
     {
         return actorToImageMap.get(actor);
     }
-    
+
     public MSIImage getImage(MSIKey key)
     {
     	return getImageFromKey(key);
     }
-    
+
     public boolean containsImage(MSIKey key)
     {
     	return containsKey(key);
     }
-    
+
 	public void setShowFrustums(boolean b)
 	{
 		for (MSIImage image : imageToActorsMap.keySet())

@@ -1,6 +1,6 @@
 package edu.jhuapl.near.util;
 
-public class BoundingBox 
+public class BoundingBox
 {
 	public double xmin = Double.MAX_VALUE;
 	public double xmax = -Double.MAX_VALUE;
@@ -75,7 +75,7 @@ public class BoundingBox
 	}
 	
 	/**
-	 * Returns whether or not the given point is contained in the box. 
+	 * Returns whether or not the given point is contained in the box.
 	 * @param pt
 	 * @return
 	 */

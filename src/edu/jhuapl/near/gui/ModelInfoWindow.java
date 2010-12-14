@@ -20,7 +20,7 @@ public abstract class ModelInfoWindow extends JFrame implements PropertyChangeLi
 	/**
 	 * Get the collection model which directly manages the model returned by getModel.
 	 * E.g. for MSI Images this would MSIImageCollection
-	 * 
+	 *
 	 * @return
 	 */
 	public abstract Model getCollectionModel();

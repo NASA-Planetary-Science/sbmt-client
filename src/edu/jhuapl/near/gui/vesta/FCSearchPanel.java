@@ -76,10 +76,10 @@ public class FCSearchPanel extends JPanel implements ActionListener, MouseListen
     private JFormattedTextField toPhaseTextField;
 
     private JToggleButton selectRegionButton;
-    
+
     private JFormattedTextField searchByNumberTextField;
     private JCheckBox searchByNumberCheckBox;
-    
+
     private JList resultList;
     private MSIPopupMenu msiPopupMenu;
     private ArrayList<String> msiRawResults = new ArrayList<String>();
@@ -91,17 +91,17 @@ public class FCSearchPanel extends JPanel implements ActionListener, MouseListen
     private JButton removeAllImagesButton;
     private JComboBox numberOfBoundariesComboBox;
     private IdPair resultIntervalCurrentlyShown = null;
-    
+
     /**
      * The source of the msi images of the most recently executed query
      */
     private MSIImage.MSISource msiSourceOfLastQuery = MSIImage.MSISource.PDS;
-    
+
     public FCSearchPanel(
-    		final ModelManager modelManager, 
+    		final ModelManager modelManager,
     		ModelInfoWindowManager infoPanelManager,
     		final PickManager pickManager,
-    		Renderer renderer) 
+    		Renderer renderer)
     {
 		JPanel topPanel = new JPanel();
 		topPanel.setLayout(new BoxLayout(topPanel,
@@ -113,7 +113,7 @@ public class FCSearchPanel extends JPanel implements ActionListener, MouseListen
     	this.modelManager = modelManager;
     	this.pickManager = pickManager;
     	
-		this.addComponentListener(new ComponentAdapter() 
+		this.addComponentListener(new ComponentAdapter()
 		{
 			public void componentHidden(ComponentEvent e)
 			{
@@ -127,7 +127,7 @@ public class FCSearchPanel extends JPanel implements ActionListener, MouseListen
         		BoxLayout.PAGE_AXIS));
 
     	//pane.setBorder(
-        //        new CompoundBorder(BorderFactory.createEmptyBorder(9, 9, 9, 9), 
+        //        new CompoundBorder(BorderFactory.createEmptyBorder(9, 9, 9, 9),
         //                           new TitledBorder("Query Editor")));
 
         final JPanel msiSourcePanel = new JPanel();
@@ -148,7 +148,7 @@ public class FCSearchPanel extends JPanel implements ActionListener, MouseListen
             {
                 public void stateChanged(ChangeEvent e)
                 {
-                    java.util.Date date = 
+                    java.util.Date date =
                         ((SpinnerDateModel)startSpinner.getModel()).getDate();
                     if (date != null)
                         startDate = date;
@@ -167,7 +167,7 @@ public class FCSearchPanel extends JPanel implements ActionListener, MouseListen
             {
                 public void stateChanged(ChangeEvent e)
                 {
-                    java.util.Date date = 
+                    java.util.Date date =
                         ((SpinnerDateModel)endSpinner.getModel()).getDate();
                     if (date != null)
                         endDate = date;
@@ -257,7 +257,7 @@ public class FCSearchPanel extends JPanel implements ActionListener, MouseListen
 
         NumberFormat nf = NumberFormat.getNumberInstance();
         nf.setGroupingUsed(false);
-        
+
         final JPanel distancePanel = new JPanel();
         distancePanel.setLayout(new BoxLayout(distancePanel,
         		BoxLayout.LINE_AXIS));
@@ -270,14 +270,14 @@ public class FCSearchPanel extends JPanel implements ActionListener, MouseListen
         toDistanceTextField.setValue(3000.0);
         toDistanceTextField.setMaximumSize(new Dimension(50, 23));
         final JLabel endDistanceLabel = new JLabel(" km");
-                
+
         distancePanel.add(fromDistanceLabel);
         distancePanel.add(fromDistanceTextField);
         distancePanel.add(toDistanceLabel);
         distancePanel.add(toDistanceTextField);
         distancePanel.add(endDistanceLabel);
 
-        
+
         final JPanel resolutionPanel = new JPanel();
         resolutionPanel.setLayout(new BoxLayout(resolutionPanel,
         		BoxLayout.LINE_AXIS));
@@ -291,48 +291,48 @@ public class FCSearchPanel extends JPanel implements ActionListener, MouseListen
         toResolutionTextField.setMaximumSize(new Dimension(50, 23));
         final JLabel endResolutionLabel = new JLabel(" mpp");
         endResolutionLabel.setToolTipText("meters per pixel");
-      
+
         resolutionPanel.add(fromResolutionLabel);
         resolutionPanel.add(fromResolutionTextField);
         resolutionPanel.add(toResolutionLabel);
         resolutionPanel.add(toResolutionTextField);
         resolutionPanel.add(endResolutionLabel);
-        
-        
+
+
         fromIncidenceTextField = new JFormattedTextField(nf);
         toIncidenceTextField = new JFormattedTextField(nf);
         final JPanel incidencePanel = SearchPanelUtil.createFromToPanel(
-        		fromIncidenceTextField, 
-        		toIncidenceTextField, 
-        		0.0, 
-        		180.0, 
-        		"Incidence from", 
-        		"to", 
+        		fromIncidenceTextField,
+        		toIncidenceTextField,
+        		0.0,
+        		180.0,
+        		"Incidence from",
+        		"to",
         		"degrees");
 
         fromEmissionTextField = new JFormattedTextField(nf);
         toEmissionTextField = new JFormattedTextField(nf);
         final JPanel emissionPanel = SearchPanelUtil.createFromToPanel(
-        		fromEmissionTextField, 
-        		toEmissionTextField, 
-        		0.0, 
-        		180.0, 
-        		"Emissiom from", 
-        		"to", 
+        		fromEmissionTextField,
+        		toEmissionTextField,
+        		0.0,
+        		180.0,
+        		"Emissiom from",
+        		"to",
         		"degrees");
 
         fromPhaseTextField = new JFormattedTextField(nf);
         toPhaseTextField = new JFormattedTextField(nf);
         final JPanel phasePanel = SearchPanelUtil.createFromToPanel(
-        		fromPhaseTextField, 
-        		toPhaseTextField, 
-        		0.0, 
-        		180.0, 
-        		"Phase from", 
-        		"to", 
+        		fromPhaseTextField,
+        		toPhaseTextField,
+        		0.0,
+        		180.0,
+        		"Phase from",
+        		"to",
         		"degrees");
 
-        
+
         final JPanel searchByNumberPanel = new JPanel();
         searchByNumberPanel.setLayout(new BoxLayout(searchByNumberPanel,
         		BoxLayout.LINE_AXIS));
@@ -346,7 +346,7 @@ public class FCSearchPanel extends JPanel implements ActionListener, MouseListen
         searchByNumberTextField.setEnabled(false);
         searchByNumberCheckBox.addItemListener(new ItemListener()
         {
-        	public void itemStateChanged(ItemEvent e) 
+        	public void itemStateChanged(ItemEvent e)
         	{
         		boolean enable = e.getStateChange() == ItemEvent.SELECTED;
         		searchByNumberTextField.setEnabled(enable);
@@ -383,17 +383,17 @@ public class FCSearchPanel extends JPanel implements ActionListener, MouseListen
                 	comp.setEnabled(!enable);
             }
         });
-        
+
         searchByNumberPanel.add(searchByNumberCheckBox);
         searchByNumberPanel.add(searchByNumberTextField);
-        
+
         JPanel selectRegionPanel = new JPanel();
         //selectRegionPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         selectRegionButton = new JToggleButton("Select Region");
         selectRegionButton.setEnabled(true);
         selectRegionButton.addActionListener(new ActionListener()
         {
-			public void actionPerformed(ActionEvent e) 
+			public void actionPerformed(ActionEvent e)
 			{
 				if (selectRegionButton.isSelected())
 					pickManager.setPickMode(PickMode.CIRCLE_SELECTION);
@@ -406,7 +406,7 @@ public class FCSearchPanel extends JPanel implements ActionListener, MouseListen
         final JButton clearRegionButton = new JButton("Clear Region");
         clearRegionButton.addActionListener(new ActionListener()
         {
-			public void actionPerformed(ActionEvent e) 
+			public void actionPerformed(ActionEvent e)
 			{
 				RegularPolygonModel selectionModel = (RegularPolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
 				selectionModel.removeAllStructures();
@@ -414,7 +414,7 @@ public class FCSearchPanel extends JPanel implements ActionListener, MouseListen
         });
         selectRegionPanel.add(clearRegionButton);
 
-        
+
         final JPanel submitPanel = new JPanel();
         //panel.setBorder(BorderFactory.createEmptyBorder(9, 9, 9, 9));
         JButton submitButton = new JButton("Search");
@@ -436,15 +436,15 @@ public class FCSearchPanel extends JPanel implements ActionListener, MouseListen
         pane.add(searchByNumberPanel);
     	pane.add(selectRegionPanel);
     	pane.add(submitPanel);
-        
+
         topPanel.add(pane);
 
-        
-        
-        
-        
-        
-        
+
+
+
+
+
+
         JPanel resultsPanel = new JPanel(new BorderLayout());
 		
 		msiPopupMenu = new MSIPopupMenu(this.modelManager, infoPanelManager, renderer, this);
@@ -457,18 +457,18 @@ public class FCSearchPanel extends JPanel implements ActionListener, MouseListen
         resultList.addMouseListener(this);
         JScrollPane listScrollPane = new JScrollPane(resultList);
         listScrollPane.setPreferredSize(new Dimension(300, 200));
-        
+
         //listScrollPane.setBorder(
-        //       new CompoundBorder(BorderFactory.createEmptyBorder(9, 9, 9, 9), 
+        //       new CompoundBorder(BorderFactory.createEmptyBorder(9, 9, 9, 9),
         //                           new TitledBorder("Query Results")));
 
         resultsPanel.add(resultsLabel, BorderLayout.NORTH);
         resultsPanel.add(listScrollPane, BorderLayout.CENTER);
 
         final JPanel resultControlsPanel = new JPanel(new BorderLayout());
-        
+
         final JPanel resultSub1ControlsPanel = new JPanel();
-        
+
         resultSub1ControlsPanel.setLayout(new BoxLayout(resultSub1ControlsPanel,
         		BoxLayout.LINE_AXIS));
 
@@ -485,7 +485,7 @@ public class FCSearchPanel extends JPanel implements ActionListener, MouseListen
         nextButton.setActionCommand(">");
         nextButton.addActionListener(new ActionListener()
         {
-			public void actionPerformed(ActionEvent e) 
+			public void actionPerformed(ActionEvent e)
 			{
 				if (resultIntervalCurrentlyShown != null)
 				{
@@ -509,7 +509,7 @@ public class FCSearchPanel extends JPanel implements ActionListener, MouseListen
         prevButton.setActionCommand("<");
         prevButton.addActionListener(new ActionListener()
         {
-			public void actionPerformed(ActionEvent e) 
+			public void actionPerformed(ActionEvent e)
 			{
 				if (resultIntervalCurrentlyShown != null)
 				{
@@ -537,7 +537,7 @@ public class FCSearchPanel extends JPanel implements ActionListener, MouseListen
         removeAllButton.setActionCommand("Remove All Boundaries");
         removeAllButton.addActionListener(new ActionListener()
         {
-			public void actionPerformed(ActionEvent e) 
+			public void actionPerformed(ActionEvent e)
 			{
 				//MSIBoundaryCollection model = (MSIBoundaryCollection)modelManager.getModel(ModelNames.MSI_BOUNDARY);
 				//model.removeAllBoundaries();
@@ -547,12 +547,12 @@ public class FCSearchPanel extends JPanel implements ActionListener, MouseListen
         removeAllButton.setEnabled(true);
         removeAllButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        
+
         removeAllImagesButton = new JButton("Remove All Images");
         removeAllImagesButton.setActionCommand("Remove All Images");
         removeAllImagesButton.addActionListener(new ActionListener()
         {
-			public void actionPerformed(ActionEvent e) 
+			public void actionPerformed(ActionEvent e)
 			{
 				//MSIImageCollection model = (MSIImageCollection)modelManager.getModel(ModelNames.MSI_IMAGES);
 				//model.removeAllImages();
@@ -563,16 +563,16 @@ public class FCSearchPanel extends JPanel implements ActionListener, MouseListen
 
         resultSub2ControlsPanel.add(removeAllButton);
         resultSub2ControlsPanel.add(removeAllImagesButton);
-        
+
         resultControlsPanel.add(resultSub1ControlsPanel, BorderLayout.CENTER);
         resultControlsPanel.add(resultSub2ControlsPanel, BorderLayout.SOUTH);
-        
+
         resultsPanel.add(resultControlsPanel, BorderLayout.SOUTH);
 
         topPanel.add(resultsPanel);
 
         JScrollPane topScrollPane = new JScrollPane(topPanel);
-        
+
         add(topScrollPane);
 
     }
@@ -658,7 +658,7 @@ public class FCSearchPanel extends JPanel implements ActionListener, MouseListen
 			System.out.println(msiSource.toString());
         	ArrayList<String> results = Query.getInstance().runQuery(
         			Query.Datatype.MSI,
-        			startDateJoda, 
+        			startDateJoda,
         			endDateJoda,
         			filtersChecked,
         			fc1CheckBox.isSelected(),
@@ -686,14 +686,14 @@ public class FCSearchPanel extends JPanel implements ActionListener, MouseListen
 
         	setMSIResults(results);
         }
-        catch (Exception e) 
-        { 
+        catch (Exception e)
+        {
             e.printStackTrace();
             System.out.println(e);
             return;
         }
     }
-    
+
 	private void setMSIResults(ArrayList<String> results)
 	{
 		msiResultsLabelText = results.size() + " images matched";
@@ -707,7 +707,7 @@ public class FCSearchPanel extends JPanel implements ActionListener, MouseListen
     	for (String str : results)
     	{
     		formattedResults[i] = new String(
-    				str.substring(23, 32) 
+    				str.substring(23, 32)
     				+ ", day: " + str.substring(10, 13) + "/" + str.substring(5, 9)
     				+ ", type: " + str.substring(14, 20)
                     + ", filter: " + str.substring(33, 34)
@@ -724,31 +724,31 @@ public class FCSearchPanel extends JPanel implements ActionListener, MouseListen
     	this.showMSIBoundaries(resultIntervalCurrentlyShown);
 	}
 
-	public void mouseClicked(MouseEvent e) 
+	public void mouseClicked(MouseEvent e)
 	{
 	}
 
-	public void mouseEntered(MouseEvent e) 
+	public void mouseEntered(MouseEvent e)
 	{
 	}
 
-	public void mouseExited(MouseEvent e) 
+	public void mouseExited(MouseEvent e)
 	{
 	}
 
-	public void mousePressed(MouseEvent e) 
+	public void mousePressed(MouseEvent e)
 	{
 		maybeShowPopup(e);
 	}
 
-	public void mouseReleased(MouseEvent e) 
+	public void mouseReleased(MouseEvent e)
 	{
 		maybeShowPopup(e);
 	}
 
-	private void maybeShowPopup(MouseEvent e) 
+	private void maybeShowPopup(MouseEvent e)
 	{
-        if (e.isPopupTrigger()) 
+        if (e.isPopupTrigger())
         {
         	int index = resultList.locationToIndex(e.getPoint());
 
@@ -777,14 +777,14 @@ public class FCSearchPanel extends JPanel implements ActionListener, MouseListen
 			else if(i >= msiRawResults.size())
 				break;
 			
-			try 
+			try
 			{
 				String currentImage = msiRawResults.get(i);
 				//String boundaryName = currentImage.substring(0,currentImage.length()-4) + "_BOUNDARY.VTK";
 				//String boundaryName = currentImage.substring(0,currentImage.length()-4) + "_DDR.LBL";
 				String boundaryName = currentImage.substring(0,currentImage.length()-4);
 				model.addBoundary(new MSIKey(boundaryName, msiSourceOfLastQuery));
-			} 
+			}
 			catch (FitsException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();

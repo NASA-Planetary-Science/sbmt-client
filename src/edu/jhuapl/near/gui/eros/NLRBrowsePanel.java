@@ -40,8 +40,8 @@ public class NLRBrowsePanel extends JPanel implements ListSelectionListener
     private JButton saveButton;
     private NlrTimeIntervalChanger timeIntervalChanger;
     private RadialOffsetChanger radialOffsetChanger;
-    
-    
+
+
     public class NlrTimeIntervalChanger extends JPanel implements ChangeListener
     {
     	private RangeSlider slider;
@@ -77,7 +77,7 @@ public class NLRBrowsePanel extends JPanel implements ListSelectionListener
     		}
     	}
 
-    	public void stateChanged(ChangeEvent e) 
+    	public void stateChanged(ChangeEvent e)
     	{
     		double lowVal = (double)slider.getLowValue()/(double)slider.getMaximum();
     		double highVal = (double)slider.getHighValue()/(double)slider.getMaximum();
@@ -87,15 +87,15 @@ public class NLRBrowsePanel extends JPanel implements ListSelectionListener
     }
 
     public NLRBrowsePanel(
-    		final ModelManager modelManager) 
+    		final ModelManager modelManager)
     {
     	setLayout(new BoxLayout(this,
         		BoxLayout.PAGE_AXIS));
     	
     	//this.modelManager = modelManager;
     	this.nlrModel = (NLRBrowseDataCollection)modelManager.getModel(ModelNames.NLR_DATA_BROWSE);
-        
-        
+
+
         JPanel resultsPanel = new JPanel(new BorderLayout());
 		
 		resultsLabel = new JLabel("Available Files");
@@ -105,8 +105,8 @@ public class NLRBrowsePanel extends JPanel implements ListSelectionListener
         nlrRawResults = nlrModel.getAllNlrPaths();
     	for (String str : nlrRawResults)
     	{
-    		nlrResultListModel.addElement( 
-    				str.substring(5, 13) 
+    		nlrResultListModel.addElement(
+    				str.substring(5, 13)
     				+ ", day: " + str.substring(8, 11) + "/20" + str.substring(6, 8)
     				);
     	}
@@ -121,23 +121,23 @@ public class NLRBrowsePanel extends JPanel implements ListSelectionListener
         resultsPanel.add(listScrollPane, BorderLayout.CENTER);
 
         final JPanel resultControlsPanel = new JPanel(new BorderLayout());
-        
+
         final JPanel resultSub1ControlsPanel = new JPanel();
-        
+
         resultSub1ControlsPanel.setLayout(new BoxLayout(resultSub1ControlsPanel,
         		BoxLayout.PAGE_AXIS));
 
-        
+
         showHideButton = new JButton("Show");
         showHideButton.setActionCommand("Show");
         showHideButton.addActionListener(new ActionListener()
         {
-        	public void actionPerformed(ActionEvent e) 
+        	public void actionPerformed(ActionEvent e)
         	{
         		int index = resultList.getSelectedIndex();
         		if (index >= 0)
         		{
-            		try 
+            		try
             		{
             			if (showHideButton.getText().startsWith("Show"))
             			{
@@ -154,7 +154,7 @@ public class NLRBrowsePanel extends JPanel implements ListSelectionListener
         					timeIntervalChanger.setNLRData(null);
             			}
             		}
-            		catch (IOException e1) 
+            		catch (IOException e1)
             		{
     					e1.printStackTrace();
     				}
@@ -162,13 +162,13 @@ public class NLRBrowsePanel extends JPanel implements ListSelectionListener
         	}
         });
         showHideButton.setEnabled(false);
-        
+
 
         saveButton = new JButton("Save...");
         saveButton.setActionCommand("Save...");
         saveButton.addActionListener(new ActionListener()
         {
-        	public void actionPerformed(ActionEvent e) 
+        	public void actionPerformed(ActionEvent e)
         	{
         		int index = resultList.getSelectedIndex();
         		if (index >= 0)
@@ -202,7 +202,7 @@ public class NLRBrowsePanel extends JPanel implements ListSelectionListener
         });
         saveButton.setEnabled(false);
 
-        
+
         JPanel resultSub2ControlsPanel = new JPanel();
         resultSub2ControlsPanel.setLayout(new BoxLayout(resultSub2ControlsPanel,
         		BoxLayout.LINE_AXIS));
@@ -210,7 +210,7 @@ public class NLRBrowsePanel extends JPanel implements ListSelectionListener
         removeAllButton.setActionCommand(NLR_REMOVE_ALL_BUTTON_TEXT);
         removeAllButton.addActionListener(new ActionListener()
         {
-			public void actionPerformed(ActionEvent e) 
+			public void actionPerformed(ActionEvent e)
 			{
 				NLRBrowseDataCollection model = (NLRBrowseDataCollection)modelManager.getModel(ModelNames.NLR_DATA_BROWSE);
 				model.removeAllNlrData();
@@ -222,27 +222,27 @@ public class NLRBrowsePanel extends JPanel implements ListSelectionListener
         removeAllButton.setEnabled(true);
         removeAllButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        
+
         resultSub2ControlsPanel.add(showHideButton);
         resultSub2ControlsPanel.add(removeAllButton);
         resultSub2ControlsPanel.add(saveButton);
-        
+
         resultControlsPanel.add(resultSub1ControlsPanel, BorderLayout.CENTER);
         resultControlsPanel.add(resultSub2ControlsPanel, BorderLayout.SOUTH);
-        
+
         resultsPanel.add(resultControlsPanel, BorderLayout.SOUTH);
 
         timeIntervalChanger = new NlrTimeIntervalChanger();
-        
+
         radialOffsetChanger = new RadialOffsetChanger(nlrModel, "Radial Offset");
-        
+
         add(resultsPanel);
         add(timeIntervalChanger);
         add(radialOffsetChanger);
     }
 
 	
-	public void valueChanged(ListSelectionEvent arg0) 
+	public void valueChanged(ListSelectionEvent arg0)
 	{
 		int[] idx = {arg0.getFirstIndex(), arg0.getLastIndex()};
 		for (int index : idx)

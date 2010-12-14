@@ -19,7 +19,7 @@ import edu.jhuapl.near.util.LatLon;
 import edu.jhuapl.near.util.PolyDataUtil;
 import edu.jhuapl.near.util.Properties;
 
-public class SmallBodyModel extends Model 
+public class SmallBodyModel extends Model
 {
 
 	public enum ColoringValueType {
@@ -31,7 +31,7 @@ public class SmallBodyModel extends Model
     	FLAT,
     	SMOOTH,
     }
-    
+
     static public final String FlatShadingStr = "Flat";
     static public final String SmoothShadingStr = "Smooth";
     static public final String LowResModelStr = "Low (49152 plates)";
@@ -211,7 +211,7 @@ public class SmallBodyModel extends Model
 
     		vtkPolyData output = smallBodyReader.GetOutput();
             lowResSmallBodyPolyData.DeepCopy(output);
-            
+
     		smallBodyReader.Delete();
 
             lowResPointLocator = new vtkPointLocator();
@@ -228,10 +228,10 @@ public class SmallBodyModel extends Model
     public vtkPolyData getLowResSmallBodyPolyData()
     {
         initializeLowResData();
-        
+
         return lowResSmallBodyPolyData;
     }
-    
+
 	public vtksbCellLocator getCellLocator()
 	{
 		return cellLocator;
@@ -276,8 +276,8 @@ public class SmallBodyModel extends Model
 	}
 
 	public vtkPolyData computeFrustumIntersection(
-			double[] origin, 
-			double[] ul, 
+			double[] origin,
+			double[] ul,
 			double[] ur,
 			double[] lr,
 			double[] ll)
@@ -286,7 +286,7 @@ public class SmallBodyModel extends Model
 	}
 
 	/**
-	 * Given 2 points on the surface of the body, draw a nice looking path between the 2 
+	 * Given 2 points on the surface of the body, draw a nice looking path between the 2
 	 * that is not obscured anywhere or too distant from the surface. Return this
 	 * path as a vtkPolyData
 	 * @param pt1
@@ -402,10 +402,10 @@ public class SmallBodyModel extends Model
         int[] cellId = new int[1];
         int[] subId = new int[1];
         double[] dist2 = new double[1];
-     
+
         // Use FindClosestPoint rather the FindCell since not sure what tolerance to use in the latter.
         cellLocator.FindClosestPoint(pt, closestPoint, genericCell, cellId, subId, dist2);
-        
+
         return cellId[0];
     }
 
@@ -419,11 +419,11 @@ public class SmallBodyModel extends Model
         double[] closestPoint = new double[3];
         return findClosestCell(pt, closestPoint);
     }
-    
+
     /**
      * Compute the point on the asteroid that has the specified latitude and longitude. Returns the
      * cell id of the cell containing that point. This is done by shooting a ray from the origin in the
-     * specified direction.  
+     * specified direction.
      * @param lat
      * @param lon
      * @param intersectPoint
@@ -475,9 +475,9 @@ public class SmallBodyModel extends Model
 	        smallBodyActor.SetMapper(smallBodyMapper);
 	        vtkProperty smallBodyProperty = smallBodyActor.GetProperty();
 	        smallBodyProperty.SetInterpolationToGouraud();
-	        
+	
 	        smallBodyActors.add(smallBodyActor);
-	        
+	
 	        scalarBarActor = new vtkScalarBarActor();
 	        vtkCoordinate coordinate = scalarBarActor.GetPositionCoordinate();
 	        coordinate.SetCoordinateSystemToNormalizedViewport();
@@ -490,8 +490,8 @@ public class SmallBodyModel extends Model
 	        scalarBarActor.SetTitleTextProperty(tp);
 		}
     }
-    
-	public ArrayList<vtkProp> getProps() 
+
+	public ArrayList<vtkProp> getProps()
 	{
 		initializeActorsAndMappers();
 		
@@ -639,7 +639,7 @@ public class SmallBodyModel extends Model
     	System.out.println("Surface area " + massProp.GetSurfaceArea());
     	System.out.println("Volume " + massProp.GetVolume());
     }
-    
+
     public void setModelResolution(int level) throws IOException
     {
     	if (level == resolutionLevel)
@@ -680,12 +680,12 @@ public class SmallBodyModel extends Model
 		this.pcs.firePropertyChange(Properties.MODEL_RESOLUTION_CHANGED, null, null);
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
-    
+
     public int getModelResolution()
     {
     	return resolutionLevel;
     }
-    
+
     public int getNumberResolutionLevels()
 	{
 		return modelFiles.length;
@@ -698,7 +698,7 @@ public class SmallBodyModel extends Model
     	else
     		return null;
     }
-    
+
 	/**
 	 * This file loads the coloring used when the coloring method is point data
 	 * @throws IOException
@@ -779,13 +779,13 @@ public class SmallBodyModel extends Model
 //	        lookupTable.SetRange(coloringValues[i].GetRange());
 //	        lookupTable.Build();
 //	        invertLookupTableCharArray(lookupTable.GetTable());
-//	        
+//	
 //	    	vtkImageMapToColors mapToColors = new vtkImageMapToColors();
 //	        mapToColors.SetInputConnection(reader.GetOutputPort());
 //	        mapToColors.SetLookupTable(lookupTable);
 //	        mapToColors.SetOutputFormatToRGB();
 //	        mapToColors.Update();
-//	        
+//	
 //	    	image.DeepCopy(mapToColors.GetOutput());
 		}
 	}
@@ -803,7 +803,7 @@ public class SmallBodyModel extends Model
 	}
 	
 	/**
-	 * Invert the lookup table so that red is high values 
+	 * Invert the lookup table so that red is high values
 	 * and blue is low values (rather than the reverse).
 	 */
 	private void invertLookupTable()
@@ -867,7 +867,7 @@ public class SmallBodyModel extends Model
     {
     	return coloringFiles != null;
     }
-    
+
     private void blendImageMapWithColoring()
     {
     	vtkImageData image = null;
@@ -936,11 +936,11 @@ public class SmallBodyModel extends Model
 		}
         blendFilter.SetOpacity(1, 1.0 - imageMapOpacity);
         blendFilter.Update();
-        
+
         vtkImageData output = blendFilter.GetOutput();
         displayedImageMap.DeepCopy(output);
     }
-    
+
     private void generateTextureCoordinates()
     {
         vtkFloatArray textureCoords = new vtkFloatArray();
@@ -951,7 +951,7 @@ public class SmallBodyModel extends Model
 		textureCoords.SetNumberOfTuples(numberOfPoints);
 
 		vtkPoints points = smallBodyPolyData.GetPoints();
-    
+
 		for (int i=0; i<numberOfPoints; ++i)
 		{
 			double[] pt = points.GetPoint(i);
@@ -1053,7 +1053,7 @@ public class SmallBodyModel extends Model
     {
     	return imageMapName != null;
     }
-    
+
     public void setShowImageMap(boolean b)
     {
     	showImageMap = b;
@@ -1215,7 +1215,7 @@ public class SmallBodyModel extends Model
 			
 			range[0] = adjustedMin;
 
-			return range; 
+			return range;
 		}
 	}
 	
@@ -1327,7 +1327,7 @@ public class SmallBodyModel extends Model
 					smallBodyMapper.SetScalarModeToUseCellData();
 			}
 		}
-		else 
+		else
 		{
 			if (resolutionLevel != 0)
 				return;

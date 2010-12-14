@@ -20,7 +20,7 @@ import edu.jhuapl.near.pick.PickManager;
 import edu.jhuapl.near.util.Properties;
 import net.miginfocom.swing.MigLayout;
 
-public abstract class AbstractStructureMappingControlPanel extends JPanel implements 
+public abstract class AbstractStructureMappingControlPanel extends JPanel implements
 	ActionListener,
 	PropertyChangeListener,
 	TableModelListener, ListSelectionListener
@@ -41,7 +41,7 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
     private StructureModel structureModel;
     private PickManager pickManager;
 	private PickManager.PickMode pickMode;
-    
+
     public AbstractStructureMappingControlPanel(
     		final ModelManager modelManager,
     		final StructureModel structureModel,
@@ -56,7 +56,7 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
 		this.pickMode = pickMode;
 		
 		structureModel.addPropertyChangeListener(this);
-		this.addComponentListener(new ComponentAdapter() 
+		this.addComponentListener(new ComponentAdapter()
 		{
 			public void componentHidden(ComponentEvent e)
 			{
@@ -83,7 +83,7 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
         this.structuresFileTextField = new JLabel("<no file loaded>");
         this.structuresFileTextField.setEnabled(true);
         this.structuresFileTextField.setPreferredSize(new java.awt.Dimension(150, 22));
-        
+
         if (!compactMode)
         {
         	add(this.structuresFileTextField, "span");
@@ -92,17 +92,17 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
         	add(this.saveStructuresButton, "w 100!");
         	add(this.saveAsStructuresButton, "w 100!, wrap 15px");
         }
-        
+
         JLabel structureTypeText = new JLabel(" Structures");
         if (!compactMode)
         	add(structureTypeText, "span");
-        
+
         //String[] options = {LineModel.LINES, CircleModel.CIRCLES};
         //structureTypeComboBox = new JComboBox(options);
-        
+
         //add(structureTypeComboBox, "wrap");
-        
-        
+
+
         String[] columnNames = {"Id",
                 "Type",
                 "Name",
@@ -137,10 +137,10 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
 //        structuresTable.getColumnModel().getColumn(0).setPreferredWidth(30);
         structuresTable.getModel().addTableModelListener(this);
         structuresTable.getSelectionModel().addListSelectionListener(this);
-        
+
         JScrollPane tableScrollPane = new JScrollPane(structuresTable);
         tableScrollPane.setPreferredSize(new Dimension(10000, 10000));
-        
+
         //structuresPopupMenu = new StructuresPopupMenu(this.modelManager, this.pickManager, this);
 
         if (!compactMode)
@@ -152,7 +152,7 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
         	final JButton newButton = new JButton("New");
         	newButton.addActionListener(new ActionListener()
         	{
-        		public void actionPerformed(ActionEvent e) 
+        		public void actionPerformed(ActionEvent e)
         		{
         			structureModel.addNewStructure();
         			pickManager.setPickMode(pickMode);
@@ -170,7 +170,7 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
         editButton = new JToggleButton("Edit");
         editButton.addActionListener(new ActionListener()
         {
-        	public void actionPerformed(ActionEvent e) 
+        	public void actionPerformed(ActionEvent e)
         	{
         		setEditingEnabled(editButton.isSelected());
         	}
@@ -180,7 +180,7 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
         JButton deleteButton = new JButton("Delete");
         deleteButton.addActionListener(new ActionListener()
         {
-			public void actionPerformed(ActionEvent e) 
+			public void actionPerformed(ActionEvent e)
 			{
 				editButton.setSelected(false);
 				
@@ -262,7 +262,7 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
     	}
     }
 
-	public void propertyChange(PropertyChangeEvent evt) 
+	public void propertyChange(PropertyChangeEvent evt)
 	{
 		if (Properties.MODEL_CHANGED.equals(evt.getPropertyName()))
 		{

@@ -14,15 +14,15 @@ public class CircleSelectionPicker extends Picker
     private vtkRenderWindowPanel renWin;
     private SmallBodyModel smallBodyModel;
     private RegularPolygonModel circleModel;
-    
+
     private vtkCellPicker smallBodyPicker;
 
     private int vertexIdBeingEdited = -1;
 	
     public CircleSelectionPicker(
-			Renderer renderer, 
+			Renderer renderer,
 			ModelManager modelManager
-			) 
+			)
 	{
 		this.renWin = renderer.getRenderWindowPanel();
 		this.modelManager = modelManager;
@@ -43,7 +43,7 @@ public class CircleSelectionPicker extends Picker
 		smallBodyPicker.AddLocator(smallBodyModel.getCellLocator());
 	}
 
-    public void mousePressed(MouseEvent e) 
+    public void mousePressed(MouseEvent e)
     {
     	//if (e.getButton() != MouseEvent.BUTTON1)
     	//	return;
@@ -71,12 +71,12 @@ public class CircleSelectionPicker extends Picker
     	}		
 	}
 	
-	public void mouseReleased(MouseEvent e) 
+	public void mouseReleased(MouseEvent e)
 	{
 		vertexIdBeingEdited = -1;
 	}
 	
-	public void mouseDragged(MouseEvent e) 
+	public void mouseDragged(MouseEvent e)
 	{
 		//if (e.getButton() != MouseEvent.BUTTON1)
 		//	return;

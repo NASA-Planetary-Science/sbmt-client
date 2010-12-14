@@ -1,6 +1,6 @@
 package edu.jhuapl.near.util;
 
-public class Point3D 
+public class Point3D
 {
 	public double[] xyz = new double[3];
 	

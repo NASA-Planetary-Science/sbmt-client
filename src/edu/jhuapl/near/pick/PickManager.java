@@ -9,9 +9,9 @@ public class PickManager extends Picker
 {
 	public enum PickMode
 	{
-		DEFAULT, 
-		CIRCLE_SELECTION, 
-		LINE_DRAW, 
+		DEFAULT,
+		CIRCLE_SELECTION,
+		LINE_DRAW,
 		CIRCLE_DRAW,
 		POINT_DRAW
 	}
@@ -19,15 +19,15 @@ public class PickManager extends Picker
 	private PickMode pickMode = PickMode.DEFAULT;
 	private Renderer renderer;
     private vtkRenderWindowPanel renWin;
-    
+
     private Picker linePicker;
     private Picker circlePicker;
     private Picker pointPicker;
     private DefaultPicker defaultPicker;
     private Picker circleSelectionPicker;
-    
+
 	public PickManager(
-			Renderer renderer, 
+			Renderer renderer,
 			StatusBar statusBar,
 			ModelManager modelManager,
 			PopupManager popupManager)

@@ -25,9 +25,9 @@ public class ViewerManager extends JPanel
         viewers.add(new DeimosViewer(statusBar));
         viewers.add(new ItokawaViewer(statusBar));
         viewers.add(new VestaViewer(statusBar));
-        
+
         currentViewer = viewers.get(0);
-        
+
         for (Viewer viewer : viewers)
         	add(viewer, viewer.getName());
 	}

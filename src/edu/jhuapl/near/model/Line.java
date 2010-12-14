@@ -94,7 +94,7 @@ public class Line extends StructureModel.Structure
     	
     	String vertices = "";
         int size = lat.size();
-        
+
         for (int i=0;i<size;++i)
         {
         	double latitude = lat.get(i)*180.0/Math.PI;
@@ -179,7 +179,7 @@ public class Line extends StructureModel.Structure
     	
 		return length;
     }
-    
+
     public void updateSegment(int segment)
     {
 		LatLon ll1 = new LatLon(lat.get(segment), lon.get(segment), rad.get(segment));

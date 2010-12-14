@@ -18,7 +18,7 @@ import edu.jhuapl.near.model.eros.NISSpectrum;
 import edu.jhuapl.near.popupmenus.PopupMenu;
 
 
-public class NISPopupMenu extends PopupMenu 
+public class NISPopupMenu extends PopupMenu
 {
     private ModelManager modelManager;
     private String currentSpectrum;
@@ -28,16 +28,16 @@ public class NISPopupMenu extends PopupMenu
     private JMenuItem showFrustumMenuItem;
     private ModelInfoWindowManager infoPanelManager;
     //private SmallBodyModel erosModel;
-    
+
     /**
-     * 
+     *
      * @param modelManager
      * @param type the type of popup. 0 for right clicks on items in the search list,
      * 1 for right clicks on boundaries mapped on Eros, 2 for right clicks on images
      * mapped to Eros.
      */
 	public NISPopupMenu(
-			ModelManager modelManager, 
+			ModelManager modelManager,
 			ModelInfoWindowManager infoPanelManager)
 	{
     	this.modelManager = modelManager;
@@ -98,10 +98,10 @@ public class NISPopupMenu extends PopupMenu
 
 	private class ShowRemoveIn3DAction extends AbstractAction
 	{
-		public void actionPerformed(ActionEvent e) 
+		public void actionPerformed(ActionEvent e)
 		{
 			NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelNames.NIS_SPECTRA);		
-			try 
+			try
 			{
 				if (showRemoveSpectrumIn3DMenuItem.isSelected())
 					model.addSpectrum(currentSpectrum);
@@ -109,7 +109,7 @@ public class NISPopupMenu extends PopupMenu
 					model.removeImage(currentSpectrum);
 				
 				updateMenuItems();
-			} 
+			}
 			catch (IOException e1) {
 				e1.printStackTrace();
 			}
@@ -118,9 +118,9 @@ public class NISPopupMenu extends PopupMenu
 	
 	private class ShowInfoAction extends AbstractAction
 	{
-		public void actionPerformed(ActionEvent e) 
+		public void actionPerformed(ActionEvent e)
 		{
-			try 
+			try
 			{
 				NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelNames.NIS_SPECTRA);
 				model.addSpectrum(currentSpectrum);
@@ -139,14 +139,14 @@ public class NISPopupMenu extends PopupMenu
 	
 	private class CenterImageAction extends AbstractAction
 	{
-		public void actionPerformed(ActionEvent e) 
+		public void actionPerformed(ActionEvent e)
 		{
 		}
 	}
 
 	private class ShowFrustumAction extends AbstractAction
 	{
-		public void actionPerformed(ActionEvent e) 
+		public void actionPerformed(ActionEvent e)
 		{
 			try
 			{

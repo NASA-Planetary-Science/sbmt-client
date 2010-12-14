@@ -44,7 +44,7 @@ public class ContrastChanger extends JPanel implements ChangeListener
 		}
 	}
 
-	public void stateChanged(ChangeEvent e) 
+	public void stateChanged(ChangeEvent e)
 	{
 		int lowVal = slider.getLowValue();
 		int highVal = slider.getHighValue();

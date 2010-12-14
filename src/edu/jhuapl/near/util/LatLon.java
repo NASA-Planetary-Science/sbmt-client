@@ -41,16 +41,16 @@ public class LatLon
 	}
 	
 	/**
-	 * Given two LatLons WITH EQUAL RADII, find a new LatLon that 
+	 * Given two LatLons WITH EQUAL RADII, find a new LatLon that
 	 * equally bisects the two given LatLons.
-	 * 
-	 * The algorithm used is as follows. 
-	 * 
+	 *
+	 * The algorithm used is as follows.
+	 *
 	 * 1. Convert the 2 points to xyz using latLonToRec.
 	 * 2. Find the midpoint between the 2 points.
 	 * 3. Convert this midpoint back into LatLon using recToLatLon.
-	 * 4. Set the radius of this LatLon to that of the 2 points. 
-	 * 
+	 * 4. Set the radius of this LatLon to that of the 2 points.
+	 *
 	 * @param ll1
 	 * @return
 	 */

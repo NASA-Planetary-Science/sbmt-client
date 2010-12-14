@@ -20,7 +20,7 @@ public class LinesPopupMenu extends StructuresPopupMenu
 	{
 		this.model = (LineModel)modelManager.getModel(ModelNames.LINE_STRUCTURES);
 		
-		JMenuItem mi; 
+		JMenuItem mi;
 		mi = new JMenuItem(new EditAction());
 		mi.setText("Edit");
 		//this.add(mi); // don't show for now
@@ -34,7 +34,7 @@ public class LinesPopupMenu extends StructuresPopupMenu
 	
 	private class EditAction extends AbstractAction
 	{
-		public void actionPerformed(ActionEvent e) 
+		public void actionPerformed(ActionEvent e)
 		{
 			model.selectStructure(cellIdLastClicked);
 		}
@@ -42,7 +42,7 @@ public class LinesPopupMenu extends StructuresPopupMenu
 
 	private class DeleteAction extends AbstractAction
 	{
-		public void actionPerformed(ActionEvent e) 
+		public void actionPerformed(ActionEvent e)
 		{
 			model.removeStructure(cellIdLastClicked);
 		}

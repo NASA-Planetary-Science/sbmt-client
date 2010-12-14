@@ -13,7 +13,7 @@ import edu.jhuapl.near.popupmenus.PopupMenu;
 import java.awt.*;
 import java.awt.event.*;
 
-public class LineamentPopupMenu extends PopupMenu 
+public class LineamentPopupMenu extends PopupMenu
 {
 	private enum ColoringType
 	{
@@ -27,10 +27,10 @@ public class LineamentPopupMenu extends PopupMenu
 	private Component invoker;
 	
 	public LineamentPopupMenu(ModelManager modelManager)
-	{        
+	{
 		this.model = (LineamentModel)modelManager.getModel(ModelNames.LINEAMENT);
 
-		JMenuItem mi; 
+		JMenuItem mi;
 		mi = new JMenuItem(new ChangeLineamentColorAction(ColoringType.ONE_LINEAMENT));
 		mi.setText("Change color of this lineament only");
 		this.add(mi);

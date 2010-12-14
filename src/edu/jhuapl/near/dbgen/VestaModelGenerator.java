@@ -31,11 +31,11 @@ public class VestaModelGenerator {
 	 * In addition this program generates normals and saves it to the vtk file.
 	 * In addition this program generates a coordinate grid and saves it to a
 	 * vtk file.
-	 * 
+	 *
 	 * To run this program, 2 arguments are required:
 	 * - the folder containing the .tab file
 	 * - the folder where you want to save the generated files
-	 * 
+	 *
 	 * @param args
 	 */
 	
@@ -164,17 +164,17 @@ public class VestaModelGenerator {
 	 * This program converts the Hubble Vesta shape model that can be downloaded
 	 * from http://sbn.psi.edu/pds/asteroid/EAR_A_5_DDR_SHAPE_MODELS_V2_1.zip to
 	 * vtk format. This program can convert the file:
-	 * 
+	 *
 	 * 1. EAR_A_5_DDR_SHAPE_MODELS_V2_1/4vesta.tab
-	 * 
+	 *
 	 * In addition this program generates normals and saves it to the vtk file.
 	 * In addition this program generates a coordinate grid and saves it to a
 	 * vtk file.
-	 * 
+	 *
 	 * To run this program, 2 arguments are required:
 	 * - the folder containing the 4vesta.tab file
 	 * - the folder where you want to save the generated files
-	 * 
+	 *
 	 * @param args
 
 	public static void main(String[] args)

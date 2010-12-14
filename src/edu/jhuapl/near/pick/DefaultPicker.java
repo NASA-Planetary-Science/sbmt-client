@@ -35,9 +35,9 @@ public class DefaultPicker extends Picker
     private DecimalFormat decimalFormatter = new DecimalFormat("##0.000");
     private DecimalFormat decimalFormatter2 = new DecimalFormat("#0.000");
     private boolean suppressPopups = false;
-    
+
 	public DefaultPicker(
-			Renderer renderer, 
+			Renderer renderer,
 			StatusBar statusBar,
 			ModelManager modelManager,
 			PopupManager popupManager)
@@ -73,7 +73,7 @@ public class DefaultPicker extends Picker
 		this.suppressPopups = b;
 	}
 	
-	public void mousePressed(MouseEvent e) 
+	public void mousePressed(MouseEvent e)
 	{
 		if (renWin.GetRenderWindow().GetNeverRendered() > 0)
 			return;
@@ -144,17 +144,17 @@ public class DefaultPicker extends Picker
 		}
 	}
 
-	public void mouseWheelMoved(MouseWheelEvent e) 
+	public void mouseWheelMoved(MouseWheelEvent e)
 	{
 		showPositionInfoInStatusBar(e);
 	}
 
-	public void mouseDragged(MouseEvent e) 
+	public void mouseDragged(MouseEvent e)
 	{
 		showPositionInfoInStatusBar(e);
 	}
 
-	public void mouseMoved(MouseEvent e) 
+	public void mouseMoved(MouseEvent e)
 	{
 		if (renWin.GetRenderWindow().GetNeverRendered() > 0)
     		return;
@@ -162,7 +162,7 @@ public class DefaultPicker extends Picker
 		showPositionInfoInStatusBar(e);
 	}
 
-	private void maybeShowPopup(MouseEvent e) 
+	private void maybeShowPopup(MouseEvent e)
 	{
 		if (suppressPopups)
 			return;
@@ -182,15 +182,15 @@ public class DefaultPicker extends Picker
 		}		
     }
 
-	public void propertyChange(PropertyChangeEvent evt) 
+	public void propertyChange(PropertyChangeEvent evt)
 	{
 		if (evt.getPropertyName().equals(Properties.MODEL_CHANGED))
 		{
-			// Whenever the model actors change, we need to update the pickers 
+			// Whenever the model actors change, we need to update the pickers
 			// internal list of all actors to pick from. The small body actor is excluded
 			// from this list since many other actors occupy the same position
 			// as parts of the small body and we want the picker to pick these other
-			// actors rather than the small body. Note that this exclusion only applies 
+			// actors rather than the small body. Note that this exclusion only applies
 			// to the following picker.
 			ArrayList<vtkProp> actors = modelManager.getPropsExceptSmallBody();
 			vtkPropCollection mousePressNonSmallBodyCellPickList = mousePressNonSmallBodyCellPicker.GetPickList();
@@ -253,7 +253,7 @@ public class DefaultPicker extends Picker
 	        //else
 	        //	latStr += "\u00B0S";
 	        latStr += "\u00B0";
-	        
+	
 	        // Note that the convention seems to be that longitude
 	        // is never negative and is shown as E. longitude.
 	        double lon = llr.lon*180/Math.PI;

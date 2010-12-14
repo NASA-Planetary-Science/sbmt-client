@@ -28,30 +28,30 @@ public class ErosPopupManager extends PopupManager
     private LinesPopupMenu linesPopupMenu;
     private CirclesPopupMenu circlesPopupMenu;
     private PointsPopupMenu pointsPopupMenu;
-    
+
     private HashMap<Model, PopupMenu> modelToPopupMap =
     	new HashMap<Model, PopupMenu>();
-    
+
 	public ErosPopupManager(
-				Renderer erosRenderer, 
+				Renderer erosRenderer,
 				ModelManager modelManager,
 				ModelInfoWindowManager infoPanelManager)
 	{
 		super(modelManager);
 		
-		lineamentPopupMenu = 
+		lineamentPopupMenu =
 			new LineamentPopupMenu(modelManager);
 		modelToPopupMap.put(modelManager.getModel(ModelNames.LINEAMENT), lineamentPopupMenu);
 		
-		msiBoundariesPopupMenu= 
+		msiBoundariesPopupMenu=
 			new MSIPopupMenu(modelManager, infoPanelManager, erosRenderer, erosRenderer);
 		modelToPopupMap.put(modelManager.getModel(ModelNames.MSI_BOUNDARY), msiBoundariesPopupMenu);
 		
-		msiImagesPopupMenu = 
+		msiImagesPopupMenu =
 			new MSIPopupMenu(modelManager, infoPanelManager, erosRenderer, erosRenderer);
 		modelToPopupMap.put(modelManager.getModel(ModelNames.MSI_IMAGES), msiImagesPopupMenu);
 		
-		nisSpectraPopupMenu = 
+		nisSpectraPopupMenu =
 			new NISPopupMenu(modelManager, infoPanelManager);
 		modelToPopupMap.put(modelManager.getModel(ModelNames.NIS_SPECTRA), nisSpectraPopupMenu);
 		

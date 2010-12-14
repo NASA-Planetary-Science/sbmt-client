@@ -27,7 +27,7 @@ import edu.jhuapl.near.util.FileUtil;
 import edu.jhuapl.near.util.MathUtil;
 
 
-public class MSIPopupMenu extends PopupMenu 
+public class MSIPopupMenu extends PopupMenu
 {
 	private Component invoker;
     private ModelManager modelManager;
@@ -41,16 +41,16 @@ public class MSIPopupMenu extends PopupMenu
     private JMenuItem showFrustumMenuItem;
     private ModelInfoWindowManager infoPanelManager;
     private Renderer renderer;
-    
+
     /**
-     * 
+     *
      * @param modelManager
      * @param type the type of popup. 0 for right clicks on items in the search list,
      * 1 for right clicks on boundaries mapped on Eros, 2 for right clicks on images
      * mapped to Eros.
      */
 	public MSIPopupMenu(
-			ModelManager modelManager, 
+			ModelManager modelManager,
 			ModelInfoWindowManager infoPanelManager,
 			Renderer renderer,
 			Component invoker)
@@ -145,10 +145,10 @@ public class MSIPopupMenu extends PopupMenu
 
 	private class ShowRemoveIn3DAction extends AbstractAction
 	{
-		public void actionPerformed(ActionEvent e) 
+		public void actionPerformed(ActionEvent e)
 		{
 			MSIImageCollection model = (MSIImageCollection)modelManager.getModel(ModelNames.MSI_IMAGES);
-			try 
+			try
 			{
 				if (showRemoveImageIn3DMenuItem.isSelected())
 					model.addImage(msiKey);
@@ -156,7 +156,7 @@ public class MSIPopupMenu extends PopupMenu
 					model.removeImage(msiKey);
 				
 				updateMenuItems();
-			} 
+			}
 			catch (FitsException e1) {
 				e1.printStackTrace();
 			}
@@ -168,10 +168,10 @@ public class MSIPopupMenu extends PopupMenu
 	
 	private class ShowRemoveOutlineIn3DAction extends AbstractAction
 	{
-		public void actionPerformed(ActionEvent e) 
+		public void actionPerformed(ActionEvent e)
 		{
 			MSIBoundaryCollection model = (MSIBoundaryCollection)modelManager.getModel(ModelNames.MSI_BOUNDARY);
-			try 
+			try
 			{
 				if (showRemoveBoundaryIn3DMenuItem.isSelected())
 					model.addBoundary(msiKey);
@@ -179,7 +179,7 @@ public class MSIPopupMenu extends PopupMenu
 					model.removeBoundary(msiKey);
 
 				updateMenuItems();
-			} 
+			}
 			catch (FitsException e1) {
 				e1.printStackTrace();
 			}
@@ -191,16 +191,16 @@ public class MSIPopupMenu extends PopupMenu
 	
 	private class ShowInfoAction extends AbstractAction
 	{
-		public void actionPerformed(ActionEvent e) 
+		public void actionPerformed(ActionEvent e)
 		{
-			try 
+			try
 			{
 		        MSIImageCollection msiImages = (MSIImageCollection)modelManager.getModel(ModelNames.MSI_IMAGES);
 		        msiImages.addImage(msiKey);
 		        infoPanelManager.addData(msiImages.getImage(msiKey));
 
 				updateMenuItems();
-			} 
+			}
 			catch (FitsException e1) {
 				e1.printStackTrace();
 			} catch (IOException e1) {
@@ -213,7 +213,7 @@ public class MSIPopupMenu extends PopupMenu
 	
 	private class SaveImageAction extends AbstractAction
 	{
-		public void actionPerformed(ActionEvent e) 
+		public void actionPerformed(ActionEvent e)
 		{
 			File file = CustomFileChooser.showSaveDialog(invoker, "Save FIT file", msiKey.name + ".FIT", "fit");
 			try
@@ -238,7 +238,7 @@ public class MSIPopupMenu extends PopupMenu
 	
 	private class CenterImageAction extends AbstractAction
 	{
-		public void actionPerformed(ActionEvent e) 
+		public void actionPerformed(ActionEvent e)
 		{
             double[] spacecraftPosition = new double[3];
             double[] boresightDirection = new double[3];
@@ -260,7 +260,7 @@ public class MSIPopupMenu extends PopupMenu
 	        {
 	            return;
 	        }
-	        
+	
 	        final double norm = MathUtil.vnorm(spacecraftPosition);
 	        double[] position = {
 	                spacecraftPosition[0] + 0.6*norm*boresightDirection[0],
@@ -279,13 +279,13 @@ public class MSIPopupMenu extends PopupMenu
 
 	private class SaveBackplanesAction extends AbstractAction
 	{
-		public void actionPerformed(ActionEvent e) 
+		public void actionPerformed(ActionEvent e)
 		{
 			// First generate the DDR
 			
 			File file = CustomFileChooser.showSaveDialog(invoker, "Save Backplanes DDR", msiKey.name + "_DDR.IMG");
 
-			try 
+			try
 			{
 				if (file != null)
 				{
@@ -325,7 +325,7 @@ public class MSIPopupMenu extends PopupMenu
 			
 			file = CustomFileChooser.showSaveDialog(invoker, "Save Backplanes Label", msiKey.name + "_DDR.LBL");
 
-			try 
+			try
 			{
 				if (file != null)
 				{
@@ -358,7 +358,7 @@ public class MSIPopupMenu extends PopupMenu
 
 	private class ShowFrustumAction extends AbstractAction
 	{
-		public void actionPerformed(ActionEvent e) 
+		public void actionPerformed(ActionEvent e)
 		{
 			try
 			{

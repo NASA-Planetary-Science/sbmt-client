@@ -15,7 +15,7 @@ public class ModelManager extends Model implements PropertyChangeListener
     private ArrayList<vtkProp> propsExceptSmallBody = new ArrayList<vtkProp>();
     private HashMap<vtkProp, Model> propToModelMap = new HashMap<vtkProp, Model>();
     private HashMap<String, Model> allModels = new HashMap<String, Model>();
-    
+
     public void setModels(HashMap<String, Model> models)
     {
     	allModels.clear();
@@ -29,7 +29,7 @@ public class ModelManager extends Model implements PropertyChangeListener
 
     	updateProps();
     }
-    
+
     public ArrayList<vtkProp> getProps()
 	{
 		return props;
@@ -40,7 +40,7 @@ public class ModelManager extends Model implements PropertyChangeListener
 		return propsExceptSmallBody;
 	}
 
-	public void propertyChange(PropertyChangeEvent evt) 
+	public void propertyChange(PropertyChangeEvent evt)
 	{
 		if (Properties.MODEL_CHANGED.equals(evt.getPropertyName()))
 		{

@@ -14,9 +14,9 @@ import edu.jhuapl.near.util.Configuration;
 /**
  * This class represents a database storing information about all the
  * data. It also provides functions for querying the database.
- * 
+ *
  * @author kahneg1
- * 
+ *
  */
 public class Query
 {
@@ -31,7 +31,7 @@ public class Query
 	{
 		ArrayList<ArrayList<String>> results = new ArrayList<ArrayList<String>>();
 		
-		try 
+		try
 		{
 			URL u = new URL(Configuration.getQueryRootURL() + "/" + phpScript);
 			URLConnection conn = u.openConnection();
@@ -61,8 +61,8 @@ public class Query
 			}
 
 			in.close();
-		} 
-		catch (IOException e) 
+		}
+		catch (IOException e)
 		{
 			e.printStackTrace();
 		}
@@ -154,20 +154,20 @@ public class Query
 		return str;
 	}
 
-	public static Query getInstance()                                                                                                 
-    {                                                                                                                                          
-        if (ref == null)                                                                                                                       
-            ref = new Query();                                                                                                        
-        return ref;                                                                                                                            
-    }                                                                                                                                          
-                                                                                                                                               
-    public Object clone()                                                                                                                      
-        throws CloneNotSupportedException                                                                                                      
-    {                                                                                                                                          
-        throw new CloneNotSupportedException();                                                                                                
-    }                                                                                                                                          
-                                                            
-	private Query() 
+	public static Query getInstance()
+    {
+        if (ref == null)
+            ref = new Query();
+        return ref;
+    }
+
+    public Object clone()
+        throws CloneNotSupportedException
+    {
+        throw new CloneNotSupportedException();
+    }
+
+	private Query()
 	{
 	}
 
@@ -175,13 +175,13 @@ public class Query
 	/**
 	 * Run a query which searches for msi images between the specified dates.
 	 * Returns a list of URL's of the fit files that match.
-	 * 
+	 *
 	 * @param startDate
 	 * @param endDate
 	 */
 	public ArrayList<String> runQuery(
 			Datatype datatype,
-			DateTime startDate, 
+			DateTime startDate,
 			DateTime stopDate,
 			ArrayList<Integer> filters,
 			boolean iofdbl,
@@ -200,7 +200,7 @@ public class Query
 			double toPhase,
 			TreeSet<Integer> cubeList,
 			MSIImage.MSISource msiSource,
-			int limbType) 
+			int limbType)
 	{
 		ArrayList<String> matchedImages = new ArrayList<String>();
 		ArrayList<ArrayList<String>> results = null;
@@ -230,7 +230,7 @@ public class Query
 				catch (NumberFormatException e)
 				{
 					e.printStackTrace();
-				} 
+				}
 				
 				if (results != null && results.size() > 0)
 				{
@@ -328,7 +328,7 @@ public class Query
 					matchedImages.add(path);
 				}
 			}
-			catch (Exception e) 
+			catch (Exception e)
 			{
 				e.printStackTrace();
 			}
@@ -409,7 +409,7 @@ public class Query
 					matchedImages.add(path);
 				}
 			}
-			catch (Exception e) 
+			catch (Exception e)
 			{
 				e.printStackTrace();
 			}

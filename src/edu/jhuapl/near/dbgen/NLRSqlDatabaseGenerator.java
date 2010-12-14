@@ -16,12 +16,12 @@ import edu.jhuapl.near.util.NativeLibraryLoader;
 
 /**
  * This program goes through all the NLR data and creates an sql database
- * containing all the data. 
- * 
+ * containing all the data.
+ *
  * The database consists of the following columns
- * 
+ *
  * 1.  id
- * 2.  longitudeE 
+ * 2.  longitudeE
  * 3.  latitudeN
  * 4.  Eros_rad
  * 5.  ET_J2000
@@ -42,7 +42,7 @@ import edu.jhuapl.near.util.NativeLibraryLoader;
  * 20. U
  * 21. filename
  * 22. cube_id
- * 
+ *
  * divides all the data
  * up into cubes and saves each cube to a separate file.
  * @author kahneg1
@@ -102,7 +102,7 @@ public class NLRSqlDatabaseGenerator
         }
 	}
 	
-	public static void main(String[] args) 
+	public static void main(String[] args)
 	{
 		NativeLibraryLoader.loadVtkLibraries();
 
@@ -142,9 +142,9 @@ public class NLRSqlDatabaseGenerator
 			{
 				
 			    System.out.println("Begin processing file " + filename + " - " + count + " / " + nlrFiles.size());
-			    
+			
 			    ArrayList<String> lines = FileUtil.getFileLinesAsStringList(filename);
-			    
+			
 				for (int i=2; i<lines.size(); ++i)
 				{
 					String[] vals = lines.get(i).trim().split("\\s+");

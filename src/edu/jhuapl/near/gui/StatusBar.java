@@ -4,7 +4,7 @@ import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;
 
-public class StatusBar extends JPanel 
+public class StatusBar extends JPanel
 {
 	private JLabel leftLabel;
 	private JLabel rightLabel;

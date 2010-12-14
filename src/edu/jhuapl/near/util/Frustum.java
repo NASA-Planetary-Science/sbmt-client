@@ -64,13 +64,13 @@ public class Frustum
             u = Math.sqrt(u);
 
         //System.out.println(v/b + " " + u/a + " " + d1 + " " + d2);
-        
+
         v = v/b;
         u = u/a;
-        
+
         if (v < 0.0) v = 0.0;
         else if (v > 1.0) v = 1.0;
-        
+
         if (u < 0.0) u = 0.0;
         else if (u > 1.0) u = 1.0;
 

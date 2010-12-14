@@ -22,15 +22,15 @@ public class DeimosModelGenerator {
 	/**
 	 * This program converts the Deimos model to
 	 * vtk format. Currently there is only 1 resolution level
-	 * 
+	 *
 	 * In addition this program generates normals and saves it to the vtk file.
 	 * In addition this program generates a coordinate grid and saves it to
 	 * vtk files for each resolution.
-	 * 
+	 *
 	 * To run this program, 2 arguments are required:
 	 * - the folder containing the DEIMOS.PLT file
 	 * - the folder where you want to save the generated files.
-	 * 
+	 *
 	 * @param args
 	 */
 	public static void main(String[] args)

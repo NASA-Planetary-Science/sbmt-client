@@ -116,7 +116,7 @@ abstract public class ProgressBarSwingWorker extends SwingWorker<Void, Void>
         	if (cancelButton.isEnabled() != enableCancelButton)
         		cancelButton.setEnabled(enableCancelButton);
         }
-        
+
         if (evt.getNewValue().equals(SwingWorker.StateValue.DONE))
 		{
 	        dialog.setVisible(false);

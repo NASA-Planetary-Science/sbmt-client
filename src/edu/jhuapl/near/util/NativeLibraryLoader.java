@@ -1,6 +1,6 @@
 package edu.jhuapl.near.util;
 
-public class NativeLibraryLoader 
+public class NativeLibraryLoader
 {
 	/**
 	 * Loads in the vtk shared libraries. This needs to be called before any vtk classes
@@ -9,11 +9,11 @@ public class NativeLibraryLoader
 	 */
     static public void loadVtkLibraries()
     {
-    	// Before loading the native vtk libraries, we want to make sure the 
-    	// awt/swing subsystem is loaded and initialized as much as possible (i.e. 
+    	// Before loading the native vtk libraries, we want to make sure the
+    	// awt/swing subsystem is loaded and initialized as much as possible (i.e.
     	// has already done some usefull work) since by doing this, we
     	// ensure that other java-internal shared libraries which vtk depends on are
-    	// already loaded in. Failure to do so may result in linking errors when 
+    	// already loaded in. Failure to do so may result in linking errors when
     	// loading in the vtk shared libraries (especially vtkRenderingJava).
     	// The following dummy thread seems to do the trick.
 		javax.swing.SwingUtilities.invokeLater(new Runnable()
@@ -80,7 +80,7 @@ public class NativeLibraryLoader
     	else
     	{
     		// On linux or mac the shared libraries must have
-    		// $ORIGIN or @loader_path embedded in them so that 
+    		// $ORIGIN or @loader_path embedded in them so that
     		// the dependent libraries are found.
     		
     		System.loadLibrary("vtkCommonJava");
@@ -101,7 +101,7 @@ public class NativeLibraryLoader
     }
 
     /**
-     * For batch processing jobs on linux, we don't need any rendering, 
+     * For batch processing jobs on linux, we don't need any rendering,
      * so don't load the rendering related libraries.
      */
     static public void loadVtkLibrariesLinuxNoX11()

@@ -13,7 +13,7 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-public class ColorChooser 
+public class ColorChooser
 {
 	private static JColorChooser cc = new JColorChooser();
 	private static Color chosenColor = null;
@@ -25,7 +25,7 @@ public class ColorChooser
         frame.setModal(true);
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setLocationRelativeTo(parent);
-        
+
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 

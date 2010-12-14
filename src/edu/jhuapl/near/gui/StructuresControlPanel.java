@@ -20,7 +20,7 @@ public class StructuresControlPanel extends JTabbedPane
 			ModelManager modelManager,
 			PickManager pickManager)
 	{
-		StructureModel structureModel = 
+		StructureModel structureModel =
 			(StructureModel)modelManager.getModel(ModelNames.LINE_STRUCTURES);
 		lineStructuresMapperPanel = (new AbstractStructureMappingControlPanel(
 				modelManager,
@@ -29,7 +29,7 @@ public class StructuresControlPanel extends JTabbedPane
 				PickManager.PickMode.LINE_DRAW,
 				false) {});
 
-		structureModel = 
+		structureModel =
 			(StructureModel)modelManager.getModel(ModelNames.CIRCLE_STRUCTURES);
 		circleStructuresMapperPanel = (new AbstractStructureMappingControlPanel(
 				modelManager,
@@ -46,7 +46,7 @@ public class StructuresControlPanel extends JTabbedPane
 		addTab("Circles", circleStructuresMapperPanel);
 		addTab("Points", pointsStructuresMapperPanel);
 		
-		this.addComponentListener(new ComponentAdapter() 
+		this.addComponentListener(new ComponentAdapter()
 		{
 			public void componentHidden(ComponentEvent e)
 			{

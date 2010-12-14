@@ -17,7 +17,7 @@ import edu.jhuapl.near.popupmenus.PopupMenu;
 public abstract class PopupManager
 {
     private ModelManager modelManager;
-    
+
 	public PopupManager(ModelManager modelManager)
 	{
 		this.modelManager = modelManager;

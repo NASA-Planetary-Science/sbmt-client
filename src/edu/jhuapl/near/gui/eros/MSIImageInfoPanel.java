@@ -40,12 +40,12 @@ public class MSIImageInfoPanel extends ModelInfoWindow implements PropertyChange
         renWin.setInteractorStyle(style);
 
         vtkImageData displayedImage = image.getDisplayedImage();
-        
+
         vtkImageActor actor = new vtkImageActor();
         //actor.SetDisplayExtent(0, MSIImage.IMAGE_WIDTH-1, 0, MSIImage.IMAGE_HEIGHT-1, 0, 0);
-        actor.SetInput(displayedImage);                     
+        actor.SetInput(displayedImage);
 
-// for testing backplane generation        
+// for testing backplane generation
 //        {
 //        	vtkImageData plane = new vtkImageData();
 //        	plane.DeepCopy(displayedImage);
@@ -59,9 +59,9 @@ public class MSIImageInfoPanel extends ModelInfoWindow implements PropertyChange
 //            	}
 //        	actor.SetInput(plane);
 //        }
-        
+
         renWin.GetRenderer().AddActor(actor);
-        
+
 		//renWin.GetRenderWindow().SetSize(MSIImage.IMAGE_WIDTH, MSIImage.IMAGE_HEIGHT);
 		renWin.setSize(MSIImage.IMAGE_WIDTH, MSIImage.IMAGE_HEIGHT);
 
@@ -79,7 +79,7 @@ public class MSIImageInfoPanel extends ModelInfoWindow implements PropertyChange
 
 		HashMap<String, String> properties = null;
 		Object[][] data = {	{"", ""} };
-		try 
+		try
 		{
 			properties = image.getProperties();
 			TreeMap<String, String> sortedProperties = new TreeMap<String, String>(properties);
@@ -118,17 +118,17 @@ public class MSIImageInfoPanel extends ModelInfoWindow implements PropertyChange
         contrastChanger = new ContrastChanger();
 
         contrastChanger.setMSIImage(image);
-        
+
         bottomPanel.add(Box.createVerticalStrut(10));
         bottomPanel.add(scrollPane);
         bottomPanel.add(contrastChanger);
-        
+
         panel.add(bottomPanel, BorderLayout.SOUTH);
-        
+
         add(panel, BorderLayout.CENTER);
-        
+
         createMenus();
-        
+
         // Finally make the frame visible
         setTitle("MSI Image " + image.getName() + " Properties");
         //this.set
@@ -158,7 +158,7 @@ public class MSIImageInfoPanel extends ModelInfoWindow implements PropertyChange
     	 * it as an actual menu in a menu bar. Therefore we simply grab the menu items
     	 * from that class and put these in our new JMenu.
     	 */
-    	MSIPopupMenu msiImagesPopupMenu = 
+    	MSIPopupMenu msiImagesPopupMenu =
 			new MSIPopupMenu(modelManager, null, null, this);
     	
     	msiImagesPopupMenu.setCurrentImage(msiImage.getKey());
@@ -172,9 +172,9 @@ public class MSIImageInfoPanel extends ModelInfoWindow implements PropertyChange
         	if (item instanceof JMenuItem)
         		menu.add(item);
         }
-        
+
         menuBar.add(menu);
-        
+
         setJMenuBar(menuBar);
     }
 
@@ -188,7 +188,7 @@ public class MSIImageInfoPanel extends ModelInfoWindow implements PropertyChange
 		return modelManager.getModel(ModelNames.MSI_IMAGES);
 	}
 	
-	public void propertyChange(PropertyChangeEvent arg0) 
+	public void propertyChange(PropertyChangeEvent arg0)
 	{
 		if (renWin.GetRenderWindow().GetNeverRendered() > 0)
 			return;

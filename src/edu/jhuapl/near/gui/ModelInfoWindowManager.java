@@ -10,12 +10,12 @@ import edu.jhuapl.near.util.Properties;
 
 abstract public class ModelInfoWindowManager implements PropertyChangeListener
 {
-	HashMap<Model, ModelInfoWindow> infoPanels = 
+	HashMap<Model, ModelInfoWindow> infoPanels =
 		new HashMap<Model, ModelInfoWindow>();
 	
 	ModelManager modelManager;
 	
-	public ModelInfoWindowManager(ModelManager modelManager) 
+	public ModelInfoWindowManager(ModelManager modelManager)
 	{
 		this.modelManager = modelManager;
 	}
@@ -54,7 +54,7 @@ abstract public class ModelInfoWindowManager implements PropertyChangeListener
 		}
 	}
 
-	public void propertyChange(PropertyChangeEvent e) 
+	public void propertyChange(PropertyChangeEvent e)
 	{
     	if (e.getPropertyName().equals(Properties.MODEL_REMOVED))
     	{

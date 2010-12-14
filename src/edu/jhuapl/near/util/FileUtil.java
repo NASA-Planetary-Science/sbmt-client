@@ -9,17 +9,17 @@ import java.util.zip.ZipFile;
 
 import org.apache.commons.io.FileUtils;
 
-public class FileUtil 
+public class FileUtil
 {
 	private static volatile boolean abortUnzip = false;
 	private static volatile double unzipProgress = 0.0;
 	
 	/**
-	 * The function takes a file and returns its contents as a list of strings, 
+	 * The function takes a file and returns its contents as a list of strings,
 	 * one line per string.
 	 * @param filename file to read
 	 * @return contents of file as list of strings
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	public static ArrayList<String> getFileLinesAsStringList(String filename) throws IOException
 	{
@@ -43,11 +43,11 @@ public class FileUtil
 	}
 	
 	/**
-	 * The function takes a file and returns its contents as a list of strings, 
+	 * The function takes a file and returns its contents as a list of strings,
 	 * one word per string.
 	 * @param filename file to read
 	 * @return contents of file as list of strings
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	public static ArrayList<String> getFileWordsAsStringList(String filename) throws IOException
 	{
@@ -130,11 +130,11 @@ public class FileUtil
 
 	/**
 	 * The following function is adapted from http://www.devx.com/getHelpOn/10MinuteSolution/20447
-	 * 
+	 *
 	 * This function assumes the zip file contains a single top level folder of the same name as the
-	 * zip file without the .zip extension. E.g. if the zip file is called mapmaker.zip, then 
+	 * zip file without the .zip extension. E.g. if the zip file is called mapmaker.zip, then
 	 * when unzipped, there will be a single folder called mapmaker in the same folder as mapmaker.zip.
-	 * 
+	 *
 	 * @param file
 	 */
 	public static void unzipFile(File file)
@@ -147,7 +147,7 @@ public class FileUtil
 		String zipTopLevelFolder = zipContainingFolder + File.separator + zipTopLevelFolderName;
 		String tempExtractToFolder = zipTopLevelFolder + getTemporarySuffix();
 		
-		try 
+		try
 		{
 			FileUtils.deleteQuietly(new File(zipTopLevelFolder));
 			FileUtils.deleteQuietly(new File(tempExtractToFolder));

@@ -25,7 +25,7 @@ public class HelpMenu extends JMenu
         this.add(mi);
 
         this.addSeparator();
-        
+
         mi = new JMenuItem(new AboutAction());
         this.add(mi);
 
@@ -66,14 +66,14 @@ public class HelpMenu extends JMenu
             if (frame == null)
             {
                 frame = new JFrame();
-                
+
                 JTextPane label = new JTextPane();
                 label.setEditable(false);
                 label.setContentType("text/html");
                 label.setText(helpContents);
-                
+
                 JScrollPane scrollPane = new JScrollPane(label);
-                
+
                 frame.add(scrollPane);
 
                 frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);

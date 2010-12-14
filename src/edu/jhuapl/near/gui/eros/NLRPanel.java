@@ -10,7 +10,7 @@ public class NLRPanel extends JTabbedPane
 {
     public NLRPanel(
     		final ModelManager modelManager,
-    		final PickManager pickManager) 
+    		final PickManager pickManager)
     {
         setBorder(BorderFactory.createEmptyBorder());
 

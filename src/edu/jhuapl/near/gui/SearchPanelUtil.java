@@ -4,7 +4,7 @@ import java.awt.Dimension;
 
 import javax.swing.*;
 
-public class SearchPanelUtil 
+public class SearchPanelUtil
 {
 	public static JPanel createFromToPanel(
 			JFormattedTextField fromField,

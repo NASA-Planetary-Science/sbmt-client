@@ -51,7 +51,7 @@ import java.util.*;
  *
  * Author: Karl Meissner karl@meissnersd.com
  */
-public class SqlManager 
+public class SqlManager
 {
 
 	private Connection conn;                                                //our connnection to the db - presist for life of program
@@ -70,7 +70,7 @@ public class SqlManager
 //        dataSource.setDatabase("jdbc:hsqldb:file:" + db_file_name_prefix);
 
         //conn = dataSource.getConnection("sa", "");
-        
+
         try {
             //Class.forName("org.hsqldb.jdbcDriver" );
             Class.forName("com.mysql.jdbc.Driver");
@@ -82,7 +82,7 @@ public class SqlManager
 
 	   String username = "";
        String password = "";
-       
+
        //conn = DriverManager.getConnection("jdbc:hsqldb:file:" + db_file_name_prefix, "sa", "");
         conn = DriverManager.getConnection("jdbc:mysql://sd-mysql.jhuapl.edu:3306/near?" +
         "user=" + username + "&password=" + password);
@@ -104,7 +104,7 @@ public class SqlManager
     	conn = DriverManager.getConnection(connectionString);
     }
 
-    public void shutdown() throws SQLException 
+    public void shutdown() throws SQLException
     {
 
 //        Statement st = conn.createStatement();
@@ -117,7 +117,7 @@ public class SqlManager
     }
 
 //use for SQL command SELECT
-    public synchronized ArrayList<ArrayList<Object>> query(String expression) throws SQLException 
+    public synchronized ArrayList<ArrayList<Object>> query(String expression) throws SQLException
     {
 
         Statement st = null;
@@ -138,12 +138,12 @@ public class SqlManager
         // the result set is invalidated also  if you recycle an Statement
         // and try to execute some other query before the result set has been
         // completely examined.
-        
+
         return results;
     }
 
 //use for SQL commands CREATE, DROP, INSERT and UPDATE
-    public synchronized void update(String expression) throws SQLException 
+    public synchronized void update(String expression) throws SQLException
     {
 
         Statement st = null;
@@ -159,14 +159,14 @@ public class SqlManager
         st.close();
     }    // void update()
 
-    
-    public synchronized void dropTable(String table) throws SQLException 
+
+    public synchronized void dropTable(String table) throws SQLException
     {
     	update("DROP TABLE IF EXISTS " + table);
     }
 
 
-    public static ArrayList<ArrayList<Object>> dump(ResultSet rs) throws SQLException 
+    public static ArrayList<ArrayList<Object>> dump(ResultSet rs) throws SQLException
     {
 
     	ArrayList<ArrayList<Object>> results = new ArrayList<ArrayList<Object>>();
@@ -183,10 +183,10 @@ public class SqlManager
         // assume we are pointing to BEFORE the first row
         // rs.next() points to next row and returns true
         // or false if there is no next row, which breaks the loop
-        for (; rs.next(); ) 
+        for (; rs.next(); )
         {
         	ArrayList<Object> nextRow = new ArrayList<Object>();
-            for (i = 0; i < colmax; ++i) 
+            for (i = 0; i < colmax; ++i)
             {
                 o = rs.getObject(i + 1);    // Is SQL the first column is indexed with 1 not 0
 
@@ -196,10 +196,10 @@ public class SqlManager
             }
 
             results.add(nextRow);
-            
+
             //System.out.println(" ");
         }
-        
+
         return results;
     }
 
@@ -208,12 +208,12 @@ public class SqlManager
     	return conn.prepareStatement(st);
     }
 
-    
+
     public Statement createStatement() throws SQLException
     {
     	return conn.createStatement();
     }
-    
+
 
     public static void main(String[] args) {
 

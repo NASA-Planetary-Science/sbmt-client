@@ -68,7 +68,7 @@ public class TopoViewer extends JFrame
     private JComboBox coloringTypeComboBox;
     private DEMModel dem;
     private Renderer renderer;
-    
+
 	private static final String Profile = "Profile";
 	private static final String StartLatitude = "StartLatitude";
 	private static final String StartLongitude = "StartLongitude";
@@ -106,7 +106,7 @@ public class TopoViewer extends JFrame
     	modelManager.setModels(allModels);
 
     	renderer = new Renderer(modelManager);
-        
+
 
 		GenericPopupManager popupManager = new GenericPopupManager(modelManager);
 
@@ -123,7 +123,7 @@ public class TopoViewer extends JFrame
         plot = new TopoPlot(lineModel, dem);
 		plot.getChartPanel().setMinimumSize(new Dimension(100, 100));
 		plot.getChartPanel().setPreferredSize(new Dimension(400, 400));
-      
+
 		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
                 renderer, plot.getChartPanel());
 
@@ -167,7 +167,7 @@ public class TopoViewer extends JFrame
 
     	setJMenuBar(menuBar);
 	}
-    
+
 	private JPanel createButtonsPanel()
 	{
         JPanel panel = new JPanel();
@@ -199,11 +199,11 @@ public class TopoViewer extends JFrame
         	}
 		});
         panel.add(coloringTypeComboBox);
-        
+
         newButton = new JButton("New Profile");
     	newButton.addActionListener(new ActionListener()
     	{
-    		public void actionPerformed(ActionEvent e) 
+    		public void actionPerformed(ActionEvent e)
     		{
     			removeFaultyProfiles();
     			
@@ -222,7 +222,7 @@ public class TopoViewer extends JFrame
         editButton = new JToggleButton("Edit Profiles");
         editButton.addActionListener(new ActionListener()
         {
-        	public void actionPerformed(ActionEvent e) 
+        	public void actionPerformed(ActionEvent e)
         	{
     			removeFaultyProfiles();
 
@@ -237,7 +237,7 @@ public class TopoViewer extends JFrame
         deleteAllButton = new JButton("Delete All Profiles");
         deleteAllButton.addActionListener(new ActionListener()
     	{
-    		public void actionPerformed(ActionEvent e) 
+    		public void actionPerformed(ActionEvent e)
     		{
     			removeAllProfiles();
     		}
@@ -247,10 +247,10 @@ public class TopoViewer extends JFrame
         saveButton = new JButton("Save...");
         saveButton.addActionListener(new ActionListener()
     	{
-    		public void actionPerformed(ActionEvent e) 
+    		public void actionPerformed(ActionEvent e)
     		{
     			File file = null;
-    			try 
+    			try
     			{
     				file = CustomFileChooser.showSaveDialog(TopoViewer.this, "Save Profiles", "profiles.txt");
     				if (file != null)
@@ -273,10 +273,10 @@ public class TopoViewer extends JFrame
         loadButton = new JButton("Load...");
         loadButton.addActionListener(new ActionListener()
     	{
-    		public void actionPerformed(ActionEvent e) 
+    		public void actionPerformed(ActionEvent e)
     		{
     			File file = null;
-    			try 
+    			try
     			{
     				file = CustomFileChooser.showOpenDialog(TopoViewer.this, "Load Profiles");
     				if (file != null)
@@ -330,14 +330,14 @@ public class TopoViewer extends JFrame
         	out.write(EndLatitude + "=" + line.lat.get(1) + eol);
         	out.write(EndLongitude + "=" + line.lon.get(1) + eol);
         	out.write(EndRadius + "=" + line.rad.get(1) + eol);
-        	out.write(Color + "=" + 
-        			line.color[0] + " " + 
-        			line.color[1] + " " + 
-        			line.color[2] + " " + 
+        	out.write(Color + "=" +
+        			line.color[0] + " " +
+        			line.color[1] + " " +
+        			line.color[2] + " " +
         			line.color[3] + eol);
         	out.write(plot.getProfileAsString(i));
         }
-        
+
 		out.close();
 	}
 
@@ -422,7 +422,7 @@ public class TopoViewer extends JFrame
         	if (line.controlPointIds.size() != 2)
         		lineModel.removeStructure(i);
         }
-        
+
 	}
 	
 	private void removeAllProfiles()

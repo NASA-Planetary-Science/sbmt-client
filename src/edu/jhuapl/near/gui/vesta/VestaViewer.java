@@ -28,11 +28,11 @@ import java.util.HashMap;
 /**
  * This class contains the "main" function called at the start of the program.
  * This class sets up the top level window and instantiates all the "managers" used
- * through out the program. 
+ * through out the program.
  * @author kahneg1
  *
  */
-public class VestaViewer extends Viewer 
+public class VestaViewer extends Viewer
 {
 	public static final String NAME = "Vesta";
 

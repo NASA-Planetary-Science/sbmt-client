@@ -25,7 +25,7 @@ public class SmallBodyCubes
 	 * Create a cube set structure for the given model, where each cube has side <tt>cubeSize</tt>
 	 * and <tt>buffer</tt> is added to all sides of the bounding box of the model. Cubes
 	 * that do not intersect the asteroid at all are removed.
-	 * 
+	 *
 	 * @param smallBodyPolyData
 	 * @param cubeSize
 	 * @param buffer
@@ -49,8 +49,8 @@ public class SmallBodyCubes
 	 * Create a cube set structure for the given model using a default value of 1 for the
 	 * cube size and a default value of 0.01 for the buffer. If <tt>cubesToKeep</tt> is not
 	 * null, then only those cubes are kept by this class, all others are discarded. If
-	 * <tt>cubesToKeep</tt> is null, then we compute the empty cubes and discard those. 
-	 *  
+	 * <tt>cubesToKeep</tt> is null, then we compute the empty cubes and discard those.
+	 *
 	 * @param smallBodyPolyData
 	 * @param cubesToKeep
 	 */
@@ -234,7 +234,7 @@ public class SmallBodyCubes
 //		
 //		return (int)Math.floor((x - erosBB.xmin) / cubeSize) +
 //		(int)Math.floor((y - erosBB.ymin) / cubeSize)*numCubesX +
-//		(int)Math.floor((z - erosBB.zmin) / cubeSize)*numCubesX*numCubesY; 
+//		(int)Math.floor((z - erosBB.zmin) / cubeSize)*numCubesX*numCubesY;
 	}
 }
 

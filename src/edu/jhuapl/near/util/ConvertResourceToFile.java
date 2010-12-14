@@ -2,7 +2,7 @@ package edu.jhuapl.near.util;
 
 import java.io.*;
 
-public class ConvertResourceToFile 
+public class ConvertResourceToFile
 {
 	/**
 	 * Convert a specified resource to a real file to be placed in a certain directory.
@@ -22,7 +22,7 @@ public class ConvertResourceToFile
 			parent.mkdirs();
 		
 		File file = new File(parentDir + File.separator + name);
-		try 
+		try
 		{
 			InputStream is = o.getClass().getResourceAsStream(resource);
 
@@ -37,8 +37,8 @@ public class ConvertResourceToFile
 
 			os.close();
 			is.close();
-		} 
-		catch (IOException e) 
+		}
+		catch (IOException e)
 		{
 			file = null;
 			e.printStackTrace();
@@ -50,7 +50,7 @@ public class ConvertResourceToFile
 	public static File convertResourceToTempFile(Object o, String resource)
 	{
 		File temp = null;
-		try 
+		try
 		{
 			temp = File.createTempFile("resource-", null);
 			temp.deleteOnExit();
@@ -68,8 +68,8 @@ public class ConvertResourceToFile
 			
 			os.close();
 			is.close();
-		} 
-		catch (IOException e) 
+		}
+		catch (IOException e)
 		{
 			temp = null;
 			e.printStackTrace();

@@ -76,11 +76,11 @@ public class GRaNDSearchPanel extends JPanel implements ActionListener, MouseLis
     private JCheckBox polygonType3CheckBox;
     private JToggleButton selectRegionButton;
 
-    
+
     public GRaNDSearchPanel(
-    		final ModelManager modelManager, 
+    		final ModelManager modelManager,
     		ModelInfoWindowManager infoPanelManager,
-    		final PickManager pickManager) 
+    		final PickManager pickManager)
     {
     	//setLayout(new BoxLayout(this,
         //		BoxLayout.PAGE_AXIS));
@@ -89,7 +89,7 @@ public class GRaNDSearchPanel extends JPanel implements ActionListener, MouseLis
     	this.modelManager = modelManager;
     	this.pickManager = pickManager;
 
-		this.addComponentListener(new ComponentAdapter() 
+		this.addComponentListener(new ComponentAdapter()
 		{
 			public void componentHidden(ComponentEvent e)
 			{
@@ -104,10 +104,10 @@ public class GRaNDSearchPanel extends JPanel implements ActionListener, MouseLis
     	pane.setLayout(new MigLayout("wrap 1"));
     	
     	//pane.setBorder(
-        //        new CompoundBorder(BorderFactory.createEmptyBorder(9, 9, 9, 9), 
+        //        new CompoundBorder(BorderFactory.createEmptyBorder(9, 9, 9, 9),
         //                           new TitledBorder("Query Editor")));
 
-        
+
         final JPanel startDatePanel = new JPanel();
         this.startDateLabel = new JLabel(START_DATE_LABEL_TEXT);
         startDatePanel.add(this.startDateLabel);
@@ -117,7 +117,7 @@ public class GRaNDSearchPanel extends JPanel implements ActionListener, MouseLis
             {
                 public void stateChanged(ChangeEvent e)
                 {
-                    java.util.Date date = 
+                    java.util.Date date =
                         ((SpinnerDateModel)startSpinner.getModel()).getDate();
                     if (date != null)
                         startDate = date;
@@ -136,7 +136,7 @@ public class GRaNDSearchPanel extends JPanel implements ActionListener, MouseLis
             {
                 public void stateChanged(ChangeEvent e)
                 {
-                    java.util.Date date = 
+                    java.util.Date date =
                         ((SpinnerDateModel)endSpinner.getModel()).getDate();
                     if (date != null)
                         endDate = date;
@@ -146,14 +146,14 @@ public class GRaNDSearchPanel extends JPanel implements ActionListener, MouseLis
         endSpinner.setEnabled(true);
         pane.add(endDatePanel);
 
-        
+
     	JPanel polygonTypePanel = new JPanel();
     	//polygonTypePanel.setLayout(new BoxLayout(polygonTypePanel,
         //		BoxLayout.PAGE_AXIS));
     	polygonTypePanel.setLayout(new MigLayout("wrap 2"));
         JLabel polygonTypeLabel = new JLabel("Field-Of-View Polygon Type:");
         //polygonTypeLabel.setAlignmentX(1.0f);
-        
+
         polygonType0CheckBox = new JCheckBox();
         polygonType0CheckBox.setText("Full");
         polygonType0CheckBox.setSelected(true);
@@ -187,7 +187,7 @@ public class GRaNDSearchPanel extends JPanel implements ActionListener, MouseLis
 
         NumberFormat nf = NumberFormat.getNumberInstance();
         nf.setGroupingUsed(false);
-        
+
         final JPanel distancePanel = new JPanel();
         distancePanel.setLayout(new BoxLayout(distancePanel,
         		BoxLayout.LINE_AXIS));
@@ -202,7 +202,7 @@ public class GRaNDSearchPanel extends JPanel implements ActionListener, MouseLis
         toDistanceTextField.setMaximumSize(new Dimension(50, 23));
         toDistanceTextField.setColumns(5);
         final JLabel endDistanceLabel = new JLabel(" km");
-                
+
         distancePanel.add(fromDistanceLabel);
         distancePanel.add(fromDistanceTextField);
         distancePanel.add(toDistanceLabel);
@@ -212,34 +212,34 @@ public class GRaNDSearchPanel extends JPanel implements ActionListener, MouseLis
         fromIncidenceTextField = new JFormattedTextField(nf);
         toIncidenceTextField = new JFormattedTextField(nf);
         JPanel incidencePanel = SearchPanelUtil.createFromToPanel(
-        		fromIncidenceTextField, 
-        		toIncidenceTextField, 
-        		0.0, 
-        		180.0, 
-        		"Incidence from", 
-        		"to", 
+        		fromIncidenceTextField,
+        		toIncidenceTextField,
+        		0.0,
+        		180.0,
+        		"Incidence from",
+        		"to",
         		"degrees");
 
         fromEmissionTextField = new JFormattedTextField(nf);
         toEmissionTextField = new JFormattedTextField(nf);
         JPanel emissionPanel = SearchPanelUtil.createFromToPanel(
-        		fromEmissionTextField, 
-        		toEmissionTextField, 
-        		0.0, 
-        		180.0, 
-        		"Emissiom from", 
-        		"to", 
+        		fromEmissionTextField,
+        		toEmissionTextField,
+        		0.0,
+        		180.0,
+        		"Emissiom from",
+        		"to",
         		"degrees");
 
         fromPhaseTextField = new JFormattedTextField(nf);
         toPhaseTextField = new JFormattedTextField(nf);
         JPanel phasePanel = SearchPanelUtil.createFromToPanel(
-        		fromPhaseTextField, 
-        		toPhaseTextField, 
-        		0.0, 
-        		180.0, 
-        		"Phase from", 
-        		"to", 
+        		fromPhaseTextField,
+        		toPhaseTextField,
+        		0.0,
+        		180.0,
+        		"Phase from",
+        		"to",
         		"degrees");
 
 
@@ -249,7 +249,7 @@ public class GRaNDSearchPanel extends JPanel implements ActionListener, MouseLis
         selectRegionButton.setEnabled(true);
         selectRegionButton.addActionListener(new ActionListener()
         {
-			public void actionPerformed(ActionEvent e) 
+			public void actionPerformed(ActionEvent e)
 			{
 				if (selectRegionButton.isSelected())
 					pickManager.setPickMode(PickMode.CIRCLE_SELECTION);
@@ -262,7 +262,7 @@ public class GRaNDSearchPanel extends JPanel implements ActionListener, MouseLis
         final JButton clearRegionButton = new JButton("Clear Region");
         clearRegionButton.addActionListener(new ActionListener()
         {
-			public void actionPerformed(ActionEvent e) 
+			public void actionPerformed(ActionEvent e)
 			{
 				RegularPolygonModel selectionModel = (RegularPolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
 				selectionModel.removeAllStructures();
@@ -270,7 +270,7 @@ public class GRaNDSearchPanel extends JPanel implements ActionListener, MouseLis
         });
         selectRegionPanel.add(clearRegionButton);
 
-        
+
         final JPanel submitPanel = new JPanel();
         //panel.setBorder(BorderFactory.createEmptyBorder(9, 9, 9, 9));
         JButton submitButton = new JButton("Search");
@@ -289,15 +289,15 @@ public class GRaNDSearchPanel extends JPanel implements ActionListener, MouseLis
         //pane.add(Box.createVerticalStrut(10));
     	pane.add(selectRegionPanel, "align center");
     	pane.add(submitPanel, "align center");
-        
+
         this.add(pane);
 
-        
-        
-        
-        
-        
-        
+
+
+
+
+
+
         JPanel resultsPanel = new JPanel(new MigLayout("insets 0"));
 		
 		nisPopupMenu = new NISPopupMenu(this.modelManager, infoPanelManager);
@@ -310,19 +310,19 @@ public class GRaNDSearchPanel extends JPanel implements ActionListener, MouseLis
         resultList.addMouseListener(this);
         JScrollPane listScrollPane = new JScrollPane(resultList);
         listScrollPane.setPreferredSize(new Dimension(10000, 10000));
-        
-        
+
+
         //listScrollPane.setBorder(
-        //       new CompoundBorder(BorderFactory.createEmptyBorder(9, 9, 9, 9), 
+        //       new CompoundBorder(BorderFactory.createEmptyBorder(9, 9, 9, 9),
         //                           new TitledBorder("Query Results")));
 
         resultsPanel.add(resultsLabel, "north");
         resultsPanel.add(listScrollPane, "center");
 
         final JPanel resultControlsPanel = new JPanel(new MigLayout());
-        
+
         final JPanel resultSub1ControlsPanel = new JPanel();
-        
+
         resultSub1ControlsPanel.setLayout(new BoxLayout(resultSub1ControlsPanel,
         		BoxLayout.LINE_AXIS));
 
@@ -339,7 +339,7 @@ public class GRaNDSearchPanel extends JPanel implements ActionListener, MouseLis
         nextButton.setActionCommand(">");
         nextButton.addActionListener(new ActionListener()
         {
-			public void actionPerformed(ActionEvent e) 
+			public void actionPerformed(ActionEvent e)
 			{
 				if (resultIntervalCurrentlyShown != null)
 				{
@@ -363,7 +363,7 @@ public class GRaNDSearchPanel extends JPanel implements ActionListener, MouseLis
         prevButton.setActionCommand("<");
         prevButton.addActionListener(new ActionListener()
         {
-			public void actionPerformed(ActionEvent e) 
+			public void actionPerformed(ActionEvent e)
 			{
 				if (resultIntervalCurrentlyShown != null)
 				{
@@ -389,7 +389,7 @@ public class GRaNDSearchPanel extends JPanel implements ActionListener, MouseLis
         removeAllButton.setActionCommand(NIS_REMOVE_ALL_BUTTON_TEXT);
         removeAllButton.addActionListener(new ActionListener()
         {
-			public void actionPerformed(ActionEvent e) 
+			public void actionPerformed(ActionEvent e)
 			{
 				NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelNames.NIS_SPECTRA);
 				model.removeAllImages();
@@ -398,7 +398,7 @@ public class GRaNDSearchPanel extends JPanel implements ActionListener, MouseLis
         });
         removeAllButton.setEnabled(true);
 
-        
+
         resultSub2ControlsPanel.add(removeAllButton, "span, align center");
 
         JLabel channelLabel = new JLabel("Color by Channel");
@@ -409,7 +409,7 @@ public class GRaNDSearchPanel extends JPanel implements ActionListener, MouseLis
 		channelComboBox.setSelectedIndex(NISSpectrum.getChannelToColorBy());
 		channelComboBox.addActionListener(new ActionListener()
         {
-			public void actionPerformed(ActionEvent e) 
+			public void actionPerformed(ActionEvent e)
 			{
                 Double minVal = (Double)minChannelValueTextField.getValue();
                 Double maxVal = (Double)maxChannelValueTextField.getValue();
@@ -424,7 +424,7 @@ public class GRaNDSearchPanel extends JPanel implements ActionListener, MouseLis
 		minChannelValueTextField.setPreferredSize(new Dimension(80, 23));
         minChannelValueTextField.addChangeListener(new ChangeListener()
         {
-        	public void stateChanged(ChangeEvent e) 
+        	public void stateChanged(ChangeEvent e)
         	{
                 Double minVal = (Double)minChannelValueTextField.getValue();
                 Double maxVal = (Double)maxChannelValueTextField.getValue();
@@ -445,7 +445,7 @@ public class GRaNDSearchPanel extends JPanel implements ActionListener, MouseLis
 		maxChannelValueTextField.setPreferredSize(new Dimension(80, 23));
 		maxChannelValueTextField.addChangeListener(new ChangeListener()
         {
-        	public void stateChanged(ChangeEvent e) 
+        	public void stateChanged(ChangeEvent e)
         	{
                 Double minVal = (Double)minChannelValueTextField.getValue();
                 Double maxVal = (Double)maxChannelValueTextField.getValue();
@@ -470,11 +470,11 @@ public class GRaNDSearchPanel extends JPanel implements ActionListener, MouseLis
 
         resultControlsPanel.add(resultSub1ControlsPanel, "wrap");
         //resultControlsPanel.add(resultSub2ControlsPanel);
-        
+
         resultsPanel.add(resultControlsPanel, "south");
 
         add(resultsPanel, "growy");
-        
+
     }
 
     public void actionPerformed(ActionEvent actionEvent)
@@ -565,14 +565,14 @@ public class GRaNDSearchPanel extends JPanel implements ActionListener, MouseLis
 
         	setNISResults(results);
         }
-        catch (Exception e) 
-        { 
+        catch (Exception e)
+        {
             e.printStackTrace();
             System.out.println(e);
             return;
         }
     }
-    
+
 
 	private void setNISResults(ArrayList<String> results)
 	{
@@ -587,7 +587,7 @@ public class GRaNDSearchPanel extends JPanel implements ActionListener, MouseLis
     	for (String str : results)
     	{
     		formattedResults[i] = new String(
-    				str.substring(16, 25) 
+    				str.substring(16, 25)
     				+ ", day: " + str.substring(10, 13) + "/" + str.substring(5, 9)
     				);
     		
@@ -601,31 +601,31 @@ public class GRaNDSearchPanel extends JPanel implements ActionListener, MouseLis
     	this.showNISBoundaries(resultIntervalCurrentlyShown);
 	}
 	
-	public void mouseClicked(MouseEvent e) 
+	public void mouseClicked(MouseEvent e)
 	{
 	}
 
-	public void mouseEntered(MouseEvent e) 
+	public void mouseEntered(MouseEvent e)
 	{
 	}
 
-	public void mouseExited(MouseEvent e) 
+	public void mouseExited(MouseEvent e)
 	{
 	}
 
-	public void mousePressed(MouseEvent e) 
+	public void mousePressed(MouseEvent e)
 	{
 		maybeShowPopup(e);
 	}
 
-	public void mouseReleased(MouseEvent e) 
+	public void mouseReleased(MouseEvent e)
 	{
 		maybeShowPopup(e);
 	}
 
-	private void maybeShowPopup(MouseEvent e) 
+	private void maybeShowPopup(MouseEvent e)
 	{
-        if (e.isPopupTrigger()) 
+        if (e.isPopupTrigger())
         {
         	int index = resultList.locationToIndex(e.getPoint());
 
@@ -653,7 +653,7 @@ public class GRaNDSearchPanel extends JPanel implements ActionListener, MouseLis
 			else if(i >= nisRawResults.size())
 				break;
 			
-			try 
+			try
 			{
 				String currentImage = nisRawResults.get(i);
 				String boundaryName = currentImage.substring(0,currentImage.length()-4) + ".NIS";

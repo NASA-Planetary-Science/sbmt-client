@@ -18,9 +18,9 @@ import edu.jhuapl.near.util.*;
 import edu.jhuapl.near.util.Properties;
 
 /**
- * This class represents an image of the NEAR MSI instrument. It allows 
+ * This class represents an image of the NEAR MSI instrument. It allows
  * retrieving the image itself as well as the associated IMG file.
- * 
+ *
  * @author kahneg1
  *
  */
@@ -60,10 +60,10 @@ public class MSIImage extends Model implements PropertyChangeListener
     private vtkPolyDataNormals normalsFilter;
 
     private vtkFloatArray textureCoords;
-    
+
     private boolean footprintGenerated = false;
     private boolean normalsGenerated = false;
-    
+
     private double minIncidence = Double.MAX_VALUE;
     private double maxIncidence = -Double.MAX_VALUE;
     private double minEmission = Double.MAX_VALUE;
@@ -76,7 +76,7 @@ public class MSIImage extends Model implements PropertyChangeListener
     private double maxVerticalPixelScale = -Double.MAX_VALUE;
 
 	private String name = ""; // The name is a 9 digit number at the beginning of the filename
-						 	  // (starting after the initial M0). This is how the lineament 
+						 	  // (starting after the initial M0). This is how the lineament
 							  // model names them.
 
 	private float minValue;
@@ -96,7 +96,7 @@ public class MSIImage extends Model implements PropertyChangeListener
 
     private double[] boresightDirection = new double[3];
     private double[] upVector = new double[3];
-    
+
 	private boolean showFrustum = false;
 
 	private String startTime = "";
@@ -137,7 +137,7 @@ public class MSIImage extends Model implements PropertyChangeListener
 	 */
 	public static class MSIKey
 	{
-		// The path of the image as passed into the constructor. This is not the 
+		// The path of the image as passed into the constructor. This is not the
 		// same as fullpath but instead corresponds to the name needed to download
 		// the file from the server (excluding the hostname and extension).
 		public String name;
@@ -170,7 +170,7 @@ public class MSIImage extends Model implements PropertyChangeListener
 	 */
 //	public static class MSIImageFactory
 //	{
-//		static private WeakHashMap<MSIImage, Object> images = 
+//		static private WeakHashMap<MSIImage, Object> images =
 //			new WeakHashMap<MSIImage, Object>();
 //		
 //		static /*public*/ MSIImage createImage(MSIKey key, SmallBodyModel eros) throws FitsException, IOException
@@ -198,7 +198,7 @@ public class MSIImage extends Model implements PropertyChangeListener
 	public MSIImage(MSIKey key, SmallBodyModel eros) throws FitsException, IOException
 	{
 	    this.key = key;
-	    
+	
 		// Download the image, and all the companion files if necessary.
 		File fitFile = FileCache.getFileFromServer(key.name + ".FIT");
 
@@ -270,7 +270,7 @@ public class MSIImage extends Model implements PropertyChangeListener
         {
         	short[][] arrayS = (short[][])h.getData().getData();
         	array = new float[originalHeight][originalWidth];
-            
+
         	for (int i=0; i<originalHeight; ++i)
                 for (int j=0; j<originalWidth; ++j)
                 {
@@ -285,7 +285,7 @@ public class MSIImage extends Model implements PropertyChangeListener
         rawImage.SetSpacing(1.0, 1.0, 1.0);
         rawImage.SetOrigin(0.0, 0.0, 0.0);
         rawImage.SetNumberOfScalarComponents(1);
-        
+
         maxValue = -Float.MAX_VALUE;
         minValue = Float.MAX_VALUE;
         for (int i=0; i<originalHeight; ++i)
@@ -298,7 +298,7 @@ public class MSIImage extends Model implements PropertyChangeListener
             	if (array[i][j] < minValue)
             		minValue = array[i][j];
             }
-        
+
         // Now scale this image
         vtkImageReslice reslice = new vtkImageReslice();
         reslice.SetInput(rawImage);
@@ -307,11 +307,11 @@ public class MSIImage extends Model implements PropertyChangeListener
         reslice.SetOutputOrigin(0.0, 0.0, 0.0);
         reslice.SetOutputExtent(0, IMAGE_WIDTH-1, 0, IMAGE_HEIGHT-1, 0, 0);
         reslice.Update();
-        
+
         vtkImageData resliceOutput = reslice.GetOutput();
         rawImage.DeepCopy(resliceOutput);
         rawImage.SetSpacing(1, 1, 1);
-        
+
         setDisplayedImageRange(new IntensityRange(0, 255));
 
         loadImageInfo();
@@ -446,7 +446,7 @@ public class MSIImage extends Model implements PropertyChangeListener
 
 		return footprintActors;
 	}
-    
+
 	public void setShowFrustum(boolean b)
 	{
 		showFrustum = b;
@@ -481,32 +481,32 @@ public class MSIImage extends Model implements PropertyChangeListener
 		return key.name;
 	}
 	
-	public double getMinIncidence() 
+	public double getMinIncidence()
 	{
 		return minIncidence;
 	}
 
-	public double getMaxIncidence() 
+	public double getMaxIncidence()
 	{
 		return maxIncidence;
 	}
 
-	public double getMinEmission() 
+	public double getMinEmission()
 	{
 		return minEmission;
 	}
 
-	public double getMaxEmission() 
+	public double getMaxEmission()
 	{
 		return maxEmission;
 	}
 
-	public double getMinPhase() 
+	public double getMinPhase()
 	{
 		return minPhase;
 	}
 
-	public double getMaxPhase() 
+	public double getMaxPhase()
 	{
 		return maxPhase;
 	}
@@ -564,7 +564,7 @@ public class MSIImage extends Model implements PropertyChangeListener
 
 	/**
 	 * 	Make this static so it can be called without needing access
-	 * 	to and MSIImage object. 
+	 * 	to and MSIImage object.
 	 */
 	static public void loadImageInfo(
 			String lblFilename,
@@ -592,7 +592,7 @@ public class MSIImage extends Model implements PropertyChangeListener
 		while ((str = in.readLine()) != null)
 		{
 		    StringTokenizer st = new StringTokenizer(str);
-		    while (st.hasMoreTokens()) 
+		    while (st.hasMoreTokens())
 		    {
 		    	String token = st.nextToken();
 		    	if (START_TIME.equals(token))
@@ -802,11 +802,11 @@ public class MSIImage extends Model implements PropertyChangeListener
         MathUtil.vhat(frustum2, frustum2);
         MathUtil.vhat(frustum3, frustum3);
         MathUtil.vhat(frustum4, frustum4);
-        
+
         MathUtil.vhat(cz, boresightDirection);
         MathUtil.vhat(cx, upVector);
 	}
-    
+
 	private void loadSumfile() throws NumberFormatException, IOException
 	{
 		File sumfile = new File(fullpath);
@@ -882,7 +882,7 @@ public class MSIImage extends Model implements PropertyChangeListener
 	{
 	    if (generateFootprint)
 	    {
-            vtkPolyData tmp = erosModel.computeFrustumIntersection(spacecraftPosition, 
+            vtkPolyData tmp = erosModel.computeFrustumIntersection(spacecraftPosition,
                     frustum1, frustum3, frustum4, frustum2);
 
             if (tmp == null)
@@ -897,7 +897,7 @@ public class MSIImage extends Model implements PropertyChangeListener
             textureCoords.SetNumberOfTuples(numberOfPoints);
 
             vtkPoints points = footprint.GetPoints();
-            
+
 
             double a = MathUtil.vsep(frustum1, frustum3);
             double b = MathUtil.vsep(frustum1, frustum2);
@@ -924,15 +924,15 @@ public class MSIImage extends Model implements PropertyChangeListener
                     u = Math.sqrt(u);
 
                 //System.out.println(v/b + " " + u/a + " " + d1 + " " + d2);
-                
+
                 v = v/b;
                 u = u/a;
-                
+
                 if (v < 0.0) v = 0.0;
                 if (v > 1.0) v = 1.0;
                 if (u < 0.0) u = 0.0;
                 if (u > 1.0) u = 1.0;
-                
+
                 textureCoords.SetTuple2(i, v, u);
             }
 
@@ -942,10 +942,10 @@ public class MSIImage extends Model implements PropertyChangeListener
 	    else
 	    {
             int resolutionLevel = erosModel.getModelResolution();
-            
+
             String footprintFilename = null;
             File file = null;
-            
+
             if (footprintIsOnLocalDisk)
             {
                 if (key.source == MSISource.PDS)
@@ -964,7 +964,7 @@ public class MSIImage extends Model implements PropertyChangeListener
 
                 file = FileCache.getFileFromServer(footprintFilename);
             }
-            
+
             if (file == null || !file.exists())
             {
                 System.out.println("Warning: " + footprintFilename + " not found");
@@ -978,7 +978,7 @@ public class MSIImage extends Model implements PropertyChangeListener
             vtkPolyData footprintReaderOutput = footprintReader.GetOutput();
             footprint.DeepCopy(footprintReaderOutput);
 	    }
-	    
+	
 		
 		shiftedFootprint.DeepCopy(footprint);
 		PolyDataUtil.shiftPolyDataInNormalDirection(shiftedFootprint, 0.002);
@@ -1000,7 +1000,7 @@ public class MSIImage extends Model implements PropertyChangeListener
         edgeExtracter.NonManifoldEdgesOff();
         edgeExtracter.ManifoldEdgesOff();
         edgeExtracter.Update();
-        
+
         vtkPolyData boundary = new vtkPolyData();
         vtkPolyData edgeExtracterOutput = edgeExtracter.GetOutput();
         boundary.DeepCopy(edgeExtracterOutput);
@@ -1071,7 +1071,7 @@ public class MSIImage extends Model implements PropertyChangeListener
 			spacecraftPosition[0] - pt[0],
 			spacecraftPosition[1] - pt[1],
 			spacecraftPosition[2] - pt[2]};
-		                                      
+		
 		
 		double[] sunvec = {
 				sunPosition[0] - pt[0],
@@ -1193,7 +1193,7 @@ public class MSIImage extends Model implements PropertyChangeListener
 	 * image contains a limb without having to compute the entire backplane. Note
 	 * that this is a bit of a hack and a better way is needed to quickly determine
 	 * if there is a limb.
-	 * 
+	 *
 	 * @param returnNullIfContainsLimb
 	 * @return
 	 */
@@ -1233,11 +1233,11 @@ public class MSIImage extends Model implements PropertyChangeListener
         //vtkPoints intersectPoints = new vtkPoints();
         //vtkIdList intersectCells = new vtkIdList();
 		vtkGenericCell cell = new vtkGenericCell();
-        
+
 		// For each pixel in the image we need to compute the vector
 		// from the spacecraft pointing in the direction of that pixel.
 		// To do this, for each row in the image compute the left and
-		// right vectors of the entire row. Then for each pixel in 
+		// right vectors of the entire row. Then for each pixel in
 		// the row use the two vectors from either side to compute
 		// the vector of that pixel.
 		double[] corner1 = {
@@ -1335,7 +1335,7 @@ public class MSIImage extends Model implements PropertyChangeListener
 				    // we don't have normals of the asteroid itself)
 			        if (returnNullIfContainsLimb)
 			            continue;
-			        
+			
 					//double[] closestPoint = intersectPoints.GetPoint(0);
 					//int closestCell = intersectCells.GetId(0);
 					double[] closestPoint = x;
@@ -1479,7 +1479,7 @@ public class MSIImage extends Model implements PropertyChangeListener
 		
 		/*
 		 TODO consider generating the entire lbl file on the fly
-		 
+		
 		StringBuffer str = new StringBuffer("");
 
 		String nl = System.getProperty("line.separator");
