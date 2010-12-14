@@ -19,6 +19,20 @@ public class PolyDataUtil
 		System.out.println(s + " " + p[0] + " " + p[1] + " " + p[2]);
 	}
 
+	public static vtkPolyData computeMultipleFrustumIntersection(
+			vtkPolyData polyData,
+			vtksbCellLocator locator,
+			vtkAbstractPointLocator pointLocator,
+			ArrayList<Frustum> frustums)
+	{
+		for (Frustum f : frustums)
+		{
+			polyData = computeFrustumIntersection(polyData, locator, pointLocator, f.origin, f.ul, f.ur, f.lr, f.ll);
+		}
+		
+		return polyData;
+	}
+	
 	public static vtkPolyData computeFrustumIntersection(
 			vtkPolyData polyData,
 			vtksbCellLocator locator,
