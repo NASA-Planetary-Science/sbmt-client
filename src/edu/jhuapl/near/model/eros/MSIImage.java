@@ -308,7 +308,8 @@ public class MSIImage extends Model implements PropertyChangeListener
         reslice.SetOutputExtent(0, IMAGE_WIDTH-1, 0, IMAGE_HEIGHT-1, 0, 0);
         reslice.Update();
         
-        rawImage.DeepCopy(reslice.GetOutput());
+        vtkImageData resliceOutput = reslice.GetOutput();
+        rawImage.DeepCopy(resliceOutput);
         rawImage.SetSpacing(1, 1, 1);
         
         setDisplayedImageRange(new IntensityRange(0, 255));
@@ -384,7 +385,8 @@ public class MSIImage extends Model implements PropertyChangeListener
 			footprintActor = new vtkActor();
 			footprintActor.SetMapper(footprintMapper);
 			footprintActor.SetTexture(texture);
-			footprintActor.GetProperty().LightingOff();
+	    	vtkProperty footprintProperty = footprintActor.GetProperty();
+			footprintProperty.LightingOff();
 
 			footprintActors.add(footprintActor);
 		}
@@ -434,8 +436,9 @@ public class MSIImage extends Model implements PropertyChangeListener
 
 			frustumActor = new vtkActor();
 			frustumActor.SetMapper(frusMapper);
-			frustumActor.GetProperty().SetColor(0.0, 1.0, 0.0);
-			frustumActor.GetProperty().SetLineWidth(2.0);
+	    	vtkProperty frustumProperty = frustumActor.GetProperty();
+			frustumProperty.SetColor(0.0, 1.0, 0.0);
+			frustumProperty.SetLineWidth(2.0);
 			frustumActor.VisibilityOff();
 			
 			footprintActors.add(frustumActor);
@@ -542,7 +545,8 @@ public class MSIImage extends Model implements PropertyChangeListener
 
 			if (displayedImage == null)
 				displayedImage = new vtkImageData();
-			displayedImage.DeepCopy(mapToColors.GetOutput());
+			vtkImageData mapToColorsOutput = mapToColors.GetOutput();
+			displayedImage.DeepCopy(mapToColorsOutput);
 
 			//vtkPNGWriter writer = new vtkPNGWriter();
 			//writer.SetFileName("fit.png");
@@ -971,7 +975,8 @@ public class MSIImage extends Model implements PropertyChangeListener
             footprintReader.SetFileName(file.getAbsolutePath());
             footprintReader.Update();
 
-            footprint.DeepCopy(footprintReader.GetOutput());
+            vtkPolyData footprintReaderOutput = footprintReader.GetOutput();
+            footprint.DeepCopy(footprintReaderOutput);
 	    }
 	    
 		
@@ -997,7 +1002,8 @@ public class MSIImage extends Model implements PropertyChangeListener
         edgeExtracter.Update();
         
         vtkPolyData boundary = new vtkPolyData();
-        boundary.DeepCopy(edgeExtracter.GetOutput());
+        vtkPolyData edgeExtracterOutput = edgeExtracter.GetOutput();
+        boundary.DeepCopy(edgeExtracterOutput);
 
 		return boundary;
 	}
@@ -1047,7 +1053,8 @@ public class MSIImage extends Model implements PropertyChangeListener
 			normalsFilter.SplittingOff();
 			normalsFilter.Update();
 
-			footprint.DeepCopy(normalsFilter.GetOutput());
+			vtkPolyData normalsFilterOutput = normalsFilter.GetOutput();
+			footprint.DeepCopy(normalsFilterOutput);
 			normalsGenerated = true;
 		}
 	}

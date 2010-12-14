@@ -190,7 +190,8 @@ public class DEMModel extends SmallBodyModel
 		normalsFilter.FlipNormalsOn();
 		normalsFilter.Update();
 		
-		dem.DeepCopy(normalsFilter.GetOutput());
+		vtkPolyData normalsFilterOutput = normalsFilter.GetOutput();
+		dem.DeepCopy(normalsFilterOutput);
 		
 		return dem;
 	}

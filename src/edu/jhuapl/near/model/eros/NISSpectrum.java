@@ -6,7 +6,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.WeakHashMap;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -235,12 +234,13 @@ public class NISSpectrum extends Model implements PropertyChangeListener
 
 			footprintActor = new vtkActor();
 			footprintActor.SetMapper(footprintMapper);
-			footprintActor.GetProperty().SetColor(
+			vtkProperty footprintProperty = footprintActor.GetProperty();
+			footprintProperty.SetColor(
 					getChannelColor(),
 					getChannelColor(),
 					getChannelColor());
-			footprintActor.GetProperty().SetLineWidth(2.0);
-			footprintActor.GetProperty().LightingOff();
+			footprintProperty.SetLineWidth(2.0);
+			footprintProperty.LightingOff();
 
 			footprintActors.add(footprintActor);
 
@@ -315,8 +315,9 @@ public class NISSpectrum extends Model implements PropertyChangeListener
 
 			frustumActor = new vtkActor();
 			frustumActor.SetMapper(frusMapper);
-			frustumActor.GetProperty().SetColor(0.0, 1.0, 0.0);
-			frustumActor.GetProperty().SetLineWidth(2.0);
+			vtkProperty frustumProperty = frustumActor.GetProperty();
+			frustumProperty.SetColor(0.0, 1.0, 0.0);
+			frustumProperty.SetLineWidth(2.0);
 			frustumActor.VisibilityOff();
 
 			footprintActors.add(frustumActor);
@@ -453,7 +454,8 @@ public class NISSpectrum extends Model implements PropertyChangeListener
 
     public void updateChannelColoring()
     {
-		footprintActor.GetProperty().SetColor(
+    	vtkProperty footprintProperty = footprintActor.GetProperty();
+		footprintProperty.SetColor(
 				getChannelColor(),
 				getChannelColor(),
 				getChannelColor());
