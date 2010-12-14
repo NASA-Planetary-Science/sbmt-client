@@ -34,7 +34,7 @@ public class NLRSummaryPanel extends JPanel
     {
     	setLayout(new BoxLayout(this,
         		BoxLayout.PAGE_AXIS));
-    
+
     	//this.modelManager = modelManager;
     	this.nlrModel = (NLRBrowseDataCollection)modelManager.getModel(ModelNames.NLR_DATA_BROWSE);
 
@@ -72,7 +72,7 @@ public class NLRSummaryPanel extends JPanel
         					saveButton.getParent(),
         					"Save NLR data",
         					tmp.getName().substring(0, tmp.getName().length()-3));
-        
+
         			try
         			{
         				if (file != null)

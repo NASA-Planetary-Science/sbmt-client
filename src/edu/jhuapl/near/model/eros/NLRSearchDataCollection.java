@@ -734,7 +734,7 @@ public class NLRSearchDataCollection extends Model
     private void createDoyToPathMap()
     {
     	nlrDoyToPathMap = new HashMap<String, String>();
-    
+
     	ArrayList<String> allpaths = getAllNlrPaths();
     	for (String path : allpaths)
     	{
@@ -746,7 +746,7 @@ public class NLRSearchDataCollection extends Model
     		if (doyStr.startsWith("0"))
     			doyStr = doyStr.substring(1);
     		int doy = Integer.parseInt(doyStr);
-    
+
     		nlrDoyToPathMap.put((new IdPair(doy, year)).toString(), path);
     	}
     }
@@ -754,7 +754,7 @@ public class NLRSearchDataCollection extends Model
     private ArrayList<String> getAllNlrPaths()
     {
     	ArrayList<String> paths = new ArrayList<String>();
-    
+
 		InputStream is = getClass().getResourceAsStream("/edu/jhuapl/near/data/NlrFiles.txt");
 		InputStreamReader isr = new InputStreamReader(is);
 		BufferedReader in = new BufferedReader(isr);
@@ -853,10 +853,10 @@ public class NLRSearchDataCollection extends Model
     {
     	potential.clear();
     	distance.clear();
-    
+
     	if (originalPoints.size() == 0 || firstPointShown < 0 || lastPointShown < 0)
     		return;
-    
+
         double length = 0.0;
 
         potential.add(originalPoints.get(firstPointShown).potential);
@@ -883,10 +883,10 @@ public class NLRSearchDataCollection extends Model
     {
     	potential.clear();
     	time.clear();
-    
+
     	if (originalPoints.size() == 0 || firstPointShown < 0 || lastPointShown < 0)
     		return;
-    
+
         for (int i=firstPointShown; i<=lastPointShown; ++i)
         {
             potential.add(originalPoints.get(i).potential);

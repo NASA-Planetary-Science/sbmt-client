@@ -129,7 +129,7 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
 	    {
 	    	this.center = center;
 	    	this.radius = radius;
-	    
+
 	    	sbModel.drawPolygon(center, radius, numberOfSides, interiorPolyData, boundaryPolyData);
 	    }
 
@@ -399,7 +399,7 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
     			(pol.center[2]-newPointOnPerimeter[2])*(pol.center[2]-newPointOnPerimeter[2]));
     	if (newRadius > maxRadius)
     		newRadius = maxRadius;
-    
+
         pol.updatePolygon(smallBodyModel, pol.center, newRadius);
         updatePolyData();
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
@@ -498,9 +498,9 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
 
 	    	if (pol.id > maxPolygonId)
 	    		maxPolygonId = pol.id;
-	    
+
 	    	// The remainder of the line (if there is one) is not used
-	    
+
 	    	pol.updatePolygon(smallBodyModel, pol.center, pol.radius);
 	        newPolygons.add(pol);
 		}

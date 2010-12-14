@@ -110,7 +110,7 @@ public class HelpMenu extends JMenu
         	catch (Exception e)
         	{
         	}
-        
+
 			JOptionPane.showMessageDialog(rootPanel,
 					"Small Body Mapping Tool\n" + versionString +
 				    COPYRIGHT + " 2010 The Johns Hopkins University Applied Physics Laboratory\n",

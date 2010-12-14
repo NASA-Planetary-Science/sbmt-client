@@ -25,7 +25,7 @@ public class ModelManager extends Model implements PropertyChangeListener
     		Model model = models.get(modelName);
     		model.addPropertyChangeListener(this);
     		allModels.put(modelName, model);
-    	}    
+    	}
 
     	updateProps();
     }

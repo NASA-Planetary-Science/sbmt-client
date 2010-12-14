@@ -43,7 +43,7 @@ public class NISPopupMenu extends PopupMenu
     	this.modelManager = modelManager;
     	this.infoPanelManager = infoPanelManager;
     	//this.erosModel = (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
-    
+
 		showRemoveSpectrumIn3DMenuItem = new JCheckBoxMenuItem(new ShowRemoveIn3DAction());
 		showRemoveSpectrumIn3DMenuItem.setText("Show Footprint");
 		this.add(showRemoveSpectrumIn3DMenuItem);

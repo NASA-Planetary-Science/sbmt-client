@@ -191,7 +191,7 @@ public class MSIBoundaryCollection extends Model implements PropertyChangeListen
 						points.InsertNextPoint(closestPoint);
 			        	idList.SetId(0, count);
 			        	verts.InsertNextCell(idList);
-			        
+
 			        	++count;
 					}
 				}

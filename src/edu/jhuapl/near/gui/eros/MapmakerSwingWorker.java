@@ -98,7 +98,7 @@ public class MapmakerSwingWorker extends FileDownloadSwingWorker
             {
         		if (isCancelled())
         			break;
-        
+
             	try
             	{
             		mapmakerProcess.exitValue();

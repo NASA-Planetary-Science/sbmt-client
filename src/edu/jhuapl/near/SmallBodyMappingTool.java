@@ -104,9 +104,9 @@ public class SmallBodyMappingTool extends JFrame
 
                 	JPopupMenu.setDefaultLightWeightPopupEnabled(false);
                     ToolTipManager.sharedInstance().setLightWeightPopupEnabled(false);
-                
+
                 	SmallBodyMappingTool frame = new SmallBodyMappingTool();
-                
+
             		ImageIcon erosIcon = new ImageIcon(getClass().getResource("/edu/jhuapl/near/data/eros.png"));
                     frame.setIconImage(erosIcon.getImage());
                     frame.setTitle("Small Body Mapping Tool");

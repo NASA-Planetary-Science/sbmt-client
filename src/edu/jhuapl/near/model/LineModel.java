@@ -276,7 +276,7 @@ public class LineModel extends StructureModel implements PropertyChangeListener
 		for (Line lin : this.lines)
 		{
 			numberOfPoints += lin.lat.size();
-		}    
+		}
     	return numberOfPoints;
     }
 
@@ -434,7 +434,7 @@ public class LineModel extends StructureModel implements PropertyChangeListener
     {
     	if (selectedLine < 0)
     		return;
-    
+
         Line lin = lines.get(selectedLine);
 
         if (lin.controlPointIds.size() == maximumVerticesPerLine)
@@ -442,7 +442,7 @@ public class LineModel extends StructureModel implements PropertyChangeListener
 
     	if (currentLineVertex < -1 || currentLineVertex >= lin.controlPointIds.size())
     		System.out.println("Error: currentLineVertex is invalid");
-    
+
         LatLon ll = MathUtil.reclat(newPoint);
 
         lin.lat.add(currentLineVertex+1, ll.lat);
@@ -610,7 +610,7 @@ public class LineModel extends StructureModel implements PropertyChangeListener
     {
     	if (selectedLine == cellId)
     		return;
-    
+
     	selectedLine = cellId;
 
     	if (cellId >= 0)
@@ -622,7 +622,7 @@ public class LineModel extends StructureModel implements PropertyChangeListener
     	{
     		currentLineVertex = -1000;
     	}
-    
+
     	updateLineSelection();
 
     	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
@@ -631,7 +631,7 @@ public class LineModel extends StructureModel implements PropertyChangeListener
     public void selectCurrentLineVertex(int idx)
     {
     	currentLineVertex = idx;
-    
+
     	updateLineSelection();
 
     	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
@@ -831,7 +831,7 @@ public class LineModel extends StructureModel implements PropertyChangeListener
         updateLineSelection();
 
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-    
+
     }
     */
 
@@ -841,7 +841,7 @@ public class LineModel extends StructureModel implements PropertyChangeListener
 		{
         	for (int i=0; i<lin.controlPointIds.size(); ++i)
         		lin.shiftPointOnPathToClosestPointOnAsteroid(i);
-        
+
         	for (int i=0; i<lin.controlPointIds.size()-1; ++i)
         		lin.updateSegment(i);
 		}

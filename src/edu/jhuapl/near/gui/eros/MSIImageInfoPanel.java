@@ -160,9 +160,9 @@ public class MSIImageInfoPanel extends ModelInfoWindow implements PropertyChange
     	 */
     	MSIPopupMenu msiImagesPopupMenu =
 			new MSIPopupMenu(modelManager, null, null, this);
-    
+
     	msiImagesPopupMenu.setCurrentImage(msiImage.getKey());
-    
+
     	JMenu menu = new JMenu("Options");
         menu.setMnemonic('O');
 

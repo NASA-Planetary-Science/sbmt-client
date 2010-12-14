@@ -29,7 +29,7 @@ public class Mapmaker
     	String osname = System.getProperty("os.name");
 
     	ArrayList<String> processCommand = new ArrayList<String>();
-    
+
 		processBuilder = new ProcessBuilder(processCommand);
 
 		processBuilder.directory(new File(mapmakerRootDir));
@@ -43,7 +43,7 @@ public class Mapmaker
     			processName = execDir + File.separator + "MAPMAKERO.linux64";
     		else
     			processName = execDir + File.separator + "MAPMAKERO.linux32";
-    
+
     		env.put("LD_LIBRARY_PATH", execDir);
     	}
     	else if (osname.toLowerCase().startsWith("mac"))
@@ -57,7 +57,7 @@ public class Mapmaker
 			processName = execDir + File.separator + "MAPMAKERO.win32.exe";
 			//throw new IOException("Operating system not supported");
     	}
-    
+
     	new File(processName).setExecutable(true);
     	processCommand.add(processName);
 	}

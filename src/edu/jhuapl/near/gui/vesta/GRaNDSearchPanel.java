@@ -85,7 +85,7 @@ public class GRaNDSearchPanel extends JPanel implements ActionListener, MouseLis
     	//setLayout(new BoxLayout(this,
         //		BoxLayout.PAGE_AXIS));
     	setLayout(new MigLayout("wrap 1, insets 0"));
-    
+
     	this.modelManager = modelManager;
     	this.pickManager = pickManager;
 
@@ -102,7 +102,7 @@ public class GRaNDSearchPanel extends JPanel implements ActionListener, MouseLis
 //    	pane.setLayout(new BoxLayout(pane,
 //        		BoxLayout.PAGE_AXIS));
     	pane.setLayout(new MigLayout("wrap 1"));
-    
+
     	//pane.setBorder(
         //        new CompoundBorder(BorderFactory.createEmptyBorder(9, 9, 9, 9),
         //                           new TitledBorder("Query Editor")));
@@ -539,7 +539,7 @@ public class GRaNDSearchPanel extends JPanel implements ActionListener, MouseLis
                     cubeList = erosModel.getIntersectingCubes(region.interiorPolyData);
                 }
 			}
-        
+
         	ArrayList<String> results = Query.getInstance().runQuery(
         			Query.Datatype.NIS,
         			startDateJoda,
@@ -579,7 +579,7 @@ public class GRaNDSearchPanel extends JPanel implements ActionListener, MouseLis
 		nisResultsLabelText = results.size() + " spectra matched";
     	resultsLabel.setText(nisResultsLabelText);
     	nisRawResults = results;
-    
+
     	String[] formattedResults = new String[results.size()];
 
     	// add the results to the list
@@ -590,10 +590,10 @@ public class GRaNDSearchPanel extends JPanel implements ActionListener, MouseLis
     				str.substring(16, 25)
     				+ ", day: " + str.substring(10, 13) + "/" + str.substring(5, 9)
     				);
-    
+
     		++i;
     	}
-    
+
     	resultList.setListData(formattedResults);
 
     	// Show the first set of boundaries

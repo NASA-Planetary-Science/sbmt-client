@@ -66,7 +66,7 @@ public class NLRSqlDatabaseGenerator
         	{
         		e.printStackTrace();
         	}
-        
+
             db.update(
             		"create table nlr(" +
             		"UTC bigint PRIMARY KEY, " +
@@ -154,16 +154,16 @@ public class NLRSqlDatabaseGenerator
         			pt[2] = Double.parseDouble(vals[16])/1000.0;
 
         			double[] closestPt = erosModel.findClosestPoint(pt);
-        
+
         			double dist = MathUtil.distanceBetween(pt, closestPt);
 
         			int cubeid = -1;
-        
+
         			if (dist <= MAX_DIST)
         			{
         				cubeid = cubes.getCubeId(closestPt);
         			}
-        
+
                     msiInsert.setLong(1, sdf.parse(vals[4]).getTime());
                     msiInsert.setFloat(2, Float.parseFloat(vals[0]));
                     msiInsert.setFloat(3, Float.parseFloat(vals[1]));

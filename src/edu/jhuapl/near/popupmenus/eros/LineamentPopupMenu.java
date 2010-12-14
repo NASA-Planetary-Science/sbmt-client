@@ -46,7 +46,7 @@ public class LineamentPopupMenu extends PopupMenu
     private class ChangeLineamentColorAction extends AbstractAction
     {
     	ColoringType coloringType;
-    
+
     	public ChangeLineamentColorAction(ColoringType type)
         {
     		this.coloringType = type;
@@ -55,16 +55,16 @@ public class LineamentPopupMenu extends PopupMenu
         public void actionPerformed(ActionEvent actionEvent)
         {
         	Color color = ColorChooser.showColorChooser(invoker);
-        
+
         	if (color == null)
         		return;
-        
+
         	int[] c = new int[4];
         	c[0] = color.getRed();
         	c[1] = color.getGreen();
         	c[2] = color.getBlue();
         	c[3] = color.getAlpha();
-        
+
         	switch(coloringType)
         	{
         	case ONE_LINEAMENT:

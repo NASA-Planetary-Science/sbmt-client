@@ -19,7 +19,7 @@ public class StatusBar extends JPanel
 
     	Font font = new Font("Monospaced", Font.PLAIN, 13);
     	rightLabel.setFont(font);
-    
+
     	setBorder(new BevelBorder(BevelBorder.LOWERED));
 	}
 

@@ -19,15 +19,15 @@ public class CustomFileChooser
     private static class CustomExtensionFilter extends FileFilter
     {
     	private String extension;
-    
+
     	public CustomExtensionFilter(String extension)
     	{
     		if (extension != null)
     			extension = extension.toLowerCase();
-    
+
     		this.extension = extension;
     	}
-    
+
         //Accept all directories and all files with specified extension.
         public boolean accept(File f)
         {
@@ -77,7 +77,7 @@ public class CustomFileChooser
 
     static
     {
-    	fc.setAcceptAllFileFilterUsed(false);    
+    	fc.setAcceptAllFileFilterUsed(false);
     }
 
     public static File showOpenDialog(Component parent, String title)

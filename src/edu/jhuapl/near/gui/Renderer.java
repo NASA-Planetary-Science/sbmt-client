@@ -20,7 +20,7 @@ public class Renderer extends JPanel implements
     public Renderer(ModelManager modelManager)
     {
     	setLayout(new BorderLayout());
-    
+
         renWin = new vtkEnhancedRenderWindowPanel();
 
         this.modelManager = modelManager;
@@ -48,7 +48,7 @@ public class Renderer extends JPanel implements
     	// Go through the props and if an prop is already in the renderer,
     	// do nothing. If not, add it. If an prop not listed is
     	// in the renderer, remove it from the renderer.
-    
+
     	// First remove the props not in the specified list that are currently rendered.
     	vtkPropCollection propCollection = renWin.GetRenderer().GetViewProps();
     	int size = propCollection.GetNumberOfItems();
@@ -63,7 +63,7 @@ public class Renderer extends JPanel implements
     			renWin.GetRenderer().RemoveViewProp(prop);
     		renWin.unlock();
     	}
-    
+
     	// Next add the new props.
     	for (vtkProp prop : props)
     	{
@@ -97,7 +97,7 @@ public class Renderer extends JPanel implements
     			actorWasAdded = true;
     		}
     	}
-    
+
     	if (actorWasAdded)
     		render();
     }

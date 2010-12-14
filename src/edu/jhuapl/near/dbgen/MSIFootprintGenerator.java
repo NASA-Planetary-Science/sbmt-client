@@ -92,15 +92,15 @@ public class MSIFootprintGenerator
 
     		MSIImage image = new MSIImage(origFile, erosModel, msiSource);
 
-    
+
     		System.out.println("id: " + Integer.parseInt(origFile.getName().substring(2, 11)));
     		System.out.println("year: " + yearStr);
     		System.out.println("dayofyear: " + dayOfYearStr);
     		//System.out.println("midtime: " + midtime);
-    
+
     		image.loadFootprint();
     		vtkPolyData footprint = image.getUnshiftedFootprint();
-    
+
 			if (footprint == null || footprint.GetNumberOfPoints() == 0)
 			{
 				System.err.println("Error: Footprint generation failed");

@@ -48,7 +48,7 @@ abstract public class StructuresPopupMenu extends PopupMenu
     	private Component invoker;
     	private StructureModel structureModel;
     	private int structureIndex;
-    
+
     	public ChangeColorAction(StructureModel structureModel)
         {
 			this.structureModel = structureModel;
@@ -67,10 +67,10 @@ abstract public class StructuresPopupMenu extends PopupMenu
 		public void actionPerformed(ActionEvent actionEvent)
         {
         	Color color = ColorChooser.showColorChooser(invoker);
-        
+
         	if (color == null)
         		return;
-        
+
         	int[] c = new int[4];
         	c[0] = color.getRed();
         	c[1] = color.getGreen();

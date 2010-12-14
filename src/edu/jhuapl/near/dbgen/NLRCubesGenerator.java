@@ -88,17 +88,17 @@ public class NLRCubesGenerator
 
         			if (true)
         				continue;
-        
+
         			double[] closestPt = erosModel.findClosestPoint(pt);
-        
+
         			double dist = MathUtil.distanceBetween(pt, closestPt);
-        
+
         			if (dist > MAX_DIST)
         			{
         			    cubeIdOfPoints[i] = -1;
         				continue;
         			}
-        
+
         			int cubeid = cubes.getCubeId(closestPt);
                     cubeIdOfPoints[i] = cubeid;
 
@@ -109,7 +109,7 @@ public class NLRCubesGenerator
             	        BufferedWriter out = new BufferedWriter(fstream);
 
             			out.write(lines.get(i) + "\n");
-            
+
             			out.close();
         			}
 				}

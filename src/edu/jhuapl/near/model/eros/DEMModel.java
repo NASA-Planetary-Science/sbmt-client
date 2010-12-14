@@ -66,7 +66,7 @@ public class DEMModel extends SmallBodyModel
     private vtkPolyData initializeDEM(String filename, String lblfilename) throws IOException
 	{
     	loadLblFile(lblfilename);
-    
+
         vtkPoints points = new vtkPoints();
         vtkCellArray polys = new vtkCellArray();
         //vtkFloatArray heights = new vtkFloatArray();
@@ -211,7 +211,7 @@ public class DEMModel extends SmallBodyModel
     {
     	profileHeights.clear();
     	profileDistances.clear();
-    
+
     	// For each point in xyzPointList, find the cell containing that
     	// point and then, using barycentric coordinates find the value
     	// of the height at that point
@@ -220,7 +220,7 @@ public class DEMModel extends SmallBodyModel
     	// and last points of xyzPointList. For each point, p, in xyzPointList, find the point
     	// on the line closest to p. The distance from p to the start of the line is what
     	// is placed in heights. Use SPICE's nplnpt function for this.
-    
+
     	double[] first = xyzPointList.get(0).xyz;
     	double[] last = xyzPointList.get(xyzPointList.size()-1).xyz;
         double[] lindir = new double[3];
@@ -238,11 +238,11 @@ public class DEMModel extends SmallBodyModel
     	for (Point3D p : xyzPointList)
     	{
     		int cellId = findClosestCell(p.xyz);
-    
+
     		double val = PolyDataUtil.interpolateWithinCell(dem, heightsGravity, cellId, p.xyz, idList);
-    
+
     		profileHeights.add(val);
-    
+
             if (zeroLineDir)
             {
         		profileDistances.add(0.0);

@@ -186,7 +186,7 @@ public class MSIImage extends Model implements PropertyChangeListener
 //			return image;
 //		}
 //	}
-    
+
 	/**
 	 * This constructor should only be used in the GUI program since
 	 * this constructor makes sure the relevant files get downloaded
@@ -833,7 +833,7 @@ public class MSIImage extends Model implements PropertyChangeListener
     public HashMap<String, String> getProperties() throws IOException
     {
     	HashMap<String, String> properties = new HashMap<String, String>();
-    
+
     	if (maxPhase < minPhase)
     	{
     		this.computeIlluminationAngles();
@@ -870,7 +870,7 @@ public class MSIImage extends Model implements PropertyChangeListener
     public boolean containsLimb()
     {
     	//TODO Speed this up: Determine if there is a limb without computing the entire backplane.
-    
+
     	float[] bp = generateBackplanes(true);
     	if (bp == null)
     		return true;
@@ -1118,7 +1118,7 @@ public class MSIImage extends Model implements PropertyChangeListener
     				(pt0[2] + pt1[2] + pt2[2]) / 3.0
     		};
     		double[] normal = normals.GetTuple3(i);
-    
+
 			double[] angles = computeIlluminationAnglesAtPoint(centroid, normal);
 			double incidence = angles[0];
 			double emission  = angles[1];

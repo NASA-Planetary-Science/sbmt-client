@@ -433,14 +433,14 @@ public class SmallBodyModel extends Model
     {
     	LatLon lla = new LatLon(lat, lon);
     	double[] lookPt = MathUtil.latrec(lla);
-    
+
     	// Move in the direction of lookPt until we are definitely outside the asteroid
     	BoundingBox bb = getBoundingBox();
     	double largestSide = bb.getLargestSide() * 1.1;
     	lookPt[0] *= largestSide;
     	lookPt[1] *= largestSide;
     	lookPt[2] *= largestSide;
-    
+
     	double[] origin = {0.0, 0.0, 0.0};
 		double tol = 1e-6;
 		double[] t = new double[1];
@@ -582,7 +582,7 @@ public class SmallBodyModel extends Model
     public double[] computeLargestSmallestMeanEdgeLength()
     {
     	double[] largestSmallestMean = new double[3];
-    
+
     	double minLength = Double.MAX_VALUE;
     	double maxLength = 0.0;
     	double meanLength = 0.0;
@@ -613,7 +613,7 @@ public class SmallBodyModel extends Model
     			minLength = dist2;
     		if (dist2 > maxLength)
     			maxLength = dist2;
-    
+
     		meanLength += (dist0 + dist1 + dist2);
     	}
 
@@ -635,7 +635,7 @@ public class SmallBodyModel extends Model
     	vtkMassProperties massProp = new vtkMassProperties();
     	massProp.SetInput(smallBodyPolyData);
     	massProp.Update();
-    
+
     	System.out.println("Surface area " + massProp.GetSurfaceArea());
     	System.out.println("Volume " + massProp.GetVolume());
     }
@@ -644,20 +644,20 @@ public class SmallBodyModel extends Model
     {
     	if (level == resolutionLevel)
     		return;
-    
+
     	resolutionLevel = level;
     	if (level < 0)
     		resolutionLevel = 0;
     	else if (level > 3)
     		resolutionLevel = 3;
-    
+
     	smallBodyCubes = null;
     	if (coloringValues != null)
     	{
     		for (int i=0; i<coloringValues.length; ++i)
     			coloringValues[i] = null;
     	}
-    
+
 		File smallBodyFile = defaultModelFile;
 		switch(level)
 		{
@@ -871,7 +871,7 @@ public class SmallBodyModel extends Model
     private void blendImageMapWithColoring()
     {
     	vtkImageData image = null;
-    
+
     	if (coloringIndex >= 0)
     	{
 	    	vtkLookupTable lookupTable = new vtkLookupTable();
@@ -896,7 +896,7 @@ public class SmallBodyModel extends Model
     	else if (useFalseColoring)
     	{
     		vtkImageAppendComponents appendComponents = new vtkImageAppendComponents();
-    
+
     		int[] components = {redFalseColor, greenFalseColor, blueFalseColor};
     		for (int c : components)
     		{
@@ -910,14 +910,14 @@ public class SmallBodyModel extends Model
         		shiftScale.SetInput(coloringImages[c]);
         		shiftScale.SetOutputScalarTypeToUnsignedChar();
         		shiftScale.Update();
-        
+
         		// TODO in this situation, invalid data get mapped to black, not white, as
         		// is the convention throughout the rest of this class. Fix this if desired.
-        
+
         		vtkAlgorithmOutput outputPort = shiftScale.GetOutputPort();
         		appendComponents.AddInputConnection(outputPort);
     		}
-    
+
     		appendComponents.Update();
     		image = appendComponents.GetOutput();
     	}
@@ -986,7 +986,7 @@ public class SmallBodyModel extends Model
     		lon[0] = textureCoords.GetTuple2(id0)[0];
     		lon[1] = textureCoords.GetTuple2(id1)[0];
     		lon[2] = textureCoords.GetTuple2(id2)[0];
-    
+
     		if ( Math.abs(lon[0] - lon[1]) > 0.5 ||
     			 Math.abs(lon[1] - lon[2]) > 0.5 ||
     			 Math.abs(lon[2] - lon[0]) > 0.5)
@@ -1001,7 +1001,7 @@ public class SmallBodyModel extends Model
     			System.out.println(lon[1] - lon[2]);
     			System.out.println(lon[2] - lon[0]);
     			// First determine which side we're on
-    
+
     			// Do this by first determining which point is the greatest distance from the
     			// meridian
     			double[] dist = {-1000.0, -1000.0, -1000.0};
@@ -1013,14 +1013,14 @@ public class SmallBodyModel extends Model
     					dist[j] = 1.0 - lon[j];
     				else
     					dist[j] = lon[j];
-    
+
     				if (dist[j] > maxDist)
     				{
     					maxDist = dist[j];
     					maxIdx = j;
     				}
     			}
-    
+
     			if (lon[maxIdx] < 0.5) // If true, we're on left
     			{
     				// Make sure all the coordinates are on left
@@ -1045,7 +1045,7 @@ public class SmallBodyModel extends Model
     		}
     	}
     	*/
-    
+
 		smallBodyPolyData.GetPointData().SetTCoords(textureCoords);
     }
 
@@ -1136,7 +1136,7 @@ public class SmallBodyModel extends Model
     		// TODO Auto-generated catch block
     		e.printStackTrace();
     	}
-    
+
     	return getColoringValue(pt, coloringValues[index]);
     }
 
@@ -1342,7 +1342,7 @@ public class SmallBodyModel extends Model
 
 				originalImageMap = new vtkImageData();
 				originalImageMap.DeepCopy(readerOutput);
-			}	    
+			}
 
 	    	if (displayedImageMap == null)
 	    	{

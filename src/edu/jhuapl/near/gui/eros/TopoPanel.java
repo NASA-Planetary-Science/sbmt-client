@@ -49,7 +49,7 @@ public class TopoPanel extends JPanel implements ActionListener
 
     	this.modelManager = modelManager;
     	this.pickManager = pickManager;
-    
+
 		this.addComponentListener(new ComponentAdapter()
 		{
 			public void componentHidden(ComponentEvent e)
@@ -306,10 +306,10 @@ public class TopoPanel extends JPanel implements ActionListener
 					"or Mac OS X instead. We apologize for any inconvenience.",
 					"Error",
 					JOptionPane.ERROR_MESSAGE);
-    
+
     		return false;
     	}
-    
+
     	return true;
 	}
 }

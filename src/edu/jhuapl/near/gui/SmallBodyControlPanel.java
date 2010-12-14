@@ -204,7 +204,7 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
     		if (smallBodyModel.isFalseColoringSupported())
     		{
     			panel.add(coloringButtons.get(coloringButtons.size()-1), "wrap, gapleft 25");
-    
+
     			panel.add(customColorRedLabel, "gapleft 50, split 2, align right");
     			panel.add(customColorRedComboBox, "wrap");
     			panel.add(customColorGreenLabel, "gapleft 50, split 2, align right");
@@ -223,7 +223,7 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
     	panel.add(shadingLabel, "wrap");
     	panel.add(flatShadingButton, "wrap, gapleft 25");
     	panel.add(smoothShadingButton, "wrap, gapleft 25");
-    
+
     	add(panel, BorderLayout.CENTER);
 	}
 
@@ -338,7 +338,7 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
 	    			customColorGreenLabel.setEnabled(false);
 	    			customColorBlueLabel.setEnabled(false);
 	    		}
-	    
+
 				try
 				{
 					smallBodyModel.setColoringIndex(-1);

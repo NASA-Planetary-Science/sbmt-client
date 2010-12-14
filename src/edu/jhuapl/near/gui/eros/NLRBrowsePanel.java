@@ -45,9 +45,9 @@ public class NLRBrowsePanel extends JPanel implements ListSelectionListener
     public class NlrTimeIntervalChanger extends JPanel implements ChangeListener
     {
     	private RangeSlider slider;
-    
+
     	private NLRDataPerDay nlrData;
-    
+
     	public NlrTimeIntervalChanger()
     	{
     		setBorder(BorderFactory.createTitledBorder("Displayed NLR Data"));
@@ -60,7 +60,7 @@ public class NLRBrowsePanel extends JPanel implements ListSelectionListener
     		slider.setEnabled(false);
     		add(slider);
     	}
-    
+
     	void setNLRData(NLRDataPerDay data)
     	{
     		if (data != null)
@@ -91,7 +91,7 @@ public class NLRBrowsePanel extends JPanel implements ListSelectionListener
     {
     	setLayout(new BoxLayout(this,
         		BoxLayout.PAGE_AXIS));
-    
+
     	//this.modelManager = modelManager;
     	this.nlrModel = (NLRBrowseDataCollection)modelManager.getModel(ModelNames.NLR_DATA_BROWSE);
 
@@ -178,7 +178,7 @@ public class NLRBrowsePanel extends JPanel implements ListSelectionListener
         					saveButton.getParent(),
         					"Save NLR data",
         					tmp.getName().substring(0, tmp.getName().length()-3));
-        
+
         			try
         			{
         				if (file != null)

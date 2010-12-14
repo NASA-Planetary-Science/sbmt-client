@@ -417,7 +417,7 @@ public class NISSpectrum extends Model implements PropertyChangeListener
 			break;
 		}
 		properties.put("POLYGON_TYPE_FLAG", polygonTypeStr);
-    
+
 		// Note \u00B0 is the unicode degree symbol
 		String deg = "\u00B0";
 		properties.put("Minimum Incidence", Double.toString(minIncidence)+deg);

@@ -59,7 +59,7 @@ public class MSIPopupMenu extends PopupMenu
     	this.infoPanelManager = infoPanelManager;
     	this.renderer = renderer;
     	this.invoker = invoker;
-    
+
 		showRemoveImageIn3DMenuItem = new JCheckBoxMenuItem(new ShowRemoveIn3DAction());
 		showRemoveImageIn3DMenuItem.setText("Show Image");
 		this.add(showRemoveImageIn3DMenuItem);

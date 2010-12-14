@@ -98,7 +98,7 @@ public class NLRBrowseDataCollection extends Model implements PropertyChangeList
     public ArrayList<String> getAllNlrPaths()
     {
     	ArrayList<String> paths = new ArrayList<String>();
-    
+
 		InputStream is = getClass().getResourceAsStream("/edu/jhuapl/near/data/NlrFiles.txt");
 		InputStreamReader isr = new InputStreamReader(is);
 		BufferedReader in = new BufferedReader(isr);
@@ -135,7 +135,7 @@ public class NLRBrowseDataCollection extends Model implements PropertyChangeList
     		NLRDataPerDay data = fileToNlrPerDayMap.get(key);
     		data.setRadialOffset(offset);
     	}
-    
+
     	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 	}
 }

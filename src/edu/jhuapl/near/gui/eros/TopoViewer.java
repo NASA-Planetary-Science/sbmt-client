@@ -82,7 +82,7 @@ public class TopoViewer extends JFrame
     public TopoViewer(File cubFile, File lblFile, MapletBoundaryCollection mapletBoundaries) throws IOException
 	{
     	this.mapletBoundaries = mapletBoundaries;
-    
+
 		ImageIcon erosIcon = new ImageIcon(getClass().getResource("/edu/jhuapl/near/data/eros.png"));
 		setIconImage(erosIcon.getImage());
 
@@ -90,7 +90,7 @@ public class TopoViewer extends JFrame
 
     	StatusBar statusBar = new StatusBar();
     	add(statusBar, BorderLayout.PAGE_END);
-    
+
     	String filename = cubFile.getAbsolutePath();
     	String lblfilename = lblFile.getAbsolutePath();
 		final ModelManager modelManager = new ModelManager();
@@ -206,19 +206,19 @@ public class TopoViewer extends JFrame
     		public void actionPerformed(ActionEvent e)
     		{
     			removeFaultyProfiles();
-    
+
     			lineModel.addNewStructure();
-    
+
     			// Set the color of this new structure
     			int idx = lineModel.getNumberOfStructures() - 1;
     			lineModel.setStructureColor(idx, getNextColor());
-    
+
     			pickManager.setPickMode(PickMode.LINE_DRAW);
     			editButton.setSelected(true);
     		}
     	});
     	panel.add(newButton);
-    
+
         editButton = new JToggleButton("Edit Profiles");
         editButton.addActionListener(new ActionListener()
         {
@@ -322,7 +322,7 @@ public class TopoViewer extends JFrame
         	Line line = (Line)lineModel.getStructure(i);
         	if (line.controlPointIds.size() != 2)
         		continue;
-        
+
         	out.write(eol + Profile + "=" + i + eol);
         	out.write(StartLatitude + "=" + line.lat.get(0) + eol);
         	out.write(StartLongitude + "=" + line.lon.get(0) + eol);

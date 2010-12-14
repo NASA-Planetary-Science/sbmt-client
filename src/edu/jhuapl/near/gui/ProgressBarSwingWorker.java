@@ -105,14 +105,14 @@ abstract public class ProgressBarSwingWorker extends SwingWorker<Void, Void>
         {
         	int progress = (Integer) evt.getNewValue();
         	System.out.println("progress property change " + progress);
-        
+
         	if (indeterminate)
         		progressBar.setIndeterminate(true);
         	else
         		progressBar.setValue(progress);
-        
+
         	label.setText(labelText);
-        
+
         	if (cancelButton.isEnabled() != enableCancelButton)
         		cancelButton.setEnabled(enableCancelButton);
         }

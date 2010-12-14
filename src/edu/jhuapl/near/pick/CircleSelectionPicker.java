@@ -51,7 +51,7 @@ public class CircleSelectionPicker extends Picker
     	vertexIdBeingEdited = -1;
 
     	circleModel.removeAllStructures();
-    
+
 		int pickSucceeded = doPick(e, smallBodyPicker, renWin);
 
     	if (pickSucceeded == 1)

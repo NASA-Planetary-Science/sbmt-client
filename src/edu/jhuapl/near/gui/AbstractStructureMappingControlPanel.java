@@ -257,7 +257,7 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
     						JOptionPane.ERROR_MESSAGE);
 
     				e.printStackTrace();
-    			}        
+    			}
     		}
     	}
     }

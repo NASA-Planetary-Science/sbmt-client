@@ -151,9 +151,9 @@ public class NISSpectrumInfoPanel extends ModelInfoWindow implements PropertyCha
     {
     	NISPopupMenu msiImagesPopupMenu =
 			new NISPopupMenu(modelManager, null);
-    
+
     	msiImagesPopupMenu.setCurrentSpectrum(nisSpectrum.getServerPath());
-    
+
     	JMenuBar menuBar = new JMenuBar();
 
     	JMenu menu = new JMenu("Options");

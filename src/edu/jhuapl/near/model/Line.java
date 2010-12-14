@@ -91,7 +91,7 @@ public class Line extends StructureModel.Structure
     	linEle.setAttribute(ID, String.valueOf(id));
     	linEle.setAttribute(NAME, name);
     	linEle.setAttribute(LENGTH, String.valueOf(getPathLength()));
-    
+
     	String vertices = "";
         int size = lat.size();
 
@@ -101,9 +101,9 @@ public class Line extends StructureModel.Structure
         	double longitude = lon.get(i)*180.0/Math.PI;
         	if (longitude < 0.0)
         		longitude += 360.0;
-        
+
         	vertices += latitude + " " + longitude + " " + rad.get(i);
-        
+
         	if (i < size-1)
         		vertices += " ";
         }
@@ -122,41 +122,41 @@ public class Line extends StructureModel.Structure
     	xyzPointList.clear();
 
     	id = Integer.parseInt(element.getAttribute(ID));
-    
+
     	if (id > maxId)
     		maxId = id;
-    
+
     	name = element.getAttribute(NAME);
     	String tmp = element.getAttribute(VERTICES);
 
     	if (tmp.length() == 0)
     		return;
-    
+
     	String[] tokens = tmp.split(" ");
-    
+
     	int count = 0;
     	for (int i=0; i<tokens.length;)
     	{
     		lat.add(Double.parseDouble(tokens[i++])*Math.PI/180.0);
     		lon.add(Double.parseDouble(tokens[i++])*Math.PI/180.0);
     		rad.add(Double.parseDouble(tokens[i++]));
-    
+
     		if (shapeModelName == null || !shapeModelName.equals(smallBodyModel.getModelName()))
     			shiftPointOnPathToClosestPointOnAsteroid(count);
 
     		controlPointIds.add(xyzPointList.size());
-    
+
     		// Note, this point will be replaced with the correct value
     		// when we call updateSegment
     		double[] dummy = {0.0, 0.0, 0.0};
     		xyzPointList.add(new Point3D(dummy));
-    
+
     		if (count > 0)
     			this.updateSegment(count-1);
-    
+
     		++count;
     	}
-    
+
     }
 
     public String getClickStatusBarText()
@@ -176,7 +176,7 @@ public class Line extends StructureModel.Structure
 			double dist = xyzPointList.get(i-1).distanceTo(xyzPointList.get(i));
 			length += dist;
 		}
-    
+
 		return length;
     }
 
@@ -208,7 +208,7 @@ public class Line extends StructureModel.Structure
     		vtkPolyData poly = smallBodyModel.drawPath(pt1, pt2);
     		if (poly == null)
     			return;
-    
+
     		points = poly.GetPoints();
         }
 
