@@ -35,7 +35,7 @@ public class NLRCubesGenerator
 
 		String nlrFileList = args[0];
 		String outputFolder = args[1];
-		
+
 		ArrayList<String> nlrFiles = null;
 		try {
 			nlrFiles = FileUtil.getFileLinesAsStringList(nlrFileList);
@@ -44,12 +44,12 @@ public class NLRCubesGenerator
 		}
 
 		SmallBodyCubes cubes = new SmallBodyCubes(erosModel.getSmallBodyPolyData(), 1.0, 1.0, true);
-		
+
 		double[] pt = new double[3];
-		
+
 		// If a point is farther than MAX_DIST from the asteroid, then throw it out.
 		final double MAX_DIST = 1.0;
-	
+
 		vtkPolyData polydata = new vtkPolyData();
 		vtkPoints points = new vtkPoints();
 		vtkCellArray vert = new vtkCellArray();
@@ -66,9 +66,9 @@ public class NLRCubesGenerator
 			for (String filename : nlrFiles)
 			{
 			    System.out.println("Begin processing file " + filename + " - " + filecount++ + " / " + nlrFiles.size());
-			
+
 			    ArrayList<String> lines = FileUtil.getFileLinesAsStringList(filename);
-			
+
 			    int[] cubeIdOfPoints = new int[lines.size()];
                 cubeIdOfPoints[0] = -1;
                 cubeIdOfPoints[1] = -1;
@@ -88,17 +88,17 @@ public class NLRCubesGenerator
 
         			if (true)
         				continue;
-        			
+        
         			double[] closestPt = erosModel.findClosestPoint(pt);
-        			
+        
         			double dist = MathUtil.distanceBetween(pt, closestPt);
-        			
+        
         			if (dist > MAX_DIST)
         			{
         			    cubeIdOfPoints[i] = -1;
         				continue;
         			}
-        			
+        
         			int cubeid = cubes.getCubeId(closestPt);
                     cubeIdOfPoints[i] = cubeid;
 
@@ -109,11 +109,11 @@ public class NLRCubesGenerator
             	        BufferedWriter out = new BufferedWriter(fstream);
 
             			out.write(lines.get(i) + "\n");
-            			
+            
             			out.close();
         			}
 				}
-				
+
 				// Save out the cube ids of each line to a new file
                 FileWriter fstream = new FileWriter(filename.substring(0, filename.length()-3)+ ".cubeids");
                 BufferedWriter out = new BufferedWriter(fstream);

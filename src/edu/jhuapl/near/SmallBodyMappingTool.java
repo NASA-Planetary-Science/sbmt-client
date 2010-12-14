@@ -29,7 +29,7 @@ public class SmallBodyMappingTool extends JFrame
 	private HelpMenu helpMenu;
 	private ViewerManager rootPanel;
 	private static vtkJavaGarbageCollector garbageCollector;
-	
+
 	public SmallBodyMappingTool()
 	{
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -41,7 +41,7 @@ public class SmallBodyMappingTool extends JFrame
 		createMenus();
 
 		this.add(rootPanel, BorderLayout.CENTER);
-		
+
 //        // Center the application on the screen.
 //        Dimension prefSize = this.getPreferredSize();
 //        Dimension parentSize;
@@ -104,9 +104,9 @@ public class SmallBodyMappingTool extends JFrame
 
                 	JPopupMenu.setDefaultLightWeightPopupEnabled(false);
                     ToolTipManager.sharedInstance().setLightWeightPopupEnabled(false);
-                	
+                
                 	SmallBodyMappingTool frame = new SmallBodyMappingTool();
-                	
+                
             		ImageIcon erosIcon = new ImageIcon(getClass().getResource("/edu/jhuapl/near/data/eros.png"));
                     frame.setIconImage(erosIcon.getImage());
                     frame.setTitle("Small Body Mapping Tool");

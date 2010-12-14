@@ -170,7 +170,7 @@ public class SqlManager
     {
 
     	ArrayList<ArrayList<Object>> results = new ArrayList<ArrayList<Object>>();
-    	
+    
         // the order of the rows in a cursor
         // are implementation dependent unless you use the SQL ORDER statement
         ResultSetMetaData meta   = rs.getMetaData();

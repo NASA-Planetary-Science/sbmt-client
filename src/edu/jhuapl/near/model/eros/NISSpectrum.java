@@ -44,7 +44,7 @@ public class NISSpectrum extends Model implements PropertyChangeListener
 	static public final int POLYGON_TYPE_FLAG_OFFSET = 258+2;
 	static public final int NUMBER_OF_VERTICES_OFFSET = 259+2;
 	static public final int POLYGON_START_COORDINATES_OFFSET = 260+2;
-	
+
 	private DateTime dateTime;
 	private double duration;
 	private short polygon_type_flag;
@@ -100,7 +100,7 @@ public class NISSpectrum extends Model implements PropertyChangeListener
 //	{
 //		static private WeakHashMap<NISSpectrum, Object> spectra =
 //			new WeakHashMap<NISSpectrum, Object>();
-//		
+//
 //		static /*public*/ NISSpectrum createSpectrum(String name, SmallBodyModel eros) throws IOException
 //		{
 //			for (NISSpectrum spectrum : spectra.keySet())
@@ -115,7 +115,7 @@ public class NISSpectrum extends Model implements PropertyChangeListener
 //		}
 //	}
 
-	
+
 	public NISSpectrum(String filename, SmallBodyModel eros) throws IOException
 	{
 		// Download the spectrum.
@@ -126,7 +126,7 @@ public class NISSpectrum extends Model implements PropertyChangeListener
 	public NISSpectrum(File nisFile, SmallBodyModel eros) throws IOException
 	{
 		this.erosModel = eros;
-		
+
 		String filename = nisFile.getAbsolutePath();
 		this.fullpath = filename;
 
@@ -136,7 +136,7 @@ public class NISSpectrum extends Model implements PropertyChangeListener
 
 		double metOffsetToMiddle = Double.parseDouble(values.get(MET_OFFSET_TO_MIDDLE_OFFSET));
 		dateTime = dateTime.plusMillis((int)metOffsetToMiddle);
-		
+
 		duration = Double.parseDouble(values.get(DURATION_OFFSET));
 		minIncidence = Double.parseDouble(values.get(INCIDENCE_OFFSET+1));
 		maxIncidence = Double.parseDouble(values.get(INCIDENCE_OFFSET+2));
@@ -146,17 +146,17 @@ public class NISSpectrum extends Model implements PropertyChangeListener
 		maxPhase= Double.parseDouble(values.get(PHASE_OFFSET+2));
 		range = Double.parseDouble(values.get(RANGE_OFFSET));
 		polygon_type_flag = Short.parseShort(values.get(POLYGON_TYPE_FLAG_OFFSET));
-		
+
 		int footprintSize = Integer.parseInt(values.get(NUMBER_OF_VERTICES_OFFSET));
 		for (int i=0; i<footprintSize; ++i)
 		{
 			int latIdx = POLYGON_START_COORDINATES_OFFSET + i*2;
 			int lonIdx = POLYGON_START_COORDINATES_OFFSET + i*2 + 1;
-			
+
 			latLons.add(new LatLon(Double.parseDouble(values.get(latIdx)) * Math.PI / 180.0,
 								   (360.0-Double.parseDouble(values.get(lonIdx))) * Math.PI / 180.0));
 		}
-		
+
 		for (int i=0; i<64; ++i)
 		{
 			// The following min and max clamps the value between 0 and 1.
@@ -189,22 +189,22 @@ public class NISSpectrum extends Model implements PropertyChangeListener
 		{
 			vtkPolyData tmp = erosModel.computeFrustumIntersection(spacecraftPosition,
 					frustum1, frustum2, frustum3, frustum4);
-			
+
 			if (tmp != null)
 			{
 				footprint.DeepCopy(tmp);
-				
+
 				shiftedFootprint.DeepCopy(tmp);
 				PolyDataUtil.shiftPolyDataInNormalDirection(shiftedFootprint, 0.001);
 			}
 		}
 	}
-	
+
 //	private vtkPolyData loadFootprint()
 //	{
 //		String footprintFilename = serverpath.substring(0, serverpath.length()-4) + "_FOOTPRINT.VTK";
 //		File file = FileCache.getFileFromServer(footprintFilename);
-//		
+//
 //		if (file == null)
 //		{
 //			return null;
@@ -216,7 +216,7 @@ public class NISSpectrum extends Model implements PropertyChangeListener
 //
 //        vtkPolyData polyData = new vtkPolyData();
 //		polyData.DeepCopy(footprintReader.GetOutput());
-//		
+//
 //		return polyData;
 //	}
 
@@ -269,7 +269,7 @@ public class NISSpectrum extends Model implements PropertyChangeListener
 			footprintActors.add(edgeActor);
 			*/
 		}
-		
+
 		if (frustumActor == null)
 		{
 			vtkPolyData frus = new vtkPolyData();
@@ -322,14 +322,14 @@ public class NISSpectrum extends Model implements PropertyChangeListener
 
 			footprintActors.add(frustumActor);
 		}
-		
+
 		return footprintActors;
 	}
-	
+
 	public void setShowFrustum(boolean b)
 	{
 		showFrustum = b;
-		
+
 		if (showFrustum)
 		{
 			frustumActor.VisibilityOn();
@@ -339,7 +339,7 @@ public class NISSpectrum extends Model implements PropertyChangeListener
 			frustumActor.VisibilityOff();
 		}
 	}
-	
+
 	public boolean isFrustumShowing()
 	{
 		return showFrustum;
@@ -350,7 +350,7 @@ public class NISSpectrum extends Model implements PropertyChangeListener
 	{
 		return serverpath;
 	}
-	
+
 	public double getRange()
 	{
 		return range;
@@ -360,17 +360,17 @@ public class NISSpectrum extends Model implements PropertyChangeListener
 	{
 		return duration;
 	}
-	
+
 	public DateTime getDateTime()
 	{
 		return dateTime;
 	}
-	
+
 	public short getPolygonTypeFlag()
 	{
 		return polygon_type_flag;
 	}
-	
+
 	public double[] getSpectrum()
 	{
 		return spectrum;
@@ -380,26 +380,26 @@ public class NISSpectrum extends Model implements PropertyChangeListener
 	{
 		return spectrumEros;
 	}
-	
+
 	public double[] getBandCenters()
 	{
 		return bandCenters;
 	}
-	
+
     public HashMap<String, String> getProperties() throws IOException
     {
     	HashMap<String, String> properties = new HashMap<String, String>();
     	System.out.println(this.fullpath);
 		properties.put("DAY_OF_YEAR", (new File(this.fullpath)).getParentFile().getName());
-		
+
 		//properties.put("YEAR", (new File(this.fullpath)).getParentFile().getParentFile().getName());
-		
+
 		properties.put("MET", (new File(this.fullpath)).getName().substring(2,11));
-		
+
 		properties.put("DURATION", Double.toString(duration) + " seconds");
-		
+
 		properties.put("Date", dateTime.toString());
-		
+
 		String polygonTypeStr = "Missing value";
 		switch(this.polygon_type_flag)
 		{
@@ -417,7 +417,7 @@ public class NISSpectrum extends Model implements PropertyChangeListener
 			break;
 		}
 		properties.put("POLYGON_TYPE_FLAG", polygonTypeStr);
-    	
+    
 		// Note \u00B0 is the unicode degree symbol
 		String deg = "\u00B0";
 		properties.put("Minimum Incidence", Double.toString(minIncidence)+deg);
@@ -426,7 +426,7 @@ public class NISSpectrum extends Model implements PropertyChangeListener
 		properties.put("Maximum Emission", Double.toString(maxIncidence)+deg);
 		properties.put("Minimum Phase", Double.toString(minPhase)+deg);
 		properties.put("Maximum Phase", Double.toString(maxPhase)+deg);
-		
+
 		return properties;
     }
 
@@ -498,7 +498,7 @@ public class NISSpectrum extends Model implements PropertyChangeListener
 			val = 0.0;
 		else if (val > 1.0)
 			val = 1.0;
-		
+
 		double slope = 1.0 / (channelColoringMaxValue - channelColoringMinValue);
 		return slope * (val - channelColoringMinValue);
 	}
@@ -509,11 +509,11 @@ public class NISSpectrum extends Model implements PropertyChangeListener
 		{
 			System.out.println("updating nis image");
 			generateFootprint();
-			
+
 			this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 		}
 	}
-	
+
 	/**
 	 * The shifted footprint is the original footprint shifted slightly in the
 	 * normal direction so that it will be rendered correctly and not obscured
@@ -534,11 +534,11 @@ public class NISSpectrum extends Model implements PropertyChangeListener
 	{
 		return footprint;
 	}
-	
+
 	public void Delete()
     {
 		footprint.Delete();
 		shiftedFootprint.Delete();
     }
-	
+
 }

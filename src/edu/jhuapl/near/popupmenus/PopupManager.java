@@ -22,9 +22,9 @@ public abstract class PopupManager
 	{
 		this.modelManager = modelManager;
 	}
-	
+
 	protected abstract HashMap<Model, PopupMenu> getModelToPopupMap();
-	
+
     public void showPopup(MouseEvent e, vtkProp pickedProp, int pickedCellId, double[] pickedPosition)
     {
     	PopupMenu popup = getModelToPopupMap().get(modelManager.getModel(pickedProp));

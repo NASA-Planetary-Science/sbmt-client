@@ -11,7 +11,7 @@ import javax.swing.JRadioButtonMenuItem;
 public class ViewMenu extends JMenu
 {
 	private ViewerManager rootPanel;
-	
+
     public ViewMenu(ViewerManager rootPanel)
     {
         super("View");

@@ -19,7 +19,7 @@ public class MSIFootprintGenerator
 {
 	private static SmallBodyModel erosModel;
     private static int resolutionLevel = 0;
-	
+
 	private static boolean checkIfMsiFilesExist(String line, MSIImage.MSISource source)
 	{
 		File file = new File(line);
@@ -30,7 +30,7 @@ public class MSIFootprintGenerator
 		file = new File(name);
 		if (!file.exists())
 			return false;
-		
+
 		name = line.substring(0, line.length()-4) + "_DDR.LBL";
 		file = new File(name);
 		if (!file.exists())
@@ -92,15 +92,15 @@ public class MSIFootprintGenerator
 
     		MSIImage image = new MSIImage(origFile, erosModel, msiSource);
 
-    		
+    
     		System.out.println("id: " + Integer.parseInt(origFile.getName().substring(2, 11)));
     		System.out.println("year: " + yearStr);
     		System.out.println("dayofyear: " + dayOfYearStr);
     		//System.out.println("midtime: " + midtime);
-    	
+    
     		image.loadFootprint();
     		vtkPolyData footprint = image.getUnshiftedFootprint();
-    		
+    
 			if (footprint == null || footprint.GetNumberOfPoints() == 0)
 			{
 				System.err.println("Error: Footprint generation failed");
@@ -154,14 +154,14 @@ public class MSIFootprintGenerator
         }
 
         MSIImage.setGenerateFootprint(true);
-		
+
 		ArrayList<String> msiFiles = null;
 		try {
 			msiFiles = FileUtil.getFileLinesAsStringList(msiFileList);
 		} catch (IOException e2) {
 			e2.printStackTrace();
 		}
-		
+
 		try
 		{
             generateMSIFootprints(msiFiles, MSISource.PDS);

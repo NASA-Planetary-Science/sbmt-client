@@ -4,22 +4,22 @@ public class Frustum
 {
 	// location of the origin of frustum
 	public final double[] origin;// = new double[3];
-	
+
 	// vector pointing in upper left of frustum
 	public final double[] ul;// = new double[3];
-	
+
 	// vector pointing in upper right of frustum
 	public final double[] ur;// = new double[3];
-	
+
 	// vector pointing in lower left of frustum
 	public final double[] ll;// = new double[3];
-	
+
 	// vector pointing in lower right of frustum
 	public final double[] lr;// = new double[3];
-	
+
 	private final double a;
 	private final double b;
-	
+
 	public Frustum(
 			double[] origin,
 			double[] ul,
@@ -32,11 +32,11 @@ public class Frustum
 		this.ur = ur.clone();
 		this.ll = ll.clone();
 		this.lr = lr.clone();
-		
+
         a = MathUtil.vsep(ul, ur);
         b = MathUtil.vsep(ul, lr);
 	}
-	
+
 	/**
 	 * Given any point in 3D space compute the texture coordinates of the
 	 * point assuming the frustum represents the field of the view of
@@ -50,7 +50,7 @@ public class Frustum
 			 pt[0] - origin[0],
 			 pt[1] - origin[1],
 			 pt[2] - origin[2]};
-		
+
         MathUtil.vhat(vec, vec);
 
         double d1 = MathUtil.vsep(vec, ul);

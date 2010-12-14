@@ -29,10 +29,10 @@ public class PolyDataUtil
 		{
 			polyData = computeFrustumIntersection(polyData, locator, pointLocator, f.origin, f.ul, f.ur, f.lr, f.ll);
 		}
-		
+
 		return polyData;
 	}
-	
+
 	public static vtkPolyData computeFrustumIntersection(
 			vtkPolyData polyData,
 			vtksbCellLocator locator,
@@ -414,7 +414,7 @@ public class PolyDataUtil
 
 		vtkPolyData nextInput = polyData;
 		vtkClipPolyData clipPolyData = null;
-		for (int i=0; i<sides.size(); ++i)	
+		for (int i=0; i<sides.size(); ++i)
 		{
 			int side = sides.get(i);
 
@@ -677,7 +677,7 @@ public class PolyDataUtil
 
 		vtkPolyData nextInput = polyData;
 		vtkClipPolyData clipPolyData = null;
-		for (int i=0; i<sides.size(); ++i)	
+		for (int i=0; i<sides.size(); ++i)
 		{
 			int side = sides.get(i);
 

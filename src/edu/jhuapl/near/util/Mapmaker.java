@@ -19,17 +19,17 @@ public class Mapmaker
 	private File outputFolder;
 	private File cubeFile;
 	private File lblFile;
-	
+
 	public Mapmaker() throws IOException
 	{
 		File file = FileCache.getFileFromServer("/MSI/mapmaker.zip");
 		mapmakerRootDir = file.getParent() + File.separator + "mapmaker";
-		
+
 		String execDir = mapmakerRootDir + File.separator + "EXECUTABLES";
     	String osname = System.getProperty("os.name");
 
     	ArrayList<String> processCommand = new ArrayList<String>();
-    	
+    
 		processBuilder = new ProcessBuilder(processCommand);
 
 		processBuilder.directory(new File(mapmakerRootDir));
@@ -43,13 +43,13 @@ public class Mapmaker
     			processName = execDir + File.separator + "MAPMAKERO.linux64";
     		else
     			processName = execDir + File.separator + "MAPMAKERO.linux32";
-    		
+    
     		env.put("LD_LIBRARY_PATH", execDir);
     	}
     	else if (osname.toLowerCase().startsWith("mac"))
     	{
 			processName = execDir + File.separator + "MAPMAKERO.macosx";
-			
+
     		env.put("DYLD_LIBRARY_PATH", execDir);
     	}
     	else
@@ -57,11 +57,11 @@ public class Mapmaker
 			processName = execDir + File.separator + "MAPMAKERO.win32.exe";
 			//throw new IOException("Operating system not supported");
     	}
-    	
+    
     	new File(processName).setExecutable(true);
     	processCommand.add(processName);
 	}
-	
+
 	public Process runMapmaker() throws IOException, InterruptedException
 	{
 		Process process = processBuilder.start();
@@ -71,10 +71,10 @@ public class Mapmaker
 		stdin.write(arguments.getBytes());
 		stdin.flush();
 		stdin.close();
-		
+
 		return process;
 	}
-	
+
 	public void copyGeneratedFilesToOutputFolder() throws IOException
 	{
 		// Copy output files to output folder
@@ -83,11 +83,11 @@ public class Mapmaker
 
 		cubeFile = new File(outputFolder + File.separator + name + ".cub");
 		lblFile = new File(outputFolder + File.separator + name + ".lbl");
-		
+
 		FileUtil.copyFile(origCubeFile, cubeFile);
 		FileUtil.copyFile(origLblFile, lblFile);
 	}
-	
+
 	public String getName()
 	{
 		return name;
@@ -153,7 +153,7 @@ public class Mapmaker
 	{
 		return cubeFile;
 	}
-	
+
 	public File getLabelFile()
 	{
 		return lblFile;

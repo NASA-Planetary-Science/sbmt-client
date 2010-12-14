@@ -16,11 +16,11 @@ public class ConvertResourceToFile
 		// Get the name of the resource after the last slash
 		File tmp = new File(resource);
 		String name = tmp.getName();
-		
+
 		File parent = new File(parentDir);
 		if (!parent.exists())
 			parent.mkdirs();
-		
+
 		File file = new File(parentDir + File.separator + name);
 		try
 		{
@@ -43,7 +43,7 @@ public class ConvertResourceToFile
 			file = null;
 			e.printStackTrace();
 		}
-		
+
 		return file;
 	}
 
@@ -54,7 +54,7 @@ public class ConvertResourceToFile
 		{
 			temp = File.createTempFile("resource-", null);
 			temp.deleteOnExit();
-			
+
 			InputStream is = o.getClass().getResourceAsStream(resource);
 
 			FileOutputStream os = new FileOutputStream(temp);
@@ -65,7 +65,7 @@ public class ConvertResourceToFile
 			{
 				os.write(buff, 0, len);
 			}
-			
+
 			os.close();
 			is.close();
 		}
@@ -74,7 +74,7 @@ public class ConvertResourceToFile
 			temp = null;
 			e.printStackTrace();
 		}
-		
+
 		return temp;
 	}
 }

@@ -23,14 +23,14 @@ public class NativeLibraryLoader
         		// do nothing
         	}
         });
-		
+
     	String name = System.getProperty("os.name");
     	if (name.toLowerCase().startsWith("windows"))
     	{
         	// On windows, just load all the libraries
     		// manually rather than dealing with how to find dependent libraries.
     		// Note they must be loaded in the following order.
-        	
+        
     		System.loadLibrary("jawt"); // For some reason this is not loaded automatically on Windows
     		System.loadLibrary("vtkzlib");
     		System.loadLibrary("vtkNetCDF");
@@ -82,7 +82,7 @@ public class NativeLibraryLoader
     		// On linux or mac the shared libraries must have
     		// $ORIGIN or @loader_path embedded in them so that
     		// the dependent libraries are found.
-    		
+    
     		System.loadLibrary("vtkCommonJava");
     		System.loadLibrary("vtkFilteringJava");
     		System.loadLibrary("vtkGraphicsJava");

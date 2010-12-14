@@ -25,16 +25,16 @@ public class MSIImageInfoPanel extends ModelInfoWindow implements PropertyChange
     private ContrastChanger contrastChanger;
 	private MSIImage msiImage;
 	private ModelManager modelManager;
-	
+
 	public MSIImageInfoPanel(MSIImage image, ModelManager modelManager)
 	{
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
 		msiImage = image;
 		this.modelManager = modelManager;
-		
+
 		renWin = new vtkEnhancedRenderWindowPanel();
-		
+
         vtkInteractorStyleImage style =
             new vtkInteractorStyleImage();
         renWin.setInteractorStyle(style);
@@ -66,9 +66,9 @@ public class MSIImageInfoPanel extends ModelInfoWindow implements PropertyChange
 		renWin.setSize(MSIImage.IMAGE_WIDTH, MSIImage.IMAGE_HEIGHT);
 
         JPanel panel = new JPanel(new BorderLayout());
-		
+
 		panel.add(renWin, BorderLayout.CENTER);
-		
+
 		JPanel bottomPanel = new JPanel();
 		bottomPanel.setLayout(new BoxLayout(bottomPanel,
         		BoxLayout.PAGE_AXIS));
@@ -85,13 +85,13 @@ public class MSIImageInfoPanel extends ModelInfoWindow implements PropertyChange
 			TreeMap<String, String> sortedProperties = new TreeMap<String, String>(properties);
 			int size = properties.size();
 			data = new Object[size][2];
-			
+
 			int i=0;
 			for (String key : sortedProperties.keySet())
 			{
 				data[i][0] = key;
 				data[i][1] = sortedProperties.get(key);
-				
+
 				++i;
 			}
 		}
@@ -99,7 +99,7 @@ public class MSIImageInfoPanel extends ModelInfoWindow implements PropertyChange
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 
 		JTable table = new JTable(data, columnNames)
 		{
@@ -113,7 +113,7 @@ public class MSIImageInfoPanel extends ModelInfoWindow implements PropertyChange
 		table.setPreferredScrollableViewportSize(new Dimension(500, 130));
 
 		JScrollPane scrollPane = new JScrollPane(table);
-		
+
 		// Add the contrast changer
         contrastChanger = new ContrastChanger();
 
@@ -160,9 +160,9 @@ public class MSIImageInfoPanel extends ModelInfoWindow implements PropertyChange
     	 */
     	MSIPopupMenu msiImagesPopupMenu =
 			new MSIPopupMenu(modelManager, null, null, this);
-    	
+    
     	msiImagesPopupMenu.setCurrentImage(msiImage.getKey());
-    	
+    
     	JMenu menu = new JMenu("Options");
         menu.setMnemonic('O');
 
@@ -182,12 +182,12 @@ public class MSIImageInfoPanel extends ModelInfoWindow implements PropertyChange
 	{
 		return msiImage;
 	}
-	
+
 	public Model getCollectionModel()
 	{
 		return modelManager.getModel(ModelNames.MSI_IMAGES);
 	}
-	
+
 	public void propertyChange(PropertyChangeEvent arg0)
 	{
 		if (renWin.GetRenderWindow().GetNeverRendered() > 0)

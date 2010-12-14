@@ -60,7 +60,7 @@ public abstract class Picker implements
 		else
 		{
 			// Delay half a second before enabling picking. This helps prevent some crashes.
-			
+
 			int delay = 500; //milliseconds
 			ActionListener taskPerformer = new ActionListener() {
 				public void actionPerformed(ActionEvent evt)
@@ -68,7 +68,7 @@ public abstract class Picker implements
 					pickingEnabled = true;
 				}
 			};
-			
+
 			Timer timer = new Timer(delay, taskPerformer);
 			timer.setRepeats(false);
 			timer.start();
@@ -115,11 +115,11 @@ public abstract class Picker implements
 	{
 		if (pickingEnabled == false)
 			return 0;
-		
+
 		// Don't do a pick if the event is more than a third of a second old
 		final long currentTime = System.currentTimeMillis();
 		final long when = e.getWhen();
-		
+
 		//System.err.println("elapsed time " + (currentTime - when));
 		if (currentTime - when > 333)
 			return 0;
@@ -130,7 +130,7 @@ public abstract class Picker implements
         // with this situation, do a series of picks starting out with a low tolerance
         // and increase the tolerance after each new pick. Stop as soon as the pick succeeds
         // or we reach the maximum tolerance.
-		
+
         int pickSucceeded = 0;
         double tolerance = 0.0002;
         final double originalTolerance = picker.GetTolerance();

@@ -22,12 +22,12 @@ abstract public class StructuresPopupMenu extends PopupMenu
 		mi.setText("Change Color...");
 		this.add(mi);
 	}
-	
+
 	protected ChangeColorAction getChangeColorAction()
 	{
 		return changeColorAction;
 	}
-	
+
 	protected class DeleteAction extends AbstractAction
 	{
     	private StructureModel structureModel;
@@ -36,7 +36,7 @@ abstract public class StructuresPopupMenu extends PopupMenu
 		{
 			this.structureModel = mod;
 		}
-		
+
 		public void actionPerformed(ActionEvent e)
 		{
 			structureModel.removeStructure(cellIdLastClicked);
@@ -48,7 +48,7 @@ abstract public class StructuresPopupMenu extends PopupMenu
     	private Component invoker;
     	private StructureModel structureModel;
     	private int structureIndex;
-    	
+    
     	public ChangeColorAction(StructureModel structureModel)
         {
 			this.structureModel = structureModel;
@@ -67,10 +67,10 @@ abstract public class StructuresPopupMenu extends PopupMenu
 		public void actionPerformed(ActionEvent actionEvent)
         {
         	Color color = ColorChooser.showColorChooser(invoker);
-        	
+        
         	if (color == null)
         		return;
-        	
+        
         	int[] c = new int[4];
         	c[0] = color.getRed();
         	c[1] = color.getGreen();
@@ -80,5 +80,5 @@ abstract public class StructuresPopupMenu extends PopupMenu
         	structureModel.setStructureColor(structureIndex, c);
         }
     }
-	
+
 }

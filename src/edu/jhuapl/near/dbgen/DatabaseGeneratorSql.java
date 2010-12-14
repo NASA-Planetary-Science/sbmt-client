@@ -53,7 +53,7 @@ public class DatabaseGeneratorSql
         	{
         		e.printStackTrace();
         	}
-        	
+        
             db.update(
             		"create table " + msiTableName + "(" +
             		"id int PRIMARY KEY, " +
@@ -200,7 +200,7 @@ public class DatabaseGeneratorSql
         MSIImage.setFootprintIsOnLocalDisk(true);
 
     	int count = 0;
-    	
+    
     	for (String filename : msiFiles)
     	{
 			boolean filesExist = checkIfAllMsiFilesExist(filename, msiSource);
@@ -208,7 +208,7 @@ public class DatabaseGeneratorSql
 				continue;
 
 			System.out.println("starting msi " + count++ + "  " + filename);
-			
+
     		byte iof_or_cif = -1;
     		String dayOfYearStr = "";
     		String yearStr = "";
@@ -229,15 +229,15 @@ public class DatabaseGeneratorSql
     		yearStr = f.getName();
 
     		MSIImage image = new MSIImage(origFile, erosModel, msiSource);
-    		
+    
     		// Calling this forces the calculation of incidence, emission, phase, and pixel scale
     		image.getProperties();
 
     		/*
     		int res = findOptimalResolution(image);
-    		
+    
     		System.out.println("Optimal resolution " + res);
-    		
+    
     		if (res != erosModel.getModelResolution())
     		{
     		    System.out.println("Changing resolution to " + res);
@@ -247,7 +247,7 @@ public class DatabaseGeneratorSql
         		image.getProperties();
     		}
     		*/
-    		
+    
             if (msiInsert == null)
             {
             	msiInsert = db.preparedStatement(
@@ -321,9 +321,9 @@ public class DatabaseGeneratorSql
     	{
     		// Don't check if all Nis files exist here, since we want to allow searches on spectra
     		// that don't intersect the asteroid
-    		
+    
 			System.out.println("starting nis " + count++ + "  " + filename);
-			
+
     		String dayOfYearStr = "";
     		String yearStr = "";
 
@@ -338,7 +338,7 @@ public class DatabaseGeneratorSql
 
 
     		NISSpectrum nisSpectrum = new NISSpectrum(origFile, erosModel);
-    		
+    
     		if (nisInsert == null)
     		{
     			nisInsert = db.preparedStatement(
@@ -348,7 +348,7 @@ public class DatabaseGeneratorSql
     		DateTime midtime = new DateTime(nisSpectrum.getDateTime().toString(), DateTimeZone.UTC);
     		// Replace the "T" with a space
     		//time = time.substring(0, 10) + " " + time.substring(11, time.length());
-    		
+    
     		System.out.println("id: " + Integer.parseInt(origFile.getName().substring(2, 11)));
     		System.out.println("year: " + yearStr);
     		System.out.println("dayofyear: " + dayOfYearStr);
@@ -362,7 +362,7 @@ public class DatabaseGeneratorSql
     		System.out.println("range: " + nisSpectrum.getRange());
     		System.out.println("polygon type: " + nisSpectrum.getPolygonTypeFlag());
     		System.out.println(" ");
-    		
+    
 
     		nisInsert.setInt(1, Integer.parseInt(origFile.getName().substring(2, 11)));
     		nisInsert.setShort(2, Short.parseShort(yearStr));
@@ -398,7 +398,7 @@ public class DatabaseGeneratorSql
 				continue;
 
 			System.out.println("\n\nstarting msi " + filename);
-			
+
 //    		String dayOfYearStr = "";
 //    		String yearStr = "";
 
@@ -417,7 +417,7 @@ public class DatabaseGeneratorSql
 //	        	footprintReader = new vtkPolyDataReader();
 //	        footprintReader.SetFileName(vtkfile);
 //	        footprintReader.Update();
-//	
+//
     		if (footprintPolyData == null)
     		    footprintPolyData = new vtkPolyData();
 //			footprintPolyData.DeepCopy(footprintReader.GetOutput());
@@ -427,7 +427,7 @@ public class DatabaseGeneratorSql
 
 			image.loadFootprint();
 			footprintPolyData.DeepCopy(image.getUnshiftedFootprint());
-			
+
     		if (msiInsert2 == null)
     		{
     			msiInsert2 = db.preparedStatement(
@@ -439,7 +439,7 @@ public class DatabaseGeneratorSql
     		System.out.println("number of cubes: " + cubeIds.size());
     		System.out.println("id: " + count);
     		System.out.println("number of cells in polydata " + footprintPolyData.GetNumberOfCells());
-    		
+    
     		for (Integer i : cubeIds)
     		{
     			msiInsert2.setInt(1, count);
@@ -450,7 +450,7 @@ public class DatabaseGeneratorSql
 
     			++count;
     		}
-    		
+    
             image.Delete();
             System.gc();
             System.out.println("deleted " + vtkGlobalJavaHash.GC());
@@ -468,7 +468,7 @@ public class DatabaseGeneratorSql
 				continue;
 
 			System.out.println("\n\nstarting nis " + filename + " " + filecount++ + "/" + nisFiles.size());
-			
+
 //    		String dayOfYearStr = "";
 //    		String yearStr = "";
 
@@ -484,13 +484,13 @@ public class DatabaseGeneratorSql
     		NISSpectrum nisSpectrum = new NISSpectrum(origFile, erosModel);
 
     		nisSpectrum.generateFootprint();
-    		
+    
 	        if (footprintPolyData == null)
 	        	footprintPolyData = new vtkPolyData();
 			footprintPolyData.DeepCopy(nisSpectrum.getUnshiftedFootprint());
 			footprintPolyData.ComputeBounds();
-			
-    		
+
+    
     		if (nisInsert2 == null)
     		{
     			nisInsert2 = db.preparedStatement(
@@ -532,7 +532,7 @@ public class DatabaseGeneratorSql
 		file = new File(name);
 		if (!file.exists())
 			return false;
-		
+
 		name = line.substring(0, line.length()-4) + "_DDR.LBL";
 		file = new File(name);
 		if (!file.exists())
@@ -548,12 +548,12 @@ public class DatabaseGeneratorSql
 	        if (!file.exists())
 	            return false;
 		}
-		
+
 		//name = line.substring(0, line.length()-4) + "_DDR.IMG.gz";
 		//file = new File(name);
 		//if (!file.exists())
 		//	return false;
-		
+
 		//name = line.substring(0, line.length()-4) + "_BOUNDARY.VTK";
 		//file = new File(name);
 		//if (!file.exists())
@@ -566,7 +566,7 @@ public class DatabaseGeneratorSql
 
 		return true;
 	}
-	
+
     static boolean checkIfAllNisFilesExist(String line)
 	{
 		File file = new File(line);
@@ -586,11 +586,11 @@ public class DatabaseGeneratorSql
     	int numRes = erosModel.getNumberResolutionLevels();
 
     	meanPlateSizes = new double[numRes];
-    	
+    
     	for (int i=0; i<numRes; ++i)
     	{
     		erosModel.setModelResolution(i);
-    		
+    
     		meanPlateSizes[i] = erosModel.computeLargestSmallestMeanEdgeLength()[2];
     	}
     }
@@ -601,7 +601,7 @@ public class DatabaseGeneratorSql
 		double horiz = image.getMinimumHorizontalPixelScale();
 		double vert = image.getMinimumVerticalPixelScale();
 		double pixelSize = Math.min(horiz, vert);
-		
+
 		System.out.println("pixel size " + pixelSize);
 		int numRes = erosModel.getNumberResolutionLevels();
     	for (int i=0; i<numRes; ++i)
@@ -609,10 +609,10 @@ public class DatabaseGeneratorSql
     		if (pixelSize >= meanPlateSizes[i])
     			return i;
     	}
-		
+
 		return numRes - 1;
 	}
-	
+
 
 	/**
 	 * @param args
@@ -623,13 +623,13 @@ public class DatabaseGeneratorSql
 		NativeLibraryLoader.loadVtkLibrariesLinuxNoX11();
 
 		erosModel = ModelFactory.createErosBodyModel();
-		
+
 //		computeMeanPlateSizeAtAllResolutions();
-		
+
 		String msiFileList=args[0];
 		String nisFileList=args[1];
 		int mode = Integer.parseInt(args[2]);
-		
+
 		ArrayList<String> msiFiles = null;
 		ArrayList<String> nisFiles = null;
 		try {
@@ -639,7 +639,7 @@ public class DatabaseGeneratorSql
 			e2.printStackTrace();
 			return;
 		}
-		
+
         try
         {
             db = new SqlManager(null);
@@ -662,7 +662,7 @@ public class DatabaseGeneratorSql
 		else if (mode == 6 || mode == 0)
 			createNISTablesCubes();
 
-		
+
 		try
 		{
 			if (mode == 1 || mode == 0)
@@ -681,8 +681,8 @@ public class DatabaseGeneratorSql
 		catch (Exception e1) {
 			e1.printStackTrace();
 		}
-		
-		
+
+
         try
         {
 			db.shutdown();

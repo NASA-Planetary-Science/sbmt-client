@@ -23,7 +23,7 @@ public class NLRDataPerDay extends Model
 	private vtkGeometryFilter geometryFilter;
 	private String filepath;
 	private ArrayList<String> times = new ArrayList<String>();
-	
+
 	public NLRDataPerDay(String path) throws IOException
 	{
 		File file = FileCache.getFileFromServer(path);
@@ -32,9 +32,9 @@ public class NLRDataPerDay extends Model
 			throw new IOException(path + " could not be loaded");
 
 		filepath = path;
-		
+
 		ArrayList<String> lines = FileUtil.getFileLinesAsStringList(file.getAbsolutePath());
-		
+
 		polydata = new vtkPolyData();
 		vtkPoints points = new vtkPoints();
 		vtkCellArray vert = new vtkCellArray();
@@ -55,7 +55,7 @@ public class NLRDataPerDay extends Model
             			Double.parseDouble(vals[16])/1000.0);
         	idList.SetId(0, i-2);
 		    vert.InsertNextCell(idList);
-		
+
 		    times.add(vals[4]);
 		}
 
@@ -70,7 +70,7 @@ public class NLRDataPerDay extends Model
 		geometryFilter.MergingOff();
 		geometryFilter.SetPointMinimum(0);
 		geometryFilter.SetPointMaximum(lines.size()-2);
-		
+
         vtkPolyDataMapper pointsMapper = new vtkPolyDataMapper();
         pointsMapper.SetInput(geometryFilter.GetOutput());
         //pointsMapper.SetResolveCoincidentTopologyToPolygonOffset();
@@ -101,7 +101,7 @@ public class NLRDataPerDay extends Model
 		geometryFilter.SetPointMaximum(lastPointId);
 
 		geometryFilter.Update();
-		
+
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 	}
 
@@ -123,7 +123,7 @@ public class NLRDataPerDay extends Model
         	lla.rad += offset;
         	pt = MathUtil.latrec(lla);
         	points.SetPoint(i, pt);
-		}		
+		}
 
         polydata.Modified();
 	}

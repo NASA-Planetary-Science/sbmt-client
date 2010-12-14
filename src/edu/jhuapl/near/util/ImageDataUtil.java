@@ -27,7 +27,7 @@ public class ImageDataUtil
 			{
 				array[i][j] = (float)data.GetValue(count++);
 			}
-		
+
 		return array;
 	}
 }

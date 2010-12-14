@@ -26,13 +26,13 @@ public class ImageFileChooser
     {
     	private String[] extensions;
     	private String description;
-    	
+    
     	public ImageFilter(String[] extensions, String description)
     	{
     		this.extensions = extensions;
     		this.description = description;
     	}
-    	
+    
         //Accept all directories and all png files.
         public boolean accept(File f)
         {
@@ -103,7 +103,7 @@ public class ImageFileChooser
         if (returnVal == JFileChooser.APPROVE_OPTION)
         {
         	return fc.getSelectedFile();
-        }	
+        }
         else
         {
         	return null;
@@ -151,7 +151,7 @@ public class ImageFileChooser
         	{
         		filename += ".tiff";
         	}
-        	
+        
         	File file = new File(filename);
         	if (file.exists ())
             {
@@ -164,7 +164,7 @@ public class ImageFileChooser
             }
 
         	return file;
-        }	
+        }
         else
         {
         	return null;

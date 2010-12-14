@@ -8,7 +8,7 @@ public class Configuration
 	static private String cacheDir = null;
 	static private String cacheVersion = "2";
 	static private String mapMaperDir = null;
-	
+
 	/*
 	static
 	{
@@ -30,7 +30,7 @@ public class Configuration
 		}
 	}
 	*/
-	
+
 	/**
 	 * @return Return the location where all application specific files should be stored. This is within
 	 * the .neartool folder located in the users home directory.
@@ -51,7 +51,7 @@ public class Configuration
 
 		return appDir;
 	}
-	
+
 	/**
 	 * The cache folder is where files downloaded from the server are placed. The
 	 * URL of server is returned by getDataRootURL()
@@ -64,7 +64,7 @@ public class Configuration
 			cacheDir = Configuration.getApplicationDataDir() + File.separator +
 			"cache" + File.separator + cacheVersion;
 		}
-		
+
 		return cacheDir;
 	}
 
@@ -75,7 +75,7 @@ public class Configuration
 	{
 		return "http://near.jhuapl.edu/software/data";
 	}
-	
+
 	static public String getQueryRootURL()
 	{
 		return "http://near.jhuapl.edu/software/query2";
@@ -85,7 +85,7 @@ public class Configuration
 	{
 		return mapMaperDir;
 	}
-	
+
 	static public void setMapmakerDir(String folder)
 	{
 		mapMaperDir = folder;

@@ -51,7 +51,7 @@ public class ErosModelGenerator {
         		// do nothing
         	}
         });
-		
+
 		NativeLibraryLoader.loadVtkLibrariesLinuxNoX11();
 
 		String datadir = args[0];

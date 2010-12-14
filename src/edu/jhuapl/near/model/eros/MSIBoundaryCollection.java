@@ -36,19 +36,19 @@ public class MSIBoundaryCollection extends Model implements PropertyChangeListen
 		public Boundary(MSIKey key) throws IOException
 		{
 		    this.key = key;
-		
+
 			File lblFile = FileCache.getFileFromServer(key.name + "_DDR.LBL");
 
 			if (lblFile == null)
 				throw new IOException("Could not download " + key.name);
-			
+
 	        boundary = new vtkPolyData();
 	        boundary.SetPoints(new vtkPoints());
 			boundary.SetVerts(new vtkCellArray());
 
 	        boundaryMapper = new vtkPolyDataMapper();
 	        actor = new vtkActor();
-	
+
 			String[] startTime = new String[1];
 			String[] stopTime = new String[1];
 
@@ -81,10 +81,10 @@ public class MSIBoundaryCollection extends Model implements PropertyChangeListen
 	                    boresightDirection,
 	                    upVector);
 	        }
-	
+
 	        initialize();
 		}
-		
+
 		private void initialize()
 		{
 			// Using the frustum, go around the boundary of the frustum and intersect with
@@ -94,19 +94,19 @@ public class MSIBoundaryCollection extends Model implements PropertyChangeListen
 			vtkCellArray verts = boundary.GetVerts();
 			verts.SetNumberOfCells(0);
 			points.SetNumberOfPoints(0);
-			
+
 			vtkIdList idList = new vtkIdList();
 	        idList.SetNumberOfIds(1);
-			
+
 			vtksbCellLocator cellLocator = erosModel.getCellLocator();
 
 			vtkGenericCell cell = new vtkGenericCell();
-			
+
 			final int IMAGE_WIDTH = MSIImage.IMAGE_WIDTH;
 			final int IMAGE_HEIGHT = MSIImage.IMAGE_HEIGHT;
 
 			int count = 0;
-			
+
 			double[] corner1 = {
 					spacecraftPosition[0] + frustum1[0],
 					spacecraftPosition[1] + frustum1[1],
@@ -132,7 +132,7 @@ public class MSIBoundaryCollection extends Model implements PropertyChangeListen
 					corner3[1] - corner1[1],
 					corner3[2] - corner1[2]
 			};
-			
+
 			//double horizScaleFactor = 2.0 * Math.tan( GeometryUtil.vsep(frustum1, frustum3) / 2.0 ) / IMAGE_HEIGHT;
 			//double vertScaleFactor = 2.0 * Math.tan( GeometryUtil.vsep(frustum1, frustum2) / 2.0 ) / IMAGE_WIDTH;
 
@@ -155,7 +155,7 @@ public class MSIBoundaryCollection extends Model implements PropertyChangeListen
 						j = IMAGE_WIDTH-2;
 						continue;
 					}
-					
+
 					double fracWidth = ((double)j / (double)(IMAGE_WIDTH-1));
 					double[] vec = {
 							left[0] + fracWidth*vec12[0],
@@ -168,8 +168,8 @@ public class MSIBoundaryCollection extends Model implements PropertyChangeListen
 					MathUtil.unorm(vec, vec);
 
 					double[] lookPt = {
-							spacecraftPosition[0] + 2.0*scdist*vec[0],	
-							spacecraftPosition[1] + 2.0*scdist*vec[1],	
+							spacecraftPosition[0] + 2.0*scdist*vec[0],
+							spacecraftPosition[1] + 2.0*scdist*vec[1],
 							spacecraftPosition[2] + 2.0*scdist*vec[2]
 					};
 
@@ -180,24 +180,24 @@ public class MSIBoundaryCollection extends Model implements PropertyChangeListen
 					int[] subId = new int[1];
 					int[] cellId = new int[1];
 					int result = cellLocator.IntersectWithLine(spacecraftPosition, lookPt, tol, t, x, pcoords, subId, cellId, cell);
-							
+
 					if (result > 0)
 					{
 						double[] closestPoint = x;
-						
+
 						//double horizPixelScale = closestDist * horizScaleFactor;
 						//double vertPixelScale = closestDist * vertScaleFactor;
 
 						points.InsertNextPoint(closestPoint);
 			        	idList.SetId(0, count);
 			        	verts.InsertNextCell(idList);
-			        	
+			        
 			        	++count;
 					}
 				}
 			}
-			
-	
+
+
 			PolyDataUtil.shiftPolyLineInNormalDirectionOfPolyData(
 					boundary, erosModel.getSmallBodyPolyData(), erosModel.getPointLocator(), 0.003);
 
@@ -224,12 +224,12 @@ public class MSIBoundaryCollection extends Model implements PropertyChangeListen
 			props.add(actor);
 			return props;
 		}
-		
+
 		public MSIKey getKey()
 		{
 		    return key;
 		}
-		
+
 		public void getCameraOrientation(double[] spacecraftPosition,
 		        double[] boresightDirection, double[] upVector)
 		{
@@ -246,11 +246,11 @@ public class MSIBoundaryCollection extends Model implements PropertyChangeListen
     private HashMap<Boundary, ArrayList<vtkProp>> boundaryToActorsMap = new HashMap<Boundary, ArrayList<vtkProp>>();
 	private HashMap<vtkProp, Boundary> actorToBoundaryMap = new HashMap<vtkProp, Boundary>();
 	private SmallBodyModel erosModel;
-	
+
 	public MSIBoundaryCollection(SmallBodyModel erosModel)
 	{
 		super(ModelNames.MSI_BOUNDARY);
-		
+
 		this.erosModel = erosModel;
 	}
 
@@ -286,7 +286,7 @@ public class MSIBoundaryCollection extends Model implements PropertyChangeListen
 
         erosModel.addPropertyChangeListener(boundary);
 		boundary.addPropertyChangeListener(this);
-		
+
 		boundaryToActorsMap.put(boundary, new ArrayList<vtkProp>());
 
         ArrayList<vtkProp> boundaryPieces = boundary.getProps();
@@ -302,7 +302,7 @@ public class MSIBoundaryCollection extends Model implements PropertyChangeListen
 	public void removeBoundary(MSIKey key)
 	{
 		Boundary boundary = getBoundaryFromKey(key);
-		
+
         ArrayList<vtkProp> actors = boundaryToActorsMap.get(boundary);
 
         for (vtkProp act : actors)
@@ -327,7 +327,7 @@ public class MSIBoundaryCollection extends Model implements PropertyChangeListen
 	{
         return new ArrayList<vtkProp>(actorToBoundaryMap.keySet());
 	}
-	
+
     public String getClickStatusBarText(vtkProp prop, int cellId, double[] pickPosition)
     {
     	File file = new File(actorToBoundaryMap.get(prop).key.name);

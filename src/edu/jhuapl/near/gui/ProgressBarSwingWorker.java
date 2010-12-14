@@ -28,7 +28,7 @@ abstract public class ProgressBarSwingWorker extends SwingWorker<Void, Void>
 	private volatile boolean indeterminate = false;
 	private volatile String labelText = " ";
 	private volatile boolean enableCancelButton = true;
-	
+
 	private class ProgressDialog extends JDialog implements ActionListener
 	{
 
@@ -37,14 +37,14 @@ abstract public class ProgressBarSwingWorker extends SwingWorker<Void, Void>
 			super(JOptionPane.getFrameForComponent(c));
 			JPanel panel = new JPanel(new MigLayout());
 			setPreferredSize(new Dimension(275, 150));
-			
+
 			label = new JLabel(" ");
-			
+
 			progressBar = new JProgressBar(0, 100);
 			progressBar.setPreferredSize(new Dimension(250, 20));
 			panel.add(label, "wrap");
 			panel.add(progressBar, "wrap");
-			
+
 			cancelButton = new JButton("Cancel");
 	        cancelButton.addActionListener(this);
 
@@ -61,20 +61,20 @@ abstract public class ProgressBarSwingWorker extends SwingWorker<Void, Void>
 		public void actionPerformed(ActionEvent e)
 		{
     		cancel(true);
-			
+
 	        dialog.setVisible(false);
 			dialog.dispose();
 		}
 	}
-	
+
 	public ProgressBarSwingWorker(Component c, String title)
 	{
 		dialog = new ProgressDialog(c);
 		dialog.setTitle(title);
-		
+
         addPropertyChangeListener(this);
 	}
-	
+
 	/**
 	 * Executes the worker and shows the dialog. Also updates the dialog text
 	 * if setLabelText was called.
@@ -88,7 +88,7 @@ abstract public class ProgressBarSwingWorker extends SwingWorker<Void, Void>
     	execute();
     	dialog.setVisible(true);
 	}
-	
+
 	protected void setIndeterminate(boolean indeterminate)
 	{
 		this.indeterminate = indeterminate;
@@ -105,14 +105,14 @@ abstract public class ProgressBarSwingWorker extends SwingWorker<Void, Void>
         {
         	int progress = (Integer) evt.getNewValue();
         	System.out.println("progress property change " + progress);
-        	
+        
         	if (indeterminate)
         		progressBar.setIndeterminate(true);
         	else
         		progressBar.setValue(progress);
-        	
+        
         	label.setText(labelText);
-        	
+        
         	if (cancelButton.isEnabled() != enableCancelButton)
         		cancelButton.setEnabled(enableCancelButton);
         }

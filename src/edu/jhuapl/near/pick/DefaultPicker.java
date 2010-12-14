@@ -48,12 +48,12 @@ public class DefaultPicker extends Picker
 		this.popupManager = popupManager;
 
 		modelManager.addPropertyChangeListener(this);
-		
+
 		SmallBodyModel smallBodyModel = modelManager.getSmallBodyModel();
 		mouseMovedCellPicker = new vtkCellPicker();
 		mouseMovedCellPicker.SetTolerance(0.002);
 		mouseMovedCellPicker.AddLocator(smallBodyModel.getCellLocator());
-		
+
 		// See comment in the propertyChange function below as to why
 		// we use a custom pick list for these pickers.
 		mousePressNonSmallBodyCellPicker = new vtkCellPicker();
@@ -72,7 +72,7 @@ public class DefaultPicker extends Picker
 	{
 		this.suppressPopups = b;
 	}
-	
+
 	public void mousePressed(MouseEvent e)
 	{
 		if (renWin.GetRenderWindow().GetNeverRendered() > 0)
@@ -80,7 +80,7 @@ public class DefaultPicker extends Picker
 
 		// First try picking on the non-small-body picker. If that fails try the small body picker.
 		int pickSucceeded = doPick(e, mousePressNonSmallBodyCellPicker, renWin);
-		
+
 		if (pickSucceeded == 1)
 		{
 			vtkActor pickedActor = mousePressNonSmallBodyCellPicker.GetActor();
@@ -97,7 +97,7 @@ public class DefaultPicker extends Picker
 						null,
 						new PickEvent(e, pickedActor, cellId, pickPosition));
 			}
-		}		
+		}
 		else
 		{
 			// If the non-small-body picker failed, see if the user clicked on the small body itself.
@@ -119,7 +119,7 @@ public class DefaultPicker extends Picker
 							null,
 							new PickEvent(e, pickedActor, cellId, pickPosition));
 				}
-			}		
+			}
 			else
 			{
 				statusBar.setLeftText(" ");
@@ -166,7 +166,7 @@ public class DefaultPicker extends Picker
 	{
 		if (suppressPopups)
 			return;
-		
+
 		if (renWin.GetRenderWindow().GetNeverRendered() > 0)
 			return;
 
@@ -179,7 +179,7 @@ public class DefaultPicker extends Picker
 					pickedActor,
 					mousePressNonSmallBodyCellPicker.GetCellId(),
 					mousePressNonSmallBodyCellPicker.GetPickPosition());
-		}		
+		}
     }
 
 	public void propertyChange(PropertyChangeEvent evt)
@@ -211,12 +211,12 @@ public class DefaultPicker extends Picker
 			}
 		}
 	}
-	
+
 	private void showPositionInfoInStatusBar(MouseEvent e)
 	{
 		if (renWin.GetRenderWindow().GetNeverRendered() > 0)
     		return;
-		
+
 		vtkCamera activeCamera = renWin.GetRenderer().GetActiveCamera();
 		double[] cameraPos = activeCamera.GetPosition();
 		double distance = Math.sqrt(
@@ -238,7 +238,7 @@ public class DefaultPicker extends Picker
 			LatLon llr = MathUtil.reclat(pos);
 
 			// Note \u00B0 is the unicode degree symbol
-			
+
 			//double sign = 1.0;
 			double lat = llr.lat*180/Math.PI;
 			//if (lat < 0.0)
@@ -253,7 +253,7 @@ public class DefaultPicker extends Picker
 	        //else
 	        //	latStr += "\u00B0S";
 	        latStr += "\u00B0";
-	
+
 	        // Note that the convention seems to be that longitude
 	        // is never negative and is shown as E. longitude.
 	        double lon = llr.lon*180/Math.PI;
@@ -283,5 +283,5 @@ public class DefaultPicker extends Picker
 			statusBar.setRightText("Distance: " + distanceStr + " ");
 		}
 	}
-	
+
 }

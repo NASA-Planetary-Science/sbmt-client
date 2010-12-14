@@ -161,7 +161,7 @@ public class MyGarbageCollector {
 				fields = getAllFields(o.getClass());
 			else
 				fields = Arrays.asList(o.getClass().getDeclaredFields());
-			
+
 			for (Field f : fields)
 			{
 				if (!Modifier.isStatic(f.getModifiers()))
@@ -176,7 +176,7 @@ public class MyGarbageCollector {
 					}
 					catch (IllegalArgumentException e)
 					{
-						
+
 					}
 				}
 			}

@@ -21,38 +21,38 @@ import edu.jhuapl.near.util.Configuration;
 public class Query
 {
 	public enum Datatype {MSI, NIS, NLR};
-	
+
 	private static Query ref = null;
-	
+
 	String version;
 
-	
+
 	private ArrayList<ArrayList<String>> doQuery(String phpScript, String data)
 	{
 		ArrayList<ArrayList<String>> results = new ArrayList<ArrayList<String>>();
-		
+
 		try
 		{
 			URL u = new URL(Configuration.getQueryRootURL() + "/" + phpScript);
 			URLConnection conn = u.openConnection();
 			conn.setDoOutput(true);
 			conn.setUseCaches(false);
-			
+
 			OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
 			wr.write(data);
 			wr.flush();
-			
+
 			InputStreamReader isr = new InputStreamReader(conn.getInputStream());
 			BufferedReader in = new BufferedReader(isr);
 
 			String line;
-			
+
 			while ((line = in.readLine()) != null)
 			{
 				line = line.trim();
 				if (line.length() == 0)
 					continue;
-				
+
 				String[] tokens = line.split("\\s+");
 				ArrayList<String> words = new ArrayList<String>();
 				for (String word : tokens)
@@ -69,11 +69,11 @@ public class Query
 
 		return results;
 	}
-	
+
 	private String constructUrlArguments(HashMap<String, String> args)
 	{
 		String str = "";
-		
+
 		boolean firstKey = true;
 		for (String key : args.keySet())
 		{
@@ -81,13 +81,13 @@ public class Query
 				firstKey = false;
 			else
 				str += "&";
-			
+
 			str += key + "=" + args.get(key);
 		}
-		
+
 		return str;
 	}
-	
+
 	private String getMsiPath(ArrayList<String> result)
 	{
 		int id = Integer.parseInt(result.get(0));
@@ -100,7 +100,7 @@ public class Query
 			typeStr = "iofdbl";
 		else
 			typeStr = "cifdbl";
-		
+
 		return this.getMsiPath(id, year, dayOfYear, typeStr, filter);
 	}
 
@@ -108,23 +108,23 @@ public class Query
 	{
 		String str = "/MSI/";
 		str += year + "/";
-		
+
 		if (dayOfYear < 10)
 			str += "00";
 		else if (dayOfYear < 100)
 			str += "0";
 
 		str += dayOfYear + "/";
-		
+
 		str += type + "/";
-		
+
 		str += "M0" + name + "F" + filter + "_2P_";
-		
+
 		if (type.equals("iofdbl"))
 			str += "IOF_DBL.FIT";
 		else
 			str += "CIF_DBL.FIT";
-		
+
 		return str;
 	}
 
@@ -141,16 +141,16 @@ public class Query
 	{
 		String str = "/NIS/";
 		str += year + "/";
-		
+
 		if (dayOfYear < 10)
 			str += "00";
 		else if (dayOfYear < 100)
 			str += "0";
 
 		str += dayOfYear + "/";
-		
+
 		str += "N0" + name + ".NIS";
-		
+
 		return str;
 	}
 
@@ -171,7 +171,7 @@ public class Query
 	{
 	}
 
-	
+
 	/**
 	 * Run a query which searches for msi images between the specified dates.
 	 * Returns a list of URL's of the fit files that match.
@@ -224,18 +224,18 @@ public class Query
 					HashMap<String, String> args = new HashMap<String, String>();
                     args.put("msiSource", msiSource.toString());
 					args.put("id", String.valueOf(id));
-					
+
 					results = doQuery("searchmsi_id.php", constructUrlArguments(args));
 				}
 				catch (NumberFormatException e)
 				{
 					e.printStackTrace();
 				}
-				
+
 				if (results != null && results.size() > 0)
 				{
 					String path = this.getMsiPath(results.get(0));
-	
+
 					matchedImages.add(path);
 				}
 				return matchedImages;
@@ -243,7 +243,7 @@ public class Query
 
 			if (filters.isEmpty() || (iofdbl == false && cifdbl == false))
 				return matchedImages;
-			
+
 			try
 			{
 				double minScDistance = Math.min(startDistance, stopDistance);
@@ -318,13 +318,13 @@ public class Query
 					}
 					args.put("cubes", cubes);
 				}
-				
+
 				results = doQuery("searchmsi.php", constructUrlArguments(args));
-				
+
 				for (ArrayList<String> res : results)
 				{
 					String path = this.getMsiPath(res);
-					
+
 					matchedImages.add(path);
 				}
 			}
@@ -332,7 +332,7 @@ public class Query
 			{
 				e.printStackTrace();
 			}
-			
+
 			return matchedImages;
 
 		case NIS:
@@ -340,7 +340,7 @@ public class Query
 			{
 				double minScDistance = Math.min(startDistance, stopDistance);
 				double maxScDistance = Math.max(startDistance, stopDistance);
-				
+
 //				String query = "SELECT id, year, day FROM nisspectra ";
 //				query += "WHERE midtime >= " + startDate.getMillis();
 //				query += " AND midtime <= " + stopDate.getMillis();
@@ -366,7 +366,7 @@ public class Query
 //				query += " AND maxphase >= " + minPhase;
 //
 //				System.out.println(query);
-				
+
 				HashMap<String, String> args = new HashMap<String, String>();
 				args.put("startDate", String.valueOf(startDate.getMillis()));
 				args.put("stopDate", String.valueOf(stopDate.getMillis()));
@@ -401,11 +401,11 @@ public class Query
 				}
 
 				results = doQuery("searchnis.php", constructUrlArguments(args));
-				
+
 				for (ArrayList<String> res : results)
 				{
 					String path = this.getNisPath(res);
-					
+
 					matchedImages.add(path);
 				}
 			}
@@ -416,7 +416,7 @@ public class Query
 
 			break;
 		}
-		
+
 		return matchedImages;
 	}
 

@@ -14,7 +14,7 @@ public class PointsMappingControlPanel extends
 {
 	private JSpinner spinner;
 	private PointModel pointModel;
-	
+
 	public PointsMappingControlPanel(
 			ModelManager modelManager,
 			PickManager pickManager)
@@ -24,7 +24,7 @@ public class PointsMappingControlPanel extends
 				pickManager,
 				PickManager.PickMode.POINT_DRAW,
 				false);
-		
+
 		pointModel = (PointModel)modelManager.getModel(ModelNames.POINT_STRUCTURES);
 
 		double diameter = 2.0 * pointModel.getDefaultRadius();
@@ -33,7 +33,7 @@ public class PointsMappingControlPanel extends
 
 		JLabel radiusLabel = new JLabel("Diameter");
 		panel.add(radiusLabel);
-		
+
 		double bbLength = modelManager.getSmallBodyModel().getBoundingBoxDiagonalLength();
 		double min = bbLength / 4000.0;
 		double max =bbLength / 10.0;
@@ -43,7 +43,7 @@ public class PointsMappingControlPanel extends
                 min,
                 max,
                 step);
-		
+
 		spinner = new JSpinner(model);
 		spinner.addChangeListener(this);
         radiusLabel.setLabelFor(spinner);

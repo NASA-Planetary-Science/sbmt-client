@@ -15,23 +15,23 @@ public class LinesPopupMenu extends StructuresPopupMenu
 {
 	private int cellIdLastClicked = -1;
 	private LineModel model = null;
-	
+
 	public LinesPopupMenu(ModelManager modelManager)
 	{
 		this.model = (LineModel)modelManager.getModel(ModelNames.LINE_STRUCTURES);
-		
+
 		JMenuItem mi;
 		mi = new JMenuItem(new EditAction());
 		mi.setText("Edit");
 		//this.add(mi); // don't show for now
-		
+
 		super.addMenuItems(model);
 
 		mi = new JMenuItem(new DeleteAction());
 		mi.setText("Delete");
 		this.add(mi);
 	}
-	
+
 	private class EditAction extends AbstractAction
 	{
 		public void actionPerformed(ActionEvent e)

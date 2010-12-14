@@ -22,9 +22,9 @@ public class MSIColorImage extends Model implements PropertyChangeListener
 		this.greenImage = greenImage;
 		this.blueImage = blueImage;
 		this.erosModel = eros;
-		
+
 	}
-	
+
 	@Override
 	public ArrayList<vtkProp> getProps()
 	{
@@ -35,7 +35,7 @@ public class MSIColorImage extends Model implements PropertyChangeListener
 	public void propertyChange(PropertyChangeEvent evt)
 	{
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

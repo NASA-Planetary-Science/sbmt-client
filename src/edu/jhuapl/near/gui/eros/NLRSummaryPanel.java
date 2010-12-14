@@ -20,7 +20,7 @@ import edu.jhuapl.near.util.FileUtil;
 public class NLRSummaryPanel extends JPanel
 {
 	private final String NLR_REMOVE_ALL_BUTTON_TEXT = "Remove All NLR Data";
-	
+
     private NLRBrowseDataCollection nlrModel;
     private JList resultList;
     private ArrayList<String> nlrRawResults = new ArrayList<String>();
@@ -34,7 +34,7 @@ public class NLRSummaryPanel extends JPanel
     {
     	setLayout(new BoxLayout(this,
         		BoxLayout.PAGE_AXIS));
-    	
+    
     	//this.modelManager = modelManager;
     	this.nlrModel = (NLRBrowseDataCollection)modelManager.getModel(ModelNames.NLR_DATA_BROWSE);
 
@@ -72,7 +72,7 @@ public class NLRSummaryPanel extends JPanel
         					saveButton.getParent(),
         					"Save NLR data",
         					tmp.getName().substring(0, tmp.getName().length()-3));
-        			
+        
         			try
         			{
         				if (file != null)

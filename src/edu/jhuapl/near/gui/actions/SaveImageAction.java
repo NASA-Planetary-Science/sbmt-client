@@ -9,7 +9,7 @@ import edu.jhuapl.near.gui.Renderer;
 public class SaveImageAction extends AbstractAction
 {
 	private Renderer renderer;
-	
+
 	public SaveImageAction(Renderer renderer)
     {
         super("Export to Image...");

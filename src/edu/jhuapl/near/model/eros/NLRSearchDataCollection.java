@@ -47,7 +47,7 @@ public class NLRSearchDataCollection extends Model
 	private SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MMM-d HH:mm:ss.SSS", Locale.US);
 
 	private double radialOffset = 0.0;
-	
+
 	private GregorianCalendar startDate;
 	private GregorianCalendar stopDate;
 	private TreeSet<Integer> cubeList;
@@ -60,9 +60,9 @@ public class NLRSearchDataCollection extends Model
 	private int lastPointShown = -1;
 
 	private boolean needToResetMask = true;
-	
+
 	private int selectedPoint = -1;
-	
+
 	public enum NLRMaskType
 	{
 		NONE,
@@ -70,13 +70,13 @@ public class NLRSearchDataCollection extends Model
 		BY_TIME,
 		BY_DISTANCE
 	}
-	
+
 	private static class NLRPoint implements Comparable<NLRPoint>
 	{
 		public double[] point;
 		public Long time;
 		public double potential;
-		
+
 		public NLRPoint(double[] point, long time, double potential)
 		{
 			this.point = point;
@@ -96,7 +96,7 @@ public class NLRSearchDataCollection extends Model
 		private vtkPolyData polydata;
 		private vtkDoubleArray potential;
 		private vtkDoubleArray time;
-		
+
 		public NLROriginalPoints()
 		{
 			polydata = new vtkPolyData();
@@ -104,43 +104,43 @@ public class NLRSearchDataCollection extends Model
 			vtkCellArray vert = new vtkCellArray();
 			polydata.SetPoints( points );
 			polydata.SetVerts( vert );
-			
+
 			potential = new vtkDoubleArray();
 			potential.SetNumberOfComponents(1);
 
 			time = new vtkDoubleArray();
 			time.SetNumberOfComponents(1);
 		}
-		
+
 		public void addPoint(double[] point, long time, double potential)
 		{
 			polydata.GetPoints().InsertNextPoint(point);
 			this.potential.InsertNextTuple1(potential);
 			this.time.InsertNextTuple1(time);
 		}
-		
+
 		public int size()
 		{
 			return polydata.GetNumberOfPoints();
 		}
-		
+
 		public NLRPoint get(int i)
 		{
 			return new NLRPoint(polydata.GetPoint(i), (long)time.GetTuple1(i), potential.GetTuple1(i));
 		}
-		
+
 		public void clear()
 		{
 		}
 	}
 	*/
-	
+
 	public NLRSearchDataCollection(SmallBodyModel erosModel)
 	{
 		super(ModelNames.NLR_DATA_SEARCH);
-		
+
 		this.erosModel = erosModel;
-	
+
 		createDoyToPathMap();
 
 		polydata = new vtkPolyData();
@@ -172,12 +172,12 @@ public class NLRSearchDataCollection extends Model
 			boolean reset) throws IOException, ParseException
 	{
 		loadNlrData(startDate, stopDate, cubeList);
-		
+
 		applyMask(maskType, maskValue, reset);
-		
+
 		geometryFilter.SetPointMinimum(firstPointShown);
 		geometryFilter.SetPointMaximum(lastPointShown);
-		
+
 		if (pointsMapper == null)
 		{
 			pointsMapper = new vtkPolyDataMapper();
@@ -203,15 +203,15 @@ public class NLRSearchDataCollection extends Model
 
 			actors.add(selectedPointActor);
 		}
-		
+
 		setRadialOffset(radialOffset);
 
 		selectPoint(-1);
-		
+
     	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 	}
-	
-	
+
+
 	private ArrayList<IdPair> getValidIntersectingDays(GregorianCalendar startDate, GregorianCalendar stopDate)
 	{
 		ArrayList<IdPair> validDays = new ArrayList<IdPair>();
@@ -229,7 +229,7 @@ public class NLRSearchDataCollection extends Model
 		{
 			return validDays;
 		}
-		
+
 		if (yearStart < 2000)
 		{
 			yearStart = 2000;
@@ -237,7 +237,7 @@ public class NLRSearchDataCollection extends Model
 		}
 		if (doyStart < 59 && yearStart == 2000)
 			doyStart = 59;
-		
+
 		if (yearStop > 2001)
 		{
 			yearStop = 2001;
@@ -245,31 +245,31 @@ public class NLRSearchDataCollection extends Model
 		}
 		if (doyStop > 43 && yearStop == 2001)
 			doyStop = 43;
-		
+
 		int doy = doyStart;
 		int year = yearStart;
-		
+
 		while(true)
 		{
 			validDays.add(new IdPair(doy, year));
-			
+
 			if (doy == doyStop && year == yearStop)
 				break;
-			
+
 			++doy;
-			
+
 			if (year == 2000 && doy > 366)
 			{
 				doy = 1;
 				year = 2001;
 			}
 		}
-		
+
 		return validDays;
 	}
-	
-	
-	
+
+
+
 	private void loadNlrData(
 			GregorianCalendar startDate,
 			GregorianCalendar stopDate,
@@ -281,13 +281,13 @@ public class NLRSearchDataCollection extends Model
 		{
 			return;
 		}
-		
+
 		// Make clones since otherwise the previous if statement might
 		// evaluate to true even if something changed.
 		this.startDate = (GregorianCalendar)startDate.clone();
 		this.stopDate = (GregorianCalendar)stopDate.clone();
 		this.cubeList = (TreeSet<Integer>)cubeList.clone();
-		
+
 		long start = startDate.getTimeInMillis();
 		long stop = stopDate.getTimeInMillis();
 
@@ -300,7 +300,7 @@ public class NLRSearchDataCollection extends Model
 		points.SetNumberOfPoints(0);
 		vert.SetNumberOfCells(0);
 		originalPoints.clear();
-		
+
 		vtkIdList idList = new vtkIdList();
 		idList.SetNumberOfIds(1);
 
@@ -340,11 +340,11 @@ public class NLRSearchDataCollection extends Model
 					{
 						continue;
 					}
-					
+
 					// don't include outliers
 					if (Integer.valueOf(linescubes.get(i)) == -1)
 					    continue;
-					
+
 					double[] point = {
 							Double.parseDouble(vals[14])/1000.0,
 							Double.parseDouble(vals[15])/1000.0,
@@ -389,11 +389,11 @@ public class NLRSearchDataCollection extends Model
 					originalPoints.add(new NLRPoint(point, time, potential));
 				}
 			}
-			
+
 			// Now sort all the points in time order and place them into polydata
 
 			points.SetNumberOfPoints(originalPoints.size());
-			
+
 			Collections.sort(originalPoints);
 			int numPoints = originalPoints.size();
 			for (int i=0; i<numPoints; ++i)
@@ -404,7 +404,7 @@ public class NLRSearchDataCollection extends Model
 			}
 		}
 	}
-	
+
 
 	private void loadNlrDataSql(
 			GregorianCalendar startDate,
@@ -417,7 +417,7 @@ public class NLRSearchDataCollection extends Model
 		{
 			return;
 		}
-		
+
 		try
 		{
 			if (db == null)
@@ -433,7 +433,7 @@ public class NLRSearchDataCollection extends Model
 		this.startDate = (GregorianCalendar)startDate.clone();
 		this.stopDate = (GregorianCalendar)stopDate.clone();
 		this.cubeList = (TreeSet<Integer>)cubeList.clone();
-		
+
 		long start = startDate.getTime().getTime();
 		long stop = stopDate.getTime().getTime();
 
@@ -443,7 +443,7 @@ public class NLRSearchDataCollection extends Model
 		points.SetNumberOfPoints(0);
 		vert.SetNumberOfCells(0);
 		originalPoints.clear();
-		
+
 		vtkIdList idList = new vtkIdList();
 		idList.SetNumberOfIds(1);
 
@@ -485,7 +485,7 @@ public class NLRSearchDataCollection extends Model
 		{
 			st = db.createStatement();
 	        rs = st.executeQuery(statement);
-	
+
 	        System.out.println("finished executing query");
 	        int count = 0;
 	        while(rs.next())
@@ -499,7 +499,7 @@ public class NLRSearchDataCollection extends Model
 
 				originalPoints.add(new NLRPoint(point, time, potential));
 				//System.out.println(time);
-				
+
 				if (count % 1000 == 0)
 					System.out.println(count);
 
@@ -520,7 +520,7 @@ public class NLRSearchDataCollection extends Model
 		// Now sort all the points in time order and place them into polydata
 
 		points.SetNumberOfPoints(originalPoints.size());
-		
+
 		Collections.sort(originalPoints);
 		int numPoints = originalPoints.size();
 		for (int i=0; i<numPoints; ++i)
@@ -530,7 +530,7 @@ public class NLRSearchDataCollection extends Model
 			vert.InsertNextCell(idList);
 		}
 	}
-	
+
 	private void applyMask(NLRMaskType maskType, double maskValue, boolean reset)
 	{
         int totalNumberPoints = originalPoints.size();
@@ -603,7 +603,7 @@ public class NLRSearchDataCollection extends Model
                 lastPointShown = firstPointShown;
                 initialTime = originalPoints.get(lastPointShown).time;
                 pointer = lastPointShown;
-			}			
+			}
 
 			while(true)
 			{
@@ -611,7 +611,7 @@ public class NLRSearchDataCollection extends Model
 					++pointer;
 				else
 					--pointer;
-			
+
 				if (pointer < 0)
 				{
 				    pointer = 0;
@@ -621,10 +621,10 @@ public class NLRSearchDataCollection extends Model
 				{
                     pointer = totalNumberPoints-1;
                     break;
-				}				
-				
+				}
+
 				long nextTime = originalPoints.get(pointer).time;
-				
+
 				if (Math.abs(nextTime - initialTime) > Math.abs(milliseconds))
 					break;
 			}
@@ -662,7 +662,7 @@ public class NLRSearchDataCollection extends Model
 					++pointer;
 				else
 					--pointer;
-			
+
                 if (pointer < 0)
                 {
                     pointer = 0;
@@ -673,13 +673,13 @@ public class NLRSearchDataCollection extends Model
                     pointer = totalNumberPoints-1;
                     break;
                 }
-		
+
 				double[] nextPoint = originalPoints.get(pointer).point;
 				currentDist += MathUtil.distanceBetween(nextPoint, prevPoint);
-				
+
 				if (currentDist > Math.abs(maskValue))
 					break;
-				
+
 				prevPoint = nextPoint;
 			}
 
@@ -721,7 +721,7 @@ public class NLRSearchDataCollection extends Model
 	{
 	    return prop == actor;
 	}
-	
+
     public String getClickStatusBarText(vtkProp prop, int cellId, double[] pickPosition)
     {
     	cellId = geometryFilter.GetPointMinimum() + cellId;
@@ -734,7 +734,7 @@ public class NLRSearchDataCollection extends Model
     private void createDoyToPathMap()
     {
     	nlrDoyToPathMap = new HashMap<String, String>();
-    	
+    
     	ArrayList<String> allpaths = getAllNlrPaths();
     	for (String path : allpaths)
     	{
@@ -746,7 +746,7 @@ public class NLRSearchDataCollection extends Model
     		if (doyStr.startsWith("0"))
     			doyStr = doyStr.substring(1);
     		int doy = Integer.parseInt(doyStr);
-    		
+    
     		nlrDoyToPathMap.put((new IdPair(doy, year)).toString(), path);
     	}
     }
@@ -754,7 +754,7 @@ public class NLRSearchDataCollection extends Model
     private ArrayList<String> getAllNlrPaths()
     {
     	ArrayList<String> paths = new ArrayList<String>();
-    	
+    
 		InputStream is = getClass().getResourceAsStream("/edu/jhuapl/near/data/NlrFiles.txt");
 		InputStreamReader isr = new InputStreamReader(is);
 		BufferedReader in = new BufferedReader(isr);
@@ -778,7 +778,7 @@ public class NLRSearchDataCollection extends Model
 	{
 		if (offset == radialOffset)
 			return;
-		
+
 		radialOffset = offset;
 
         vtkPoints points = polydata.GetPoints();
@@ -792,7 +792,7 @@ public class NLRSearchDataCollection extends Model
         	lla.rad += offset;
         	pt = MathUtil.latrec(lla);
         	points.SetPoint(i, pt);
-		}		
+		}
 
         polydata.Modified();
 
@@ -809,7 +809,7 @@ public class NLRSearchDataCollection extends Model
 			smallBodyCubes = new SmallBodyCubes(
 					erosModel.getLowResSmallBodyPolyData(), 1.0, 1.0, true);
 		}
-		
+
 		return smallBodyCubes.getIntersectingCubes(polydata);
 	}
 
@@ -817,7 +817,7 @@ public class NLRSearchDataCollection extends Model
 	{
 		return originalPoints.size();
 	}
-	
+
 	public int[] getMaskedPointRange()
 	{
         int[] range = {firstPointShown, lastPointShown};
@@ -828,7 +828,7 @@ public class NLRSearchDataCollection extends Model
     {
         return originalPoints.get(i).time;
     }
-	
+
     public double getLengthOfMaskedPoints()
     {
         double length = 0.0;
@@ -853,10 +853,10 @@ public class NLRSearchDataCollection extends Model
     {
     	potential.clear();
     	distance.clear();
-    	
+    
     	if (originalPoints.size() == 0 || firstPointShown < 0 || lastPointShown < 0)
     		return;
-    	
+    
         double length = 0.0;
 
         potential.add(originalPoints.get(firstPointShown).potential);
@@ -883,10 +883,10 @@ public class NLRSearchDataCollection extends Model
     {
     	potential.clear();
     	time.clear();
-    	
+    
     	if (originalPoints.size() == 0 || firstPointShown < 0 || lastPointShown < 0)
     		return;
-    	
+    
         for (int i=firstPointShown; i<=lastPointShown; ++i)
         {
             potential.add(originalPoints.get(i).potential);
@@ -931,12 +931,12 @@ public class NLRSearchDataCollection extends Model
 		if (firstPointShown < 0 || lastPointShown < 0)
 			return;
 	}
-	
+
 	public void saveNlrDataSql(File outFile) throws IOException, ParseException
 	{
 		if (firstPointShown < 0 || lastPointShown < 0)
 			return;
-		
+
         PreparedStatement st = null;
         ResultSet rs = null;
 
@@ -947,9 +947,9 @@ public class NLRSearchDataCollection extends Model
 
 	        st = db.preparedStatement("SELECT * FROM nlr WHERE UTC = ?");
 	        String newline = System.getProperty("line.separator");
-	
+
 	        StringBuilder sb = new StringBuilder();
-	
+
 	        int count = 0;
 			int numPoints = originalPoints.size();
 			System.out.println("numPOint " + numPoints);
@@ -957,14 +957,14 @@ public class NLRSearchDataCollection extends Model
 			{
 				if (i < firstPointShown || i > lastPointShown)
 					continue;
-				
+
 				st.setLong(1, originalPoints.get(i).time);
 		        rs = st.executeQuery();
-		
+
 		        boolean hasNext = rs.next();
 		        if (hasNext == false)
 		        	continue;
-		
+
 		        sb.append(rs.getFloat(2)); sb.append(' ');
 		        sb.append(rs.getFloat(3)); sb.append(' ');
 		        sb.append(rs.getFloat(4)); sb.append(' ');
@@ -987,12 +987,12 @@ public class NLRSearchDataCollection extends Model
 		        sb.append(newline);
 
 		        out.write(sb.toString());
-		
+
 		        if (count % 1000 == 0)
 		        	System.out.println(count);
 		        ++count;
 			}
-			
+
 
 	        st.close();
 		}

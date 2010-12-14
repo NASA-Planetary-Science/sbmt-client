@@ -40,11 +40,11 @@ public class SmallBodyCubes
 		this.buffer = buffer;
 
 		initialize(smallBodyPolyData);
-		
+
 		if (removeEmptyCubes)
 		    removeEmptyCubes(smallBodyPolyData);
 	}
-	
+
 	/**
 	 * Create a cube set structure for the given model using a default value of 1 for the
 	 * cube size and a default value of 0.01 for the buffer. If <tt>cubesToKeep</tt> is not
@@ -59,7 +59,7 @@ public class SmallBodyCubes
 	        int[] cubesToKeep)
 	{
 	    initialize(smallBodyPolyData);
-		
+
 		if (cubesToKeep != null)
 		{
 		    ArrayList<BoundingBox> tmpCubes = new ArrayList<BoundingBox>();
@@ -74,7 +74,7 @@ public class SmallBodyCubes
 		    removeEmptyCubes(smallBodyPolyData);
 		}
 	}
-	
+
 	private void initialize(vtkPolyData smallBodyPolyData)
 	{
 	    smallBodyPolyData.ComputeBounds();
@@ -86,12 +86,12 @@ public class SmallBodyCubes
 		boundingBox.ymin -= buffer;
 		boundingBox.zmax += buffer;
 		boundingBox.zmin -= buffer;
-		
-		
+
+
 		numCubesX = (int)(Math.ceil(boundingBox.xmax - boundingBox.xmin) / cubeSize);
 		numCubesY = (int)(Math.ceil(boundingBox.ymax - boundingBox.ymin) / cubeSize);
 		numCubesZ = (int)(Math.ceil(boundingBox.zmax - boundingBox.zmin) / cubeSize);
-		
+
 		for (int k=0; k<numCubesZ; ++k)
 		{
 			double zmin = boundingBox.zmin + k * cubeSize;
@@ -116,7 +116,7 @@ public class SmallBodyCubes
 			}
 		}
 	}
-	
+
 	private void removeEmptyCubes(vtkPolyData smallBodyPolyData)
 	{
 	    System.out.println("numCubesX " + numCubesX);
@@ -149,7 +149,7 @@ public class SmallBodyCubes
 
 	    System.out.println("finished initializing cubes, total = " + allCubes.size());
 	}
-	
+
 	public BoundingBox getCube(int cubeId)
 	{
 		return allCubes.get(cubeId);
@@ -169,7 +169,7 @@ public class SmallBodyCubes
 
 		BoundingBox polydataBB = new BoundingBox(polydata.GetBounds());
 		int numberPolygons = polydata.GetNumberOfCells();
-	
+
 
 		// Store all the bounding boxes of all the individual polygons in an array first
 		// since the call to GetCellBounds is very slow.
@@ -180,8 +180,8 @@ public class SmallBodyCubes
 			polydata.GetCellBounds(j, cellBounds);
 			polyCellsBB.add(new BoundingBox(cellBounds));
 		}
-		
-		
+
+
 		int numberCubes = allCubes.size();
 		for (int i=0; i<numberCubes; ++i)
 		{
@@ -201,7 +201,7 @@ public class SmallBodyCubes
 				}
 			}
 		}
-		
+
 		return cubeIds;
 	}
 
@@ -214,7 +214,7 @@ public class SmallBodyCubes
 	{
 		if (!boundingBox.contains(point))
 			return -1;
-		
+
 		int numberCubes = allCubes.size();
 		for (int i=0; i<numberCubes; ++i)
 		{
@@ -225,13 +225,13 @@ public class SmallBodyCubes
 
 		// If we reach here something is wrong
 		System.err.println("Error: could not find cube");
-		
+
 		return -1;
-		
+
 //		double x = pt[0];
 //		double y = pt[1];
 //		double z = pt[2];
-//		
+//
 //		return (int)Math.floor((x - erosBB.xmin) / cubeSize) +
 //		(int)Math.floor((y - erosBB.ymin) / cubeSize)*numCubesX +
 //		(int)Math.floor((z - erosBB.zmin) / cubeSize)*numCubesX*numCubesY;

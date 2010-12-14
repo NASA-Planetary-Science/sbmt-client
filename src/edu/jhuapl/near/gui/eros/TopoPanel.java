@@ -49,7 +49,7 @@ public class TopoPanel extends JPanel implements ActionListener
 
     	this.modelManager = modelManager;
     	this.pickManager = pickManager;
-    	
+    
 		this.addComponentListener(new ComponentAdapter()
 		{
 			public void componentHidden(ComponentEvent e)
@@ -173,16 +173,16 @@ public class TopoPanel extends JPanel implements ActionListener
         selectRegionButton.setSelected(false);
 
 		// Run Bob Gaskell's map maker fortran program
-		
+
 		// First get the center point and radius of the selection circle
 		double [] centerPoint = null;
 		double radius = 0.0;
-		
+
         RegularPolygonModel selectionModel = (RegularPolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
 		if (selectionModel.getNumberOfStructures() > 0)
 		{
 			RegularPolygonModel.RegularPolygon region = (RegularPolygonModel.RegularPolygon)selectionModel.getStructure(0);
-			
+
 			centerPoint = region.center;
 			radius = region.radius;
 		}
@@ -194,7 +194,7 @@ public class TopoPanel extends JPanel implements ActionListener
 					JOptionPane.ERROR_MESSAGE);
 			return;
 		}
-		
+
 		final String name = this.nameTextField.getText();
 		if (name == null || name.length() == 0)
 		{
@@ -214,7 +214,7 @@ public class TopoPanel extends JPanel implements ActionListener
 					JOptionPane.ERROR_MESSAGE);
 			return;
 		}
-		
+
 		File outputFolder = new File(outputFolderStr);
 		if (!outputFolder.exists())
 		{
@@ -239,7 +239,7 @@ public class TopoPanel extends JPanel implements ActionListener
 		// Ask the user beforehand if it's okay to continue.
 		final MapmakerSwingWorker mapmakerWorker =
 			new MapmakerSwingWorker(this, "Running Mapmaker", "/MSI/mapmaker.zip");
-		
+
 		// If we need to download, promt the user that it will take a long time
 		if (mapmakerWorker.getIfNeedToDownload())
 		{
@@ -262,7 +262,7 @@ public class TopoPanel extends JPanel implements ActionListener
 
 		if (mapmakerWorker.isCancelled())
 			return;
-		
+
 		try
 		{
 			new TopoViewer(mapmakerWorker.getCubeFile(), mapmakerWorker.getLabelFile(),
@@ -273,7 +273,7 @@ public class TopoPanel extends JPanel implements ActionListener
 			e1.printStackTrace();
 		}
 	}
-	
+
 	private void loadCubeFile()
 	{
 		File file = CustomFileChooser.showOpenDialog(TopoPanel.this, "Load Cube File", "cub");
@@ -281,7 +281,7 @@ public class TopoPanel extends JPanel implements ActionListener
 		{
 			return;
 		}
-		
+
 		String filename = file.getAbsolutePath();
 		File lblFile = new File(filename.substring(0, filename.length()-3) + "lbl");
 		try
@@ -295,7 +295,7 @@ public class TopoPanel extends JPanel implements ActionListener
 			e.printStackTrace();
 		}
 	}
-	
+
 	private boolean checkIfPlatformSupported()
 	{
     	String name = System.getProperty("os.name");
@@ -306,10 +306,10 @@ public class TopoPanel extends JPanel implements ActionListener
 					"or Mac OS X instead. We apologize for any inconvenience.",
 					"Error",
 					JOptionPane.ERROR_MESSAGE);
-    		
+    
     		return false;
     	}
-    	
+    
     	return true;
 	}
 }

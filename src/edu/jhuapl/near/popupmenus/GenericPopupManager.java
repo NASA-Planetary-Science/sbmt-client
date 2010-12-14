@@ -30,11 +30,11 @@ public class GenericPopupManager extends PopupManager
 			ModelManager modelManager)
 	{
 		super(modelManager);
-		
+
 		linesPopupMenu =
 			new LinesPopupMenu(modelManager);
 		modelToPopupMap.put(modelManager.getModel(ModelNames.LINE_STRUCTURES), linesPopupMenu);
-		
+
 		circlesPopupMenu =
 			new CirclesPopupMenu(modelManager);
 		modelToPopupMap.put(modelManager.getModel(ModelNames.CIRCLE_STRUCTURES), circlesPopupMenu);
@@ -43,7 +43,7 @@ public class GenericPopupManager extends PopupManager
 			new PointsPopupMenu(modelManager);
 		modelToPopupMap.put(modelManager.getModel(ModelNames.POINT_STRUCTURES), pointsPopupMenu);
 	}
-	
+
 	protected HashMap<Model, PopupMenu> getModelToPopupMap()
 	{
 		return modelToPopupMap;

@@ -21,17 +21,17 @@ public abstract class Viewer extends JPanel
 	 * this function should be called prior to first time the Viewer is
 	 * shown in order to cause it
 	 */
-	
+
 	public Viewer(LayoutManager mgr)
 	{
 		super(mgr);
 	}
-	
+
 	public void initialize()
 	{
 	}
-	
+
 	public abstract String getName();
-	
+
     public abstract Renderer getRenderer();
 }

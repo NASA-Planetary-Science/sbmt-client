@@ -19,7 +19,7 @@ public class FileDownloadSwingWorker extends ProgressBarSwingWorker
 		this.filename = filename;
     	setLabelText("<html>Downloading file<br>Completed 0%</html>");
 	}
-	
+
 	public boolean getIfNeedToDownload()
 	{
 		return FileCacheNew.getFileInfoFromServer(filename).needToDownload;
@@ -29,7 +29,7 @@ public class FileDownloadSwingWorker extends ProgressBarSwingWorker
 	{
 		String zipfile = FileCacheNew.getFileInfoFromServer(filename).file.getAbsolutePath();
 		File zipRootFolder = new File(zipfile.substring(0, zipfile.length()-4));
-		
+
 		return !zipRootFolder.exists() && zipfile.endsWith(".zip");
 	}
 

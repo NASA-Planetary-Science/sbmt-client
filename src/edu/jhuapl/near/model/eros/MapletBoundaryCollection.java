@@ -23,14 +23,14 @@ public class MapletBoundaryCollection extends Model implements PropertyChangeLis
 		public Boundary(DEMModel dem)
 		{
 		    this.dem = dem;
-		
+
 	        boundary = new vtkPolyData();
 	        boundaryMapper = new vtkPolyDataMapper();
 	        actor = new vtkActor();
-	
+
 	        initialize();
 		}
-		
+
 		private void initialize()
 		{
 			boundary.DeepCopy(dem.getBoundary());
@@ -69,23 +69,23 @@ public class MapletBoundaryCollection extends Model implements PropertyChangeLis
 			props.add(actor);
 			return props;
 		}
-		
+
 		public DEMModel getDEM()
 		{
 		    return dem;
 		}
-		
+
 	}
 
 
     private HashMap<Boundary, ArrayList<vtkProp>> boundaryToActorsMap = new HashMap<Boundary, ArrayList<vtkProp>>();
 	private HashMap<vtkProp, Boundary> actorToBoundaryMap = new HashMap<vtkProp, Boundary>();
 	private SmallBodyModel erosModel;
-	
+
 	public MapletBoundaryCollection(SmallBodyModel erosModel)
 	{
 		super(ModelNames.MAPLET_BOUNDARY);
-		
+
 		this.erosModel = erosModel;
 	}
 
@@ -137,10 +137,10 @@ public class MapletBoundaryCollection extends Model implements PropertyChangeLis
 	public void removeBoundary(DEMModel dem)
 	{
 		Boundary boundary = getBoundaryFromDEM(dem);
-		
+
 		boundary.removePropertyChangeListener(this);
         erosModel.removePropertyChangeListener(boundary);
-		
+
         ArrayList<vtkProp> actors = boundaryToActorsMap.get(boundary);
 
         for (vtkProp act : actors)
@@ -163,7 +163,7 @@ public class MapletBoundaryCollection extends Model implements PropertyChangeLis
 	{
         return new ArrayList<vtkProp>(actorToBoundaryMap.keySet());
 	}
-	
+
     public String getClickStatusBarText(vtkProp prop, int cellId, double[] pickPosition)
     {
     	return "Boundary of maplet";

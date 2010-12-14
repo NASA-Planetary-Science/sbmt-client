@@ -36,7 +36,7 @@ public class LinePicker extends Picker
 	private EditMode currentEditMode = EditMode.VERTEX_ADD;
 
 	private double[] lastDragPosition;
-	
+
     public LinePicker(
 			Renderer renderer,
 			ModelManager modelManager
@@ -47,7 +47,7 @@ public class LinePicker extends Picker
 		this.lineModel = (LineModel)modelManager.getModel(ModelNames.LINE_STRUCTURES);
 
 		profileMode = lineModel.hasProfileMode();
-		
+
 		smallBodyPicker = new vtkCellPicker();
 		smallBodyPicker.SetTolerance(0.002);
 		smallBodyPicker.PickFromListOn();
@@ -69,7 +69,7 @@ public class LinePicker extends Picker
 		vtkPropCollection linePickList = linePicker.GetPickList();
 		linePickList.RemoveAllItems();
 		linePicker.AddPickList(lineModel.getLineActor());
-		
+
 		lineSelectionPicker = new vtkCellPicker();
 		lineSelectionPicker.SetTolerance(0.008);
 		lineSelectionPicker.PickFromListOn();
@@ -78,7 +78,7 @@ public class LinePicker extends Picker
 		lineSelectionPickList.RemoveAllItems();
 		lineSelectionPicker.AddPickList(lineModel.getLineSelectionActor());
 	}
-	
+
 	public void mousePressed(MouseEvent e)
 	{
 		// If we pressed a vertex of an existing lineament, begin dragging that vertex.
@@ -87,7 +87,7 @@ public class LinePicker extends Picker
 
 		vertexIdBeingEdited = -1;
 		lastDragPosition = null;
-		
+
 		if (this.currentEditMode == EditMode.VERTEX_DRAG_OR_DELETE)
 		{
 			if (e.getButton() != MouseEvent.BUTTON1 && e.getButton() != MouseEvent.BUTTON3)
@@ -103,7 +103,7 @@ public class LinePicker extends Picker
 					if (e.getButton() == MouseEvent.BUTTON1)
 					{
 						vertexIdBeingEdited = lineSelectionPicker.GetCellId();
-						
+
 						if (profileMode)
 						{
 							int lineId = lineModel.getLineIdFromSelectionCellId(vertexIdBeingEdited);
@@ -141,10 +141,10 @@ public class LinePicker extends Picker
 						lineModel.insertVertexIntoSelectedLine(pos);
 					}
 				}
-			}		
+			}
 		}
 	}
-	
+
 	public void mouseReleased(MouseEvent e)
 	{
 		if (this.currentEditMode == EditMode.VERTEX_DRAG_OR_DELETE &&
@@ -152,7 +152,7 @@ public class LinePicker extends Picker
 				lastDragPosition != null)
 		{
 			int vertexId = vertexIdBeingEdited;
-			
+
 			if (profileMode)
 				vertexId = lineModel.getVertexIdFromSelectionCellId(vertexIdBeingEdited);
 
@@ -161,13 +161,13 @@ public class LinePicker extends Picker
 
 		vertexIdBeingEdited = -1;
 	}
-	
+
 	public void mouseDragged(MouseEvent e)
 	{
 		//if (e.getButton() != MouseEvent.BUTTON1)
 		//	return;
 
-		
+
 		if (this.currentEditMode == EditMode.VERTEX_DRAG_OR_DELETE &&
 			vertexIdBeingEdited >= 0)
 		{
@@ -187,11 +187,11 @@ public class LinePicker extends Picker
 		}
 	}
 
-	
+
 	public void mouseMoved(MouseEvent e)
 	{
 		int pickSucceeded = doPick(e, lineSelectionPicker, renWin);
-		
+
 		// If we're in profile mode, then do not allow dragging of a vertex if we're
 		// in the middle of creating a new profile. We can determine if we're in the
 		// middle of creating one if the last line in the LineModel has fewer than 2
@@ -207,21 +207,21 @@ public class LinePicker extends Picker
 					profileModeOkToDrag = false;
 			}
 		}
-		
+
 		if (pickSucceeded == 1 &&
 			lineSelectionPicker.GetActor() == lineModel.getLineSelectionActor() &&
 			profileModeOkToDrag)
 		{
 			if (renWin.getCursor().getType() != Cursor.HAND_CURSOR)
 				renWin.setCursor(new Cursor(Cursor.HAND_CURSOR));
-			
+
 			currentEditMode = EditMode.VERTEX_DRAG_OR_DELETE;
 		}
 		else
 		{
 			if (renWin.getCursor().getType() != Cursor.DEFAULT_CURSOR)
 				renWin.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-			
+
 			currentEditMode = EditMode.VERTEX_ADD;
 		}
 	}

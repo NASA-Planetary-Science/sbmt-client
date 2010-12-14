@@ -78,11 +78,11 @@ public class TopoViewer extends JFrame
 	private static final String EndRadius = "EndRadius";
 	private static final String Color = "Color";
 
-	
+
     public TopoViewer(File cubFile, File lblFile, MapletBoundaryCollection mapletBoundaries) throws IOException
 	{
     	this.mapletBoundaries = mapletBoundaries;
-    	
+    
 		ImageIcon erosIcon = new ImageIcon(getClass().getResource("/edu/jhuapl/near/data/eros.png"));
 		setIconImage(erosIcon.getImage());
 
@@ -90,7 +90,7 @@ public class TopoViewer extends JFrame
 
     	StatusBar statusBar = new StatusBar();
     	add(statusBar, BorderLayout.PAGE_END);
-    	
+    
     	String filename = cubFile.getAbsolutePath();
     	String lblfilename = lblFile.getAbsolutePath();
 		final ModelManager modelManager = new ModelManager();
@@ -111,7 +111,7 @@ public class TopoViewer extends JFrame
 		GenericPopupManager popupManager = new GenericPopupManager(modelManager);
 
 		pickManager = new PickManager(renderer, statusBar, modelManager, popupManager);
-		
+
         renderer.setMinimumSize(new Dimension(100, 100));
         renderer.setPreferredSize(new Dimension(400, 400));
 
@@ -119,7 +119,7 @@ public class TopoViewer extends JFrame
         rendererPanel.add(renderer, BorderLayout.CENTER);
 
         JPanel panel = new JPanel(new BorderLayout());
-		
+
         plot = new TopoPlot(lineModel, dem);
 		plot.getChartPanel().setMinimumSize(new Dimension(100, 100));
 		plot.getChartPanel().setPreferredSize(new Dimension(400, 400));
@@ -136,7 +136,7 @@ public class TopoViewer extends JFrame
 		add(panel, BorderLayout.CENTER);
 
 		mapletBoundaries.addBoundary(dem);
-		
+
 		addWindowListener(new WindowAdapter()
 		{
 			public void windowClosing(WindowEvent e)
@@ -148,13 +148,13 @@ public class TopoViewer extends JFrame
 		});
 
 		createMenus();
-		
+
         // Finally make the frame visible
         setTitle("Mapmaker View");
         pack();
         setVisible(true);
 	}
-	
+
     private void createMenus()
     {
     	JMenuBar menuBar = new JMenuBar();
@@ -206,19 +206,19 @@ public class TopoViewer extends JFrame
     		public void actionPerformed(ActionEvent e)
     		{
     			removeFaultyProfiles();
-    			
+    
     			lineModel.addNewStructure();
-    			
+    
     			// Set the color of this new structure
     			int idx = lineModel.getNumberOfStructures() - 1;
     			lineModel.setStructureColor(idx, getNextColor());
-    			
+    
     			pickManager.setPickMode(PickMode.LINE_DRAW);
     			editButton.setSelected(true);
     		}
     	});
     	panel.add(newButton);
-    	
+    
         editButton = new JToggleButton("Edit Profiles");
         editButton.addActionListener(new ActionListener()
         {
@@ -298,7 +298,7 @@ public class TopoViewer extends JFrame
 
         return panel;
 	}
-	
+
 	private int[] getNextColor()
 	{
 		int numColors = DefaultDrawingSupplier.DEFAULT_PAINT_SEQUENCE.length;
@@ -308,7 +308,7 @@ public class TopoViewer extends JFrame
 		++currentColorIndex;
 		return new int[] {c.getRed(), c.getGreen(), c.getBlue(), c.getAlpha()};
 	}
-	
+
 	private void saveViewer(File file) throws IOException
 	{
 		FileWriter fstream = new FileWriter(file);
@@ -322,7 +322,7 @@ public class TopoViewer extends JFrame
         	Line line = (Line)lineModel.getStructure(i);
         	if (line.controlPointIds.size() != 2)
         		continue;
-        	
+        
         	out.write(eol + Profile + "=" + i + eol);
         	out.write(StartLatitude + "=" + line.lat.get(0) + eol);
         	out.write(StartLongitude + "=" + line.lon.get(0) + eol);
@@ -344,17 +344,17 @@ public class TopoViewer extends JFrame
 	private void loadViewer(File file) throws IOException
 	{
 		removeAllProfiles();
-		
+
 		InputStream fs = new FileInputStream(file);
 		InputStreamReader isr = new InputStreamReader(fs);
 		BufferedReader in = new BufferedReader(isr);
 
 		String line;
-		
+
 		LatLon start = new LatLon();
 		LatLon end = new LatLon();
 		int lineId = 0;
-		
+
 		while ((line = in.readLine()) != null)
 		{
 			line = line.trim();
@@ -364,7 +364,7 @@ public class TopoViewer extends JFrame
 			if (tokens.length != 2)
 				throw new IOException("Error parsing file");
 			//System.out.println(tokens[0]);
-			
+
 			String key = tokens[0].trim();
 			String value = tokens[1].trim();
 
@@ -389,25 +389,25 @@ public class TopoViewer extends JFrame
 				color[1] = Integer.parseInt(c[1]);
 				color[2] = Integer.parseInt(c[2]);
 				color[3] = Integer.parseInt(c[3]);
-				
+
 				double[] p1 = MathUtil.latrec(start);
 				double[] p2 = MathUtil.latrec(end);
-				
+
 				lineModel.addNewStructure();
 				lineModel.selectStructure(lineId);
 				lineModel.setStructureColor(lineId, color);
 				lineModel.insertVertexIntoSelectedLine(p1);
 				lineModel.insertVertexIntoSelectedLine(p2);
-				
+
 				++lineId;
-				
+
 				// Force an increment of the color index. Note this
 				// might not work so well since there may be no relationship
 				// between the colors loaded from the file and the color index.
 				getNextColor();
 			}
 		}
-		
+
 		in.close();
 	}
 
@@ -424,7 +424,7 @@ public class TopoViewer extends JFrame
         }
 
 	}
-	
+
 	private void removeAllProfiles()
 	{
 		lineModel.removeAllStructures();

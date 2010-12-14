@@ -22,7 +22,7 @@ public class MathUtil
 
         return xyz;
 	}
-	
+
 	/**
 	 * Convert cartesian coordinates to lat lon. Copied from spice's reclat function.
 	 * @param xyz
@@ -60,7 +60,7 @@ public class MathUtil
 			llr.lon = 0.;
 			llr.lat = 0.;
 		}
-		
+
 		return llr;
 	}
 
@@ -108,7 +108,7 @@ public class MathUtil
 		      return (  v1max * Math.sqrt( normSqr )  );
 		   }
 	}
-	
+
 	/**
 	 * Copied from spice.
 	 * Note unlike the original spice which takes a 3rd argument as output, here we return it from the function.
@@ -126,8 +126,8 @@ public class MathUtil
 
 		   double vmag = vnorm( v1 );
 
-		
-		
+
+
 		   /*
 		   If *vmag is nonzero, then normalize.  Note that this process is
 		   numerically stable: overflow could only happen if vmag were small,
@@ -148,7 +148,7 @@ public class MathUtil
 		      vout[1] = 0.;
 		      vout[2] = 0.;
 		      }
-		
+
 		   return vmag;
 	}
 
@@ -162,7 +162,7 @@ public class MathUtil
 	{
 		return ( v1[0]*v2[0] + v1[1]*v2[1] + v1[2]*v2[2] );
 	}
-	
+
 	/**
 	 * Copied from spice
 	 * @param v1
@@ -200,7 +200,7 @@ public class MathUtil
 		      vsep = 0.0;
 		      return vsep;
 		      }
-		
+
 		      dmag2 = unorm ( v2, u2 );
 
 		   if ( dmag2 == 0.0 )
@@ -208,22 +208,22 @@ public class MathUtil
 		      vsep = 0.0;
 		      return vsep;
 		      }
-		
+
 		   if ( vdot(u1,u2) > 0. )
 		      {
 		      vtemp[0] = u1[0] - u2[0];
 		      vtemp[1] = u1[1] - u2[1];
 		      vtemp[2] = u1[2] - u2[2];
-		
+
 		      vsep = 2.00 * Math.asin (0.50 * vnorm(vtemp));
 		      }
-		
+
 		   else if ( vdot(u1,u2) < 0. )
 		      {
 		      vtemp[0] = u1[0] + u2[0];
 		      vtemp[1] = u1[1] + u2[1];
 		      vtemp[2] = u1[2] + u2[2];
-		
+
 		      vsep = Math.PI - 2.00 * Math.asin (0.50 * vnorm(vtemp));
 		      }
 
@@ -231,7 +231,7 @@ public class MathUtil
 		      {
 		      vsep = 0.5 * Math.PI;
 		      }
-		
+
 
 		   return vsep;
 
@@ -276,20 +276,20 @@ public class MathUtil
 		      vout[2] = 0.0;
 		      }
 	}
-	
+
 	static public void vcrss(double[] v1, double[] v2, double[] vout)
 	{
 		double[] vtemp = new double[3];
-		
+
 		vtemp[0] = v1[1]*v2[2] - v1[2]*v2[1];
 		vtemp[1] = v1[2]*v2[0] - v1[0]*v2[2];
 		vtemp[2] = v1[0]*v2[1] - v1[1]*v2[0];
-		
+
 		vout[0] = vtemp[0];
 		vout[1] = vtemp[1];
 		vout[2] = vtemp[2];
 	}
-	
+
 	static public void vsub(double[] v1, double[] v2, double[] vout)
 	{
 		vout[0] = v1[0] - v2[0];
@@ -409,7 +409,7 @@ public class MathUtil
 		};
 		return vnorm(vec);
 	}
-	
+
 	static public double distance2Between(double[] pt1, double[] pt2)
 	{
 		double[] vec = {
@@ -434,7 +434,7 @@ public class MathUtil
 		double c = distance2Between(p3,p1);
 		return (0.25* Math.sqrt(Math.abs(4.0*a*c - (a-b+c)*(a-b+c))));
 	}
-	
+
 	static public void barycentricCoords(double[] x, double[] p1, double[] p2, double[] p3, double[] bcoords)
 	{
 		double area1 = triangleArea(x, p2, p3);
@@ -452,7 +452,7 @@ public class MathUtil
 		bcoords[1] = area2 / totalArea;
 		bcoords[2] = area3 / totalArea;
 	}
-	
+
 	static public double interpolateWithinTriangle(
 			double[] x,
 			double[] p1,
@@ -477,7 +477,7 @@ public class MathUtil
 
 	    return b1 << 24 | b2 << 16 | b3 << 8 | b4 << 0;
 	}
-	
+
 	// This function is taken from http://www.java2s.com/Code/Java/Language-Basics/Utilityforbyteswappingofalljavadatatypes.htm
 	static public float swap(float value)
 	{

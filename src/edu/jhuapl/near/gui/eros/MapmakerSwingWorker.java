@@ -24,7 +24,7 @@ public class MapmakerSwingWorker extends FileDownloadSwingWorker
 		super(c, title, filename);
 	}
 
-	
+
 	public void setName(String name)
 	{
 		this.name = name;
@@ -68,7 +68,7 @@ public class MapmakerSwingWorker extends FileDownloadSwingWorker
 	protected Void doInBackground()
 	{
 		super.doInBackground();
-		
+
 		if (isCancelled())
 		{
 			return null;
@@ -78,9 +78,9 @@ public class MapmakerSwingWorker extends FileDownloadSwingWorker
     	setIndeterminate(true);
     	setCancelButtonEnabled(false);
     	setProgress(1);
-		
+
 		Process mapmakerProcess = null;
-		
+
 		try
 		{
 			Mapmaker mapmaker = new Mapmaker();
@@ -91,14 +91,14 @@ public class MapmakerSwingWorker extends FileDownloadSwingWorker
 			mapmaker.setHalfSize(halfSize);
 			mapmaker.setPixelSize(1000.0 * 1.5 * radius / (double)halfSize);
 			mapmaker.setOutputFolder(outputFolder);
-		
+
 			mapmakerProcess = mapmaker.runMapmaker();
-			
+
             while (true)
             {
         		if (isCancelled())
         			break;
-        		
+        
             	try
             	{
             		mapmakerProcess.exitValue();
@@ -125,7 +125,7 @@ public class MapmakerSwingWorker extends FileDownloadSwingWorker
 		{
 			//e.printStackTrace();
 		}
-		
+
 		if (mapmakerProcess != null && isCancelled())
 		{
 			mapmakerProcess.destroy();

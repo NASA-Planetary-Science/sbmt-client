@@ -11,9 +11,9 @@ import edu.jhuapl.near.util.IntensityRange;
 public class ContrastChanger extends JPanel implements ChangeListener
 {
 	private RangeSlider slider;
-	
+
 	private MSIImage msiImage;
-	
+
 	public ContrastChanger()
 	{
 		setBorder(BorderFactory.createTitledBorder("Contrast"));
@@ -27,7 +27,7 @@ public class ContrastChanger extends JPanel implements ChangeListener
 		slider.setEnabled(false);
 		add(slider);
 	}
-	
+
 	public void setMSIImage(MSIImage image)
 	{
 		if (image != null)

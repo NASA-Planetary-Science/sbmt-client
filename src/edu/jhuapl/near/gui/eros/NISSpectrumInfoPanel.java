@@ -26,16 +26,16 @@ public class NISSpectrumInfoPanel extends ModelInfoWindow implements PropertyCha
 {
 	private ModelManager modelManager;
 	private NISSpectrum nisSpectrum;
-	
+
 	public NISSpectrumInfoPanel(NISSpectrum nisSpectrum, ModelManager modelManager)
 	{
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
 		this.modelManager = modelManager;
 		this.nisSpectrum = nisSpectrum;
-		
+
         JPanel panel = new JPanel(new BorderLayout());
-		
+
 
         // add the jfreechart graph
         XYSeries series = new XYSeries("NIS Spectrum");
@@ -75,21 +75,21 @@ public class NISSpectrumInfoPanel extends ModelInfoWindow implements PropertyCha
 
 		HashMap<String, String> properties = null;
 		Object[][] data = {	{"", ""} };
-		
+
 		try
 		{
-			
+
 			properties = this.nisSpectrum.getProperties();
 			TreeMap<String, String> sortedProperties = new TreeMap<String, String>(properties);
 			int size = properties.size();
 			data = new Object[size][2];
-			
+
 			int i=0;
 			for (String key : sortedProperties.keySet())
 			{
 				data[i][0] = key;
 				data[i][1] = sortedProperties.get(key);
-				
+
 				++i;
 			}
 		}
@@ -97,8 +97,8 @@ public class NISSpectrumInfoPanel extends ModelInfoWindow implements PropertyCha
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		
+
+
 
 		JTable table = new JTable(data, columnNames)
 		{
@@ -112,7 +112,7 @@ public class NISSpectrumInfoPanel extends ModelInfoWindow implements PropertyCha
 		table.setPreferredScrollableViewportSize(new Dimension(500, 130));
 
 		JScrollPane scrollPane = new JScrollPane(table);
-		
+
         bottomPanel.add(Box.createVerticalStrut(10));
         bottomPanel.add(scrollPane);
 
@@ -129,17 +129,17 @@ public class NISSpectrumInfoPanel extends ModelInfoWindow implements PropertyCha
         setVisible(true);
 	}
 
-	
+
 	public Model getModel()
 	{
 		return nisSpectrum;
 	}
-	
+
 	public Model getCollectionModel()
 	{
 		return modelManager.getModel(ModelNames.NIS_SPECTRA);
 	}
-	
+
 
 	/**
 	 * The following function is a bit of a hack. We want to reuse the MSIPopupMenu
@@ -151,9 +151,9 @@ public class NISSpectrumInfoPanel extends ModelInfoWindow implements PropertyCha
     {
     	NISPopupMenu msiImagesPopupMenu =
 			new NISPopupMenu(modelManager, null);
-    	
+    
     	msiImagesPopupMenu.setCurrentSpectrum(nisSpectrum.getServerPath());
-    	
+    
     	JMenuBar menuBar = new JMenuBar();
 
     	JMenu menu = new JMenu("Options");

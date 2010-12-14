@@ -22,7 +22,7 @@ public class NLRBrowseDataCollection extends Model implements PropertyChangeList
 	private HashMap<String, NLRDataPerDay> fileToNlrPerDayMap = new HashMap<String, NLRDataPerDay>();
 	private HashMap<vtkProp, String> actorToFileMap = new HashMap<vtkProp, String>();
 	private double radialOffset = 0.0;
-	
+
 	public NLRBrowseDataCollection()
 	{
 		super(ModelNames.NLR_DATA_BROWSE);
@@ -36,26 +36,26 @@ public class NLRBrowseDataCollection extends Model implements PropertyChangeList
 		NLRDataPerDay nlrData = new NLRDataPerDay(path);
 
 		nlrData.addPropertyChangeListener(this);
-		
+
 		fileToNlrPerDayMap.put(path, nlrData);
-		
+
 		actorToFileMap.put(nlrData.getProps().get(0), path);
-		
+
 		nlrPerDayActors.add(nlrData.getProps().get(0));
-	
+
 		this.setRadialOffset(radialOffset);
-		
+
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 	}
 
 	public void removeNlrData(String path)
 	{
 		vtkProp actor = fileToNlrPerDayMap.get(path).getProps().get(0);
-		
+
 		nlrPerDayActors.remove(actor);
 
 		actorToFileMap.remove(actor);
-		
+
 		fileToNlrPerDayMap.remove(path);
 
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
@@ -73,12 +73,12 @@ public class NLRBrowseDataCollection extends Model implements PropertyChangeList
 	{
 		return fileToNlrPerDayMap.get(path);
 	}
-	
+
 	public ArrayList<vtkProp> getProps()
 	{
 		return nlrPerDayActors;
 	}
-	
+
     public String getClickStatusBarText(vtkProp prop, int cellId, double[] pickPosition)
     {
     	NLRDataPerDay data = fileToNlrPerDayMap.get(actorToFileMap.get(prop));
@@ -98,7 +98,7 @@ public class NLRBrowseDataCollection extends Model implements PropertyChangeList
     public ArrayList<String> getAllNlrPaths()
     {
     	ArrayList<String> paths = new ArrayList<String>();
-    	
+    
 		InputStream is = getClass().getResourceAsStream("/edu/jhuapl/near/data/NlrFiles.txt");
 		InputStreamReader isr = new InputStreamReader(is);
 		BufferedReader in = new BufferedReader(isr);
@@ -126,7 +126,7 @@ public class NLRBrowseDataCollection extends Model implements PropertyChangeList
 	public void setRadialOffset(double offset)
 	{
 		radialOffset = offset;
-		
+
     	if (fileToNlrPerDayMap.isEmpty())
     		return;
 
@@ -135,7 +135,7 @@ public class NLRBrowseDataCollection extends Model implements PropertyChangeList
     		NLRDataPerDay data = fileToNlrPerDayMap.get(key);
     		data.setRadialOffset(offset);
     	}
-    	
+    
     	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 	}
 }

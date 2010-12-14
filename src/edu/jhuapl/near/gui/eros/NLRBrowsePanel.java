@@ -27,7 +27,7 @@ import edu.jhuapl.near.util.FileUtil;
 public class NLRBrowsePanel extends JPanel implements ListSelectionListener
 {
 	private final String NLR_REMOVE_ALL_BUTTON_TEXT = "Remove All NLR Data";
-	
+
 //    private final ModelManager modelManager;
     private NLRBrowseDataCollection nlrModel;
     private JList resultList;
@@ -45,9 +45,9 @@ public class NLRBrowsePanel extends JPanel implements ListSelectionListener
     public class NlrTimeIntervalChanger extends JPanel implements ChangeListener
     {
     	private RangeSlider slider;
-    	
+    
     	private NLRDataPerDay nlrData;
-    	
+    
     	public NlrTimeIntervalChanger()
     	{
     		setBorder(BorderFactory.createTitledBorder("Displayed NLR Data"));
@@ -60,7 +60,7 @@ public class NLRBrowsePanel extends JPanel implements ListSelectionListener
     		slider.setEnabled(false);
     		add(slider);
     	}
-    	
+    
     	void setNLRData(NLRDataPerDay data)
     	{
     		if (data != null)
@@ -91,13 +91,13 @@ public class NLRBrowsePanel extends JPanel implements ListSelectionListener
     {
     	setLayout(new BoxLayout(this,
         		BoxLayout.PAGE_AXIS));
-    	
+    
     	//this.modelManager = modelManager;
     	this.nlrModel = (NLRBrowseDataCollection)modelManager.getModel(ModelNames.NLR_DATA_BROWSE);
 
 
         JPanel resultsPanel = new JPanel(new BorderLayout());
-		
+
 		resultsLabel = new JLabel("Available Files");
 
         nlrResultListModel = new DefaultListModel();
@@ -178,7 +178,7 @@ public class NLRBrowsePanel extends JPanel implements ListSelectionListener
         					saveButton.getParent(),
         					"Save NLR data",
         					tmp.getName().substring(0, tmp.getName().length()-3));
-        			
+        
         			try
         			{
         				if (file != null)
@@ -241,7 +241,7 @@ public class NLRBrowsePanel extends JPanel implements ListSelectionListener
         add(radialOffsetChanger);
     }
 
-	
+
 	public void valueChanged(ListSelectionEvent arg0)
 	{
 		int[] idx = {arg0.getFirstIndex(), arg0.getLastIndex()};
@@ -251,7 +251,7 @@ public class NLRBrowsePanel extends JPanel implements ListSelectionListener
 			{
 				showHideButton.setEnabled(true);
 				saveButton.setEnabled(true);
-				
+
 				//resultList.setSelectedIndex(index);
 				if (nlrModel.containsNlrData(nlrRawResults.get(index)))
 				{

@@ -15,11 +15,11 @@ public class CirclesPopupMenu extends PopupMenu
 {
 	private int cellIdLastClicked = -1;
 	private CircleModel model = null;
-	
+
 	public CirclesPopupMenu(ModelManager modelManager)
 	{
 		this.model = (CircleModel)modelManager.getModel(ModelNames.CIRCLE_STRUCTURES);
-		
+
 		JMenuItem mi;
 		mi = new JMenuItem(new DeleteAction());
 		mi.setText("Delete");

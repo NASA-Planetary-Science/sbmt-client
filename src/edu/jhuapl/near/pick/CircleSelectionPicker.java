@@ -18,7 +18,7 @@ public class CircleSelectionPicker extends Picker
     private vtkCellPicker smallBodyPicker;
 
     private int vertexIdBeingEdited = -1;
-	
+
     public CircleSelectionPicker(
 			Renderer renderer,
 			ModelManager modelManager
@@ -27,7 +27,7 @@ public class CircleSelectionPicker extends Picker
 		this.renWin = renderer.getRenderWindowPanel();
 		this.modelManager = modelManager;
 		this.circleModel = (RegularPolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
-		
+
 		smallBodyPicker = new vtkCellPicker();
 		smallBodyPicker.SetTolerance(0.002);
 		smallBodyPicker.PickFromListOn();
@@ -51,7 +51,7 @@ public class CircleSelectionPicker extends Picker
     	vertexIdBeingEdited = -1;
 
     	circleModel.removeAllStructures();
-    	
+    
 		int pickSucceeded = doPick(e, smallBodyPicker, renWin);
 
     	if (pickSucceeded == 1)
@@ -68,20 +68,20 @@ public class CircleSelectionPicker extends Picker
     				vertexIdBeingEdited = circleModel.getNumberOfStructures()-1;
     			}
     		}
-    	}		
+    	}
 	}
-	
+
 	public void mouseReleased(MouseEvent e)
 	{
 		vertexIdBeingEdited = -1;
 	}
-	
+
 	public void mouseDragged(MouseEvent e)
 	{
 		//if (e.getButton() != MouseEvent.BUTTON1)
 		//	return;
 
-		
+
 		if (vertexIdBeingEdited >= 0)
 		{
 			int pickSucceeded = doPick(e, smallBodyPicker, renWin);

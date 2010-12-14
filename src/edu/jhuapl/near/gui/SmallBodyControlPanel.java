@@ -63,7 +63,7 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
         lowResModelButton.setToolTipText(
         		"<html>Click here to show a low resolution model of " + bodyName + " <br />" +
         		"containing 49152 plates or triangles</html>");
-		
+
         medResModelButton = new JRadioButton(SmallBodyModel.MedResModelStr);
         medResModelButton.setActionCommand(SmallBodyModel.MedResModelStr);
         medResModelButton.addItemListener(this);
@@ -71,7 +71,7 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
         medResModelButton.setToolTipText(
         		"<html>Click here to show a medium resolution model of " + bodyName + " <br />" +
         		"containing 196608 plates or triangles</html>");
-		
+
         highResModelButton = new JRadioButton(SmallBodyModel.HighResModelStr);
         highResModelButton.setActionCommand(SmallBodyModel.HighResModelStr);
         highResModelButton.addItemListener(this);
@@ -88,7 +88,7 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
         		"<html>Click here to show a very high resolution model of " + bodyName + " <br />" +
         		"containing 3145728 plates or triangles <br />" +
         		"Warning: A high-end graphics card and several gigabytes of RAM are required for best performance.</html>");
-		
+
 		resolutionButtonGroup = new ButtonGroup();
 		resolutionButtonGroup.add(lowResModelButton);
 		resolutionButtonGroup.add(medResModelButton);
@@ -110,7 +110,7 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
 			button.setEnabled(false);
 			coloringButtons.add(button);
 		}
-		
+
 		if (smallBodyModel.isFalseColoringSupported())
 		{
 			final String customColor = "Custom";
@@ -127,7 +127,7 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
 	        Object[] coloringOptions = new Object[smallBodyModel.getNumberOfColors()];
 	    	for (int i=0; i<smallBodyModel.getNumberOfColors(); ++i)
 	    		coloringOptions[i] = smallBodyModel.getColoringName(i);
-	
+
 	    	customColorRedComboBox = new JComboBox(coloringOptions);
 	        customColorRedComboBox.setMaximumSize(new Dimension(175, 23));
 	        customColorRedComboBox.addItemListener(this);
@@ -145,7 +145,7 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
     	    customColorGreenLabel.setEnabled(false);
     	    customColorBlueLabel.setEnabled(false);
 		}
-		
+
 		coloringButtonGroup = new ButtonGroup();
 		for (int i=0; i<coloringButtons.size(); ++i)
 	        coloringButtonGroup.add(coloringButtons.get(i));
@@ -158,12 +158,12 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
 		flatShadingButton.setActionCommand(SmallBodyModel.FlatShadingStr);
 		flatShadingButton.addItemListener(this);
 		flatShadingButton.setEnabled(true);
-		
+
 		smoothShadingButton = new JRadioButton(SmallBodyModel.SmoothShadingStr);
 		smoothShadingButton.setActionCommand(SmallBodyModel.SmoothShadingStr);
 		smoothShadingButton.addItemListener(this);
 		smoothShadingButton.setEnabled(true);
-		
+
 		shadingButtonGroup = new ButtonGroup();
 		shadingButtonGroup.add(flatShadingButton);
 		shadingButtonGroup.add(smoothShadingButton);
@@ -204,7 +204,7 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
     		if (smallBodyModel.isFalseColoringSupported())
     		{
     			panel.add(coloringButtons.get(coloringButtons.size()-1), "wrap, gapleft 25");
-    			
+    
     			panel.add(customColorRedLabel, "gapleft 50, split 2, align right");
     			panel.add(customColorRedComboBox, "wrap");
     			panel.add(customColorGreenLabel, "gapleft 50, split 2, align right");
@@ -223,14 +223,14 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
     	panel.add(shadingLabel, "wrap");
     	panel.add(flatShadingButton, "wrap, gapleft 25");
     	panel.add(smoothShadingButton, "wrap, gapleft 25");
-    	
+    
     	add(panel, BorderLayout.CENTER);
 	}
 
 	public void itemStateChanged(ItemEvent e)
 	{
 		Picker.setPickingEnabled(false);
-		
+
 		SmallBodyModel smallBodyModel = modelManager.getSmallBodyModel();
 
 		if (e.getItemSelectable() == this.modelCheckBox)
@@ -338,7 +338,7 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
 	    			customColorGreenLabel.setEnabled(false);
 	    			customColorBlueLabel.setEnabled(false);
 	    		}
-	    		
+	    
 				try
 				{
 					smallBodyModel.setColoringIndex(-1);
@@ -346,7 +346,7 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
 				catch (IOException e1) {
 					e1.printStackTrace();
 				}
-				
+
 				opacityLabel.setEnabled(false);
 				imageMapOpacitySpinner.setEnabled(false);
 			}
@@ -398,7 +398,7 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
 						return;
 					}
 				}
-				
+
 				// If the false coloring option is selected (which is the last radio button
 				// and is not included in the previous for loop)
 				if (coloringButtonGroup.getSelection() ==

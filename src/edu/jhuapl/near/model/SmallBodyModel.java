@@ -84,8 +84,8 @@ public class SmallBodyModel extends Model
 	private int greenFalseColor = -1; // green channel for false coloring
 	private int blueFalseColor = -1; // blue channel for false coloring
 	private vtkUnsignedCharArray falseColorArray;
-	
-	
+
+
 	/**
 	 * Default constructor. Must be followed by a call to setSmallBodyPolyData.
 	 */
@@ -95,7 +95,7 @@ public class SmallBodyModel extends Model
 		genericCell = new vtkGenericCell();
 		idList = new vtkIdList();
 	}
-			
+
 	public SmallBodyModel(
 			String[] modelNames,
 			String[] modelFiles,
@@ -109,7 +109,7 @@ public class SmallBodyModel extends Model
 			boolean lowestResolutionModelStoredInResource)
 	{
 		super(ModelNames.SMALL_BODY);
-		
+
 		this.modelNames = modelNames;
 		this.modelFiles = modelFiles;
 		this.coloringFiles = coloringFiles;
@@ -123,7 +123,7 @@ public class SmallBodyModel extends Model
 		{
 			this.coloringValues = new vtkFloatArray[coloringNames.length];
 			this.coloringImages = new vtkImageData[coloringNames.length];
-			
+
 			// If coloringHasNulls is null, assume false for all coloring (i.e. all data
 			// is real data, with no missing data)
 			if (coloringHasNulls == null)
@@ -136,7 +136,7 @@ public class SmallBodyModel extends Model
 		smallBodyPolyData = new vtkPolyData();
 		genericCell = new vtkGenericCell();
 		idList = new vtkIdList();
-		
+
 		if (lowestResolutionModelStoredInResource)
 			defaultModelFile = ConvertResourceToFile.convertResourceToTempFile(this, modelFiles[0]);
 		else
@@ -156,7 +156,7 @@ public class SmallBodyModel extends Model
 		this.coloringNames = coloringNames;
 		this.coloringUnits = coloringUnits;
 		this.coloringValueType = coloringValueType;
-		
+
 		initializeLocators();
 	}
 
@@ -172,7 +172,7 @@ public class SmallBodyModel extends Model
 		smallBodyReader.Delete();
 
 		initializeLocators();
-		
+
 		//this.computeLargestSmallestEdgeLength();
 		//this.computeSurfaceArea();
 	}
@@ -184,7 +184,7 @@ public class SmallBodyModel extends Model
 			cellLocator = new vtksbCellLocator();
 			pointLocator = new vtkPointLocator();
 		}
-		
+
 		// Initialize the cell locator
 		cellLocator.FreeSearchStructure();
 		cellLocator.SetDataSet(smallBodyPolyData);
@@ -198,7 +198,7 @@ public class SmallBodyModel extends Model
 		pointLocator.SetDataSet(smallBodyPolyData);
 		pointLocator.BuildLocator();
 	}
-	
+
 	private void initializeLowResData()
 	{
         if (lowResPointLocator == null)
@@ -219,12 +219,12 @@ public class SmallBodyModel extends Model
             lowResPointLocator.BuildLocator();
         }
 	}
-	
+
 	public vtkPolyData getSmallBodyPolyData()
 	{
 		return smallBodyPolyData;
 	}
-	
+
     public vtkPolyData getLowResSmallBodyPolyData()
     {
         initializeLowResData();
@@ -236,12 +236,12 @@ public class SmallBodyModel extends Model
 	{
 		return cellLocator;
 	}
-	
+
 	public vtkAbstractPointLocator getPointLocator()
 	{
 		return pointLocator;
 	}
-	
+
 	public TreeSet<Integer> getIntersectingCubes(vtkPolyData polydata)
 	{
 		if (smallBodyCubes == null)
@@ -250,10 +250,10 @@ public class SmallBodyModel extends Model
 			        getLowResSmallBodyPolyData(),
 			        null);
 		}
-		
+
 		return smallBodyCubes.getIntersectingCubes(polydata);
 	}
-	
+
 	public void setShowSmallBody(boolean show)
 	{
 		if (show)
@@ -272,7 +272,7 @@ public class SmallBodyModel extends Model
 				this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 			}
 		}
-		
+
 	}
 
 	public vtkPolyData computeFrustumIntersection(
@@ -360,7 +360,7 @@ public class SmallBodyModel extends Model
 				outputInterior,
 				outputBoundary);
 	}
-	
+
 	public void shiftPolyLineInNormalDirection(
 			vtkPolyData polyLine,
 			double shiftFactor)
@@ -371,7 +371,7 @@ public class SmallBodyModel extends Model
 				pointLocator,
 				shiftFactor * getMinShiftAmount());
 	}
-	
+
 	/**
 	 * This returns the closest point to the model to pt. Note the returned point need
 	 * not be a vertex of the model and can lie anywhere on a plate.
@@ -384,12 +384,12 @@ public class SmallBodyModel extends Model
 		int[] cellId = new int[1];
 		int[] subId = new int[1];
 		double[] dist2 = new double[1];
-		
+
 		cellLocator.FindClosestPoint(pt, closestPoint, genericCell, cellId, subId, dist2);
-		
+
 		return closestPoint;
 	}
-	
+
     /**
      * This returns the index of the closest cell in the model to pt.
      * The closest point within the cell is returned in closestPoint
@@ -433,14 +433,14 @@ public class SmallBodyModel extends Model
     {
     	LatLon lla = new LatLon(lat, lon);
     	double[] lookPt = MathUtil.latrec(lla);
-    	
+    
     	// Move in the direction of lookPt until we are definitely outside the asteroid
     	BoundingBox bb = getBoundingBox();
     	double largestSide = bb.getLargestSide() * 1.1;
     	lookPt[0] *= largestSide;
     	lookPt[1] *= largestSide;
     	lookPt[2] *= largestSide;
-    	
+    
     	double[] origin = {0.0, 0.0, 0.0};
 		double tol = 1e-6;
 		double[] t = new double[1];
@@ -448,13 +448,13 @@ public class SmallBodyModel extends Model
 		double[] pcoords = new double[3];
 		int[] subId = new int[1];
 		int[] cellId = new int[1];
-		
+
 		int result = cellLocator.IntersectWithLine(origin, lookPt, tol, t, x, pcoords, subId, cellId, genericCell);
-		
+
 		intersectPoint[0] = x[0];
 		intersectPoint[1] = x[1];
 		intersectPoint[2] = x[2];
-		
+
 		if (result > 0)
 			return cellId[0];
 		else
@@ -470,14 +470,14 @@ public class SmallBodyModel extends Model
 			vtkLookupTable lookupTable = new vtkLookupTable();
 			smallBodyMapper.SetLookupTable(lookupTable);
 	        smallBodyMapper.UseLookupTableScalarRangeOn();
-			
+
 	        smallBodyActor = new vtkActor();
 	        smallBodyActor.SetMapper(smallBodyMapper);
 	        vtkProperty smallBodyProperty = smallBodyActor.GetProperty();
 	        smallBodyProperty.SetInterpolationToGouraud();
-	
+
 	        smallBodyActors.add(smallBodyActor);
-	
+
 	        scalarBarActor = new vtkScalarBarActor();
 	        vtkCoordinate coordinate = scalarBarActor.GetPositionCoordinate();
 	        coordinate.SetCoordinateSystemToNormalizedViewport();
@@ -494,19 +494,19 @@ public class SmallBodyModel extends Model
 	public ArrayList<vtkProp> getProps()
 	{
 		initializeActorsAndMappers();
-		
+
 		return smallBodyActors;
 	}
-	
+
 	public void setShadingToFlat()
 	{
 		initializeActorsAndMappers();
-		
+
 		vtkProperty property = smallBodyActor.GetProperty();
 		property.SetInterpolationToFlat();
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 	}
-	
+
 	public void setShadingToSmooth()
 	{
 		initializeActorsAndMappers();
@@ -515,7 +515,7 @@ public class SmallBodyModel extends Model
 		property.SetInterpolationToGouraud();
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 	}
-	
+
 	public BoundingBox getBoundingBox()
 	{
 		if (boundingBox == null)
@@ -523,9 +523,9 @@ public class SmallBodyModel extends Model
 			smallBodyPolyData.ComputeBounds();
 			boundingBox = new BoundingBox(smallBodyPolyData.GetBounds());
 		}
-		
+
 		return boundingBox;
-		
+
 		/*
 		BoundingBox bb = new BoundingBox();
 		vtkPoints points = smallBodyPolyData.GetPoints();
@@ -535,16 +535,16 @@ public class SmallBodyModel extends Model
 			double[] pt = points.GetPoint(i);
 			bb.update(pt[0], pt[1], pt[2]);
 		}
-		
+
 		return bb;
 		*/
 	}
-	
+
 	public double getBoundingBoxDiagonalLength()
 	{
 		return getBoundingBox().getDiagonalLength();
 	}
-	
+
 	/**
 	 * Get the minimum shift amount needed so shift an object away from
 	 * the model so it is not obscured by the model and looks like it's
@@ -555,7 +555,7 @@ public class SmallBodyModel extends Model
 	{
 		return getBoundingBoxDiagonalLength() / 38660.0;
 	}
-	
+
     public String getClickStatusBarText(vtkProp prop, int cellId, double[] pickPosition)
     {
     	// Coloring is currently only supported in the lowest resolution level
@@ -582,13 +582,13 @@ public class SmallBodyModel extends Model
     public double[] computeLargestSmallestMeanEdgeLength()
     {
     	double[] largestSmallestMean = new double[3];
-    	
+    
     	double minLength = Double.MAX_VALUE;
     	double maxLength = 0.0;
     	double meanLength = 0.0;
 
     	int numberOfCells = smallBodyPolyData.GetNumberOfCells();
-		
+
     	System.out.println(numberOfCells);
 
 		for (int i=0; i<numberOfCells; ++i)
@@ -613,16 +613,16 @@ public class SmallBodyModel extends Model
     			minLength = dist2;
     		if (dist2 > maxLength)
     			maxLength = dist2;
-    		
+    
     		meanLength += (dist0 + dist1 + dist2);
     	}
-		
+
 		meanLength /= ((double)(numberOfCells * 3));
-		
+
 		System.out.println("minLength  " + minLength);
 		System.out.println("maxLength  " + maxLength);
 		System.out.println("meanLength  " + meanLength);
-		
+
 		largestSmallestMean[0] = minLength;
 		largestSmallestMean[1] = maxLength;
 		largestSmallestMean[2] = meanLength;
@@ -635,7 +635,7 @@ public class SmallBodyModel extends Model
     	vtkMassProperties massProp = new vtkMassProperties();
     	massProp.SetInput(smallBodyPolyData);
     	massProp.Update();
-    	
+    
     	System.out.println("Surface area " + massProp.GetSurfaceArea());
     	System.out.println("Volume " + massProp.GetVolume());
     }
@@ -644,20 +644,20 @@ public class SmallBodyModel extends Model
     {
     	if (level == resolutionLevel)
     		return;
-    	
+    
     	resolutionLevel = level;
     	if (level < 0)
     		resolutionLevel = 0;
     	else if (level > 3)
     		resolutionLevel = 3;
-    	
+    
     	smallBodyCubes = null;
     	if (coloringValues != null)
     	{
     		for (int i=0; i<coloringValues.length; ++i)
     			coloringValues[i] = null;
     	}
-    	
+    
 		File smallBodyFile = defaultModelFile;
 		switch(level)
 		{
@@ -674,9 +674,9 @@ public class SmallBodyModel extends Model
 
 		if (resolutionLevel != 0)
 			setColoringIndex(-1);
-		
+
 		this.initialize(smallBodyFile);
-		
+
 		this.pcs.firePropertyChange(Properties.MODEL_RESOLUTION_CHANGED, null, null);
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
@@ -714,18 +714,18 @@ public class SmallBodyModel extends Model
 		{
 			return;
 		}
-		
+
 		for (int i=0; i<coloringValues.length; ++i)
 		{
 			File file = FileCache.getFileFromServer(coloringFiles[i]);
 			vtkFloatArray array = coloringValues[i];
-			
+
 			array.SetNumberOfComponents(1);
 			if (coloringValueType == ColoringValueType.POINT_DATA)
 				array.SetNumberOfTuples(smallBodyPolyData.GetNumberOfPoints());
 			else
 				array.SetNumberOfTuples(smallBodyPolyData.GetNumberOfCells());
-			
+
 	    	FileInputStream fs =  new FileInputStream(file);
 			InputStreamReader isr = new InputStreamReader(fs);
 			BufferedReader in = new BufferedReader(isr);
@@ -737,7 +737,7 @@ public class SmallBodyModel extends Model
 				array.SetTuple1(j, Float.parseFloat(line));
 				++j;
 			}
-			
+
 			in.close();
 		}
 	}
@@ -751,7 +751,7 @@ public class SmallBodyModel extends Model
 		if (coloringImages != null && coloringImages.length > 0 && coloringImages[0] == null)
 		{
 			loadColoringData();
-			
+
 			for (int i=0; i<coloringImages.length; ++i)
 				coloringImages[i] = new vtkImageData();
 		}
@@ -759,12 +759,12 @@ public class SmallBodyModel extends Model
 		{
 			return;
 		}
-		
+
 		for (int i=0; i<coloringImages.length; ++i)
 		{
 			int length = coloringFiles[i].length();
 			File file = FileCache.getFileFromServer(coloringFiles[i].substring(0, length-6) + "vti");
-			
+
 			vtkImageData image = coloringImages[i];
 
 			vtkXMLImageDataReader reader = new vtkXMLImageDataReader();
@@ -779,13 +779,13 @@ public class SmallBodyModel extends Model
 //	        lookupTable.SetRange(coloringValues[i].GetRange());
 //	        lookupTable.Build();
 //	        invertLookupTableCharArray(lookupTable.GetTable());
-//	
+//
 //	    	vtkImageMapToColors mapToColors = new vtkImageMapToColors();
 //	        mapToColors.SetInputConnection(reader.GetOutputPort());
 //	        mapToColors.SetLookupTable(lookupTable);
 //	        mapToColors.SetOutputFormatToRGB();
 //	        mapToColors.Update();
-//	
+//
 //	    	image.DeepCopy(mapToColors.GetOutput());
 		}
 	}
@@ -801,7 +801,7 @@ public class SmallBodyModel extends Model
 			table.SetTuple4(numberOfValues-i-1, v1[0], v1[1], v1[2], v1[3]);
 		}
 	}
-	
+
 	/**
 	 * Invert the lookup table so that red is high values
 	 * and blue is low values (rather than the reverse).
@@ -810,7 +810,7 @@ public class SmallBodyModel extends Model
 	{
 		vtkLookupTable lookupTable = (vtkLookupTable)smallBodyMapper.GetLookupTable();
 		vtkUnsignedCharArray table = lookupTable.GetTable();
-		
+
 		invertLookupTableCharArray(table);
 //		int numberOfValues = table.GetNumberOfTuples();
 //		for (int i=0; i<numberOfValues/2; ++i)
@@ -820,26 +820,26 @@ public class SmallBodyModel extends Model
 //			table.SetTuple4(i, v2[0], v2[1], v2[2], v2[3]);
 //			table.SetTuple4(numberOfValues-i-1, v1[0], v1[1], v1[2], v1[3]);
 //		}
-		
+
 		lookupTable.SetTable(table);
 		smallBodyMapper.Modified();
 	}
-	
+
 	public void setColoringIndex(int index) throws IOException
 	{
 //		if (coloringIndex == index)
 //			return;
-//		
+//
     	// Coloring is currently only supported in the lowest resolution level
 		if (resolutionLevel == 0)
 		{
 			coloringIndex = index;
 			useFalseColoring = false;
-			
+
 			paintBody();
 		}
 	}
-	
+
 	public void setFalseColoring(int redChannel, int greenChannel, int blueChannel) throws IOException
 	{
 //		if (redFalseColor == redChannel &&
@@ -849,7 +849,7 @@ public class SmallBodyModel extends Model
 //		{
 //			return;
 //		}
-//		
+//
     	// Coloring is currently only supported in the lowest resolution level
 		if (resolutionLevel == 0)
 		{
@@ -858,11 +858,11 @@ public class SmallBodyModel extends Model
 			redFalseColor = redChannel;
 			greenFalseColor = greenChannel;
 			blueFalseColor = blueChannel;
-			
+
 			paintBody();
 		}
 	}
-	
+
     public boolean isColoringDataAvailable()
     {
     	return coloringFiles != null;
@@ -871,7 +871,7 @@ public class SmallBodyModel extends Model
     private void blendImageMapWithColoring()
     {
     	vtkImageData image = null;
-    	
+    
     	if (coloringIndex >= 0)
     	{
 	    	vtkLookupTable lookupTable = new vtkLookupTable();
@@ -896,7 +896,7 @@ public class SmallBodyModel extends Model
     	else if (useFalseColoring)
     	{
     		vtkImageAppendComponents appendComponents = new vtkImageAppendComponents();
-    		
+    
     		int[] components = {redFalseColor, greenFalseColor, blueFalseColor};
     		for (int c : components)
     		{
@@ -910,14 +910,14 @@ public class SmallBodyModel extends Model
         		shiftScale.SetInput(coloringImages[c]);
         		shiftScale.SetOutputScalarTypeToUnsignedChar();
         		shiftScale.Update();
-        		
+        
         		// TODO in this situation, invalid data get mapped to black, not white, as
         		// is the convention throughout the rest of this class. Fix this if desired.
-        		
+        
         		vtkAlgorithmOutput outputPort = shiftScale.GetOutputPort();
         		appendComponents.AddInputConnection(outputPort);
     		}
-    		
+    
     		appendComponents.Update();
     		image = appendComponents.GetOutput();
     	}
@@ -957,13 +957,13 @@ public class SmallBodyModel extends Model
 			double[] pt = points.GetPoint(i);
 
 			LatLon ll = MathUtil.reclat(pt);
-	
+
 			double u = ll.lon;
 			if (u < 0.0)
 				u += 2.0 * Math.PI;
 			u /= 2.0 * Math.PI;
 			double v = (ll.lat + Math.PI/2.0) / Math.PI;
-			
+
 			if (u < 0.0) u = 0.0;
 			else if (u > 1.0) u = 1.0;
 			if (v < 0.0) v = 0.0;
@@ -986,7 +986,7 @@ public class SmallBodyModel extends Model
     		lon[0] = textureCoords.GetTuple2(id0)[0];
     		lon[1] = textureCoords.GetTuple2(id1)[0];
     		lon[2] = textureCoords.GetTuple2(id2)[0];
-    		
+    
     		if ( Math.abs(lon[0] - lon[1]) > 0.5 ||
     			 Math.abs(lon[1] - lon[2]) > 0.5 ||
     			 Math.abs(lon[2] - lon[0]) > 0.5)
@@ -1001,7 +1001,7 @@ public class SmallBodyModel extends Model
     			System.out.println(lon[1] - lon[2]);
     			System.out.println(lon[2] - lon[0]);
     			// First determine which side we're on
-    			
+    
     			// Do this by first determining which point is the greatest distance from the
     			// meridian
     			double[] dist = {-1000.0, -1000.0, -1000.0};
@@ -1013,14 +1013,14 @@ public class SmallBodyModel extends Model
     					dist[j] = 1.0 - lon[j];
     				else
     					dist[j] = lon[j];
-    				
+    
     				if (dist[j] > maxDist)
     				{
     					maxDist = dist[j];
     					maxIdx = j;
     				}
     			}
-    			
+    
     			if (lon[maxIdx] < 0.5) // If true, we're on left
     			{
     				// Make sure all the coordinates are on left
@@ -1045,7 +1045,7 @@ public class SmallBodyModel extends Model
     		}
     	}
     	*/
-    	
+    
 		smallBodyPolyData.GetPointData().SetTCoords(textureCoords);
     }
 
@@ -1075,7 +1075,7 @@ public class SmallBodyModel extends Model
 		else
 			return coloringNames.length;
 	}
-	
+
 	public String getColoringName(int i)
 	{
 		if (coloringNames != null && i < coloringNames.length)
@@ -1083,12 +1083,12 @@ public class SmallBodyModel extends Model
 		else
 			return null;
 	}
-	
+
 	public boolean isFalseColoringSupported()
 	{
 		return supportsFalseColoring;
 	}
-	
+
     private double getColoringValue(double[] pt, vtkFloatArray pointOrCellData)
     {
         double[] closestPoint = new double[3];
@@ -1136,7 +1136,7 @@ public class SmallBodyModel extends Model
     		// TODO Auto-generated catch block
     		e.printStackTrace();
     	}
-    	
+    
     	return getColoringValue(pt, coloringValues[index]);
     }
 
@@ -1160,7 +1160,7 @@ public class SmallBodyModel extends Model
 		{
 			values[i] = getColoringValue(closestPoint, coloringValues[i], cellId);
 		}
-		
+
     	return values;
     }
 
@@ -1190,7 +1190,7 @@ public class SmallBodyModel extends Model
 	{
 		double[] range = new double[2];
 		coloringValues[index].GetRange(range);
-		
+
 		if (coloringHasNulls == null || !coloringHasNulls[index])
 		{
 			return range;
@@ -1212,13 +1212,13 @@ public class SmallBodyModel extends Model
 			// for current data, but may need tweaking for future data.
 			if (adjustForColorTable)
 				adjustedMin -= (range[1]-adjustedMin)/254.0;
-			
+
 			range[0] = adjustedMin;
 
 			return range;
 		}
 	}
-	
+
 	/**
 	 *  Update the false color point or cell data if
 	 */
@@ -1229,11 +1229,11 @@ public class SmallBodyModel extends Model
 			falseColorArray = new vtkUnsignedCharArray();
 			falseColorArray.SetNumberOfComponents(3);
 		}
-		
+
 		vtkFloatArray red = coloringValues[redFalseColor];
 		vtkFloatArray green = coloringValues[greenFalseColor];
 		vtkFloatArray blue = coloringValues[blueFalseColor];
-		
+
 		double[] redRange = computeRange(redFalseColor, false);
 		double[] greenRange = computeRange(greenFalseColor, false);
 		double[] blueRange = computeRange(blueFalseColor, false);
@@ -1243,7 +1243,7 @@ public class SmallBodyModel extends Model
 
 		int numberTuples = red.GetNumberOfTuples();
 		falseColorArray.SetNumberOfTuples(numberTuples);
-		
+
 		for (int i=0; i<numberTuples; ++i)
 		{
 			double redValue = 255.0 * (red.GetTuple1(i) - redRange[0]) / redExtent;
@@ -1258,7 +1258,7 @@ public class SmallBodyModel extends Model
 			falseColorArray.SetTuple3(i, redValue, greenValue, blueValue);
 		}
 	}
-	
+
 	private void paintBody() throws IOException
 	{
 		if (resolutionLevel != 0)
@@ -1285,7 +1285,7 @@ public class SmallBodyModel extends Model
 			this.smallBodyPolyData.GetPointData().SetScalars(array);
 		else
 			this.smallBodyPolyData.GetCellData().SetScalars(array);
-		
+
 		if (coloringIndex < 0)
 		{
 			if (smallBodyActors.contains(scalarBarActor))
@@ -1297,7 +1297,7 @@ public class SmallBodyModel extends Model
 			smallBodyMapper.GetLookupTable().SetRange(computeRange(coloringIndex, true));
 			((vtkLookupTable)smallBodyMapper.GetLookupTable()).ForceBuild();
 			this.invertLookupTable();
-			
+
 			// If there's missing data, map them to white
 			if (coloringHasNulls != null && coloringHasNulls[coloringIndex])
 				((vtkLookupTable)smallBodyMapper.GetLookupTable()).SetTableValue(0, 1.0, 1.0, 1.0, 1.0);
@@ -1342,7 +1342,7 @@ public class SmallBodyModel extends Model
 
 				originalImageMap = new vtkImageData();
 				originalImageMap.DeepCopy(readerOutput);
-			}	    	
+			}	    
 
 	    	if (displayedImageMap == null)
 	    	{
@@ -1380,7 +1380,7 @@ public class SmallBodyModel extends Model
 
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 	}
-	
+
 	public void delete()
 	{
 		if (smallBodyPolyData != null) smallBodyPolyData.Delete();

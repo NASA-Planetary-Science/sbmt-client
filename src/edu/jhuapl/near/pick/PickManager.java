@@ -15,7 +15,7 @@ public class PickManager extends Picker
 		CIRCLE_DRAW,
 		POINT_DRAW
 	}
-	
+
 	private PickMode pickMode = PickMode.DEFAULT;
 	private Renderer renderer;
     private vtkRenderWindowPanel renWin;
@@ -36,7 +36,7 @@ public class PickManager extends Picker
 		this.renWin = renderer.getRenderWindowPanel();
 
 		modelManager.addPropertyChangeListener(this);
-		
+
 		renWin.addMouseListener(this);
         renWin.addMouseMotionListener(this);
         renWin.addMouseWheelListener(this);
@@ -46,17 +46,17 @@ public class PickManager extends Picker
 		pointPicker = new PointPicker(renderer, modelManager);
 
 		circleSelectionPicker = new CircleSelectionPicker(renderer, modelManager);
-		
+
 		defaultPicker = new DefaultPicker(renderer, statusBar, modelManager, popupManager);
 
 		addPicker(defaultPicker);
 	}
-	
+
 	public void setPickMode(PickMode mode)
 	{
 		if (this.pickMode == mode)
 			return;
-		
+
 		this.pickMode = mode;
 		switch(this.pickMode)
 		{
@@ -102,19 +102,19 @@ public class PickManager extends Picker
 			break;
 		}
 	}
-	
+
 	public DefaultPicker getDefaultPicker()
 	{
 		return defaultPicker;
 	}
-	
+
 	private void addPicker(Picker picker)
 	{
 		renWin.addMouseListener(picker);
         renWin.addMouseMotionListener(picker);
         renWin.addMouseWheelListener(picker);
 	}
-	
+
 	private void removePicker(Picker picker)
 	{
 		renWin.removeMouseListener(picker);

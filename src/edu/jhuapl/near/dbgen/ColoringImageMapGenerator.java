@@ -43,7 +43,7 @@ public class ColoringImageMapGenerator
 		double[] point = new double[3];
 		int height = 1800;
 		int width = 3600;
-		
+
 		for (int i=0; i<height; ++i)
 		{
 			System.out.println("line " + i);
@@ -52,35 +52,35 @@ public class ColoringImageMapGenerator
 				double lat = (Math.PI/180.0) * (((double)i / ((double)height-1.0)) * 180.0 - 90.0);
 				double lon = (Math.PI/180.0) * (((double)j / ((double)width-1.0)) * 360.0);
 				//System.out.println(i + " " + lat + " " + j + " " + lon);
-				
+
 				int cellId = model.getPointAndCellIdFromLatLon(lat, lon, point);
-				
+
 				if (cellId < 0)
 				{
 					throw new Exception("Problem converting lat lon");
 				}
-				
+
 				double slope = model.getColoringValue(0, point);
 				double elev = model.getColoringValue(1, point);
 				double gravAcc = model.getColoringValue(2, point);
 				double gravPot = model.getColoringValue(3, point);
-				
+
 				slopeImage.SetScalarComponentFromDouble(j, i, 0, 0, slope);
 				elevImage.SetScalarComponentFromDouble(j, i, 0, 0, elev);
 				gravAccImage.SetScalarComponentFromDouble(j, i, 0, 0, gravAcc);
 				gravPotImage.SetScalarComponentFromDouble(j, i, 0, 0, gravPot);
 			}
 		}
-		
+
 		//vtkXMLImageDataWriter writer = new vtkXMLImageDataWriter();
 		//writer.SetDataModeToBinary();
 		vtkStructuredPointsWriter writer = new vtkStructuredPointsWriter();
 		writer.SetFileTypeToBinary();
-		
+
 		writer.SetFileName("DEIMOS_Slope_PointData.vtk");
 		writer.SetInput(slopeImage);
 		writer.Write();
-		
+
 		writer.SetFileName("DEIMOS_Elevation_PointData.vtk");
 		writer.SetInput(elevImage);
 		writer.Write();

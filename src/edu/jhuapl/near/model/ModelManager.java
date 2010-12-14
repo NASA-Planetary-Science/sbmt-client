@@ -25,7 +25,7 @@ public class ModelManager extends Model implements PropertyChangeListener
     		Model model = models.get(modelName);
     		model.addPropertyChangeListener(this);
     		allModels.put(modelName, model);
-    	}    	
+    	}    
 
     	updateProps();
     }
@@ -48,7 +48,7 @@ public class ModelManager extends Model implements PropertyChangeListener
 			this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 		}
 	}
-	
+
 	private void updateProps()
 	{
 		props.clear();
@@ -75,12 +75,12 @@ public class ModelManager extends Model implements PropertyChangeListener
 	{
 		return propToModelMap.get(prop);
 	}
-	
+
 	public Model getModel(String modelName)
 	{
 		return allModels.get(modelName);
 	}
-	
+
 	public SmallBodyModel getSmallBodyModel()
 	{
 		for (String modelName : allModels.keySet())
@@ -89,10 +89,10 @@ public class ModelManager extends Model implements PropertyChangeListener
 			if (model instanceof SmallBodyModel)
 				return (SmallBodyModel)model;
 		}
-		
+
 		return null;
 	}
-	
+
 	public void deleteAllModels()
 	{
 		for (String modelName : allModels.keySet())

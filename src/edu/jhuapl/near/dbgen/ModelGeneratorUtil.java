@@ -16,10 +16,10 @@ public class ModelGeneratorUtil
 	public static void convertCellDataToPointData(vtkPolyData polydata, String cellDataFile)
 	{
 		vtkFloatArray cellData = new vtkFloatArray();
-		
+
 		cellData.SetNumberOfComponents(1);
 		cellData.SetNumberOfTuples(polydata.GetNumberOfCells());
-		
+
     	FileInputStream fs;
 		try
 		{
@@ -34,16 +34,16 @@ public class ModelGeneratorUtil
 				cellData.SetTuple1(j, Float.parseFloat(line));
 				++j;
 			}
-			
+
 			in.close();
-			
+
 			vtkFloatArray pointData = new vtkFloatArray();
 			PolyDataUtil.generatePointScalarsFromCellScalars(polydata, cellData, pointData);
-			
+
 			int l = cellDataFile.length();
 			FileWriter fstream = new FileWriter(cellDataFile.substring(0, l-4) + "_PointData.txt");
 	        BufferedWriter out = new BufferedWriter(fstream);
-	
+
 	        int numPoints = pointData.GetNumberOfTuples();
 	        for (int i=0; i<numPoints; ++i)
 	        {

@@ -21,17 +21,17 @@ public class SearchPanelUtil
 				BoxLayout.LINE_AXIS));
 
 		JLabel fromLabel = new JLabel(labelTextLeft + " ");
-		
+
 		fromField.setValue(fromValue);
 		fromField.setMaximumSize(new Dimension(50, 23));
 		fromField.setColumns(5);
-		
+
 		JLabel toLabel = new JLabel(" " + labelTextMiddle + " ");
-		
+
 		toField.setValue(toValue);
 		toField.setMaximumSize(new Dimension(50, 23));
 		toField.setColumns(5);
-		
+
 		JLabel endLabel = new JLabel(" " + labelTextRight);
 
 		panel.add(fromLabel);

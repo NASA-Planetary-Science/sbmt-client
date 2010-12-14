@@ -17,7 +17,7 @@ public class LineamentModel extends Model
     private ArrayList<vtkProp> lineamentActors = new ArrayList<vtkProp>();
     private vtkActor lineamentActor;
 	private int[] defaultColor = {255, 0, 255, 255}; // RGBA, default to purple
-	
+
 	public static class Lineament
 	{
 		public int cellId;
@@ -68,7 +68,7 @@ public class LineamentModel extends Model
 			System.out.println("Number of lineaments: " + this.idToLineamentMap.size());
 		}
 	}
-	
+
 	private void loadModel() throws NumberFormatException, IOException
 	{
 		InputStream is = getClass().getResourceAsStream("/edu/jhuapl/near/data/LinearFeatures.txt");
@@ -135,7 +135,7 @@ public class LineamentModel extends Model
 		return array;
 	}
 	*/
-	
+
 	private void createPolyData()
 	{
 		lineaments = new vtkPolyData();
@@ -153,7 +153,7 @@ public class LineamentModel extends Model
 		{
 			Lineament lin =	this.idToLineamentMap.get(id);
 			lin.cellId = cellId;
-			
+
             int size = lin.lat.size();
             idList.SetNumberOfIds(size);
 
@@ -177,17 +177,17 @@ public class LineamentModel extends Model
             cellIdToLineamentMap.put(cellId, lin);
             ++cellId;
 		}
-		
+
         lineaments.SetPoints(points);
         lineaments.SetLines(lines);
         lineaments.GetCellData().SetScalars(colors);
 	}
-	
+
 	public Lineament getLineament(int cellId)
 	{
 		return this.cellIdToLineamentMap.get(cellId);
 	}
-		
+
 	public void setLineamentColor(int cellId, int[] color)
 	{
 		lineaments.GetCellData().GetScalars().SetTuple4(cellId, color[0], color[1], color[2], color[3]);
@@ -199,20 +199,20 @@ public class LineamentModel extends Model
 	{
 		int numLineaments = this.cellIdToLineamentMap.size();
 		vtkDataArray colors = lineaments.GetCellData().GetScalars();
-		
+
 		for (int i=0; i<numLineaments; ++i)
 			colors.SetTuple4(i, color[0], color[1], color[2], color[3]);
-		
+
 		lineaments.Modified();
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 	}
-	
+
 	public void setMSIImageLineamentsColor(int cellId, int[] color)
 	{
 		int numLineaments = this.cellIdToLineamentMap.size();
 		String name = cellIdToLineamentMap.get(cellId).name;
 		vtkDataArray colors = lineaments.GetCellData().GetScalars();
-		
+
 		for (int i=0; i<numLineaments; ++i)
 			if (cellIdToLineamentMap.get(i).name.equals(name))
 					colors.SetTuple4(i, color[0], color[1], color[2], color[3]);
@@ -225,7 +225,7 @@ public class LineamentModel extends Model
 	{
 		if (lineamentActors.isEmpty())
 			initialize();
-		
+
         int ptId=0;
         vtkPoints points = lineaments.GetPoints();
 
@@ -243,7 +243,7 @@ public class LineamentModel extends Model
             	points.SetPoint(ptId, x, y, z);
             	++ptId;
             }
-		}		
+		}
 
 		lineaments.Modified();
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
@@ -256,7 +256,7 @@ public class LineamentModel extends Model
 			if (lineamentActors.isEmpty())
 			{
 				initialize();
-				
+
 				lineamentActors.add(lineamentActor);
 				this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 			}
@@ -269,14 +269,14 @@ public class LineamentModel extends Model
 				this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 			}
 		}
-		
+
 	}
-	
+
 	public ArrayList<vtkProp> getProps()
 	{
 		return lineamentActors;
 	}
-	
+
     public String getClickStatusBarText(vtkProp prop, int cellId, double[] pickPosition)
     {
 		LineamentModel.Lineament lin = getLineament(cellId);

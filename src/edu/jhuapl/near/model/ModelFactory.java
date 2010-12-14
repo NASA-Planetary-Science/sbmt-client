@@ -96,7 +96,7 @@ public class ModelFactory
 				ColoringValueType.CELLDATA,
 				false);
 	}
-	
+
 	static public SmallBodyModel createItokawaBodyModel()
 	{
 		final String[] modelNames = {
@@ -144,7 +144,7 @@ public class ModelFactory
 		final String[] coloringUnits = {
 				SlopeUnitsStr, ElevUnitsStr, GravAccUnitsStr, GravPotUnitsStr, "", "", "", ""
 		};
-		
+
 		final boolean[] coloringHasNulls = {
 				false, false, false, false, true, true, true, true
 		};
@@ -161,7 +161,7 @@ public class ModelFactory
 				ColoringValueType.CELLDATA,
 				false);
 	}
-	
+
 	static public Graticule createErosGraticuleModel(SmallBodyModel smallBodyModel)
 	{
 		final String[] gridFiles = {

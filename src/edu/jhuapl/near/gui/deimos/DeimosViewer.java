@@ -42,18 +42,18 @@ public class DeimosViewer extends Viewer
 	private GenericPopupManager popupManager;
 	private StatusBar statusBar;
 	private boolean initialized = false;
-		
+
 	public DeimosViewer(StatusBar statusBar)
 	{
 		super(new BorderLayout());
 		this.statusBar = statusBar;
 	}
-	
+
 	public void initialize()
 	{
 		if (initialized)
 			return;
-		
+
 		setupModelManager();
 
 		renderer = new Renderer(modelManager);
@@ -99,7 +99,7 @@ public class DeimosViewer extends Viewer
     	modelManager.setModels(allModels);
 
 	}
-	
+
 	public Renderer getRenderer()
 	{
 		return renderer;

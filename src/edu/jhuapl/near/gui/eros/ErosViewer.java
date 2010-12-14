@@ -52,13 +52,13 @@ public class ErosViewer extends Viewer
 	private PickManager pickManager;
 	private ErosPopupManager popupManager;
 	private ModelInfoWindowManager infoPanelManager;
-	
+
 	public ErosViewer(StatusBar statusBar)
 	{
 		super(new BorderLayout());
 
 		setupModelManager();
-		
+
 		infoPanelManager = new ModelInfoWindowManager(modelManager)
 		{
 			public ModelInfoWindow createModelInfoWindow(Model model,
@@ -72,7 +72,7 @@ public class ErosViewer extends Viewer
 					return null;
 			}
 		};
-		
+
 		renderer = new Renderer(modelManager);
 
 		popupManager = new ErosPopupManager(renderer, modelManager, infoPanelManager);
@@ -89,7 +89,7 @@ public class ErosViewer extends Viewer
 		controlPanel.addTab("Structures", new StructuresControlPanel(modelManager, pickManager));
 		controlPanel.addTab("Mapmaker", new TopoPanel(modelManager, pickManager));
 
-		
+
 		splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
                 controlPanel, renderer);
 		splitPane.setOneTouchExpandable(true);
@@ -108,7 +108,7 @@ public class ErosViewer extends Viewer
 
 		SmallBodyModel erosModel = ModelFactory.createErosBodyModel();
     	Graticule graticule = ModelFactory.createErosGraticuleModel(erosModel);
-		
+
         HashMap<String, Model> allModels = new HashMap<String, Model>();
         allModels.put(ModelNames.SMALL_BODY, erosModel);
     	allModels.put(ModelNames.LINEAMENT, new LineamentModel());
@@ -126,7 +126,7 @@ public class ErosViewer extends Viewer
 
     	modelManager.setModels(allModels);
 	}
-	
+
 	public Renderer getRenderer()
 	{
 		return renderer;

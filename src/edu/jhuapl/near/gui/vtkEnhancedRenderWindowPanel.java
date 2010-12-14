@@ -60,7 +60,7 @@ public class vtkEnhancedRenderWindowPanel extends vtkRenderWindowPanel
 		// do nothing
 	}
 
-	
+
 	public void keyPressed(KeyEvent e)
 	{
 		if (ren.VisibleActorCount() == 0) return;
@@ -74,12 +74,12 @@ public class vtkEnhancedRenderWindowPanel extends vtkRenderWindowPanel
 			lock();
 			vtkCamera cam = ren.GetActiveCamera();
 			cam.SetFocalPoint(0.0, 0.0, 0.0);
-			
+
 			double xSize = Math.abs(bounds[1] - bounds[0]);
 			double ySize = Math.abs(bounds[3] - bounds[2]);
 			double zSize = Math.abs(bounds[5] - bounds[4]);
 			double maxSize = Math.max(Math.max(xSize, ySize), zSize);
-			
+
 			if ('X' == keyChar)
 			{
 				double xpos = xSize / Math.tan(Math.PI/6.0) + 2.0*maxSize;
@@ -126,8 +126,8 @@ public class vtkEnhancedRenderWindowPanel extends vtkRenderWindowPanel
 			super.keyPressed(e);
 		}
 	}
-	
-	
+
+
     public void saveToFile()
     {
         File file = ImageFileChooser.showSaveDialog(this, "Export to Image");

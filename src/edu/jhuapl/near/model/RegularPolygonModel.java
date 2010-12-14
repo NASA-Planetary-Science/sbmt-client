@@ -63,13 +63,13 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
 
 		public double[] center;
 		public double radius;
-		
+
 		public vtkPolyData boundaryPolyData;
 		public vtkPolyData interiorPolyData;
 		public int numberOfSides;
 		public String type;
 		public int[] color;
-		
+
 		public RegularPolygon(int numberOfSides, String type, int[] color)
 		{
 			id = ++maxPolygonId;
@@ -99,22 +99,22 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
 		{
 			return type;
 		}
-		
+
 		public String getInfo()
 		{
 			return "Diameter = " + 2.0*radius + " km";
 		}
-		
+
 		public int[] getColor()
 		{
 			return color;
 		}
-		
+
 		public void setColor(int[] color)
 		{
 			this.color = color;
 		}
-		
+
 		public vtkPolyData getBoundaryPolyData()
 		{
 			return boundaryPolyData;
@@ -129,10 +129,10 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
 	    {
 	    	this.center = center;
 	    	this.radius = radius;
-	    	
+	    
 	    	sbModel.drawPolygon(center, radius, numberOfSides, interiorPolyData, boundaryPolyData);
 	    }
-	
+
 	    public String getClickStatusBarText()
 	    {
 	    	return type + ", Id = " + id + ", Diameter = " + 2.0*radius + " km";
@@ -148,26 +148,26 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
 			String name)
 	{
 		super(name);
-		
+
 		this.smallBodyModel = smallBodyModel;
 
 		defaultRadius = smallBodyModel.getBoundingBoxDiagonalLength() / 155.0;
 		maxRadius = smallBodyModel.getBoundingBoxDiagonalLength() / 8.0;
-		
+
 		this.smallBodyModel.addPropertyChangeListener(this);
-		
+
 		emptyPolyData = new vtkPolyData();
-		
+
 		this.numberOfSides = numberOfSides;
 		this.saveRadiusToOutput = saveRadiusToOutput;
 		this.type = type;
-		
+
 		boundaryColors = new vtkUnsignedCharArray();
 		boundaryColors.SetNumberOfComponents(3);
-		
+
 		interiorColors = new vtkUnsignedCharArray();
 		interiorColors.SetNumberOfComponents(3);
-		
+
 		boundaryPolyData = new vtkPolyData();
 		boundaryAppendFilter = new vtkAppendPolyData();
 		boundaryAppendFilter.UserManagedInputsOn();
@@ -191,7 +191,7 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
 
 		actors.add(interiorActor);
 	}
-	
+
 	public void setDefaultColor(int[] color)
 	{
 		this.defaultColor = color;
@@ -206,12 +206,12 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
 	{
 		this.polygons.get(i).color  = color;
 	}
-	
+
 	public int[] getPolygonColor(int i)
 	{
 		return this.polygons.get(i).color;
 	}
-	
+
 	/*
 	public int[] getDefaultBoundaryColor()
 	{
@@ -239,7 +239,7 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
 	{
 		return interiorOpacity;
 	}
-	
+
 	public void setInteriorOpacity(double opacity)
 	{
 		this.interiorOpacity = opacity;
@@ -254,7 +254,7 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
 		{
 			boundaryAppendFilter.SetNumberOfInputs(polygons.size());
 			interiorAppendFilter.SetNumberOfInputs(polygons.size());
-			
+
 			for (int i=0; i<polygons.size(); ++i)
 			{
 				vtkPolyData poly = polygons.get(i).boundaryPolyData;
@@ -275,16 +275,16 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
 
 			smallBodyModel.shiftPolyLineInNormalDirection(boundaryPolyData, 3.0);
 			smallBodyModel.shiftPolyLineInNormalDirection(interiorPolyData, 2.0);
-			
+
 			boundaryColors.SetNumberOfTuples(boundaryPolyData.GetNumberOfCells());
 			interiorColors.SetNumberOfTuples(interiorPolyData.GetNumberOfCells());
 			for (int i=0; i<polygons.size(); ++i)
 			{
 				int[] color = polygons.get(i).color;
-				
+
 				if (i == this.highlightedStructure)
 					color = highlightColor;
-				
+
 				IdPair range = this.getCellIdRangeOfPolygon(i, false);
 				for (int j=range.id1; j<range.id2; ++j)
 					boundaryColors.SetTuple3(j, color[0], color[1], color[2]);
@@ -309,18 +309,18 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
 		boundaryMapper.Update();
 		interiorMapper.SetInput(interiorPolyData);
 		interiorMapper.Update();
-		
+
 		boundaryActor.SetMapper(boundaryMapper);
         boundaryActor.Modified();
 		interiorActor.SetMapper(interiorMapper);
         interiorActor.Modified();
 	}
-	
+
 	public ArrayList<vtkProp> getProps()
 	{
 		return actors;
 	}
-	
+
     public String getClickStatusBarText(vtkProp prop, int cellId, double[] pickPosition)
     {
     	if (prop == boundaryActor || prop == interiorActor)
@@ -381,7 +381,7 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
 
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
-	
+
     public void movePolygon(int polygonId, double[] newCenter)
     {
     	RegularPolygon pol = polygons.get(polygonId);
@@ -399,7 +399,7 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
     			(pol.center[2]-newPointOnPerimeter[2])*(pol.center[2]-newPointOnPerimeter[2]));
     	if (newRadius > maxRadius)
     		newRadius = maxRadius;
-    	
+    
         pol.updatePolygon(smallBodyModel, pol.center, newRadius);
         updatePolyData();
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
@@ -420,7 +420,7 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
 	{
 		// Do nothing. RegularPolygonModel does not support selection.
 	}
-	
+
 	/**
 	 * A picker picking the actor of this model will return a
 	 * cellId. But since there are many cells per RegularPolygon, we need to be
@@ -445,12 +445,12 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
 	{
 		return this.getPolygonIdFromCellId(cellId, false);
 	}
-	
+
 	public int getPolygonIdFromInteriorCellId(int cellId)
 	{
 		return this.getPolygonIdFromCellId(cellId, true);
 	}
-	
+
 	private IdPair getCellIdRangeOfPolygon(int polygonId, boolean interior)
 	{
 		int startCell = 0;
@@ -461,7 +461,7 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
 			else
 				startCell += polygons.get(i).boundaryPolyData.GetNumberOfCells();
 		}
-		
+
 		int endCell = startCell;
 		if (interior)
 			endCell += polygons.get(polygonId).interiorPolyData.GetNumberOfCells();
@@ -470,11 +470,11 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
 
 		return new IdPair(startCell, endCell);
 	}
-	
+
 	public void loadModel(File file) throws IOException
 	{
 		ArrayList<String> lines = FileUtil.getFileLinesAsStringList(file.getAbsolutePath());
-		
+
 		ArrayList<RegularPolygon> newPolygons = new ArrayList<RegularPolygon>();
 		for (int i=0; i<lines.size(); ++i)
 		{
@@ -488,23 +488,23 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
 			pol.center[0] = Double.parseDouble(words[2]);
 			pol.center[1] = Double.parseDouble(words[3]);
 			pol.center[2] = Double.parseDouble(words[4]);
-			
+
 			// Note the next 3 words in the line (the point in spherical coordinates) are not used
 
 			if (saveRadiusToOutput)
 				pol.radius = Double.parseDouble(words[8]) / 2.0; // read in diameter not radius
 			else
 				pol.radius = defaultRadius;
-			
+
 	    	if (pol.id > maxPolygonId)
 	    		maxPolygonId = pol.id;
-	    	
+	    
 	    	// The remainder of the line (if there is one) is not used
-	    	
+	    
 	    	pol.updatePolygon(smallBodyModel, pol.center, pol.radius);
 	        newPolygons.add(pol);
 		}
-		
+
 		// Only if we reach here and no exception is thrown do we modify this class
 		polygons = newPolygons;
 
@@ -526,13 +526,13 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
 
 			// Since tab is used as the delimiter, replace any tabs in the name with spaces.
 			name = name.replace('\t', ' ');
-			
+
 			LatLon llr = MathUtil.reclat(pol.center);
 			double lat = llr.lat*180.0/Math.PI;
 			double lon = llr.lon*180.0/Math.PI;
 			if (lon < 0.0)
 				lon += 360.0;
-			
+
 			String str =
 				pol.id + "\t" +
 				name + "\t" +
@@ -542,7 +542,7 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
 				lat + "\t" +
 				lon + "\t" +
 				llr.rad;
-			
+
 			if (saveRadiusToOutput)
 				str += "\t" + 2.0*pol.radius; // save out as diameter, not radius
 			else
@@ -560,7 +560,7 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
 
 			out.write(str);
 		}
-		
+
 		out.close();
 	}
 
@@ -573,12 +573,12 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
 	{
 		return false;
 	}
-	
+
 	public double getDefaultRadius()
 	{
 		return defaultRadius;
 	}
-	
+
 	public void setDefaultRadius(double radius)
 	{
 		this.defaultRadius = radius;
@@ -593,7 +593,7 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
 			this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 		}
 	}
-	
+
 	public int getHighlightedStructure()
 	{
 		return highlightedStructure;
@@ -630,7 +630,7 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
 		if (Properties.MODEL_RESOLUTION_CHANGED.equals(evt.getPropertyName()))
 		{
 			redrawAllStructures();
-		}	
+		}
 	}
 
 	public void setStructureColor(int idx, int[] color)

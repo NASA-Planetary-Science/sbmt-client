@@ -124,7 +124,7 @@ public class FileCache
 		File realFile = new File(realFilename);
 		realFile.delete();
 		file.renameTo(realFile);
-		
+
 		// Change the modified time again just in case the process of
 		// renaming the file caused the modified time to change.
 		// (On Linux, changing the filename, does not change the modified
@@ -132,6 +132,6 @@ public class FileCache
 		if (urlLastModified > 0)
 			realFile.setLastModified(urlLastModified);
 
-		return realFile;	
+		return realFile;
 	}
 }

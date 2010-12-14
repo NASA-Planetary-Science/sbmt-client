@@ -15,11 +15,11 @@ public class PointsPopupMenu extends PopupMenu
 {
 	private int cellIdLastClicked = -1;
 	private PointModel model;
-	
+
 	public PointsPopupMenu(ModelManager modelManager)
 	{
 		this.model = (PointModel)modelManager.getModel(ModelNames.POINT_STRUCTURES);
-		
+
 		JMenuItem mi;
 		mi = new JMenuItem(new DeleteAction());
 		mi.setText("Delete");

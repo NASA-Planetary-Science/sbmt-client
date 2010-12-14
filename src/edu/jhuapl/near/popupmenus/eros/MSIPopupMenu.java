@@ -59,22 +59,22 @@ public class MSIPopupMenu extends PopupMenu
     	this.infoPanelManager = infoPanelManager;
     	this.renderer = renderer;
     	this.invoker = invoker;
-    	
+    
 		showRemoveImageIn3DMenuItem = new JCheckBoxMenuItem(new ShowRemoveIn3DAction());
 		showRemoveImageIn3DMenuItem.setText("Show Image");
 		this.add(showRemoveImageIn3DMenuItem);
-		
+
 		showRemoveBoundaryIn3DMenuItem = new JCheckBoxMenuItem(new ShowRemoveOutlineIn3DAction());
 		showRemoveBoundaryIn3DMenuItem.setText("Show Image Boundary");
 		this.add(showRemoveBoundaryIn3DMenuItem);
-		
+
 		if (this.infoPanelManager != null)
 		{
 			showImageInfoMenuItem = new JMenuItem(new ShowInfoAction());
 			showImageInfoMenuItem.setText("Properties...");
 			this.add(showImageInfoMenuItem);
 		}
-		
+
 		saveToDiskMenuItem = new JMenuItem(new SaveImageAction());
 		saveToDiskMenuItem.setText("Save Raw FIT Image to Disk...");
 		this.add(saveToDiskMenuItem);
@@ -89,7 +89,7 @@ public class MSIPopupMenu extends PopupMenu
 			centerImageMenuItem.setText("Center in Window");
 			this.add(centerImageMenuItem);
 		}
-		
+
 		showFrustumMenuItem = new JCheckBoxMenuItem(new ShowFrustumAction());
 		showFrustumMenuItem.setText("Show Frustum");
 		this.add(showFrustumMenuItem);
@@ -99,10 +99,10 @@ public class MSIPopupMenu extends PopupMenu
 	public void setCurrentImage(MSIKey key)
 	{
 		msiKey = key;
-		
+
 		updateMenuItems();
 	}
-	
+
 	private void updateMenuItems()
 	{
 		MSIBoundaryCollection msiBoundaries = (MSIBoundaryCollection)modelManager.getModel(ModelNames.MSI_BOUNDARY);
@@ -110,11 +110,11 @@ public class MSIPopupMenu extends PopupMenu
 
 		boolean containsImage = msiImages.containsImage(msiKey);
 		boolean containsBoundary = msiBoundaries.containsBoundary(msiKey);
-			
+
 		showRemoveBoundaryIn3DMenuItem.setSelected(containsBoundary);
-		
+
 		showRemoveImageIn3DMenuItem.setSelected(containsImage);
-		
+
 		if (centerImageMenuItem != null)
 		{
 			if (containsBoundary || containsImage)
@@ -125,10 +125,10 @@ public class MSIPopupMenu extends PopupMenu
 
 		if (showImageInfoMenuItem != null)
 			showImageInfoMenuItem.setEnabled(containsImage);
-		
+
 		saveBackplanesMenuItem.setEnabled(containsImage);
 		saveToDiskMenuItem.setEnabled(containsImage);
-		
+
 		if (containsImage)
 		{
 			MSIImage image = msiImages.getImage(msiKey);
@@ -141,7 +141,7 @@ public class MSIPopupMenu extends PopupMenu
 			showFrustumMenuItem.setEnabled(false);
 		}
 	}
-	
+
 
 	private class ShowRemoveIn3DAction extends AbstractAction
 	{
@@ -154,7 +154,7 @@ public class MSIPopupMenu extends PopupMenu
 					model.addImage(msiKey);
 				else
 					model.removeImage(msiKey);
-				
+
 				updateMenuItems();
 			}
 			catch (FitsException e1) {
@@ -165,7 +165,7 @@ public class MSIPopupMenu extends PopupMenu
 			}
 		}
 	}
-	
+
 	private class ShowRemoveOutlineIn3DAction extends AbstractAction
 	{
 		public void actionPerformed(ActionEvent e)
@@ -188,7 +188,7 @@ public class MSIPopupMenu extends PopupMenu
 			}
 		}
 	}
-	
+
 	private class ShowInfoAction extends AbstractAction
 	{
 		public void actionPerformed(ActionEvent e)
@@ -210,7 +210,7 @@ public class MSIPopupMenu extends PopupMenu
 			}
 		}
 	}
-	
+
 	private class SaveImageAction extends AbstractAction
 	{
 		public void actionPerformed(ActionEvent e)
@@ -235,7 +235,7 @@ public class MSIPopupMenu extends PopupMenu
 			}
 		}
 	}
-	
+
 	private class CenterImageAction extends AbstractAction
 	{
 		public void actionPerformed(ActionEvent e)
@@ -260,7 +260,7 @@ public class MSIPopupMenu extends PopupMenu
 	        {
 	            return;
 	        }
-	
+
 	        final double norm = MathUtil.vnorm(spacecraftPosition);
 	        double[] position = {
 	                spacecraftPosition[0] + 0.6*norm*boresightDirection[0],
@@ -282,7 +282,7 @@ public class MSIPopupMenu extends PopupMenu
 		public void actionPerformed(ActionEvent e)
 		{
 			// First generate the DDR
-			
+
 			File file = CustomFileChooser.showSaveDialog(invoker, "Save Backplanes DDR", msiKey.name + "_DDR.IMG");
 
 			try
@@ -322,7 +322,7 @@ public class MSIPopupMenu extends PopupMenu
 			}
 
 			// Then generate the LBL file
-			
+
 			file = CustomFileChooser.showSaveDialog(invoker, "Save Backplanes Label", msiKey.name + "_DDR.LBL");
 
 			try
@@ -352,7 +352,7 @@ public class MSIPopupMenu extends PopupMenu
 						JOptionPane.ERROR_MESSAGE);
 				ex.printStackTrace();
 			}
-			
+
 		}
 	}
 
@@ -366,17 +366,17 @@ public class MSIPopupMenu extends PopupMenu
 				msiImages.addImage(msiKey);
 				MSIImage image = msiImages.getImage(msiKey);
 				image.setShowFrustum(showFrustumMenuItem.isSelected());
-				
+
 				updateMenuItems();
 			}
 			catch (Exception ex)
 			{
 				ex.printStackTrace();
 			}
-			
+
 		}
 	}
-	
+
 	public void showPopup(MouseEvent e, vtkProp pickedProp, int pickedCellId,
 			double[] pickedPosition)
 	{

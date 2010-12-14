@@ -44,6 +44,6 @@ public class LineamentControlPanel extends JPanel implements ItemListener
 				lineamentModel.setShowLineaments(false);
 			else
 				lineamentModel.setShowLineaments(true);
-		}	
+		}
 	}
 }

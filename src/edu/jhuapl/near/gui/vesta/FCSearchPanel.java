@@ -39,7 +39,7 @@ import edu.jhuapl.near.gui.SearchPanelUtil;
 public class FCSearchPanel extends JPanel implements ActionListener, MouseListener
 {
 	private final String MSI_REMOVE_ALL_BUTTON_TEXT = "Remove All Boundaries";
-	
+
     private final ModelManager modelManager;
     private PickManager pickManager;
     private JComboBox msiSourceComboBox;
@@ -106,13 +106,13 @@ public class FCSearchPanel extends JPanel implements ActionListener, MouseListen
 		JPanel topPanel = new JPanel();
 		topPanel.setLayout(new BoxLayout(topPanel,
         		BoxLayout.PAGE_AXIS));
-		
+
     	setLayout(new BoxLayout(this,
         		BoxLayout.PAGE_AXIS));
-    	
+    
     	this.modelManager = modelManager;
     	this.pickManager = pickManager;
-    	
+    
 		this.addComponentListener(new ComponentAdapter()
 		{
 			public void componentHidden(ComponentEvent e)
@@ -138,7 +138,7 @@ public class FCSearchPanel extends JPanel implements ActionListener, MouseListen
     	msiSourcePanel.add(msiSourceLabel);
     	msiSourcePanel.add(msiSourceComboBox);
     	//pane.add(msiSourcePanel);
-    	
+    
         final JPanel startDatePanel = new JPanel();
         this.startDateLabel = new JLabel(START_DATE_LABEL_TEXT);
         startDatePanel.add(this.startDateLabel);
@@ -203,7 +203,7 @@ public class FCSearchPanel extends JPanel implements ActionListener, MouseListen
         filter7CheckBox = new JCheckBox();
     	filter7CheckBox.setText("Filter 7 (1050 nm)");
     	filter7CheckBox.setSelected(true);
-    	
+    
     	JPanel filtersSub1Panel = new JPanel();
         filtersSub1Panel.setLayout(new BoxLayout(filtersSub1Panel,
         		BoxLayout.PAGE_AXIS));
@@ -211,7 +211,7 @@ public class FCSearchPanel extends JPanel implements ActionListener, MouseListen
     	filtersSub1Panel.add(filter2CheckBox);
         filtersSub1Panel.add(filter3CheckBox);
         filtersSub1Panel.add(filter4CheckBox);
-    	
+    
     	JPanel filtersSub2Panel = new JPanel();
         filtersSub2Panel.setLayout(new BoxLayout(filtersSub2Panel,
         		BoxLayout.PAGE_AXIS));
@@ -222,7 +222,7 @@ public class FCSearchPanel extends JPanel implements ActionListener, MouseListen
     	filtersPanel.add(filtersSub1Panel);
         filtersPanel.add(Box.createHorizontalStrut(15));
     	filtersPanel.add(filtersSub2Panel);
-    	    	
+    	    
     	//filtersPanel.setBorder(BorderFactory.createEmptyBorder(9, 9, 9, 9));
 
     	final JPanel fc1and2Panel = new JPanel();
@@ -446,7 +446,7 @@ public class FCSearchPanel extends JPanel implements ActionListener, MouseListen
 
 
         JPanel resultsPanel = new JPanel(new BorderLayout());
-		
+
 		msiPopupMenu = new MSIPopupMenu(this.modelManager, infoPanelManager, renderer, this);
 
 		resultsLabel = new JLabel(" ");
@@ -480,7 +480,7 @@ public class FCSearchPanel extends JPanel implements ActionListener, MouseListen
         		};
 		numberOfBoundariesComboBox = new JComboBox(options2);
 		numberOfBoundariesComboBox.setMaximumSize(new Dimension(100, 23));
-		
+
 		nextButton = new JButton(">");
         nextButton.setActionCommand(">");
         nextButton.addActionListener(new ActionListener()
@@ -627,14 +627,14 @@ public class FCSearchPanel extends JPanel implements ActionListener, MouseListen
         			endDateGreg.get(GregorianCalendar.SECOND),
         			endDateGreg.get(GregorianCalendar.MILLISECOND),
         			DateTimeZone.UTC);
-        	
+        
 			TreeSet<Integer> cubeList = null;
 			RegularPolygonModel selectionModel = (RegularPolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
 			SmallBodyModel erosModel = (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
 			if (selectionModel.getNumberOfStructures() > 0)
 			{
 				RegularPolygonModel.RegularPolygon region = (RegularPolygonModel.RegularPolygon)selectionModel.getStructure(0);
-				
+
 				// Always use the lowest resolution model for getting the intersection cubes list.
 				// Therefore, if the selection region was created using a higher resolution model,
 				// we need to recompute the selection region using the low res model.
@@ -649,7 +649,7 @@ public class FCSearchPanel extends JPanel implements ActionListener, MouseListen
 					cubeList = erosModel.getIntersectingCubes(region.interiorPolyData);
 				}
 			}
-			
+
 			MSIImage.MSISource msiSource = null;
 			if (msiSourceComboBox.getSelectedItem().equals(MSIImage.MSISource.PDS))
 			    msiSource = MSIImage.MSISource.PDS;
@@ -699,7 +699,7 @@ public class FCSearchPanel extends JPanel implements ActionListener, MouseListen
 		msiResultsLabelText = results.size() + " images matched";
     	resultsLabel.setText(msiResultsLabelText);
     	msiRawResults = results;
-    	
+    
     	String[] formattedResults = new String[results.size()];
 
     	// add the results to the list
@@ -713,7 +713,7 @@ public class FCSearchPanel extends JPanel implements ActionListener, MouseListen
                     + ", filter: " + str.substring(33, 34)
                     + ", source: " + msiSourceOfLastQuery
     				);
-    		
+    
     		++i;
     	}
 
@@ -761,22 +761,22 @@ public class FCSearchPanel extends JPanel implements ActionListener, MouseListen
         	}
         }
     }
-	
+
 	private void showMSIBoundaries(IdPair idPair)
 	{
 		int startId = idPair.id1;
 		int endId = idPair.id2;
-		
+
 		MSIBoundaryCollection model = (MSIBoundaryCollection)modelManager.getModel(ModelNames.MSI_BOUNDARY);
 		model.removeAllBoundaries();
-		
+
 		for (int i=startId; i<endId; ++i)
 		{
 			if (i < 0)
 				continue;
 			else if(i >= msiRawResults.size())
 				break;
-			
+
 			try
 			{
 				String currentImage = msiRawResults.get(i);

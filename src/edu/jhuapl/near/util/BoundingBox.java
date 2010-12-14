@@ -8,16 +8,16 @@ public class BoundingBox
 	public double ymax = -Double.MAX_VALUE;
 	public double zmin = Double.MAX_VALUE;
 	public double zmax = -Double.MAX_VALUE;
-	
+
 	public BoundingBox()
 	{
 	}
-	
+
 	public BoundingBox(double[] bounds)
 	{
 		setBounds(bounds);
 	}
-	
+
 	public void setBounds(double[] bounds)
 	{
 		xmin = bounds[0];
@@ -27,7 +27,7 @@ public class BoundingBox
 		zmin = bounds[4];
 		zmax = bounds[5];
 	}
-	
+
 	public void update(double x, double y, double z)
 	{
         if (xmin > x)
@@ -43,7 +43,7 @@ public class BoundingBox
         if (zmax < z)
         	zmax = z;
 	}
-	
+
 	public boolean intersects(BoundingBox other)
 	{
 		if (other.xmax >= xmin && other.xmin <= xmax &&
@@ -53,7 +53,7 @@ public class BoundingBox
 		else
 			return false;
 	}
-	
+
 	/**
 	 * Returns the largest side of the box.
 	 * @return
@@ -62,7 +62,7 @@ public class BoundingBox
 	{
 		return Math.max(xmax-xmin, Math.max(ymax-ymin, zmax-zmin));
 	}
-	
+
 	public double getDiagonalLength()
 	{
 		double[] vec = {
@@ -70,10 +70,10 @@ public class BoundingBox
 				ymax-ymin,
 				zmax-zmin
 		};
-		
+
 		return MathUtil.vnorm(vec);
 	}
-	
+
 	/**
 	 * Returns whether or not the given point is contained in the box.
 	 * @param pt
@@ -88,12 +88,12 @@ public class BoundingBox
 		else
 			return true;
 	}
-	
+
 	public String toString()
 	{
 		return "xmin: " + xmin + " xmax: " + xmax +
 			   " ymin: " + ymin + " ymax: " + ymax +
 			   " zmin: " + zmin + " zmax: " + zmax;
 	}
-	
+
 }

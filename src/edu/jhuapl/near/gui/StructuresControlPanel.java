@@ -37,15 +37,15 @@ public class StructuresControlPanel extends JTabbedPane
 				pickManager,
 				PickManager.PickMode.CIRCLE_DRAW,
 				false) {});
-				
+
 		pointsStructuresMapperPanel = new PointsMappingControlPanel(
 				modelManager,
 				pickManager);
-				
+
 		addTab("Paths", lineStructuresMapperPanel);
 		addTab("Circles", circleStructuresMapperPanel);
 		addTab("Points", pointsStructuresMapperPanel);
-		
+
 		this.addComponentListener(new ComponentAdapter()
 		{
 			public void componentHidden(ComponentEvent e)

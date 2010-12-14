@@ -33,7 +33,7 @@ public class PointPicker extends Picker
 	private EditMode currentEditMode = EditMode.VERTEX_ADD;
 
 	private double[] lastDragPosition;
-	
+
     public PointPicker(
 			Renderer renderer,
 			ModelManager modelManager
@@ -42,7 +42,7 @@ public class PointPicker extends Picker
 		this.renWin = renderer.getRenderWindowPanel();
 		this.modelManager = modelManager;
 		this.pointModel = (PointModel)modelManager.getModel(ModelNames.POINT_STRUCTURES);
-		
+
 		smallBodyPicker = new vtkCellPicker();
 		smallBodyPicker.SetTolerance(0.002);
 		smallBodyPicker.PickFromListOn();
@@ -65,7 +65,7 @@ public class PointPicker extends Picker
 		pointPickList.RemoveAllItems();
 		pointPicker.AddPickList(pointModel.getInteriorActor());
 	}
-	
+
 	public void mousePressed(MouseEvent e)
 	{
 		// If we pressed a vertex of an existing point, begin dragging that vertex.
@@ -74,7 +74,7 @@ public class PointPicker extends Picker
 
 		vertexIdBeingEdited = -1;
 		lastDragPosition = null;
-		
+
 		if (this.currentEditMode == EditMode.VERTEX_DRAG_OR_DELETE)
 		{
 			if (e.getButton() != MouseEvent.BUTTON1 && e.getButton() != MouseEvent.BUTTON3)
@@ -120,10 +120,10 @@ public class PointPicker extends Picker
 						pointModel.addNewStructure(pos);
 					}
 				}
-			}		
+			}
 		}
 	}
-	
+
 	public void mouseReleased(MouseEvent e)
 	{
 //		if (this.currentEditMode == EditMode.VERTEX_DRAG_OR_DELETE &&
@@ -135,13 +135,13 @@ public class PointPicker extends Picker
 //
 //		vertexIdBeingEdited = -1;
 	}
-	
+
 	public void mouseDragged(MouseEvent e)
 	{
 		//if (e.getButton() != MouseEvent.BUTTON1)
 		//	return;
 
-		
+
 		if (this.currentEditMode == EditMode.VERTEX_DRAG_OR_DELETE &&
 			vertexIdBeingEdited >= 0)
 		{
@@ -161,7 +161,7 @@ public class PointPicker extends Picker
 		}
 	}
 
-	
+
 	public void mouseMoved(MouseEvent e)
 	{
 		int pickSucceeded = doPick(e, pointPicker, renWin);
@@ -170,14 +170,14 @@ public class PointPicker extends Picker
 		{
 			if (renWin.getCursor().getType() != Cursor.HAND_CURSOR)
 				renWin.setCursor(new Cursor(Cursor.HAND_CURSOR));
-			
+
 			currentEditMode = EditMode.VERTEX_DRAG_OR_DELETE;
 		}
 		else
 		{
 			if (renWin.getCursor().getType() != Cursor.DEFAULT_CURSOR)
 				renWin.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-			
+
 			currentEditMode = EditMode.VERTEX_ADD;
 		}
 	}

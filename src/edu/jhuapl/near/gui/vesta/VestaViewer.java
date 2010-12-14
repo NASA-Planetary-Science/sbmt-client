@@ -45,18 +45,18 @@ public class VestaViewer extends Viewer
 	private StatusBar statusBar;
 	private ModelInfoWindowManager infoPanelManager;
 	private boolean initialized = false;
-		
+
 	public VestaViewer(StatusBar statusBar)
 	{
 		super(new BorderLayout());
 		this.statusBar = statusBar;
 	}
-	
+
 	public void initialize()
 	{
 		if (initialized)
 			return;
-		
+
 		setupModelManager();
 
 		infoPanelManager = new ModelInfoWindowManager(modelManager)
@@ -65,7 +65,7 @@ public class VestaViewer extends Viewer
 					ModelManager modelManager)
 			{
 				return null;
-			}	
+			}
 		};
 
 		renderer = new Renderer(modelManager);
@@ -114,7 +114,7 @@ public class VestaViewer extends Viewer
     	modelManager.setModels(allModels);
 
 	}
-	
+
 	public Renderer getRenderer()
 	{
 		return renderer;

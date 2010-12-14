@@ -54,7 +54,7 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
 		this.structureModel = structureModel;
 		this.pickManager = pickManager;
 		this.pickMode = pickMode;
-		
+
 		structureModel.addPropertyChangeListener(this);
 		this.addComponentListener(new ComponentAdapter()
 		{
@@ -63,9 +63,9 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
 				setEditingEnabled(false);
 			}
 		});
-		
+
 		pickManager.getDefaultPicker().addPropertyChangeListener(this);
-		
+
 		setLayout(new MigLayout("wrap 3, insets 0"));
 
         this.loadStructuresButton = new JButton("Load...");
@@ -183,7 +183,7 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
 			public void actionPerformed(ActionEvent e)
 			{
 				editButton.setSelected(false);
-				
+
 				int numStructures = structuresTable.getRowCount();
 				int idx = structuresTable.getSelectedRow();
 				if (idx >= 0 && idx < numStructures)
@@ -257,7 +257,7 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
     						JOptionPane.ERROR_MESSAGE);
 
     				e.printStackTrace();
-    			}        	
+    			}        
     		}
     	}
     }
@@ -267,7 +267,7 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
 		if (Properties.MODEL_CHANGED.equals(evt.getPropertyName()))
 		{
 			updateStructureTable();
-			
+
 			if (structureModel.supportsSelection())
 			{
 				int idx = structureModel.getSelectedStructureIndex();
@@ -300,12 +300,12 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
 			{
 				return;
 			}
-			
+
 			PickEvent e = (PickEvent)evt.getNewValue();
 			if (modelManager.getModel(e.getPickedProp()) == structureModel)
 			{
 				int idx = structureModel.getStructureIndexFromCellId(e.getPickedCellId(), e.getPickedProp());
-				
+
 				structuresTable.setRowSelectionInterval(idx, idx);
 				structuresTable.scrollRectToVisible(structuresTable.getCellRect(idx, 0, true));
 			}
@@ -323,7 +323,7 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
 			structuresTable.scrollRectToVisible(structuresTable.getCellRect(idx, 0, true));
 		}
 	}
-	
+
 	private void updateStructureTable()
 	{
 		int numStructures = structureModel.getNumberOfStructures();
@@ -350,10 +350,10 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
 			if (name != null && !name.equals(structure.getName()))
 			{
 				structure.setName(name);
-			}			
+			}
 		}
 	}
-	
+
 	public void valueChanged(ListSelectionEvent e)
 	{
 		if (e.getValueIsAdjusting() == false)
@@ -361,7 +361,7 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
 			structureModel.highlightStructure(structuresTable.getSelectedRow());
 		}
 	}
-	
+
 	public void setEditingEnabled(boolean enable)
 	{
 		if (enable)

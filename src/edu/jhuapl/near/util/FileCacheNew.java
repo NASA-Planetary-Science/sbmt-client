@@ -47,7 +47,7 @@ public class FileCacheNew
 	static private FileInfo getFileInfoFromServer(String path, boolean doDownloadIfNeeded)
 	{
 		FileInfo fi = new FileInfo();
-		
+
 		String unzippedPath = path;
 		if (unzippedPath.toLowerCase().endsWith(".gz"))
 			unzippedPath = unzippedPath.substring(0, unzippedPath.length() - 3);
@@ -56,7 +56,7 @@ public class FileCacheNew
 				+ unzippedPath);
 
 		fi.file = file;
-		
+
 		// If we've already downloaded the file previously in this process,
 		// simply return without making any network connections.
 		boolean exists = file.exists();
@@ -120,12 +120,12 @@ public class FileCacheNew
 			return null;
 		}
 	}
-	
+
 	static public FileInfo getFileInfoFromServer(String path)
 	{
 		return getFileInfoFromServer(path, false);
 	}
-	
+
 	static public File getFileFromServer(String path)
 	{
 		FileInfo fi = getFileInfoFromServer(path, true);
@@ -146,7 +146,7 @@ public class FileCacheNew
 //
 //		return file;
 //	}
-//	
+//
 //	/**
 //	 * Return whether or not we need to download the file from the server or
 //	 * if we can already use the file in the cache
@@ -175,10 +175,10 @@ public class FileCacheNew
 //	{
 //		if (path.toLowerCase().endsWith(".gz"))
 //			path = path.substring(0, path.length()-3);
-//		
+//
 //		String realFilename = Configuration.getCacheDir() + File.separator + path;
 //		File file = new File(realFilename + getTemporarySuffix());
-//		
+//
 //		if (file.exists())
 //		{
 //			return file.length();
@@ -196,7 +196,7 @@ public class FileCacheNew
 //				return new File(realFilename).length();
 //		}
 //	}
-	
+
 	/**
 	 * When adding to the cache, gzipped files are always uncompressed and saved
 	 * without the ".gz" extension.
@@ -226,9 +226,9 @@ public class FileCacheNew
 		abortDownload = false;
 		boolean downloadAborted = false;
 		downloadProgress = 0.0;
-		
+
 		int amountDownloadedSoFar = 0;
-		
+
 		final int bufferSize = 2048;
 		byte[] buff = new byte[bufferSize];
 		int len;
@@ -236,13 +236,13 @@ public class FileCacheNew
 		{
 			amountDownloadedSoFar += len;
 			downloadProgress = 100.0 * (double)amountDownloadedSoFar / (double)contentLength;
-			
+
 			if (abortDownload)
 			{
 				downloadAborted = true;
 				break;
 			}
-			
+
 			os.write(buff, 0, len);
 		}
 
@@ -256,7 +256,7 @@ public class FileCacheNew
 			file.delete();
 			return null;
 		}
-		
+
 		// Change the modified time of the file to that of the server.
 		if (urlLastModified > 0)
 			file.setLastModified(urlLastModified);
@@ -265,7 +265,7 @@ public class FileCacheNew
 		File realFile = new File(realFilename);
 		realFile.delete();
 		file.renameTo(realFile);
-		
+
 		// Change the modified time again just in case the process of
 		// renaming the file caused the modified time to change.
 		// (On Linux, changing the filename, does not change the modified
@@ -273,14 +273,14 @@ public class FileCacheNew
 		if (urlLastModified > 0)
 			realFile.setLastModified(urlLastModified);
 
-		return realFile;	
+		return realFile;
 	}
-	
+
 	static public String getTemporarySuffix()
 	{
 		return FileUtil.getTemporarySuffix();
 	}
-	
+
 	static public void abortDownload()
 	{
 		abortDownload = true;

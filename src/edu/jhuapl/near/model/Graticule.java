@@ -42,13 +42,13 @@ public class Graticule extends Model implements PropertyChangeListener
 	public Graticule(SmallBodyModel smallBodyModel, String[] gridFiles)
 	{
 		super(ModelNames.GRATICULE);
-		
+
 		if (smallBodyModel != null)
 		{
 			this.smallBodyModel = smallBodyModel;
 			smallBodyModel.addPropertyChangeListener(this);
 		}
-	
+
 		this.gridFiles = gridFiles;
 		appendFilter = new vtkAppendPolyData();
 		plane = new vtkPlane();
@@ -58,23 +58,23 @@ public class Graticule extends Model implements PropertyChangeListener
 		polyData = new vtkPolyData();
 		reader = new vtkPolyDataReader();
 	}
-	
+
 	public void setShiftFactor(double factor)
 	{
 		shiftFactor = factor;
 	}
-	
+
 	public void generateGrid(vtkPolyData smallBodyPolyData)
 	{
 		double longitudeSpacing = 10.0;
 		double latitudeSpacing = 10.0;
-		
+
 		int numberLonCircles = (int)(180.0/longitudeSpacing);
 		int numberLatCircles = (int)(90.0/latitudeSpacing);
 
 		double[] origin = {0.0, 0.0, 0.0};
 		double[] zaxis = {0.0, 0.0, 1.0};
-		
+
 		appendFilter.UserManagedInputsOn();
 		appendFilter.SetNumberOfInputs(numberLatCircles + numberLonCircles);
 		vtkPolyData[] tmps = new vtkPolyData[numberLatCircles + numberLonCircles];
@@ -88,7 +88,7 @@ public class Graticule extends Model implements PropertyChangeListener
 			double[] vec = MathUtil.latrec(new LatLon(0.0, lon, 1.0));
 			double[] normal = new double[3];
 			MathUtil.vcrss(vec, zaxis, normal);
-			
+
 			plane.SetOrigin(origin);
 			plane.SetNormal(normal);
 
@@ -118,7 +118,7 @@ public class Graticule extends Model implements PropertyChangeListener
 				cone.SetAngle(latitudeSpacing * (double)i);
 				cutFunction = cone;
 			}
-			
+
 			cutPolyData.SetCutFunction(cutFunction);
 			cutPolyData.Update();
 
@@ -129,10 +129,10 @@ public class Graticule extends Model implements PropertyChangeListener
 		}
 
 		appendFilter.Update();
-	
+
 		polyData.DeepCopy(appendFilter.GetOutput());
 	}
-	
+
 	/**
 	 * Returns the grid as a vtkPolyData. Note that generateGrid() must be called first.
 	 * @return
@@ -141,7 +141,7 @@ public class Graticule extends Model implements PropertyChangeListener
 	{
 		return polyData;
 	}
-	
+
 	private void update()
 	{
 		// There is no need to regenerate the data if generated is true
@@ -151,7 +151,7 @@ public class Graticule extends Model implements PropertyChangeListener
 		//this.generateGrid(smallBodyModel.getErosPolyData());
 		int level = smallBodyModel.getModelResolution();
 
-		
+
 		File modelFile = null;
 		switch(level)
 		{
@@ -173,7 +173,7 @@ public class Graticule extends Model implements PropertyChangeListener
 		reader.Update();
 
 		polyData.DeepCopy(reader.GetOutput());
-		
+
 		smallBodyModel.shiftPolyLineInNormalDirection(polyData, shiftFactor);
 
 		if (mapper == null)
@@ -203,7 +203,7 @@ public class Graticule extends Model implements PropertyChangeListener
 			this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 		}
 	}
-	
+
 	public void propertyChange(PropertyChangeEvent evt)
 	{
 		if (Properties.MODEL_RESOLUTION_CHANGED.equals(evt.getPropertyName()))

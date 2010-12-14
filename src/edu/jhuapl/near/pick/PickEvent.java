@@ -10,7 +10,7 @@ public class PickEvent
 	private vtkProp pickedProp;
 	private int pickedCellId;
 	private double[] pickedPosition;
-	
+
 	public PickEvent(MouseEvent e, vtkProp pickedProp, int pickedCellId, double[] pickedPosition)
 	{
 		this.mouseEvent = e;

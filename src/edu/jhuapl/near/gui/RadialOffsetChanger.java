@@ -9,11 +9,11 @@ import edu.jhuapl.near.model.*;
 public class RadialOffsetChanger extends JPanel implements ChangeListener
 {
 	private JSlider slider;
-	
+
 	private Model model;
 
 	private double offsetScale = 0.025;
-	
+
 	public RadialOffsetChanger(Model model, String title)
 	{
 		this.model = model;
@@ -26,7 +26,7 @@ public class RadialOffsetChanger extends JPanel implements ChangeListener
 		slider.addChangeListener(this);
 		add(slider);
 	}
-	
+
 	public void setOffsetScale(double scale)
 	{
 		this.offsetScale = scale;

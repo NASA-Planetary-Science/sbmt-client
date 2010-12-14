@@ -49,7 +49,7 @@ public class DEMModel extends SmallBodyModel
 		{
 				heightsGravity, heightsPlane, slopes
 		};
-		
+
 		String[] coloringNames = {
 				"Elevation Relative to Gravity",
 				"Elevation Relative to Plane",
@@ -58,7 +58,7 @@ public class DEMModel extends SmallBodyModel
 		String[] coloringUnits = {
 				"m", "m", "deg"
 		};
-		
+
 		setSmallBodyPolyData(dem, coloringValues, coloringNames, coloringUnits, ColoringValueType.POINT_DATA);
 		setColoringIndex(0);
 	}
@@ -66,7 +66,7 @@ public class DEMModel extends SmallBodyModel
     private vtkPolyData initializeDEM(String filename, String lblfilename) throws IOException
 	{
     	loadLblFile(lblfilename);
-    	
+    
         vtkPoints points = new vtkPoints();
         vtkCellArray polys = new vtkCellArray();
         //vtkFloatArray heights = new vtkFloatArray();
@@ -86,7 +86,7 @@ public class DEMModel extends SmallBodyModel
 		FileInputStream fs = new FileInputStream(filename);
 		BufferedInputStream bs = new BufferedInputStream(fs);
 		DataInputStream in = new DataInputStream(bs);
-		
+
 		float[] data = new float[MAX_WIDTH*MAX_HEIGHT*6];
 
 		for (int i=0;i<data.length; ++i)
@@ -131,13 +131,13 @@ public class DEMModel extends SmallBodyModel
 						boundaryPolys.InsertNextCell(idList);
 						++d;
 					}
-					
+
 					//points.SetPoint(c, x, y, z);
 					points.InsertNextPoint(x, y, z);
 					heightsGravity.InsertNextTuple1(h);
 					heightsPlane.InsertNextTuple1(h2);
 					slopes.InsertNextTuple1(s);
-					
+
 					indices[m][n] = c;
 
 					++c;
@@ -189,10 +189,10 @@ public class DEMModel extends SmallBodyModel
 		normalsFilter.SplittingOff();
 		normalsFilter.FlipNormalsOn();
 		normalsFilter.Update();
-		
+
 		vtkPolyData normalsFilterOutput = normalsFilter.GetOutput();
 		dem.DeepCopy(normalsFilterOutput);
-		
+
 		return dem;
 	}
 
@@ -211,7 +211,7 @@ public class DEMModel extends SmallBodyModel
     {
     	profileHeights.clear();
     	profileDistances.clear();
-    	
+    
     	// For each point in xyzPointList, find the cell containing that
     	// point and then, using barycentric coordinates find the value
     	// of the height at that point
@@ -220,7 +220,7 @@ public class DEMModel extends SmallBodyModel
     	// and last points of xyzPointList. For each point, p, in xyzPointList, find the point
     	// on the line closest to p. The distance from p to the start of the line is what
     	// is placed in heights. Use SPICE's nplnpt function for this.
-    	
+    
     	double[] first = xyzPointList.get(0).xyz;
     	double[] last = xyzPointList.get(xyzPointList.size()-1).xyz;
         double[] lindir = new double[3];
@@ -238,11 +238,11 @@ public class DEMModel extends SmallBodyModel
     	for (Point3D p : xyzPointList)
     	{
     		int cellId = findClosestCell(p.xyz);
-    		
+    
     		double val = PolyDataUtil.interpolateWithinCell(dem, heightsGravity, cellId, p.xyz, idList);
-    		
+    
     		profileHeights.add(val);
-    		
+    
             if (zeroLineDir)
             {
         		profileDistances.add(0.0);
@@ -263,11 +263,11 @@ public class DEMModel extends SmallBodyModel
 		BufferedReader in = new BufferedReader(isr);
 
 		String line;
-		
+
 		while ((line = in.readLine()) != null)
 		{
 			line = line.trim();
-			
+
 			if (line.startsWith("NAXIS1_LIVE"))
 			{
 				String[] tokens = line.split("=");

@@ -17,13 +17,13 @@ public class Line extends StructureModel.Structure
 {
 	public String name = "default";
 	public int id;
-	
+
 	// Note the lat, lon, and alt is what gets stored in the saved file.
 	// These are the control points.
 	public ArrayList<Double> lat = new ArrayList<Double>();
 	public ArrayList<Double> lon = new ArrayList<Double>();
 	public ArrayList<Double> rad = new ArrayList<Double>();
-	
+
 	// Note xyzPointList is what's displayed. There will usually be more of these points than
 	// lat, lon, alt in order to ensure the line is right above the surface of the asteroid.
 	public ArrayList<Point3D> xyzPointList = new ArrayList<Point3D>();
@@ -69,7 +69,7 @@ public class Line extends StructureModel.Structure
 	{
 		return PATH;
 	}
-	
+
 	public String getInfo()
 	{
 		return decimalFormatter.format(getPathLength()) + " km, " + controlPointIds.size() + " vertices";
@@ -79,19 +79,19 @@ public class Line extends StructureModel.Structure
 	{
 		return color;
 	}
-	
+
 	public void setColor(int[] color)
 	{
 		this.color = (int[])color.clone();
 	}
-	
+
     public Element toXmlDomElement(Document dom)
     {
     	Element linEle = dom.createElement(PATH);
     	linEle.setAttribute(ID, String.valueOf(id));
     	linEle.setAttribute(NAME, name);
     	linEle.setAttribute(LENGTH, String.valueOf(getPathLength()));
-    	
+    
     	String vertices = "";
         int size = lat.size();
 
@@ -101,9 +101,9 @@ public class Line extends StructureModel.Structure
         	double longitude = lon.get(i)*180.0/Math.PI;
         	if (longitude < 0.0)
         		longitude += 360.0;
-        	
+        
         	vertices += latitude + " " + longitude + " " + rad.get(i);
-        	
+        
         	if (i < size-1)
         		vertices += " ";
         }
@@ -122,41 +122,41 @@ public class Line extends StructureModel.Structure
     	xyzPointList.clear();
 
     	id = Integer.parseInt(element.getAttribute(ID));
-    	
+    
     	if (id > maxId)
     		maxId = id;
-    	
+    
     	name = element.getAttribute(NAME);
     	String tmp = element.getAttribute(VERTICES);
 
     	if (tmp.length() == 0)
     		return;
-    	
+    
     	String[] tokens = tmp.split(" ");
-    	
+    
     	int count = 0;
     	for (int i=0; i<tokens.length;)
     	{
     		lat.add(Double.parseDouble(tokens[i++])*Math.PI/180.0);
     		lon.add(Double.parseDouble(tokens[i++])*Math.PI/180.0);
     		rad.add(Double.parseDouble(tokens[i++]));
-    		
+    
     		if (shapeModelName == null || !shapeModelName.equals(smallBodyModel.getModelName()))
     			shiftPointOnPathToClosestPointOnAsteroid(count);
 
     		controlPointIds.add(xyzPointList.size());
-    		
+    
     		// Note, this point will be replaced with the correct value
     		// when we call updateSegment
     		double[] dummy = {0.0, 0.0, 0.0};
     		xyzPointList.add(new Point3D(dummy));
-    		
+    
     		if (count > 0)
     			this.updateSegment(count-1);
-    		
+    
     		++count;
     	}
-    	
+    
     }
 
     public String getClickStatusBarText()
@@ -170,13 +170,13 @@ public class Line extends StructureModel.Structure
     {
 		int size = xyzPointList.size();
 		double length = 0.0;
-		
+
 		for (int i=1;i<size;++i)
 		{
 			double dist = xyzPointList.get(i-1).distanceTo(xyzPointList.get(i));
 			length += dist;
 		}
-    	
+    
 		return length;
     }
 
@@ -186,14 +186,14 @@ public class Line extends StructureModel.Structure
 		LatLon ll2 = new LatLon(lat.get(segment+1), lon.get(segment+1), rad.get(segment+1));
 		double pt1[] = MathUtil.latrec(ll1);
 		double pt2[] = MathUtil.latrec(ll2);
-		
+
 		int id1 = controlPointIds.get(segment);
 		int id2 = controlPointIds.get(segment+1);
-		
+
 		// Set the 2 control points
 		xyzPointList.set(id1, new Point3D(pt1));
 		xyzPointList.set(id2, new Point3D(pt2));
-		
+
 		vtkPoints points = null;
         if (Math.abs(lat.get(segment) - lat.get(segment+1)) < 1e-8 &&
             	Math.abs(lon.get(segment) - lon.get(segment+1)) < 1e-8 &&
@@ -208,30 +208,30 @@ public class Line extends StructureModel.Structure
     		vtkPolyData poly = smallBodyModel.drawPath(pt1, pt2);
     		if (poly == null)
     			return;
-    			
+    
     		points = poly.GetPoints();
         }
-		
+
 		// Remove points BETWEEN the 2 control points
 		for (int i=0; i<id2-id1-1; ++i)
 		{
 			xyzPointList.remove(id1+1);
 		}
-		
+
 		// Set the new points
 		int numNewPoints = points.GetNumberOfPoints();
 		for (int i=1; i<numNewPoints-1; ++i)
 		{
 			xyzPointList.add(id1+i, new Point3D(points.GetPoint(i)));
 		}
-		
+
 		// Shift the control points ids from segment+1 till the end by the right amount.
 		int shiftAmount = id1+numNewPoints-1 - id2;
 		for (int i=segment+1; i<controlPointIds.size(); ++i)
 		{
 			controlPointIds.set(i, controlPointIds.get(i) + shiftAmount);
 		}
-		
+
     }
 
 	public void shiftPointOnPathToClosestPointOnAsteroid(int idx)

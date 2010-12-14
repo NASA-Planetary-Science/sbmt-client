@@ -42,13 +42,13 @@ public class ItokawaViewer extends Viewer
 	private GenericPopupManager popupManager;
 	private StatusBar statusBar;
 	private boolean initialized = false;
-		
+
 	public ItokawaViewer(StatusBar statusBar)
 	{
 		super(new BorderLayout());
 		this.statusBar = statusBar;
 	}
-	
+
 	public void initialize()
 	{
 		if (initialized)
@@ -77,17 +77,17 @@ public class ItokawaViewer extends Viewer
         controlPanel.setPreferredSize(new Dimension(320, 800));
 
 		this.add(splitPane, BorderLayout.CENTER);
-		
+
 		initialized = true;
 	}
-	
+
 	private void setupModelManager()
 	{
 		modelManager = new ModelManager();
 
 		SmallBodyModel itokawaModel = ModelFactory.createItokawaBodyModel();
     	Graticule graticule = ModelFactory.createItokawaGraticuleModel(itokawaModel);
-    	
+    
         HashMap<String, Model> allModels = new HashMap<String, Model>();
         allModels.put(ModelNames.SMALL_BODY, itokawaModel);
     	allModels.put(ModelNames.LINE_STRUCTURES, new LineModel(itokawaModel));

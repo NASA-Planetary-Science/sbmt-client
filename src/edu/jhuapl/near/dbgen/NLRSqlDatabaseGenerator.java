@@ -66,7 +66,7 @@ public class NLRSqlDatabaseGenerator
         	{
         		e.printStackTrace();
         	}
-        	
+        
             db.update(
             		"create table nlr(" +
             		"UTC bigint PRIMARY KEY, " +
@@ -101,7 +101,7 @@ public class NLRSqlDatabaseGenerator
             // this will have no effect on the db
         }
 	}
-	
+
 	public static void main(String[] args)
 	{
 		NativeLibraryLoader.loadVtkLibraries();
@@ -109,7 +109,7 @@ public class NLRSqlDatabaseGenerator
 		SmallBodyModel erosModel = ModelFactory.createErosBodyModel();
 
 		String nlrFileList = args[0];
-		
+
 		ArrayList<String> nlrFiles = null;
 		try {
 			nlrFiles = FileUtil.getFileLinesAsStringList(nlrFileList);
@@ -118,21 +118,21 @@ public class NLRSqlDatabaseGenerator
 		}
 
 		SmallBodyCubes cubes = new SmallBodyCubes(erosModel.getSmallBodyPolyData(), 1.0, 1.0, true);
-		
+
 		double[] pt = new double[3];
-		
+
 		// If a point is farther than MAX_DIST from the asteroid, then set its cubeid to -1.
 		final double MAX_DIST = 1.0;
-		
+
 		PreparedStatement msiInsert = null;
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-DDD'T'HH:mm:ss.SSS", Locale.US);
-		
+
 		try
 		{
 			db = new SqlManager("org.h2.Driver", "jdbc:h2:~/tmp/test-h2/nlr");
 
 			createTable();
-			
+
 	    	msiInsert = db.preparedStatement(
     		"insert into nlr values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
@@ -140,11 +140,11 @@ public class NLRSqlDatabaseGenerator
 	    	short filecount = 0;
 			for (String filename : nlrFiles)
 			{
-				
+
 			    System.out.println("Begin processing file " + filename + " - " + count + " / " + nlrFiles.size());
-			
+
 			    ArrayList<String> lines = FileUtil.getFileLinesAsStringList(filename);
-			
+
 				for (int i=2; i<lines.size(); ++i)
 				{
 					String[] vals = lines.get(i).trim().split("\\s+");
@@ -154,16 +154,16 @@ public class NLRSqlDatabaseGenerator
         			pt[2] = Double.parseDouble(vals[16])/1000.0;
 
         			double[] closestPt = erosModel.findClosestPoint(pt);
-        			
+        
         			double dist = MathUtil.distanceBetween(pt, closestPt);
 
         			int cubeid = -1;
-        			
+        
         			if (dist <= MAX_DIST)
         			{
         				cubeid = cubes.getCubeId(closestPt);
         			}
-        			
+        
                     msiInsert.setLong(1, sdf.parse(vals[4]).getTime());
                     msiInsert.setFloat(2, Float.parseFloat(vals[0]));
                     msiInsert.setFloat(3, Float.parseFloat(vals[1]));
@@ -189,10 +189,10 @@ public class NLRSqlDatabaseGenerator
 
 					++count;
 				}
-				
+
 				++filecount;
 			}
-			
+
 			db.shutdown();
 		}
 		catch (Exception e)

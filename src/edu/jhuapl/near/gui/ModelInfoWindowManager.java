@@ -12,9 +12,9 @@ abstract public class ModelInfoWindowManager implements PropertyChangeListener
 {
 	HashMap<Model, ModelInfoWindow> infoPanels =
 		new HashMap<Model, ModelInfoWindow>();
-	
+
 	ModelManager modelManager;
-	
+
 	public ModelInfoWindowManager(ModelManager modelManager)
 	{
 		this.modelManager = modelManager;
@@ -28,17 +28,17 @@ abstract public class ModelInfoWindowManager implements PropertyChangeListener
 		else
 		{
 			final ModelInfoWindow infoPanel = createModelInfoWindow(model, modelManager);
-		
+
 			final Model collectionModel = infoPanel.getCollectionModel();
-			
+
 			model.addPropertyChangeListener(infoPanel);
 			collectionModel.addPropertyChangeListener(this);
-			
+
 			if (infoPanel == null)
 			{
 				throw new Exception("The Info Panel Manager cannot handle the model you specified.");
 			}
-			
+
 			infoPanel.addWindowListener(new WindowAdapter()
 			{
 				public void windowClosed(WindowEvent e)
@@ -49,7 +49,7 @@ abstract public class ModelInfoWindowManager implements PropertyChangeListener
 					collectionModel.removePropertyChangeListener(ModelInfoWindowManager.this);
 				}
 			});
-			
+
 			infoPanels.put(model, infoPanel);
 		}
 	}

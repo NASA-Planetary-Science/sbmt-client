@@ -43,18 +43,18 @@ public class NISPopupMenu extends PopupMenu
     	this.modelManager = modelManager;
     	this.infoPanelManager = infoPanelManager;
     	//this.erosModel = (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
-    	
+    
 		showRemoveSpectrumIn3DMenuItem = new JCheckBoxMenuItem(new ShowRemoveIn3DAction());
 		showRemoveSpectrumIn3DMenuItem.setText("Show Footprint");
 		this.add(showRemoveSpectrumIn3DMenuItem);
-		
+
 		if (this.infoPanelManager != null)
 		{
 			showSpectrumInfoMenuItem = new JMenuItem(new ShowInfoAction());
 			showSpectrumInfoMenuItem.setText("Spectrum...");
 			this.add(showSpectrumInfoMenuItem);
 		}
-		
+
 		centerSpectrumMenuItem = new JMenuItem(new CenterImageAction());
 		centerSpectrumMenuItem.setText("Center in Window");
 		//this.add(centerImageMenuItem);
@@ -64,24 +64,24 @@ public class NISPopupMenu extends PopupMenu
 		this.add(showFrustumMenuItem);
 	}
 
-	
+
 	public void setCurrentSpectrum(String name)
 	{
 		currentSpectrum = name;
 
 		updateMenuItems();
 	}
-	
+
 	private void updateMenuItems()
 	{
 		NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelNames.NIS_SPECTRA);
-		
+
 		boolean containsSpectrum = model.containsSpectrum(currentSpectrum);
 		showRemoveSpectrumIn3DMenuItem.setSelected(containsSpectrum);
-		
+
 		if (showSpectrumInfoMenuItem != null)
 			showSpectrumInfoMenuItem.setEnabled(containsSpectrum);
-		
+
 		if (containsSpectrum)
 		{
 			NISSpectrum image = model.getSpectrum(currentSpectrum);
@@ -94,20 +94,20 @@ public class NISPopupMenu extends PopupMenu
 			showFrustumMenuItem.setEnabled(false);
 		}
 	}
-	
+
 
 	private class ShowRemoveIn3DAction extends AbstractAction
 	{
 		public void actionPerformed(ActionEvent e)
 		{
-			NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelNames.NIS_SPECTRA);		
+			NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelNames.NIS_SPECTRA);
 			try
 			{
 				if (showRemoveSpectrumIn3DMenuItem.isSelected())
 					model.addSpectrum(currentSpectrum);
 				else
 					model.removeImage(currentSpectrum);
-				
+
 				updateMenuItems();
 			}
 			catch (IOException e1) {
@@ -115,7 +115,7 @@ public class NISPopupMenu extends PopupMenu
 			}
 		}
 	}
-	
+
 	private class ShowInfoAction extends AbstractAction
 	{
 		public void actionPerformed(ActionEvent e)
@@ -135,8 +135,8 @@ public class NISPopupMenu extends PopupMenu
 			}
 		}
 	}
-	
-	
+
+
 	private class CenterImageAction extends AbstractAction
 	{
 		public void actionPerformed(ActionEvent e)
@@ -153,16 +153,16 @@ public class NISPopupMenu extends PopupMenu
 				NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelNames.NIS_SPECTRA);
 				model.addSpectrum(currentSpectrum);
 				NISSpectrum spectrum = model.getSpectrum(currentSpectrum);
-				
+
 				spectrum.setShowFrustum(showFrustumMenuItem.isSelected());
-				
+
 				updateMenuItems();
 			}
 			catch (Exception ex)
 			{
 				ex.printStackTrace();
 			}
-			
+
 		}
 	}
 
@@ -177,5 +177,5 @@ public class NISPopupMenu extends PopupMenu
 			show(e.getComponent(), e.getX(), e.getY());
 		}
 	}
-	
+
 }

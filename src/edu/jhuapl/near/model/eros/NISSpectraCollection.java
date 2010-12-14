@@ -24,11 +24,11 @@ public class NISSpectraCollection extends Model implements PropertyChangeListene
 
 	private HashMap<vtkProp, String> actorToFileMap = new HashMap<vtkProp, String>();
 	private SmallBodyModel erosModel;
-	
+
 	public NISSpectraCollection(SmallBodyModel eros)
 	{
 		super(ModelNames.NIS_SPECTRA);
-		
+
 		this.erosModel = eros;
 	}
 
@@ -36,16 +36,16 @@ public class NISSpectraCollection extends Model implements PropertyChangeListene
 	{
 		if (fileToSpectrumMap.containsKey(path))
 			return;
-		
-		//NISSpectrum spectrum = NISSpectrum.NISSpectrumFactory.createSpectrum(path, erosModel);		
+
+		//NISSpectrum spectrum = NISSpectrum.NISSpectrumFactory.createSpectrum(path, erosModel);
 		NISSpectrum spectrum = new NISSpectrum(path, erosModel);
-		
+
 		erosModel.addPropertyChangeListener(spectrum);
 		spectrum.addPropertyChangeListener(this);
 
 		fileToSpectrumMap.put(path, spectrum);
 		spectraActors.put(spectrum, new ArrayList<vtkProp>());
-				
+
 		// Now texture map this image onto the Eros model.
 		//spectrum.setPolygonOffset(-10.0);
 
@@ -55,7 +55,7 @@ public class NISSpectraCollection extends Model implements PropertyChangeListene
 
 		for (vtkProp act : imagePieces)
 			actorToFileMap.put(act, path);
-		
+
 		allActors.addAll(imagePieces);
 
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
@@ -64,15 +64,15 @@ public class NISSpectraCollection extends Model implements PropertyChangeListene
 	public void removeImage(String path)
 	{
 		NISSpectrum spectrum = fileToSpectrumMap.get(path);
-		
+
 		ArrayList<vtkProp> actors = spectraActors.get(spectrum);
 		allActors.removeAll(actors);
-		
+
 		for (vtkProp act : actors)
 			actorToFileMap.remove(act);
 
 		spectraActors.remove(spectrum);
-		
+
 		fileToSpectrumMap.remove(path);
 
 		spectrum.removePropertyChangeListener(this);

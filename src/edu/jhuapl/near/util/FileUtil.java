@@ -13,7 +13,7 @@ public class FileUtil
 {
 	private static volatile boolean abortUnzip = false;
 	private static volatile double unzipProgress = 0.0;
-	
+
 	/**
 	 * The function takes a file and returns its contents as a list of strings,
 	 * one line per string.
@@ -31,17 +31,17 @@ public class FileUtil
 
 		ArrayList<String> lines = new ArrayList<String>();
 		String line;
-		
+
 		while ((line = in.readLine()) != null)
 		{
 			lines.add(line);
 		}
-		
+
 		in.close();
-		
+
 		return lines;
 	}
-	
+
 	/**
 	 * The function takes a file and returns its contents as a list of strings,
 	 * one word per string.
@@ -59,7 +59,7 @@ public class FileUtil
 
 		ArrayList<String> words = new ArrayList<String>();
 		String line;
-		
+
 		while ((line = in.readLine()) != null)
 		{
 			String [] tokens = line.trim().split("\\s+");
@@ -67,9 +67,9 @@ public class FileUtil
 			for (String word : tokens)
 				words.add(word);
 		}
-		
+
 		in.close();
-		
+
 		return words;
 	}
 
@@ -83,7 +83,7 @@ public class FileUtil
 
 		ArrayList<String> words = new ArrayList<String>();
 		String line;
-		
+
 		while ((line = in.readLine()) != null)
 		{
 			String [] tokens = line.trim().split(separator);
@@ -91,9 +91,9 @@ public class FileUtil
 			for (String word : tokens)
 				words.add(word);
 		}
-		
+
 		in.close();
-		
+
 		return words;
 	}
 
@@ -146,7 +146,7 @@ public class FileUtil
 		String zipTopLevelFolderName = file.getName().substring(0, file.getName().length()-4);
 		String zipTopLevelFolder = zipContainingFolder + File.separator + zipTopLevelFolderName;
 		String tempExtractToFolder = zipTopLevelFolder + getTemporarySuffix();
-		
+
 		try
 		{
 			FileUtils.deleteQuietly(new File(zipTopLevelFolder));
@@ -162,11 +162,11 @@ public class FileUtil
 			boolean unzipAborted = false;
 			int count = 0;
 			int totalEntries = zipFile.size();
-			
+
 			while(entries.hasMoreElements())
 			{
 				unzipProgress = 100.0 * (double)count / (double)totalEntries;
-				
+
 				if (abortUnzip)
 				{
 					unzipAborted = true;
@@ -185,12 +185,12 @@ public class FileUtil
 				//System.err.println("Extracting file: " + entry.getName());
 				copyInputStream(zipFile.getInputStream(entry),
 						new BufferedOutputStream(new FileOutputStream(tempExtractToFolder + File.separator + entry.getName())));
-				
+
 				++count;
 			}
 
 			zipFile.close();
-			
+
 			if (!unzipAborted)
 			{
 				String tempTopLevelFolder = tempExtractToFolder + File.separator + zipTopLevelFolderName;
@@ -212,7 +212,7 @@ public class FileUtil
 	{
 		abortUnzip = true;
 	}
-	
+
 	static public double getUnzipProgress()
 	{
 		return unzipProgress;

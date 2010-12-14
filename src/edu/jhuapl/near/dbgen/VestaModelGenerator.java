@@ -38,7 +38,7 @@ public class VestaModelGenerator {
 	 *
 	 * @param args
 	 */
-	
+
 	public static void main(String[] args)
 	{
 		javax.swing.SwingUtilities.invokeLater(new Runnable()
@@ -48,7 +48,7 @@ public class VestaModelGenerator {
         		// do nothing
         	}
         });
-		
+
 		NativeLibraryLoader.loadVtkLibrariesLinuxNoX11();
 
 		String datadir = args[0];
@@ -158,9 +158,9 @@ public class VestaModelGenerator {
 
 	}
 
-	
+
 	/*
-	
+
 	 * This program converts the Hubble Vesta shape model that can be downloaded
 	 * from http://sbn.psi.edu/pds/asteroid/EAR_A_5_DDR_SHAPE_MODELS_V2_1.zip to
 	 * vtk format. This program can convert the file:
@@ -186,7 +186,7 @@ public class VestaModelGenerator {
         		// do nothing
         	}
         });
-		
+
 		NativeLibraryLoader.loadVtkLibrariesLinuxNoX11();
 
 		String datadir = args[0];
@@ -211,7 +211,7 @@ public class VestaModelGenerator {
 		        vtkCellArray polys = new vtkCellArray();
 		        body.SetPoints(points);
 		        body.SetPolys(polys);
-				
+
 				int numRows = 37;
 				int numCols = 73;
 				int[][] indices = new int[numRows][numCols];
@@ -226,7 +226,7 @@ public class VestaModelGenerator {
 
 						if (lat == -90.0 || lat == 90.0 || lon == 360.0)
 							lon = 0.0;
-						
+
 						LatLon ll = new LatLon(lat*Math.PI/180.0, lon*Math.PI/180.0, rad);
 						double[] pt = MathUtil.latrec(ll);
 						indices[m][n] = count++;
@@ -235,7 +235,7 @@ public class VestaModelGenerator {
 
 				in.close();
 
-				
+
 		        // Now add connectivity information
 		        int i0, i1, i2, i3;
 		        vtkIdList idList = new vtkIdList();
@@ -261,7 +261,7 @@ public class VestaModelGenerator {
 						{
 							System.out.println("Error occurred");
 						}
-						
+
 						// Add bottom right triangle
 						if (i2>=0 && i1>=0 && i3>=0)
 						{
@@ -284,7 +284,7 @@ public class VestaModelGenerator {
 				cleanPolyData.ConvertPolysToLinesOff();
 				cleanPolyData.ConvertStripsToPolysOff();
 				cleanPolyData.Update();
-				
+
 				vtkPolyDataNormals normalsFilter = new vtkPolyDataNormals();
 				normalsFilter.SetInputConnection(cleanPolyData.GetOutputPort());
 				normalsFilter.SetComputeCellNormals(0);

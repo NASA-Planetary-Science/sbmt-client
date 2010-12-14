@@ -35,7 +35,7 @@ import edu.jhuapl.near.util.IdPair;
 public class VIRSearchPanel extends JPanel implements ActionListener, MouseListener
 {
 	private final String NIS_REMOVE_ALL_BUTTON_TEXT = "Remove All Footprints";
-	
+
     private final ModelManager modelManager;
     private PickManager pickManager;
     private java.util.Date startDate = new GregorianCalendar(2011, 6, 1, 0, 0, 0).getTime();
@@ -85,7 +85,7 @@ public class VIRSearchPanel extends JPanel implements ActionListener, MouseListe
     	//setLayout(new BoxLayout(this,
         //		BoxLayout.PAGE_AXIS));
     	setLayout(new MigLayout("wrap 1, insets 0"));
-    	
+    
     	this.modelManager = modelManager;
     	this.pickManager = pickManager;
 
@@ -102,7 +102,7 @@ public class VIRSearchPanel extends JPanel implements ActionListener, MouseListe
 //    	pane.setLayout(new BoxLayout(pane,
 //        		BoxLayout.PAGE_AXIS));
     	pane.setLayout(new MigLayout("wrap 1"));
-    	
+    
     	//pane.setBorder(
         //        new CompoundBorder(BorderFactory.createEmptyBorder(9, 9, 9, 9),
         //                           new TitledBorder("Query Editor")));
@@ -299,7 +299,7 @@ public class VIRSearchPanel extends JPanel implements ActionListener, MouseListe
 
 
         JPanel resultsPanel = new JPanel(new MigLayout("insets 0"));
-		
+
 		nisPopupMenu = new NISPopupMenu(this.modelManager, infoPanelManager);
 
 		resultsLabel = new JLabel(" ");
@@ -334,7 +334,7 @@ public class VIRSearchPanel extends JPanel implements ActionListener, MouseListe
         		};
 		numberOfBoundariesComboBox = new JComboBox(options2);
 		numberOfBoundariesComboBox.setMaximumSize(new Dimension(150, 23));
-		
+
 		nextButton = new JButton(">");
         nextButton.setActionCommand(">");
         nextButton.addActionListener(new ActionListener()
@@ -417,7 +417,7 @@ public class VIRSearchPanel extends JPanel implements ActionListener, MouseListe
 				model.setChannelColoring(channelComboBox.getSelectedIndex(), minVal, maxVal);
 			}
         });
-		
+
         JLabel minChannelValueLabel = new JLabel("Min");
         minChannelValueTextField = new JSpinner(new SpinnerNumberModel(0.0, 0.0, 1.0, 0.01));
         minChannelValueTextField.setValue(NISSpectrum.getChannelColoringMinValue());
@@ -438,7 +438,7 @@ public class VIRSearchPanel extends JPanel implements ActionListener, MouseListe
             }
         });
 
-		
+
         JLabel maxChannelValueLabel = new JLabel("Max");
 		maxChannelValueTextField = new JSpinner(new SpinnerNumberModel(0.05, 0.0, 1.0, 0.01));
 		maxChannelValueTextField.setValue(NISSpectrum.getChannelColoringMaxValue());
@@ -539,7 +539,7 @@ public class VIRSearchPanel extends JPanel implements ActionListener, MouseListe
                     cubeList = erosModel.getIntersectingCubes(region.interiorPolyData);
                 }
 			}
-        	
+        
         	ArrayList<String> results = Query.getInstance().runQuery(
         			Query.Datatype.NIS,
         			startDateJoda,
@@ -579,7 +579,7 @@ public class VIRSearchPanel extends JPanel implements ActionListener, MouseListe
 		nisResultsLabelText = results.size() + " spectra matched";
     	resultsLabel.setText(nisResultsLabelText);
     	nisRawResults = results;
-    	
+    
     	String[] formattedResults = new String[results.size()];
 
     	// add the results to the list
@@ -590,17 +590,17 @@ public class VIRSearchPanel extends JPanel implements ActionListener, MouseListe
     				str.substring(16, 25)
     				+ ", day: " + str.substring(10, 13) + "/" + str.substring(5, 9)
     				);
-    		
+    
     		++i;
     	}
-    	
+    
     	resultList.setListData(formattedResults);
 
     	// Show the first set of boundaries
     	this.resultIntervalCurrentlyShown = new IdPair(0, (Integer)this.numberOfBoundariesComboBox.getSelectedItem());
     	this.showNISBoundaries(resultIntervalCurrentlyShown);
 	}
-	
+
 	public void mouseClicked(MouseEvent e)
 	{
 	}
@@ -637,22 +637,22 @@ public class VIRSearchPanel extends JPanel implements ActionListener, MouseListe
         	}
         }
     }
-	
+
 	private void showNISBoundaries(IdPair idPair)
 	{
 		int startId = idPair.id1;
 		int endId = idPair.id2;
-		
+
 		NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelNames.NIS_SPECTRA);
 		model.removeAllImages();
-		
+
 		for (int i=startId; i<endId; ++i)
 		{
 			if (i < 0)
 				continue;
 			else if(i >= nisRawResults.size())
 				break;
-			
+
 			try
 			{
 				String currentImage = nisRawResults.get(i);

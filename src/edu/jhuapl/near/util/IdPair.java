@@ -9,7 +9,7 @@ public class IdPair
 		this.id1 = id1;
 		this.id2 = id2;
 	}
-	
+
 	/**
 	 * Add a numbers to each id so that the next block of a specified size
 	 * is stored in this class.
@@ -20,7 +20,7 @@ public class IdPair
 		id1 = id2;
 		id2 += size;
 	}
-	
+
 	/**
 	 * Subtract numbers from each id so that the previous block of a specified size
 	 * is stored in this class.
@@ -31,7 +31,7 @@ public class IdPair
 		id2 = id1;
 		id1 -= size;
 	}
-	
+
 	@Override
 	public boolean equals(Object o)
 	{
@@ -39,7 +39,7 @@ public class IdPair
 		int otherId2 = ((IdPair)o).id2;
 		return id1 == otherId1 && id2 == otherId2;
 	}
-	
+
 	@Override
 	public String toString()
 	{

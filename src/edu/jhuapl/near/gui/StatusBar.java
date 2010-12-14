@@ -8,7 +8,7 @@ public class StatusBar extends JPanel
 {
 	private JLabel leftLabel;
 	private JLabel rightLabel;
-	
+
 	public StatusBar()
 	{
 		setLayout(new BorderLayout());
@@ -19,7 +19,7 @@ public class StatusBar extends JPanel
 
     	Font font = new Font("Monospaced", Font.PLAIN, 13);
     	rightLabel.setFont(font);
-    	
+    
     	setBorder(new BevelBorder(BevelBorder.LOWERED));
 	}
 
