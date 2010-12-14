@@ -6,5 +6,5 @@ import vtk.vtkProp;
 
 public abstract class PopupMenu extends JPopupMenu
 {
-	abstract public void showPopup(MouseEvent e, vtkProp pickedProp, int pickedCellId, double[] pickedPosition);
+    abstract public void showPopup(MouseEvent e, vtkProp pickedProp, int pickedCellId, double[] pickedPosition);
 }

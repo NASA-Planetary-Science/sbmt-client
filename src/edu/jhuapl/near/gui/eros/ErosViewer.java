@@ -43,97 +43,97 @@ import java.util.HashMap;
  */
 public class ErosViewer extends Viewer
 {
-	public static final String NAME = "Eros";
+    public static final String NAME = "Eros";
 
-	private JSplitPane splitPane;
-	private Renderer renderer;
-	private JTabbedPane controlPanel;
-	private ModelManager modelManager;
-	private PickManager pickManager;
-	private ErosPopupManager popupManager;
-	private ModelInfoWindowManager infoPanelManager;
+    private JSplitPane splitPane;
+    private Renderer renderer;
+    private JTabbedPane controlPanel;
+    private ModelManager modelManager;
+    private PickManager pickManager;
+    private ErosPopupManager popupManager;
+    private ModelInfoWindowManager infoPanelManager;
 
-	public ErosViewer(StatusBar statusBar)
-	{
-		super(new BorderLayout());
+    public ErosViewer(StatusBar statusBar)
+    {
+        super(new BorderLayout());
 
-		setupModelManager();
+        setupModelManager();
 
-		infoPanelManager = new ModelInfoWindowManager(modelManager)
-		{
-			public ModelInfoWindow createModelInfoWindow(Model model,
-					ModelManager modelManager)
-			{
-				if (model instanceof MSIImage)
-					return new MSIImageInfoPanel((MSIImage)model, modelManager);
-				else if (model instanceof NISSpectrum)
-					return new NISSpectrumInfoPanel((NISSpectrum)model, modelManager);
-				else
-					return null;
-			}
-		};
+        infoPanelManager = new ModelInfoWindowManager(modelManager)
+        {
+            public ModelInfoWindow createModelInfoWindow(Model model,
+                    ModelManager modelManager)
+            {
+                if (model instanceof MSIImage)
+                    return new MSIImageInfoPanel((MSIImage)model, modelManager);
+                else if (model instanceof NISSpectrum)
+                    return new NISSpectrumInfoPanel((NISSpectrum)model, modelManager);
+                else
+                    return null;
+            }
+        };
 
-		renderer = new Renderer(modelManager);
+        renderer = new Renderer(modelManager);
 
-		popupManager = new ErosPopupManager(renderer, modelManager, infoPanelManager);
+        popupManager = new ErosPopupManager(renderer, modelManager, infoPanelManager);
 
-		pickManager = new PickManager(renderer, statusBar, modelManager, popupManager);
+        pickManager = new PickManager(renderer, statusBar, modelManager, popupManager);
 
-		controlPanel = new JTabbedPane();
-		controlPanel.setBorder(BorderFactory.createEmptyBorder());
-		controlPanel.addTab("Eros", new SmallBodyControlPanel(modelManager, "Eros"));
-		controlPanel.addTab("MSI", new MSISearchPanel(modelManager, infoPanelManager, pickManager, renderer));
-		controlPanel.addTab("NIS", new NISSearchPanel(modelManager, infoPanelManager, pickManager));
-		controlPanel.addTab("NLR", new NLRPanel(modelManager, pickManager));
-		controlPanel.addTab("Lineament", new LineamentControlPanel(modelManager));
-		controlPanel.addTab("Structures", new StructuresControlPanel(modelManager, pickManager));
-		controlPanel.addTab("Mapmaker", new TopoPanel(modelManager, pickManager));
+        controlPanel = new JTabbedPane();
+        controlPanel.setBorder(BorderFactory.createEmptyBorder());
+        controlPanel.addTab("Eros", new SmallBodyControlPanel(modelManager, "Eros"));
+        controlPanel.addTab("MSI", new MSISearchPanel(modelManager, infoPanelManager, pickManager, renderer));
+        controlPanel.addTab("NIS", new NISSearchPanel(modelManager, infoPanelManager, pickManager));
+        controlPanel.addTab("NLR", new NLRPanel(modelManager, pickManager));
+        controlPanel.addTab("Lineament", new LineamentControlPanel(modelManager));
+        controlPanel.addTab("Structures", new StructuresControlPanel(modelManager, pickManager));
+        controlPanel.addTab("Mapmaker", new TopoPanel(modelManager, pickManager));
 
 
-		splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
+        splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
                 controlPanel, renderer);
-		splitPane.setOneTouchExpandable(true);
+        splitPane.setOneTouchExpandable(true);
 
         renderer.setMinimumSize(new Dimension(100, 100));
         renderer.setPreferredSize(new Dimension(800, 800));
         controlPanel.setMinimumSize(new Dimension(320, 100));
         controlPanel.setPreferredSize(new Dimension(320, 800));
 
-		this.add(splitPane, BorderLayout.CENTER);
-	}
+        this.add(splitPane, BorderLayout.CENTER);
+    }
 
-	private void setupModelManager()
-	{
-		modelManager = new ModelManager();
+    private void setupModelManager()
+    {
+        modelManager = new ModelManager();
 
-		SmallBodyModel erosModel = ModelFactory.createErosBodyModel();
-    	Graticule graticule = ModelFactory.createErosGraticuleModel(erosModel);
+        SmallBodyModel erosModel = ModelFactory.createErosBodyModel();
+        Graticule graticule = ModelFactory.createErosGraticuleModel(erosModel);
 
         HashMap<String, Model> allModels = new HashMap<String, Model>();
         allModels.put(ModelNames.SMALL_BODY, erosModel);
-    	allModels.put(ModelNames.LINEAMENT, new LineamentModel());
+        allModels.put(ModelNames.LINEAMENT, new LineamentModel());
         allModels.put(ModelNames.MSI_IMAGES, new MSIImageCollection(erosModel));
         allModels.put(ModelNames.MSI_BOUNDARY, new MSIBoundaryCollection(erosModel));
         allModels.put(ModelNames.NIS_SPECTRA, new NISSpectraCollection(erosModel));
         allModels.put(ModelNames.NLR_DATA_BROWSE, new NLRBrowseDataCollection());
         allModels.put(ModelNames.NLR_DATA_SEARCH, new NLRSearchDataCollection(erosModel));
-    	allModels.put(ModelNames.LINE_STRUCTURES, new LineModel(erosModel));
-    	allModels.put(ModelNames.CIRCLE_STRUCTURES, new CircleModel(erosModel));
-    	allModels.put(ModelNames.POINT_STRUCTURES, new PointModel(erosModel));
-    	allModels.put(ModelNames.CIRCLE_SELECTION, new RegularPolygonModel(erosModel,20,false,"Selection",ModelNames.CIRCLE_SELECTION));
-    	allModels.put(ModelNames.GRATICULE, graticule);
+        allModels.put(ModelNames.LINE_STRUCTURES, new LineModel(erosModel));
+        allModels.put(ModelNames.CIRCLE_STRUCTURES, new CircleModel(erosModel));
+        allModels.put(ModelNames.POINT_STRUCTURES, new PointModel(erosModel));
+        allModels.put(ModelNames.CIRCLE_SELECTION, new RegularPolygonModel(erosModel,20,false,"Selection",ModelNames.CIRCLE_SELECTION));
+        allModels.put(ModelNames.GRATICULE, graticule);
         allModels.put(ModelNames.MAPLET_BOUNDARY, new MapletBoundaryCollection(erosModel));
 
-    	modelManager.setModels(allModels);
-	}
+        modelManager.setModels(allModels);
+    }
 
-	public Renderer getRenderer()
-	{
-		return renderer;
-	}
+    public Renderer getRenderer()
+    {
+        return renderer;
+    }
 
-	public String getName()
-	{
-		return NAME;
-	}
+    public String getName()
+    {
+        return NAME;
+    }
 }

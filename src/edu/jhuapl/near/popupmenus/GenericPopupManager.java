@@ -24,28 +24,28 @@ public class GenericPopupManager extends PopupManager
     private PointsPopupMenu pointsPopupMenu;
 
     private HashMap<Model, PopupMenu> modelToPopupMap =
-    	new HashMap<Model, PopupMenu>();
+        new HashMap<Model, PopupMenu>();
 
-	public GenericPopupManager(
-			ModelManager modelManager)
-	{
-		super(modelManager);
+    public GenericPopupManager(
+            ModelManager modelManager)
+    {
+        super(modelManager);
 
-		linesPopupMenu =
-			new LinesPopupMenu(modelManager);
-		modelToPopupMap.put(modelManager.getModel(ModelNames.LINE_STRUCTURES), linesPopupMenu);
+        linesPopupMenu =
+            new LinesPopupMenu(modelManager);
+        modelToPopupMap.put(modelManager.getModel(ModelNames.LINE_STRUCTURES), linesPopupMenu);
 
-		circlesPopupMenu =
-			new CirclesPopupMenu(modelManager);
-		modelToPopupMap.put(modelManager.getModel(ModelNames.CIRCLE_STRUCTURES), circlesPopupMenu);
+        circlesPopupMenu =
+            new CirclesPopupMenu(modelManager);
+        modelToPopupMap.put(modelManager.getModel(ModelNames.CIRCLE_STRUCTURES), circlesPopupMenu);
 
-		pointsPopupMenu =
-			new PointsPopupMenu(modelManager);
-		modelToPopupMap.put(modelManager.getModel(ModelNames.POINT_STRUCTURES), pointsPopupMenu);
-	}
+        pointsPopupMenu =
+            new PointsPopupMenu(modelManager);
+        modelToPopupMap.put(modelManager.getModel(ModelNames.POINT_STRUCTURES), pointsPopupMenu);
+    }
 
-	protected HashMap<Model, PopupMenu> getModelToPopupMap()
-	{
-		return modelToPopupMap;
-	}
+    protected HashMap<Model, PopupMenu> getModelToPopupMap()
+    {
+        return modelToPopupMap;
+    }
 }

@@ -9,11 +9,11 @@ package edu.jhuapl.near.model;
  */
 public class PointModel extends RegularPolygonModel
 {
-	public PointModel(SmallBodyModel smallBodyModel)
-	{
-		super(smallBodyModel, 4, false, "point", ModelNames.POINT_STRUCTURES);
-		setInteriorOpacity(1.0);
-		int[] color = {255, 0, 255};
-		setDefaultColor(color);
-	}
+    public PointModel(SmallBodyModel smallBodyModel)
+    {
+        super(smallBodyModel, 4, false, "point", ModelNames.POINT_STRUCTURES);
+        setInteriorOpacity(1.0);
+        int[] color = {255, 0, 255};
+        setDefaultColor(color);
+    }
 }

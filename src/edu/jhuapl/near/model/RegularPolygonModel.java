@@ -25,15 +25,15 @@ import vtk.*;
 
 public class RegularPolygonModel extends StructureModel implements PropertyChangeListener
 {
-	private ArrayList<RegularPolygon> polygons = new ArrayList<RegularPolygon>();
+    private ArrayList<RegularPolygon> polygons = new ArrayList<RegularPolygon>();
     private ArrayList<vtkProp> actors = new ArrayList<vtkProp>();
 
-	private vtkPolyData boundaryPolyData;
+    private vtkPolyData boundaryPolyData;
     private vtkAppendPolyData boundaryAppendFilter;
     private vtkPolyDataMapper boundaryMapper;
     private vtkActor boundaryActor;
 
-	private vtkPolyData interiorPolyData;
+    private vtkPolyData interiorPolyData;
     private vtkAppendPolyData interiorAppendFilter;
     private vtkPolyDataMapper interiorMapper;
     private vtkActor interiorActor;
@@ -54,310 +54,310 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
     private boolean saveRadiusToOutput = true;
     private int highlightedStructure = -1;
     private int[] highlightColor = {0, 0, 255};
-	private int maxPolygonId = 0;
+    private int maxPolygonId = 0;
 
-	public class RegularPolygon extends StructureModel.Structure
-	{
-		public String name = "default";
-		public int id;
+    public class RegularPolygon extends StructureModel.Structure
+    {
+        public String name = "default";
+        public int id;
 
-		public double[] center;
-		public double radius;
+        public double[] center;
+        public double radius;
 
-		public vtkPolyData boundaryPolyData;
-		public vtkPolyData interiorPolyData;
-		public int numberOfSides;
-		public String type;
-		public int[] color;
+        public vtkPolyData boundaryPolyData;
+        public vtkPolyData interiorPolyData;
+        public int numberOfSides;
+        public String type;
+        public int[] color;
 
-		public RegularPolygon(int numberOfSides, String type, int[] color)
-		{
-			id = ++maxPolygonId;
-			boundaryPolyData = new vtkPolyData();
-			interiorPolyData = new vtkPolyData();
-			this.numberOfSides = numberOfSides;
-			this.type = type;
-			this.color = color;
-		}
+        public RegularPolygon(int numberOfSides, String type, int[] color)
+        {
+            id = ++maxPolygonId;
+            boundaryPolyData = new vtkPolyData();
+            interiorPolyData = new vtkPolyData();
+            this.numberOfSides = numberOfSides;
+            this.type = type;
+            this.color = color;
+        }
 
-		public int getId()
-		{
-			return id;
-		}
+        public int getId()
+        {
+            return id;
+        }
 
-		public String getName()
-		{
-			return name;
-		}
+        public String getName()
+        {
+            return name;
+        }
 
-		public void setName(String name)
-		{
-			this.name = name;
-		}
+        public void setName(String name)
+        {
+            this.name = name;
+        }
 
-		public String getType()
-		{
-			return type;
-		}
+        public String getType()
+        {
+            return type;
+        }
 
-		public String getInfo()
-		{
-			return "Diameter = " + 2.0*radius + " km";
-		}
+        public String getInfo()
+        {
+            return "Diameter = " + 2.0*radius + " km";
+        }
 
-		public int[] getColor()
-		{
-			return color;
-		}
+        public int[] getColor()
+        {
+            return color;
+        }
 
-		public void setColor(int[] color)
-		{
-			this.color = color;
-		}
+        public void setColor(int[] color)
+        {
+            this.color = color;
+        }
 
-		public vtkPolyData getBoundaryPolyData()
-		{
-			return boundaryPolyData;
-		}
+        public vtkPolyData getBoundaryPolyData()
+        {
+            return boundaryPolyData;
+        }
 
-		public vtkPolyData getInteriorPolyData()
-		{
-			return interiorPolyData;
-		}
+        public vtkPolyData getInteriorPolyData()
+        {
+            return interiorPolyData;
+        }
 
-		public void updatePolygon(SmallBodyModel sbModel, double[] center, double radius)
-	    {
-	    	this.center = center;
-	    	this.radius = radius;
+        public void updatePolygon(SmallBodyModel sbModel, double[] center, double radius)
+        {
+            this.center = center;
+            this.radius = radius;
 
-	    	sbModel.drawPolygon(center, radius, numberOfSides, interiorPolyData, boundaryPolyData);
-	    }
+            sbModel.drawPolygon(center, radius, numberOfSides, interiorPolyData, boundaryPolyData);
+        }
 
-	    public String getClickStatusBarText()
-	    {
-	    	return type + ", Id = " + id + ", Diameter = " + 2.0*radius + " km";
-	    }
+        public String getClickStatusBarText()
+        {
+            return type + ", Id = " + id + ", Diameter = " + 2.0*radius + " km";
+        }
 
-	}
+    }
 
-	public RegularPolygonModel(
-			SmallBodyModel smallBodyModel,
-			int numberOfSides,
-			boolean saveRadiusToOutput,
-			String type,
-			String name)
-	{
-		super(name);
+    public RegularPolygonModel(
+            SmallBodyModel smallBodyModel,
+            int numberOfSides,
+            boolean saveRadiusToOutput,
+            String type,
+            String name)
+    {
+        super(name);
 
-		this.smallBodyModel = smallBodyModel;
+        this.smallBodyModel = smallBodyModel;
 
-		defaultRadius = smallBodyModel.getBoundingBoxDiagonalLength() / 155.0;
-		maxRadius = smallBodyModel.getBoundingBoxDiagonalLength() / 8.0;
+        defaultRadius = smallBodyModel.getBoundingBoxDiagonalLength() / 155.0;
+        maxRadius = smallBodyModel.getBoundingBoxDiagonalLength() / 8.0;
 
-		this.smallBodyModel.addPropertyChangeListener(this);
+        this.smallBodyModel.addPropertyChangeListener(this);
 
-		emptyPolyData = new vtkPolyData();
+        emptyPolyData = new vtkPolyData();
 
-		this.numberOfSides = numberOfSides;
-		this.saveRadiusToOutput = saveRadiusToOutput;
-		this.type = type;
+        this.numberOfSides = numberOfSides;
+        this.saveRadiusToOutput = saveRadiusToOutput;
+        this.type = type;
 
-		boundaryColors = new vtkUnsignedCharArray();
-		boundaryColors.SetNumberOfComponents(3);
+        boundaryColors = new vtkUnsignedCharArray();
+        boundaryColors.SetNumberOfComponents(3);
 
-		interiorColors = new vtkUnsignedCharArray();
-		interiorColors.SetNumberOfComponents(3);
+        interiorColors = new vtkUnsignedCharArray();
+        interiorColors.SetNumberOfComponents(3);
 
-		boundaryPolyData = new vtkPolyData();
-		boundaryAppendFilter = new vtkAppendPolyData();
-		boundaryAppendFilter.UserManagedInputsOn();
-		boundaryMapper = new vtkPolyDataMapper();
-		boundaryActor = new vtkActor();
-		vtkProperty boundaryProperty = boundaryActor.GetProperty();
-		boundaryProperty.LightingOff();
-		boundaryProperty.SetLineWidth(2.0);
+        boundaryPolyData = new vtkPolyData();
+        boundaryAppendFilter = new vtkAppendPolyData();
+        boundaryAppendFilter.UserManagedInputsOn();
+        boundaryMapper = new vtkPolyDataMapper();
+        boundaryActor = new vtkActor();
+        vtkProperty boundaryProperty = boundaryActor.GetProperty();
+        boundaryProperty.LightingOff();
+        boundaryProperty.SetLineWidth(2.0);
 
-		actors.add(boundaryActor);
+        actors.add(boundaryActor);
 
-		interiorPolyData = new vtkPolyData();
-		interiorAppendFilter = new vtkAppendPolyData();
-		interiorAppendFilter.UserManagedInputsOn();
-		interiorMapper = new vtkPolyDataMapper();
-		interiorActor = new vtkActor();
-		vtkProperty interiorProperty = interiorActor.GetProperty();
-		interiorProperty.LightingOff();
-		interiorProperty.SetOpacity(interiorOpacity);
-		//interiorProperty.SetLineWidth(2.0);
+        interiorPolyData = new vtkPolyData();
+        interiorAppendFilter = new vtkAppendPolyData();
+        interiorAppendFilter.UserManagedInputsOn();
+        interiorMapper = new vtkPolyDataMapper();
+        interiorActor = new vtkActor();
+        vtkProperty interiorProperty = interiorActor.GetProperty();
+        interiorProperty.LightingOff();
+        interiorProperty.SetOpacity(interiorOpacity);
+        //interiorProperty.SetLineWidth(2.0);
 
-		actors.add(interiorActor);
-	}
+        actors.add(interiorActor);
+    }
 
-	public void setDefaultColor(int[] color)
-	{
-		this.defaultColor = color;
-	}
+    public void setDefaultColor(int[] color)
+    {
+        this.defaultColor = color;
+    }
 
-	public int[] getDefaultColor()
-	{
-		return defaultColor;
-	}
+    public int[] getDefaultColor()
+    {
+        return defaultColor;
+    }
 
-	public void setPolygonColor(int i, int[] color)
-	{
-		this.polygons.get(i).color  = color;
-	}
+    public void setPolygonColor(int i, int[] color)
+    {
+        this.polygons.get(i).color  = color;
+    }
 
-	public int[] getPolygonColor(int i)
-	{
-		return this.polygons.get(i).color;
-	}
+    public int[] getPolygonColor(int i)
+    {
+        return this.polygons.get(i).color;
+    }
 
-	/*
-	public int[] getDefaultBoundaryColor()
-	{
-		return defaultBoundaryColor;
-	}
-
-
-	public void setDefaultBoundaryColor(int[] color)
-	{
-		this.defaultBoundaryColor = color;
-	}
-
-	public int[] getDefaultInteriorColor()
-	{
-		return defaultInteriorColor;
-	}
-
-	public void setDefaultInteriorColor(int[] color)
-	{
-		this.defaultInteriorColor = color;
-	}
-	*/
-
-	public double getInteriorOpacity()
-	{
-		return interiorOpacity;
-	}
-
-	public void setInteriorOpacity(double opacity)
-	{
-		this.interiorOpacity = opacity;
-		interiorActor.GetProperty().SetOpacity(opacity);
-		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-	}
+    /*
+    public int[] getDefaultBoundaryColor()
+    {
+        return defaultBoundaryColor;
+    }
 
 
-	private void updatePolyData()
-	{
-		if (polygons.size() > 0)
-		{
-			boundaryAppendFilter.SetNumberOfInputs(polygons.size());
-			interiorAppendFilter.SetNumberOfInputs(polygons.size());
+    public void setDefaultBoundaryColor(int[] color)
+    {
+        this.defaultBoundaryColor = color;
+    }
 
-			for (int i=0; i<polygons.size(); ++i)
-			{
-				vtkPolyData poly = polygons.get(i).boundaryPolyData;
-				if (poly != null)
-					boundaryAppendFilter.SetInputByNumber(i, poly);
-				poly = polygons.get(i).interiorPolyData;
-				if (poly != null)
-					interiorAppendFilter.SetInputByNumber(i, poly);
-			}
+    public int[] getDefaultInteriorColor()
+    {
+        return defaultInteriorColor;
+    }
 
-			boundaryAppendFilter.Update();
-			interiorAppendFilter.Update();
+    public void setDefaultInteriorColor(int[] color)
+    {
+        this.defaultInteriorColor = color;
+    }
+    */
 
-			vtkPolyData boundaryAppendFilterOutput = boundaryAppendFilter.GetOutput();
-			vtkPolyData interiorAppendFilterOutput = interiorAppendFilter.GetOutput();
-			boundaryPolyData.DeepCopy(boundaryAppendFilterOutput);
-			interiorPolyData.DeepCopy(interiorAppendFilterOutput);
+    public double getInteriorOpacity()
+    {
+        return interiorOpacity;
+    }
 
-			smallBodyModel.shiftPolyLineInNormalDirection(boundaryPolyData, 3.0);
-			smallBodyModel.shiftPolyLineInNormalDirection(interiorPolyData, 2.0);
-
-			boundaryColors.SetNumberOfTuples(boundaryPolyData.GetNumberOfCells());
-			interiorColors.SetNumberOfTuples(interiorPolyData.GetNumberOfCells());
-			for (int i=0; i<polygons.size(); ++i)
-			{
-				int[] color = polygons.get(i).color;
-
-				if (i == this.highlightedStructure)
-					color = highlightColor;
-
-				IdPair range = this.getCellIdRangeOfPolygon(i, false);
-				for (int j=range.id1; j<range.id2; ++j)
-					boundaryColors.SetTuple3(j, color[0], color[1], color[2]);
-
-				range = this.getCellIdRangeOfPolygon(i, true);
-				for (int j=range.id1; j<range.id2; ++j)
-					interiorColors.SetTuple3(j, color[0], color[1], color[2]);
-			}
-			vtkCellData boundaryCellData = boundaryPolyData.GetCellData();
-			vtkCellData interiorCellData = interiorPolyData.GetCellData();
-			boundaryCellData.SetScalars(boundaryColors);
-			interiorCellData.SetScalars(interiorColors);
-		}
-		else
-		{
-			boundaryPolyData.DeepCopy(emptyPolyData);
-			interiorPolyData.DeepCopy(emptyPolyData);
-		}
+    public void setInteriorOpacity(double opacity)
+    {
+        this.interiorOpacity = opacity;
+        interiorActor.GetProperty().SetOpacity(opacity);
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+    }
 
 
-		boundaryMapper.SetInput(boundaryPolyData);
-		boundaryMapper.Update();
-		interiorMapper.SetInput(interiorPolyData);
-		interiorMapper.Update();
+    private void updatePolyData()
+    {
+        if (polygons.size() > 0)
+        {
+            boundaryAppendFilter.SetNumberOfInputs(polygons.size());
+            interiorAppendFilter.SetNumberOfInputs(polygons.size());
 
-		boundaryActor.SetMapper(boundaryMapper);
+            for (int i=0; i<polygons.size(); ++i)
+            {
+                vtkPolyData poly = polygons.get(i).boundaryPolyData;
+                if (poly != null)
+                    boundaryAppendFilter.SetInputByNumber(i, poly);
+                poly = polygons.get(i).interiorPolyData;
+                if (poly != null)
+                    interiorAppendFilter.SetInputByNumber(i, poly);
+            }
+
+            boundaryAppendFilter.Update();
+            interiorAppendFilter.Update();
+
+            vtkPolyData boundaryAppendFilterOutput = boundaryAppendFilter.GetOutput();
+            vtkPolyData interiorAppendFilterOutput = interiorAppendFilter.GetOutput();
+            boundaryPolyData.DeepCopy(boundaryAppendFilterOutput);
+            interiorPolyData.DeepCopy(interiorAppendFilterOutput);
+
+            smallBodyModel.shiftPolyLineInNormalDirection(boundaryPolyData, 3.0);
+            smallBodyModel.shiftPolyLineInNormalDirection(interiorPolyData, 2.0);
+
+            boundaryColors.SetNumberOfTuples(boundaryPolyData.GetNumberOfCells());
+            interiorColors.SetNumberOfTuples(interiorPolyData.GetNumberOfCells());
+            for (int i=0; i<polygons.size(); ++i)
+            {
+                int[] color = polygons.get(i).color;
+
+                if (i == this.highlightedStructure)
+                    color = highlightColor;
+
+                IdPair range = this.getCellIdRangeOfPolygon(i, false);
+                for (int j=range.id1; j<range.id2; ++j)
+                    boundaryColors.SetTuple3(j, color[0], color[1], color[2]);
+
+                range = this.getCellIdRangeOfPolygon(i, true);
+                for (int j=range.id1; j<range.id2; ++j)
+                    interiorColors.SetTuple3(j, color[0], color[1], color[2]);
+            }
+            vtkCellData boundaryCellData = boundaryPolyData.GetCellData();
+            vtkCellData interiorCellData = interiorPolyData.GetCellData();
+            boundaryCellData.SetScalars(boundaryColors);
+            interiorCellData.SetScalars(interiorColors);
+        }
+        else
+        {
+            boundaryPolyData.DeepCopy(emptyPolyData);
+            interiorPolyData.DeepCopy(emptyPolyData);
+        }
+
+
+        boundaryMapper.SetInput(boundaryPolyData);
+        boundaryMapper.Update();
+        interiorMapper.SetInput(interiorPolyData);
+        interiorMapper.Update();
+
+        boundaryActor.SetMapper(boundaryMapper);
         boundaryActor.Modified();
-		interiorActor.SetMapper(interiorMapper);
+        interiorActor.SetMapper(interiorMapper);
         interiorActor.Modified();
-	}
+    }
 
-	public ArrayList<vtkProp> getProps()
-	{
-		return actors;
-	}
+    public ArrayList<vtkProp> getProps()
+    {
+        return actors;
+    }
 
     public String getClickStatusBarText(vtkProp prop, int cellId, double[] pickPosition)
     {
-    	if (prop == boundaryActor || prop == interiorActor)
-    	{
-        	int polygonId = this.getPolygonIdFromCellId(cellId, prop == interiorActor);
-        	RegularPolygon pol = polygons.get(polygonId);
-        	return pol.getClickStatusBarText();
-    	}
-    	else
-    	{
-    		return "";
-    	}
+        if (prop == boundaryActor || prop == interiorActor)
+        {
+            int polygonId = this.getPolygonIdFromCellId(cellId, prop == interiorActor);
+            RegularPolygon pol = polygons.get(polygonId);
+            return pol.getClickStatusBarText();
+        }
+        else
+        {
+            return "";
+        }
     }
 
     public int getNumberOfStructures()
     {
-    	return polygons.size();
+        return polygons.size();
     }
 
     public Structure getStructure(int polygonId)
     {
-    	return polygons.get(polygonId);
+        return polygons.get(polygonId);
     }
 
     public vtkActor getBoundaryActor()
     {
-    	return boundaryActor;
+        return boundaryActor;
     }
 
     public vtkActor getInteriorActor()
     {
-    	return interiorActor;
+        return interiorActor;
     }
 
     public void addNewStructure()
     {
-    	// do nothing
+        // do nothing
     }
 
     public void addNewStructure(double[] pos)
@@ -369,13 +369,13 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
         highlightedStructure = polygons.size()-1;
         updatePolyData();
 
-		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-		this.pcs.firePropertyChange(Properties.STRUCTURE_ADDED, null, null);
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+        this.pcs.firePropertyChange(Properties.STRUCTURE_ADDED, null, null);
     }
 
     public void removeStructure(int polygonId)
     {
-    	polygons.remove(polygonId);
+        polygons.remove(polygonId);
 
         updatePolyData();
 
@@ -384,259 +384,259 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
 
     public void movePolygon(int polygonId, double[] newCenter)
     {
-    	RegularPolygon pol = polygons.get(polygonId);
+        RegularPolygon pol = polygons.get(polygonId);
         pol.updatePolygon(smallBodyModel, newCenter, pol.radius);
         updatePolyData();
-		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
     public void changeRadiusOfPolygon(int polygonId, double[] newPointOnPerimeter)
     {
-    	RegularPolygon pol = polygons.get(polygonId);
-    	double newRadius = Math.sqrt(
-    			(pol.center[0]-newPointOnPerimeter[0])*(pol.center[0]-newPointOnPerimeter[0]) +
-    			(pol.center[1]-newPointOnPerimeter[1])*(pol.center[1]-newPointOnPerimeter[1]) +
-    			(pol.center[2]-newPointOnPerimeter[2])*(pol.center[2]-newPointOnPerimeter[2]));
-    	if (newRadius > maxRadius)
-    		newRadius = maxRadius;
+        RegularPolygon pol = polygons.get(polygonId);
+        double newRadius = Math.sqrt(
+                (pol.center[0]-newPointOnPerimeter[0])*(pol.center[0]-newPointOnPerimeter[0]) +
+                (pol.center[1]-newPointOnPerimeter[1])*(pol.center[1]-newPointOnPerimeter[1]) +
+                (pol.center[2]-newPointOnPerimeter[2])*(pol.center[2]-newPointOnPerimeter[2]));
+        if (newRadius > maxRadius)
+            newRadius = maxRadius;
 
         pol.updatePolygon(smallBodyModel, pol.center, newRadius);
         updatePolyData();
-		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
-	public void changeRadiusOfAllPolygons(double newRadius)
-	{
-		for (RegularPolygon pol : this.polygons)
-		{
-	        pol.updatePolygon(smallBodyModel, pol.center, newRadius);
-		}
+    public void changeRadiusOfAllPolygons(double newRadius)
+    {
+        for (RegularPolygon pol : this.polygons)
+        {
+            pol.updatePolygon(smallBodyModel, pol.center, newRadius);
+        }
 
-		updatePolyData();
-		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-	}
+        updatePolyData();
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+    }
 
-	public void selectStructure(int idx)
-	{
-		// Do nothing. RegularPolygonModel does not support selection.
-	}
+    public void selectStructure(int idx)
+    {
+        // Do nothing. RegularPolygonModel does not support selection.
+    }
 
-	/**
-	 * A picker picking the actor of this model will return a
-	 * cellId. But since there are many cells per RegularPolygon, we need to be
-	 * able to figure out which RegularPolygon was picked
-	 */
-	private int getPolygonIdFromCellId(int cellId, boolean interior)
-	{
-		int numberCellsSoFar = 0;
-		for (int i=0; i<polygons.size(); ++i)
-		{
-			if (interior)
-				numberCellsSoFar += polygons.get(i).interiorPolyData.GetNumberOfCells();
-			else
-				numberCellsSoFar += polygons.get(i).boundaryPolyData.GetNumberOfCells();
-			if (cellId < numberCellsSoFar)
-				return i;
-		}
-		return -1;
-	}
+    /**
+     * A picker picking the actor of this model will return a
+     * cellId. But since there are many cells per RegularPolygon, we need to be
+     * able to figure out which RegularPolygon was picked
+     */
+    private int getPolygonIdFromCellId(int cellId, boolean interior)
+    {
+        int numberCellsSoFar = 0;
+        for (int i=0; i<polygons.size(); ++i)
+        {
+            if (interior)
+                numberCellsSoFar += polygons.get(i).interiorPolyData.GetNumberOfCells();
+            else
+                numberCellsSoFar += polygons.get(i).boundaryPolyData.GetNumberOfCells();
+            if (cellId < numberCellsSoFar)
+                return i;
+        }
+        return -1;
+    }
 
-	public int getPolygonIdFromBoundaryCellId(int cellId)
-	{
-		return this.getPolygonIdFromCellId(cellId, false);
-	}
+    public int getPolygonIdFromBoundaryCellId(int cellId)
+    {
+        return this.getPolygonIdFromCellId(cellId, false);
+    }
 
-	public int getPolygonIdFromInteriorCellId(int cellId)
-	{
-		return this.getPolygonIdFromCellId(cellId, true);
-	}
+    public int getPolygonIdFromInteriorCellId(int cellId)
+    {
+        return this.getPolygonIdFromCellId(cellId, true);
+    }
 
-	private IdPair getCellIdRangeOfPolygon(int polygonId, boolean interior)
-	{
-		int startCell = 0;
-		for (int i=0; i<polygonId; ++i)
-		{
-			if (interior)
-				startCell += polygons.get(i).interiorPolyData.GetNumberOfCells();
-			else
-				startCell += polygons.get(i).boundaryPolyData.GetNumberOfCells();
-		}
+    private IdPair getCellIdRangeOfPolygon(int polygonId, boolean interior)
+    {
+        int startCell = 0;
+        for (int i=0; i<polygonId; ++i)
+        {
+            if (interior)
+                startCell += polygons.get(i).interiorPolyData.GetNumberOfCells();
+            else
+                startCell += polygons.get(i).boundaryPolyData.GetNumberOfCells();
+        }
 
-		int endCell = startCell;
-		if (interior)
-			endCell += polygons.get(polygonId).interiorPolyData.GetNumberOfCells();
-		else
-			endCell += polygons.get(polygonId).boundaryPolyData.GetNumberOfCells();
+        int endCell = startCell;
+        if (interior)
+            endCell += polygons.get(polygonId).interiorPolyData.GetNumberOfCells();
+        else
+            endCell += polygons.get(polygonId).boundaryPolyData.GetNumberOfCells();
 
-		return new IdPair(startCell, endCell);
-	}
+        return new IdPair(startCell, endCell);
+    }
 
-	public void loadModel(File file) throws IOException
-	{
-		ArrayList<String> lines = FileUtil.getFileLinesAsStringList(file.getAbsolutePath());
+    public void loadModel(File file) throws IOException
+    {
+        ArrayList<String> lines = FileUtil.getFileLinesAsStringList(file.getAbsolutePath());
 
-		ArrayList<RegularPolygon> newPolygons = new ArrayList<RegularPolygon>();
-		for (int i=0; i<lines.size(); ++i)
-		{
-			RegularPolygon pol = this.new RegularPolygon(numberOfSides, type, defaultColor);
-			pol.center = new double[3];
+        ArrayList<RegularPolygon> newPolygons = new ArrayList<RegularPolygon>();
+        for (int i=0; i<lines.size(); ++i)
+        {
+            RegularPolygon pol = this.new RegularPolygon(numberOfSides, type, defaultColor);
+            pol.center = new double[3];
 
-			String[] words = lines.get(i).trim().split("\\s+");
+            String[] words = lines.get(i).trim().split("\\s+");
 
-			pol.id = Integer.parseInt(words[0]);
-			pol.name = words[1];
-			pol.center[0] = Double.parseDouble(words[2]);
-			pol.center[1] = Double.parseDouble(words[3]);
-			pol.center[2] = Double.parseDouble(words[4]);
+            pol.id = Integer.parseInt(words[0]);
+            pol.name = words[1];
+            pol.center[0] = Double.parseDouble(words[2]);
+            pol.center[1] = Double.parseDouble(words[3]);
+            pol.center[2] = Double.parseDouble(words[4]);
 
-			// Note the next 3 words in the line (the point in spherical coordinates) are not used
+            // Note the next 3 words in the line (the point in spherical coordinates) are not used
 
-			if (saveRadiusToOutput)
-				pol.radius = Double.parseDouble(words[8]) / 2.0; // read in diameter not radius
-			else
-				pol.radius = defaultRadius;
+            if (saveRadiusToOutput)
+                pol.radius = Double.parseDouble(words[8]) / 2.0; // read in diameter not radius
+            else
+                pol.radius = defaultRadius;
 
-	    	if (pol.id > maxPolygonId)
-	    		maxPolygonId = pol.id;
+            if (pol.id > maxPolygonId)
+                maxPolygonId = pol.id;
 
-	    	// The remainder of the line (if there is one) is not used
+            // The remainder of the line (if there is one) is not used
 
-	    	pol.updatePolygon(smallBodyModel, pol.center, pol.radius);
-	        newPolygons.add(pol);
-		}
+            pol.updatePolygon(smallBodyModel, pol.center, pol.radius);
+            newPolygons.add(pol);
+        }
 
-		// Only if we reach here and no exception is thrown do we modify this class
-		polygons = newPolygons;
+        // Only if we reach here and no exception is thrown do we modify this class
+        polygons = newPolygons;
 
-		updatePolyData();
+        updatePolyData();
 
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-	}
+    }
 
-	public void saveModel(File file) throws IOException
-	{
-		FileWriter fstream = new FileWriter(file);
+    public void saveModel(File file) throws IOException
+    {
+        FileWriter fstream = new FileWriter(file);
         BufferedWriter out = new BufferedWriter(fstream);
 
-		for (RegularPolygon pol : polygons)
-		{
-			String name = pol.name;
-			if (name.length() == 0)
-				name = "default";
+        for (RegularPolygon pol : polygons)
+        {
+            String name = pol.name;
+            if (name.length() == 0)
+                name = "default";
 
-			// Since tab is used as the delimiter, replace any tabs in the name with spaces.
-			name = name.replace('\t', ' ');
+            // Since tab is used as the delimiter, replace any tabs in the name with spaces.
+            name = name.replace('\t', ' ');
 
-			LatLon llr = MathUtil.reclat(pol.center);
-			double lat = llr.lat*180.0/Math.PI;
-			double lon = llr.lon*180.0/Math.PI;
-			if (lon < 0.0)
-				lon += 360.0;
+            LatLon llr = MathUtil.reclat(pol.center);
+            double lat = llr.lat*180.0/Math.PI;
+            double lon = llr.lon*180.0/Math.PI;
+            if (lon < 0.0)
+                lon += 360.0;
 
-			String str =
-				pol.id + "\t" +
-				name + "\t" +
-				pol.center[0] + "\t" +
-				pol.center[1] + "\t" +
-				pol.center[2] + "\t" +
-				lat + "\t" +
-				lon + "\t" +
-				llr.rad;
+            String str =
+                pol.id + "\t" +
+                name + "\t" +
+                pol.center[0] + "\t" +
+                pol.center[1] + "\t" +
+                pol.center[2] + "\t" +
+                lat + "\t" +
+                lon + "\t" +
+                llr.rad;
 
-			if (saveRadiusToOutput)
-				str += "\t" + 2.0*pol.radius; // save out as diameter, not radius
-			else
-			{
-				str += "\t";
-				int numberOfColors = smallBodyModel.getNumberOfColors();
-				for (int i=0; i<numberOfColors; ++i)
-				{
-					str += smallBodyModel.getColoringValue(i, pol.center);
-					if (i < numberOfColors-1)
-						str += "\t";
-				}
-			}
-			str += "\n";
+            if (saveRadiusToOutput)
+                str += "\t" + 2.0*pol.radius; // save out as diameter, not radius
+            else
+            {
+                str += "\t";
+                int numberOfColors = smallBodyModel.getNumberOfColors();
+                for (int i=0; i<numberOfColors; ++i)
+                {
+                    str += smallBodyModel.getColoringValue(i, pol.center);
+                    if (i < numberOfColors-1)
+                        str += "\t";
+                }
+            }
+            str += "\n";
 
-			out.write(str);
-		}
+            out.write(str);
+        }
 
-		out.close();
-	}
+        out.close();
+    }
 
-	public int getSelectedStructureIndex()
-	{
-		return -1;
-	}
+    public int getSelectedStructureIndex()
+    {
+        return -1;
+    }
 
-	public boolean supportsSelection()
-	{
-		return false;
-	}
+    public boolean supportsSelection()
+    {
+        return false;
+    }
 
-	public double getDefaultRadius()
-	{
-		return defaultRadius;
-	}
+    public double getDefaultRadius()
+    {
+        return defaultRadius;
+    }
 
-	public void setDefaultRadius(double radius)
-	{
-		this.defaultRadius = radius;
-	}
+    public void setDefaultRadius(double radius)
+    {
+        this.defaultRadius = radius;
+    }
 
-	public void highlightStructure(int idx)
-	{
-		if (highlightedStructure != idx)
-		{
-			this.highlightedStructure = idx;
-			updatePolyData();
-			this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-		}
-	}
+    public void highlightStructure(int idx)
+    {
+        if (highlightedStructure != idx)
+        {
+            this.highlightedStructure = idx;
+            updatePolyData();
+            this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+        }
+    }
 
-	public int getHighlightedStructure()
-	{
-		return highlightedStructure;
-	}
+    public int getHighlightedStructure()
+    {
+        return highlightedStructure;
+    }
 
-	public int getStructureIndexFromCellId(int cellId, vtkProp prop)
-	{
-		if (prop == boundaryActor)
-		{
-			return getPolygonIdFromBoundaryCellId(cellId);
-		}
-		else if (prop == interiorActor)
-		{
-			return getPolygonIdFromInteriorCellId(cellId);
-		}
+    public int getStructureIndexFromCellId(int cellId, vtkProp prop)
+    {
+        if (prop == boundaryActor)
+        {
+            return getPolygonIdFromBoundaryCellId(cellId);
+        }
+        else if (prop == interiorActor)
+        {
+            return getPolygonIdFromInteriorCellId(cellId);
+        }
 
-		return -1;
-	}
+        return -1;
+    }
 
-	public void redrawAllStructures()
-	{
-		for (RegularPolygon pol : this.polygons)
-		{
-	        pol.updatePolygon(smallBodyModel, pol.center, pol.radius);
-		}
+    public void redrawAllStructures()
+    {
+        for (RegularPolygon pol : this.polygons)
+        {
+            pol.updatePolygon(smallBodyModel, pol.center, pol.radius);
+        }
 
-		updatePolyData();
+        updatePolyData();
 
-		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-	}
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+    }
 
-	public void propertyChange(PropertyChangeEvent evt)
-	{
-		if (Properties.MODEL_RESOLUTION_CHANGED.equals(evt.getPropertyName()))
-		{
-			redrawAllStructures();
-		}
-	}
+    public void propertyChange(PropertyChangeEvent evt)
+    {
+        if (Properties.MODEL_RESOLUTION_CHANGED.equals(evt.getPropertyName()))
+        {
+            redrawAllStructures();
+        }
+    }
 
-	public void setStructureColor(int idx, int[] color)
-	{
-		polygons.get(idx).setColor(color);
-		updatePolyData();
-		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-	}
+    public void setStructureColor(int idx, int[] color)
+    {
+        polygons.get(idx).setColor(color);
+        updatePolyData();
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+    }
 }

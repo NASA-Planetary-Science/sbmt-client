@@ -32,81 +32,81 @@ import java.util.HashMap;
  */
 public class ItokawaViewer extends Viewer
 {
-	public static final String NAME = "Itokawa";
+    public static final String NAME = "Itokawa";
 
-	private JSplitPane splitPane;
-	private Renderer renderer;
-	private JTabbedPane controlPanel;
-	private ModelManager modelManager;
-	private PickManager pickManager;
-	private GenericPopupManager popupManager;
-	private StatusBar statusBar;
-	private boolean initialized = false;
+    private JSplitPane splitPane;
+    private Renderer renderer;
+    private JTabbedPane controlPanel;
+    private ModelManager modelManager;
+    private PickManager pickManager;
+    private GenericPopupManager popupManager;
+    private StatusBar statusBar;
+    private boolean initialized = false;
 
-	public ItokawaViewer(StatusBar statusBar)
-	{
-		super(new BorderLayout());
-		this.statusBar = statusBar;
-	}
+    public ItokawaViewer(StatusBar statusBar)
+    {
+        super(new BorderLayout());
+        this.statusBar = statusBar;
+    }
 
-	public void initialize()
-	{
-		if (initialized)
-			return;
+    public void initialize()
+    {
+        if (initialized)
+            return;
 
-		setupModelManager();
+        setupModelManager();
 
-		renderer = new Renderer(modelManager);
+        renderer = new Renderer(modelManager);
 
-		popupManager = new GenericPopupManager(modelManager);
+        popupManager = new GenericPopupManager(modelManager);
 
-		pickManager = new PickManager(renderer, statusBar, modelManager, popupManager);
+        pickManager = new PickManager(renderer, statusBar, modelManager, popupManager);
 
-		controlPanel = new JTabbedPane();
-		controlPanel.setBorder(BorderFactory.createEmptyBorder());
-		controlPanel.addTab("Itokawa", new SmallBodyControlPanel(modelManager, "Itokawa"));
-		controlPanel.addTab("Structures", new StructuresControlPanel(modelManager, pickManager));
+        controlPanel = new JTabbedPane();
+        controlPanel.setBorder(BorderFactory.createEmptyBorder());
+        controlPanel.addTab("Itokawa", new SmallBodyControlPanel(modelManager, "Itokawa"));
+        controlPanel.addTab("Structures", new StructuresControlPanel(modelManager, pickManager));
 
-		splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
+        splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
                 controlPanel, renderer);
-		splitPane.setOneTouchExpandable(true);
+        splitPane.setOneTouchExpandable(true);
 
         renderer.setMinimumSize(new Dimension(100, 100));
         renderer.setPreferredSize(new Dimension(800, 800));
         controlPanel.setMinimumSize(new Dimension(320, 100));
         controlPanel.setPreferredSize(new Dimension(320, 800));
 
-		this.add(splitPane, BorderLayout.CENTER);
+        this.add(splitPane, BorderLayout.CENTER);
 
-		initialized = true;
-	}
+        initialized = true;
+    }
 
-	private void setupModelManager()
-	{
-		modelManager = new ModelManager();
+    private void setupModelManager()
+    {
+        modelManager = new ModelManager();
 
-		SmallBodyModel itokawaModel = ModelFactory.createItokawaBodyModel();
-    	Graticule graticule = ModelFactory.createItokawaGraticuleModel(itokawaModel);
+        SmallBodyModel itokawaModel = ModelFactory.createItokawaBodyModel();
+        Graticule graticule = ModelFactory.createItokawaGraticuleModel(itokawaModel);
 
         HashMap<String, Model> allModels = new HashMap<String, Model>();
         allModels.put(ModelNames.SMALL_BODY, itokawaModel);
-    	allModels.put(ModelNames.LINE_STRUCTURES, new LineModel(itokawaModel));
-    	allModels.put(ModelNames.CIRCLE_STRUCTURES, new CircleModel(itokawaModel));
-    	allModels.put(ModelNames.POINT_STRUCTURES, new PointModel(itokawaModel));
-    	allModels.put(ModelNames.CIRCLE_SELECTION, new RegularPolygonModel(itokawaModel,20,false,"Selection",ModelNames.CIRCLE_SELECTION));
-    	allModels.put(ModelNames.GRATICULE, graticule);
+        allModels.put(ModelNames.LINE_STRUCTURES, new LineModel(itokawaModel));
+        allModels.put(ModelNames.CIRCLE_STRUCTURES, new CircleModel(itokawaModel));
+        allModels.put(ModelNames.POINT_STRUCTURES, new PointModel(itokawaModel));
+        allModels.put(ModelNames.CIRCLE_SELECTION, new RegularPolygonModel(itokawaModel,20,false,"Selection",ModelNames.CIRCLE_SELECTION));
+        allModels.put(ModelNames.GRATICULE, graticule);
 
-    	modelManager.setModels(allModels);
+        modelManager.setModels(allModels);
 
-	}
+    }
 
-	public Renderer getRenderer()
-	{
-		return renderer;
-	}
+    public Renderer getRenderer()
+    {
+        return renderer;
+    }
 
-	public String getName()
-	{
-		return NAME;
-	}
+    public String getName()
+    {
+        return NAME;
+    }
 }

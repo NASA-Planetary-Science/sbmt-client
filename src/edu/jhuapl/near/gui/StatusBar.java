@@ -6,34 +6,34 @@ import java.awt.*;
 
 public class StatusBar extends JPanel
 {
-	private JLabel leftLabel;
-	private JLabel rightLabel;
+    private JLabel leftLabel;
+    private JLabel rightLabel;
 
-	public StatusBar()
-	{
-		setLayout(new BorderLayout());
-		leftLabel = new JLabel(" ", SwingConstants.LEFT);
-    	add(leftLabel, BorderLayout.CENTER);
-		rightLabel = new JLabel(" ", SwingConstants.RIGHT);
-    	add(rightLabel, BorderLayout.EAST);
+    public StatusBar()
+    {
+        setLayout(new BorderLayout());
+        leftLabel = new JLabel(" ", SwingConstants.LEFT);
+        add(leftLabel, BorderLayout.CENTER);
+        rightLabel = new JLabel(" ", SwingConstants.RIGHT);
+        add(rightLabel, BorderLayout.EAST);
 
-    	Font font = new Font("Monospaced", Font.PLAIN, 13);
-    	rightLabel.setFont(font);
+        Font font = new Font("Monospaced", Font.PLAIN, 13);
+        rightLabel.setFont(font);
 
-    	setBorder(new BevelBorder(BevelBorder.LOWERED));
-	}
+        setBorder(new BevelBorder(BevelBorder.LOWERED));
+    }
 
-	public void setLeftText(String text)
-	{
-		if (text.length() == 0)
-			text = " ";
-		leftLabel.setText(text);
-	}
+    public void setLeftText(String text)
+    {
+        if (text.length() == 0)
+            text = " ";
+        leftLabel.setText(text);
+    }
 
-	public void setRightText(String text)
-	{
-		if (text.length() == 0)
-			text = " ";
-		rightLabel.setText(text);
-	}
+    public void setRightText(String text)
+    {
+        if (text.length() == 0)
+            text = " ";
+        rightLabel.setText(text);
+    }
 }

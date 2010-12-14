@@ -10,55 +10,55 @@ import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.pick.PickManager;
 
 public class PointsMappingControlPanel extends
-		AbstractStructureMappingControlPanel implements ChangeListener
+        AbstractStructureMappingControlPanel implements ChangeListener
 {
-	private JSpinner spinner;
-	private PointModel pointModel;
+    private JSpinner spinner;
+    private PointModel pointModel;
 
-	public PointsMappingControlPanel(
-			ModelManager modelManager,
-			PickManager pickManager)
-	{
-		super(modelManager,
-				(StructureModel)modelManager.getModel(ModelNames.POINT_STRUCTURES),
-				pickManager,
-				PickManager.PickMode.POINT_DRAW,
-				false);
+    public PointsMappingControlPanel(
+            ModelManager modelManager,
+            PickManager pickManager)
+    {
+        super(modelManager,
+                (StructureModel)modelManager.getModel(ModelNames.POINT_STRUCTURES),
+                pickManager,
+                PickManager.PickMode.POINT_DRAW,
+                false);
 
-		pointModel = (PointModel)modelManager.getModel(ModelNames.POINT_STRUCTURES);
+        pointModel = (PointModel)modelManager.getModel(ModelNames.POINT_STRUCTURES);
 
-		double diameter = 2.0 * pointModel.getDefaultRadius();
+        double diameter = 2.0 * pointModel.getDefaultRadius();
 
-		JPanel panel = new JPanel();
+        JPanel panel = new JPanel();
 
-		JLabel radiusLabel = new JLabel("Diameter");
-		panel.add(radiusLabel);
+        JLabel radiusLabel = new JLabel("Diameter");
+        panel.add(radiusLabel);
 
-		double bbLength = modelManager.getSmallBodyModel().getBoundingBoxDiagonalLength();
-		double min = bbLength / 4000.0;
-		double max =bbLength / 10.0;
-		double step = max / 40.0;
+        double bbLength = modelManager.getSmallBodyModel().getBoundingBoxDiagonalLength();
+        double min = bbLength / 4000.0;
+        double max =bbLength / 10.0;
+        double step = max / 40.0;
 
-		SpinnerModel model = new SpinnerNumberModel(diameter, //initial value
+        SpinnerModel model = new SpinnerNumberModel(diameter, //initial value
                 min,
                 max,
                 step);
 
-		spinner = new JSpinner(model);
-		spinner.addChangeListener(this);
+        spinner = new JSpinner(model);
+        spinner.addChangeListener(this);
         radiusLabel.setLabelFor(spinner);
         panel.add(spinner);
 
-		JLabel kmLabel = new JLabel("km");
-		panel.add(kmLabel);
+        JLabel kmLabel = new JLabel("km");
+        panel.add(kmLabel);
 
-		add(panel, "span");
-	}
+        add(panel, "span");
+    }
 
-	public void stateChanged(ChangeEvent e)
-	{
-		Number val = (Number)spinner.getValue();
-		pointModel.setDefaultRadius(val.doubleValue()/2.0);
-		pointModel.changeRadiusOfAllPolygons(val.doubleValue()/2.0);
-	}
+    public void stateChanged(ChangeEvent e)
+    {
+        Number val = (Number)spinner.getValue();
+        pointModel.setDefaultRadius(val.doubleValue()/2.0);
+        pointModel.changeRadiusOfAllPolygons(val.doubleValue()/2.0);
+    }
 }

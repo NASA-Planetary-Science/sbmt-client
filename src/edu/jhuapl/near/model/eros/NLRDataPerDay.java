@@ -15,61 +15,61 @@ import edu.jhuapl.near.util.MathUtil;
 
 public class NLRDataPerDay extends Model
 {
-	private vtkPolyData polydata;
-	private vtkPoints originalPoints;
+    private vtkPolyData polydata;
+    private vtkPoints originalPoints;
     private ArrayList<vtkProp> actors = new ArrayList<vtkProp>();
-	private double startPercentage = 0.0;
-	private double stopPercentage = 1.0;
-	private vtkGeometryFilter geometryFilter;
-	private String filepath;
-	private ArrayList<String> times = new ArrayList<String>();
+    private double startPercentage = 0.0;
+    private double stopPercentage = 1.0;
+    private vtkGeometryFilter geometryFilter;
+    private String filepath;
+    private ArrayList<String> times = new ArrayList<String>();
 
-	public NLRDataPerDay(String path) throws IOException
-	{
-		File file = FileCache.getFileFromServer(path);
+    public NLRDataPerDay(String path) throws IOException
+    {
+        File file = FileCache.getFileFromServer(path);
 
-		if (file == null)
-			throw new IOException(path + " could not be loaded");
+        if (file == null)
+            throw new IOException(path + " could not be loaded");
 
-		filepath = path;
+        filepath = path;
 
-		ArrayList<String> lines = FileUtil.getFileLinesAsStringList(file.getAbsolutePath());
+        ArrayList<String> lines = FileUtil.getFileLinesAsStringList(file.getAbsolutePath());
 
-		polydata = new vtkPolyData();
-		vtkPoints points = new vtkPoints();
-		vtkCellArray vert = new vtkCellArray();
-		polydata.SetPoints( points );
-		polydata.SetVerts( vert );
+        polydata = new vtkPolyData();
+        vtkPoints points = new vtkPoints();
+        vtkCellArray vert = new vtkCellArray();
+        polydata.SetPoints( points );
+        polydata.SetVerts( vert );
 
-		vtkIdList idList = new vtkIdList();
+        vtkIdList idList = new vtkIdList();
         idList.SetNumberOfIds(1);
         points.SetNumberOfPoints(lines.size()-2);
 
-		for (int i=2; i<lines.size(); ++i)
-		{
+        for (int i=2; i<lines.size(); ++i)
+        {
             String[] vals = lines.get(i).trim().split("\\s+");
 
             points.SetPoint(i-2,
-            			Double.parseDouble(vals[14])/1000.0,
-            			Double.parseDouble(vals[15])/1000.0,
-            			Double.parseDouble(vals[16])/1000.0);
-        	idList.SetId(0, i-2);
-		    vert.InsertNextCell(idList);
+                        Double.parseDouble(vals[14])/1000.0,
+                        Double.parseDouble(vals[15])/1000.0,
+                        Double.parseDouble(vals[16])/1000.0);
+            idList.SetId(0, i-2);
+            vert.InsertNextCell(idList);
 
-		    times.add(vals[4]);
-		}
+            times.add(vals[4]);
+        }
 
-		originalPoints = new vtkPoints();
-		originalPoints.DeepCopy(points);
+        originalPoints = new vtkPoints();
+        originalPoints.DeepCopy(points);
 
-		geometryFilter = new vtkGeometryFilter();
-		geometryFilter.SetInput(polydata);
-		geometryFilter.PointClippingOn();
-		geometryFilter.CellClippingOff();
-		geometryFilter.ExtentClippingOff();
-		geometryFilter.MergingOff();
-		geometryFilter.SetPointMinimum(0);
-		geometryFilter.SetPointMaximum(lines.size()-2);
+        geometryFilter = new vtkGeometryFilter();
+        geometryFilter.SetInput(polydata);
+        geometryFilter.PointClippingOn();
+        geometryFilter.CellClippingOff();
+        geometryFilter.ExtentClippingOff();
+        geometryFilter.MergingOff();
+        geometryFilter.SetPointMinimum(0);
+        geometryFilter.SetPointMaximum(lines.size()-2);
 
         vtkPolyDataMapper pointsMapper = new vtkPolyDataMapper();
         pointsMapper.SetInput(geometryFilter.GetOutput());
@@ -82,62 +82,62 @@ public class NLRDataPerDay extends Model
         actor.GetProperty().SetPointSize(2.0);
 
         actors.add(actor);
-	}
+    }
 
-	public void setPercentageShown(double startPercent, double stopPercent)
-	{
-		startPercentage = startPercent;
-		stopPercentage = stopPercent;
+    public void setPercentageShown(double startPercent, double stopPercent)
+    {
+        startPercentage = startPercent;
+        stopPercentage = stopPercent;
 
-		double numberOfPoints = originalPoints.GetNumberOfPoints();
-		int firstPointId = (int)(numberOfPoints * startPercentage);
-		int lastPointId = (int)(numberOfPoints * stopPercentage) - 1;
-		if (lastPointId < firstPointId)
-		{
-			lastPointId = firstPointId;
-		}
+        double numberOfPoints = originalPoints.GetNumberOfPoints();
+        int firstPointId = (int)(numberOfPoints * startPercentage);
+        int lastPointId = (int)(numberOfPoints * stopPercentage) - 1;
+        if (lastPointId < firstPointId)
+        {
+            lastPointId = firstPointId;
+        }
 
-		geometryFilter.SetPointMinimum(firstPointId);
-		geometryFilter.SetPointMaximum(lastPointId);
+        geometryFilter.SetPointMinimum(firstPointId);
+        geometryFilter.SetPointMaximum(lastPointId);
 
-		geometryFilter.Update();
+        geometryFilter.Update();
 
-		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-	}
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+    }
 
-	public DoublePair getPercentageShown()
-	{
-		return new DoublePair(startPercentage, stopPercentage);
-	}
+    public DoublePair getPercentageShown()
+    {
+        return new DoublePair(startPercentage, stopPercentage);
+    }
 
-	public void setRadialOffset(double offset)
-	{
+    public void setRadialOffset(double offset)
+    {
         vtkPoints points = polydata.GetPoints();
 
         int numberOfPoints = points.GetNumberOfPoints();
 
         for (int i=0;i<numberOfPoints;++i)
         {
-        	double[] pt = originalPoints.GetPoint(i);
-        	LatLon lla = MathUtil.reclat(pt);
-        	lla.rad += offset;
-        	pt = MathUtil.latrec(lla);
-        	points.SetPoint(i, pt);
-		}
+            double[] pt = originalPoints.GetPoint(i);
+            LatLon lla = MathUtil.reclat(pt);
+            lla.rad += offset;
+            pt = MathUtil.latrec(lla);
+            points.SetPoint(i, pt);
+        }
 
         polydata.Modified();
-	}
+    }
 
     public String getClickStatusBarText(vtkProp prop, int cellId, double[] pickPosition)
     {
-    	cellId = geometryFilter.GetPointMinimum() + cellId;
-    	File file = new File(filepath);
-    	return "NLR " + file.getName().substring(0, 8) + " acquired at " + times.get(cellId);
+        cellId = geometryFilter.GetPointMinimum() + cellId;
+        File file = new File(filepath);
+        return "NLR " + file.getName().substring(0, 8) + " acquired at " + times.get(cellId);
     }
 
-	public ArrayList<vtkProp> getProps()
-	{
-		return actors;
-	}
+    public ArrayList<vtkProp> getProps()
+    {
+        return actors;
+    }
 }
 

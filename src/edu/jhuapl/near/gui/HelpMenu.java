@@ -17,9 +17,9 @@ public class HelpMenu extends JMenu
 {
     private JPanel rootPanel;
 
-	public HelpMenu(JPanel rootPanel)
-	{
-		super("Help");
+    public HelpMenu(JPanel rootPanel)
+    {
+        super("Help");
 
         JMenuItem mi = new JMenuItem(new ShowHelpContentsAction());
         this.add(mi);
@@ -29,7 +29,7 @@ public class HelpMenu extends JMenu
         mi = new JMenuItem(new AboutAction());
         this.add(mi);
 
-	}
+    }
 
     private class ShowHelpContentsAction extends AbstractAction
     {
@@ -88,34 +88,34 @@ public class HelpMenu extends JMenu
 
     private class AboutAction extends AbstractAction
     {
-    	private static final String COPYRIGHT  = "\u00a9";
+        private static final String COPYRIGHT  = "\u00a9";
 
-    	public AboutAction()
+        public AboutAction()
         {
             super("About Small Body Mapping Tool");
         }
 
         public void actionPerformed(ActionEvent actionEvent)
         {
-        	String versionString = "\n";
-        	try
-        	{
-        		InputStream is = this.getClass().getResourceAsStream("/svn.version");
-        		byte[] data = new byte[256];
-        		is.read(data, 0, data.length);
-        		String[] tmp = (new String(data)).trim().split("\\s+");
-        		tmp[3] = tmp[3].replace('-', '.');
-        		versionString = "Version: " + tmp[3] + "\n\n";
-        	}
-        	catch (Exception e)
-        	{
-        	}
+            String versionString = "\n";
+            try
+            {
+                InputStream is = this.getClass().getResourceAsStream("/svn.version");
+                byte[] data = new byte[256];
+                is.read(data, 0, data.length);
+                String[] tmp = (new String(data)).trim().split("\\s+");
+                tmp[3] = tmp[3].replace('-', '.');
+                versionString = "Version: " + tmp[3] + "\n\n";
+            }
+            catch (Exception e)
+            {
+            }
 
-			JOptionPane.showMessageDialog(rootPanel,
-					"Small Body Mapping Tool\n" + versionString +
-				    COPYRIGHT + " 2010 The Johns Hopkins University Applied Physics Laboratory\n",
-				    "About Small Body Mapping Tool",
-				    JOptionPane.PLAIN_MESSAGE);
+            JOptionPane.showMessageDialog(rootPanel,
+                    "Small Body Mapping Tool\n" + versionString +
+                    COPYRIGHT + " 2010 The Johns Hopkins University Applied Physics Laboratory\n",
+                    "About Small Body Mapping Tool",
+                    JOptionPane.PLAIN_MESSAGE);
         }
     }
 }

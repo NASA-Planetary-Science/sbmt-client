@@ -31,33 +31,33 @@ import edu.jhuapl.near.pick.PickManager.PickMode;
 
 public class TopoPanel extends JPanel implements ActionListener
 {
-	private ModelManager modelManager;
-	private JToggleButton selectRegionButton;
+    private ModelManager modelManager;
+    private JToggleButton selectRegionButton;
     private JFormattedTextField nameTextField;
-	private JFormattedTextField outputFolderTextField;
+    private JFormattedTextField outputFolderTextField;
     private JFileChooser dirChooser;
-	private JButton submitButton;
-	private JButton loadButton;
-	private PickManager pickManager;
+    private JButton submitButton;
+    private JButton loadButton;
+    private PickManager pickManager;
     private JSpinner halfSizeSpinner;
 
-	public TopoPanel(final ModelManager modelManager,
-			final PickManager pickManager)
-	{
-    	setLayout(new BoxLayout(this,
-        		BoxLayout.PAGE_AXIS));
+    public TopoPanel(final ModelManager modelManager,
+            final PickManager pickManager)
+    {
+        setLayout(new BoxLayout(this,
+                BoxLayout.PAGE_AXIS));
 
-    	this.modelManager = modelManager;
-    	this.pickManager = pickManager;
+        this.modelManager = modelManager;
+        this.pickManager = pickManager;
 
-		this.addComponentListener(new ComponentAdapter()
-		{
-			public void componentHidden(ComponentEvent e)
-			{
-		    	selectRegionButton.setSelected(false);
-				pickManager.setPickMode(PickMode.DEFAULT);
-			}
-		});
+        this.addComponentListener(new ComponentAdapter()
+        {
+            public void componentHidden(ComponentEvent e)
+            {
+                selectRegionButton.setSelected(false);
+                pickManager.setPickMode(PickMode.DEFAULT);
+            }
+        });
 
         JPanel pane = new JPanel();
         pane.setLayout(new MigLayout("wrap 1"));
@@ -106,27 +106,27 @@ public class TopoPanel extends JPanel implements ActionListener
         halfSizePanel.add(halfSizeSpinner);
 
 
-	    dirChooser = new JFileChooser();
-	    dirChooser.setCurrentDirectory(null);
+        dirChooser = new JFileChooser();
+        dirChooser.setCurrentDirectory(null);
         JPanel outputFolderPanel = new JPanel(new MigLayout("wrap 2"));
         final JButton outputFolderButton = new JButton("Output Folder...");
         outputFolderTextField = new JFormattedTextField();
         outputFolderTextField.setPreferredSize(new Dimension(150, 24));
         outputFolderTextField.setText(dirChooser.getCurrentDirectory().getAbsolutePath());
         outputFolderButton.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent e)
-			{
-			    dirChooser.setDialogTitle("Select Output Folder");
-			    dirChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-			    dirChooser.setAcceptAllFileFilterUsed(false);
-			    int result = dirChooser.showOpenDialog(TopoPanel.this);
-			    if (result == JFileChooser.APPROVE_OPTION)
-			    {
-			    	outputFolderTextField.setText(dirChooser.getSelectedFile().getAbsolutePath());
-			    }
-			}
-		});
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                dirChooser.setDialogTitle("Select Output Folder");
+                dirChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+                dirChooser.setAcceptAllFileFilterUsed(false);
+                int result = dirChooser.showOpenDialog(TopoPanel.this);
+                if (result == JFileChooser.APPROVE_OPTION)
+                {
+                    outputFolderTextField.setText(dirChooser.getSelectedFile().getAbsolutePath());
+                }
+            }
+        });
         outputFolderPanel.add(outputFolderButton);
         outputFolderPanel.add(outputFolderTextField);
 
@@ -143,12 +143,12 @@ public class TopoPanel extends JPanel implements ActionListener
         loadButton = new JButton("Load Cube File...");
         loadButton.setEnabled(true);
         loadButton.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent e)
-			{
-				loadCubeFile();
-			}
-		});
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                loadCubeFile();
+            }
+        });
         pane.add(loadPanel, "align center");
 
         loadPanel.add(loadButton);
@@ -162,154 +162,154 @@ public class TopoPanel extends JPanel implements ActionListener
 
         add(pane);
 
-	}
+    }
 
-	public void actionPerformed(ActionEvent e)
-	{
-		if (!checkIfPlatformSupported())
-			return;
+    public void actionPerformed(ActionEvent e)
+    {
+        if (!checkIfPlatformSupported())
+            return;
 
         pickManager.setPickMode(PickMode.DEFAULT);
         selectRegionButton.setSelected(false);
 
-		// Run Bob Gaskell's map maker fortran program
+        // Run Bob Gaskell's map maker fortran program
 
-		// First get the center point and radius of the selection circle
-		double [] centerPoint = null;
-		double radius = 0.0;
+        // First get the center point and radius of the selection circle
+        double [] centerPoint = null;
+        double radius = 0.0;
 
         RegularPolygonModel selectionModel = (RegularPolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
-		if (selectionModel.getNumberOfStructures() > 0)
-		{
-			RegularPolygonModel.RegularPolygon region = (RegularPolygonModel.RegularPolygon)selectionModel.getStructure(0);
+        if (selectionModel.getNumberOfStructures() > 0)
+        {
+            RegularPolygonModel.RegularPolygon region = (RegularPolygonModel.RegularPolygon)selectionModel.getStructure(0);
 
-			centerPoint = region.center;
-			radius = region.radius;
-		}
-		else
-		{
-			JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
-					"Please select a region on the asteroid.",
-					"Error",
-					JOptionPane.ERROR_MESSAGE);
-			return;
-		}
+            centerPoint = region.center;
+            radius = region.radius;
+        }
+        else
+        {
+            JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
+                    "Please select a region on the asteroid.",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
-		final String name = this.nameTextField.getText();
-		if (name == null || name.length() == 0)
-		{
-			JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
-					"Please enter a name.",
-					"Error",
-					JOptionPane.ERROR_MESSAGE);
-			return;
-		}
+        final String name = this.nameTextField.getText();
+        if (name == null || name.length() == 0)
+        {
+            JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
+                    "Please enter a name.",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
-		String outputFolderStr = outputFolderTextField.getText();
-		if (outputFolderStr == null || outputFolderStr.isEmpty())
-		{
-			JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
-					"Please enter an output folder.",
-					"Error",
-					JOptionPane.ERROR_MESSAGE);
-			return;
-		}
+        String outputFolderStr = outputFolderTextField.getText();
+        if (outputFolderStr == null || outputFolderStr.isEmpty())
+        {
+            JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
+                    "Please enter an output folder.",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
-		File outputFolder = new File(outputFolderStr);
-		if (!outputFolder.exists())
-		{
-			JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
-					"The output folder does not exists.",
-					"Error",
-					JOptionPane.ERROR_MESSAGE);
-			return;
-		}
+        File outputFolder = new File(outputFolderStr);
+        if (!outputFolder.exists())
+        {
+            JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
+                    "The output folder does not exists.",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
-		if (!outputFolder.canWrite())
-		{
-			JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
-					"The output folder is not writable.",
-					"Error",
-					JOptionPane.ERROR_MESSAGE);
-			return;
-		}
+        if (!outputFolder.canWrite())
+        {
+            JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
+                    "The output folder is not writable.",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
-		// Next download the entire map maker suite to the users computer
-		// if it has never been downloaded before.
-		// Ask the user beforehand if it's okay to continue.
-		final MapmakerSwingWorker mapmakerWorker =
-			new MapmakerSwingWorker(this, "Running Mapmaker", "/MSI/mapmaker.zip");
+        // Next download the entire map maker suite to the users computer
+        // if it has never been downloaded before.
+        // Ask the user beforehand if it's okay to continue.
+        final MapmakerSwingWorker mapmakerWorker =
+            new MapmakerSwingWorker(this, "Running Mapmaker", "/MSI/mapmaker.zip");
 
-		// If we need to download, promt the user that it will take a long time
-		if (mapmakerWorker.getIfNeedToDownload())
-		{
-			int result = JOptionPane.showConfirmDialog(JOptionPane.getFrameForComponent(this),
-					"Before Mapmaker can be run for the first time, a large 700 MB file needs to be downloaded.\n" +
-					"This may take several minutes. Would you like to continue?",
-					"Confirm Download",
-					JOptionPane.YES_NO_OPTION);
-			if (result == JOptionPane.NO_OPTION)
-				return;
-		}
+        // If we need to download, promt the user that it will take a long time
+        if (mapmakerWorker.getIfNeedToDownload())
+        {
+            int result = JOptionPane.showConfirmDialog(JOptionPane.getFrameForComponent(this),
+                    "Before Mapmaker can be run for the first time, a large 700 MB file needs to be downloaded.\n" +
+                    "This may take several minutes. Would you like to continue?",
+                    "Confirm Download",
+                    JOptionPane.YES_NO_OPTION);
+            if (result == JOptionPane.NO_OPTION)
+                return;
+        }
 
-		mapmakerWorker.setCenterPoint(centerPoint);
-		mapmakerWorker.setName(name);
-		mapmakerWorker.setRadius(radius);
-		mapmakerWorker.setHalfSize((Integer)halfSizeSpinner.getValue());
-		mapmakerWorker.setOutputFolder(outputFolder);
+        mapmakerWorker.setCenterPoint(centerPoint);
+        mapmakerWorker.setName(name);
+        mapmakerWorker.setRadius(radius);
+        mapmakerWorker.setHalfSize((Integer)halfSizeSpinner.getValue());
+        mapmakerWorker.setOutputFolder(outputFolder);
 
-		mapmakerWorker.executeDialog();
+        mapmakerWorker.executeDialog();
 
-		if (mapmakerWorker.isCancelled())
-			return;
+        if (mapmakerWorker.isCancelled())
+            return;
 
-		try
-		{
-			new TopoViewer(mapmakerWorker.getCubeFile(), mapmakerWorker.getLabelFile(),
-					(MapletBoundaryCollection) modelManager.getModel(ModelNames.MAPLET_BOUNDARY));
-		}
-		catch (IOException e1)
-		{
-			e1.printStackTrace();
-		}
-	}
+        try
+        {
+            new TopoViewer(mapmakerWorker.getCubeFile(), mapmakerWorker.getLabelFile(),
+                    (MapletBoundaryCollection) modelManager.getModel(ModelNames.MAPLET_BOUNDARY));
+        }
+        catch (IOException e1)
+        {
+            e1.printStackTrace();
+        }
+    }
 
-	private void loadCubeFile()
-	{
-		File file = CustomFileChooser.showOpenDialog(TopoPanel.this, "Load Cube File", "cub");
-		if (file == null)
-		{
-			return;
-		}
+    private void loadCubeFile()
+    {
+        File file = CustomFileChooser.showOpenDialog(TopoPanel.this, "Load Cube File", "cub");
+        if (file == null)
+        {
+            return;
+        }
 
-		String filename = file.getAbsolutePath();
-		File lblFile = new File(filename.substring(0, filename.length()-3) + "lbl");
-		try
-		{
-			new TopoViewer(file, lblFile,
-					(MapletBoundaryCollection) modelManager.getModel(ModelNames.MAPLET_BOUNDARY));
-		}
-		catch (IOException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+        String filename = file.getAbsolutePath();
+        File lblFile = new File(filename.substring(0, filename.length()-3) + "lbl");
+        try
+        {
+            new TopoViewer(file, lblFile,
+                    (MapletBoundaryCollection) modelManager.getModel(ModelNames.MAPLET_BOUNDARY));
+        }
+        catch (IOException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
 
-	private boolean checkIfPlatformSupported()
-	{
-    	String name = System.getProperty("os.name");
-    	if (name.toLowerCase().startsWith("windows"))
-    	{
-			JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
-					"This feature is currently not supported in Windows platforms. Please try using Linux\n" +
-					"or Mac OS X instead. We apologize for any inconvenience.",
-					"Error",
-					JOptionPane.ERROR_MESSAGE);
+    private boolean checkIfPlatformSupported()
+    {
+        String name = System.getProperty("os.name");
+        if (name.toLowerCase().startsWith("windows"))
+        {
+            JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
+                    "This feature is currently not supported in Windows platforms. Please try using Linux\n" +
+                    "or Mac OS X instead. We apologize for any inconvenience.",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
 
-    		return false;
-    	}
+            return false;
+        }
 
-    	return true;
-	}
+        return true;
+    }
 }

@@ -18,84 +18,84 @@ public class ModelManager extends Model implements PropertyChangeListener
 
     public void setModels(HashMap<String, Model> models)
     {
-    	allModels.clear();
+        allModels.clear();
 
-    	for (String modelName : models.keySet())
-    	{
-    		Model model = models.get(modelName);
-    		model.addPropertyChangeListener(this);
-    		allModels.put(modelName, model);
-    	}
+        for (String modelName : models.keySet())
+        {
+            Model model = models.get(modelName);
+            model.addPropertyChangeListener(this);
+            allModels.put(modelName, model);
+        }
 
-    	updateProps();
+        updateProps();
     }
 
     public ArrayList<vtkProp> getProps()
-	{
-		return props;
-	}
+    {
+        return props;
+    }
 
     public ArrayList<vtkProp> getPropsExceptSmallBody()
-	{
-		return propsExceptSmallBody;
-	}
+    {
+        return propsExceptSmallBody;
+    }
 
-	public void propertyChange(PropertyChangeEvent evt)
-	{
-		if (Properties.MODEL_CHANGED.equals(evt.getPropertyName()))
-		{
-			updateProps();
-			this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-		}
-	}
+    public void propertyChange(PropertyChangeEvent evt)
+    {
+        if (Properties.MODEL_CHANGED.equals(evt.getPropertyName()))
+        {
+            updateProps();
+            this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+        }
+    }
 
-	private void updateProps()
-	{
-		props.clear();
-		propsExceptSmallBody.clear();
-		propToModelMap.clear();
+    private void updateProps()
+    {
+        props.clear();
+        propsExceptSmallBody.clear();
+        propToModelMap.clear();
 
-		for (String modelName : allModels.keySet())
-		{
-			Model model = allModels.get(modelName);
-			if (model.isVisible())
-			{
-				props.addAll(model.getProps());
+        for (String modelName : allModels.keySet())
+        {
+            Model model = allModels.get(modelName);
+            if (model.isVisible())
+            {
+                props.addAll(model.getProps());
 
-				for (vtkProp prop : model.getProps())
-					propToModelMap.put(prop, model);
+                for (vtkProp prop : model.getProps())
+                    propToModelMap.put(prop, model);
 
-				if (!(model instanceof SmallBodyModel))
-					propsExceptSmallBody.addAll(model.getProps());
-			}
-		}
-	}
+                if (!(model instanceof SmallBodyModel))
+                    propsExceptSmallBody.addAll(model.getProps());
+            }
+        }
+    }
 
-	public Model getModel(vtkProp prop)
-	{
-		return propToModelMap.get(prop);
-	}
+    public Model getModel(vtkProp prop)
+    {
+        return propToModelMap.get(prop);
+    }
 
-	public Model getModel(String modelName)
-	{
-		return allModels.get(modelName);
-	}
+    public Model getModel(String modelName)
+    {
+        return allModels.get(modelName);
+    }
 
-	public SmallBodyModel getSmallBodyModel()
-	{
-		for (String modelName : allModels.keySet())
-		{
-			Model model = allModels.get(modelName);
-			if (model instanceof SmallBodyModel)
-				return (SmallBodyModel)model;
-		}
+    public SmallBodyModel getSmallBodyModel()
+    {
+        for (String modelName : allModels.keySet())
+        {
+            Model model = allModels.get(modelName);
+            if (model instanceof SmallBodyModel)
+                return (SmallBodyModel)model;
+        }
 
-		return null;
-	}
+        return null;
+    }
 
-	public void deleteAllModels()
-	{
-		for (String modelName : allModels.keySet())
-			allModels.get(modelName).delete();
-	}
+    public void deleteAllModels()
+    {
+        for (String modelName : allModels.keySet())
+            allModels.get(modelName).delete();
+    }
 }

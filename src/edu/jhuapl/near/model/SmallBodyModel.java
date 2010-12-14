@@ -22,14 +22,14 @@ import edu.jhuapl.near.util.Properties;
 public class SmallBodyModel extends Model
 {
 
-	public enum ColoringValueType {
-		POINT_DATA,
-		CELLDATA
-	}
+    public enum ColoringValueType {
+        POINT_DATA,
+        CELLDATA
+    }
 
     public enum ShadingType {
-    	FLAT,
-    	SMOOTH,
+        FLAT,
+        SMOOTH,
     }
 
     static public final String FlatShadingStr = "Flat";
@@ -59,148 +59,148 @@ public class SmallBodyModel extends Model
     private vtkImageData originalImageMap;
     private vtkImageData displayedImageMap;
     private vtkScalarBarActor scalarBarActor;
-	private SmallBodyCubes smallBodyCubes;
+    private SmallBodyCubes smallBodyCubes;
     private int coloringIndex = -1;
     private File defaultModelFile;
     private int resolutionLevel = 0;
     private vtkGenericCell genericCell;
     private String[] modelNames;
     private String[] modelFiles;
-	private String[] coloringFiles;
-	private String imageMapName = null;
+    private String[] coloringFiles;
+    private String imageMapName = null;
     private boolean showImageMap = false;
-	private vtkTexture imageMapTexture = null;
-	private BoundingBox boundingBox = null;
-	private double imageMapOpacity = 0.50;
-	private vtkImageBlend blendFilter;
-	private vtkIdList idList; // to avoid repeated allocations
+    private vtkTexture imageMapTexture = null;
+    private BoundingBox boundingBox = null;
+    private double imageMapOpacity = 0.50;
+    private vtkImageBlend blendFilter;
+    private vtkIdList idList; // to avoid repeated allocations
 
-	// Does this class support false coloring
-	private boolean supportsFalseColoring = false;
-	// If true, a false color will be used by using 3 of the existing
-	// colors for the red, green, and blue channels
-	private boolean useFalseColoring = false;
-	private int redFalseColor = -1; // red channel for false coloring
-	private int greenFalseColor = -1; // green channel for false coloring
-	private int blueFalseColor = -1; // blue channel for false coloring
-	private vtkUnsignedCharArray falseColorArray;
+    // Does this class support false coloring
+    private boolean supportsFalseColoring = false;
+    // If true, a false color will be used by using 3 of the existing
+    // colors for the red, green, and blue channels
+    private boolean useFalseColoring = false;
+    private int redFalseColor = -1; // red channel for false coloring
+    private int greenFalseColor = -1; // green channel for false coloring
+    private int blueFalseColor = -1; // blue channel for false coloring
+    private vtkUnsignedCharArray falseColorArray;
 
 
-	/**
-	 * Default constructor. Must be followed by a call to setSmallBodyPolyData.
-	 */
-	public SmallBodyModel()
-	{
-		smallBodyPolyData = new vtkPolyData();
-		genericCell = new vtkGenericCell();
-		idList = new vtkIdList();
-	}
+    /**
+     * Default constructor. Must be followed by a call to setSmallBodyPolyData.
+     */
+    public SmallBodyModel()
+    {
+        smallBodyPolyData = new vtkPolyData();
+        genericCell = new vtkGenericCell();
+        idList = new vtkIdList();
+    }
 
-	public SmallBodyModel(
-			String[] modelNames,
-			String[] modelFiles,
-			String[] coloringFiles,
-			String[] coloringNames,
-			String[] coloringUnits,
-			boolean[] coloringHasNulls,
-			boolean supportsFalseColoring,
-			String imageMapName,
-			ColoringValueType coloringValueType,
-			boolean lowestResolutionModelStoredInResource)
-	{
-		super(ModelNames.SMALL_BODY);
+    public SmallBodyModel(
+            String[] modelNames,
+            String[] modelFiles,
+            String[] coloringFiles,
+            String[] coloringNames,
+            String[] coloringUnits,
+            boolean[] coloringHasNulls,
+            boolean supportsFalseColoring,
+            String imageMapName,
+            ColoringValueType coloringValueType,
+            boolean lowestResolutionModelStoredInResource)
+    {
+        super(ModelNames.SMALL_BODY);
 
-		this.modelNames = modelNames;
-		this.modelFiles = modelFiles;
-		this.coloringFiles = coloringFiles;
-		this.coloringNames = coloringNames;
-		this.coloringUnits = coloringUnits;
-		this.coloringHasNulls = coloringHasNulls;
-		this.supportsFalseColoring = supportsFalseColoring;
-		this.imageMapName = imageMapName;
-		this.coloringValueType = coloringValueType;
-		if (coloringNames != null)
-		{
-			this.coloringValues = new vtkFloatArray[coloringNames.length];
-			this.coloringImages = new vtkImageData[coloringNames.length];
+        this.modelNames = modelNames;
+        this.modelFiles = modelFiles;
+        this.coloringFiles = coloringFiles;
+        this.coloringNames = coloringNames;
+        this.coloringUnits = coloringUnits;
+        this.coloringHasNulls = coloringHasNulls;
+        this.supportsFalseColoring = supportsFalseColoring;
+        this.imageMapName = imageMapName;
+        this.coloringValueType = coloringValueType;
+        if (coloringNames != null)
+        {
+            this.coloringValues = new vtkFloatArray[coloringNames.length];
+            this.coloringImages = new vtkImageData[coloringNames.length];
 
-			// If coloringHasNulls is null, assume false for all coloring (i.e. all data
-			// is real data, with no missing data)
-			if (coloringHasNulls == null)
-			{
-				coloringHasNulls = new boolean[coloringNames.length];
-				Arrays.fill(coloringHasNulls, false);
-			}
-		}
+            // If coloringHasNulls is null, assume false for all coloring (i.e. all data
+            // is real data, with no missing data)
+            if (coloringHasNulls == null)
+            {
+                coloringHasNulls = new boolean[coloringNames.length];
+                Arrays.fill(coloringHasNulls, false);
+            }
+        }
 
-		smallBodyPolyData = new vtkPolyData();
-		genericCell = new vtkGenericCell();
-		idList = new vtkIdList();
+        smallBodyPolyData = new vtkPolyData();
+        genericCell = new vtkGenericCell();
+        idList = new vtkIdList();
 
-		if (lowestResolutionModelStoredInResource)
-			defaultModelFile = ConvertResourceToFile.convertResourceToTempFile(this, modelFiles[0]);
-		else
-			defaultModelFile = FileCache.getFileFromServer(modelFiles[0]);
+        if (lowestResolutionModelStoredInResource)
+            defaultModelFile = ConvertResourceToFile.convertResourceToTempFile(this, modelFiles[0]);
+        else
+            defaultModelFile = FileCache.getFileFromServer(modelFiles[0]);
 
-		initialize(defaultModelFile);
-	}
+        initialize(defaultModelFile);
+    }
 
-	public void setSmallBodyPolyData(vtkPolyData polydata,
-			vtkFloatArray[] coloringValues,
-			String[] coloringNames,
-			String[] coloringUnits,
-			ColoringValueType coloringValueType)
-	{
-		smallBodyPolyData.DeepCopy(polydata);
-		this.coloringValues = coloringValues;
-		this.coloringNames = coloringNames;
-		this.coloringUnits = coloringUnits;
-		this.coloringValueType = coloringValueType;
+    public void setSmallBodyPolyData(vtkPolyData polydata,
+            vtkFloatArray[] coloringValues,
+            String[] coloringNames,
+            String[] coloringUnits,
+            ColoringValueType coloringValueType)
+    {
+        smallBodyPolyData.DeepCopy(polydata);
+        this.coloringValues = coloringValues;
+        this.coloringNames = coloringNames;
+        this.coloringUnits = coloringUnits;
+        this.coloringValueType = coloringValueType;
 
-		initializeLocators();
-	}
+        initializeLocators();
+    }
 
-	private void initialize(File modelFile)
-	{
-		vtkPolyDataReader smallBodyReader = new vtkPolyDataReader();
-		smallBodyReader.SetFileName(modelFile.getAbsolutePath());
-		smallBodyReader.Update();
+    private void initialize(File modelFile)
+    {
+        vtkPolyDataReader smallBodyReader = new vtkPolyDataReader();
+        smallBodyReader.SetFileName(modelFile.getAbsolutePath());
+        smallBodyReader.Update();
 
-		vtkPolyData output = smallBodyReader.GetOutput();
-		smallBodyPolyData.DeepCopy(output);
+        vtkPolyData output = smallBodyReader.GetOutput();
+        smallBodyPolyData.DeepCopy(output);
 
-		smallBodyReader.Delete();
+        smallBodyReader.Delete();
 
-		initializeLocators();
+        initializeLocators();
 
-		//this.computeLargestSmallestEdgeLength();
-		//this.computeSurfaceArea();
-	}
+        //this.computeLargestSmallestEdgeLength();
+        //this.computeSurfaceArea();
+    }
 
-	private void initializeLocators()
-	{
-		if (cellLocator == null)
-		{
-			cellLocator = new vtksbCellLocator();
-			pointLocator = new vtkPointLocator();
-		}
+    private void initializeLocators()
+    {
+        if (cellLocator == null)
+        {
+            cellLocator = new vtksbCellLocator();
+            pointLocator = new vtkPointLocator();
+        }
 
-		// Initialize the cell locator
-		cellLocator.FreeSearchStructure();
-		cellLocator.SetDataSet(smallBodyPolyData);
-		cellLocator.CacheCellBoundsOn();
-		cellLocator.AutomaticOn();
-		//cellLocator.SetMaxLevel(10);
-		//cellLocator.SetNumberOfCellsPerNode(5);
-		cellLocator.BuildLocator();
+        // Initialize the cell locator
+        cellLocator.FreeSearchStructure();
+        cellLocator.SetDataSet(smallBodyPolyData);
+        cellLocator.CacheCellBoundsOn();
+        cellLocator.AutomaticOn();
+        //cellLocator.SetMaxLevel(10);
+        //cellLocator.SetNumberOfCellsPerNode(5);
+        cellLocator.BuildLocator();
 
-		pointLocator.FreeSearchStructure();
-		pointLocator.SetDataSet(smallBodyPolyData);
-		pointLocator.BuildLocator();
-	}
+        pointLocator.FreeSearchStructure();
+        pointLocator.SetDataSet(smallBodyPolyData);
+        pointLocator.BuildLocator();
+    }
 
-	private void initializeLowResData()
-	{
+    private void initializeLowResData()
+    {
         if (lowResPointLocator == null)
         {
             lowResSmallBodyPolyData = new vtkPolyData();
@@ -209,21 +209,21 @@ public class SmallBodyModel extends Model
             smallBodyReader.SetFileName(defaultModelFile.getAbsolutePath());
             smallBodyReader.Update();
 
-    		vtkPolyData output = smallBodyReader.GetOutput();
+            vtkPolyData output = smallBodyReader.GetOutput();
             lowResSmallBodyPolyData.DeepCopy(output);
 
-    		smallBodyReader.Delete();
+            smallBodyReader.Delete();
 
             lowResPointLocator = new vtkPointLocator();
             lowResPointLocator.SetDataSet(lowResSmallBodyPolyData);
             lowResPointLocator.BuildLocator();
         }
-	}
+    }
 
-	public vtkPolyData getSmallBodyPolyData()
-	{
-		return smallBodyPolyData;
-	}
+    public vtkPolyData getSmallBodyPolyData()
+    {
+        return smallBodyPolyData;
+    }
 
     public vtkPolyData getLowResSmallBodyPolyData()
     {
@@ -232,163 +232,163 @@ public class SmallBodyModel extends Model
         return lowResSmallBodyPolyData;
     }
 
-	public vtksbCellLocator getCellLocator()
-	{
-		return cellLocator;
-	}
+    public vtksbCellLocator getCellLocator()
+    {
+        return cellLocator;
+    }
 
-	public vtkAbstractPointLocator getPointLocator()
-	{
-		return pointLocator;
-	}
+    public vtkAbstractPointLocator getPointLocator()
+    {
+        return pointLocator;
+    }
 
-	public TreeSet<Integer> getIntersectingCubes(vtkPolyData polydata)
-	{
-		if (smallBodyCubes == null)
-		{
-			smallBodyCubes = new SmallBodyCubes(
-			        getLowResSmallBodyPolyData(),
-			        null);
-		}
+    public TreeSet<Integer> getIntersectingCubes(vtkPolyData polydata)
+    {
+        if (smallBodyCubes == null)
+        {
+            smallBodyCubes = new SmallBodyCubes(
+                    getLowResSmallBodyPolyData(),
+                    null);
+        }
 
-		return smallBodyCubes.getIntersectingCubes(polydata);
-	}
+        return smallBodyCubes.getIntersectingCubes(polydata);
+    }
 
-	public void setShowSmallBody(boolean show)
-	{
-		if (show)
-		{
-			if (!smallBodyActors.contains(smallBodyActor))
-			{
-				smallBodyActors.add(smallBodyActor);
-				this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-			}
-		}
-		else
-		{
-			if (smallBodyActors.contains(smallBodyActor))
-			{
-				smallBodyActors.remove(smallBodyActor);
-				this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-			}
-		}
+    public void setShowSmallBody(boolean show)
+    {
+        if (show)
+        {
+            if (!smallBodyActors.contains(smallBodyActor))
+            {
+                smallBodyActors.add(smallBodyActor);
+                this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+            }
+        }
+        else
+        {
+            if (smallBodyActors.contains(smallBodyActor))
+            {
+                smallBodyActors.remove(smallBodyActor);
+                this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+            }
+        }
 
-	}
+    }
 
-	public vtkPolyData computeFrustumIntersection(
-			double[] origin,
-			double[] ul,
-			double[] ur,
-			double[] lr,
-			double[] ll)
-	{
-		return PolyDataUtil.computeFrustumIntersection(smallBodyPolyData, cellLocator, pointLocator, origin, ul, ur, lr, ll);
-	}
+    public vtkPolyData computeFrustumIntersection(
+            double[] origin,
+            double[] ul,
+            double[] ur,
+            double[] lr,
+            double[] ll)
+    {
+        return PolyDataUtil.computeFrustumIntersection(smallBodyPolyData, cellLocator, pointLocator, origin, ul, ur, lr, ll);
+    }
 
-	/**
-	 * Given 2 points on the surface of the body, draw a nice looking path between the 2
-	 * that is not obscured anywhere or too distant from the surface. Return this
-	 * path as a vtkPolyData
-	 * @param pt1
-	 * @param pt2
-	 * @return
-	 */
-	public vtkPolyData drawPath(
-			double[] pt1,
-			double[] pt2)
-	{
-		return PolyDataUtil.drawPathOnPolyData(smallBodyPolyData, pointLocator, pt1, pt2);
-	}
+    /**
+     * Given 2 points on the surface of the body, draw a nice looking path between the 2
+     * that is not obscured anywhere or too distant from the surface. Return this
+     * path as a vtkPolyData
+     * @param pt1
+     * @param pt2
+     * @return
+     */
+    public vtkPolyData drawPath(
+            double[] pt1,
+            double[] pt2)
+    {
+        return PolyDataUtil.drawPathOnPolyData(smallBodyPolyData, pointLocator, pt1, pt2);
+    }
 
-	public void drawPolygon(
-			double[] center,
-			double radius,
-			int numberOfSides,
-			vtkPolyData outputInterior,
-			vtkPolyData outputBoundary)
-	{
-		PolyDataUtil.drawPolygonOnPolyData(
-				smallBodyPolyData,
-				pointLocator,
-				center,
-				radius,
-				numberOfSides,
-				outputInterior,
-				outputBoundary);
-	}
+    public void drawPolygon(
+            double[] center,
+            double radius,
+            int numberOfSides,
+            vtkPolyData outputInterior,
+            vtkPolyData outputBoundary)
+    {
+        PolyDataUtil.drawPolygonOnPolyData(
+                smallBodyPolyData,
+                pointLocator,
+                center,
+                radius,
+                numberOfSides,
+                outputInterior,
+                outputBoundary);
+    }
 
-	public void drawPolygonLowRes(
-			double[] center,
-			double radius,
-			int numberOfSides,
-			vtkPolyData outputInterior,
-			vtkPolyData outputBoundary)
-	{
-		if (resolutionLevel == 0)
-		{
-			drawPolygon(center, radius, numberOfSides, outputInterior, outputBoundary);
-			return;
-		}
+    public void drawPolygonLowRes(
+            double[] center,
+            double radius,
+            int numberOfSides,
+            vtkPolyData outputInterior,
+            vtkPolyData outputBoundary)
+    {
+        if (resolutionLevel == 0)
+        {
+            drawPolygon(center, radius, numberOfSides, outputInterior, outputBoundary);
+            return;
+        }
 
-		initializeLowResData();
+        initializeLowResData();
 
-		PolyDataUtil.drawPolygonOnPolyData(
-				lowResSmallBodyPolyData,
-				lowResPointLocator,
-				center,
-				radius,
-				numberOfSides,
-				outputInterior,
-				outputBoundary);
-	}
+        PolyDataUtil.drawPolygonOnPolyData(
+                lowResSmallBodyPolyData,
+                lowResPointLocator,
+                center,
+                radius,
+                numberOfSides,
+                outputInterior,
+                outputBoundary);
+    }
 
-	public void drawCone(
-			double[] vertex,
-			double[] axis,
-			double angle,
-			int numberOfSides,
-			vtkPolyData outputInterior,
-			vtkPolyData outputBoundary)
-	{
-		PolyDataUtil.drawConeOnPolyData(
-				smallBodyPolyData,
-				pointLocator,
-				vertex,
-				axis,
-				angle,
-				numberOfSides,
-				outputInterior,
-				outputBoundary);
-	}
+    public void drawCone(
+            double[] vertex,
+            double[] axis,
+            double angle,
+            int numberOfSides,
+            vtkPolyData outputInterior,
+            vtkPolyData outputBoundary)
+    {
+        PolyDataUtil.drawConeOnPolyData(
+                smallBodyPolyData,
+                pointLocator,
+                vertex,
+                axis,
+                angle,
+                numberOfSides,
+                outputInterior,
+                outputBoundary);
+    }
 
-	public void shiftPolyLineInNormalDirection(
-			vtkPolyData polyLine,
-			double shiftFactor)
-	{
-		PolyDataUtil.shiftPolyLineInNormalDirectionOfPolyData(
-				polyLine,
-				smallBodyPolyData,
-				pointLocator,
-				shiftFactor * getMinShiftAmount());
-	}
+    public void shiftPolyLineInNormalDirection(
+            vtkPolyData polyLine,
+            double shiftFactor)
+    {
+        PolyDataUtil.shiftPolyLineInNormalDirectionOfPolyData(
+                polyLine,
+                smallBodyPolyData,
+                pointLocator,
+                shiftFactor * getMinShiftAmount());
+    }
 
-	/**
-	 * This returns the closest point to the model to pt. Note the returned point need
-	 * not be a vertex of the model and can lie anywhere on a plate.
-	 * @param pt
-	 * @return
-	 */
-	public double[] findClosestPoint(double[] pt)
-	{
-		double[] closestPoint = new double[3];
-		int[] cellId = new int[1];
-		int[] subId = new int[1];
-		double[] dist2 = new double[1];
+    /**
+     * This returns the closest point to the model to pt. Note the returned point need
+     * not be a vertex of the model and can lie anywhere on a plate.
+     * @param pt
+     * @return
+     */
+    public double[] findClosestPoint(double[] pt)
+    {
+        double[] closestPoint = new double[3];
+        int[] cellId = new int[1];
+        int[] subId = new int[1];
+        double[] dist2 = new double[1];
 
-		cellLocator.FindClosestPoint(pt, closestPoint, genericCell, cellId, subId, dist2);
+        cellLocator.FindClosestPoint(pt, closestPoint, genericCell, cellId, subId, dist2);
 
-		return closestPoint;
-	}
+        return closestPoint;
+    }
 
     /**
      * This returns the index of the closest cell in the model to pt.
@@ -431,509 +431,509 @@ public class SmallBodyModel extends Model
      */
     public int getPointAndCellIdFromLatLon(double lat, double lon, double[] intersectPoint)
     {
-    	LatLon lla = new LatLon(lat, lon);
-    	double[] lookPt = MathUtil.latrec(lla);
+        LatLon lla = new LatLon(lat, lon);
+        double[] lookPt = MathUtil.latrec(lla);
 
-    	// Move in the direction of lookPt until we are definitely outside the asteroid
-    	BoundingBox bb = getBoundingBox();
-    	double largestSide = bb.getLargestSide() * 1.1;
-    	lookPt[0] *= largestSide;
-    	lookPt[1] *= largestSide;
-    	lookPt[2] *= largestSide;
+        // Move in the direction of lookPt until we are definitely outside the asteroid
+        BoundingBox bb = getBoundingBox();
+        double largestSide = bb.getLargestSide() * 1.1;
+        lookPt[0] *= largestSide;
+        lookPt[1] *= largestSide;
+        lookPt[2] *= largestSide;
 
-    	double[] origin = {0.0, 0.0, 0.0};
-		double tol = 1e-6;
-		double[] t = new double[1];
-		double[] x = new double[3];
-		double[] pcoords = new double[3];
-		int[] subId = new int[1];
-		int[] cellId = new int[1];
+        double[] origin = {0.0, 0.0, 0.0};
+        double tol = 1e-6;
+        double[] t = new double[1];
+        double[] x = new double[3];
+        double[] pcoords = new double[3];
+        int[] subId = new int[1];
+        int[] cellId = new int[1];
 
-		int result = cellLocator.IntersectWithLine(origin, lookPt, tol, t, x, pcoords, subId, cellId, genericCell);
+        int result = cellLocator.IntersectWithLine(origin, lookPt, tol, t, x, pcoords, subId, cellId, genericCell);
 
-		intersectPoint[0] = x[0];
-		intersectPoint[1] = x[1];
-		intersectPoint[2] = x[2];
+        intersectPoint[0] = x[0];
+        intersectPoint[1] = x[1];
+        intersectPoint[2] = x[2];
 
-		if (result > 0)
-			return cellId[0];
-		else
-			return -1;
+        if (result > 0)
+            return cellId[0];
+        else
+            return -1;
     }
 
     protected void initializeActorsAndMappers()
     {
-		if (smallBodyActor == null)
-		{
-	        smallBodyMapper = new vtkPolyDataMapper();
-	        smallBodyMapper.SetInput(smallBodyPolyData);
-			vtkLookupTable lookupTable = new vtkLookupTable();
-			smallBodyMapper.SetLookupTable(lookupTable);
-	        smallBodyMapper.UseLookupTableScalarRangeOn();
+        if (smallBodyActor == null)
+        {
+            smallBodyMapper = new vtkPolyDataMapper();
+            smallBodyMapper.SetInput(smallBodyPolyData);
+            vtkLookupTable lookupTable = new vtkLookupTable();
+            smallBodyMapper.SetLookupTable(lookupTable);
+            smallBodyMapper.UseLookupTableScalarRangeOn();
 
-	        smallBodyActor = new vtkActor();
-	        smallBodyActor.SetMapper(smallBodyMapper);
-	        vtkProperty smallBodyProperty = smallBodyActor.GetProperty();
-	        smallBodyProperty.SetInterpolationToGouraud();
+            smallBodyActor = new vtkActor();
+            smallBodyActor.SetMapper(smallBodyMapper);
+            vtkProperty smallBodyProperty = smallBodyActor.GetProperty();
+            smallBodyProperty.SetInterpolationToGouraud();
 
-	        smallBodyActors.add(smallBodyActor);
+            smallBodyActors.add(smallBodyActor);
 
-	        scalarBarActor = new vtkScalarBarActor();
-	        vtkCoordinate coordinate = scalarBarActor.GetPositionCoordinate();
-	        coordinate.SetCoordinateSystemToNormalizedViewport();
-	        coordinate.SetValue(0.2, 0.01);
-	        scalarBarActor.SetOrientationToHorizontal();
-	        scalarBarActor.SetWidth(0.6);
-	        scalarBarActor.SetHeight(0.1275);
-	        vtkTextProperty tp = new vtkTextProperty();
-	        tp.SetFontSize(10);
-	        scalarBarActor.SetTitleTextProperty(tp);
-		}
+            scalarBarActor = new vtkScalarBarActor();
+            vtkCoordinate coordinate = scalarBarActor.GetPositionCoordinate();
+            coordinate.SetCoordinateSystemToNormalizedViewport();
+            coordinate.SetValue(0.2, 0.01);
+            scalarBarActor.SetOrientationToHorizontal();
+            scalarBarActor.SetWidth(0.6);
+            scalarBarActor.SetHeight(0.1275);
+            vtkTextProperty tp = new vtkTextProperty();
+            tp.SetFontSize(10);
+            scalarBarActor.SetTitleTextProperty(tp);
+        }
     }
 
-	public ArrayList<vtkProp> getProps()
-	{
-		initializeActorsAndMappers();
+    public ArrayList<vtkProp> getProps()
+    {
+        initializeActorsAndMappers();
 
-		return smallBodyActors;
-	}
+        return smallBodyActors;
+    }
 
-	public void setShadingToFlat()
-	{
-		initializeActorsAndMappers();
+    public void setShadingToFlat()
+    {
+        initializeActorsAndMappers();
 
-		vtkProperty property = smallBodyActor.GetProperty();
-		property.SetInterpolationToFlat();
-		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-	}
+        vtkProperty property = smallBodyActor.GetProperty();
+        property.SetInterpolationToFlat();
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+    }
 
-	public void setShadingToSmooth()
-	{
-		initializeActorsAndMappers();
+    public void setShadingToSmooth()
+    {
+        initializeActorsAndMappers();
 
-		vtkProperty property = smallBodyActor.GetProperty();
-		property.SetInterpolationToGouraud();
-		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-	}
+        vtkProperty property = smallBodyActor.GetProperty();
+        property.SetInterpolationToGouraud();
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+    }
 
-	public BoundingBox getBoundingBox()
-	{
-		if (boundingBox == null)
-		{
-			smallBodyPolyData.ComputeBounds();
-			boundingBox = new BoundingBox(smallBodyPolyData.GetBounds());
-		}
+    public BoundingBox getBoundingBox()
+    {
+        if (boundingBox == null)
+        {
+            smallBodyPolyData.ComputeBounds();
+            boundingBox = new BoundingBox(smallBodyPolyData.GetBounds());
+        }
 
-		return boundingBox;
+        return boundingBox;
 
-		/*
-		BoundingBox bb = new BoundingBox();
-		vtkPoints points = smallBodyPolyData.GetPoints();
-		int numberPoints = points.GetNumberOfPoints();
-		for (int i=0; i<numberPoints; ++i)
-		{
-			double[] pt = points.GetPoint(i);
-			bb.update(pt[0], pt[1], pt[2]);
-		}
+        /*
+        BoundingBox bb = new BoundingBox();
+        vtkPoints points = smallBodyPolyData.GetPoints();
+        int numberPoints = points.GetNumberOfPoints();
+        for (int i=0; i<numberPoints; ++i)
+        {
+            double[] pt = points.GetPoint(i);
+            bb.update(pt[0], pt[1], pt[2]);
+        }
 
-		return bb;
-		*/
-	}
+        return bb;
+        */
+    }
 
-	public double getBoundingBoxDiagonalLength()
-	{
-		return getBoundingBox().getDiagonalLength();
-	}
+    public double getBoundingBoxDiagonalLength()
+    {
+        return getBoundingBox().getDiagonalLength();
+    }
 
-	/**
-	 * Get the minimum shift amount needed so shift an object away from
-	 * the model so it is not obscured by the model and looks like it's
-	 * laying on the model
-	 * @return
-	 */
-	public double getMinShiftAmount()
-	{
-		return getBoundingBoxDiagonalLength() / 38660.0;
-	}
+    /**
+     * Get the minimum shift amount needed so shift an object away from
+     * the model so it is not obscured by the model and looks like it's
+     * laying on the model
+     * @return
+     */
+    public double getMinShiftAmount()
+    {
+        return getBoundingBoxDiagonalLength() / 38660.0;
+    }
 
     public String getClickStatusBarText(vtkProp prop, int cellId, double[] pickPosition)
     {
-    	// Coloring is currently only supported in the lowest resolution level
-    	if (resolutionLevel == 0)
-    	{
-    		if (coloringIndex >= 0)
-    		{
-    			float value = (float)getColoringValue(coloringIndex, pickPosition);
-    			return coloringNames[coloringIndex] + ": " + value + " " + coloringUnits[coloringIndex];
-    		}
-    		else if (useFalseColoring)
-    		{
-    			float red = (float)getColoringValue(redFalseColor, pickPosition);
-    			float green = (float)getColoringValue(greenFalseColor, pickPosition);
-    			float blue = (float)getColoringValue(blueFalseColor, pickPosition);
-    			return coloringNames[redFalseColor] + ": " + red + " " + coloringUnits[redFalseColor] + ", " +
-    			coloringNames[greenFalseColor] + ": " + green + " " + coloringUnits[greenFalseColor] +  ", " +
-    			coloringNames[blueFalseColor] + ": " + blue + " " + coloringUnits[blueFalseColor];
-    		}
-    	}
-		return "";
+        // Coloring is currently only supported in the lowest resolution level
+        if (resolutionLevel == 0)
+        {
+            if (coloringIndex >= 0)
+            {
+                float value = (float)getColoringValue(coloringIndex, pickPosition);
+                return coloringNames[coloringIndex] + ": " + value + " " + coloringUnits[coloringIndex];
+            }
+            else if (useFalseColoring)
+            {
+                float red = (float)getColoringValue(redFalseColor, pickPosition);
+                float green = (float)getColoringValue(greenFalseColor, pickPosition);
+                float blue = (float)getColoringValue(blueFalseColor, pickPosition);
+                return coloringNames[redFalseColor] + ": " + red + " " + coloringUnits[redFalseColor] + ", " +
+                coloringNames[greenFalseColor] + ": " + green + " " + coloringUnits[greenFalseColor] +  ", " +
+                coloringNames[blueFalseColor] + ": " + blue + " " + coloringUnits[blueFalseColor];
+            }
+        }
+        return "";
     }
 
     public double[] computeLargestSmallestMeanEdgeLength()
     {
-    	double[] largestSmallestMean = new double[3];
+        double[] largestSmallestMean = new double[3];
 
-    	double minLength = Double.MAX_VALUE;
-    	double maxLength = 0.0;
-    	double meanLength = 0.0;
+        double minLength = Double.MAX_VALUE;
+        double maxLength = 0.0;
+        double meanLength = 0.0;
 
-    	int numberOfCells = smallBodyPolyData.GetNumberOfCells();
+        int numberOfCells = smallBodyPolyData.GetNumberOfCells();
 
-    	System.out.println(numberOfCells);
+        System.out.println(numberOfCells);
 
-		for (int i=0; i<numberOfCells; ++i)
-    	{
-			vtkCell cell = smallBodyPolyData.GetCell(i);
-			vtkPoints points = cell.GetPoints();
-    		double[] pt0 = points.GetPoint(0);
-    		double[] pt1 = points.GetPoint(1);
-    		double[] pt2 = points.GetPoint(2);
-    		double dist0 = MathUtil.distanceBetween(pt0, pt1);
-    		double dist1 = MathUtil.distanceBetween(pt1, pt2);
-    		double dist2 = MathUtil.distanceBetween(pt2, pt0);
-    		if (dist0 < minLength)
-    			minLength = dist0;
-    		if (dist0 > maxLength)
-    			maxLength = dist0;
-    		if (dist1 < minLength)
-    			minLength = dist1;
-    		if (dist1 > maxLength)
-    			maxLength = dist1;
-    		if (dist2 < minLength)
-    			minLength = dist2;
-    		if (dist2 > maxLength)
-    			maxLength = dist2;
+        for (int i=0; i<numberOfCells; ++i)
+        {
+            vtkCell cell = smallBodyPolyData.GetCell(i);
+            vtkPoints points = cell.GetPoints();
+            double[] pt0 = points.GetPoint(0);
+            double[] pt1 = points.GetPoint(1);
+            double[] pt2 = points.GetPoint(2);
+            double dist0 = MathUtil.distanceBetween(pt0, pt1);
+            double dist1 = MathUtil.distanceBetween(pt1, pt2);
+            double dist2 = MathUtil.distanceBetween(pt2, pt0);
+            if (dist0 < minLength)
+                minLength = dist0;
+            if (dist0 > maxLength)
+                maxLength = dist0;
+            if (dist1 < minLength)
+                minLength = dist1;
+            if (dist1 > maxLength)
+                maxLength = dist1;
+            if (dist2 < minLength)
+                minLength = dist2;
+            if (dist2 > maxLength)
+                maxLength = dist2;
 
-    		meanLength += (dist0 + dist1 + dist2);
-    	}
+            meanLength += (dist0 + dist1 + dist2);
+        }
 
-		meanLength /= ((double)(numberOfCells * 3));
+        meanLength /= ((double)(numberOfCells * 3));
 
-		System.out.println("minLength  " + minLength);
-		System.out.println("maxLength  " + maxLength);
-		System.out.println("meanLength  " + meanLength);
+        System.out.println("minLength  " + minLength);
+        System.out.println("maxLength  " + maxLength);
+        System.out.println("meanLength  " + meanLength);
 
-		largestSmallestMean[0] = minLength;
-		largestSmallestMean[1] = maxLength;
-		largestSmallestMean[2] = meanLength;
+        largestSmallestMean[0] = minLength;
+        largestSmallestMean[1] = maxLength;
+        largestSmallestMean[2] = meanLength;
 
-		return largestSmallestMean;
+        return largestSmallestMean;
     }
 
     public void computeSurfaceArea()
     {
-    	vtkMassProperties massProp = new vtkMassProperties();
-    	massProp.SetInput(smallBodyPolyData);
-    	massProp.Update();
+        vtkMassProperties massProp = new vtkMassProperties();
+        massProp.SetInput(smallBodyPolyData);
+        massProp.Update();
 
-    	System.out.println("Surface area " + massProp.GetSurfaceArea());
-    	System.out.println("Volume " + massProp.GetVolume());
+        System.out.println("Surface area " + massProp.GetSurfaceArea());
+        System.out.println("Volume " + massProp.GetVolume());
     }
 
     public void setModelResolution(int level) throws IOException
     {
-    	if (level == resolutionLevel)
-    		return;
+        if (level == resolutionLevel)
+            return;
 
-    	resolutionLevel = level;
-    	if (level < 0)
-    		resolutionLevel = 0;
-    	else if (level > 3)
-    		resolutionLevel = 3;
+        resolutionLevel = level;
+        if (level < 0)
+            resolutionLevel = 0;
+        else if (level > 3)
+            resolutionLevel = 3;
 
-    	smallBodyCubes = null;
-    	if (coloringValues != null)
-    	{
-    		for (int i=0; i<coloringValues.length; ++i)
-    			coloringValues[i] = null;
-    	}
+        smallBodyCubes = null;
+        if (coloringValues != null)
+        {
+            for (int i=0; i<coloringValues.length; ++i)
+                coloringValues[i] = null;
+        }
 
-		File smallBodyFile = defaultModelFile;
-		switch(level)
-		{
-		case 1:
-			smallBodyFile = FileCache.getFileFromServer(modelFiles[1]);
-			break;
-		case 2:
-			smallBodyFile = FileCache.getFileFromServer(modelFiles[2]);
-			break;
-		case 3:
-			smallBodyFile = FileCache.getFileFromServer(modelFiles[3]);
-			break;
-		}
+        File smallBodyFile = defaultModelFile;
+        switch(level)
+        {
+        case 1:
+            smallBodyFile = FileCache.getFileFromServer(modelFiles[1]);
+            break;
+        case 2:
+            smallBodyFile = FileCache.getFileFromServer(modelFiles[2]);
+            break;
+        case 3:
+            smallBodyFile = FileCache.getFileFromServer(modelFiles[3]);
+            break;
+        }
 
-		if (resolutionLevel != 0)
-			setColoringIndex(-1);
+        if (resolutionLevel != 0)
+            setColoringIndex(-1);
 
-		this.initialize(smallBodyFile);
+        this.initialize(smallBodyFile);
 
-		this.pcs.firePropertyChange(Properties.MODEL_RESOLUTION_CHANGED, null, null);
-		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+        this.pcs.firePropertyChange(Properties.MODEL_RESOLUTION_CHANGED, null, null);
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
     public int getModelResolution()
     {
-    	return resolutionLevel;
+        return resolutionLevel;
     }
 
     public int getNumberResolutionLevels()
-	{
-		return modelFiles.length;
-	}
+    {
+        return modelFiles.length;
+    }
 
     public String getModelName()
     {
-    	if (resolutionLevel >= 0 && resolutionLevel < 4)
-    		return modelNames[resolutionLevel];
-    	else
-    		return null;
+        if (resolutionLevel >= 0 && resolutionLevel < 4)
+            return modelNames[resolutionLevel];
+        else
+            return null;
     }
 
-	/**
-	 * This file loads the coloring used when the coloring method is point data
-	 * @throws IOException
-	 */
-	private void loadColoringData() throws IOException
-	{
-		if (coloringValues != null && coloringValues.length > 0 && coloringValues[0] == null)
-		{
-			for (int i=0; i<coloringValues.length; ++i)
-				coloringValues[i] = new vtkFloatArray();
-		}
-		else
-		{
-			return;
-		}
+    /**
+     * This file loads the coloring used when the coloring method is point data
+     * @throws IOException
+     */
+    private void loadColoringData() throws IOException
+    {
+        if (coloringValues != null && coloringValues.length > 0 && coloringValues[0] == null)
+        {
+            for (int i=0; i<coloringValues.length; ++i)
+                coloringValues[i] = new vtkFloatArray();
+        }
+        else
+        {
+            return;
+        }
 
-		for (int i=0; i<coloringValues.length; ++i)
-		{
-			File file = FileCache.getFileFromServer(coloringFiles[i]);
-			vtkFloatArray array = coloringValues[i];
+        for (int i=0; i<coloringValues.length; ++i)
+        {
+            File file = FileCache.getFileFromServer(coloringFiles[i]);
+            vtkFloatArray array = coloringValues[i];
 
-			array.SetNumberOfComponents(1);
-			if (coloringValueType == ColoringValueType.POINT_DATA)
-				array.SetNumberOfTuples(smallBodyPolyData.GetNumberOfPoints());
-			else
-				array.SetNumberOfTuples(smallBodyPolyData.GetNumberOfCells());
+            array.SetNumberOfComponents(1);
+            if (coloringValueType == ColoringValueType.POINT_DATA)
+                array.SetNumberOfTuples(smallBodyPolyData.GetNumberOfPoints());
+            else
+                array.SetNumberOfTuples(smallBodyPolyData.GetNumberOfCells());
 
-	    	FileInputStream fs =  new FileInputStream(file);
-			InputStreamReader isr = new InputStreamReader(fs);
-			BufferedReader in = new BufferedReader(isr);
+            FileInputStream fs =  new FileInputStream(file);
+            InputStreamReader isr = new InputStreamReader(fs);
+            BufferedReader in = new BufferedReader(isr);
 
-			String line;
-			int j = 0;
-			while ((line = in.readLine()) != null)
-			{
-				array.SetTuple1(j, Float.parseFloat(line));
-				++j;
-			}
+            String line;
+            int j = 0;
+            while ((line = in.readLine()) != null)
+            {
+                array.SetTuple1(j, Float.parseFloat(line));
+                ++j;
+            }
 
-			in.close();
-		}
-	}
+            in.close();
+        }
+    }
 
-	/**
-	 * This file loads the coloring used when the coloring method is texture
-	 * @throws IOException
-	 */
-	private void loadColoringTexture() throws IOException
-	{
-		if (coloringImages != null && coloringImages.length > 0 && coloringImages[0] == null)
-		{
-			loadColoringData();
+    /**
+     * This file loads the coloring used when the coloring method is texture
+     * @throws IOException
+     */
+    private void loadColoringTexture() throws IOException
+    {
+        if (coloringImages != null && coloringImages.length > 0 && coloringImages[0] == null)
+        {
+            loadColoringData();
 
-			for (int i=0; i<coloringImages.length; ++i)
-				coloringImages[i] = new vtkImageData();
-		}
-		else
-		{
-			return;
-		}
+            for (int i=0; i<coloringImages.length; ++i)
+                coloringImages[i] = new vtkImageData();
+        }
+        else
+        {
+            return;
+        }
 
-		for (int i=0; i<coloringImages.length; ++i)
-		{
-			int length = coloringFiles[i].length();
-			File file = FileCache.getFileFromServer(coloringFiles[i].substring(0, length-6) + "vti");
+        for (int i=0; i<coloringImages.length; ++i)
+        {
+            int length = coloringFiles[i].length();
+            File file = FileCache.getFileFromServer(coloringFiles[i].substring(0, length-6) + "vti");
 
-			vtkImageData image = coloringImages[i];
+            vtkImageData image = coloringImages[i];
 
-			vtkXMLImageDataReader reader = new vtkXMLImageDataReader();
-	    	//vtkStructuredPointsReader reader = new vtkStructuredPointsReader();
-	    	reader.SetFileName(file.getAbsolutePath());
-	    	reader.Update();
+            vtkXMLImageDataReader reader = new vtkXMLImageDataReader();
+            //vtkStructuredPointsReader reader = new vtkStructuredPointsReader();
+            reader.SetFileName(file.getAbsolutePath());
+            reader.Update();
 
-	    	vtkImageData readerOutput = reader.GetOutput();
-	    	image.DeepCopy(readerOutput);
+            vtkImageData readerOutput = reader.GetOutput();
+            image.DeepCopy(readerOutput);
 
-//	    	vtkLookupTable lookupTable = new vtkLookupTable();
-//	        lookupTable.SetRange(coloringValues[i].GetRange());
-//	        lookupTable.Build();
-//	        invertLookupTableCharArray(lookupTable.GetTable());
+//            vtkLookupTable lookupTable = new vtkLookupTable();
+//            lookupTable.SetRange(coloringValues[i].GetRange());
+//            lookupTable.Build();
+//            invertLookupTableCharArray(lookupTable.GetTable());
 //
-//	    	vtkImageMapToColors mapToColors = new vtkImageMapToColors();
-//	        mapToColors.SetInputConnection(reader.GetOutputPort());
-//	        mapToColors.SetLookupTable(lookupTable);
-//	        mapToColors.SetOutputFormatToRGB();
-//	        mapToColors.Update();
+//            vtkImageMapToColors mapToColors = new vtkImageMapToColors();
+//            mapToColors.SetInputConnection(reader.GetOutputPort());
+//            mapToColors.SetLookupTable(lookupTable);
+//            mapToColors.SetOutputFormatToRGB();
+//            mapToColors.Update();
 //
-//	    	image.DeepCopy(mapToColors.GetOutput());
-		}
-	}
+//            image.DeepCopy(mapToColors.GetOutput());
+        }
+    }
 
-	private void invertLookupTableCharArray(vtkUnsignedCharArray table)
-	{
-		int numberOfValues = table.GetNumberOfTuples();
-		for (int i=0; i<numberOfValues/2; ++i)
-		{
-			double[] v1 = table.GetTuple4(i);
-			double[] v2 = table.GetTuple4(numberOfValues-i-1);
-			table.SetTuple4(i, v2[0], v2[1], v2[2], v2[3]);
-			table.SetTuple4(numberOfValues-i-1, v1[0], v1[1], v1[2], v1[3]);
-		}
-	}
+    private void invertLookupTableCharArray(vtkUnsignedCharArray table)
+    {
+        int numberOfValues = table.GetNumberOfTuples();
+        for (int i=0; i<numberOfValues/2; ++i)
+        {
+            double[] v1 = table.GetTuple4(i);
+            double[] v2 = table.GetTuple4(numberOfValues-i-1);
+            table.SetTuple4(i, v2[0], v2[1], v2[2], v2[3]);
+            table.SetTuple4(numberOfValues-i-1, v1[0], v1[1], v1[2], v1[3]);
+        }
+    }
 
-	/**
-	 * Invert the lookup table so that red is high values
-	 * and blue is low values (rather than the reverse).
-	 */
-	private void invertLookupTable()
-	{
-		vtkLookupTable lookupTable = (vtkLookupTable)smallBodyMapper.GetLookupTable();
-		vtkUnsignedCharArray table = lookupTable.GetTable();
+    /**
+     * Invert the lookup table so that red is high values
+     * and blue is low values (rather than the reverse).
+     */
+    private void invertLookupTable()
+    {
+        vtkLookupTable lookupTable = (vtkLookupTable)smallBodyMapper.GetLookupTable();
+        vtkUnsignedCharArray table = lookupTable.GetTable();
 
-		invertLookupTableCharArray(table);
-//		int numberOfValues = table.GetNumberOfTuples();
-//		for (int i=0; i<numberOfValues/2; ++i)
-//		{
-//			double[] v1 = table.GetTuple4(i);
-//			double[] v2 = table.GetTuple4(numberOfValues-i-1);
-//			table.SetTuple4(i, v2[0], v2[1], v2[2], v2[3]);
-//			table.SetTuple4(numberOfValues-i-1, v1[0], v1[1], v1[2], v1[3]);
-//		}
+        invertLookupTableCharArray(table);
+//        int numberOfValues = table.GetNumberOfTuples();
+//        for (int i=0; i<numberOfValues/2; ++i)
+//        {
+//            double[] v1 = table.GetTuple4(i);
+//            double[] v2 = table.GetTuple4(numberOfValues-i-1);
+//            table.SetTuple4(i, v2[0], v2[1], v2[2], v2[3]);
+//            table.SetTuple4(numberOfValues-i-1, v1[0], v1[1], v1[2], v1[3]);
+//        }
 
-		lookupTable.SetTable(table);
-		smallBodyMapper.Modified();
-	}
+        lookupTable.SetTable(table);
+        smallBodyMapper.Modified();
+    }
 
-	public void setColoringIndex(int index) throws IOException
-	{
-//		if (coloringIndex == index)
-//			return;
+    public void setColoringIndex(int index) throws IOException
+    {
+//        if (coloringIndex == index)
+//            return;
 //
-    	// Coloring is currently only supported in the lowest resolution level
-		if (resolutionLevel == 0)
-		{
-			coloringIndex = index;
-			useFalseColoring = false;
+        // Coloring is currently only supported in the lowest resolution level
+        if (resolutionLevel == 0)
+        {
+            coloringIndex = index;
+            useFalseColoring = false;
 
-			paintBody();
-		}
-	}
+            paintBody();
+        }
+    }
 
-	public void setFalseColoring(int redChannel, int greenChannel, int blueChannel) throws IOException
-	{
-//		if (redFalseColor == redChannel &&
-//				greenFalseColor == greenChannel &&
-//				blueFalseColor == blueChannel &&
-//				useFalseColoring == true)
-//		{
-//			return;
-//		}
+    public void setFalseColoring(int redChannel, int greenChannel, int blueChannel) throws IOException
+    {
+//        if (redFalseColor == redChannel &&
+//                greenFalseColor == greenChannel &&
+//                blueFalseColor == blueChannel &&
+//                useFalseColoring == true)
+//        {
+//            return;
+//        }
 //
-    	// Coloring is currently only supported in the lowest resolution level
-		if (resolutionLevel == 0)
-		{
-			coloringIndex = -1;
-			useFalseColoring = true;
-			redFalseColor = redChannel;
-			greenFalseColor = greenChannel;
-			blueFalseColor = blueChannel;
+        // Coloring is currently only supported in the lowest resolution level
+        if (resolutionLevel == 0)
+        {
+            coloringIndex = -1;
+            useFalseColoring = true;
+            redFalseColor = redChannel;
+            greenFalseColor = greenChannel;
+            blueFalseColor = blueChannel;
 
-			paintBody();
-		}
-	}
+            paintBody();
+        }
+    }
 
     public boolean isColoringDataAvailable()
     {
-    	return coloringFiles != null;
+        return coloringFiles != null;
     }
 
     private void blendImageMapWithColoring()
     {
-    	vtkImageData image = null;
+        vtkImageData image = null;
 
-    	if (coloringIndex >= 0)
-    	{
-	    	vtkLookupTable lookupTable = new vtkLookupTable();
-	    	//lookupTable.SetRange(coloringValues[coloringIndex].GetRange());
-	        lookupTable.SetRange(computeRange(coloringIndex, true));
-	        lookupTable.Build();
-	        invertLookupTableCharArray(lookupTable.GetTable());
-			// If there's missing data, map them to white
-			if (coloringHasNulls != null && coloringHasNulls[coloringIndex])
-				((vtkLookupTable)smallBodyMapper.GetLookupTable()).SetTableValue(0, 1.0, 1.0, 1.0, 1.0);
+        if (coloringIndex >= 0)
+        {
+            vtkLookupTable lookupTable = new vtkLookupTable();
+            //lookupTable.SetRange(coloringValues[coloringIndex].GetRange());
+            lookupTable.SetRange(computeRange(coloringIndex, true));
+            lookupTable.Build();
+            invertLookupTableCharArray(lookupTable.GetTable());
+            // If there's missing data, map them to white
+            if (coloringHasNulls != null && coloringHasNulls[coloringIndex])
+                ((vtkLookupTable)smallBodyMapper.GetLookupTable()).SetTableValue(0, 1.0, 1.0, 1.0, 1.0);
 
-	    	vtkImageMapToColors mapToColors = new vtkImageMapToColors();
-	        mapToColors.SetInput(coloringImages[coloringIndex]);
-	        mapToColors.SetLookupTable(lookupTable);
-	        mapToColors.SetOutputFormatToRGB();
-	        mapToColors.Update();
+            vtkImageMapToColors mapToColors = new vtkImageMapToColors();
+            mapToColors.SetInput(coloringImages[coloringIndex]);
+            mapToColors.SetLookupTable(lookupTable);
+            mapToColors.SetOutputFormatToRGB();
+            mapToColors.Update();
 
-	        //image = this.coloringImages[coloringIndex];
-	        image = mapToColors.GetOutput();
-    		scalarBarActor.SetTitle(coloringNames[coloringIndex] + " (" + coloringUnits[coloringIndex] + ")");
-    	}
-    	else if (useFalseColoring)
-    	{
-    		vtkImageAppendComponents appendComponents = new vtkImageAppendComponents();
+            //image = this.coloringImages[coloringIndex];
+            image = mapToColors.GetOutput();
+            scalarBarActor.SetTitle(coloringNames[coloringIndex] + " (" + coloringUnits[coloringIndex] + ")");
+        }
+        else if (useFalseColoring)
+        {
+            vtkImageAppendComponents appendComponents = new vtkImageAppendComponents();
 
-    		int[] components = {redFalseColor, greenFalseColor, blueFalseColor};
-    		for (int c : components)
-    		{
-    			//double[] range = coloringValues[c].GetRange();
-        		double[] range = computeRange(c, false);
-        		double extent = range[1] - range[0];
+            int[] components = {redFalseColor, greenFalseColor, blueFalseColor};
+            for (int c : components)
+            {
+                //double[] range = coloringValues[c].GetRange();
+                double[] range = computeRange(c, false);
+                double extent = range[1] - range[0];
 
-        		vtkImageShiftScale shiftScale = new vtkImageShiftScale();
-        		shiftScale.SetShift(-range[0]);
-        		shiftScale.SetScale(255.0 / extent);
-        		shiftScale.SetInput(coloringImages[c]);
-        		shiftScale.SetOutputScalarTypeToUnsignedChar();
-        		shiftScale.Update();
+                vtkImageShiftScale shiftScale = new vtkImageShiftScale();
+                shiftScale.SetShift(-range[0]);
+                shiftScale.SetScale(255.0 / extent);
+                shiftScale.SetInput(coloringImages[c]);
+                shiftScale.SetOutputScalarTypeToUnsignedChar();
+                shiftScale.Update();
 
-        		// TODO in this situation, invalid data get mapped to black, not white, as
-        		// is the convention throughout the rest of this class. Fix this if desired.
+                // TODO in this situation, invalid data get mapped to black, not white, as
+                // is the convention throughout the rest of this class. Fix this if desired.
 
-        		vtkAlgorithmOutput outputPort = shiftScale.GetOutputPort();
-        		appendComponents.AddInputConnection(outputPort);
-    		}
+                vtkAlgorithmOutput outputPort = shiftScale.GetOutputPort();
+                appendComponents.AddInputConnection(outputPort);
+            }
 
-    		appendComponents.Update();
-    		image = appendComponents.GetOutput();
-    	}
+            appendComponents.Update();
+            image = appendComponents.GetOutput();
+        }
 
-		if (blendFilter == null)
-		{
-			blendFilter = new vtkImageBlend();
-			blendFilter.AddInput(originalImageMap);
-			blendFilter.AddInput(image);
-		}
-		else
-		{
-			blendFilter.SetInput(0, originalImageMap);
-			blendFilter.SetInput(1, image);
-			blendFilter.Modified();
-		}
+        if (blendFilter == null)
+        {
+            blendFilter = new vtkImageBlend();
+            blendFilter.AddInput(originalImageMap);
+            blendFilter.AddInput(image);
+        }
+        else
+        {
+            blendFilter.SetInput(0, originalImageMap);
+            blendFilter.SetInput(1, image);
+            blendFilter.Modified();
+        }
         blendFilter.SetOpacity(1, 1.0 - imageMapOpacity);
         blendFilter.Update();
 
@@ -947,161 +947,161 @@ public class SmallBodyModel extends Model
 
         int numberOfPoints = smallBodyPolyData.GetNumberOfPoints();
 
-		textureCoords.SetNumberOfComponents(2);
-		textureCoords.SetNumberOfTuples(numberOfPoints);
+        textureCoords.SetNumberOfComponents(2);
+        textureCoords.SetNumberOfTuples(numberOfPoints);
 
-		vtkPoints points = smallBodyPolyData.GetPoints();
+        vtkPoints points = smallBodyPolyData.GetPoints();
 
-		for (int i=0; i<numberOfPoints; ++i)
-		{
-			double[] pt = points.GetPoint(i);
+        for (int i=0; i<numberOfPoints; ++i)
+        {
+            double[] pt = points.GetPoint(i);
 
-			LatLon ll = MathUtil.reclat(pt);
+            LatLon ll = MathUtil.reclat(pt);
 
-			double u = ll.lon;
-			if (u < 0.0)
-				u += 2.0 * Math.PI;
-			u /= 2.0 * Math.PI;
-			double v = (ll.lat + Math.PI/2.0) / Math.PI;
+            double u = ll.lon;
+            if (u < 0.0)
+                u += 2.0 * Math.PI;
+            u /= 2.0 * Math.PI;
+            double v = (ll.lat + Math.PI/2.0) / Math.PI;
 
-			if (u < 0.0) u = 0.0;
-			else if (u > 1.0) u = 1.0;
-			if (v < 0.0) v = 0.0;
-			else if (v > 1.0) v = 1.0;
+            if (u < 0.0) u = 0.0;
+            else if (u > 1.0) u = 1.0;
+            if (v < 0.0) v = 0.0;
+            else if (v > 1.0) v = 1.0;
 
-			textureCoords.SetTuple2(i, u, v);
-		}
+            textureCoords.SetTuple2(i, u, v);
+        }
 
-		/*
-		// The plates that cross the zero longitude meridian might be messed up
-		// since some of the points might be to the left and some to right. Fix
-		// this here to make all the points either on the left or on the right.
-		int numberOfCells = smallBodyPolyData.GetNumberOfCells();
-		for (int i=0; i<numberOfCells; ++i)
-    	{
-    		int id0 = smallBodyPolyData.GetCell(i).GetPointId(0);
-    		int id1 = smallBodyPolyData.GetCell(i).GetPointId(1);
-    		int id2 = smallBodyPolyData.GetCell(i).GetPointId(2);
-    		double[] lon = new double[3];
-    		lon[0] = textureCoords.GetTuple2(id0)[0];
-    		lon[1] = textureCoords.GetTuple2(id1)[0];
-    		lon[2] = textureCoords.GetTuple2(id2)[0];
+        /*
+        // The plates that cross the zero longitude meridian might be messed up
+        // since some of the points might be to the left and some to right. Fix
+        // this here to make all the points either on the left or on the right.
+        int numberOfCells = smallBodyPolyData.GetNumberOfCells();
+        for (int i=0; i<numberOfCells; ++i)
+        {
+            int id0 = smallBodyPolyData.GetCell(i).GetPointId(0);
+            int id1 = smallBodyPolyData.GetCell(i).GetPointId(1);
+            int id2 = smallBodyPolyData.GetCell(i).GetPointId(2);
+            double[] lon = new double[3];
+            lon[0] = textureCoords.GetTuple2(id0)[0];
+            lon[1] = textureCoords.GetTuple2(id1)[0];
+            lon[2] = textureCoords.GetTuple2(id2)[0];
 
-    		if ( Math.abs(lon[0] - lon[1]) > 0.5 ||
-    			 Math.abs(lon[1] - lon[2]) > 0.5 ||
-    			 Math.abs(lon[2] - lon[0]) > 0.5)
-    		{
-        		double[] lat = new double[3];
-        		lat[0] = textureCoords.GetTuple2(id0)[1];
-        		lat[1] = textureCoords.GetTuple2(id1)[1];
-        		lat[2] = textureCoords.GetTuple2(id2)[1];
+            if ( Math.abs(lon[0] - lon[1]) > 0.5 ||
+                 Math.abs(lon[1] - lon[2]) > 0.5 ||
+                 Math.abs(lon[2] - lon[0]) > 0.5)
+            {
+                double[] lat = new double[3];
+                lat[0] = textureCoords.GetTuple2(id0)[1];
+                lat[1] = textureCoords.GetTuple2(id1)[1];
+                lat[2] = textureCoords.GetTuple2(id2)[1];
 
-        		System.out.println("messed up " + i);
-    			System.out.println(lon[0] - lon[1]);
-    			System.out.println(lon[1] - lon[2]);
-    			System.out.println(lon[2] - lon[0]);
-    			// First determine which side we're on
+                System.out.println("messed up " + i);
+                System.out.println(lon[0] - lon[1]);
+                System.out.println(lon[1] - lon[2]);
+                System.out.println(lon[2] - lon[0]);
+                // First determine which side we're on
 
-    			// Do this by first determining which point is the greatest distance from the
-    			// meridian
-    			double[] dist = {-1000.0, -1000.0, -1000.0};
-    			int maxIdx = -1;
-    			double maxDist = -1000.0;
-    			for (int j=0; j<3; ++j)
-    			{
-    				if (lon[j] > 0.5)
-    					dist[j] = 1.0 - lon[j];
-    				else
-    					dist[j] = lon[j];
+                // Do this by first determining which point is the greatest distance from the
+                // meridian
+                double[] dist = {-1000.0, -1000.0, -1000.0};
+                int maxIdx = -1;
+                double maxDist = -1000.0;
+                for (int j=0; j<3; ++j)
+                {
+                    if (lon[j] > 0.5)
+                        dist[j] = 1.0 - lon[j];
+                    else
+                        dist[j] = lon[j];
 
-    				if (dist[j] > maxDist)
-    				{
-    					maxDist = dist[j];
-    					maxIdx = j;
-    				}
-    			}
+                    if (dist[j] > maxDist)
+                    {
+                        maxDist = dist[j];
+                        maxIdx = j;
+                    }
+                }
 
-    			if (lon[maxIdx] < 0.5) // If true, we're on left
-    			{
-    				// Make sure all the coordinates are on left
-    				for (int j=0; j<3; ++j)
-        			{
-        				if (lon[j] > 0.5)
-        					lon[j] = 0.0;
-        			}
-    			}
-    			else
-    			{
-    				// Make sure all the coordinates are on right
-    				for (int j=0; j<3; ++j)
-        			{
-        				if (lon[j] < 0.5)
-        					lon[j] = 1.0;
-        			}
-    			}
-				textureCoords.SetTuple2(id0, lon[0], lat[0]);
-				textureCoords.SetTuple2(id1, lon[1], lat[1]);
-				textureCoords.SetTuple2(id2, lon[2], lat[2]);
-    		}
-    	}
-    	*/
+                if (lon[maxIdx] < 0.5) // If true, we're on left
+                {
+                    // Make sure all the coordinates are on left
+                    for (int j=0; j<3; ++j)
+                    {
+                        if (lon[j] > 0.5)
+                            lon[j] = 0.0;
+                    }
+                }
+                else
+                {
+                    // Make sure all the coordinates are on right
+                    for (int j=0; j<3; ++j)
+                    {
+                        if (lon[j] < 0.5)
+                            lon[j] = 1.0;
+                    }
+                }
+                textureCoords.SetTuple2(id0, lon[0], lat[0]);
+                textureCoords.SetTuple2(id1, lon[1], lat[1]);
+                textureCoords.SetTuple2(id2, lon[2], lat[2]);
+            }
+        }
+        */
 
-		smallBodyPolyData.GetPointData().SetTCoords(textureCoords);
+        smallBodyPolyData.GetPointData().SetTCoords(textureCoords);
     }
 
     public boolean isImageMapAvailable()
     {
-    	return imageMapName != null;
+        return imageMapName != null;
     }
 
     public void setShowImageMap(boolean b)
     {
-    	showImageMap = b;
+        showImageMap = b;
 
-    	try
-		{
-			paintBody();
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-		}
+        try
+        {
+            paintBody();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
     }
 
-	public int getNumberOfColors()
-	{
-		if (coloringNames == null)
-			return 0;
-		else
-			return coloringNames.length;
-	}
+    public int getNumberOfColors()
+    {
+        if (coloringNames == null)
+            return 0;
+        else
+            return coloringNames.length;
+    }
 
-	public String getColoringName(int i)
-	{
-		if (coloringNames != null && i < coloringNames.length)
-			return coloringNames[i];
-		else
-			return null;
-	}
+    public String getColoringName(int i)
+    {
+        if (coloringNames != null && i < coloringNames.length)
+            return coloringNames[i];
+        else
+            return null;
+    }
 
-	public boolean isFalseColoringSupported()
-	{
-		return supportsFalseColoring;
-	}
+    public boolean isFalseColoringSupported()
+    {
+        return supportsFalseColoring;
+    }
 
     private double getColoringValue(double[] pt, vtkFloatArray pointOrCellData)
     {
         double[] closestPoint = new double[3];
-    	int cellId = findClosestCell(pt, closestPoint);
-    	if (coloringValueType == ColoringValueType.POINT_DATA)
-    	{
-    		return PolyDataUtil.interpolateWithinCell(
-    				smallBodyPolyData, pointOrCellData, cellId, closestPoint, idList);
-    	}
-    	else
-    	{
-    		return pointOrCellData.GetTuple1(cellId);
-    	}
+        int cellId = findClosestCell(pt, closestPoint);
+        if (coloringValueType == ColoringValueType.POINT_DATA)
+        {
+            return PolyDataUtil.interpolateWithinCell(
+                    smallBodyPolyData, pointOrCellData, cellId, closestPoint, idList);
+        }
+        else
+        {
+            return pointOrCellData.GetTuple1(cellId);
+        }
     }
 
     /**
@@ -1113,290 +1113,290 @@ public class SmallBodyModel extends Model
      */
     private double getColoringValue(double[] pt, vtkFloatArray pointOrCellData, int cellId)
     {
-    	if (coloringValueType == ColoringValueType.POINT_DATA)
-    	{
-    		return PolyDataUtil.interpolateWithinCell(
-    				smallBodyPolyData, pointOrCellData, cellId, pt, idList);
-    	}
-    	else
-    	{
-    		return pointOrCellData.GetTuple1(cellId);
-    	}
+        if (coloringValueType == ColoringValueType.POINT_DATA)
+        {
+            return PolyDataUtil.interpolateWithinCell(
+                    smallBodyPolyData, pointOrCellData, cellId, pt, idList);
+        }
+        else
+        {
+            return pointOrCellData.GetTuple1(cellId);
+        }
     }
 
     public double getColoringValue(int index, double[] pt)
     {
-    	try
-    	{
-    		if (coloringValues != null && index < coloringValues.length && coloringValues[index] == null)
-    			loadColoringData();
-    	}
-    	catch (IOException e)
-    	{
-    		// TODO Auto-generated catch block
-    		e.printStackTrace();
-    	}
+        try
+        {
+            if (coloringValues != null && index < coloringValues.length && coloringValues[index] == null)
+                loadColoringData();
+        }
+        catch (IOException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 
-    	return getColoringValue(pt, coloringValues[index]);
+        return getColoringValue(pt, coloringValues[index]);
     }
 
     public double[] getAllColoringValues(double[] pt)
     {
-    	try
-    	{
-    		loadColoringData();
-    	}
-    	catch (IOException e)
-    	{
-    		// TODO Auto-generated catch block
-    		e.printStackTrace();
-    	}
+        try
+        {
+            loadColoringData();
+        }
+        catch (IOException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 
         double[] closestPoint = new double[3];
-    	int cellId = findClosestCell(pt, closestPoint);
+        int cellId = findClosestCell(pt, closestPoint);
 
-    	double[] values = new double[coloringValues.length];
-		for (int i=0; i<coloringValues.length; ++i)
-		{
-			values[i] = getColoringValue(closestPoint, coloringValues[i], cellId);
-		}
+        double[] values = new double[coloringValues.length];
+        for (int i=0; i<coloringValues.length; ++i)
+        {
+            values[i] = getColoringValue(closestPoint, coloringValues[i], cellId);
+        }
 
-    	return values;
+        return values;
     }
 
-	public double getImageMapOpacity()
-	{
-		return imageMapOpacity;
-	}
+    public double getImageMapOpacity()
+    {
+        return imageMapOpacity;
+    }
 
-	public void setImageMapOpacity(double imageMapOpacity)
-	{
-		this.imageMapOpacity = imageMapOpacity;
-		try
-		{
-			paintBody();
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-		}
-	}
+    public void setImageMapOpacity(double imageMapOpacity)
+    {
+        this.imageMapOpacity = imageMapOpacity;
+        try
+        {
+            paintBody();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+    }
 
-	// Compute the range of an array but account for the fact that for some datasets,
-	// some of the data is missing as represented by the lowest valued. So compute
-	// the range ignoring this lowest value (i.e take the lowest value to be the value
-	// just higher than the lowest value).
-	private double[] computeRange(int index, boolean adjustForColorTable)
-	{
-		double[] range = new double[2];
-		coloringValues[index].GetRange(range);
+    // Compute the range of an array but account for the fact that for some datasets,
+    // some of the data is missing as represented by the lowest valued. So compute
+    // the range ignoring this lowest value (i.e take the lowest value to be the value
+    // just higher than the lowest value).
+    private double[] computeRange(int index, boolean adjustForColorTable)
+    {
+        double[] range = new double[2];
+        coloringValues[index].GetRange(range);
 
-		if (coloringHasNulls == null || !coloringHasNulls[index])
-		{
-			return range;
-		}
-		else
-		{
-			vtkFloatArray array = coloringValues[index];
-			int numberValues = array.GetNumberOfTuples();
-			double adjustedMin = range[1];
-			for (int i=0; i<numberValues; ++i)
-			{
-				double v = array.GetValue(i);
-				if (v < adjustedMin && v > range[0])
-					adjustedMin = v;
-			}
+        if (coloringHasNulls == null || !coloringHasNulls[index])
+        {
+            return range;
+        }
+        else
+        {
+            vtkFloatArray array = coloringValues[index];
+            int numberValues = array.GetNumberOfTuples();
+            double adjustedMin = range[1];
+            for (int i=0; i<numberValues; ++i)
+            {
+                double v = array.GetValue(i);
+                if (v < adjustedMin && v > range[0])
+                    adjustedMin = v;
+            }
 
-			// Subtract a little amount from the adjustedMin. This adds an extra value in the lookup table
-			// for the invalid data, which we can map to the color white. The value of 254 seems to work well,
-			// for current data, but may need tweaking for future data.
-			if (adjustForColorTable)
-				adjustedMin -= (range[1]-adjustedMin)/254.0;
+            // Subtract a little amount from the adjustedMin. This adds an extra value in the lookup table
+            // for the invalid data, which we can map to the color white. The value of 254 seems to work well,
+            // for current data, but may need tweaking for future data.
+            if (adjustForColorTable)
+                adjustedMin -= (range[1]-adjustedMin)/254.0;
 
-			range[0] = adjustedMin;
+            range[0] = adjustedMin;
 
-			return range;
-		}
-	}
+            return range;
+        }
+    }
 
-	/**
-	 *  Update the false color point or cell data if
-	 */
-	private void updateFalseColorArray()
-	{
-		if (falseColorArray == null)
-		{
-			falseColorArray = new vtkUnsignedCharArray();
-			falseColorArray.SetNumberOfComponents(3);
-		}
+    /**
+     *  Update the false color point or cell data if
+     */
+    private void updateFalseColorArray()
+    {
+        if (falseColorArray == null)
+        {
+            falseColorArray = new vtkUnsignedCharArray();
+            falseColorArray.SetNumberOfComponents(3);
+        }
 
-		vtkFloatArray red = coloringValues[redFalseColor];
-		vtkFloatArray green = coloringValues[greenFalseColor];
-		vtkFloatArray blue = coloringValues[blueFalseColor];
+        vtkFloatArray red = coloringValues[redFalseColor];
+        vtkFloatArray green = coloringValues[greenFalseColor];
+        vtkFloatArray blue = coloringValues[blueFalseColor];
 
-		double[] redRange = computeRange(redFalseColor, false);
-		double[] greenRange = computeRange(greenFalseColor, false);
-		double[] blueRange = computeRange(blueFalseColor, false);
-		double redExtent = redRange[1] - redRange[0];
-		double greenExtent = greenRange[1] - greenRange[0];
-		double blueExtent = blueRange[1] - blueRange[0];
+        double[] redRange = computeRange(redFalseColor, false);
+        double[] greenRange = computeRange(greenFalseColor, false);
+        double[] blueRange = computeRange(blueFalseColor, false);
+        double redExtent = redRange[1] - redRange[0];
+        double greenExtent = greenRange[1] - greenRange[0];
+        double blueExtent = blueRange[1] - blueRange[0];
 
-		int numberTuples = red.GetNumberOfTuples();
-		falseColorArray.SetNumberOfTuples(numberTuples);
+        int numberTuples = red.GetNumberOfTuples();
+        falseColorArray.SetNumberOfTuples(numberTuples);
 
-		for (int i=0; i<numberTuples; ++i)
-		{
-			double redValue = 255.0 * (red.GetTuple1(i) - redRange[0]) / redExtent;
-			double greenValue = 255.0 * (green.GetTuple1(i) - greenRange[0]) / greenExtent;
-			double blueValue = 255.0 * (blue.GetTuple1(i) - blueRange[0]) / blueExtent;
+        for (int i=0; i<numberTuples; ++i)
+        {
+            double redValue = 255.0 * (red.GetTuple1(i) - redRange[0]) / redExtent;
+            double greenValue = 255.0 * (green.GetTuple1(i) - greenRange[0]) / greenExtent;
+            double blueValue = 255.0 * (blue.GetTuple1(i) - blueRange[0]) / blueExtent;
 
-			// Map invalid data to white
-			if (redValue < 0.0)   redValue   = 255.0;
-			if (greenValue < 0.0) greenValue = 255.0;
-			if (blueValue < 0.0)  blueValue  = 255.0;
+            // Map invalid data to white
+            if (redValue < 0.0)   redValue   = 255.0;
+            if (greenValue < 0.0) greenValue = 255.0;
+            if (blueValue < 0.0)  blueValue  = 255.0;
 
-			falseColorArray.SetTuple3(i, redValue, greenValue, blueValue);
-		}
-	}
+            falseColorArray.SetTuple3(i, redValue, greenValue, blueValue);
+        }
+    }
 
-	private void paintBody() throws IOException
-	{
-		if (resolutionLevel != 0)
-			return;
+    private void paintBody() throws IOException
+    {
+        if (resolutionLevel != 0)
+            return;
 
-		initializeActorsAndMappers();
+        initializeActorsAndMappers();
 
-		loadColoringData();
+        loadColoringData();
 
-		vtkDataArray array = null;
+        vtkDataArray array = null;
 
-		if (coloringIndex >= 0)
-		{
-			array = coloringValues[coloringIndex];
-			scalarBarActor.SetTitle(coloringNames[coloringIndex] + " (" + coloringUnits[coloringIndex] + ")");
-		}
-		else if (useFalseColoring)
-		{
-			updateFalseColorArray();
-			array = falseColorArray;
-		}
+        if (coloringIndex >= 0)
+        {
+            array = coloringValues[coloringIndex];
+            scalarBarActor.SetTitle(coloringNames[coloringIndex] + " (" + coloringUnits[coloringIndex] + ")");
+        }
+        else if (useFalseColoring)
+        {
+            updateFalseColorArray();
+            array = falseColorArray;
+        }
 
-		if (coloringValueType == ColoringValueType.POINT_DATA)
-			this.smallBodyPolyData.GetPointData().SetScalars(array);
-		else
-			this.smallBodyPolyData.GetCellData().SetScalars(array);
+        if (coloringValueType == ColoringValueType.POINT_DATA)
+            this.smallBodyPolyData.GetPointData().SetScalars(array);
+        else
+            this.smallBodyPolyData.GetCellData().SetScalars(array);
 
-		if (coloringIndex < 0)
-		{
-			if (smallBodyActors.contains(scalarBarActor))
-				smallBodyActors.remove(scalarBarActor);
-		}
-		else
-		{
-			//smallBodyMapper.GetLookupTable().SetRange(array.GetRange());
-			smallBodyMapper.GetLookupTable().SetRange(computeRange(coloringIndex, true));
-			((vtkLookupTable)smallBodyMapper.GetLookupTable()).ForceBuild();
-			this.invertLookupTable();
+        if (coloringIndex < 0)
+        {
+            if (smallBodyActors.contains(scalarBarActor))
+                smallBodyActors.remove(scalarBarActor);
+        }
+        else
+        {
+            //smallBodyMapper.GetLookupTable().SetRange(array.GetRange());
+            smallBodyMapper.GetLookupTable().SetRange(computeRange(coloringIndex, true));
+            ((vtkLookupTable)smallBodyMapper.GetLookupTable()).ForceBuild();
+            this.invertLookupTable();
 
-			// If there's missing data, map them to white
-			if (coloringHasNulls != null && coloringHasNulls[coloringIndex])
-				((vtkLookupTable)smallBodyMapper.GetLookupTable()).SetTableValue(0, 1.0, 1.0, 1.0, 1.0);
+            // If there's missing data, map them to white
+            if (coloringHasNulls != null && coloringHasNulls[coloringIndex])
+                ((vtkLookupTable)smallBodyMapper.GetLookupTable()).SetTableValue(0, 1.0, 1.0, 1.0, 1.0);
 
-			if (!smallBodyActors.contains(scalarBarActor))
-				smallBodyActors.add(scalarBarActor);
+            if (!smallBodyActors.contains(scalarBarActor))
+                smallBodyActors.add(scalarBarActor);
 
-			scalarBarActor.SetLookupTable(smallBodyMapper.GetLookupTable());
-		}
+            scalarBarActor.SetLookupTable(smallBodyMapper.GetLookupTable());
+        }
 
 
-		if (showImageMap == false)
-		{
-			smallBodyActor.SetTexture(null);
+        if (showImageMap == false)
+        {
+            smallBodyActor.SetTexture(null);
 
-			if (coloringIndex < 0 && useFalseColoring == false)
-			{
-				smallBodyMapper.ScalarVisibilityOff();
-				smallBodyMapper.SetScalarModeToDefault();
-			}
-			else
-			{
-				smallBodyMapper.ScalarVisibilityOn();
-				if (coloringValueType == ColoringValueType.POINT_DATA)
-					smallBodyMapper.SetScalarModeToUsePointData();
-				else
-					smallBodyMapper.SetScalarModeToUseCellData();
-			}
-		}
-		else
-		{
-			if (resolutionLevel != 0)
-				return;
+            if (coloringIndex < 0 && useFalseColoring == false)
+            {
+                smallBodyMapper.ScalarVisibilityOff();
+                smallBodyMapper.SetScalarModeToDefault();
+            }
+            else
+            {
+                smallBodyMapper.ScalarVisibilityOn();
+                if (coloringValueType == ColoringValueType.POINT_DATA)
+                    smallBodyMapper.SetScalarModeToUsePointData();
+                else
+                    smallBodyMapper.SetScalarModeToUseCellData();
+            }
+        }
+        else
+        {
+            if (resolutionLevel != 0)
+                return;
 
-			if (originalImageMap == null)
-			{
-				File imageFile = FileCache.getFileFromServer(imageMapName);
-				vtkPNGReader reader = new vtkPNGReader();
-				reader.SetFileName(imageFile.getAbsolutePath());
-				reader.Update();
-				vtkImageData readerOutput = reader.GetOutput();
+            if (originalImageMap == null)
+            {
+                File imageFile = FileCache.getFileFromServer(imageMapName);
+                vtkPNGReader reader = new vtkPNGReader();
+                reader.SetFileName(imageFile.getAbsolutePath());
+                reader.Update();
+                vtkImageData readerOutput = reader.GetOutput();
 
-				originalImageMap = new vtkImageData();
-				originalImageMap.DeepCopy(readerOutput);
-			}
+                originalImageMap = new vtkImageData();
+                originalImageMap.DeepCopy(readerOutput);
+            }
 
-	    	if (displayedImageMap == null)
-	    	{
-	    		displayedImageMap = new vtkImageData();
-	    	}
+            if (displayedImageMap == null)
+            {
+                displayedImageMap = new vtkImageData();
+            }
 
-	    	if (imageMapTexture == null)
-	    	{
-	    		imageMapTexture = new vtkTexture();
-	    		imageMapTexture.InterpolateOn();
-	    		imageMapTexture.RepeatOff();
-	    		imageMapTexture.EdgeClampOn();
-	    		imageMapTexture.SetInput(displayedImageMap);
+            if (imageMapTexture == null)
+            {
+                imageMapTexture = new vtkTexture();
+                imageMapTexture.InterpolateOn();
+                imageMapTexture.RepeatOff();
+                imageMapTexture.EdgeClampOn();
+                imageMapTexture.SetInput(displayedImageMap);
 
-    			generateTextureCoordinates();
-	    	}
+                generateTextureCoordinates();
+            }
 
-    		smallBodyActor.SetTexture(imageMapTexture);
+            smallBodyActor.SetTexture(imageMapTexture);
 
-			smallBodyMapper.ScalarVisibilityOff();
-			smallBodyMapper.SetScalarModeToDefault();
+            smallBodyMapper.ScalarVisibilityOff();
+            smallBodyMapper.SetScalarModeToDefault();
 
-			if (coloringIndex < 0 && useFalseColoring == false)
-			{
-				displayedImageMap.DeepCopy(originalImageMap);
-			}
-			else
-			{
-				loadColoringTexture();
-				blendImageMapWithColoring();
-			}
-		}
+            if (coloringIndex < 0 && useFalseColoring == false)
+            {
+                displayedImageMap.DeepCopy(originalImageMap);
+            }
+            else
+            {
+                loadColoringTexture();
+                blendImageMapWithColoring();
+            }
+        }
 
-		this.smallBodyPolyData.Modified();
+        this.smallBodyPolyData.Modified();
 
-		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-	}
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+    }
 
-	public void delete()
-	{
-		if (smallBodyPolyData != null) smallBodyPolyData.Delete();
-		if (lowResSmallBodyPolyData != null) lowResSmallBodyPolyData.Delete();
-		if (smallBodyActor != null) smallBodyActor.Delete();
-		if (smallBodyMapper != null) smallBodyMapper.Delete();
-	    for (vtkProp prop : smallBodyActors)
-	    	if (prop != null) prop.Delete();
-	    if (cellLocator != null) cellLocator.Delete();
-	    if (pointLocator != null) pointLocator.Delete();
-	    if (lowResPointLocator != null) lowResPointLocator.Delete();
-	    if (originalImageMap != null) originalImageMap.Delete();
-	    if (displayedImageMap != null) displayedImageMap.Delete();
-	    if (scalarBarActor != null) scalarBarActor.Delete();
-	    if (genericCell != null) genericCell.Delete();
-	    if (imageMapTexture != null) imageMapTexture.Delete();
-	    if (blendFilter != null) blendFilter.Delete();
-	}
+    public void delete()
+    {
+        if (smallBodyPolyData != null) smallBodyPolyData.Delete();
+        if (lowResSmallBodyPolyData != null) lowResSmallBodyPolyData.Delete();
+        if (smallBodyActor != null) smallBodyActor.Delete();
+        if (smallBodyMapper != null) smallBodyMapper.Delete();
+        for (vtkProp prop : smallBodyActors)
+            if (prop != null) prop.Delete();
+        if (cellLocator != null) cellLocator.Delete();
+        if (pointLocator != null) pointLocator.Delete();
+        if (lowResPointLocator != null) lowResPointLocator.Delete();
+        if (originalImageMap != null) originalImageMap.Delete();
+        if (displayedImageMap != null) displayedImageMap.Delete();
+        if (scalarBarActor != null) scalarBarActor.Delete();
+        if (genericCell != null) genericCell.Delete();
+        if (imageMapTexture != null) imageMapTexture.Delete();
+        if (blendFilter != null) blendFilter.Delete();
+    }
 }

@@ -11,71 +11,71 @@ import vtk.*;
 
 public class LineamentModel extends Model
 {
-	private HashMap<Integer, Lineament> idToLineamentMap = new HashMap<Integer, Lineament>();
-	private HashMap<Integer, Lineament> cellIdToLineamentMap = new HashMap<Integer, Lineament>();
-	private vtkPolyData lineaments;
+    private HashMap<Integer, Lineament> idToLineamentMap = new HashMap<Integer, Lineament>();
+    private HashMap<Integer, Lineament> cellIdToLineamentMap = new HashMap<Integer, Lineament>();
+    private vtkPolyData lineaments;
     private ArrayList<vtkProp> lineamentActors = new ArrayList<vtkProp>();
     private vtkActor lineamentActor;
-	private int[] defaultColor = {255, 0, 255, 255}; // RGBA, default to purple
+    private int[] defaultColor = {255, 0, 255, 255}; // RGBA, default to purple
 
-	public static class Lineament
-	{
-		public int cellId;
-		public String name = "";
-		public int id;
-		public ArrayList<Double> lat = new ArrayList<Double>();
-		public ArrayList<Double> lon = new ArrayList<Double>();
-		public ArrayList<Double> rad = new ArrayList<Double>();
-		//public ArrayList<Double> x = new ArrayList<Double>();
-		//public ArrayList<Double> y = new ArrayList<Double>();
-		//public ArrayList<Double> z = new ArrayList<Double>();
-		//public BoundingBox bb = new BoundingBox();
-	}
+    public static class Lineament
+    {
+        public int cellId;
+        public String name = "";
+        public int id;
+        public ArrayList<Double> lat = new ArrayList<Double>();
+        public ArrayList<Double> lon = new ArrayList<Double>();
+        public ArrayList<Double> rad = new ArrayList<Double>();
+        //public ArrayList<Double> x = new ArrayList<Double>();
+        //public ArrayList<Double> y = new ArrayList<Double>();
+        //public ArrayList<Double> z = new ArrayList<Double>();
+        //public BoundingBox bb = new BoundingBox();
+    }
 
-	public LineamentModel()
-	{
-		super(ModelNames.LINEAMENT);
-	}
+    public LineamentModel()
+    {
+        super(ModelNames.LINEAMENT);
+    }
 
-	private void initialize()
-	{
-		if (lineamentActor == null)
-		{
-			try
-			{
-				loadModel();
+    private void initialize()
+    {
+        if (lineamentActor == null)
+        {
+            try
+            {
+                loadModel();
 
-				createPolyData();
+                createPolyData();
 
-				vtkPolyDataMapper lineamentMapper = new vtkPolyDataMapper();
-				lineamentMapper.SetInput(lineaments);
-				//lineamentMapper.SetResolveCoincidentTopologyToPolygonOffset();
-				//lineamentMapper.SetResolveCoincidentTopologyPolygonOffsetParameters(-1000.0, -1000.0);
+                vtkPolyDataMapper lineamentMapper = new vtkPolyDataMapper();
+                lineamentMapper.SetInput(lineaments);
+                //lineamentMapper.SetResolveCoincidentTopologyToPolygonOffset();
+                //lineamentMapper.SetResolveCoincidentTopologyPolygonOffsetParameters(-1000.0, -1000.0);
 
-				lineamentActor = new vtkActor();
-				lineamentActor.SetMapper(lineamentMapper);
+                lineamentActor = new vtkActor();
+                lineamentActor.SetMapper(lineamentMapper);
 
-				// By default do not show the lineaments
-				//lineamentActors.add(lineamentActor);
+                // By default do not show the lineaments
+                //lineamentActors.add(lineamentActor);
 
-			} catch (NumberFormatException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			System.out.println("Number of lineaments: " + this.idToLineamentMap.size());
-		}
-	}
+            } catch (NumberFormatException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            System.out.println("Number of lineaments: " + this.idToLineamentMap.size());
+        }
+    }
 
-	private void loadModel() throws NumberFormatException, IOException
-	{
-		InputStream is = getClass().getResourceAsStream("/edu/jhuapl/near/data/LinearFeatures.txt");
-		InputStreamReader isr = new InputStreamReader(is);
-		BufferedReader in = new BufferedReader(isr);
+    private void loadModel() throws NumberFormatException, IOException
+    {
+        InputStream is = getClass().getResourceAsStream("/edu/jhuapl/near/data/LinearFeatures.txt");
+        InputStreamReader isr = new InputStreamReader(is);
+        BufferedReader in = new BufferedReader(isr);
 
-		String line;
+        String line;
         while ((line = in.readLine()) != null)
         {
             String [] tokens = line.split("\t");
@@ -84,7 +84,7 @@ public class LineamentModel extends Model
             {
                 System.out.println(tokens.length);
                 for (int i=0;i<tokens.length;++i)
-                	System.out.println(tokens[i]);
+                    System.out.println(tokens[i]);
                 continue;
             }
 
@@ -96,7 +96,7 @@ public class LineamentModel extends Model
 
             if (!this.idToLineamentMap.containsKey(id))
             {
-            	this.idToLineamentMap.put(id, new Lineament());
+                this.idToLineamentMap.put(id, new Lineament());
             }
 
             Lineament lin = this.idToLineamentMap.get(id);
@@ -120,25 +120,25 @@ public class LineamentModel extends Model
         }
 
         in.close();
-	}
+    }
 
-	/*
-	public List<Lineament> getLineamentsWithinBox(BoundingBox box)
-	{
-		ArrayList<Lineament> array = new ArrayList<Lineament>();
-		for (Integer id : this.idToLineamentMap.keySet())
-		{
-			Lineament lin =	this.idToLineamentMap.get(id);
-			if (lin.bb.intersects(box))
-				array.add(lin);
-		}
-		return array;
-	}
-	*/
+    /*
+    public List<Lineament> getLineamentsWithinBox(BoundingBox box)
+    {
+        ArrayList<Lineament> array = new ArrayList<Lineament>();
+        for (Integer id : this.idToLineamentMap.keySet())
+        {
+            Lineament lin =    this.idToLineamentMap.get(id);
+            if (lin.bb.intersects(box))
+                array.add(lin);
+        }
+        return array;
+    }
+    */
 
-	private void createPolyData()
-	{
-		lineaments = new vtkPolyData();
+    private void createPolyData()
+    {
+        lineaments = new vtkPolyData();
         vtkPoints points = new vtkPoints();
         vtkCellArray lines = new vtkCellArray();
         vtkUnsignedCharArray colors = new vtkUnsignedCharArray();
@@ -149,89 +149,89 @@ public class LineamentModel extends Model
 
         int c=0;
         int cellId = 0;
-		for (Integer id : this.idToLineamentMap.keySet())
-		{
-			Lineament lin =	this.idToLineamentMap.get(id);
-			lin.cellId = cellId;
+        for (Integer id : this.idToLineamentMap.keySet())
+        {
+            Lineament lin =    this.idToLineamentMap.get(id);
+            lin.cellId = cellId;
 
             int size = lin.lat.size();
             idList.SetNumberOfIds(size);
 
             for (int i=0;i<size;++i)
             {
-            	double lat = lin.lat.get(i);
-            	double lon = lin.lon.get(i);
-            	double rad = lin.rad.get(i);
+                double lat = lin.lat.get(i);
+                double lon = lin.lon.get(i);
+                double rad = lin.rad.get(i);
                 double x = rad * Math.cos( lon ) * Math.cos( lat );
                 double y = rad * Math.sin( lon ) * Math.cos( lat );
                 double z = rad * Math.sin( lat );
 
                 points.InsertNextPoint(x, y, z);
-            	idList.SetId(i, c);
-            	++c;
+                idList.SetId(i, c);
+                ++c;
             }
 
             lines.InsertNextCell(idList);
-        	colors.InsertNextTuple4(defaultColor[0],defaultColor[1],defaultColor[2],defaultColor[3]);
+            colors.InsertNextTuple4(defaultColor[0],defaultColor[1],defaultColor[2],defaultColor[3]);
 
             cellIdToLineamentMap.put(cellId, lin);
             ++cellId;
-		}
+        }
 
         lineaments.SetPoints(points);
         lineaments.SetLines(lines);
         lineaments.GetCellData().SetScalars(colors);
-	}
+    }
 
-	public Lineament getLineament(int cellId)
-	{
-		return this.cellIdToLineamentMap.get(cellId);
-	}
+    public Lineament getLineament(int cellId)
+    {
+        return this.cellIdToLineamentMap.get(cellId);
+    }
 
-	public void setLineamentColor(int cellId, int[] color)
-	{
-		lineaments.GetCellData().GetScalars().SetTuple4(cellId, color[0], color[1], color[2], color[3]);
-		lineaments.Modified();
-		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-	}
+    public void setLineamentColor(int cellId, int[] color)
+    {
+        lineaments.GetCellData().GetScalars().SetTuple4(cellId, color[0], color[1], color[2], color[3]);
+        lineaments.Modified();
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+    }
 
-	public void setsAllLineamentsColor(int[] color)
-	{
-		int numLineaments = this.cellIdToLineamentMap.size();
-		vtkDataArray colors = lineaments.GetCellData().GetScalars();
+    public void setsAllLineamentsColor(int[] color)
+    {
+        int numLineaments = this.cellIdToLineamentMap.size();
+        vtkDataArray colors = lineaments.GetCellData().GetScalars();
 
-		for (int i=0; i<numLineaments; ++i)
-			colors.SetTuple4(i, color[0], color[1], color[2], color[3]);
+        for (int i=0; i<numLineaments; ++i)
+            colors.SetTuple4(i, color[0], color[1], color[2], color[3]);
 
-		lineaments.Modified();
-		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-	}
+        lineaments.Modified();
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+    }
 
-	public void setMSIImageLineamentsColor(int cellId, int[] color)
-	{
-		int numLineaments = this.cellIdToLineamentMap.size();
-		String name = cellIdToLineamentMap.get(cellId).name;
-		vtkDataArray colors = lineaments.GetCellData().GetScalars();
+    public void setMSIImageLineamentsColor(int cellId, int[] color)
+    {
+        int numLineaments = this.cellIdToLineamentMap.size();
+        String name = cellIdToLineamentMap.get(cellId).name;
+        vtkDataArray colors = lineaments.GetCellData().GetScalars();
 
-		for (int i=0; i<numLineaments; ++i)
-			if (cellIdToLineamentMap.get(i).name.equals(name))
-					colors.SetTuple4(i, color[0], color[1], color[2], color[3]);
+        for (int i=0; i<numLineaments; ++i)
+            if (cellIdToLineamentMap.get(i).name.equals(name))
+                    colors.SetTuple4(i, color[0], color[1], color[2], color[3]);
 
-		lineaments.Modified();
-		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-	}
+        lineaments.Modified();
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+    }
 
-	public void setRadialOffset(double offset)
-	{
-		if (lineamentActors.isEmpty())
-			initialize();
+    public void setRadialOffset(double offset)
+    {
+        if (lineamentActors.isEmpty())
+            initialize();
 
         int ptId=0;
         vtkPoints points = lineaments.GetPoints();
 
-		for (Integer id : this.idToLineamentMap.keySet())
-		{
-			Lineament lin =	this.idToLineamentMap.get(id);
+        for (Integer id : this.idToLineamentMap.keySet())
+        {
+            Lineament lin =    this.idToLineamentMap.get(id);
 
             int size = lin.lat.size();
 
@@ -240,50 +240,50 @@ public class LineamentModel extends Model
                 double x = (lin.rad.get(i)+offset) * Math.cos( lin.lon.get(i) ) * Math.cos( lin.lat.get(i) );
                 double y = (lin.rad.get(i)+offset) * Math.sin( lin.lon.get(i) ) * Math.cos( lin.lat.get(i) );
                 double z = (lin.rad.get(i)+offset) * Math.sin( lin.lat.get(i) );
-            	points.SetPoint(ptId, x, y, z);
-            	++ptId;
+                points.SetPoint(ptId, x, y, z);
+                ++ptId;
             }
-		}
+        }
 
-		lineaments.Modified();
-		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-	}
+        lineaments.Modified();
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+    }
 
-	public void setShowLineaments(boolean show)
-	{
-		if (show)
-		{
-			if (lineamentActors.isEmpty())
-			{
-				initialize();
+    public void setShowLineaments(boolean show)
+    {
+        if (show)
+        {
+            if (lineamentActors.isEmpty())
+            {
+                initialize();
 
-				lineamentActors.add(lineamentActor);
-				this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-			}
-		}
-		else
-		{
-			if (!lineamentActors.isEmpty())
-			{
-				lineamentActors.clear();
-				this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-			}
-		}
+                lineamentActors.add(lineamentActor);
+                this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+            }
+        }
+        else
+        {
+            if (!lineamentActors.isEmpty())
+            {
+                lineamentActors.clear();
+                this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+            }
+        }
 
-	}
+    }
 
-	public ArrayList<vtkProp> getProps()
-	{
-		return lineamentActors;
-	}
+    public ArrayList<vtkProp> getProps()
+    {
+        return lineamentActors;
+    }
 
     public String getClickStatusBarText(vtkProp prop, int cellId, double[] pickPosition)
     {
-		LineamentModel.Lineament lin = getLineament(cellId);
-		if (lin != null)
-			return "Lineament " + lin.id + " mapped on MSI image " + lin.name + " contains " + lin.lat.size() + " vertices";
-		else
-			return "";
+        LineamentModel.Lineament lin = getLineament(cellId);
+        if (lin != null)
+            return "Lineament " + lin.id + " mapped on MSI image " + lin.name + " contains " + lin.lat.size() + " vertices";
+        else
+            return "";
     }
 
 }

@@ -15,8 +15,8 @@ import javax.swing.JPanel;
 
 public class ColorChooser
 {
-	private static JColorChooser cc = new JColorChooser();
-	private static Color chosenColor = null;
+    private static JColorChooser cc = new JColorChooser();
+    private static Color chosenColor = null;
 
     static public Color showColorChooser(Component parent)
     {

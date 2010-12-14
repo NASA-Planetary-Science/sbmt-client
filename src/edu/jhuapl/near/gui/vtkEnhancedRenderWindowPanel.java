@@ -23,109 +23,109 @@ import vtk.vtkWindowToImageFilter;
  *
  */
 public class vtkEnhancedRenderWindowPanel extends vtkRenderWindowPanel
-												implements
-												MouseWheelListener
+                                                implements
+                                                MouseWheelListener
 {
-	public vtkEnhancedRenderWindowPanel()
-	{
-		addMouseWheelListener(this);
-	}
+    public vtkEnhancedRenderWindowPanel()
+    {
+        addMouseWheelListener(this);
+    }
 
-	public void mouseWheelMoved(MouseWheelEvent e)
-	{
-		ctrlPressed = (e.getModifiers() & InputEvent.CTRL_MASK) == InputEvent.CTRL_MASK ? 1
-				: 0;
-		shiftPressed = (e.getModifiers() & InputEvent.SHIFT_MASK) == InputEvent.SHIFT_MASK ? 1
-				: 0;
+    public void mouseWheelMoved(MouseWheelEvent e)
+    {
+        ctrlPressed = (e.getModifiers() & InputEvent.CTRL_MASK) == InputEvent.CTRL_MASK ? 1
+                : 0;
+        shiftPressed = (e.getModifiers() & InputEvent.SHIFT_MASK) == InputEvent.SHIFT_MASK ? 1
+                : 0;
 
-		iren.SetEventInformationFlipY(e.getX(), e.getY(), ctrlPressed,
-				shiftPressed, '0', 0, "0");
+        iren.SetEventInformationFlipY(e.getX(), e.getY(), ctrlPressed,
+                shiftPressed, '0', 0, "0");
 
-		Lock();
-		if (e.getWheelRotation() > 0)
-			iren.MouseWheelBackwardEvent();
-		else
-			iren.MouseWheelForwardEvent();
-		UnLock();
-	}
+        Lock();
+        if (e.getWheelRotation() > 0)
+            iren.MouseWheelBackwardEvent();
+        else
+            iren.MouseWheelForwardEvent();
+        UnLock();
+    }
 
-	/**
-	 * The following function is overridden since for some reason, one of the base classes
-	 * of this class which implements this method causes the render window to always accept focus
-	 * whenever the mouse hovers over the window. We don't want this behavior so override it
-	 * with an empty function.
-	 */
-	public void mouseEntered(MouseEvent e)
-	{
-		// do nothing
-	}
+    /**
+     * The following function is overridden since for some reason, one of the base classes
+     * of this class which implements this method causes the render window to always accept focus
+     * whenever the mouse hovers over the window. We don't want this behavior so override it
+     * with an empty function.
+     */
+    public void mouseEntered(MouseEvent e)
+    {
+        // do nothing
+    }
 
 
-	public void keyPressed(KeyEvent e)
-	{
-		if (ren.VisibleActorCount() == 0) return;
-		char keyChar = e.getKeyChar();
+    public void keyPressed(KeyEvent e)
+    {
+        if (ren.VisibleActorCount() == 0) return;
+        char keyChar = e.getKeyChar();
 
-		if ('x' == keyChar || 'y' == keyChar || 'z' == keyChar ||
-				'X' == keyChar || 'Y' == keyChar || 'Z' == keyChar)
-		{
-			double[] bounds = new double[6];
-			ren.ComputeVisiblePropBounds(bounds);
-			lock();
-			vtkCamera cam = ren.GetActiveCamera();
-			cam.SetFocalPoint(0.0, 0.0, 0.0);
+        if ('x' == keyChar || 'y' == keyChar || 'z' == keyChar ||
+                'X' == keyChar || 'Y' == keyChar || 'Z' == keyChar)
+        {
+            double[] bounds = new double[6];
+            ren.ComputeVisiblePropBounds(bounds);
+            lock();
+            vtkCamera cam = ren.GetActiveCamera();
+            cam.SetFocalPoint(0.0, 0.0, 0.0);
 
-			double xSize = Math.abs(bounds[1] - bounds[0]);
-			double ySize = Math.abs(bounds[3] - bounds[2]);
-			double zSize = Math.abs(bounds[5] - bounds[4]);
-			double maxSize = Math.max(Math.max(xSize, ySize), zSize);
+            double xSize = Math.abs(bounds[1] - bounds[0]);
+            double ySize = Math.abs(bounds[3] - bounds[2]);
+            double zSize = Math.abs(bounds[5] - bounds[4]);
+            double maxSize = Math.max(Math.max(xSize, ySize), zSize);
 
-			if ('X' == keyChar)
-			{
-				double xpos = xSize / Math.tan(Math.PI/6.0) + 2.0*maxSize;
-				cam.SetPosition(xpos, 0.0, 0.0);
-				cam.SetViewUp(0.0, 0.0, 1.0);
-			}
-			else if ('x' == keyChar)
-			{
-				double xpos = -xSize / Math.tan(Math.PI/6.0) - 2.0*maxSize;
-				cam.SetPosition(xpos, 0.0, 0.0);
-				cam.SetViewUp(0.0, 0.0, 1.0);
-			}
-			else if ('Y' == keyChar)
-			{
-				double ypos = ySize / Math.tan(Math.PI/6.0) + 2.0*maxSize;
-				cam.SetPosition(0.0, ypos, 0.0);
-				cam.SetViewUp(0.0, 0.0, 1.0);
-			}
-			else if ('y' == keyChar)
-			{
-				double ypos = -ySize / Math.tan(Math.PI/6.0) - 2.0*maxSize;
-				cam.SetPosition(0.0, ypos, 0.0);
-				cam.SetViewUp(0.0, 0.0, 1.0);
-			}
-			else if ('Z' == keyChar)
-			{
-				double zpos = zSize / Math.tan(Math.PI/6.0) + 2.0*maxSize;
-				cam.SetPosition(0.0, 0.0, zpos);
-				cam.SetViewUp(0.0, 1.0, 0.0);
-			}
-			else if ('z' == keyChar)
-			{
-				double zpos = -zSize / Math.tan(Math.PI/6.0) - 2.0*maxSize;
-				cam.SetPosition(0.0, 0.0, zpos);
-				cam.SetViewUp(0.0, 1.0, 0.0);
-			}
+            if ('X' == keyChar)
+            {
+                double xpos = xSize / Math.tan(Math.PI/6.0) + 2.0*maxSize;
+                cam.SetPosition(xpos, 0.0, 0.0);
+                cam.SetViewUp(0.0, 0.0, 1.0);
+            }
+            else if ('x' == keyChar)
+            {
+                double xpos = -xSize / Math.tan(Math.PI/6.0) - 2.0*maxSize;
+                cam.SetPosition(xpos, 0.0, 0.0);
+                cam.SetViewUp(0.0, 0.0, 1.0);
+            }
+            else if ('Y' == keyChar)
+            {
+                double ypos = ySize / Math.tan(Math.PI/6.0) + 2.0*maxSize;
+                cam.SetPosition(0.0, ypos, 0.0);
+                cam.SetViewUp(0.0, 0.0, 1.0);
+            }
+            else if ('y' == keyChar)
+            {
+                double ypos = -ySize / Math.tan(Math.PI/6.0) - 2.0*maxSize;
+                cam.SetPosition(0.0, ypos, 0.0);
+                cam.SetViewUp(0.0, 0.0, 1.0);
+            }
+            else if ('Z' == keyChar)
+            {
+                double zpos = zSize / Math.tan(Math.PI/6.0) + 2.0*maxSize;
+                cam.SetPosition(0.0, 0.0, zpos);
+                cam.SetViewUp(0.0, 1.0, 0.0);
+            }
+            else if ('z' == keyChar)
+            {
+                double zpos = -zSize / Math.tan(Math.PI/6.0) - 2.0*maxSize;
+                cam.SetPosition(0.0, 0.0, zpos);
+                cam.SetViewUp(0.0, 1.0, 0.0);
+            }
 
-			unlock();
-			resetCameraClippingRange();
-			this.Render();
-		}
-		else
-		{
-			super.keyPressed(e);
-		}
-	}
+            unlock();
+            resetCameraClippingRange();
+            this.Render();
+        }
+        else
+        {
+            super.keyPressed(e);
+        }
+    }
 
 
     public void saveToFile()

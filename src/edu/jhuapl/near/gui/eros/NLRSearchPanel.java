@@ -34,9 +34,9 @@ import edu.jhuapl.near.util.Properties;
 
 
 public class NLRSearchPanel extends JPanel implements ActionListener, PropertyChangeListener
-{	
-	private final String NLR_REMOVE_ALL_BUTTON_TEXT = "Clear Data";
-	
+{    
+    private final String NLR_REMOVE_ALL_BUTTON_TEXT = "Clear Data";
+    
     private final ModelManager modelManager;
     private NLRSearchDataCollection nlrModel;
     private JLabel resultsLabel;
@@ -62,79 +62,79 @@ public class NLRSearchPanel extends JPanel implements ActionListener, PropertyCh
     
     private enum DisplayedResultsOptions
     {
-    	ALL                 ("all",            NLRMaskType.NONE,        -1.0),
-    	NEXT_POINT          ("1 point",        NLRMaskType.BY_NUMBER,   1.0),
-    	NEXT_10_POINTS      ("10 points",      NLRMaskType.BY_NUMBER,   10.0),
-    	NEXT_100_POINTS     ("100 points",     NLRMaskType.BY_NUMBER,   100.0),
-    	NEXT_1000_POINTS    ("1000 points",    NLRMaskType.BY_NUMBER,   1000.0),
-    	NEXT_5000_POINTS    ("5000 points",    NLRMaskType.BY_NUMBER,   5000.0),
-    	NEXT_10000_POINTS   ("10000 points",   NLRMaskType.BY_NUMBER,   10000.0),
-    	NEXT_SECOND         ("1 second",       NLRMaskType.BY_TIME,     1),
-    	NEXT_MINUTE         ("1 minute",       NLRMaskType.BY_TIME,     60),
-    	NEXT_HOUR           ("1 hour",         NLRMaskType.BY_TIME,     3600),
+        ALL                 ("all",            NLRMaskType.NONE,        -1.0),
+        NEXT_POINT          ("1 point",        NLRMaskType.BY_NUMBER,   1.0),
+        NEXT_10_POINTS      ("10 points",      NLRMaskType.BY_NUMBER,   10.0),
+        NEXT_100_POINTS     ("100 points",     NLRMaskType.BY_NUMBER,   100.0),
+        NEXT_1000_POINTS    ("1000 points",    NLRMaskType.BY_NUMBER,   1000.0),
+        NEXT_5000_POINTS    ("5000 points",    NLRMaskType.BY_NUMBER,   5000.0),
+        NEXT_10000_POINTS   ("10000 points",   NLRMaskType.BY_NUMBER,   10000.0),
+        NEXT_SECOND         ("1 second",       NLRMaskType.BY_TIME,     1),
+        NEXT_MINUTE         ("1 minute",       NLRMaskType.BY_TIME,     60),
+        NEXT_HOUR           ("1 hour",         NLRMaskType.BY_TIME,     3600),
         NEXT_12_HOURS       ("12 hours",       NLRMaskType.BY_TIME,     43200),
-    	NEXT_DAY            ("1 day",          NLRMaskType.BY_TIME,     86400),
-    	NEXT_METER          ("1 meter",        NLRMaskType.BY_DISTANCE, 0.001),
-    	NEXT_10_METERS      ("10 meters",      NLRMaskType.BY_DISTANCE, 0.01),
-    	NEXT_100_METERS     ("100 meters",     NLRMaskType.BY_DISTANCE, 0.1),
-    	NEXT_KILOMETER      ("1 kilometer",    NLRMaskType.BY_DISTANCE, 1.0),
+        NEXT_DAY            ("1 day",          NLRMaskType.BY_TIME,     86400),
+        NEXT_METER          ("1 meter",        NLRMaskType.BY_DISTANCE, 0.001),
+        NEXT_10_METERS      ("10 meters",      NLRMaskType.BY_DISTANCE, 0.01),
+        NEXT_100_METERS     ("100 meters",     NLRMaskType.BY_DISTANCE, 0.1),
+        NEXT_KILOMETER      ("1 kilometer",    NLRMaskType.BY_DISTANCE, 1.0),
         NEXT_5_KILOMETERS   ("5 kilometers",   NLRMaskType.BY_DISTANCE, 5.0),
         NEXT_10_KILOMETERS  ("10 kilometers",  NLRMaskType.BY_DISTANCE, 10.0),
         NEXT_50_KILOMETERS  ("50 kilometers",  NLRMaskType.BY_DISTANCE, 50.0),
         NEXT_100_KILOMETERS ("100 kilometers", NLRMaskType.BY_DISTANCE, 100.0);
     
-    	private final String name;
-    	private final NLRMaskType type;
-    	private final double value;
+        private final String name;
+        private final NLRMaskType type;
+        private final double value;
 
-    	private DisplayedResultsOptions(String name, NLRMaskType type, double value)
-    	{
-    		this.name = name;
-    		this.type = type;
-    		this.value = value;
-    	}
-    	
-    	public String toString()
-    	{
-    		return name;
-    	}
-    	
-    	public NLRMaskType getType()
-    	{
-    		return type;
-    	}
-    	
-    	public double getValue()
-    	{
-    		return value;
-    	}
+        private DisplayedResultsOptions(String name, NLRMaskType type, double value)
+        {
+            this.name = name;
+            this.type = type;
+            this.value = value;
+        }
+        
+        public String toString()
+        {
+            return name;
+        }
+        
+        public NLRMaskType getType()
+        {
+            return type;
+        }
+        
+        public double getValue()
+        {
+            return value;
+        }
     }
     
 
     public NLRSearchPanel(
-    		final ModelManager modelManager,
+            final ModelManager modelManager,
             final PickManager pickManager) 
     {
-    	setLayout(new BoxLayout(this,
-        		BoxLayout.PAGE_AXIS));
-    	
-    	this.modelManager = modelManager;
-    	this.pickManager = pickManager;
-    	
-		this.addComponentListener(new ComponentAdapter() 
-		{
-			public void componentHidden(ComponentEvent e)
-			{
-		    	selectRegionButton.setSelected(false);
-				pickManager.setPickMode(PickMode.DEFAULT);
-			}
-		});
-		
-		pickManager.getDefaultPicker().addPropertyChangeListener(this);
+        setLayout(new BoxLayout(this,
+                BoxLayout.PAGE_AXIS));
+        
+        this.modelManager = modelManager;
+        this.pickManager = pickManager;
+        
+        this.addComponentListener(new ComponentAdapter() 
+        {
+            public void componentHidden(ComponentEvent e)
+            {
+                selectRegionButton.setSelected(false);
+                pickManager.setPickMode(PickMode.DEFAULT);
+            }
+        });
+        
+        pickManager.getDefaultPicker().addPropertyChangeListener(this);
 
 
-		this.nlrModel = (NLRSearchDataCollection)modelManager.getModel(ModelNames.NLR_DATA_SEARCH);
-    	
+        this.nlrModel = (NLRSearchDataCollection)modelManager.getModel(ModelNames.NLR_DATA_SEARCH);
+        
         JPanel pane = new JPanel();
         pane.setLayout(new MigLayout("wrap 1"));
 
@@ -215,21 +215,21 @@ public class NLRSearchPanel extends JPanel implements ActionListener, PropertyCh
         pane.add(selectRegionPanel, "align center");
         pane.add(submitPanel, "align center");
 
-		resultsLabel = new JLabel("<html><br><br></html>");
-		resultsLabel.setPreferredSize(new Dimension(300, 200));
-		resultsLabel.setBorder(BorderFactory.createEtchedBorder());
-		
+        resultsLabel = new JLabel("<html><br><br></html>");
+        resultsLabel.setPreferredSize(new Dimension(300, 200));
+        resultsLabel.setBorder(BorderFactory.createEtchedBorder());
+        
         removeAllButton = new JButton(NLR_REMOVE_ALL_BUTTON_TEXT);
         removeAllButton.setActionCommand(NLR_REMOVE_ALL_BUTTON_TEXT);
         removeAllButton.addActionListener(new ActionListener()
         {
-			public void actionPerformed(ActionEvent e) 
-			{
-				NLRSearchDataCollection model = (NLRSearchDataCollection)modelManager.getModel(ModelNames.NLR_DATA_SEARCH);
-				model.removeAllNlrData();
-		        if (nlrPlot != null)
-		            nlrPlot.updateData();
-			}
+            public void actionPerformed(ActionEvent e) 
+            {
+                NLRSearchDataCollection model = (NLRSearchDataCollection)modelManager.getModel(ModelNames.NLR_DATA_SEARCH);
+                model.removeAllNlrData();
+                if (nlrPlot != null)
+                    nlrPlot.updateData();
+            }
         });
         removeAllButton.setEnabled(true);
         removeAllButton.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -238,20 +238,20 @@ public class NLRSearchPanel extends JPanel implements ActionListener, PropertyCh
 
         JLabel showLabel = new JLabel("Show ");
         
-    	shownResultsShowComboBox = new JComboBox(DisplayedResultsOptions.values());
-    	shownResultsShowComboBox.setSelectedIndex(0);
-    	
-    	pane.add(showLabel, "split");
-    	pane.add(shownResultsShowComboBox);
-    	
-		nextButton = new JButton(">");
+        shownResultsShowComboBox = new JComboBox(DisplayedResultsOptions.values());
+        shownResultsShowComboBox.setSelectedIndex(0);
+        
+        pane.add(showLabel, "split");
+        pane.add(shownResultsShowComboBox);
+        
+        nextButton = new JButton(">");
         nextButton.setActionCommand(">");
         nextButton.addActionListener(new ActionListener()
         {
-			public void actionPerformed(ActionEvent e) 
-			{
-				showData(1, false);
-			}
+            public void actionPerformed(ActionEvent e) 
+            {
+                showData(1, false);
+            }
         });
         nextButton.setEnabled(true);
 
@@ -259,10 +259,10 @@ public class NLRSearchPanel extends JPanel implements ActionListener, PropertyCh
         prevButton.setActionCommand("<");
         prevButton.addActionListener(new ActionListener()
         {
-			public void actionPerformed(ActionEvent e) 
-			{
-				showData(-1, false);
-			}
+            public void actionPerformed(ActionEvent e) 
+            {
+                showData(-1, false);
+            }
         });
         prevButton.setEnabled(true);
 
@@ -270,17 +270,17 @@ public class NLRSearchPanel extends JPanel implements ActionListener, PropertyCh
         pane.add(nextButton, "wrap");
         
         pane.add(removeAllButton, "align center");
-		
+        
         JButton plotPotentialButton = new JButton("Plot Potential");
         plotPotentialButton.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent e)
-			{
-				if (nlrPlot == null)
-				    nlrPlot = new NLRPlot(nlrModel);
-				nlrPlot.setVisible(true);
-			}
-		});
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                if (nlrPlot == null)
+                    nlrPlot = new NLRPlot(nlrModel);
+                nlrPlot.setVisible(true);
+            }
+        });
         
         pane.add(plotPotentialButton, "align center");
 
@@ -288,33 +288,33 @@ public class NLRSearchPanel extends JPanel implements ActionListener, PropertyCh
         saveButton.setActionCommand("Save...");
         saveButton.addActionListener(new ActionListener()
         {
-        	public void actionPerformed(ActionEvent e) 
-        	{
-        		int index = 1;
-        		if (index >= 0)
-        		{
-        			File file = CustomFileChooser.showSaveDialog(
-        					saveButton.getParent(),
-        					"Save NLR data");
-        			
-        			try
-        			{
-        				if (file != null)
-        				{
-        					nlrModel.saveNlrDataSql(file);
-        				}
-        			}
-        			catch(Exception ex)
-        			{
-        				JOptionPane.showMessageDialog(saveButton.getParent(),
-        						"Unable to save file to " + file.getAbsolutePath(),
-        						"Error Saving File",
-        						JOptionPane.ERROR_MESSAGE);
-        				ex.printStackTrace();
-        			}
+            public void actionPerformed(ActionEvent e) 
+            {
+                int index = 1;
+                if (index >= 0)
+                {
+                    File file = CustomFileChooser.showSaveDialog(
+                            saveButton.getParent(),
+                            "Save NLR data");
+                    
+                    try
+                    {
+                        if (file != null)
+                        {
+                            nlrModel.saveNlrDataSql(file);
+                        }
+                    }
+                    catch(Exception ex)
+                    {
+                        JOptionPane.showMessageDialog(saveButton.getParent(),
+                                "Unable to save file to " + file.getAbsolutePath(),
+                                "Error Saving File",
+                                JOptionPane.ERROR_MESSAGE);
+                        ex.printStackTrace();
+                    }
 
-        		}
-        	}
+                }
+            }
         });
         saveButton.setEnabled(true);
 
@@ -326,61 +326,61 @@ public class NLRSearchPanel extends JPanel implements ActionListener, PropertyCh
         add(radialOffsetChanger);
     }
 
-	
+    
 
 
     public void actionPerformed(ActionEvent e)
     {
-    	selectRegionButton.setSelected(false);
+        selectRegionButton.setSelected(false);
         pickManager.setPickMode(PickMode.DEFAULT);
 
         RegularPolygonModel selectionModel = (RegularPolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
-		SmallBodyModel erosModel = (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
-		if (selectionModel.getNumberOfStructures() > 0)
-		{
-			RegularPolygonModel.RegularPolygon region = (RegularPolygonModel.RegularPolygon)selectionModel.getStructure(0);
-			
-			// Always use the lowest resolution model for getting the intersection cubes list.
-			// Therefore, if the selection region was created using a higher resolution model,
-			// we need to recompute the selection region using the low res model.
-			if (erosModel.getModelResolution() > 0)
-			{
-				vtkPolyData interiorPoly = new vtkPolyData();
-				erosModel.drawPolygonLowRes(region.center, region.radius, region.numberOfSides, interiorPoly, null);
-				cubeList = nlrModel.getIntersectingCubes(interiorPoly);
-			}
-			else
-			{
-				cubeList = nlrModel.getIntersectingCubes(region.interiorPolyData);
-			}
-		}
+        SmallBodyModel erosModel = (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
+        if (selectionModel.getNumberOfStructures() > 0)
+        {
+            RegularPolygonModel.RegularPolygon region = (RegularPolygonModel.RegularPolygon)selectionModel.getStructure(0);
+            
+            // Always use the lowest resolution model for getting the intersection cubes list.
+            // Therefore, if the selection region was created using a higher resolution model,
+            // we need to recompute the selection region using the low res model.
+            if (erosModel.getModelResolution() > 0)
+            {
+                vtkPolyData interiorPoly = new vtkPolyData();
+                erosModel.drawPolygonLowRes(region.center, region.radius, region.numberOfSides, interiorPoly, null);
+                cubeList = nlrModel.getIntersectingCubes(interiorPoly);
+            }
+            else
+            {
+                cubeList = nlrModel.getIntersectingCubes(region.interiorPolyData);
+            }
+        }
 
-		showData(1, true);
+        showData(1, true);
     }
 
     private void showData(int direction, boolean reset)
-	{
-    	DisplayedResultsOptions option = (DisplayedResultsOptions)shownResultsShowComboBox.getSelectedItem();
-    	
-    	GregorianCalendar startCal = new GregorianCalendar();
-    	startCal.setTimeInMillis(startDate.getTime());
-    	GregorianCalendar stopCal = new GregorianCalendar();
-    	stopCal.setTimeInMillis(endDate.getTime());
+    {
+        DisplayedResultsOptions option = (DisplayedResultsOptions)shownResultsShowComboBox.getSelectedItem();
+        
+        GregorianCalendar startCal = new GregorianCalendar();
+        startCal.setTimeInMillis(startDate.getTime());
+        GregorianCalendar stopCal = new GregorianCalendar();
+        stopCal.setTimeInMillis(endDate.getTime());
 
-    	try
-		{
-			nlrModel.setNlrData(startCal, stopCal, cubeList, option.getType(), direction*option.getValue(), reset);
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-		}
-		catch (ParseException e)
-		{
-			e.printStackTrace();
-		}
+        try
+        {
+            nlrModel.setNlrData(startCal, stopCal, cubeList, option.getType(), direction*option.getValue(), reset);
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+        catch (ParseException e)
+        {
+            e.printStackTrace();
+        }
 
-		int[] range = nlrModel.getMaskedPointRange();
+        int[] range = nlrModel.getMaskedPointRange();
 
         String resultsText = 
             "<html>" + nlrModel.getNumberOfPoints() + " points matched<br><br>";
@@ -403,22 +403,22 @@ public class NLRSearchPanel extends JPanel implements ActionListener, PropertyCh
         
         if (nlrPlot != null)
             nlrPlot.updateData();
-	}
+    }
 
-	public void propertyChange(PropertyChangeEvent evt)
-	{
-		if (Properties.MODEL_PICKED.equals(evt.getPropertyName()))
-		{
-			PickEvent e = (PickEvent)evt.getNewValue();
-			if (modelManager.getModel(e.getPickedProp()) == nlrModel &&
-			        nlrModel.isDataPointsProp(e.getPickedProp()))
-			{
-				int id = e.getPickedCellId();
-				nlrModel.selectPoint(id);
-				if (nlrPlot != null)
-					nlrPlot.selectPoint(id);
-			}
-		}
-	}
+    public void propertyChange(PropertyChangeEvent evt)
+    {
+        if (Properties.MODEL_PICKED.equals(evt.getPropertyName()))
+        {
+            PickEvent e = (PickEvent)evt.getNewValue();
+            if (modelManager.getModel(e.getPickedProp()) == nlrModel &&
+                    nlrModel.isDataPointsProp(e.getPickedProp()))
+            {
+                int id = e.getPickedCellId();
+                nlrModel.selectPoint(id);
+                if (nlrPlot != null)
+                    nlrPlot.selectPoint(id);
+            }
+        }
+    }
 
 }

@@ -9,8 +9,8 @@ import edu.jhuapl.near.pick.PickManager;
 public class NLRPanel extends JTabbedPane
 {
     public NLRPanel(
-    		final ModelManager modelManager,
-    		final PickManager pickManager)
+            final ModelManager modelManager,
+            final PickManager pickManager)
     {
         setBorder(BorderFactory.createEmptyBorder());
 

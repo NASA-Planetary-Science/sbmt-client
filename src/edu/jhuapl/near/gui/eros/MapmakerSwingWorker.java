@@ -11,128 +11,128 @@ import edu.jhuapl.near.util.MathUtil;
 
 public class MapmakerSwingWorker extends FileDownloadSwingWorker
 {
-	private String name;
-	private double[] centerPoint;
-	private double radius;
-	private File outputFolder;
-	private File cubeFile;
-	private File lblFile;
-	private int halfSize;
+    private String name;
+    private double[] centerPoint;
+    private double radius;
+    private File outputFolder;
+    private File cubeFile;
+    private File lblFile;
+    private int halfSize;
 
-	public MapmakerSwingWorker(Component c, String title, String filename)
-	{
-		super(c, title, filename);
-	}
-
-
-	public void setName(String name)
-	{
-		this.name = name;
-	}
+    public MapmakerSwingWorker(Component c, String title, String filename)
+    {
+        super(c, title, filename);
+    }
 
 
-	public void setCenterPoint(double[] centerPoint)
-	{
-		this.centerPoint = centerPoint;
-	}
+    public void setName(String name)
+    {
+        this.name = name;
+    }
 
 
-	public void setRadius(double radius)
-	{
-		this.radius = radius;
-	}
-
-	public void setHalfSize(int halfSize)
-	{
-		this.halfSize = halfSize;
-	}
+    public void setCenterPoint(double[] centerPoint)
+    {
+        this.centerPoint = centerPoint;
+    }
 
 
-	public void setOutputFolder(File outputFolder)
-	{
-		this.outputFolder = outputFolder;
-	}
+    public void setRadius(double radius)
+    {
+        this.radius = radius;
+    }
+
+    public void setHalfSize(int halfSize)
+    {
+        this.halfSize = halfSize;
+    }
 
 
-	public File getCubeFile()
-	{
-		return cubeFile;
-	}
+    public void setOutputFolder(File outputFolder)
+    {
+        this.outputFolder = outputFolder;
+    }
 
-	public File getLabelFile()
-	{
-		return lblFile;
-	}
 
-	@Override
-	protected Void doInBackground()
-	{
-		super.doInBackground();
+    public File getCubeFile()
+    {
+        return cubeFile;
+    }
 
-		if (isCancelled())
-		{
-			return null;
-		}
+    public File getLabelFile()
+    {
+        return lblFile;
+    }
 
-		setLabelText("<html>Running Mapmaker<br> </html>");
-    	setIndeterminate(true);
-    	setCancelButtonEnabled(false);
-    	setProgress(1);
+    @Override
+    protected Void doInBackground()
+    {
+        super.doInBackground();
 
-		Process mapmakerProcess = null;
+        if (isCancelled())
+        {
+            return null;
+        }
 
-		try
-		{
-			Mapmaker mapmaker = new Mapmaker();
-			mapmaker.setName(name);
-			LatLon ll = MathUtil.reclat(centerPoint);
-			mapmaker.setLatitude(ll.lat);
-			mapmaker.setLongitude(ll.lon);
-			mapmaker.setHalfSize(halfSize);
-			mapmaker.setPixelSize(1000.0 * 1.5 * radius / (double)halfSize);
-			mapmaker.setOutputFolder(outputFolder);
+        setLabelText("<html>Running Mapmaker<br> </html>");
+        setIndeterminate(true);
+        setCancelButtonEnabled(false);
+        setProgress(1);
 
-			mapmakerProcess = mapmaker.runMapmaker();
+        Process mapmakerProcess = null;
+
+        try
+        {
+            Mapmaker mapmaker = new Mapmaker();
+            mapmaker.setName(name);
+            LatLon ll = MathUtil.reclat(centerPoint);
+            mapmaker.setLatitude(ll.lat);
+            mapmaker.setLongitude(ll.lon);
+            mapmaker.setHalfSize(halfSize);
+            mapmaker.setPixelSize(1000.0 * 1.5 * radius / (double)halfSize);
+            mapmaker.setOutputFolder(outputFolder);
+
+            mapmakerProcess = mapmaker.runMapmaker();
 
             while (true)
             {
-        		if (isCancelled())
-        			break;
+                if (isCancelled())
+                    break;
 
-            	try
-            	{
-            		mapmakerProcess.exitValue();
-            		break;
-            	}
-            	catch (IllegalThreadStateException e)
-            	{
-            		//e.printStackTrace();
-            		// do nothing. We'll get here if the process is still running
-            	}
+                try
+                {
+                    mapmakerProcess.exitValue();
+                    break;
+                }
+                catch (IllegalThreadStateException e)
+                {
+                    //e.printStackTrace();
+                    // do nothing. We'll get here if the process is still running
+                }
 
-            	Thread.sleep(333);
+                Thread.sleep(333);
             }
 
             mapmaker.copyGeneratedFilesToOutputFolder();
-			cubeFile = mapmaker.getCubeFile();
-			lblFile = mapmaker.getLabelFile();
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-		}
-		catch (InterruptedException e)
-		{
-			//e.printStackTrace();
-		}
+            cubeFile = mapmaker.getCubeFile();
+            lblFile = mapmaker.getLabelFile();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+        catch (InterruptedException e)
+        {
+            //e.printStackTrace();
+        }
 
-		if (mapmakerProcess != null && isCancelled())
-		{
-			mapmakerProcess.destroy();
-		}
+        if (mapmakerProcess != null && isCancelled())
+        {
+            mapmakerProcess.destroy();
+        }
 
-		setProgress(100);
+        setProgress(100);
 
-		return null;
-	}
+        return null;
+    }
 }

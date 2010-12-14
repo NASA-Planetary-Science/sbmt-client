@@ -50,119 +50,119 @@ import edu.jhuapl.near.util.NativeLibraryLoader;
  */
 public class NLRSqlDatabaseGenerator
 {
-	static private SqlManager db = null;
+    static private SqlManager db = null;
 
-	static private void createTable()
-	{
-    	System.out.println("creating msi");
+    static private void createTable()
+    {
+        System.out.println("creating msi");
         try {
 
             //make a table
-        	try
-        	{
-        		db.dropTable("nlr");
-        	}
-        	catch(Exception e)
-        	{
-        		e.printStackTrace();
-        	}
+            try
+            {
+                db.dropTable("nlr");
+            }
+            catch(Exception e)
+            {
+                e.printStackTrace();
+            }
 
             db.update(
-            		"create table nlr(" +
-            		"UTC bigint PRIMARY KEY, " +
-            		"longitudeE real, " +
-            		"latitudeN real, " +
-            		"Eros_rad real, " +
-            		"ET_J2000 double, " +
-            		"Range real," +
-            		"t tinyint," +
-            		"a tinyint," +
-            		"SClon real," +
-            		"SClat real," +
-            		"SCrdst real," +
-            		"Emission real," +
-            		"Offnadir real," +
-            		"SCLCKCH double," +
-            		"Eros_x real," +
-            		"Eros_y real," +
-            		"Eros_z real," +
-            		"Omega real," +
-            		"U real," +
-            		"cube_id int" +
-            		")"
+                    "create table nlr(" +
+                    "UTC bigint PRIMARY KEY, " +
+                    "longitudeE real, " +
+                    "latitudeN real, " +
+                    "Eros_rad real, " +
+                    "ET_J2000 double, " +
+                    "Range real," +
+                    "t tinyint," +
+                    "a tinyint," +
+                    "SClon real," +
+                    "SClat real," +
+                    "SCrdst real," +
+                    "Emission real," +
+                    "Offnadir real," +
+                    "SCLCKCH double," +
+                    "Eros_x real," +
+                    "Eros_y real," +
+                    "Eros_z real," +
+                    "Omega real," +
+                    "U real," +
+                    "cube_id int" +
+                    ")"
                 );
         } catch (SQLException ex2) {
 
             //ignore
-        	ex2.printStackTrace();  // second time we run program
+            ex2.printStackTrace();  // second time we run program
             //  should throw execption since table
             // already there
             //
             // this will have no effect on the db
         }
-	}
+    }
 
-	public static void main(String[] args)
-	{
-		NativeLibraryLoader.loadVtkLibraries();
+    public static void main(String[] args)
+    {
+        NativeLibraryLoader.loadVtkLibraries();
 
-		SmallBodyModel erosModel = ModelFactory.createErosBodyModel();
+        SmallBodyModel erosModel = ModelFactory.createErosBodyModel();
 
-		String nlrFileList = args[0];
+        String nlrFileList = args[0];
 
-		ArrayList<String> nlrFiles = null;
-		try {
-			nlrFiles = FileUtil.getFileLinesAsStringList(nlrFileList);
-		} catch (IOException e2) {
-			e2.printStackTrace();
-		}
+        ArrayList<String> nlrFiles = null;
+        try {
+            nlrFiles = FileUtil.getFileLinesAsStringList(nlrFileList);
+        } catch (IOException e2) {
+            e2.printStackTrace();
+        }
 
-		SmallBodyCubes cubes = new SmallBodyCubes(erosModel.getSmallBodyPolyData(), 1.0, 1.0, true);
+        SmallBodyCubes cubes = new SmallBodyCubes(erosModel.getSmallBodyPolyData(), 1.0, 1.0, true);
 
-		double[] pt = new double[3];
+        double[] pt = new double[3];
 
-		// If a point is farther than MAX_DIST from the asteroid, then set its cubeid to -1.
-		final double MAX_DIST = 1.0;
+        // If a point is farther than MAX_DIST from the asteroid, then set its cubeid to -1.
+        final double MAX_DIST = 1.0;
 
-		PreparedStatement msiInsert = null;
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-DDD'T'HH:mm:ss.SSS", Locale.US);
+        PreparedStatement msiInsert = null;
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-DDD'T'HH:mm:ss.SSS", Locale.US);
 
-		try
-		{
-			db = new SqlManager("org.h2.Driver", "jdbc:h2:~/tmp/test-h2/nlr");
+        try
+        {
+            db = new SqlManager("org.h2.Driver", "jdbc:h2:~/tmp/test-h2/nlr");
 
-			createTable();
+            createTable();
 
-	    	msiInsert = db.preparedStatement(
-    		"insert into nlr values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            msiInsert = db.preparedStatement(
+            "insert into nlr values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
-	    	int count = 0;
-	    	short filecount = 0;
-			for (String filename : nlrFiles)
-			{
+            int count = 0;
+            short filecount = 0;
+            for (String filename : nlrFiles)
+            {
 
-			    System.out.println("Begin processing file " + filename + " - " + count + " / " + nlrFiles.size());
+                System.out.println("Begin processing file " + filename + " - " + count + " / " + nlrFiles.size());
 
-			    ArrayList<String> lines = FileUtil.getFileLinesAsStringList(filename);
+                ArrayList<String> lines = FileUtil.getFileLinesAsStringList(filename);
 
-				for (int i=2; i<lines.size(); ++i)
-				{
-					String[] vals = lines.get(i).trim().split("\\s+");
+                for (int i=2; i<lines.size(); ++i)
+                {
+                    String[] vals = lines.get(i).trim().split("\\s+");
 
-	       			pt[0] = Double.parseDouble(vals[14])/1000.0;
-        			pt[1] = Double.parseDouble(vals[15])/1000.0;
-        			pt[2] = Double.parseDouble(vals[16])/1000.0;
+                       pt[0] = Double.parseDouble(vals[14])/1000.0;
+                    pt[1] = Double.parseDouble(vals[15])/1000.0;
+                    pt[2] = Double.parseDouble(vals[16])/1000.0;
 
-        			double[] closestPt = erosModel.findClosestPoint(pt);
+                    double[] closestPt = erosModel.findClosestPoint(pt);
 
-        			double dist = MathUtil.distanceBetween(pt, closestPt);
+                    double dist = MathUtil.distanceBetween(pt, closestPt);
 
-        			int cubeid = -1;
+                    int cubeid = -1;
 
-        			if (dist <= MAX_DIST)
-        			{
-        				cubeid = cubes.getCubeId(closestPt);
-        			}
+                    if (dist <= MAX_DIST)
+                    {
+                        cubeid = cubes.getCubeId(closestPt);
+                    }
 
                     msiInsert.setLong(1, sdf.parse(vals[4]).getTime());
                     msiInsert.setFloat(2, Float.parseFloat(vals[0]));
@@ -187,17 +187,17 @@ public class NLRSqlDatabaseGenerator
 
                     msiInsert.executeUpdate();
 
-					++count;
-				}
+                    ++count;
+                }
 
-				++filecount;
-			}
+                ++filecount;
+            }
 
-			db.shutdown();
-		}
-		catch (Exception e)
-		{
-		    e.printStackTrace();
-		}
-	}
+            db.shutdown();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
 }

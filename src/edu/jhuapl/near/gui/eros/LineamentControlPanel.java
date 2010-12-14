@@ -16,7 +16,7 @@ public class LineamentControlPanel extends JPanel implements ItemListener
 
     public LineamentControlPanel(ModelManager modelManager)
     {
-		lineamentModel = (LineamentModel)modelManager.getModel(ModelNames.LINEAMENT);
+        lineamentModel = (LineamentModel)modelManager.getModel(ModelNames.LINEAMENT);
         RadialOffsetChanger radialChanger = new RadialOffsetChanger(lineamentModel, "Radial Offset");
 
         lineamentCheckBox = new JCheckBox();
@@ -26,7 +26,7 @@ public class LineamentControlPanel extends JPanel implements ItemListener
 
         JPanel pane = new JPanel();
         pane.setLayout(new BoxLayout(pane,
-        		BoxLayout.PAGE_AXIS));
+                BoxLayout.PAGE_AXIS));
 
         pane.add(lineamentCheckBox);
         pane.add(Box.createVerticalStrut(5));
@@ -34,16 +34,16 @@ public class LineamentControlPanel extends JPanel implements ItemListener
 
 
         add(pane);
-	}
+    }
 
-	public void itemStateChanged(ItemEvent e)
-	{
-		if (e.getItemSelectable() == this.lineamentCheckBox)
-		{
-			if (e.getStateChange() == ItemEvent.DESELECTED)
-				lineamentModel.setShowLineaments(false);
-			else
-				lineamentModel.setShowLineaments(true);
-		}
-	}
+    public void itemStateChanged(ItemEvent e)
+    {
+        if (e.getItemSelectable() == this.lineamentCheckBox)
+        {
+            if (e.getStateChange() == ItemEvent.DESELECTED)
+                lineamentModel.setShowLineaments(false);
+            else
+                lineamentModel.setShowLineaments(true);
+        }
+    }
 }

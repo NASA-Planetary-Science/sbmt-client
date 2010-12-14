@@ -40,10 +40,10 @@ public class TopoPlot implements ChartMouseListener, PropertyChangeListener
     
     public TopoPlot(LineModel lineModel, DEMModel demModel)
     {
-    	this.lineModel = lineModel;
-    	this.demModel = demModel;
-    	
-    	lineModel.addPropertyChangeListener(this);
+        this.lineModel = lineModel;
+        this.demModel = demModel;
+        
+        lineModel.addPropertyChangeListener(this);
 
         heightDistanceDataset = new XYSeriesCollection();
 
@@ -70,115 +70,115 @@ public class TopoPlot implements ChartMouseListener, PropertyChangeListener
     
     public JPanel getChartPanel()
     {
-    	return chartPanel;
+        return chartPanel;
     }
     
     private void setSeriesColor(int lineId)
     {
-    	Line line = (Line)lineModel.getStructure(lineId);
-    	int[] c = line.color;
-    	((XYPlot)chartPanel.getChart().getPlot()).getRenderer().setSeriesPaint(
-    			lineId, new Color(c[0], c[1], c[2], c[3]));
+        Line line = (Line)lineModel.getStructure(lineId);
+        int[] c = line.color;
+        ((XYPlot)chartPanel.getChart().getPlot()).getRenderer().setSeriesPaint(
+                lineId, new Color(c[0], c[1], c[2], c[3]));
     }
     
     private void addProfile()
     {
-    	int lineId = lineModel.getNumberOfStructures()-1;
-    	XYSeries series = new XYSeries("Profile " + numberOfProfilesCreated++);
-    	((XYSeriesCollection)heightDistanceDataset).addSeries(series);
-    	setSeriesColor(lineId);
-    	((XYPlot)chartPanel.getChart().getPlot()).getRenderer().setSeriesStroke(
-    			lineId, new BasicStroke(2.0f)); // set line thickness
-    	updateProfile(lineId);
+        int lineId = lineModel.getNumberOfStructures()-1;
+        XYSeries series = new XYSeries("Profile " + numberOfProfilesCreated++);
+        ((XYSeriesCollection)heightDistanceDataset).addSeries(series);
+        setSeriesColor(lineId);
+        ((XYPlot)chartPanel.getChart().getPlot()).getRenderer().setSeriesStroke(
+                lineId, new BasicStroke(2.0f)); // set line thickness
+        updateProfile(lineId);
     }
     
     private void updateProfile(int lineId)
     {
-    	if (lineId >= ((XYSeriesCollection)heightDistanceDataset).getSeriesCount())
-    		return;
-    		
-    	Line line = (Line)lineModel.getStructure(lineId);
-    	ArrayList<Double> height = new ArrayList<Double>(); 
-    	ArrayList<Double> distance = new ArrayList<Double>(); 
-    	demModel.generateProfile(line.xyzPointList, height, distance);
-    	
-    	XYSeries series = ((XYSeriesCollection)heightDistanceDataset).getSeries(lineId);
-    	series.clear();
-    	int N = height.size();
+        if (lineId >= ((XYSeriesCollection)heightDistanceDataset).getSeriesCount())
+            return;
+            
+        Line line = (Line)lineModel.getStructure(lineId);
+        ArrayList<Double> height = new ArrayList<Double>(); 
+        ArrayList<Double> distance = new ArrayList<Double>(); 
+        demModel.generateProfile(line.xyzPointList, height, distance);
+        
+        XYSeries series = ((XYSeriesCollection)heightDistanceDataset).getSeries(lineId);
+        series.clear();
+        int N = height.size();
         for (int i=0; i<N; ++i)
-        	series.add(distance.get(i), height.get(i), false);
+            series.add(distance.get(i), height.get(i), false);
         series.fireSeriesChanged();
     }
     
     private void removeProfile(int lineId)
     {
-    	if (lineId < ((XYSeriesCollection)heightDistanceDataset).getSeriesCount())
-    		((XYSeriesCollection)heightDistanceDataset).removeSeries(lineId);
+        if (lineId < ((XYSeriesCollection)heightDistanceDataset).getSeriesCount())
+            ((XYSeriesCollection)heightDistanceDataset).removeSeries(lineId);
     }
 
     public String getProfileAsString(int lineId)
     {
-    	StringBuilder buffer = new StringBuilder();
-    	
-		XYSeries series = ((XYSeriesCollection)heightDistanceDataset).getSeries(lineId);
-		
+        StringBuilder buffer = new StringBuilder();
+        
+        XYSeries series = ((XYSeriesCollection)heightDistanceDataset).getSeries(lineId);
+        
         String eol = System.getProperty("line.separator");
 
-		int N = series.getItemCount();
+        int N = series.getItemCount();
 
-		buffer.append("Distance=");
-		for (int i=0; i<N; ++i)
-			buffer.append(series.getX(i) + " ");
+        buffer.append("Distance=");
+        for (int i=0; i<N; ++i)
+            buffer.append(series.getX(i) + " ");
 
-		buffer.append(eol);
+        buffer.append(eol);
 
-		buffer.append("Elevation=");
-		for (int i=0; i<N; ++i)
-			buffer.append(series.getY(i) + " ");
+        buffer.append("Elevation=");
+        for (int i=0; i<N; ++i)
+            buffer.append(series.getY(i) + " ");
 
-		buffer.append(eol);
+        buffer.append(eol);
 
-		return buffer.toString();
+        return buffer.toString();
     }
     
     public void chartMouseClicked(ChartMouseEvent arg0)
     {
-    	ChartEntity entity = arg0.getEntity();
-    	
-    	if (entity instanceof XYItemEntity)
-    	{
-    		//int id = ((XYItemEntity)entity).getItem();
-    	}
+        ChartEntity entity = arg0.getEntity();
+        
+        if (entity instanceof XYItemEntity)
+        {
+            //int id = ((XYItemEntity)entity).getItem();
+        }
     }
 
     public void chartMouseMoved(ChartMouseEvent arg0)
     {
     }
 
-	public void propertyChange(PropertyChangeEvent evt)
-	{
-		if (Properties.VERTEX_INSERTED_INTO_LINE.equals(evt.getPropertyName()))
-		{
-			int lineId = (Integer)evt.getNewValue();
-			Line line = (Line)lineModel.getStructure(lineId);
-			
-			if (line.controlPointIds.size() == 2)
-				addProfile();
-		}
-		else if (Properties.VERTEX_POSITION_CHANGED.equals(evt.getPropertyName()))
-		{
-			int lineId = (Integer)evt.getNewValue();
-			updateProfile(lineId);
-		}
-		else if (Properties.STRUCTURE_REMOVED.equals(evt.getPropertyName()))
-		{
-			int lineId = (Integer)evt.getNewValue();
-			removeProfile(lineId);
-		}
-		else if (Properties.COLOR_CHANGED.equals(evt.getPropertyName()))
-		{
-			int lineId = (Integer)evt.getNewValue();
-			setSeriesColor(lineId);
-		}
-	}
+    public void propertyChange(PropertyChangeEvent evt)
+    {
+        if (Properties.VERTEX_INSERTED_INTO_LINE.equals(evt.getPropertyName()))
+        {
+            int lineId = (Integer)evt.getNewValue();
+            Line line = (Line)lineModel.getStructure(lineId);
+            
+            if (line.controlPointIds.size() == 2)
+                addProfile();
+        }
+        else if (Properties.VERTEX_POSITION_CHANGED.equals(evt.getPropertyName()))
+        {
+            int lineId = (Integer)evt.getNewValue();
+            updateProfile(lineId);
+        }
+        else if (Properties.STRUCTURE_REMOVED.equals(evt.getPropertyName()))
+        {
+            int lineId = (Integer)evt.getNewValue();
+            removeProfile(lineId);
+        }
+        else if (Properties.COLOR_CHANGED.equals(evt.getPropertyName()))
+        {
+            int lineId = (Integer)evt.getNewValue();
+            setSeriesColor(lineId);
+        }
+    }
 }

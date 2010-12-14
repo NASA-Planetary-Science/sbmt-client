@@ -14,24 +14,24 @@ import javax.swing.JPanel;
  */
 public abstract class Viewer extends JPanel
 {
-	/**
-	 * By default a viewer should be created empty. Only when the user
-	 * requests to show a particular Viewer, should the Viewer's contents
-	 * be created in order to reduce memory and startup time. Therefore,
-	 * this function should be called prior to first time the Viewer is
-	 * shown in order to cause it
-	 */
+    /**
+     * By default a viewer should be created empty. Only when the user
+     * requests to show a particular Viewer, should the Viewer's contents
+     * be created in order to reduce memory and startup time. Therefore,
+     * this function should be called prior to first time the Viewer is
+     * shown in order to cause it
+     */
 
-	public Viewer(LayoutManager mgr)
-	{
-		super(mgr);
-	}
+    public Viewer(LayoutManager mgr)
+    {
+        super(mgr);
+    }
 
-	public void initialize()
-	{
-	}
+    public void initialize()
+    {
+    }
 
-	public abstract String getName();
+    public abstract String getName();
 
     public abstract Renderer getRenderer();
 }

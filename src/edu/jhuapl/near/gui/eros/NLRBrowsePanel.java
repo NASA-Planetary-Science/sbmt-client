@@ -26,7 +26,7 @@ import edu.jhuapl.near.util.FileUtil;
 
 public class NLRBrowsePanel extends JPanel implements ListSelectionListener
 {
-	private final String NLR_REMOVE_ALL_BUTTON_TEXT = "Remove All NLR Data";
+    private final String NLR_REMOVE_ALL_BUTTON_TEXT = "Remove All NLR Data";
 
 //    private final ModelManager modelManager;
     private NLRBrowseDataCollection nlrModel;
@@ -44,72 +44,72 @@ public class NLRBrowsePanel extends JPanel implements ListSelectionListener
 
     public class NlrTimeIntervalChanger extends JPanel implements ChangeListener
     {
-    	private RangeSlider slider;
+        private RangeSlider slider;
 
-    	private NLRDataPerDay nlrData;
+        private NLRDataPerDay nlrData;
 
-    	public NlrTimeIntervalChanger()
-    	{
-    		setBorder(BorderFactory.createTitledBorder("Displayed NLR Data"));
+        public NlrTimeIntervalChanger()
+        {
+            setBorder(BorderFactory.createTitledBorder("Displayed NLR Data"));
 
-    		slider = new RangeSlider(0, 255, 0, 255);
-    		slider.setPaintTicks(true);
-    		slider.setMajorTickSpacing(10);
-    		slider.setPaintTrack(true);
-    		slider.addChangeListener(this);
-    		slider.setEnabled(false);
-    		add(slider);
-    	}
+            slider = new RangeSlider(0, 255, 0, 255);
+            slider.setPaintTicks(true);
+            slider.setMajorTickSpacing(10);
+            slider.setPaintTrack(true);
+            slider.addChangeListener(this);
+            slider.setEnabled(false);
+            add(slider);
+        }
 
-    	void setNLRData(NLRDataPerDay data)
-    	{
-    		if (data != null)
-    		{
-    			nlrData = data;
-    			DoublePair pair = data.getPercentageShown();
-    			slider.setLowValue((int)(pair.d1*slider.getMaximum()));
-    			slider.setHighValue((int)(pair.d2*slider.getMaximum()));
-    			slider.setEnabled(true);
-    		}
-    		else
-    		{
-    			slider.setEnabled(false);
-    		}
-    	}
+        void setNLRData(NLRDataPerDay data)
+        {
+            if (data != null)
+            {
+                nlrData = data;
+                DoublePair pair = data.getPercentageShown();
+                slider.setLowValue((int)(pair.d1*slider.getMaximum()));
+                slider.setHighValue((int)(pair.d2*slider.getMaximum()));
+                slider.setEnabled(true);
+            }
+            else
+            {
+                slider.setEnabled(false);
+            }
+        }
 
-    	public void stateChanged(ChangeEvent e)
-    	{
-    		double lowVal = (double)slider.getLowValue()/(double)slider.getMaximum();
-    		double highVal = (double)slider.getHighValue()/(double)slider.getMaximum();
-    		if (nlrData != null)
-    			nlrData.setPercentageShown(lowVal, highVal);
-    	}
+        public void stateChanged(ChangeEvent e)
+        {
+            double lowVal = (double)slider.getLowValue()/(double)slider.getMaximum();
+            double highVal = (double)slider.getHighValue()/(double)slider.getMaximum();
+            if (nlrData != null)
+                nlrData.setPercentageShown(lowVal, highVal);
+        }
     }
 
     public NLRBrowsePanel(
-    		final ModelManager modelManager)
+            final ModelManager modelManager)
     {
-    	setLayout(new BoxLayout(this,
-        		BoxLayout.PAGE_AXIS));
+        setLayout(new BoxLayout(this,
+                BoxLayout.PAGE_AXIS));
 
-    	//this.modelManager = modelManager;
-    	this.nlrModel = (NLRBrowseDataCollection)modelManager.getModel(ModelNames.NLR_DATA_BROWSE);
+        //this.modelManager = modelManager;
+        this.nlrModel = (NLRBrowseDataCollection)modelManager.getModel(ModelNames.NLR_DATA_BROWSE);
 
 
         JPanel resultsPanel = new JPanel(new BorderLayout());
 
-		resultsLabel = new JLabel("Available Files");
+        resultsLabel = new JLabel("Available Files");
 
         nlrResultListModel = new DefaultListModel();
 
         nlrRawResults = nlrModel.getAllNlrPaths();
-    	for (String str : nlrRawResults)
-    	{
-    		nlrResultListModel.addElement(
-    				str.substring(5, 13)
-    				+ ", day: " + str.substring(8, 11) + "/20" + str.substring(6, 8)
-    				);
-    	}
+        for (String str : nlrRawResults)
+        {
+            nlrResultListModel.addElement(
+                    str.substring(5, 13)
+                    + ", day: " + str.substring(8, 11) + "/20" + str.substring(6, 8)
+                    );
+        }
 
         //Create the list and put it in a scroll pane.
         resultList = new JList(nlrResultListModel);
@@ -125,41 +125,41 @@ public class NLRBrowsePanel extends JPanel implements ListSelectionListener
         final JPanel resultSub1ControlsPanel = new JPanel();
 
         resultSub1ControlsPanel.setLayout(new BoxLayout(resultSub1ControlsPanel,
-        		BoxLayout.PAGE_AXIS));
+                BoxLayout.PAGE_AXIS));
 
 
         showHideButton = new JButton("Show");
         showHideButton.setActionCommand("Show");
         showHideButton.addActionListener(new ActionListener()
         {
-        	public void actionPerformed(ActionEvent e)
-        	{
-        		int index = resultList.getSelectedIndex();
-        		if (index >= 0)
-        		{
-            		try
-            		{
-            			if (showHideButton.getText().startsWith("Show"))
-            			{
-            				nlrModel.addNlrData(nlrRawResults.get(index));
+            public void actionPerformed(ActionEvent e)
+            {
+                int index = resultList.getSelectedIndex();
+                if (index >= 0)
+                {
+                    try
+                    {
+                        if (showHideButton.getText().startsWith("Show"))
+                        {
+                            nlrModel.addNlrData(nlrRawResults.get(index));
 
-            				showHideButton.setText("Remove");
-        					timeIntervalChanger.setNLRData(nlrModel.getNlrData(nlrRawResults.get(index)));
-            			}
-            			else
-            			{
-            				nlrModel.removeNlrData(nlrRawResults.get(index));
+                            showHideButton.setText("Remove");
+                            timeIntervalChanger.setNLRData(nlrModel.getNlrData(nlrRawResults.get(index)));
+                        }
+                        else
+                        {
+                            nlrModel.removeNlrData(nlrRawResults.get(index));
 
-            				showHideButton.setText("Show");
-        					timeIntervalChanger.setNLRData(null);
-            			}
-            		}
-            		catch (IOException e1)
-            		{
-    					e1.printStackTrace();
-    				}
-				}
-        	}
+                            showHideButton.setText("Show");
+                            timeIntervalChanger.setNLRData(null);
+                        }
+                    }
+                    catch (IOException e1)
+                    {
+                        e1.printStackTrace();
+                    }
+                }
+            }
         });
         showHideButton.setEnabled(false);
 
@@ -168,56 +168,56 @@ public class NLRBrowsePanel extends JPanel implements ListSelectionListener
         saveButton.setActionCommand("Save...");
         saveButton.addActionListener(new ActionListener()
         {
-        	public void actionPerformed(ActionEvent e)
-        	{
-        		int index = resultList.getSelectedIndex();
-        		if (index >= 0)
-        		{
-        			File tmp = new File(nlrRawResults.get(index));
-        			File file = CustomFileChooser.showSaveDialog(
-        					saveButton.getParent(),
-        					"Save NLR data",
-        					tmp.getName().substring(0, tmp.getName().length()-3));
+            public void actionPerformed(ActionEvent e)
+            {
+                int index = resultList.getSelectedIndex();
+                if (index >= 0)
+                {
+                    File tmp = new File(nlrRawResults.get(index));
+                    File file = CustomFileChooser.showSaveDialog(
+                            saveButton.getParent(),
+                            "Save NLR data",
+                            tmp.getName().substring(0, tmp.getName().length()-3));
 
-        			try
-        			{
-        				if (file != null)
-        				{
-        					File nlrFile = FileCache.getFileFromServer(nlrRawResults.get(index));
+                    try
+                    {
+                        if (file != null)
+                        {
+                            File nlrFile = FileCache.getFileFromServer(nlrRawResults.get(index));
 
-        					FileUtil.copyFile(nlrFile, file);
-        				}
-        			}
-        			catch(Exception ex)
-        			{
-        				JOptionPane.showMessageDialog(saveButton.getParent(),
-        						"Unable to save file to " + file.getAbsolutePath(),
-        						"Error Saving File",
-        						JOptionPane.ERROR_MESSAGE);
-        				ex.printStackTrace();
-        			}
+                            FileUtil.copyFile(nlrFile, file);
+                        }
+                    }
+                    catch(Exception ex)
+                    {
+                        JOptionPane.showMessageDialog(saveButton.getParent(),
+                                "Unable to save file to " + file.getAbsolutePath(),
+                                "Error Saving File",
+                                JOptionPane.ERROR_MESSAGE);
+                        ex.printStackTrace();
+                    }
 
-        		}
-        	}
+                }
+            }
         });
         saveButton.setEnabled(false);
 
 
         JPanel resultSub2ControlsPanel = new JPanel();
         resultSub2ControlsPanel.setLayout(new BoxLayout(resultSub2ControlsPanel,
-        		BoxLayout.LINE_AXIS));
+                BoxLayout.LINE_AXIS));
         removeAllButton = new JButton(NLR_REMOVE_ALL_BUTTON_TEXT);
         removeAllButton.setActionCommand(NLR_REMOVE_ALL_BUTTON_TEXT);
         removeAllButton.addActionListener(new ActionListener()
         {
-			public void actionPerformed(ActionEvent e)
-			{
-				NLRBrowseDataCollection model = (NLRBrowseDataCollection)modelManager.getModel(ModelNames.NLR_DATA_BROWSE);
-				model.removeAllNlrData();
+            public void actionPerformed(ActionEvent e)
+            {
+                NLRBrowseDataCollection model = (NLRBrowseDataCollection)modelManager.getModel(ModelNames.NLR_DATA_BROWSE);
+                model.removeAllNlrData();
 
-				showHideButton.setText("Show");
-				timeIntervalChanger.setNLRData(null);
-			}
+                showHideButton.setText("Show");
+                timeIntervalChanger.setNLRData(null);
+            }
         });
         removeAllButton.setEnabled(true);
         removeAllButton.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -242,35 +242,35 @@ public class NLRBrowsePanel extends JPanel implements ListSelectionListener
     }
 
 
-	public void valueChanged(ListSelectionEvent arg0)
-	{
-		int[] idx = {arg0.getFirstIndex(), arg0.getLastIndex()};
-		for (int index : idx)
-		{
-			if (index >= 0 && resultList.isSelectedIndex(index))
-			{
-				showHideButton.setEnabled(true);
-				saveButton.setEnabled(true);
+    public void valueChanged(ListSelectionEvent arg0)
+    {
+        int[] idx = {arg0.getFirstIndex(), arg0.getLastIndex()};
+        for (int index : idx)
+        {
+            if (index >= 0 && resultList.isSelectedIndex(index))
+            {
+                showHideButton.setEnabled(true);
+                saveButton.setEnabled(true);
 
-				//resultList.setSelectedIndex(index);
-				if (nlrModel.containsNlrData(nlrRawResults.get(index)))
-				{
-					showHideButton.setText("Remove");
-					timeIntervalChanger.setNLRData(nlrModel.getNlrData(nlrRawResults.get(index)));
-				}
-				else
-				{
-					showHideButton.setText("Show");
-					timeIntervalChanger.setNLRData(null);
-				}
-				break;
-			}
-			else
-			{
-				showHideButton.setEnabled(false);
-				saveButton.setEnabled(false);
-			}
-		}
-	}
+                //resultList.setSelectedIndex(index);
+                if (nlrModel.containsNlrData(nlrRawResults.get(index)))
+                {
+                    showHideButton.setText("Remove");
+                    timeIntervalChanger.setNLRData(nlrModel.getNlrData(nlrRawResults.get(index)));
+                }
+                else
+                {
+                    showHideButton.setText("Show");
+                    timeIntervalChanger.setNLRData(null);
+                }
+                break;
+            }
+            else
+            {
+                showHideButton.setEnabled(false);
+                saveButton.setEnabled(false);
+            }
+        }
+    }
 
 }

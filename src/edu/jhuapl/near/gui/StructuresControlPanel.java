@@ -12,48 +12,48 @@ import edu.jhuapl.near.pick.PickManager;
 
 public class StructuresControlPanel extends JTabbedPane
 {
-	private AbstractStructureMappingControlPanel lineStructuresMapperPanel;
-	private AbstractStructureMappingControlPanel circleStructuresMapperPanel;
-	private AbstractStructureMappingControlPanel pointsStructuresMapperPanel;
+    private AbstractStructureMappingControlPanel lineStructuresMapperPanel;
+    private AbstractStructureMappingControlPanel circleStructuresMapperPanel;
+    private AbstractStructureMappingControlPanel pointsStructuresMapperPanel;
 
-	public StructuresControlPanel(
-			ModelManager modelManager,
-			PickManager pickManager)
-	{
-		StructureModel structureModel =
-			(StructureModel)modelManager.getModel(ModelNames.LINE_STRUCTURES);
-		lineStructuresMapperPanel = (new AbstractStructureMappingControlPanel(
-				modelManager,
-				structureModel,
-				pickManager,
-				PickManager.PickMode.LINE_DRAW,
-				false) {});
+    public StructuresControlPanel(
+            ModelManager modelManager,
+            PickManager pickManager)
+    {
+        StructureModel structureModel =
+            (StructureModel)modelManager.getModel(ModelNames.LINE_STRUCTURES);
+        lineStructuresMapperPanel = (new AbstractStructureMappingControlPanel(
+                modelManager,
+                structureModel,
+                pickManager,
+                PickManager.PickMode.LINE_DRAW,
+                false) {});
 
-		structureModel =
-			(StructureModel)modelManager.getModel(ModelNames.CIRCLE_STRUCTURES);
-		circleStructuresMapperPanel = (new AbstractStructureMappingControlPanel(
-				modelManager,
-				structureModel,
-				pickManager,
-				PickManager.PickMode.CIRCLE_DRAW,
-				false) {});
+        structureModel =
+            (StructureModel)modelManager.getModel(ModelNames.CIRCLE_STRUCTURES);
+        circleStructuresMapperPanel = (new AbstractStructureMappingControlPanel(
+                modelManager,
+                structureModel,
+                pickManager,
+                PickManager.PickMode.CIRCLE_DRAW,
+                false) {});
 
-		pointsStructuresMapperPanel = new PointsMappingControlPanel(
-				modelManager,
-				pickManager);
+        pointsStructuresMapperPanel = new PointsMappingControlPanel(
+                modelManager,
+                pickManager);
 
-		addTab("Paths", lineStructuresMapperPanel);
-		addTab("Circles", circleStructuresMapperPanel);
-		addTab("Points", pointsStructuresMapperPanel);
+        addTab("Paths", lineStructuresMapperPanel);
+        addTab("Circles", circleStructuresMapperPanel);
+        addTab("Points", pointsStructuresMapperPanel);
 
-		this.addComponentListener(new ComponentAdapter()
-		{
-			public void componentHidden(ComponentEvent e)
-			{
-				lineStructuresMapperPanel.setEditingEnabled(false);
-				circleStructuresMapperPanel.setEditingEnabled(false);
-				pointsStructuresMapperPanel.setEditingEnabled(false);
-			}
-		});
-	}
+        this.addComponentListener(new ComponentAdapter()
+        {
+            public void componentHidden(ComponentEvent e)
+            {
+                lineStructuresMapperPanel.setEditingEnabled(false);
+                circleStructuresMapperPanel.setEditingEnabled(false);
+                pointsStructuresMapperPanel.setEditingEnabled(false);
+            }
+        });
+    }
 }

@@ -53,7 +53,7 @@ public class MyGarbageCollector {
 
       public void run() {
         // Do the delete here
-    	  System.gc();
+          System.gc();
         int num = vtkGlobalJavaHash.GC();
         if (debug) {
           System.out.println("vtkJavaGarbageCollector deleted " + num + " references.");
@@ -70,19 +70,19 @@ public class MyGarbageCollector {
             vtkObjectBase obj = (vtkObjectBase)((WeakReference)entry.getValue()).get();
             if (obj != null)
             {
-            	if (aliveMap.containsKey(obj.GetClassName()))
-            		aliveMap.put(obj.GetClassName(), 1+aliveMap.get(obj.GetClassName()));
-            	else
-            		aliveMap.put(obj.GetClassName(), 1);
-            	//System.out.println(obj.GetClassName());
-            	//if (obj instanceof vtkPolyData)
-                //	System.out.println(obj);
-            	++count;
+                if (aliveMap.containsKey(obj.GetClassName()))
+                    aliveMap.put(obj.GetClassName(), 1+aliveMap.get(obj.GetClassName()));
+                else
+                    aliveMap.put(obj.GetClassName(), 1);
+                //System.out.println(obj.GetClassName());
+                //if (obj instanceof vtkPolyData)
+                //    System.out.println(obj);
+                ++count;
             }
           }
           for (String s : aliveMap.keySet())
           {
-        	  System.out.println(s + " : " + aliveMap.get(s));
+              System.out.println(s + " : " + aliveMap.get(s));
           }
           System.out.println("-----------------/");
           System.out.println("number of objects alive: " + count);
@@ -154,41 +154,41 @@ public class MyGarbageCollector {
 
   public static void setFieldsToNull(Object o, boolean includeInherited)
   {
-		try
-		{
-			List<Field> fields = null;
-			if (includeInherited)
-				fields = getAllFields(o.getClass());
-			else
-				fields = Arrays.asList(o.getClass().getDeclaredFields());
+        try
+        {
+            List<Field> fields = null;
+            if (includeInherited)
+                fields = getAllFields(o.getClass());
+            else
+                fields = Arrays.asList(o.getClass().getDeclaredFields());
 
-			for (Field f : fields)
-			{
-				if (!Modifier.isStatic(f.getModifiers()))
-				{
-					//System.out.println(f.getName());
-					f.setAccessible(true);
-					try
-					{
-						//setFieldsToNull(o, includeInherited);
-						if (f.get(o) instanceof vtkObjectBase)
-							f.set(o, null);
-					}
-					catch (IllegalArgumentException e)
-					{
+            for (Field f : fields)
+            {
+                if (!Modifier.isStatic(f.getModifiers()))
+                {
+                    //System.out.println(f.getName());
+                    f.setAccessible(true);
+                    try
+                    {
+                        //setFieldsToNull(o, includeInherited);
+                        if (f.get(o) instanceof vtkObjectBase)
+                            f.set(o, null);
+                    }
+                    catch (IllegalArgumentException e)
+                    {
 
-					}
-				}
-			}
-		}
-		catch (SecurityException e)
-		{
-			e.printStackTrace();
-		}
-		catch (IllegalAccessException e)
-		{
-			e.printStackTrace();
-		}
+                    }
+                }
+            }
+        }
+        catch (SecurityException e)
+        {
+            e.printStackTrace();
+        }
+        catch (IllegalAccessException e)
+        {
+            e.printStackTrace();
+        }
 
   }
 }

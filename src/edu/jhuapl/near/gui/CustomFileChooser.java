@@ -18,15 +18,15 @@ public class CustomFileChooser
 
     private static class CustomExtensionFilter extends FileFilter
     {
-    	private String extension;
+        private String extension;
 
-    	public CustomExtensionFilter(String extension)
-    	{
-    		if (extension != null)
-    			extension = extension.toLowerCase();
+        public CustomExtensionFilter(String extension)
+        {
+            if (extension != null)
+                extension = extension.toLowerCase();
 
-    		this.extension = extension;
-    	}
+            this.extension = extension;
+        }
 
         //Accept all directories and all files with specified extension.
         public boolean accept(File f)
@@ -41,7 +41,7 @@ public class CustomFileChooser
             {
                 if (ext.equals(extension))
                 {
-                	return true;
+                    return true;
                 }
                 else
                 {
@@ -55,10 +55,10 @@ public class CustomFileChooser
         //The description of this filter
         public String getDescription()
         {
-        	if (extension == null || extension.isEmpty())
-        		return "All Files";
-        	else
-        		return extension.toUpperCase() + " Files";
+            if (extension == null || extension.isEmpty())
+                return "All Files";
+            else
+                return extension.toUpperCase() + " Files";
         }
 
         private String getExtension(File f)
@@ -77,46 +77,46 @@ public class CustomFileChooser
 
     static
     {
-    	fc.setAcceptAllFileFilterUsed(false);
+        fc.setAcceptAllFileFilterUsed(false);
     }
 
     public static File showOpenDialog(Component parent, String title)
     {
-    	return showOpenDialog(parent, title, null);
+        return showOpenDialog(parent, title, null);
     }
 
     public static File showOpenDialog(Component parent, String title, String extension)
     {
-    	fc.setDialogTitle(title);
-    	fc.setFileFilter(new CustomExtensionFilter(extension));
-    	int returnVal = fc.showOpenDialog(parent);
+        fc.setDialogTitle(title);
+        fc.setFileFilter(new CustomExtensionFilter(extension));
+        int returnVal = fc.showOpenDialog(parent);
         if (returnVal == JFileChooser.APPROVE_OPTION)
         {
-        	return fc.getSelectedFile();
+            return fc.getSelectedFile();
         }
         else
         {
-        	return null;
+            return null;
         }
     }
 
     public static File showSaveDialog(Component parent, String title)
     {
-    	return showSaveDialog(parent, title, null, null);
+        return showSaveDialog(parent, title, null, null);
     }
 
     public static File showSaveDialog(Component parent, String title, String defaultFilename)
     {
-    	return showSaveDialog(parent, title, defaultFilename, null);
+        return showSaveDialog(parent, title, defaultFilename, null);
     }
 
     public static File showSaveDialog(Component parent, String title, String defaultFilename, String extension)
     {
-    	fc.setDialogTitle(title);
-    	fc.setFileFilter(new CustomExtensionFilter(extension));
-    	if (defaultFilename != null)
-    		fc.setSelectedFile(new File(defaultFilename));
-    	int returnVal = fc.showSaveDialog(parent);
+        fc.setDialogTitle(title);
+        fc.setFileFilter(new CustomExtensionFilter(extension));
+        if (defaultFilename != null)
+            fc.setSelectedFile(new File(defaultFilename));
+        int returnVal = fc.showSaveDialog(parent);
         if (returnVal == JFileChooser.APPROVE_OPTION)
         {
             File file = fc.getSelectedFile();
@@ -127,20 +127,20 @@ public class CustomFileChooser
                    JOptionPane.OK_CANCEL_OPTION,
                    JOptionPane.QUESTION_MESSAGE);
                 if (response == JOptionPane.CANCEL_OPTION)
-                	return null;
+                    return null;
             }
 
-        	String filename = file.getAbsolutePath();
-        	if (extension != null && !extension.isEmpty())
-        	{
-        		if (!filename.toLowerCase().endsWith("." + extension))
-        			filename += "." + extension;
-        	}
-        	return new File(filename);
+            String filename = file.getAbsolutePath();
+            if (extension != null && !extension.isEmpty())
+            {
+                if (!filename.toLowerCase().endsWith("." + extension))
+                    filename += "." + extension;
+            }
+            return new File(filename);
         }
         else
         {
-        	return null;
+            return null;
         }
     }
 }

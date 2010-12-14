@@ -24,15 +24,15 @@ import org.jfree.data.xy.*;
 
 public class NISSpectrumInfoPanel extends ModelInfoWindow implements PropertyChangeListener
 {
-	private ModelManager modelManager;
-	private NISSpectrum nisSpectrum;
+    private ModelManager modelManager;
+    private NISSpectrum nisSpectrum;
 
-	public NISSpectrumInfoPanel(NISSpectrum nisSpectrum, ModelManager modelManager)
-	{
-		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    public NISSpectrumInfoPanel(NISSpectrum nisSpectrum, ModelManager modelManager)
+    {
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-		this.modelManager = modelManager;
-		this.nisSpectrum = nisSpectrum;
+        this.modelManager = modelManager;
+        this.nisSpectrum = nisSpectrum;
 
         JPanel panel = new JPanel(new BorderLayout());
 
@@ -42,11 +42,11 @@ public class NISSpectrumInfoPanel extends ModelInfoWindow implements PropertyCha
         double[] wavelengths = this.nisSpectrum.getBandCenters();
         double[] spectrum = this.nisSpectrum.getSpectrum();
         for (int i=0; i<wavelengths.length; ++i)
-        	series.add(wavelengths[i], spectrum[i]);
+            series.add(wavelengths[i], spectrum[i]);
         XYDataset xyDataset = new XYSeriesCollection(series);
         JFreeChart chart = ChartFactory.createXYLineChart
                 ("NIS Calibrated Spectrum", "Wavelength (nm)", "Reflectance",
-                		xyDataset, PlotOrientation.VERTICAL, true, true, false);
+                        xyDataset, PlotOrientation.VERTICAL, true, true, false);
         ChartPanel chartPanel = new ChartPanel(chart);
         chartPanel.setMouseWheelEnabled(true);
 
@@ -65,53 +65,53 @@ public class NISSpectrumInfoPanel extends ModelInfoWindow implements PropertyCha
         panel.add(chartPanel, BorderLayout.CENTER);
 
 
-		JPanel bottomPanel = new JPanel();
-		bottomPanel.setLayout(new BoxLayout(bottomPanel,
-        		BoxLayout.PAGE_AXIS));
+        JPanel bottomPanel = new JPanel();
+        bottomPanel.setLayout(new BoxLayout(bottomPanel,
+                BoxLayout.PAGE_AXIS));
 
-		// Add a text box for showing information about the image
-		String[] columnNames = {"Property",
+        // Add a text box for showing information about the image
+        String[] columnNames = {"Property",
                 "Value"};
 
-		HashMap<String, String> properties = null;
-		Object[][] data = {	{"", ""} };
+        HashMap<String, String> properties = null;
+        Object[][] data = {    {"", ""} };
 
-		try
-		{
+        try
+        {
 
-			properties = this.nisSpectrum.getProperties();
-			TreeMap<String, String> sortedProperties = new TreeMap<String, String>(properties);
-			int size = properties.size();
-			data = new Object[size][2];
+            properties = this.nisSpectrum.getProperties();
+            TreeMap<String, String> sortedProperties = new TreeMap<String, String>(properties);
+            int size = properties.size();
+            data = new Object[size][2];
 
-			int i=0;
-			for (String key : sortedProperties.keySet())
-			{
-				data[i][0] = key;
-				data[i][1] = sortedProperties.get(key);
+            int i=0;
+            for (String key : sortedProperties.keySet())
+            {
+                data[i][0] = key;
+                data[i][1] = sortedProperties.get(key);
 
-				++i;
-			}
-		}
-		catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+                ++i;
+            }
+        }
+        catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 
 
 
-		JTable table = new JTable(data, columnNames)
-		{
-			public boolean isCellEditable(int row, int column)
-			{
-				return false;
-			}
-		};
+        JTable table = new JTable(data, columnNames)
+        {
+            public boolean isCellEditable(int row, int column)
+            {
+                return false;
+            }
+        };
 
-		table.setBorder(BorderFactory.createTitledBorder(""));
-		table.setPreferredScrollableViewportSize(new Dimension(500, 130));
+        table.setBorder(BorderFactory.createTitledBorder(""));
+        table.setPreferredScrollableViewportSize(new Dimension(500, 130));
 
-		JScrollPane scrollPane = new JScrollPane(table);
+        JScrollPane scrollPane = new JScrollPane(table);
 
         bottomPanel.add(Box.createVerticalStrut(10));
         bottomPanel.add(scrollPane);
@@ -127,43 +127,43 @@ public class NISSpectrumInfoPanel extends ModelInfoWindow implements PropertyCha
 
         pack();
         setVisible(true);
-	}
+    }
 
 
-	public Model getModel()
-	{
-		return nisSpectrum;
-	}
+    public Model getModel()
+    {
+        return nisSpectrum;
+    }
 
-	public Model getCollectionModel()
-	{
-		return modelManager.getModel(ModelNames.NIS_SPECTRA);
-	}
+    public Model getCollectionModel()
+    {
+        return modelManager.getModel(ModelNames.NIS_SPECTRA);
+    }
 
 
-	/**
-	 * The following function is a bit of a hack. We want to reuse the MSIPopupMenu
-	 * class, but instead of having a right-click popup menu, we want instead to use
-	 * it as an actual menu in a menu bar. Therefore we simply grab the menu items
-	 * from that class and put these in our new JMenu.
-	 */
+    /**
+     * The following function is a bit of a hack. We want to reuse the MSIPopupMenu
+     * class, but instead of having a right-click popup menu, we want instead to use
+     * it as an actual menu in a menu bar. Therefore we simply grab the menu items
+     * from that class and put these in our new JMenu.
+     */
     private void createMenus()
     {
-    	NISPopupMenu msiImagesPopupMenu =
-			new NISPopupMenu(modelManager, null);
+        NISPopupMenu msiImagesPopupMenu =
+            new NISPopupMenu(modelManager, null);
 
-    	msiImagesPopupMenu.setCurrentSpectrum(nisSpectrum.getServerPath());
+        msiImagesPopupMenu.setCurrentSpectrum(nisSpectrum.getServerPath());
 
-    	JMenuBar menuBar = new JMenuBar();
+        JMenuBar menuBar = new JMenuBar();
 
-    	JMenu menu = new JMenu("Options");
+        JMenu menu = new JMenu("Options");
         menu.setMnemonic('O');
 
         Component[] components = msiImagesPopupMenu.getComponents();
         for (Component item : components)
         {
-        	if (item instanceof JMenuItem)
-        		menu.add(item);
+            if (item instanceof JMenuItem)
+                menu.add(item);
         }
 
         menuBar.add(menu);
@@ -171,7 +171,7 @@ public class NISSpectrumInfoPanel extends ModelInfoWindow implements PropertyCha
         setJMenuBar(menuBar);
     }
 
-	public void propertyChange(PropertyChangeEvent arg0)
-	{
-	}
+    public void propertyChange(PropertyChangeEvent arg0)
+    {
+    }
 }

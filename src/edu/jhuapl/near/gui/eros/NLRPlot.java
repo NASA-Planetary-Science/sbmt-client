@@ -137,8 +137,8 @@ public class NLRPlot extends JFrame implements ChartMouseListener
         potentialDistanceDataSeries.clear();
         if (potential.size() > 0 && distance.size() > 0)
         {
-        	for (int i=0; i<potential.size(); ++i)
-        		potentialDistanceDataSeries.add(distance.get(i), potential.get(i), false);
+            for (int i=0; i<potential.size(); ++i)
+                potentialDistanceDataSeries.add(distance.get(i), potential.get(i), false);
         }
         potentialDistanceDataSeries.fireSeriesChanged();
 
@@ -151,9 +151,9 @@ public class NLRPlot extends JFrame implements ChartMouseListener
         potentialTimeDataSeries.clear();
         if (potential.size() > 0 && time.size() > 0)
         {
-        	long t0 = time.get(0);
-        	for (int i=0; i<potential.size(); ++i)
-        		potentialTimeDataSeries.add((double)(time.get(i)-t0)/1000.0, potential.get(i), false);
+            long t0 = time.get(0);
+            for (int i=0; i<potential.size(); ++i)
+                potentialTimeDataSeries.add((double)(time.get(i)-t0)/1000.0, potential.get(i), false);
         }
         potentialTimeDataSeries.fireSeriesChanged();
     }
@@ -162,35 +162,35 @@ public class NLRPlot extends JFrame implements ChartMouseListener
     public void selectPoint(int ptId)
     {
         potentialDistanceSelectionSeries.clear();
-    	if (ptId >= 0)
-    	{
-    		potentialDistanceSelectionSeries.add(
-    				potentialDistanceDataSeries.getX(ptId),
-    				potentialDistanceDataSeries.getY(ptId), true);
-    	}
+        if (ptId >= 0)
+        {
+            potentialDistanceSelectionSeries.add(
+                    potentialDistanceDataSeries.getX(ptId),
+                    potentialDistanceDataSeries.getY(ptId), true);
+        }
 
         
 
         potentialTimeSelectionSeries.clear();
         if (ptId >= 0)
         {
-    		potentialTimeSelectionSeries.add(
-    				potentialTimeDataSeries.getX(ptId),
-    				potentialTimeDataSeries.getY(ptId), true);
+            potentialTimeSelectionSeries.add(
+                    potentialTimeDataSeries.getX(ptId),
+                    potentialTimeDataSeries.getY(ptId), true);
         }
     }
     
     public void chartMouseClicked(ChartMouseEvent arg0)
     {
-    	ChartEntity entity = arg0.getEntity();
-    	
-    	if (entity instanceof XYItemEntity)
-    	{
-    		int id = ((XYItemEntity)entity).getItem();
-    		selectPoint(id);
-    		nlrModel.selectPoint(id);
-    	}
-    	
+        ChartEntity entity = arg0.getEntity();
+        
+        if (entity instanceof XYItemEntity)
+        {
+            int id = ((XYItemEntity)entity).getItem();
+            selectPoint(id);
+            nlrModel.selectPoint(id);
+        }
+        
     }
 
     public void chartMouseMoved(ChartMouseEvent arg0)

@@ -10,7 +10,7 @@ import vtk.*;
 
 public abstract class Model
 {
-	protected final PropertyChangeSupport pcs = new PropertyChangeSupport( this );
+    protected final PropertyChangeSupport pcs = new PropertyChangeSupport( this );
     public void addPropertyChangeListener( PropertyChangeListener listener )
     { this.pcs.addPropertyChangeListener( listener ); }
     public void removePropertyChangeListener( PropertyChangeListener listener )
@@ -20,26 +20,26 @@ public abstract class Model
     private String name = null;
 
     public Model()
-	{
-	}
+    {
+    }
 
     public Model(String name)
-	{
-    	this.name = name;
-	}
+    {
+        this.name = name;
+    }
 
     public boolean isVisible()
     {
-    	return visible;
+        return visible;
     }
 
     public void setVisible(boolean b)
     {
-    	if (this.visible != b)
-    	{
-    		this.visible = b;
-			this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-    	}
+        if (this.visible != b)
+        {
+            this.visible = b;
+            this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+        }
     }
 
     public abstract ArrayList<vtkProp> getProps();
@@ -55,7 +55,7 @@ public abstract class Model
      */
     public String getClickStatusBarText(vtkProp prop, int cellId, double[] pickPosition)
     {
-    	return "";
+        return "";
     }
 
     /**
@@ -68,16 +68,16 @@ public abstract class Model
      */
     public void setRadialOffset(double offset)
     {
-    	// Do nothing
+        // Do nothing
     }
 
-	public String getName()
-	{
-		return name;
-	}
+    public String getName()
+    {
+        return name;
+    }
 
-	public void delete()
-	{
+    public void delete()
+    {
 
-	}
+    }
 }

@@ -26,12 +26,12 @@ import vtk.vtkRenderWindowPanel;
  *
  */
 public abstract class Picker implements
-	MouseListener,
-	MouseMotionListener,
-	MouseWheelListener,
-	PropertyChangeListener
+    MouseListener,
+    MouseMotionListener,
+    MouseWheelListener,
+    PropertyChangeListener
 {
-	protected final PropertyChangeSupport pcs = new PropertyChangeSupport( this );
+    protected final PropertyChangeSupport pcs = new PropertyChangeSupport( this );
     public void addPropertyChangeListener( PropertyChangeListener listener )
     { this.pcs.addPropertyChangeListener( listener ); }
     public void removePropertyChangeListener( PropertyChangeListener listener )
@@ -51,78 +51,78 @@ public abstract class Picker implements
      *
      * @param b
      */
-	public static void setPickingEnabled(boolean b)
-	{
-		if (b == false)
-		{
-			pickingEnabled = false;
-		}
-		else
-		{
-			// Delay half a second before enabling picking. This helps prevent some crashes.
+    public static void setPickingEnabled(boolean b)
+    {
+        if (b == false)
+        {
+            pickingEnabled = false;
+        }
+        else
+        {
+            // Delay half a second before enabling picking. This helps prevent some crashes.
 
-			int delay = 500; //milliseconds
-			ActionListener taskPerformer = new ActionListener() {
-				public void actionPerformed(ActionEvent evt)
-				{
-					pickingEnabled = true;
-				}
-			};
+            int delay = 500; //milliseconds
+            ActionListener taskPerformer = new ActionListener() {
+                public void actionPerformed(ActionEvent evt)
+                {
+                    pickingEnabled = true;
+                }
+            };
 
-			Timer timer = new Timer(delay, taskPerformer);
-			timer.setRepeats(false);
-			timer.start();
-		}
-	}
+            Timer timer = new Timer(delay, taskPerformer);
+            timer.setRepeats(false);
+            timer.start();
+        }
+    }
 
-	public void mouseClicked(MouseEvent e)
-	{
-	}
+    public void mouseClicked(MouseEvent e)
+    {
+    }
 
-	public void mouseEntered(MouseEvent e)
-	{
-	}
+    public void mouseEntered(MouseEvent e)
+    {
+    }
 
-	public void mouseExited(MouseEvent e)
-	{
-	}
+    public void mouseExited(MouseEvent e)
+    {
+    }
 
-	public void mousePressed(MouseEvent e)
-	{
-	}
+    public void mousePressed(MouseEvent e)
+    {
+    }
 
-	public void mouseReleased(MouseEvent e)
-	{
-	}
+    public void mouseReleased(MouseEvent e)
+    {
+    }
 
-	public void mouseDragged(MouseEvent e)
-	{
-	}
+    public void mouseDragged(MouseEvent e)
+    {
+    }
 
-	public void mouseMoved(MouseEvent e)
-	{
-	}
+    public void mouseMoved(MouseEvent e)
+    {
+    }
 
-	public void mouseWheelMoved(MouseWheelEvent e)
-	{
-	}
+    public void mouseWheelMoved(MouseWheelEvent e)
+    {
+    }
 
-	public void propertyChange(PropertyChangeEvent evt)
-	{
-	}
+    public void propertyChange(PropertyChangeEvent evt)
+    {
+    }
 
-	protected int doPick(MouseEvent e, vtkCellPicker picker, vtkRenderWindowPanel renWin)
-	{
-		if (pickingEnabled == false)
-			return 0;
+    protected int doPick(MouseEvent e, vtkCellPicker picker, vtkRenderWindowPanel renWin)
+    {
+        if (pickingEnabled == false)
+            return 0;
 
-		// Don't do a pick if the event is more than a third of a second old
-		final long currentTime = System.currentTimeMillis();
-		final long when = e.getWhen();
+        // Don't do a pick if the event is more than a third of a second old
+        final long currentTime = System.currentTimeMillis();
+        final long when = e.getWhen();
 
-		//System.err.println("elapsed time " + (currentTime - when));
-		if (currentTime - when > 333)
-			return 0;
+        //System.err.println("elapsed time " + (currentTime - when));
+        if (currentTime - when > 333)
+            return 0;
 
         // When picking, choosing the right tolerance is not simple. If it's too small, then
         // the pick will only work well if we are zoomed in very close to the object. If it's
@@ -153,6 +153,6 @@ public abstract class Picker implements
         renWin.unlock();
 
         return pickSucceeded;
-	}
+    }
 
 }

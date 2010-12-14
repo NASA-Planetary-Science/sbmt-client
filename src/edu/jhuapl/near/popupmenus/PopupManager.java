@@ -18,17 +18,17 @@ public abstract class PopupManager
 {
     private ModelManager modelManager;
 
-	public PopupManager(ModelManager modelManager)
-	{
-		this.modelManager = modelManager;
-	}
+    public PopupManager(ModelManager modelManager)
+    {
+        this.modelManager = modelManager;
+    }
 
-	protected abstract HashMap<Model, PopupMenu> getModelToPopupMap();
+    protected abstract HashMap<Model, PopupMenu> getModelToPopupMap();
 
     public void showPopup(MouseEvent e, vtkProp pickedProp, int pickedCellId, double[] pickedPosition)
     {
-    	PopupMenu popup = getModelToPopupMap().get(modelManager.getModel(pickedProp));
-    	if (popup != null)
-    		popup.showPopup(e, pickedProp, pickedCellId, pickedPosition);
+        PopupMenu popup = getModelToPopupMap().get(modelManager.getModel(pickedProp));
+        if (popup != null)
+            popup.showPopup(e, pickedProp, pickedCellId, pickedPosition);
     }
 }

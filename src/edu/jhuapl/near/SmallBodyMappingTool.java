@@ -23,24 +23,24 @@ import edu.jhuapl.near.util.NativeLibraryLoader;
  */
 public class SmallBodyMappingTool extends JFrame
 {
-	private StatusBar statusBar;
-	private FileMenu fileMenu;
-	private ViewMenu viewMenu;
-	private HelpMenu helpMenu;
-	private ViewerManager rootPanel;
-	private static vtkJavaGarbageCollector garbageCollector;
+    private StatusBar statusBar;
+    private FileMenu fileMenu;
+    private ViewMenu viewMenu;
+    private HelpMenu helpMenu;
+    private ViewerManager rootPanel;
+    private static vtkJavaGarbageCollector garbageCollector;
 
-	public SmallBodyMappingTool()
-	{
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    public SmallBodyMappingTool()
+    {
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         createStatusBar();
 
         rootPanel = new ViewerManager(statusBar);
 
-		createMenus();
+        createMenus();
 
-		this.add(rootPanel, BorderLayout.CENTER);
+        this.add(rootPanel, BorderLayout.CENTER);
 
 //        // Center the application on the screen.
 //        Dimension prefSize = this.getPreferredSize();
@@ -51,13 +51,13 @@ public class SmallBodyMappingTool extends JFrame
 //        int y = parentLocation.y + (parentSize.height - prefSize.height) / 2;
 //        this.setLocation(x, y);
 //        this.setResizable(true);
-	}
+    }
 
     private void createMenus()
     {
-    	JMenuBar menuBar = new JMenuBar();
+        JMenuBar menuBar = new JMenuBar();
 
-    	fileMenu = new FileMenu(rootPanel);
+        fileMenu = new FileMenu(rootPanel);
         fileMenu.setMnemonic('F');
         menuBar.add(fileMenu);
 
@@ -65,7 +65,7 @@ public class SmallBodyMappingTool extends JFrame
         viewMenu.setMnemonic('V');
         menuBar.add(viewMenu);
 
-    	helpMenu = new HelpMenu(rootPanel);
+        helpMenu = new HelpMenu(rootPanel);
         helpMenu.setMnemonic('H');
         menuBar.add(helpMenu);
 
@@ -74,8 +74,8 @@ public class SmallBodyMappingTool extends JFrame
 
     private void createStatusBar()
     {
-    	statusBar = new StatusBar();
-    	this.getContentPane().add(statusBar, BorderLayout.PAGE_END);
+        statusBar = new StatusBar();
+        this.getContentPane().add(statusBar, BorderLayout.PAGE_END);
     }
 
     public static void main(String[] args)
@@ -84,8 +84,8 @@ public class SmallBodyMappingTool extends JFrame
         {
             javax.swing.SwingUtilities.invokeLater(new Runnable()
             {
-            	public void run()
-            	{
+                public void run()
+                {
                     NativeLibraryLoader.loadVtkLibraries();
 
                     garbageCollector = new vtkJavaGarbageCollector();
@@ -93,27 +93,27 @@ public class SmallBodyMappingTool extends JFrame
                     garbageCollector.SetScheduleTime(5, TimeUnit.SECONDS);
                     garbageCollector.SetAutoGarbageCollection(true);
 
-                	try
+                    try
                     {
-                		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+                        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
                     }
                     catch (Exception e)
                     {
-                    	e.printStackTrace();
+                        e.printStackTrace();
                     }
 
-                	JPopupMenu.setDefaultLightWeightPopupEnabled(false);
+                    JPopupMenu.setDefaultLightWeightPopupEnabled(false);
                     ToolTipManager.sharedInstance().setLightWeightPopupEnabled(false);
 
-                	SmallBodyMappingTool frame = new SmallBodyMappingTool();
+                    SmallBodyMappingTool frame = new SmallBodyMappingTool();
 
-            		ImageIcon erosIcon = new ImageIcon(getClass().getResource("/edu/jhuapl/near/data/eros.png"));
+                    ImageIcon erosIcon = new ImageIcon(getClass().getResource("/edu/jhuapl/near/data/eros.png"));
                     frame.setIconImage(erosIcon.getImage());
                     frame.setTitle("Small Body Mapping Tool");
                     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                     frame.pack();
                     frame.setVisible(true);
-            	}
+                }
             });
         }
         catch (Exception e)

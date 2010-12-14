@@ -24,14 +24,14 @@ public class ImageFileChooser
 
     private static class ImageFilter extends FileFilter
     {
-    	private String[] extensions;
-    	private String description;
+        private String[] extensions;
+        private String description;
 
-    	public ImageFilter(String[] extensions, String description)
-    	{
-    		this.extensions = extensions;
-    		this.description = description;
-    	}
+        public ImageFilter(String[] extensions, String description)
+        {
+            this.extensions = extensions;
+            this.description = description;
+        }
 
         //Accept all directories and all png files.
         public boolean accept(File f)
@@ -44,13 +44,13 @@ public class ImageFileChooser
             String extension = getExtension(f);
             if (extension != null)
             {
-            	for (String str : extensions)
-            	{
-            		if (extension.equals(str))
-            		{
-            			return true;
-            		}
-            	}
+                for (String str : extensions)
+                {
+                    if (extension.equals(str))
+                    {
+                        return true;
+                    }
+                }
 
                 return false;
             }
@@ -61,7 +61,7 @@ public class ImageFileChooser
         //The description of this filter
         public String getDescription()
         {
-        	return description;
+            return description;
         }
 
         private String getExtension(File f)
@@ -80,94 +80,94 @@ public class ImageFileChooser
 
     static
     {
-    	fc.setAcceptAllFileFilterUsed(false);
+        fc.setAcceptAllFileFilterUsed(false);
 
-    	String[] bmp = {"bmp"};
-    	fc.addChoosableFileFilter(new ImageFilter(bmp, BMP_DESCRIPTION));
-    	String[] jpeg = {"jpg", "jpeg"};
-    	fc.addChoosableFileFilter(new ImageFilter(jpeg, JPEG_DESCRIPTION));
-    	String[] png = {"png"};
-    	fc.addChoosableFileFilter(new ImageFilter(png, PNG_DESCRIPTION));
-    	String[] pnm = {"pnm"};
-    	fc.addChoosableFileFilter(new ImageFilter(pnm, PNM_DESCRIPTION));
-    	String[] ps = {"ps"};
-    	fc.addChoosableFileFilter(new ImageFilter(ps, PS_DESCRIPTION));
-    	String[] tiff = {"tif", "tiff"};
-    	fc.addChoosableFileFilter(new ImageFilter(tiff, TIFF_DESCRIPTION));
+        String[] bmp = {"bmp"};
+        fc.addChoosableFileFilter(new ImageFilter(bmp, BMP_DESCRIPTION));
+        String[] jpeg = {"jpg", "jpeg"};
+        fc.addChoosableFileFilter(new ImageFilter(jpeg, JPEG_DESCRIPTION));
+        String[] png = {"png"};
+        fc.addChoosableFileFilter(new ImageFilter(png, PNG_DESCRIPTION));
+        String[] pnm = {"pnm"};
+        fc.addChoosableFileFilter(new ImageFilter(pnm, PNM_DESCRIPTION));
+        String[] ps = {"ps"};
+        fc.addChoosableFileFilter(new ImageFilter(ps, PS_DESCRIPTION));
+        String[] tiff = {"tif", "tiff"};
+        fc.addChoosableFileFilter(new ImageFilter(tiff, TIFF_DESCRIPTION));
     }
 
     public static File showOpenDialog(Component parent, String title)
     {
-    	fc.setDialogTitle(title);
-    	int returnVal = fc.showOpenDialog(parent);
+        fc.setDialogTitle(title);
+        int returnVal = fc.showOpenDialog(parent);
         if (returnVal == JFileChooser.APPROVE_OPTION)
         {
-        	return fc.getSelectedFile();
+            return fc.getSelectedFile();
         }
         else
         {
-        	return null;
+            return null;
         }
     }
 
     public static File showSaveDialog(Component parent, String title)
     {
-    	fc.setDialogTitle(title);
-    	int returnVal = fc.showSaveDialog(parent);
+        fc.setDialogTitle(title);
+        int returnVal = fc.showSaveDialog(parent);
         if (returnVal == JFileChooser.APPROVE_OPTION)
         {
             String filename = fc.getSelectedFile().getAbsolutePath();
 
             String desc = fc.getFileFilter().getDescription();
-        	if (BMP_DESCRIPTION.equals(desc) &&
-        			!filename.toLowerCase().endsWith(".bmp"))
-        	{
-        		filename += ".bmp";
-        	}
-        	else if (JPEG_DESCRIPTION.equals(desc) &&
-        			!filename.toLowerCase().endsWith(".jpg") &&
-        			!filename.toLowerCase().endsWith(".jpeg") )
-        	{
-        		filename += ".jpg";
-        	}
-        	else if (PNG_DESCRIPTION.equals(desc) &&
-        			!filename.toLowerCase().endsWith(".png"))
-        	{
-        		filename += ".png";
-        	}
-        	else if (PNM_DESCRIPTION.equals(desc) &&
-        			!filename.toLowerCase().endsWith(".pnm"))
-        	{
-        		filename += ".pnm";
-        	}
-        	else if (PS_DESCRIPTION.equals(desc) &&
-        			!filename.toLowerCase().endsWith(".ps"))
-        	{
-        		filename += ".ps";
-        	}
-        	else if (TIFF_DESCRIPTION.equals(desc) &&
-        			!filename.toLowerCase().endsWith(".tif") &&
-        			!filename.toLowerCase().endsWith(".tiff"))
-        	{
-        		filename += ".tiff";
-        	}
+            if (BMP_DESCRIPTION.equals(desc) &&
+                    !filename.toLowerCase().endsWith(".bmp"))
+            {
+                filename += ".bmp";
+            }
+            else if (JPEG_DESCRIPTION.equals(desc) &&
+                    !filename.toLowerCase().endsWith(".jpg") &&
+                    !filename.toLowerCase().endsWith(".jpeg") )
+            {
+                filename += ".jpg";
+            }
+            else if (PNG_DESCRIPTION.equals(desc) &&
+                    !filename.toLowerCase().endsWith(".png"))
+            {
+                filename += ".png";
+            }
+            else if (PNM_DESCRIPTION.equals(desc) &&
+                    !filename.toLowerCase().endsWith(".pnm"))
+            {
+                filename += ".pnm";
+            }
+            else if (PS_DESCRIPTION.equals(desc) &&
+                    !filename.toLowerCase().endsWith(".ps"))
+            {
+                filename += ".ps";
+            }
+            else if (TIFF_DESCRIPTION.equals(desc) &&
+                    !filename.toLowerCase().endsWith(".tif") &&
+                    !filename.toLowerCase().endsWith(".tiff"))
+            {
+                filename += ".tiff";
+            }
 
-        	File file = new File(filename);
-        	if (file.exists ())
+            File file = new File(filename);
+            if (file.exists ())
             {
                 int response = JOptionPane.showConfirmDialog (null,
                   "Overwrite " + file.getName() + "?","Confirm Overwrite",
                    JOptionPane.OK_CANCEL_OPTION,
                    JOptionPane.QUESTION_MESSAGE);
                 if (response == JOptionPane.CANCEL_OPTION)
-                	return null;
+                    return null;
             }
 
-        	return file;
+            return file;
         }
         else
         {
-        	return null;
+            return null;
         }
     }
 

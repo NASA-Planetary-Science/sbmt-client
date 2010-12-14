@@ -19,110 +19,110 @@ import vtk.*;
 
 public class MSIImageCollection extends Model implements PropertyChangeListener
 {
-	private SmallBodyModel erosModel;
+    private SmallBodyModel erosModel;
 
-	private HashMap<MSIImage, ArrayList<vtkProp>> imageToActorsMap = new HashMap<MSIImage, ArrayList<vtkProp>>();
+    private HashMap<MSIImage, ArrayList<vtkProp>> imageToActorsMap = new HashMap<MSIImage, ArrayList<vtkProp>>();
 
-	private HashMap<vtkProp, MSIImage> actorToImageMap = new HashMap<vtkProp, MSIImage>();
+    private HashMap<vtkProp, MSIImage> actorToImageMap = new HashMap<vtkProp, MSIImage>();
 
-	public MSIImageCollection(SmallBodyModel eros)
-	{
-		super(ModelNames.MSI_IMAGES);
+    public MSIImageCollection(SmallBodyModel eros)
+    {
+        super(ModelNames.MSI_IMAGES);
 
-		this.erosModel = eros;
-	}
+        this.erosModel = eros;
+    }
 
-	private boolean containsKey(MSIKey key)
-	{
-		for (MSIImage image : imageToActorsMap.keySet())
-		{
-			if (image.getKey().equals(key))
-				return true;
-		}
+    private boolean containsKey(MSIKey key)
+    {
+        for (MSIImage image : imageToActorsMap.keySet())
+        {
+            if (image.getKey().equals(key))
+                return true;
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	private MSIImage getImageFromKey(MSIKey key)
-	{
-		for (MSIImage image : imageToActorsMap.keySet())
-		{
-			if (image.getKey().equals(key))
-				return image;
-		}
+    private MSIImage getImageFromKey(MSIKey key)
+    {
+        for (MSIImage image : imageToActorsMap.keySet())
+        {
+            if (image.getKey().equals(key))
+                return image;
+        }
 
-		return null;
-	}
+        return null;
+    }
 
-	public void addImage(MSIKey key) throws FitsException, IOException
-	{
-		if (containsKey(key))
-			return;
+    public void addImage(MSIKey key) throws FitsException, IOException
+    {
+        if (containsKey(key))
+            return;
 
-//		MSIImage image = MSIImage.MSIImageFactory.createImage(key, erosModel);
-		MSIImage image = new MSIImage(key, erosModel);
+//        MSIImage image = MSIImage.MSIImageFactory.createImage(key, erosModel);
+        MSIImage image = new MSIImage(key, erosModel);
 
-		erosModel.addPropertyChangeListener(image);
-		image.addPropertyChangeListener(this);
+        erosModel.addPropertyChangeListener(image);
+        image.addPropertyChangeListener(this);
 
-		imageToActorsMap.put(image, new ArrayList<vtkProp>());
+        imageToActorsMap.put(image, new ArrayList<vtkProp>());
 
-		ArrayList<vtkProp> imagePieces = image.getProps();
+        ArrayList<vtkProp> imagePieces = image.getProps();
 
-		imageToActorsMap.get(image).addAll(imagePieces);
+        imageToActorsMap.get(image).addAll(imagePieces);
 
-		for (vtkProp act : imagePieces)
-			actorToImageMap.put(act, image);
+        for (vtkProp act : imagePieces)
+            actorToImageMap.put(act, image);
 
-		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-	}
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+    }
 
-	public void removeImage(MSIKey key)
-	{
-		MSIImage image = getImageFromKey(key);
+    public void removeImage(MSIKey key)
+    {
+        MSIImage image = getImageFromKey(key);
 
-		ArrayList<vtkProp> actors = imageToActorsMap.get(image);
+        ArrayList<vtkProp> actors = imageToActorsMap.get(image);
 
-		for (vtkProp act : actors)
-			actorToImageMap.remove(act);
+        for (vtkProp act : actors)
+            actorToImageMap.remove(act);
 
-		imageToActorsMap.remove(image);
+        imageToActorsMap.remove(image);
 
-		image.removePropertyChangeListener(this);
-		erosModel.removePropertyChangeListener(image);
-		image.setShowFrustum(false);
+        image.removePropertyChangeListener(this);
+        erosModel.removePropertyChangeListener(image);
+        image.setShowFrustum(false);
 
-		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-		this.pcs.firePropertyChange(Properties.MODEL_REMOVED, null, image);
-	}
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+        this.pcs.firePropertyChange(Properties.MODEL_REMOVED, null, image);
+    }
 
-	public void removeAllImages()
-	{
-		HashMap<MSIImage, ArrayList<vtkProp>> map = (HashMap<MSIImage, ArrayList<vtkProp>>)imageToActorsMap.clone();
-		for (MSIImage image : map.keySet())
-			removeImage(image.getKey());
-	}
+    public void removeAllImages()
+    {
+        HashMap<MSIImage, ArrayList<vtkProp>> map = (HashMap<MSIImage, ArrayList<vtkProp>>)imageToActorsMap.clone();
+        for (MSIImage image : map.keySet())
+            removeImage(image.getKey());
+    }
 
-	public ArrayList<vtkProp> getProps()
-	{
-		return new ArrayList<vtkProp>(actorToImageMap.keySet());
-	}
+    public ArrayList<vtkProp> getProps()
+    {
+        return new ArrayList<vtkProp>(actorToImageMap.keySet());
+    }
 
-	public void propertyChange(PropertyChangeEvent evt)
-	{
-		if (Properties.MODEL_CHANGED.equals(evt.getPropertyName()))
-			this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-	}
+    public void propertyChange(PropertyChangeEvent evt)
+    {
+        if (Properties.MODEL_CHANGED.equals(evt.getPropertyName()))
+            this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+    }
 
     public String getClickStatusBarText(vtkProp prop, int cellId, double[] pickPosition)
     {
-    	File file = new File(actorToImageMap.get(prop).getKey().name);
-    	return "MSI image " + file.getName().substring(2, 11);
+        File file = new File(actorToImageMap.get(prop).getKey().name);
+        return "MSI image " + file.getName().substring(2, 11);
     }
 
     public String getImageName(vtkActor actor)
     {
-    	return actorToImageMap.get(actor).getKey().name;
+        return actorToImageMap.get(actor).getKey().name;
     }
 
     public MSIImage getImage(vtkActor actor)
@@ -132,19 +132,19 @@ public class MSIImageCollection extends Model implements PropertyChangeListener
 
     public MSIImage getImage(MSIKey key)
     {
-    	return getImageFromKey(key);
+        return getImageFromKey(key);
     }
 
     public boolean containsImage(MSIKey key)
     {
-    	return containsKey(key);
+        return containsKey(key);
     }
 
-	public void setShowFrustums(boolean b)
-	{
-		for (MSIImage image : imageToActorsMap.keySet())
-			image.setShowFrustum(b);
+    public void setShowFrustums(boolean b)
+    {
+        for (MSIImage image : imageToActorsMap.keySet())
+            image.setShowFrustum(b);
 
-		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-	}
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+    }
 }

@@ -2,54 +2,54 @@ package edu.jhuapl.near.util;
 
 public class Frustum
 {
-	// location of the origin of frustum
-	public final double[] origin;// = new double[3];
+    // location of the origin of frustum
+    public final double[] origin;// = new double[3];
 
-	// vector pointing in upper left of frustum
-	public final double[] ul;// = new double[3];
+    // vector pointing in upper left of frustum
+    public final double[] ul;// = new double[3];
 
-	// vector pointing in upper right of frustum
-	public final double[] ur;// = new double[3];
+    // vector pointing in upper right of frustum
+    public final double[] ur;// = new double[3];
 
-	// vector pointing in lower left of frustum
-	public final double[] ll;// = new double[3];
+    // vector pointing in lower left of frustum
+    public final double[] ll;// = new double[3];
 
-	// vector pointing in lower right of frustum
-	public final double[] lr;// = new double[3];
+    // vector pointing in lower right of frustum
+    public final double[] lr;// = new double[3];
 
-	private final double a;
-	private final double b;
+    private final double a;
+    private final double b;
 
-	public Frustum(
-			double[] origin,
-			double[] ul,
-			double[] ur,
-			double[] ll,
-			double[] lr)
-	{
-		this.origin = origin.clone();
-		this.ul = ul.clone();
-		this.ur = ur.clone();
-		this.ll = ll.clone();
-		this.lr = lr.clone();
+    public Frustum(
+            double[] origin,
+            double[] ul,
+            double[] ur,
+            double[] ll,
+            double[] lr)
+    {
+        this.origin = origin.clone();
+        this.ul = ul.clone();
+        this.ur = ur.clone();
+        this.ll = ll.clone();
+        this.lr = lr.clone();
 
         a = MathUtil.vsep(ul, ur);
         b = MathUtil.vsep(ul, lr);
-	}
+    }
 
-	/**
-	 * Given any point in 3D space compute the texture coordinates of the
-	 * point assuming the frustum represents the field of the view of
-	 * a camera.
-	 * @param pt desired point to compute texture coordinates for
-	 * @param uv returned texture coordinates as a 2 element vector
-	 */
-	public void computeTextureCoordinates(double[] pt, double[] uv)
-	{
-		double[] vec = {
-			 pt[0] - origin[0],
-			 pt[1] - origin[1],
-			 pt[2] - origin[2]};
+    /**
+     * Given any point in 3D space compute the texture coordinates of the
+     * point assuming the frustum represents the field of the view of
+     * a camera.
+     * @param pt desired point to compute texture coordinates for
+     * @param uv returned texture coordinates as a 2 element vector
+     */
+    public void computeTextureCoordinates(double[] pt, double[] uv)
+    {
+        double[] vec = {
+             pt[0] - origin[0],
+             pt[1] - origin[1],
+             pt[2] - origin[2]};
 
         MathUtil.vhat(vec, vec);
 
@@ -76,5 +76,5 @@ public class Frustum
 
         uv[0] = u;
         uv[1] = v;
-	}
+    }
 }

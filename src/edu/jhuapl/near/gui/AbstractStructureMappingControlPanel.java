@@ -21,9 +21,9 @@ import edu.jhuapl.near.util.Properties;
 import net.miginfocom.swing.MigLayout;
 
 public abstract class AbstractStructureMappingControlPanel extends JPanel implements
-	ActionListener,
-	PropertyChangeListener,
-	TableModelListener, ListSelectionListener
+    ActionListener,
+    PropertyChangeListener,
+    TableModelListener, ListSelectionListener
 {
     private ModelManager modelManager;
     //private PickManager pickManager;
@@ -40,33 +40,33 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
     //private int selectedIndex = -1;
     private StructureModel structureModel;
     private PickManager pickManager;
-	private PickManager.PickMode pickMode;
+    private PickManager.PickMode pickMode;
 
     public AbstractStructureMappingControlPanel(
-    		final ModelManager modelManager,
-    		final StructureModel structureModel,
-    		final PickManager pickManager,
-    		final PickManager.PickMode pickMode,
-    		boolean compactMode)
+            final ModelManager modelManager,
+            final StructureModel structureModel,
+            final PickManager pickManager,
+            final PickManager.PickMode pickMode,
+            boolean compactMode)
     {
-		this.modelManager = modelManager;
-		//this.pickManager = pickManager;
-		this.structureModel = structureModel;
-		this.pickManager = pickManager;
-		this.pickMode = pickMode;
+        this.modelManager = modelManager;
+        //this.pickManager = pickManager;
+        this.structureModel = structureModel;
+        this.pickManager = pickManager;
+        this.pickMode = pickMode;
 
-		structureModel.addPropertyChangeListener(this);
-		this.addComponentListener(new ComponentAdapter()
-		{
-			public void componentHidden(ComponentEvent e)
-			{
-				setEditingEnabled(false);
-			}
-		});
+        structureModel.addPropertyChangeListener(this);
+        this.addComponentListener(new ComponentAdapter()
+        {
+            public void componentHidden(ComponentEvent e)
+            {
+                setEditingEnabled(false);
+            }
+        });
 
-		pickManager.getDefaultPicker().addPropertyChangeListener(this);
+        pickManager.getDefaultPicker().addPropertyChangeListener(this);
 
-		setLayout(new MigLayout("wrap 3, insets 0"));
+        setLayout(new MigLayout("wrap 3, insets 0"));
 
         this.loadStructuresButton = new JButton("Load...");
         this.loadStructuresButton.setEnabled(true);
@@ -86,16 +86,16 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
 
         if (!compactMode)
         {
-        	add(this.structuresFileTextField, "span");
+            add(this.structuresFileTextField, "span");
 
-        	add(this.loadStructuresButton, "w 100!");
-        	add(this.saveStructuresButton, "w 100!");
-        	add(this.saveAsStructuresButton, "w 100!, wrap 15px");
+            add(this.loadStructuresButton, "w 100!");
+            add(this.saveStructuresButton, "w 100!");
+            add(this.saveAsStructuresButton, "w 100!, wrap 15px");
         }
 
         JLabel structureTypeText = new JLabel(" Structures");
         if (!compactMode)
-        	add(structureTypeText, "span");
+            add(structureTypeText, "span");
 
         //String[] options = {LineModel.LINES, CircleModel.CIRCLES};
         //structureTypeComboBox = new JComboBox(options);
@@ -117,19 +117,19 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
 
         Object[][] data = new Object[0][4];
 
-		structuresTable = new JTable(new DefaultTableModel(data, columnNames)
-		{
-			public boolean isCellEditable(int row, int column)
-			{
-				if (column == 2)
-					return true;
-				else
-					return false;
-			}
-		});
+        structuresTable = new JTable(new DefaultTableModel(data, columnNames)
+        {
+            public boolean isCellEditable(int row, int column)
+            {
+                if (column == 2)
+                    return true;
+                else
+                    return false;
+            }
+        });
 
-		structuresTable.setBorder(BorderFactory.createTitledBorder(""));
-		//table.setPreferredScrollableViewportSize(new Dimension(500, 130));
+        structuresTable.setBorder(BorderFactory.createTitledBorder(""));
+        //table.setPreferredScrollableViewportSize(new Dimension(500, 130));
         structuresTable.setColumnSelectionAllowed(false);
         structuresTable.setRowSelectionAllowed(true);
         structuresTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
@@ -144,274 +144,274 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
         //structuresPopupMenu = new StructuresPopupMenu(this.modelManager, this.pickManager, this);
 
         if (!compactMode)
-        	add(tableScrollPane, "span");
+            add(tableScrollPane, "span");
 
 
         if (structureModel.supportsSelection())
         {
-        	final JButton newButton = new JButton("New");
-        	newButton.addActionListener(new ActionListener()
-        	{
-        		public void actionPerformed(ActionEvent e)
-        		{
-        			structureModel.addNewStructure();
-        			pickManager.setPickMode(pickMode);
-        			editButton.setSelected(true);
-        			updateStructureTable();
+            final JButton newButton = new JButton("New");
+            newButton.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent e)
+                {
+                    structureModel.addNewStructure();
+                    pickManager.setPickMode(pickMode);
+                    editButton.setSelected(true);
+                    updateStructureTable();
 
-        			int numStructures = structuresTable.getRowCount();
-        			if (numStructures > 0)
-        				structuresTable.setRowSelectionInterval(numStructures-1, numStructures-1);
-        		}
-        	});
-        	add(newButton, "w 100!");
+                    int numStructures = structuresTable.getRowCount();
+                    if (numStructures > 0)
+                        structuresTable.setRowSelectionInterval(numStructures-1, numStructures-1);
+                }
+            });
+            add(newButton, "w 100!");
         }
 
         editButton = new JToggleButton("Edit");
         editButton.addActionListener(new ActionListener()
         {
-        	public void actionPerformed(ActionEvent e)
-        	{
-        		setEditingEnabled(editButton.isSelected());
-        	}
+            public void actionPerformed(ActionEvent e)
+            {
+                setEditingEnabled(editButton.isSelected());
+            }
         });
         add(editButton, "w 100!");
 
         JButton deleteButton = new JButton("Delete");
         deleteButton.addActionListener(new ActionListener()
         {
-			public void actionPerformed(ActionEvent e)
-			{
-				editButton.setSelected(false);
+            public void actionPerformed(ActionEvent e)
+            {
+                editButton.setSelected(false);
 
-				int numStructures = structuresTable.getRowCount();
-				int idx = structuresTable.getSelectedRow();
-				if (idx >= 0 && idx < numStructures)
-				{
-					structureModel.removeStructure(idx);
-					pickManager.setPickMode(PickManager.PickMode.DEFAULT);
-					structureModel.selectStructure(-1);
-					updateStructureTable();
+                int numStructures = structuresTable.getRowCount();
+                int idx = structuresTable.getSelectedRow();
+                if (idx >= 0 && idx < numStructures)
+                {
+                    structureModel.removeStructure(idx);
+                    pickManager.setPickMode(PickManager.PickMode.DEFAULT);
+                    structureModel.selectStructure(-1);
+                    updateStructureTable();
 
-					numStructures = structuresTable.getRowCount();
-					if (numStructures > 0)
-					{
-						if (idx > numStructures-1)
-							structuresTable.setRowSelectionInterval(numStructures-1, numStructures-1);
-						else
-							structuresTable.setRowSelectionInterval(idx, idx);
-					}
-				}
-			}
+                    numStructures = structuresTable.getRowCount();
+                    if (numStructures > 0)
+                    {
+                        if (idx > numStructures-1)
+                            structuresTable.setRowSelectionInterval(numStructures-1, numStructures-1);
+                        else
+                            structuresTable.setRowSelectionInterval(idx, idx);
+                    }
+                }
+            }
         });
         add(deleteButton, "w 100!, wrap");
-	}
+    }
 
     public void actionPerformed(ActionEvent actionEvent)
     {
-    	Object source = actionEvent.getSource();
+        Object source = actionEvent.getSource();
 
-    	if (source == this.loadStructuresButton)
-    	{
-    		structuresFile = CustomFileChooser.showOpenDialog(this, "Select File");
-    		if (structuresFile != null)
-    			this.structuresFileTextField.setText(structuresFile.getAbsolutePath());
+        if (source == this.loadStructuresButton)
+        {
+            structuresFile = CustomFileChooser.showOpenDialog(this, "Select File");
+            if (structuresFile != null)
+                this.structuresFileTextField.setText(structuresFile.getAbsolutePath());
 
-    		if (structuresFile != null)
-    		{
-    			try
-    			{
-    				structureModel.loadModel(structuresFile);
-    			}
-    			catch (Exception e)
-    			{
-    				JOptionPane.showMessageDialog(null,
-    						"There was an error reading the file.",
-    						"Error",
-    						JOptionPane.ERROR_MESSAGE);
+            if (structuresFile != null)
+            {
+                try
+                {
+                    structureModel.loadModel(structuresFile);
+                }
+                catch (Exception e)
+                {
+                    JOptionPane.showMessageDialog(null,
+                            "There was an error reading the file.",
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE);
 
-    				e.printStackTrace();
-    			}
-    		}
-    	}
-    	else if (source == this.saveStructuresButton || source == this.saveAsStructuresButton)
-    	{
-    		if (structuresFile == null || source == this.saveAsStructuresButton)
-    		{
-    			structuresFile = CustomFileChooser.showSaveDialog(this, "Select File");
-    			if (structuresFile != null)
-    				this.structuresFileTextField.setText(structuresFile.getAbsolutePath());
-    		}
+                    e.printStackTrace();
+                }
+            }
+        }
+        else if (source == this.saveStructuresButton || source == this.saveAsStructuresButton)
+        {
+            if (structuresFile == null || source == this.saveAsStructuresButton)
+            {
+                structuresFile = CustomFileChooser.showSaveDialog(this, "Select File");
+                if (structuresFile != null)
+                    this.structuresFileTextField.setText(structuresFile.getAbsolutePath());
+            }
 
-    		if (structuresFile != null)
-    		{
-    			try
-    			{
-    				structureModel.saveModel(structuresFile);
-    			}
-    			catch (Exception e)
-    			{
-    				JOptionPane.showMessageDialog(null,
-    						"There was an error saving the file.",
-    						"Error",
-    						JOptionPane.ERROR_MESSAGE);
+            if (structuresFile != null)
+            {
+                try
+                {
+                    structureModel.saveModel(structuresFile);
+                }
+                catch (Exception e)
+                {
+                    JOptionPane.showMessageDialog(null,
+                            "There was an error saving the file.",
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE);
 
-    				e.printStackTrace();
-    			}
-    		}
-    	}
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
-	public void propertyChange(PropertyChangeEvent evt)
-	{
-		if (Properties.MODEL_CHANGED.equals(evt.getPropertyName()))
-		{
-			updateStructureTable();
+    public void propertyChange(PropertyChangeEvent evt)
+    {
+        if (Properties.MODEL_CHANGED.equals(evt.getPropertyName()))
+        {
+            updateStructureTable();
 
-			if (structureModel.supportsSelection())
-			{
-				int idx = structureModel.getSelectedStructureIndex();
-				if (idx >= 0)
-				{
-					pickManager.setPickMode(pickMode);
-					if (!editButton.isSelected())
-						editButton.setSelected(true);
-					structuresTable.setRowSelectionInterval(idx, idx);
-					structuresTable.setEnabled(false);
-				}
-				else
-				{
-					// Don't change the picker if this tab is not in view since
-					// it's possible we could be in the middle of drawing other
-					// objects.
-					if (isVisible())
-						pickManager.setPickMode(PickManager.PickMode.DEFAULT);
-					if (editButton.isSelected())
-						editButton.setSelected(false);
-					structuresTable.setEnabled(true);
-				}
-			}
-		}
-		else if (Properties.MODEL_PICKED.equals(evt.getPropertyName()))
-		{
-			// If we're editing, say, a path, return immediately.
-			if (structureModel.supportsSelection() &&
-					editButton.isSelected())
-			{
-				return;
-			}
+            if (structureModel.supportsSelection())
+            {
+                int idx = structureModel.getSelectedStructureIndex();
+                if (idx >= 0)
+                {
+                    pickManager.setPickMode(pickMode);
+                    if (!editButton.isSelected())
+                        editButton.setSelected(true);
+                    structuresTable.setRowSelectionInterval(idx, idx);
+                    structuresTable.setEnabled(false);
+                }
+                else
+                {
+                    // Don't change the picker if this tab is not in view since
+                    // it's possible we could be in the middle of drawing other
+                    // objects.
+                    if (isVisible())
+                        pickManager.setPickMode(PickManager.PickMode.DEFAULT);
+                    if (editButton.isSelected())
+                        editButton.setSelected(false);
+                    structuresTable.setEnabled(true);
+                }
+            }
+        }
+        else if (Properties.MODEL_PICKED.equals(evt.getPropertyName()))
+        {
+            // If we're editing, say, a path, return immediately.
+            if (structureModel.supportsSelection() &&
+                    editButton.isSelected())
+            {
+                return;
+            }
 
-			PickEvent e = (PickEvent)evt.getNewValue();
-			if (modelManager.getModel(e.getPickedProp()) == structureModel)
-			{
-				int idx = structureModel.getStructureIndexFromCellId(e.getPickedCellId(), e.getPickedProp());
+            PickEvent e = (PickEvent)evt.getNewValue();
+            if (modelManager.getModel(e.getPickedProp()) == structureModel)
+            {
+                int idx = structureModel.getStructureIndexFromCellId(e.getPickedCellId(), e.getPickedProp());
 
-				structuresTable.setRowSelectionInterval(idx, idx);
-				structuresTable.scrollRectToVisible(structuresTable.getCellRect(idx, 0, true));
-			}
-			else
-			{
-				int count = structuresTable.getRowCount();
-				if (count > 0)
-					structuresTable.removeRowSelectionInterval(0, count-1);
-			}
-		}
-		else if (Properties.STRUCTURE_ADDED.equals(evt.getPropertyName()))
-		{
-			int idx = structureModel.getNumberOfStructures() - 1;
-			structuresTable.setRowSelectionInterval(idx, idx);
-			structuresTable.scrollRectToVisible(structuresTable.getCellRect(idx, 0, true));
-		}
-	}
+                structuresTable.setRowSelectionInterval(idx, idx);
+                structuresTable.scrollRectToVisible(structuresTable.getCellRect(idx, 0, true));
+            }
+            else
+            {
+                int count = structuresTable.getRowCount();
+                if (count > 0)
+                    structuresTable.removeRowSelectionInterval(0, count-1);
+            }
+        }
+        else if (Properties.STRUCTURE_ADDED.equals(evt.getPropertyName()))
+        {
+            int idx = structureModel.getNumberOfStructures() - 1;
+            structuresTable.setRowSelectionInterval(idx, idx);
+            structuresTable.scrollRectToVisible(structuresTable.getCellRect(idx, 0, true));
+        }
+    }
 
-	private void updateStructureTable()
-	{
-		int numStructures = structureModel.getNumberOfStructures();
+    private void updateStructureTable()
+    {
+        int numStructures = structureModel.getNumberOfStructures();
 
-		((DefaultTableModel)structuresTable.getModel()).setRowCount(numStructures);
-		for (int i=0; i<numStructures; ++i)
-		{
-			StructureModel.Structure structure = structureModel.getStructure(i);
-			structuresTable.setValueAt(structure.getId(), i, 0);
-			structuresTable.setValueAt(structure.getType(), i, 1);
-			structuresTable.setValueAt(structure.getName(), i, 2);
-			structuresTable.setValueAt(structure.getInfo(), i, 3);
-		}
-	}
+        ((DefaultTableModel)structuresTable.getModel()).setRowCount(numStructures);
+        for (int i=0; i<numStructures; ++i)
+        {
+            StructureModel.Structure structure = structureModel.getStructure(i);
+            structuresTable.setValueAt(structure.getId(), i, 0);
+            structuresTable.setValueAt(structure.getType(), i, 1);
+            structuresTable.setValueAt(structure.getName(), i, 2);
+            structuresTable.setValueAt(structure.getInfo(), i, 3);
+        }
+    }
 
-	public void tableChanged(TableModelEvent e)
-	{
-		if (e.getColumn() == 2)
-		{
-			int row = e.getFirstRow();
-			int col = e.getColumn();
-			StructureModel.Structure structure = structureModel.getStructure(row);
-			String name = (String)structuresTable.getValueAt(row, col);
-			if (name != null && !name.equals(structure.getName()))
-			{
-				structure.setName(name);
-			}
-		}
-	}
+    public void tableChanged(TableModelEvent e)
+    {
+        if (e.getColumn() == 2)
+        {
+            int row = e.getFirstRow();
+            int col = e.getColumn();
+            StructureModel.Structure structure = structureModel.getStructure(row);
+            String name = (String)structuresTable.getValueAt(row, col);
+            if (name != null && !name.equals(structure.getName()))
+            {
+                structure.setName(name);
+            }
+        }
+    }
 
-	public void valueChanged(ListSelectionEvent e)
-	{
-		if (e.getValueIsAdjusting() == false)
-		{
-			structureModel.highlightStructure(structuresTable.getSelectedRow());
-		}
-	}
+    public void valueChanged(ListSelectionEvent e)
+    {
+        if (e.getValueIsAdjusting() == false)
+        {
+            structureModel.highlightStructure(structuresTable.getSelectedRow());
+        }
+    }
 
-	public void setEditingEnabled(boolean enable)
-	{
-		if (enable)
-		{
-			if (!editButton.isSelected())
-				editButton.setSelected(true);
-		}
-		else
-		{
-			if (editButton.isSelected())
-				editButton.setSelected(false);
-		}
+    public void setEditingEnabled(boolean enable)
+    {
+        if (enable)
+        {
+            if (!editButton.isSelected())
+                editButton.setSelected(true);
+        }
+        else
+        {
+            if (editButton.isSelected())
+                editButton.setSelected(false);
+        }
 
-		if (structureModel.supportsSelection())
-		{
-			int idx = structuresTable.getSelectedRow();
+        if (structureModel.supportsSelection())
+        {
+            int idx = structuresTable.getSelectedRow();
 
-			if (enable)
-			{
-				if (idx >= 0)
-				{
-					pickManager.setPickMode(pickMode);
-					structureModel.selectStructure(idx);
-				}
-				else
-				{
-					editButton.setSelected(false);
-				}
-			}
-			else
-			{
-				pickManager.setPickMode(PickManager.PickMode.DEFAULT);
-				structureModel.selectStructure(-1);
-			}
+            if (enable)
+            {
+                if (idx >= 0)
+                {
+                    pickManager.setPickMode(pickMode);
+                    structureModel.selectStructure(idx);
+                }
+                else
+                {
+                    editButton.setSelected(false);
+                }
+            }
+            else
+            {
+                pickManager.setPickMode(PickManager.PickMode.DEFAULT);
+                structureModel.selectStructure(-1);
+            }
 
-			// The item in the table might get deselected so select it again here.
-			int numStructures = structuresTable.getRowCount();
-			if (idx >= 0 && idx < numStructures)
-				structuresTable.setRowSelectionInterval(idx, idx);
-		}
-		else
-		{
-			if (enable)
-			{
-				pickManager.setPickMode(pickMode);
-			}
-			else
-			{
-				pickManager.setPickMode(PickManager.PickMode.DEFAULT);
-			}
-		}
-	}
+            // The item in the table might get deselected so select it again here.
+            int numStructures = structuresTable.getRowCount();
+            if (idx >= 0 && idx < numStructures)
+                structuresTable.setRowSelectionInterval(idx, idx);
+        }
+        else
+        {
+            if (enable)
+            {
+                pickManager.setPickMode(pickMode);
+            }
+            else
+            {
+                pickManager.setPickMode(PickManager.PickMode.DEFAULT);
+            }
+        }
+    }
 }

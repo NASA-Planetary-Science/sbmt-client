@@ -24,161 +24,161 @@ public class PointPicker extends Picker
     // There are 2 types of line editing possible:
     //   1. Dragging an existing vertex to a new locations
     //   2. Extending a line by adding new vertices
-	public enum EditMode
-	{
-		VERTEX_DRAG_OR_DELETE,
-		VERTEX_ADD
-	}
+    public enum EditMode
+    {
+        VERTEX_DRAG_OR_DELETE,
+        VERTEX_ADD
+    }
 
-	private EditMode currentEditMode = EditMode.VERTEX_ADD;
+    private EditMode currentEditMode = EditMode.VERTEX_ADD;
 
-	private double[] lastDragPosition;
+    private double[] lastDragPosition;
 
     public PointPicker(
-			Renderer renderer,
-			ModelManager modelManager
-			)
-	{
-		this.renWin = renderer.getRenderWindowPanel();
-		this.modelManager = modelManager;
-		this.pointModel = (PointModel)modelManager.getModel(ModelNames.POINT_STRUCTURES);
+            Renderer renderer,
+            ModelManager modelManager
+            )
+    {
+        this.renWin = renderer.getRenderWindowPanel();
+        this.modelManager = modelManager;
+        this.pointModel = (PointModel)modelManager.getModel(ModelNames.POINT_STRUCTURES);
 
-		smallBodyPicker = new vtkCellPicker();
-		smallBodyPicker.SetTolerance(0.002);
-		smallBodyPicker.PickFromListOn();
-		smallBodyPicker.InitializePickList();
-		smallBodyModel = modelManager.getSmallBodyModel();
-		ArrayList<vtkProp> actors = smallBodyModel.getProps();
-		vtkPropCollection smallBodyPickList = smallBodyPicker.GetPickList();
-		smallBodyPickList.RemoveAllItems();
-		for (vtkProp act : actors)
-		{
-			smallBodyPicker.AddPickList(act);
-		}
-		smallBodyPicker.AddLocator(smallBodyModel.getCellLocator());
+        smallBodyPicker = new vtkCellPicker();
+        smallBodyPicker.SetTolerance(0.002);
+        smallBodyPicker.PickFromListOn();
+        smallBodyPicker.InitializePickList();
+        smallBodyModel = modelManager.getSmallBodyModel();
+        ArrayList<vtkProp> actors = smallBodyModel.getProps();
+        vtkPropCollection smallBodyPickList = smallBodyPicker.GetPickList();
+        smallBodyPickList.RemoveAllItems();
+        for (vtkProp act : actors)
+        {
+            smallBodyPicker.AddPickList(act);
+        }
+        smallBodyPicker.AddLocator(smallBodyModel.getCellLocator());
 
-		pointPicker = new vtkCellPicker();
-		pointPicker.SetTolerance(0.002);
-		pointPicker.PickFromListOn();
-		pointPicker.InitializePickList();
-		vtkPropCollection pointPickList = pointPicker.GetPickList();
-		pointPickList.RemoveAllItems();
-		pointPicker.AddPickList(pointModel.getInteriorActor());
-	}
+        pointPicker = new vtkCellPicker();
+        pointPicker.SetTolerance(0.002);
+        pointPicker.PickFromListOn();
+        pointPicker.InitializePickList();
+        vtkPropCollection pointPickList = pointPicker.GetPickList();
+        pointPickList.RemoveAllItems();
+        pointPicker.AddPickList(pointModel.getInteriorActor());
+    }
 
-	public void mousePressed(MouseEvent e)
-	{
-		// If we pressed a vertex of an existing point, begin dragging that vertex.
-		// If we pressed a point on the body, begin drawing a new point.
+    public void mousePressed(MouseEvent e)
+    {
+        // If we pressed a vertex of an existing point, begin dragging that vertex.
+        // If we pressed a point on the body, begin drawing a new point.
 
 
-		vertexIdBeingEdited = -1;
-		lastDragPosition = null;
+        vertexIdBeingEdited = -1;
+        lastDragPosition = null;
 
-		if (this.currentEditMode == EditMode.VERTEX_DRAG_OR_DELETE)
-		{
-			if (e.getButton() != MouseEvent.BUTTON1 && e.getButton() != MouseEvent.BUTTON3)
-				return;
+        if (this.currentEditMode == EditMode.VERTEX_DRAG_OR_DELETE)
+        {
+            if (e.getButton() != MouseEvent.BUTTON1 && e.getButton() != MouseEvent.BUTTON3)
+                return;
 
-			int pickSucceeded = doPick(e, pointPicker, renWin);
-			if (pickSucceeded == 1)
-			{
-				vtkActor pickedActor = pointPicker.GetActor();
+            int pickSucceeded = doPick(e, pointPicker, renWin);
+            if (pickSucceeded == 1)
+            {
+                vtkActor pickedActor = pointPicker.GetActor();
 
-				if (pickedActor == pointModel.getInteriorActor())
-				{
-					if (e.getButton() == MouseEvent.BUTTON1)
-					{
-						int cellId = pointPicker.GetCellId();
-						int pointId = pointModel.getPolygonIdFromInteriorCellId(cellId);
-						this.vertexIdBeingEdited = pointId;
-					}
-					else
-					{
-						vertexIdBeingEdited = -1;
-					}
-				}
-			}
-		}
-		else if (this.currentEditMode == EditMode.VERTEX_ADD)
-		{
-			if (e.getButton() != MouseEvent.BUTTON1)
-				return;
+                if (pickedActor == pointModel.getInteriorActor())
+                {
+                    if (e.getButton() == MouseEvent.BUTTON1)
+                    {
+                        int cellId = pointPicker.GetCellId();
+                        int pointId = pointModel.getPolygonIdFromInteriorCellId(cellId);
+                        this.vertexIdBeingEdited = pointId;
+                    }
+                    else
+                    {
+                        vertexIdBeingEdited = -1;
+                    }
+                }
+            }
+        }
+        else if (this.currentEditMode == EditMode.VERTEX_ADD)
+        {
+            if (e.getButton() != MouseEvent.BUTTON1)
+                return;
 
-			int pickSucceeded = doPick(e, smallBodyPicker, renWin);
+            int pickSucceeded = doPick(e, smallBodyPicker, renWin);
 
-			if (pickSucceeded == 1)
-			{
-				vtkActor pickedActor = smallBodyPicker.GetActor();
-				Model model = modelManager.getModel(pickedActor);
+            if (pickSucceeded == 1)
+            {
+                vtkActor pickedActor = smallBodyPicker.GetActor();
+                Model model = modelManager.getModel(pickedActor);
 
-				if (model == smallBodyModel)
-				{
-					double[] pos = smallBodyPicker.GetPickPosition();
-					if (e.getClickCount() == 1)
-					{
-						pointModel.addNewStructure(pos);
-					}
-				}
-			}
-		}
-	}
+                if (model == smallBodyModel)
+                {
+                    double[] pos = smallBodyPicker.GetPickPosition();
+                    if (e.getClickCount() == 1)
+                    {
+                        pointModel.addNewStructure(pos);
+                    }
+                }
+            }
+        }
+    }
 
-	public void mouseReleased(MouseEvent e)
-	{
-//		if (this.currentEditMode == EditMode.VERTEX_DRAG_OR_DELETE &&
-//				vertexIdBeingEdited >= 0 &&
-//				lastDragPosition != null)
-//		{
-//			pointModel.updateSelectedLineVertex(vertexIdBeingEdited, lastDragPosition);
-//		}
+    public void mouseReleased(MouseEvent e)
+    {
+//        if (this.currentEditMode == EditMode.VERTEX_DRAG_OR_DELETE &&
+//                vertexIdBeingEdited >= 0 &&
+//                lastDragPosition != null)
+//        {
+//            pointModel.updateSelectedLineVertex(vertexIdBeingEdited, lastDragPosition);
+//        }
 //
-//		vertexIdBeingEdited = -1;
-	}
+//        vertexIdBeingEdited = -1;
+    }
 
-	public void mouseDragged(MouseEvent e)
-	{
-		//if (e.getButton() != MouseEvent.BUTTON1)
-		//	return;
-
-
-		if (this.currentEditMode == EditMode.VERTEX_DRAG_OR_DELETE &&
-			vertexIdBeingEdited >= 0)
-		{
-			int pickSucceeded = doPick(e, smallBodyPicker, renWin);
-			if (pickSucceeded == 1)
-			{
-				vtkActor pickedActor = smallBodyPicker.GetActor();
-				Model model = modelManager.getModel(pickedActor);
-
-				if (model == smallBodyModel)
-				{
-					lastDragPosition = smallBodyPicker.GetPickPosition();
-
-					pointModel.movePolygon(vertexIdBeingEdited, lastDragPosition);
-				}
-			}
-		}
-	}
+    public void mouseDragged(MouseEvent e)
+    {
+        //if (e.getButton() != MouseEvent.BUTTON1)
+        //    return;
 
 
-	public void mouseMoved(MouseEvent e)
-	{
-		int pickSucceeded = doPick(e, pointPicker, renWin);
-		if (pickSucceeded == 1 &&
-				pointPicker.GetActor() == pointModel.getInteriorActor())
-		{
-			if (renWin.getCursor().getType() != Cursor.HAND_CURSOR)
-				renWin.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        if (this.currentEditMode == EditMode.VERTEX_DRAG_OR_DELETE &&
+            vertexIdBeingEdited >= 0)
+        {
+            int pickSucceeded = doPick(e, smallBodyPicker, renWin);
+            if (pickSucceeded == 1)
+            {
+                vtkActor pickedActor = smallBodyPicker.GetActor();
+                Model model = modelManager.getModel(pickedActor);
 
-			currentEditMode = EditMode.VERTEX_DRAG_OR_DELETE;
-		}
-		else
-		{
-			if (renWin.getCursor().getType() != Cursor.DEFAULT_CURSOR)
-				renWin.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+                if (model == smallBodyModel)
+                {
+                    lastDragPosition = smallBodyPicker.GetPickPosition();
 
-			currentEditMode = EditMode.VERTEX_ADD;
-		}
-	}
+                    pointModel.movePolygon(vertexIdBeingEdited, lastDragPosition);
+                }
+            }
+        }
+    }
+
+
+    public void mouseMoved(MouseEvent e)
+    {
+        int pickSucceeded = doPick(e, pointPicker, renWin);
+        if (pickSucceeded == 1 &&
+                pointPicker.GetActor() == pointModel.getInteriorActor())
+        {
+            if (renWin.getCursor().getType() != Cursor.HAND_CURSOR)
+                renWin.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+            currentEditMode = EditMode.VERTEX_DRAG_OR_DELETE;
+        }
+        else
+        {
+            if (renWin.getCursor().getType() != Cursor.DEFAULT_CURSOR)
+                renWin.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+
+            currentEditMode = EditMode.VERTEX_ADD;
+        }
+    }
 }

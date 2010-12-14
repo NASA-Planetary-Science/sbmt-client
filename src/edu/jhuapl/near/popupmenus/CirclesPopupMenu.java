@@ -13,32 +13,32 @@ import edu.jhuapl.near.model.ModelNames;
 
 public class CirclesPopupMenu extends PopupMenu
 {
-	private int cellIdLastClicked = -1;
-	private CircleModel model = null;
+    private int cellIdLastClicked = -1;
+    private CircleModel model = null;
 
-	public CirclesPopupMenu(ModelManager modelManager)
-	{
-		this.model = (CircleModel)modelManager.getModel(ModelNames.CIRCLE_STRUCTURES);
+    public CirclesPopupMenu(ModelManager modelManager)
+    {
+        this.model = (CircleModel)modelManager.getModel(ModelNames.CIRCLE_STRUCTURES);
 
-		JMenuItem mi;
-		mi = new JMenuItem(new DeleteAction());
-		mi.setText("Delete");
-		this.add(mi);
-	}
+        JMenuItem mi;
+        mi = new JMenuItem(new DeleteAction());
+        mi.setText("Delete");
+        this.add(mi);
+    }
 
-	private class DeleteAction extends AbstractAction
-	{
-		public void actionPerformed(ActionEvent e)
-		{
-			int idx = model.getPolygonIdFromBoundaryCellId(cellIdLastClicked);
-			model.removeStructure(idx);
-		}
-	}
+    private class DeleteAction extends AbstractAction
+    {
+        public void actionPerformed(ActionEvent e)
+        {
+            int idx = model.getPolygonIdFromBoundaryCellId(cellIdLastClicked);
+            model.removeStructure(idx);
+        }
+    }
 
-	public void showPopup(MouseEvent e, vtkProp pickedProp, int pickedCellId,
-			double[] pickedPosition)
-	{
-		this.cellIdLastClicked = pickedCellId;
-		show(e.getComponent(), e.getX(), e.getY());
-	}
+    public void showPopup(MouseEvent e, vtkProp pickedProp, int pickedCellId,
+            double[] pickedPosition)
+    {
+        this.cellIdLastClicked = pickedCellId;
+        show(e.getComponent(), e.getX(), e.getY());
+    }
 }

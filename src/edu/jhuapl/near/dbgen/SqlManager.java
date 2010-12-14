@@ -54,7 +54,7 @@ import java.util.*;
 public class SqlManager
 {
 
-	private Connection conn;                                                //our connnection to the db - presist for life of program
+    private Connection conn;                                                //our connnection to the db - presist for life of program
 
     // we dont want this garbage collected until we are done
     public SqlManager(String db_file_name_prefix) throws Exception    // note more general exception
@@ -80,7 +80,7 @@ public class SqlManager
             return;
         }
 
-	   String username = "";
+       String username = "";
        String password = "";
 
        //conn = DriverManager.getConnection("jdbc:hsqldb:file:" + db_file_name_prefix, "sa", "");
@@ -91,17 +91,17 @@ public class SqlManager
 
     public SqlManager(String driver, String connectionString) throws Exception
     {
-    	try
-    	{
-    		Class.forName(driver);
-    	}
-    	catch (Exception e) {
-    		System.out.println("ERROR: failed to load JDBC driver.");
-    		e.printStackTrace();
-    		return;
-    	}
+        try
+        {
+            Class.forName(driver);
+        }
+        catch (Exception e) {
+            System.out.println("ERROR: failed to load JDBC driver.");
+            e.printStackTrace();
+            return;
+        }
 
-    	conn = DriverManager.getConnection(connectionString);
+        conn = DriverManager.getConnection(connectionString);
     }
 
     public void shutdown() throws SQLException
@@ -162,14 +162,14 @@ public class SqlManager
 
     public synchronized void dropTable(String table) throws SQLException
     {
-    	update("DROP TABLE IF EXISTS " + table);
+        update("DROP TABLE IF EXISTS " + table);
     }
 
 
     public static ArrayList<ArrayList<Object>> dump(ResultSet rs) throws SQLException
     {
 
-    	ArrayList<ArrayList<Object>> results = new ArrayList<ArrayList<Object>>();
+        ArrayList<ArrayList<Object>> results = new ArrayList<ArrayList<Object>>();
 
         // the order of the rows in a cursor
         // are implementation dependent unless you use the SQL ORDER statement
@@ -185,7 +185,7 @@ public class SqlManager
         // or false if there is no next row, which breaks the loop
         for (; rs.next(); )
         {
-        	ArrayList<Object> nextRow = new ArrayList<Object>();
+            ArrayList<Object> nextRow = new ArrayList<Object>();
             for (i = 0; i < colmax; ++i)
             {
                 o = rs.getObject(i + 1);    // Is SQL the first column is indexed with 1 not 0
@@ -205,13 +205,13 @@ public class SqlManager
 
     public PreparedStatement preparedStatement(String st) throws SQLException
     {
-    	return conn.prepareStatement(st);
+        return conn.prepareStatement(st);
     }
 
 
     public Statement createStatement() throws SQLException
     {
-    	return conn.createStatement();
+        return conn.createStatement();
     }
 
 
