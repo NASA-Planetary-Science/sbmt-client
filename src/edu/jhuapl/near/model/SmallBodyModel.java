@@ -12,6 +12,7 @@ import java.util.TreeSet;
 import vtk.*;
 import edu.jhuapl.near.util.BoundingBox;
 import edu.jhuapl.near.util.ConvertResourceToFile;
+import edu.jhuapl.near.util.Frustum;
 import edu.jhuapl.near.util.SmallBodyCubes;
 import edu.jhuapl.near.util.FileCache;
 import edu.jhuapl.near.util.MathUtil;
@@ -283,6 +284,11 @@ public class SmallBodyModel extends Model
             double[] ll)
     {
         return PolyDataUtil.computeFrustumIntersection(smallBodyPolyData, cellLocator, pointLocator, origin, ul, ur, lr, ll);
+    }
+
+    public vtkPolyData computeMultipleFrustumIntersection(ArrayList<Frustum> frustums)
+    {
+        return PolyDataUtil.computeMultipleFrustumIntersection(smallBodyPolyData, cellLocator, pointLocator, frustums);
     }
 
     /**

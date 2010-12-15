@@ -22,11 +22,28 @@ public class PolyDataUtil
     public static vtkPolyData computeMultipleFrustumIntersection(
             vtkPolyData polyData,
             vtksbCellLocator locator,
-            vtkAbstractPointLocator pointLocator,
+            vtkPointLocator pointLocator,
             ArrayList<Frustum> frustums)
     {
-        for (Frustum f : frustums)
+        Frustum f = frustums.get(0);
+        polyData = computeFrustumIntersection(polyData, locator, pointLocator, f.origin, f.ul, f.ur, f.lr, f.ll);
+
+        for ( int i=1; i<frustums.size(); ++i)
         {
+            locator = new vtksbCellLocator();
+            pointLocator = new vtkPointLocator();
+
+            locator.SetDataSet(polyData);
+            locator.CacheCellBoundsOn();
+            locator.AutomaticOn();
+            //locator.SetMaxLevel(10);
+            //locator.SetNumberOfCellsPerNode(5);
+            locator.BuildLocator();
+
+            pointLocator.SetDataSet(polyData);
+            pointLocator.BuildLocator();
+
+            f = frustums.get(i);
             polyData = computeFrustumIntersection(polyData, locator, pointLocator, f.origin, f.ul, f.ur, f.lr, f.ll);
         }
 

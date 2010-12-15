@@ -30,4 +30,20 @@ public class ImageDataUtil
 
         return array;
     }
+
+    /**
+     * Given a 2D image of given length and width as well as texture coordinates
+     * in the image (i.e. between 0 and 1) interpolate within the image to find
+     * the pixel value at the texture coordinates using linear interpolation.
+     * @param image
+     * @param width
+     * @param height
+     * @param u
+     * @param v
+     * @return
+     */
+    float interpolateInImage(float[][] image, int width, int height, double u, double v)
+    {
+        return 0.0f;
+    }
 }

@@ -38,7 +38,7 @@ public class Frustum
     }
 
     /**
-     * Given any point in 3D space compute the texture coordinates of the
+     * Given a point in the frustum compute the texture coordinates of the
      * point assuming the frustum represents the field of the view of
      * a camera.
      * @param pt desired point to compute texture coordinates for

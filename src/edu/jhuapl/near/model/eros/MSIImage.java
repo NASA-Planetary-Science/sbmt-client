@@ -1573,4 +1573,9 @@ public class MSIImage extends Model implements PropertyChangeListener
             upVector[i] = this.upVector[i];
         }
     }
+
+    public Frustum getFrustum()
+    {
+        return new Frustum(spacecraftPosition, frustum1, frustum3, frustum4, frustum2);
+    }
 }
