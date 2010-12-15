@@ -1,11 +1,13 @@
 package edu.jhuapl.near.gui;
 
-import java.awt.event.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.*;
+import java.util.HashMap;
 
-import edu.jhuapl.near.model.*;
+import edu.jhuapl.near.model.Model;
+import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.util.Properties;
 
 abstract public class ModelInfoWindowManager implements PropertyChangeListener

@@ -1,14 +1,20 @@
 package edu.jhuapl.near.model.eros;
 
-import java.util.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
+import java.util.HashMap;
 
-import vtk.*;
+import vtk.vtkActor;
+import vtk.vtkPoints;
+import vtk.vtkPolyData;
+import vtk.vtkPolyDataMapper;
+import vtk.vtkProp;
+
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.SmallBodyModel;
-import edu.jhuapl.near.util.*;
+import edu.jhuapl.near.util.PolyDataUtil;
 import edu.jhuapl.near.util.Properties;
 
 public class MapletBoundaryCollection extends Model implements PropertyChangeListener

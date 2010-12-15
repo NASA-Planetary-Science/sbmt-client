@@ -4,14 +4,22 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import vtk.*;
+import vtk.vtkActor;
+import vtk.vtkCellArray;
+import vtk.vtkGeometryFilter;
+import vtk.vtkIdList;
+import vtk.vtkPoints;
+import vtk.vtkPolyData;
+import vtk.vtkPolyDataMapper;
+import vtk.vtkProp;
+
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.util.DoublePair;
 import edu.jhuapl.near.util.FileCache;
 import edu.jhuapl.near.util.FileUtil;
 import edu.jhuapl.near.util.LatLon;
-import edu.jhuapl.near.util.Properties;
 import edu.jhuapl.near.util.MathUtil;
+import edu.jhuapl.near.util.Properties;
 
 public class NLRDataPerDay extends Model
 {

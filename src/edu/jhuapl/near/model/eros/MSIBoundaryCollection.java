@@ -1,19 +1,32 @@
 package edu.jhuapl.near.model.eros;
 
-import java.util.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import nom.tam.fits.FitsException;
 
-import vtk.*;
+import vtk.vtkActor;
+import vtk.vtkCellArray;
+import vtk.vtkGenericCell;
+import vtk.vtkIdList;
+import vtk.vtkPoints;
+import vtk.vtkPolyData;
+import vtk.vtkPolyDataMapper;
+import vtk.vtkProp;
+import vtk.vtksbCellLocator;
+
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.eros.MSIImage.MSIKey;
 import edu.jhuapl.near.model.eros.MSIImage.MSISource;
-import edu.jhuapl.near.util.*;
+import edu.jhuapl.near.util.FileCache;
+import edu.jhuapl.near.util.MathUtil;
+import edu.jhuapl.near.util.PolyDataUtil;
 import edu.jhuapl.near.util.Properties;
 
 public class MSIBoundaryCollection extends Model implements PropertyChangeListener

@@ -1,8 +1,10 @@
 package edu.jhuapl.near.gui;
 
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
 
-import javax.swing.*;
+import javax.swing.AbstractAction;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
 
 import edu.jhuapl.near.gui.actions.SaveImageAction;
 

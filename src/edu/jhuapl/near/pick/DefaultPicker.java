@@ -7,11 +7,22 @@ import java.beans.PropertyChangeEvent;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
-import edu.jhuapl.near.gui.*;
-import edu.jhuapl.near.model.*;
-import edu.jhuapl.near.popupmenus.*;
-import edu.jhuapl.near.util.*;
-import vtk.*;
+import vtk.vtkActor;
+import vtk.vtkCamera;
+import vtk.vtkCellPicker;
+import vtk.vtkProp;
+import vtk.vtkPropCollection;
+import vtk.vtkRenderWindowPanel;
+
+import edu.jhuapl.near.gui.Renderer;
+import edu.jhuapl.near.gui.StatusBar;
+import edu.jhuapl.near.model.Model;
+import edu.jhuapl.near.model.ModelManager;
+import edu.jhuapl.near.model.SmallBodyModel;
+import edu.jhuapl.near.popupmenus.PopupManager;
+import edu.jhuapl.near.util.LatLon;
+import edu.jhuapl.near.util.MathUtil;
+import edu.jhuapl.near.util.Properties;
 
 /**
  * This is the picker normally in use by default.

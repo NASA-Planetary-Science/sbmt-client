@@ -1,13 +1,25 @@
 package edu.jhuapl.near.model.eros;
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import vtk.vtkActor;
+import vtk.vtkCellArray;
+import vtk.vtkDataArray;
+import vtk.vtkIdList;
+import vtk.vtkPoints;
+import vtk.vtkPolyData;
+import vtk.vtkPolyDataMapper;
+import vtk.vtkProp;
+import vtk.vtkUnsignedCharArray;
 
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.util.Properties;
-
-import vtk.*;
 
 public class LineamentModel extends Model
 {

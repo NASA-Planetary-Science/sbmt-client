@@ -1,10 +1,11 @@
 package edu.jhuapl.near.gui;
 
 
+import java.awt.Component;
 import java.io.File;
-import java.awt.*;
 
-import javax.swing.*;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileFilter;
 
 

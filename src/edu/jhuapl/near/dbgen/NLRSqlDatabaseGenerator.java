@@ -9,10 +9,10 @@ import java.util.Locale;
 
 import edu.jhuapl.near.model.ModelFactory;
 import edu.jhuapl.near.model.SmallBodyModel;
-import edu.jhuapl.near.util.MathUtil;
-import edu.jhuapl.near.util.SmallBodyCubes;
 import edu.jhuapl.near.util.FileUtil;
+import edu.jhuapl.near.util.MathUtil;
 import edu.jhuapl.near.util.NativeLibraryLoader;
+import edu.jhuapl.near.util.SmallBodyCubes;
 
 /**
  * This program goes through all the NLR data and creates an sql database

@@ -6,7 +6,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.util.*;
+import java.util.ArrayList;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -24,12 +24,21 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import edu.jhuapl.near.util.Point3D;
-import edu.jhuapl.near.util.LatLon;
-import edu.jhuapl.near.util.Properties;
-import edu.jhuapl.near.util.MathUtil;
+import vtk.vtkActor;
+import vtk.vtkCellArray;
+import vtk.vtkCellData;
+import vtk.vtkIdList;
+import vtk.vtkPoints;
+import vtk.vtkPolyData;
+import vtk.vtkPolyDataMapper;
+import vtk.vtkProp;
+import vtk.vtkProperty;
+import vtk.vtkUnsignedCharArray;
 
-import vtk.*;
+import edu.jhuapl.near.util.LatLon;
+import edu.jhuapl.near.util.MathUtil;
+import edu.jhuapl.near.util.Point3D;
+import edu.jhuapl.near.util.Properties;
 
 /**
  * Model of line structures drawn on a body.

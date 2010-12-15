@@ -6,12 +6,12 @@ import java.util.ArrayList;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import vtk.vtkPoints;
+import vtk.vtkPolyData;
+
 import edu.jhuapl.near.util.LatLon;
 import edu.jhuapl.near.util.MathUtil;
 import edu.jhuapl.near.util.Point3D;
-
-import vtk.vtkPoints;
-import vtk.vtkPolyData;
 
 public class Line extends StructureModel.Structure
 {

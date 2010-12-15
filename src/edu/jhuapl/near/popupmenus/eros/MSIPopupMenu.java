@@ -3,19 +3,26 @@ package edu.jhuapl.near.popupmenus.eros;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 
 import javax.swing.AbstractAction;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
+import nom.tam.fits.FitsException;
+
 import vtk.vtkActor;
 import vtk.vtkProp;
 
-import nom.tam.fits.FitsException;
-import edu.jhuapl.near.gui.*;
-import edu.jhuapl.near.model.*;
+import edu.jhuapl.near.gui.CustomFileChooser;
+import edu.jhuapl.near.gui.ModelInfoWindowManager;
+import edu.jhuapl.near.gui.Renderer;
+import edu.jhuapl.near.model.ModelManager;
+import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.eros.MSIBoundaryCollection;
 import edu.jhuapl.near.model.eros.MSIImage;
 import edu.jhuapl.near.model.eros.MSIImageCollection;

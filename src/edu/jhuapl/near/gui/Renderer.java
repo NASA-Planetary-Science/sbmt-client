@@ -1,13 +1,23 @@
 package edu.jhuapl.near.gui;
 
-import java.util.*;
-import javax.swing.*;
-import java.beans.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
+import java.util.HashSet;
+
+import javax.swing.JPanel;
+
+import vtk.vtkCamera;
+import vtk.vtkInteractorStyleRubberBand3D;
+import vtk.vtkInteractorStyleTrackballCamera;
+import vtk.vtkLightKit;
+import vtk.vtkProp;
+import vtk.vtkPropCollection;
+import vtk.vtkRenderWindowPanel;
 
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.util.Properties;
-import vtk.*;
 
 public class Renderer extends JPanel implements
             PropertyChangeListener

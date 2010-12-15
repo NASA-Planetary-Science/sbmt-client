@@ -1,13 +1,17 @@
 package edu.jhuapl.near.gui.eros;
 
-import javax.swing.*;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JCheckBox;
+import javax.swing.JPanel;
 
 import edu.jhuapl.near.gui.RadialOffsetChanger;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.eros.LineamentModel;
-
-import java.awt.event.*;
 
 public class LineamentControlPanel extends JPanel implements ItemListener
 {

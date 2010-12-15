@@ -1,24 +1,28 @@
 package edu.jhuapl.near.dbgen;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.*;
-
-import edu.jhuapl.near.model.ModelFactory;
-import edu.jhuapl.near.model.SmallBodyModel;
-import edu.jhuapl.near.model.eros.MSIImage;
-import edu.jhuapl.near.model.eros.NISSpectrum;
-import edu.jhuapl.near.model.eros.MSIImage.MSISource;
-import edu.jhuapl.near.util.*;
+import java.util.ArrayList;
+import java.util.TreeSet;
 
 import nom.tam.fits.FitsException;
+
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
 import vtk.vtkGlobalJavaHash;
 import vtk.vtkPolyData;
 import vtk.vtkPolyDataReader;
+
+import edu.jhuapl.near.model.ModelFactory;
+import edu.jhuapl.near.model.SmallBodyModel;
+import edu.jhuapl.near.model.eros.MSIImage;
+import edu.jhuapl.near.model.eros.NISSpectrum;
+import edu.jhuapl.near.model.eros.MSIImage.MSISource;
+import edu.jhuapl.near.util.FileUtil;
+import edu.jhuapl.near.util.NativeLibraryLoader;
 
 public class DatabaseGeneratorSql
 {

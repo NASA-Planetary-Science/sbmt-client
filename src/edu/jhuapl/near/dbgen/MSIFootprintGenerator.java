@@ -6,7 +6,9 @@ import java.util.ArrayList;
 
 import nom.tam.fits.FitsException;
 
-import vtk.*;
+import vtk.vtkGlobalJavaHash;
+import vtk.vtkPolyData;
+import vtk.vtkXMLPolyDataWriter;
 
 import edu.jhuapl.near.model.ModelFactory;
 import edu.jhuapl.near.model.SmallBodyModel;

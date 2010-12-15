@@ -2,19 +2,51 @@ package edu.jhuapl.near.model.eros;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.text.DecimalFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.StringTokenizer;
 
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
 import nom.tam.fits.FitsException;
 
-import vtk.*;
+import vtk.vtkActor;
+import vtk.vtkCell;
+import vtk.vtkCellArray;
+import vtk.vtkDataArray;
+import vtk.vtkFeatureEdges;
+import vtk.vtkFloatArray;
+import vtk.vtkGenericCell;
+import vtk.vtkIdList;
+import vtk.vtkImageData;
+import vtk.vtkImageMapToColors;
+import vtk.vtkImageReslice;
+import vtk.vtkLookupTable;
+import vtk.vtkPoints;
+import vtk.vtkPolyData;
+import vtk.vtkPolyDataMapper;
+import vtk.vtkPolyDataNormals;
+import vtk.vtkProp;
+import vtk.vtkProperty;
+import vtk.vtkTexture;
+import vtk.vtkXMLPolyDataReader;
+import vtk.vtksbCellLocator;
 
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.SmallBodyModel;
-import edu.jhuapl.near.util.*;
+import edu.jhuapl.near.util.FileCache;
+import edu.jhuapl.near.util.Frustum;
+import edu.jhuapl.near.util.IntensityRange;
+import edu.jhuapl.near.util.LatLon;
+import edu.jhuapl.near.util.MathUtil;
+import edu.jhuapl.near.util.PolyDataUtil;
 import edu.jhuapl.near.util.Properties;
 
 /**

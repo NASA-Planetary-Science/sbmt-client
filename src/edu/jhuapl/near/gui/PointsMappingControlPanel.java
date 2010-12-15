@@ -1,12 +1,17 @@
 package edu.jhuapl.near.gui;
 
-import javax.swing.*;
-import javax.swing.event.*;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerModel;
+import javax.swing.SpinnerNumberModel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
+import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.PointModel;
 import edu.jhuapl.near.model.StructureModel;
-import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.pick.PickManager;
 
 public class PointsMappingControlPanel extends

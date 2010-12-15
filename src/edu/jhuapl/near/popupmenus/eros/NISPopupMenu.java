@@ -2,7 +2,7 @@ package edu.jhuapl.near.popupmenus.eros;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
-import java.io.*;
+import java.io.IOException;
 
 import javax.swing.AbstractAction;
 import javax.swing.JCheckBoxMenuItem;
@@ -12,7 +12,8 @@ import vtk.vtkActor;
 import vtk.vtkProp;
 
 import edu.jhuapl.near.gui.ModelInfoWindowManager;
-import edu.jhuapl.near.model.*;
+import edu.jhuapl.near.model.ModelManager;
+import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.eros.NISSpectraCollection;
 import edu.jhuapl.near.model.eros.NISSpectrum;
 import edu.jhuapl.near.popupmenus.PopupMenu;

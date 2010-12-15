@@ -22,13 +22,26 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.TreeSet;
 
+import vtk.vtkActor;
+import vtk.vtkCellArray;
+import vtk.vtkGeometryFilter;
+import vtk.vtkIdList;
+import vtk.vtkPoints;
+import vtk.vtkPolyData;
+import vtk.vtkPolyDataMapper;
+import vtk.vtkProp;
+
 import edu.jhuapl.near.dbgen.SqlManager;
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.SmallBodyModel;
-import edu.jhuapl.near.util.*;
-
-import vtk.*;
+import edu.jhuapl.near.util.FileCache;
+import edu.jhuapl.near.util.FileUtil;
+import edu.jhuapl.near.util.IdPair;
+import edu.jhuapl.near.util.LatLon;
+import edu.jhuapl.near.util.MathUtil;
+import edu.jhuapl.near.util.Properties;
+import edu.jhuapl.near.util.SmallBodyCubes;
 
 public class NLRSearchDataCollection extends Model
 {

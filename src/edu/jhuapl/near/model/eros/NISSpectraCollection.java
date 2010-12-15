@@ -6,13 +6,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import vtk.vtkProp;
+
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.util.Properties;
-
-
-import vtk.*;
 
 public class NISSpectraCollection extends Model implements PropertyChangeListener
 {

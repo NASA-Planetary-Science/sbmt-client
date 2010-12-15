@@ -1,8 +1,11 @@
 package edu.jhuapl.near.gui.eros;
 
-import javax.swing.*;
-import javax.swing.event.*;
-import com.jidesoft.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.JPanel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
+import com.jidesoft.swing.RangeSlider;
 
 import edu.jhuapl.near.model.eros.MSIImage;
 import edu.jhuapl.near.util.IntensityRange;

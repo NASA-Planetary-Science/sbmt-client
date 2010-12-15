@@ -1,8 +1,14 @@
 package edu.jhuapl.near;
 
-import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
 import java.util.concurrent.TimeUnit;
+
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JMenuBar;
+import javax.swing.JPopupMenu;
+import javax.swing.ToolTipManager;
+import javax.swing.UIManager;
 
 import vtk.vtkJavaGarbageCollector;
 

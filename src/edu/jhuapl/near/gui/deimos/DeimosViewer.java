@@ -1,6 +1,12 @@
 package edu.jhuapl.near.gui.deimos;
 
-import javax.swing.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.util.HashMap;
+
+import javax.swing.BorderFactory;
+import javax.swing.JSplitPane;
+import javax.swing.JTabbedPane;
 
 import edu.jhuapl.near.gui.Renderer;
 import edu.jhuapl.near.gui.SmallBodyControlPanel;
@@ -19,9 +25,6 @@ import edu.jhuapl.near.model.RegularPolygonModel;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.pick.PickManager;
 import edu.jhuapl.near.popupmenus.GenericPopupManager;
-
-import java.awt.*;
-import java.util.HashMap;
 
 /**
  * This class contains the "main" function called at the start of the program.

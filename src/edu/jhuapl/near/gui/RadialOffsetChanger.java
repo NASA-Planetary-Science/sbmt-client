@@ -1,9 +1,13 @@
 package edu.jhuapl.near.gui;
 
 
-import javax.swing.*;
-import javax.swing.event.*;
-import edu.jhuapl.near.model.*;
+import javax.swing.BorderFactory;
+import javax.swing.JPanel;
+import javax.swing.JSlider;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
+import edu.jhuapl.near.model.Model;
 
 
 public class RadialOffsetChanger extends JPanel implements ChangeListener

@@ -2,7 +2,10 @@ package edu.jhuapl.near.gui;
 
 import java.awt.Dimension;
 
-import javax.swing.*;
+import javax.swing.BoxLayout;
+import javax.swing.JFormattedTextField;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 public class SearchPanelUtil
 {

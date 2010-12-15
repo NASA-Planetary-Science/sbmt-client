@@ -6,15 +6,22 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+
+import vtk.vtkActor;
+import vtk.vtkAppendPolyData;
+import vtk.vtkCellData;
+import vtk.vtkPolyData;
+import vtk.vtkPolyDataMapper;
+import vtk.vtkProp;
+import vtk.vtkProperty;
+import vtk.vtkUnsignedCharArray;
 
 import edu.jhuapl.near.util.FileUtil;
 import edu.jhuapl.near.util.IdPair;
 import edu.jhuapl.near.util.LatLon;
-import edu.jhuapl.near.util.Properties;
 import edu.jhuapl.near.util.MathUtil;
-
-import vtk.*;
+import edu.jhuapl.near.util.Properties;
 
 /**
  * Model of regular polygon structures drawn on a body.

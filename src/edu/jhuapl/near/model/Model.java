@@ -4,9 +4,9 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 
-import edu.jhuapl.near.util.Properties;
+import vtk.vtkProp;
 
-import vtk.*;
+import edu.jhuapl.near.util.Properties;
 
 public abstract class Model
 {

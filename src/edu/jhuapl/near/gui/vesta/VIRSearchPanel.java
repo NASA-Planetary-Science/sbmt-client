@@ -1,23 +1,45 @@
 package edu.jhuapl.near.gui.vesta;
 
-import java.io.IOException;
-import java.text.NumberFormat;
-import java.util.*;
-
-import javax.swing.*;
-import javax.swing.event.*;
-
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.io.IOException;
+import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.TreeSet;
+
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JFormattedTextField;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
+import javax.swing.JToggleButton;
+import javax.swing.ListSelectionModel;
+import javax.swing.SpinnerDateModel;
+import javax.swing.SpinnerNumberModel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import net.miginfocom.swing.MigLayout;
 
-import org.joda.time.*;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 
 import vtk.vtkPolyData;
 
-import edu.jhuapl.near.query.Query;
 import edu.jhuapl.near.gui.ModelInfoWindowManager;
 import edu.jhuapl.near.gui.SearchPanelUtil;
 import edu.jhuapl.near.model.ModelManager;
@@ -29,6 +51,7 @@ import edu.jhuapl.near.model.eros.NISSpectrum;
 import edu.jhuapl.near.pick.PickManager;
 import edu.jhuapl.near.pick.PickManager.PickMode;
 import edu.jhuapl.near.popupmenus.eros.NISPopupMenu;
+import edu.jhuapl.near.query.Query;
 import edu.jhuapl.near.util.IdPair;
 
 

@@ -7,17 +7,32 @@ import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.TreeMap;
 
-import javax.swing.*;
+import javax.swing.AbstractAction;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+
+import vtk.vtkImageActor;
+import vtk.vtkImageData;
+import vtk.vtkInteractorStyleImage;
 
 import edu.jhuapl.near.gui.ModelInfoWindow;
 import edu.jhuapl.near.gui.vtkEnhancedRenderWindowPanel;
-import edu.jhuapl.near.model.*;
+import edu.jhuapl.near.model.Model;
+import edu.jhuapl.near.model.ModelManager;
+import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.eros.MSIImage;
 import edu.jhuapl.near.popupmenus.eros.MSIPopupMenu;
-
-import vtk.*;
 
 public class MSIImageInfoPanel extends ModelInfoWindow implements PropertyChangeListener
 {

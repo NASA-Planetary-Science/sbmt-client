@@ -1,9 +1,11 @@
 package edu.jhuapl.near.pick;
 
-import edu.jhuapl.near.gui.*;
+import vtk.vtkRenderWindowPanel;
+
+import edu.jhuapl.near.gui.Renderer;
+import edu.jhuapl.near.gui.StatusBar;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.popupmenus.PopupManager;
-import vtk.*;
 
 public class PickManager extends Picker
 {

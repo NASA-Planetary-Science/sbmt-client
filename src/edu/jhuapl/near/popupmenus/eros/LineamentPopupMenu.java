@@ -1,6 +1,12 @@
 package edu.jhuapl.near.popupmenus.eros;
 
-import javax.swing.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.MouseEvent;
+
+import javax.swing.AbstractAction;
+import javax.swing.JMenuItem;
 
 import vtk.vtkProp;
 
@@ -9,9 +15,6 @@ import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.eros.LineamentModel;
 import edu.jhuapl.near.popupmenus.PopupMenu;
-
-import java.awt.*;
-import java.awt.event.*;
 
 public class LineamentPopupMenu extends PopupMenu
 {

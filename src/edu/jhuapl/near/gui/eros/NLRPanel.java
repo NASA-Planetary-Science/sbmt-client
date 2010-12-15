@@ -1,6 +1,7 @@
 package edu.jhuapl.near.gui.eros;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.JTabbedPane;
 
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.pick.PickManager;

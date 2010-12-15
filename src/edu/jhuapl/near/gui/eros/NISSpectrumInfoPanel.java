@@ -6,21 +6,37 @@ import java.awt.Dimension;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.TreeMap;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 
-import edu.jhuapl.near.gui.ModelInfoWindow;
-import edu.jhuapl.near.model.*;
-import edu.jhuapl.near.model.eros.NISSpectrum;
-import edu.jhuapl.near.popupmenus.eros.NISPopupMenu;
-
-import org.jfree.chart.*;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
-import org.jfree.data.xy.*;
+import org.jfree.data.xy.XYDataset;
+import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
+
+import edu.jhuapl.near.gui.ModelInfoWindow;
+import edu.jhuapl.near.model.Model;
+import edu.jhuapl.near.model.ModelManager;
+import edu.jhuapl.near.model.ModelNames;
+import edu.jhuapl.near.model.eros.NISSpectrum;
+import edu.jhuapl.near.popupmenus.eros.NISPopupMenu;
 
 public class NISSpectrumInfoPanel extends ModelInfoWindow implements PropertyChangeListener
 {

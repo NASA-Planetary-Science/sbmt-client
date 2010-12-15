@@ -9,16 +9,46 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.TreeSet;
 
-import vtk.*;
+import vtk.vtkAbstractPointLocator;
+import vtk.vtkActor;
+import vtk.vtkAlgorithmOutput;
+import vtk.vtkCell;
+import vtk.vtkCoordinate;
+import vtk.vtkDataArray;
+import vtk.vtkFloatArray;
+import vtk.vtkGenericCell;
+import vtk.vtkIdList;
+import vtk.vtkImageAppendComponents;
+import vtk.vtkImageBlend;
+import vtk.vtkImageData;
+import vtk.vtkImageMapToColors;
+import vtk.vtkImageShiftScale;
+import vtk.vtkLookupTable;
+import vtk.vtkMassProperties;
+import vtk.vtkPNGReader;
+import vtk.vtkPointLocator;
+import vtk.vtkPoints;
+import vtk.vtkPolyData;
+import vtk.vtkPolyDataMapper;
+import vtk.vtkPolyDataReader;
+import vtk.vtkProp;
+import vtk.vtkProperty;
+import vtk.vtkScalarBarActor;
+import vtk.vtkTextProperty;
+import vtk.vtkTexture;
+import vtk.vtkUnsignedCharArray;
+import vtk.vtkXMLImageDataReader;
+import vtk.vtksbCellLocator;
+
 import edu.jhuapl.near.util.BoundingBox;
 import edu.jhuapl.near.util.ConvertResourceToFile;
-import edu.jhuapl.near.util.Frustum;
-import edu.jhuapl.near.util.SmallBodyCubes;
 import edu.jhuapl.near.util.FileCache;
-import edu.jhuapl.near.util.MathUtil;
+import edu.jhuapl.near.util.Frustum;
 import edu.jhuapl.near.util.LatLon;
+import edu.jhuapl.near.util.MathUtil;
 import edu.jhuapl.near.util.PolyDataUtil;
 import edu.jhuapl.near.util.Properties;
+import edu.jhuapl.near.util.SmallBodyCubes;
 
 public class SmallBodyModel extends Model
 {

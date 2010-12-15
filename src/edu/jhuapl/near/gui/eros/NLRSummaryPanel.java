@@ -1,12 +1,16 @@
 package edu.jhuapl.near.gui.eros;
 
-import java.io.File;
-import java.util.*;
-
-import javax.swing.*;
-
 import java.awt.BorderLayout;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.util.ArrayList;
+
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JList;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 
 import edu.jhuapl.near.gui.CustomFileChooser;
 import edu.jhuapl.near.gui.RadialOffsetChanger;

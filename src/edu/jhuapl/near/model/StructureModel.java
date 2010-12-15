@@ -1,6 +1,6 @@
 package edu.jhuapl.near.model;
 
-import java.io.*;
+import java.io.File;
 
 import vtk.vtkProp;
 

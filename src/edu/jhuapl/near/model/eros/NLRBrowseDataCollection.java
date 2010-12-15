@@ -9,11 +9,12 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import vtk.vtkActor;
+import vtk.vtkProp;
+
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.util.Properties;
-
-import vtk.*;
 
 public class NLRBrowseDataCollection extends Model implements PropertyChangeListener
 {

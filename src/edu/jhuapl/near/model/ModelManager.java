@@ -5,9 +5,9 @@ import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import edu.jhuapl.near.util.Properties;
+import vtk.vtkProp;
 
-import vtk.*;
+import edu.jhuapl.near.util.Properties;
 
 public class ModelManager extends Model implements PropertyChangeListener
 {

@@ -1,6 +1,12 @@
 package edu.jhuapl.near.gui.eros;
 
-import javax.swing.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.util.HashMap;
+
+import javax.swing.BorderFactory;
+import javax.swing.JSplitPane;
+import javax.swing.JTabbedPane;
 
 import edu.jhuapl.near.gui.ModelInfoWindow;
 import edu.jhuapl.near.gui.ModelInfoWindowManager;
@@ -30,9 +36,6 @@ import edu.jhuapl.near.model.eros.NLRBrowseDataCollection;
 import edu.jhuapl.near.model.eros.NLRSearchDataCollection;
 import edu.jhuapl.near.pick.PickManager;
 import edu.jhuapl.near.popupmenus.eros.ErosPopupManager;
-
-import java.awt.*;
-import java.util.HashMap;
 
 /**
  * This class contains the "main" function called at the start of the program.

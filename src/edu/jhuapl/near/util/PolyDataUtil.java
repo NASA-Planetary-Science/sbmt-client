@@ -4,7 +4,28 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
-import vtk.*;
+import vtk.vtkAbstractPointLocator;
+import vtk.vtkCellArray;
+import vtk.vtkCleanPolyData;
+import vtk.vtkClipPolyData;
+import vtk.vtkCutter;
+import vtk.vtkDataArray;
+import vtk.vtkExtractPolyDataGeometry;
+import vtk.vtkFeatureEdges;
+import vtk.vtkFloatArray;
+import vtk.vtkGenericCell;
+import vtk.vtkIdList;
+import vtk.vtkIdTypeArray;
+import vtk.vtkPlane;
+import vtk.vtkPointData;
+import vtk.vtkPointLocator;
+import vtk.vtkPoints;
+import vtk.vtkPolyData;
+import vtk.vtkPolyDataConnectivityFilter;
+import vtk.vtkPolyDataNormals;
+import vtk.vtkRegularPolygonSource;
+import vtk.vtkSphere;
+import vtk.vtksbCellLocator;
 
 /**
  * This class contains various utility functions for operating on a vtkPolyData.

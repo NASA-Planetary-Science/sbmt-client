@@ -8,10 +8,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-//import vtk.vtkCellArray;
-//import vtk.vtkCleanPolyData;
-//import vtk.vtkIdList;
-//import vtk.vtkPoints;
 import vtk.vtkPolyData;
 import vtk.vtkPolyDataNormals;
 import vtk.vtkPolyDataReader;
@@ -19,8 +15,6 @@ import vtk.vtkPolyDataWriter;
 
 import edu.jhuapl.near.model.Graticule;
 import edu.jhuapl.near.model.ModelFactory;
-//import edu.jhuapl.near.util.LatLon;
-//import edu.jhuapl.near.util.MathUtil;
 import edu.jhuapl.near.util.NativeLibraryLoader;
 
 public class VestaModelGenerator {

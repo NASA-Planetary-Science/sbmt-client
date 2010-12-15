@@ -1,24 +1,36 @@
 package edu.jhuapl.near.gui;
 
-import javax.swing.*;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.io.File;
+
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JToggleButton;
+import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 
-import java.awt.Dimension;
-import java.awt.event.*;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.io.File;
+import net.miginfocom.swing.MigLayout;
 
-//import edu.jhuapl.near.gui.popupmenus.StructuresPopupMenu;
-import edu.jhuapl.near.model.*;
+import edu.jhuapl.near.model.ModelManager;
+import edu.jhuapl.near.model.StructureModel;
 import edu.jhuapl.near.pick.PickEvent;
 import edu.jhuapl.near.pick.PickManager;
 import edu.jhuapl.near.util.Properties;
-import net.miginfocom.swing.MigLayout;
 
 public abstract class AbstractStructureMappingControlPanel extends JPanel implements
     ActionListener,

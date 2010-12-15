@@ -5,11 +5,6 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.util.ArrayList;
 
-import edu.jhuapl.near.util.FileCache;
-import edu.jhuapl.near.util.LatLon;
-import edu.jhuapl.near.util.MathUtil;
-import edu.jhuapl.near.util.Properties;
-
 import vtk.vtkActor;
 import vtk.vtkAppendPolyData;
 import vtk.vtkCone;
@@ -21,6 +16,11 @@ import vtk.vtkPolyDataMapper;
 import vtk.vtkPolyDataReader;
 import vtk.vtkProp;
 import vtk.vtkTransform;
+
+import edu.jhuapl.near.util.FileCache;
+import edu.jhuapl.near.util.LatLon;
+import edu.jhuapl.near.util.MathUtil;
+import edu.jhuapl.near.util.Properties;
 
 public class Graticule extends Model implements PropertyChangeListener
 {

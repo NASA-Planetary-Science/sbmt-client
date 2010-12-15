@@ -4,9 +4,9 @@ import java.awt.event.MouseEvent;
 import java.util.HashMap;
 
 import vtk.vtkProp;
+
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelManager;
-import edu.jhuapl.near.popupmenus.PopupMenu;
 
 /**
  * This class is responsible for the creation of popups and for the routing

@@ -1,9 +1,14 @@
 package edu.jhuapl.near.query;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.TreeSet;
 
 import org.joda.time.DateTime;
 

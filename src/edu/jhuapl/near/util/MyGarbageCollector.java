@@ -13,11 +13,11 @@ import java.util.TreeMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+
 import javax.swing.SwingUtilities;
 
 import vtk.vtkGlobalJavaHash;
 import vtk.vtkObjectBase;
-import vtk.vtkPolyData;
 
 /**
  * This class helps to provide a solution in concurrent garbage collection issue

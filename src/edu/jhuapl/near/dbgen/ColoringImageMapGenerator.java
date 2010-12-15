@@ -1,6 +1,8 @@
 package edu.jhuapl.near.dbgen;
 
-import vtk.*;
+import vtk.vtkImageData;
+import vtk.vtkStructuredPointsWriter;
+
 import edu.jhuapl.near.model.ModelFactory;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.util.NativeLibraryLoader;
