@@ -1,16 +1,20 @@
 package edu.jhuapl.near.gui;
 
+import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
+import java.io.IOException;
 import java.io.InputStream;
 
 import javax.swing.AbstractAction;
+import javax.swing.BorderFactory;
+import javax.swing.JEditorPane;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextPane;
 
 
 public class HelpMenu extends JMenu
@@ -34,27 +38,6 @@ public class HelpMenu extends JMenu
     private class ShowHelpContentsAction extends AbstractAction
     {
         private JFrame frame = null;
-        private final String helpContents = "<html>" +
-            "Small Body Mapping Tool Help<br><br>" +
-            "NAVIGATION:<br>" +
-            "Left Mouse Button: rotate camera<br>" +
-            "Middle Mouse Button: pan camera<br>" +
-            "Right Mouse Button: zoom camera<br>" +
-            "Mousewheel: zoom camera<br>" +
-            "Shift + Left Mouse Button: pan camera<br>" +
-            "Ctrl + Left Mouse Button: spin camera<br>" +
-            "Keypress 3: toggle stereo mode<br>" +
-            "Keypress f: fly to point most recently clicked<br>" +
-            "Keypress r: reset camera<br>" +
-            "Keypress s: modify objects in scene to be shown as surfaces<br>" +
-            "Keypress w: modify objects in scene to be shown as wireframe<br>" +
-            "Keypress x (lowercase): reorient camera to point in positive x direction<br>" +
-            "Keypress X (uppercase): reorient camera to point in negative x direction<br>" +
-            "Keypress y (lowercase): reorient camera to point in positive y direction<br>" +
-            "Keypress Y (uppercase): reorient camera to point in negative y direction<br>" +
-            "Keypress z (lowercase): reorient camera to point in positive z direction<br>" +
-            "Keypress Z (uppercase): reorient camera to point in negative z direction<br>" +
-            "</html>";
 
         public ShowHelpContentsAction()
         {
@@ -67,12 +50,27 @@ public class HelpMenu extends JMenu
             {
                 frame = new JFrame();
 
-                JTextPane label = new JTextPane();
+                java.net.URL helpURL = HelpMenu.class.getResource(
+                "/edu/jhuapl/near/data/helpcontents.html");
+
+                JEditorPane label;
+                try
+                {
+                    label = new JEditorPane(helpURL);
+                }
+                catch (IOException e)
+                {
+                    e.printStackTrace();
+                    return;
+                }
                 label.setEditable(false);
                 label.setContentType("text/html");
-                label.setText(helpContents);
+                label.setBackground(Color.WHITE);
 
                 JScrollPane scrollPane = new JScrollPane(label);
+                scrollPane.setPreferredSize(new Dimension(800, 600));
+                scrollPane.setMinimumSize(new Dimension(10, 10));
+                scrollPane.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
 
                 frame.add(scrollPane);
 

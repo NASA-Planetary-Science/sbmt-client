@@ -2,27 +2,253 @@
 <html>
 <head>
 <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
-<title>Overview</title>
+<title>Small Body Mapping Tool Help</title>
 </head>
 <body>
-Small Body Mapping Tool Help<br><br>
-NAVIGATION:<br>
-Left Mouse Button: rotate camera<br>
-Middle Mouse Button: pan camera<br>
-Right Mouse Button: zoom camera<br>
-Mousewheel: zoom camera<br>
-Shift + Left Mouse Button: pan camera<br>
-Ctrl + Left Mouse Button: spin camera<br>
-Keypress 3: toggle stereo mode<br>
-Keypress f: fly to point most recently clicked<br>
-Keypress r: reset camera<br>
-Keypress s: modify objects in scene to be shown as surfaces<br>
-Keypress w: modify objects in scene to be shown as wireframe<br>
-Keypress x (lowercase): reorient camera to point in positive x direction<br>
-Keypress X (uppercase): reorient camera to point in negative x direction<br>
-Keypress y (lowercase): reorient camera to point in positive y direction<br>
-Keypress Y (uppercase): reorient camera to point in negative y direction<br>
-Keypress z (lowercase): reorient camera to point in positive z direction<br>
-Keypress Z (uppercase): reorient camera to point in negative z direction<br>
- </body>
+<h1>How to Use the Small Body Mapping Tool</h1><br>
+<p>
+The purpose of the Small Body Mapping Tool is help scientists and mission planners
+quickly search, retrieve, visualize, and export data from small body missions.
+The Small Body Mapping Tool is divided into 2 panels, the rendering panel on the right 
+for displaying small bodies and their associated data and a control panel on the left 
+consisting of several tabs for what gets displayed in the rendering panel.
+In addition there is a status bar on the bottom and a menu bar on top.
+</p>
+<p>
+When the Small Body Mapping Tool is started, initially a low resolution model of the Eros
+asteroid is shown. The small body shown can be changed in the View menu. Three other small
+bodies besides Eros are available: Deimos, Itokawa, and Vesta. The number of
+tabs in the control panel and their contents depend on which asteroid is currently visible.
+Most of the work to date on the tool has focused on the NEAR mission.
+</p>
+<p>
+
+<h2>The Rendering Panel</h2>
+
+Using the mouse and keyboard one can easily navigate through the data in the rendering panel.
+The following mouse and key bindings work with the rendering panel:
+<br>
+<ul>
+<li>Left Mouse Button: rotate camera
+<li>Middle Mouse Button: pan camera
+<li>Right Mouse Button: zoom camera
+<li>Mousewheel: zoom camera
+<li>Shift + Left Mouse Button: pan camera
+<li>Ctrl + Left Mouse Button: spin camera
+<li>Keypress 3: toggle stereo mode
+<li>Keypress f: fly to point most recently clicked
+<li>Keypress r: reset camera
+<li>Keypress s: modify objects in scene to be shown as surfaces
+<li>Keypress w: modify objects in scene to be shown as wireframe
+<li>Keypress x (lowercase): reorient camera to point in positive x direction
+<li>Keypress X (uppercase): reorient camera to point in negative x direction
+<li>Keypress y (lowercase): reorient camera to point in positive y direction
+<li>Keypress Y (uppercase): reorient camera to point in negative y direction
+<li>Keypress z (lowercase): reorient camera to point in positive z direction
+<li>Keypress Z (uppercase): reorient camera to point in negative z direction
+</ul>
+<br>
+<p>In addition, whenever one moves the mouse pointer over a point of the small body, the latitude, 
+longitude, radius, and distance is shown on the right part of the status bar.
+Longitude is defined east longitude and varies from 0 to 360 degrees. Radius is
+the distance from the center of the body to the point and distance is the distance
+from the camera to the center of the body.
+</p>
+<p>In addition if one clicks with the left mouse button on certain object, more information about
+that object is shown on the left side of the status bar. If one clicks with the right button
+on certain objects, a context menu is displayed with various options depending on the object.
+</p>
+<br>
+
+<h2>Control Panel</h2>
+
+<h3>Eros tab (or the Deimos, Itokawa, and Vesta tabs for those bodies)</h3>
+
+Each small body has a tab with the same name as the body for controlling general options
+related to that body, such as controlling the resolution, how the asteroid is colored,
+whether to show a coordinate grid, or what shading to use (flat or smooth),
+depending on the small body. The coordinate grid lines are separated by 10 degrees
+in latitude or longitude.W hen you click on a higher resolution model for the first time, 
+it will download the model from the server and cache it in your home directory, so there 
+may be an extra delay the first time you switch models. 
+
+<h3>MSI tab (Eros only)</h3>
+
+One of the instruments on the NEAR mission was a Multispectral Imager which took over 100000 images
+of Eros between between Jan 12, 2000 and Feb 12, 2001. The MSI tab provides
+options for searching and displaying these images. One of two databases of MSI images can be searched,
+which can be specified in the "MSI Source" dropdown menu.
+<ol>
+<li>The original database submitted to PDS with over 100000 images. These images may be slightly misaligned
+with the asteroid due to imprecision in the SPICE kernels from which the pointing information
+was derived.
+<li> Bob Gaskell's list with high quality pointing information. This list is a subset of
+the first with about 20000 images which he used to create the Eros shape models.
+Images are much better registered with the asteroid.
+</ol>
+To do a search, choose the desired options and click the Search button. A list of the matching images
+will be returned below. When a search is performed, the outline of the footprint of the first several matching images
+is shown in the renderer in red. This allows one to quickly see what part of the asteroid the image was taken of.
+One can see additional footprints by clicking on the next and previous buttons below the list. The
+number of outlines shown at one time can also be controlled.
+
+<p>
+You'll see in the MSI and NIS tabs two new buttons: Select Region and Clear Region. 
+If you click on the Select Region a new mode is entered which allows you to draw a 
+circular region on the asteroid (similar to drawing circles and points within the 
+Structures tab). Click the Select Region button again to leave this mode and click 
+Clear Region to remove the region. If there is no region drawn then the search 
+includes the entire asteroid.
+
+<p>
+One thing you'll notice when you do searches is that often images and 
+spectra are returned that are outside of the circle drawn. Usually as 
+long as a part of the spectrum or image is within about a kilometer 
+from the circle, it will be returned in the search. This is due to 
+nature of the approximations used in the search algorithm. It is possible 
+to reduce this distance (i.e. to make it smaller than a kilometer) at the 
+expense of a larger database and possibly slower searches. Let me know if 
+you'd like me to do this.
+
+<p>
+To show the image itself mapped onto the asteroid, right-click either on the outline in the renderer or
+on an item in the returned list in the control panel. A popup menu will appear and clicking on the "Show Image"
+option will map the image itself onto the asteroid. Once an image is shown, additional menu items
+become active such as showing a properties window and generation of backplanes.
+
+The properties window that appears shows a 2D view of the image, various properties
+about the image, as well as a slider to modify the contrast. 
+
+The backplane generation option allows 
+you to choose the desired filename of the file.
+
+This is the list, in order of the backplanes generated. Everything is in float (4 bytes)
+<ol>
+<li>MSI image pixel value
+<li>x value of point in body centered coordinates (kilometers)
+<li>y value of point in body centered coordinates (kilometers)
+<li>z value of point in body centered coordinates (kilometers)
+<li>latitude (geocentric) (degrees)
+<li>longitude (degrees)
+<li>distance from center of asteroid (kilometers)
+<li>solar incidence angle (degrees)
+<li>emission angle (degrees)
+<li>phase angle (degrees)
+<li>horizontal pixel scale in kilometers per pixel
+<li>vertical pixel scale in kilometers per pixel
+</ol>
+
+<h3>NIS tab (Eros only)</h3>
+
+Another instrument on the NEAR mission was the Near-Infrared Spectrograph
+which measured several hundred thousand spectra of the asteroid between January and May 2000,
+after which the instrument failed. Each spectrum consists of 64 separate channels 
+between 812 nm and 2708 nm. The NIS tab provides an interface for searching, displaying,
+and plotting NIS spectra and is very similar to the MSI tab.
+
+<h3>NLR tab (Eros only)</h3>
+
+Another instrument on the NEAR mission was the NEAR Laser Rangefinder. This instrument
+contained a lidar which was used to determine the shape of the asteroid. About 16 million
+data points were acquired 
+
+<h3>Lineament tab (Eros only)</h3>
+
+The Lineament tab shows asteroid lineaments drawn by Debra Buczkowski several years
+ago using a different software tool. Since the lineaments are not perfectly registered
+with the asteroid, a slider is provided for slightly changing the radial offset of the
+lineaments. 
+
+<h3>Structures tab (Available for all bodies)</h3>
+
+</p>
+Each of the 3 tabs (paths, circles, and points) works completely independently
+of each other. You can only be drawing one type of structure at a time. To
+draw a point or a circle, click on the "Edit" button. That will activate a
+special editing mode where you can no longer rotate, pan, zoom the asteroid.
+Click anywhere on the asteroid and the point or circle will appear. Once a
+point or circle has been created, you can drag it around with the left mouse
+button. To change the size of a circle drag it while holding the Control
+button. When you're finished editing, press the Edit button again and the 3D
+view will return to the standard rotate/pan/zoom mode.
+
+</p>
+Drawing paths works a little differently than circles or points. You can
+only be editing a single path at a time unlike points or circles. To create a new
+path press New and to edit an existing path, press Edit. You can add new
+vertices to paths and drag around existing vertices. One thing missing is
+the ability to delete individual vertices. I hope to add that soon.
+
+</p>
+You can save/load all the structures to/from disk using the Save and Load
+buttons. Note each type of structure has a different format.
+
+</p>
+You can also right-click a structure within the 3D view and a popup will
+show allowing you to delete it. For paths, the popup includes the option to edit
+that path as well (For points and circles simply press the Edit button in
+the control panel).
+
+<h3>Mapmaker tab (Eros only)</h3>
+
+<p>
+In the tool, you'll see a new tab called Mapmaker from which you can run the Mapmaker 
+program. You need to draw a region on the asteroid, choose a name and output folder, 
+and click "Run Mapmaker". If you close the tool and then restart it, you can load in 
+the cube file with the "Load Cube File" button without having to rerun the mapmaker program.
+
+<p>
+The first time you run the mapmaker tool it will download and unzip all the mapmaker files. 
+This can take a while since it's about 700MB of data. I won't happen again unless I 
+need to make changes to those files on the server. I provided a progress indicator 
+to show what's happening.
+
+<p>
+When the mapmaker program completes a new window will show up showing the maplet in 
+3D as well as a graph for plotting profiles. You can draw and edit profiles with the 
+New Profile and Edit Profile buttons. It works similar to, though not exactly like, 
+the Paths drawing tool in the Structures tab: When you press New Profile, a new Edit 
+mode is entered in which standard navigation is disabled so that when you click on 
+the maplet the endpoints of the profile are drawn. The profile is immediately plotted 
+in the graph as soon as you click the second endpoint. The start of the profile is 
+indicated with a green dot and the end with a red dot. Default colors are chosen for 
+the lines but you can change them by right-clicking on a profile (provided you are 
+not in "Edit" mode). You can also color the maplet  with any of the 3 channels 
+produced by the mapmaker program (height relative to gravity, height relative to 
+plane, and slope). Note that what's plotted is height relative to gravity. You 
+can also load and save profiles.
+
+<p>
+Note that you can the pan the graph while holding the Control button (Alt on the 
+Mac I think) and the mousewheel allows you to zoom in and out.
+
+<p>
+In addition an outline of the maplet is shown on the Eros asteroid in dark green. 
+It disappears when you close the maplet window.
+
+<p>
+Also, I wasn't able to get this to work on Windows. I did find a Fortran compiler 
+for Windows to compile Bob Gaskell's code, but when I ran it, the program seemed 
+to hang and never finished. So currently only mac and linux work. Please let me 
+know if this is a problem and I'll look into this.
+
+<p>
+Another issue you may encounter is that currently the display of the maplets 
+consumes a huge amount of memory. That's because for each maplet, over 2 million 
+polygons are rendered. I noticed also that when you close the maplet window, the 
+memory is not really freed. I am still looking into this but in the meantime, 
+you may need to restart the tool if you want to generate a second maplet. If 
+you can't even view a single maplet without running into memory issues, 
+please let me know. It may be necessary to provide options for generating 
+smaller maplets or come up with some other scheme to reduce memory usage.
+
+<!--
+<h2>Additional Information</h2>
+
+This section provides additional information about the design and inner workings of the Small
+Body Mapping Tool which may be interest to the user.
+-->
+
+
+</body>
 </html>
