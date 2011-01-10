@@ -2,17 +2,28 @@ package edu.jhuapl.near.model.eros;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.IOException;
 import java.util.ArrayList;
 
+import nom.tam.fits.FitsException;
+
+import vtk.vtkActor;
 import vtk.vtkGenericCell;
+import vtk.vtkImageData;
 import vtk.vtkPolyData;
+import vtk.vtkPolyDataMapper;
 import vtk.vtkProp;
+import vtk.vtkProperty;
+import vtk.vtkTexture;
 import vtk.vtksbCellLocator;
 
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.util.Frustum;
+import edu.jhuapl.near.util.ImageDataUtil;
 import edu.jhuapl.near.util.MathUtil;
+import edu.jhuapl.near.util.PolyDataUtil;
+import edu.jhuapl.near.util.Properties;
 
 public class MSIColorImage extends Model implements PropertyChangeListener
 {
@@ -20,25 +31,116 @@ public class MSIColorImage extends Model implements PropertyChangeListener
     private MSIImage redImage;
     private MSIImage greenImage;
     private MSIImage blueImage;
+    private vtkImageData colorImage;
+    private vtkPolyData footprint;
+    private vtkPolyData shiftedFootprint;
+    private vtkActor footprintActor;
+    private ArrayList<vtkProp> footprintActors = new ArrayList<vtkProp>();
+    private float[][] redPixelData;
+    private float[][] greenPixelData;
+    private float[][] bluePixelData;
+    private MSIColorKey colorKey;
+//    private HashMap<MSIImage.MSIKey, MSIImage> keyToImageMap = new HashMap<MSIImage.MSIKey, MSIImage>();
 
-    public MSIColorImage(MSIImage redImage, MSIImage greenImage, MSIImage blueImage, SmallBodyModel eros)
+    static public class NoOverlapException extends Exception
     {
-        this.redImage = redImage;
-        this.greenImage = greenImage;
-        this.blueImage = blueImage;
+        public NoOverlapException()
+        {
+            super("No overlap in 3 images");
+        }
+    }
+
+    public static class MSIColorKey
+    {
+        public MSIImage.MSIKey redImageKey;
+        public MSIImage.MSIKey greenImageKey;
+        public MSIImage.MSIKey blueImageKey;
+
+        public MSIColorKey(MSIImage.MSIKey redImage, MSIImage.MSIKey greenImage, MSIImage.MSIKey blueImage)
+        {
+            this.redImageKey = redImage;
+            this.greenImageKey = greenImage;
+            this.blueImageKey = blueImage;
+        }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            return redImageKey.equals(((MSIColorKey)obj).redImageKey) &&
+            greenImageKey.equals(((MSIColorKey)obj).greenImageKey) &&
+            blueImageKey.equals(((MSIColorKey)obj).blueImageKey);
+        }
+    }
+
+//    private MSIImage getImageFromKey(MSIImage.MSIKey msiKey) throws FitsException, IOException
+//    {
+//        if (keyToImageMap.containsKey(msiKey))
+//        {
+//            return keyToImageMap.get(msiKey);
+//        }
+//        else
+//        {
+//            MSIImage image = new MSIImage(msiKey, erosModel);
+//            keyToImageMap.put(msiKey, image);
+//            return image;
+//        }
+//    }
+
+    public MSIColorImage(MSIColorKey key, SmallBodyModel eros) throws FitsException, IOException, NoOverlapException
+    {
+        this.colorKey = key;
         this.erosModel = eros;
 
+        redImage = new MSIImage(colorKey.redImageKey, eros);
+        greenImage = new MSIImage(colorKey.greenImageKey, eros);
+        blueImage = new MSIImage(colorKey.blueImageKey, eros);
+
+        redPixelData = ImageDataUtil.vtkImageDataToArray2D(redImage.getRawImage());
+        greenPixelData = ImageDataUtil.vtkImageDataToArray2D(greenImage.getRawImage());
+        bluePixelData = ImageDataUtil.vtkImageDataToArray2D(blueImage.getRawImage());
+
+        colorImage = new vtkImageData();
+        colorImage.SetScalarTypeToUnsignedChar();
+        colorImage.SetDimensions(MSIImage.IMAGE_WIDTH, MSIImage.IMAGE_HEIGHT, 1);
+        colorImage.SetSpacing(1.0, 1.0, 1.0);
+        colorImage.SetOrigin(0.0, 0.0, 0.0);
+        colorImage.SetNumberOfScalarComponents(3);
+
+        shiftedFootprint = new vtkPolyData();
+
+        computeFootprintAndColorImage();
+    }
+
+    private void computeFootprintAndColorImage() throws NoOverlapException
+    {
         Frustum redFrustum = redImage.getFrustum();
         Frustum greenFrustum = greenImage.getFrustum();
         Frustum blueFrustum = blueImage.getFrustum();
 
+        double[] redRange = redImage.getRawImage().GetScalarRange();
+        double[] greenRange = greenImage.getRawImage().GetScalarRange();
+        double[] blueRange = blueImage.getRawImage().GetScalarRange();
+//        double redScalarExtent = redRange[1] - redRange[0];
+//        double greenScalarExtent = greenRange[1] - greenRange[0];
+//        double blueScalarExtent = blueRange[1] - blueRange[0];
+        double redScalarExtent = redRange[1] - 0.0;
+        double greenScalarExtent = greenRange[1] - 0.0;
+        double blueScalarExtent = blueRange[1] - 0.0;
 
         ArrayList<Frustum> frustums = new ArrayList<Frustum>();
         frustums.add(redFrustum);
         frustums.add(greenFrustum);
         frustums.add(blueFrustum);
 
-        vtkPolyData footprint = eros.computeMultipleFrustumIntersection(frustums);
+        footprint = erosModel.computeMultipleFrustumIntersection(frustums);
+
+        if (footprint == null)
+            throw new NoOverlapException();
+
+        PolyDataUtil.generateTextureCoordinates(redFrustum, footprint);
+
+        shiftedFootprint.DeepCopy(footprint);
+        PolyDataUtil.shiftPolyDataInNormalDirection(shiftedFootprint, 0.002);
 
         // Now compute a color image with each channel one of these images.
         // To do that go through each pixel of the red image, and intersect a ray into the asteroid in
@@ -119,7 +221,6 @@ public class MSIColorImage extends Model implements PropertyChangeListener
                         spacecraftPosition[2] + 2.0*scdist*vec[2]
                 };
 
-                //cellLocator.IntersectWithLine(spacecraftPosition, lookPt, intersectPoints, intersectCells);
                 double tol = 1e-6;
                 double[] t = new double[1];
                 double[] x = new double[3];
@@ -130,25 +231,91 @@ public class MSIColorImage extends Model implements PropertyChangeListener
 
                 if (result > 0)
                 {
-                    double[] greenUv = new double[2];
-                    redFrustum.computeTextureCoordinates(x, greenUv);
-                    double[] blueUv = new double[2];
-                    redFrustum.computeTextureCoordinates(x, blueUv);
+                    float redValue = redPixelData[j][i];
+
+                    double[] uv = new double[2];
+
+                    greenFrustum.computeTextureCoordinates(x, uv);
+                    float greenValue = ImageDataUtil.interpolateWithinImage(
+                            greenPixelData,
+                            MSIImage.IMAGE_WIDTH,
+                            MSIImage.IMAGE_HEIGHT,
+                            uv[1],
+                            uv[0]);
+
+                    blueFrustum.computeTextureCoordinates(x, uv);
+                    float blueValue = ImageDataUtil.interpolateWithinImage(
+                            bluePixelData,
+                            MSIImage.IMAGE_WIDTH,
+                            MSIImage.IMAGE_HEIGHT,
+                            uv[1],
+                            uv[0]);
+
+                    colorImage.SetScalarComponentFromFloat(j, i, 0, 0, 255.0 * redValue / redScalarExtent);
+                    colorImage.SetScalarComponentFromFloat(j, i, 0, 1, 255.0 * greenValue / greenScalarExtent);
+                    colorImage.SetScalarComponentFromFloat(j, i, 0, 2, 255.0 * blueValue / blueScalarExtent);
+
+//                    colorImage.SetScalarComponentFromFloat(j, i, 0, 0, 255.0 * redValue / redScalarExtent);
+//                    colorImage.SetScalarComponentFromFloat(j, i, 0, 1, 255.0 * redValue / redScalarExtent);
+//                    colorImage.SetScalarComponentFromFloat(j, i, 0, 2, 255.0 * redValue / redScalarExtent);
+//                    colorImage.SetScalarComponentFromFloat(j, i, 0, 0, 255.0 * greenValue / greenScalarExtent);
+//                    colorImage.SetScalarComponentFromFloat(j, i, 0, 1, 255.0 * greenValue / greenScalarExtent);
+//                    colorImage.SetScalarComponentFromFloat(j, i, 0, 2, 255.0 * greenValue / greenScalarExtent);
+//                    colorImage.SetScalarComponentFromFloat(j, i, 0, 0, 255.0 * blueValue / blueScalarExtent);
+//                    colorImage.SetScalarComponentFromFloat(j, i, 0, 1, 255.0 * blueValue / blueScalarExtent);
+//                    colorImage.SetScalarComponentFromFloat(j, i, 0, 2, 255.0 * blueValue / blueScalarExtent);
+
                 }
             }
         }
-
     }
 
     @Override
     public ArrayList<vtkProp> getProps()
     {
-        return null;
+        if (footprintActor == null)
+        {
+            vtkTexture texture = new vtkTexture();
+            texture.InterpolateOn();
+            texture.RepeatOff();
+            texture.EdgeClampOn();
+            texture.SetInput(colorImage);
+
+            vtkPolyDataMapper footprintMapper = new vtkPolyDataMapper();
+            footprintMapper.SetInput(shiftedFootprint);
+            footprintMapper.Update();
+
+            footprintActor = new vtkActor();
+            footprintActor.SetMapper(footprintMapper);
+            footprintActor.SetTexture(texture);
+            vtkProperty footprintProperty = footprintActor.GetProperty();
+            footprintProperty.LightingOff();
+
+            footprintActors.add(footprintActor);
+        }
+        return footprintActors;
+    }
+
+    public MSIColorKey getKey()
+    {
+        return colorKey;
     }
 
     public void propertyChange(PropertyChangeEvent evt)
     {
+        if (Properties.MODEL_RESOLUTION_CHANGED.equals(evt.getPropertyName()))
+        {
+            try
+            {
+                computeFootprintAndColorImage();
 
+                this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+        }
     }
 
 }

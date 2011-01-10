@@ -13,17 +13,17 @@ public class ImageDataUtil
      * @param image
      * @return
      */
-    float[][] ImageDataTo2DArray(vtkImageData image)
+    static public float[][] vtkImageDataToArray2D(vtkImageData image)
     {
         int[] dims = image.GetDimensions();
-        int width = dims[0];
-        int height = dims[1];
+        int height = dims[0];
+        int width = dims[1];
         vtkPointData pointdata = image.GetPointData();
         vtkFloatArray data = (vtkFloatArray)pointdata.GetScalars();
         float[][] array = new float[height][width];
         int count = 0;
-        for (int i=0; i < height; ++i)
-            for (int j=0; j < width; ++j)
+        for (int j=0; j < width; ++j)
+            for (int i=0; i < height; ++i)
             {
                 array[i][j] = (float)data.GetValue(count++);
             }
@@ -42,8 +42,22 @@ public class ImageDataUtil
      * @param v
      * @return
      */
-    float interpolateInImage(float[][] image, int width, int height, double u, double v)
+    static public float interpolateWithinImage(float[][] image, int width, int height, double u, double v)
     {
-        return 0.0f;
+        final double x = u * (width - 1.0);
+        final double y = v * (height - 1.0);
+        final int x1 = (int)Math.floor(x);
+        final int x2 = (int)Math.ceil(x);
+        final int y1 = (int)Math.floor(y);
+        final int y2 = (int)Math.ceil(y);
+
+        // From http://en.wikipedia.org/wiki/Bilinear_interpolation
+        final double value =
+            image[x1][y1]*(x2-x)*(y2-y) +
+            image[x2][y1]*(x-x1)*(y2-y) +
+            image[x1][y2]*(x2-x)*(y-y1) +
+            image[x2][y2]*(x-x1)*(y-y1);
+
+        return (float)value;
     }
 }

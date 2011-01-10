@@ -5,6 +5,7 @@ public interface ModelNames
     static public final String SMALL_BODY = "small-body";
     static public final String LINEAMENT = "lineament";
     static public final String MSI_IMAGES = "msi-images";
+    static public final String MSI_COLOR_IMAGES = "msi-color-images";
     static public final String MSI_BOUNDARY = "msi-boundary";
     static public final String NIS_SPECTRA = "nis-spectra";
     static public final String NLR_DATA_BROWSE = "nlr-data-browse";

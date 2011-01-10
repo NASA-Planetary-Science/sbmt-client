@@ -12,6 +12,8 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -19,7 +21,6 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.TreeSet;
 
-import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -28,16 +29,17 @@ import javax.swing.JComboBox;
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
 import javax.swing.JSpinner;
 import javax.swing.JToggleButton;
 import javax.swing.ListSelectionModel;
 import javax.swing.SpinnerDateModel;
+import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
 import net.miginfocom.swing.MigLayout;
 import nom.tam.fits.FitsException;
@@ -45,30 +47,37 @@ import nom.tam.fits.FitsException;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
+import vtk.vtkActor;
 import vtk.vtkPolyData;
 
 import edu.jhuapl.near.gui.ModelInfoWindowManager;
 import edu.jhuapl.near.gui.Renderer;
 import edu.jhuapl.near.gui.SearchPanelUtil;
+import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.RegularPolygonModel;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.eros.MSIBoundaryCollection;
+import edu.jhuapl.near.model.eros.MSIColorImageCollection;
 import edu.jhuapl.near.model.eros.MSIImage;
 import edu.jhuapl.near.model.eros.MSIImageCollection;
+import edu.jhuapl.near.model.eros.MSIColorImage.MSIColorKey;
+import edu.jhuapl.near.model.eros.MSIColorImage.NoOverlapException;
 import edu.jhuapl.near.model.eros.MSIImage.MSIKey;
+import edu.jhuapl.near.pick.PickEvent;
 import edu.jhuapl.near.pick.PickManager;
 import edu.jhuapl.near.pick.PickManager.PickMode;
 import edu.jhuapl.near.popupmenus.eros.MSIPopupMenu;
 import edu.jhuapl.near.query.Query;
 import edu.jhuapl.near.util.IdPair;
+import edu.jhuapl.near.util.Properties;
 
 
 /**
  * Panel with options for searching for MSI images. Two databases can be searched.
  * 1. The original one submitted to PDS with over 100000 images. Spice kernels for
- *       these images are not perfect and as a result, the images may be slightly misaligned
+ *    these images are not perfect and as a result, the images may be slightly misaligned
  *    with the asteroid.
  * 2. Bob Gaskell's list with high quality pointing information. This list is a subset of
  *    the first with about 20000 images which he used to create the shape models.
@@ -77,7 +86,7 @@ import edu.jhuapl.near.util.IdPair;
  * @author eli
  *
  */
-public class MSISearchPanel extends JPanel implements ActionListener, MouseListener, ListSelectionListener
+public class MSISearchPanel extends JPanel implements ActionListener, MouseListener, PropertyChangeListener
 {
     private final String MSI_REMOVE_ALL_BUTTON_TEXT = "Remove All Boundaries";
 
@@ -133,10 +142,13 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
     private JComboBox numberOfBoundariesComboBox;
     private IdPair resultIntervalCurrentlyShown = null;
 
-    private JToggleButton redButton;
-    private JToggleButton greenButton;
-    private JToggleButton blueButton;
+    private JButton redButton;
+    private JButton greenButton;
+    private JButton blueButton;
     private JButton generateColorImageButton;
+    private int redSelectedIndex = -1;
+    private int greenSelectedIndex = -1;
+    private int blueSelectedIndex = -1;
 
     /**
      * The source of the msi images of the most recently executed query
@@ -169,6 +181,8 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
                 pickManager.setPickMode(PickMode.DEFAULT);
             }
         });
+
+        pickManager.getDefaultPicker().addPropertyChangeListener(this);
 
         JPanel pane = new JPanel();
         pane.setLayout(new BoxLayout(pane,
@@ -503,7 +517,6 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
         resultList = new JList();
         resultList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         resultList.addMouseListener(this);
-        resultList.getSelectionModel().addListSelectionListener(this);
 
         JScrollPane listScrollPane = new JScrollPane(resultList);
         listScrollPane.setPreferredSize(new Dimension(300, 200));
@@ -584,33 +597,43 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
         // setup color image generation controls
 
         JPanel resultSub25ControlsPanel = new JPanel();
-        resultSub25ControlsPanel.setBorder(BorderFactory.createTitledBorder("Generate Color Images"));
+        //resultSub25ControlsPanel.setBorder(BorderFactory.createTitledBorder("Generate Color Images"));
         resultSub25ControlsPanel.setLayout(new MigLayout());
-        redButton = new JToggleButton("Red");
+        JSeparator separator = new JSeparator(SwingConstants.HORIZONTAL);
+        JLabel colorImagelabel = new JLabel("Color Images");
+        redButton = new JButton("Red");
         redButton.setBackground(Color.RED);
-        greenButton = new JToggleButton("Green");
+        final JLabel redLabel = new JLabel();
+        greenButton = new JButton("Green");
         greenButton.setBackground(Color.GREEN);
-        blueButton = new JToggleButton("Blue");
+        final JLabel greenLabel = new JLabel();
+        blueButton = new JButton("Blue");
         blueButton.setBackground(Color.BLUE);
+        final JLabel blueLabel = new JLabel();
 
         ActionListener colorButtonsListener = new ActionListener()
         {
             public void actionPerformed(ActionEvent e)
             {
-                if (e.getSource() == redButton)
+                int index = resultList.getSelectedIndex();
+                if (index >= 0)
                 {
-                    greenButton.setSelected(false);
-                    blueButton.setSelected(false);
-                }
-                else if (e.getSource() == greenButton)
-                {
-                    redButton.setSelected(false);
-                    blueButton.setSelected(false);
-                }
-                else if (e.getSource() == blueButton)
-                {
-                    redButton.setSelected(false);
-                    greenButton.setSelected(false);
+                    String name = msiRawResults.get(index).substring(23, 32);
+                    if (e.getSource() == redButton)
+                    {
+                        redLabel.setText(name);
+                        redSelectedIndex = index;
+                    }
+                    else if (e.getSource() == greenButton)
+                    {
+                        greenLabel.setText(name);
+                        greenSelectedIndex = index;
+                    }
+                    else if (e.getSource() == blueButton)
+                    {
+                        blueLabel.setText(name);
+                        blueSelectedIndex = index;
+                    }
                 }
             }
         };
@@ -624,22 +647,26 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
         {
             public void actionPerformed(ActionEvent e)
             {
-                generateColorImage(e);
+                showColorImage(e);
             }
         });
 
         JList colorImagesDisplayedList = new JList();
         colorImagesDisplayedList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         colorImagesDisplayedList.addMouseListener(this);
-        colorImagesDisplayedList.getSelectionModel().addListSelectionListener(this);
 
         JScrollPane colorImagesDisplayedListScrollPane = new JScrollPane(colorImagesDisplayedList);
         //colorImagesDisplayedListScrollPane.setPreferredSize(new Dimension(200, 100));
 
 
-        resultSub25ControlsPanel.add(redButton, "w 120!");
-        resultSub25ControlsPanel.add(greenButton, "w 120!");
-        resultSub25ControlsPanel.add(blueButton, "wrap, w 120!");
+        resultSub25ControlsPanel.add(separator, "growx, span, wrap, gaptop 10");
+        resultSub25ControlsPanel.add(colorImagelabel, "span, wrap");
+        resultSub25ControlsPanel.add(redButton, "w 60!");
+        resultSub25ControlsPanel.add(redLabel, "wrap");
+        resultSub25ControlsPanel.add(greenButton, "w 60!");
+        resultSub25ControlsPanel.add(greenLabel, "wrap");
+        resultSub25ControlsPanel.add(blueButton, "w 60!");
+        resultSub25ControlsPanel.add(blueLabel, "wrap");
         resultSub25ControlsPanel.add(generateColorImageButton, "align center, span");
         resultSub25ControlsPanel.add(colorImagesDisplayedListScrollPane, "align center, span, h 100!");
 
@@ -694,8 +721,8 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
         resultSub2ControlsPanel.add(removeAllImagesButton);
 
         resultControlsPanel.add(resultSub1ControlsPanel, BorderLayout.NORTH);
-        resultControlsPanel.add(resultSub25ControlsPanel, BorderLayout.CENTER);
-        resultControlsPanel.add(resultSub2ControlsPanel, BorderLayout.SOUTH);
+        resultControlsPanel.add(resultSub2ControlsPanel, BorderLayout.CENTER);
+        resultControlsPanel.add(resultSub25ControlsPanel, BorderLayout.SOUTH);
 
         resultsPanel.add(resultControlsPanel, BorderLayout.SOUTH);
 
@@ -837,6 +864,7 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
         for (String str : results)
         {
             formattedResults[i] = new String(
+                    (i+1) + ": " +
                     str.substring(23, 32)
                     + ", day: " + str.substring(10, 13) + "/" + str.substring(5, 9)
                     + ", type: " + str.substring(14, 20)
@@ -926,24 +954,64 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
         }
     }
 
-    public void valueChanged(ListSelectionEvent e)
+    private void showColorImage(ActionEvent e)
     {
-        if (e.getValueIsAdjusting() == false)
+        MSIColorImageCollection model = (MSIColorImageCollection)modelManager.getModel(ModelNames.MSI_COLOR_IMAGES);
+
+        if (redSelectedIndex >= 0 && greenSelectedIndex >=0 && blueSelectedIndex >= 0)
         {
-            int index = resultList.getSelectedIndex();
-            String name = msiRawResults.get(index).substring(23, 32);
-            if (redButton.isSelected())
-                redButton.setText("Red: " + name);
-            else if (greenButton.isSelected())
-                greenButton.setText("Green: " + name);
-            else if (blueButton.isSelected())
-                blueButton.setText("Blue: " + name);
+            String redImage = msiRawResults.get(redSelectedIndex);
+            MSIKey redKey = new MSIKey(redImage.substring(0,redImage.length()-4), msiSourceOfLastQuery);
+            String greenImage = msiRawResults.get(greenSelectedIndex);
+            MSIKey greenKey = new MSIKey(greenImage.substring(0,greenImage.length()-4), msiSourceOfLastQuery);
+            String blueImage = msiRawResults.get(blueSelectedIndex);
+            MSIKey blueKey = new MSIKey(blueImage.substring(0,blueImage.length()-4), msiSourceOfLastQuery);
+
+            MSIColorKey colorKey = new MSIColorKey(redKey, greenKey, blueKey);
+            try
+            {
+                model.addImage(colorKey);
+            }
+            catch (IOException e1)
+            {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+            }
+            catch (FitsException e1)
+            {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+            }
+            catch (NoOverlapException e1)
+            {
+                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
+                        "The 3 images you selected do not overlap.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
 
-    private void generateColorImage(ActionEvent e)
+    public void propertyChange(PropertyChangeEvent evt)
     {
-//        MSIImageCollection model = (MSIImageCollection)modelManager.getModel(ModelNames.MSI_IMAGES);
+        if (Properties.MODEL_PICKED.equals(evt.getPropertyName()))
+        {
+            PickEvent e = (PickEvent)evt.getNewValue();
+            Model model = modelManager.getModel(e.getPickedProp());
+            if (model instanceof MSIImageCollection || model instanceof MSIBoundaryCollection)
+            {
+                String name = null;
 
+                if (model instanceof MSIImageCollection)
+                    name = ((MSIImageCollection)model).getImageName((vtkActor)e.getPickedProp());
+                else if (model instanceof MSIBoundaryCollection)
+                    name = ((MSIBoundaryCollection)model).getBoundaryName((vtkActor)e.getPickedProp());
+
+                int idx = msiRawResults.indexOf(name + ".FIT");
+
+                resultList.setSelectionInterval(idx, idx);
+                resultList.scrollRectToVisible(resultList.getCellBounds(idx, idx));
+            }
+        }
     }
 }

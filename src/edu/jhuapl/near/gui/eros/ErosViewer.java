@@ -27,6 +27,7 @@ import edu.jhuapl.near.model.RegularPolygonModel;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.eros.LineamentModel;
 import edu.jhuapl.near.model.eros.MSIBoundaryCollection;
+import edu.jhuapl.near.model.eros.MSIColorImageCollection;
 import edu.jhuapl.near.model.eros.MSIImage;
 import edu.jhuapl.near.model.eros.MSIImageCollection;
 import edu.jhuapl.near.model.eros.MapletBoundaryCollection;
@@ -116,6 +117,7 @@ public class ErosViewer extends Viewer
         allModels.put(ModelNames.SMALL_BODY, erosModel);
         allModels.put(ModelNames.LINEAMENT, new LineamentModel());
         allModels.put(ModelNames.MSI_IMAGES, new MSIImageCollection(erosModel));
+        allModels.put(ModelNames.MSI_COLOR_IMAGES, new MSIColorImageCollection(erosModel));
         allModels.put(ModelNames.MSI_BOUNDARY, new MSIBoundaryCollection(erosModel));
         allModels.put(ModelNames.NIS_SPECTRA, new NISSpectraCollection(erosModel));
         allModels.put(ModelNames.NLR_DATA_BROWSE, new NLRBrowseDataCollection());

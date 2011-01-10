@@ -29,6 +29,7 @@ import vtk.vtkImageData;
 import vtk.vtkImageMapToColors;
 import vtk.vtkImageReslice;
 import vtk.vtkLookupTable;
+import vtk.vtkPointData;
 import vtk.vtkPoints;
 import vtk.vtkPolyData;
 import vtk.vtkPolyDataMapper;
@@ -922,54 +923,9 @@ public class MSIImage extends Model implements PropertyChangeListener
 
             footprint.DeepCopy(tmp);
 
-            // Generate the texture coordinates
-            int numberOfPoints = footprint.GetNumberOfPoints();
-
-            textureCoords.SetNumberOfComponents(2);
-            textureCoords.SetNumberOfTuples(numberOfPoints);
-
-            vtkPoints points = footprint.GetPoints();
-
-
-            double a = MathUtil.vsep(frustum1, frustum3);
-            double b = MathUtil.vsep(frustum1, frustum2);
-
-            double[] vec = new double[3];
-
-            for (int i=0; i<numberOfPoints; ++i)
-            {
-                double[] pt = points.GetPoint(i);
-
-                vec[0] = pt[0] - spacecraftPosition[0];
-                vec[1] = pt[1] - spacecraftPosition[1];
-                vec[2] = pt[2] - spacecraftPosition[2];
-                MathUtil.vhat(vec, vec);
-
-                double d1 = MathUtil.vsep(vec, frustum1);
-                double d2 = MathUtil.vsep(vec, frustum2);
-
-                double v = (d1*d1 + b*b - d2*d2) / (2.0*b);
-                double u = d1*d1 - v*v;
-                if (u <= 0.0)
-                    u = 0.0;
-                else
-                    u = Math.sqrt(u);
-
-                //System.out.println(v/b + " " + u/a + " " + d1 + " " + d2);
-
-                v = v/b;
-                u = u/a;
-
-                if (v < 0.0) v = 0.0;
-                if (v > 1.0) v = 1.0;
-                if (u < 0.0) u = 0.0;
-                if (u > 1.0) u = 1.0;
-
-                textureCoords.SetTuple2(i, v, u);
-            }
-
-
-            footprint.GetPointData().SetTCoords(textureCoords);
+            vtkPointData pointData = footprint.GetPointData();
+            pointData.SetTCoords(textureCoords);
+            PolyDataUtil.generateTextureCoordinates(getFrustum(), footprint);
         }
         else
         {
@@ -1610,4 +1566,5 @@ public class MSIImage extends Model implements PropertyChangeListener
     {
         return new Frustum(spacecraftPosition, frustum1, frustum3, frustum4, frustum2);
     }
+
 }

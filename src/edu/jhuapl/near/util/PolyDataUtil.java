@@ -47,10 +47,13 @@ public class PolyDataUtil
             ArrayList<Frustum> frustums)
     {
         Frustum f = frustums.get(0);
-        polyData = computeFrustumIntersection(polyData, locator, pointLocator, f.origin, f.ul, f.ur, f.lr, f.ll);
+        polyData = computeFrustumIntersection(polyData, locator, pointLocator, f.origin, f.ul, f.ur, f.ll, f.lr);
 
         for ( int i=1; i<frustums.size(); ++i)
         {
+            if (polyData == null || polyData.GetNumberOfPoints() == 0 || polyData.GetNumberOfCells() == 0)
+                return null;
+
             locator = new vtksbCellLocator();
             pointLocator = new vtkPointLocator();
 
@@ -65,7 +68,7 @@ public class PolyDataUtil
             pointLocator.BuildLocator();
 
             f = frustums.get(i);
-            polyData = computeFrustumIntersection(polyData, locator, pointLocator, f.origin, f.ul, f.ur, f.lr, f.ll);
+            polyData = computeFrustumIntersection(polyData, locator, pointLocator, f.origin, f.ul, f.ur, f.ll, f.lr);
         }
 
         return polyData;
@@ -1329,6 +1332,79 @@ public class PolyDataUtil
             pointValue /= (double)numberOfCells;
 
             pointScalars.SetTuple1(i, pointValue);
+        }
+    }
+
+    /**
+     * Given a frustum and a polydata footprint, generate texture coordinates for all points in
+     * the polydata assuming an image acquired with that frustum is texture mapped to it.
+     *
+     * @param frustum
+     * @param polyData
+     */
+    static public void generateTextureCoordinates(Frustum frustum, vtkPolyData footprint)
+    {
+        int numberOfPoints = footprint.GetNumberOfPoints();
+
+        double[] spacecraftPosition = frustum.origin;
+        double[] frustum1 = frustum.ul;
+        double[] frustum3 = frustum.ur;
+        double[] frustum2 = frustum.lr;
+
+        vtkPointData pointData = footprint.GetPointData();
+        vtkDataArray textureCoordinates = pointData.GetTCoords();
+        vtkFloatArray textureCoords = null;
+
+        if (textureCoordinates != null && textureCoordinates instanceof vtkFloatArray)
+        {
+            textureCoords = (vtkFloatArray)textureCoordinates;
+        }
+        else
+        {
+            textureCoords = new vtkFloatArray();
+            pointData.SetTCoords(textureCoords);
+        }
+
+        textureCoords.SetNumberOfComponents(2);
+        textureCoords.SetNumberOfTuples(numberOfPoints);
+
+        vtkPoints points = footprint.GetPoints();
+
+        double a = MathUtil.vsep(frustum1, frustum3);
+        double b = MathUtil.vsep(frustum1, frustum2);
+
+        double[] vec = new double[3];
+
+        for (int i=0; i<numberOfPoints; ++i)
+        {
+            double[] pt = points.GetPoint(i);
+
+            vec[0] = pt[0] - spacecraftPosition[0];
+            vec[1] = pt[1] - spacecraftPosition[1];
+            vec[2] = pt[2] - spacecraftPosition[2];
+            MathUtil.vhat(vec, vec);
+
+            double d1 = MathUtil.vsep(vec, frustum1);
+            double d2 = MathUtil.vsep(vec, frustum2);
+
+            double v = (d1*d1 + b*b - d2*d2) / (2.0*b);
+            double u = d1*d1 - v*v;
+            if (u <= 0.0)
+                u = 0.0;
+            else
+                u = Math.sqrt(u);
+
+            //System.out.println(v/b + " " + u/a + " " + d1 + " " + d2);
+
+            v = v/b;
+            u = u/a;
+
+            if (v < 0.0) v = 0.0;
+            if (v > 1.0) v = 1.0;
+            if (u < 0.0) u = 0.0;
+            if (u > 1.0) u = 1.0;
+
+            textureCoords.SetTuple2(i, v, u);
         }
     }
 }
