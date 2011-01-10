@@ -1,8 +1,5 @@
 package edu.jhuapl.near.popupmenus;
 
-import java.util.HashMap;
-
-import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 
@@ -14,33 +11,18 @@ import edu.jhuapl.near.model.ModelNames;
  */
 public class GenericPopupManager extends PopupManager
 {
-    private LinesPopupMenu linesPopupMenu;
-    private CirclesPopupMenu circlesPopupMenu;
-    private PointsPopupMenu pointsPopupMenu;
-
-    private HashMap<Model, PopupMenu> modelToPopupMap =
-        new HashMap<Model, PopupMenu>();
-
     public GenericPopupManager(
             ModelManager modelManager)
     {
         super(modelManager);
 
-        linesPopupMenu =
-            new LinesPopupMenu(modelManager);
-        modelToPopupMap.put(modelManager.getModel(ModelNames.LINE_STRUCTURES), linesPopupMenu);
+        PopupMenu popupMenu = new LinesPopupMenu(modelManager);
+        registerPopup(modelManager.getModel(ModelNames.LINE_STRUCTURES), popupMenu);
 
-        circlesPopupMenu =
-            new CirclesPopupMenu(modelManager);
-        modelToPopupMap.put(modelManager.getModel(ModelNames.CIRCLE_STRUCTURES), circlesPopupMenu);
+        popupMenu = new CirclesPopupMenu(modelManager);
+        registerPopup(modelManager.getModel(ModelNames.CIRCLE_STRUCTURES), popupMenu);
 
-        pointsPopupMenu =
-            new PointsPopupMenu(modelManager);
-        modelToPopupMap.put(modelManager.getModel(ModelNames.POINT_STRUCTURES), pointsPopupMenu);
-    }
-
-    protected HashMap<Model, PopupMenu> getModelToPopupMap()
-    {
-        return modelToPopupMap;
+        popupMenu = new PointsPopupMenu(modelManager);
+        registerPopup(modelManager.getModel(ModelNames.POINT_STRUCTURES), popupMenu);
     }
 }
