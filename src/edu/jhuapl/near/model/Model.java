@@ -71,6 +71,16 @@ public abstract class Model
         // Do nothing
     }
 
+    public void setPolygonOffset(double offset)
+    {
+
+    }
+
+    public double getPolygonOffset()
+    {
+        return 0.0;
+    }
+
     public String getName()
     {
         return name;
