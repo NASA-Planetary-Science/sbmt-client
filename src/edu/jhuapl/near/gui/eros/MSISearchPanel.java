@@ -10,6 +10,7 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.PropertyChangeEvent;
@@ -23,6 +24,7 @@ import java.util.TreeSet;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -68,6 +70,7 @@ import edu.jhuapl.near.model.eros.MSIImage.MSIKey;
 import edu.jhuapl.near.pick.PickEvent;
 import edu.jhuapl.near.pick.PickManager;
 import edu.jhuapl.near.pick.PickManager.PickMode;
+import edu.jhuapl.near.popupmenus.eros.MSIColorPopupMenu;
 import edu.jhuapl.near.popupmenus.eros.MSIPopupMenu;
 import edu.jhuapl.near.query.Query;
 import edu.jhuapl.near.util.IdPair;
@@ -145,10 +148,16 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
     private JButton redButton;
     private JButton greenButton;
     private JButton blueButton;
+    private JLabel redLabel;
+    private JLabel greenLabel;
+    private JLabel blueLabel;
     private JButton generateColorImageButton;
-    private int redSelectedIndex = -1;
-    private int greenSelectedIndex = -1;
-    private int blueSelectedIndex = -1;
+    private MSIKey selectedRedKey;
+    private MSIKey selectedGreenKey;
+    private MSIKey selectedBlueKey;
+    private JList colorImagesDisplayedList;
+    private JButton removeColorImageButton;
+    private MSIColorPopupMenu msiColorPopupMenu;
 
     /**
      * The source of the msi images of the most recently executed query
@@ -597,19 +606,18 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
         // setup color image generation controls
 
         JPanel resultSub25ControlsPanel = new JPanel();
-        //resultSub25ControlsPanel.setBorder(BorderFactory.createTitledBorder("Generate Color Images"));
         resultSub25ControlsPanel.setLayout(new MigLayout());
         JSeparator separator = new JSeparator(SwingConstants.HORIZONTAL);
-        JLabel colorImagelabel = new JLabel("Color Images");
+        JLabel colorImagelabel = new JLabel("Color Image Generation");
         redButton = new JButton("Red");
         redButton.setBackground(Color.RED);
-        final JLabel redLabel = new JLabel();
+        redLabel = new JLabel();
         greenButton = new JButton("Green");
         greenButton.setBackground(Color.GREEN);
-        final JLabel greenLabel = new JLabel();
+        greenLabel = new JLabel();
         blueButton = new JButton("Blue");
         blueButton.setBackground(Color.BLUE);
-        final JLabel blueLabel = new JLabel();
+        blueLabel = new JLabel();
 
         ActionListener colorButtonsListener = new ActionListener()
         {
@@ -618,21 +626,23 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
                 int index = resultList.getSelectedIndex();
                 if (index >= 0)
                 {
-                    String name = msiRawResults.get(index).substring(23, 32);
+                    String image = msiRawResults.get(index);
+                    String name = image.substring(23, 32);
+                    image = image.substring(0,image.length()-4);
                     if (e.getSource() == redButton)
                     {
                         redLabel.setText(name);
-                        redSelectedIndex = index;
+                        selectedRedKey = new MSIKey(image, msiSourceOfLastQuery);
                     }
                     else if (e.getSource() == greenButton)
                     {
                         greenLabel.setText(name);
-                        greenSelectedIndex = index;
+                        selectedGreenKey = new MSIKey(image, msiSourceOfLastQuery);
                     }
                     else if (e.getSource() == blueButton)
                     {
                         blueLabel.setText(name);
-                        blueSelectedIndex = index;
+                        selectedBlueKey = new MSIKey(image, msiSourceOfLastQuery);
                     }
                 }
             }
@@ -651,13 +661,66 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
             }
         });
 
-        JList colorImagesDisplayedList = new JList();
+        msiColorPopupMenu = new MSIColorPopupMenu(this.modelManager, infoPanelManager);
+
+        colorImagesDisplayedList = new JList();
+        colorImagesDisplayedList.setModel(new DefaultListModel());
         colorImagesDisplayedList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        colorImagesDisplayedList.addMouseListener(this);
 
         JScrollPane colorImagesDisplayedListScrollPane = new JScrollPane(colorImagesDisplayedList);
-        //colorImagesDisplayedListScrollPane.setPreferredSize(new Dimension(200, 100));
+        colorImagesDisplayedListScrollPane.setPreferredSize(new Dimension(300, 100));
+        colorImagesDisplayedList.addMouseListener(new MouseAdapter()
+        {
+            public void mousePressed(MouseEvent e)
+            {
+                maybeShowPopup(e);
+            }
 
+            public void mouseReleased(MouseEvent e)
+            {
+                maybeShowPopup(e);
+            }
+
+            private void maybeShowPopup(MouseEvent e)
+            {
+                if (e.isPopupTrigger())
+                {
+                    int index = colorImagesDisplayedList.locationToIndex(e.getPoint());
+
+                    if (index >= 0 && colorImagesDisplayedList.getCellBounds(index, index).contains(e.getPoint()))
+                    {
+                        colorImagesDisplayedList.setSelectedIndex(index);
+                        MSIColorKey colorKey = (MSIColorKey)((DefaultListModel)colorImagesDisplayedList.getModel()).get(index);
+                        msiColorPopupMenu.setCurrentImage(colorKey);
+                        msiColorPopupMenu.show(e.getComponent(), e.getX(), e.getY());
+                    }
+                }
+            }
+        });
+
+        removeColorImageButton = new JButton("Remove");
+        removeColorImageButton.setActionCommand("Remove");
+        removeColorImageButton.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                int index = colorImagesDisplayedList.getSelectedIndex();
+                if (index >= 0)
+                {
+                    MSIColorKey colorKey = (MSIColorKey)((DefaultListModel)colorImagesDisplayedList.getModel()).remove(index);
+                    MSIColorImageCollection model = (MSIColorImageCollection)modelManager.getModel(ModelNames.MSI_COLOR_IMAGES);
+                    model.removeImage(colorKey);
+
+                    // Select the element in its place (unless it's the last one in which case
+                    // select the previous one)
+                    if (index >= colorImagesDisplayedList.getModel().getSize())
+                        --index;
+                    if (index >= 0)
+                        colorImagesDisplayedList.setSelectionInterval(index, index);
+                }
+            }
+        });
+        removeColorImageButton.setEnabled(true);
 
         resultSub25ControlsPanel.add(separator, "growx, span, wrap, gaptop 10");
         resultSub25ControlsPanel.add(colorImagelabel, "span, wrap");
@@ -669,6 +732,7 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
         resultSub25ControlsPanel.add(blueLabel, "wrap");
         resultSub25ControlsPanel.add(generateColorImageButton, "align center, span");
         resultSub25ControlsPanel.add(colorImagesDisplayedListScrollPane, "align center, span, h 100!");
+        resultSub25ControlsPanel.add(removeColorImageButton, "align center, span");
 
 
         //------------------------------------------------------
@@ -958,19 +1022,27 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
     {
         MSIColorImageCollection model = (MSIColorImageCollection)modelManager.getModel(ModelNames.MSI_COLOR_IMAGES);
 
-        if (redSelectedIndex >= 0 && greenSelectedIndex >=0 && blueSelectedIndex >= 0)
+        if (selectedRedKey != null && selectedGreenKey != null && selectedBlueKey != null)
         {
-            String redImage = msiRawResults.get(redSelectedIndex);
-            MSIKey redKey = new MSIKey(redImage.substring(0,redImage.length()-4), msiSourceOfLastQuery);
-            String greenImage = msiRawResults.get(greenSelectedIndex);
-            MSIKey greenKey = new MSIKey(greenImage.substring(0,greenImage.length()-4), msiSourceOfLastQuery);
-            String blueImage = msiRawResults.get(blueSelectedIndex);
-            MSIKey blueKey = new MSIKey(blueImage.substring(0,blueImage.length()-4), msiSourceOfLastQuery);
-
-            MSIColorKey colorKey = new MSIColorKey(redKey, greenKey, blueKey);
+            MSIColorKey colorKey = new MSIColorKey(selectedRedKey, selectedGreenKey, selectedBlueKey);
             try
             {
-                model.addImage(colorKey);
+                DefaultListModel listModel = (DefaultListModel)colorImagesDisplayedList.getModel();
+                if (!model.containsImage(colorKey))
+                {
+                    model.addImage(colorKey);
+
+                    listModel.addElement(colorKey);
+                    int idx = listModel.size()-1;
+                    colorImagesDisplayedList.setSelectionInterval(idx, idx);
+                    colorImagesDisplayedList.scrollRectToVisible(colorImagesDisplayedList.getCellBounds(idx, idx));
+                }
+                else
+                {
+                    int idx = listModel.indexOf(colorKey);
+                    colorImagesDisplayedList.setSelectionInterval(idx, idx);
+                    colorImagesDisplayedList.scrollRectToVisible(colorImagesDisplayedList.getCellBounds(idx, idx));
+                }
             }
             catch (IOException e1)
             {
@@ -991,6 +1063,16 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
             }
         }
     }
+
+//    private void resetColorImageSelection()
+//    {
+//        selectedRedKey = null;
+//        selectedGreenKey = null;
+//        selectedBlueKey = null;
+//        redLabel.setText("");
+//        greenLabel.setText("");
+//        blueLabel.setText("");
+//    }
 
     public void propertyChange(PropertyChangeEvent evt)
     {

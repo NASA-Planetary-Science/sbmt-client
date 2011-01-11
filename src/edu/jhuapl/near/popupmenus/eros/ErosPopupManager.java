@@ -34,6 +34,9 @@ public class ErosPopupManager extends PopupManager
         popupMenu = new MSIPopupMenu(modelManager, infoPanelManager, erosRenderer, erosRenderer);
         registerPopup(modelManager.getModel(ModelNames.MSI_IMAGES), popupMenu);
 
+        popupMenu = new MSIColorPopupMenu(modelManager, infoPanelManager);
+        registerPopup(modelManager.getModel(ModelNames.MSI_COLOR_IMAGES), popupMenu);
+
         popupMenu = new NISPopupMenu(modelManager, infoPanelManager);
         registerPopup(modelManager.getModel(ModelNames.NIS_SPECTRA), popupMenu);
 

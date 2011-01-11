@@ -16,21 +16,20 @@ import vtk.vtkProp;
 import edu.jhuapl.near.gui.ModelInfoWindowManager;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
-import edu.jhuapl.near.model.eros.MSIBoundaryCollection;
-import edu.jhuapl.near.model.eros.MSIImage;
-import edu.jhuapl.near.model.eros.MSIImageCollection;
-import edu.jhuapl.near.model.eros.MSIBoundaryCollection.Boundary;
-import edu.jhuapl.near.model.eros.MSIImage.MSIKey;
+import edu.jhuapl.near.model.eros.MSIColorImage;
+import edu.jhuapl.near.model.eros.MSIColorImageCollection;
+import edu.jhuapl.near.model.eros.MSIColorImage.MSIColorKey;
+import edu.jhuapl.near.model.eros.MSIColorImage.NoOverlapException;
 import edu.jhuapl.near.popupmenus.PopupMenu;
 
 
 public class MSIColorPopupMenu extends PopupMenu
 {
     private ModelManager modelManager;
-    private MSIKey msiKey;
+    private MSIColorKey msiKey;
     private JMenuItem showRemoveImageIn3DMenuItem;
     private JMenuItem showImageInfoMenuItem;
-    private ModelInfoWindowManager infoPanelManager;
+//    private ModelInfoWindowManager infoPanelManager;
 
     /**
      *
@@ -44,22 +43,22 @@ public class MSIColorPopupMenu extends PopupMenu
             ModelInfoWindowManager infoPanelManager)
     {
         this.modelManager = modelManager;
-        this.infoPanelManager = infoPanelManager;
+//        this.infoPanelManager = infoPanelManager;
 
         showRemoveImageIn3DMenuItem = new JCheckBoxMenuItem(new ShowRemoveIn3DAction());
-        showRemoveImageIn3DMenuItem.setText("Show Image");
+        showRemoveImageIn3DMenuItem.setText("Show Color Image");
         this.add(showRemoveImageIn3DMenuItem);
 
-        if (this.infoPanelManager != null)
-        {
-            showImageInfoMenuItem = new JMenuItem(new ShowInfoAction());
-            showImageInfoMenuItem.setText("Properties...");
-            this.add(showImageInfoMenuItem);
-        }
+//        if (this.infoPanelManager != null)
+//        {
+//            showImageInfoMenuItem = new JMenuItem(new ShowInfoAction());
+//            showImageInfoMenuItem.setText("Properties...");
+//            this.add(showImageInfoMenuItem);
+//        }
 
     }
 
-    public void setCurrentImage(MSIKey key)
+    public void setCurrentImage(MSIColorKey key)
     {
         msiKey = key;
 
@@ -68,7 +67,7 @@ public class MSIColorPopupMenu extends PopupMenu
 
     private void updateMenuItems()
     {
-        MSIImageCollection msiImages = (MSIImageCollection)modelManager.getModel(ModelNames.MSI_IMAGES);
+        MSIColorImageCollection msiImages = (MSIColorImageCollection)modelManager.getModel(ModelNames.MSI_COLOR_IMAGES);
 
         boolean containsImage = msiImages.containsImage(msiKey);
 
@@ -83,7 +82,7 @@ public class MSIColorPopupMenu extends PopupMenu
     {
         public void actionPerformed(ActionEvent e)
         {
-            MSIImageCollection model = (MSIImageCollection)modelManager.getModel(ModelNames.MSI_IMAGES);
+            MSIColorImageCollection model = (MSIColorImageCollection)modelManager.getModel(ModelNames.MSI_COLOR_IMAGES);
             try
             {
                 if (showRemoveImageIn3DMenuItem.isSelected())
@@ -99,30 +98,33 @@ public class MSIColorPopupMenu extends PopupMenu
             catch (IOException e1) {
                 e1.printStackTrace();
             }
-        }
-    }
-
-    private class ShowInfoAction extends AbstractAction
-    {
-        public void actionPerformed(ActionEvent e)
-        {
-            try
-            {
-                MSIImageCollection msiImages = (MSIImageCollection)modelManager.getModel(ModelNames.MSI_IMAGES);
-                msiImages.addImage(msiKey);
-                infoPanelManager.addData(msiImages.getImage(msiKey));
-
-                updateMenuItems();
-            }
-            catch (FitsException e1) {
-                e1.printStackTrace();
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            } catch (Exception e1) {
+            catch (NoOverlapException e1) {
                 e1.printStackTrace();
             }
         }
     }
+
+//    private class ShowInfoAction extends AbstractAction
+//    {
+//        public void actionPerformed(ActionEvent e)
+//        {
+//            try
+//            {
+//                MSIColorImageCollection msiImages = (MSIColorImageCollection)modelManager.getModel(ModelNames.MSI_COLOR_IMAGES);
+//                msiImages.addImage(msiKey);
+//                infoPanelManager.addData(msiImages.getImage(msiKey));
+//
+//                updateMenuItems();
+//            }
+//            catch (FitsException e1) {
+//                e1.printStackTrace();
+//            } catch (IOException e1) {
+//                e1.printStackTrace();
+//            } catch (Exception e1) {
+//                e1.printStackTrace();
+//            }
+//        }
+//    }
 
 
     public void showPopup(MouseEvent e, vtkProp pickedProp, int pickedCellId,
@@ -130,17 +132,10 @@ public class MSIColorPopupMenu extends PopupMenu
     {
         if (pickedProp instanceof vtkActor)
         {
-            if (modelManager.getModel(pickedProp) instanceof MSIBoundaryCollection)
+            if (modelManager.getModel(pickedProp) instanceof MSIColorImageCollection)
             {
-                MSIBoundaryCollection msiBoundaries = (MSIBoundaryCollection)modelManager.getModel(ModelNames.MSI_BOUNDARY);
-                Boundary boundary = msiBoundaries.getBoundary((vtkActor)pickedProp);
-                setCurrentImage(boundary.getKey());
-                show(e.getComponent(), e.getX(), e.getY());
-            }
-            else if (modelManager.getModel(pickedProp) instanceof MSIImageCollection)
-            {
-                MSIImageCollection msiImages = (MSIImageCollection)modelManager.getModel(ModelNames.MSI_IMAGES);
-                MSIImage image = msiImages.getImage((vtkActor)pickedProp);
+                MSIColorImageCollection msiImages = (MSIColorImageCollection)modelManager.getModel(ModelNames.MSI_COLOR_IMAGES);
+                MSIColorImage image = msiImages.getImage((vtkActor)pickedProp);
                 setCurrentImage(image.getKey());
                 show(e.getComponent(), e.getX(), e.getY());
             }

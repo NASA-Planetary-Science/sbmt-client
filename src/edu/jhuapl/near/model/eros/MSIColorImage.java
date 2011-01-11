@@ -70,6 +70,15 @@ public class MSIColorImage extends Model implements PropertyChangeListener
             greenImageKey.equals(((MSIColorKey)obj).greenImageKey) &&
             blueImageKey.equals(((MSIColorKey)obj).blueImageKey);
         }
+
+        @Override
+        public String toString()
+        {
+            return
+            "R: " + redImageKey.name.substring(23, 32) + ", " +
+            "G: " + greenImageKey.name.substring(23, 32) + ", " +
+            "B: " + blueImageKey.name.substring(23, 32);
+        }
     }
 
 //    private MSIImage getImageFromKey(MSIImage.MSIKey msiKey) throws FitsException, IOException
