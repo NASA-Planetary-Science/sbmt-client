@@ -44,10 +44,6 @@
  
  - replace joda time with orekit's time handling. Will require regenerating the databases
  
- - if an msi image was shown and then removed and then the resolution level changes, the msi
-   image not being shown will still recompute itself for the new resolution level. Prevent this
-   from happening.
-   
  - reduce memory usage, especially when large models are shown.
  
  - improve speed of intersecting a frustum with the asteroid, especially important for
@@ -66,8 +62,6 @@
  - fix crash which occurs sometimes if you click with mouse on the renderer while
    a resolution change is taking place
    
- - in backplane generation, add the elevation, slope, etc values as new planes
- 
  - for people using macs, the width of the control panel is too narrow
  
  - use interpolation within a plate for the elevation, slope etc. (similar to smooth shading)
@@ -131,13 +125,6 @@
    	...
    	...
    	
- - provide option (e.g. a checkbox) to show frustum in renderer for msi and nis footprints
- 
- - In SmallBodyModel replace the 4 coloring arrays with a hashmap that maps color names to
-   the coloring data. What if we eventually want to add a fifth coloring type?
-   
- - Consolidate all file choosers into a single class
-
  - In the Eros, Deimos, Itokawa, and Vesta tabs, show some statistics
    about the asteroid such as number of plates, points, volume,
    surface area, mean size of plate, bounding box etc.
@@ -151,3 +138,13 @@
    the left or right
     
  - add ability to temporary hide a given actor   
+ 
+ - Remove .FIT extension from results returned from MSI search (see getMSIPath in Query.java)
+   since not really needed (requires modification to all places that use it)
+   
+ - change layout of all tabs to use MigLayout especially MSI and NIS
+ 
+ 
+   
+ 
+ 
