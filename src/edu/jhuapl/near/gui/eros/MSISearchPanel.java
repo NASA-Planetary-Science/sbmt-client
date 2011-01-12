@@ -609,14 +609,20 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
         resultSub25ControlsPanel.setLayout(new MigLayout());
         JSeparator separator = new JSeparator(SwingConstants.HORIZONTAL);
         JLabel colorImagelabel = new JLabel("Color Image Generation");
+
+        String tooltip = "Select an image from the list above and then press this button";
+
         redButton = new JButton("Red");
         redButton.setBackground(Color.RED);
+        redButton.setToolTipText(tooltip);
         redLabel = new JLabel();
         greenButton = new JButton("Green");
         greenButton.setBackground(Color.GREEN);
+        greenButton.setToolTipText(tooltip);
         greenLabel = new JLabel();
         blueButton = new JButton("Blue");
         blueButton.setBackground(Color.BLUE);
+        blueButton.setToolTipText(tooltip);
         blueLabel = new JLabel();
 
         ActionListener colorButtonsListener = new ActionListener()
