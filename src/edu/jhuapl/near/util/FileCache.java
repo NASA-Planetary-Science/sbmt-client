@@ -18,19 +18,37 @@ public class FileCache
     private static volatile boolean abortDownload = false;
     private static volatile double downloadProgress = 0.0;
 
+    /**
+     * Information returned about a remote file on the server
+     *
+     * @author kahneg1
+     *
+     */
     public static class FileInfo
     {
+        // The location on disk of the file if actually downloaded or the location the file
+        // would have if downloaded.
         public File file = null;
+
+        // If the the file was not actually downloaded, this variable stores whether it
+        // needs to be downloaded (i.e. if it is out of date)
         public boolean needToDownload = false;
+
+        // The number of bytes in the file (regardless if actually downloaded)
         public long length = -1;
     }
 
     /**
-     * This function retrieves the specifed file from the server and places it
-     * in the cache. It first checks the cache to see if the file is already
-     * there. The cache mirrors the file hierarchy on the server.
+     * This function is used to both download a file from a server as well as to
+     * check if the file is out of data and needs to be downloaded. This depends
+     * on the doDownloadIfNeeded parameter. If set to true it will download
+     * the file if needed using the rules described below. If false, nothing
+     * will be downloaded, but the server will be queried to see if a newer
+     * version exists.
      *
-     * The rules for determining whether or not we download the file from the
+     * If the file is requested to be actually downloaded from server it is placed
+     * in the cache when downloaded so it does not need to be downloaded a second time.
+     * The precise rules for determining whether or not we download the file from the
      * server or use the file already in the cache are as follows:
      *
      * - If the file does not exist in the cache, download it. - If the file
@@ -43,6 +61,8 @@ public class FileCache
      * cached file. - If there was a failure connecting to the server simply
      * return the file if it exists in the cache. - If the file could not be
      * retrieved for any reason, null is returned.
+     *
+     * Note the cache mirrors the file hierarchy on the server.
      *
      * @param path
      * @return
@@ -124,11 +144,24 @@ public class FileCache
         }
     }
 
+    /**
+     * Get information about the file on the server without actually downloading.
+     *
+     * @param path
+     * @return
+     */
     static public FileInfo getFileInfoFromServer(String path)
     {
         return getFileInfoFromServer(path, false);
     }
 
+    /**
+     * Get (download) the file from the server. Place it in the cache for
+     * future access.
+     *
+     * @param path
+     * @return
+     */
     static public File getFileFromServer(String path)
     {
         FileInfo fi = getFileInfoFromServer(path, true);
