@@ -6,13 +6,24 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.HashSet;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.zip.GZIPInputStream;
 
 public class FileCache
 {
     // Stores files already downloaded in this process
-    private static HashSet<String> downloadedFiles = new HashSet<String>();
+    private static ConcurrentHashMap<String, Object> downloadedFiles =
+        new ConcurrentHashMap<String, Object>();
+
+    private static volatile boolean abortDownload = false;
+    private static volatile double downloadProgress = 0.0;
+
+    public static class FileInfo
+    {
+        public File file = null;
+        public boolean needToDownload = false;
+        public long length = -1;
+    }
 
     /**
      * This function retrieves the specifed file from the server and places it
@@ -36,8 +47,10 @@ public class FileCache
      * @param path
      * @return
      */
-    static public File getFileFromServer(String path)
+    static private FileInfo getFileInfoFromServer(String path, boolean doDownloadIfNeeded)
     {
+        FileInfo fi = new FileInfo();
+
         String unzippedPath = path;
         if (unzippedPath.toLowerCase().endsWith(".gz"))
             unzippedPath = unzippedPath.substring(0, unzippedPath.length() - 3);
@@ -45,11 +58,16 @@ public class FileCache
         File file = new File(Configuration.getCacheDir() + File.separator
                 + unzippedPath);
 
+        fi.file = file;
+
         // If we've already downloaded the file previously in this process,
         // simply return without making any network connections.
         boolean exists = file.exists();
-        if (exists && downloadedFiles.contains(path))
-            return file;
+        if (exists && downloadedFiles.containsKey(path))
+        {
+            fi.length = file.length();
+            return fi;
+        }
 
         // Open a connection the file on the server
         try
@@ -61,13 +79,31 @@ public class FileCache
 
             if (exists && file.lastModified() >= urlLastModified)
             {
-                return file;
+                fi.length = file.length();
+                return fi;
             }
             else
             {
-                file = addToCache(path, conn.getInputStream(), urlLastModified);
-                downloadedFiles.add(path);
-                return file;
+                if (doDownloadIfNeeded)
+                {
+                    file = addToCache(path, conn.getInputStream(), urlLastModified, conn.getContentLength());
+                    if (file != null) // file can be null if the user aborted the download
+                    {
+                        downloadedFiles.put(path, "");
+                        fi.length = file.length();
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                }
+                else
+                {
+                    fi.needToDownload = true;
+                    fi.length = conn.getContentLength();
+                }
+
+                return fi;
             }
         }
         catch (IOException e)
@@ -78,19 +114,38 @@ public class FileCache
         // If something happens that we reach here, simply return the file if it
         // exists.
         if (exists)
-            return file;
+        {
+            fi.length = file.length();
+            return fi;
+        }
+        else
+        {
+            return null;
+        }
+    }
+
+    static public FileInfo getFileInfoFromServer(String path)
+    {
+        return getFileInfoFromServer(path, false);
+    }
+
+    static public File getFileFromServer(String path)
+    {
+        FileInfo fi = getFileInfoFromServer(path, true);
+        if (fi != null)
+            return fi.file;
         else
             return null;
     }
 
+
     /**
      * When adding to the cache, gzipped files are always uncompressed and saved
      * without the ".gz" extension.
-     * Zip files are also unzipped, but the original zip file is NOT deleted.
      *
      * @throws IOException
      */
-    static private File addToCache(String path, InputStream is, long urlLastModified) throws IOException
+    static private File addToCache(String path, InputStream is, long urlLastModified, long contentLength) throws IOException
     {
         if (path.toLowerCase().endsWith(".gz"))
             is = new GZIPInputStream(is);
@@ -103,21 +158,45 @@ public class FileCache
         // during a download, the file will not be used when the program is restarted.
         // After the download is successful, rename the file to the correct name.
         String realFilename = Configuration.getCacheDir() + File.separator + path;
-        File file = new File(realFilename + ".sbmt_tool");
+        File file = new File(realFilename + getTemporarySuffix());
 
         file.getParentFile().mkdirs();
 
         FileOutputStream os = new FileOutputStream(file);
 
-        byte[] buff = new byte[2048];
+        abortDownload = false;
+        boolean downloadAborted = false;
+        downloadProgress = 0.0;
+
+        int amountDownloadedSoFar = 0;
+
+        final int bufferSize = 2048;
+        byte[] buff = new byte[bufferSize];
         int len;
         while((len = is.read(buff)) > 0)
         {
+            amountDownloadedSoFar += len;
+            downloadProgress = 100.0 * (double)amountDownloadedSoFar / (double)contentLength;
+
+            if (abortDownload)
+            {
+                downloadAborted = true;
+                break;
+            }
+
             os.write(buff, 0, len);
         }
 
         os.close();
         is.close();
+
+        downloadProgress = 100.0;
+
+        if (downloadAborted)
+        {
+            file.delete();
+            return null;
+        }
 
         // Change the modified time of the file to that of the server.
         if (urlLastModified > 0)
@@ -136,5 +215,25 @@ public class FileCache
             realFile.setLastModified(urlLastModified);
 
         return realFile;
+    }
+
+    static public String getTemporarySuffix()
+    {
+        return FileUtil.getTemporarySuffix();
+    }
+
+    static public void abortDownload()
+    {
+        abortDownload = true;
+    }
+
+    static public double getDownloadProgess()
+    {
+        return downloadProgress;
+    }
+
+    static public void resetDownloadProgess()
+    {
+        downloadProgress = 0.0;
     }
 }

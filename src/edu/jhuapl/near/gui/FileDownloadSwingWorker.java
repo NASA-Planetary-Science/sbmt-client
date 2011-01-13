@@ -4,7 +4,7 @@ import java.awt.Component;
 import java.io.File;
 import java.text.DecimalFormat;
 
-import edu.jhuapl.near.util.FileCacheNew;
+import edu.jhuapl.near.util.FileCache;
 import edu.jhuapl.near.util.FileUtil;
 
 
@@ -22,12 +22,12 @@ public class FileDownloadSwingWorker extends ProgressBarSwingWorker
 
     public boolean getIfNeedToDownload()
     {
-        return FileCacheNew.getFileInfoFromServer(filename).needToDownload;
+        return FileCache.getFileInfoFromServer(filename).needToDownload;
     }
 
     public boolean getIfNeedToUnzip()
     {
-        String zipfile = FileCacheNew.getFileInfoFromServer(filename).file.getAbsolutePath();
+        String zipfile = FileCache.getFileInfoFromServer(filename).file.getAbsolutePath();
         File zipRootFolder = new File(zipfile.substring(0, zipfile.length()-4));
 
         return !zipRootFolder.exists() && zipfile.endsWith(".zip");
@@ -42,7 +42,7 @@ public class FileDownloadSwingWorker extends ProgressBarSwingWorker
             return null;
 
         if (needToDownload)
-            FileCacheNew.resetDownloadProgess();
+            FileCache.resetDownloadProgess();
         if (needToUnzip)
             FileUtil.resetUnzipProgress();
 
@@ -50,7 +50,7 @@ public class FileDownloadSwingWorker extends ProgressBarSwingWorker
         {
             public void run()
             {
-                File file = FileCacheNew.getFileFromServer(filename);
+                File file = FileCache.getFileFromServer(filename);
 
                 if (file != null && needToUnzip)
                     FileUtil.unzipFile(file);
@@ -63,7 +63,7 @@ public class FileDownloadSwingWorker extends ProgressBarSwingWorker
         {
             while (downloadThread.isAlive() && !isCancelled())
             {
-                double downloadProgress = FileCacheNew.getDownloadProgess();
+                double downloadProgress = FileCache.getDownloadProgess();
                 double unzipProgress = FileUtil.getUnzipProgress();
                 if (downloadProgress < 100.0 && needToDownload)
                 {
@@ -89,7 +89,7 @@ public class FileDownloadSwingWorker extends ProgressBarSwingWorker
         if (isCancelled())
         {
             if (needToDownload)
-                FileCacheNew.abortDownload();
+                FileCache.abortDownload();
             if (needToUnzip)
                 FileUtil.abortUnzip();
         }
