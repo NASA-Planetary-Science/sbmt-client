@@ -15,6 +15,11 @@ abstract public class StructuresPopupMenu extends PopupMenu
     private ChangeColorAction changeColorAction;
     private int cellIdLastClicked = -1;
 
+    /**
+     * Should be called by subclasses to add menu items defined here.
+     *
+     * @param model
+     */
     protected void addMenuItems(StructureModel model)
     {
         changeColorAction = new ChangeColorAction(model);

@@ -37,17 +37,18 @@ public class Line extends StructureModel.Structure
 
     private static int maxId = 0;
 
-    public static String PATH = "path";
-    public static String ID = "id";
-    public static String NAME = "name";
-    public static String VERTICES = "vertices";
-    public static String LENGTH = "length";
+    public static final String PATH = "path";
+    public static final String ID = "id";
+    public static final String NAME = "name";
+    public static final String VERTICES = "vertices";
+    public static final String LENGTH = "length";
+    public static final String COLOR = "color";
 
     public Line(SmallBodyModel smallBodyModel)
     {
         this.smallBodyModel = smallBodyModel;
         id = ++maxId;
-        color = purpleColor;
+        color = (int[])purpleColor.clone();
     }
 
     public int getId()
@@ -91,6 +92,9 @@ public class Line extends StructureModel.Structure
         linEle.setAttribute(ID, String.valueOf(id));
         linEle.setAttribute(NAME, name);
         linEle.setAttribute(LENGTH, String.valueOf(getPathLength()));
+
+        String colorStr = color[0] + "," + color[1] + "," + color[2];
+        linEle.setAttribute(COLOR, colorStr);
 
         String vertices = "";
         int size = lat.size();
@@ -157,6 +161,13 @@ public class Line extends StructureModel.Structure
             ++count;
         }
 
+        tmp = element.getAttribute(COLOR);
+        if (tmp.length() == 0)
+            return;
+        tokens = tmp.split(",");
+        color[0] = Integer.parseInt(tokens[0]);
+        color[1] = Integer.parseInt(tokens[1]);
+        color[2] = Integer.parseInt(tokens[2]);
     }
 
     public String getClickStatusBarText()

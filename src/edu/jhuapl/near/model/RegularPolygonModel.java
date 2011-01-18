@@ -84,7 +84,7 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
             interiorPolyData = new vtkPolyData();
             this.numberOfSides = numberOfSides;
             this.type = type;
-            this.color = color;
+            this.color = (int[])color.clone();
         }
 
         public int getId()
@@ -119,7 +119,7 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
 
         public void setColor(int[] color)
         {
-            this.color = color;
+            this.color = (int[])color.clone();
         }
 
         public vtkPolyData getBoundaryPolyData()
@@ -201,7 +201,7 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
 
     public void setDefaultColor(int[] color)
     {
-        this.defaultColor = color;
+        this.defaultColor = (int[])color.clone();
     }
 
     public int[] getDefaultColor()
@@ -211,7 +211,7 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
 
     public void setPolygonColor(int i, int[] color)
     {
-        this.polygons.get(i).color  = color;
+        this.polygons.get(i).setColor(color);
     }
 
     public int[] getPolygonColor(int i)
@@ -228,7 +228,7 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
 
     public void setDefaultBoundaryColor(int[] color)
     {
-        this.defaultBoundaryColor = color;
+        this.defaultBoundaryColor = (int[])color.clone();
     }
 
     public int[] getDefaultInteriorColor()
@@ -238,7 +238,7 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
 
     public void setDefaultInteriorColor(int[] color)
     {
-        this.defaultInteriorColor = color;
+        this.defaultInteriorColor = (int[])color.clone();
     }
     */
 
@@ -506,7 +506,17 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
             if (pol.id > maxPolygonId)
                 maxPolygonId = pol.id;
 
-            // The remainder of the line (if there is one) is not used
+            // If there is more on the line, the last item is the color
+            if (words.length > 9)
+            {
+                String[] colorStr = words[words.length-1].split(",");
+                if (colorStr.length == 3)
+                {
+                    pol.color[0] = Integer.parseInt(colorStr[0]);
+                    pol.color[1] = Integer.parseInt(colorStr[1]);
+                    pol.color[2] = Integer.parseInt(colorStr[2]);
+                }
+            }
 
             pol.updatePolygon(smallBodyModel, pol.center, pol.radius);
             newPolygons.add(pol);
@@ -563,6 +573,9 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
                         str += "\t";
                 }
             }
+
+            str += "\t" + pol.color[0] + "," + pol.color[1] + "," + pol.color[2];
+
             str += "\n";
 
             out.write(str);

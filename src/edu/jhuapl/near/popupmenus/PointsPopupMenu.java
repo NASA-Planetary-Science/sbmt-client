@@ -12,7 +12,7 @@ import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.PointModel;
 
-public class PointsPopupMenu extends PopupMenu
+public class PointsPopupMenu extends StructuresPopupMenu
 {
     private int cellIdLastClicked = -1;
     private PointModel model;
@@ -20,6 +20,8 @@ public class PointsPopupMenu extends PopupMenu
     public PointsPopupMenu(ModelManager modelManager)
     {
         this.model = (PointModel)modelManager.getModel(ModelNames.POINT_STRUCTURES);
+
+        super.addMenuItems(model);
 
         JMenuItem mi;
         mi = new JMenuItem(new DeleteAction());
@@ -40,6 +42,11 @@ public class PointsPopupMenu extends PopupMenu
             double[] pickedPosition)
     {
         this.cellIdLastClicked = pickedCellId;
-        show(e.getComponent(), e.getX(), e.getY());
+
+        getChangeColorAction().setInvoker(e.getComponent());
+        int idx = model.getPolygonIdFromInteriorCellId(cellIdLastClicked);
+        getChangeColorAction().setStructureIndex(idx);
+
+       show(e.getComponent(), e.getX(), e.getY());
     }
 }

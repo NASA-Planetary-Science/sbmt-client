@@ -12,7 +12,7 @@ import edu.jhuapl.near.model.CircleModel;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 
-public class CirclesPopupMenu extends PopupMenu
+public class CirclesPopupMenu extends StructuresPopupMenu
 {
     private int cellIdLastClicked = -1;
     private CircleModel model = null;
@@ -20,6 +20,8 @@ public class CirclesPopupMenu extends PopupMenu
     public CirclesPopupMenu(ModelManager modelManager)
     {
         this.model = (CircleModel)modelManager.getModel(ModelNames.CIRCLE_STRUCTURES);
+
+        super.addMenuItems(model);
 
         JMenuItem mi;
         mi = new JMenuItem(new DeleteAction());
@@ -40,6 +42,11 @@ public class CirclesPopupMenu extends PopupMenu
             double[] pickedPosition)
     {
         this.cellIdLastClicked = pickedCellId;
+
+        getChangeColorAction().setInvoker(e.getComponent());
+        int idx = model.getPolygonIdFromBoundaryCellId(cellIdLastClicked);
+        getChangeColorAction().setStructureIndex(idx);
+
         show(e.getComponent(), e.getX(), e.getY());
     }
 }
