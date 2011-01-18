@@ -1,10 +1,14 @@
 package edu.jhuapl.near.gui;
 
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -18,11 +22,13 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JToggleButton;
 import javax.swing.ListSelectionModel;
+import javax.swing.border.Border;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -118,7 +124,8 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
         String[] columnNames = {"Id",
                 "Type",
                 "Name",
-                "Details"};
+                "Details",
+                "Color"};
 
         /*
         structuresList = new JList();
@@ -127,28 +134,20 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
         JScrollPane listScrollPane = new JScrollPane(structuresList);
         */
 
-        Object[][] data = new Object[0][4];
+        Object[][] data = new Object[0][5];
 
-        structuresTable = new JTable(new DefaultTableModel(data, columnNames)
-        {
-            public boolean isCellEditable(int row, int column)
-            {
-                if (column == 2)
-                    return true;
-                else
-                    return false;
-            }
-        });
-
+        structuresTable = new JTable(new StructuresTableModel(data, columnNames));
         structuresTable.setBorder(BorderFactory.createTitledBorder(""));
         //table.setPreferredScrollableViewportSize(new Dimension(500, 130));
         structuresTable.setColumnSelectionAllowed(false);
         structuresTable.setRowSelectionAllowed(true);
         structuresTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         structuresTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        structuresTable.setDefaultRenderer(Color.class, new ColorRenderer());
 //        structuresTable.getColumnModel().getColumn(0).setPreferredWidth(30);
         structuresTable.getModel().addTableModelListener(this);
         structuresTable.getSelectionModel().addListSelectionListener(this);
+        structuresTable.addMouseListener(new TableMouseHandler());
 
         JScrollPane tableScrollPane = new JScrollPane(structuresTable);
         tableScrollPane.setPreferredSize(new Dimension(10000, 10000));
@@ -344,10 +343,12 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
         for (int i=0; i<numStructures; ++i)
         {
             StructureModel.Structure structure = structureModel.getStructure(i);
-            structuresTable.setValueAt(structure.getId(), i, 0);
+            int[] c = structure.getColor();
+            structuresTable.setValueAt(String.valueOf(structure.getId()), i, 0);
             structuresTable.setValueAt(structure.getType(), i, 1);
             structuresTable.setValueAt(structure.getName(), i, 2);
             structuresTable.setValueAt(structure.getInfo(), i, 3);
+            structuresTable.setValueAt(new Color(c[0], c[1], c[2]), i, 4);
         }
     }
 
@@ -426,4 +427,102 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
             }
         }
     }
+
+    class ColorRenderer extends JLabel implements TableCellRenderer
+    {
+        private Border unselectedBorder = null;
+        private Border selectedBorder = null;
+
+        public ColorRenderer()
+        {
+            setOpaque(true); //MUST do this for background to show up.
+        }
+
+        public Component getTableCellRendererComponent(
+                JTable table, Object color,
+                boolean isSelected, boolean hasFocus,
+                int row, int column)
+        {
+            Color newColor = (Color)color;
+            setBackground(newColor);
+
+            if (isSelected)
+            {
+                if (selectedBorder == null)
+                {
+                    selectedBorder = BorderFactory.createMatteBorder(2,5,2,5,
+                                              table.getSelectionBackground());
+                }
+                setBorder(selectedBorder);
+            }
+            else
+            {
+                if (unselectedBorder == null)
+                {
+                    unselectedBorder = BorderFactory.createMatteBorder(2,5,2,5,
+                                              table.getBackground());
+                }
+                setBorder(unselectedBorder);
+            }
+
+            setToolTipText("RGB value: " + newColor.getRed() + ", "
+                    + newColor.getGreen() + ", "
+                    + newColor.getBlue());
+
+            return this;
+        }
+    }
+
+    class StructuresTableModel extends DefaultTableModel
+    {
+        public StructuresTableModel(Object[][] data, String[] columnNames)
+        {
+            super(data, columnNames);
+        }
+
+        public boolean isCellEditable(int row, int column)
+        {
+            if (column == 2)
+                return true;
+            else
+                return false;
+        }
+
+        public Class<?> getColumnClass(int columnIndex)
+        {
+            if (columnIndex == 4)
+                return Color.class;
+            else
+                return String.class;
+        }
+    }
+
+    class TableMouseHandler extends MouseAdapter
+    {
+        @Override
+        public void mouseClicked(MouseEvent e)
+        {
+            int row = structuresTable.rowAtPoint(e.getPoint());
+            int col = structuresTable.columnAtPoint(e.getPoint());
+
+            if (e.getClickCount() == 2 && row >= 0 && col == 4)
+            {
+                Color color = ColorChooser.showColorChooser(
+                        JOptionPane.getFrameForComponent(structuresTable),
+                        structureModel.getStructure(row).getColor());
+
+                if (color == null)
+                    return;
+
+                int[] c = new int[4];
+                c[0] = color.getRed();
+                c[1] = color.getGreen();
+                c[2] = color.getBlue();
+                c[3] = color.getAlpha();
+
+                structureModel.setStructureColor(row, c);
+            }
+        }
+    }
+
 }

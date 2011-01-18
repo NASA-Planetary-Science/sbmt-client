@@ -71,7 +71,9 @@ abstract public class StructuresPopupMenu extends PopupMenu
 
         public void actionPerformed(ActionEvent actionEvent)
         {
-            Color color = ColorChooser.showColorChooser(invoker);
+            Color color = ColorChooser.showColorChooser(
+                    invoker,
+                    structureModel.getStructure(structureIndex).getColor());
 
             if (color == null)
                 return;
