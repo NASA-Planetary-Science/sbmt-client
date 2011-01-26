@@ -24,6 +24,7 @@ public class HelpMenu extends JMenu
     public HelpMenu(JPanel rootPanel)
     {
         super("Help");
+        this.rootPanel = rootPanel;
 
         JMenuItem mi = new JMenuItem(new ShowHelpContentsAction());
         this.add(mi);
@@ -109,7 +110,7 @@ public class HelpMenu extends JMenu
             {
             }
 
-            JOptionPane.showMessageDialog(rootPanel,
+            JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(rootPanel),
                     "Small Body Mapping Tool\n" + versionString +
                     COPYRIGHT + " 2010 The Johns Hopkins University Applied Physics Laboratory\n",
                     "About Small Body Mapping Tool",

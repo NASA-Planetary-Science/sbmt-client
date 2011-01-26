@@ -276,7 +276,7 @@ public class TopoPanel extends JPanel implements ActionListener
 
     private void loadCubeFile()
     {
-        File file = CustomFileChooser.showOpenDialog(TopoPanel.this, "Load Cube File", "cub");
+        File file = CustomFileChooser.showOpenDialog(this, "Load Cube File", "cub");
         if (file == null)
         {
             return;

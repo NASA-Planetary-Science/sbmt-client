@@ -101,7 +101,7 @@ public class ImageFileChooser
     public static File showOpenDialog(Component parent, String title)
     {
         fc.setDialogTitle(title);
-        int returnVal = fc.showOpenDialog(parent);
+        int returnVal = fc.showOpenDialog(JOptionPane.getFrameForComponent(parent));
         if (returnVal == JFileChooser.APPROVE_OPTION)
         {
             return fc.getSelectedFile();
@@ -115,7 +115,7 @@ public class ImageFileChooser
     public static File showSaveDialog(Component parent, String title)
     {
         fc.setDialogTitle(title);
-        int returnVal = fc.showSaveDialog(parent);
+        int returnVal = fc.showSaveDialog(JOptionPane.getFrameForComponent(parent));
         if (returnVal == JFileChooser.APPROVE_OPTION)
         {
             String filename = fc.getSelectedFile().getAbsolutePath();
@@ -157,7 +157,7 @@ public class ImageFileChooser
             File file = new File(filename);
             if (file.exists ())
             {
-                int response = JOptionPane.showConfirmDialog (null,
+                int response = JOptionPane.showConfirmDialog (JOptionPane.getFrameForComponent(parent),
                   "Overwrite " + file.getName() + "?","Confirm Overwrite",
                    JOptionPane.OK_CANCEL_OPTION,
                    JOptionPane.QUESTION_MESSAGE);

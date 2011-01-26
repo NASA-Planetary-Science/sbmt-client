@@ -202,7 +202,7 @@ public class NLRBrowsePanel extends JPanel implements ListSelectionListener
                     }
                     catch(Exception ex)
                     {
-                        JOptionPane.showMessageDialog(saveButton.getParent(),
+                        JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(saveButton),
                                 "Unable to save file to " + file.getAbsolutePath(),
                                 "Error Saving File",
                                 JOptionPane.ERROR_MESSAGE);

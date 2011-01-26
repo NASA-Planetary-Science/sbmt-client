@@ -252,7 +252,7 @@ public class TopoViewer extends JFrame
                 File file = null;
                 try
                 {
-                    file = CustomFileChooser.showSaveDialog(TopoViewer.this, "Save Profiles", "profiles.txt");
+                    file = CustomFileChooser.showSaveDialog(saveButton, "Save Profiles", "profiles.txt");
                     if (file != null)
                     {
                         saveViewer(file);
@@ -260,7 +260,7 @@ public class TopoViewer extends JFrame
                 }
                 catch (Exception ex)
                 {
-                    JOptionPane.showMessageDialog(TopoViewer.this,
+                    JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(saveButton),
                             "Unable to save file to " + file.getAbsolutePath(),
                             "Error Saving File",
                             JOptionPane.ERROR_MESSAGE);
@@ -278,7 +278,7 @@ public class TopoViewer extends JFrame
                 File file = null;
                 try
                 {
-                    file = CustomFileChooser.showOpenDialog(TopoViewer.this, "Load Profiles");
+                    file = CustomFileChooser.showOpenDialog(loadButton, "Load Profiles");
                     if (file != null)
                     {
                         loadViewer(file);
@@ -286,7 +286,7 @@ public class TopoViewer extends JFrame
                 }
                 catch (Exception ex)
                 {
-                    JOptionPane.showMessageDialog(TopoViewer.this,
+                    JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(loadButton),
                             "Unable to load file " + file.getAbsolutePath(),
                             "Error Loading File",
                             JOptionPane.ERROR_MESSAGE);

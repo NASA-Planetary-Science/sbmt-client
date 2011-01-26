@@ -236,7 +236,7 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
                 }
                 catch (Exception e)
                 {
-                    JOptionPane.showMessageDialog(null,
+                    JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
                             "There was an error reading the file.",
                             "Error",
                             JOptionPane.ERROR_MESSAGE);
@@ -262,7 +262,7 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
                 }
                 catch (Exception e)
                 {
-                    JOptionPane.showMessageDialog(null,
+                    JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
                             "There was an error saving the file.",
                             "Error",
                             JOptionPane.ERROR_MESSAGE);

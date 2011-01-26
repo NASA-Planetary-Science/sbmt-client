@@ -50,15 +50,15 @@ import edu.jhuapl.near.util.Properties;
 
 
 public class NLRSearchPanel extends JPanel implements ActionListener, PropertyChangeListener
-{    
+{
     private final String NLR_REMOVE_ALL_BUTTON_TEXT = "Clear Data";
-    
+
     private final ModelManager modelManager;
     private NLRSearchDataCollection nlrModel;
     private JLabel resultsLabel;
     private JButton removeAllButton;
     private RadialOffsetChanger radialOffsetChanger;
-    
+
     private java.util.Date startDate = new GregorianCalendar(2000, 4, 1, 0, 0, 0).getTime();
     private java.util.Date endDate = new GregorianCalendar(2000, 4, 2, 0, 0, 0).getTime();
     private JLabel endDateLabel;
@@ -75,7 +75,7 @@ public class NLRSearchPanel extends JPanel implements ActionListener, PropertyCh
     private PickManager pickManager;
     private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MMM-d HH:mm:ss.SSS", Locale.US);
     private NLRPlot nlrPlot;
-    
+
     private enum DisplayedResultsOptions
     {
         ALL                 ("all",            NLRMaskType.NONE,        -1.0),
@@ -98,7 +98,7 @@ public class NLRSearchPanel extends JPanel implements ActionListener, PropertyCh
         NEXT_10_KILOMETERS  ("10 kilometers",  NLRMaskType.BY_DISTANCE, 10.0),
         NEXT_50_KILOMETERS  ("50 kilometers",  NLRMaskType.BY_DISTANCE, 50.0),
         NEXT_100_KILOMETERS ("100 kilometers", NLRMaskType.BY_DISTANCE, 100.0);
-    
+
         private final String name;
         private final NLRMaskType type;
         private final double value;
@@ -109,35 +109,35 @@ public class NLRSearchPanel extends JPanel implements ActionListener, PropertyCh
             this.type = type;
             this.value = value;
         }
-        
+
         public String toString()
         {
             return name;
         }
-        
+
         public NLRMaskType getType()
         {
             return type;
         }
-        
+
         public double getValue()
         {
             return value;
         }
     }
-    
+
 
     public NLRSearchPanel(
             final ModelManager modelManager,
-            final PickManager pickManager) 
+            final PickManager pickManager)
     {
         setLayout(new BoxLayout(this,
                 BoxLayout.PAGE_AXIS));
-        
+
         this.modelManager = modelManager;
         this.pickManager = pickManager;
-        
-        this.addComponentListener(new ComponentAdapter() 
+
+        this.addComponentListener(new ComponentAdapter()
         {
             public void componentHidden(ComponentEvent e)
             {
@@ -145,12 +145,12 @@ public class NLRSearchPanel extends JPanel implements ActionListener, PropertyCh
                 pickManager.setPickMode(PickMode.DEFAULT);
             }
         });
-        
+
         pickManager.getDefaultPicker().addPropertyChangeListener(this);
 
 
         this.nlrModel = (NLRSearchDataCollection)modelManager.getModel(ModelNames.NLR_DATA_SEARCH);
-        
+
         JPanel pane = new JPanel();
         pane.setLayout(new MigLayout("wrap 1"));
 
@@ -163,7 +163,7 @@ public class NLRSearchPanel extends JPanel implements ActionListener, PropertyCh
             {
                 public void stateChanged(ChangeEvent e)
                 {
-                    java.util.Date date = 
+                    java.util.Date date =
                         ((SpinnerDateModel)startSpinner.getModel()).getDate();
                     if (date != null)
                         startDate = date;
@@ -182,7 +182,7 @@ public class NLRSearchPanel extends JPanel implements ActionListener, PropertyCh
             {
                 public void stateChanged(ChangeEvent e)
                 {
-                    java.util.Date date = 
+                    java.util.Date date =
                         ((SpinnerDateModel)endSpinner.getModel()).getDate();
                     if (date != null)
                         endDate = date;
@@ -198,7 +198,7 @@ public class NLRSearchPanel extends JPanel implements ActionListener, PropertyCh
         selectRegionButton.setEnabled(true);
         selectRegionButton.addActionListener(new ActionListener()
         {
-            public void actionPerformed(ActionEvent e) 
+            public void actionPerformed(ActionEvent e)
             {
                 if (selectRegionButton.isSelected())
                     pickManager.setPickMode(PickMode.CIRCLE_SELECTION);
@@ -211,7 +211,7 @@ public class NLRSearchPanel extends JPanel implements ActionListener, PropertyCh
         final JButton clearRegionButton = new JButton("Clear Region");
         clearRegionButton.addActionListener(new ActionListener()
         {
-            public void actionPerformed(ActionEvent e) 
+            public void actionPerformed(ActionEvent e)
             {
                 RegularPolygonModel selectionModel = (RegularPolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
                 selectionModel.removeAllStructures();
@@ -234,12 +234,12 @@ public class NLRSearchPanel extends JPanel implements ActionListener, PropertyCh
         resultsLabel = new JLabel("<html><br><br></html>");
         resultsLabel.setPreferredSize(new Dimension(300, 200));
         resultsLabel.setBorder(BorderFactory.createEtchedBorder());
-        
+
         removeAllButton = new JButton(NLR_REMOVE_ALL_BUTTON_TEXT);
         removeAllButton.setActionCommand(NLR_REMOVE_ALL_BUTTON_TEXT);
         removeAllButton.addActionListener(new ActionListener()
         {
-            public void actionPerformed(ActionEvent e) 
+            public void actionPerformed(ActionEvent e)
             {
                 NLRSearchDataCollection model = (NLRSearchDataCollection)modelManager.getModel(ModelNames.NLR_DATA_SEARCH);
                 model.removeAllNlrData();
@@ -253,18 +253,18 @@ public class NLRSearchPanel extends JPanel implements ActionListener, PropertyCh
         pane.add(resultsLabel);
 
         JLabel showLabel = new JLabel("Show ");
-        
+
         shownResultsShowComboBox = new JComboBox(DisplayedResultsOptions.values());
         shownResultsShowComboBox.setSelectedIndex(0);
-        
+
         pane.add(showLabel, "split");
         pane.add(shownResultsShowComboBox);
-        
+
         nextButton = new JButton(">");
         nextButton.setActionCommand(">");
         nextButton.addActionListener(new ActionListener()
         {
-            public void actionPerformed(ActionEvent e) 
+            public void actionPerformed(ActionEvent e)
             {
                 showData(1, false);
             }
@@ -275,7 +275,7 @@ public class NLRSearchPanel extends JPanel implements ActionListener, PropertyCh
         prevButton.setActionCommand("<");
         prevButton.addActionListener(new ActionListener()
         {
-            public void actionPerformed(ActionEvent e) 
+            public void actionPerformed(ActionEvent e)
             {
                 showData(-1, false);
             }
@@ -284,9 +284,9 @@ public class NLRSearchPanel extends JPanel implements ActionListener, PropertyCh
 
         pane.add(prevButton);
         pane.add(nextButton, "wrap");
-        
+
         pane.add(removeAllButton, "align center");
-        
+
         JButton plotPotentialButton = new JButton("Plot Potential");
         plotPotentialButton.addActionListener(new ActionListener()
         {
@@ -297,14 +297,14 @@ public class NLRSearchPanel extends JPanel implements ActionListener, PropertyCh
                 nlrPlot.setVisible(true);
             }
         });
-        
+
         pane.add(plotPotentialButton, "align center");
 
         final JButton saveButton = new JButton("Save...");
         saveButton.setActionCommand("Save...");
         saveButton.addActionListener(new ActionListener()
         {
-            public void actionPerformed(ActionEvent e) 
+            public void actionPerformed(ActionEvent e)
             {
                 int index = 1;
                 if (index >= 0)
@@ -312,7 +312,7 @@ public class NLRSearchPanel extends JPanel implements ActionListener, PropertyCh
                     File file = CustomFileChooser.showSaveDialog(
                             saveButton.getParent(),
                             "Save NLR data");
-                    
+
                     try
                     {
                         if (file != null)
@@ -322,7 +322,7 @@ public class NLRSearchPanel extends JPanel implements ActionListener, PropertyCh
                     }
                     catch(Exception ex)
                     {
-                        JOptionPane.showMessageDialog(saveButton.getParent(),
+                        JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(saveButton),
                                 "Unable to save file to " + file.getAbsolutePath(),
                                 "Error Saving File",
                                 JOptionPane.ERROR_MESSAGE);
@@ -342,7 +342,7 @@ public class NLRSearchPanel extends JPanel implements ActionListener, PropertyCh
         add(radialOffsetChanger);
     }
 
-    
+
 
 
     public void actionPerformed(ActionEvent e)
@@ -355,7 +355,7 @@ public class NLRSearchPanel extends JPanel implements ActionListener, PropertyCh
         if (selectionModel.getNumberOfStructures() > 0)
         {
             RegularPolygonModel.RegularPolygon region = (RegularPolygonModel.RegularPolygon)selectionModel.getStructure(0);
-            
+
             // Always use the lowest resolution model for getting the intersection cubes list.
             // Therefore, if the selection region was created using a higher resolution model,
             // we need to recompute the selection region using the low res model.
@@ -377,7 +377,7 @@ public class NLRSearchPanel extends JPanel implements ActionListener, PropertyCh
     private void showData(int direction, boolean reset)
     {
         DisplayedResultsOptions option = (DisplayedResultsOptions)shownResultsShowComboBox.getSelectedItem();
-        
+
         GregorianCalendar startCal = new GregorianCalendar();
         startCal.setTimeInMillis(startDate.getTime());
         GregorianCalendar stopCal = new GregorianCalendar();
@@ -398,9 +398,9 @@ public class NLRSearchPanel extends JPanel implements ActionListener, PropertyCh
 
         int[] range = nlrModel.getMaskedPointRange();
 
-        String resultsText = 
+        String resultsText =
             "<html>" + nlrModel.getNumberOfPoints() + " points matched<br><br>";
-        
+
         if (nlrModel.getNumberOfPoints() > 0)
         {
             long t0 = nlrModel.getTimeOfPoint(range[0]);
@@ -412,11 +412,11 @@ public class NLRSearchPanel extends JPanel implements ActionListener, PropertyCh
             "Time range: " + ((double)(t1-t0)/1000.0) + " seconds<br>" +
             "Distance: " + (float)nlrModel.getLengthOfMaskedPoints() + " km";
         }
-        
+
         resultsText += "</html>";
-        
+
         resultsLabel.setText(resultsText);
-        
+
         if (nlrPlot != null)
             nlrPlot.updateData();
     }

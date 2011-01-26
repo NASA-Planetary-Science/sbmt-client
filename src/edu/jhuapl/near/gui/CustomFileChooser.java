@@ -90,7 +90,7 @@ public class CustomFileChooser
     {
         fc.setDialogTitle(title);
         fc.setFileFilter(new CustomExtensionFilter(extension));
-        int returnVal = fc.showOpenDialog(parent);
+        int returnVal = fc.showOpenDialog(JOptionPane.getFrameForComponent(parent));
         if (returnVal == JFileChooser.APPROVE_OPTION)
         {
             return fc.getSelectedFile();
@@ -117,13 +117,13 @@ public class CustomFileChooser
         fc.setFileFilter(new CustomExtensionFilter(extension));
         if (defaultFilename != null)
             fc.setSelectedFile(new File(defaultFilename));
-        int returnVal = fc.showSaveDialog(parent);
+        int returnVal = fc.showSaveDialog(JOptionPane.getFrameForComponent(parent));
         if (returnVal == JFileChooser.APPROVE_OPTION)
         {
             File file = fc.getSelectedFile();
             if (file.exists())
             {
-                int response = JOptionPane.showConfirmDialog (null,
+                int response = JOptionPane.showConfirmDialog (JOptionPane.getFrameForComponent(parent),
                   "Overwrite existing file?","Confirm Overwrite",
                    JOptionPane.OK_CANCEL_OPTION,
                    JOptionPane.QUESTION_MESSAGE);

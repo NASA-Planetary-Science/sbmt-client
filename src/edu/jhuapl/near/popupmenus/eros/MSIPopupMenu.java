@@ -234,7 +234,7 @@ public class MSIPopupMenu extends PopupMenu
             }
             catch(Exception ex)
             {
-                JOptionPane.showMessageDialog(invoker,
+                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(invoker),
                         "Unable to save file to " + file.getAbsolutePath(),
                         "Error Saving File",
                         JOptionPane.ERROR_MESSAGE);
@@ -321,7 +321,7 @@ public class MSIPopupMenu extends PopupMenu
             }
             catch (Exception ex)
             {
-                JOptionPane.showMessageDialog(invoker,
+                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(invoker),
                         "Unable to save file to " + file.getAbsolutePath(),
                         "Error Saving File",
                         JOptionPane.ERROR_MESSAGE);
@@ -353,7 +353,7 @@ public class MSIPopupMenu extends PopupMenu
             }
             catch (Exception ex)
             {
-                JOptionPane.showMessageDialog(invoker,
+                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(invoker),
                         "Unable to save file to " + file.getAbsolutePath(),
                         "Error Saving File",
                         JOptionPane.ERROR_MESSAGE);
