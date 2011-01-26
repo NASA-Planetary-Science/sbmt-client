@@ -17,7 +17,8 @@ struct TimeMatrix
 };
 
 
-std::string& trim(std::string& s)
+// Remove initial and trailing whitespace from string. Modifies string in-place
+void trim(std::string& s)
 {
     const std::size_t si = s.find_first_not_of(" \t");
     if (si != std::string::npos)
@@ -30,7 +31,6 @@ std::string& trim(std::string& s)
     {
         s = "";
     }
-    return s;
 }
 
 
@@ -57,7 +57,7 @@ std::vector<std::string> loadFileList(const std::string& filelist)
 
 
 void loadSumFile(const std::string& sumfile,
-		 std::string& utc,
+                 std::string& utc,
                  double mat[3][3])
 {
     std::ifstream fin(sumfile.c_str());
@@ -104,7 +104,6 @@ void loadSumFile(const std::string& sumfile,
 
         utc2et_c(utc.c_str(), &et);
 
-        std::cout << et << std::endl;
         double msi_to_eros[3][3];
         msi_to_eros[0][0] = cx[0];
         msi_to_eros[0][1] = cx[1];
@@ -142,43 +141,6 @@ void loadSumFile(const std::string& sumfile,
 }
 
 
-void loadSpiceKernels(const std::vector<std::string>& kernelfiles)
-{
-    for (unsigned int i=0; i<kernelfiles.size(); ++i)
-    {
-        furnsh_c(kernelfiles[i].c_str());
-    }
-}
-
-
-void createMsopckSetupFile()
-{
-    std::ofstream fout("msopcksetup");
-
-    if (!fout.is_open())
-    {
-        std::cerr << "Error: Unable to open file for writing" << std::endl;
-        exit(1);
-    }
-
-    fout.precision(16);
-
-    fout << "\\begindata\n";
-    
-    fout << "LSK_FILE_NAME          = '/home/kahneg1/src/near/kernels/LSK/NAIF0007.TLS'\n";
-    fout << "SCLK_FILE_NAME         = '/home/kahneg1/src/near/kernels/SCLK/NEAR_171.TSC'\n";
-    fout << "CK_TYPE                = 3\n";
-    fout << "INSTRUMENT_ID          = -93000\n";
-    fout << "REFERENCE_FRAME_NAME   = 'J2000'\n";
-    fout << "ANGULAR_RATE_PRESENT   = 'MAKE UP/NO AVERAGING'\n";
-    fout << "INPUT_TIME_TYPE        = 'UTC'\n";
-    fout << "INPUT_DATA_TYPE        = 'MATRICES'\n";
-    fout << "PRODUCER_ID            = 'E. Kahn, JHUAPL'\n";
-
-    fout << "\\begintext\n";
-}
-
-
 void createMsopckInputDataFile(const std::vector<TimeMatrix>& data)
 {
     std::ofstream fout("msopckinputdata");
@@ -212,21 +174,18 @@ int main(int argc, char** argv)
 {
     if (argc < 3)
     {
-        std::cout << "Usage: process_sumfiles <sumfilelist> <kernelfilelist>" << std::endl;
+        std::cout << "Usage: process_sumfiles <kernelfiles> <sumfilelist>" << std::endl;
         return 1;
     }
     
-    std::string sumfilelist = argv[1];
-    std::string kernelfilelist = argv[2];
+    std::string kernelfiles = argv[1];
+    std::string sumfilelist = argv[2];
+
+    furnsh_c(kernelfiles.c_str());
 
     std::vector<std::string> sumfiles = loadFileList(sumfilelist);
-    std::vector<std::string> kernelfiles = loadFileList(kernelfilelist);
 
     std::cout.precision(16);
-    
-    loadSpiceKernels(kernelfiles);
-
-    createMsopckSetupFile();
     
     std::vector<TimeMatrix> data;
     
