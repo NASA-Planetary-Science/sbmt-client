@@ -10,7 +10,6 @@ import java.io.IOException;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JFileChooser;
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -22,6 +21,7 @@ import javax.swing.SpinnerNumberModel;
 import net.miginfocom.swing.MigLayout;
 
 import edu.jhuapl.near.gui.CustomFileChooser;
+import edu.jhuapl.near.gui.DirectoryChooser;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.RegularPolygonModel;
@@ -35,7 +35,6 @@ public class TopoPanel extends JPanel implements ActionListener
     private JToggleButton selectRegionButton;
     private JFormattedTextField nameTextField;
     private JFormattedTextField outputFolderTextField;
-    private JFileChooser dirChooser;
     private JButton submitButton;
     private JButton loadButton;
     private PickManager pickManager;
@@ -106,24 +105,19 @@ public class TopoPanel extends JPanel implements ActionListener
         halfSizePanel.add(halfSizeSpinner);
 
 
-        dirChooser = new JFileChooser();
-        dirChooser.setCurrentDirectory(null);
         JPanel outputFolderPanel = new JPanel(new MigLayout("wrap 2"));
         final JButton outputFolderButton = new JButton("Output Folder...");
         outputFolderTextField = new JFormattedTextField();
         outputFolderTextField.setPreferredSize(new Dimension(150, 24));
-        outputFolderTextField.setText(dirChooser.getCurrentDirectory().getAbsolutePath());
+        outputFolderTextField.setText(System.getProperty("user.home"));
         outputFolderButton.addActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent e)
             {
-                dirChooser.setDialogTitle("Select Output Folder");
-                dirChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-                dirChooser.setAcceptAllFileFilterUsed(false);
-                int result = dirChooser.showOpenDialog(TopoPanel.this);
-                if (result == JFileChooser.APPROVE_OPTION)
+                File file = DirectoryChooser.showOpenDialog(outputFolderTextField);
+                if (file != null)
                 {
-                    outputFolderTextField.setText(dirChooser.getSelectedFile().getAbsolutePath());
+                    outputFolderTextField.setText(file.getAbsolutePath());
                 }
             }
         });
