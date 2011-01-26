@@ -539,8 +539,12 @@ public class SmallBodyModel extends Model
         initializeActorsAndMappers();
 
         vtkProperty property = smallBodyActor.GetProperty();
-        property.SetInterpolationToFlat();
-        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+
+        if (property.GetInterpolation() != 0) // The value 0 corresponds to flat (see vtkProperty.h)
+        {
+            property.SetInterpolationToFlat();
+            this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+        }
     }
 
     public void setShadingToSmooth()
@@ -548,8 +552,12 @@ public class SmallBodyModel extends Model
         initializeActorsAndMappers();
 
         vtkProperty property = smallBodyActor.GetProperty();
-        property.SetInterpolationToGouraud();
-        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+
+        if (property.GetInterpolation() != 1) // The value 1 corresponds to gouraud (see vtkProperty.h)
+        {
+            property.SetInterpolationToGouraud();
+            this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+        }
     }
 
     public BoundingBox getBoundingBox()
