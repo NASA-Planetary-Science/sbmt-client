@@ -13,7 +13,7 @@ import javax.swing.filechooser.FileFilter;
  * @author kahneg1
  *
  */
-public class CustomFileChooser
+public class CustomFileChooser extends FileChooserBase
 {
     private static final JFileChooser fc = new JFileChooser();
 
@@ -90,9 +90,11 @@ public class CustomFileChooser
     {
         fc.setDialogTitle(title);
         fc.setFileFilter(new CustomExtensionFilter(extension));
+        fc.setCurrentDirectory(getLastDirectory());
         int returnVal = fc.showOpenDialog(JOptionPane.getFrameForComponent(parent));
         if (returnVal == JFileChooser.APPROVE_OPTION)
         {
+            setLastDirectory(fc.getCurrentDirectory());
             return fc.getSelectedFile();
         }
         else
@@ -115,11 +117,13 @@ public class CustomFileChooser
     {
         fc.setDialogTitle(title);
         fc.setFileFilter(new CustomExtensionFilter(extension));
+        fc.setCurrentDirectory(getLastDirectory());
         if (defaultFilename != null)
             fc.setSelectedFile(new File(defaultFilename));
         int returnVal = fc.showSaveDialog(JOptionPane.getFrameForComponent(parent));
         if (returnVal == JFileChooser.APPROVE_OPTION)
         {
+            setLastDirectory(fc.getCurrentDirectory());
             File file = fc.getSelectedFile();
             if (file.exists())
             {
