@@ -8,10 +8,12 @@ import java.util.HashSet;
 
 import javax.swing.JPanel;
 
+import vtk.vtkAxesActor;
 import vtk.vtkCamera;
 import vtk.vtkInteractorStyleRubberBand3D;
 import vtk.vtkInteractorStyleTrackballCamera;
 import vtk.vtkLightKit;
+import vtk.vtkOrientationMarkerWidget;
 import vtk.vtkProp;
 import vtk.vtkPropCollection;
 import vtk.vtkRenderWindowPanel;
@@ -26,8 +28,10 @@ public class Renderer extends JPanel implements
     private ModelManager modelManager;
     private vtkInteractorStyleTrackballCamera defaultInteractorStyle;
     private vtkInteractorStyleRubberBand3D rubberBandInteractorStyle;
+    private vtkAxesActor axes;
+    private vtkOrientationMarkerWidget orientationWidget;
 
-    public Renderer(ModelManager modelManager)
+    public Renderer(final ModelManager modelManager)
     {
         setLayout(new BorderLayout());
 
@@ -50,7 +54,23 @@ public class Renderer extends JPanel implements
 
         add(renWin, BorderLayout.CENTER);
 
-        setProps(modelManager.getProps());
+        axes = new vtkAxesActor();
+
+        orientationWidget = new vtkOrientationMarkerWidget();
+        orientationWidget.SetOrientationMarker(axes);
+        orientationWidget.SetInteractor(renWin.getIren());
+        orientationWidget.SetEnabled(1);
+        orientationWidget.InteractiveOn();
+
+        javax.swing.SwingUtilities.invokeLater(new Runnable()
+        {
+            public void run()
+            {
+                setProps(modelManager.getProps());
+                renWin.resetCamera();
+                renWin.Render();
+            }
+        });
     }
 
     public void setProps(ArrayList<vtkProp> props)
