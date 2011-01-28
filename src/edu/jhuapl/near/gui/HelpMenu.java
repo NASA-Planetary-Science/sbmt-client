@@ -29,11 +29,54 @@ public class HelpMenu extends JMenu
         JMenuItem mi = new JMenuItem(new ShowHelpContentsAction());
         this.add(mi);
 
-        this.addSeparator();
+        // On macs the about action is in the Application menu not the help menu
+        if (!System.getProperty("os.name").toLowerCase().startsWith("mac"))
+        {
+            this.addSeparator();
 
-        mi = new JMenuItem(new AboutAction());
-        this.add(mi);
+            mi = new JMenuItem(new AboutAction());
+            this.add(mi);
+        }
+        else
+        {
+            try
+            {
+                OSXAdapter.setAboutHandler(this, getClass().getDeclaredMethod("showAbout", (Class[])null));
+            }
+            catch (SecurityException e)
+            {
+                e.printStackTrace();
+            }
+            catch (NoSuchMethodException e)
+            {
+                e.printStackTrace();
+            }
+        }
+    }
 
+    private void showAbout()
+    {
+        final String COPYRIGHT  = "\u00a9";
+
+        String versionString = "\n";
+        try
+        {
+            InputStream is = this.getClass().getResourceAsStream("/svn.version");
+            byte[] data = new byte[256];
+            is.read(data, 0, data.length);
+            String[] tmp = (new String(data)).trim().split("\\s+");
+            tmp[3] = tmp[3].replace('-', '.');
+            versionString = "Version: " + tmp[3] + "\n\n";
+        }
+        catch (Exception e)
+        {
+        }
+
+        JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(rootPanel),
+                "Small Body Mapping Tool\n" + versionString +
+                COPYRIGHT + " 2010 The Johns Hopkins University Applied Physics Laboratory\n",
+                "About Small Body Mapping Tool",
+                JOptionPane.PLAIN_MESSAGE);
     }
 
     private class ShowHelpContentsAction extends AbstractAction
@@ -87,8 +130,6 @@ public class HelpMenu extends JMenu
 
     private class AboutAction extends AbstractAction
     {
-        private static final String COPYRIGHT  = "\u00a9";
-
         public AboutAction()
         {
             super("About Small Body Mapping Tool");
@@ -96,25 +137,7 @@ public class HelpMenu extends JMenu
 
         public void actionPerformed(ActionEvent actionEvent)
         {
-            String versionString = "\n";
-            try
-            {
-                InputStream is = this.getClass().getResourceAsStream("/svn.version");
-                byte[] data = new byte[256];
-                is.read(data, 0, data.length);
-                String[] tmp = (new String(data)).trim().split("\\s+");
-                tmp[3] = tmp[3].replace('-', '.');
-                versionString = "Version: " + tmp[3] + "\n\n";
-            }
-            catch (Exception e)
-            {
-            }
-
-            JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(rootPanel),
-                    "Small Body Mapping Tool\n" + versionString +
-                    COPYRIGHT + " 2010 The Johns Hopkins University Applied Physics Laboratory\n",
-                    "About Small Body Mapping Tool",
-                    JOptionPane.PLAIN_MESSAGE);
+            showAbout();
         }
     }
 }
