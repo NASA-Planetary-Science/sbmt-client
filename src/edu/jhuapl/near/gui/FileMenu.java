@@ -19,10 +19,14 @@ public class FileMenu extends JMenu
         JMenuItem mi = new JMenuItem(new SaveImageAction(rootPanel.getCurrentViewer().getRenderer()));
         this.add(mi);
 
-        this.addSeparator();
+        // On macs the exit action is in the Application menu not the file menu
+        if (!System.getProperty("os.name").toLowerCase().startsWith("mac"))
+        {
+            this.addSeparator();
 
-        mi = new JMenuItem(new ExitAction());
-        this.add(mi);
+            mi = new JMenuItem(new ExitAction());
+            this.add(mi);
+        }
     }
 
     private class ExitAction extends AbstractAction
