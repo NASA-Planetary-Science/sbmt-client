@@ -14,6 +14,7 @@ import vtk.vtkJavaGarbageCollector;
 
 import edu.jhuapl.near.gui.FileMenu;
 import edu.jhuapl.near.gui.HelpMenu;
+import edu.jhuapl.near.gui.OSXAdapter;
 import edu.jhuapl.near.gui.StatusBar;
 import edu.jhuapl.near.gui.ViewMenu;
 import edu.jhuapl.near.gui.ViewerManager;
@@ -35,6 +36,16 @@ public class SmallBodyMappingTool extends JFrame
     private HelpMenu helpMenu;
     private ViewerManager rootPanel;
     private static vtkJavaGarbageCollector garbageCollector;
+
+    static
+    {
+        if (System.getProperty("os.name").toLowerCase().startsWith("mac"))
+        {
+            System.setProperty("apple.laf.useScreenMenuBar", "true");
+            ImageIcon erosIcon = new ImageIcon(SmallBodyMappingTool.class.getResource("/edu/jhuapl/near/data/eros.png"));
+            OSXAdapter.setDockIconImage(erosIcon.getImage());
+        }
+    }
 
     public SmallBodyMappingTool()
     {
@@ -83,6 +94,39 @@ public class SmallBodyMappingTool extends JFrame
         statusBar = new StatusBar();
         this.getContentPane().add(statusBar, BorderLayout.PAGE_END);
     }
+
+    /*
+    private static void setupLookAndFeel()
+    {
+        try
+        {
+            if (System.getProperty("os.name").toLowerCase().startsWith("linux"))
+            {
+                boolean haveNimbus = false;
+                for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels())
+                {
+                    if ("Nimbus".equals(info.getName()))
+                    {
+                        UIManager.setLookAndFeel(info.getClassName());
+                        haveNimbus = true;
+                        break;
+                    }
+                }
+
+                if (haveNimbus == false)
+                    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            }
+            else
+            {
+                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            }
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+    */
 
     public static void main(String[] args)
     {

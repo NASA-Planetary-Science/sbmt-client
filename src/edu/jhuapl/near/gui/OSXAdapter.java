@@ -205,4 +205,20 @@ public class OSXAdapter implements InvocationHandler {
             }
         }
     }
+
+    public static void setDockIconImage(java.awt.Image image)
+    {
+        try {
+            Class applicationClass = Class.forName("com.apple.eawt.Application");
+            if (macOSXApplication == null) {
+                macOSXApplication = applicationClass.getConstructor((Class[])null).newInstance((Object[])null);
+            }
+
+            Method setDockIconImageMethod = macOSXApplication.getClass().getDeclaredMethod("setDockIconImage", new Class[] { java.awt.Image.class });
+            setDockIconImageMethod.invoke(macOSXApplication, new Object[] { image });
+        } catch (Exception ex) {
+            System.err.println("OSXAdapter could not access the setDockIconImage method");
+            ex.printStackTrace();
+        }
+    }
 }

@@ -54,7 +54,7 @@ public class HelpMenu extends JMenu
         }
     }
 
-    private void showAbout()
+    public void showAbout()
     {
         final String COPYRIGHT  = "\u00a9";
 

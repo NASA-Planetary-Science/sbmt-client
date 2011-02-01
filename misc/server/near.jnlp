@@ -15,16 +15,19 @@
     </security>
 
     <resources>
-        <j2se href="http://java.sun.com/products/autodl/j2se" version="1.5+" initial-heap-size="512m"
-              max-heap-size="1024m"/>
+        <j2se href="http://java.sun.com/products/autodl/j2se" version="1.6+"/>
         <property name="sun.java2d.noddraw" value="true"/>
+        <property name="com.apple.mrj.application.apple.menu.about.name" value="Small Body Mapping Tool"/>
         <jar href="near.jar" main="true"/>
+        <jar href="vtksb.jar"/>
         <jar href="vtk.jar"/>
         <jar href="jide-oss-2.7.3.jar"/>
         <jar href="joda-time-1.6.jar"/>
         <jar href="jcommon-1.0.16.jar"/>
         <jar href="jfreechart-1.0.13.jar"/>
         <jar href="miglayout-3.7.1-swing.jar"/>
+        <jar href="commons-io-2.0.jar"/>
+        <jar href="fits-1.04.0.jar"/>
     </resources>
 
     <resources os="Windows" arch="x86">
@@ -42,16 +45,10 @@
     <resources os="Linux" arch="x86_64">
       <nativelib href = "vtk-natives-linux-amd64.jar" />
     </resources>
-    <resources os="Mac OS X" arch="ppc">
-      <nativelib href = "vtk-natives-macosx-universal.jar" />
-    </resources>
-    <resources os="Mac OS X" arch="i386">
-      <nativelib href = "vtk-natives-macosx-universal.jar" />
-    </resources>
     <resources os="Mac OS X" arch="x86_64">
       <nativelib href = "vtk-natives-macosx-x86_64.jar" />
     </resources>
 
-    <application-desc main-class="edu.jhuapl.near.ErosViewer"/>
+    <application-desc main-class="edu.jhuapl.near.SmallBodyMappingTool"/>
 
 </jnlp>

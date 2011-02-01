@@ -27,6 +27,26 @@ public class FileMenu extends JMenu
             mi = new JMenuItem(new ExitAction());
             this.add(mi);
         }
+        else
+        {
+            try
+            {
+                OSXAdapter.setQuitHandler(this, getClass().getDeclaredMethod("exitSBMT", (Class[])null));
+            }
+            catch (SecurityException e)
+            {
+                e.printStackTrace();
+            }
+            catch (NoSuchMethodException e)
+            {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void exitSBMT()
+    {
+        System.exit(0);
     }
 
     private class ExitAction extends AbstractAction
@@ -38,7 +58,7 @@ public class FileMenu extends JMenu
 
         public void actionPerformed(ActionEvent actionEvent)
         {
-            System.exit(0);
+            exitSBMT();
         }
     }
 }
