@@ -90,4 +90,19 @@ public class Configuration
     {
         mapMaperDir = folder;
     }
+
+    static boolean isMac()
+    {
+        return System.getProperty("os.name").toLowerCase().startsWith("mac");
+    }
+
+    static boolean isLinux()
+    {
+        return System.getProperty("os.name").toLowerCase().startsWith("linux");
+    }
+
+    static boolean isWindows()
+    {
+        return System.getProperty("os.name").toLowerCase().startsWith("windows");
+    }
 }
