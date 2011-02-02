@@ -1,12 +1,14 @@
 package edu.jhuapl.near;
 
 import java.awt.BorderLayout;
+import java.lang.reflect.Method;
 import java.util.concurrent.TimeUnit;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JPopupMenu;
+import javax.swing.LookAndFeel;
 import javax.swing.ToolTipManager;
 import javax.swing.UIManager;
 
@@ -95,12 +97,22 @@ public class SmallBodyMappingTool extends JFrame
         this.getContentPane().add(statusBar, BorderLayout.PAGE_END);
     }
 
-    /*
     private static void setupLookAndFeel()
     {
         try
         {
-            if (System.getProperty("os.name").toLowerCase().startsWith("linux"))
+            if (System.getProperty("os.name").toLowerCase().startsWith("mac"))
+            {
+                System.setProperty("Quaqua.tabLayoutPolicy","wrap");
+
+                // Use reflection to load the quaqua look and feel
+                Class quaquaManagerClass = Class.forName("ch.randelshofer.quaqua.QuaquaManager");
+                Method getLookAndFeelMethod = quaquaManagerClass.getDeclaredMethod("getLookAndFeel", new Class[] { });
+                LookAndFeel lookAndFeel = (LookAndFeel)getLookAndFeelMethod.invoke(null, new Object[] { });
+                UIManager.setLookAndFeel(lookAndFeel);
+            }
+            /*
+            else if (System.getProperty("os.name").toLowerCase().startsWith("linux"))
             {
                 boolean haveNimbus = false;
                 for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels())
@@ -116,6 +128,7 @@ public class SmallBodyMappingTool extends JFrame
                 if (haveNimbus == false)
                     UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
             }
+            */
             else
             {
                 UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -126,7 +139,6 @@ public class SmallBodyMappingTool extends JFrame
             e.printStackTrace();
         }
     }
-    */
 
     public static void main(String[] args)
     {
@@ -143,14 +155,7 @@ public class SmallBodyMappingTool extends JFrame
                     garbageCollector.SetScheduleTime(5, TimeUnit.SECONDS);
                     garbageCollector.SetAutoGarbageCollection(true);
 
-                    try
-                    {
-                        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-                    }
-                    catch (Exception e)
-                    {
-                        e.printStackTrace();
-                    }
+                    setupLookAndFeel();
 
                     JPopupMenu.setDefaultLightWeightPopupEnabled(false);
                     ToolTipManager.sharedInstance().setLightWeightPopupEnabled(false);

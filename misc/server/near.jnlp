@@ -46,6 +46,8 @@
       <nativelib href = "vtk-natives-linux-amd64.jar" />
     </resources>
     <resources os="Mac OS X" arch="x86_64">
+      <jar href="quaqua.jar"/>
+      <nativelib href = "libquaqua64.jnilib.jar" />
       <nativelib href = "vtk-natives-macosx-x86_64.jar" />
     </resources>
 

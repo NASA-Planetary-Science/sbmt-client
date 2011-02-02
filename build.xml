@@ -156,6 +156,15 @@
     </jar>
   </target>
 
+  <target name="nativequaquajar">
+    <mkdir dir="${rootdir}/build/jar"/>
+    <jar destfile="${rootdir}/build/jar/libquaqua64.jnilib.jar" basedir="${rootdir}/lib/quaqua">
+      <manifest>
+      </manifest>
+    </jar>
+  </target>
+
+
   <!--
 
       The next target assumes that you have file named "keystore" in
@@ -276,6 +285,22 @@
     <input message="Please enter keystore password:"
            addproperty="keypass" />
     <signjar jar="${rootdir}/lib/fits-1.04.0.jar"
+             keystore="${rootdir}/keystore" alias="mykey"
+             storepass="${keypass}"/>
+  </target>
+
+  <target name="signquaqua">
+    <input message="Please enter keystore password:"
+           addproperty="keypass" />
+    <signjar jar="${rootdir}/lib/quaqua.jar"
+             keystore="${rootdir}/keystore" alias="mykey"
+             storepass="${keypass}"/>
+  </target>
+
+  <target name="signnativequaqua" depends="nativequaquajar">
+    <input message="Please enter keystore password:"
+           addproperty="keypass" />
+    <signjar jar="${rootdir}/build/jar/libquaqua64.jnilib.jar"
              keystore="${rootdir}/keystore" alias="mykey"
              storepass="${keypass}"/>
   </target>
