@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project name="Small Body Mapping Tool">
+<!--  <bannerLeft>
+    <name>Small Body Mapping Tool</name>
+    <src>http://maven.apache.org/images/apache-maven-project.png</src>
+    <href>http://maven.apache.org/</href>
+  </bannerLeft>
+  <bannerRight>
+    <src>http://maven.apache.org/images/maven-small.gif</src>
+  </bannerRight>
+-->
+  <body>
+<!--
+    <links>
+      <item name="Apache" href="http://www.apache.org/" />
+      <item name="Maven 1.x"
+      href="http://maven.apache.org/maven-1.x/"/>
+      <item name="Maven 2" href="http://maven.apache.org/"/>
+    </links>
+-->
+    <menu name="Overview">
+      <item name="Home" href="index.html"/>
+      <item name="User Manual" href="release-notes.html" />
+      <item name="Changes" href="about.html"/>
+    </menu>
+
+  </body>
+</project>

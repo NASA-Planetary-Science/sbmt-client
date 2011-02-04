@@ -1,0 +1,17 @@
+  Click {{{http://near.jhuapl.edu/software/sbmt/near.jnlp}here}} to
+  start the latest version of the Small Body Mapping Tool. Requires
+  Java 6 or higher.
+
+  Supported platforms:
+
+  * Windows (32-bit)
+  
+  * Linux (32- or 64-bit)
+  
+  * Mac OS X version 10.5 or higher (64-bit Intel-based Macs only) 
+
+  []
+
+  To run an older version of the tool which works with Java 5, click
+  here. Note, however, that future updates to the tool will be made
+  only for the Java 6 version.
