@@ -10,13 +10,16 @@ import javax.swing.JPanel;
 
 import vtk.vtkAxesActor;
 import vtk.vtkCamera;
+import vtk.vtkCaptionActor2D;
 import vtk.vtkInteractorStyleRubberBand3D;
 import vtk.vtkInteractorStyleTrackballCamera;
 import vtk.vtkLightKit;
 import vtk.vtkOrientationMarkerWidget;
 import vtk.vtkProp;
 import vtk.vtkPropCollection;
+import vtk.vtkProperty;
 import vtk.vtkRenderWindowPanel;
+import vtk.vtkTextProperty;
 
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.util.Properties;
@@ -55,6 +58,34 @@ public class Renderer extends JPanel implements
         add(renWin, BorderLayout.CENTER);
 
         axes = new vtkAxesActor();
+
+        // Set the z axis to yellow since the blue default is
+        // hard to see on a black background.
+        vtkProperty property = axes.GetZAxisShaftProperty();
+        property.SetColor(1.0, 1.0, 0.0);
+        property = axes.GetZAxisTipProperty();
+        property.SetColor(1.0, 1.0, 0.0);
+
+        vtkCaptionActor2D caption = axes.GetXAxisCaptionActor2D();
+        //caption.GetTextActor().SetTextScaleModeToNone();
+        vtkTextProperty textProperty = caption.GetCaptionTextProperty();
+        //textProperty.SetFontSize(14);
+        textProperty.BoldOff();
+        textProperty.ItalicOff();
+
+        caption = axes.GetYAxisCaptionActor2D();
+        //caption.GetTextActor().SetTextScaleModeToNone();
+        textProperty = caption.GetCaptionTextProperty();
+        //textProperty.SetFontSize(14);
+        textProperty.BoldOff();
+        textProperty.ItalicOff();
+
+        caption = axes.GetZAxisCaptionActor2D();
+        //caption.GetTextActor().SetTextScaleModeToNone();
+        textProperty = caption.GetCaptionTextProperty();
+        //textProperty.SetFontSize(14);
+        textProperty.BoldOff();
+        textProperty.ItalicOff();
 
         orientationWidget = new vtkOrientationMarkerWidget();
         orientationWidget.SetOrientationMarker(axes);
