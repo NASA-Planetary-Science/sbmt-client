@@ -2,8 +2,6 @@
    Also show plot of potential vs distance (range) traveled. Allow from these
    plots to highlight data in renderer and vs versa. 
 
- - Allow search region to work for NLR
- 
  - Make NLR GUI more similar to MSI and NIS
     
  - improve NLR tab: fix performance. Allow showing all data at once. Allow exporting data.
@@ -57,18 +55,10 @@
    
  - Add ability to load a new shape model at runtime in a new View
  
- - add ability to reorient the camera along any of the axes as requested by Carolyn
- 
  - fix crash which occurs sometimes if you click with mouse on the renderer while
    a resolution change is taking place
    
  - for people using macs, the width of the control panel is too narrow
- 
- - use interpolation within a plate for the elevation, slope etc. (similar to smooth shading)
- 
- - add options for changing colors of drawn structures such as circles and lines.
-   perhaps save the color to each line of the file. also provide controls for
-   changing color of individual structures. 
  
  - In NIS tab, allow coloring of footprints using 3 channels (currently only 1 channel is
    supported) thus enabling full RGB color footprints. Also provide checkbox option for dividing
@@ -81,36 +71,11 @@
    This will be very similar to paths tab plus the following features:
    1. Polygons will be filled in
    2. (possibly) double clicking somehow finishes the drawing (not sure exactly)
- 
- - develop new high res topography tool: this will work as follows. Create a new tab which
-   provides the options to select a point (in lat, west lon) by drawing a circle.
-   A ddr cube will be generated at that area using Bob Gaskell's fortran program
-   for generating high resolution topography. Bob Gaskell's program takes the
-   following input:
-    1. a name
-    2. lat lon (note lon is west longitude not east as is used by the tool)
-    3. half width: i.e. the number of pixels in half the size of width of a plane
-    	 of the cube. The maximum is 512 pixels (or 1023 (must be odd) in full length)
-    4. size of horizontal pixel in meters per pixel
-   Currently the program is interactive. we will need to modify it so all options can be run
-   on the command line. 
-   Once the ddr is generated, allow user to save it to any location. Also provide option
-   for generating profiles (i.e. plot of height vs distance). See the screenshot Carolyn
-   sent. Try to reproduce it: show the isosurface lines superimposed on the shaded
-   relief map on the left.
-   Show multiple profiles at once on the plot. Perhaps show each in a different color to
-   distinguish clearly. Perhaps show A at the start of the profile and A' at the end so
-   as to distinguish the beginning and end of a profile.
-   Provide ability to export profiles to a text file. Probably a single profile per
-   file.
-   On the asteroid, show the outline of the ddr (similar to how outlines of msi images
-   are shown when searching). Provide ability to save outline to file.
-   If possible it should be possible to load in this outline and ddr and continue work
-   from there (i.e. to be able to generate new profiles) in situations where user
-   closes tool and would like to resume work later.
-   It will be necessary to first download all topographic data to users machine before
-   first use.
+
+ - Get maplets tool working on Windows
    
+ - Provide ability to save outline of maplets shown on asteroid to file.
+ 
  - In NIS and MSI allow creation of mosiacs by specifically specifying the offset size for each
    footprint or image. Provide menu option in popup for "bring to front" like in Powerpoint
 
@@ -143,8 +108,6 @@
    since not really needed (requires modification to all places that use it)
    
  - change layout of all tabs to use MigLayout especially MSI and NIS
- 
- 
-   
- 
- 
+
+ - In the lists in the MSI, NIS, and NLR tabs, change background color of list
+   items that are currently visible in the renderer.
