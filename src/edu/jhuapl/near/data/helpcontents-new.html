@@ -7,24 +7,23 @@
 <body>
 <h1>How to Use the Small Body Mapping Tool</h1><br>
 <p>
-The purpose of the Small Body Mapping Tool is help scientists and mission planners
-quickly search, retrieve, visualize, and export data from small body missions.
 The Small Body Mapping Tool is divided into 2 panels, the rendering panel on the right 
 for displaying small bodies and their associated data and a control panel on the left 
-consisting of several tabs for what gets displayed in the rendering panel.
+consisting of several tabs controlling how the data is displayed in the rendering panel.
 In addition there is a status bar on the bottom and a menu bar on top.
 </p>
 <p>
-When the Small Body Mapping Tool is started, initially a low resolution model of the Eros
+When the Small Body Mapping Tool is started, initially, a low resolution model of the Eros
 asteroid is shown. The small body shown can be changed in the View menu. Three other small
 bodies besides Eros are available: Deimos, Itokawa, and Vesta. The number of
-tabs in the control panel and their contents depend on which asteroid is currently visible.
-Most of the work to date on the tool has focused on the NEAR mission.
+and contents of the tabs in the control panel are different for each asteroid. Each of these
+tabs will be described below.
 </p>
 <p>
 
 <h2>The Rendering Panel</h2>
 
+The rendering panel shows a 3 dimensional view of the small bodies and their associated data.
 Using the mouse and keyboard one can easily navigate through the data in the rendering panel.
 The following mouse and key bindings work with the rendering panel:
 <br>
@@ -65,62 +64,70 @@ on certain objects, a context menu is displayed with various options depending o
 <h3>Eros tab (or the Deimos, Itokawa, and Vesta tabs for those bodies)</h3>
 
 Each small body has a tab with the same name as the body for controlling general options
-related to that body, such as controlling the resolution, how the asteroid is colored,
+related to that body, such as resolution, how the asteroid is colored,
 whether to show a coordinate grid, or what shading to use (flat or smooth),
-depending on the small body. The coordinate grid lines are separated by 10 degrees
-in latitude or longitude.W hen you click on a higher resolution model for the first time, 
+Some of these options may be different for different small bodies. Note that
+the coordinate grid lines are separated by 10 degrees in latitude or longitude.
+<!--Each of these options
+are discussed in turn.
+<ul>
+<li>Resolution: Currently some asteroids are available in 4 different resolution levels and some
+are only available in one resolution.
+</ul>
+When you click on a higher resolution model for the first time, 
 it will download the model from the server and cache it in your home directory, so there 
 may be an extra delay the first time you switch models. 
+-->
 
 <h3>MSI tab (Eros only)</h3>
 
-One of the instruments on the NEAR mission was a Multispectral Imager which took over 100000 images
-of Eros between between Jan 12, 2000 and Feb 12, 2001. The MSI tab provides
-options for searching and displaying these images. One of two databases of MSI images can be searched,
-which can be specified in the "MSI Source" dropdown menu.
+The MSI tab provides options for searching and displaying images acquired by the 
+NEAR Multispectral Imager (MSI) which took over 100000 images
+of Eros between between Jan 12, 2000 and Feb 12, 2001. 
+One of two databases of MSI images can be searched,
+which can be specified in the "MSI Source" dropdown menu:
 <ol>
 <li>The original database submitted to PDS with over 100000 images. These images may be slightly misaligned
 with the asteroid due to imprecision in the SPICE kernels from which the pointing information
 was derived.
 <li> Bob Gaskell's list with high quality pointing information. This list is a subset of
 the first with about 20000 images which he used to create the Eros shape models.
-Images are much better registered with the asteroid.
+These images are much better registered with the asteroid.
 </ol>
 To do a search, choose the desired options and click the Search button. A list of the matching images
 will be returned below. When a search is performed, the outline of the footprint of the first several matching images
-is shown in the renderer in red. This allows one to quickly see what part of the asteroid the image was taken of.
+is shown in the renderer in red. This allows one to quickly see what part of the asteroid is within the image frustum
+without downloading the entire image.
 One can see additional footprints by clicking on the next and previous buttons below the list. The
 number of outlines shown at one time can also be controlled.
 
 <p>
-You'll see in the MSI and NIS tabs two new buttons: Select Region and Clear Region. 
+The two buttons, Select Region and Clear Region, can
+be used to restrict the search to a specific region on the asteroid. 
 If you click on the Select Region a new mode is entered which allows you to draw a 
-circular region on the asteroid (similar to drawing circles and points within the 
-Structures tab). Click the Select Region button again to leave this mode and click 
-Clear Region to remove the region. If there is no region drawn then the search 
+circular region on the asteroid but does not allow you to navigate around the asteroid.
+Click the Select Region button again to leave this mode and return to the default navigation
+mode. Click the Clear Region button to remove the region. If there is no region drawn, then the search 
 includes the entire asteroid.
 
 <p>
-One thing you'll notice when you do searches is that often images and 
-spectra are returned that are outside of the circle drawn. Usually as 
-long as a part of the spectrum or image is within about a kilometer 
-from the circle, it will be returned in the search. This is due to 
-nature of the approximations used in the search algorithm. It is possible 
-to reduce this distance (i.e. to make it smaller than a kilometer) at the 
-expense of a larger database and possibly slower searches. Let me know if 
-you'd like me to do this.
+You might notice when you do searches is that often images 
+are returned that are outside of the circle drawn. Usually as 
+long as a part of the image is within about a kilometer 
+of the circle, it will be returned in the search. This is due to 
+nature of the approximations used in the search algorithm.
 
 <p>
-To show the image itself mapped onto the asteroid, right-click either on the outline in the renderer or
+To map the image directly onto the asteroid, right-click either on the outline in the renderer or
 on an item in the returned list in the control panel. A popup menu will appear and clicking on the "Show Image"
-option will map the image itself onto the asteroid. Once an image is shown, additional menu items
+option will map the image onto the asteroid. Once an image is shown, additional menu items
 become active such as showing a properties window and generation of backplanes.
 
 The properties window that appears shows a 2D view of the image, various properties
 about the image, as well as a slider to modify the contrast. 
 
-The backplane generation option allows 
-you to choose the desired filename of the file.
+The backplane generation option generates an image volume where each plane
+in the volume contains information about each pixel in the MSI Image.
 
 This is the list, in order of the backplanes generated. Everything is in float (4 bytes)
 <ol>
@@ -136,36 +143,59 @@ This is the list, in order of the backplanes generated. Everything is in float (
 <li>phase angle (degrees)
 <li>horizontal pixel scale in kilometers per pixel
 <li>vertical pixel scale in kilometers per pixel
+<li>Slope in degrees
+<li>Elevation in meters
+<li>Gravitational acceleration in meters per second squared
+<li>Gravitational potential in joules per kilogram
 </ol>
 
 <h3>NIS tab (Eros only)</h3>
 
-Another instrument on the NEAR mission was the Near-Infrared Spectrograph
-which measured several hundred thousand spectra of the asteroid between January and May 2000,
-after which the instrument failed. Each spectrum consists of 64 separate channels 
-between 812 nm and 2708 nm. The NIS tab provides an interface for searching, displaying,
-and plotting NIS spectra and is very similar to the MSI tab.
+The NIS tab provides an interface for searching, displaying,
+and plotting spectra acquired by the NEAR Near-Infrared Spectrograph (NIS)
+which measured several hundred thousand spectra of the asteroid between January and May 2000.
+Each spectrum consists of 64 separate channels 
+between 812 nm and 2708 nm. The NIS tab is very similar to the MSI tab and much of the information
+described there applies here as well.
 
 <h3>NLR tab (Eros only)</h3>
 
-Another instrument on the NEAR mission was the NEAR Laser Rangefinder. This instrument
-contained a lidar which was used to determine the shape of the asteroid. About 16 million
-data points were acquired 
+The NLR tab provies and interface for showing data from the NEAR Laser Rangefinder (NLR). This instrument
+contained a laser which was used to determine the shape of the asteroid. About 16 million
+data points were acquired  during the mission. Currently there are 2 tabs within the NLR tab.
+
+<p>
+The Browse tab allows you to browse and show data from individual days. To show data
+from a specific data, select a day and click on the Show button beneath the list.
+The text of the button will then change to Remove and if you click it again the data
+will be removed from the renderer. Click the Remove All NLR Data to remove all the
+data being displayed. The Save button can be used to save the raw data file to disk.
+Since the data may not be well registered with the asteroid a slider is provided for
+changing the radial offset of the data. In addition another slider 
+
+<p>
+The Search tab can be used search for NLR by specifying specific start and stop dates. In
+addition a search region to restrict the search to can be specified as well exactly like
+the MSI and NIS tabs. A radial offset slider is provided as in the Browse tab.
 
 <h3>Lineament tab (Eros only)</h3>
 
-The Lineament tab shows asteroid lineaments drawn by Debra Buczkowski several years
-ago using a different software tool. Since the lineaments are not perfectly registered
+The Lineament tab shows lineaments structures drawn by Debra Buczkowski several years
+ago using a different tool. Since the lineaments are not perfectly registered
 with the asteroid, a slider is provided for slightly changing the radial offset of the
 lineaments. 
 
 <h3>Structures tab (Available for all bodies)</h3>
 
 </p>
+Besides searching and visualizing mission data, the tool allows you to draw
+different types of structures directly on the asteroid. Currently 3 types of
+structures are supported: paths, circles, and points and each of these
+are controlled within a separate tab within the Structures tab.
 Each of the 3 tabs (paths, circles, and points) works completely independently
 of each other. You can only be drawing one type of structure at a time. To
 draw a point or a circle, click on the "Edit" button. That will activate a
-special editing mode where you can no longer rotate, pan, zoom the asteroid.
+special editing mode where the asteroid will be frozen and navigation is disabled.
 Click anywhere on the asteroid and the point or circle will appear. Once a
 point or circle has been created, you can drag it around with the left mouse
 button. To change the size of a circle drag it while holding the Control
@@ -173,26 +203,25 @@ button. When you're finished editing, press the Edit button again and the 3D
 view will return to the standard rotate/pan/zoom mode.
 
 </p>
-Drawing paths works a little differently than circles or points. You can
-only be editing a single path at a time unlike points or circles. To create a new
+Drawing paths works a little differently than circles or points. Unlike circles or points, you can
+only be editing a single path at a time. To create a new
 path press New and to edit an existing path, press Edit. You can add new
-vertices to paths and drag around existing vertices. One thing missing is
-the ability to delete individual vertices. I hope to add that soon.
+vertices to paths and drag around existing vertices.
 
 </p>
 You can save/load all the structures to/from disk using the Save and Load
-buttons. Note each type of structure has a different format.
+buttons. Note each type of structure has a different file format.
 
 </p>
 You can also right-click a structure within the 3D view and a popup will
-show allowing you to delete it. For paths, the popup includes the option to edit
+show allowing you to delete it or change its color. For paths, the popup includes the option to edit
 that path as well (For points and circles simply press the Edit button in
 the control panel).
 
 <h3>Mapmaker tab (Eros only)</h3>
 
 <p>
-In the tool, you'll see a new tab called Mapmaker from which you can run the Mapmaker 
+The Mapmaker tab allows you to run In the tool, you'll see a new tab called Mapmaker from which you can run the Mapmaker 
 program. You need to draw a region on the asteroid, choose a name and output folder, 
 and click "Run Mapmaker". If you close the tool and then restart it, you can load in 
 the cube file with the "Load Cube File" button without having to rerun the mapmaker program.
