@@ -35,6 +35,7 @@ import vtk.vtkGlobalJavaHash;
 
 import edu.jhuapl.near.gui.CustomFileChooser;
 import edu.jhuapl.near.gui.Renderer;
+import edu.jhuapl.near.gui.ScaleDataRangeDialog;
 import edu.jhuapl.near.gui.StatusBar;
 import edu.jhuapl.near.gui.actions.SaveImageAction;
 import edu.jhuapl.near.model.CircleModel;
@@ -68,6 +69,7 @@ public class TopoViewer extends JFrame
     private JComboBox coloringTypeComboBox;
     private DEMModel dem;
     private Renderer renderer;
+    private JButton scaleColoringButton;
 
     private static final String Profile = "Profile";
     private static final String StartLatitude = "StartLatitude";
@@ -187,9 +189,15 @@ public class TopoViewer extends JFrame
                 {
                     int index = coloringTypeComboBox.getSelectedIndex();
                     if (index == 3)
+                    {
+                        scaleColoringButton.setEnabled(false);
                         dem.setColoringIndex(-1);
+                    }
                     else
+                    {
+                        scaleColoringButton.setEnabled(true);
                         dem.setColoringIndex(index);
+                    }
                 }
                 catch (IOException e1)
                 {
@@ -199,6 +207,19 @@ public class TopoViewer extends JFrame
             }
         });
         panel.add(coloringTypeComboBox);
+
+        scaleColoringButton = new JButton("Rescale Data Range");
+        scaleColoringButton.setEnabled(true);
+        scaleColoringButton.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                ScaleDataRangeDialog scaleDataDialog = new ScaleDataRangeDialog(dem);
+                scaleDataDialog.setLocationRelativeTo(JOptionPane.getFrameForComponent(scaleColoringButton));
+                scaleDataDialog.setVisible(true);
+            }
+        });
+        panel.add(scaleColoringButton);
 
         newButton = new JButton("New Profile");
         newButton.addActionListener(new ActionListener()

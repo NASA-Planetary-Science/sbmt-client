@@ -2,15 +2,19 @@ package edu.jhuapl.near.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.swing.ButtonGroup;
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JSpinner;
@@ -48,9 +52,12 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
     private ButtonGroup shadingButtonGroup;
     private ButtonGroup resolutionButtonGroup;
     private JCheckBox gridCheckBox;
+    private JCheckBox axesCheckBox;
     private JCheckBox imageMapCheckBox;
     private JLabel opacityLabel;
     private JSpinner imageMapOpacitySpinner;
+    private JButton scaleColoringButton;
+    private JRadioButton customColorButton;
 
 
     public SmallBodyControlPanel(ModelManager modelManager, String bodyName)
@@ -113,7 +120,7 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
         showColoringCheckBox.setSelected(false);
         showColoringCheckBox.addItemListener(this);
 
-        SmallBodyModel smallBodyModel = modelManager.getSmallBodyModel();
+        final SmallBodyModel smallBodyModel = modelManager.getSmallBodyModel();
         for (int i=0; i<smallBodyModel.getNumberOfColors(); ++i)
         {
             JRadioButton button = new JRadioButton(smallBodyModel.getColoringName(i));
@@ -126,11 +133,11 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
         if (smallBodyModel.isFalseColoringSupported())
         {
             final String customColor = "Custom";
-            JRadioButton button = new JRadioButton(customColor);
-            button.setActionCommand(customColor);
-            button.addItemListener(this);
-            button.setEnabled(false);
-            coloringButtons.add(button);
+            customColorButton = new JRadioButton(customColor);
+            customColorButton.setActionCommand(customColor);
+            customColorButton.addItemListener(this);
+            customColorButton.setEnabled(false);
+            coloringButtons.add(customColorButton);
 
             customColorRedLabel = new JLabel("Red: ");
             customColorGreenLabel = new JLabel("Green: ");
@@ -164,6 +171,18 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
         if (coloringButtons.size() > 0)
             coloringButtonGroup.setSelected(coloringButtons.get(0).getModel(), true);
 
+        scaleColoringButton = new JButton("Rescale Data Range");
+        scaleColoringButton.setEnabled(false);
+        scaleColoringButton.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                ScaleDataRangeDialog scaleDataDialog = new ScaleDataRangeDialog(smallBodyModel);
+                scaleDataDialog.setLocationRelativeTo(JOptionPane.getFrameForComponent(scaleColoringButton));
+                scaleDataDialog.setVisible(true);
+            }
+        });
+
         JLabel shadingLabel = new JLabel("Shading");
 
         flatShadingButton = new JRadioButton(SmallBodyModel.FlatShadingStr);
@@ -185,6 +204,11 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
         gridCheckBox.setText("Show Coordinate Grid");
         gridCheckBox.setSelected(false);
         gridCheckBox.addItemListener(this);
+
+        axesCheckBox = new JCheckBox();
+        axesCheckBox.setText("Show Orientation Axes");
+        axesCheckBox.setSelected(true);
+        axesCheckBox.addItemListener(this);
 
         imageMapCheckBox = new JCheckBox();
         imageMapCheckBox.setText("Show Image Map");
@@ -224,6 +248,7 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
                 panel.add(customColorBlueLabel, "gapleft 50, split 2, align right");
                 panel.add(customColorBlueComboBox, "wrap");
             }
+            panel.add(scaleColoringButton, "wrap, gapleft 25");
         }
         if (modelManager.getSmallBodyModel().isImageMapAvailable())
         {
@@ -232,6 +257,7 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
             panel.add(imageMapOpacitySpinner, "wrap");
         }
         panel.add(gridCheckBox, "wrap");
+        //panel.add(axesCheckBox, "wrap");
         panel.add(shadingLabel, "wrap");
         panel.add(flatShadingButton, "wrap, gapleft 25");
         panel.add(smoothShadingButton, "wrap, gapleft 25");
@@ -359,6 +385,7 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
                     e1.printStackTrace();
                 }
 
+                scaleColoringButton.setEnabled(false);
                 opacityLabel.setEnabled(false);
                 imageMapOpacitySpinner.setEnabled(false);
             }
@@ -366,6 +393,9 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
             {
                 for (int i=0; i<coloringButtons.size(); ++i)
                     coloringButtons.get(i).setEnabled(true);
+
+                scaleColoringButton.setEnabled(true);
+
                 if (smallBodyModel.isFalseColoringSupported())
                 {
                     customColorRedComboBox.setEnabled(true);
@@ -374,6 +404,9 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
                     customColorRedLabel.setEnabled(true);
                     customColorGreenLabel.setEnabled(true);
                     customColorBlueLabel.setEnabled(true);
+
+                    if (customColorButton.isSelected())
+                        scaleColoringButton.setEnabled(false);
                 }
 
                 setColoring();
@@ -387,6 +420,15 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
         }
         else
         {
+            if (smallBodyModel.isFalseColoringSupported() &&
+                    this.showColoringCheckBox.isSelected())
+            {
+                if (customColorButton.isSelected())
+                    scaleColoringButton.setEnabled(false);
+                else
+                    scaleColoringButton.setEnabled(true);
+            }
+
             if (this.showColoringCheckBox.isSelected())
                 setColoring();
         }

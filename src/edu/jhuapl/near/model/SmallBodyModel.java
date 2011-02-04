@@ -76,6 +76,8 @@ public class SmallBodyModel extends Model
     // of the data is should be interperted as no data available at that location,
     // not as a real value. This affects the color table.
     private boolean[] coloringHasNulls;
+    private double[][] defaultColoringRanges;
+    private double[][] currentColoringRanges;
     private vtkPolyData smallBodyPolyData;
     private vtkPolyData lowResSmallBodyPolyData;
     private vtkActor smallBodyActor;
@@ -105,6 +107,7 @@ public class SmallBodyModel extends Model
     private double imageMapOpacity = 0.50;
     private vtkImageBlend blendFilter;
     private vtkIdList idList; // to avoid repeated allocations
+    private vtkUnsignedCharArray colorData;
 
     // Does this class support false coloring
     private boolean supportsFalseColoring = false;
@@ -155,6 +158,8 @@ public class SmallBodyModel extends Model
             this.coloringValues = new vtkFloatArray[coloringNames.length];
             this.coloringImages = new vtkImageData[coloringNames.length];
 
+            colorData = new vtkUnsignedCharArray();
+
             // If coloringHasNulls is null, assume false for all coloring (i.e. all data
             // is real data, with no missing data)
             if (coloringHasNulls == null)
@@ -189,6 +194,7 @@ public class SmallBodyModel extends Model
         this.coloringValueType = coloringValueType;
 
         initializeLocators();
+        initializeColoringRanges();
     }
 
     private void initialize(File modelFile)
@@ -511,6 +517,7 @@ public class SmallBodyModel extends Model
             smallBodyActor.SetMapper(smallBodyMapper);
             vtkProperty smallBodyProperty = smallBodyActor.GetProperty();
             smallBodyProperty.SetInterpolationToGouraud();
+            //smallBodyProperty.SetOpacity(0.5);
 
             smallBodyActors.add(smallBodyActor);
 
@@ -784,6 +791,8 @@ public class SmallBodyModel extends Model
 
             in.close();
         }
+
+        initializeColoringRanges();
     }
 
     /**
@@ -871,17 +880,22 @@ public class SmallBodyModel extends Model
 
     public void setColoringIndex(int index) throws IOException
     {
-//        if (coloringIndex == index)
-//            return;
-//
         // Coloring is currently only supported in the lowest resolution level
         if (resolutionLevel == 0)
         {
-            coloringIndex = index;
-            useFalseColoring = false;
+            if (coloringIndex != index)
+            {
+                coloringIndex = index;
+                useFalseColoring = false;
 
-            paintBody();
+                paintBody();
+            }
         }
+    }
+
+    public int getColoringIndex()
+    {
+        return coloringIndex;
     }
 
     public void setFalseColoring(int redChannel, int greenChannel, int blueChannel) throws IOException
@@ -918,14 +932,15 @@ public class SmallBodyModel extends Model
 
         if (coloringIndex >= 0)
         {
+            // TODO If scalar data has nulls (invalid data) do further processing to
+            //      acount for this since the color lookup table will map
+            //      the invalid values to the first end of the color bar. You
+            //      will probably need to use some sort of mask.
             vtkLookupTable lookupTable = new vtkLookupTable();
-            //lookupTable.SetRange(coloringValues[coloringIndex].GetRange());
-            lookupTable.SetRange(computeRange(coloringIndex, true));
+            double[] range = getCurrentColoringRange(coloringIndex);
+            lookupTable.SetRange(range);
             lookupTable.Build();
             invertLookupTableCharArray(lookupTable.GetTable());
-            // If there's missing data, map them to white
-            if (coloringHasNulls != null && coloringHasNulls[coloringIndex])
-                ((vtkLookupTable)smallBodyMapper.GetLookupTable()).SetTableValue(0, 1.0, 1.0, 1.0, 1.0);
 
             vtkImageMapToColors mapToColors = new vtkImageMapToColors();
             mapToColors.SetInput(coloringImages[coloringIndex]);
@@ -944,8 +959,7 @@ public class SmallBodyModel extends Model
             int[] components = {redFalseColor, greenFalseColor, blueFalseColor};
             for (int c : components)
             {
-                //double[] range = coloringValues[c].GetRange();
-                double[] range = computeRange(c, false);
+                double[] range = getCurrentColoringRange(c);
                 double extent = range[1] - range[0];
 
                 vtkImageShiftScale shiftScale = new vtkImageShiftScale();
@@ -1177,7 +1191,6 @@ public class SmallBodyModel extends Model
         }
         catch (IOException e)
         {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
@@ -1192,7 +1205,6 @@ public class SmallBodyModel extends Model
         }
         catch (IOException e)
         {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
@@ -1230,7 +1242,7 @@ public class SmallBodyModel extends Model
     // some of the data is missing as represented by the lowest valued. So compute
     // the range ignoring this lowest value (i.e take the lowest value to be the value
     // just higher than the lowest value).
-    private double[] computeRange(int index, boolean adjustForColorTable)
+    private double[] computeDefaultColoringRange(int index)//, boolean adjustForColorTable)
     {
         double[] range = new double[2];
         coloringValues[index].GetRange(range);
@@ -1251,15 +1263,57 @@ public class SmallBodyModel extends Model
                     adjustedMin = v;
             }
 
-            // Subtract a little amount from the adjustedMin. This adds an extra value in the lookup table
-            // for the invalid data, which we can map to the color white. The value of 254 seems to work well,
-            // for current data, but may need tweaking for future data.
-            if (adjustForColorTable)
-                adjustedMin -= (range[1]-adjustedMin)/254.0;
-
             range[0] = adjustedMin;
 
             return range;
+        }
+    }
+
+    private void initializeColoringRanges()
+    {
+        if (defaultColoringRanges == null)
+        {
+            int numberOfColors = getNumberOfColors();
+            defaultColoringRanges = new double[numberOfColors][2];
+            currentColoringRanges = new double[numberOfColors][2];
+
+            for (int i=0; i<numberOfColors; ++i)
+            {
+                double[] range = computeDefaultColoringRange(i);
+                defaultColoringRanges[i][0] = range[0];
+                defaultColoringRanges[i][1] = range[1];
+                currentColoringRanges[i][0] = range[0];
+                currentColoringRanges[i][1] = range[1];
+            }
+        }
+    }
+
+    public double[] getDefaultColoringRange(int coloringIndex)
+    {
+        return defaultColoringRanges[coloringIndex];
+    }
+
+    public double[] getCurrentColoringRange(int coloringIndex)
+    {
+        return currentColoringRanges[coloringIndex];
+    }
+
+    public void setCurrentColoringRange(int coloringIndex, double[] range) throws IOException
+    {
+        range = range.clone();
+
+        if (range[0] < defaultColoringRanges[coloringIndex][0])
+            range[0] = defaultColoringRanges[coloringIndex][0];
+        if (range[1] > defaultColoringRanges[coloringIndex][1])
+            range[1] = defaultColoringRanges[coloringIndex][1];
+
+        if (range[0] != currentColoringRanges[coloringIndex][0] ||
+            range[1] != currentColoringRanges[coloringIndex][1])
+        {
+            currentColoringRanges[coloringIndex][0] = range[0];
+            currentColoringRanges[coloringIndex][1] = range[1];
+
+            paintBody();
         }
     }
 
@@ -1278,9 +1332,9 @@ public class SmallBodyModel extends Model
         vtkFloatArray green = coloringValues[greenFalseColor];
         vtkFloatArray blue = coloringValues[blueFalseColor];
 
-        double[] redRange = computeRange(redFalseColor, false);
-        double[] greenRange = computeRange(greenFalseColor, false);
-        double[] blueRange = computeRange(blueFalseColor, false);
+        double[] redRange = getCurrentColoringRange(redFalseColor);
+        double[] greenRange = getCurrentColoringRange(greenFalseColor);
+        double[] blueRange = getCurrentColoringRange(blueFalseColor);
         double redExtent = redRange[1] - redRange[0];
         double greenExtent = greenRange[1] - greenRange[0];
         double blueExtent = blueRange[1] - blueRange[0];
@@ -1325,11 +1379,6 @@ public class SmallBodyModel extends Model
             array = falseColorArray;
         }
 
-        if (coloringValueType == ColoringValueType.POINT_DATA)
-            this.smallBodyPolyData.GetPointData().SetScalars(array);
-        else
-            this.smallBodyPolyData.GetCellData().SetScalars(array);
-
         if (coloringIndex < 0)
         {
             if (smallBodyActors.contains(scalarBarActor))
@@ -1337,20 +1386,31 @@ public class SmallBodyModel extends Model
         }
         else
         {
-            //smallBodyMapper.GetLookupTable().SetRange(array.GetRange());
-            smallBodyMapper.GetLookupTable().SetRange(computeRange(coloringIndex, true));
+            double[] range = getCurrentColoringRange(coloringIndex);
+            smallBodyMapper.GetLookupTable().SetRange(range);
             ((vtkLookupTable)smallBodyMapper.GetLookupTable()).ForceBuild();
             this.invertLookupTable();
 
-            // If there's missing data, map them to white
+            // If there's missing data (invalid data), we need to set the
+            // color data manually rather than using the lookup table of
+            // the mapper
             if (coloringHasNulls != null && coloringHasNulls[coloringIndex])
-                ((vtkLookupTable)smallBodyMapper.GetLookupTable()).SetTableValue(0, 1.0, 1.0, 1.0, 1.0);
+            {
+                vtkLookupTable lookupTable = (vtkLookupTable)smallBodyMapper.GetLookupTable();
+                mapScalarsThroughLookupTable(coloringValues[coloringIndex], lookupTable, colorData);
+                array = colorData;
+            }
 
             if (!smallBodyActors.contains(scalarBarActor))
                 smallBodyActors.add(scalarBarActor);
 
             scalarBarActor.SetLookupTable(smallBodyMapper.GetLookupTable());
         }
+
+        if (coloringValueType == ColoringValueType.POINT_DATA)
+            this.smallBodyPolyData.GetPointData().SetScalars(array);
+        else
+            this.smallBodyPolyData.GetCellData().SetScalars(array);
 
 
         if (showImageMap == false)
@@ -1423,6 +1483,31 @@ public class SmallBodyModel extends Model
         this.smallBodyPolyData.Modified();
 
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+    }
+
+    private void mapScalarsThroughLookupTable(vtkDataArray scalarData,
+            vtkLookupTable lookupTable,
+            vtkUnsignedCharArray colorArray)
+    {
+        double nullValue = scalarData.GetRange()[0];
+        int numberValues = scalarData.GetNumberOfTuples();
+        colorArray.SetNumberOfComponents(3);
+        colorArray.SetNumberOfTuples(numberValues);
+        double[] rgb = new double[3];
+        for (int i=0; i<numberValues; ++i)
+        {
+            double v = scalarData.GetTuple1(i);
+            if (v != nullValue)
+            {
+                lookupTable.GetColor(v, rgb);
+                colorArray.SetTuple3(i, 255.0*rgb[0], 255.0*rgb[1], 255.0*rgb[2]);
+            }
+            else
+            {
+                // Map null values to white
+                colorArray.SetTuple3(i, 255.0, 255.0, 255.0);
+            }
+        }
     }
 
     public void delete()
