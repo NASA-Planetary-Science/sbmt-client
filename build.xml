@@ -158,7 +158,7 @@
 
   <target name="nativequaquajar">
     <mkdir dir="${rootdir}/build/jar"/>
-    <jar destfile="${rootdir}/build/jar/libquaqua64.jnilib.jar" basedir="${rootdir}/lib/quaqua">
+    <jar destfile="${rootdir}/build/jar/libquaqua64.jnilib-7.3.4.jar" basedir="${rootdir}/lib/quaqua">
       <manifest>
       </manifest>
     </jar>
@@ -292,7 +292,15 @@
   <target name="signquaqua">
     <input message="Please enter keystore password:"
            addproperty="keypass" />
-    <signjar jar="${rootdir}/lib/quaqua.jar"
+    <signjar jar="${rootdir}/lib/quaqua-7.3.4.jar"
+             keystore="${rootdir}/keystore" alias="mykey"
+             storepass="${keypass}"/>
+  </target>
+
+  <target name="signquaqua-filechooser">
+    <input message="Please enter keystore password:"
+           addproperty="keypass" />
+    <signjar jar="${rootdir}/lib/quaqua-7.3.4-filechooser-only.jar"
              keystore="${rootdir}/keystore" alias="mykey"
              storepass="${keypass}"/>
   </target>
@@ -300,7 +308,7 @@
   <target name="signnativequaqua" depends="nativequaquajar">
     <input message="Please enter keystore password:"
            addproperty="keypass" />
-    <signjar jar="${rootdir}/build/jar/libquaqua64.jnilib.jar"
+    <signjar jar="${rootdir}/build/jar/libquaqua64.jnilib-7.3.4.jar"
              keystore="${rootdir}/keystore" alias="mykey"
              storepass="${keypass}"/>
   </target>

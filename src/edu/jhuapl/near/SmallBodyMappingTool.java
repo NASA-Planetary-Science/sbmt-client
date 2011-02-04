@@ -105,11 +105,18 @@ public class SmallBodyMappingTool extends JFrame
             {
                 System.setProperty("Quaqua.tabLayoutPolicy","wrap");
 
-                // Use reflection to load the quaqua look and feel
-                Class quaquaManagerClass = Class.forName("ch.randelshofer.quaqua.QuaquaManager");
-                Method getLookAndFeelMethod = quaquaManagerClass.getDeclaredMethod("getLookAndFeel", new Class[] { });
-                LookAndFeel lookAndFeel = (LookAndFeel)getLookAndFeelMethod.invoke(null, new Object[] { });
-                UIManager.setLookAndFeel(lookAndFeel);
+                try
+                {
+                    // Use reflection to load the quaqua look and feel
+                    Class quaquaManagerClass = Class.forName("ch.randelshofer.quaqua.QuaquaManager");
+                    Method getLookAndFeelMethod = quaquaManagerClass.getDeclaredMethod("getLookAndFeel", new Class[] { });
+                    LookAndFeel lookAndFeel = (LookAndFeel)getLookAndFeelMethod.invoke(null, new Object[] { });
+                    UIManager.setLookAndFeel(lookAndFeel);
+                }
+                catch(Exception e)
+                {
+                    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+                }
             }
             /*
             else if (System.getProperty("os.name").toLowerCase().startsWith("linux"))
