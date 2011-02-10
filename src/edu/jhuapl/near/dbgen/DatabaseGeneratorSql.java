@@ -14,7 +14,6 @@ import org.joda.time.DateTimeZone;
 
 import vtk.vtkGlobalJavaHash;
 import vtk.vtkPolyData;
-import vtk.vtkPolyDataReader;
 
 import edu.jhuapl.near.model.ModelFactory;
 import edu.jhuapl.near.model.SmallBodyModel;
@@ -27,9 +26,9 @@ import edu.jhuapl.near.util.NativeLibraryLoader;
 public class DatabaseGeneratorSql
 {
     static private final String MsiImagesPdsTable = "msiimages_beta2";
-    static private final String MsiImagesGaskellTable = "msiimages_gaskell_beta2";
+    static private final String MsiImagesGaskellTable = "msiimages_gaskell_beta3";
     static private final String MsiCubesPdsTable = "msicubes_beta2";
-    static private final String MsiCubesGaskellTable = "msicubes_gaskell_beta2";
+    static private final String MsiCubesGaskellTable = "msicubes_gaskell_beta3";
     static private final String NisSpectraTable = "nisspectra_beta2";
     static private final String NisCubesTable = "niscubes_beta2";
 
@@ -39,9 +38,9 @@ public class DatabaseGeneratorSql
     static private PreparedStatement nisInsert = null;
     static private PreparedStatement nisInsert2 = null;
     static private SmallBodyModel erosModel;
-    static private vtkPolyDataReader footprintReader;
+    //static private vtkPolyDataReader footprintReader;
     static private vtkPolyData footprintPolyData;
-    static private double[] meanPlateSizes;
+    //static private double[] meanPlateSizes;
 
     private static void createMSITables(String msiTableName)
     {
@@ -200,7 +199,7 @@ public class DatabaseGeneratorSql
             MSIImage.MSISource msiSource) throws IOException, SQLException, FitsException
     {
         erosModel.setModelResolution(3);
-        MSIImage.setGenerateFootprint(false);
+        MSIImage.setGenerateFootprint(true);
         MSIImage.setFootprintIsOnLocalDisk(true);
 
         int count = 0;
@@ -391,7 +390,7 @@ public class DatabaseGeneratorSql
             MSIImage.MSISource msiSource) throws SQLException, IOException, FitsException
     {
         erosModel.setModelResolution(0);
-        MSIImage.setGenerateFootprint(false);
+        MSIImage.setGenerateFootprint(true);
         MSIImage.setFootprintIsOnLocalDisk(true);
 
         int count = 0;
@@ -584,7 +583,7 @@ public class DatabaseGeneratorSql
 
         return true;
     }
-
+/*
     private static void computeMeanPlateSizeAtAllResolutions() throws IOException
     {
         int numRes = erosModel.getNumberResolutionLevels();
@@ -616,6 +615,7 @@ public class DatabaseGeneratorSql
 
         return numRes - 1;
     }
+*/
 
 
     /**
