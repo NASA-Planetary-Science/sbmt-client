@@ -9,6 +9,10 @@
 
   <version position="none" />
 
+  <poweredBy>
+    <logo name="" href="" img="images/dummy.png"/>
+  </poweredBy>
+
   <body>
 <!--
     <links>
