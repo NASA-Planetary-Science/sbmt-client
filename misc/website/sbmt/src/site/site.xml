@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <project name="Small Body Mapping Tool">
-<!--  <bannerLeft>
+
+  <bannerLeft>
     <name>Small Body Mapping Tool</name>
-    <src>http://maven.apache.org/images/apache-maven-project.png</src>
-    <href>http://maven.apache.org/</href>
+    <src>images/sbmt.png</src>
+    <href>http://near.jhuapl.edu/software</href>
   </bannerLeft>
-  <bannerRight>
-    <src>http://maven.apache.org/images/maven-small.gif</src>
-  </bannerRight>
--->
+
+  <version position="none" />
+
   <body>
 <!--
     <links>
@@ -20,8 +20,8 @@
 -->
     <menu name="Overview">
       <item name="Home" href="index.html"/>
-      <item name="User Manual" href="release-notes.html" />
-      <item name="Changes" href="about.html"/>
+      <item name="User Manual" href="usermanual.html" />
+      <item name="Changes" href="changes.html"/>
     </menu>
 
   </body>

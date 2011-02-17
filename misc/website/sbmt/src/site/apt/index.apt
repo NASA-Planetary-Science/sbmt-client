@@ -1,7 +1,11 @@
-  Click {{{http://near.jhuapl.edu/software/sbmt/near.jnlp}here}} to
-  start the latest version of the Small Body Mapping Tool. Requires
-  Java 6 or higher.
+Welcome to the Small Body Mapping Tool
 
+  Click on the following link to start the latest version of the Small
+  Body Mapping Tool. Java 6 or higher is required.
+
+  {{{http://near.jhuapl.edu/software/sbmt/near.jnlp}<<Start Small Body Mapping Tool>>}}
+
+  \
   Supported platforms:
 
   * Windows (32-bit)
@@ -13,5 +17,6 @@
   []
 
   To run an older version of the tool which works with Java 5, click
-  here. Note, however, that future updates to the tool will be made
-  only for the Java 6 version.
+  {{{http://near.jhuapl.edu/software/sbmt_old_java5/near.jnlp}here}}. Note,
+  however, that future updates to the tool will be made only for the
+  Java 6 version.
