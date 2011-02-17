@@ -31,7 +31,6 @@ import edu.jhuapl.near.model.eros.MSIImage.MSIKey;
 import edu.jhuapl.near.popupmenus.PopupMenu;
 import edu.jhuapl.near.util.FileCache;
 import edu.jhuapl.near.util.FileUtil;
-import edu.jhuapl.near.util.MathUtil;
 
 
 public class MSIPopupMenu extends PopupMenu
@@ -248,7 +247,7 @@ public class MSIPopupMenu extends PopupMenu
         public void actionPerformed(ActionEvent e)
         {
             double[] spacecraftPosition = new double[3];
-            double[] boresightDirection = new double[3];
+            double[] focalPoint = new double[3];
             double[] upVector = new double[3];
 
             MSIBoundaryCollection msiBoundaries = (MSIBoundaryCollection)modelManager.getModel(ModelNames.MSI_BOUNDARY);
@@ -256,31 +255,23 @@ public class MSIPopupMenu extends PopupMenu
             if (msiBoundaries.containsBoundary(msiKey))
             {
                 Boundary boundary = msiBoundaries.getBoundary(msiKey);
-                boundary.getCameraOrientation(spacecraftPosition, boresightDirection, upVector);
+                boundary.getCameraOrientation(spacecraftPosition, focalPoint, upVector);
             }
             else if (msiImages.containsImage(msiKey))
             {
                 MSIImage image = msiImages.getImage(msiKey);
-                image.getCameraOrientation(spacecraftPosition, boresightDirection, upVector);
+                image.getCameraOrientation(spacecraftPosition, focalPoint, upVector);
             }
             else
             {
                 return;
             }
 
-            final double norm = MathUtil.vnorm(spacecraftPosition);
-            double[] position = {
-                    spacecraftPosition[0] + 0.6*norm*boresightDirection[0],
-                    spacecraftPosition[1] + 0.6*norm*boresightDirection[1],
-                    spacecraftPosition[2] + 0.6*norm*boresightDirection[2]
-            };
-            double[] focalPoint = {
-                    position[0] + 0.25*norm*boresightDirection[0],
-                    position[1] + 0.25*norm*boresightDirection[1],
-                    position[2] + 0.25*norm*boresightDirection[2]
-            };
+            // The field of view of the MSI imager was 2.95 by 2.26 degrees. Therefore set the view angle
+            // here to 4 degrees to show a little of the asteroid around the image.
+            double viewAngle = 4.0;
 
-            renderer.setCameraOrientation(position, focalPoint, upVector);
+            renderer.setCameraOrientation(spacecraftPosition, focalPoint, upVector, viewAngle);
         }
     }
 

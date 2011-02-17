@@ -202,13 +202,15 @@ public class Renderer extends JPanel implements
     public void setCameraOrientation(
             double[] position,
             double[] focalPoint,
-            double[] upVector)
+            double[] upVector,
+            double viewAngle)
     {
         renWin.lock();
         vtkCamera cam = renWin.GetRenderer().GetActiveCamera();
         cam.SetPosition(position);
         cam.SetFocalPoint(focalPoint);
         cam.SetViewUp(upVector);
+        cam.SetViewAngle(viewAngle);
         renWin.unlock();
         renWin.resetCameraClippingRange();
         renWin.Render();

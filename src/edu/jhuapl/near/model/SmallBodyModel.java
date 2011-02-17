@@ -503,6 +503,46 @@ public class SmallBodyModel extends Model
             return -1;
     }
 
+    /**
+     * Compute the intersection of a ray with the asteroid. Returns the
+     * cell id of the cell containing that point. This is done by shooting
+     * a ray from the specified origin in the specified direction.
+     * @param origin point
+     * @param direction vector
+     * @param (returned) intersectPoint
+     * @return the cellId of the cell containing the intersect point
+     */
+    public int computeRayIntersection(double[] origin, double[] direction, double[] intersectPoint)
+    {
+        // Normalize the direction vector
+        double[] directionUnit = new double[3];
+        MathUtil.unorm(direction, directionUnit);
+
+        double distance = MathUtil.vnorm(origin);
+        double[] lookPt = new double[3];
+        lookPt[0] = origin[0] + 2.0*distance*directionUnit[0];
+        lookPt[1] = origin[1] + 2.0*distance*directionUnit[1];
+        lookPt[2] = origin[2] + 2.0*distance*directionUnit[2];
+
+        double tol = 1e-6;
+        double[] t = new double[1];
+        double[] x = new double[3];
+        double[] pcoords = new double[3];
+        int[] subId = new int[1];
+        int[] cellId = new int[1];
+
+        int result = cellLocator.IntersectWithLine(origin, lookPt, tol, t, x, pcoords, subId, cellId, genericCell);
+
+        intersectPoint[0] = x[0];
+        intersectPoint[1] = x[1];
+        intersectPoint[2] = x[2];
+
+        if (result > 0)
+            return cellId[0];
+        else
+            return -1;
+    }
+
     protected void initializeActorsAndMappers()
     {
         if (smallBodyActor == null)

@@ -1552,12 +1552,18 @@ public class MSIImage extends Model implements PropertyChangeListener
     }
 
     public void getCameraOrientation(double[] spacecraftPosition,
-            double[] boresightDirection, double[] upVector)
+            double[] focalPoint, double[] upVector)
     {
+        int cellId = erosModel.computeRayIntersection(this.spacecraftPosition, boresightDirection, focalPoint);
+
+        if (cellId < 0)
+        {
+            System.out.println("Error computing boresight intersection");
+        }
+
         for (int i=0; i<3; ++i)
         {
             spacecraftPosition[i] = this.spacecraftPosition[i];
-            boresightDirection[i] = this.boresightDirection[i];
             upVector[i] = this.upVector[i];
         }
     }
