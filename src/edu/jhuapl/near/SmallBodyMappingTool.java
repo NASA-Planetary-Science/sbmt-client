@@ -44,7 +44,7 @@ public class SmallBodyMappingTool extends JFrame
         if (System.getProperty("os.name").toLowerCase().startsWith("mac"))
         {
             System.setProperty("apple.laf.useScreenMenuBar", "true");
-            ImageIcon erosIcon = new ImageIcon(SmallBodyMappingTool.class.getResource("/edu/jhuapl/near/data/eros.png"));
+            ImageIcon erosIcon = new ImageIcon(SmallBodyMappingTool.class.getResource("/edu/jhuapl/near/data/erosMacDock.png"));
             OSXAdapter.setDockIconImage(erosIcon.getImage());
         }
     }
