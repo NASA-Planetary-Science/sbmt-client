@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
@@ -1041,13 +1042,17 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
                     listModel.addElement(colorKey);
                     int idx = listModel.size()-1;
                     colorImagesDisplayedList.setSelectionInterval(idx, idx);
-                    colorImagesDisplayedList.scrollRectToVisible(colorImagesDisplayedList.getCellBounds(idx, idx));
+                    Rectangle cellBounds = colorImagesDisplayedList.getCellBounds(idx, idx);
+                    if (cellBounds != null)
+                        colorImagesDisplayedList.scrollRectToVisible(cellBounds);
                 }
                 else
                 {
                     int idx = listModel.indexOf(colorKey);
                     colorImagesDisplayedList.setSelectionInterval(idx, idx);
-                    colorImagesDisplayedList.scrollRectToVisible(colorImagesDisplayedList.getCellBounds(idx, idx));
+                    Rectangle cellBounds = colorImagesDisplayedList.getCellBounds(idx, idx);
+                    if (cellBounds != null)
+                        colorImagesDisplayedList.scrollRectToVisible(cellBounds);
                 }
             }
             catch (IOException e1)
@@ -1098,7 +1103,9 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
                 int idx = msiRawResults.indexOf(name + ".FIT");
 
                 resultList.setSelectionInterval(idx, idx);
-                resultList.scrollRectToVisible(resultList.getCellBounds(idx, idx));
+                Rectangle cellBounds = resultList.getCellBounds(idx, idx);
+                if (cellBounds != null)
+                    resultList.scrollRectToVisible(cellBounds);
             }
         }
     }
