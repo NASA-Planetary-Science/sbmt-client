@@ -42,6 +42,7 @@ import vtk.vtksbCellLocator;
 
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.SmallBodyModel;
+import edu.jhuapl.near.util.BoundingBox;
 import edu.jhuapl.near.util.FileCache;
 import edu.jhuapl.near.util.Frustum;
 import edu.jhuapl.near.util.IntensityRange;
@@ -1554,17 +1555,29 @@ public class MSIImage extends Model implements PropertyChangeListener
     public void getCameraOrientation(double[] spacecraftPosition,
             double[] focalPoint, double[] upVector)
     {
-        int cellId = erosModel.computeRayIntersection(this.spacecraftPosition, boresightDirection, focalPoint);
-
-        if (cellId < 0)
-        {
-            System.out.println("Error computing boresight intersection");
-        }
 
         for (int i=0; i<3; ++i)
         {
             spacecraftPosition[i] = this.spacecraftPosition[i];
             upVector[i] = this.upVector[i];
+        }
+
+        // Normalize the direction vector
+        double[] direction = new double[3];
+        MathUtil.unorm(boresightDirection, direction);
+
+        int cellId = erosModel.computeRayIntersection(spacecraftPosition, direction, focalPoint);
+
+        if (cellId < 0)
+        {
+            BoundingBox bb = new BoundingBox(footprint.GetBounds());
+            double[] centerPoint = bb.getCenterPoint();
+            //double[] centerPoint = footprint.GetPoint(0);
+            double distanceToCenter = MathUtil.distanceBetween(spacecraftPosition, centerPoint);
+
+            focalPoint[0] = spacecraftPosition[0] + distanceToCenter*direction[0];
+            focalPoint[1] = spacecraftPosition[1] + distanceToCenter*direction[1];
+            focalPoint[2] = spacecraftPosition[2] + distanceToCenter*direction[2];
         }
     }
 

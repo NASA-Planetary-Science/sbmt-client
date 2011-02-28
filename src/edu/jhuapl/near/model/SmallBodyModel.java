@@ -508,21 +508,17 @@ public class SmallBodyModel extends Model
      * cell id of the cell containing that point. This is done by shooting
      * a ray from the specified origin in the specified direction.
      * @param origin point
-     * @param direction vector
-     * @param (returned) intersectPoint
+     * @param direction vector (must be unit vector)
+     * @param intersectPoint (returned)
      * @return the cellId of the cell containing the intersect point
      */
     public int computeRayIntersection(double[] origin, double[] direction, double[] intersectPoint)
     {
-        // Normalize the direction vector
-        double[] directionUnit = new double[3];
-        MathUtil.unorm(direction, directionUnit);
-
         double distance = MathUtil.vnorm(origin);
         double[] lookPt = new double[3];
-        lookPt[0] = origin[0] + 2.0*distance*directionUnit[0];
-        lookPt[1] = origin[1] + 2.0*distance*directionUnit[1];
-        lookPt[2] = origin[2] + 2.0*distance*directionUnit[2];
+        lookPt[0] = origin[0] + 2.0*distance*direction[0];
+        lookPt[1] = origin[1] + 2.0*distance*direction[1];
+        lookPt[2] = origin[2] + 2.0*distance*direction[2];
 
         double tol = 1e-6;
         double[] t = new double[1];

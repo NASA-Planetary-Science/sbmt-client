@@ -63,6 +63,17 @@ public class BoundingBox
         return Math.max(xmax-xmin, Math.max(ymax-ymin, zmax-zmin));
     }
 
+    public double[] getCenterPoint()
+    {
+        double[] center = {
+                xmin + (xmax-xmin)/2.0,
+                ymin + (ymax-ymin)/2.0,
+                zmin + (zmax-zmin)/2.0
+        };
+
+        return center;
+    }
+
     public double getDiagonalLength()
     {
         double[] vec = {
