@@ -24,8 +24,7 @@ public class NativeLibraryLoader
             }
         });
 
-        String name = System.getProperty("os.name");
-        if (name.toLowerCase().startsWith("windows"))
+        if (Configuration.isWindows())
         {
             // On windows, just load all the libraries
             // manually rather than dealing with how to find dependent libraries.

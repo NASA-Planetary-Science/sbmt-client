@@ -7,6 +7,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
 import edu.jhuapl.near.gui.actions.SaveImageAction;
+import edu.jhuapl.near.util.Configuration;
 
 
 
@@ -20,7 +21,7 @@ public class FileMenu extends JMenu
         this.add(mi);
 
         // On macs the exit action is in the Application menu not the file menu
-        if (!System.getProperty("os.name").toLowerCase().startsWith("mac"))
+        if (!Configuration.isMac())
         {
             this.addSeparator();
 

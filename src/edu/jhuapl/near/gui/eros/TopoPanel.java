@@ -28,6 +28,7 @@ import edu.jhuapl.near.model.RegularPolygonModel;
 import edu.jhuapl.near.model.eros.MapletBoundaryCollection;
 import edu.jhuapl.near.pick.PickManager;
 import edu.jhuapl.near.pick.PickManager.PickMode;
+import edu.jhuapl.near.util.Configuration;
 
 public class TopoPanel extends JPanel implements ActionListener
 {
@@ -292,8 +293,7 @@ public class TopoPanel extends JPanel implements ActionListener
 
     private boolean checkIfPlatformSupported()
     {
-        String name = System.getProperty("os.name");
-        if (name.toLowerCase().startsWith("windows"))
+        if (Configuration.isWindows())
         {
             JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
                     "This feature is currently not supported in Windows platforms. Please try using Linux\n" +

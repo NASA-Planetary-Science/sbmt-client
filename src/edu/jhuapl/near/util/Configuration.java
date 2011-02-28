@@ -107,17 +107,17 @@ public class Configuration
         mapMaperDir = folder;
     }
 
-    static boolean isMac()
+    static public boolean isMac()
     {
         return System.getProperty("os.name").toLowerCase().startsWith("mac");
     }
 
-    static boolean isLinux()
+    static public boolean isLinux()
     {
         return System.getProperty("os.name").toLowerCase().startsWith("linux");
     }
 
-    static boolean isWindows()
+    static public boolean isWindows()
     {
         return System.getProperty("os.name").toLowerCase().startsWith("windows");
     }

@@ -16,6 +16,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
+import edu.jhuapl.near.util.Configuration;
+
 
 public class HelpMenu extends JMenu
 {
@@ -30,7 +32,7 @@ public class HelpMenu extends JMenu
         this.add(mi);
 
         // On macs the about action is in the Application menu not the help menu
-        if (!System.getProperty("os.name").toLowerCase().startsWith("mac"))
+        if (!Configuration.isMac())
         {
             this.addSeparator();
 

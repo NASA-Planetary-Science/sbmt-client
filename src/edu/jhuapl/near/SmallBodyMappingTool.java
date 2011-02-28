@@ -13,6 +13,7 @@ import vtk.vtkJavaGarbageCollector;
 
 import edu.jhuapl.near.gui.MainWindow;
 import edu.jhuapl.near.gui.OSXAdapter;
+import edu.jhuapl.near.util.Configuration;
 import edu.jhuapl.near.util.NativeLibraryLoader;
 
 
@@ -28,7 +29,7 @@ public class SmallBodyMappingTool
 
     static
     {
-        if (System.getProperty("os.name").toLowerCase().startsWith("mac"))
+        if (Configuration.isMac())
         {
             System.setProperty("apple.laf.useScreenMenuBar", "true");
             ImageIcon erosIcon = new ImageIcon(SmallBodyMappingTool.class.getResource("/edu/jhuapl/near/data/erosMacDock.png"));
@@ -40,7 +41,7 @@ public class SmallBodyMappingTool
     {
         try
         {
-            if (System.getProperty("os.name").toLowerCase().startsWith("mac"))
+            if (Configuration.isMac())
             {
                 System.setProperty("Quaqua.tabLayoutPolicy","wrap");
 
@@ -58,7 +59,7 @@ public class SmallBodyMappingTool
                 }
             }
             /*
-            else if (System.getProperty("os.name").toLowerCase().startsWith("linux"))
+            else if (Configuration.isLinux())
             {
                 boolean haveNimbus = false;
                 for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels())

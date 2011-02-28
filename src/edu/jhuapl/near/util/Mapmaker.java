@@ -25,7 +25,6 @@ public class Mapmaker
         this.mapmakerRootDir = mapmakerRootDir;
 
         String execDir = mapmakerRootDir + File.separator + "EXECUTABLES";
-        String osname = System.getProperty("os.name");
 
         ArrayList<String> processCommand = new ArrayList<String>();
 
@@ -36,7 +35,7 @@ public class Mapmaker
         Map<String, String> env = processBuilder.environment();
 
         String processName = null;
-        if (osname.toLowerCase().startsWith("linux"))
+        if (Configuration.isLinux())
         {
             if (System.getProperty("sun.arch.data.model").equals("64"))
                 processName = execDir + File.separator + "MAPMAKERO.linux64";
@@ -45,7 +44,7 @@ public class Mapmaker
 
             env.put("LD_LIBRARY_PATH", execDir);
         }
-        else if (osname.toLowerCase().startsWith("mac"))
+        else if (Configuration.isMac())
         {
             processName = execDir + File.separator + "MAPMAKERO.macosx";
 
