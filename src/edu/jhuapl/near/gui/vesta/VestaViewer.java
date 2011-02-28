@@ -27,6 +27,7 @@ import edu.jhuapl.near.model.RegularPolygonModel;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.pick.PickManager;
 import edu.jhuapl.near.popupmenus.GenericPopupManager;
+import edu.jhuapl.near.util.Configuration;
 
 /**
  * This class contains the "main" function called at the start of the program.
@@ -80,10 +81,13 @@ public class VestaViewer extends Viewer
         controlPanel = new JTabbedPane();
         controlPanel.setBorder(BorderFactory.createEmptyBorder());
         controlPanel.addTab("Vesta", new SmallBodyControlPanel(modelManager, "Vesta"));
-        controlPanel.addTab("FC", new FCSearchPanel(modelManager, infoPanelManager, pickManager, renderer));
-        controlPanel.addTab("VIR", new VIRSearchPanel(modelManager, infoPanelManager, pickManager));
-        controlPanel.addTab("GRaND", new GRaNDSearchPanel(modelManager, infoPanelManager, pickManager));
-        controlPanel.addTab("Structures", new StructuresControlPanel(modelManager, pickManager));
+        if (Configuration.isAPLVersion())
+        {
+            controlPanel.addTab("FC", new FCSearchPanel(modelManager, infoPanelManager, pickManager, renderer));
+            controlPanel.addTab("VIR", new VIRSearchPanel(modelManager, infoPanelManager, pickManager));
+            controlPanel.addTab("GRaND", new GRaNDSearchPanel(modelManager, infoPanelManager, pickManager));
+            controlPanel.addTab("Structures", new StructuresControlPanel(modelManager, pickManager));
+        }
 
         splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
                 controlPanel, renderer);

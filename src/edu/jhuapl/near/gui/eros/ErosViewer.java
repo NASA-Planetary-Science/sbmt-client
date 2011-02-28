@@ -37,6 +37,7 @@ import edu.jhuapl.near.model.eros.NLRBrowseDataCollection;
 import edu.jhuapl.near.model.eros.NLRSearchDataCollection;
 import edu.jhuapl.near.pick.PickManager;
 import edu.jhuapl.near.popupmenus.eros.ErosPopupManager;
+import edu.jhuapl.near.util.Configuration;
 
 /**
  * This class contains the "main" function called at the start of the program.
@@ -89,10 +90,12 @@ public class ErosViewer extends Viewer
         controlPanel.addTab("MSI", new MSISearchPanel(modelManager, infoPanelManager, pickManager, renderer));
         controlPanel.addTab("NIS", new NISSearchPanel(modelManager, infoPanelManager, pickManager));
         controlPanel.addTab("NLR", new NLRPanel(modelManager, pickManager));
-        controlPanel.addTab("Lineament", new LineamentControlPanel(modelManager));
-        controlPanel.addTab("Structures", new StructuresControlPanel(modelManager, pickManager));
-        controlPanel.addTab("Mapmaker", new TopoPanel(modelManager, pickManager));
-
+        if (Configuration.isAPLVersion())
+        {
+            controlPanel.addTab("Lineament", new LineamentControlPanel(modelManager));
+            controlPanel.addTab("Structures", new StructuresControlPanel(modelManager, pickManager));
+            controlPanel.addTab("Mapmaker", new TopoPanel(modelManager, pickManager));
+        }
 
         splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
                 controlPanel, renderer);

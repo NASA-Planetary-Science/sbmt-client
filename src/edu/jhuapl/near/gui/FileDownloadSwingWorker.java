@@ -22,12 +22,12 @@ public class FileDownloadSwingWorker extends ProgressBarSwingWorker
 
     public boolean getIfNeedToDownload()
     {
-        return FileCache.getFileInfoFromServer(filename).needToDownload;
+        return FileCache.getFileInfoFromServer(filename, true).needToDownload;
     }
 
     public boolean getIfNeedToUnzip()
     {
-        String zipfile = FileCache.getFileInfoFromServer(filename).file.getAbsolutePath();
+        String zipfile = FileCache.getFileInfoFromServer(filename, true).file.getAbsolutePath();
         File zipRootFolder = new File(zipfile.substring(0, zipfile.length()-4));
 
         return !zipRootFolder.exists() && zipfile.endsWith(".zip");
@@ -50,7 +50,7 @@ public class FileDownloadSwingWorker extends ProgressBarSwingWorker
         {
             public void run()
             {
-                File file = FileCache.getFileFromServer(filename);
+                File file = FileCache.getFileFromServer(filename, true);
 
                 if (file != null && needToUnzip)
                     FileUtil.unzipFile(file);
@@ -95,5 +95,10 @@ public class FileDownloadSwingWorker extends ProgressBarSwingWorker
         }
 
         return null;
+    }
+
+    protected String getFileDownloaded()
+    {
+        return filename;
     }
 }

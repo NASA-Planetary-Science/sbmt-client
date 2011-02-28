@@ -9,8 +9,17 @@ public class Configuration
     static private String cacheVersion = "2";
     static private String mapMaperDir = null;
 
-    /*
+    // Flag indicating if this version of the tool is APL in-house only ("private")
+    static private boolean APLVersion = false;
+
     static
+    {
+        //String username = "";
+        //String password = "";
+        //setupPasswordAuthentication(username, password);
+    }
+
+    static public void setupPasswordAuthentication(final String username, final String password)
     {
         try
         {
@@ -18,8 +27,6 @@ public class Configuration
             {
                 protected java.net.PasswordAuthentication getPasswordAuthentication()
                 {
-                    String username = "";
-                    String password = "";
                     return new java.net.PasswordAuthentication(username, password.toCharArray());
                 }
             });
@@ -29,7 +36,7 @@ public class Configuration
             e.printStackTrace();
         }
     }
-    */
+
 
     /**
      * @return Return the location where all application specific files should be stored. This is within
@@ -73,12 +80,21 @@ public class Configuration
      */
     static public String getDataRootURL()
     {
-        return "http://near.jhuapl.edu/software/data";
+        return "http://near.jhuapl.edu/software/sbmt/data";
+    }
+
+    /**
+     * @return Return the url of the server where data is downloaded from.
+     * for use by the APL in-house version
+     */
+    static public String getDataRootURLAPL()
+    {
+        return "http://near.jhuapl.edu/software/apl/data-apl";
     }
 
     static public String getQueryRootURL()
     {
-        return "http://near.jhuapl.edu/software/query2";
+        return "http://near.jhuapl.edu/software/sbmt/query";
     }
 
     static public String getMapmakerDir()
@@ -104,5 +120,15 @@ public class Configuration
     static boolean isWindows()
     {
         return System.getProperty("os.name").toLowerCase().startsWith("windows");
+    }
+
+    static public void setAPLVersion(boolean b)
+    {
+        APLVersion = b;
+    }
+
+    static public boolean isAPLVersion()
+    {
+        return APLVersion;
     }
 }

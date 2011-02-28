@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 
 import edu.jhuapl.near.gui.FileDownloadSwingWorker;
+import edu.jhuapl.near.util.FileCache;
 import edu.jhuapl.near.util.LatLon;
 import edu.jhuapl.near.util.Mapmaker;
 import edu.jhuapl.near.util.MathUtil;
@@ -83,7 +84,10 @@ public class MapmakerSwingWorker extends FileDownloadSwingWorker
 
         try
         {
-            Mapmaker mapmaker = new Mapmaker();
+            File file = FileCache.getFileFromServer(this.getFileDownloaded(), true);
+            String mapmakerRootDir = file.getParent() + File.separator + "mapmaker";
+
+            Mapmaker mapmaker = new Mapmaker(mapmakerRootDir);
             mapmaker.setName(name);
             LatLon ll = MathUtil.reclat(centerPoint);
             mapmaker.setLatitude(ll.lat);

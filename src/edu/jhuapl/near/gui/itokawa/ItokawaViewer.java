@@ -25,6 +25,7 @@ import edu.jhuapl.near.model.RegularPolygonModel;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.pick.PickManager;
 import edu.jhuapl.near.popupmenus.GenericPopupManager;
+import edu.jhuapl.near.util.Configuration;
 
 /**
  * This class contains the "main" function called at the start of the program.
@@ -68,7 +69,10 @@ public class ItokawaViewer extends Viewer
         controlPanel = new JTabbedPane();
         controlPanel.setBorder(BorderFactory.createEmptyBorder());
         controlPanel.addTab("Itokawa", new SmallBodyControlPanel(modelManager, "Itokawa"));
-        controlPanel.addTab("Structures", new StructuresControlPanel(modelManager, pickManager));
+        if (Configuration.isAPLVersion())
+        {
+            controlPanel.addTab("Structures", new StructuresControlPanel(modelManager, pickManager));
+        }
 
         splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
                 controlPanel, renderer);

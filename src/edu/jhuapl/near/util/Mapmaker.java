@@ -20,10 +20,9 @@ public class Mapmaker
     private File cubeFile;
     private File lblFile;
 
-    public Mapmaker() throws IOException
+    public Mapmaker(String mapmakerRootDir) throws IOException
     {
-        File file = FileCache.getFileFromServer("/MSI/mapmaker.zip");
-        mapmakerRootDir = file.getParent() + File.separator + "mapmaker";
+        this.mapmakerRootDir = mapmakerRootDir;
 
         String execDir = mapmakerRootDir + File.separator + "EXECUTABLES";
         String osname = System.getProperty("os.name");

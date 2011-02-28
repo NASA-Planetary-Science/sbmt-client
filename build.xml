@@ -35,28 +35,9 @@
     </javac> 
   </target>
 
-  <target name="run" depends="compile">
-    <java classname="edu.jhuapl.near.ErosViewer" fork="true" maxmemory="512m">
-      <jvmarg value="-Djava.library.path=${rootdir}/lib/linux32"/>
-      <jvmarg value="-Dsun.java2d.noddraw=true"/>
-      <classpath>
-		<pathelement location="${rootdir}/build/classes"/>
-		<pathelement location="${rootdir}/lib/vtksb.jar"/>
-		<pathelement location="${rootdir}/lib/vtk.jar"/>
-		<pathelement location="${rootdir}/lib/jide-oss-2.7.3.jar"/>
-		<pathelement location="${rootdir}/lib/joda-time-1.6.jar"/>
-		<pathelement location="${rootdir}/lib/jcommon-1.0.16.jar"/>
-		<pathelement location="${rootdir}/lib/jfreechart-1.0.13.jar"/>
-		<pathelement location="${rootdir}/lib/miglayout-3.7.1-swing.jar"/>
-		<pathelement location="${rootdir}/lib/commons-io-2.0.jar"/>
-		<pathelement location="${rootdir}/lib/fits-1.04.0.jar"/>
-      </classpath>
-    </java>
-  </target>
-
-  <target name="jar" depends="compile">
+  <target name="jarapl" depends="compile">
     <mkdir dir="${rootdir}/build/jar"/>
-    <jar destfile="${rootdir}/build/jar/near.jar" basedir="${rootdir}/build/classes">
+    <jar destfile="${rootdir}/build/jar/near-apl.jar" basedir="${rootdir}/build/classes">
       <manifest>
         <attribute name="Class-Path" value="vtksb.jar
 											vtk.jar
@@ -67,29 +48,39 @@
                                             miglayout-3.7.1-swing.jar
                                             commons-io-2.0.jar
                                             fits-1.04.0.jar"/>
-        <attribute name="Main-Class" value="edu.jhuapl.near.ErosViewer"/>
+        <attribute name="Main-Class" value="edu.jhuapl.near.SmallBodyMappingToolAPL"/>
       </manifest>
     </jar>
   </target>
 
-  <target name="runjar" depends="jar">
-    <java classname="edu.jhuapl.near.ErosViewer" fork="true"
-          maxmemory="512m">
-      <jvmarg value="-Djava.library.path=${rootdir}/lib/linux32"/>
-      <jvmarg value="-Dsun.java2d.noddraw=true"/>
-      <classpath>
-		<pathelement location="${rootdir}/lib/vtksb.jar"/>
-		<pathelement location="${rootdir}/lib/vtk.jar"/>
-		<pathelement location="${rootdir}/lib/jide-oss-2.7.3.jar"/>
-		<pathelement location="${rootdir}/lib/joda-time-1.6.jar"/>
-		<pathelement location="${rootdir}/lib/jcommon-1.0.16.jar"/>
-        <pathelement location="${rootdir}/lib/jfreechart-1.0.13.jar"/>
-        <pathelement location="${rootdir}/lib/miglayout-3.7.1-swing.jar"/>
-        <pathelement location="${rootdir}/lib/commons-io-2.0.jar"/>
-        <pathelement location="${rootdir}/lib/fits-1.04.0.jar"/>
-		<pathelement location="${rootdir}/build/jar/near.jar"/>
-      </classpath>
-    </java>
+  <target name="jar" depends="compile">
+    <mkdir dir="${rootdir}/build/jar"/>
+    <jar destfile="${rootdir}/build/jar/near.jar" 
+         basedir="${rootdir}/build/classes"
+         excludes="edu/jhuapl/near/gui/eros/LineamentControlPanel.class
+                   edu/jhuapl/near/gui/eros/TopoPanel*
+                   edu/jhuapl/near/gui/eros/TopoPlot*
+                   edu/jhuapl/near/gui/eros/TopoViewer*
+                   edu/jhuapl/near/gui/vesta/FCSearchPanel*
+                   edu/jhuapl/near/gui/vesta/GRaNDSearchPanel*
+                   edu/jhuapl/near/gui/vesta/VIRSearchPanel*
+                   edu/jhuapl/near/gui/StructuresControlPanel*
+                   edu/jhuapl/near/gui/AbstractStructureMappingControlPanel*
+                   edu/jhuapl/near/data/LinearFeatures.txt
+                   edu/jhuapl/near/SmallBodyMappingToolAPL.class">
+      <manifest>
+        <attribute name="Class-Path" value="vtksb.jar
+											vtk.jar
+											jide-oss-2.7.3.jar
+											joda-time-1.6.jar
+                                            jcommon-1.0.16.jar
+                                            jfreechart-1.0.13.jar
+                                            miglayout-3.7.1-swing.jar
+                                            commons-io-2.0.jar
+                                            fits-1.04.0.jar"/>
+        <attribute name="Main-Class" value="edu.jhuapl.near.SmallBodyMappingTool"/>
+      </manifest>
+    </jar>
   </target>
 
   <target name="nativelinuxvtkjar">
@@ -115,16 +106,6 @@
       </manifest>
     </jar>
   </target>
-
-  <!--
-  <target name="nativemac32vtkjar">
-    <mkdir dir="${rootdir}/build/jar"/>
-    <jar destfile="${rootdir}/build/jar/vtk-natives-macosx-universal.jar" basedir="${vtkrootdir}/mac32">
-      <manifest>
-      </manifest>
-    </jar>
-  </target>
-    -->
 
   <target name="nativemac64vtkjar">
     <mkdir dir="${rootdir}/build/jar"/>
@@ -175,10 +156,13 @@
       ${JAVA_HOME}/bin/keytool -genkey -keystore keystore -validity 1000000
 
     -->
-  <target name="signjar" depends="jar">
+  <target name="signjar" depends="jar,jarapl">
     <input message="Please enter keystore password:"
            addproperty="keypass" />
     <signjar jar="${rootdir}/build/jar/near.jar"
+             keystore="${rootdir}/keystore" alias="mykey"
+             storepass="${keypass}"/>
+    <signjar jar="${rootdir}/build/jar/near-apl.jar"
              keystore="${rootdir}/keystore" alias="mykey"
              storepass="${keypass}"/>
   </target>
@@ -214,16 +198,6 @@
              keystore="${rootdir}/keystore" alias="mykey"
              storepass="${keypass}"/>
   </target>
-
-  <!--
-  <target name="signnativemac32vtkjar" depends="nativemac32vtkjar">
-    <input message="Please enter keystore password:"
-           addproperty="keypass" />
-    <signjar jar="${rootdir}/build/jar/vtk-natives-macosx-universal.jar"
-             keystore="${rootdir}/keystore" alias="mykey"
-             storepass="${keypass}"/>
-  </target>
-  -->
 
   <target name="signnativemac64vtkjar" depends="nativemac64vtkjar">
     <input message="Please enter keystore password:"
