@@ -57,16 +57,7 @@
     <mkdir dir="${rootdir}/build/jar"/>
     <jar destfile="${rootdir}/build/jar/near.jar" 
          basedir="${rootdir}/build/classes"
-         excludes="edu/jhuapl/near/gui/eros/LineamentControlPanel.class
-                   edu/jhuapl/near/gui/eros/TopoPanel*
-                   edu/jhuapl/near/gui/eros/TopoPlot*
-                   edu/jhuapl/near/gui/eros/TopoViewer*
-                   edu/jhuapl/near/gui/vesta/FCSearchPanel*
-                   edu/jhuapl/near/gui/vesta/GRaNDSearchPanel*
-                   edu/jhuapl/near/gui/vesta/VIRSearchPanel*
-                   edu/jhuapl/near/gui/StructuresControlPanel*
-                   edu/jhuapl/near/gui/AbstractStructureMappingControlPanel*
-                   edu/jhuapl/near/data/LinearFeatures.txt
+         excludes="edu/jhuapl/near/data/LinearFeatures.txt
                    edu/jhuapl/near/SmallBodyMappingToolAPL.class">
       <manifest>
         <attribute name="Class-Path" value="vtksb.jar
