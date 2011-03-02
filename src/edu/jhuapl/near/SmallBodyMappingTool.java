@@ -45,38 +45,18 @@ public class SmallBodyMappingTool
             {
                 System.setProperty("Quaqua.tabLayoutPolicy","wrap");
 
-                try
-                {
-                    // Use reflection to load the quaqua look and feel
-                    Class quaquaManagerClass = Class.forName("ch.randelshofer.quaqua.QuaquaManager");
-                    Method getLookAndFeelMethod = quaquaManagerClass.getDeclaredMethod("getLookAndFeel", new Class[] { });
-                    LookAndFeel lookAndFeel = (LookAndFeel)getLookAndFeelMethod.invoke(null, new Object[] { });
-                    UIManager.setLookAndFeel(lookAndFeel);
-                }
-                catch(Exception e)
-                {
-                    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-                }
+                // Use reflection to load the quaqua look and feel
+                Class quaquaManagerClass = Class.forName("ch.randelshofer.quaqua.QuaquaManager");
+                Method getLookAndFeelMethod = quaquaManagerClass.getDeclaredMethod("getLookAndFeel", new Class[] { });
+                LookAndFeel lookAndFeel = (LookAndFeel)getLookAndFeelMethod.invoke(null, new Object[] { });
+                UIManager.setLookAndFeel(lookAndFeel);
             }
-            /*
             else if (Configuration.isLinux())
             {
-                boolean haveNimbus = false;
-                for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels())
-                {
-                    if ("Nimbus".equals(info.getName()))
-                    {
-                        UIManager.setLookAndFeel(info.getClassName());
-                        haveNimbus = true;
-                        break;
-                    }
-                }
-
-                if (haveNimbus == false)
-                    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+                //UIManager.put("ClassLoader", LookUtils.class.getClassLoader());
+                UIManager.setLookAndFeel("com.jgoodies.looks.plastic.PlasticXPLookAndFeel");
             }
-            */
-            else
+            else // Windows
             {
                 UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
             }
@@ -84,6 +64,15 @@ public class SmallBodyMappingTool
         catch (Exception e)
         {
             e.printStackTrace();
+
+            try
+            {
+                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            }
+            catch (Exception e1)
+            {
+                e1.printStackTrace();
+            }
         }
     }
 
