@@ -32,6 +32,8 @@
 		<pathelement location="${rootdir}/lib/miglayout-3.7.1-swing.jar"/>
 		<pathelement location="${rootdir}/lib/commons-io-2.0.jar"/>
 		<pathelement location="${rootdir}/lib/fits-1.04.0.jar"/>
+		<pathelement location="${rootdir}/lib/jgoodies-common-1.1.1.jar"/>
+		<pathelement location="${rootdir}/lib/jgoodies-looks-2.4.0.jar"/>
       </classpath>
     </javac> 
   </target>
@@ -48,7 +50,9 @@
                                             jfreechart-1.0.13.jar
                                             miglayout-3.7.1-swing.jar
                                             commons-io-2.0.jar
-                                            fits-1.04.0.jar"/>
+                                            fits-1.04.0.jar
+                                            jgoodies-common-1.1.1.jar
+                                            jgoodies-looks-2.4.0.jar"/>
         <attribute name="Main-Class" value="edu.jhuapl.near.SmallBodyMappingToolAPL"/>
       </manifest>
     </jar>
@@ -69,7 +73,9 @@
                                             jfreechart-1.0.13.jar
                                             miglayout-3.7.1-swing.jar
                                             commons-io-2.0.jar
-                                            fits-1.04.0.jar"/>
+                                            fits-1.04.0.jar
+                                            jgoodies-common-1.1.1.jar
+                                            jgoodies-looks-2.4.0.jar"/>
         <attribute name="Main-Class" value="edu.jhuapl.near.SmallBodyMappingTool"/>
       </manifest>
     </jar>
@@ -275,6 +281,22 @@
     <input message="Please enter keystore password:"
            addproperty="keypass" />
     <signjar jar="${rootdir}/build/jar/libquaqua64.jnilib-7.3.4.jar"
+             keystore="${rootdir}/keystore" alias="mykey"
+             storepass="${keypass}"/>
+  </target>
+
+  <target name="signjgoodiescommon">
+    <input message="Please enter keystore password:"
+           addproperty="keypass" />
+    <signjar jar="${rootdir}/lib/jgoodies-common-1.1.1.jar"
+             keystore="${rootdir}/keystore" alias="mykey"
+             storepass="${keypass}"/>
+  </target>
+
+  <target name="signjgoodieslooks">
+    <input message="Please enter keystore password:"
+           addproperty="keypass" />
+    <signjar jar="${rootdir}/lib/jgoodies-looks-2.4.0.jar"
              keystore="${rootdir}/keystore" alias="mykey"
              storepass="${keypass}"/>
   </target>

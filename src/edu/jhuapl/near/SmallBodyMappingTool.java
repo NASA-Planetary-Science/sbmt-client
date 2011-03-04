@@ -16,6 +16,7 @@ import edu.jhuapl.near.gui.OSXAdapter;
 import edu.jhuapl.near.util.Configuration;
 import edu.jhuapl.near.util.NativeLibraryLoader;
 
+import com.jgoodies.looks.LookUtils;
 
 /**
  * This class contains the "main" function called at the start of the program.
@@ -53,7 +54,7 @@ public class SmallBodyMappingTool
             }
             else if (Configuration.isLinux())
             {
-                //UIManager.put("ClassLoader", LookUtils.class.getClassLoader());
+                UIManager.put("ClassLoader", LookUtils.class.getClassLoader());
                 UIManager.setLookAndFeel("com.jgoodies.looks.plastic.PlasticXPLookAndFeel");
             }
             else // Windows
