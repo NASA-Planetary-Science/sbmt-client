@@ -16,6 +16,7 @@ public class PointsPopupMenu extends StructuresPopupMenu
 {
     private int cellIdLastClicked = -1;
     private PointModel model;
+    private ChangeLatLonAction changeLatLonAction;
 
     public PointsPopupMenu(ModelManager modelManager)
     {
@@ -24,6 +25,11 @@ public class PointsPopupMenu extends StructuresPopupMenu
         super.addMenuItems(model);
 
         JMenuItem mi;
+        changeLatLonAction = new ChangeLatLonAction(model);
+        mi = new JMenuItem(changeLatLonAction);
+        mi.setText("Change Latitude/Longitude...");
+        this.add(mi);
+
         mi = new JMenuItem(new DeleteAction());
         mi.setText("Delete");
         this.add(mi);
@@ -47,6 +53,9 @@ public class PointsPopupMenu extends StructuresPopupMenu
         int idx = model.getPolygonIdFromInteriorCellId(cellIdLastClicked);
         getChangeColorAction().setStructureIndex(idx);
 
-       show(e.getComponent(), e.getX(), e.getY());
+        changeLatLonAction.setStructureIndex(idx);
+        changeLatLonAction.setInvoker(e.getComponent());
+
+        show(e.getComponent(), e.getX(), e.getY());
     }
 }

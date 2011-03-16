@@ -6,7 +6,9 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 
+import edu.jhuapl.near.gui.ChangeLatLonDialog;
 import edu.jhuapl.near.gui.ColorChooser;
 import edu.jhuapl.near.model.StructureModel;
 
@@ -88,4 +90,37 @@ abstract public class StructuresPopupMenu extends PopupMenu
         }
     }
 
+    protected static class ChangeLatLonAction extends AbstractAction
+    {
+        private StructureModel structureModel;
+        private int structureIndex;
+        private Component component;
+
+        public ChangeLatLonAction(StructureModel structureModel)
+        {
+            this.structureModel = structureModel;
+        }
+
+        public void setStructureIndex(int idx)
+        {
+            this.structureIndex = idx;
+        }
+
+        public void actionPerformed(ActionEvent actionEvent)
+        {
+            ChangeLatLonDialog dialog = new ChangeLatLonDialog(structureModel, structureIndex);
+            dialog.setLocationRelativeTo(JOptionPane.getFrameForComponent(component));
+            dialog.setVisible(true);
+        }
+
+        /**
+         * Sets the frame which this dialog should be positioned relative to.
+         *
+         * @param component
+         */
+        public void setInvoker(Component component)
+        {
+            this.component = component;
+        }
+    }
 }

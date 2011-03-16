@@ -397,6 +397,20 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
+    /**
+     * Move the polygon to the specified latitude and longitude.
+     *
+     * @param polygonId
+     * @param latitude - in radians
+     * @param longitude - in radians
+     */
+    public void movePolygon(int polygonId, double latitude, double longitude)
+    {
+        double[] newCenter = new double[3];
+        smallBodyModel.getPointAndCellIdFromLatLon(latitude, longitude, newCenter);
+        movePolygon(polygonId, newCenter);
+    }
+
     public void changeRadiusOfPolygon(int polygonId, double[] newPointOnPerimeter)
     {
         RegularPolygon pol = polygons.get(polygonId);

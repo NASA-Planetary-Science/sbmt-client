@@ -16,6 +16,7 @@ public class CirclesPopupMenu extends StructuresPopupMenu
 {
     private int cellIdLastClicked = -1;
     private CircleModel model = null;
+    private ChangeLatLonAction changeLatLonAction;
 
     public CirclesPopupMenu(ModelManager modelManager)
     {
@@ -24,6 +25,11 @@ public class CirclesPopupMenu extends StructuresPopupMenu
         super.addMenuItems(model);
 
         JMenuItem mi;
+        changeLatLonAction = new ChangeLatLonAction(model);
+        mi = new JMenuItem(changeLatLonAction);
+        mi.setText("Change Latitude/Longitude...");
+        this.add(mi);
+
         mi = new JMenuItem(new DeleteAction());
         mi.setText("Delete");
         this.add(mi);
@@ -46,6 +52,9 @@ public class CirclesPopupMenu extends StructuresPopupMenu
         getChangeColorAction().setInvoker(e.getComponent());
         int idx = model.getPolygonIdFromBoundaryCellId(cellIdLastClicked);
         getChangeColorAction().setStructureIndex(idx);
+
+        changeLatLonAction.setStructureIndex(idx);
+        changeLatLonAction.setInvoker(e.getComponent());
 
         show(e.getComponent(), e.getX(), e.getY());
     }

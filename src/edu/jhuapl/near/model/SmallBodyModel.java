@@ -466,8 +466,8 @@ public class SmallBodyModel extends Model
      * Compute the point on the asteroid that has the specified latitude and longitude. Returns the
      * cell id of the cell containing that point. This is done by shooting a ray from the origin in the
      * specified direction.
-     * @param lat
-     * @param lon
+     * @param lat - in radians
+     * @param lon - in radians
      * @param intersectPoint
      * @return the cellId of the cell containing the intersect point
      */
