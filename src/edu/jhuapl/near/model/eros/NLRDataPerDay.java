@@ -57,10 +57,14 @@ public class NLRDataPerDay extends Model
         {
             String[] vals = lines.get(i).trim().split("\\s+");
 
+            // Don't include noise
+            if (vals[7].equals("1"))
+                continue;
+
             points.SetPoint(i-2,
-                        Double.parseDouble(vals[14])/1000.0,
-                        Double.parseDouble(vals[15])/1000.0,
-                        Double.parseDouble(vals[16])/1000.0);
+                    Double.parseDouble(vals[14])/1000.0,
+                    Double.parseDouble(vals[15])/1000.0,
+                    Double.parseDouble(vals[16])/1000.0);
             idList.SetId(0, i-2);
             vert.InsertNextCell(idList);
 

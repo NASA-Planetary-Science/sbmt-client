@@ -358,6 +358,10 @@ public class NLRSearchDataCollection extends Model
                     if (Integer.valueOf(linescubes.get(i)) == -1)
                         continue;
 
+                    // Don't include noise
+                    if (vals[7].equals("1"))
+                        continue;
+
                     double[] point = {
                             Double.parseDouble(vals[14])/1000.0,
                             Double.parseDouble(vals[15])/1000.0,
@@ -390,6 +394,10 @@ public class NLRSearchDataCollection extends Model
 
                     long time = sdf.parse(vals[4]).getTime();
                     if (time < start || time > stop)
+                        continue;
+
+                    // Don't include noise
+                    if (vals[7].equals("1"))
                         continue;
 
                     double[] point = {
