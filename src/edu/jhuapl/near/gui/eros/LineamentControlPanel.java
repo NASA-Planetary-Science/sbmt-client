@@ -28,16 +28,13 @@ public class LineamentControlPanel extends JPanel implements ItemListener
         lineamentCheckBox.setSelected(false);
         lineamentCheckBox.addItemListener(this);
 
-        JPanel pane = new JPanel();
-        pane.setLayout(new BoxLayout(pane,
+        setLayout(new BoxLayout(this,
                 BoxLayout.PAGE_AXIS));
 
-        pane.add(lineamentCheckBox);
-        pane.add(Box.createVerticalStrut(5));
-        pane.add(radialChanger);
-
-
-        add(pane);
+        add(Box.createVerticalStrut(10));
+        add(lineamentCheckBox);
+        add(Box.createVerticalStrut(15));
+        add(radialChanger);
     }
 
     public void itemStateChanged(ItemEvent e)

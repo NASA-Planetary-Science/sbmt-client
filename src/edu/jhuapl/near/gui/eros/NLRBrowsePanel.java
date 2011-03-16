@@ -62,6 +62,8 @@ public class NLRBrowsePanel extends JPanel implements ListSelectionListener
 
         public NlrTimeIntervalChanger()
         {
+            setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
+
             setBorder(BorderFactory.createTitledBorder("Displayed NLR Data"));
 
             slider = new RangeSlider(0, 255, 0, 255);

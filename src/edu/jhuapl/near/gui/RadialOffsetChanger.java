@@ -2,6 +2,7 @@ package edu.jhuapl.near.gui;
 
 
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
@@ -20,6 +21,8 @@ public class RadialOffsetChanger extends JPanel implements ChangeListener
 
     public RadialOffsetChanger(Model model, String title)
     {
+        setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
+
         this.model = model;
         setBorder(BorderFactory.createTitledBorder(title));
 
