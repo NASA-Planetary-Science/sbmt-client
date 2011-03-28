@@ -10,7 +10,6 @@ import java.io.InputStreamReader;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -426,7 +425,7 @@ public class NLRSearchDataCollection extends Model
         }
     }
 
-
+/*
     private void loadNlrDataSql(
             GregorianCalendar startDate,
             GregorianCalendar stopDate,
@@ -551,6 +550,7 @@ public class NLRSearchDataCollection extends Model
             vert.InsertNextCell(idList);
         }
     }
+*/
 
     private void applyMask(NLRMaskType maskType, double maskValue, boolean reset)
     {
