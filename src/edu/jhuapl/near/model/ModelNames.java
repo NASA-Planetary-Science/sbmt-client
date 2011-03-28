@@ -8,6 +8,7 @@ public interface ModelNames
     static public final String MSI_COLOR_IMAGES = "msi-color-images";
     static public final String MSI_BOUNDARY = "msi-boundary";
     static public final String NIS_SPECTRA = "nis-spectra";
+    static public final String NLR_DATA_SUMMARY = "nlr-data-summary";
     static public final String NLR_DATA_BROWSE = "nlr-data-browse";
     static public final String NLR_DATA_SEARCH = "nlr-data-search";
     static public final String LINE_STRUCTURES = "line-structures";

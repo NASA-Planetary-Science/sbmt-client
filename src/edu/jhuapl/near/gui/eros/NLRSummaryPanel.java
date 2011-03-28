@@ -1,36 +1,34 @@
 package edu.jhuapl.near.gui.eros;
 
-import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
 
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import edu.jhuapl.near.gui.CustomFileChooser;
-import edu.jhuapl.near.gui.RadialOffsetChanger;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
-import edu.jhuapl.near.model.eros.NLRBrowseDataCollection;
+import edu.jhuapl.near.model.eros.NLRDataEverything;
 import edu.jhuapl.near.util.FileCache;
 import edu.jhuapl.near.util.FileUtil;
 
 
 public class NLRSummaryPanel extends JPanel
 {
-    private final String NLR_REMOVE_ALL_BUTTON_TEXT = "Remove All NLR Data";
-
-    private NLRBrowseDataCollection nlrModel;
+    private NLRDataEverything nlrModel;
     private JList resultList;
     private ArrayList<String> nlrRawResults = new ArrayList<String>();
-    private JButton showHideButton;
+    private JCheckBox showHideButton;
     private JButton saveButton;
-    private RadialOffsetChanger radialOffsetChanger;
+    //private RadialOffsetChanger radialOffsetChanger;
 
 
     public NLRSummaryPanel(
@@ -40,26 +38,18 @@ public class NLRSummaryPanel extends JPanel
                 BoxLayout.PAGE_AXIS));
 
         //this.modelManager = modelManager;
-        this.nlrModel = (NLRBrowseDataCollection)modelManager.getModel(ModelNames.NLR_DATA_BROWSE);
+        this.nlrModel = (NLRDataEverything)modelManager.getModel(ModelNames.NLR_DATA_SUMMARY);
 
-
-        final JPanel resultControlsPanel = new JPanel(new BorderLayout());
-
-        final JPanel resultSub1ControlsPanel = new JPanel();
-
-        resultSub1ControlsPanel.setLayout(new BoxLayout(resultSub1ControlsPanel,
-                BoxLayout.PAGE_AXIS));
-
-
-        showHideButton = new JButton("Show");
-        showHideButton.setActionCommand("Show");
+        showHideButton = new JCheckBox("Show all NLR data");
+        showHideButton.setActionCommand("Show all NLR data");
         showHideButton.addActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent e)
             {
+                nlrModel.setVisible(showHideButton.isSelected());
             }
         });
-        showHideButton.setEnabled(false);
+        showHideButton.setEnabled(true);
 
 
         saveButton = new JButton("Save...");
@@ -98,22 +88,18 @@ public class NLRSummaryPanel extends JPanel
                 }
             }
         });
-        saveButton.setEnabled(false);
+        saveButton.setEnabled(true);
 
 
-        JPanel resultSub2ControlsPanel = new JPanel();
-        resultSub2ControlsPanel.setLayout(new BoxLayout(resultSub2ControlsPanel,
-                BoxLayout.LINE_AXIS));
+        add(Box.createVerticalStrut(15));
+        add(showHideButton);
+        add(Box.createVerticalStrut(15));
+//        add(saveButton);
+//        add(Box.createVerticalStrut(15));
 
-        resultSub2ControlsPanel.add(showHideButton);
-        resultSub2ControlsPanel.add(saveButton);
+//        radialOffsetChanger = new RadialOffsetChanger(nlrModel, "Radial Offset");
 
-        resultControlsPanel.add(resultSub1ControlsPanel, BorderLayout.CENTER);
-        resultControlsPanel.add(resultSub2ControlsPanel, BorderLayout.SOUTH);
-
-        radialOffsetChanger = new RadialOffsetChanger(nlrModel, "Radial Offset");
-
-        add(radialOffsetChanger);
+//       add(radialOffsetChanger);
     }
 
 }

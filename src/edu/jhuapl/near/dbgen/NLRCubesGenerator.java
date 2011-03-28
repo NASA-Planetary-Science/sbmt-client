@@ -9,7 +9,6 @@ import vtk.vtkCellArray;
 import vtk.vtkIdList;
 import vtk.vtkPoints;
 import vtk.vtkPolyData;
-import vtk.vtkPolyDataWriter;
 
 import edu.jhuapl.near.model.ModelFactory;
 import edu.jhuapl.near.model.SmallBodyModel;
@@ -21,6 +20,10 @@ import edu.jhuapl.near.util.SmallBodyCubes;
 /**
  * This program goes through all the NLR data and divides all the data
  * up into cubes and saves each cube to a separate file.
+ *
+ * This program also can generate a single vtk file containing all
+ * the NLR data (see comments in code).
+ *
  * @author kahneg1
  *
  */
@@ -76,7 +79,11 @@ public class NLRCubesGenerator
                 {
                     String[] vals = lines.get(i).trim().split("\\s+");
 
-                       pt[0] = Double.parseDouble(vals[14])/1000.0;
+                    // Don't include noise
+                    if (vals[7].equals("1"))
+                        continue;
+
+                    pt[0] = Double.parseDouble(vals[14])/1000.0;
                     pt[1] = Double.parseDouble(vals[15])/1000.0;
                     pt[2] = Double.parseDouble(vals[16])/1000.0;
 
@@ -85,8 +92,11 @@ public class NLRCubesGenerator
                     vert.InsertNextCell(idList);
                     ++count;
 
-                    if (true)
-                        continue;
+                    // Uncomment out the following if statement to generate the cubes files.
+                    // Also uncomment out the poly data writer at the end. When commented, this
+                    // program will generate a single vtk file containing all the NLR data.
+                    //if (true)
+                    //    continue;
 
                     double[] closestPt = erosModel.findClosestPoint(pt);
 
@@ -123,17 +133,13 @@ public class NLRCubesGenerator
                 out.close();
             }
 
-//            vtkXMLPolyDataWriter writer = new vtkXMLPolyDataWriter();
-//            writer.SetInput(polydata);
-//            writer.SetFileName("nlrdata.vtp");
-//            writer.SetCompressorTypeToZLib();
-//            writer.SetDataModeToBinary();
-//            writer.Write();
-            vtkPolyDataWriter writer = new vtkPolyDataWriter();
-            writer.SetInput(polydata);
-            writer.SetFileName("nlrdata.vtk");
-            writer.SetFileTypeToBinary();
-            writer.Write();
+            // Uncomment out the following lines when generating the cubes files.
+            // When commented, this will save a single vtk file containing all the NLR data.
+            //vtkPolyDataWriter writer = new vtkPolyDataWriter();
+            //writer.SetInput(polydata);
+            //writer.SetFileName("nlrdata.vtk");
+            //writer.SetFileTypeToBinary();
+            //writer.Write();
         }
         catch (Exception e)
         {

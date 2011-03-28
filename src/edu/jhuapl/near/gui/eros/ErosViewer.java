@@ -34,6 +34,7 @@ import edu.jhuapl.near.model.eros.MapletBoundaryCollection;
 import edu.jhuapl.near.model.eros.NISSpectraCollection;
 import edu.jhuapl.near.model.eros.NISSpectrum;
 import edu.jhuapl.near.model.eros.NLRBrowseDataCollection;
+import edu.jhuapl.near.model.eros.NLRDataEverything;
 import edu.jhuapl.near.model.eros.NLRSearchDataCollection;
 import edu.jhuapl.near.pick.PickManager;
 import edu.jhuapl.near.popupmenus.eros.ErosPopupManager;
@@ -123,6 +124,7 @@ public class ErosViewer extends Viewer
         allModels.put(ModelNames.MSI_COLOR_IMAGES, new MSIColorImageCollection(erosModel));
         allModels.put(ModelNames.MSI_BOUNDARY, new MSIBoundaryCollection(erosModel));
         allModels.put(ModelNames.NIS_SPECTRA, new NISSpectraCollection(erosModel));
+        allModels.put(ModelNames.NLR_DATA_SUMMARY, new NLRDataEverything());
         allModels.put(ModelNames.NLR_DATA_BROWSE, new NLRBrowseDataCollection());
         allModels.put(ModelNames.NLR_DATA_SEARCH, new NLRSearchDataCollection(erosModel));
         allModels.put(ModelNames.LINE_STRUCTURES, new LineModel(erosModel));

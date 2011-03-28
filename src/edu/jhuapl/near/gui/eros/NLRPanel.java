@@ -15,9 +15,11 @@ public class NLRPanel extends JTabbedPane
     {
         setBorder(BorderFactory.createEmptyBorder());
 
+        //NLRSummaryPanel nlrSummaryPanel = new NLRSummaryPanel(modelManager);
         NLRBrowsePanel nlrBrowsePanel = new NLRBrowsePanel(modelManager);
         NLRSearchPanel nlrSearchPanel = new NLRSearchPanel(modelManager, pickManager);
 
+        //addTab("Summary", nlrSummaryPanel);
         addTab("Browse", nlrBrowsePanel);
         addTab("Search", nlrSearchPanel);
     }
