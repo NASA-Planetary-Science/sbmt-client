@@ -63,6 +63,7 @@
     <jar destfile="${rootdir}/build/jar/near.jar" 
          basedir="${rootdir}/build/classes"
          excludes="edu/jhuapl/near/data/LinearFeatures.txt
+                   edu/jhuapl/near/data/helpcontents-apl.html
                    edu/jhuapl/near/SmallBodyMappingToolAPL.class">
       <manifest>
         <attribute name="Class-Path" value="vtksb.jar
