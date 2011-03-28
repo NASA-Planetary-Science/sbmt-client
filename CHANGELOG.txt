@@ -1,0 +1,35 @@
+ - Added more extensive user manual.
+
+2011.03.24
+
+ - Removed black border around MSI images.
+
+2011.03.16
+
+ - Excluded NLR points marked as noise from being displayed.
+ - Added ability to change latitude/longitude of points or circles.
+
+2011.03.02
+
+ - Split tool into 2 versions, an internal APL version and a public
+   (password protected) version for outside users.
+ - Improved centering of MSI images in renderer.
+ - Added better dock icon for Mac platforms.
+
+2011.02.04
+
+ - Added ability to change colors of points, circles, and paths drawn in renderer.
+   Color information is also written to and read from files when saving 
+   or loading structures.
+ - File choosers remember last used directory. This is global for all
+   file choosers.
+ - Improved integration with Mac OS X platforms, including better file
+   choosers, adding dock icon, and moving toolbar to top of desktop.
+ - Added new orientation axes to renderer.
+ - Added ability to rescale range of color bars.
+ - Added 67 new MSI images to Gaskell database taken as NEAR
+   spacecraft was landing on Eros.
+
+2011.01.12
+   
+ - Added ability to generate color images from 3 MSI images.
