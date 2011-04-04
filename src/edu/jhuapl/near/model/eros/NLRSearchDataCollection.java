@@ -1,15 +1,10 @@
 package edu.jhuapl.near.model.eros;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -953,6 +948,7 @@ public class NLRSearchDataCollection extends Model
             return;
     }
 
+    /*
     public void saveNlrDataSql(File outFile) throws IOException, ParseException
     {
         if (firstPointShown < 0 || lastPointShown < 0)
@@ -1023,5 +1019,5 @@ public class NLRSearchDataCollection extends Model
             e.printStackTrace();
         }
     }
-
+    */
 }

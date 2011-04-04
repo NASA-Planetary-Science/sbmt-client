@@ -317,7 +317,7 @@ public class NLRSearchPanel extends JPanel implements ActionListener, PropertyCh
                     {
                         if (file != null)
                         {
-                            nlrModel.saveNlrDataSql(file);
+                            //nlrModel.saveNlrDataSql(file);
                         }
                     }
                     catch(Exception ex)
