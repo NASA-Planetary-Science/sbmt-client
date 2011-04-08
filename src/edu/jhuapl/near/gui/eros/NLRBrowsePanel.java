@@ -248,7 +248,8 @@ public class NLRBrowsePanel extends JPanel implements ListSelectionListener
 
         timeIntervalChanger = new NlrTimeIntervalChanger();
 
-        radialOffsetChanger = new RadialOffsetChanger(nlrModel, "Radial Offset");
+        radialOffsetChanger = new RadialOffsetChanger();
+        radialOffsetChanger.setModel(nlrModel);
 
         add(resultsPanel);
         add(timeIntervalChanger);

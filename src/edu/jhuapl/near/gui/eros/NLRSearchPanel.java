@@ -336,7 +336,8 @@ public class NLRSearchPanel extends JPanel implements ActionListener, PropertyCh
 
         //pane.add(saveButton, "align center");
 
-        radialOffsetChanger = new RadialOffsetChanger(nlrModel, "Radial Offset");
+        radialOffsetChanger = new RadialOffsetChanger();
+        radialOffsetChanger.setModel(nlrModel);
 
         add(pane);
         add(radialOffsetChanger);
