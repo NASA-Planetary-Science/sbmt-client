@@ -1,3 +1,34 @@
+---
+MSI
+---
+
+ - show value of each MSI original color image pixel in status bar
+ 
+ - add ability to change contrast of MSI color images (like in original MSI images),
+   either of each band separately or all bands together
+   
+ - add ability to create mosaic of either regular or color MSI images (need to
+   create new tool for this)
+
+ - add general tool for doing band math on MSI images in both RGB and HSI color spaces
+ 
+ - add ability to select a region of several (overlapping) MSI images and output
+   a spectrum of that region and export to cvs
+   
+ - in the returned list of MSI images, show the time the image was acquired
+
+ - in the returned list of MSI images, show the wavelength value (e.g. 900 nm)
+
+ - (Scott Murchie suggestion) when searching for MSI images, provide options for searching for
+   a specific sequence as documented in a spreadsheet he provided
+  
+ - Remove .FIT extension from results returned from MSI search (see getMSIPath in Query.java)
+   since not really needed (requires modification to all places that use it)
+   
+---
+NLR
+---
+ 
  - Improve NLR. Show plot of range of spacecraft to asteroid vs time.
    Also show plot of potential vs distance (range) traveled. Allow from these
    plots to highlight data in renderer and vs versa. 
@@ -23,20 +54,66 @@
   
  - In NLR Plots, don't show lines connecting the points, just show the points
  
- - In NLR tab, provide checkbox for not showing points whose invalid flag is true (i.e. filter on invalid flag)
- 
  - In NLR tab, when showing the plots, add a new 3D plot just showing the points and a set of axes (XYZ)
  
  - In NLR tab, when plotting potential vs distance, the distance should be computed by fitting
    a straight line through the points (using least squares), and then projecting the point onto
    the line. The distance along this line is what should be plotted, not the euclidean distance
    between points as is done now.
+
+---
+NIS
+---
+
+ - In NIS tab, allow coloring of footprints using 3 channels (currently only 1 channel is
+   supported) thus enabling full RGB color footprints. Also provide checkbox option for dividing
+   spectrum by the cosine of the incidence (cos I)
    
- - Show a popup progress bar dialog for long running operations which leave the tool hanging
+ - In NIS, provide export of data. Use the following format: First a header in a key = value format
+   format, then a table of the wavelengths and reflectances:
+   	MET = blah
+   	X = 3
+   	Y = 4
+   	Z = 5
+   	Wavelength, Reflectance, ...
+   	1, 2, ...
+   	...
+   	...
+   	
+----------
+Structures   
+----------
+
+ - In path structures drawing, allow deletion of single vertex, (currently only
+   deleting the entire path is supported)
+
+ - in structures tab, add ability to change multiple structures at a time
+   (currently just 1 is supported) especially point size
  
+ - In structures tab, provide new structure tab called Polygons for drawing arbitrary polygons.
+   This will be very similar to paths tab plus the following features:
+   1. Polygons will be filled in
+   2. (possibly) double clicking somehow finishes the drawing (not sure exactly)
+
  - Disable ability to save and load from file while drawing a path
 
  - Undo feature
+
+--------
+Mapmaker
+--------
+
+ - Get maplets tool working on Windows
+   
+ - Provide ability to save outline of maplets shown on asteroid to file.
+ 
+ - when loading a maplet, add error dialog if we cannot find the lbl file
+ 
+ 
+---------------------------
+
+   
+ - Show a popup progress bar dialog for long running operations which leave the tool hanging
  
  - overlay lat/lon labels when lat/lon grid is shown
  
@@ -60,54 +137,16 @@
    
  - for people using macs, the width of the control panel is too narrow
  
- - In NIS tab, allow coloring of footprints using 3 channels (currently only 1 channel is
-   supported) thus enabling full RGB color footprints. Also provide checkbox option for dividing
-   spectrum by the cosine of the incidence (cos I)
-   
- - In path structures drawing, allow deletion of single vertex, (currently only
-   deleting the entire path is supported)
-
- - In structures tab, provide new structure tab called Polygons for drawing arbitrary polygons.
-   This will be very similar to paths tab plus the following features:
-   1. Polygons will be filled in
-   2. (possibly) double clicking somehow finishes the drawing (not sure exactly)
-
- - Get maplets tool working on Windows
-   
- - Provide ability to save outline of maplets shown on asteroid to file.
- 
- - In NIS and MSI allow creation of mosiacs by specifically specifying the offset size for each
-   footprint or image. Provide menu option in popup for "bring to front" like in Powerpoint
-
- - In NIS, provide export of data. Use the following format: First a header in a key = value format
-   format, then a table of the wavelengths and reflectances:
-   	MET = blah
-   	X = 3
-   	Y = 4
-   	Z = 5
-   	Wavelength, Reflectance, ...
-   	1, 2, ...
-   	...
-   	...
-   	
  - In the Eros, Deimos, Itokawa, and Vesta tabs, show some statistics
    about the asteroid such as number of plates, points, volume,
    surface area, mean size of plate, bounding box etc.
 
- - when loading a maplet, add error dialog if we cannot find the lbl file
+ - add ability to temporary hide a given actor
  
- - (Scott Murchie suggestion) when searching for MSI images, provide options for searching for
-   a specific sequence as documented in a spreadsheet he provided
-  
- - (Scott Murchie suggestion) when texture mapping MSI images, don't show the black band on 
-   the left or right
-    
- - add ability to temporary hide a given actor   
- 
- - Remove .FIT extension from results returned from MSI search (see getMSIPath in Query.java)
-   since not really needed (requires modification to all places that use it)
-   
  - change layout of all tabs to use MigLayout especially MSI and NIS
 
- - In the lists in the MSI, NIS, and NLR tabs, change background color of list
+ - In the lists in the MSI and NIS tabs, change background color of list
    items that are currently visible in the renderer.
+
+ - consider adding Phobos asteroid with crism and hirise data
+ 
