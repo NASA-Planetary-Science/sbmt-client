@@ -5,7 +5,7 @@
 <title>Small Body Mapping Tool User Manual</title>
 </head>
 <body>
-<h1>Small Body Mapping Tool User Manual</h1><br>
+<h1>Small Body Mapping Tool User Manual</h1>
 <p>
 The Small Body Mapping Tool is divided into 2 panels, the rendering panel on the right 
 for displaying small bodies and their associated data and a control panel on the left 
@@ -19,7 +19,6 @@ bodies besides Eros are available: Deimos, Itokawa, and Vesta. The number of
 and contents of the tabs in the control panel are different for each asteroid. Each of these
 tabs will be described below.
 </p>
-<br>
 
 <h2>The Rendering Panel</h2>
 
@@ -28,7 +27,6 @@ The rendering panel shows a 3 dimensional view of the small bodies and their ass
 Using the mouse and keyboard one can easily navigate through the data in the rendering panel.
 The following mouse and key bindings work with the rendering panel:
 </p>
-<br>
 <ul>
 <li>Left Mouse Button: rotate camera
 <li>Middle Mouse Button: pan camera
@@ -48,7 +46,6 @@ The following mouse and key bindings work with the rendering panel:
 <li>Keypress z (lowercase): reorient camera to point in positive z direction
 <li>Keypress Z (uppercase): reorient camera to point in negative z direction
 </ul>
-<br>
 <p>
 In addition, whenever one moves the mouse pointer over a point of the small body, the latitude, 
 longitude, radius, and distance is shown on the right part of the status bar.
@@ -61,7 +58,6 @@ In addition if one clicks with the left mouse button on certain object, more inf
 that object is shown on the left side of the status bar. If one clicks with the right button
 on certain objects, a context menu is displayed with various options depending on the object.
 </p>
-<br>
 
 <h2>Control Panel</h2>
 
@@ -84,7 +80,6 @@ When you click on a higher resolution model for the first time,
 it will download the model from the server and cache it in your home directory, so there 
 may be an extra delay the first time you switch models. 
 -->
-<br>
 
 <h3>MSI tab (Eros only)</h3>
 
@@ -94,6 +89,7 @@ NEAR Multispectral Imager (MSI) which took over 100000 images
 of Eros between between Jan 12, 2000 and Feb 12, 2001. 
 One of two databases of MSI images can be searched,
 which can be specified in the "MSI Source" dropdown menu:
+</p>
 <ol>
 <li>The original database, submitted to PDS, with over 100000 images. These images may be slightly misaligned
 with the asteroid due to imprecision in the SPICE kernels from which the pointing information
@@ -102,6 +98,7 @@ was derived.
 the first with about 20000 images which he used to create the Eros shape models.
 These images are much better registered with the asteroid.
 </ol>
+<p>
 To do a search, choose the desired options and click the Search button. A list of the matching images
 will be returned below. When a search is performed, the outline of the footprint of the first several matching images
 is shown in the renderer in red. This allows one to quickly see what part of the asteroid is within the image frustum
@@ -147,6 +144,7 @@ in the volume contains information about each pixel in the MSI Image.
 
 <p>
 This is the list, in order of the backplanes generated. All values are in float (4 bytes)
+</p>
 <ol>
 <li>MSI image pixel value
 <li>x value of point in body centered coordinates (kilometers)
@@ -165,8 +163,6 @@ This is the list, in order of the backplanes generated. All values are in float 
 <li>Gravitational acceleration in meters per second squared
 <li>Gravitational potential in joules per kilogram
 </ol>
-</p>
-<br>
 
 <h3>NIS tab (Eros only)</h3>
 
@@ -178,7 +174,6 @@ Each spectrum consists of 64 separate channels
 between 812 nm and 2708 nm. The NIS tab is very similar to the MSI tab and much of the information
 described there applies here as well.
 </p>
-<br>
 
 <h3>NLR tab (Eros only)</h3>
 
@@ -206,7 +201,6 @@ The Search tab can be used search for NLR by specifying specific start and stop 
 addition, a search region to restrict the search to can be specified as well exactly like
 the MSI and NIS tabs. A radial offset slider is provided as in the Browse tab.
 </p>
-<br>
 
 <!--APL VERSION START-->
 <h3>Lineament tab (Eros only)</h3>
@@ -217,7 +211,6 @@ ago using a different tool. Since the lineaments are not perfectly registered
 with the asteroid, a slider is provided for slightly changing the radial offset of the
 lineaments. 
 </p>
-<br>
 
 <h3>Structures tab (Available for all bodies)</h3>
 
@@ -229,7 +222,6 @@ are controlled within a separate tab within the Structures tab.
 Each of the 3 tabs (paths, circles, and points) works completely independent
 of each other. You can only be drawing one type of structure at a time.
 </p>
-<br>
 
 <h4>Drawing Circles or Points</h4>
 <p>
@@ -241,7 +233,6 @@ button. To change the size of a circle drag it while holding the Control
 button. When you're finished editing, press the Edit button again and the 3D
 view will return to the standard rotate/pan/zoom mode.
 </p>
-<br>
 
 <h4>Drawing Paths</h4>
 <p>
@@ -250,7 +241,6 @@ only be editing a single path at a time. To create a new
 path press New and to edit an existing path, press Edit. You can add new
 vertices to paths and drag around existing vertices.
 </p>
-<br>
 
 <h4>Editing Structures</h4>
 <p>
@@ -259,14 +249,12 @@ show allowing you to delete it or change its color. For paths, the popup include
 that path as well (For points and circles simply press the Edit button in
 the control panel).
 </p>
-<br>
 
 <h4>Saving and Loading Structures</h4>
 <p>
 You can save/load all the structures to/from disk using the Save and Load
 buttons. Note each type of structure has a different file format.
 </p>
-<br>
 
 <h3>Mapmaker tab (Eros only)</h3>
 
