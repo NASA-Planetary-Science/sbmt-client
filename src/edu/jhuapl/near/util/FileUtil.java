@@ -2,9 +2,12 @@ package edu.jhuapl.near.util;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -129,6 +132,31 @@ public class FileUtil
         OutputStream out = new FileOutputStream(outFile);
 
         copyInputStream(in, out);
+    }
+
+    public static void copyLinesInFile(File inFile, File outFile, int startLine, int endLine, boolean append) throws IOException
+    {
+        FileReader ifs = new FileReader(inFile);
+        BufferedReader in = new BufferedReader(ifs);
+
+        FileWriter ofs = new FileWriter(outFile, append);
+        BufferedWriter out = new BufferedWriter(ofs);
+
+        String line;
+
+        int lineNumber = 0;
+        while ((line = in.readLine()) != null)
+        {
+            if (lineNumber >= startLine && lineNumber <= endLine)
+            {
+                out.write(line + "\n");
+            }
+
+            ++lineNumber;
+        }
+
+        in.close();
+        out.close();
     }
 
     static public String getTemporarySuffix()

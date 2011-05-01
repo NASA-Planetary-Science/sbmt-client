@@ -40,6 +40,9 @@ public class ErosPopupManager extends PopupManager
         popupMenu = new NISPopupMenu(modelManager, infoPanelManager);
         registerPopup(modelManager.getModel(ModelNames.NIS_SPECTRA), popupMenu);
 
+        popupMenu = new NLRPopupMenu(modelManager);
+        registerPopup(modelManager.getModel(ModelNames.NLR_DATA_SEARCH), popupMenu);
+
         popupMenu = new LinesPopupMenu(modelManager);
         registerPopup(modelManager.getModel(ModelNames.LINE_STRUCTURES), popupMenu);
 

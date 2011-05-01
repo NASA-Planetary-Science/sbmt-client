@@ -13,6 +13,7 @@ package edu.jhuapl.near.gui.eros;
 
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
@@ -36,7 +37,9 @@ import edu.jhuapl.near.model.eros.NLRSearchDataCollection2.NLRMaskType;
 import edu.jhuapl.near.pick.PickEvent;
 import edu.jhuapl.near.pick.PickManager;
 import edu.jhuapl.near.pick.PickManager.PickMode;
+import edu.jhuapl.near.popupmenus.eros.NLRPopupMenu;
 import edu.jhuapl.near.util.Properties;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -47,10 +50,11 @@ public class NLRSearchPanelNB extends javax.swing.JPanel implements PropertyChan
     private final ModelManager modelManager;
     private PickManager pickManager;
     private NLRSearchDataCollection2 nlrModel;
-    private java.util.Date startDate = new GregorianCalendar(2000, 4, 1, 0, 0, 0).getTime();
-    private java.util.Date endDate = new GregorianCalendar(2000, 4, 2, 0, 0, 0).getTime();
+    private java.util.Date startDate = new GregorianCalendar(2000, 1, 28, 0, 0, 0).getTime();
+    private java.util.Date endDate = new GregorianCalendar(2001, 1, 13, 0, 0, 0).getTime();
     private TreeSet<Integer> cubeList = new TreeSet<Integer>();
     private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MMM-d HH:mm:ss.SSS", Locale.US);
+    private NLRPopupMenu nlrPopupMenu;
 
     /** Creates new form NLRSearchPanelNB */
     public NLRSearchPanelNB(final ModelManager modelManager,
@@ -76,6 +80,8 @@ public class NLRSearchPanelNB extends javax.swing.JPanel implements PropertyChan
         initComponents();
 
         radialOffsetChanger.setModel(nlrModel);
+
+        nlrPopupMenu = new NLRPopupMenu(modelManager);
     }
 
     private void showData(int direction, boolean reset)
@@ -87,10 +93,36 @@ public class NLRSearchPanelNB extends javax.swing.JPanel implements PropertyChan
         GregorianCalendar stopCal = new GregorianCalendar();
         stopCal.setTimeInMillis(endDate.getTime());
 
+        int minTrackLength = Integer.parseInt(minTrackSizeTextField.getText());
+        if (minTrackLength < 1)
+        {
+            JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
+                    "Minimum track length must be a positive integer.",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        double timeSeparationBetweenTracks = Double.parseDouble(trackSeparationTextField.getText());
+        if (timeSeparationBetweenTracks < 0.0)
+        {
+            JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
+                    "Track separation must be nonnegative.",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
         try
         {
-            //nlrModel.setNlrData(startCal, stopCal, cubeList, option.getType(), direction * option.getValue(), reset);
-            nlrModel.setNlrData(startCal, stopCal, cubeList, NLRMaskType.NONE, direction* -1.0, reset);
+            nlrModel.setNlrData(startCal,
+                    stopCal,
+                    cubeList,
+                    NLRMaskType.NONE,
+                    direction* -1.0,
+                    reset,
+                    Math.round(1000.0*timeSeparationBetweenTracks), // convert to milliseconds
+                    minTrackLength);
         }
         catch (IOException e)
         {
@@ -108,14 +140,15 @@ public class NLRSearchPanelNB extends javax.swing.JPanel implements PropertyChan
 
         if (nlrModel.getNumberOfPoints() > 0)
         {
-            long t0 = nlrModel.getTimeOfPoint(range[0]);
-            long t1 = nlrModel.getTimeOfPoint(range[1]);
+            //long t0 = nlrModel.getTimeOfPoint(range[0]);
+            //long t1 = nlrModel.getTimeOfPoint(range[1]);
 
-            resultsText += "Showing points " + (range[0]+1) + " through " + (range[1]+1) + ", " +
-            " from " + sdf.format(new Date(t0)) + " until " + sdf.format(new Date(t1)) + "<br><br>" +
-            "Number of points shown: " + (range[1] - range[0] + 1) + "<br>" +
-            "Time range: " + ((double)(t1-t0)/1000.0) + " seconds<br>" +
-            "Distance: " + (float)nlrModel.getLengthOfMaskedPoints() + " km";
+            //resultsText += "Showing points " + (range[0]+1) + " through " + (range[1]+1) + ", " +
+            //" from " + sdf.format(new Date(t0)) + " until " + sdf.format(new Date(t1)) + "<br><br>" +
+            //"Number of points shown: " + (range[1] - range[0] + 1) + "<br>" +
+            //"Time range: " + ((double)(t1-t0)/1000.0) + " seconds<br>" +
+            //"Distance: " + (float)nlrModel.getLengthOfMaskedPoints() + " km";
+            resultsText += "Number of tracks: " + nlrModel.getNumberOfTrack();
         }
 
         resultsText += "</html>";
@@ -123,7 +156,7 @@ public class NLRSearchPanelNB extends javax.swing.JPanel implements PropertyChan
         resultsLabel.setText(resultsText);
 
         populateTracksList();
-        
+
 //        if (nlrPlot != null)
 //            nlrPlot.updateData();
     }
@@ -132,7 +165,7 @@ public class NLRSearchPanelNB extends javax.swing.JPanel implements PropertyChan
     {
         int numberOfTracks = nlrModel.getNumberOfTrack();
         String[] results = new String[numberOfTracks];
-        
+
         for (int i=0; i<numberOfTracks; ++i)
         {
             NLRSearchDataCollection2.Track track = nlrModel.getTrack(i);
@@ -158,6 +191,20 @@ public class NLRSearchPanelNB extends javax.swing.JPanel implements PropertyChan
         }
     }
 
+    private void maybeShowPopup(MouseEvent e)
+    {
+        if (e.isPopupTrigger())
+        {
+            int index = tracksList.locationToIndex(e.getPoint());
+
+            if (index >= 0 && tracksList.getCellBounds(index, index).contains(e.getPoint()))
+            {
+                tracksList.setSelectedIndex(index);
+                nlrPopupMenu.setCurrentTrack(index);
+                nlrPopupMenu.show(e.getComponent(), e.getX(), e.getY());
+            }
+        }
+    }
 
     /** This method is called from within the constructor to
      * initialize the form.
@@ -171,20 +218,29 @@ public class NLRSearchPanelNB extends javax.swing.JPanel implements PropertyChan
         jLabel2 = new javax.swing.JLabel();
         startSpinner = new javax.swing.JSpinner();
         endSpinner = new javax.swing.JSpinner();
-        clearRegionButton = new javax.swing.JButton();
-        submitButton = new javax.swing.JButton();
         resultsLabel = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tracksList = new javax.swing.JList();
         radialOffsetChanger = new edu.jhuapl.near.gui.RadialOffsetChanger();
+        jPanel1 = new javax.swing.JPanel();
+        hideAllButton = new javax.swing.JButton();
         removeAllButton = new javax.swing.JButton();
+        resetButton = new javax.swing.JButton();
+        jPanel2 = new javax.swing.JPanel();
         selectRegionButton = new javax.swing.JToggleButton();
+        clearRegionButton = new javax.swing.JButton();
+        jPanel3 = new javax.swing.JPanel();
+        submitButton = new javax.swing.JButton();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        minTrackSizeTextField = new javax.swing.JFormattedTextField();
+        trackSeparationTextField = new javax.swing.JFormattedTextField();
 
         jLabel1.setText("Start Date:");
 
         jLabel2.setText("End Date:");
 
-        startSpinner.setModel(new javax.swing.SpinnerDateModel(new java.util.Date(957153600000L), null, null, java.util.Calendar.DAY_OF_MONTH));
+        startSpinner.setModel(new javax.swing.SpinnerDateModel(new java.util.Date(951714000000L), null, null, java.util.Calendar.DAY_OF_MONTH));
         startSpinner.setEditor(new javax.swing.JSpinner.DateEditor(startSpinner, "yyyy-MMM-dd HH:mm:ss"));
         startSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
@@ -192,7 +248,7 @@ public class NLRSearchPanelNB extends javax.swing.JPanel implements PropertyChan
             }
         });
 
-        endSpinner.setModel(new javax.swing.SpinnerDateModel(new java.util.Date(957153600000L), null, null, java.util.Calendar.DAY_OF_MONTH));
+        endSpinner.setModel(new javax.swing.SpinnerDateModel(new java.util.Date(982040400000L), null, null, java.util.Calendar.DAY_OF_MONTH));
         endSpinner.setEditor(new javax.swing.JSpinner.DateEditor(endSpinner, "yyyy-MMM-dd HH:mm:ss"));
         endSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
@@ -200,30 +256,41 @@ public class NLRSearchPanelNB extends javax.swing.JPanel implements PropertyChan
             }
         });
 
-        clearRegionButton.setText("Clear Region");
-        clearRegionButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                clearRegionButtonActionPerformed(evt);
-            }
-        });
-
-        submitButton.setText("Search");
-        submitButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                submitButtonActionPerformed(evt);
-            }
-        });
-
         resultsLabel.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
+        tracksList.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                tracksListMousePressed(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                tracksListMouseReleased(evt);
+            }
+        });
         jScrollPane1.setViewportView(tracksList);
 
-        removeAllButton.setText("Remove All Tracks");
+        hideAllButton.setText("Hide All");
+        hideAllButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                hideAllButtonActionPerformed(evt);
+            }
+        });
+        jPanel1.add(hideAllButton);
+
+        removeAllButton.setText("Remove All");
         removeAllButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 removeAllButtonActionPerformed(evt);
             }
         });
+        jPanel1.add(removeAllButton);
+
+        resetButton.setText("Reset");
+        resetButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                resetButtonActionPerformed(evt);
+            }
+        });
+        jPanel1.add(resetButton);
 
         selectRegionButton.setText("Select Region");
         selectRegionButton.addActionListener(new java.awt.event.ActionListener() {
@@ -231,18 +298,47 @@ public class NLRSearchPanelNB extends javax.swing.JPanel implements PropertyChan
                 selectRegionButtonActionPerformed(evt);
             }
         });
+        jPanel2.add(selectRegionButton);
+
+        clearRegionButton.setText("Clear Region");
+        clearRegionButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                clearRegionButtonActionPerformed(evt);
+            }
+        });
+        jPanel2.add(clearRegionButton);
+
+        submitButton.setText("Search");
+        submitButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                submitButtonActionPerformed(evt);
+            }
+        });
+        jPanel3.add(submitButton);
+
+        jLabel3.setText("Minumum Track Size:");
+
+        jLabel4.setText("Track Separation (sec):");
+
+        minTrackSizeTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0"))));
+        minTrackSizeTextField.setText("1");
+
+        trackSeparationTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.000"))));
+        trackSeparationTextField.setText("10");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(resultsLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 282, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                        .addContainerGap()
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 265, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 265, Short.MAX_VALUE)
+                    .addComponent(resultsLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 265, Short.MAX_VALUE)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 265, Short.MAX_VALUE)
+                    .addComponent(radialOffsetChanger, javax.swing.GroupLayout.DEFAULT_SIZE, 265, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.TRAILING))
@@ -250,28 +346,17 @@ public class NLRSearchPanelNB extends javax.swing.JPanel implements PropertyChan
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(startSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(endSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                        .addGap(32, 32, 32)
-                        .addComponent(selectRegionButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(clearRegionButton))
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                        .addGap(120, 120, 120)
-                        .addComponent(submitButton))
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 282, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(radialOffsetChanger, javax.swing.GroupLayout.DEFAULT_SIZE, 282, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                        .addGap(93, 93, 93)
-                        .addComponent(removeAllButton)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel3)
+                            .addComponent(jLabel4))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(minTrackSizeTextField)
+                            .addComponent(trackSeparationTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 112, Short.MAX_VALUE)))
+                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, 265, Short.MAX_VALUE))
                 .addContainerGap())
         );
-
-        layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {clearRegionButton, selectRegionButton});
-
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
@@ -285,17 +370,23 @@ public class NLRSearchPanelNB extends javax.swing.JPanel implements PropertyChan
                     .addComponent(endSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(clearRegionButton)
-                    .addComponent(selectRegionButton))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(submitButton)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(resultsLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 213, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel3)
+                    .addComponent(minTrackSizeTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel4)
+                    .addComponent(trackSeparationTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(removeAllButton)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(resultsLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 265, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(radialOffsetChanger, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -320,13 +411,6 @@ public class NLRSearchPanelNB extends javax.swing.JPanel implements PropertyChan
         selectionModel.removeAllStructures();
         cubeList.clear();
     }//GEN-LAST:event_clearRegionButtonActionPerformed
-
-    private void removeAllButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeAllButtonActionPerformed
-        NLRSearchDataCollection2 model = (NLRSearchDataCollection2) modelManager.getModel(ModelNames.NLR_DATA_SEARCH);
-        model.removeAllNlrData();
-//        if (nlrPlot != null)
-//            nlrPlot.updateData();
-    }//GEN-LAST:event_removeAllButtonActionPerformed
 
     private void submitButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_submitButtonActionPerformed
     {//GEN-HEADEREND:event_submitButtonActionPerformed
@@ -353,6 +437,19 @@ public class NLRSearchPanelNB extends javax.swing.JPanel implements PropertyChan
                 cubeList = nlrModel.getIntersectingCubes(region.interiorPolyData);
             }
         }
+        else
+        {
+            int option = JOptionPane.showConfirmDialog(
+                    JOptionPane.getFrameForComponent(this),
+                    "You have not selected a region on the small body in order to limit the search.\n" +
+                    "This may cause the program to crash if too much data is returned.\n" +
+                    "Are you sure you want to continue?",
+                    "No search region selected",
+                    JOptionPane.YES_NO_OPTION);
+
+            if (option == JOptionPane.NO_OPTION)
+                return;
+        }
 
         showData(1, true);
     }//GEN-LAST:event_submitButtonActionPerformed
@@ -365,19 +462,53 @@ public class NLRSearchPanelNB extends javax.swing.JPanel implements PropertyChan
             pickManager.setPickMode(PickMode.DEFAULT);
     }//GEN-LAST:event_selectRegionButtonActionPerformed
 
+    private void tracksListMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tracksListMousePressed
+        maybeShowPopup(evt);
+    }//GEN-LAST:event_tracksListMousePressed
+
+    private void tracksListMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tracksListMouseReleased
+        maybeShowPopup(evt);
+    }//GEN-LAST:event_tracksListMouseReleased
+
+    private void hideAllButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hideAllButtonActionPerformed
+        NLRSearchDataCollection2 model = (NLRSearchDataCollection2) modelManager.getModel(ModelNames.NLR_DATA_SEARCH);
+        model.hideAllTracks();
+}//GEN-LAST:event_hideAllButtonActionPerformed
+
+    private void resetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetButtonActionPerformed
+        NLRSearchDataCollection2 model = (NLRSearchDataCollection2) modelManager.getModel(ModelNames.NLR_DATA_SEARCH);
+        model.resetTracks();
+    }//GEN-LAST:event_resetButtonActionPerformed
+
+    private void removeAllButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_removeAllButtonActionPerformed
+    {//GEN-HEADEREND:event_removeAllButtonActionPerformed
+        NLRSearchDataCollection2 model = (NLRSearchDataCollection2) modelManager.getModel(ModelNames.NLR_DATA_SEARCH);
+        model.removeAllNlrData();
+        tracksList.setListData(new String[]{});
+    }//GEN-LAST:event_removeAllButtonActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton clearRegionButton;
     private javax.swing.JSpinner endSpinner;
+    private javax.swing.JButton hideAllButton;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JFormattedTextField minTrackSizeTextField;
     private edu.jhuapl.near.gui.RadialOffsetChanger radialOffsetChanger;
     private javax.swing.JButton removeAllButton;
+    private javax.swing.JButton resetButton;
     private javax.swing.JLabel resultsLabel;
     private javax.swing.JToggleButton selectRegionButton;
     private javax.swing.JSpinner startSpinner;
     private javax.swing.JButton submitButton;
+    private javax.swing.JFormattedTextField trackSeparationTextField;
     private javax.swing.JList tracksList;
     // End of variables declaration//GEN-END:variables
 

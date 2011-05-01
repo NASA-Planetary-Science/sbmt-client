@@ -70,8 +70,8 @@ public class NLRSearchDataCollection2 extends Model
 
     private ArrayList<Track> tracks = new ArrayList<Track>();
     private vtkUnsignedCharArray colors;
-    private int currentTrack = -1;
-    private static long TRACK_SEPARATION = 10000;
+    private long timeSeparationBetweenTracks = 10000; // In milliseconds
+    private int minTrackLength = 1;
     private final int[] defaultColor = {0, 0, 255, 255};
     private final int[] highlightColor = {255, 0, 255, 255};
 
@@ -88,13 +88,20 @@ public class NLRSearchDataCollection2 extends Model
         public double[] point;
         public Long time;
         public double potential;
-        public short[] color;
+        //public short[] color;
 
-        public NLRPoint(double[] point, long time, double potential)
+        // The following 2 variables store which file and line number, this data point
+        // came from
+        public String doyOrCubeId; // day of year or cube id depending one where it was loaded from
+        public int lineNumber; // line number in file
+
+        public NLRPoint(double[] point, long time, double potential, String doy, int lineNumber)
         {
             this.point = point;
             this.time = time;
             this.potential = potential;
+            this.doyOrCubeId = doy;
+            this.lineNumber = lineNumber;
         }
 
         public int compareTo(NLRPoint o)
@@ -107,6 +114,8 @@ public class NLRSearchDataCollection2 extends Model
     {
         public int startId = -1;
         public int stopId = -1;
+        public boolean highlighted = false;
+        public boolean hidden = false;
 
         public int getNumberOfPoints()
         {
@@ -156,9 +165,11 @@ public class NLRSearchDataCollection2 extends Model
             TreeSet<Integer> cubeList,
             NLRMaskType maskType,
             double maskValue,
-            boolean reset) throws IOException, ParseException
+            boolean reset,
+            long timeSeparationBetweenTracks,
+            int minTrackLength) throws IOException, ParseException
     {
-        loadNlrData(startDate, stopDate, cubeList);
+        loadNlrData(startDate, stopDate, cubeList, timeSeparationBetweenTracks, minTrackLength);
 
         applyMask(maskType, maskValue, reset);
 
@@ -212,8 +223,8 @@ public class NLRSearchDataCollection2 extends Model
         // Check for valid values. NLR data was only aquired from day 59 in year 2000
         // to day 43 in year 2001
         if (startDate.compareTo(stopDate) > 0 ||
-                stopDate.compareTo(new GregorianCalendar(2000, 2, 28, 0, 0, 0)) < 0 ||
-                startDate.compareTo(new GregorianCalendar(2001, 2, 13, 0, 0, 0)) >= 0)
+                stopDate.compareTo(new GregorianCalendar(2000, 1, 28, 0, 0, 0)) < 0 ||
+                startDate.compareTo(new GregorianCalendar(2001, 1, 13, 0, 0, 0)) >= 0)
         {
             return validDays;
         }
@@ -261,11 +272,15 @@ public class NLRSearchDataCollection2 extends Model
     private void loadNlrData(
             GregorianCalendar startDate,
             GregorianCalendar stopDate,
-            TreeSet<Integer> cubeList) throws IOException, ParseException
+            TreeSet<Integer> cubeList,
+            long timeSeparationBetweenTracks,
+            int minTrackLength) throws IOException, ParseException
     {
         if (startDate.equals(this.startDate) &&
                 stopDate.equals(this.stopDate) &&
-                cubeList.equals(this.cubeList))
+                cubeList.equals(this.cubeList) &&
+                timeSeparationBetweenTracks == this.timeSeparationBetweenTracks &&
+                minTrackLength == this.minTrackLength)
         {
             return;
         }
@@ -275,6 +290,9 @@ public class NLRSearchDataCollection2 extends Model
         this.startDate = (GregorianCalendar)startDate.clone();
         this.stopDate = (GregorianCalendar)stopDate.clone();
         this.cubeList = (TreeSet<Integer>)cubeList.clone();
+        this.timeSeparationBetweenTracks = timeSeparationBetweenTracks;
+        this.minTrackLength = minTrackLength;
+
 
         long start = startDate.getTimeInMillis();
         long stop = stopDate.getTimeInMillis();
@@ -303,7 +321,8 @@ public class NLRSearchDataCollection2 extends Model
             int id = 0;
             for (IdPair day : validDays)
             {
-                String path = nlrDoyToPathMap.get(day.toString());
+                String doy = day.toString();
+                String path = nlrDoyToPathMap.get(doy);
 
                 File file = FileCache.getFileFromServer(path);
                 if (file == null)
@@ -342,14 +361,10 @@ public class NLRSearchDataCollection2 extends Model
                             Double.parseDouble(vals[14])/1000.0,
                             Double.parseDouble(vals[15])/1000.0,
                             Double.parseDouble(vals[16])/1000.0};
-                    points.InsertNextPoint(point);
-                    idList.SetId(0, id++);
-                    vert.InsertNextCell(idList);
-                    colors.InsertNextTuple4(defaultColor[0], defaultColor[1], defaultColor[2], defaultColor[3]);
 
                     double potential = Double.parseDouble(vals[18]);
 
-                    originalPoints.add(new NLRPoint(point, time, potential));
+                    originalPoints.add(new NLRPoint(point, time, potential, doy, i));
                 }
             }
         }
@@ -384,26 +399,28 @@ public class NLRSearchDataCollection2 extends Model
 
                     double potential = Double.parseDouble(vals[18]);
 
-                    originalPoints.add(new NLRPoint(point, time, potential));
+                    originalPoints.add(new NLRPoint(point, time, potential, cubeid.toString(), i));
                 }
             }
 
-            // Now sort all the points in time order and place them into polydata
-
-            points.SetNumberOfPoints(originalPoints.size());
-
+            // Now sort all the points in time order
             Collections.sort(originalPoints);
-            int numPoints = originalPoints.size();
-            for (int i=0; i<numPoints; ++i)
-            {
-                points.SetPoint(i, originalPoints.get(i).point);
-                idList.SetId(0, i);
-                vert.InsertNextCell(idList);
-                colors.InsertNextTuple4(defaultColor[0], defaultColor[1], defaultColor[2], defaultColor[3]);
-            }
         }
 
         computeTracks();
+        removeTracksThatAreTooSmall();
+
+        // Place the points into polydata
+        points.SetNumberOfPoints(originalPoints.size());
+
+        int numPoints = originalPoints.size();
+        for (int i = 0; i < numPoints; ++i)
+        {
+            points.SetPoint(i, originalPoints.get(i).point);
+            idList.SetId(0, i);
+            vert.InsertNextCell(idList);
+            colors.InsertNextTuple4(defaultColor[0], defaultColor[1], defaultColor[2], defaultColor[3]);
+        }
     }
 
     private void applyMask(NLRMaskType maskType, double maskValue, boolean reset)
@@ -425,6 +442,12 @@ public class NLRSearchDataCollection2 extends Model
         }
     }
 
+    /**
+     * Return the track with the specified trackId
+     * 
+     * @param trackId
+     * @return
+     */
     public Track getTrack(int trackId)
     {
         return tracks.get(trackId);
@@ -462,7 +485,7 @@ public class NLRSearchDataCollection2 extends Model
         for (int i=1; i<size; ++i)
         {
             long currentTime = originalPoints.get(i).time;
-            if (currentTime - prevTime >= TRACK_SEPARATION)
+            if (currentTime - prevTime >= timeSeparationBetweenTracks)
             {
                 track.stopId = i-1;
 
@@ -478,49 +501,166 @@ public class NLRSearchDataCollection2 extends Model
         track.stopId = size-1;
     }
 
-    public void removeTrack(int trackId)
+    public void saveTrack(int trackId, File outfile) throws IOException
     {
+        int startId = tracks.get(trackId).startId;
+        int stopId = tracks.get(trackId).stopId;
 
+        NLRPoint startPoint = originalPoints.get(startId);
+        boolean append = false;
+
+        for (int i=startId; i<=stopId; ++i)
+        {
+            NLRPoint currentPoint = originalPoints.get(i);
+            NLRPoint nextPoint = null;
+
+            if (i+1 <= stopId)
+                nextPoint = originalPoints.get(i+1);
+
+            if (nextPoint == null ||
+                currentPoint.lineNumber+1 != nextPoint.lineNumber ||
+                !currentPoint.doyOrCubeId.equals(nextPoint.doyOrCubeId))
+            {
+                // Save out the points starting from startPoint
+
+                // If the startPoint.doyOrCubeId variable contains a space (between
+                // the year and day) that means the file is the original tab files.
+                // Otherwise assume a cubes file.
+                String infilename = null;
+                if (startPoint.doyOrCubeId.contains(" "))
+                    infilename = nlrDoyToPathMap.get(startPoint.doyOrCubeId);
+                else
+                    infilename = "/NLR/per_cube/" + startPoint.doyOrCubeId + ".nlr";
+
+                FileUtil.copyLinesInFile(
+                        FileCache.getFileFromServer(infilename),
+                        outfile,
+                        startPoint.lineNumber,
+                        currentPoint.lineNumber,
+                        append);
+
+                append = true;
+
+                if (i+1 <= stopId)
+                    startPoint = originalPoints.get(i+1);
+            }
+        }
     }
 
-    public void saveTrack(int trackId)
+    public void highlightTrack(int trackId, boolean highlight)
     {
-
+        tracks.get(trackId).highlighted = highlight;
+        updateTrackColors();
     }
 
-    public void highlightTrack(int trackId)
+    public void hideTrack(int trackId, boolean hide)
     {
-        setTrackColor(trackId, highlightColor, defaultColor);
-    }
-
-    public void hideTrack(int trackId)
-    {
-        setTrackColor(trackId, new int[]{0, 0, 0, 0}, defaultColor);
+        tracks.get(trackId).hidden = hide;
+        updateTrackColors();
     }
 
     public void hideOtherTracksExcept(int trackId)
     {
-        setTrackColor(trackId, defaultColor, new int[]{0, 0, 0, 0});
+        Track trackToHide = tracks.get(trackId);
+        for (Track track : tracks)
+        {
+            if (track != trackToHide)
+                track.hidden = true;
+        }
+
+        updateTrackColors();
     }
 
-    private void setTrackColor(int trackId, int[] trackColor, int[] otherTracksColor)
+    public void hideAllTracks()
     {
-        currentTrack = trackId;
+        for (Track track : tracks)
+        {
+            track.hidden = true;
+        }
+
+        updateTrackColors();
+    }
+
+    public void resetTracks()
+    {
+        for (Track track : tracks)
+        {
+            track.hidden = false;
+            track.highlighted = false;
+        }
+
+        updateTrackColors();
+    }
+
+    public boolean isTrackHidden(int trackId)
+    {
+        return tracks.get(trackId).hidden;
+    }
+
+    public boolean isTrackHighlighted(int trackId)
+    {
+        return tracks.get(trackId).highlighted;
+    }
+
+    private void updateTrackColors()
+    {
+        if (tracks.isEmpty())
+            return;
+        
+        int currentTrack = 0;
+        Track track = getTrack(currentTrack);
 
         int numPoints = originalPoints.size();
-        Track track = getTrack(trackId);
         for (int i=0; i<numPoints; ++i)
         {
-            if (track.containsId(i))
-                colors.SetTuple4(i, trackColor[0], trackColor[1], trackColor[2], trackColor[3]);
+            if (track.hidden)
+                colors.SetTuple4(i, 1.0, 0.0, 0.0, 0.0);
+            else if (track.highlighted)
+                colors.SetTuple4(i, highlightColor[0], highlightColor[1], highlightColor[2], highlightColor[3]);
             else
-                colors.SetTuple4(i, otherTracksColor[0], otherTracksColor[1], otherTracksColor[2], otherTracksColor[3]);
+                colors.SetTuple4(i, defaultColor[0], defaultColor[1], defaultColor[2], defaultColor[3]);
+
+            if (i == track.stopId && currentTrack < tracks.size()-1)
+            {
+                ++currentTrack;
+                track = getTrack(currentTrack);
+            }
         }
 
         polydata.GetCellData().SetScalars(colors);
         polydata.Modified();
 
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+    }
+
+    private void removeTrack(int trackId)
+    {
+        Track track = tracks.get(trackId);
+        int trackSize = track.getNumberOfPoints();
+
+        for (int i=track.stopId; i>=track.startId; --i)
+            originalPoints.remove(i);
+
+        tracks.remove(trackId);
+
+        // Go through all tracks that follow the deleted track and shift
+        // all the start and stop ids down by the size of the deleted track
+        int numberOfTracks = tracks.size();
+        for (int i=trackId; i<numberOfTracks; ++i)
+        {
+            track = tracks.get(i);
+            track.startId -= trackSize;
+            track.stopId -= trackSize;
+        }
+    }
+
+    private void removeTracksThatAreTooSmall()
+    {
+        for (int i=tracks.size()-1; i>=0; --i)
+        {
+            if (tracks.get(i).getNumberOfPoints() < minTrackLength)
+                removeTrack(i);
+        }
     }
 
     public void removeAllNlrData()
@@ -680,20 +820,24 @@ public class NLRSearchDataCollection2 extends Model
      * @param potential
      * @param distance
      */
-    public void getPotentialVsDistance(ArrayList<Double> potential, ArrayList<Double> distance)
+    public void getPotentialVsDistance(int trackId,
+            ArrayList<Double> potential,
+            ArrayList<Double> distance)
     {
         potential.clear();
         distance.clear();
 
-        if (originalPoints.size() == 0 || firstPointShown < 0 || lastPointShown < 0)
+        Track track = tracks.get(trackId);
+
+        if (originalPoints.size() == 0 || track.startId < 0 || track.stopId < 0)
             return;
 
         double length = 0.0;
 
-        potential.add(originalPoints.get(firstPointShown).potential);
+        potential.add(originalPoints.get(track.startId).potential);
         distance.add(0.0);
 
-        for (int i=firstPointShown+1; i<=lastPointShown; ++i)
+        for (int i=track.startId+1; i<=track.stopId; ++i)
         {
             double[] prevPoint = originalPoints.get(i-1).point;
             double[] currentPoint = originalPoints.get(i).point;
@@ -710,15 +854,19 @@ public class NLRSearchDataCollection2 extends Model
      * @param potential
      * @param time
      */
-    public void getPotentialVsTime(ArrayList<Double> potential, ArrayList<Long> time)
+    public void getPotentialVsTime(int trackId,
+            ArrayList<Double> potential,
+            ArrayList<Long> time)
     {
         potential.clear();
         time.clear();
 
-        if (originalPoints.size() == 0 || firstPointShown < 0 || lastPointShown < 0)
+        Track track = tracks.get(trackId);
+
+        if (originalPoints.size() == 0 || track.startId < 0 || track.stopId < 0)
             return;
 
-        for (int i=firstPointShown; i<=lastPointShown; ++i)
+        for (int i=track.startId; i<=track.stopId; ++i)
         {
             potential.add(originalPoints.get(i).potential);
             time.add(originalPoints.get(i).time);
@@ -757,10 +905,10 @@ public class NLRSearchDataCollection2 extends Model
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
-    public void saveNlrData(File outFile) throws IOException, ParseException
-    {
-        if (firstPointShown < 0 || lastPointShown < 0)
-            return;
-    }
+//    public void saveNlrData(File outFile) throws IOException, ParseException
+//    {
+//        if (firstPointShown < 0 || lastPointShown < 0)
+//            return;
+//    }
 
 }
