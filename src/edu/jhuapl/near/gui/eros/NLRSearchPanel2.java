@@ -4,7 +4,7 @@
  */
 
 /*
- * NLRSearchPanelNB.java
+ * NLRSearchPanel2.java
  *
  * Created on Apr 5, 2011, 5:15:12 PM
  */
@@ -41,7 +41,7 @@ import edu.jhuapl.near.util.Properties;
  *
  * @author kahneg1
  */
-public class NLRSearchPanelNB extends javax.swing.JPanel implements PropertyChangeListener
+public class NLRSearchPanel2 extends javax.swing.JPanel implements PropertyChangeListener
 {
     private final ModelManager modelManager;
     private PickManager pickManager;
@@ -51,8 +51,8 @@ public class NLRSearchPanelNB extends javax.swing.JPanel implements PropertyChan
     private TreeSet<Integer> cubeList = new TreeSet<Integer>();
     private NLRPopupMenu nlrPopupMenu;
 
-    /** Creates new form NLRSearchPanelNB */
-    public NLRSearchPanelNB(final ModelManager modelManager,
+    /** Creates new form NLRSearchPanel2 */
+    public NLRSearchPanel2(final ModelManager modelManager,
             final PickManager pickManager)
     {
         this.modelManager = modelManager;
