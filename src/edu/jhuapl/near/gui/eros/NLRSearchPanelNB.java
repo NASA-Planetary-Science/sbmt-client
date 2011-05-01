@@ -18,12 +18,10 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.Locale;
 import java.util.TreeSet;
 
+import javax.swing.JOptionPane;
 import javax.swing.SpinnerDateModel;
 
 import vtk.vtkPolyData;
@@ -33,13 +31,11 @@ import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.RegularPolygonModel;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.eros.NLRSearchDataCollection2;
-import edu.jhuapl.near.model.eros.NLRSearchDataCollection2.NLRMaskType;
 import edu.jhuapl.near.pick.PickEvent;
 import edu.jhuapl.near.pick.PickManager;
 import edu.jhuapl.near.pick.PickManager.PickMode;
 import edu.jhuapl.near.popupmenus.eros.NLRPopupMenu;
 import edu.jhuapl.near.util.Properties;
-import javax.swing.JOptionPane;
 
 /**
  *
@@ -53,7 +49,6 @@ public class NLRSearchPanelNB extends javax.swing.JPanel implements PropertyChan
     private java.util.Date startDate = new GregorianCalendar(2000, 1, 28, 0, 0, 0).getTime();
     private java.util.Date endDate = new GregorianCalendar(2001, 1, 13, 0, 0, 0).getTime();
     private TreeSet<Integer> cubeList = new TreeSet<Integer>();
-    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MMM-d HH:mm:ss.SSS", Locale.US);
     private NLRPopupMenu nlrPopupMenu;
 
     /** Creates new form NLRSearchPanelNB */
@@ -86,8 +81,6 @@ public class NLRSearchPanelNB extends javax.swing.JPanel implements PropertyChan
 
     private void showData(int direction, boolean reset)
     {
-//        DisplayedResultsOptions option = (DisplayedResultsOptions)shownResultsShowComboBox.getSelectedItem();
-
         GregorianCalendar startCal = new GregorianCalendar();
         startCal.setTimeInMillis(startDate.getTime());
         GregorianCalendar stopCal = new GregorianCalendar();
@@ -118,7 +111,6 @@ public class NLRSearchPanelNB extends javax.swing.JPanel implements PropertyChan
             nlrModel.setNlrData(startCal,
                     stopCal,
                     cubeList,
-                    NLRMaskType.NONE,
                     direction* -1.0,
                     reset,
                     Math.round(1000.0*timeSeparationBetweenTracks), // convert to milliseconds
@@ -133,21 +125,11 @@ public class NLRSearchPanelNB extends javax.swing.JPanel implements PropertyChan
             e.printStackTrace();
         }
 
-        int[] range = nlrModel.getMaskedPointRange();
-
         String resultsText =
             "<html>" + nlrModel.getNumberOfPoints() + " points matched<br><br>";
 
         if (nlrModel.getNumberOfPoints() > 0)
         {
-            //long t0 = nlrModel.getTimeOfPoint(range[0]);
-            //long t1 = nlrModel.getTimeOfPoint(range[1]);
-
-            //resultsText += "Showing points " + (range[0]+1) + " through " + (range[1]+1) + ", " +
-            //" from " + sdf.format(new Date(t0)) + " until " + sdf.format(new Date(t1)) + "<br><br>" +
-            //"Number of points shown: " + (range[1] - range[0] + 1) + "<br>" +
-            //"Time range: " + ((double)(t1-t0)/1000.0) + " seconds<br>" +
-            //"Distance: " + (float)nlrModel.getLengthOfMaskedPoints() + " km";
             resultsText += "Number of tracks: " + nlrModel.getNumberOfTrack();
         }
 
@@ -156,9 +138,6 @@ public class NLRSearchPanelNB extends javax.swing.JPanel implements PropertyChan
         resultsLabel.setText(resultsText);
 
         populateTracksList();
-
-//        if (nlrPlot != null)
-//            nlrPlot.updateData();
     }
 
     private void populateTracksList()
@@ -185,8 +164,6 @@ public class NLRSearchPanelNB extends javax.swing.JPanel implements PropertyChan
             {
                 int id = e.getPickedCellId();
                 nlrModel.selectPoint(id);
-                //if (nlrPlot != null)
-                //    nlrPlot.selectPoint(id);
             }
         }
     }

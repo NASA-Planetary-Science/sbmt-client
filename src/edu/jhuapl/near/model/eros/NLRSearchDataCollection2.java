@@ -18,7 +18,6 @@ import java.util.TreeSet;
 
 import vtk.vtkActor;
 import vtk.vtkCellArray;
-import vtk.vtkGeometryFilter;
 import vtk.vtkIdList;
 import vtk.vtkPoints;
 import vtk.vtkPolyData;
@@ -43,7 +42,6 @@ public class NLRSearchDataCollection2 extends Model
     private vtkPolyData selectedPointPolydata;
     private ArrayList<NLRPoint> originalPoints = new ArrayList<NLRPoint>();
     private ArrayList<vtkProp> actors = new ArrayList<vtkProp>();
-    private vtkGeometryFilter geometryFilter;
     private vtkPolyDataMapper pointsMapper;
     private vtkPolyDataMapper selectedPointMapper;
     private vtkActor actor;
@@ -61,11 +59,6 @@ public class NLRSearchDataCollection2 extends Model
     private SmallBodyModel erosModel;
     private SmallBodyCubes smallBodyCubes;
 
-    private int firstPointShown = -1;
-    private int lastPointShown = -1;
-
-    private boolean needToResetMask = true;
-
     private int selectedPoint = -1;
 
     private ArrayList<Track> tracks = new ArrayList<Track>();
@@ -74,14 +67,6 @@ public class NLRSearchDataCollection2 extends Model
     private int minTrackLength = 1;
     private final int[] defaultColor = {0, 0, 255, 255};
     private final int[] highlightColor = {255, 0, 255, 255};
-
-    public enum NLRMaskType
-    {
-        NONE,
-//        BY_NUMBER,
-//        BY_TIME,
-//        BY_DISTANCE
-    }
 
     private static class NLRPoint implements Comparable<NLRPoint>
     {
@@ -150,20 +135,12 @@ public class NLRSearchDataCollection2 extends Model
         vert = new vtkCellArray();
         selectedPointPolydata.SetPoints( points );
         selectedPointPolydata.SetVerts( vert );
-
-        geometryFilter = new vtkGeometryFilter();
-        geometryFilter.SetInput(polydata);
-        geometryFilter.PointClippingOn();
-        geometryFilter.CellClippingOff();
-        geometryFilter.ExtentClippingOff();
-        geometryFilter.MergingOff();
     }
 
     public void setNlrData(
             GregorianCalendar startDate,
             GregorianCalendar stopDate,
             TreeSet<Integer> cubeList,
-            NLRMaskType maskType,
             double maskValue,
             boolean reset,
             long timeSeparationBetweenTracks,
@@ -171,15 +148,9 @@ public class NLRSearchDataCollection2 extends Model
     {
         loadNlrData(startDate, stopDate, cubeList, timeSeparationBetweenTracks, minTrackLength);
 
-        applyMask(maskType, maskValue, reset);
-
-        geometryFilter.SetPointMinimum(firstPointShown);
-        geometryFilter.SetPointMaximum(lastPointShown);
-
         if (pointsMapper == null)
         {
             pointsMapper = new vtkPolyDataMapper();
-            pointsMapper.SetInput(geometryFilter.GetOutput());
             pointsMapper.SetScalarModeToUseCellData();
 
             selectedPointMapper = new vtkPolyDataMapper();
@@ -203,9 +174,14 @@ public class NLRSearchDataCollection2 extends Model
             actors.add(selectedPointActor);
         }
 
+        polydata.Modified();
+        pointsMapper.Modified();
+        pointsMapper.SetInput(polydata);
+
         setRadialOffset(radialOffset);
 
         selectPoint(-1);
+System.out.println(polydata.GetNumberOfPoints());
 
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
@@ -318,7 +294,6 @@ public class NLRSearchDataCollection2 extends Model
                 cubeList.size() == 0 ||
                 4*validDays.size() < cubeList.size())
         {
-            int id = 0;
             for (IdPair day : validDays)
             {
                 String doy = day.toString();
@@ -423,28 +398,9 @@ public class NLRSearchDataCollection2 extends Model
         }
     }
 
-    private void applyMask(NLRMaskType maskType, double maskValue, boolean reset)
-    {
-        int totalNumberPoints = originalPoints.size();
-
-        if (reset || needToResetMask)
-        {
-            // If we are resetting the mask, make sure maskValue is positive
-            if (maskValue < 0)
-                maskValue = -maskValue;
-        }
-
-        if (maskType == NLRMaskType.NONE)
-        {
-            firstPointShown = 0;
-            lastPointShown = totalNumberPoints - 1;
-            return;
-        }
-    }
-
     /**
      * Return the track with the specified trackId
-     * 
+     *
      * @param trackId
      * @return
      */
@@ -606,28 +562,25 @@ public class NLRSearchDataCollection2 extends Model
     {
         if (tracks.isEmpty())
             return;
-        
-        int currentTrack = 0;
-        Track track = getTrack(currentTrack);
 
-        int numPoints = originalPoints.size();
-        for (int i=0; i<numPoints; ++i)
+        int numTracks = getNumberOfTrack();
+        for (int j=0; j<numTracks; ++j)
         {
-            if (track.hidden)
-                colors.SetTuple4(i, 1.0, 0.0, 0.0, 0.0);
-            else if (track.highlighted)
-                colors.SetTuple4(i, highlightColor[0], highlightColor[1], highlightColor[2], highlightColor[3]);
-            else
-                colors.SetTuple4(i, defaultColor[0], defaultColor[1], defaultColor[2], defaultColor[3]);
-
-            if (i == track.stopId && currentTrack < tracks.size()-1)
+            Track track = getTrack(j);
+            int startId = track.startId;
+            int stopId = track.stopId;
+            for (int i=startId; i<=stopId; ++i)
             {
-                ++currentTrack;
-                track = getTrack(currentTrack);
+                if (track.hidden)
+                    colors.SetTuple4(i, 0.0, 0.0, 0.0, 0.0);
+                else if (track.highlighted)
+                    colors.SetTuple4(i, highlightColor[0], highlightColor[1], highlightColor[2], highlightColor[3]);
+                else
+                    colors.SetTuple4(i, defaultColor[0], defaultColor[1], defaultColor[2], defaultColor[3]);
             }
         }
 
-        polydata.GetCellData().SetScalars(colors);
+        polydata.GetCellData().GetScalars().Modified();
         polydata.Modified();
 
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
@@ -665,12 +618,9 @@ public class NLRSearchDataCollection2 extends Model
 
     public void removeAllNlrData()
     {
-        needToResetMask = true;
-
-        firstPointShown = -1;
-        lastPointShown = -1;
-        geometryFilter.SetPointMinimum(Integer.MAX_VALUE);
-        geometryFilter.SetPointMaximum(Integer.MAX_VALUE);
+        polydata.GetPoints().SetNumberOfPoints(0);
+        originalPoints.clear();
+        tracks.clear();
 
         selectPoint(-1);
 
@@ -695,7 +645,6 @@ public class NLRSearchDataCollection2 extends Model
 
     public String getClickStatusBarText(vtkProp prop, int cellId, double[] pickPosition)
     {
-        cellId = geometryFilter.GetPointMinimum() + cellId;
         Date date = new Date(originalPoints.get(cellId).time);
         return "NLR acquired at " + sdf2.format(date)
             + ", Potential: " + originalPoints.get(cellId).potential + " J/kg";
@@ -789,30 +738,9 @@ public class NLRSearchDataCollection2 extends Model
         return originalPoints.size();
     }
 
-    public int[] getMaskedPointRange()
-    {
-        int[] range = {firstPointShown, lastPointShown};
-        return range;
-    }
-
     public long getTimeOfPoint(int i)
     {
         return originalPoints.get(i).time;
-    }
-
-    public double getLengthOfMaskedPoints()
-    {
-        double length = 0.0;
-
-        for (int i=firstPointShown+1; i<=lastPointShown; ++i)
-        {
-            double[] prevPoint = originalPoints.get(i-1).point;
-            double[] currentPoint = originalPoints.get(i).point;
-            double dist = MathUtil.distanceBetween(prevPoint, currentPoint);
-            length += dist;
-        }
-
-        return length;
     }
 
     /**
@@ -875,9 +803,6 @@ public class NLRSearchDataCollection2 extends Model
 
     public void selectPoint(int ptId)
     {
-//        if (ptId == selectedPoint)
-//            return;
-
         selectedPoint = ptId;
 
         vtkPoints points = selectedPointPolydata.GetPoints();
@@ -893,8 +818,6 @@ public class NLRSearchDataCollection2 extends Model
             vtkIdList idList = new vtkIdList();
             idList.SetNumberOfIds(1);
 
-            ptId = geometryFilter.GetPointMinimum() + ptId;
-
             points.SetPoint(0, polydata.GetPoints().GetPoint(ptId));
             idList.SetId(0, 0);
             vert.InsertNextCell(idList);
@@ -904,11 +827,4 @@ public class NLRSearchDataCollection2 extends Model
 
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
-
-//    public void saveNlrData(File outFile) throws IOException, ParseException
-//    {
-//        if (firstPointShown < 0 || lastPointShown < 0)
-//            return;
-//    }
-
 }
