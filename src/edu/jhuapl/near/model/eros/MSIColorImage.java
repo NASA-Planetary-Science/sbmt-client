@@ -52,11 +52,11 @@ public class MSIColorImage extends Model implements PropertyChangeListener
 
     public static class MSIColorKey
     {
-        public MSIImage.MSIKey redImageKey;
-        public MSIImage.MSIKey greenImageKey;
-        public MSIImage.MSIKey blueImageKey;
+        public MSIImage.ImageKey redImageKey;
+        public MSIImage.ImageKey greenImageKey;
+        public MSIImage.ImageKey blueImageKey;
 
-        public MSIColorKey(MSIImage.MSIKey redImage, MSIImage.MSIKey greenImage, MSIImage.MSIKey blueImage)
+        public MSIColorKey(MSIImage.ImageKey redImage, MSIImage.ImageKey greenImage, MSIImage.ImageKey blueImage)
         {
             this.redImageKey = redImage;
             this.greenImageKey = greenImage;

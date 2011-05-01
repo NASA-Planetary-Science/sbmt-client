@@ -15,11 +15,11 @@ import org.joda.time.DateTimeZone;
 import vtk.vtkGlobalJavaHash;
 import vtk.vtkPolyData;
 
+import edu.jhuapl.near.model.Image.ImageSource;
 import edu.jhuapl.near.model.ModelFactory;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.eros.MSIImage;
 import edu.jhuapl.near.model.eros.NISSpectrum;
-import edu.jhuapl.near.model.eros.MSIImage.MSISource;
 import edu.jhuapl.near.util.FileUtil;
 import edu.jhuapl.near.util.NativeLibraryLoader;
 
@@ -196,7 +196,7 @@ public class DatabaseGeneratorSql
     private static void populateMSITables(
             ArrayList<String> msiFiles,
             String msiTableName,
-            MSIImage.MSISource msiSource) throws IOException, SQLException, FitsException
+            MSIImage.ImageSource msiSource) throws IOException, SQLException, FitsException
     {
         erosModel.setModelResolution(3);
         MSIImage.setGenerateFootprint(true);
@@ -387,7 +387,7 @@ public class DatabaseGeneratorSql
     private static void populateMSITablesCubes(
             ArrayList<String> msiFiles,
             String msiTableName,
-            MSIImage.MSISource msiSource) throws SQLException, IOException, FitsException
+            MSIImage.ImageSource msiSource) throws SQLException, IOException, FitsException
     {
         erosModel.setModelResolution(0);
         MSIImage.setGenerateFootprint(true);
@@ -525,7 +525,7 @@ public class DatabaseGeneratorSql
         }
     }
 
-    static boolean checkIfAllMsiFilesExist(String line, MSIImage.MSISource source)
+    static boolean checkIfAllMsiFilesExist(String line, MSIImage.ImageSource source)
     {
         File file = new File(line);
         if (!file.exists())
@@ -542,7 +542,7 @@ public class DatabaseGeneratorSql
             return false;
 
         // Check for the sumfile if source is Gaskell
-        if (source.equals(MSISource.GASKELL))
+        if (source.equals(ImageSource.GASKELL))
         {
             File msirootdir = (new File(line)).getParentFile().getParentFile().getParentFile().getParentFile();
             String msiId = (new File(line)).getName().substring(0, 11);
@@ -670,13 +670,13 @@ public class DatabaseGeneratorSql
         try
         {
             if (mode == 1 || mode == 0)
-                populateMSITables(msiFiles, MsiImagesPdsTable, MSIImage.MSISource.PDS);
+                populateMSITables(msiFiles, MsiImagesPdsTable, MSIImage.ImageSource.PDS);
             else if (mode == 2 || mode == 0)
-                populateMSITables(msiFiles, MsiImagesGaskellTable, MSIImage.MSISource.GASKELL);
+                populateMSITables(msiFiles, MsiImagesGaskellTable, MSIImage.ImageSource.GASKELL);
             else if (mode == 3 || mode == 0)
-                populateMSITablesCubes(msiFiles, MsiCubesPdsTable, MSIImage.MSISource.PDS);
+                populateMSITablesCubes(msiFiles, MsiCubesPdsTable, MSIImage.ImageSource.PDS);
             else if (mode == 4 || mode == 0)
-                populateMSITablesCubes(msiFiles, MsiCubesGaskellTable, MSIImage.MSISource.GASKELL);
+                populateMSITablesCubes(msiFiles, MsiCubesGaskellTable, MSIImage.ImageSource.GASKELL);
             else if (mode == 5 || mode == 0)
                 populateNISTables(nisFiles);
             else if (mode == 6 || mode == 0)

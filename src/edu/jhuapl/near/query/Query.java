@@ -204,7 +204,7 @@ public class Query
             double fromPhase,
             double toPhase,
             TreeSet<Integer> cubeList,
-            MSIImage.MSISource msiSource,
+            MSIImage.ImageSource msiSource,
             int limbType)
     {
         ArrayList<String> matchedImages = new ArrayList<String>();

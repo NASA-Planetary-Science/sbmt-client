@@ -12,10 +12,10 @@ import nom.tam.fits.FitsException;
 import vtk.vtkActor;
 import vtk.vtkProp;
 
+import edu.jhuapl.near.model.Image.ImageKey;
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.SmallBodyModel;
-import edu.jhuapl.near.model.eros.MSIImage.MSIKey;
 import edu.jhuapl.near.util.Properties;
 
 public class MSIImageCollection extends Model implements PropertyChangeListener
@@ -33,7 +33,7 @@ public class MSIImageCollection extends Model implements PropertyChangeListener
         this.erosModel = eros;
     }
 
-    private boolean containsKey(MSIKey key)
+    private boolean containsKey(ImageKey key)
     {
         for (MSIImage image : imageToActorsMap.keySet())
         {
@@ -44,7 +44,7 @@ public class MSIImageCollection extends Model implements PropertyChangeListener
         return false;
     }
 
-    private MSIImage getImageFromKey(MSIKey key)
+    private MSIImage getImageFromKey(ImageKey key)
     {
         for (MSIImage image : imageToActorsMap.keySet())
         {
@@ -55,7 +55,7 @@ public class MSIImageCollection extends Model implements PropertyChangeListener
         return null;
     }
 
-    public void addImage(MSIKey key) throws FitsException, IOException
+    public void addImage(ImageKey key) throws FitsException, IOException
     {
         if (containsKey(key))
             return;
@@ -78,7 +78,7 @@ public class MSIImageCollection extends Model implements PropertyChangeListener
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
-    public void removeImage(MSIKey key)
+    public void removeImage(ImageKey key)
     {
         MSIImage image = getImageFromKey(key);
 
@@ -131,12 +131,12 @@ public class MSIImageCollection extends Model implements PropertyChangeListener
         return actorToImageMap.get(actor);
     }
 
-    public MSIImage getImage(MSIKey key)
+    public MSIImage getImage(ImageKey key)
     {
         return getImageFromKey(key);
     }
 
-    public boolean containsImage(MSIKey key)
+    public boolean containsImage(ImageKey key)
     {
         return containsKey(key);
     }

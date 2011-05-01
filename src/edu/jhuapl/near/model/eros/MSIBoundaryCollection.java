@@ -19,11 +19,11 @@ import vtk.vtkPolyDataMapper;
 import vtk.vtkProp;
 import vtk.vtksbCellLocator;
 
+import edu.jhuapl.near.model.Image.ImageKey;
+import edu.jhuapl.near.model.Image.ImageSource;
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.SmallBodyModel;
-import edu.jhuapl.near.model.eros.MSIImage.MSIKey;
-import edu.jhuapl.near.model.eros.MSIImage.MSISource;
 import edu.jhuapl.near.util.BoundingBox;
 import edu.jhuapl.near.util.FileCache;
 import edu.jhuapl.near.util.MathUtil;
@@ -45,9 +45,9 @@ public class MSIBoundaryCollection extends Model implements PropertyChangeListen
         private double[] sunPosition = new double[3];
         private double[] boresightDirection = new double[3];
         private double[] upVector = new double[3];
-        private MSIKey key;
+        private ImageKey key;
 
-        public Boundary(MSIKey key) throws IOException
+        public Boundary(ImageKey key) throws IOException
         {
             this.key = key;
 
@@ -79,7 +79,7 @@ public class MSIBoundaryCollection extends Model implements PropertyChangeListen
                     boresightDirection,
                     upVector);
 
-            if (key.source.equals(MSISource.GASKELL))
+            if (key.source.equals(ImageSource.GASKELL))
             {
                 // Try to load a sumfile if there is one
                 File tmp = new File(key.name);
@@ -239,7 +239,7 @@ public class MSIBoundaryCollection extends Model implements PropertyChangeListen
             return props;
         }
 
-        public MSIKey getKey()
+        public ImageKey getKey()
         {
             return key;
         }
@@ -285,7 +285,7 @@ public class MSIBoundaryCollection extends Model implements PropertyChangeListen
         this.erosModel = erosModel;
     }
 
-    private boolean containsKey(MSIKey key)
+    private boolean containsKey(ImageKey key)
     {
         for (Boundary boundary : boundaryToActorsMap.keySet())
         {
@@ -296,7 +296,7 @@ public class MSIBoundaryCollection extends Model implements PropertyChangeListen
         return false;
     }
 
-    private Boundary getBoundaryFromKey(MSIKey key)
+    private Boundary getBoundaryFromKey(ImageKey key)
     {
         for (Boundary boundary : boundaryToActorsMap.keySet())
         {
@@ -308,7 +308,7 @@ public class MSIBoundaryCollection extends Model implements PropertyChangeListen
     }
 
 
-    public void addBoundary(MSIKey key) throws FitsException, IOException
+    public void addBoundary(ImageKey key) throws FitsException, IOException
     {
         if (containsKey(key))
             return;
@@ -330,7 +330,7 @@ public class MSIBoundaryCollection extends Model implements PropertyChangeListen
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
-    public void removeBoundary(MSIKey key)
+    public void removeBoundary(ImageKey key)
     {
         Boundary boundary = getBoundaryFromKey(key);
 
@@ -375,12 +375,12 @@ public class MSIBoundaryCollection extends Model implements PropertyChangeListen
         return actorToBoundaryMap.get(actor);
     }
 
-    public Boundary getBoundary(MSIKey key)
+    public Boundary getBoundary(ImageKey key)
     {
         return getBoundaryFromKey(key);
     }
 
-    public boolean containsBoundary(MSIKey key)
+    public boolean containsBoundary(ImageKey key)
     {
         return containsKey(key);
     }

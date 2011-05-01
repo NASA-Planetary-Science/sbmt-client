@@ -56,18 +56,18 @@ import vtk.vtkPolyData;
 import edu.jhuapl.near.gui.ModelInfoWindowManager;
 import edu.jhuapl.near.gui.Renderer;
 import edu.jhuapl.near.gui.SearchPanelUtil;
+import edu.jhuapl.near.model.Image.ImageKey;
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.RegularPolygonModel;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.eros.MSIBoundaryCollection;
+import edu.jhuapl.near.model.eros.MSIColorImage.MSIColorKey;
+import edu.jhuapl.near.model.eros.MSIColorImage.NoOverlapException;
 import edu.jhuapl.near.model.eros.MSIColorImageCollection;
 import edu.jhuapl.near.model.eros.MSIImage;
 import edu.jhuapl.near.model.eros.MSIImageCollection;
-import edu.jhuapl.near.model.eros.MSIColorImage.MSIColorKey;
-import edu.jhuapl.near.model.eros.MSIColorImage.NoOverlapException;
-import edu.jhuapl.near.model.eros.MSIImage.MSIKey;
 import edu.jhuapl.near.pick.PickEvent;
 import edu.jhuapl.near.pick.PickManager;
 import edu.jhuapl.near.pick.PickManager.PickMode;
@@ -153,9 +153,9 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
     private JLabel greenLabel;
     private JLabel blueLabel;
     private JButton generateColorImageButton;
-    private MSIKey selectedRedKey;
-    private MSIKey selectedGreenKey;
-    private MSIKey selectedBlueKey;
+    private ImageKey selectedRedKey;
+    private ImageKey selectedGreenKey;
+    private ImageKey selectedBlueKey;
     private JList colorImagesDisplayedList;
     private JButton removeColorImageButton;
     private MSIColorPopupMenu msiColorPopupMenu;
@@ -163,7 +163,7 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
     /**
      * The source of the msi images of the most recently executed query
      */
-    private MSIImage.MSISource msiSourceOfLastQuery = MSIImage.MSISource.PDS;
+    private MSIImage.ImageSource msiSourceOfLastQuery = MSIImage.ImageSource.PDS;
 
     public MSISearchPanel(
             final ModelManager modelManager,
@@ -204,7 +204,7 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
 
         final JPanel msiSourcePanel = new JPanel();
         JLabel msiSourceLabel = new JLabel("MSI Source:");
-        Object[] msiSourceOptions = {MSIImage.MSISource.PDS, MSIImage.MSISource.GASKELL};
+        Object[] msiSourceOptions = {MSIImage.ImageSource.PDS, MSIImage.ImageSource.GASKELL};
         msiSourceComboBox = new JComboBox(msiSourceOptions);
         //msiSourceComboBox.setMaximumSize(new Dimension(1000, 23));
         msiSourcePanel.add(msiSourceLabel);
@@ -639,17 +639,17 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
                     if (e.getSource() == redButton)
                     {
                         redLabel.setText(name);
-                        selectedRedKey = new MSIKey(image, msiSourceOfLastQuery);
+                        selectedRedKey = new ImageKey(image, msiSourceOfLastQuery);
                     }
                     else if (e.getSource() == greenButton)
                     {
                         greenLabel.setText(name);
-                        selectedGreenKey = new MSIKey(image, msiSourceOfLastQuery);
+                        selectedGreenKey = new ImageKey(image, msiSourceOfLastQuery);
                     }
                     else if (e.getSource() == blueButton)
                     {
                         blueLabel.setText(name);
-                        selectedBlueKey = new MSIKey(image, msiSourceOfLastQuery);
+                        selectedBlueKey = new ImageKey(image, msiSourceOfLastQuery);
                     }
                 }
             }
@@ -878,11 +878,11 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
                 }
             }
 
-            MSIImage.MSISource msiSource = null;
-            if (msiSourceComboBox.getSelectedItem().equals(MSIImage.MSISource.PDS))
-                msiSource = MSIImage.MSISource.PDS;
+            MSIImage.ImageSource msiSource = null;
+            if (msiSourceComboBox.getSelectedItem().equals(MSIImage.ImageSource.PDS))
+                msiSource = MSIImage.ImageSource.PDS;
             else
-                msiSource = MSIImage.MSISource.GASKELL;
+                msiSource = MSIImage.ImageSource.GASKELL;
             System.out.println(msiSource.toString());
             ArrayList<String> results = Query.getInstance().runQuery(
                     Query.Datatype.MSI,
@@ -907,10 +907,10 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
                     msiSource,
                     hasLimbComboBox.getSelectedIndex());
 
-            if (msiSourceComboBox.getSelectedItem().equals(MSIImage.MSISource.PDS))
-                msiSourceOfLastQuery = MSIImage.MSISource.PDS;
+            if (msiSourceComboBox.getSelectedItem().equals(MSIImage.ImageSource.PDS))
+                msiSourceOfLastQuery = MSIImage.ImageSource.PDS;
             else
-                msiSourceOfLastQuery = MSIImage.MSISource.GASKELL;
+                msiSourceOfLastQuery = MSIImage.ImageSource.GASKELL;
 
             setMSIResults(results);
         }
@@ -985,7 +985,7 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
             {
                 resultList.setSelectedIndex(index);
                 String name = msiRawResults.get(index);
-                msiPopupMenu.setCurrentImage(new MSIKey(name.substring(0, name.length()-4), msiSourceOfLastQuery));
+                msiPopupMenu.setCurrentImage(new ImageKey(name.substring(0, name.length()-4), msiSourceOfLastQuery));
                 msiPopupMenu.show(e.getComponent(), e.getX(), e.getY());
             }
         }
@@ -1012,7 +1012,7 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
                 //String boundaryName = currentImage.substring(0,currentImage.length()-4) + "_BOUNDARY.VTK";
                 //String boundaryName = currentImage.substring(0,currentImage.length()-4) + "_DDR.LBL";
                 String boundaryName = currentImage.substring(0,currentImage.length()-4);
-                model.addBoundary(new MSIKey(boundaryName, msiSourceOfLastQuery));
+                model.addBoundary(new ImageKey(boundaryName, msiSourceOfLastQuery));
             }
             catch (FitsException e1) {
                 // TODO Auto-generated catch block

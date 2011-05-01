@@ -21,13 +21,13 @@ import vtk.vtkProp;
 import edu.jhuapl.near.gui.CustomFileChooser;
 import edu.jhuapl.near.gui.ModelInfoWindowManager;
 import edu.jhuapl.near.gui.Renderer;
+import edu.jhuapl.near.model.Image.ImageKey;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.eros.MSIBoundaryCollection;
+import edu.jhuapl.near.model.eros.MSIBoundaryCollection.Boundary;
 import edu.jhuapl.near.model.eros.MSIImage;
 import edu.jhuapl.near.model.eros.MSIImageCollection;
-import edu.jhuapl.near.model.eros.MSIBoundaryCollection.Boundary;
-import edu.jhuapl.near.model.eros.MSIImage.MSIKey;
 import edu.jhuapl.near.popupmenus.PopupMenu;
 import edu.jhuapl.near.util.FileCache;
 import edu.jhuapl.near.util.FileUtil;
@@ -37,7 +37,7 @@ public class MSIPopupMenu extends PopupMenu
 {
     private Component invoker;
     private ModelManager modelManager;
-    private MSIKey msiKey;
+    private ImageKey msiKey;
     private JMenuItem showRemoveImageIn3DMenuItem;
     private JMenuItem showRemoveBoundaryIn3DMenuItem;
     private JMenuItem showImageInfoMenuItem;
@@ -102,7 +102,7 @@ public class MSIPopupMenu extends PopupMenu
 
     }
 
-    public void setCurrentImage(MSIKey key)
+    public void setCurrentImage(ImageKey key)
     {
         msiKey = key;
 

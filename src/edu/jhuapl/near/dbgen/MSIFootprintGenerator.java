@@ -10,10 +10,10 @@ import vtk.vtkGlobalJavaHash;
 import vtk.vtkPolyData;
 import vtk.vtkXMLPolyDataWriter;
 
+import edu.jhuapl.near.model.Image.ImageSource;
 import edu.jhuapl.near.model.ModelFactory;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.eros.MSIImage;
-import edu.jhuapl.near.model.eros.MSIImage.MSISource;
 import edu.jhuapl.near.util.FileUtil;
 import edu.jhuapl.near.util.NativeLibraryLoader;
 
@@ -22,7 +22,7 @@ public class MSIFootprintGenerator
     private static SmallBodyModel erosModel;
     private static int resolutionLevel = 0;
 
-    private static boolean checkIfMsiFilesExist(String line, MSIImage.MSISource source)
+    private static boolean checkIfMsiFilesExist(String line, MSIImage.ImageSource source)
     {
         File file = new File(line);
         if (!file.exists())
@@ -39,7 +39,7 @@ public class MSIFootprintGenerator
             return false;
 
         // Check for the sumfile if source is Gaskell
-        if (source.equals(MSISource.GASKELL))
+        if (source.equals(ImageSource.GASKELL))
         {
             File msirootdir = (new File(line)).getParentFile().getParentFile().getParentFile().getParentFile();
             String msiId = (new File(line)).getName().substring(0, 11);
@@ -53,7 +53,7 @@ public class MSIFootprintGenerator
     }
 
     private static void generateMSIFootprints(
-            ArrayList<String> msiFiles, MSIImage.MSISource msiSource) throws IOException, FitsException
+            ArrayList<String> msiFiles, MSIImage.ImageSource msiSource) throws IOException, FitsException
     {
         int count = 0;
         for (String filename : msiFiles)
@@ -79,7 +79,7 @@ public class MSIFootprintGenerator
             yearStr = f.getName();
 
             String vtkfile = null;
-            if (msiSource == MSISource.PDS)
+            if (msiSource == ImageSource.PDS)
                 vtkfile = filename.substring(0, filename.length()-4) + "_FOOTPRINT_RES" + resolutionLevel + "_PDS.VTP";
             else
                 vtkfile = filename.substring(0, filename.length()-4) + "_FOOTPRINT_RES" + resolutionLevel + "_GASKELL.VTP";
@@ -166,8 +166,8 @@ public class MSIFootprintGenerator
 
         try
         {
-            generateMSIFootprints(msiFiles, MSISource.PDS);
-            generateMSIFootprints(msiFiles, MSISource.GASKELL);
+            generateMSIFootprints(msiFiles, ImageSource.PDS);
+            generateMSIFootprints(msiFiles, ImageSource.GASKELL);
         }
         catch (Exception e1) {
             e1.printStackTrace();
