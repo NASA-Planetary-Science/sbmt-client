@@ -450,7 +450,7 @@ public class NLRSearchPanel2 extends javax.swing.JPanel implements PropertyChang
     private void hideAllButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hideAllButtonActionPerformed
         NLRSearchDataCollection2 model = (NLRSearchDataCollection2) modelManager.getModel(ModelNames.NLR_DATA_SEARCH);
         model.hideAllTracks();
-}//GEN-LAST:event_hideAllButtonActionPerformed
+    }//GEN-LAST:event_hideAllButtonActionPerformed
 
     private void resetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetButtonActionPerformed
         NLRSearchDataCollection2 model = (NLRSearchDataCollection2) modelManager.getModel(ModelNames.NLR_DATA_SEARCH);
