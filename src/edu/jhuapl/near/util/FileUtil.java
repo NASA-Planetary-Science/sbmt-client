@@ -134,6 +134,17 @@ public class FileUtil
         copyInputStream(in, out);
     }
 
+    /**
+     * Copies a range of lines in a file to a new file. E.g. suppose you wanted
+     * to copy lines 5 through 10 of a certain file to a new file.
+     *
+     * @param inFile the file to copy lines from
+     * @param outFile the file to copy lines to
+     * @param startLine the first line to copy
+     * @param endLine the last line to copy
+     * @param append if true the lines are appended to outFile. If false, outFile is truncated.
+     * @throws IOException
+     */
     public static void copyLinesInFile(File inFile, File outFile, int startLine, int endLine, boolean append) throws IOException
     {
         FileReader ifs = new FileReader(inFile);
