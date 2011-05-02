@@ -1,0 +1,17 @@
+\begindata
+
+KERNELS_TO_LOAD = ('/home/kahneg1/src/near/data/hayabusa/spice_pds/20050902-20051126_att.bc'
+                   '/home/kahneg1/src/near/data/hayabusa/spice_pds/de403s.bsp'
+                   '/home/kahneg1/src/near/data/hayabusa/spice_pds/Sept-Nov_SPK.bsp'
+                   '/home/kahneg1/src/near/data/hayabusa/spice_pds/sb-25143-140.bsp'
+                   '/home/kahneg1/src/near/data/hayabusa/spice_pds/hayabusa_frames_v1.tf'
+                   '/home/kahneg1/src/near/data/hayabusa/spice_pds/hayabusa.tsc'
+                   '/home/kahneg1/src/near/data/hayabusa/spice_pds/Itokawa_Gaskell_n3.tpc'
+                   '/home/kahneg1/src/near/data/hayabusa/spice_pds/lidar_v1.ti'
+                   '/home/kahneg1/src/near/data/hayabusa/spice_pds/pck00008.tpc'
+                   '/home/kahneg1/src/near/data/hayabusa/spice_pds/naif0008.tls'
+                   '/home/kahneg1/src/near/data/hayabusa/spice_pds/amica_v202.ti'
+                   '/home/kahneg1/src/near/data/hayabusa/spice_pds/SHAPE0_May2006.bpe'
+                   )
+
+\begintext
