@@ -98,7 +98,7 @@ abstract public class Image extends Model implements PropertyChangeListener
     private double[] frustum2 = new double[3];
     private double[] frustum3 = new double[3];
     private double[] frustum4 = new double[3];
-    private double[] sunPosition = new double[3];
+    private double[] sunVector = new double[3];
 
     private double[] boresightDirection = new double[3];
     private double[] upVector = new double[3];
@@ -206,7 +206,7 @@ abstract public class Image extends Model implements PropertyChangeListener
             String[] startTime,
             String[] stopTime,
             double[] spacecraftPosition,
-            double[] sunPosition,
+            double[] sunVector,
             double[] frustum1,
             double[] frustum2,
             double[] frustum3,
@@ -563,7 +563,7 @@ abstract public class Image extends Model implements PropertyChangeListener
                 start,
                 stop,
                 spacecraftPosition,
-                sunPosition,
+                sunVector,
                 frustum1,
                 frustum2,
                 frustum3,
@@ -593,9 +593,56 @@ abstract public class Image extends Model implements PropertyChangeListener
             s[i] = s[i].replace('D', 'E');
     }
 
+    /**
+     * Bob Gaskell's date time format needs to be converted to
+     * yyyy-MM-dd'T'HH:mm:ss.SSS format.
+     *
+     * @param datetime
+     * @return
+     */
+    private static String convertDateTimeFormat(String datetime)
+    {
+        String[] tokens = datetime.trim().split("\\s+");
+
+        String year  = tokens[0];
+        String month = tokens[1];
+        String day   = tokens[2];
+        String time  = tokens[3];
+
+        if (month.equals("JAN"))
+            month = "01";
+        else if (month.equals("FEB"))
+            month = "02";
+        else if (month.equals("MAR"))
+            month = "03";
+        else if (month.equals("APR"))
+            month = "04";
+        else if (month.equals("MAY"))
+            month = "05";
+        else if (month.equals("JUN"))
+            month = "06";
+        else if (month.equals("JUL"))
+            month = "07";
+        else if (month.equals("AUG"))
+            month = "08";
+        else if (month.equals("SEP"))
+            month = "09";
+        else if (month.equals("OCT"))
+            month = "10";
+        else if (month.equals("NOV"))
+            month = "11";
+        else if (month.equals("DEC"))
+            month = "12";
+
+        return year + "-" + month + "-" + day + "T" + time;
+    }
+
     public static void loadSumfile(
             String sumfilename,
+            String[] startTime,
+            String[] stopTime,
             double[] spacecraftPosition,
+            double[] sunVector,
             double[] frustum1,
             double[] frustum2,
             double[] frustum3,
@@ -608,7 +655,12 @@ abstract public class Image extends Model implements PropertyChangeListener
         BufferedReader in = new BufferedReader(isr);
 
         in.readLine();
-        in.readLine();
+
+        String datetime = in.readLine().trim();
+        datetime = convertDateTimeFormat(datetime);
+        startTime[0] = datetime;
+        stopTime[0] = datetime;
+
         in.readLine();
         in.readLine();
 
@@ -621,6 +673,7 @@ abstract public class Image extends Model implements PropertyChangeListener
         double[] cx = new double[3];
         double[] cy = new double[3];
         double[] cz = new double[3];
+        double[] sz = new double[3];
 
         tmp = in.readLine().trim().split("\\s+");
         replaceDwithE(tmp);
@@ -639,6 +692,12 @@ abstract public class Image extends Model implements PropertyChangeListener
         cz[0] = Double.parseDouble(tmp[0]);
         cz[1] = Double.parseDouble(tmp[1]);
         cz[2] = Double.parseDouble(tmp[2]);
+
+        tmp = in.readLine().trim().split("\\s+");
+        replaceDwithE(tmp);
+        sz[0] = Double.parseDouble(tmp[0]);
+        sz[1] = Double.parseDouble(tmp[1]);
+        sz[2] = Double.parseDouble(tmp[2]);
 
         final double zo = -0.025753661240;
         final double yo = -0.019744857140;
@@ -677,19 +736,29 @@ abstract public class Image extends Model implements PropertyChangeListener
 
         MathUtil.vhat(cz, boresightDirection);
         MathUtil.vhat(cx, upVector);
+        MathUtil.vhat(sz, sunVector);
     }
 
     private void loadSumfile() throws NumberFormatException, IOException
     {
+        String[] start = new String[1];
+        String[] stop = new String[1];
+
         loadSumfile(
                 getSumfileFullPath(),
+                start,
+                stop,
                 spacecraftPosition,
+                sunVector,
                 frustum1,
                 frustum2,
                 frustum3,
                 frustum4,
                 boresightDirection,
                 upVector);
+
+        startTime = start[0];
+        stopTime = stop[0];
 
 //        printpt(frustum1, "gas frustum1 ");
 //        printpt(frustum2, "gas frustum2 ");
@@ -896,15 +965,9 @@ abstract public class Image extends Model implements PropertyChangeListener
             spacecraftPosition[1] - pt[1],
             spacecraftPosition[2] - pt[2]};
 
-
-        double[] sunvec = {
-                sunPosition[0] - pt[0],
-                sunPosition[1] - pt[1],
-                sunPosition[2] - pt[2]};
-
-        double incidence = MathUtil.vsep(normal, sunvec) * 180.0 / Math.PI;
+        double incidence = MathUtil.vsep(normal, sunVector) * 180.0 / Math.PI;
         double emission = MathUtil.vsep(normal, scvec) * 180.0 / Math.PI;
-        double phase = MathUtil.vsep(sunvec, scvec) * 180.0 / Math.PI;
+        double phase = MathUtil.vsep(sunVector, scvec) * 180.0 / Math.PI;
 
         double[] angles = {incidence, emission, phase};
 

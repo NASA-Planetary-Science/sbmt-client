@@ -42,7 +42,7 @@ public class MSIBoundaryCollection extends Model implements PropertyChangeListen
         private double[] frustum2 = new double[3];
         private double[] frustum3 = new double[3];
         private double[] frustum4 = new double[3];
-        private double[] sunPosition = new double[3];
+        private double[] sunVector = new double[3];
         private double[] boresightDirection = new double[3];
         private double[] upVector = new double[3];
         private ImageKey key;
@@ -71,7 +71,7 @@ public class MSIBoundaryCollection extends Model implements PropertyChangeListen
                     startTime,
                     stopTime,
                     spacecraftPosition,
-                    sunPosition,
+                    sunVector,
                     frustum1,
                     frustum2,
                     frustum3,
@@ -87,7 +87,10 @@ public class MSIBoundaryCollection extends Model implements PropertyChangeListen
                 File sumfile = FileCache.getFileFromServer(sumFilename);
 
                 MSIImage.loadSumfile(sumfile.getAbsolutePath(),
+                        startTime,
+                        stopTime,
                         spacecraftPosition,
+                        sunVector,
                         frustum1,
                         frustum2,
                         frustum3,

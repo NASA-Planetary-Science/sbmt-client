@@ -64,11 +64,11 @@ public class MSIImage extends Image
 
         // Download the FIT file, the LBL file, and, if gaskell source, the sumfile
         File fitFile = FileCache.getFileFromServer(key.name + ".FIT");
-        this.fullpath = fitFile.getAbsolutePath();
 
         if (fitFile == null)
             throw new IOException("Could not download " + key.name);
 
+        this.fullpath = fitFile.getAbsolutePath();
 
         String imgLblFilename = key.name + "_DDR.LBL";
         File infoFile = FileCache.getFileFromServer(imgLblFilename);
@@ -111,7 +111,7 @@ public class MSIImage extends Image
             String[] startTime,
             String[] stopTime,
             double[] spacecraftPosition,
-            double[] sunPosition,
+            double[] sunVector,
             double[] frustum1,
             double[] frustum2,
             double[] frustum3,
@@ -197,9 +197,10 @@ public class MSIImage extends Image
                     }
                     if (SUN_POSITION_LT.equals(token))
                     {
-                        sunPosition[0] = x;
-                        sunPosition[1] = y;
-                        sunPosition[2] = z;
+                        sunVector[0] = x;
+                        sunVector[1] = y;
+                        sunVector[2] = z;
+                        MathUtil.vhat(sunVector, sunVector);
                     }
                     if (MSI_BORESIGHT_DIRECTION.equals(token))
                     {

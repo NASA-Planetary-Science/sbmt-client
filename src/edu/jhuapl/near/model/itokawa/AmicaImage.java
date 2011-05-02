@@ -35,7 +35,7 @@ public class AmicaImage extends Image
             String[] startTime,
             String[] stopTime,
             double[] spacecraftPosition,
-            double[] sunPosition,
+            double[] sunVector,
             double[] frustum1,
             double[] frustum2,
             double[] frustum3,
@@ -43,7 +43,7 @@ public class AmicaImage extends Image
             double[] boresightDirection,
             double[] upVector) throws NumberFormatException, IOException
     {
-
+        // Not used
     }
 
     @Override
@@ -64,27 +64,26 @@ public class AmicaImage extends Image
         ImageKey key = getKey();
 
         // Download the image, and all the companion files if necessary.
-        File fitFile = FileCache.getFileFromServer(key.name + ".FIT");
+        File fitFile = FileCache.getFileFromServer(key.name + ".fit");
 
         if (fitFile == null)
             throw new IOException("Could not download " + key.name);
 
-        String imgLblFilename = key.name + "_DDR.LBL";
-        FileCache.getFileFromServer(imgLblFilename);
+        this.fullpath = fitFile.getAbsolutePath();
+
+        this.infoFileFullPath = "";
 
         if (key.source.equals(ImageSource.GASKELL))
         {
             // Try to load a sumfile if there is one
             File tmp = new File(key.name);
-            String sumFilename = "/ITOKAWA/sumfiles/" + tmp.getName().substring(0, 11) + ".SUM";
-            FileCache.getFileFromServer(sumFilename);
+            String sumFilename = "/ITOKAWA/AMICA/sumfiles/N" + tmp.getName().substring(3, 13) + ".SUM";
+            File sumfile = FileCache.getFileFromServer(sumFilename);
+            this.sumfileFullPath = sumfile.getAbsolutePath();
         }
 
         //String footprintFilename = filename.substring(0, filename.length()-4) + "_FOOTPRINT.VTK";
         //FileCache.getFileFromServer(footprintFilename);
-
-        String filename = fitFile.getAbsolutePath();
-        this.fullpath = filename;
     }
 
     @Override
@@ -92,12 +91,11 @@ public class AmicaImage extends Image
     {
         this.fullpath = fitFile.getAbsolutePath();
 
-        this.infoFileFullPath = fullpath.substring(0, fullpath.length()-4) + "_DDR.LBL";
+        this.infoFileFullPath = "";
 
-        File sumfile = new File(fullpath);
-        String sumname = sumfile.getName().substring(0, 11);
-        sumfile = sumfile.getParentFile().getParentFile().getParentFile().getParentFile();
-        this.sumfileFullPath = sumfile.getAbsolutePath() + "/sumfiles/" + sumname + ".SUM";
+        String id = fitFile.getName().substring(3, 13);
+        File parentdir = fitFile.getParentFile().getParentFile();
+        this.sumfileFullPath = parentdir.getAbsolutePath() + "/sumfiles/N" + id + ".SUM";
     }
 
 
