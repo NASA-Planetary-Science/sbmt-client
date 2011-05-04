@@ -225,7 +225,7 @@ abstract public class Image extends Model implements PropertyChangeListener
     abstract protected int getTopMask();
     abstract protected int getBottomMask();
 
-    abstract protected String getFullPath();
+    abstract protected String getFitFileFullPath();
     abstract protected String getInfoFileFullPath();
     abstract protected String getSumfileFullPath();
 
@@ -233,7 +233,7 @@ abstract public class Image extends Model implements PropertyChangeListener
 
     private void initialize() throws FitsException, IOException
     {
-        String filename = getFullPath();
+        String filename = getFitFileFullPath();
 
         Fits f = new Fits(filename);
         BasicHDU h = f.getHDU(0);
@@ -778,9 +778,9 @@ abstract public class Image extends Model implements PropertyChangeListener
 
         DecimalFormat df = new DecimalFormat("#.######");
 
-        String fullpath = getFullPath();
+        String fullpath = getFitFileFullPath();
         properties.put("Spacecraft Distance", df.format(getSpacecraftDistance()) + " km");
-        properties.put("Name", new File(getFullPath()).getName()); //TODO remove extension and possibly prefix
+        properties.put("Name", new File(getFitFileFullPath()).getName()); //TODO remove extension and possibly prefix
         properties.put("Start Time", startTime);
         properties.put("Stop Time", stopTime);
         properties.put("Filter", String.valueOf(getFilter()));
@@ -840,7 +840,7 @@ abstract public class Image extends Model implements PropertyChangeListener
 
             if (footprintIsOnLocalDisk)
             {
-                String fullpath = getFullPath();
+                String fullpath = getFitFileFullPath();
                 if (key.source == ImageSource.PDS)
                     footprintFilename = fullpath.substring(0, fullpath.length()-4) + "_FOOTPRINT_RES" + resolutionLevel + "_PDS.VTP";
                 else

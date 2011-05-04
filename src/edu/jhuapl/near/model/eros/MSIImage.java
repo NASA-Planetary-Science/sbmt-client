@@ -251,7 +251,7 @@ public class MSIImage extends Image
 
     public String generateBackplanesLabel() throws IOException
     {
-        String lblFilename = getFullPath().substring(0, getFullPath().length()-4) + "_DDR.LBL";
+        String lblFilename = getFitFileFullPath().substring(0, getFitFileFullPath().length()-4) + "_DDR.LBL";
 
         FileInputStream fs = null;
         try {
@@ -387,7 +387,7 @@ public class MSIImage extends Image
     }
 
     @Override
-    protected String getFullPath()
+    protected String getFitFileFullPath()
     {
         return fullpath;
     }
@@ -407,7 +407,7 @@ public class MSIImage extends Image
     @Override
     public int getFilter()
     {
-        String fitName = new File(getFullPath()).getName();
+        String fitName = new File(getFitFileFullPath()).getName();
         return Integer.parseInt(fitName.substring(12,13));
     }
 

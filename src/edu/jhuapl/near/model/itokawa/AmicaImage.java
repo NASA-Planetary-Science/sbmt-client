@@ -14,7 +14,7 @@ public class AmicaImage extends Image
     public static final int IMAGE_WIDTH = 1024;
     public static final int IMAGE_HEIGHT = 1024;
 
-    private String fullpath; // The actual path of the image stored on the local disk (after downloading from the server)
+    private String fitFileFullPath; // The actual path of the image stored on the local disk (after downloading from the server)
     private String infoFileFullPath;
     private String sumfileFullPath;
 
@@ -46,6 +46,46 @@ public class AmicaImage extends Image
         // Not used
     }
 
+    public String generateBackplanesLabel() throws IOException
+    {
+        StringBuffer strbuf = new StringBuffer("");
+
+        // The software name and version in the downloaded ddr is not correct
+        strbuf.append("SOFTWARE_NAME                = \"Small Body Mapping Tool\"\r\n");
+
+        strbuf.append("SOFTWARE_VERSION_ID          = \"2.0\"\r\n");
+
+        // The planes in the downloaded ddr are all wrong
+        strbuf.append("    BANDS                    = 16\r\n");
+        strbuf.append("    BAND_STORAGE_TYPE        = BAND_SEQUENTIAL\r\n");
+        strbuf.append("    BAND_NAME                = (\"MSI pixel value\",\r\n");
+        strbuf.append("                                \"x coordinate of center of pixel, body fixed coordinate system, km\",\r\n");
+        strbuf.append("                                \"y coordinate of center of pixel, body fixed coordinate system, km\",\r\n");
+        strbuf.append("                                \"z coordinate of center of pixel, body fixed coordinate system, km\",\r\n");
+        strbuf.append("                                \"Latitude, deg\",\r\n");
+        strbuf.append("                                \"Longitude, deg\",\r\n");
+        strbuf.append("                                \"Distance from center of body, km\",\r\n");
+        strbuf.append("                                \"Incidence angle, measured against the plate model, deg\",\r\n");
+        strbuf.append("                                \"Emission angle, measured against the plate model, deg\",\r\n");
+        strbuf.append("                                \"Phase angle, measured against the plate model, deg\",\r\n");
+        strbuf.append("                                \"Horizontal pixel scale, km per pixel\",\r\n");
+        strbuf.append("                                \"Vertical pixel scale, km per pixel\",\r\n");
+        strbuf.append("                                \"Slope, deg\",\r\n");
+        strbuf.append("                                \"Elevation, m\",\r\n");
+        strbuf.append("                                \"Gravitational acceleration, m/s^2\",\r\n");
+        strbuf.append("                                \"Gravitational potential, J/kg\")\r\n");
+        strbuf.append("\r\n");
+        strbuf.append("  END_OBJECT                 = IMAGE\r\n");
+        strbuf.append("\r\n");
+        strbuf.append("END_OBJECT                   = FILE\r\n");
+        strbuf.append("\r\n");
+        strbuf.append("END\r\n");
+
+        strbuf.append("\r\n");
+
+        return strbuf.toString();
+    }
+
     @Override
     public int getImageWidth()
     {
@@ -69,7 +109,7 @@ public class AmicaImage extends Image
         if (fitFile == null)
             throw new IOException("Could not download " + key.name);
 
-        this.fullpath = fitFile.getAbsolutePath();
+        this.fitFileFullPath = fitFile.getAbsolutePath();
 
         this.infoFileFullPath = "";
 
@@ -89,7 +129,7 @@ public class AmicaImage extends Image
     @Override
     protected void initializeFilePaths(File fitFile)
     {
-        this.fullpath = fitFile.getAbsolutePath();
+        this.fitFileFullPath = fitFile.getAbsolutePath();
 
         this.infoFileFullPath = "";
 
@@ -124,9 +164,9 @@ public class AmicaImage extends Image
     }
 
     @Override
-    protected String getFullPath()
+    protected String getFitFileFullPath()
     {
-        return fullpath;
+        return fitFileFullPath;
     }
 
     @Override
@@ -144,7 +184,7 @@ public class AmicaImage extends Image
     @Override
     public int getFilter()
     {
-        String fitName = new File(getFullPath()).getName();
+        String fitName = new File(getFitFileFullPath()).getName();
         return Integer.parseInt(fitName.substring(12,13));
     }
 
