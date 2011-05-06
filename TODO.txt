@@ -61,6 +61,13 @@ NLR
    the line. The distance along this line is what should be plotted, not the euclidean distance
    between points as is done now.
 
+ - Crash when hovering mouse on renderer during a search
+ 
+ - transparency issues with selection circle. Make selection circle completely opaque with
+   lighting enabled
+   
+ - Consider ALWAYS requiring a selection circle.
+ 
 ---
 NIS
 ---
