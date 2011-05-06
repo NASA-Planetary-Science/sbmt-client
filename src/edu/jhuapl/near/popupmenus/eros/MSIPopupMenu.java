@@ -137,7 +137,7 @@ public class MSIPopupMenu extends PopupMenu
 
         if (containsImage)
         {
-            MSIImage image = msiImages.getImage(msiKey);
+            MSIImage image = (MSIImage)msiImages.getImage(msiKey);
             showFrustumMenuItem.setSelected(image.isFrustumShowing());
             showFrustumMenuItem.setEnabled(true);
         }
@@ -259,7 +259,7 @@ public class MSIPopupMenu extends PopupMenu
             }
             else if (msiImages.containsImage(msiKey))
             {
-                MSIImage image = msiImages.getImage(msiKey);
+                MSIImage image = (MSIImage)msiImages.getImage(msiKey);
                 image.getCameraOrientation(spacecraftPosition, focalPoint, upVector);
             }
             else
@@ -291,7 +291,7 @@ public class MSIPopupMenu extends PopupMenu
 
                     MSIImageCollection msiImages = (MSIImageCollection)modelManager.getModel(ModelNames.MSI_IMAGES);
                     msiImages.addImage(msiKey);
-                    MSIImage image = msiImages.getImage(msiKey);
+                    MSIImage image = (MSIImage)msiImages.getImage(msiKey);
 
                     updateMenuItems();
 
@@ -331,7 +331,7 @@ public class MSIPopupMenu extends PopupMenu
 
                     MSIImageCollection msiImages = (MSIImageCollection)modelManager.getModel(ModelNames.MSI_IMAGES);
                     msiImages.addImage(msiKey);
-                    MSIImage image = msiImages.getImage(msiKey);
+                    MSIImage image = (MSIImage)msiImages.getImage(msiKey);
 
                     updateMenuItems();
 
@@ -362,7 +362,7 @@ public class MSIPopupMenu extends PopupMenu
             {
                 MSIImageCollection msiImages = (MSIImageCollection)modelManager.getModel(ModelNames.MSI_IMAGES);
                 msiImages.addImage(msiKey);
-                MSIImage image = msiImages.getImage(msiKey);
+                MSIImage image = (MSIImage)msiImages.getImage(msiKey);
                 image.setShowFrustum(showFrustumMenuItem.isSelected());
 
                 updateMenuItems();
@@ -390,7 +390,7 @@ public class MSIPopupMenu extends PopupMenu
             else if (modelManager.getModel(pickedProp) instanceof MSIImageCollection)
             {
                 MSIImageCollection msiImages = (MSIImageCollection)modelManager.getModel(ModelNames.MSI_IMAGES);
-                MSIImage image = msiImages.getImage((vtkActor)pickedProp);
+                MSIImage image = (MSIImage)msiImages.getImage((vtkActor)pickedProp);
                 setCurrentImage(image.getKey());
                 show(e.getComponent(), e.getX(), e.getY());
             }
