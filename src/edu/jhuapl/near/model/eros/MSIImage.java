@@ -20,6 +20,9 @@ public class MSIImage extends Image
     public static final int IMAGE_WIDTH = 537;
     public static final int IMAGE_HEIGHT = 412;
 
+    public static final double FOV_PARAMETER1 = -0.025753661240;
+    public static final double FOV_PARAMETER2 = -0.019744857140;
+
     // Number of pixels on each side of the image that are
     // masked out (invalid) due to filtering.
     public static final int LEFT_MASK = 14;
@@ -41,20 +44,21 @@ public class MSIImage extends Image
     public static final String SUN_POSITION_LT = "SUN_POSITION_LT";
 
     private SmallBodyModel erosModel;
-    private String fullpath; // The actual path of the image stored on the local disk (after downloading from the server)
+    private String fitFileFullPath; // The actual path of the image stored on the local disk (after downloading from the server)
     private String infoFileFullPath;
     private String sumfileFullPath;
 
-    public MSIImage(ImageKey key, SmallBodyModel smallBodyModel) throws FitsException, IOException
+    public MSIImage(ImageKey key, SmallBodyModel erosModel) throws FitsException, IOException
     {
-        super(key, smallBodyModel);
+        super(key, erosModel);
+        this.erosModel = erosModel;
     }
 
-    public MSIImage(File fitFile, SmallBodyModel eros, ImageSource source)
+    public MSIImage(File fitFile, SmallBodyModel erosModel, ImageSource source)
             throws FitsException, IOException
     {
-        super(fitFile, eros, source);
-        this.erosModel = eros;
+        super(fitFile, erosModel, source);
+        this.erosModel = erosModel;
     }
 
     @Override
@@ -68,7 +72,7 @@ public class MSIImage extends Image
         if (fitFile == null)
             throw new IOException("Could not download " + key.name);
 
-        this.fullpath = fitFile.getAbsolutePath();
+        this.fitFileFullPath = fitFile.getAbsolutePath();
 
         String imgLblFilename = key.name + "_DDR.LBL";
         File infoFile = FileCache.getFileFromServer(imgLblFilename);
@@ -91,11 +95,11 @@ public class MSIImage extends Image
     @Override
     protected void initializeFilePaths(File fitFile)
     {
-        this.fullpath = fitFile.getAbsolutePath();
+        this.fitFileFullPath = fitFile.getAbsolutePath();
 
-        this.infoFileFullPath = fullpath.substring(0, fullpath.length()-4) + "_DDR.LBL";
+        this.infoFileFullPath = fitFileFullPath.substring(0, fitFileFullPath.length()-4) + "_DDR.LBL";
 
-        File sumfile = new File(fullpath);
+        File sumfile = new File(fitFileFullPath);
         String sumname = sumfile.getName().substring(0, 11);
         sumfile = sumfile.getParentFile().getParentFile().getParentFile().getParentFile();
         this.sumfileFullPath = sumfile.getAbsolutePath() + "/sumfiles/" + sumname + ".SUM";
@@ -251,7 +255,7 @@ public class MSIImage extends Image
 
     public String generateBackplanesLabel() throws IOException
     {
-        String lblFilename = getFitFileFullPath().substring(0, getFitFileFullPath().length()-4) + "_DDR.LBL";
+        String lblFilename = getInfoFileFullPath();
 
         FileInputStream fs = null;
         try {
@@ -363,6 +367,18 @@ public class MSIImage extends Image
     }
 
     @Override
+    public double getFovParameter1()
+    {
+        return FOV_PARAMETER1;
+    }
+
+    @Override
+    public double getFovParameter2()
+    {
+        return FOV_PARAMETER2;
+    }
+
+    @Override
     protected int getLeftMask()
     {
         return LEFT_MASK;
@@ -389,7 +405,7 @@ public class MSIImage extends Image
     @Override
     protected String getFitFileFullPath()
     {
-        return fullpath;
+        return fitFileFullPath;
     }
 
     @Override

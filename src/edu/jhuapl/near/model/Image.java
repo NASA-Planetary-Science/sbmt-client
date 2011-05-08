@@ -216,6 +216,8 @@ abstract public class Image extends Model implements PropertyChangeListener
 
     abstract public int getImageWidth();
     abstract public int getImageHeight();
+    abstract public double getFovParameter1();
+    abstract public double getFovParameter2();
 
     abstract protected void downloadFilesIntoCache() throws IOException;
     abstract protected void initializeFilePaths(File fitFile);
@@ -244,24 +246,37 @@ abstract public class Image extends Model implements PropertyChangeListener
         int originalWidth = axes[1];
         int originalHeight = axes[0];
 
-        //HashMap<Short, Integer> values = new HashMap<Short, Integer>();
-
-        // For now only support images with type float or short
-        try
+        Object data = h.getData().getData();
+        if (data instanceof float[][])
         {
-            array = (float[][])h.getData().getData();
+            array = (float[][])data;
         }
-        catch (ClassCastException e)
+        else if (data instanceof short[][])
         {
-            short[][] arrayS = (short[][])h.getData().getData();
+            short[][] arrayS = (short[][])data;
             array = new float[originalHeight][originalWidth];
 
             for (int i=0; i<originalHeight; ++i)
                 for (int j=0; j<originalWidth; ++j)
                 {
-                    //values.put(arrayS[i][j], 0);
                     array[i][j] = arrayS[i][j];
                 }
+        }
+        else if (data instanceof byte[][])
+        {
+            byte[][] arrayB = (byte[][])data;
+            array = new float[originalHeight][originalWidth];
+
+            for (int i=0; i<originalHeight; ++i)
+                for (int j=0; j<originalWidth; ++j)
+                {
+                    array[i][j] = arrayB[i][j];
+                }
+        }
+        else
+        {
+            System.out.println("Data type not supported!");
+            return;
         }
 
         rawImage = new vtkImageData();
@@ -639,6 +654,8 @@ abstract public class Image extends Model implements PropertyChangeListener
 
     public static void loadSumfile(
             String sumfilename,
+            double fovParameter1,
+            double fovParameter2,
             String[] startTime,
             String[] stopTime,
             double[] spacecraftPosition,
@@ -699,8 +716,8 @@ abstract public class Image extends Model implements PropertyChangeListener
         sz[1] = Double.parseDouble(tmp[1]);
         sz[2] = Double.parseDouble(tmp[2]);
 
-        final double zo = -0.025753661240;
-        final double yo = -0.019744857140;
+        double zo = fovParameter1;
+        double yo = fovParameter2;
         double fx = zo;
         double fy = yo;
         double fz = 1.0;
@@ -746,6 +763,8 @@ abstract public class Image extends Model implements PropertyChangeListener
 
         loadSumfile(
                 getSumfileFullPath(),
+                getFovParameter1(),
+                getFovParameter2(),
                 start,
                 stop,
                 spacecraftPosition,
@@ -1088,13 +1107,10 @@ abstract public class Image extends Model implements PropertyChangeListener
      */
     private float[] generateBackplanes(boolean returnNullIfContainsLimb)
     {
-        if (footprintGenerated == false)
-            loadFootprint();
-
-        computeCellNormals();
-
-        //vtkBar2 cellLocator = new vtkBar2();
-        //vbar.testme();
+        // We need to use cell normals not point normals for the calculations
+        vtkDataArray normals = null;
+        if (!returnNullIfContainsLimb)
+            normals = smallBodyModel.getCellNormals();
 
         int IMAGE_WIDTH = getImageWidth();
         int IMAGE_HEIGHT = getImageHeight();
@@ -1102,25 +1118,7 @@ abstract public class Image extends Model implements PropertyChangeListener
         int numLayers = 16;
         float[] data = new float[numLayers*IMAGE_HEIGHT*IMAGE_WIDTH];
 
-        // If we are searching for a limb, use the locator of the small body itself
-        // since the locator of the footprint might not intersect along the boundary
-        // even if there is no limb.
-        vtksbCellLocator cellLocator = null;
-        if (returnNullIfContainsLimb)
-        {
-            cellLocator = smallBodyModel.getCellLocator();
-        }
-        else
-        {
-            //vtkCellLocator cellLocator = new vtkCellLocator();
-            cellLocator = new vtksbCellLocator();
-            cellLocator.SetDataSet(footprint);
-            cellLocator.CacheCellBoundsOn();
-            cellLocator.AutomaticOn();
-            //cellLocator.SetMaxLevel(10);
-            //cellLocator.SetNumberOfCellsPerNode(15);
-            cellLocator.BuildLocator();
-        }
+        vtksbCellLocator cellLocator = smallBodyModel.getCellLocator();
 
         //vtkPoints intersectPoints = new vtkPoints();
         //vtkIdList intersectCells = new vtkIdList();
@@ -1162,8 +1160,6 @@ abstract public class Image extends Model implements PropertyChangeListener
         double vertScaleFactor = 2.0 * Math.tan( MathUtil.vsep(frustum1, frustum2) / 2.0 ) / IMAGE_WIDTH;
 
         double scdist = MathUtil.vnorm(spacecraftPosition);
-
-        vtkDataArray normals = footprint.GetCellData().GetNormals();
 
         for (int i=0; i<IMAGE_HEIGHT; ++i)
         {

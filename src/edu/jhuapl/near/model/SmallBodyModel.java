@@ -30,6 +30,7 @@ import vtk.vtkPointLocator;
 import vtk.vtkPoints;
 import vtk.vtkPolyData;
 import vtk.vtkPolyDataMapper;
+import vtk.vtkPolyDataNormals;
 import vtk.vtkPolyDataReader;
 import vtk.vtkProp;
 import vtk.vtkProperty;
@@ -118,6 +119,7 @@ public class SmallBodyModel extends Model
     private int greenFalseColor = -1; // green channel for false coloring
     private int blueFalseColor = -1; // blue channel for false coloring
     private vtkUnsignedCharArray falseColorArray;
+    private vtkFloatArray cellNormals;
 
 
     /**
@@ -289,6 +291,29 @@ public class SmallBodyModel extends Model
         }
 
         return smallBodyCubes.getIntersectingCubes(polydata);
+    }
+
+    public vtkFloatArray getCellNormals()
+    {
+        // Compute the normals of necessary. For now don't add the normals to the cell
+        // data of the small body model since doing so might create problems.
+        // TODO consider adding normals to cell data without creating problems
+        if (cellNormals == null)
+        {
+            vtkPolyDataNormals normalsFilter = new vtkPolyDataNormals();
+            normalsFilter.SetInput(smallBodyPolyData);
+            normalsFilter.SetComputeCellNormals(1);
+            normalsFilter.SetComputePointNormals(0);
+            normalsFilter.SplittingOff();
+            normalsFilter.Update();
+
+            cellNormals = new vtkFloatArray();
+            vtkFloatArray normals = (vtkFloatArray)normalsFilter.GetOutput().GetCellData().GetNormals();
+            cellNormals.DeepCopy(normals);
+            normalsFilter.Delete();
+        }
+
+        return cellNormals;
     }
 
     public void setShowSmallBody(boolean show)

@@ -87,6 +87,8 @@ public class MSIBoundaryCollection extends Model implements PropertyChangeListen
                 File sumfile = FileCache.getFileFromServer(sumFilename);
 
                 MSIImage.loadSumfile(sumfile.getAbsolutePath(),
+                        MSIImage.FOV_PARAMETER1,
+                        MSIImage.FOV_PARAMETER2,
                         startTime,
                         stopTime,
                         spacecraftPosition,
