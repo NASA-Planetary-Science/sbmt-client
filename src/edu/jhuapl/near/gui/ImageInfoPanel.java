@@ -1,4 +1,4 @@
-package edu.jhuapl.near.gui.eros;
+package edu.jhuapl.near.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -6,6 +6,7 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.TreeMap;
@@ -26,27 +27,30 @@ import vtk.vtkImageActor;
 import vtk.vtkImageData;
 import vtk.vtkInteractorStyleImage;
 
-import edu.jhuapl.near.gui.ModelInfoWindow;
-import edu.jhuapl.near.gui.vtkEnhancedRenderWindowPanel;
+import edu.jhuapl.near.model.Image;
+import edu.jhuapl.near.model.ImageBoundaryCollection;
+import edu.jhuapl.near.model.ImageCollection;
 import edu.jhuapl.near.model.Model;
-import edu.jhuapl.near.model.ModelManager;
-import edu.jhuapl.near.model.ModelNames;
-import edu.jhuapl.near.model.eros.MSIImage;
-import edu.jhuapl.near.popupmenus.eros.MSIPopupMenu;
+import edu.jhuapl.near.popupmenus.ImagePopupMenu;
 
-public class MSIImageInfoPanel extends ModelInfoWindow implements PropertyChangeListener
+public class ImageInfoPanel extends ModelInfoWindow implements PropertyChangeListener
 {
     private vtkEnhancedRenderWindowPanel renWin;
     private ContrastChanger contrastChanger;
-    private MSIImage msiImage;
-    private ModelManager modelManager;
+    private Image image;
+    private ImageCollection imageCollection;
+    private ImageBoundaryCollection imageBoundaryCollection;
 
-    public MSIImageInfoPanel(MSIImage image, ModelManager modelManager)
+    public ImageInfoPanel(
+            Image image,
+            ImageCollection imageCollection,
+            ImageBoundaryCollection imageBoundaryCollection)
     {
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-        msiImage = image;
-        this.modelManager = modelManager;
+        this.image = image;
+        this.imageCollection = imageCollection;
+        this.imageBoundaryCollection = imageBoundaryCollection;
 
         renWin = new vtkEnhancedRenderWindowPanel();
 
@@ -57,7 +61,6 @@ public class MSIImageInfoPanel extends ModelInfoWindow implements PropertyChange
         vtkImageData displayedImage = image.getDisplayedImage();
 
         vtkImageActor actor = new vtkImageActor();
-        //actor.SetDisplayExtent(0, MSIImage.IMAGE_WIDTH-1, 0, MSIImage.IMAGE_HEIGHT-1, 0, 0);
         actor.SetInput(displayedImage);
 
 // for testing backplane generation
@@ -65,8 +68,8 @@ public class MSIImageInfoPanel extends ModelInfoWindow implements PropertyChange
 //            vtkImageData plane = new vtkImageData();
 //            plane.DeepCopy(displayedImage);
 //            float[] bp = image.generateBackplanes();
-//            for (int i=0; i<MSIImage.IMAGE_HEIGHT; ++i)
-//                for (int j=0; j<MSIImage.IMAGE_WIDTH; ++j)
+//            for (int i=0; i<image.getImageHeight(); ++i)
+//                for (int j=0; j<image.getImageWidth(); ++j)
 //                {
 //                    plane.SetScalarComponentFromFloat(j, i, 0, 0, 1000*bp[image.index(j, i, 0)]);
 //                    plane.SetScalarComponentFromFloat(j, i, 0, 1, 1000*bp[image.index(j, i, 0)]);
@@ -77,8 +80,7 @@ public class MSIImageInfoPanel extends ModelInfoWindow implements PropertyChange
 
         renWin.GetRenderer().AddActor(actor);
 
-        //renWin.GetRenderWindow().SetSize(MSIImage.IMAGE_WIDTH, MSIImage.IMAGE_HEIGHT);
-        renWin.setSize(MSIImage.IMAGE_WIDTH, MSIImage.IMAGE_HEIGHT);
+        renWin.setSize(image.getImageWidth(), image.getImageHeight());
 
         JPanel panel = new JPanel(new BorderLayout());
 
@@ -132,7 +134,7 @@ public class MSIImageInfoPanel extends ModelInfoWindow implements PropertyChange
         // Add the contrast changer
         contrastChanger = new ContrastChanger();
 
-        contrastChanger.setMSIImage(image);
+        contrastChanger.setImage(image);
 
         bottomPanel.add(Box.createVerticalStrut(10));
         bottomPanel.add(scrollPane);
@@ -145,7 +147,8 @@ public class MSIImageInfoPanel extends ModelInfoWindow implements PropertyChange
         createMenus();
 
         // Finally make the frame visible
-        setTitle("MSI Image " + image.getName() + " Properties");
+        String name = new File(image.getFitFileFullPath()).getName();
+        setTitle("Image " + name + " Properties");
         //this.set
         pack();
         setVisible(true);
@@ -168,20 +171,20 @@ public class MSIImageInfoPanel extends ModelInfoWindow implements PropertyChange
         menuBar.add(fileMenu);
 
         /**
-         * The following is a bit of a hack. We want to reuse the MSIPopupMenu
+         * The following is a bit of a hack. We want to reuse the PopupMenu
          * class, but instead of having a right-click popup menu, we want instead to use
          * it as an actual menu in a menu bar. Therefore we simply grab the menu items
          * from that class and put these in our new JMenu.
          */
-        MSIPopupMenu msiImagesPopupMenu =
-            new MSIPopupMenu(modelManager, null, null, this);
+        ImagePopupMenu imagesPopupMenu =
+            new ImagePopupMenu(imageCollection, imageBoundaryCollection, null, null, this);
 
-        msiImagesPopupMenu.setCurrentImage(msiImage.getKey());
+        imagesPopupMenu.setCurrentImage(image.getKey());
 
         JMenu menu = new JMenu("Options");
         menu.setMnemonic('O');
 
-        Component[] components = msiImagesPopupMenu.getComponents();
+        Component[] components = imagesPopupMenu.getComponents();
         for (Component item : components)
         {
             if (item instanceof JMenuItem)
@@ -195,12 +198,12 @@ public class MSIImageInfoPanel extends ModelInfoWindow implements PropertyChange
 
     public Model getModel()
     {
-        return msiImage;
+        return image;
     }
 
     public Model getCollectionModel()
     {
-        return modelManager.getModel(ModelNames.MSI_IMAGES);
+        return imageCollection;
     }
 
     public void propertyChange(PropertyChangeEvent arg0)

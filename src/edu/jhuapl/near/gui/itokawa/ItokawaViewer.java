@@ -8,23 +8,33 @@ import javax.swing.BorderFactory;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 
+import edu.jhuapl.near.gui.ImageInfoPanel;
+import edu.jhuapl.near.gui.ModelInfoWindow;
+import edu.jhuapl.near.gui.ModelInfoWindowManager;
 import edu.jhuapl.near.gui.Renderer;
 import edu.jhuapl.near.gui.SmallBodyControlPanel;
 import edu.jhuapl.near.gui.StatusBar;
 import edu.jhuapl.near.gui.StructuresControlPanel;
 import edu.jhuapl.near.gui.Viewer;
+import edu.jhuapl.near.gui.eros.NISSpectrumInfoPanel;
 import edu.jhuapl.near.model.CircleModel;
 import edu.jhuapl.near.model.Graticule;
 import edu.jhuapl.near.model.LineModel;
 import edu.jhuapl.near.model.Model;
-import edu.jhuapl.near.model.ModelFactory;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.PointModel;
 import edu.jhuapl.near.model.RegularPolygonModel;
 import edu.jhuapl.near.model.SmallBodyModel;
+import edu.jhuapl.near.model.eros.NISSpectrum;
+import edu.jhuapl.near.model.itokawa.AmicaBoundaryCollection;
+import edu.jhuapl.near.model.itokawa.AmicaColorImageCollection;
+import edu.jhuapl.near.model.itokawa.AmicaImage;
+import edu.jhuapl.near.model.itokawa.AmicaImageCollection;
+import edu.jhuapl.near.model.itokawa.Itokawa;
+import edu.jhuapl.near.model.itokawa.ItokawaGraticule;
 import edu.jhuapl.near.pick.PickManager;
-import edu.jhuapl.near.popupmenus.GenericPopupManager;
+import edu.jhuapl.near.popupmenus.PopupManager;
 import edu.jhuapl.near.util.Configuration;
 
 /**
@@ -43,9 +53,10 @@ public class ItokawaViewer extends Viewer
     private JTabbedPane controlPanel;
     private ModelManager modelManager;
     private PickManager pickManager;
-    private GenericPopupManager popupManager;
+    private PopupManager popupManager;
     private StatusBar statusBar;
     private boolean initialized = false;
+    private ModelInfoWindowManager infoPanelManager;
 
     public ItokawaViewer(StatusBar statusBar)
     {
@@ -60,15 +71,38 @@ public class ItokawaViewer extends Viewer
 
         setupModelManager();
 
+        infoPanelManager = new ModelInfoWindowManager(modelManager)
+        {
+            public ModelInfoWindow createModelInfoWindow(Model model,
+                    ModelManager modelManager)
+            {
+                if (model instanceof AmicaImage)
+                {
+                    AmicaImageCollection amicaImages = (AmicaImageCollection)modelManager.getModel(ModelNames.AMICA_IMAGES);
+                    AmicaBoundaryCollection amicaBoundaries = (AmicaBoundaryCollection)modelManager.getModel(ModelNames.AMICA_BOUNDARY);
+                    return new ImageInfoPanel((AmicaImage)model, amicaImages, amicaBoundaries);
+                }
+                else if (model instanceof NISSpectrum)
+                {
+                    return new NISSpectrumInfoPanel((NISSpectrum)model, modelManager);
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        };
+
         renderer = new Renderer(modelManager);
 
-        popupManager = new GenericPopupManager(modelManager);
+        popupManager = new PopupManager(modelManager);
 
         pickManager = new PickManager(renderer, statusBar, modelManager, popupManager);
 
         controlPanel = new JTabbedPane();
         controlPanel.setBorder(BorderFactory.createEmptyBorder());
         controlPanel.addTab("Itokawa", new SmallBodyControlPanel(modelManager, "Itokawa"));
+        controlPanel.addTab("AMICA", new ItokawaSearchPanel(modelManager, infoPanelManager, pickManager, renderer));
         if (Configuration.isAPLVersion())
         {
             controlPanel.addTab("Structures", new StructuresControlPanel(modelManager, pickManager));
@@ -92,11 +126,14 @@ public class ItokawaViewer extends Viewer
     {
         modelManager = new ModelManager();
 
-        SmallBodyModel itokawaModel = ModelFactory.createItokawaBodyModel();
-        Graticule graticule = ModelFactory.createItokawaGraticuleModel(itokawaModel);
+        SmallBodyModel itokawaModel = new Itokawa();
+        Graticule graticule = new ItokawaGraticule(itokawaModel);
 
         HashMap<String, Model> allModels = new HashMap<String, Model>();
         allModels.put(ModelNames.SMALL_BODY, itokawaModel);
+        allModels.put(ModelNames.AMICA_IMAGES, new AmicaImageCollection(itokawaModel));
+        allModels.put(ModelNames.AMICA_COLOR_IMAGES, new AmicaColorImageCollection(itokawaModel));
+        allModels.put(ModelNames.AMICA_BOUNDARY, new AmicaBoundaryCollection(itokawaModel));
         allModels.put(ModelNames.LINE_STRUCTURES, new LineModel(itokawaModel));
         allModels.put(ModelNames.CIRCLE_STRUCTURES, new CircleModel(itokawaModel));
         allModels.put(ModelNames.POINT_STRUCTURES, new PointModel(itokawaModel));

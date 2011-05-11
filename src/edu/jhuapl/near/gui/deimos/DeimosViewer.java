@@ -17,14 +17,15 @@ import edu.jhuapl.near.model.CircleModel;
 import edu.jhuapl.near.model.Graticule;
 import edu.jhuapl.near.model.LineModel;
 import edu.jhuapl.near.model.Model;
-import edu.jhuapl.near.model.ModelFactory;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.PointModel;
 import edu.jhuapl.near.model.RegularPolygonModel;
 import edu.jhuapl.near.model.SmallBodyModel;
+import edu.jhuapl.near.model.deimos.Deimos;
+import edu.jhuapl.near.model.deimos.DeimosGraticule;
 import edu.jhuapl.near.pick.PickManager;
-import edu.jhuapl.near.popupmenus.GenericPopupManager;
+import edu.jhuapl.near.popupmenus.PopupManager;
 import edu.jhuapl.near.util.Configuration;
 
 /**
@@ -43,7 +44,7 @@ public class DeimosViewer extends Viewer
     private JTabbedPane controlPanel;
     private ModelManager modelManager;
     private PickManager pickManager;
-    private GenericPopupManager popupManager;
+    private PopupManager popupManager;
     private StatusBar statusBar;
     private boolean initialized = false;
 
@@ -62,7 +63,7 @@ public class DeimosViewer extends Viewer
 
         renderer = new Renderer(modelManager);
 
-        popupManager = new GenericPopupManager(modelManager);
+        popupManager = new PopupManager(modelManager);
 
         pickManager = new PickManager(renderer, statusBar, modelManager, popupManager);
 
@@ -92,8 +93,8 @@ public class DeimosViewer extends Viewer
     {
         modelManager = new ModelManager();
 
-        SmallBodyModel deimosModel = ModelFactory.createDeimosBodyModel();
-        Graticule graticule = ModelFactory.createDeimosGraticuleModel(deimosModel);
+        SmallBodyModel deimosModel = new Deimos();
+        Graticule graticule = new DeimosGraticule(deimosModel);
 
         HashMap<String, Model> allModels = new HashMap<String, Model>();
         allModels.put(ModelNames.SMALL_BODY, deimosModel);

@@ -50,7 +50,7 @@ import edu.jhuapl.near.model.eros.DEMModel;
 import edu.jhuapl.near.model.eros.MapletBoundaryCollection;
 import edu.jhuapl.near.pick.PickManager;
 import edu.jhuapl.near.pick.PickManager.PickMode;
-import edu.jhuapl.near.popupmenus.GenericPopupManager;
+import edu.jhuapl.near.popupmenus.PopupManager;
 import edu.jhuapl.near.util.LatLon;
 import edu.jhuapl.near.util.MathUtil;
 
@@ -110,7 +110,7 @@ public class TopoViewer extends JFrame
         renderer = new Renderer(modelManager);
 
 
-        GenericPopupManager popupManager = new GenericPopupManager(modelManager);
+        PopupManager popupManager = new PopupManager(modelManager);
 
         pickManager = new PickManager(renderer, statusBar, modelManager, popupManager);
 

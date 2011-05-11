@@ -48,6 +48,11 @@ public class MSIImage extends Image
     private String infoFileFullPath;
     private String sumfileFullPath;
 
+    public MSIImage(ImageKey key)
+    {
+        super(key);
+    }
+
     public MSIImage(ImageKey key, SmallBodyModel erosModel) throws FitsException, IOException
     {
         super(key, erosModel);
@@ -64,31 +69,15 @@ public class MSIImage extends Image
     @Override
     protected void downloadFilesIntoCache() throws IOException
     {
-        ImageKey key = getKey();
-
         // Download the FIT file, the LBL file, and, if gaskell source, the sumfile
-        File fitFile = FileCache.getFileFromServer(key.name + ".FIT");
 
-        if (fitFile == null)
-            throw new IOException("Could not download " + key.name);
+        getFitFileFullPath();
 
-        this.fitFileFullPath = fitFile.getAbsolutePath();
+        getInfoFileFullPath();
 
-        String imgLblFilename = key.name + "_DDR.LBL";
-        File infoFile = FileCache.getFileFromServer(imgLblFilename);
-        this.infoFileFullPath = infoFile.getAbsolutePath();
-
+        ImageKey key = getKey();
         if (key.source.equals(ImageSource.GASKELL))
-        {
-            // Try to load a sumfile if there is one
-            File tmp = new File(key.name);
-            String sumFilename = "/MSI/sumfiles/" + tmp.getName().substring(0, 11) + ".SUM";
-            File sumfile = FileCache.getFileFromServer(sumFilename);
-            this.sumfileFullPath = sumfile.getAbsolutePath();
-        }
-
-        //String footprintFilename = filename.substring(0, filename.length()-4) + "_FOOTPRINT.VTK";
-        //FileCache.getFileFromServer(footprintFilename);
+            getSumfileFullPath();
     }
 
 
@@ -106,11 +95,8 @@ public class MSIImage extends Image
     }
 
 
-    /**
-     *     Make this static so it can be called without needing access
-     *     to an MSIImage object.
-     */
-    static public void loadImageInfo(
+    @Override
+    public void loadImageInfo(
             String lblFilename,
             String[] startTime,
             String[] stopTime,
@@ -223,34 +209,6 @@ public class MSIImage extends Image
         }
 
         in.close();
-    }
-
-    @Override
-    protected void doLoadImageInfo(
-            String lblFilename,
-            String[] startTime,
-            String[] stopTime,
-            double[] spacecraftPosition,
-            double[] sunPosition,
-            double[] frustum1,
-            double[] frustum2,
-            double[] frustum3,
-            double[] frustum4,
-            double[] boresightDirection,
-            double[] upVector) throws NumberFormatException, IOException
-    {
-        MSIImage.loadImageInfo(
-                lblFilename,
-                startTime,
-                stopTime,
-                spacecraftPosition,
-                sunPosition,
-                frustum1,
-                frustum2,
-                frustum3,
-                frustum4,
-                boresightDirection,
-                upVector);
     }
 
     public String generateBackplanesLabel() throws IOException
@@ -403,20 +361,44 @@ public class MSIImage extends Image
     }
 
     @Override
-    protected String getFitFileFullPath()
+    public String getFitFileFullPath()
     {
+        if (fitFileFullPath == null)
+        {
+            ImageKey key = getKey();
+            File fitFile = FileCache.getFileFromServer(key.name + ".FIT");
+            this.fitFileFullPath = fitFile.getAbsolutePath();
+        }
+
         return fitFileFullPath;
     }
 
     @Override
-    protected String getInfoFileFullPath()
+    public String getInfoFileFullPath()
     {
+        if (infoFileFullPath == null)
+        {
+            ImageKey key = getKey();
+            String imgLblFilename = key.name + "_DDR.LBL";
+            File infoFile = FileCache.getFileFromServer(imgLblFilename);
+            this.infoFileFullPath = infoFile.getAbsolutePath();
+        }
+
         return infoFileFullPath;
     }
 
     @Override
-    protected String getSumfileFullPath()
+    public String getSumfileFullPath()
     {
+        if (sumfileFullPath == null)
+        {
+            ImageKey key = getKey();
+            File tmp = new File(key.name);
+            String sumFilename = "/MSI/sumfiles/" + tmp.getName().substring(0, 11) + ".SUM";
+            File sumfile = FileCache.getFileFromServer(sumFilename);
+            this.sumfileFullPath = sumfile.getAbsolutePath();
+        }
+
         return sumfileFullPath;
     }
 

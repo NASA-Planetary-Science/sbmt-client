@@ -1,4 +1,4 @@
-package edu.jhuapl.near.gui.eros;
+package edu.jhuapl.near.gui;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
@@ -7,7 +7,7 @@ import javax.swing.event.ChangeListener;
 
 import com.jidesoft.swing.RangeSlider;
 
-import edu.jhuapl.near.model.eros.MSIImage;
+import edu.jhuapl.near.model.Image;
 import edu.jhuapl.near.util.IntensityRange;
 
 
@@ -15,7 +15,7 @@ public class ContrastChanger extends JPanel implements ChangeListener
 {
     private RangeSlider slider;
 
-    private MSIImage msiImage;
+    private Image image;
 
     public ContrastChanger()
     {
@@ -31,11 +31,11 @@ public class ContrastChanger extends JPanel implements ChangeListener
         add(slider);
     }
 
-    public void setMSIImage(MSIImage image)
+    public void setImage(Image image)
     {
         if (image != null)
         {
-            msiImage = image;
+            this.image = image;
             IntensityRange range = image.getDisplayedRange();
             slider.setLowValue(range.min);
             slider.setHighValue(range.max);
@@ -51,7 +51,7 @@ public class ContrastChanger extends JPanel implements ChangeListener
     {
         int lowVal = slider.getLowValue();
         int highVal = slider.getHighValue();
-        if (msiImage != null)
-            msiImage.setDisplayedImageRange(new IntensityRange(lowVal, highVal));
+        if (image != null)
+            image.setDisplayedImageRange(new IntensityRange(lowVal, highVal));
     }
 }

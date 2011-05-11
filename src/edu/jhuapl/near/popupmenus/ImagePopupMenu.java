@@ -1,4 +1,4 @@
-package edu.jhuapl.near.popupmenus.eros;
+package edu.jhuapl.near.popupmenus;
 
 import java.awt.Component;
 import java.awt.event.ActionEvent;
@@ -21,23 +21,21 @@ import vtk.vtkProp;
 import edu.jhuapl.near.gui.CustomFileChooser;
 import edu.jhuapl.near.gui.ModelInfoWindowManager;
 import edu.jhuapl.near.gui.Renderer;
+import edu.jhuapl.near.model.Image;
 import edu.jhuapl.near.model.Image.ImageKey;
-import edu.jhuapl.near.model.ModelManager;
-import edu.jhuapl.near.model.ModelNames;
-import edu.jhuapl.near.model.eros.MSIBoundaryCollection;
-import edu.jhuapl.near.model.eros.MSIBoundaryCollection.Boundary;
-import edu.jhuapl.near.model.eros.MSIImage;
-import edu.jhuapl.near.model.eros.MSIImageCollection;
-import edu.jhuapl.near.popupmenus.PopupMenu;
+import edu.jhuapl.near.model.ImageBoundary;
+import edu.jhuapl.near.model.ImageBoundaryCollection;
+import edu.jhuapl.near.model.ImageCollection;
 import edu.jhuapl.near.util.FileCache;
 import edu.jhuapl.near.util.FileUtil;
 
 
-public class MSIPopupMenu extends PopupMenu
+public class ImagePopupMenu extends PopupMenu
 {
     private Component invoker;
-    private ModelManager modelManager;
-    private ImageKey msiKey;
+    private ImageCollection imageCollection;
+    private ImageBoundaryCollection imageBoundaryCollection;
+    private ImageKey imageKey;
     private JMenuItem showRemoveImageIn3DMenuItem;
     private JMenuItem showRemoveBoundaryIn3DMenuItem;
     private JMenuItem showImageInfoMenuItem;
@@ -55,13 +53,15 @@ public class MSIPopupMenu extends PopupMenu
      * 1 for right clicks on boundaries mapped on Eros, 2 for right clicks on images
      * mapped to Eros.
      */
-    public MSIPopupMenu(
-            ModelManager modelManager,
+    public ImagePopupMenu(
+            ImageCollection imageCollection,
+            ImageBoundaryCollection imageBoundaryCollection,
             ModelInfoWindowManager infoPanelManager,
             Renderer renderer,
             Component invoker)
     {
-        this.modelManager = modelManager;
+        this.imageCollection = imageCollection;
+        this.imageBoundaryCollection = imageBoundaryCollection;
         this.infoPanelManager = infoPanelManager;
         this.renderer = renderer;
         this.invoker = invoker;
@@ -104,18 +104,15 @@ public class MSIPopupMenu extends PopupMenu
 
     public void setCurrentImage(ImageKey key)
     {
-        msiKey = key;
+        imageKey = key;
 
         updateMenuItems();
     }
 
     private void updateMenuItems()
     {
-        MSIBoundaryCollection msiBoundaries = (MSIBoundaryCollection)modelManager.getModel(ModelNames.MSI_BOUNDARY);
-        MSIImageCollection msiImages = (MSIImageCollection)modelManager.getModel(ModelNames.MSI_IMAGES);
-
-        boolean containsImage = msiImages.containsImage(msiKey);
-        boolean containsBoundary = msiBoundaries.containsBoundary(msiKey);
+        boolean containsImage = imageCollection.containsImage(imageKey);
+        boolean containsBoundary = imageBoundaryCollection.containsBoundary(imageKey);
 
         showRemoveBoundaryIn3DMenuItem.setSelected(containsBoundary);
 
@@ -137,7 +134,7 @@ public class MSIPopupMenu extends PopupMenu
 
         if (containsImage)
         {
-            MSIImage image = (MSIImage)msiImages.getImage(msiKey);
+            Image image = imageCollection.getImage(imageKey);
             showFrustumMenuItem.setSelected(image.isFrustumShowing());
             showFrustumMenuItem.setEnabled(true);
         }
@@ -153,13 +150,12 @@ public class MSIPopupMenu extends PopupMenu
     {
         public void actionPerformed(ActionEvent e)
         {
-            MSIImageCollection model = (MSIImageCollection)modelManager.getModel(ModelNames.MSI_IMAGES);
             try
             {
                 if (showRemoveImageIn3DMenuItem.isSelected())
-                    model.addImage(msiKey);
+                    imageCollection.addImage(imageKey);
                 else
-                    model.removeImage(msiKey);
+                    imageCollection.removeImage(imageKey);
 
                 updateMenuItems();
             }
@@ -176,13 +172,12 @@ public class MSIPopupMenu extends PopupMenu
     {
         public void actionPerformed(ActionEvent e)
         {
-            MSIBoundaryCollection model = (MSIBoundaryCollection)modelManager.getModel(ModelNames.MSI_BOUNDARY);
             try
             {
                 if (showRemoveBoundaryIn3DMenuItem.isSelected())
-                    model.addBoundary(msiKey);
+                    imageBoundaryCollection.addBoundary(imageKey);
                 else
-                    model.removeBoundary(msiKey);
+                    imageBoundaryCollection.removeBoundary(imageKey);
 
                 updateMenuItems();
             }
@@ -201,9 +196,8 @@ public class MSIPopupMenu extends PopupMenu
         {
             try
             {
-                MSIImageCollection msiImages = (MSIImageCollection)modelManager.getModel(ModelNames.MSI_IMAGES);
-                msiImages.addImage(msiKey);
-                infoPanelManager.addData(msiImages.getImage(msiKey));
+                imageCollection.addImage(imageKey);
+                infoPanelManager.addData(imageCollection.getImage(imageKey));
 
                 updateMenuItems();
             }
@@ -221,12 +215,12 @@ public class MSIPopupMenu extends PopupMenu
     {
         public void actionPerformed(ActionEvent e)
         {
-            File file = CustomFileChooser.showSaveDialog(invoker, "Save FIT file", msiKey.name + ".FIT", "fit");
+            File file = CustomFileChooser.showSaveDialog(invoker, "Save FIT file", imageKey.name + ".FIT", "fit");
             try
             {
                 if (file != null)
                 {
-                    File fitFile = FileCache.getFileFromServer(msiKey.name + ".FIT");
+                    File fitFile = FileCache.getFileFromServer(imageKey.name + ".FIT");
 
                     FileUtil.copyFile(fitFile, file);
                 }
@@ -250,16 +244,14 @@ public class MSIPopupMenu extends PopupMenu
             double[] focalPoint = new double[3];
             double[] upVector = new double[3];
 
-            MSIBoundaryCollection msiBoundaries = (MSIBoundaryCollection)modelManager.getModel(ModelNames.MSI_BOUNDARY);
-            MSIImageCollection msiImages = (MSIImageCollection)modelManager.getModel(ModelNames.MSI_IMAGES);
-            if (msiBoundaries.containsBoundary(msiKey))
+            if (imageBoundaryCollection.containsBoundary(imageKey))
             {
-                Boundary boundary = msiBoundaries.getBoundary(msiKey);
+                ImageBoundary boundary = imageBoundaryCollection.getBoundary(imageKey);
                 boundary.getCameraOrientation(spacecraftPosition, focalPoint, upVector);
             }
-            else if (msiImages.containsImage(msiKey))
+            else if (imageCollection.containsImage(imageKey))
             {
-                MSIImage image = (MSIImage)msiImages.getImage(msiKey);
+                Image image = imageCollection.getImage(imageKey);
                 image.getCameraOrientation(spacecraftPosition, focalPoint, upVector);
             }
             else
@@ -281,7 +273,7 @@ public class MSIPopupMenu extends PopupMenu
         {
             // First generate the DDR
 
-            File file = CustomFileChooser.showSaveDialog(invoker, "Save Backplanes DDR", msiKey.name + "_DDR.IMG");
+            File file = CustomFileChooser.showSaveDialog(invoker, "Save Backplanes DDR", imageKey.name + "_DDR.IMG");
 
             try
             {
@@ -289,9 +281,8 @@ public class MSIPopupMenu extends PopupMenu
                 {
                     OutputStream out = new FileOutputStream(file);
 
-                    MSIImageCollection msiImages = (MSIImageCollection)modelManager.getModel(ModelNames.MSI_IMAGES);
-                    msiImages.addImage(msiKey);
-                    MSIImage image = (MSIImage)msiImages.getImage(msiKey);
+                    imageCollection.addImage(imageKey);
+                    Image image = imageCollection.getImage(imageKey);
 
                     updateMenuItems();
 
@@ -321,7 +312,7 @@ public class MSIPopupMenu extends PopupMenu
 
             // Then generate the LBL file
 
-            file = CustomFileChooser.showSaveDialog(invoker, "Save Backplanes Label", msiKey.name + "_DDR.LBL");
+            file = CustomFileChooser.showSaveDialog(invoker, "Save Backplanes Label", imageKey.name + "_DDR.LBL");
 
             try
             {
@@ -329,9 +320,8 @@ public class MSIPopupMenu extends PopupMenu
                 {
                     OutputStream out = new FileOutputStream(file);
 
-                    MSIImageCollection msiImages = (MSIImageCollection)modelManager.getModel(ModelNames.MSI_IMAGES);
-                    msiImages.addImage(msiKey);
-                    MSIImage image = (MSIImage)msiImages.getImage(msiKey);
+                    imageCollection.addImage(imageKey);
+                    Image image = imageCollection.getImage(imageKey);
 
                     updateMenuItems();
 
@@ -360,9 +350,8 @@ public class MSIPopupMenu extends PopupMenu
         {
             try
             {
-                MSIImageCollection msiImages = (MSIImageCollection)modelManager.getModel(ModelNames.MSI_IMAGES);
-                msiImages.addImage(msiKey);
-                MSIImage image = (MSIImage)msiImages.getImage(msiKey);
+                imageCollection.addImage(imageKey);
+                Image image = imageCollection.getImage(imageKey);
                 image.setShowFrustum(showFrustumMenuItem.isSelected());
 
                 updateMenuItems();
@@ -380,17 +369,15 @@ public class MSIPopupMenu extends PopupMenu
     {
         if (pickedProp instanceof vtkActor)
         {
-            if (modelManager.getModel(pickedProp) instanceof MSIBoundaryCollection)
+            if (imageBoundaryCollection.getBoundary((vtkActor)pickedProp) != null)
             {
-                MSIBoundaryCollection msiBoundaries = (MSIBoundaryCollection)modelManager.getModel(ModelNames.MSI_BOUNDARY);
-                Boundary boundary = msiBoundaries.getBoundary((vtkActor)pickedProp);
+                ImageBoundary boundary = imageBoundaryCollection.getBoundary((vtkActor)pickedProp);
                 setCurrentImage(boundary.getKey());
                 show(e.getComponent(), e.getX(), e.getY());
             }
-            else if (modelManager.getModel(pickedProp) instanceof MSIImageCollection)
+            else if (imageCollection.getImage((vtkActor)pickedProp) != null)
             {
-                MSIImageCollection msiImages = (MSIImageCollection)modelManager.getModel(ModelNames.MSI_IMAGES);
-                MSIImage image = (MSIImage)msiImages.getImage((vtkActor)pickedProp);
+                Image image = imageCollection.getImage((vtkActor)pickedProp);
                 setCurrentImage(image.getKey());
                 show(e.getComponent(), e.getX(), e.getY());
             }

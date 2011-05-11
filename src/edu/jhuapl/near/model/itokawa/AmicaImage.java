@@ -27,6 +27,11 @@ public class AmicaImage extends Image
     private String infoFileFullPath;
     private String sumfileFullPath;
 
+    public AmicaImage(ImageKey key)
+    {
+        super(key);
+    }
+
     public AmicaImage(ImageKey key, SmallBodyModel smallBodyModel) throws FitsException, IOException
     {
         super(key, smallBodyModel);
@@ -41,31 +46,15 @@ public class AmicaImage extends Image
     @Override
     protected void downloadFilesIntoCache() throws IOException
     {
+        // Download the FIT file, the LBL file, and, if gaskell source, the sumfile
+
+        getFitFileFullPath();
+
+        getInfoFileFullPath();
+
         ImageKey key = getKey();
-
-        // Download the image, and all the companion files if necessary.
-        File fitFile = FileCache.getFileFromServer(key.name + ".fit");
-
-        if (fitFile == null)
-            throw new IOException("Could not download " + key.name);
-
-        this.fitFileFullPath = fitFile.getAbsolutePath();
-
-        String imgLblFilename = key.name + ".lbl";
-        File infoFile = FileCache.getFileFromServer(imgLblFilename);
-        this.infoFileFullPath = infoFile.getAbsolutePath();
-
         if (key.source.equals(ImageSource.GASKELL))
-        {
-            // Try to load a sumfile if there is one
-            File tmp = new File(key.name);
-            String sumFilename = "/ITOKAWA/AMICA/sumfiles/N" + tmp.getName().substring(3, 13) + ".SUM";
-            File sumfile = FileCache.getFileFromServer(sumFilename);
-            this.sumfileFullPath = sumfile.getAbsolutePath();
-        }
-
-        //String footprintFilename = filename.substring(0, filename.length()-4) + "_FOOTPRINT.VTK";
-        //FileCache.getFileFromServer(footprintFilename);
+            getSumfileFullPath();
     }
 
     @Override
@@ -81,7 +70,7 @@ public class AmicaImage extends Image
     }
 
     @Override
-    protected void doLoadImageInfo(
+    public void loadImageInfo(
             String lblFilename,
             String[] startTime,
             String[] stopTime,
@@ -404,20 +393,44 @@ public class AmicaImage extends Image
     }
 
     @Override
-    protected String getFitFileFullPath()
+    public String getFitFileFullPath()
     {
+        if (fitFileFullPath == null)
+        {
+            ImageKey key = getKey();
+            File fitFile = FileCache.getFileFromServer(key.name + ".fit");
+            this.fitFileFullPath = fitFile.getAbsolutePath();
+        }
+
         return fitFileFullPath;
     }
 
     @Override
-    protected String getInfoFileFullPath()
+    public String getInfoFileFullPath()
     {
+        if (infoFileFullPath == null)
+        {
+            ImageKey key = getKey();
+            String imgLblFilename = key.name + ".lbl";
+            File infoFile = FileCache.getFileFromServer(imgLblFilename);
+            this.infoFileFullPath = infoFile.getAbsolutePath();
+        }
+
         return infoFileFullPath;
     }
 
     @Override
-    protected String getSumfileFullPath()
+    public String getSumfileFullPath()
     {
+        if (sumfileFullPath == null)
+        {
+            ImageKey key = getKey();
+            File tmp = new File(key.name);
+            String sumFilename = "/ITOKAWA/AMICA/sumfiles/N" + tmp.getName().substring(3, 13) + ".SUM";
+            File sumfile = FileCache.getFileFromServer(sumFilename);
+            this.sumfileFullPath = sumfile.getAbsolutePath();
+        }
+
         return sumfileFullPath;
     }
 

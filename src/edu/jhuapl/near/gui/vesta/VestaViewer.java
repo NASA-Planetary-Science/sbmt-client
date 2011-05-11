@@ -19,14 +19,15 @@ import edu.jhuapl.near.model.CircleModel;
 import edu.jhuapl.near.model.Graticule;
 import edu.jhuapl.near.model.LineModel;
 import edu.jhuapl.near.model.Model;
-import edu.jhuapl.near.model.ModelFactory;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.PointModel;
 import edu.jhuapl.near.model.RegularPolygonModel;
 import edu.jhuapl.near.model.SmallBodyModel;
+import edu.jhuapl.near.model.vesta.Vesta;
+import edu.jhuapl.near.model.vesta.VestaGraticule;
 import edu.jhuapl.near.pick.PickManager;
-import edu.jhuapl.near.popupmenus.GenericPopupManager;
+import edu.jhuapl.near.popupmenus.PopupManager;
 import edu.jhuapl.near.util.Configuration;
 
 /**
@@ -45,7 +46,7 @@ public class VestaViewer extends Viewer
     private JTabbedPane controlPanel;
     private ModelManager modelManager;
     private PickManager pickManager;
-    private GenericPopupManager popupManager;
+    private PopupManager popupManager;
     private StatusBar statusBar;
     private ModelInfoWindowManager infoPanelManager;
     private boolean initialized = false;
@@ -74,7 +75,7 @@ public class VestaViewer extends Viewer
 
         renderer = new Renderer(modelManager);
 
-        popupManager = new GenericPopupManager(modelManager);
+        popupManager = new PopupManager(modelManager);
 
         pickManager = new PickManager(renderer, statusBar, modelManager, popupManager);
 
@@ -107,8 +108,8 @@ public class VestaViewer extends Viewer
     {
         modelManager = new ModelManager();
 
-        SmallBodyModel vestaModel = ModelFactory.createVestaBodyModel();
-        Graticule graticule = ModelFactory.createVestaGraticuleModel(vestaModel);
+        SmallBodyModel vestaModel = new Vesta();
+        Graticule graticule = new VestaGraticule(vestaModel);
 
         HashMap<String, Model> allModels = new HashMap<String, Model>();
         allModels.put(ModelNames.SMALL_BODY, vestaModel);

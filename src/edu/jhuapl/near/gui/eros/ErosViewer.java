@@ -8,6 +8,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 
+import edu.jhuapl.near.gui.ImageInfoPanel;
 import edu.jhuapl.near.gui.ModelInfoWindow;
 import edu.jhuapl.near.gui.ModelInfoWindowManager;
 import edu.jhuapl.near.gui.Renderer;
@@ -19,12 +20,13 @@ import edu.jhuapl.near.model.CircleModel;
 import edu.jhuapl.near.model.Graticule;
 import edu.jhuapl.near.model.LineModel;
 import edu.jhuapl.near.model.Model;
-import edu.jhuapl.near.model.ModelFactory;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.PointModel;
 import edu.jhuapl.near.model.RegularPolygonModel;
 import edu.jhuapl.near.model.SmallBodyModel;
+import edu.jhuapl.near.model.eros.Eros;
+import edu.jhuapl.near.model.eros.ErosGraticule;
 import edu.jhuapl.near.model.eros.LineamentModel;
 import edu.jhuapl.near.model.eros.MSIBoundaryCollection;
 import edu.jhuapl.near.model.eros.MSIColorImageCollection;
@@ -71,11 +73,19 @@ public class ErosViewer extends Viewer
                     ModelManager modelManager)
             {
                 if (model instanceof MSIImage)
-                    return new MSIImageInfoPanel((MSIImage)model, modelManager);
+                {
+                    MSIImageCollection msiImages = (MSIImageCollection)modelManager.getModel(ModelNames.MSI_IMAGES);
+                    MSIBoundaryCollection msiBoundaries = (MSIBoundaryCollection)modelManager.getModel(ModelNames.MSI_BOUNDARY);
+                    return new ImageInfoPanel((MSIImage)model, msiImages, msiBoundaries);
+                }
                 else if (model instanceof NISSpectrum)
+                {
                     return new NISSpectrumInfoPanel((NISSpectrum)model, modelManager);
+                }
                 else
+                {
                     return null;
+                }
             }
         };
 
@@ -114,8 +124,8 @@ public class ErosViewer extends Viewer
     {
         modelManager = new ModelManager();
 
-        SmallBodyModel erosModel = ModelFactory.createErosBodyModel();
-        Graticule graticule = ModelFactory.createErosGraticuleModel(erosModel);
+        SmallBodyModel erosModel = new Eros();
+        Graticule graticule = new ErosGraticule(erosModel);
 
         HashMap<String, Model> allModels = new HashMap<String, Model>();
         allModels.put(ModelNames.SMALL_BODY, erosModel);
@@ -127,6 +137,7 @@ public class ErosViewer extends Viewer
         allModels.put(ModelNames.NLR_DATA_SUMMARY, new NLRDataEverything());
         allModels.put(ModelNames.NLR_DATA_BROWSE, new NLRBrowseDataCollection());
         allModels.put(ModelNames.NLR_DATA_SEARCH, new NLRSearchDataCollection(erosModel));
+        //allModels.put(ModelNames.NLR_DATA_SEARCH, new NLRSearchDataCollection2(erosModel));
         allModels.put(ModelNames.LINE_STRUCTURES, new LineModel(erosModel));
         allModels.put(ModelNames.CIRCLE_STRUCTURES, new CircleModel(erosModel));
         allModels.put(ModelNames.POINT_STRUCTURES, new PointModel(erosModel));

@@ -18,9 +18,11 @@ public class NLRPanel extends JTabbedPane
         //NLRSummaryPanel nlrSummaryPanel = new NLRSummaryPanel(modelManager);
         NLRBrowsePanel nlrBrowsePanel = new NLRBrowsePanel(modelManager);
         NLRSearchPanel nlrSearchPanel = new NLRSearchPanel(modelManager, pickManager);
+        //NLRSearchPanel2 nlrSearchPanel2 = new NLRSearchPanel2(modelManager, pickManager);
 
         //addTab("Summary", nlrSummaryPanel);
         addTab("Browse", nlrBrowsePanel);
         addTab("Search", nlrSearchPanel);
+        //addTab("Search2", nlrSearchPanel2);
     }
 }

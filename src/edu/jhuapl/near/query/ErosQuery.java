@@ -1,11 +1,5 @@
 package edu.jhuapl.near.query;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.TreeSet;
@@ -13,7 +7,6 @@ import java.util.TreeSet;
 import org.joda.time.DateTime;
 
 import edu.jhuapl.near.model.eros.MSIImage;
-import edu.jhuapl.near.util.Configuration;
 
 
 /**
@@ -23,75 +16,11 @@ import edu.jhuapl.near.util.Configuration;
  * @author kahneg1
  *
  */
-public class Query
+public class ErosQuery extends QueryBase
 {
-    public enum Datatype {MSI, NIS, NLR};
+    public enum Datatype {MSI, NIS};
 
-    private static Query ref = null;
-
-    String version;
-
-
-    private ArrayList<ArrayList<String>> doQuery(String phpScript, String data)
-    {
-        ArrayList<ArrayList<String>> results = new ArrayList<ArrayList<String>>();
-
-        try
-        {
-            URL u = new URL(Configuration.getQueryRootURL() + "/" + phpScript);
-            URLConnection conn = u.openConnection();
-            conn.setDoOutput(true);
-            conn.setUseCaches(false);
-
-            OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
-            wr.write(data);
-            wr.flush();
-
-            InputStreamReader isr = new InputStreamReader(conn.getInputStream());
-            BufferedReader in = new BufferedReader(isr);
-
-            String line;
-
-            while ((line = in.readLine()) != null)
-            {
-                line = line.trim();
-                if (line.length() == 0)
-                    continue;
-
-                String[] tokens = line.split("\\s+");
-                ArrayList<String> words = new ArrayList<String>();
-                for (String word : tokens)
-                    words.add(word);
-                results.add(words);
-            }
-
-            in.close();
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
-
-        return results;
-    }
-
-    private String constructUrlArguments(HashMap<String, String> args)
-    {
-        String str = "";
-
-        boolean firstKey = true;
-        for (String key : args.keySet())
-        {
-            if (firstKey == true)
-                firstKey = false;
-            else
-                str += "&";
-
-            str += key + "=" + args.get(key);
-        }
-
-        return str;
-    }
+    private static ErosQuery ref = null;
 
     private String getMsiPath(ArrayList<String> result)
     {
@@ -159,10 +88,10 @@ public class Query
         return str;
     }
 
-    public static Query getInstance()
+    public static ErosQuery getInstance()
     {
         if (ref == null)
-            ref = new Query();
+            ref = new ErosQuery();
         return ref;
     }
 
@@ -172,7 +101,7 @@ public class Query
         throw new CloneNotSupportedException();
     }
 
-    private Query()
+    private ErosQuery()
     {
     }
 

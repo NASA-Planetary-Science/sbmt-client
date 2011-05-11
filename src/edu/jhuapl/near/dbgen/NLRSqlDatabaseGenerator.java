@@ -7,8 +7,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Locale;
 
-import edu.jhuapl.near.model.ModelFactory;
 import edu.jhuapl.near.model.SmallBodyModel;
+import edu.jhuapl.near.model.eros.Eros;
 import edu.jhuapl.near.util.FileUtil;
 import edu.jhuapl.near.util.MathUtil;
 import edu.jhuapl.near.util.NativeLibraryLoader;
@@ -106,7 +106,7 @@ public class NLRSqlDatabaseGenerator
     {
         NativeLibraryLoader.loadVtkLibraries();
 
-        SmallBodyModel erosModel = ModelFactory.createErosBodyModel();
+        SmallBodyModel erosModel = new Eros();
 
         String nlrFileList = args[0];
 

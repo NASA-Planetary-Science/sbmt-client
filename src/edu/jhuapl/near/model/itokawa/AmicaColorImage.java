@@ -1,4 +1,4 @@
-package edu.jhuapl.near.model.eros;
+package edu.jhuapl.near.model.itokawa;
 
 import java.io.IOException;
 
@@ -9,10 +9,10 @@ import edu.jhuapl.near.model.Image;
 import edu.jhuapl.near.model.Image.ImageKey;
 import edu.jhuapl.near.model.SmallBodyModel;
 
-public class MSIColorImage extends ColorImage
+public class AmicaColorImage extends ColorImage
 {
 
-    public MSIColorImage(ColorImageKey key, SmallBodyModel smallBodyModel)
+    public AmicaColorImage(ColorImageKey key, SmallBodyModel smallBodyModel)
             throws FitsException, IOException, NoOverlapException
     {
         super(key, smallBodyModel);
@@ -22,6 +22,6 @@ public class MSIColorImage extends ColorImage
     protected Image createImage(ImageKey key, SmallBodyModel smallBodyModel)
             throws FitsException, IOException
     {
-        return new MSIImage(key, smallBodyModel);
+        return new AmicaImage(key, smallBodyModel);
     }
 }

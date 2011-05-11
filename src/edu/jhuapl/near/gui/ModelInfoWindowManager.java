@@ -31,15 +31,15 @@ abstract public class ModelInfoWindowManager implements PropertyChangeListener
         {
             final ModelInfoWindow infoPanel = createModelInfoWindow(model, modelManager);
 
-            final Model collectionModel = infoPanel.getCollectionModel();
-
-            model.addPropertyChangeListener(infoPanel);
-            collectionModel.addPropertyChangeListener(this);
-
             if (infoPanel == null)
             {
                 throw new Exception("The Info Panel Manager cannot handle the model you specified.");
             }
+
+            final Model collectionModel = infoPanel.getCollectionModel();
+
+            model.addPropertyChangeListener(infoPanel);
+            collectionModel.addPropertyChangeListener(this);
 
             infoPanel.addWindowListener(new WindowAdapter()
             {

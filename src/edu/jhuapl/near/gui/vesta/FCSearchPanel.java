@@ -52,10 +52,11 @@ import edu.jhuapl.near.model.RegularPolygonModel;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.eros.MSIBoundaryCollection;
 import edu.jhuapl.near.model.eros.MSIImage;
+import edu.jhuapl.near.model.eros.MSIImageCollection;
 import edu.jhuapl.near.pick.PickManager;
 import edu.jhuapl.near.pick.PickManager.PickMode;
-import edu.jhuapl.near.popupmenus.eros.MSIPopupMenu;
-import edu.jhuapl.near.query.Query;
+import edu.jhuapl.near.popupmenus.ImagePopupMenu;
+import edu.jhuapl.near.query.ErosQuery;
 import edu.jhuapl.near.util.IdPair;
 
 
@@ -104,7 +105,7 @@ public class FCSearchPanel extends JPanel implements ActionListener, MouseListen
     private JCheckBox searchByNumberCheckBox;
 
     private JList resultList;
-    private MSIPopupMenu msiPopupMenu;
+    private ImagePopupMenu msiPopupMenu;
     private ArrayList<String> msiRawResults = new ArrayList<String>();
     private JLabel resultsLabel;
     private String msiResultsLabelText = " ";
@@ -470,7 +471,9 @@ public class FCSearchPanel extends JPanel implements ActionListener, MouseListen
 
         JPanel resultsPanel = new JPanel(new BorderLayout());
 
-        msiPopupMenu = new MSIPopupMenu(this.modelManager, infoPanelManager, renderer, this);
+        MSIImageCollection msiImages = (MSIImageCollection)modelManager.getModel(ModelNames.MSI_IMAGES);
+        MSIBoundaryCollection msiBoundaries = (MSIBoundaryCollection)modelManager.getModel(ModelNames.MSI_BOUNDARY);
+        msiPopupMenu = new ImagePopupMenu(msiImages, msiBoundaries, infoPanelManager, renderer, this);
 
         resultsLabel = new JLabel(" ");
 
@@ -679,8 +682,8 @@ public class FCSearchPanel extends JPanel implements ActionListener, MouseListen
             else
                 msiSource = MSIImage.ImageSource.GASKELL;
             System.out.println(msiSource.toString());
-            ArrayList<String> results = Query.getInstance().runQuery(
-                    Query.Datatype.MSI,
+            ArrayList<String> results = ErosQuery.getInstance().runQuery(
+                    ErosQuery.Datatype.MSI,
                     startDateJoda,
                     endDateJoda,
                     filtersChecked,

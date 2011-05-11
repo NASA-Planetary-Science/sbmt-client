@@ -1,4 +1,4 @@
-package edu.jhuapl.near.model.eros;
+package edu.jhuapl.near.model.itokawa;
 
 import java.io.IOException;
 
@@ -7,21 +7,21 @@ import edu.jhuapl.near.model.ImageBoundary;
 import edu.jhuapl.near.model.ImageBoundaryCollection;
 import edu.jhuapl.near.model.SmallBodyModel;
 
-public class MSIBoundaryCollection extends ImageBoundaryCollection
+public class AmicaBoundaryCollection extends ImageBoundaryCollection
 {
-    private SmallBodyModel erosModel;
+    private SmallBodyModel itokawaModel;
 
-    public MSIBoundaryCollection(SmallBodyModel erosModel)
+    public AmicaBoundaryCollection(SmallBodyModel itokawaModel)
     {
-        super(erosModel);
+        super(itokawaModel);
 
-        this.erosModel = erosModel;
+        this.itokawaModel = itokawaModel;
     }
 
     @Override
     protected ImageBoundary createBoundary(ImageKey key,
             SmallBodyModel smallBodyModel) throws IOException
     {
-        return new ImageBoundary(new MSIImage(key), erosModel);
+        return new ImageBoundary(new AmicaImage(key), itokawaModel);
     }
 }

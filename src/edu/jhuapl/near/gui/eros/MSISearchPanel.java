@@ -56,6 +56,8 @@ import vtk.vtkPolyData;
 import edu.jhuapl.near.gui.ModelInfoWindowManager;
 import edu.jhuapl.near.gui.Renderer;
 import edu.jhuapl.near.gui.SearchPanelUtil;
+import edu.jhuapl.near.model.ColorImage.ColorImageKey;
+import edu.jhuapl.near.model.ColorImage.NoOverlapException;
 import edu.jhuapl.near.model.Image.ImageKey;
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelManager;
@@ -63,17 +65,15 @@ import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.RegularPolygonModel;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.eros.MSIBoundaryCollection;
-import edu.jhuapl.near.model.eros.MSIColorImage.MSIColorKey;
-import edu.jhuapl.near.model.eros.MSIColorImage.NoOverlapException;
 import edu.jhuapl.near.model.eros.MSIColorImageCollection;
 import edu.jhuapl.near.model.eros.MSIImage;
 import edu.jhuapl.near.model.eros.MSIImageCollection;
 import edu.jhuapl.near.pick.PickEvent;
 import edu.jhuapl.near.pick.PickManager;
 import edu.jhuapl.near.pick.PickManager.PickMode;
-import edu.jhuapl.near.popupmenus.eros.MSIColorPopupMenu;
-import edu.jhuapl.near.popupmenus.eros.MSIPopupMenu;
-import edu.jhuapl.near.query.Query;
+import edu.jhuapl.near.popupmenus.ColorImagePopupMenu;
+import edu.jhuapl.near.popupmenus.ImagePopupMenu;
+import edu.jhuapl.near.query.ErosQuery;
 import edu.jhuapl.near.util.IdPair;
 import edu.jhuapl.near.util.Properties;
 
@@ -135,7 +135,7 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
     private JCheckBox searchByNumberCheckBox;
 
     private JList resultList;
-    private MSIPopupMenu msiPopupMenu;
+    private ImagePopupMenu msiPopupMenu;
     private ArrayList<String> msiRawResults = new ArrayList<String>();
     private JLabel resultsLabel;
     private String msiResultsLabelText = " ";
@@ -158,7 +158,7 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
     private ImageKey selectedBlueKey;
     private JList colorImagesDisplayedList;
     private JButton removeColorImageButton;
-    private MSIColorPopupMenu msiColorPopupMenu;
+    private ColorImagePopupMenu msiColorPopupMenu;
 
     /**
      * The source of the msi images of the most recently executed query
@@ -519,7 +519,9 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
 
         JPanel resultsPanel = new JPanel(new BorderLayout());
 
-        msiPopupMenu = new MSIPopupMenu(this.modelManager, infoPanelManager, renderer, this);
+        MSIImageCollection msiImages = (MSIImageCollection)modelManager.getModel(ModelNames.MSI_IMAGES);
+        MSIBoundaryCollection msiBoundaries = (MSIBoundaryCollection)modelManager.getModel(ModelNames.MSI_BOUNDARY);
+        msiPopupMenu = new ImagePopupMenu(msiImages, msiBoundaries, infoPanelManager, renderer, this);
 
         resultsLabel = new JLabel(" ");
 
@@ -668,7 +670,8 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
             }
         });
 
-        msiColorPopupMenu = new MSIColorPopupMenu(this.modelManager, infoPanelManager);
+        MSIColorImageCollection msiColorImages = (MSIColorImageCollection)modelManager.getModel(ModelNames.MSI_COLOR_IMAGES);
+        msiColorPopupMenu = new ColorImagePopupMenu(msiColorImages, infoPanelManager);
 
         colorImagesDisplayedList = new JList();
         colorImagesDisplayedList.setModel(new DefaultListModel());
@@ -697,7 +700,7 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
                     if (index >= 0 && colorImagesDisplayedList.getCellBounds(index, index).contains(e.getPoint()))
                     {
                         colorImagesDisplayedList.setSelectedIndex(index);
-                        MSIColorKey colorKey = (MSIColorKey)((DefaultListModel)colorImagesDisplayedList.getModel()).get(index);
+                        ColorImageKey colorKey = (ColorImageKey)((DefaultListModel)colorImagesDisplayedList.getModel()).get(index);
                         msiColorPopupMenu.setCurrentImage(colorKey);
                         msiColorPopupMenu.show(e.getComponent(), e.getX(), e.getY());
                     }
@@ -714,7 +717,7 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
                 int index = colorImagesDisplayedList.getSelectedIndex();
                 if (index >= 0)
                 {
-                    MSIColorKey colorKey = (MSIColorKey)((DefaultListModel)colorImagesDisplayedList.getModel()).remove(index);
+                    ColorImageKey colorKey = (ColorImageKey)((DefaultListModel)colorImagesDisplayedList.getModel()).remove(index);
                     MSIColorImageCollection model = (MSIColorImageCollection)modelManager.getModel(ModelNames.MSI_COLOR_IMAGES);
                     model.removeImage(colorKey);
 
@@ -884,8 +887,8 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
             else
                 msiSource = MSIImage.ImageSource.GASKELL;
             System.out.println(msiSource.toString());
-            ArrayList<String> results = Query.getInstance().runQuery(
-                    Query.Datatype.MSI,
+            ArrayList<String> results = ErosQuery.getInstance().runQuery(
+                    ErosQuery.Datatype.MSI,
                     startDateJoda,
                     endDateJoda,
                     filtersChecked,
@@ -1031,7 +1034,7 @@ public class MSISearchPanel extends JPanel implements ActionListener, MouseListe
 
         if (selectedRedKey != null && selectedGreenKey != null && selectedBlueKey != null)
         {
-            MSIColorKey colorKey = new MSIColorKey(selectedRedKey, selectedGreenKey, selectedBlueKey);
+            ColorImageKey colorKey = new ColorImageKey(selectedRedKey, selectedGreenKey, selectedBlueKey);
             try
             {
                 DefaultListModel listModel = (DefaultListModel)colorImagesDisplayedList.getModel();

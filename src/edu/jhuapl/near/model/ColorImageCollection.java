@@ -2,7 +2,6 @@ package edu.jhuapl.near.model;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,29 +11,29 @@ import nom.tam.fits.FitsException;
 import vtk.vtkActor;
 import vtk.vtkProp;
 
-import edu.jhuapl.near.model.Image.ImageKey;
+import edu.jhuapl.near.model.ColorImage.ColorImageKey;
+import edu.jhuapl.near.model.ColorImage.NoOverlapException;
 import edu.jhuapl.near.util.Properties;
 
-abstract public class ImageCollection extends Model implements PropertyChangeListener
+abstract public class ColorImageCollection extends Model implements PropertyChangeListener
 {
-    private SmallBodyModel erosModel;
+    private SmallBodyModel smallBodyModel;
 
-    private HashMap<Image, ArrayList<vtkProp>> imageToActorsMap = new HashMap<Image, ArrayList<vtkProp>>();
+    private HashMap<ColorImage, ArrayList<vtkProp>> imageToActorsMap = new HashMap<ColorImage, ArrayList<vtkProp>>();
 
-    private HashMap<vtkProp, Image> actorToImageMap = new HashMap<vtkProp, Image>();
+    private HashMap<vtkProp, ColorImage> actorToImageMap = new HashMap<vtkProp, ColorImage>();
 
-    public ImageCollection(SmallBodyModel eros)
+    public ColorImageCollection(SmallBodyModel smallBodyModel)
     {
-        super(ModelNames.MSI_IMAGES);
-
-        this.erosModel = eros;
+        this.smallBodyModel = smallBodyModel;
     }
 
-    abstract protected Image createImage(ImageKey key, SmallBodyModel smallBodyModel) throws FitsException, IOException;
+    abstract protected ColorImage createImage(ColorImageKey key,
+            SmallBodyModel smallBodyModel) throws FitsException, IOException, NoOverlapException;
 
-    private boolean containsKey(ImageKey key)
+    private boolean containsKey(ColorImageKey key)
     {
-        for (Image image : imageToActorsMap.keySet())
+        for (ColorImage image : imageToActorsMap.keySet())
         {
             if (image.getKey().equals(key))
                 return true;
@@ -43,9 +42,9 @@ abstract public class ImageCollection extends Model implements PropertyChangeLis
         return false;
     }
 
-    private Image getImageFromKey(ImageKey key)
+    private ColorImage getImageFromKey(ColorImageKey key)
     {
-        for (Image image : imageToActorsMap.keySet())
+        for (ColorImage image : imageToActorsMap.keySet())
         {
             if (image.getKey().equals(key))
                 return image;
@@ -54,14 +53,14 @@ abstract public class ImageCollection extends Model implements PropertyChangeLis
         return null;
     }
 
-    public void addImage(ImageKey key) throws FitsException, IOException
+    public void addImage(ColorImageKey key) throws IOException, FitsException, NoOverlapException
     {
         if (containsKey(key))
             return;
 
-        Image image = createImage(key, erosModel);
+        ColorImage image = createImage(key, smallBodyModel);
 
-        erosModel.addPropertyChangeListener(image);
+        smallBodyModel.addPropertyChangeListener(image);
         image.addPropertyChangeListener(this);
 
         imageToActorsMap.put(image, new ArrayList<vtkProp>());
@@ -76,9 +75,9 @@ abstract public class ImageCollection extends Model implements PropertyChangeLis
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
-    public void removeImage(ImageKey key)
+    public void removeImage(ColorImageKey key)
     {
-        Image image = getImageFromKey(key);
+        ColorImage image = getImageFromKey(key);
 
         ArrayList<vtkProp> actors = imageToActorsMap.get(image);
 
@@ -88,8 +87,8 @@ abstract public class ImageCollection extends Model implements PropertyChangeLis
         imageToActorsMap.remove(image);
 
         image.removePropertyChangeListener(this);
-        erosModel.removePropertyChangeListener(image);
-        image.setShowFrustum(false);
+        smallBodyModel.removePropertyChangeListener(image);
+        //image.setShowFrustum(false);
 
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
         this.pcs.firePropertyChange(Properties.MODEL_REMOVED, null, image);
@@ -97,8 +96,8 @@ abstract public class ImageCollection extends Model implements PropertyChangeLis
 
     public void removeAllImages()
     {
-        HashMap<Image, ArrayList<vtkProp>> map = (HashMap<Image, ArrayList<vtkProp>>)imageToActorsMap.clone();
-        for (Image image : map.keySet())
+        HashMap<ColorImage, ArrayList<vtkProp>> map = (HashMap<ColorImage, ArrayList<vtkProp>>)imageToActorsMap.clone();
+        for (ColorImage image : map.keySet())
             removeImage(image.getKey());
     }
 
@@ -113,37 +112,26 @@ abstract public class ImageCollection extends Model implements PropertyChangeLis
             this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
-    public String getClickStatusBarText(vtkProp prop, int cellId, double[] pickPosition)
-    {
-        File file = new File(actorToImageMap.get(prop).getKey().name);
-        return "Image " + file.getName();
-    }
-
-    public String getImageName(vtkActor actor)
-    {
-        return actorToImageMap.get(actor).getKey().name;
-    }
-
-    public Image getImage(vtkActor actor)
+    public ColorImage getImage(vtkActor actor)
     {
         return actorToImageMap.get(actor);
     }
 
-    public Image getImage(ImageKey key)
+    public ColorImage getImage(ColorImageKey key)
     {
         return getImageFromKey(key);
     }
 
-    public boolean containsImage(ImageKey key)
+    public boolean containsImage(ColorImageKey key)
     {
         return containsKey(key);
     }
 
-    public void setShowFrustums(boolean b)
-    {
-        for (Image image : imageToActorsMap.keySet())
-            image.setShowFrustum(b);
-
-        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-    }
+//    public void setShowFrustums(boolean b)
+//    {
+//        for (ColorImage image : imageToActorsMap.keySet())
+//            image.setShowFrustum(b);
+//
+//        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+//    }
 }

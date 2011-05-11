@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.swing.AbstractAction;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
@@ -18,7 +19,6 @@ import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.eros.NLRSearchDataCollection2;
 import edu.jhuapl.near.popupmenus.PopupMenu;
-import javax.swing.JCheckBoxMenuItem;
 
 public class NLRPopupMenu extends PopupMenu
 {
@@ -120,12 +120,12 @@ public class NLRPopupMenu extends PopupMenu
         }
     }
 
-    private class ShowInfoAboutTrackAction extends AbstractAction
-    {
-        public void actionPerformed(ActionEvent e)
-        {
-        }
-    }
+//    private class ShowInfoAboutTrackAction extends AbstractAction
+//    {
+//        public void actionPerformed(ActionEvent e)
+//        {
+//        }
+//    }
 
     @Override
     public void showPopup(MouseEvent e, vtkProp pickedProp, int pickedCellId,

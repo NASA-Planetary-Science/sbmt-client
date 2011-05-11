@@ -7,6 +7,7 @@ import vtk.vtkProp;
 
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelManager;
+import edu.jhuapl.near.model.ModelNames;
 
 /**
  * This class is responsible for the creation of popups and for the routing
@@ -14,7 +15,7 @@ import edu.jhuapl.near.model.ModelManager;
  * @author eli
  *
  */
-public abstract class PopupManager
+public class PopupManager
 {
     private ModelManager modelManager;
     private HashMap<Model, PopupMenu> modelToPopupMap =
@@ -24,6 +25,15 @@ public abstract class PopupManager
     public PopupManager(ModelManager modelManager)
     {
         this.modelManager = modelManager;
+
+        PopupMenu popupMenu = new LinesPopupMenu(modelManager);
+        registerPopup(modelManager.getModel(ModelNames.LINE_STRUCTURES), popupMenu);
+
+        popupMenu = new CirclesPopupMenu(modelManager);
+        registerPopup(modelManager.getModel(ModelNames.CIRCLE_STRUCTURES), popupMenu);
+
+        popupMenu = new PointsPopupMenu(modelManager);
+        registerPopup(modelManager.getModel(ModelNames.POINT_STRUCTURES), popupMenu);
     }
 
 //    public PopupMenu getPopup(Model model)

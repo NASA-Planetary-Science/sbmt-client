@@ -64,6 +64,15 @@ public class SmallBodyModel extends Model
         SMOOTH,
     }
 
+    static public final String SlopeStr = "Slope";
+    static public final String ElevStr = "Elevation";
+    static public final String GravAccStr = "Gravitational Acceleration";
+    static public final String GravPotStr = "Gravitational Potential";
+    static public final String SlopeUnitsStr = "deg";
+    static public final String ElevUnitsStr = "m";
+    static public final String GravAccUnitsStr = "m/s^2";
+    static public final String GravPotUnitsStr = "J/kg";
+
     static public final String FlatShadingStr = "Flat";
     static public final String SmoothShadingStr = "Smooth";
     static public final String LowResModelStr = "Low (49152 plates)";

@@ -11,8 +11,8 @@ import vtk.vtkPolyData;
 import vtk.vtkXMLPolyDataWriter;
 
 import edu.jhuapl.near.model.Image.ImageSource;
-import edu.jhuapl.near.model.ModelFactory;
 import edu.jhuapl.near.model.SmallBodyModel;
+import edu.jhuapl.near.model.eros.Eros;
 import edu.jhuapl.near.model.eros.MSIImage;
 import edu.jhuapl.near.util.FileUtil;
 import edu.jhuapl.near.util.NativeLibraryLoader;
@@ -146,7 +146,7 @@ public class MSIFootprintGenerator
 
         String msiFileList=args[0];
 
-        erosModel = ModelFactory.createErosBodyModel();
+        erosModel = new Eros();
         resolutionLevel = Integer.parseInt(args[1]);
         try {
             erosModel.setModelResolution(resolutionLevel);

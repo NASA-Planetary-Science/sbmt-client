@@ -1,4 +1,4 @@
-package edu.jhuapl.near.popupmenus.eros;
+package edu.jhuapl.near.popupmenus;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
@@ -14,19 +14,16 @@ import vtk.vtkActor;
 import vtk.vtkProp;
 
 import edu.jhuapl.near.gui.ModelInfoWindowManager;
-import edu.jhuapl.near.model.ModelManager;
-import edu.jhuapl.near.model.ModelNames;
-import edu.jhuapl.near.model.eros.MSIColorImage;
-import edu.jhuapl.near.model.eros.MSIColorImageCollection;
-import edu.jhuapl.near.model.eros.MSIColorImage.MSIColorKey;
-import edu.jhuapl.near.model.eros.MSIColorImage.NoOverlapException;
-import edu.jhuapl.near.popupmenus.PopupMenu;
+import edu.jhuapl.near.model.ColorImage;
+import edu.jhuapl.near.model.ColorImage.ColorImageKey;
+import edu.jhuapl.near.model.ColorImage.NoOverlapException;
+import edu.jhuapl.near.model.ColorImageCollection;
 
 
-public class MSIColorPopupMenu extends PopupMenu
+public class ColorImagePopupMenu extends PopupMenu
 {
-    private ModelManager modelManager;
-    private MSIColorKey msiKey;
+    private ColorImageCollection imageCollection;
+    private ColorImageKey imageKey;
     private JMenuItem showRemoveImageIn3DMenuItem;
     private JMenuItem showImageInfoMenuItem;
 //    private ModelInfoWindowManager infoPanelManager;
@@ -35,14 +32,14 @@ public class MSIColorPopupMenu extends PopupMenu
      *
      * @param modelManager
      * @param type the type of popup. 0 for right clicks on items in the search list,
-     * 1 for right clicks on boundaries mapped on Eros, 2 for right clicks on images
-     * mapped to Eros.
+     * 1 for right clicks on boundaries mapped on the small body, 2 for right clicks on images
+     * mapped to the small body.
      */
-    public MSIColorPopupMenu(
-            ModelManager modelManager,
+    public ColorImagePopupMenu(
+            ColorImageCollection imageCollection,
             ModelInfoWindowManager infoPanelManager)
     {
-        this.modelManager = modelManager;
+        this.imageCollection = imageCollection;
 //        this.infoPanelManager = infoPanelManager;
 
         showRemoveImageIn3DMenuItem = new JCheckBoxMenuItem(new ShowRemoveIn3DAction());
@@ -58,18 +55,16 @@ public class MSIColorPopupMenu extends PopupMenu
 
     }
 
-    public void setCurrentImage(MSIColorKey key)
+    public void setCurrentImage(ColorImageKey key)
     {
-        msiKey = key;
+        imageKey = key;
 
         updateMenuItems();
     }
 
     private void updateMenuItems()
     {
-        MSIColorImageCollection msiImages = (MSIColorImageCollection)modelManager.getModel(ModelNames.MSI_COLOR_IMAGES);
-
-        boolean containsImage = msiImages.containsImage(msiKey);
+        boolean containsImage = imageCollection.containsImage(imageKey);
 
         showRemoveImageIn3DMenuItem.setSelected(containsImage);
 
@@ -82,13 +77,12 @@ public class MSIColorPopupMenu extends PopupMenu
     {
         public void actionPerformed(ActionEvent e)
         {
-            MSIColorImageCollection model = (MSIColorImageCollection)modelManager.getModel(ModelNames.MSI_COLOR_IMAGES);
             try
             {
                 if (showRemoveImageIn3DMenuItem.isSelected())
-                    model.addImage(msiKey);
+                    imageCollection.addImage(imageKey);
                 else
-                    model.removeImage(msiKey);
+                    imageCollection.removeImage(imageKey);
 
                 updateMenuItems();
             }
@@ -110,9 +104,8 @@ public class MSIColorPopupMenu extends PopupMenu
 //        {
 //            try
 //            {
-//                MSIColorImageCollection msiImages = (MSIColorImageCollection)modelManager.getModel(ModelNames.MSI_COLOR_IMAGES);
-//                msiImages.addImage(msiKey);
-//                infoPanelManager.addData(msiImages.getImage(msiKey));
+//                imageCollection.addImage(imageKey);
+//                infoPanelManager.addData(imageCollection.getImage(imageKey));
 //
 //                updateMenuItems();
 //            }
@@ -132,10 +125,9 @@ public class MSIColorPopupMenu extends PopupMenu
     {
         if (pickedProp instanceof vtkActor)
         {
-            if (modelManager.getModel(pickedProp) instanceof MSIColorImageCollection)
+            if (imageCollection.getImage((vtkActor)pickedProp) != null)
             {
-                MSIColorImageCollection msiImages = (MSIColorImageCollection)modelManager.getModel(ModelNames.MSI_COLOR_IMAGES);
-                MSIColorImage image = msiImages.getImage((vtkActor)pickedProp);
+                ColorImage image = imageCollection.getImage((vtkActor)pickedProp);
                 setCurrentImage(image.getKey());
                 show(e.getComponent(), e.getX(), e.getY());
             }

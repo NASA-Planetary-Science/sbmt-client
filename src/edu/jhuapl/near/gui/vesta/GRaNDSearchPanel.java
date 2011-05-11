@@ -51,7 +51,7 @@ import edu.jhuapl.near.model.eros.NISSpectrum;
 import edu.jhuapl.near.pick.PickManager;
 import edu.jhuapl.near.pick.PickManager.PickMode;
 import edu.jhuapl.near.popupmenus.eros.NISPopupMenu;
-import edu.jhuapl.near.query.Query;
+import edu.jhuapl.near.query.ErosQuery;
 import edu.jhuapl.near.util.IdPair;
 
 
@@ -563,8 +563,8 @@ public class GRaNDSearchPanel extends JPanel implements ActionListener, MouseLis
                 }
             }
 
-            ArrayList<String> results = Query.getInstance().runQuery(
-                    Query.Datatype.NIS,
+            ArrayList<String> results = ErosQuery.getInstance().runQuery(
+                    ErosQuery.Datatype.NIS,
                     startDateJoda,
                     endDateJoda,
                     null,

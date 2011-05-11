@@ -168,6 +168,10 @@ abstract public class Image extends Model implements PropertyChangeListener
         }
     }
 
+    public Image(ImageKey key)
+    {
+        this.key = key;
+    }
 
     /**
      * This constructor should only be used in the GUI program since
@@ -201,7 +205,7 @@ abstract public class Image extends Model implements PropertyChangeListener
         initialize();
     }
 
-    abstract protected void doLoadImageInfo(
+    abstract public void loadImageInfo(
             String lblFilename,
             String[] startTime,
             String[] stopTime,
@@ -227,11 +231,13 @@ abstract public class Image extends Model implements PropertyChangeListener
     abstract protected int getTopMask();
     abstract protected int getBottomMask();
 
-    abstract protected String getFitFileFullPath();
-    abstract protected String getInfoFileFullPath();
-    abstract protected String getSumfileFullPath();
+    abstract public String getFitFileFullPath();
+    abstract public String getInfoFileFullPath();
+    abstract public String getSumfileFullPath();
 
     abstract protected int getFilter();
+
+    abstract public String generateBackplanesLabel() throws IOException;
 
     private void initialize() throws FitsException, IOException
     {
@@ -573,7 +579,7 @@ abstract public class Image extends Model implements PropertyChangeListener
 
         String[] start = new String[1];
         String[] stop = new String[1];
-        doLoadImageInfo(
+        loadImageInfo(
                 lblFilename,
                 start,
                 stop,
@@ -602,7 +608,7 @@ abstract public class Image extends Model implements PropertyChangeListener
      * @param s
      * @return
      */
-    private static void replaceDwithE(String[] s)
+    private void replaceDwithE(String[] s)
     {
         for (int i=0; i<s.length; ++i)
             s[i] = s[i].replace('D', 'E');
@@ -615,7 +621,7 @@ abstract public class Image extends Model implements PropertyChangeListener
      * @param datetime
      * @return
      */
-    private static String convertDateTimeFormat(String datetime)
+    private String convertDateTimeFormat(String datetime)
     {
         String[] tokens = datetime.trim().split("\\s+");
 
@@ -652,7 +658,7 @@ abstract public class Image extends Model implements PropertyChangeListener
         return year + "-" + month + "-" + day + "T" + time;
     }
 
-    public static void loadSumfile(
+    public void loadSumfile(
             String sumfilename,
             double fovParameter1,
             double fovParameter2,

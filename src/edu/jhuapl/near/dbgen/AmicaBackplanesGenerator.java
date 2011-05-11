@@ -11,10 +11,10 @@ import nom.tam.fits.FitsException;
 import vtk.vtkGlobalJavaHash;
 
 import edu.jhuapl.near.model.Image.ImageSource;
-import edu.jhuapl.near.model.ModelFactory;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.eros.MSIImage;
 import edu.jhuapl.near.model.itokawa.AmicaImage;
+import edu.jhuapl.near.model.itokawa.Itokawa;
 import edu.jhuapl.near.util.FileUtil;
 import edu.jhuapl.near.util.NativeLibraryLoader;
 
@@ -104,7 +104,7 @@ public class AmicaBackplanesGenerator
 
         String amicaFileList=args[0];
 
-        itokawaModel = ModelFactory.createItokawaBodyModel();
+        itokawaModel = new Itokawa();
         try {
             itokawaModel.setModelResolution(3);
         } catch (IOException e) {

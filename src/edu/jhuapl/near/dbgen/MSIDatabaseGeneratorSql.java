@@ -16,14 +16,14 @@ import vtk.vtkGlobalJavaHash;
 import vtk.vtkPolyData;
 
 import edu.jhuapl.near.model.Image.ImageSource;
-import edu.jhuapl.near.model.ModelFactory;
 import edu.jhuapl.near.model.SmallBodyModel;
+import edu.jhuapl.near.model.eros.Eros;
 import edu.jhuapl.near.model.eros.MSIImage;
 import edu.jhuapl.near.model.eros.NISSpectrum;
 import edu.jhuapl.near.util.FileUtil;
 import edu.jhuapl.near.util.NativeLibraryLoader;
 
-public class DatabaseGeneratorSql
+public class MSIDatabaseGeneratorSql
 {
     static private final String MsiImagesPdsTable = "msiimages_beta2";
     static private final String MsiImagesGaskellTable = "msiimages_gaskell_beta3";
@@ -626,7 +626,7 @@ public class DatabaseGeneratorSql
     {
         NativeLibraryLoader.loadVtkLibrariesLinuxNoX11();
 
-        erosModel = ModelFactory.createErosBodyModel();
+        erosModel = new Eros();
 
 //        computeMeanPlateSizeAtAllResolutions();
 
