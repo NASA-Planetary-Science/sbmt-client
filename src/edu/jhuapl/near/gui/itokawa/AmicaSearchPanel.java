@@ -60,7 +60,7 @@ import edu.jhuapl.near.util.Properties;
  *
  * @author kahneg1
  */
-public class ItokawaSearchPanel extends javax.swing.JPanel implements PropertyChangeListener
+public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChangeListener
 {
     private final ModelManager modelManager;
     private final PickManager pickManager;
@@ -79,7 +79,7 @@ public class ItokawaSearchPanel extends javax.swing.JPanel implements PropertyCh
     private ColorImagePopupMenu msiColorPopupMenu;
 
     /** Creates new form ItokawaSearchPanel3 */
-    public ItokawaSearchPanel(final ModelManager modelManager,
+    public AmicaSearchPanel(final ModelManager modelManager,
             ModelInfoWindowManager infoPanelManager,
             final PickManager pickManager,
             Renderer renderer)
@@ -842,7 +842,6 @@ public class ItokawaSearchPanel extends javax.swing.JPanel implements PropertyCh
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 7;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.CENTER;
         jPanel8.add(removeAllButton, gridBagConstraints);
 
         removeAllImagesButton.setText("Remove All Images");

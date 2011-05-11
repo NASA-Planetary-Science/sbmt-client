@@ -102,7 +102,7 @@ public class ItokawaViewer extends Viewer
         controlPanel = new JTabbedPane();
         controlPanel.setBorder(BorderFactory.createEmptyBorder());
         controlPanel.addTab("Itokawa", new SmallBodyControlPanel(modelManager, "Itokawa"));
-        controlPanel.addTab("AMICA", new ItokawaSearchPanel(modelManager, infoPanelManager, pickManager, renderer));
+        controlPanel.addTab("AMICA", new AmicaSearchPanel(modelManager, infoPanelManager, pickManager, renderer));
         if (Configuration.isAPLVersion())
         {
             controlPanel.addTab("Structures", new StructuresControlPanel(modelManager, pickManager));
