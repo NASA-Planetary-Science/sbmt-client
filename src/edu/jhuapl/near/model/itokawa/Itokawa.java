@@ -18,8 +18,33 @@ public class Itokawa extends SmallBodyModel
             "/ITOKAWA/ver512q.vtk.gz"
     };
 
+    static private final String[] coloringFiles = {
+        "/ITOKAWA/Itokawa_Slope.txt.gz",
+        "/ITOKAWA/Itokawa_Elevation.txt.gz",
+        "/ITOKAWA/Itokawa_GravitationalAcceleration.txt.gz",
+        "/ITOKAWA/Itokawa_GravitationalPotential.txt.gz"
+    };
+
+    static private final String[] coloringNames = {
+        SlopeStr, ElevStr, GravAccStr, GravPotStr
+    };
+
+    static private final String[] coloringUnits = {
+        SlopeUnitsStr, ElevUnitsStr, GravAccUnitsStr, GravPotUnitsStr
+    };
+
+
     public Itokawa()
     {
-        super(modelNames, modelFiles, null, null, null, null, false, null, ColoringValueType.CELLDATA, false);
+        super(modelNames,
+                modelFiles,
+                coloringFiles,
+                coloringNames,
+                coloringUnits,
+                null,
+                false,
+                null,
+                ColoringValueType.CELLDATA,
+                false);
     }
 }
