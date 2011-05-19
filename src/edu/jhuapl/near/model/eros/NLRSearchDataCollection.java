@@ -25,10 +25,10 @@ import vtk.vtkPolyData;
 import vtk.vtkPolyDataMapper;
 import vtk.vtkProp;
 
-import edu.jhuapl.near.dbgen.SqlManager;
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.SmallBodyModel;
+import edu.jhuapl.near.server.SqlManager;
 import edu.jhuapl.near.util.FileCache;
 import edu.jhuapl.near.util.FileUtil;
 import edu.jhuapl.near.util.IdPair;

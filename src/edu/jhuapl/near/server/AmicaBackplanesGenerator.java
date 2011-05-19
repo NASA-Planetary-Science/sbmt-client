@@ -1,4 +1,4 @@
-package edu.jhuapl.near.dbgen;
+package edu.jhuapl.near.server;
 
 import java.io.File;
 import java.io.FileOutputStream;

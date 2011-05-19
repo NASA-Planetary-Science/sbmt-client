@@ -1,4 +1,4 @@
-package edu.jhuapl.near.dbgen;
+package edu.jhuapl.near.server;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;

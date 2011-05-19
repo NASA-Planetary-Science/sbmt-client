@@ -11,4 +11,4 @@ AMICA_FIT_FILES=/project/nearsdc/data/internal/allAmicaFiles.txt
 find -L $AMICA_DIR -name "*.fit" -type f | sort > $AMICA_FIT_FILES
 
 
-$JAVA_COMMAND edu.jhuapl.near.dbgen.AmicaBackplanesGenerator $AMICA_FIT_FILES
+$JAVA_COMMAND edu.jhuapl.near.server.AmicaBackplanesGenerator $AMICA_FIT_FILES
