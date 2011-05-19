@@ -54,12 +54,10 @@ public class AmicaDatabaseGeneratorSql
             db.update(
                     "create table " + amicaTableName + "(" +
                     "id int PRIMARY KEY, " +
-                    "year smallint, " +
-                    "day smallint, " +
+                    "filename char(30), " +
                     "starttime bigint, " +
                     "stoptime bigint, " +
                     "filter tinyint, " +
-                    "iofcif tinyint," +
                     "target_center_distance double," +
                     "min_horizontal_pixel_scale double," +
                     "max_horizontal_pixel_scale double," +
@@ -121,7 +119,7 @@ public class AmicaDatabaseGeneratorSql
             String amicaTableName,
             AmicaImage.ImageSource amicaSource) throws IOException, SQLException, FitsException
     {
-        itokawaModel.setModelResolution(3);
+        itokawaModel.setModelResolution(0);
         Image.setGenerateFootprint(true);
         Image.setFootprintIsOnLocalDisk(true);
 
@@ -135,50 +133,17 @@ public class AmicaDatabaseGeneratorSql
 
             System.out.println("starting amica " + count++ + "  " + filename);
 
-            byte iof_or_cif = -1;
-            String dayOfYearStr = "";
-            String yearStr = "";
-
             File origFile = new File(filename);
-            File f = origFile;
-
-            f = f.getParentFile();
-            if (f.getName().equals("iofdbl"))
-                iof_or_cif = 0;
-            else if (f.getName().equals("cifdbl"))
-                iof_or_cif = 1;
-
-            f = f.getParentFile();
-            dayOfYearStr = f.getName();
-
-            f = f.getParentFile();
-            yearStr = f.getName();
 
             AmicaImage image = new AmicaImage(origFile, itokawaModel, amicaSource);
 
             // Calling this forces the calculation of incidence, emission, phase, and pixel scale
             image.getProperties();
 
-            /*
-            int res = findOptimalResolution(image);
-
-            System.out.println("Optimal resolution " + res);
-
-            if (res != itokawaModel.getModelResolution())
-            {
-                System.out.println("Changing resolution to " + res);
-                itokawaModel.setModelResolution(res);
-                image.Delete();
-                image = new AmicaImage(origFile, itokawaModel, amicaSource);
-                image.getProperties();
-            }
-            */
-
             if (amicaInsert == null)
             {
                 amicaInsert = db.preparedStatement(
-//                    "insert into amicaimages values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-                    "insert into " + amicaTableName + " values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                    "insert into " + amicaTableName + " values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
             }
 
             DateTime startTime = new DateTime(image.getStartTime(), DateTimeZone.UTC);
@@ -188,14 +153,11 @@ public class AmicaDatabaseGeneratorSql
             //stopTime = stopTime.substring(0, 10) + " " + stopTime.substring(11, stopTime.length());
 
 
-            System.out.println("id: " + Integer.parseInt(origFile.getName().substring(2, 11)));
-            System.out.println("year: " + yearStr);
-            System.out.println("dayofyear: " + dayOfYearStr);
-            System.out.println("iof_or_cif: " + iof_or_cif);
+            System.out.println("id: " + Integer.parseInt(origFile.getName().substring(3, 13), 10));
+            System.out.println("filename: " + origFile.getName());
             System.out.println("starttime: " + startTime);
             System.out.println("stoptime: " + stopTime);
-            System.out.println("filter: " + Integer.parseInt(origFile.getName().substring(12, 13)));
-            System.out.println("iof_or_cif: " + iof_or_cif);
+            System.out.println("filter: " + image.getFilter());
             System.out.println("TARGET_CENTER_DISTANCE: " + image.getSpacecraftDistance());
             System.out.println("Min HORIZONTAL_PIXEL_SCALE: " + image.getMinimumHorizontalPixelScale());
             System.out.println("Max HORIZONTAL_PIXEL_SCALE: " + image.getMaximumHorizontalPixelScale());
@@ -209,25 +171,23 @@ public class AmicaDatabaseGeneratorSql
             System.out.println("minPhase: " + image.getMinPhase());
             System.out.println("maxPhase: " + image.getMaxPhase());
 
-            amicaInsert.setInt(1, Integer.parseInt(origFile.getName().substring(2, 11)));
-            amicaInsert.setShort(2, Short.parseShort(yearStr));
-            amicaInsert.setShort(3, Short.parseShort(dayOfYearStr));
-            amicaInsert.setLong(4, startTime.getMillis());
-            amicaInsert.setLong(5, stopTime.getMillis());
-            amicaInsert.setByte(6, Byte.parseByte(origFile.getName().substring(12, 13)));
-            amicaInsert.setByte(7, iof_or_cif);
-            amicaInsert.setDouble(8, image.getSpacecraftDistance());
-            amicaInsert.setDouble(9, image.getMinimumHorizontalPixelScale());
-            amicaInsert.setDouble(10, image.getMaximumHorizontalPixelScale());
-            amicaInsert.setDouble(11, image.getMinimumVerticalPixelScale());
-            amicaInsert.setDouble(12, image.getMaximumVerticalPixelScale());
-            amicaInsert.setBoolean(13, image.containsLimb());
-            amicaInsert.setDouble(14, image.getMinIncidence());
-            amicaInsert.setDouble(15, image.getMaxIncidence());
-            amicaInsert.setDouble(16, image.getMinEmission());
-            amicaInsert.setDouble(17, image.getMaxEmission());
-            amicaInsert.setDouble(18, image.getMinPhase());
-            amicaInsert.setDouble(19, image.getMaxPhase());
+            amicaInsert.setInt(1, Integer.parseInt(origFile.getName().substring(3, 13), 10));
+            amicaInsert.setString(2, origFile.getName());
+            amicaInsert.setLong(3, startTime.getMillis());
+            amicaInsert.setLong(4, stopTime.getMillis());
+            amicaInsert.setByte(5, (byte)image.getFilter());
+            amicaInsert.setDouble(6, image.getSpacecraftDistance());
+            amicaInsert.setDouble(7, image.getMinimumHorizontalPixelScale());
+            amicaInsert.setDouble(8, image.getMaximumHorizontalPixelScale());
+            amicaInsert.setDouble(9, image.getMinimumVerticalPixelScale());
+            amicaInsert.setDouble(10, image.getMaximumVerticalPixelScale());
+            amicaInsert.setBoolean(11, image.containsLimb());
+            amicaInsert.setDouble(12, image.getMinIncidence());
+            amicaInsert.setDouble(13, image.getMaxIncidence());
+            amicaInsert.setDouble(14, image.getMinEmission());
+            amicaInsert.setDouble(15, image.getMaxEmission());
+            amicaInsert.setDouble(16, image.getMinPhase());
+            amicaInsert.setDouble(17, image.getMaxPhase());
 
             amicaInsert.executeUpdate();
 
@@ -302,7 +262,7 @@ public class AmicaDatabaseGeneratorSql
             for (Integer i : cubeIds)
             {
                 amicaInsert2.setInt(1, count);
-                amicaInsert2.setInt(2, Integer.parseInt(origFile.getName().substring(2, 11)));
+                amicaInsert2.setInt(2, Integer.parseInt(origFile.getName().substring(3, 13), 10));
                 amicaInsert2.setInt(3, i);
 
                 amicaInsert2.executeUpdate();
@@ -354,7 +314,7 @@ public class AmicaDatabaseGeneratorSql
         itokawaModel = new Itokawa();
 
         String amicaFileList=args[0];
-        int mode = Integer.parseInt(args[2]);
+        int mode = Integer.parseInt(args[1]);
 
         ArrayList<String> amicaFiles = null;
         try {
