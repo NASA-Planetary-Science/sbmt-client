@@ -294,9 +294,14 @@ public class SmallBodyModel extends Model
     {
         if (smallBodyCubes == null)
         {
+            // The number 38.66056033363347 is used here so that the cube size
+            // comes out to 1 km for Eros.
+            double cubeSize = getBoundingBoxDiagonalLength() / 38.66056033363347;
             smallBodyCubes = new SmallBodyCubes(
                     getLowResSmallBodyPolyData(),
-                    null);
+                    cubeSize,
+                    0.01 * cubeSize,
+                    true);
         }
 
         return smallBodyCubes.getIntersectingCubes(polydata);
