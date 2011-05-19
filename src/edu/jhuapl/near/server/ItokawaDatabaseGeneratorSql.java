@@ -99,8 +99,8 @@ public class ItokawaDatabaseGeneratorSql
 
             db.update(
                     "create table " + amicaTableName + "(" +
-                    "id bigint PRIMARY KEY, " +
-                    "imageid int, " +
+                    "id int PRIMARY KEY, " +
+                    "imageid bigint, " +
                     "cubeid int)"
                 );
         } catch (SQLException ex2) {
@@ -261,7 +261,7 @@ public class ItokawaDatabaseGeneratorSql
             for (Integer i : cubeIds)
             {
                 amicaInsert2.setInt(1, count);
-                amicaInsert2.setInt(2, Integer.parseInt(origFile.getName().substring(3, 13), 10));
+                amicaInsert2.setLong(2, Long.parseLong(origFile.getName().substring(3, 13), 10));
                 amicaInsert2.setInt(3, i);
 
                 amicaInsert2.executeUpdate();
