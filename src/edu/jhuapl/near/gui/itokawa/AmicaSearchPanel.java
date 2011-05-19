@@ -44,9 +44,9 @@ import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.RegularPolygonModel;
 import edu.jhuapl.near.model.SmallBodyModel;
-import edu.jhuapl.near.model.eros.MSIBoundaryCollection;
-import edu.jhuapl.near.model.eros.MSIColorImageCollection;
-import edu.jhuapl.near.model.eros.MSIImageCollection;
+import edu.jhuapl.near.model.itokawa.AmicaBoundaryCollection;
+import edu.jhuapl.near.model.itokawa.AmicaColorImageCollection;
+import edu.jhuapl.near.model.itokawa.AmicaImageCollection;
 import edu.jhuapl.near.pick.PickEvent;
 import edu.jhuapl.near.pick.PickManager;
 import edu.jhuapl.near.pick.PickManager.PickMode;
@@ -64,19 +64,19 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
 {
     private final ModelManager modelManager;
     private final PickManager pickManager;
-    private java.util.Date startDate = new GregorianCalendar(2000, 0, 12, 0, 0, 0).getTime();
-    private java.util.Date endDate = new GregorianCalendar(2001, 1, 13, 0, 0, 0).getTime();
+    private java.util.Date startDate = new GregorianCalendar(2005, 8, 1, 0, 0, 0).getTime();
+    private java.util.Date endDate = new GregorianCalendar(2005, 10, 31, 0, 0, 0).getTime();
     private IdPair resultIntervalCurrentlyShown = null;
     private ImageKey selectedRedKey;
     private ImageKey selectedGreenKey;
     private ImageKey selectedBlueKey;
 
-    // The source of the msi images of the most recently executed query
+    // The source of the images of the most recently executed query
     private Image.ImageSource sourceOfLastQuery = Image.ImageSource.PDS;
 
-    private ArrayList<String> msiRawResults = new ArrayList<String>();
-    private ImagePopupMenu msiPopupMenu;
-    private ColorImagePopupMenu msiColorPopupMenu;
+    private ArrayList<String> amicaRawResults = new ArrayList<String>();
+    private ImagePopupMenu amicaPopupMenu;
+    private ColorImagePopupMenu amicaColorPopupMenu;
 
     /** Creates new form ItokawaSearchPanel3 */
     public AmicaSearchPanel(final ModelManager modelManager,
@@ -102,9 +102,9 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
             if (index >= 0 && resultList.getCellBounds(index, index).contains(e.getPoint()))
             {
                 resultList.setSelectedIndex(index);
-                String name = msiRawResults.get(index);
-                msiPopupMenu.setCurrentImage(new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery));
-                msiPopupMenu.show(e.getComponent(), e.getX(), e.getY());
+                String name = amicaRawResults.get(index);
+                amicaPopupMenu.setCurrentImage(new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery));
+                amicaPopupMenu.show(e.getComponent(), e.getX(), e.getY());
             }
         }
     }
@@ -120,16 +120,16 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
             {
                 colorImagesDisplayedList.setSelectedIndex(index);
                 ColorImageKey colorKey = (ColorImageKey)((DefaultListModel)colorImagesDisplayedList.getModel()).get(index);
-                msiColorPopupMenu.setCurrentImage(colorKey);
-                msiColorPopupMenu.show(e.getComponent(), e.getX(), e.getY());
+                amicaColorPopupMenu.setCurrentImage(colorKey);
+                amicaColorPopupMenu.show(e.getComponent(), e.getX(), e.getY());
             }
         }
     }
 
-    private void setMSIResults(ArrayList<String> results)
+    private void setAmicaResults(ArrayList<String> results)
     {
         resultsLabel.setText(results.size() + " images matched");
-        msiRawResults = results;
+        amicaRawResults = results;
 
         String[] formattedResults = new String[results.size()];
 
@@ -153,28 +153,28 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
 
         // Show the first set of boundaries
         this.resultIntervalCurrentlyShown = new IdPair(0, (Integer)this.numberOfBoundariesComboBox.getSelectedItem());
-        this.showMSIBoundaries(resultIntervalCurrentlyShown);
+        this.showAmicaBoundaries(resultIntervalCurrentlyShown);
     }
 
 
-    private void showMSIBoundaries(IdPair idPair)
+    private void showAmicaBoundaries(IdPair idPair)
     {
         int startId = idPair.id1;
         int endId = idPair.id2;
 
-        MSIBoundaryCollection model = (MSIBoundaryCollection)modelManager.getModel(ModelNames.MSI_BOUNDARY);
+        AmicaBoundaryCollection model = (AmicaBoundaryCollection)modelManager.getModel(ModelNames.AMICA_BOUNDARY);
         model.removeAllBoundaries();
 
         for (int i=startId; i<endId; ++i)
         {
             if (i < 0)
                 continue;
-            else if(i >= msiRawResults.size())
+            else if(i >= amicaRawResults.size())
                 break;
 
             try
             {
-                String currentImage = msiRawResults.get(i);
+                String currentImage = amicaRawResults.get(i);
                 //String boundaryName = currentImage.substring(0,currentImage.length()-4) + "_BOUNDARY.VTK";
                 //String boundaryName = currentImage.substring(0,currentImage.length()-4) + "_DDR.LBL";
                 String boundaryName = currentImage.substring(0,currentImage.length()-4);
@@ -193,7 +193,7 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
 
     private void showColorImage(ActionEvent e)
     {
-        MSIColorImageCollection model = (MSIColorImageCollection)modelManager.getModel(ModelNames.MSI_COLOR_IMAGES);
+        AmicaColorImageCollection model = (AmicaColorImageCollection)modelManager.getModel(ModelNames.AMICA_COLOR_IMAGES);
 
         if (selectedRedKey != null && selectedGreenKey != null && selectedBlueKey != null)
         {
@@ -245,16 +245,16 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
         {
             PickEvent e = (PickEvent)evt.getNewValue();
             Model model = modelManager.getModel(e.getPickedProp());
-            if (model instanceof MSIImageCollection || model instanceof MSIBoundaryCollection)
+            if (model instanceof AmicaImageCollection || model instanceof AmicaBoundaryCollection)
             {
                 String name = null;
 
-                if (model instanceof MSIImageCollection)
-                    name = ((MSIImageCollection)model).getImageName((vtkActor)e.getPickedProp());
-                else if (model instanceof MSIBoundaryCollection)
-                    name = ((MSIBoundaryCollection)model).getBoundaryName((vtkActor)e.getPickedProp());
+                if (model instanceof AmicaImageCollection)
+                    name = ((AmicaImageCollection)model).getImageName((vtkActor)e.getPickedProp());
+                else if (model instanceof AmicaBoundaryCollection)
+                    name = ((AmicaBoundaryCollection)model).getBoundaryName((vtkActor)e.getPickedProp());
 
-                int idx = msiRawResults.indexOf(name + ".FIT");
+                int idx = amicaRawResults.indexOf(name + ".FIT");
 
                 resultList.setSelectionInterval(idx, idx);
                 Rectangle cellBounds = resultList.getCellBounds(idx, idx);
@@ -299,21 +299,21 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
         toResolutionLabel = new javax.swing.JLabel();
         toResolutionTextField = new javax.swing.JFormattedTextField();
         endResolutionLabel = new javax.swing.JLabel();
-        jLabel11 = new javax.swing.JLabel();
+        fromIncidenceLabel = new javax.swing.JLabel();
         fromIncidenceTextField = new javax.swing.JFormattedTextField();
-        jLabel12 = new javax.swing.JLabel();
+        toIncidenceLabel = new javax.swing.JLabel();
         toIncidenceTextField = new javax.swing.JFormattedTextField();
-        jLabel13 = new javax.swing.JLabel();
-        jLabel14 = new javax.swing.JLabel();
+        endIncidenceLabel = new javax.swing.JLabel();
+        fromEmissionLabel = new javax.swing.JLabel();
         fromEmissionTextField = new javax.swing.JFormattedTextField();
-        jLabel15 = new javax.swing.JLabel();
+        toEmissionLabel = new javax.swing.JLabel();
         toEmissionTextField = new javax.swing.JFormattedTextField();
-        jLabel16 = new javax.swing.JLabel();
-        jLabel17 = new javax.swing.JLabel();
+        endEmissionLabel = new javax.swing.JLabel();
+        fromPhaseLabel = new javax.swing.JLabel();
         fromPhaseTextField = new javax.swing.JFormattedTextField();
-        jLabel18 = new javax.swing.JLabel();
+        toPhaseLabel = new javax.swing.JLabel();
         toPhaseTextField = new javax.swing.JFormattedTextField();
-        jLabel19 = new javax.swing.JLabel();
+        endPhaseLabel = new javax.swing.JLabel();
         jPanel4 = new javax.swing.JPanel();
         searchByNumberCheckBox = new javax.swing.JCheckBox();
         searchByNumberTextField = new javax.swing.JFormattedTextField();
@@ -367,6 +367,7 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
         jPanel1.add(startDateLabel, gridBagConstraints);
 
         startSpinner.setModel(new javax.swing.SpinnerDateModel(new java.util.Date(1126411200000L), null, null, java.util.Calendar.DAY_OF_MONTH));
+        startSpinner.setEditor(new javax.swing.JSpinner.DateEditor(startSpinner, "yyyy-MMM-dd HH:mm:ss"));
         startSpinner.setMinimumSize(new java.awt.Dimension(36, 28));
         startSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
@@ -388,7 +389,8 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
         gridBagConstraints.insets = new java.awt.Insets(13, 6, 0, 0);
         jPanel1.add(endDateLabel, gridBagConstraints);
 
-        endSpinner.setModel(new javax.swing.SpinnerDateModel(new java.util.Date(1132376400000L), null, null, java.util.Calendar.DAY_OF_MONTH));
+        endSpinner.setModel(new javax.swing.SpinnerDateModel(new java.util.Date(1132462800000L), null, null, java.util.Calendar.DAY_OF_MONTH));
+        endSpinner.setEditor(new javax.swing.JSpinner.DateEditor(endSpinner, "yyyy-MMM-dd HH:mm:ss"));
         endSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 endSpinnerStateChanged(evt);
@@ -403,6 +405,7 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 0);
         jPanel8.add(jPanel1, gridBagConstraints);
 
         jPanel2.setLayout(new java.awt.GridBagLayout());
@@ -554,13 +557,13 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
         gridBagConstraints.insets = new java.awt.Insets(12, 4, 0, 6);
         jPanel3.add(endResolutionLabel, gridBagConstraints);
 
-        jLabel11.setText("Incidence from");
+        fromIncidenceLabel.setText("Incidence from");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(12, 25, 0, 0);
-        jPanel3.add(jLabel11, gridBagConstraints);
+        jPanel3.add(fromIncidenceLabel, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 2;
@@ -569,13 +572,13 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
         gridBagConstraints.insets = new java.awt.Insets(6, 6, 0, 0);
         jPanel3.add(fromIncidenceTextField, gridBagConstraints);
 
-        jLabel12.setText("to");
+        toIncidenceLabel.setText("to");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(12, 6, 0, 0);
-        jPanel3.add(jLabel12, gridBagConstraints);
+        jPanel3.add(toIncidenceLabel, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 2;
@@ -584,21 +587,21 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
         gridBagConstraints.insets = new java.awt.Insets(6, 6, 0, 0);
         jPanel3.add(toIncidenceTextField, gridBagConstraints);
 
-        jLabel13.setText("deg");
+        endIncidenceLabel.setText("deg");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 4;
         gridBagConstraints.gridy = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(12, 4, 0, 0);
-        jPanel3.add(jLabel13, gridBagConstraints);
+        jPanel3.add(endIncidenceLabel, gridBagConstraints);
 
-        jLabel14.setText("Emission from");
+        fromEmissionLabel.setText("Emission from");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(12, 30, 0, 0);
-        jPanel3.add(jLabel14, gridBagConstraints);
+        jPanel3.add(fromEmissionLabel, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 3;
@@ -607,13 +610,13 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
         gridBagConstraints.insets = new java.awt.Insets(6, 6, 0, 0);
         jPanel3.add(fromEmissionTextField, gridBagConstraints);
 
-        jLabel15.setText("to");
+        toEmissionLabel.setText("to");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(12, 6, 0, 0);
-        jPanel3.add(jLabel15, gridBagConstraints);
+        jPanel3.add(toEmissionLabel, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 3;
@@ -622,21 +625,21 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
         gridBagConstraints.insets = new java.awt.Insets(6, 6, 0, 0);
         jPanel3.add(toEmissionTextField, gridBagConstraints);
 
-        jLabel16.setText("deg");
+        endEmissionLabel.setText("deg");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 4;
         gridBagConstraints.gridy = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(12, 4, 0, 0);
-        jPanel3.add(jLabel16, gridBagConstraints);
+        jPanel3.add(endEmissionLabel, gridBagConstraints);
 
-        jLabel17.setText("Phase from");
+        fromPhaseLabel.setText("Phase from");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 4;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(12, 46, 0, 0);
-        jPanel3.add(jLabel17, gridBagConstraints);
+        jPanel3.add(fromPhaseLabel, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 4;
@@ -645,13 +648,13 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
         gridBagConstraints.insets = new java.awt.Insets(6, 6, 0, 0);
         jPanel3.add(fromPhaseTextField, gridBagConstraints);
 
-        jLabel18.setText("to");
+        toPhaseLabel.setText("to");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 4;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(12, 6, 0, 0);
-        jPanel3.add(jLabel18, gridBagConstraints);
+        jPanel3.add(toPhaseLabel, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 4;
@@ -660,14 +663,14 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
         gridBagConstraints.insets = new java.awt.Insets(6, 6, 0, 0);
         jPanel3.add(toPhaseTextField, gridBagConstraints);
 
-        jLabel19.setText("deg");
+        endPhaseLabel.setText("deg");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 4;
         gridBagConstraints.gridy = 4;
         gridBagConstraints.ipadx = 21;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(12, 4, 0, 0);
-        jPanel3.add(jLabel19, gridBagConstraints);
+        jPanel3.add(endPhaseLabel, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -1043,6 +1046,21 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
         toResolutionLabel.setEnabled(!enable);
         toResolutionTextField.setEnabled(!enable);
         endResolutionLabel.setEnabled(!enable);
+        fromIncidenceLabel.setEnabled(!enable);
+        fromIncidenceTextField.setEnabled(!enable);
+        toIncidenceLabel.setEnabled(!enable);
+        toIncidenceTextField.setEnabled(!enable);
+        endIncidenceLabel.setEnabled(!enable);
+        fromEmissionLabel.setEnabled(!enable);
+        fromEmissionTextField.setEnabled(!enable);
+        toEmissionLabel.setEnabled(!enable);
+        toEmissionTextField.setEnabled(!enable);
+        endEmissionLabel.setEnabled(!enable);
+        fromPhaseLabel.setEnabled(!enable);
+        fromPhaseTextField.setEnabled(!enable);
+        toPhaseLabel.setEnabled(!enable);
+        toPhaseTextField.setEnabled(!enable);
+        endPhaseLabel.setEnabled(!enable);
     }//GEN-LAST:event_searchByNumberCheckBoxItemStateChanged
 
     private void selectRegionButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_selectRegionButtonActionPerformed
@@ -1067,7 +1085,7 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
             if (resultIntervalCurrentlyShown.id1 > 0)
             {
                 resultIntervalCurrentlyShown.prevBlock((Integer)numberOfBoundariesComboBox.getSelectedItem());
-                showMSIBoundaries(resultIntervalCurrentlyShown);
+                showAmicaBoundaries(resultIntervalCurrentlyShown);
             }
         }
 
@@ -1081,13 +1099,13 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
             if (resultIntervalCurrentlyShown.id2 < resultList.getModel().getSize())
             {
                 resultIntervalCurrentlyShown.nextBlock((Integer)numberOfBoundariesComboBox.getSelectedItem());
-                showMSIBoundaries(resultIntervalCurrentlyShown);
+                showAmicaBoundaries(resultIntervalCurrentlyShown);
             }
         }
         else
         {
             resultIntervalCurrentlyShown = new IdPair(0, (Integer)numberOfBoundariesComboBox.getSelectedItem());
-            showMSIBoundaries(resultIntervalCurrentlyShown);
+            showAmicaBoundaries(resultIntervalCurrentlyShown);
         }
     }//GEN-LAST:event_nextButtonActionPerformed
 
@@ -1096,7 +1114,7 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
         int index = resultList.getSelectedIndex();
         if (index >= 0)
         {
-            String image = msiRawResults.get(index);
+            String image = amicaRawResults.get(index);
             String name = image.substring(23, 32);
             image = image.substring(0,image.length()-4);
             redLabel.setText(name);
@@ -1109,7 +1127,7 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
         int index = resultList.getSelectedIndex();
         if (index >= 0)
         {
-            String image = msiRawResults.get(index);
+            String image = amicaRawResults.get(index);
             String name = image.substring(23, 32);
             image = image.substring(0,image.length()-4);
             greenLabel.setText(name);
@@ -1122,7 +1140,7 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
         int index = resultList.getSelectedIndex();
         if (index >= 0)
         {
-            String image = msiRawResults.get(index);
+            String image = amicaRawResults.get(index);
             String name = image.substring(23, 32);
             image = image.substring(0,image.length()-4);
             blueLabel.setText(name);
@@ -1141,7 +1159,7 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
         if (index >= 0)
         {
             ColorImageKey colorKey = (ColorImageKey)((DefaultListModel)colorImagesDisplayedList.getModel()).remove(index);
-            MSIColorImageCollection model = (MSIColorImageCollection)modelManager.getModel(ModelNames.MSI_COLOR_IMAGES);
+            AmicaColorImageCollection model = (AmicaColorImageCollection)modelManager.getModel(ModelNames.AMICA_COLOR_IMAGES);
             model.removeImage(colorKey);
 
             // Select the element in its place (unless it's the last one in which case
@@ -1165,14 +1183,14 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
 
     private void removeAllButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_removeAllButtonActionPerformed
     {//GEN-HEADEREND:event_removeAllButtonActionPerformed
-        MSIBoundaryCollection model = (MSIBoundaryCollection)modelManager.getModel(ModelNames.MSI_BOUNDARY);
+        AmicaBoundaryCollection model = (AmicaBoundaryCollection)modelManager.getModel(ModelNames.AMICA_BOUNDARY);
         model.removeAllBoundaries();
         resultIntervalCurrentlyShown = null;
     }//GEN-LAST:event_removeAllButtonActionPerformed
 
     private void removeAllImagesButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_removeAllImagesButtonActionPerformed
     {//GEN-HEADEREND:event_removeAllImagesButtonActionPerformed
-        MSIImageCollection model = (MSIImageCollection)modelManager.getModel(ModelNames.MSI_IMAGES);
+        AmicaImageCollection model = (AmicaImageCollection)modelManager.getModel(ModelNames.AMICA_IMAGES);
         model.removeAllImages();
     }//GEN-LAST:event_removeAllImagesButtonActionPerformed
 
@@ -1229,7 +1247,7 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
 
             TreeSet<Integer> cubeList = null;
             RegularPolygonModel selectionModel = (RegularPolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
-            SmallBodyModel erosModel = (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
+            SmallBodyModel itokawaModel = (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
             if (selectionModel.getNumberOfStructures() > 0)
             {
                 RegularPolygonModel.RegularPolygon region = (RegularPolygonModel.RegularPolygon)selectionModel.getStructure(0);
@@ -1237,20 +1255,20 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
                 // Always use the lowest resolution model for getting the intersection cubes list.
                 // Therefore, if the selection region was created using a higher resolution model,
                 // we need to recompute the selection region using the low res model.
-                if (erosModel.getModelResolution() > 0)
+                if (itokawaModel.getModelResolution() > 0)
                 {
                     vtkPolyData interiorPoly = new vtkPolyData();
-                    erosModel.drawPolygonLowRes(region.center, region.radius, region.numberOfSides, interiorPoly, null);
-                    cubeList = erosModel.getIntersectingCubes(interiorPoly);
+                    itokawaModel.drawPolygonLowRes(region.center, region.radius, region.numberOfSides, interiorPoly, null);
+                    cubeList = itokawaModel.getIntersectingCubes(interiorPoly);
                 }
                 else
                 {
-                    cubeList = erosModel.getIntersectingCubes(region.interiorPolyData);
+                    cubeList = itokawaModel.getIntersectingCubes(region.interiorPolyData);
                 }
             }
 
-            Image.ImageSource msiSource = Image.ImageSource.GASKELL;
-            System.out.println(msiSource.toString());
+            Image.ImageSource amicaSource = Image.ImageSource.GASKELL;
+            System.out.println(amicaSource.toString());
             ArrayList<String> results = ItokawaQuery.getInstance().runQuery(
                     ItokawaQuery.Datatype.AMICA,
                     startDateJoda,
@@ -1269,12 +1287,12 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
                     Double.parseDouble(fromPhaseTextField.getText()),
                     Double.parseDouble(toPhaseTextField.getText()),
                     cubeList,
-                    msiSource,
+                    amicaSource,
                     0);
 
             sourceOfLastQuery = Image.ImageSource.GASKELL;
 
-            setMSIResults(results);
+            setAmicaResults(results);
         }
         catch (Exception e)
         {
@@ -1301,6 +1319,9 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
     private javax.swing.JList colorImagesDisplayedList;
     private javax.swing.JLabel endDateLabel;
     private javax.swing.JLabel endDistanceLabel;
+    private javax.swing.JLabel endEmissionLabel;
+    private javax.swing.JLabel endIncidenceLabel;
+    private javax.swing.JLabel endPhaseLabel;
     private javax.swing.JLabel endResolutionLabel;
     private javax.swing.JSpinner endSpinner;
     private javax.swing.JCheckBox filter1CheckBox;
@@ -1312,23 +1333,17 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
     private javax.swing.JCheckBox filter7CheckBox;
     private javax.swing.JLabel fromDistanceLabel;
     private javax.swing.JFormattedTextField fromDistanceTextField;
+    private javax.swing.JLabel fromEmissionLabel;
     private javax.swing.JFormattedTextField fromEmissionTextField;
+    private javax.swing.JLabel fromIncidenceLabel;
     private javax.swing.JFormattedTextField fromIncidenceTextField;
+    private javax.swing.JLabel fromPhaseLabel;
     private javax.swing.JFormattedTextField fromPhaseTextField;
     private javax.swing.JLabel fromResolutionLabel;
     private javax.swing.JFormattedTextField fromResolutionTextField;
     private javax.swing.JButton generateColorImageButton;
     private javax.swing.JButton greenButton;
     private javax.swing.JLabel greenLabel;
-    private javax.swing.JLabel jLabel11;
-    private javax.swing.JLabel jLabel12;
-    private javax.swing.JLabel jLabel13;
-    private javax.swing.JLabel jLabel14;
-    private javax.swing.JLabel jLabel15;
-    private javax.swing.JLabel jLabel16;
-    private javax.swing.JLabel jLabel17;
-    private javax.swing.JLabel jLabel18;
-    private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel20;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
@@ -1363,8 +1378,11 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
     private javax.swing.JButton submitButton;
     private javax.swing.JLabel toDistanceLabel;
     private javax.swing.JFormattedTextField toDistanceTextField;
+    private javax.swing.JLabel toEmissionLabel;
     private javax.swing.JFormattedTextField toEmissionTextField;
+    private javax.swing.JLabel toIncidenceLabel;
     private javax.swing.JFormattedTextField toIncidenceTextField;
+    private javax.swing.JLabel toPhaseLabel;
     private javax.swing.JFormattedTextField toPhaseTextField;
     private javax.swing.JLabel toResolutionLabel;
     private javax.swing.JFormattedTextField toResolutionTextField;
