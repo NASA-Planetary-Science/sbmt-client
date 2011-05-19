@@ -23,7 +23,7 @@ import edu.jhuapl.near.model.itokawa.Itokawa;
 import edu.jhuapl.near.util.FileUtil;
 import edu.jhuapl.near.util.NativeLibraryLoader;
 
-public class AmicaDatabaseGeneratorSql
+public class ItokawaDatabaseGeneratorSql
 {
     static private final String AmicaImagesGaskellTable = "amicaimages_gaskell";
     static private final String AmicaCubesGaskellTable = "amicacubes_gaskell";

@@ -23,7 +23,7 @@ import edu.jhuapl.near.model.eros.NISSpectrum;
 import edu.jhuapl.near.util.FileUtil;
 import edu.jhuapl.near.util.NativeLibraryLoader;
 
-public class MSIDatabaseGeneratorSql
+public class ErosDatabaseGeneratorSql
 {
     static private final String MsiImagesPdsTable = "msiimages_beta2";
     static private final String MsiImagesGaskellTable = "msiimages_gaskell_beta3";
