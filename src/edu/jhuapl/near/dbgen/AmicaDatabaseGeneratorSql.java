@@ -53,7 +53,7 @@ public class AmicaDatabaseGeneratorSql
 
             db.update(
                     "create table " + amicaTableName + "(" +
-                    "id int PRIMARY KEY, " +
+                    "id bigint PRIMARY KEY, " +
                     "filename char(30), " +
                     "starttime bigint, " +
                     "stoptime bigint, " +
@@ -99,7 +99,7 @@ public class AmicaDatabaseGeneratorSql
 
             db.update(
                     "create table " + amicaTableName + "(" +
-                    "id int PRIMARY KEY, " +
+                    "id bigint PRIMARY KEY, " +
                     "imageid int, " +
                     "cubeid int)"
                 );
@@ -152,8 +152,7 @@ public class AmicaDatabaseGeneratorSql
             //startTime = startTime.substring(0, 10) + " " + startTime.substring(11, startTime.length());
             //stopTime = stopTime.substring(0, 10) + " " + stopTime.substring(11, stopTime.length());
 
-
-            System.out.println("id: " + Integer.parseInt(origFile.getName().substring(3, 13), 10));
+            System.out.println("id: " + Long.parseLong(origFile.getName().substring(3, 13)));
             System.out.println("filename: " + origFile.getName());
             System.out.println("starttime: " + startTime);
             System.out.println("stoptime: " + stopTime);
@@ -171,7 +170,7 @@ public class AmicaDatabaseGeneratorSql
             System.out.println("minPhase: " + image.getMinPhase());
             System.out.println("maxPhase: " + image.getMaxPhase());
 
-            amicaInsert.setInt(1, Integer.parseInt(origFile.getName().substring(3, 13), 10));
+            amicaInsert.setLong(1, Long.parseLong(origFile.getName().substring(3, 13), 10));
             amicaInsert.setString(2, origFile.getName());
             amicaInsert.setLong(3, startTime.getMillis());
             amicaInsert.setLong(4, stopTime.getMillis());
@@ -309,7 +308,7 @@ public class AmicaDatabaseGeneratorSql
      */
     public static void main(String[] args) throws IOException
     {
-        NativeLibraryLoader.loadVtkLibrariesLinuxNoX11();
+        NativeLibraryLoader.loadVtkLibraries();
 
         itokawaModel = new Itokawa();
 
@@ -337,7 +336,6 @@ public class AmicaDatabaseGeneratorSql
             createAmicaTables(AmicaImagesGaskellTable);
         else if (mode == 2 || mode == 0)
             createAmicaTablesCubes(AmicaCubesGaskellTable);
-
 
         try
         {
