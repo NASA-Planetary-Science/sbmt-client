@@ -136,7 +136,7 @@ abstract public class ColorImage extends Model implements PropertyChangeListener
         PolyDataUtil.generateTextureCoordinates(redFrustum, footprint);
 
         shiftedFootprint.DeepCopy(footprint);
-        PolyDataUtil.shiftPolyDataInNormalDirection(shiftedFootprint, 0.002);
+        PolyDataUtil.shiftPolyDataInNormalDirection(shiftedFootprint, 2.0*smallBodyModel.getMinShiftAmount());
 
         // Now compute a color image with each channel one of these images.
         // To do that go through each pixel of the red image, and intersect a ray into the asteroid in

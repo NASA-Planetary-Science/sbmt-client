@@ -899,7 +899,7 @@ abstract public class Image extends Model implements PropertyChangeListener
 
 
         shiftedFootprint.DeepCopy(footprint);
-        PolyDataUtil.shiftPolyDataInNormalDirection(shiftedFootprint, 0.002);
+        PolyDataUtil.shiftPolyDataInNormalDirection(shiftedFootprint, 2.0*smallBodyModel.getMinShiftAmount());
 
         footprintGenerated = true;
     }
