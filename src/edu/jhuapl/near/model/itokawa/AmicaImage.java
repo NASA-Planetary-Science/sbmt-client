@@ -437,7 +437,29 @@ public class AmicaImage extends Image
     @Override
     public int getFilter()
     {
-        String fitName = new File(getFitFileFullPath()).getName();
-        return Integer.parseInt(fitName.substring(12,13));
+        String fitName = getFitFileFullPath();
+
+        int ind1 = fitName.lastIndexOf('_');
+        int ind2 = fitName.lastIndexOf('.');
+
+        String filterName = fitName.substring(ind1+1, ind2);
+
+        int filterNum = -1;
+        if (filterName.equals("ul"))
+            filterNum = 1;
+        else if (filterName.equals("b"))
+            filterNum = 2;
+        else if (filterName.equals("v"))
+            filterNum = 3;
+        else if (filterName.equals("w"))
+            filterNum = 4;
+        else if (filterName.equals("x"))
+            filterNum = 5;
+        else if (filterName.equals("p"))
+            filterNum = 6;
+        else if (filterName.equals("zs"))
+            filterNum = 7;
+
+        return filterNum;
     }
 }
