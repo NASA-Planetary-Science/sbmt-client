@@ -34,7 +34,7 @@ import edu.jhuapl.near.model.itokawa.AmicaImageCollection;
 import edu.jhuapl.near.model.itokawa.Itokawa;
 import edu.jhuapl.near.model.itokawa.ItokawaGraticule;
 import edu.jhuapl.near.pick.PickManager;
-import edu.jhuapl.near.popupmenus.PopupManager;
+import edu.jhuapl.near.popupmenus.itokawa.ItokawaPopupManager;
 import edu.jhuapl.near.util.Configuration;
 
 /**
@@ -53,7 +53,7 @@ public class ItokawaViewer extends Viewer
     private JTabbedPane controlPanel;
     private ModelManager modelManager;
     private PickManager pickManager;
-    private PopupManager popupManager;
+    private ItokawaPopupManager popupManager;
     private StatusBar statusBar;
     private boolean initialized = false;
     private ModelInfoWindowManager infoPanelManager;
@@ -95,7 +95,7 @@ public class ItokawaViewer extends Viewer
 
         renderer = new Renderer(modelManager);
 
-        popupManager = new PopupManager(modelManager);
+        popupManager = new ItokawaPopupManager(renderer, modelManager, infoPanelManager);
 
         pickManager = new PickManager(renderer, statusBar, modelManager, popupManager);
 
