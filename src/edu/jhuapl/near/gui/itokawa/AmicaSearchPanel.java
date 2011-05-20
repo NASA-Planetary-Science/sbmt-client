@@ -520,7 +520,7 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
         jPanel3.add(toDistanceLabel, gridBagConstraints);
 
         toDistanceTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.###"))));
-        toDistanceTextField.setText("100");
+        toDistanceTextField.setText("26");
         toDistanceTextField.setPreferredSize(new java.awt.Dimension(0, 27));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
@@ -570,7 +570,7 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
         jPanel3.add(toResolutionLabel, gridBagConstraints);
 
         toResolutionTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.###"))));
-        toResolutionTextField.setText("50");
+        toResolutionTextField.setText("3");
         toResolutionTextField.setPreferredSize(new java.awt.Dimension(0, 27));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
