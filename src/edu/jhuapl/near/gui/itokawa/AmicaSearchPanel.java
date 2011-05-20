@@ -494,91 +494,88 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(12, 6, 0, 0);
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
+        gridBagConstraints.insets = new java.awt.Insets(1, 0, 1, 2);
         jPanel3.add(fromDistanceLabel, gridBagConstraints);
 
         fromDistanceTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.###"))));
         fromDistanceTextField.setText("0");
-        fromDistanceTextField.setPreferredSize(new java.awt.Dimension(0, 27));
+        fromDistanceTextField.setPreferredSize(new java.awt.Dimension(0, 25));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.ipadx = 43;
+        gridBagConstraints.ipadx = 50;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(6, 6, 0, 0);
+        gridBagConstraints.insets = new java.awt.Insets(1, 0, 1, 0);
         jPanel3.add(fromDistanceTextField, gridBagConstraints);
 
         toDistanceLabel.setText("to");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(12, 6, 0, 0);
+        gridBagConstraints.insets = new java.awt.Insets(1, 2, 1, 2);
         jPanel3.add(toDistanceLabel, gridBagConstraints);
 
         toDistanceTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.###"))));
         toDistanceTextField.setText("26");
-        toDistanceTextField.setPreferredSize(new java.awt.Dimension(0, 27));
+        toDistanceTextField.setPreferredSize(new java.awt.Dimension(0, 25));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.ipadx = 43;
+        gridBagConstraints.ipadx = 50;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(6, 6, 0, 0);
+        gridBagConstraints.insets = new java.awt.Insets(1, 0, 1, 0);
         jPanel3.add(toDistanceTextField, gridBagConstraints);
 
         endDistanceLabel.setText("km");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 4;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.ipadx = 27;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(12, 4, 0, 0);
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(1, 2, 1, 2);
         jPanel3.add(endDistanceLabel, gridBagConstraints);
 
         fromResolutionLabel.setText("Resolution from");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(12, 19, 0, 0);
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(1, 0, 1, 2);
         jPanel3.add(fromResolutionLabel, gridBagConstraints);
 
         fromResolutionTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.###"))));
         fromResolutionTextField.setText("0");
-        fromResolutionTextField.setPreferredSize(new java.awt.Dimension(0, 27));
+        fromResolutionTextField.setPreferredSize(new java.awt.Dimension(0, 25));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.ipadx = 43;
+        gridBagConstraints.ipadx = 50;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(7, 6, 0, 0);
+        gridBagConstraints.insets = new java.awt.Insets(1, 0, 1, 0);
         jPanel3.add(fromResolutionTextField, gridBagConstraints);
 
         toResolutionLabel.setText("to");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 1;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(12, 4, 0, 0);
+        gridBagConstraints.insets = new java.awt.Insets(1, 2, 1, 2);
         jPanel3.add(toResolutionLabel, gridBagConstraints);
 
         toResolutionTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.###"))));
         toResolutionTextField.setText("3");
-        toResolutionTextField.setPreferredSize(new java.awt.Dimension(0, 27));
+        toResolutionTextField.setPreferredSize(new java.awt.Dimension(0, 25));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 1;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.ipadx = 43;
+        gridBagConstraints.ipadx = 50;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(7, 6, 0, 0);
+        gridBagConstraints.insets = new java.awt.Insets(1, 0, 1, 0);
         jPanel3.add(toResolutionTextField, gridBagConstraints);
 
         endResolutionLabel.setText("mpp");
@@ -586,154 +583,149 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 4;
         gridBagConstraints.gridy = 1;
-        gridBagConstraints.ipadx = 19;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(12, 4, 0, 0);
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(1, 2, 1, 2);
         jPanel3.add(endResolutionLabel, gridBagConstraints);
 
         fromIncidenceLabel.setText("Incidence from");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(12, 25, 0, 0);
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(1, 0, 1, 2);
         jPanel3.add(fromIncidenceLabel, gridBagConstraints);
 
         fromIncidenceTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.###"))));
         fromIncidenceTextField.setText("0");
-        fromIncidenceTextField.setPreferredSize(new java.awt.Dimension(0, 27));
+        fromIncidenceTextField.setPreferredSize(new java.awt.Dimension(0, 25));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.ipadx = 43;
+        gridBagConstraints.ipadx = 50;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(6, 6, 0, 0);
+        gridBagConstraints.insets = new java.awt.Insets(1, 0, 1, 0);
         jPanel3.add(fromIncidenceTextField, gridBagConstraints);
 
         toIncidenceLabel.setText("to");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 2;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(12, 6, 0, 0);
+        gridBagConstraints.insets = new java.awt.Insets(1, 2, 1, 2);
         jPanel3.add(toIncidenceLabel, gridBagConstraints);
 
         toIncidenceTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.###"))));
         toIncidenceTextField.setText("180");
-        toIncidenceTextField.setPreferredSize(new java.awt.Dimension(0, 27));
+        toIncidenceTextField.setPreferredSize(new java.awt.Dimension(0, 25));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.ipadx = 43;
+        gridBagConstraints.ipadx = 50;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(6, 6, 0, 0);
+        gridBagConstraints.insets = new java.awt.Insets(1, 0, 1, 0);
         jPanel3.add(toIncidenceTextField, gridBagConstraints);
 
         endIncidenceLabel.setText("deg");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 4;
         gridBagConstraints.gridy = 2;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(12, 4, 0, 0);
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(1, 2, 1, 2);
         jPanel3.add(endIncidenceLabel, gridBagConstraints);
 
         fromEmissionLabel.setText("Emission from");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 3;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(12, 30, 0, 0);
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(1, 0, 1, 2);
         jPanel3.add(fromEmissionLabel, gridBagConstraints);
 
         fromEmissionTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.###"))));
         fromEmissionTextField.setText("0");
-        fromEmissionTextField.setPreferredSize(new java.awt.Dimension(0, 27));
+        fromEmissionTextField.setPreferredSize(new java.awt.Dimension(0, 25));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 3;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.ipadx = 43;
+        gridBagConstraints.ipadx = 50;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(6, 6, 0, 0);
+        gridBagConstraints.insets = new java.awt.Insets(1, 0, 1, 0);
         jPanel3.add(fromEmissionTextField, gridBagConstraints);
 
         toEmissionLabel.setText("to");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 3;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(12, 6, 0, 0);
+        gridBagConstraints.insets = new java.awt.Insets(1, 2, 1, 2);
         jPanel3.add(toEmissionLabel, gridBagConstraints);
 
         toEmissionTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.###"))));
         toEmissionTextField.setText("180");
-        toEmissionTextField.setPreferredSize(new java.awt.Dimension(0, 27));
+        toEmissionTextField.setPreferredSize(new java.awt.Dimension(0, 25));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 3;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.ipadx = 43;
+        gridBagConstraints.ipadx = 50;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(6, 6, 0, 0);
+        gridBagConstraints.insets = new java.awt.Insets(1, 0, 1, 0);
         jPanel3.add(toEmissionTextField, gridBagConstraints);
 
         endEmissionLabel.setText("deg");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 4;
         gridBagConstraints.gridy = 3;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(12, 4, 0, 0);
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(1, 2, 1, 2);
         jPanel3.add(endEmissionLabel, gridBagConstraints);
 
         fromPhaseLabel.setText("Phase from");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 4;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(12, 46, 0, 0);
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(1, 0, 1, 2);
         jPanel3.add(fromPhaseLabel, gridBagConstraints);
 
         fromPhaseTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.###"))));
         fromPhaseTextField.setText("0");
-        fromPhaseTextField.setPreferredSize(new java.awt.Dimension(0, 27));
+        fromPhaseTextField.setPreferredSize(new java.awt.Dimension(0, 25));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 4;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.ipadx = 43;
+        gridBagConstraints.ipadx = 50;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(6, 6, 0, 0);
+        gridBagConstraints.insets = new java.awt.Insets(1, 0, 1, 0);
         jPanel3.add(fromPhaseTextField, gridBagConstraints);
 
         toPhaseLabel.setText("to");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 4;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(12, 6, 0, 0);
+        gridBagConstraints.insets = new java.awt.Insets(1, 2, 1, 2);
         jPanel3.add(toPhaseLabel, gridBagConstraints);
 
         toPhaseTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.###"))));
         toPhaseTextField.setText("180");
-        toPhaseTextField.setPreferredSize(new java.awt.Dimension(0, 27));
+        toPhaseTextField.setPreferredSize(new java.awt.Dimension(0, 25));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 4;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.ipadx = 43;
+        gridBagConstraints.ipadx = 50;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(6, 6, 0, 0);
+        gridBagConstraints.insets = new java.awt.Insets(1, 0, 1, 0);
         jPanel3.add(toPhaseTextField, gridBagConstraints);
 
         endPhaseLabel.setText("deg");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 4;
         gridBagConstraints.gridy = 4;
-        gridBagConstraints.ipadx = 21;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(12, 4, 0, 0);
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(1, 2, 1, 2);
         jPanel3.add(endPhaseLabel, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -753,8 +745,7 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(10, 6, 0, 0);
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         jPanel4.add(searchByNumberCheckBox, gridBagConstraints);
 
         searchByNumberTextField.setEnabled(false);
@@ -762,8 +753,7 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.ipadx = 122;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(6, 12, 6, 6);
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         jPanel4.add(searchByNumberTextField, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -818,11 +808,13 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
         jPanel8.add(jPanel5, gridBagConstraints);
 
         jPanel6.setLayout(new java.awt.GridBagLayout());
+
+        resultsLabel.setText(" ");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.ipady = 20;
+        gridBagConstraints.ipady = 5;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         jPanel6.add(resultsLabel, gridBagConstraints);
 
