@@ -22,9 +22,9 @@ public class ItokawaQuery extends QueryBase
 
     private static ItokawaQuery ref = null;
 
-    private String getAmicaPath(ArrayList<String> result)
+    private void changeAmicaPathToFullPath(ArrayList<String> result)
     {
-        return "/ITOKAWA/AMICA/images/" + result.get(1);
+        result.set(0, "/ITOKAWA/AMICA/images/" + result.get(0));
     }
 
     public static ItokawaQuery getInstance()
@@ -52,7 +52,7 @@ public class ItokawaQuery extends QueryBase
      * @param startDate
      * @param endDate
      */
-    public ArrayList<String> runQuery(
+    public ArrayList<ArrayList<String>> runQuery(
             Datatype datatype,
             DateTime startDate,
             DateTime stopDate,
@@ -73,7 +73,6 @@ public class ItokawaQuery extends QueryBase
             Image.ImageSource imageSource,
             int limbType)
     {
-        ArrayList<String> matchedImages = new ArrayList<String>();
         ArrayList<ArrayList<String>> results = null;
 
         double minIncidence = Math.min(fromIncidence, toIncidence);
@@ -105,15 +104,13 @@ public class ItokawaQuery extends QueryBase
 
                 if (results != null && results.size() > 0)
                 {
-                    String path = this.getAmicaPath(results.get(0));
-
-                    matchedImages.add(path);
+                    this.changeAmicaPathToFullPath(results.get(0));
                 }
-                return matchedImages;
+                return results;
             }
 
             if (filters.isEmpty())
-                return matchedImages;
+                return results;
 
             try
             {
@@ -163,9 +160,7 @@ public class ItokawaQuery extends QueryBase
 
                 for (ArrayList<String> res : results)
                 {
-                    String path = this.getAmicaPath(res);
-
-                    matchedImages.add(path);
+                    this.changeAmicaPathToFullPath(res);
                 }
             }
             catch (Exception e)
@@ -173,10 +168,10 @@ public class ItokawaQuery extends QueryBase
                 e.printStackTrace();
             }
 
-            return matchedImages;
+            return results;
         }
 
-        return matchedImages;
+        return results;
     }
 
 

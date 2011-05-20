@@ -17,8 +17,11 @@ import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.TimeZone;
 import java.util.TreeSet;
 
 import javax.swing.DefaultListModel;
@@ -74,7 +77,7 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
     // The source of the images of the most recently executed query
     private Image.ImageSource sourceOfLastQuery = Image.ImageSource.PDS;
 
-    private ArrayList<String> amicaRawResults = new ArrayList<String>();
+    private ArrayList<ArrayList<String>> amicaRawResults = new ArrayList<ArrayList<String>>();
     private ImagePopupMenu amicaPopupMenu;
     private ColorImagePopupMenu amicaColorPopupMenu;
 
@@ -108,7 +111,7 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
             if (index >= 0 && resultList.getCellBounds(index, index).contains(e.getPoint()))
             {
                 resultList.setSelectedIndex(index);
-                String name = amicaRawResults.get(index);
+                String name = amicaRawResults.get(index).get(0);
                 amicaPopupMenu.setCurrentImage(new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery));
                 amicaPopupMenu.show(e.getComponent(), e.getX(), e.getY());
             }
@@ -132,20 +135,25 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
         }
     }
 
-    private void setAmicaResults(ArrayList<String> results)
+    private void setAmicaResults(ArrayList<ArrayList<String>> results)
     {
         resultsLabel.setText(results.size() + " images matched");
         amicaRawResults = results;
 
         String[] formattedResults = new String[results.size()];
 
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss.SSS");
+        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+
         // add the results to the list
         int i=0;
-        for (String str : results)
+        for (ArrayList<String> str : results)
         {
+            Date dt = new Date(Long.parseLong(str.get(1)));
             formattedResults[i] = new String(
                     (i+1) + ": " +
-                    str.substring(22)
+                    str.get(0).substring(22) +
+                    " " + sdf.format(dt)
                     );
 
             ++i;
@@ -176,7 +184,7 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
 
             try
             {
-                String currentImage = amicaRawResults.get(i);
+                String currentImage = amicaRawResults.get(i).get(0);
                 //String boundaryName = currentImage.substring(0,currentImage.length()-4) + "_BOUNDARY.VTK";
                 //String boundaryName = currentImage.substring(0,currentImage.length()-4) + "_DDR.LBL";
                 String boundaryName = currentImage.substring(0,currentImage.length()-4);
@@ -1194,7 +1202,7 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
         int index = resultList.getSelectedIndex();
         if (index >= 0)
         {
-            String image = amicaRawResults.get(index);
+            String image = amicaRawResults.get(index).get(0);
             String name = image.substring(23, 32);
             image = image.substring(0,image.length()-4);
             redLabel.setText(name);
@@ -1207,7 +1215,7 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
         int index = resultList.getSelectedIndex();
         if (index >= 0)
         {
-            String image = amicaRawResults.get(index);
+            String image = amicaRawResults.get(index).get(0);
             String name = image.substring(23, 32);
             image = image.substring(0,image.length()-4);
             greenLabel.setText(name);
@@ -1220,7 +1228,7 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
         int index = resultList.getSelectedIndex();
         if (index >= 0)
         {
-            String image = amicaRawResults.get(index);
+            String image = amicaRawResults.get(index).get(0);
             String name = image.substring(23, 32);
             image = image.substring(0,image.length()-4);
             blueLabel.setText(name);
@@ -1348,7 +1356,7 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
             }
 
             Image.ImageSource amicaSource = Image.ImageSource.GASKELL;
-            ArrayList<String> results = ItokawaQuery.getInstance().runQuery(
+            ArrayList<ArrayList<String>> results = ItokawaQuery.getInstance().runQuery(
                     ItokawaQuery.Datatype.AMICA,
                     startDateJoda,
                     endDateJoda,
