@@ -1,6 +1,7 @@
 package edu.jhuapl.near.gui;
 
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -19,9 +20,9 @@ public class ContrastChanger extends JPanel implements ChangeListener
 
     public ContrastChanger()
     {
+        setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
         setBorder(BorderFactory.createTitledBorder("Contrast"));
 
-        //this.setPreferredSize(new Dimension(300,300));
         slider = new RangeSlider(0, 255, 0, 255);
         slider.setPaintTicks(true);
         slider.setMajorTickSpacing(10);
