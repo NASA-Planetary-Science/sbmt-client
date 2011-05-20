@@ -24,42 +24,7 @@ public class ItokawaQuery extends QueryBase
 
     private String getAmicaPath(ArrayList<String> result)
     {
-        int id = Integer.parseInt(result.get(0));
-        int year = Integer.parseInt(result.get(1));
-        int dayOfYear = Integer.parseInt(result.get(2));
-        int filter = Integer.parseInt(result.get(3));
-        int type = Integer.parseInt(result.get(4));
-        String typeStr;
-        if (type == 0)
-            typeStr = "iofdbl";
-        else
-            typeStr = "cifdbl";
-
-        return this.getAmicaPath(id, year, dayOfYear, typeStr, filter);
-    }
-
-    private String getAmicaPath(int name, int year, int dayOfYear, String type, int filter)
-    {
-        String str = "/MSI/";
-        str += year + "/";
-
-        if (dayOfYear < 10)
-            str += "00";
-        else if (dayOfYear < 100)
-            str += "0";
-
-        str += dayOfYear + "/";
-
-        str += type + "/";
-
-        str += "M0" + name + "F" + filter + "_2P_";
-
-        if (type.equals("iofdbl"))
-            str += "IOF_DBL.FIT";
-        else
-            str += "CIF_DBL.FIT";
-
-        return str;
+        return "/ITOKAWA/AMICA/images/" + result.get(1);
     }
 
     public static ItokawaQuery getInstance()
@@ -125,7 +90,7 @@ public class ItokawaQuery extends QueryBase
             {
                 try
                 {
-                    int id = Integer.parseInt(searchString);
+                    long id = Long.parseLong(searchString);
 
                     HashMap<String, String> args = new HashMap<String, String>();
                     args.put("imageSource", imageSource.toString());
