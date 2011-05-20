@@ -12,8 +12,6 @@ $minEmission=(float)$_POST['minEmission'];
 $maxEmission=(float)$_POST['maxEmission'];
 $minPhase=(float)$_POST['minPhase'];
 $maxPhase=(float)$_POST['maxPhase'];
-$iofdbl=$_POST['iofdbl'] + 0;
-$cifdbl=$_POST['cifdbl'] + 0;
 $filterType1=$_POST['filterType1'] + 0;
 $filterType2=$_POST['filterType2'] + 0;
 $filterType3=$_POST['filterType3'] + 0;
@@ -64,7 +62,7 @@ if (!$link) {
 }
 @mysql_select_db($database) or die("died!");
 
-$query = "SELECT DISTINCT $amicaimages.id, year, day, filter, iofcif FROM $amicaimages ";
+$query = "SELECT DISTINCT filename, starttime FROM $amicaimages ";
 if (strlen($cubesStr) > 0)
 {
 	$query .= " JOIN $amicacubes ON $amicaimages.id = $amicacubes.imageid ";
@@ -75,11 +73,6 @@ $query .= " AND target_center_distance >= " . $minScDistance;
 $query .= " AND target_center_distance <= " . $maxScDistance;
 $query .= " AND min_horizontal_pixel_scale <= " . $maxResolution;
 $query .= " AND max_horizontal_pixel_scale >= " . $minResolution;
-
-if ($iofdbl == 0)
-	$query .= " AND iofcif = 1";
-elseif ($cifdbl == 0)
-	$query .= " AND iofcif = 0";
 
 if (count($filterTypes) > 0)
 {
@@ -134,15 +127,12 @@ mysql_close();
 $i=0;
 while ($i < $num) 
 {
-	$row = mysql_fetch_row($result);	
-	$id   = $row[0];
-	$year = $row[1];
-	$day  = $row[2];
-	$filter   = $row[3];
-	$iofcif   = $row[4];
+	$row       = mysql_fetch_row($result);	
+	$filename  = $row[0];
+	$starttime = $row[1];
 	
 
-	echo "$id $year $day $filter $iofcif\n";
+	echo "$filename $starttime\n";
 	
 	$i++;
 }
@@ -150,7 +140,3 @@ while ($i < $num)
 #echo "$query";
 
 ?>
-
-
-
-
