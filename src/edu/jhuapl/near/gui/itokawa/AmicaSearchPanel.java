@@ -348,6 +348,9 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
         jScrollPane3 = new javax.swing.JScrollPane();
         colorImagesDisplayedList = new javax.swing.JList();
         removeColorImageButton = new javax.swing.JButton();
+        jPanel11 = new javax.swing.JPanel();
+        hasLimbComboBox = new javax.swing.JComboBox();
+        hasLimbLabel = new javax.swing.JLabel();
 
         addComponentListener(new java.awt.event.ComponentAdapter() {
             public void componentHidden(java.awt.event.ComponentEvent evt) {
@@ -735,7 +738,7 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridy = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         jPanel8.add(jPanel3, gridBagConstraints);
 
@@ -765,7 +768,7 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 3;
+        gridBagConstraints.gridy = 4;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         jPanel8.add(jPanel4, gridBagConstraints);
 
@@ -811,7 +814,7 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 4;
+        gridBagConstraints.gridy = 5;
         jPanel8.add(jPanel5, gridBagConstraints);
 
         jPanel6.setLayout(new java.awt.GridBagLayout());
@@ -844,7 +847,7 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 5;
+        gridBagConstraints.gridy = 6;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.weightx = 1.0;
@@ -895,7 +898,7 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 6;
+        gridBagConstraints.gridy = 7;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         jPanel8.add(jPanel7, gridBagConstraints);
 
@@ -907,7 +910,7 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 7;
+        gridBagConstraints.gridy = 8;
         jPanel8.add(removeAllButton, gridBagConstraints);
 
         removeAllImagesButton.setText("Remove All Images");
@@ -918,7 +921,7 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 8;
+        gridBagConstraints.gridy = 9;
         jPanel8.add(removeAllImagesButton, gridBagConstraints);
 
         jPanel9.setLayout(new java.awt.GridBagLayout());
@@ -938,7 +941,7 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 9;
+        gridBagConstraints.gridy = 10;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(6, 6, 0, 0);
         jPanel8.add(jPanel9, gridBagConstraints);
@@ -1010,7 +1013,7 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 10;
+        gridBagConstraints.gridy = 11;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.insets = new java.awt.Insets(3, 0, 0, 0);
@@ -1025,7 +1028,7 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 11;
+        gridBagConstraints.gridy = 12;
         jPanel8.add(generateColorImageButton, gridBagConstraints);
 
         colorImagesDisplayedList.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -1040,7 +1043,7 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 12;
+        gridBagConstraints.gridy = 13;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         jPanel8.add(jScrollPane3, gridBagConstraints);
 
@@ -1053,8 +1056,28 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 13;
+        gridBagConstraints.gridy = 14;
         jPanel8.add(removeColorImageButton, gridBagConstraints);
+
+        jPanel11.setLayout(new java.awt.GridBagLayout());
+
+        hasLimbComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "with or without", "with only", "without only" }));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 0);
+        jPanel11.add(hasLimbComboBox, gridBagConstraints);
+
+        hasLimbLabel.setText("Limb:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        jPanel11.add(hasLimbLabel, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        jPanel8.add(jPanel11, gridBagConstraints);
 
         jScrollPane2.setViewportView(jPanel8);
 
@@ -1099,6 +1122,8 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
         filter5CheckBox.setEnabled(!enable);
         filter6CheckBox.setEnabled(!enable);
         filter7CheckBox.setEnabled(!enable);
+        hasLimbLabel.setEnabled(!enable);
+        hasLimbComboBox.setEnabled(!enable);
         fromDistanceLabel.setEnabled(!enable);
         fromDistanceTextField.setEnabled(!enable);
         toDistanceLabel.setEnabled(!enable);
@@ -1350,7 +1375,7 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
                     Double.parseDouble(toPhaseTextField.getText()),
                     cubeList,
                     amicaSource,
-                    0);
+                    hasLimbComboBox.getSelectedIndex());
 
             sourceOfLastQuery = Image.ImageSource.GASKELL;
 
@@ -1406,10 +1431,13 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
     private javax.swing.JButton generateColorImageButton;
     private javax.swing.JButton greenButton;
     private javax.swing.JLabel greenLabel;
+    private javax.swing.JComboBox hasLimbComboBox;
+    private javax.swing.JLabel hasLimbLabel;
     private javax.swing.JLabel jLabel20;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
+    private javax.swing.JPanel jPanel11;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
