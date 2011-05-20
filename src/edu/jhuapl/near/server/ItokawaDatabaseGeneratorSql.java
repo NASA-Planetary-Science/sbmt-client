@@ -162,7 +162,7 @@ public class ItokawaDatabaseGeneratorSql
             System.out.println("Max HORIZONTAL_PIXEL_SCALE: " + image.getMaximumHorizontalPixelScale());
             System.out.println("Min VERTICAL_PIXEL_SCALE: " + image.getMinimumVerticalPixelScale());
             System.out.println("Max VERTICAL_PIXEL_SCALE: " + image.getMaximumVerticalPixelScale());
-            System.out.println("hasLimb: " /*+ image.containsLimb()*/);
+            System.out.println("hasLimb: " + image.containsLimb());
             System.out.println("minIncidence: " + image.getMinIncidence());
             System.out.println("maxIncidence: " + image.getMaxIncidence());
             System.out.println("minEmission: " + image.getMinEmission());
