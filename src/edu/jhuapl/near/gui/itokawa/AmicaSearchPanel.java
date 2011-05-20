@@ -91,6 +91,12 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
 
         initComponents();
 
+        AmicaImageCollection msiImages = (AmicaImageCollection)modelManager.getModel(ModelNames.AMICA_IMAGES);
+        AmicaBoundaryCollection msiBoundaries = (AmicaBoundaryCollection)modelManager.getModel(ModelNames.AMICA_BOUNDARY);
+        amicaPopupMenu = new ImagePopupMenu(msiImages, msiBoundaries, infoPanelManager, renderer, this);
+
+        AmicaColorImageCollection msiColorImages = (AmicaColorImageCollection)modelManager.getModel(ModelNames.AMICA_COLOR_IMAGES);
+        amicaColorPopupMenu = new ColorImagePopupMenu(msiColorImages, infoPanelManager);
     }
 
     private void resultsListMaybeShowPopup(MouseEvent e)
@@ -139,11 +145,7 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
         {
             formattedResults[i] = new String(
                     (i+1) + ": " +
-                    str.substring(23, 32)
-                    + ", day: " + str.substring(10, 13) + "/" + str.substring(5, 9)
-                    + ", type: " + str.substring(14, 20)
-                    + ", filter: " + str.substring(33, 34)
-                    + ", source: " + sourceOfLastQuery
+                    str.substring(22)
                     );
 
             ++i;
@@ -152,7 +154,7 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
         resultList.setListData(formattedResults);
 
         // Show the first set of boundaries
-        this.resultIntervalCurrentlyShown = new IdPair(0, (Integer)this.numberOfBoundariesComboBox.getSelectedItem());
+        this.resultIntervalCurrentlyShown = new IdPair(0, Integer.parseInt((String)this.numberOfBoundariesComboBox.getSelectedItem()));
         this.showAmicaBoundaries(resultIntervalCurrentlyShown);
     }
 
@@ -362,8 +364,8 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(13, 6, 0, 0);
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(6, 6, 0, 0);
         jPanel1.add(startDateLabel, gridBagConstraints);
 
         startSpinner.setModel(new javax.swing.SpinnerDateModel(new java.util.Date(1126411200000L), null, null, java.util.Calendar.DAY_OF_MONTH));
@@ -385,8 +387,8 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(13, 6, 0, 0);
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(6, 6, 0, 0);
         jPanel1.add(endDateLabel, gridBagConstraints);
 
         endSpinner.setModel(new javax.swing.SpinnerDateModel(new java.util.Date(1132462800000L), null, null, java.util.Calendar.DAY_OF_MONTH));
@@ -410,7 +412,8 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
 
         jPanel2.setLayout(new java.awt.GridBagLayout());
 
-        filter1CheckBox.setText("Filter 1 (550 nm)");
+        filter1CheckBox.setSelected(true);
+        filter1CheckBox.setText("Filter ul (381 nm)");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -418,7 +421,8 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
         gridBagConstraints.insets = new java.awt.Insets(5, 7, 0, 0);
         jPanel2.add(filter1CheckBox, gridBagConstraints);
 
-        filter2CheckBox.setText("Filter 2 (450 nm)");
+        filter2CheckBox.setSelected(true);
+        filter2CheckBox.setText("Filter b (429 nm)");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
@@ -426,7 +430,8 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
         gridBagConstraints.insets = new java.awt.Insets(6, 7, 0, 0);
         jPanel2.add(filter2CheckBox, gridBagConstraints);
 
-        filter3CheckBox.setText("Filter 3 (760 nm)");
+        filter3CheckBox.setSelected(true);
+        filter3CheckBox.setText("Filter v (553 nm)");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
@@ -434,7 +439,8 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
         gridBagConstraints.insets = new java.awt.Insets(6, 7, 0, 0);
         jPanel2.add(filter3CheckBox, gridBagConstraints);
 
-        filter4CheckBox.setText("Filter 4 (950 nm)");
+        filter4CheckBox.setSelected(true);
+        filter4CheckBox.setText("Filter w (700 nm)");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 3;
@@ -443,7 +449,8 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
         gridBagConstraints.insets = new java.awt.Insets(6, 7, 6, 0);
         jPanel2.add(filter4CheckBox, gridBagConstraints);
 
-        filter5CheckBox.setText("Filter 5 (900 nm)");
+        filter5CheckBox.setSelected(true);
+        filter5CheckBox.setText("Filter x (861 nm)");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
@@ -452,7 +459,8 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
         gridBagConstraints.insets = new java.awt.Insets(5, 8, 0, 0);
         jPanel2.add(filter5CheckBox, gridBagConstraints);
 
-        filter6CheckBox.setText("Filter 6 (1000 nm)");
+        filter6CheckBox.setSelected(true);
+        filter6CheckBox.setText("Filter p (960 nm)");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
@@ -461,7 +469,8 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
         gridBagConstraints.insets = new java.awt.Insets(6, 8, 0, 6);
         jPanel2.add(filter6CheckBox, gridBagConstraints);
 
-        filter7CheckBox.setText("Filter 7 (1050 nm)");
+        filter7CheckBox.setSelected(true);
+        filter7CheckBox.setText("Filter zs (1008 nm)");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 2;
@@ -485,11 +494,17 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(12, 6, 0, 0);
         jPanel3.add(fromDistanceLabel, gridBagConstraints);
+
+        fromDistanceTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.###"))));
+        fromDistanceTextField.setText("0");
+        fromDistanceTextField.setPreferredSize(new java.awt.Dimension(0, 27));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.ipadx = 43;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(6, 6, 0, 0);
         jPanel3.add(fromDistanceTextField, gridBagConstraints);
 
@@ -500,11 +515,17 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(12, 6, 0, 0);
         jPanel3.add(toDistanceLabel, gridBagConstraints);
+
+        toDistanceTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.###"))));
+        toDistanceTextField.setText("100");
+        toDistanceTextField.setPreferredSize(new java.awt.Dimension(0, 27));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.ipadx = 43;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(6, 6, 0, 0);
         jPanel3.add(toDistanceTextField, gridBagConstraints);
 
@@ -522,11 +543,16 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(13, 19, 0, 0);
+        gridBagConstraints.insets = new java.awt.Insets(12, 19, 0, 0);
         jPanel3.add(fromResolutionLabel, gridBagConstraints);
+
+        fromResolutionTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.###"))));
+        fromResolutionTextField.setText("0");
+        fromResolutionTextField.setPreferredSize(new java.awt.Dimension(0, 27));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.ipadx = 43;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(7, 6, 0, 0);
@@ -537,12 +563,17 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 1;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(13, 6, 0, 0);
+        gridBagConstraints.insets = new java.awt.Insets(12, 4, 0, 0);
         jPanel3.add(toResolutionLabel, gridBagConstraints);
+
+        toResolutionTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.###"))));
+        toResolutionTextField.setText("50");
+        toResolutionTextField.setPreferredSize(new java.awt.Dimension(0, 27));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 1;
-        gridBagConstraints.ipadx = 45;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.ipadx = 43;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(7, 6, 0, 0);
         jPanel3.add(toResolutionTextField, gridBagConstraints);
@@ -554,7 +585,7 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
         gridBagConstraints.gridy = 1;
         gridBagConstraints.ipadx = 19;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(12, 4, 0, 6);
+        gridBagConstraints.insets = new java.awt.Insets(12, 4, 0, 0);
         jPanel3.add(endResolutionLabel, gridBagConstraints);
 
         fromIncidenceLabel.setText("Incidence from");
@@ -564,9 +595,14 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(12, 25, 0, 0);
         jPanel3.add(fromIncidenceLabel, gridBagConstraints);
+
+        fromIncidenceTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.###"))));
+        fromIncidenceTextField.setText("0");
+        fromIncidenceTextField.setPreferredSize(new java.awt.Dimension(0, 27));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.ipadx = 43;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(6, 6, 0, 0);
@@ -579,10 +615,15 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(12, 6, 0, 0);
         jPanel3.add(toIncidenceLabel, gridBagConstraints);
+
+        toIncidenceTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.###"))));
+        toIncidenceTextField.setText("180");
+        toIncidenceTextField.setPreferredSize(new java.awt.Dimension(0, 27));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 2;
-        gridBagConstraints.ipadx = 45;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.ipadx = 43;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(6, 6, 0, 0);
         jPanel3.add(toIncidenceTextField, gridBagConstraints);
@@ -602,9 +643,14 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(12, 30, 0, 0);
         jPanel3.add(fromEmissionLabel, gridBagConstraints);
+
+        fromEmissionTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.###"))));
+        fromEmissionTextField.setText("0");
+        fromEmissionTextField.setPreferredSize(new java.awt.Dimension(0, 27));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 3;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.ipadx = 43;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(6, 6, 0, 0);
@@ -617,9 +663,14 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(12, 6, 0, 0);
         jPanel3.add(toEmissionLabel, gridBagConstraints);
+
+        toEmissionTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.###"))));
+        toEmissionTextField.setText("180");
+        toEmissionTextField.setPreferredSize(new java.awt.Dimension(0, 27));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 3;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.ipadx = 43;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(6, 6, 0, 0);
@@ -640,9 +691,14 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(12, 46, 0, 0);
         jPanel3.add(fromPhaseLabel, gridBagConstraints);
+
+        fromPhaseTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.###"))));
+        fromPhaseTextField.setText("0");
+        fromPhaseTextField.setPreferredSize(new java.awt.Dimension(0, 27));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 4;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.ipadx = 43;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(6, 6, 0, 0);
@@ -655,9 +711,14 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(12, 6, 0, 0);
         jPanel3.add(toPhaseLabel, gridBagConstraints);
+
+        toPhaseTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.###"))));
+        toPhaseTextField.setText("180");
+        toPhaseTextField.setPreferredSize(new java.awt.Dimension(0, 27));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 4;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.ipadx = 43;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(6, 6, 0, 0);
@@ -692,6 +753,8 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(10, 6, 0, 0);
         jPanel4.add(searchByNumberCheckBox, gridBagConstraints);
+
+        searchByNumberTextField.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
@@ -755,8 +818,8 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.ipadx = 316;
-        gridBagConstraints.ipady = 21;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.ipady = 20;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         jPanel6.add(resultsLabel, gridBagConstraints);
 
@@ -1084,7 +1147,7 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
             // Only get the prev block if there's something left to show.
             if (resultIntervalCurrentlyShown.id1 > 0)
             {
-                resultIntervalCurrentlyShown.prevBlock((Integer)numberOfBoundariesComboBox.getSelectedItem());
+                resultIntervalCurrentlyShown.prevBlock(Integer.parseInt((String)this.numberOfBoundariesComboBox.getSelectedItem()));
                 showAmicaBoundaries(resultIntervalCurrentlyShown);
             }
         }
@@ -1098,13 +1161,13 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
             // Only get the next block if there's something left to show.
             if (resultIntervalCurrentlyShown.id2 < resultList.getModel().getSize())
             {
-                resultIntervalCurrentlyShown.nextBlock((Integer)numberOfBoundariesComboBox.getSelectedItem());
+                resultIntervalCurrentlyShown.nextBlock(Integer.parseInt((String)this.numberOfBoundariesComboBox.getSelectedItem()));
                 showAmicaBoundaries(resultIntervalCurrentlyShown);
             }
         }
         else
         {
-            resultIntervalCurrentlyShown = new IdPair(0, (Integer)numberOfBoundariesComboBox.getSelectedItem());
+            resultIntervalCurrentlyShown = new IdPair(0, Integer.parseInt((String)this.numberOfBoundariesComboBox.getSelectedItem()));
             showAmicaBoundaries(resultIntervalCurrentlyShown);
         }
     }//GEN-LAST:event_nextButtonActionPerformed
@@ -1268,7 +1331,6 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
             }
 
             Image.ImageSource amicaSource = Image.ImageSource.GASKELL;
-            System.out.println(amicaSource.toString());
             ArrayList<String> results = ItokawaQuery.getInstance().runQuery(
                     ItokawaQuery.Datatype.AMICA,
                     startDateJoda,
