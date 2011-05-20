@@ -243,25 +243,30 @@ public class ImagePopupMenu extends PopupMenu
             double[] spacecraftPosition = new double[3];
             double[] focalPoint = new double[3];
             double[] upVector = new double[3];
+            double viewAngle = 0.0;
 
             if (imageBoundaryCollection.containsBoundary(imageKey))
             {
                 ImageBoundary boundary = imageBoundaryCollection.getBoundary(imageKey);
                 boundary.getCameraOrientation(spacecraftPosition, focalPoint, upVector);
+
+                viewAngle = boundary.getImage().getFovAngle();
             }
             else if (imageCollection.containsImage(imageKey))
             {
                 Image image = imageCollection.getImage(imageKey);
                 image.getCameraOrientation(spacecraftPosition, focalPoint, upVector);
+
+                viewAngle = image.getFovAngle();
             }
             else
             {
                 return;
             }
 
-            // The field of view of the MSI imager was 2.95 by 2.26 degrees. Therefore set the view angle
-            // here to 4 degrees to show a little of the asteroid around the image.
-            double viewAngle = 4.0;
+            // Increase the view angle by a little amount to show some of
+            // the asteroid around the image.
+            viewAngle = 1.25 * viewAngle;
 
             renderer.setCameraOrientation(spacecraftPosition, focalPoint, upVector, viewAngle);
         }

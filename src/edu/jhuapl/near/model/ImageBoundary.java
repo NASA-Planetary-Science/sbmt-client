@@ -239,6 +239,11 @@ public class ImageBoundary extends Model implements PropertyChangeListener
         return image.getKey();
     }
 
+    public Image getImage()
+    {
+        return image;
+    }
+
     public void getCameraOrientation(double[] spacecraftPosition,
             double[] focalPoint, double[] upVector)
     {

@@ -1392,4 +1392,20 @@ abstract public class Image extends Model implements PropertyChangeListener
         return new Frustum(spacecraftPosition, frustum1, frustum3, frustum4, frustum2);
     }
 
+    /**
+     *  Get the maximum FOV angle in degrees of the image. I.e., return the
+     *  angular separation in degrees between two corners of the frustum where the
+     *  two corners are both on the longer side.
+     *
+     * @return
+     */
+    public double getFovAngle()
+    {
+        double fov = Math.max(Math.abs(getFovParameter1()), Math.abs(getFovParameter2()));
+
+        double[] v1 = {fov, fov, 1.0};
+        double[] v2 = {-fov, fov, 1.0};
+
+        return MathUtil.vsep(v1, v2) * 180.0 / Math.PI;
+    }
 }
