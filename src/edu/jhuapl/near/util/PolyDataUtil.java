@@ -96,35 +96,13 @@ public class PolyDataUtil
         double[] right = new double[3];
         double[] bottom = new double[3];
         double[] left = new double[3];
-        double[] near = new double[3];
-        double[] far = new double[3];
 
         MathUtil.vcrss(ur, ul, top);
         MathUtil.vcrss(lr, ur, right);
         MathUtil.vcrss(ll, lr, bottom);
         MathUtil.vcrss(ul, ll, left);
 
-        // let the near clipping plane be very close to the origin
-        double dx = 0.1;
-        double[] nearUL = {origin[0]+ul[0]*dx, origin[1]+ul[1]*dx, origin[2]+ul[2]*dx};
-        //double[] nearUR = {origin[0]+ur[0]*dx, origin[1]+ur[1]*dx, origin[2]+ur[2]*dx};
-        double[] nearLL = {origin[0]+ll[0]*dx, origin[1]+ll[1]*dx, origin[2]+ll[2]*dx};
-        double[] nearLR = {origin[0]+lr[0]*dx, origin[1]+lr[1]*dx, origin[2]+lr[2]*dx};
-        double[] nearX = {nearLR[0]-nearLL[0], nearLR[1]-nearLL[1], nearLR[2]-nearLL[2]};
-        double[] nearY = {nearUL[0]-nearLL[0], nearUL[1]-nearLL[1], nearUL[2]-nearLL[2]};
-        MathUtil.vcrss(nearX, nearY, near);
-
-        // let the far clipping plane be a multiple of the distance to the origin
-        dx = 2.0 * MathUtil.vnorm(origin);
-        //double[] farUL = {origin[0]+ul[0]*dx, origin[1]+ul[1]*dx, origin[2]+ul[2]*dx};
-        double[] farUR = {origin[0]+ur[0]*dx, origin[1]+ur[1]*dx, origin[2]+ur[2]*dx};
-        double[] farLL = {origin[0]+ll[0]*dx, origin[1]+ll[1]*dx, origin[2]+ll[2]*dx};
-        double[] farLR = {origin[0]+lr[0]*dx, origin[1]+lr[1]*dx, origin[2]+lr[2]*dx};
-        double[] farX = {farLL[0]-farLR[0], farLL[1]-farLR[1], farLL[2]-farLR[2]};
-        double[] farY = {farUR[0]-farLR[0], farUR[1]-farLR[1], farUR[2]-farLR[2]};
-        MathUtil.vcrss(farX, farY, far);
-
-        dx = MathUtil.vnorm(origin);
+        double dx = MathUtil.vnorm(origin);
         double[] UL2 = {origin[0]+ul[0]*dx, origin[1]+ul[1]*dx, origin[2]+ul[2]*dx};
         double[] UR2 = {origin[0]+ur[0]*dx, origin[1]+ur[1]*dx, origin[2]+ur[2]*dx};
         double[] LL2 = {origin[0]+ll[0]*dx, origin[1]+ll[1]*dx, origin[2]+ll[2]*dx};
