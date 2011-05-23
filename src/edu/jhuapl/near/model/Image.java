@@ -549,6 +549,10 @@ abstract public class Image extends Model implements PropertyChangeListener
             vtkImageData mapToColorsOutput = maskFilter.GetOutput();
             displayedImage.DeepCopy(mapToColorsOutput);
 
+            maskFilter.Delete();
+            mapToColors.Delete();
+            lut.Delete();
+
             //vtkPNGWriter writer = new vtkPNGWriter();
             //writer.SetFileName("fit.png");
             //writer.SetInput(displayedImage);
