@@ -2,6 +2,7 @@ package edu.jhuapl.near.model;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -72,10 +73,30 @@ abstract public class ColorImage extends Model implements PropertyChangeListener
         @Override
         public String toString()
         {
+            // Find the start and stop indices of number part of the name. Should be
+            // the same for all 3 images.
+            String name = new File(redImageKey.name).getName();
+            char[] buf = name.toCharArray();
+            int ind0 = -1;
+            int ind1 = -1;
+            for (int i = 0; i<buf.length; ++i)
+            {
+                if (Character.isDigit(buf[i]) && ind0 == -1)
+                    ind0 = i;
+                else if(!Character.isDigit(buf[i]) && ind0 >= 0)
+                {
+                    ind1 = i;
+                    break;
+                }
+            }
+
+            if (buf[ind0] == '0')
+                ++ind0;
+
             return
-            "R: " + redImageKey.name.substring(23, 32) + ", " +
-            "G: " + greenImageKey.name.substring(23, 32) + ", " +
-            "B: " + blueImageKey.name.substring(23, 32);
+            "R: " + new File(redImageKey.name).getName().substring(ind0, ind1) + ", " +
+            "G: " + new File(greenImageKey.name).getName().substring(ind0, ind1) + ", " +
+            "B: " + new File(blueImageKey.name).getName().substring(ind0, ind1);
         }
     }
 

@@ -16,6 +16,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -93,6 +94,8 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
         pickManager.getDefaultPicker().addPropertyChangeListener(this);
 
         initComponents();
+
+        colorImagesDisplayedList.setModel(new DefaultListModel());
 
         AmicaImageCollection msiImages = (AmicaImageCollection)modelManager.getModel(ModelNames.AMICA_IMAGES);
         AmicaBoundaryCollection msiBoundaries = (AmicaBoundaryCollection)modelManager.getModel(ModelNames.AMICA_BOUNDARY);
@@ -826,6 +829,8 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         jPanel6.add(resultsLabel, gridBagConstraints);
 
+        jScrollPane1.setPreferredSize(new java.awt.Dimension(300, 200));
+
         resultList.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 resultListMousePressed(evt);
@@ -951,7 +956,6 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
         redButton.setBackground(new java.awt.Color(255, 0, 0));
         redButton.setText("Red");
         redButton.setToolTipText("Select an image from the list above and then press this button");
-        redButton.setEnabled(false);
         redButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 redButtonActionPerformed(evt);
@@ -972,7 +976,6 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
         greenButton.setBackground(new java.awt.Color(0, 255, 0));
         greenButton.setText("Green");
         greenButton.setToolTipText("Select an image from the list above and then press this button");
-        greenButton.setEnabled(false);
         greenButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 greenButtonActionPerformed(evt);
@@ -987,7 +990,6 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
         blueButton.setBackground(new java.awt.Color(0, 0, 255));
         blueButton.setText("Blue");
         blueButton.setToolTipText("Select an image from the list above and then press this button");
-        blueButton.setEnabled(false);
         blueButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 blueButtonActionPerformed(evt);
@@ -1020,7 +1022,6 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
         jPanel8.add(jPanel10, gridBagConstraints);
 
         generateColorImageButton.setText("Generate Color Image");
-        generateColorImageButton.setEnabled(false);
         generateColorImageButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 generateColorImageButtonActionPerformed(evt);
@@ -1031,6 +1032,9 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
         gridBagConstraints.gridy = 12;
         jPanel8.add(generateColorImageButton, gridBagConstraints);
 
+        jScrollPane3.setPreferredSize(new java.awt.Dimension(300, 100));
+
+        colorImagesDisplayedList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         colorImagesDisplayedList.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 colorImagesDisplayedListMousePressed(evt);
@@ -1048,7 +1052,6 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
         jPanel8.add(jScrollPane3, gridBagConstraints);
 
         removeColorImageButton.setText("Remove");
-        removeColorImageButton.setEnabled(false);
         removeColorImageButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 removeColorImageButtonActionPerformed(evt);
@@ -1203,7 +1206,7 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
         if (index >= 0)
         {
             String image = amicaRawResults.get(index).get(0);
-            String name = image.substring(23, 32);
+            String name = new File(image).getName();
             image = image.substring(0,image.length()-4);
             redLabel.setText(name);
             selectedRedKey = new ImageKey(image, sourceOfLastQuery);
@@ -1216,7 +1219,7 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
         if (index >= 0)
         {
             String image = amicaRawResults.get(index).get(0);
-            String name = image.substring(23, 32);
+            String name = new File(image).getName();
             image = image.substring(0,image.length()-4);
             greenLabel.setText(name);
             selectedGreenKey = new ImageKey(image, sourceOfLastQuery);
@@ -1229,7 +1232,7 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
         if (index >= 0)
         {
             String image = amicaRawResults.get(index).get(0);
-            String name = image.substring(23, 32);
+            String name = new File(image).getName();
             image = image.substring(0,image.length()-4);
             blueLabel.setText(name);
             selectedBlueKey = new ImageKey(image, sourceOfLastQuery);
