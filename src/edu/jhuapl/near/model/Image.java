@@ -26,7 +26,6 @@ import vtk.vtkImageCanvasSource2D;
 import vtk.vtkImageData;
 import vtk.vtkImageMapToColors;
 import vtk.vtkImageMask;
-import vtk.vtkImageReslice;
 import vtk.vtkLookupTable;
 import vtk.vtkPointData;
 import vtk.vtkPoints;
@@ -239,6 +238,12 @@ abstract public class Image extends Model implements PropertyChangeListener
     abstract public String generateBackplanesLabel() throws IOException;
     abstract public LinkedHashMap<String, String> getProperties() throws IOException;
 
+    // Give oppurtunity to subclass to rescale raw image
+    protected void rescaleRawImage(vtkImageData rawImage)
+    {
+        // By default do nothing
+    }
+
     private void initialize() throws FitsException, IOException
     {
         String filename = getFitFileFullPath();
@@ -305,24 +310,10 @@ abstract public class Image extends Model implements PropertyChangeListener
                     minValue = array[i][j];
             }
 
-        // Now scale this image only if necessary (i.e. the height as specified in
-        // in getImageHeight() is different than the height of the raw image.
+        rescaleRawImage(rawImage);
+
         int IMAGE_WIDTH = getImageWidth();
         int IMAGE_HEIGHT = getImageHeight();
-        if (getImageHeight() != originalHeight)
-        {
-            vtkImageReslice reslice = new vtkImageReslice();
-            reslice.SetInput(rawImage);
-            reslice.SetInterpolationModeToLinear();
-            reslice.SetOutputSpacing(1.0, (double)originalHeight/(double)IMAGE_HEIGHT, 1.0);
-            reslice.SetOutputOrigin(0.0, 0.0, 0.0);
-            reslice.SetOutputExtent(0, IMAGE_WIDTH-1, 0, IMAGE_HEIGHT-1, 0, 0);
-            reslice.Update();
-
-            vtkImageData resliceOutput = reslice.GetOutput();
-            rawImage.DeepCopy(resliceOutput);
-            rawImage.SetSpacing(1, 1, 1);
-        }
 
         maskSource = new vtkImageCanvasSource2D();
         maskSource.SetScalarTypeToUnsignedChar();

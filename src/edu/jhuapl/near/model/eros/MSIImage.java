@@ -12,6 +12,9 @@ import java.util.StringTokenizer;
 
 import nom.tam.fits.FitsException;
 
+import vtk.vtkImageData;
+import vtk.vtkImageReslice;
+
 import edu.jhuapl.near.model.Image;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.util.FileCache;
@@ -96,6 +99,24 @@ public class MSIImage extends Image
         this.sumfileFullPath = sumfile.getAbsolutePath() + "/sumfiles/" + sumname + ".SUM";
     }
 
+    @Override
+    protected void rescaleRawImage(vtkImageData rawImage)
+    {
+        int[] dims = rawImage.GetDimensions();
+        int originalHeight = dims[1];
+
+        vtkImageReslice reslice = new vtkImageReslice();
+        reslice.SetInput(rawImage);
+        reslice.SetInterpolationModeToLinear();
+        reslice.SetOutputSpacing(1.0, (double)originalHeight/(double)IMAGE_HEIGHT, 1.0);
+        reslice.SetOutputOrigin(0.0, 0.0, 0.0);
+        reslice.SetOutputExtent(0, IMAGE_WIDTH-1, 0, IMAGE_HEIGHT-1, 0, 0);
+        reslice.Update();
+
+        vtkImageData resliceOutput = reslice.GetOutput();
+        rawImage.DeepCopy(resliceOutput);
+        rawImage.SetSpacing(1, 1, 1);
+    }
 
     @Override
     public void loadImageInfo(
