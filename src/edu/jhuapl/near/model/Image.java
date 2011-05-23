@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
@@ -791,9 +791,9 @@ abstract public class Image extends Model implements PropertyChangeListener
 //        printpt(frustum4, "gas frustum4 ");
     }
 
-    public HashMap<String, String> getProperties() throws IOException
+    public LinkedHashMap<String, String> getProperties() throws IOException
     {
-        HashMap<String, String> properties = new HashMap<String, String>();
+        LinkedHashMap<String, String> properties = new LinkedHashMap<String, String>();
 
         if (maxPhase < minPhase)
         {

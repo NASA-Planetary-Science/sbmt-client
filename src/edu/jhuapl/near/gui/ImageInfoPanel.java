@@ -8,8 +8,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.TreeMap;
+import java.util.LinkedHashMap;
 
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
@@ -94,20 +93,19 @@ public class ImageInfoPanel extends ModelInfoWindow implements PropertyChangeLis
         String[] columnNames = {"Property",
                 "Value"};
 
-        HashMap<String, String> properties = null;
+        LinkedHashMap<String, String> properties = null;
         Object[][] data = {    {"", ""} };
         try
         {
             properties = image.getProperties();
-            TreeMap<String, String> sortedProperties = new TreeMap<String, String>(properties);
             int size = properties.size();
             data = new Object[size][2];
 
             int i=0;
-            for (String key : sortedProperties.keySet())
+            for (String key : properties.keySet())
             {
                 data[i][0] = key;
-                data[i][1] = sortedProperties.get(key);
+                data[i][1] = properties.get(key);
 
                 ++i;
             }
