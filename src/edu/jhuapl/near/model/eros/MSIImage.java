@@ -6,6 +6,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.text.DecimalFormat;
+import java.util.LinkedHashMap;
 import java.util.StringTokenizer;
 
 import nom.tam.fits.FitsException;
@@ -407,6 +409,45 @@ public class MSIImage extends Image
     {
         String fitName = new File(getFitFileFullPath()).getName();
         return Integer.parseInt(fitName.substring(12,13));
+    }
+
+    @Override
+    public LinkedHashMap<String, String> getProperties() throws IOException
+    {
+        LinkedHashMap<String, String> properties = new LinkedHashMap<String, String>();
+
+        if (getMaxPhase() < getMinPhase())
+        {
+            this.computeIlluminationAngles();
+            this.computePixelScale();
+        }
+
+        DecimalFormat df = new DecimalFormat("#.######");
+
+        String fullpath = getFitFileFullPath();
+        properties.put("Name", new File(getFitFileFullPath()).getName()); //TODO remove extension and possibly prefix
+        properties.put("Start Time", getStartTime());
+        properties.put("Stop Time", getStopTime());
+        properties.put("Filter", String.valueOf(getFilter()));
+        properties.put("Day of Year", (new File(fullpath)).getParentFile().getParentFile().getName());
+        properties.put("Year", (new File(fullpath)).getParentFile().getParentFile().getParentFile().getName());
+        properties.put("Deblur Type", (new File(fullpath)).getParentFile().getName());
+        properties.put("Spacecraft Distance", df.format(getSpacecraftDistance()) + " km");
+
+        // Note \u00B0 is the unicode degree symbol
+        String deg = "\u00B0";
+        properties.put("Minimum Incidence", df.format(getMinIncidence())+deg);
+        properties.put("Maximum Incidence", df.format(getMaxIncidence())+deg);
+        properties.put("Minimum Emission", df.format(getMinEmission())+deg);
+        properties.put("Maximum Emission", df.format(getMaxIncidence())+deg);
+        properties.put("Minimum Phase", df.format(getMinPhase())+deg);
+        properties.put("Maximum Phase", df.format(getMaxPhase())+deg);
+        properties.put("Minimum Horizontal Pixel Scale", df.format(1000.0*getMinimumHorizontalPixelScale()) + " meters/pixel");
+        properties.put("Maximum Horizontal Pixel Scale", df.format(1000.0*getMaximumHorizontalPixelScale()) + " meters/pixel");
+        properties.put("Minimum Vertical Pixel Scale", df.format(1000.0*getMinimumVerticalPixelScale()) + " meters/pixel");
+        properties.put("Maximum Vertical Pixel Scale", df.format(1000.0*getMaximumVerticalPixelScale()) + " meters/pixel");
+
+        return properties;
     }
 
 

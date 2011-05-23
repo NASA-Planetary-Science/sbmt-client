@@ -7,7 +7,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
@@ -238,6 +237,7 @@ abstract public class Image extends Model implements PropertyChangeListener
     abstract protected int getFilter();
 
     abstract public String generateBackplanesLabel() throws IOException;
+    abstract public LinkedHashMap<String, String> getProperties() throws IOException;
 
     private void initialize() throws FitsException, IOException
     {
@@ -791,44 +791,6 @@ abstract public class Image extends Model implements PropertyChangeListener
 //        printpt(frustum4, "gas frustum4 ");
     }
 
-    public LinkedHashMap<String, String> getProperties() throws IOException
-    {
-        LinkedHashMap<String, String> properties = new LinkedHashMap<String, String>();
-
-        if (maxPhase < minPhase)
-        {
-            this.computeIlluminationAngles();
-            this.computePixelScale();
-        }
-
-        DecimalFormat df = new DecimalFormat("#.######");
-
-        String fullpath = getFitFileFullPath();
-        properties.put("Spacecraft Distance", df.format(getSpacecraftDistance()) + " km");
-        properties.put("Name", new File(getFitFileFullPath()).getName()); //TODO remove extension and possibly prefix
-        properties.put("Start Time", startTime);
-        properties.put("Stop Time", stopTime);
-        properties.put("Filter", String.valueOf(getFilter()));
-        properties.put("Day of Year", (new File(fullpath)).getParentFile().getParentFile().getName());
-        properties.put("Year", (new File(fullpath)).getParentFile().getParentFile().getParentFile().getName());
-        properties.put("Deblur Type", (new File(fullpath)).getParentFile().getName());
-
-        // Note \u00B0 is the unicode degree symbol
-        String deg = "\u00B0";
-        properties.put("Minimum Incidence", df.format(minIncidence)+deg);
-        properties.put("Maximum Incidence", df.format(maxIncidence)+deg);
-        properties.put("Minimum Emission", df.format(minEmission)+deg);
-        properties.put("Maximum Emission", df.format(maxIncidence)+deg);
-        properties.put("Minimum Phase", df.format(minPhase)+deg);
-        properties.put("Maximum Phase", df.format(maxPhase)+deg);
-        properties.put("Minimum Horizontal Pixel Scale", df.format(1000.0*minHorizontalPixelScale) + " meters/pixel");
-        properties.put("Maximum Horizontal Pixel Scale", df.format(1000.0*maxHorizontalPixelScale) + " meters/pixel");
-        properties.put("Minimum Vertical Pixel Scale", df.format(1000.0*minVerticalPixelScale) + " meters/pixel");
-        properties.put("Maximum Vertical Pixel Scale", df.format(1000.0*maxVerticalPixelScale) + " meters/pixel");
-
-        return properties;
-    }
-
     public boolean containsLimb()
     {
         //TODO Speed this up: Determine if there is a limb without computing the entire backplane.
@@ -999,7 +961,7 @@ abstract public class Image extends Model implements PropertyChangeListener
         return angles;
     }
 
-    private void computeIlluminationAngles()
+    protected void computeIlluminationAngles()
     {
         if (footprintGenerated == false)
             loadFootprint();
@@ -1051,7 +1013,7 @@ abstract public class Image extends Model implements PropertyChangeListener
         }
     }
 
-    private void computePixelScale()
+    protected void computePixelScale()
     {
         if (footprintGenerated == false)
             loadFootprint();

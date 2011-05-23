@@ -6,8 +6,10 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.LinkedHashMap;
 
 import nom.tam.fits.FitsException;
 
@@ -444,22 +446,83 @@ public class AmicaImage extends Image
 
         String filterName = fitName.substring(ind1+1, ind2);
 
-        int filterNum = -1;
-        if (filterName.equals("ul"))
-            filterNum = 1;
-        else if (filterName.equals("b"))
-            filterNum = 2;
-        else if (filterName.equals("v"))
-            filterNum = 3;
-        else if (filterName.equals("w"))
-            filterNum = 4;
-        else if (filterName.equals("x"))
-            filterNum = 5;
-        else if (filterName.equals("p"))
-            filterNum = 6;
-        else if (filterName.equals("zs"))
-            filterNum = 7;
-
-        return filterNum;
+        return getFilterNumberFromName(filterName);
     }
+
+    private int getFilterNumberFromName(String name)
+    {
+        int num = -1;
+        if (name.equals("ul"))
+            num = 1;
+        else if (name.equals("b"))
+            num = 2;
+        else if (name.equals("v"))
+            num = 3;
+        else if (name.equals("w"))
+            num = 4;
+        else if (name.equals("x"))
+            num = 5;
+        else if (name.equals("p"))
+            num = 6;
+        else if (name.equals("zs"))
+            num = 7;
+
+        return num;
+    }
+
+    private String getFilterNameFromNumber(int num)
+    {
+        String name = "";
+        if (num == 1)
+            name = "ul";
+        else if (num == 2)
+            name = "b";
+        else if (num == 3)
+            name = "v";
+        else if (num == 4)
+            name = "w";
+        else if (num == 5)
+            name = "x";
+        else if (num == 6)
+            name = "p";
+        else if (num == 7)
+            name = "zs";
+
+        return name;
+    }
+
+    @Override
+    public LinkedHashMap<String, String> getProperties() throws IOException
+    {
+        LinkedHashMap<String, String> properties = new LinkedHashMap<String, String>();
+
+        if (getMaxPhase() < getMinPhase())
+        {
+            this.computeIlluminationAngles();
+            this.computePixelScale();
+        }
+
+        DecimalFormat df = new DecimalFormat("#.######");
+
+        properties.put("Name", new File(getFitFileFullPath()).getName()); //TODO remove extension and possibly prefix
+        properties.put("Time", getStartTime());
+        properties.put("Spacecraft Distance", df.format(getSpacecraftDistance()) + " km");
+        properties.put("Filter", getFilterNameFromNumber(getFilter()));
+
+        // Note \u00B0 is the unicode degree symbol
+        String deg = "\u00B0";
+        properties.put("Minimum Incidence", df.format(getMinIncidence())+deg);
+        properties.put("Maximum Incidence", df.format(getMaxIncidence())+deg);
+        properties.put("Minimum Emission", df.format(getMinEmission())+deg);
+        properties.put("Maximum Emission", df.format(getMaxIncidence())+deg);
+        properties.put("Minimum Phase", df.format(getMinPhase())+deg);
+        properties.put("Maximum Phase", df.format(getMaxPhase())+deg);
+        properties.put("Minimum Horizontal Pixel Scale", df.format(1000.0*getMinimumHorizontalPixelScale()) + " meters/pixel");
+        properties.put("Maximum Horizontal Pixel Scale", df.format(1000.0*getMaximumHorizontalPixelScale()) + " meters/pixel");
+        properties.put("Minimum Vertical Pixel Scale", df.format(1000.0*getMinimumVerticalPixelScale()) + " meters/pixel");
+        properties.put("Maximum Vertical Pixel Scale", df.format(1000.0*getMaximumVerticalPixelScale()) + " meters/pixel");
+
+        return properties;
+    }
+
 }
