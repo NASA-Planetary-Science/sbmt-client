@@ -9,14 +9,14 @@ import javax.swing.LookAndFeel;
 import javax.swing.ToolTipManager;
 import javax.swing.UIManager;
 
+import com.jgoodies.looks.LookUtils;
+
 import vtk.vtkJavaGarbageCollector;
 
 import edu.jhuapl.near.gui.MainWindow;
 import edu.jhuapl.near.gui.OSXAdapter;
 import edu.jhuapl.near.util.Configuration;
 import edu.jhuapl.near.util.NativeLibraryLoader;
-
-import com.jgoodies.looks.LookUtils;
 
 /**
  * This class contains the "main" function called at the start of the program.
@@ -52,14 +52,10 @@ public class SmallBodyMappingTool
                 LookAndFeel lookAndFeel = (LookAndFeel)getLookAndFeelMethod.invoke(null, new Object[] { });
                 UIManager.setLookAndFeel(lookAndFeel);
             }
-            else if (Configuration.isLinux())
+            else
             {
                 UIManager.put("ClassLoader", LookUtils.class.getClassLoader());
                 UIManager.setLookAndFeel("com.jgoodies.looks.plastic.PlasticXPLookAndFeel");
-            }
-            else // Windows
-            {
-                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
             }
         }
         catch (Exception e)
