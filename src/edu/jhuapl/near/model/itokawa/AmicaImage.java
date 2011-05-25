@@ -3,7 +3,6 @@ package edu.jhuapl.near.model.itokawa;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.DecimalFormat;
@@ -88,17 +87,25 @@ public class AmicaImage extends Image
         // Not used
     }
 
+    private void appendWithPadding(StringBuffer strbuf, String str)
+    {
+        strbuf.append(str);
+
+        int length = str.length();
+        while(length < 78)
+        {
+            strbuf.append(' ');
+            ++length;
+        }
+
+        strbuf.append("\r\n");
+    }
+
     public String generateBackplanesLabel() throws IOException
     {
         String lblFilename = getInfoFileFullPath();
 
-        FileInputStream fs = null;
-        try {
-            fs = new FileInputStream(lblFilename);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            return "";
-        }
+        FileInputStream fs = new FileInputStream(lblFilename);
         InputStreamReader isr = new InputStreamReader(fs);
         BufferedReader in = new BufferedReader(isr);
 
@@ -114,8 +121,6 @@ public class AmicaImage extends Image
         String str;
         while ((str = in.readLine()) != null)
         {
-            str = str.trim();
-
             // The software name and version in the downloaded ddr is not correct
             if (str.startsWith("RECORD_TYPE") ||
                     str.startsWith("RECORD_BYTES") ||
@@ -126,12 +131,18 @@ public class AmicaImage extends Image
                 continue;
             }
 
+            if (str.startsWith("DATA_SET_ID"))
+            {
+                appendWithPadding(strbuf, "DATA_SET_ID                        = \"HAY-A-AMICA-3-AMICAGEOM-V1.0\"");
+                continue;
+            }
+
             if (str.startsWith("PRODUCT_NAME"))
             {
                 String[] tokens = str.split("=");
                 productName = tokens[1].trim().replaceAll("\"","");
                 productName = productName.substring(0, productName.length()-4) + "_DDR.IMG";
-                strbuf.append("PRODUCT_NAME                       = \"" + productName + "\"\r\n");
+                appendWithPadding(strbuf, "PRODUCT_NAME                       = \"" + productName + "\"");
                 continue;
             }
 
@@ -140,77 +151,79 @@ public class AmicaImage extends Image
                 String[] tokens = str.split("=");
                 String name = tokens[1].trim().replaceAll("\"","");
                 name = name.substring(0, name.length()-4) + "_DDR_IMG";
-                strbuf.append("PRODUCT_ID                         = \"" + name + "\"\r\n");
+                appendWithPadding(strbuf, "PRODUCT_ID                         = \"" + name + "\"");
                 continue;
             }
 
             if (str.startsWith("PRODUCT_CREATION_TIME"))
             {
-                strbuf.append("PRODUCT_TYPE                       = DDR\r\n");
+                appendWithPadding(strbuf, "PRODUCT_TYPE                       = DDR");
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 Date date = new Date();
                 String dateStr = sdf.format(date).replace(' ', 'T');
-                strbuf.append("PRODUCT_CREATION_TIME              = " + dateStr + "\r\n");
+                appendWithPadding(strbuf, "PRODUCT_CREATION_TIME              = " + dateStr);
                 continue;
             }
 
             if (str.startsWith("OBJECT"))
             {
-                strbuf.append("\r\n");
-                strbuf.append("/* This DDR label describes one data file:                               */\r\n");
-                strbuf.append("/* 1. A multiple-band backplane image file with wavelength-independent,  */\r\n");
-                strbuf.append("/* spatial pixel-dependent geometric and timing information.             */\r\n");
-                strbuf.append("\r\n");
-                strbuf.append("OBJECT                       = FILE\r\n");
+                appendWithPadding(strbuf, "");
+                appendWithPadding(strbuf, "/* This DDR label describes one data file:                               */");
+                appendWithPadding(strbuf, "/* 1. A multiple-band backplane image file with wavelength-independent,  */");
+                appendWithPadding(strbuf, "/* spatial pixel-dependent geometric and timing information.             */");
+                appendWithPadding(strbuf, "");
+                appendWithPadding(strbuf, "OBJECT                       = FILE");
 
                 String[] tokens = productName.split(":");
                 String imageName = tokens[1].trim().toLowerCase();
-                strbuf.append("  ^IMAGE                     = \"" + imageName + "\"\r\n");
+                appendWithPadding(strbuf, "  ^IMAGE                     = \"" + imageName + "\"");
 
-                strbuf.append("  RECORD_TYPE                = FIXED_LENGTH\r\n");
-                strbuf.append("  RECORD_BYTES               = " + (IMAGE_WIDTH * 4) + "\r\n");
-                strbuf.append("  FILE_RECORDS               = " + (IMAGE_HEIGHT * numBands) + "\r\n");
-                strbuf.append("\r\n");
+                appendWithPadding(strbuf, "  RECORD_TYPE                = FIXED_LENGTH");
+                appendWithPadding(strbuf, "  RECORD_BYTES               = " + (IMAGE_WIDTH * 4));
+                appendWithPadding(strbuf, "  FILE_RECORDS               = " + (IMAGE_HEIGHT * numBands));
+                appendWithPadding(strbuf, "");
 
-                strbuf.append("  OBJECT                     = IMAGE\r\n");
-                strbuf.append("    LINES                    = " + IMAGE_HEIGHT + "\r\n");
-                strbuf.append("    LINE_SAMPLES             = " + IMAGE_WIDTH + "\r\n");
-                strbuf.append("    SAMPLE_TYPE              = PC_REAL\r\n");
-                strbuf.append("    SAMPLE_BITS              = 32\r\n");
+                appendWithPadding(strbuf, "  OBJECT                     = IMAGE");
+                appendWithPadding(strbuf, "    LINES                    = " + IMAGE_HEIGHT);
+                appendWithPadding(strbuf, "    LINE_SAMPLES             = " + IMAGE_WIDTH);
+                appendWithPadding(strbuf, "    SAMPLE_TYPE              = PC_REAL");
+                appendWithPadding(strbuf, "    SAMPLE_BITS              = 32");
 
-                strbuf.append("    BANDS                    = " + numBands + "\r\n");
-                strbuf.append("    BAND_STORAGE_TYPE        = BAND_SEQUENTIAL\r\n");
-                strbuf.append("    BAND_NAME                = (\"Pixel value\",\r\n");
-                strbuf.append("                                \"x coordinate of center of pixel, body fixed coordinate system, km\",\r\n");
-                strbuf.append("                                \"y coordinate of center of pixel, body fixed coordinate system, km\",\r\n");
-                strbuf.append("                                \"z coordinate of center of pixel, body fixed coordinate system, km\",\r\n");
-                strbuf.append("                                \"Latitude, deg\",\r\n");
-                strbuf.append("                                \"Longitude, deg\",\r\n");
-                strbuf.append("                                \"Distance from center of body, km\",\r\n");
-                strbuf.append("                                \"Incidence angle, measured against the plate model, deg\",\r\n");
-                strbuf.append("                                \"Emission angle, measured against the plate model, deg\",\r\n");
-                strbuf.append("                                \"Phase angle, measured against the plate model, deg\",\r\n");
-                strbuf.append("                                \"Horizontal pixel scale, km per pixel\",\r\n");
-                strbuf.append("                                \"Vertical pixel scale, km per pixel\",\r\n");
-                strbuf.append("                                \"Slope, deg\",\r\n");
-                strbuf.append("                                \"Elevation, m\",\r\n");
-                strbuf.append("                                \"Gravitational acceleration, m/s^2\",\r\n");
-                strbuf.append("                                \"Gravitational potential, J/kg\")\r\n");
-                strbuf.append("\r\n");
-                strbuf.append("  END_OBJECT                 = IMAGE\r\n");
-                strbuf.append("\r\n");
-                strbuf.append("END_OBJECT                   = FILE\r\n");
-                strbuf.append("\r\n");
-                strbuf.append("END\r\n");
+                appendWithPadding(strbuf, "    BANDS                    = " + numBands);
+                appendWithPadding(strbuf, "    BAND_STORAGE_TYPE        = BAND_SEQUENTIAL");
+                appendWithPadding(strbuf, "    BAND_NAME                = (\"Pixel value\",");
+                appendWithPadding(strbuf, "                                \"x coordinate of center of pixel, km\",");
+                appendWithPadding(strbuf, "                                \"y coordinate of center of pixel, km\",");
+                appendWithPadding(strbuf, "                                \"z coordinate of center of pixel, km\",");
+                appendWithPadding(strbuf, "                                \"Latitude, deg\",");
+                appendWithPadding(strbuf, "                                \"Longitude, deg\",");
+                appendWithPadding(strbuf, "                                \"Distance from center of body, km\",");
+                appendWithPadding(strbuf, "                                \"Incidence angle, deg\",");
+                appendWithPadding(strbuf, "                                \"Emission angle, deg\",");
+                appendWithPadding(strbuf, "                                \"Phase angle, deg\",");
+                appendWithPadding(strbuf, "                                \"Horizontal pixel scale, km per pixel\",");
+                appendWithPadding(strbuf, "                                \"Vertical pixel scale, km per pixel\",");
+                appendWithPadding(strbuf, "                                \"Slope, deg\",");
+                appendWithPadding(strbuf, "                                \"Elevation, m\",");
+                appendWithPadding(strbuf, "                                \"Gravitational acceleration, m/s^2\",");
+                appendWithPadding(strbuf, "                                \"Gravitational potential, J/kg\")");
+                appendWithPadding(strbuf, "");
+                appendWithPadding(strbuf, "  END_OBJECT                 = IMAGE");
+                appendWithPadding(strbuf, "");
+                appendWithPadding(strbuf, "END_OBJECT                   = FILE");
+                appendWithPadding(strbuf, "");
+                appendWithPadding(strbuf, "END");
 
                 break;
             }
 
-            if (!lastLineWasEmpty || !str.isEmpty())
-                strbuf.append(str).append("\r\n");
+            if (!lastLineWasEmpty || !str.trim().isEmpty())
+                appendWithPadding(strbuf, str);
 
-            lastLineWasEmpty = str.isEmpty();
+            lastLineWasEmpty = str.trim().isEmpty();
         }
+
+        in.close();
 
         return strbuf.toString();
     }
