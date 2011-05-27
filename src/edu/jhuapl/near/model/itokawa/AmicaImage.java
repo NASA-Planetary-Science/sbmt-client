@@ -10,7 +10,13 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedHashMap;
 
+import nom.tam.fits.BasicHDU;
+import nom.tam.fits.Fits;
 import nom.tam.fits.FitsException;
+
+import vtk.vtkImageConstantPad;
+import vtk.vtkImageData;
+import vtk.vtkImageTranslateExtent;
 
 import edu.jhuapl.near.model.Image;
 import edu.jhuapl.near.model.SmallBodyModel;
@@ -47,6 +53,42 @@ public class AmicaImage extends Image
             double[] upVector) throws NumberFormatException, IOException
     {
         // Not used
+    }
+
+    @Override
+    protected void resizeRawImage(vtkImageData rawImage)
+    {
+        int[] dims = rawImage.GetDimensions();
+        if (dims[0] == 1024 && dims[1] == 1024)
+            return;
+
+        // Some of the AMICA images were cropped from their original size
+        // of 1024x1024. Therefore, the following pads the images with zero back to
+        // original size. The vtkImageTranslateExtent first translates the cropped image
+        // to its proper position in the original and the vtkImageConstantPad then pads
+        // it with zero to size 1024x1024.
+
+        int[] masking = getMaskSizes();
+        //int topMask =    masking[0];
+        //int rightMask =  masking[1];
+        int bottomMask = masking[2];
+        int leftMask =   masking[3];
+
+        vtkImageTranslateExtent translateExtent = new vtkImageTranslateExtent();
+        translateExtent.SetInputConnection(rawImage.GetProducerPort());
+        translateExtent.SetTranslation(leftMask, bottomMask, 0);
+        translateExtent.Update();
+
+        vtkImageConstantPad pad = new vtkImageConstantPad();
+        pad.SetInputConnection(translateExtent.GetOutputPort());
+        pad.SetOutputWholeExtent(0, 1023, 0, 1023, 0, 0);
+        pad.Update();
+
+        vtkImageData padOutput = pad.GetOutput();
+        rawImage.DeepCopy(padOutput);
+
+        // shift origin back to zero
+        rawImage.SetOrigin(0.0, 0.0, 0.0);
     }
 
     private void appendWithPadding(StringBuffer strbuf, String str)
@@ -205,6 +247,30 @@ public class AmicaImage extends Image
     @Override
     protected int[] getMaskSizes()
     {
+        String filename = getFitFileFullPath();
+
+        try
+        {
+            Fits f = new Fits(filename);
+            BasicHDU h = f.getHDU(0);
+
+            int startH = h.getHeader().getIntValue("START_H");
+            int startV = h.getHeader().getIntValue("START_V");
+            int lastH  = h.getHeader().getIntValue("LAST_H");
+            int lastV  = h.getHeader().getIntValue("LAST_V");
+
+            return new int[]{startV, 1023-lastH, 1023-lastV, startH};
+        }
+        catch (FitsException e)
+        {
+            e.printStackTrace();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+
+        // Should never reach here
         return new int[]{0, 0, 0, 0};
     }
 

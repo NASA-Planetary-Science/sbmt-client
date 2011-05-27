@@ -268,8 +268,11 @@ abstract public class Image extends Model implements PropertyChangeListener
         return sumfileFullPath;
     }
 
-    // Give oppurtunity to subclass to rescale raw image
-    protected void rescaleRawImage(vtkImageData rawImage)
+    /**
+     *  Give oppurtunity to subclass to resize raw image
+     * @param rawImage
+     */
+    protected void resizeRawImage(vtkImageData rawImage)
     {
         // By default do nothing
     }
@@ -339,7 +342,7 @@ abstract public class Image extends Model implements PropertyChangeListener
                     minValue = array[i][j];
             }
 
-        rescaleRawImage(rawImage);
+        resizeRawImage(rawImage);
 
         int[] dims = rawImage.GetDimensions();
         imageWidth = dims[0];
