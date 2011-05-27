@@ -309,27 +309,9 @@ public class MSIImage extends Image
     }
 
     @Override
-    protected int getLeftMask()
+    protected int[] getMaskSizes()
     {
-        return LEFT_MASK;
-    }
-
-    @Override
-    protected int getRightMask()
-    {
-        return RIGHT_MASK;
-    }
-
-    @Override
-    protected int getTopMask()
-    {
-        return TOP_MASK;
-    }
-
-    @Override
-    protected int getBottomMask()
-    {
-        return BOTTOM_MASK;
+        return new int[]{TOP_MASK, RIGHT_MASK, BOTTOM_MASK, LEFT_MASK};
     }
 
     @Override

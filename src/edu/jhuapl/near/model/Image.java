@@ -224,15 +224,24 @@ abstract public class Image extends Model implements PropertyChangeListener
     abstract public double getFovParameter1();
     abstract public double getFovParameter2();
 
-    abstract protected int getLeftMask();
-    abstract protected int getRightMask();
-    abstract protected int getTopMask();
-    abstract protected int getBottomMask();
+    /**
+     * Return the mask sizes as a 4 element integer array where the:
+     * first  element is the top    mask size,
+     * second element is the right  mask size,
+     * third  element is the bottom mask size,
+     * fourth element is the left   mask size.
+     * @return
+     */
+    abstract protected int[] getMaskSizes();
 
     abstract protected int getFilter();
 
     abstract public String generateBackplanesLabel() throws IOException;
     abstract public LinkedHashMap<String, String> getProperties() throws IOException;
+
+    abstract protected String initializeFitFileFullPath(File rootFolder);
+    abstract protected String initializeInfoFileFullPath(File rootFolder);
+    abstract protected String initializeSumfileFullPath(File rootFolder);
 
     public int getImageWidth()
     {
@@ -258,10 +267,6 @@ abstract public class Image extends Model implements PropertyChangeListener
     {
         return sumfileFullPath;
     }
-
-    abstract protected String initializeFitFileFullPath(File rootFolder);
-    abstract protected String initializeInfoFileFullPath(File rootFolder);
-    abstract protected String initializeSumfileFullPath(File rootFolder);
 
     // Give oppurtunity to subclass to rescale raw image
     protected void rescaleRawImage(vtkImageData rawImage)
@@ -340,6 +345,12 @@ abstract public class Image extends Model implements PropertyChangeListener
         imageWidth = dims[0];
         imageHeight = dims[1];
 
+        int[] masking = getMaskSizes();
+        int topMask =    masking[0];
+        int rightMask =  masking[1];
+        int bottomMask = masking[2];
+        int leftMask =   masking[3];
+
         maskSource = new vtkImageCanvasSource2D();
         maskSource.SetScalarTypeToUnsignedChar();
         maskSource.SetNumberOfScalarComponents(1);
@@ -349,7 +360,7 @@ abstract public class Image extends Model implements PropertyChangeListener
         maskSource.FillBox(0, imageWidth-1, 0, imageHeight-1);
         // Create a square inside mask which passes through the image.
         maskSource.SetDrawColor(255.0, 255.0, 255.0, 255.0);
-        maskSource.FillBox(getLeftMask(), imageWidth-1-getRightMask(), getBottomMask(), imageHeight-1-getTopMask());
+        maskSource.FillBox(leftMask, imageWidth-1-rightMask, bottomMask, imageHeight-1-topMask);
         maskSource.Update();
 
         setDisplayedImageRange(new IntensityRange(0, 255));

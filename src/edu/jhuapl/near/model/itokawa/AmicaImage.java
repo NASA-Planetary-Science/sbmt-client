@@ -203,27 +203,9 @@ public class AmicaImage extends Image
     }
 
     @Override
-    protected int getLeftMask()
+    protected int[] getMaskSizes()
     {
-        return 0;
-    }
-
-    @Override
-    protected int getRightMask()
-    {
-        return 0;
-    }
-
-    @Override
-    protected int getTopMask()
-    {
-        return 0;
-    }
-
-    @Override
-    protected int getBottomMask()
-    {
-        return 0;
+        return new int[]{0, 0, 0, 0};
     }
 
     @Override
