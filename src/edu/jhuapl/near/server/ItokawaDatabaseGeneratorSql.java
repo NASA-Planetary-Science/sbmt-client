@@ -334,6 +334,13 @@ public class ItokawaDatabaseGeneratorSql
             file = new File(name);
             if (!file.exists())
                 return false;
+
+            // Only process files that are listed in Gaskell's INERTIAL.TXT file.
+            if (!inertialFileList.contains("N" + amicaId))
+            {
+                System.out.println("N" + amicaId + " not in INERTIAL.TXT");
+                return false;
+            }
         }
 
         return true;
