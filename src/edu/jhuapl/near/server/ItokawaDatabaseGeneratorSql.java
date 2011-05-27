@@ -1,7 +1,11 @@
 package edu.jhuapl.near.server;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -36,6 +40,9 @@ public class ItokawaDatabaseGeneratorSql
     //static private vtkPolyDataReader footprintReader;
     static private vtkPolyData footprintPolyData;
     //static private double[] meanPlateSizes;
+
+    // Files listed in Gaskell's INERTIAL.TXT file. Only these are processed.
+    private static ArrayList<String> inertialFileList = new ArrayList<String>();
 
     private static void createAmicaTables(String amicaTableName)
     {
@@ -283,6 +290,28 @@ public class ItokawaDatabaseGeneratorSql
         }
     }
 
+    private static void loadInertialFile(String inertialFilename) throws IOException
+    {
+        InputStream fs = new FileInputStream(inertialFilename);
+        InputStreamReader isr = new InputStreamReader(fs);
+        BufferedReader in = new BufferedReader(isr);
+
+        String line;
+
+        while ((line = in.readLine()) != null)
+        {
+            if (line.startsWith("N"))
+            {
+                String[] tokens = line.trim().split("\\s+");
+                inertialFileList.add(tokens[0]);
+            }
+        }
+
+        System.out.println("number of inertial files: " + inertialFileList.size());
+
+        in.close();
+    }
+
     static boolean checkIfAllAmicaFilesExist(String line, Image.ImageSource source)
     {
         File file = new File(line);
@@ -321,11 +350,13 @@ public class ItokawaDatabaseGeneratorSql
         itokawaModel = new Itokawa();
 
         String amicaFileList=args[0];
-        int mode = Integer.parseInt(args[1]);
+        String inertialFilename = args[1];
+        int mode = Integer.parseInt(args[2]);
 
         ArrayList<String> amicaFiles = null;
         try {
             amicaFiles = FileUtil.getFileLinesAsStringList(amicaFileList);
+            loadInertialFile(inertialFilename);
         } catch (IOException e2) {
             e2.printStackTrace();
             return;

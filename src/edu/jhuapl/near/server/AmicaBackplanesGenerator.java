@@ -1,8 +1,12 @@
 package edu.jhuapl.near.server;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.ArrayList;
 
@@ -23,6 +27,33 @@ public class AmicaBackplanesGenerator
 {
     private static SmallBodyModel itokawaModel;
 
+    // Files listed in Gaskell's INERTIAL.TXT file. Only these are processed.
+    private static ArrayList<String> inertialFileList = new ArrayList<String>();
+
+    private static int numberValidFiles = 0;
+
+    private static void loadInertialFile(String inertialFilename) throws IOException
+    {
+        InputStream fs = new FileInputStream(inertialFilename);
+        InputStreamReader isr = new InputStreamReader(fs);
+        BufferedReader in = new BufferedReader(isr);
+
+        String line;
+
+        while ((line = in.readLine()) != null)
+        {
+            if (line.startsWith("N"))
+            {
+                String[] tokens = line.trim().split("\\s+");
+                inertialFileList.add(tokens[0]);
+            }
+        }
+
+        System.out.println("number of inertial files: " + inertialFileList.size());
+
+        in.close();
+    }
+
     private static boolean checkIfAmicaFilesExist(String line, MSIImage.ImageSource source)
     {
         File file = new File(line);
@@ -40,11 +71,17 @@ public class AmicaBackplanesGenerator
             file = new File(name);
             if (!file.exists())
                 return false;
+
+            // Only process files that are listed in Gaskell's INERTIAL.TXT file.
+            if (!inertialFileList.contains("N" + amicaId))
+            {
+                System.out.println("N" + amicaId + " not in INERTIAL.TXT");
+                return false;
+            }
         }
 
         return true;
     }
-
 
     private static void generateBackplanes(ArrayList<String> amicaFiles, AmicaImage.ImageSource amicaSource) throws FitsException, IOException
     {
@@ -59,6 +96,8 @@ public class AmicaBackplanesGenerator
                 System.out.println("Could not find sumfile");
                 continue;
             }
+
+            ++numberValidFiles;
 
             File origFile = new File(filename);
             File rootFolder = origFile.getParentFile().getParentFile().getParentFile().getParentFile();
@@ -96,6 +135,8 @@ public class AmicaBackplanesGenerator
             System.out.println("deleted " + vtkGlobalJavaHash.GC());
             System.out.println("\n\n");
         }
+
+        System.out.println("Total number of files processed " + numberValidFiles);
     }
 
     /**
@@ -107,6 +148,7 @@ public class AmicaBackplanesGenerator
         NativeLibraryLoader.loadVtkLibraries();
 
         String amicaFileList=args[0];
+        String inertialFilename = args[1];
 
         itokawaModel = new Itokawa();
         try {
@@ -121,6 +163,7 @@ public class AmicaBackplanesGenerator
         ArrayList<String> amicaFiles = null;
         try {
             amicaFiles = FileUtil.getFileLinesAsStringList(amicaFileList);
+            loadInertialFile(inertialFilename);
         } catch (IOException e2) {
             e2.printStackTrace();
         }
