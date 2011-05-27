@@ -145,7 +145,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements PropertyChangeLis
         createMenus();
 
         // Finally make the frame visible
-        String name = new File(image.getFitFileFullPath()).getName();
+        String name = new File(image.getImageName()).getName();
         setTitle("Image " + name + " Properties");
         //this.set
         pack();

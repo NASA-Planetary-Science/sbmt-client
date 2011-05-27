@@ -384,7 +384,7 @@ public class MSIImage extends Image
     }
 
     @Override
-    public String getFitFileFullPath()
+    protected String getFitFileFullPath()
     {
         if (fitFileFullPath == null)
         {
@@ -397,7 +397,7 @@ public class MSIImage extends Image
     }
 
     @Override
-    public String getInfoFileFullPath()
+    protected String getInfoFileFullPath()
     {
         if (infoFileFullPath == null)
         {
@@ -411,7 +411,7 @@ public class MSIImage extends Image
     }
 
     @Override
-    public String getSumfileFullPath()
+    protected String getSumfileFullPath()
     {
         if (sumfileFullPath == null)
         {

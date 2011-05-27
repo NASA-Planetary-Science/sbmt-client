@@ -229,9 +229,9 @@ abstract public class Image extends Model implements PropertyChangeListener
     abstract protected int getTopMask();
     abstract protected int getBottomMask();
 
-    abstract public String getFitFileFullPath();
-    abstract public String getInfoFileFullPath();
-    abstract public String getSumfileFullPath();
+    abstract protected String getFitFileFullPath();
+    abstract protected String getInfoFileFullPath();
+    abstract protected String getSumfileFullPath();
 
     abstract protected int getFilter();
 
@@ -1364,5 +1364,10 @@ abstract public class Image extends Model implements PropertyChangeListener
         double[] v2 = {-fov, fov, 1.0};
 
         return MathUtil.vsep(v1, v2) * 180.0 / Math.PI;
+    }
+
+    public String getImageName()
+    {
+        return new File(key.name).getName();
     }
 }
