@@ -22,6 +22,6 @@ public class MSIColorImage extends ColorImage
     protected Image createImage(ImageKey key, SmallBodyModel smallBodyModel)
             throws FitsException, IOException
     {
-        return new MSIImage(key, smallBodyModel);
+        return new MSIImage(key, smallBodyModel, false, null);
     }
 }

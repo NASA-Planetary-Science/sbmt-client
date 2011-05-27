@@ -22,8 +22,9 @@ import edu.jhuapl.near.util.MathUtil;
 
 public class MSIImage extends Image
 {
-    public static final int IMAGE_WIDTH = 537;
-    public static final int IMAGE_HEIGHT = 412;
+    // Size of image after resampling. Before resampling image is 537 by 244 pixels.
+    public static final int RESAMPLED_IMAGE_WIDTH = 537;
+    public static final int RESAMPLED_IMAGE_HEIGHT = 412;
 
     public static final double FOV_PARAMETER1 = -0.025753661240;
     public static final double FOV_PARAMETER2 = -0.019744857140;
@@ -49,54 +50,14 @@ public class MSIImage extends Image
     public static final String SUN_POSITION_LT = "SUN_POSITION_LT";
 
     private SmallBodyModel erosModel;
-    private String fitFileFullPath; // The actual path of the image stored on the local disk (after downloading from the server)
-    private String infoFileFullPath;
-    private String sumfileFullPath;
 
-    public MSIImage(ImageKey key)
+    public MSIImage(ImageKey key,
+            SmallBodyModel smallBodyModel,
+            boolean loadPointingOnly,
+            File rootFolder) throws FitsException, IOException
     {
-        super(key);
-    }
-
-    public MSIImage(ImageKey key, SmallBodyModel erosModel) throws FitsException, IOException
-    {
-        super(key, erosModel);
-        this.erosModel = erosModel;
-    }
-
-    public MSIImage(File fitFile, SmallBodyModel erosModel, ImageSource source)
-            throws FitsException, IOException
-    {
-        super(fitFile, erosModel, source);
-        this.erosModel = erosModel;
-    }
-
-    @Override
-    protected void downloadFilesIntoCache() throws IOException
-    {
-        // Download the FIT file, the LBL file, and, if gaskell source, the sumfile
-
-        getFitFileFullPath();
-
-        getInfoFileFullPath();
-
-        ImageKey key = getKey();
-        if (key.source.equals(ImageSource.GASKELL))
-            getSumfileFullPath();
-    }
-
-
-    @Override
-    protected void initializeFilePaths(File fitFile)
-    {
-        this.fitFileFullPath = fitFile.getAbsolutePath();
-
-        this.infoFileFullPath = fitFileFullPath.substring(0, fitFileFullPath.length()-4) + "_DDR.LBL";
-
-        File sumfile = new File(fitFileFullPath);
-        String sumname = sumfile.getName().substring(0, 11);
-        sumfile = sumfile.getParentFile().getParentFile().getParentFile().getParentFile();
-        this.sumfileFullPath = sumfile.getAbsolutePath() + "/sumfiles/" + sumname + ".SUM";
+        super(key, smallBodyModel, loadPointingOnly, rootFolder);
+        this.erosModel = smallBodyModel;
     }
 
     @Override
@@ -108,9 +69,9 @@ public class MSIImage extends Image
         vtkImageReslice reslice = new vtkImageReslice();
         reslice.SetInput(rawImage);
         reslice.SetInterpolationModeToLinear();
-        reslice.SetOutputSpacing(1.0, (double)originalHeight/(double)IMAGE_HEIGHT, 1.0);
+        reslice.SetOutputSpacing(1.0, (double)originalHeight/(double)RESAMPLED_IMAGE_HEIGHT, 1.0);
         reslice.SetOutputOrigin(0.0, 0.0, 0.0);
-        reslice.SetOutputExtent(0, IMAGE_WIDTH-1, 0, IMAGE_HEIGHT-1, 0, 0);
+        reslice.SetOutputExtent(0, RESAMPLED_IMAGE_WIDTH-1, 0, RESAMPLED_IMAGE_HEIGHT-1, 0, 0);
         reslice.Update();
 
         vtkImageData resliceOutput = reslice.GetOutput();
@@ -336,18 +297,6 @@ public class MSIImage extends Image
     }
 
     @Override
-    public int getImageWidth()
-    {
-        return IMAGE_WIDTH;
-    }
-
-    @Override
-    public int getImageHeight()
-    {
-        return IMAGE_HEIGHT;
-    }
-
-    @Override
     public double getFovParameter1()
     {
         return FOV_PARAMETER1;
@@ -384,45 +333,49 @@ public class MSIImage extends Image
     }
 
     @Override
-    protected String getFitFileFullPath()
+    protected String initializeFitFileFullPath(File rootFolder)
     {
-        if (fitFileFullPath == null)
+        ImageKey key = getKey();
+        if (rootFolder == null)
         {
-            ImageKey key = getKey();
-            File fitFile = FileCache.getFileFromServer(key.name + ".FIT");
-            this.fitFileFullPath = fitFile.getAbsolutePath();
+            return FileCache.getFileFromServer(key.name + ".FIT").getAbsolutePath();
         }
-
-        return fitFileFullPath;
+        else
+        {
+            return rootFolder.getAbsolutePath() + key.name + ".FIT";
+        }
     }
 
     @Override
-    protected String getInfoFileFullPath()
+    protected String initializeInfoFileFullPath(File rootFolder)
     {
-        if (infoFileFullPath == null)
+        ImageKey key = getKey();
+        String imgLblFilename = key.name + "_DDR.LBL";
+        if (rootFolder == null)
         {
-            ImageKey key = getKey();
-            String imgLblFilename = key.name + "_DDR.LBL";
-            File infoFile = FileCache.getFileFromServer(imgLblFilename);
-            this.infoFileFullPath = infoFile.getAbsolutePath();
+            return FileCache.getFileFromServer(imgLblFilename).getAbsolutePath();
         }
-
-        return infoFileFullPath;
+        else
+        {
+            return rootFolder.getAbsolutePath() + imgLblFilename;
+        }
     }
 
     @Override
-    protected String getSumfileFullPath()
+    protected String initializeSumfileFullPath(File rootFolder)
     {
-        if (sumfileFullPath == null)
+        ImageKey key = getKey();
+        File keyFile = new File(key.name);
+        String sumFilename = keyFile.getParentFile().getParentFile().getParentFile().getParent()
+        + "/sumfiles/" + keyFile.getName().substring(0, 11) + ".SUM";
+        if (rootFolder == null)
         {
-            ImageKey key = getKey();
-            File tmp = new File(key.name);
-            String sumFilename = "/MSI/sumfiles/" + tmp.getName().substring(0, 11) + ".SUM";
-            File sumfile = FileCache.getFileFromServer(sumFilename);
-            this.sumfileFullPath = sumfile.getAbsolutePath();
+            return FileCache.getFileFromServer(sumFilename).getAbsolutePath();
         }
-
-        return sumfileFullPath;
+        else
+        {
+            return rootFolder.getAbsolutePath() + sumFilename;
+        }
     }
 
     @Override

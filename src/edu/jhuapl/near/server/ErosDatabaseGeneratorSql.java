@@ -15,6 +15,7 @@ import org.joda.time.DateTimeZone;
 import vtk.vtkGlobalJavaHash;
 import vtk.vtkPolyData;
 
+import edu.jhuapl.near.model.Image.ImageKey;
 import edu.jhuapl.near.model.Image.ImageSource;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.eros.Eros;
@@ -231,7 +232,11 @@ public class ErosDatabaseGeneratorSql
             f = f.getParentFile();
             yearStr = f.getName();
 
-            MSIImage image = new MSIImage(origFile, erosModel, msiSource);
+            File rootFolder = origFile.getParentFile().getParentFile().getParentFile().getParentFile().getParentFile();
+            String keyName = origFile.getAbsolutePath().replace(rootFolder.getAbsolutePath(), "");
+            keyName = keyName.replace(".FIT", "");
+            ImageKey key = new ImageKey(keyName, msiSource);
+            MSIImage image = new MSIImage(key, erosModel, false, rootFolder);
 
             // Calling this forces the calculation of incidence, emission, phase, and pixel scale
             image.getProperties();
@@ -426,7 +431,11 @@ public class ErosDatabaseGeneratorSql
 //            footprintPolyData.DeepCopy(footprintReader.GetOutput());
 //            footprintPolyData.ComputeBounds();
 
-            MSIImage image = new MSIImage(origFile, erosModel, msiSource);
+            File rootFolder = origFile.getParentFile().getParentFile().getParentFile().getParentFile().getParentFile();
+            String keyName = origFile.getAbsolutePath().replace(rootFolder.getAbsolutePath(), "");
+            keyName = keyName.replace(".FIT", "");
+            ImageKey key = new ImageKey(keyName, msiSource);
+            MSIImage image = new MSIImage(key, erosModel, false, rootFolder);
 
             image.loadFootprint();
             footprintPolyData.DeepCopy(image.getUnshiftedFootprint());

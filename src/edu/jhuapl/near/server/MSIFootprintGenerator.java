@@ -10,6 +10,7 @@ import vtk.vtkGlobalJavaHash;
 import vtk.vtkPolyData;
 import vtk.vtkXMLPolyDataWriter;
 
+import edu.jhuapl.near.model.Image.ImageKey;
 import edu.jhuapl.near.model.Image.ImageSource;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.eros.Eros;
@@ -92,7 +93,11 @@ public class MSIFootprintGenerator
                 continue;
             }
 
-            MSIImage image = new MSIImage(origFile, erosModel, msiSource);
+            File rootFolder = origFile.getParentFile().getParentFile().getParentFile().getParentFile().getParentFile();
+            String keyName = origFile.getAbsolutePath().replace(rootFolder.getAbsolutePath(), "");
+            keyName = keyName.replace(".FIT", "");
+            ImageKey key = new ImageKey(keyName, msiSource);
+            MSIImage image = new MSIImage(key, erosModel, false, rootFolder);
 
 
             System.out.println("id: " + Integer.parseInt(origFile.getName().substring(2, 11)));

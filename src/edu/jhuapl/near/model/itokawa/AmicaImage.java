@@ -18,56 +18,18 @@ import edu.jhuapl.near.util.FileCache;
 
 public class AmicaImage extends Image
 {
-    public static final int IMAGE_WIDTH = 1024;
-    public static final int IMAGE_HEIGHT = 1024;
+    //private static final int IMAGE_WIDTH = 1024;
+    //private static final int IMAGE_HEIGHT = 1024;
 
     public static final double FOV_PARAMETER1 = -0.049782949;
     public static final double FOV_PARAMETER2 = -0.049782949;
 
-    private String fitFileFullPath; // The actual path of the image stored on the local disk (after downloading from the server)
-    private String infoFileFullPath;
-    private String sumfileFullPath;
-
-    public AmicaImage(ImageKey key)
+    public AmicaImage(ImageKey key,
+            SmallBodyModel smallBodyModel,
+            boolean loadPointingOnly,
+            File rootFolder) throws FitsException, IOException
     {
-        super(key);
-    }
-
-    public AmicaImage(ImageKey key, SmallBodyModel smallBodyModel) throws FitsException, IOException
-    {
-        super(key, smallBodyModel);
-    }
-
-    public AmicaImage(File fitFile, SmallBodyModel eros, ImageSource source)
-            throws FitsException, IOException
-    {
-        super(fitFile, eros, source);
-    }
-
-    @Override
-    protected void downloadFilesIntoCache() throws IOException
-    {
-        // Download the FIT file, the LBL file, and, if gaskell source, the sumfile
-
-        getFitFileFullPath();
-
-        getInfoFileFullPath();
-
-        ImageKey key = getKey();
-        if (key.source.equals(ImageSource.GASKELL))
-            getSumfileFullPath();
-    }
-
-    @Override
-    protected void initializeFilePaths(File fitFile)
-    {
-        this.fitFileFullPath = fitFile.getAbsolutePath();
-
-        this.infoFileFullPath = fitFileFullPath.substring(0, fitFileFullPath.length()-4) + ".lbl";
-
-        String id = fitFile.getName().substring(3, 13);
-        File parentdir = fitFile.getParentFile().getParentFile();
-        this.sumfileFullPath = parentdir.getAbsolutePath() + "/sumfiles/N" + id + ".SUM";
+        super(key, smallBodyModel, loadPointingOnly, rootFolder);
     }
 
     @Override
@@ -179,13 +141,13 @@ public class AmicaImage extends Image
                 appendWithPadding(strbuf, "  ^IMAGE                     = \"" + imageName + "\"");
 
                 appendWithPadding(strbuf, "  RECORD_TYPE                = FIXED_LENGTH");
-                appendWithPadding(strbuf, "  RECORD_BYTES               = " + (IMAGE_WIDTH * 4));
-                appendWithPadding(strbuf, "  FILE_RECORDS               = " + (IMAGE_HEIGHT * numBands));
+                appendWithPadding(strbuf, "  RECORD_BYTES               = " + (getImageWidth() * 4));
+                appendWithPadding(strbuf, "  FILE_RECORDS               = " + (getImageHeight() * numBands));
                 appendWithPadding(strbuf, "");
 
                 appendWithPadding(strbuf, "  OBJECT                     = IMAGE");
-                appendWithPadding(strbuf, "    LINES                    = " + IMAGE_HEIGHT);
-                appendWithPadding(strbuf, "    LINE_SAMPLES             = " + IMAGE_WIDTH);
+                appendWithPadding(strbuf, "    LINES                    = " + getImageHeight());
+                appendWithPadding(strbuf, "    LINE_SAMPLES             = " + getImageWidth());
                 appendWithPadding(strbuf, "    SAMPLE_TYPE              = PC_REAL");
                 appendWithPadding(strbuf, "    SAMPLE_BITS              = 32");
 
@@ -229,18 +191,6 @@ public class AmicaImage extends Image
     }
 
     @Override
-    public int getImageWidth()
-    {
-        return IMAGE_WIDTH;
-    }
-
-    @Override
-    public int getImageHeight()
-    {
-        return IMAGE_HEIGHT;
-    }
-
-    @Override
     public double getFovParameter1()
     {
         return FOV_PARAMETER1;
@@ -277,45 +227,49 @@ public class AmicaImage extends Image
     }
 
     @Override
-    protected String getFitFileFullPath()
+    protected String initializeFitFileFullPath(File rootFolder)
     {
-        if (fitFileFullPath == null)
+        ImageKey key = getKey();
+        if (rootFolder == null)
         {
-            ImageKey key = getKey();
-            File fitFile = FileCache.getFileFromServer(key.name + ".fit");
-            this.fitFileFullPath = fitFile.getAbsolutePath();
+            return FileCache.getFileFromServer(key.name + ".fit").getAbsolutePath();
         }
-
-        return fitFileFullPath;
+        else
+        {
+            return rootFolder.getAbsolutePath() + key.name + ".fit";
+        }
     }
 
     @Override
-    protected String getInfoFileFullPath()
+    protected String initializeInfoFileFullPath(File rootFolder)
     {
-        if (infoFileFullPath == null)
+        ImageKey key = getKey();
+        String imgLblFilename = key.name + ".lbl";
+        if (rootFolder == null)
         {
-            ImageKey key = getKey();
-            String imgLblFilename = key.name + ".lbl";
-            File infoFile = FileCache.getFileFromServer(imgLblFilename);
-            this.infoFileFullPath = infoFile.getAbsolutePath();
+            return FileCache.getFileFromServer(imgLblFilename).getAbsolutePath();
         }
-
-        return infoFileFullPath;
+        else
+        {
+            return rootFolder.getAbsolutePath() + imgLblFilename;
+        }
     }
 
     @Override
-    protected String getSumfileFullPath()
+    protected String initializeSumfileFullPath(File rootFolder)
     {
-        if (sumfileFullPath == null)
+        ImageKey key = getKey();
+        File keyFile = new File(key.name);
+        String sumFilename = keyFile.getParentFile().getParent()
+        + "/sumfiles/N" + keyFile.getName().substring(3, 13) + ".SUM";
+        if (rootFolder == null)
         {
-            ImageKey key = getKey();
-            File tmp = new File(key.name);
-            String sumFilename = "/ITOKAWA/AMICA/sumfiles/N" + tmp.getName().substring(3, 13) + ".SUM";
-            File sumfile = FileCache.getFileFromServer(sumFilename);
-            this.sumfileFullPath = sumfile.getAbsolutePath();
+            return FileCache.getFileFromServer(sumFilename).getAbsolutePath();
         }
-
-        return sumfileFullPath;
+        else
+        {
+            return rootFolder.getAbsolutePath() + sumFilename;
+        }
     }
 
     @Override

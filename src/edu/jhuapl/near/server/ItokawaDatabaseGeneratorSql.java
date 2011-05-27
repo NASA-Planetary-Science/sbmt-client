@@ -16,6 +16,7 @@ import vtk.vtkGlobalJavaHash;
 import vtk.vtkPolyData;
 
 import edu.jhuapl.near.model.Image;
+import edu.jhuapl.near.model.Image.ImageKey;
 import edu.jhuapl.near.model.Image.ImageSource;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.itokawa.AmicaImage;
@@ -134,8 +135,11 @@ public class ItokawaDatabaseGeneratorSql
             System.out.println("starting amica " + count++ + "  " + filename);
 
             File origFile = new File(filename);
-
-            AmicaImage image = new AmicaImage(origFile, itokawaModel, amicaSource);
+            File rootFolder = origFile.getParentFile().getParentFile().getParentFile().getParentFile();
+            String keyName = origFile.getAbsolutePath().replace(rootFolder.getAbsolutePath(), "");
+            keyName = keyName.replace(".fit", "");
+            ImageKey key = new ImageKey(keyName, amicaSource);
+            AmicaImage image = new AmicaImage(key, itokawaModel, false, rootFolder);
 
             // Calling this forces the calculation of incidence, emission, phase, and pixel scale
             image.getProperties();
@@ -241,7 +245,11 @@ public class ItokawaDatabaseGeneratorSql
 //            footprintPolyData.DeepCopy(footprintReader.GetOutput());
 //            footprintPolyData.ComputeBounds();
 
-            AmicaImage image = new AmicaImage(origFile, itokawaModel, amicaSource);
+            File rootFolder = origFile.getParentFile().getParentFile().getParentFile().getParentFile();
+            String keyName = origFile.getAbsolutePath().replace(rootFolder.getAbsolutePath(), "");
+            keyName = keyName.replace(".fit", "");
+            ImageKey key = new ImageKey(keyName, amicaSource);
+            AmicaImage image = new AmicaImage(key, itokawaModel, false, rootFolder);
 
             image.loadFootprint();
             footprintPolyData.DeepCopy(image.getUnshiftedFootprint());

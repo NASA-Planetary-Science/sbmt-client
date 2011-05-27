@@ -28,7 +28,7 @@ abstract public class ImageBoundaryCollection extends Model implements PropertyC
 
     abstract protected ImageBoundary createBoundary(
             ImageKey key,
-            SmallBodyModel smallBodyModel) throws IOException;
+            SmallBodyModel smallBodyModel) throws IOException, FitsException;
 
     private boolean containsKey(ImageKey key)
     {

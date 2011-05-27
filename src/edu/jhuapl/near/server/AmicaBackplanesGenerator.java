@@ -10,6 +10,7 @@ import nom.tam.fits.FitsException;
 
 import vtk.vtkGlobalJavaHash;
 
+import edu.jhuapl.near.model.Image.ImageKey;
 import edu.jhuapl.near.model.Image.ImageSource;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.eros.MSIImage;
@@ -60,8 +61,11 @@ public class AmicaBackplanesGenerator
             }
 
             File origFile = new File(filename);
-
-            AmicaImage image = new AmicaImage(origFile, itokawaModel, amicaSource);
+            File rootFolder = origFile.getParentFile().getParentFile().getParentFile().getParentFile();
+            String keyName = origFile.getAbsolutePath().replace(rootFolder.getAbsolutePath(), "");
+            keyName = keyName.replace(".fit", "");
+            ImageKey key = new ImageKey(keyName, amicaSource);
+            AmicaImage image = new AmicaImage(key, itokawaModel, false, rootFolder);
 
             // Generate the backplanes binary file
             float[] backplanes = image.generateBackplanes();
@@ -106,7 +110,7 @@ public class AmicaBackplanesGenerator
 
         itokawaModel = new Itokawa();
         try {
-            itokawaModel.setModelResolution(3);
+            itokawaModel.setModelResolution(0);
         } catch (IOException e) {
             e.printStackTrace();
             return;

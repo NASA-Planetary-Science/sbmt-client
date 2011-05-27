@@ -22,6 +22,6 @@ public class AmicaColorImage extends ColorImage
     protected Image createImage(ImageKey key, SmallBodyModel smallBodyModel)
             throws FitsException, IOException
     {
-        return new AmicaImage(key, smallBodyModel);
+        return new AmicaImage(key, smallBodyModel, false, null);
     }
 }

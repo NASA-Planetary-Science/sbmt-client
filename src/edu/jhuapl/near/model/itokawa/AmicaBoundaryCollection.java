@@ -2,6 +2,8 @@ package edu.jhuapl.near.model.itokawa;
 
 import java.io.IOException;
 
+import nom.tam.fits.FitsException;
+
 import edu.jhuapl.near.model.Image.ImageKey;
 import edu.jhuapl.near.model.ImageBoundary;
 import edu.jhuapl.near.model.ImageBoundaryCollection;
@@ -20,8 +22,8 @@ public class AmicaBoundaryCollection extends ImageBoundaryCollection
 
     @Override
     protected ImageBoundary createBoundary(ImageKey key,
-            SmallBodyModel smallBodyModel) throws IOException
+            SmallBodyModel smallBodyModel) throws IOException, FitsException
     {
-        return new ImageBoundary(new AmicaImage(key), itokawaModel);
+        return new ImageBoundary(new AmicaImage(key, smallBodyModel, true, null), itokawaModel);
     }
 }

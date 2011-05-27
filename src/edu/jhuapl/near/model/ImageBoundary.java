@@ -16,8 +16,8 @@ import vtk.vtkProp;
 import vtk.vtksbCellLocator;
 
 import edu.jhuapl.near.model.Image.ImageKey;
-import edu.jhuapl.near.model.Image.ImageSource;
 import edu.jhuapl.near.util.BoundingBox;
+import edu.jhuapl.near.util.Frustum;
 import edu.jhuapl.near.util.MathUtil;
 import edu.jhuapl.near.util.PolyDataUtil;
 import edu.jhuapl.near.util.Properties;
@@ -31,8 +31,6 @@ public class ImageBoundary extends Model implements PropertyChangeListener
     private double[] frustum1 = new double[3];
     private double[] frustum2 = new double[3];
     private double[] frustum3 = new double[3];
-    private double[] frustum4 = new double[3];
-    private double[] sunVector = new double[3];
     private double[] boresightDirection = new double[3];
     private double[] upVector = new double[3];
     private Image image;
@@ -43,11 +41,6 @@ public class ImageBoundary extends Model implements PropertyChangeListener
         this.image = image;
         this.smallBodyModel = smallBodyModel;
 
-        String lblFilename = image.getInfoFileFullPath();
-
-        if (lblFilename == null)
-            throw new IOException("Could not download " + image.getKey().name);
-
         boundary = new vtkPolyData();
         boundary.SetPoints(new vtkPoints());
         boundary.SetVerts(new vtkCellArray());
@@ -55,41 +48,13 @@ public class ImageBoundary extends Model implements PropertyChangeListener
         boundaryMapper = new vtkPolyDataMapper();
         actor = new vtkActor();
 
-        String[] startTime = new String[1];
-        String[] stopTime = new String[1];
-
-        image.loadImageInfo(
-                lblFilename,
-                startTime,
-                stopTime,
-                spacecraftPosition,
-                sunVector,
-                frustum1,
-                frustum2,
-                frustum3,
-                frustum4,
-                boresightDirection,
-                upVector);
-
-        if (image.getKey().source.equals(ImageSource.GASKELL))
-        {
-            // Try to load a sumfile if there is one
-            String sumfilename = image.getSumfileFullPath();
-
-            image.loadSumfile(sumfilename,
-                    image.getFovParameter1(),
-                    image.getFovParameter2(),
-                    startTime,
-                    stopTime,
-                    spacecraftPosition,
-                    sunVector,
-                    frustum1,
-                    frustum2,
-                    frustum3,
-                    frustum4,
-                    boresightDirection,
-                    upVector);
-        }
+        spacecraftPosition = image.getSpacecraftPosition();
+        Frustum frus = image.getFrustum();
+        frustum1 = frus.ul;
+        frustum2 = frus.lr;
+        frustum3 = frus.ur;
+        boresightDirection = image.getBoresightDirection();
+        upVector = image.getUpVector();
 
         initialize();
     }
@@ -111,8 +76,11 @@ public class ImageBoundary extends Model implements PropertyChangeListener
 
         vtkGenericCell cell = new vtkGenericCell();
 
-        final int IMAGE_WIDTH = image.getImageWidth();
-        final int IMAGE_HEIGHT = image.getImageHeight();
+        // Note it doesn't matter what image size we use, even
+        // if it's not the same size as the original image. Just
+        // needs to large enough so enough points get drawn.
+        final int IMAGE_WIDTH = 475;
+        final int IMAGE_HEIGHT = 475;
 
         int count = 0;
 
