@@ -208,7 +208,7 @@ abstract public class Image extends Model implements PropertyChangeListener
             loadImage();
     }
 
-    abstract public void loadImageInfo(
+    abstract protected void loadImageInfo(
             String lblFilename,
             String[] startTime,
             String[] stopTime,
@@ -692,7 +692,7 @@ abstract public class Image extends Model implements PropertyChangeListener
         return year + "-" + month + "-" + day + "T" + time;
     }
 
-    public void loadSumfile(
+    protected void loadSumfile(
             String sumfilename,
             double fovParameter1,
             double fovParameter2,

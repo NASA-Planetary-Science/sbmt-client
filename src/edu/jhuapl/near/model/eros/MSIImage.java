@@ -80,7 +80,7 @@ public class MSIImage extends Image
     }
 
     @Override
-    public void loadImageInfo(
+    protected void loadImageInfo(
             String lblFilename,
             String[] startTime,
             String[] stopTime,
