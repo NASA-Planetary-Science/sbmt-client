@@ -183,7 +183,12 @@ public class ImageInfoPanel extends ModelInfoWindow implements PropertyChangeLis
         for (Component item : components)
         {
             if (item instanceof JMenuItem)
-                menu.add(item);
+            {
+                // Do not show the "Show Image" option since that creates problems
+                // since it's supposed to close this window also.
+                if (!(((JMenuItem)item).getAction() instanceof ImagePopupMenu.ShowRemoveIn3DAction))
+                    menu.add(item);
+            }
         }
 
         menuBar.add(menu);

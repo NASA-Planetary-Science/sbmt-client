@@ -146,7 +146,7 @@ public class ImagePopupMenu extends PopupMenu
     }
 
 
-    private class ShowRemoveIn3DAction extends AbstractAction
+    public class ShowRemoveIn3DAction extends AbstractAction
     {
         public void actionPerformed(ActionEvent e)
         {
