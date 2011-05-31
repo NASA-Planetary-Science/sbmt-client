@@ -1,8 +1,16 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+/*
+ * ImageInfoPanel2.java
+ *
+ * Created on May 30, 2011, 12:24:26 PM
+ */
 package edu.jhuapl.near.gui;
 
-import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -11,16 +19,10 @@ import java.io.IOException;
 import java.util.LinkedHashMap;
 
 import javax.swing.AbstractAction;
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
 
 import vtk.vtkImageActor;
 import vtk.vtkImageData;
@@ -31,21 +33,27 @@ import edu.jhuapl.near.model.ImageBoundaryCollection;
 import edu.jhuapl.near.model.ImageCollection;
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.popupmenus.ImagePopupMenu;
+import edu.jhuapl.near.util.IntensityRange;
 
+/**
+ *
+ * @author eli
+ */
 public class ImageInfoPanel extends ModelInfoWindow implements PropertyChangeListener
 {
     private vtkEnhancedRenderWindowPanel renWin;
-    private ContrastChanger contrastChanger;
     private Image image;
     private ImageCollection imageCollection;
     private ImageBoundaryCollection imageBoundaryCollection;
+    private vtkImageActor actor;
 
+    /** Creates new form ImageInfoPanel2 */
     public ImageInfoPanel(
-            Image image,
+            final Image image,
             ImageCollection imageCollection,
             ImageBoundaryCollection imageBoundaryCollection)
     {
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        initComponents();
 
         this.image = image;
         this.imageCollection = imageCollection;
@@ -59,8 +67,9 @@ public class ImageInfoPanel extends ModelInfoWindow implements PropertyChangeLis
 
         vtkImageData displayedImage = image.getDisplayedImage();
 
-        vtkImageActor actor = new vtkImageActor();
+        actor = new vtkImageActor();
         actor.SetInput(displayedImage);
+        actor.InterpolateOn();
 
 // for testing backplane generation
 //        {
@@ -81,20 +90,23 @@ public class ImageInfoPanel extends ModelInfoWindow implements PropertyChangeLis
 
         renWin.setSize(image.getImageWidth(), image.getImageHeight());
 
-        JPanel panel = new JPanel(new BorderLayout());
+        // Trying to add a renWin panel in the netbeans gui does not seem to work
+        // so instead add it here.
+        java.awt.GridBagConstraints gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        getContentPane().add(renWin, gridBagConstraints);
 
-        panel.add(renWin, BorderLayout.CENTER);
-
-        JPanel bottomPanel = new JPanel();
-        bottomPanel.setLayout(new BoxLayout(bottomPanel,
-                BoxLayout.PAGE_AXIS));
 
         // Add a text box for showing information about the image
-        String[] columnNames = {"Property",
-                "Value"};
+        String[] columnNames = {"Property", "Value"};
 
         LinkedHashMap<String, String> properties = null;
-        Object[][] data = {    {"", ""} };
+        Object[][] data = { {"", ""} };
         try
         {
             properties = image.getProperties();
@@ -110,44 +122,34 @@ public class ImageInfoPanel extends ModelInfoWindow implements PropertyChangeLis
                 ++i;
             }
         }
+
         catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
 
-        JTable table = new JTable(data, columnNames)
+        DefaultTableModel model = new DefaultTableModel(data, columnNames)
         {
+            @Override
             public boolean isCellEditable(int row, int column)
             {
                 return false;
             }
         };
 
-        table.setBorder(BorderFactory.createTitledBorder(""));
-        table.setPreferredScrollableViewportSize(new Dimension(500, 130));
-
-        JScrollPane scrollPane = new JScrollPane(table);
-
-        // Add the contrast changer
-        contrastChanger = new ContrastChanger();
-
-        contrastChanger.setImage(image);
-
-        bottomPanel.add(Box.createVerticalStrut(10));
-        bottomPanel.add(scrollPane);
-        bottomPanel.add(contrastChanger);
-
-        panel.add(bottomPanel, BorderLayout.SOUTH);
-
-        add(panel, BorderLayout.CENTER);
+        table.setModel(model);
 
         createMenus();
+
+        IntensityRange range = image.getDisplayedRange();
+        slider.setLowValue(range.min);
+        slider.setHighValue(range.max);
+        slider.setEnabled(true);
 
         // Finally make the frame visible
         String name = new File(image.getImageName()).getName();
         setTitle("Image " + name + " Properties");
-        //this.set
+
         pack();
         setVisible(true);
     }
@@ -210,4 +212,103 @@ public class ImageInfoPanel extends ModelInfoWindow implements PropertyChangeLis
             return;
         renWin.Render();
     }
+
+    /** This method is called from within the constructor to
+     * initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is
+     * always regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    private void initComponents() {//GEN-BEGIN:initComponents
+        java.awt.GridBagConstraints gridBagConstraints;
+
+        slider = new com.jidesoft.swing.RangeSlider();
+        jLabel1 = new javax.swing.JLabel();
+        interpolateCheckBox = new javax.swing.JCheckBox();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        table = new javax.swing.JTable();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        getContentPane().setLayout(new java.awt.GridBagLayout());
+
+        slider.setMajorTickSpacing(10);
+        slider.setMaximum(255);
+        slider.setPaintTicks(true);
+        slider.setHighValue(255);
+        slider.setLowValue(0);
+        slider.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                sliderStateChanged(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(3, 3, 0, 0);
+        getContentPane().add(slider, gridBagConstraints);
+
+        jLabel1.setText("Contrast:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.insets = new java.awt.Insets(3, 3, 0, 0);
+        getContentPane().add(jLabel1, gridBagConstraints);
+
+        interpolateCheckBox.setText("Nearest Neighbor Interpolation");
+        interpolateCheckBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                interpolateCheckBoxActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 0);
+        getContentPane().add(interpolateCheckBox, gridBagConstraints);
+
+        jScrollPane1.setMinimumSize(new java.awt.Dimension(452, 200));
+        jScrollPane1.setPreferredSize(new java.awt.Dimension(452, 200));
+
+        jScrollPane1.setViewportView(table);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        getContentPane().add(jScrollPane1, gridBagConstraints);
+
+        pack();
+    }//GEN-END:initComponents
+
+    private void sliderStateChanged(javax.swing.event.ChangeEvent evt)//GEN-FIRST:event_sliderStateChanged
+    {//GEN-HEADEREND:event_sliderStateChanged
+        if (slider.getValueIsAdjusting())
+            return;
+
+        int lowVal = slider.getLowValue();
+        int highVal = slider.getHighValue();
+        if (image != null)
+            image.setDisplayedImageRange(new IntensityRange(lowVal, highVal));
+}//GEN-LAST:event_sliderStateChanged
+
+    private void interpolateCheckBoxActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_interpolateCheckBoxActionPerformed
+    {//GEN-HEADEREND:event_interpolateCheckBoxActionPerformed
+        image.setInterpolate(!interpolateCheckBox.isSelected());
+        actor.SetInterpolate(interpolateCheckBox.isSelected() ? 0 : 1);
+        renWin.Render();
+}//GEN-LAST:event_interpolateCheckBoxActionPerformed
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JCheckBox interpolateCheckBox;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JScrollPane jScrollPane1;
+    private com.jidesoft.swing.RangeSlider slider;
+    private javax.swing.JTable table;
+    // End of variables declaration//GEN-END:variables
 }

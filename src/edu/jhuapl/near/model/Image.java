@@ -1424,4 +1424,23 @@ abstract public class Image extends Model implements PropertyChangeListener
     {
         return upVector;
     }
+
+    public void setInterpolate(boolean enable)
+    {
+        vtkTexture texture = footprintActor.GetTexture();
+        if (texture != null)
+        {
+            texture.SetInterpolate(enable ? 1 : 0);
+            this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+        }
+    }
+
+    public boolean getInterpolate()
+    {
+        vtkTexture texture = footprintActor.GetTexture();
+        if (texture != null)
+            return texture.GetInterpolate() == 0 ? false : true;
+        else
+            return true;
+    }
 }
