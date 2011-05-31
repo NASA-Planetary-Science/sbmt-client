@@ -90,8 +90,8 @@ public class ImageInfoPanel extends ModelInfoWindow implements PropertyChangeLis
 
         renWin.setSize(image.getImageWidth(), image.getImageHeight());
 
-        // Trying to add a renWin panel in the netbeans gui does not seem to work
-        // so instead add it here.
+        // Trying to add a vtkEnhancedRenderWindowPanel in the netbeans gui
+        // does not seem to work so instead add it here.
         java.awt.GridBagConstraints gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -140,11 +140,6 @@ public class ImageInfoPanel extends ModelInfoWindow implements PropertyChangeLis
         table.setModel(model);
 
         createMenus();
-
-        IntensityRange range = image.getDisplayedRange();
-        slider.setLowValue(range.min);
-        slider.setHighValue(range.max);
-        slider.setEnabled(true);
 
         // Finally make the frame visible
         String name = new File(image.getImageName()).getName();
