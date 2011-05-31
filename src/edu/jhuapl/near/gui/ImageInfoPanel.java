@@ -26,7 +26,9 @@ import javax.swing.table.DefaultTableModel;
 
 import vtk.vtkImageActor;
 import vtk.vtkImageData;
+import vtk.vtkImageReslice;
 import vtk.vtkInteractorStyleImage;
+import vtk.vtkTransform;
 
 import edu.jhuapl.near.model.Image;
 import edu.jhuapl.near.model.ImageBoundaryCollection;
@@ -46,6 +48,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements PropertyChangeLis
     private ImageCollection imageCollection;
     private ImageBoundaryCollection imageBoundaryCollection;
     private vtkImageActor actor;
+    private vtkImageReslice reslice;
 
     /** Creates new form ImageInfoPanel2 */
     public ImageInfoPanel(
@@ -67,8 +70,27 @@ public class ImageInfoPanel extends ModelInfoWindow implements PropertyChangeLis
 
         vtkImageData displayedImage = image.getDisplayedImage();
 
+        double[] center = displayedImage.GetCenter();
+        int[] dims = displayedImage.GetDimensions();
+
+        // Rotate image by 90 degrees so it appears the same way as when you
+        // use the Center in Image option.
+        vtkTransform imageTransform = new vtkTransform();
+        imageTransform.Translate(center[0], center[1], 0.0);
+        imageTransform.RotateZ(-90.0);
+        imageTransform.Translate(-center[1], -center[0], 0.0);
+
+        reslice = new vtkImageReslice();
+        reslice.SetInput(displayedImage);
+        reslice.SetResliceTransform(imageTransform);
+        reslice.SetInterpolationModeToNearestNeighbor();
+        reslice.SetOutputSpacing(1.0, 1.0, 1.0);
+        reslice.SetOutputOrigin(0.0, 0.0, 0.0);
+        reslice.SetOutputExtent(0, dims[1]-1, 0, dims[0]-1, 0, 0);
+        reslice.Update();
+
         actor = new vtkImageActor();
-        actor.SetInput(displayedImage);
+        actor.SetInput(reslice.GetOutput());
         actor.InterpolateOn();
 
 // for testing backplane generation
@@ -88,7 +110,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements PropertyChangeLis
 
         renWin.GetRenderer().AddActor(actor);
 
-        renWin.setSize(image.getImageWidth(), image.getImageHeight());
+        renWin.setSize(550, 550);
 
         // Trying to add a vtkEnhancedRenderWindowPanel in the netbeans gui
         // does not seem to work so instead add it here.
