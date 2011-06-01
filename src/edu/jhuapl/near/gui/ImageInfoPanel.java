@@ -278,7 +278,8 @@ public class ImageInfoPanel extends ModelInfoWindow implements PropertyChangeLis
         gridBagConstraints.insets = new java.awt.Insets(3, 3, 0, 0);
         getContentPane().add(jLabel1, gridBagConstraints);
 
-        interpolateCheckBox.setText("Nearest Neighbor Interpolation");
+        interpolateCheckBox.setSelected(true);
+        interpolateCheckBox.setText("Interpolate Image");
         interpolateCheckBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 interpolateCheckBoxActionPerformed(evt);
@@ -321,8 +322,8 @@ public class ImageInfoPanel extends ModelInfoWindow implements PropertyChangeLis
 
     private void interpolateCheckBoxActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_interpolateCheckBoxActionPerformed
     {//GEN-HEADEREND:event_interpolateCheckBoxActionPerformed
-        image.setInterpolate(!interpolateCheckBox.isSelected());
-        actor.SetInterpolate(interpolateCheckBox.isSelected() ? 0 : 1);
+        image.setInterpolate(interpolateCheckBox.isSelected());
+        actor.SetInterpolate(interpolateCheckBox.isSelected() ? 1 : 0);
         renWin.Render();
 }//GEN-LAST:event_interpolateCheckBoxActionPerformed
 

@@ -51,7 +51,8 @@
     </Component>
     <Component class="javax.swing.JCheckBox" name="interpolateCheckBox">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Nearest Neighbor Interpolation"/>
+        <Property name="selected" type="boolean" value="true"/>
+        <Property name="text" type="java.lang.String" value="Interpolate Image"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="interpolateCheckBoxActionPerformed"/>
