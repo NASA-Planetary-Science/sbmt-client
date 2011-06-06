@@ -267,12 +267,23 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
                 else if (model instanceof AmicaBoundaryCollection)
                     name = ((AmicaBoundaryCollection)model).getBoundaryName((vtkActor)e.getPickedProp());
 
-                int idx = amicaRawResults.indexOf(name + ".FIT");
+                name = name + ".fit";
+                int idx = -1;
+                int size = amicaRawResults.size();
+                for (int i=0; i<size; ++i)
+                    if (name.equals(amicaRawResults.get(i).get(0)))
+                    {
+                        idx = i;
+                        break;
+                    }
 
-                resultList.setSelectionInterval(idx, idx);
-                Rectangle cellBounds = resultList.getCellBounds(idx, idx);
-                if (cellBounds != null)
-                    resultList.scrollRectToVisible(cellBounds);
+                if (idx >= 0)
+                {
+                    resultList.setSelectionInterval(idx, idx);
+                    Rectangle cellBounds = resultList.getCellBounds(idx, idx);
+                    if (cellBounds != null)
+                        resultList.scrollRectToVisible(cellBounds);
+                }
             }
         }
     }
