@@ -15,8 +15,6 @@ import javax.swing.filechooser.FileFilter;
  */
 public class ImageFileChooser extends FileChooserBase
 {
-    private static final JFileChooser fc = new JFileChooser();
-
     private static String BMP_DESCRIPTION = "BMP Files";
     private static String JPEG_DESCRIPTION = "JPEG Files";
     private static String PNG_DESCRIPTION = "PNG Files";
@@ -80,7 +78,7 @@ public class ImageFileChooser extends FileChooserBase
         }
     }
 
-    static
+    static private void setupFileChooser(JFileChooser fc)
     {
         fc.setAcceptAllFileFilterUsed(false);
 
@@ -100,6 +98,8 @@ public class ImageFileChooser extends FileChooserBase
 
     public static File showOpenDialog(Component parent, String title)
     {
+        JFileChooser fc = new JFileChooser();
+        setupFileChooser(fc);
         fc.setDialogTitle(title);
         fc.setCurrentDirectory(getLastDirectory());
         int returnVal = fc.showOpenDialog(JOptionPane.getFrameForComponent(parent));
@@ -116,6 +116,8 @@ public class ImageFileChooser extends FileChooserBase
 
     public static File showSaveDialog(Component parent, String title)
     {
+        JFileChooser fc = new JFileChooser();
+        setupFileChooser(fc);
         fc.setDialogTitle(title);
         fc.setCurrentDirectory(getLastDirectory());
         int returnVal = fc.showSaveDialog(JOptionPane.getFrameForComponent(parent));

@@ -8,10 +8,9 @@ import javax.swing.JOptionPane;
 
 public class DirectoryChooser extends FileChooserBase
 {
-    private static final JFileChooser fc = new JFileChooser();
-
     public static File showOpenDialog(Component parent)
     {
+        JFileChooser fc = new JFileChooser();
         fc.setDialogTitle("Select Output Folder");
         fc.setCurrentDirectory(getLastDirectory());
         fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);

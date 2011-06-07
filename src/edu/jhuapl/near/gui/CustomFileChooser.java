@@ -15,8 +15,6 @@ import javax.swing.filechooser.FileFilter;
  */
 public class CustomFileChooser extends FileChooserBase
 {
-    private static final JFileChooser fc = new JFileChooser();
-
     private static class CustomExtensionFilter extends FileFilter
     {
         private String extension;
@@ -76,11 +74,6 @@ public class CustomFileChooser extends FileChooserBase
         }
     }
 
-    static
-    {
-        fc.setAcceptAllFileFilterUsed(false);
-    }
-
     public static File showOpenDialog(Component parent, String title)
     {
         return showOpenDialog(parent, title, null);
@@ -88,8 +81,11 @@ public class CustomFileChooser extends FileChooserBase
 
     public static File showOpenDialog(Component parent, String title, String extension)
     {
+        JFileChooser fc = new JFileChooser();
+        fc.setAcceptAllFileFilterUsed(true);
         fc.setDialogTitle(title);
-        fc.setFileFilter(new CustomExtensionFilter(extension));
+        if (extension != null)
+            fc.addChoosableFileFilter(new CustomExtensionFilter(extension));
         fc.setCurrentDirectory(getLastDirectory());
         int returnVal = fc.showOpenDialog(JOptionPane.getFrameForComponent(parent));
         if (returnVal == JFileChooser.APPROVE_OPTION)
@@ -115,8 +111,11 @@ public class CustomFileChooser extends FileChooserBase
 
     public static File showSaveDialog(Component parent, String title, String defaultFilename, String extension)
     {
+        JFileChooser fc = new JFileChooser();
+        fc.setAcceptAllFileFilterUsed(true);
         fc.setDialogTitle(title);
-        fc.setFileFilter(new CustomExtensionFilter(extension));
+        if (extension != null)
+            fc.addChoosableFileFilter(new CustomExtensionFilter(extension));
         fc.setCurrentDirectory(getLastDirectory());
         if (defaultFilename != null)
             fc.setSelectedFile(new File(defaultFilename));
@@ -125,6 +124,15 @@ public class CustomFileChooser extends FileChooserBase
         {
             setLastDirectory(fc.getCurrentDirectory());
             File file = fc.getSelectedFile();
+
+            String filename = file.getAbsolutePath();
+            if (extension != null && !extension.isEmpty())
+            {
+                if (!filename.toLowerCase().endsWith("." + extension))
+                    filename += "." + extension;
+            }
+            file = new File(filename);
+
             if (file.exists())
             {
                 int response = JOptionPane.showConfirmDialog (JOptionPane.getFrameForComponent(parent),
@@ -135,13 +143,7 @@ public class CustomFileChooser extends FileChooserBase
                     return null;
             }
 
-            String filename = file.getAbsolutePath();
-            if (extension != null && !extension.isEmpty())
-            {
-                if (!filename.toLowerCase().endsWith("." + extension))
-                    filename += "." + extension;
-            }
-            return new File(filename);
+            return file;
         }
         else
         {
