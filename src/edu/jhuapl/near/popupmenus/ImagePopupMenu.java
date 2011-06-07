@@ -278,7 +278,8 @@ public class ImagePopupMenu extends PopupMenu
         {
             // First generate the DDR
 
-            File file = CustomFileChooser.showSaveDialog(invoker, "Save Backplanes DDR", imageKey.name + "_DDR.IMG");
+            String defaultFilename = new File(imageKey.name + "_DDR.IMG").getName();
+            File file = CustomFileChooser.showSaveDialog(invoker, "Save Backplanes DDR", defaultFilename, "img");
 
             try
             {
@@ -315,14 +316,22 @@ public class ImagePopupMenu extends PopupMenu
                 ex.printStackTrace();
             }
 
-            // Then generate the LBL file
-
-            file = CustomFileChooser.showSaveDialog(invoker, "Save Backplanes Label", imageKey.name + "_DDR.LBL");
+            // Then generate the LBL file using the same filename but with a lbl extension.
+            // The extension is chosen to have the same case as the img file.
 
             try
             {
                 if (file != null)
                 {
+                    String lblName = file.getAbsolutePath();
+                    lblName = lblName.substring(0, lblName.length()-4);
+                    if (file.getAbsolutePath().endsWith("img"))
+                        lblName += ".lbl";
+                    else
+                        lblName += ".LBL";
+
+                    file = new File(lblName);
+
                     OutputStream out = new FileOutputStream(file);
 
                     imageCollection.addImage(imageKey);
