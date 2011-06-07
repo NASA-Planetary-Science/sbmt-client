@@ -3,6 +3,7 @@ package edu.jhuapl.near.popupmenus;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -285,7 +286,7 @@ public class ImagePopupMenu extends PopupMenu
             {
                 if (file != null)
                 {
-                    OutputStream out = new FileOutputStream(file);
+                    OutputStream out = new BufferedOutputStream(new FileOutputStream(file));
 
                     imageCollection.addImage(imageKey);
                     Image image = imageCollection.getImage(imageKey);
@@ -294,16 +295,17 @@ public class ImagePopupMenu extends PopupMenu
 
                     float[] backplanes = image.generateBackplanes();
 
-                    byte[] buf = new byte[4 * backplanes.length];
+                    byte[] buf = new byte[4];
                     for (int i=0; i<backplanes.length; ++i)
                     {
                         int v = Float.floatToIntBits(backplanes[i]);
-                        buf[4*i + 0] = (byte)(v >>> 24);
-                        buf[4*i + 1] = (byte)(v >>> 16);
-                        buf[4*i + 2] = (byte)(v >>>  8);
-                        buf[4*i + 3] = (byte)(v >>>  0);
+                        buf[0] = (byte)(v >>> 24);
+                        buf[1] = (byte)(v >>> 16);
+                        buf[2] = (byte)(v >>>  8);
+                        buf[3] = (byte)(v >>>  0);
+                        out.write(buf, 0, buf.length);
                     }
-                    out.write(buf, 0, buf.length);
+
                     out.close();
                 }
             }
