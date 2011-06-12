@@ -163,7 +163,10 @@ public class PointPicker extends Picker
                 {
                     lastDragPosition = smallBodyPicker.GetPickPosition();
 
-                    pointModel.movePolygon(vertexIdBeingEdited, lastDragPosition);
+                    if (e.isControlDown() || e.isShiftDown())
+                        pointModel.changeRadiusOfPolygon(vertexIdBeingEdited, lastDragPosition);
+                    else
+                        pointModel.movePolygon(vertexIdBeingEdited, lastDragPosition);
                 }
             }
         }
