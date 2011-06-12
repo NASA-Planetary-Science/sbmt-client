@@ -10,7 +10,10 @@ import java.util.ArrayList;
 
 import vtk.vtkActor;
 import vtk.vtkAppendPolyData;
+import vtk.vtkCellArray;
 import vtk.vtkCellData;
+import vtk.vtkIdTypeArray;
+import vtk.vtkPoints;
 import vtk.vtkPolyData;
 import vtk.vtkPolyDataMapper;
 import vtk.vtkProp;
@@ -58,7 +61,7 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
 //    private int[] defaultInteriorColor = {0, 191, 255};
     private double interiorOpacity = 0.3;
     private String type;
-    private boolean saveRadiusToOutput = true;
+    private boolean isCircleModel = true;
     private int highlightedStructure = -1;
     private int[] highlightColor = {0, 0, 255};
     private int maxPolygonId = 0;
@@ -150,7 +153,7 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
     public RegularPolygonModel(
             SmallBodyModel smallBodyModel,
             int numberOfSides,
-            boolean saveRadiusToOutput,
+            boolean isCircle,
             String type,
             String name)
     {
@@ -166,7 +169,7 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
         emptyPolyData = new vtkPolyData();
 
         this.numberOfSides = numberOfSides;
-        this.saveRadiusToOutput = saveRadiusToOutput;
+        this.isCircleModel = isCircle;
         this.type = type;
 
         boundaryColors = new vtkUnsignedCharArray();
@@ -504,23 +507,41 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
 
             String[] words = lines.get(i).trim().split("\\s+");
 
+            // The latest version of this file format has 14 columns. The previous version had
+            // 10 columns for circles and 13 columns for points. We still want to support loading
+            // both versions, so look at how many columns are in the line.
+
+            // The first 8 columns are the same in both the old and new formats.
             pol.id = Integer.parseInt(words[0]);
             pol.name = words[1];
             pol.center[0] = Double.parseDouble(words[2]);
             pol.center[1] = Double.parseDouble(words[3]);
             pol.center[2] = Double.parseDouble(words[4]);
 
-            // Note the next 3 words in the line (the point in spherical coordinates) are not used
-
-            if (saveRadiusToOutput)
-                pol.radius = Double.parseDouble(words[8]) / 2.0; // read in diameter not radius
-            else
-                pol.radius = defaultRadius;
-
             if (pol.id > maxPolygonId)
                 maxPolygonId = pol.id;
 
-            // If there is more on the line, the last item is the color
+            // Note the next 3 words in the line (the point in spherical coordinates) are not used
+
+            // For the new format and the points file in the old format, the next 4 columns (slope,
+            // elevation, acceleration, and potential) are not used.
+
+            if (words.length < 14)
+            {
+                // OLD VERSION of file
+                if (isCircleModel)
+                    pol.radius = Double.parseDouble(words[8]) / 2.0; // read in diameter not radius
+                else
+                    pol.radius = defaultRadius;
+            }
+            else
+            {
+                // NEW VERSION of file
+                pol.radius = Double.parseDouble(words[12]) / 2.0; // read in diameter not radius
+            }
+
+            // If there are 9 or more columns in the file, the last column is the color in both
+            // the new and old formats.
             if (words.length > 9)
             {
                 String[] colorStr = words[words.length-1].split(",");
@@ -574,19 +595,17 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
                 lon + "\t" +
                 llr.rad;
 
-            if (saveRadiusToOutput)
-                str += "\t" + 2.0*pol.radius; // save out as diameter, not radius
-            else
+
+            str += "\t";
+            double[] values = getColoringValuesAtPolygon(pol);
+            for (int i=0; i<values.length; ++i)
             {
-                str += "\t";
-                int numberOfColors = smallBodyModel.getNumberOfColors();
-                for (int i=0; i<numberOfColors; ++i)
-                {
-                    str += smallBodyModel.getColoringValue(i, pol.center);
-                    if (i < numberOfColors-1)
-                        str += "\t";
-                }
+                str += values[i];
+                if (i < values.length-1)
+                    str += "\t";
             }
+
+            str += "\t" + 2.0*pol.radius; // save out as diameter, not radius
 
             str += "\t" + pol.color[0] + "," + pol.color[1] + "," + pol.color[2];
 
@@ -672,5 +691,57 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
         polygons.get(idx).setColor(color);
         updatePolyData();
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+    }
+
+    private double[] getColoringValuesAtPolygon(RegularPolygon pol)
+    {
+        double[] values = {0.0, 0.0, 0.0, 0.0};
+
+        if (!isCircleModel)
+        {
+            for (int i=0; i<4; ++i)
+                values[i] = smallBodyModel.getColoringValue(i, pol.center);
+        }
+        else
+        {
+            // For circles compute the slope and elevation averaged over the rim of the circle.
+            // For acceleration and potential simply compute at the center.
+
+            vtkCellArray lines = pol.boundaryPolyData.GetLines();
+            vtkPoints points = pol.boundaryPolyData.GetPoints();
+
+            vtkIdTypeArray idArray = lines.GetData();
+            int size = idArray.GetNumberOfTuples();
+
+            double totalLength = 0.0;
+            double[] midpoint = new double[3];
+            for (int i=0; i<size; i+=3)
+            {
+                if (idArray.GetValue(i) != 2)
+                {
+                    System.out.println("Big problem: polydata corrupted");
+                    return null;
+                }
+
+                double[] pt1 = points.GetPoint(idArray.GetValue(i+1));
+                double[] pt2 = points.GetPoint(idArray.GetValue(i+2));
+
+                MathUtil.midpointBetween(pt1, pt2, midpoint);
+                double dist = MathUtil.distanceBetween(pt1, pt2);
+                totalLength += dist;
+
+                double[] valuesAtMidpoint = smallBodyModel.getAllColoringValues(midpoint);
+
+                values[0] += valuesAtMidpoint[0]*dist;
+                values[1] += valuesAtMidpoint[1]*dist;
+            }
+
+            values[0] /= totalLength;
+            values[1] /= totalLength;
+            values[2] = smallBodyModel.getColoringValue(2, pol.center);
+            values[3] = smallBodyModel.getColoringValue(3, pol.center);
+        }
+
+        return values;
     }
 }

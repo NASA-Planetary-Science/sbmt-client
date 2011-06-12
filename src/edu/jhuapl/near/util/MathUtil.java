@@ -420,6 +420,14 @@ public class MathUtil
         return vdot(vec, vec);
     }
 
+    static public void midpointBetween(double[] pt1, double[] pt2, double[] midpoint)
+    {
+        midpoint[0] = 0.5 * (pt1[0]+pt2[0]);
+        midpoint[1] = 0.5 * (pt1[1]+pt2[1]);
+        midpoint[2] = 0.5 * (pt1[2]+pt2[2]);
+    }
+
+
     /**
      * Adapted from VTK's version
      * @param p1

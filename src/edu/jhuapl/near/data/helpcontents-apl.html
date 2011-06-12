@@ -255,6 +255,33 @@ the control panel).
 You can save/load all the structures to/from disk using the Save and Load
 buttons. Note each type of structure has a different file format.
 </p>
+<p>
+The file format for paths is in XML.
+</p>
+<p>
+The file format for circles and points is a tab separated table with the following columns:
+</p>
+<ol>
+<li>id (integer)
+<li>name (string)
+<li>x-coordinate (km)
+<li>y-coordinate (km)
+<li>z-coordinate (km)
+<li>latitude (degrees)
+<li>longitude (degrees)
+<li>distance from center of body (km)
+<li>slope (degrees)
+<li>elevation (meters)
+<li>gravitational acceleration (meters per second squared)
+<li>gravitational potential (joules per kilogram)
+<li>diameter (km)
+<li>color (red,green,blue)
+</ol>
+
+Note that when loading points are circles from files, not all of these fields are actually used.
+Also note that if using a shape model for which slope, elevation, acceleration, and potential are
+not specified such as the higher resolution shape models for Eros, then these values that are
+saved to the file are undefined.
 
 <h3>Mapmaker tab (Eros only)</h3>
 
