@@ -224,15 +224,15 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
 
         if (source == this.loadStructuresButton)
         {
-            structuresFile = CustomFileChooser.showOpenDialog(this, "Select File");
-            if (structuresFile != null)
-                this.structuresFileTextField.setText(structuresFile.getAbsolutePath());
+            File file = CustomFileChooser.showOpenDialog(this, "Select File");
 
-            if (structuresFile != null)
+            if (file != null)
             {
                 try
                 {
-                    structureModel.loadModel(structuresFile);
+                    structureModel.loadModel(file);
+                    structuresFileTextField.setText(file.getAbsolutePath());
+                    structuresFile = file;
                 }
                 catch (Exception e)
                 {
@@ -247,18 +247,19 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
         }
         else if (source == this.saveStructuresButton || source == this.saveAsStructuresButton)
         {
+            File file = null;
             if (structuresFile == null || source == this.saveAsStructuresButton)
             {
-                structuresFile = CustomFileChooser.showSaveDialog(this, "Select File");
-                if (structuresFile != null)
-                    this.structuresFileTextField.setText(structuresFile.getAbsolutePath());
+                file = CustomFileChooser.showSaveDialog(this, "Select File");
             }
 
-            if (structuresFile != null)
+            if (file != null)
             {
                 try
                 {
-                    structureModel.saveModel(structuresFile);
+                    structureModel.saveModel(file);
+                    structuresFileTextField.setText(file.getAbsolutePath());
+                    structuresFile = file;
                 }
                 catch (Exception e)
                 {
