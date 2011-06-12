@@ -229,8 +229,8 @@ To draw a point or a circle, click on the "Edit" button. That will activate a
 special editing mode where the asteroid will be frozen and navigation is disabled.
 Click anywhere on the asteroid and the point or circle will appear. Once a
 point or circle has been created, you can drag it around with the left mouse
-button. To change the size of a circle drag it while holding the Control
-button. When you're finished editing, press the Edit button again and the 3D
+button. To change the size of a point or circle, drag it while holding the Control
+or Shift button. When you're finished editing, press the Edit button again and the 3D
 view will return to the standard rotate/pan/zoom mode.
 </p>
 
@@ -253,10 +253,11 @@ the control panel).
 <h4>Saving and Loading Structures</h4>
 <p>
 You can save/load all the structures to/from disk using the Save and Load
-buttons. Note each type of structure has a different file format.
+buttons. Note that the file format for paths is different than the format
+for points or circles.
 </p>
 <p>
-The file format for paths is in XML.
+The file format for paths is XML.
 </p>
 <p>
 The file format for circles and points is a tab separated table with the following columns:
@@ -278,10 +279,15 @@ The file format for circles and points is a tab separated table with the followi
 <li>color (red,green,blue)
 </ol>
 
-Note that when loading points are circles from files, not all of these fields are actually used.
-Also note that if using a shape model for which slope, elevation, acceleration, and potential are
-not specified such as the higher resolution shape models for Eros, then these values that are
-saved to the file are undefined.
+<p>
+Note that when loading points or circles files, only columns 1 through 5 and 13 and 14 are
+actually read. Columns 6 through 12 are ignored. In addition note that when saving circles, the slope
+and elevation are averaged over the rim of the circle, whereas the acceleration and potential
+are computed at the center of the circle. For points the center of the point is used for
+all 4 values. Finally note that if using a shape model for which slope, elevation,
+acceleration, and potential are not specified such as the higher resolution shape models
+for Eros or Itokawa, then these values that are saved to the file are undefined.
+</p>
 
 <h3>Mapmaker tab (Eros only)</h3>
 
