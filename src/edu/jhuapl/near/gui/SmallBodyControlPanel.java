@@ -498,7 +498,7 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
     {
         SmallBodyModel smallBodyModel = modelManager.getSmallBodyModel();
 
-        DecimalFormat df = new DecimalFormat("#.####");
+        DecimalFormat df = new DecimalFormat("#.#####");
 
         String text = "<html>Statistics:<br>"
             + "&nbsp;&nbsp;&nbsp;Number of plates: " + smallBodyModel.getSmallBodyPolyData().GetNumberOfCells() + "<br>"
