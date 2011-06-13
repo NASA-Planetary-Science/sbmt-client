@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import javax.swing.ButtonGroup;
@@ -58,6 +59,7 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
     private JSpinner imageMapOpacitySpinner;
     private JButton scaleColoringButton;
     private JRadioButton customColorButton;
+    private JLabel statisticsLabel;
 
 
     public SmallBodyControlPanel(ModelManager modelManager, String bodyName)
@@ -105,8 +107,13 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
         veryHighResModelButton.setEnabled(true);
         veryHighResModelButton.setToolTipText(
                 "<html>Click here to show a very high resolution model of " + bodyName + " <br />" +
-                "containing 3145728 plates or triangles <br />" +
-                "Warning: A high-end graphics card and several gigabytes of RAM are required for best performance.</html>");
+                "containing 3145728 plates or triangles </html>");
+
+        statisticsLabel = new JLabel();
+        statisticsLabel.setBorder(null);
+        statisticsLabel.setOpaque(false);
+        setStatisticsLabel();
+
 
         resolutionButtonGroup = new ButtonGroup();
         resolutionButtonGroup.add(lowResModelButton);
@@ -223,6 +230,7 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
         opacityLabel.setEnabled(false);
         imageMapOpacitySpinner.setEnabled(false);
 
+
         panel.add(modelCheckBox, "wrap");
         if (modelManager.getSmallBodyModel().getNumberResolutionLevels() > 1)
         {
@@ -261,6 +269,7 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
         panel.add(shadingLabel, "wrap");
         panel.add(flatShadingButton, "wrap, gapleft 25");
         panel.add(smoothShadingButton, "wrap, gapleft 25");
+        panel.add(statisticsLabel, "gaptop 15");
 
         add(panel, BorderLayout.CENTER);
     }
@@ -330,6 +339,7 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
             if (this.lowResModelButton.isSelected())
                 try {
                     smallBodyModel.setModelResolution(0);
+                    setStatisticsLabel();
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 }
@@ -339,6 +349,7 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
             if (this.medResModelButton.isSelected())
                 try {
                     smallBodyModel.setModelResolution(1);
+                    setStatisticsLabel();
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 }
@@ -348,6 +359,7 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
             if (this.highResModelButton.isSelected())
                 try {
                     smallBodyModel.setModelResolution(2);
+                    setStatisticsLabel();
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 }
@@ -357,6 +369,7 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
             if (this.veryHighResModelButton.isSelected())
                 try {
                     smallBodyModel.setModelResolution(3);
+                    setStatisticsLabel();
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 }
@@ -479,5 +492,25 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
         double val = (Double)imageMapOpacitySpinner.getValue();
 
         smallBodyModel.setImageMapOpacity(val);
+    }
+
+    private void setStatisticsLabel()
+    {
+        SmallBodyModel smallBodyModel = modelManager.getSmallBodyModel();
+
+        DecimalFormat df = new DecimalFormat("#.####");
+
+        String text = "<html>Statistics:<br>"
+            + "&nbsp;&nbsp;&nbsp;Number of plates: " + smallBodyModel.getSmallBodyPolyData().GetNumberOfCells() + "<br>"
+            + "&nbsp;&nbsp;&nbsp;Number of vertices: " + smallBodyModel.getSmallBodyPolyData().GetNumberOfPoints() + "<br>"
+            + "&nbsp;&nbsp;&nbsp;Surface Area: " + df.format(smallBodyModel.getSurfaceArea()) + " km^2<br>"
+            + "&nbsp;&nbsp;&nbsp;Volume: " + df.format(smallBodyModel.getVolume()) + " km^3<br>"
+            + "&nbsp;&nbsp;&nbsp;Average plate area: " + df.format(1.0e6 * smallBodyModel.getMeanCellArea()) + " m^2<br>"
+            + "&nbsp;&nbsp;&nbsp;Minimum plate area: " + df.format(1.0e6 * smallBodyModel.getMinCellArea()) + " m^2<br>"
+            + "&nbsp;&nbsp;&nbsp;Maximum plate area: " + df.format(1.0e6 * smallBodyModel.getMaxCellArea()) + " m^2<br>"
+            + "</html>";
+
+        text += "</table>";
+        statisticsLabel.setText(text);
     }
 }

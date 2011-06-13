@@ -129,7 +129,11 @@ public class SmallBodyModel extends Model
     private int blueFalseColor = -1; // blue channel for false coloring
     private vtkUnsignedCharArray falseColorArray;
     private vtkFloatArray cellNormals;
-
+    private double surfaceArea = -1.0;
+    private double volume = -1.0;
+    private double minCellArea = -1.0;
+    private double maxCellArea = -1.0;
+    private double meanCellArea = -1.0;
 
     /**
      * Default constructor. Must be followed by a call to setSmallBodyPolyData.
@@ -220,6 +224,8 @@ public class SmallBodyModel extends Model
         smallBodyReader.Delete();
 
         initializeLocators();
+
+        this.computeShapeModelStatistics();
 
         //this.computeLargestSmallestEdgeLength();
         //this.computeSurfaceArea();
@@ -756,14 +762,80 @@ public class SmallBodyModel extends Model
         return largestSmallestMean;
     }
 
-    public void computeSurfaceArea()
+    private void computeShapeModelStatistics()
     {
         vtkMassProperties massProp = new vtkMassProperties();
         massProp.SetInput(smallBodyPolyData);
         massProp.Update();
 
-        System.out.println("Surface area " + massProp.GetSurfaceArea());
+        surfaceArea = massProp.GetSurfaceArea();
+        volume = massProp.GetVolume();
+        meanCellArea = surfaceArea / (double)smallBodyPolyData.GetNumberOfCells();
+        minCellArea = massProp.GetMinCellArea();
+        maxCellArea = massProp.GetMaxCellArea();
+
+        /*
+
+        // The following computes the surface area directly rather than using vtkMassProperties
+        // It gives exactly the same results as vtkMassProperties but is much slower.
+
+        int numberOfCells = smallBodyPolyData.GetNumberOfCells();
+
+        System.out.println(numberOfCells);
+        double totalArea = 0.0;
+        minCellArea = Double.MAX_VALUE;
+        maxCellArea = 0.0;
+        for (int i=0; i<numberOfCells; ++i)
+        {
+            vtkCell cell = smallBodyPolyData.GetCell(i);
+            vtkPoints points = cell.GetPoints();
+            double[] pt0 = points.GetPoint(0);
+            double[] pt1 = points.GetPoint(1);
+            double[] pt2 = points.GetPoint(2);
+            double area = MathUtil.triangleArea(pt0, pt1, pt2);
+            totalArea += area;
+            if (area < minCellArea)
+                minCellArea = area;
+            if (area > maxCellArea)
+                maxCellArea = area;
+        }
+
+        meanCellArea = totalArea / (double)(numberOfCells);
+
+
+        System.out.println("Surface area   " + massProp.GetSurfaceArea());
+        System.out.println("Surface area2  " + totalArea);
+        System.out.println("min cell area  " + massProp.GetMinCellArea());
+        System.out.println("min cell area2 " + minCellArea);
+        System.out.println("max cell area  " + massProp.GetMaxCellArea());
+        System.out.println("max cell area2 " + maxCellArea);
         System.out.println("Volume " + massProp.GetVolume());
+        */
+    }
+
+    public double getSurfaceArea()
+    {
+        return surfaceArea;
+    }
+
+    public double getVolume()
+    {
+        return volume;
+    }
+
+    public double getMeanCellArea()
+    {
+        return meanCellArea;
+    }
+
+    public double getMinCellArea()
+    {
+        return minCellArea;
+    }
+
+    public double getMaxCellArea()
+    {
+        return maxCellArea;
     }
 
     public void setModelResolution(int level) throws IOException
