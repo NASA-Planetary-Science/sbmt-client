@@ -247,7 +247,7 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
         }
         else if (source == this.saveStructuresButton || source == this.saveAsStructuresButton)
         {
-            File file = null;
+            File file = structuresFile;
             if (structuresFile == null || source == this.saveAsStructuresButton)
             {
                 file = CustomFileChooser.showSaveDialog(this, "Select File");
