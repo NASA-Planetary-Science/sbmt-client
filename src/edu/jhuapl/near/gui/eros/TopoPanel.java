@@ -24,7 +24,7 @@ import edu.jhuapl.near.gui.CustomFileChooser;
 import edu.jhuapl.near.gui.DirectoryChooser;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
-import edu.jhuapl.near.model.RegularPolygonModel;
+import edu.jhuapl.near.model.AbstractEllipsePolygonModel;
 import edu.jhuapl.near.model.eros.MapletBoundaryCollection;
 import edu.jhuapl.near.pick.PickManager;
 import edu.jhuapl.near.pick.PickManager.PickMode;
@@ -83,7 +83,7 @@ public class TopoPanel extends JPanel implements ActionListener
         {
             public void actionPerformed(ActionEvent e)
             {
-                RegularPolygonModel selectionModel = (RegularPolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
+                AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
                 selectionModel.removeAllStructures();
             }
         });
@@ -173,10 +173,10 @@ public class TopoPanel extends JPanel implements ActionListener
         double [] centerPoint = null;
         double radius = 0.0;
 
-        RegularPolygonModel selectionModel = (RegularPolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
+        AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
         if (selectionModel.getNumberOfStructures() > 0)
         {
-            RegularPolygonModel.RegularPolygon region = (RegularPolygonModel.RegularPolygon)selectionModel.getStructure(0);
+            AbstractEllipsePolygonModel.EllipsePolygon region = (AbstractEllipsePolygonModel.EllipsePolygon)selectionModel.getStructure(0);
 
             centerPoint = region.center;
             radius = region.radius;

@@ -7,11 +7,11 @@ package edu.jhuapl.near.model;
  * @author
  *
  */
-public class PointModel extends RegularPolygonModel
+public class PointModel extends AbstractEllipsePolygonModel
 {
     public PointModel(SmallBodyModel smallBodyModel)
     {
-        super(smallBodyModel, 4, false, "point", ModelNames.POINT_STRUCTURES);
+        super(smallBodyModel, 4, Mode.POINT_MODE, "point", ModelNames.POINT_STRUCTURES);
         setInteriorOpacity(1.0);
         int[] color = {255, 0, 255};
         setDefaultColor(color);

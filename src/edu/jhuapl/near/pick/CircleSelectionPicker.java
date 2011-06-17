@@ -13,7 +13,7 @@ import edu.jhuapl.near.gui.Renderer;
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
-import edu.jhuapl.near.model.RegularPolygonModel;
+import edu.jhuapl.near.model.AbstractEllipsePolygonModel;
 import edu.jhuapl.near.model.SmallBodyModel;
 
 public class CircleSelectionPicker extends Picker
@@ -21,7 +21,7 @@ public class CircleSelectionPicker extends Picker
     private ModelManager modelManager;
     private vtkRenderWindowPanel renWin;
     private SmallBodyModel smallBodyModel;
-    private RegularPolygonModel circleModel;
+    private AbstractEllipsePolygonModel circleModel;
 
     private vtkCellPicker smallBodyPicker;
 
@@ -34,7 +34,7 @@ public class CircleSelectionPicker extends Picker
     {
         this.renWin = renderer.getRenderWindowPanel();
         this.modelManager = modelManager;
-        this.circleModel = (RegularPolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
+        this.circleModel = (AbstractEllipsePolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
 
         smallBodyPicker = new vtkCellPicker();
         smallBodyPicker.SetTolerance(0.002);

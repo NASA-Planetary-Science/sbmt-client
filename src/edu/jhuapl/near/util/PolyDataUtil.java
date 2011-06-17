@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import vtk.vtkAbstractPointLocator;
+import vtk.vtkAlgorithmOutput;
 import vtk.vtkCellArray;
 import vtk.vtkCleanPolyData;
 import vtk.vtkClipPolyData;
@@ -25,6 +26,8 @@ import vtk.vtkPolyDataConnectivityFilter;
 import vtk.vtkPolyDataNormals;
 import vtk.vtkRegularPolygonSource;
 import vtk.vtkSphere;
+import vtk.vtkTransform;
+import vtk.vtkTransformPolyDataFilter;
 import vtk.vtksbCellLocator;
 
 /**
@@ -507,6 +510,177 @@ public class PolyDataUtil
 
             //polyData.DeepCopy(edgeExtracter.GetOutput());
             outputBoundary.DeepCopy(edgeExtracter.GetOutput());
+        }
+
+
+        //vtkPolyDataWriter writer = new vtkPolyDataWriter();
+        //writer.SetInput(polygonSource.GetOutput());
+        //writer.SetFileName("/tmp/coneeros.vtk");
+        //writer.SetFileTypeToBinary();
+        //writer.Write();
+
+        //return polyData;
+        //return outputPolyData;
+    }
+
+
+    public static void drawEllipseOnPolyData(
+            vtkPolyData polyData,
+            vtkAbstractPointLocator pointLocator,
+            double[] center,
+            double semiMajorAxis,
+            double flattening,
+            double angle,
+            int numberOfSides,
+            vtkPolyData outputInterior,
+            vtkPolyData outputBoundary)
+    {
+        double[] normal = getPolyDataNormalAtPoint(center, polyData, pointLocator);
+
+        // If the number of points are too small, then vtkExtractPolyDataGeometry
+        // as used here might fail, so skip this part (which is just an optimization
+        // not really needed when the points are few) in this case.
+        if (polyData.GetNumberOfPoints() >= 10000)
+        {
+            // Reduce the size of the polydata we need to process by only
+            // considering cells within twice radius of center.
+            vtkSphere sphere = new vtkSphere();
+            sphere.SetCenter(center);
+            sphere.SetRadius(semiMajorAxis >= 0.2 ? 1.2*semiMajorAxis : 1.2*0.2);
+
+            vtkExtractPolyDataGeometry extract = new vtkExtractPolyDataGeometry();
+            extract.SetImplicitFunction(sphere);
+            extract.SetExtractInside(1);
+            extract.SetExtractBoundaryCells(1);
+            extract.SetInput(polyData);
+            extract.Update();
+            polyData = extract.GetOutput();
+        }
+
+        vtkRegularPolygonSource polygonSource = new vtkRegularPolygonSource();
+        //polygonSource.SetCenter(center);
+        polygonSource.SetRadius(semiMajorAxis);
+        //polygonSource.SetNormal(normal);
+        polygonSource.SetNumberOfSides(numberOfSides);
+        polygonSource.SetGeneratePolygon(0);
+        polygonSource.SetGeneratePolyline(0);
+
+        // Now transform the regular polygon to turn it into an ellipse
+        // Apply the following tranformations in this order
+        // 1. Scale in xy plane to specified flattening
+        // 2. Rotate around z axis by specified angle
+        // 3. Rotate so normal is normal to surface at center
+        // 4. Translate to center
+
+        // First compute cross product of normal and z axis
+        double[] zaxis = {0.0, 0.0, 1.0};
+        double[] cross = new double[3];
+        MathUtil.vcrss(zaxis, normal, cross);
+        // Compute angle between normal and zaxis
+        double sepAngle = MathUtil.vsep(normal, zaxis) * 180.0 / Math.PI;
+
+        vtkTransform transform = new vtkTransform();
+        transform.Translate(center);
+        transform.RotateWXYZ(sepAngle, cross);
+        transform.RotateZ(angle);
+        transform.Scale(1.0, flattening, 1.0);
+
+        vtkTransformPolyDataFilter transformFilter = new vtkTransformPolyDataFilter();
+        vtkAlgorithmOutput polygonSourceOutput = polygonSource.GetOutputPort();
+        transformFilter.SetInputConnection(polygonSourceOutput);
+        transformFilter.SetTransform(transform);
+        transformFilter.Update();
+
+        vtkPoints points = transformFilter.GetOutput().GetPoints();
+
+        ArrayList<vtkPlane> clipPlanes = new ArrayList<vtkPlane>();
+        ArrayList<vtkClipPolyData> clipFilters = new ArrayList<vtkClipPolyData>();
+        ArrayList<vtkPolyData> clipOutputs = new ArrayList<vtkPolyData>();
+
+        // randomly shuffling the order of the sides we process can speed things up
+        ArrayList<Integer> sides = new ArrayList<Integer>();
+        for (int i=0; i<numberOfSides; ++i)
+            sides.add(i);
+        Collections.shuffle(sides);
+
+        vtkPolyData nextInput = polyData;
+        vtkClipPolyData clipPolyData = null;
+        for (int i=0; i<sides.size(); ++i)
+        {
+            int side = sides.get(i);
+
+            // compute normal to plane formed by this side of polygon
+            double[] currentPoint = points.GetPoint(side);
+
+            double[] nextPoint = null;
+            if (side < numberOfSides-1)
+                nextPoint = points.GetPoint(side+1);
+            else
+                nextPoint = points.GetPoint(0);
+
+            double[] vec = {nextPoint[0]-currentPoint[0],
+                    nextPoint[1]-currentPoint[1],
+                    nextPoint[2]-currentPoint[2]};
+
+            double[] planeNormal = new double[3];
+            MathUtil.vcrss(normal, vec, planeNormal);
+            MathUtil.vhat(planeNormal, planeNormal);
+
+            if (i > clipPlanes.size()-1)
+                clipPlanes.add(new vtkPlane());
+            vtkPlane plane = clipPlanes.get(i);
+            //            vtkPlane plane = new vtkPlane();
+            plane.SetOrigin(currentPoint);
+            plane.SetNormal(planeNormal);
+
+            if (i > clipFilters.size()-1)
+                clipFilters.add(new vtkClipPolyData());
+            clipPolyData = clipFilters.get(i);
+            //            clipPolyData = new vtkClipPolyData();
+            clipPolyData.SetInput(nextInput);
+            clipPolyData.SetClipFunction(plane);
+            clipPolyData.SetInsideOut(1);
+            //clipPolyData.Update();
+
+            nextInput = clipPolyData.GetOutput();
+
+            if (i > clipOutputs.size()-1)
+                clipOutputs.add(nextInput);
+            clipOutputs.set(i, nextInput);
+        }
+
+
+        vtkPolyDataConnectivityFilter connectivityFilter = new vtkPolyDataConnectivityFilter();
+        vtkAlgorithmOutput clipPolyDataOutput = clipPolyData.GetOutputPort();
+        connectivityFilter.SetInputConnection(clipPolyDataOutput);
+        connectivityFilter.SetExtractionModeToClosestPointRegion();
+        connectivityFilter.SetClosestPoint(center);
+        connectivityFilter.Update();
+
+        //        polyData = new vtkPolyData();
+        //if (outputPolyData == null)
+        //    outputPolyData = new vtkPolyData();
+
+        if (outputInterior != null)
+        {
+            vtkPolyData connectivityFilterOutput = connectivityFilter.GetOutput();
+            outputInterior.DeepCopy(connectivityFilterOutput);
+        }
+
+        if (outputBoundary != null)
+        {
+            // Compute the bounding edges of this surface
+            vtkFeatureEdges edgeExtracter = new vtkFeatureEdges();
+            vtkAlgorithmOutput connectivityFilterOutput = connectivityFilter.GetOutputPort();
+            edgeExtracter.SetInputConnection(connectivityFilterOutput);
+            edgeExtracter.BoundaryEdgesOn();
+            edgeExtracter.FeatureEdgesOff();
+            edgeExtracter.NonManifoldEdgesOff();
+            edgeExtracter.ManifoldEdgesOff();
+            edgeExtracter.Update();
+
+            vtkPolyData edgeExtracterOutput = edgeExtracter.GetOutput();
+            outputBoundary.DeepCopy(edgeExtracterOutput);
         }
 
 
@@ -1153,7 +1327,7 @@ public class PolyDataUtil
     }
 
 
-    private static double[] getPolyDataNormalAtPoint(
+    public static double[] getPolyDataNormalAtPoint(
             double[] pt,
             vtkPolyData polyData,
             vtkAbstractPointLocator pointLocator)

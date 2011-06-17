@@ -6,6 +6,7 @@ public interface ModelNames
     static public final String SMALL_BODY = "small-body";
     static public final String LINE_STRUCTURES = "line-structures";
     static public final String CIRCLE_STRUCTURES = "circle-structures";
+    static public final String ELLIPSE_STRUCTURES = "ellipse-structures";
     static public final String POINT_STRUCTURES = "point-structures";
     static public final String CIRCLE_SELECTION = "circle-selection";
     static public final String GRATICULE = "graticule";

@@ -404,6 +404,27 @@ public class SmallBodyModel extends Model
                 outputBoundary);
     }
 
+    public void drawEllipticalPolygon(
+            double[] center,
+            double radius,
+            double flattening,
+            double angle,
+            int numberOfSides,
+            vtkPolyData outputInterior,
+            vtkPolyData outputBoundary)
+    {
+        PolyDataUtil.drawEllipseOnPolyData(
+                smallBodyPolyData,
+                pointLocator,
+                center,
+                radius,
+                flattening,
+                angle,
+                numberOfSides,
+                outputInterior,
+                outputBoundary);
+    }
+
     public void drawPolygonLowRes(
             double[] center,
             double radius,
@@ -457,6 +478,11 @@ public class SmallBodyModel extends Model
                 smallBodyPolyData,
                 pointLocator,
                 shiftFactor * getMinShiftAmount());
+    }
+
+    public double[] getNormalAtPoint(double[] point)
+    {
+        return PolyDataUtil.getPolyDataNormalAtPoint(point, smallBodyPolyData, pointLocator);
     }
 
     /**

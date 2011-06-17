@@ -17,13 +17,14 @@ import edu.jhuapl.near.gui.StatusBar;
 import edu.jhuapl.near.gui.StructuresControlPanel;
 import edu.jhuapl.near.gui.Viewer;
 import edu.jhuapl.near.model.CircleModel;
+import edu.jhuapl.near.model.CircleSelectionModel;
+import edu.jhuapl.near.model.EllipseModel;
 import edu.jhuapl.near.model.Graticule;
 import edu.jhuapl.near.model.LineModel;
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.PointModel;
-import edu.jhuapl.near.model.RegularPolygonModel;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.eros.Eros;
 import edu.jhuapl.near.model.eros.ErosGraticule;
@@ -140,8 +141,9 @@ public class ErosViewer extends Viewer
         //allModels.put(ModelNames.NLR_DATA_SEARCH, new NLRSearchDataCollection2(erosModel));
         allModels.put(ModelNames.LINE_STRUCTURES, new LineModel(erosModel));
         allModels.put(ModelNames.CIRCLE_STRUCTURES, new CircleModel(erosModel));
+        allModels.put(ModelNames.ELLIPSE_STRUCTURES, new EllipseModel(erosModel));
         allModels.put(ModelNames.POINT_STRUCTURES, new PointModel(erosModel));
-        allModels.put(ModelNames.CIRCLE_SELECTION, new RegularPolygonModel(erosModel,20,false,"Selection",ModelNames.CIRCLE_SELECTION));
+        allModels.put(ModelNames.CIRCLE_SELECTION, new CircleSelectionModel(erosModel));
         allModels.put(ModelNames.GRATICULE, graticule);
         allModels.put(ModelNames.MAPLET_BOUNDARY, new MapletBoundaryCollection(erosModel));
 

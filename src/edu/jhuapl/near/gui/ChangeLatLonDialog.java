@@ -15,7 +15,7 @@ import javax.swing.JPanel;
 
 import net.miginfocom.swing.MigLayout;
 
-import edu.jhuapl.near.model.RegularPolygonModel;
+import edu.jhuapl.near.model.AbstractEllipsePolygonModel;
 import edu.jhuapl.near.model.StructureModel;
 import edu.jhuapl.near.util.LatLon;
 import edu.jhuapl.near.util.MathUtil;
@@ -87,17 +87,17 @@ public class ChangeLatLonDialog extends JDialog implements ActionListener
         {
             try
             {
-                if (structureModel instanceof RegularPolygonModel)
+                if (structureModel instanceof AbstractEllipsePolygonModel)
                 {
                     double latitude = Double.parseDouble(latTextField.getText());
                     double longitude = Double.parseDouble(lonTextField.getText());
 
-                    ((RegularPolygonModel)structureModel).movePolygon(
+                    ((AbstractEllipsePolygonModel)structureModel).movePolygon(
                             structureIndex,
                             (Math.PI/180.0)*latitude,
                             (Math.PI/180.0)*longitude);
 
-                    double[] center = ((RegularPolygonModel.RegularPolygon)structureModel.getStructure(structureIndex)).center;
+                    double[] center = ((AbstractEllipsePolygonModel.EllipsePolygon)structureModel.getStructure(structureIndex)).center;
 
                     LatLon ll = MathUtil.reclat(center);
                     if (ll.lon < 0.0)
@@ -123,7 +123,7 @@ public class ChangeLatLonDialog extends JDialog implements ActionListener
 
     public void setVisible(boolean b)
     {
-        double[] center = ((RegularPolygonModel.RegularPolygon)structureModel.getStructure(structureIndex)).center;
+        double[] center = ((AbstractEllipsePolygonModel.EllipsePolygon)structureModel.getStructure(structureIndex)).center;
 
         LatLon ll = MathUtil.reclat(center);
         if (ll.lon < 0.0)

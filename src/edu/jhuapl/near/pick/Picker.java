@@ -2,6 +2,8 @@ package edu.jhuapl.near.pick;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -29,6 +31,7 @@ public abstract class Picker implements
     MouseListener,
     MouseMotionListener,
     MouseWheelListener,
+    KeyListener,
     PropertyChangeListener
 {
     protected final PropertyChangeSupport pcs = new PropertyChangeSupport( this );
@@ -104,6 +107,18 @@ public abstract class Picker implements
     }
 
     public void mouseWheelMoved(MouseWheelEvent e)
+    {
+    }
+
+    public void keyTyped(KeyEvent e)
+    {
+    }
+
+    public void keyPressed(KeyEvent e)
+    {
+    }
+
+    public void keyReleased(KeyEvent e)
     {
     }
 

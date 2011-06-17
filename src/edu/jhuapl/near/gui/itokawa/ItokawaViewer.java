@@ -18,13 +18,14 @@ import edu.jhuapl.near.gui.StructuresControlPanel;
 import edu.jhuapl.near.gui.Viewer;
 import edu.jhuapl.near.gui.eros.NISSpectrumInfoPanel;
 import edu.jhuapl.near.model.CircleModel;
+import edu.jhuapl.near.model.CircleSelectionModel;
+import edu.jhuapl.near.model.EllipseModel;
 import edu.jhuapl.near.model.Graticule;
 import edu.jhuapl.near.model.LineModel;
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.PointModel;
-import edu.jhuapl.near.model.RegularPolygonModel;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.eros.NISSpectrum;
 import edu.jhuapl.near.model.itokawa.AmicaBoundaryCollection;
@@ -136,8 +137,9 @@ public class ItokawaViewer extends Viewer
         allModels.put(ModelNames.AMICA_BOUNDARY, new AmicaBoundaryCollection(itokawaModel));
         allModels.put(ModelNames.LINE_STRUCTURES, new LineModel(itokawaModel));
         allModels.put(ModelNames.CIRCLE_STRUCTURES, new CircleModel(itokawaModel));
+        allModels.put(ModelNames.ELLIPSE_STRUCTURES, new EllipseModel(itokawaModel));
         allModels.put(ModelNames.POINT_STRUCTURES, new PointModel(itokawaModel));
-        allModels.put(ModelNames.CIRCLE_SELECTION, new RegularPolygonModel(itokawaModel,20,false,"Selection",ModelNames.CIRCLE_SELECTION));
+        allModels.put(ModelNames.CIRCLE_SELECTION, new CircleSelectionModel(itokawaModel));
         allModels.put(ModelNames.GRATICULE, graticule);
 
         modelManager.setModels(allModels);

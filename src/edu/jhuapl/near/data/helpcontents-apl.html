@@ -216,27 +216,35 @@ lineaments.
 
 <p>
 Besides searching and visualizing mission data, the tool allows you to draw
-different types of structures directly on the asteroid. Currently 3 types of
-structures are supported: paths, circles, and points, and each of these
+different types of structures directly on the asteroid. Currently 4 types of
+structures are supported: paths, circles, ellipses, and points, and each of these
 are controlled within a separate tab within the Structures tab.
-Each of the 3 tabs (paths, circles, and points) works completely independent
+Each of the 4 tabs (paths, circles, ellipses, and points) works completely independent
 of each other. You can only be drawing one type of structure at a time.
 </p>
 
-<h4>Drawing Circles or Points</h4>
+<h4>Drawing Circles, Ellipses, or Points</h4>
 <p>
-To draw a point or a circle, click on the "Edit" button. That will activate a
+To draw a point, circle, or ellipse click on the "Edit" button. That will activate a
 special editing mode where the asteroid will be frozen and navigation is disabled.
-Click anywhere on the asteroid and the point or circle will appear. Once a
-point or circle has been created, you can drag it around with the left mouse
+Click anywhere on the asteroid and the point, circle, or ellipse will appear. Once a
+point, circle, or ellipse has been created, you can drag it around with the left mouse
 button. To change the size of a point or circle, drag it while holding the Control
-or Shift button. When you're finished editing, press the Edit button again and the 3D
+or Shift button. For ellipses there are 3 ways to change its shape: To change the size
+of the ellipse while keeping the ratio of the semi-minor axis to semi-major axis constant,
+drag it while holding the Control or Shift button, like for circles or points.
+To change the flattening of the ellipse, i.e. the ratio of the semi-minor axis to semi-major axis,
+drag it while holding the "s" key down. The flattening cannot be greater than 1.0 or
+less than 0.001. Finally to change the orientation of the ellipse,
+drag it while holding the "a" key down.
+When you're finished editing, press the Edit button again and the 3D
 view will return to the standard rotate/pan/zoom mode.
 </p>
 
 <h4>Drawing Paths</h4>
 <p>
-Drawing paths works a little differently than circles or points. Unlike circles or points, you can
+Drawing paths works a little differently than circles, ellipses, or points.
+Unlike circles, ellipses or points, you can
 only be editing a single path at a time. To create a new
 path press New and to edit an existing path, press Edit. You can add new
 vertices to paths and drag around existing vertices.
@@ -246,7 +254,7 @@ vertices to paths and drag around existing vertices.
 <p>
 You can also right-click a structure within the 3D view and a popup will
 show allowing you to delete it or change its color. For paths, the popup includes the option to edit
-that path as well (For points and circles simply press the Edit button in
+that path as well (For points, ellipses, and circles simply press the Edit button in
 the control panel).
 </p>
 
@@ -254,7 +262,7 @@ the control panel).
 <p>
 You can save/load all the structures to/from disk using the Save and Load
 buttons. Note that the file format for paths is different than the format
-for points or circles.
+for points, circles, or ellipses.
 </p>
 <p>
 The file format for paths is XML.
@@ -276,23 +284,26 @@ The file format for circles and points is a tab separated table with the followi
 <li>gravitational acceleration (meters per second squared)
 <li>gravitational potential (joules per kilogram)
 <li>diameter (km)
+<li>flattening (ratio of semi-minor axis to semi-major axis)
+<li>angle (degrees)
 <li>color (red,green,blue)
 </ol>
 
 <p>
-Note that when loading points or circles files, only columns 1 through 5 and 13 and 14 are
-actually read. Columns 6 through 12 are ignored. In addition note that when saving circles, the slope
-and elevation are averaged over the rim of the circle, whereas the acceleration and potential
-are computed at the center of the circle. For points the center of the point is used for
+Note that when loading points, ellipses, or circles files, only columns 1 through 5 and 15 through 16 are
+actually read (for ellipses, columns 13 and 14 are read as well). All other columns are ignored.
+In addition note that when saving circles or ellipses,
+the slope and elevation are averaged over the rim of the circle or ellipse, whereas the acceleration and potential
+are computed at the center of the circle or ellipse. For points, the center of the point is used for
 all 4 values. Finally note that if using a shape model for which slope, elevation,
 acceleration, and potential are not specified such as the higher resolution shape models
-for Eros or Itokawa, then these values that are saved to the file are undefined.
+for Eros or Itokawa, then those values that are saved to the file are undefined.
 </p>
 
 <h3>Mapmaker tab (Eros only)</h3>
 
 <p>
-The Mapmaker tab privides an interface for running Bob Gaskell's Mapmaker tool.
+The Mapmaker tab provides an interface for running Bob Gaskell's Mapmaker tool.
 You need to draw a region on the asteroid, choose a name and output folder, 
 and click "Run Mapmaker". If you close the tool and then restart it, you can load in 
 the cube file with the "Load Cube File" button without having to rerun the mapmaker program.

@@ -14,13 +14,14 @@ import edu.jhuapl.near.gui.StatusBar;
 import edu.jhuapl.near.gui.StructuresControlPanel;
 import edu.jhuapl.near.gui.Viewer;
 import edu.jhuapl.near.model.CircleModel;
+import edu.jhuapl.near.model.CircleSelectionModel;
+import edu.jhuapl.near.model.EllipseModel;
 import edu.jhuapl.near.model.Graticule;
 import edu.jhuapl.near.model.LineModel;
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.PointModel;
-import edu.jhuapl.near.model.RegularPolygonModel;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.deimos.Deimos;
 import edu.jhuapl.near.model.deimos.DeimosGraticule;
@@ -101,7 +102,8 @@ public class DeimosViewer extends Viewer
         allModels.put(ModelNames.LINE_STRUCTURES, new LineModel(deimosModel));
         allModels.put(ModelNames.CIRCLE_STRUCTURES, new CircleModel(deimosModel));
         allModels.put(ModelNames.POINT_STRUCTURES, new PointModel(deimosModel));
-        allModels.put(ModelNames.CIRCLE_SELECTION, new RegularPolygonModel(deimosModel,20,false,"Selection",ModelNames.CIRCLE_SELECTION));
+        allModels.put(ModelNames.ELLIPSE_STRUCTURES, new EllipseModel(deimosModel));
+        allModels.put(ModelNames.CIRCLE_SELECTION, new CircleSelectionModel(deimosModel));
         allModels.put(ModelNames.GRATICULE, graticule);
 
         modelManager.setModels(allModels);

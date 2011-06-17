@@ -14,6 +14,7 @@ public class StructuresControlPanel extends JTabbedPane
 {
     private AbstractStructureMappingControlPanel lineStructuresMapperPanel;
     private AbstractStructureMappingControlPanel circleStructuresMapperPanel;
+    private AbstractStructureMappingControlPanel ellipseStructuresMapperPanel;
     private AbstractStructureMappingControlPanel pointsStructuresMapperPanel;
 
     public StructuresControlPanel(
@@ -38,12 +39,22 @@ public class StructuresControlPanel extends JTabbedPane
                 PickManager.PickMode.CIRCLE_DRAW,
                 false) {});
 
+        structureModel =
+            (StructureModel)modelManager.getModel(ModelNames.ELLIPSE_STRUCTURES);
+        ellipseStructuresMapperPanel = (new AbstractStructureMappingControlPanel(
+                modelManager,
+                structureModel,
+                pickManager,
+                PickManager.PickMode.ELLIPSE_DRAW,
+                false) {});
+
         pointsStructuresMapperPanel = new PointsMappingControlPanel(
                 modelManager,
                 pickManager);
 
         addTab("Paths", lineStructuresMapperPanel);
         addTab("Circles", circleStructuresMapperPanel);
+        addTab("Ellipses", ellipseStructuresMapperPanel);
         addTab("Points", pointsStructuresMapperPanel);
 
         this.addComponentListener(new ComponentAdapter()
@@ -52,6 +63,7 @@ public class StructuresControlPanel extends JTabbedPane
             {
                 lineStructuresMapperPanel.setEditingEnabled(false);
                 circleStructuresMapperPanel.setEditingEnabled(false);
+                ellipseStructuresMapperPanel.setEditingEnabled(false);
                 pointsStructuresMapperPanel.setEditingEnabled(false);
             }
         });

@@ -6,6 +6,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import vtk.vtkActor;
@@ -18,6 +19,7 @@ import vtk.vtkPolyData;
 import vtk.vtkPolyDataMapper;
 import vtk.vtkProp;
 import vtk.vtkProperty;
+import vtk.vtkTransform;
 import vtk.vtkUnsignedCharArray;
 
 import edu.jhuapl.near.util.FileUtil;
@@ -33,9 +35,9 @@ import edu.jhuapl.near.util.Properties;
  *
  */
 
-public class RegularPolygonModel extends StructureModel implements PropertyChangeListener
+abstract public class AbstractEllipsePolygonModel extends StructureModel implements PropertyChangeListener
 {
-    private ArrayList<RegularPolygon> polygons = new ArrayList<RegularPolygon>();
+    private ArrayList<EllipsePolygon> polygons = new ArrayList<EllipsePolygon>();
     private ArrayList<vtkProp> actors = new ArrayList<vtkProp>();
 
     private vtkPolyData boundaryPolyData;
@@ -61,18 +63,29 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
 //    private int[] defaultInteriorColor = {0, 191, 255};
     private double interiorOpacity = 0.3;
     private String type;
-    private boolean isCircleModel = true;
     private int highlightedStructure = -1;
     private int[] highlightColor = {0, 0, 255};
     private int maxPolygonId = 0;
+    private DecimalFormat df = new DecimalFormat("#.#####");
 
-    public class RegularPolygon extends StructureModel.Structure
+    protected enum Mode
+    {
+        POINT_MODE,
+        CIRCLE_MODE,
+        ELLIPSE_MODE
+    }
+
+    private Mode mode;
+
+    public class EllipsePolygon extends StructureModel.Structure
     {
         public String name = "default";
         public int id;
 
         public double[] center;
-        public double radius;
+        public double radius; // or semimajor axis
+        public double flattening; // ratio of semiminor axis to semimajor axis
+        public double angle;
 
         public vtkPolyData boundaryPolyData;
         public vtkPolyData interiorPolyData;
@@ -80,7 +93,7 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
         public String type;
         public int[] color;
 
-        public RegularPolygon(int numberOfSides, String type, int[] color)
+        public EllipsePolygon(int numberOfSides, String type, int[] color)
         {
             id = ++maxPolygonId;
             boundaryPolyData = new vtkPolyData();
@@ -112,7 +125,14 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
 
         public String getInfo()
         {
-            return "Diameter = " + 2.0*radius + " km";
+            String str = "Diameter = " + df.format(2.0*radius) + " km";
+            if (mode == Mode.ELLIPSE_MODE)
+            {
+                str += ", Flattening = " + df.format(flattening);
+                str += ", Angle = " + df.format(angle);
+            }
+
+            return str;
         }
 
         public int[] getColor()
@@ -135,12 +155,19 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
             return interiorPolyData;
         }
 
-        public void updatePolygon(SmallBodyModel sbModel, double[] center, double radius)
+        public void updatePolygon(
+                SmallBodyModel sbModel,
+                double[] center,
+                double radius,
+                double flattening,
+                double angle)
         {
             this.center = center;
             this.radius = radius;
+            this.flattening = flattening;
+            this.angle = angle;
 
-            sbModel.drawPolygon(center, radius, numberOfSides, interiorPolyData, boundaryPolyData);
+            sbModel.drawEllipticalPolygon(center, radius, flattening, angle, numberOfSides, interiorPolyData, boundaryPolyData);
         }
 
         public String getClickStatusBarText()
@@ -150,10 +177,10 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
 
     }
 
-    public RegularPolygonModel(
+    public AbstractEllipsePolygonModel(
             SmallBodyModel smallBodyModel,
             int numberOfSides,
-            boolean isCircle,
+            Mode mode,
             String type,
             String name)
     {
@@ -169,7 +196,7 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
         emptyPolyData = new vtkPolyData();
 
         this.numberOfSides = numberOfSides;
-        this.isCircleModel = isCircle;
+        this.mode = mode;
         this.type = type;
 
         boundaryColors = new vtkUnsignedCharArray();
@@ -336,7 +363,7 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
         if (prop == boundaryActor || prop == interiorActor)
         {
             int polygonId = this.getPolygonIdFromCellId(cellId, prop == interiorActor);
-            RegularPolygon pol = polygons.get(polygonId);
+            EllipsePolygon pol = polygons.get(polygonId);
             return pol.getClickStatusBarText();
         }
         else
@@ -372,10 +399,10 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
 
     public void addNewStructure(double[] pos)
     {
-        RegularPolygon pol = this.new RegularPolygon(numberOfSides, type, defaultColor);
+        EllipsePolygon pol = this.new EllipsePolygon(numberOfSides, type, defaultColor);
         polygons.add(pol);
 
-        pol.updatePolygon(smallBodyModel, pos, defaultRadius);
+        pol.updatePolygon(smallBodyModel, pos, defaultRadius, 1.0, 0.0);
         highlightedStructure = polygons.size()-1;
         updatePolyData();
 
@@ -394,8 +421,8 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
 
     public void movePolygon(int polygonId, double[] newCenter)
     {
-        RegularPolygon pol = polygons.get(polygonId);
-        pol.updatePolygon(smallBodyModel, newCenter, pol.radius);
+        EllipsePolygon pol = polygons.get(polygonId);
+        pol.updatePolygon(smallBodyModel, newCenter, pol.radius, pol.flattening, pol.angle);
         updatePolyData();
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
@@ -416,7 +443,7 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
 
     public void changeRadiusOfPolygon(int polygonId, double[] newPointOnPerimeter)
     {
-        RegularPolygon pol = polygons.get(polygonId);
+        EllipsePolygon pol = polygons.get(polygonId);
         double newRadius = Math.sqrt(
                 (pol.center[0]-newPointOnPerimeter[0])*(pol.center[0]-newPointOnPerimeter[0]) +
                 (pol.center[1]-newPointOnPerimeter[1])*(pol.center[1]-newPointOnPerimeter[1]) +
@@ -424,16 +451,125 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
         if (newRadius > maxRadius)
             newRadius = maxRadius;
 
-        pol.updatePolygon(smallBodyModel, pol.center, newRadius);
+        pol.updatePolygon(smallBodyModel, pol.center, newRadius, pol.flattening, pol.angle);
+        updatePolyData();
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+    }
+
+    public void changeFlatteningOfPolygon(int polygonId, double[] newPointOnPerimeter)
+    {
+        EllipsePolygon pol = polygons.get(polygonId);
+
+        // The following math does this: we need to find the direction of
+        // the semimajor axis of the ellipse. Then once we have that
+        // we need to find the distance to that line from the point the mouse
+        // is hovering, where that point is first projected onto the
+        // tangent plane of the asteroid at the ellipse center.
+        // This distance divided by the semimajor axis of the ellipse
+        // is what we call the flattening.
+
+        // First compute cross product of normal and z axis
+        double[] normal = smallBodyModel.getNormalAtPoint(pol.center);
+        double[] zaxis = {0.0, 0.0, 1.0};
+        double[] cross = new double[3];
+        MathUtil.vcrss(zaxis, normal, cross);
+        // Compute angle between normal and zaxis
+        double sepAngle = MathUtil.vsep(normal, zaxis) * 180.0 / Math.PI;
+
+        vtkTransform transform = new vtkTransform();
+        transform.Translate(pol.center);
+        transform.RotateWXYZ(sepAngle, cross);
+
+        double[] xaxis = {1.0, 0.0, 0.0};
+        xaxis = transform.TransformDoubleVector(xaxis);
+        MathUtil.vhat(xaxis, xaxis);
+
+        // Project newPoint onto the plane perpendicular to the
+        // normal of the shape model.
+        double[] projPoint = new double[3];
+        MathUtil.vprjp(newPointOnPerimeter, normal, pol.center, projPoint);
+        double[] projDir = new double[3];
+        MathUtil.vsub(projPoint, pol.center, projDir);
+
+        double[] proj = new double[3];
+        MathUtil.vproj(projDir, xaxis, proj);
+        double[] distVec = new double[3];
+        MathUtil.vsub(projDir, proj, distVec);
+        double newRadius = MathUtil.vnorm(distVec);
+
+        double newFlattening = 1.0;
+        if (pol.radius > 0.0)
+            newFlattening = newRadius / pol.radius;
+
+        if (newFlattening < 0.001)
+            newFlattening = 0.001;
+        else if (newFlattening > 1.0)
+            newFlattening = 1.0;
+
+        pol.updatePolygon(smallBodyModel, pol.center, pol.radius, newFlattening, pol.angle);
+        updatePolyData();
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+    }
+
+    public void changeAngleOfPolygon(int polygonId, double[] newPointOnPerimeter)
+    {
+        EllipsePolygon pol = polygons.get(polygonId);
+
+        // The following math does this: we need to find the direction of
+        // the semimajor axis of the ellipse. Then once we have that
+        // we need to find the angular distance between the axis and the
+        // vector from the ellipse center to the point the mouse
+        // is hovering, where that vector first projected onto the
+        // tangent plane of the asteroid at the ellipse center.
+        // This angular distance is what we rotate the ellipse by.
+
+
+        // First compute cross product of normal and z axis
+        double[] normal = smallBodyModel.getNormalAtPoint(pol.center);
+        double[] zaxis = {0.0, 0.0, 1.0};
+        double[] cross = new double[3];
+        MathUtil.vcrss(zaxis, normal, cross);
+        // Compute angle between normal and zaxis
+        double sepAngle = MathUtil.vsep(normal, zaxis) * 180.0 / Math.PI;
+
+        vtkTransform transform = new vtkTransform();
+        transform.Translate(pol.center);
+        transform.RotateWXYZ(sepAngle, cross);
+
+        double[] xaxis = {1.0, 0.0, 0.0};
+        xaxis = transform.TransformDoubleVector(xaxis);
+        MathUtil.vhat(xaxis, xaxis);
+
+        // Project newPoint onto the plane perpendicular to the
+        // normal of the shape model.
+        double[] projPoint = new double[3];
+        MathUtil.vprjp(newPointOnPerimeter, normal, pol.center, projPoint);
+        double[] projDir = new double[3];
+        MathUtil.vsub(projPoint, pol.center, projDir);
+        MathUtil.vhat(projDir, projDir);
+
+        // Compute angular distance between projected direction and transformed x-axis
+        double newAngle = MathUtil.vsep(projDir, xaxis) * 180.0 / Math.PI;
+
+        // We need to negate this angle under certain conditions.
+        if (newAngle != 0.0)
+        {
+            MathUtil.vcrss(xaxis, projDir, cross);
+            double a = MathUtil.vsep(cross, normal) * 180.0 / Math.PI;
+            if (a > 90.0)
+                newAngle = -newAngle;
+        }
+
+        pol.updatePolygon(smallBodyModel, pol.center, pol.radius, pol.flattening, newAngle);
         updatePolyData();
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
     public void changeRadiusOfAllPolygons(double newRadius)
     {
-        for (RegularPolygon pol : this.polygons)
+        for (EllipsePolygon pol : this.polygons)
         {
-            pol.updatePolygon(smallBodyModel, pol.center, newRadius);
+            pol.updatePolygon(smallBodyModel, pol.center, newRadius, pol.flattening, pol.angle);
         }
 
         updatePolyData();
@@ -499,15 +635,15 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
     {
         ArrayList<String> lines = FileUtil.getFileLinesAsStringList(file.getAbsolutePath());
 
-        ArrayList<RegularPolygon> newPolygons = new ArrayList<RegularPolygon>();
+        ArrayList<EllipsePolygon> newPolygons = new ArrayList<EllipsePolygon>();
         for (int i=0; i<lines.size(); ++i)
         {
-            RegularPolygon pol = this.new RegularPolygon(numberOfSides, type, defaultColor);
+            EllipsePolygon pol = this.new EllipsePolygon(numberOfSides, type, defaultColor);
             pol.center = new double[3];
 
             String[] words = lines.get(i).trim().split("\\s+");
 
-            // The latest version of this file format has 14 columns. The previous version had
+            // The latest version of this file format has 16 columns. The previous version had
             // 10 columns for circles and 13 columns for points. We still want to support loading
             // both versions, so look at how many columns are in the line.
 
@@ -526,10 +662,10 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
             // For the new format and the points file in the old format, the next 4 columns (slope,
             // elevation, acceleration, and potential) are not used.
 
-            if (words.length < 14)
+            if (words.length < 16)
             {
                 // OLD VERSION of file
-                if (isCircleModel)
+                if (mode == Mode.CIRCLE_MODE)
                     pol.radius = Double.parseDouble(words[8]) / 2.0; // read in diameter not radius
                 else
                     pol.radius = defaultRadius;
@@ -538,6 +674,17 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
             {
                 // NEW VERSION of file
                 pol.radius = Double.parseDouble(words[12]) / 2.0; // read in diameter not radius
+            }
+
+            if (mode == Mode.ELLIPSE_MODE && words.length >= 16)
+            {
+                pol.flattening = Double.parseDouble(words[13]);
+                pol.angle = Double.parseDouble(words[14]);
+            }
+            else
+            {
+                pol.flattening = 1.0;
+                pol.angle = 0.0;
             }
 
             // If there are 9 or more columns in the file, the last column is the color in both
@@ -553,7 +700,7 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
                 }
             }
 
-            pol.updatePolygon(smallBodyModel, pol.center, pol.radius);
+            pol.updatePolygon(smallBodyModel, pol.center, pol.radius, pol.flattening, pol.angle);
             newPolygons.add(pol);
         }
 
@@ -570,7 +717,7 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
         FileWriter fstream = new FileWriter(file);
         BufferedWriter out = new BufferedWriter(fstream);
 
-        for (RegularPolygon pol : polygons)
+        for (EllipsePolygon pol : polygons)
         {
             String name = pol.name;
             if (name.length() == 0)
@@ -606,6 +753,8 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
             }
 
             str += "\t" + 2.0*pol.radius; // save out as diameter, not radius
+
+            str += "\t" + pol.flattening + "\t" + pol.angle;
 
             str += "\t" + pol.color[0] + "," + pol.color[1] + "," + pol.color[2];
 
@@ -668,9 +817,9 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
 
     public void redrawAllStructures()
     {
-        for (RegularPolygon pol : this.polygons)
+        for (EllipsePolygon pol : this.polygons)
         {
-            pol.updatePolygon(smallBodyModel, pol.center, pol.radius);
+            pol.updatePolygon(smallBodyModel, pol.center, pol.radius, pol.flattening, pol.angle);
         }
 
         updatePolyData();
@@ -693,11 +842,11 @@ public class RegularPolygonModel extends StructureModel implements PropertyChang
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
-    private double[] getColoringValuesAtPolygon(RegularPolygon pol)
+    private double[] getColoringValuesAtPolygon(EllipsePolygon pol)
     {
         double[] values = {0.0, 0.0, 0.0, 0.0};
 
-        if (!isCircleModel)
+        if (mode == Mode.POINT_MODE)
         {
             for (int i=0; i<4; ++i)
                 values[i] = smallBodyModel.getColoringValue(i, pol.center);

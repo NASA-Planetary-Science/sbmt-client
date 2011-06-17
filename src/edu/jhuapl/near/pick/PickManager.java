@@ -1,5 +1,7 @@
 package edu.jhuapl.near.pick;
 
+import java.util.HashMap;
+
 import vtk.vtkRenderWindowPanel;
 
 import edu.jhuapl.near.gui.Renderer;
@@ -15,6 +17,7 @@ public class PickManager extends Picker
         CIRCLE_SELECTION,
         LINE_DRAW,
         CIRCLE_DRAW,
+        ELLIPSE_DRAW,
         POINT_DRAW
     }
 
@@ -22,11 +25,9 @@ public class PickManager extends Picker
     private Renderer renderer;
     private vtkRenderWindowPanel renWin;
 
-    private Picker linePicker;
-    private Picker circlePicker;
-    private Picker pointPicker;
     private DefaultPicker defaultPicker;
-    private Picker circleSelectionPicker;
+
+    private HashMap<PickMode, Picker> nondefaultPickers = new HashMap<PickMode, Picker>();
 
     public PickManager(
             Renderer renderer,
@@ -43,11 +44,11 @@ public class PickManager extends Picker
         renWin.addMouseMotionListener(this);
         renWin.addMouseWheelListener(this);
 
-        linePicker = new LinePicker(renderer, modelManager);
-        circlePicker = new CirclePicker(renderer, modelManager);
-        pointPicker = new PointPicker(renderer, modelManager);
-
-        circleSelectionPicker = new CircleSelectionPicker(renderer, modelManager);
+        nondefaultPickers.put(PickMode.LINE_DRAW, new LinePicker(renderer, modelManager));
+        nondefaultPickers.put(PickMode.CIRCLE_DRAW, new CirclePicker(renderer, modelManager));
+        nondefaultPickers.put(PickMode.ELLIPSE_DRAW, new EllipsePicker(renderer, modelManager));
+        nondefaultPickers.put(PickMode.POINT_DRAW, new PointPicker(renderer, modelManager));
+        nondefaultPickers.put(PickMode.CIRCLE_SELECTION, new CircleSelectionPicker(renderer, modelManager));
 
         defaultPicker = new DefaultPicker(renderer, statusBar, modelManager, popupManager);
 
@@ -60,48 +61,28 @@ public class PickManager extends Picker
             return;
 
         this.pickMode = mode;
-        switch(this.pickMode)
+
+        if (this.pickMode == PickMode.DEFAULT)
         {
-        case DEFAULT:
             renderer.setInteractorToDefault();
-            removePicker(linePicker);
-            removePicker(circlePicker);
-            removePicker(pointPicker);
-            removePicker(circleSelectionPicker);
+            for (PickMode pm : nondefaultPickers.keySet())
+            {
+                removePicker(nondefaultPickers.get(pm));
+            }
             defaultPicker.setSuppressPopups(false);
-            break;
-        case LINE_DRAW:
+        }
+        else
+        {
             renderer.setInteractorToNone();
-            removePicker(circlePicker);
-            removePicker(pointPicker);
-            removePicker(circleSelectionPicker);
-            addPicker(linePicker);
+            for (PickMode pm : nondefaultPickers.keySet())
+            {
+                if (pm != this.pickMode)
+                {
+                    removePicker(nondefaultPickers.get(pm));
+                }
+            }
+            addPicker(nondefaultPickers.get(this.pickMode));
             defaultPicker.setSuppressPopups(true);
-            break;
-        case CIRCLE_DRAW:
-            renderer.setInteractorToNone();
-            removePicker(linePicker);
-            removePicker(pointPicker);
-            removePicker(circleSelectionPicker);
-            addPicker(circlePicker);
-            defaultPicker.setSuppressPopups(true);
-            break;
-        case POINT_DRAW:
-            renderer.setInteractorToNone();
-            removePicker(linePicker);
-            removePicker(circlePicker);
-            removePicker(circleSelectionPicker);
-            addPicker(pointPicker);
-            defaultPicker.setSuppressPopups(true);
-            break;
-        case CIRCLE_SELECTION:
-            renderer.setInteractorToNone();
-            removePicker(linePicker);
-            removePicker(pointPicker);
-            removePicker(circlePicker);
-            addPicker(circleSelectionPicker);
-            defaultPicker.setSuppressPopups(true);
-            break;
         }
     }
 
@@ -115,6 +96,7 @@ public class PickManager extends Picker
         renWin.addMouseListener(picker);
         renWin.addMouseMotionListener(picker);
         renWin.addMouseWheelListener(picker);
+        renWin.addKeyListener(picker);
     }
 
     private void removePicker(Picker picker)
@@ -122,5 +104,6 @@ public class PickManager extends Picker
         renWin.removeMouseListener(picker);
         renWin.removeMouseMotionListener(picker);
         renWin.removeMouseWheelListener(picker);
+        renWin.removeKeyListener(picker);
     }
 }

@@ -39,13 +39,13 @@ import edu.jhuapl.near.gui.ScaleDataRangeDialog;
 import edu.jhuapl.near.gui.StatusBar;
 import edu.jhuapl.near.gui.actions.SaveImageAction;
 import edu.jhuapl.near.model.CircleModel;
+import edu.jhuapl.near.model.CircleSelectionModel;
 import edu.jhuapl.near.model.Line;
 import edu.jhuapl.near.model.LineModel;
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.PointModel;
-import edu.jhuapl.near.model.RegularPolygonModel;
 import edu.jhuapl.near.model.eros.DEMModel;
 import edu.jhuapl.near.model.eros.MapletBoundaryCollection;
 import edu.jhuapl.near.pick.PickManager;
@@ -104,7 +104,7 @@ public class TopoViewer extends JFrame
         allModels.put(ModelNames.LINE_STRUCTURES, lineModel);
         allModels.put(ModelNames.CIRCLE_STRUCTURES, new CircleModel(dem));
         allModels.put(ModelNames.POINT_STRUCTURES, new PointModel(dem));
-        allModels.put(ModelNames.CIRCLE_SELECTION, new RegularPolygonModel(dem,20,false,"Selection",ModelNames.CIRCLE_SELECTION));
+        allModels.put(ModelNames.CIRCLE_SELECTION, new CircleSelectionModel(dem));
         modelManager.setModels(allModels);
 
         renderer = new Renderer(modelManager);

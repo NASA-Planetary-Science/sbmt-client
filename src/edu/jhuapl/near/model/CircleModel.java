@@ -8,11 +8,11 @@ package edu.jhuapl.near.model;
  *
  */
 
-public class CircleModel extends RegularPolygonModel
+public class CircleModel extends AbstractEllipsePolygonModel
 {
     public CircleModel(SmallBodyModel smallBodyModel)
     {
-        super(smallBodyModel, 20, true, "circle", ModelNames.CIRCLE_STRUCTURES);
+        super(smallBodyModel, 20, Mode.CIRCLE_MODE, "circle", ModelNames.CIRCLE_STRUCTURES);
         setInteriorOpacity(0.0);
         int[] color = {255, 0, 255};
         setDefaultColor(color);

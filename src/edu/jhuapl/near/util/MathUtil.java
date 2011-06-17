@@ -394,6 +394,72 @@ public class MathUtil
 
     }
 
+    static public void vlcom(double a,
+            final double[] v1,
+            double b,
+            final double[] v2,
+            double[] sum)
+    {
+        sum[0] = a*v1[0] + b*v2[0];
+        sum[1] = a*v1[1] + b*v2[1];
+        sum[2] = a*v1[2] + b*v2[2];
+    }
+
+    static public void vminus ( final double[] v1,  double[] vout )
+    {
+        vout[0] = -v1[0];
+        vout[1] = -v1[1];
+        vout[2] = -v1[2];
+    }
+
+
+    /**
+     * Similar to spice version but instead of using the plane datatype, use a normal
+     * vector to the plane and a point on the plane.
+     * @param vin
+     * @param normalToPlane
+     * @param pointOnPlane
+     * @param vout
+     */
+    static public void vprjp(final double[] vin,
+            final double[] normalToPlane,
+            final double[] pointOnPlane,
+            double[] vout)
+    {
+        // First convert the normal and point to the normal and constant
+        // representation of a plane. See nvp2pl_c.c from which the following
+        // is taken.
+
+        if (  vzero (normalToPlane)  )
+        {
+            System.out.println( "Normal vector must be non-zero." );
+            return;
+        }
+
+        double[] normal = new double[3];
+
+        vhat (normalToPlane, normal);
+
+        double constant = vdot ( pointOnPlane, normal);
+
+        if ( constant  <  0.0 )
+        {
+            constant = -constant;
+
+            vminus ( normal, normal );
+        }
+
+        // end of nvp2pl_c.c.
+
+
+        vlcom ( 1.0,
+                vin,
+                constant - vdot ( vin, normal ),
+                normal,
+                vout );
+    }
+
+
     /**
      * Compute the distance between 2 3D points
      * @param pt1
