@@ -667,7 +667,7 @@ public class FCSearchPanel extends JPanel implements ActionListener, MouseListen
                 if (erosModel.getModelResolution() > 0)
                 {
                     vtkPolyData interiorPoly = new vtkPolyData();
-                    erosModel.drawPolygonLowRes(region.center, region.radius, region.numberOfSides, interiorPoly, null);
+                    erosModel.drawRegularPolygonLowRes(region.center, region.radius, region.numberOfSides, interiorPoly, null);
                     cubeList = erosModel.getIntersectingCubes(interiorPoly);
                 }
                 else

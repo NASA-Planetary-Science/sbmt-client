@@ -300,7 +300,7 @@ public class PolyDataUtil
     /*
      * This is an older version of that uses a vtkCylinder to do
      * the intersection rather than a series of planes. Unfortunately, the results
-     * look crappy. Use drawPolygonOnPolyData instead.
+     * look crappy. Use drawRegularPolygonOnPolyData instead.
      */
     /*
 
@@ -382,7 +382,7 @@ public class PolyDataUtil
     }
      */
 
-    public static void drawPolygonOnPolyData(
+    public static void drawRegularPolygonOnPolyData(
             vtkPolyData polyData,
             vtkAbstractPointLocator pointLocator,
             double[] center,

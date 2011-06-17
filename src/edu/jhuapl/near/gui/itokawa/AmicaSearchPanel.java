@@ -1373,7 +1373,7 @@ public class AmicaSearchPanel extends javax.swing.JPanel implements PropertyChan
                 if (itokawaModel.getModelResolution() > 0)
                 {
                     vtkPolyData interiorPoly = new vtkPolyData();
-                    itokawaModel.drawPolygonLowRes(region.center, region.radius, region.numberOfSides, interiorPoly, null);
+                    itokawaModel.drawRegularPolygonLowRes(region.center, region.radius, region.numberOfSides, interiorPoly, null);
                     cubeList = itokawaModel.getIntersectingCubes(interiorPoly);
                 }
                 else

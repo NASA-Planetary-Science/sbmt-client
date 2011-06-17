@@ -387,14 +387,14 @@ public class SmallBodyModel extends Model
         return PolyDataUtil.drawPathOnPolyData(smallBodyPolyData, pointLocator, pt1, pt2);
     }
 
-    public void drawPolygon(
+    public void drawRegularPolygon(
             double[] center,
             double radius,
             int numberOfSides,
             vtkPolyData outputInterior,
             vtkPolyData outputBoundary)
     {
-        PolyDataUtil.drawPolygonOnPolyData(
+        PolyDataUtil.drawRegularPolygonOnPolyData(
                 smallBodyPolyData,
                 pointLocator,
                 center,
@@ -425,7 +425,7 @@ public class SmallBodyModel extends Model
                 outputBoundary);
     }
 
-    public void drawPolygonLowRes(
+    public void drawRegularPolygonLowRes(
             double[] center,
             double radius,
             int numberOfSides,
@@ -434,13 +434,13 @@ public class SmallBodyModel extends Model
     {
         if (resolutionLevel == 0)
         {
-            drawPolygon(center, radius, numberOfSides, outputInterior, outputBoundary);
+            drawRegularPolygon(center, radius, numberOfSides, outputInterior, outputBoundary);
             return;
         }
 
         initializeLowResData();
 
-        PolyDataUtil.drawPolygonOnPolyData(
+        PolyDataUtil.drawRegularPolygonOnPolyData(
                 lowResSmallBodyPolyData,
                 lowResPointLocator,
                 center,
