@@ -40,6 +40,7 @@ import edu.jhuapl.near.gui.StatusBar;
 import edu.jhuapl.near.gui.actions.SaveImageAction;
 import edu.jhuapl.near.model.CircleModel;
 import edu.jhuapl.near.model.CircleSelectionModel;
+import edu.jhuapl.near.model.EllipseModel;
 import edu.jhuapl.near.model.Line;
 import edu.jhuapl.near.model.LineModel;
 import edu.jhuapl.near.model.Model;
@@ -103,6 +104,7 @@ public class TopoViewer extends JFrame
         allModels.put(ModelNames.SMALL_BODY, dem);
         allModels.put(ModelNames.LINE_STRUCTURES, lineModel);
         allModels.put(ModelNames.CIRCLE_STRUCTURES, new CircleModel(dem));
+        allModels.put(ModelNames.ELLIPSE_STRUCTURES, new EllipseModel(dem));
         allModels.put(ModelNames.POINT_STRUCTURES, new PointModel(dem));
         allModels.put(ModelNames.CIRCLE_SELECTION, new CircleSelectionModel(dem));
         modelManager.setModels(allModels);
