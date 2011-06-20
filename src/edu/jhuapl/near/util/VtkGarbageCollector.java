@@ -26,7 +26,7 @@ import vtk.vtkObjectBase;
  *
  * @author sebastien jourdain - sebastien.jourdain@kitware.com
  */
-public class MyGarbageCollector {
+public class VtkGarbageCollector {
 
   private ScheduledExecutorService executor;
   private Runnable deleteRunnable;
@@ -41,7 +41,7 @@ public class MyGarbageCollector {
    * seconds but has not been started yet. The user has to call
    * SetAutoGarbageCollection(true) to make it start.
    */
-  public MyGarbageCollector() {
+  public VtkGarbageCollector() {
     // Default settings
     debug = true;
     periodTime = 1;
