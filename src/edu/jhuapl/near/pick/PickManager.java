@@ -40,10 +40,6 @@ public class PickManager extends Picker
 
         modelManager.addPropertyChangeListener(this);
 
-        renWin.addMouseListener(this);
-        renWin.addMouseMotionListener(this);
-        renWin.addMouseWheelListener(this);
-
         nondefaultPickers.put(PickMode.LINE_DRAW, new LinePicker(renderer, modelManager));
         nondefaultPickers.put(PickMode.CIRCLE_DRAW, new CirclePicker(renderer, modelManager));
         nondefaultPickers.put(PickMode.ELLIPSE_DRAW, new EllipsePicker(renderer, modelManager));
