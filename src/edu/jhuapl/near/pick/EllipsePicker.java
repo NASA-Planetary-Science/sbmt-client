@@ -42,8 +42,8 @@ public class EllipsePicker extends Picker
     private EditMode currentEditMode = EditMode.VERTEX_ADD;
 
     private double[] lastDragPosition;
-    private boolean aKeyPressed = false;
-    private boolean sKeyPressed = false;
+    private boolean changeFlatteningKeyPressed = false;
+    private boolean changeAngleKeyPressed = false;
 
     public EllipsePicker(
             Renderer renderer,
@@ -166,12 +166,12 @@ public class EllipsePicker extends Picker
                 {
                     lastDragPosition = smallBodyPicker.GetPickPosition();
 
-                    if (aKeyPressed)
-                        ellipseModel.changeAngleOfPolygon(vertexIdBeingEdited, lastDragPosition);
-                    else if (sKeyPressed)
-                        ellipseModel.changeFlatteningOfPolygon(vertexIdBeingEdited, lastDragPosition);
-                    else if (e.isControlDown() || e.isShiftDown())
+                    if (e.isControlDown() || e.isShiftDown())
                         ellipseModel.changeRadiusOfPolygon(vertexIdBeingEdited, lastDragPosition);
+                    else if (changeFlatteningKeyPressed)
+                        ellipseModel.changeFlatteningOfPolygon(vertexIdBeingEdited, lastDragPosition);
+                    else if (changeAngleKeyPressed)
+                        ellipseModel.changeAngleOfPolygon(vertexIdBeingEdited, lastDragPosition);
                     else
                         ellipseModel.movePolygon(vertexIdBeingEdited, lastDragPosition);
                 }
@@ -202,17 +202,17 @@ public class EllipsePicker extends Picker
 
     public void keyPressed(KeyEvent e)
     {
-        if (e.getKeyCode() == KeyEvent.VK_S)
-            sKeyPressed = true;
-        if (e.getKeyCode() == KeyEvent.VK_A)
-            aKeyPressed = true;
+        if (e.getKeyCode() == KeyEvent.VK_Z || e.getKeyCode() == KeyEvent.VK_SLASH)
+            changeFlatteningKeyPressed = true;
+        if (e.getKeyCode() == KeyEvent.VK_X || e.getKeyCode() == KeyEvent.VK_PERIOD)
+            changeAngleKeyPressed = true;
     }
 
     public void keyReleased(KeyEvent e)
     {
-        if (e.getKeyCode() == KeyEvent.VK_S)
-            sKeyPressed = false;
-        if (e.getKeyCode() == KeyEvent.VK_A)
-            aKeyPressed = false;
+        if (e.getKeyCode() == KeyEvent.VK_Z || e.getKeyCode() == KeyEvent.VK_SLASH)
+            changeFlatteningKeyPressed = false;
+        if (e.getKeyCode() == KeyEvent.VK_X || e.getKeyCode() == KeyEvent.VK_PERIOD)
+            changeAngleKeyPressed = false;
     }
 }
