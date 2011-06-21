@@ -70,8 +70,11 @@ public class vtkEnhancedRenderWindowPanel extends vtkRenderWindowPanel
         if (ren.VisibleActorCount() == 0) return;
         char keyChar = e.getKeyChar();
 
-        if ('x' == keyChar || 'y' == keyChar || 'z' == keyChar ||
-                'X' == keyChar || 'Y' == keyChar || 'Z' == keyChar)
+        // Only repond to x, y, or z press if in the default interactor (e.g.
+        // not when drawing structures)
+        if (iren.GetInteractorStyle() != null &&
+                ('x' == keyChar || 'y' == keyChar || 'z' == keyChar ||
+                 'X' == keyChar || 'Y' == keyChar || 'Z' == keyChar))
         {
             double[] bounds = new double[6];
             ren.ComputeVisiblePropBounds(bounds);
