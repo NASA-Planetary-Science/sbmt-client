@@ -18,8 +18,10 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JSeparator;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -230,6 +232,7 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
         opacityLabel.setEnabled(false);
         imageMapOpacitySpinner.setEnabled(false);
 
+        JSeparator separator = new JSeparator(SwingConstants.HORIZONTAL);
 
         panel.add(modelCheckBox, "wrap");
         if (modelManager.getSmallBodyModel().getNumberResolutionLevels() > 1)
@@ -269,6 +272,7 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
         panel.add(shadingLabel, "wrap");
         panel.add(flatShadingButton, "wrap, gapleft 25");
         panel.add(smoothShadingButton, "wrap, gapleft 25");
+        panel.add(separator, "growx, span, wrap, gaptop 15");
         panel.add(statisticsLabel, "gaptop 15");
 
         add(panel, BorderLayout.CENTER);
