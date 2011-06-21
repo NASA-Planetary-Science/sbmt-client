@@ -17,6 +17,7 @@ import vtk.vtkFloatArray;
 import vtk.vtkGenericCell;
 import vtk.vtkIdList;
 import vtk.vtkIdTypeArray;
+import vtk.vtkObject;
 import vtk.vtkPlane;
 import vtk.vtkPointData;
 import vtk.vtkPointLocator;
@@ -382,6 +383,8 @@ public class PolyDataUtil
     }
      */
 
+/*
+ // Old version
     public static void drawRegularPolygonOnPolyData(
             vtkPolyData polyData,
             vtkAbstractPointLocator pointLocator,
@@ -522,7 +525,28 @@ public class PolyDataUtil
         //return polyData;
         //return outputPolyData;
     }
+*/
 
+    public static void drawRegularPolygonOnPolyData(
+            vtkPolyData polyData,
+            vtkAbstractPointLocator pointLocator,
+            double[] center,
+            double radius,
+            int numberOfSides,
+            vtkPolyData outputInterior,
+            vtkPolyData outputBoundary)
+    {
+        drawEllipseOnPolyData(
+                polyData,
+                pointLocator,
+                center,
+                radius,
+                1.0,
+                0.0,
+                numberOfSides,
+                outputInterior,
+                outputBoundary);
+    }
 
     public static void drawEllipseOnPolyData(
             vtkPolyData polyData,
@@ -535,6 +559,9 @@ public class PolyDataUtil
             vtkPolyData outputInterior,
             vtkPolyData outputBoundary)
     {
+        // List holding vtk objects to delete at end of function
+        ArrayList<vtkObject> d = new ArrayList<vtkObject>();
+
         double[] normal = getPolyDataNormalAtPoint(center, polyData, pointLocator);
 
         // If the number of points are too small, then vtkExtractPolyDataGeometry
@@ -545,19 +572,23 @@ public class PolyDataUtil
             // Reduce the size of the polydata we need to process by only
             // considering cells within twice radius of center.
             vtkSphere sphere = new vtkSphere();
+            d.add(sphere);
             sphere.SetCenter(center);
             sphere.SetRadius(semiMajorAxis >= 0.2 ? 1.2*semiMajorAxis : 1.2*0.2);
 
             vtkExtractPolyDataGeometry extract = new vtkExtractPolyDataGeometry();
+            d.add(extract);
             extract.SetImplicitFunction(sphere);
             extract.SetExtractInside(1);
             extract.SetExtractBoundaryCells(1);
             extract.SetInput(polyData);
             extract.Update();
             polyData = extract.GetOutput();
+            d.add(polyData);
         }
 
         vtkRegularPolygonSource polygonSource = new vtkRegularPolygonSource();
+        d.add(polygonSource);
         //polygonSource.SetCenter(center);
         polygonSource.SetRadius(semiMajorAxis);
         //polygonSource.SetNormal(normal);
@@ -580,22 +611,28 @@ public class PolyDataUtil
         double sepAngle = MathUtil.vsep(normal, zaxis) * 180.0 / Math.PI;
 
         vtkTransform transform = new vtkTransform();
+        d.add(transform);
         transform.Translate(center);
         transform.RotateWXYZ(sepAngle, cross);
         transform.RotateZ(angle);
         transform.Scale(1.0, flattening, 1.0);
 
         vtkTransformPolyDataFilter transformFilter = new vtkTransformPolyDataFilter();
+        d.add(transformFilter);
         vtkAlgorithmOutput polygonSourceOutput = polygonSource.GetOutputPort();
+        d.add(polygonSourceOutput);
         transformFilter.SetInputConnection(polygonSourceOutput);
         transformFilter.SetTransform(transform);
         transformFilter.Update();
 
-        vtkPoints points = transformFilter.GetOutput().GetPoints();
+        vtkPolyData transformFilterOutput = transformFilter.GetOutput();
+        d.add(transformFilterOutput);
+        vtkPoints points = transformFilterOutput.GetPoints();
+        d.add(points);
 
-        ArrayList<vtkPlane> clipPlanes = new ArrayList<vtkPlane>();
-        ArrayList<vtkClipPolyData> clipFilters = new ArrayList<vtkClipPolyData>();
-        ArrayList<vtkPolyData> clipOutputs = new ArrayList<vtkPolyData>();
+//        ArrayList<vtkPlane> clipPlanes = new ArrayList<vtkPlane>();
+//        ArrayList<vtkClipPolyData> clipFilters = new ArrayList<vtkClipPolyData>();
+//        ArrayList<vtkPolyData> clipOutputs = new ArrayList<vtkPolyData>();
 
         // randomly shuffling the order of the sides we process can speed things up
         ArrayList<Integer> sides = new ArrayList<Integer>();
@@ -626,32 +663,37 @@ public class PolyDataUtil
             MathUtil.vcrss(normal, vec, planeNormal);
             MathUtil.vhat(planeNormal, planeNormal);
 
-            if (i > clipPlanes.size()-1)
-                clipPlanes.add(new vtkPlane());
-            vtkPlane plane = clipPlanes.get(i);
-            //            vtkPlane plane = new vtkPlane();
+            //if (i > clipPlanes.size()-1)
+            //    clipPlanes.add(new vtkPlane());
+            //vtkPlane plane = clipPlanes.get(i);
+            vtkPlane plane = new vtkPlane();
+            d.add(plane);
             plane.SetOrigin(currentPoint);
             plane.SetNormal(planeNormal);
 
-            if (i > clipFilters.size()-1)
-                clipFilters.add(new vtkClipPolyData());
-            clipPolyData = clipFilters.get(i);
-            //            clipPolyData = new vtkClipPolyData();
+            //if (i > clipFilters.size()-1)
+            //    clipFilters.add(new vtkClipPolyData());
+            //clipPolyData = clipFilters.get(i);
+            clipPolyData = new vtkClipPolyData();
+            d.add(clipPolyData);
             clipPolyData.SetInput(nextInput);
             clipPolyData.SetClipFunction(plane);
             clipPolyData.SetInsideOut(1);
             //clipPolyData.Update();
 
             nextInput = clipPolyData.GetOutput();
+            d.add(nextInput);
 
-            if (i > clipOutputs.size()-1)
-                clipOutputs.add(nextInput);
-            clipOutputs.set(i, nextInput);
+            //if (i > clipOutputs.size()-1)
+            //    clipOutputs.add(nextInput);
+            //clipOutputs.set(i, nextInput);
         }
 
 
         vtkPolyDataConnectivityFilter connectivityFilter = new vtkPolyDataConnectivityFilter();
+        d.add(connectivityFilter);
         vtkAlgorithmOutput clipPolyDataOutput = clipPolyData.GetOutputPort();
+        d.add(clipPolyDataOutput);
         connectivityFilter.SetInputConnection(clipPolyDataOutput);
         connectivityFilter.SetExtractionModeToClosestPointRegion();
         connectivityFilter.SetClosestPoint(center);
@@ -664,6 +706,7 @@ public class PolyDataUtil
         if (outputInterior != null)
         {
             vtkPolyData connectivityFilterOutput = connectivityFilter.GetOutput();
+            d.add(connectivityFilterOutput);
             outputInterior.DeepCopy(connectivityFilterOutput);
         }
 
@@ -671,7 +714,9 @@ public class PolyDataUtil
         {
             // Compute the bounding edges of this surface
             vtkFeatureEdges edgeExtracter = new vtkFeatureEdges();
+            d.add(edgeExtracter);
             vtkAlgorithmOutput connectivityFilterOutput = connectivityFilter.GetOutputPort();
+            d.add(connectivityFilterOutput);
             edgeExtracter.SetInputConnection(connectivityFilterOutput);
             edgeExtracter.BoundaryEdgesOn();
             edgeExtracter.FeatureEdgesOff();
@@ -680,6 +725,7 @@ public class PolyDataUtil
             edgeExtracter.Update();
 
             vtkPolyData edgeExtracterOutput = edgeExtracter.GetOutput();
+            d.add(edgeExtracterOutput);
             outputBoundary.DeepCopy(edgeExtracterOutput);
         }
 
@@ -690,8 +736,8 @@ public class PolyDataUtil
         //writer.SetFileTypeToBinary();
         //writer.Write();
 
-        //return polyData;
-        //return outputPolyData;
+        for (vtkObject o : d)
+            o.Delete();
     }
 
 
@@ -1023,6 +1069,10 @@ public class PolyDataUtil
         }
 
         polyLine.Modified();
+
+        pointData.Delete();
+        pointNormals.Delete();
+        points.Delete();
     }
 
 
@@ -1355,6 +1405,8 @@ public class PolyDataUtil
         normal[0] /= N;
         normal[1] /= N;
         normal[2] /= N;
+
+        idList.Delete();
 
         return normal;
     }

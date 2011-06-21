@@ -332,8 +332,14 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
             }
             vtkCellData boundaryCellData = boundaryPolyData.GetCellData();
             vtkCellData interiorCellData = interiorPolyData.GetCellData();
+
             boundaryCellData.SetScalars(boundaryColors);
             interiorCellData.SetScalars(interiorColors);
+
+            boundaryAppendFilterOutput.Delete();
+            interiorAppendFilterOutput.Delete();
+            boundaryCellData.Delete();
+            interiorCellData.Delete();
         }
         else
         {
@@ -509,6 +515,8 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
         pol.updatePolygon(smallBodyModel, pol.center, pol.radius, newFlattening, pol.angle);
         updatePolyData();
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+
+        transform.Delete();
     }
 
     public void changeAngleOfPolygon(int polygonId, double[] newPointOnPerimeter)
@@ -563,6 +571,8 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
         pol.updatePolygon(smallBodyModel, pol.center, pol.radius, pol.flattening, newAngle);
         updatePolyData();
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+
+        transform.Delete();
     }
 
     public void changeRadiusOfAllPolygons(double newRadius)
