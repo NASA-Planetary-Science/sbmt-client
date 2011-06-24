@@ -84,8 +84,10 @@ abstract public class Image extends Model implements PropertyChangeListener
     private double maxPhase = -Double.MAX_VALUE;
     private double minHorizontalPixelScale = Double.MAX_VALUE;
     private double maxHorizontalPixelScale = -Double.MAX_VALUE;
+    private double meanHorizontalPixelScale = 0.0;
     private double minVerticalPixelScale = Double.MAX_VALUE;
     private double maxVerticalPixelScale = -Double.MAX_VALUE;
+    private double meanVerticalPixelScale = 0.0;
 
     private float minValue;
     private float maxValue;
@@ -945,6 +947,11 @@ abstract public class Image extends Model implements PropertyChangeListener
         return maxHorizontalPixelScale;
     }
 
+    public double getMeanHorizontalPixelScale()
+    {
+        return meanHorizontalPixelScale;
+    }
+
     public double getMinimumVerticalPixelScale()
     {
         return minVerticalPixelScale;
@@ -953,6 +960,11 @@ abstract public class Image extends Model implements PropertyChangeListener
     public double getMaximumVerticalPixelScale()
     {
         return maxVerticalPixelScale;
+    }
+
+    public double getMeanVerticalPixelScale()
+    {
+        return meanVerticalPixelScale;
     }
 
     public double getSpacecraftDistance()
@@ -1061,8 +1073,10 @@ abstract public class Image extends Model implements PropertyChangeListener
 
         minHorizontalPixelScale = Double.MAX_VALUE;
         maxHorizontalPixelScale = -Double.MAX_VALUE;
+        meanHorizontalPixelScale = 0.0;
         minVerticalPixelScale = Double.MAX_VALUE;
         maxVerticalPixelScale = -Double.MAX_VALUE;
+        meanVerticalPixelScale = 0.0;
 
         double horizScaleFactor = 2.0 * Math.tan( MathUtil.vsep(frustum1, frustum3) / 2.0 ) / imageHeight;
         double vertScaleFactor = 2.0 * Math.tan( MathUtil.vsep(frustum1, frustum2) / 2.0 ) / imageWidth;
@@ -1089,7 +1103,13 @@ abstract public class Image extends Model implements PropertyChangeListener
                 minVerticalPixelScale = vertPixelScale;
             if (vertPixelScale > maxVerticalPixelScale)
                 maxVerticalPixelScale = vertPixelScale;
+
+            meanHorizontalPixelScale += horizPixelScale;
+            meanVerticalPixelScale += vertPixelScale;
         }
+
+        meanHorizontalPixelScale /= (double)numberOfPoints;
+        meanVerticalPixelScale /= (double)numberOfPoints;
     }
 
     public float[] generateBackplanes()
@@ -1313,6 +1333,8 @@ abstract public class Image extends Model implements PropertyChangeListener
             this.maxHorizontalPixelScale = -Double.MAX_VALUE;
             this.minVerticalPixelScale = Double.MAX_VALUE;
             this.maxVerticalPixelScale = -Double.MAX_VALUE;
+            this.meanHorizontalPixelScale = 0.0;
+            this.meanVerticalPixelScale = 0.0;
 
             this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
         }
