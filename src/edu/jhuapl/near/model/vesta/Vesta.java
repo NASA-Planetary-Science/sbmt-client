@@ -13,14 +13,14 @@ public class Vesta extends SmallBodyModel
     };
 
     static private final String[] coloringFiles = {
-            "/VESTA/VESTA_Slope.txt.gz",
-            "/VESTA/VESTA_Elevation.txt.gz",
-            "/VESTA/VESTA_GravitationalAcceleration.txt.gz",
-            "/VESTA/VESTA_GravitationalPotential.txt.gz",
-            "/VESTA/VESTA_439.txt.gz",
-            "/VESTA/VESTA_673.txt.gz",
-            "/VESTA/VESTA_953.txt.gz",
-            "/VESTA/VESTA_1042.txt.gz"
+            "/VESTA/VESTA_Slope",
+            "/VESTA/VESTA_Elevation",
+            "/VESTA/VESTA_GravitationalAcceleration",
+            "/VESTA/VESTA_GravitationalPotential",
+            "/VESTA/VESTA_439",
+            "/VESTA/VESTA_673",
+            "/VESTA/VESTA_953",
+            "/VESTA/VESTA_1042"
     };
 
     static private final String[] coloringNames = {

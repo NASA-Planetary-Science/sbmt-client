@@ -13,10 +13,10 @@ public class Deimos extends SmallBodyModel
     };
 
     static private final String[] coloringFiles = {
-            "/DEIMOS/DEIMOS_Slope.txt.gz",
-            "/DEIMOS/DEIMOS_Elevation.txt.gz",
-            "/DEIMOS/DEIMOS_GravitationalAcceleration.txt.gz",
-            "/DEIMOS/DEIMOS_GravitationalPotential.txt.gz"
+            "/DEIMOS/DEIMOS_Slope",
+            "/DEIMOS/DEIMOS_Elevation",
+            "/DEIMOS/DEIMOS_GravitationalAcceleration",
+            "/DEIMOS/DEIMOS_GravitationalPotential"
     };
 
     static private final String imageMap = "/DEIMOS/deimos_image_map.png";

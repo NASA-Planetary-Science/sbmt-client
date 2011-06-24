@@ -19,10 +19,10 @@ public class Eros extends SmallBodyModel
     };
 
     static private final String[] coloringFiles = {
-            "/EROS/Eros_Dec2006_0_Slope.txt.gz",
-            "/EROS/Eros_Dec2006_0_Elevation.txt.gz",
-            "/EROS/Eros_Dec2006_0_GravitationalAcceleration.txt.gz",
-            "/EROS/Eros_Dec2006_0_GravitationalPotential.txt.gz"
+            "/EROS/Eros_Slope",
+            "/EROS/Eros_Elevation",
+            "/EROS/Eros_GravitationalAcceleration",
+            "/EROS/Eros_GravitationalPotential"
     };
 
     static private final String[] coloringNames = {

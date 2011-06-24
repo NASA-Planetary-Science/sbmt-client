@@ -19,10 +19,10 @@ public class Itokawa extends SmallBodyModel
     };
 
     static private final String[] coloringFiles = {
-        "/ITOKAWA/Itokawa_Slope.txt.gz",
-        "/ITOKAWA/Itokawa_Elevation.txt.gz",
-        "/ITOKAWA/Itokawa_GravitationalAcceleration.txt.gz",
-        "/ITOKAWA/Itokawa_GravitationalPotential.txt.gz"
+        "/ITOKAWA/Itokawa_Slope",
+        "/ITOKAWA/Itokawa_Elevation",
+        "/ITOKAWA/Itokawa_GravitationalAcceleration",
+        "/ITOKAWA/Itokawa_GravitationalPotential"
     };
 
     static private final String[] coloringNames = {

@@ -716,23 +716,19 @@ public class SmallBodyModel extends Model
 
     public String getClickStatusBarText(vtkProp prop, int cellId, double[] pickPosition)
     {
-        // Coloring is currently only supported in the lowest resolution level
-        if (resolutionLevel == 0)
+        if (coloringIndex >= 0)
         {
-            if (coloringIndex >= 0)
-            {
-                float value = (float)getColoringValue(coloringIndex, pickPosition);
-                return coloringNames[coloringIndex] + ": " + value + " " + coloringUnits[coloringIndex];
-            }
-            else if (useFalseColoring)
-            {
-                float red = (float)getColoringValue(redFalseColor, pickPosition);
-                float green = (float)getColoringValue(greenFalseColor, pickPosition);
-                float blue = (float)getColoringValue(blueFalseColor, pickPosition);
-                return coloringNames[redFalseColor] + ": " + red + " " + coloringUnits[redFalseColor] + ", " +
-                coloringNames[greenFalseColor] + ": " + green + " " + coloringUnits[greenFalseColor] +  ", " +
-                coloringNames[blueFalseColor] + ": " + blue + " " + coloringUnits[blueFalseColor];
-            }
+            float value = (float)getColoringValue(coloringIndex, pickPosition);
+            return coloringNames[coloringIndex] + ": " + value + " " + coloringUnits[coloringIndex];
+        }
+        else if (useFalseColoring)
+        {
+            float red = (float)getColoringValue(redFalseColor, pickPosition);
+            float green = (float)getColoringValue(greenFalseColor, pickPosition);
+            float blue = (float)getColoringValue(blueFalseColor, pickPosition);
+            return coloringNames[redFalseColor] + ": " + red + " " + coloringUnits[redFalseColor] + ", " +
+                   coloringNames[greenFalseColor] + ": " + green + " " + coloringUnits[greenFalseColor] +  ", " +
+                   coloringNames[blueFalseColor] + ": " + blue + " " + coloringUnits[blueFalseColor];
         }
         return "";
     }
@@ -896,10 +892,11 @@ public class SmallBodyModel extends Model
             break;
         }
 
-        if (resolutionLevel != 0)
-            setColoringIndex(-1);
-
         this.initialize(smallBodyFile);
+
+        // Repaint the asteroid if we're currently showing any type of coloring
+        if (coloringIndex >= 0 || useFalseColoring)
+            paintBody();
 
         this.pcs.firePropertyChange(Properties.MODEL_RESOLUTION_CHANGED, null, null);
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
@@ -941,7 +938,8 @@ public class SmallBodyModel extends Model
 
         for (int i=0; i<coloringValues.length; ++i)
         {
-            File file = FileCache.getFileFromServer(coloringFiles[i]);
+            File file = FileCache.getFileFromServer(coloringFiles[i] + "_res" + resolutionLevel + ".txt.gz");
+
             vtkFloatArray array = coloringValues[i];
 
             array.SetNumberOfComponents(1);
@@ -988,8 +986,7 @@ public class SmallBodyModel extends Model
 
         for (int i=0; i<coloringImages.length; ++i)
         {
-            int length = coloringFiles[i].length();
-            File file = FileCache.getFileFromServer(coloringFiles[i].substring(0, length-6) + "vti");
+            File file = FileCache.getFileFromServer(coloringFiles[i] + "_res" + resolutionLevel + ".vti");
 
             vtkImageData image = coloringImages[i];
 
@@ -1053,16 +1050,12 @@ public class SmallBodyModel extends Model
 
     public void setColoringIndex(int index) throws IOException
     {
-        // Coloring is currently only supported in the lowest resolution level
-        if (resolutionLevel == 0)
+        if (coloringIndex != index)
         {
-            if (coloringIndex != index)
-            {
-                coloringIndex = index;
-                useFalseColoring = false;
+            coloringIndex = index;
+            useFalseColoring = false;
 
-                paintBody();
-            }
+            paintBody();
         }
     }
 
@@ -1073,25 +1066,13 @@ public class SmallBodyModel extends Model
 
     public void setFalseColoring(int redChannel, int greenChannel, int blueChannel) throws IOException
     {
-//        if (redFalseColor == redChannel &&
-//                greenFalseColor == greenChannel &&
-//                blueFalseColor == blueChannel &&
-//                useFalseColoring == true)
-//        {
-//            return;
-//        }
-//
-        // Coloring is currently only supported in the lowest resolution level
-        if (resolutionLevel == 0)
-        {
-            coloringIndex = -1;
-            useFalseColoring = true;
-            redFalseColor = redChannel;
-            greenFalseColor = greenChannel;
-            blueFalseColor = blueChannel;
+        coloringIndex = -1;
+        useFalseColoring = true;
+        redFalseColor = redChannel;
+        greenFalseColor = greenChannel;
+        blueFalseColor = blueChannel;
 
-            paintBody();
-        }
+        paintBody();
     }
 
     public boolean isColoringDataAvailable()
@@ -1532,9 +1513,6 @@ public class SmallBodyModel extends Model
 
     private void paintBody() throws IOException
     {
-        if (resolutionLevel != 0)
-            return;
-
         initializeActorsAndMappers();
 
         loadColoringData();
@@ -1606,9 +1584,6 @@ public class SmallBodyModel extends Model
         }
         else
         {
-            if (resolutionLevel != 0)
-                return;
-
             if (originalImageMap == null)
             {
                 File imageFile = FileCache.getFileFromServer(imageMapName);
