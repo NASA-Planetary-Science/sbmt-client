@@ -31,7 +31,7 @@ jar_files=`ls lib/*.jar`
 jar_files_unix=`echo $jar_files | sed 's/ /:/g'`
 jar_files_win=`echo $jar_files | sed 's/ /;/g'`
 
-echo "#!/bin/sh
+echo -n -e "#!/bin/sh
 cd \`dirname \$0\`
 MACHINE=\`uname -m\`
 if [ \"\${MACHINE}\" = \"x86_64\" ]; then
@@ -43,8 +43,8 @@ java -Djava.library.path=\${VTK_DIR} -Dcom.apple.mrj.application.apple.menu.abou
 " > $output_dir/sbmt/runsbmt.sh
 chmod +x $output_dir/sbmt/runsbmt.sh
 
-echo "@echo off
-javaw -Djava.library.path=lib/win32 -Dsun.java2d.noddraw=true -classpath $jar_files_win edu.jhuapl.near.SmallBodyMappingToolAPL
+echo -n -e "@echo off\r
+start javaw -Djava.library.path=lib/win32 -Dsun.java2d.noddraw=true -classpath $jar_files_win edu.jhuapl.near.SmallBodyMappingToolAPL\r
 " > $output_dir/sbmt/runsbmt.bat
 chmod +x $output_dir/sbmt/runsbmt.bat
 
