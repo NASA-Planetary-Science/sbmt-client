@@ -11,6 +11,7 @@
 # mac64   - for 64-bit Mac OS X libraries (Intel based Macs only)
 #
 # The generated zip file is placed in $HOME/sbmt
+# The script must be run from the top level folder of the sbmt source tree.
 
 vtk_dir=$1
 output_dir=$HOME/sbmt
