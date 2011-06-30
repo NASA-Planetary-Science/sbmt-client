@@ -95,15 +95,33 @@ public class ImageInfoPanel extends ModelInfoWindow implements PropertyChangeLis
 
 // for testing backplane generation
 //        {
+//            int band = 10;
 //            vtkImageData plane = new vtkImageData();
 //            plane.DeepCopy(displayedImage);
 //            float[] bp = image.generateBackplanes();
+//            double minValue = Double.MAX_VALUE;
+//            double maxValue = -Double.MAX_VALUE;
+//            int pixelStart = image.index(0, 0, band);
+//            int pixelEnd = image.index(0, 0, band+1);
+//            for (int i=pixelStart; i<pixelEnd; ++i)
+//            {
+//                if (bp[i] == Image.PDS_NA) continue;
+//                if (bp[i] < minValue) minValue = bp[i];
+//                if (bp[i] > maxValue) maxValue = bp[i];
+//            }
+//            System.out.println("min band " + band + " : " + minValue);
+//            System.out.println("max band " + band + " : " + maxValue);
 //            for (int i=0; i<image.getImageHeight(); ++i)
 //                for (int j=0; j<image.getImageWidth(); ++j)
 //                {
-//                    plane.SetScalarComponentFromFloat(j, i, 0, 0, 1000*bp[image.index(j, i, 0)]);
-//                    plane.SetScalarComponentFromFloat(j, i, 0, 1, 1000*bp[image.index(j, i, 0)]);
-//                    plane.SetScalarComponentFromFloat(j, i, 0, 2, 1000*bp[image.index(j, i, 0)]);
+//                    double v = bp[image.index(j, i, band)];
+//                    if (v == Image.PDS_NA)
+//                        v = minValue;
+//                    else
+//                        v = (v-minValue) * 255.0 / (maxValue - minValue);
+//                    plane.SetScalarComponentFromFloat(j, i, 0, 0, v);
+//                    plane.SetScalarComponentFromFloat(j, i, 0, 1, v);
+//                    plane.SetScalarComponentFromFloat(j, i, 0, 2, v);
 //                }
 //            actor.SetInput(plane);
 //        }
