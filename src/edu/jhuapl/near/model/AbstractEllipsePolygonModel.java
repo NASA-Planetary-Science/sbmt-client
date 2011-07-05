@@ -675,7 +675,7 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
             if (words.length < 16)
             {
                 // OLD VERSION of file
-                if (mode == Mode.CIRCLE_MODE)
+                if (mode == Mode.CIRCLE_MODE || mode == Mode.ELLIPSE_MODE)
                     pol.radius = Double.parseDouble(words[8]) / 2.0; // read in diameter not radius
                 else
                     pol.radius = defaultRadius;
