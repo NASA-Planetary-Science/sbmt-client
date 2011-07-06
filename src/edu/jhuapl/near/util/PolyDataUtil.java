@@ -570,11 +570,20 @@ public class PolyDataUtil
         if (polyData.GetNumberOfPoints() >= 10000)
         {
             // Reduce the size of the polydata we need to process by only
-            // considering cells within twice radius of center.
+            // considering cells within 1.2 times the radius. We make sure,
+            // however, that if the radius is below a threshold to not
+            // go below it. The threshold is chosen to be 0.2 for Eros,
+            // which is equal to the bounding box diagonal length divided
+            // by about 193. For other bodies it will be different, depending on
+            // the diagonal length.
+
+            BoundingBox boundingBox = new BoundingBox(polyData.GetBounds());
+            double minRadius = boundingBox.getDiagonalLength() / 193.30280166816735;
+
             vtkSphere sphere = new vtkSphere();
             d.add(sphere);
             sphere.SetCenter(center);
-            sphere.SetRadius(semiMajorAxis >= 0.2 ? 1.2*semiMajorAxis : 1.2*0.2);
+            sphere.SetRadius(semiMajorAxis >= minRadius ? 1.2*semiMajorAxis : 1.2*minRadius);
 
             vtkExtractPolyDataGeometry extract = new vtkExtractPolyDataGeometry();
             d.add(extract);
