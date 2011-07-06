@@ -228,7 +228,7 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
                 int result = JOptionPane.showConfirmDialog(
                         JOptionPane.getFrameForComponent(AbstractStructureMappingControlPanel.this),
                         "Are you sure you want to delete all structures?",
-                        "Confirm Delete",
+                        "Confirm Delete All",
                         JOptionPane.YES_NO_OPTION);
                 if (result == JOptionPane.NO_OPTION)
                     return;
