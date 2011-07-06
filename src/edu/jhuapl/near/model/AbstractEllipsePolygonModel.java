@@ -425,6 +425,15 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
+    public void removeAllStructures()
+    {
+        polygons.clear();
+
+        updatePolyData();
+
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+    }
+
     public void movePolygon(int polygonId, double[] newCenter)
     {
         EllipsePolygon pol = polygons.get(polygonId);

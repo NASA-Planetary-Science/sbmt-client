@@ -215,7 +215,22 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
                 }
             }
         });
-        add(deleteButton, "w 100!, wrap");
+        add(deleteButton, "w 100!");
+
+        JButton deleteAllButton = new JButton("Delete All");
+        deleteAllButton.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                editButton.setSelected(false);
+
+                structureModel.removeAllStructures();
+                pickManager.setPickMode(PickManager.PickMode.DEFAULT);
+                structureModel.selectStructure(-1);
+                updateStructureTable();
+            }
+        });
+        add(deleteAllButton, "w 100!, wrap");
     }
 
     public void actionPerformed(ActionEvent actionEvent)

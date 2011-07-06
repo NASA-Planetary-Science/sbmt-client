@@ -46,11 +46,7 @@ public abstract class StructureModel extends Model
 
     public abstract void removeStructure(int idx);
 
-    public void removeAllStructures()
-    {
-        for (int i=getNumberOfStructures()-1; i>=0; --i)
-            removeStructure(i);
-    }
+    public abstract void removeAllStructures();
 
     public abstract Structure getStructure(int idx);
 
