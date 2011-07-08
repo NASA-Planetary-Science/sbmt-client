@@ -1,5 +1,6 @@
 package edu.jhuapl.near.server;
 
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -10,10 +11,13 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.ArrayList;
 
+import javax.imageio.ImageIO;
+
 import nom.tam.fits.FitsException;
 
 import vtk.vtkGlobalJavaHash;
 
+import edu.jhuapl.near.model.Image;
 import edu.jhuapl.near.model.Image.ImageKey;
 import edu.jhuapl.near.model.Image.ImageSource;
 import edu.jhuapl.near.model.SmallBodyModel;
@@ -31,6 +35,8 @@ public class AmicaBackplanesGenerator
     private static ArrayList<String> inertialFileList = new ArrayList<String>();
 
     private static int numberValidFiles = 0;
+
+    private static double[] meanPlateSizes;
 
     private static void loadInertialFile(String inertialFilename) throws IOException
     {
@@ -88,7 +94,8 @@ public class AmicaBackplanesGenerator
         int count = 0;
         for (String filename : amicaFiles)
         {
-            System.out.println("\n\nstarting amica " + count++ + " / " + amicaFiles.size() + " " + filename);
+            System.out.println("\n\n----------------------------------------------------------------------");
+            System.out.println("starting amica " + count++ + " / " + amicaFiles.size() + " " + filename);
 
             boolean filesExist = checkIfAmicaFilesExist(filename, amicaSource);
             if (filesExist == false)
@@ -106,6 +113,26 @@ public class AmicaBackplanesGenerator
             ImageKey key = new ImageKey(keyName, amicaSource);
             AmicaImage image = new AmicaImage(key, itokawaModel, false, rootFolder);
 
+            // Calling this forces the calculation of incidence, emission, phase, and pixel scale
+            image.getProperties();
+
+            int res = findOptimalResolution(image);
+
+            System.out.println("Optimal resolution " + res);
+
+            if (res == 3)
+                res = 2;
+
+            if (res != itokawaModel.getModelResolution())
+            {
+                System.out.println("Changing resolution to " + res);
+                itokawaModel.setModelResolution(res);
+                image.Delete();
+                image = new AmicaImage(key, itokawaModel, false, rootFolder);
+                // Calling this forces the calculation of incidence, emission, phase, and pixel scale
+                image.getProperties();
+            }
+
             // Generate the backplanes binary file
             float[] backplanes = image.generateBackplanes();
             String ddrFilename = filename.substring(0, filename.length()-4) + "_ddr.img";
@@ -121,6 +148,10 @@ public class AmicaBackplanesGenerator
             }
             out.write(buf, 0, buf.length);
             out.close();
+
+            // Generate a jpeg for each backplane
+            //generateFitsFileForEachBackPlane(backplanes, ddrFilename);
+            generateJpegFileForEachBackPlane(backplanes, ddrFilename);
 
             // Generate the label file
             String ddrLabelFilename = filename.substring(0, filename.length()-4) + "_ddr.lbl";
@@ -139,6 +170,115 @@ public class AmicaBackplanesGenerator
         System.out.println("Total number of files processed " + numberValidFiles);
     }
 
+    /*
+    private static void generateFitsFileForEachBackPlane(float[] array, String ddrFilename)
+    {
+        try
+        {
+            float[][] data = new float[1024][1024];
+            int c = 0;
+            for (int k=0; k<16; ++k)
+            {
+                for (int i=0; i<1024; ++i)
+                    for (int j=0; j<1024; ++j)
+                        data[i][j] = array[c++];
+
+                Fits f = new Fits();
+                f.addHDU(FitsFactory.HDUFactory(data));
+                BufferedFile bf = new BufferedFile(ddrFilename + "_" + k + ".fit", "rw");
+                f.write(bf);
+                bf.close();
+            }
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+        catch (FitsException e)
+        {
+            e.printStackTrace();
+        }
+    }
+     */
+
+    private static void generateJpegFileForEachBackPlane(float[] array, String ddrFilename)
+    {
+        try
+        {
+            for (int k=0; k<16; ++k)
+            {
+                int pixelStart = 1024*1024*k;
+                int pixelEnd = 1024*1024*(k+1);
+
+                float minValue = Float.MAX_VALUE;
+                float maxValue = -Float.MAX_VALUE;
+                for (int i=pixelStart; i<pixelEnd; ++i)
+                {
+                    if (array[i] == Image.PDS_NA) continue;
+                    if (array[i] < minValue) minValue = array[i];
+                    if (array[i] > maxValue) maxValue = array[i];
+                }
+
+                BufferedImage bi = new BufferedImage(1024, 1024, BufferedImage.TYPE_INT_RGB);
+                int c = pixelStart;
+                for (int i=0; i<1024; ++i)
+                    for (int j=0; j<1024; ++j)
+                    {
+                        float v = array[c++];
+                        if (v == Image.PDS_NA)
+                            v = minValue;
+                        else
+                            v = (v-minValue) * 255.0f / (maxValue - minValue);
+                        bi.getRaster().setSample(i, j, 0, v);
+                        bi.getRaster().setSample(i, j, 1, v);
+                        bi.getRaster().setSample(i, j, 2, v);
+                    }
+
+                File outputfile = new File(ddrFilename + "_" + k + ".jpg");
+                ImageIO.write(bi, "jpg", outputfile);
+            }
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    private static void computeMeanPlateSizeAtAllResolutions() throws IOException
+    {
+        int numRes = itokawaModel.getNumberResolutionLevels();
+
+        meanPlateSizes = new double[numRes];
+
+        for (int i=0; i<numRes; ++i)
+        {
+            itokawaModel.setModelResolution(i);
+
+            meanPlateSizes[i] = itokawaModel.computeLargestSmallestMeanEdgeLength()[2];
+        }
+    }
+
+    private static int findOptimalResolution(Image image)
+    {
+        // First get the pixel size.
+        double horiz = image.getMeanHorizontalPixelScale();
+        double vert = image.getMeanVerticalPixelScale();
+        double pixelSize = (horiz + vert) / 2.0;
+
+        System.out.println("pixel size: " + pixelSize);
+        if (pixelSize <= 0.0)
+            System.exit(1);
+        int numRes = itokawaModel.getNumberResolutionLevels();
+        for (int i=0; i<numRes-1; ++i)
+        {
+            if (pixelSize >= (meanPlateSizes[i]+meanPlateSizes[i+1])/2.0)
+                return i;
+        }
+
+
+        return numRes - 1;
+    }
+
     /**
      * @param args
      * @throws IOException
@@ -151,6 +291,9 @@ public class AmicaBackplanesGenerator
         String inertialFilename = args[1];
 
         itokawaModel = new Itokawa();
+
+        computeMeanPlateSizeAtAllResolutions();
+
         try {
             itokawaModel.setModelResolution(0);
         } catch (IOException e) {
