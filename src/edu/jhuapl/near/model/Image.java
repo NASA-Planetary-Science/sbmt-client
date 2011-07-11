@@ -583,19 +583,25 @@ abstract public class Image extends Model implements PropertyChangeListener
             mapToColors.SetLookupTable(lut);
             mapToColors.Update();
 
+            vtkImageData mapToColorsOutput = mapToColors.GetOutput();
+            vtkImageData maskSourceOutput = maskSource.GetOutput();
+
             vtkImageMask maskFilter = new vtkImageMask();
-            maskFilter.SetImageInput(mapToColors.GetOutput());
-            maskFilter.SetMaskInput(maskSource.GetOutput());
+            maskFilter.SetImageInput(mapToColorsOutput);
+            maskFilter.SetMaskInput(maskSourceOutput);
             maskFilter.Update();
 
             if (displayedImage == null)
                 displayedImage = new vtkImageData();
-            vtkImageData mapToColorsOutput = maskFilter.GetOutput();
-            displayedImage.DeepCopy(mapToColorsOutput);
+            vtkImageData maskFilterOutput = maskFilter.GetOutput();
+            displayedImage.DeepCopy(maskFilterOutput);
 
             maskFilter.Delete();
             mapToColors.Delete();
             lut.Delete();
+            mapToColorsOutput.Delete();
+            maskSourceOutput.Delete();
+            maskFilterOutput.Delete();
 
             //vtkPNGWriter writer = new vtkPNGWriter();
             //writer.SetFileName("fit.png");
