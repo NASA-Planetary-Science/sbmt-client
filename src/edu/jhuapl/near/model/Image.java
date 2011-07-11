@@ -1370,6 +1370,7 @@ abstract public class Image extends Model implements PropertyChangeListener
         shiftedFootprint.Delete();
         textureCoords.Delete();
         normalsFilter.Delete();
+        maskSource.Delete();
     }
 
     public void getCameraOrientation(double[] spacecraftPosition,
