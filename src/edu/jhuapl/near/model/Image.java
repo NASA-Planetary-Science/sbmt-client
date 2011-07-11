@@ -1269,7 +1269,8 @@ abstract public class Image extends Model implements PropertyChangeListener
                     */
 
                     LatLon llr = MathUtil.reclat(closestPoint);
-                    double lon = llr.lon*180/Math.PI;
+                    double lat = llr.lat * 180.0 / Math.PI;
+                    double lon = llr.lon * 180.0 / Math.PI;
                     if (lon < 0.0)
                         lon += 360.0;
 
@@ -1285,14 +1286,14 @@ abstract public class Image extends Model implements PropertyChangeListener
                     data[index(j,i,1)]  = (float)closestPoint[0];
                     data[index(j,i,2)]  = (float)closestPoint[1];
                     data[index(j,i,3)]  = (float)closestPoint[2];
-                    data[index(j,i,4)]  = (float)(llr.lat * 180.0 / Math.PI);
-                    data[index(j,i,5)]  = (float)(lon);
-                    data[index(j,i,6)]  = (float)(llr.rad);
-                    data[index(j,i,7)]  = (float)(illumAngles[0] * 180.0 / Math.PI);
-                    data[index(j,i,8)]  = (float)(illumAngles[1] * 180.0 / Math.PI);
-                    data[index(j,i,9)]  = (float)(illumAngles[2] * 180.0 / Math.PI);
-                    data[index(j,i,10)] = (float)(horizPixelScale);
-                    data[index(j,i,11)] = (float)(vertPixelScale);
+                    data[index(j,i,4)]  = (float)lat;
+                    data[index(j,i,5)]  = (float)lon;
+                    data[index(j,i,6)]  = (float)llr.rad;
+                    data[index(j,i,7)]  = (float)illumAngles[0];
+                    data[index(j,i,8)]  = (float)illumAngles[1];
+                    data[index(j,i,9)]  = (float)illumAngles[2];
+                    data[index(j,i,10)] = (float)horizPixelScale;
+                    data[index(j,i,11)] = (float)vertPixelScale;
                     data[index(j,i,12)] = (float)coloringValues[0]; // slope
                     data[index(j,i,13)] = (float)coloringValues[1]; // elevation;
                     data[index(j,i,14)] = (float)coloringValues[2]; // grav acc;
