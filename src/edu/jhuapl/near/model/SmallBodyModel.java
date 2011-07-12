@@ -1374,6 +1374,29 @@ public class SmallBodyModel extends Model
         return values;
     }
 
+    public double[] getGravityVector(double[] pt)
+    {
+        try
+        {
+            loadGravityVectorData();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+
+//        double[] closestPoint = new double[3];
+//        int cellId = findClosestCell(pt, closestPoint);
+//
+//        double[] values = new double[3];
+
+        return null;
+    }
+
+    private void loadGravityVectorData() throws IOException
+    {
+    }
+
     public double getImageMapOpacity()
     {
         return imageMapOpacity;
