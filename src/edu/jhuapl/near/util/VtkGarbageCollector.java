@@ -1,5 +1,8 @@
 package edu.jhuapl.near.util;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -36,6 +39,9 @@ public class VtkGarbageCollector {
   private boolean autoCollectionRunning;
   private boolean debug;
 
+  private TreeMap<String, ArrayList<Integer>> liveObjectHistoryMap =
+      new TreeMap<String, ArrayList<Integer>>();
+
   /**
    * Build a garbage collector which is configured to garbage collect every
    * seconds but has not been started yet. The user has to call
@@ -56,36 +62,11 @@ public class VtkGarbageCollector {
           System.gc();
         int num = vtkGlobalJavaHash.GC();
         if (debug) {
-          System.out.println("vtkJavaGarbageCollector deleted " + num + " references.");
-          System.out.println("vtk alive objects:");
+          updateLiveObjectHistory();
+          saveLiveObjectHistory();
 
-          TreeMap<String, Integer> aliveMap = new TreeMap<String, Integer>();
-          int count = 0;
-          Set entries = vtkGlobalJavaHash.PointerToReference.entrySet();
-          Iterator iter = entries.iterator();
-          System.out.println("/-----------------");
-          while (iter.hasNext())
-          {
-            Map.Entry entry = (Map.Entry)iter.next();
-            vtkObjectBase obj = (vtkObjectBase)((WeakReference)entry.getValue()).get();
-            if (obj != null)
-            {
-                if (aliveMap.containsKey(obj.GetClassName()))
-                    aliveMap.put(obj.GetClassName(), 1+aliveMap.get(obj.GetClassName()));
-                else
-                    aliveMap.put(obj.GetClassName(), 1);
-                //System.out.println(obj.GetClassName());
-                //if (obj instanceof vtkPolyData)
-                //    System.out.println(obj);
-                ++count;
-            }
-          }
-          for (String s : aliveMap.keySet())
-          {
-              System.out.println(s + " : " + aliveMap.get(s));
-          }
-          System.out.println("-----------------/");
-          System.out.println("number of objects alive: " + count);
+          System.out.println("vtkJavaGarbageCollector deleted " + num + " references.");
+          System.out.println("vtk live objects: " + getNumberOfLiveObjects());
         }
       }
     };
@@ -190,5 +171,106 @@ public class VtkGarbageCollector {
             e.printStackTrace();
         }
 
+  }
+
+  public TreeMap<String, Integer> getLiveObjectMap()
+  {
+      TreeMap<String, Integer> liveMap = new TreeMap<String, Integer>();
+      Set entries = vtkGlobalJavaHash.PointerToReference.entrySet();
+      Iterator iter = entries.iterator();
+      while (iter.hasNext())
+      {
+          Map.Entry entry = (Map.Entry)iter.next();
+          vtkObjectBase obj = (vtkObjectBase)((WeakReference)entry.getValue()).get();
+          if (obj != null)
+          {
+              if (liveMap.containsKey(obj.GetClassName()))
+                  liveMap.put(obj.GetClassName(), 1+liveMap.get(obj.GetClassName()));
+              else
+                  liveMap.put(obj.GetClassName(), 1);
+          }
+      }
+
+      return liveMap;
+  }
+
+  public void updateLiveObjectHistory()
+  {
+      int numberStepsSoFar = 1;
+
+      // First go through all existing items and append a zero to each value
+      for (String s : liveObjectHistoryMap.keySet())
+      {
+          ArrayList<Integer> objectHistory = liveObjectHistoryMap.get(s);
+          objectHistory.add(0);
+          numberStepsSoFar = objectHistory.size();
+      }
+
+      // Get the current live object map and update the history map
+      TreeMap<String, Integer> liveMap = getLiveObjectMap();
+      for (String s : liveMap.keySet())
+      {
+          if (!liveObjectHistoryMap.containsKey(s))
+          {
+              ArrayList<Integer> objectHistory = new ArrayList<Integer>();
+              for (int i=0;i<numberStepsSoFar; ++i)
+                  objectHistory.add(0);
+              liveObjectHistoryMap.put(s, objectHistory);
+          }
+          ArrayList<Integer> objectHistory = liveObjectHistoryMap.get(s);
+          objectHistory.set(objectHistory.size()-1, liveMap.get(s));
+      }
+  }
+
+  public int getNumberOfLiveObjects()
+  {
+      TreeMap<String, Integer> liveMap = getLiveObjectMap();
+      int count = 0;
+      for (String s : liveMap.keySet())
+          count = count + liveMap.get(s);
+
+      return count;
+  }
+
+  public void saveLiveObjectHistory()
+  {
+    try
+    {
+        FileWriter fstream = new FileWriter("/tmp/vtkliveobjects.csv");
+        BufferedWriter out = new BufferedWriter(fstream);
+
+        int historyLength = 0;
+        for (String s : liveObjectHistoryMap.keySet())
+        {
+            out.write(s + ",");
+
+            ArrayList<Integer> objectHistory = liveObjectHistoryMap.get(s);
+            for (Integer num : objectHistory)
+                out.write(num + ",");
+            out.write("\n");
+
+            historyLength = objectHistory.size();
+        }
+
+        // Write out totals for each object on last line
+        out.write("Total,");
+        for (int i=0; i<historyLength; ++i)
+        {
+            int total = 0;
+            for (String s : liveObjectHistoryMap.keySet())
+            {
+                ArrayList<Integer> objectHistory = liveObjectHistoryMap.get(s);
+                total += objectHistory.get(i);
+            }
+            out.write(total + ",");
+        }
+        out.write("\n");
+
+        out.close();
+    }
+    catch (IOException e)
+    {
+        e.printStackTrace();
+    }
   }
 }
