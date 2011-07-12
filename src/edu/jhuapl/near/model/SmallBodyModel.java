@@ -878,6 +878,8 @@ public class SmallBodyModel extends Model
                 coloringValues[i] = null;
         }
 
+        cellNormals = null;
+
         File smallBodyFile = defaultModelFile;
         switch(level)
         {
