@@ -43,7 +43,7 @@ public class VtkGarbageCollector {
    */
   public VtkGarbageCollector() {
     // Default settings
-    debug = true;
+    debug = false;
     periodTime = 1;
     timeUnit = TimeUnit.SECONDS;
     autoCollectionRunning = false;
