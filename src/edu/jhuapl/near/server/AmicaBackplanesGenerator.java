@@ -1,10 +1,14 @@
 package edu.jhuapl.near.server;
 
+import java.awt.AlphaComposite;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -37,6 +41,8 @@ public class AmicaBackplanesGenerator
     private static int numberValidFiles = 0;
 
     private static double[] meanPlateSizes;
+
+    private static ArrayList<String> filesProcessed = new ArrayList<String>();
 
     private static void loadInertialFile(String inertialFilename) throws IOException
     {
@@ -161,6 +167,8 @@ public class AmicaBackplanesGenerator
             out.write(bytes, 0, bytes.length);
             out.close();
 
+            filesProcessed.add(ddrFilename);
+
             image.Delete();
             System.gc();
             System.out.println("deleted " + vtkGlobalJavaHash.GC());
@@ -234,14 +242,76 @@ public class AmicaBackplanesGenerator
                         bi.getRaster().setSample(i, j, 2, v);
                     }
 
-                File outputfile = new File(ddrFilename + "_" + k + ".jpg");
-                ImageIO.write(bi, "jpg", outputfile);
+                BufferedImage scaledBI = new BufferedImage(300, 300, BufferedImage.TYPE_INT_RGB);
+                Graphics2D g = scaledBI.createGraphics();
+                g.drawImage(bi, 0, 0, 300, 300, null);
+                g.setComposite(AlphaComposite.Src);
+                g.dispose();
+
+                File outputfile = new File(ddrFilename.replace('.', '_') + "_" + k + ".jpg");
+                ImageIO.write(scaledBI, "jpg", outputfile);
             }
         }
         catch (IOException e)
         {
             e.printStackTrace();
         }
+    }
+
+    private static void generateLatex() throws IOException
+    {
+        String dir = new File(filesProcessed.get(0)).getParentFile().getAbsolutePath();
+        FileWriter fstream = new FileWriter(dir + "/amica_backplanes_summary.tex");
+        BufferedWriter o = new BufferedWriter(fstream);
+
+        o.write("\\documentclass[12pt]{article}\n");
+
+        o.write("\\usepackage{graphicx}\n");
+        o.write("\\usepackage{subfigure}\n");
+        o.write("\\usepackage{fullpage}\n");
+
+        o.write("\\begin{document}\n");
+
+        String[] bands = {
+                "pixel value",
+                "x coordinate",
+                "y coordinate",
+                "z coordinate",
+                "Latitude",
+                "Longitude",
+                "Distance from center",
+                "Incidence angle",
+                "Emission angle",
+                "Phase angle",
+                "Horizontal pixel scale",
+                "Vertical pixel scale",
+                "Slope",
+                "Elevation",
+                "Gravitational Acc",
+                "Gravitational Pot"
+        };
+
+        for (String filename : filesProcessed)
+        {
+            o.write("\\begin{figure}\n");
+            o.write("  \\begin{center}\n");
+
+            for (int i=0; i<16; ++i)
+            {
+                String bf = filename.replace('.', '_') + "_" + i + ".jpg";
+                o.write("    \\subfigure["+ bands[i] + "]{\\includegraphics[scale=0.35]{" + bf + "}}\n");
+            }
+
+            o.write("  \\end{center}\n");
+            o.write("\\caption{" + new File(filename).getName().replace("_", "\\_") + "}\n");
+            o.write("\\end{figure}\n");
+            o.write("\\clearpage\n");
+            o.write("\\setcounter{subfigure}{0}\n");
+        }
+
+        o.write("\\end{document}\n");
+
+        o.close();
     }
 
     private static void computeMeanPlateSizeAtAllResolutions() throws IOException
@@ -314,6 +384,7 @@ public class AmicaBackplanesGenerator
         try
         {
             generateBackplanes(amicaFiles, ImageSource.GASKELL);
+            generateLatex();
         }
         catch (Exception e1) {
             e1.printStackTrace();
