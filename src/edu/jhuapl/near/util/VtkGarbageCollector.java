@@ -1,6 +1,7 @@
 package edu.jhuapl.near.util;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
@@ -236,7 +237,7 @@ public class VtkGarbageCollector {
   {
     try
     {
-        FileWriter fstream = new FileWriter("/tmp/vtkliveobjects.csv");
+        FileWriter fstream = new FileWriter(System.getProperty("user.home") + File.separator + "vtkliveobjects.csv");
         BufferedWriter out = new BufferedWriter(fstream);
 
         int historyLength = 0;
