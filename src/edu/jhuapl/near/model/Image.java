@@ -1123,6 +1123,8 @@ abstract public class Image extends Model implements PropertyChangeListener
 
         meanHorizontalPixelScale /= (double)numberOfPoints;
         meanVerticalPixelScale /= (double)numberOfPoints;
+
+        points.Delete();
     }
 
     public float[] generateBackplanes()
