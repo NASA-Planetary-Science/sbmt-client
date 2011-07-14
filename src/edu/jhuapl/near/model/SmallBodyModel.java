@@ -13,6 +13,7 @@ import vtk.vtkAbstractPointLocator;
 import vtk.vtkActor;
 import vtk.vtkAlgorithmOutput;
 import vtk.vtkCell;
+import vtk.vtkCellData;
 import vtk.vtkCoordinate;
 import vtk.vtkDataArray;
 import vtk.vtkFloatArray;
@@ -327,9 +328,16 @@ public class SmallBodyModel extends Model
             normalsFilter.SplittingOff();
             normalsFilter.Update();
 
+            vtkPolyData normalsFilterOutput = normalsFilter.GetOutput();
+            vtkCellData normalsFilterOutputCellData = normalsFilterOutput.GetCellData();
+            vtkFloatArray normals = (vtkFloatArray)normalsFilterOutputCellData.GetNormals();
+
             cellNormals = new vtkFloatArray();
-            vtkFloatArray normals = (vtkFloatArray)normalsFilter.GetOutput().GetCellData().GetNormals();
             cellNormals.DeepCopy(normals);
+
+            normals.Delete();
+            normalsFilterOutputCellData.Delete();
+            normalsFilterOutput.Delete();
             normalsFilter.Delete();
         }
 
