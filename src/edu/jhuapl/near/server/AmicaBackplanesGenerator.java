@@ -167,12 +167,15 @@ public class AmicaBackplanesGenerator
 
             int res = optimalResMap.get(filename);
 
-            if (res == 3)
-                res = 2;
-
             System.out.println("Optimal resolution " + res);
 
-            itokawaModel.setModelResolution(res);
+            if (res != itokawaModel.getModelResolution())
+            {
+                System.out.println("Changing resolution from " +
+                        itokawaModel.getModelResolution() + " to " + res);
+
+                itokawaModel.setModelResolution(res);
+            }
 
             AmicaImage image = new AmicaImage(key, itokawaModel, false, rootFolder);
 
@@ -424,13 +427,6 @@ public class AmicaBackplanesGenerator
         itokawaModel = new Itokawa();
 
         computeMeanPlateSizeAtAllResolutions();
-
-        try {
-            itokawaModel.setModelResolution(0);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return;
-        }
 
         AmicaImage.setGenerateFootprint(true);
 
