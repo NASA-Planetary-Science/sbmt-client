@@ -17,6 +17,7 @@ import nom.tam.fits.FitsException;
 import vtk.vtkActor;
 import vtk.vtkCell;
 import vtk.vtkCellArray;
+import vtk.vtkCellData;
 import vtk.vtkDataArray;
 import vtk.vtkFeatureEdges;
 import vtk.vtkFloatArray;
@@ -1026,7 +1027,8 @@ abstract public class Image extends Model implements PropertyChangeListener
         int numberOfCells = footprint.GetNumberOfCells();
 
         vtkPoints points = footprint.GetPoints();
-        vtkDataArray normals = footprint.GetCellData().GetNormals();
+        vtkCellData footprintCellData = footprint.GetCellData();
+        vtkDataArray normals = footprintCellData.GetNormals();
 
         this.minEmission  =  Double.MAX_VALUE;
         this.maxEmission  = -Double.MAX_VALUE;
@@ -1065,7 +1067,12 @@ abstract public class Image extends Model implements PropertyChangeListener
                 minPhase = phase;
             if (phase > maxPhase)
                 maxPhase = phase;
+            cell.Delete();
         }
+
+        points.Delete();
+        footprintCellData.Delete();
+        normals.Delete();
     }
 
     protected void computePixelScale()
