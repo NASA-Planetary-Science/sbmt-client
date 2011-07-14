@@ -119,28 +119,29 @@ public class AmicaBackplanesGenerator
             ImageKey key = new ImageKey(keyName, amicaSource);
             AmicaImage image = new AmicaImage(key, itokawaModel, false, rootFolder);
 
-            // Calling this forces the calculation of incidence, emission, phase, and pixel scale
-            image.getProperties();
+            // Generate the backplanes binary file
+            float[] backplanes = image.generateBackplanes();
 
-            int res = findOptimalResolution(image);
+            int res = findOptimalResolution(backplanes);
 
             System.out.println("Optimal resolution " + res);
 
             if (res == 3)
                 res = 2;
 
+            // If we used the wrong resolution, recompute the blackplanes using the right one.
             if (res != itokawaModel.getModelResolution())
             {
                 System.out.println("Changing resolution to " + res);
                 itokawaModel.setModelResolution(res);
                 image.Delete();
+                System.gc();
+                System.out.println("deleted " + vtkGlobalJavaHash.GC());
+
                 image = new AmicaImage(key, itokawaModel, false, rootFolder);
-                // Calling this forces the calculation of incidence, emission, phase, and pixel scale
-                image.getProperties();
+                backplanes = image.generateBackplanes();
             }
 
-            // Generate the backplanes binary file
-            float[] backplanes = image.generateBackplanes();
             String ddrFilename = filename.substring(0, filename.length()-4) + "_ddr.img";
             OutputStream out = new FileOutputStream(ddrFilename);
             byte[] buf = new byte[4 * backplanes.length];
@@ -328,23 +329,45 @@ public class AmicaBackplanesGenerator
         }
     }
 
-    private static int findOptimalResolution(Image image)
+    private static double computePixelScaleFromBackplanes(float[] bp)
+    {
+        // Get the average value of the horizontal and vertical pixel scale planes
+        // These are planes 10 and 11 (zero based)
+        double scale = 0.0;
+        int c = 10*1024*1024;
+        int total = 0;
+        for (int k=10; k<=11; ++k)
+        {
+            for (int i=0; i<1024; ++i)
+                for (int j=0; j<1024; ++j)
+                {
+                    double val = bp[c++];
+                    if (val != Image.PDS_NA)
+                    {
+                        scale += val;
+                        ++total;
+                    }
+                }
+        }
+        scale = scale / (double)total;
+        return scale;
+    }
+
+    private static int findOptimalResolution(float[] bp)
     {
         // First get the pixel size.
-        double horiz = image.getMeanHorizontalPixelScale();
-        double vert = image.getMeanVerticalPixelScale();
-        double pixelSize = (horiz + vert) / 2.0;
+        double pixelScale = computePixelScaleFromBackplanes(bp);
 
-        System.out.println("pixel size: " + pixelSize);
-        if (pixelSize <= 0.0)
+        System.out.println("pixel size: " + pixelScale);
+        if (pixelScale <= 0.0)
             System.exit(1);
+
         int numRes = itokawaModel.getNumberResolutionLevels();
         for (int i=0; i<numRes-1; ++i)
         {
-            if (pixelSize >= (meanPlateSizes[i]+meanPlateSizes[i+1])/2.0)
+            if (pixelScale >= (meanPlateSizes[i]+meanPlateSizes[i+1])/2.0)
                 return i;
         }
-
 
         return numRes - 1;
     }
