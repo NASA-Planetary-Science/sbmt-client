@@ -14,6 +14,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.imageio.ImageIO;
 
@@ -97,10 +98,15 @@ public class AmicaBackplanesGenerator
 
     private static void generateBackplanes(ArrayList<String> amicaFiles, AmicaImage.ImageSource amicaSource) throws FitsException, IOException
     {
+        // First compute the optimal resolution of all images using the highest
+        // resolution shape model
+        itokawaModel.setModelResolution(3);
+        HashMap<String, Integer> optimalResMap = new HashMap<String, Integer>();
         int count = 0;
         for (String filename : amicaFiles)
         {
             System.out.println("\n\n----------------------------------------------------------------------");
+            System.out.println("\n\n----------first pass");
             System.out.println("starting amica " + count++ + " / " + amicaFiles.size() + " " + filename);
 
             boolean filesExist = checkIfAmicaFilesExist(filename, amicaSource);
@@ -126,22 +132,54 @@ public class AmicaBackplanesGenerator
 
             System.out.println("Optimal resolution " + res);
 
+            optimalResMap.put(filename, res);
+
+            image.Delete();
+            System.gc();
+            System.out.println("deleted " + vtkGlobalJavaHash.GC());
+            System.out.println("\n\n");
+
+        }
+
+        // Now that we know the optimal resolutions to, recompute
+        // and save off backplanes
+        count = 0;
+        for (String filename : amicaFiles)
+        {
+            System.out.println("\n\n----------------------------------------------------------------------");
+            System.out.println("\n\n----------second pass");
+            System.out.println("starting amica " + count++ + " / " + amicaFiles.size() + " " + filename);
+
+            boolean filesExist = checkIfAmicaFilesExist(filename, amicaSource);
+            if (filesExist == false)
+            {
+                System.out.println("Could not find sumfile");
+                continue;
+            }
+
+            ++numberValidFiles;
+
+            File origFile = new File(filename);
+            File rootFolder = origFile.getParentFile().getParentFile().getParentFile().getParentFile();
+            String keyName = origFile.getAbsolutePath().replace(rootFolder.getAbsolutePath(), "");
+            keyName = keyName.replace(".fit", "");
+            ImageKey key = new ImageKey(keyName, amicaSource);
+
+            int res = optimalResMap.get(filename);
+
             if (res == 3)
                 res = 2;
 
-            // If we used the wrong resolution, recompute the blackplanes using the right one.
-            if (res != itokawaModel.getModelResolution())
-            {
-                System.out.println("Changing resolution to " + res);
-                itokawaModel.setModelResolution(res);
-                image.Delete();
-                System.gc();
-                System.out.println("deleted " + vtkGlobalJavaHash.GC());
+            System.out.println("Optimal resolution " + res);
 
-                image = new AmicaImage(key, itokawaModel, false, rootFolder);
-                backplanes = image.generateBackplanes();
-            }
+            itokawaModel.setModelResolution(res);
 
+            AmicaImage image = new AmicaImage(key, itokawaModel, false, rootFolder);
+
+            // Generate the backplanes binary file
+            float[] backplanes = image.generateBackplanes();
+
+            // Save out the backplanes
             String ddrFilename = filename.substring(0, filename.length()-4) + "_ddr.img";
             OutputStream out = new FileOutputStream(ddrFilename);
             byte[] buf = new byte[4 * backplanes.length];
