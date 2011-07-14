@@ -769,6 +769,8 @@ public class SmallBodyModel extends Model
                 maxLength = dist2;
 
             meanLength += (dist0 + dist1 + dist2);
+            points.Delete();
+            cell.Delete();
         }
 
         meanLength /= ((double)(numberOfCells * 3));
