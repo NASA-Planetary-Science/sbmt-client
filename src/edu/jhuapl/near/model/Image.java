@@ -863,6 +863,7 @@ abstract public class Image extends Model implements PropertyChangeListener
             vtkPointData pointData = footprint.GetPointData();
             pointData.SetTCoords(textureCoords);
             PolyDataUtil.generateTextureCoordinates(getFrustum(), footprint);
+            pointData.Delete();
         }
         else
         {
