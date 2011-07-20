@@ -17,6 +17,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 
+import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -37,7 +38,6 @@ import edu.jhuapl.near.gui.CustomFileChooser;
 import edu.jhuapl.near.gui.Renderer;
 import edu.jhuapl.near.gui.ScaleDataRangeDialog;
 import edu.jhuapl.near.gui.StatusBar;
-import edu.jhuapl.near.gui.actions.SaveImageAction;
 import edu.jhuapl.near.model.CircleModel;
 import edu.jhuapl.near.model.CircleSelectionModel;
 import edu.jhuapl.near.model.EllipseModel;
@@ -453,5 +453,21 @@ public class TopoViewer extends JFrame
         lineModel.removeAllStructures();
         pickManager.setPickMode(PickMode.DEFAULT);
         editButton.setSelected(false);
+    }
+
+    private class SaveImageAction extends AbstractAction
+    {
+        private Renderer renderer;
+
+        public SaveImageAction(Renderer renderer)
+        {
+            super("Export to Image...");
+            this.renderer = renderer;
+        }
+
+        public void actionPerformed(ActionEvent actionEvent)
+        {
+            renderer.saveToFile();
+        }
     }
 }

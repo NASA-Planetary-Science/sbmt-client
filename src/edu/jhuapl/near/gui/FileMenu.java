@@ -6,7 +6,6 @@ import javax.swing.AbstractAction;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
-import edu.jhuapl.near.gui.actions.SaveImageAction;
 import edu.jhuapl.near.util.Configuration;
 
 
@@ -17,7 +16,7 @@ public class FileMenu extends JMenu
     {
         super("File");
 
-        JMenuItem mi = new JMenuItem(new SaveImageAction(rootPanel.getCurrentViewer().getRenderer()));
+        JMenuItem mi = new JMenuItem(new SaveImageAction(rootPanel));
         this.add(mi);
 
         // On macs the exit action is in the Application menu not the file menu
@@ -48,6 +47,22 @@ public class FileMenu extends JMenu
     public void exitSBMT()
     {
         System.exit(0);
+    }
+
+    private class SaveImageAction extends AbstractAction
+    {
+        private ViewerManager rootPanel;
+
+        public SaveImageAction(ViewerManager rootPanel)
+        {
+            super("Export to Image...");
+            this.rootPanel = rootPanel;
+        }
+
+        public void actionPerformed(ActionEvent actionEvent)
+        {
+            rootPanel.getCurrentViewer().getRenderer().saveToFile();
+        }
     }
 
     private class ExitAction extends AbstractAction
