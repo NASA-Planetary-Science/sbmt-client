@@ -316,7 +316,7 @@ abstract public class Image extends Model implements PropertyChangeListener
             for (int i=0; i<originalHeight; ++i)
                 for (int j=0; j<originalWidth; ++j)
                 {
-                    array[i][j] = arrayB[i][j];
+                    array[i][j] = arrayB[i][j] & 0xFF;
                 }
         }
         else
