@@ -6,6 +6,7 @@ import javax.swing.AbstractAction;
 import javax.swing.ButtonGroup;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JRadioButtonMenuItem;
 
 public class ViewMenu extends JMenu
@@ -29,6 +30,17 @@ public class ViewMenu extends JMenu
             group.add(mi);
             this.add(mi);
         }
+/*
+        this.addSeparator();
+
+        JMenuItem mi = new JMenuItem(new CustomShapeModelsAction());
+        this.add(mi);
+
+        this.addSeparator();
+
+        // create action for each custom shape model
+
+*/
     }
 
     private class ShowBodyAction extends AbstractAction
@@ -44,6 +56,21 @@ public class ViewMenu extends JMenu
         public void actionPerformed(ActionEvent actionEvent)
         {
             rootPanel.setCurrentViewer(viewer);
+        }
+    }
+
+    private class CustomShapeModelsAction extends AbstractAction
+    {
+        public CustomShapeModelsAction()
+        {
+            super("Custom Shape Models");
+        }
+
+        public void actionPerformed(ActionEvent actionEvent)
+        {
+            ShapeModelImporterManagerDialog dialog = new ShapeModelImporterManagerDialog(JOptionPane.getFrameForComponent(rootPanel));
+            dialog.setVisible(true);
+
         }
     }
 }
