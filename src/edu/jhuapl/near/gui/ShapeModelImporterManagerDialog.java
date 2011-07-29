@@ -10,7 +10,16 @@
  */
 package edu.jhuapl.near.gui;
 
+import java.io.File;
+import java.util.Arrays;
+
+import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
+
+import org.apache.commons.io.FileUtils;
+
+import edu.jhuapl.near.util.Configuration;
+import edu.jhuapl.near.util.Properties;
 
 /**
  *
@@ -18,12 +27,33 @@ import javax.swing.JOptionPane;
  */
 public class ShapeModelImporterManagerDialog extends javax.swing.JDialog
 {
-
     /** Creates new form ShapeModelManagerDialog */
     public ShapeModelImporterManagerDialog(java.awt.Frame parent)
     {
-        super(parent);
+        super(parent, "Import Shape Models", true);
         initComponents();
+
+        modelList.setModel(new DefaultListModel());
+        populateList();
+    }
+
+    private void populateList()
+    {
+        ((DefaultListModel)modelList.getModel()).clear();
+
+        File modelsDir = new File(Configuration.getImportedShapeModelsDir());
+        File[] dirs = modelsDir.listFiles();
+        if (dirs != null && dirs.length > 0)
+        {
+            Arrays.sort(dirs);
+            for (File dir : dirs)
+            {
+                if (dir.isDirectory())
+                {
+                    ((DefaultListModel)modelList.getModel()).addElement(dir.getName());
+                }
+            }
+        }
     }
 
     /** This method is called from within the constructor to
@@ -36,7 +66,7 @@ public class ShapeModelImporterManagerDialog extends javax.swing.JDialog
         java.awt.GridBagConstraints gridBagConstraints;
 
         jScrollPane1 = new javax.swing.JScrollPane();
-        jList1 = new javax.swing.JList();
+        modelList = new javax.swing.JList();
         newButton = new javax.swing.JButton();
         removeButton = new javax.swing.JButton();
         closeButton = new javax.swing.JButton();
@@ -44,7 +74,8 @@ public class ShapeModelImporterManagerDialog extends javax.swing.JDialog
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
-        jScrollPane1.setViewportView(jList1);
+        modelList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        jScrollPane1.setViewportView(modelList);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -100,8 +131,16 @@ public class ShapeModelImporterManagerDialog extends javax.swing.JDialog
 
     private void newButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_newButtonActionPerformed
     {//GEN-HEADEREND:event_newButtonActionPerformed
+        int numImportedModels = ((DefaultListModel)modelList.getModel()).getSize();
+
         ShapeModelImporterDialog dialog = new ShapeModelImporterDialog(JOptionPane.getFrameForComponent(this));
         dialog.setVisible(true);
+        populateList();
+
+        if (numImportedModels < ((DefaultListModel)modelList.getModel()).getSize())
+        {
+            this.firePropertyChange(Properties.CUSTOM_MODEL_ADDED, "", dialog.getNameOfImportedShapeModel());
+        }
     }//GEN-LAST:event_newButtonActionPerformed
 
     private void closeButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_closeButtonActionPerformed
@@ -111,13 +150,23 @@ public class ShapeModelImporterManagerDialog extends javax.swing.JDialog
 
     private void removeButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_removeButtonActionPerformed
     {//GEN-HEADEREND:event_removeButtonActionPerformed
+        int idx = modelList.getSelectedIndex();
+        if (idx >= 0)
+        {
+            String dirname = (String)((DefaultListModel)modelList.getModel()).remove(idx);
 
+            // Remove all the files also
+            String dirpath = Configuration.getImportedShapeModelsDir() + File.separator + dirname;
+            FileUtils.deleteQuietly(new File(dirpath));
+
+            this.firePropertyChange(Properties.CUSTOM_MODEL_DELETED, "", dirname);
+        }
     }//GEN-LAST:event_removeButtonActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton closeButton;
-    private javax.swing.JList jList1;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JList modelList;
     private javax.swing.JButton newButton;
     private javax.swing.JButton removeButton;
     // End of variables declaration//GEN-END:variables

@@ -1,5 +1,10 @@
 package edu.jhuapl.near.util;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -1619,5 +1624,82 @@ public class PolyDataUtil
 
             textureCoords.SetTuple2(i, v, u);
         }
+    }
+
+    /**
+     * Read in PDS vertex file format. There are 2 variants of this file. In
+     * one the first line contains the number of points and the number of cells
+     * and then follows the points and vertices. In the other variant the first
+     * line only contains the number of points, then follows the points, then
+     * follows a line listing the number of cells followed by the cells. Support
+     * both variants here.
+     *
+     * @param filename
+     * @return
+     * @throws IOException
+     */
+    static public vtkPolyData loadPDSShapeModel(String filename) throws Exception
+    {
+        vtkPolyData polydata = new vtkPolyData();
+        vtkPoints points = new vtkPoints();
+        vtkCellArray cells = new vtkCellArray();
+        polydata.SetPoints(points);
+        polydata.SetPolys(cells);
+
+        InputStream fs = new FileInputStream(filename);
+        InputStreamReader isr = new InputStreamReader(fs);
+        BufferedReader in = new BufferedReader(isr);
+
+        // Read in the first line which list the number of points and plates
+        String val = in.readLine().trim();
+        String[] vals = val.split("\\s+");
+        int numPoints = -1;
+        int numCells = -1;
+        if (vals.length == 1)
+        {
+            numPoints = Integer.parseInt(vals[0]);
+        }
+        if (vals.length == 2)
+        {
+            numPoints = Integer.parseInt(vals[0]);
+            numCells = Integer.parseInt(vals[1]);
+        }
+        else
+        {
+            throw new IOException("Format not valid");
+        }
+
+        for (int j=0; j<numPoints; ++j)
+        {
+            vals = in.readLine().trim().split("\\s+");
+            double x = Double.parseDouble(vals[1]);
+            double y = Double.parseDouble(vals[2]);
+            double z = Double.parseDouble(vals[3]);
+            points.InsertNextPoint(x, y, z);
+        }
+
+        if (numCells == -1)
+        {
+            val = in.readLine().trim();
+            numCells = Integer.parseInt(val);
+        }
+
+        vtkIdList idList = new vtkIdList();
+        idList.SetNumberOfIds(3);
+        for (int j=0; j<numCells; ++j)
+        {
+            vals = in.readLine().trim().split("\\s+");
+            int idx1 = Integer.parseInt(vals[1]) - 1;
+            int idx2 = Integer.parseInt(vals[2]) - 1;
+            int idx3 = Integer.parseInt(vals[3]) - 1;
+            idList.SetId(0, idx1);
+            idList.SetId(1, idx2);
+            idList.SetId(2, idx3);
+            cells.InsertNextCell(idList);
+        }
+
+        idList.Delete();
+
+        return polydata;
     }
 }

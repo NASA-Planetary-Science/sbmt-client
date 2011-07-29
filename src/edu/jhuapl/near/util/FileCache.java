@@ -11,6 +11,8 @@ import java.util.zip.GZIPInputStream;
 
 public class FileCache
 {
+    public static final String FILE_PREFIX = "file://";
+
     // Stores files already downloaded in this process
     private static ConcurrentHashMap<String, Object> downloadedFiles =
         new ConcurrentHashMap<String, Object>();
@@ -194,13 +196,18 @@ public class FileCache
      * Get (download) the file from the server. Place it in the cache for
      * future access.
      * This function uses the public (non APL-only) server.
+     * If the path begins with "file://", then the file is assumed to be local
+     * on disk and no server is contacted.
      *
      * @param path
      * @return
      */
     static public File getFileFromServer(String path)
     {
-        return getFileFromServer(path, false);
+        if (path.startsWith(FILE_PREFIX))
+            return new File(path.substring(FILE_PREFIX.length()));
+        else
+            return getFileFromServer(path, false);
     }
 
     /**

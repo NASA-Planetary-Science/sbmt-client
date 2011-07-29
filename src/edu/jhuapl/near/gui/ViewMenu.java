@@ -1,17 +1,25 @@
 package edu.jhuapl.near.gui;
 
 import java.awt.event.ActionEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.ButtonGroup;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JRadioButtonMenuItem;
 
-public class ViewMenu extends JMenu
+import edu.jhuapl.near.util.Configuration;
+import edu.jhuapl.near.util.Properties;
+
+public class ViewMenu extends JMenu implements PropertyChangeListener
 {
     private ViewerManager rootPanel;
+    private ButtonGroup group;
+    private ShapeModelImporterManagerDialog shapeModelImportedDialog;
 
     public ViewMenu(ViewerManager rootPanel)
     {
@@ -19,28 +27,106 @@ public class ViewMenu extends JMenu
 
         this.rootPanel = rootPanel;
 
-        ButtonGroup group = new ButtonGroup();
+        group = new ButtonGroup();
 
-        for (int i=0; i < rootPanel.getNumberOfViewers(); ++i)
+        for (int i=0; i < rootPanel.getNumberOfBuiltInViewers(); ++i)
         {
-            Viewer viewer = rootPanel.getViewer(i);
+            Viewer viewer = rootPanel.getBuiltInViewer(i);
             JMenuItem mi = new JRadioButtonMenuItem(new ShowBodyAction(viewer));
             if (i==0)
                 mi.setSelected(true);
             group.add(mi);
             this.add(mi);
         }
-/*
-        this.addSeparator();
 
-        JMenuItem mi = new JMenuItem(new CustomShapeModelsAction());
+        if (Configuration.isAPLVersion())
+        {
+            this.addSeparator();
+
+            JMenuItem mi = new JMenuItem(new ImportShapeModelsAction());
+            this.add(mi);
+
+            if (rootPanel.getNumberOfCustomViewers() > 0)
+                this.addSeparator();
+
+            for (int i=0; i < rootPanel.getNumberOfCustomViewers(); ++i)
+            {
+                Viewer viewer = rootPanel.getCustomViewer(i);
+                mi = new JRadioButtonMenuItem(new ShowBodyAction(viewer));
+                if (i==0)
+                    mi.setSelected(true);
+                group.add(mi);
+                this.add(mi);
+            }
+        }
+    }
+
+    public void addCustomMenuItem(Viewer viewer)
+    {
+        if (rootPanel.getNumberOfCustomViewers() == 1)
+            this.addSeparator();
+
+        JMenuItem mi = new JRadioButtonMenuItem(new ShowBodyAction(viewer));
+        group.add(mi);
         this.add(mi);
+    }
 
-        this.addSeparator();
+    public void removeCustomMenuItem(Viewer viewer)
+    {
+        int numberItems = this.getItemCount();
+        for (int i=0; i<numberItems; ++i)
+        {
+            JMenuItem item = this.getItem(i);
+            if (item != null)
+            {
+                Action action = item.getAction();
+                if (action instanceof ShowBodyAction)
+                {
+                    ShowBodyAction showBodyAction = (ShowBodyAction) action;
+                    if (viewer == showBodyAction.viewer)
+                    {
+                        this.remove(item);
+                        group.remove(item);
 
-        // create action for each custom shape model
+                        // Remove the final separator if no custom models remain
+                        if (rootPanel.getNumberOfCustomViewers() == 0)
+                            removeFinalSeparator();
 
-*/
+                        return;
+                    }
+                }
+            }
+        }
+    }
+
+    public void removeFinalSeparator()
+    {
+        int numberItems = this.getItemCount();
+        for (int i=numberItems-1; i>=0; --i)
+        {
+            JMenuItem item = this.getItem(i);
+            if (item == null)
+            {
+                this.remove(i);
+                return;
+            }
+        }
+    }
+
+    public void propertyChange(PropertyChangeEvent evt)
+    {
+        if (Properties.CUSTOM_MODEL_ADDED.equals(evt.getPropertyName()))
+        {
+            String name = (String) evt.getNewValue();
+            Viewer viewer = rootPanel.addCustomViewer(name);
+            addCustomMenuItem(viewer);
+        }
+        else if (Properties.CUSTOM_MODEL_DELETED.equals(evt.getPropertyName()))
+        {
+            String name = (String) evt.getNewValue();
+            Viewer viewer = rootPanel.removeCustomViewer(name);
+            removeCustomMenuItem(viewer);
+        }
     }
 
     private class ShowBodyAction extends AbstractAction
@@ -59,18 +145,22 @@ public class ViewMenu extends JMenu
         }
     }
 
-    private class CustomShapeModelsAction extends AbstractAction
+    private class ImportShapeModelsAction extends AbstractAction
     {
-        public CustomShapeModelsAction()
+        public ImportShapeModelsAction()
         {
-            super("Custom Shape Models");
+            super("Import Shape Models...");
         }
 
         public void actionPerformed(ActionEvent actionEvent)
         {
-            ShapeModelImporterManagerDialog dialog = new ShapeModelImporterManagerDialog(JOptionPane.getFrameForComponent(rootPanel));
-            dialog.setVisible(true);
+            if (shapeModelImportedDialog == null)
+            {
+                shapeModelImportedDialog = new ShapeModelImporterManagerDialog(JOptionPane.getFrameForComponent(rootPanel));
+                shapeModelImportedDialog.addPropertyChangeListener(ViewMenu.this);
+            }
 
+            shapeModelImportedDialog.setVisible(true);
         }
     }
 }

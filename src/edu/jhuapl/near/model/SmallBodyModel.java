@@ -1165,7 +1165,7 @@ public class SmallBodyModel extends Model
         displayedImageMap.DeepCopy(output);
     }
 
-    private void generateTextureCoordinates()
+    protected void generateTextureCoordinates()
     {
         vtkFloatArray textureCoords = new vtkFloatArray();
 
@@ -1546,6 +1546,15 @@ public class SmallBodyModel extends Model
         }
     }
 
+    protected vtkImageData loadImageMap(String name)
+    {
+        File imageFile = FileCache.getFileFromServer(name);
+        vtkPNGReader reader = new vtkPNGReader();
+        reader.SetFileName(imageFile.getAbsolutePath());
+        reader.Update();
+        return reader.GetOutput();
+    }
+
     private void paintBody() throws IOException
     {
         initializeActorsAndMappers();
@@ -1621,14 +1630,10 @@ public class SmallBodyModel extends Model
         {
             if (originalImageMap == null)
             {
-                File imageFile = FileCache.getFileFromServer(imageMapName);
-                vtkPNGReader reader = new vtkPNGReader();
-                reader.SetFileName(imageFile.getAbsolutePath());
-                reader.Update();
-                vtkImageData readerOutput = reader.GetOutput();
+                vtkImageData image = loadImageMap(imageMapName);
 
                 originalImageMap = new vtkImageData();
-                originalImageMap.DeepCopy(readerOutput);
+                originalImageMap.DeepCopy(image);
             }
 
             if (displayedImageMap == null)

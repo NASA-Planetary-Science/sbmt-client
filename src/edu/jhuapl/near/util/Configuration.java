@@ -97,6 +97,11 @@ public class Configuration
         return "http://near.jhuapl.edu/software/sbmt/query";
     }
 
+    static public String getImportedShapeModelsDir()
+    {
+        return getApplicationDataDir() + File.separator + "models";
+    }
+
     static public String getMapmakerDir()
     {
         return mapMaperDir;
