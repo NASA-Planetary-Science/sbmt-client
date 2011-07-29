@@ -111,7 +111,6 @@ public class CustomShapeModel extends SmallBodyModel
         imageHeight = dims[1];
 
         int[] extent = image.GetWholeExtent();
-        System.out.println(image);
 
         vtkImageConstantPad padFilter = new vtkImageConstantPad();
         padFilter.SetInput(image);
@@ -121,7 +120,6 @@ public class CustomShapeModel extends SmallBodyModel
         padFilter.SetOutputNumberOfScalarComponents(image.GetNumberOfScalarComponents());
         padFilter.SetConstant(255.0);
         padFilter.Update();
-        System.out.println(padFilter.GetOutput());
 
         vtkImageTranslateExtent translateFilter = new vtkImageTranslateExtent();
         translateFilter.SetInputConnection(padFilter.GetOutputPort());
@@ -188,7 +186,6 @@ public class CustomShapeModel extends SmallBodyModel
 
             if (ll.lat >= lllat-0.04 && ll.lat <= urlat+0.04 && ll.lon >= lllon-0.04 && ll.lon <= urlon+0.04)
             {
-                System.out.println(ll.lat * 180.0 / Math.PI);
                 u = (ll.lon - lllon) / xsize;
                 v = (ll.lat - lllat) / ysize;
 
