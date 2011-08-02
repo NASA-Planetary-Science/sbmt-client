@@ -32,17 +32,11 @@ import edu.jhuapl.near.util.Properties;
 public class DefaultPicker extends Picker
 {
     private vtkRenderWindowPanel renWin;
-    //private LineamentPopupMenu lineamentPopupMenu;
-    //private MSIPopupMenu msiImagesPopupMenu;
-    //private MSIPopupMenu msiBoundariesPopupMenu;
-    //private NISPopupMenu nisSpectraPopupMenu;
-    //private StructuresPopupMenu structuresPopupMenu;
     private StatusBar statusBar;
     private ModelManager modelManager;
     private PopupManager popupManager;
-    private vtkCellPicker mouseMovedCellPicker; // includes all props including the small body
     private vtkCellPicker mousePressNonSmallBodyCellPicker; // includes all props EXCEPT the small body
-    private vtkCellPicker mousePressSmallBodyCellPicker; // only includes small body prop
+    private vtkCellPicker smallBodyCellPicker; // only includes small body prop
     private DecimalFormat decimalFormatter = new DecimalFormat("##0.000");
     private DecimalFormat decimalFormatter2 = new DecimalFormat("#0.000");
     private boolean suppressPopups = false;
@@ -61,9 +55,6 @@ public class DefaultPicker extends Picker
         modelManager.addPropertyChangeListener(this);
 
         SmallBodyModel smallBodyModel = modelManager.getSmallBodyModel();
-        mouseMovedCellPicker = new vtkCellPicker();
-        mouseMovedCellPicker.SetTolerance(0.002);
-        mouseMovedCellPicker.AddLocator(smallBodyModel.getCellLocator());
 
         // See comment in the propertyChange function below as to why
         // we use a custom pick list for these pickers.
@@ -72,11 +63,18 @@ public class DefaultPicker extends Picker
         mousePressNonSmallBodyCellPicker.PickFromListOn();
         mousePressNonSmallBodyCellPicker.InitializePickList();
 
-        mousePressSmallBodyCellPicker = new vtkCellPicker();
-        mousePressSmallBodyCellPicker.SetTolerance(0.002);
-        mousePressSmallBodyCellPicker.PickFromListOn();
-        mousePressSmallBodyCellPicker.InitializePickList();
-        mousePressSmallBodyCellPicker.AddLocator(smallBodyModel.getCellLocator());
+        smallBodyCellPicker = new vtkCellPicker();
+        smallBodyCellPicker.SetTolerance(0.002);
+        smallBodyCellPicker.PickFromListOn();
+        smallBodyCellPicker.InitializePickList();
+        ArrayList<vtkProp> actors = smallBodyModel.getProps();
+        vtkPropCollection smallBodyPickList = smallBodyCellPicker.GetPickList();
+        smallBodyPickList.RemoveAllItems();
+        for (vtkProp act : actors)
+        {
+            smallBodyCellPicker.AddPickList(act);
+        }
+        smallBodyCellPicker.AddLocator(smallBodyModel.getCellLocator());
     }
 
     public void setSuppressPopups(boolean b)
@@ -112,17 +110,17 @@ public class DefaultPicker extends Picker
         else
         {
             // If the non-small-body picker failed, see if the user clicked on the small body itself.
-            pickSucceeded = doPick(e, mousePressSmallBodyCellPicker, renWin);
+            pickSucceeded = doPick(e, smallBodyCellPicker, renWin);
 
             if (pickSucceeded == 1)
             {
-                vtkActor pickedActor = mousePressSmallBodyCellPicker.GetActor();
+                vtkActor pickedActor = smallBodyCellPicker.GetActor();
                 Model model = modelManager.getModel(pickedActor);
 
                 if (model != null)
                 {
-                    int cellId = mousePressSmallBodyCellPicker.GetCellId();
-                    double[] pickPosition = mousePressSmallBodyCellPicker.GetPickPosition();
+                    int cellId = smallBodyCellPicker.GetCellId();
+                    double[] pickPosition = smallBodyCellPicker.GetPickPosition();
                     String text = model.getClickStatusBarText(pickedActor, cellId, pickPosition);
                     statusBar.setLeftText(text);
                     pcs.firePropertyChange(
@@ -212,13 +210,18 @@ public class DefaultPicker extends Picker
             }
 
             // Note that this picker includes only the small body prop so that if the
-            // the previous picker, we then invoke this picker on small body itself.
+            // the previous picker fails, we then invoke this picker on small body itself.
+            // Note: even though we initialized this picker in the constructor with
+            // the small body prop, we need to reset the props here again to support situation
+            // where user hides small body where we don't want to show anything in status bar.
+            // Without the following, coordinates would still be shown in status bar even
+            // if asteroid is hidden.
             actors = modelManager.getSmallBodyModel().getProps();
-            vtkPropCollection mousePressSmallBodyCellPickList = mousePressSmallBodyCellPicker.GetPickList();
+            vtkPropCollection mousePressSmallBodyCellPickList = smallBodyCellPicker.GetPickList();
             mousePressSmallBodyCellPickList.RemoveAllItems();
             for (vtkProp act : actors)
             {
-                mousePressSmallBodyCellPicker.AddPickList(act);
+                smallBodyCellPicker.AddPickList(act);
             }
         }
     }
@@ -241,11 +244,11 @@ public class DefaultPicker extends Picker
             distanceStr = " " + distanceStr;
         distanceStr += " km";
 
-        int pickSucceeded = doPick(e, mouseMovedCellPicker, renWin);
+        int pickSucceeded = doPick(e, smallBodyCellPicker, renWin);
 
         if (pickSucceeded == 1)
         {
-            double[] pos = mouseMovedCellPicker.GetPickPosition();
+            double[] pos = smallBodyCellPicker.GetPickPosition();
             LatLon llr = MathUtil.reclat(pos);
 
             // Note \u00B0 is the unicode degree symbol
