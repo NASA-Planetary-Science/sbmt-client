@@ -30,6 +30,7 @@ import net.miginfocom.swing.MigLayout;
 import edu.jhuapl.near.model.Graticule;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
+import edu.jhuapl.near.model.SmallBodyImageMap;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.pick.Picker;
 
@@ -225,7 +226,7 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
         imageMapCheckBox.addItemListener(this);
 
         opacityLabel = new JLabel("Opacity");
-        imageMapOpacitySpinner = new JSpinner(new SpinnerNumberModel(0.50, 0.0, 1.0, 0.1));
+        imageMapOpacitySpinner = new JSpinner(new SpinnerNumberModel(1.0, 0.0, 1.0, 0.1));
         imageMapOpacitySpinner.setEditor(new JSpinner.NumberEditor(imageMapOpacitySpinner, "0.00"));
         imageMapOpacitySpinner.setPreferredSize(new Dimension(80, 21));
         imageMapOpacitySpinner.addChangeListener(this);
@@ -283,10 +284,11 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
         Picker.setPickingEnabled(false);
 
         SmallBodyModel smallBodyModel = modelManager.getSmallBodyModel();
+        SmallBodyImageMap smallBodyImageMap = (SmallBodyImageMap) modelManager.getModel(ModelNames.SMALL_BODY_IMAGE_MAP);
 
         if (e.getItemSelectable() == this.modelCheckBox)
         {
-            // In the following we ensure that the graticule is shown
+            // In the following we ensure that the graticule and image map are shown
             // only if the shape model is shown
             Graticule graticule = (Graticule)modelManager.getModel(ModelNames.GRATICULE);
             if (e.getStateChange() == ItemEvent.SELECTED)
@@ -294,12 +296,16 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
                 smallBodyModel.setShowSmallBody(true);
                 if (gridCheckBox.isSelected())
                     graticule.setShowGraticule(true);
+                if (imageMapCheckBox.isSelected())
+                    smallBodyImageMap.setShowImageMap(true);
             }
             else
             {
                 smallBodyModel.setShowSmallBody(false);
                 if (gridCheckBox.isSelected())
                     graticule.setShowGraticule(false);
+                if (imageMapCheckBox.isSelected())
+                    smallBodyImageMap.setShowImageMap(false);
             }
         }
         else if (e.getItemSelectable() == this.gridCheckBox)
@@ -314,16 +320,13 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
         {
             if (e.getStateChange() == ItemEvent.SELECTED)
             {
-                smallBodyModel.setShowImageMap(true);
-                if (this.showColoringCheckBox.isSelected())
-                {
-                    opacityLabel.setEnabled(true);
-                    imageMapOpacitySpinner.setEnabled(true);
-                }
+                smallBodyImageMap.setShowImageMap(true);
+                opacityLabel.setEnabled(true);
+                imageMapOpacitySpinner.setEnabled(true);
             }
             else
             {
-                smallBodyModel.setShowImageMap(false);
+                smallBodyImageMap.setShowImageMap(false);
                 opacityLabel.setEnabled(false);
                 imageMapOpacitySpinner.setEnabled(false);
             }
@@ -403,8 +406,6 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
                 }
 
                 scaleColoringButton.setEnabled(false);
-                opacityLabel.setEnabled(false);
-                imageMapOpacitySpinner.setEnabled(false);
             }
             else
             {
@@ -427,12 +428,6 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
                 }
 
                 setColoring();
-
-                if (imageMapCheckBox.isSelected())
-                {
-                    opacityLabel.setEnabled(true);
-                    imageMapOpacitySpinner.setEnabled(true);
-                }
             }
         }
         else
@@ -491,11 +486,11 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
 
     public void stateChanged(ChangeEvent e)
     {
-        SmallBodyModel smallBodyModel = modelManager.getSmallBodyModel();
+        SmallBodyImageMap smallBodyImageMap = (SmallBodyImageMap) modelManager.getModel(ModelNames.SMALL_BODY_IMAGE_MAP);
 
         double val = (Double)imageMapOpacitySpinner.getValue();
 
-        smallBodyModel.setImageMapOpacity(val);
+        smallBodyImageMap.setImageMapOpacity(val);
     }
 
     private void setStatisticsLabel()

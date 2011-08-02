@@ -22,6 +22,7 @@ import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.PointModel;
+import edu.jhuapl.near.model.SmallBodyImageMap;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.deimos.Deimos;
 import edu.jhuapl.near.model.deimos.DeimosGraticule;
@@ -104,6 +105,7 @@ public class DeimosViewer extends Viewer
         allModels.put(ModelNames.POINT_STRUCTURES, new PointModel(deimosModel));
         allModels.put(ModelNames.ELLIPSE_STRUCTURES, new EllipseModel(deimosModel));
         allModels.put(ModelNames.CIRCLE_SELECTION, new CircleSelectionModel(deimosModel));
+        allModels.put(ModelNames.SMALL_BODY_IMAGE_MAP, new SmallBodyImageMap(deimosModel));
         allModels.put(ModelNames.GRATICULE, graticule);
 
         modelManager.setModels(allModels);

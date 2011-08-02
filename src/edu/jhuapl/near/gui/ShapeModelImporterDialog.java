@@ -126,8 +126,6 @@ public class ShapeModelImporterDialog extends javax.swing.JDialog
 
             if (lllat >= urlat)
                 return "Latitude of upper right corner must be greater than latitude of lower left corner.";
-            if (lllon >= urlon)
-                return "Longitude of upper right corner must be greater than longitude of lower left corner.";
         }
 
         return null;

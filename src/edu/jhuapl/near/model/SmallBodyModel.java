@@ -1278,6 +1278,11 @@ public class SmallBodyModel extends Model
         return imageMapName != null;
     }
 
+    public String getImageMapName()
+    {
+        return imageMapName;
+    }
+
     public void setShowImageMap(boolean b)
     {
         showImageMap = b;

@@ -9,6 +9,7 @@ public interface ModelNames
     static public final String ELLIPSE_STRUCTURES = "ellipse-structures";
     static public final String POINT_STRUCTURES = "point-structures";
     static public final String CIRCLE_SELECTION = "circle-selection";
+    static public final String SMALL_BODY_IMAGE_MAP = "small-body-image-map";
     static public final String GRATICULE = "graticule";
 
     // Eros
