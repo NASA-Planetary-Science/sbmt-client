@@ -216,21 +216,6 @@ public class DefaultPicker extends Picker
             {
                 mousePressNonSmallBodyCellPicker.AddPickList(act);
             }
-
-            // Note that this picker includes only the small body prop so that if the
-            // the previous picker fails, we then invoke this picker on small body itself.
-            // Note: even though we initialized this picker in the constructor with
-            // the small body prop, we need to reset the props here again to support situation
-            // where user hides small body where we don't want to show anything in status bar.
-            // Without the following, coordinates would still be shown in status bar even
-            // if asteroid is hidden.
-            actors = modelManager.getSmallBodyModel().getProps();
-            vtkPropCollection mousePressSmallBodyCellPickList = smallBodyCellPicker.GetPickList();
-            mousePressSmallBodyCellPickList.RemoveAllItems();
-            for (vtkProp act : actors)
-            {
-                smallBodyCellPicker.AddPickList(act);
-            }
         }
     }
 
