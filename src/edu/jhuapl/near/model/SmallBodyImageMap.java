@@ -8,11 +8,9 @@ import vtk.vtkActor;
 import vtk.vtkAlgorithmOutput;
 import vtk.vtkAppendPolyData;
 import vtk.vtkClipPolyData;
-import vtk.vtkCone;
 import vtk.vtkFloatArray;
 import vtk.vtkImageData;
 import vtk.vtkImplicitBoolean;
-import vtk.vtkImplicitFunction;
 import vtk.vtkPNGReader;
 import vtk.vtkPlane;
 import vtk.vtkPoints;
@@ -21,7 +19,6 @@ import vtk.vtkPolyDataMapper;
 import vtk.vtkProp;
 import vtk.vtkProperty;
 import vtk.vtkTexture;
-import vtk.vtkTransform;
 
 import edu.jhuapl.near.util.Configuration;
 import edu.jhuapl.near.util.FileCache;
@@ -63,6 +60,7 @@ public class SmallBodyImageMap extends Model
 
         double[] origin = {0.0, 0.0, 0.0};
         double[] zaxis = {0.0, 0.0, 1.0};
+        double[] mzaxis = {0.0, 0.0, -1.0};
 
         double[] corners = loadTextureCorners();
         double lllat = corners[0];
@@ -70,107 +68,94 @@ public class SmallBodyImageMap extends Model
         double urlat = corners[2];
         double urlon = corners[3];
 
+        // If the texture does not cover the entire model, then clip out the part
+        // that it does cover. Note that this is valid ONLY for an ellipsoid. For
+        // a non-ellipsoidal body this is NOT valid. It is assumed that for a
+        // non-ellipsoid body, that the texture covers the ENTIRE body.
         if (lllat != -90.0 || lllon != 0.0 || urlat != 90.0 || urlon != 360.0)
         {
+            lllat *= (Math.PI / 180.0);
+            urlat *= (Math.PI / 180.0);
             lllon *= (Math.PI / 180.0);
             urlon *= (Math.PI / 180.0);
-            lllon -= (Math.PI);
-            urlon -= (Math.PI);
 
-            // If the texture does not cover the entire body, cut out from the body
-            // the part that it covers
+            boolean textureCrossesZeroLon = urlon < lllon;
+            boolean widerThan180 = false;
+            if (!textureCrossesZeroLon)
+            {
+                if (urlon - lllon > Math.PI)
+                    widerThan180 = true;
+            }
+            else
+            {
+                if (2.0 * Math.PI - (lllon - urlon) > Math.PI)
+                    widerThan180 = true;
+            }
 
             double[] vec = MathUtil.latrec(new LatLon(0.0, lllon, 1.0));
             double[] normal = new double[3];
-            MathUtil.vcrss(vec, zaxis, normal);
+            if (widerThan180)
+                MathUtil.vcrss(vec, mzaxis, normal);
+            else
+                MathUtil.vcrss(vec, zaxis, normal);
 
             vtkPlane plane1 = new vtkPlane();
             plane1.SetOrigin(origin);
             plane1.SetNormal(normal);
 
-            vtkClipPolyData clipPolyData1 = new vtkClipPolyData();
-            clipPolyData1.SetClipFunction(plane1);
-            clipPolyData1.SetInput(smallBodyPolyData);
-            vtkAlgorithmOutput clipPolyData1Output = clipPolyData1.GetOutputPort();
-
             vec = MathUtil.latrec(new LatLon(0.0, urlon, 1.0));
-            MathUtil.vcrss(vec, zaxis, normal);
+            if (widerThan180)
+                MathUtil.vcrss(vec, zaxis, normal);
+            else
+                MathUtil.vcrss(vec, mzaxis, normal);
 
             vtkPlane plane2 = new vtkPlane();
             plane2.SetOrigin(origin);
             plane2.SetNormal(normal);
 
+            vtkImplicitBoolean implicitBoolean = new vtkImplicitBoolean();
+            implicitBoolean.SetOperationTypeToIntersection();
+            implicitBoolean.AddFunction(plane1);
+            implicitBoolean.AddFunction(plane2);
+
+            vtkClipPolyData clipPolyData1 = new vtkClipPolyData();
+            clipPolyData1.SetClipFunction(implicitBoolean);
+            clipPolyData1.SetInput(smallBodyPolyData);
+            if (widerThan180)
+                clipPolyData1.SetInsideOut(0);
+            else
+                clipPolyData1.SetInsideOut(1);
+            vtkAlgorithmOutput clipPolyData1Output = clipPolyData1.GetOutputPort();
+
+
+            double[] intersectPoint = new double[3];
+            smallBodyModel.getPointAndCellIdFromLatLon(lllat, 0.0, intersectPoint);
+            vec = new double[]{0.0, 0.0, intersectPoint[2]};
+
+
+            vtkPlane plane3 = new vtkPlane();
+            plane3.SetOrigin(vec);
+            plane3.SetNormal(zaxis);
+
             vtkClipPolyData clipPolyData2 = new vtkClipPolyData();
-            clipPolyData2.SetClipFunction(plane2);
+            clipPolyData2.SetClipFunction(plane3);
             clipPolyData2.SetInputConnection(clipPolyData1Output);
-            clipPolyData2.SetInsideOut(1);
             vtkAlgorithmOutput clipPolyData2Output = clipPolyData2.GetOutputPort();
 
 
+            smallBodyModel.getPointAndCellIdFromLatLon(urlat, 0.0, intersectPoint);
+            vec = new double[]{0.0, 0.0, intersectPoint[2]};
 
-            double[] yaxis = {0.0, 1.0, 0.0};
-            vtkTransform transform = new vtkTransform();
-            transform.Identity();
-            transform.RotateWXYZ(90.0, yaxis);
-
-            vtkPlane zeroLatPlane = new vtkPlane();
-            zeroLatPlane.SetOrigin(origin);
-            zeroLatPlane.SetNormal(zaxis);
-
-            vtkImplicitFunction clipFunction1 = null;
-            if (lllat == 0.0)
-            {
-                clipFunction1 = zeroLatPlane;
-            }
-            else
-            {
-                vtkCone cone = new vtkCone();
-                cone.SetTransform(transform);
-                cone.SetAngle(90 - Math.abs(lllat));
-
-                vtkImplicitBoolean implicitBoolean = new vtkImplicitBoolean();
-                implicitBoolean.SetOperationTypeToIntersection();
-                implicitBoolean.AddFunction(zeroLatPlane);
-                implicitBoolean.AddFunction(cone);
-
-                clipFunction1 = implicitBoolean;
-            }
+            vtkPlane plane4 = new vtkPlane();
+            plane4.SetOrigin(vec);
+            plane4.SetNormal(zaxis);
 
             vtkClipPolyData clipPolyData3 = new vtkClipPolyData();
-            clipPolyData3.SetClipFunction(clipFunction1);
+            clipPolyData3.SetClipFunction(plane4);
             clipPolyData3.SetInputConnection(clipPolyData2Output);
-            vtkAlgorithmOutput clipPolyData3Output = clipPolyData3.GetOutputPort();
+            clipPolyData3.SetInsideOut(1);
 
-            double[] mzaxis = {0.0, 0.0, -1.0};
-            vtkPlane mzeroLatPlane = new vtkPlane();
-            mzeroLatPlane.SetOrigin(origin);
-            mzeroLatPlane.SetNormal(mzaxis);
-
-            vtkImplicitFunction clipFunction2 = null;
-            if (urlat == 0.0)
-            {
-                clipFunction2 = mzeroLatPlane;
-            }
-            else
-            {
-                vtkCone cone = new vtkCone();
-                cone.SetTransform(transform);
-                cone.SetAngle(90 - Math.abs(urlat));
-
-                vtkImplicitBoolean implicitBoolean = new vtkImplicitBoolean();
-                implicitBoolean.SetOperationTypeToIntersection();
-                implicitBoolean.AddFunction(mzeroLatPlane);
-                implicitBoolean.AddFunction(cone);
-
-                clipFunction2 = implicitBoolean;
-            }
-
-            vtkClipPolyData clipPolyData4 = new vtkClipPolyData();
-            clipPolyData4.SetClipFunction(clipFunction2);
-            clipPolyData4.SetInputConnection(clipPolyData3Output);
-            clipPolyData4.Update();
-
-            smallBodyPolyData = clipPolyData4.GetOutput();
+            smallBodyPolyData = clipPolyData3.GetOutput();
         }
 
         // Now divide the above along the zero longitude line and compute
@@ -270,9 +255,19 @@ public class SmallBodyImageMap extends Model
 
         vtkPoints points = polydata.GetPoints();
 
+        // If the texture crosses over the line of zero longitude,
+        // then shift all longitudes to the right so that the left
+        // side of the texture is at zero longitude.
+        boolean textureCrossesZeroLon = urlon < lllon;
+        double shift = 0.0;
+        if (textureCrossesZeroLon)
+        {
+            shift = (2.0 * Math.PI - lllon);
+            urlon += shift;
+            lllon = 0.0;
+        }
+
         double xsize = urlon - lllon;
-        if (xsize < 0.0)
-            xsize += 2.0 * Math.PI;
         double ysize = urlat - lllat;
 
         for (int i=0; i<numberOfPoints; ++i)
@@ -286,22 +281,32 @@ public class SmallBodyImageMap extends Model
             if (ll.lon >= 2.0 * Math.PI)
                 ll.lon = 0.0;
 
-            double u = 0.0;
-            double v = 0.0;
+            double origLon = ll.lon;
 
-            double dlon = ll.lon - lllon;
-            if (dlon < 0.0)
-                dlon += 2.0 * Math.PI;
+            if (textureCrossesZeroLon)
+            {
+                ll.lon += shift;
+                if (ll.lon >= 2.0 * Math.PI)
+                    ll.lon -= (2.0 * Math.PI);
 
-            u = dlon / xsize;
-            v = (ll.lat - lllat) / ysize;
+                if (ll.lon > urlon)
+                {
+                    if (2.0*Math.PI - ll.lon < ll.lon - urlon)
+                        ll.lon = lllon;
+                    else
+                        ll.lon = urlon;
+                }
+            }
+
+            double u = (ll.lon - lllon) / xsize;
+            double v = (ll.lat - lllat) / ysize;
 
             if (u < 0.0) u = 0.0;
             else if (u > 1.0) u = 1.0;
             if (v < 0.0) v = 0.0;
             else if (v > 1.0) v = 1.0;
 
-            if (ll.lon == 0.0 && u == 0.0 && mapZeroLongitudeToRight)
+            if (origLon == 0.0 && u == 0.0 && mapZeroLongitudeToRight)
                 u = 1.0;
 
             textureCoords.SetTuple2(i, u, v);

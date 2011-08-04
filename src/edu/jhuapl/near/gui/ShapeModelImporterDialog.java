@@ -125,7 +125,9 @@ public class ShapeModelImporterDialog extends javax.swing.JDialog
                 return "Longitudes must be between 0 and 360.";
 
             if (lllat >= urlat)
-                return "Latitude of upper right corner must be greater than latitude of lower left corner.";
+                return "Upper right latitude must be greater than lower left latitude.";
+            if (lllon == urlon)
+                return "Upper right longitude and lower left longitude may not be the same.";
         }
 
         return null;
@@ -266,18 +268,31 @@ public class ShapeModelImporterDialog extends javax.swing.JDialog
             //imageWriter.SetFileTypeToBinary();
             imageWriter.Write();
 
-            // Save out the corners of the texture to a file
+            // Save out the corners of the texture to a file only if an ellipsoid was selected
             try
             {
-                FileWriter fstream = new FileWriter(newModelDir.getAbsolutePath() + File.separator + "corners.txt");
-                BufferedWriter out = new BufferedWriter(fstream);
+                if (ellipsoidRadioButton.isSelected())
+                {
+                    FileWriter fstream = new FileWriter(newModelDir.getAbsolutePath() + File.separator + "corners.txt");
+                    BufferedWriter out = new BufferedWriter(fstream);
 
-                out.write(lllatFormattedTextField.getText() + " ");
-                out.write(lllonFormattedTextField.getText() + " ");
-                out.write(urlatFormattedTextField.getText() + " ");
-                out.write(urlonFormattedTextField.getText() + "\n");
+                    double lllat = Double.parseDouble(lllatFormattedTextField.getText());
+                    double lllon = Double.parseDouble(lllonFormattedTextField.getText());
+                    double urlat = Double.parseDouble(urlatFormattedTextField.getText());
+                    double urlon = Double.parseDouble(urlonFormattedTextField.getText());
 
-                out.close();
+                    if (lllon == 360.0)
+                        lllon = 0.0;
+                    if (urlon == 0.0)
+                        urlon = 360.0;
+
+                    out.write(lllat + " ");
+                    out.write(lllon + " ");
+                    out.write(urlat + " ");
+                    out.write(urlon + "\n");
+
+                    out.close();
+                }
             }
             catch (IOException ex)
             {
@@ -286,6 +301,37 @@ public class ShapeModelImporterDialog extends javax.swing.JDialog
         }
 
         return true;
+    }
+
+    private void updateEnabledState()
+    {
+        boolean enabled = ellipsoidRadioButton.isSelected();
+        shapeModelPathTextField.setEnabled(!enabled);
+        browseShapeModelButton.setEnabled(!enabled);
+        pathLabel.setEnabled(!enabled);
+        shapeModelFormatLabel.setEnabled(!enabled);
+        shapeModelFormatComboBox.setEnabled(!enabled);
+        equRadiusLabel.setEnabled(enabled);
+        equRadiusFormattedTextField.setEnabled(enabled);
+        polarRadiusLabel.setEnabled(enabled);
+        polarRadiusFormattedTextField.setEnabled(enabled);
+        resolutionLabel.setEnabled(enabled);
+        resolutionFormattedTextField.setEnabled(enabled);
+
+        enabled = mapImageCheckBox.isSelected();
+        pathLabel2.setEnabled(enabled);
+        imagePathTextField.setEnabled(enabled);
+        browseImageButton.setEnabled(enabled);
+
+        enabled = mapImageCheckBox.isSelected() && ellipsoidRadioButton.isSelected();
+        lllatLabel.setEnabled(enabled);
+        lllatFormattedTextField.setEnabled(enabled);
+        lllonLabel.setEnabled(enabled);
+        lllonFormattedTextField.setEnabled(enabled);
+        urlatLabel.setEnabled(enabled);
+        urlatFormattedTextField.setEnabled(enabled);
+        urlonLabel.setEnabled(enabled);
+        urlonFormattedTextField.setEnabled(enabled);
     }
 
     /** This method is called from within the constructor to
@@ -533,8 +579,8 @@ public class ShapeModelImporterDialog extends javax.swing.JDialog
         gridBagConstraints.insets = new java.awt.Insets(10, 0, 5, 0);
         getContentPane().add(jPanel1, gridBagConstraints);
 
-        equRadiusFormattedTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.00000"))));
-        equRadiusFormattedTextField.setText("1000.0");
+        equRadiusFormattedTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.########"))));
+        equRadiusFormattedTextField.setText("1000");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 2;
@@ -543,8 +589,8 @@ public class ShapeModelImporterDialog extends javax.swing.JDialog
         gridBagConstraints.insets = new java.awt.Insets(0, 5, 4, 0);
         getContentPane().add(equRadiusFormattedTextField, gridBagConstraints);
 
-        polarRadiusFormattedTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.00000"))));
-        polarRadiusFormattedTextField.setText("1000.0");
+        polarRadiusFormattedTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.########"))));
+        polarRadiusFormattedTextField.setText("1000");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 3;
@@ -563,8 +609,8 @@ public class ShapeModelImporterDialog extends javax.swing.JDialog
         gridBagConstraints.insets = new java.awt.Insets(0, 5, 4, 0);
         getContentPane().add(resolutionFormattedTextField, gridBagConstraints);
 
-        lllatFormattedTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.00"))));
-        lllatFormattedTextField.setText("-90.00");
+        lllatFormattedTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.########"))));
+        lllatFormattedTextField.setText("-90");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 10;
@@ -573,8 +619,8 @@ public class ShapeModelImporterDialog extends javax.swing.JDialog
         gridBagConstraints.insets = new java.awt.Insets(0, 5, 4, 0);
         getContentPane().add(lllatFormattedTextField, gridBagConstraints);
 
-        lllonFormattedTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.00"))));
-        lllonFormattedTextField.setText("0.00");
+        lllonFormattedTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.########"))));
+        lllonFormattedTextField.setText("0");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 11;
@@ -583,8 +629,8 @@ public class ShapeModelImporterDialog extends javax.swing.JDialog
         gridBagConstraints.insets = new java.awt.Insets(0, 5, 4, 0);
         getContentPane().add(lllonFormattedTextField, gridBagConstraints);
 
-        urlatFormattedTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.00"))));
-        urlatFormattedTextField.setText("90.00");
+        urlatFormattedTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.########"))));
+        urlatFormattedTextField.setText("90");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 12;
@@ -593,8 +639,8 @@ public class ShapeModelImporterDialog extends javax.swing.JDialog
         gridBagConstraints.insets = new java.awt.Insets(0, 5, 4, 0);
         getContentPane().add(urlatFormattedTextField, gridBagConstraints);
 
-        urlonFormattedTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.00"))));
-        urlonFormattedTextField.setText("360.00");
+        urlonFormattedTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.########"))));
+        urlonFormattedTextField.setText("360");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 13;
@@ -635,34 +681,12 @@ public class ShapeModelImporterDialog extends javax.swing.JDialog
 
     private void customShapeModelRadioButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_customShapeModelRadioButtonActionPerformed
     {//GEN-HEADEREND:event_customShapeModelRadioButtonActionPerformed
-        boolean enabled = customShapeModelRadioButton.isSelected();
-        shapeModelPathTextField.setEnabled(enabled);
-        browseShapeModelButton.setEnabled(enabled);
-        pathLabel.setEnabled(enabled);
-        shapeModelFormatLabel.setEnabled(enabled);
-        shapeModelFormatComboBox.setEnabled(enabled);
-        equRadiusLabel.setEnabled(!enabled);
-        equRadiusFormattedTextField.setEnabled(!enabled);
-        polarRadiusLabel.setEnabled(!enabled);
-        polarRadiusFormattedTextField.setEnabled(!enabled);
-        resolutionLabel.setEnabled(!enabled);
-        resolutionFormattedTextField.setEnabled(!enabled);
+        updateEnabledState();
     }//GEN-LAST:event_customShapeModelRadioButtonActionPerformed
 
     private void ellipsoidRadioButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_ellipsoidRadioButtonActionPerformed
     {//GEN-HEADEREND:event_ellipsoidRadioButtonActionPerformed
-        boolean enabled = ellipsoidRadioButton.isSelected();
-        shapeModelPathTextField.setEnabled(!enabled);
-        browseShapeModelButton.setEnabled(!enabled);
-        pathLabel.setEnabled(!enabled);
-        shapeModelFormatLabel.setEnabled(!enabled);
-        shapeModelFormatComboBox.setEnabled(!enabled);
-        equRadiusLabel.setEnabled(enabled);
-        equRadiusFormattedTextField.setEnabled(enabled);
-        polarRadiusLabel.setEnabled(enabled);
-        polarRadiusFormattedTextField.setEnabled(enabled);
-        resolutionLabel.setEnabled(enabled);
-        resolutionFormattedTextField.setEnabled(enabled);
+        updateEnabledState();
     }//GEN-LAST:event_ellipsoidRadioButtonActionPerformed
 
     private void browseShapeModelButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_browseShapeModelButtonActionPerformed
@@ -679,18 +703,7 @@ public class ShapeModelImporterDialog extends javax.swing.JDialog
 
     private void mapImageCheckBoxActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_mapImageCheckBoxActionPerformed
     {//GEN-HEADEREND:event_mapImageCheckBoxActionPerformed
-        boolean enabled = mapImageCheckBox.isSelected();
-        pathLabel2.setEnabled(enabled);
-        imagePathTextField.setEnabled(enabled);
-        browseImageButton.setEnabled(enabled);
-        lllatLabel.setEnabled(enabled);
-        lllatFormattedTextField.setEnabled(enabled);
-        lllonLabel.setEnabled(enabled);
-        lllonFormattedTextField.setEnabled(enabled);
-        urlatLabel.setEnabled(enabled);
-        urlatFormattedTextField.setEnabled(enabled);
-        urlonLabel.setEnabled(enabled);
-        urlonFormattedTextField.setEnabled(enabled);
+        updateEnabledState();
     }//GEN-LAST:event_mapImageCheckBoxActionPerformed
 
     private void browseImageButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_browseImageButtonActionPerformed
