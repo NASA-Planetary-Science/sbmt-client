@@ -1,6 +1,8 @@
 package edu.jhuapl.near.pick;
 
+import java.awt.Point;
 import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.beans.PropertyChangeEvent;
@@ -13,6 +15,7 @@ import vtk.vtkCellPicker;
 import vtk.vtkProp;
 import vtk.vtkPropCollection;
 import vtk.vtkRenderWindowPanel;
+import vtk.vtkRenderer;
 
 import edu.jhuapl.near.gui.Renderer;
 import edu.jhuapl.near.gui.StatusBar;
@@ -37,6 +40,7 @@ public class DefaultPicker extends Picker
     private PopupManager popupManager;
     private vtkCellPicker mousePressNonSmallBodyCellPicker; // includes all props EXCEPT the small body
     private vtkCellPicker smallBodyCellPicker; // only includes small body prop
+    private vtkCellPicker allPropsCellPicker; // includes all props including the small body
     private DecimalFormat decimalFormatter = new DecimalFormat("##0.000");
     private DecimalFormat decimalFormatter2 = new DecimalFormat("#0.000");
     private boolean suppressPopups = false;
@@ -75,6 +79,10 @@ public class DefaultPicker extends Picker
             smallBodyCellPicker.AddPickList(act);
         }
         smallBodyCellPicker.AddLocator(smallBodyModel.getCellLocator());
+
+        allPropsCellPicker = new vtkCellPicker();
+        allPropsCellPicker.SetTolerance(0.002);
+        allPropsCellPicker.AddLocator(smallBodyModel.getCellLocator());
     }
 
     public void setSuppressPopups(boolean b)
@@ -295,6 +303,101 @@ public class DefaultPicker extends Picker
         else
         {
             statusBar.setRightText("Distance: " + distanceStr + " ");
+        }
+    }
+
+    public void keyPressed(KeyEvent e)
+    {
+        vtkRenderer ren = renWin.GetRenderer();
+        if (ren.VisibleActorCount() == 0) return;
+
+        int keyCode = e.getKeyCode();
+
+        // Only repond to c, x, y, or z press if in the default interactor (e.g.
+        // not when drawing structures)
+        if (keyCode == KeyEvent.VK_C && renWin.getIren().GetInteractorStyle() != null)
+        {
+            Point pt = renWin.getMousePosition();
+            if (pt != null)
+            {
+                // The call to doPick requires a MouseEvent, so create one here
+                MouseEvent me = new MouseEvent(e.getComponent(), e.getID(), e.getWhen(),
+                        e.getModifiers(),
+                        pt.x, pt.y,
+                        0, false);
+
+                int pickSucceeded = doPick(me, allPropsCellPicker, renWin);
+                if (pickSucceeded == 1)
+                {
+                    double[] pos = smallBodyCellPicker.GetPickPosition();
+
+                    renWin.lock();
+                    vtkCamera activeCamera = renWin.GetRenderer().GetActiveCamera();
+                    activeCamera.SetFocalPoint(pos);
+                    renWin.unlock();
+
+                    renWin.resetCameraClippingRange();
+                    renWin.Render();
+                }
+            }
+        }
+        else if ((keyCode == KeyEvent.VK_X ||
+                  keyCode == KeyEvent.VK_Y ||
+                  keyCode == KeyEvent.VK_Z) &&
+                 renWin.getIren().GetInteractorStyle() != null)
+        {
+            char keyChar = e.getKeyChar();
+
+            double[] bounds = modelManager.getSmallBodyModel().getBoundingBox().getBounds();
+            double xSize = Math.abs(bounds[1] - bounds[0]);
+            double ySize = Math.abs(bounds[3] - bounds[2]);
+            double zSize = Math.abs(bounds[5] - bounds[4]);
+            double maxSize = Math.max(Math.max(xSize, ySize), zSize);
+
+            renWin.lock();
+            vtkCamera cam = ren.GetActiveCamera();
+            cam.SetFocalPoint(0.0, 0.0, 0.0);
+
+            if ('X' == keyChar)
+            {
+                double xpos = xSize / Math.tan(Math.PI/6.0) + 2.0*maxSize;
+                cam.SetPosition(xpos, 0.0, 0.0);
+                cam.SetViewUp(0.0, 0.0, 1.0);
+            }
+            else if ('x' == keyChar)
+            {
+                double xpos = -xSize / Math.tan(Math.PI/6.0) - 2.0*maxSize;
+                cam.SetPosition(xpos, 0.0, 0.0);
+                cam.SetViewUp(0.0, 0.0, 1.0);
+            }
+            else if ('Y' == keyChar)
+            {
+                double ypos = ySize / Math.tan(Math.PI/6.0) + 2.0*maxSize;
+                cam.SetPosition(0.0, ypos, 0.0);
+                cam.SetViewUp(0.0, 0.0, 1.0);
+            }
+            else if ('y' == keyChar)
+            {
+                double ypos = -ySize / Math.tan(Math.PI/6.0) - 2.0*maxSize;
+                cam.SetPosition(0.0, ypos, 0.0);
+                cam.SetViewUp(0.0, 0.0, 1.0);
+            }
+            else if ('Z' == keyChar)
+            {
+                double zpos = zSize / Math.tan(Math.PI/6.0) + 2.0*maxSize;
+                cam.SetPosition(0.0, 0.0, zpos);
+                cam.SetViewUp(0.0, 1.0, 0.0);
+            }
+            else if ('z' == keyChar)
+            {
+                double zpos = -zSize / Math.tan(Math.PI/6.0) - 2.0*maxSize;
+                cam.SetPosition(0.0, 0.0, zpos);
+                cam.SetViewUp(0.0, 1.0, 0.0);
+            }
+            renWin.unlock();
+
+            renWin.resetCameraClippingRange();
+            renWin.Render();
         }
     }
 

@@ -28,6 +28,11 @@ public class BoundingBox
         zmax = bounds[5];
     }
 
+    public double[] getBounds()
+    {
+        return new double[] {xmin, xmax, ymin, ymax, zmin, zmax};
+    }
+
     public void update(double x, double y, double z)
     {
         if (xmin > x)

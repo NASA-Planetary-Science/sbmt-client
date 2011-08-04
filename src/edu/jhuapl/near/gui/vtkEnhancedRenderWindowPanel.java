@@ -1,14 +1,12 @@
 package edu.jhuapl.near.gui;
 
 import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.io.File;
 
 import vtk.vtkBMPWriter;
-import vtk.vtkCamera;
 import vtk.vtkJPEGWriter;
 import vtk.vtkPNGWriter;
 import vtk.vtkPNMWriter;
@@ -63,77 +61,6 @@ public class vtkEnhancedRenderWindowPanel extends vtkRenderWindowPanel
     {
         // do nothing
     }
-
-
-    public void keyPressed(KeyEvent e)
-    {
-        if (ren.VisibleActorCount() == 0) return;
-        char keyChar = e.getKeyChar();
-
-        // Only repond to x, y, or z press if in the default interactor (e.g.
-        // not when drawing structures)
-        if (iren.GetInteractorStyle() != null &&
-                ('x' == keyChar || 'y' == keyChar || 'z' == keyChar ||
-                 'X' == keyChar || 'Y' == keyChar || 'Z' == keyChar))
-        {
-            double[] bounds = new double[6];
-            ren.ComputeVisiblePropBounds(bounds);
-            lock();
-            vtkCamera cam = ren.GetActiveCamera();
-            cam.SetFocalPoint(0.0, 0.0, 0.0);
-
-            double xSize = Math.abs(bounds[1] - bounds[0]);
-            double ySize = Math.abs(bounds[3] - bounds[2]);
-            double zSize = Math.abs(bounds[5] - bounds[4]);
-            double maxSize = Math.max(Math.max(xSize, ySize), zSize);
-
-            if ('X' == keyChar)
-            {
-                double xpos = xSize / Math.tan(Math.PI/6.0) + 2.0*maxSize;
-                cam.SetPosition(xpos, 0.0, 0.0);
-                cam.SetViewUp(0.0, 0.0, 1.0);
-            }
-            else if ('x' == keyChar)
-            {
-                double xpos = -xSize / Math.tan(Math.PI/6.0) - 2.0*maxSize;
-                cam.SetPosition(xpos, 0.0, 0.0);
-                cam.SetViewUp(0.0, 0.0, 1.0);
-            }
-            else if ('Y' == keyChar)
-            {
-                double ypos = ySize / Math.tan(Math.PI/6.0) + 2.0*maxSize;
-                cam.SetPosition(0.0, ypos, 0.0);
-                cam.SetViewUp(0.0, 0.0, 1.0);
-            }
-            else if ('y' == keyChar)
-            {
-                double ypos = -ySize / Math.tan(Math.PI/6.0) - 2.0*maxSize;
-                cam.SetPosition(0.0, ypos, 0.0);
-                cam.SetViewUp(0.0, 0.0, 1.0);
-            }
-            else if ('Z' == keyChar)
-            {
-                double zpos = zSize / Math.tan(Math.PI/6.0) + 2.0*maxSize;
-                cam.SetPosition(0.0, 0.0, zpos);
-                cam.SetViewUp(0.0, 1.0, 0.0);
-            }
-            else if ('z' == keyChar)
-            {
-                double zpos = -zSize / Math.tan(Math.PI/6.0) - 2.0*maxSize;
-                cam.SetPosition(0.0, 0.0, zpos);
-                cam.SetViewUp(0.0, 1.0, 0.0);
-            }
-
-            unlock();
-            resetCameraClippingRange();
-            this.Render();
-        }
-        else
-        {
-            super.keyPressed(e);
-        }
-    }
-
 
     public void saveToFile()
     {
