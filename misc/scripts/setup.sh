@@ -2,9 +2,8 @@
 # current directory must be the folder containing this file)
 
 
-# Setup paths to java
-export JAVA_HOME=/project/nearsdc/software/java/x86_64/jdk1.6.0_25
-export PATH=$JAVA_HOME/bin:$PATH
+# Setup LD_LIBRARY_PATH variable. Note that java must be in the PATH,
+# and JAVA_HOME must be set to the path containing the jdk.
 export LD_LIBRARY_PATH=$JAVA_HOME/jre/lib/amd64:$JAVA_HOME/jre/lib/amd64/xawt
 
 
