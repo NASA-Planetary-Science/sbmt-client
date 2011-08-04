@@ -15,6 +15,6 @@ Xvfb $DISPLAY &
 
 # Setup java command including classpath
 TOP_DIR=`pwd`/../..
-JAVA_COMMAND="java -Djava.library.path=/project/nearsdc/software/vtk_all_platforms/linux64:$JAVA_HOME/jre/lib/amd64/xawt -Dfile.encoding=UTF-8 -classpath $TOP_DIR/bin:$TOP_DIR/lib/vtksb.jar:$TOP_DIR/lib/vtk.jar:$TOP_DIR/lib/fits-1.04.0.jar:$TOP_DIR/lib/jide-oss-2.7.3.jar:$TOP_DIR/lib/joda-time-1.6.jar:$TOP_DIR/lib/mysql-connector-java-5.1.10-bin.jar:$TOP_DIR/lib/commons-io-2.0.jar"
+JAVA_COMMAND="java -Djava.library.path=/project/nearsdc/software/vtk_all_platforms/linux64:$JAVA_HOME/jre/lib/amd64/xawt -Dfile.encoding=UTF-8 -classpath $TOP_DIR/build/classes:$TOP_DIR/lib/vtksb.jar:$TOP_DIR/lib/vtk.jar:$TOP_DIR/lib/fits-1.04.0.jar:$TOP_DIR/lib/jide-oss-2.7.3.jar:$TOP_DIR/lib/joda-time-1.6.jar:$TOP_DIR/lib/mysql-connector-java-5.1.10-bin.jar:$TOP_DIR/lib/commons-io-2.0.jar"
 
 echo -e "$JAVA_COMMAND \n"
