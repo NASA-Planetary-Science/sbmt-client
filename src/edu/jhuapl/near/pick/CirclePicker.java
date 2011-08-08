@@ -4,6 +4,8 @@ import java.awt.Cursor;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
+import javax.swing.JOptionPane;
+
 import vtk.vtkActor;
 import vtk.vtkCellPicker;
 import vtk.vtkProp;
@@ -111,7 +113,10 @@ public class CirclePicker extends Picker
         else if (this.currentEditMode == EditMode.VERTEX_ADD)
         {
             if (e.getButton() != MouseEvent.BUTTON1)
+            {
+                circleModel.resetCircumferencePoints();
                 return;
+            }
 
             int pickSucceeded = doPick(e, smallBodyPicker, renWin);
 
@@ -125,31 +130,21 @@ public class CirclePicker extends Picker
                     double[] pos = smallBodyPicker.GetPickPosition();
                     if (e.getClickCount() == 1)
                     {
-                        circleModel.addNewStructure(pos);
+                        if (!circleModel.addCircumferencePoint(pos))
+                        {
+                            JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(renWin),
+                                    "Could not fit circle to specified points.",
+                                    "Error",
+                                    JOptionPane.ERROR_MESSAGE);
+                        }
                     }
                 }
             }
         }
     }
 
-    public void mouseReleased(MouseEvent e)
-    {
-//        if (this.currentEditMode == EditMode.VERTEX_DRAG_OR_DELETE &&
-//                vertexIdBeingEdited >= 0 &&
-//                lastDragPosition != null)
-//        {
-//            pointModel.updateSelectedLineVertex(vertexIdBeingEdited, lastDragPosition);
-//        }
-//
-//        vertexIdBeingEdited = -1;
-    }
-
     public void mouseDragged(MouseEvent e)
     {
-        //if (e.getButton() != MouseEvent.BUTTON1)
-        //    return;
-
-
         if (this.currentEditMode == EditMode.VERTEX_DRAG_OR_DELETE &&
             vertexIdBeingEdited >= 0)
         {
