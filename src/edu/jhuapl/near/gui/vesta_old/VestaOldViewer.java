@@ -1,4 +1,4 @@
-package edu.jhuapl.near.gui.vesta;
+package edu.jhuapl.near.gui.vesta_old;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -25,11 +25,8 @@ import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.PointModel;
 import edu.jhuapl.near.model.SmallBodyModel;
-import edu.jhuapl.near.model.vesta.FcBoundaryCollection;
-import edu.jhuapl.near.model.vesta.FcColorImageCollection;
-import edu.jhuapl.near.model.vesta.FcImageCollection;
-import edu.jhuapl.near.model.vesta.Vesta;
-import edu.jhuapl.near.model.vesta.VestaGraticule;
+import edu.jhuapl.near.model.vesta_old.VestaOld;
+import edu.jhuapl.near.model.vesta_old.VestaOldGraticule;
 import edu.jhuapl.near.pick.PickManager;
 import edu.jhuapl.near.popupmenus.PopupManager;
 import edu.jhuapl.near.util.Configuration;
@@ -41,9 +38,9 @@ import edu.jhuapl.near.util.Configuration;
  * @author kahneg1
  *
  */
-public class VestaViewer extends Viewer
+public class VestaOldViewer extends Viewer
 {
-    public static final String NAME = "Vesta";
+    public static final String NAME = "Vesta-old";
 
     private JSplitPane splitPane;
     private Renderer renderer;
@@ -55,7 +52,7 @@ public class VestaViewer extends Viewer
     private ModelInfoWindowManager infoPanelManager;
     private boolean initialized = false;
 
-    public VestaViewer(StatusBar statusBar)
+    public VestaOldViewer(StatusBar statusBar)
     {
         super(new BorderLayout());
         this.statusBar = statusBar;
@@ -85,10 +82,9 @@ public class VestaViewer extends Viewer
 
         controlPanel = new JTabbedPane();
         controlPanel.setBorder(BorderFactory.createEmptyBorder());
-        controlPanel.addTab("Vesta", new SmallBodyControlPanel(modelManager, "Vesta"));
+        controlPanel.addTab("Vesta-old", new SmallBodyControlPanel(modelManager, "Vesta-old"));
         if (Configuration.isAPLVersion())
         {
-            controlPanel.addTab("FC", new FCSearchPanel(modelManager, infoPanelManager, pickManager, renderer));
             controlPanel.addTab("Structures", new StructuresControlPanel(modelManager, pickManager));
         }
 
@@ -110,14 +106,11 @@ public class VestaViewer extends Viewer
     {
         modelManager = new ModelManager();
 
-        SmallBodyModel vestaModel = new Vesta();
-        Graticule graticule = new VestaGraticule(vestaModel);
+        SmallBodyModel vestaModel = new VestaOld();
+        Graticule graticule = new VestaOldGraticule(vestaModel);
 
         HashMap<String, Model> allModels = new HashMap<String, Model>();
         allModels.put(ModelNames.SMALL_BODY, vestaModel);
-        allModels.put(ModelNames.FC_IMAGES, new FcImageCollection(vestaModel));
-        allModels.put(ModelNames.FC_COLOR_IMAGES, new FcColorImageCollection(vestaModel));
-        allModels.put(ModelNames.FC_BOUNDARY, new FcBoundaryCollection(vestaModel));
         allModels.put(ModelNames.LINE_STRUCTURES, new LineModel(vestaModel));
         allModels.put(ModelNames.CIRCLE_STRUCTURES, new CircleModel(vestaModel));
         allModels.put(ModelNames.ELLIPSE_STRUCTURES, new EllipseModel(vestaModel));

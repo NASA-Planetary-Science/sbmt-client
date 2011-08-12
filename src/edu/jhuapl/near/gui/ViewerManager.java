@@ -1,19 +1,20 @@
 package edu.jhuapl.near.gui;
 
-import edu.jhuapl.near.gui.custom.CustomViewer;
 import java.awt.CardLayout;
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 
+import edu.jhuapl.near.gui.custom.CustomViewer;
 import edu.jhuapl.near.gui.deimos.DeimosViewer;
 import edu.jhuapl.near.gui.eros.ErosViewer;
 import edu.jhuapl.near.gui.itokawa.ItokawaViewer;
 import edu.jhuapl.near.gui.vesta.VestaViewer;
+import edu.jhuapl.near.gui.vesta_old.VestaOldViewer;
 import edu.jhuapl.near.util.Configuration;
-import java.io.File;
-import java.util.Arrays;
 
 public class ViewerManager extends JPanel
 {
@@ -27,10 +28,11 @@ public class ViewerManager extends JPanel
         super(new CardLayout());
         setBorder(BorderFactory.createEmptyBorder());
         this.statusBar = statusBar;
-        
+
         builtInViewers.add(new ErosViewer(statusBar));
         builtInViewers.add(new DeimosViewer(statusBar));
         builtInViewers.add(new ItokawaViewer(statusBar));
+        builtInViewers.add(new VestaOldViewer(statusBar));
         builtInViewers.add(new VestaViewer(statusBar));
 
         currentViewer = builtInViewers.get(0);
@@ -39,11 +41,11 @@ public class ViewerManager extends JPanel
             add(viewer, viewer.getName());
 
         loadCustomViewers();
-        
+
         for (Viewer viewer : customViewers)
             add(viewer, viewer.getName());
     }
-    
+
     private void loadCustomViewers()
     {
         File modelsDir = new File(Configuration.getImportedShapeModelsDir());
@@ -86,7 +88,7 @@ public class ViewerManager extends JPanel
     {
         return builtInViewers.size();
     }
-    
+
     public Viewer getCustomViewer(int i)
     {
         return customViewers.get(i);
@@ -104,7 +106,7 @@ public class ViewerManager extends JPanel
         add(viewer, name);
         return viewer;
     }
-    
+
     public Viewer removeCustomViewer(String name)
     {
         for (Viewer viewer : customViewers)
@@ -116,7 +118,7 @@ public class ViewerManager extends JPanel
                 return viewer;
             }
         }
-        
+
         return null;
     }
 }
