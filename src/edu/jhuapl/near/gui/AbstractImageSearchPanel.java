@@ -1500,7 +1500,8 @@ abstract public class AbstractImageSearchPanel extends javax.swing.JPanel implem
             }
 
             Image.ImageSource imageSource = null;
-            if (sourceComboBox.getSelectedItem().toString().startsWith(Image.ImageSource.PDS.toString()))
+            if (sourceComboBox.isVisible() &&
+                    sourceComboBox.getSelectedItem().toString().startsWith(Image.ImageSource.PDS.toString()))
                 imageSource = Image.ImageSource.PDS;
             else
                 imageSource = Image.ImageSource.GASKELL;
@@ -1528,10 +1529,7 @@ abstract public class AbstractImageSearchPanel extends javax.swing.JPanel implem
                     imageSource,
                     hasLimbComboBox.getSelectedIndex());
 
-            if (sourceComboBox.getSelectedItem().toString().startsWith(Image.ImageSource.PDS.toString()))
-                sourceOfLastQuery = Image.ImageSource.PDS;
-            else
-                sourceOfLastQuery = Image.ImageSource.GASKELL;
+            sourceOfLastQuery = imageSource;
 
             setImageResults(results);
         }
