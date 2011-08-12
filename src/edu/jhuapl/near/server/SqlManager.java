@@ -31,6 +31,7 @@
 
 package edu.jhuapl.near.server;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -39,6 +40,9 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+
+import edu.jhuapl.near.util.Configuration;
+import edu.jhuapl.near.util.FileUtil;
 
 
 /**
@@ -80,8 +84,10 @@ public class SqlManager
             return;
         }
 
-       String username = "";
-       String password = "";
+       ArrayList<String> credentials = FileUtil.getFileLinesAsStringList(
+               Configuration.getApplicationDataDir() + File.separator + "mysql-login.txt");
+       String username = credentials.get(0);
+       String password = credentials.get(1);
 
        //conn = DriverManager.getConnection("jdbc:hsqldb:file:" + db_file_name_prefix, "sa", "");
         conn = DriverManager.getConnection("jdbc:mysql://sd-mysql.jhuapl.edu:3306/near?" +
