@@ -8,7 +8,11 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.TreeSet;
 
+import org.joda.time.DateTime;
+
+import edu.jhuapl.near.model.Image;
 import edu.jhuapl.near.util.Configuration;
 
 
@@ -21,7 +25,7 @@ import edu.jhuapl.near.util.Configuration;
  */
 abstract public class QueryBase
 {
-    public ArrayList<ArrayList<String>> doQuery(String phpScript, String data)
+    protected ArrayList<ArrayList<String>> doQuery(String phpScript, String data)
     {
         ArrayList<ArrayList<String>> results = new ArrayList<ArrayList<String>>();
 
@@ -64,7 +68,7 @@ abstract public class QueryBase
         return results;
     }
 
-    public String constructUrlArguments(HashMap<String, String> args)
+    protected String constructUrlArguments(HashMap<String, String> args)
     {
         String str = "";
 
@@ -81,4 +85,56 @@ abstract public class QueryBase
 
         return str;
     }
+
+    /**
+     * Run a query and return an array containing the results. The returned array
+     * is a list of list of strings where each a list in the containing list
+     * contains 2 elements. The first element is the path on the server to the
+     * FIT image file. The second is the start time of the image.
+     *
+     * @param datatype
+     * @param startDate
+     * @param stopDate
+     * @param filters
+     * @param userDefined1
+     * @param userDefined2
+     * @param startDistance
+     * @param stopDistance
+     * @param startResolution
+     * @param stopResolution
+     * @param searchString
+     * @param polygonTypes
+     * @param fromIncidence
+     * @param toIncidence
+     * @param fromEmission
+     * @param toEmission
+     * @param fromPhase
+     * @param toPhase
+     * @param cubeList
+     * @param imageSource
+     * @param limbType
+     * @return
+     */
+    abstract public ArrayList<ArrayList<String>> runQuery(
+            String type,
+            DateTime startDate,
+            DateTime stopDate,
+            ArrayList<Integer> filters,
+            boolean userDefined1,
+            boolean userDefined2,
+            double startDistance,
+            double stopDistance,
+            double startResolution,
+            double stopResolution,
+            String searchString,
+            ArrayList<Integer> polygonTypes,
+            double fromIncidence,
+            double toIncidence,
+            double fromEmission,
+            double toEmission,
+            double fromPhase,
+            double toPhase,
+            TreeSet<Integer> cubeList,
+            Image.ImageSource imageSource,
+            int limbType);
 }

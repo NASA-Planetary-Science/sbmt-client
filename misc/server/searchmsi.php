@@ -64,7 +64,7 @@ if (!$link) {
 }
 @mysql_select_db($database) or die("died!");
 
-$query = "SELECT DISTINCT $msiimages.id, year, day, filter, iofcif FROM $msiimages ";
+$query = "SELECT DISTINCT $msiimages.id, year, day, filter, iofcif, starttime FROM $msiimages ";
 if (strlen($cubesStr) > 0)
 {
 	$query .= " JOIN $msicubes ON $msiimages.id = $msicubes.imageid ";
@@ -140,9 +140,10 @@ while ($i < $num)
 	$day  = $row[2];
 	$filter   = $row[3];
 	$iofcif   = $row[4];
+	$starttime = $row[5];
 	
 
-	echo "$id $year $day $filter $iofcif\n";
+	echo "$id $year $day $filter $iofcif $starttime\n";
 	
 	$i++;
 }

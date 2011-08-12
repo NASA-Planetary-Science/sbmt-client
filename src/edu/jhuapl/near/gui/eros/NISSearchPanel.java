@@ -42,9 +42,9 @@ import vtk.vtkPolyData;
 
 import edu.jhuapl.near.gui.ModelInfoWindowManager;
 import edu.jhuapl.near.gui.SearchPanelUtil;
+import edu.jhuapl.near.model.AbstractEllipsePolygonModel;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
-import edu.jhuapl.near.model.AbstractEllipsePolygonModel;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.eros.NISSpectraCollection;
 import edu.jhuapl.near.model.eros.NISSpectrum;
@@ -563,7 +563,7 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
                 }
             }
 
-            ArrayList<String> results = ErosQuery.getInstance().runQuery(
+            ArrayList<String> results = ErosQuery.getInstance().runQueryNIS(
                     ErosQuery.Datatype.NIS,
                     startDateJoda,
                     endDateJoda,

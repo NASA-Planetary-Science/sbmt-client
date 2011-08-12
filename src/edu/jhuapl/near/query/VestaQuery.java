@@ -6,31 +6,16 @@ import java.util.TreeSet;
 
 import org.joda.time.DateTime;
 
-import edu.jhuapl.near.model.Image;
+import edu.jhuapl.near.model.Image.ImageSource;
 
-
-/**
- * This class represents a database storing information about all the
- * data. It also provides functions for querying the database.
- *
- * @author kahneg1
- *
- */
-public class ItokawaQuery extends QueryBase
+public class VestaQuery extends QueryBase
 {
-    public enum Datatype {AMICA};
+    private static VestaQuery ref = null;
 
-    private static ItokawaQuery ref = null;
-
-    private void changeAmicaPathToFullPath(ArrayList<String> result)
-    {
-        result.set(0, "/ITOKAWA/AMICA/images/" + result.get(0));
-    }
-
-    public static ItokawaQuery getInstance()
+    public static VestaQuery getInstance()
     {
         if (ref == null)
-            ref = new ItokawaQuery();
+            ref = new VestaQuery();
         return ref;
     }
 
@@ -40,25 +25,18 @@ public class ItokawaQuery extends QueryBase
         throw new CloneNotSupportedException();
     }
 
-    private ItokawaQuery()
+    private VestaQuery()
     {
     }
 
-
-    /**
-     * Run a query which searches for amica images between the specified dates.
-     * Returns a list of URL's of the fit files that match.
-     *
-     * @param startDate
-     * @param endDate
-     */
+    @Override
     public ArrayList<ArrayList<String>> runQuery(
             String type,
             DateTime startDate,
             DateTime stopDate,
             ArrayList<Integer> filters,
-            boolean unused1,
-            boolean unused2,
+            boolean fc1_unused,
+            boolean fc2_unused,
             double startDistance,
             double stopDistance,
             double startResolution,
@@ -72,7 +50,7 @@ public class ItokawaQuery extends QueryBase
             double fromPhase,
             double toPhase,
             TreeSet<Integer> cubeList,
-            Image.ImageSource imageSource,
+            ImageSource imageSource,
             int limbType)
     {
         ArrayList<ArrayList<String>> results = new ArrayList<ArrayList<String>>();
@@ -84,7 +62,7 @@ public class ItokawaQuery extends QueryBase
         double minPhase = Math.min(fromPhase, toPhase);
         double maxPhase = Math.max(fromPhase, toPhase);
 
-        //if ("AMICA".equals(type))
+        //if ("FC".equals(type))
         {
             if (searchString != null)
             {
@@ -96,7 +74,7 @@ public class ItokawaQuery extends QueryBase
                     args.put("imageSource", imageSource.toString());
                     args.put("id", String.valueOf(id));
 
-                    results = doQuery("searchamica_id.php", constructUrlArguments(args));
+                    results = doQuery("searchfc_id.php", constructUrlArguments(args));
                 }
                 catch (NumberFormatException e)
                 {
@@ -105,7 +83,7 @@ public class ItokawaQuery extends QueryBase
 
                 if (results != null && results.size() > 0)
                 {
-                    this.changeAmicaPathToFullPath(results.get(0));
+//                    this.changeFcPathToFullPath(results.get(0));
                 }
                 return results;
             }
@@ -157,11 +135,11 @@ public class ItokawaQuery extends QueryBase
                     args.put("cubes", cubes);
                 }
 
-                results = doQuery("searchamica.php", constructUrlArguments(args));
+                results = doQuery("searchfc.php", constructUrlArguments(args));
 
                 for (ArrayList<String> res : results)
                 {
-                    this.changeAmicaPathToFullPath(res);
+//                    this.changeFcPathToFullPath(res);
                 }
             }
             catch (Exception e)
@@ -172,6 +150,5 @@ public class ItokawaQuery extends QueryBase
 
         return results;
     }
-
 
 }

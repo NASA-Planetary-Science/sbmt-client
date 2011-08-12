@@ -6,6 +6,7 @@ import java.util.TreeSet;
 
 import org.joda.time.DateTime;
 
+import edu.jhuapl.near.model.Image;
 import edu.jhuapl.near.model.eros.MSIImage;
 
 
@@ -21,6 +22,16 @@ public class ErosQuery extends QueryBase
     public enum Datatype {MSI, NIS};
 
     private static ErosQuery ref = null;
+
+    private void fixResult(ArrayList<String> result)
+    {
+        result.set(0, getMsiPath(result));
+        result.set(1, result.get(5)); // Time should be the second element in the returned result
+        result.remove(2);
+        result.remove(2);
+        result.remove(2);
+        result.remove(2);
+    }
 
     private String getMsiPath(ArrayList<String> result)
     {
@@ -113,8 +124,8 @@ public class ErosQuery extends QueryBase
      * @param startDate
      * @param endDate
      */
-    public ArrayList<String> runQuery(
-            Datatype datatype,
+    public ArrayList<ArrayList<String>> runQuery(
+            String type,
             DateTime startDate,
             DateTime stopDate,
             ArrayList<Integer> filters,
@@ -133,11 +144,10 @@ public class ErosQuery extends QueryBase
             double fromPhase,
             double toPhase,
             TreeSet<Integer> cubeList,
-            MSIImage.ImageSource msiSource,
+            Image.ImageSource msiSource,
             int limbType)
     {
-        ArrayList<String> matchedImages = new ArrayList<String>();
-        ArrayList<ArrayList<String>> results = null;
+        ArrayList<ArrayList<String>> results = new ArrayList<ArrayList<String>>();
 
         double minIncidence = Math.min(fromIncidence, toIncidence);
         double maxIncidence = Math.max(fromIncidence, toIncidence);
@@ -146,9 +156,8 @@ public class ErosQuery extends QueryBase
         double minPhase = Math.min(fromPhase, toPhase);
         double maxPhase = Math.max(fromPhase, toPhase);
 
-        switch (datatype)
+        //if ("MSI".equals(type))
         {
-        case MSI:
             if (searchString != null)
             {
                 try
@@ -159,7 +168,7 @@ public class ErosQuery extends QueryBase
                     args.put("msiSource", msiSource.toString());
                     args.put("id", String.valueOf(id));
 
-                    results = doQuery("searchmsi_id.php", constructUrlArguments(args));
+                    results = doQuery("searchmsi_id_new.php", constructUrlArguments(args));
                 }
                 catch (NumberFormatException e)
                 {
@@ -168,15 +177,13 @@ public class ErosQuery extends QueryBase
 
                 if (results != null && results.size() > 0)
                 {
-                    String path = this.getMsiPath(results.get(0));
-
-                    matchedImages.add(path);
+                    this.fixResult(results.get(0));
                 }
-                return matchedImages;
+                return results;
             }
 
             if (filters.isEmpty() || (iofdbl == false && cifdbl == false))
-                return matchedImages;
+                return results;
 
             try
             {
@@ -184,35 +191,6 @@ public class ErosQuery extends QueryBase
                 double maxScDistance = Math.max(startDistance, stopDistance);
                 double minResolution = Math.min(startResolution, stopResolution) / 1000.0;
                 double maxResolution = Math.max(startResolution, stopResolution) / 1000.0;
-
-//                String query = "SELECT id, year, day, filter, iofcif FROM msiimages ";
-//                query += "WHERE starttime <= " + stopDate.getMillis();
-//                query += " AND stoptime >= " + startDate.getMillis();
-//                query += " AND target_center_distance >= " + minScDistance;
-//                query += " AND target_center_distance <= " + maxScDistance;
-//                query += " AND horizontal_pixel_scale >= " + minResolution;
-//                query += " AND horizontal_pixel_scale <= " + maxResolution;
-//                if (iofdbl == false)
-//                    query += " AND iofcif = 1";
-//                else if (cifdbl == false)
-//                    query += " AND iofcif = 0";
-//                query += " AND ( ";
-//                for (int i=0; i<filters.size(); ++i)
-//                {
-//                    query += " filter = " + filters.get(i);
-//                    if (i < filters.size()-1)
-//                        query += " OR ";
-//                }
-//                query += " ) ";
-//
-//                query += " AND minincidence <= " + maxIncidence;
-//                query += " AND maxincidence >= " + minIncidence;
-//                query += " AND minemission <= " + maxEmission;
-//                query += " AND maxemission >= " + minEmission;
-//                query += " AND minphase <= " + maxPhase;
-//                query += " AND maxphase >= " + minPhase;
-//
-//                System.out.println(query);
 
                 HashMap<String, String> args = new HashMap<String, String>();
                 args.put("msiSource", msiSource.toString());
@@ -253,53 +231,62 @@ public class ErosQuery extends QueryBase
                     args.put("cubes", cubes);
                 }
 
-                results = doQuery("searchmsi.php", constructUrlArguments(args));
+                results = doQuery("searchmsi_new.php", constructUrlArguments(args));
 
                 for (ArrayList<String> res : results)
                 {
-                    String path = this.getMsiPath(res);
-
-                    matchedImages.add(path);
+                    this.fixResult(res);
                 }
             }
             catch (Exception e)
             {
                 e.printStackTrace();
             }
+        }
 
-            return matchedImages;
+        return results;
+    }
 
+    public ArrayList<String> runQueryNIS(
+            Datatype datatype,
+            DateTime startDate,
+            DateTime stopDate,
+            ArrayList<Integer> filters,
+            boolean iofdbl,
+            boolean cifdbl,
+            double startDistance,
+            double stopDistance,
+            double startResolution,
+            double stopResolution,
+            String searchString,
+            ArrayList<Integer> polygonTypes,
+            double fromIncidence,
+            double toIncidence,
+            double fromEmission,
+            double toEmission,
+            double fromPhase,
+            double toPhase,
+            TreeSet<Integer> cubeList,
+            MSIImage.ImageSource msiSource,
+            int limbType)
+    {
+        ArrayList<String> matchedImages = new ArrayList<String>();
+        ArrayList<ArrayList<String>> results = null;
+
+        double minIncidence = Math.min(fromIncidence, toIncidence);
+        double maxIncidence = Math.max(fromIncidence, toIncidence);
+        double minEmission = Math.min(fromEmission, toEmission);
+        double maxEmission = Math.max(fromEmission, toEmission);
+        double minPhase = Math.min(fromPhase, toPhase);
+        double maxPhase = Math.max(fromPhase, toPhase);
+
+        switch (datatype)
+        {
         case NIS:
             try
             {
                 double minScDistance = Math.min(startDistance, stopDistance);
                 double maxScDistance = Math.max(startDistance, stopDistance);
-
-//                String query = "SELECT id, year, day FROM nisspectra ";
-//                query += "WHERE midtime >= " + startDate.getMillis();
-//                query += " AND midtime <= " + stopDate.getMillis();
-//                query += " AND range >= " + minScDistance;
-//                query += " AND range <= " + maxScDistance;
-//                if (!polygonTypes.isEmpty())
-//                {
-//                    query += " AND ( ";
-//                    int count = 0;
-//                    for (Integer i : polygonTypes)
-//                    {
-//                        if (count++ > 0)
-//                            query += " OR ";
-//                        query += " polygon_type_flag = " + i;
-//                    }
-//                    query += " ) ";
-//                }
-//                query += " AND minincidence <= " + maxIncidence;
-//                query += " AND maxincidence >= " + minIncidence;
-//                query += " AND minemission <= " + maxEmission;
-//                query += " AND maxemission >= " + minEmission;
-//                query += " AND minphase <= " + maxPhase;
-//                query += " AND maxphase >= " + minPhase;
-//
-//                System.out.println(query);
 
                 HashMap<String, String> args = new HashMap<String, String>();
                 args.put("startDate", String.valueOf(startDate.getMillis()));
@@ -353,6 +340,5 @@ public class ErosQuery extends QueryBase
 
         return matchedImages;
     }
-
 
 }

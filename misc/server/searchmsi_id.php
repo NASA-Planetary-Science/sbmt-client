@@ -16,7 +16,7 @@ else
 mysql_connect($host,$username,$password);
 @mysql_select_db($database) or die();
 
-$query = "SELECT id, year, day, filter, iofcif FROM $msiimages ";
+$query = "SELECT id, year, day, filter, iofcif, starttime FROM $msiimages ";
 $query .= "WHERE id = " . $id;
 
 $result=mysql_query($query);
@@ -34,8 +34,9 @@ while ($i < $num)
 	$day  = $row[2];
 	$filter   = $row[3];
 	$iofcif   = $row[4];
+	$starttime = $row[5];
 	
-	echo "$id $year $day $filter $iofcif\n";
+	echo "$id $year $day $filter $iofcif $starttime\n";
 	
 	$i++;
 }
