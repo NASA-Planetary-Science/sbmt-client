@@ -27,4 +27,9 @@ public interface ModelNames
     static public final String AMICA_IMAGES = "amica-images";
     static public final String AMICA_COLOR_IMAGES = "amica-color-images";
     static public final String AMICA_BOUNDARY = "amica-boundary";
+
+    // Vesta
+    static public final String FC_IMAGES = "amica-images";
+    static public final String FC_COLOR_IMAGES = "amica-color-images";
+    static public final String FC_BOUNDARY = "amica-boundary";
 }
