@@ -12,10 +12,10 @@ public class Vesta extends SmallBodyModel
     };
 
     static private final String[] modelFiles = {
-            "/VESTA2/Vesta_res0.vtk.gz",
-            "/VESTA2/Vesta_res1.vtk.gz",
-            "/VESTA2/Vesta_res2.vtk.gz",
-            "/VESTA2/Vesta_res3.vtk.gz"
+            "/VESTA/Vesta_res0.vtk.gz",
+            "/VESTA/Vesta_res1.vtk.gz",
+            "/VESTA/Vesta_res2.vtk.gz",
+            "/VESTA/Vesta_res3.vtk.gz"
     };
 
     public Vesta()
