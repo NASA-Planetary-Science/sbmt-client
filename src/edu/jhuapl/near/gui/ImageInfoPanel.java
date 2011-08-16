@@ -226,7 +226,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements PropertyChangeLis
             {
                 // Do not show the "Show Image" option since that creates problems
                 // since it's supposed to close this window also.
-                if (!(((JMenuItem)item).getAction() instanceof ImagePopupMenu.ShowRemoveIn3DAction))
+                if (!(((JMenuItem)item).getAction() instanceof ImagePopupMenu.MapImageAction))
                     menu.add(item);
             }
         }
