@@ -310,8 +310,8 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
             boundaryPolyData.DeepCopy(boundaryAppendFilterOutput);
             interiorPolyData.DeepCopy(interiorAppendFilterOutput);
 
-            smallBodyModel.shiftPolyLineInNormalDirection(boundaryPolyData, 3.0);
-            smallBodyModel.shiftPolyLineInNormalDirection(interiorPolyData, 2.0);
+            smallBodyModel.shiftPolyLineInNormalDirection(boundaryPolyData, 5.0);
+            smallBodyModel.shiftPolyLineInNormalDirection(interiorPolyData, 4.0);
 
             boundaryColors.SetNumberOfTuples(boundaryPolyData.GetNumberOfCells());
             interiorColors.SetNumberOfTuples(interiorPolyData.GetNumberOfCells());
