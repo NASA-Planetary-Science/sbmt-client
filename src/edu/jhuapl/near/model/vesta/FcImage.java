@@ -7,14 +7,18 @@ import java.util.LinkedHashMap;
 
 import nom.tam.fits.FitsException;
 
+import vtk.vtkImageData;
+import vtk.vtkImageFlip;
+
 import edu.jhuapl.near.model.Image;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.util.FileCache;
 
 public class FcImage extends Image
 {
-    public static final double FOV_PARAMETER1 = -0.095480;
-    public static final double FOV_PARAMETER2 = -0.095420;
+    // Values from FC instrument kernel file
+    public static final double FOV_PARAMETER1 = -0.095480/2.0;
+    public static final double FOV_PARAMETER2 = -0.095420/2.0;
 
     public FcImage(ImageKey key,
             SmallBodyModel smallBodyModel,
@@ -22,6 +26,33 @@ public class FcImage extends Image
             File rootFolder) throws FitsException, IOException
     {
         super(key, smallBodyModel, loadPointingOnly, rootFolder);
+    }
+
+    @Override
+    protected void resizeRawImage(vtkImageData rawImage)
+    {
+        // Flip image along y axis. For some reason we need to do
+        // this so the image is displayed properly.
+        int[] dims = rawImage.GetDimensions();
+        vtkImageFlip flip = new vtkImageFlip();
+        flip.SetInput(rawImage);
+        flip.SetInterpolationModeToNearestNeighbor();
+        flip.SetOutputSpacing(1.0, 1.0, 1.0);
+        flip.SetOutputOrigin(0.0, 0.0, 0.0);
+        flip.SetOutputExtent(0, dims[1]-1, 0, dims[0]-1, 0, 0);
+        flip.FlipAboutOriginOff();
+        flip.SetFilteredAxes(1);
+        flip.Update();
+
+        vtkImageData flipOutput = flip.GetOutput();
+        rawImage.DeepCopy(flipOutput);
+    }
+
+    public int getCamera()
+    {
+        ImageKey key = getKey();
+        String cameraId = new File(key.name).getName().substring(2, 3);
+        return Integer.parseInt(cameraId);
     }
 
     @Override
@@ -70,27 +101,18 @@ public class FcImage extends Image
         ImageKey key = getKey();
         if (rootFolder == null)
         {
-            return FileCache.getFileFromServer(key.name + ".fit").getAbsolutePath();
+            return FileCache.getFileFromServer(key.name + ".FIT", true).getAbsolutePath();
         }
         else
         {
-            return rootFolder.getAbsolutePath() + key.name + ".fit";
+            return rootFolder.getAbsolutePath() + key.name + ".FIT";
         }
     }
 
     @Override
     protected String initializeInfoFileFullPath(File rootFolder)
     {
-        ImageKey key = getKey();
-        String imgLblFilename = key.name + ".lbl";
-        if (rootFolder == null)
-        {
-            return FileCache.getFileFromServer(imgLblFilename).getAbsolutePath();
-        }
-        else
-        {
-            return rootFolder.getAbsolutePath() + imgLblFilename;
-        }
+        return null;
     }
 
     @Override
@@ -98,11 +120,11 @@ public class FcImage extends Image
     {
         ImageKey key = getKey();
         File keyFile = new File(key.name);
-        String sumFilename = keyFile.getParentFile().getParent()
-        + "/sumfiles/N" + keyFile.getName().substring(3, 13) + ".SUM";
+        String sumFilename = keyFile.getParentFile().getParent() + "/sumfiles/"
+        + keyFile.getName().substring(0, 12).replace('B', 'A') + ".SUM";
         if (rootFolder == null)
         {
-            return FileCache.getFileFromServer(sumFilename).getAbsolutePath();
+            return FileCache.getFileFromServer(sumFilename, true).getAbsolutePath();
         }
         else
         {
@@ -113,56 +135,9 @@ public class FcImage extends Image
     @Override
     public int getFilter()
     {
-        String fitName = getFitFileFullPath();
-
-        int ind1 = fitName.lastIndexOf('_');
-        int ind2 = fitName.lastIndexOf('.');
-
-        String filterName = fitName.substring(ind1+1, ind2);
-
-        return getFilterNumberFromName(filterName);
-    }
-
-    private int getFilterNumberFromName(String name)
-    {
-        int num = -1;
-        if (name.equals("ul"))
-            num = 1;
-        else if (name.equals("b"))
-            num = 2;
-        else if (name.equals("v"))
-            num = 3;
-        else if (name.equals("w"))
-            num = 4;
-        else if (name.equals("x"))
-            num = 5;
-        else if (name.equals("p"))
-            num = 6;
-        else if (name.equals("zs"))
-            num = 7;
-
-        return num;
-    }
-
-    private String getFilterNameFromNumber(int num)
-    {
-        String name = "";
-        if (num == 1)
-            name = "ul";
-        else if (num == 2)
-            name = "b";
-        else if (num == 3)
-            name = "v";
-        else if (num == 4)
-            name = "w";
-        else if (num == 5)
-            name = "x";
-        else if (num == 6)
-            name = "p";
-        else if (num == 7)
-            name = "zs";
-
-        return name;
+        ImageKey key = getKey();
+        String filterId = new File(key.name).getName().substring(25, 26);
+        return Integer.parseInt(filterId);
     }
 
     @Override
@@ -181,7 +156,8 @@ public class FcImage extends Image
         properties.put("Name", new File(getFitFileFullPath()).getName()); //TODO remove extension and possibly prefix
         properties.put("Time", getStartTime());
         properties.put("Spacecraft Distance", df.format(getSpacecraftDistance()) + " km");
-        properties.put("Filter", getFilterNameFromNumber(getFilter()));
+        properties.put("Filter", String.valueOf(getFilter()));
+        properties.put("Camera", "FC" + String.valueOf(getCamera()));
 
         // Note \u00B0 is the unicode degree symbol
         String deg = "\u00B0";
