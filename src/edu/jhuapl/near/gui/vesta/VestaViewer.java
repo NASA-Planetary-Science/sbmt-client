@@ -8,6 +8,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 
+import edu.jhuapl.near.gui.ImageInfoPanel;
 import edu.jhuapl.near.gui.ModelInfoWindow;
 import edu.jhuapl.near.gui.ModelInfoWindowManager;
 import edu.jhuapl.near.gui.Renderer;
@@ -27,11 +28,13 @@ import edu.jhuapl.near.model.PointModel;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.vesta.FcBoundaryCollection;
 import edu.jhuapl.near.model.vesta.FcColorImageCollection;
+import edu.jhuapl.near.model.vesta.FcImage;
 import edu.jhuapl.near.model.vesta.FcImageCollection;
 import edu.jhuapl.near.model.vesta.Vesta;
 import edu.jhuapl.near.model.vesta.VestaGraticule;
 import edu.jhuapl.near.pick.PickManager;
 import edu.jhuapl.near.popupmenus.PopupManager;
+import edu.jhuapl.near.popupmenus.vesta.VestaPopupManager;
 import edu.jhuapl.near.util.Configuration;
 
 /**
@@ -73,13 +76,22 @@ public class VestaViewer extends Viewer
             public ModelInfoWindow createModelInfoWindow(Model model,
                     ModelManager modelManager)
             {
-                return null;
+                if (model instanceof FcImage)
+                {
+                    FcImageCollection fcImages = (FcImageCollection)modelManager.getModel(ModelNames.FC_IMAGES);
+                    FcBoundaryCollection fcBoundaries = (FcBoundaryCollection)modelManager.getModel(ModelNames.FC_BOUNDARY);
+                    return new ImageInfoPanel((FcImage)model, fcImages, fcBoundaries);
+                }
+                else
+                {
+                    return null;
+                }
             }
         };
 
         renderer = new Renderer(modelManager);
 
-        popupManager = new PopupManager(modelManager);
+        popupManager = new VestaPopupManager(renderer, modelManager, infoPanelManager);
 
         pickManager = new PickManager(renderer, statusBar, modelManager, popupManager);
 
