@@ -10,7 +10,7 @@ import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.pick.PickManager;
 import edu.jhuapl.near.query.QueryBase;
-import edu.jhuapl.near.query.VestaQuery;
+import edu.jhuapl.near.query.VestaEverythingQuery;
 
 public class FCSearchPanel extends AbstractImageSearchPanel
 {
@@ -58,7 +58,7 @@ public class FCSearchPanel extends AbstractImageSearchPanel
     @Override
     protected QueryBase getQuery()
     {
-        return VestaQuery.getInstance();
+        return VestaEverythingQuery.getInstance();
     }
 
     @Override
