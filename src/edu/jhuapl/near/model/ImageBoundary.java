@@ -176,7 +176,7 @@ public class ImageBoundary extends Model implements PropertyChangeListener
 
 
         PolyDataUtil.shiftPolyLineInNormalDirectionOfPolyData(
-                boundary, smallBodyModel.getSmallBodyPolyData(), smallBodyModel.getPointLocator(), 3.0*smallBodyModel.getMinShiftAmount());
+                boundary, smallBodyModel.getSmallBodyPolyData(), smallBodyModel.getPointLocator(), 4.0*smallBodyModel.getMinShiftAmount());
 
         boundaryMapper.SetInput(boundary);
 
