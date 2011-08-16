@@ -84,7 +84,7 @@ public class ImagePopupMenu extends PopupMenu
         }
 
         saveToDiskMenuItem = new JMenuItem(new SaveImageAction());
-        saveToDiskMenuItem.setText("Save Raw FIT Image to Disk...");
+        saveToDiskMenuItem.setText("Save Original FITS Image...");
         this.add(saveToDiskMenuItem);
 
         saveBackplanesMenuItem = new JMenuItem(new SaveBackplanesAction());
@@ -225,12 +225,18 @@ public class ImagePopupMenu extends PopupMenu
     {
         public void actionPerformed(ActionEvent e)
         {
-            File file = CustomFileChooser.showSaveDialog(invoker, "Save FIT file", imageKey.name + ".FIT", "fit");
+            File file = null;
             try
             {
+                imageCollection.addImage(imageKey);
+                Image image = imageCollection.getImage(imageKey);
+                String path = image.getFitFileFullPath();
+                String extension = path.substring(path.lastIndexOf("."));
+
+                file = CustomFileChooser.showSaveDialog(invoker, "Save FITS image", imageKey.name + extension, "fit");
                 if (file != null)
                 {
-                    File fitFile = FileCache.getFileFromServer(imageKey.name + ".FIT");
+                    File fitFile = FileCache.getFileFromServer(imageKey.name + extension);
 
                     FileUtil.copyFile(fitFile, file);
                 }

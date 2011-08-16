@@ -257,7 +257,7 @@ abstract public class Image extends Model implements PropertyChangeListener
         return imageHeight;
     }
 
-    protected String getFitFileFullPath()
+    public String getFitFileFullPath()
     {
         return fitFileFullPath;
     }
