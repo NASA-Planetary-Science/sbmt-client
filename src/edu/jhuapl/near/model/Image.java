@@ -40,6 +40,7 @@ import vtk.vtkXMLPolyDataReader;
 import vtk.vtksbCellLocator;
 
 import edu.jhuapl.near.util.BoundingBox;
+import edu.jhuapl.near.util.DateTimeUtil;
 import edu.jhuapl.near.util.FileCache;
 import edu.jhuapl.near.util.Frustum;
 import edu.jhuapl.near.util.IntensityRange;
@@ -660,50 +661,6 @@ abstract public class Image extends Model implements PropertyChangeListener
             s[i] = s[i].replace('D', 'E');
     }
 
-    /**
-     * Bob Gaskell's date time format needs to be converted to
-     * yyyy-MM-dd'T'HH:mm:ss.SSS format.
-     *
-     * @param datetime
-     * @return
-     */
-    private String convertDateTimeFormat(String datetime)
-    {
-        String[] tokens = datetime.trim().split("\\s+");
-
-        String year  = tokens[0];
-        String month = tokens[1];
-        String day   = tokens[2];
-        String time  = tokens[3];
-
-        if (month.equals("JAN"))
-            month = "01";
-        else if (month.equals("FEB"))
-            month = "02";
-        else if (month.equals("MAR"))
-            month = "03";
-        else if (month.equals("APR"))
-            month = "04";
-        else if (month.equals("MAY"))
-            month = "05";
-        else if (month.equals("JUN"))
-            month = "06";
-        else if (month.equals("JUL"))
-            month = "07";
-        else if (month.equals("AUG"))
-            month = "08";
-        else if (month.equals("SEP"))
-            month = "09";
-        else if (month.equals("OCT"))
-            month = "10";
-        else if (month.equals("NOV"))
-            month = "11";
-        else if (month.equals("DEC"))
-            month = "12";
-
-        return year + "-" + month + "-" + day + "T" + time;
-    }
-
     protected void loadSumfile(
             String sumfilename,
             double fovParameter1,
@@ -726,7 +683,7 @@ abstract public class Image extends Model implements PropertyChangeListener
         in.readLine();
 
         String datetime = in.readLine().trim();
-        datetime = convertDateTimeFormat(datetime);
+        datetime = DateTimeUtil.convertDateTimeFormat(datetime);
         startTime[0] = datetime;
         stopTime[0] = datetime;
 
