@@ -56,7 +56,7 @@ public class AmicaImage extends Image
     }
 
     @Override
-    protected void resizeRawImage(vtkImageData rawImage)
+    protected void processRawImage(vtkImageData rawImage)
     {
         int[] dims = rawImage.GetDimensions();
         if (dims[0] == 1024 && dims[1] == 1024)

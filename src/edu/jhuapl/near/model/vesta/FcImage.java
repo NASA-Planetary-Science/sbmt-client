@@ -29,7 +29,7 @@ public class FcImage extends Image
     }
 
     @Override
-    protected void resizeRawImage(vtkImageData rawImage)
+    protected void processRawImage(vtkImageData rawImage)
     {
         // Flip image along y axis. For some reason we need to do
         // this so the image is displayed properly.

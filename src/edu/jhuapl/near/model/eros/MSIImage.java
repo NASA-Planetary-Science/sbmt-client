@@ -61,7 +61,7 @@ public class MSIImage extends Image
     }
 
     @Override
-    protected void resizeRawImage(vtkImageData rawImage)
+    protected void processRawImage(vtkImageData rawImage)
     {
         int[] dims = rawImage.GetDimensions();
         int originalHeight = dims[1];

@@ -273,10 +273,12 @@ abstract public class Image extends Model implements PropertyChangeListener
     }
 
     /**
-     *  Give oppurtunity to subclass to resize raw image
+     *  Give oppurtunity to subclass to do some processing on the raw
+     *  image such as resizing, flipping, masking, etc.
+     *
      * @param rawImage
      */
-    protected void resizeRawImage(vtkImageData rawImage)
+    protected void processRawImage(vtkImageData rawImage)
     {
         // By default do nothing
     }
@@ -346,7 +348,7 @@ abstract public class Image extends Model implements PropertyChangeListener
                     minValue = array[i][j];
             }
 
-        resizeRawImage(rawImage);
+        processRawImage(rawImage);
 
         int[] dims = rawImage.GetDimensions();
         imageWidth = dims[0];
