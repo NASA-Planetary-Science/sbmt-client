@@ -1483,4 +1483,10 @@ abstract public class Image extends Model implements PropertyChangeListener
         else
             return true;
     }
+
+    public void setVisible(boolean b)
+    {
+        footprintActor.SetVisibility(b ? 1 : 0);
+        super.setVisible(b);
+    }
 }

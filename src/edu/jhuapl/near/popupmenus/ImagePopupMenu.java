@@ -37,13 +37,14 @@ public class ImagePopupMenu extends PopupMenu
     private ImageCollection imageCollection;
     private ImageBoundaryCollection imageBoundaryCollection;
     private ImageKey imageKey;
-    private JMenuItem showRemoveImageIn3DMenuItem;
-    private JMenuItem showRemoveBoundaryIn3DMenuItem;
+    private JMenuItem mapImageMenuItem;
+    private JMenuItem mapBoundaryMenuItem;
     private JMenuItem showImageInfoMenuItem;
     private JMenuItem saveToDiskMenuItem;
     private JMenuItem saveBackplanesMenuItem;
     private JMenuItem centerImageMenuItem;
     private JMenuItem showFrustumMenuItem;
+    private JMenuItem hideImageMenuItem;
     private ModelInfoWindowManager infoPanelManager;
     private Renderer renderer;
 
@@ -67,13 +68,13 @@ public class ImagePopupMenu extends PopupMenu
         this.renderer = renderer;
         this.invoker = invoker;
 
-        showRemoveImageIn3DMenuItem = new JCheckBoxMenuItem(new ShowRemoveIn3DAction());
-        showRemoveImageIn3DMenuItem.setText("Show Image");
-        this.add(showRemoveImageIn3DMenuItem);
+        mapImageMenuItem = new JCheckBoxMenuItem(new MapImageAction());
+        mapImageMenuItem.setText("Map Image");
+        this.add(mapImageMenuItem);
 
-        showRemoveBoundaryIn3DMenuItem = new JCheckBoxMenuItem(new ShowRemoveOutlineIn3DAction());
-        showRemoveBoundaryIn3DMenuItem.setText("Show Image Boundary");
-        this.add(showRemoveBoundaryIn3DMenuItem);
+        mapBoundaryMenuItem = new JCheckBoxMenuItem(new MapBoundaryAction());
+        mapBoundaryMenuItem.setText("Map Image Boundary");
+        this.add(mapBoundaryMenuItem);
 
         if (this.infoPanelManager != null)
         {
@@ -101,6 +102,10 @@ public class ImagePopupMenu extends PopupMenu
         showFrustumMenuItem.setText("Show Frustum");
         this.add(showFrustumMenuItem);
 
+        hideImageMenuItem = new JCheckBoxMenuItem(new HideImageAction());
+        hideImageMenuItem.setText("Hide Image");
+        this.add(hideImageMenuItem);
+
     }
 
     public void setCurrentImage(ImageKey key)
@@ -115,9 +120,9 @@ public class ImagePopupMenu extends PopupMenu
         boolean containsImage = imageCollection.containsImage(imageKey);
         boolean containsBoundary = imageBoundaryCollection.containsBoundary(imageKey);
 
-        showRemoveBoundaryIn3DMenuItem.setSelected(containsBoundary);
+        mapBoundaryMenuItem.setSelected(containsBoundary);
 
-        showRemoveImageIn3DMenuItem.setSelected(containsImage);
+        mapImageMenuItem.setSelected(containsImage);
 
         if (centerImageMenuItem != null)
         {
@@ -138,22 +143,26 @@ public class ImagePopupMenu extends PopupMenu
             Image image = imageCollection.getImage(imageKey);
             showFrustumMenuItem.setSelected(image.isFrustumShowing());
             showFrustumMenuItem.setEnabled(true);
+            hideImageMenuItem.setSelected(!image.isVisible());
+            hideImageMenuItem.setEnabled(true);
         }
         else
         {
             showFrustumMenuItem.setSelected(false);
             showFrustumMenuItem.setEnabled(false);
+            hideImageMenuItem.setSelected(false);
+            hideImageMenuItem.setEnabled(false);
         }
     }
 
 
-    public class ShowRemoveIn3DAction extends AbstractAction
+    public class MapImageAction extends AbstractAction
     {
         public void actionPerformed(ActionEvent e)
         {
             try
             {
-                if (showRemoveImageIn3DMenuItem.isSelected())
+                if (mapImageMenuItem.isSelected())
                     imageCollection.addImage(imageKey);
                 else
                     imageCollection.removeImage(imageKey);
@@ -169,13 +178,13 @@ public class ImagePopupMenu extends PopupMenu
         }
     }
 
-    private class ShowRemoveOutlineIn3DAction extends AbstractAction
+    private class MapBoundaryAction extends AbstractAction
     {
         public void actionPerformed(ActionEvent e)
         {
             try
             {
-                if (showRemoveBoundaryIn3DMenuItem.isSelected())
+                if (mapBoundaryMenuItem.isSelected())
                     imageBoundaryCollection.addBoundary(imageKey);
                 else
                     imageBoundaryCollection.removeBoundary(imageKey);
@@ -369,6 +378,26 @@ public class ImagePopupMenu extends PopupMenu
                 imageCollection.addImage(imageKey);
                 Image image = imageCollection.getImage(imageKey);
                 image.setShowFrustum(showFrustumMenuItem.isSelected());
+
+                updateMenuItems();
+            }
+            catch (Exception ex)
+            {
+                ex.printStackTrace();
+            }
+
+        }
+    }
+
+    private class HideImageAction extends AbstractAction
+    {
+        public void actionPerformed(ActionEvent e)
+        {
+            try
+            {
+                imageCollection.addImage(imageKey);
+                Image image = imageCollection.getImage(imageKey);
+                image.setVisible(!hideImageMenuItem.isSelected());
 
                 updateMenuItems();
             }
