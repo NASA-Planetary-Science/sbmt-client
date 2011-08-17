@@ -141,7 +141,7 @@ public class VestaDatabaseGeneratorSql
             File origFile = new File(filename);
             File rootFolder = origFile.getParentFile().getParentFile().getParentFile().getParentFile();
             String keyName = origFile.getAbsolutePath().replace(rootFolder.getAbsolutePath(), "");
-            keyName = keyName.replace(".fit", "");
+            keyName = keyName.replace(".FIT", "");
             ImageKey key = new ImageKey(keyName, fcSource);
             FcImage image = new FcImage(key, vestaModel, false, rootFolder);
 
@@ -253,7 +253,7 @@ public class VestaDatabaseGeneratorSql
 
             File rootFolder = origFile.getParentFile().getParentFile().getParentFile().getParentFile();
             String keyName = origFile.getAbsolutePath().replace(rootFolder.getAbsolutePath(), "");
-            keyName = keyName.replace(".fit", "");
+            keyName = keyName.replace(".FIT", "");
             ImageKey key = new ImageKey(keyName, fcSource);
             FcImage image = new FcImage(key, vestaModel, false, rootFolder);
 
