@@ -71,6 +71,8 @@ public class FileCache
      */
     static private FileInfo getFileInfoFromServer(String path, boolean doDownloadIfNeeded, boolean useAPLServer)
     {
+        path = replaceBackslashesWithForwardSlashes(path);
+
         FileInfo fi = new FileInfo();
 
         String unzippedPath = path;
@@ -306,5 +308,15 @@ public class FileCache
     static public void resetDownloadProgess()
     {
         downloadProgress = 0.0;
+    }
+
+    /**
+     * This is needed on windows.
+     * @param path
+     * @return
+     */
+    static private String replaceBackslashesWithForwardSlashes(String path)
+    {
+        return path.replace('\\', '/');
     }
 }
