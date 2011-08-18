@@ -58,7 +58,7 @@ public class VestaDatabaseGeneratorSql
             db.update(
                     "create table " + fcTableName + "(" +
                     "id bigint PRIMARY KEY, " +
-                    "filename char(30), " +
+                    "filename char(128), " +
                     "starttime bigint, " +
                     "stoptime bigint, " +
                     "filter tinyint, " +
