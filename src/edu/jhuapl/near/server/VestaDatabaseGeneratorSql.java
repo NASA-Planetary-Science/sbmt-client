@@ -160,7 +160,7 @@ public class VestaDatabaseGeneratorSql
             //startTime = startTime.substring(0, 10) + " " + startTime.substring(11, startTime.length());
             //stopTime = stopTime.substring(0, 10) + " " + stopTime.substring(11, stopTime.length());
 
-            System.out.println("id: " + Long.parseLong(origFile.getName().substring(3, 13)));
+            System.out.println("id: " + Long.parseLong(origFile.getName().substring(5, 12)));
             System.out.println("filename: " + origFile.getName());
             System.out.println("starttime: " + startTime);
             System.out.println("stoptime: " + stopTime);
@@ -179,7 +179,7 @@ public class VestaDatabaseGeneratorSql
             System.out.println("minPhase: " + image.getMinPhase());
             System.out.println("maxPhase: " + image.getMaxPhase());
 
-            fcInsert.setLong(1, Long.parseLong(origFile.getName().substring(3, 13), 10));
+            fcInsert.setLong(1, Long.parseLong(origFile.getName().substring(5, 12), 10));
             fcInsert.setString(2, origFile.getName());
             fcInsert.setLong(3, startTime.getMillis());
             fcInsert.setLong(4, stopTime.getMillis());
@@ -275,7 +275,7 @@ public class VestaDatabaseGeneratorSql
             for (Integer i : cubeIds)
             {
                 fcInsert2.setInt(1, count);
-                fcInsert2.setLong(2, Long.parseLong(origFile.getName().substring(3, 13), 10));
+                fcInsert2.setLong(2, Long.parseLong(origFile.getName().substring(5, 12), 10));
                 fcInsert2.setInt(3, i);
 
                 fcInsert2.executeUpdate();
@@ -329,7 +329,7 @@ public class VestaDatabaseGeneratorSql
         {
             File fcrootdir = (new File(line)).getParentFile().getParentFile();
             System.out.println(line);
-            String fcId = (new File(line)).getName().substring(0, 12);
+            String fcId = (new File(line)).getName().substring(0, 12).replace('B', 'A');
             String name = fcrootdir.getAbsolutePath() + "/sumfiles/" + fcId + ".SUM";
             System.out.println(name);
             file = new File(name);
