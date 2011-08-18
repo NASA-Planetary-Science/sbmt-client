@@ -128,6 +128,8 @@ if (strlen($cubesStr) > 0)
 	$query .= ")";
 }
 
+$query .= " ORDER BY starttime";
+
 $result=mysql_query($query);
 
 $num=mysql_numrows($result);
