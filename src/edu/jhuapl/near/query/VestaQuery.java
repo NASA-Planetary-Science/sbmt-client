@@ -12,6 +12,12 @@ public class VestaQuery extends QueryBase
 {
     private static VestaQuery ref = null;
 
+    private void changeFcPathToFullPath(ArrayList<String> result)
+    {
+        result.set(0, "/VESTA/FC/images/" + result.get(0));
+    }
+
+
     public static VestaQuery getInstance()
     {
         if (ref == null)
@@ -35,8 +41,8 @@ public class VestaQuery extends QueryBase
             DateTime startDate,
             DateTime stopDate,
             ArrayList<Integer> filters,
-            boolean fc1_unused,
-            boolean fc2_unused,
+            boolean fc1,
+            boolean fc2,
             double startDistance,
             double stopDistance,
             double startResolution,
@@ -83,12 +89,12 @@ public class VestaQuery extends QueryBase
 
                 if (results != null && results.size() > 0)
                 {
-//                    this.changeFcPathToFullPath(results.get(0));
+                    this.changeFcPathToFullPath(results.get(0));
                 }
                 return results;
             }
 
-            if (filters.isEmpty())
+            if (filters.isEmpty()|| (fc1 == false && fc2 == false))
                 return results;
 
             try
@@ -113,7 +119,9 @@ public class VestaQuery extends QueryBase
                 args.put("minPhase", String.valueOf(minPhase));
                 args.put("maxPhase", String.valueOf(maxPhase));
                 args.put("limbType", String.valueOf(limbType));
-                for (int i=1; i<=7; ++i)
+                args.put("fc1", fc1==true ? "1" : "0");
+                args.put("fc2", fc2==true ? "1" : "0");
+                for (int i=1; i<=8; ++i)
                 {
                     if (filters.contains(i))
                         args.put("filterType"+i, "1");
@@ -139,7 +147,7 @@ public class VestaQuery extends QueryBase
 
                 for (ArrayList<String> res : results)
                 {
-//                    this.changeFcPathToFullPath(res);
+                    this.changeFcPathToFullPath(res);
                 }
             }
             catch (Exception e)

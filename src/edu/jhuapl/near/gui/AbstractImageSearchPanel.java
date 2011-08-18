@@ -1449,6 +1449,11 @@ abstract public class AbstractImageSearchPanel extends javax.swing.JPanel implem
                 filtersChecked.add(6);
             if (filter7CheckBox.isSelected())
                 filtersChecked.add(7);
+            if (getNumberOfFilters() > 7)
+            {
+                if (filter8CheckBox.isSelected())
+                    filtersChecked.add(8);
+            }
 
             String searchField = null;
             if (searchByNumberCheckBox.isSelected())
