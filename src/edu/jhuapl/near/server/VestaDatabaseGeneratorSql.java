@@ -348,6 +348,31 @@ public class VestaDatabaseGeneratorSql
     }
 
     /**
+     * Only keep 1A files if there's no corresponding 1B file
+     * @param fcFiles
+     * @return
+     */
+    private static ArrayList<String> removeRedundantFiles(
+            ArrayList<String> fcFiles)
+    {
+        ArrayList<String> filesToKeep = new ArrayList<String>();
+        for (String path : fcFiles)
+        {
+            if (path.contains("FC21B"))
+            {
+                filesToKeep.add(path);
+            }
+            else if (path.contains("FC21A"))
+            {
+                if (!fcFiles.contains(path.replaceAll("FC21A", "FC21B")))
+                    filesToKeep.add(path);
+            }
+        }
+
+        return filesToKeep;
+    }
+
+    /**
      * @param args
      * @throws IOException
      */
@@ -358,13 +383,12 @@ public class VestaDatabaseGeneratorSql
         vestaModel = new Vesta();
 
         String fcFileList=args[0];
-        //String inertialFilename = args[1];
         int mode = Integer.parseInt(args[1]);
 
         ArrayList<String> fcFiles = null;
         try {
             fcFiles = FileUtil.getFileLinesAsStringList(fcFileList);
-            //loadInertialFile(inertialFilename);
+            fcFiles = removeRedundantFiles(fcFiles);
         } catch (IOException e2) {
             e2.printStackTrace();
             return;
