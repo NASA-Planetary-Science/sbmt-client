@@ -26,8 +26,10 @@ import edu.jhuapl.near.util.NativeLibraryLoader;
 
 public class VestaDatabaseGeneratorSql
 {
-    static private final String FcImagesGaskellTable = "fcimages_gaskell";
-    static private final String FcCubesGaskellTable = "fccubes_gaskell";
+    static private final String FcImagesGaskellTable = "fcimages_gaskell_beta";
+    static private final String FcCubesGaskellTable = "fccubes_gaskell_beta";
+    static private final String FcImagesPdsTable = "fcimages_pds_beta";
+    static private final String FcCubesPdsTable = "fccubes_pds_beta";
 
     static private SqlManager db = null;
     static private PreparedStatement fcInsert = null;
@@ -343,6 +345,18 @@ public class VestaDatabaseGeneratorSql
 //                return false;
 //            }
         }
+        else
+        {
+            File fcrootdir = (new File(line)).getParentFile().getParentFile();
+            System.out.println(line);
+            String fcId = (new File(line)).getName();
+            fcId = fcId.substring(0, fcId.length()-4);
+            String name = fcrootdir.getAbsolutePath() + "/infofiles/" + fcId + ".INFO";
+            System.out.println(name);
+            file = new File(name);
+            if (!file.exists())
+                return false;
+        }
 
         return true;
     }
@@ -424,6 +438,10 @@ public class VestaDatabaseGeneratorSql
             createFcTables(FcImagesGaskellTable);
         else if (mode == 2 || mode == 0)
             createFcTablesCubes(FcCubesGaskellTable);
+        else if (mode == 3 || mode == 0)
+            createFcTables(FcImagesPdsTable);
+        else if (mode == 4 || mode == 0)
+            createFcTablesCubes(FcCubesPdsTable);
 
         try
         {
@@ -431,6 +449,10 @@ public class VestaDatabaseGeneratorSql
                 populateFcTables(fcFiles, FcImagesGaskellTable, Image.ImageSource.GASKELL);
             else if (mode == 2 || mode == 0)
                 populateFcTablesCubes(fcFiles, FcCubesGaskellTable, Image.ImageSource.GASKELL);
+            else if (mode == 3 || mode == 0)
+                populateFcTables(fcFiles, FcImagesPdsTable, Image.ImageSource.PDS);
+            else if (mode == 4 || mode == 0)
+                populateFcTablesCubes(fcFiles, FcCubesPdsTable, Image.ImageSource.PDS);
         }
         catch (Exception e1) {
             e1.printStackTrace();

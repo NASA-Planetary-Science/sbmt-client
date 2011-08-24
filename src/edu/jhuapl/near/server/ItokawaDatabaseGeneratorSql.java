@@ -30,8 +30,10 @@ import edu.jhuapl.near.util.NativeLibraryLoader;
 
 public class ItokawaDatabaseGeneratorSql
 {
-    static private final String AmicaImagesGaskellTable = "amicaimages_gaskell";
-    static private final String AmicaCubesGaskellTable = "amicacubes_gaskell";
+    static private final String AmicaImagesGaskellTable = "amicaimages_gaskell_beta";
+    static private final String AmicaCubesGaskellTable = "amicacubes_gaskell_beta";
+    static private final String AmicaImagesPdsTable = "amicaimages_pds_beta";
+    static private final String AmicaCubesPdsTable = "amicacubes_pds_beta";
 
     static private SqlManager db = null;
     static private PreparedStatement amicaInsert = null;
@@ -342,6 +344,18 @@ public class ItokawaDatabaseGeneratorSql
                 return false;
             }
         }
+        else
+        {
+            File amicarootdir = (new File(line)).getParentFile().getParentFile();
+            System.out.println(line);
+            String amicaId = (new File(line)).getName();
+            amicaId = amicaId.substring(0, amicaId.length()-4);
+            name = amicarootdir.getAbsolutePath() + "/infofiles/" + amicaId + ".INFO";
+            System.out.println(name);
+            file = new File(name);
+            if (!file.exists())
+                return false;
+        }
 
         return true;
     }
@@ -382,6 +396,10 @@ public class ItokawaDatabaseGeneratorSql
             createAmicaTables(AmicaImagesGaskellTable);
         else if (mode == 2 || mode == 0)
             createAmicaTablesCubes(AmicaCubesGaskellTable);
+        else if (mode == 3 || mode == 0)
+            createAmicaTables(AmicaImagesPdsTable);
+        else if (mode == 4 || mode == 0)
+            createAmicaTablesCubes(AmicaCubesPdsTable);
 
         try
         {
@@ -389,6 +407,10 @@ public class ItokawaDatabaseGeneratorSql
                 populateAmicaTables(amicaFiles, AmicaImagesGaskellTable, Image.ImageSource.GASKELL);
             else if (mode == 2 || mode == 0)
                 populateAmicaTablesCubes(amicaFiles, AmicaCubesGaskellTable, Image.ImageSource.GASKELL);
+            else if (mode == 3 || mode == 0)
+                populateAmicaTables(amicaFiles, AmicaImagesPdsTable, Image.ImageSource.PDS);
+            else if (mode == 4 || mode == 0)
+                populateAmicaTablesCubes(amicaFiles, AmicaCubesPdsTable, Image.ImageSource.PDS);
         }
         catch (Exception e1) {
             e1.printStackTrace();
