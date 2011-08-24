@@ -150,6 +150,7 @@ public class ItokawaDatabaseGeneratorSql
             ImageKey key = new ImageKey(keyName, amicaSource);
             AmicaImage image = new AmicaImage(key, itokawaModel, false, rootFolder);
 
+            image.loadFootprint();
             if (image.getUnshiftedFootprint().GetNumberOfCells() == 0)
             {
                 System.out.println("skipping this image since no intersecting cells");
