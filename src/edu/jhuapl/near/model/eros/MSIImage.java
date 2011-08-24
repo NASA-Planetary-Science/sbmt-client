@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.DecimalFormat;
 import java.util.LinkedHashMap;
-import java.util.StringTokenizer;
 
 import nom.tam.fits.FitsException;
 
@@ -18,7 +17,6 @@ import vtk.vtkImageReslice;
 import edu.jhuapl.near.model.Image;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.util.FileCache;
-import edu.jhuapl.near.util.MathUtil;
 
 public class MSIImage extends Image
 {
@@ -36,18 +34,8 @@ public class MSIImage extends Image
     public static final int TOP_MASK = 2;
     public static final int BOTTOM_MASK = 2;
 
-    public static final String MSI_FRUSTUM1 = "MSI_FRUSTUM1";
-    public static final String MSI_FRUSTUM2 = "MSI_FRUSTUM2";
-    public static final String MSI_FRUSTUM3 = "MSI_FRUSTUM3";
-    public static final String MSI_FRUSTUM4 = "MSI_FRUSTUM4";
-    public static final String MSI_BORESIGHT_DIRECTION = "MSI_BORESIGHT_DIRECTION";
-    public static final String MSI_UP_DIRECTION = "MSI_UP_DIRECTION";
-    public static final String START_TIME = "START_TIME";
-    public static final String STOP_TIME = "STOP_TIME";
     //public static final String TARGET_CENTER_DISTANCE = "TARGET_CENTER_DISTANCE";
     //public static final String HORIZONTAL_PIXEL_SCALE = "HORIZONTAL_PIXEL_SCALE";
-    public static final String SPACECRAFT_POSITION = "SPACECRAFT_POSITION";
-    public static final String SUN_POSITION_LT = "SUN_POSITION_LT";
 
     private SmallBodyModel erosModel;
 
@@ -79,125 +67,9 @@ public class MSIImage extends Image
         rawImage.SetSpacing(1, 1, 1);
     }
 
-    @Override
-    protected void loadImageInfo(
-            String lblFilename,
-            String[] startTime,
-            String[] stopTime,
-            double[] spacecraftPosition,
-            double[] sunVector,
-            double[] frustum1,
-            double[] frustum2,
-            double[] frustum3,
-            double[] frustum4,
-            double[] boresightDirection,
-            double[] upVector) throws NumberFormatException, IOException
-    {
-        FileInputStream fs = null;
-        try {
-            fs = new FileInputStream(lblFilename);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        InputStreamReader isr = new InputStreamReader(fs);
-        BufferedReader in = new BufferedReader(isr);
-
-        String str;
-        while ((str = in.readLine()) != null)
-        {
-            StringTokenizer st = new StringTokenizer(str);
-            while (st.hasMoreTokens())
-            {
-                String token = st.nextToken();
-                if (START_TIME.equals(token))
-                {
-                    st.nextToken();
-                    startTime[0] = st.nextToken();
-                }
-                if (STOP_TIME.equals(token))
-                {
-                    st.nextToken();
-                    stopTime[0] = st.nextToken();
-                }
-                if (SPACECRAFT_POSITION.equals(token) ||
-                        MSI_FRUSTUM1.equals(token) ||
-                        MSI_FRUSTUM2.equals(token) ||
-                        MSI_FRUSTUM3.equals(token) ||
-                        MSI_FRUSTUM4.equals(token) ||
-                        SUN_POSITION_LT.equals(token) ||
-                        MSI_BORESIGHT_DIRECTION.equals(token) ||
-                        MSI_UP_DIRECTION.equals(token))
-                {
-                    st.nextToken();
-                    st.nextToken();
-                    double x = Double.parseDouble(st.nextToken());
-                    st.nextToken();
-                    double y = Double.parseDouble(st.nextToken());
-                    st.nextToken();
-                    double z = Double.parseDouble(st.nextToken());
-                    if (SPACECRAFT_POSITION.equals(token))
-                    {
-                        spacecraftPosition[0] = x;
-                        spacecraftPosition[1] = y;
-                        spacecraftPosition[2] = z;
-                    }
-                    else if (MSI_FRUSTUM1.equals(token))
-                    {
-                        frustum1[0] = x;
-                        frustum1[1] = y;
-                        frustum1[2] = z;
-                        MathUtil.vhat(frustum1, frustum1);
-                    }
-                    else if (MSI_FRUSTUM2.equals(token))
-                    {
-                        frustum2[0] = x;
-                        frustum2[1] = y;
-                        frustum2[2] = z;
-                        MathUtil.vhat(frustum2, frustum2);
-                    }
-                    else if (MSI_FRUSTUM3.equals(token))
-                    {
-                        frustum3[0] = x;
-                        frustum3[1] = y;
-                        frustum3[2] = z;
-                        MathUtil.vhat(frustum3, frustum3);
-                    }
-                    else if (MSI_FRUSTUM4.equals(token))
-                    {
-                        frustum4[0] = x;
-                        frustum4[1] = y;
-                        frustum4[2] = z;
-                        MathUtil.vhat(frustum4, frustum4);
-                    }
-                    if (SUN_POSITION_LT.equals(token))
-                    {
-                        sunVector[0] = x;
-                        sunVector[1] = y;
-                        sunVector[2] = z;
-                        MathUtil.vhat(sunVector, sunVector);
-                    }
-                    if (MSI_BORESIGHT_DIRECTION.equals(token))
-                    {
-                        boresightDirection[0] = x;
-                        boresightDirection[1] = y;
-                        boresightDirection[2] = z;
-                    }
-                    if (MSI_UP_DIRECTION.equals(token))
-                    {
-                        upVector[0] = x;
-                        upVector[1] = y;
-                        upVector[2] = z;
-                    }
-                }
-            }
-        }
-
-        in.close();
-    }
-
     public String generateBackplanesLabel() throws IOException
     {
-        String lblFilename = getInfoFileFullPath();
+        String lblFilename = getLabelFileFullPath();
 
         FileInputStream fs = null;
         try {
@@ -329,7 +201,7 @@ public class MSIImage extends Image
     }
 
     @Override
-    protected String initializeInfoFileFullPath(File rootFolder)
+    protected String initializeLabelFileFullPath(File rootFolder)
     {
         ImageKey key = getKey();
         String imgLblFilename = key.name + "_DDR.LBL";
@@ -341,6 +213,12 @@ public class MSIImage extends Image
         {
             return rootFolder.getAbsolutePath() + imgLblFilename;
         }
+    }
+
+    @Override
+    protected String initializeInfoFileFullPath(File rootFolder)
+    {
+        return initializeLabelFileFullPath(rootFolder);
     }
 
     @Override

@@ -5,10 +5,12 @@ import java.beans.PropertyChangeListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.StringTokenizer;
 
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
@@ -58,6 +60,16 @@ import edu.jhuapl.near.util.Properties;
 abstract public class Image extends Model implements PropertyChangeListener
 {
     public static final float PDS_NA = -1.e32f;
+    public static final String FRUSTUM1 = "FRUSTUM1";
+    public static final String FRUSTUM2 = "FRUSTUM2";
+    public static final String FRUSTUM3 = "FRUSTUM3";
+    public static final String FRUSTUM4 = "FRUSTUM4";
+    public static final String BORESIGHT_DIRECTION = "BORESIGHT_DIRECTION";
+    public static final String UP_DIRECTION = "UP_DIRECTION";
+    public static final String START_TIME = "START_TIME";
+    public static final String STOP_TIME = "STOP_TIME";
+    public static final String SPACECRAFT_POSITION = "SPACECRAFT_POSITION";
+    public static final String SUN_POSITION_LT = "SUN_POSITION_LT";
 
     private SmallBodyModel smallBodyModel;
 
@@ -118,6 +130,7 @@ abstract public class Image extends Model implements PropertyChangeListener
     private int imageHeight;
 
     private String fitFileFullPath; // The actual path of the image stored on the local disk (after downloading from the server)
+    private String labelFileFullPath;
     private String infoFileFullPath;
     private String sumfileFullPath;
 
@@ -199,12 +212,15 @@ abstract public class Image extends Model implements PropertyChangeListener
         this.smallBodyModel = smallBodyModel;
 
         if (!loadPointingOnly)
+        {
             fitFileFullPath = initializeFitFileFullPath(rootFolder);
-
-        infoFileFullPath = initializeInfoFileFullPath(rootFolder);
+            labelFileFullPath = initializeLabelFileFullPath(rootFolder);
+        }
 
         if (key.source.equals(ImageSource.GASKELL))
             sumfileFullPath = initializeSumfileFullPath(rootFolder);
+        else
+            infoFileFullPath = initializeInfoFileFullPath(rootFolder);
 
         loadPointing();
 
@@ -212,7 +228,7 @@ abstract public class Image extends Model implements PropertyChangeListener
             loadImage();
     }
 
-    abstract protected void loadImageInfo(
+    protected void loadImageInfo(
             String lblFilename,
             String[] startTime,
             String[] stopTime,
@@ -223,7 +239,116 @@ abstract public class Image extends Model implements PropertyChangeListener
             double[] frustum3,
             double[] frustum4,
             double[] boresightDirection,
-            double[] upVector) throws NumberFormatException, IOException;
+            double[] upVector) throws NumberFormatException, IOException
+    {
+        FileInputStream fs = null;
+        try {
+            fs = new FileInputStream(lblFilename);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        InputStreamReader isr = new InputStreamReader(fs);
+        BufferedReader in = new BufferedReader(isr);
+
+        String str;
+        while ((str = in.readLine()) != null)
+        {
+            StringTokenizer st = new StringTokenizer(str);
+            while (st.hasMoreTokens())
+            {
+                String token = st.nextToken();
+                if (token == null)
+                    continue;
+
+                if (START_TIME.equals(token))
+                {
+                    st.nextToken();
+                    startTime[0] = st.nextToken();
+                }
+                if (STOP_TIME.equals(token))
+                {
+                    st.nextToken();
+                    stopTime[0] = st.nextToken();
+                }
+                // For backwards compatibility with MSI images we use the endsWith function
+                // rather than equals for FRUSTUM1, FRUSTUM2, FRUSTUM3, FRUSTUM4, BORESIGHT_DIRECTION
+                // and UP_DIRECTION since these are all prefixed with MSI_ in the info file.
+                if (SPACECRAFT_POSITION.equals(token) ||
+                        SUN_POSITION_LT.equals(token) ||
+                        token.endsWith(FRUSTUM1) ||
+                        token.endsWith(FRUSTUM2) ||
+                        token.endsWith(FRUSTUM3) ||
+                        token.endsWith(FRUSTUM4) ||
+                        token.endsWith(BORESIGHT_DIRECTION) ||
+                        token.endsWith(UP_DIRECTION))
+                {
+                    st.nextToken();
+                    st.nextToken();
+                    double x = Double.parseDouble(st.nextToken());
+                    st.nextToken();
+                    double y = Double.parseDouble(st.nextToken());
+                    st.nextToken();
+                    double z = Double.parseDouble(st.nextToken());
+                    if (SPACECRAFT_POSITION.equals(token))
+                    {
+                        spacecraftPosition[0] = x;
+                        spacecraftPosition[1] = y;
+                        spacecraftPosition[2] = z;
+                    }
+                    if (SUN_POSITION_LT.equals(token))
+                    {
+                        sunVector[0] = x;
+                        sunVector[1] = y;
+                        sunVector[2] = z;
+                        MathUtil.vhat(sunVector, sunVector);
+                    }
+                    else if (token.endsWith(FRUSTUM1))
+                    {
+                        frustum1[0] = x;
+                        frustum1[1] = y;
+                        frustum1[2] = z;
+                        MathUtil.vhat(frustum1, frustum1);
+                    }
+                    else if (token.endsWith(FRUSTUM2))
+                    {
+                        frustum2[0] = x;
+                        frustum2[1] = y;
+                        frustum2[2] = z;
+                        MathUtil.vhat(frustum2, frustum2);
+                    }
+                    else if (token.endsWith(FRUSTUM3))
+                    {
+                        frustum3[0] = x;
+                        frustum3[1] = y;
+                        frustum3[2] = z;
+                        MathUtil.vhat(frustum3, frustum3);
+                    }
+                    else if (token.endsWith(FRUSTUM4))
+                    {
+                        frustum4[0] = x;
+                        frustum4[1] = y;
+                        frustum4[2] = z;
+                        MathUtil.vhat(frustum4, frustum4);
+                    }
+                    if (token.endsWith(BORESIGHT_DIRECTION))
+                    {
+                        boresightDirection[0] = x;
+                        boresightDirection[1] = y;
+                        boresightDirection[2] = z;
+                    }
+                    if (token.endsWith(UP_DIRECTION))
+                    {
+                        upVector[0] = x;
+                        upVector[1] = y;
+                        upVector[2] = z;
+                    }
+                }
+            }
+        }
+
+        in.close();
+    }
+
 
     abstract public double getFovParameter1();
     abstract public double getFovParameter2();
@@ -244,6 +369,7 @@ abstract public class Image extends Model implements PropertyChangeListener
     abstract public LinkedHashMap<String, String> getProperties() throws IOException;
 
     abstract protected String initializeFitFileFullPath(File rootFolder);
+    abstract protected String initializeLabelFileFullPath(File rootFolder);
     abstract protected String initializeInfoFileFullPath(File rootFolder);
     abstract protected String initializeSumfileFullPath(File rootFolder);
 
@@ -260,6 +386,11 @@ abstract public class Image extends Model implements PropertyChangeListener
     public String getFitFileFullPath()
     {
         return fitFileFullPath;
+    }
+
+    protected String getLabelFileFullPath()
+    {
+        return labelFileFullPath;
     }
 
     protected String getInfoFileFullPath()
@@ -383,10 +514,6 @@ abstract public class Image extends Model implements PropertyChangeListener
 
     protected void loadPointing() throws FitsException, IOException
     {
-        loadImageInfo();
-
-        // If the sumfile exists, then load it after we load the LBL file
-        // so as to overwrite whatever was loaded from the LBL file.
         if (key.source.equals(ImageSource.GASKELL))
         {
             try
@@ -397,6 +524,10 @@ abstract public class Image extends Model implements PropertyChangeListener
             {
                 System.out.println("Sumfile not available");
             }
+        }
+        else
+        {
+            loadImageInfo();
         }
     }
 

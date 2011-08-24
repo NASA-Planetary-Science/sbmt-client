@@ -100,7 +100,7 @@ public class AmicaSearchPanel extends AbstractImageSearchPanel
     @Override
     protected boolean showSourceComboBox()
     {
-        return false;
+        return true;
     }
 
     @Override

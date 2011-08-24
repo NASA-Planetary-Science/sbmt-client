@@ -55,23 +55,6 @@ public class FcImage extends Image
         return Integer.parseInt(cameraId);
     }
 
-    @Override
-    protected void loadImageInfo(
-            String lblFilename,
-            String[] startTime,
-            String[] stopTime,
-            double[] spacecraftPosition,
-            double[] sunVector,
-            double[] frustum1,
-            double[] frustum2,
-            double[] frustum3,
-            double[] frustum4,
-            double[] boresightDirection,
-            double[] upVector) throws NumberFormatException, IOException
-    {
-        // Not used
-    }
-
     public String generateBackplanesLabel() throws IOException
     {
         return "";
@@ -110,9 +93,26 @@ public class FcImage extends Image
     }
 
     @Override
+    protected String initializeLabelFileFullPath(File rootFolder)
+    {
+        return initializeInfoFileFullPath(rootFolder);
+    }
+
+    @Override
     protected String initializeInfoFileFullPath(File rootFolder)
     {
-        return null;
+        ImageKey key = getKey();
+        File keyFile = new File(key.name);
+        String sumFilename = keyFile.getParentFile().getParent() + "/infofiles/"
+        + keyFile.getName() + ".INFO";
+        if (rootFolder == null)
+        {
+            return FileCache.getFileFromServer(sumFilename, true).getAbsolutePath();
+        }
+        else
+        {
+            return rootFolder.getAbsolutePath() + sumFilename;
+        }
     }
 
     @Override

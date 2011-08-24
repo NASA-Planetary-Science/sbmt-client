@@ -16,6 +16,7 @@ import nom.tam.fits.FitsException;
 
 import vtk.vtkImageConstantPad;
 import vtk.vtkImageData;
+import vtk.vtkImageResample;
 import vtk.vtkImageTranslateExtent;
 
 import edu.jhuapl.near.model.Image;
@@ -39,23 +40,6 @@ public class AmicaImage extends Image
     }
 
     @Override
-    protected void loadImageInfo(
-            String lblFilename,
-            String[] startTime,
-            String[] stopTime,
-            double[] spacecraftPosition,
-            double[] sunVector,
-            double[] frustum1,
-            double[] frustum2,
-            double[] frustum3,
-            double[] frustum4,
-            double[] boresightDirection,
-            double[] upVector) throws NumberFormatException, IOException
-    {
-        // Not used
-    }
-
-    @Override
     protected void processRawImage(vtkImageData rawImage)
     {
         int[] dims = rawImage.GetDimensions();
@@ -66,13 +50,59 @@ public class AmicaImage extends Image
         // of 1024x1024. Therefore, the following pads the images with zero back to
         // original size. The vtkImageTranslateExtent first translates the cropped image
         // to its proper position in the original and the vtkImageConstantPad then pads
-        // it with zero to size 1024x1024.
+        // it with zero to size 1024x1024. For images that were binned need to resample
+        // to 1024x1024.
+        String filename = getFitFileFullPath();
 
-        int[] masking = getMaskSizes();
-        //int topMask =    masking[0];
-        //int rightMask =  masking[1];
-        int bottomMask = masking[2];
-        int leftMask =   masking[3];
+        int binning = 1;
+        //int topMask = 0;
+        //int rightMask = 0;
+        int bottomMask = 0;
+        int leftMask = 0;
+
+        try
+        {
+            Fits f = new Fits(filename);
+            BasicHDU h = f.getHDU(0);
+
+            binning = h.getHeader().getIntValue("BINNING");
+            int startH = h.getHeader().getIntValue("START_H");
+            //int startV = h.getHeader().getIntValue("START_V");
+            //int lastH  = h.getHeader().getIntValue("LAST_H");
+            int lastV  = h.getHeader().getIntValue("LAST_V");
+
+            if (binning == 1)
+            {
+                //topMask = startV;
+                //rightMask = 1023-lastH;
+                bottomMask = 1023-lastV;
+                leftMask = startH;
+            }
+            else if (binning == 2)
+            {
+                startH /= 2;
+                //startV /= 2;
+                //lastH = ((lastH + 1) / 2) - 1;
+                lastV = ((lastV + 1) / 2) - 1;
+
+                //topMask = startV;
+                //rightMask = 511-lastH;
+                bottomMask = 511-lastV;
+                leftMask = startH;
+            }
+            else
+            {
+                // do nothing as images with binning higher than 2 have no masks
+            }
+        }
+        catch (FitsException e)
+        {
+            e.printStackTrace();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
 
         vtkImageTranslateExtent translateExtent = new vtkImageTranslateExtent();
         translateExtent.SetInputConnection(rawImage.GetProducerPort());
@@ -81,7 +111,14 @@ public class AmicaImage extends Image
 
         vtkImageConstantPad pad = new vtkImageConstantPad();
         pad.SetInputConnection(translateExtent.GetOutputPort());
-        pad.SetOutputWholeExtent(0, 1023, 0, 1023, 0, 0);
+        if (binning == 1)
+            pad.SetOutputWholeExtent(0, 1023, 0, 1023, 0, 0);
+        else if (binning == 2)
+            pad.SetOutputWholeExtent(0, 511, 0, 511, 0, 0);
+        else if (binning == 4)
+            pad.SetOutputWholeExtent(0, 255, 0, 255, 0, 0);
+        else if (binning == 8)
+            pad.SetOutputWholeExtent(0, 127, 0, 127, 0, 0);
         pad.Update();
 
         vtkImageData padOutput = pad.GetOutput();
@@ -89,6 +126,20 @@ public class AmicaImage extends Image
 
         // shift origin back to zero
         rawImage.SetOrigin(0.0, 0.0, 0.0);
+
+        // Rescale image to 1024 by 1024 for binned images
+        if (binning > 1)
+        {
+            vtkImageResample resample = new vtkImageResample();
+            resample.SetInput(rawImage);
+            resample.InterpolateOff();
+            resample.SetAxisMagnificationFactor(0, binning);
+            resample.SetAxisMagnificationFactor(1, binning);
+            resample.SetAxisMagnificationFactor(2, 1.0);
+            resample.Update();
+            vtkImageData resampleOutput = resample.GetOutput();
+            rawImage.DeepCopy(resampleOutput);
+        }
     }
 
     private void appendWithPadding(StringBuffer strbuf, String str)
@@ -107,7 +158,7 @@ public class AmicaImage extends Image
 
     public String generateBackplanesLabel() throws IOException
     {
-        String lblFilename = getInfoFileFullPath();
+        String lblFilename = getLabelFileFullPath();
 
         FileInputStream fs = new FileInputStream(lblFilename);
         InputStreamReader isr = new InputStreamReader(fs);
@@ -345,7 +396,7 @@ public class AmicaImage extends Image
     }
 
     @Override
-    protected String initializeInfoFileFullPath(File rootFolder)
+    protected String initializeLabelFileFullPath(File rootFolder)
     {
         ImageKey key = getKey();
         String imgLblFilename = key.name + ".lbl";
@@ -356,6 +407,23 @@ public class AmicaImage extends Image
         else
         {
             return rootFolder.getAbsolutePath() + imgLblFilename;
+        }
+    }
+
+    @Override
+    protected String initializeInfoFileFullPath(File rootFolder)
+    {
+        ImageKey key = getKey();
+        File keyFile = new File(key.name);
+        String sumFilename = keyFile.getParentFile().getParent()
+        + "/infofiles/" + keyFile.getName() + ".INFO";
+        if (rootFolder == null)
+        {
+            return FileCache.getFileFromServer(sumFilename).getAbsolutePath();
+        }
+        else
+        {
+            return rootFolder.getAbsolutePath() + sumFilename;
         }
     }
 

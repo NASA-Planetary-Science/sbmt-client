@@ -97,7 +97,7 @@ public class FCSearchPanel extends AbstractImageSearchPanel
     @Override
     protected boolean showSourceComboBox()
     {
-        return false;
+        return true;
     }
 
     @Override
