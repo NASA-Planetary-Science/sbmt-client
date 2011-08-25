@@ -28,7 +28,7 @@ public class FCSearchPanel extends AbstractImageSearchPanel
     @Override
     protected Date getDefaultStartDate()
     {
-        return new GregorianCalendar(2011, 6, 1, 0, 0, 0).getTime();
+        return new GregorianCalendar(2011, 4, 3, 0, 0, 0).getTime();
     }
 
     @Override
