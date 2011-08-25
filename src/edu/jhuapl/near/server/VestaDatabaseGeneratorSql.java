@@ -7,6 +7,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.TreeSet;
 
+import nom.tam.fits.BasicHDU;
+import nom.tam.fits.Fits;
 import nom.tam.fits.FitsException;
 
 import org.joda.time.DateTime;
@@ -374,16 +376,40 @@ public class VestaDatabaseGeneratorSql
     }
 
     /**
-     * Only keep 1A files if there's no corresponding 1B file
+     * Only keep 1A files if there's no corresponding 1B file.
+     * Also remove files that are not exactly 1024x1024 pixels.
      * @param fcFiles
      * @return
      */
-    private static ArrayList<String> removeRedundantFiles(
+    private static ArrayList<String> removeRedundantAndWrongSizedFiles(
             ArrayList<String> fcFiles)
     {
         ArrayList<String> filesToKeep = new ArrayList<String>();
         for (String path : fcFiles)
         {
+            // First ignore files that are not exactly 1024x1024 pixels.
+            try
+            {
+                Fits f = new Fits(path);
+                BasicHDU h = f.getHDU(0);
+
+                int x = h.getHeader().getIntValue("NAXIS1");
+                int y = h.getHeader().getIntValue("NAXIS2");
+                System.out.println("Size: " + x + " " + y + "  " + path);
+                f.getStream().close();
+                if (x != 1024 || y != 1024)
+                    continue;
+            }
+            catch (FitsException e)
+            {
+                e.printStackTrace();
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+
+
             if (path.contains("FC21B"))
             {
                 filesToKeep.add(path);
@@ -431,7 +457,7 @@ public class VestaDatabaseGeneratorSql
         ArrayList<String> fcFiles = null;
         try {
             fcFiles = FileUtil.getFileLinesAsStringList(fcFileList);
-            fcFiles = removeRedundantFiles(fcFiles);
+            fcFiles = removeRedundantAndWrongSizedFiles(fcFiles);
         } catch (IOException e2) {
             e2.printStackTrace();
             return;
