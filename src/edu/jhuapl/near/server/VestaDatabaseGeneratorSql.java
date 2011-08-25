@@ -147,6 +147,18 @@ public class VestaDatabaseGeneratorSql
             ImageKey key = new ImageKey(keyName, fcSource);
             FcImage image = new FcImage(key, vestaModel, false, rootFolder);
 
+            image.loadFootprint();
+            if (image.getUnshiftedFootprint().GetNumberOfCells() == 0)
+            {
+                System.out.println("skipping this image since no intersecting cells");
+                image.Delete();
+                System.gc();
+                System.out.println("deleted " + vtkGlobalJavaHash.GC());
+                System.out.println(" ");
+                System.out.println(" ");
+                continue;
+            }
+
             // Calling this forces the calculation of incidence, emission, phase, and pixel scale
             image.getProperties();
 

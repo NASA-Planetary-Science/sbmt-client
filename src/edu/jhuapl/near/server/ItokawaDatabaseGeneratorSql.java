@@ -157,6 +157,8 @@ public class ItokawaDatabaseGeneratorSql
                 image.Delete();
                 System.gc();
                 System.out.println("deleted " + vtkGlobalJavaHash.GC());
+                System.out.println(" ");
+                System.out.println(" ");
                 continue;
             }
 
