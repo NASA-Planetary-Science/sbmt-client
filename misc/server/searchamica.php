@@ -20,7 +20,7 @@ $filterType5=$_POST['filterType5'] + 0;
 $filterType6=$_POST['filterType6'] + 0;
 $filterType7=$_POST['filterType7'] + 0;
 $cubesStr=$_POST['cubes'];
-$amicaSource=$_POST['amicaSource'];
+$imageSource=$_POST['imageSource'];
 $limbType=$_POST['limbType'] + 0;
 
 $filterTypes = array();
@@ -45,10 +45,10 @@ $password="n3ar!usr";
 $database="near";
 $host="sd-mysql.jhuapl.edu:3306";
 
-if (substr($amicaSource, 0, 3) == "PDS")
+if (substr($imageSource, 0, 3) == "PDS")
 {
-	$amicaimages="amicaimages";
-	$amicacubes="amicacubes";
+	$amicaimages="amicaimages_pds";
+	$amicacubes="amicacubes_pds";
 }
 else
 {

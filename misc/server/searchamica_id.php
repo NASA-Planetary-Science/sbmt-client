@@ -1,15 +1,15 @@
 <?
 
 $id=$_POST['id'] + 0;
-$amicaSource=$_POST['amicaSource'];
+$imageSource=$_POST['imageSource'];
 
 $username="nearuser";
 $password="n3ar!usr";
 $database="near";
 $host="sd-mysql.jhuapl.edu:3306";
 
-if (substr($amicaSource, 0, 3) == "PDS")
-	$amicaimages="amicaimages";
+if (substr($imageSource, 0, 3) == "PDS")
+	$amicaimages="amicaimages_pds";
 else
 	$amicaimages="amicaimages_gaskell";
 

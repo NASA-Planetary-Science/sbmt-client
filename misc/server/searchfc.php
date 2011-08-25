@@ -23,7 +23,7 @@ $filterType6=$_POST['filterType6'] + 0;
 $filterType7=$_POST['filterType7'] + 0;
 $filterType8=$_POST['filterType8'] + 0;
 $cubesStr=$_POST['cubes'];
-$fcSource=$_POST['fcSource'];
+$imageSource=$_POST['imageSource'];
 $limbType=$_POST['limbType'] + 0;
 
 $filterTypes = array();
@@ -50,10 +50,10 @@ $password="n3ar!usr";
 $database="near";
 $host="sd-mysql.jhuapl.edu:3306";
 
-if (substr($fcSource, 0, 3) == "PDS")
+if (substr($imageSource, 0, 3) == "PDS")
 {
-	$fcimages="fcimages";
-	$fccubes="fccubes";
+	$fcimages="fcimages_pds";
+	$fccubes="fccubes_pds";
 }
 else
 {

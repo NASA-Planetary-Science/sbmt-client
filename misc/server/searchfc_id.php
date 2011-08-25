@@ -1,15 +1,15 @@
 <?
 
 $id=$_POST['id'] + 0;
-$fcSource=$_POST['fcSource'];
+$imageSource=$_POST['imageSource'];
 
 $username="nearuser";
 $password="n3ar!usr";
 $database="near";
 $host="sd-mysql.jhuapl.edu:3306";
 
-if (substr($fcSource, 0, 3) == "PDS")
-	$fcimages="fcimages";
+if (substr($imageSource, 0, 3) == "PDS")
+	$fcimages="fcimages_pds";
 else
 	$fcimages="fcimages_gaskell";
 
