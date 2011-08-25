@@ -459,6 +459,8 @@ abstract public class Image extends Model implements PropertyChangeListener
             return;
         }
 
+        f.getStream().close();
+
         rawImage = new vtkImageData();
         rawImage.SetScalarTypeToFloat();
         rawImage.SetDimensions(originalWidth, originalHeight, 1);

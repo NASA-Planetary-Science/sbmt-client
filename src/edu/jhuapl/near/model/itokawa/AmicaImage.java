@@ -94,6 +94,8 @@ public class AmicaImage extends Image
             {
                 // do nothing as images with binning higher than 2 have no masks
             }
+
+            f.getStream().close();
         }
         catch (FitsException e)
         {
@@ -365,6 +367,8 @@ public class AmicaImage extends Image
             int startV = h.getHeader().getIntValue("START_V");
             int lastH  = h.getHeader().getIntValue("LAST_H");
             int lastV  = h.getHeader().getIntValue("LAST_V");
+
+            f.getStream().close();
 
             return new int[]{startV, 1023-lastH, 1023-lastV, startH};
         }
