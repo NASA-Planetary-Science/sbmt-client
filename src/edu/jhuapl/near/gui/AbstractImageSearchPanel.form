@@ -120,8 +120,8 @@
                   <Properties>
                     <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
                       <StringArray count="2">
-                        <StringItem index="0" value="PDS derived"/>
-                        <StringItem index="1" value="Gaskell derived"/>
+                        <StringItem index="0" value="Gaskell derived"/>
+                        <StringItem index="1" value="PDS derived"/>
                       </StringArray>
                     </Property>
                   </Properties>
