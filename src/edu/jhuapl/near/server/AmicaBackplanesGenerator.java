@@ -73,27 +73,36 @@ public class AmicaBackplanesGenerator
         if (!file.exists())
             return false;
 
-        // Check for the sumfile if source is Gaskell
-        if (source.equals(ImageSource.GASKELL))
-        {
-            File amicarootdir = (new File(line)).getParentFile().getParentFile();
-            System.out.println(line);
-            String amicaId = (new File(line)).getName().substring(3, 13);
-            String name = amicarootdir.getAbsolutePath() + "/sumfiles/N" + amicaId + ".SUM";
-            System.out.println(name);
-            file = new File(name);
-            if (!file.exists())
-                return false;
+        // If source is Gaskell, only process it if a sumfile exists.
+        // If source is PDS, only process it if an infofile exists and a sumfile DOES NOT exist.
 
-            // Only process files that are listed in Gaskell's INERTIAL.TXT file.
-            if (!inertialFileList.contains("N" + amicaId))
-            {
-                System.out.println("N" + amicaId + " not in INERTIAL.TXT");
-                return false;
-            }
+        // First check if it's a valid Gaskell file
+        File amicarootdir = (new File(line)).getParentFile().getParentFile();
+        System.out.println(line);
+        String amicaId = (new File(line)).getName().substring(3, 13);
+        String name = amicarootdir.getAbsolutePath() + "/sumfiles/N" + amicaId + ".SUM";
+        System.out.println(name);
+        file = new File(name);
+        boolean hasSumfile = file.exists();
+        // Only process files that are listed in Gaskell's INERTIAL.TXT file.
+        if (!inertialFileList.contains("N" + amicaId))
+        {
+            System.out.println("N" + amicaId + " not in INERTIAL.TXT");
+            hasSumfile = false;
         }
 
-        return true;
+        // Next check if it's a valid PDS file
+        String filename = (new File(line)).getName();
+        amicaId = filename.substring(0, filename.indexOf('.'));
+        name = amicarootdir.getAbsolutePath() + "/infofiles/" + amicaId + ".INFO";
+        System.out.println(name);
+        file = new File(name);
+        boolean hasInfofile = file.exists();
+
+        if (source.equals(ImageSource.GASKELL))
+            return hasSumfile;
+        else
+            return !hasSumfile && hasInfofile;
     }
 
     private static void generateBackplanes(ArrayList<String> amicaFiles, AmicaImage.ImageSource amicaSource) throws FitsException, IOException
@@ -441,6 +450,7 @@ public class AmicaBackplanesGenerator
         try
         {
             generateBackplanes(amicaFiles, ImageSource.GASKELL);
+            generateBackplanes(amicaFiles, ImageSource.PDS);
             generateLatex();
         }
         catch (Exception e1) {
