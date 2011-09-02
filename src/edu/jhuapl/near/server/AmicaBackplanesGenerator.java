@@ -150,6 +150,8 @@ public class AmicaBackplanesGenerator
 
         }
 
+        filesProcessed.clear();
+
         // Now that we know the optimal resolutions to, recompute
         // and save off backplanes
         count = 0;
@@ -309,10 +311,10 @@ public class AmicaBackplanesGenerator
         }
     }
 
-    private static void generateLatex() throws IOException
+    private static void generateLatex(String name) throws IOException
     {
         String dir = new File(filesProcessed.get(0)).getParentFile().getAbsolutePath();
-        FileWriter fstream = new FileWriter(dir + "/amica_backplanes_summary.tex");
+        FileWriter fstream = new FileWriter(dir + "/" + name);
         BufferedWriter o = new BufferedWriter(fstream);
 
         o.write("\\documentclass[12pt]{article}\n");
@@ -450,8 +452,10 @@ public class AmicaBackplanesGenerator
         try
         {
             generateBackplanes(amicaFiles, ImageSource.GASKELL);
+            generateLatex("amica_backplanes_summary_gaskell.tex");
+
             generateBackplanes(amicaFiles, ImageSource.PDS);
-            generateLatex();
+            generateLatex("amica_backplanes_summary_pds.tex");
         }
         catch (Exception e1) {
             e1.printStackTrace();
