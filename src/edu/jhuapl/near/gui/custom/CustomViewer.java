@@ -22,7 +22,7 @@ import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.PointModel;
-import edu.jhuapl.near.model.SmallBodyImageMap;
+import edu.jhuapl.near.model.SmallBodyImageMapCollection;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.custom.CustomGraticule;
 import edu.jhuapl.near.model.custom.CustomShapeModel;
@@ -105,7 +105,7 @@ public class CustomViewer extends Viewer
         allModels.put(ModelNames.POINT_STRUCTURES, new PointModel(customModel));
         allModels.put(ModelNames.ELLIPSE_STRUCTURES, new EllipseModel(customModel));
         allModels.put(ModelNames.CIRCLE_SELECTION, new CircleSelectionModel(customModel));
-        allModels.put(ModelNames.SMALL_BODY_IMAGE_MAP, new SmallBodyImageMap(customModel));
+        allModels.put(ModelNames.SMALL_BODY_IMAGE_MAP, new SmallBodyImageMapCollection(customModel));
         allModels.put(ModelNames.GRATICULE, graticule);
 
         modelManager.setModels(allModels);
@@ -120,5 +120,10 @@ public class CustomViewer extends Viewer
     public String getName()
     {
         return name;
+    }
+
+    public ModelManager getModelManager()
+    {
+        return modelManager;
     }
 }

@@ -30,7 +30,7 @@ import net.miginfocom.swing.MigLayout;
 import edu.jhuapl.near.model.Graticule;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
-import edu.jhuapl.near.model.SmallBodyImageMap;
+import edu.jhuapl.near.model.SmallBodyImageMapCollection;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.pick.Picker;
 
@@ -284,7 +284,8 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
         Picker.setPickingEnabled(false);
 
         SmallBodyModel smallBodyModel = modelManager.getSmallBodyModel();
-        SmallBodyImageMap smallBodyImageMap = (SmallBodyImageMap) modelManager.getModel(ModelNames.SMALL_BODY_IMAGE_MAP);
+        SmallBodyImageMapCollection smallBodyImageMap =
+            (SmallBodyImageMapCollection) modelManager.getModel(ModelNames.SMALL_BODY_IMAGE_MAP);
 
         if (e.getItemSelectable() == this.modelCheckBox)
         {
@@ -297,7 +298,7 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
                 if (gridCheckBox.isSelected())
                     graticule.setShowGraticule(true);
                 if (imageMapCheckBox.isSelected())
-                    smallBodyImageMap.setShowImageMap(true);
+                    smallBodyImageMap.setShowImageMaps(true);
             }
             else
             {
@@ -305,7 +306,7 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
                 if (gridCheckBox.isSelected())
                     graticule.setShowGraticule(false);
                 if (imageMapCheckBox.isSelected())
-                    smallBodyImageMap.setShowImageMap(false);
+                    smallBodyImageMap.setShowImageMaps(false);
             }
         }
         else if (e.getItemSelectable() == this.gridCheckBox)
@@ -320,13 +321,13 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
         {
             if (e.getStateChange() == ItemEvent.SELECTED)
             {
-                smallBodyImageMap.setShowImageMap(true);
+                smallBodyImageMap.setShowImageMaps(true);
                 opacityLabel.setEnabled(true);
                 imageMapOpacitySpinner.setEnabled(true);
             }
             else
             {
-                smallBodyImageMap.setShowImageMap(false);
+                smallBodyImageMap.setShowImageMaps(false);
                 opacityLabel.setEnabled(false);
                 imageMapOpacitySpinner.setEnabled(false);
             }
@@ -486,11 +487,12 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
 
     public void stateChanged(ChangeEvent e)
     {
-        SmallBodyImageMap smallBodyImageMap = (SmallBodyImageMap) modelManager.getModel(ModelNames.SMALL_BODY_IMAGE_MAP);
+        SmallBodyImageMapCollection smallBodyImageMap =
+            (SmallBodyImageMapCollection)modelManager.getModel(ModelNames.SMALL_BODY_IMAGE_MAP);
 
         double val = (Double)imageMapOpacitySpinner.getValue();
 
-        smallBodyImageMap.setImageMapOpacity(val);
+        smallBodyImageMap.setImageMapOpacities(val);
     }
 
     private void setStatisticsLabel()

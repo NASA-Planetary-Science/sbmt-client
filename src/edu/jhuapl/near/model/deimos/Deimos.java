@@ -19,7 +19,9 @@ public class Deimos extends SmallBodyModel
             "/DEIMOS/DEIMOS_GravitationalPotential"
     };
 
-    static private final String imageMap = "/DEIMOS/deimos_image_map.png";
+    static private final String[] imageMap = {
+        "/DEIMOS/deimos_image_map.png"
+    };
 
     static private final String[] coloringNames = {
             SlopeStr, ElevStr, GravAccStr, GravPotStr

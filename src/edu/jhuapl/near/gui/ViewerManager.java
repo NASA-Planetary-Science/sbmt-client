@@ -121,4 +121,17 @@ public class ViewerManager extends JPanel
 
         return null;
     }
+
+    public Viewer getCustomViewer(String name)
+    {
+        for (Viewer viewer : customViewers)
+        {
+            if (viewer.getName().equals(name))
+            {
+                return viewer;
+            }
+        }
+
+        return null;
+    }
 }

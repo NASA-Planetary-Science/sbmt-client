@@ -10,11 +10,14 @@
  */
 package edu.jhuapl.near.gui;
 
-import java.io.BufferedWriter;
+import java.awt.Dialog;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
+import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
 
 import org.apache.commons.io.FileUtils;
@@ -33,7 +36,10 @@ import vtk.vtkTransform;
 import vtk.vtkTransformPolyDataFilter;
 
 import edu.jhuapl.near.model.Graticule;
+import edu.jhuapl.near.model.SmallBodyImageMap.ImageInfo;
+import edu.jhuapl.near.model.custom.CustomShapeModel;
 import edu.jhuapl.near.util.Configuration;
+import edu.jhuapl.near.util.MapUtil;
 import edu.jhuapl.near.util.PolyDataUtil;
 
 /**
@@ -42,17 +48,88 @@ import edu.jhuapl.near.util.PolyDataUtil;
  */
 public class ShapeModelImporterDialog extends javax.swing.JDialog
 {
+    private ArrayList<ImageInfo> imageInfoList = new ArrayList<ImageInfo>();
+
+    // True if we're editing an existing model rather than creating a new one.
+    private boolean editMode = false;
+
+    private boolean okayPressed = false;
 
     /** Creates new form ShapeModelImporterDialog */
-    public ShapeModelImporterDialog(java.awt.Frame parent)
+    public ShapeModelImporterDialog(java.awt.Window parent)
     {
-        super(parent, "Import New Shape Model", true);
+        super(parent, "Import New Shape Model", Dialog.ModalityType.DOCUMENT_MODAL);
         initComponents();
+
+        imageList.setModel(new DefaultListModel());
     }
 
     public String getNameOfImportedShapeModel()
     {
         return nameTextField.getText();
+    }
+
+    public void setName(String name)
+    {
+        nameTextField.setText(name);
+    }
+
+    public void setEditMode(boolean b)
+    {
+        editMode = b;
+        nameLabel.setEnabled(!b);
+        nameTextField.setEnabled(!b);
+    }
+
+    public boolean getOkayPressed()
+    {
+        return okayPressed;
+    }
+
+    public void loadConfig(String configFilename) throws IOException
+    {
+        Map<String, String> configMap = MapUtil.loadMap(configFilename);
+        nameTextField.setText(configMap.get(CustomShapeModel.NAME));
+        boolean isEllipsoid = CustomShapeModel.ELLIPSOID.equals(configMap.get(CustomShapeModel.TYPE));
+        ellipsoidRadioButton.setSelected(isEllipsoid);
+        customShapeModelRadioButton.setSelected(!isEllipsoid);
+
+        if (isEllipsoid)
+        {
+            equRadiusFormattedTextField.setText(configMap.get(CustomShapeModel.EQUATORIAL_RADIUS));
+            polarRadiusFormattedTextField.setText(configMap.get(CustomShapeModel.POLAR_RADIUS));
+            resolutionFormattedTextField.setText(configMap.get(CustomShapeModel.RESOLUTION));
+        }
+        else
+        {
+            shapeModelPathTextField.setText(configMap.get(CustomShapeModel.CUSTOM_SHAPE_MODEL_PATH));
+            String format = configMap.get(CustomShapeModel.CUSTOM_SHAPE_MODEL_FORMAT);
+            shapeModelFormatComboBox.setSelectedItem(format);
+        }
+
+        String[] imagePaths = configMap.get(CustomShapeModel.IMAGE_MAP_PATHS).split(",");
+        String[] lllats = configMap.get(CustomShapeModel.LOWER_LEFT_LATITUDES).split(",");
+        String[] lllons = configMap.get(CustomShapeModel.LOWER_LEFT_LONGITUDES).split(",");
+        String[] urlats = configMap.get(CustomShapeModel.UPPER_RIGHT_LATITUDES).split(",");
+        String[] urlons = configMap.get(CustomShapeModel.UPPER_RIGHT_LONGITUDES).split(",");
+
+        for (int i=0; i<imagePaths.length; ++i)
+        {
+            ImageInfo imageInfo = new ImageInfo();
+            imageInfo.filename = imagePaths[i];
+            if (!imageInfo.filename.isEmpty())
+            {
+                imageInfo.lllat = Double.parseDouble(lllats[i]);
+                imageInfo.lllon = Double.parseDouble(lllons[i]);
+                imageInfo.urlat = Double.parseDouble(urlats[i]);
+                imageInfo.urlon = Double.parseDouble(urlons[i]);
+
+                imageInfoList.add(imageInfo);
+                ((DefaultListModel)imageList.getModel()).addElement(imageInfo.toString());
+            }
+        }
+
+        updateEnabledState();
     }
 
     private String validateInput()
@@ -66,15 +143,19 @@ public class ShapeModelImporterDialog extends javax.swing.JDialog
         if (name.contains("/") || name.contains("\\") || name.contains(" ") || name.contains("\t"))
             return "Name may not contain spaces or slashes.";
 
-        // Check if name is already being used by another imported shape model
-        File modelsDir = new File(Configuration.getImportedShapeModelsDir());
-        File[] dirs = modelsDir.listFiles();
-        if (dirs != null && dirs.length > 0)
+        // Check if name is already being used by another imported shape model.
+        // Do not check in edit mode.
+        if (!editMode)
         {
-            for (File dir : dirs)
+            File modelsDir = new File(Configuration.getImportedShapeModelsDir());
+            File[] dirs = modelsDir.listFiles();
+            if (dirs != null && dirs.length > 0)
             {
-                if (dir.getName().equals(name))
-                    return "Name already exists.";
+                for (File dir : dirs)
+                {
+                    if (dir.getName().equals(name))
+                        return "Name already exists.";
+                }
             }
         }
 
@@ -103,38 +184,16 @@ public class ShapeModelImporterDialog extends javax.swing.JDialog
                 return modelPath + " does not exist or is not readable.";
         }
 
-        if (mapImageCheckBox.isSelected())
-        {
-            String imagePath = imagePathTextField.getText();
-
-            if (imagePath == null || imagePath.isEmpty())
-                return "Please enter the path to an image.";
-
-            File file = new File(imagePath);
-            if (!file.exists() || !file.canRead() || !file.isFile())
-                return imagePath + " does not exist or is not readable.";
-
-            double lllat = Double.parseDouble(lllatFormattedTextField.getText());
-            double lllon = Double.parseDouble(lllonFormattedTextField.getText());
-            double urlat = Double.parseDouble(urlatFormattedTextField.getText());
-            double urlon = Double.parseDouble(urlonFormattedTextField.getText());
-
-            if (lllat < -90.0 || lllat > 90.0 || urlat < -90.0 || urlat > 90.0)
-                return "Latitudes must be between -90 and +90.";
-            if (lllon < 0.0 || lllon > 360.0 || urlon < 0.0 || urlon > 360.0)
-                return "Longitudes must be between 0 and 360.";
-
-            if (lllat >= urlat)
-                return "Upper right latitude must be greater than lower left latitude.";
-            if (lllon == urlon)
-                return "Upper right longitude and lower left longitude may not be the same.";
-        }
-
         return null;
     }
 
     private boolean importShapeModel()
     {
+        LinkedHashMap<String, String> configMap = new LinkedHashMap<String, String>();
+
+        String name = nameTextField.getText();
+        configMap.put(CustomShapeModel.NAME, name);
+
         vtkPolyData shapePoly = null;
 
         // First either load a shape model from file or create ellipsoidal shape model
@@ -168,11 +227,20 @@ public class ShapeModelImporterDialog extends javax.swing.JDialog
                 shapePoly.Delete();
                 shapePoly = filter.GetOutput();
             }
+
+            configMap.put(CustomShapeModel.TYPE, CustomShapeModel.ELLIPSOID);
+            configMap.put(CustomShapeModel.EQUATORIAL_RADIUS, String.valueOf(equRadius));
+            configMap.put(CustomShapeModel.POLAR_RADIUS, String.valueOf(polarRadius));
+            configMap.put(CustomShapeModel.RESOLUTION, String.valueOf(resolution));
         }
         else
         {
             String modelPath = shapeModelPathTextField.getText();
             String format = (String) shapeModelFormatComboBox.getSelectedItem();
+
+            configMap.put(CustomShapeModel.TYPE, CustomShapeModel.CUSTOM);
+            configMap.put(CustomShapeModel.CUSTOM_SHAPE_MODEL_PATH, modelPath);
+
             if (format.equals("PDS"))
             {
                 try
@@ -196,6 +264,8 @@ public class ShapeModelImporterDialog extends javax.swing.JDialog
                 normalsFilter.Update();
 
                 shapePoly = normalsFilter.GetOutput();
+
+                configMap.put(CustomShapeModel.CUSTOM_SHAPE_MODEL_FORMAT, CustomShapeModel.PDS_FORMAT);
             }
             else if (format.equals("OBJ"))
             {
@@ -204,6 +274,8 @@ public class ShapeModelImporterDialog extends javax.swing.JDialog
                 reader.Update();
 
                 shapePoly = reader.GetOutput();
+
+                configMap.put(CustomShapeModel.CUSTOM_SHAPE_MODEL_FORMAT, CustomShapeModel.OBJ_FORMAT);
             }
             else if (format.equals("VTK"))
             {
@@ -212,14 +284,17 @@ public class ShapeModelImporterDialog extends javax.swing.JDialog
                 reader.Update();
 
                 shapePoly = reader.GetOutput();
+
+                configMap.put(CustomShapeModel.CUSTOM_SHAPE_MODEL_FORMAT, CustomShapeModel.VTK_FORMAT);
             }
         }
 
         // Now save the shape model to the users home folder within the
         // custom-shape-models folders
-        String name = nameTextField.getText();
         File newModelDir = new File(Configuration.getImportedShapeModelsDir() + File.separator + name);
+        FileUtils.deleteQuietly(newModelDir);
         newModelDir.mkdirs();
+
 
         vtkPolyDataWriter writer = new vtkPolyDataWriter();
         writer.SetInput(shapePoly);
@@ -239,10 +314,18 @@ public class ShapeModelImporterDialog extends javax.swing.JDialog
         writer.Write();
 
 
-        // Load in the image
-        if (mapImageCheckBox.isSelected())
+        // Load in the images
+        String imageFilenames = "";
+        String lllats = "";
+        String lllons = "";
+        String urlats = "";
+        String urlons = "";
+
+        for (int i=0; i<imageInfoList.size(); ++i)
         {
-            String imageName = imagePathTextField.getText();
+            ImageInfo imageInfo = imageInfoList.get(i);
+
+            String imageName = imageInfo.filename;
             vtkImageReader2Factory imageFactory = new vtkImageReader2Factory();
             vtkImageReader2 imageReader = imageFactory.CreateImageReader2(imageName);
             if (imageReader == null)
@@ -264,40 +347,61 @@ public class ShapeModelImporterDialog extends javax.swing.JDialog
             //vtkStructuredPointsWriter imageWriter = new vtkStructuredPointsWriter();
             vtkPNGWriter imageWriter = new vtkPNGWriter();
             imageWriter.SetInputConnection(imageReaderOutput);
-            imageWriter.SetFileName(newModelDir.getAbsolutePath() + File.separator + "image.png");
+            imageWriter.SetFileName(newModelDir.getAbsolutePath() + File.separator + "image" + i + ".png");
             //imageWriter.SetFileTypeToBinary();
             imageWriter.Write();
 
-            // Save out the corners of the texture to a file only if an ellipsoid was selected
-            try
+            imageFilenames += imageName;
+            if (i < imageInfoList.size()-1)
+                imageFilenames += CustomShapeModel.LIST_SEPARATOR;
+
+            double lllat = -90.0;
+            double lllon = 0.0;
+            double urlat = 90.0;
+            double urlon = 360.0;
+
+            // If not ellipsoid, lats and lons should cover entire asteroid
+            if (ellipsoidRadioButton.isSelected())
             {
-                if (ellipsoidRadioButton.isSelected())
-                {
-                    FileWriter fstream = new FileWriter(newModelDir.getAbsolutePath() + File.separator + "corners.txt");
-                    BufferedWriter out = new BufferedWriter(fstream);
+                lllat = imageInfo.lllat;
+                lllon = imageInfo.lllon;
+                urlat = imageInfo.urlat;
+                urlon = imageInfo.urlon;
 
-                    double lllat = Double.parseDouble(lllatFormattedTextField.getText());
-                    double lllon = Double.parseDouble(lllonFormattedTextField.getText());
-                    double urlat = Double.parseDouble(urlatFormattedTextField.getText());
-                    double urlon = Double.parseDouble(urlonFormattedTextField.getText());
-
-                    if (lllon == 360.0)
-                        lllon = 0.0;
-                    if (urlon == 0.0)
-                        urlon = 360.0;
-
-                    out.write(lllat + " ");
-                    out.write(lllon + " ");
-                    out.write(urlat + " ");
-                    out.write(urlon + "\n");
-
-                    out.close();
-                }
+                if (lllon == 360.0)
+                    lllon = 0.0;
+                if (urlon == 0.0)
+                    urlon = 360.0;
             }
-            catch (IOException ex)
+
+            lllats += String.valueOf(lllat);
+            lllons += String.valueOf(lllon);
+            urlats += String.valueOf(urlat);
+            urlons += String.valueOf(urlon);
+
+            if (i < imageInfoList.size()-1)
             {
-
+                lllats += CustomShapeModel.LIST_SEPARATOR;
+                lllons += CustomShapeModel.LIST_SEPARATOR;
+                urlats += CustomShapeModel.LIST_SEPARATOR;
+                urlons += CustomShapeModel.LIST_SEPARATOR;
             }
+        }
+
+        configMap.put(CustomShapeModel.IMAGE_MAP_PATHS, imageFilenames);
+        configMap.put(CustomShapeModel.LOWER_LEFT_LATITUDES, lllats);
+        configMap.put(CustomShapeModel.LOWER_LEFT_LONGITUDES, lllons);
+        configMap.put(CustomShapeModel.UPPER_RIGHT_LATITUDES, urlats);
+        configMap.put(CustomShapeModel.UPPER_RIGHT_LONGITUDES, urlons);
+
+        try
+        {
+            // Save out all information about this shape model to the config.txt file
+            MapUtil.saveMap(configMap, newModelDir.getAbsolutePath() + File.separator + "config.txt");
+        }
+        catch (IOException ex)
+        {
+
         }
 
         return true;
@@ -317,21 +421,6 @@ public class ShapeModelImporterDialog extends javax.swing.JDialog
         polarRadiusFormattedTextField.setEnabled(enabled);
         resolutionLabel.setEnabled(enabled);
         resolutionFormattedTextField.setEnabled(enabled);
-
-        enabled = mapImageCheckBox.isSelected();
-        pathLabel2.setEnabled(enabled);
-        imagePathTextField.setEnabled(enabled);
-        browseImageButton.setEnabled(enabled);
-
-        enabled = mapImageCheckBox.isSelected() && ellipsoidRadioButton.isSelected();
-        lllatLabel.setEnabled(enabled);
-        lllatFormattedTextField.setEnabled(enabled);
-        lllonLabel.setEnabled(enabled);
-        lllonFormattedTextField.setEnabled(enabled);
-        urlatLabel.setEnabled(enabled);
-        urlatFormattedTextField.setEnabled(enabled);
-        urlonLabel.setEnabled(enabled);
-        urlonFormattedTextField.setEnabled(enabled);
     }
 
     /** This method is called from within the constructor to
@@ -340,11 +429,12 @@ public class ShapeModelImporterDialog extends javax.swing.JDialog
      * always regenerated by the Form Editor.
      */
     @SuppressWarnings("unchecked")
-    private void initComponents() {//GEN-BEGIN:initComponents
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
         shapeModelSourceButtonGroup = new javax.swing.ButtonGroup();
-        jLabel1 = new javax.swing.JLabel();
+        nameLabel = new javax.swing.JLabel();
         nameTextField = new javax.swing.JTextField();
         customShapeModelRadioButton = new javax.swing.JRadioButton();
         ellipsoidRadioButton = new javax.swing.JRadioButton();
@@ -353,38 +443,33 @@ public class ShapeModelImporterDialog extends javax.swing.JDialog
         equRadiusLabel = new javax.swing.JLabel();
         polarRadiusLabel = new javax.swing.JLabel();
         resolutionLabel = new javax.swing.JLabel();
-        mapImageCheckBox = new javax.swing.JCheckBox();
-        pathLabel2 = new javax.swing.JLabel();
-        imagePathTextField = new javax.swing.JTextField();
-        browseImageButton = new javax.swing.JButton();
-        lllatLabel = new javax.swing.JLabel();
-        lllonLabel = new javax.swing.JLabel();
-        urlatLabel = new javax.swing.JLabel();
-        urlonLabel = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
         cancelButton = new javax.swing.JButton();
         okButton = new javax.swing.JButton();
         equRadiusFormattedTextField = new javax.swing.JFormattedTextField();
         polarRadiusFormattedTextField = new javax.swing.JFormattedTextField();
         resolutionFormattedTextField = new javax.swing.JFormattedTextField();
-        lllatFormattedTextField = new javax.swing.JFormattedTextField();
-        lllonFormattedTextField = new javax.swing.JFormattedTextField();
-        urlatFormattedTextField = new javax.swing.JFormattedTextField();
-        urlonFormattedTextField = new javax.swing.JFormattedTextField();
         shapeModelFormatLabel = new javax.swing.JLabel();
         shapeModelFormatComboBox = new javax.swing.JComboBox();
         pathLabel = new javax.swing.JLabel();
+        imagesLabel = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        imageList = new javax.swing.JList();
+        jPanel2 = new javax.swing.JPanel();
+        newImageButton = new javax.swing.JButton();
+        deleteImageButton = new javax.swing.JButton();
+        editImageButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
-        jLabel1.setText("Name");
+        nameLabel.setText("Name");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 10, 0);
-        getContentPane().add(jLabel1, gridBagConstraints);
+        getContentPane().add(nameLabel, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
@@ -469,79 +554,6 @@ public class ShapeModelImporterDialog extends javax.swing.JDialog
         gridBagConstraints.insets = new java.awt.Insets(0, 25, 0, 0);
         getContentPane().add(resolutionLabel, gridBagConstraints);
 
-        mapImageCheckBox.setSelected(true);
-        mapImageCheckBox.setText("Image Map");
-        mapImageCheckBox.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                mapImageCheckBoxActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 8;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(10, 5, 0, 0);
-        getContentPane().add(mapImageCheckBox, gridBagConstraints);
-
-        pathLabel2.setText("Path");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 9;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 25, 0, 0);
-        getContentPane().add(pathLabel2, gridBagConstraints);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 9;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new java.awt.Insets(0, 5, 4, 0);
-        getContentPane().add(imagePathTextField, gridBagConstraints);
-
-        browseImageButton.setText("Browse...");
-        browseImageButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                browseImageButtonActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 9;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new java.awt.Insets(0, 5, 4, 5);
-        getContentPane().add(browseImageButton, gridBagConstraints);
-
-        lllatLabel.setText("Lower Left Latitude");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 10;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 25, 0, 0);
-        getContentPane().add(lllatLabel, gridBagConstraints);
-
-        lllonLabel.setText("Lower Left Longitude");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 11;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 25, 0, 0);
-        getContentPane().add(lllonLabel, gridBagConstraints);
-
-        urlatLabel.setText("Upper Right Latitude");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 12;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 25, 0, 0);
-        getContentPane().add(urlatLabel, gridBagConstraints);
-
-        urlonLabel.setText("Upper Right Longitude");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 13;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 25, 0, 0);
-        getContentPane().add(urlonLabel, gridBagConstraints);
-
         jPanel1.setLayout(new java.awt.GridBagLayout());
 
         cancelButton.setText("Cancel");
@@ -554,11 +566,10 @@ public class ShapeModelImporterDialog extends javax.swing.JDialog
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 4);
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 2);
         jPanel1.add(cancelButton, gridBagConstraints);
 
         okButton.setText("OK");
-        okButton.setPreferredSize(new java.awt.Dimension(54, 22));
         okButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 okButtonActionPerformed(evt);
@@ -568,11 +579,12 @@ public class ShapeModelImporterDialog extends javax.swing.JDialog
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(0, 2, 0, 0);
         jPanel1.add(okButton, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 14;
+        gridBagConstraints.gridy = 10;
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.PAGE_END;
         gridBagConstraints.weighty = 1.0;
@@ -609,46 +621,6 @@ public class ShapeModelImporterDialog extends javax.swing.JDialog
         gridBagConstraints.insets = new java.awt.Insets(0, 5, 4, 0);
         getContentPane().add(resolutionFormattedTextField, gridBagConstraints);
 
-        lllatFormattedTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.########"))));
-        lllatFormattedTextField.setText("-90");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 10;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.ipadx = 60;
-        gridBagConstraints.insets = new java.awt.Insets(0, 5, 4, 0);
-        getContentPane().add(lllatFormattedTextField, gridBagConstraints);
-
-        lllonFormattedTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.########"))));
-        lllonFormattedTextField.setText("0");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 11;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.ipadx = 60;
-        gridBagConstraints.insets = new java.awt.Insets(0, 5, 4, 0);
-        getContentPane().add(lllonFormattedTextField, gridBagConstraints);
-
-        urlatFormattedTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.########"))));
-        urlatFormattedTextField.setText("90");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 12;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.ipadx = 60;
-        gridBagConstraints.insets = new java.awt.Insets(0, 5, 4, 0);
-        getContentPane().add(urlatFormattedTextField, gridBagConstraints);
-
-        urlonFormattedTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.########"))));
-        urlonFormattedTextField.setText("360");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 13;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.ipadx = 60;
-        gridBagConstraints.insets = new java.awt.Insets(0, 5, 4, 0);
-        getContentPane().add(urlonFormattedTextField, gridBagConstraints);
-
         shapeModelFormatLabel.setText("Format");
         shapeModelFormatLabel.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -676,8 +648,75 @@ public class ShapeModelImporterDialog extends javax.swing.JDialog
         gridBagConstraints.insets = new java.awt.Insets(0, 25, 0, 0);
         getContentPane().add(pathLabel, gridBagConstraints);
 
+        imagesLabel.setText("Image Maps");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 8;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(8, 10, 1, 0);
+        getContentPane().add(imagesLabel, gridBagConstraints);
+
+        jScrollPane1.setViewportView(imageList);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 9;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 10, 0, 0);
+        getContentPane().add(jScrollPane1, gridBagConstraints);
+
+        jPanel2.setLayout(new java.awt.GridBagLayout());
+
+        newImageButton.setText("New...");
+        newImageButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                newImageButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 5);
+        jPanel2.add(newImageButton, gridBagConstraints);
+
+        deleteImageButton.setText("Remove");
+        deleteImageButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                deleteImageButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 5);
+        jPanel2.add(deleteImageButton, gridBagConstraints);
+
+        editImageButton.setText("Edit...");
+        editImageButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                editImageButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(4, 5, 4, 5);
+        jPanel2.add(editImageButton, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 9;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
+        getContentPane().add(jPanel2, gridBagConstraints);
+
         pack();
-    }//GEN-END:initComponents
+    }// </editor-fold>//GEN-END:initComponents
 
     private void customShapeModelRadioButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_customShapeModelRadioButtonActionPerformed
     {//GEN-HEADEREND:event_customShapeModelRadioButtonActionPerformed
@@ -701,23 +740,6 @@ public class ShapeModelImporterDialog extends javax.swing.JDialog
         shapeModelPathTextField.setText(filename);
     }//GEN-LAST:event_browseShapeModelButtonActionPerformed
 
-    private void mapImageCheckBoxActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_mapImageCheckBoxActionPerformed
-    {//GEN-HEADEREND:event_mapImageCheckBoxActionPerformed
-        updateEnabledState();
-    }//GEN-LAST:event_mapImageCheckBoxActionPerformed
-
-    private void browseImageButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_browseImageButtonActionPerformed
-    {//GEN-HEADEREND:event_browseImageButtonActionPerformed
-        File file = CustomFileChooser.showOpenDialog(this, "Select Image");
-        if (file == null)
-        {
-            return;
-        }
-
-        String filename = file.getAbsolutePath();
-        imagePathTextField.setText(filename);
-    }//GEN-LAST:event_browseImageButtonActionPerformed
-
     private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_cancelButtonActionPerformed
     {//GEN-HEADEREND:event_cancelButtonActionPerformed
         setVisible(false);
@@ -738,29 +760,78 @@ public class ShapeModelImporterDialog extends javax.swing.JDialog
         boolean success = importShapeModel();
 
         if (success)
+        {
+            okayPressed = true;
             setVisible(false);
+        }
     }//GEN-LAST:event_okButtonActionPerformed
 
+    private void editImageButtonActionPerformed(java.awt.event.ActionEvent evt)
+    {//GEN-FIRST:event_editImageButtonActionPerformed
+        int selectedItem = imageList.getSelectedIndex();
+        if (selectedItem >= 0)
+        {
+            ImageInfo imageInfo = imageInfoList.get(selectedItem);
+
+            ShapeModelImageImporterDialog dialog = new ShapeModelImageImporterDialog(this);
+            dialog.setImageInfo(imageInfo, ellipsoidRadioButton.isSelected());
+            dialog.setVisible(true);
+
+            // If user clicks okay replace item in list
+            if (dialog.getOkayPressed())
+            {
+                imageInfo = dialog.getImageInfo();
+                imageInfoList.set(selectedItem, imageInfo);
+                ((DefaultListModel)imageList.getModel()).set(selectedItem, imageInfo.toString());
+            }
+        }
+    }//GEN-LAST:event_editImageButtonActionPerformed
+
+    private void newImageButtonActionPerformed(java.awt.event.ActionEvent evt)
+    {//GEN-FIRST:event_newImageButtonActionPerformed
+        ImageInfo imageInfo = new ImageInfo();
+        ShapeModelImageImporterDialog dialog = new ShapeModelImageImporterDialog(this);
+        dialog.setImageInfo(imageInfo, ellipsoidRadioButton.isSelected());
+        dialog.setVisible(true);
+
+        // If user clicks okay add to list
+        if (dialog.getOkayPressed())
+        {
+            imageInfo = dialog.getImageInfo();
+            imageInfoList.add(imageInfo);
+            ((DefaultListModel)imageList.getModel()).addElement(imageInfo.toString());
+        }
+    }//GEN-LAST:event_newImageButtonActionPerformed
+
+    private void deleteImageButtonActionPerformed(java.awt.event.ActionEvent evt)
+    {//GEN-FIRST:event_deleteImageButtonActionPerformed
+        int selectedItem = imageList.getSelectedIndex();
+        if (selectedItem >= 0)
+        {
+            imageInfoList.remove(selectedItem);
+            ((DefaultListModel)imageList.getModel()).remove(selectedItem);
+        }
+    }//GEN-LAST:event_deleteImageButtonActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton browseImageButton;
     private javax.swing.JButton browseShapeModelButton;
     private javax.swing.JButton cancelButton;
     private javax.swing.JRadioButton customShapeModelRadioButton;
+    private javax.swing.JButton deleteImageButton;
+    private javax.swing.JButton editImageButton;
     private javax.swing.JRadioButton ellipsoidRadioButton;
     private javax.swing.JFormattedTextField equRadiusFormattedTextField;
     private javax.swing.JLabel equRadiusLabel;
-    private javax.swing.JTextField imagePathTextField;
-    private javax.swing.JLabel jLabel1;
+    private javax.swing.JList imageList;
+    private javax.swing.JLabel imagesLabel;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JFormattedTextField lllatFormattedTextField;
-    private javax.swing.JLabel lllatLabel;
-    private javax.swing.JFormattedTextField lllonFormattedTextField;
-    private javax.swing.JLabel lllonLabel;
-    private javax.swing.JCheckBox mapImageCheckBox;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JLabel nameLabel;
     private javax.swing.JTextField nameTextField;
+    private javax.swing.JButton newImageButton;
     private javax.swing.JButton okButton;
     private javax.swing.JLabel pathLabel;
-    private javax.swing.JLabel pathLabel2;
     private javax.swing.JFormattedTextField polarRadiusFormattedTextField;
     private javax.swing.JLabel polarRadiusLabel;
     private javax.swing.JFormattedTextField resolutionFormattedTextField;
@@ -769,9 +840,5 @@ public class ShapeModelImporterDialog extends javax.swing.JDialog
     private javax.swing.JLabel shapeModelFormatLabel;
     private javax.swing.JTextField shapeModelPathTextField;
     private javax.swing.ButtonGroup shapeModelSourceButtonGroup;
-    private javax.swing.JFormattedTextField urlatFormattedTextField;
-    private javax.swing.JLabel urlatLabel;
-    private javax.swing.JFormattedTextField urlonFormattedTextField;
-    private javax.swing.JLabel urlonLabel;
     // End of variables declaration//GEN-END:variables
 }

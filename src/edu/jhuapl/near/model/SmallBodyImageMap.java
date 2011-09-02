@@ -1,7 +1,7 @@
 package edu.jhuapl.near.model;
 
 import java.io.File;
-import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import vtk.vtkActor;
@@ -20,9 +20,7 @@ import vtk.vtkProp;
 import vtk.vtkProperty;
 import vtk.vtkTexture;
 
-import edu.jhuapl.near.util.Configuration;
 import edu.jhuapl.near.util.FileCache;
-import edu.jhuapl.near.util.FileUtil;
 import edu.jhuapl.near.util.LatLon;
 import edu.jhuapl.near.util.MathUtil;
 import edu.jhuapl.near.util.PolyDataUtil;
@@ -30,6 +28,27 @@ import edu.jhuapl.near.util.Properties;
 
 public class SmallBodyImageMap extends Model
 {
+    public static class ImageInfo
+    {
+        public String filename = "";
+        public double lllat = -90.0;
+        public double lllon = 0.0;
+        public double urlat = 90.0;
+        public double urlon = 360.0;
+
+        @Override
+        public String toString()
+        {
+            DecimalFormat df = new DecimalFormat("#.#####");
+            return filename + "  ["
+                    + df.format(lllat) + ", "
+                    + df.format(lllon) + ", "
+                    + df.format(urlat) + ", "
+                    + df.format(urlon)
+                    + "]";
+        }
+    }
+
     private vtkPolyData imageMapPolyData;
     private vtkActor smallBodyActor;
     private vtkPolyDataMapper smallBodyMapper;
@@ -38,13 +57,15 @@ public class SmallBodyImageMap extends Model
     private SmallBodyModel smallBodyModel;
     private vtkTexture imageMapTexture;
     private boolean initialized = false;
-
+    private ImageInfo imageInfo;
 
     public SmallBodyImageMap(
-            SmallBodyModel smallBodyModel)
+            SmallBodyModel smallBodyModel,
+            ImageInfo imageInfo)
     {
         super(ModelNames.SMALL_BODY);
         this.smallBodyModel = smallBodyModel;
+        this.imageInfo = imageInfo;
 
         imageMapPolyData = new vtkPolyData();
 
@@ -62,11 +83,10 @@ public class SmallBodyImageMap extends Model
         double[] zaxis = {0.0, 0.0, 1.0};
         double[] mzaxis = {0.0, 0.0, -1.0};
 
-        double[] corners = loadTextureCorners();
-        double lllat = corners[0];
-        double lllon = corners[1];
-        double urlat = corners[2];
-        double urlon = corners[3];
+        double lllat = imageInfo.lllat;
+        double lllon = imageInfo.lllon;
+        double urlat = imageInfo.urlat;
+        double urlon = imageInfo.urlon;
 
         // If the texture does not cover the entire model, then clip out the part
         // that it does cover. Note that this is valid ONLY for an ellipsoid. For
@@ -206,40 +226,12 @@ public class SmallBodyImageMap extends Model
         initialized = true;
     }
 
-    private double[] loadTextureCorners()
-    {
-        try
-        {
-            // Load in the corners.txt file
-            String cornersFilename = Configuration.getImportedShapeModelsDir() +
-                    File.separator +
-                    smallBodyModel.getModelName() +
-                    File.separator +
-                    "corners.txt";
-
-            ArrayList<String> words = FileUtil.getFileWordsAsStringList(cornersFilename);
-            double lllat = Double.parseDouble(words.get(0));
-            double lllon = Double.parseDouble(words.get(1));
-            double urlat = Double.parseDouble(words.get(2));
-            double urlon = Double.parseDouble(words.get(3));
-
-            return new double[]{lllat, lllon, urlat, urlon};
-        }
-        catch (IOException ex)
-        {
-            // silently ignore
-        }
-
-        return new double[]{-90.0, 0.0, 90.0, 360.0};
-    }
-
     protected void generateTextureCoordinates(vtkPolyData polydata, boolean mapZeroLongitudeToRight)
     {
-        double[] corners = loadTextureCorners();
-        double lllat = corners[0];
-        double lllon = corners[1];
-        double urlat = corners[2];
-        double urlon = corners[3];
+        double lllat = imageInfo.lllat;
+        double lllon = imageInfo.lllon;
+        double urlat = imageInfo.urlat;
+        double urlon = imageInfo.urlon;
 
         lllat *= (Math.PI / 180.0);
         lllon *= (Math.PI / 180.0);
@@ -329,7 +321,7 @@ public class SmallBodyImageMap extends Model
             imageMapTexture.InterpolateOn();
             imageMapTexture.RepeatOff();
             imageMapTexture.EdgeClampOn();
-            vtkImageData image = loadImageMap(smallBodyModel.getImageMapName());
+            vtkImageData image = loadImageMap(imageInfo.filename);
             imageMapTexture.SetInput(image);
 
             smallBodyActor = new vtkActor();
@@ -342,16 +334,12 @@ public class SmallBodyImageMap extends Model
         return smallBodyActors;
     }
 
-    public boolean isImageMapAvailable()
-    {
-        return smallBodyModel.getImageMapName() != null;
-    }
-
     public void setShowImageMap(boolean b)
     {
         if (b)
             initialize();
 
+        smallBodyActor.SetVisibility(b ? 1 : 0);
         super.setVisible(b);
     }
 

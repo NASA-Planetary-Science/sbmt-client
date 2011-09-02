@@ -3,6 +3,7 @@ package edu.jhuapl.near.gui;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.IOException;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -12,6 +13,11 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JRadioButtonMenuItem;
 
+import edu.jhuapl.near.gui.custom.CustomViewer;
+import edu.jhuapl.near.model.ModelManager;
+import edu.jhuapl.near.model.ModelNames;
+import edu.jhuapl.near.model.SmallBodyImageMapCollection;
+import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.util.Configuration;
 import edu.jhuapl.near.util.Properties;
 
@@ -127,6 +133,33 @@ public class ViewMenu extends JMenu implements PropertyChangeListener
             Viewer viewer = rootPanel.removeCustomViewer(name);
             removeCustomMenuItem(viewer);
         }
+        else if (Properties.CUSTOM_MODEL_EDITED.equals(evt.getPropertyName()))
+        {
+            String name = (String) evt.getNewValue();
+            CustomViewer viewer = (CustomViewer) rootPanel.getCustomViewer(name);
+
+            ModelManager modelManager = viewer.getModelManager();
+
+            // If model manager is null, it means the model has not been displayed yet,
+            // so no need to reset anything.
+            if (modelManager != null)
+            {
+                SmallBodyModel smallBodyModel =
+                        (SmallBodyModel) modelManager.getModel(ModelNames.SMALL_BODY);
+                try
+                {
+                    smallBodyModel.reloadShapeModel();
+                }
+                catch (IOException e)
+                {
+                    e.printStackTrace();
+                }
+
+                SmallBodyImageMapCollection imageCollection =
+                        (SmallBodyImageMapCollection) modelManager.getModel(ModelNames.SMALL_BODY_IMAGE_MAP);
+                imageCollection.reset();
+            }
+        }
     }
 
     private class ShowBodyAction extends AbstractAction
@@ -156,7 +189,7 @@ public class ViewMenu extends JMenu implements PropertyChangeListener
         {
             if (shapeModelImportedDialog == null)
             {
-                shapeModelImportedDialog = new ShapeModelImporterManagerDialog(JOptionPane.getFrameForComponent(rootPanel));
+                shapeModelImportedDialog = new ShapeModelImporterManagerDialog(null);
                 shapeModelImportedDialog.addPropertyChangeListener(ViewMenu.this);
             }
 

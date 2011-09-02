@@ -99,7 +99,7 @@ public class SmallBodyModel extends Model
     private String[] modelNames;
     private String[] modelFiles;
     private String[] coloringFiles;
-    private String imageMapName = null;
+    private String[] imageMapNames = null;
     private BoundingBox boundingBox = null;
     private vtkIdList idList; // to avoid repeated allocations
     private vtkUnsignedCharArray colorData;
@@ -138,7 +138,7 @@ public class SmallBodyModel extends Model
             String[] coloringUnits,
             boolean[] coloringHasNulls,
             boolean supportsFalseColoring,
-            String imageMapName,
+            String[] imageMapNames,
             ColoringValueType coloringValueType,
             boolean lowestResolutionModelStoredInResource)
     {
@@ -151,7 +151,7 @@ public class SmallBodyModel extends Model
         this.coloringUnits = coloringUnits;
         this.coloringHasNulls = coloringHasNulls;
         this.supportsFalseColoring = supportsFalseColoring;
-        this.imageMapName = imageMapName;
+        this.imageMapNames = imageMapNames;
         this.coloringValueType = coloringValueType;
         if (coloringNames != null)
         {
@@ -864,6 +864,11 @@ public class SmallBodyModel extends Model
         else if (level > 3)
             resolutionLevel = 3;
 
+        reloadShapeModel();
+    }
+
+    public void reloadShapeModel() throws IOException
+    {
         smallBodyCubes = null;
         if (coloringValues != null)
         {
@@ -874,7 +879,7 @@ public class SmallBodyModel extends Model
         cellNormals = null;
 
         File smallBodyFile = defaultModelFile;
-        switch(level)
+        switch(resolutionLevel)
         {
         case 1:
             smallBodyFile = FileCache.getFileFromServer(modelFiles[1]);
@@ -1030,12 +1035,12 @@ public class SmallBodyModel extends Model
 
     public boolean isImageMapAvailable()
     {
-        return imageMapName != null;
+        return imageMapNames != null && imageMapNames.length > 0;
     }
 
-    public String getImageMapName()
+    public String[] getImageMapNames()
     {
-        return imageMapName;
+        return imageMapNames;
     }
 
     public int getNumberOfColors()

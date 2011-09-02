@@ -18,7 +18,8 @@ public interface Properties
     final String STRUCTURE_REMOVED = "structure-removed";
     final String COLOR_CHANGED = "color-changed";
     //final String LINE_SELECTED = "line-selected";
-    
+
     final String CUSTOM_MODEL_ADDED = "custom-model-added";
     final String CUSTOM_MODEL_DELETED = "custom-model-deleted";
+    final String CUSTOM_MODEL_EDITED = "custom-model-edited";
 }
