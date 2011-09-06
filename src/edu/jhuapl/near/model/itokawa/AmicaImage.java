@@ -16,7 +16,7 @@ import nom.tam.fits.FitsException;
 
 import vtk.vtkImageConstantPad;
 import vtk.vtkImageData;
-import vtk.vtkImageResample;
+import vtk.vtkImageReslice;
 import vtk.vtkImageTranslateExtent;
 
 import edu.jhuapl.near.model.Image;
@@ -132,12 +132,19 @@ public class AmicaImage extends Image
         // Rescale image to 1024 by 1024 for binned images
         if (binning > 1)
         {
-            vtkImageResample resample = new vtkImageResample();
+            if (binning == 2)
+                rawImage.SetSpacing(2.0, 2.0, 1.0);
+            else if (binning == 4)
+                rawImage.SetSpacing(4.0, 4.0, 1.0);
+            else if (binning == 8)
+                rawImage.SetSpacing(8.0, 8.0, 1.0);
+
+            vtkImageReslice resample = new vtkImageReslice();
             resample.SetInput(rawImage);
             resample.InterpolateOff();
-            resample.SetAxisMagnificationFactor(0, binning);
-            resample.SetAxisMagnificationFactor(1, binning);
-            resample.SetAxisMagnificationFactor(2, 1.0);
+            resample.SetOutputExtent(0, 1023, 0, 1023, 0, 0);
+            resample.SetOutputOrigin(0.0, 0.0, 0.0);
+            resample.SetOutputSpacing(1.0, 1.0, 1.0);
             resample.Update();
             vtkImageData resampleOutput = resample.GetOutput();
             rawImage.DeepCopy(resampleOutput);
