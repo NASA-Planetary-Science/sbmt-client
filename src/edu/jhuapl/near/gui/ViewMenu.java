@@ -10,7 +10,6 @@ import javax.swing.Action;
 import javax.swing.ButtonGroup;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JRadioButtonMenuItem;
 
 import edu.jhuapl.near.gui.custom.CustomViewer;
@@ -193,6 +192,7 @@ public class ViewMenu extends JMenu implements PropertyChangeListener
                 shapeModelImportedDialog.addPropertyChangeListener(ViewMenu.this);
             }
 
+            shapeModelImportedDialog.setLocationRelativeTo(rootPanel);
             shapeModelImportedDialog.setVisible(true);
         }
     }

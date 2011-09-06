@@ -775,6 +775,7 @@ public class ShapeModelImporterDialog extends javax.swing.JDialog
 
             ShapeModelImageImporterDialog dialog = new ShapeModelImageImporterDialog(this);
             dialog.setImageInfo(imageInfo, ellipsoidRadioButton.isSelected());
+            dialog.setLocationRelativeTo(this);
             dialog.setVisible(true);
 
             // If user clicks okay replace item in list
@@ -792,6 +793,7 @@ public class ShapeModelImporterDialog extends javax.swing.JDialog
         ImageInfo imageInfo = new ImageInfo();
         ShapeModelImageImporterDialog dialog = new ShapeModelImageImporterDialog(this);
         dialog.setImageInfo(imageInfo, ellipsoidRadioButton.isSelected());
+        dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
 
         // If user clicks okay add to list

@@ -166,6 +166,7 @@ public class ShapeModelImporterManagerDialog extends javax.swing.JDialog
         int numImportedModels = ((DefaultListModel)modelList.getModel()).getSize();
 
         ShapeModelImporterDialog dialog = new ShapeModelImporterDialog(this);
+        dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
         populateList();
 
@@ -219,6 +220,7 @@ public class ShapeModelImporterManagerDialog extends javax.swing.JDialog
             }
 
             dialog.setEditMode(true);
+            dialog.setLocationRelativeTo(this);
             dialog.setVisible(true);
 
             if (dialog.getOkayPressed())
@@ -249,7 +251,7 @@ public class ShapeModelImporterManagerDialog extends javax.swing.JDialog
 
             String newUniqueName = findUniqueName(dirname);
             dialog.setName(newUniqueName);
-
+            dialog.setLocationRelativeTo(this);
             dialog.setVisible(true);
             populateList();
 
