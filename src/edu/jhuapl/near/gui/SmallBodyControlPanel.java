@@ -501,17 +501,17 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
 
         DecimalFormat df = new DecimalFormat("#.#####");
 
+        // We add a superscripted space at end of first 2 lines so that spacing between all lines is the same.
         String text = "<html>Statistics:<br>"
-            + "&nbsp;&nbsp;&nbsp;Number of plates: " + smallBodyModel.getSmallBodyPolyData().GetNumberOfCells() + "<br>"
-            + "&nbsp;&nbsp;&nbsp;Number of vertices: " + smallBodyModel.getSmallBodyPolyData().GetNumberOfPoints() + "<br>"
-            + "&nbsp;&nbsp;&nbsp;Surface Area: " + df.format(smallBodyModel.getSurfaceArea()) + " km^2<br>"
-            + "&nbsp;&nbsp;&nbsp;Volume: " + df.format(smallBodyModel.getVolume()) + " km^3<br>"
-            + "&nbsp;&nbsp;&nbsp;Average plate area: " + df.format(1.0e6 * smallBodyModel.getMeanCellArea()) + " m^2<br>"
-            + "&nbsp;&nbsp;&nbsp;Minimum plate area: " + df.format(1.0e6 * smallBodyModel.getMinCellArea()) + " m^2<br>"
-            + "&nbsp;&nbsp;&nbsp;Maximum plate area: " + df.format(1.0e6 * smallBodyModel.getMaxCellArea()) + " m^2<br>"
+            + "&nbsp;&nbsp;&nbsp;Number of plates: " + smallBodyModel.getSmallBodyPolyData().GetNumberOfCells() + "<sup>&nbsp;</sup><br>"
+            + "&nbsp;&nbsp;&nbsp;Number of vertices: " + smallBodyModel.getSmallBodyPolyData().GetNumberOfPoints() + "<sup>&nbsp;</sup><br>"
+            + "&nbsp;&nbsp;&nbsp;Surface Area: " + df.format(smallBodyModel.getSurfaceArea()) + " km<sup>2</sup><br>"
+            + "&nbsp;&nbsp;&nbsp;Volume: " + df.format(smallBodyModel.getVolume()) + " km<sup>3</sup><br>"
+            + "&nbsp;&nbsp;&nbsp;Average plate area: " + df.format(1.0e6 * smallBodyModel.getMeanCellArea()) + " m<sup>2</sup><br>"
+            + "&nbsp;&nbsp;&nbsp;Minimum plate area: " + df.format(1.0e6 * smallBodyModel.getMinCellArea()) + " m<sup>2</sup><br>"
+            + "&nbsp;&nbsp;&nbsp;Maximum plate area: " + df.format(1.0e6 * smallBodyModel.getMaxCellArea()) + " m<sup>2</sup><br>"
             + "</html>";
 
-        text += "</table>";
         statisticsLabel.setText(text);
     }
 }
