@@ -879,6 +879,7 @@ public class SmallBodyModel extends Model
         }
 
         cellNormals = null;
+        gravityVector = null;
 
         File smallBodyFile = defaultModelFile;
         switch(resolutionLevel)
