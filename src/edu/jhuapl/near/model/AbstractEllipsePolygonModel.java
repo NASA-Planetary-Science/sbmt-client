@@ -887,17 +887,20 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
         if (!smallBodyModel.isColoringDataAvailable())
             return null;
 
-        double[] values = {0.0, 0.0, 0.0, 0.0};
-
         if (mode == Mode.POINT_MODE)
         {
-            for (int i=0; i<4; ++i)
-                values[i] = smallBodyModel.getColoringValue(i, pol.center);
+            return smallBodyModel.getAllColoringValues(pol.center);
         }
         else
         {
             // For circles compute the slope and elevation averaged over the rim of the circle.
             // For acceleration and potential simply compute at the center.
+            double[] values = smallBodyModel.getAllColoringValues(pol.center);
+            if (values == null || values.length != 4)
+                return null;
+
+            values[0] = 0.0;
+            values[1] = 0.0;
 
             vtkCellArray lines = pol.boundaryPolyData.GetLines();
             vtkPoints points = pol.boundaryPolyData.GetPoints();
@@ -930,11 +933,9 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
 
             values[0] /= totalLength;
             values[1] /= totalLength;
-            values[2] = smallBodyModel.getColoringValue(2, pol.center);
-            values[3] = smallBodyModel.getColoringValue(3, pol.center);
-        }
 
-        return values;
+            return values;
+        }
     }
 
     private Double getEllipseAngleRelativeToGravityVector(EllipsePolygon pol)

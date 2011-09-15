@@ -880,6 +880,7 @@ public class SmallBodyModel extends Model
 
         cellNormals = null;
         gravityVector = null;
+        defaultColoringRanges = null;
 
         File smallBodyFile = defaultModelFile;
         switch(resolutionLevel)
@@ -929,44 +930,43 @@ public class SmallBodyModel extends Model
      */
     private void loadColoringData() throws IOException
     {
-        if (coloringValues != null && coloringValues.length > 0 && coloringValues[0] == null)
+        if (coloringValues != null && coloringValues.length > 0)
         {
             for (int i=0; i<coloringValues.length; ++i)
-                coloringValues[i] = new vtkFloatArray();
-        }
-        else
-        {
-            return;
-        }
-
-        for (int i=0; i<coloringValues.length; ++i)
-        {
-            File file = FileCache.getFileFromServer(coloringFiles[i] + "_res" + resolutionLevel + ".txt.gz");
-
-            vtkFloatArray array = coloringValues[i];
-
-            array.SetNumberOfComponents(1);
-            if (coloringValueType == ColoringValueType.POINT_DATA)
-                array.SetNumberOfTuples(smallBodyPolyData.GetNumberOfPoints());
-            else
-                array.SetNumberOfTuples(smallBodyPolyData.GetNumberOfCells());
-
-            FileInputStream fs =  new FileInputStream(file);
-            InputStreamReader isr = new InputStreamReader(fs);
-            BufferedReader in = new BufferedReader(isr);
-
-            String line;
-            int j = 0;
-            while ((line = in.readLine()) != null)
             {
-                array.SetTuple1(j, Float.parseFloat(line));
-                ++j;
+                // If not null, that means we've already loaded it.
+                if (coloringValues[i] != null)
+                    continue;
+
+                File file = FileCache.getFileFromServer(coloringFiles[i] + "_res" + resolutionLevel + ".txt.gz");
+
+                FileInputStream fs =  new FileInputStream(file);
+                InputStreamReader isr = new InputStreamReader(fs);
+                BufferedReader in = new BufferedReader(isr);
+
+                vtkFloatArray array = new vtkFloatArray();
+
+                array.SetNumberOfComponents(1);
+                if (coloringValueType == ColoringValueType.POINT_DATA)
+                    array.SetNumberOfTuples(smallBodyPolyData.GetNumberOfPoints());
+                else
+                    array.SetNumberOfTuples(smallBodyPolyData.GetNumberOfCells());
+
+                String line;
+                int j = 0;
+                while ((line = in.readLine()) != null)
+                {
+                    array.SetTuple1(j, Float.parseFloat(line));
+                    ++j;
+                }
+
+                in.close();
+
+                coloringValues[i] = array;
             }
 
-            in.close();
+            initializeColoringRanges();
         }
-
-        initializeColoringRanges();
     }
 
     private void invertLookupTableCharArray(vtkUnsignedCharArray table)
@@ -1112,6 +1112,7 @@ public class SmallBodyModel extends Model
         catch (IOException e)
         {
             e.printStackTrace();
+            return 0.0;
         }
 
         return getColoringValue(pt, coloringValues[index]);
@@ -1126,6 +1127,7 @@ public class SmallBodyModel extends Model
         catch (IOException e)
         {
             e.printStackTrace();
+            return null;
         }
 
         double[] closestPoint = new double[3];
