@@ -768,11 +768,18 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
 
             str += "\t";
             double[] values = getColoringValuesAtPolygon(pol);
-            for (int i=0; i<values.length; ++i)
+            if (values == null || values.length != 4)
             {
-                str += values[i];
-                if (i < values.length-1)
-                    str += "\t";
+                str += "NA\tNA\tNA\tNA";
+            }
+            else
+            {
+                for (int i=0; i<values.length; ++i)
+                {
+                    str += values[i];
+                    if (i < values.length-1)
+                        str += "\t";
+                }
             }
 
             str += "\t" + 2.0*pol.radius; // save out as diameter, not radius
@@ -781,11 +788,15 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
 
             str += "\t" + pol.color[0] + "," + pol.color[1] + "," + pol.color[2];
 
-            Double gravityAngle = getEllipseAngleRelativeToGravityVector(pol);
-            if (gravityAngle != null)
-                str += "\t" + gravityAngle;
-            else
-                str += "\t" + "NA";
+            if (mode == Mode.ELLIPSE_MODE)
+            {
+                Double gravityAngle = getEllipseAngleRelativeToGravityVector(pol);
+                System.out.println(gravityAngle);
+                if (gravityAngle != null)
+                    str += "\t" + gravityAngle;
+                else
+                    str += "\t" + "NA";
+            }
 
             str += "\n";
 
@@ -873,6 +884,9 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
 
     private double[] getColoringValuesAtPolygon(EllipsePolygon pol)
     {
+        if (!smallBodyModel.isColoringDataAvailable())
+            return null;
+
         double[] values = {0.0, 0.0, 0.0, 0.0};
 
         if (mode == Mode.POINT_MODE)
