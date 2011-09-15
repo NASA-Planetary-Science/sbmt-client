@@ -710,7 +710,11 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
             // the new and old formats.
             if (words.length > 9)
             {
-                String[] colorStr = words[words.length-1].split(",");
+                int colorIdx = words.length - 1;
+                if (words.length == 17)
+                    colorIdx = 15;
+
+                String[] colorStr = words[colorIdx].split(",");
                 if (colorStr.length == 3)
                 {
                     pol.color[0] = Integer.parseInt(colorStr[0]);
@@ -776,6 +780,12 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
             str += "\t" + pol.flattening + "\t" + pol.angle;
 
             str += "\t" + pol.color[0] + "," + pol.color[1] + "," + pol.color[2];
+
+            Double gravityAngle = getEllipseAngleRelativeToGravityVector(pol);
+            if (gravityAngle != null)
+                str += "\t" + gravityAngle;
+            else
+                str += "\t" + "NA";
 
             str += "\n";
 
@@ -911,5 +921,57 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
         }
 
         return values;
+    }
+
+    private Double getEllipseAngleRelativeToGravityVector(EllipsePolygon pol)
+    {
+        double[] gravityVector = smallBodyModel.getGravityVector(pol.center);
+        if (gravityVector == null)
+            return null;
+        MathUtil.vhat(gravityVector, gravityVector);
+
+        // First compute cross product of normal and z axis
+        double[] normal = smallBodyModel.getNormalAtPoint(pol.center);
+        double[] zaxis = {0.0, 0.0, 1.0};
+        double[] cross = new double[3];
+        MathUtil.vcrss(zaxis, normal, cross);
+        // Compute angle between normal and zaxis
+        double sepAngle = MathUtil.vsep(normal, zaxis) * 180.0 / Math.PI;
+
+        vtkTransform transform = new vtkTransform();
+        transform.Translate(pol.center);
+        transform.RotateWXYZ(sepAngle, cross);
+        transform.RotateZ(pol.angle);
+        transform.Scale(1.0, pol.flattening, 1.0);
+
+        double[] xaxis = {1.0, 0.0, 0.0};
+        xaxis = transform.TransformDoubleVector(xaxis);
+        MathUtil.vhat(xaxis, xaxis);
+
+        double[] gravityPoint = {
+                pol.center[0] + gravityVector[0],
+                pol.center[1] + gravityVector[1],
+                pol.center[2] + gravityVector[2],
+        };
+
+        // project gravity into plane normal to asteroid at ellipse center.
+        double[] projGravityPoint = new double[3];
+        MathUtil.vprjp(gravityPoint, normal, pol.center, projGravityPoint);
+        double[] projGravityVector = new double[3];
+        MathUtil.vsub(projGravityPoint, pol.center, projGravityVector);
+        MathUtil.vhat(projGravityVector, projGravityVector);
+
+        // Compute angular separation between projected gravity vector and
+        // semi-major axis (both directions). The angular separation is the
+        // smaller of these 2 angles.
+        double sepAngle1 = MathUtil.vsep(xaxis, projGravityVector) * 180.0 / Math.PI;
+        xaxis[0] = -xaxis[0];
+        xaxis[1] = -xaxis[1];
+        xaxis[2] = -xaxis[2];
+        double sepAngle2 = MathUtil.vsep(xaxis, projGravityVector) * 180.0 / Math.PI;
+
+        transform.Delete();
+
+        return Math.min(sepAngle1, sepAngle2);
     }
 }

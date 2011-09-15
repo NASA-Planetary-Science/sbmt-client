@@ -47,4 +47,12 @@ public class Itokawa extends SmallBodyModel
                 ColoringValueType.CELLDATA,
                 false);
     }
+
+    protected String getGravityVectorFilePath(int resolutionLevel)
+    {
+        if (resolutionLevel <= 1)
+            return "/ITOKAWA/Itokawa_GravityVector" + "_res" + resolutionLevel + ".txt.gz";
+        else
+            return null;
+    }
 }

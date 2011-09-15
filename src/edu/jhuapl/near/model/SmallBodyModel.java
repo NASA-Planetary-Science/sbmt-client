@@ -3,6 +3,7 @@ package edu.jhuapl.near.model;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -103,6 +104,7 @@ public class SmallBodyModel extends Model
     private BoundingBox boundingBox = null;
     private vtkIdList idList; // to avoid repeated allocations
     private vtkUnsignedCharArray colorData;
+    private vtkFloatArray gravityVector;
 
     // Does this class support false coloring
     private boolean supportsFalseColoring = false;
@@ -1137,27 +1139,89 @@ public class SmallBodyModel extends Model
         return values;
     }
 
+    /**
+     * Subclass must override this method if it wants to support loading
+     * gravity vector.
+     *
+     * @param resolutionLevel
+     * @return
+     */
+    protected String getGravityVectorFilePath(int resolutionLevel)
+    {
+        return null;
+    }
+
     public double[] getGravityVector(double[] pt)
     {
         try
         {
-            loadGravityVectorData();
+            if (gravityVector == null)
+            {
+                boolean success = loadGravityVectorData();
+                if (!success)
+                    return null;
+            }
         }
         catch (IOException e)
         {
             e.printStackTrace();
         }
 
-//        double[] closestPoint = new double[3];
-//        int cellId = findClosestCell(pt, closestPoint);
-//
-//        double[] values = new double[3];
+        double[] closestPoint = new double[3];
+        int cellId = findClosestCell(pt, closestPoint);
 
-        return null;
+        return gravityVector.GetTuple3(cellId);
     }
 
-    private void loadGravityVectorData() throws IOException
+    public vtkDataArray getGravityVectorData()
     {
+        try
+        {
+            if (gravityVector == null)
+                loadGravityVectorData();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+
+        return gravityVector;
+    }
+
+    private boolean loadGravityVectorData() throws IOException
+    {
+        String filePath = getGravityVectorFilePath(resolutionLevel);
+        if (filePath == null)
+            return false;
+
+        // Only cell data is supported now.
+        if (coloringValueType == ColoringValueType.POINT_DATA)
+            return false;
+
+        File file = FileCache.getFileFromServer(filePath);
+
+        gravityVector = new vtkFloatArray();
+        gravityVector.SetNumberOfComponents(3);
+        gravityVector.SetNumberOfTuples(smallBodyPolyData.GetNumberOfCells());
+
+        FileReader ifs = new FileReader(file);
+        BufferedReader in = new BufferedReader(ifs);
+
+        String line;
+        int j = 0;
+        while ((line = in.readLine()) != null)
+        {
+            String[] vals = line.trim().split("\\s+");
+            double x = Float.parseFloat(vals[0]);
+            double y = Float.parseFloat(vals[1]);
+            double z = Float.parseFloat(vals[2]);
+            gravityVector.SetTuple3(j, x, y, z);
+            ++j;
+        }
+
+        in.close();
+
+        return true;
     }
 
     // Compute the range of an array but account for the fact that for some datasets,
