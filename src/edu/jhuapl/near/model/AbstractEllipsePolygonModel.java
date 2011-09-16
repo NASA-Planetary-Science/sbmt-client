@@ -788,15 +788,15 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
 
             str += "\t" + pol.color[0] + "," + pol.color[1] + "," + pol.color[2];
 
-            if (mode == Mode.ELLIPSE_MODE)
-            {
-                Double gravityAngle = getEllipseAngleRelativeToGravityVector(pol);
-                System.out.println(gravityAngle);
-                if (gravityAngle != null)
-                    str += "\t" + gravityAngle;
-                else
-                    str += "\t" + "NA";
-            }
+            // if (mode == Mode.ELLIPSE_MODE)
+            // {
+            //     Double gravityAngle = getEllipseAngleRelativeToGravityVector(pol);
+            //     System.out.println(gravityAngle);
+            //     if (gravityAngle != null)
+            //         str += "\t" + gravityAngle;
+            //     else
+            //         str += "\t" + "NA";
+            // }
 
             str += "\n";
 
