@@ -169,6 +169,12 @@ public class Graticule extends Model implements PropertyChangeListener
             break;
         }
 
+        if (modelFile == null)
+        {
+            System.err.println("Error: could not download coordinate grid");
+            return;
+        }
+
         reader.SetFileName(modelFile.getAbsolutePath());
         reader.Update();
 
