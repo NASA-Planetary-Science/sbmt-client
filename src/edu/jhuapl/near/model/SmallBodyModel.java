@@ -938,7 +938,10 @@ public class SmallBodyModel extends Model
                 if (coloringValues[i] != null)
                     continue;
 
-                File file = FileCache.getFileFromServer(coloringFiles[i] + "_res" + resolutionLevel + ".txt.gz");
+                String filename = coloringFiles[i] + "_res" + resolutionLevel + ".txt.gz";
+                File file = FileCache.getFileFromServer(filename);
+                if (file == null)
+                    throw new IOException("Unable to download " + filename);
 
                 FileInputStream fs =  new FileInputStream(file);
                 InputStreamReader isr = new InputStreamReader(fs);
@@ -1109,7 +1112,7 @@ public class SmallBodyModel extends Model
             if (coloringValues != null && index < coloringValues.length && coloringValues[index] == null)
                 loadColoringData();
         }
-        catch (IOException e)
+        catch (Exception e)
         {
             e.printStackTrace();
             return 0.0;
@@ -1124,7 +1127,7 @@ public class SmallBodyModel extends Model
         {
             loadColoringData();
         }
-        catch (IOException e)
+        catch (Exception e)
         {
             e.printStackTrace();
             return null;
