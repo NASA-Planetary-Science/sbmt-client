@@ -125,8 +125,6 @@ public class AmicaBackplanesGenerator
                 continue;
             }
 
-            ++numberValidFiles;
-
             File origFile = new File(filename);
             File rootFolder = origFile.getParentFile().getParentFile().getParentFile().getParentFile();
             String keyName = origFile.getAbsolutePath().replace(rootFolder.getAbsolutePath(), "");
@@ -147,7 +145,6 @@ public class AmicaBackplanesGenerator
             System.gc();
             System.out.println("deleted " + vtkGlobalJavaHash.GC());
             System.out.println("\n\n");
-
         }
 
         filesProcessed.clear();
@@ -168,8 +165,6 @@ public class AmicaBackplanesGenerator
                 continue;
             }
 
-            ++numberValidFiles;
-
             File origFile = new File(filename);
             File rootFolder = origFile.getParentFile().getParentFile().getParentFile().getParentFile();
             String keyName = origFile.getAbsolutePath().replace(rootFolder.getAbsolutePath(), "");
@@ -189,6 +184,18 @@ public class AmicaBackplanesGenerator
             }
 
             AmicaImage image = new AmicaImage(key, itokawaModel, false, rootFolder);
+
+            image.loadFootprint();
+            if (image.getUnshiftedFootprint().GetNumberOfCells() == 0)
+            {
+                System.out.println("skipping this image since no intersecting cells");
+                image.Delete();
+                System.gc();
+                System.out.println("deleted " + vtkGlobalJavaHash.GC());
+                System.out.println(" ");
+                System.out.println(" ");
+                continue;
+            }
 
             // Generate the backplanes binary file
             float[] backplanes = image.generateBackplanes();
@@ -221,6 +228,7 @@ public class AmicaBackplanesGenerator
             out.close();
 
             filesProcessed.add(ddrFilename);
+            ++numberValidFiles;
 
             image.Delete();
             System.gc();
@@ -434,6 +442,7 @@ public class AmicaBackplanesGenerator
 
         String amicaFileList=args[0];
         String inertialFilename = args[1];
+        int mode = Integer.parseInt(args[2]);
 
         itokawaModel = new Itokawa();
 
@@ -451,11 +460,16 @@ public class AmicaBackplanesGenerator
 
         try
         {
-            generateBackplanes(amicaFiles, ImageSource.GASKELL);
-            generateLatex("amica_backplanes_summary_gaskell.tex");
-
-            generateBackplanes(amicaFiles, ImageSource.PDS);
-            generateLatex("amica_backplanes_summary_pds.tex");
+            if (mode == 1 || mode == 0)
+            {
+                generateBackplanes(amicaFiles, ImageSource.GASKELL);
+                generateLatex("amica_backplanes_summary_gaskell.tex");
+            }
+            else if (mode == 2 || mode == 0)
+            {
+                generateBackplanes(amicaFiles, ImageSource.PDS);
+                generateLatex("amica_backplanes_summary_pds.tex");
+            }
         }
         catch (Exception e1) {
             e1.printStackTrace();
