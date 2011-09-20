@@ -139,6 +139,8 @@ public abstract class Picker implements
         return Cursor.DEFAULT_CURSOR;
     }
 
+/*
+// Old version:
     protected int doPick(MouseEvent e, vtkCellPicker picker, vtkRenderWindowPanel renWin)
     {
         if (pickingEnabled == false)
@@ -182,5 +184,42 @@ public abstract class Picker implements
 
         return pickSucceeded;
     }
+*/
+    protected int doPick(MouseEvent e, vtkCellPicker picker, vtkRenderWindowPanel renWin)
+    {
+        if (pickingEnabled == false)
+            return 0;
 
+        // Don't do a pick if the event is more than a third of a second old
+        final long currentTime = System.currentTimeMillis();
+        final long when = e.getWhen();
+
+        //System.err.println("elapsed time " + (currentTime - when));
+        if (currentTime - when > 333)
+            return 0;
+
+        // When picking, choosing the right tolerance is not so simple. Here we set
+        // the tolerance to about 2 pixels.
+        // See vtk documentation where tolerance is specified as a fraction of the screen
+        // diagonal size. We thus compute the diagonal and divide 2 by it.
+
+        double width = renWin.getWidth();
+        double height = renWin.getHeight();
+        double diagonal = Math.sqrt(width*width + height*height);
+        if (diagonal == 0.0)
+            return 0;
+        double tolerance = 2.0 / diagonal; // This should equal about 2 pixels
+
+        final double originalTolerance = picker.GetTolerance();
+
+        renWin.lock();
+
+        picker.SetTolerance(tolerance);
+        int pickSucceeded = picker.Pick(e.getX(), renWin.getHeight()-e.getY()-1, 0.0, renWin.GetRenderer());
+        picker.SetTolerance(originalTolerance);
+
+        renWin.unlock();
+
+        return pickSucceeded;
+    }
 }
