@@ -171,7 +171,11 @@ public class CirclePicker extends Picker
     public void mouseMoved(MouseEvent e)
     {
         int pickSucceeded = doPick(e, circlePicker, renWin);
-        if (pickSucceeded == 1 &&
+
+        // Only allow dragging if we are not in the middle of drawing a
+        // a new circle, i.e. if number of circumference points is zero.
+        if (circleModel.getNumberOfCircumferencePoints() == 0 &&
+                pickSucceeded == 1 &&
                 circlePicker.GetActor() == circleModel.getBoundaryActor())
         {
             if (renWin.getCursor().getType() != Cursor.HAND_CURSOR)

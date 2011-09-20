@@ -161,4 +161,9 @@ public class CircleModel extends AbstractEllipsePolygonModel
             this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
         }
     }
+
+    public int getNumberOfCircumferencePoints()
+    {
+        return selectionPolyData.GetNumberOfPoints();
+    }
 }
