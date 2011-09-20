@@ -1,5 +1,6 @@
 package edu.jhuapl.near.pick;
 
+import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -124,6 +125,18 @@ public abstract class Picker implements
 
     public void propertyChange(PropertyChangeEvent evt)
     {
+    }
+
+    /**
+     * Get the default cursor to be used when this picker is active.
+     * Note this may be different than the value of Cursor.DEFAULT_CURSOR
+     * or Cursor.getDefaultCursor().
+     *
+     * @return
+     */
+    public int getDefaultCursor()
+    {
+        return Cursor.DEFAULT_CURSOR;
     }
 
     protected int doPick(MouseEvent e, vtkCellPicker picker, vtkRenderWindowPanel renWin)

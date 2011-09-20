@@ -1,5 +1,6 @@
 package edu.jhuapl.near.pick;
 
+import java.awt.Cursor;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
@@ -10,10 +11,10 @@ import vtk.vtkPropCollection;
 import vtk.vtkRenderWindowPanel;
 
 import edu.jhuapl.near.gui.Renderer;
+import edu.jhuapl.near.model.AbstractEllipsePolygonModel;
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
-import edu.jhuapl.near.model.AbstractEllipsePolygonModel;
 import edu.jhuapl.near.model.SmallBodyModel;
 
 public class CircleSelectionPicker extends Picker
@@ -106,5 +107,11 @@ public class CircleSelectionPicker extends Picker
                 }
             }
         }
+    }
+
+    @Override
+    public int getDefaultCursor()
+    {
+        return Cursor.CROSSHAIR_CURSOR;
     }
 }

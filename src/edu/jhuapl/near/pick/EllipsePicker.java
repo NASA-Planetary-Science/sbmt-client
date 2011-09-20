@@ -193,8 +193,8 @@ public class EllipsePicker extends Picker
         }
         else
         {
-            if (renWin.getCursor().getType() != Cursor.DEFAULT_CURSOR)
-                renWin.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+            if (renWin.getCursor().getType() != getDefaultCursor())
+                renWin.setCursor(new Cursor(getDefaultCursor()));
 
             currentEditMode = EditMode.VERTEX_ADD;
         }
@@ -214,5 +214,11 @@ public class EllipsePicker extends Picker
             changeFlatteningKeyPressed = false;
         if (e.getKeyCode() == KeyEvent.VK_X || e.getKeyCode() == KeyEvent.VK_PERIOD)
             changeAngleKeyPressed = false;
+    }
+
+    @Override
+    public int getDefaultCursor()
+    {
+        return Cursor.CROSSHAIR_CURSOR;
     }
 }

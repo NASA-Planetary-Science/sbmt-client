@@ -1,5 +1,6 @@
 package edu.jhuapl.near.pick;
 
+import java.awt.Cursor;
 import java.util.HashMap;
 
 import vtk.vtkRenderWindowPanel;
@@ -64,6 +65,7 @@ public class PickManager extends Picker
                 removePicker(nondefaultPickers.get(pm));
             }
             defaultPicker.setSuppressPopups(false);
+            renWin.setCursor(new Cursor(defaultPicker.getDefaultCursor()));
         }
         else
         {
@@ -75,8 +77,10 @@ public class PickManager extends Picker
                     removePicker(nondefaultPickers.get(pm));
                 }
             }
-            addPicker(nondefaultPickers.get(this.pickMode));
+            Picker picker = nondefaultPickers.get(this.pickMode);
+            addPicker(picker);
             defaultPicker.setSuppressPopups(true);
+            renWin.setCursor(new Cursor(picker.getDefaultCursor()));
         }
     }
 

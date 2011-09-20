@@ -185,10 +185,16 @@ public class CirclePicker extends Picker
         }
         else
         {
-            if (renWin.getCursor().getType() != Cursor.DEFAULT_CURSOR)
-                renWin.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+            if (renWin.getCursor().getType() != getDefaultCursor())
+                renWin.setCursor(new Cursor(getDefaultCursor()));
 
             currentEditMode = EditMode.VERTEX_ADD;
         }
+    }
+
+    @Override
+    public int getDefaultCursor()
+    {
+        return Cursor.CROSSHAIR_CURSOR;
     }
 }
