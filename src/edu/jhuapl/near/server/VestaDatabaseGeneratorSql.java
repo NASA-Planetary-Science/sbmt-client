@@ -352,6 +352,11 @@ public class VestaDatabaseGeneratorSql
             if (!file.exists())
                 return false;
 
+            // If the sumfile has no landmarks, then ignore it. Sumfiles that have no landmarks
+            // are 1296 bytes long
+            if (file.length() <= 1296)
+                return false;
+
 //            // Only process files that are listed in Gaskell's INERTIAL.TXT file.
 //            if (!inertialFileList.contains("N" + fcId))
 //            {
