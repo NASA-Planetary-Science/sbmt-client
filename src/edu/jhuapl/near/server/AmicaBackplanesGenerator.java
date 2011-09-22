@@ -4,11 +4,9 @@ import java.awt.AlphaComposite;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -37,15 +35,13 @@ public class AmicaBackplanesGenerator
     private static SmallBodyModel itokawaModel;
 
     // Files listed in Gaskell's INERTIAL.TXT file. Only these are processed.
-    private static ArrayList<String> inertialFileList = new ArrayList<String>();
-
-    private static int numberValidFiles = 0;
+    static ArrayList<String> inertialFileList = new ArrayList<String>();
 
     private static double[] meanPlateSizes;
 
     private static ArrayList<String> filesProcessed = new ArrayList<String>();
 
-    private static void loadInertialFile(String inertialFilename) throws IOException
+    static void loadInertialFile(String inertialFilename) throws IOException
     {
         InputStream fs = new FileInputStream(inertialFilename);
         InputStreamReader isr = new InputStreamReader(fs);
@@ -228,7 +224,7 @@ public class AmicaBackplanesGenerator
             out.close();
 
             filesProcessed.add(ddrFilename);
-            ++numberValidFiles;
+            System.out.println("Processed " + filesProcessed.size() + " images so far");
 
             image.Delete();
             System.gc();
@@ -236,7 +232,7 @@ public class AmicaBackplanesGenerator
             System.out.println("\n\n");
         }
 
-        System.out.println("Total number of files processed " + numberValidFiles);
+        System.out.println("Total number of files processed " + filesProcessed.size());
     }
 
     /*
@@ -317,62 +313,6 @@ public class AmicaBackplanesGenerator
         {
             e.printStackTrace();
         }
-    }
-
-    private static void generateLatex(String name) throws IOException
-    {
-        String dir = new File(filesProcessed.get(0)).getParentFile().getAbsolutePath();
-        FileWriter fstream = new FileWriter(dir + "/" + name);
-        BufferedWriter o = new BufferedWriter(fstream);
-
-        o.write("\\documentclass[12pt]{article}\n");
-
-        o.write("\\usepackage{graphicx}\n");
-        o.write("\\usepackage{subfigure}\n");
-        o.write("\\usepackage{fullpage}\n");
-
-        o.write("\\begin{document}\n");
-
-        String[] bands = {
-                "pixel value",
-                "x coordinate",
-                "y coordinate",
-                "z coordinate",
-                "Latitude",
-                "Longitude",
-                "Distance from center",
-                "Incidence angle",
-                "Emission angle",
-                "Phase angle",
-                "Horizontal pixel scale",
-                "Vertical pixel scale",
-                "Slope",
-                "Elevation",
-                "Gravitational Acc",
-                "Gravitational Pot"
-        };
-
-        for (String filename : filesProcessed)
-        {
-            o.write("\\begin{figure}\n");
-            o.write("  \\begin{center}\n");
-
-            for (int i=0; i<16; ++i)
-            {
-                String bf = filename.replace('.', '_') + "_" + i + ".jpg";
-                o.write("    \\subfigure["+ bands[i] + "]{\\includegraphics[scale=0.35]{" + bf + "}}\n");
-            }
-
-            o.write("  \\end{center}\n");
-            o.write("\\caption{" + new File(filename).getName().replace("_", "\\_") + "}\n");
-            o.write("\\end{figure}\n");
-            o.write("\\clearpage\n");
-            o.write("\\setcounter{subfigure}{0}\n");
-        }
-
-        o.write("\\end{document}\n");
-
-        o.close();
     }
 
     private static void computeMeanPlateSizeAtAllResolutions() throws IOException
@@ -463,12 +403,10 @@ public class AmicaBackplanesGenerator
             if (mode == 1 || mode == 0)
             {
                 generateBackplanes(amicaFiles, ImageSource.GASKELL);
-                generateLatex("amica_backplanes_summary_gaskell.tex");
             }
             else if (mode == 2 || mode == 0)
             {
                 generateBackplanes(amicaFiles, ImageSource.PDS);
-                generateLatex("amica_backplanes_summary_pds.tex");
             }
         }
         catch (Exception e1) {
