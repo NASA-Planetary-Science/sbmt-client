@@ -1659,7 +1659,7 @@ public class PolyDataUtil
         {
             numPoints = Integer.parseInt(vals[0]);
         }
-        if (vals.length == 2)
+        else if (vals.length == 2)
         {
             numPoints = Integer.parseInt(vals[0]);
             numCells = Integer.parseInt(vals[1]);
