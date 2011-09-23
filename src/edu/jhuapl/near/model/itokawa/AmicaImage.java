@@ -28,8 +28,10 @@ public class AmicaImage extends Image
     //private static final int IMAGE_WIDTH = 1024;
     //private static final int IMAGE_HEIGHT = 1024;
 
-    public static final double FOV_PARAMETER1 = -0.049782949;
-    public static final double FOV_PARAMETER2 = -0.049782949;
+    // Values from AMICA instrument kernel file.
+    public static final double FOV_PARAMETER1 = -0.006144;
+    public static final double FOV_PARAMETER2 = -0.006144;
+    public static final double FOV_PARAMETER3 = 0.1204711614;
 
     public AmicaImage(ImageKey key,
             SmallBodyModel smallBodyModel,
@@ -358,6 +360,12 @@ public class AmicaImage extends Image
     public double getFovParameter2()
     {
         return FOV_PARAMETER2;
+    }
+
+    @Override
+    public double getFovParameter3()
+    {
+        return FOV_PARAMETER3;
     }
 
     @Override

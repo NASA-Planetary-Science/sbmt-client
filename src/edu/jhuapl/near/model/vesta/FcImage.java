@@ -16,9 +16,10 @@ import edu.jhuapl.near.util.FileCache;
 
 public class FcImage extends Image
 {
-    // Values from FC instrument kernel file
-    public static final double FOV_PARAMETER1 = -0.095480/2.0;
-    public static final double FOV_PARAMETER2 = -0.095420/2.0;
+    // Values derived from FC instrument kernel file. Note the tangent!
+    public static final double FOV_PARAMETER1 = -Math.tan(0.095480/2.0);
+    public static final double FOV_PARAMETER2 = -Math.tan(0.095420/2.0);
+    public static final double FOV_PARAMETER3 = 1.0;
 
     public FcImage(ImageKey key,
             SmallBodyModel smallBodyModel,
@@ -70,6 +71,12 @@ public class FcImage extends Image
     public double getFovParameter2()
     {
         return FOV_PARAMETER2;
+    }
+
+    @Override
+    public double getFovParameter3()
+    {
+        return FOV_PARAMETER3;
     }
 
     @Override
