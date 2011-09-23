@@ -443,6 +443,10 @@ public class VestaDatabaseGeneratorSql
             }
         }
 
+	System.out.println("before redundant " + fcFiles.size());
+	System.out.println("before redundant " + filesToKeep.size());
+	System.out.println(filesToKeep);
+
         return filesToKeep;
     }
 
