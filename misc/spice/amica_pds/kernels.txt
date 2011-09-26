@@ -24,7 +24,7 @@ KPL/MK
    \begindata
 
       PATH_VALUES       = (
-                          '/project/nearsdc/spice/hayabusa'
+                          '/project/nearsdc/spice-kernels/hayabusa'
                           )
       PATH_SYMBOLS      = (
                           'KERNELS'
