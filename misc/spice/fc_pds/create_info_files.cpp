@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 #include <cstdlib>
+#include <cmath>
 extern "C"
 {
 #include "SpiceUsr.h"
@@ -133,7 +134,7 @@ void getEt(const string& not_used,
   frustum:
    
 */
-void getScOrientation(double et, double scposb[3], double boredir[3], double updir[3],
+void getScOrientation(double et, int filter, double scposb[3], double boredir[3], double updir[3],
                       double frustum[12])
 {
     double lt;
@@ -158,9 +159,46 @@ void getScOrientation(double et, double scposb[3], double boredir[3], double upd
     if (failed_c())
         return;
 
-    xo=-0.095480/2.0;
-    yo=-0.095420/2.0;
-
+    if (filter == 1)
+    {
+        xo=-tan(0.095480/2.0);
+        yo=-tan(0.095420/2.0);
+    }
+    else if (filter == 2)
+    {
+        xo=-tan(0.095461/2.0);
+        yo=-tan(0.095401/2.0);
+    }
+    else if (filter == 3)
+    {
+        xo=-tan(0.095499/2.0);
+        yo=-tan(0.095439/2.0);
+    }
+    else if (filter == 4)
+    {
+        xo=-tan(0.095452/2.0);
+        yo=-tan(0.095392/2.0);
+    }
+    else if (filter == 5)
+    {
+        xo=-tan(0.095427/2.0);
+        yo=-tan(0.095367/2.0);
+    }
+    else if (filter == 6)
+    {
+        xo=-tan(0.095476/2.0);
+        yo=-tan(0.095416/2.0);
+    }
+    else if (filter == 7)
+    {
+        xo=-tan(0.095492/2.0);
+        yo=-tan(0.095432/2.0);
+    }
+    else if (filter == 8)
+    {
+        xo=-tan(0.095286/2.0);
+        yo=-tan(0.095226/2.0);
+    }
 
     /* First compute the direction of the center pixel */
     vpxi[0] = 0.0;
@@ -291,6 +329,12 @@ void saveInfoFile(string filename,
     fout << scientific << sunpos[2] << " )\n";
 }
 
+int getFilter(string fitfilename)
+{
+    int n = fitfilename.size();
+    string filt = fitfilename.substr(n-6, n-5);
+    return atoi(filt.c_str());
+}
 
 /*
 
@@ -336,7 +380,8 @@ int main(int argc, char** argv)
         if (failed_c())
             continue;
 
-        getScOrientation(et, scposb, boredir, updir, frustum);
+        int filter = getFilter(fitfiles[i].first);
+        getScOrientation(et, filter, scposb, boredir, updir, frustum);
         if (failed_c())
             continue;
 
