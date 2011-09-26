@@ -102,7 +102,7 @@ public class FcImage extends Image
     @Override
     protected String initializeLabelFileFullPath(File rootFolder)
     {
-        return initializeInfoFileFullPath(rootFolder);
+        return null;
     }
 
     @Override
