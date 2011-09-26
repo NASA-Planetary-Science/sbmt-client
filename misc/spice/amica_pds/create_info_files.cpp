@@ -88,7 +88,7 @@ void getScOrientation(double et, double scposb[3], double boredir[3], double upd
     double i2bmat[3][3];
     double vpxi[3];
     double ci[3];
-    double xo,yo;
+    double xo,yo,zo;
     const char* target = "HAYABUSA";
     const char* ref = "IAU_ITOKAWA";
     const char* abcorr = "NONE";
@@ -106,9 +106,9 @@ void getScOrientation(double et, double scposb[3], double boredir[3], double upd
     if (failed_c())
         return;
 
-    xo=-0.049782949;
-    yo=-0.049782949;
-
+    xo=-0.006144;
+    yo=-0.006144;
+    zo=0.1204711614;
 
     /* First compute the direction of the center pixel */
     vpxi[0] = 0.0;
@@ -118,8 +118,8 @@ void getScOrientation(double et, double scposb[3], double boredir[3], double upd
     mxv_c(i2bmat, ci, boredir);
 
     /* Then compute the up direction */
-    vpxi[0] = 1.0;
-    vpxi[1] = 0.0;
+    vpxi[0] = 0.0;
+    vpxi[1] = -1.0;
     vpxi[2] = 0.0;
     vpack_c(vpxi[0], vpxi[1], vpxi[2], ci);
     mxv_c(i2bmat, ci, updir);
@@ -127,25 +127,25 @@ void getScOrientation(double et, double scposb[3], double boredir[3], double upd
     /* Now compute the frustum */
     vpxi[0] = xo;
     vpxi[1] = -yo;
-    vpxi[2] = 1.0;
+    vpxi[2] = zo;
     vpack_c(vpxi[0], vpxi[1], vpxi[2], ci);
     mxv_c(i2bmat, ci, &frustum[0]);
 
     vpxi[0] = -xo;
     vpxi[1] = -yo;
-    vpxi[2] = 1.0;
+    vpxi[2] = zo;
     vpack_c(vpxi[0], vpxi[1], vpxi[2], ci);
     mxv_c(i2bmat, ci, &frustum[3]);
 
     vpxi[0] = xo;
     vpxi[1] = yo;
-    vpxi[2] = 1.0;
+    vpxi[2] = zo;
     vpack_c(vpxi[0], vpxi[1], vpxi[2], ci);
     mxv_c(i2bmat, ci, &frustum[6]);
 
     vpxi[0] = -xo;
     vpxi[1] = yo;
-    vpxi[2] = 1.0;
+    vpxi[2] = zo;
     vpack_c(vpxi[0], vpxi[1], vpxi[2], ci);
     mxv_c(i2bmat, ci, &frustum[9]);
 }
