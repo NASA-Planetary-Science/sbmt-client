@@ -265,7 +265,18 @@ buttons. Note that the file format for paths is different than the format
 for circles, ellipses, or points.
 </p>
 <p>
-The file format for paths is XML.
+The file format for paths is XML. The XML format consists of a series of path elements, one
+element per path. Each element contains the following attributes:
+<ul>
+<li>id - a unique integer identifying the path.
+<li>color - the color the path is to drawn in (specified as red,green,blue).
+<li>length - the total length of the path. This equals the sum of all the path's segments.
+<li>name - a user specified name given to the path.
+<li>vertices - the list of vertices making up the path. Each vertex is specified as a 3D point in spherical coordinates,
+i.e. latitude in degrees, longitude in degrees and the radius. There are thus 3N value in this
+attribute where N is the number of vertices and N-1 is the number of path segments. Thus if the
+path consists of 2 segments, 3 vertices will be listed for a total of 9 numbers.  
+</ul>
 </p>
 <p>
 The file format for circles, ellipses, and points is a tab separated table with the following columns:
@@ -287,6 +298,7 @@ The file format for circles, ellipses, and points is a tab separated table with 
 <li>flattening (ratio of semi-minor axis to semi-major axis)
 <li>angle (degrees)
 <li>color (red,green,blue)
+<li>ellipse angle relative to gravity vector (only saved for ellipses, not circles or points)
 </ol>
 
 <p>
@@ -297,7 +309,26 @@ the slope and elevation are averaged over the rim of the circle or ellipse, wher
 are computed at the center of the circle or ellipse. For points, the center of the point is used for
 all 4 values. Finally note that if using a shape model for which slope, elevation,
 acceleration, and potential are not specified such as the higher resolution shape models
-for Eros or Itokawa, then those values that are saved to the file are undefined.
+for Eros or Itokawa, then 'NA' is printed for those values.
+</p>
+<p>
+For ellipses, the final column in the file is the angle between the semimajor axis of
+the ellipse and the gravity acceleration vector. This angle is only computed
+if such gravity information is available for the shape model. If no gravity information
+is available, then 'NA' is printed in that column. The angle is compute using the following steps:
+<ol>
+<li>First the plate closest to the center of the ellipse is rotated such that its normal vector
+points in the direction of positive z-axis and the plane of the plate is aligned with
+the xy-plane.
+<li>Then the gravity vector is rotated by the same rotation
+that the normal vector was rotated in Step 1.
+<li>Then the rotated gravity vector is projected into the xy-plane (the plane of the plate).
+<li>There are 2 vectors that point in the direction of the semimajor axis of the ellipse,
+each in opposite directions. The angle required to rotate the projected gravity vector
+(counterclockwise as viewed from an observer looking down in the negative z
+direction onto the xy-plane) into each of these 2 vectors is computed.
+<li>The smaller of these 2 angles is what is saved to the file. It is between 0 and 180 degrees. 
+</ol>
 </p>
 
 <h3>Mapmaker tab (Eros only)</h3>
