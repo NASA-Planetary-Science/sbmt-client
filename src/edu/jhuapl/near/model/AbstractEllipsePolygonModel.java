@@ -788,15 +788,14 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
 
             str += "\t" + pol.color[0] + "," + pol.color[1] + "," + pol.color[2];
 
-            // if (mode == Mode.ELLIPSE_MODE)
-            // {
-            //     Double gravityAngle = getEllipseAngleRelativeToGravityVector(pol);
-            //     System.out.println(gravityAngle);
-            //     if (gravityAngle != null)
-            //         str += "\t" + gravityAngle;
-            //     else
-            //         str += "\t" + "NA";
-            // }
+             if (mode == Mode.ELLIPSE_MODE)
+             {
+                 Double gravityAngle = getEllipseAngleRelativeToGravityVector(pol);
+                 if (gravityAngle != null)
+                     str += "\t" + gravityAngle;
+                 else
+                     str += "\t" + "NA";
+             }
 
             str += "\n";
 
@@ -945,45 +944,84 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
             return null;
         MathUtil.vhat(gravityVector, gravityVector);
 
+
         // First compute cross product of normal and z axis
         double[] normal = smallBodyModel.getNormalAtPoint(pol.center);
         double[] zaxis = {0.0, 0.0, 1.0};
         double[] cross = new double[3];
         MathUtil.vcrss(zaxis, normal, cross);
         // Compute angle between normal and zaxis
-        double sepAngle = MathUtil.vsep(normal, zaxis) * 180.0 / Math.PI;
+        double sepAngle = -MathUtil.vsep(normal, zaxis) * 180.0 / Math.PI;
 
+
+
+        // Rotate gravity vector and center of ellipse by amount
+        // such that normal of ellipse faces positive z-axis
         vtkTransform transform = new vtkTransform();
-        transform.Translate(pol.center);
         transform.RotateWXYZ(sepAngle, cross);
-        transform.RotateZ(pol.angle);
-        transform.Scale(1.0, pol.flattening, 1.0);
 
-        double[] xaxis = {1.0, 0.0, 0.0};
-        xaxis = transform.TransformDoubleVector(xaxis);
-        MathUtil.vhat(xaxis, xaxis);
+        gravityVector = transform.TransformDoubleVector(gravityVector);
+        double[] center = transform.TransformDoublePoint(pol.center);
 
+        // project gravity into xy plane
         double[] gravityPoint = {
-                pol.center[0] + gravityVector[0],
-                pol.center[1] + gravityVector[1],
-                pol.center[2] + gravityVector[2],
+                center[0] + gravityVector[0],
+                center[1] + gravityVector[1],
+                center[2] + gravityVector[2],
         };
-
-        // project gravity into plane normal to asteroid at ellipse center.
         double[] projGravityPoint = new double[3];
-        MathUtil.vprjp(gravityPoint, normal, pol.center, projGravityPoint);
+        MathUtil.vprjp(gravityPoint, zaxis, center, projGravityPoint);
         double[] projGravityVector = new double[3];
-        MathUtil.vsub(projGravityPoint, pol.center, projGravityVector);
+        MathUtil.vsub(projGravityPoint, center, projGravityVector);
         MathUtil.vhat(projGravityVector, projGravityVector);
 
-        // Compute angular separation between projected gravity vector and
-        // semi-major axis (both directions). The angular separation is the
-        // smaller of these 2 angles.
-        double sepAngle1 = MathUtil.vsep(xaxis, projGravityVector) * 180.0 / Math.PI;
-        xaxis[0] = -xaxis[0];
-        xaxis[1] = -xaxis[1];
-        xaxis[2] = -xaxis[2];
-        double sepAngle2 = MathUtil.vsep(xaxis, projGravityVector) * 180.0 / Math.PI;
+
+
+        // Compute direction of semimajor axis (both directions) in xy plane
+        transform.Delete();
+        transform = new vtkTransform();
+        transform.RotateZ(pol.angle);
+
+        // Positive x direction
+        double[] xaxis = {1.0, 0.0, 0.0};
+        double[] semimajoraxis1 = transform.TransformDoubleVector(xaxis);
+
+        // Negative x direction
+        double[] mxaxis = {-1.0, 0.0, 0.0};
+        double[] semimajoraxis2 = transform.TransformDoubleVector(mxaxis);
+
+
+
+        // Compute angular separation of projected gravity vector
+        // with respect to x-axis using atan2
+        double gravAngle = Math.atan2(projGravityVector[1], projGravityVector[0]) * 180.0 / Math.PI;
+        if (gravAngle < 0.0)
+            gravAngle += 360.0;
+
+
+
+        // Compute angular separations of semimajor axes vectors (both directions)
+        // with respect to x-axis using atan2
+        double smaxisangle1 = Math.atan2(semimajoraxis1[1], semimajoraxis1[0]) * 180.0 / Math.PI;
+        if (smaxisangle1 < 0.0)
+            smaxisangle1 += 360.0;
+
+        double smaxisangle2 = Math.atan2(semimajoraxis2[1], semimajoraxis2[0]) * 180.0 / Math.PI;
+        if (smaxisangle2 < 0.0)
+            smaxisangle2 += 360.0;
+
+
+
+        // Compute angular separations between semimajor axes and gravity vector.
+        // The smaller one is the one we want, which should be between 0 and 180 degrees.
+        double sepAngle1 = smaxisangle1 - gravAngle;
+        if (sepAngle1 < 0.0)
+            sepAngle1 += 360.0;
+
+        double sepAngle2 = smaxisangle2 - gravAngle;
+        if (sepAngle2 < 0.0)
+            sepAngle2 += 360.0;
+
 
         transform.Delete();
 
