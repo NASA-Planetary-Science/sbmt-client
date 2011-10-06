@@ -11,6 +11,7 @@ public interface ModelNames
     static public final String CIRCLE_SELECTION = "circle-selection";
     static public final String SMALL_BODY_IMAGE_MAP = "small-body-image-map";
     static public final String GRATICULE = "graticule";
+    static public final String GRAVITY_VECTOR_FIELD = "gravity-vector-field";
 
     // Eros
     static public final String LINEAMENT = "lineament";
@@ -27,6 +28,7 @@ public interface ModelNames
     static public final String AMICA_IMAGES = "amica-images";
     static public final String AMICA_COLOR_IMAGES = "amica-color-images";
     static public final String AMICA_BOUNDARY = "amica-boundary";
+    static public final String HAYLIDAR_BROWSE = "haylidar-browse";
 
     // Vesta
     static public final String FC_IMAGES = "amica-images";
