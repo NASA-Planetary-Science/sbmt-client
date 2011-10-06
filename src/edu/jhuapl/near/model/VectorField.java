@@ -1,0 +1,133 @@
+package edu.jhuapl.near.model;
+
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
+
+import vtk.vtkActor;
+import vtk.vtkArrowSource;
+import vtk.vtkCellArray;
+import vtk.vtkDataArray;
+import vtk.vtkGlyph3D;
+import vtk.vtkIdList;
+import vtk.vtkPoints;
+import vtk.vtkPolyData;
+import vtk.vtkPolyDataMapper;
+import vtk.vtkProp;
+import vtk.vtkTriangle;
+
+import edu.jhuapl.near.util.Properties;
+
+/**
+ * Model for showing gravity vector field. Currently only used for testing,
+ * not the released versions.
+ *
+ * @author eli
+ *
+ */
+public class VectorField extends Model implements PropertyChangeListener
+{
+    private SmallBodyModel smallBodyModel;
+    private ArrayList<vtkProp> actors = new ArrayList<vtkProp>();
+    private boolean generated = false;
+    private vtkActor actor;
+    private vtkPolyDataMapper mapper;
+
+    public VectorField(SmallBodyModel smallBodyModel)
+    {
+        this.smallBodyModel = smallBodyModel;
+        smallBodyModel.addPropertyChangeListener(this);
+    }
+
+    @Override
+    public ArrayList<vtkProp> getProps()
+    {
+        return actors;
+    }
+
+    private void update()
+    {
+        // There is no need to regenerate the data if generated is true
+        if (generated)
+            return;
+
+        vtkPolyData smallBodyPolyData = smallBodyModel.getSmallBodyPolyData();
+
+        vtkPolyData polydata = new vtkPolyData();
+        vtkPoints points = new vtkPoints();
+        vtkCellArray vert = new vtkCellArray();
+        polydata.SetPoints( points );
+        polydata.SetVerts( vert );
+        vtkDataArray gravityVectors = smallBodyModel.getGravityVectorData();
+        polydata.GetPointData().SetVectors(gravityVectors);
+
+        vtkIdList idList = new vtkIdList();
+        idList.SetNumberOfIds(1);
+
+        double[] center = new double[3];
+        int numberOfCells = smallBodyPolyData.GetNumberOfCells();
+        for (int i=0; i<numberOfCells; ++i)
+        {
+            vtkTriangle cell = (vtkTriangle) smallBodyPolyData.GetCell(i);
+            vtkPoints cellpoints = cell.GetPoints();
+            double[] pt0 = cellpoints.GetPoint(0);
+            double[] pt1 = cellpoints.GetPoint(1);
+            double[] pt2 = cellpoints.GetPoint(2);
+            cell.TriangleCenter(pt0, pt1, pt2, center);
+
+            points.InsertNextPoint(center);
+            idList.SetId(0, i);
+            vert.InsertNextCell(idList);
+        }
+
+        vtkArrowSource arrowSource = new vtkArrowSource();
+        arrowSource.SetTipResolution(1);
+        arrowSource.SetTipRadius(0.05);
+        arrowSource.SetShaftResolution(2);
+        arrowSource.SetShaftRadius(0.005);
+
+        vtkGlyph3D glyph3D = new vtkGlyph3D();
+        glyph3D.SetSource(arrowSource.GetOutput());
+        glyph3D.SetVectorModeToUseVector();
+        glyph3D.SetInput(polydata);
+        glyph3D.SetScaleFactor(.01);
+        glyph3D.Update();
+
+        if (mapper == null)
+            mapper = new vtkPolyDataMapper();
+        mapper.SetInput(glyph3D.GetOutput());
+        mapper.Update();
+
+        if (actor == null)
+            actor = new vtkActor();
+        actor.SetMapper(mapper);
+        actor.GetProperty().SetColor(1.0, 0.0, 0.0);
+        actor.PickableOff();
+    }
+
+    public void setShowVectorField(boolean show)
+    {
+        if (show == true && actors.size() == 0)
+        {
+            update();
+            actors.add(actor);
+            this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+        }
+        else if (show == false && actors.size() > 0)
+        {
+            actors.clear();
+            this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+        }
+    }
+
+    public void propertyChange(PropertyChangeEvent evt)
+    {
+        if (Properties.MODEL_RESOLUTION_CHANGED.equals(evt.getPropertyName()))
+        {
+            generated = false;
+            if (actors.size() > 0)
+                update();
+            this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+        }
+    }
+}
