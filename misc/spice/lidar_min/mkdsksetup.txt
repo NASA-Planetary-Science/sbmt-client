@@ -1,0 +1,25 @@
+\begindata
+
+INPUT_SHAPE_FILE    = '/project/nearsdc/data/ITOKAWA/quad512q.tab'
+OUTPUT_DSK_FILE     = '/project/nearsdc/data/ITOKAWA/quad512q.bds'
+COMMENT_FILE        = ' '
+LEAPSECONDS_FILE    = '/project/nearsdc/spice-kernels/hayabusa/lsk/naif0009.tls'
+SURFACE_NAME        = 'itokawa'
+CENTER_NAME         = 'itokawa'
+REF_FRAME_NAME      = 'IAU_ITOKAWA'
+START_TIME          = '1950-JAN-1/00:00:00'
+STOP_TIME           = '2050-JAN-1/00:00:00'
+DATA_CLASS          = 2
+INPUT_DATA_UNITS    = ( 'ANGLES    = DEGREES'
+                        'DISTANCES = KILOMETERS' )
+COORDINATE_SYSTEM   = 'LATITUDINAL'
+MINIMUM_LATITUDE    = -90
+MAXIMUM_LATITUDE    =  90
+MINIMUM_LONGITUDE   = -180
+MAXIMUM_LONGITUDE   =  180
+DATA_TYPE           = 2
+PLATE_TYPE          = 2
+FINE_VOXEL_SCALE    = 4.0
+COARSE_VOXEL_SCALE  = 5
+
+\begintext
