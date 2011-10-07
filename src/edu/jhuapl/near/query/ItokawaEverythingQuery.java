@@ -6,21 +6,19 @@ import java.util.ArrayList;
 import java.util.TreeSet;
 
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 
 import edu.jhuapl.near.model.Image.ImageSource;
-import edu.jhuapl.near.util.DateTimeUtil;
 import edu.jhuapl.near.util.FileCache;
 import edu.jhuapl.near.util.FileUtil;
 
-public class VestaEverythingQuery extends QueryBase
+public class ItokawaEverythingQuery extends QueryBase
 {
-    private static VestaEverythingQuery ref = null;
+    private static ItokawaEverythingQuery ref = null;
 
-    public static VestaEverythingQuery getInstance()
+    public static ItokawaEverythingQuery getInstance()
     {
         if (ref == null)
-            ref = new VestaEverythingQuery();
+            ref = new ItokawaEverythingQuery();
         return ref;
     }
 
@@ -30,7 +28,7 @@ public class VestaEverythingQuery extends QueryBase
         throw new CloneNotSupportedException();
     }
 
-    private VestaEverythingQuery()
+    private ItokawaEverythingQuery()
     {
     }
 
@@ -40,8 +38,8 @@ public class VestaEverythingQuery extends QueryBase
             DateTime startDate,
             DateTime stopDate,
             ArrayList<Integer> filters,
-            boolean fc1_unused,
-            boolean fc2_unused,
+            boolean unused1,
+            boolean unused2,
             double startDistance,
             double stopDistance,
             double startResolution,
@@ -60,8 +58,8 @@ public class VestaEverythingQuery extends QueryBase
     {
         ArrayList<ArrayList<String>> results = new ArrayList<ArrayList<String>>();
 
-        File file = FileCache.getFileFromServer("/VESTA/FC/gaskell-all.txt", true);
-        //File file = FileCache.getFileFromServer("/VESTA/FC/pds-all.txt", true);
+        File file = FileCache.getFileFromServer("/ITOKAWA/AMICA/gaskell-all.txt", true);
+        //File file = FileCache.getFileFromServer("/ITOKAWA/AMICA/pds-all.txt", true);
 
         if (file != null)
         {
@@ -72,9 +70,9 @@ public class VestaEverythingQuery extends QueryBase
                 {
                     String[] vals = line.trim().split("\\s+");
                     ArrayList<String> res = new ArrayList<String>();
-                    res.add("/VESTA/FC/images/" + vals[0]);
-                    String dateTime = DateTimeUtil.convertDateTimeFormat(vals[1]+" "+vals[2]+" "+vals[3]+" "+vals[4]);
-                    res.add(String.valueOf(new DateTime(dateTime, DateTimeZone.UTC).getMillis()));
+                    res.add("/ITOKAWA/AMICA/images/" + vals[0]);
+                    //String dateTime = DateTimeUtil.convertDateTimeFormat(vals[1]+" "+vals[2]+" "+vals[3]+" "+vals[4]);
+                    res.add(vals[1]);
                     results.add(res);
                 }
             }
