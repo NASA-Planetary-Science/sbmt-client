@@ -27,10 +27,12 @@ public class ResampleLowResColoringData
 
         // Load in the low res model
         SmallBodyModel modelLow = new Eros();
+        //SmallBodyModel modelLow = new Itokawa();
         modelLow.setModelResolution(0);
 
         // Load in the high res model
         SmallBodyModel modelHigh = new Eros();
+        //SmallBodyModel modelHigh = new Itokawa();
         vtkPolyData polydata = modelHigh.getSmallBodyPolyData();
         for (int resLevel = 1; resLevel < 4; ++resLevel)
         {
@@ -43,6 +45,7 @@ public class ResampleLowResColoringData
             for (int i=0; i<numColors; ++i)
             {
                 String name = "Eros_" + modelLow.getColoringName(i).replace(" ", "") + "_res" + resLevel + ".txt";
+                //String name = "Itokawa_" + modelLow.getColoringName(i).replace(" ", "") + "_res" + resLevel + ".txt";
                 FileWriter fw = new FileWriter(name);
                 BufferedWriter out = new BufferedWriter(fw);
 
@@ -50,7 +53,7 @@ public class ResampleLowResColoringData
                 for (int j=0; j<numPolygons; ++j)
                 {
                     if (j % 10000 == 0)
-                        System.out.println("progress " + i + " " + j);
+                        System.out.println("progress " + resLevel + " " + i + " " + j);
 
                     vtkTriangle cell = (vtkTriangle) polydata.GetCell(j);
                     vtkPoints points = cell.GetPoints();
