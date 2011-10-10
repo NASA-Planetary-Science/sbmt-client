@@ -159,4 +159,6 @@ abstract public class LidarBrowseDataCollection extends Model implements Propert
      * @return
      */
     abstract protected boolean isInMeters();
+
+    abstract public double getOffsetScale();
 }

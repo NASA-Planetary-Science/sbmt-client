@@ -244,6 +244,7 @@ abstract public class LidarBrowsePanel extends JPanel implements ListSelectionLi
 
         radialOffsetChanger = new RadialOffsetChanger();
         radialOffsetChanger.setModel(lidarModel);
+        radialOffsetChanger.setOffsetScale(lidarModel.getOffsetScale());
 
         add(resultsPanel);
         add(timeIntervalChanger);
