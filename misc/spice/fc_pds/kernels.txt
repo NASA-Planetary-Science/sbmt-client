@@ -4,7 +4,7 @@ KERNELS_TO_LOAD = (
                    '/project/nearsdc/spice-kernels/dawn/naif0009.tls'
 
                    '/project/nearsdc/spice-kernels/dawn/pck00009.tpc'
-                   '/project/nearsdc/spice-kernels/dawn/dawn_vesta_v02.tpc'
+                   '/project/nearsdc/spice-kernels/dawn/dawn_vesta_v03.tpc'
 
                    '/project/nearsdc/spice-kernels/dawn/DAWN_203_SCLKSCET.00021.tsc'
 
@@ -18,9 +18,15 @@ KERNELS_TO_LOAD = (
                    '/project/nearsdc/spice-kernels/dawn+'
                    '/dawn_rec_110416-110802_110913_v1.bsp'
                    '/project/nearsdc/spice-kernels/dawn+'
-                   '/dawn_ql_110802-110921_110902_v1.bsp'
+                   '/dawn_rec_110802-110831_110922_v1.bsp'
                    '/project/nearsdc/spice-kernels/dawn+'
-                   '/dawn_ql_110828-110921_110912_v1.bsp'
+                   '/dawn_ql_110828-111013_110918_v1.bsp'
+                   '/project/nearsdc/spice-kernels/dawn+'
+                   '/dawn_ql_110918-111013_110923_v1.bsp'
+                   '/project/nearsdc/spice-kernels/dawn+'
+                   '/dawn_ql_110923-111031_110928_v1.bsp'
+                   '/project/nearsdc/spice-kernels/dawn+'
+                   '/dawn_ql_110928-111031_111003_v2.bsp'
 
                    '/project/nearsdc/spice-kernels/dawn/dawn_sc_110502_110508.bc'
                    '/project/nearsdc/spice-kernels/dawn/dawn_sc_110509_110515.bc'
@@ -42,6 +48,10 @@ KERNELS_TO_LOAD = (
                    '/project/nearsdc/spice-kernels/dawn/dawn_sc_110829_110904.bc'
                    '/project/nearsdc/spice-kernels/dawn/dawn_sc_110905_110911.bc'
                    '/project/nearsdc/spice-kernels/dawn/dawn_sc_110912_110918.bc'
+                   '/project/nearsdc/spice-kernels/dawn/dawn_sc_110919_110925.bc'
+                   '/project/nearsdc/spice-kernels/dawn/dawn_sc_110926_111002.bc'
+                   '/project/nearsdc/spice-kernels/dawn/dawn_sc_111003_111009.bc'
+                   '/project/nearsdc/spice-kernels/dawn/dawn_sc_111010_111016.bc'
                    )
 
 \begintext
