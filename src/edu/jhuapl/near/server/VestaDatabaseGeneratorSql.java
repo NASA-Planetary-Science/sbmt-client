@@ -423,17 +423,20 @@ public class VestaDatabaseGeneratorSql
             }
 
 
-            if (path.contains("FC21B"))
+            if (path.contains("FC11B") || path.contains("FC21B"))
             {
                 filesToKeep.add(path);
             }
-            else if (path.contains("FC21A"))
+            else if (path.contains("FC11A") || path.contains("FC21A"))
             {
                 // Only compare the part of the filename preceding the underscore
                 // as the remaining part of the filename can differ.
                 String name = new File(path).getName();
                 name = name.substring(0, name.indexOf('_'));
-                name = name.replaceAll("FC21A", "FC21B");
+                if (path.contains("FC11A"))
+                    name = name.replaceAll("FC11A", "FC11B");
+                else
+                    name = name.replaceAll("FC21A", "FC21B");
 
                 boolean found1B = false;
 
