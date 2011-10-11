@@ -1,7 +1,11 @@
 package edu.jhuapl.near.server;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -41,8 +45,8 @@ public class VestaDatabaseGeneratorSql
     static private vtkPolyData footprintPolyData;
     //static private double[] meanPlateSizes;
 
-    // Files listed in Gaskell's INERTIAL.TXT file. Only these are processed.
-    //private static ArrayList<String> inertialFileList = new ArrayList<String>();
+    // sumfiles listed in Gaskell's list. Only these are processed.
+    private static ArrayList<String> sumfileList = new ArrayList<String>();
 
     private static void createFcTables(String fcTableName)
     {
@@ -305,10 +309,15 @@ public class VestaDatabaseGeneratorSql
         }
     }
 
-    /*
-    private static void loadInertialFile(String inertialFilename) throws IOException
+    /**
+     * Gaskell sent out a list specifying that only these files should be used.
+     * Load it.
+     * @param listFilename
+     * @throws IOException
+     */
+    private static void loadGaskellList(String sumfilelistFilename) throws IOException
     {
-        InputStream fs = new FileInputStream(inertialFilename);
+        InputStream fs = new FileInputStream(sumfilelistFilename);
         InputStreamReader isr = new InputStreamReader(fs);
         BufferedReader in = new BufferedReader(isr);
 
@@ -316,18 +325,17 @@ public class VestaDatabaseGeneratorSql
 
         while ((line = in.readLine()) != null)
         {
-            if (line.startsWith("N"))
+            if (line.trim().startsWith("FC"))
             {
-                String[] tokens = line.trim().split("\\s+");
-                inertialFileList.add(tokens[0]);
+                sumfileList.add(line.trim());
             }
         }
 
-        System.out.println("number of inertial files: " + inertialFileList.size());
+        System.out.println("number of sumfiles to process: " + sumfileList.size());
 
         in.close();
     }
-    */
+
 
     static boolean checkIfAllFcFilesExist(String line, Image.ImageSource source)
     {
@@ -357,12 +365,12 @@ public class VestaDatabaseGeneratorSql
             if (file.length() <= 1296)
                 return false;
 
-//            // Only process files that are listed in Gaskell's INERTIAL.TXT file.
-//            if (!inertialFileList.contains("N" + fcId))
-//            {
-//                System.out.println("N" + fcId + " not in INERTIAL.TXT");
-//                return false;
-//            }
+            // Only process files that are listed in Gaskell's sumfile list
+            if (!sumfileList.contains(fcId))
+            {
+                System.out.println(fcId + " not in sumfile list");
+                return false;
+            }
         }
         else
         {
@@ -461,12 +469,14 @@ public class VestaDatabaseGeneratorSql
         vestaModel = new Vesta();
 
         String fcFileList=args[0];
-        int mode = Integer.parseInt(args[1]);
+        String sumfilelistFilename=args[1];
+        int mode = Integer.parseInt(args[2]);
 
         ArrayList<String> fcFiles = null;
         try {
             fcFiles = FileUtil.getFileLinesAsStringList(fcFileList);
             fcFiles = removeRedundantAndWrongSizedFiles(fcFiles);
+            loadGaskellList(sumfilelistFilename);
         } catch (IOException e2) {
             e2.printStackTrace();
             return;
