@@ -8,7 +8,6 @@ export LD_LIBRARY_PATH=$JAVA_HOME/jre/lib/amd64:$JAVA_HOME/jre/lib/amd64/xawt
 
 
 # Setup virtual display since java has problems in headless mode                                                                              
-killall Xvfb
 export DISPLAY=":20"
 Xvfb $DISPLAY &
 
