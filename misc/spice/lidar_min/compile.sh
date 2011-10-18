@@ -14,7 +14,7 @@ gcc -ansi -Wall -O2 lidar-min-rigid-translation.c \
     -llbfgs -lm \
     -o lidar-min-rigid-translation
 
-gcc -ansi -Wall -O2 lidar-min-polynomial-fit.c optimize.c \
+gcc -ansi -Wall -O2 lidar-min-polynomial-fit.c optimize.c closest_point_dsk.c \
     -I$SPICE_DIR/include \
     -I$SPICE_DIR/src/dsklib_c \
     -I$LBFGS_DIR/include \

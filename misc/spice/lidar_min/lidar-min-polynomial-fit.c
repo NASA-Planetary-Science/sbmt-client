@@ -3,10 +3,10 @@
 #include <string.h>
 #include <math.h>
 #include "SpiceUsr.h"
-#include "SpiceDLA.h"
-#include "SpiceDSK.h"
 #include "lbfgs.h"
 #include "optimize.h"
+
+void findClosestPointDsk(const double* origin, const double* direction, double* closestPoint, int* found);
 
 
 /************************************************************************
@@ -49,7 +49,6 @@ const char Outfiles[NUMBER_FILES][PATH_SIZE] =
     "/project/nearsdc/data/ITOKAWA/LIDAR/cdr/cdr_optimized_20051101_20051118.tab"
 };
 const char* const kernelfiles = "/project/nearsdc/spice-kernels/hayabusa/kernels.txt";
-const char* const dskfile = "/project/nearsdc/data/ITOKAWA/quad512q.bds";
 
 
 /************************************************************************
@@ -80,12 +79,6 @@ int g_trackStartPoint;
 
 /* The number of points within */
 int g_trackSize;
-
-/* Used to perform ray intersection with shape model */
-SpiceDLADescr g_dladsc;
-
-/* Used to perform ray intersection with shape model */
-SpiceInt g_handle;
 
 
 void printPoint(int i)
@@ -166,24 +159,6 @@ void loadPoints()
         fclose ( f );
     }
     printf("Finished loading data\n\n\n");
-}
-
-
-/************************************************************************
-* Loads the dsk shape model
-************************************************************************/
-void loadDsk(const char* dskfile)
-{
-    SpiceBoolean found;
-    dasopr_c ( dskfile, &g_handle );
-    dlabfs_c ( g_handle, &g_dladsc, &found );
-    if ( !found  )
-    {
-        setmsg_c ( "No segments found in DSK file #.");
-        errch_c  ( "#",  dskfile                     );
-        sigerr_c ( "SPICE(NODATA)"                   );
-        exit(1);
-    }
 }
 
 
@@ -289,7 +264,6 @@ double funcForInitialization(const double* q)
 ************************************************************************/
 double func(const double* q)
 {
-    int plid;
     SpiceBoolean found;
     int i;
     int endPoint = g_trackStartPoint + g_trackSize;
@@ -312,9 +286,8 @@ double func(const double* q)
 
         /* Shoot this ray into shape model */
         double xpt[3];
-        dskx02_c ( g_handle, &g_dladsc, scpos, pt.boredir,
-                   &plid,  xpt,     &found          );
-
+        findClosestPointDsk(scpos, pt.boredir, xpt, &found);
+        
         if (found)
         {
             double dist = vdist_c(xpt, targetShifted);
@@ -602,8 +575,6 @@ int main(int argc, char** argv)
     
     furnsh_c(kernelfiles);
 
-    loadDsk(dskfile);
-    
     loadPoints();
 
     optimizeAllTracks(solverType);
