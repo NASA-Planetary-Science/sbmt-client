@@ -11,7 +11,6 @@
 * Constants
 ************************************************************************/
 #define NUMBER_POINTS 1114386
-/*#define NUMBER_POINTS 1000*/
 #define PATH_SIZE 256
 #define LINE_SIZE 1024
 #define UTC_SIZE 128
@@ -31,6 +30,8 @@ const char outfiles[NUMBER_FILES][PATH_SIZE] =
     "/project/nearsdc/data/ITOKAWA/LIDAR/cdr/cdr_optimized_20051001_20051031.tab",
     "/project/nearsdc/data/ITOKAWA/LIDAR/cdr/cdr_optimized_20051101_20051118.tab"
 };
+const char* const kernelfiles = "/project/nearsdc/spice-kernels/hayabusa/kernels.txt";
+const char* const dskfile = "/project/nearsdc/data/ITOKAWA/quad512q.bds";
 
 
 /************************************************************************
@@ -163,7 +164,7 @@ void loadPoints()
 /************************************************************************
 * Loads the dsk shape model
 ************************************************************************/
-void loadDsk(char* dskfile)
+void loadDsk(const char* dskfile)
 {
     SpiceBoolean found;
     dasopr_c ( dskfile, &g_handle );
@@ -535,23 +536,8 @@ void savePointsOptimized()
 ************************************************************************/
 int main(int argc, char** argv)
 {
-    if (argc < 3) 
-	{
-	    fprintf(stderr, "usage: lidar-min <kernelfiles> <shapemodel> [<solver>]\n");
-	    exit(1);
-	}
-
-    char* kernelfiles = argv[1];
-    char* dskfile = argv[2];
-
     SolverType solverType = LIBLBFGS;
-    if (argc >= 4)
-    {
-        char* solver = argv[3];
-        if (!strcmp(solver, "LIBLBFGS"))
-            solverType = LIBLBFGS;
-    }
-    
+
     furnsh_c(kernelfiles);
 
     loadDsk(dskfile);
