@@ -556,7 +556,7 @@ int main(int argc, char** argv)
 
     loadDsk(dskfile);
     
-    loadPoints(tabfiles, 3);
+    loadPoints();
 
     optimizeAllTracks(solverType);
     
