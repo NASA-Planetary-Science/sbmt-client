@@ -11,7 +11,7 @@
 * Constants
 ************************************************************************/
 #define NUMBER_POINTS 1114386
-//#define NUMBER_POINTS 1000
+/*#define NUMBER_POINTS 1000*/
 #define PATH_SIZE 256
 #define LINE_SIZE 1024
 #define UTC_SIZE 128
@@ -82,7 +82,7 @@ SpiceInt g_handle;
 
 void printPoint(int i)
 {
-    printf("point %d: %lf %lf %lf %lf %lf %lf %lf \n",
+    printf("point %d: %f %f %f %f %f %f %f \n",
            i,
            g_points[i].time,
            g_points[i].scpos[0],
@@ -96,7 +96,7 @@ void printPoint(int i)
 
 void printpt(const char* str, const double* pt)
 {
-    printf("%s - %lf %lf %lf\n", str, pt[0], pt[1], pt[2]);
+    printf("%s - %f %f %f\n", str, pt[0], pt[1], pt[2]);
 }
         
 /************************************************************************
@@ -185,7 +185,7 @@ void loadDsk(char* dskfile)
 ************************************************************************/
 double func(const double* shift)
 {
-//    printpt("shift amount", shift);
+/*    printpt("shift amount", shift); */
     
     int plid;
     SpiceBoolean found;
@@ -248,11 +248,11 @@ void grad(const double* shift, double* gradient)
 
 
 
-//-----------------------------------------------------------------------
-//-----------------------------------------------------------------------
-// LBFGS solver related functions and variables
-//-----------------------------------------------------------------------
-//-----------------------------------------------------------------------
+/*-----------------------------------------------------------------------
+-------------------------------------------------------------------------
+ LBFGS solver related functions and variables
+-------------------------------------------------------------------------
+-----------------------------------------------------------------------*/
 static lbfgsfloatval_t evaluate(
     void *instance,
     const lbfgsfloatval_t *x,
@@ -317,9 +317,9 @@ void runLiblbfgs(double* minimizer)
     
     lbfgs_free(x);
 }
-//-----------------------------------------------------------------------
-// End LBFGS
-//-----------------------------------------------------------------------
+/*-----------------------------------------------------------------------
+ End LBFGS
+-----------------------------------------------------------------------*/
 
 
 
@@ -331,13 +331,13 @@ void optimizeTrack(int startId, int trackSize, SolverType solverType)
 {
     printf("Optimizing track starting at %d with size %d\n\n", startId, trackSize);
         
-    // do the optimization here
+    /* do the optimization here */
     g_trackStartPoint = startId;
     g_trackSize = trackSize;
 
     double minimizer[3] = {0.0, 0.0, 0.0};
     double value = func(minimizer);
-    printf("Initial value of objective function: %lf\n", value);
+    printf("Initial value of objective function: %f\n", value);
     if (solverType == LIBLBFGS)
     {
         runLiblbfgs(minimizer);
@@ -516,7 +516,7 @@ void savePointsOptimized()
 
             et2utc_c(point.time, "ISOC", 3, UTC_SIZE, utc);
             
-            fprintf(fout, "0 %s 0 %lf %lf %lf %lf %lf %lf\n", utc, sx, sy, sz, x, y, z);
+            fprintf(fout, "0 %s 0 %f %f %f %f %f %f\n", utc, sx, sy, sz, x, y, z);
 
             ++count;
         }
