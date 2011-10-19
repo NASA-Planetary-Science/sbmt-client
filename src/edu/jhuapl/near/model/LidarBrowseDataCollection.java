@@ -34,6 +34,7 @@ abstract public class LidarBrowseDataCollection extends Model implements Propert
         LidarDataPerUnit lidarData = new LidarDataPerUnit(
                 path,
                 getXYZIndices(),
+                getSpacecraftXYZIndices(),
                 getTimeIndex(),
                 getNumberHeaderLines(),
                 isInMeters(),
@@ -43,9 +44,11 @@ abstract public class LidarBrowseDataCollection extends Model implements Propert
 
         fileToLidarPerUnitMap.put(path, lidarData);
 
-        actorToFileMap.put(lidarData.getProps().get(0), path);
-
-        lidarPerUnitActors.add(lidarData.getProps().get(0));
+        for (vtkProp prop : lidarData.getProps())
+        {
+            actorToFileMap.put(prop, path);
+            lidarPerUnitActors.add(prop);
+        }
 
         this.setRadialOffset(radialOffset);
 
@@ -54,11 +57,12 @@ abstract public class LidarBrowseDataCollection extends Model implements Propert
 
     public void removeLidarData(String path)
     {
-        vtkProp actor = fileToLidarPerUnitMap.get(path).getProps().get(0);
-
-        lidarPerUnitActors.remove(actor);
-
-        actorToFileMap.remove(actor);
+        ArrayList<vtkProp> props = fileToLidarPerUnitMap.get(path).getProps();
+        for (vtkProp prop : props)
+        {
+            lidarPerUnitActors.remove(prop);
+            actorToFileMap.remove(prop);
+        }
 
         fileToLidarPerUnitMap.remove(path);
 
@@ -144,6 +148,8 @@ abstract public class LidarBrowseDataCollection extends Model implements Propert
     }
 
     abstract protected int[] getXYZIndices();
+
+    abstract protected int[] getSpacecraftXYZIndices();
 
     abstract protected int getTimeIndex();
 

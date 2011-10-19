@@ -11,6 +11,12 @@ public class HayLidarBrowseDataCollection extends LidarBrowseDataCollection
     }
 
     @Override
+    protected int[] getSpacecraftXYZIndices()
+    {
+        return new int[]{3, 4, 5};
+    }
+
+    @Override
     protected int getTimeIndex()
     {
         return 1;
