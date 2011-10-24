@@ -31,3 +31,5 @@ gcc -Wall -O3 lidar-min-icp.c optimize.c closest_point_dsk.c icp.c \
     $SPICE_DIR/lib/dsklib_c.a $SPICE_DIR/lib/cspice.a $SPICE_DIR/lib/csupport.a \
     $LBFGS_DIR/lib/liblbfgs.a -lm \
     -o lidar-min-icp
+
+gcc -Wall -O3 lidar-save-min-icp.c -lm -o lidar-save-min-icp
