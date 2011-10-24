@@ -110,12 +110,14 @@ void optimizeLbfgs(double (*func)(const double* x), double* minimizer, int numVa
     double value = func(minimizer);
     printf("Initial value of objective function: \n");
     printCurrentValue(value, x);
+    printf("\n");
 
     int ret = lbfgs(N, x, &fx, evaluate, progress, NULL, &param);
     
     /* Report the result. */
     printf("L-BFGS optimization terminated with status code = %d\n", ret);
     printCurrentValue(fx, x);
+    printf("\n");
 
     /* return the minimizer to the calling function */
     for (i = 0;i < N;++i)
