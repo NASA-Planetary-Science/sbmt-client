@@ -43,6 +43,7 @@ public class LidarDataPerUnit extends Model
     private vtkGeometryFilter geometryFilterSc;
     private String filepath;
     private vtkDoubleArray times;
+    private vtkActor actorSpacecraft;
 
     public LidarDataPerUnit(String path,
             int[] xyzIndices,
@@ -181,18 +182,19 @@ public class LidarDataPerUnit extends Model
         vtkPolyDataMapper pointsMapperSc = new vtkPolyDataMapper();
         pointsMapperSc.SetInput(geometryFilterSc.GetOutput());
 
-        vtkActor actorSc = new vtkActor();
-        actorSc.SetMapper(pointsMapperSc);
-        actorSc.GetProperty().SetColor(0.0, 1.0, 0.0);
-        if (path.contains("cdr_optimized"))
-            actorSc.GetProperty().SetColor(1.0, 0.0, 1.0);
+        actorSpacecraft = new vtkActor();
+        actorSpacecraft.SetMapper(pointsMapperSc);
+        actorSpacecraft.GetProperty().SetColor(0.0, 1.0, 0.0);
+        // for Itokawa optimized lidar data, show in different color.
+        if (path.contains("optimized"))
+            actorSpacecraft.GetProperty().SetColor(1.0, 0.0, 1.0);
 
-        actorSc.GetProperty().SetPointSize(2.0);
+        actorSpacecraft.GetProperty().SetPointSize(2.0);
 
 
 
         actors.add(actor);
-        actors.add(actorSc);
+        actors.add(actorSpacecraft);
     }
 
     public void setPercentageShown(double startPercent, double stopPercent)
@@ -260,6 +262,12 @@ public class LidarDataPerUnit extends Model
     public ArrayList<vtkProp> getProps()
     {
         return actors;
+    }
+
+    public void setShowSpacecraftPosition(boolean show)
+    {
+        if (actorSpacecraft != null)
+            actorSpacecraft.SetVisibility(show ? 1 : 0);
     }
 }
 

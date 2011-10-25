@@ -2,6 +2,7 @@ package edu.jhuapl.near.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -12,12 +13,14 @@ import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
+import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
@@ -246,7 +249,21 @@ abstract public class LidarBrowsePanel extends JPanel implements ListSelectionLi
         radialOffsetChanger.setModel(lidarModel);
         radialOffsetChanger.setOffsetScale(lidarModel.getOffsetScale());
 
+        JPanel showSpacecraftPanel = new JPanel(new GridLayout());
+        showSpacecraftPanel.setBorder(new EmptyBorder(5, 0, 5, 0));
+        final JCheckBox showSpacecraftCheckBox = new JCheckBox("Show spacecraft position");
+        showSpacecraftCheckBox.setSelected(true);
+        showSpacecraftCheckBox.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                lidarModel.setShowSpacecraftPosition(showSpacecraftCheckBox.isSelected());
+            }
+        });
+        showSpacecraftPanel.add(showSpacecraftCheckBox);
+
         add(resultsPanel);
+        add(showSpacecraftPanel);
         add(timeIntervalChanger);
         add(radialOffsetChanger);
     }
