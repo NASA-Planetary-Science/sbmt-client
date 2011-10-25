@@ -48,6 +48,7 @@ public class LidarDataPerUnit extends Model
     public LidarDataPerUnit(String path,
             int[] xyzIndices,
             int[] scXyzIndices,
+            boolean isSpacecraftInSphericalCoordinates,
             int timeindex,
             int numberHeaderLines,
             boolean isInMeters,
@@ -114,6 +115,17 @@ public class LidarDataPerUnit extends Model
             double scx = Double.parseDouble(vals[scxindex]);
             double scy = Double.parseDouble(vals[scyindex]);
             double scz = Double.parseDouble(vals[sczindex]);
+
+            // If spacecraft position is in spherical coordinates,
+            // do the conversion here.
+            if (isSpacecraftInSphericalCoordinates)
+            {
+                double[] xyz = MathUtil.latrec(new LatLon(scy*Math.PI/180.0, scx*Math.PI/180.0, scz));
+                scx = xyz[0];
+                scy = xyz[1];
+                scz = xyz[2];
+            }
+
             if (isInMeters)
             {
                 x /= 1000.0;

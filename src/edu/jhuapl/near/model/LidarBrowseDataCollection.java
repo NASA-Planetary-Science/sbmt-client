@@ -35,7 +35,8 @@ abstract public class LidarBrowseDataCollection extends Model implements Propert
         LidarDataPerUnit lidarData = new LidarDataPerUnit(
                 path,
                 getXYZIndices(),
-                getSpacecraftXYZIndices(),
+                getSpacecraftIndices(),
+                isSpacecraftInSphericalCoordinates(),
                 getTimeIndex(),
                 getNumberHeaderLines(),
                 isInMeters(),
@@ -167,7 +168,14 @@ abstract public class LidarBrowseDataCollection extends Model implements Propert
 
     abstract protected int[] getXYZIndices();
 
-    abstract protected int[] getSpacecraftXYZIndices();
+    abstract protected int[] getSpacecraftIndices();
+
+    /**
+     * For Eros NLR data, the spacecraft position is in spherical coordinates,
+     * not Cartesian. Hence we need this function.
+     * @return
+     */
+    abstract protected boolean isSpacecraftInSphericalCoordinates();
 
     abstract protected int getTimeIndex();
 

@@ -1,142 +1,61 @@
 package edu.jhuapl.near.model.eros;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.HashMap;
+import edu.jhuapl.near.model.LidarBrowseDataCollection;
 
-import vtk.vtkActor;
-import vtk.vtkProp;
-
-import edu.jhuapl.near.model.Model;
-import edu.jhuapl.near.model.ModelNames;
-import edu.jhuapl.near.util.Properties;
-
-public class NLRBrowseDataCollection extends Model implements PropertyChangeListener
+public class NLRBrowseDataCollection extends LidarBrowseDataCollection
 {
-    private ArrayList<vtkProp> nlrPerDayActors = new ArrayList<vtkProp>();
 
-    private HashMap<String, NLRDataPerDay> fileToNlrPerDayMap = new HashMap<String, NLRDataPerDay>();
-    private HashMap<vtkProp, String> actorToFileMap = new HashMap<vtkProp, String>();
-    private double radialOffset = 0.0;
-
-    public NLRBrowseDataCollection()
+    @Override
+    protected int[] getXYZIndices()
     {
-        super(ModelNames.NLR_DATA_BROWSE);
+        return new int[]{14, 15, 16};
     }
 
-    public void addNlrData(String path) throws IOException
+    @Override
+    protected int[] getSpacecraftIndices()
     {
-        if (fileToNlrPerDayMap.containsKey(path))
-            return;
-
-        NLRDataPerDay nlrData = new NLRDataPerDay(path);
-
-        nlrData.addPropertyChangeListener(this);
-
-        fileToNlrPerDayMap.put(path, nlrData);
-
-        actorToFileMap.put(nlrData.getProps().get(0), path);
-
-        nlrPerDayActors.add(nlrData.getProps().get(0));
-
-        this.setRadialOffset(radialOffset);
-
-        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+        return new int[]{8, 9, 10};
     }
 
-    public void removeNlrData(String path)
+    @Override
+    protected boolean isSpacecraftInSphericalCoordinates()
     {
-        vtkProp actor = fileToNlrPerDayMap.get(path).getProps().get(0);
-
-        nlrPerDayActors.remove(actor);
-
-        actorToFileMap.remove(actor);
-
-        fileToNlrPerDayMap.remove(path);
-
-        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+        return true;
     }
 
-    public void removeAllNlrData()
+    @Override
+    protected int getTimeIndex()
     {
-        nlrPerDayActors.clear();
-        actorToFileMap.clear();
-        fileToNlrPerDayMap.clear();
-        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+        return 4;
     }
 
-    public NLRDataPerDay getNlrData(String path)
+    @Override
+    protected int getNoiseIndex()
     {
-        return fileToNlrPerDayMap.get(path);
+        return 7;
     }
 
-    public ArrayList<vtkProp> getProps()
+    @Override
+    protected String getFileListResourcePath()
     {
-        return nlrPerDayActors;
+        return "/edu/jhuapl/near/data/NlrFiles.txt";
     }
 
-    public String getClickStatusBarText(vtkProp prop, int cellId, double[] pickPosition)
+    @Override
+    protected int getNumberHeaderLines()
     {
-        NLRDataPerDay data = fileToNlrPerDayMap.get(actorToFileMap.get(prop));
-        return data.getClickStatusBarText(prop, cellId, pickPosition);
+        return 2;
     }
 
-    public String getNlrName(vtkActor actor)
+    @Override
+    protected boolean isInMeters()
     {
-        return actorToFileMap.get(actor);
+        return true;
     }
 
-    public boolean containsNlrData(String file)
+    @Override
+    public double getOffsetScale()
     {
-        return fileToNlrPerDayMap.containsKey(file);
-    }
-
-    public ArrayList<String> getAllNlrPaths()
-    {
-        ArrayList<String> paths = new ArrayList<String>();
-
-        InputStream is = getClass().getResourceAsStream("/edu/jhuapl/near/data/NlrFiles.txt");
-        InputStreamReader isr = new InputStreamReader(is);
-        BufferedReader in = new BufferedReader(isr);
-
-        String line;
-        try
-        {
-            while ((line = in.readLine()) != null)
-            {
-                paths.add(line);
-            }
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return paths;
-    }
-
-    public void propertyChange(PropertyChangeEvent evt)
-    {
-        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-    }
-
-    public void setRadialOffset(double offset)
-    {
-        radialOffset = offset;
-
-        if (fileToNlrPerDayMap.isEmpty())
-            return;
-
-        for (String key : fileToNlrPerDayMap.keySet())
-        {
-            NLRDataPerDay data = fileToNlrPerDayMap.get(key);
-            data.setRadialOffset(offset);
-        }
-
-        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+        return 0.025;
     }
 }

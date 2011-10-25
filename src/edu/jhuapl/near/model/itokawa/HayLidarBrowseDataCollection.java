@@ -11,9 +11,15 @@ public class HayLidarBrowseDataCollection extends LidarBrowseDataCollection
     }
 
     @Override
-    protected int[] getSpacecraftXYZIndices()
+    protected int[] getSpacecraftIndices()
     {
         return new int[]{3, 4, 5};
+    }
+
+    @Override
+    protected boolean isSpacecraftInSphericalCoordinates()
+    {
+        return false;
     }
 
     @Override
