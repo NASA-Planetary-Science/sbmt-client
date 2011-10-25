@@ -263,8 +263,8 @@ abstract public class LidarBrowsePanel extends JPanel implements ListSelectionLi
         showSpacecraftPanel.add(showSpacecraftCheckBox);
 
         add(resultsPanel);
-        add(showSpacecraftPanel);
         add(timeIntervalChanger);
+        add(showSpacecraftPanel);
         add(radialOffsetChanger);
     }
 
