@@ -58,7 +58,7 @@ public class AmicaBackplanesLatexGenerator
             }
 
             o.write("  \\end{center}\n");
-            o.write("\\caption{" + new File(filename).getName().replace("_", "\\_") + ", " + getStartTime(filename) + "}\n");
+            o.write("\\caption{" + new File(filename).getName().replace("_", "\\_").replace("_gz", "") + ", " + getStartTime(filename) + "}\n");
             o.write("\\end{figure}\n");
             o.write("\\clearpage\n");
             o.write("\\setcounter{subfigure}{0}\n");
