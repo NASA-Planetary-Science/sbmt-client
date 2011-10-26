@@ -75,9 +75,9 @@ public class AmicaBackplanesLatexGenerator
         {
             String lblFile = null;
             if (ddrFile.endsWith("ddr.img"))
-                lblFile = ddrFile.substring(0, ddrFile.length()-4);
+                lblFile = ddrFile.substring(0, ddrFile.length()-4) + ".lbl";
             else if (ddrFile.endsWith("ddr.img.gz"))
-                lblFile = ddrFile.substring(0, ddrFile.length()-7);
+                lblFile = ddrFile.substring(0, ddrFile.length()-7) + ".lbl";
 
             FileInputStream fs = new FileInputStream(lblFile);
             InputStreamReader isr = new InputStreamReader(fs);
