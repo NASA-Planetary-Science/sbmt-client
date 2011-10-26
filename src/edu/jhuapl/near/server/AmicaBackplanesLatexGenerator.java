@@ -1,9 +1,12 @@
 package edu.jhuapl.near.server;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -24,22 +27,22 @@ public class AmicaBackplanesLatexGenerator
         o.write("\\begin{document}\n");
 
         String[] bands = {
-                "pixel value",
-                "x coordinate",
-                "y coordinate",
-                "z coordinate",
+                "Pixel value",
+                "X coordinate",
+                "Y coordinate",
+                "Z coordinate",
                 "Latitude",
                 "Longitude",
                 "Distance from center",
                 "Incidence angle",
                 "Emission angle",
                 "Phase angle",
-                "Horizontal pixel scale",
+                "Horiz pixel scale",
                 "Vertical pixel scale",
                 "Slope",
                 "Elevation",
-                "Gravitational Acc",
-                "Gravitational Pot"
+                "Grav acceleration",
+                "Grav potential"
         };
 
         for (File f : files)
@@ -55,7 +58,7 @@ public class AmicaBackplanesLatexGenerator
             }
 
             o.write("  \\end{center}\n");
-            o.write("\\caption{" + new File(filename).getName().replace("_", "\\_") + "}\n");
+            o.write("\\caption{" + new File(filename).getName().replace("_", "\\_") + ", " + getStartTime(f) + "}\n");
             o.write("\\end{figure}\n");
             o.write("\\clearpage\n");
             o.write("\\setcounter{subfigure}{0}\n");
@@ -64,6 +67,34 @@ public class AmicaBackplanesLatexGenerator
         o.write("\\end{document}\n");
 
         o.close();
+    }
+
+    private static String getStartTime(File ddrFile)
+    {
+        try
+        {
+            FileInputStream fs = new FileInputStream(ddrFile);
+            InputStreamReader isr = new InputStreamReader(fs);
+            BufferedReader in = new BufferedReader(isr);
+
+            String str;
+            while ((str = in.readLine()) != null)
+            {
+                if (str.startsWith("START_TIME"))
+                {
+                    String[] tokens = str.split("=");
+                    return tokens[1].trim();
+                }
+            }
+
+            in.close();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+
+        return "";
     }
 
     private static ArrayList<File> getAllDdrFiles(File imageDir)
