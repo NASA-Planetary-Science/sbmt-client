@@ -58,7 +58,7 @@ public class AmicaBackplanesLatexGenerator
             }
 
             o.write("  \\end{center}\n");
-            o.write("\\caption{" + new File(filename).getName().replace("_", "\\_") + ", " + getStartTime(f) + "}\n");
+            o.write("\\caption{" + new File(filename).getName().replace("_", "\\_") + ", " + getStartTime(filename) + "}\n");
             o.write("\\end{figure}\n");
             o.write("\\clearpage\n");
             o.write("\\setcounter{subfigure}{0}\n");
@@ -69,11 +69,17 @@ public class AmicaBackplanesLatexGenerator
         o.close();
     }
 
-    private static String getStartTime(File ddrFile)
+    private static String getStartTime(String ddrFile)
     {
         try
         {
-            FileInputStream fs = new FileInputStream(ddrFile);
+            String lblFile = null;
+            if (ddrFile.endsWith("ddr.img"))
+                lblFile = ddrFile.substring(0, ddrFile.length()-4);
+            else if (ddrFile.endsWith("ddr.img.gz"))
+                lblFile = ddrFile.substring(0, ddrFile.length()-7);
+
+            FileInputStream fs = new FileInputStream(lblFile);
             InputStreamReader isr = new InputStreamReader(fs);
             BufferedReader in = new BufferedReader(isr);
 
