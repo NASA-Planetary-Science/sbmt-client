@@ -53,7 +53,7 @@ public class AmicaBackplanesLatexGenerator
 
             for (int i=0; i<16; ++i)
             {
-                String bf = new File(filename.replace('.', '_') + "_" + i + ".jpg").getName();
+                String bf = new File(filename.replace('.', '_') + "_" + i + ".jpg").getName().replace("_gz", "");
                 o.write("    \\subfigure["+ bands[i] + "]{\\includegraphics[scale=0.35]{" + bf + "}}\n");
             }
 
