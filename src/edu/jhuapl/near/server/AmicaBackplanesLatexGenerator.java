@@ -89,6 +89,7 @@ public class AmicaBackplanesLatexGenerator
                 if (str.startsWith("START_TIME"))
                 {
                     String[] tokens = str.split("=");
+                    in.close();
                     return tokens[1].trim();
                 }
             }
