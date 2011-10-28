@@ -24,7 +24,7 @@ typedef enum SolverType
 /************************************************************************
 * Constants
 ************************************************************************/
-#define NUMBER_POINTS 1114386
+#define MAX_NUMBER_POINTS 2000000
 #define PATH_SIZE 256
 #define LINE_SIZE 1024
 #define UTC_SIZE 128
@@ -59,11 +59,11 @@ struct LidarPoint
 ************************************************************************/
 
 /* Array for storing all lidar points */
-struct LidarPoint g_points[NUMBER_POINTS];
+struct LidarPoint g_points[MAX_NUMBER_POINTS];
 
-struct LidarPoint g_pointsOptimized[NUMBER_POINTS];
+struct LidarPoint g_pointsOptimized[MAX_NUMBER_POINTS];
 
-int g_numberOptimizationsPerPoint[NUMBER_POINTS];
+int g_numberOptimizationsPerPoint[MAX_NUMBER_POINTS];
 
 /* The first point within the points variable to be optimized */
 int g_trackStartPoint;
@@ -76,6 +76,10 @@ int g_startPoint;
 
 /* Stop point to end optimization with */
 int g_stopPoint;
+
+/* The actual number of points read in from the files */
+int g_actual_number_points;
+
 
 void printPoint(int i)
 {
@@ -129,6 +133,12 @@ void loadPoints()
         
         while ( fgets ( line, sizeof line, f ) != NULL ) /* read a line */
         {
+            if (count >= MAX_NUMBER_POINTS)
+            {
+                printf("Error: Max number of allowable points exceeded!");
+                exit(1);
+            }
+            
             sscanf(line, "%*s %s %*s %lf %lf %lf %lf %lf %lf", utc, &sx, &sy, &sz, &x, &y, &z);
 
             utc2et_c(utc, &time);
@@ -154,6 +164,8 @@ void loadPoints()
         fflush(NULL);
         fclose ( f );
     }
+
+    g_actual_number_points = count;
     printf("Finished loading data\n\n\n");
 }
 
@@ -220,7 +232,7 @@ void initializeClosestPoints()
 {
     SpiceBoolean found;
     int i;
-    for (i=0; i<NUMBER_POINTS; ++i)
+    for (i=0; i<g_actual_number_points; ++i)
     {
         if (i% 1000 == 0)
             printf("finding closest point %d\n", i);
@@ -250,7 +262,7 @@ void initializeClosestPoints()
 void initializePointsOptimized()
 {
     int i;
-    for (i=0; i<NUMBER_POINTS; ++i)
+    for (i=0; i<g_actual_number_points; ++i)
     {
         g_pointsOptimized[i].time         = g_points[i].time;
         g_pointsOptimized[i].scpos[0]     = 0.0;
@@ -276,8 +288,8 @@ int checkForBreakInTrack(int startId, int trackSize)
     int i;
     double t0 = g_points[startId].time;
     int endPoint = startId + trackSize;
-    if (endPoint > NUMBER_POINTS)
-        endPoint = NUMBER_POINTS;
+    if (endPoint > g_actual_number_points)
+        endPoint = g_actual_number_points;
     
     for (i=startId+1; i<endPoint; ++i)
     {
@@ -345,7 +357,7 @@ void savePointsOptimized()
     double z;
 
     int i;
-    for (i=0; i<NUMBER_POINTS; ++i)
+    for (i=0; i<g_actual_number_points; ++i)
     {
         struct LidarPoint point = g_pointsOptimized[i];
 

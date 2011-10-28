@@ -67,6 +67,12 @@ void loadPoints(int argc, char** argv)
         
         while ( fgets ( line, sizeof line, f ) != NULL ) /* read a line */
         {
+            if (count >= MAX_NUMBER_POINTS)
+            {
+                printf("Error: Max number of allowable points exceeded!");
+                exit(1);
+            }
+            
             sscanf(line, "%*s %s %*s %lf %lf %lf %lf %lf %lf", utc, &sx, &sy, &sz, &x, &y, &z);
 
             struct LidarPoint point;
