@@ -14,7 +14,7 @@ add_definitions(-ansi -Wall)
 include_directories(${SPICE_DIR}/include ${SPICE_DIR}/src/dsklib_c ${LBFGS_DIR}/include)
 link_directories(${SPICE_DIR}/lib ${LBFGS_DIR}/lib)
 
-add_library(lidar optimize.c closest_point_dsk.c icp.c closest_point_vtk.cpp)
+add_library(lidar optimize.c closest-point-dsk.c icp.c closest-point-vtk.cpp)
 if(VTK_LIBRARIES)
   target_link_libraries(lidar ${VTK_LIBRARIES} dsklib_c cspice csupport lbfgs)
 else()
