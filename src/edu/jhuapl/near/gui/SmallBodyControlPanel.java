@@ -501,7 +501,7 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
 
         DecimalFormat df = new DecimalFormat("#.#####");
 
-        // We add a superscripted space at end of first 2 lines so that spacing between all lines is the same.
+        // We add a superscripted space at end of first 2 lines and last 6 lines so that spacing between all lines is the same.
         String text = "<html>Statistics:<br>"
             + "&nbsp;&nbsp;&nbsp;Number of plates: " + smallBodyModel.getSmallBodyPolyData().GetNumberOfCells() + "<sup>&nbsp;</sup><br>"
             + "&nbsp;&nbsp;&nbsp;Number of vertices: " + smallBodyModel.getSmallBodyPolyData().GetNumberOfPoints() + "<sup>&nbsp;</sup><br>"
@@ -510,6 +510,12 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
             + "&nbsp;&nbsp;&nbsp;Average plate area: " + df.format(1.0e6 * smallBodyModel.getMeanCellArea()) + " m<sup>2</sup><br>"
             + "&nbsp;&nbsp;&nbsp;Minimum plate area: " + df.format(1.0e6 * smallBodyModel.getMinCellArea()) + " m<sup>2</sup><br>"
             + "&nbsp;&nbsp;&nbsp;Maximum plate area: " + df.format(1.0e6 * smallBodyModel.getMaxCellArea()) + " m<sup>2</sup><br>"
+            + "&nbsp;&nbsp;&nbsp;X min: " + df.format(smallBodyModel.getBoundingBox().xmin) + " km<sup>&nbsp;</sup><br>"
+            + "&nbsp;&nbsp;&nbsp;X max: " + df.format(smallBodyModel.getBoundingBox().xmax) + " km<sup>&nbsp;</sup><br>"
+            + "&nbsp;&nbsp;&nbsp;Y min: " + df.format(smallBodyModel.getBoundingBox().ymin) + " km<sup>&nbsp;</sup><br>"
+            + "&nbsp;&nbsp;&nbsp;Y max: " + df.format(smallBodyModel.getBoundingBox().ymax) + " km<sup>&nbsp;</sup><br>"
+            + "&nbsp;&nbsp;&nbsp;Z min: " + df.format(smallBodyModel.getBoundingBox().zmin) + " km<sup>&nbsp;</sup><br>"
+            + "&nbsp;&nbsp;&nbsp;Z max: " + df.format(smallBodyModel.getBoundingBox().zmax) + " km<sup>&nbsp;</sup><br>"
             + "</html>";
 
         statisticsLabel.setText(text);
