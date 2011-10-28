@@ -6,9 +6,7 @@
 #include "lbfgs.h"
 #include "optimize.h"
 #include "icp.h"
-
-void findClosestPointDsk(const double* origin, const double* direction, double* closestPoint, int* found);
-/*void findClosestPointVtk(double* origin, double* notUsed, double* closestPoint, int* found);*/
+#include "closest-point.h"
 
 
 /************************************************************************
@@ -33,6 +31,7 @@ typedef enum SolverType
 #define MAX_TRACK_SIZE 500
 #define TRACK_BREAK_THRESHOLD 60
 #define NUMBER_FILES 3
+#define USE_VTK 1
 const char Tabfiles[NUMBER_FILES][PATH_SIZE] =
 {
     "/project/nearsdc/data/ITOKAWA/LIDAR/cdr/cdr_f_20050911_20050930.tab",
@@ -227,17 +226,20 @@ void initializeClosestPoints()
             printf("finding closest point %d\n", i);
         
         struct LidarPoint pt = g_points[i];
-        double xpt[3];
+        double closestPoint[3];
         double boredir[3] = {
             pt.targetpos[0] - pt.scpos[0],
             pt.targetpos[1] - pt.scpos[1],
             pt.targetpos[2] - pt.scpos[2] };
         
-        findClosestPointDsk(pt.scpos, boredir, xpt, &found);
+        if (USE_VTK)
+            findClosestPointVtk(pt.targetpos, closestPoint, &found);
+        else
+            findClosestPointDsk(pt.scpos, boredir, closestPoint, &found);
 
-        g_points[i].closestpoint[0] = xpt[0];
-        g_points[i].closestpoint[1] = xpt[1];
-        g_points[i].closestpoint[2] = xpt[2];
+        g_points[i].closestpoint[0] = closestPoint[0];
+        g_points[i].closestpoint[1] = closestPoint[1];
+        g_points[i].closestpoint[2] = closestPoint[2];
     }
 }
 
