@@ -881,6 +881,7 @@ public class SmallBodyModel extends Model
         cellNormals = null;
         gravityVector = null;
         defaultColoringRanges = null;
+        boundingBox = null;
 
         File smallBodyFile = defaultModelFile;
         switch(resolutionLevel)
