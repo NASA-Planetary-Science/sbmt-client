@@ -205,7 +205,7 @@ public class SmallBodyModel extends Model
         smallBodyReader.Update();
 
         vtkPolyData output = smallBodyReader.GetOutput();
-        smallBodyPolyData.DeepCopy(output);
+        smallBodyPolyData.ShallowCopy(output);
 
         smallBodyReader.Delete();
 
@@ -250,7 +250,7 @@ public class SmallBodyModel extends Model
             smallBodyReader.Update();
 
             vtkPolyData output = smallBodyReader.GetOutput();
-            lowResSmallBodyPolyData.DeepCopy(output);
+            lowResSmallBodyPolyData.ShallowCopy(output);
 
             smallBodyReader.Delete();
 
