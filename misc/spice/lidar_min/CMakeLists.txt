@@ -21,13 +21,13 @@ else()
   target_link_libraries(lidar vtkGraphics vtkIO dsklib_c cspice csupport lbfgs)
 endif()
 
-add_executable(lidar_min lidar-min-icp.c)
-target_link_libraries(lidar_min lidar)
+add_executable(lidar-min-icp lidar-min-icp.c)
+target_link_libraries(lidar-min-icp lidar)
 
-add_executable(lidar_compute_rms lidar-compute-rms.c)
-target_link_libraries(lidar_compute_rms lidar)
+add_executable(lidar-compute-rms lidar-compute-rms.c)
+target_link_libraries(lidar-compute-rms lidar)
 
-add_executable(lidar_save_min lidar-save-min-icp.c)
-target_link_libraries(lidar_save_min lidar)
+add_executable(lidar-save-min lidar-save-min-icp.c)
+target_link_libraries(lidar-save-min lidar)
 
-add_executable(lidar_remove_duplicates lidar-remove-duplicates.cpp)
+add_executable(lidar-remove-duplicates lidar-remove-duplicates.cpp)
