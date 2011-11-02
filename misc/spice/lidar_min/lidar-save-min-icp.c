@@ -6,7 +6,7 @@
 /************************************************************************
 * Constants
 ************************************************************************/
-#define NUMBER_POINTS 1114386
+#define MAX_NUMBER_POINTS 2000000
 #define PATH_SIZE 256
 #define LINE_SIZE 1024
 #define UTC_SIZE 128
@@ -15,15 +15,15 @@
 #define NUMBER_FILES 3
 const char Tabfiles[NUMBER_FILES][PATH_SIZE] =
 {
-    "/project/nearsdc/data/ITOKAWA/LIDAR/cdr/cdr_f_20050911_20050930.tab",
-    "/project/nearsdc/data/ITOKAWA/LIDAR/cdr/cdr_f_20051001_20051031.tab",
-    "/project/nearsdc/data/ITOKAWA/LIDAR/cdr/cdr_f_20051101_20051118.tab"
+    "/project/nearsdc/data/ITOKAWA/LIDAR/cdr/cdr_uf2_20050911_20050930.tab",
+    "/project/nearsdc/data/ITOKAWA/LIDAR/cdr/cdr_uf2_20051001_20051031.tab",
+    "/project/nearsdc/data/ITOKAWA/LIDAR/cdr/cdr_uf2_20051101_20051118.tab"
 };
 const char Outfiles[NUMBER_FILES][PATH_SIZE] =
 {
-    "/project/nearsdc/data/ITOKAWA/LIDAR/cdr/cdr_optimized_20050911_20050930.tab",
-    "/project/nearsdc/data/ITOKAWA/LIDAR/cdr/cdr_optimized_20051001_20051031.tab",
-    "/project/nearsdc/data/ITOKAWA/LIDAR/cdr/cdr_optimized_20051101_20051118.tab"
+    "/project/nearsdc/data/ITOKAWA/LIDAR/cdr/cdr_optimized2_20050911_20050930.tab",
+    "/project/nearsdc/data/ITOKAWA/LIDAR/cdr/cdr_optimized2_20051001_20051031.tab",
+    "/project/nearsdc/data/ITOKAWA/LIDAR/cdr/cdr_optimized2_20051101_20051118.tab"
 };
 const char* const kernelfiles = "/project/nearsdc/spice-kernels/hayabusa/kernels.txt";
 
@@ -42,9 +42,12 @@ struct LidarPoint
 * Global varaiables
 ************************************************************************/
 
-struct LidarPoint g_pointsOptimized[NUMBER_POINTS];
+struct LidarPoint g_pointsOptimized[MAX_NUMBER_POINTS];
 
-int g_numberOptimizationsPerPoint[NUMBER_POINTS];
+int g_numberOptimizationsPerPoint[MAX_NUMBER_POINTS];
+
+/* The actual number of points read in from the files */
+int g_actual_number_points;
 
 
 /************************************************************************
@@ -93,10 +96,12 @@ void loadPoints(int argc, char** argv)
             ++count;
         }
 
+	g_actual_number_points = count;
         printf("points read %d\n", count);
         fflush(NULL);
         fclose ( f );
     }
+
     printf("Finished loading data\n\n\n");
 }
 
@@ -104,7 +109,7 @@ void loadPoints(int argc, char** argv)
 void initializePointsOptimized()
 {
     int i;
-    for (i=0; i<NUMBER_POINTS; ++i)
+    for (i=0; i<MAX_NUMBER_POINTS; ++i)
     {
         g_pointsOptimized[i].scpos[0]     = 0.0;
         g_pointsOptimized[i].scpos[1]     = 0.0;
@@ -123,7 +128,7 @@ void initializePointsOptimized()
 void finalizePointsOptimized()
 {
     int i;
-    for (i=0; i<NUMBER_POINTS; ++i)
+    for (i=0; i<g_actual_number_points; ++i)
     {
         g_pointsOptimized[i].scpos[0]     /= g_numberOptimizationsPerPoint[i];
         g_pointsOptimized[i].scpos[1]     /= g_numberOptimizationsPerPoint[i];
@@ -203,6 +208,8 @@ void savePointsOptimized()
 ************************************************************************/
 int main(int argc, char** argv)
 {
+    initializePointsOptimized();
+
     loadPoints(argc, argv);
 
     finalizePointsOptimized();
