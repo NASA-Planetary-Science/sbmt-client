@@ -27,7 +27,7 @@ target_link_libraries(lidar-min-icp lidar)
 add_executable(lidar-compute-rms lidar-compute-rms.c)
 target_link_libraries(lidar-compute-rms lidar)
 
-add_executable(lidar-save-min lidar-save-min-icp.c)
-target_link_libraries(lidar-save-min lidar)
+add_executable(lidar-save-min-icp lidar-save-min-icp.c)
+target_link_libraries(lidar-save-min-icp lidar)
 
 add_executable(lidar-remove-duplicates lidar-remove-duplicates.cpp)
