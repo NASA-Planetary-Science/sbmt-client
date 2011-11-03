@@ -95,6 +95,15 @@ void icp(struct Point source[], struct Point target[], int n, double* translatio
     g_source = source;
     g_target = target;
     N = n;
+    int corr[n];
+    correspondences = &corr[0];
+
+
+    translation[0] = translation[1] = translation[2] = 0.0;
+    findAllClosestPoints(source, target, n, translation, corr);
+    printf("Initial value of objective function with no translation: %f\n",
+           func(translation));
+
     
     struct Point sourceCentroid;
     struct Point targetCentroid;
@@ -105,8 +114,6 @@ void icp(struct Point source[], struct Point target[], int n, double* translatio
     translation[2] = targetCentroid.p[2] - sourceCentroid.p[2];
 
     /* Now iterate */
-    int corr[n];
-    correspondences = &corr[0];
     
     int maxIter = 100;
     int i;
