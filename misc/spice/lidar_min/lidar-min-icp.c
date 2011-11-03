@@ -28,17 +28,17 @@ typedef enum SolverType
 #define PATH_SIZE 256
 #define LINE_SIZE 1024
 #define UTC_SIZE 128
-#define MAX_TRACK_SIZE 500
-#define TRACK_BREAK_THRESHOLD 60
+#define MAX_TRACK_SIZE 1000
+#define TRACK_BREAK_THRESHOLD 500
 #define NUMBER_FILES 3
 #define USE_VTK 1
 #define MAX_DIAGONAL_LENGTH 0.1
 #define NOISE_THRESHOLD 0.01
 const char Tabfiles[NUMBER_FILES][PATH_SIZE] =
 {
-    "/project/nearsdc/data/ITOKAWA/LIDAR/cdr/cdr_f_20050911_20050930.tab",
-    "/project/nearsdc/data/ITOKAWA/LIDAR/cdr/cdr_f_20051001_20051031.tab",
-    "/project/nearsdc/data/ITOKAWA/LIDAR/cdr/cdr_f_20051101_20051118.tab"
+    "/project/nearsdc/data/ITOKAWA/LIDAR/cdr/cdr_uf2_20050911_20050930.tab",
+    "/project/nearsdc/data/ITOKAWA/LIDAR/cdr/cdr_uf2_20051001_20051031.tab",
+    "/project/nearsdc/data/ITOKAWA/LIDAR/cdr/cdr_uf2_20051101_20051118.tab"
 };
 const char* const Outfile = "/project/nearsdc/data/ITOKAWA/LIDAR/cdr/cdr_optimized";
 const char* const kernelfiles = "/project/nearsdc/spice-kernels/hayabusa/kernels.txt";
@@ -308,17 +308,17 @@ double computeBoundingBoxDiagonalOfTrack(int startId, int trackSize)
         
         if (g_points[i].targetpos[0] < xmin)
             xmin = g_points[i].targetpos[0];
-        else if (g_points[i].targetpos[0] > xmax)
+        if (g_points[i].targetpos[0] > xmax)
             xmax = g_points[i].targetpos[0];
 
         if (g_points[i].targetpos[1] < ymin)
             ymin = g_points[i].targetpos[1];
-        else if (g_points[i].targetpos[1] > ymax)
+        if (g_points[i].targetpos[1] > ymax)
             ymax = g_points[i].targetpos[1];
 
         if (g_points[i].targetpos[2] < zmin)
             zmin = g_points[i].targetpos[2];
-        else if (g_points[i].targetpos[2] > zmax)
+        if (g_points[i].targetpos[2] > zmax)
             zmax = g_points[i].targetpos[2];
 
         ++count;
@@ -333,6 +333,7 @@ double computeBoundingBoxDiagonalOfTrack(int startId, int trackSize)
     
     return sqrt(xext*xext + yext*yext + zext*zext);
 }
+
 
 /************************************************************************
 * This function determines if there is a break in a track due to a large
@@ -355,15 +356,22 @@ int checkForBreakInTrack(int startId, int trackSize)
         double t1 = g_points[i].time;
 
         if (t1 - t0 > TRACK_BREAK_THRESHOLD || t1 - t0 < 0.0)
+        {
+            printf("Max time break exceeded. Length: %f, size: %d\n", t1-t0, i-startId);
             return (i - startId);
-
-        double diagLength = computeBoundingBoxDiagonalOfTrack(startId, i);
+        }
+        
+        double diagLength = computeBoundingBoxDiagonalOfTrack(startId, i-startId+1);
         if (diagLength > MAX_DIAGONAL_LENGTH)
+        {
+            printf("Max diag length exceeded. Length: %f, size: %d\n", diagLength, i-startId);
             return (i - startId);
-            
+        }
+
         t0 = t1;
     }
 
+    printf("No break in track found! size: %d\n", i-startId);
     return (i - startId);
 }
 
@@ -375,24 +383,24 @@ void optimizeAllTracks(SolverType solverType)
 {
     initializePointsOptimized();
 
+    int prevEndPoint = -1;
     int currentStartPoint = g_startPoint;
     while(currentStartPoint < g_stopPoint)
     {
         int trackSize = checkForBreakInTrack(currentStartPoint, MAX_TRACK_SIZE);
-        optimizeTrack(currentStartPoint, trackSize, solverType);
-        
-        if (trackSize == MAX_TRACK_SIZE)
+
+        int endPoint = currentStartPoint + trackSize;
+        if (endPoint > prevEndPoint)
         {
-            trackSize = checkForBreakInTrack(currentStartPoint+1, MAX_TRACK_SIZE);
-            if (trackSize == MAX_TRACK_SIZE)
-                ++currentStartPoint;
-            else
-                currentStartPoint += trackSize + 1;           
+            optimizeTrack(currentStartPoint, trackSize, solverType);
         }
         else
         {
-            currentStartPoint += trackSize;
+            printf("Skipping this track since end point has not incremented. End point: %d\n", endPoint);
         }
+        
+        ++currentStartPoint;
+        prevEndPoint = endPoint;
     }
 }
 
