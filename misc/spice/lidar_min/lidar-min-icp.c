@@ -157,6 +157,7 @@ void loadPoints()
             point.closestpoint[0] = 0.0;
             point.closestpoint[1] = 0.0;
             point.closestpoint[2] = 0.0;
+            point.isNoise = 0;
             
             g_points[count] = point;
 

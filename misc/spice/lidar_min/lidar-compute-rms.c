@@ -22,7 +22,6 @@
 ************************************************************************/
 struct LidarPoint
 {
-    double time;
     double scpos[3];
     double targetpos[3];
     double closestpoint[3]; /* closest point on asteroid to targetpos */
