@@ -32,6 +32,8 @@ typedef enum SolverType
 #define TRACK_BREAK_THRESHOLD 60
 #define NUMBER_FILES 3
 #define USE_VTK 1
+#define MAX_DIAGONAL_LENGTH 0.1
+#define NOISE_THRESHOLD 0.01
 const char Tabfiles[NUMBER_FILES][PATH_SIZE] =
 {
     "/project/nearsdc/data/ITOKAWA/LIDAR/cdr/cdr_f_20050911_20050930.tab",
@@ -51,6 +53,7 @@ struct LidarPoint
     double scpos[3];
     double targetpos[3];
     double closestpoint[3]; /* closest point on asteroid to targetpos */
+    unsigned char isNoise; /* 1 if considered noise, 0 otherwise */
 };
 
 
@@ -252,6 +255,13 @@ void initializeClosestPoints()
         g_points[i].closestpoint[0] = closestPoint[0];
         g_points[i].closestpoint[1] = closestPoint[1];
         g_points[i].closestpoint[2] = closestPoint[2];
+
+        /* If the distance to the asteroid is too large, mark this point as noise */
+        double dist = vdist_c(pt.targetpos, closestPoint);
+        if (dist > NOISE_THRESHOLD)
+            g_points[i].isNoise = 1;
+        else
+            g_points[i].isNoise = 0;
     }
 }
 
@@ -276,9 +286,57 @@ void initializePointsOptimized()
 }
 
 
+double computeBoundingBoxDiagonalOfTrack(int startId, int trackSize)
+{
+    int i;
+    int endPoint = startId + trackSize;
+    if (endPoint > g_actual_number_points)
+        endPoint = g_actual_number_points;
+
+    double xmin = 1.0e10;
+    double xmax = -1.0e10;
+    double ymin = 1.0e10;
+    double ymax = -1.0e10;
+    double zmin = 1.0e10;
+    double zmax = -1.0e10;
+    int count = 0;
+    for (i=startId; i<endPoint; ++i)
+    {
+        if (g_points[i].isNoise)
+            continue;
+        
+        if (g_points[i].targetpos[0] < xmin)
+            xmin = g_points[i].targetpos[0];
+        else if (g_points[i].targetpos[0] > xmax)
+            xmax = g_points[i].targetpos[0];
+
+        if (g_points[i].targetpos[1] < ymin)
+            ymin = g_points[i].targetpos[1];
+        else if (g_points[i].targetpos[1] > ymax)
+            ymax = g_points[i].targetpos[1];
+
+        if (g_points[i].targetpos[2] < zmin)
+            zmin = g_points[i].targetpos[2];
+        else if (g_points[i].targetpos[2] > zmax)
+            zmax = g_points[i].targetpos[2];
+
+        ++count;
+    }
+
+    if (count == 0)
+        return 0.0;
+    
+    double xext = xmax - xmin;
+    double yext = ymax - ymin;
+    double zext = zmax - zmin;
+    
+    return sqrt(xext*xext + yext*yext + zext*zext);
+}
+
 /************************************************************************
 * This function determines if there is a break in a track due to a large
-* enough time difference between two points. If there is a break, it
+* enough time difference between two points or because the bounding box
+* that encloses the track is too large. If there is a break, it
 * returns the maximum size of the track such that there is no break.
 * If for some reason, a data point preceded in time the previous point,
 * that is considered a break, no matter how large.
@@ -297,7 +355,11 @@ int checkForBreakInTrack(int startId, int trackSize)
 
         if (t1 - t0 > TRACK_BREAK_THRESHOLD || t1 - t0 < 0.0)
             return (i - startId);
-        
+
+        double diagLength = computeBoundingBoxDiagonalOfTrack(startId, i);
+        if (diagLength > MAX_DIAGONAL_LENGTH)
+            return (i - startId);
+            
         t0 = t1;
     }
 
