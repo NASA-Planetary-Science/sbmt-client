@@ -211,11 +211,10 @@ void optimizeTrack(int startId, int trackSize, SolverType solverType)
         scpos[j].p[2] = pt.scpos[2];
     }
 
-    double minimizer[3];
     if (USE_VTK_ICP)
         icpVtk(sources, targets, trackSize, scpos);
     else
-        icp(sources, targets, trackSize, minimizer);
+        icp(sources, targets, trackSize, scpos);
     
 
     
@@ -223,22 +222,13 @@ void optimizeTrack(int startId, int trackSize, SolverType solverType)
     {
         struct LidarPoint pt = g_points[i];
 
-        if (USE_VTK_ICP)
-        {
-            pt.scpos[0] = scpos[j].p[0];
-            pt.scpos[1] = scpos[j].p[1];
-            pt.scpos[2] = scpos[j].p[2];
+        pt.scpos[0] = scpos[j].p[0];
+        pt.scpos[1] = scpos[j].p[1];
+        pt.scpos[2] = scpos[j].p[2];
 
-            pt.targetpos[0] = sources[j].p[0];
-            pt.targetpos[1] = sources[j].p[1];
-            pt.targetpos[2] = sources[j].p[2];
-        }
-        else
-        {
-            vadd_c(pt.scpos, minimizer, pt.scpos);
-
-            vadd_c(pt.targetpos, minimizer, pt.targetpos);
-        }
+        pt.targetpos[0] = sources[j].p[0];
+        pt.targetpos[1] = sources[j].p[1];
+        pt.targetpos[2] = sources[j].p[2];
 
         struct LidarPoint ptOpt = g_pointsOptimized[i];
         
