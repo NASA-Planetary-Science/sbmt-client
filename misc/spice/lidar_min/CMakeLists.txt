@@ -14,12 +14,15 @@ add_definitions(-ansi -Wall)
 include_directories(${SPICE_DIR}/include ${SPICE_DIR}/src/dsklib_c ${LBFGS_DIR}/include)
 link_directories(${SPICE_DIR}/lib ${LBFGS_DIR}/lib)
 
-add_library(lidar optimize.c closest-point-dsk.c icp.c closest-point-vtk.cpp)
-if(VTK_LIBRARIES)
-  target_link_libraries(lidar ${VTK_LIBRARIES} dsklib_c cspice csupport lbfgs)
-else()
-  target_link_libraries(lidar vtkGraphics vtkIO dsklib_c cspice csupport lbfgs)
-endif()
+add_library(lidar
+optimize.c
+closest-point-dsk.c
+icp.c
+icp-vtk.cpp
+closest-point-vtk.cpp
+#optimize-gsl.c
+)
+target_link_libraries(lidar vtkHybrid dsklib_c cspice csupport lbfgs)
 
 add_executable(lidar-min-icp lidar-min-icp.c)
 target_link_libraries(lidar-min-icp lidar)

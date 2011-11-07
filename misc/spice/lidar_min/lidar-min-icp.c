@@ -31,7 +31,8 @@ typedef enum SolverType
 #define MAX_TRACK_SIZE 1000
 #define TRACK_BREAK_THRESHOLD 500
 #define NUMBER_FILES 3
-#define USE_VTK 1
+#define USE_VTK_CLOSEST_POINT 1
+#define USE_VTK_ICP 1
 #define MAX_DIAGONAL_LENGTH 0.1
 #define NOISE_THRESHOLD 0.01
 const char Tabfiles[NUMBER_FILES][PATH_SIZE] =
@@ -192,6 +193,7 @@ void optimizeTrack(int startId, int trackSize, SolverType solverType)
     int endPoint = g_trackStartPoint + g_trackSize;
     struct Point sources[trackSize];
     struct Point targets[trackSize];
+    struct Point scpos[trackSize];
     int i,j;
     for (i=g_trackStartPoint,j=0; i<endPoint; ++i,++j)
     {
@@ -203,19 +205,40 @@ void optimizeTrack(int startId, int trackSize, SolverType solverType)
         targets[j].p[0] = pt.closestpoint[0];
         targets[j].p[1] = pt.closestpoint[1];
         targets[j].p[2] = pt.closestpoint[2];
+
+        scpos[j].p[0] = pt.scpos[0];
+        scpos[j].p[1] = pt.scpos[1];
+        scpos[j].p[2] = pt.scpos[2];
     }
+
     double minimizer[3];
-    icp(sources, targets, trackSize, minimizer);
+    if (USE_VTK_ICP)
+        icpVtk(sources, targets, trackSize, scpos);
+    else
+        icp(sources, targets, trackSize, minimizer);
     
 
     
-    for (i=g_trackStartPoint; i<endPoint; ++i)
+    for (i=g_trackStartPoint,j=0; i<endPoint; ++i)
     {
         struct LidarPoint pt = g_points[i];
 
-        vadd_c(pt.scpos, minimizer, pt.scpos);
+        if (USE_VTK_ICP)
+        {
+            pt.scpos[0] = scpos[j].p[0];
+            pt.scpos[1] = scpos[j].p[1];
+            pt.scpos[2] = scpos[j].p[2];
 
-        vadd_c(pt.targetpos, minimizer, pt.targetpos);
+            pt.targetpos[0] = sources[j].p[0];
+            pt.targetpos[1] = sources[j].p[1];
+            pt.targetpos[2] = sources[j].p[2];
+        }
+        else
+        {
+            vadd_c(pt.scpos, minimizer, pt.scpos);
+
+            vadd_c(pt.targetpos, minimizer, pt.targetpos);
+        }
 
         struct LidarPoint ptOpt = g_pointsOptimized[i];
         
@@ -248,7 +271,7 @@ void initializeClosestPoints()
             pt.targetpos[1] - pt.scpos[1],
             pt.targetpos[2] - pt.scpos[2] };
         
-        if (USE_VTK)
+        if (USE_VTK_CLOSEST_POINT)
             findClosestPointVtk(pt.targetpos, closestPoint, &found);
         else
             findClosestPointDsk(pt.scpos, boredir, closestPoint, &found);
