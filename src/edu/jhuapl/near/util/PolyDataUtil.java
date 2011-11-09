@@ -838,7 +838,7 @@ public class PolyDataUtil
             points.SetPoint(1, closestPoint2);
 
             vtkCellArray lines = polyLine.GetLines();
-            lines.SetNumberOfCells(0);
+            lines.Initialize();
 
             vtkIdList idList = new vtkIdList();
             idList.SetNumberOfIds(2);

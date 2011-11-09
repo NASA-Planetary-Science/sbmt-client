@@ -66,7 +66,7 @@ public class ImageBoundary extends Model implements PropertyChangeListener
 
         vtkPoints points = boundary.GetPoints();
         vtkCellArray verts = boundary.GetVerts();
-        verts.SetNumberOfCells(0);
+        verts.Initialize();
         points.SetNumberOfPoints(0);
 
         vtkIdList idList = new vtkIdList();
