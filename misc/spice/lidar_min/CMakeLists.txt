@@ -34,3 +34,6 @@ add_executable(lidar-save-min-icp lidar-save-min-icp.c)
 target_link_libraries(lidar-save-min-icp lidar)
 
 add_executable(lidar-remove-duplicates lidar-remove-duplicates.cpp)
+
+add_executable(lidar-convert-edr lidar-convert-edr.c)
+target_link_libraries(lidar-convert-edr cspice csupport m)
