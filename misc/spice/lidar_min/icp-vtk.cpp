@@ -6,6 +6,7 @@
 #include <vtkTransformPolyDataFilter.h>
 #include <vtkLandmarkTransform.h>
 #include <vtkMatrix4x4.h>
+#include <vtkMath.h>
 
 #include "icp.h"
 
@@ -35,6 +36,15 @@ static void CreatePolyData(struct Point pts[], int n, vtkSmartPointer<vtkPolyDat
 }
 
 
+static bool isValidMatrix(vtkSmartPointer<vtkMatrix4x4> m)
+{
+    for (int i=0; i<4; ++i)
+        for (int j=0; j<4; ++j)
+            if (vtkMath::IsNan(m->GetElement(i,j)))
+                return false;
+    return true;
+}
+
 /**
    Perform ICP algorithm on source and target points, both of size
    n. The optimal transformation that maps the source points into target
@@ -62,25 +72,40 @@ extern "C" void icpVtk(struct Point source[], struct Point target[], int n, stru
     
 
     // Setup ICP transform
-    vtkSmartPointer<vtkIterativeClosestPointTransform> icp =
+    vtkSmartPointer<vtkIterativeClosestPointTransform> icpTransform =
         vtkSmartPointer<vtkIterativeClosestPointTransform>::New();
-    icp->SetSource(sourcePolydata);
-    icp->SetTarget(targetPolydata);
-    icp->GetLandmarkTransform()->SetModeToRigidBody();
-    icp->SetMaximumNumberOfIterations(20);
-    //icp->StartByMatchingCentroidsOn();
-    icp->Modified();
-    icp->Update();
+    icpTransform->SetSource(sourcePolydata);
+    icpTransform->SetTarget(targetPolydata);
+    icpTransform->GetLandmarkTransform()->SetModeToRigidBody();
+    icpTransform->SetMaximumNumberOfIterations(25);
+    icpTransform->SetMaximumNumberOfLandmarks(n);
+    icpTransform->StartByMatchingCentroidsOn();
+    icpTransform->CheckMeanDistanceOn();
+    icpTransform->SetMaximumMeanDistance(1e-09);
+    icpTransform->Modified();
+    icpTransform->Update();
 
-    // Get the resulting transformation matrix (this matrix takes the source points to the target points)
-    vtkSmartPointer<vtkMatrix4x4> m = icp->GetMatrix();
-    std::cout << "The resulting matrix is: " << *m << std::endl;
+    std::cout << "icp stats: " << *icpTransform << std::endl;
 
+    vtkSmartPointer<vtkMatrix4x4> m = icpTransform->GetMatrix();
+
+    std::cout << "Determinant: " << m->Determinant() << std::endl;
+    
+    bool validMatrix = isValidMatrix(m);
+    if (!validMatrix)
+    {
+        std::cout << "VTK ICP failed. Performing other ICP version\n\n" << std::endl;
+
+        // do the other ICP version if this fails
+        icp(source, target, n, additionalPoints);
+        return;
+    }
+    
     // Transform the source points by the ICP solution
     vtkSmartPointer<vtkTransformPolyDataFilter> icpTransformFilter =
         vtkSmartPointer<vtkTransformPolyDataFilter>::New();
     icpTransformFilter->SetInput(sourcePolydata);
-    icpTransformFilter->SetTransform(icp);
+    icpTransformFilter->SetTransform(icpTransform);
     icpTransformFilter->Update();
 
     vtkSmartPointer<vtkPolyData> outPolydata = icpTransformFilter->GetOutput();
@@ -102,7 +127,7 @@ extern "C" void icpVtk(struct Point source[], struct Point target[], int n, stru
         // Transform the additional points by the ICP solution
         icpTransformFilter = vtkSmartPointer<vtkTransformPolyDataFilter>::New();
         icpTransformFilter->SetInput(additionalPolydata);
-        icpTransformFilter->SetTransform(icp);
+        icpTransformFilter->SetTransform(icpTransform);
         icpTransformFilter->Update();
 
         outPolydata = icpTransformFilter->GetOutput();
