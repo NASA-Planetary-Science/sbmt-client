@@ -32,14 +32,14 @@ typedef enum SolverType
 #define TRACK_BREAK_THRESHOLD 500
 #define NUMBER_FILES 3
 #define USE_VTK_CLOSEST_POINT 1
-#define USE_VTK_ICP 1
+#define USE_VTK_ICP 0
 #define MAX_DIAGONAL_LENGTH 0.1
 #define NOISE_THRESHOLD 0.01
 const char Tabfiles[NUMBER_FILES][PATH_SIZE] =
 {
-    "/project/nearsdc/data/ITOKAWA/LIDAR/cdr/cdr_uf2_20050911_20050930.tab",
-    "/project/nearsdc/data/ITOKAWA/LIDAR/cdr/cdr_uf2_20051001_20051031.tab",
-    "/project/nearsdc/data/ITOKAWA/LIDAR/cdr/cdr_uf2_20051101_20051118.tab"
+    "/project/nearsdc/data/ITOKAWA/LIDAR/edr/edr_uf_20050911_20050930.tab",
+    "/project/nearsdc/data/ITOKAWA/LIDAR/edr/edr_uf_20051001_20051031.tab",
+    "/project/nearsdc/data/ITOKAWA/LIDAR/edr/edr_uf_20051101_20051118.tab"
 };
 const char* const Outfile = "/project/nearsdc/data/ITOKAWA/LIDAR/cdr/cdr_optimized";
 const char* const kernelfiles = "/project/nearsdc/spice-kernels/hayabusa/kernels.txt";
