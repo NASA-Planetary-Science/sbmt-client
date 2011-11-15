@@ -1,9 +1,23 @@
 #include <stdio.h>
 #include "icp.h"
 #include "optimize.h"
-#include "SpiceUsr.h"
-#include "lbfgs.h"
 
+
+/* Return distance squared between points x and y */
+static double vdist2(const double x[3], const double y[3])
+{
+    return ( ( x[0] - y[0] ) * ( x[0] - y[0] )
+             + ( x[1] - y[1] ) * ( x[1] - y[1] )
+             + ( x[2] - y[2] ) * ( x[2] - y[2] ) );
+}
+
+/* Add vectors v1 and v2 and store result in vout */
+static void vadd(const double v1[3], const double v2[3], double vout[3])
+{
+    vout[0] = v1[0] + v2[0];
+    vout[1] = v1[1] + v2[1];
+    vout[2] = v1[2] + v2[2];
+}
 
 static void centroid(struct Point points[], int n, double* centroid)
 {
@@ -13,7 +27,7 @@ static void centroid(struct Point points[], int n, double* centroid)
     int i;
     for (i=0; i<n; ++i)
     {
-        vadd_c(centroid, points[i].p, centroid);
+        vadd(centroid, points[i].p, centroid);
     }
 
     centroid[0] /= n;
@@ -23,15 +37,15 @@ static void centroid(struct Point points[], int n, double* centroid)
 
 static int findClosestPoint(struct Point targets[], int n, struct Point point)
 {
-    double mindist = 1.0e10;
+    double mindist2 = 1.0e20;
     int minidx = 0;
     int i;
     for (i=0; i<n; ++i)
     {
-        double dist = vdist_c(point.p, targets[i].p);
-        if (dist < mindist)
+        double dist2 = vdist2(point.p, targets[i].p);
+        if (dist2 < mindist2)
         {
-            mindist = dist;
+            mindist2 = dist2;
             minidx = i;
         }
     }
@@ -45,7 +59,7 @@ static void findAllClosestPoints(struct Point source[], struct Point target[], i
     for (i=0; i<n; ++i)
     {
         struct Point s = source[i];
-        vadd_c(s.p, translation, s.p);
+        vadd(s.p, translation, s.p);
         corr[i] = findClosestPoint(target, n, s);
     }
 }
@@ -65,10 +79,10 @@ static double func(const double* translation)
         struct Point s = g_source[i];
         struct Point t = g_target[correspondences[i]];
 
-        vadd_c(s.p, translation, s.p);
+        vadd(s.p, translation, s.p);
 
-        double dist = vdist_c(s.p, t.p);
-        ssd += dist*dist;
+        double dist2 = vdist2(s.p, t.p);
+        ssd += dist2;
     }
 
     return ssd;
@@ -134,8 +148,8 @@ void icp(struct Point source[], struct Point target[], int n, struct Point* addi
 
     for (i=0; i<n; ++i)
     {
-        vadd_c(source[i].p, translation, source[i].p);
+        vadd(source[i].p, translation, source[i].p);
         if (additionalPoints != 0)
-            vadd_c(additionalPoints[i].p, translation, additionalPoints[i].p);
+            vadd(additionalPoints[i].p, translation, additionalPoints[i].p);
     }
 }
