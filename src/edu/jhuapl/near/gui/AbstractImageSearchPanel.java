@@ -508,7 +508,7 @@ abstract public class AbstractImageSearchPanel extends javax.swing.JPanel implem
         gridBagConstraints.insets = new java.awt.Insets(6, 6, 0, 0);
         jPanel1.add(sourceLabel, gridBagConstraints);
 
-        sourceComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Gaskell derived", "PDS derived" }));
+        sourceComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Gaskell derived", "PDS derived", "Gaskell derived (exclude PDS)", "PDS derived (exclude Gaskell)" }));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
@@ -1534,6 +1534,50 @@ abstract public class AbstractImageSearchPanel extends javax.swing.JPanel implem
                     cubeList,
                     imageSource,
                     hasLimbComboBox.getSelectedIndex());
+
+            // If PDS Derived (exclude Gaskell) or Gaskell Derived (exlude PDS) is selected,
+            // then remove from the list images which are contained in the other list by doing
+            // an additional search.
+            if (sourceComboBox.getSelectedIndex() >= 2)
+            {
+                ArrayList<ArrayList<String>> resultsOtherSource = getQuery().runQuery(
+                        "",
+                        startDateJoda,
+                        endDateJoda,
+                        filtersChecked,
+                        userDefined1CheckBox.isSelected(),
+                        userDefined2CheckBox.isSelected(),
+                        Double.parseDouble(fromDistanceTextField.getText()),
+                        Double.parseDouble(toDistanceTextField.getText()),
+                        Double.parseDouble(fromResolutionTextField.getText()),
+                        Double.parseDouble(toResolutionTextField.getText()),
+                        searchField,
+                        null,
+                        Double.parseDouble(fromIncidenceTextField.getText()),
+                        Double.parseDouble(toIncidenceTextField.getText()),
+                        Double.parseDouble(fromEmissionTextField.getText()),
+                        Double.parseDouble(toEmissionTextField.getText()),
+                        Double.parseDouble(fromPhaseTextField.getText()),
+                        Double.parseDouble(toPhaseTextField.getText()),
+                        cubeList,
+                        imageSource == Image.ImageSource.PDS ? Image.ImageSource.GASKELL : Image.ImageSource.PDS,
+                        hasLimbComboBox.getSelectedIndex());
+
+                int numOtherResults = resultsOtherSource.size();
+                for (int i=0; i<numOtherResults; ++i)
+                {
+                    String imageName = resultsOtherSource.get(i).get(0);
+                    int numResults = results.size();
+                    for (int j=0; j<numResults; ++j)
+                    {
+                        if (results.get(j).get(0).startsWith(imageName))
+                        {
+                            results.remove(j);
+                            break;
+                        }
+                    }
+                }
+            }
 
             sourceOfLastQuery = imageSource;
 
