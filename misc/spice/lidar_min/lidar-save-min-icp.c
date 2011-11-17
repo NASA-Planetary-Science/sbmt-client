@@ -15,6 +15,9 @@
 #define NUMBER_FILES 3
 const char Tabfiles[NUMBER_FILES][PATH_SIZE] =
 {
+/*    "/project/nearsdc/data/ITOKAWA/LIDAR/edr/edr_uf_20050911_20050930.tab",
+    "/project/nearsdc/data/ITOKAWA/LIDAR/edr/edr_uf_20051001_20051031.tab",
+    "/project/nearsdc/data/ITOKAWA/LIDAR/edr/edr_uf_20051101_20051118.tab"*/
     "/project/nearsdc/data/ITOKAWA/LIDAR/cdr/cdr_uf2_20050911_20050930.tab",
     "/project/nearsdc/data/ITOKAWA/LIDAR/cdr/cdr_uf2_20051001_20051031.tab",
     "/project/nearsdc/data/ITOKAWA/LIDAR/cdr/cdr_uf2_20051101_20051118.tab"
