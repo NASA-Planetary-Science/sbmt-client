@@ -218,7 +218,7 @@ void optimizeTrack(int startId, int trackSize, SolverType solverType)
     
 
     
-    for (i=g_trackStartPoint,j=0; i<endPoint; ++i)
+    for (i=g_trackStartPoint,j=0; i<endPoint; ++i,++j)
     {
         struct LidarPoint pt = g_points[i];
 
