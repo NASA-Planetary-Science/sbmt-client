@@ -112,4 +112,21 @@ public class BoundingBox
                " zmin: " + zmin + " zmax: " + zmax;
     }
 
+    @Override
+    public boolean equals(Object obj)
+    {
+        BoundingBox b = (BoundingBox)obj;
+        return this.xmin == b.xmin &&
+        this.xmax == b.xmax &&
+        this.ymin == b.ymin &&
+        this.ymax == b.ymax &&
+        this.zmin == b.zmin &&
+        this.zmax == b.zmax;
+    }
+
+    @Override
+    public Object clone()
+    {
+        return new BoundingBox(getBounds());
+    }
 }

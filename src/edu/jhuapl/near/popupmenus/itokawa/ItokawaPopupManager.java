@@ -7,8 +7,10 @@ import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.itokawa.AmicaBoundaryCollection;
 import edu.jhuapl.near.model.itokawa.AmicaColorImageCollection;
 import edu.jhuapl.near.model.itokawa.AmicaImageCollection;
+import edu.jhuapl.near.model.itokawa.HayLidarSearchDataCollection;
 import edu.jhuapl.near.popupmenus.ColorImagePopupMenu;
 import edu.jhuapl.near.popupmenus.ImagePopupMenu;
+import edu.jhuapl.near.popupmenus.LidarPopupMenu;
 import edu.jhuapl.near.popupmenus.PopupManager;
 import edu.jhuapl.near.popupmenus.PopupMenu;
 
@@ -30,6 +32,7 @@ public class ItokawaPopupManager extends PopupManager
         AmicaImageCollection amicaImages = (AmicaImageCollection)modelManager.getModel(ModelNames.AMICA_IMAGES);
         AmicaBoundaryCollection amicaBoundaries = (AmicaBoundaryCollection)modelManager.getModel(ModelNames.AMICA_BOUNDARY);
         AmicaColorImageCollection amicaColorImages = (AmicaColorImageCollection)modelManager.getModel(ModelNames.AMICA_COLOR_IMAGES);
+        HayLidarSearchDataCollection lidarSearch = (HayLidarSearchDataCollection)modelManager.getModel(ModelNames.HAYLIDAR_SEARCH);
 
         PopupMenu popupMenu = new ImagePopupMenu(amicaImages, amicaBoundaries, infoPanelManager, renderer, renderer);
         registerPopup(modelManager.getModel(ModelNames.AMICA_BOUNDARY), popupMenu);
@@ -39,5 +42,8 @@ public class ItokawaPopupManager extends PopupManager
 
         popupMenu = new ColorImagePopupMenu(amicaColorImages, infoPanelManager);
         registerPopup(modelManager.getModel(ModelNames.AMICA_COLOR_IMAGES), popupMenu);
+
+        popupMenu = new LidarPopupMenu(lidarSearch);
+        registerPopup(modelManager.getModel(ModelNames.HAYLIDAR_SEARCH), popupMenu);
     }
 }

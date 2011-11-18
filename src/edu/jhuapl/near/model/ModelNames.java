@@ -29,6 +29,7 @@ public interface ModelNames
     static public final String AMICA_COLOR_IMAGES = "amica-color-images";
     static public final String AMICA_BOUNDARY = "amica-boundary";
     static public final String HAYLIDAR_BROWSE = "haylidar-browse";
+    static public final String HAYLIDAR_SEARCH = "haylidar-search";
 
     // Vesta
     static public final String FC_IMAGES = "amica-images";

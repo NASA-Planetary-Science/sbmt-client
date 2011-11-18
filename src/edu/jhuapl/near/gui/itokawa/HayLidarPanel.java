@@ -16,7 +16,9 @@ public class HayLidarPanel extends JTabbedPane
         setBorder(BorderFactory.createEmptyBorder());
 
         HayLidarBrowsePanel lidarBrowsePanel = new HayLidarBrowsePanel(modelManager);
+        HayLidarSearchPanel lidarSearchPanel = new HayLidarSearchPanel(modelManager, pickManager);
 
         addTab("Browse", lidarBrowsePanel);
+        addTab("Search", lidarSearchPanel);
     }
 }
