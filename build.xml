@@ -31,6 +31,7 @@
 		<pathelement location="${rootdir}/lib/jfreechart-1.0.13.jar"/>
 		<pathelement location="${rootdir}/lib/miglayout-3.7.1-swing.jar"/>
 		<pathelement location="${rootdir}/lib/commons-io-2.0.jar"/>
+		<pathelement location="${rootdir}/lib/commons-math-2.2.jar"/>
 		<pathelement location="${rootdir}/lib/fits-1.04.0.jar"/>
 		<pathelement location="${rootdir}/lib/jgoodies-common-1.1.1.jar"/>
 		<pathelement location="${rootdir}/lib/jgoodies-looks-2.4.0.jar"/>
@@ -50,6 +51,7 @@
                                             jfreechart-1.0.13.jar
                                             miglayout-3.7.1-swing.jar
                                             commons-io-2.0.jar
+                                            commons-math-2.2.jar
                                             fits-1.04.0.jar
                                             jgoodies-common-1.1.1.jar
                                             jgoodies-looks-2.4.0.jar"/>
@@ -74,6 +76,7 @@
                                             jfreechart-1.0.13.jar
                                             miglayout-3.7.1-swing.jar
                                             commons-io-2.0.jar
+                                            commons-math-2.2.jar
                                             fits-1.04.0.jar
                                             jgoodies-common-1.1.1.jar
                                             jgoodies-looks-2.4.0.jar"/>
@@ -250,6 +253,14 @@
     <input message="Please enter keystore password:"
            addproperty="keypass" />
     <signjar jar="${rootdir}/lib/commons-io-2.0.jar"
+             keystore="${rootdir}/keystore" alias="mykey"
+             storepass="${keypass}"/>
+  </target>
+
+  <target name="signcommonsmath">
+    <input message="Please enter keystore password:"
+           addproperty="keypass" />
+    <signjar jar="${rootdir}/lib/commons-math-2.2.jar"
              keystore="${rootdir}/keystore" alias="mykey"
              storepass="${keypass}"/>
   </target>
