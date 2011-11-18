@@ -21,16 +21,23 @@ public class RadialOffsetChanger extends javax.swing.JPanel
 {
     private Model model;
     private double offsetScale = 0.025;
+    private int defaultValue = 15;
 
     /** Creates new form RadialOffsetChanger */
     public RadialOffsetChanger()
     {
         initComponents();
+        reset();
     }
 
     public void setModel(Model model)
     {
         this.model = model;
+    }
+
+    public void reset()
+    {
+        slider.setValue(defaultValue);
     }
 
     /** This method is called from within the constructor to
