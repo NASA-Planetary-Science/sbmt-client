@@ -1413,7 +1413,8 @@ abstract public class Image extends Model implements PropertyChangeListener
                     if (returnNullIfContainsLimb)
                         return null;
 
-                    for (int k=0; k<numLayers; ++k)
+                    data[index(j,i,0)]  = (float)rawImage.GetScalarComponentAsFloat(j, i, 0, 0);
+                    for (int k=1; k<numLayers; ++k)
                         data[index(j,i,k)] = PDS_NA;
                 }
             }
