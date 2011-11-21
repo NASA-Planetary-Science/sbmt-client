@@ -9,6 +9,8 @@ import java.net.URLConnection;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.zip.GZIPInputStream;
 
+import org.apache.commons.io.input.CountingInputStream;
+
 public class FileCache
 {
     public static final String FILE_PREFIX = "file://";
@@ -18,7 +20,9 @@ public class FileCache
         new ConcurrentHashMap<String, Object>();
 
     private static volatile boolean abortDownload = false;
-    private static volatile double downloadProgress = 0.0;
+
+    // Download progress. Equal to number of bytes downloaded so far.
+    private static volatile long downloadProgress = 0;
 
     /**
      * Information returned about a remote file on the server
@@ -220,6 +224,17 @@ public class FileCache
      */
     static private File addToCache(String path, InputStream is, long urlLastModified, long contentLength) throws IOException
     {
+        // Put in a counting stream so we can count the number of bytes
+        // read. This is necessary because the number of bytes read
+        // might be different than the number of bytes written, for example
+        // when the file is gzipped. As a result, looking at how
+        // many bytes were written to disk so far won't
+        // tell us how much remains to be downloaded. Since this counting
+        // stream is inserted beneath the GZIP stream, we can divide the number
+        // of bytes reads by the content length to get the percentage of the
+        // file downloaded.
+        CountingInputStream cis = new CountingInputStream(is);
+        is = cis;
         if (path.toLowerCase().endsWith(".gz"))
             is = new GZIPInputStream(is);
 
@@ -239,17 +254,14 @@ public class FileCache
 
         abortDownload = false;
         boolean downloadAborted = false;
-        downloadProgress = 0.0;
-
-        int amountDownloadedSoFar = 0;
+        downloadProgress = 0;
 
         final int bufferSize = 2048;
         byte[] buff = new byte[bufferSize];
         int len;
         while((len = is.read(buff)) > 0)
         {
-            amountDownloadedSoFar += len;
-            downloadProgress = 100.0 * (double)amountDownloadedSoFar / (double)contentLength;
+            downloadProgress = cis.getByteCount();
 
             if (abortDownload)
             {
@@ -263,7 +275,7 @@ public class FileCache
         os.close();
         is.close();
 
-        downloadProgress = 100.0;
+        downloadProgress = contentLength;
 
         if (downloadAborted)
         {
@@ -300,14 +312,18 @@ public class FileCache
         abortDownload = true;
     }
 
-    static public double getDownloadProgess()
+    /**
+     * Get download progress as number of bytes downloaded so far.
+     * @return
+     */
+    static public long getDownloadProgess()
     {
         return downloadProgress;
     }
 
     static public void resetDownloadProgess()
     {
-        downloadProgress = 0.0;
+        downloadProgress = 0;
     }
 
     /**

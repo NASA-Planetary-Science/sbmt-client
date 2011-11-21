@@ -22,7 +22,7 @@ public class MapmakerSwingWorker extends FileDownloadSwingWorker
 
     public MapmakerSwingWorker(Component c, String title, String filename)
     {
-        super(c, title, filename);
+        super(c, title, filename, true);
     }
 
 
