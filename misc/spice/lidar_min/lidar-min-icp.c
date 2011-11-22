@@ -30,19 +30,10 @@ typedef enum SolverType
 #define UTC_SIZE 128
 #define MAX_TRACK_SIZE 1000
 #define TRACK_BREAK_THRESHOLD 500
-#define NUMBER_FILES 3
 #define USE_VTK_CLOSEST_POINT 1
 #define USE_VTK_ICP 0
 #define MAX_DIAGONAL_LENGTH 0.1
 #define NOISE_THRESHOLD 0.01
-const char Tabfiles[NUMBER_FILES][PATH_SIZE] =
-{
-    "/project/nearsdc/data/ITOKAWA/LIDAR/edr/edr_uf_20050911_20050930.tab",
-    "/project/nearsdc/data/ITOKAWA/LIDAR/edr/edr_uf_20051001_20051031.tab",
-    "/project/nearsdc/data/ITOKAWA/LIDAR/edr/edr_uf_20051101_20051118.tab"
-};
-const char* const Outfile = "/project/nearsdc/data/ITOKAWA/LIDAR/cdr/cdr_optimized";
-const char* const kernelfiles = "/project/nearsdc/spice-kernels/hayabusa/kernels.txt";
 
 
 /************************************************************************
@@ -110,14 +101,15 @@ void printpt(const char* str, const double* pt)
 * Function which loads points from "tab" files into points
 * global variable
 ************************************************************************/
-void loadPoints()
+void loadPoints(int argc, char** argv)
 {
     printf("Loading data\n");
     int i;
     int count = 0;
-    for (i=0; i<NUMBER_FILES; ++i)
+    /* Element at index 5 of argv is start of input files */
+    for (i=5; i<argc; ++i)
     {
-        const char* filename = Tabfiles[i];
+        const char* filename = argv[i];
         FILE *f = fopen(filename, "r");
         if (f == NULL)
         {
@@ -421,14 +413,12 @@ void optimizeAllTracks(SolverType solverType)
 /************************************************************************
 * 
 ************************************************************************/
-void savePointsOptimized()
+void savePointsOptimized(const char* outfile)
 {
-    char outfilename[256];
-    sprintf(outfilename, "%s_%d-%d", Outfile, g_startPoint, g_stopPoint);
-    FILE *fout = fopen(outfilename, "w");
+    FILE *fout = fopen(outfile, "w");
     if (fout == NULL)
     {
-        printf("Could not open %s", outfilename);
+        printf("Could not open %s", outfile);
         exit(1);
     }
 
@@ -468,24 +458,28 @@ int main(int argc, char** argv)
 {
     if (argc < 3)
     {
-        printf("Usage: lidar-min-icp <start-point> <stop-point>\n");;
+        printf("Usage: lidar-min-icp <start-point> <stop-point> <kernelfiles> <outputfile> <inputfile1> [<inputfile2> ...]\n");;
         return 1;
     }
 
     g_startPoint = atoi(argv[1]);
     g_stopPoint  = atoi(argv[2]);
 
+    const char* const kernelfiles = argv[3];
+    const char* const outfile = argv[4];
+
+
     SolverType solverType = LIBLBFGS;
     
     furnsh_c(kernelfiles);
 
-    loadPoints();
+    loadPoints(argc, argv);
 
     initializeClosestPoints();
     
     optimizeAllTracks(solverType);
     
-    savePointsOptimized();
+    savePointsOptimized(outfile);
 
     return 0;
 }
