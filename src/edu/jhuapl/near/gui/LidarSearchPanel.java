@@ -161,7 +161,8 @@ abstract public class LidarSearchPanel extends javax.swing.JPanel implements Pro
         for (int i=0; i<numberOfTracks; ++i)
         {
             LidarSearchDataCollection.Track track = lidarModel.getTrack(i);
-            results[i] = "Track " + i + ", Number of points: " + track.getNumberOfPoints();
+            results[i] = "Track " + i + ", Number of points: " + track.getNumberOfPoints()
+            + ", " + lidarModel.getTrackTimeRange(i);
         }
 
         tracksList.setListData(results);

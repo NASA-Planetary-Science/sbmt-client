@@ -777,4 +777,19 @@ public abstract class LidarSearchDataCollection extends Model
 
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
+
+
+    public String getTrackTimeRange(int trackId)
+    {
+        Track track = tracks.get(trackId);
+
+        if (originalPoints.size() == 0 || track.startId < 0 || track.stopId < 0)
+            return "";
+
+        long t0 = originalPoints.get(track.startId).time;
+        long t1 = originalPoints.get(track.stopId).time;
+
+        return sdf2.format(new Date(t0)).replace(' ', 'T') + " - " +
+            sdf2.format(new Date(t1)).replace(' ', 'T');
+    }
 }
