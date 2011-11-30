@@ -69,12 +69,12 @@ def combine_output():
     f2 = open(OUTPUT + 'spk_input.txt', 'w')
     numLines = len(N)
     for i in range(0, numLines):
-        xsc[j] /= N[j]
-        ysc[j] /= N[j]
-        zsc[j] /= N[j]
-        xtarget[j] /= N[j]
-        ytarget[j] /= N[j]
-        ztarget[j] /= N[j]
+        xsc[i] /= N[i]
+        ysc[i] /= N[i]
+        zsc[i] /= N[i]
+        xtarget[i] /= N[i]
+        ytarget[i] /= N[i]
+        ztarget[i] /= N[i]
         
         output_line = '%s %s %s %.16e %.16e %.16e %.16e %.16e %.16e\n' % (met[i], utc[i], rang[i], xsc[i], ysc[i], zsc[i], xtarget[i], ytarget[i], ztarget[i])
         f.write(output_line)
