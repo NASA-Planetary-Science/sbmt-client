@@ -41,6 +41,9 @@ typedef enum SolverType
 ************************************************************************/
 struct LidarPoint
 {
+    char met[11];
+    char utc[24];
+    char range[10];
     double time;
     double scpos[3];
     double targetpos[3];
@@ -118,16 +121,8 @@ void loadPoints(int argc, char** argv)
         }
 
         char line[LINE_SIZE];
-        char utc[UTC_SIZE];
-        double time;
-        double sx;
-        double sy;
-        double sz;
-        double x;
-        double y;
-        double z;
         
-        while ( fgets ( line, sizeof line, f ) != NULL ) /* read a line */
+        while ( fgets ( line, LINE_SIZE, f ) != NULL ) /* read a line */
         {
             if (count >= MAX_NUMBER_POINTS)
             {
@@ -135,18 +130,21 @@ void loadPoints(int argc, char** argv)
                 exit(1);
             }
             
-            sscanf(line, "%*s %s %*s %lf %lf %lf %lf %lf %lf", utc, &sx, &sy, &sz, &x, &y, &z);
-
-            utc2et_c(utc, &time);
-
             struct LidarPoint point;
-            point.time = time;
-            point.scpos[0] = sx;
-            point.scpos[1] = sy;
-            point.scpos[2] = sz;
-            point.targetpos[0] = x;
-            point.targetpos[1] = y;
-            point.targetpos[2] = z;
+
+            sscanf(line, "%s %s %s %lf %lf %lf %lf %lf %lf",
+                   point.met,
+                   point.utc,
+                   point.range,
+                   &point.scpos[0],
+                   &point.scpos[1],
+                   &point.scpos[2],
+                   &point.targetpos[0],
+                   &point.targetpos[1],
+                   &point.targetpos[2]);
+
+            utc2et_c(point.utc, &point.time);
+
             point.closestpoint[0] = 0.0;
             point.closestpoint[1] = 0.0;
             point.closestpoint[2] = 0.0;
@@ -280,7 +278,7 @@ void initializePointsOptimized()
     int i;
     for (i=0; i<g_actual_number_points; ++i)
     {
-        g_pointsOptimized[i].time         = g_points[i].time;
+        g_pointsOptimized[i]              = g_points[i];
         g_pointsOptimized[i].scpos[0]     = 0.0;
         g_pointsOptimized[i].scpos[1]     = 0.0;
         g_pointsOptimized[i].scpos[2]     = 0.0;
@@ -422,28 +420,22 @@ void savePointsOptimized(const char* outfile)
         exit(1);
     }
 
-    int numOptimizations;
-    double sx;
-    double sy;
-    double sz;
-    double x;
-    double y;
-    double z;
-
     int i;
     for (i=0; i<g_actual_number_points; ++i)
     {
         struct LidarPoint point = g_pointsOptimized[i];
 
-        numOptimizations = g_numberOptimizationsPerPoint[i];
-        sx = point.scpos[0];
-        sy = point.scpos[1];
-        sz = point.scpos[2];
-        x = point.targetpos[0];
-        y = point.targetpos[1];
-        z = point.targetpos[2];
-
-        fprintf(fout, "%d %.16e %.16e %.16e %.16e %.16e %.16e\n", numOptimizations, sx, sy, sz, x, y, z);
+        fprintf(fout, "%d %s %s %8s %.16e %.16e %.16e %.16e %.16e %.16e\n",
+                g_numberOptimizationsPerPoint[i],
+                point.met,
+                point.utc,
+                point.range,
+                point.scpos[0],
+                point.scpos[1],
+                point.scpos[2],
+                point.targetpos[0],
+                point.targetpos[1],
+                point.targetpos[2]);
     }
 
     fclose ( fout );
@@ -456,7 +448,7 @@ void savePointsOptimized(const char* outfile)
 ************************************************************************/
 int main(int argc, char** argv)
 {
-    if (argc < 3)
+    if (argc < 6)
     {
         printf("Usage: lidar-min-icp <start-point> <stop-point> <kernelfiles> <outputfile> <inputfile1> [<inputfile2> ...]\n");;
         return 1;
