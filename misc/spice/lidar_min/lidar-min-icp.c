@@ -32,7 +32,7 @@ typedef enum SolverType
 #define TRACK_BREAK_THRESHOLD 500
 #define USE_VTK_CLOSEST_POINT 1
 #define USE_VTK_ICP 0
-#define MAX_DIAGONAL_LENGTH 0.1
+#define MAX_TRACK_EXTENT 0.1
 #define NOISE_THRESHOLD 0.01
 
 
@@ -289,7 +289,7 @@ void initializePointsOptimized()
     }
 }
 
-
+/* replaced with computeExtentOfTrack()
 double computeBoundingBoxDiagonalOfTrack(int startId, int trackSize)
 {
     int i;
@@ -336,6 +336,44 @@ double computeBoundingBoxDiagonalOfTrack(int startId, int trackSize)
     
     return sqrt(xext*xext + yext*yext + zext*zext);
 }
+*/
+
+/* Computes a measure of the overall extent of a track by computing
+   the mean deviation of each point of the track from the centroid
+   of the track */
+double computeExtentOfTrack(int startId, int trackSize)
+{
+    int i;
+    int endPoint = startId + trackSize;
+    if (endPoint > g_actual_number_points)
+        endPoint = g_actual_number_points;
+
+    /* First compute centroid of points */
+    double centroid[3] = {0.0, 0.0, 0.0};
+
+    for (i=startId; i<endPoint; ++i)
+    {
+        centroid[0] += g_points[i].targetpos[0];
+        centroid[1] += g_points[i].targetpos[1];
+        centroid[2] += g_points[i].targetpos[2];
+    }
+
+    centroid[0] /= (double)trackSize;
+    centroid[1] /= (double)trackSize;
+    centroid[2] /= (double)trackSize;
+
+    /* Next compute mean distance from the centroid */
+    double meandist = 0.0;
+    
+    for (i=startId; i<endPoint; ++i)
+    {
+        meandist += vdist_c(centroid, g_points[i].targetpos);
+    }
+
+    meandist /= (double)trackSize;
+
+    return meandist;
+}
 
 
 /************************************************************************
@@ -353,7 +391,7 @@ int checkForBreakInTrack(int startId, int trackSize)
     int endPoint = startId + trackSize;
     if (endPoint > g_actual_number_points)
         endPoint = g_actual_number_points;
-    
+
     for (i=startId+1; i<endPoint; ++i)
     {
         double t1 = g_points[i].time;
@@ -363,11 +401,11 @@ int checkForBreakInTrack(int startId, int trackSize)
             printf("Max time break exceeded. Length: %f, size: %d\n", t1-t0, i-startId);
             return (i - startId);
         }
-        
-        double diagLength = computeBoundingBoxDiagonalOfTrack(startId, i-startId+1);
-        if (diagLength > MAX_DIAGONAL_LENGTH)
+
+        double trackExtent = computeExtentOfTrack(startId, i-startId+1);
+        if (trackExtent > MAX_TRACK_EXTENT)
         {
-            printf("Max diag length exceeded. Length: %f, size: %d\n", diagLength, i-startId);
+            printf("Max track extent exceeded. Length: %f, size: %d\n", trackExtent, i-startId);
             return (i - startId);
         }
 
