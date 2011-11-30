@@ -35,6 +35,7 @@ import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.pick.PickEvent;
 import edu.jhuapl.near.pick.PickManager;
 import edu.jhuapl.near.pick.PickManager.PickMode;
+import edu.jhuapl.near.pick.Picker;
 import edu.jhuapl.near.popupmenus.LidarPopupMenu;
 import edu.jhuapl.near.util.BoundingBox;
 import edu.jhuapl.near.util.Properties;
@@ -405,6 +406,7 @@ abstract public class LidarSearchPanel extends javax.swing.JPanel implements Pro
 
     private void submitButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_submitButtonActionPerformed
     {//GEN-HEADEREND:event_submitButtonActionPerformed
+        Picker.setPickingEnabled(false);
         selectRegionButton.setSelected(false);
         pickManager.setPickMode(PickMode.DEFAULT);
 
@@ -439,6 +441,7 @@ abstract public class LidarSearchPanel extends javax.swing.JPanel implements Pro
 
         showData(1, true, bb, selectionRegionCenter, selectionRegionRadius);
         radialOffsetChanger.reset();
+        Picker.setPickingEnabled(true);
     }//GEN-LAST:event_submitButtonActionPerformed
 
     private void selectRegionButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_selectRegionButtonActionPerformed
