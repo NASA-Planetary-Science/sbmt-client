@@ -289,6 +289,13 @@ void initializePointsOptimized()
     }
 }
 
+/* Return distance squared between points x and y */
+static double vdist2(const double x[3], const double y[3])
+{
+    return ( ( x[0] - y[0] ) * ( x[0] - y[0] )
+             + ( x[1] - y[1] ) * ( x[1] - y[1] )
+             + ( x[2] - y[2] ) * ( x[2] - y[2] ) );
+}
 
 /* Computes a measure of the overall extent of a track */
 double computeExtentOfTrack(int startId, int trackSize)
@@ -325,7 +332,7 @@ double computeExtentOfTrack(int startId, int trackSize)
     int count = 0;
     for (i=startId; i<endPoint; ++i)
     {
-        if (vdist_c(centroid, g_points[i].targetpos) > 2.0*MAX_TRACK_EXTENT)
+        if (vdist2(centroid, g_points[i].targetpos) > 4.0*MAX_TRACK_EXTENT*MAX_TRACK_EXTENT)
             continue;
         
         if (g_points[i].targetpos[0] < xmin)
@@ -353,7 +360,7 @@ double computeExtentOfTrack(int startId, int trackSize)
     double yext = ymax - ymin;
     double zext = zmax - zmin;
     
-    return sqrt(xext*xext + yext*yext + zext*zext);
+    return (xext*xext + yext*yext + zext*zext);
 }
 
 
@@ -391,7 +398,7 @@ int checkForBreakInTrack(int startId, int trackSize)
     for (i=endPoint-1; i>=startId+1; --i)
     {
         double trackExtent = computeExtentOfTrack(startId, i-startId+1);
-        if (trackExtent <= MAX_TRACK_EXTENT)
+        if (trackExtent <= MAX_TRACK_EXTENT*MAX_TRACK_EXTENT)
         {
             return (i - startId);
         }
