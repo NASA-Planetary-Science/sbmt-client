@@ -400,7 +400,7 @@ int checkForBreakInTrack(int startId, int trackSize)
         double trackExtent = computeExtentOfTrack(startId, i-startId+1);
         if (trackExtent <= MAX_TRACK_EXTENT*MAX_TRACK_EXTENT)
         {
-            return (i - startId);
+            return (i - startId + 1);
         }
     }
 
