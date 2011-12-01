@@ -28,9 +28,9 @@ typedef enum SolverType
 #define PATH_SIZE 256
 #define LINE_SIZE 1024
 #define UTC_SIZE 128
-#define MAX_TRACK_SIZE 1000
+#define MAX_TRACK_SIZE 10000
 #define TRACK_BREAK_THRESHOLD 500
-#define USE_VTK_CLOSEST_POINT 1
+#define USE_VTK_CLOSEST_POINT 0
 #define USE_VTK_ICP 0
 #define MAX_TRACK_EXTENT 0.1
 #define NOISE_THRESHOLD 0.01
@@ -289,14 +289,33 @@ void initializePointsOptimized()
     }
 }
 
-/* replaced with computeExtentOfTrack()
-double computeBoundingBoxDiagonalOfTrack(int startId, int trackSize)
+`
+/* Computes a measure of the overall extent of a track */
+double computeExtentOfTrack(int startId, int trackSize)
 {
     int i;
     int endPoint = startId + trackSize;
     if (endPoint > g_actual_number_points)
         endPoint = g_actual_number_points;
 
+    /* First compute centroid of points */
+    double centroid[3] = {0.0, 0.0, 0.0};
+
+    for (i=startId; i<endPoint; ++i)
+    {
+        centroid[0] += g_points[i].targetpos[0];
+        centroid[1] += g_points[i].targetpos[1];
+        centroid[2] += g_points[i].targetpos[2];
+    }
+
+    centroid[0] /= (double)trackSize;
+    centroid[1] /= (double)trackSize;
+    centroid[2] /= (double)trackSize;
+
+    /* Next compute a measure of the size of this set of points by
+       computing the size a bounding box enclosing these points
+       excluding points that are noise. Noisy points are those that
+       are too far from the mean. */
     double xmin = 1.0e10;
     double xmax = -1.0e10;
     double ymin = 1.0e10;
@@ -306,7 +325,7 @@ double computeBoundingBoxDiagonalOfTrack(int startId, int trackSize)
     int count = 0;
     for (i=startId; i<endPoint; ++i)
     {
-        if (g_points[i].isNoise)
+        if (vdist_c(centroid, g_points[i].targetpos) > 2.0*MAX_TRACK_EXTENT)
             continue;
         
         if (g_points[i].targetpos[0] < xmin)
@@ -336,44 +355,6 @@ double computeBoundingBoxDiagonalOfTrack(int startId, int trackSize)
     
     return sqrt(xext*xext + yext*yext + zext*zext);
 }
-*/
-
-/* Computes a measure of the overall extent of a track by computing
-   the mean deviation of each point of the track from the centroid
-   of the track */
-double computeExtentOfTrack(int startId, int trackSize)
-{
-    int i;
-    int endPoint = startId + trackSize;
-    if (endPoint > g_actual_number_points)
-        endPoint = g_actual_number_points;
-
-    /* First compute centroid of points */
-    double centroid[3] = {0.0, 0.0, 0.0};
-
-    for (i=startId; i<endPoint; ++i)
-    {
-        centroid[0] += g_points[i].targetpos[0];
-        centroid[1] += g_points[i].targetpos[1];
-        centroid[2] += g_points[i].targetpos[2];
-    }
-
-    centroid[0] /= (double)trackSize;
-    centroid[1] /= (double)trackSize;
-    centroid[2] /= (double)trackSize;
-
-    /* Next compute mean distance from the centroid */
-    double meandist = 0.0;
-    
-    for (i=startId; i<endPoint; ++i)
-    {
-        meandist += vdist_c(centroid, g_points[i].targetpos);
-    }
-
-    meandist /= (double)trackSize;
-
-    return meandist;
-}
 
 
 /************************************************************************
@@ -392,6 +373,7 @@ int checkForBreakInTrack(int startId, int trackSize)
     if (endPoint > g_actual_number_points)
         endPoint = g_actual_number_points;
 
+    /*
     for (i=startId+1; i<endPoint; ++i)
     {
         double t1 = g_points[i].time;
@@ -402,18 +384,20 @@ int checkForBreakInTrack(int startId, int trackSize)
             return (i - startId);
         }
 
-        double trackExtent = computeExtentOfTrack(startId, i-startId+1);
-        if (trackExtent > MAX_TRACK_EXTENT)
-        {
-            printf("Max track extent exceeded. Length: %f, size: %d\n", trackExtent, i-startId);
-            return (i - startId);
-        }
-
         t0 = t1;
     }
+    */
 
-    printf("No break in track found! size: %d\n", i-startId);
-    return (i - startId);
+    for (i=endPoint-1; i>=startId+1; --i)
+    {
+        double trackExtent = computeExtentOfTrack(startId, i-startId+1);
+        if (trackExtent <= MAX_TRACK_EXTENT)
+        {
+            return (i - startId);
+        }
+    }
+
+    return 1;
 }
 
 
