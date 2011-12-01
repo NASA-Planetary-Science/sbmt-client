@@ -289,7 +289,7 @@ void initializePointsOptimized()
     }
 }
 
-`
+
 /* Computes a measure of the overall extent of a track */
 double computeExtentOfTrack(int startId, int trackSize)
 {
@@ -368,7 +368,7 @@ double computeExtentOfTrack(int startId, int trackSize)
 int checkForBreakInTrack(int startId, int trackSize)
 {
     int i;
-    double t0 = g_points[startId].time;
+    /* double t0 = g_points[startId].time; */
     int endPoint = startId + trackSize;
     if (endPoint > g_actual_number_points)
         endPoint = g_actual_number_points;
