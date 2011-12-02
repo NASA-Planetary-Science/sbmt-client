@@ -5,17 +5,16 @@
         OBJECT_NAME       = 'Muses-C'
         CENTER_ID         = 2025143 
         CENTER_NAME       = 'ITOKAWA'
-        REF_FRAME_NAME    = 'J2000'
+        REF_FRAME_NAME    = 'IAU_ITOKAWA'
         PRODUCER_ID       = 'HAYABUSA Joint Science Team'
         DATA_ORDER        = 'EPOCH X Y Z VX VY VZ'
         INPUT_DATA_UNITS  = ('ANGLES=DEGREES' 'DISTANCES=km')
-        DATA_DELIMITER    = ' '
+        DATA_DELIMITER    = ';'
         LINES_PER_RECORD  = 1
-        EPOCH_STR_LENGTH  = 24
+        EPOCH_STR_LENGTH  = 27
         IGNORE_FIRST_LINE = 0
         LEAPSECONDS_FILE  = '/project/nearsdc/spice-kernels/hayabusa/lsk/naif0009.tls'
         POLYNOM_DEGREE    = 1
         SEGMENT_ID        = 'SPK_STATES_09'
-        FRAME_DEF_FILE    = '/project/nearsdc/spice-kernels/hayabusa/fk/hayabusa_hp.tf'
         \begintext
 

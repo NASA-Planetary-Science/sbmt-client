@@ -78,7 +78,7 @@ def combine_output():
         
         output_line = '%s %s %s %.16e %.16e %.16e %.16e %.16e %.16e\n' % (met[i], utc[i], rang[i], xsc[i], ysc[i], zsc[i], xtarget[i], ytarget[i], ztarget[i])
         f.write(output_line)
-        output_line = '%s UTC %.16e %.16e %.16e %.16e %.16e %.16e\n' % (utc[i].replace('T', ' '), xsc[i], ysc[i], zsc[i], 0.0, 0.0, 0.0)
+        output_line = '%s UTC;%.16e;%.16e;%.16e;%.16e;%.16e;%.16e\n' % (utc[i].replace('T', ' '), xsc[i], ysc[i], zsc[i], 0.0, 0.0, 0.0)
         f2.write(output_line)
         
     f.close()
