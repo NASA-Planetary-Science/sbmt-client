@@ -15,7 +15,7 @@
 #define MAX_TRACK_SIZE 500
 #define TRACK_BREAK_THRESHOLD 60
 #define NUMBER_FILES 3
-#define USE_VTK 1
+#define USE_VTK 0
 
 /************************************************************************
 * Structure for storing a lidar point
@@ -25,6 +25,7 @@ struct LidarPoint
     double scpos[3];
     double targetpos[3];
     double closestpoint[3]; /* closest point on asteroid to targetpos */
+    double range;
 };
 
 
@@ -57,6 +58,7 @@ void loadPoints(int argc, char** argv)
 
         char line[LINE_SIZE];
         char utc[UTC_SIZE];
+        double range;
         double sx;
         double sy;
         double sz;
@@ -72,9 +74,10 @@ void loadPoints(int argc, char** argv)
                 exit(1);
             }
             
-            sscanf(line, "%*s %s %*s %lf %lf %lf %lf %lf %lf", utc, &sx, &sy, &sz, &x, &y, &z);
+            sscanf(line, "%*s %s %lf %lf %lf %lf %lf %lf %lf", utc, &range, &sx, &sy, &sz, &x, &y, &z);
 
             struct LidarPoint point;
+            point.range = range;
             point.scpos[0] = sx;
             point.scpos[1] = sy;
             point.scpos[2] = sz;
@@ -104,6 +107,7 @@ void computeRMS()
 {
     double rms = 0.0;
     double meanDist = 0.0;
+    double meanRangeError = 0.0;
     SpiceBoolean found;
     int i;
     for (i=0; i<g_actual_number_points; ++i)
@@ -126,10 +130,14 @@ void computeRMS()
         double dist = vdist_c(pt.targetpos, closestPoint);
         rms += dist*dist;
         meanDist += dist;
+        
+        double computedRange = vdist_c(pt.scpos, closestPoint);
+        meanRangeError += fabs(computedRange - pt.range);
     }
 
     printf("RMS = %f\n", sqrt(rms/g_actual_number_points));
     printf("Mean distance = %f\n", meanDist/g_actual_number_points);
+    printf("Mean range error = %f\n", meanRangeError/g_actual_number_points);
 }
 
 
