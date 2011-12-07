@@ -422,7 +422,36 @@ public class VestaDatabaseGeneratorSql
                 e.printStackTrace();
             }
 
+            // If two files have the same exact name preceding the first underscore,
+            // but the part after the underscore is different, then only keep the
+            // file that is newer. The newer file should have a 'B' as the letter
+            // before the .FIT extension and the older should have an 'A'.
+            if (path.endsWith("A.FIT"))
+            {
+                boolean found1B = false;
 
+                String name = new File(path).getName();
+                name = name.substring(0, name.indexOf('_'));
+
+                for (String path2 : fcFiles)
+                {
+                    if (path2.endsWith("B.FIT"))
+                    {
+                        String name2 = new File(path2).getName();
+                        name2 = name2.substring(0, name2.indexOf('_'));
+
+                        if (name.equals(name2))
+                            found1B = true;
+                    }
+                }
+
+                if (found1B)
+                    continue;
+            }
+
+
+            // The following checks to make sure that we only keep a 1A file
+            // if there is no 1B file.
             if (path.contains("FC11B") || path.contains("FC21B"))
             {
                 filesToKeep.add(path);
