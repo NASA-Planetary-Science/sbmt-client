@@ -11,49 +11,17 @@ extern "C"
 
 using namespace std;
 
-std::vector<std::string>
-split(const std::string& s, const std::string& delim = " \t")
-{
-    typedef std::string::size_type size_type;
-    std::vector<std::string> tokens;
-
-    const size_type n = s.size();
-    size_type i = 0;
-    size_type e = 0;
-    while (i < n && e < n)
-    {
-        e = s.find_first_of(delim, i); // Find end of current word
-        if (e == std::string::npos)
-        {   // Found last word
-            tokens.push_back(s.substr(i, n - i));
-        }
-        else
-        {
-            if (i != e)
-            {
-                tokens.push_back(s.substr(i, e - i));
-            }
-            i = s.find_first_not_of(delim, e); // Find start of next word
-        }
-    }
-    return tokens;
-}
-
-vector<pair<string, string> > loadFileList(const string& filelist)
+vector<string> loadFileList(const string& filelist)
 {
     ifstream fin(filelist.c_str());
 
-    vector<pair<string, string> > files;
+    vector<string> files;
     
     if (fin.is_open())
     {
         string line;
         while (getline(fin, line))
-        {
-            vector<string> vals = split(line, ",");
-            pair<string, string> pr(vals[0], vals[vals.size()-1]);
-            files.push_back(pr);
-        }
+            files.push_back(line);
     }
     else
     {
@@ -64,44 +32,65 @@ vector<pair<string, string> > loadFileList(const string& filelist)
     return files;
 }
 
-/*
-void getEt(const string& fitfile,
-           string& utc,
-           double& et)
+void removeSurroundingQuotes(string& str)
 {
-    ifstream fin(fitfile.c_str());
+    int length = str.size();
+    if (str[length-1] == '"')
+        str = str.substr(0, length-1);
+    if (str[0] == '"')
+        str = str.substr(1);
+}
 
+void getEt(const string& fitfile,
+           string& startutc,
+           double& startet,
+           string& stoputc,
+           double& stopet)
+{
+    int length = fitfile.size();
+    string lblfilename = fitfile.substr(0, length-4) + ".LBL";
+    
+    ifstream fin(lblfilename.c_str());
+
+    int found;
+    int id;
+    bodn2c_c("DAWN", &id, &found);
+    
     if (fin.is_open())
     {
-        double startutc;
-        double stoputc;
         string str;
         while(true)
         {
             fin >> str;
             
-            if (str == "START_TIME")
+            if (str == "SPACECRAFT_CLOCK_START_COUNT")
             {
                 fin >> str; // the equals character
-                fin >> str; // the utc string
-                utc2et_c(str.c_str(), &startutc);
+                fin >> str; // the count string
+                removeSurroundingQuotes(str);
+
+                scs2e_c(id, str.c_str(), &startet);
+                char utc[25];
+                et2utc_c ( startet , "C", 3, 25, utc );
+                startutc = utc;
+            
+                cout << fitfile << " SPACECRAFT_CLOCK_START_COUNT " << str << " " << startutc << " " << startet << std::endl;
             }
-            if (str == "STOP_TIME")
+            if (str == "SPACECRAFT_CLOCK_STOP_COUNT")
             {
                 fin >> str; // the equals character
-                fin >> str; // the utc string
-                utc2et_c(str.c_str(), &stoputc);
+                fin >> str; // the count string
+                removeSurroundingQuotes(str);
+
+                scs2e_c(id, str.c_str(), &stopet);
+                char utc[25];
+                et2utc_c ( stopet , "C", 3, 25, utc );
+                stoputc = utc;
+                
+                cout << fitfile << " SPACECRAFT_CLOCK_STOP_COUNT " << str << " " << stoputc << " " << stopet << std::endl;
                 break;
             }
         }
-
-        utc = str.substr(1, 19);
-
-        et = startutc + (stoputc - startutc) / 2.0;
-
-        char utcstr[64];
-        et2utc_c(et, "ISOC", 3, 64, utcstr);
-        utc = utcstr;
     }
     else
     {
@@ -111,14 +100,7 @@ void getEt(const string& fitfile,
 
     fin.close();
 }
-*/
 
-void getEt(const string& not_used,
-           const string& utc,
-           double& et)
-{
-    utc2et_c(utc.c_str(), &et);
-}
 
 
 /*
@@ -268,7 +250,8 @@ void getSunPosition(double et, double sunpos[3])
 
 
 void saveInfoFile(string filename,
-                  string utc,
+                  string startutc,
+                  string stoputc,
                   const double scposb[3],
                   const double boredir[3],
                   const double updir[3],
@@ -285,8 +268,8 @@ void saveInfoFile(string filename,
 
     fout.precision(16);
 
-    fout << "START_TIME          = " << utc << "\n";
-    fout << "STOP_TIME           = " << utc << "\n";
+    fout << "START_TIME          = " << startutc << "\n";
+    fout << "STOP_TIME           = " << stoputc << "\n";
 
     fout << "SPACECRAFT_POSITION = ( ";
     fout << scientific << scposb[0] << " , ";
@@ -362,13 +345,17 @@ int main(int argc, char** argv)
 
     erract_c("SET", 1, (char*)"RETURN");
 
-    vector<pair<string, string> > fitfiles = loadFileList(fitfilelist);
+    vector<string> fitfiles = loadFileList(fitfilelist);
 
     for (unsigned int i=0; i<fitfiles.size(); ++i)
     {
-        cout << "starting " << fitfiles[i].first << endl;
+        cout << "starting " << fitfiles[i] << endl;
         reset_c();
         
+        string startutc;
+        double startet;
+        string stoputc;
+        double stopet;
         double et;
         double scposb[3];
         double boredir[3];
@@ -376,11 +363,13 @@ int main(int argc, char** argv)
         double frustum[12];
         double sunPosition[3];
         
-        getEt(fitfiles[i].first, fitfiles[i].second, et);
+        getEt(fitfiles[i], startutc, startet, stoputc, stopet);
         if (failed_c())
             continue;
 
-        int filter = getFilter(fitfiles[i].first);
+        et = startet + (stopet - startet) / 2.0;
+
+        int filter = getFilter(fitfiles[i]);
         getScOrientation(et, filter, scposb, boredir, updir, frustum);
         if (failed_c())
             continue;
@@ -389,10 +378,10 @@ int main(int argc, char** argv)
         if (failed_c())
             continue;
 
-        int length = fitfiles[i].first.size();
-        string infofilename = fitfiles[i].first.substr(0, length-4) + ".INFO";
-        saveInfoFile(infofilename, fitfiles[i].second, scposb, boredir, updir, frustum, sunPosition);
-        cout << "finished " << fitfiles[i].first << endl;
+        int length = fitfiles[i].size();
+        string infofilename = fitfiles[i].substr(0, length-4) + ".INFO";
+        saveInfoFile(infofilename, startutc, stoputc, scposb, boredir, updir, frustum, sunPosition);
+        cout << "finished " << fitfiles[i] << endl;
     }
 
     return 0;
