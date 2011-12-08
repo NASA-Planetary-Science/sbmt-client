@@ -71,7 +71,7 @@ void getEt(const string& fitfile,
 
                 scs2e_c(id, str.c_str(), &startet);
                 char utc[25];
-                et2utc_c ( startet , "C", 3, 25, utc );
+                et2utc_c ( startet , "ISOC", 3, 25, utc );
                 startutc = utc;
             
                 cout << fitfile << " SPACECRAFT_CLOCK_START_COUNT " << str << " " << startutc << " " << startet << std::endl;
@@ -84,7 +84,7 @@ void getEt(const string& fitfile,
 
                 scs2e_c(id, str.c_str(), &stopet);
                 char utc[25];
-                et2utc_c ( stopet , "C", 3, 25, utc );
+                et2utc_c ( stopet , "ISOC", 3, 25, utc );
                 stoputc = utc;
                 
                 cout << fitfile << " SPACECRAFT_CLOCK_STOP_COUNT " << str << " " << stoputc << " " << stopet << std::endl;
