@@ -28,7 +28,7 @@ typedef enum SolverType
 #define PATH_SIZE 256
 #define LINE_SIZE 1024
 #define UTC_SIZE 128
-#define MAX_TRACK_SIZE 10000
+#define MAX_TRACK_SIZE 1000
 #define TRACK_BREAK_THRESHOLD 500
 #define USE_VTK_CLOSEST_POINT 0
 #define USE_VTK_ICP 0
@@ -402,6 +402,9 @@ int checkForBreakInTrack(int startId, int trackSize)
         {
             return (i - startId + 1);
         }
+
+        if (i-startId+1 > 700)
+            i = i - 9;
     }
 
     return 1;
