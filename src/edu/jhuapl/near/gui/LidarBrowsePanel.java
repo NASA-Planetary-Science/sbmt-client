@@ -29,9 +29,7 @@ import javax.swing.event.ListSelectionListener;
 import com.jidesoft.swing.RangeSlider;
 
 import edu.jhuapl.near.model.LidarBrowseDataCollection;
-import edu.jhuapl.near.model.LidarDataPerUnit;
 import edu.jhuapl.near.model.ModelManager;
-import edu.jhuapl.near.util.DoublePair;
 import edu.jhuapl.near.util.FileCache;
 import edu.jhuapl.near.util.FileUtil;
 
@@ -56,8 +54,6 @@ abstract public class LidarBrowsePanel extends JPanel implements ListSelectionLi
     {
         private RangeSlider slider;
 
-        private LidarDataPerUnit lidarData;
-
         public LidarTimeIntervalChanger()
         {
             setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
@@ -69,32 +65,15 @@ abstract public class LidarBrowsePanel extends JPanel implements ListSelectionLi
             slider.setMajorTickSpacing(10);
             slider.setPaintTrack(true);
             slider.addChangeListener(this);
-            slider.setEnabled(false);
             add(slider);
-        }
-
-        void setLidarData(LidarDataPerUnit data)
-        {
-            if (data != null)
-            {
-                lidarData = data;
-                DoublePair pair = data.getPercentageShown();
-                slider.setLowValue((int)(pair.d1*slider.getMaximum()));
-                slider.setHighValue((int)(pair.d2*slider.getMaximum()));
-                slider.setEnabled(true);
-            }
-            else
-            {
-                slider.setEnabled(false);
-            }
         }
 
         public void stateChanged(ChangeEvent e)
         {
             double lowVal = (double)slider.getLowValue()/(double)slider.getMaximum();
             double highVal = (double)slider.getHighValue()/(double)slider.getMaximum();
-            if (lidarData != null)
-                lidarData.setPercentageShown(lowVal, highVal);
+            if (lidarModel != null)
+                lidarModel.setPercentageShown(lowVal, highVal);
         }
     }
 
@@ -104,7 +83,6 @@ abstract public class LidarBrowsePanel extends JPanel implements ListSelectionLi
         setLayout(new BoxLayout(this,
                 BoxLayout.PAGE_AXIS));
 
-        //this.modelManager = modelManager;
         this.lidarModel = (LidarBrowseDataCollection)modelManager.getModel(getModelName());
 
 
@@ -155,14 +133,12 @@ abstract public class LidarBrowsePanel extends JPanel implements ListSelectionLi
                             lidarModel.addLidarData(lidarRawResults.get(index));
 
                             showHideButton.setText("Remove");
-                            timeIntervalChanger.setLidarData(lidarModel.getLidarData(lidarRawResults.get(index)));
                         }
                         else
                         {
                             lidarModel.removeLidarData(lidarRawResults.get(index));
 
                             showHideButton.setText("Show");
-                            timeIntervalChanger.setLidarData(null);
                         }
                     }
                     catch (IOException e1)
@@ -227,7 +203,6 @@ abstract public class LidarBrowsePanel extends JPanel implements ListSelectionLi
                 model.removeAllLidarData();
 
                 showHideButton.setText("Show");
-                timeIntervalChanger.setLidarData(null);
             }
         });
         removeAllButton.setEnabled(true);
@@ -279,16 +254,13 @@ abstract public class LidarBrowsePanel extends JPanel implements ListSelectionLi
                 showHideButton.setEnabled(true);
                 saveButton.setEnabled(true);
 
-                //resultList.setSelectedIndex(index);
                 if (lidarModel.containsLidarData(lidarRawResults.get(index)))
                 {
                     showHideButton.setText("Remove");
-                    timeIntervalChanger.setLidarData(lidarModel.getLidarData(lidarRawResults.get(index)));
                 }
                 else
                 {
                     showHideButton.setText("Show");
-                    timeIntervalChanger.setLidarData(null);
                 }
                 break;
             }

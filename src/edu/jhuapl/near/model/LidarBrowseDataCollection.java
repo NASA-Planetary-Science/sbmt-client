@@ -21,6 +21,8 @@ abstract public class LidarBrowseDataCollection extends Model implements Propert
     private HashMap<String, LidarDataPerUnit> fileToLidarPerUnitMap = new HashMap<String, LidarDataPerUnit>();
     private HashMap<vtkProp, String> actorToFileMap = new HashMap<vtkProp, String>();
     private double radialOffset = 0.0;
+    private double startPercent = 0.0;
+    private double stopPercent = 1.0;
     private boolean showSpacecraftPosition = true;
 
     public LidarBrowseDataCollection()
@@ -54,6 +56,7 @@ abstract public class LidarBrowseDataCollection extends Model implements Propert
         }
 
         this.setRadialOffset(radialOffset);
+        this.setPercentageShown(startPercent, stopPercent);
 
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
@@ -145,6 +148,23 @@ abstract public class LidarBrowseDataCollection extends Model implements Propert
         {
             LidarDataPerUnit data = fileToLidarPerUnitMap.get(key);
             data.setRadialOffset(offset);
+        }
+
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+    }
+
+    public void setPercentageShown(double startPercent, double stopPercent)
+    {
+        this.startPercent = startPercent;
+        this.stopPercent = stopPercent;
+
+        if (fileToLidarPerUnitMap.isEmpty())
+            return;
+
+        for (String key : fileToLidarPerUnitMap.keySet())
+        {
+            LidarDataPerUnit data = fileToLidarPerUnitMap.get(key);
+            data.setPercentageShown(startPercent, stopPercent);
         }
 
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
