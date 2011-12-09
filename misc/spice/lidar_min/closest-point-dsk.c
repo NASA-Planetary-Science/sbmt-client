@@ -48,6 +48,22 @@ void findClosestPointDsk(const double* origin, const double* direction, double* 
                &plid,  closestPoint, found );
 }
 
+void findClosestPointAndNormalDsk(const double* origin, const double* direction, double* closestPoint, double* normal, int* found)
+{
+    if (!initialized)
+    {
+        loadDsk();
+        initialized = 1;
+    }
+
+    int plid;
+    dskx02_c ( g_handle, &g_dladsc, origin, direction,
+               &plid,  closestPoint, found );
+
+    if (*found)
+        dskn02_c ( g_handle, &g_dladsc, plid, normal );
+}
+
 void illum_pl02Dsk ( SpiceDouble            et,
                      SpiceDouble            spoint [3],
                      SpiceDouble          * phase,
