@@ -15,7 +15,7 @@
 #define MAX_TRACK_SIZE 500
 #define TRACK_BREAK_THRESHOLD 60
 #define NUMBER_FILES 3
-#define USE_VTK 0
+#define USE_VTK 1
 
 /************************************************************************
 * Structure for storing a lidar point
@@ -108,7 +108,7 @@ void computeRMS()
     double rms = 0.0;
     double meanDist = 0.0;
     double meanRangeError = 0.0;
-    SpiceBoolean found;
+    int numberWithNoIntersect = 0;
     int i;
     for (i=0; i<g_actual_number_points; ++i)
     {
@@ -122,11 +122,19 @@ void computeRMS()
             pt.targetpos[1] - pt.scpos[1],
             pt.targetpos[2] - pt.scpos[2] };
 
+        SpiceBoolean found = 1;
         if (USE_VTK)
             findClosestPointVtk(pt.targetpos, closestPoint, &found);
         else
             findClosestPointDsk(pt.scpos, boredir, closestPoint, &found);
 
+        if (!found)
+        {
+            printf("%d not found\n", i);
+            ++numberWithNoIntersect;
+            continue;
+        }
+        
         double dist = vdist_c(pt.targetpos, closestPoint);
         rms += dist*dist;
         meanDist += dist;
@@ -138,6 +146,7 @@ void computeRMS()
     printf("RMS = %f\n", sqrt(rms/g_actual_number_points));
     printf("Mean distance = %f\n", meanDist/g_actual_number_points);
     printf("Mean range error = %f\n", meanRangeError/g_actual_number_points);
+    printf("number with no intersect %d\n", numberWithNoIntersect);
 }
 
 
