@@ -9,13 +9,9 @@
 * Constants
 ************************************************************************/
 #define MAX_NUMBER_POINTS 2000000
-#define PATH_SIZE 256
 #define LINE_SIZE 1024
 #define UTC_SIZE 128
-#define MAX_TRACK_SIZE 500
-#define TRACK_BREAK_THRESHOLD 60
-#define NUMBER_FILES 3
-#define USE_VTK 1
+#define USE_VTK 0
 
 /************************************************************************
 * Structure for storing a lidar point
