@@ -185,7 +185,7 @@ public class LidarDataPerUnit extends Model
         vtkActor actor = new vtkActor();
         actor.SetMapper(pointsMapper);
         actor.GetProperty().SetColor(0.0, 0.0, 1.0);
-        if (path.contains("cdr_optimized"))
+        if (path.contains("_v2"))
             actor.GetProperty().SetColor(1.0, 1.0, 0.0);
 
         actor.GetProperty().SetPointSize(2.0);
@@ -198,7 +198,7 @@ public class LidarDataPerUnit extends Model
         actorSpacecraft.SetMapper(pointsMapperSc);
         actorSpacecraft.GetProperty().SetColor(0.0, 1.0, 0.0);
         // for Itokawa optimized lidar data, show in different color.
-        if (path.contains("optimized"))
+        if (path.contains("_v2"))
             actorSpacecraft.GetProperty().SetColor(1.0, 0.0, 1.0);
 
         actorSpacecraft.GetProperty().SetPointSize(2.0);
