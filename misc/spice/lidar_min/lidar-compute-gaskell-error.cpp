@@ -13,18 +13,32 @@ extern "C"
 
 using namespace std;
 
-const int ignore_list[] = {
-    6,7,14,15,16,17,18,19,20,21,22,23,24,30,31,32,33,34,35,36,37,38,39,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,122,123,124,189,190,191,192,193,194,195,196,197,198,199,200,201,202,203,204,205,206,207,208,209,210,211,212,213,214,215,216,217,218,219,220,221,222,223,224,225,226,227,228,229,230,231,232,233,234,235,236,237,238,239,240,241,242,243,244,245,246,247,248,249,250,251,252,253,254,255,256,257,258,259,260,261,262,263,264,265,266,268,269,270,271,272,273,274,275,276,277,278,279,280,281,282,283,284,285,286,287,288,289,290,291,292,293,294,295,296,297,298,299,300,369,410,411,412,413,417,418,419,420,421,422,658,659,661,663,664,665,707,708,709,746,762,763,764,765,766,767,768,769
+/************************************************************************
+* Constants
+************************************************************************/
+#define MAX_NUMBER_POINTS 2000000
+#define LINE_SIZE 1024
+#define UTC_SIZE 128
+#define TRACK_BREAK_THRESHOLD 1.0
+
+
+/************************************************************************
+* Structure for storing a lidar point
+************************************************************************/
+struct LidarPoint
+{
+    double time;
+    double scpos[3];
 };
 
-bool isInIgnoreList(int idx)
-{
-    int size = sizeof(ignore_list) / sizeof(int);
-    for (int i=0; i<size; ++i)
-        if (ignore_list[i] == idx)
-            return true;
-    return false;
-}
+
+/************************************************************************
+* Global varaiables
+************************************************************************/
+
+/* Array for storing all lidar points */
+struct LidarPoint g_points[MAX_NUMBER_POINTS];
+int g_actual_number_points;
 
 // Remove initial and trailing whitespace from string. Modifies string in-place
 void trim(std::string& s)
@@ -68,6 +82,104 @@ split(const std::string& s, const std::string& delim = " \t")
         }
     }
     return tokens;
+}
+
+void loadPoints(int argc, char** argv)
+{
+    printf("Loading data\n");
+    int i;
+    int count = 0;
+    for (i=4; i<argc; ++i)
+    {
+        const char* filename = argv[i];
+        FILE *f = fopen(filename, "r");
+        if (f == NULL)
+        {
+            printf("Could not open %s", filename);
+            exit(1);
+        }
+
+        char line[LINE_SIZE];
+        char utc[UTC_SIZE];
+        double sx;
+        double sy;
+        double sz;
+        
+        while ( fgets ( line, sizeof line, f ) != NULL ) /* read a line */
+        {
+            if (count >= MAX_NUMBER_POINTS)
+            {
+                printf("Error: Max number of allowable points exceeded!");
+                exit(1);
+            }
+            
+            sscanf(line, "%*s %s %*s %lf %lf %lf", utc, &sx, &sy, &sz);
+
+
+            struct LidarPoint point;
+
+            utc2et_c(utc, &point.time);
+
+            point.scpos[0] = sx;
+            point.scpos[1] = sy;
+            point.scpos[2] = sz;
+            
+            g_points[count] = point;
+
+            ++count;
+        }
+
+        printf("points read %d\n", count);
+        fflush(NULL);
+        fclose ( f );
+    }
+    
+    g_actual_number_points = count;
+    printf("Finished loading data\n\n\n");
+}
+
+bool getLidarPosAtTime(double time, double pos[3])
+{
+    if (time < g_points[0].time)
+    {
+        return false;
+    }
+    
+    for (int i=1; i<g_actual_number_points; ++i)
+    {
+        struct LidarPoint pt1 = g_points[i];
+        double t1 = pt1.time;
+
+        if (time == t1)
+        {
+            pos[0] = pt1.scpos[0];
+            pos[1] = pt1.scpos[1];
+            pos[2] = pt1.scpos[2];
+            return true;
+        }
+        else if (time < t1)
+        {
+            double t0 = g_points[i-1].time;
+            if (time - t0 > TRACK_BREAK_THRESHOLD || t1 - time > TRACK_BREAK_THRESHOLD)
+            {
+                return false;
+            }
+            else
+            {
+                struct LidarPoint pt0 = g_points[i-1];
+                
+                // do linear interpolation for each dimension
+                for (int j = 0; j<3; ++j)
+                {
+                    pos[j] = pt0.scpos[j] + ( (time-t0) * (pt1.scpos[j]-pt0.scpos[j]) ) / (t1 - t0);
+                }
+
+                return true;
+            }
+        }
+    }
+
+    return false;
 }
 
 void getGaskellPos(const string& sumfile, double scpos[3])
@@ -128,11 +240,11 @@ vector<pair<string, double> > loadFitTimes(const string& filelist)
 
             // convert met to ephemeris time
             double et = 0.0;
-            scs2e_c(id, (fields[0]).c_str(), &et);
+            scs2e_c(id, (fields[0]+":0").c_str(), &et);
             char utc[25];
             et2utc_c ( et , "C", 3, 25, utc );
             
-            //cout << fields[1] << " " << utc << std::endl;
+            //cout << fields[1] << " " << utc << " " << et << std::endl;
             pair<string, double> p(fields[1], et);
             files.push_back(p);
         }
@@ -149,9 +261,9 @@ vector<pair<string, double> > loadFitTimes(const string& filelist)
 
 int main(int argc, char** argv)
 {
-    if (argc < 4)
+    if (argc < 5)
     {
-        cerr << "Usage: lidar-compute-gaskell-error <kernelfiles> <fittimeslist> <sumfilefolder>" << endl;
+        cerr << "Usage: lidar-compute-gaskell-error <kernelfiles> <fittimeslist> <sumfilefolder> <lidarfile1> [<lidarfile2> ...]" << endl;
         return 1;
     }
     
@@ -163,39 +275,55 @@ int main(int argc, char** argv)
    
     erract_c("SET", 1, (char*)"RETURN");
 
+    loadPoints(argc, argv);
+
     vector<pair<string, double> > fittimes = loadFitTimes(fittimeslist);
 
     double meandist = 0.0;
     int count = 0;
     for (unsigned int i=0; i<fittimes.size()-1; ++i)
     {
-        if (isInIgnoreList(i))
-            continue;
-        
         reset_c();
 
+        
         string sumfile = sumfilefolder + "/N" + fittimes[i].first.substr(3, 10) + ".SUM";
         double scpos_gas[3];
         getGaskellPos(sumfile, scpos_gas);
 
-        double scpos_spice[3];
 
+        double scpos_spice[3];
+        bool isInRange = getLidarPosAtTime(fittimes[i].second, scpos_spice);
+        if (!isInRange)
+        {
+            //cout << "image " << i << " " << fittimes[i].first << " not in lidar range" << endl;
+            //cout << i << ",";
+            continue;
+        }
+
+        /*
+          // The following is just for a consistency check to make sure
+          // our interpolation is the same as you would get using the
+          // spk kernels.
+          
+        double scpos_spice2[3];
         const char* target = "HAYABUSA";
         const char* ref = "IAU_ITOKAWA";
         const char* abcorr = "NONE";
         const char* obs = "ITOKAWA";
         double lt;
-
-        spkpos_c(target, fittimes[i].second, ref, abcorr, obs, scpos_spice, &lt);
+        spkpos_c(target, fittimes[i].second, ref, abcorr, obs, scpos_spice2, &lt);
         if (failed_c())
             continue;
+        cout << "distance between spice and mine " << vdist_c(scpos_spice2, scpos_spice) << endl;
+        */
 
         double dist = vdist_c(scpos_gas, scpos_spice);
-        if (dist >= 0.1)
-        {
-            //cout << i << ",";
-            continue;
-        }
+
+        //if (dist >= 0.1)
+        //{
+        //    cout << i << ",";
+        //    continue;
+        //}
         
         meandist += dist;
         cout << "starting " << (i+1) << " / " << fittimes.size() << " " << fittimes[i].first << " " << dist << endl;

@@ -37,3 +37,6 @@ add_executable(lidar-remove-duplicates lidar-remove-duplicates.cpp)
 
 add_executable(lidar-convert-edr lidar-convert-edr.c)
 target_link_libraries(lidar-convert-edr cspice csupport m)
+
+add_executable(lidar-compute-gaskell-error lidar-compute-gaskell-error.cpp)
+target_link_libraries(lidar-compute-gaskell-error cspice csupport)
