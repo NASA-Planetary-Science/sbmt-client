@@ -92,7 +92,6 @@ abstract public class ProgressBarSwingWorker extends SwingWorker<Void, Void>
         {
             if (completionTimeEstimate >= 4.0)
             {
-                System.out.println("cte " + completionTimeEstimate);
                 break;
             }
             else if (isDone())
