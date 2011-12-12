@@ -63,7 +63,6 @@ public abstract class LidarSearchDataCollection extends Model
     private final int[] defaultColor = {0, 0, 255, 255};
     private final int[] highlightColor = {255, 0, 0, 255};
     private SqlManager db;
-    private String dbPath;
     private ArrayList<Integer> displayedPointToOriginalPointMap = new ArrayList<Integer>();
 
     private static class LidarPoint implements Comparable<LidarPoint>
@@ -105,10 +104,9 @@ public abstract class LidarSearchDataCollection extends Model
         }
     }
 
-    public LidarSearchDataCollection(SmallBodyModel smallBodyModel, String dbPath)
+    public LidarSearchDataCollection(SmallBodyModel smallBodyModel)
     {
         this.smallBodyModel = smallBodyModel;
-        this.dbPath = dbPath;
 
         polydata = new vtkPolyData();
         vtkPoints points = new vtkPoints();
@@ -223,6 +221,7 @@ public abstract class LidarSearchDataCollection extends Model
         {
             if (db == null)
             {
+                String dbPath = getDatabasePath();
                 File file = FileCache.getFileFromServer(dbPath);
 
                 if (file == null)

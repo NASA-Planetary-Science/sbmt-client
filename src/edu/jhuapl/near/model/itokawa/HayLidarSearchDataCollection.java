@@ -5,11 +5,9 @@ import edu.jhuapl.near.model.SmallBodyModel;
 
 public class HayLidarSearchDataCollection extends LidarSearchDataCollection
 {
-    private static final String dbPath = "/ITOKAWA/LIDAR/lidar.h2.db.gz";
-
     public HayLidarSearchDataCollection(SmallBodyModel smallBodyModel)
     {
-        super(smallBodyModel, dbPath);
+        super(smallBodyModel);
     }
 
     @Override
@@ -23,7 +21,7 @@ public class HayLidarSearchDataCollection extends LidarSearchDataCollection
     @Override
     public String getDatabasePath()
     {
-        return dbPath;
+        return "/ITOKAWA/LIDAR/lidar.h2.db.gz";
     }
 
 }
