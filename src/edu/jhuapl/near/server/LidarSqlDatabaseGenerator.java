@@ -114,6 +114,8 @@ public abstract class LidarSqlDatabaseGenerator
 
     abstract protected int getPotentialIndex();
 
+    abstract protected String getDatabasePath();
+
     public void run()
     {
         NativeLibraryLoader.loadVtkLibraries();
@@ -133,7 +135,7 @@ public abstract class LidarSqlDatabaseGenerator
 
         try
         {
-            db = new SqlManager("org.h2.Driver", "jdbc:h2:/project/nearsdc/data/ITOKAWA/LIDAR/lidar");
+            db = new SqlManager("org.h2.Driver", "jdbc:h2:" + getDatabasePath());
 
             createTable();
 

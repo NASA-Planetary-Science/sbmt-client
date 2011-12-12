@@ -1,19 +1,45 @@
 package edu.jhuapl.near.server;
 
+import java.io.IOException;
+
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.itokawa.Itokawa;
 
 public class HayLidarSqlDatabaseGenerator extends LidarSqlDatabaseGenerator
 {
+    private static String fileListPath = null;
+    private static String dbName = null;
+    private static Itokawa itokawa = null;
+
     static public void main(String[] args)
     {
+        fileListPath = "/project/nearsdc/data/ITOKAWA/LIDAR/HayLidarFiles.txt";
+        dbName = "/project/nearsdc/data/ITOKAWA/LIDAR/lidar";
+        new HayLidarSqlDatabaseGenerator().run();
+
+        fileListPath = "/project/nearsdc/data/ITOKAWA/LIDAR/HayLidarFilesUnfiltered.txt";
+        dbName = "/project/nearsdc/data/ITOKAWA/LIDAR/lidar-unfiltered";
         new HayLidarSqlDatabaseGenerator().run();
     }
 
     @Override
     protected SmallBodyModel getSmallBodyModel()
     {
-        return new Itokawa();
+        if (itokawa == null)
+        {
+            itokawa = new Itokawa();
+
+            try
+            {
+                itokawa.setModelResolution(3);
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+        }
+
+        return itokawa;
     }
 
     @Override
@@ -49,7 +75,7 @@ public class HayLidarSqlDatabaseGenerator extends LidarSqlDatabaseGenerator
     @Override
     protected String getFileListPath()
     {
-        return "/project/nearsdc/data/ITOKAWA/LIDAR/HayLidarFiles.txt";
+        return fileListPath;
     }
 
     @Override
@@ -68,5 +94,11 @@ public class HayLidarSqlDatabaseGenerator extends LidarSqlDatabaseGenerator
     protected int getPotentialIndex()
     {
         return -1;
+    }
+
+    @Override
+    protected String getDatabasePath()
+    {
+        return dbName;
     }
 }
