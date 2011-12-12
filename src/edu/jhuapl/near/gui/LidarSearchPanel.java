@@ -443,14 +443,18 @@ abstract public class LidarSearchPanel extends javax.swing.JPanel implements Pro
         Picker.setPickingEnabled(false);
 
         // Download file so progress bar shows up if necessary
-        FileDownloadSwingWorker.downloadFile(
+        boolean success = FileDownloadSwingWorker.downloadFile(
                 this,
                 "Downloading Lidar Database",
                 lidarModel.getDatabasePath(),
                 false);
 
-        showData(1, true, bb, selectionRegionCenter, selectionRegionRadius);
-        radialOffsetChanger.reset();
+        if (success)
+        {
+            showData(1, true, bb, selectionRegionCenter, selectionRegionRadius);
+            radialOffsetChanger.reset();
+        }
+
         Picker.setPickingEnabled(true);
     }//GEN-LAST:event_submitButtonActionPerformed
 

@@ -23,10 +23,11 @@ public class FileDownloadSwingWorker extends ProgressBarSwingWorker
         setLabelText("<html>Downloading file<br>0% completed</html>");
     }
 
-    public static void downloadFile(Component c, String title, String filename, boolean useAPLServer)
+    public static boolean downloadFile(Component c, String title, String filename, boolean useAPLServer)
     {
         FileDownloadSwingWorker worker = new FileDownloadSwingWorker(c, title, filename, useAPLServer);
         worker.executeDialog();
+        return !worker.isCancelled();
     }
 
     public boolean getIfNeedToDownload()
