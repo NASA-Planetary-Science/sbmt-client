@@ -201,18 +201,23 @@ public class FileUtil
 
             zipFile = new ZipFile(file);
 
+            // First compute the decompressed size by summing over all entries
+            long totalDecompressedSize = 0;
+            entries = zipFile.entries();
+            while(entries.hasMoreElements())
+                totalDecompressedSize += ((ZipEntry)entries.nextElement()).getSize();
+
             entries = zipFile.entries();
 
             abortUnzip = false;
             unzipProgress = 0.0;
 
             boolean unzipAborted = false;
-            int count = 0;
-            int totalEntries = zipFile.size();
+            long numberOfBytesDecompressedSoFar = 0;
 
             while(entries.hasMoreElements())
             {
-                unzipProgress = 100.0 * (double)count / (double)totalEntries;
+                unzipProgress = 100.0 * (double)numberOfBytesDecompressedSoFar / (double)totalDecompressedSize;
 
                 if (abortUnzip)
                 {
@@ -226,14 +231,15 @@ public class FileUtil
                 {
                     //System.err.println("Extracting directory: " + entry.getName());
                     (new File(tempExtractToFolder + File.separator + entry.getName())).mkdirs();
-                    continue;
+                }
+                else
+                {
+                    //System.err.println("Extracting file: " + entry.getName());
+                    copyInputStream(zipFile.getInputStream(entry),
+                            new BufferedOutputStream(new FileOutputStream(tempExtractToFolder + File.separator + entry.getName())));
                 }
 
-                //System.err.println("Extracting file: " + entry.getName());
-                copyInputStream(zipFile.getInputStream(entry),
-                        new BufferedOutputStream(new FileOutputStream(tempExtractToFolder + File.separator + entry.getName())));
-
-                ++count;
+                numberOfBytesDecompressedSoFar += entry.getSize();
             }
 
             zipFile.close();
