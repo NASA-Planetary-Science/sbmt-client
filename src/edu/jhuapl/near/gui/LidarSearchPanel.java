@@ -406,12 +406,11 @@ abstract public class LidarSearchPanel extends javax.swing.JPanel implements Pro
 
     private void submitButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_submitButtonActionPerformed
     {//GEN-HEADEREND:event_submitButtonActionPerformed
-        Picker.setPickingEnabled(false);
         selectRegionButton.setSelected(false);
         pickManager.setPickMode(PickMode.DEFAULT);
 
         AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
-        SmallBodyModel erosModel = (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
+        SmallBodyModel smallBodyModel = (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
         BoundingBox bb = null;
         double[] selectionRegionCenter = null;
         double selectionRegionRadius = 0.0;
@@ -420,7 +419,7 @@ abstract public class LidarSearchPanel extends javax.swing.JPanel implements Pro
             AbstractEllipsePolygonModel.EllipsePolygon region = (AbstractEllipsePolygonModel.EllipsePolygon)selectionModel.getStructure(0);
 
             vtkPolyData interiorPoly = new vtkPolyData();
-            erosModel.drawRegularPolygonLowRes(region.center, region.radius, region.numberOfSides, interiorPoly, null);
+            smallBodyModel.drawRegularPolygonLowRes(region.center, region.radius, region.numberOfSides, interiorPoly, null);
             bb = new BoundingBox(interiorPoly.GetBounds());
             selectionRegionCenter = region.center;
             selectionRegionRadius = region.radius;
@@ -437,7 +436,18 @@ abstract public class LidarSearchPanel extends javax.swing.JPanel implements Pro
 
             if (option == JOptionPane.NO_OPTION)
                 return;
+
+            bb = smallBodyModel.getBoundingBox();
         }
+
+        Picker.setPickingEnabled(false);
+
+        // Download file so progress bar shows up if necessary
+        FileDownloadSwingWorker.downloadFile(
+                this,
+                "Downloading Lidar Database",
+                lidarModel.getDatabasePath(),
+                false);
 
         showData(1, true, bb, selectionRegionCenter, selectionRegionRadius);
         radialOffsetChanger.reset();

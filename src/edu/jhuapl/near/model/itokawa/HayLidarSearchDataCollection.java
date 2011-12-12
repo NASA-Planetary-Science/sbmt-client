@@ -20,4 +20,10 @@ public class HayLidarSearchDataCollection extends LidarSearchDataCollection
         return 0.00044228259621279913;
     }
 
+    @Override
+    public String getDatabasePath()
+    {
+        return dbPath;
+    }
+
 }

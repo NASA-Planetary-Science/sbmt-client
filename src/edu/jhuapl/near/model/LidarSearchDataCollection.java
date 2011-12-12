@@ -19,16 +19,13 @@ import org.apache.commons.math.optimization.general.LevenbergMarquardtOptimizer;
 import org.joda.time.DateTime;
 
 import vtk.vtkActor;
-import vtk.vtkAlgorithmOutput;
 import vtk.vtkCellArray;
-import vtk.vtkGeometryFilter;
 import vtk.vtkIdList;
 import vtk.vtkLine;
 import vtk.vtkPoints;
 import vtk.vtkPolyData;
 import vtk.vtkPolyDataMapper;
 import vtk.vtkProp;
-import vtk.vtkThreshold;
 import vtk.vtkUnsignedCharArray;
 
 import edu.jhuapl.near.server.SqlManager;
@@ -41,8 +38,6 @@ import edu.jhuapl.near.util.Properties;
 public abstract class LidarSearchDataCollection extends Model
 {
     private vtkPolyData polydata;
-    private vtkThreshold thresholdFilter;
-    private vtkGeometryFilter geometryFilter;
     private vtkPolyData selectedPointPolydata;
     private ArrayList<LidarPoint> originalPoints = new ArrayList<LidarPoint>();
     private ArrayList<vtkProp> actors = new ArrayList<vtkProp>();
@@ -50,8 +45,7 @@ public abstract class LidarSearchDataCollection extends Model
     private vtkPolyDataMapper selectedPointMapper;
     private vtkActor actor;
     private vtkActor selectedPointActor;
-    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-DDD'T'HH:mm:ss.SSS", Locale.US);
-    private SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.US);
+    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.US);
 
     private double radialOffset = 0.0;
 
@@ -128,17 +122,6 @@ public abstract class LidarSearchDataCollection extends Model
         hidden.SetNumberOfComponents(1);
         polydata.GetPointData().SetScalars(hidden);
 
-        thresholdFilter = new vtkThreshold();
-        vtkAlgorithmOutput output = polydata.GetProducerPort();
-        thresholdFilter.SetInputConnection(output);
-        thresholdFilter.SetInputArrayToProcess(0, 0, 0, "vtkDataObject::FIELD_ASSOCIATION_POINTS", "vtkDataSetAttributes::SCALARS");
-        thresholdFilter.ThresholdByLower(0.5);
-
-        // This converts the unstructured grid produced by vtkThreshold into a polydata.
-        geometryFilter = new vtkGeometryFilter();
-        output = thresholdFilter.GetOutputPort();
-        geometryFilter.SetInputConnection(output);
-
         selectedPointPolydata = new vtkPolyData();
         points = new vtkPoints();
         vert = new vtkCellArray();
@@ -147,6 +130,7 @@ public abstract class LidarSearchDataCollection extends Model
     }
 
     abstract public double getOffsetScale();
+    abstract public String getDatabasePath();
 
     public void setLidarData(
             DateTime startDate,
@@ -172,8 +156,7 @@ public abstract class LidarSearchDataCollection extends Model
         {
             pointsMapper = new vtkPolyDataMapper();
             pointsMapper.SetScalarModeToUseCellData();
-            vtkAlgorithmOutput output = geometryFilter.GetOutputPort();
-            pointsMapper.SetInputConnection(output);
+            pointsMapper.SetInput(polydata);
 
             selectedPointMapper = new vtkPolyDataMapper();
             selectedPointMapper.SetInput(selectedPointPolydata);
@@ -195,10 +178,6 @@ public abstract class LidarSearchDataCollection extends Model
 
             actors.add(selectedPointActor);
         }
-
-        polydata.Modified();
-        polydata.GetCellData().GetScalars().Modified();
-        pointsMapper.Modified();
 
         setRadialOffset(radialOffset);
 
@@ -268,21 +247,24 @@ public abstract class LidarSearchDataCollection extends Model
             " AND zclosest >= " + bb.zmin + " AND zclosest <= " + bb.zmax +
             " ORDER BY UTC";
 
-        System.out.println(statement);
         try
         {
             Statement st = db.createStatement();
             ResultSet rs = st.executeQuery(statement);
-            System.out.println("finished executing query");
 
-            double[] normal = smallBodyModel.getNormalAtPoint(selectionRegionCenter);
-            double[] point2 = {
+            double[] point2 = null;
+            double radius2 = Double.MAX_VALUE;
+            vtkLine line = new vtkLine();
+            if (selectionRegionCenter != null)
+            {
+                double[] normal = smallBodyModel.getNormalAtPoint(selectionRegionCenter);
+                point2 = new double[]{
                     selectionRegionCenter[0] + normal[0],
                     selectionRegionCenter[1] + normal[1],
                     selectionRegionCenter[2] + normal[2],
-            };
-            vtkLine line = new vtkLine();
-            double radius2 = selectionRegionRadius * selectionRegionRadius;
+                };
+                radius2 = selectionRegionRadius * selectionRegionRadius;
+            }
 
             while(rs.next())
             {
@@ -297,7 +279,9 @@ public abstract class LidarSearchDataCollection extends Model
                 scpos[2] = rs.getFloat(7);
                 float potential = rs.getFloat(8);
 
-                double dist2 = line.DistanceToLine(target, selectionRegionCenter, point2);
+                double dist2 = 0.0;
+                if (selectionRegionCenter != null)
+                    dist2 = line.DistanceToLine(target, selectionRegionCenter, point2);
                 if (dist2 <= radius2)
                 {
                     originalPoints.add(new LidarPoint(target, scpos, time, potential));
@@ -305,9 +289,6 @@ public abstract class LidarSearchDataCollection extends Model
             }
 
             st.close();
-
-            System.out.println("finished retrieving data from db");
-
         }
         catch (SQLException e)
         {
@@ -318,33 +299,7 @@ public abstract class LidarSearchDataCollection extends Model
         computeTracks();
         removeTracksThatAreTooSmall();
 
-        // Place the points into polydata
-        vtkPoints points = polydata.GetPoints();
-        vtkCellArray vert = polydata.GetVerts();
-        vtkUnsignedCharArray colors = (vtkUnsignedCharArray)polydata.GetCellData().GetScalars();
-        vtkUnsignedCharArray hidden = (vtkUnsignedCharArray)polydata.GetPointData().GetScalars();
-
-        vtkIdList idList = new vtkIdList();
-        idList.SetNumberOfIds(1);
-
-        int numPoints = originalPoints.size();
-        points.SetNumberOfPoints(numPoints);
-        colors.SetNumberOfTuples(numPoints);
-        hidden.SetNumberOfTuples(numPoints);
-        vert.Initialize();
-        displayedPointToOriginalPointMap.clear();
-
-        for (int i = 0; i < numPoints; ++i)
-        {
-            points.SetPoint(i, originalPoints.get(i).target);
-            idList.SetId(0, i);
-            vert.InsertNextCell(idList);
-            colors.SetTuple4(i, defaultColor[0], defaultColor[1], defaultColor[2], defaultColor[3]);
-            hidden.SetTuple1(i, 0);
-            displayedPointToOriginalPointMap.add(i);
-        }
-
-        geometryFilter.Update();
+        updateTrackPolydata();
     }
 
     /**
@@ -420,7 +375,7 @@ public abstract class LidarSearchDataCollection extends Model
 
             Date date = new Date(pt.time);
 
-            out.write(sdf2.format(date).replace(' ', 'T') + " " +
+            out.write(sdf.format(date).replace(' ', 'T') + " " +
                     pt.target[0] + " " +
                     pt.target[1] + " " +
                     pt.target[2] + " " +
@@ -436,13 +391,13 @@ public abstract class LidarSearchDataCollection extends Model
     public void highlightTrack(int trackId, boolean highlight)
     {
         tracks.get(trackId).highlighted = highlight;
-        updateTrackColors();
+        updateTrackPolydata();
     }
 
     public void hideTrack(int trackId, boolean hide)
     {
         tracks.get(trackId).hidden = hide;
-        updateTrackColors();
+        updateTrackPolydata();
     }
 
     public void hideOtherTracksExcept(int trackId)
@@ -454,7 +409,7 @@ public abstract class LidarSearchDataCollection extends Model
                 track.hidden = true;
         }
 
-        updateTrackColors();
+        updateTrackPolydata();
     }
 
     public void hideAllTracks()
@@ -464,7 +419,7 @@ public abstract class LidarSearchDataCollection extends Model
             track.hidden = true;
         }
 
-        updateTrackColors();
+        updateTrackPolydata();
     }
 
     public void resetTracks()
@@ -475,7 +430,7 @@ public abstract class LidarSearchDataCollection extends Model
             track.highlighted = false;
         }
 
-        updateTrackColors();
+        updateTrackPolydata();
     }
 
     public boolean isTrackHidden(int trackId)
@@ -488,15 +443,23 @@ public abstract class LidarSearchDataCollection extends Model
         return tracks.get(trackId).highlighted;
     }
 
-    private void updateTrackColors()
+    private void updateTrackPolydata()
     {
-        if (tracks.isEmpty())
-            return;
-
+        // Place the points into polydata
+        vtkPoints points = polydata.GetPoints();
+        vtkCellArray vert = polydata.GetVerts();
         vtkUnsignedCharArray colors = (vtkUnsignedCharArray)polydata.GetCellData().GetScalars();
         vtkUnsignedCharArray hidden = (vtkUnsignedCharArray)polydata.GetPointData().GetScalars();
 
+        vtkIdList idList = new vtkIdList();
+        idList.SetNumberOfIds(1);
+
+        points.SetNumberOfPoints(0);
+        colors.SetNumberOfTuples(0);
+        hidden.SetNumberOfTuples(0);
+        vert.Initialize();
         displayedPointToOriginalPointMap.clear();
+
         int numTracks = getNumberOfTrack();
         for (int j=0; j<numTracks; ++j)
         {
@@ -507,16 +470,20 @@ public abstract class LidarSearchDataCollection extends Model
             {
                 if (track.hidden)
                 {
-                    hidden.SetTuple1(i, 1);
+                    hidden.InsertNextTuple1(1);
                 }
                 else
                 {
-                    hidden.SetTuple1(i, 0);
+                    points.InsertNextPoint(originalPoints.get(i).target);
+                    idList.SetId(0, i);
+                    vert.InsertNextCell(idList);
+
+                    hidden.InsertNextTuple1(0);
 
                     if (track.highlighted)
-                        colors.SetTuple4(i, highlightColor[0], highlightColor[1], highlightColor[2], highlightColor[3]);
+                        colors.InsertNextTuple4(highlightColor[0], highlightColor[1], highlightColor[2], highlightColor[3]);
                     else
-                        colors.SetTuple4(i, defaultColor[0], defaultColor[1], defaultColor[2], defaultColor[3]);
+                        colors.InsertNextTuple4(defaultColor[0], defaultColor[1], defaultColor[2], defaultColor[3]);
 
                     displayedPointToOriginalPointMap.add(i);
                 }
@@ -526,8 +493,6 @@ public abstract class LidarSearchDataCollection extends Model
         polydata.GetCellData().GetScalars().Modified();
         polydata.GetPointData().GetScalars().Modified();
         polydata.Modified();
-
-        geometryFilter.Update();
 
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
@@ -591,10 +556,15 @@ public abstract class LidarSearchDataCollection extends Model
 
     public String getClickStatusBarText(vtkProp prop, int cellId, double[] pickPosition)
     {
-        cellId = displayedPointToOriginalPointMap.get(cellId);
-        Date date = new Date(originalPoints.get(cellId).time);
-        return "Lidar point acquired at " + sdf.format(date)
-            + ", Potential: " + originalPoints.get(cellId).potential + " J/kg";
+        if (!originalPoints.isEmpty() && !tracks.isEmpty())
+        {
+            cellId = displayedPointToOriginalPointMap.get(cellId);
+            Date date = new Date(originalPoints.get(cellId).time);
+            return "Lidar point acquired at " + sdf.format(date)
+                + ", Potential: " + originalPoints.get(cellId).potential + " J/kg";
+        }
+
+        return "";
     }
 
     public void setRadialOffset(double offset)
@@ -789,7 +759,7 @@ public abstract class LidarSearchDataCollection extends Model
         long t0 = originalPoints.get(track.startId).time;
         long t1 = originalPoints.get(track.stopId).time;
 
-        return sdf2.format(new Date(t0)).replace(' ', 'T') + " - " +
-            sdf2.format(new Date(t1)).replace(' ', 'T');
+        return sdf.format(new Date(t0)).replace(' ', 'T') + " - " +
+            sdf.format(new Date(t1)).replace(' ', 'T');
     }
 }
