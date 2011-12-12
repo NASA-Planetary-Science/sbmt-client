@@ -1,5 +1,6 @@
 package edu.jhuapl.near.popupmenus;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
@@ -8,18 +9,22 @@ import java.io.IOException;
 
 import javax.swing.AbstractAction;
 import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
 import vtk.vtkProp;
 
+import edu.jhuapl.near.gui.ColorChooser;
 import edu.jhuapl.near.gui.CustomFileChooser;
 import edu.jhuapl.near.gui.LidarPlot;
 import edu.jhuapl.near.model.LidarSearchDataCollection;
+import edu.jhuapl.near.util.ColorUtil;
 
 public class LidarPopupMenu extends PopupMenu
 {
-    private JMenuItem highlightTrackMenuItem;
+    private Component invoker;
+    private JMenuItem customTrackColorMenuItem;
     private JMenuItem saveTrackMenuItem;
     private JMenuItem hideTrackMenuItem;
     private JMenuItem hideOtherTracksMenuItem;
@@ -27,13 +32,24 @@ public class LidarPopupMenu extends PopupMenu
     private LidarSearchDataCollection lidarModel;
     private int currentTrack;
 
-    public LidarPopupMenu(LidarSearchDataCollection lidarModel)
+    public LidarPopupMenu(LidarSearchDataCollection lidarModel,
+            Component invoker)
     {
         this.lidarModel = lidarModel;
+        this.invoker = invoker;
 
-        highlightTrackMenuItem = new JCheckBoxMenuItem(new HighlightTrackAction());
-        highlightTrackMenuItem.setText("Highlight track");
-        this.add(highlightTrackMenuItem);
+        JMenu colorMenu = new JMenu("Track Color");
+        this.add(colorMenu);
+        for (ColorUtil.DefaultColor color : ColorUtil.DefaultColor.values())
+        {
+            JCheckBoxMenuItem colorMenuItem = new JCheckBoxMenuItem(new TrackColorAction(color.color()));
+            colorMenuItem.setText(color.toString().toLowerCase().replace('_', ' '));
+            colorMenu.add(colorMenuItem);
+        }
+        colorMenu.addSeparator();
+        customTrackColorMenuItem = new JCheckBoxMenuItem(new CustomTrackColorAction());
+        customTrackColorMenuItem.setText("Custom...");
+        colorMenu.add(customTrackColorMenuItem);
 
         saveTrackMenuItem = new JMenuItem(new SaveTrackAction());
         saveTrackMenuItem.setText("Save track...");
@@ -56,15 +72,32 @@ public class LidarPopupMenu extends PopupMenu
     {
         currentTrack = trackId;
 
-        highlightTrackMenuItem.setSelected(lidarModel.isTrackHighlighted(trackId));
         hideTrackMenuItem.setSelected(lidarModel.isTrackHidden(trackId));
     }
 
-    private class HighlightTrackAction extends AbstractAction
+    private class TrackColorAction extends AbstractAction
+    {
+        private Color color;
+
+        public TrackColorAction(Color color)
+        {
+            this.color = color;
+        }
+
+        public void actionPerformed(ActionEvent e)
+        {
+            lidarModel.setTrackColor(currentTrack, color);
+        }
+    }
+
+    private class CustomTrackColorAction extends AbstractAction
     {
         public void actionPerformed(ActionEvent e)
         {
-            lidarModel.highlightTrack(currentTrack, highlightTrackMenuItem.isSelected());
+            int[] currentColor = lidarModel.getTrackColor(currentTrack);
+            Color newColor = ColorChooser.showColorChooser(invoker, currentColor);
+            if (newColor != null)
+                lidarModel.setTrackColor(currentTrack, newColor);
         }
     }
 

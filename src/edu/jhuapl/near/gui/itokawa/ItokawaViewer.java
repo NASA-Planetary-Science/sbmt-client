@@ -34,6 +34,7 @@ import edu.jhuapl.near.model.itokawa.AmicaImage;
 import edu.jhuapl.near.model.itokawa.AmicaImageCollection;
 import edu.jhuapl.near.model.itokawa.HayLidarBrowseDataCollection;
 import edu.jhuapl.near.model.itokawa.HayLidarSearchDataCollection;
+import edu.jhuapl.near.model.itokawa.HayLidarUnfilteredSearchDataCollection;
 import edu.jhuapl.near.model.itokawa.Itokawa;
 import edu.jhuapl.near.model.itokawa.ItokawaGraticule;
 import edu.jhuapl.near.pick.PickManager;
@@ -106,7 +107,7 @@ public class ItokawaViewer extends Viewer
         controlPanel.setBorder(BorderFactory.createEmptyBorder());
         controlPanel.addTab("Itokawa", new SmallBodyControlPanel(modelManager, "Itokawa"));
         controlPanel.addTab("AMICA", new AmicaSearchPanel(modelManager, infoPanelManager, pickManager, renderer));
-        controlPanel.addTab("LIDAR", new HayLidarPanel(modelManager, pickManager));
+        controlPanel.addTab("LIDAR", new HayLidarPanel(modelManager, pickManager, renderer));
         if (Configuration.isAPLVersion())
         {
             controlPanel.addTab("Structures", new StructuresControlPanel(modelManager, pickManager));
@@ -140,6 +141,7 @@ public class ItokawaViewer extends Viewer
         allModels.put(ModelNames.AMICA_BOUNDARY, new AmicaBoundaryCollection(itokawaModel));
         allModels.put(ModelNames.HAYLIDAR_BROWSE, new HayLidarBrowseDataCollection());
         allModels.put(ModelNames.HAYLIDAR_SEARCH, new HayLidarSearchDataCollection(itokawaModel));
+        allModels.put(ModelNames.HAYLIDAR_SEARCH_UNFILTERED, new HayLidarUnfilteredSearchDataCollection(itokawaModel));
         allModels.put(ModelNames.LINE_STRUCTURES, new LineModel(itokawaModel));
         allModels.put(ModelNames.CIRCLE_STRUCTURES, new CircleModel(itokawaModel));
         allModels.put(ModelNames.ELLIPSE_STRUCTURES, new EllipseModel(itokawaModel));

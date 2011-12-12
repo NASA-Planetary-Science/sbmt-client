@@ -1,5 +1,6 @@
 package edu.jhuapl.near.model;
 
+import java.awt.Color;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -60,12 +61,12 @@ public abstract class LidarSearchDataCollection extends Model
     private ArrayList<Track> tracks = new ArrayList<Track>();
     private long timeSeparationBetweenTracks = 10000; // In milliseconds
     private int minTrackLength = 1;
-    private final int[] defaultColor = {0, 0, 255, 255};
-    private final int[] highlightColor = {255, 0, 0, 255};
+    private int[] defaultColor = {0, 0, 255, 255};
+    //private final int[] highlightColor = {255, 0, 0, 255};
     private SqlManager db;
     private ArrayList<Integer> displayedPointToOriginalPointMap = new ArrayList<Integer>();
 
-    private static class LidarPoint implements Comparable<LidarPoint>
+    private class LidarPoint implements Comparable<LidarPoint>
     {
         public double[] target;
         public double[] scpos;
@@ -86,12 +87,13 @@ public abstract class LidarSearchDataCollection extends Model
         }
     }
 
-    public static class Track
+    private class Track
     {
         public int startId = -1;
         public int stopId = -1;
-        public boolean highlighted = false;
+        //public boolean highlighted = false;
         public boolean hidden = false;
+        public int[] color = defaultColor.clone(); // blue by default
 
         public int getNumberOfPoints()
         {
@@ -368,6 +370,8 @@ public abstract class LidarSearchDataCollection extends Model
         int startId = tracks.get(trackId).startId;
         int stopId = tracks.get(trackId).stopId;
 
+        String newline = System.getProperty("line.separator");
+
         for (int i=startId; i<=stopId; ++i)
         {
             LidarPoint pt = originalPoints.get(i);
@@ -381,15 +385,39 @@ public abstract class LidarSearchDataCollection extends Model
                     pt.scpos[0] + " " +
                     pt.scpos[1] + " " +
                     pt.scpos[2] + " " +
-                    pt.potential);
+                    pt.potential + newline);
         }
 
         out.close();
     }
 
-    public void highlightTrack(int trackId, boolean highlight)
+    public void setTrackColor(int trackId, Color color)
     {
-        tracks.get(trackId).highlighted = highlight;
+        Track track = tracks.get(trackId);
+        track.color[0] = color.getRed();
+        track.color[1] = color.getGreen();
+        track.color[2] = color.getBlue();
+        track.color[3] = color.getAlpha();
+        updateTrackPolydata();
+    }
+
+    public int[] getTrackColor(int trackId)
+    {
+        return tracks.get(trackId).color.clone();
+    }
+
+    public void setColorAllTracks(Color color)
+    {
+        defaultColor[0] = color.getRed();
+        defaultColor[1] = color.getGreen();
+        defaultColor[2] = color.getBlue();
+        defaultColor[3] = color.getAlpha();
+
+        for (Track track : tracks)
+        {
+            track.color = defaultColor.clone();
+        }
+
         updateTrackPolydata();
     }
 
@@ -421,12 +449,11 @@ public abstract class LidarSearchDataCollection extends Model
         updateTrackPolydata();
     }
 
-    public void resetTracks()
+    public void showAllTracks()
     {
         for (Track track : tracks)
         {
             track.hidden = false;
-            track.highlighted = false;
         }
 
         updateTrackPolydata();
@@ -435,11 +462,6 @@ public abstract class LidarSearchDataCollection extends Model
     public boolean isTrackHidden(int trackId)
     {
         return tracks.get(trackId).hidden;
-    }
-
-    public boolean isTrackHighlighted(int trackId)
-    {
-        return tracks.get(trackId).highlighted;
     }
 
     private void updateTrackPolydata()
@@ -479,10 +501,7 @@ public abstract class LidarSearchDataCollection extends Model
 
                     hidden.InsertNextTuple1(0);
 
-                    if (track.highlighted)
-                        colors.InsertNextTuple4(highlightColor[0], highlightColor[1], highlightColor[2], highlightColor[3]);
-                    else
-                        colors.InsertNextTuple4(defaultColor[0], defaultColor[1], defaultColor[2], defaultColor[3]);
+                    colors.InsertNextTuple4(track.color[0], track.color[1], track.color[2], track.color[3]);
 
                     displayedPointToOriginalPointMap.add(i);
                 }
@@ -592,6 +611,15 @@ public abstract class LidarSearchDataCollection extends Model
         selectPoint(selectedPoint);
 
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+    }
+
+    public void setPointSize(int size)
+    {
+        if (actor != null)
+        {
+            actor.GetProperty().SetPointSize(size);
+            this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+        }
     }
 
     public int getNumberOfPoints()
@@ -760,5 +788,10 @@ public abstract class LidarSearchDataCollection extends Model
 
         return sdf.format(new Date(t0)).replace(' ', 'T') + " - " +
             sdf.format(new Date(t1)).replace(' ', 'T');
+    }
+
+    public int getNumberOfPointsPerTrack(int trackId)
+    {
+        return tracks.get(trackId).getNumberOfPoints();
     }
 }

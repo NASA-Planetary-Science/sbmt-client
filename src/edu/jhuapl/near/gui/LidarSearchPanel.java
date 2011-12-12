@@ -11,6 +11,8 @@
 
 package edu.jhuapl.near.gui;
 
+import java.awt.Color;
+import java.awt.Rectangle;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseEvent;
@@ -55,7 +57,8 @@ abstract public class LidarSearchPanel extends javax.swing.JPanel implements Pro
 
     /** Creates new form LidarSearchPanel */
     public LidarSearchPanel(final ModelManager modelManager,
-            final PickManager pickManager)
+            final PickManager pickManager,
+            Renderer renderer)
     {
         this.modelManager = modelManager;
         this.pickManager = pickManager;
@@ -79,7 +82,7 @@ abstract public class LidarSearchPanel extends javax.swing.JPanel implements Pro
         radialOffsetChanger.setModel(lidarModel);
         radialOffsetChanger.setOffsetScale(lidarModel.getOffsetScale());
 
-        lidarPopupMenu = new LidarPopupMenu(lidarModel);
+        lidarPopupMenu = new LidarPopupMenu(lidarModel, renderer);
 
         startDate = getDefaultStartDate();
         ((SpinnerDateModel)startSpinner.getModel()).setValue(startDate);
@@ -161,8 +164,7 @@ abstract public class LidarSearchPanel extends javax.swing.JPanel implements Pro
 
         for (int i=0; i<numberOfTracks; ++i)
         {
-            LidarSearchDataCollection.Track track = lidarModel.getTrack(i);
-            results[i] = "Track " + i + ", Number of points: " + track.getNumberOfPoints()
+            results[i] = "Track " + i + ", Number of points: " + lidarModel.getNumberOfPointsPerTrack(i)
             + ", " + lidarModel.getTrackTimeRange(i);
         }
 
@@ -179,6 +181,15 @@ abstract public class LidarSearchPanel extends javax.swing.JPanel implements Pro
             {
                 int id = e.getPickedCellId();
                 lidarModel.selectPoint(id);
+
+                int idx = lidarModel.getTrackIdFromPointId(id);
+                if (idx >= 0)
+                {
+                    tracksList.setSelectionInterval(idx, idx);
+                    Rectangle cellBounds = tracksList.getCellBounds(idx, idx);
+                    if (cellBounds != null)
+                        tracksList.scrollRectToVisible(cellBounds);
+                }
             }
         }
     }
@@ -217,8 +228,8 @@ abstract public class LidarSearchPanel extends javax.swing.JPanel implements Pro
         radialOffsetChanger = new edu.jhuapl.near.gui.RadialOffsetChanger();
         jPanel1 = new javax.swing.JPanel();
         hideAllButton = new javax.swing.JButton();
+        showAllButton = new javax.swing.JButton();
         removeAllButton = new javax.swing.JButton();
-        resetButton = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         selectRegionButton = new javax.swing.JToggleButton();
         clearRegionButton = new javax.swing.JButton();
@@ -228,6 +239,9 @@ abstract public class LidarSearchPanel extends javax.swing.JPanel implements Pro
         jLabel4 = new javax.swing.JLabel();
         minTrackSizeTextField = new javax.swing.JFormattedTextField();
         trackSeparationTextField = new javax.swing.JFormattedTextField();
+        jLabel5 = new javax.swing.JLabel();
+        pointSizeSpinner = new javax.swing.JSpinner();
+        changeAllColorButton = new javax.swing.JButton();
 
         jLabel1.setText("Start Date:");
 
@@ -269,6 +283,14 @@ abstract public class LidarSearchPanel extends javax.swing.JPanel implements Pro
         });
         jPanel1.add(hideAllButton);
 
+        showAllButton.setText("Show All");
+        showAllButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                showAllButtonActionPerformed(evt);
+            }
+        });
+        jPanel1.add(showAllButton);
+
         removeAllButton.setText("Remove All");
         removeAllButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -276,14 +298,6 @@ abstract public class LidarSearchPanel extends javax.swing.JPanel implements Pro
             }
         });
         jPanel1.add(removeAllButton);
-
-        resetButton.setText("Reset");
-        resetButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                resetButtonActionPerformed(evt);
-            }
-        });
-        jPanel1.add(resetButton);
 
         selectRegionButton.setText("Select Region");
         selectRegionButton.addActionListener(new java.awt.event.ActionListener() {
@@ -314,10 +328,26 @@ abstract public class LidarSearchPanel extends javax.swing.JPanel implements Pro
         jLabel4.setText("Track Separation (sec):");
 
         minTrackSizeTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0"))));
-        minTrackSizeTextField.setText("1");
+        minTrackSizeTextField.setText("10");
 
         trackSeparationTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.000"))));
         trackSeparationTextField.setText("10");
+
+        jLabel5.setText("Point Size");
+
+        pointSizeSpinner.setModel(new javax.swing.SpinnerNumberModel(2, 1, 100, 1));
+        pointSizeSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                pointSizeSpinnerStateChanged(evt);
+            }
+        });
+
+        changeAllColorButton.setText("Change Color All Tracks...");
+        changeAllColorButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                changeAllColorButtonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -326,11 +356,11 @@ abstract public class LidarSearchPanel extends javax.swing.JPanel implements Pro
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(radialOffsetChanger, javax.swing.GroupLayout.DEFAULT_SIZE, 265, Short.MAX_VALUE)
                     .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 265, Short.MAX_VALUE)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 265, Short.MAX_VALUE)
                     .addComponent(resultsLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 265, Short.MAX_VALUE)
                     .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 265, Short.MAX_VALUE)
-                    .addComponent(radialOffsetChanger, javax.swing.GroupLayout.DEFAULT_SIZE, 265, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING)
@@ -347,7 +377,15 @@ abstract public class LidarSearchPanel extends javax.swing.JPanel implements Pro
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(minTrackSizeTextField)
                             .addComponent(trackSeparationTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 112, Short.MAX_VALUE)))
-                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, 265, Short.MAX_VALUE))
+                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, 265, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(12, 12, 12)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(changeAllColorButton, javax.swing.GroupLayout.PREFERRED_SIZE, 202, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel5)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(pointSizeSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -376,12 +414,18 @@ abstract public class LidarSearchPanel extends javax.swing.JPanel implements Pro
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(resultsLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 265, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 231, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(radialOffsetChanger, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addComponent(radialOffsetChanger, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(5, 5, 5)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(pointSizeSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel5))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(changeAllColorButton)
+                .addGap(11, 11, 11))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -451,6 +495,9 @@ abstract public class LidarSearchPanel extends javax.swing.JPanel implements Pro
 
         if (success)
         {
+            // Add a small buffer to bounding box
+            bb.increaseSize(0.01);
+
             showData(1, true, bb, selectionRegionCenter, selectionRegionRadius);
             radialOffsetChanger.reset();
         }
@@ -478,9 +525,9 @@ abstract public class LidarSearchPanel extends javax.swing.JPanel implements Pro
         lidarModel.hideAllTracks();
     }//GEN-LAST:event_hideAllButtonActionPerformed
 
-    private void resetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetButtonActionPerformed
-        lidarModel.resetTracks();
-    }//GEN-LAST:event_resetButtonActionPerformed
+    private void showAllButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_showAllButtonActionPerformed
+        lidarModel.showAllTracks();
+    }//GEN-LAST:event_showAllButtonActionPerformed
 
     private void removeAllButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_removeAllButtonActionPerformed
     {//GEN-HEADEREND:event_removeAllButtonActionPerformed
@@ -488,8 +535,20 @@ abstract public class LidarSearchPanel extends javax.swing.JPanel implements Pro
         tracksList.setListData(new String[]{});
     }//GEN-LAST:event_removeAllButtonActionPerformed
 
+    private void pointSizeSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_pointSizeSpinnerStateChanged
+        Number val = (Number)pointSizeSpinner.getValue();
+        lidarModel.setPointSize(val.intValue());
+    }//GEN-LAST:event_pointSizeSpinnerStateChanged
+
+    private void changeAllColorButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_changeAllColorButtonActionPerformed
+        Color newColor = ColorChooser.showColorChooser(this);
+        if (newColor != null)
+            lidarModel.setColorAllTracks(newColor);
+    }//GEN-LAST:event_changeAllColorButtonActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton changeAllColorButton;
     private javax.swing.JButton clearRegionButton;
     private javax.swing.JSpinner endSpinner;
     private javax.swing.JButton hideAllButton;
@@ -497,16 +556,18 @@ abstract public class LidarSearchPanel extends javax.swing.JPanel implements Pro
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JFormattedTextField minTrackSizeTextField;
+    private javax.swing.JSpinner pointSizeSpinner;
     private edu.jhuapl.near.gui.RadialOffsetChanger radialOffsetChanger;
     private javax.swing.JButton removeAllButton;
-    private javax.swing.JButton resetButton;
     private javax.swing.JLabel resultsLabel;
     private javax.swing.JToggleButton selectRegionButton;
+    private javax.swing.JButton showAllButton;
     private javax.swing.JSpinner startSpinner;
     private javax.swing.JButton submitButton;
     private javax.swing.JFormattedTextField trackSeparationTextField;

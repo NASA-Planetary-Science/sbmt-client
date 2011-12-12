@@ -105,6 +105,27 @@ public class BoundingBox
             return true;
     }
 
+    /**
+     * Increase the size of the bounding box by adding (subtracting)
+     * to each side a specified percentage of the bounding box
+     * diagonal
+     *
+     * @param fractionOfDiagonalLength must be positive
+     */
+    public void increaseSize(double fractionOfDiagonalLength)
+    {
+        if (fractionOfDiagonalLength > 0.0)
+        {
+            double size = fractionOfDiagonalLength * getDiagonalLength();
+            xmin -= size;
+            xmax += size;
+            ymin -= size;
+            ymax += size;
+            zmin -= size;
+            zmax += size;
+        }
+    }
+
     public String toString()
     {
         return "xmin: " + xmin + " xmax: " + xmax +

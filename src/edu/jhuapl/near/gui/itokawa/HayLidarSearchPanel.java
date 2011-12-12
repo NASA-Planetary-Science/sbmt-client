@@ -5,17 +5,18 @@ import java.util.Date;
 import org.joda.time.DateTime;
 
 import edu.jhuapl.near.gui.LidarSearchPanel;
+import edu.jhuapl.near.gui.Renderer;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.pick.PickManager;
 
 public class HayLidarSearchPanel extends LidarSearchPanel
 {
-
     public HayLidarSearchPanel(ModelManager modelManager,
-            PickManager pickManager)
+            PickManager pickManager,
+            Renderer renderer)
     {
-        super(modelManager, pickManager);
+        super(modelManager, pickManager, renderer);
     }
 
     @Override
