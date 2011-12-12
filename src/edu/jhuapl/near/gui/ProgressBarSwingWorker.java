@@ -28,6 +28,7 @@ abstract public class ProgressBarSwingWorker extends SwingWorker<Void, Void>
     private volatile boolean indeterminate = false;
     private volatile String labelText = " ";
     private volatile boolean enableCancelButton = true;
+    private volatile double completionTimeEstimate = -1.0; // in seconds
 
     private class ProgressDialog extends JDialog implements ActionListener
     {
@@ -86,6 +87,29 @@ abstract public class ProgressBarSwingWorker extends SwingWorker<Void, Void>
         // Note execute must be called BEFORE setVisible. Otherwise, the worker thread
         // won't run since setVisible blocks until the dialog closes.
         execute();
+
+        while (true)
+        {
+            if (completionTimeEstimate >= 4.0)
+            {
+                System.out.println("cte " + completionTimeEstimate);
+                break;
+            }
+            else if (isDone())
+            {
+                dialog.dispose();
+                return;
+            }
+
+            try
+            {
+                Thread.sleep(100);
+            }
+            catch (InterruptedException e)
+            {
+            }
+        }
+
         dialog.setVisible(true);
     }
 
@@ -127,5 +151,12 @@ abstract public class ProgressBarSwingWorker extends SwingWorker<Void, Void>
     public void setCancelButtonEnabled(boolean b)
     {
         enableCancelButton = b;
+    }
+
+    public void setCompletionTimeEstimate(double completionTimeEstimate)
+    {
+        // Only allow setting completion time once
+        if (this.completionTimeEstimate < 0.0)
+            this.completionTimeEstimate = completionTimeEstimate;
     }
 }

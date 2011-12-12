@@ -51,7 +51,14 @@ public class FileDownloadSwingWorker extends ProgressBarSwingWorker
         if (needToDownload)
             FileCache.resetDownloadProgess();
         if (needToUnzip)
+        {
             FileUtil.resetUnzipProgress();
+            // If we need to unzip always show progress dialog and don't bother
+            // to calculate time to unzip
+            // TODO calculate how long to unzip and only show progress dialog
+            // if necessary
+            setCompletionTimeEstimate(1000000.0); // a very high number to force progress bar to show
+        }
 
         Runnable runner = new Runnable()
         {
@@ -65,6 +72,9 @@ public class FileDownloadSwingWorker extends ProgressBarSwingWorker
         };
         Thread downloadThread = new Thread(runner);
         downloadThread.start();
+
+        long prevTime = System.currentTimeMillis();
+        boolean computedTimeEstimate = false;
 
         try
         {
@@ -99,6 +109,15 @@ public class FileDownloadSwingWorker extends ProgressBarSwingWorker
                 }
 
                 Thread.sleep(333);
+
+                if (needToDownload && !computedTimeEstimate)
+                {
+                    double timeElapsed = (double)(System.currentTimeMillis() - prevTime) / 1000.0;
+                    double downloadRate = (double)FileCache.getDownloadProgess() / timeElapsed;
+                    double totalTimeToDownload = (double)fileInfo.length / downloadRate;
+                    setCompletionTimeEstimate(totalTimeToDownload);
+                    computedTimeEstimate = true;
+                }
             }
         }
         catch (InterruptedException ignore)
