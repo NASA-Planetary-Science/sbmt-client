@@ -154,12 +154,11 @@ public abstract class LidarSqlDatabaseGenerator
             int timeindex = getTimeIndex();
             int potentialIndex = getPotentialIndex();
 
-            int count = 0;
-            short filecount = 0;
+            int filecount = 1;
             for (String filename : lidarFiles)
             {
 
-                System.out.println("Begin processing file " + filename + " - " + count + " / " + lidarFiles.size());
+                System.out.println("Begin processing file " + filename + " - " + filecount + " / " + lidarFiles.size());
 
                 InputStream fs = new FileInputStream(filename);
                 if (filename.toLowerCase().endsWith(".gz"))
@@ -238,8 +237,6 @@ public abstract class LidarSqlDatabaseGenerator
                     msiInsert.setFloat(11, (float)potential);
 
                     msiInsert.executeUpdate();
-
-                    ++count;
                 }
 
                 ++filecount;
