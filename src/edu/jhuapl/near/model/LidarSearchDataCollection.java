@@ -31,6 +31,7 @@ import vtk.vtkUnsignedCharArray;
 
 import edu.jhuapl.near.server.SqlManager;
 import edu.jhuapl.near.util.BoundingBox;
+import edu.jhuapl.near.util.ColorUtil;
 import edu.jhuapl.near.util.FileCache;
 import edu.jhuapl.near.util.LatLon;
 import edu.jhuapl.near.util.MathUtil;
@@ -300,6 +301,8 @@ public abstract class LidarSearchDataCollection extends Model
         computeTracks();
         removeTracksThatAreTooSmall();
 
+        assignInitialColorToTrack();
+
         updateTrackPolydata();
     }
 
@@ -316,6 +319,7 @@ public abstract class LidarSearchDataCollection extends Model
 
     public int getTrackIdFromPointId(int pointId)
     {
+        pointId = displayedPointToOriginalPointMap.get(pointId);
         for (int i=0; i<tracks.size(); ++i)
         {
             if (getTrack(i).containsId(pointId))
@@ -389,6 +393,27 @@ public abstract class LidarSearchDataCollection extends Model
         }
 
         out.close();
+    }
+
+    private void assignInitialColorToTrack()
+    {
+        Color[] colors = ColorUtil.generateColors(tracks.size());
+        int[] color = new int[4];
+        int i = 0;
+
+        for (Track track : tracks)
+        {
+            color[0] = colors[i].getRed();
+            color[1] = colors[i].getGreen();
+            color[2] = colors[i].getBlue();
+            color[3] = colors[i].getAlpha();
+
+            track.color = color.clone();
+
+            ++i;
+        }
+
+        updateTrackPolydata();
     }
 
     public void setTrackColor(int trackId, Color color)
