@@ -470,18 +470,12 @@ abstract public class LidarSearchPanel extends javax.swing.JPanel implements Pro
         }
         else
         {
-            int option = JOptionPane.showConfirmDialog(
-                    JOptionPane.getFrameForComponent(this),
-                    "You have not selected a region on the small body in order to limit the search.\n" +
-                    "This may cause the program to crash if too much data is returned.\n" +
-                    "Are you sure you want to continue?",
-                    "No search region selected",
-                    JOptionPane.YES_NO_OPTION);
+            JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
+                    "Please select a region on the asteroid.",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
 
-            if (option == JOptionPane.NO_OPTION)
-                return;
-
-            bb = smallBodyModel.getBoundingBox();
+            return;
         }
 
         Picker.setPickingEnabled(false);
