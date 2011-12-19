@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.swing.AbstractAction;
 import javax.swing.JCheckBoxMenuItem;
@@ -24,6 +25,8 @@ import edu.jhuapl.near.util.ColorUtil;
 public class LidarPopupMenu extends PopupMenu
 {
     private Component invoker;
+    private JMenu colorMenu;
+    private ArrayList<JCheckBoxMenuItem> colorMenuItems = new ArrayList<JCheckBoxMenuItem>();
     private JMenuItem customTrackColorMenuItem;
     private JMenuItem saveTrackMenuItem;
     private JMenuItem hideTrackMenuItem;
@@ -38,16 +41,17 @@ public class LidarPopupMenu extends PopupMenu
         this.lidarModel = lidarModel;
         this.invoker = invoker;
 
-        JMenu colorMenu = new JMenu("Track Color");
+        colorMenu = new JMenu("Track Color");
         this.add(colorMenu);
         for (ColorUtil.DefaultColor color : ColorUtil.DefaultColor.values())
         {
             JCheckBoxMenuItem colorMenuItem = new JCheckBoxMenuItem(new TrackColorAction(color.color()));
+            colorMenuItems.add(colorMenuItem);
             colorMenuItem.setText(color.toString().toLowerCase().replace('_', ' '));
             colorMenu.add(colorMenuItem);
         }
         colorMenu.addSeparator();
-        customTrackColorMenuItem = new JCheckBoxMenuItem(new CustomTrackColorAction());
+        customTrackColorMenuItem = new JMenuItem(new CustomTrackColorAction());
         customTrackColorMenuItem.setText("Custom...");
         colorMenu.add(customTrackColorMenuItem);
 
@@ -73,6 +77,26 @@ public class LidarPopupMenu extends PopupMenu
         currentTrack = trackId;
 
         hideTrackMenuItem.setSelected(lidarModel.isTrackHidden(trackId));
+
+        // If the track color equals one of the predefined colors, then check
+        // the corresponding menu item.
+        int[] currentTrackColor = lidarModel.getTrackColor(trackId);
+        for (JCheckBoxMenuItem item : colorMenuItems)
+        {
+            TrackColorAction action = (TrackColorAction)item.getAction();
+            Color color = action.color;
+            if (currentTrackColor[0] == color.getRed() &&
+                    currentTrackColor[1] == color.getGreen() &&
+                    currentTrackColor[2] == color.getBlue() &&
+                    currentTrackColor[3] == color.getAlpha())
+            {
+                item.setSelected(true);
+            }
+            else
+            {
+                item.setSelected(false);
+            }
+        }
     }
 
     private class TrackColorAction extends AbstractAction
