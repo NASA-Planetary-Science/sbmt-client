@@ -14,27 +14,28 @@
 
 struct FuncParam
 {
-    double (*function)(const double*);
-    int N;
+    double (*function)(const double*, void* externalParams);
+    void (*gradient)(const double*, double*, void *externalParams);
+    void* externalParams;
 };
 
 
-static void printCurrentValue(int iter, double fx, const gsl_vector* x, int N)
+static void printCurrentValue(size_t iter, double fx, const gsl_vector* x, size_t N)
 {
-    printf("Iter: %d,  fx = %f", iter, fx);
-    int i;
+    printf("Iter: %ld,  fx = %f", iter, fx);
+    /*size_t i;
     for (i=0; i<N; ++i)
     {
-        printf(", x[%d] = %f", i, gsl_vector_get(x, i));
-    }
+        printf(", x[%ld] = %f", i, gsl_vector_get(x, i));
+    }*/
     printf("\n");
 }
 
 
-static double func(const gsl_vector *v, void *params)
+static double func(const gsl_vector *v, void *internalParams)
 {
-    struct FuncParam* p = (struct FuncParam*)params;
-    return p->function(gsl_vector_const_ptr(v, 0));
+    struct FuncParam* p = (struct FuncParam*)internalParams;
+    return p->function(gsl_vector_const_ptr(v, 0), p->externalParams);
 }
 
 
@@ -42,15 +43,21 @@ static double func(const gsl_vector *v, void *params)
 * This function numerically computes the gradient of func using finite differences
 ************************************************************************/
 static void grad(const gsl_vector *v,
-                 void *params,
+                 void *internalParams,
                  gsl_vector *df)
 {
-    double f = func(v, params);
-    struct FuncParam* p = (struct FuncParam*)params;
-    int N = p->N;
+    struct FuncParam* p = (struct FuncParam*)internalParams;
+    if (p->gradient != 0)
+    {
+        p->gradient(gsl_vector_const_ptr(v, 0), gsl_vector_ptr(df, 0), p->externalParams);
+        return;
+    }
     
-    int i;
-    int j;
+    double f = func(v, internalParams);
+    size_t N = v->size;
+    
+    size_t i;
+    size_t j;
     for (i=0; i<N; ++i)
     {
         double coef2[N];
@@ -59,7 +66,7 @@ static void grad(const gsl_vector *v,
         
         coef2[i] += DX;
 
-        double f2 = p->function(coef2);
+        double f2 = p->function(coef2, p->externalParams);
 
         gsl_vector_set(df,i, (f2 - f) / DX);
     }
@@ -83,11 +90,16 @@ static void fdf(const gsl_vector *x,
   minimizer contains the initial guess and on output contains the optimal
   values of the independent function that minimizes the function.
  */
-void optimizeGsl(double (*function)(const double*), double* minimizer, int N)
+void optimizeGsl(double (*function)(const double*, void *externalParams),
+                 void (*gradient)(const double*, double*, void *externalParams),
+                 double* minimizer,
+                 size_t N,
+                 void *externalParams)
 {
-    struct FuncParam param;
-    param.function = function;
-    param.N = N;
+    struct FuncParam internalParams;
+    internalParams.function = function;
+    internalParams.gradient = gradient;
+    internalParams.externalParams = externalParams;
 
     size_t iter = 0;
     int status;
@@ -102,21 +114,22 @@ void optimizeGsl(double (*function)(const double*), double* minimizer, int N)
     my_func.f = func;
     my_func.df = grad;
     my_func.fdf = fdf;
-    my_func.params = &param;
+    my_func.params = &internalParams;
 
     /* Starting point, x =  */
     x = gsl_vector_alloc (N);
-    int i;
+    size_t i;
     for (i=0;i<N;++i)
         gsl_vector_set (x, i, minimizer[i]);
 
-    T = gsl_multimin_fdfminimizer_conjugate_fr;
+    /*T = gsl_multimin_fdfminimizer_conjugate_fr;*/
+    T = gsl_multimin_fdfminimizer_vector_bfgs2;
     s = gsl_multimin_fdfminimizer_alloc (T, N);
 
     gsl_multimin_fdfminimizer_set (s, &my_func, x, 0.01, 1e-4);
 
     printf("Initial value of objective function: \n");
-    printCurrentValue(0, function(minimizer), x, N);
+    printCurrentValue(0, function(minimizer, externalParams), x, N);
     printf("\n");
 
     do
@@ -134,13 +147,13 @@ void optimizeGsl(double (*function)(const double*), double* minimizer, int N)
 
         printCurrentValue(iter, s->f, s->x, N);
     }
-    while (status == GSL_CONTINUE && iter < 100);
+    while (status == GSL_CONTINUE && iter < 50);
 
     for (i=0;i<N;++i)
         minimizer[i] = gsl_vector_get (s->x, i);
 
     printf("GSL optimization terminated with status code = %d\n", status);
-    printCurrentValue(iter, function(minimizer), s->x, N);
+    printCurrentValue(iter, function(minimizer, externalParams), s->x, N);
     printf("\n");
     
     gsl_multimin_fdfminimizer_free (s);
