@@ -45,36 +45,6 @@ public class SmallBodyCubes
             removeEmptyCubes(smallBodyPolyData);
     }
 
-    /**
-     * Create a cube set structure for the given model using a default value of 1 for the
-     * cube size and a default value of 0.01 for the buffer. If <tt>cubesToKeep</tt> is not
-     * null, then only those cubes are kept by this class, all others are discarded. If
-     * <tt>cubesToKeep</tt> is null, then we compute the empty cubes and discard those.
-     *
-     * @param smallBodyPolyData
-     * @param cubesToKeep
-     */
-    public SmallBodyCubes(
-            vtkPolyData smallBodyPolyData,
-            int[] cubesToKeep)
-    {
-        initialize(smallBodyPolyData);
-
-        if (cubesToKeep != null)
-        {
-            ArrayList<BoundingBox> tmpCubes = new ArrayList<BoundingBox>();
-            for (int i : cubesToKeep)
-            {
-                tmpCubes.add(allCubes.get(i));
-            }
-            allCubes = tmpCubes;
-        }
-        else
-        {
-            removeEmptyCubes(smallBodyPolyData);
-        }
-    }
-
     private void initialize(vtkPolyData smallBodyPolyData)
     {
         smallBodyPolyData.ComputeBounds();
