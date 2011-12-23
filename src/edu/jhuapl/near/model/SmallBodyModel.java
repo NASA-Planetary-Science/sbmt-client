@@ -282,13 +282,17 @@ public class SmallBodyModel extends Model
         return pointLocator;
     }
 
-    public TreeSet<Integer> getIntersectingCubes(vtkPolyData polydata)
+    public SmallBodyCubes getSmallBodyCubes()
     {
         if (smallBodyCubes == null)
         {
             // The number 38.66056033363347 is used here so that the cube size
             // comes out to 1 km for Eros.
-            double cubeSize = getBoundingBoxDiagonalLength() / 38.66056033363347;
+
+            // Compute bounding box diagonal length of lowest res shape model
+            double diagonalLength =
+                    new BoundingBox(getLowResSmallBodyPolyData().GetBounds()).getDiagonalLength();
+            double cubeSize = diagonalLength / 38.66056033363347;
             smallBodyCubes = new SmallBodyCubes(
                     getLowResSmallBodyPolyData(),
                     cubeSize,
@@ -296,7 +300,22 @@ public class SmallBodyModel extends Model
                     true);
         }
 
-        return smallBodyCubes.getIntersectingCubes(polydata);
+        return smallBodyCubes;
+    }
+
+    public TreeSet<Integer> getIntersectingCubes(vtkPolyData polydata)
+    {
+        return getSmallBodyCubes().getIntersectingCubes(polydata);
+    }
+
+    public TreeSet<Integer> getIntersectingCubes(BoundingBox bb)
+    {
+        return getSmallBodyCubes().getIntersectingCubes(bb);
+    }
+
+    public int getCubeId(double[] point)
+    {
+        return getSmallBodyCubes().getCubeId(point);
     }
 
     public vtkFloatArray getCellNormals()
@@ -1446,6 +1465,13 @@ public class SmallBodyModel extends Model
                 colorArray.SetTuple3(i, 255.0, 255.0, 255.0);
             }
         }
+    }
+
+    public void setOpacity(double opacity)
+    {
+        vtkProperty smallBodyProperty = smallBodyActor.GetProperty();
+        smallBodyProperty.SetOpacity(opacity);
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
     public void delete()

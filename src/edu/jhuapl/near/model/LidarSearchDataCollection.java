@@ -1,23 +1,27 @@
 package edu.jhuapl.near.model;
 
 import java.awt.Color;
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
+import java.util.TreeSet;
+import java.util.zip.GZIPInputStream;
 
 import org.apache.commons.math.analysis.polynomials.PolynomialFunction;
 import org.apache.commons.math.optimization.fitting.PolynomialFitter;
 import org.apache.commons.math.optimization.general.LevenbergMarquardtOptimizer;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 
 import vtk.vtkActor;
 import vtk.vtkCellArray;
@@ -29,8 +33,6 @@ import vtk.vtkPolyDataMapper;
 import vtk.vtkProp;
 import vtk.vtkUnsignedCharArray;
 
-import edu.jhuapl.near.server.SqlManager;
-import edu.jhuapl.near.util.BoundingBox;
 import edu.jhuapl.near.util.ColorUtil;
 import edu.jhuapl.near.util.FileCache;
 import edu.jhuapl.near.util.LatLon;
@@ -39,6 +41,7 @@ import edu.jhuapl.near.util.Properties;
 
 public abstract class LidarSearchDataCollection extends Model
 {
+    private SmallBodyModel smallBodyModel;
     private vtkPolyData polydata;
     private vtkPolyData selectedPointPolydata;
     private ArrayList<LidarPoint> originalPoints = new ArrayList<LidarPoint>();
@@ -53,9 +56,7 @@ public abstract class LidarSearchDataCollection extends Model
 
     private DateTime startDate;
     private DateTime stopDate;
-    private BoundingBox boundingBox;
-
-    private SmallBodyModel smallBodyModel;
+    private TreeSet<Integer> cubeList;
 
     private int selectedPoint = -1;
 
@@ -63,8 +64,6 @@ public abstract class LidarSearchDataCollection extends Model
     private long timeSeparationBetweenTracks = 10000; // In milliseconds
     private int minTrackLength = 1;
     private int[] defaultColor = {0, 0, 255, 255};
-    //private final int[] highlightColor = {255, 0, 0, 255};
-    private SqlManager db;
     private ArrayList<Integer> displayedPointToOriginalPointMap = new ArrayList<Integer>();
 
     private class LidarPoint implements Comparable<LidarPoint>
@@ -92,7 +91,6 @@ public abstract class LidarSearchDataCollection extends Model
     {
         public int startId = -1;
         public int stopId = -1;
-        //public boolean highlighted = false;
         public boolean hidden = false;
         public int[] color = defaultColor.clone(); // blue by default
 
@@ -131,12 +129,13 @@ public abstract class LidarSearchDataCollection extends Model
     }
 
     abstract public double getOffsetScale();
-    abstract public String getDatabasePath();
+    abstract protected String getCubeFolderPath();
+
 
     public void setLidarData(
             DateTime startDate,
             DateTime stopDate,
-            BoundingBox bb,
+            TreeSet<Integer> cubeList,
             double[] selectionRegionCenter,
             double selectionRegionRadius,
             double maskValue,
@@ -147,7 +146,7 @@ public abstract class LidarSearchDataCollection extends Model
         runQuery(
                 startDate,
                 stopDate,
-                bb,
+                cubeList,
                 selectionRegionCenter,
                 selectionRegionRadius,
                 timeSeparationBetweenTracks,
@@ -167,7 +166,6 @@ public abstract class LidarSearchDataCollection extends Model
         {
             actor = new vtkActor();
             actor.SetMapper(pointsMapper);
-            //actor.GetProperty().SetColor(0.0, 0.0, 1.0);
             actor.GetProperty().SetPointSize(2.0);
 
             actors.add(actor);
@@ -191,7 +189,7 @@ public abstract class LidarSearchDataCollection extends Model
     private void runQuery(
             DateTime startDate,
             DateTime stopDate,
-            BoundingBox bb,
+            TreeSet<Integer> cubeList,
             double[] selectionRegionCenter,
             double selectionRegionRadius,
             long timeSeparationBetweenTracks,
@@ -199,7 +197,7 @@ public abstract class LidarSearchDataCollection extends Model
     {
         if (startDate.equals(this.startDate) &&
                 stopDate.equals(this.stopDate) &&
-                bb.equals(this.boundingBox) &&
+                cubeList.equals(this.cubeList) &&
                 timeSeparationBetweenTracks == this.timeSeparationBetweenTracks &&
                 minTrackLength == this.minTrackLength)
         {
@@ -210,7 +208,7 @@ public abstract class LidarSearchDataCollection extends Model
         // evaluate to true even if something changed.
         this.startDate = new DateTime(startDate);
         this.stopDate = new DateTime(stopDate);
-        this.boundingBox = (BoundingBox)bb.clone();
+        this.cubeList = (TreeSet<Integer>)cubeList.clone();
         this.timeSeparationBetweenTracks = timeSeparationBetweenTracks;
         this.minTrackLength = minTrackLength;
 
@@ -220,66 +218,62 @@ public abstract class LidarSearchDataCollection extends Model
 
         originalPoints.clear();
 
-        try
+        double[] point2 = null;
+        double radius2 = Double.MAX_VALUE;
+        vtkLine line = new vtkLine();
+        if (selectionRegionCenter != null)
         {
-            if (db == null)
-            {
-                String dbPath = getDatabasePath();
-                File file = FileCache.getFileFromServer(dbPath);
-
-                if (file == null)
-                    throw new IOException(dbPath + " could not be loaded");
-
-                String path = file.getAbsolutePath();
-                path = path.substring(0, path.length()-6);
-
-                db = new SqlManager("org.h2.Driver", "jdbc:h2:" + path + ";ACCESS_MODE_DATA=r");
-            }
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
+            double[] normal = smallBodyModel.getNormalAtPoint(selectionRegionCenter);
+            point2 = new double[]{
+                selectionRegionCenter[0] + normal[0],
+                selectionRegionCenter[1] + normal[1],
+                selectionRegionCenter[2] + normal[2],
+            };
+            radius2 = selectionRegionRadius * selectionRegionRadius;
         }
 
-        String statement =
-            "SELECT UTC, xtarget, ytarget, ztarget, xsc, ysc, zsc, potential FROM lidar WHERE" +
-            " UTC >= " + start + " AND UTC <= " + stop +
-            " AND xclosest >= " + bb.xmin + " AND xclosest <= " + bb.xmax +
-            " AND yclosest >= " + bb.ymin + " AND yclosest <= " + bb.ymax +
-            " AND zclosest >= " + bb.zmin + " AND zclosest <= " + bb.zmax +
-            " ORDER BY UTC";
+        int timeindex = 0;
+        int xindex = 1;
+        int yindex = 2;
+        int zindex = 3;
+        int scxindex = 4;
+        int scyindex = 5;
+        int sczindex = 6;
+        int potentialIndex = 7;
 
-        try
+        for (Integer cubeid : cubeList)
         {
-            Statement st = db.createStatement();
-            ResultSet rs = st.executeQuery(statement);
+            String filename = getCubeFolderPath() + "/" + cubeid + ".lidarcube";
+            File file = FileCache.getFileFromServer(filename);
 
-            double[] point2 = null;
-            double radius2 = Double.MAX_VALUE;
-            vtkLine line = new vtkLine();
-            if (selectionRegionCenter != null)
-            {
-                double[] normal = smallBodyModel.getNormalAtPoint(selectionRegionCenter);
-                point2 = new double[]{
-                    selectionRegionCenter[0] + normal[0],
-                    selectionRegionCenter[1] + normal[1],
-                    selectionRegionCenter[2] + normal[2],
-                };
-                radius2 = selectionRegionRadius * selectionRegionRadius;
-            }
+            if (file == null)
+                continue;
 
-            while(rs.next())
+            InputStream fs = new FileInputStream(file.getAbsolutePath());
+            if (file.getAbsolutePath().toLowerCase().endsWith(".gz"))
+                fs = new GZIPInputStream(fs);
+            InputStreamReader isr = new InputStreamReader(fs);
+            BufferedReader in = new BufferedReader(isr);
+
+            String lineRead;
+            while ((lineRead = in.readLine()) != null)
             {
-                long time = rs.getLong(1);
-                double[] target = new double[3];
-                target[0] = rs.getFloat(2);
-                target[1] = rs.getFloat(3);
-                target[2] = rs.getFloat(4);
+                String[] vals = lineRead.trim().split("\\s+");
+
+                long time = new DateTime(vals[timeindex], DateTimeZone.UTC).getMillis();
+                if (time < start || time > stop)
+                    continue;
+
                 double[] scpos = new double[3];
-                scpos[0] = rs.getFloat(5);
-                scpos[1] = rs.getFloat(6);
-                scpos[2] = rs.getFloat(7);
-                float potential = rs.getFloat(8);
+                double[] target = new double[3];
+                target[0] = Double.parseDouble(vals[xindex]);
+                target[1] = Double.parseDouble(vals[yindex]);
+                target[2] = Double.parseDouble(vals[zindex]);
+                scpos[0] = Double.parseDouble(vals[scxindex]);
+                scpos[1] = Double.parseDouble(vals[scyindex]);
+                scpos[2] = Double.parseDouble(vals[sczindex]);
+
+                double potential = Double.parseDouble(vals[potentialIndex]);
 
                 double dist2 = 0.0;
                 if (selectionRegionCenter != null)
@@ -290,13 +284,8 @@ public abstract class LidarSearchDataCollection extends Model
                 }
             }
 
-            st.close();
+            in.close();
         }
-        catch (SQLException e)
-        {
-            e.printStackTrace();
-        }
-
 
         computeTracks();
         removeTracksThatAreTooSmall();
@@ -412,8 +401,6 @@ public abstract class LidarSearchDataCollection extends Model
 
             ++i;
         }
-
-        updateTrackPolydata();
     }
 
     public void setTrackColor(int trackId, Color color)
@@ -575,6 +562,10 @@ public abstract class LidarSearchDataCollection extends Model
         polydata.GetPoints().SetNumberOfPoints(0);
         originalPoints.clear();
         tracks.clear();
+
+        this.startDate = null;
+        this.stopDate = null;
+        this.cubeList = null;
 
         selectPoint(-1);
 

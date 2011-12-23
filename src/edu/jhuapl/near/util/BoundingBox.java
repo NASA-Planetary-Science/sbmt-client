@@ -97,9 +97,9 @@ public class BoundingBox
      */
     public boolean contains(double[] pt)
     {
-        if (pt[0] <= xmin || pt[0] > xmax ||
-            pt[1] <= ymin || pt[1] > ymax ||
-            pt[2] <= zmin || pt[2] > zmax)
+        if (pt[0] < xmin || pt[0] > xmax ||
+            pt[1] < ymin || pt[1] > ymax ||
+            pt[2] < zmin || pt[2] > zmax)
             return false;
         else
             return true;

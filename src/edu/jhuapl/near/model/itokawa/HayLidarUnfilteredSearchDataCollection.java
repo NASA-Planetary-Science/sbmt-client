@@ -10,8 +10,9 @@ public class HayLidarUnfilteredSearchDataCollection extends HayLidarSearchDataCo
     }
 
     @Override
-    public String getDatabasePath()
+    protected String getCubeFolderPath()
     {
-        return "/ITOKAWA/LIDAR/lidar-unfiltered.h2.db.gz";
+        return "/ITOKAWA/LIDAR/cdr/cubes-unfiltered";
     }
+
 }

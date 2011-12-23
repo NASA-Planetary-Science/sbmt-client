@@ -101,7 +101,7 @@ public class ErosViewer extends Viewer
         controlPanel.addTab("Eros", new SmallBodyControlPanel(modelManager, "Eros"));
         controlPanel.addTab("MSI", new MSISearchPanel(modelManager, infoPanelManager, pickManager, renderer));
         controlPanel.addTab("NIS", new NISSearchPanel(modelManager, infoPanelManager, pickManager));
-        controlPanel.addTab("NLR", new NLRPanel(modelManager, pickManager));
+        controlPanel.addTab("NLR", new NLRPanel(modelManager, pickManager, renderer));
         if (Configuration.isAPLVersion())
         {
             controlPanel.addTab("Lineament", new LineamentControlPanel(modelManager));
@@ -138,7 +138,6 @@ public class ErosViewer extends Viewer
         allModels.put(ModelNames.NLR_DATA_SUMMARY, new NLRDataEverything());
         allModels.put(ModelNames.NLR_DATA_BROWSE, new NLRBrowseDataCollection());
         allModels.put(ModelNames.NLR_DATA_SEARCH, new NLRSearchDataCollection(erosModel));
-        //allModels.put(ModelNames.NLR_DATA_SEARCH, new NLRSearchDataCollection2(erosModel));
         allModels.put(ModelNames.LINE_STRUCTURES, new LineModel(erosModel));
         allModels.put(ModelNames.CIRCLE_STRUCTURES, new CircleModel(erosModel));
         allModels.put(ModelNames.ELLIPSE_STRUCTURES, new EllipseModel(erosModel));

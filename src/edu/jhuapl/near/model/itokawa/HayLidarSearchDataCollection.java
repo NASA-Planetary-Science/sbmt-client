@@ -19,9 +19,9 @@ public class HayLidarSearchDataCollection extends LidarSearchDataCollection
     }
 
     @Override
-    public String getDatabasePath()
+    protected String getCubeFolderPath()
     {
-        return "/ITOKAWA/LIDAR/lidar.h2.db.gz";
+        return "/ITOKAWA/LIDAR/cdr/cubes-optimized";
     }
 
 }

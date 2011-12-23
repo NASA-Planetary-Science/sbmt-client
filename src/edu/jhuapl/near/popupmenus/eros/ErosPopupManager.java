@@ -7,8 +7,10 @@ import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.eros.MSIBoundaryCollection;
 import edu.jhuapl.near.model.eros.MSIColorImageCollection;
 import edu.jhuapl.near.model.eros.MSIImageCollection;
+import edu.jhuapl.near.model.eros.NLRSearchDataCollection;
 import edu.jhuapl.near.popupmenus.ColorImagePopupMenu;
 import edu.jhuapl.near.popupmenus.ImagePopupMenu;
+import edu.jhuapl.near.popupmenus.LidarPopupMenu;
 import edu.jhuapl.near.popupmenus.PopupManager;
 import edu.jhuapl.near.popupmenus.PopupMenu;
 
@@ -33,6 +35,7 @@ public class ErosPopupManager extends PopupManager
         MSIImageCollection msiImages = (MSIImageCollection)modelManager.getModel(ModelNames.MSI_IMAGES);
         MSIBoundaryCollection msiBoundaries = (MSIBoundaryCollection)modelManager.getModel(ModelNames.MSI_BOUNDARY);
         MSIColorImageCollection msiColorImages = (MSIColorImageCollection)modelManager.getModel(ModelNames.MSI_COLOR_IMAGES);
+        NLRSearchDataCollection lidarSearch = (NLRSearchDataCollection)modelManager.getModel(ModelNames.NLR_DATA_SEARCH);
 
         popupMenu = new ImagePopupMenu(msiImages, msiBoundaries, infoPanelManager, renderer, renderer);
         registerPopup(modelManager.getModel(ModelNames.MSI_BOUNDARY), popupMenu);
@@ -46,7 +49,7 @@ public class ErosPopupManager extends PopupManager
         popupMenu = new NISPopupMenu(modelManager, infoPanelManager);
         registerPopup(modelManager.getModel(ModelNames.NIS_SPECTRA), popupMenu);
 
-        //popupMenu = new NLRPopupMenu(modelManager);
-        //registerPopup(modelManager.getModel(ModelNames.NLR_DATA_SEARCH), popupMenu);
+        popupMenu = new LidarPopupMenu(lidarSearch, renderer);
+        registerPopup(modelManager.getModel(ModelNames.NLR_DATA_SEARCH), popupMenu);
     }
 }

@@ -176,6 +176,28 @@ public class SmallBodyCubes
     }
 
     /**
+     * Get all the cubes that intersect with BoundingBox <tt>bb</tt>
+     * @param bb
+     * @return
+     */
+    public TreeSet<Integer> getIntersectingCubes(BoundingBox bb)
+    {
+        TreeSet<Integer> cubeIds = new TreeSet<Integer>();
+
+        int numberCubes = allCubes.size();
+        for (int i=0; i<numberCubes; ++i)
+        {
+            BoundingBox cube = getCube(i);
+            if (cube.intersects(bb))
+            {
+                cubeIds.add(i);
+            }
+        }
+
+        return cubeIds;
+    }
+
+    /**
      * Get the id of the cube containing <tt>point</tt>
      * @param point
      * @return

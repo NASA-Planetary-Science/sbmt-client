@@ -20,6 +20,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.TreeSet;
 
 import javax.swing.JOptionPane;
 import javax.swing.SpinnerDateModel;
@@ -97,7 +98,7 @@ abstract public class LidarSearchPanel extends javax.swing.JPanel implements Pro
     private void showData(
             int direction,
             boolean reset,
-            BoundingBox bb,
+            TreeSet<Integer> cubeList,
             double[] selectionRegionCenter,
             double selectionRegionRadius)
     {
@@ -125,7 +126,7 @@ abstract public class LidarSearchPanel extends javax.swing.JPanel implements Pro
         {
             lidarModel.setLidarData(new DateTime(startDate, DateTimeZone.UTC),
                     new DateTime(endDate, DateTimeZone.UTC),
-                    bb,
+                    cubeList,
                     selectionRegionCenter,
                     selectionRegionRadius,
                     direction* -1.0,
@@ -455,18 +456,28 @@ abstract public class LidarSearchPanel extends javax.swing.JPanel implements Pro
 
         AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
         SmallBodyModel smallBodyModel = (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
-        BoundingBox bb = null;
+        TreeSet<Integer> cubeList = null;
         double[] selectionRegionCenter = null;
         double selectionRegionRadius = 0.0;
         if (selectionModel.getNumberOfStructures() > 0)
         {
             AbstractEllipsePolygonModel.EllipsePolygon region = (AbstractEllipsePolygonModel.EllipsePolygon)selectionModel.getStructure(0);
-
-            vtkPolyData interiorPoly = new vtkPolyData();
-            smallBodyModel.drawRegularPolygonLowRes(region.center, region.radius, region.numberOfSides, interiorPoly, null);
-            bb = new BoundingBox(interiorPoly.GetBounds());
             selectionRegionCenter = region.center;
             selectionRegionRadius = region.radius;
+
+            // Always use the lowest resolution model for getting the intersection cubes list.
+            // Therefore, if the selection region was created using a higher resolution model,
+            // we need to recompute the selection region using the low res model.
+            if (smallBodyModel.getModelResolution() > 0)
+            {
+                vtkPolyData interiorPoly = new vtkPolyData();
+                smallBodyModel.drawRegularPolygonLowRes(region.center, region.radius, region.numberOfSides, interiorPoly, null);
+                cubeList = smallBodyModel.getIntersectingCubes(new BoundingBox(interiorPoly.GetBounds()));
+            }
+            else
+            {
+                cubeList = smallBodyModel.getIntersectingCubes(new BoundingBox(region.interiorPolyData.GetBounds()));
+            }
         }
         else
         {
@@ -480,21 +491,8 @@ abstract public class LidarSearchPanel extends javax.swing.JPanel implements Pro
 
         Picker.setPickingEnabled(false);
 
-        // Download file so progress bar shows up if necessary
-        boolean success = FileDownloadSwingWorker.downloadFile(
-                this,
-                "Downloading Lidar Database",
-                lidarModel.getDatabasePath(),
-                false);
-
-        if (success)
-        {
-            // Add a small buffer to bounding box
-            bb.increaseSize(0.01);
-
-            showData(1, true, bb, selectionRegionCenter, selectionRegionRadius);
-            radialOffsetChanger.reset();
-        }
+        showData(1, true, cubeList, selectionRegionCenter, selectionRegionRadius);
+        radialOffsetChanger.reset();
 
         Picker.setPickingEnabled(true);
     }//GEN-LAST:event_submitButtonActionPerformed
