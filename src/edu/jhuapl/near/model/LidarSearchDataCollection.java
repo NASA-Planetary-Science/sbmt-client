@@ -12,6 +12,7 @@ import java.io.InputStreamReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TreeSet;
@@ -138,8 +139,6 @@ public abstract class LidarSearchDataCollection extends Model
             TreeSet<Integer> cubeList,
             double[] selectionRegionCenter,
             double selectionRegionRadius,
-            double maskValue,
-            boolean reset,
             long timeSeparationBetweenTracks,
             int minTrackLength) throws IOException, ParseException
     {
@@ -286,6 +285,9 @@ public abstract class LidarSearchDataCollection extends Model
 
             in.close();
         }
+
+        // Sort points in time order
+        Collections.sort(originalPoints);
 
         computeTracks();
         removeTracksThatAreTooSmall();

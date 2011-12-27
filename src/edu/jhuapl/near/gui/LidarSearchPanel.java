@@ -96,8 +96,6 @@ abstract public class LidarSearchPanel extends javax.swing.JPanel implements Pro
     abstract protected String getLidarModelName();
 
     private void showData(
-            int direction,
-            boolean reset,
             TreeSet<Integer> cubeList,
             double[] selectionRegionCenter,
             double selectionRegionRadius)
@@ -129,8 +127,6 @@ abstract public class LidarSearchPanel extends javax.swing.JPanel implements Pro
                     cubeList,
                     selectionRegionCenter,
                     selectionRegionRadius,
-                    direction* -1.0,
-                    reset,
                     Math.round(1000.0*timeSeparationBetweenTracks), // convert to milliseconds
                     minTrackLength);
         }
@@ -491,7 +487,7 @@ abstract public class LidarSearchPanel extends javax.swing.JPanel implements Pro
 
         Picker.setPickingEnabled(false);
 
-        showData(1, true, cubeList, selectionRegionCenter, selectionRegionRadius);
+        showData(cubeList, selectionRegionCenter, selectionRegionRadius);
         radialOffsetChanger.reset();
 
         Picker.setPickingEnabled(true);
