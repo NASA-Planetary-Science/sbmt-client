@@ -334,7 +334,7 @@ double funcAdolc(const double* coef, void* params)
     adouble funcValueA = 0.0;
     adouble fitErrorA = 0.0;
     adouble rangeErrorA = 0.0;
-    adouble ptA[3];
+    adouble scposA[3];
     adouble errorA;
     adouble t = 0.0;
     adouble intersectPt[3];
@@ -358,9 +358,9 @@ double funcAdolc(const double* coef, void* params)
             double t = pt.time - startTime;
             gsl_bspline_eval(t, p->B[k], p->bw[k]);
 
-            vdotgAdolc(startCoef, gsl_vector_const_ptr(p->B[k], 0), p->ncoeffsPerDim, &ptA[k]);
+            vdotgAdolc(startCoef, gsl_vector_const_ptr(p->B[k], 0), p->ncoeffsPerDim, &scposA[k]);
             double valMeasured = pt.scpos[k];
-            errorA = ptA[k] - valMeasured;
+            errorA = scposA[k] - valMeasured;
             fitErrorA += errorA*errorA;
         }
 
@@ -374,9 +374,10 @@ double funcAdolc(const double* coef, void* params)
             double closestPoint[3];
             double normal[3];
             SpiceBoolean found;
+            double scpos[3] = {scposA[0].value(), scposA[1].value(), scposA[2].value()};
 
             // Compute intersection with asteroid
-            findClosestPointAndNormalDsk(pt.scpos, pt.boredir, closestPoint, normal, &found);
+            findClosestPointAndNormalDsk(scpos, pt.boredir, closestPoint, normal, &found);
 
             if (!found)
             {
@@ -401,19 +402,19 @@ double funcAdolc(const double* coef, void* params)
             // computing a gradient it is okay to assume that the
             // plate the ray intersects has infinite extent.
             
-            t = -(a*ptA[0] + b*ptA[1] + c*ptA[2] + d) /
+            t = -(a*scposA[0] + b*scposA[1] + c*scposA[2] + d) /
                 (a*pt.boredir[0] + b*pt.boredir[1] + c*pt.boredir[2]);
 
-            intersectPt[0] = ptA[0] + t*pt.boredir[0];
-            intersectPt[1] = ptA[1] + t*pt.boredir[1];
-            intersectPt[2] = ptA[2] + t*pt.boredir[2];
+            intersectPt[0] = scposA[0] + t*pt.boredir[0];
+            intersectPt[1] = scposA[1] + t*pt.boredir[1];
+            intersectPt[2] = scposA[2] + t*pt.boredir[2];
 
             // do sanity check to make sure intersectPt is same as closestPoint
 
             // compute distance between spacecraft position and intersect point.
-            vec[0] = intersectPt[0] - ptA[0];
-            vec[1] = intersectPt[1] - ptA[1];
-            vec[2] = intersectPt[2] - ptA[2];
+            vec[0] = intersectPt[0] - scposA[0];
+            vec[1] = intersectPt[1] - scposA[1];
+            vec[2] = intersectPt[2] - scposA[2];
 
             dist = vec[0]*vec[0] + vec[1]*vec[1] + vec[2]*vec[2];
             dist = sqrt(dist);
@@ -583,7 +584,7 @@ void optimizeTrack(int startId, int trackSize, SolverType solverType)
     int endPoint = startId + trackSize;
         
     FunctionParams params;
-    params.weight = 0.5;
+    params.weight = 1.0;
     bool success = doInitialFit(startId, trackSize, &params);
     if (!success)
     {

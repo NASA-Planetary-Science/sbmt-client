@@ -122,8 +122,8 @@ void optimizeGsl(double (*function)(const double*, void *externalParams),
     for (i=0;i<N;++i)
         gsl_vector_set (x, i, minimizer[i]);
 
-    /*T = gsl_multimin_fdfminimizer_conjugate_fr;*/
-    T = gsl_multimin_fdfminimizer_vector_bfgs2;
+    T = gsl_multimin_fdfminimizer_conjugate_pr;
+    /*T = gsl_multimin_fdfminimizer_vector_bfgs2;*/
     s = gsl_multimin_fdfminimizer_alloc (T, N);
 
     gsl_multimin_fdfminimizer_set (s, &my_func, x, 0.01, 1e-4);
