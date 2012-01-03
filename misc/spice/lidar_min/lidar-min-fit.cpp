@@ -51,7 +51,10 @@ typedef enum BodyType
 #define USE_VTK_ICP 0
 #define MAX_TRACK_EXTENT 0.1
 #define NOISE_THRESHOLD 0.01
-
+#define SC_BSPLINE_ORDER 4
+#define SC_BSPLINE_KNOT_SPACING 60.0
+#define POINTING_BSPLINE_ORDER 3
+#define POINTING_BSPLINE_KNOT_SPACING 60.0
 
 /************************************************************************
 * Structure for storing a lidar point
@@ -71,10 +74,11 @@ struct FunctionParams
 {
     int startPoint;
     int endPoint;
-    int ncoeffsPerDim;
-    gsl_bspline_workspace* bw[3];
-    gsl_vector* B[3];
-    gsl_vector* c[3];
+    int ncoeffsPerDimSc;
+    int ncoeffsPerDimPointing;
+    gsl_bspline_workspace* bw[6];
+    gsl_vector* B[6];
+    gsl_vector* c[6];
     double weight;
 };
 
@@ -102,6 +106,7 @@ int g_stopPoint;
 
 BodyType g_bodyType;
 
+bool g_estimatePointing = false;
 
 void printPoint(int i)
 {
@@ -266,7 +271,9 @@ double funcAdolc(const double* coef, void* params)
 {
     // First evaluate the splines using the coefficients
     FunctionParams* p = (FunctionParams*)params;
-    int N = 3*p->ncoeffsPerDim;
+    int N = 3*p->ncoeffsPerDimSc;
+    if (g_estimatePointing)
+        N += 3*p->ncoeffsPerDimPointing;
 
     int startId = p->startPoint;
     int endPoint = p->endPoint;
@@ -278,6 +285,7 @@ double funcAdolc(const double* coef, void* params)
     adouble fitErrorA = 0.0;
     adouble rangeErrorA = 0.0;
     adouble scposA[3];
+    adouble boredirA[3];
     adouble errorA;
     adouble t = 0.0;
     adouble intersectPt[3];
@@ -293,18 +301,33 @@ double funcAdolc(const double* coef, void* params)
     for (int i = startId; i < endPoint; ++i)
     {
         struct LidarPoint pt = g_points[i];
+        double time = pt.time - startTime;
 
         for (int k=0; k<3; ++k)
         {
-            const adouble* startCoef = &coefA[k*p->ncoeffsPerDim];
+            const adouble* startCoef = &coefA[k*p->ncoeffsPerDimSc];
         
-            double t = pt.time - startTime;
-            gsl_bspline_eval(t, p->B[k], p->bw[k]);
+            gsl_bspline_eval(time, p->B[k], p->bw[k]);
 
-            vdotgAdolc(startCoef, gsl_vector_const_ptr(p->B[k], 0), p->ncoeffsPerDim, &scposA[k]);
+            vdotgAdolc(startCoef, gsl_vector_const_ptr(p->B[k], 0), p->ncoeffsPerDimSc, &scposA[k]);
             double valMeasured = pt.scpos[k];
             errorA = scposA[k] - valMeasured;
             fitErrorA += errorA*errorA;
+        }
+
+        if (g_estimatePointing)
+        {
+            for (int k=3; k<6; ++k)
+            {
+                const adouble* startCoef = &coefA[3*p->ncoeffsPerDimSc + (k-3)*p->ncoeffsPerDimPointing];
+
+                gsl_bspline_eval(time, p->B[k], p->bw[k]);
+
+                vdotgAdolc(startCoef, gsl_vector_const_ptr(p->B[k], 0), p->ncoeffsPerDimSc, &boredirA[k-3]);
+                double valMeasured = pt.boredir[k-3];
+                errorA = boredirA[k-3] - valMeasured;
+                fitErrorA += errorA*errorA;
+            }
         }
 
         if (p->weight > 0.0)
@@ -320,7 +343,15 @@ double funcAdolc(const double* coef, void* params)
             double scpos[3] = {scposA[0].value(), scposA[1].value(), scposA[2].value()};
 
             // Compute intersection with asteroid
-            findClosestPointAndNormalDsk(scpos, pt.boredir, closestPoint, normal, &found);
+            if (g_estimatePointing)
+            {
+                double boredir[3] = {boredirA[0].value(), boredirA[1].value(), boredirA[2].value()};
+                findClosestPointAndNormalDsk(scpos, boredir, closestPoint, normal, &found);
+            }
+            else
+            {
+                findClosestPointAndNormalDsk(scpos, pt.boredir, closestPoint, normal, &found);
+            }
 
             if (!found)
             {
@@ -345,14 +376,24 @@ double funcAdolc(const double* coef, void* params)
             // computing a gradient it is okay to assume that the
             // plate the ray intersects has infinite extent.
             
-            t = -(a*scposA[0] + b*scposA[1] + c*scposA[2] + d) /
-                (a*pt.boredir[0] + b*pt.boredir[1] + c*pt.boredir[2]);
+            if (g_estimatePointing)
+            {
+                t = -(a*scposA[0] + b*scposA[1] + c*scposA[2] + d) /
+                        (a*boredirA[0] + b*boredirA[1] + c*boredirA[2]);
+                intersectPt[0] = scposA[0] + t*boredirA[0];
+                intersectPt[1] = scposA[1] + t*boredirA[1];
+                intersectPt[2] = scposA[2] + t*boredirA[2];
+            }
+            else
+            {
+                t = -(a*scposA[0] + b*scposA[1] + c*scposA[2] + d) /
+                        (a*pt.boredir[0] + b*pt.boredir[1] + c*pt.boredir[2]);
+                intersectPt[0] = scposA[0] + t*pt.boredir[0];
+                intersectPt[1] = scposA[1] + t*pt.boredir[1];
+                intersectPt[2] = scposA[2] + t*pt.boredir[2];
+            }
 
-            intersectPt[0] = scposA[0] + t*pt.boredir[0];
-            intersectPt[1] = scposA[1] + t*pt.boredir[1];
-            intersectPt[2] = scposA[2] + t*pt.boredir[2];
-
-            // do sanity check to make sure intersectPt is same as closestPoint
+            // TODO do sanity check to make sure intersectPt is same as closestPoint
 
             // compute distance between spacecraft position and intersect point.
             vec[0] = intersectPt[0] - scposA[0];
@@ -382,7 +423,9 @@ double funcAdolc(const double* coef, void* params)
 void gradAdolc(const double* coef, double* df, void* params)
 {
     FunctionParams* p = (FunctionParams*)params;
-    int N = 3*p->ncoeffsPerDim;
+    int N = 3*p->ncoeffsPerDimSc;
+    if (g_estimatePointing)
+        N += 3*p->ncoeffsPerDimPointing;
 
     funcAdolc(coef, params); // return value not used
     gradient(1,N,coef,df);
@@ -398,17 +441,9 @@ bool doInitialFit(int startId, int trackSize, FunctionParams* params)
     double t0 = 0.0;
     double t1 = g_points[endPoint-1].time - g_points[startId].time;
 
-    /* nbreak = ncoeffs + 2 - k = ncoeffs - 2 since k = 4 */
     const int n = trackSize;
-    int ncoeffs = (int)(t1 / 60.0);
-    if (ncoeffs < 5)
-        ncoeffs = 5;
-    if (n < ncoeffs)
-        ncoeffs = n;
-    cout << "ncoeffs: " << ncoeffs << endl;
-    cout << "t0: " << t0 << endl;
-    cout << "t1: " << t1 << endl;
-    const int nbreak = ncoeffs - 2;
+    int ncoeffs;
+    int nbreak;
     int i, j, k;
     gsl_bspline_workspace *bw;
     gsl_vector *B;
@@ -420,13 +455,41 @@ bool doInitialFit(int startId, int trackSize, FunctionParams* params)
 
     params->startPoint = startId;
     params->endPoint = endPoint;
-    params->ncoeffsPerDim = ncoeffs;
     
-    for (k=0; k<3; ++k)
+    const int maxK = g_estimatePointing ? 6 : 3;
+    for (k=0; k < maxK; ++k)
     {
+        if (k < 3)
+        {
+            ncoeffs = (int)(t1 / SC_BSPLINE_KNOT_SPACING);
+            if (ncoeffs < 5)
+                ncoeffs = 5;
+            if (n < ncoeffs)
+                ncoeffs = n;
+            nbreak = ncoeffs + 2 - SC_BSPLINE_ORDER;
+            params->ncoeffsPerDimSc = ncoeffs;
 
-        /* allocate a cubic bspline workspace (k = 4) */
-        bw = gsl_bspline_alloc(4, nbreak);
+            /* allocate a cubic bspline workspace (k = 4) */
+            bw = gsl_bspline_alloc(SC_BSPLINE_ORDER, nbreak);
+        }
+        else
+        {
+            ncoeffs = (int)(t1 / POINTING_BSPLINE_KNOT_SPACING);
+            if (ncoeffs < 5)
+                ncoeffs = 5;
+            if (n < ncoeffs)
+                ncoeffs = n;
+            nbreak = ncoeffs + 2 - POINTING_BSPLINE_ORDER;
+            params->ncoeffsPerDimPointing = ncoeffs;
+
+            /* allocate a bspline workspace */
+            bw = gsl_bspline_alloc(POINTING_BSPLINE_ORDER, nbreak);
+        }
+
+        cout << "ncoeffs: " << ncoeffs << endl;
+        cout << "t0: " << t0 << endl;
+        cout << "t1: " << t1 << endl;
+
         B = gsl_vector_alloc(ncoeffs);
 
         x = gsl_vector_alloc(n);
@@ -447,6 +510,10 @@ bool doInitialFit(int startId, int trackSize, FunctionParams* params)
         {
             gsl_vector_set(x, j, g_points[i].time - g_points[startId].time);
             gsl_vector_set(y, j, g_points[i].scpos[k]);
+            if (k < 3)
+                gsl_vector_set(y, j, g_points[i].scpos[k]);
+            else
+                gsl_vector_set(y, j, g_points[i].boredir[k-3]);
             gsl_vector_set(w, j, 1.0);
         }
 
@@ -498,7 +565,7 @@ bool doInitialFit(int startId, int trackSize, FunctionParams* params)
 
                 meanError += error;
             }
-            printf("mean error: %f\n", meanError / (double)n);
+            printf("%d: mean error: %f\n", k, meanError / (double)n);
         }
         
         
@@ -543,25 +610,32 @@ void optimizeTrack(int startId, int trackSize)
     // put computed coefficients into single array
     vector<double> coeffs;
     for (int i=0; i<3; ++i)
-        for (int j=0; j<params.ncoeffsPerDim; ++j)
+        for (int j=0; j<params.ncoeffsPerDimSc; ++j)
             coeffs.push_back(gsl_vector_get(params.c[i],j));
-    
+
+    if (g_estimatePointing)
+    {
+        for (int i=3; i<6; ++i)
+            for (int j=0; j<params.ncoeffsPerDimPointing; ++j)
+                coeffs.push_back(gsl_vector_get(params.c[i],j));
+    }
+
     /* Now do full optimization */
 //    optimizeGsl(func, grad, &coeffs[0], 3*params.ncoeffsPerDim, &params); 
-    optimizeGsl(funcAdolc, gradAdolc, &coeffs[0], 3*params.ncoeffsPerDim, &params); 
+    optimizeGsl(funcAdolc, gradAdolc, &coeffs[0], 3*params.ncoeffsPerDimSc, &params);
 
     // Now evaluate the splines using the new coefficients
+    double startTime = g_points[startId].time;
     for (int k=0; k<3; ++k)
     {
-        const double* startCoef = &coeffs[k*params.ncoeffsPerDim];
-        double startTime = g_points[startId].time;
+        const double* startCoef = &coeffs[k*params.ncoeffsPerDimSc];
         
         for (int i = startId; i < endPoint; ++i)
         {
             double t = g_points[i].time - startTime;
             gsl_bspline_eval(t, params.B[k], params.bw[k]);
 
-            double valFit = vdotg(startCoef, gsl_vector_const_ptr(params.B[k], 0), params.ncoeffsPerDim);
+            double valFit = vdotg(startCoef, gsl_vector_const_ptr(params.B[k], 0), params.ncoeffsPerDimSc);
             //double valMeasured = g_points[i].scpos[k];
             //double error = valFit - valMeasured;
 
@@ -571,11 +645,34 @@ void optimizeTrack(int startId, int trackSize)
         }
     }
 
-    // Free memory
-    for (int i=0; i<3; ++i)
+    if (g_estimatePointing)
     {
-        gsl_bspline_free(params.bw[i]);
-        gsl_vector_free(params.B[i]);
+        for (int k=3; k<6; ++k)
+        {
+            const double* startCoef = &coeffs[3*params.ncoeffsPerDimSc + k*params.ncoeffsPerDimPointing];
+
+            for (int i = startId; i < endPoint; ++i)
+            {
+                double t = g_points[i].time - startTime;
+                gsl_bspline_eval(t, params.B[k], params.bw[k]);
+
+                double valFit = vdotg(startCoef, gsl_vector_const_ptr(params.B[k], 0), params.ncoeffsPerDimPointing);
+                //double valMeasured = g_points[i].boredir[k-3];
+                //double error = valFit - valMeasured;
+
+                g_pointsOptimized[i].boredir[k-3] = valFit;
+            }
+        }
+    }
+
+    // Free memory
+    for (int i=0; i<6; ++i)
+    {
+        if (i < 3 || g_estimatePointing)
+        {
+            gsl_bspline_free(params.bw[i]);
+            gsl_vector_free(params.B[i]);
+        }
     }
     
     printf("Finished optimizing track\n\n\n\n");
