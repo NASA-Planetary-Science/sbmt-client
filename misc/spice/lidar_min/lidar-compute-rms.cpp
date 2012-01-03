@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include <math.h>
 #include <vector>
 #include "SpiceUsr.h"
@@ -24,6 +25,12 @@ struct LidarPoint
     double range;
 };
 
+typedef enum BodyType
+{
+    ITOKAWA,
+    EROS
+} BodyType;
+
 
 /************************************************************************
 * Global varaiables
@@ -36,11 +43,11 @@ std::vector<LidarPoint> g_points;
 * Function which loads points from "tab" files into points
 * global variable
 ************************************************************************/
-void loadPoints(int argc, char** argv)
+void loadPoints(int argc, char** argv, BodyType bodyType)
 {
     printf("Loading data\n");
     int i;
-    for (i=2; i<argc; ++i)
+    for (i=3; i<argc; ++i)
     {
         const char* filename = argv[i];
         FILE *f = fopen(filename, "r");
@@ -62,9 +69,43 @@ void loadPoints(int argc, char** argv)
         
         while ( fgets ( line, sizeof line, f ) != NULL ) /* read a line */
         {
-            sscanf(line, "%*s %s %lf %lf %lf %lf %lf %lf %lf", utc, &range, &sx, &sy, &sz, &x, &y, &z);
-
             struct LidarPoint point;
+
+            
+            if (bodyType == ITOKAWA)
+            {
+                sscanf(line, "%*s %s %lf %lf %lf %lf %lf %lf %lf", utc, &range, &sx, &sy, &sz, &x, &y, &z);
+            }
+            else if (bodyType == EROS)
+            {
+                int noise;
+                double sclon;
+                double sclat;
+                double scrdst;
+                sscanf(line, "%*s %*s %*s %*s %s %lf %*s %d %lf %lf %lf %*s %*s %*s %lf %lf %lf",
+                       utc,
+                       &point.range,
+                       &noise,
+                       &sclon,
+                       &sclat,
+                       &scrdst,
+                       &x,
+                       &y,
+                       &z);
+
+                if (noise == 1)
+                    continue;
+
+                point.range /= 1000.0;
+                
+                x /= 1000.0;
+                y /= 1000.0;
+                z /= 1000.0;
+                
+                scrdst /= 1000.0;
+                latrec_c(scrdst, sclon, sclat, point.scpos);
+            }            
+            
             point.range = range;
             point.scpos[0] = sx;
             point.scpos[1] = sy;
@@ -142,11 +183,16 @@ void computeRMS()
 ************************************************************************/
 int main(int argc, char** argv)
 {
-    char* dskfile = argv[1];
+    char* body = argv[1];
+    char* dskfile = argv[2];
 
     initializeDsk(dskfile);
 
-    loadPoints(argc, argv);
+    BodyType bodyType = EROS;
+    if (!strcmp(body, "ITOKAWA"))
+        bodyType = ITOKAWA;
+
+    loadPoints(argc, argv, bodyType);
 
     computeRMS();
     

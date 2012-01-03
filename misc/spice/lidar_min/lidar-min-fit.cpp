@@ -66,9 +66,9 @@ typedef enum BodyType
 ************************************************************************/
 struct LidarPoint
 {
-    char met[11];
+    char met[16];
     char utc[24];
-    char rangeStr[10];
+    char rangeStr[12];
     double range;
     double time;
     double scpos[3];
@@ -108,6 +108,7 @@ int g_startPoint;
 /* Stop point to end optimization with */
 int g_stopPoint;
 
+BodyType g_bodyType;
 
 
 void printPoint(int i)
@@ -165,7 +166,7 @@ void vdotgAdolc ( const adouble   * v1,
 * Function which loads points from "tab" files into points
 * global variable
 ************************************************************************/
-void loadPoints(int argc, char** argv, BodyType bodyType)
+void loadPoints(int argc, char** argv)
 {
     printf("Loading data\n");
     int i;
@@ -189,7 +190,7 @@ void loadPoints(int argc, char** argv, BodyType bodyType)
         {
             struct LidarPoint point;
 
-            if (bodyType == ITOKAWA)
+            if (g_bodyType == ITOKAWA)
             {
                 sscanf(line, "%s %s %s %lf %lf %lf %lf %lf %lf",
                        point.met,
@@ -201,19 +202,39 @@ void loadPoints(int argc, char** argv, BodyType bodyType)
                        &x,
                        &y,
                        &z);
+
+                point.range = atof(point.rangeStr);
             }
-            else if (bodyType == EROS)
+            else if (g_bodyType == EROS)
             {
-                sscanf(line, "%*s %s %s %s %lf %lf %lf %lf %lf %lf",
-                       point.met,
+                int noise;
+                double sclon;
+                double sclat;
+                double scrdst;
+                sscanf(line, "%*s %*s %*s %*s %s %s %*s %d %lf %lf %lf %*s %*s %s %lf %lf %lf",
                        point.utc,
                        point.rangeStr,
-                       &point.scpos[0],
-                       &point.scpos[1],
-                       &point.scpos[2],
+                       &noise,
+                       &sclon,
+                       &sclat,
+                       &scrdst,
+                       point.met,
                        &x,
                        &y,
                        &z);
+
+                if (noise == 1)
+                    continue;
+
+                point.range = atof(point.rangeStr);
+                point.range /= 1000.0;
+                
+                x /= 1000.0;
+                y /= 1000.0;
+                z /= 1000.0;
+                
+                scrdst /= 1000.0;
+                latrec_c(scrdst, sclon, sclat, point.scpos);
             }
 
             point.boredir[0] = x - point.scpos[0];
@@ -223,8 +244,6 @@ void loadPoints(int argc, char** argv, BodyType bodyType)
             
             utc2et_c(point.utc, &point.time);
 
-            point.range = atof(point.rangeStr);
-            
             g_points.push_back(point);
         }
 
@@ -755,17 +774,37 @@ void savePointsOptimized(const char* outfile)
         targetpos[1] = point.scpos[1] + point.range*point.boredir[1];
         targetpos[2] = point.scpos[2] + point.range*point.boredir[2];
         
-        fprintf(fout, "%d %s %s %8s %.16e %.16e %.16e %.16e %.16e %.16e\n",
-                g_numberOptimizationsPerPoint[i],
-                point.met,
-                point.utc,
-                point.rangeStr,
-                point.scpos[0],
-                point.scpos[1],
-                point.scpos[2],
-                targetpos[0],
-                targetpos[1],
-                targetpos[2]);
+        if (g_bodyType == ITOKAWA)
+        {
+            fprintf(fout, "%d %s %s %8s %.16e %.16e %.16e %.16e %.16e %.16e\n",
+                    g_numberOptimizationsPerPoint[i],
+                    point.met,
+                    point.utc,
+                    point.rangeStr,
+                    point.scpos[0],
+                    point.scpos[1],
+                    point.scpos[2],
+                    targetpos[0],
+                    targetpos[1],
+                    targetpos[2]);
+        }
+        else if (g_bodyType == EROS)
+        {
+            double sclon;
+            double sclat;
+            double scrdst;
+            reclat_c(point.scpos, &scrdst, &sclon, &sclat);
+            fprintf(fout, "0 0 0 0 %s %s 0 0 %.16e %.16e %.16e 0 0 %s %.16e %.16e %.16e\n",
+                    point.utc,
+                    point.rangeStr,
+                    sclon,
+                    sclat,
+                    1000.0 * scrdst,
+                    point.met,
+                    1000.0 * targetpos[0],
+                    1000.0 * targetpos[1],
+                    1000.0 * targetpos[2]);
+        }
     }
 
     fclose ( fout );
@@ -779,7 +818,7 @@ void savePointsOptimized(const char* outfile)
 ************************************************************************/
 int main(int argc, char** argv)
 {
-    if (argc < 7)
+    if (argc < 8)
     {
         printf("Usage: lidar-min-icp <body> <dskfile> <start-point> <stop-point> <kernelfiles> <outputfile> <inputfile1> [<inputfile2> ...]\n");;
         return 1;
@@ -796,15 +835,15 @@ int main(int argc, char** argv)
 
 
     SolverType solverType = LIBLBFGS;
-    BodyType bodyType = EROS;
+    g_bodyType = EROS;
     if (!strcmp(body, "ITOKAWA"))
-        bodyType = ITOKAWA;
+        g_bodyType = ITOKAWA;
     
     initializeDsk(dskfile);
 
     furnsh_c(kernelfiles);
 
-    loadPoints(argc, argv, bodyType);
+    loadPoints(argc, argv);
 
     optimizeAllTracks(solverType);
     
