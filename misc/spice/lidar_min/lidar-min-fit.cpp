@@ -53,8 +53,8 @@ typedef enum BodyType
 #define NOISE_THRESHOLD 0.01
 #define SC_BSPLINE_ORDER 4
 #define SC_BSPLINE_KNOT_SPACING 60.0
-#define POINTING_BSPLINE_ORDER 3
-#define POINTING_BSPLINE_KNOT_SPACING 60.0
+#define POINTING_BSPLINE_ORDER 4
+#define POINTING_BSPLINE_KNOT_SPACING 20.0
 
 /************************************************************************
 * Structure for storing a lidar point
@@ -182,9 +182,11 @@ void loadPoints(int argc, char** argv)
         double x;
         double y;
         double z;
+        int count = -1;
         
         while ( fgets ( line, LINE_SIZE, f ) != NULL ) /* read a line */
         {
+            ++count;
             struct LidarPoint point;
 
             if (g_bodyType == ITOKAWA)
@@ -204,6 +206,9 @@ void loadPoints(int argc, char** argv)
             }
             else if (g_bodyType == EROS)
             {
+                if (count < 2)
+                    continue;
+                
                 int noise;
                 double sclon;
                 double sclat;
@@ -231,7 +236,7 @@ void loadPoints(int argc, char** argv)
                 z /= 1000.0;
                 
                 scrdst /= 1000.0;
-                latrec_c(scrdst, sclon, sclat, point.scpos);
+                latrec_c(scrdst, sclon*M_PI/180.0, sclat*M_PI/180.0, point.scpos);
             }
 
             point.boredir[0] = x - point.scpos[0];
@@ -323,7 +328,7 @@ double funcAdolc(const double* coef, void* params)
 
                 gsl_bspline_eval(time, p->B[k], p->bw[k]);
 
-                vdotgAdolc(startCoef, gsl_vector_const_ptr(p->B[k], 0), p->ncoeffsPerDimSc, &boredirA[k-3]);
+                vdotgAdolc(startCoef, gsl_vector_const_ptr(p->B[k], 0), p->ncoeffsPerDimPointing, &boredirA[k-3]);
                 double valMeasured = pt.boredir[k-3];
                 errorA = boredirA[k-3] - valMeasured;
                 fitErrorA += errorA*errorA;
@@ -595,6 +600,8 @@ void optimizeTrack(int startId, int trackSize)
         
     FunctionParams params;
     params.weight = 1.0;
+    params.ncoeffsPerDimSc = 0;
+    params.ncoeffsPerDimPointing = 0;
     bool success = doInitialFit(startId, trackSize, &params);
     if (!success)
     {
@@ -621,8 +628,7 @@ void optimizeTrack(int startId, int trackSize)
     }
 
     /* Now do full optimization */
-//    optimizeGsl(func, grad, &coeffs[0], 3*params.ncoeffsPerDim, &params); 
-    optimizeGsl(funcAdolc, gradAdolc, &coeffs[0], 3*params.ncoeffsPerDimSc, &params);
+    optimizeGsl(funcAdolc, gradAdolc, &coeffs[0], 3*params.ncoeffsPerDimSc + 3*params.ncoeffsPerDimPointing, &params);
 
     // Now evaluate the splines using the new coefficients
     double startTime = g_points[startId].time;
@@ -649,7 +655,7 @@ void optimizeTrack(int startId, int trackSize)
     {
         for (int k=3; k<6; ++k)
         {
-            const double* startCoef = &coeffs[3*params.ncoeffsPerDimSc + k*params.ncoeffsPerDimPointing];
+            const double* startCoef = &coeffs[3*params.ncoeffsPerDimSc + (k-3)*params.ncoeffsPerDimPointing];
 
             for (int i = startId; i < endPoint; ++i)
             {
@@ -783,9 +789,15 @@ void savePointsOptimized(const char* outfile)
         struct LidarPoint point = g_pointsOptimized[i];
 
         double targetpos[3];
-        targetpos[0] = point.scpos[0] + point.range*point.boredir[0];
-        targetpos[1] = point.scpos[1] + point.range*point.boredir[1];
-        targetpos[2] = point.scpos[2] + point.range*point.boredir[2];
+
+        // normalize the bore direction since this vector might no longer
+        // be normalized as a result of the optimization.
+        double boredirUnit[3];
+        vhat_c(point.boredir, boredirUnit);
+
+        targetpos[0] = point.scpos[0] + point.range*boredirUnit[0];
+        targetpos[1] = point.scpos[1] + point.range*boredirUnit[1];
+        targetpos[2] = point.scpos[2] + point.range*boredirUnit[2];
         
         if (g_bodyType == ITOKAWA)
         {
@@ -810,8 +822,8 @@ void savePointsOptimized(const char* outfile)
             fprintf(fout, "0 0 0 0 %s %s 0 0 %.16e %.16e %.16e 0 0 %s %.16e %.16e %.16e\n",
                     point.utc,
                     point.rangeStr,
-                    sclon,
-                    sclat,
+                    sclon * 180.0 / M_PI,
+                    sclat * 180.0 / M_PI,
                     1000.0 * scrdst,
                     point.met,
                     1000.0 * targetpos[0],
