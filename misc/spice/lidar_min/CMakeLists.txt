@@ -25,7 +25,7 @@ optimize-gsl.c
 )
 target_link_libraries(lidar vtkHybrid dsklib_c cspice csupport lbfgs gsl gslcblas adolc)
 
-add_executable(lidar-min-icp lidar-min-icp.c)
+add_executable(lidar-min-icp lidar-min-icp.cpp)
 target_link_libraries(lidar-min-icp lidar)
 
 add_executable(lidar-min-fit lidar-min-fit.cpp)
