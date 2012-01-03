@@ -31,7 +31,7 @@ target_link_libraries(lidar-min-icp lidar)
 add_executable(lidar-min-fit lidar-min-fit.cpp)
 target_link_libraries(lidar-min-fit lidar)
 
-add_executable(lidar-compute-rms lidar-compute-rms.c)
+add_executable(lidar-compute-rms lidar-compute-rms.cpp)
 target_link_libraries(lidar-compute-rms lidar)
 
 add_executable(lidar-save-min-icp lidar-save-min-icp.c)
