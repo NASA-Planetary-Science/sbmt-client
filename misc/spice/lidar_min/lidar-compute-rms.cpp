@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
+#include <vector>
 #include "SpiceUsr.h"
 #include "closest-point.h"
 
@@ -8,7 +9,6 @@
 /************************************************************************
 * Constants
 ************************************************************************/
-#define MAX_NUMBER_POINTS 2000000
 #define LINE_SIZE 1024
 #define UTC_SIZE 128
 #define USE_VTK 0
@@ -30,8 +30,7 @@ struct LidarPoint
 ************************************************************************/
 
 /* Array for storing all lidar points */
-struct LidarPoint g_points[MAX_NUMBER_POINTS];
-int g_actual_number_points;
+std::vector<LidarPoint> g_points;
 
 /************************************************************************
 * Function which loads points from "tab" files into points
@@ -41,8 +40,7 @@ void loadPoints(int argc, char** argv)
 {
     printf("Loading data\n");
     int i;
-    int count = 0;
-    for (i=1; i<argc; ++i)
+    for (i=2; i<argc; ++i)
     {
         const char* filename = argv[i];
         FILE *f = fopen(filename, "r");
@@ -64,12 +62,6 @@ void loadPoints(int argc, char** argv)
         
         while ( fgets ( line, sizeof line, f ) != NULL ) /* read a line */
         {
-            if (count >= MAX_NUMBER_POINTS)
-            {
-                printf("Error: Max number of allowable points exceeded!");
-                exit(1);
-            }
-            
             sscanf(line, "%*s %s %lf %lf %lf %lf %lf %lf %lf", utc, &range, &sx, &sy, &sz, &x, &y, &z);
 
             struct LidarPoint point;
@@ -84,17 +76,14 @@ void loadPoints(int argc, char** argv)
             point.closestpoint[1] = 0.0;
             point.closestpoint[2] = 0.0;
             
-            g_points[count] = point;
-
-            ++count;
+            g_points.push_back(point);
         }
 
-        printf("points read %d\n", count);
+        printf("points read %ld\n", g_points.size());
         fflush(NULL);
         fclose ( f );
     }
     
-    g_actual_number_points = count;
     printf("Finished loading data\n\n\n");
 }
 
@@ -106,7 +95,8 @@ void computeRMS()
     double meanRangeError = 0.0;
     int numberWithNoIntersect = 0;
     int i;
-    for (i=0; i<g_actual_number_points; ++i)
+    int numPoints = g_points.size();
+    for (i=0; i<numPoints; ++i)
     {
         if (i % 1000 == 0)
             printf("finding closest point %d\n", i);
@@ -139,9 +129,9 @@ void computeRMS()
         meanRangeError += fabs(computedRange - pt.range);
     }
 
-    printf("RMS = %f\n", sqrt(rms/g_actual_number_points));
-    printf("Mean distance = %f\n", meanDist/g_actual_number_points);
-    printf("Mean range error = %f\n", meanRangeError/g_actual_number_points);
+    printf("RMS = %f\n", sqrt(rms/numPoints));
+    printf("Mean distance = %f\n", meanDist/numPoints);
+    printf("Mean range error = %f\n", meanRangeError/numPoints);
     printf("number with no intersect %d\n", numberWithNoIntersect);
 }
 
@@ -152,6 +142,10 @@ void computeRMS()
 ************************************************************************/
 int main(int argc, char** argv)
 {
+    char* dskfile = argv[1];
+
+    initializeDsk(dskfile);
+
     loadPoints(argc, argv);
 
     computeRMS();

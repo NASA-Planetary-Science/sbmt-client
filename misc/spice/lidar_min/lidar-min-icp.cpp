@@ -492,6 +492,8 @@ int main(int argc, char** argv)
     const char* const kernelfiles = argv[3];
     const char* const outfile = argv[4];
 
+    const char* dskfile = "/project/nearsdc/data/ITOKAWA/quad512q.bds";
+    initializeDsk(dskfile);
 
     SolverType solverType = LIBLBFGS;
     

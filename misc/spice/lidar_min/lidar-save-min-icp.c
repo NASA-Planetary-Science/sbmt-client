@@ -291,6 +291,9 @@ int main(int argc, char** argv)
     const char* const outputfile = argv[2];
     const char* const inputfile = argv[3];
 
+    const char* dskfile = "/project/nearsdc/data/ITOKAWA/quad512q.bds";
+    initializeDsk(dskfile);
+
     furnsh_c(kernelfiles);
 
     loadPoints(inputfile);

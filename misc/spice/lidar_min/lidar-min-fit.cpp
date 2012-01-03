@@ -40,11 +40,16 @@ typedef enum SolverType
     NR
 } SolverType;
 
+typedef enum BodyType
+{
+    ITOKAWA,
+    EROS
+} BodyType;
+
 
 /************************************************************************
 * Constants
 ************************************************************************/
-#define MAX_NUMBER_POINTS 2000000
 #define PATH_SIZE 256
 #define LINE_SIZE 1024
 #define UTC_SIZE 128
@@ -85,12 +90,11 @@ struct FunctionParams
 * Global varaiables
 ************************************************************************/
 
-/* Array for storing all lidar points */
-struct LidarPoint g_points[MAX_NUMBER_POINTS];
+std::vector<LidarPoint> g_points;
 
-struct LidarPoint g_pointsOptimized[MAX_NUMBER_POINTS];
+std::vector<LidarPoint> g_pointsOptimized;
 
-int g_numberOptimizationsPerPoint[MAX_NUMBER_POINTS];
+std::vector<int> g_numberOptimizationsPerPoint;
 
 /* The first point within the points variable to be optimized */
 //int g_trackStartPoint;
@@ -104,8 +108,6 @@ int g_startPoint;
 /* Stop point to end optimization with */
 int g_stopPoint;
 
-/* The actual number of points read in from the files */
-int g_actual_number_points;
 
 
 void printPoint(int i)
@@ -163,13 +165,12 @@ void vdotgAdolc ( const adouble   * v1,
 * Function which loads points from "tab" files into points
 * global variable
 ************************************************************************/
-void loadPoints(int argc, char** argv)
+void loadPoints(int argc, char** argv, BodyType bodyType)
 {
     printf("Loading data\n");
     int i;
-    int count = 0;
-    /* Element at index 5 of argv is start of input files */
-    for (i=5; i<argc; ++i)
+    /* Element at index 7 of argv is start of input files */
+    for (i=7; i<argc; ++i)
     {
         const char* filename = argv[i];
         FILE *f = fopen(filename, "r");
@@ -186,24 +187,34 @@ void loadPoints(int argc, char** argv)
         
         while ( fgets ( line, LINE_SIZE, f ) != NULL ) /* read a line */
         {
-            if (count >= MAX_NUMBER_POINTS)
-            {
-                printf("Error: Max number of allowable points exceeded!");
-                exit(1);
-            }
-            
             struct LidarPoint point;
 
-            sscanf(line, "%s %s %s %lf %lf %lf %lf %lf %lf",
-                   point.met,
-                   point.utc,
-                   point.rangeStr,
-                   &point.scpos[0],
-                   &point.scpos[1],
-                   &point.scpos[2],
-                   &x,
-                   &y,
-                   &z);
+            if (bodyType == ITOKAWA)
+            {
+                sscanf(line, "%s %s %s %lf %lf %lf %lf %lf %lf",
+                       point.met,
+                       point.utc,
+                       point.rangeStr,
+                       &point.scpos[0],
+                       &point.scpos[1],
+                       &point.scpos[2],
+                       &x,
+                       &y,
+                       &z);
+            }
+            else if (bodyType == EROS)
+            {
+                sscanf(line, "%*s %s %s %s %lf %lf %lf %lf %lf %lf",
+                       point.met,
+                       point.utc,
+                       point.rangeStr,
+                       &point.scpos[0],
+                       &point.scpos[1],
+                       &point.scpos[2],
+                       &x,
+                       &y,
+                       &z);
+            }
 
             point.boredir[0] = x - point.scpos[0];
             point.boredir[1] = y - point.scpos[1];
@@ -214,17 +225,14 @@ void loadPoints(int argc, char** argv)
 
             point.range = atof(point.rangeStr);
             
-            g_points[count] = point;
-
-            ++count;
+            g_points.push_back(point);
         }
 
-        printf("points read %d\n", count);
+        printf("points read %ld\n", g_points.size());
         fflush(NULL);
         fclose ( f );
     }
 
-    g_actual_number_points = count;
     printf("Finished loading data\n\n\n");
 }
 /*
@@ -645,8 +653,11 @@ void optimizeTrack(int startId, int trackSize, SolverType solverType)
 ************************************************************************/
 void initializePointsOptimized()
 {
+    int numPoints = g_points.size();
+    g_pointsOptimized.reserve(numPoints);
+    g_numberOptimizationsPerPoint.resize(numPoints);
     int i;
-    for (i=0; i<g_actual_number_points; ++i)
+    for (i=0; i<numPoints; ++i)
     {
         g_pointsOptimized[i]              = g_points[i];
         g_pointsOptimized[i].scpos[0]     = 0.0;
@@ -667,10 +678,11 @@ void initializePointsOptimized()
 int checkForBreakInTrack(int startId, int trackSize)
 {
     int i;
+    int numPoints = g_points.size();
     double t0 = g_points[startId].time;
     int endPoint = startId + trackSize;
-    if (endPoint > g_actual_number_points)
-        endPoint = g_actual_number_points;
+    if (endPoint > numPoints)
+        endPoint = numPoints;
 
     for (i=startId+1; i<endPoint; ++i)
     {
@@ -733,7 +745,8 @@ void savePointsOptimized(const char* outfile)
     }
 
     int i;
-    for (i=0; i<g_actual_number_points; ++i)
+    int numPoints = g_points.size();
+    for (i=0; i<numPoints; ++i)
     {
         struct LidarPoint point = g_pointsOptimized[i];
 
@@ -766,24 +779,32 @@ void savePointsOptimized(const char* outfile)
 ************************************************************************/
 int main(int argc, char** argv)
 {
-    if (argc < 6)
+    if (argc < 7)
     {
-        printf("Usage: lidar-min-icp <start-point> <stop-point> <kernelfiles> <outputfile> <inputfile1> [<inputfile2> ...]\n");;
+        printf("Usage: lidar-min-icp <body> <dskfile> <start-point> <stop-point> <kernelfiles> <outputfile> <inputfile1> [<inputfile2> ...]\n");;
         return 1;
     }
 
-    g_startPoint = atoi(argv[1]);
-    g_stopPoint  = atoi(argv[2]);
+    char* body = argv[1];
+    char* dskfile = argv[2];
 
-    const char* const kernelfiles = argv[3];
-    const char* const outfile = argv[4];
+    g_startPoint = atoi(argv[3]);
+    g_stopPoint  = atoi(argv[4]);
+
+    const char* const kernelfiles = argv[5];
+    const char* const outfile = argv[6];
 
 
     SolverType solverType = LIBLBFGS;
+    BodyType bodyType = EROS;
+    if (!strcmp(body, "ITOKAWA"))
+        bodyType = ITOKAWA;
     
+    initializeDsk(dskfile);
+
     furnsh_c(kernelfiles);
 
-    loadPoints(argc, argv);
+    loadPoints(argc, argv, bodyType);
 
     optimizeAllTracks(solverType);
     
