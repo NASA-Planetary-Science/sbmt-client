@@ -30,16 +30,8 @@ namespace
 {
 
 /************************************************************************
-* Enumeration listing available solvers
+* Enumeration listing available small bodies
 ************************************************************************/
-typedef enum SolverType
-{
-    LIBLBFGS,
-    GSL,
-    NLOPT,
-    NR
-} SolverType;
-
 typedef enum BodyType
 {
     ITOKAWA,
@@ -604,7 +596,7 @@ bool doInitialFit(int startId, int trackSize, FunctionParams* params)
 /************************************************************************
 * Does the optimization of a single track (Polynomial)
 ************************************************************************/
-void optimizeTrack(int startId, int trackSize, SolverType solverType)
+void optimizeTrack(int startId, int trackSize)
 {
     printf("Optimizing track starting at %d with size %d\n\n", startId, trackSize);
 
@@ -724,7 +716,7 @@ int checkForBreakInTrack(int startId, int trackSize)
 /************************************************************************
 * 
 ************************************************************************/
-void optimizeAllTracks(SolverType solverType)
+void optimizeAllTracks()
 {
     initializePointsOptimized();
 
@@ -737,7 +729,7 @@ void optimizeAllTracks(SolverType solverType)
         int endPoint = currentStartPoint + trackSize;
         if (endPoint > prevEndPoint)
         {
-            optimizeTrack(currentStartPoint, trackSize, solverType);
+            optimizeTrack(currentStartPoint, trackSize);
         }
         else
         {
@@ -834,7 +826,6 @@ int main(int argc, char** argv)
     const char* const outfile = argv[6];
 
 
-    SolverType solverType = LIBLBFGS;
     g_bodyType = EROS;
     if (!strcmp(body, "ITOKAWA"))
         g_bodyType = ITOKAWA;
@@ -845,7 +836,7 @@ int main(int argc, char** argv)
 
     loadPoints(argc, argv);
 
-    optimizeAllTracks(solverType);
+    optimizeAllTracks();
     
     savePointsOptimized(outfile);
 
