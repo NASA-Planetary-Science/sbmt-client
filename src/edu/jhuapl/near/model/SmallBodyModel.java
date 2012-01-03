@@ -105,6 +105,7 @@ public class SmallBodyModel extends Model
     private vtkIdList idList; // to avoid repeated allocations
     private vtkUnsignedCharArray colorData;
     private vtkFloatArray gravityVector;
+    private boolean useAPLServer;
 
     // Does this class support false coloring
     private boolean supportsFalseColoring = false;
@@ -144,6 +145,32 @@ public class SmallBodyModel extends Model
             ColoringValueType coloringValueType,
             boolean lowestResolutionModelStoredInResource)
     {
+        this(modelNames,
+                modelFiles,
+                coloringFiles,
+                coloringNames,
+                coloringUnits,
+                coloringHasNulls,
+                supportsFalseColoring,
+                imageMapNames,
+                coloringValueType,
+                lowestResolutionModelStoredInResource,
+                false);
+    }
+
+    public SmallBodyModel(
+            String[] modelNames,
+            String[] modelFiles,
+            String[] coloringFiles,
+            String[] coloringNames,
+            String[] coloringUnits,
+            boolean[] coloringHasNulls,
+            boolean supportsFalseColoring,
+            String[] imageMapNames,
+            ColoringValueType coloringValueType,
+            boolean lowestResolutionModelStoredInResource,
+            boolean useAPLServer)
+    {
         super(ModelNames.SMALL_BODY);
 
         this.modelNames = modelNames;
@@ -174,10 +201,12 @@ public class SmallBodyModel extends Model
         genericCell = new vtkGenericCell();
         idList = new vtkIdList();
 
+        this.useAPLServer = useAPLServer;
+
         if (lowestResolutionModelStoredInResource)
             defaultModelFile = ConvertResourceToFile.convertResourceToTempFile(this, modelFiles[0]);
         else
-            defaultModelFile = FileCache.getFileFromServer(modelFiles[0]);
+            defaultModelFile = FileCache.getFileFromServer(modelFiles[0], useAPLServer);
 
         initialize(defaultModelFile);
     }
@@ -906,13 +935,13 @@ public class SmallBodyModel extends Model
         switch(resolutionLevel)
         {
         case 1:
-            smallBodyFile = FileCache.getFileFromServer(modelFiles[1]);
+            smallBodyFile = FileCache.getFileFromServer(modelFiles[1], useAPLServer);
             break;
         case 2:
-            smallBodyFile = FileCache.getFileFromServer(modelFiles[2]);
+            smallBodyFile = FileCache.getFileFromServer(modelFiles[2], useAPLServer);
             break;
         case 3:
-            smallBodyFile = FileCache.getFileFromServer(modelFiles[3]);
+            smallBodyFile = FileCache.getFileFromServer(modelFiles[3], useAPLServer);
             break;
         }
 
@@ -959,7 +988,7 @@ public class SmallBodyModel extends Model
                     continue;
 
                 String filename = coloringFiles[i] + "_res" + resolutionLevel + ".txt.gz";
-                File file = FileCache.getFileFromServer(filename);
+                File file = FileCache.getFileFromServer(filename, useAPLServer);
                 if (file == null)
                     throw new IOException("Unable to download " + filename);
 
@@ -1224,7 +1253,7 @@ public class SmallBodyModel extends Model
         if (coloringValueType == ColoringValueType.POINT_DATA)
             return false;
 
-        File file = FileCache.getFileFromServer(filePath);
+        File file = FileCache.getFileFromServer(filePath, useAPLServer);
 
         gravityVector = new vtkFloatArray();
         gravityVector.SetNumberOfComponents(3);

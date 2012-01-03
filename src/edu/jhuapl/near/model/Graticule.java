@@ -38,8 +38,14 @@ public class Graticule extends Model implements PropertyChangeListener
     private vtkPolyDataReader reader;
     private String[] gridFiles;
     private double shiftFactor = 5.0;
+    private boolean useAPLServer = false;
 
     public Graticule(SmallBodyModel smallBodyModel, String[] gridFiles)
+    {
+        this(smallBodyModel, gridFiles, false);
+    }
+
+    public Graticule(SmallBodyModel smallBodyModel, String[] gridFiles, boolean useAPLServer)
     {
         super(ModelNames.GRATICULE);
 
@@ -50,6 +56,8 @@ public class Graticule extends Model implements PropertyChangeListener
         }
 
         this.gridFiles = gridFiles;
+        this.useAPLServer = useAPLServer;
+
         appendFilter = new vtkAppendPolyData();
         plane = new vtkPlane();
         cone = new vtkCone();
@@ -156,16 +164,16 @@ public class Graticule extends Model implements PropertyChangeListener
         switch(level)
         {
         case 1:
-            modelFile = FileCache.getFileFromServer(gridFiles[1]);
+            modelFile = FileCache.getFileFromServer(gridFiles[1], useAPLServer);
             break;
         case 2:
-            modelFile = FileCache.getFileFromServer(gridFiles[2]);
+            modelFile = FileCache.getFileFromServer(gridFiles[2], useAPLServer);
             break;
         case 3:
-            modelFile = FileCache.getFileFromServer(gridFiles[3]);
+            modelFile = FileCache.getFileFromServer(gridFiles[3], useAPLServer);
             break;
         default:
-            modelFile = FileCache.getFileFromServer(gridFiles[0]);
+            modelFile = FileCache.getFileFromServer(gridFiles[0], useAPLServer);
             break;
         }
 

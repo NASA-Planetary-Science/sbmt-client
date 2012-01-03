@@ -5,22 +5,22 @@ import edu.jhuapl.near.model.SmallBodyModel;
 public class VestaOld extends SmallBodyModel
 {
     static private final String[] modelNames = {
-            "VESTA-old"
+        "VESTA-old"
     };
 
     static private final String[] modelFiles = {
-            "/VESTA/VESTA.vtk.gz"
+        "/VESTA_OLD/VESTA.vtk.gz"
     };
 
     static private final String[] coloringFiles = {
-            "/VESTA/VESTA_Slope",
-            "/VESTA/VESTA_Elevation",
-            "/VESTA/VESTA_GravitationalAcceleration",
-            "/VESTA/VESTA_GravitationalPotential",
-            "/VESTA/VESTA_439",
-            "/VESTA/VESTA_673",
-            "/VESTA/VESTA_953",
-            "/VESTA/VESTA_1042"
+        "/VESTA_OLD/VESTA_Slope",
+        "/VESTA_OLD/VESTA_Elevation",
+        "/VESTA_OLD/VESTA_GravitationalAcceleration",
+        "/VESTA_OLD/VESTA_GravitationalPotential",
+        "/VESTA_OLD/VESTA_439",
+        "/VESTA_OLD/VESTA_673",
+        "/VESTA_OLD/VESTA_953",
+        "/VESTA_OLD/VESTA_1042"
     };
 
     static private final String[] coloringNames = {

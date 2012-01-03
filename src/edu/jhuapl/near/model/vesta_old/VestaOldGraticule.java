@@ -6,7 +6,7 @@ import edu.jhuapl.near.model.SmallBodyModel;
 public class VestaOldGraticule extends Graticule
 {
     static private final String[] gridFiles = {
-            "/VESTA/coordinate_grid_res0.vtk.gz"
+        "/VESTA_OLD/coordinate_grid_res0.vtk.gz"
     };
 
     public VestaOldGraticule(SmallBodyModel smallBodyModel)

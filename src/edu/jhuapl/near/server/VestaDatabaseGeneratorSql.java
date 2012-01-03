@@ -27,6 +27,7 @@ import edu.jhuapl.near.model.Image.ImageSource;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.vesta.FcImage;
 import edu.jhuapl.near.model.vesta.Vesta;
+import edu.jhuapl.near.util.Configuration;
 import edu.jhuapl.near.util.FileUtil;
 import edu.jhuapl.near.util.NativeLibraryLoader;
 
@@ -496,6 +497,8 @@ public class VestaDatabaseGeneratorSql
      */
     public static void main(String[] args) throws IOException
     {
+        Configuration.setAPLVersion(true);
+
         NativeLibraryLoader.loadVtkLibraries();
 
         vestaModel = new Vesta();
