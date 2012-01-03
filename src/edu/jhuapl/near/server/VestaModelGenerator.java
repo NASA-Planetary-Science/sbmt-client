@@ -66,8 +66,11 @@ public class VestaModelGenerator
                 BufferedWriter out = new BufferedWriter(fstream);
 
                 // Read in the first line which list the number of points and plates
-                String val = in.readLine().trim();
-                int numPoints = Integer.parseInt(val);
+                String[] val = in.readLine().trim().split("\\s+");
+                int numPoints = Integer.parseInt(val[0]);
+                int numPlates = -1;
+                if (val.length >= 2)
+                    numPlates = Integer.parseInt(val[1]);
 
                 out.write("# vtk DataFile Version 2.0\n");
                 out.write("VESTA\n");
@@ -81,8 +84,11 @@ public class VestaModelGenerator
                     out.write(vals[1] + " " + vals[2] + " " + vals[3] + "\n");
                 }
 
-                val = in.readLine().trim();
-                int numPlates = Integer.parseInt(val);
+                if (numPlates == -1)
+                {
+                    String numPlatesStr = in.readLine().trim();
+                    numPlates = Integer.parseInt(numPlatesStr);
+                }
 
                 out.write("POLYGONS " + numPlates + " " + (numPlates*4) + "\n");
 
