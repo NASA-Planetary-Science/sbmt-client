@@ -782,6 +782,12 @@ void savePointsOptimized(const char* outfile)
         exit(1);
     }
 
+    if (g_bodyType == EROS)
+    {
+        fprintf(fout, "Header line 1\n");
+        fprintf(fout, "Header line 2\n");
+    }
+
     int i;
     int numPoints = g_points.size();
     for (i=0; i<numPoints; ++i)
