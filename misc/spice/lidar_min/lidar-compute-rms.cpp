@@ -103,7 +103,7 @@ void loadPoints(int argc, char** argv, BodyType bodyType)
                 z /= 1000.0;
                 
                 scrdst /= 1000.0;
-                latrec_c(scrdst, sclon, sclat, point.scpos);
+                latrec_c(scrdst, sclon*M_PI/180.0, sclat*M_PI/180.0, point.scpos);
             }            
             
             point.range = range;
