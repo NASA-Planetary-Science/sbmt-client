@@ -21,7 +21,6 @@ struct LidarPoint
 {
     double scpos[3];
     double targetpos[3];
-    double closestpoint[3]; /* closest point on asteroid to targetpos */
     double range;
 };
 
@@ -59,25 +58,31 @@ void loadPoints(int argc, char** argv, BodyType bodyType)
 
         char line[LINE_SIZE];
         char utc[UTC_SIZE];
-        double range;
-        double sx;
-        double sy;
-        double sz;
-        double x;
-        double y;
-        double z;
         
+        int count = -1;
+
         while ( fgets ( line, sizeof line, f ) != NULL ) /* read a line */
         {
+            ++count;
             struct LidarPoint point;
-
             
             if (bodyType == ITOKAWA)
             {
-                sscanf(line, "%*s %s %lf %lf %lf %lf %lf %lf %lf", utc, &range, &sx, &sy, &sz, &x, &y, &z);
+                sscanf(line, "%*s %s %lf %lf %lf %lf %lf %lf %lf",
+                       utc,
+                       &point.range,
+                       &point.scpos[0],
+                       &point.scpos[1],
+                       &point.scpos[2],
+                       &point.targetpos[0],
+                       &point.targetpos[1],
+                       &point.targetpos[2]);
             }
             else if (bodyType == EROS)
             {
+                if (count < 2)
+                    continue;
+
                 int noise;
                 double sclon;
                 double sclat;
@@ -89,33 +94,22 @@ void loadPoints(int argc, char** argv, BodyType bodyType)
                        &sclon,
                        &sclat,
                        &scrdst,
-                       &x,
-                       &y,
-                       &z);
+                       &point.targetpos[0],
+                       &point.targetpos[1],
+                       &point.targetpos[2]);
 
                 if (noise == 1)
                     continue;
 
                 point.range /= 1000.0;
                 
-                x /= 1000.0;
-                y /= 1000.0;
-                z /= 1000.0;
+                point.targetpos[0] /= 1000.0;
+                point.targetpos[1] /= 1000.0;
+                point.targetpos[2] /= 1000.0;
                 
                 scrdst /= 1000.0;
                 latrec_c(scrdst, sclon*M_PI/180.0, sclat*M_PI/180.0, point.scpos);
             }            
-            
-            point.range = range;
-            point.scpos[0] = sx;
-            point.scpos[1] = sy;
-            point.scpos[2] = sz;
-            point.targetpos[0] = x;
-            point.targetpos[1] = y;
-            point.targetpos[2] = z;
-            point.closestpoint[0] = 0.0;
-            point.closestpoint[1] = 0.0;
-            point.closestpoint[2] = 0.0;
             
             g_points.push_back(point);
         }
