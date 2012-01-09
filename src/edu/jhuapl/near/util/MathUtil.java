@@ -65,7 +65,7 @@ public class MathUtil
     }
 
     /**
-     * Copied from SPICE
+     * compute magnitude of 3D vector. Copied from SPICE
      * @param v1
      * @return
      */
@@ -110,11 +110,12 @@ public class MathUtil
     }
 
     /**
+     * Compute magnitude of 3D vector vector and also normalize it.
      * Copied from spice.
      * Note unlike the original spice which takes a 3rd argument as output, here we return it from the function.
      * @param v1
-     * @param vout
-     * @return
+     * @param vout resultant normalized vector
+     * @return magnitude of v1
      */
     static public double unorm(double[] v1,
                                double[] vout)
@@ -153,6 +154,7 @@ public class MathUtil
     }
 
     /**
+     * Compute dot product of 2 3D vectors.
      * Copied from spice
      * @param v1
      * @param v2
@@ -164,10 +166,11 @@ public class MathUtil
     }
 
     /**
+     * Compute angular separation between 2 3D vectors.
      * Copied from spice
      * @param v1
      * @param v2
-     * @return
+     * @return angular separation between 2 3D vectors in radians
      */
     static public double vsep( double[] v1, double[] v2 )
     {
@@ -238,6 +241,7 @@ public class MathUtil
     }
 
     /**
+     * Normalize a 3D vector
      * Copied from spice
      * @param v1
      * @param vout
