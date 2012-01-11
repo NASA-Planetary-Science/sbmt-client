@@ -4,6 +4,7 @@
 #include <string>
 #include <cstdlib>
 #include <cmath>
+#include <libgen.h>
 extern "C"
 {
 #include "SpiceUsr.h"
@@ -328,18 +329,20 @@ int getFilter(string fitfilename)
 
   1. kernelfiles - a file containing the kernel files
   2. fit file list - a file containing a list of fit files to process, one per line
+  3. output folder - path to folder where infofiles should be saved to
 
 */
 int main(int argc, char** argv)
 {
-    if (argc < 3)
+    if (argc < 4)
     {
-        cerr << "Usage: create_info_files <kernelfiles> <fitfilelist>" << endl;
+        cerr << "Usage: create_info_files <kernelfiles> <fitfilelist> <outputfolder>" << endl;
         return 1;
     }
     
     string kernelfiles = argv[1];
     string fitfilelist = argv[2];
+    string outputfolder = argv[3];
 
     furnsh_c(kernelfiles.c_str());
 
@@ -379,9 +382,10 @@ int main(int argc, char** argv)
             continue;
 
         int length = fitfiles[i].size();
-        string infofilename = fitfiles[i].substr(0, length-4) + ".INFO";
+        string fitbasename = basename((char*)fitfiles[i].c_str());
+        string infofilename = outputfolder + "/" + fitbasename.substr(0, length-4) + ".INFO";
         saveInfoFile(infofilename, startutc, stoputc, scposb, boredir, updir, frustum, sunPosition);
-        cout << "finished " << fitfiles[i] << endl;
+        cout << "finished " << infofilename << endl;
     }
 
     return 0;

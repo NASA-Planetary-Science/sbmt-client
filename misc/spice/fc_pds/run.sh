@@ -2,9 +2,13 @@
 
 # Script for running the create_info_files program
 cd `dirname $0`
-DIR=`pwd`
 
-rm -rf /project/nearsdc/data-apl/VESTA/FC/infofiles/
-mkdir -p /project/nearsdc/data-apl/VESTA/FC/infofiles
-cd /project/nearsdc/data-apl/VESTA/FC/infofiles
-$DIR/create_info_files $DIR/kernels.txt /project/nearsdc/data-apl/VESTA/FC/dawn_searchresults.csv
+# Create a list of all fit files
+FC_DIR=/project/nearsdc/data-apl/VESTA/FC/images
+FC_FIT_FILES=/project/nearsdc/data/internal/allFcFiles.txt
+find -L $FC_DIR -name "*.FIT" -type f | sort > $FC_FIT_FILES
+
+INFO_DIR=/project/nearsdc/data-apl/VESTA/FC/infofiles
+rm -rf $INFO_DIR
+mkdir -p $INFO_DIR
+./create_info_files kernels.txt $FC_FIT_FILES /project/nearsdc/data-apl/VESTA/FC/infofiles
