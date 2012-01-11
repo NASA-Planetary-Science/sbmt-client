@@ -1,11 +1,7 @@
 package edu.jhuapl.near.server;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -47,7 +43,7 @@ public class VestaDatabaseGeneratorSql
     //static private double[] meanPlateSizes;
 
     // sumfiles listed in Gaskell's list. Only these are processed.
-    private static ArrayList<String> sumfileList = new ArrayList<String>();
+    //private static ArrayList<String> sumfileList = new ArrayList<String>();
 
     private static void createFcTables(String fcTableName)
     {
@@ -316,6 +312,7 @@ public class VestaDatabaseGeneratorSql
      * @param listFilename
      * @throws IOException
      */
+    /*
     private static void loadGaskellList(String sumfilelistFilename) throws IOException
     {
         InputStream fs = new FileInputStream(sumfilelistFilename);
@@ -336,7 +333,7 @@ public class VestaDatabaseGeneratorSql
 
         in.close();
     }
-
+     */
 
     static boolean checkIfAllFcFilesExist(String line, Image.ImageSource source)
     {
@@ -362,16 +359,16 @@ public class VestaDatabaseGeneratorSql
                 return false;
 
             // If the sumfile has no landmarks, then ignore it. Sumfiles that have no landmarks
-            // are 1296 bytes long
+            // are 1296 bytes long or less
             if (file.length() <= 1296)
                 return false;
 
             // Only process files that are listed in Gaskell's sumfile list
-            if (!sumfileList.contains(fcId))
-            {
-                System.out.println(fcId + " not in sumfile list");
-                return false;
-            }
+            //if (!sumfileList.contains(fcId))
+            //{
+            //    System.out.println(fcId + " not in sumfile list");
+            //    return false;
+            //}
         }
         else
         {
@@ -425,28 +422,29 @@ public class VestaDatabaseGeneratorSql
 
             // If two files have the same exact name preceding the first underscore,
             // but the part after the underscore is different, then only keep the
-            // file that is newer. The newer file should have a 'B' as the letter
-            // before the .FIT extension and the older should have an 'A'.
-            if (path.endsWith("A.FIT"))
+            // newer file. The newer file should have a higher letter
+            // before the .FIT extension.
             {
-                boolean found1B = false;
-
+                char version = path.charAt(path.length()-5);
                 String name = new File(path).getName();
                 name = name.substring(0, name.indexOf('_'));
 
+                boolean foundNewerVersion = false;
                 for (String path2 : fcFiles)
                 {
-                    if (path2.endsWith("B.FIT"))
-                    {
-                        String name2 = new File(path2).getName();
-                        name2 = name2.substring(0, name2.indexOf('_'));
+                    char version2 = path2.charAt(path.length()-5);
+                    String name2 = new File(path2).getName();
+                    name2 = name2.substring(0, name2.indexOf('_'));
 
-                        if (name.equals(name2))
-                            found1B = true;
+                    if (name.equals(name2) && version2 > version)
+                    {
+                        System.out.println("found newer version " + version + " " + version2 + " " + path + " " + path2);
+                        foundNewerVersion = true;
+                        break;
                     }
                 }
 
-                if (found1B)
+                if (foundNewerVersion)
                     continue;
             }
 
@@ -504,14 +502,14 @@ public class VestaDatabaseGeneratorSql
         vestaModel = new Vesta();
 
         String fcFileList=args[0];
-        String sumfilelistFilename=args[1];
+        //String sumfilelistFilename=args[1];
         int mode = Integer.parseInt(args[2]);
 
         ArrayList<String> fcFiles = null;
         try {
             fcFiles = FileUtil.getFileLinesAsStringList(fcFileList);
             fcFiles = removeRedundantAndWrongSizedFiles(fcFiles);
-            loadGaskellList(sumfilelistFilename);
+            //loadGaskellList(sumfilelistFilename);
         } catch (IOException e2) {
             e2.printStackTrace();
             return;
