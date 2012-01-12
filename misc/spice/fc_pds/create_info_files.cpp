@@ -381,8 +381,8 @@ int main(int argc, char** argv)
         if (failed_c())
             continue;
 
-        int length = fitfiles[i].size();
         string fitbasename = basename((char*)fitfiles[i].c_str());
+        int length = fitbasename.size();
         string infofilename = outputfolder + "/" + fitbasename.substr(0, length-4) + ".INFO";
         saveInfoFile(infofilename, startutc, stoputc, scposb, boredir, updir, frustum, sunPosition);
         cout << "finished " << infofilename << endl;
