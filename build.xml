@@ -20,7 +20,6 @@
     </copy>
     <javac srcdir="${rootdir}/src"
 		   destdir="${rootdir}/build/classes"
-		   excludes="edu/jhuapl/near/server/**"
 		   debug="off" >
       <classpath>
 		<pathelement location="${rootdir}/lib/vtksb.jar"/>
