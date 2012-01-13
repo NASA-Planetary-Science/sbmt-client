@@ -508,7 +508,7 @@ abstract public class AbstractImageSearchPanel extends javax.swing.JPanel implem
         gridBagConstraints.insets = new java.awt.Insets(6, 6, 0, 0);
         jPanel1.add(sourceLabel, gridBagConstraints);
 
-        sourceComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Gaskell derived", "PDS derived", "Gaskell derived (exclude PDS)", "PDS derived (exclude Gaskell)" }));
+        sourceComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Gaskell derived", "PDS derived", "PDS derived (exclude Gaskell)" }));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
