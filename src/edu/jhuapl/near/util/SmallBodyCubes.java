@@ -58,9 +58,9 @@ public class SmallBodyCubes
         boundingBox.zmin -= buffer;
 
 
-        numCubesX = (int)(Math.ceil(boundingBox.xmax - boundingBox.xmin) / cubeSize);
-        numCubesY = (int)(Math.ceil(boundingBox.ymax - boundingBox.ymin) / cubeSize);
-        numCubesZ = (int)(Math.ceil(boundingBox.zmax - boundingBox.zmin) / cubeSize);
+        numCubesX = (int)Math.ceil( (boundingBox.xmax - boundingBox.xmin) / cubeSize );
+        numCubesY = (int)Math.ceil( (boundingBox.ymax - boundingBox.ymin) / cubeSize );
+        numCubesZ = (int)Math.ceil( (boundingBox.zmax - boundingBox.zmin) / cubeSize );
 
         for (int k=0; k<numCubesZ; ++k)
         {
