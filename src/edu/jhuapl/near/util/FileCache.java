@@ -172,6 +172,8 @@ public class FileCache
     /**
      * Get (download) the file from the server. Place it in the cache for
      * future access.
+     * If the path begins with "file://", then the file is assumed to be local
+     * on disk and no server is contacted.
      *
      * @param path
      * @param useAPLServer whether or not to use the APL in-house server
@@ -179,11 +181,18 @@ public class FileCache
      */
     static public File getFileFromServer(String path, boolean useAPLServer)
     {
-        FileInfo fi = getFileInfoFromServer(path, true, useAPLServer);
-        if (fi != null)
-            return fi.file;
+        if (path.startsWith(FILE_PREFIX))
+        {
+            return new File(path.substring(FILE_PREFIX.length()));
+        }
         else
-            return null;
+        {
+            FileInfo fi = getFileInfoFromServer(path, true, useAPLServer);
+            if (fi != null)
+                return fi.file;
+            else
+                return null;
+        }
     }
 
     /**
@@ -210,10 +219,7 @@ public class FileCache
      */
     static public File getFileFromServer(String path)
     {
-        if (path.startsWith(FILE_PREFIX))
-            return new File(path.substring(FILE_PREFIX.length()));
-        else
-            return getFileFromServer(path, false);
+        return getFileFromServer(path, false);
     }
 
     /**
