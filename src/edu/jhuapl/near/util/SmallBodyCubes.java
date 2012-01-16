@@ -15,11 +15,8 @@ public class SmallBodyCubes
 {
     private BoundingBox boundingBox;
     private ArrayList<BoundingBox> allCubes = new ArrayList<BoundingBox>();
-    private double cubeSize = 1.0;
-    private double buffer = 0.01;
-    private int numCubesX;
-    private int numCubesY;
-    private int numCubesZ;
+    private final double cubeSize;
+    private final double buffer;
 
     /**
      * Create a cube set structure for the given model, where each cube has side <tt>cubeSize</tt>
@@ -58,9 +55,9 @@ public class SmallBodyCubes
         boundingBox.zmin -= buffer;
 
 
-        numCubesX = (int)Math.ceil( (boundingBox.xmax - boundingBox.xmin) / cubeSize );
-        numCubesY = (int)Math.ceil( (boundingBox.ymax - boundingBox.ymin) / cubeSize );
-        numCubesZ = (int)Math.ceil( (boundingBox.zmax - boundingBox.zmin) / cubeSize );
+        int numCubesX = (int)Math.ceil( (boundingBox.xmax - boundingBox.xmin) / cubeSize );
+        int numCubesY = (int)Math.ceil( (boundingBox.ymax - boundingBox.ymin) / cubeSize );
+        int numCubesZ = (int)Math.ceil( (boundingBox.zmax - boundingBox.zmin) / cubeSize );
 
         for (int k=0; k<numCubesZ; ++k)
         {
@@ -89,31 +86,18 @@ public class SmallBodyCubes
 
     private void removeEmptyCubes(vtkPolyData smallBodyPolyData)
     {
-        System.out.println("numCubesX " + numCubesX);
-        System.out.println("numCubesY " + numCubesY);
-        System.out.println("numCubesZ " + numCubesZ);
-
         System.out.println("total cubes before reduction = " + allCubes.size());
-        System.out.println("int[] erosIntersectingCubes = {");
 
         // Remove from allCubes all cubes that do not intersect the asteroid
-        long t0 = System.currentTimeMillis();
+        //long t0 = System.currentTimeMillis();
         TreeSet<Integer> intersectingCubes = getIntersectingCubes(smallBodyPolyData);
-        System.out.println("Time elapsed:  " + ((double)System.currentTimeMillis()-t0)/1000.0);
+        //System.out.println("Time elapsed:  " + ((double)System.currentTimeMillis()-t0)/1000.0);
 
         ArrayList<BoundingBox> tmpCubes = new ArrayList<BoundingBox>();
-        int count = 0;
         for (Integer i : intersectingCubes)
         {
             tmpCubes.add(allCubes.get(i));
-            System.out.print(i);
-            if (count < intersectingCubes.size()-1)
-                System.out.print(",");
-            ++count;
-            if (count % 15 == 0)
-                System.out.println("");
         }
-        System.out.println("};");
 
         allCubes = tmpCubes;
 
@@ -219,14 +203,6 @@ public class SmallBodyCubes
         System.err.println("Error: could not find cube");
 
         return -1;
-
-//        double x = pt[0];
-//        double y = pt[1];
-//        double z = pt[2];
-//
-//        return (int)Math.floor((x - erosBB.xmin) / cubeSize) +
-//        (int)Math.floor((y - erosBB.ymin) / cubeSize)*numCubesX +
-//        (int)Math.floor((z - erosBB.zmin) / cubeSize)*numCubesX*numCubesY;
     }
 }
 
