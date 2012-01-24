@@ -2001,6 +2001,7 @@ public class PolyDataUtil
             vtkPolyData normalsOutput = normalsFilter.GetOutput();
             shapeModel.ShallowCopy(normalsOutput);
 
+            normalsFilter.Delete();
         }
 
         return shapeModel;
