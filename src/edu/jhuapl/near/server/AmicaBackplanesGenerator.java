@@ -41,6 +41,9 @@ public class AmicaBackplanesGenerator
 
     private static ArrayList<String> filesProcessed = new ArrayList<String>();
 
+    private static int currentCroppedWidth = -1;
+    private static int currentCroppedHeight = -1;
+
     static void loadInertialFile(String inertialFilename) throws IOException
     {
         InputStream fs = new FileInputStream(inertialFilename);
@@ -127,6 +130,9 @@ public class AmicaBackplanesGenerator
             keyName = keyName.replace(".fit", "");
             ImageKey key = new ImageKey(keyName, amicaSource);
             AmicaImage image = new AmicaImage(key, itokawaModel, false, rootFolder);
+            int[] croppedSize = image.getCroppedSize();
+            currentCroppedWidth = croppedSize[0];
+            currentCroppedHeight = croppedSize[1];
 
             // Generate the backplanes binary file
             float[] backplanes = image.generateBackplanes();
@@ -180,6 +186,9 @@ public class AmicaBackplanesGenerator
             }
 
             AmicaImage image = new AmicaImage(key, itokawaModel, false, rootFolder);
+            int[] croppedSize = image.getCroppedSize();
+            currentCroppedWidth = croppedSize[0];
+            currentCroppedHeight = croppedSize[1];
 
             image.loadFootprint();
             if (image.getUnshiftedFootprint().GetNumberOfCells() == 0)
@@ -240,12 +249,12 @@ public class AmicaBackplanesGenerator
     {
         try
         {
-            float[][] data = new float[1024][1024];
+            float[][] data = new float[currentCroppedWidth][currentCroppedHeight];
             int c = 0;
             for (int k=0; k<16; ++k)
             {
-                for (int i=0; i<1024; ++i)
-                    for (int j=0; j<1024; ++j)
+                for (int i=0; i<currentCroppedWidth; ++i)
+                    for (int j=0; j<currentCroppedHeight; ++j)
                         data[i][j] = array[c++];
 
                 Fits f = new Fits();
@@ -272,8 +281,8 @@ public class AmicaBackplanesGenerator
         {
             for (int k=0; k<16; ++k)
             {
-                int pixelStart = 1024*1024*k;
-                int pixelEnd = 1024*1024*(k+1);
+                int pixelStart = currentCroppedWidth*currentCroppedHeight*k;
+                int pixelEnd = currentCroppedWidth*currentCroppedHeight*(k+1);
 
                 float minValue = Float.MAX_VALUE;
                 float maxValue = -Float.MAX_VALUE;
@@ -284,10 +293,10 @@ public class AmicaBackplanesGenerator
                     if (array[i] > maxValue) maxValue = array[i];
                 }
 
-                BufferedImage bi = new BufferedImage(1024, 1024, BufferedImage.TYPE_INT_RGB);
+                BufferedImage bi = new BufferedImage(currentCroppedWidth, currentCroppedHeight, BufferedImage.TYPE_INT_RGB);
                 int c = pixelStart;
-                for (int i=0; i<1024; ++i)
-                    for (int j=0; j<1024; ++j)
+                for (int i=0; i<currentCroppedWidth; ++i)
+                    for (int j=0; j<currentCroppedHeight; ++j)
                     {
                         float v = array[c++];
                         if (v == Image.PDS_NA)
@@ -334,12 +343,12 @@ public class AmicaBackplanesGenerator
         // Get the average value of the horizontal and vertical pixel scale planes
         // These are planes 10 and 11 (zero based)
         double scale = 0.0;
-        int c = 10*1024*1024;
+        int c = 10*currentCroppedWidth*currentCroppedHeight;
         int total = 0;
         for (int k=10; k<=11; ++k)
         {
-            for (int i=0; i<1024; ++i)
-                for (int j=0; j<1024; ++j)
+            for (int i=0; i<currentCroppedWidth; ++i)
+                for (int j=0; j<currentCroppedHeight; ++j)
                 {
                     double val = bp[c++];
                     if (val != Image.PDS_NA)

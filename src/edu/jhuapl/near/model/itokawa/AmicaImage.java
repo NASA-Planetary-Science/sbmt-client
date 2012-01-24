@@ -177,6 +177,9 @@ public class AmicaImage extends Image
 
         StringBuffer strbuf = new StringBuffer("");
 
+        int[] croppedSize = getCroppedSize();
+
+        int numBands = 16;
         String productName = null;
 
         // The following flag is used to ensure that two or more
@@ -186,36 +189,9 @@ public class AmicaImage extends Image
         String str;
         while ((str = in.readLine()) != null)
         {
-            if (str.startsWith("RECORD_TYPE"))
-            {
-                String name = new File(lblFilename).getName().toLowerCase();
-                name = name.substring(0, name.length()-4) + "_ddr.img";
-                appendWithPadding(strbuf, "RECORD_TYPE                        = FIXED_LENGTH");
-                appendWithPadding(strbuf, "RECORD_BYTES                       = 4096");
-                appendWithPadding(strbuf, "^IMAGE                             = (\"" + name + "\", 1)");
-                appendWithPadding(strbuf, "^XCOORD_TABLE                      = (\"" + name + "\", 1025)");
-                appendWithPadding(strbuf, "^YCOORD_TABLE                      = (\"" + name + "\", 2049)");
-                appendWithPadding(strbuf, "^ZCOORD_TABLE                      = (\"" + name + "\", 3073)");
-                appendWithPadding(strbuf, "^LATITUDE_TABLE                    = (\"" + name + "\", 4097)");
-                appendWithPadding(strbuf, "^LONGITUDE_TABLE                   = (\"" + name + "\", 5121)");
-                appendWithPadding(strbuf, "^DISTANCE_TABLE                    = (\"" + name + "\", 6145)");
-                appendWithPadding(strbuf, "^INCIDENCE_ANGLE_TABLE             = (\"" + name + "\", 7169)");
-                appendWithPadding(strbuf, "^EMISSION_ANGLE_TABLE              = (\"" + name + "\", 8193)");
-                appendWithPadding(strbuf, "^PHASE_ANGLE_TABLE                 = (\"" + name + "\", 9217)");
-                appendWithPadding(strbuf, "^HORIZONTALSCALE_TABLE             = (\"" + name + "\", 10241)");
-                appendWithPadding(strbuf, "^VERTICAL_SCALE_TABLE              = (\"" + name + "\", 11265)");
-                appendWithPadding(strbuf, "^SLOPE_TABLE                       = (\"" + name + "\", 12289)");
-                appendWithPadding(strbuf, "^ELEVATION_TABLE                   = (\"" + name + "\", 13313)");
-                appendWithPadding(strbuf, "^GRAV_ACCELERATION_TABLE           = (\"" + name + "\", 14337)");
-                appendWithPadding(strbuf, "^GRAV_POTENTIAL_TABLE              = (\"" + name + "\", 15361)");
-                appendWithPadding(strbuf, "");
-                appendWithPadding(strbuf, "");
-
-                continue;
-            }
-
             // The software name and version in the downloaded ddr is not correct
-            if (str.startsWith("RECORD_BYTES") ||
+            if (str.startsWith("RECORD_TYPE") ||
+                    str.startsWith("RECORD_BYTES") ||
                     str.startsWith("FILE_RECORDS") ||
                     str.startsWith("^HEADER") ||
                     str.startsWith("^IMAGE"))
@@ -264,75 +240,46 @@ public class AmicaImage extends Image
                 appendWithPadding(strbuf, "/* 1. A multiple-band backplane image file with wavelength-independent,  */");
                 appendWithPadding(strbuf, "/* spatial pixel-dependent geometric and timing information.             */");
                 appendWithPadding(strbuf, "");
+                appendWithPadding(strbuf, "OBJECT                       = FILE");
 
-                appendWithPadding(strbuf, "OBJECT                     = IMAGE");
-                appendWithPadding(strbuf, "  LINES                    = 1024");
-                appendWithPadding(strbuf, "  LINE_SAMPLES             = 1024");
-                appendWithPadding(strbuf, "  SAMPLE_TYPE              = PC_REAL");
-                appendWithPadding(strbuf, "  SAMPLE_BITS              = 32");
-                appendWithPadding(strbuf, "  BANDS                    = 1");
-                appendWithPadding(strbuf, "END_OBJECT                 = IMAGE");
+                String[] tokens = productName.split(":");
+                String imageName = tokens[1].trim().toLowerCase();
+                appendWithPadding(strbuf, "  ^IMAGE                     = \"" + imageName + "\"");
+
+                appendWithPadding(strbuf, "  RECORD_TYPE                = FIXED_LENGTH");
+                appendWithPadding(strbuf, "  RECORD_BYTES               = " + (croppedSize[0] * 4));
+                appendWithPadding(strbuf, "  FILE_RECORDS               = " + (croppedSize[1] * numBands));
                 appendWithPadding(strbuf, "");
-                appendWithPadding(strbuf, "OBJECT = XCOORD_TABLE");
-                appendWithPadding(strbuf, "  NAME                     = \"x coordinate of center of pixel, km\"");
-                appendWithPadding(strbuf, "  ^STRUCTURE               = \"st_ddr.fmt\"");
-                appendWithPadding(strbuf, "END_OBJECT = XCOORD_TABLE");
-                appendWithPadding(strbuf, "OBJECT = YCOORD_TABLE");
-                appendWithPadding(strbuf, "  NAME                     = \"y coordinate of center of pixel, km\"");
-                appendWithPadding(strbuf, "  ^STRUCTURE               = \"st_ddr.fmt\"");
-                appendWithPadding(strbuf, "END_OBJECT = YCOORD_TABLE");
-                appendWithPadding(strbuf, "OBJECT = ZCOORD_TABLE");
-                appendWithPadding(strbuf, "  NAME                     = \"z coordinate of center of pixel, km\"");
-                appendWithPadding(strbuf, "  ^STRUCTURE               = \"st_ddr.fmt\"");
-                appendWithPadding(strbuf, "END_OBJECT = ZCOORD_TABLE");
-                appendWithPadding(strbuf, "OBJECT = LATITUDE_TABLE");
-                appendWithPadding(strbuf, "  NAME                     = \"Latitude, deg\"");
-                appendWithPadding(strbuf, "  ^STRUCTURE               = \"st_ddr.fmt\"");
-                appendWithPadding(strbuf, "END_OBJECT = LATITUDE_TABLE");
-                appendWithPadding(strbuf, "OBJECT = LONGITUDE_TABLE");
-                appendWithPadding(strbuf, "  NAME                     = \"Longitude, deg\"");
-                appendWithPadding(strbuf, "  ^STRUCTURE               = \"st_ddr.fmt\"");
-                appendWithPadding(strbuf, "END_OBJECT = LONGITUDE_TABLE");
-                appendWithPadding(strbuf, "OBJECT = DISTANCE_TABLE");
-                appendWithPadding(strbuf, "  NAME                     = \"Distance from center of body, km\"");
-                appendWithPadding(strbuf, "  ^STRUCTURE               = \"st_ddr.fmt\"");
-                appendWithPadding(strbuf, "END_OBJECT = DISTANCE_TABLE");
-                appendWithPadding(strbuf, "OBJECT = INCIDENCE_ANGLE_TABLE");
-                appendWithPadding(strbuf, "  NAME                     = \"Incidence angle, deg\"");
-                appendWithPadding(strbuf, "  ^STRUCTURE               = \"st_ddr.fmt\"");
-                appendWithPadding(strbuf, "END_OBJECT = INCIDENCE_ANGLE_TABLE");
-                appendWithPadding(strbuf, "OBJECT = EMISSION_ANGLE_TABLE");
-                appendWithPadding(strbuf, "  NAME                     = \"Emission angle, deg\"");
-                appendWithPadding(strbuf, "  ^STRUCTURE               = \"st_ddr.fmt\"");
-                appendWithPadding(strbuf, "END_OBJECT = EMISSION_ANGLE_TABLE");
-                appendWithPadding(strbuf, "OBJECT = PHASE_ANGLE_TABLE");
-                appendWithPadding(strbuf, "  NAME                     = \"Phase angle, deg\"");
-                appendWithPadding(strbuf, "  ^STRUCTURE               = \"st_ddr.fmt\"");
-                appendWithPadding(strbuf, "END_OBJECT = PHASE_ANGLE_TABLE");
-                appendWithPadding(strbuf, "OBJECT = HORIZONTALSCALE_TABLE");
-                appendWithPadding(strbuf, "  NAME                     = \"Horizontal pixel scale, km per pixel\"");
-                appendWithPadding(strbuf, "  ^STRUCTURE               = \"st_ddr.fmt\"");
-                appendWithPadding(strbuf, "END_OBJECT = HORIZONTALSCALE_TABLE");
-                appendWithPadding(strbuf, "OBJECT = VERTICAL_SCALE_TABLE");
-                appendWithPadding(strbuf, "  NAME                     = \"Vertical pixel scale, km per pixel\"");
-                appendWithPadding(strbuf, "  ^STRUCTURE               = \"st_ddr.fmt\"");
-                appendWithPadding(strbuf, "END_OBJECT = VERTICAL_SCALE_TABLE");
-                appendWithPadding(strbuf, "OBJECT = SLOPE_TABLE");
-                appendWithPadding(strbuf, "  NAME                     = \"Slope, deg\"");
-                appendWithPadding(strbuf, "  ^STRUCTURE               = \"st_ddr.fmt\"");
-                appendWithPadding(strbuf, "END_OBJECT = SLOPE_TABLE");
-                appendWithPadding(strbuf, "OBJECT = ELEVATION_TABLE");
-                appendWithPadding(strbuf, "  NAME                     = \"Elevation, m\"");
-                appendWithPadding(strbuf, "  ^STRUCTURE               = \"st_ddr.fmt\"");
-                appendWithPadding(strbuf, "END_OBJECT = ELEVATION_TABLE");
-                appendWithPadding(strbuf, "OBJECT = GRAV_ACCELERATION_TABLE");
-                appendWithPadding(strbuf, "  NAME                     = \"Gravitational acceleration, m/s^2\"");
-                appendWithPadding(strbuf, "  ^STRUCTURE               = \"st_ddr.fmt\"");
-                appendWithPadding(strbuf, "END_OBJECT = GRAV_ACCELERATION_TABLE");
-                appendWithPadding(strbuf, "OBJECT = GRAV_POTENTIAL_TABLE");
-                appendWithPadding(strbuf, "  NAME                     = \"Gravitational potential, J/kg\"");
-                appendWithPadding(strbuf, "  ^STRUCTURE               = \"st_ddr.fmt\"");
-                appendWithPadding(strbuf, "END_OBJECT = GRAV_POTENTIAL_TABLE");
+
+                appendWithPadding(strbuf, "  OBJECT                     = IMAGE");
+                appendWithPadding(strbuf, "    LINES                    = " + croppedSize[0]);
+                appendWithPadding(strbuf, "    LINE_SAMPLES             = " + croppedSize[1]);
+                appendWithPadding(strbuf, "    SAMPLE_TYPE              = IEEE_REAL");
+                appendWithPadding(strbuf, "    SAMPLE_BITS              = 32");
+                appendWithPadding(strbuf, "    MISSING_CONSTANT         = -1.0E32");
+
+                appendWithPadding(strbuf, "    BANDS                    = " + numBands);
+                appendWithPadding(strbuf, "    BAND_STORAGE_TYPE        = BAND_SEQUENTIAL");
+                appendWithPadding(strbuf, "    BAND_NAME                = (\"Pixel value\",");
+                appendWithPadding(strbuf, "                                \"x coordinate of center of pixel, km\",");
+                appendWithPadding(strbuf, "                                \"y coordinate of center of pixel, km\",");
+                appendWithPadding(strbuf, "                                \"z coordinate of center of pixel, km\",");
+                appendWithPadding(strbuf, "                                \"Latitude, deg\",");
+                appendWithPadding(strbuf, "                                \"Longitude, deg\",");
+                appendWithPadding(strbuf, "                                \"Distance from center of body, km\",");
+                appendWithPadding(strbuf, "                                \"Incidence angle, deg\",");
+                appendWithPadding(strbuf, "                                \"Emission angle, deg\",");
+                appendWithPadding(strbuf, "                                \"Phase angle, deg\",");
+                appendWithPadding(strbuf, "                                \"Horizontal pixel scale, km per pixel\",");
+                appendWithPadding(strbuf, "                                \"Vertical pixel scale, km per pixel\",");
+                appendWithPadding(strbuf, "                                \"Slope, deg\",");
+                appendWithPadding(strbuf, "                                \"Elevation, m\",");
+                appendWithPadding(strbuf, "                                \"Gravitational acceleration, m/s^2\",");
+                appendWithPadding(strbuf, "                                \"Gravitational potential, J/kg\")");
+                appendWithPadding(strbuf, "");
+                appendWithPadding(strbuf, "  END_OBJECT                 = IMAGE");
+                appendWithPadding(strbuf, "END_OBJECT                   = FILE");
+
                 appendWithPadding(strbuf, "");
                 appendWithPadding(strbuf, "END");
 
@@ -366,6 +313,60 @@ public class AmicaImage extends Image
     public double getFovParameter3()
     {
         return FOV_PARAMETER3;
+    }
+
+    @Override
+    public float[] generateBackplanes()
+    {
+        float[] backplanes = super.generateBackplanes();
+
+        // The backplane should not include the extra parts added to the image so that
+        // it has a size of 1024x1024. Therefore, create a new backplane array which only
+        // includes the original image. Note that we still resample the image in cases where
+        // the binning is greater than 1.
+
+        int[] mask = getMaskSizes();
+        int topMask =    mask[0];
+        int rightMask =  mask[1];
+        int bottomMask = mask[2];
+        int leftMask =   mask[3];
+
+        int[] croppedSize = getCroppedSize();
+
+        if (croppedSize[0] == 1024 && croppedSize[1] == 1024)
+            return backplanes;
+
+        float[] newBackplanes = new float[16 * croppedSize[0] * croppedSize[1]];
+
+        for (int i=0; i<1024; ++i)
+            for (int j=0; j<1024; ++j)
+            {
+                if (i >= bottomMask && i <= 1024-1-topMask &&
+                        j >= leftMask && j <= 1024-1-rightMask)
+                {
+                    for (int k = 0; k < 16; ++k)
+                    {
+                        int idx = ((k * croppedSize[0] + (j-leftMask)) * croppedSize[1] + (i-bottomMask));
+                        newBackplanes[idx]  = backplanes[index(j,i,k)];
+                    }
+                }
+            }
+
+        return newBackplanes;
+    }
+
+    /**
+     * Get the size of the image without the mask added to it to make it 1024x1024
+     * @return width in first element and height in second
+     */
+    public int[] getCroppedSize()
+    {
+        int[] mask = getMaskSizes();
+
+        return new int[] {
+                1024 - mask[1] - mask[3],
+                1024 - mask[0] - mask[2]
+        };
     }
 
     @Override
