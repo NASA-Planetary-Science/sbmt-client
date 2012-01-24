@@ -38,7 +38,11 @@ import edu.jhuapl.near.model.itokawa.HayLidarUnfilteredSearchDataCollection;
 import edu.jhuapl.near.model.itokawa.Itokawa;
 import edu.jhuapl.near.model.itokawa.ItokawaGraticule;
 import edu.jhuapl.near.pick.PickManager;
-import edu.jhuapl.near.popupmenus.itokawa.ItokawaPopupManager;
+import edu.jhuapl.near.popupmenus.ColorImagePopupMenu;
+import edu.jhuapl.near.popupmenus.ImagePopupMenu;
+import edu.jhuapl.near.popupmenus.LidarPopupMenu;
+import edu.jhuapl.near.popupmenus.PopupManager;
+import edu.jhuapl.near.popupmenus.PopupMenu;
 import edu.jhuapl.near.util.Configuration;
 
 /**
@@ -57,7 +61,7 @@ public class ItokawaViewer extends Viewer
     private JTabbedPane controlPanel;
     private ModelManager modelManager;
     private PickManager pickManager;
-    private ItokawaPopupManager popupManager;
+    private PopupManager popupManager;
     private StatusBar statusBar;
     private boolean initialized = false;
     private ModelInfoWindowManager infoPanelManager;
@@ -99,7 +103,7 @@ public class ItokawaViewer extends Viewer
 
         renderer = new Renderer(modelManager);
 
-        popupManager = new ItokawaPopupManager(renderer, modelManager, infoPanelManager);
+        setupPopupManager();
 
         pickManager = new PickManager(renderer, statusBar, modelManager, popupManager);
 
@@ -151,6 +155,33 @@ public class ItokawaViewer extends Viewer
 
         modelManager.setModels(allModels);
 
+    }
+
+    private void setupPopupManager()
+    {
+        popupManager = new PopupManager(modelManager);
+
+        AmicaImageCollection amicaImages = (AmicaImageCollection)modelManager.getModel(ModelNames.AMICA_IMAGES);
+        AmicaBoundaryCollection amicaBoundaries = (AmicaBoundaryCollection)modelManager.getModel(ModelNames.AMICA_BOUNDARY);
+        AmicaColorImageCollection amicaColorImages = (AmicaColorImageCollection)modelManager.getModel(ModelNames.AMICA_COLOR_IMAGES);
+        HayLidarSearchDataCollection lidarSearch = (HayLidarSearchDataCollection)modelManager.getModel(ModelNames.HAYLIDAR_SEARCH);
+        HayLidarUnfilteredSearchDataCollection lidarSearchUnfiltered =
+            (HayLidarUnfilteredSearchDataCollection)modelManager.getModel(ModelNames.HAYLIDAR_SEARCH_UNFILTERED);
+
+        PopupMenu popupMenu = new ImagePopupMenu(amicaImages, amicaBoundaries, infoPanelManager, renderer, renderer);
+        popupManager.registerPopup(modelManager.getModel(ModelNames.AMICA_BOUNDARY), popupMenu);
+
+        popupMenu = new ImagePopupMenu(amicaImages, amicaBoundaries, infoPanelManager, renderer, renderer);
+        popupManager.registerPopup(modelManager.getModel(ModelNames.AMICA_IMAGES), popupMenu);
+
+        popupMenu = new ColorImagePopupMenu(amicaColorImages, infoPanelManager);
+        popupManager.registerPopup(modelManager.getModel(ModelNames.AMICA_COLOR_IMAGES), popupMenu);
+
+        popupMenu = new LidarPopupMenu(lidarSearch, renderer);
+        popupManager.registerPopup(modelManager.getModel(ModelNames.HAYLIDAR_SEARCH), popupMenu);
+
+        popupMenu = new LidarPopupMenu(lidarSearchUnfiltered, renderer);
+        popupManager.registerPopup(modelManager.getModel(ModelNames.HAYLIDAR_SEARCH_UNFILTERED), popupMenu);
     }
 
     public Renderer getRenderer()

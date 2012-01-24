@@ -72,7 +72,7 @@ public class PopupManager
         return modelToPopupMap;
     }
 
-    protected void registerPopup(Model model, PopupMenu menu)
+    public void registerPopup(Model model, PopupMenu menu)
     {
         modelToPopupMap.put(model, menu);
     }

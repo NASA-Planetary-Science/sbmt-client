@@ -33,8 +33,10 @@ import edu.jhuapl.near.model.vesta.FcImageCollection;
 import edu.jhuapl.near.model.vesta.Vesta;
 import edu.jhuapl.near.model.vesta.VestaGraticule;
 import edu.jhuapl.near.pick.PickManager;
+import edu.jhuapl.near.popupmenus.ColorImagePopupMenu;
+import edu.jhuapl.near.popupmenus.ImagePopupMenu;
 import edu.jhuapl.near.popupmenus.PopupManager;
-import edu.jhuapl.near.popupmenus.vesta.VestaPopupManager;
+import edu.jhuapl.near.popupmenus.PopupMenu;
 import edu.jhuapl.near.util.Configuration;
 
 /**
@@ -91,7 +93,7 @@ public class VestaViewer extends Viewer
 
         renderer = new Renderer(modelManager);
 
-        popupManager = new VestaPopupManager(renderer, modelManager, infoPanelManager);
+        setupPopupManager();
 
         pickManager = new PickManager(renderer, statusBar, modelManager, popupManager);
 
@@ -139,6 +141,24 @@ public class VestaViewer extends Viewer
 
         modelManager.setModels(allModels);
 
+    }
+
+    private void setupPopupManager()
+    {
+        popupManager = new PopupManager(modelManager);
+
+        FcImageCollection fcImages = (FcImageCollection)modelManager.getModel(ModelNames.FC_IMAGES);
+        FcBoundaryCollection fcBoundaries = (FcBoundaryCollection)modelManager.getModel(ModelNames.FC_BOUNDARY);
+        FcColorImageCollection fcColorImages = (FcColorImageCollection)modelManager.getModel(ModelNames.FC_COLOR_IMAGES);
+
+        PopupMenu popupMenu = new ImagePopupMenu(fcImages, fcBoundaries, infoPanelManager, renderer, renderer);
+        popupManager.registerPopup(modelManager.getModel(ModelNames.FC_BOUNDARY), popupMenu);
+
+        popupMenu = new ImagePopupMenu(fcImages, fcBoundaries, infoPanelManager, renderer, renderer);
+        popupManager.registerPopup(modelManager.getModel(ModelNames.FC_IMAGES), popupMenu);
+
+        popupMenu = new ColorImagePopupMenu(fcColorImages, infoPanelManager);
+        popupManager.registerPopup(modelManager.getModel(ModelNames.FC_COLOR_IMAGES), popupMenu);
     }
 
     public Renderer getRenderer()
