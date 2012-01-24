@@ -26,7 +26,6 @@ import vtk.vtkPoints;
 import vtk.vtkPolyData;
 import vtk.vtkPolyDataMapper;
 import vtk.vtkPolyDataNormals;
-import vtk.vtkPolyDataReader;
 import vtk.vtkProp;
 import vtk.vtkProperty;
 import vtk.vtkScalarBarActor;
@@ -35,6 +34,7 @@ import vtk.vtkUnsignedCharArray;
 import vtk.vtksbCellLocator;
 
 import edu.jhuapl.near.util.BoundingBox;
+import edu.jhuapl.near.util.Configuration;
 import edu.jhuapl.near.util.ConvertResourceToFile;
 import edu.jhuapl.near.util.FileCache;
 import edu.jhuapl.near.util.Frustum;
@@ -204,7 +204,10 @@ public class SmallBodyModel extends Model
         this.useAPLServer = useAPLServer;
 
         if (lowestResolutionModelStoredInResource)
-            defaultModelFile = ConvertResourceToFile.convertResourceToTempFile(this, modelFiles[0]);
+            defaultModelFile = ConvertResourceToFile.convertResourceToRealFile(
+                    this,
+                    modelFiles[0],
+                    Configuration.getApplicationDataDir());
         else
             defaultModelFile = FileCache.getFileFromServer(modelFiles[0], useAPLServer);
 
@@ -229,14 +232,15 @@ public class SmallBodyModel extends Model
 
     private void initialize(File modelFile)
     {
-        vtkPolyDataReader smallBodyReader = new vtkPolyDataReader();
-        smallBodyReader.SetFileName(modelFile.getAbsolutePath());
-        smallBodyReader.Update();
-
-        vtkPolyData output = smallBodyReader.GetOutput();
-        smallBodyPolyData.ShallowCopy(output);
-
-        smallBodyReader.Delete();
+        try
+        {
+            smallBodyPolyData.ShallowCopy(
+                    PolyDataUtil.loadShapeModel(modelFile.getAbsolutePath()));
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
 
         initializeLocators();
 
@@ -274,14 +278,15 @@ public class SmallBodyModel extends Model
         {
             lowResSmallBodyPolyData = new vtkPolyData();
 
-            vtkPolyDataReader smallBodyReader = new vtkPolyDataReader();
-            smallBodyReader.SetFileName(defaultModelFile.getAbsolutePath());
-            smallBodyReader.Update();
-
-            vtkPolyData output = smallBodyReader.GetOutput();
-            lowResSmallBodyPolyData.ShallowCopy(output);
-
-            smallBodyReader.Delete();
+            try
+            {
+                lowResSmallBodyPolyData.ShallowCopy(
+                        PolyDataUtil.loadShapeModel(defaultModelFile.getAbsolutePath()));
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
 
             lowResPointLocator = new vtkPointLocator();
             lowResPointLocator.SetDataSet(lowResSmallBodyPolyData);
