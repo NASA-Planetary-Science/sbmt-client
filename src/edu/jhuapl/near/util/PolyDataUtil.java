@@ -22,6 +22,7 @@ import vtk.vtkFloatArray;
 import vtk.vtkGenericCell;
 import vtk.vtkIdList;
 import vtk.vtkIdTypeArray;
+import vtk.vtkOBJReader;
 import vtk.vtkObject;
 import vtk.vtkPlane;
 import vtk.vtkPointData;
@@ -30,6 +31,7 @@ import vtk.vtkPoints;
 import vtk.vtkPolyData;
 import vtk.vtkPolyDataConnectivityFilter;
 import vtk.vtkPolyDataNormals;
+import vtk.vtkPolyDataReader;
 import vtk.vtkRegularPolygonSource;
 import vtk.vtkSphere;
 import vtk.vtkTransform;
@@ -1701,5 +1703,306 @@ public class PolyDataUtil
         idList.Delete();
 
         return polydata;
+    }
+
+    /**
+     * Read in a shape model with format where each line in file
+     * consists of lat, lon, and radius, or lon, lat, and radius.
+     *
+     * @param filename
+     * @return
+     * @throws Exception
+     */
+    static public vtkPolyData loadLLRShapeModel(String filename) throws Exception
+    {
+        // We need to load the file in 2 passes. In the first pass
+        // we figure out the latitude/longitude spacing (both assumed same),
+        // which column is latitude, and which column is longitude.
+        //
+        // It is assumed the following:
+        // If 0 is the first field of the first column,
+        // then longitude is the first column.
+        // If -90 is the first field of the first column,
+        // then latitude is the first column.
+        // If 90 is the first field of the first column,
+        // then latitude is the first column.
+        //
+        // These assumptions ensure that the shape models of Thomas, Stooke, and Hudson
+        // are loaded in correctly. However, other shape models in some other lat, lon
+        // scheme may not be loaded correctly with this function.
+        //
+        // In the second pass, we load the file using the values
+        // determined in the first pass.
+
+        // First pass
+        double latLonSpacing = 0.0;
+        int latIndex = 0;
+        int lonIndex = 1;
+
+        InputStream fs = new FileInputStream(filename);
+        InputStreamReader isr = new InputStreamReader(fs);
+        BufferedReader in = new BufferedReader(isr);
+
+        {
+            // We only need to look at the first 2 lines of the file
+            // in the first pass to determine everything we need.
+            String[] vals = in.readLine().trim().split("\\s+");
+            double a1 = Double.parseDouble(vals[0]);
+            double b1 = Double.parseDouble(vals[1]);
+            vals = in.readLine().trim().split("\\s+");
+            double a2 = Double.parseDouble(vals[0]);
+            double b2 = Double.parseDouble(vals[1]);
+
+            if (a1 == 0.0)
+            {
+                latIndex = 1;
+                lonIndex = 0;
+            }
+            else if (a1 == -90.0 || a1 == 90.0)
+            {
+                latIndex = 0;
+                lonIndex = 1;
+            }
+            else
+            {
+                System.out.println("Error occurred");
+            }
+
+            if (a1 != a2)
+                latLonSpacing = Math.abs(a2 - a1);
+            else if (b1 != b2)
+                latLonSpacing = Math.abs(b2 - b1);
+            else
+                System.out.println("Error occurred");
+
+            in.close();
+        }
+
+        // Second pass
+        fs = new FileInputStream(filename);
+        isr = new InputStreamReader(fs);
+        in = new BufferedReader(isr);
+
+        vtkPolyData body = new vtkPolyData();
+        vtkPoints points = new vtkPoints();
+        vtkCellArray polys = new vtkCellArray();
+        body.SetPoints(points);
+        body.SetPolys(polys);
+
+        int numRows = (int)Math.round(180.0 / latLonSpacing) + 1;
+        int numCols = (int)Math.round(360.0 / latLonSpacing) + 1;
+
+        int count = 0;
+        int[][] indices = new int[numRows][numCols];
+        String line;
+        while ((line = in.readLine()) != null)
+        {
+            String[] vals = line.trim().split("\\s+");
+            double lat = Double.parseDouble(vals[latIndex]);
+            double lon = Double.parseDouble(vals[lonIndex]);
+            double rad = Double.parseDouble(vals[2]);
+
+            int row = (int)Math.round((lat + 90.0) / latLonSpacing);
+            int col = (int)Math.round(lon / latLonSpacing);
+
+            // Only include 1 point at each pole and don't include any points
+            // at longitude 360 since it's the same as longitude 0
+            if ( (lat == -90.0 && lon > 0.0) ||
+                 (lat ==  90.0 && lon > 0.0) ||
+                 lon == 360.0 )
+            {
+                indices[row][col] = -1;
+            }
+            else
+            {
+                indices[row][col] = count++;
+                LatLon ll = new LatLon(lat*Math.PI/180.0, lon*Math.PI/180.0, rad);
+                double[] pt = MathUtil.latrec(ll);
+                points.InsertNextPoint(pt);
+            }
+        }
+
+        in.close();
+
+
+        // Now add connectivity information
+        int i0, i1, i2, i3;
+        vtkIdList idList = new vtkIdList();
+        idList.SetNumberOfIds(3);
+        for (int m=0; m <= numRows-2; ++m)
+            for (int n=0; n <= numCols-2; ++n)
+            {
+                // Add triangles touching south pole
+                if (m == 0)
+                {
+                    i0 = indices[m][0]; // index of south pole point
+                    i1 = indices[m+1][n];
+                    if (n == numCols-2)
+                        i2 = indices[m+1][0];
+                    else
+                        i2 = indices[m+1][n+1];
+
+                    if (i0>=0 && i1>=0 && i2>=0)
+                    {
+                        idList.SetId(0, i0);
+                        idList.SetId(1, i1);
+                        idList.SetId(2, i2);
+                        polys.InsertNextCell(idList);
+                    }
+                    else
+                    {
+                        System.out.println("Error occurred");
+                    }
+
+                }
+                // Add triangles touching north pole
+                else if (m == numRows-2)
+                {
+                    i0 = indices[m+1][0]; // index of north pole point
+                    i1 = indices[m][n];
+                    if (n == numCols-2)
+                        i2 = indices[m][0];
+                    else
+                        i2 = indices[m][n+1];
+
+                    if (i0>=0 && i1>=0 && i2>=0)
+                    {
+                        idList.SetId(0, i0);
+                        idList.SetId(1, i1);
+                        idList.SetId(2, i2);
+                        polys.InsertNextCell(idList);
+                    }
+                    else
+                    {
+                        System.out.println("Error occurred");
+                    }
+                }
+                // Add middle triangles that do not touch either pole
+                else
+                {
+                    // Get the indices of the 4 corners of the rectangle to the upper right
+                    i0 = indices[m][n];
+                    i1 = indices[m+1][n];
+                    if (n == numCols-2)
+                    {
+                        i2 = indices[m][0];
+                        i3 = indices[m+1][0];
+                    }
+                    else
+                    {
+                        i2 = indices[m][n+1];
+                        i3 = indices[m+1][n+1];
+                    }
+
+                    // Add upper left triangle
+                    if (i0>=0 && i1>=0 && i2>=0)
+                    {
+                        idList.SetId(0, i0);
+                        idList.SetId(1, i1);
+                        idList.SetId(2, i2);
+                        polys.InsertNextCell(idList);
+                    }
+                    else
+                    {
+                        System.out.println("Error occurred");
+                    }
+
+                    // Add bottom right triangle
+                    if (i2>=0 && i1>=0 && i3>=0)
+                    {
+                        idList.SetId(0, i2);
+                        idList.SetId(1, i1);
+                        idList.SetId(2, i3);
+                        polys.InsertNextCell(idList);
+                    }
+                    else
+                    {
+                        System.out.println("Error occurred");
+                    }
+                }
+            }
+
+
+        //vtkPolyDataWriter writer = new vtkPolyDataWriter();
+        //writer.SetInput(body);
+        //writer.SetFileName("/tmp/coneeros.vtk");
+        ////writer.SetFileTypeToBinary();
+        //writer.Write();
+
+
+        return body;
+    }
+
+    /**
+     * This function loads a shape model in a variety of formats. It looks
+     * at its file extension to determine it format. It supports these formats:
+     * 1. VTK (.vtk extension)
+     * 2. OBJ (.obj extension)
+     * 3. PDS vertex style shape models (.pds extension)
+     * 4. Lat, lon, radius format also used in PDS shape models (.llr extension)
+     *
+     * This function also adds normal vectors to the returned polydata, if not
+     * available in the file.
+     *
+     * @param filename
+     * @return
+     * @throws Exception
+     */
+    static public vtkPolyData loadShapeModel(String filename) throws Exception
+    {
+        vtkPolyData shapeModel = new vtkPolyData();
+        if (filename.toLowerCase().endsWith(".vtk"))
+        {
+            vtkPolyDataReader smallBodyReader = new vtkPolyDataReader();
+            smallBodyReader.SetFileName(filename);
+            smallBodyReader.Update();
+
+            vtkPolyData output = smallBodyReader.GetOutput();
+            shapeModel.ShallowCopy(output);
+
+            smallBodyReader.Delete();
+        }
+        else if (filename.toLowerCase().endsWith(".obj"))
+        {
+            vtkOBJReader smallBodyReader = new vtkOBJReader();
+            smallBodyReader.SetFileName(filename);
+            smallBodyReader.Update();
+
+            vtkPolyData output = smallBodyReader.GetOutput();
+            shapeModel.ShallowCopy(output);
+
+            smallBodyReader.Delete();
+        }
+        else if (filename.toLowerCase().endsWith(".pds"))
+        {
+            shapeModel = loadPDSShapeModel(filename);
+        }
+        else if (filename.toLowerCase().endsWith(".llr"))
+        {
+            shapeModel = loadLLRShapeModel(filename);
+        }
+        else
+        {
+            System.out.println("Error: Unrecognized file extension");
+            return null;
+        }
+
+        if (shapeModel.GetPointData().GetNormals() == null)
+        {
+            // Add normal vectors
+            vtkPolyDataNormals normalsFilter = new vtkPolyDataNormals();
+            normalsFilter.SetInput(shapeModel);
+            normalsFilter.SetComputeCellNormals(0);
+            normalsFilter.SetComputePointNormals(1);
+            normalsFilter.SplittingOff();
+            normalsFilter.AutoOrientNormalsOn();
+            normalsFilter.Update();
+
+            vtkPolyData normalsOutput = normalsFilter.GetOutput();
+            shapeModel.ShallowCopy(normalsOutput);
+
+        }
+
+        return shapeModel;
     }
 }
