@@ -40,6 +40,11 @@ public class Graticule extends Model implements PropertyChangeListener
     private double shiftFactor = 5.0;
     private boolean useAPLServer = false;
 
+    public Graticule(SmallBodyModel smallBodyModel)
+    {
+        this(smallBodyModel, null, false);
+    }
+
     public Graticule(SmallBodyModel smallBodyModel, String[] gridFiles)
     {
         this(smallBodyModel, gridFiles, false);
@@ -156,31 +161,37 @@ public class Graticule extends Model implements PropertyChangeListener
         if (generated)
             return;
 
-        //this.generateGrid(smallBodyModel.getErosPolyData());
-        int level = smallBodyModel.getModelResolution();
-
-
-        File modelFile = null;
-        switch(level)
+        if (gridFiles == null)
         {
-        case 1:
-            modelFile = FileCache.getFileFromServer(gridFiles[1], useAPLServer);
-            break;
-        case 2:
-            modelFile = FileCache.getFileFromServer(gridFiles[2], useAPLServer);
-            break;
-        case 3:
-            modelFile = FileCache.getFileFromServer(gridFiles[3], useAPLServer);
-            break;
-        default:
-            modelFile = FileCache.getFileFromServer(gridFiles[0], useAPLServer);
-            break;
+            this.generateGrid(smallBodyModel.getSmallBodyPolyData());
         }
+        else
+        {
+            int level = smallBodyModel.getModelResolution();
 
-        reader.SetFileName(modelFile.getAbsolutePath());
-        reader.Update();
 
-        polyData.DeepCopy(reader.GetOutput());
+            File modelFile = null;
+            switch(level)
+            {
+            case 1:
+                modelFile = FileCache.getFileFromServer(gridFiles[1], useAPLServer);
+                break;
+            case 2:
+                modelFile = FileCache.getFileFromServer(gridFiles[2], useAPLServer);
+                break;
+            case 3:
+                modelFile = FileCache.getFileFromServer(gridFiles[3], useAPLServer);
+                break;
+            default:
+                modelFile = FileCache.getFileFromServer(gridFiles[0], useAPLServer);
+                break;
+            }
+
+            reader.SetFileName(modelFile.getAbsolutePath());
+            reader.Update();
+
+            polyData.DeepCopy(reader.GetOutput());
+        }
 
         smallBodyModel.shiftPolyLineInNormalDirection(polyData, shiftFactor);
 
