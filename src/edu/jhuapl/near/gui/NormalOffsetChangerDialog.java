@@ -77,7 +77,6 @@ public class NormalOffsetChangerDialog extends JDialog implements ActionListener
         offsetLabel.setToolTipText(tooltipText);
         offsetField.setToolTipText(tooltipText);
         kmLabel.setToolTipText(tooltipText);
-        panel.setToolTipText(tooltipText);
 
 
         panel.add(offsetLabel);
