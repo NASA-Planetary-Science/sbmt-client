@@ -193,7 +193,9 @@ public class Graticule extends Model implements PropertyChangeListener
             polyData.DeepCopy(reader.GetOutput());
         }
 
-        smallBodyModel.shiftPolyLineInNormalDirection(polyData, shiftFactor);
+        smallBodyModel.shiftPolyLineInNormalDirection(
+                polyData,
+                shiftFactor * smallBodyModel.getMinShiftAmount());
 
         if (mapper == null)
             mapper = new vtkPolyDataMapper();

@@ -67,6 +67,7 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
     private int[] highlightColor = {0, 0, 255};
     private int maxPolygonId = 0;
     private DecimalFormat df = new DecimalFormat("#.#####");
+    private double offset;
 
     protected enum Mode
     {
@@ -187,6 +188,8 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
         super(name);
 
         this.smallBodyModel = smallBodyModel;
+
+        this.offset = getDefaultOffset();
 
         defaultRadius = smallBodyModel.getBoundingBoxDiagonalLength() / 155.0;
         maxRadius = smallBodyModel.getBoundingBoxDiagonalLength() / 8.0;
@@ -310,8 +313,8 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
             boundaryPolyData.DeepCopy(boundaryAppendFilterOutput);
             interiorPolyData.DeepCopy(interiorAppendFilterOutput);
 
-            smallBodyModel.shiftPolyLineInNormalDirection(boundaryPolyData, 5.0);
-            smallBodyModel.shiftPolyLineInNormalDirection(interiorPolyData, 4.0);
+            smallBodyModel.shiftPolyLineInNormalDirection(boundaryPolyData, offset);
+            smallBodyModel.shiftPolyLineInNormalDirection(interiorPolyData, offset);
 
             boundaryColors.SetNumberOfTuples(boundaryPolyData.GetNumberOfCells());
             interiorColors.SetNumberOfTuples(interiorPolyData.GetNumberOfCells());
@@ -1026,5 +1029,23 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
         transform.Delete();
 
         return Math.min(sepAngle1, sepAngle2);
+    }
+
+    public double getDefaultOffset()
+    {
+        return 5.0*smallBodyModel.getMinShiftAmount();
+    }
+
+    public void setRadialOffset(double offset)
+    {
+        this.offset = offset;
+
+        updatePolyData();
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+    }
+
+    public double getOffset()
+    {
+        return offset;
     }
 }

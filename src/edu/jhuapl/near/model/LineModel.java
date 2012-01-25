@@ -69,6 +69,8 @@ public class LineModel extends StructureModel implements PropertyChangeListener
 
     private boolean profileMode = false;
 
+    private double offset;
+
     private static final String LINES = "lines";
     private static final String SHAPE_MODEL_NAME = "shapemodel";
     private static final int[] redColor = {255, 0, 0, 255}; // RGBA red
@@ -86,6 +88,8 @@ public class LineModel extends StructureModel implements PropertyChangeListener
 
         this.smallBodyModel = smallBodyModel;
         this.profileMode = profileMode;
+
+        this.offset = getDefaultOffset();
 
         if (profileMode)
             setMaximumVerticesPerLine(2);
@@ -207,7 +211,7 @@ public class LineModel extends StructureModel implements PropertyChangeListener
             colors.InsertNextTuple4(color[0],color[1],color[2],color[3]);
         }
 
-        smallBodyModel.shiftPolyLineInNormalDirection(linesPolyData, 9.0);
+        smallBodyModel.shiftPolyLineInNormalDirection(linesPolyData, offset);
 
         if (lineMapper == null)
             lineMapper = new vtkPolyDataMapper();
@@ -586,7 +590,8 @@ public class LineModel extends StructureModel implements PropertyChangeListener
                 }
             }
 
-            smallBodyModel.shiftPolyLineInNormalDirection(selectionPolyData, 1.0);
+            smallBodyModel.shiftPolyLineInNormalDirection(selectionPolyData,
+                    smallBodyModel.getMinShiftAmount());
 
         }
         else
@@ -625,7 +630,7 @@ public class LineModel extends StructureModel implements PropertyChangeListener
                     colors.InsertNextTuple4(redColor[0],redColor[1],redColor[2],redColor[3]);
             }
 
-            smallBodyModel.shiftPolyLineInNormalDirection(selectionPolyData, 1.0);
+            smallBodyModel.shiftPolyLineInNormalDirection(selectionPolyData, offset);
 
             if (!actors.contains(lineSelectionActor))
                 actors.add(lineSelectionActor);
@@ -966,5 +971,23 @@ public class LineModel extends StructureModel implements PropertyChangeListener
         }
 
         return -1;
+    }
+
+    public double getDefaultOffset()
+    {
+        return 5.0*smallBodyModel.getMinShiftAmount();
+    }
+
+    public void setRadialOffset(double offset)
+    {
+        this.offset = offset;
+
+        updatePolyData();
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+    }
+
+    public double getOffset()
+    {
+        return offset;
     }
 }

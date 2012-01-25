@@ -517,13 +517,13 @@ public class SmallBodyModel extends Model
 
     public void shiftPolyLineInNormalDirection(
             vtkPolyData polyLine,
-            double shiftFactor)
+            double shiftAmount)
     {
         PolyDataUtil.shiftPolyLineInNormalDirectionOfPolyData(
                 polyLine,
                 smallBodyPolyData,
                 pointLocator,
-                shiftFactor * getMinShiftAmount());
+                shiftAmount);
     }
 
     public double[] getNormalAtPoint(double[] point)

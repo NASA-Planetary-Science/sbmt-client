@@ -242,6 +242,25 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
             }
         });
         add(deleteAllButton, "w 100!, wrap");
+
+        JButton changeOffsetButton = new JButton("Change Normal Offset...");
+        changeOffsetButton.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                NormalOffsetChangerDialog changeOffsetDialog = new NormalOffsetChangerDialog(structureModel);
+                changeOffsetDialog.setLocationRelativeTo(
+                        JOptionPane.getFrameForComponent(AbstractStructureMappingControlPanel.this));
+                changeOffsetDialog.setVisible(true);
+            }
+        });
+        changeOffsetButton.setToolTipText(
+                "<html>Structures displayed on a shape model need to be shifted slightly away from<br>" +
+                "the shape model in the direction normal to the plates as otherwise they will<br>" +
+                "interfere with the shape model itself and may not be visible. Click this<br>" +
+                "button to show a dialog that will allow you to explicitely set the offset<br>" +
+                "amount in meters.</html>");
+        add(changeOffsetButton, "span 2, w 200!, wrap");
     }
 
     public void actionPerformed(ActionEvent actionEvent)

@@ -92,6 +92,7 @@ public class SmallBodyMappingTool
 
                     JPopupMenu.setDefaultLightWeightPopupEnabled(false);
                     ToolTipManager.sharedInstance().setLightWeightPopupEnabled(false);
+                    ToolTipManager.sharedInstance().setDismissDelay(600000); // 10 minutes
 
                     MainWindow frame = new MainWindow();
                     frame.setVisible(true);

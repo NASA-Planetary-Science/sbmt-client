@@ -26,14 +26,20 @@ import edu.jhuapl.near.util.Properties;
 
 public class CircleModel extends AbstractEllipsePolygonModel
 {
+    private SmallBodyModel smallBodyModel;
     private vtkPolyData selectionPolyData;
     private vtkPolyDataMapper lineSelectionMapper;
     private vtkActor lineSelectionActor;
+    private double[] unshiftedPoint1;
+    private double[] unshiftedPoint2;
 
 
     public CircleModel(SmallBodyModel smallBodyModel)
     {
         super(smallBodyModel, 20, Mode.CIRCLE_MODE, "circle", ModelNames.CIRCLE_STRUCTURES);
+
+        this.smallBodyModel = smallBodyModel;
+
         setInteriorOpacity(0.0);
         int[] color = {255, 0, 255};
         setDefaultColor(color);
@@ -86,6 +92,20 @@ public class CircleModel extends AbstractEllipsePolygonModel
 
             idList.Delete();
 
+            if (numPoints == 0)
+            {
+                unshiftedPoint1 = pt.clone();
+            }
+            if (numPoints == 1)
+            {
+                unshiftedPoint2 = pt.clone();
+                // Since we shift the points afterwards, reset the first
+                // point to the original unshifted position.
+                points.SetPoint(0, unshiftedPoint1);
+            }
+
+            smallBodyModel.shiftPolyLineInNormalDirection(selectionPolyData, getOffset());
+
             selectionPolyData.Modified();
             this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
         }
@@ -97,8 +117,8 @@ public class CircleModel extends AbstractEllipsePolygonModel
             // is facing the positive z direction. Then use VTK's Circumcircle
             // function which computes the center and radius of a circle that
             // passes through these points.
-            double[] pt1 = points.GetPoint(0);
-            double[] pt2 = points.GetPoint(1);
+            double[] pt1 = unshiftedPoint1;
+            double[] pt2 = unshiftedPoint2;
             double[] pt3 = pt;
             double[] normal = new double[3];
 
@@ -152,6 +172,9 @@ public class CircleModel extends AbstractEllipsePolygonModel
     {
         if (selectionPolyData.GetNumberOfPoints() > 0)
         {
+            unshiftedPoint1 = null;
+            unshiftedPoint2 = null;
+
             vtkPoints points = new vtkPoints();
             vtkCellArray cells = new vtkCellArray();
             selectionPolyData.SetPoints(points);

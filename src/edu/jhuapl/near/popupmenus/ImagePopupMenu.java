@@ -21,6 +21,7 @@ import vtk.vtkProp;
 
 import edu.jhuapl.near.gui.CustomFileChooser;
 import edu.jhuapl.near.gui.ModelInfoWindowManager;
+import edu.jhuapl.near.gui.NormalOffsetChangerDialog;
 import edu.jhuapl.near.gui.Renderer;
 import edu.jhuapl.near.model.Image;
 import edu.jhuapl.near.model.Image.ImageKey;
@@ -44,6 +45,7 @@ public class ImagePopupMenu extends PopupMenu
     private JMenuItem saveBackplanesMenuItem;
     private JMenuItem centerImageMenuItem;
     private JMenuItem showFrustumMenuItem;
+    private JMenuItem changeNormalOffsetMenuItem;
     private JMenuItem hideImageMenuItem;
     private ModelInfoWindowManager infoPanelManager;
     private Renderer renderer;
@@ -102,6 +104,10 @@ public class ImagePopupMenu extends PopupMenu
         showFrustumMenuItem.setText("Show Frustum");
         this.add(showFrustumMenuItem);
 
+        changeNormalOffsetMenuItem = new JMenuItem(new ChangeNormalOffsetAction());
+        changeNormalOffsetMenuItem.setText("Change Normal Offset...");
+        this.add(changeNormalOffsetMenuItem);
+
         hideImageMenuItem = new JCheckBoxMenuItem(new HideImageAction());
         hideImageMenuItem.setText("Hide Image");
         this.add(hideImageMenuItem);
@@ -137,6 +143,7 @@ public class ImagePopupMenu extends PopupMenu
 
         saveBackplanesMenuItem.setEnabled(containsImage);
         saveToDiskMenuItem.setEnabled(containsImage);
+        changeNormalOffsetMenuItem.setEnabled(containsImage);
 
         if (containsImage)
         {
@@ -392,6 +399,20 @@ public class ImagePopupMenu extends PopupMenu
                 ex.printStackTrace();
             }
 
+        }
+    }
+
+    private class ChangeNormalOffsetAction extends AbstractAction
+    {
+        public void actionPerformed(ActionEvent e)
+        {
+            Image image = imageCollection.getImage(imageKey);
+            if (image != null)
+            {
+                NormalOffsetChangerDialog changeOffsetDialog = new NormalOffsetChangerDialog(image);
+                changeOffsetDialog.setLocationRelativeTo(JOptionPane.getFrameForComponent(invoker));
+                changeOffsetDialog.setVisible(true);
+            }
         }
     }
 

@@ -68,16 +68,18 @@ public abstract class Model
      */
     public void setRadialOffset(double offset)
     {
-        // Do nothing
+        // Do nothing. Subclasses should redefine this if they support offset.
     }
 
-    public void setPolygonOffset(double offset)
+    public double getOffset()
     {
-
+        // Subclasses should redefine this if they support offset.
+        return 0.0;
     }
 
-    public double getPolygonOffset()
+    public double getDefaultOffset()
     {
+        // Subclasses should redefine this if they support offset.
         return 0.0;
     }
 
