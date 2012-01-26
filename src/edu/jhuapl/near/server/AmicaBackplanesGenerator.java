@@ -308,9 +308,16 @@ public class AmicaBackplanesGenerator
                         bi.getRaster().setSample(i, j, 2, v);
                     }
 
-                BufferedImage scaledBI = new BufferedImage(300, 300, BufferedImage.TYPE_INT_RGB);
+                int jpegWidth = 300;
+                int jpegHeight = 300;
+                if (currentCroppedWidth < currentCroppedHeight)
+                    jpegWidth = (int) Math.round( 300.0 * ( ((double)currentCroppedWidth) / ((double)currentCroppedHeight) ) );
+                else if (currentCroppedHeight < currentCroppedWidth)
+                    jpegHeight = (int) Math.round( 300.0 * ( ((double)currentCroppedHeight) / ((double)currentCroppedWidth) ) );
+
+                BufferedImage scaledBI = new BufferedImage(jpegWidth, jpegHeight, BufferedImage.TYPE_INT_RGB);
                 Graphics2D g = scaledBI.createGraphics();
-                g.drawImage(bi, 0, 0, 300, 300, null);
+                g.drawImage(bi, 0, 0, jpegWidth, jpegHeight, null);
                 g.setComposite(AlphaComposite.Src);
                 g.dispose();
 
