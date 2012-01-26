@@ -22,7 +22,6 @@ import org.apache.commons.math.analysis.polynomials.PolynomialFunction;
 import org.apache.commons.math.optimization.fitting.PolynomialFitter;
 import org.apache.commons.math.optimization.general.LevenbergMarquardtOptimizer;
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 
 import vtk.vtkActor;
 import vtk.vtkCellArray;
@@ -259,7 +258,7 @@ public abstract class LidarSearchDataCollection extends Model
             {
                 String[] vals = lineRead.trim().split("\\s+");
 
-                long time = new DateTime(vals[timeindex], DateTimeZone.UTC).getMillis();
+                long time = new DateTime(vals[timeindex]).getMillis();
                 if (time < start || time > stop)
                     continue;
 

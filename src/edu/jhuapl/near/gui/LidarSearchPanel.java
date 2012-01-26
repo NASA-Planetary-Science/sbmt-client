@@ -11,7 +11,6 @@
 
 package edu.jhuapl.near.gui;
 
-import java.awt.Color;
 import java.awt.Rectangle;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -26,7 +25,6 @@ import javax.swing.JOptionPane;
 import javax.swing.SpinnerDateModel;
 
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 
 import vtk.vtkPolyData;
 
@@ -122,8 +120,9 @@ abstract public class LidarSearchPanel extends javax.swing.JPanel implements Pro
 
         try
         {
-            lidarModel.setLidarData(new DateTime(startDate, DateTimeZone.UTC),
-                    new DateTime(endDate, DateTimeZone.UTC),
+            lidarModel.setLidarData(
+                    new DateTime(startDate),
+                    new DateTime(endDate),
                     cubeList,
                     selectionRegionCenter,
                     selectionRegionRadius,
