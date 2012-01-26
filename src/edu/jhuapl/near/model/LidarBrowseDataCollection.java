@@ -55,7 +55,7 @@ abstract public class LidarBrowseDataCollection extends Model implements Propert
             lidarPerUnitActors.add(prop);
         }
 
-        this.setRadialOffset(radialOffset);
+        this.setOffset(radialOffset);
         this.setPercentageShown(startPercent, stopPercent);
 
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
@@ -137,7 +137,7 @@ abstract public class LidarBrowseDataCollection extends Model implements Propert
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
-    public void setRadialOffset(double offset)
+    public void setOffset(double offset)
     {
         radialOffset = offset;
 
@@ -147,7 +147,7 @@ abstract public class LidarBrowseDataCollection extends Model implements Propert
         for (String key : fileToLidarPerUnitMap.keySet())
         {
             LidarDataPerUnit data = fileToLidarPerUnitMap.get(key);
-            data.setRadialOffset(offset);
+            data.setOffset(offset);
         }
 
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);

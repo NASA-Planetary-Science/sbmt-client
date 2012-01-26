@@ -233,7 +233,7 @@ public class LineamentModel extends Model
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
-    public void setRadialOffset(double offset)
+    public void setOffset(double offset)
     {
         if (lineamentActors.isEmpty())
             initialize();

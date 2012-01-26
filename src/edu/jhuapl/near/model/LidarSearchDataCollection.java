@@ -176,7 +176,7 @@ public abstract class LidarSearchDataCollection extends Model
             actors.add(selectedPointActor);
         }
 
-        setRadialOffset(radialOffset);
+        setOffset(radialOffset);
 
         selectPoint(-1);
 
@@ -602,7 +602,7 @@ public abstract class LidarSearchDataCollection extends Model
         return "";
     }
 
-    public void setRadialOffset(double offset)
+    public void setOffset(double offset)
     {
         if (offset == radialOffset)
             return;

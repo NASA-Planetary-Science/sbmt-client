@@ -238,7 +238,7 @@ public class LidarDataPerUnit extends Model
         return new DoublePair(startPercentage, stopPercentage);
     }
 
-    public void setRadialOffset(double offset)
+    public void setOffset(double offset)
     {
         vtkPoints points = polydata.GetPoints();
 

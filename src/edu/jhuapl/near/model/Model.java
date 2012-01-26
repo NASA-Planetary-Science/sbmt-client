@@ -60,13 +60,13 @@ public abstract class Model
 
     /**
      * Some models have vertex values that overlap the SmallBodyModel and are thus obscured.
-     * In these cases it may be helpful to shift the vertices slightly in the radial direction
+     * In these cases it may be helpful to shift the vertices slightly away from the shape model
      * so they are not obscured. This function, which by default does nothing may be used
      * by subclasses for this purpose.
      *
      * @param offset
      */
-    public void setRadialOffset(double offset)
+    public void setOffset(double offset)
     {
         // Do nothing. Subclasses should redefine this if they support offset.
     }

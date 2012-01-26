@@ -100,7 +100,7 @@ public class NormalOffsetChangerDialog extends JDialog implements ActionListener
                 double newOffset = Double.parseDouble(offsetField.getText());
                 newOffset /= 1000.0;
 
-                model.setRadialOffset(newOffset);
+                model.setOffset(newOffset);
 
                 // Reset the text field in case the requested offset change was not
                 // fully fulfilled (e.g. was negative)
@@ -116,7 +116,7 @@ public class NormalOffsetChangerDialog extends JDialog implements ActionListener
         {
             double defaultOffset = model.getDefaultOffset();
 
-            model.setRadialOffset(defaultOffset);
+            model.setOffset(defaultOffset);
 
             // Reset the text field in case the requested offset change was not
             // fully fulfilled.

@@ -1036,7 +1036,7 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
         return 5.0*smallBodyModel.getMinShiftAmount();
     }
 
-    public void setRadialOffset(double offset)
+    public void setOffset(double offset)
     {
         this.offset = offset;
 

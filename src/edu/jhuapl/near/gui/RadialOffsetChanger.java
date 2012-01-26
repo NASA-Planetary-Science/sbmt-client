@@ -114,7 +114,7 @@ public class RadialOffsetChanger extends javax.swing.JPanel
             int max = slider.getMaximum();
             int min = slider.getMinimum();
             double offset = (val - (max-min)/2.0) * offsetScale;
-            model.setRadialOffset(offset);
+            model.setOffset(offset);
         }
     }//GEN-LAST:event_sliderStateChanged
 
