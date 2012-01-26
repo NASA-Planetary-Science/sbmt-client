@@ -757,7 +757,12 @@ public class SmallBodyModel extends Model
      */
     public double getMinShiftAmount()
     {
-        return getBoundingBoxDiagonalLength() / 38660.0;
+        double shift = getBoundingBoxDiagonalLength() / 38660.0;
+        // Don't let the shift be greater than 10 meters.
+        if (shift < 0.01)
+            return shift;
+        else
+            return 0.01;
     }
 
     public String getClickStatusBarText(vtkProp prop, int cellId, double[] pickPosition)
