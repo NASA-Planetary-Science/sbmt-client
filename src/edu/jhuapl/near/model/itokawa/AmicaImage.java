@@ -325,12 +325,6 @@ public class AmicaImage extends Image
         // includes the original image. Note that we still resample the image in cases where
         // the binning is greater than 1.
 
-        int[] mask = getMaskSizes();
-        int topMask =    mask[0];
-        int rightMask =  mask[1];
-        int bottomMask = mask[2];
-        int leftMask =   mask[3];
-
         int[] croppedSize = getCroppedSize();
 
         if (croppedSize[0] == 1024 && croppedSize[1] == 1024)
@@ -338,19 +332,23 @@ public class AmicaImage extends Image
 
         float[] newBackplanes = new float[16 * croppedSize[0] * croppedSize[1]];
 
-        for (int i=0; i<1024; ++i)
-            for (int j=0; j<1024; ++j)
-            {
-                if (i >= bottomMask && i <= 1024-1-topMask &&
-                        j >= leftMask && j <= 1024-1-rightMask)
+        int[] mask = getMaskSizes();
+        int topMask =    mask[0];
+        int rightMask =  mask[1];
+        int bottomMask = mask[2];
+        int leftMask =   mask[3];
+
+        int startH = leftMask;
+        int startV = topMask;
+        int lastH = 1023 - rightMask;
+        int lastV = 1023 - bottomMask;
+        for (int i=startH; i<=lastH; ++i)
+            for (int j=startV; j<=lastV; ++j)
+                for (int k = 0; k < 16; ++k)
                 {
-                    for (int k = 0; k < 16; ++k)
-                    {
-                        int idx = ((k * croppedSize[0] + (j-leftMask)) * croppedSize[1] + (i-bottomMask));
-                        newBackplanes[idx]  = backplanes[index(j,i,k)];
-                    }
+                    int idx  = ((k * croppedSize[0] + (j-startV)) * croppedSize[1] + (i-startH));
+                    newBackplanes[idx]  = backplanes[index(i,j,k)];
                 }
-            }
 
         return newBackplanes;
     }
@@ -364,8 +362,8 @@ public class AmicaImage extends Image
         int[] mask = getMaskSizes();
 
         return new int[] {
-                1024 - mask[1] - mask[3],
-                1024 - mask[0] - mask[2]
+                1024 - mask[0] - mask[2],
+                1024 - mask[1] - mask[3]
         };
     }
 
