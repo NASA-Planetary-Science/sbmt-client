@@ -104,6 +104,104 @@ public class AmicaBackplanesGenerator
             return !hasSumfile && hasInfofile;
     }
 
+    /*
+     * This function was used to crop the backplanes after they had been generated which was a requirment
+     * by PDS for archiving the backplanes. Future calls to generateBackplanes should produce cropped
+     * backplanes, so if regenerating the backplanes from scratch, then this function should not be
+     * needed.
+    private static void cropGeneratedBackplanes(ArrayList<String> amicaFiles, AmicaImage.ImageSource amicaSource) throws FitsException, IOException
+    {
+        int count = 0;
+        for (String filename : amicaFiles)
+        {
+            System.out.println("\n\n----------------------------------------------------------------------");
+            System.out.println("\n\n----------second pass");
+            System.out.println("starting amica " + count++ + " / " + amicaFiles.size() + " " + filename);
+
+            boolean filesExist = checkIfAmicaFilesExist(filename, amicaSource);
+            if (filesExist == false)
+            {
+                System.out.println("Could not find sumfile");
+                continue;
+            }
+
+            File origFile = new File(filename);
+            File rootFolder = origFile.getParentFile().getParentFile().getParentFile().getParentFile();
+            String keyName = origFile.getAbsolutePath().replace(rootFolder.getAbsolutePath(), "");
+            keyName = keyName.replace(".fit", "");
+
+            ImageKey key = new ImageKey(keyName, amicaSource);
+
+
+            AmicaImage image = new AmicaImage(key, itokawaModel, false, rootFolder);
+            int[] croppedSize = image.getCroppedSize();
+            currentCroppedWidth = croppedSize[1];
+            currentCroppedHeight = croppedSize[0];
+
+            System.out.println("cropped size: " + croppedSize[1] + " " + croppedSize[0]);
+
+            OutputStream out = null;
+
+            String ddrFilename = filename.substring(0, filename.length()-4) + "_ddr.img";
+            if (!(new File(ddrFilename).exists()))
+                continue;
+
+            if (croppedSize[0] != 1024 || croppedSize[1] != 1024)
+            {
+                float[] backplanes = new float[(int)(new File(ddrFilename).length())/4];
+                System.out.println(ddrFilename + " " + backplanes.length);
+                {
+                    // fix backplanes
+                    InputStream isr = new FileInputStream(ddrFilename);
+                    BufferedInputStream in = new BufferedInputStream(isr);
+                    DataInputStream dis = new DataInputStream(in);
+                    for (int i=0; i<backplanes.length; ++i)
+                    {
+                        backplanes[i] = dis.readFloat();
+                    }
+                    in.close();
+
+                    backplanes = image.cropBackplanes(backplanes);
+                }
+
+                // Save out the backplanes
+                out = new FileOutputStream(ddrFilename + "-cropped");
+                byte[] buf = new byte[4 * backplanes.length];
+                for (int i=0; i<backplanes.length; ++i)
+                {
+                    int v = Float.floatToIntBits(backplanes[i]);
+                    buf[4*i + 0] = (byte)(v >>> 24);
+                    buf[4*i + 1] = (byte)(v >>> 16);
+                    buf[4*i + 2] = (byte)(v >>>  8);
+                    buf[4*i + 3] = (byte)(v >>>  0);
+                }
+                out.write(buf, 0, buf.length);
+                out.close();
+
+                // Generate a jpeg for each backplane
+                //generateFitsFileForEachBackPlane(backplanes, ddrFilename);
+                generateJpegFileForEachBackPlane(backplanes, ddrFilename);
+            }
+
+            // Generate the label file
+            String ddrLabelFilename = filename.substring(0, filename.length()-4) + "_ddr.lbl";
+            out = new FileOutputStream(ddrLabelFilename);
+            String lblstr = image.generateBackplanesLabel();
+            byte[] bytes = lblstr.getBytes();
+            out.write(bytes, 0, bytes.length);
+            out.close();
+
+            filesProcessed.add(ddrFilename);
+            System.out.println("Processed " + filesProcessed.size() + " images so far");
+
+            image.Delete();
+            System.gc();
+            System.out.println("deleted " + vtkGlobalJavaHash.GC());
+            System.out.println("\n\n");
+        }
+    }
+    */
+
     private static void generateBackplanes(ArrayList<String> amicaFiles, AmicaImage.ImageSource amicaSource) throws FitsException, IOException
     {
         // First compute the optimal resolution of all images using the highest
@@ -131,8 +229,8 @@ public class AmicaBackplanesGenerator
             ImageKey key = new ImageKey(keyName, amicaSource);
             AmicaImage image = new AmicaImage(key, itokawaModel, false, rootFolder);
             int[] croppedSize = image.getCroppedSize();
-            currentCroppedWidth = croppedSize[0];
-            currentCroppedHeight = croppedSize[1];
+            currentCroppedWidth = croppedSize[1];
+            currentCroppedHeight = croppedSize[0];
 
             // Generate the backplanes binary file
             float[] backplanes = image.generateBackplanes();
@@ -187,8 +285,8 @@ public class AmicaBackplanesGenerator
 
             AmicaImage image = new AmicaImage(key, itokawaModel, false, rootFolder);
             int[] croppedSize = image.getCroppedSize();
-            currentCroppedWidth = croppedSize[0];
-            currentCroppedHeight = croppedSize[1];
+            currentCroppedWidth = croppedSize[1];
+            currentCroppedHeight = croppedSize[0];
 
             image.loadFootprint();
             if (image.getUnshiftedFootprint().GetNumberOfCells() == 0)
