@@ -1706,6 +1706,79 @@ public class PolyDataUtil
     }
 
     /**
+     * Several PDS shape models are in special format similar to standard
+     * Gaskell vertex shape models but are zero based and don't have a
+     * first column listing the id.
+     *
+     * @param filename
+     * @param inMeters If true, vertices are assumed to be in meters. If false, assumed to be kilometers.
+     * @return
+     * @throws IOException
+     */
+    static public vtkPolyData loadTempel1AndWild2ShapeModel(String filename, boolean inMeters) throws Exception
+    {
+        vtkPolyData polydata = new vtkPolyData();
+        vtkPoints points = new vtkPoints();
+        vtkCellArray cells = new vtkCellArray();
+        polydata.SetPoints(points);
+        polydata.SetPolys(cells);
+
+        InputStream fs = new FileInputStream(filename);
+        InputStreamReader isr = new InputStreamReader(fs);
+        BufferedReader in = new BufferedReader(isr);
+
+        // Read in the first line which lists the number of points and plates
+        String val = in.readLine().trim();
+        String[] vals = val.split("\\s+");
+        int numPoints = -1;
+        int numCells = -1;
+        if (vals.length == 2)
+        {
+            numPoints = Integer.parseInt(vals[0]);
+            numCells = Integer.parseInt(vals[1]);
+        }
+        else
+        {
+            throw new IOException("Format not valid");
+        }
+
+        for (int j=0; j<numPoints; ++j)
+        {
+            vals = in.readLine().trim().split("\\s+");
+            double x = Double.parseDouble(vals[0]);
+            double y = Double.parseDouble(vals[1]);
+            double z = Double.parseDouble(vals[2]);
+
+            if (inMeters)
+            {
+                x /= 1000.0;
+                y /= 1000.0;
+                z /= 1000.0;
+            }
+
+            points.InsertNextPoint(x, y, z);
+        }
+
+        vtkIdList idList = new vtkIdList();
+        idList.SetNumberOfIds(3);
+        for (int j=0; j<numCells; ++j)
+        {
+            vals = in.readLine().trim().split("\\s+");
+            int idx1 = Integer.parseInt(vals[0]);
+            int idx2 = Integer.parseInt(vals[1]);
+            int idx3 = Integer.parseInt(vals[2]);
+            idList.SetId(0, idx1);
+            idList.SetId(1, idx2);
+            idList.SetId(2, idx3);
+            cells.InsertNextCell(idList);
+        }
+
+        idList.Delete();
+
+        return polydata;
+    }
+
+    /**
      * Read in a shape model with format where each line in file
      * consists of lat, lon, and radius, or lon, lat, and radius.
      *
@@ -1980,6 +2053,14 @@ public class PolyDataUtil
         else if (filename.toLowerCase().endsWith(".llr"))
         {
             shapeModel = loadLLRShapeModel(filename);
+        }
+        else if (filename.toLowerCase().endsWith(".t1"))
+        {
+            shapeModel = loadTempel1AndWild2ShapeModel(filename, false);
+        }
+        else if (filename.toLowerCase().endsWith(".w2"))
+        {
+            shapeModel = loadTempel1AndWild2ShapeModel(filename, true);
         }
         else
         {
