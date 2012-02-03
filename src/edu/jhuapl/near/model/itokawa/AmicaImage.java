@@ -247,16 +247,16 @@ public class AmicaImage extends Image
                 appendWithPadding(strbuf, "  ^IMAGE                     = \"" + imageName + "\"");
 
                 appendWithPadding(strbuf, "  RECORD_TYPE                = FIXED_LENGTH");
-                appendWithPadding(strbuf, "  RECORD_BYTES               = " + (croppedSize[0] * 4));
-                appendWithPadding(strbuf, "  FILE_RECORDS               = " + (croppedSize[1] * numBands));
+                appendWithPadding(strbuf, "  RECORD_BYTES               = " + (croppedSize[1] * 4));
+                appendWithPadding(strbuf, "  FILE_RECORDS               = " + (croppedSize[0] * numBands));
                 appendWithPadding(strbuf, "");
 
                 appendWithPadding(strbuf, "  OBJECT                     = IMAGE");
-                appendWithPadding(strbuf, "    LINES                    = " + croppedSize[0]);
-                appendWithPadding(strbuf, "    LINE_SAMPLES             = " + croppedSize[1]);
+                appendWithPadding(strbuf, "    LINES                    = " + croppedSize[1]);
+                appendWithPadding(strbuf, "    LINE_SAMPLES             = " + croppedSize[0]);
                 appendWithPadding(strbuf, "    SAMPLE_TYPE              = IEEE_REAL");
                 appendWithPadding(strbuf, "    SAMPLE_BITS              = 32");
-                appendWithPadding(strbuf, "    MISSING_CONSTANT         = -1.0E32");
+                appendWithPadding(strbuf, "    CORE_NULL                = 16#F49DC5AE#"); // bit pattern of -1.0e32 in hex
 
                 appendWithPadding(strbuf, "    BANDS                    = " + numBands);
                 appendWithPadding(strbuf, "    BAND_STORAGE_TYPE        = BAND_SEQUENTIAL");
@@ -315,10 +315,8 @@ public class AmicaImage extends Image
         return FOV_PARAMETER3;
     }
 
-    @Override
-    public float[] generateBackplanes()
+    public float[] cropBackplanes(float[] backplanes)
     {
-        float[] backplanes = super.generateBackplanes();
 
         // The backplane should not include the extra parts added to the image so that
         // it has a size of 1024x1024. Therefore, create a new backplane array which only
@@ -338,32 +336,42 @@ public class AmicaImage extends Image
         int bottomMask = mask[2];
         int leftMask =   mask[3];
 
-        int startH = leftMask;
-        int startV = topMask;
-        int lastH = 1023 - rightMask;
-        int lastV = 1023 - bottomMask;
-        for (int i=startH; i<=lastH; ++i)
-            for (int j=startV; j<=lastV; ++j)
-                for (int k = 0; k < 16; ++k)
+        for (int i=0; i<1024; ++i)
+            for (int j=0; j<1024; ++j)
+            {
+                if (i >= bottomMask && i <= 1024-1-topMask &&
+                        j >= leftMask && j <= 1024-1-rightMask)
                 {
-                    int idx  = ((k * croppedSize[0] + (j-startV)) * croppedSize[1] + (i-startH));
-                    newBackplanes[idx]  = backplanes[index(i,j,k)];
+                    for (int k = 0; k < 16; ++k)
+                    {
+                        int idx = k*croppedSize[0]*croppedSize[1] + (i-bottomMask)*croppedSize[0] + (j-leftMask);
+                        newBackplanes[idx]  = backplanes[index(j,i,k)];
+                    }
                 }
+            }
 
         return newBackplanes;
     }
 
+    @Override
+    public float[] generateBackplanes()
+    {
+        float[] backplanes = super.generateBackplanes();
+
+        return cropBackplanes(backplanes);
+    }
+
     /**
      * Get the size of the image without the mask added to it to make it 1024x1024
-     * @return width in first element and height in second
+     * @return height in first element and width in second
      */
     public int[] getCroppedSize()
     {
         int[] mask = getMaskSizes();
 
         return new int[] {
-                1024 - mask[0] - mask[2],
-                1024 - mask[1] - mask[3]
+                1024 - mask[1] - mask[3],
+                1024 - mask[0] - mask[2]
         };
     }
 
