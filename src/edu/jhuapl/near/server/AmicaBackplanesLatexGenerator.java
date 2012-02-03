@@ -21,7 +21,7 @@ public class AmicaBackplanesLatexGenerator
         o.write("\\documentclass[12pt]{article}\n");
 
         o.write("\\usepackage{graphicx}\n");
-        o.write("\\usepackage{subfigure}\n");
+        o.write("\\usepackage{subfig}\n");
         o.write("\\usepackage{fullpage}\n");
 
         o.write("\\begin{document}\n");
@@ -54,14 +54,16 @@ public class AmicaBackplanesLatexGenerator
             for (int i=0; i<16; ++i)
             {
                 String bf = new File(filename.replace('.', '_') + "_" + i + ".jpg").getName().replace("_gz", "");
-                o.write("    \\subfigure["+ bands[i] + "]{\\includegraphics[scale=0.35]{" + bf + "}}\n");
+                o.write("    \\subfloat["+ bands[i] + "]{\\makebox[.25\\textwidth]{\\includegraphics[scale=0.35]{" + bf + "}}}");
+                if (i < 15 && ((i+1)%4 == 0))
+                    o.write("\\\\");
+                o.write("\n");
             }
 
             o.write("  \\end{center}\n");
             o.write("\\caption{" + new File(filename).getName().replace("_", "\\_").replace(".gz", "") + ", " + getStartTime(filename) + "}\n");
             o.write("\\end{figure}\n");
             o.write("\\clearpage\n");
-            o.write("\\setcounter{subfigure}{0}\n");
         }
 
         o.write("\\end{document}\n");
