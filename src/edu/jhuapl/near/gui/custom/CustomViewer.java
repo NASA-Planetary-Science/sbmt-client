@@ -117,7 +117,7 @@ public class CustomViewer extends Viewer
         return renderer;
     }
 
-    public String getName()
+    public String getDisplayName()
     {
         return name;
     }

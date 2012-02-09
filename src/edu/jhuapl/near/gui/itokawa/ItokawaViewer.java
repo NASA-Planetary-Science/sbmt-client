@@ -189,8 +189,13 @@ public class ItokawaViewer extends Viewer
         return renderer;
     }
 
-    public String getName()
+    public String getDisplayName()
     {
         return NAME;
+    }
+
+    public String getSubmenu()
+    {
+        return "Gaskell";
     }
 }

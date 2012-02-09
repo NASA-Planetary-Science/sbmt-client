@@ -34,15 +34,41 @@ public class ViewMenu extends JMenu implements PropertyChangeListener
 
         group = new ButtonGroup();
 
+        JMenu gaskellMenu = new JMenu("Gaskell Shape Models");
+        JMenu thomasMenu = new JMenu("Thomas Shape Models");
+        JMenu stookeMenu = new JMenu("Stooke Shape Models");
+        JMenu hudsonMenu = new JMenu("Hudson (Radar) Shape Models");
+        JMenu moreMenu = new JMenu("More Shape Models");
+
         for (int i=0; i < rootPanel.getNumberOfBuiltInViewers(); ++i)
         {
             Viewer viewer = rootPanel.getBuiltInViewer(i);
             JMenuItem mi = new JRadioButtonMenuItem(new ShowBodyAction(viewer));
+            mi.setText(viewer.getDisplayName());
             if (i==0)
                 mi.setSelected(true);
             group.add(mi);
             this.add(mi);
+
+            if ("Gaskell".equals(viewer.getSubmenu()))
+                gaskellMenu.add(mi);
+            else if ("Thomas".equals(viewer.getSubmenu()))
+                thomasMenu.add(mi);
+            else if ("Stooke".equals(viewer.getSubmenu()))
+                stookeMenu.add(mi);
+            else if ("Hudson".equals(viewer.getSubmenu()))
+                hudsonMenu.add(mi);
+            else if ("Other".equals(viewer.getSubmenu()))
+                moreMenu.add(mi);
+            else
+                System.out.println("Error: invalid submenu");
         }
+
+        this.add(gaskellMenu);
+        this.add(thomasMenu);
+        this.add(stookeMenu);
+        this.add(hudsonMenu);
+        this.add(moreMenu);
 
         if (Configuration.isAPLVersion())
         {
@@ -58,6 +84,7 @@ public class ViewMenu extends JMenu implements PropertyChangeListener
             {
                 Viewer viewer = rootPanel.getCustomViewer(i);
                 mi = new JRadioButtonMenuItem(new ShowBodyAction(viewer));
+                mi.setText(viewer.getDisplayName());
                 if (i==0)
                     mi.setSelected(true);
                 group.add(mi);
@@ -72,6 +99,7 @@ public class ViewMenu extends JMenu implements PropertyChangeListener
             this.addSeparator();
 
         JMenuItem mi = new JRadioButtonMenuItem(new ShowBodyAction(viewer));
+        mi.setText(viewer.getDisplayName());
         group.add(mi);
         this.add(mi);
     }
@@ -167,7 +195,7 @@ public class ViewMenu extends JMenu implements PropertyChangeListener
 
         public ShowBodyAction(Viewer viewer)
         {
-            super(viewer.getName());
+            super(viewer.getUniqueName());
             this.viewer = viewer;
         }
 

@@ -31,7 +31,42 @@ public abstract class Viewer extends JPanel
     {
     }
 
-    public abstract String getName();
-
     public abstract Renderer getRenderer();
+
+    /**
+     * Return a unique name for this viewer. No other viewer may have this
+     * name. Note that only applies within built-in viewers or custom viewers
+     * but a custom viewer can share the name of a built-in one or vice versa.
+     * By default simply return the submenu concatenated with the display
+     * name if the submenu is not null or just the display name if the submenu
+     * is null.
+     * @return
+     */
+    public String getUniqueName()
+    {
+        String submenu = getSubmenu();
+        if (submenu != null)
+            return submenu + "/" + getDisplayName();
+        else
+            return getDisplayName();
+    }
+
+    /**
+     * Return the display name for this viewer (the name to be shown in the menu).
+     * This name need not be unique among all viewers.
+     * @return
+     */
+    public abstract String getDisplayName();
+
+    /**
+     * Return the submenu in which this viewer should be placed.
+     * If null (the default), do not place in a submenu but in the
+     * top menu.
+     *
+     * @return
+     */
+    public String getSubmenu()
+    {
+        return null;
+    }
 }

@@ -8,8 +8,6 @@ import javax.swing.BorderFactory;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 
-import edu.jhuapl.near.gui.ModelInfoWindow;
-import edu.jhuapl.near.gui.ModelInfoWindowManager;
 import edu.jhuapl.near.gui.Renderer;
 import edu.jhuapl.near.gui.SmallBodyControlPanel;
 import edu.jhuapl.near.gui.StatusBar;
@@ -26,7 +24,6 @@ import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.PointModel;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.vesta_old.VestaOld;
-import edu.jhuapl.near.model.vesta_old.VestaOldGraticule;
 import edu.jhuapl.near.pick.PickManager;
 import edu.jhuapl.near.popupmenus.PopupManager;
 import edu.jhuapl.near.util.Configuration;
@@ -40,7 +37,7 @@ import edu.jhuapl.near.util.Configuration;
  */
 public class VestaOldViewer extends Viewer
 {
-    public static final String NAME = "Vesta-old";
+    public static final String NAME = "Vesta";
 
     private JSplitPane splitPane;
     private Renderer renderer;
@@ -49,7 +46,6 @@ public class VestaOldViewer extends Viewer
     private PickManager pickManager;
     private PopupManager popupManager;
     private StatusBar statusBar;
-    private ModelInfoWindowManager infoPanelManager;
     private boolean initialized = false;
 
     public VestaOldViewer(StatusBar statusBar)
@@ -65,15 +61,6 @@ public class VestaOldViewer extends Viewer
 
         setupModelManager();
 
-        infoPanelManager = new ModelInfoWindowManager(modelManager)
-        {
-            public ModelInfoWindow createModelInfoWindow(Model model,
-                    ModelManager modelManager)
-            {
-                return null;
-            }
-        };
-
         renderer = new Renderer(modelManager);
 
         popupManager = new PopupManager(modelManager);
@@ -82,7 +69,7 @@ public class VestaOldViewer extends Viewer
 
         controlPanel = new JTabbedPane();
         controlPanel.setBorder(BorderFactory.createEmptyBorder());
-        controlPanel.addTab("Vesta-old", new SmallBodyControlPanel(modelManager, "Vesta-old"));
+        controlPanel.addTab("Vesta", new SmallBodyControlPanel(modelManager, "Vesta"));
         if (Configuration.isAPLVersion())
         {
             controlPanel.addTab("Structures", new StructuresControlPanel(modelManager, pickManager));
@@ -107,7 +94,7 @@ public class VestaOldViewer extends Viewer
         modelManager = new ModelManager();
 
         SmallBodyModel vestaModel = new VestaOld();
-        Graticule graticule = new VestaOldGraticule(vestaModel);
+        Graticule graticule = new Graticule(vestaModel);
 
         HashMap<String, Model> allModels = new HashMap<String, Model>();
         allModels.put(ModelNames.SMALL_BODY, vestaModel);
@@ -127,8 +114,13 @@ public class VestaOldViewer extends Viewer
         return renderer;
     }
 
-    public String getName()
+    public String getDisplayName()
     {
         return NAME;
+    }
+
+    public String getSubmenu()
+    {
+        return "Thomas";
     }
 }

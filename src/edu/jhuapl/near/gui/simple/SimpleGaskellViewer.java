@@ -1,4 +1,4 @@
-package edu.jhuapl.near.gui.deimos;
+package edu.jhuapl.near.gui.simple;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -22,25 +22,14 @@ import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.PointModel;
-import edu.jhuapl.near.model.SmallBodyImageMapCollection;
 import edu.jhuapl.near.model.SmallBodyModel;
-import edu.jhuapl.near.model.deimos.Deimos;
-import edu.jhuapl.near.model.deimos.DeimosGraticule;
+import edu.jhuapl.near.model.simple.SimpleSmallBody;
 import edu.jhuapl.near.pick.PickManager;
 import edu.jhuapl.near.popupmenus.PopupManager;
 import edu.jhuapl.near.util.Configuration;
 
-/**
- * This class contains the "main" function called at the start of the program.
- * This class sets up the top level window and instantiates all the "managers" used
- * through out the program.
- * @author kahneg1
- *
- */
-public class DeimosViewer extends Viewer
+public class SimpleGaskellViewer extends Viewer
 {
-    public static final String NAME = "Deimos";
-
     private JSplitPane splitPane;
     private Renderer renderer;
     private JTabbedPane controlPanel;
@@ -49,11 +38,18 @@ public class DeimosViewer extends Viewer
     private PopupManager popupManager;
     private StatusBar statusBar;
     private boolean initialized = false;
+    private String name;
+    private String pathToSmallBodyFileOnServer;
 
-    public DeimosViewer(StatusBar statusBar)
+    public SimpleGaskellViewer(
+            StatusBar statusBar,
+            String name,
+            String pathToSmallBodyFileOnServer)
     {
         super(new BorderLayout());
         this.statusBar = statusBar;
+        this.name = name;
+        this.pathToSmallBodyFileOnServer = pathToSmallBodyFileOnServer;
     }
 
     public void initialize()
@@ -71,7 +67,7 @@ public class DeimosViewer extends Viewer
 
         controlPanel = new JTabbedPane();
         controlPanel.setBorder(BorderFactory.createEmptyBorder());
-        controlPanel.addTab("Deimos", new SmallBodyControlPanel(modelManager, "Deimos"));
+        controlPanel.addTab(name, new SmallBodyControlPanel(modelManager, name));
         if (Configuration.isAPLVersion())
         {
             controlPanel.addTab("Structures", new StructuresControlPanel(modelManager, pickManager));
@@ -95,17 +91,35 @@ public class DeimosViewer extends Viewer
     {
         modelManager = new ModelManager();
 
-        SmallBodyModel deimosModel = new Deimos();
-        Graticule graticule = new DeimosGraticule(deimosModel);
+        String[] names = {
+                name + " low",
+                name + " med",
+                name + " high",
+                name + " very high"
+        };
+        String[] smallBodyModelPaths = {
+                pathToSmallBodyFileOnServer + "/ver64q.vtk.gz",
+                pathToSmallBodyFileOnServer + "/ver128q.vtk.gz",
+                pathToSmallBodyFileOnServer + "/ver256q.vtk.gz",
+                pathToSmallBodyFileOnServer + "/ver512q.vtk.gz"
+        };
+        String[] graticulePaths = {
+                pathToSmallBodyFileOnServer + "/coordinate_grid_res0.vtk.gz",
+                pathToSmallBodyFileOnServer + "/coordinate_grid_res1.vtk.gz",
+                pathToSmallBodyFileOnServer + "/coordinate_grid_res2.vtk.gz",
+                pathToSmallBodyFileOnServer + "/coordinate_grid_res3.vtk.gz"
+        };
+
+        SmallBodyModel smallBodyModel = new SimpleSmallBody(names, smallBodyModelPaths);
+        Graticule graticule = new Graticule(smallBodyModel, graticulePaths);
 
         HashMap<String, Model> allModels = new HashMap<String, Model>();
-        allModels.put(ModelNames.SMALL_BODY, deimosModel);
-        allModels.put(ModelNames.LINE_STRUCTURES, new LineModel(deimosModel));
-        allModels.put(ModelNames.CIRCLE_STRUCTURES, new CircleModel(deimosModel));
-        allModels.put(ModelNames.POINT_STRUCTURES, new PointModel(deimosModel));
-        allModels.put(ModelNames.ELLIPSE_STRUCTURES, new EllipseModel(deimosModel));
-        allModels.put(ModelNames.CIRCLE_SELECTION, new CircleSelectionModel(deimosModel));
-        allModels.put(ModelNames.SMALL_BODY_IMAGE_MAP, new SmallBodyImageMapCollection(deimosModel));
+        allModels.put(ModelNames.SMALL_BODY, smallBodyModel);
+        allModels.put(ModelNames.LINE_STRUCTURES, new LineModel(smallBodyModel));
+        allModels.put(ModelNames.CIRCLE_STRUCTURES, new CircleModel(smallBodyModel));
+        allModels.put(ModelNames.POINT_STRUCTURES, new PointModel(smallBodyModel));
+        allModels.put(ModelNames.ELLIPSE_STRUCTURES, new EllipseModel(smallBodyModel));
+        allModels.put(ModelNames.CIRCLE_SELECTION, new CircleSelectionModel(smallBodyModel));
         allModels.put(ModelNames.GRATICULE, graticule);
 
         modelManager.setModels(allModels);
@@ -119,11 +133,11 @@ public class DeimosViewer extends Viewer
 
     public String getDisplayName()
     {
-        return NAME;
+        return name;
     }
 
     public String getSubmenu()
     {
-        return "Thomas";
+        return "Gaskell";
     }
 }

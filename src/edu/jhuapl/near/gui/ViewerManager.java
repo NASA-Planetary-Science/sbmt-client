@@ -12,6 +12,8 @@ import edu.jhuapl.near.gui.custom.CustomViewer;
 import edu.jhuapl.near.gui.deimos.DeimosViewer;
 import edu.jhuapl.near.gui.eros.ErosViewer;
 import edu.jhuapl.near.gui.itokawa.ItokawaViewer;
+import edu.jhuapl.near.gui.simple.SimpleGaskellViewer;
+import edu.jhuapl.near.gui.simple.SimpleViewer;
 import edu.jhuapl.near.gui.vesta.VestaViewer;
 import edu.jhuapl.near.gui.vesta_old.VestaOldViewer;
 import edu.jhuapl.near.util.Configuration;
@@ -29,21 +31,65 @@ public class ViewerManager extends JPanel
         setBorder(BorderFactory.createEmptyBorder());
         this.statusBar = statusBar;
 
+
+        // Gaskell models
         builtInViewers.add(new ErosViewer(statusBar));
-        builtInViewers.add(new DeimosViewer(statusBar));
         builtInViewers.add(new ItokawaViewer(statusBar));
-        builtInViewers.add(new VestaOldViewer(statusBar));
         builtInViewers.add(new VestaViewer(statusBar));
+        builtInViewers.add(new SimpleGaskellViewer(statusBar, "Mimas", "/MIMAS"));
+        builtInViewers.add(new SimpleGaskellViewer(statusBar, "Phoebe", "/PHOEBE"));
+        builtInViewers.add(new SimpleGaskellViewer(statusBar, "Phobos", "/PHOBOS"));
+
+
+        // Thomas models
+        builtInViewers.add(new SimpleViewer(statusBar, "Ida", "/THOMAS/243ida.llr.gz"));
+        builtInViewers.add(new SimpleViewer(statusBar, "Mathilde", "/THOMAS/253mathilde.llr.gz"));
+        builtInViewers.add(new VestaOldViewer(statusBar));
+        builtInViewers.add(new SimpleViewer(statusBar, "Gaspra", "/THOMAS/951gaspra.llr.gz"));
+        builtInViewers.add(new SimpleViewer(statusBar, "Phobos", "/THOMAS/m1phobos.llr.gz"));
+        builtInViewers.add(new DeimosViewer(statusBar));
+        builtInViewers.add(new SimpleViewer(statusBar, "Janus", "/THOMAS/s10janus.llr.gz"));
+        builtInViewers.add(new SimpleViewer(statusBar, "Epimetheus", "/THOMAS/s11epimetheus.llr.gz"));
+        builtInViewers.add(new SimpleViewer(statusBar, "Hyperion", "/THOMAS/s7hyperion.llr.gz"));
+        builtInViewers.add(new SimpleViewer(statusBar, "Tempel 1", "/THOMAS/tempel1_cart.t1.gz"));
+
+        // Stooke models
+        builtInViewers.add(new SimpleViewer(statusBar, "Halley", "/STOOKE/1682q1halley.llr.gz"));
+        builtInViewers.add(new SimpleViewer(statusBar, "Ida", "/STOOKE/243ida.llr.gz"));
+        builtInViewers.add(new SimpleViewer(statusBar, "Gaspra", "/STOOKE/951gaspra.llr.gz"));
+        builtInViewers.add(new SimpleViewer(statusBar, "Amalthea", "/STOOKE/j5amalthea.llr.gz"));
+        builtInViewers.add(new SimpleViewer(statusBar, "Arissa", "/STOOKE/n7larissa.llr.gz"));
+        builtInViewers.add(new SimpleViewer(statusBar, "Proteus", "/STOOKE/n8proteus.llr.gz"));
+        builtInViewers.add(new SimpleViewer(statusBar, "Janus", "/STOOKE/s10janus.llr.gz"));
+        builtInViewers.add(new SimpleViewer(statusBar, "Epimetheus", "/STOOKE/s11epimetheus.llr.gz"));
+        builtInViewers.add(new SimpleViewer(statusBar, "Prometheus", "/STOOKE/s16prometheus.llr.gz"));
+        builtInViewers.add(new SimpleViewer(statusBar, "Pandora", "/STOOKE/s17pandora.llr.gz"));
+
+        // Hudson models
+        builtInViewers.add(new SimpleViewer(statusBar, "Geographos", "/HUDSON/1620geographos.obj.gz"));
+        builtInViewers.add(new SimpleViewer(statusBar, "KY26", "/HUDSON/1998ky26.obj.gz"));
+        builtInViewers.add(new SimpleViewer(statusBar, "Bacchus", "/HUDSON/2063bacchus.obj.gz"));
+        builtInViewers.add(new SimpleViewer(statusBar, "Kleopatra", "/HUDSON/216kleopatra.obj.gz"));
+        builtInViewers.add(new SimpleViewer(statusBar, "Itokawa", "/HUDSON/25143itokawa.obj.gz"));
+        builtInViewers.add(new SimpleViewer(statusBar, "Toutatis (Low Res)", "/HUDSON/4179toutatis.obj.gz"));
+        builtInViewers.add(new SimpleViewer(statusBar, "Toutatis (High Res)", "/HUDSON/4179toutatis2.obj.gz"));
+        builtInViewers.add(new SimpleViewer(statusBar, "Castalia", "/HUDSON/4769castalia.obj.gz"));
+        builtInViewers.add(new SimpleViewer(statusBar, "52760 (1998 ML14)", "/HUDSON/52760.obj.gz"));
+        builtInViewers.add(new SimpleViewer(statusBar, "Golevka", "/HUDSON/6489golevka.obj.gz"));
+
+        // Other models
+        builtInViewers.add(new SimpleViewer(statusBar, "Wild 2", "/OTHER/wild2_cart_full.w2.gz"));
+
 
         currentViewer = builtInViewers.get(0);
 
         for (Viewer viewer : builtInViewers)
-            add(viewer, viewer.getName());
+            add(viewer, viewer.getUniqueName());
 
         loadCustomViewers();
 
         for (Viewer viewer : customViewers)
-            add(viewer, viewer.getName());
+            add(viewer, viewer.getUniqueName());
     }
 
     private void loadCustomViewers()
@@ -70,11 +116,13 @@ public class ViewerManager extends JPanel
 
     public void setCurrentViewer(Viewer viewer)
     {
-        // defer initialization of Viewer until we show it.
-        viewer.initialize();
-
         CardLayout cardLayout = (CardLayout)(getLayout());
-        cardLayout.show(this, viewer.getName());
+        cardLayout.show(this, viewer.getUniqueName());
+
+        // defer initialization of Viewer until we show it.
+        repaint();
+        validate();
+        viewer.initialize();
 
         currentViewer = viewer;
     }
@@ -111,7 +159,7 @@ public class ViewerManager extends JPanel
     {
         for (Viewer viewer : customViewers)
         {
-            if (viewer.getName().equals(name))
+            if (viewer.getUniqueName().equals(name))
             {
                 customViewers.remove(viewer);
                 remove(viewer);
@@ -126,7 +174,7 @@ public class ViewerManager extends JPanel
     {
         for (Viewer viewer : customViewers)
         {
-            if (viewer.getName().equals(name))
+            if (viewer.getUniqueName().equals(name))
             {
                 return viewer;
             }
