@@ -30,9 +30,9 @@ public class NormalOffsetChangerDialog extends JDialog implements ActionListener
     private JFormattedTextField offsetField;
     private String lastGood = "";
 
-    public NormalOffsetChangerDialog(Model smallBodyModel)
+    public NormalOffsetChangerDialog(Model model)
     {
-        this.model = smallBodyModel;
+        this.model = model;
 
         JPanel panel = new JPanel();
         panel.setLayout(new MigLayout());
