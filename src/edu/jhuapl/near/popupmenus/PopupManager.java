@@ -8,6 +8,7 @@ import vtk.vtkProp;
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
+import edu.jhuapl.near.model.SmallBodyImageMapCollection;
 
 /**
  * This class is responsible for the creation of popups and for the routing
@@ -37,6 +38,11 @@ public class PopupManager
 
         popupMenu = new PointsPopupMenu(modelManager);
         registerPopup(modelManager.getModel(ModelNames.POINT_STRUCTURES), popupMenu);
+
+        SmallBodyImageMapCollection imageMapCollection =
+            (SmallBodyImageMapCollection)modelManager.getModel(ModelNames.SMALL_BODY_IMAGE_MAP);
+        popupMenu = new SmallBodyImagePopupMenu(imageMapCollection);
+        registerPopup(modelManager.getModel(ModelNames.SMALL_BODY_IMAGE_MAP), popupMenu);
     }
 
 //    public PopupMenu getPopup(Model model)

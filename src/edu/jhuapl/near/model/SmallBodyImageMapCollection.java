@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
 
+import vtk.vtkActor;
 import vtk.vtkProp;
 
 import edu.jhuapl.near.model.SmallBodyImageMap.ImageInfo;
@@ -167,6 +168,17 @@ public class SmallBodyImageMapCollection extends Model implements PropertyChange
         this.opacity = opacity;
         for (SmallBodyImageMap image : images)
             image.setImageMapOpacity(opacity);
+    }
+
+    public SmallBodyImageMap getImage(vtkActor actor)
+    {
+        for (SmallBodyImageMap image : images)
+        {
+            if (image.getProps().contains(actor))
+                return image;
+        }
+
+        return null;
     }
 
     public ArrayList<vtkProp> getProps()

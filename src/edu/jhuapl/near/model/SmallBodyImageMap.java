@@ -50,6 +50,7 @@ public class SmallBodyImageMap extends Model
     }
 
     private vtkPolyData imageMapPolyData;
+    private vtkPolyData shiftedImageMapPolyData;
     private vtkActor smallBodyActor;
     private vtkPolyDataMapper smallBodyMapper;
     private ArrayList<vtkProp> smallBodyActors = new ArrayList<vtkProp>();
@@ -58,6 +59,7 @@ public class SmallBodyImageMap extends Model
     private vtkTexture imageMapTexture;
     private boolean initialized = false;
     private ImageInfo imageInfo;
+    private double offset;
 
     public SmallBodyImageMap(
             SmallBodyModel smallBodyModel,
@@ -68,6 +70,9 @@ public class SmallBodyImageMap extends Model
         this.imageInfo = imageInfo;
 
         imageMapPolyData = new vtkPolyData();
+        shiftedImageMapPolyData = new vtkPolyData();
+
+        this.offset = getDefaultOffset();
 
         setVisible(false);
     }
@@ -221,7 +226,8 @@ public class SmallBodyImageMap extends Model
         vtkPolyData appendFilterOutput = appendFilter.GetOutput();
         imageMapPolyData.DeepCopy(appendFilterOutput);
 
-        PolyDataUtil.shiftPolyDataInNormalDirection(imageMapPolyData, 2.0*smallBodyModel.getMinShiftAmount());
+        shiftedImageMapPolyData.DeepCopy(imageMapPolyData);
+        PolyDataUtil.shiftPolyDataInNormalDirection(shiftedImageMapPolyData, offset);
 
         initialized = true;
     }
@@ -314,7 +320,7 @@ public class SmallBodyImageMap extends Model
             smallBodyMapper = new vtkPolyDataMapper();
             smallBodyMapper.ScalarVisibilityOff();
             smallBodyMapper.SetScalarModeToDefault();
-            smallBodyMapper.SetInput(imageMapPolyData);
+            smallBodyMapper.SetInput(shiftedImageMapPolyData);
             smallBodyMapper.Update();
 
             imageMapTexture = new vtkTexture();
@@ -363,6 +369,26 @@ public class SmallBodyImageMap extends Model
         reader.SetFileName(imageFile.getAbsolutePath());
         reader.Update();
         return reader.GetOutput();
+    }
+
+    public double getDefaultOffset()
+    {
+        return 2.0*smallBodyModel.getMinShiftAmount();
+    }
+
+    public void setOffset(double offset)
+    {
+        this.offset = offset;
+
+        shiftedImageMapPolyData.DeepCopy(imageMapPolyData);
+        PolyDataUtil.shiftPolyDataInNormalDirection(shiftedImageMapPolyData, offset);
+
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+    }
+
+    public double getOffset()
+    {
+        return offset;
     }
 
     public void delete()
