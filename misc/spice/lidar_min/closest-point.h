@@ -8,7 +8,8 @@
 extern "C" {
 #endif
 
-void initializeDsk(const char* const dskfile);
+void initializeDsk(const char* dskfile);
+void initializeVtk(const char* dskfile);
 void findClosestPointDsk(const double* origin, const double* direction, double* closestPoint, int* found);
 void findClosestPointAndNormalDsk(const double* origin, const double* direction, double* closestPoint, double* normal, int* found);
 void findClosestPointVtk(const double* origin, double* closestPoint, int* found);

@@ -5,12 +5,11 @@
 #include <vtkGenericCell.h>
 
 
-static const char* const dskfile = "/project/nearsdc/data/ITOKAWA/ver512q.vtk";
 static vtkCellLocator* cellLocator = 0;
 static vtkGenericCell* genericCell = 0;
 
 
-static void loadVtk()
+extern "C" void initializeVtk(const char* dskfile)
 {
     vtkPolyDataReader* smallBodyReader = vtkPolyDataReader::New();
     smallBodyReader->SetFileName(dskfile);
@@ -35,13 +34,6 @@ static void loadVtk()
 
 extern "C" void findClosestPointVtk(const double* origin, double* closestPoint, int* found)
 {
-    static int initialized = 0;
-    if (!initialized)
-    {
-        loadVtk();
-        initialized = 1;
-    }
-
     double point[3] = {origin[0], origin[1], origin[2]};
     vtkIdType cellId;
     int subId;
