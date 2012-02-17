@@ -4,7 +4,8 @@
 #include <math.h>
 #include <vector>
 #include "SpiceUsr.h"
-#include "closest-point.h"
+#include "closest-point-dsk.h"
+#include "closest-point-vtk.h"
 
 
 /************************************************************************
@@ -58,14 +59,14 @@ void loadPoints(int argc, char** argv, BodyType bodyType)
 
         char line[LINE_SIZE];
         char utc[UTC_SIZE];
-        
+
         int count = -1;
 
         while ( fgets ( line, sizeof line, f ) != NULL ) /* read a line */
         {
             ++count;
             struct LidarPoint point;
-            
+
             if (bodyType == ITOKAWA)
             {
                 sscanf(line, "%*s %s %lf %lf %lf %lf %lf %lf %lf",
@@ -102,15 +103,15 @@ void loadPoints(int argc, char** argv, BodyType bodyType)
                     continue;
 
                 point.range /= 1000.0;
-                
+
                 point.targetpos[0] /= 1000.0;
                 point.targetpos[1] /= 1000.0;
                 point.targetpos[2] /= 1000.0;
-                
+
                 scrdst /= 1000.0;
                 latrec_c(scrdst, sclon*M_PI/180.0, sclat*M_PI/180.0, point.scpos);
-            }            
-            
+            }
+
             g_points.push_back(point);
         }
 
@@ -118,7 +119,7 @@ void loadPoints(int argc, char** argv, BodyType bodyType)
         fflush(NULL);
         fclose ( f );
     }
-    
+
     printf("Finished loading data\n\n\n");
 }
 
@@ -135,7 +136,7 @@ void computeRMS()
     {
         if (i % 1000 == 0)
             printf("finding closest point %d\n", i);
-        
+
         struct LidarPoint pt = g_points[i];
         double closestPoint[3];
         double boredir[3] = {
@@ -155,11 +156,11 @@ void computeRMS()
             ++numberWithNoIntersect;
             continue;
         }
-        
+
         double dist = vdist_c(pt.targetpos, closestPoint);
         rms += dist*dist;
         meanDist += dist;
-        
+
         double computedRange = vdist_c(pt.scpos, closestPoint);
         meanRangeError += fabs(computedRange - pt.range);
     }
@@ -189,6 +190,6 @@ int main(int argc, char** argv)
     loadPoints(argc, argv, bodyType);
 
     computeRMS();
-    
+
     return 0;
 }

@@ -9,7 +9,7 @@ static vtkCellLocator* cellLocator = 0;
 static vtkGenericCell* genericCell = 0;
 
 
-extern "C" void initializeVtk(const char* dskfile)
+void initializeVtk(const char* dskfile)
 {
     vtkPolyDataReader* smallBodyReader = vtkPolyDataReader::New();
     smallBodyReader->SetFileName(dskfile);
@@ -32,7 +32,7 @@ extern "C" void initializeVtk(const char* dskfile)
 }
 
 
-extern "C" void findClosestPointVtk(const double* origin, double* closestPoint, int* found)
+void findClosestPointVtk(const double* origin, double* closestPoint, int* found)
 {
     double point[3] = {origin[0], origin[1], origin[2]};
     vtkIdType cellId;

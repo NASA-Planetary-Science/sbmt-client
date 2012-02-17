@@ -1,9 +1,11 @@
 #include <stdlib.h>
 #include "SpiceUsr.h"
+extern "C"
+{
 #include "SpiceDLA.h"
 #include "SpiceDSK.h"
 #include "pl02.h"
-
+}
 
 /* Used to perform ray intersection with shape model */
 static SpiceDLADescr g_dladsc;

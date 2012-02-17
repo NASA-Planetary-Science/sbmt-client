@@ -6,10 +6,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
-extern "C"
-{
 #include "SpiceUsr.h"
-}
+
 
 using namespace std;
 
@@ -104,7 +102,7 @@ void loadPoints(int argc, char** argv)
         double sx;
         double sy;
         double sz;
-        
+
         while ( fgets ( line, sizeof line, f ) != NULL ) /* read a line */
         {
             if (count >= MAX_NUMBER_POINTS)
@@ -112,7 +110,7 @@ void loadPoints(int argc, char** argv)
                 printf("Error: Max number of allowable points exceeded!");
                 exit(1);
             }
-            
+
             sscanf(line, "%*s %s %*s %lf %lf %lf", utc, &sx, &sy, &sz);
 
 
@@ -123,7 +121,7 @@ void loadPoints(int argc, char** argv)
             point.scpos[0] = sx;
             point.scpos[1] = sy;
             point.scpos[2] = sz;
-            
+
             g_points[count] = point;
 
             ++count;
@@ -133,7 +131,7 @@ void loadPoints(int argc, char** argv)
         fflush(NULL);
         fclose ( f );
     }
-    
+
     g_actual_number_points = count;
     printf("Finished loading data\n\n\n");
 }
@@ -144,7 +142,7 @@ bool getLidarPosAtTime(double time, double pos[3])
     {
         return false;
     }
-    
+
     for (int i=1; i<g_actual_number_points; ++i)
     {
         struct LidarPoint pt1 = g_points[i];
@@ -167,7 +165,7 @@ bool getLidarPosAtTime(double time, double pos[3])
             else
             {
                 struct LidarPoint pt0 = g_points[i-1];
-                
+
                 // do linear interpolation for each dimension
                 for (int j = 0; j<3; ++j)
                 {
@@ -203,7 +201,7 @@ void getGaskellPos(const string& sumfile, double scpos[3])
                     if ( pos != string::npos )
                         fields[i].replace( pos, 1, "E" );
                 }
-                
+
                 scpos[0] = -atof(fields[0].c_str());
                 scpos[1] = -atof(fields[1].c_str());
                 scpos[2] = -atof(fields[2].c_str());
@@ -226,11 +224,11 @@ vector<pair<string, double> > loadFitTimes(const string& filelist)
     ifstream fin(filelist.c_str());
 
     vector<pair<string, double> > files;
-    
+
     int found;
     int id;
     bodn2c_c("HAYABUSA", &id, &found);
-    
+
     if (fin.is_open())
     {
         string line;
@@ -243,7 +241,7 @@ vector<pair<string, double> > loadFitTimes(const string& filelist)
             scs2e_c(id, (fields[0]+":0").c_str(), &et);
             char utc[25];
             et2utc_c ( et , "C", 3, 25, utc );
-            
+
             //cout << fields[1] << " " << utc << " " << et << std::endl;
             pair<string, double> p(fields[1], et);
             files.push_back(p);
@@ -266,13 +264,13 @@ int main(int argc, char** argv)
         cerr << "Usage: lidar-compute-gaskell-error <kernelfiles> <fittimeslist> <sumfilefolder> <lidarfile1> [<lidarfile2> ...]" << endl;
         return 1;
     }
-    
+
     string kernelfiles = argv[1];
     string fittimeslist = argv[2];
     string sumfilefolder = argv[3];
 
     furnsh_c(kernelfiles.c_str());
-   
+
     erract_c("SET", 1, (char*)"RETURN");
 
     loadPoints(argc, argv);
@@ -285,7 +283,7 @@ int main(int argc, char** argv)
     {
         reset_c();
 
-        
+
         string sumfile = sumfilefolder + "/N" + fittimes[i].first.substr(3, 10) + ".SUM";
         double scpos_gas[3];
         getGaskellPos(sumfile, scpos_gas);
@@ -304,7 +302,7 @@ int main(int argc, char** argv)
           // The following is just for a consistency check to make sure
           // our interpolation is the same as you would get using the
           // spk kernels.
-          
+
         double scpos_spice2[3];
         const char* target = "HAYABUSA";
         const char* ref = "IAU_ITOKAWA";
@@ -324,7 +322,7 @@ int main(int argc, char** argv)
         //    cout << i << ",";
         //    continue;
         //}
-        
+
         meandist += dist;
         cout << "starting " << (i+1) << " / " << fittimes.size() << " " << fittimes[i].first << " " << dist << endl;
         ++count;
@@ -333,6 +331,6 @@ int main(int argc, char** argv)
     meandist /= (double)count;
 
     cout << "meandist: " << meandist << " count: " << count << endl;
-    
+
     return 0;
 }

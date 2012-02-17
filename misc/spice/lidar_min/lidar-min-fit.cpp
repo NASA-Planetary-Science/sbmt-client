@@ -7,8 +7,10 @@
 #include "SpiceUsr.h"
 #include "lbfgs.h"
 #include "optimize.h"
+#include "optimize-gsl.h"
 #include "adolc/adolc.h"
-#include "closest-point.h"
+#include "closest-point-dsk.h"
+#include "closest-point-vtk.h"
 #include <gsl/gsl_bspline.h>
 #include <gsl/gsl_multifit.h>
 #include <gsl/gsl_rng.h>
@@ -17,14 +19,6 @@
 
 using namespace std;
 
-extern "C"
-{
-void optimizeGsl(double (*function)(const double*, void *externalParams),
-                 void (*gradient)(const double*, double*, void *externalParams),
-                 double* minimizer,
-                 size_t N,
-                 void *externalParams);
-}
 
 namespace
 {
@@ -124,7 +118,7 @@ void printpt(const char* str, const double* pt)
 {
     printf("%s - %f %f %f\n", str, pt[0], pt[1], pt[2]);
 }
-        
+
 
 /* Return distance squared between points x and y */
 double vdist2(const double x[3], const double y[3])
@@ -146,7 +140,7 @@ double vdotg ( const double   * v1,
     }
     return dot;
 }
-    
+
 void vdotgAdolc ( const adouble   * v1,
                   const double    * v2,
                   int               ndim,
@@ -183,7 +177,7 @@ void loadPoints(int argc, char** argv)
         double y;
         double z;
         int count = -1;
-        
+
         while ( fgets ( line, LINE_SIZE, f ) != NULL ) /* read a line */
         {
             ++count;
@@ -208,7 +202,7 @@ void loadPoints(int argc, char** argv)
             {
                 if (count < 2)
                     continue;
-                
+
                 int noise;
                 double sclon;
                 double sclat;
@@ -230,11 +224,11 @@ void loadPoints(int argc, char** argv)
 
                 point.range = atof(point.rangeStr);
                 point.range /= 1000.0;
-                
+
                 x /= 1000.0;
                 y /= 1000.0;
                 z /= 1000.0;
-                
+
                 scrdst /= 1000.0;
                 latrec_c(scrdst, sclon*M_PI/180.0, sclat*M_PI/180.0, point.scpos);
             }
@@ -243,7 +237,7 @@ void loadPoints(int argc, char** argv)
             point.boredir[1] = y - point.scpos[1];
             point.boredir[2] = z - point.scpos[2];
             vhat_c(point.boredir, point.boredir);
-            
+
             utc2et_c(point.utc, &point.time);
 
             g_points.push_back(point);
@@ -271,7 +265,7 @@ void printTapestats()
     fprintf(stdout,"    maxlive                 %d\n",tape_stats[NUM_MAX_LIVES]);
     fprintf(stdout,"    valstack size           %d\n\n",tape_stats[TAY_STACK_SIZE]);
 }
-    
+
 double funcAdolc(const double* coef, void* params)
 {
     // First evaluate the splines using the coefficients
@@ -297,7 +291,7 @@ double funcAdolc(const double* coef, void* params)
     adouble vec[3];
     adouble dist;
     adouble* coefA = new adouble[N];
-    
+
     trace_on(1);
 
     for (int i=0; i<N; ++i)
@@ -311,7 +305,7 @@ double funcAdolc(const double* coef, void* params)
         for (int k=0; k<3; ++k)
         {
             const adouble* startCoef = &coefA[k*p->ncoeffsPerDimSc];
-        
+
             gsl_bspline_eval(time, p->B[k], p->bw[k]);
 
             vdotgAdolc(startCoef, gsl_vector_const_ptr(p->B[k], 0), p->ncoeffsPerDimSc, &scposA[k]);
@@ -341,7 +335,7 @@ double funcAdolc(const double* coef, void* params)
             // computed range based on the position computed from the splines.
 
             double measuredRange = pt.range;
-            
+
             double closestPoint[3];
             double normal[3];
             SpiceBoolean found;
@@ -364,7 +358,7 @@ double funcAdolc(const double* coef, void* params)
                 rangeErrorA += 2.0 * 2.0;
                 continue;
             }
-            
+
             // Form equation of plane along this plate using intersect
             // and normal. Equation of plane is ax + by + cz + d = 0
             // where [a, b, c] is normal vector.
@@ -380,7 +374,7 @@ double funcAdolc(const double* coef, void* params)
             // to use ADOLC to compute a gradient. For the purpose of
             // computing a gradient it is okay to assume that the
             // plate the ray intersects has infinite extent.
-            
+
             if (g_estimatePointing)
             {
                 t = -(a*scposA[0] + b*scposA[1] + c*scposA[2] + d) /
@@ -412,16 +406,16 @@ double funcAdolc(const double* coef, void* params)
             rangeErrorA += errorA*errorA;
         }
     }
-    
+
     funcValueA = (1.0 - p->weight) * fitErrorA + p->weight * rangeErrorA;
     funcValueA >>= funcValue;
 
     trace_off();
-    
+
     //printTapestats();
-    
+
     delete[] coefA;
-    
+
     return funcValue;
 }
 
@@ -435,13 +429,13 @@ void gradAdolc(const double* coef, double* df, void* params)
     funcAdolc(coef, params); // return value not used
     gradient(1,N,coef,df);
 }
-    
+
 /* do an initial linear least squares fit of a cubic spline to the data */
 bool doInitialFit(int startId, int trackSize, FunctionParams* params)
 {
     if (trackSize <= 20)
         return false;
-    
+
     int endPoint = startId + trackSize;
     double t0 = 0.0;
     double t1 = g_points[endPoint-1].time - g_points[startId].time;
@@ -460,7 +454,7 @@ bool doInitialFit(int startId, int trackSize, FunctionParams* params)
 
     params->startPoint = startId;
     params->endPoint = endPoint;
-    
+
     const int maxK = g_estimatePointing ? 6 : 3;
     for (k=0; k < maxK; ++k)
     {
@@ -572,8 +566,8 @@ bool doInitialFit(int startId, int trackSize, FunctionParams* params)
             }
             printf("%d: mean error: %f\n", k, meanError / (double)n);
         }
-        
-        
+
+
         //gsl_bspline_free(bw);
         //gsl_vector_free(B);
         gsl_vector_free(x);
@@ -597,7 +591,7 @@ void optimizeTrack(int startId, int trackSize)
     printf("Optimizing track starting at %d with size %d\n\n", startId, trackSize);
 
     int endPoint = startId + trackSize;
-        
+
     FunctionParams params;
     params.weight = 1.0;
     params.ncoeffsPerDimSc = 0;
@@ -613,7 +607,7 @@ void optimizeTrack(int startId, int trackSize)
 
         return;
     }
-    
+
     // put computed coefficients into single array
     vector<double> coeffs;
     for (int i=0; i<3; ++i)
@@ -635,7 +629,7 @@ void optimizeTrack(int startId, int trackSize)
     for (int k=0; k<3; ++k)
     {
         const double* startCoef = &coeffs[k*params.ncoeffsPerDimSc];
-        
+
         for (int i = startId; i < endPoint; ++i)
         {
             double t = g_points[i].time - startTime;
@@ -680,14 +674,14 @@ void optimizeTrack(int startId, int trackSize)
             gsl_vector_free(params.B[i]);
         }
     }
-    
+
     printf("Finished optimizing track\n\n\n\n");
 }
 
 
 
 /************************************************************************
-* 
+*
 ************************************************************************/
 void initializePointsOptimized()
 {
@@ -741,7 +735,7 @@ int checkForBreakInTrack(int startId, int trackSize)
 
 
 /************************************************************************
-* 
+*
 ************************************************************************/
 void optimizeAllTracks()
 {
@@ -762,7 +756,7 @@ void optimizeAllTracks()
         {
             printf("Skipping this track since end point has not incremented. End point: %d\n", endPoint);
         }
-        
+
         //++currentStartPoint;
         currentStartPoint = endPoint;
         prevEndPoint = endPoint;
@@ -771,7 +765,7 @@ void optimizeAllTracks()
 
 
 /************************************************************************
-* 
+*
 ************************************************************************/
 void savePointsOptimized(const char* outfile)
 {
@@ -804,7 +798,7 @@ void savePointsOptimized(const char* outfile)
         targetpos[0] = point.scpos[0] + point.range*boredirUnit[0];
         targetpos[1] = point.scpos[1] + point.range*boredirUnit[1];
         targetpos[2] = point.scpos[2] + point.range*boredirUnit[2];
-        
+
         if (g_bodyType == ITOKAWA)
         {
             fprintf(fout, "%d %s %s %8s %.16e %.16e %.16e %.16e %.16e %.16e\n",
@@ -868,7 +862,7 @@ int main(int argc, char** argv)
     g_bodyType = EROS;
     if (!strcmp(body, "ITOKAWA"))
         g_bodyType = ITOKAWA;
-    
+
     initializeDsk(dskfile);
 
     furnsh_c(kernelfiles);
@@ -876,7 +870,7 @@ int main(int argc, char** argv)
     loadPoints(argc, argv);
 
     optimizeAllTracks();
-    
+
     savePointsOptimized(outfile);
 
     return 0;

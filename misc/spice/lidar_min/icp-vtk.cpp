@@ -22,7 +22,7 @@ static void CreatePolyData(struct Point pts[], int n, vtkSmartPointer<vtkPolyDat
     {
         points->InsertNextPoint(pts[i].p);
     }
-    
+
     vtkSmartPointer<vtkPolyData> temp =
         vtkSmartPointer<vtkPolyData>::New();
     temp->SetPoints(points);
@@ -58,7 +58,7 @@ static bool isValidMatrix(vtkSmartPointer<vtkMatrix4x4> m)
    * additionalPoints I/O     if not null, additional points to transform using the computed
                               transformation. Assumed to be size n.
  */
-extern "C" void icpVtk(struct Point source[], struct Point target[], int n, struct Point* additionalPoints)
+void icpVtk(struct Point source[], struct Point target[], int n, struct Point* additionalPoints)
 {
     // Create source and target polydata
 
@@ -69,7 +69,7 @@ extern "C" void icpVtk(struct Point source[], struct Point target[], int n, stru
 
     CreatePolyData(source, n, sourcePolydata);
     CreatePolyData(target, n, targetPolydata);
-    
+
 
     // Setup ICP transform
     vtkSmartPointer<vtkIterativeClosestPointTransform> icpTransform =
@@ -90,7 +90,7 @@ extern "C" void icpVtk(struct Point source[], struct Point target[], int n, stru
     vtkSmartPointer<vtkMatrix4x4> m = icpTransform->GetMatrix();
 
     std::cout << "Determinant: " << m->Determinant() << std::endl;
-    
+
     bool validMatrix = isValidMatrix(m);
     if (!validMatrix)
     {
@@ -100,7 +100,7 @@ extern "C" void icpVtk(struct Point source[], struct Point target[], int n, stru
         icp(source, target, n, additionalPoints);
         return;
     }
-    
+
     // Transform the source points by the ICP solution
     vtkSmartPointer<vtkTransformPolyDataFilter> icpTransformFilter =
         vtkSmartPointer<vtkTransformPolyDataFilter>::New();
@@ -117,7 +117,7 @@ extern "C" void icpVtk(struct Point source[], struct Point target[], int n, stru
         source[i].p[1] = pt[1];
         source[i].p[2] = pt[2];
     }
-    
+
     if (additionalPoints != 0)
     {
         vtkSmartPointer<vtkPolyData> additionalPolydata =

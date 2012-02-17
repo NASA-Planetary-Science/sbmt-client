@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include "closest-point.h"
+#include "closest-point-dsk.h"
 #include "SpiceUsr.h"
 
 
@@ -51,7 +51,7 @@ void loadPoints(const char* filename)
 
     char line[LINE_SIZE];
     int count = 0;
-        
+
     while ( fgets ( line, LINE_SIZE, f ) != NULL ) /* read a line */
     {
         struct LidarPoint point;
@@ -87,7 +87,7 @@ void loadPoints(const char* filename)
 
 
 /************************************************************************
-* 
+*
 ************************************************************************/
 void intersectWithAsteroid(const double sc[3],
                            const double lidarpoint[3],
@@ -103,7 +103,7 @@ void intersectWithAsteroid(const double sc[3],
 }
 
 /************************************************************************
-* 
+*
 ************************************************************************/
 void savePointsOptimized(const char* filename)
 {
@@ -119,9 +119,9 @@ void savePointsOptimized(const char* filename)
         printf("Could not open %s", filename);
         exit(1);
     }
-        
+
     int found;
-        
+
     for (i=0; i<g_actual_number_points; ++i)
     {
         struct LidarPoint point = g_pointsOptimized[count];
@@ -130,7 +130,7 @@ void savePointsOptimized(const char* filename)
         const char* met = point.met;
         const char* utc = point.utc;
         const char* range = point.range;
-            
+
         double et;
         utc2et_c(utc, &et);
 
@@ -170,7 +170,7 @@ void savePointsOptimized(const char* filename)
         reclat_c(point.targetpos, &rad, &lon, &lat);
         lon *= dpr_c();
         lat *= dpr_c();
-            
+
         double int_lon;                            /* Column 20 */
         double int_lat;                            /* Column 21 */
         reclat_c(intersect, &rad, &int_lon, &int_lat);
@@ -207,7 +207,7 @@ void savePointsOptimized(const char* filename)
                     double tmp_phase, tmp_inc, tmp_emis, tmp_lon, tmp_lat;
                     illum_pl02Dsk(et, intersect, &tmp_phase, &tmp_inc, &tmp_emis);
                     reclat_c(intersect, &rad, &tmp_lon, &tmp_lat);
-                        
+
                     mean_phase += tmp_phase;
                     mean_inc += tmp_inc;
                     mean_emis += tmp_emis;
@@ -246,7 +246,7 @@ void savePointsOptimized(const char* filename)
         {
             printf("No intersection found!\n");
         }
-            
+
         fprintf(fout, "%s %s %8s %9.5f %9.5f %9.5f %9.5f %9.5f %9.5f %9.5f %9.5f %9.5f %7.3f %7.3f %7.3f %7.3f %7.3f %8.3f %8.3f %8.3f %8.3f %7.3f %7.3f %7.3f %8.3f %8.3f %8.3f %8.3f %8.3f %8.3f %d\r\n",
                 met,
                 utc,
