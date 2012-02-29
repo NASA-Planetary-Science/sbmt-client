@@ -84,9 +84,9 @@ int main(int argc, char** argv)
         double acc[3];
 
 
-        double potential = 1.0e6*factor*getPotential3(center, acc);
-        //double potential = factor*getPotential(center, acc);
-        //double potential = factor*getPotential(pt1, acc);
+        double potential = 1.0e6*factor*getGravity3(center, acc);
+        //double potential = factor*getGravity(center, acc);
+        //double potential = factor*getGravity(pt1, acc);
 
         // add centrifugal force
 //        potential -= 1.0e6 * 0.5 * omega*omega * (center[0]*center[0] + center[1]*center[1]);
@@ -99,9 +99,9 @@ int main(int argc, char** argv)
 
 
 /*
-        double pot1 = 1.0e6*factor*getPotential2(pt1, acc);
-        double pot2 = 1.0e6*factor*getPotential2(pt2, acc);
-        double pot3 = 1.0e6*factor*getPotential2(pt3, acc);
+        double pot1 = 1.0e6*factor*getGravity2(pt1, acc);
+        double pot2 = 1.0e6*factor*getGravity2(pt2, acc);
+        double pot3 = 1.0e6*factor*getGravity2(pt3, acc);
 //        pot1 -= 1.0e6*0.5 * omega*omega * (pt1[0]*pt1[0] + pt1[1]*pt1[1]);
 //        pot2 -= 1.0e6*0.5 * omega*omega * (pt2[0]*pt2[0] + pt2[1]*pt2[1]);
 //        pot3 -= 1.0e6*0.5 * omega*omega * (pt3[0]*pt3[0] + pt3[1]*pt3[1]);

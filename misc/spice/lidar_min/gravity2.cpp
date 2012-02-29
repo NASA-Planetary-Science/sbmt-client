@@ -84,7 +84,7 @@ vtkPolyData* initializeGravity2(const char* vtkfile)
     return polyData;
 }
 
-double getPotential2(const double fieldPoint[3], double acc[3])
+double getGravity2(const double fieldPoint[3], double acc[3])
 {
     double potential = 0.0;
     acc[0] = 0.0;

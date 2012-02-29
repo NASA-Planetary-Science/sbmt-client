@@ -4,7 +4,7 @@
 #include <vtkPolyData.h>
 
 vtkPolyData* initializeGravity3(const char* vtkfile);
-double getPotential3(const double fieldPoint[3], double* acc);
+double getGravity3(const double fieldPoint[3], double* acc);
 
 
 #endif // GRAVITY3_H

@@ -222,7 +222,7 @@ static double compute_Le(const double fieldPoint[3], vtkIdType edgeId)
     return log ( (r1 + r2 + ed.edgeLength) / (r1 + r2 - ed.edgeLength) );
 }
 
-double getPotential(const double fieldPoint[3], double* acc)
+double getGravity(const double fieldPoint[3], double* acc)
 {
     double potential = 0.0;
     if (acc)
