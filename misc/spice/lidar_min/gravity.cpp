@@ -6,9 +6,10 @@
 #include <vtkPolyDataNormals.h>
 #include <vtkTriangle.h>
 #include <vector>
-#include <hash_map.h>
+#include <tr1/unordered_map>
 
 using namespace std;
+using namespace std::tr1;
 
 struct EdgeKey
 {
@@ -50,7 +51,7 @@ struct PointData
     double r_mag;
 };
 
-typedef hash_map<EdgeKey, EdgeData, EdgeHash> EdgeDataMap;
+typedef unordered_map<EdgeKey, EdgeData, EdgeHash> EdgeDataMap;
 
 static vector<EdgeData> edgeData;
 static vector<FaceData> faceData;
