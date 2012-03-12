@@ -2,7 +2,6 @@
 #include <vtkPolyData.h>
 #include <vtkCellData.h>
 #include <vtkMath.h>
-#include <vtkIdList.h>
 #include <vtkPolyDataNormals.h>
 #include <vtkTriangle.h>
 #include <vector>
@@ -21,7 +20,6 @@ struct FaceCenters
 
 static vector<FaceCenters> faceCenters;
 static vtkPolyData* polyData = 0;
-static vtkIdList* idList = 0;
 
 vtkPolyData* initializeGravity2(const char* vtkfile)
 {
@@ -45,30 +43,33 @@ vtkPolyData* initializeGravity2(const char* vtkfile)
     polyData->ShallowCopy(normalsFilter->GetOutput());
 
     polyData->BuildCells();
-    polyData->BuildLinks();
 
 
     vtkPoints* points = polyData->GetPoints();
     vtkDataArray* normals = polyData->GetCellData()->GetNormals();
 
-    idList = vtkIdList::New();
+    vtkIdType *pts, npts;
 
 
     // Compute the face data
     int numFaces = polyData->GetNumberOfCells();
+    faceCenters.resize(numFaces);
     for (vtkIdType i=0; i<numFaces; ++i)
     {
         FaceCenters fc;
 
         // Get center of cell
-        polyData->GetCellPoints(i, idList);
+        polyData->GetCellPoints(i, npts, pts);
+        int p1 = pts[0];
+        int p2 = pts[1];
+        int p3 = pts[2];
 
         double pt1[3];
         double pt2[3];
         double pt3[3];
-        points->GetPoint(idList->GetId(0), pt1);
-        points->GetPoint(idList->GetId(1), pt2);
-        points->GetPoint(idList->GetId(2), pt3);
+        points->GetPoint(p1, pt1);
+        points->GetPoint(p2, pt2);
+        points->GetPoint(p3, pt3);
 
         vtkTriangle::TriangleCenter(pt1, pt2, pt3, fc.center);
 
@@ -78,7 +79,7 @@ vtkPolyData* initializeGravity2(const char* vtkfile)
         double area = vtkTriangle::TriangleArea(pt1, pt2, pt3);
         vtkMath::MultiplyScalar(fc.normal, 2.0 * area);
 
-        faceCenters.push_back(fc);
+        faceCenters[i] = fc;
     }
 
     return polyData;
