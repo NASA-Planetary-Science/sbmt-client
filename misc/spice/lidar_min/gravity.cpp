@@ -32,6 +32,8 @@ struct EdgeData
 {
     double E[3][3];
     double edgeLength;
+    int p1;
+    int p2;
 };
 
 struct FaceData
@@ -50,7 +52,7 @@ struct PointData
 
 typedef hash_map<EdgeKey, EdgeData, EdgeHash> EdgeDataMap;
 
-static EdgeDataMap edgeData;
+static vector<EdgeData> edgeData;
 static vector<FaceData> faceData;
 static vtkPolyData* polyData = 0;
 static vtkIdList* idList = 0;
@@ -62,6 +64,13 @@ static void addMatrices(double a[3][3], double b[3][3], double c[3][3])
     for (int i=0; i<3; ++i)
         for (int j=0; j<3; ++j)
             c[i][j] = a[i][j] + b[i][j];
+}
+
+void Multiply3x3(const double A[3][3], const double v[3], double u[3])
+{
+    u[0] = A[0][0]*v[0] + A[0][1]*v[1] + A[0][2]*v[2];
+    u[1] = A[1][0]*v[0] + A[1][1]*v[1] + A[1][2]*v[2];
+    u[2] = A[2][0]*v[0] + A[2][1]*v[1] + A[2][2]*v[2];
 }
 
 /*
@@ -98,6 +107,8 @@ vtkPolyData* initializeGravity(const char* vtkfile)
 
     if (polyData != 0)
         polyData->Delete();
+
+    EdgeDataMap edgeDataMap;
 
     edgeData.clear();
     faceData.clear();
@@ -162,17 +173,19 @@ vtkPolyData* initializeGravity(const char* vtkfile)
             }
 
             // If key not found
-            if (edgeData.find(key) == edgeData.end())
+            if (edgeDataMap.find(key) == edgeDataMap.end())
             {
                 EdgeData ed;
                 ed.E[0][0] = ed.E[0][1] = ed.E[0][2] = 0.0;
                 ed.E[1][0] = ed.E[1][1] = ed.E[1][2] = 0.0;
                 ed.E[2][0] = ed.E[2][1] = ed.E[2][2] = 0.0;
                 ed.edgeLength = 0.0;
-                edgeData[key] = ed;
+                ed.p1 = key.p1;
+                ed.p2 = key.p2;
+                edgeDataMap[key] = ed;
             }
 
-            EdgeData& ed = edgeData[key];
+            EdgeData& ed = edgeDataMap[key];
 
             // Compute unit vector from p1 to p2
             double edgeUnitVector[3];
@@ -192,6 +205,17 @@ vtkPolyData* initializeGravity(const char* vtkfile)
             addMatrices(ed.E, E, ed.E);
         }
     }
+
+    // Now convert the edgeDataMap to a vector
+    edgeData.clear();
+    EdgeDataMap::const_iterator it;
+    EdgeDataMap::const_iterator end = edgeDataMap.end();
+    for (it = edgeDataMap.begin(); it != end; ++it)
+    {
+        const EdgeData& ed = it->second;
+        edgeData.push_back(ed);
+    }
+
 
     // Compute the face data
     for (vtkIdType i=0; i<numFaces; ++i)
@@ -214,7 +238,7 @@ vtkPolyData* initializeGravity(const char* vtkfile)
     return polyData;
 }
 
-static double compute_wf(const double fieldPoint[3], const FaceData& fd)
+static double compute_wf(const FaceData& fd)
 {
     const PointData& pd1 = pointData[fd.p1];
     const PointData& pd2 = pointData[fd.p2];
@@ -235,10 +259,10 @@ static double compute_wf(const double fieldPoint[3], const FaceData& fd)
     return 2.0 * atan2(numerator, denominator);
 }
 
-static double compute_Le(const double fieldPoint[3], const EdgeKey& key, const EdgeData& ed)
+static double compute_Le(const EdgeData& ed)
 {
-    const PointData& pd1 = pointData[key.p1];
-    const PointData& pd2 = pointData[key.p2];
+    const PointData& pd1 = pointData[ed.p1];
+    const PointData& pd2 = pointData[ed.p2];
 
     if ( fabs(pd1.r_mag + pd2.r_mag - ed.edgeLength) < 1e-9)
     {
@@ -276,19 +300,17 @@ double getGravity(const double fieldPoint[3], double* acc)
     double Fr[3];
     double rFr;
 
-    EdgeDataMap::const_iterator it;
-    EdgeDataMap::const_iterator end = edgeData.end();
-    for (it = edgeData.begin(); it != end; ++it)
+    int numEdges = edgeData.size();
+    for (int i=0; i<numEdges; ++i)
     {
-        const EdgeKey& key = it->first;
-        const EdgeData& ed = it->second;
+        const EdgeData& ed = edgeData[i];
 
         // Any vertex of the cell will do, so just choose the first one.
-        const PointData& pd = pointData[key.p1];
+        const PointData& pd = pointData[ed.p1];
 
-        double Le = compute_Le(fieldPoint, key, ed);
+        double Le = compute_Le(ed);
 
-        vtkMath::Multiply3x3(ed.E, pd.r, Er);
+        Multiply3x3(ed.E, pd.r, Er);
         rEr = vtkMath::Dot(pd.r, Er);
         potential -= (rEr * Le);
 
@@ -301,16 +323,16 @@ double getGravity(const double fieldPoint[3], double* acc)
     }
 
     int numFaces = polyData->GetNumberOfCells();
-    for (vtkIdType i=0; i<numFaces; ++i)
+    for (int i=0; i<numFaces; ++i)
     {
         const FaceData& fd = faceData[i];
 
         // Any vertex of the cell will do, so just choose the first one.
         const PointData& pd = pointData[fd.p1];
 
-        double wf = compute_wf(fieldPoint, fd);
+        double wf = compute_wf(fd);
 
-        vtkMath::Multiply3x3(fd.F, pd.r, Fr);
+        Multiply3x3(fd.F, pd.r, Fr);
         rFr = vtkMath::Dot(pd.r, Fr);
 
         potential += (rFr * wf);
