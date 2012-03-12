@@ -81,8 +81,8 @@ public class ErosViewer extends Viewer
             {
                 if (model instanceof MSIImage)
                 {
-                    ImageCollection msiImages = (ImageCollection)modelManager.getModel(ModelNames.MSI_IMAGES);
-                    ImageBoundaryCollection msiBoundaries = (ImageBoundaryCollection)modelManager.getModel(ModelNames.MSI_BOUNDARY);
+                    ImageCollection msiImages = (ImageCollection)modelManager.getModel(ModelNames.IMAGES);
+                    ImageBoundaryCollection msiBoundaries = (ImageBoundaryCollection)modelManager.getModel(ModelNames.IMAGE_BOUNDARIES);
                     return new ImageInfoPanel((MSIImage)model, msiImages, msiBoundaries);
                 }
                 else if (model instanceof NISSpectrum)
@@ -137,9 +137,9 @@ public class ErosViewer extends Viewer
         HashMap<String, Model> allModels = new HashMap<String, Model>();
         allModels.put(ModelNames.SMALL_BODY, erosModel);
         allModels.put(ModelNames.LINEAMENT, new LineamentModel());
-        allModels.put(ModelNames.MSI_IMAGES, new ImageCollection(erosModel));
-        allModels.put(ModelNames.MSI_COLOR_IMAGES, new ColorImageCollection(erosModel));
-        allModels.put(ModelNames.MSI_BOUNDARY, new ImageBoundaryCollection(erosModel));
+        allModels.put(ModelNames.IMAGES, new ImageCollection(erosModel));
+        allModels.put(ModelNames.COLOR_IMAGES, new ColorImageCollection(erosModel));
+        allModels.put(ModelNames.IMAGE_BOUNDARIES, new ImageBoundaryCollection(erosModel));
         allModels.put(ModelNames.NIS_SPECTRA, new NISSpectraCollection(erosModel));
         allModels.put(ModelNames.NLR_DATA_SUMMARY, new NLRDataEverything());
         allModels.put(ModelNames.NLR_DATA_BROWSE, new NLRBrowseDataCollection());
@@ -162,19 +162,19 @@ public class ErosViewer extends Viewer
         PopupMenu popupMenu = new LineamentPopupMenu(modelManager);
         popupManager.registerPopup(modelManager.getModel(ModelNames.LINEAMENT), popupMenu);
 
-        ImageCollection msiImages = (ImageCollection)modelManager.getModel(ModelNames.MSI_IMAGES);
-        ImageBoundaryCollection msiBoundaries = (ImageBoundaryCollection)modelManager.getModel(ModelNames.MSI_BOUNDARY);
-        ColorImageCollection msiColorImages = (ColorImageCollection)modelManager.getModel(ModelNames.MSI_COLOR_IMAGES);
+        ImageCollection msiImages = (ImageCollection)modelManager.getModel(ModelNames.IMAGES);
+        ImageBoundaryCollection msiBoundaries = (ImageBoundaryCollection)modelManager.getModel(ModelNames.IMAGE_BOUNDARIES);
+        ColorImageCollection msiColorImages = (ColorImageCollection)modelManager.getModel(ModelNames.COLOR_IMAGES);
         NLRSearchDataCollection lidarSearch = (NLRSearchDataCollection)modelManager.getModel(ModelNames.NLR_DATA_SEARCH);
 
         popupMenu = new ImagePopupMenu(msiImages, msiBoundaries, infoPanelManager, renderer, renderer);
-        popupManager.registerPopup(modelManager.getModel(ModelNames.MSI_BOUNDARY), popupMenu);
+        popupManager.registerPopup(modelManager.getModel(ModelNames.IMAGE_BOUNDARIES), popupMenu);
 
         popupMenu = new ImagePopupMenu(msiImages, msiBoundaries, infoPanelManager, renderer, renderer);
-        popupManager.registerPopup(modelManager.getModel(ModelNames.MSI_IMAGES), popupMenu);
+        popupManager.registerPopup(modelManager.getModel(ModelNames.IMAGES), popupMenu);
 
         popupMenu = new ColorImagePopupMenu(msiColorImages, infoPanelManager);
-        popupManager.registerPopup(modelManager.getModel(ModelNames.MSI_COLOR_IMAGES), popupMenu);
+        popupManager.registerPopup(modelManager.getModel(ModelNames.COLOR_IMAGES), popupMenu);
 
         popupMenu = new NISPopupMenu(modelManager, infoPanelManager);
         popupManager.registerPopup(modelManager.getModel(ModelNames.NIS_SPECTRA), popupMenu);

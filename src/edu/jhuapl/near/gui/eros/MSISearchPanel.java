@@ -7,7 +7,6 @@ import edu.jhuapl.near.gui.AbstractImageSearchPanel;
 import edu.jhuapl.near.gui.ModelInfoWindowManager;
 import edu.jhuapl.near.gui.Renderer;
 import edu.jhuapl.near.model.ModelManager;
-import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.pick.PickManager;
 import edu.jhuapl.near.query.ErosQuery;
 import edu.jhuapl.near.query.QueryBase;
@@ -34,24 +33,6 @@ public class MSISearchPanel extends AbstractImageSearchPanel
     protected Date getDefaultEndDate()
     {
         return new GregorianCalendar(2001, 1, 13, 0, 0, 0).getTime();
-    }
-
-    @Override
-    protected String getImageCollectionModelName()
-    {
-        return ModelNames.MSI_IMAGES;
-    }
-
-    @Override
-    protected String getImageBoundaryCollectionModelName()
-    {
-        return ModelNames.MSI_BOUNDARY;
-    }
-
-    @Override
-    protected String getColorImageCollectionModelName()
-    {
-        return ModelNames.MSI_COLOR_IMAGES;
     }
 
     @Override

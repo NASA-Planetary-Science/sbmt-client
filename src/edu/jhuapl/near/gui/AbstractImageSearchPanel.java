@@ -105,9 +105,6 @@ abstract public class AbstractImageSearchPanel extends javax.swing.JPanel implem
 
     abstract protected java.util.Date getDefaultStartDate();
     abstract protected java.util.Date getDefaultEndDate();
-    abstract protected String getImageCollectionModelName();
-    abstract protected String getImageBoundaryCollectionModelName();
-    abstract protected String getColorImageCollectionModelName();
     abstract protected QueryBase getQuery();
     abstract protected int getNumberOfFilters();
     abstract protected String[] getFilterNames();
@@ -116,6 +113,22 @@ abstract public class AbstractImageSearchPanel extends javax.swing.JPanel implem
     abstract protected boolean showSourceComboBox();
     abstract protected double getDefaultMaxSpacecraftDistance();
     abstract protected double getDefaultMaxResolution();
+
+
+    private String getImageCollectionModelName()
+    {
+        return ModelNames.IMAGES;
+    }
+
+    private String getImageBoundaryCollectionModelName()
+    {
+        return ModelNames.IMAGE_BOUNDARIES;
+    }
+
+    private String getColorImageCollectionModelName()
+    {
+        return ModelNames.COLOR_IMAGES;
+    }
 
     private void postInitComponents()
     {

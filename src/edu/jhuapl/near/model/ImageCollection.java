@@ -25,8 +25,6 @@ public class ImageCollection extends Model implements PropertyChangeListener
 
     public ImageCollection(SmallBodyModel eros)
     {
-        super(ModelNames.MSI_IMAGES);
-
         this.erosModel = eros;
     }
 

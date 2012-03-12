@@ -80,8 +80,8 @@ public class VestaViewer extends Viewer
             {
                 if (model instanceof FcImage)
                 {
-                    ImageCollection fcImages = (ImageCollection)modelManager.getModel(ModelNames.FC_IMAGES);
-                    ImageBoundaryCollection fcBoundaries = (ImageBoundaryCollection)modelManager.getModel(ModelNames.FC_BOUNDARY);
+                    ImageCollection fcImages = (ImageCollection)modelManager.getModel(ModelNames.IMAGES);
+                    ImageBoundaryCollection fcBoundaries = (ImageBoundaryCollection)modelManager.getModel(ModelNames.IMAGE_BOUNDARIES);
                     return new ImageInfoPanel((FcImage)model, fcImages, fcBoundaries);
                 }
                 else
@@ -129,9 +129,9 @@ public class VestaViewer extends Viewer
 
         HashMap<String, Model> allModels = new HashMap<String, Model>();
         allModels.put(ModelNames.SMALL_BODY, vestaModel);
-        allModels.put(ModelNames.FC_IMAGES, new ImageCollection(vestaModel));
-        allModels.put(ModelNames.FC_COLOR_IMAGES, new ColorImageCollection(vestaModel));
-        allModels.put(ModelNames.FC_BOUNDARY, new ImageBoundaryCollection(vestaModel));
+        allModels.put(ModelNames.IMAGES, new ImageCollection(vestaModel));
+        allModels.put(ModelNames.COLOR_IMAGES, new ColorImageCollection(vestaModel));
+        allModels.put(ModelNames.IMAGE_BOUNDARIES, new ImageBoundaryCollection(vestaModel));
         allModels.put(ModelNames.LINE_STRUCTURES, new LineModel(vestaModel));
         allModels.put(ModelNames.CIRCLE_STRUCTURES, new CircleModel(vestaModel));
         allModels.put(ModelNames.ELLIPSE_STRUCTURES, new EllipseModel(vestaModel));
@@ -147,18 +147,18 @@ public class VestaViewer extends Viewer
     {
         popupManager = new PopupManager(modelManager);
 
-        ImageCollection fcImages = (ImageCollection)modelManager.getModel(ModelNames.FC_IMAGES);
-        ImageBoundaryCollection fcBoundaries = (ImageBoundaryCollection)modelManager.getModel(ModelNames.FC_BOUNDARY);
-        ColorImageCollection fcColorImages = (ColorImageCollection)modelManager.getModel(ModelNames.FC_COLOR_IMAGES);
+        ImageCollection fcImages = (ImageCollection)modelManager.getModel(ModelNames.IMAGES);
+        ImageBoundaryCollection fcBoundaries = (ImageBoundaryCollection)modelManager.getModel(ModelNames.IMAGE_BOUNDARIES);
+        ColorImageCollection fcColorImages = (ColorImageCollection)modelManager.getModel(ModelNames.COLOR_IMAGES);
 
         PopupMenu popupMenu = new ImagePopupMenu(fcImages, fcBoundaries, infoPanelManager, renderer, renderer);
-        popupManager.registerPopup(modelManager.getModel(ModelNames.FC_BOUNDARY), popupMenu);
+        popupManager.registerPopup(modelManager.getModel(ModelNames.IMAGE_BOUNDARIES), popupMenu);
 
         popupMenu = new ImagePopupMenu(fcImages, fcBoundaries, infoPanelManager, renderer, renderer);
-        popupManager.registerPopup(modelManager.getModel(ModelNames.FC_IMAGES), popupMenu);
+        popupManager.registerPopup(modelManager.getModel(ModelNames.IMAGES), popupMenu);
 
         popupMenu = new ColorImagePopupMenu(fcColorImages, infoPanelManager);
-        popupManager.registerPopup(modelManager.getModel(ModelNames.FC_COLOR_IMAGES), popupMenu);
+        popupManager.registerPopup(modelManager.getModel(ModelNames.COLOR_IMAGES), popupMenu);
     }
 
     public Renderer getRenderer()

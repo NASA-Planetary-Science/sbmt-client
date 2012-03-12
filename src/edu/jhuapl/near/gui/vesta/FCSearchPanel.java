@@ -7,7 +7,6 @@ import edu.jhuapl.near.gui.AbstractImageSearchPanel;
 import edu.jhuapl.near.gui.ModelInfoWindowManager;
 import edu.jhuapl.near.gui.Renderer;
 import edu.jhuapl.near.model.ModelManager;
-import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.pick.PickManager;
 import edu.jhuapl.near.query.QueryBase;
 import edu.jhuapl.near.query.VestaQuery;
@@ -35,24 +34,6 @@ public class FCSearchPanel extends AbstractImageSearchPanel
     protected Date getDefaultEndDate()
     {
         return new GregorianCalendar(2012, 7, 1, 0, 0, 0).getTime();
-    }
-
-    @Override
-    protected String getImageCollectionModelName()
-    {
-        return ModelNames.FC_IMAGES;
-    }
-
-    @Override
-    protected String getImageBoundaryCollectionModelName()
-    {
-        return ModelNames.FC_BOUNDARY;
-    }
-
-    @Override
-    protected String getColorImageCollectionModelName()
-    {
-        return ModelNames.FC_COLOR_IMAGES;
     }
 
     @Override

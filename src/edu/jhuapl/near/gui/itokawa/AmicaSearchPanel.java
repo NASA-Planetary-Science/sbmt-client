@@ -7,7 +7,6 @@ import edu.jhuapl.near.gui.AbstractImageSearchPanel;
 import edu.jhuapl.near.gui.ModelInfoWindowManager;
 import edu.jhuapl.near.gui.Renderer;
 import edu.jhuapl.near.model.ModelManager;
-import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.pick.PickManager;
 import edu.jhuapl.near.query.ItokawaQuery;
 import edu.jhuapl.near.query.QueryBase;
@@ -39,24 +38,6 @@ public class AmicaSearchPanel extends AbstractImageSearchPanel
     protected Date getDefaultEndDate()
     {
         return new GregorianCalendar(2005, 10, 31, 0, 0, 0).getTime();
-    }
-
-    @Override
-    protected String getImageCollectionModelName()
-    {
-        return ModelNames.AMICA_IMAGES;
-    }
-
-    @Override
-    protected String getImageBoundaryCollectionModelName()
-    {
-        return ModelNames.AMICA_BOUNDARY;
-    }
-
-    @Override
-    protected String getColorImageCollectionModelName()
-    {
-        return ModelNames.AMICA_COLOR_IMAGES;
     }
 
     @Override
