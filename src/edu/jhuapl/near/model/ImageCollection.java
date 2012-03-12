@@ -15,7 +15,7 @@ import vtk.vtkProp;
 import edu.jhuapl.near.model.Image.ImageKey;
 import edu.jhuapl.near.util.Properties;
 
-abstract public class ImageCollection extends Model implements PropertyChangeListener
+public class ImageCollection extends Model implements PropertyChangeListener
 {
     private SmallBodyModel erosModel;
 
@@ -30,7 +30,10 @@ abstract public class ImageCollection extends Model implements PropertyChangeLis
         this.erosModel = eros;
     }
 
-    abstract protected Image createImage(ImageKey key, SmallBodyModel smallBodyModel) throws FitsException, IOException;
+    protected Image createImage(ImageKey key, SmallBodyModel smallBodyModel) throws FitsException, IOException
+    {
+        return ImageFactory.createImage(key, smallBodyModel, false, null);
+    }
 
     private boolean containsKey(ImageKey key)
     {

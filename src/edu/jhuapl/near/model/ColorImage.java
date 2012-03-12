@@ -25,7 +25,7 @@ import edu.jhuapl.near.util.MathUtil;
 import edu.jhuapl.near.util.PolyDataUtil;
 import edu.jhuapl.near.util.Properties;
 
-abstract public class ColorImage extends Model implements PropertyChangeListener
+public class ColorImage extends Model implements PropertyChangeListener
 {
     private SmallBodyModel smallBodyModel;
     private Image redImage;
@@ -125,8 +125,10 @@ abstract public class ColorImage extends Model implements PropertyChangeListener
         computeFootprintAndColorImage();
     }
 
-    abstract protected Image createImage(ImageKey key,
-            SmallBodyModel smallBodyModel) throws FitsException, IOException;
+    protected Image createImage(ImageKey key, SmallBodyModel smallBodyModel) throws FitsException, IOException
+    {
+        return ImageFactory.createImage(key, smallBodyModel, false, null);
+    }
 
     private void computeFootprintAndColorImage() throws NoOverlapException
     {

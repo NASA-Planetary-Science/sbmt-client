@@ -18,18 +18,18 @@ import edu.jhuapl.near.gui.StructuresControlPanel;
 import edu.jhuapl.near.gui.Viewer;
 import edu.jhuapl.near.model.CircleModel;
 import edu.jhuapl.near.model.CircleSelectionModel;
+import edu.jhuapl.near.model.ColorImageCollection;
 import edu.jhuapl.near.model.EllipseModel;
 import edu.jhuapl.near.model.Graticule;
+import edu.jhuapl.near.model.ImageBoundaryCollection;
+import edu.jhuapl.near.model.ImageCollection;
 import edu.jhuapl.near.model.LineModel;
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.PointModel;
 import edu.jhuapl.near.model.SmallBodyModel;
-import edu.jhuapl.near.model.vesta.FcBoundaryCollection;
-import edu.jhuapl.near.model.vesta.FcColorImageCollection;
 import edu.jhuapl.near.model.vesta.FcImage;
-import edu.jhuapl.near.model.vesta.FcImageCollection;
 import edu.jhuapl.near.model.vesta.Vesta;
 import edu.jhuapl.near.model.vesta.VestaGraticule;
 import edu.jhuapl.near.pick.PickManager;
@@ -80,8 +80,8 @@ public class VestaViewer extends Viewer
             {
                 if (model instanceof FcImage)
                 {
-                    FcImageCollection fcImages = (FcImageCollection)modelManager.getModel(ModelNames.FC_IMAGES);
-                    FcBoundaryCollection fcBoundaries = (FcBoundaryCollection)modelManager.getModel(ModelNames.FC_BOUNDARY);
+                    ImageCollection fcImages = (ImageCollection)modelManager.getModel(ModelNames.FC_IMAGES);
+                    ImageBoundaryCollection fcBoundaries = (ImageBoundaryCollection)modelManager.getModel(ModelNames.FC_BOUNDARY);
                     return new ImageInfoPanel((FcImage)model, fcImages, fcBoundaries);
                 }
                 else
@@ -129,9 +129,9 @@ public class VestaViewer extends Viewer
 
         HashMap<String, Model> allModels = new HashMap<String, Model>();
         allModels.put(ModelNames.SMALL_BODY, vestaModel);
-        allModels.put(ModelNames.FC_IMAGES, new FcImageCollection(vestaModel));
-        allModels.put(ModelNames.FC_COLOR_IMAGES, new FcColorImageCollection(vestaModel));
-        allModels.put(ModelNames.FC_BOUNDARY, new FcBoundaryCollection(vestaModel));
+        allModels.put(ModelNames.FC_IMAGES, new ImageCollection(vestaModel));
+        allModels.put(ModelNames.FC_COLOR_IMAGES, new ColorImageCollection(vestaModel));
+        allModels.put(ModelNames.FC_BOUNDARY, new ImageBoundaryCollection(vestaModel));
         allModels.put(ModelNames.LINE_STRUCTURES, new LineModel(vestaModel));
         allModels.put(ModelNames.CIRCLE_STRUCTURES, new CircleModel(vestaModel));
         allModels.put(ModelNames.ELLIPSE_STRUCTURES, new EllipseModel(vestaModel));
@@ -147,9 +147,9 @@ public class VestaViewer extends Viewer
     {
         popupManager = new PopupManager(modelManager);
 
-        FcImageCollection fcImages = (FcImageCollection)modelManager.getModel(ModelNames.FC_IMAGES);
-        FcBoundaryCollection fcBoundaries = (FcBoundaryCollection)modelManager.getModel(ModelNames.FC_BOUNDARY);
-        FcColorImageCollection fcColorImages = (FcColorImageCollection)modelManager.getModel(ModelNames.FC_COLOR_IMAGES);
+        ImageCollection fcImages = (ImageCollection)modelManager.getModel(ModelNames.FC_IMAGES);
+        ImageBoundaryCollection fcBoundaries = (ImageBoundaryCollection)modelManager.getModel(ModelNames.FC_BOUNDARY);
+        ColorImageCollection fcColorImages = (ColorImageCollection)modelManager.getModel(ModelNames.FC_COLOR_IMAGES);
 
         PopupMenu popupMenu = new ImagePopupMenu(fcImages, fcBoundaries, infoPanelManager, renderer, renderer);
         popupManager.registerPopup(modelManager.getModel(ModelNames.FC_BOUNDARY), popupMenu);

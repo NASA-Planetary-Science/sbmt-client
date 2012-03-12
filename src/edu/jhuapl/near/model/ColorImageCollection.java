@@ -15,7 +15,7 @@ import edu.jhuapl.near.model.ColorImage.ColorImageKey;
 import edu.jhuapl.near.model.ColorImage.NoOverlapException;
 import edu.jhuapl.near.util.Properties;
 
-abstract public class ColorImageCollection extends Model implements PropertyChangeListener
+public class ColorImageCollection extends Model implements PropertyChangeListener
 {
     private SmallBodyModel smallBodyModel;
 
@@ -28,8 +28,11 @@ abstract public class ColorImageCollection extends Model implements PropertyChan
         this.smallBodyModel = smallBodyModel;
     }
 
-    abstract protected ColorImage createImage(ColorImageKey key,
-            SmallBodyModel smallBodyModel) throws FitsException, IOException, NoOverlapException;
+    protected ColorImage createImage(ColorImageKey key,
+            SmallBodyModel smallBodyModel) throws FitsException, IOException, NoOverlapException
+    {
+        return new ColorImage(key, smallBodyModel);
+    }
 
     private boolean containsKey(ColorImageKey key)
     {

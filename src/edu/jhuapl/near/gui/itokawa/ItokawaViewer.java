@@ -19,8 +19,11 @@ import edu.jhuapl.near.gui.Viewer;
 import edu.jhuapl.near.gui.eros.NISSpectrumInfoPanel;
 import edu.jhuapl.near.model.CircleModel;
 import edu.jhuapl.near.model.CircleSelectionModel;
+import edu.jhuapl.near.model.ColorImageCollection;
 import edu.jhuapl.near.model.EllipseModel;
 import edu.jhuapl.near.model.Graticule;
+import edu.jhuapl.near.model.ImageBoundaryCollection;
+import edu.jhuapl.near.model.ImageCollection;
 import edu.jhuapl.near.model.LineModel;
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelManager;
@@ -28,10 +31,7 @@ import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.PointModel;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.eros.NISSpectrum;
-import edu.jhuapl.near.model.itokawa.AmicaBoundaryCollection;
-import edu.jhuapl.near.model.itokawa.AmicaColorImageCollection;
 import edu.jhuapl.near.model.itokawa.AmicaImage;
-import edu.jhuapl.near.model.itokawa.AmicaImageCollection;
 import edu.jhuapl.near.model.itokawa.HayLidarBrowseDataCollection;
 import edu.jhuapl.near.model.itokawa.HayLidarSearchDataCollection;
 import edu.jhuapl.near.model.itokawa.HayLidarUnfilteredSearchDataCollection;
@@ -86,8 +86,8 @@ public class ItokawaViewer extends Viewer
             {
                 if (model instanceof AmicaImage)
                 {
-                    AmicaImageCollection amicaImages = (AmicaImageCollection)modelManager.getModel(ModelNames.AMICA_IMAGES);
-                    AmicaBoundaryCollection amicaBoundaries = (AmicaBoundaryCollection)modelManager.getModel(ModelNames.AMICA_BOUNDARY);
+                    ImageCollection amicaImages = (ImageCollection)modelManager.getModel(ModelNames.AMICA_IMAGES);
+                    ImageBoundaryCollection amicaBoundaries = (ImageBoundaryCollection)modelManager.getModel(ModelNames.AMICA_BOUNDARY);
                     return new ImageInfoPanel((AmicaImage)model, amicaImages, amicaBoundaries);
                 }
                 else if (model instanceof NISSpectrum)
@@ -140,9 +140,9 @@ public class ItokawaViewer extends Viewer
 
         HashMap<String, Model> allModels = new HashMap<String, Model>();
         allModels.put(ModelNames.SMALL_BODY, itokawaModel);
-        allModels.put(ModelNames.AMICA_IMAGES, new AmicaImageCollection(itokawaModel));
-        allModels.put(ModelNames.AMICA_COLOR_IMAGES, new AmicaColorImageCollection(itokawaModel));
-        allModels.put(ModelNames.AMICA_BOUNDARY, new AmicaBoundaryCollection(itokawaModel));
+        allModels.put(ModelNames.AMICA_IMAGES, new ImageCollection(itokawaModel));
+        allModels.put(ModelNames.AMICA_COLOR_IMAGES, new ColorImageCollection(itokawaModel));
+        allModels.put(ModelNames.AMICA_BOUNDARY, new ImageBoundaryCollection(itokawaModel));
         allModels.put(ModelNames.HAYLIDAR_BROWSE, new HayLidarBrowseDataCollection());
         allModels.put(ModelNames.HAYLIDAR_SEARCH, new HayLidarSearchDataCollection(itokawaModel));
         allModels.put(ModelNames.HAYLIDAR_SEARCH_UNFILTERED, new HayLidarUnfilteredSearchDataCollection(itokawaModel));
@@ -161,9 +161,9 @@ public class ItokawaViewer extends Viewer
     {
         popupManager = new PopupManager(modelManager);
 
-        AmicaImageCollection amicaImages = (AmicaImageCollection)modelManager.getModel(ModelNames.AMICA_IMAGES);
-        AmicaBoundaryCollection amicaBoundaries = (AmicaBoundaryCollection)modelManager.getModel(ModelNames.AMICA_BOUNDARY);
-        AmicaColorImageCollection amicaColorImages = (AmicaColorImageCollection)modelManager.getModel(ModelNames.AMICA_COLOR_IMAGES);
+        ImageCollection amicaImages = (ImageCollection)modelManager.getModel(ModelNames.AMICA_IMAGES);
+        ImageBoundaryCollection amicaBoundaries = (ImageBoundaryCollection)modelManager.getModel(ModelNames.AMICA_BOUNDARY);
+        ColorImageCollection amicaColorImages = (ColorImageCollection)modelManager.getModel(ModelNames.AMICA_COLOR_IMAGES);
         HayLidarSearchDataCollection lidarSearch = (HayLidarSearchDataCollection)modelManager.getModel(ModelNames.HAYLIDAR_SEARCH);
         HayLidarUnfilteredSearchDataCollection lidarSearchUnfiltered =
             (HayLidarUnfilteredSearchDataCollection)modelManager.getModel(ModelNames.HAYLIDAR_SEARCH_UNFILTERED);

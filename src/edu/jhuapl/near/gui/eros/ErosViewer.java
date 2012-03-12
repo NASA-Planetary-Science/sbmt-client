@@ -18,8 +18,11 @@ import edu.jhuapl.near.gui.StructuresControlPanel;
 import edu.jhuapl.near.gui.Viewer;
 import edu.jhuapl.near.model.CircleModel;
 import edu.jhuapl.near.model.CircleSelectionModel;
+import edu.jhuapl.near.model.ColorImageCollection;
 import edu.jhuapl.near.model.EllipseModel;
 import edu.jhuapl.near.model.Graticule;
+import edu.jhuapl.near.model.ImageBoundaryCollection;
+import edu.jhuapl.near.model.ImageCollection;
 import edu.jhuapl.near.model.LineModel;
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelManager;
@@ -29,10 +32,7 @@ import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.eros.Eros;
 import edu.jhuapl.near.model.eros.ErosGraticule;
 import edu.jhuapl.near.model.eros.LineamentModel;
-import edu.jhuapl.near.model.eros.MSIBoundaryCollection;
-import edu.jhuapl.near.model.eros.MSIColorImageCollection;
 import edu.jhuapl.near.model.eros.MSIImage;
-import edu.jhuapl.near.model.eros.MSIImageCollection;
 import edu.jhuapl.near.model.eros.MapletBoundaryCollection;
 import edu.jhuapl.near.model.eros.NISSpectraCollection;
 import edu.jhuapl.near.model.eros.NISSpectrum;
@@ -81,8 +81,8 @@ public class ErosViewer extends Viewer
             {
                 if (model instanceof MSIImage)
                 {
-                    MSIImageCollection msiImages = (MSIImageCollection)modelManager.getModel(ModelNames.MSI_IMAGES);
-                    MSIBoundaryCollection msiBoundaries = (MSIBoundaryCollection)modelManager.getModel(ModelNames.MSI_BOUNDARY);
+                    ImageCollection msiImages = (ImageCollection)modelManager.getModel(ModelNames.MSI_IMAGES);
+                    ImageBoundaryCollection msiBoundaries = (ImageBoundaryCollection)modelManager.getModel(ModelNames.MSI_BOUNDARY);
                     return new ImageInfoPanel((MSIImage)model, msiImages, msiBoundaries);
                 }
                 else if (model instanceof NISSpectrum)
@@ -137,9 +137,9 @@ public class ErosViewer extends Viewer
         HashMap<String, Model> allModels = new HashMap<String, Model>();
         allModels.put(ModelNames.SMALL_BODY, erosModel);
         allModels.put(ModelNames.LINEAMENT, new LineamentModel());
-        allModels.put(ModelNames.MSI_IMAGES, new MSIImageCollection(erosModel));
-        allModels.put(ModelNames.MSI_COLOR_IMAGES, new MSIColorImageCollection(erosModel));
-        allModels.put(ModelNames.MSI_BOUNDARY, new MSIBoundaryCollection(erosModel));
+        allModels.put(ModelNames.MSI_IMAGES, new ImageCollection(erosModel));
+        allModels.put(ModelNames.MSI_COLOR_IMAGES, new ColorImageCollection(erosModel));
+        allModels.put(ModelNames.MSI_BOUNDARY, new ImageBoundaryCollection(erosModel));
         allModels.put(ModelNames.NIS_SPECTRA, new NISSpectraCollection(erosModel));
         allModels.put(ModelNames.NLR_DATA_SUMMARY, new NLRDataEverything());
         allModels.put(ModelNames.NLR_DATA_BROWSE, new NLRBrowseDataCollection());
@@ -162,9 +162,9 @@ public class ErosViewer extends Viewer
         PopupMenu popupMenu = new LineamentPopupMenu(modelManager);
         popupManager.registerPopup(modelManager.getModel(ModelNames.LINEAMENT), popupMenu);
 
-        MSIImageCollection msiImages = (MSIImageCollection)modelManager.getModel(ModelNames.MSI_IMAGES);
-        MSIBoundaryCollection msiBoundaries = (MSIBoundaryCollection)modelManager.getModel(ModelNames.MSI_BOUNDARY);
-        MSIColorImageCollection msiColorImages = (MSIColorImageCollection)modelManager.getModel(ModelNames.MSI_COLOR_IMAGES);
+        ImageCollection msiImages = (ImageCollection)modelManager.getModel(ModelNames.MSI_IMAGES);
+        ImageBoundaryCollection msiBoundaries = (ImageBoundaryCollection)modelManager.getModel(ModelNames.MSI_BOUNDARY);
+        ColorImageCollection msiColorImages = (ColorImageCollection)modelManager.getModel(ModelNames.MSI_COLOR_IMAGES);
         NLRSearchDataCollection lidarSearch = (NLRSearchDataCollection)modelManager.getModel(ModelNames.NLR_DATA_SEARCH);
 
         popupMenu = new ImagePopupMenu(msiImages, msiBoundaries, infoPanelManager, renderer, renderer);

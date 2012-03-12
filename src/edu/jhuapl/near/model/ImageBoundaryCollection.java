@@ -15,7 +15,7 @@ import vtk.vtkProp;
 import edu.jhuapl.near.model.Image.ImageKey;
 import edu.jhuapl.near.util.Properties;
 
-abstract public class ImageBoundaryCollection extends Model implements PropertyChangeListener
+public class ImageBoundaryCollection extends Model implements PropertyChangeListener
 {
     private HashMap<ImageBoundary, ArrayList<vtkProp>> boundaryToActorsMap = new HashMap<ImageBoundary, ArrayList<vtkProp>>();
     private HashMap<vtkProp, ImageBoundary> actorToBoundaryMap = new HashMap<vtkProp, ImageBoundary>();
@@ -26,9 +26,12 @@ abstract public class ImageBoundaryCollection extends Model implements PropertyC
         this.smallBodyModel = smallBodyModel;
     }
 
-    abstract protected ImageBoundary createBoundary(
+    protected ImageBoundary createBoundary(
             ImageKey key,
-            SmallBodyModel smallBodyModel) throws IOException, FitsException;
+            SmallBodyModel smallBodyModel) throws IOException, FitsException
+    {
+        return new ImageBoundary(ImageFactory.createImage(key, smallBodyModel, true, null), smallBodyModel);
+    }
 
     private boolean containsKey(ImageKey key)
     {
