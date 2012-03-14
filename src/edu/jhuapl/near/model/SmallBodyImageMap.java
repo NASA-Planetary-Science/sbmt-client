@@ -304,7 +304,7 @@ public class SmallBodyImageMap extends Model
             if (v < 0.0) v = 0.0;
             else if (v > 1.0) v = 1.0;
 
-            if (origLon == 0.0 && u == 0.0 && mapZeroLongitudeToRight)
+            if (mapZeroLongitudeToRight && Math.abs(origLon) < 1.0e-8 && Math.abs(u) < 1.0e-8)
                 u = 1.0;
 
             textureCoords.SetTuple2(i, u, v);
