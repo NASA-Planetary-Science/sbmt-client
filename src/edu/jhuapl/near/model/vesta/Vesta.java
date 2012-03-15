@@ -26,13 +26,26 @@ public class Vesta extends SmallBodyModel
         "/VESTA/Vesta_res3.vtk.gz"
     };
 
+    static private final String[] coloringFiles = {
+        "/VESTA/Vesta_GravitationalAcceleration",
+        "/VESTA/Vesta_GravitationalPotential"
+    };
+
+    static private final String[] coloringNames = {
+        GravAccStr, GravPotStr
+    };
+
+    static private final String[] coloringUnits = {
+        GravAccUnitsStr, GravPotUnitsStr
+    };
+
     public Vesta()
     {
         super(modelNames,
                 Configuration.isAPLVersion() ? modelFilesAplOnly : modelFilesPublic,
-                null,
-                null,
-                null,
+                Configuration.isAPLVersion() ? coloringFiles : null,
+                Configuration.isAPLVersion() ? coloringNames : null,
+                Configuration.isAPLVersion() ? coloringUnits : null,
                 null,
                 false,
                 null,
