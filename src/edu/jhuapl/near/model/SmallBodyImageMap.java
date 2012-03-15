@@ -345,7 +345,9 @@ public class SmallBodyImageMap extends Model
         if (b)
             initialize();
 
-        smallBodyActor.SetVisibility(b ? 1 : 0);
+        if (smallBodyActor != null)
+            smallBodyActor.SetVisibility(b ? 1 : 0);
+
         super.setVisible(b);
     }
 
