@@ -84,16 +84,16 @@ public class ImageFileChooser extends FileChooserBase
 
         String[] bmp = {"bmp"};
         fc.addChoosableFileFilter(new ImageFilter(bmp, BMP_DESCRIPTION));
-        String[] jpeg = {"jpg", "jpeg"};
-        fc.addChoosableFileFilter(new ImageFilter(jpeg, JPEG_DESCRIPTION));
-        String[] png = {"png"};
-        fc.addChoosableFileFilter(new ImageFilter(png, PNG_DESCRIPTION));
         String[] pnm = {"pnm"};
         fc.addChoosableFileFilter(new ImageFilter(pnm, PNM_DESCRIPTION));
         String[] ps = {"ps"};
         fc.addChoosableFileFilter(new ImageFilter(ps, PS_DESCRIPTION));
         String[] tiff = {"tif", "tiff"};
         fc.addChoosableFileFilter(new ImageFilter(tiff, TIFF_DESCRIPTION));
+        String[] jpeg = {"jpg", "jpeg"};
+        fc.addChoosableFileFilter(new ImageFilter(jpeg, JPEG_DESCRIPTION));
+        String[] png = {"png"};
+        fc.addChoosableFileFilter(new ImageFilter(png, PNG_DESCRIPTION));
     }
 
     public static File showOpenDialog(Component parent, String title)
