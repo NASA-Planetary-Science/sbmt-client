@@ -135,6 +135,19 @@ public class FileUtil
     }
 
     /**
+     * @param in
+     * @param out
+     * @throws IOException
+     */
+    public static void copyFile(String inFile, String outFile) throws IOException
+    {
+        InputStream in = new FileInputStream(inFile);
+        OutputStream out = new FileOutputStream(outFile);
+
+        copyInputStream(in, out);
+    }
+
+    /**
      * Copies a range of lines in a file to a new file. E.g. suppose you wanted
      * to copy lines 5 through 10 of a certain file to a new file.
      *

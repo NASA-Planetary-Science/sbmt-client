@@ -1,10 +1,13 @@
 package edu.jhuapl.near.model.custom;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.Map;
 
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.util.Configuration;
 import edu.jhuapl.near.util.FileCache;
+import edu.jhuapl.near.util.MapUtil;
 
 public class CustomShapeModel extends SmallBodyModel
 {
@@ -25,17 +28,32 @@ public class CustomShapeModel extends SmallBodyModel
     public static final String LOWER_LEFT_LONGITUDES = "LLLon";
     public static final String UPPER_RIGHT_LATITUDES = "URLat";
     public static final String UPPER_RIGHT_LONGITUDES = "URLon";
+    public static final String CELL_DATA_PATHS = "CellDataPaths";
+    public static final String CELL_DATA_NAMES = "CellDataNames";
+    public static final String CELL_DATA_UNITS = "CellDataUnits";
     public static final String LIST_SEPARATOR = ",";
 
+    public static class CellDataInfo
+    {
+        public String path;
+        public String name;
+        public String units;
+
+        @Override
+        public String toString()
+        {
+            return path + ", " + name + ", " + units;
+        }
+    }
 
     public CustomShapeModel(String name)
     {
         super(
                 new String[] { name },
                 new String[] { getModelFilename(name) },
-                null,
-                null,
-                null,
+                getPlateDataPaths(name),
+                getPlateDataInfo(name, CELL_DATA_NAMES),
+                getPlateDataInfo(name, CELL_DATA_UNITS),
                 null,
                 false,
                 getModelFolder(name),
@@ -61,5 +79,55 @@ public class CustomShapeModel extends SmallBodyModel
                 File.separator;
 
         return new String[]{path};
+    }
+
+    private static String[] getPlateDataPaths(String name)
+    {
+
+        String shapeModelDir = Configuration.getImportedShapeModelsDir() +
+                File.separator + name;
+        String configfile = shapeModelDir + File.separator + "config.txt";
+
+        Map<String, String> map;
+        try
+        {
+            map = MapUtil.loadMap(configfile);
+            if (map.containsKey(CELL_DATA_PATHS))
+            {
+                String[] paths = map.get(CELL_DATA_PATHS).split(",", -1);
+                for (int i=0; i<paths.length; ++i)
+                {
+                    paths[i] = FileCache.FILE_PREFIX + shapeModelDir + File.separator + "platedata" + i + ".txt";
+                    System.out.println(paths[i]);
+                }
+                return paths;
+            }
+        }
+        catch (IOException e)
+        {
+        }
+
+        return null;
+    }
+
+    private static String[] getPlateDataInfo(String name, String key)
+    {
+        String configfile = Configuration.getImportedShapeModelsDir() +
+        File.separator +
+        name +
+        File.separator + "config.txt";
+
+        Map<String, String> map;
+        try
+        {
+            map = MapUtil.loadMap(configfile);
+            if (map.containsKey(key))
+                return map.get(key).split(",", -1);
+        }
+        catch (IOException e)
+        {
+        }
+
+        return null;
     }
 }

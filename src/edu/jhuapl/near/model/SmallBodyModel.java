@@ -57,6 +57,11 @@ public class SmallBodyModel extends Model
         SMOOTH,
     }
 
+    public enum ColoringSource {
+        BUILT_IN,
+        CUSTOM
+    }
+
     static public final String SlopeStr = "Slope";
     static public final String ElevStr = "Elevation";
     static public final String GravAccStr = "Gravitational Acceleration";
@@ -992,7 +997,9 @@ public class SmallBodyModel extends Model
                 if (coloringValues[i] != null)
                     continue;
 
-                String filename = coloringFiles[i] + "_res" + resolutionLevel + ".txt.gz";
+                String filename = coloringFiles[i];
+                if (!coloringFiles[i].startsWith(FileCache.FILE_PREFIX))
+                    filename += "_res" + resolutionLevel + ".txt.gz";
                 File file = FileCache.getFileFromServer(filename, useAPLServer);
                 if (file == null)
                     throw new IOException("Unable to download " + filename);
@@ -1414,7 +1421,10 @@ public class SmallBodyModel extends Model
         if (coloringIndex >= 0)
         {
             array = coloringValues[coloringIndex];
-            scalarBarActor.SetTitle(coloringNames[coloringIndex] + " (" + coloringUnits[coloringIndex] + ")");
+            String title = coloringNames[coloringIndex];
+            if (!coloringUnits[coloringIndex].isEmpty())
+                title += " (" + coloringUnits[coloringIndex] + ")";
+            scalarBarActor.SetTitle(title);
         }
         else if (useFalseColoring)
         {

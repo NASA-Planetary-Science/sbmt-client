@@ -71,12 +71,15 @@ public class ShapeModelImageImporterDialog extends javax.swing.JDialog
     {
         String imagePath = imagePathTextField.getText();
 
-        if (imagePath == null || imagePath.isEmpty())
+        if (imagePath == null || imagePath.trim().isEmpty())
             return "Please enter the path to an image.";
 
         File file = new File(imagePath);
         if (!file.exists() || !file.canRead() || !file.isFile())
             return imagePath + " does not exist or is not readable.";
+
+        if ( (imagePath != null && imagePath.contains(",")) )
+               return "Image path may not contain commas.";
 
         vtkImageReader2Factory imageFactory = new vtkImageReader2Factory();
         vtkImageReader2 imageReader = imageFactory.CreateImageReader2(imagePath);

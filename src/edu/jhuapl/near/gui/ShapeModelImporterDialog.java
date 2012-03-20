@@ -11,8 +11,13 @@
 package edu.jhuapl.near.gui;
 
 import java.awt.Dialog;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -38,7 +43,9 @@ import vtk.vtkTransformPolyDataFilter;
 import edu.jhuapl.near.model.Graticule;
 import edu.jhuapl.near.model.SmallBodyImageMap.ImageInfo;
 import edu.jhuapl.near.model.custom.CustomShapeModel;
+import edu.jhuapl.near.model.custom.CustomShapeModel.CellDataInfo;
 import edu.jhuapl.near.util.Configuration;
+import edu.jhuapl.near.util.FileUtil;
 import edu.jhuapl.near.util.MapUtil;
 import edu.jhuapl.near.util.PolyDataUtil;
 
@@ -49,6 +56,7 @@ import edu.jhuapl.near.util.PolyDataUtil;
 public class ShapeModelImporterDialog extends javax.swing.JDialog
 {
     private ArrayList<ImageInfo> imageInfoList = new ArrayList<ImageInfo>();
+    private ArrayList<CellDataInfo> cellDataInfoList = new ArrayList<CellDataInfo>();
 
     // True if we're editing an existing model rather than creating a new one.
     private boolean editMode = false;
@@ -62,6 +70,7 @@ public class ShapeModelImporterDialog extends javax.swing.JDialog
         initComponents();
 
         imageList.setModel(new DefaultListModel());
+        cellDataList.setModel(new DefaultListModel());
     }
 
     public String getNameOfImportedShapeModel()
@@ -107,25 +116,56 @@ public class ShapeModelImporterDialog extends javax.swing.JDialog
             shapeModelFormatComboBox.setSelectedItem(format);
         }
 
-        String[] imagePaths = configMap.get(CustomShapeModel.IMAGE_MAP_PATHS).split(",");
-        String[] lllats = configMap.get(CustomShapeModel.LOWER_LEFT_LATITUDES).split(",");
-        String[] lllons = configMap.get(CustomShapeModel.LOWER_LEFT_LONGITUDES).split(",");
-        String[] urlats = configMap.get(CustomShapeModel.UPPER_RIGHT_LATITUDES).split(",");
-        String[] urlons = configMap.get(CustomShapeModel.UPPER_RIGHT_LONGITUDES).split(",");
-
-        for (int i=0; i<imagePaths.length; ++i)
+        if (configMap.containsKey(CustomShapeModel.IMAGE_MAP_PATHS) &&
+            configMap.containsKey(CustomShapeModel.LOWER_LEFT_LATITUDES) &&
+            configMap.containsKey(CustomShapeModel.LOWER_LEFT_LONGITUDES) &&
+            configMap.containsKey(CustomShapeModel.UPPER_RIGHT_LATITUDES) &&
+            configMap.containsKey(CustomShapeModel.UPPER_RIGHT_LONGITUDES))
         {
-            ImageInfo imageInfo = new ImageInfo();
-            imageInfo.filename = imagePaths[i];
-            if (!imageInfo.filename.isEmpty())
-            {
-                imageInfo.lllat = Double.parseDouble(lllats[i]);
-                imageInfo.lllon = Double.parseDouble(lllons[i]);
-                imageInfo.urlat = Double.parseDouble(urlats[i]);
-                imageInfo.urlon = Double.parseDouble(urlons[i]);
+            String[] imagePaths = configMap.get(CustomShapeModel.IMAGE_MAP_PATHS).split(",", -1);
+            String[] lllats = configMap.get(CustomShapeModel.LOWER_LEFT_LATITUDES).split(",", -1);
+            String[] lllons = configMap.get(CustomShapeModel.LOWER_LEFT_LONGITUDES).split(",", -1);
+            String[] urlats = configMap.get(CustomShapeModel.UPPER_RIGHT_LATITUDES).split(",", -1);
+            String[] urlons = configMap.get(CustomShapeModel.UPPER_RIGHT_LONGITUDES).split(",", -1);
 
-                imageInfoList.add(imageInfo);
-                ((DefaultListModel)imageList.getModel()).addElement(imageInfo.toString());
+            for (int i=0; i<imagePaths.length; ++i)
+            {
+                ImageInfo imageInfo = new ImageInfo();
+                imageInfo.filename = imagePaths[i];
+                if (!imageInfo.filename.trim().isEmpty())
+                {
+                    imageInfo.lllat = Double.parseDouble(lllats[i]);
+                    imageInfo.lllon = Double.parseDouble(lllons[i]);
+                    imageInfo.urlat = Double.parseDouble(urlats[i]);
+                    imageInfo.urlon = Double.parseDouble(urlons[i]);
+
+                    imageInfoList.add(imageInfo);
+                    ((DefaultListModel)imageList.getModel()).addElement(imageInfo.toString());
+                }
+            }
+        }
+
+
+        if (configMap.containsKey(CustomShapeModel.CELL_DATA_PATHS) &&
+            configMap.containsKey(CustomShapeModel.CELL_DATA_NAMES) &&
+            configMap.containsKey(CustomShapeModel.CELL_DATA_UNITS))
+        {
+            String[] cellDataPaths = configMap.get(CustomShapeModel.CELL_DATA_PATHS).split(",", -1);
+            String[] cellDataNames = configMap.get(CustomShapeModel.CELL_DATA_NAMES).split(",", -1);
+            String[] cellDataUnits = configMap.get(CustomShapeModel.CELL_DATA_UNITS).split(",", -1);
+
+            for (int i=0; i<cellDataPaths.length; ++i)
+            {
+                CellDataInfo cellDataInfo = new CellDataInfo();
+                cellDataInfo.path = cellDataPaths[i];
+                if (!cellDataInfo.path.trim().isEmpty())
+                {
+                    cellDataInfo.name = cellDataNames[i];
+                    cellDataInfo.units = cellDataUnits[i];
+
+                    cellDataInfoList.add(cellDataInfo);
+                    ((DefaultListModel)cellDataList.getModel()).addElement(cellDataInfo.toString());
+                }
             }
         }
 
@@ -136,7 +176,7 @@ public class ShapeModelImporterDialog extends javax.swing.JDialog
     {
         String name = nameTextField.getText();
 
-        if (name == null || name.isEmpty())
+        if (name == null || name.trim().isEmpty())
             return "Please enter a name for the shape model.";
 
         // Make sure name is not empty and does not contain spaces or slashes
@@ -176,7 +216,7 @@ public class ShapeModelImporterDialog extends javax.swing.JDialog
         {
             String modelPath = shapeModelPathTextField.getText();
 
-            if (modelPath == null || modelPath.isEmpty())
+            if (modelPath == null || modelPath.trim().isEmpty())
                 return "Please enter the path to a shape model.";
 
             File file = new File(modelPath);
@@ -394,6 +434,56 @@ public class ShapeModelImporterDialog extends javax.swing.JDialog
         configMap.put(CustomShapeModel.UPPER_RIGHT_LATITUDES, urlats);
         configMap.put(CustomShapeModel.UPPER_RIGHT_LONGITUDES, urlons);
 
+
+        // Load in the plate data
+        String cellDataPaths = "";
+        String cellDataNames = "";
+        String cellDataUnits = "";
+
+        for (int i=0; i<cellDataInfoList.size(); ++i)
+        {
+            CellDataInfo cellDataInfo = cellDataInfoList.get(i);
+
+            String errorMessage = validateCellDataFile(cellDataInfo.path, shapePoly.GetNumberOfCells());
+            if (errorMessage != null)
+            {
+                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
+                        errorMessage,
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+                return false;
+            }
+
+            // Now copy the cell data file to the model directory
+            try
+            {
+                FileUtil.copyFile(cellDataInfo.path, newModelDir.getAbsolutePath() + File.separator + "platedata" + i + ".txt");
+            }
+            catch (IOException e)
+            {
+                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
+                        "An error occurred loading the file",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+                return false;
+            }
+
+            cellDataPaths += cellDataInfo.path;
+            cellDataNames += cellDataInfo.name;
+            cellDataUnits += cellDataInfo.units;
+            if (i < cellDataInfoList.size()-1)
+            {
+                cellDataPaths += CustomShapeModel.LIST_SEPARATOR;
+                cellDataNames += CustomShapeModel.LIST_SEPARATOR;
+                cellDataUnits += CustomShapeModel.LIST_SEPARATOR;
+            }
+        }
+
+        configMap.put(CustomShapeModel.CELL_DATA_PATHS, cellDataPaths);
+        configMap.put(CustomShapeModel.CELL_DATA_NAMES, cellDataNames);
+        configMap.put(CustomShapeModel.CELL_DATA_UNITS, cellDataUnits);
+
+
         try
         {
             // Save out all information about this shape model to the config.txt file
@@ -405,6 +495,50 @@ public class ShapeModelImporterDialog extends javax.swing.JDialog
         }
 
         return true;
+    }
+
+    private String validateCellDataFile(String path, int numCells)
+    {
+        InputStream fs;
+        try
+        {
+            fs = new FileInputStream(path);
+        }
+        catch (FileNotFoundException e)
+        {
+            return "The file '" + path + "' does not exist or is not readable.";
+        }
+
+        InputStreamReader isr = new InputStreamReader(fs);
+        BufferedReader in = new BufferedReader(isr);
+
+        String line;
+        int lineCount = 0;
+        try
+        {
+            while ((line = in.readLine()) != null)
+            {
+                Double.parseDouble(line);
+                ++lineCount;
+            }
+
+            in.close();
+        }
+        catch (NumberFormatException e)
+        {
+            return "Numbers are malformatted.";
+        }
+        catch (IOException e)
+        {
+            return "An error occurred reading the file '" + path + "'";
+        }
+
+        if (lineCount != numCells)
+        {
+            return "Number of lines in file must equal number of plates in shape model.";
+        }
+
+        return null;
     }
 
     private void updateEnabledState()
@@ -459,6 +593,13 @@ public class ShapeModelImporterDialog extends javax.swing.JDialog
         newImageButton = new javax.swing.JButton();
         deleteImageButton = new javax.swing.JButton();
         editImageButton = new javax.swing.JButton();
+        cellDataLabel = new javax.swing.JLabel();
+        jPanel3 = new javax.swing.JPanel();
+        newCellDataButton = new javax.swing.JButton();
+        editCellDataButton = new javax.swing.JButton();
+        deleteCellDataButton = new javax.swing.JButton();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        cellDataList = new javax.swing.JList();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         getContentPane().setLayout(new java.awt.GridBagLayout());
@@ -584,7 +725,7 @@ public class ShapeModelImporterDialog extends javax.swing.JDialog
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 10;
+        gridBagConstraints.gridy = 12;
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.PAGE_END;
         gridBagConstraints.weighty = 1.0;
@@ -715,6 +856,73 @@ public class ShapeModelImporterDialog extends javax.swing.JDialog
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
         getContentPane().add(jPanel2, gridBagConstraints);
 
+        cellDataLabel.setText("Plate Data");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 10;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(8, 10, 1, 0);
+        getContentPane().add(cellDataLabel, gridBagConstraints);
+
+        jPanel3.setLayout(new java.awt.GridBagLayout());
+
+        newCellDataButton.setText("New...");
+        newCellDataButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                newCellDataButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 5);
+        jPanel3.add(newCellDataButton, gridBagConstraints);
+
+        editCellDataButton.setText("Edit...");
+        editCellDataButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                editCellDataButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(4, 5, 4, 5);
+        jPanel3.add(editCellDataButton, gridBagConstraints);
+
+        deleteCellDataButton.setText("Remove");
+        deleteCellDataButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                deleteCellDataButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 5);
+        jPanel3.add(deleteCellDataButton, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 11;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
+        getContentPane().add(jPanel3, gridBagConstraints);
+
+        jScrollPane2.setViewportView(cellDataList);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 11;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 10, 0, 0);
+        getContentPane().add(jScrollPane2, gridBagConstraints);
+
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
@@ -815,11 +1023,61 @@ public class ShapeModelImporterDialog extends javax.swing.JDialog
         }
     }//GEN-LAST:event_deleteImageButtonActionPerformed
 
+    private void newCellDataButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newCellDataButtonActionPerformed
+        CellDataInfo cellDataInfo = new CellDataInfo();
+        ShapeModelCellDataImporterDialog dialog = new ShapeModelCellDataImporterDialog(this);
+        dialog.setCellDataInfo(cellDataInfo);
+        dialog.setLocationRelativeTo(this);
+        dialog.setVisible(true);
+
+        // If user clicks okay add to list
+        if (dialog.getOkayPressed())
+        {
+            cellDataInfo = dialog.getCellDataInfo();
+            cellDataInfoList.add(cellDataInfo);
+            ((DefaultListModel)cellDataList.getModel()).addElement(cellDataInfo.toString());
+        }
+    }//GEN-LAST:event_newCellDataButtonActionPerformed
+
+    private void editCellDataButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editCellDataButtonActionPerformed
+        int selectedItem = cellDataList.getSelectedIndex();
+        if (selectedItem >= 0)
+        {
+            CellDataInfo cellDataInfo = cellDataInfoList.get(selectedItem);
+
+            ShapeModelCellDataImporterDialog dialog = new ShapeModelCellDataImporterDialog(this);
+            dialog.setCellDataInfo(cellDataInfo);
+            dialog.setLocationRelativeTo(this);
+            dialog.setVisible(true);
+
+            // If user clicks okay replace item in list
+            if (dialog.getOkayPressed())
+            {
+                cellDataInfo = dialog.getCellDataInfo();
+                cellDataInfoList.set(selectedItem, cellDataInfo);
+                ((DefaultListModel)cellDataList.getModel()).set(selectedItem, cellDataInfo.toString());
+            }
+        }
+    }//GEN-LAST:event_editCellDataButtonActionPerformed
+
+    private void deleteCellDataButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteCellDataButtonActionPerformed
+        int selectedItem = cellDataList.getSelectedIndex();
+        if (selectedItem >= 0)
+        {
+            cellDataInfoList.remove(selectedItem);
+            ((DefaultListModel)cellDataList.getModel()).remove(selectedItem);
+        }
+    }//GEN-LAST:event_deleteCellDataButtonActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton browseShapeModelButton;
     private javax.swing.JButton cancelButton;
+    private javax.swing.JLabel cellDataLabel;
+    private javax.swing.JList cellDataList;
     private javax.swing.JRadioButton customShapeModelRadioButton;
+    private javax.swing.JButton deleteCellDataButton;
     private javax.swing.JButton deleteImageButton;
+    private javax.swing.JButton editCellDataButton;
     private javax.swing.JButton editImageButton;
     private javax.swing.JRadioButton ellipsoidRadioButton;
     private javax.swing.JFormattedTextField equRadiusFormattedTextField;
@@ -828,9 +1086,12 @@ public class ShapeModelImporterDialog extends javax.swing.JDialog
     private javax.swing.JLabel imagesLabel;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JLabel nameLabel;
     private javax.swing.JTextField nameTextField;
+    private javax.swing.JButton newCellDataButton;
     private javax.swing.JButton newImageButton;
     private javax.swing.JButton okButton;
     private javax.swing.JLabel pathLabel;
