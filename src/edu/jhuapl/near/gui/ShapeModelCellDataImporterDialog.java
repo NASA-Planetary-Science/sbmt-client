@@ -41,6 +41,7 @@ public class ShapeModelCellDataImporterDialog extends javax.swing.JDialog
         cellDataPathTextField.setText(info.path);
         nameTextField.setText(info.name);
         unitsTextField.setText(info.units);
+        hasNullsCheckBox.setSelected(info.hasNulls);
     }
 
     /**
@@ -52,6 +53,7 @@ public class ShapeModelCellDataImporterDialog extends javax.swing.JDialog
         info.path = cellDataPathTextField.getText();
         info.name = nameTextField.getText();
         info.units = unitsTextField.getText();
+        info.hasNulls = hasNullsCheckBox.isSelected();
 
         return info;
     }
@@ -106,6 +108,7 @@ public class ShapeModelCellDataImporterDialog extends javax.swing.JDialog
         okButton = new javax.swing.JButton();
         nameTextField = new javax.swing.JTextField();
         unitsTextField = new javax.swing.JTextField();
+        hasNullsCheckBox = new javax.swing.JCheckBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(600, 167));
@@ -184,7 +187,7 @@ public class ShapeModelCellDataImporterDialog extends javax.swing.JDialog
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 3;
+        gridBagConstraints.gridy = 4;
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.PAGE_END;
         gridBagConstraints.weighty = 1.0;
@@ -202,6 +205,16 @@ public class ShapeModelCellDataImporterDialog extends javax.swing.JDialog
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(0, 5, 4, 0);
         getContentPane().add(unitsTextField, gridBagConstraints);
+
+        hasNullsCheckBox.setText("Contains Invalid Data");
+        hasNullsCheckBox.setToolTipText("If checked, then the smallest value in the file is assumed to represent invalid data and is not displayed on the shape model.");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.gridwidth = 3;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 25, 0, 0);
+        getContentPane().add(hasNullsCheckBox, gridBagConstraints);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -243,6 +256,7 @@ public class ShapeModelCellDataImporterDialog extends javax.swing.JDialog
     private javax.swing.JButton browsePlateDataButton;
     private javax.swing.JButton cancelButton;
     private javax.swing.JTextField cellDataPathTextField;
+    private javax.swing.JCheckBox hasNullsCheckBox;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JLabel nameLabel;
     private javax.swing.JTextField nameTextField;

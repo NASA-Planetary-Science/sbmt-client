@@ -31,6 +31,7 @@ public class CustomShapeModel extends SmallBodyModel
     public static final String CELL_DATA_PATHS = "CellDataPaths";
     public static final String CELL_DATA_NAMES = "CellDataNames";
     public static final String CELL_DATA_UNITS = "CellDataUnits";
+    public static final String CELL_DATA_HAS_NULLS = "CellDataHasNull";
     public static final String LIST_SEPARATOR = ",";
 
     public static class CellDataInfo
@@ -38,6 +39,7 @@ public class CustomShapeModel extends SmallBodyModel
         public String path;
         public String name;
         public String units;
+        public boolean hasNulls;
 
         @Override
         public String toString()
@@ -54,7 +56,7 @@ public class CustomShapeModel extends SmallBodyModel
                 getPlateDataPaths(name),
                 getPlateDataInfo(name, CELL_DATA_NAMES),
                 getPlateDataInfo(name, CELL_DATA_UNITS),
-                null,
+                stringArrayToBooleanArray(getPlateDataInfo(name, CELL_DATA_HAS_NULLS)),
                 false,
                 getModelFolder(name),
                 ColoringValueType.CELLDATA,
@@ -129,5 +131,17 @@ public class CustomShapeModel extends SmallBodyModel
         }
 
         return null;
+    }
+
+    private static boolean[] stringArrayToBooleanArray(String[] strArray)
+    {
+        if (strArray == null)
+            return null;
+
+        boolean[] booleanArray = new boolean[strArray.length];
+        for (int i=0; i<strArray.length; ++i)
+            booleanArray[i] = Boolean.parseBoolean(strArray[i]);
+
+        return booleanArray;
     }
 }

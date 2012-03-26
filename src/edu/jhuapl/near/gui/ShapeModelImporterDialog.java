@@ -148,11 +148,13 @@ public class ShapeModelImporterDialog extends javax.swing.JDialog
 
         if (configMap.containsKey(CustomShapeModel.CELL_DATA_PATHS) &&
             configMap.containsKey(CustomShapeModel.CELL_DATA_NAMES) &&
-            configMap.containsKey(CustomShapeModel.CELL_DATA_UNITS))
+            configMap.containsKey(CustomShapeModel.CELL_DATA_UNITS) &&
+            configMap.containsKey(CustomShapeModel.CELL_DATA_HAS_NULLS))
         {
             String[] cellDataPaths = configMap.get(CustomShapeModel.CELL_DATA_PATHS).split(",", -1);
             String[] cellDataNames = configMap.get(CustomShapeModel.CELL_DATA_NAMES).split(",", -1);
             String[] cellDataUnits = configMap.get(CustomShapeModel.CELL_DATA_UNITS).split(",", -1);
+            String[] cellDataHasNulls = configMap.get(CustomShapeModel.CELL_DATA_HAS_NULLS).split(",", -1);
 
             for (int i=0; i<cellDataPaths.length; ++i)
             {
@@ -162,6 +164,7 @@ public class ShapeModelImporterDialog extends javax.swing.JDialog
                 {
                     cellDataInfo.name = cellDataNames[i];
                     cellDataInfo.units = cellDataUnits[i];
+                    cellDataInfo.hasNulls = Boolean.parseBoolean(cellDataHasNulls[i]);
 
                     cellDataInfoList.add(cellDataInfo);
                     ((DefaultListModel)cellDataList.getModel()).addElement(cellDataInfo.toString());
@@ -439,6 +442,7 @@ public class ShapeModelImporterDialog extends javax.swing.JDialog
         String cellDataPaths = "";
         String cellDataNames = "";
         String cellDataUnits = "";
+        String cellDataHasNulls = "";
 
         for (int i=0; i<cellDataInfoList.size(); ++i)
         {
@@ -471,17 +475,21 @@ public class ShapeModelImporterDialog extends javax.swing.JDialog
             cellDataPaths += cellDataInfo.path;
             cellDataNames += cellDataInfo.name;
             cellDataUnits += cellDataInfo.units;
+            cellDataHasNulls += new Boolean(cellDataInfo.hasNulls).toString();
+
             if (i < cellDataInfoList.size()-1)
             {
                 cellDataPaths += CustomShapeModel.LIST_SEPARATOR;
                 cellDataNames += CustomShapeModel.LIST_SEPARATOR;
                 cellDataUnits += CustomShapeModel.LIST_SEPARATOR;
+                cellDataHasNulls += CustomShapeModel.LIST_SEPARATOR;
             }
         }
 
         configMap.put(CustomShapeModel.CELL_DATA_PATHS, cellDataPaths);
         configMap.put(CustomShapeModel.CELL_DATA_NAMES, cellDataNames);
         configMap.put(CustomShapeModel.CELL_DATA_UNITS, cellDataUnits);
+        configMap.put(CustomShapeModel.CELL_DATA_HAS_NULLS, cellDataHasNulls);
 
 
         try
