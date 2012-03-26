@@ -100,7 +100,6 @@ public class CustomShapeModel extends SmallBodyModel
                 for (int i=0; i<paths.length; ++i)
                 {
                     paths[i] = FileCache.FILE_PREFIX + shapeModelDir + File.separator + "platedata" + i + ".txt";
-                    System.out.println(paths[i]);
                 }
                 return paths;
             }
