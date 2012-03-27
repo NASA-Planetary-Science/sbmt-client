@@ -34,6 +34,8 @@ public class SmallBodyImageMapCollection extends Model implements PropertyChange
         this.smallBodyModel = smallBodyModel;
 
         loadImages();
+
+        setVisible(false);
     }
 
     private void loadImages()
@@ -83,6 +85,7 @@ public class SmallBodyImageMapCollection extends Model implements PropertyChange
             String[] lllons = null;
             String[] urlats = null;
             String[] urlons = null;
+            boolean isEllipsoid = true;
 
             for (int i = 0; i<imageNames.length; ++i)
             {
@@ -113,6 +116,7 @@ public class SmallBodyImageMapCollection extends Model implements PropertyChange
                                 lllons = configMap.get(CustomShapeModel.LOWER_LEFT_LONGITUDES).split(",");
                                 urlats = configMap.get(CustomShapeModel.UPPER_RIGHT_LATITUDES).split(",");
                                 urlons = configMap.get(CustomShapeModel.UPPER_RIGHT_LONGITUDES).split(",");
+                                isEllipsoid = CustomShapeModel.ELLIPSOID.equals(configMap.get(CustomShapeModel.TYPE));
                             }
 
                             imageInfo.lllat = Double.parseDouble(lllats[i]);
@@ -139,7 +143,7 @@ public class SmallBodyImageMapCollection extends Model implements PropertyChange
                     }
                 }
 
-                SmallBodyImageMap image = new SmallBodyImageMap(smallBodyModel, imageInfo);
+                SmallBodyImageMap image = new SmallBodyImageMap(smallBodyModel, imageInfo, isEllipsoid);
                 image.addPropertyChangeListener(this);
                 images.add(image);
             }

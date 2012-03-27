@@ -28,6 +28,7 @@ import edu.jhuapl.near.model.SmallBodyImageMap.ImageInfo;
 public class ShapeModelImageImporterDialog extends javax.swing.JDialog
 {
     private boolean okayPressed = false;
+    private boolean isEllipsoid;
 
     /** Creates new form ShapeModelImporterDialog */
     public ShapeModelImageImporterDialog(java.awt.Window parent)
@@ -38,20 +39,13 @@ public class ShapeModelImageImporterDialog extends javax.swing.JDialog
 
     public void setImageInfo(ImageInfo info, boolean isEllipsoid)
     {
+        this.isEllipsoid = isEllipsoid;
+
         imagePathTextField.setText(info.filename);
         lllatFormattedTextField.setText(String.valueOf(info.lllat));
         lllonFormattedTextField.setText(String.valueOf(info.lllon));
         urlatFormattedTextField.setText(String.valueOf(info.urlat));
         urlonFormattedTextField.setText(String.valueOf(info.urlon));
-
-        lllatLabel.setEnabled(isEllipsoid);
-        lllatFormattedTextField.setEnabled(isEllipsoid);
-        lllonLabel.setEnabled(isEllipsoid);
-        lllonFormattedTextField.setEnabled(isEllipsoid);
-        urlatLabel.setEnabled(isEllipsoid);
-        urlatFormattedTextField.setEnabled(isEllipsoid);
-        urlonLabel.setEnabled(isEllipsoid);
-        urlonFormattedTextField.setEnabled(isEllipsoid);
     }
 
     public ImageInfo getImageInfo()
@@ -87,19 +81,19 @@ public class ShapeModelImageImporterDialog extends javax.swing.JDialog
             return "The format of the specified image is not supported.";
 
         double lllat = Double.parseDouble(lllatFormattedTextField.getText());
-        double lllon = Double.parseDouble(lllonFormattedTextField.getText());
         double urlat = Double.parseDouble(urlatFormattedTextField.getText());
-        double urlon = Double.parseDouble(urlonFormattedTextField.getText());
 
         if (lllat < -90.0 || lllat > 90.0 || urlat < -90.0 || urlat > 90.0)
             return "Latitudes must be between -90 and +90.";
-        if (lllon < 0.0 || lllon > 360.0 || urlon < 0.0 || urlon > 360.0)
-            return "Longitudes must be between 0 and 360.";
-
         if (lllat >= urlat)
             return "Upper right latitude must be greater than lower left latitude.";
-        if (lllon == urlon)
-            return "Upper right longitude and lower left longitude may not be the same.";
+
+        if (!isEllipsoid)
+        {
+            if ( (lllat < 1.0 && lllat > 0.0) || (lllat > -1.0 && lllat < 0.0) ||
+                 (urlat < 1.0 && urlat > 0.0) || (urlat > -1.0 && urlat < 0.0) )
+                return "For non-ellipsoidal shape models, latitudes must be (in degrees) either 0, greater than +1, or less then -1.";
+        }
 
         return null;
     }

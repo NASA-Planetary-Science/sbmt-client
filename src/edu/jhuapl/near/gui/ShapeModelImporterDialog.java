@@ -398,24 +398,10 @@ public class ShapeModelImporterDialog extends javax.swing.JDialog
             if (i < imageInfoList.size()-1)
                 imageFilenames += CustomShapeModel.LIST_SEPARATOR;
 
-            double lllat = -90.0;
-            double lllon = 0.0;
-            double urlat = 90.0;
-            double urlon = 360.0;
-
-            // If not ellipsoid, lats and lons should cover entire asteroid
-            if (ellipsoidRadioButton.isSelected())
-            {
-                lllat = imageInfo.lllat;
-                lllon = imageInfo.lllon;
-                urlat = imageInfo.urlat;
-                urlon = imageInfo.urlon;
-
-                if (lllon == 360.0)
-                    lllon = 0.0;
-                if (urlon == 0.0)
-                    urlon = 360.0;
-            }
+            double lllat = imageInfo.lllat;
+            double lllon = imageInfo.lllon;
+            double urlat = imageInfo.urlat;
+            double urlon = imageInfo.urlon;
 
             lllats += String.valueOf(lllat);
             lllons += String.valueOf(lllon);
