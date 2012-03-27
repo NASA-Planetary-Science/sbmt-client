@@ -31,7 +31,7 @@ public class CustomShapeModel extends SmallBodyModel
     public static final String CELL_DATA_PATHS = "CellDataPaths";
     public static final String CELL_DATA_NAMES = "CellDataNames";
     public static final String CELL_DATA_UNITS = "CellDataUnits";
-    public static final String CELL_DATA_HAS_NULLS = "CellDataHasNull";
+    public static final String CELL_DATA_HAS_NULLS = "CellDataHasNulls";
     public static final String LIST_SEPARATOR = ",";
 
     public static class CellDataInfo
@@ -96,7 +96,11 @@ public class CustomShapeModel extends SmallBodyModel
             map = MapUtil.loadMap(configfile);
             if (map.containsKey(CELL_DATA_PATHS))
             {
-                String[] paths = map.get(CELL_DATA_PATHS).split(",", -1);
+                String pathsUnsplit = map.get(CELL_DATA_PATHS).trim();
+                if(pathsUnsplit.isEmpty())
+                    return null;
+                String[] paths = pathsUnsplit.split(",", -1);
+                System.out.println("pl " + paths.length);
                 for (int i=0; i<paths.length; ++i)
                 {
                     paths[i] = FileCache.FILE_PREFIX + shapeModelDir + File.separator + "platedata" + i + ".txt";
@@ -113,6 +117,9 @@ public class CustomShapeModel extends SmallBodyModel
 
     private static String[] getPlateDataInfo(String name, String key)
     {
+        if (getPlateDataPaths(name) == null)
+            return null;
+
         String configfile = Configuration.getImportedShapeModelsDir() +
         File.separator +
         name +
