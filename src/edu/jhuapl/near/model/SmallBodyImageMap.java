@@ -124,7 +124,7 @@ public class SmallBodyImageMap extends Model
         }
 
         // First do the hemisphere from longitude 0 to 180.
-        boolean needToGenerateTextures = true;
+        boolean needToGenerateTextures0To180 = true;
         vtkClipPolyData clipPolyData1 = new vtkClipPolyData();
         clipPolyData1.SetClipFunction(planeZeroLon);
         clipPolyData1.SetInput(smallBodyPolyData);
@@ -169,7 +169,7 @@ public class SmallBodyImageMap extends Model
 
                 generateTextureCoordinates(clipPolyData1Output, true, false);
                 generateTextureCoordinates(clipOutput, false, true);
-                needToGenerateTextures = false;
+                needToGenerateTextures0To180 = false;
 
                 vtkAppendPolyData appendFilter = new vtkAppendPolyData();
                 appendFilter.UserManagedInputsOff();
@@ -187,20 +187,10 @@ public class SmallBodyImageMap extends Model
                 clipPolyData1Output = clipPolyData1.GetOutput();
             }
         }
-        if (needToGenerateTextures)
-        {
-            boolean isOnLeftSide = false;
-            boolean isOnRightSide = false;
-            if (lllon >= 0.0 && lllon < 180.0)
-                isOnLeftSide = true;
-            if (urlon > 0.0 && urlon <= 180.0)
-                isOnRightSide = true;
-            generateTextureCoordinates(clipPolyData1Output, isOnLeftSide, isOnRightSide);
-        }
 
 
         // Next do the hemisphere from longitude 180 to 360.
-        needToGenerateTextures = true;
+        boolean needToGenerateTextures180To0 = true;
         vtkClipPolyData clipPolyData2 = new vtkClipPolyData();
         clipPolyData2.SetClipFunction(planeZeroLon);
         clipPolyData2.SetInput(smallBodyPolyData);
@@ -244,7 +234,7 @@ public class SmallBodyImageMap extends Model
 
                 generateTextureCoordinates(clipPolyData1Output, true, false);
                 generateTextureCoordinates(clipOutput, false, true);
-                needToGenerateTextures = false;
+                needToGenerateTextures180To0 = false;
 
                 vtkAppendPolyData appendFilter = new vtkAppendPolyData();
                 appendFilter.UserManagedInputsOff();
@@ -262,16 +252,6 @@ public class SmallBodyImageMap extends Model
                 clipPolyData2Output = clipPolyData2.GetOutput();
             }
         }
-        if (needToGenerateTextures)
-        {
-            boolean isOnLeftSide = false;
-            boolean isOnRightSide = false;
-            if (lllon >= 180.0)
-                isOnLeftSide = true;
-            if (urlon > 180.0 || urlon == 0.0)
-                isOnRightSide = true;
-            generateTextureCoordinates(clipPolyData2Output, isOnLeftSide, isOnRightSide);
-        }
 
 
 
@@ -280,9 +260,33 @@ public class SmallBodyImageMap extends Model
         // We may not need to include both hemispheres. Test to see
         // if the texture is contained in each hemisphere.
         if (doLongitudeIntervalsIntersect(0.0, 180.0, lllon, urlon))
+        {
+            if (needToGenerateTextures0To180)
+            {
+                boolean isOnLeftSide = false;
+                boolean isOnRightSide = false;
+                if (lllon >= 0.0 && lllon < 180.0)
+                    isOnLeftSide = true;
+                if (urlon > 0.0 && urlon <= 180.0)
+                    isOnRightSide = true;
+                generateTextureCoordinates(clipPolyData1Output, isOnLeftSide, isOnRightSide);
+            }
             appendFilter.AddInput(clipPolyData1Output);
+        }
         if (doLongitudeIntervalsIntersect(180.0, 0.0, lllon, urlon))
+        {
+            if (needToGenerateTextures180To0)
+            {
+                boolean isOnLeftSide = false;
+                boolean isOnRightSide = false;
+                if (lllon >= 180.0)
+                    isOnLeftSide = true;
+                if (urlon > 180.0 || urlon == 0.0)
+                    isOnRightSide = true;
+                generateTextureCoordinates(clipPolyData2Output, isOnLeftSide, isOnRightSide);
+            }
             appendFilter.AddInput(clipPolyData2Output);
+        }
         appendFilter.Update();
         smallBodyPolyData = appendFilter.GetOutput();
 
@@ -460,6 +464,14 @@ public class SmallBodyImageMap extends Model
         initialized = true;
     }
 
+    /**
+     * Generates the cylindrical projection texture coordinates for the polydata.
+     * If isOnLeftSide is true, that means the polydata borders the left side (the side of lllon) of the image.
+     * If isOnRightSide is true, that means the polydata borders the right side (the side of urlon) of the image.
+     * @param polydata
+     * @param isOnLeftSide
+     * @param isOnRightSide
+     */
     protected void generateTextureCoordinates(
             vtkPolyData polydata,
             boolean isOnLeftSide,
@@ -555,8 +567,8 @@ public class SmallBodyImageMap extends Model
             return dist + 2.0 * Math.PI;
     }
 
-    /*
-     * Same as above but returns distance in degrees
+    /**
+     * Same as previous but returns distance in degrees
      */
     private double getDistanceBetweenLongitudesDegrees(double leftLon, double rightLon)
     {
