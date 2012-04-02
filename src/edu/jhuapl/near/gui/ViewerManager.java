@@ -182,4 +182,12 @@ public class ViewerManager extends JPanel
 
         return null;
     }
+
+    public ArrayList<Viewer> getAllViewers()
+    {
+        ArrayList<Viewer> allViewers = new ArrayList<Viewer>();
+        allViewers.addAll(builtInViewers);
+        allViewers.addAll(customViewers);
+        return allViewers;
+    }
 }

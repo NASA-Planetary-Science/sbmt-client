@@ -13,6 +13,7 @@ import vtk.vtkCamera;
 import vtk.vtkCaptionActor2D;
 import vtk.vtkInteractorStyleRubberBand3D;
 import vtk.vtkInteractorStyleTrackballCamera;
+import vtk.vtkLight;
 import vtk.vtkLightKit;
 import vtk.vtkOrientationMarkerWidget;
 import vtk.vtkProp;
@@ -22,17 +23,30 @@ import vtk.vtkRenderWindowPanel;
 import vtk.vtkTextProperty;
 
 import edu.jhuapl.near.model.ModelManager;
+import edu.jhuapl.near.util.Preferences;
 import edu.jhuapl.near.util.Properties;
 
 public class Renderer extends JPanel implements
             PropertyChangeListener
 {
+    public enum LightingType
+    {
+        NONE,
+        HEADLIGHT,
+        LIGHT_KIT
+    }
     private vtkEnhancedRenderWindowPanel renWin;
     private ModelManager modelManager;
     private vtkInteractorStyleTrackballCamera defaultInteractorStyle;
     private vtkInteractorStyleRubberBand3D rubberBandInteractorStyle;
     private vtkAxesActor axes;
     private vtkOrientationMarkerWidget orientationWidget;
+    private vtkLightKit lightKit;
+    private vtkLight headlight;
+    private LightingType currentLighting = LightingType.NONE;
+    // We need a separate flag for this since we should modify interaction if
+    // axes are enabled
+    private boolean interactiveAxes = true;
 
     public Renderer(final ModelManager modelManager)
     {
@@ -49,11 +63,18 @@ public class Renderer extends JPanel implements
 
         renWin.setInteractorStyle(defaultInteractorStyle);
 
+        headlight = renWin.GetRenderer().MakeLight();
+        headlight.SetLightTypeToHeadlight();
+        setHeadlightIntensity(Preferences.getInstance().getAsDouble(Preferences.HEADLIGHT_INTENSITY, 1.0));
+
         renWin.GetRenderer().AutomaticLightCreationOff();
-        vtkLightKit lightKit = new vtkLightKit();
+        lightKit = new vtkLightKit();
         lightKit.SetKeyToFillRatio(1.0);
         lightKit.SetKeyToHeadRatio(20.0);
-        lightKit.AddLightsToRenderer(renWin.GetRenderer());
+
+        LightingType lightingType = LightingType.valueOf(
+                Preferences.getInstance().get(Preferences.LIGHTING_TYPE, LightingType.LIGHT_KIT.toString()));
+        setLighting(lightingType);
 
         add(renWin, BorderLayout.CENTER);
 
@@ -90,8 +111,9 @@ public class Renderer extends JPanel implements
         orientationWidget = new vtkOrientationMarkerWidget();
         orientationWidget.SetOrientationMarker(axes);
         orientationWidget.SetInteractor(renWin.getIren());
-        orientationWidget.SetEnabled(1);
-        orientationWidget.InteractiveOn();
+        orientationWidget.SetTolerance(10);
+        setShowOrientationAxes(Preferences.getInstance().getAsBoolean(Preferences.SHOW_AXES, true));
+        setOrientationAxesInteractive(Preferences.getInstance().getAsBoolean(Preferences.INTERACTIVE_AXES, true));
 
         javax.swing.SwingUtilities.invokeLater(new Runnable()
         {
@@ -246,5 +268,79 @@ public class Renderer extends JPanel implements
     public void setInteractorToNone()
     {
         renWin.setInteractorStyle(null);
+    }
+
+    public void setLighting(LightingType type)
+    {
+        if (type != currentLighting)
+        {
+            renWin.GetRenderer().RemoveAllLights();
+            if (type == LightingType.LIGHT_KIT)
+            {
+                lightKit.AddLightsToRenderer(renWin.GetRenderer());
+            }
+            else
+            {
+                renWin.GetRenderer().AddLight(headlight);
+            }
+            currentLighting = type;
+            if (renWin.GetRenderWindow().GetNeverRendered() == 0)
+                renWin.Render();
+        }
+    }
+
+    public LightingType getLighting()
+    {
+        return currentLighting;
+    }
+
+    public void setHeadlightIntensity(double percentage)
+    {
+        if (percentage != getHeadlightIntensity())
+        {
+            headlight.SetIntensity(percentage);
+            if (renWin.GetRenderWindow().GetNeverRendered() == 0)
+                renWin.Render();
+        }
+    }
+
+    public double getHeadlightIntensity()
+    {
+        return headlight.GetIntensity();
+    }
+
+    public void setShowOrientationAxes(boolean show)
+    {
+        if (getShowOrientationAxes() != show)
+        {
+            orientationWidget.SetEnabled(show ? 1 : 0);
+            if (show)
+                orientationWidget.SetInteractive(interactiveAxes ? 1 : 0);
+            if (renWin.GetRenderWindow().GetNeverRendered() == 0)
+                renWin.Render();
+        }
+    }
+
+    public boolean getShowOrientationAxes()
+    {
+        int value = orientationWidget.GetEnabled();
+        return value == 1 ? true : false;
+    }
+
+    public void setOrientationAxesInteractive(boolean interactive)
+    {
+        if (getOrientationAxesInteractive() != interactive &&
+            getShowOrientationAxes())
+        {
+            orientationWidget.SetInteractive(interactive ? 1 : 0);
+            if (renWin.GetRenderWindow().GetNeverRendered() == 0)
+                renWin.Render();
+        }
+        interactiveAxes = interactive;
+    }
+
+    public boolean getOrientationAxesInteractive()
+    {
+        return interactiveAxes;
     }
 }
