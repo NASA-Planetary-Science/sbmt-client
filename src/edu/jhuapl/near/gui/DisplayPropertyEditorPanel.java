@@ -4,7 +4,6 @@ import java.awt.Dimension;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
-import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
@@ -63,10 +62,8 @@ public class DisplayPropertyEditorPanel extends JPanel implements ChangeListener
 
     public DisplayPropertyEditorPanel(SmallBodyModel smallBodyModel)
     {
-        super(new MigLayout());
+        super(new MigLayout("insets 0"));
         this.smallBodyModel = smallBodyModel;
-
-        setBorder(BorderFactory.createEmptyBorder());
 
         JLabel shadingLabel = new JLabel("Shading");
 

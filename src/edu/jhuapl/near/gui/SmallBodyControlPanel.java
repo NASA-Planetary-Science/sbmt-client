@@ -216,8 +216,6 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
 
         JSeparator statisticsSeparator = new JSeparator(SwingConstants.HORIZONTAL);
 
-        JLabel surfacePropertiesLabel = new JLabel("Surface Properties:");
-        JSeparator surfacePropertiesSeparator = new JSeparator(SwingConstants.HORIZONTAL);
         JPanel surfacePropertiesEditorPanel = new DisplayPropertyEditorPanel(smallBodyModel);
 
         panel.add(modelCheckBox, "wrap");
@@ -255,8 +253,6 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
         }
         panel.add(gridCheckBox, "wrap");
 
-        panel.add(surfacePropertiesSeparator, "growx, span, wrap, gaptop 15");
-        panel.add(surfacePropertiesLabel, "wrap, gaptop 15");
         panel.add(surfacePropertiesEditorPanel, "wrap");
 
         panel.add(statisticsSeparator, "growx, span, wrap, gaptop 15");
