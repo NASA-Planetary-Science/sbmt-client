@@ -7,7 +7,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.IOException;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import javax.swing.ButtonGroup;
@@ -479,23 +478,21 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
     {
         SmallBodyModel smallBodyModel = modelManager.getSmallBodyModel();
 
-        DecimalFormat df = new DecimalFormat("#.#####");
-
         BoundingBox bb = smallBodyModel.getBoundingBox();
 
         // We add a superscripted space at end of first 2 lines and last 6 lines so that spacing between all lines is the same.
         String text = "<html>Statistics:<br>"
             + "&nbsp;&nbsp;&nbsp;Number of plates: " + smallBodyModel.getSmallBodyPolyData().GetNumberOfCells() + "<sup>&nbsp;</sup><br>"
             + "&nbsp;&nbsp;&nbsp;Number of vertices: " + smallBodyModel.getSmallBodyPolyData().GetNumberOfPoints() + "<sup>&nbsp;</sup><br>"
-            + "&nbsp;&nbsp;&nbsp;Surface Area: " + df.format(smallBodyModel.getSurfaceArea()) + " km<sup>2</sup><br>"
-            + "&nbsp;&nbsp;&nbsp;Volume: " + df.format(smallBodyModel.getVolume()) + " km<sup>3</sup><br>"
-            + "&nbsp;&nbsp;&nbsp;Average plate area: " + df.format(1.0e6 * smallBodyModel.getMeanCellArea()) + " m<sup>2</sup><br>"
-            + "&nbsp;&nbsp;&nbsp;Minimum plate area: " + df.format(1.0e6 * smallBodyModel.getMinCellArea()) + " m<sup>2</sup><br>"
-            + "&nbsp;&nbsp;&nbsp;Maximum plate area: " + df.format(1.0e6 * smallBodyModel.getMaxCellArea()) + " m<sup>2</sup><br>"
+            + "&nbsp;&nbsp;&nbsp;Surface Area: " + String.format("%g", smallBodyModel.getSurfaceArea()) + " km<sup>2</sup><br>"
+            + "&nbsp;&nbsp;&nbsp;Volume: " + String.format("%g", smallBodyModel.getVolume()) + " km<sup>3</sup><br>"
+            + "&nbsp;&nbsp;&nbsp;Average plate area: " + String.format("%g", smallBodyModel.getMeanCellArea()) + " km<sup>2</sup><br>"
+            + "&nbsp;&nbsp;&nbsp;Minimum plate area: " + String.format("%g", smallBodyModel.getMinCellArea()) + " km<sup>2</sup><br>"
+            + "&nbsp;&nbsp;&nbsp;Maximum plate area: " + String.format("%g", smallBodyModel.getMaxCellArea()) + " km<sup>2</sup><br>"
             + "&nbsp;&nbsp;&nbsp;Extent:<sup>&nbsp;</sup><br>"
-            + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;X: [" + df.format(bb.xmin) + ", " + df.format(bb.xmax) + "] km<sup>&nbsp;</sup><br>"
-            + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Y: [" + df.format(bb.ymin) + ", " + df.format(bb.ymax) + "] km<sup>&nbsp;</sup><br>"
-            + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Z: [" + df.format(bb.zmin) + ", " + df.format(bb.zmax) + "] km<sup>&nbsp;</sup><br>"
+            + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;X: [" + String.format("%g", bb.xmin) + ", " + String.format("%g", bb.xmax) + "] km<sup>&nbsp;</sup><br>"
+            + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Y: [" + String.format("%g", bb.ymin) + ", " + String.format("%g", bb.ymax) + "] km<sup>&nbsp;</sup><br>"
+            + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Z: [" + String.format("%g", bb.zmin) + ", " + String.format("%g", bb.zmax) + "] km<sup>&nbsp;</sup><br>"
             + "</html>";
 
         statisticsLabel.setText(text);
