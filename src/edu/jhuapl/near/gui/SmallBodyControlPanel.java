@@ -18,6 +18,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
@@ -47,14 +48,11 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
     private JLabel customColorRedLabel;
     private JLabel customColorGreenLabel;
     private JLabel customColorBlueLabel;
-    private JRadioButton flatShadingButton;
-    private JRadioButton smoothShadingButton;
     private JRadioButton lowResModelButton;
     private JRadioButton medResModelButton;
     private JRadioButton highResModelButton;
     private JRadioButton veryHighResModelButton;
     private ButtonGroup coloringButtonGroup;
-    private ButtonGroup shadingButtonGroup;
     private ButtonGroup resolutionButtonGroup;
     private JCheckBox gridCheckBox;
     private JCheckBox axesCheckBox;
@@ -194,23 +192,6 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
             }
         });
 
-        JLabel shadingLabel = new JLabel("Shading");
-
-        flatShadingButton = new JRadioButton(SmallBodyModel.FlatShadingStr);
-        flatShadingButton.setActionCommand(SmallBodyModel.FlatShadingStr);
-        flatShadingButton.addItemListener(this);
-        flatShadingButton.setEnabled(true);
-
-        smoothShadingButton = new JRadioButton(SmallBodyModel.SmoothShadingStr);
-        smoothShadingButton.setActionCommand(SmallBodyModel.SmoothShadingStr);
-        smoothShadingButton.addItemListener(this);
-        smoothShadingButton.setEnabled(true);
-
-        shadingButtonGroup = new ButtonGroup();
-        shadingButtonGroup.add(flatShadingButton);
-        shadingButtonGroup.add(smoothShadingButton);
-        shadingButtonGroup.setSelected(smoothShadingButton.getModel(), true);
-
         gridCheckBox = new JCheckBox();
         gridCheckBox.setText("Show Coordinate Grid");
         gridCheckBox.setSelected(false);
@@ -234,7 +215,11 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
         opacityLabel.setEnabled(false);
         imageMapOpacitySpinner.setEnabled(false);
 
-        JSeparator separator = new JSeparator(SwingConstants.HORIZONTAL);
+        JSeparator statisticsSeparator = new JSeparator(SwingConstants.HORIZONTAL);
+
+        JLabel surfacePropertiesLabel = new JLabel("Surface Properties:");
+        JSeparator surfacePropertiesSeparator = new JSeparator(SwingConstants.HORIZONTAL);
+        JPanel surfacePropertiesEditorPanel = new DisplayPropertyEditorPanel(smallBodyModel);
 
         panel.add(modelCheckBox, "wrap");
         if (modelManager.getSmallBodyModel().getNumberResolutionLevels() > 1)
@@ -270,14 +255,18 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
             panel.add(imageMapOpacitySpinner, "wrap");
         }
         panel.add(gridCheckBox, "wrap");
-        //panel.add(axesCheckBox, "wrap");
-        panel.add(shadingLabel, "wrap");
-        panel.add(flatShadingButton, "wrap, gapleft 25");
-        panel.add(smoothShadingButton, "wrap, gapleft 25");
-        panel.add(separator, "growx, span, wrap, gaptop 15");
+
+        panel.add(surfacePropertiesSeparator, "growx, span, wrap, gaptop 15");
+        panel.add(surfacePropertiesLabel, "wrap, gaptop 15");
+        panel.add(surfacePropertiesEditorPanel, "wrap");
+
+        panel.add(statisticsSeparator, "growx, span, wrap, gaptop 15");
         panel.add(statisticsLabel, "gaptop 15");
 
-        add(panel, BorderLayout.CENTER);
+        JScrollPane scrollPane = new JScrollPane();
+        scrollPane.setViewportView(panel);
+
+        add(scrollPane, BorderLayout.CENTER);
     }
 
     public void itemStateChanged(ItemEvent e)
@@ -332,16 +321,6 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
                 opacityLabel.setEnabled(false);
                 imageMapOpacitySpinner.setEnabled(false);
             }
-        }
-        else if (e.getItemSelectable() == this.flatShadingButton)
-        {
-            if (this.flatShadingButton.isSelected())
-                smallBodyModel.setShadingToFlat();
-        }
-        else if (e.getItemSelectable() == this.smoothShadingButton)
-        {
-            if (this.smoothShadingButton.isSelected())
-                smallBodyModel.setShadingToSmooth();
         }
         else if (e.getItemSelectable() == this.lowResModelButton)
         {

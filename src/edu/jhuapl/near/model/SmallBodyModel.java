@@ -675,7 +675,8 @@ public class SmallBodyModel extends Model
             smallBodyActor.SetMapper(smallBodyMapper);
             vtkProperty smallBodyProperty = smallBodyActor.GetProperty();
             smallBodyProperty.SetInterpolationToGouraud();
-            //smallBodyProperty.SetOpacity(0.5);
+            smallBodyProperty.SetSpecular(.1);
+            smallBodyProperty.SetSpecularPower(100);
 
             smallBodyActors.add(smallBodyActor);
 
@@ -1517,6 +1518,63 @@ public class SmallBodyModel extends Model
         smallBodyProperty.SetOpacity(opacity);
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
+
+    public void setSpecularCoefficient(double value)
+    {
+        smallBodyActor.GetProperty().SetSpecular(value);
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+    }
+
+    public void setSpecularPower(double value)
+    {
+        smallBodyActor.GetProperty().SetSpecularPower(value);
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+    }
+
+    public void setRepresentationToSurface()
+    {
+        smallBodyActor.GetProperty().SetRepresentationToSurface();
+        smallBodyActor.GetProperty().EdgeVisibilityOff();
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+    }
+
+    public void setRepresentationToWireframe()
+    {
+        smallBodyActor.GetProperty().SetRepresentationToWireframe();
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+    }
+
+    public void setRepresentationToPoints()
+    {
+        smallBodyActor.GetProperty().SetRepresentationToPoints();
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+    }
+
+    public void setRepresentationToSurfaceWithEdges()
+    {
+        smallBodyActor.GetProperty().SetRepresentationToSurface();
+        smallBodyActor.GetProperty().EdgeVisibilityOn();
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+    }
+
+    public void setPointSize(double value)
+    {
+        smallBodyActor.GetProperty().SetPointSize(value);
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+    }
+
+    public void setLineWidth(double value)
+    {
+        smallBodyActor.GetProperty().SetLineWidth(value);
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+    }
+
+    public void setCullFrontface(boolean enable)
+    {
+        smallBodyActor.GetProperty().SetFrontfaceCulling(enable ? 1 : 0);
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+    }
+
 
     public void delete()
     {
