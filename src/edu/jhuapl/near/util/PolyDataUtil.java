@@ -1781,12 +1781,16 @@ public class PolyDataUtil
     /**
      * Read in a shape model with format where each line in file
      * consists of lat, lon, and radius, or lon, lat, and radius.
+     * Note that most of the shape models of Thomas and Stooke in this
+     * format use west longtude. The only exception is Thomas's Ida
+     * model which uses east longitude.
      *
      * @param filename
+     * @param westLongitude if true, assume longitude is west, if false assume east
      * @return
      * @throws Exception
      */
-    static public vtkPolyData loadLLRShapeModel(String filename) throws Exception
+    static public vtkPolyData loadLLRShapeModel(String filename, boolean westLongitude) throws Exception
     {
         // We need to load the file in 2 passes. In the first pass
         // we figure out the latitude/longitude spacing (both assumed same),
@@ -1888,6 +1892,9 @@ public class PolyDataUtil
             }
             else
             {
+                if (westLongitude)
+                    lon = -lon;
+
                 indices[row][col] = count++;
                 LatLon ll = new LatLon(lat*Math.PI/180.0, lon*Math.PI/180.0, rad);
                 double[] pt = MathUtil.latrec(ll);
@@ -2052,7 +2059,13 @@ public class PolyDataUtil
         }
         else if (filename.toLowerCase().endsWith(".llr"))
         {
-            shapeModel = loadLLRShapeModel(filename);
+            boolean westLongitude = true;
+            // Thomas's Ida shape model uses east longitude. All the others use west longitude.
+            // TODO rather than hard coding this check in, need better way to decide if model
+            // uses west or east longitude.
+            if (filename.toLowerCase().contains("thomas") && filename.toLowerCase().contains("243ida"))
+                westLongitude = false;
+            shapeModel = loadLLRShapeModel(filename, westLongitude);
         }
         else if (filename.toLowerCase().endsWith(".t1"))
         {
