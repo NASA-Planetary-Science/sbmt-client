@@ -23,6 +23,7 @@ import edu.jhuapl.near.gui.CustomFileChooser;
 import edu.jhuapl.near.gui.ModelInfoWindowManager;
 import edu.jhuapl.near.gui.NormalOffsetChangerDialog;
 import edu.jhuapl.near.gui.Renderer;
+import edu.jhuapl.near.gui.Renderer.LightingType;
 import edu.jhuapl.near.model.Image;
 import edu.jhuapl.near.model.Image.ImageKey;
 import edu.jhuapl.near.model.ImageBoundary;
@@ -46,6 +47,7 @@ public class ImagePopupMenu extends PopupMenu
     private JMenuItem centerImageMenuItem;
     private JMenuItem showFrustumMenuItem;
     private JMenuItem changeNormalOffsetMenuItem;
+    private JMenuItem simulateLightingMenuItem;
     private JMenuItem hideImageMenuItem;
     private ModelInfoWindowManager infoPanelManager;
     private Renderer renderer;
@@ -108,6 +110,10 @@ public class ImagePopupMenu extends PopupMenu
         changeNormalOffsetMenuItem.setText("Change Normal Offset...");
         this.add(changeNormalOffsetMenuItem);
 
+        simulateLightingMenuItem = new JMenuItem(new SimulateLightingAction());
+        simulateLightingMenuItem.setText("Simulate Lighting");
+        this.add(simulateLightingMenuItem);
+
         hideImageMenuItem = new JCheckBoxMenuItem(new HideImageAction());
         hideImageMenuItem.setText("Hide Image");
         this.add(hideImageMenuItem);
@@ -150,6 +156,7 @@ public class ImagePopupMenu extends PopupMenu
             Image image = imageCollection.getImage(imageKey);
             showFrustumMenuItem.setSelected(image.isFrustumShowing());
             showFrustumMenuItem.setEnabled(true);
+            simulateLightingMenuItem.setEnabled(true);
             hideImageMenuItem.setSelected(!image.isVisible());
             hideImageMenuItem.setEnabled(true);
         }
@@ -157,6 +164,7 @@ public class ImagePopupMenu extends PopupMenu
         {
             showFrustumMenuItem.setSelected(false);
             showFrustumMenuItem.setEnabled(false);
+            simulateLightingMenuItem.setEnabled(false);
             hideImageMenuItem.setSelected(false);
             hideImageMenuItem.setEnabled(false);
         }
@@ -412,6 +420,20 @@ public class ImagePopupMenu extends PopupMenu
                 NormalOffsetChangerDialog changeOffsetDialog = new NormalOffsetChangerDialog(image);
                 changeOffsetDialog.setLocationRelativeTo(JOptionPane.getFrameForComponent(invoker));
                 changeOffsetDialog.setVisible(true);
+            }
+        }
+    }
+
+    private class SimulateLightingAction extends AbstractAction
+    {
+        public void actionPerformed(ActionEvent e)
+        {
+            Image image = imageCollection.getImage(imageKey);
+            if (image != null)
+            {
+                double[] sunDir = image.getSunVector();
+                renderer.setFixedLightDirection(sunDir);
+                renderer.setLighting(LightingType.FIXEDLIGHT);
             }
         }
     }

@@ -12,9 +12,12 @@ public class Preferences extends MapUtil
 {
     // List of all preferences keys
     public static final String LIGHTING_TYPE = "LightingType";
-    public static final String HEADLIGHT_INTENSITY = "HeadlightIntensity";
+    public static final String LIGHT_INTENSITY = "LightIntensity";
     public static final String SHOW_AXES = "ShowAxes";
     public static final String INTERACTIVE_AXES = "InteractiveAxes";
+    public static final String FIXEDLIGHT_LATITUDE = "FixedLightLatitude";
+    public static final String FIXEDLIGHT_LONGITUDE = "FixedLightLongitude";
+    public static final String FIXEDLIGHT_DISTANCE = "FixedLightDistance";
 
 
     private static final String preferencesPath = Configuration.getApplicationDataDir() + File.separator + "preferences.txt";

@@ -23,6 +23,8 @@ import vtk.vtkRenderWindowPanel;
 import vtk.vtkTextProperty;
 
 import edu.jhuapl.near.model.ModelManager;
+import edu.jhuapl.near.util.LatLon;
+import edu.jhuapl.near.util.MathUtil;
 import edu.jhuapl.near.util.Preferences;
 import edu.jhuapl.near.util.Properties;
 
@@ -33,7 +35,8 @@ public class Renderer extends JPanel implements
     {
         NONE,
         HEADLIGHT,
-        LIGHT_KIT
+        LIGHT_KIT,
+        FIXEDLIGHT
     }
     private vtkEnhancedRenderWindowPanel renWin;
     private ModelManager modelManager;
@@ -43,6 +46,7 @@ public class Renderer extends JPanel implements
     private vtkOrientationMarkerWidget orientationWidget;
     private vtkLightKit lightKit;
     private vtkLight headlight;
+    private vtkLight fixedLight;
     private LightingType currentLighting = LightingType.NONE;
     // We need a separate flag for this since we should modify interaction if
     // axes are enabled
@@ -65,7 +69,19 @@ public class Renderer extends JPanel implements
 
         headlight = renWin.GetRenderer().MakeLight();
         headlight.SetLightTypeToHeadlight();
-        setHeadlightIntensity(Preferences.getInstance().getAsDouble(Preferences.HEADLIGHT_INTENSITY, 1.0));
+        headlight.SetConeAngle(180.0);
+
+        fixedLight = renWin.GetRenderer().MakeLight();
+        fixedLight.SetLightTypeToSceneLight();
+        fixedLight.PositionalOn();
+        fixedLight.SetConeAngle(180.0);
+        LatLon defaultPosition = new LatLon(
+                Preferences.getInstance().getAsDouble(Preferences.FIXEDLIGHT_LATITUDE, 90.0),
+                Preferences.getInstance().getAsDouble(Preferences.FIXEDLIGHT_LONGITUDE, 0.0),
+                Preferences.getInstance().getAsDouble(Preferences.FIXEDLIGHT_DISTANCE, 1.0e8));
+        setFixedLightPosition(defaultPosition);
+        setLightIntensity(Preferences.getInstance().getAsDouble(Preferences.LIGHT_INTENSITY, 1.0));
+
 
         renWin.GetRenderer().AutomaticLightCreationOff();
         lightKit = new vtkLightKit();
@@ -279,9 +295,13 @@ public class Renderer extends JPanel implements
             {
                 lightKit.AddLightsToRenderer(renWin.GetRenderer());
             }
-            else
+            else if (type == LightingType.HEADLIGHT)
             {
                 renWin.GetRenderer().AddLight(headlight);
+            }
+            else
+            {
+                renWin.GetRenderer().AddLight(fixedLight);
             }
             currentLighting = type;
             if (renWin.GetRenderWindow().GetNeverRendered() == 0)
@@ -294,17 +314,61 @@ public class Renderer extends JPanel implements
         return currentLighting;
     }
 
-    public void setHeadlightIntensity(double percentage)
+    public void setLightIntensity(double percentage)
     {
-        if (percentage != getHeadlightIntensity())
+        if (percentage != getLightIntensity())
         {
             headlight.SetIntensity(percentage);
+            fixedLight.SetIntensity(percentage);
             if (renWin.GetRenderWindow().GetNeverRendered() == 0)
                 renWin.Render();
         }
     }
 
-    public double getHeadlightIntensity()
+    /**
+     * Get the absolute position of the light in lat/lon/rad where
+     * lat and lon are in degress.
+     * @return
+     */
+    public LatLon getFixedLightPosition()
+    {
+        double[] position = fixedLight.GetPosition();
+        return MathUtil.reclat(position).toDegrees();
+    }
+
+    /**
+     * Set the absolute position of the light in lat/lon/rad.
+     * Lat and lon must be in degrees.
+     * @param latLon
+     */
+    public void setFixedLightPosition(LatLon latLon)
+    {
+        fixedLight.SetPosition(MathUtil.latrec(latLon.toRadians()));
+        if (renWin.GetRenderWindow().GetNeverRendered() == 0)
+            renWin.Render();
+    }
+
+    /**
+     * Rather than setting the absolute position of the light as in the previous
+     * function, set the direction of the light source in the body frame. We still need a
+     * distance for the light, so simply use a large multiple of the
+     * shape model bounding box diagonal.
+     * @param dir
+     */
+    public void setFixedLightDirection(double[] dir)
+    {
+        dir = dir.clone();
+        MathUtil.vhat(dir, dir);
+        double bbd = modelManager.getSmallBodyModel().getBoundingBoxDiagonalLength();
+        dir[0] *= (1.0e5 * bbd);
+        dir[1] *= (1.0e5 * bbd);
+        dir[2] *= (1.0e5 * bbd);
+        fixedLight.SetPosition(dir);
+        if (renWin.GetRenderWindow().GetNeverRendered() == 0)
+            renWin.Render();
+    }
+
+    public double getLightIntensity()
     {
         return headlight.GetIntensity();
     }

@@ -1,6 +1,11 @@
 package edu.jhuapl.near.util;
 
 
+/**
+ * Note it is unspecified whether lat and lon are in degrees or radians.
+ * @author kahneg1
+ *
+ */
 public class LatLon
 {
     public double lat;
@@ -38,6 +43,24 @@ public class LatLon
     public String toString()
     {
         return "lat: " + lat + " lon: " + lon + " rad: " + rad;
+    }
+
+    /**
+     * Assuming this instance is in radians, return a new instance converted to degrees.
+     * @return
+     */
+    public LatLon toDegrees()
+    {
+        return new LatLon(lat*180.0/Math.PI, lon*180.0/Math.PI, rad);
+    }
+
+    /**
+     * Assuming this instance is in degrees, return a new instance converted to radians.
+     * @return
+     */
+    public LatLon toRadians()
+    {
+        return new LatLon(lat*Math.PI/180.0, lon*Math.PI/180.0, rad);
     }
 
     /**
