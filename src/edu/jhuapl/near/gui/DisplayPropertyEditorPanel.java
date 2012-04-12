@@ -176,8 +176,8 @@ public class DisplayPropertyEditorPanel extends JPanel implements ChangeListener
         add(lineWidthLabel, "split 2");
         add(lineWidthSpinner, "wrap");
         //add(cullFrontfaceCheckBox, "wrap");
-        add(specularCoefLabel, "split 2");
-        add(specularCoefSpinner, "wrap");
+        //add(specularCoefLabel, "split 2");
+        //add(specularCoefSpinner, "wrap");
         //add(specularPowerLabel, "split 2");
         //add(specularPowerSpinner, "wrap");
         //add(opacityLabel, "split 2");
