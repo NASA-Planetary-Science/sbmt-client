@@ -128,13 +128,13 @@ public class Renderer extends JPanel implements
         orientationWidget.SetOrientationMarker(axes);
         orientationWidget.SetInteractor(renWin.getIren());
         orientationWidget.SetTolerance(10);
-        setShowOrientationAxes(Preferences.getInstance().getAsBoolean(Preferences.SHOW_AXES, true));
-        setOrientationAxesInteractive(Preferences.getInstance().getAsBoolean(Preferences.INTERACTIVE_AXES, true));
 
         javax.swing.SwingUtilities.invokeLater(new Runnable()
         {
             public void run()
             {
+                setShowOrientationAxes(Preferences.getInstance().getAsBoolean(Preferences.SHOW_AXES, true));
+                setOrientationAxesInteractive(Preferences.getInstance().getAsBoolean(Preferences.INTERACTIVE_AXES, true));
                 setProps(modelManager.getProps());
                 renWin.resetCamera();
                 renWin.Render();
@@ -377,9 +377,11 @@ public class Renderer extends JPanel implements
     {
         if (getShowOrientationAxes() != show)
         {
+            renWin.lock();
             orientationWidget.SetEnabled(show ? 1 : 0);
             if (show)
                 orientationWidget.SetInteractive(interactiveAxes ? 1 : 0);
+            renWin.unlock();
             if (renWin.GetRenderWindow().GetNeverRendered() == 0)
                 renWin.Render();
         }
@@ -396,7 +398,9 @@ public class Renderer extends JPanel implements
         if (getOrientationAxesInteractive() != interactive &&
             getShowOrientationAxes())
         {
+            renWin.lock();
             orientationWidget.SetInteractive(interactive ? 1 : 0);
+            renWin.unlock();
             if (renWin.GetRenderWindow().GetNeverRendered() == 0)
                 renWin.Render();
         }
