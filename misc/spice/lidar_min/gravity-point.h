@@ -1,13 +1,9 @@
-#ifndef GRAVITY_H
-#define GRAVITY_H
+#ifndef GRAVITY_POINT_H
+#define GRAVITY_POINT_H
 
-#include <vtkPolyData.h>
 #include <vtkMath.h>
 
-vtkPolyData* initializeGravity(const char* vtkfile);
-double getGravity(const double fieldPoint[3], double* acc);
-
-inline double getPointGravity(const double fieldPoint[3], double* acc)
+inline double getGravityPoint(const double fieldPoint[3], double* acc)
 {
     double rhat[3] = {fieldPoint[0], fieldPoint[1], fieldPoint[2]};
     double r = vtkMath::Normalize(rhat);
@@ -23,4 +19,4 @@ inline double getPointGravity(const double fieldPoint[3], double* acc)
 }
 
 
-#endif // GRAVITY_H
+#endif // GRAVITY_POINT_H

@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <gsl/gsl_multimin.h>
 
 
@@ -52,10 +51,10 @@ static void grad(const gsl_vector *v,
         p->gradient(gsl_vector_const_ptr(v, 0), gsl_vector_ptr(df, 0), p->externalParams);
         return;
     }
-    
+
     double f = func(v, internalParams);
     size_t N = v->size;
-    
+
     size_t i;
     size_t j;
     for (i=0; i<N; ++i)
@@ -63,7 +62,7 @@ static void grad(const gsl_vector *v,
         double coef2[N];
         for (j=0; j<N; ++j)
             coef2[j] = gsl_vector_get(v,j);
-        
+
         coef2[i] += DX;
 
         double f2 = p->function(coef2, p->externalParams);
@@ -85,7 +84,7 @@ static void fdf(const gsl_vector *x,
 
 /*
   Public function
-  
+
   Perform an optimization on provided function with N independent variables.
   minimizer contains the initial guess and on output contains the optimal
   values of the independent function that minimizes the function.
@@ -155,7 +154,7 @@ void optimizeGsl(double (*function)(const double*, void *externalParams),
     printf("GSL optimization terminated with status code = %d\n", status);
     printCurrentValue(iter, function(minimizer, externalParams), s->x, N);
     printf("\n");
-    
+
     gsl_multimin_fdfminimizer_free (s);
     gsl_vector_free (x);
 }

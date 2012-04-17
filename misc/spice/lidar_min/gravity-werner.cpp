@@ -107,7 +107,7 @@ static void printvec(const char* str, double m[3])
   of a closed triangular plate model using the method of Werner as
   described in Werner R. A. and D. J. Scheeres (1997) CeMDA, 65, 313-344.
   */
-vtkPolyData* initializeGravity(const char* vtkfile)
+vtkPolyData* initializeGravityWerner(const char* vtkfile)
 {
     vtkPolyDataReader* smallBodyReader = vtkPolyDataReader::New();
     smallBodyReader->SetFileName(vtkfile);
@@ -285,7 +285,7 @@ static double compute_Le(const EdgeData& ed)
     return log ( (pd1.r_mag + pd2.r_mag + ed.edgeLength) / (pd1.r_mag + pd2.r_mag - ed.edgeLength) );
 }
 
-double getGravity(const double fieldPoint[3], double* acc)
+double getGravityWerner(const double fieldPoint[3], double* acc)
 {
     double potential = 0.0;
     if (acc)

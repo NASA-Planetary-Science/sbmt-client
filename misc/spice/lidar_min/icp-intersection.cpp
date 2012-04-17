@@ -59,7 +59,7 @@ static void findAllClosestPoints(const double* translation)
     }
 }
 
-static double func(const double* translation)
+static double func(const double* translation, void*)
 {
     int i;
     int n = g_source.size();
@@ -106,7 +106,7 @@ void icp2(struct Point source[], int n, struct Point* additionalPoints)
     double translation[3] = {0.0, 0.0, 0.0};
     findAllClosestPoints(translation);
     printf("Initial value of objective function with no translation: %f\n",
-           func(translation));
+           func(translation, NULL));
 
 
     struct Point sourceCentroid;
@@ -127,11 +127,11 @@ void icp2(struct Point source[], int n, struct Point* additionalPoints)
 
         findAllClosestPoints(translation);
 
-        double prevssd = func(translation);
+        double prevssd = func(translation, NULL);
 
-        optimizeLbfgs(func, translation, 3);
+        optimizeLbfgs(func, translation, 3, NULL);
 
-        double ssd = func(translation);
+        double ssd = func(translation, NULL);
 
         if (ssd >= prevssd)
             break;

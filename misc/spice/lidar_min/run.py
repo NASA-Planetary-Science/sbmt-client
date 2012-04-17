@@ -109,9 +109,31 @@ def split_final_output_into_months(input_file, output_prefix):
     f3.close()
 
 
+def split_final_output_into_days():
+    f = open(OUTPUT + 'combines.txt', 'r')
+    lines = f.readlines();
+
+    daysset = set([])
+    f1 = None
+
+    for line in lines:
+        fields = line.split()
+        day = fields[1][0:10]
+        if day not in daysset:
+            daysset.add(day)
+            print day
+            if f1 != None:
+                f1.close()
+            f1 = open(OUTPUT + day + '.tab', 'w')
+        f1.write(line)
+
+    f.close()
+    f1.close()
+
 
 def run_lidar_min():
     number_points = num_lines_in_input(INPUT_FILES)
+    #number_points = 16000000
     SIZE=number_points / NUM_PROCS
     subproc = []
     for i in range(0, NUM_PROCS):
@@ -120,7 +142,8 @@ def run_lidar_min():
         if i == NUM_PROCS-1:
             stopId = str(number_points)
         ii = str(i)
-        command = './lidar-min-icp '+startId+' '+stopId+' '+KERNEL+' '+OUTPUT+ii+' '+" ".join(INPUT_FILES)+' > '+LOG+ii+' 2>&1'
+        command = './lidar-min-icp '+BODY+' '+DSKFILE+' '+startId+' '+stopId+' '+KERNEL+' '+OUTPUT+ii+' '+" ".join(INPUT_FILES)+' > '+LOG+ii+' 2>&1'
+        #command = './lidar-min-fit '+BODY+' '+DSKFILE+' '+startId+' '+stopId+' '+KERNEL+' '+OUTPUT+ii+' '+" ".join(INPUT_FILES)+' > '+LOG+ii+' 2>&1'
         print command
         p = subprocess.Popen(command, shell=True)
         subproc.append(p)
@@ -155,18 +178,24 @@ def do_all():
     
     combine_output()
 
-    run_mkspk()
+#    if BODY == 'ITOKAWA':
+#        run_mkspk()
+#        run_lidar_save()
 
-    run_lidar_save()
+    split_final_output_into_days()
 
 
+###########################################################################
 
+BODY='ITOKAWA'
+#DSKFILE='/project/nearsdc/data/ITOKAWA/quad512q.bds'
+DSKFILE='/project/nearsdc/data/ITOKAWA/ver512q.vtk'
 KERNEL='/project/nearsdc/spice-kernels/hayabusa/kernels.txt'
 KERNEL_NEW_SPK='/project/nearsdc/spice-kernels/hayabusa/kernels-newspk.txt'
 NEW_SPK='/project/nearsdc/spice-kernels/hayabusa/spk/hay_osbj_050911_051118_v2.bsp'
 
 
-NUM_PROCS = 8
+NUM_PROCS = 1
 OUTPUT='/project/nearsdc/data/ITOKAWA/LIDAR/cdr/cdr_optimized_uf_'
 INPUT1='/project/nearsdc/data/ITOKAWA/LIDAR/cdr/cdr_uf2_20050911_20050930.tab'
 INPUT2='/project/nearsdc/data/ITOKAWA/LIDAR/cdr/cdr_uf2_20051001_20051031.tab'
@@ -176,10 +205,29 @@ LOG='/tmp/icp-out-uf_'
 
 do_all()
 
+###########################################################################
 
 NUM_PROCS = 1
 OUTPUT='/project/nearsdc/data/ITOKAWA/LIDAR/cdr/cdr_optimized_test_'
-INPUT1='/project/nearsdc/data/ITOKAWA/LIDAR/cdr/per-day/cdr_uf2_2005-10-02b.tab'
+INPUT1='/project/nearsdc/data/ITOKAWA/LIDAR/cdr/per-day/cdr_uf2_2005-10-31.tab'
+INPUT_FILES = [INPUT1]
+LOG='/tmp/icp-out-test_'
+
+#do_all()
+
+###########################################################################
+
+BODY='EROS'
+#DSKFILE='/project/nearsdc/data/EROS/quad512q.bds'
+DSKFILE='/project/nearsdc/data/EROS/ver512q.vtk'
+#KERNEL='/project/nearsdc/spice-kernels/near/kernels.txt'
+
+NUM_PROCS = 1
+OUTPUT='/project/nearsdc/data/NLR/nlr_optimized_test_'
+#INPUT1='/project/nearsdc/data/NLR/L00118NG-d.TAB'
+#INPUT1='/project/nearsdc/data/NLR/L00174NG-b.TAB'
+#INPUT1='/home/eli/projects/near/nearsdc/data/NLR/l00059nd.tab'
+INPUT1='/project/nearsdc/data/NLR/all.tab'
 INPUT_FILES = [INPUT1]
 LOG='/tmp/icp-out-test_'
 

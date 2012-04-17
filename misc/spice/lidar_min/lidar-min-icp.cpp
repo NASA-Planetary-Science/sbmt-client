@@ -481,7 +481,7 @@ int checkForBreakInTrack2(int startId, int trackSize)
     if (g_bodyType == EROS)
         maxTrackLength = 10.0;
     else if (g_bodyType == ITOKAWA)
-        maxTrackLength = 0.01;
+        maxTrackLength = 0.25;
 
 
     double length = 0.0;

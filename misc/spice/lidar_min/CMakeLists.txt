@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 2.6)
 PROJECT(lidar)
 
 set(VTK_DIR /project/nearsdc/software/vtk/build)
+#set(VTK_DIR /Users/kahneg1/software/vtk/vtk-5.8.0/build)
 find_package(VTK REQUIRED)
 include(${VTK_USE_FILE})
 
@@ -24,10 +25,14 @@ icp-vtk.cpp
 icp-intersection.cpp
 closest-point-vtk.cpp
 optimize-gsl.cpp
-gravity.cpp
-gravity2.cpp
-gravity3.cpp
+gravity-werner.cpp
+gravity-cheng.cpp
+lidardata.cpp
+propagator.cpp
+propagatorfit.cpp
 
+constants.h
+gravity-point.h
 util.h
 )
 target_link_libraries(lidar vtkHybrid dsklib_c cspice csupport lbfgs gsl gslcblas adolc)
@@ -52,8 +57,11 @@ target_link_libraries(lidar-convert-edr cspice csupport m)
 add_executable(lidar-compute-gaskell-error lidar-compute-gaskell-error.cpp)
 target_link_libraries(lidar-compute-gaskell-error cspice csupport)
 
-add_executable(propagator propagator.cpp)
+add_executable(propagator prop-fit.cpp)
 target_link_libraries(propagator lidar)
 
 add_executable(compute-gravity compute-gravity.cpp)
 target_link_libraries(compute-gravity lidar)
+
+add_executable(test-gravity test-gravity.cpp)
+target_link_libraries(test-gravity lidar)

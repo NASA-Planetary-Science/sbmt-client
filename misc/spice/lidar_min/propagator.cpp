@@ -1,107 +1,73 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <iostream>
-#include <fstream>
-#include <vector>
-#include <cmath>
-#include <string.h>
-#include <string>
 #include <gsl/gsl_errno.h>
 #include <gsl/gsl_matrix.h>
 #include <gsl/gsl_odeiv2.h>
+#include "propagator.h"
 #include "SpiceUsr.h"
-#include "util.h"
-#include "optimize-gsl.h"
+#include "gravity-werner.h"
+#include "gravity-cheng.h"
+#include "gravity-point.h"
+#include <iostream>
 
-using namespace std;
-
-struct Point2
-{
-    double time;
-    double pos[3];
-    Point2() {}
-    Point2(double t, double p[3]):
-        time(t)
-    {
-        pos[0] = p[0];
-        pos[1] = p[1];
-        pos[2] = p[2];
-    }
-};
-
-typedef enum WhatToEstimate
-{
-    ESTIMATE_DENSITY,
-    ESTIMATE_PRESSURE
-} WhatToEstimate;
-
-typedef enum BodyType
-{
-    ITOKAWA,
-    EROS
-} BodyType;
-
-vector<Point2> g_referenceTrajectory;
 const double g_G = 6.67384e-11 * 1.0e-9;
-WhatToEstimate g_whatToEstimate;
-BodyType g_bodyType;
-double g_volume;
-double g_density;
-double g_pressure;
 
-
-/* Return distance squared between points x and y */
-double vdist2(const double x[3], const double y[3])
+Propagator::Propagator()
 {
-    return ( ( x[0] - y[0] ) * ( x[0] - y[0] )
-             + ( x[1] - y[1] ) * ( x[1] - y[1] )
-             + ( x[2] - y[2] ) * ( x[2] - y[2] ) );
 }
 
-void getSunPosition(double et, double sunpos[3])
+void Propagator::setShapeModelFilename(const string &filename)
+{
+    //initializeGravityWerner(filename.c_str());
+    initializeGravityCheng(filename.c_str());
+}
+
+LidarTrack Propagator::run()
+{
+    return computePropagatedTrajectory();
+}
+
+void Propagator::getSunPosition(double et, double sunpos[3])
 {
     double lt;
     const char* target = "SUN";
-    const char* ref = "IAU_VESTA";
+    const char* ref = "J2000";
     const char* abcorr = "LT+S";
-    const char* obs = "VESTA";
+    const char* obs = "ITOKAWA";
 
     spkpos_c(target, et, ref, abcorr, obs, sunpos, &lt);
     if (failed_c())
         return;
 
-    cout.precision(16);
-    cout << "Sun position: " << sunpos[0] << " " << sunpos[1] << " " << sunpos[2] << endl;
+    //cout.precision(16);
+    //cout << "Sun position: " << sunpos[0] << " " << sunpos[1] << " " << sunpos[2] << endl;
 }
 
-void pointParticleGravitationalAcceleration(double t, const double pos[3], double acc[3])
+void Propagator::gravitationAcceleration(double t, const double pos[3], double acc[3])
 {
-    double mass = g_density * g_volume;
+    // First convert position to body fixed coordinates
+    double newPos[3];
+    const char* ref = "J2000";
+    const char* frame = "IAU_ITOKAWA";
+    double i2bmat[3][3];
+    pxform_c(ref, frame, t, i2bmat);
+    mxv_c(i2bmat, pos, newPos);
 
-    // Get the position of the center of the asteroid in J2000
-    double center[3];
+    getGravityCheng(newPos, acc);
+    acc[0] *= (g_G*density__*1.0e12);
+    acc[1] *= (g_G*density__*1.0e12);
+    acc[2] *= (g_G*density__*1.0e12);
 
-    double scToBodyVec[3] =
-    {
-        center[0] - pos[0],
-        center[1] - pos[1],
-        center[2] - pos[2]
-    };
+//    getGravityPoint(newPos, acc);
+//    acc[0] *= (g_G*mass__*1.0e12);
+//    acc[1] *= (g_G*mass__*1.0e12);
+//    acc[2] *= (g_G*mass__*1.0e12);
 
-    double r = 0.0;
-    unorm_c(scToBodyVec, scToBodyVec, &r);
 
-    acc[0] = scToBodyVec[0] * g_G * mass / (r*r);
-    acc[1] = scToBodyVec[1] * g_G * mass / (r*r);
-    acc[2] = scToBodyVec[2] * g_G * mass / (r*r);
+    // Now transform the acceleration back from body fixed to inertial coordinates
+    pxform_c(frame, ref, t, i2bmat);
+    mxv_c(i2bmat, acc, acc);
 }
 
-void gravitationAcceleration(double t, const double pos[3], double acc[3])
-{
-
-}
-
-void solarPressureAcceleration(double t, const double pos[3], double acc[3])
+void Propagator::solarPressureAcceleration(double t, const double pos[3], double acc[3])
 {
     double sunpos[3];
     getSunPosition(t, sunpos);
@@ -115,33 +81,38 @@ void solarPressureAcceleration(double t, const double pos[3], double acc[3])
 
     vhat_c(sunToScVec, sunToScVec);
 
-    acc[0] = g_pressure * sunToScVec[0];
-    acc[1] = g_pressure * sunToScVec[1];
-    acc[2] = g_pressure * sunToScVec[2];
+    acc[0] = 1.0e-10 * pressure__ * sunToScVec[0];
+    acc[1] = 1.0e-10 * pressure__ * sunToScVec[1];
+    acc[2] = 1.0e-10 * pressure__ * sunToScVec[2];
 }
 
-void totalAcceleration(double t, const double pos[3], double acc[3])
+void Propagator::totalAcceleration(double t, const double pos[3], double acc[3])
 {
-    double gravity[3];
+    double gravity[3] = {0.0, 0.0, 0.0};
     gravitationAcceleration(t, pos, gravity);
 
-    double solarPressure[3];
+    double solarPressure[3] = {0.0, 0.0, 0.0};
     solarPressureAcceleration(t, pos, solarPressure);
+
+//    cout << "pos " << pos[0] << " " << pos[1] << " " << pos[2] << " " << vnorm_c(solarPressure) << " " << vnorm_c(gravity) << endl;
+//    cout << "solar pressure to gravity ratio: " << vnorm_c(solarPressure)/vnorm_c(gravity) << endl;
 
     acc[0] = gravity[0] + solarPressure[0];
     acc[1] = gravity[1] + solarPressure[1];
     acc[2] = gravity[2] + solarPressure[2];
 }
 
-int func (double t, const double y[], double f[],
-          void *params)
+static int func(double t, const double y[], double f[],
+                void *params)
 {
+    Propagator* propagator = (Propagator*)params;
+
     f[0] = y[3];
     f[1] = y[4];
     f[2] = y[5];
 
     double acc[3];
-    totalAcceleration(t, y, acc);
+    propagator->totalAcceleration(t, y, acc);
 
     f[3] = acc[0];
     f[4] = acc[1];
@@ -150,51 +121,43 @@ int func (double t, const double y[], double f[],
     return GSL_SUCCESS;
 }
 
-/*
-int jac (double t, const double y[], double *dfdy,
-         double dfdt[], void *params)
+void Propagator::getInitialState(double initialState[6])
 {
-    double mu = *(double *)params;
-    gsl_matrix_view dfdy_mat
-            = gsl_matrix_view_array (dfdy, 2, 2);
-    gsl_matrix * m = &dfdy_mat.matrix;
-    gsl_matrix_set (m, 0, 0, 0.0);
-    gsl_matrix_set (m, 0, 1, 1.0);
-    gsl_matrix_set (m, 1, 0, -2.0*mu*y[0]*y[1] - 1.0);
-    gsl_matrix_set (m, 1, 1, -mu*(y[0]*y[0] - 1.0));
-    dfdt[0] = 0.0;
-    dfdt[1] = 0.0;
-    return GSL_SUCCESS;
-}
-*/
-
-void getInitialState(double initialState[6])
-{
-
+    initialState[0] = initialPosition__[0];
+    initialState[1] = initialPosition__[1];
+    initialState[2] = initialPosition__[2];
+    initialState[3] = initialVelocity__[0];
+    initialState[4] = initialVelocity__[1];
+    initialState[5] = initialVelocity__[2];
 }
 
-vector<Point2> computePropagatedTrajectory()
+LidarTrack Propagator::computePropagatedTrajectory()
 {
     // Use GSL's ordinary differential equation solver to
     // propagate the trajectory forward in time
-    gsl_odeiv2_system sys = {func, 0, 6, 0};
+    gsl_odeiv2_system sys = {func, 0, 6, this};
     gsl_odeiv2_driver * d =
-            gsl_odeiv2_driver_alloc_y_new (&sys, gsl_odeiv2_step_rk8pd,
+            gsl_odeiv2_driver_alloc_y_new (&sys, gsl_odeiv2_step_rkf45,
                                            1e-6, 1e-6, 0.0);
 
 
     double y[6];
     getInitialState(y);
 
-    vector<Point2> propagatedTrajectory;
-    propagatedTrajectory.push_back(g_referenceTrajectory[0]);
+    LidarTrack propagatedTrajectory;
+    propagatedTrajectory.push_back(referenceTrajectory__[0]);
+    propagatedTrajectory[0].ancillary1[0] = referenceTrajectory__[0].scpos[0];
+    propagatedTrajectory[0].ancillary1[1] = referenceTrajectory__[0].scpos[1];
+    propagatedTrajectory[0].ancillary1[2] = referenceTrajectory__[0].scpos[2];
 
-    int size = g_referenceTrajectory.size();
-    double t = g_referenceTrajectory[0].time;
-    double tf = g_referenceTrajectory[size-1].time;
-    while (t < tf)
+    int size = referenceTrajectory__.size();
+    double t = referenceTrajectory__[0].time;
+    double tf = referenceTrajectory__[size-1].time;
+    for (int i=1; i<size; )
     {
-        double ti = t + 1.0;
+        //cout << "Step " << i << " / " << size << endl;
+        //printf ("%f %f %f %f %f %f %f\n", t, y[0], y[1], y[2], y[3], y[4], y[5]);
+        double ti = referenceTrajectory__[i].time;
         if (ti > tf)
             ti = tf;
         int status = gsl_odeiv2_driver_apply (d, &t, ti, y);
@@ -203,146 +166,30 @@ vector<Point2> computePropagatedTrajectory()
             printf ("error, return value=%d\n", status);
             break;
         }
-        propagatedTrajectory.push_back(Point2(t, y));
-        //printf ("%.5e %.5e %.5e\n", t0, y[0], y[1]);
+        LidarPoint p = referenceTrajectory__[i];
+
+        // Keep the reference position around so we can compute the error to it.
+        p.ancillary1[0] = p.scpos[0];
+        p.ancillary1[1] = p.scpos[1];
+        p.ancillary1[2] = p.scpos[2];
+
+        if(p.time != t)
+            cout << "Problem! Times are not equal!" << endl;
+
+        p.time = t;
+        p.scpos[0] = y[0];
+        p.scpos[1] = y[1];
+        p.scpos[2] = y[2];
+        propagatedTrajectory.push_back(p);
+
+        // Move forward by several timesteps, otherwise this will take forever
+        if (i == size -1)
+            break;
+        i += 100;
+        if (i >= size)
+            i = size -1;
     }
     gsl_odeiv2_driver_free (d);
 
     return propagatedTrajectory;
-}
-
-double funcLeastSquares(const double* x, void* params)
-{
-    if (g_whatToEstimate == ESTIMATE_DENSITY)
-        g_density = *x;
-    else if (g_whatToEstimate == ESTIMATE_PRESSURE)
-        g_pressure = *x;
-
-    vector<Point2> propagatedTrajectory =
-        computePropagatedTrajectory();
-
-    unsigned int size = propagatedTrajectory.size();
-    if (size != g_referenceTrajectory.size())
-    {
-        cout << "Major error!" << endl;
-        abort();
-    }
-
-    double totalDistance = 0.0;
-    for (unsigned int i=0; i<size; ++i)
-    {
-        double dist = vdist2(propagatedTrajectory[i].pos, g_referenceTrajectory[i].pos);
-        dist = sqrt(dist);
-        totalDistance += dist;
-    }
-
-    totalDistance /= (double)size;
-
-    return totalDistance;
-}
-
-double doLeastSquares()
-{
-    double x;
-    if (g_whatToEstimate == ESTIMATE_DENSITY)
-        x = g_density;
-    else if (g_whatToEstimate == ESTIMATE_PRESSURE)
-        x = g_pressure;
-
-    optimizeGsl(funcLeastSquares, 0, &x, 1, 0);
-    return x;
-}
-
-void loadReferenceTrajectory(const string& filename)
-{
-    ifstream fin(filename.c_str());
-
-    g_referenceTrajectory.clear();
-
-    if (fin.is_open())
-    {
-        string line;
-        while (getline(fin, line))
-        {
-            vector<string> tokens = split(line);
-            Point2 p;
-            p.time = atof(tokens[0].c_str());
-            p.pos[0] = atof(tokens[1].c_str());
-            p.pos[1] = atof(tokens[2].c_str());
-            p.pos[2] = atof(tokens[3].c_str());
-
-            // transform to J2000
-            g_referenceTrajectory.push_back(p);
-        }
-    }
-    else
-    {
-        cerr << "Error: Unable to open file '" << filename << "'" << endl;
-        exit(1);
-    }
-}
-
-
-/**
-   This program takes a shape model, a reference trajectory, and an
-   initial state at a specified time and attempts to compute the
-   density of the asteroid using the following least squares procedure:
-
-   The state is propagated forward in time based on the gravitational
-   force of the shape model using an initial guess for the density.
-   It then computes the error between the propagated trajectory and
-   the reference trajectory. The using, a least squares approach, this
-   procedure is iterated until the optimal density is found that
-   results in the minimum error between the propagated trajectory and
-   the reference trajectory.
-
-   The optimal propagated trajectory is then saved out to a file.
-
- */
-int main(int argc, char** argv)
-{
-    if (argc < 8)
-    {
-        printf("Usage:\n");
-        printf("  gravity -d <density> <body> <vtkfile> <kernelfiles> <trajectoryfile> <outputfile>\n");
-        printf("  gravity -p <pressure> <body> <vtkfile> <kernelfiles> <trajectoryfile> <outputfile>\n");
-        printf("where:\n");
-        printf("<body> is either EROS or ITOKAWA\n");
-        printf("<vtkfile> path to shape model\n");
-        printf("<kernelfile> path to metakernel file\n");
-        printf("<trajectoryfile> path to reference trajectory file\n");
-        printf("<density>\n");
-        printf("\n");
-        printf("\n");
-        printf("\n");
-        printf("\n");
-        printf("\n");
-        return 1;
-    }
-
-
-    if (!strcmp(argv[1], "-d"))
-        g_whatToEstimate = ESTIMATE_DENSITY;
-    else if (!strcmp(argv[1], "-p"))
-        g_whatToEstimate = ESTIMATE_PRESSURE;
-
-    g_density = atof(argv[2]);
-    g_pressure = atof(argv[3]);
-    char* body = argv[3];
-    char* dskfile = argv[4];
-    const char* kernelfiles = argv[5];
-    string trajectoryfile = argv[6];
-    const char* outfile = argv[7];
-
-    g_bodyType = EROS;
-    if (!strcmp(body, "ITOKAWA"))
-        g_bodyType = ITOKAWA;
-
-//    initializeVtk(dskfile);
-
-    furnsh_c(kernelfiles);
-
-    loadReferenceTrajectory(trajectoryfile);
-    double value = doLeastSquares();
-    cout << "optimal value: " << value << endl;
 }

@@ -70,7 +70,7 @@ static struct Point* g_target = 0;
 static int* correspondences = 0;
 static int N;
 
-static double func(const double* translation)
+static double func(const double* translation, void* notused)
 {
     int i;
     double ssd = 0.0;
@@ -115,9 +115,9 @@ void icp(struct Point source[], struct Point target[], int n, struct Point* addi
     double translation[3] = {0.0, 0.0, 0.0};
     findAllClosestPoints(source, target, n, translation, corr);
     printf("Initial value of objective function with no translation: %f\n",
-           func(translation));
+           func(translation, NULL));
 
-    
+
     struct Point sourceCentroid;
     struct Point targetCentroid;
     centroid(source, n, sourceCentroid.p);
@@ -127,7 +127,7 @@ void icp(struct Point source[], struct Point target[], int n, struct Point* addi
     translation[2] = targetCentroid.p[2] - sourceCentroid.p[2];
 
     /* Now iterate */
-    
+
     int maxIter = 100;
     int i;
     for (i=0;i<maxIter;++i)
@@ -136,11 +136,11 @@ void icp(struct Point source[], struct Point target[], int n, struct Point* addi
 
         findAllClosestPoints(source, target, n, translation, corr);
 
-        double prevssd = func(translation);
+        double prevssd = func(translation, NULL);
 
-        optimizeLbfgs(func, translation, 3);
+        optimizeLbfgs(func, translation, 3, NULL);
 
-        double ssd = func(translation);
+        double ssd = func(translation, NULL);
 
         if (ssd >= prevssd)
             break;

@@ -10,7 +10,7 @@
 
 
 #define DX 0.00001
-static double (*function)(const double* x) = 0;
+static double (*function)(const double* x, void *instance) = 0;
 static int N;
 
 
@@ -29,9 +29,9 @@ static void printCurrentValue(double fx, const double* x)
 /************************************************************************
 * This function numerically computes the gradient of func using finite differences
 ************************************************************************/
-static void grad(const double* coef, double* gradient)
+static void grad(const double* coef, double* gradient, void *instance)
 {
-    double f = function(coef);
+    double f = function(coef, instance);
 
     int i;
     int j;
@@ -40,10 +40,10 @@ static void grad(const double* coef, double* gradient)
         double coef2[N];
         for (j=0; j<N; ++j)
             coef2[j] = coef[j];
-        
+
         coef2[i] += DX;
 
-        double f2 = function(coef2);
+        double f2 = function(coef2, instance);
 
         gradient[i] = (f2 - f) / DX;
     }
@@ -58,8 +58,8 @@ static lbfgsfloatval_t evaluate(
     const lbfgsfloatval_t step
     )
 {
-    lbfgsfloatval_t fx = function(x);
-    grad(x, g);
+    lbfgsfloatval_t fx = function(x, instance);
+    grad(x, g, instance);
     return fx;
 }
 
@@ -86,7 +86,10 @@ static int progress(
 
 
 /** Public function */
-void optimizeLbfgs(double (*func)(const double* x), double* minimizer, int numVar)
+void optimizeLbfgs(double (*func)(const double* x, void *externalParams),
+                   double* minimizer,
+                   int numVar,
+                   void *instance)
 {
     static lbfgs_parameter_t param;
     static int initialized = 0;
@@ -98,7 +101,7 @@ void optimizeLbfgs(double (*func)(const double* x), double* minimizer, int numVa
 
     function = func;
     N = numVar;
-    
+
     lbfgsfloatval_t fx;
     lbfgsfloatval_t *x = lbfgs_malloc(N);
 
@@ -107,13 +110,13 @@ void optimizeLbfgs(double (*func)(const double* x), double* minimizer, int numVa
     for (i = 0;i < N;++i)
         x[i] = minimizer[i];
 
-    double value = func(minimizer);
+    double value = func(minimizer, instance);
     printf("Initial value of objective function: \n");
     printCurrentValue(value, x);
     printf("\n");
 
-    int ret = lbfgs(N, x, &fx, evaluate, progress, NULL, &param);
-    
+    int ret = lbfgs(N, x, &fx, evaluate, progress, instance, &param);
+
     /* Report the result. */
     printf("L-BFGS optimization terminated with status code = %d\n", ret);
     printCurrentValue(fx, x);
@@ -122,6 +125,6 @@ void optimizeLbfgs(double (*func)(const double* x), double* minimizer, int numVa
     /* return the minimizer to the calling function */
     for (i = 0;i < N;++i)
         minimizer[i] = x[i];
-    
+
     lbfgs_free(x);
 }
