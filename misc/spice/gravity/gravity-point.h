@@ -1,7 +1,7 @@
 #ifndef GRAVITY_POINT_H
 #define GRAVITY_POINT_H
 
-#include "util.h"
+#include "mathutil.h"
 
 inline double getGravityPoint(const double fieldPoint[3], double* acc)
 {

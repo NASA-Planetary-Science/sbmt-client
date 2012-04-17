@@ -31,6 +31,12 @@ struct GravityResult
     bool filled;
 };
 
+static void usage()
+{
+    cout << "This program computes the gravitational acceleration and potential of a"
+         <<   " shape model at specified points and saves the values to files ";
+}
+
 int main(int argc, char** argv)
 {
     char* vtkfile = argv[1];
@@ -46,6 +52,17 @@ int main(int argc, char** argv)
     double omega = (1617.3329428 / 86400.0) * (M_PI / 180.0); // for Vesta (in radians per second)
     HowToEvaluateAtPlate howToEvalute = EVALUATE_AT_CENTER;
 
+    for(int i = 1; i<argc; ++i)
+    {
+        if (!strcmp(argv[i], "-ed"))
+        {
+
+        }
+        else if (!strcmp(argv[i], "-ep"))
+        {
+
+        }
+    }
 
     Platemodel* polyData = 0;
 
@@ -71,7 +88,7 @@ int main(int argc, char** argv)
         exit(1);
     }
     foutA.precision(16);
-
+    cout.precision(16);
     vector<GravityResult> results;
     if (howToEvalute == AVERAGE_VERTICES)
     {
@@ -99,8 +116,8 @@ int main(int argc, char** argv)
             double pt2[3];
             double pt3[3];
             polyData->getPoint(idList[0], pt1);
-            polyData->getPoint(idList[0], pt2);
-            polyData->getPoint(idList[0], pt3);
+            polyData->getPoint(idList[1], pt2);
+            polyData->getPoint(idList[2], pt3);
 
             double center[3];
 

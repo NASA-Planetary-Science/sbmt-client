@@ -3,7 +3,7 @@
 
 #include <vector>
 #include <string>
-#include "util.h"
+#include "mathutil.h"
 
 /**
   This is bare bones plate model class similar to VTK's vtkPolydata class

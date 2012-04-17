@@ -1,7 +1,7 @@
 #ifndef GRAVITY_WERNER_H
 #define GRAVITY_WERNER_H
 
-#include "util.h"
+#include "mathutil.h"
 #include "platemodel.h"
 
 Platemodel* initializeGravityWerner(const char* vtkfile);

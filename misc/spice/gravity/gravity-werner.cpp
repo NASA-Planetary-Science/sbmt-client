@@ -1,6 +1,6 @@
 #include <vector>
 #include <tr1/unordered_map>
-#include "util.h"
+#include "mathutil.h"
 #include "platemodel.h"
 
 using namespace std;
