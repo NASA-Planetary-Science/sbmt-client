@@ -11,6 +11,7 @@ os.chdir(dname)
 
 BODY='ITOKAWA'
 VTKFILE='/project/nearsdc/data/ITOKAWA/ver64q.vtk'
+PLTFILE='/project/nearsdc/data/ITOKAWA/ver64q.tab'
 KERNEL='/project/nearsdc/spice-kernels/hayabusa/kernels.txt'
 
 
@@ -38,12 +39,12 @@ OUTPUT='/project/nearsdc/data/ITOKAWA/LIDAR/cdr/prop-traj.txt'
 #velocity='3.27187e-05,-4.361e-06,-2.53998e-06'
 #position='14.2904,-3.00209,-1.68242'
 
-#startTime='180977699.76'
-#stopTime='181141879.654'
-#density='0.216207'
-#pressure='1.65806'
-#position='11.6965,-1.17968,-0.653116'
-#velocity='9.58572e-06,2.20938e-06,2.43306e-06'
+startTime='180977699.76'
+stopTime='181141879.654'
+density='0.216207'
+pressure='1.65806'
+position='11.6965,-1.17968,-0.653116'
+velocity='9.58572e-06,2.20938e-06,2.43306e-06'
 
 #startTime='181664530.935'
 #stopTime='182097704.216'
@@ -59,12 +60,12 @@ OUTPUT='/project/nearsdc/data/ITOKAWA/LIDAR/cdr/prop-traj.txt'
 #position='7.02233,0.960101,3.50028'
 #velocity='1.2946e-07,-8.94694e-07,-1.05388e-05'
 
-startTime='182624891.914'
-stopTime='182795287.573'
-density='2.03'
-pressure='1.22692'
-position='7.02233,0.960101,3.50028'
-velocity='1.2946e-07,-8.94694e-07,-1.05388e-05'
+#startTime='182624891.914'
+#stopTime='182795287.573'
+#density='2.03'
+#pressure='1.22692'
+#position='7.02233,0.960101,3.50028'
+#velocity='1.2946e-07,-8.94694e-07,-1.05388e-05'
 
 startTime='183743545.705'
 stopTime='184002083.595'
@@ -74,17 +75,17 @@ position='3.2248,1.07039,0.486777'
 velocity='3.34028e-05,1.59279e-05,5.89719e-06'
 
 # 2005 OCT 31 04:45:39.404 - 2005 NOV 03 03:30:37.462
-startTime='184006003.587'
-stopTime='184260701.645'
-density='2.03'
-pressure='1.22692'
-position='3.2248,1.07039,0.486777'
-velocity='3.34028e-05,1.59279e-05,5.89719e-06'
+#startTime='184006003.587'
+#stopTime='184260701.645'
+#density='2.03'
+#pressure='1.22692'
+#position='3.2248,1.07039,0.486777'
+#velocity='3.34028e-05,1.59279e-05,5.89719e-06'
 
 #command = './propagator -ep -d '+density+' -p '+pressure+' -v '+velocity+' -po '+position+' -b '+BODY+\
-#          ' -s '+VTKFILE+' -k '+KERNEL+' -i '+INPUT+' -o '+OUTPUT+' -start '+startTime+' -stop '+stopTime
+#          ' -s '+VTKFILE+' -t '+PLTFILE+' -k '+KERNEL+' -i '+INPUT+' -o '+OUTPUT+' -start '+startTime+' -stop '+stopTime
 command = './propagator -ed -d '+density+' -p '+pressure+' -b '+BODY+\
-    ' -s '+VTKFILE+' -k '+KERNEL+' -i '+INPUT+' -o '+OUTPUT+' -start '+startTime+' -stop '+stopTime
+    ' -s '+VTKFILE+' -t '+PLTFILE+' -k '+KERNEL+' -i '+INPUT+' -o '+OUTPUT+' -start '+startTime+' -stop '+stopTime
 print command
 os.system(command)
 

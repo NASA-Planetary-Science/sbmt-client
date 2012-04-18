@@ -10,10 +10,10 @@ using namespace std;
 // Remove initial and trailing whitespace from string. Modifies string in-place
 static void trim(std::string& s)
 {
-    const std::size_t si = s.find_first_not_of(" \t");
+    const std::size_t si = s.find_first_not_of(" \t\r\n");
     if (si != std::string::npos)
     {
-        const std::size_t ei = s.find_last_not_of(" \t");
+        const std::size_t ei = s.find_last_not_of(" \t\r\n");
         const std::size_t l = (ei == std::string::npos ? ei : ei - si + 1);
         s = s.substr(si, l);
     }
@@ -73,7 +73,7 @@ void Platemodel::load(std::string filename)
             numPlates = atoi(tokens[1].c_str());
         if (tokens.size() < 1 || tokens.size() > 2)
         {
-            cerr << "Error: File format incorrect" << endl;
+            cerr << "Error: File format incorrect " << endl;
             exit(1);
         }
 

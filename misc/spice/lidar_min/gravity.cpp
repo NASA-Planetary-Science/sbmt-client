@@ -1,13 +1,12 @@
-#include <vtkMath.h>
-#include <vtkTriangle.h>
-#include <vtkMassProperties.h>
-#include <vtkIdList.h>
 #include <iostream>
+#include <fstream>
 #include "gravity-werner.h"
 #include "gravity-cheng.h"
 #include "gravity-point.h"
 #include <fenv.h>
 #include <time.h>
+#include <stdlib.h>
+#include <string.h>
 
 using namespace std;
 
@@ -33,6 +32,12 @@ struct GravityResult
     bool filled;
 };
 
+static void usage()
+{
+    cout << "This program computes the gravitational acceleration and potential of a"
+         <<   " shape model at specified points and saves the values to files ";
+}
+
 int main(int argc, char** argv)
 {
     char* vtkfile = argv[1];
@@ -48,8 +53,19 @@ int main(int argc, char** argv)
     double omega = (1617.3329428 / 86400.0) * (M_PI / 180.0); // for Vesta (in radians per second)
     HowToEvaluateAtPlate howToEvalute = EVALUATE_AT_CENTER;
 
+    for(int i = 1; i<argc; ++i)
+    {
+        if (!strcmp(argv[i], "-ed"))
+        {
 
-    vtkPolyData* polyData = 0;
+        }
+        else if (!strcmp(argv[i], "-ep"))
+        {
+
+        }
+    }
+
+    Platemodel* polyData = 0;
 
     if (gravityType == WERNER)
         polyData = initializeGravityWerner(vtkfile);
@@ -57,10 +73,6 @@ int main(int argc, char** argv)
         polyData = initializeGravityCheng(vtkfile);
     else
         abort();
-
-    vtkPoints* points = polyData->GetPoints();
-
-    vtkIdList* idList = vtkIdList::New();
 
     ofstream foutP(outputPot);
     if (!foutP.is_open())
@@ -77,21 +89,23 @@ int main(int argc, char** argv)
         exit(1);
     }
     foutA.precision(16);
-
+    cout.precision(16);
     vector<GravityResult> results;
     if (howToEvalute == AVERAGE_VERTICES)
     {
-        int numPoints = polyData->GetNumberOfPoints();
+        int numPoints = polyData->getNumberOfPoints();
         results.resize(numPoints);
         for (int i=0; i<numPoints; ++i)
             results[i].filled = false;
     }
-    cout.precision(16);
-    int numCells = polyData->GetNumberOfCells();
-    for (vtkIdType i=0; i<numCells; ++i)
+
+    int idList[3];
+
+    int numPlates = polyData->getNumberOfPlates();
+    for (int i=0; i<numPlates; ++i)
     {
         // Get center of cell
-        polyData->GetCellPoints(i, idList);
+        polyData->getPlatePoints(i, idList);
 
 
         double acc[3] = {0.0, 0.0, 0.0};
@@ -102,19 +116,18 @@ int main(int argc, char** argv)
             double pt1[3];
             double pt2[3];
             double pt3[3];
-            points->GetPoint(idList->GetId(0), pt1);
-            points->GetPoint(idList->GetId(1), pt2);
-            points->GetPoint(idList->GetId(2), pt3);
+            polyData->getPoint(idList[0], pt1);
+            polyData->getPoint(idList[1], pt2);
+            polyData->getPoint(idList[2], pt3);
 
             double center[3];
 
-            vtkTriangle::TriangleCenter(pt1, pt2, pt3, center);
+            TriangleCenter(pt1, pt2, pt3, center);
 
             if (gravityType == WERNER)
                 potential = 1.0e6*1.0e12*g_G*density*getGravityWerner(center, acc);
             else
                 potential = 1.0e6*1.0e12*g_G*density*getGravityCheng(center, acc);
-            cout << pt1[0] << endl;exit(0);
 
             acc[0] *= 1.0e3 * 1.0e12 * g_G * density;
             acc[1] *= 1.0e3 * 1.0e12 * g_G * density;
@@ -134,11 +147,11 @@ int main(int argc, char** argv)
             double pt[3];
             for (int j=0; j<3; ++j)
             {
-                int ptId = idList->GetId(j);
+                int ptId = idList[j];
                 GravityResult& result = results[ptId];
                 if (!result.filled)
                 {
-                    points->GetPoint(ptId, pt);
+                    polyData->getPoint(ptId, pt);
 
                     if (gravityType == WERNER)
                         result.potential = 1.0e6*1.0e12*g_G*density*getGravityWerner(pt, result.acc);
@@ -178,7 +191,7 @@ int main(int argc, char** argv)
 //        acc[1] *=    (1.0e3 * 1.0e12 * g_G * density);
 //        acc[2] *=    (1.0e3 * 1.0e12 * g_G * density);
 
-        double accMag = vtkMath::Norm(acc);
+        double accMag = Norm(acc);
 
         foutP << potential << endl;
         foutA << accMag << endl;

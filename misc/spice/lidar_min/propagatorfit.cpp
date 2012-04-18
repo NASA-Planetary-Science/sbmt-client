@@ -26,7 +26,7 @@ PropagatorFit::PropagatorFit()
 
 LidarTrack PropagatorFit::run()
 {
-    initializeVtk(shapeModelFilename.c_str());
+    initializeVtk(vtkShapeModelFilename.c_str());
     doLeastSquares();
 
     cout << "final density : " << density__ << endl;

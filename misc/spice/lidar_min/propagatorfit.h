@@ -57,10 +57,11 @@ public:
         referenceTrajectory__ = traj;
         propagator__.setReferenceTrajectory(traj);
     }
-    void setShapeModelFilename(const string& filename)
+    void setShapeModelFilename(const string& vtkfilename, const string& pltfilename)
     {
-        shapeModelFilename = filename;
-        propagator__.setShapeModelFilename(filename);
+        vtkShapeModelFilename = vtkfilename;
+        pltShapeModelFilename = pltfilename;
+        propagator__.setShapeModelFilename(pltfilename);
     }
     void setWhatToEstimate(WhatToEstimate whatToEst)
     {
@@ -97,7 +98,8 @@ private:
     WhatToOptimizeOver whatToOptimizeOver__;
     Propagator propagator__;
     double error__;
-    std::string shapeModelFilename;
+    std::string vtkShapeModelFilename;
+    std::string pltShapeModelFilename;
     bool estimateEverythingCyclicly;
     bool estimateEverythingAtOnce;
 };

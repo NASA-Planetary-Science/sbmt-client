@@ -1,12 +1,12 @@
 #ifndef GRAVITY_WERNER_H
 #define GRAVITY_WERNER_H
 
-#include <vtkPolyData.h>
-#include <vtkMath.h>
+#include "mathutil.h"
+#include "platemodel.h"
+
+Platemodel* initializeGravityWerner(const char* filename);
+double getGravityWerner(const double fieldPoint[3], double acc[3]);
 
 
-vtkPolyData* initializeGravityWerner(const char* vtkfile);
-double getGravityWerner(const double fieldPoint[3], double* acc);
 
-
-#endif // GRAVITY_WERNER_H
+#endif // GRAVITY_H

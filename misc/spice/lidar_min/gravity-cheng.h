@@ -1,10 +1,10 @@
 #ifndef GRAVITY_CHENG_H
 #define GRAVITY_CHENG_H
 
-#include <vtkPolyData.h>
+#include "platemodel.h"
 
-vtkPolyData* initializeGravityCheng(const char* vtkfile);
-double getGravityCheng(const double fieldPoint[3], double* acc);
+Platemodel* initializeGravityCheng(const char* filename);
+double getGravityCheng(const double fieldPoint[3], double acc[3]);
 
 
 #endif // GRAVITY_CHENG_H

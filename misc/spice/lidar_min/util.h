@@ -12,10 +12,10 @@ struct Point
 // Remove initial and trailing whitespace from string. Modifies string in-place
 inline void trim(std::string& s)
 {
-    const std::size_t si = s.find_first_not_of(" \t");
+    const std::size_t si = s.find_first_not_of(" \t\r\n");
     if (si != std::string::npos)
     {
-        const std::size_t ei = s.find_last_not_of(" \t");
+        const std::size_t ei = s.find_last_not_of(" \t\r\n");
         const std::size_t l = (ei == std::string::npos ? ei : ei - si + 1);
         s = s.substr(si, l);
     }

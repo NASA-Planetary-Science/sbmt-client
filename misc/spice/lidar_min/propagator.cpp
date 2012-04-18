@@ -61,7 +61,6 @@ void Propagator::gravitationAcceleration(double t, const double pos[3], double a
 //    acc[1] *= (g_G*mass__*1.0e12);
 //    acc[2] *= (g_G*mass__*1.0e12);
 
-
     // Now transform the acceleration back from body fixed to inertial coordinates
     pxform_c(frame, ref, t, i2bmat);
     mxv_c(i2bmat, acc, acc);

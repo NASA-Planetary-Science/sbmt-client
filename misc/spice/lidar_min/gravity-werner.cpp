@@ -1,11 +1,7 @@
-#include <vtkPolyDataReader.h>
-#include <vtkPolyData.h>
-#include <vtkCellData.h>
-#include <vtkMath.h>
-#include <vtkPolyDataNormals.h>
-#include <vtkTriangle.h>
 #include <vector>
 #include <tr1/unordered_map>
+#include "mathutil.h"
+#include "platemodel.h"
 
 using namespace std;
 using namespace std::tr1;
@@ -58,7 +54,7 @@ typedef unordered_map<EdgeKey, EdgeData, EdgeHash> EdgeDataMap;
 
 static vector<EdgeData> edgeData;
 static vector<FaceData> faceData;
-static vtkPolyData* polyData = 0;
+static Platemodel* polyData = 0;
 static vector<PointData> pointData;
 
 
@@ -107,56 +103,31 @@ static void printvec(const char* str, double m[3])
   of a closed triangular plate model using the method of Werner as
   described in Werner R. A. and D. J. Scheeres (1997) CeMDA, 65, 313-344.
   */
-vtkPolyData* initializeGravityWerner(const char* vtkfile)
+Platemodel* initializeGravityWerner(const char* filename)
 {
-    vtkPolyDataReader* smallBodyReader = vtkPolyDataReader::New();
-    smallBodyReader->SetFileName(vtkfile);
-    smallBodyReader->Update();
-
     if (polyData != 0)
-        polyData->Delete();
+        delete polyData;
 
     EdgeDataMap edgeDataMap;
 
-    vtkPolyDataNormals* normalsFilter = vtkPolyDataNormals::New();
-    normalsFilter->SetInput(smallBodyReader->GetOutput());
-    normalsFilter->SetComputeCellNormals(1);
-    normalsFilter->SetComputePointNormals(0);
-    normalsFilter->SplittingOff();
-    normalsFilter->ConsistencyOn();
-    normalsFilter->AutoOrientNormalsOn();
-    normalsFilter->Update();
+    polyData = new Platemodel();
+    polyData->load(filename);
 
-    polyData = vtkPolyData::New();
-    polyData->ShallowCopy(normalsFilter->GetOutput());
-
-    polyData->BuildCells();
-
-
-    vtkPoints* points = polyData->GetPoints();
-    vtkDataArray* normals = polyData->GetCellData()->GetNormals();
-
-    vtkIdType *pts, npts;
     int pointIds[3];
 
-    int numFaces = polyData->GetNumberOfCells();
+    int numFaces = polyData->getNumberOfPlates();
     // Compute the edge data
-    for (vtkIdType i=0; i<numFaces; ++i)
+    for (int i=0; i<numFaces; ++i)
     {
-        polyData->GetCellPoints(i, npts, pts);
-        // Copy point ids to new array immediately since not sure how long pts is valid
-        // (probably not necessary to do this).
-        pointIds[0] = pts[0];
-        pointIds[1] = pts[1];
-        pointIds[2] = pts[2];
+        polyData->getPlatePoints(i, pointIds);
 
         double cellNormal[3];
-        normals->GetTuple(i, cellNormal);
+        polyData->getNormal(i, cellNormal);
 
-        for (vtkIdType j=0; j<3; ++j)
+        for (int j=0; j<3; ++j)
         {
-            vtkIdType p1;
-            vtkIdType p2;
+            int p1;
+            int p2;
             if (j < 2)
             {
                 p1 = pointIds[j];
@@ -202,16 +173,16 @@ vtkPolyData* initializeGravityWerner(const char* vtkfile)
             double edgeUnitVector[3];
             double pt1[3];
             double pt2[3];
-            points->GetPoint(p1, pt1);
-            points->GetPoint(p2, pt2);
-            vtkMath::Subtract(pt2, pt1, edgeUnitVector);
-            ed.edgeLength = vtkMath::Normalize(edgeUnitVector);
+            polyData->getPoint(p1, pt1);
+            polyData->getPoint(p2, pt2);
+            Subtract(pt2, pt1, edgeUnitVector);
+            ed.edgeLength = Normalize(edgeUnitVector);
             // Compute half of the E dyad
             double edgeNormal[3];
-            vtkMath::Cross(edgeUnitVector, cellNormal, edgeNormal);
+            Cross(edgeUnitVector, cellNormal, edgeNormal);
 
             double E[3][3];
-            vtkMath::Outer(cellNormal, edgeNormal, E);
+            Outer(cellNormal, edgeNormal, E);
 
             addMatrices(ed.E, E, ed.E);
         }
@@ -231,19 +202,19 @@ vtkPolyData* initializeGravityWerner(const char* vtkfile)
 
     // Compute the face data
     faceData.resize(numFaces);
-    for (vtkIdType i=0; i<numFaces; ++i)
+    for (int i=0; i<numFaces; ++i)
     {
         FaceData fd;
-        polyData->GetCellPoints(i, npts, pts);
+        polyData->getPlatePoints(i, pointIds);
 
-        fd.p1 = pts[0];
-        fd.p2 = pts[1];
-        fd.p3 = pts[2];
+        fd.p1 = pointIds[0];
+        fd.p2 = pointIds[1];
+        fd.p3 = pointIds[2];
 
         // Compute the F dyad
         double normal[3];
-        normals->GetTuple(i, normal);
-        vtkMath::Outer(normal, normal, fd.F);
+        polyData->getNormal(i, normal);
+        Outer(normal, normal, fd.F);
 
         faceData[i] = fd;
     }
@@ -258,13 +229,13 @@ static double compute_wf(const FaceData& fd)
     const PointData& pd3 = pointData[fd.p3];
 
     double cross[3];
-    vtkMath::Cross(pd2.r, pd3.r, cross);
+    Cross(pd2.r, pd3.r, cross);
 
-    double numerator = vtkMath::Dot(pd1.r, cross);
+    double numerator = Dot(pd1.r, cross);
     double denominator = pd1.r_mag*pd2.r_mag*pd3.r_mag +
-            pd1.r_mag*vtkMath::Dot(pd2.r,pd3.r) +
-            pd2.r_mag*vtkMath::Dot(pd3.r,pd1.r) +
-            pd3.r_mag*vtkMath::Dot(pd1.r,pd2.r);
+            pd1.r_mag*Dot(pd2.r,pd3.r) +
+            pd2.r_mag*Dot(pd3.r,pd1.r) +
+            pd3.r_mag*Dot(pd1.r,pd2.r);
 
     if (Abs(numerator) < 1e-9)
         numerator = -0.0;
@@ -285,7 +256,7 @@ static double compute_Le(const EdgeData& ed)
     return log ( (pd1.r_mag + pd2.r_mag + ed.edgeLength) / (pd1.r_mag + pd2.r_mag - ed.edgeLength) );
 }
 
-double getGravityWerner(const double fieldPoint[3], double* acc)
+double getGravityWerner(const double fieldPoint[3], double acc[])
 {
     double potential = 0.0;
     if (acc)
@@ -296,15 +267,14 @@ double getGravityWerner(const double fieldPoint[3], double* acc)
     }
 
     // Cache all the vectors from field point to vertices and their magnitudes
-    vtkPoints* points = polyData->GetPoints();
-    int numPoints = points->GetNumberOfPoints();
+    int numPoints = polyData->getNumberOfPoints();
     pointData.resize(numPoints);
     for (int i=0; i<numPoints; ++i)
     {
         PointData& pd = pointData[i];
-        points->GetPoint(i, pd.r);
-        vtkMath::Subtract(pd.r, fieldPoint, pd.r);
-        pd.r_mag = vtkMath::Norm(pd.r);
+        polyData->getPoint(i, pd.r);
+        Subtract(pd.r, fieldPoint, pd.r);
+        pd.r_mag = Norm(pd.r);
     }
 
 
@@ -324,7 +294,7 @@ double getGravityWerner(const double fieldPoint[3], double* acc)
         double Le = compute_Le(ed);
 
         Multiply3x3(ed.E, pd.r, Er);
-        rEr = vtkMath::Dot(pd.r, Er);
+        rEr = Dot(pd.r, Er);
         potential -= (rEr * Le);
 
         if (acc)
@@ -335,7 +305,7 @@ double getGravityWerner(const double fieldPoint[3], double* acc)
         }
     }
 
-    int numFaces = polyData->GetNumberOfCells();
+    int numFaces = polyData->getNumberOfPlates();
     for (int i=0; i<numFaces; ++i)
     {
         const FaceData& fd = faceData[i];
@@ -346,7 +316,7 @@ double getGravityWerner(const double fieldPoint[3], double* acc)
         double wf = compute_wf(fd);
 
         Multiply3x3(fd.F, pd.r, Fr);
-        rFr = vtkMath::Dot(pd.r, Fr);
+        rFr = Dot(pd.r, Fr);
 
         potential += (rFr * wf);
 

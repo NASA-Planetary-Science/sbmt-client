@@ -1,10 +1,5 @@
-#include <vtkPolyDataReader.h>
-#include <vtkPolyData.h>
-#include <vtkCellData.h>
-#include <vtkMath.h>
-#include <vtkPolyDataNormals.h>
-#include <vtkTriangle.h>
 #include <vector>
+#include "platemodel.h"
 
 using namespace std;
 
@@ -19,65 +14,44 @@ struct FaceCenters
 };
 
 static vector<FaceCenters> faceCenters;
-static vtkPolyData* polyData = 0;
+static Platemodel* polyData = 0;
 
-vtkPolyData* initializeGravityCheng(const char* vtkfile)
+Platemodel* initializeGravityCheng(const char* filename)
 {
-    vtkPolyDataReader* smallBodyReader = vtkPolyDataReader::New();
-    smallBodyReader->SetFileName(vtkfile);
-    smallBodyReader->Update();
-
     if (polyData != 0)
-        polyData->Delete();
+        delete polyData;
 
-    vtkPolyDataNormals* normalsFilter = vtkPolyDataNormals::New();
-    normalsFilter->SetInput(smallBodyReader->GetOutput());
-    normalsFilter->SetComputeCellNormals(1);
-    normalsFilter->SetComputePointNormals(0);
-    normalsFilter->SplittingOff();
-    normalsFilter->ConsistencyOn();
-    normalsFilter->AutoOrientNormalsOn();
-    normalsFilter->Update();
+    polyData = new Platemodel();
+    polyData->load(filename);
 
-    polyData = vtkPolyData::New();
-    polyData->ShallowCopy(normalsFilter->GetOutput());
-
-    polyData->BuildCells();
-
-
-    vtkPoints* points = polyData->GetPoints();
-    vtkDataArray* normals = polyData->GetCellData()->GetNormals();
-
-    vtkIdType *pts, npts;
-
-
+    int pointIds[3];
     // Compute the face data
-    int numFaces = polyData->GetNumberOfCells();
+    int numFaces = polyData->getNumberOfPlates();
     faceCenters.resize(numFaces);
-    for (vtkIdType i=0; i<numFaces; ++i)
+    for (int i=0; i<numFaces; ++i)
     {
         FaceCenters fc;
 
         // Get center of cell
-        polyData->GetCellPoints(i, npts, pts);
-        int p1 = pts[0];
-        int p2 = pts[1];
-        int p3 = pts[2];
+        polyData->getPlatePoints(i, pointIds);
+        int p1 = pointIds[0];
+        int p2 = pointIds[1];
+        int p3 = pointIds[2];
 
         double pt1[3];
         double pt2[3];
         double pt3[3];
-        points->GetPoint(p1, pt1);
-        points->GetPoint(p2, pt2);
-        points->GetPoint(p3, pt3);
+        polyData->getPoint(p1, pt1);
+        polyData->getPoint(p2, pt2);
+        polyData->getPoint(p3, pt3);
 
-        vtkTriangle::TriangleCenter(pt1, pt2, pt3, fc.center);
+        TriangleCenter(pt1, pt2, pt3, fc.center);
 
 
-        normals->GetTuple(i, fc.normal);
+        polyData->getNormal(i, fc.normal);
 
-        double area = vtkTriangle::TriangleArea(pt1, pt2, pt3);
-        vtkMath::MultiplyScalar(fc.normal, 2.0 * area);
+        double area = TriangleArea(pt1, pt2, pt3);
+        MultiplyScalar(fc.normal, 2.0 * area);
 
         faceCenters[i] = fc;
     }
@@ -93,16 +67,16 @@ double getGravityCheng(const double fieldPoint[3], double acc[3])
     acc[2] = 0.0;
 
     // Compute the edge data
-    int numFaces = polyData->GetNumberOfCells();
-    for (vtkIdType i=0; i<numFaces; ++i)
+    int numFaces = polyData->getNumberOfPlates();
+    for (int i=0; i<numFaces; ++i)
     {
         const FaceCenters& fc = faceCenters[i];
 
         double x_minus_R[3];
-        vtkMath::Subtract(fieldPoint, fc.center, x_minus_R);
+        Subtract(fieldPoint, fc.center, x_minus_R);
 
-        double x_minus_R_dot_N = vtkMath::Dot(x_minus_R, fc.normal);
-        double mag_x_minus_R = vtkMath::Norm(x_minus_R);
+        double x_minus_R_dot_N = Dot(x_minus_R, fc.normal);
+        double mag_x_minus_R = Norm(x_minus_R);
 
         if (mag_x_minus_R == 0.0)
             continue;

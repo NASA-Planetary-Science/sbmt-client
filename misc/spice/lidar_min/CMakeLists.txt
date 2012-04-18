@@ -30,6 +30,7 @@ gravity-cheng.cpp
 lidardata.cpp
 propagator.cpp
 propagatorfit.cpp
+platemodel.cpp
 
 constants.h
 gravity-point.h
@@ -60,8 +61,5 @@ target_link_libraries(lidar-compute-gaskell-error cspice csupport)
 add_executable(propagator prop-fit.cpp)
 target_link_libraries(propagator lidar)
 
-add_executable(compute-gravity compute-gravity.cpp)
-target_link_libraries(compute-gravity lidar)
-
-add_executable(test-gravity test-gravity.cpp)
-target_link_libraries(test-gravity lidar)
+add_executable(gravity gravity.cpp)
+target_link_libraries(gravity lidar)

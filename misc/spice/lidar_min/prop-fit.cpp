@@ -35,13 +35,14 @@ int main(int argc, char** argv)
     if (argc < 8)
     {
         printf("Usage (one of the following):\n\n");
-        printf("  gravity [-ed|-ep|-ev] -d <density> -p <pressure> -v<vx>,<vy>,<vz> -b <body> -s <vtkfile> -k <kernelfiles> -i <trajectoryfile> -o <outputfile>\n");
+        printf("  gravity [-ed|-ep|-ev] -d <density> -p <pressure> -v<vx>,<vy>,<vz> -b <body> -s <vtkfile> -t <pltfile> -k <kernelfiles> -i <trajectoryfile> -o <outputfile>\n");
         printf("where:\n\n");
         printf("  -ed means estimate density and -ep means estimate pressure\n");
         printf("  <density> is the density value to use if -ep is set or the initial value of density if -ed is set\n");
         printf("  <pressure> is the pressure value to use if -ed is set or the initial value of pressure if -ep is set\n");
         printf("  <body> is either EROS or ITOKAWA\n");
-        printf("  <vtkfile> path to shape model\n");
+        printf("  <vtkfile> path to shape model in VTK format\n");
+        printf("  <pltfile> path to shape model in PLT format\n");
         printf("  <kernelfile> path to metakernel file\n");
         printf("  <trajectoryfile> path to reference trajectory file\n");
         printf("  <outputfile> optimized trajectory file in body fixed coordinates. First column is time and next 3 columns are position.\n");
@@ -49,7 +50,8 @@ int main(int argc, char** argv)
     }
 
     char* body = 0;
-    char* dskfile = 0;
+    char* vtkfile = 0;
+    char* pltfile = 0;
     const char* kernelfiles = 0;
     string trajectoryfile;
     string outfile;
@@ -126,7 +128,11 @@ int main(int argc, char** argv)
         }
         else if (!strcmp(argv[i], "-s"))
         {
-            dskfile = argv[++i];
+            vtkfile = argv[++i];
+        }
+        else if (!strcmp(argv[i], "-t"))
+        {
+            pltfile = argv[++i];
         }
         else if (!strcmp(argv[i], "-k"))
         {
@@ -159,7 +165,7 @@ int main(int argc, char** argv)
         propFit.setInitialVelocity(initialVelocity);
     propFit.setReferenceTrajectory(referenceTrajectory);
     propFit.setWhatToEstimate(whatToEstimate);
-    propFit.setShapeModelFilename(dskfile);
+    propFit.setShapeModelFilename(vtkfile, pltfile);
 
     LidarTrack optimalTrack = propFit.run();
 

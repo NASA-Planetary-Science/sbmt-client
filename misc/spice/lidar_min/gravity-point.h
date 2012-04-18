@@ -1,12 +1,12 @@
 #ifndef GRAVITY_POINT_H
 #define GRAVITY_POINT_H
 
-#include <vtkMath.h>
+#include "mathutil.h"
 
-inline double getGravityPoint(const double fieldPoint[3], double* acc)
+inline double getGravityPoint(const double fieldPoint[3], double acc[3])
 {
     double rhat[3] = {fieldPoint[0], fieldPoint[1], fieldPoint[2]};
-    double r = vtkMath::Normalize(rhat);
+    double r = Normalize(rhat);
 
     double r2 = fieldPoint[0]*fieldPoint[0] + fieldPoint[1]*fieldPoint[1] + fieldPoint[2]*fieldPoint[2];
 
