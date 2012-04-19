@@ -1,0 +1,23 @@
+\begindata
+
+      PATH_VALUES       = (
+                          '/project/nearsdc/spice-kernels/generic'
+                          )
+      PATH_SYMBOLS      = (
+                          'KERNELS'
+                          )
+      KERNELS_TO_LOAD   = (
+                          '$KERNELS/naif0010.tls'
+                          '$KERNELS/pck00010.tpc'
+                          '$KERNELS/de421.bsp'
+                          '$KERNELS/ROS_V18.TF'
+                          '$KERNELS/ROS_LUTETIA_RSOC_V03.TF'
+                          '$KERNELS/codes_300ast_20100725.bsp'
+                          '$KERNELS/codes_300ast_20100725.tf'
+                          '$KERNELS/mar085.bsp'
+                          '$KERNELS/ORHS_______________00109.BSP'
+                          '$KERNELS/eros_1900_2100.bsp'
+                          '$KERNELS/EROS80.BSP'
+                          )
+
+\begintext
