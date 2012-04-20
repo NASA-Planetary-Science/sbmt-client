@@ -1,7 +1,9 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
 import os
 import subprocess
+import process_dv_file
+import run_jobs_in_parallel
 
 # Change to folder containing this script
 abspath = os.path.abspath(__file__)
@@ -39,12 +41,12 @@ OUTPUT='/project/nearsdc/data/ITOKAWA/LIDAR/cdr/prop-traj.txt'
 #velocity='3.27187e-05,-4.361e-06,-2.53998e-06'
 #position='14.2904,-3.00209,-1.68242'
 
-startTime='180977699.76'
-stopTime='181141879.654'
-density='0.216207'
-pressure='1.65806'
-position='11.6965,-1.17968,-0.653116'
-velocity='9.58572e-06,2.20938e-06,2.43306e-06'
+#startTime='180977699.76'
+#stopTime='181141879.654'
+#density='0.216207'
+#pressure='1.65806'
+#position='11.6965,-1.17968,-0.653116'
+#velocity='9.58572e-06,2.20938e-06,2.43306e-06'
 
 #startTime='181664530.935'
 #stopTime='182097704.216'
@@ -67,12 +69,12 @@ velocity='9.58572e-06,2.20938e-06,2.43306e-06'
 #position='7.02233,0.960101,3.50028'
 #velocity='1.2946e-07,-8.94694e-07,-1.05388e-05'
 
-startTime='183743545.705'
-stopTime='184002083.595'
-density='2.03'
-pressure='1.22692'
-position='3.2248,1.07039,0.486777'
-velocity='3.34028e-05,1.59279e-05,5.89719e-06'
+#startTime='183743545.705'
+#stopTime='184002083.595'
+#density='2.03'
+#pressure='1.22692'
+#position='3.2248,1.07039,0.486777'
+#velocity='3.34028e-05,1.59279e-05,5.89719e-06'
 
 # 2005 OCT 31 04:45:39.404 - 2005 NOV 03 03:30:37.462
 #startTime='184006003.587'
@@ -84,11 +86,50 @@ velocity='3.34028e-05,1.59279e-05,5.89719e-06'
 
 #command = './propagator -ep -d '+density+' -p '+pressure+' -v '+velocity+' -po '+position+' -b '+BODY+\
 #          ' -s '+VTKFILE+' -t '+PLTFILE+' -k '+KERNEL+' -i '+INPUT+' -o '+OUTPUT+' -start '+startTime+' -stop '+stopTime
-command = './propagator -ed -d '+density+' -p '+pressure+' -b '+BODY+\
-    ' -s '+VTKFILE+' -t '+PLTFILE+' -k '+KERNEL+' -i '+INPUT+' -o '+OUTPUT+' -start '+startTime+' -stop '+stopTime
-print command
-os.system(command)
+#command = './propagator -ed -d '+density+' -p '+pressure+' -b '+BODY+\
+#    ' -s '+VTKFILE+' -t '+PLTFILE+' -k '+KERNEL+' -i '+INPUT+' -o '+OUTPUT+' -start '+startTime+' -stop '+stopTime
+#print command
+#os.system(command)
 
-os.system("cp " + INPUT + " ~/.neartool/cache/2/ITOKAWA/LIDAR/cdr/cdr_uf_arc.tab")
-os.system("cp " + OUTPUT + " ~/.neartool/cache/2/ITOKAWA/LIDAR/cdr/")
-os.system("cp " + OUTPUT + "-ref ~/.neartool/cache/2/ITOKAWA/LIDAR/cdr/")
+#os.system("cp " + INPUT + " ~/.neartool/cache/2/ITOKAWA/LIDAR/cdr/cdr_uf_arc.tab")
+#os.system("cp " + OUTPUT + " ~/.neartool/cache/2/ITOKAWA/LIDAR/cdr/")
+#os.system("cp " + OUTPUT + "-ref ~/.neartool/cache/2/ITOKAWA/LIDAR/cdr/")
+
+#density='2.03'
+density='1.5'
+#pressure='1.22692'
+pressure='0.0'
+totalError=0.0
+commandlist=[]
+i = 0
+for interval in process_dv_file.goodIntervals:
+    t0 = str(interval[0])
+    t1 = str(interval[1])
+    statsfile = 'stats-' + str(i) + '.txt'
+    command = './propagator -ev -d '+density+' -p '+pressure+' -b '+BODY+\
+        ' -s '+VTKFILE+' -t '+PLTFILE+' -k '+KERNEL+' -i '+INPUT+' -o '+OUTPUT+\
+        ' -start '+t0+' -stop '+t1+' -e '+statsfile
+    print command
+    commandlist.append(command)
+    #os.system(command)
+    i = i + 1
+
+run_jobs_in_parallel.runJobs(commandlist, 3)
+
+numIntervals=0
+for i in range(len(process_dv_file.goodIntervals)):
+
+    # Load in the error files and compute mean error
+    try:
+        statsfile = 'stats-' + str(i) + '.txt'
+        f = open(statsfile, 'r')
+        lines = f.readlines()
+        error = float(lines[0])
+        totalError += error
+        numIntervals = numIntervals + 1
+    except IOError as e:
+        print 'Oh dear. No stats file'
+
+
+print "total error : ", totalError
+print "mean error : ", totalError/numIntervals

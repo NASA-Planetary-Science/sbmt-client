@@ -31,7 +31,7 @@ void Propagator::getSunPosition(double et, double sunpos[3])
     const char* target = "SUN";
     const char* ref = "J2000";
     const char* abcorr = "LT+S";
-    const char* obs = "ITOKAWA";
+    const char* obs = LidarData::getBodyName();
 
     spkpos_c(target, et, ref, abcorr, obs, sunpos, &lt);
     if (failed_c())
@@ -46,7 +46,7 @@ void Propagator::gravitationAcceleration(double t, const double pos[3], double a
     // First convert position to body fixed coordinates
     double newPos[3];
     const char* ref = "J2000";
-    const char* frame = "IAU_ITOKAWA";
+    const char* frame = LidarData::getBodyFrame();
     double i2bmat[3][3];
     pxform_c(ref, frame, t, i2bmat);
     mxv_c(i2bmat, pos, newPos);
@@ -184,7 +184,7 @@ LidarTrack Propagator::computePropagatedTrajectory()
         // Move forward by several timesteps, otherwise this will take forever
         if (i == size -1)
             break;
-        i += 100;
+        i += 300;
         if (i >= size)
             i = size -1;
     }

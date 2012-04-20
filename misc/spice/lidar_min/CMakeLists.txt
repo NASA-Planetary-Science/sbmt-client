@@ -35,6 +35,7 @@ platemodel.cpp
 constants.h
 gravity-point.h
 util.h
+mathutil.h
 )
 target_link_libraries(lidar vtkHybrid dsklib_c cspice csupport lbfgs gsl gslcblas adolc)
 

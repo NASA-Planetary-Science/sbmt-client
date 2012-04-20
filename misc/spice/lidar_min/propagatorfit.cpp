@@ -20,7 +20,7 @@ PropagatorFit::PropagatorFit()
     initialVelocityProvided__ = false;
     whatToOptimizeOver__ = OPTIMIZE_DISTANCE_TO_REFERENCE_TRAJECTORY;
     //whatToOptimizeOver__ = OPTIMIZE_RANGE_ERROR;
-    estimateEverythingCyclicly = true;
+    estimateEverythingCyclicly = false;
     estimateEverythingAtOnce = false;
 }
 
@@ -80,11 +80,6 @@ static double func(const double* x, void* params)
 double PropagatorFit::errorToReferenceTrajectory()
 {
     unsigned int size = optimalTrajectory__.size();
-//    if (size != referenceTrajectory__.size())
-//    {
-//        cout << "Major error!" << endl;
-//        abort();
-//    }
 
     double totalDistance = 0.0;
     for (unsigned int i=0; i<size; ++i)
@@ -109,12 +104,21 @@ double PropagatorFit::rangeError()
     int totalNotFound = 0;
     for (unsigned int i=0; i<size; ++i)
     {
+        // Convert position to body fixed coordinates. Note that boredir is
+        // already in the body-fixed frame.
+        double newPos[3];
+        const char* ref = "J2000";
+        const char* frame = LidarData::getBodyFrame();
+        double i2bmat[3][3];
+        pxform_c(ref, frame, optimalTrajectory__[i].time, i2bmat);
+        mxv_c(i2bmat, optimalTrajectory__[i].scpos, newPos);
+
         // Compute the range to the asteroid from this position
-        intersectWithLineVtk(optimalTrajectory__[i].scpos, optimalTrajectory__[i].boredir, closestPoint, &found);
+        intersectWithLineVtk(newPos, optimalTrajectory__[i].boredir, closestPoint, &found);
 
         if (found)
         {
-            double range = sqrt(vdist2(optimalTrajectory__[i].scpos, closestPoint));
+            double range = sqrt(vdist2(newPos, closestPoint));
             totalDistance += fabs(range - optimalTrajectory__[i].range);
         }
         else
@@ -206,8 +210,8 @@ void PropagatorFit::doLeastSquares()
         WhatToEstimate toEst[] = {
             ESTIMATE_VELOCITY,
             ESTIMATE_POSITION,
-            ESTIMATE_DENSITY,
-            ESTIMATE_PRESSURE
+            //ESTIMATE_DENSITY,
+            //ESTIMATE_PRESSURE
         };
         int numCycles = 1;
         while (true)
@@ -296,8 +300,8 @@ void PropagatorFit::doLeastSquares()
             numVar = 3;
         }
 
-        optimizeGsl(func, 0, x, numVar, this);
-        //optimizeLbfgs(func, x, numVar, this);
+        //optimizeGsl(func, 0, x, numVar, this);
+        optimizeLbfgs(func, x, numVar, this);
     }
 
 }

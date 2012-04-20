@@ -71,6 +71,26 @@ public:
     {
         whatToOptimizeOver__ = whatToOpt;
     }
+    double getError()
+    {
+        return error__;
+    }
+    double getDensity()
+    {
+        return density__;
+    }
+    double getPressure()
+    {
+        return pressure__;
+    }
+    const double* getInitialPosition()
+    {
+        return &initialPosition__[0];
+    }
+    const double* getInitialVelocity()
+    {
+        return &initialVelocity__[0];
+    }
 
 
     LidarTrack run();

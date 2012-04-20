@@ -3,6 +3,7 @@
 #include <iostream>
 #include <vector>
 #include <cmath>
+#include <fstream>
 #include <string.h>
 #include <string>
 #include "SpiceUsr.h"
@@ -30,12 +31,13 @@ using namespace std;
    The optimal propagated trajectory is then saved out to a file.
 
  */
+
 int main(int argc, char** argv)
 {
     if (argc < 8)
     {
         printf("Usage (one of the following):\n\n");
-        printf("  gravity [-ed|-ep|-ev] -d <density> -p <pressure> -v<vx>,<vy>,<vz> -b <body> -s <vtkfile> -t <pltfile> -k <kernelfiles> -i <trajectoryfile> -o <outputfile>\n");
+        printf("  gravity [-ed|-ep|-ev] -d <density> -p <pressure> -v<vx>,<vy>,<vz> -b <body> -s <vtkfile> -t <pltfile> -k <kernelfiles> -i <trajectoryfile> -o <outputfile> -e <statsfile>\n");
         printf("where:\n\n");
         printf("  -ed means estimate density and -ep means estimate pressure\n");
         printf("  <density> is the density value to use if -ep is set or the initial value of density if -ed is set\n");
@@ -46,6 +48,7 @@ int main(int argc, char** argv)
         printf("  <kernelfile> path to metakernel file\n");
         printf("  <trajectoryfile> path to reference trajectory file\n");
         printf("  <outputfile> optimized trajectory file in body fixed coordinates. First column is time and next 3 columns are position.\n");
+        printf("  <statsfile> file in which statistics about this run are written to, such as final error, density, etc. If not specified, \"stats.txt\" is used.\n");
         return 1;
     }
 
@@ -55,6 +58,7 @@ int main(int argc, char** argv)
     const char* kernelfiles = 0;
     string trajectoryfile;
     string outfile;
+    const char* statsfile = "stats.txt";
     double density = 1.0;
     double pressure = 1.0;
     double initialVelocity[3] = {0.0, 0.0, 0.0};
@@ -146,15 +150,25 @@ int main(int argc, char** argv)
         {
             outfile = argv[++i];
         }
+        else if (!strcmp(argv[i], "-e"))
+        {
+            statsfile = argv[++i];
+        }
     }
 
     bodyType = EROS;
     if (!strcmp(body, "ITOKAWA"))
         bodyType = ITOKAWA;
+    LidarData::setBodyType(bodyType);
 
     furnsh_c(kernelfiles);
 
-    LidarTrack referenceTrajectory = LidarData::loadTrack(trajectoryfile, bodyType, true, startTime, stopTime);
+    LidarTrack referenceTrajectory = LidarData::loadTrack(trajectoryfile, true, startTime, stopTime);
+    if (referenceTrajectory.size() < 300)
+    {
+        cout << "Error: Reference trajectory too short!" << endl;
+        exit(0);
+    }
 
     PropagatorFit propFit;
     propFit.setDensity(density);
@@ -169,6 +183,23 @@ int main(int argc, char** argv)
 
     LidarTrack optimalTrack = propFit.run();
 
-    LidarData::saveTrack(outfile, optimalTrack, bodyType, true);
-    LidarData::saveTrack(outfile+"-ref", referenceTrajectory, bodyType, true);
+    LidarData::saveTrack(outfile, optimalTrack, true);
+    LidarData::saveTrack(outfile+"-ref", referenceTrajectory, true);
+
+    // save out the error stats to a text file
+    ofstream fout(statsfile);
+    if (fout.is_open())
+    {
+        fout << propFit.getError() << endl;
+        fout << "times " << startTime << " " << stopTime << endl;
+        fout << "time length: " << stopTime - startTime << endl;
+        fout << "reference trajectory size: " << referenceTrajectory.size() << endl;
+        fout << "density " << propFit.getDensity() << endl;
+        fout << "pressure " << propFit.getPressure() << endl;
+        const double* pos = propFit.getInitialPosition();
+        fout << "init_pos " << pos[0] << " " << pos[1] << " " << pos[2] << endl;
+        const double* vel = propFit.getInitialVelocity();
+        fout << "init_vel " << vel[0] << " " << vel[1] << " " << vel[2] << endl;
+    }
+    fout.close();
 }

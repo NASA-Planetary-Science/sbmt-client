@@ -38,15 +38,40 @@ public:
     LidarData();
 
     static LidarTrack loadTrack(const string& filename,
-                                BodyType bodyType,
                                 bool convertToJ2000,
                                 double startTime,
                                 double stopTime);
 
     static void saveTrack(const string& filename,
                           const LidarTrack& track,
-                          BodyType bodyType,
                           bool convertFromJ2000);
+
+    static void setBodyType(BodyType bt)
+    {
+        bodyType = bt;
+    }
+    static BodyType getBodyType()
+    {
+        return bodyType;
+    }
+    static const char* getBodyName()
+    {
+        if (bodyType == ITOKAWA)
+            return ITOKAWA_NAME;
+        else
+            return EROS_NAME;
+    }
+    static const char* getBodyFrame()
+    {
+        if (bodyType == ITOKAWA)
+            return ITOKAWA_FRAME;
+        else
+            return EROS_FRAME;
+    }
+
+private:
+
+    static BodyType bodyType;
 };
 
 #endif // LIDARDATA_H
