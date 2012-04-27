@@ -17,6 +17,7 @@ public:
         ESTIMATE_PRESSURE,
         ESTIMATE_POSITION,
         ESTIMATE_VELOCITY,
+        ESTIMATE_POSITION_AND_VELOCITY,
         ESTIMATE_ALL
     } WhatToEstimate;
 
@@ -120,6 +121,7 @@ private:
     double error__;
     std::string vtkShapeModelFilename;
     std::string pltShapeModelFilename;
+    bool spiceKernelsContainVelocity__;
     bool estimateEverythingCyclicly;
     bool estimateEverythingAtOnce;
 };

@@ -20,6 +20,7 @@ PropagatorFit::PropagatorFit()
     initialVelocityProvided__ = false;
     whatToOptimizeOver__ = OPTIMIZE_DISTANCE_TO_REFERENCE_TRAJECTORY;
     //whatToOptimizeOver__ = OPTIMIZE_RANGE_ERROR;
+    spiceKernelsContainVelocity__ = false;
     estimateEverythingCyclicly = false;
     estimateEverythingAtOnce = false;
 }
@@ -27,6 +28,7 @@ PropagatorFit::PropagatorFit()
 LidarTrack PropagatorFit::run()
 {
     initializeVtk(vtkShapeModelFilename.c_str());
+
     doLeastSquares();
 
     cout << "final density : " << density__ << endl;
@@ -43,32 +45,42 @@ void PropagatorFit::computeInitialPosition(double pos[3])
     pos[0] = p.scpos[0];
     pos[1] = p.scpos[1];
     pos[2] = p.scpos[2];
+    initialPositionProvided__ = true;
 }
 
 void PropagatorFit::computeInitialVelocity(double velocity[3])
 {
-    // Use the reference trajectory to estimate
-    // and initial velocity by taking the average of the
-    // first N segments
-    unsigned int N = 20;
-    if (referenceTrajectory__.size() < N)
-        N = 1;
-
-    double meanVelocity[3] = {0.0, 0.0, 0.0};
-
-    for (unsigned int i=1; i<N; ++i)
+    if (spiceKernelsContainVelocity__)
     {
-        const LidarPoint& p0 = referenceTrajectory__[i-1];
-        const LidarPoint& p1 = referenceTrajectory__[i];
 
-        meanVelocity[0] += (p1.scpos[0] - p0.scpos[0]) / (p1.time - p0.time);
-        meanVelocity[1] += (p1.scpos[1] - p0.scpos[1]) / (p1.time - p0.time);
-        meanVelocity[2] += (p1.scpos[2] - p0.scpos[2]) / (p1.time - p0.time);
+    }
+    else
+    {
+        // Use the reference trajectory to estimate
+        // and initial velocity by taking the average of the
+        // first N segments
+        unsigned int N = 20;
+        if (referenceTrajectory__.size() < N)
+            N = 1;
+
+        double meanVelocity[3] = {0.0, 0.0, 0.0};
+
+        for (unsigned int i=1; i<N; ++i)
+        {
+            const LidarPoint& p0 = referenceTrajectory__[i-1];
+            const LidarPoint& p1 = referenceTrajectory__[i];
+
+            meanVelocity[0] += (p1.scpos[0] - p0.scpos[0]) / (p1.time - p0.time);
+            meanVelocity[1] += (p1.scpos[1] - p0.scpos[1]) / (p1.time - p0.time);
+            meanVelocity[2] += (p1.scpos[2] - p0.scpos[2]) / (p1.time - p0.time);
+        }
+
+        velocity[0] = meanVelocity[0] / (double)N;
+        velocity[1] = meanVelocity[1] / (double)N;
+        velocity[2] = meanVelocity[2] / (double)N;
     }
 
-    velocity[0] = meanVelocity[0] / (double)N;
-    velocity[1] = meanVelocity[1] / (double)N;
-    velocity[2] = meanVelocity[2] / (double)N;
+    initialVelocityProvided__ = true;
 }
 
 static double func(const double* x, void* params)
@@ -158,6 +170,15 @@ double PropagatorFit::funcLeastSquares(const double* x/*, void* params*/)
         initialPosition__[1] = x[1];
         initialPosition__[2] = x[2];
     }
+    else if (whatToEstimate__ == ESTIMATE_POSITION_AND_VELOCITY)
+    {
+        initialPosition__[0] = x[0];
+        initialPosition__[1] = x[1];
+        initialPosition__[2] = x[2];
+        initialVelocity__[0] = x[3] * 1.0e-6;
+        initialVelocity__[1] = x[4] * 1.0e-6;
+        initialVelocity__[2] = x[5] * 1.0e-6;
+    }
     else if (whatToEstimate__ == ESTIMATE_ALL)
     {
         density__            = x[0];
@@ -203,7 +224,67 @@ void PropagatorFit::doLeastSquares()
     if (!initialVelocityProvided__)
         computeInitialVelocity(initialVelocity__);
 
-    if (estimateEverythingCyclicly)
+    if (true)
+    {
+        error__ = 1.0e100;
+        WhatToEstimate toEst[] = {
+            ESTIMATE_POSITION,
+            ESTIMATE_VELOCITY,
+            ESTIMATE_POSITION,
+            ESTIMATE_VELOCITY,
+        };
+        WhatToOptimizeOver toOpt[] =
+        {
+            OPTIMIZE_DISTANCE_TO_REFERENCE_TRAJECTORY,
+            OPTIMIZE_DISTANCE_TO_REFERENCE_TRAJECTORY,
+            OPTIMIZE_RANGE_ERROR,
+            OPTIMIZE_RANGE_ERROR
+        };
+        for (unsigned int i=0; i<sizeof(toEst)/sizeof(WhatToEstimate); ++i)
+        {
+            whatToOptimizeOver__ = toOpt[i];
+            whatToEstimate__ = toEst[i];
+            if (toEst[i] == ESTIMATE_DENSITY)
+            {
+                x[0] = density__;
+                numVar = 1;
+            }
+            else if (toEst[i] == ESTIMATE_PRESSURE)
+            {
+                x[0] = pressure__;
+                numVar = 1;
+            }
+            else if (toEst[i] == ESTIMATE_POSITION)
+            {
+                x[0] = initialPosition__[0];
+                x[1] = initialPosition__[1];
+                x[2] = initialPosition__[2];
+                numVar = 3;
+            }
+            else if (toEst[i] == ESTIMATE_VELOCITY)
+            {
+                x[0] = initialVelocity__[0] / 1.0e-6;
+                x[1] = initialVelocity__[1] / 1.0e-6;
+                x[2] = initialVelocity__[2] / 1.0e-6;
+                numVar = 3;
+            }
+            else if (toEst[i] == ESTIMATE_POSITION_AND_VELOCITY)
+            {
+                x[0] = initialPosition__[0];
+                x[1] = initialPosition__[1];
+                x[2] = initialPosition__[2];
+                x[3] = initialVelocity__[0] / 1.0e-6;
+                x[4] = initialVelocity__[1] / 1.0e-6;
+                x[5] = initialVelocity__[2] / 1.0e-6;
+                numVar = 6;
+            }
+            cout << "Beginning new optimization. Estimating: " << toEst[i] << " " << toOpt[i] << endl;
+            //optimizeGsl(func, 0, x, numVar, this);
+            optimizeLbfgs(func, x, numVar, this);
+        }
+    }
+    /*
+    else if (estimateEverythingCyclicly)
     {
         error__ = 1.0e100;
         double prevError;
@@ -251,7 +332,7 @@ void PropagatorFit::doLeastSquares()
                 //optimizeGsl(func, 0, x, numVar, this);
                 optimizeLbfgs(func, x, numVar, this);
             }
-            if (error__ >= prevError || numCycles > 2) // no error reduction, so terminate
+            if (error__ >= prevError || numCycles >= 1) // no error reduction, so terminate
                 return;
             ++numCycles;
         }
@@ -303,5 +384,5 @@ void PropagatorFit::doLeastSquares()
         //optimizeGsl(func, 0, x, numVar, this);
         optimizeLbfgs(func, x, numVar, this);
     }
-
+    */
 }

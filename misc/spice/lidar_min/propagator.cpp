@@ -16,8 +16,8 @@ Propagator::Propagator()
 
 void Propagator::setShapeModelFilename(const string &filename)
 {
-    //initializeGravityWerner(filename.c_str());
-    initializeGravityCheng(filename.c_str());
+    initializeGravityWerner(filename.c_str());
+    //initializeGravityCheng(filename.c_str());
 }
 
 LidarTrack Propagator::run()
@@ -51,7 +51,8 @@ void Propagator::gravitationAcceleration(double t, const double pos[3], double a
     pxform_c(ref, frame, t, i2bmat);
     mxv_c(i2bmat, pos, newPos);
 
-    getGravityCheng(newPos, acc);
+    //getGravityCheng(newPos, acc);
+    getGravityWerner(newPos, acc);
     acc[0] *= (g_G*density__*1.0e12);
     acc[1] *= (g_G*density__*1.0e12);
     acc[2] *= (g_G*density__*1.0e12);
@@ -184,7 +185,7 @@ LidarTrack Propagator::computePropagatedTrajectory()
         // Move forward by several timesteps, otherwise this will take forever
         if (i == size -1)
             break;
-        i += 300;
+        i += 1000;
         if (i >= size)
             i = size -1;
     }
