@@ -314,7 +314,7 @@ public class DefaultPicker extends Picker
                 int pickSucceeded = doPick(me, allPropsCellPicker, renWin);
                 if (pickSucceeded == 1)
                 {
-                    double[] pos = smallBodyCellPicker.GetPickPosition();
+                    double[] pos = allPropsCellPicker.GetPickPosition();
 
                     renWin.lock();
                     vtkCamera activeCamera = renWin.GetRenderer().GetActiveCamera();
