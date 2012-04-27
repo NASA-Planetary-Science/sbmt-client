@@ -228,10 +228,10 @@ void PropagatorFit::doLeastSquares()
     {
         error__ = 1.0e100;
         WhatToEstimate toEst[] = {
-            ESTIMATE_POSITION,
             ESTIMATE_VELOCITY,
             ESTIMATE_POSITION,
             ESTIMATE_VELOCITY,
+            ESTIMATE_POSITION,
         };
         WhatToOptimizeOver toOpt[] =
         {
