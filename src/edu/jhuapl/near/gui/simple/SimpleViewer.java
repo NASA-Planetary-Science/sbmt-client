@@ -22,6 +22,7 @@ import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.PointModel;
+import edu.jhuapl.near.model.SmallBodyImageMapCollection;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.simple.SimpleSmallBody;
 import edu.jhuapl.near.pick.PickManager;
@@ -40,16 +41,27 @@ public class SimpleViewer extends Viewer
     private boolean initialized = false;
     private String name;
     private String pathToSmallBodyFileOnServer;
+    private String imageMap;
 
     public SimpleViewer(
             StatusBar statusBar,
             String name,
             String pathToSmallBodyFileOnServer)
     {
+        this(statusBar, name, pathToSmallBodyFileOnServer, null);
+    }
+
+    public SimpleViewer(
+            StatusBar statusBar,
+            String name,
+            String pathToSmallBodyFileOnServer,
+            String imageMap)
+    {
         super(new BorderLayout());
         this.statusBar = statusBar;
         this.name = name;
         this.pathToSmallBodyFileOnServer = pathToSmallBodyFileOnServer;
+        this.imageMap = imageMap;
     }
 
     public void initialize()
@@ -91,7 +103,8 @@ public class SimpleViewer extends Viewer
     {
         modelManager = new ModelManager();
 
-        SmallBodyModel smallBodyModel = new SimpleSmallBody(name, pathToSmallBodyFileOnServer);
+        SmallBodyModel smallBodyModel = new SimpleSmallBody(
+                name, pathToSmallBodyFileOnServer, imageMap);
         Graticule graticule = new Graticule(smallBodyModel);
 
         HashMap<String, Model> allModels = new HashMap<String, Model>();
@@ -102,6 +115,8 @@ public class SimpleViewer extends Viewer
         allModels.put(ModelNames.ELLIPSE_STRUCTURES, new EllipseModel(smallBodyModel));
         allModels.put(ModelNames.CIRCLE_SELECTION, new CircleSelectionModel(smallBodyModel));
         allModels.put(ModelNames.GRATICULE, graticule);
+        if (imageMap != null)
+            allModels.put(ModelNames.SMALL_BODY_IMAGE_MAP, new SmallBodyImageMapCollection(smallBodyModel));
 
         modelManager.setModels(allModels);
 

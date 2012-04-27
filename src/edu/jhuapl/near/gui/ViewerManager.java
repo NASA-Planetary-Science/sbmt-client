@@ -11,7 +11,10 @@ import javax.swing.JPanel;
 import edu.jhuapl.near.gui.custom.CustomViewer;
 import edu.jhuapl.near.gui.deimos.DeimosViewer;
 import edu.jhuapl.near.gui.eros.ErosViewer;
+import edu.jhuapl.near.gui.gaspra.GaspraViewer;
+import edu.jhuapl.near.gui.ida.IdaViewer;
 import edu.jhuapl.near.gui.itokawa.ItokawaViewer;
+import edu.jhuapl.near.gui.mathilde.MathildeViewer;
 import edu.jhuapl.near.gui.simple.SimpleGaskellViewer;
 import edu.jhuapl.near.gui.simple.SimpleViewer;
 import edu.jhuapl.near.gui.vesta.VestaViewer;
@@ -42,10 +45,10 @@ public class ViewerManager extends JPanel
 
 
         // Thomas models
-        builtInViewers.add(new SimpleViewer(statusBar, "Ida", "/THOMAS/243ida.llr.gz"));
-        builtInViewers.add(new SimpleViewer(statusBar, "Mathilde", "/THOMAS/253mathilde.llr.gz"));
+        builtInViewers.add(new IdaViewer(statusBar));
+        builtInViewers.add(new MathildeViewer(statusBar));
         builtInViewers.add(new VestaOldViewer(statusBar));
-        builtInViewers.add(new SimpleViewer(statusBar, "Gaspra", "/THOMAS/951gaspra.llr.gz"));
+        builtInViewers.add(new GaspraViewer(statusBar));
         builtInViewers.add(new SimpleViewer(statusBar, "Phobos", "/THOMAS/m1phobos.llr.gz"));
         builtInViewers.add(new DeimosViewer(statusBar));
         builtInViewers.add(new SimpleViewer(statusBar, "Janus", "/THOMAS/s10janus.llr.gz"));
@@ -55,8 +58,8 @@ public class ViewerManager extends JPanel
 
         // Stooke models
         builtInViewers.add(new SimpleViewer(statusBar, "Halley", "/STOOKE/1682q1halley.llr.gz"));
-        builtInViewers.add(new SimpleViewer(statusBar, "Ida", "/STOOKE/243ida.llr.gz"));
-        builtInViewers.add(new SimpleViewer(statusBar, "Gaspra", "/STOOKE/951gaspra.llr.gz"));
+        builtInViewers.add(new SimpleViewer(statusBar, "Ida", "/STOOKE/243ida.llr.gz", "/STOOKE/ida_image_map.png"));
+        builtInViewers.add(new SimpleViewer(statusBar, "Gaspra", "/STOOKE/951gaspra.llr.gz", "/STOOKE/gaspra_image_map.png"));
         builtInViewers.add(new SimpleViewer(statusBar, "Amalthea", "/STOOKE/j5amalthea.llr.gz"));
         builtInViewers.add(new SimpleViewer(statusBar, "Arissa", "/STOOKE/n7larissa.llr.gz"));
         builtInViewers.add(new SimpleViewer(statusBar, "Proteus", "/STOOKE/n8proteus.llr.gz"));

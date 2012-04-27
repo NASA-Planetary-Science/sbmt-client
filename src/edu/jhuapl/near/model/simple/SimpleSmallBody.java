@@ -33,4 +33,20 @@ public class SimpleSmallBody extends SmallBodyModel
                 ColoringValueType.CELLDATA,
                 false);
     }
+
+    public SimpleSmallBody(String name, String path, String imageMap)
+    {
+        super(
+                new String[] {name},
+                new String[] {path},
+                null,
+                null,
+                null,
+                null,
+                false,
+                new String[] {imageMap},
+                ColoringValueType.CELLDATA,
+                false);
+    }
+
 }
