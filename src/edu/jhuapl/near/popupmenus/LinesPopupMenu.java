@@ -2,12 +2,15 @@ package edu.jhuapl.near.popupmenus;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
+import java.io.File;
 
 import javax.swing.AbstractAction;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 
 import vtk.vtkProp;
 
+import edu.jhuapl.near.gui.CustomFileChooser;
 import edu.jhuapl.near.model.LineModel;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
@@ -28,6 +31,10 @@ public class LinesPopupMenu extends StructuresPopupMenu
 
         super.addMenuItems(model);
 
+        mi = new JMenuItem(new SaveProfileAction());
+        mi.setText("Save Profile...");
+        this.add(mi);
+
         mi = new JMenuItem(new DeleteAction());
         mi.setText("Delete");
         this.add(mi);
@@ -38,6 +45,28 @@ public class LinesPopupMenu extends StructuresPopupMenu
         public void actionPerformed(ActionEvent e)
         {
             model.selectStructure(cellIdLastClicked);
+        }
+    }
+
+    private class SaveProfileAction extends AbstractAction
+    {
+        public void actionPerformed(ActionEvent e)
+        {
+            File file = CustomFileChooser.showSaveDialog(null, "Save Profile", "profile.csv");
+
+            try
+            {
+                model.saveProfile(cellIdLastClicked, file);
+            }
+            catch (Exception e1)
+            {
+                e1.printStackTrace();
+                JOptionPane.showMessageDialog(null,
+                        "An error occurred saving the profile.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
         }
     }
 

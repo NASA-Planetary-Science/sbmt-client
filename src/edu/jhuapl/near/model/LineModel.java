@@ -2,8 +2,10 @@ package edu.jhuapl.near.model;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
@@ -990,4 +992,160 @@ public class LineModel extends StructureModel implements PropertyChangeListener
     {
         return offset;
     }
+
+    /*
+     // Version of computing profiles that uses normal planes and computes distance to
+     // normal plane. Not so good since results highly dependent on orientation of normal
+     // plane.
+    private double signedDistanceToPlane(double[] x, double[] n, double[] p0)
+    {
+        return (n[0]*(x[0]-p0[0]) + n[1]*(x[1]-p0[1]) + n[2]*(x[2]-p0[2]));
+    }
+    public boolean computeProfile(int cellId, ArrayList<Double> heights, ArrayList<Double> distances)
+    {
+        Line lin = this.lines.get(cellId);
+
+        if (lin.controlPointIds.size() != 2)
+            return false;
+
+        heights.clear();
+        distances.clear();
+
+        int size = lin.xyzPointList.size();
+
+        // Compute the normal plane to the asteroid at the the points on the line
+        double[] p1 = lin.xyzPointList.get(0).xyz;
+        double[] p2 = lin.xyzPointList.get(size-1).xyz;
+        double[] normal1 = smallBodyModel.getNormalAtPoint(p1);
+        double[] normal2 = smallBodyModel.getNormalAtPoint(p2);
+
+        // Take the normal as the average of these 2 normals and the point on the plane as
+        // the midpoint between the first and last points.
+        double[] normal = {
+                (normal1[0] + normal2[0])/2.0,
+                (normal1[1] + normal2[1])/2.0,
+                (normal1[2] + normal2[2])/2.0
+        };
+        MathUtil.vhat(normal, normal);
+        double[] pointOnPlane = {
+                (p1[0] + p2[0])/2.0,
+                (p1[1] + p2[1])/2.0,
+                (p1[2] + p2[2])/2.0
+        };
+
+        double[] lineDir = {
+                p2[0] - p1[0],
+                p2[1] - p1[1],
+                p2[2] - p1[2]
+        };
+        MathUtil.vhat(lineDir, lineDir);
+
+        double[] projectedPointOnPlane = new double[3];
+        double[] projectedPointOnLine = new double[3];
+        double[] notused = new double[1];
+
+        for (int i=0;i<size;++i)
+        {
+            double[] p = lin.xyzPointList.get(i).xyz;
+            // Compute the distance of the point to the normal plane
+            double distanceToPlane = signedDistanceToPlane(p, normal, pointOnPlane);
+
+            // project p onto plane
+            MathUtil.vprjp(p, normal, pointOnPlane, projectedPointOnPlane);
+
+            // project projectedPointOnPlane onto line joining p1 and p2
+            MathUtil.nplnpt(p1, lineDir, projectedPointOnPlane, projectedPointOnLine, notused);
+
+            // Compute the distance of projected point to line to p1
+            double distanceToLineStart = MathUtil.distanceBetween(p1, projectedPointOnLine);
+
+            heights.add(distanceToPlane);
+            distances.add(distanceToLineStart);
+        }
+
+        return true;
+    }
+    */
+
+    /**
+     * Computes profile (height vs distance along a line) basing elevation on the
+     * distance to the center of the asteroid. This is really not correct though.
+     * Instead we need to use true elevation with respect to a geoid. Also
+     * this function only works for lines consisting of exactly 2 control points.
+     *
+     * @param cellId
+     * @param heights
+     * @param distances
+     * @return
+     */
+    public boolean computeProfile(int cellId, ArrayList<Double> heights, ArrayList<Double> distances)
+    {
+        Line lin = this.lines.get(cellId);
+
+        if (lin.controlPointIds.size() != 2)
+            return false;
+
+        heights.clear();
+        distances.clear();
+
+        int size = lin.xyzPointList.size();
+
+        // Compute the normal plane to the asteroid at the the points on the line
+        double[] p1 = lin.xyzPointList.get(0).xyz;
+        double[] p2 = lin.xyzPointList.get(size-1).xyz;
+
+        double[] lineDir = {
+                p2[0] - p1[0],
+                p2[1] - p1[1],
+                p2[2] - p1[2]
+        };
+        MathUtil.vhat(lineDir, lineDir);
+
+        double[] projectedPointOnLine = new double[3];
+        double[] notused = new double[1];
+
+        for (int i=0;i<size;++i)
+        {
+            double[] p = lin.xyzPointList.get(i).xyz;
+
+            // Compute the height as the distance to center of asteroid.
+            // TODO: computing height as distance to center of asteroid
+            // is not correct. Need to use true elevation with respect to
+            // a geoid.
+            double height = MathUtil.vnorm(p);
+
+            // project p onto line
+            MathUtil.nplnpt(p1, lineDir, p, projectedPointOnLine, notused);
+
+            // Compute the distance of projected point to start of line
+            double distanceToLineStart = MathUtil.distanceBetween(p1, projectedPointOnLine);
+
+            heights.add(height);
+            distances.add(distanceToLineStart);
+        }
+
+        return true;
+    }
+
+    public void saveProfile(int cellId, File file) throws Exception
+    {
+        ArrayList<Double> heights = new ArrayList<Double>();
+        ArrayList<Double> distances = new ArrayList<Double>();
+        boolean success = computeProfile(cellId, heights, distances);
+
+        if (!success)
+            throw new Exception("Line must contain exactly 2 control points.");
+
+        int size = heights.size();
+
+        FileWriter fstream = new FileWriter(file);
+        BufferedWriter out = new BufferedWriter(fstream);
+
+        final String lineSeparator = System.getProperty("line.separator");
+        for (int i=0; i<size; ++i)
+            out.write(distances.get(i) + "," + heights.get(i) + lineSeparator);
+
+        out.close();
+    }
+
 }
