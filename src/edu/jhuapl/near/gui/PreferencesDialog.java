@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
 import edu.jhuapl.near.gui.Renderer.LightingType;
+import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.util.LatLon;
 import edu.jhuapl.near.util.Preferences;
 
@@ -54,6 +55,9 @@ public class PreferencesDialog extends javax.swing.JDialog {
             distanceTextField.setValue(position.rad);
             showAxesCheckBox.setSelected(renderer.getShowOrientationAxes());
             interactiveCheckBox.setSelected(renderer.getOrientationAxesInteractive());
+            SmallBodyModel smallBodyModel =
+                    viewerManager.getCurrentViewer().getModelManager().getSmallBodyModel();
+            showScaleBarCheckBox.setSelected(smallBodyModel.getShowScaleBar());
             updateEnabledItems();
         }
 
@@ -102,6 +106,10 @@ public class PreferencesDialog extends javax.swing.JDialog {
             renderer.setFixedLightPosition(position);
             renderer.setShowOrientationAxes(showAxesCheckBox.isSelected());
             renderer.setOrientationAxesInteractive(interactiveCheckBox.isSelected());
+
+            SmallBodyModel smallBodyModel =
+                    viewerManager.getCurrentViewer().getModelManager().getSmallBodyModel();
+            smallBodyModel.setShowScaleBar(showScaleBarCheckBox.isSelected());
         }
     }
 
@@ -139,6 +147,10 @@ public class PreferencesDialog extends javax.swing.JDialog {
         longitudeTextField = new javax.swing.JFormattedTextField();
         distanceLabel = new javax.swing.JLabel();
         distanceTextField = new javax.swing.JFormattedTextField();
+        jPanel4 = new javax.swing.JPanel();
+        jSeparator3 = new javax.swing.JSeparator();
+        jLabel2 = new javax.swing.JLabel();
+        showScaleBarCheckBox = new javax.swing.JCheckBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         getContentPane().setLayout(new java.awt.GridBagLayout());
@@ -237,7 +249,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 11;
+        gridBagConstraints.gridy = 13;
         gridBagConstraints.weighty = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(15, 0, 0, 0);
         getContentPane().add(jPanel1, gridBagConstraints);
@@ -309,6 +321,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 3;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 4, 0, 0);
         getContentPane().add(fixedLightRadioButton, gridBagConstraints);
 
@@ -360,6 +373,37 @@ public class PreferencesDialog extends javax.swing.JDialog {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         getContentPane().add(distanceTextField, gridBagConstraints);
 
+        jPanel4.setLayout(new java.awt.GridBagLayout());
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        jPanel4.add(jSeparator3, gridBagConstraints);
+
+        jLabel2.setText("Scale Bar");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        jPanel4.add(jLabel2, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 11;
+        gridBagConstraints.gridwidth = 3;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(15, 4, 5, 0);
+        getContentPane().add(jPanel4, gridBagConstraints);
+
+        showScaleBarCheckBox.setText("Show Scale Bar");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 12;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 4, 0, 0);
+        getContentPane().add(showScaleBarCheckBox, gridBagConstraints);
+
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
@@ -395,6 +439,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
         preferencesMap.put(Preferences.FIXEDLIGHT_DISTANCE, Double.parseDouble(distanceTextField.getText()));
         preferencesMap.put(Preferences.SHOW_AXES, (Boolean)showAxesCheckBox.isSelected());
         preferencesMap.put(Preferences.INTERACTIVE_AXES, (Boolean)interactiveCheckBox.isSelected());
+        preferencesMap.put(Preferences.SHOW_SCALE_BAR, (Boolean)showScaleBarCheckBox.isSelected());
         Preferences.getInstance().put(preferencesMap);
     }//GEN-LAST:event_applyToAllButtonActionPerformed
 
@@ -427,17 +472,21 @@ public class PreferencesDialog extends javax.swing.JDialog {
     private javax.swing.JSpinner intensitySpinner;
     private javax.swing.JCheckBox interactiveCheckBox;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
+    private javax.swing.JSeparator jSeparator3;
     private javax.swing.JLabel latitudeLabel;
     private javax.swing.JFormattedTextField latitudeTextField;
     private javax.swing.JRadioButton lightKitRadioButton;
     private javax.swing.JLabel longitudeLabel;
     private javax.swing.JFormattedTextField longitudeTextField;
     private javax.swing.JCheckBox showAxesCheckBox;
+    private javax.swing.JCheckBox showScaleBarCheckBox;
     // End of variables declaration//GEN-END:variables
 }

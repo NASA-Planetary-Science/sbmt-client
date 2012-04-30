@@ -12,7 +12,9 @@ import java.util.TreeSet;
 
 import vtk.vtkAbstractPointLocator;
 import vtk.vtkActor;
+import vtk.vtkActor2D;
 import vtk.vtkCell;
+import vtk.vtkCellArray;
 import vtk.vtkCellData;
 import vtk.vtkCoordinate;
 import vtk.vtkDataArray;
@@ -25,10 +27,12 @@ import vtk.vtkPointLocator;
 import vtk.vtkPoints;
 import vtk.vtkPolyData;
 import vtk.vtkPolyDataMapper;
+import vtk.vtkPolyDataMapper2D;
 import vtk.vtkPolyDataNormals;
 import vtk.vtkProp;
 import vtk.vtkProperty;
 import vtk.vtkScalarBarActor;
+import vtk.vtkTextActor;
 import vtk.vtkTextProperty;
 import vtk.vtkUnsignedCharArray;
 import vtk.vtksbCellLocator;
@@ -41,6 +45,7 @@ import edu.jhuapl.near.util.Frustum;
 import edu.jhuapl.near.util.LatLon;
 import edu.jhuapl.near.util.MathUtil;
 import edu.jhuapl.near.util.PolyDataUtil;
+import edu.jhuapl.near.util.Preferences;
 import edu.jhuapl.near.util.Properties;
 import edu.jhuapl.near.util.SmallBodyCubes;
 
@@ -127,6 +132,16 @@ public class SmallBodyModel extends Model
     private double minCellArea = -1.0;
     private double maxCellArea = -1.0;
     private double meanCellArea = -1.0;
+
+    // variables related to the scale bar (note the scale bar is different
+    // from the scalar bar)
+    private vtkPolyData scaleBarPolydata;
+    private vtkPolyDataMapper2D scaleBarMapper;
+    private vtkActor2D scaleBarActor;
+    private vtkTextActor scaleBarTextActor;
+    private int scaleBarWidthInPixels = -1;
+    private double scaleBarWidthInKm = -1.0;
+    private boolean showScaleBar = true;
 
     /**
      * Default constructor. Must be followed by a call to setSmallBodyPolyData.
@@ -690,6 +705,8 @@ public class SmallBodyModel extends Model
             vtkTextProperty tp = new vtkTextProperty();
             tp.SetFontSize(10);
             scalarBarActor.SetTitleTextProperty(tp);
+
+            setupScaleBar();
         }
     }
 
@@ -1589,5 +1606,108 @@ public class SmallBodyModel extends Model
         if (lowResPointLocator != null) lowResPointLocator.Delete();
         if (scalarBarActor != null) scalarBarActor.Delete();
         if (genericCell != null) genericCell.Delete();
+    }
+
+    private void setupScaleBar()
+    {
+        scaleBarPolydata = new vtkPolyData();
+        vtkPoints points = new vtkPoints();
+        vtkCellArray polys = new vtkCellArray();
+        scaleBarPolydata.SetPoints(points);
+        scaleBarPolydata.SetLines(polys);
+
+        points.SetNumberOfPoints(5);
+
+        vtkIdList idList = new vtkIdList();
+        idList.SetNumberOfIds(5);
+        for (int i=0; i<5; ++i)
+            idList.SetId(i, i);
+        polys.InsertNextCell(idList);
+
+        scaleBarMapper = new vtkPolyDataMapper2D();
+        scaleBarMapper.SetInput(scaleBarPolydata);
+
+        scaleBarActor = new vtkActor2D();
+        scaleBarActor.SetMapper(scaleBarMapper);
+
+        scaleBarTextActor = new vtkTextActor();
+
+        smallBodyActors.add(scaleBarActor);
+        smallBodyActors.add(scaleBarTextActor);
+
+        scaleBarActor.GetProperty().SetColor(1.0, 1.0, 1.0);
+        scaleBarTextActor.GetTextProperty().SetColor(1.0, 1.0, 1.0);
+        scaleBarTextActor.GetTextProperty().BoldOn();
+
+        scaleBarActor.VisibilityOff();
+        scaleBarTextActor.VisibilityOff();
+
+        showScaleBar = Preferences.getInstance().getAsBoolean(Preferences.SHOW_SCALE_BAR, true);
+    }
+
+    public void updateScaleBarPosition(int windowWidth, int windowHeight)
+    {
+        vtkPoints points = scaleBarPolydata.GetPoints();
+
+        int newScaleBarWidthInPixels = (int)Math.min(0.75*windowWidth, 150.0);
+
+        scaleBarWidthInPixels = newScaleBarWidthInPixels;
+        int scaleBarHeight = scaleBarWidthInPixels/9;
+        int buffer = scaleBarWidthInPixels/20;
+        int x = windowWidth - scaleBarWidthInPixels - buffer; // lower left corner x
+        int y = buffer; // lower left corner y
+
+        points.SetPoint(0, x, y, 0.0);
+        points.SetPoint(1, x+scaleBarWidthInPixels, y, 0.0);
+        points.SetPoint(2, x+scaleBarWidthInPixels, y+scaleBarHeight, 0.0);
+        points.SetPoint(3, x, y+scaleBarHeight, 0.0);
+        points.SetPoint(4, x, y, 0.0);
+
+        scaleBarTextActor.SetPosition(x+2, y+2);
+        scaleBarTextActor.GetTextProperty().SetFontSize(scaleBarHeight-4);
+
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+    }
+
+    public void updateScaleBarValue(double pixelSizeInKm)
+    {
+        if (scaleBarWidthInKm == scaleBarWidthInPixels * pixelSizeInKm)
+            return;
+
+        scaleBarWidthInKm = scaleBarWidthInPixels * pixelSizeInKm;
+
+        if (pixelSizeInKm <= 0.0)
+        {
+            scaleBarActor.VisibilityOff();
+            scaleBarTextActor.VisibilityOff();
+        }
+        else
+        {
+            if (showScaleBar)
+            {
+                scaleBarActor.VisibilityOn();
+                scaleBarTextActor.VisibilityOn();
+            }
+
+            if (scaleBarWidthInKm < 1.0)
+                scaleBarTextActor.SetInput(String.format("%.2f m", 1000.0*scaleBarWidthInKm));
+            else
+                scaleBarTextActor.SetInput(String.format("%.2f km", scaleBarWidthInKm));
+        }
+
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+    }
+
+    public void setShowScaleBar(boolean enabled)
+    {
+        this.showScaleBar = enabled;
+        scaleBarActor.SetVisibility(enabled ? 1 : 0);
+        scaleBarTextActor.SetVisibility(enabled ? 1 : 0);
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+    }
+
+    public boolean getShowScaleBar()
+    {
+        return showScaleBar;
     }
 }

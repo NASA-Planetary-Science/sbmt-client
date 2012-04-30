@@ -480,6 +480,24 @@ public class MathUtil
         return vnorm(vec);
     }
 
+    /**
+     * The same as the previous function, but instead of using the slower,
+     * more accurate vnorm function, just take the square root directly
+     * of the sum of square of the components.
+     * @param pt1
+     * @param pt2
+     * @return
+     */
+    static public double distanceBetweenFast(double[] pt1, double[] pt2)
+    {
+        double[] v = {
+                pt2[0]-pt1[0],
+                pt2[1]-pt1[1],
+                pt2[2]-pt1[2]
+        };
+        return Math.sqrt( v[0]*v[0] + v[1]*v[1] + v[2]*v[2] );
+    }
+
     static public double distance2Between(double[] pt1, double[] pt2)
     {
         double[] vec = {

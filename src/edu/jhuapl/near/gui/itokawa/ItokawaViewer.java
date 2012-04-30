@@ -198,4 +198,9 @@ public class ItokawaViewer extends Viewer
     {
         return "Gaskell";
     }
+
+    public ModelManager getModelManager()
+    {
+        return modelManager;
+    }
 }

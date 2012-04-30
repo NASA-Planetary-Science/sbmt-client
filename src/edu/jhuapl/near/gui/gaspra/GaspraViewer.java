@@ -179,4 +179,9 @@ public class GaspraViewer extends Viewer
     {
         return "Thomas";
     }
+
+    public ModelManager getModelManager()
+    {
+        return modelManager;
+    }
 }

@@ -139,4 +139,9 @@ public class SimpleViewer extends Viewer
         String submenu = pathToSmallBodyFileOnServer.substring(2, idxOfSlash).toLowerCase();
         return pathToSmallBodyFileOnServer.substring(1, 2) + submenu;
     }
+
+    public ModelManager getModelManager()
+    {
+        return modelManager;
+    }
 }

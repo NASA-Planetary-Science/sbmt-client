@@ -14,6 +14,7 @@ public class Preferences extends MapUtil
     public static final String LIGHTING_TYPE = "LightingType";
     public static final String LIGHT_INTENSITY = "LightIntensity";
     public static final String SHOW_AXES = "ShowAxes";
+    public static final String SHOW_SCALE_BAR = "ShowScaleBar";
     public static final String INTERACTIVE_AXES = "InteractiveAxes";
     public static final String FIXEDLIGHT_LATITUDE = "FixedLightLatitude";
     public static final String FIXEDLIGHT_LONGITUDE = "FixedLightLongitude";

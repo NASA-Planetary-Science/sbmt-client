@@ -4,6 +4,8 @@ import java.awt.LayoutManager;
 
 import javax.swing.JPanel;
 
+import edu.jhuapl.near.model.ModelManager;
+
 
 /**
  * A viewer is a container which contains a control panel and renderer
@@ -32,6 +34,7 @@ public abstract class Viewer extends JPanel
     }
 
     public abstract Renderer getRenderer();
+    public abstract ModelManager getModelManager();
 
     /**
      * Return a unique name for this viewer. No other viewer may have this

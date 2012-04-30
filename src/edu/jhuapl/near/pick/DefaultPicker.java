@@ -1,6 +1,8 @@
 package edu.jhuapl.near.pick;
 
 import java.awt.Point;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
@@ -83,6 +85,25 @@ public class DefaultPicker extends Picker
         allPropsCellPicker = new vtkCellPicker();
         allPropsCellPicker.SetTolerance(0.002);
         allPropsCellPicker.AddLocator(smallBodyModel.getCellLocator());
+
+        // We need to update the scale bar whenever there is a render or whenever
+        // the window gets resized. Although resizing a window results in a render,
+        // we still need to listen to a resize event since only listening to render
+        // results in the scale bar not being positioned correctly when during the
+        // resize for some reason. Thus we need to register a component
+        // listener on the renderer panel as well to listen explicitly to resize events.
+        // Note also that this functionality is in this class since picking is required
+        // to compute the value of the scale bar.
+        renWin.GetRenderWindow().AddObserver("EndEvent", this, "updateScaleBarValue");
+        renWin.addComponentListener(new ComponentAdapter()
+        {
+            @Override
+            public void componentResized(ComponentEvent e)
+            {
+                updateScaleBarValue();
+                updateScaleBarPosition();
+            }
+        });
     }
 
     public void setSuppressPopups(boolean b)
@@ -289,6 +310,64 @@ public class DefaultPicker extends Picker
         {
             statusBar.setRightText("Distance: " + distanceStr + " ");
         }
+    }
+
+    /**
+     * Computes the size of a pixel in body fixed coordinates. This is only meaningful
+     * when the user is zoomed in a lot. To compute a result all 4 corners of the
+     * view window must intersect the asteroid.
+     *
+     * @return
+     */
+    private double computeSizeOfPixel()
+    {
+        // Do a pick at each of the 4 corners of the renderer
+        long currentTime = System.currentTimeMillis();
+        int width = renWin.getWidth();
+        int height = renWin.getHeight();
+
+        int[][] corners = { {0, 0}, {width-1, 0}, {width-1, height-1}, {0, height-1} };
+        double[][] points = new double[4][3];
+        for (int i=0; i<4; ++i)
+        {
+            int pickSucceeded = doPick(currentTime, corners[i][0], corners[i][1], smallBodyCellPicker, renWin);
+
+            if (pickSucceeded == 1)
+            {
+                points[i] = smallBodyCellPicker.GetPickPosition();
+            }
+            else
+            {
+                return -1.0;
+            }
+        }
+
+        // Compute the scale if all 4 points intersect by averaging the distance of all 4 sides
+        double bottom = MathUtil.distanceBetweenFast(points[0], points[1]);
+        double right  = MathUtil.distanceBetweenFast(points[1], points[2]);
+        double top    = MathUtil.distanceBetweenFast(points[2], points[3]);
+        double left   = MathUtil.distanceBetweenFast(points[3], points[0]);
+
+        double sizeOfPixel =
+                ( bottom / (double)(width-1)  +
+                  right  / (double)(height-1) +
+                  top    / (double)(width-1)  +
+                  left   / (double)(height-1) ) / 4.0;
+
+        return sizeOfPixel;
+    }
+
+    private void updateScaleBarValue()
+    {
+        double sizeOfPixel = computeSizeOfPixel();
+        SmallBodyModel smallBodyModel = modelManager.getSmallBodyModel();
+        smallBodyModel.updateScaleBarValue(sizeOfPixel);
+    }
+
+    public void updateScaleBarPosition()
+    {
+        SmallBodyModel smallBodyModel = modelManager.getSmallBodyModel();
+        smallBodyModel.updateScaleBarPosition(renWin.getWidth(), renWin.getHeight());
     }
 
     public void keyPressed(KeyEvent e)

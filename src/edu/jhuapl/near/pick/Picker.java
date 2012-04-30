@@ -185,14 +185,19 @@ public abstract class Picker implements
         return pickSucceeded;
     }
 */
+
     protected int doPick(MouseEvent e, vtkCellPicker picker, vtkRenderWindowPanel renWin)
+    {
+        return doPick(e.getWhen(), e.getX(), e.getY(), picker, renWin);
+    }
+
+    protected int doPick(final long when, int x, int y, vtkCellPicker picker, vtkRenderWindowPanel renWin)
     {
         if (pickingEnabled == false)
             return 0;
 
         // Don't do a pick if the event is more than a third of a second old
         final long currentTime = System.currentTimeMillis();
-        final long when = e.getWhen();
 
         //System.err.println("elapsed time " + (currentTime - when));
         if (currentTime - when > 333)
@@ -215,7 +220,7 @@ public abstract class Picker implements
         renWin.lock();
 
         picker.SetTolerance(tolerance);
-        int pickSucceeded = picker.Pick(e.getX(), renWin.getHeight()-e.getY()-1, 0.0, renWin.GetRenderer());
+        int pickSucceeded = picker.Pick(x, renWin.getHeight()-y-1, 0.0, renWin.GetRenderer());
         picker.SetTolerance(originalTolerance);
 
         renWin.unlock();
