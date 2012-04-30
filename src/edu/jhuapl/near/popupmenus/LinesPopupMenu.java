@@ -56,7 +56,8 @@ public class LinesPopupMenu extends StructuresPopupMenu
 
             try
             {
-                model.saveProfile(cellIdLastClicked, file);
+                if (file != null)
+                    model.saveProfile(cellIdLastClicked, file);
             }
             catch (Exception e1)
             {

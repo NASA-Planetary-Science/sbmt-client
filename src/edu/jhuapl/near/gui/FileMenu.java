@@ -98,7 +98,8 @@ public class FileMenu extends JMenu
 
             try
             {
-                rootPanel.getCurrentViewer().getModelManager().getSmallBodyModel().saveAsPLT(file);
+                if (file != null)
+                    rootPanel.getCurrentViewer().getModelManager().getSmallBodyModel().saveAsPLT(file);
             }
             catch (Exception e1)
             {
