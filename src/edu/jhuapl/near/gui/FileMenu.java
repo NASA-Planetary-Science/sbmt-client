@@ -1,10 +1,12 @@
 package edu.jhuapl.near.gui;
 
 import java.awt.event.ActionEvent;
+import java.io.File;
 
 import javax.swing.AbstractAction;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 
 import edu.jhuapl.near.util.Configuration;
 
@@ -20,6 +22,8 @@ public class FileMenu extends JMenu
         this.rootPanel = rootPanel;
 
         JMenuItem mi = new JMenuItem(new SaveImageAction());
+        this.add(mi);
+        mi = new JMenuItem(new SaveShapeModelAction());
         this.add(mi);
 
         // On macs the exit action is in the Application menu not the file menu
@@ -78,6 +82,33 @@ public class FileMenu extends JMenu
         public void actionPerformed(ActionEvent actionEvent)
         {
             rootPanel.getCurrentViewer().getRenderer().saveToFile();
+        }
+    }
+
+    private class SaveShapeModelAction extends AbstractAction
+    {
+        public SaveShapeModelAction()
+        {
+            super("Export Shape Model...");
+        }
+
+        public void actionPerformed(ActionEvent actionEvent)
+        {
+            File file = CustomFileChooser.showSaveDialog(null, "Export Shape Model", "model.plt");
+
+            try
+            {
+                rootPanel.getCurrentViewer().getModelManager().getSmallBodyModel().saveAsPLT(file);
+            }
+            catch (Exception e1)
+            {
+                e1.printStackTrace();
+                JOptionPane.showMessageDialog(null,
+                        "An error occurred exporting the shape model.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
         }
     }
 

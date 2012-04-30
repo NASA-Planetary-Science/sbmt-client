@@ -1,7 +1,9 @@
 package edu.jhuapl.near.util;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -2099,5 +2101,42 @@ public class PolyDataUtil
         }
 
         return shapeModel;
+    }
+
+    static public void saveShapeModelAsPLT(vtkPolyData polydata, String filename) throws IOException
+    {
+        // This saves it out in exactly the same format as Bob Gaskell's shape
+        // models including precision and field width. That's why there's
+        // extra space padded at the end to make all lines the same length.
+
+        FileWriter fstream = new FileWriter(filename);
+        BufferedWriter out = new BufferedWriter(fstream);
+
+        vtkPoints points = polydata.GetPoints();
+
+        int numberPoints = polydata.GetNumberOfPoints();
+        int numberCells = polydata.GetNumberOfCells();
+        out.write(String.format("%12d %12d                              \r\n", numberPoints, numberCells));
+
+        double[] p = new double[3];
+        for (int i=0; i<numberPoints; ++i)
+        {
+            points.GetPoint(i, p);
+            out.write(String.format("%10d%15.5f%15.5f%15.5f\r\n", (i+1), p[0], p[1], p[2]));
+        }
+
+        polydata.BuildCells();
+        vtkIdList idList = new vtkIdList();
+        for (int i=0; i<numberCells; ++i)
+        {
+            polydata.GetCellPoints(i, idList);
+            int id0 = idList.GetId(0);
+            int id1 = idList.GetId(1);
+            int id2 = idList.GetId(2);
+            out.write(String.format("%10d%10d%10d%10d               \r\n", (i+1), (id0+1), (id1+1), (id2+1)));
+        }
+
+        idList.Delete();
+        out.close();
     }
 }

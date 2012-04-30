@@ -1710,4 +1710,9 @@ public class SmallBodyModel extends Model
     {
         return showScaleBar;
     }
+
+    public void saveAsPLT(File file) throws IOException
+    {
+        PolyDataUtil.saveShapeModelAsPLT(smallBodyPolyData, file.getAbsolutePath());
+    }
 }
