@@ -19,6 +19,7 @@ struct LidarPoint
     double closestpoint[3]; /* closest point on asteroid to targetpos */
     double boredir[3];
     double ancillary1[3]; /* arbitrary place for ancillary data as needed */
+    double intersectpos[3]; /* intersection point on asteroid in direction of boresight. may be different from closest point */
     unsigned char isNoise; /* 1 if considered noise, 0 otherwise */
     LidarPoint() {}
     LidarPoint(double t, double p[3]):

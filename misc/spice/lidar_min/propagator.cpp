@@ -10,7 +10,8 @@
 
 const double g_G = 6.67384e-11 * 1.0e-9;
 
-Propagator::Propagator()
+Propagator::Propagator():
+    increment__(500)
 {
 }
 
@@ -146,6 +147,9 @@ LidarTrack Propagator::computePropagatedTrajectory()
 
     LidarTrack propagatedTrajectory;
     propagatedTrajectory.push_back(referenceTrajectory__[0]);
+    propagatedTrajectory[0].scpos[0] = y[0];
+    propagatedTrajectory[0].scpos[1] = y[1];
+    propagatedTrajectory[0].scpos[2] = y[2];
     propagatedTrajectory[0].ancillary1[0] = referenceTrajectory__[0].scpos[0];
     propagatedTrajectory[0].ancillary1[1] = referenceTrajectory__[0].scpos[1];
     propagatedTrajectory[0].ancillary1[2] = referenceTrajectory__[0].scpos[2];
@@ -153,7 +157,7 @@ LidarTrack Propagator::computePropagatedTrajectory()
     int size = referenceTrajectory__.size();
     double t = referenceTrajectory__[0].time;
     double tf = referenceTrajectory__[size-1].time;
-    for (int i=1; i<size; )
+    for (int i=increment__; i<size; )
     {
         //cout << "Step " << i << " / " << size << endl;
         //printf ("%f %f %f %f %f %f %f\n", t, y[0], y[1], y[2], y[3], y[4], y[5]);
@@ -185,7 +189,7 @@ LidarTrack Propagator::computePropagatedTrajectory()
         // Move forward by several timesteps, otherwise this will take forever
         if (i == size -1)
             break;
-        i += 1000;
+        i += increment__;
         if (i >= size)
             i = size -1;
     }

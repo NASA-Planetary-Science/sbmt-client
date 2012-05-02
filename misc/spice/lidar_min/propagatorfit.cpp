@@ -202,6 +202,7 @@ double PropagatorFit::funcLeastSquares(const double* x/*, void* params*/)
     propagator__.setMass(mass__);
     propagator__.setInitialPosition(initialPosition__);
     propagator__.setInitialVelocity(initialVelocity__);
+    propagator__.setIncrement(400);
 
     optimalTrajectory__ = propagator__.run();
 
@@ -212,6 +213,46 @@ double PropagatorFit::funcLeastSquares(const double* x/*, void* params*/)
 
     cout << "error : " << error__ << endl;
     return error__;
+}
+
+LidarTrack PropagatorFit::getFullOptimalTrajectory()
+{
+    propagator__.setDensity(density__);
+    propagator__.setPressure(pressure__);
+    propagator__.setMass(mass__);
+    propagator__.setInitialPosition(initialPosition__);
+    propagator__.setInitialVelocity(initialVelocity__);
+    propagator__.setIncrement(1);
+
+    LidarTrack fullOptTraj = propagator__.run();
+
+    int found = 0;
+    int size = fullOptTraj.size();
+
+    // Now intersect each point with the asteroid
+    for (int i=0; i<size; ++i)
+    {
+        // Convert position to body fixed coordinates. Note that boredir is
+        // already in the body-fixed frame.
+        double newPos[3];
+        const char* ref = "J2000";
+        const char* frame = LidarData::getBodyFrame();
+        double i2bmat[3][3];
+        pxform_c(ref, frame, fullOptTraj[i].time, i2bmat);
+        mxv_c(i2bmat, fullOptTraj[i].scpos, newPos);
+
+        // Compute the range to the asteroid from this position
+        intersectWithLineVtk(newPos, fullOptTraj[i].boredir, fullOptTraj[i].intersectpos, &found);
+
+        if (!found)
+        {
+            fullOptTraj[i].intersectpos[0] = 0.0;
+            fullOptTraj[i].intersectpos[1] = 0.0;
+            fullOptTraj[i].intersectpos[2] = 0.0;
+        }
+    }
+
+    return fullOptTraj;
 }
 
 void PropagatorFit::doLeastSquares()

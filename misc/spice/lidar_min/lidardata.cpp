@@ -52,6 +52,9 @@ LidarTrack LidarData::loadTrack(const string &filename,
                     p.targetpos[0] = atof(tokens[6].c_str());
                     p.targetpos[1] = atof(tokens[7].c_str());
                     p.targetpos[2] = atof(tokens[8].c_str());
+                    p.intersectpos[0] = atof(tokens[9].c_str());
+                    p.intersectpos[1] = atof(tokens[10].c_str());
+                    p.intersectpos[2] = atof(tokens[11].c_str());
 
                     p.boredir[0] = p.targetpos[0] - p.scpos[0];
                     p.boredir[1] = p.targetpos[1] - p.scpos[1];
@@ -156,11 +159,17 @@ void LidarData::saveTrack(const string &filename,
                     pxform_c(ref, frame, p.time, i2bmat);
                     mxv_c(i2bmat, p.scpos, newPos);
 
-                    fout << 0 << " " << strTime << " 0 " << newPos[0] << " " << newPos[1] << " " << newPos[2] << " 0 0 0\n";
+                    fout << 0 << " " << strTime << " " << p.range << " "
+                         << newPos[0] << " " << newPos[1] << " " << newPos[2] << " "
+                         << p.targetpos[0] << " " << p.targetpos[1] << " " << p.targetpos[2] << " "
+                         << p.intersectpos[0] << " " << p.intersectpos[1] << " " << p.intersectpos[2] << "\n";
                 }
                 else
                 {
-                    fout << 0 << " " << strTime << " 0 " << p.scpos[0] << " " << p.scpos[1] << " " << p.scpos[2] << " 0 0 0\n";
+                    fout << 0 << " " << strTime << " " << p.range << " "
+                         << p.scpos[0] << " " << p.scpos[1] << " " << p.scpos[2] << " "
+                         << p.targetpos[0] << " " << p.targetpos[1] << " " << p.targetpos[2] << " "
+                         << p.intersectpos[0] << " " << p.intersectpos[1] << " " << p.intersectpos[2] << "\n";
                 }
             }
             else if (bodyType == EROS)

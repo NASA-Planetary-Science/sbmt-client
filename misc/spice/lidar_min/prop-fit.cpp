@@ -185,6 +185,7 @@ int main(int argc, char** argv)
 
     LidarData::saveTrack(outfile, optimalTrack, true);
     LidarData::saveTrack(outfile+"-ref", referenceTrajectory, true);
+    LidarData::saveTrack(outfile+"-full", propFit.getFullOptimalTrajectory(), true);
 
     // save out the error stats to a text file
     ofstream fout(statsfile);

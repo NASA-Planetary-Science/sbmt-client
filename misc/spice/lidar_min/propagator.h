@@ -38,6 +38,11 @@ public:
     }
     void setShapeModelFilename(const string& filename);
 
+    void setIncrement(int inc)
+    {
+        increment__ = inc;
+    }
+
     LidarTrack run();
 
     void totalAcceleration(double t, const double pos[], double acc[]);
@@ -57,6 +62,7 @@ private:
     double mass__;
     double initialPosition__[3];
     double initialVelocity__[3];
+    int increment__;
     LidarTrack referenceTrajectory__;
 };
 

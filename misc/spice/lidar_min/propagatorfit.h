@@ -97,6 +97,9 @@ public:
     LidarTrack run();
     double funcLeastSquares(const double *x);
 
+    //! Get the full optimal trajectory with data at time for
+    //! for which the reference trajectory has data.
+    LidarTrack getFullOptimalTrajectory();
 
 private:
 
