@@ -139,7 +139,7 @@ public class SmallBodyModel extends Model
     private vtkPolyDataMapper2D scaleBarMapper;
     private vtkActor2D scaleBarActor;
     private vtkTextActor scaleBarTextActor;
-    private int scaleBarWidthInPixels = -1;
+    private int scaleBarWidthInPixels = 0;
     private double scaleBarWidthInKm = -1.0;
     private boolean showScaleBar = true;
 
@@ -1671,24 +1671,27 @@ public class SmallBodyModel extends Model
 
     public void updateScaleBarValue(double pixelSizeInKm)
     {
-        if (scaleBarWidthInKm == scaleBarWidthInPixels * pixelSizeInKm)
+        if (scaleBarWidthInPixels <= 0 ||
+            scaleBarWidthInKm == scaleBarWidthInPixels * pixelSizeInKm)
+        {
             return;
+        }
 
         scaleBarWidthInKm = scaleBarWidthInPixels * pixelSizeInKm;
 
-        if (pixelSizeInKm <= 0.0)
+        if (pixelSizeInKm > 0.0 && showScaleBar)
+        {
+            scaleBarActor.VisibilityOn();
+            scaleBarTextActor.VisibilityOn();
+        }
+        else
         {
             scaleBarActor.VisibilityOff();
             scaleBarTextActor.VisibilityOff();
         }
-        else
-        {
-            if (showScaleBar)
-            {
-                scaleBarActor.VisibilityOn();
-                scaleBarTextActor.VisibilityOn();
-            }
 
+        if (pixelSizeInKm > 0.0)
+        {
             if (scaleBarWidthInKm < 1.0)
                 scaleBarTextActor.SetInput(String.format("%.2f m", 1000.0*scaleBarWidthInKm));
             else
@@ -1701,8 +1704,10 @@ public class SmallBodyModel extends Model
     public void setShowScaleBar(boolean enabled)
     {
         this.showScaleBar = enabled;
-        scaleBarActor.SetVisibility(enabled ? 1 : 0);
-        scaleBarTextActor.SetVisibility(enabled ? 1 : 0);
+        // The following forces the scale bar to be redrawn.
+        scaleBarWidthInKm = -1.0;
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+        // Note that we call firePropertyChange *twice*. Not really sure why.
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
