@@ -108,7 +108,7 @@ int main(int argc, char** argv)
         }
         else if (!strcmp(argv[i], "--file"))
         {
-            howToEvalute = AVERAGE_VERTICES;
+            howToEvalute = FROM_FILE;
             fieldpointsfile = argv[++i];
         }
         else
