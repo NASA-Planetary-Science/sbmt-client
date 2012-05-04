@@ -66,6 +66,8 @@ double getGravityCheng(const double fieldPoint[3], double acc[3])
     acc[1] = 0.0;
     acc[2] = 0.0;
 
+    int pointIds[3];
+
     // Compute the edge data
     int numFaces = polyData->getNumberOfPlates();
     for (int i=0; i<numFaces; ++i)
@@ -79,13 +81,49 @@ double getGravityCheng(const double fieldPoint[3], double acc[3])
         double mag_x_minus_R = Norm(x_minus_R);
 
         if (mag_x_minus_R == 0.0)
-            continue;
+        {
+            // No contribution to potential if we reach here. Only acceleration.
+            polyData->getPlatePoints(i, pointIds);
+            int p1 = pointIds[0];
+            int p2 = pointIds[1];
+            int p3 = pointIds[2];
 
-        potential +=  x_minus_R_dot_N / mag_x_minus_R;
+            double pt1[3];
+            double pt2[3];
+            double pt3[3];
+            polyData->getPoint(p1, pt1);
+            polyData->getPoint(p2, pt2);
+            polyData->getPoint(p3, pt3);
 
-        acc[0] -= ( (fc.normal[0] - x_minus_R[0] * x_minus_R_dot_N / (mag_x_minus_R*mag_x_minus_R)) / mag_x_minus_R );
-        acc[1] -= ( (fc.normal[1] - x_minus_R[1] * x_minus_R_dot_N / (mag_x_minus_R*mag_x_minus_R)) / mag_x_minus_R );
-        acc[2] -= ( (fc.normal[2] - x_minus_R[2] * x_minus_R_dot_N / (mag_x_minus_R*mag_x_minus_R)) / mag_x_minus_R );
+            double _2vjik[3] = {
+                2.0 * pt2[0] - pt1[0] - pt3[0],
+                2.0 * pt2[1] - pt1[1] - pt3[1],
+                2.0 * pt2[2] - pt1[2] - pt3[2]
+            };
+            double _2vijk[3] = {
+                2.0 * pt1[0] - pt2[0] - pt3[0],
+                2.0 * pt1[1] - pt2[1] - pt3[1],
+                2.0 * pt1[2] - pt2[2] - pt3[2]
+            };
+            double _2vkij[3] = {
+                2.0 * pt3[0] - pt1[0] - pt2[0],
+                2.0 * pt3[1] - pt1[1] - pt2[1],
+                2.0 * pt3[2] - pt1[2] - pt2[2]
+            };
+            double factor = 3.0 / Norm(_2vjik) + 3.0 / Norm(_2vijk) + 3.0 / Norm(_2vkij);
+
+            acc[0] -= fc.normal[0] * factor;
+            acc[1] -= fc.normal[1] * factor;
+            acc[2] -= fc.normal[2] * factor;
+        }
+        else
+        {
+            potential +=  x_minus_R_dot_N / mag_x_minus_R;
+
+            acc[0] -= ( (fc.normal[0] - x_minus_R[0] * x_minus_R_dot_N / (mag_x_minus_R*mag_x_minus_R)) / mag_x_minus_R );
+            acc[1] -= ( (fc.normal[1] - x_minus_R[1] * x_minus_R_dot_N / (mag_x_minus_R*mag_x_minus_R)) / mag_x_minus_R );
+            acc[2] -= ( (fc.normal[2] - x_minus_R[2] * x_minus_R_dot_N / (mag_x_minus_R*mag_x_minus_R)) / mag_x_minus_R );
+        }
     }
 
     potential *= 0.25;
