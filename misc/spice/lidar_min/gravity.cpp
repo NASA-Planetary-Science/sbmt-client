@@ -262,6 +262,10 @@ int main(int argc, char** argv)
             else if(howToEvalute == AVERAGE_VERTICES)
             {
                 double pt[3];
+                acc[0] = 0.0;
+                acc[1] = 0.0;
+                acc[2] = 0.0;
+                potential = 0.0;
                 for (int j=0; j<3; ++j)
                 {
                     int ptId = idList[j];
