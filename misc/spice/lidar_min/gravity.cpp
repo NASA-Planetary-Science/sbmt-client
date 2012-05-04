@@ -40,13 +40,18 @@ static void usage()
          << "shape model at specified points and saves the values to files.\n"
          << "Usage: gravity [options] <platemodel-file> <output-potential-file> <output-acceleration-file>\n"
          << "Options:\n"
-         << " -d          Density of shape model in g/cm^3 (default is 1)\n"
-         << " -r          Rotation rate of shape model in radians/sec (default is 0)\n"
-         << " --werner    Use the Werner algorithm for computing the gravity (this is the default if neither --werner or --cheng option provided)\n"
-         << " --cheng     Use Andy Cheng's algorithm for computing the gravity (default is to use Werner method if neither --werner or --cheng option provided)\n"
-         << " --centers   Evaluate gravity directly at the centers of plates (this is the default if neither --centers or -vertices option provided)\n"
-         << " --vertices  Evaluate gravity of each plate by avereging the gravity computed at the 3 vertices of the plate (default is to evaluate directly at centers) \n"
-         << " --file      Evaluate gravity at points specified in file (default is to evaluate directly at centers of plates of shape model)\n";
+         << " -d <value>         Density of shape model in g/cm^3 (default is 1)\n"
+         << " -r <value>         Rotation rate of shape model in radians/sec (default is 0)\n"
+         << " --werner           Use the Werner algorithm for computing the gravity (this is the\n"
+         << "                    default if neither --werner or --cheng option provided)\n"
+         << " --cheng            Use Andy Cheng's algorithm for computing the gravity (default is to\n"
+         << "                    use Werner method if neither --werner or --cheng option provided)\n"
+         << " --centers          Evaluate gravity directly at the centers of plates (this is the default\n"
+         << "                    if neither --centers or -vertices option provided)\n"
+         << " --vertices         Evaluate gravity of each plate by avereging the gravity computed at the\n"
+         << "                    3 vertices of the plate (default is to evaluate directly at centers)\n"
+         << " --file <filename>  Evaluate gravity at points specified in file (default is to evaluate directly\n"
+         << "                    at centers of plates of shape model)\n";
 
     exit(0);
 }
@@ -116,7 +121,7 @@ int main(int argc, char** argv)
             break;
         }
     }
-    cout << argc << " " << i << endl;
+
     // There must be numRequiredArgs arguments remaining after the options. Otherwise abort.
     if (argc - i != numberRequiredArgs)
         usage();
