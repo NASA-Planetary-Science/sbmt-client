@@ -191,9 +191,9 @@ Platemodel* initializeGravityWerner(const char* filename)
     // Now convert the edgeDataMap to a vector
     edgeData.resize(numFaces*3/2);
     int i = 0;
-    EdgeDataMap::const_iterator it;
+    EdgeDataMap::const_iterator it = edgeDataMap.begin();
     EdgeDataMap::const_iterator end = edgeDataMap.end();
-    for (it = edgeDataMap.begin(); it != end; ++it)
+    for (; it != end; ++it)
     {
         edgeData[i] = it->second;
         ++i;

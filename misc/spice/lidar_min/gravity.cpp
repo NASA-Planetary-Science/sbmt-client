@@ -1,5 +1,7 @@
 #include <iostream>
 #include <fstream>
+#include <time.h>
+#include <libgen.h>
 #include "gravity-werner.h"
 #include "gravity-cheng.h"
 #include "gravity-point.h"
@@ -38,7 +40,7 @@ static void usage()
 {
     cout << "This program computes the gravitational acceleration and potential of a \n"
          << "shape model at specified points and saves the values to files.\n"
-         << "Usage: gravity [options] <platemodel-file> <output-potential-file> <output-acceleration-file>\n"
+         << "Usage: gravity [options] <platemodelfile>\n"
          << "Options:\n"
          << " -d <value>         Density of shape model in g/cm^3 (default is 1)\n"
          << " -r <value>         Rotation rate of shape model in radians/sec (default is 0)\n"
@@ -47,18 +49,18 @@ static void usage()
          << " --cheng            Use Andy Cheng's algorithm for computing the gravity (default is to\n"
          << "                    use Werner method if neither --werner or --cheng option provided)\n"
          << " --centers          Evaluate gravity directly at the centers of plates (this is the default\n"
-         << "                    if neither --centers or -vertices option provided)\n"
+         << "                    if neither --centers or -vertices or --file option provided)\n"
          << " --vertices         Evaluate gravity of each plate by avereging the gravity computed at the\n"
-         << "                    3 vertices of the plate (default is to evaluate directly at centers)\n"
-         << " --file <filename>  Evaluate gravity at points specified in file (default is to evaluate directly\n"
-         << "                    at centers of plates of shape model)\n";
+         << "                    3 vertices of the plate (default is to evaluate at centers)\n"
+         << " --file <filename>  Evaluate gravity at points specified in file (default is to evaluate\n"
+         << "                    at centers)\n";
 
     exit(0);
 }
 
 int main(int argc, char** argv)
 {
-    const int numberRequiredArgs = 3;
+    const int numberRequiredArgs = 1;
     if (argc-1 < numberRequiredArgs)
         usage();
 
@@ -127,20 +129,29 @@ int main(int argc, char** argv)
         usage();
 
     char* pltfile = argv[i];
-    char* outputPot = argv[i+1];
-    char* outputAcc = argv[i+2];
 
+    string pltfilebasename = basename(argv[i]);
+    string outputPot = pltfilebasename + "-potential.txt";
+    string outputAcc = pltfilebasename + "-acceleration.txt";
+    string outputAccMag = pltfilebasename + "-acceleration-magnitude.txt";
 
+    cout.setf(ios::fixed,ios::floatfield);
+    cout.precision(2);
+    clock_t t1, t2;
+
+    t1 = clock();
     Platemodel* polyData = 0;
-
     if (gravityType == WERNER)
         polyData = initializeGravityWerner(pltfile);
     else if (gravityType == CHENG)
         polyData = initializeGravityCheng(pltfile);
     else
         abort();
+    t2 = clock();
+    double elapsed_time = (double)(t2 - t1) / CLOCKS_PER_SEC;
+    cout << "Initialization time: " << elapsed_time  << " sec" << endl;
 
-    ofstream foutP(outputPot);
+    ofstream foutP(outputPot.c_str());
     if (!foutP.is_open())
     {
         cerr << "Error: Unable to open file for writing" << endl;
@@ -148,14 +159,21 @@ int main(int argc, char** argv)
     }
     foutP.precision(16);
 
-    ofstream foutA(outputAcc);
+    ofstream foutA(outputAcc.c_str());
     if (!foutA.is_open())
     {
         cerr << "Error: Unable to open file for writing" << endl;
         exit(1);
     }
     foutA.precision(16);
-    cout.precision(16);
+
+    ofstream foutAM(outputAccMag.c_str());
+    if (!foutAM.is_open())
+    {
+        cerr << "Error: Unable to open file for writing" << endl;
+        exit(1);
+    }
+    foutAM.precision(16);
 
     double acc[3] = {0.0, 0.0, 0.0};
     double potential = 0.0;
@@ -165,6 +183,7 @@ int main(int argc, char** argv)
         ifstream fin(fieldpointsfile);
         if (fin.is_open())
         {
+            t1 = clock();
             string line;
             int count = 0;
             while (getline(fin, line))
@@ -197,11 +216,21 @@ int main(int argc, char** argv)
                 double accMag = Norm(acc);
 
                 foutP << potential << endl;
-                foutA << accMag << endl;
+                foutA << acc[0] << " " << acc[1] << " " << acc[2] << endl;
+                foutAM << accMag << endl;
 
-                if (count % 100 == 0)
-                    cout << "Number plates completed: " << count << endl;
+                if ((count+1) % 100 == 0)
+                {
+                    t2 = clock();
+                    double elapsed_time = (double)(t2 - t1) / CLOCKS_PER_SEC;
+                    cout << "Time to evaluate at " << count+1 << " points: " << elapsed_time  << " sec" << endl;
+                }
+
+                ++count;
             }
+            t2 = clock();
+            double elapsed_time = (double)(t2 - t1) / CLOCKS_PER_SEC;
+            cout << "Time to evaluate at " << count << " points: " << elapsed_time  << " sec" << endl;
         }
         else
         {
@@ -220,8 +249,10 @@ int main(int argc, char** argv)
                 results[i].filled = false;
         }
 
+        t1 = clock();
         int idList[3];
 
+        int numVertices = 0;
         int numPlates = polyData->getNumberOfPlates();
         for (int i=0; i<numPlates; ++i)
         {
@@ -258,6 +289,13 @@ int main(int argc, char** argv)
                     acc[1] += 1.0e3 * omega*omega * center[1];
                     // do nothing for z component
                 }
+
+                if ((i+1) % 100 == 0)
+                {
+                    t2 = clock();
+                    double elapsed_time = (double)(t2 - t1) / CLOCKS_PER_SEC;
+                    cout << "Time to evaluate " << i+1 << " plates: " << elapsed_time  << " sec" << endl;
+                }
             }
             else if(howToEvalute == AVERAGE_VERTICES)
             {
@@ -293,6 +331,14 @@ int main(int argc, char** argv)
                         }
 
                         result.filled = true;
+
+                        if ((numVertices+1) % 100 == 0)
+                        {
+                            t2 = clock();
+                            double elapsed_time = (double)(t2 - t1) / CLOCKS_PER_SEC;
+                            cout << "Time to evaluate " << numVertices+1 << " vertices: " << elapsed_time  << " sec" << endl;
+                        }
+                        ++numVertices;
                     }
 
                     potential += result.potential;
@@ -310,13 +356,18 @@ int main(int argc, char** argv)
             double accMag = Norm(acc);
 
             foutP << potential << endl;
-            foutA << accMag << endl;
-
-            if (i % 100 == 0)
-                cout << "Number plates completed: " << i << endl;
+            foutA << acc[0] << " " << acc[1] << " " << acc[2] << endl;
+            foutAM << accMag << endl;
         }
+        t2 = clock();
+        double elapsed_time = (double)(t2 - t1) / CLOCKS_PER_SEC;
+        if (howToEvalute == EVALUATE_AT_CENTER)
+            cout << "Time to evaluate " << numPlates << " plates: " << elapsed_time  << " sec" << endl;
+        else if(howToEvalute == AVERAGE_VERTICES)
+            cout << "Time to evaluate " << numVertices << " vertices: " << elapsed_time  << " sec" << endl;
     }
 
     foutP.close();
     foutA.close();
+    foutAM.close();
 }
