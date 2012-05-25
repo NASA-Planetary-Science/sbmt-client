@@ -145,4 +145,9 @@ public class SimpleGaskellViewer extends Viewer
     {
         return modelManager;
     }
+
+    public PickManager getPickManager()
+    {
+        return pickManager;
+    }
 }

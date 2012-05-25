@@ -184,4 +184,9 @@ public class MathildeViewer extends Viewer
     {
         return modelManager;
     }
+
+    public PickManager getPickManager()
+    {
+        return pickManager;
+    }
 }

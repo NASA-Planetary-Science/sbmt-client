@@ -202,4 +202,9 @@ public class ErosViewer extends Viewer
     {
         return modelManager;
     }
+
+    public PickManager getPickManager()
+    {
+        return pickManager;
+    }
 }

@@ -126,4 +126,9 @@ public class CustomViewer extends Viewer
     {
         return modelManager;
     }
+
+    public PickManager getPickManager()
+    {
+        return pickManager;
+    }
 }

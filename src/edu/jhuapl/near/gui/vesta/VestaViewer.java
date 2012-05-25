@@ -180,4 +180,9 @@ public class VestaViewer extends Viewer
     {
         return modelManager;
     }
+
+    public PickManager getPickManager()
+    {
+        return pickManager;
+    }
 }

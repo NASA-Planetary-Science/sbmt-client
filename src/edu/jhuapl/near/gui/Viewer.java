@@ -5,6 +5,7 @@ import java.awt.LayoutManager;
 import javax.swing.JPanel;
 
 import edu.jhuapl.near.model.ModelManager;
+import edu.jhuapl.near.pick.PickManager;
 
 
 /**
@@ -35,6 +36,7 @@ public abstract class Viewer extends JPanel
 
     public abstract Renderer getRenderer();
     public abstract ModelManager getModelManager();
+    public abstract PickManager getPickManager();
 
     /**
      * Return a unique name for this viewer. No other viewer may have this
