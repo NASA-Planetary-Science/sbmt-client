@@ -17,9 +17,8 @@ VTKFILE='/project/nearsdc/data/ITOKAWA/ver512q.vtk'
 PLTFILE='/project/nearsdc/data/ITOKAWA/ver64q.tab'
 KERNEL='/project/nearsdc/spice-kernels/hayabusa/kernels.txt'
 INPUT='/project/nearsdc/data/ITOKAWA/LIDAR/cdr/cdr_all_v2.tab'
-OUTPUT='/project/nearsdc/data/ITOKAWA/LIDAR/cdr/prop-traj.txt'
 
-goodIntervals = process_dv_file.goodIntervals[5:14]
+goodIntervals = process_dv_file.goodIntervals[5:]
 
 f2 = open('optimization-output.txt-'+gethostname(), 'w')
 
@@ -33,14 +32,15 @@ def funcToMinimize(x):
         t0 = str(interval[0])
         t1 = str(interval[1])
         statsfile = 'stats-' + str(i) + '.txt-' + gethostname()
-        command = './propagator -ev -d '+density+' -p '+pressure+' -b '+BODY+\
+        OUTPUT='/project/nearsdc/data/ITOKAWA/LIDAR/cdr/prop-traj-' + str(i) + '.txt-' + gethostname()
+        command = './build/propagator -ev -d '+density+' -p '+pressure+' -b '+BODY+\
                   ' -s '+VTKFILE+' -t '+PLTFILE+' -k '+KERNEL+' -i '+INPUT+' -o '+OUTPUT+\
                   ' -start '+t0+' -stop '+t1+' -e '+statsfile
         print command
         commandlist.append(command)
         i = i + 1
 
-    run_jobs_in_parallel.runJobs(commandlist, 12)
+    run_jobs_in_parallel.runJobs(commandlist, 3)
 
     numIntervals=0
     for i in range(len(goodIntervals)):
@@ -72,9 +72,12 @@ def funcToMinimize(x):
 
     return totalError
 
-for i in range(10):
-    for j in range(10):
-        x0 = [1.0+i*(1.0/3.0), j*(1.0/3.0)]
-        error = funcToMinimize(x0)
+x0 = [2.25, 1.66666666666666666666]
+error = funcToMinimize(x0)
+
+#for i in range(0,2):
+#    for j in range(1,10):
+#        x0 = [i*(1.0/4.0), j*(1.0/3.0)]
+#        error = funcToMinimize(x0)
 
 f2.close()
