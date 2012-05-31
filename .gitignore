@@ -2,3 +2,4 @@ bin
 build
 nbbuild
 nbproject/private
+*.pyc
