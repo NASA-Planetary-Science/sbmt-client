@@ -380,8 +380,8 @@ int main(int argc, char** argv)
     double prevError = func(u, 0);
     while (true)
     {
-        optimizeGsl(func, grad, &u[0], N, 0);
-        //optimizeLbfgs(func, &u[0], N, 0);
+        //optimizeGsl(func, grad, &u[0], N, 0);
+        optimizeLbfgs(func, grad, &u[0], N, 0);
 
         double currentError = func(u, 0);
 

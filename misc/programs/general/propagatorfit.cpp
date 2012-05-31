@@ -321,7 +321,7 @@ void PropagatorFit::doLeastSquares()
             }
             cout << "Beginning new optimization. Estimating: " << toEst[i] << " " << toOpt[i] << endl;
             //optimizeGsl(func, 0, x, numVar, this);
-            optimizeLbfgs(func, x, numVar, this);
+            optimizeLbfgs(func, 0, x, numVar, this);
         }
     }
     /*
@@ -371,7 +371,7 @@ void PropagatorFit::doLeastSquares()
                 }
                 cout << "Beginning new optimization. Estimating: " << toEst[i] << endl;
                 //optimizeGsl(func, 0, x, numVar, this);
-                optimizeLbfgs(func, x, numVar, this);
+                optimizeLbfgs(func, 0, x, numVar, this);
             }
             if (error__ >= prevError || numCycles >= 1) // no error reduction, so terminate
                 return;
@@ -393,7 +393,7 @@ void PropagatorFit::doLeastSquares()
         numVar = 8;
 
         optimizeGsl(func, 0, x, numVar, this);
-        //optimizeLbfgs(func, x, numVar, this);
+        //optimizeLbfgs(func, 0, x, numVar, this);
     }
     else
     {
@@ -423,7 +423,7 @@ void PropagatorFit::doLeastSquares()
         }
 
         //optimizeGsl(func, 0, x, numVar, this);
-        optimizeLbfgs(func, x, numVar, this);
+        optimizeLbfgs(func, 0, x, numVar, this);
     }
     */
 }

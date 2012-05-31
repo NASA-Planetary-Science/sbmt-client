@@ -129,7 +129,7 @@ void icp2(struct Point source[], int n, struct Point* additionalPoints)
 
         double prevssd = func(translation, NULL);
 
-        optimizeLbfgs(func, translation, 3, NULL);
+        optimizeLbfgs(func, 0, translation, 3, NULL);
 
         double ssd = func(translation, NULL);
 

@@ -11,6 +11,7 @@
 
 #define DX 0.00001
 static double (*function)(const double* x, void *instance) = 0;
+static void (*gradient)(const double* x, double* g, void *instance) = 0;
 static int N;
 
 
@@ -27,9 +28,10 @@ static void printCurrentValue(double fx, const double* x)
 
 
 /************************************************************************
-* This function numerically computes the gradient of func using finite differences
+* This function numerically computes the gradient of func using finite differences.
+* On output, the gradient is stored in g.
 ************************************************************************/
-static void grad(const double* coef, double* gradient, void *instance)
+static void gradientNumeric(const double* coef, double* g, void *instance)
 {
     double f = function(coef, instance);
 
@@ -45,7 +47,7 @@ static void grad(const double* coef, double* gradient, void *instance)
 
         double f2 = function(coef2, instance);
 
-        gradient[i] = (f2 - f) / DX;
+        g[i] = (f2 - f) / DX;
     }
 }
 
@@ -59,7 +61,11 @@ static lbfgsfloatval_t evaluate(
     )
 {
     lbfgsfloatval_t fx = function(x, instance);
-    grad(x, g, instance);
+    if (gradient != 0)
+        gradient(x, g, instance);
+    else
+        gradientNumeric(x, g, instance);
+
     return fx;
 }
 
@@ -87,6 +93,7 @@ static int progress(
 
 /** Public function */
 void optimizeLbfgs(double (*func)(const double* x, void *externalParams),
+                   void (*grad)(const double* x, double* g, void *instance),
                    double* minimizer,
                    int numVar,
                    void *instance)
@@ -100,6 +107,7 @@ void optimizeLbfgs(double (*func)(const double* x, void *externalParams),
     }
 
     function = func;
+    gradient = grad;
     N = numVar;
 
     lbfgsfloatval_t fx;
