@@ -14,7 +14,13 @@ set(GSL_DIR /project/nearsdc/software/gsl/install CACHE PATH "Path to GSL")
 
 add_definitions(-ansi -Wall)
 
-include_directories(${SPICE_DIR}/include ${SPICE_DIR}/src/dsklib_c ${LBFGS_DIR}/include ${GSL_DIR}/include ${ADOLC_DIR}/include)
+include_directories(
+${SPICE_DIR}/include
+${SPICE_DIR}/src/dsklib_c
+${LBFGS_DIR}/include
+${GSL_DIR}/include
+${ADOLC_DIR}/include
+${CMAKE_SOURCE_DIR})
 link_directories(${SPICE_DIR}/lib ${LBFGS_DIR}/lib ${GSL_DIR}/lib ${ADOLC_DIR}/lib64)
 
 add_library(lidar
@@ -64,3 +70,6 @@ target_link_libraries(propagator lidar)
 
 add_executable(gravity gravity.cpp)
 target_link_libraries(gravity lidar)
+
+add_executable( cam-est camera_est/cam-est.cpp )
+target_link_libraries( cam-est lidar )
