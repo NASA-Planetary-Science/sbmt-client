@@ -662,6 +662,8 @@ abstract public class Image extends Model implements PropertyChangeListener
         {
             frustumActor.VisibilityOff();
         }
+
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
     public boolean isFrustumShowing()
