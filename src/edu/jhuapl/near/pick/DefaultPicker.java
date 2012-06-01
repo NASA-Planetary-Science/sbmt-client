@@ -65,12 +65,10 @@ public class DefaultPicker extends Picker
         // See comment in the propertyChange function below as to why
         // we use a custom pick list for these pickers.
         mousePressNonSmallBodyCellPicker = new vtkCellPicker();
-        mousePressNonSmallBodyCellPicker.SetTolerance(0.002);
         mousePressNonSmallBodyCellPicker.PickFromListOn();
         mousePressNonSmallBodyCellPicker.InitializePickList();
 
         smallBodyCellPicker = new vtkCellPicker();
-        smallBodyCellPicker.SetTolerance(0.002);
         smallBodyCellPicker.PickFromListOn();
         smallBodyCellPicker.InitializePickList();
         ArrayList<vtkProp> actors = smallBodyModel.getProps();
@@ -83,7 +81,6 @@ public class DefaultPicker extends Picker
         smallBodyCellPicker.AddLocator(smallBodyModel.getCellLocator());
 
         allPropsCellPicker = new vtkCellPicker();
-        allPropsCellPicker.SetTolerance(0.002);
         allPropsCellPicker.AddLocator(smallBodyModel.getCellLocator());
 
         // We need to update the scale bar whenever there is a render or whenever

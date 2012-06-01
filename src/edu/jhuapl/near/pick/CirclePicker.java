@@ -54,7 +54,6 @@ public class CirclePicker extends Picker
         this.circleModel = (CircleModel)modelManager.getModel(ModelNames.CIRCLE_STRUCTURES);
 
         smallBodyPicker = new vtkCellPicker();
-        smallBodyPicker.SetTolerance(0.002);
         smallBodyPicker.PickFromListOn();
         smallBodyPicker.InitializePickList();
         smallBodyModel = modelManager.getSmallBodyModel();
@@ -68,7 +67,6 @@ public class CirclePicker extends Picker
         smallBodyPicker.AddLocator(smallBodyModel.getCellLocator());
 
         circlePicker = new vtkCellPicker();
-        circlePicker.SetTolerance(0.002);
         circlePicker.PickFromListOn();
         circlePicker.InitializePickList();
         vtkPropCollection circlePickList = circlePicker.GetPickList();

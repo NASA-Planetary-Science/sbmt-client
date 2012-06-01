@@ -44,6 +44,21 @@ public abstract class Picker implements
     // not sure if volatile is really needed, but just to be sure
     private static volatile boolean pickingEnabled = true;
 
+    public static final double DEFAULT_PICK_TOLERANCE = 0.002;
+
+    private double pickTolerance = DEFAULT_PICK_TOLERANCE;
+
+
+    public double getPickTolerance()
+    {
+        return pickTolerance;
+    }
+
+    public void setPickTolerance(double pickTolerance)
+    {
+        this.pickTolerance = pickTolerance;
+    }
+
     /**
      * Unfortunately, crashes sometimes occur if the user drags around the mouse during
      * a long running operation (e.g. changing to a high resolution). To prevent this,
@@ -203,25 +218,11 @@ public abstract class Picker implements
         if (currentTime - when > 333)
             return 0;
 
-        // When picking, choosing the right tolerance is not so simple. Here we set
-        // the tolerance to about 2 pixels.
-        // See vtk documentation where tolerance is specified as a fraction of the screen
-        // diagonal size. We thus compute the diagonal and divide 2 by it.
-
-        double width = renWin.getWidth();
-        double height = renWin.getHeight();
-        double diagonal = Math.sqrt(width*width + height*height);
-        if (diagonal == 0.0)
-            return 0;
-        double tolerance = 2.0 / diagonal; // This should equal about 2 pixels
-
-        final double originalTolerance = picker.GetTolerance();
-
         renWin.lock();
 
-        picker.SetTolerance(tolerance);
+        picker.SetTolerance(pickTolerance);
+
         int pickSucceeded = picker.Pick(x, renWin.getHeight()-y-1, 0.0, renWin.GetRenderer());
-        picker.SetTolerance(originalTolerance);
 
         renWin.unlock();
 

@@ -58,7 +58,6 @@ public class LinePicker extends Picker
         profileMode = lineModel.hasProfileMode();
 
         smallBodyPicker = new vtkCellPicker();
-        smallBodyPicker.SetTolerance(0.002);
         smallBodyPicker.PickFromListOn();
         smallBodyPicker.InitializePickList();
         smallBodyModel = modelManager.getSmallBodyModel();
@@ -72,7 +71,6 @@ public class LinePicker extends Picker
         smallBodyPicker.AddLocator(smallBodyModel.getCellLocator());
 
         linePicker = new vtkCellPicker();
-        linePicker.SetTolerance(0.002);
         linePicker.PickFromListOn();
         linePicker.InitializePickList();
         vtkPropCollection linePickList = linePicker.GetPickList();
@@ -80,7 +78,6 @@ public class LinePicker extends Picker
         linePicker.AddPickList(lineModel.getLineActor());
 
         lineSelectionPicker = new vtkCellPicker();
-        lineSelectionPicker.SetTolerance(0.008);
         lineSelectionPicker.PickFromListOn();
         lineSelectionPicker.InitializePickList();
         vtkPropCollection lineSelectionPickList = lineSelectionPicker.GetPickList();

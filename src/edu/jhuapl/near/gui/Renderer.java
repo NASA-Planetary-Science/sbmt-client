@@ -11,7 +11,8 @@ import javax.swing.JPanel;
 import vtk.vtkAxesActor;
 import vtk.vtkCamera;
 import vtk.vtkCaptionActor2D;
-import vtk.vtkInteractorStyleRubberBand3D;
+import vtk.vtkInteractorStyle;
+import vtk.vtkInteractorStyleJoystickCamera;
 import vtk.vtkInteractorStyleTrackballCamera;
 import vtk.vtkLight;
 import vtk.vtkLightKit;
@@ -38,10 +39,18 @@ public class Renderer extends JPanel implements
         LIGHT_KIT,
         FIXEDLIGHT
     }
+
+    public enum InteractorStyleType
+    {
+        TRACKBALL_CAMERA,
+        JOYSTICK_CAMERA
+    }
+
     private vtkEnhancedRenderWindowPanel renWin;
     private ModelManager modelManager;
-    private vtkInteractorStyleTrackballCamera defaultInteractorStyle;
-    private vtkInteractorStyleRubberBand3D rubberBandInteractorStyle;
+    private vtkInteractorStyleTrackballCamera trackballCameraInteractorStyle;
+    private vtkInteractorStyleJoystickCamera joystickCameraInteractorStyle;
+    private vtkInteractorStyle defaultInteractorStyle;
     private vtkAxesActor axes;
     private vtkOrientationMarkerWidget orientationWidget;
     private vtkLightKit lightKit;
@@ -62,10 +71,14 @@ public class Renderer extends JPanel implements
 
         modelManager.addPropertyChangeListener(this);
 
-        defaultInteractorStyle = new vtkInteractorStyleTrackballCamera();
-        rubberBandInteractorStyle = new vtkInteractorStyleRubberBand3D();
+        trackballCameraInteractorStyle = new vtkInteractorStyleTrackballCamera();
+        joystickCameraInteractorStyle = new vtkInteractorStyleJoystickCamera();
 
-        renWin.setInteractorStyle(defaultInteractorStyle);
+        defaultInteractorStyle = trackballCameraInteractorStyle;
+
+        InteractorStyleType interactorStyleType = InteractorStyleType.valueOf(
+                Preferences.getInstance().get(Preferences.INTERACTOR_STYLE_TYPE, InteractorStyleType.TRACKBALL_CAMERA.toString()));
+        setDefaultInteractorStyleType(interactorStyleType);
 
         headlight = renWin.GetRenderer().MakeLight();
         headlight.SetLightTypeToHeadlight();
@@ -254,6 +267,56 @@ public class Renderer extends JPanel implements
         renWin.Render();
     }
 
+    public void setCameraViewAngle(
+            double viewAngle)
+    {
+        renWin.lock();
+        vtkCamera cam = renWin.GetRenderer().GetActiveCamera();
+        cam.SetViewAngle(viewAngle);
+        renWin.unlock();
+        renWin.resetCameraClippingRange();
+        renWin.Render();
+    }
+
+    /**
+     * Note viewAngle is a 1-element array which is returned to caller
+     * @param position
+     * @param cx
+     * @param cy
+     * @param cz
+     * @param viewAngle
+     */
+    public void getCameraOrientation(
+            double[] position,
+            double[] cx,
+            double[] cy,
+            double[] cz,
+            double[] viewAngle)
+    {
+        vtkCamera cam = renWin.GetRenderer().GetActiveCamera();
+
+        double[] pos = cam.GetPosition();
+        position[0] = pos[0];
+        position[1] = pos[1];
+        position[2] = pos[2];
+
+        double[] up = cam.GetViewUp();
+        cx[0] = up[0];
+        cx[1] = up[1];
+        cx[2] = up[2];
+
+        double[] fp = cam.GetFocalPoint();
+        cz[0] = fp[0] - position[0];
+        cz[1] = fp[1] - position[1];
+        cz[2] = fp[2] - position[2];
+        MathUtil.vhat(cz, cz);
+
+        MathUtil.vcrss(cz, cx, cy);
+
+        viewAngle[0] = cam.GetViewAngle();
+    }
+
+
     public vtkRenderWindowPanel getRenderWindowPanel()
     {
         return renWin;
@@ -271,17 +334,32 @@ public class Renderer extends JPanel implements
         }
     }
 
-    public void setInteractorToRubberBand()
+    public void setDefaultInteractorStyleType(InteractorStyleType interactorStyleType)
     {
-        renWin.setInteractorStyle(rubberBandInteractorStyle);
+        if (interactorStyleType == InteractorStyleType.JOYSTICK_CAMERA)
+            defaultInteractorStyle = joystickCameraInteractorStyle;
+        else
+            defaultInteractorStyle = trackballCameraInteractorStyle;
+
+        // Change the interactor now unless it is currently null.
+        if (renWin.getIren().GetInteractorStyle() != null)
+            setInteractorStyleToDefault();
     }
 
-    public void setInteractorToDefault()
+    public InteractorStyleType getDefaultInteractorStyleType()
+    {
+        if (defaultInteractorStyle == joystickCameraInteractorStyle)
+            return InteractorStyleType.JOYSTICK_CAMERA;
+        else
+            return InteractorStyleType.TRACKBALL_CAMERA;
+    }
+
+    public void setInteractorStyleToDefault()
     {
         renWin.setInteractorStyle(defaultInteractorStyle);
     }
 
-    public void setInteractorToNone()
+    public void setInteractorStyleToNone()
     {
         renWin.setInteractorStyle(null);
     }

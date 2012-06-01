@@ -9,6 +9,7 @@ import edu.jhuapl.near.gui.Renderer;
 import edu.jhuapl.near.gui.StatusBar;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.popupmenus.PopupManager;
+import edu.jhuapl.near.util.Preferences;
 
 public class PickManager extends Picker
 {
@@ -47,6 +48,9 @@ public class PickManager extends Picker
 
         defaultPicker = new DefaultPicker(renderer, statusBar, modelManager, popupManager);
 
+        setPickTolerance(Preferences.getInstance().getAsDouble(
+                Preferences.PICK_TOLERANCE, Picker.DEFAULT_PICK_TOLERANCE));
+
         addPicker(defaultPicker);
     }
 
@@ -59,7 +63,7 @@ public class PickManager extends Picker
 
         if (this.pickMode == PickMode.DEFAULT)
         {
-            renderer.setInteractorToDefault();
+            renderer.setInteractorStyleToDefault();
             for (PickMode pm : nondefaultPickers.keySet())
             {
                 removePicker(nondefaultPickers.get(pm));
@@ -69,7 +73,7 @@ public class PickManager extends Picker
         }
         else
         {
-            renderer.setInteractorToNone();
+            renderer.setInteractorStyleToNone();
             for (PickMode pm : nondefaultPickers.keySet())
             {
                 if (pm != this.pickMode)
@@ -103,5 +107,19 @@ public class PickManager extends Picker
         renWin.removeMouseMotionListener(picker);
         renWin.removeMouseWheelListener(picker);
         renWin.removeKeyListener(picker);
+    }
+
+    public double getPickTolerance()
+    {
+        // All the pickers managed by this class should have the same
+        // tolerance so just return tolerance of the default picker.
+        return defaultPicker.getPickTolerance();
+    }
+
+    public void setPickTolerance(double pickTolerance)
+    {
+        defaultPicker.setPickTolerance(pickTolerance);
+        for (PickMode pm : nondefaultPickers.keySet())
+            nondefaultPickers.get(pm).setPickTolerance(pickTolerance);
     }
 }

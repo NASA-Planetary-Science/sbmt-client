@@ -13,8 +13,10 @@ package edu.jhuapl.near.gui;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
+import edu.jhuapl.near.gui.Renderer.InteractorStyleType;
 import edu.jhuapl.near.gui.Renderer.LightingType;
 import edu.jhuapl.near.model.SmallBodyModel;
+import edu.jhuapl.near.pick.PickManager;
 import edu.jhuapl.near.util.LatLon;
 import edu.jhuapl.near.util.Preferences;
 
@@ -25,6 +27,7 @@ import edu.jhuapl.near.util.Preferences;
 public class PreferencesDialog extends javax.swing.JDialog {
 
     private ViewerManager viewerManager;
+    private static final double MAX_TOLERANCE = 0.01;
 
     /** Creates new form SettingsDialog */
     public PreferencesDialog(java.awt.Frame parent, boolean modal) {
@@ -55,9 +58,20 @@ public class PreferencesDialog extends javax.swing.JDialog {
             distanceTextField.setValue(position.rad);
             showAxesCheckBox.setSelected(renderer.getShowOrientationAxes());
             interactiveCheckBox.setSelected(renderer.getOrientationAxesInteractive());
+
+            if (renderer.getDefaultInteractorStyleType() == Renderer.InteractorStyleType.JOYSTICK_CAMERA)
+                joystickRadioButton.setSelected(true);
+            else
+                trackballRadioButton.setSelected(true);
+
             SmallBodyModel smallBodyModel =
                     viewerManager.getCurrentViewer().getModelManager().getSmallBodyModel();
             showScaleBarCheckBox.setSelected(smallBodyModel.getShowScaleBar());
+
+            PickManager pickManager = viewerManager.getCurrentViewer().getPickManager();
+            int value = getSliderValueFromTolerance(pickManager.getPickTolerance());
+            pickToleranceSlider.setValue(value);
+
             updateEnabledItems();
         }
 
@@ -107,10 +121,30 @@ public class PreferencesDialog extends javax.swing.JDialog {
             renderer.setShowOrientationAxes(showAxesCheckBox.isSelected());
             renderer.setOrientationAxesInteractive(interactiveCheckBox.isSelected());
 
+            if (joystickRadioButton.isSelected())
+                renderer.setDefaultInteractorStyleType(InteractorStyleType.JOYSTICK_CAMERA);
+            else
+                renderer.setDefaultInteractorStyleType(InteractorStyleType.TRACKBALL_CAMERA);
+
             SmallBodyModel smallBodyModel =
                     viewerManager.getCurrentViewer().getModelManager().getSmallBodyModel();
             smallBodyModel.setShowScaleBar(showScaleBarCheckBox.isSelected());
+
+            PickManager pickManager = viewerManager.getCurrentViewer().getPickManager();
+            double tolerance = getToleranceFromSliderValue(pickToleranceSlider.getValue());
+            pickManager.setPickTolerance(tolerance);
         }
+    }
+
+    private double getToleranceFromSliderValue(int value)
+    {
+        return MAX_TOLERANCE * (double)value / (double)pickToleranceSlider.getMaximum();
+    }
+
+    private int getSliderValueFromTolerance(double tolerance)
+    {
+        return (int)((double)pickToleranceSlider.getMaximum()
+                * tolerance / MAX_TOLERANCE);
     }
 
     /** This method is called from within the constructor to
@@ -123,7 +157,8 @@ public class PreferencesDialog extends javax.swing.JDialog {
     private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
-        buttonGroup1 = new javax.swing.ButtonGroup();
+        lightingButtonGroup = new javax.swing.ButtonGroup();
+        interactorStyleButtonGroup = new javax.swing.ButtonGroup();
         headlightRadioButton = new javax.swing.JRadioButton();
         intensityLabel = new javax.swing.JLabel();
         showAxesCheckBox = new javax.swing.JCheckBox();
@@ -151,11 +186,23 @@ public class PreferencesDialog extends javax.swing.JDialog {
         jSeparator3 = new javax.swing.JSeparator();
         jLabel2 = new javax.swing.JLabel();
         showScaleBarCheckBox = new javax.swing.JCheckBox();
+        jPanel5 = new javax.swing.JPanel();
+        jLabel4 = new javax.swing.JLabel();
+        jSeparator4 = new javax.swing.JSeparator();
+        trackballRadioButton = new javax.swing.JRadioButton();
+        joystickRadioButton = new javax.swing.JRadioButton();
+        jPanel6 = new javax.swing.JPanel();
+        jSeparator5 = new javax.swing.JSeparator();
+        jLabel5 = new javax.swing.JLabel();
+        jPanel7 = new javax.swing.JPanel();
+        pickToleranceSlider = new javax.swing.JSlider();
+        jLabel6 = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
-        buttonGroup1.add(headlightRadioButton);
+        lightingButtonGroup.add(headlightRadioButton);
         headlightRadioButton.setText("Headlight");
         headlightRadioButton.setToolTipText("A Headlight is a single light always positioned at the virtual camera. It's intensity can be changed below.");
         headlightRadioButton.addActionListener(new java.awt.event.ActionListener() {
@@ -194,7 +241,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
         gridBagConstraints.insets = new java.awt.Insets(0, 4, 0, 0);
         getContentPane().add(interactiveCheckBox, gridBagConstraints);
 
-        buttonGroup1.add(lightKitRadioButton);
+        lightingButtonGroup.add(lightKitRadioButton);
         lightKitRadioButton.setSelected(true);
         lightKitRadioButton.setText("Light Kit");
         lightKitRadioButton.setToolTipText("A Light Kit is a set of several lights of various strengths positioned to provide suitable illumination for most situations.");
@@ -249,7 +296,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 13;
+        gridBagConstraints.gridy = 18;
         gridBagConstraints.weighty = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(15, 0, 0, 0);
         getContentPane().add(jPanel1, gridBagConstraints);
@@ -310,7 +357,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         getContentPane().add(intensitySpinner, gridBagConstraints);
 
-        buttonGroup1.add(fixedLightRadioButton);
+        lightingButtonGroup.add(fixedLightRadioButton);
         fixedLightRadioButton.setText("Fixed Light");
         fixedLightRadioButton.setToolTipText("A Fixed Light is a light fixed in space that does not move with the virtual camera. Its intensity and positon can be changed below.");
         fixedLightRadioButton.addActionListener(new java.awt.event.ActionListener() {
@@ -385,6 +432,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 4);
         jPanel4.add(jLabel2, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -403,6 +451,101 @@ public class PreferencesDialog extends javax.swing.JDialog {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 4, 0, 0);
         getContentPane().add(showScaleBarCheckBox, gridBagConstraints);
+
+        jPanel5.setLayout(new java.awt.GridBagLayout());
+
+        jLabel4.setText("Interactor Style");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 4);
+        jPanel5.add(jLabel4, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        jPanel5.add(jSeparator4, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 13;
+        gridBagConstraints.gridwidth = 3;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(15, 4, 5, 0);
+        getContentPane().add(jPanel5, gridBagConstraints);
+
+        interactorStyleButtonGroup.add(trackballRadioButton);
+        trackballRadioButton.setText("Trackball");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 14;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 4, 0, 0);
+        getContentPane().add(trackballRadioButton, gridBagConstraints);
+
+        interactorStyleButtonGroup.add(joystickRadioButton);
+        joystickRadioButton.setText("Joystick");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 15;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 4, 0, 0);
+        getContentPane().add(joystickRadioButton, gridBagConstraints);
+
+        jPanel6.setLayout(new java.awt.GridBagLayout());
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        jPanel6.add(jSeparator5, gridBagConstraints);
+
+        jLabel5.setText("Pick Tolerance");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 4);
+        jPanel6.add(jLabel5, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 16;
+        gridBagConstraints.gridwidth = 3;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(15, 4, 5, 0);
+        getContentPane().add(jPanel6, gridBagConstraints);
+
+        jPanel7.setLayout(new java.awt.GridBagLayout());
+
+        pickToleranceSlider.setMaximum(1000);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 4, 0, 4);
+        jPanel7.add(pickToleranceSlider, gridBagConstraints);
+
+        jLabel6.setText("Most Sensitive");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        jPanel7.add(jLabel6, gridBagConstraints);
+
+        jLabel7.setText("Least Sensitive");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 0;
+        jPanel7.add(jLabel7, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 17;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(0, 4, 0, 0);
+        getContentPane().add(jPanel7, gridBagConstraints);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -433,6 +576,11 @@ public class PreferencesDialog extends javax.swing.JDialog {
             preferencesMap.put(Preferences.LIGHTING_TYPE, LightingType.FIXEDLIGHT.toString());
         }
 
+        if (joystickRadioButton.isSelected())
+            preferencesMap.put(Preferences.INTERACTOR_STYLE_TYPE, InteractorStyleType.JOYSTICK_CAMERA.toString());
+        else
+            preferencesMap.put(Preferences.INTERACTOR_STYLE_TYPE, InteractorStyleType.TRACKBALL_CAMERA.toString());
+
         preferencesMap.put(Preferences.LIGHT_INTENSITY, (Double)intensitySpinner.getValue());
         preferencesMap.put(Preferences.FIXEDLIGHT_LATITUDE, Double.parseDouble(latitudeTextField.getText()));
         preferencesMap.put(Preferences.FIXEDLIGHT_LONGITUDE, Double.parseDouble(longitudeTextField.getText()));
@@ -440,6 +588,8 @@ public class PreferencesDialog extends javax.swing.JDialog {
         preferencesMap.put(Preferences.SHOW_AXES, (Boolean)showAxesCheckBox.isSelected());
         preferencesMap.put(Preferences.INTERACTIVE_AXES, (Boolean)interactiveCheckBox.isSelected());
         preferencesMap.put(Preferences.SHOW_SCALE_BAR, (Boolean)showScaleBarCheckBox.isSelected());
+        preferencesMap.put(Preferences.LIGHT_INTENSITY, (Double)intensitySpinner.getValue());
+        preferencesMap.put(Preferences.PICK_TOLERANCE, getToleranceFromSliderValue(pickToleranceSlider.getValue()));
         Preferences.getInstance().put(preferencesMap);
     }//GEN-LAST:event_applyToAllButtonActionPerformed
 
@@ -462,7 +612,6 @@ public class PreferencesDialog extends javax.swing.JDialog {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton applyToAllButton;
     private javax.swing.JButton applyToCurrentButton;
-    private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JButton closeButton;
     private javax.swing.JLabel distanceLabel;
     private javax.swing.JFormattedTextField distanceTextField;
@@ -471,22 +620,36 @@ public class PreferencesDialog extends javax.swing.JDialog {
     private javax.swing.JLabel intensityLabel;
     private javax.swing.JSpinner intensitySpinner;
     private javax.swing.JCheckBox interactiveCheckBox;
+    private javax.swing.ButtonGroup interactorStyleButtonGroup;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel5;
+    private javax.swing.JPanel jPanel6;
+    private javax.swing.JPanel jPanel7;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
+    private javax.swing.JSeparator jSeparator4;
+    private javax.swing.JSeparator jSeparator5;
+    private javax.swing.JRadioButton joystickRadioButton;
     private javax.swing.JLabel latitudeLabel;
     private javax.swing.JFormattedTextField latitudeTextField;
     private javax.swing.JRadioButton lightKitRadioButton;
+    private javax.swing.ButtonGroup lightingButtonGroup;
     private javax.swing.JLabel longitudeLabel;
     private javax.swing.JFormattedTextField longitudeTextField;
+    private javax.swing.JSlider pickToleranceSlider;
     private javax.swing.JCheckBox showAxesCheckBox;
     private javax.swing.JCheckBox showScaleBarCheckBox;
+    private javax.swing.JRadioButton trackballRadioButton;
     // End of variables declaration//GEN-END:variables
 }

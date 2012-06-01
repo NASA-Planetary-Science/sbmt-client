@@ -38,7 +38,6 @@ public class CircleSelectionPicker extends Picker
         this.circleModel = (AbstractEllipsePolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
 
         smallBodyPicker = new vtkCellPicker();
-        smallBodyPicker.SetTolerance(0.002);
         smallBodyPicker.PickFromListOn();
         smallBodyPicker.InitializePickList();
         smallBodyModel = modelManager.getSmallBodyModel();

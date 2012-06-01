@@ -52,7 +52,6 @@ public class PointPicker extends Picker
         this.pointModel = (PointModel)modelManager.getModel(ModelNames.POINT_STRUCTURES);
 
         smallBodyPicker = new vtkCellPicker();
-        smallBodyPicker.SetTolerance(0.002);
         smallBodyPicker.PickFromListOn();
         smallBodyPicker.InitializePickList();
         smallBodyModel = modelManager.getSmallBodyModel();
@@ -66,7 +65,6 @@ public class PointPicker extends Picker
         smallBodyPicker.AddLocator(smallBodyModel.getCellLocator());
 
         pointPicker = new vtkCellPicker();
-        pointPicker.SetTolerance(0.002);
         pointPicker.PickFromListOn();
         pointPicker.InitializePickList();
         vtkPropCollection pointPickList = pointPicker.GetPickList();

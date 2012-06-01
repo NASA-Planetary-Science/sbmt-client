@@ -55,7 +55,6 @@ public class EllipsePicker extends Picker
         this.ellipseModel = (EllipseModel)modelManager.getModel(ModelNames.ELLIPSE_STRUCTURES);
 
         smallBodyPicker = new vtkCellPicker();
-        smallBodyPicker.SetTolerance(0.002);
         smallBodyPicker.PickFromListOn();
         smallBodyPicker.InitializePickList();
         smallBodyModel = modelManager.getSmallBodyModel();
@@ -69,7 +68,6 @@ public class EllipsePicker extends Picker
         smallBodyPicker.AddLocator(smallBodyModel.getCellLocator());
 
         ellipsePicker = new vtkCellPicker();
-        ellipsePicker.SetTolerance(0.002);
         ellipsePicker.PickFromListOn();
         ellipsePicker.InitializePickList();
         vtkPropCollection ellipsePickList = ellipsePicker.GetPickList();

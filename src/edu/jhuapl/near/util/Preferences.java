@@ -19,6 +19,8 @@ public class Preferences extends MapUtil
     public static final String FIXEDLIGHT_LATITUDE = "FixedLightLatitude";
     public static final String FIXEDLIGHT_LONGITUDE = "FixedLightLongitude";
     public static final String FIXEDLIGHT_DISTANCE = "FixedLightDistance";
+    public static final String INTERACTOR_STYLE_TYPE = "InteractorStyleType";
+    public static final String PICK_TOLERANCE = "PickTolerance";
 
 
     private static final String preferencesPath = Configuration.getApplicationDataDir() + File.separator + "preferences.txt";
