@@ -25,6 +25,7 @@ import java.util.GregorianCalendar;
 import java.util.TimeZone;
 import java.util.TreeSet;
 
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
 import javax.swing.SpinnerDateModel;
@@ -43,6 +44,7 @@ import edu.jhuapl.near.model.ColorImage.NoOverlapException;
 import edu.jhuapl.near.model.ColorImageCollection;
 import edu.jhuapl.near.model.Image;
 import edu.jhuapl.near.model.Image.ImageKey;
+import edu.jhuapl.near.model.Image.ImageSource;
 import edu.jhuapl.near.model.ImageBoundaryCollection;
 import edu.jhuapl.near.model.ImageCollection;
 import edu.jhuapl.near.model.Model;
@@ -110,9 +112,9 @@ abstract public class AbstractImageSearchPanel extends javax.swing.JPanel implem
     abstract protected String[] getFilterNames();
     abstract protected boolean hasUserDefinedCheckBoxes();
     abstract protected String[] getUserDefinedCheckBoxesNames();
-    abstract protected boolean showSourceComboBox();
     abstract protected double getDefaultMaxSpacecraftDistance();
     abstract protected double getDefaultMaxResolution();
+    abstract protected ImageSource[] getImageSources();
 
 
     private String getImageCollectionModelName()
@@ -132,8 +134,15 @@ abstract public class AbstractImageSearchPanel extends javax.swing.JPanel implem
 
     private void postInitComponents()
     {
-        sourceLabel.setVisible(showSourceComboBox());
-        sourceComboBox.setVisible(showSourceComboBox());
+        excludeGaskellCheckBox.setVisible(false);
+
+        ImageSource imageSources[] = getImageSources();
+        DefaultComboBoxModel sourceComboBoxModel = new DefaultComboBoxModel(imageSources);
+        sourceComboBox.setModel(sourceComboBoxModel);
+
+        boolean showSourceLabelAndComboBox = imageSources.length > 1 ? true : false;
+        sourceLabel.setVisible(showSourceLabelAndComboBox);
+        sourceComboBox.setVisible(showSourceLabelAndComboBox);
 
         startDate = getDefaultStartDate();
         ((SpinnerDateModel)startSpinner.getModel()).setValue(startDate);
@@ -380,6 +389,7 @@ abstract public class AbstractImageSearchPanel extends javax.swing.JPanel implem
         endSpinner = new javax.swing.JSpinner();
         sourceLabel = new javax.swing.JLabel();
         sourceComboBox = new javax.swing.JComboBox();
+        excludeGaskellCheckBox = new javax.swing.JCheckBox();
         jPanel2 = new javax.swing.JPanel();
         filter1CheckBox = new javax.swing.JCheckBox();
         filter2CheckBox = new javax.swing.JCheckBox();
@@ -468,7 +478,7 @@ abstract public class AbstractImageSearchPanel extends javax.swing.JPanel implem
         startDateLabel.setText("Start Date:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridy = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.BASELINE_LEADING;
         gridBagConstraints.insets = new java.awt.Insets(6, 6, 0, 0);
         jPanel1.add(startDateLabel, gridBagConstraints);
@@ -483,7 +493,7 @@ abstract public class AbstractImageSearchPanel extends javax.swing.JPanel implem
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridy = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.BASELINE_LEADING;
         jPanel1.add(startSpinner, gridBagConstraints);
@@ -491,7 +501,7 @@ abstract public class AbstractImageSearchPanel extends javax.swing.JPanel implem
         endDateLabel.setText("End Date:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridy = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.BASELINE_LEADING;
         gridBagConstraints.insets = new java.awt.Insets(6, 6, 0, 0);
         jPanel1.add(endDateLabel, gridBagConstraints);
@@ -507,7 +517,7 @@ abstract public class AbstractImageSearchPanel extends javax.swing.JPanel implem
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridy = 3;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.BASELINE_LEADING;
         gridBagConstraints.insets = new java.awt.Insets(2, 0, 0, 0);
@@ -521,12 +531,23 @@ abstract public class AbstractImageSearchPanel extends javax.swing.JPanel implem
         gridBagConstraints.insets = new java.awt.Insets(6, 6, 0, 0);
         jPanel1.add(sourceLabel, gridBagConstraints);
 
-        sourceComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Gaskell derived", "PDS derived", "PDS derived (exclude Gaskell)" }));
+        sourceComboBox.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                sourceComboBoxItemStateChanged(evt);
+            }
+        });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         jPanel1.add(sourceComboBox, gridBagConstraints);
+
+        excludeGaskellCheckBox.setText("Exclude Gaskell");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        jPanel1.add(excludeGaskellCheckBox, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
@@ -1518,12 +1539,7 @@ abstract public class AbstractImageSearchPanel extends javax.swing.JPanel implem
                 }
             }
 
-            Image.ImageSource imageSource = null;
-            if (sourceComboBox.isVisible() &&
-                    sourceComboBox.getSelectedItem().toString().startsWith(Image.ImageSource.PDS.toString()))
-                imageSource = Image.ImageSource.PDS;
-            else
-                imageSource = Image.ImageSource.GASKELL;
+            ImageSource imageSource = ImageSource.valueOf(((Enum)sourceComboBox.getSelectedItem()).name());
             System.out.println(imageSource.toString());
             ArrayList<ArrayList<String>> results = getQuery().runQuery(
                     "",
@@ -1551,7 +1567,7 @@ abstract public class AbstractImageSearchPanel extends javax.swing.JPanel implem
             // If PDS Derived (exclude Gaskell) or Gaskell Derived (exlude PDS) is selected,
             // then remove from the list images which are contained in the other list by doing
             // an additional search.
-            if (sourceComboBox.getSelectedIndex() >= 2)
+            if (imageSource == ImageSource.PDS && excludeGaskellCheckBox.isSelected())
             {
                 ArrayList<ArrayList<String>> resultsOtherSource = getQuery().runQuery(
                         "",
@@ -1612,6 +1628,12 @@ abstract public class AbstractImageSearchPanel extends javax.swing.JPanel implem
         resultsListMaybeShowPopup(evt);
     }//GEN-LAST:event_resultListMouseReleased
 
+    private void sourceComboBoxItemStateChanged(java.awt.event.ItemEvent evt)
+    {//GEN-FIRST:event_sourceComboBoxItemStateChanged
+        ImageSource imageSource = ImageSource.valueOf(((Enum)sourceComboBox.getSelectedItem()).name());
+        excludeGaskellCheckBox.setVisible(imageSource == ImageSource.PDS);
+    }//GEN-LAST:event_sourceComboBoxItemStateChanged
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton blueButton;
     private javax.swing.JLabel blueLabel;
@@ -1624,6 +1646,7 @@ abstract public class AbstractImageSearchPanel extends javax.swing.JPanel implem
     private javax.swing.JLabel endPhaseLabel;
     private javax.swing.JLabel endResolutionLabel;
     private javax.swing.JSpinner endSpinner;
+    private javax.swing.JCheckBox excludeGaskellCheckBox;
     private javax.swing.JCheckBox filter1CheckBox;
     private javax.swing.JCheckBox filter2CheckBox;
     private javax.swing.JCheckBox filter3CheckBox;

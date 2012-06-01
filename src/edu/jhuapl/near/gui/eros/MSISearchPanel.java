@@ -6,6 +6,7 @@ import java.util.GregorianCalendar;
 import edu.jhuapl.near.gui.AbstractImageSearchPanel;
 import edu.jhuapl.near.gui.ModelInfoWindowManager;
 import edu.jhuapl.near.gui.Renderer;
+import edu.jhuapl.near.model.Image.ImageSource;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.pick.PickManager;
 import edu.jhuapl.near.query.ErosQuery;
@@ -74,12 +75,6 @@ public class MSISearchPanel extends AbstractImageSearchPanel
     }
 
     @Override
-    protected boolean showSourceComboBox()
-    {
-        return true;
-    }
-
-    @Override
     protected double getDefaultMaxSpacecraftDistance()
     {
         return 100.0;
@@ -89,5 +84,11 @@ public class MSISearchPanel extends AbstractImageSearchPanel
     protected double getDefaultMaxResolution()
     {
         return 50.0;
+    }
+
+    @Override
+    protected ImageSource[] getImageSources()
+    {
+        return new ImageSource[]{ImageSource.GASKELL, ImageSource.PDS};
     }
 }

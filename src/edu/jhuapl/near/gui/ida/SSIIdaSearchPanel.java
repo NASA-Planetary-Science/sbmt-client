@@ -6,6 +6,7 @@ import java.util.GregorianCalendar;
 import edu.jhuapl.near.gui.AbstractImageSearchPanel;
 import edu.jhuapl.near.gui.ModelInfoWindowManager;
 import edu.jhuapl.near.gui.Renderer;
+import edu.jhuapl.near.model.Image.ImageSource;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.pick.PickManager;
 import edu.jhuapl.near.query.IdaEverythingQuery;
@@ -75,12 +76,6 @@ public class SSIIdaSearchPanel extends AbstractImageSearchPanel
     }
 
     @Override
-    protected boolean showSourceComboBox()
-    {
-        return false;
-    }
-
-    @Override
     protected double getDefaultMaxSpacecraftDistance()
     {
         return 40000.0;
@@ -90,5 +85,11 @@ public class SSIIdaSearchPanel extends AbstractImageSearchPanel
     protected double getDefaultMaxResolution()
     {
         return 4000.0;
+    }
+
+    @Override
+    protected ImageSource[] getImageSources()
+    {
+        return new ImageSource[]{ImageSource.CORRECTED};
     }
 }

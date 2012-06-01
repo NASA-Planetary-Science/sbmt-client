@@ -158,6 +158,12 @@ abstract public class Image extends Model implements PropertyChangeListener
             {
                 return "Gaskell derived";
             }
+        },
+        CORRECTED {
+            public String toString()
+            {
+                return "Corrected";
+            }
         }
     };
 
@@ -221,10 +227,10 @@ abstract public class Image extends Model implements PropertyChangeListener
             labelFileFullPath = initializeLabelFileFullPath(rootFolder);
         }
 
-        if (key.source.equals(ImageSource.GASKELL))
-            sumfileFullPath = initializeSumfileFullPath(rootFolder);
-        else
+        if (key.source.equals(ImageSource.PDS))
             infoFileFullPath = initializeInfoFileFullPath(rootFolder);
+        else
+            sumfileFullPath = initializeSumfileFullPath(rootFolder);
 
         loadPointing();
 
@@ -521,7 +527,11 @@ abstract public class Image extends Model implements PropertyChangeListener
 
     protected void loadPointing() throws FitsException, IOException
     {
-        if (key.source.equals(ImageSource.GASKELL))
+        if (key.source.equals(ImageSource.PDS))
+        {
+            loadImageInfo();
+        }
+        else
         {
             try
             {
@@ -531,10 +541,6 @@ abstract public class Image extends Model implements PropertyChangeListener
             {
                 System.out.println("Sumfile not available");
             }
-        }
-        else
-        {
-            loadImageInfo();
         }
     }
 
