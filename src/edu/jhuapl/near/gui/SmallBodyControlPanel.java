@@ -2,17 +2,20 @@ package edu.jhuapl.near.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -22,8 +25,11 @@ import javax.swing.JSeparator;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
+import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.text.html.HTMLDocument;
+import javax.swing.text.html.HTMLEditorKit;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -60,7 +66,7 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
     private JSpinner imageMapOpacitySpinner;
     private JButton scaleColoringButton;
     private JRadioButton customColorButton;
-    private JLabel statisticsLabel;
+    private JEditorPane statisticsLabel;
 
 
     public SmallBodyControlPanel(ModelManager modelManager, String bodyName)
@@ -110,9 +116,19 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
                 "<html>Click here to show a very high resolution model of " + bodyName + " <br />" +
                 "containing 3145728 plates or triangles </html>");
 
-        statisticsLabel = new JLabel();
+        // The following snippet was taken from https://explodingpixels.wordpress.com/2008/10/28/make-jeditorpane-use-the-system-font/
+        // which shows how to make a JEditorPane behave look like a JLabel but still be selectable.
+        statisticsLabel = new JEditorPane(new HTMLEditorKit().getContentType(), "");
         statisticsLabel.setBorder(null);
         statisticsLabel.setOpaque(false);
+        statisticsLabel.setEditable(false);
+        statisticsLabel.setForeground(UIManager.getColor("Label.foreground"));
+        // add a CSS rule to force body tags to use the default label font
+        // instead of the value in javax.swing.text.html.default.csss
+        Font font = UIManager.getFont("Label.font");
+        String bodyRule = "body { font-family: " + font.getFamily() + "; " +
+                "font-size: " + font.getSize() + "pt; }";
+        ((HTMLDocument)statisticsLabel.getDocument()).getStyleSheet().addRule(bodyRule);
         setStatisticsLabel();
 
 
@@ -475,21 +491,22 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
         SmallBodyModel smallBodyModel = modelManager.getSmallBodyModel();
 
         BoundingBox bb = smallBodyModel.getBoundingBox();
+        DecimalFormat df = new DecimalFormat("#.#####");
 
         // We add a superscripted space at end of first 2 lines and last 6 lines so that spacing between all lines is the same.
         String text = "<html>Statistics:<br>"
-            + "&nbsp;&nbsp;&nbsp;Number of plates: " + smallBodyModel.getSmallBodyPolyData().GetNumberOfCells() + "<sup>&nbsp;</sup><br>"
-            + "&nbsp;&nbsp;&nbsp;Number of vertices: " + smallBodyModel.getSmallBodyPolyData().GetNumberOfPoints() + "<sup>&nbsp;</sup><br>"
-            + "&nbsp;&nbsp;&nbsp;Surface Area: " + String.format("%g", smallBodyModel.getSurfaceArea()) + " km<sup>2</sup><br>"
-            + "&nbsp;&nbsp;&nbsp;Volume: " + String.format("%g", smallBodyModel.getVolume()) + " km<sup>3</sup><br>"
-            + "&nbsp;&nbsp;&nbsp;Average plate area: " + String.format("%g", smallBodyModel.getMeanCellArea()) + " km<sup>2</sup><br>"
-            + "&nbsp;&nbsp;&nbsp;Minimum plate area: " + String.format("%g", smallBodyModel.getMinCellArea()) + " km<sup>2</sup><br>"
-            + "&nbsp;&nbsp;&nbsp;Maximum plate area: " + String.format("%g", smallBodyModel.getMaxCellArea()) + " km<sup>2</sup><br>"
-            + "&nbsp;&nbsp;&nbsp;Extent:<sup>&nbsp;</sup><br>"
-            + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;X: [" + String.format("%g", bb.xmin) + ", " + String.format("%g", bb.xmax) + "] km<sup>&nbsp;</sup><br>"
-            + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Y: [" + String.format("%g", bb.ymin) + ", " + String.format("%g", bb.ymax) + "] km<sup>&nbsp;</sup><br>"
-            + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Z: [" + String.format("%g", bb.zmin) + ", " + String.format("%g", bb.zmax) + "] km<sup>&nbsp;</sup><br>"
-            + "</html>";
+                + "&nbsp;&nbsp;&nbsp;Number of plates: " + smallBodyModel.getSmallBodyPolyData().GetNumberOfCells() + "<sup>&nbsp;</sup><br>"
+                + "&nbsp;&nbsp;&nbsp;Number of vertices: " + smallBodyModel.getSmallBodyPolyData().GetNumberOfPoints() + "<sup>&nbsp;</sup><br>"
+                + "&nbsp;&nbsp;&nbsp;Surface Area: " + df.format(smallBodyModel.getSurfaceArea()) + " km<sup>2</sup><br>"
+                + "&nbsp;&nbsp;&nbsp;Volume: " + df.format(smallBodyModel.getVolume()) + " km<sup>3</sup><br>"
+                + "&nbsp;&nbsp;&nbsp;Average plate area: " + df.format(1.0e6 * smallBodyModel.getMeanCellArea()) + " m<sup>2</sup><br>"
+                + "&nbsp;&nbsp;&nbsp;Minimum plate area: " + df.format(1.0e6 * smallBodyModel.getMinCellArea()) + " m<sup>2</sup><br>"
+                + "&nbsp;&nbsp;&nbsp;Maximum plate area: " + df.format(1.0e6 * smallBodyModel.getMaxCellArea()) + " m<sup>2</sup><br>"
+                + "&nbsp;&nbsp;&nbsp;Extent:<sup>&nbsp;</sup><br>"
+                + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;X: [" + df.format(bb.xmin) + ", " + df.format(bb.xmax) + "] km<sup>&nbsp;</sup><br>"
+                + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Y: [" + df.format(bb.ymin) + ", " + df.format(bb.ymax) + "] km<sup>&nbsp;</sup><br>"
+                + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Z: [" + df.format(bb.zmin) + ", " + df.format(bb.zmax) + "] km<sup>&nbsp;</sup><br>"
+                + "</html>";
 
         statisticsLabel.setText(text);
     }
