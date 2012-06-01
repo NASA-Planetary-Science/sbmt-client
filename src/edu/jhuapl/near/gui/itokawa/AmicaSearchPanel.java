@@ -94,6 +94,6 @@ public class AmicaSearchPanel extends AbstractImageSearchPanel
     @Override
     protected ImageSource[] getImageSources()
     {
-        return new ImageSource[]{ImageSource.GASKELL, ImageSource.PDS};
+        return new ImageSource[]{ImageSource.GASKELL, ImageSource.PDS, ImageSource.CORRECTED};
     }
 }

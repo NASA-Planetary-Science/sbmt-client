@@ -7,6 +7,7 @@ import java.util.TreeSet;
 import org.joda.time.DateTime;
 
 import edu.jhuapl.near.model.Image;
+import edu.jhuapl.near.model.Image.ImageSource;
 
 
 /**
@@ -75,6 +76,13 @@ public class ItokawaQuery extends QueryBase
             Image.ImageSource imageSource,
             int limbType)
     {
+        if (imageSource == ImageSource.CORRECTED)
+        {
+            return getResultsFromFileListOnServer(
+                    "/ITOKAWA/AMICA/sumfiles-corrected/imagelist.txt",
+                    "/ITOKAWA/AMICA/images/");
+        }
+
         ArrayList<ArrayList<String>> results = new ArrayList<ArrayList<String>>();
 
         double minIncidence = Math.min(fromIncidence, toIncidence);

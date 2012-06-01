@@ -1,15 +1,11 @@
 package edu.jhuapl.near.query;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.TreeSet;
 
 import org.joda.time.DateTime;
 
 import edu.jhuapl.near.model.Image.ImageSource;
-import edu.jhuapl.near.util.FileCache;
-import edu.jhuapl.near.util.FileUtil;
 
 public class IdaEverythingQuery extends QueryBase
 {
@@ -56,31 +52,9 @@ public class IdaEverythingQuery extends QueryBase
             ImageSource imageSource,
             int limbType)
     {
-        ArrayList<ArrayList<String>> results = new ArrayList<ArrayList<String>>();
-
-        File file = FileCache.getFileFromServer("/THOMAS/IDA/SSI/imagelist.txt", false);
-
-        if (file != null)
-        {
-            try
-            {
-                ArrayList<String> lines = FileUtil.getFileLinesAsStringList(file.getAbsolutePath());
-                for (String line : lines)
-                {
-                    String[] vals = line.trim().split("\\s+");
-                    ArrayList<String> res = new ArrayList<String>();
-                    res.add("/THOMAS/IDA/SSI/images/" + vals[0]);
-                    res.add(new Long(new DateTime(vals[1]).getMillis()).toString());
-                    results.add(res);
-                }
-            }
-            catch (IOException e)
-            {
-                e.printStackTrace();
-            }
-        }
-
-        return results;
+        return getResultsFromFileListOnServer(
+                "/THOMAS/IDA/SSI/imagelist.txt",
+                "/THOMAS/IDA/SSI/images/");
     }
 
 }

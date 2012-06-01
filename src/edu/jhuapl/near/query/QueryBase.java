@@ -1,6 +1,7 @@
 package edu.jhuapl.near.query;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -14,6 +15,8 @@ import org.joda.time.DateTime;
 
 import edu.jhuapl.near.model.Image;
 import edu.jhuapl.near.util.Configuration;
+import edu.jhuapl.near.util.FileCache;
+import edu.jhuapl.near.util.FileUtil;
 
 
 /**
@@ -84,6 +87,40 @@ abstract public class QueryBase
         }
 
         return str;
+    }
+
+    protected ArrayList<ArrayList<String>> getResultsFromFileListOnServer(
+            String pathToFileListOnServer,
+            String pathToImageFolderOnServer)
+    {
+        if (!pathToImageFolderOnServer.endsWith("/"))
+            pathToImageFolderOnServer += "/";
+
+        ArrayList<ArrayList<String>> results = new ArrayList<ArrayList<String>>();
+
+        File file = FileCache.getFileFromServer(pathToFileListOnServer, false);
+
+        if (file != null)
+        {
+            try
+            {
+                ArrayList<String> lines = FileUtil.getFileLinesAsStringList(file.getAbsolutePath());
+                for (String line : lines)
+                {
+                    String[] vals = line.trim().split("\\s+");
+                    ArrayList<String> res = new ArrayList<String>();
+                    res.add(pathToImageFolderOnServer + vals[0]);
+                    res.add(new Long(new DateTime(vals[1]).getMillis()).toString());
+                    results.add(res);
+                }
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+        }
+
+        return results;
     }
 
     /**

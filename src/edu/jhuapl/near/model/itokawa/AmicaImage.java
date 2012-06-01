@@ -457,9 +457,12 @@ public class AmicaImage extends Image
     protected String initializeSumfileFullPath(File rootFolder)
     {
         ImageKey key = getKey();
+        String sumfilesdir = "sumfiles";
+        if (key.source == ImageSource.CORRECTED)
+            sumfilesdir += "-corrected";
         File keyFile = new File(key.name);
         String sumFilename = keyFile.getParentFile().getParent()
-        + "/sumfiles/N" + keyFile.getName().substring(3, 13) + ".SUM";
+        + "/" + sumfilesdir + "/N" + keyFile.getName().substring(3, 13) + ".SUM";
         if (rootFolder == null)
         {
             return FileCache.getFileFromServer(sumFilename).getAbsolutePath();
