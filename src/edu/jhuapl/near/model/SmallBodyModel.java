@@ -690,8 +690,8 @@ public class SmallBodyModel extends Model
             smallBodyActor.SetMapper(smallBodyMapper);
             vtkProperty smallBodyProperty = smallBodyActor.GetProperty();
             smallBodyProperty.SetInterpolationToGouraud();
-            smallBodyProperty.SetSpecular(.1);
-            smallBodyProperty.SetSpecularPower(100);
+            //smallBodyProperty.SetSpecular(.1);
+            //smallBodyProperty.SetSpecularPower(100);
 
             smallBodyActors.add(smallBodyActor);
 
