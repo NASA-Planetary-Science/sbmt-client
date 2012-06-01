@@ -542,7 +542,7 @@ abstract public class AbstractImageSearchPanel extends javax.swing.JPanel implem
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         jPanel1.add(sourceComboBox, gridBagConstraints);
 
-        excludeGaskellCheckBox.setText("Exclude Gaskell");
+        excludeGaskellCheckBox.setText("Exclude Gaskell derived");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
