@@ -7,14 +7,14 @@ import org.joda.time.DateTime;
 
 import edu.jhuapl.near.model.Image.ImageSource;
 
-public class IdaEverythingQuery extends QueryBase
+public class IdaQuery extends QueryBase
 {
-    private static IdaEverythingQuery ref = null;
+    private static IdaQuery ref = null;
 
-    public static IdaEverythingQuery getInstance()
+    public static IdaQuery getInstance()
     {
         if (ref == null)
-            ref = new IdaEverythingQuery();
+            ref = new IdaQuery();
         return ref;
     }
 
@@ -24,7 +24,7 @@ public class IdaEverythingQuery extends QueryBase
         throw new CloneNotSupportedException();
     }
 
-    private IdaEverythingQuery()
+    private IdaQuery()
     {
     }
 

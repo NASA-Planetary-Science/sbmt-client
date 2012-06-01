@@ -9,7 +9,7 @@ import edu.jhuapl.near.gui.Renderer;
 import edu.jhuapl.near.model.Image.ImageSource;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.pick.PickManager;
-import edu.jhuapl.near.query.GaspraEverythingQuery;
+import edu.jhuapl.near.query.GaspraQuery;
 import edu.jhuapl.near.query.QueryBase;
 
 public class SSIGaspraSearchPanel extends AbstractImageSearchPanel
@@ -40,7 +40,7 @@ public class SSIGaspraSearchPanel extends AbstractImageSearchPanel
     @Override
     protected QueryBase getQuery()
     {
-        return GaspraEverythingQuery.getInstance();
+        return GaspraQuery.getInstance();
     }
 
     @Override

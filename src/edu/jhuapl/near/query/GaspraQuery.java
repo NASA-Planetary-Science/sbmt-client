@@ -7,14 +7,14 @@ import org.joda.time.DateTime;
 
 import edu.jhuapl.near.model.Image.ImageSource;
 
-public class GaspraEverythingQuery extends QueryBase
+public class GaspraQuery extends QueryBase
 {
-    private static GaspraEverythingQuery ref = null;
+    private static GaspraQuery ref = null;
 
-    public static GaspraEverythingQuery getInstance()
+    public static GaspraQuery getInstance()
     {
         if (ref == null)
-            ref = new GaspraEverythingQuery();
+            ref = new GaspraQuery();
         return ref;
     }
 
@@ -24,7 +24,7 @@ public class GaspraEverythingQuery extends QueryBase
         throw new CloneNotSupportedException();
     }
 
-    private GaspraEverythingQuery()
+    private GaspraQuery()
     {
     }
 

@@ -7,14 +7,14 @@ import org.joda.time.DateTime;
 
 import edu.jhuapl.near.model.Image.ImageSource;
 
-public class MathildeEverythingQuery extends QueryBase
+public class MathildeQuery extends QueryBase
 {
-    private static MathildeEverythingQuery ref = null;
+    private static MathildeQuery ref = null;
 
-    public static MathildeEverythingQuery getInstance()
+    public static MathildeQuery getInstance()
     {
         if (ref == null)
-            ref = new MathildeEverythingQuery();
+            ref = new MathildeQuery();
         return ref;
     }
 
@@ -24,7 +24,7 @@ public class MathildeEverythingQuery extends QueryBase
         throw new CloneNotSupportedException();
     }
 
-    private MathildeEverythingQuery()
+    private MathildeQuery()
     {
     }
 
