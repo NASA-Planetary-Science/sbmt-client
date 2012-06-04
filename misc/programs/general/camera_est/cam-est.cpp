@@ -9,6 +9,7 @@
 #include "optimize.h"
 #include "optimize-gsl.h"
 #include "adolc/adolc.h"
+#include "mathutil.h"
 #include "util.h"
 
 using namespace std;
@@ -30,6 +31,17 @@ unsigned int imageWidth = 1024;
 unsigned int imageHeight = 1024;
 vector<Point> objectPoints;
 vector<Pixel> imagePoints;
+// The purpose of the following factor is as follows. When solving the optimization
+// we want the values of the independent variables to be approximately the same size.
+// Now the 4 elements of the rotation quaternion are usually less then 1. However, if
+// the camera is far away from the asteroid, then the values of the spacecraft position
+// may be orders of magnitude greater than the quaternion values. This difference can
+// mess up the optimization. Therefore, before starting the optmization, we divide the
+// position by MULT_FACTOR so as to make the values on the order of 1. MULT_FACTOR is
+// set to the norma of the position. Then before each time we make use of the position,
+// we multiply it by MULT_FACTOR to get back the correct value. This way the optimization
+// sees all the independent variables as having approximately the same size.
+double MULT_FACTOR = 1.0;
 
 
 void getMatrixFromQuaternion(
@@ -154,9 +166,9 @@ double func(const double* u, void* params)
     for (unsigned int i=0; i<N; ++i)
         uA[i] <<= u[i];
 
-    scpos[0] = uA[0];
-    scpos[1] = uA[1];
-    scpos[2] = uA[2];
+    scpos[0] = uA[0]*MULT_FACTOR;
+    scpos[1] = uA[1]*MULT_FACTOR;
+    scpos[2] = uA[2]*MULT_FACTOR;
     q0 = uA[3];
     q1 = uA[4];
     q2 = uA[5];
@@ -199,7 +211,7 @@ void grad(const double* u, double* df, void* params)
     gradient(1,N,u,df);
 }
 
-void loadPointsAndInitialOrientation(const char* inputfile, double initialOrientation[N])
+void loadPointsAndInitialOrientation(const char* inputfile, double initialOrientation[])
 {
     ifstream fin(inputfile);
     if (fin.is_open())
@@ -222,6 +234,9 @@ void loadPointsAndInitialOrientation(const char* inputfile, double initialOrient
 
                 for (unsigned int i=0; i<3; ++i)
                     initialOrientation[i] = atof(tokens[i].c_str());
+                MULT_FACTOR = Norm(&initialOrientation[0]);
+                for (unsigned int i=0; i<3; ++i)
+                    initialOrientation[i] /= MULT_FACTOR;
             }
             else if (count == 1)
             {
@@ -392,8 +407,8 @@ int main(int argc, char** argv)
     double prevError = func(u, 0);
     while (true)
     {
-        //optimizeGsl(func, grad, &u[0], N, 0);
-        optimizeLbfgs(func, grad, &u[0], N, 0);
+        optimizeGsl(func, grad, &u[0], N, 0);
+        //optimizeLbfgs(func, grad, &u[0], N, 0);
 
         double currentError = func(u, 0);
 
@@ -403,7 +418,7 @@ int main(int argc, char** argv)
         prevError = currentError;
     }
 
-    double scpos[3] = {u[0], u[1], u[2]};
+    double scpos[3] = {u[0]*MULT_FACTOR, u[1]*MULT_FACTOR, u[2]*MULT_FACTOR};
     double q0 = u[3];
     double q1 = u[4];
     double q2 = u[5];
