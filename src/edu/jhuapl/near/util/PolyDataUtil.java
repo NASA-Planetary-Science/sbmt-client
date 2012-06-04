@@ -48,10 +48,10 @@ import vtk.vtksbCellLocator;
  */
 public class PolyDataUtil
 {
-    private static void printpt(double[] p, String s)
-    {
-        System.out.println(s + " " + p[0] + " " + p[1] + " " + p[2]);
-    }
+    //private static void printpt(double[] p, String s)
+    //{
+    //    System.out.println(s + " " + p[0] + " " + p[1] + " " + p[2]);
+    //}
 
     public static vtkPolyData computeMultipleFrustumIntersection(
             vtkPolyData polyData,
@@ -97,11 +97,11 @@ public class PolyDataUtil
             double[] lr,
             double[] ll)
     {
-        printpt(origin, "origin");
-        printpt(ul, "ul");
-        printpt(ur, "ur");
-        printpt(lr, "lr");
-        printpt(ll, "ll");
+        //printpt(origin, "origin");
+        //printpt(ul, "ul");
+        //printpt(ur, "ur");
+        //printpt(lr, "lr");
+        //printpt(ll, "ll");
 
         // First compute the normals of the 6 planes.
         // Start with computing the normals of the 4 side planes of the frustum.

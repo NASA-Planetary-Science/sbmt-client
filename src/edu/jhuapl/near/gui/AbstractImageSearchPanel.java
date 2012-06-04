@@ -1540,7 +1540,6 @@ abstract public class AbstractImageSearchPanel extends javax.swing.JPanel implem
             }
 
             ImageSource imageSource = ImageSource.valueOf(((Enum)sourceComboBox.getSelectedItem()).name());
-            System.out.println(imageSource.toString());
             ArrayList<ArrayList<String>> results = getQuery().runQuery(
                     "",
                     startDateJoda,
