@@ -213,15 +213,27 @@ void loadPointsAndInitialOrientation(const char* inputfile, double initialOrient
 
             if (count == 0)
             {
-                if (tokens.size() != N)
+                if (tokens.size() != 3)
                 {
-                    cerr << "Error: First line of input file must contain initial orientation of camera, " << endl;
+                    cerr << "Error: First line of input file must contain initial position of camera, " << endl;
                     cerr << "but it is incorrectly formatted." << endl;
                     exit(1);
                 }
 
-                for (unsigned int i=0; i<N; ++i)
+                for (unsigned int i=0; i<3; ++i)
                     initialOrientation[i] = atof(tokens[i].c_str());
+            }
+            else if (count == 1)
+            {
+                if (tokens.size() != N-3)
+                {
+                    cerr << "Error: Second line of input file must contain initial orientation of camera, " << endl;
+                    cerr << "but it is incorrectly formatted." << endl;
+                    exit(1);
+                }
+
+                for (unsigned int i=3; i<N; ++i)
+                    initialOrientation[i] = atof(tokens[i-3].c_str());
             }
             else
             {
