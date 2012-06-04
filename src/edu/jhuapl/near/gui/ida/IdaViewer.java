@@ -102,7 +102,7 @@ public class IdaViewer extends Viewer
         controlPanel.addTab(NAME, new SmallBodyControlPanel(modelManager, NAME));
         if (Configuration.isAPLVersion())
         {
-            //controlPanel.addTab("SSI", new SSIIdaSearchPanel(modelManager, infoPanelManager, pickManager, renderer));
+            controlPanel.addTab("SSI", new SSIIdaSearchPanel(modelManager, infoPanelManager, pickManager, renderer));
             controlPanel.addTab("Structures", new StructuresControlPanel(modelManager, pickManager));
         }
 
