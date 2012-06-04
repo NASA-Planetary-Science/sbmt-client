@@ -6,6 +6,9 @@ import java.util.LinkedHashMap;
 
 import nom.tam.fits.FitsException;
 
+import vtk.vtkImageData;
+import vtk.vtkImageFlip;
+
 import edu.jhuapl.near.model.Image;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.util.FileCache;
@@ -22,6 +25,26 @@ public class SSIGaspraImage extends Image
             IOException
     {
         super(key, smallBodyModel, loadPointingOnly, rootFolder);
+    }
+
+    @Override
+    protected void processRawImage(vtkImageData rawImage)
+    {
+        // Flip image along y axis. For some reason we need to do
+        // this so the image is displayed properly.
+        int[] dims = rawImage.GetDimensions();
+        vtkImageFlip flip = new vtkImageFlip();
+        flip.SetInput(rawImage);
+        flip.SetInterpolationModeToNearestNeighbor();
+        flip.SetOutputSpacing(1.0, 1.0, 1.0);
+        flip.SetOutputOrigin(0.0, 0.0, 0.0);
+        flip.SetOutputExtent(0, dims[1]-1, 0, dims[0]-1, 0, 0);
+        flip.FlipAboutOriginOff();
+        flip.SetFilteredAxes(1);
+        flip.Update();
+
+        vtkImageData flipOutput = flip.GetOutput();
+        rawImage.DeepCopy(flipOutput);
     }
 
     @Override
