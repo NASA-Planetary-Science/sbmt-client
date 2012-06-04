@@ -12,6 +12,8 @@ package edu.jhuapl.near.gui;
 
 import java.awt.Component;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -28,6 +30,8 @@ import vtk.vtkImageActor;
 import vtk.vtkImageData;
 import vtk.vtkImageReslice;
 import vtk.vtkInteractorStyleImage;
+import vtk.vtkPropCollection;
+import vtk.vtkPropPicker;
 import vtk.vtkTransform;
 
 import edu.jhuapl.near.model.Image;
@@ -49,6 +53,25 @@ public class ImageInfoPanel extends ModelInfoWindow implements PropertyChangeLis
     private ImageBoundaryCollection imageBoundaryCollection;
     private vtkImageActor actor;
     private vtkImageReslice reslice;
+    private vtkPropPicker imagePicker;
+
+    private class MouseListener extends MouseAdapter
+    {
+        @Override
+        public void mouseClicked(MouseEvent e)
+        {
+            renWin.lock();
+            int pickSucceeded = imagePicker.Pick(e.getX(), renWin.getHeight()-e.getY()-1, 0.0, renWin.GetRenderer());
+            renWin.unlock();
+            if (pickSucceeded == 1)
+            {
+                double[] p = imagePicker.GetPickPosition();
+                // Note we reverse x and y so that the pixel is in the form the camera
+                // position/orientation program expects.
+                System.out.println(p[1] + " " + p[0]);
+            }
+        }
+    }
 
     /** Creates new form ImageInfoPanel2 */
     public ImageInfoPanel(
@@ -129,6 +152,14 @@ public class ImageInfoPanel extends ModelInfoWindow implements PropertyChangeLis
         renWin.GetRenderer().AddActor(actor);
 
         renWin.setSize(550, 550);
+
+        imagePicker = new vtkPropPicker();
+        imagePicker.PickFromListOn();
+        imagePicker.InitializePickList();
+        vtkPropCollection smallBodyPickList = imagePicker.GetPickList();
+        smallBodyPickList.RemoveAllItems();
+        imagePicker.AddPickList(actor);
+        renWin.addMouseListener(new MouseListener());
 
         // Trying to add a vtkEnhancedRenderWindowPanel in the netbeans gui
         // does not seem to work so instead add it here.

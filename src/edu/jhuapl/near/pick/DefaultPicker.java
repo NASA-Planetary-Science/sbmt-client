@@ -177,6 +177,18 @@ public class DefaultPicker extends Picker
         {
             maybeShowPopup(e);
         }
+
+        if (e.getClickCount() == 1 &&
+                (e.getModifiers() & InputEvent.BUTTON1_MASK) == InputEvent.BUTTON1_MASK)
+        {
+            int pickSucceeded = doPick(e, smallBodyCellPicker, renWin);
+
+            if (pickSucceeded == 1)
+            {
+                double[] p = smallBodyCellPicker.GetPickPosition();
+                System.out.println(p[0] + " " + p[1] + " " + p[2]);
+            }
+        }
     }
 
     public void mouseWheelMoved(MouseWheelEvent e)

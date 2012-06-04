@@ -295,10 +295,6 @@ public class ImagePopupMenu extends PopupMenu
                 return;
             }
 
-            // Increase the view angle by a little amount to show some of
-            // the asteroid around the image.
-            viewAngle = 1.25 * viewAngle;
-
             renderer.setCameraOrientation(spacecraftPosition, focalPoint, upVector, viewAngle);
         }
     }

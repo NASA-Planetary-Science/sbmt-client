@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.io.File;
 
 import javax.swing.AbstractAction;
+import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -15,6 +16,7 @@ public class FileMenu extends JMenu
 {
     private PreferencesDialog preferencesDialog;
     private ViewerManager rootPanel;
+    public JFrame frame;
 
     public FileMenu(ViewerManager rootPanel)
     {
@@ -24,6 +26,8 @@ public class FileMenu extends JMenu
         JMenuItem mi = new JMenuItem(new SaveImageAction());
         this.add(mi);
         mi = new JMenuItem(new SaveShapeModelAction());
+        this.add(mi);
+        mi = new JMenuItem(new ShowCameraOrientationAction());
         this.add(mi);
 
         // On macs the exit action is in the Application menu not the file menu
@@ -110,6 +114,19 @@ public class FileMenu extends JMenu
                         JOptionPane.ERROR_MESSAGE);
                 return;
             }
+        }
+    }
+
+    private class ShowCameraOrientationAction extends AbstractAction
+    {
+        public ShowCameraOrientationAction()
+        {
+            super("Camera...");
+        }
+
+        public void actionPerformed(ActionEvent e)
+        {
+            new CameraDialog(rootPanel.getCurrentViewer().getRenderer()).setVisible(true);
         }
     }
 

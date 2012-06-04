@@ -1,0 +1,179 @@
+package edu.jhuapl.near.gui;
+
+import java.awt.BorderLayout;
+import java.awt.Dialog;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.text.NumberFormat;
+
+import javax.swing.InputVerifier;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JFormattedTextField;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+
+import net.miginfocom.swing.MigLayout;
+
+import org.apache.commons.math.geometry.NotARotationMatrixException;
+import org.apache.commons.math.geometry.Rotation;
+
+public class CameraDialog extends JDialog implements ActionListener
+{
+    private Renderer renderer;
+    private JButton applyButton;
+    private JButton resetButton;
+    private JButton okayButton;
+    private JButton cancelButton;
+    private JFormattedTextField fovField;
+    private String lastGood = "";
+
+    private String getCameraOrientationAsString()
+    {
+        double[] position = new double[3];
+        double[] cx = new double[3];
+        double[] cy = new double[3];
+        double[] cz = new double[3];
+        double[] viewAngle = new double[1];
+        renderer.getCameraOrientation(position, cx, cy, cz, viewAngle);
+
+        String str = "Camera position: " + position[0] + " " + position[1] + " " + position[2] + "\n";
+
+        try
+        {
+            double[][] m = {
+                    {cx[0], cx[1], cx[2]},
+                    {cy[0], cy[1], cy[2]},
+                    {cz[0], cz[1], cz[2]}
+            };
+
+            Rotation rotation = new Rotation(m, 1.0e-6);
+            str += "Camera orientation (quaternion): " + rotation.getQ0() + " " + rotation.getQ1() + " " + rotation.getQ2() + " " + rotation.getQ3();
+        }
+        catch (NotARotationMatrixException e)
+        {
+            e.printStackTrace();
+        }
+
+        System.out.println(str);
+
+        return str;
+    }
+
+    public CameraDialog(Renderer renderer)
+    {
+        this.renderer = renderer;
+
+        JPanel panel = new JPanel();
+        panel.setLayout(new MigLayout());
+
+        NumberFormat nf = NumberFormat.getNumberInstance();
+        nf.setGroupingUsed(false);
+        nf.setMaximumFractionDigits(6);
+
+        JLabel fovLabel = new JLabel("Vertical Field of View");
+        fovField = new JFormattedTextField(nf);
+        fovField.setPreferredSize(new Dimension(125, 23));
+        fovField.setInputVerifier(new DoubleVerifier());
+        JLabel degreesLabel = new JLabel("degrees");
+
+
+        JPanel buttonPanel = new JPanel(new MigLayout());
+        applyButton = new JButton("Apply");
+        applyButton.addActionListener(this);
+        resetButton = new JButton("Reset");
+        resetButton.addActionListener(this);
+        okayButton = new JButton("OK");
+        okayButton.addActionListener(this);
+        cancelButton = new JButton("Cancel");
+        cancelButton.addActionListener(this);
+        buttonPanel.add(applyButton);
+        buttonPanel.add(resetButton);
+        buttonPanel.add(okayButton);
+        buttonPanel.add(cancelButton);
+
+        panel.add(fovLabel);
+        panel.add(fovField);
+        panel.add(degreesLabel, "wrap");
+
+        panel.add(buttonPanel, "span, align right");
+
+        setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
+
+        add(panel, BorderLayout.CENTER);
+        pack();
+
+        getCameraOrientationAsString();
+    }
+
+    public void actionPerformed(ActionEvent e)
+    {
+        if (e.getSource() == applyButton || e.getSource() == okayButton)
+        {
+            try
+            {
+                double newFov = Double.parseDouble(fovField.getText());
+
+                renderer.setCameraViewAngle(newFov);
+
+                // Reset the text field in case the requested fov change was not
+                // fully fulfilled (e.g. was negative)
+                double fov = renderer.getCameraViewAngle();
+                fovField.setValue(fov);
+            }
+            catch (NumberFormatException ex)
+            {
+                return;
+            }
+        }
+        else if (e.getSource() == resetButton)
+        {
+            renderer.resetToDefaultCameraViewAngle();
+
+            // Reset the text field in case the requested offset change was not
+            // fully fulfilled.
+            double fov = renderer.getCameraViewAngle();
+            fovField.setValue(fov);
+        }
+
+        if (e.getSource() == okayButton || e.getSource() == cancelButton)
+        {
+            super.setVisible(false);
+        }
+    }
+
+    public void setVisible(boolean b)
+    {
+        setTitle("Camera");
+
+        fovField.setValue(renderer.getCameraViewAngle());
+        lastGood = fovField.getText();
+
+        super.setVisible(b);
+    }
+
+    private class DoubleVerifier extends InputVerifier
+    {
+        public boolean verify(JComponent input)
+        {
+            JTextField text = (JTextField)input;
+            String value = text.getText().trim();
+            try
+            {
+                double v = Double.parseDouble(value);
+                if (v < 0.00000001 || v > 179.0) // These limits are from vtkCamera.cxx
+                    throw new NumberFormatException();
+                lastGood = value;
+            }
+            catch (NumberFormatException e)
+            {
+                text.setText(lastGood);
+                return false;
+            }
+            return true;
+        }
+    }
+}

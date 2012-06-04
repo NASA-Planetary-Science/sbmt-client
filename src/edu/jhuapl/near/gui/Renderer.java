@@ -278,6 +278,16 @@ public class Renderer extends JPanel implements
         renWin.Render();
     }
 
+    public double getCameraViewAngle()
+    {
+        return renWin.GetRenderer().GetActiveCamera().GetViewAngle();
+    }
+
+    public void resetToDefaultCameraViewAngle()
+    {
+        setCameraViewAngle(30.0);
+    }
+
     /**
      * Note viewAngle is a 1-element array which is returned to caller
      * @param position
