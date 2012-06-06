@@ -27,7 +27,7 @@ import edu.jhuapl.near.util.MathUtil;
 import edu.jhuapl.near.util.PolyDataUtil;
 import edu.jhuapl.near.util.Properties;
 
-public class SmallBodyImageMap extends Model
+public class CylindricalImage extends Model
 {
     public static class ImageInfo
     {
@@ -50,20 +50,20 @@ public class SmallBodyImageMap extends Model
         }
     }
 
-    private vtkPolyData imageMapPolyData;
-    private vtkPolyData shiftedImageMapPolyData;
+    private vtkPolyData imagePolyData;
+    private vtkPolyData shiftedImagePolyData;
     private vtkActor smallBodyActor;
     private vtkPolyDataMapper smallBodyMapper;
     private ArrayList<vtkProp> smallBodyActors = new ArrayList<vtkProp>();
-    private double imageMapOpacity = 1.0;
+    private double imageOpacity = 1.0;
     private SmallBodyModel smallBodyModel;
-    private vtkTexture imageMapTexture;
+    private vtkTexture imageTexture;
     private boolean initialized = false;
     private ImageInfo imageInfo;
     private double offset;
     private boolean isShapeModelEllipsoid;
 
-    public SmallBodyImageMap(
+    public CylindricalImage(
             SmallBodyModel smallBodyModel,
             ImageInfo imageInfo,
             boolean isShapeModelEllipsoid)
@@ -73,8 +73,8 @@ public class SmallBodyImageMap extends Model
         this.imageInfo = imageInfo;
         this.isShapeModelEllipsoid = isShapeModelEllipsoid;
 
-        imageMapPolyData = new vtkPolyData();
-        shiftedImageMapPolyData = new vtkPolyData();
+        imagePolyData = new vtkPolyData();
+        shiftedImagePolyData = new vtkPolyData();
 
         this.offset = getDefaultOffset();
 
@@ -456,10 +456,10 @@ public class SmallBodyImageMap extends Model
 
         smallBodyPolyData = clipOutTextureLongitudeAndGenerateTextureCoordinates(smallBodyPolyData);
 
-        imageMapPolyData.DeepCopy(smallBodyPolyData);
+        imagePolyData.DeepCopy(smallBodyPolyData);
 
-        shiftedImageMapPolyData.DeepCopy(imageMapPolyData);
-        PolyDataUtil.shiftPolyDataInNormalDirection(shiftedImageMapPolyData, offset);
+        shiftedImagePolyData.DeepCopy(imagePolyData);
+        PolyDataUtil.shiftPolyDataInNormalDirection(shiftedImagePolyData, offset);
 
         initialized = true;
     }
@@ -622,19 +622,19 @@ public class SmallBodyImageMap extends Model
             smallBodyMapper = new vtkPolyDataMapper();
             smallBodyMapper.ScalarVisibilityOff();
             smallBodyMapper.SetScalarModeToDefault();
-            smallBodyMapper.SetInput(shiftedImageMapPolyData);
+            smallBodyMapper.SetInput(shiftedImagePolyData);
             smallBodyMapper.Update();
 
-            imageMapTexture = new vtkTexture();
-            imageMapTexture.InterpolateOn();
-            imageMapTexture.RepeatOff();
-            imageMapTexture.EdgeClampOn();
-            vtkImageData image = loadImageMap(imageInfo.filename);
-            imageMapTexture.SetInput(image);
+            imageTexture = new vtkTexture();
+            imageTexture.InterpolateOn();
+            imageTexture.RepeatOff();
+            imageTexture.EdgeClampOn();
+            vtkImageData image = loadImage(imageInfo.filename);
+            imageTexture.SetInput(image);
 
             smallBodyActor = new vtkActor();
             smallBodyActor.SetMapper(smallBodyMapper);
-            smallBodyActor.SetTexture(imageMapTexture);
+            smallBodyActor.SetTexture(imageTexture);
 
             smallBodyActors.add(smallBodyActor);
         }
@@ -642,7 +642,7 @@ public class SmallBodyImageMap extends Model
         return smallBodyActors;
     }
 
-    public void setShowImageMap(boolean b)
+    public void setShowImage(boolean b)
     {
         if (b)
             initialize();
@@ -653,20 +653,20 @@ public class SmallBodyImageMap extends Model
         super.setVisible(b);
     }
 
-    public double getImageMapOpacity()
+    public double getImageOpacity()
     {
-        return imageMapOpacity;
+        return imageOpacity;
     }
 
-    public void setImageMapOpacity(double imageMapOpacity)
+    public void setImageOpacity(double imageOpacity)
     {
-        this.imageMapOpacity = imageMapOpacity;
+        this.imageOpacity = imageOpacity;
         vtkProperty smallBodyProperty = smallBodyActor.GetProperty();
-        smallBodyProperty.SetOpacity(imageMapOpacity);
+        smallBodyProperty.SetOpacity(imageOpacity);
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
-    protected vtkImageData loadImageMap(String name)
+    protected vtkImageData loadImage(String name)
     {
         File imageFile = FileCache.getFileFromServer(name);
         vtkPNGReader reader = new vtkPNGReader();
@@ -684,8 +684,8 @@ public class SmallBodyImageMap extends Model
     {
         this.offset = offset;
 
-        shiftedImageMapPolyData.DeepCopy(imageMapPolyData);
-        PolyDataUtil.shiftPolyDataInNormalDirection(shiftedImageMapPolyData, offset);
+        shiftedImagePolyData.DeepCopy(imagePolyData);
+        PolyDataUtil.shiftPolyDataInNormalDirection(shiftedImagePolyData, offset);
 
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }

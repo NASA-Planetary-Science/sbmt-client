@@ -18,7 +18,7 @@ import javax.swing.JOptionPane;
 import vtk.vtkImageReader2;
 import vtk.vtkImageReader2Factory;
 
-import edu.jhuapl.near.model.SmallBodyImageMap.ImageInfo;
+import edu.jhuapl.near.model.CylindricalImage.ImageInfo;
 
 
 /**

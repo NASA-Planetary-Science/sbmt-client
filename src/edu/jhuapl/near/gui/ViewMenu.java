@@ -15,7 +15,7 @@ import javax.swing.JRadioButtonMenuItem;
 import edu.jhuapl.near.gui.custom.CustomViewer;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
-import edu.jhuapl.near.model.SmallBodyImageMapCollection;
+import edu.jhuapl.near.model.CylindricalImageCollection;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.util.Configuration;
 import edu.jhuapl.near.util.Properties;
@@ -182,8 +182,8 @@ public class ViewMenu extends JMenu implements PropertyChangeListener
                     e.printStackTrace();
                 }
 
-                SmallBodyImageMapCollection imageCollection =
-                        (SmallBodyImageMapCollection) modelManager.getModel(ModelNames.SMALL_BODY_IMAGE_MAP);
+                CylindricalImageCollection imageCollection =
+                        (CylindricalImageCollection) modelManager.getModel(ModelNames.CYLINDRICAL_IMAGES);
                 imageCollection.reset();
             }
         }

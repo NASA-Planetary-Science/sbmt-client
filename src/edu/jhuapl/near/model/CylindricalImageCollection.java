@@ -10,7 +10,7 @@ import java.util.Map;
 import vtk.vtkActor;
 import vtk.vtkProp;
 
-import edu.jhuapl.near.model.SmallBodyImageMap.ImageInfo;
+import edu.jhuapl.near.model.CylindricalImage.ImageInfo;
 import edu.jhuapl.near.model.custom.CustomShapeModel;
 import edu.jhuapl.near.util.Configuration;
 import edu.jhuapl.near.util.FileCache;
@@ -18,18 +18,18 @@ import edu.jhuapl.near.util.FileUtil;
 import edu.jhuapl.near.util.MapUtil;
 import edu.jhuapl.near.util.Properties;
 
-public class SmallBodyImageMapCollection extends Model implements PropertyChangeListener
+public class CylindricalImageCollection extends Model implements PropertyChangeListener
 {
-    private ArrayList<SmallBodyImageMap> images = new ArrayList<SmallBodyImageMap>();
+    private ArrayList<CylindricalImage> images = new ArrayList<CylindricalImage>();
     private SmallBodyModel smallBodyModel = null;
 
     // Store the opacity even though each individual image has it's own opacity
     // since we need this in case the user edits the images shown for custom models.
     private double opacity = 1.0;
 
-    public SmallBodyImageMapCollection(SmallBodyModel smallBodyModel)
+    public CylindricalImageCollection(SmallBodyModel smallBodyModel)
     {
-        super(ModelNames.SMALL_BODY_IMAGE_MAP);
+        super(ModelNames.CYLINDRICAL_IMAGES);
 
         this.smallBodyModel = smallBodyModel;
 
@@ -143,7 +143,7 @@ public class SmallBodyImageMapCollection extends Model implements PropertyChange
                     }
                 }
 
-                SmallBodyImageMap image = new SmallBodyImageMap(smallBodyModel, imageInfo, isEllipsoid);
+                CylindricalImage image = new CylindricalImage(smallBodyModel, imageInfo, isEllipsoid);
                 image.addPropertyChangeListener(this);
                 images.add(image);
             }
@@ -156,27 +156,27 @@ public class SmallBodyImageMapCollection extends Model implements PropertyChange
 
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 
-        this.setShowImageMaps(isVisible());
-        this.setImageMapOpacities(opacity);
+        this.setShowImages(isVisible());
+        this.setImageOpacities(opacity);
     }
 
-    public void setShowImageMaps(boolean b)
+    public void setShowImages(boolean b)
     {
         super.setVisible(b);
-        for (SmallBodyImageMap image : images)
-            image.setShowImageMap(b);
+        for (CylindricalImage image : images)
+            image.setShowImage(b);
     }
 
-    public void setImageMapOpacities(double opacity)
+    public void setImageOpacities(double opacity)
     {
         this.opacity = opacity;
-        for (SmallBodyImageMap image : images)
-            image.setImageMapOpacity(opacity);
+        for (CylindricalImage image : images)
+            image.setImageOpacity(opacity);
     }
 
-    public SmallBodyImageMap getImage(vtkActor actor)
+    public CylindricalImage getImage(vtkActor actor)
     {
-        for (SmallBodyImageMap image : images)
+        for (CylindricalImage image : images)
         {
             if (image.getProps().contains(actor))
                 return image;
@@ -188,7 +188,7 @@ public class SmallBodyImageMapCollection extends Model implements PropertyChange
     public ArrayList<vtkProp> getProps()
     {
         ArrayList<vtkProp> props = new ArrayList<vtkProp>();
-        for (SmallBodyImageMap image : images)
+        for (CylindricalImage image : images)
             props.addAll(image.getProps());
         return props;
     }

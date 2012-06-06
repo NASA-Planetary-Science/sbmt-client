@@ -22,7 +22,7 @@ import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.PointModel;
-import edu.jhuapl.near.model.SmallBodyImageMapCollection;
+import edu.jhuapl.near.model.CylindricalImageCollection;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.simple.SimpleSmallBody;
 import edu.jhuapl.near.pick.PickManager;
@@ -116,7 +116,7 @@ public class SimpleViewer extends Viewer
         allModels.put(ModelNames.CIRCLE_SELECTION, new CircleSelectionModel(smallBodyModel));
         allModels.put(ModelNames.GRATICULE, graticule);
         if (imageMap != null)
-            allModels.put(ModelNames.SMALL_BODY_IMAGE_MAP, new SmallBodyImageMapCollection(smallBodyModel));
+            allModels.put(ModelNames.CYLINDRICAL_IMAGES, new CylindricalImageCollection(smallBodyModel));
 
         modelManager.setModels(allModels);
 

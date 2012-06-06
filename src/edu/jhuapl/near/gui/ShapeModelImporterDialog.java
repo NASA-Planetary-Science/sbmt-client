@@ -41,7 +41,7 @@ import vtk.vtkTransform;
 import vtk.vtkTransformPolyDataFilter;
 
 import edu.jhuapl.near.model.Graticule;
-import edu.jhuapl.near.model.SmallBodyImageMap.ImageInfo;
+import edu.jhuapl.near.model.CylindricalImage.ImageInfo;
 import edu.jhuapl.near.model.custom.CustomShapeModel;
 import edu.jhuapl.near.model.custom.CustomShapeModel.CellDataInfo;
 import edu.jhuapl.near.util.Configuration;

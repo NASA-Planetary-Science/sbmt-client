@@ -12,19 +12,19 @@ import vtk.vtkActor;
 import vtk.vtkProp;
 
 import edu.jhuapl.near.gui.NormalOffsetChangerDialog;
-import edu.jhuapl.near.model.SmallBodyImageMap;
-import edu.jhuapl.near.model.SmallBodyImageMapCollection;
+import edu.jhuapl.near.model.CylindricalImage;
+import edu.jhuapl.near.model.CylindricalImageCollection;
 
 
-public class SmallBodyImagePopupMenu extends PopupMenu
+public class CylindricalImagePopupMenu extends PopupMenu
 {
     private Component invoker;
-    private SmallBodyImageMapCollection imageCollection;
-    private SmallBodyImageMap currentImage;
+    private CylindricalImageCollection imageCollection;
+    private CylindricalImage currentImage;
     private JMenuItem changeNormalOffsetMenuItem;
 
-    public SmallBodyImagePopupMenu(
-            SmallBodyImageMapCollection imageCollection)
+    public CylindricalImagePopupMenu(
+            CylindricalImageCollection imageCollection)
     {
         this.imageCollection = imageCollection;
 
