@@ -20,9 +20,9 @@ import nom.tam.fits.FitsException;
 
 import vtk.vtkGlobalJavaHash;
 
-import edu.jhuapl.near.model.Image;
-import edu.jhuapl.near.model.Image.ImageKey;
-import edu.jhuapl.near.model.Image.ImageSource;
+import edu.jhuapl.near.model.PerspectiveImage;
+import edu.jhuapl.near.model.PerspectiveImage.ImageKey;
+import edu.jhuapl.near.model.PerspectiveImage.ImageSource;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.eros.MSIImage;
 import edu.jhuapl.near.model.itokawa.AmicaImage;
@@ -386,7 +386,7 @@ public class AmicaBackplanesGenerator
                 float maxValue = -Float.MAX_VALUE;
                 for (int i=pixelStart; i<pixelEnd; ++i)
                 {
-                    if (array[i] == Image.PDS_NA) continue;
+                    if (array[i] == PerspectiveImage.PDS_NA) continue;
                     if (array[i] < minValue) minValue = array[i];
                     if (array[i] > maxValue) maxValue = array[i];
                 }
@@ -397,7 +397,7 @@ public class AmicaBackplanesGenerator
                     for (int j=0; j<currentCroppedHeight; ++j)
                     {
                         float v = array[c++];
-                        if (v == Image.PDS_NA)
+                        if (v == PerspectiveImage.PDS_NA)
                             v = minValue;
                         else
                             v = (v-minValue) * 255.0f / (maxValue - minValue);
@@ -456,7 +456,7 @@ public class AmicaBackplanesGenerator
                 for (int j=0; j<currentCroppedHeight; ++j)
                 {
                     double val = bp[c++];
-                    if (val != Image.PDS_NA)
+                    if (val != PerspectiveImage.PDS_NA)
                     {
                         scale += val;
                         ++total;

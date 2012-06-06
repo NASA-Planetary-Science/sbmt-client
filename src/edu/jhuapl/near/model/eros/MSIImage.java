@@ -14,11 +14,11 @@ import nom.tam.fits.FitsException;
 import vtk.vtkImageData;
 import vtk.vtkImageReslice;
 
-import edu.jhuapl.near.model.Image;
+import edu.jhuapl.near.model.PerspectiveImage;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.util.FileCache;
 
-public class MSIImage extends Image
+public class MSIImage extends PerspectiveImage
 {
     // Size of image after resampling. Before resampling image is 537 by 244 pixels.
     public static final int RESAMPLED_IMAGE_WIDTH = 537;

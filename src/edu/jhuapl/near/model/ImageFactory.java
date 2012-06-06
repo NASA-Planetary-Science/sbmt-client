@@ -5,7 +5,7 @@ import java.io.IOException;
 
 import nom.tam.fits.FitsException;
 
-import edu.jhuapl.near.model.Image.ImageKey;
+import edu.jhuapl.near.model.PerspectiveImage.ImageKey;
 import edu.jhuapl.near.model.eros.Eros;
 import edu.jhuapl.near.model.eros.MSIImage;
 import edu.jhuapl.near.model.gaspra.SSIGaspraImage;
@@ -18,7 +18,7 @@ import edu.jhuapl.near.model.vesta.Vesta;
 
 public class ImageFactory
 {
-    static public Image createImage(ImageKey key,
+    static public PerspectiveImage createImage(ImageKey key,
             SmallBodyModel smallBodyModel,
             boolean loadPointingOnly,
             File rootFolder) throws FitsException, IOException

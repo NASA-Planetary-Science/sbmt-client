@@ -12,9 +12,9 @@ public interface ModelNames
     static public final String CYLINDRICAL_IMAGES = "cylindrical-images";
     static public final String GRATICULE = "graticule";
     static public final String GRAVITY_VECTOR_FIELD = "gravity-vector-field";
-    static public final String IMAGES = "images";
+    static public final String PERSPECTIVE_IMAGES = "perspective-images";
     static public final String COLOR_IMAGES = "color-images";
-    static public final String IMAGE_BOUNDARIES = "image-boundaries";
+    static public final String PERSPECTIVE_IMAGE_BOUNDARIES = "perspective-image-boundaries";
 
     // Eros
     static public final String LINEAMENT = "lineament";

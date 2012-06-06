@@ -17,9 +17,9 @@ import org.joda.time.DateTimeZone;
 import vtk.vtkGlobalJavaHash;
 import vtk.vtkPolyData;
 
-import edu.jhuapl.near.model.Image;
-import edu.jhuapl.near.model.Image.ImageKey;
-import edu.jhuapl.near.model.Image.ImageSource;
+import edu.jhuapl.near.model.PerspectiveImage;
+import edu.jhuapl.near.model.PerspectiveImage.ImageKey;
+import edu.jhuapl.near.model.PerspectiveImage.ImageSource;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.vesta.FcImage;
 import edu.jhuapl.near.model.vesta.Vesta;
@@ -127,11 +127,11 @@ public class VestaDatabaseGeneratorSql
     private static void populateFcTables(
             ArrayList<String> fcFiles,
             String fcTableName,
-            Image.ImageSource fcSource) throws IOException, SQLException, FitsException
+            PerspectiveImage.ImageSource fcSource) throws IOException, SQLException, FitsException
     {
         vestaModel.setModelResolution(0);
-        Image.setGenerateFootprint(true);
-        Image.setFootprintIsOnLocalDisk(true);
+        PerspectiveImage.setGenerateFootprint(true);
+        PerspectiveImage.setFootprintIsOnLocalDisk(true);
 
         int count = 0;
 
@@ -229,11 +229,11 @@ public class VestaDatabaseGeneratorSql
     private static void populateFcTablesCubes(
             ArrayList<String> fcFiles,
             String fcTableName,
-            Image.ImageSource fcSource) throws SQLException, IOException, FitsException
+            PerspectiveImage.ImageSource fcSource) throws SQLException, IOException, FitsException
     {
         vestaModel.setModelResolution(0);
-        Image.setGenerateFootprint(true);
-        Image.setFootprintIsOnLocalDisk(true);
+        PerspectiveImage.setGenerateFootprint(true);
+        PerspectiveImage.setFootprintIsOnLocalDisk(true);
 
         int count = 0;
         for (String filename : fcFiles)
@@ -335,7 +335,7 @@ public class VestaDatabaseGeneratorSql
     }
      */
 
-    static boolean checkIfAllFcFilesExist(String line, Image.ImageSource source)
+    static boolean checkIfAllFcFilesExist(String line, PerspectiveImage.ImageSource source)
     {
         File file = new File(line);
         if (!file.exists())
@@ -536,13 +536,13 @@ public class VestaDatabaseGeneratorSql
         try
         {
             if (mode == 1 || mode == 0)
-                populateFcTables(fcFiles, FcImagesGaskellTable, Image.ImageSource.GASKELL);
+                populateFcTables(fcFiles, FcImagesGaskellTable, PerspectiveImage.ImageSource.GASKELL);
             else if (mode == 2 || mode == 0)
-                populateFcTablesCubes(fcFiles, FcCubesGaskellTable, Image.ImageSource.GASKELL);
+                populateFcTablesCubes(fcFiles, FcCubesGaskellTable, PerspectiveImage.ImageSource.GASKELL);
             else if (mode == 3 || mode == 0)
-                populateFcTables(fcFiles, FcImagesPdsTable, Image.ImageSource.PDS);
+                populateFcTables(fcFiles, FcImagesPdsTable, PerspectiveImage.ImageSource.PDS);
             else if (mode == 4 || mode == 0)
-                populateFcTablesCubes(fcFiles, FcCubesPdsTable, Image.ImageSource.PDS);
+                populateFcTablesCubes(fcFiles, FcCubesPdsTable, PerspectiveImage.ImageSource.PDS);
         }
         catch (Exception e1) {
             e1.printStackTrace();

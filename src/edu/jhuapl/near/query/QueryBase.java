@@ -13,7 +13,7 @@ import java.util.TreeSet;
 
 import org.joda.time.DateTime;
 
-import edu.jhuapl.near.model.Image;
+import edu.jhuapl.near.model.PerspectiveImage;
 import edu.jhuapl.near.util.Configuration;
 import edu.jhuapl.near.util.FileCache;
 import edu.jhuapl.near.util.FileUtil;
@@ -172,6 +172,6 @@ abstract public class QueryBase
             double fromPhase,
             double toPhase,
             TreeSet<Integer> cubeList,
-            Image.ImageSource imageSource,
+            PerspectiveImage.ImageSource imageSource,
             int limbType);
 }

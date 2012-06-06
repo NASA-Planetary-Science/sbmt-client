@@ -18,7 +18,7 @@ import vtk.vtkProperty;
 import vtk.vtkTexture;
 import vtk.vtksbCellLocator;
 
-import edu.jhuapl.near.model.Image.ImageKey;
+import edu.jhuapl.near.model.PerspectiveImage.ImageKey;
 import edu.jhuapl.near.util.Frustum;
 import edu.jhuapl.near.util.ImageDataUtil;
 import edu.jhuapl.near.util.MathUtil;
@@ -28,9 +28,9 @@ import edu.jhuapl.near.util.Properties;
 public class ColorImage extends Model implements PropertyChangeListener
 {
     private SmallBodyModel smallBodyModel;
-    private Image redImage;
-    private Image greenImage;
-    private Image blueImage;
+    private PerspectiveImage redImage;
+    private PerspectiveImage greenImage;
+    private PerspectiveImage blueImage;
     private vtkImageData colorImage;
     private vtkPolyData footprint;
     private vtkPolyData shiftedFootprint;
@@ -51,11 +51,11 @@ public class ColorImage extends Model implements PropertyChangeListener
 
     public static class ColorImageKey
     {
-        public Image.ImageKey redImageKey;
-        public Image.ImageKey greenImageKey;
-        public Image.ImageKey blueImageKey;
+        public PerspectiveImage.ImageKey redImageKey;
+        public PerspectiveImage.ImageKey greenImageKey;
+        public PerspectiveImage.ImageKey blueImageKey;
 
-        public ColorImageKey(Image.ImageKey redImage, Image.ImageKey greenImage, Image.ImageKey blueImage)
+        public ColorImageKey(PerspectiveImage.ImageKey redImage, PerspectiveImage.ImageKey greenImage, PerspectiveImage.ImageKey blueImage)
         {
             this.redImageKey = redImage;
             this.greenImageKey = greenImage;
@@ -125,7 +125,7 @@ public class ColorImage extends Model implements PropertyChangeListener
         computeFootprintAndColorImage();
     }
 
-    protected Image createImage(ImageKey key, SmallBodyModel smallBodyModel) throws FitsException, IOException
+    protected PerspectiveImage createImage(ImageKey key, SmallBodyModel smallBodyModel) throws FitsException, IOException
     {
         return ImageFactory.createImage(key, smallBodyModel, false, null);
     }

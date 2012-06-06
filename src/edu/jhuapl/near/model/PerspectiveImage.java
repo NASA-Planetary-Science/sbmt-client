@@ -57,7 +57,7 @@ import edu.jhuapl.near.util.Properties;
  * @author kahneg1
  *
  */
-abstract public class Image extends Model implements PropertyChangeListener
+abstract public class PerspectiveImage extends Model implements PropertyChangeListener
 {
     public static final float PDS_NA = -1.e32f;
     public static final String FRUSTUM1 = "FRUSTUM1";
@@ -211,7 +211,7 @@ abstract public class Image extends Model implements PropertyChangeListener
      * is only done by the server programs in the server package. The GUI program
      * should always set this value to null since it always downloads the files.
      */
-    public Image(ImageKey key,
+    public PerspectiveImage(ImageKey key,
             SmallBodyModel smallBodyModel,
             boolean loadPointingOnly,
             File rootFolder) throws FitsException, IOException

@@ -19,9 +19,9 @@ import org.joda.time.DateTimeZone;
 import vtk.vtkGlobalJavaHash;
 import vtk.vtkPolyData;
 
-import edu.jhuapl.near.model.Image;
-import edu.jhuapl.near.model.Image.ImageKey;
-import edu.jhuapl.near.model.Image.ImageSource;
+import edu.jhuapl.near.model.PerspectiveImage;
+import edu.jhuapl.near.model.PerspectiveImage.ImageKey;
+import edu.jhuapl.near.model.PerspectiveImage.ImageSource;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.itokawa.AmicaImage;
 import edu.jhuapl.near.model.itokawa.Itokawa;
@@ -130,8 +130,8 @@ public class ItokawaDatabaseGeneratorSql
             AmicaImage.ImageSource amicaSource) throws IOException, SQLException, FitsException
     {
         itokawaModel.setModelResolution(0);
-        Image.setGenerateFootprint(true);
-        Image.setFootprintIsOnLocalDisk(true);
+        PerspectiveImage.setGenerateFootprint(true);
+        PerspectiveImage.setFootprintIsOnLocalDisk(true);
 
         int count = 0;
 
@@ -227,11 +227,11 @@ public class ItokawaDatabaseGeneratorSql
     private static void populateAmicaTablesCubes(
             ArrayList<String> amicaFiles,
             String amicaTableName,
-            Image.ImageSource amicaSource) throws SQLException, IOException, FitsException
+            PerspectiveImage.ImageSource amicaSource) throws SQLException, IOException, FitsException
     {
         itokawaModel.setModelResolution(0);
-        Image.setGenerateFootprint(true);
-        Image.setFootprintIsOnLocalDisk(true);
+        PerspectiveImage.setGenerateFootprint(true);
+        PerspectiveImage.setFootprintIsOnLocalDisk(true);
 
         int count = 0;
         for (String filename : amicaFiles)
@@ -326,7 +326,7 @@ public class ItokawaDatabaseGeneratorSql
         in.close();
     }
 
-    static boolean checkIfAllAmicaFilesExist(String line, Image.ImageSource source)
+    static boolean checkIfAllAmicaFilesExist(String line, PerspectiveImage.ImageSource source)
     {
         File file = new File(line);
         if (!file.exists())
@@ -416,13 +416,13 @@ public class ItokawaDatabaseGeneratorSql
         try
         {
             if (mode == 1 || mode == 0)
-                populateAmicaTables(amicaFiles, AmicaImagesGaskellTable, Image.ImageSource.GASKELL);
+                populateAmicaTables(amicaFiles, AmicaImagesGaskellTable, PerspectiveImage.ImageSource.GASKELL);
             else if (mode == 2 || mode == 0)
-                populateAmicaTablesCubes(amicaFiles, AmicaCubesGaskellTable, Image.ImageSource.GASKELL);
+                populateAmicaTablesCubes(amicaFiles, AmicaCubesGaskellTable, PerspectiveImage.ImageSource.GASKELL);
             else if (mode == 3 || mode == 0)
-                populateAmicaTables(amicaFiles, AmicaImagesPdsTable, Image.ImageSource.PDS);
+                populateAmicaTables(amicaFiles, AmicaImagesPdsTable, PerspectiveImage.ImageSource.PDS);
             else if (mode == 4 || mode == 0)
-                populateAmicaTablesCubes(amicaFiles, AmicaCubesPdsTable, Image.ImageSource.PDS);
+                populateAmicaTablesCubes(amicaFiles, AmicaCubesPdsTable, PerspectiveImage.ImageSource.PDS);
         }
         catch (Exception e1) {
             e1.printStackTrace();

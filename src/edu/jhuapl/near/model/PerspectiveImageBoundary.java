@@ -15,14 +15,14 @@ import vtk.vtkPolyDataMapper;
 import vtk.vtkProp;
 import vtk.vtksbCellLocator;
 
-import edu.jhuapl.near.model.Image.ImageKey;
+import edu.jhuapl.near.model.PerspectiveImage.ImageKey;
 import edu.jhuapl.near.util.BoundingBox;
 import edu.jhuapl.near.util.Frustum;
 import edu.jhuapl.near.util.MathUtil;
 import edu.jhuapl.near.util.PolyDataUtil;
 import edu.jhuapl.near.util.Properties;
 
-public class ImageBoundary extends Model implements PropertyChangeListener
+public class PerspectiveImageBoundary extends Model implements PropertyChangeListener
 {
     private vtkActor actor;
     private vtkPolyData boundary;
@@ -33,10 +33,10 @@ public class ImageBoundary extends Model implements PropertyChangeListener
     private double[] frustum3 = new double[3];
     private double[] boresightDirection = new double[3];
     private double[] upVector = new double[3];
-    private Image image;
+    private PerspectiveImage image;
     private SmallBodyModel smallBodyModel;
 
-    public ImageBoundary(Image image, SmallBodyModel smallBodyModel) throws IOException
+    public PerspectiveImageBoundary(PerspectiveImage image, SmallBodyModel smallBodyModel) throws IOException
     {
         this.image = image;
         this.smallBodyModel = smallBodyModel;
@@ -207,7 +207,7 @@ public class ImageBoundary extends Model implements PropertyChangeListener
         return image.getKey();
     }
 
-    public Image getImage()
+    public PerspectiveImage getImage()
     {
         return image;
     }

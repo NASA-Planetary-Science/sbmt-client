@@ -5,7 +5,7 @@ import java.util.TreeSet;
 
 import org.joda.time.DateTime;
 
-import edu.jhuapl.near.model.Image.ImageSource;
+import edu.jhuapl.near.model.PerspectiveImage.ImageSource;
 
 public class MathildeQuery extends QueryBase
 {

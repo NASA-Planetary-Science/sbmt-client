@@ -42,11 +42,11 @@ import edu.jhuapl.near.model.AbstractEllipsePolygonModel;
 import edu.jhuapl.near.model.ColorImage.ColorImageKey;
 import edu.jhuapl.near.model.ColorImage.NoOverlapException;
 import edu.jhuapl.near.model.ColorImageCollection;
-import edu.jhuapl.near.model.Image;
-import edu.jhuapl.near.model.Image.ImageKey;
-import edu.jhuapl.near.model.Image.ImageSource;
-import edu.jhuapl.near.model.ImageBoundaryCollection;
-import edu.jhuapl.near.model.ImageCollection;
+import edu.jhuapl.near.model.PerspectiveImage;
+import edu.jhuapl.near.model.PerspectiveImage.ImageKey;
+import edu.jhuapl.near.model.PerspectiveImage.ImageSource;
+import edu.jhuapl.near.model.PerspectiveImageBoundaryCollection;
+import edu.jhuapl.near.model.PerspectiveImageCollection;
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
@@ -76,7 +76,7 @@ abstract public class AbstractImageSearchPanel extends javax.swing.JPanel implem
     private ImageKey selectedBlueKey;
 
     // The source of the images of the most recently executed query
-    private Image.ImageSource sourceOfLastQuery = Image.ImageSource.PDS;
+    private PerspectiveImage.ImageSource sourceOfLastQuery = PerspectiveImage.ImageSource.PDS;
 
     private ArrayList<ArrayList<String>> imageRawResults = new ArrayList<ArrayList<String>>();
     private ImagePopupMenu imagePopupMenu;
@@ -97,8 +97,8 @@ abstract public class AbstractImageSearchPanel extends javax.swing.JPanel implem
 
         postInitComponents();
 
-        ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
-        ImageBoundaryCollection boundaries = (ImageBoundaryCollection)modelManager.getModel(getImageBoundaryCollectionModelName());
+        PerspectiveImageCollection images = (PerspectiveImageCollection)modelManager.getModel(getImageCollectionModelName());
+        PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(getImageBoundaryCollectionModelName());
         imagePopupMenu = new ImagePopupMenu(images, boundaries, infoPanelManager, renderer, this);
 
         ColorImageCollection colorImages = (ColorImageCollection)modelManager.getModel(getColorImageCollectionModelName());
@@ -119,12 +119,12 @@ abstract public class AbstractImageSearchPanel extends javax.swing.JPanel implem
 
     private String getImageCollectionModelName()
     {
-        return ModelNames.IMAGES;
+        return ModelNames.PERSPECTIVE_IMAGES;
     }
 
     private String getImageBoundaryCollectionModelName()
     {
-        return ModelNames.IMAGE_BOUNDARIES;
+        return ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES;
     }
 
     private String getColorImageCollectionModelName()
@@ -251,7 +251,7 @@ abstract public class AbstractImageSearchPanel extends javax.swing.JPanel implem
         int startId = idPair.id1;
         int endId = idPair.id2;
 
-        ImageBoundaryCollection model = (ImageBoundaryCollection)modelManager.getModel(getImageBoundaryCollectionModelName());
+        PerspectiveImageBoundaryCollection model = (PerspectiveImageBoundaryCollection)modelManager.getModel(getImageBoundaryCollectionModelName());
         model.removeAllBoundaries();
 
         for (int i=startId; i<endId; ++i)
@@ -334,14 +334,14 @@ abstract public class AbstractImageSearchPanel extends javax.swing.JPanel implem
         {
             PickEvent e = (PickEvent)evt.getNewValue();
             Model model = modelManager.getModel(e.getPickedProp());
-            if (model instanceof ImageCollection || model instanceof ImageBoundaryCollection)
+            if (model instanceof PerspectiveImageCollection || model instanceof PerspectiveImageBoundaryCollection)
             {
                 String name = null;
 
-                if (model instanceof ImageCollection)
-                    name = ((ImageCollection)model).getImageName((vtkActor)e.getPickedProp());
-                else if (model instanceof ImageBoundaryCollection)
-                    name = ((ImageBoundaryCollection)model).getBoundaryName((vtkActor)e.getPickedProp());
+                if (model instanceof PerspectiveImageCollection)
+                    name = ((PerspectiveImageCollection)model).getImageName((vtkActor)e.getPickedProp());
+                else if (model instanceof PerspectiveImageBoundaryCollection)
+                    name = ((PerspectiveImageBoundaryCollection)model).getBoundaryName((vtkActor)e.getPickedProp());
 
                 int idx = -1;
                 int size = imageRawResults.size();
@@ -1450,14 +1450,14 @@ abstract public class AbstractImageSearchPanel extends javax.swing.JPanel implem
 
     private void removeAllButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_removeAllButtonActionPerformed
     {//GEN-HEADEREND:event_removeAllButtonActionPerformed
-        ImageBoundaryCollection model = (ImageBoundaryCollection)modelManager.getModel(getImageBoundaryCollectionModelName());
+        PerspectiveImageBoundaryCollection model = (PerspectiveImageBoundaryCollection)modelManager.getModel(getImageBoundaryCollectionModelName());
         model.removeAllBoundaries();
         resultIntervalCurrentlyShown = null;
     }//GEN-LAST:event_removeAllButtonActionPerformed
 
     private void removeAllImagesButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_removeAllImagesButtonActionPerformed
     {//GEN-HEADEREND:event_removeAllImagesButtonActionPerformed
-        ImageCollection model = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
+        PerspectiveImageCollection model = (PerspectiveImageCollection)modelManager.getModel(getImageCollectionModelName());
         model.removeAllImages();
     }//GEN-LAST:event_removeAllImagesButtonActionPerformed
 
@@ -1588,7 +1588,7 @@ abstract public class AbstractImageSearchPanel extends javax.swing.JPanel implem
                         Double.parseDouble(fromPhaseTextField.getText()),
                         Double.parseDouble(toPhaseTextField.getText()),
                         cubeList,
-                        imageSource == Image.ImageSource.PDS ? Image.ImageSource.GASKELL : Image.ImageSource.PDS,
+                        imageSource == PerspectiveImage.ImageSource.PDS ? PerspectiveImage.ImageSource.GASKELL : PerspectiveImage.ImageSource.PDS,
                         hasLimbComboBox.getSelectedIndex());
 
                 int numOtherResults = resultsOtherSource.size();

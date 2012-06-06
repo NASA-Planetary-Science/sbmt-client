@@ -19,11 +19,11 @@ import vtk.vtkImageData;
 import vtk.vtkImageReslice;
 import vtk.vtkImageTranslateExtent;
 
-import edu.jhuapl.near.model.Image;
+import edu.jhuapl.near.model.PerspectiveImage;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.util.FileCache;
 
-public class AmicaImage extends Image
+public class AmicaImage extends PerspectiveImage
 {
     //private static final int IMAGE_WIDTH = 1024;
     //private static final int IMAGE_HEIGHT = 1024;

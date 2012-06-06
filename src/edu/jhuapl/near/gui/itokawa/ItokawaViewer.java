@@ -22,8 +22,8 @@ import edu.jhuapl.near.model.CircleSelectionModel;
 import edu.jhuapl.near.model.ColorImageCollection;
 import edu.jhuapl.near.model.EllipseModel;
 import edu.jhuapl.near.model.Graticule;
-import edu.jhuapl.near.model.ImageBoundaryCollection;
-import edu.jhuapl.near.model.ImageCollection;
+import edu.jhuapl.near.model.PerspectiveImageBoundaryCollection;
+import edu.jhuapl.near.model.PerspectiveImageCollection;
 import edu.jhuapl.near.model.LineModel;
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelManager;
@@ -86,8 +86,8 @@ public class ItokawaViewer extends Viewer
             {
                 if (model instanceof AmicaImage)
                 {
-                    ImageCollection amicaImages = (ImageCollection)modelManager.getModel(ModelNames.IMAGES);
-                    ImageBoundaryCollection amicaBoundaries = (ImageBoundaryCollection)modelManager.getModel(ModelNames.IMAGE_BOUNDARIES);
+                    PerspectiveImageCollection amicaImages = (PerspectiveImageCollection)modelManager.getModel(ModelNames.PERSPECTIVE_IMAGES);
+                    PerspectiveImageBoundaryCollection amicaBoundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES);
                     return new ImageInfoPanel((AmicaImage)model, amicaImages, amicaBoundaries);
                 }
                 else if (model instanceof NISSpectrum)
@@ -140,9 +140,9 @@ public class ItokawaViewer extends Viewer
 
         HashMap<String, Model> allModels = new HashMap<String, Model>();
         allModels.put(ModelNames.SMALL_BODY, itokawaModel);
-        allModels.put(ModelNames.IMAGES, new ImageCollection(itokawaModel));
+        allModels.put(ModelNames.PERSPECTIVE_IMAGES, new PerspectiveImageCollection(itokawaModel));
         allModels.put(ModelNames.COLOR_IMAGES, new ColorImageCollection(itokawaModel));
-        allModels.put(ModelNames.IMAGE_BOUNDARIES, new ImageBoundaryCollection(itokawaModel));
+        allModels.put(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES, new PerspectiveImageBoundaryCollection(itokawaModel));
         allModels.put(ModelNames.HAYLIDAR_BROWSE, new HayLidarBrowseDataCollection());
         allModels.put(ModelNames.HAYLIDAR_SEARCH, new HayLidarSearchDataCollection(itokawaModel));
         allModels.put(ModelNames.HAYLIDAR_SEARCH_UNFILTERED, new HayLidarUnfilteredSearchDataCollection(itokawaModel));
@@ -161,18 +161,18 @@ public class ItokawaViewer extends Viewer
     {
         popupManager = new PopupManager(modelManager);
 
-        ImageCollection amicaImages = (ImageCollection)modelManager.getModel(ModelNames.IMAGES);
-        ImageBoundaryCollection amicaBoundaries = (ImageBoundaryCollection)modelManager.getModel(ModelNames.IMAGE_BOUNDARIES);
+        PerspectiveImageCollection amicaImages = (PerspectiveImageCollection)modelManager.getModel(ModelNames.PERSPECTIVE_IMAGES);
+        PerspectiveImageBoundaryCollection amicaBoundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES);
         ColorImageCollection amicaColorImages = (ColorImageCollection)modelManager.getModel(ModelNames.COLOR_IMAGES);
         HayLidarSearchDataCollection lidarSearch = (HayLidarSearchDataCollection)modelManager.getModel(ModelNames.HAYLIDAR_SEARCH);
         HayLidarUnfilteredSearchDataCollection lidarSearchUnfiltered =
             (HayLidarUnfilteredSearchDataCollection)modelManager.getModel(ModelNames.HAYLIDAR_SEARCH_UNFILTERED);
 
         PopupMenu popupMenu = new ImagePopupMenu(amicaImages, amicaBoundaries, infoPanelManager, renderer, renderer);
-        popupManager.registerPopup(modelManager.getModel(ModelNames.IMAGE_BOUNDARIES), popupMenu);
+        popupManager.registerPopup(modelManager.getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES), popupMenu);
 
         popupMenu = new ImagePopupMenu(amicaImages, amicaBoundaries, infoPanelManager, renderer, renderer);
-        popupManager.registerPopup(modelManager.getModel(ModelNames.IMAGES), popupMenu);
+        popupManager.registerPopup(modelManager.getModel(ModelNames.PERSPECTIVE_IMAGES), popupMenu);
 
         popupMenu = new ColorImagePopupMenu(amicaColorImages, infoPanelManager);
         popupManager.registerPopup(modelManager.getModel(ModelNames.COLOR_IMAGES), popupMenu);

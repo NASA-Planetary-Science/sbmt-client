@@ -12,30 +12,30 @@ import nom.tam.fits.FitsException;
 import vtk.vtkActor;
 import vtk.vtkProp;
 
-import edu.jhuapl.near.model.Image.ImageKey;
+import edu.jhuapl.near.model.PerspectiveImage.ImageKey;
 import edu.jhuapl.near.util.Properties;
 
-public class ImageCollection extends Model implements PropertyChangeListener
+public class PerspectiveImageCollection extends Model implements PropertyChangeListener
 {
     private SmallBodyModel erosModel;
 
-    private HashMap<Image, ArrayList<vtkProp>> imageToActorsMap = new HashMap<Image, ArrayList<vtkProp>>();
+    private HashMap<PerspectiveImage, ArrayList<vtkProp>> imageToActorsMap = new HashMap<PerspectiveImage, ArrayList<vtkProp>>();
 
-    private HashMap<vtkProp, Image> actorToImageMap = new HashMap<vtkProp, Image>();
+    private HashMap<vtkProp, PerspectiveImage> actorToImageMap = new HashMap<vtkProp, PerspectiveImage>();
 
-    public ImageCollection(SmallBodyModel eros)
+    public PerspectiveImageCollection(SmallBodyModel eros)
     {
         this.erosModel = eros;
     }
 
-    protected Image createImage(ImageKey key, SmallBodyModel smallBodyModel) throws FitsException, IOException
+    protected PerspectiveImage createImage(ImageKey key, SmallBodyModel smallBodyModel) throws FitsException, IOException
     {
         return ImageFactory.createImage(key, smallBodyModel, false, null);
     }
 
     private boolean containsKey(ImageKey key)
     {
-        for (Image image : imageToActorsMap.keySet())
+        for (PerspectiveImage image : imageToActorsMap.keySet())
         {
             if (image.getKey().equals(key))
                 return true;
@@ -44,9 +44,9 @@ public class ImageCollection extends Model implements PropertyChangeListener
         return false;
     }
 
-    private Image getImageFromKey(ImageKey key)
+    private PerspectiveImage getImageFromKey(ImageKey key)
     {
-        for (Image image : imageToActorsMap.keySet())
+        for (PerspectiveImage image : imageToActorsMap.keySet())
         {
             if (image.getKey().equals(key))
                 return image;
@@ -60,7 +60,7 @@ public class ImageCollection extends Model implements PropertyChangeListener
         if (containsKey(key))
             return;
 
-        Image image = createImage(key, erosModel);
+        PerspectiveImage image = createImage(key, erosModel);
 
         erosModel.addPropertyChangeListener(image);
         image.addPropertyChangeListener(this);
@@ -79,7 +79,7 @@ public class ImageCollection extends Model implements PropertyChangeListener
 
     public void removeImage(ImageKey key)
     {
-        Image image = getImageFromKey(key);
+        PerspectiveImage image = getImageFromKey(key);
 
         ArrayList<vtkProp> actors = imageToActorsMap.get(image);
 
@@ -98,8 +98,8 @@ public class ImageCollection extends Model implements PropertyChangeListener
 
     public void removeAllImages()
     {
-        HashMap<Image, ArrayList<vtkProp>> map = (HashMap<Image, ArrayList<vtkProp>>)imageToActorsMap.clone();
-        for (Image image : map.keySet())
+        HashMap<PerspectiveImage, ArrayList<vtkProp>> map = (HashMap<PerspectiveImage, ArrayList<vtkProp>>)imageToActorsMap.clone();
+        for (PerspectiveImage image : map.keySet())
             removeImage(image.getKey());
     }
 
@@ -125,12 +125,12 @@ public class ImageCollection extends Model implements PropertyChangeListener
         return actorToImageMap.get(actor).getKey().name;
     }
 
-    public Image getImage(vtkActor actor)
+    public PerspectiveImage getImage(vtkActor actor)
     {
         return actorToImageMap.get(actor);
     }
 
-    public Image getImage(ImageKey key)
+    public PerspectiveImage getImage(ImageKey key)
     {
         return getImageFromKey(key);
     }
@@ -142,7 +142,7 @@ public class ImageCollection extends Model implements PropertyChangeListener
 
     public void setShowFrustums(boolean b)
     {
-        for (Image image : imageToActorsMap.keySet())
+        for (PerspectiveImage image : imageToActorsMap.keySet())
             image.setShowFrustum(b);
 
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);

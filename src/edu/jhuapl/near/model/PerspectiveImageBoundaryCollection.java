@@ -12,30 +12,30 @@ import nom.tam.fits.FitsException;
 import vtk.vtkActor;
 import vtk.vtkProp;
 
-import edu.jhuapl.near.model.Image.ImageKey;
+import edu.jhuapl.near.model.PerspectiveImage.ImageKey;
 import edu.jhuapl.near.util.Properties;
 
-public class ImageBoundaryCollection extends Model implements PropertyChangeListener
+public class PerspectiveImageBoundaryCollection extends Model implements PropertyChangeListener
 {
-    private HashMap<ImageBoundary, ArrayList<vtkProp>> boundaryToActorsMap = new HashMap<ImageBoundary, ArrayList<vtkProp>>();
-    private HashMap<vtkProp, ImageBoundary> actorToBoundaryMap = new HashMap<vtkProp, ImageBoundary>();
+    private HashMap<PerspectiveImageBoundary, ArrayList<vtkProp>> boundaryToActorsMap = new HashMap<PerspectiveImageBoundary, ArrayList<vtkProp>>();
+    private HashMap<vtkProp, PerspectiveImageBoundary> actorToBoundaryMap = new HashMap<vtkProp, PerspectiveImageBoundary>();
     private SmallBodyModel smallBodyModel;
 
-    public ImageBoundaryCollection(SmallBodyModel smallBodyModel)
+    public PerspectiveImageBoundaryCollection(SmallBodyModel smallBodyModel)
     {
         this.smallBodyModel = smallBodyModel;
     }
 
-    protected ImageBoundary createBoundary(
+    protected PerspectiveImageBoundary createBoundary(
             ImageKey key,
             SmallBodyModel smallBodyModel) throws IOException, FitsException
     {
-        return new ImageBoundary(ImageFactory.createImage(key, smallBodyModel, true, null), smallBodyModel);
+        return new PerspectiveImageBoundary(ImageFactory.createImage(key, smallBodyModel, true, null), smallBodyModel);
     }
 
     private boolean containsKey(ImageKey key)
     {
-        for (ImageBoundary boundary : boundaryToActorsMap.keySet())
+        for (PerspectiveImageBoundary boundary : boundaryToActorsMap.keySet())
         {
             if (boundary.getKey().equals(key))
                 return true;
@@ -44,9 +44,9 @@ public class ImageBoundaryCollection extends Model implements PropertyChangeList
         return false;
     }
 
-    private ImageBoundary getBoundaryFromKey(ImageKey key)
+    private PerspectiveImageBoundary getBoundaryFromKey(ImageKey key)
     {
-        for (ImageBoundary boundary : boundaryToActorsMap.keySet())
+        for (PerspectiveImageBoundary boundary : boundaryToActorsMap.keySet())
         {
             if (boundary.getKey().equals(key))
                 return boundary;
@@ -61,7 +61,7 @@ public class ImageBoundaryCollection extends Model implements PropertyChangeList
         if (containsKey(key))
             return;
 
-        ImageBoundary boundary = createBoundary(key, smallBodyModel);
+        PerspectiveImageBoundary boundary = createBoundary(key, smallBodyModel);
 
         smallBodyModel.addPropertyChangeListener(boundary);
         boundary.addPropertyChangeListener(this);
@@ -80,7 +80,7 @@ public class ImageBoundaryCollection extends Model implements PropertyChangeList
 
     public void removeBoundary(ImageKey key)
     {
-        ImageBoundary boundary = getBoundaryFromKey(key);
+        PerspectiveImageBoundary boundary = getBoundaryFromKey(key);
 
         ArrayList<vtkProp> actors = boundaryToActorsMap.get(boundary);
 
@@ -97,8 +97,8 @@ public class ImageBoundaryCollection extends Model implements PropertyChangeList
 
     public void removeAllBoundaries()
     {
-        HashMap<ImageBoundary, ArrayList<vtkProp>> map = (HashMap<ImageBoundary, ArrayList<vtkProp>>)boundaryToActorsMap.clone();
-        for (ImageBoundary boundary : map.keySet())
+        HashMap<PerspectiveImageBoundary, ArrayList<vtkProp>> map = (HashMap<PerspectiveImageBoundary, ArrayList<vtkProp>>)boundaryToActorsMap.clone();
+        for (PerspectiveImageBoundary boundary : map.keySet())
             removeBoundary(boundary.getKey());
     }
 
@@ -118,12 +118,12 @@ public class ImageBoundaryCollection extends Model implements PropertyChangeList
         return actorToBoundaryMap.get(actor).getKey().name;
     }
 
-    public ImageBoundary getBoundary(vtkActor actor)
+    public PerspectiveImageBoundary getBoundary(vtkActor actor)
     {
         return actorToBoundaryMap.get(actor);
     }
 
-    public ImageBoundary getBoundary(ImageKey key)
+    public PerspectiveImageBoundary getBoundary(ImageKey key)
     {
         return getBoundaryFromKey(key);
     }

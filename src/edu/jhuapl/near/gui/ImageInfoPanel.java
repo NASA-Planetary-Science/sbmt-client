@@ -34,9 +34,9 @@ import vtk.vtkPropCollection;
 import vtk.vtkPropPicker;
 import vtk.vtkTransform;
 
-import edu.jhuapl.near.model.Image;
-import edu.jhuapl.near.model.ImageBoundaryCollection;
-import edu.jhuapl.near.model.ImageCollection;
+import edu.jhuapl.near.model.PerspectiveImage;
+import edu.jhuapl.near.model.PerspectiveImageBoundaryCollection;
+import edu.jhuapl.near.model.PerspectiveImageCollection;
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.popupmenus.ImagePopupMenu;
 import edu.jhuapl.near.util.IntensityRange;
@@ -48,9 +48,9 @@ import edu.jhuapl.near.util.IntensityRange;
 public class ImageInfoPanel extends ModelInfoWindow implements PropertyChangeListener
 {
     private vtkEnhancedRenderWindowPanel renWin;
-    private Image image;
-    private ImageCollection imageCollection;
-    private ImageBoundaryCollection imageBoundaryCollection;
+    private PerspectiveImage image;
+    private PerspectiveImageCollection imageCollection;
+    private PerspectiveImageBoundaryCollection imageBoundaryCollection;
     private vtkImageActor actor;
     private vtkImageReslice reslice;
     private vtkPropPicker imagePicker;
@@ -75,9 +75,9 @@ public class ImageInfoPanel extends ModelInfoWindow implements PropertyChangeLis
 
     /** Creates new form ImageInfoPanel2 */
     public ImageInfoPanel(
-            final Image image,
-            ImageCollection imageCollection,
-            ImageBoundaryCollection imageBoundaryCollection)
+            final PerspectiveImage image,
+            PerspectiveImageCollection imageCollection,
+            PerspectiveImageBoundaryCollection imageBoundaryCollection)
     {
         initComponents();
 

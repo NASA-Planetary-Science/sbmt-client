@@ -6,7 +6,7 @@ import java.util.TreeSet;
 
 import org.joda.time.DateTime;
 
-import edu.jhuapl.near.model.Image;
+import edu.jhuapl.near.model.PerspectiveImage;
 import edu.jhuapl.near.model.eros.MSIImage;
 
 
@@ -144,7 +144,7 @@ public class ErosQuery extends QueryBase
             double fromPhase,
             double toPhase,
             TreeSet<Integer> cubeList,
-            Image.ImageSource msiSource,
+            PerspectiveImage.ImageSource msiSource,
             int limbType)
     {
         ArrayList<ArrayList<String>> results = new ArrayList<ArrayList<String>>();

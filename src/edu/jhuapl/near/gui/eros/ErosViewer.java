@@ -21,8 +21,8 @@ import edu.jhuapl.near.model.CircleSelectionModel;
 import edu.jhuapl.near.model.ColorImageCollection;
 import edu.jhuapl.near.model.EllipseModel;
 import edu.jhuapl.near.model.Graticule;
-import edu.jhuapl.near.model.ImageBoundaryCollection;
-import edu.jhuapl.near.model.ImageCollection;
+import edu.jhuapl.near.model.PerspectiveImageBoundaryCollection;
+import edu.jhuapl.near.model.PerspectiveImageCollection;
 import edu.jhuapl.near.model.LineModel;
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelManager;
@@ -81,8 +81,8 @@ public class ErosViewer extends Viewer
             {
                 if (model instanceof MSIImage)
                 {
-                    ImageCollection msiImages = (ImageCollection)modelManager.getModel(ModelNames.IMAGES);
-                    ImageBoundaryCollection msiBoundaries = (ImageBoundaryCollection)modelManager.getModel(ModelNames.IMAGE_BOUNDARIES);
+                    PerspectiveImageCollection msiImages = (PerspectiveImageCollection)modelManager.getModel(ModelNames.PERSPECTIVE_IMAGES);
+                    PerspectiveImageBoundaryCollection msiBoundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES);
                     return new ImageInfoPanel((MSIImage)model, msiImages, msiBoundaries);
                 }
                 else if (model instanceof NISSpectrum)
@@ -137,9 +137,9 @@ public class ErosViewer extends Viewer
         HashMap<String, Model> allModels = new HashMap<String, Model>();
         allModels.put(ModelNames.SMALL_BODY, erosModel);
         allModels.put(ModelNames.LINEAMENT, new LineamentModel());
-        allModels.put(ModelNames.IMAGES, new ImageCollection(erosModel));
+        allModels.put(ModelNames.PERSPECTIVE_IMAGES, new PerspectiveImageCollection(erosModel));
         allModels.put(ModelNames.COLOR_IMAGES, new ColorImageCollection(erosModel));
-        allModels.put(ModelNames.IMAGE_BOUNDARIES, new ImageBoundaryCollection(erosModel));
+        allModels.put(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES, new PerspectiveImageBoundaryCollection(erosModel));
         allModels.put(ModelNames.NIS_SPECTRA, new NISSpectraCollection(erosModel));
         allModels.put(ModelNames.NLR_DATA_SUMMARY, new NLRDataEverything());
         allModels.put(ModelNames.NLR_DATA_BROWSE, new NLRBrowseDataCollection());
@@ -162,16 +162,16 @@ public class ErosViewer extends Viewer
         PopupMenu popupMenu = new LineamentPopupMenu(modelManager);
         popupManager.registerPopup(modelManager.getModel(ModelNames.LINEAMENT), popupMenu);
 
-        ImageCollection msiImages = (ImageCollection)modelManager.getModel(ModelNames.IMAGES);
-        ImageBoundaryCollection msiBoundaries = (ImageBoundaryCollection)modelManager.getModel(ModelNames.IMAGE_BOUNDARIES);
+        PerspectiveImageCollection msiImages = (PerspectiveImageCollection)modelManager.getModel(ModelNames.PERSPECTIVE_IMAGES);
+        PerspectiveImageBoundaryCollection msiBoundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES);
         ColorImageCollection msiColorImages = (ColorImageCollection)modelManager.getModel(ModelNames.COLOR_IMAGES);
         NLRSearchDataCollection lidarSearch = (NLRSearchDataCollection)modelManager.getModel(ModelNames.NLR_DATA_SEARCH);
 
         popupMenu = new ImagePopupMenu(msiImages, msiBoundaries, infoPanelManager, renderer, renderer);
-        popupManager.registerPopup(modelManager.getModel(ModelNames.IMAGE_BOUNDARIES), popupMenu);
+        popupManager.registerPopup(modelManager.getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES), popupMenu);
 
         popupMenu = new ImagePopupMenu(msiImages, msiBoundaries, infoPanelManager, renderer, renderer);
-        popupManager.registerPopup(modelManager.getModel(ModelNames.IMAGES), popupMenu);
+        popupManager.registerPopup(modelManager.getModel(ModelNames.PERSPECTIVE_IMAGES), popupMenu);
 
         popupMenu = new ColorImagePopupMenu(msiColorImages, infoPanelManager);
         popupManager.registerPopup(modelManager.getModel(ModelNames.COLOR_IMAGES), popupMenu);

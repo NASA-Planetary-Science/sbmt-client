@@ -9,11 +9,11 @@ import nom.tam.fits.FitsException;
 import vtk.vtkImageData;
 import vtk.vtkImageFlip;
 
-import edu.jhuapl.near.model.Image;
+import edu.jhuapl.near.model.PerspectiveImage;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.util.FileCache;
 
-public class SSIIdaImage extends Image
+public class SSIIdaImage extends PerspectiveImage
 {
     // Note the tangent!
     public static final double FOV_PARAMETER1 = -Math.tan(0.00813/2.0);
