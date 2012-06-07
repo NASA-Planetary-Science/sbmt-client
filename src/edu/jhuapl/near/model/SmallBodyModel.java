@@ -1371,13 +1371,6 @@ public class SmallBodyModel extends Model
 
     public void setCurrentColoringRange(int coloringIndex, double[] range) throws IOException
     {
-        range = range.clone();
-
-        if (range[0] < defaultColoringRanges[coloringIndex][0])
-            range[0] = defaultColoringRanges[coloringIndex][0];
-        if (range[1] > defaultColoringRanges[coloringIndex][1])
-            range[1] = defaultColoringRanges[coloringIndex][1];
-
         if (range[0] != currentColoringRanges[coloringIndex][0] ||
             range[1] != currentColoringRanges[coloringIndex][1])
         {
