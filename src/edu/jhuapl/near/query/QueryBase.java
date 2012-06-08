@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.TreeSet;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 
 import edu.jhuapl.near.model.PerspectiveImage;
 import edu.jhuapl.near.util.Configuration;
@@ -110,7 +111,7 @@ abstract public class QueryBase
                     String[] vals = line.trim().split("\\s+");
                     ArrayList<String> res = new ArrayList<String>();
                     res.add(pathToImageFolderOnServer + vals[0]);
-                    res.add(new Long(new DateTime(vals[1]).getMillis()).toString());
+                    res.add(new Long(new DateTime(vals[1], DateTimeZone.UTC).getMillis()).toString());
                     results.add(res);
                 }
             }
