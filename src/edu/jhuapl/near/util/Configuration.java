@@ -136,4 +136,9 @@ public class Configuration
     {
         return APLVersion;
     }
+
+    static public String getCustomDataFolderForBuiltInViewers()
+    {
+        return getApplicationDataDir() + File.separator + "custom-data";
+    }
 }

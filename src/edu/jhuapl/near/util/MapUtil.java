@@ -30,6 +30,19 @@ public class MapUtil
         }
     }
 
+    public boolean containsKey(String key)
+    {
+        return map.containsKey(key);
+    }
+
+    public String get(String key)
+    {
+        if (map.containsKey(key))
+            return map.get(key);
+        else
+            return null;
+    }
+
     /**
      *
      * @param key
@@ -57,6 +70,28 @@ public class MapUtil
     public boolean getAsBoolean(String key, Boolean defaultValue)
     {
         return Boolean.parseBoolean(get(key, defaultValue.toString()));
+    }
+
+    public String[] getAsArray(String key)
+    {
+        if (!map.containsKey(key))
+            return null;
+        String value = get(key, "").trim();
+        if (value.isEmpty())
+            return new String[0];
+        else
+            return get(key, "").split(",", -1);
+    }
+
+    public double[] getAsDoubleArray(String key)
+    {
+        String[] valuesStr = getAsArray(key);
+        if (valuesStr == null)
+            return null;
+        double[] values = new double[valuesStr.length];
+        for (int i=0; i<values.length; ++i)
+            values[i] = Double.parseDouble(valuesStr[i]);
+        return values;
     }
 
     public void put(String key, String value)
@@ -87,12 +122,12 @@ public class MapUtil
         put(key, value.toString());
     }
 
-    public void put(Map<String, Object> otherMap)
+    public void put(Map<String, String> otherMap)
     {
         try
         {
             for (String key : otherMap.keySet())
-                map.put(key, otherMap.get(key).toString());
+                map.put(key, otherMap.get(key));
             saveMap(map, filename);
         }
         catch (IOException e)
@@ -101,7 +136,7 @@ public class MapUtil
         }
     }
 
-    public static void saveMap(Map<String, String> map, String filename) throws IOException
+    private static void saveMap(Map<String, String> map, String filename) throws IOException
     {
         FileWriter fstream = new FileWriter(filename);
         BufferedWriter out = new BufferedWriter(fstream);
@@ -115,7 +150,7 @@ public class MapUtil
         out.close();
     }
 
-    public static Map<String, String> loadMap(String filename) throws IOException
+    private static Map<String, String> loadMap(String filename) throws IOException
     {
         LinkedHashMap<String, String> map = new LinkedHashMap<String, String>();
 

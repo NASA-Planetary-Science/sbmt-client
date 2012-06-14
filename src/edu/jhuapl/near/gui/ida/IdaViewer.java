@@ -8,8 +8,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 
-import edu.jhuapl.near.gui.ImageInfoPanel;
-import edu.jhuapl.near.gui.ModelInfoWindow;
+import edu.jhuapl.near.gui.CustomImagesPanel;
 import edu.jhuapl.near.gui.ModelInfoWindowManager;
 import edu.jhuapl.near.gui.Renderer;
 import edu.jhuapl.near.gui.SmallBodyControlPanel;
@@ -21,16 +20,14 @@ import edu.jhuapl.near.model.CircleSelectionModel;
 import edu.jhuapl.near.model.ColorImageCollection;
 import edu.jhuapl.near.model.EllipseModel;
 import edu.jhuapl.near.model.Graticule;
-import edu.jhuapl.near.model.PerspectiveImageBoundaryCollection;
-import edu.jhuapl.near.model.PerspectiveImageCollection;
+import edu.jhuapl.near.model.ImageCollection;
 import edu.jhuapl.near.model.LineModel;
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
+import edu.jhuapl.near.model.PerspectiveImageBoundaryCollection;
 import edu.jhuapl.near.model.PointModel;
-import edu.jhuapl.near.model.CylindricalImageCollection;
 import edu.jhuapl.near.model.SmallBodyModel;
-import edu.jhuapl.near.model.ida.SSIIdaImage;
 import edu.jhuapl.near.model.simple.SimpleSmallBody;
 import edu.jhuapl.near.pick.PickManager;
 import edu.jhuapl.near.popupmenus.ColorImagePopupMenu;
@@ -73,23 +70,7 @@ public class IdaViewer extends Viewer
 
         setupModelManager();
 
-        infoPanelManager = new ModelInfoWindowManager(modelManager)
-        {
-            public ModelInfoWindow createModelInfoWindow(Model model,
-                    ModelManager modelManager)
-            {
-                if (model instanceof SSIIdaImage)
-                {
-                    PerspectiveImageCollection images = (PerspectiveImageCollection)modelManager.getModel(ModelNames.PERSPECTIVE_IMAGES);
-                    PerspectiveImageBoundaryCollection imageBoundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES);
-                    return new ImageInfoPanel((SSIIdaImage)model, images, imageBoundaries);
-                }
-                else
-                {
-                    return null;
-                }
-            }
-        };
+        infoPanelManager = new ModelInfoWindowManager(modelManager);
 
         renderer = new Renderer(modelManager);
 
@@ -104,6 +85,7 @@ public class IdaViewer extends Viewer
         {
             controlPanel.addTab("SSI", new SSIIdaSearchPanel(modelManager, infoPanelManager, pickManager, renderer));
             controlPanel.addTab("Structures", new StructuresControlPanel(modelManager, pickManager));
+            controlPanel.addTab("Images", new CustomImagesPanel(modelManager, infoPanelManager, pickManager, renderer, true, getUniqueName()));
         }
 
         splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
@@ -132,7 +114,7 @@ public class IdaViewer extends Viewer
 
         HashMap<String, Model> allModels = new HashMap<String, Model>();
         allModels.put(ModelNames.SMALL_BODY, smallBodyModel);
-        allModels.put(ModelNames.PERSPECTIVE_IMAGES, new PerspectiveImageCollection(smallBodyModel));
+        allModels.put(ModelNames.IMAGES, new ImageCollection(smallBodyModel));
         allModels.put(ModelNames.COLOR_IMAGES, new ColorImageCollection(smallBodyModel));
         allModels.put(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES, new PerspectiveImageBoundaryCollection(smallBodyModel));
         allModels.put(ModelNames.LINE_STRUCTURES, new LineModel(smallBodyModel));
@@ -140,7 +122,6 @@ public class IdaViewer extends Viewer
         allModels.put(ModelNames.ELLIPSE_STRUCTURES, new EllipseModel(smallBodyModel));
         allModels.put(ModelNames.POINT_STRUCTURES, new PointModel(smallBodyModel));
         allModels.put(ModelNames.CIRCLE_SELECTION, new CircleSelectionModel(smallBodyModel));
-        allModels.put(ModelNames.CYLINDRICAL_IMAGES, new CylindricalImageCollection(smallBodyModel));
         allModels.put(ModelNames.GRATICULE, graticule);
 
         modelManager.setModels(allModels);
@@ -149,17 +130,14 @@ public class IdaViewer extends Viewer
 
     private void setupPopupManager()
     {
-        popupManager = new PopupManager(modelManager);
+        popupManager = new PopupManager(modelManager, infoPanelManager, renderer);
 
-        PerspectiveImageCollection images = (PerspectiveImageCollection)modelManager.getModel(ModelNames.PERSPECTIVE_IMAGES);
+        ImageCollection images = (ImageCollection)modelManager.getModel(ModelNames.IMAGES);
         PerspectiveImageBoundaryCollection imageBoundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES);
         ColorImageCollection colorImages = (ColorImageCollection)modelManager.getModel(ModelNames.COLOR_IMAGES);
 
         PopupMenu popupMenu = new ImagePopupMenu(images, imageBoundaries, infoPanelManager, renderer, renderer);
         popupManager.registerPopup(modelManager.getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES), popupMenu);
-
-        popupMenu = new ImagePopupMenu(images, imageBoundaries, infoPanelManager, renderer, renderer);
-        popupManager.registerPopup(modelManager.getModel(ModelNames.PERSPECTIVE_IMAGES), popupMenu);
 
         popupMenu = new ColorImagePopupMenu(colorImages, infoPanelManager);
         popupManager.registerPopup(modelManager.getModel(ModelNames.COLOR_IMAGES), popupMenu);

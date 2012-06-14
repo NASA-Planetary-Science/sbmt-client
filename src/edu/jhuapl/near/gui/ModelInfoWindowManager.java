@@ -6,11 +6,17 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.HashMap;
 
+import edu.jhuapl.near.gui.eros.NISSpectrumInfoPanel;
+import edu.jhuapl.near.model.Image;
+import edu.jhuapl.near.model.ImageCollection;
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelManager;
+import edu.jhuapl.near.model.ModelNames;
+import edu.jhuapl.near.model.PerspectiveImageBoundaryCollection;
+import edu.jhuapl.near.model.eros.NISSpectrum;
 import edu.jhuapl.near.util.Properties;
 
-abstract public class ModelInfoWindowManager implements PropertyChangeListener
+public class ModelInfoWindowManager implements PropertyChangeListener
 {
     HashMap<Model, ModelInfoWindow> infoPanels =
         new HashMap<Model, ModelInfoWindow>();
@@ -70,5 +76,21 @@ abstract public class ModelInfoWindowManager implements PropertyChangeListener
         }
     }
 
-    abstract public ModelInfoWindow createModelInfoWindow(Model model, ModelManager modelManager);
+    public ModelInfoWindow createModelInfoWindow(Model model, ModelManager modelManager)
+    {
+        if (model instanceof Image)
+        {
+            ImageCollection images = (ImageCollection)modelManager.getModel(ModelNames.IMAGES);
+            PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES);
+            return new ImageInfoPanel((Image)model, images, boundaries);
+        }
+        else if (model instanceof NISSpectrum)
+        {
+            return new NISSpectrumInfoPanel((NISSpectrum)model, modelManager);
+        }
+        else
+        {
+            return null;
+        }
+    }
 }

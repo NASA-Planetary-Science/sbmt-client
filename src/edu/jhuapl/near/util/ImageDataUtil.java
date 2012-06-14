@@ -2,6 +2,7 @@ package edu.jhuapl.near.util;
 
 import vtk.vtkFloatArray;
 import vtk.vtkImageData;
+import vtk.vtkImageFlip;
 import vtk.vtkPointData;
 
 public class ImageDataUtil
@@ -59,5 +60,27 @@ public class ImageDataUtil
             image[x2][y2]*(x-x1)*(y-y1);
 
         return (float)value;
+    }
+
+    /**
+     *  Flip image along y axis.
+     *
+     * @param image
+     */
+    static public void flipImageYAxis(vtkImageData image)
+    {
+        int[] dims = image.GetDimensions();
+        vtkImageFlip flip = new vtkImageFlip();
+        flip.SetInput(image);
+        flip.SetInterpolationModeToNearestNeighbor();
+        flip.SetOutputSpacing(1.0, 1.0, 1.0);
+        flip.SetOutputOrigin(0.0, 0.0, 0.0);
+        flip.SetOutputExtent(0, dims[1]-1, 0, dims[0]-1, 0, 0);
+        flip.FlipAboutOriginOff();
+        flip.SetFilteredAxes(1);
+        flip.Update();
+
+        vtkImageData flipOutput = flip.GetOutput();
+        image.DeepCopy(flipOutput);
     }
 }

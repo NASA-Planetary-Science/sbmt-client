@@ -8,6 +8,8 @@ import javax.swing.BorderFactory;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 
+import edu.jhuapl.near.gui.CustomImagesPanel;
+import edu.jhuapl.near.gui.ModelInfoWindowManager;
 import edu.jhuapl.near.gui.Renderer;
 import edu.jhuapl.near.gui.SmallBodyControlPanel;
 import edu.jhuapl.near.gui.StatusBar;
@@ -17,6 +19,7 @@ import edu.jhuapl.near.model.CircleModel;
 import edu.jhuapl.near.model.CircleSelectionModel;
 import edu.jhuapl.near.model.EllipseModel;
 import edu.jhuapl.near.model.Graticule;
+import edu.jhuapl.near.model.ImageCollection;
 import edu.jhuapl.near.model.LineModel;
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelManager;
@@ -48,6 +51,8 @@ public class VestaOldViewer extends Viewer
     private StatusBar statusBar;
     private boolean initialized = false;
 
+    private ModelInfoWindowManager infoPanelManager;
+
     public VestaOldViewer(StatusBar statusBar)
     {
         super(new BorderLayout());
@@ -61,9 +66,11 @@ public class VestaOldViewer extends Viewer
 
         setupModelManager();
 
+        infoPanelManager = new ModelInfoWindowManager(modelManager);
+
         renderer = new Renderer(modelManager);
 
-        popupManager = new PopupManager(modelManager);
+        popupManager = new PopupManager(modelManager, infoPanelManager, renderer);
 
         pickManager = new PickManager(renderer, statusBar, modelManager, popupManager);
 
@@ -73,6 +80,7 @@ public class VestaOldViewer extends Viewer
         if (Configuration.isAPLVersion())
         {
             controlPanel.addTab("Structures", new StructuresControlPanel(modelManager, pickManager));
+            controlPanel.addTab("Images", new CustomImagesPanel(modelManager, null, pickManager, renderer, true, getUniqueName()));
         }
 
         splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
@@ -104,6 +112,7 @@ public class VestaOldViewer extends Viewer
         allModels.put(ModelNames.POINT_STRUCTURES, new PointModel(vestaModel));
         allModels.put(ModelNames.CIRCLE_SELECTION, new CircleSelectionModel(vestaModel));
         allModels.put(ModelNames.GRATICULE, graticule);
+        allModels.put(ModelNames.IMAGES, new ImageCollection(vestaModel));
 
         modelManager.setModels(allModels);
 

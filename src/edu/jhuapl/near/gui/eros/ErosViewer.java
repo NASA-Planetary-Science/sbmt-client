@@ -8,8 +8,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 
-import edu.jhuapl.near.gui.ImageInfoPanel;
-import edu.jhuapl.near.gui.ModelInfoWindow;
+import edu.jhuapl.near.gui.CustomImagesPanel;
 import edu.jhuapl.near.gui.ModelInfoWindowManager;
 import edu.jhuapl.near.gui.Renderer;
 import edu.jhuapl.near.gui.SmallBodyControlPanel;
@@ -21,21 +20,19 @@ import edu.jhuapl.near.model.CircleSelectionModel;
 import edu.jhuapl.near.model.ColorImageCollection;
 import edu.jhuapl.near.model.EllipseModel;
 import edu.jhuapl.near.model.Graticule;
-import edu.jhuapl.near.model.PerspectiveImageBoundaryCollection;
-import edu.jhuapl.near.model.PerspectiveImageCollection;
+import edu.jhuapl.near.model.ImageCollection;
 import edu.jhuapl.near.model.LineModel;
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
+import edu.jhuapl.near.model.PerspectiveImageBoundaryCollection;
 import edu.jhuapl.near.model.PointModel;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.eros.Eros;
 import edu.jhuapl.near.model.eros.ErosGraticule;
 import edu.jhuapl.near.model.eros.LineamentModel;
-import edu.jhuapl.near.model.eros.MSIImage;
 import edu.jhuapl.near.model.eros.MapletBoundaryCollection;
 import edu.jhuapl.near.model.eros.NISSpectraCollection;
-import edu.jhuapl.near.model.eros.NISSpectrum;
 import edu.jhuapl.near.model.eros.NLRBrowseDataCollection;
 import edu.jhuapl.near.model.eros.NLRDataEverything;
 import edu.jhuapl.near.model.eros.NLRSearchDataCollection;
@@ -74,27 +71,7 @@ public class ErosViewer extends Viewer
 
         setupModelManager();
 
-        infoPanelManager = new ModelInfoWindowManager(modelManager)
-        {
-            public ModelInfoWindow createModelInfoWindow(Model model,
-                    ModelManager modelManager)
-            {
-                if (model instanceof MSIImage)
-                {
-                    PerspectiveImageCollection msiImages = (PerspectiveImageCollection)modelManager.getModel(ModelNames.PERSPECTIVE_IMAGES);
-                    PerspectiveImageBoundaryCollection msiBoundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES);
-                    return new ImageInfoPanel((MSIImage)model, msiImages, msiBoundaries);
-                }
-                else if (model instanceof NISSpectrum)
-                {
-                    return new NISSpectrumInfoPanel((NISSpectrum)model, modelManager);
-                }
-                else
-                {
-                    return null;
-                }
-            }
-        };
+        infoPanelManager = new ModelInfoWindowManager(modelManager);
 
         renderer = new Renderer(modelManager);
 
@@ -112,6 +89,7 @@ public class ErosViewer extends Viewer
         {
             controlPanel.addTab("Lineament", new LineamentControlPanel(modelManager));
             controlPanel.addTab("Structures", new StructuresControlPanel(modelManager, pickManager));
+            controlPanel.addTab("Images", new CustomImagesPanel(modelManager, infoPanelManager, pickManager, renderer, true, getUniqueName()));
             controlPanel.addTab("Mapmaker", new TopoPanel(modelManager, pickManager));
         }
 
@@ -137,7 +115,7 @@ public class ErosViewer extends Viewer
         HashMap<String, Model> allModels = new HashMap<String, Model>();
         allModels.put(ModelNames.SMALL_BODY, erosModel);
         allModels.put(ModelNames.LINEAMENT, new LineamentModel());
-        allModels.put(ModelNames.PERSPECTIVE_IMAGES, new PerspectiveImageCollection(erosModel));
+        allModels.put(ModelNames.IMAGES, new ImageCollection(erosModel));
         allModels.put(ModelNames.COLOR_IMAGES, new ColorImageCollection(erosModel));
         allModels.put(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES, new PerspectiveImageBoundaryCollection(erosModel));
         allModels.put(ModelNames.NIS_SPECTRA, new NISSpectraCollection(erosModel));
@@ -157,21 +135,18 @@ public class ErosViewer extends Viewer
 
     private void setupPopupManager()
     {
-        popupManager = new PopupManager(modelManager);
+        popupManager = new PopupManager(modelManager, infoPanelManager, renderer);
 
         PopupMenu popupMenu = new LineamentPopupMenu(modelManager);
         popupManager.registerPopup(modelManager.getModel(ModelNames.LINEAMENT), popupMenu);
 
-        PerspectiveImageCollection msiImages = (PerspectiveImageCollection)modelManager.getModel(ModelNames.PERSPECTIVE_IMAGES);
+        ImageCollection msiImages = (ImageCollection)modelManager.getModel(ModelNames.IMAGES);
         PerspectiveImageBoundaryCollection msiBoundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES);
         ColorImageCollection msiColorImages = (ColorImageCollection)modelManager.getModel(ModelNames.COLOR_IMAGES);
         NLRSearchDataCollection lidarSearch = (NLRSearchDataCollection)modelManager.getModel(ModelNames.NLR_DATA_SEARCH);
 
         popupMenu = new ImagePopupMenu(msiImages, msiBoundaries, infoPanelManager, renderer, renderer);
         popupManager.registerPopup(modelManager.getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES), popupMenu);
-
-        popupMenu = new ImagePopupMenu(msiImages, msiBoundaries, infoPanelManager, renderer, renderer);
-        popupManager.registerPopup(modelManager.getModel(ModelNames.PERSPECTIVE_IMAGES), popupMenu);
 
         popupMenu = new ColorImagePopupMenu(msiColorImages, infoPanelManager);
         popupManager.registerPopup(modelManager.getModel(ModelNames.COLOR_IMAGES), popupMenu);

@@ -562,7 +562,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
         }
 
         // In addition, save in preferences file for future use
-        LinkedHashMap<String, Object> preferencesMap = new LinkedHashMap<String, Object>();
+        LinkedHashMap<String, String> preferencesMap = new LinkedHashMap<String, String>();
         if (lightKitRadioButton.isSelected())
         {
             preferencesMap.put(Preferences.LIGHTING_TYPE, LightingType.LIGHT_KIT.toString());
@@ -581,15 +581,15 @@ public class PreferencesDialog extends javax.swing.JDialog {
         else
             preferencesMap.put(Preferences.INTERACTOR_STYLE_TYPE, InteractorStyleType.TRACKBALL_CAMERA.toString());
 
-        preferencesMap.put(Preferences.LIGHT_INTENSITY, (Double)intensitySpinner.getValue());
-        preferencesMap.put(Preferences.FIXEDLIGHT_LATITUDE, Double.parseDouble(latitudeTextField.getText()));
-        preferencesMap.put(Preferences.FIXEDLIGHT_LONGITUDE, Double.parseDouble(longitudeTextField.getText()));
-        preferencesMap.put(Preferences.FIXEDLIGHT_DISTANCE, Double.parseDouble(distanceTextField.getText()));
-        preferencesMap.put(Preferences.SHOW_AXES, (Boolean)showAxesCheckBox.isSelected());
-        preferencesMap.put(Preferences.INTERACTIVE_AXES, (Boolean)interactiveCheckBox.isSelected());
-        preferencesMap.put(Preferences.SHOW_SCALE_BAR, (Boolean)showScaleBarCheckBox.isSelected());
-        preferencesMap.put(Preferences.LIGHT_INTENSITY, (Double)intensitySpinner.getValue());
-        preferencesMap.put(Preferences.PICK_TOLERANCE, getToleranceFromSliderValue(pickToleranceSlider.getValue()));
+        preferencesMap.put(Preferences.LIGHT_INTENSITY, ((Double)intensitySpinner.getValue()).toString());
+        preferencesMap.put(Preferences.FIXEDLIGHT_LATITUDE, Double.valueOf(latitudeTextField.getText()).toString());
+        preferencesMap.put(Preferences.FIXEDLIGHT_LONGITUDE, Double.valueOf(longitudeTextField.getText()).toString());
+        preferencesMap.put(Preferences.FIXEDLIGHT_DISTANCE, Double.valueOf(distanceTextField.getText()).toString());
+        preferencesMap.put(Preferences.SHOW_AXES, ((Boolean)showAxesCheckBox.isSelected()).toString());
+        preferencesMap.put(Preferences.INTERACTIVE_AXES, ((Boolean)interactiveCheckBox.isSelected()).toString());
+        preferencesMap.put(Preferences.SHOW_SCALE_BAR, ((Boolean)showScaleBarCheckBox.isSelected()).toString());
+        preferencesMap.put(Preferences.LIGHT_INTENSITY, ((Double)intensitySpinner.getValue()).toString());
+        preferencesMap.put(Preferences.PICK_TOLERANCE, Double.valueOf(getToleranceFromSliderValue(pickToleranceSlider.getValue())).toString());
         Preferences.getInstance().put(preferencesMap);
     }//GEN-LAST:event_applyToAllButtonActionPerformed
 

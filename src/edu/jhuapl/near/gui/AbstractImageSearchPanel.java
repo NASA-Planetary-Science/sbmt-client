@@ -42,14 +42,14 @@ import edu.jhuapl.near.model.AbstractEllipsePolygonModel;
 import edu.jhuapl.near.model.ColorImage.ColorImageKey;
 import edu.jhuapl.near.model.ColorImage.NoOverlapException;
 import edu.jhuapl.near.model.ColorImageCollection;
-import edu.jhuapl.near.model.PerspectiveImage;
-import edu.jhuapl.near.model.PerspectiveImage.ImageKey;
-import edu.jhuapl.near.model.PerspectiveImage.ImageSource;
-import edu.jhuapl.near.model.PerspectiveImageBoundaryCollection;
-import edu.jhuapl.near.model.PerspectiveImageCollection;
+import edu.jhuapl.near.model.Image.ImageKey;
+import edu.jhuapl.near.model.Image.ImageSource;
+import edu.jhuapl.near.model.ImageCollection;
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
+import edu.jhuapl.near.model.PerspectiveImage;
+import edu.jhuapl.near.model.PerspectiveImageBoundaryCollection;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.pick.PickEvent;
 import edu.jhuapl.near.pick.PickManager;
@@ -97,7 +97,7 @@ abstract public class AbstractImageSearchPanel extends javax.swing.JPanel implem
 
         postInitComponents();
 
-        PerspectiveImageCollection images = (PerspectiveImageCollection)modelManager.getModel(getImageCollectionModelName());
+        ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
         PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(getImageBoundaryCollectionModelName());
         imagePopupMenu = new ImagePopupMenu(images, boundaries, infoPanelManager, renderer, this);
 
@@ -119,7 +119,7 @@ abstract public class AbstractImageSearchPanel extends javax.swing.JPanel implem
 
     private String getImageCollectionModelName()
     {
-        return ModelNames.PERSPECTIVE_IMAGES;
+        return ModelNames.IMAGES;
     }
 
     private String getImageBoundaryCollectionModelName()
@@ -334,12 +334,12 @@ abstract public class AbstractImageSearchPanel extends javax.swing.JPanel implem
         {
             PickEvent e = (PickEvent)evt.getNewValue();
             Model model = modelManager.getModel(e.getPickedProp());
-            if (model instanceof PerspectiveImageCollection || model instanceof PerspectiveImageBoundaryCollection)
+            if (model instanceof ImageCollection || model instanceof PerspectiveImageBoundaryCollection)
             {
                 String name = null;
 
-                if (model instanceof PerspectiveImageCollection)
-                    name = ((PerspectiveImageCollection)model).getImageName((vtkActor)e.getPickedProp());
+                if (model instanceof ImageCollection)
+                    name = ((ImageCollection)model).getImageName((vtkActor)e.getPickedProp());
                 else if (model instanceof PerspectiveImageBoundaryCollection)
                     name = ((PerspectiveImageBoundaryCollection)model).getBoundaryName((vtkActor)e.getPickedProp());
 
@@ -1457,8 +1457,10 @@ abstract public class AbstractImageSearchPanel extends javax.swing.JPanel implem
 
     private void removeAllImagesButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_removeAllImagesButtonActionPerformed
     {//GEN-HEADEREND:event_removeAllImagesButtonActionPerformed
-        PerspectiveImageCollection model = (PerspectiveImageCollection)modelManager.getModel(getImageCollectionModelName());
-        model.removeAllImages();
+        ImageCollection model = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
+        model.removeImages(ImageSource.GASKELL);
+        model.removeImages(ImageSource.PDS);
+        model.removeImages(ImageSource.CORRECTED);
     }//GEN-LAST:event_removeAllImagesButtonActionPerformed
 
     private void submitButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_submitButtonActionPerformed

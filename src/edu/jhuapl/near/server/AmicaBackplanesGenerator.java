@@ -20,9 +20,9 @@ import nom.tam.fits.FitsException;
 
 import vtk.vtkGlobalJavaHash;
 
+import edu.jhuapl.near.model.Image.ImageKey;
+import edu.jhuapl.near.model.Image.ImageSource;
 import edu.jhuapl.near.model.PerspectiveImage;
-import edu.jhuapl.near.model.PerspectiveImage.ImageKey;
-import edu.jhuapl.near.model.PerspectiveImage.ImageSource;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.eros.MSIImage;
 import edu.jhuapl.near.model.itokawa.AmicaImage;

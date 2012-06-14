@@ -19,9 +19,10 @@ import org.joda.time.DateTimeZone;
 import vtk.vtkGlobalJavaHash;
 import vtk.vtkPolyData;
 
+import edu.jhuapl.near.model.Image;
+import edu.jhuapl.near.model.Image.ImageKey;
+import edu.jhuapl.near.model.Image.ImageSource;
 import edu.jhuapl.near.model.PerspectiveImage;
-import edu.jhuapl.near.model.PerspectiveImage.ImageKey;
-import edu.jhuapl.near.model.PerspectiveImage.ImageSource;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.itokawa.AmicaImage;
 import edu.jhuapl.near.model.itokawa.Itokawa;
@@ -416,13 +417,13 @@ public class ItokawaDatabaseGeneratorSql
         try
         {
             if (mode == 1 || mode == 0)
-                populateAmicaTables(amicaFiles, AmicaImagesGaskellTable, PerspectiveImage.ImageSource.GASKELL);
+                populateAmicaTables(amicaFiles, AmicaImagesGaskellTable, Image.ImageSource.GASKELL);
             else if (mode == 2 || mode == 0)
-                populateAmicaTablesCubes(amicaFiles, AmicaCubesGaskellTable, PerspectiveImage.ImageSource.GASKELL);
+                populateAmicaTablesCubes(amicaFiles, AmicaCubesGaskellTable, Image.ImageSource.GASKELL);
             else if (mode == 3 || mode == 0)
-                populateAmicaTables(amicaFiles, AmicaImagesPdsTable, PerspectiveImage.ImageSource.PDS);
+                populateAmicaTables(amicaFiles, AmicaImagesPdsTable, Image.ImageSource.PDS);
             else if (mode == 4 || mode == 0)
-                populateAmicaTablesCubes(amicaFiles, AmicaCubesPdsTable, PerspectiveImage.ImageSource.PDS);
+                populateAmicaTablesCubes(amicaFiles, AmicaCubesPdsTable, Image.ImageSource.PDS);
         }
         catch (Exception e1) {
             e1.printStackTrace();

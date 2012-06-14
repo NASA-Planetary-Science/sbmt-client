@@ -17,9 +17,10 @@ import org.joda.time.DateTimeZone;
 import vtk.vtkGlobalJavaHash;
 import vtk.vtkPolyData;
 
+import edu.jhuapl.near.model.Image;
+import edu.jhuapl.near.model.Image.ImageKey;
+import edu.jhuapl.near.model.Image.ImageSource;
 import edu.jhuapl.near.model.PerspectiveImage;
-import edu.jhuapl.near.model.PerspectiveImage.ImageKey;
-import edu.jhuapl.near.model.PerspectiveImage.ImageSource;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.vesta.FcImage;
 import edu.jhuapl.near.model.vesta.Vesta;
@@ -536,13 +537,13 @@ public class VestaDatabaseGeneratorSql
         try
         {
             if (mode == 1 || mode == 0)
-                populateFcTables(fcFiles, FcImagesGaskellTable, PerspectiveImage.ImageSource.GASKELL);
+                populateFcTables(fcFiles, FcImagesGaskellTable, Image.ImageSource.GASKELL);
             else if (mode == 2 || mode == 0)
-                populateFcTablesCubes(fcFiles, FcCubesGaskellTable, PerspectiveImage.ImageSource.GASKELL);
+                populateFcTablesCubes(fcFiles, FcCubesGaskellTable, Image.ImageSource.GASKELL);
             else if (mode == 3 || mode == 0)
-                populateFcTables(fcFiles, FcImagesPdsTable, PerspectiveImage.ImageSource.PDS);
+                populateFcTables(fcFiles, FcImagesPdsTable, Image.ImageSource.PDS);
             else if (mode == 4 || mode == 0)
-                populateFcTablesCubes(fcFiles, FcCubesPdsTable, PerspectiveImage.ImageSource.PDS);
+                populateFcTablesCubes(fcFiles, FcCubesPdsTable, Image.ImageSource.PDS);
         }
         catch (Exception e1) {
             e1.printStackTrace();

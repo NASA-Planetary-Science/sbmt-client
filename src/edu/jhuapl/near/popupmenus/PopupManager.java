@@ -5,10 +5,13 @@ import java.util.HashMap;
 
 import vtk.vtkProp;
 
+import edu.jhuapl.near.gui.ModelInfoWindowManager;
+import edu.jhuapl.near.gui.Renderer;
+import edu.jhuapl.near.model.ImageCollection;
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
-import edu.jhuapl.near.model.CylindricalImageCollection;
+import edu.jhuapl.near.model.PerspectiveImageBoundaryCollection;
 
 /**
  * This class is responsible for the creation of popups and for the routing
@@ -23,7 +26,7 @@ public class PopupManager
         new HashMap<Model, PopupMenu>();
 
 
-    public PopupManager(ModelManager modelManager)
+    public PopupManager(ModelManager modelManager, ModelInfoWindowManager infoPanelManager, Renderer renderer)
     {
         this.modelManager = modelManager;
 
@@ -39,10 +42,13 @@ public class PopupManager
         popupMenu = new PointsPopupMenu(modelManager);
         registerPopup(modelManager.getModel(ModelNames.POINT_STRUCTURES), popupMenu);
 
-        CylindricalImageCollection cylindricalImageCollection =
-            (CylindricalImageCollection)modelManager.getModel(ModelNames.CYLINDRICAL_IMAGES);
-        popupMenu = new CylindricalImagePopupMenu(cylindricalImageCollection);
-        registerPopup(modelManager.getModel(ModelNames.CYLINDRICAL_IMAGES), popupMenu);
+        ImageCollection imageCollection =
+                (ImageCollection)modelManager.getModel(ModelNames.IMAGES);
+        PerspectiveImageBoundaryCollection imageBoundaries =
+                (PerspectiveImageBoundaryCollection)modelManager.getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES);
+        popupMenu = new ImagePopupMenu(imageCollection, imageBoundaries, infoPanelManager, renderer, renderer);
+        registerPopup(modelManager.getModel(ModelNames.IMAGES), popupMenu);
+
     }
 
 //    public PopupMenu getPopup(Model model)

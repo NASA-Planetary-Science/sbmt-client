@@ -8,30 +8,26 @@ import javax.swing.BorderFactory;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 
-import edu.jhuapl.near.gui.ImageInfoPanel;
-import edu.jhuapl.near.gui.ModelInfoWindow;
+import edu.jhuapl.near.gui.CustomImagesPanel;
 import edu.jhuapl.near.gui.ModelInfoWindowManager;
 import edu.jhuapl.near.gui.Renderer;
 import edu.jhuapl.near.gui.SmallBodyControlPanel;
 import edu.jhuapl.near.gui.StatusBar;
 import edu.jhuapl.near.gui.StructuresControlPanel;
 import edu.jhuapl.near.gui.Viewer;
-import edu.jhuapl.near.gui.eros.NISSpectrumInfoPanel;
 import edu.jhuapl.near.model.CircleModel;
 import edu.jhuapl.near.model.CircleSelectionModel;
 import edu.jhuapl.near.model.ColorImageCollection;
 import edu.jhuapl.near.model.EllipseModel;
 import edu.jhuapl.near.model.Graticule;
-import edu.jhuapl.near.model.PerspectiveImageBoundaryCollection;
-import edu.jhuapl.near.model.PerspectiveImageCollection;
+import edu.jhuapl.near.model.ImageCollection;
 import edu.jhuapl.near.model.LineModel;
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
+import edu.jhuapl.near.model.PerspectiveImageBoundaryCollection;
 import edu.jhuapl.near.model.PointModel;
 import edu.jhuapl.near.model.SmallBodyModel;
-import edu.jhuapl.near.model.eros.NISSpectrum;
-import edu.jhuapl.near.model.itokawa.AmicaImage;
 import edu.jhuapl.near.model.itokawa.HayLidarBrowseDataCollection;
 import edu.jhuapl.near.model.itokawa.HayLidarSearchDataCollection;
 import edu.jhuapl.near.model.itokawa.HayLidarUnfilteredSearchDataCollection;
@@ -79,27 +75,7 @@ public class ItokawaViewer extends Viewer
 
         setupModelManager();
 
-        infoPanelManager = new ModelInfoWindowManager(modelManager)
-        {
-            public ModelInfoWindow createModelInfoWindow(Model model,
-                    ModelManager modelManager)
-            {
-                if (model instanceof AmicaImage)
-                {
-                    PerspectiveImageCollection amicaImages = (PerspectiveImageCollection)modelManager.getModel(ModelNames.PERSPECTIVE_IMAGES);
-                    PerspectiveImageBoundaryCollection amicaBoundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES);
-                    return new ImageInfoPanel((AmicaImage)model, amicaImages, amicaBoundaries);
-                }
-                else if (model instanceof NISSpectrum)
-                {
-                    return new NISSpectrumInfoPanel((NISSpectrum)model, modelManager);
-                }
-                else
-                {
-                    return null;
-                }
-            }
-        };
+        infoPanelManager = new ModelInfoWindowManager(modelManager);
 
         renderer = new Renderer(modelManager);
 
@@ -115,6 +91,7 @@ public class ItokawaViewer extends Viewer
         if (Configuration.isAPLVersion())
         {
             controlPanel.addTab("Structures", new StructuresControlPanel(modelManager, pickManager));
+            controlPanel.addTab("Images", new CustomImagesPanel(modelManager, infoPanelManager, pickManager, renderer, true, getUniqueName()));
         }
 
         splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
@@ -140,7 +117,7 @@ public class ItokawaViewer extends Viewer
 
         HashMap<String, Model> allModels = new HashMap<String, Model>();
         allModels.put(ModelNames.SMALL_BODY, itokawaModel);
-        allModels.put(ModelNames.PERSPECTIVE_IMAGES, new PerspectiveImageCollection(itokawaModel));
+        allModels.put(ModelNames.IMAGES, new ImageCollection(itokawaModel));
         allModels.put(ModelNames.COLOR_IMAGES, new ColorImageCollection(itokawaModel));
         allModels.put(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES, new PerspectiveImageBoundaryCollection(itokawaModel));
         allModels.put(ModelNames.HAYLIDAR_BROWSE, new HayLidarBrowseDataCollection());
@@ -159,9 +136,9 @@ public class ItokawaViewer extends Viewer
 
     private void setupPopupManager()
     {
-        popupManager = new PopupManager(modelManager);
+        popupManager = new PopupManager(modelManager, infoPanelManager, renderer);
 
-        PerspectiveImageCollection amicaImages = (PerspectiveImageCollection)modelManager.getModel(ModelNames.PERSPECTIVE_IMAGES);
+        ImageCollection amicaImages = (ImageCollection)modelManager.getModel(ModelNames.IMAGES);
         PerspectiveImageBoundaryCollection amicaBoundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES);
         ColorImageCollection amicaColorImages = (ColorImageCollection)modelManager.getModel(ModelNames.COLOR_IMAGES);
         HayLidarSearchDataCollection lidarSearch = (HayLidarSearchDataCollection)modelManager.getModel(ModelNames.HAYLIDAR_SEARCH);
@@ -170,9 +147,6 @@ public class ItokawaViewer extends Viewer
 
         PopupMenu popupMenu = new ImagePopupMenu(amicaImages, amicaBoundaries, infoPanelManager, renderer, renderer);
         popupManager.registerPopup(modelManager.getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES), popupMenu);
-
-        popupMenu = new ImagePopupMenu(amicaImages, amicaBoundaries, infoPanelManager, renderer, renderer);
-        popupManager.registerPopup(modelManager.getModel(ModelNames.PERSPECTIVE_IMAGES), popupMenu);
 
         popupMenu = new ColorImagePopupMenu(amicaColorImages, infoPanelManager);
         popupManager.registerPopup(modelManager.getModel(ModelNames.COLOR_IMAGES), popupMenu);

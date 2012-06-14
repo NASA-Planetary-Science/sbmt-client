@@ -18,7 +18,7 @@ import vtk.vtkProperty;
 import vtk.vtkTexture;
 import vtk.vtksbCellLocator;
 
-import edu.jhuapl.near.model.PerspectiveImage.ImageKey;
+import edu.jhuapl.near.model.Image.ImageKey;
 import edu.jhuapl.near.util.Frustum;
 import edu.jhuapl.near.util.ImageDataUtil;
 import edu.jhuapl.near.util.MathUtil;
@@ -127,7 +127,7 @@ public class ColorImage extends Model implements PropertyChangeListener
 
     protected PerspectiveImage createImage(ImageKey key, SmallBodyModel smallBodyModel) throws FitsException, IOException
     {
-        return ImageFactory.createImage(key, smallBodyModel, false, null);
+        return (PerspectiveImage)ImageFactory.createImage(key, smallBodyModel, false, null);
     }
 
     private void computeFootprintAndColorImage() throws NoOverlapException

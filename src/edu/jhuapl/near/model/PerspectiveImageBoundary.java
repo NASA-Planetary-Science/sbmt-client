@@ -15,7 +15,7 @@ import vtk.vtkPolyDataMapper;
 import vtk.vtkProp;
 import vtk.vtksbCellLocator;
 
-import edu.jhuapl.near.model.PerspectiveImage.ImageKey;
+import edu.jhuapl.near.model.Image.ImageKey;
 import edu.jhuapl.near.util.BoundingBox;
 import edu.jhuapl.near.util.Frustum;
 import edu.jhuapl.near.util.MathUtil;

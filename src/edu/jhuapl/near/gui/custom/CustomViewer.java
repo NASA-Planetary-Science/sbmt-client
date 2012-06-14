@@ -8,6 +8,8 @@ import javax.swing.BorderFactory;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 
+import edu.jhuapl.near.gui.CustomImagesPanel;
+import edu.jhuapl.near.gui.ModelInfoWindowManager;
 import edu.jhuapl.near.gui.Renderer;
 import edu.jhuapl.near.gui.SmallBodyControlPanel;
 import edu.jhuapl.near.gui.StatusBar;
@@ -17,12 +19,12 @@ import edu.jhuapl.near.model.CircleModel;
 import edu.jhuapl.near.model.CircleSelectionModel;
 import edu.jhuapl.near.model.EllipseModel;
 import edu.jhuapl.near.model.Graticule;
+import edu.jhuapl.near.model.ImageCollection;
 import edu.jhuapl.near.model.LineModel;
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.PointModel;
-import edu.jhuapl.near.model.CylindricalImageCollection;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.custom.CustomGraticule;
 import edu.jhuapl.near.model.custom.CustomShapeModel;
@@ -48,6 +50,7 @@ public class CustomViewer extends Viewer
     private PopupManager popupManager;
     private StatusBar statusBar;
     private boolean initialized = false;
+    private ModelInfoWindowManager infoPanelManager;
 
     public CustomViewer(StatusBar statusBar, String name)
     {
@@ -63,9 +66,11 @@ public class CustomViewer extends Viewer
 
         setupModelManager();
 
+        infoPanelManager = new ModelInfoWindowManager(modelManager);
+
         renderer = new Renderer(modelManager);
 
-        popupManager = new PopupManager(modelManager);
+        popupManager = new PopupManager(modelManager, infoPanelManager, renderer);
 
         pickManager = new PickManager(renderer, statusBar, modelManager, popupManager);
 
@@ -75,6 +80,7 @@ public class CustomViewer extends Viewer
         if (Configuration.isAPLVersion())
         {
             controlPanel.addTab("Structures", new StructuresControlPanel(modelManager, pickManager));
+            controlPanel.addTab("Images", new CustomImagesPanel(modelManager, null, pickManager, renderer, false, getUniqueName()));
         }
 
         splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
@@ -105,7 +111,7 @@ public class CustomViewer extends Viewer
         allModels.put(ModelNames.POINT_STRUCTURES, new PointModel(customModel));
         allModels.put(ModelNames.ELLIPSE_STRUCTURES, new EllipseModel(customModel));
         allModels.put(ModelNames.CIRCLE_SELECTION, new CircleSelectionModel(customModel));
-        allModels.put(ModelNames.CYLINDRICAL_IMAGES, new CylindricalImageCollection(customModel));
+        allModels.put(ModelNames.IMAGES, new ImageCollection(customModel));
         allModels.put(ModelNames.GRATICULE, graticule);
 
         modelManager.setModels(allModels);

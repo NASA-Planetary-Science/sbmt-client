@@ -112,7 +112,7 @@ public class TopoViewer extends JFrame
         renderer = new Renderer(modelManager);
 
 
-        PopupManager popupManager = new PopupManager(modelManager);
+        PopupManager popupManager = new PopupManager(modelManager, null, renderer);
 
         pickManager = new PickManager(renderer, statusBar, modelManager, popupManager);
 

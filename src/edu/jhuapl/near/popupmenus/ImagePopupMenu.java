@@ -24,11 +24,13 @@ import edu.jhuapl.near.gui.ModelInfoWindowManager;
 import edu.jhuapl.near.gui.NormalOffsetChangerDialog;
 import edu.jhuapl.near.gui.Renderer;
 import edu.jhuapl.near.gui.Renderer.LightingType;
+import edu.jhuapl.near.model.Image;
+import edu.jhuapl.near.model.Image.ImageKey;
+import edu.jhuapl.near.model.Image.ImageSource;
+import edu.jhuapl.near.model.ImageCollection;
 import edu.jhuapl.near.model.PerspectiveImage;
-import edu.jhuapl.near.model.PerspectiveImage.ImageKey;
 import edu.jhuapl.near.model.PerspectiveImageBoundary;
 import edu.jhuapl.near.model.PerspectiveImageBoundaryCollection;
-import edu.jhuapl.near.model.PerspectiveImageCollection;
 import edu.jhuapl.near.util.FileCache;
 import edu.jhuapl.near.util.FileUtil;
 
@@ -36,7 +38,7 @@ import edu.jhuapl.near.util.FileUtil;
 public class ImagePopupMenu extends PopupMenu
 {
     private Component invoker;
-    private PerspectiveImageCollection imageCollection;
+    private ImageCollection imageCollection;
     private PerspectiveImageBoundaryCollection imageBoundaryCollection;
     private ImageKey imageKey;
     private JMenuItem mapImageMenuItem;
@@ -60,7 +62,7 @@ public class ImagePopupMenu extends PopupMenu
      * mapped to Eros.
      */
     public ImagePopupMenu(
-            PerspectiveImageCollection imageCollection,
+            ImageCollection imageCollection,
             PerspectiveImageBoundaryCollection imageBoundaryCollection,
             ModelInfoWindowManager infoPanelManager,
             Renderer renderer,
@@ -130,7 +132,9 @@ public class ImagePopupMenu extends PopupMenu
     private void updateMenuItems()
     {
         boolean containsImage = imageCollection.containsImage(imageKey);
-        boolean containsBoundary = imageBoundaryCollection.containsBoundary(imageKey);
+        boolean containsBoundary = false;
+        if (imageBoundaryCollection != null)
+            containsBoundary = imageBoundaryCollection.containsBoundary(imageKey);
 
         mapBoundaryMenuItem.setSelected(containsBoundary);
 
@@ -153,8 +157,11 @@ public class ImagePopupMenu extends PopupMenu
 
         if (containsImage)
         {
-            PerspectiveImage image = imageCollection.getImage(imageKey);
-            showFrustumMenuItem.setSelected(image.isFrustumShowing());
+            Image image = imageCollection.getImage(imageKey);
+            if (image instanceof PerspectiveImage)
+                showFrustumMenuItem.setSelected(((PerspectiveImage)image).isFrustumShowing());
+            else
+                showFrustumMenuItem.setSelected(false);
             showFrustumMenuItem.setEnabled(true);
             simulateLightingMenuItem.setEnabled(true);
             hideImageMenuItem.setSelected(!image.isVisible());
@@ -167,6 +174,29 @@ public class ImagePopupMenu extends PopupMenu
             simulateLightingMenuItem.setEnabled(false);
             hideImageMenuItem.setSelected(false);
             hideImageMenuItem.setEnabled(false);
+        }
+
+        if (imageKey.source == ImageSource.LOCAL_CYLINDRICAL || imageKey.source == ImageSource.IMAGE_MAP)
+        {
+            mapBoundaryMenuItem.setEnabled(false);
+            showFrustumMenuItem.setEnabled(false);
+            simulateLightingMenuItem.setEnabled(false);
+            if (centerImageMenuItem != null)
+                centerImageMenuItem.setEnabled(false);
+            saveBackplanesMenuItem.setEnabled(false);
+            saveToDiskMenuItem.setEnabled(false);
+
+            if (imageKey.source == ImageSource.IMAGE_MAP)
+            {
+                mapImageMenuItem.setEnabled(false);
+                hideImageMenuItem.setEnabled(false);
+            }
+        }
+        else if (imageKey.source == ImageSource.LOCAL_PERSPECTIVE)
+        {
+            saveToDiskMenuItem.setEnabled(false);
+            saveBackplanesMenuItem.setEnabled(false);
+            saveToDiskMenuItem.setEnabled(false);
         }
     }
 
@@ -244,7 +274,7 @@ public class ImagePopupMenu extends PopupMenu
             try
             {
                 imageCollection.addImage(imageKey);
-                PerspectiveImage image = imageCollection.getImage(imageKey);
+                PerspectiveImage image = (PerspectiveImage)imageCollection.getImage(imageKey);
                 String path = image.getFitFileFullPath();
                 String extension = path.substring(path.lastIndexOf("."));
 
@@ -276,7 +306,7 @@ public class ImagePopupMenu extends PopupMenu
             double[] upVector = new double[3];
             double viewAngle = 0.0;
 
-            if (imageBoundaryCollection.containsBoundary(imageKey))
+            if (imageBoundaryCollection != null && imageBoundaryCollection.containsBoundary(imageKey))
             {
                 PerspectiveImageBoundary boundary = imageBoundaryCollection.getBoundary(imageKey);
                 boundary.getCameraOrientation(spacecraftPosition, focalPoint, upVector);
@@ -285,7 +315,7 @@ public class ImagePopupMenu extends PopupMenu
             }
             else if (imageCollection.containsImage(imageKey))
             {
-                PerspectiveImage image = imageCollection.getImage(imageKey);
+                PerspectiveImage image = (PerspectiveImage)imageCollection.getImage(imageKey);
                 image.getCameraOrientation(spacecraftPosition, focalPoint, upVector);
 
                 viewAngle = image.getFovAngle();
@@ -315,7 +345,7 @@ public class ImagePopupMenu extends PopupMenu
                     OutputStream out = new BufferedOutputStream(new FileOutputStream(file));
 
                     imageCollection.addImage(imageKey);
-                    PerspectiveImage image = imageCollection.getImage(imageKey);
+                    PerspectiveImage image = (PerspectiveImage)imageCollection.getImage(imageKey);
 
                     updateMenuItems();
 
@@ -363,7 +393,7 @@ public class ImagePopupMenu extends PopupMenu
                     OutputStream out = new FileOutputStream(file);
 
                     imageCollection.addImage(imageKey);
-                    PerspectiveImage image = imageCollection.getImage(imageKey);
+                    PerspectiveImage image = (PerspectiveImage)imageCollection.getImage(imageKey);
 
                     updateMenuItems();
 
@@ -393,7 +423,7 @@ public class ImagePopupMenu extends PopupMenu
             try
             {
                 imageCollection.addImage(imageKey);
-                PerspectiveImage image = imageCollection.getImage(imageKey);
+                PerspectiveImage image = (PerspectiveImage)imageCollection.getImage(imageKey);
                 image.setShowFrustum(showFrustumMenuItem.isSelected());
 
                 updateMenuItems();
@@ -410,7 +440,7 @@ public class ImagePopupMenu extends PopupMenu
     {
         public void actionPerformed(ActionEvent e)
         {
-            PerspectiveImage image = imageCollection.getImage(imageKey);
+            Image image = imageCollection.getImage(imageKey);
             if (image != null)
             {
                 NormalOffsetChangerDialog changeOffsetDialog = new NormalOffsetChangerDialog(image);
@@ -424,7 +454,7 @@ public class ImagePopupMenu extends PopupMenu
     {
         public void actionPerformed(ActionEvent e)
         {
-            PerspectiveImage image = imageCollection.getImage(imageKey);
+            PerspectiveImage image = (PerspectiveImage)imageCollection.getImage(imageKey);
             if (image != null)
             {
                 double[] sunDir = image.getSunVector();
@@ -441,7 +471,7 @@ public class ImagePopupMenu extends PopupMenu
             try
             {
                 imageCollection.addImage(imageKey);
-                PerspectiveImage image = imageCollection.getImage(imageKey);
+                Image image = imageCollection.getImage(imageKey);
                 image.setVisible(!hideImageMenuItem.isSelected());
 
                 updateMenuItems();
@@ -459,7 +489,7 @@ public class ImagePopupMenu extends PopupMenu
     {
         if (pickedProp instanceof vtkActor)
         {
-            if (imageBoundaryCollection.getBoundary((vtkActor)pickedProp) != null)
+            if (imageBoundaryCollection != null && imageBoundaryCollection.getBoundary((vtkActor)pickedProp) != null)
             {
                 PerspectiveImageBoundary boundary = imageBoundaryCollection.getBoundary((vtkActor)pickedProp);
                 setCurrentImage(boundary.getKey());
@@ -467,7 +497,7 @@ public class ImagePopupMenu extends PopupMenu
             }
             else if (imageCollection.getImage((vtkActor)pickedProp) != null)
             {
-                PerspectiveImage image = imageCollection.getImage((vtkActor)pickedProp);
+                Image image = imageCollection.getImage((vtkActor)pickedProp);
                 setCurrentImage(image.getKey());
                 show(e.getComponent(), e.getX(), e.getY());
             }

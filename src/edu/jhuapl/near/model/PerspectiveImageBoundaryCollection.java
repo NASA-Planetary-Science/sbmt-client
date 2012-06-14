@@ -12,7 +12,7 @@ import nom.tam.fits.FitsException;
 import vtk.vtkActor;
 import vtk.vtkProp;
 
-import edu.jhuapl.near.model.PerspectiveImage.ImageKey;
+import edu.jhuapl.near.model.Image.ImageKey;
 import edu.jhuapl.near.util.Properties;
 
 public class PerspectiveImageBoundaryCollection extends Model implements PropertyChangeListener
@@ -30,7 +30,7 @@ public class PerspectiveImageBoundaryCollection extends Model implements Propert
             ImageKey key,
             SmallBodyModel smallBodyModel) throws IOException, FitsException
     {
-        return new PerspectiveImageBoundary(ImageFactory.createImage(key, smallBodyModel, true, null), smallBodyModel);
+        return new PerspectiveImageBoundary((PerspectiveImage)ImageFactory.createImage(key, smallBodyModel, true, null), smallBodyModel);
     }
 
     private boolean containsKey(ImageKey key)

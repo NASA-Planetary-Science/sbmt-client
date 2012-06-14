@@ -34,10 +34,10 @@ import vtk.vtkPropCollection;
 import vtk.vtkPropPicker;
 import vtk.vtkTransform;
 
-import edu.jhuapl.near.model.PerspectiveImage;
-import edu.jhuapl.near.model.PerspectiveImageBoundaryCollection;
-import edu.jhuapl.near.model.PerspectiveImageCollection;
+import edu.jhuapl.near.model.Image;
+import edu.jhuapl.near.model.ImageCollection;
 import edu.jhuapl.near.model.Model;
+import edu.jhuapl.near.model.PerspectiveImageBoundaryCollection;
 import edu.jhuapl.near.popupmenus.ImagePopupMenu;
 import edu.jhuapl.near.util.IntensityRange;
 
@@ -48,8 +48,8 @@ import edu.jhuapl.near.util.IntensityRange;
 public class ImageInfoPanel extends ModelInfoWindow implements PropertyChangeListener
 {
     private vtkEnhancedRenderWindowPanel renWin;
-    private PerspectiveImage image;
-    private PerspectiveImageCollection imageCollection;
+    private Image image;
+    private ImageCollection imageCollection;
     private PerspectiveImageBoundaryCollection imageBoundaryCollection;
     private vtkImageActor actor;
     private vtkImageReslice reslice;
@@ -75,8 +75,8 @@ public class ImageInfoPanel extends ModelInfoWindow implements PropertyChangeLis
 
     /** Creates new form ImageInfoPanel2 */
     public ImageInfoPanel(
-            final PerspectiveImage image,
-            PerspectiveImageCollection imageCollection,
+            final Image image,
+            ImageCollection imageCollection,
             PerspectiveImageBoundaryCollection imageBoundaryCollection)
     {
         initComponents();
@@ -91,7 +91,14 @@ public class ImageInfoPanel extends ModelInfoWindow implements PropertyChangeLis
             new vtkInteractorStyleImage();
         renWin.setInteractorStyle(style);
 
-        vtkImageData displayedImage = image.getDisplayedImage();
+        vtkImageData displayedImage = (vtkImageData)image.getTexture().GetInput();
+
+        // Only allow contrast changing for images with exactly 1 channel
+        if (image.getNumberOfComponentsOfOriginalImage() > 1)
+        {
+            slider.setEnabled(false);
+            jLabel1.setEnabled(false);
+        }
 
         double[] center = displayedImage.GetCenter();
         int[] dims = displayedImage.GetDimensions();

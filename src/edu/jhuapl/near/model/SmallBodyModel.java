@@ -1713,4 +1713,15 @@ public class SmallBodyModel extends Model
     {
         PolyDataUtil.saveShapeModelAsPLT(smallBodyPolyData, file.getAbsolutePath());
     }
+
+    /**
+     * Return if this model is an ellipsoid. If so, some operations on ellipsoids
+     * are much easier than general shape models. By default return false, unless
+     * a subclasses overrides it.
+     * @return
+     */
+    public boolean isEllipsoid()
+    {
+        return false;
+    }
 }

@@ -32,11 +32,15 @@ import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
 
 import net.miginfocom.swing.MigLayout;
+import nom.tam.fits.FitsException;
 
+import edu.jhuapl.near.model.CylindricalImage;
 import edu.jhuapl.near.model.Graticule;
+import edu.jhuapl.near.model.Image.ImageKey;
+import edu.jhuapl.near.model.Image.ImageSource;
+import edu.jhuapl.near.model.ImageCollection;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
-import edu.jhuapl.near.model.CylindricalImageCollection;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.pick.Picker;
 import edu.jhuapl.near.util.BoundingBox;
@@ -285,8 +289,6 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
         Picker.setPickingEnabled(false);
 
         SmallBodyModel smallBodyModel = modelManager.getSmallBodyModel();
-        CylindricalImageCollection cylindricalImageCollection =
-            (CylindricalImageCollection) modelManager.getModel(ModelNames.CYLINDRICAL_IMAGES);
 
         if (e.getItemSelectable() == this.modelCheckBox)
         {
@@ -299,7 +301,7 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
                 if (gridCheckBox.isSelected())
                     graticule.setShowGraticule(true);
                 if (imageMapCheckBox.isSelected())
-                    cylindricalImageCollection.setShowImages(true);
+                    showImageMap(true);
             }
             else
             {
@@ -307,7 +309,7 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
                 if (gridCheckBox.isSelected())
                     graticule.setShowGraticule(false);
                 if (imageMapCheckBox.isSelected())
-                    cylindricalImageCollection.setShowImages(false);
+                    showImageMap(false);
             }
         }
         else if (e.getItemSelectable() == this.gridCheckBox)
@@ -322,13 +324,13 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
         {
             if (e.getStateChange() == ItemEvent.SELECTED)
             {
-                cylindricalImageCollection.setShowImages(true);
+                showImageMap(true);
                 opacityLabel.setEnabled(true);
                 imageMapOpacitySpinner.setEnabled(true);
             }
             else
             {
-                cylindricalImageCollection.setShowImages(false);
+                showImageMap(false);
                 opacityLabel.setEnabled(false);
                 imageMapOpacitySpinner.setEnabled(false);
             }
@@ -476,14 +478,51 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
         }
     }
 
+    private ImageKey createImageMapKey()
+    {
+        SmallBodyModel smallBodyModel = modelManager.getSmallBodyModel();
+        String name = smallBodyModel.getImageMapNames()[0];
+        return new ImageKey(name, ImageSource.IMAGE_MAP);
+    }
+
+    private void showImageMap(boolean show)
+    {
+        SmallBodyModel smallBodyModel = modelManager.getSmallBodyModel();
+        ImageCollection imageCollection = (ImageCollection)modelManager.getModel(ModelNames.IMAGES);
+
+        try
+        {
+            if (show)
+            {
+                if (smallBodyModel.isImageMapAvailable())
+                {
+                    imageCollection.addImage(createImageMapKey());
+                }
+            }
+            else
+            {
+                imageCollection.removeImage(createImageMapKey());
+            }
+        }
+        catch (FitsException e)
+        {
+            e.printStackTrace();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
     public void stateChanged(ChangeEvent e)
     {
-        CylindricalImageCollection cylindricalImageCollection =
-            (CylindricalImageCollection)modelManager.getModel(ModelNames.CYLINDRICAL_IMAGES);
+        ImageCollection imageCollection =
+            (ImageCollection)modelManager.getModel(ModelNames.IMAGES);
 
         double val = (Double)imageMapOpacitySpinner.getValue();
 
-        cylindricalImageCollection.setImageOpacities(val);
+        CylindricalImage image = (CylindricalImage)imageCollection.getImage(createImageMapKey());
+        image.setImageOpacity(val);
     }
 
     private void setStatisticsLabel()

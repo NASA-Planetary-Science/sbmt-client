@@ -12,30 +12,31 @@ import nom.tam.fits.FitsException;
 import vtk.vtkActor;
 import vtk.vtkProp;
 
-import edu.jhuapl.near.model.PerspectiveImage.ImageKey;
+import edu.jhuapl.near.model.Image.ImageKey;
+import edu.jhuapl.near.model.Image.ImageSource;
 import edu.jhuapl.near.util.Properties;
 
-public class PerspectiveImageCollection extends Model implements PropertyChangeListener
+public class ImageCollection extends Model implements PropertyChangeListener
 {
-    private SmallBodyModel erosModel;
+    private SmallBodyModel smallBodyModel;
 
-    private HashMap<PerspectiveImage, ArrayList<vtkProp>> imageToActorsMap = new HashMap<PerspectiveImage, ArrayList<vtkProp>>();
+    private HashMap<Image, ArrayList<vtkProp>> imageToActorsMap = new HashMap<Image, ArrayList<vtkProp>>();
 
-    private HashMap<vtkProp, PerspectiveImage> actorToImageMap = new HashMap<vtkProp, PerspectiveImage>();
+    private HashMap<vtkProp, Image> actorToImageMap = new HashMap<vtkProp, Image>();
 
-    public PerspectiveImageCollection(SmallBodyModel eros)
+    public ImageCollection(SmallBodyModel smallBodyModel)
     {
-        this.erosModel = eros;
+        this.smallBodyModel = smallBodyModel;
     }
 
-    protected PerspectiveImage createImage(ImageKey key, SmallBodyModel smallBodyModel) throws FitsException, IOException
+    protected Image createImage(ImageKey key, SmallBodyModel smallBodyModel) throws FitsException, IOException
     {
         return ImageFactory.createImage(key, smallBodyModel, false, null);
     }
 
     private boolean containsKey(ImageKey key)
     {
-        for (PerspectiveImage image : imageToActorsMap.keySet())
+        for (Image image : imageToActorsMap.keySet())
         {
             if (image.getKey().equals(key))
                 return true;
@@ -44,9 +45,9 @@ public class PerspectiveImageCollection extends Model implements PropertyChangeL
         return false;
     }
 
-    private PerspectiveImage getImageFromKey(ImageKey key)
+    private Image getImageFromKey(ImageKey key)
     {
-        for (PerspectiveImage image : imageToActorsMap.keySet())
+        for (Image image : imageToActorsMap.keySet())
         {
             if (image.getKey().equals(key))
                 return image;
@@ -60,9 +61,9 @@ public class PerspectiveImageCollection extends Model implements PropertyChangeL
         if (containsKey(key))
             return;
 
-        PerspectiveImage image = createImage(key, erosModel);
+        Image image = createImage(key, smallBodyModel);
 
-        erosModel.addPropertyChangeListener(image);
+        smallBodyModel.addPropertyChangeListener(image);
         image.addPropertyChangeListener(this);
 
         imageToActorsMap.put(image, new ArrayList<vtkProp>());
@@ -79,7 +80,10 @@ public class PerspectiveImageCollection extends Model implements PropertyChangeL
 
     public void removeImage(ImageKey key)
     {
-        PerspectiveImage image = getImageFromKey(key);
+        if (!containsKey(key))
+            return;
+
+        Image image = getImageFromKey(key);
 
         ArrayList<vtkProp> actors = imageToActorsMap.get(image);
 
@@ -89,18 +93,23 @@ public class PerspectiveImageCollection extends Model implements PropertyChangeL
         imageToActorsMap.remove(image);
 
         image.removePropertyChangeListener(this);
-        erosModel.removePropertyChangeListener(image);
-        image.setShowFrustum(false);
+        smallBodyModel.removePropertyChangeListener(image);
+        image.imageAboutToBeRemoved();
 
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
         this.pcs.firePropertyChange(Properties.MODEL_REMOVED, null, image);
     }
 
-    public void removeAllImages()
+    /**
+     * Remove all images of the specified source
+     * @param source
+     */
+    public void removeImages(ImageSource source)
     {
-        HashMap<PerspectiveImage, ArrayList<vtkProp>> map = (HashMap<PerspectiveImage, ArrayList<vtkProp>>)imageToActorsMap.clone();
-        for (PerspectiveImage image : map.keySet())
-            removeImage(image.getKey());
+        HashMap<Image, ArrayList<vtkProp>> map = (HashMap<Image, ArrayList<vtkProp>>)imageToActorsMap.clone();
+        for (Image image : map.keySet())
+            if (image.getKey().source == source)
+                removeImage(image.getKey());
     }
 
     public ArrayList<vtkProp> getProps()
@@ -116,21 +125,21 @@ public class PerspectiveImageCollection extends Model implements PropertyChangeL
 
     public String getClickStatusBarText(vtkProp prop, int cellId, double[] pickPosition)
     {
-        File file = new File(actorToImageMap.get(prop).getKey().name);
+        File file = new File(actorToImageMap.get(prop).getImageName());
         return "Image " + file.getName();
     }
 
     public String getImageName(vtkActor actor)
     {
-        return actorToImageMap.get(actor).getKey().name;
+        return actorToImageMap.get(actor).getImageName();
     }
 
-    public PerspectiveImage getImage(vtkActor actor)
+    public Image getImage(vtkActor actor)
     {
         return actorToImageMap.get(actor);
     }
 
-    public PerspectiveImage getImage(ImageKey key)
+    public Image getImage(ImageKey key)
     {
         return getImageFromKey(key);
     }
@@ -138,13 +147,5 @@ public class PerspectiveImageCollection extends Model implements PropertyChangeL
     public boolean containsImage(ImageKey key)
     {
         return containsKey(key);
-    }
-
-    public void setShowFrustums(boolean b)
-    {
-        for (PerspectiveImage image : imageToActorsMap.keySet())
-            image.setShowFrustum(b);
-
-        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 }

@@ -8,6 +8,8 @@ import javax.swing.BorderFactory;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 
+import edu.jhuapl.near.gui.CustomImagesPanel;
+import edu.jhuapl.near.gui.ModelInfoWindowManager;
 import edu.jhuapl.near.gui.Renderer;
 import edu.jhuapl.near.gui.SmallBodyControlPanel;
 import edu.jhuapl.near.gui.StatusBar;
@@ -17,12 +19,12 @@ import edu.jhuapl.near.model.CircleModel;
 import edu.jhuapl.near.model.CircleSelectionModel;
 import edu.jhuapl.near.model.EllipseModel;
 import edu.jhuapl.near.model.Graticule;
+import edu.jhuapl.near.model.ImageCollection;
 import edu.jhuapl.near.model.LineModel;
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.PointModel;
-import edu.jhuapl.near.model.CylindricalImageCollection;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.simple.SimpleSmallBody;
 import edu.jhuapl.near.pick.PickManager;
@@ -42,6 +44,7 @@ public class SimpleViewer extends Viewer
     private String name;
     private String pathToSmallBodyFileOnServer;
     private String imageMap;
+    private ModelInfoWindowManager infoPanelManager;
 
     public SimpleViewer(
             StatusBar statusBar,
@@ -71,9 +74,11 @@ public class SimpleViewer extends Viewer
 
         setupModelManager();
 
+        infoPanelManager = new ModelInfoWindowManager(modelManager);
+
         renderer = new Renderer(modelManager);
 
-        popupManager = new PopupManager(modelManager);
+        popupManager = new PopupManager(modelManager, infoPanelManager, renderer);
 
         pickManager = new PickManager(renderer, statusBar, modelManager, popupManager);
 
@@ -83,6 +88,7 @@ public class SimpleViewer extends Viewer
         if (Configuration.isAPLVersion())
         {
             controlPanel.addTab("Structures", new StructuresControlPanel(modelManager, pickManager));
+            controlPanel.addTab("Images", new CustomImagesPanel(modelManager, null, pickManager, renderer, true, getUniqueName()));
         }
 
         splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
@@ -115,8 +121,7 @@ public class SimpleViewer extends Viewer
         allModels.put(ModelNames.ELLIPSE_STRUCTURES, new EllipseModel(smallBodyModel));
         allModels.put(ModelNames.CIRCLE_SELECTION, new CircleSelectionModel(smallBodyModel));
         allModels.put(ModelNames.GRATICULE, graticule);
-        if (imageMap != null)
-            allModels.put(ModelNames.CYLINDRICAL_IMAGES, new CylindricalImageCollection(smallBodyModel));
+        allModels.put(ModelNames.IMAGES, new ImageCollection(smallBodyModel));
 
         modelManager.setModels(allModels);
 

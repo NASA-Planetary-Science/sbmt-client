@@ -1,8 +1,10 @@
 package edu.jhuapl.near.model;
 
+import java.beans.PropertyChangeEvent;
 import java.io.File;
-import java.text.DecimalFormat;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 
 import vtk.vtkActor;
 import vtk.vtkAlgorithmOutput;
@@ -11,6 +13,8 @@ import vtk.vtkClipPolyData;
 import vtk.vtkCone;
 import vtk.vtkFloatArray;
 import vtk.vtkImageData;
+import vtk.vtkImageMapToColors;
+import vtk.vtkLookupTable;
 import vtk.vtkPNGReader;
 import vtk.vtkPlane;
 import vtk.vtkPoints;
@@ -22,33 +26,19 @@ import vtk.vtkTexture;
 import vtk.vtkTransform;
 
 import edu.jhuapl.near.util.FileCache;
+import edu.jhuapl.near.util.IntensityRange;
 import edu.jhuapl.near.util.LatLon;
+import edu.jhuapl.near.util.MapUtil;
 import edu.jhuapl.near.util.MathUtil;
 import edu.jhuapl.near.util.PolyDataUtil;
 import edu.jhuapl.near.util.Properties;
 
-public class CylindricalImage extends Model
+public class CylindricalImage extends Image
 {
-    public static class ImageInfo
-    {
-        public String filename = "";
-        public double lllat = -90.0;
-        public double lllon = 0.0;
-        public double urlat = 90.0;
-        public double urlon = 360.0;
-
-        @Override
-        public String toString()
-        {
-            DecimalFormat df = new DecimalFormat("#.#####");
-            return filename + "  ["
-                    + df.format(lllat) + ", "
-                    + df.format(lllon) + ", "
-                    + df.format(urlat) + ", "
-                    + df.format(urlon)
-                    + "]";
-        }
-    }
+    public static final String LOWER_LEFT_LATITUDES = "LLLat";
+    public static final String LOWER_LEFT_LONGITUDES = "LLLon";
+    public static final String UPPER_RIGHT_LATITUDES = "URLat";
+    public static final String UPPER_RIGHT_LONGITUDES = "URLon";
 
     private vtkPolyData imagePolyData;
     private vtkPolyData shiftedImagePolyData;
@@ -59,26 +49,69 @@ public class CylindricalImage extends Model
     private SmallBodyModel smallBodyModel;
     private vtkTexture imageTexture;
     private boolean initialized = false;
-    private ImageInfo imageInfo;
     private double offset;
-    private boolean isShapeModelEllipsoid;
+    private double lowerLeftLat = -90.0;
+    private double lowerLeftLon = 0.0;
+    private double upperRightLat = 90.0;
+    private double upperRightLon = 360.0;
+    private vtkImageData rawImage;
+    private vtkImageData displayedImage;
+    private float minValue;
+    private float maxValue;
+    private IntensityRange displayedRange = new IntensityRange(1,0);
+    private String imageName;
 
+
+    /**
+     * For a cylindrical image, the name field of key must be as follows depending on key.source:
+     * If key.source is IMAGE_MAP, then key.name is the path on the server to
+     * the image.
+     * If key.source is LOCAL_CYLINDRICAL, then key.name is the FULL PATH to the image file
+     * on disk. For example:
+     * /Users/kahneg1/.neartool/custom-data-for-built-in-models/Gaskell/Eros/image-92197644-7bd9-4a4e-92c8-b7c193ed6906.png
+     *
+     * @param key
+     * @param smallBodyModel
+     */
     public CylindricalImage(
-            SmallBodyModel smallBodyModel,
-            ImageInfo imageInfo,
-            boolean isShapeModelEllipsoid)
+            ImageKey key,
+            SmallBodyModel smallBodyModel)
     {
-        super(ModelNames.SMALL_BODY);
+        super(key);
         this.smallBodyModel = smallBodyModel;
-        this.imageInfo = imageInfo;
-        this.isShapeModelEllipsoid = isShapeModelEllipsoid;
 
         imagePolyData = new vtkPolyData();
         shiftedImagePolyData = new vtkPolyData();
 
         this.offset = getDefaultOffset();
 
-        setVisible(false);
+        loadImageInfoFromConfigFile();
+    }
+
+    private void loadImageInfoFromConfigFile()
+    {
+        if (getKey().source.equals(ImageSource.LOCAL_CYLINDRICAL))
+        {
+            // Look in the config file and figure out which index this image
+            // corresponds to. The config file is located in the same folder
+            // as the image file
+            String configFilename = new File(getKey().name).getParent() + File.separator + "config.txt";
+            MapUtil configMap = new MapUtil(configFilename);
+            String[] imageFilenames = configMap.getAsArray(IMAGE_FILENAMES);
+            for (int i=0; i<imageFilenames.length; ++i)
+            {
+                String filename = new File(getKey().name).getName();
+                if (filename.equals(imageFilenames[i]))
+                {
+                    imageName = configMap.getAsArray(Image.IMAGE_NAMES)[i];
+                    lowerLeftLat = configMap.getAsDoubleArray(LOWER_LEFT_LATITUDES)[i];
+                    lowerLeftLon = configMap.getAsDoubleArray(LOWER_LEFT_LONGITUDES)[i];
+                    upperRightLat = configMap.getAsDoubleArray(UPPER_RIGHT_LATITUDES)[i];
+                    upperRightLon = configMap.getAsDoubleArray(UPPER_RIGHT_LONGITUDES)[i];
+                    break;
+                }
+            }
+        }
     }
 
     /**
@@ -97,8 +130,8 @@ public class CylindricalImage extends Model
         final double[] origin = {0.0, 0.0, 0.0};
         final double[] zaxis = {0.0, 0.0, 1.0};
 
-        double lllon = imageInfo.lllon;
-        double urlon = imageInfo.urlon;
+        double lllon = lowerLeftLon;
+        double urlon = upperRightLon;
 
         // Make sure longitudes are in the interval [0, 360) by converting to
         // rectangular and back to longitude (which puts longitude in interval
@@ -232,7 +265,7 @@ public class CylindricalImage extends Model
                 clipPolyData2.Update();
                 vtkPolyData clipOutput = clipPolyData2.GetOutput();
 
-                generateTextureCoordinates(clipPolyData1Output, true, false);
+                generateTextureCoordinates(clipPolyData2Output, true, false);
                 generateTextureCoordinates(clipOutput, false, true);
                 needToGenerateTextures180To0 = false;
 
@@ -252,7 +285,6 @@ public class CylindricalImage extends Model
                 clipPolyData2Output = clipPolyData2.GetOutput();
             }
         }
-
 
 
         vtkAppendPolyData appendFilter = new vtkAppendPolyData();
@@ -302,8 +334,8 @@ public class CylindricalImage extends Model
     private vtkPolyData clipOutTextureLatitudeEllipsoid(vtkPolyData smallBodyPolyData)
     {
         double[] zaxis = {0.0, 0.0, 1.0};
-        double lllat = imageInfo.lllat * (Math.PI / 180.0);
-        double urlat = imageInfo.urlat * (Math.PI / 180.0);
+        double lllat = lowerLeftLat * (Math.PI / 180.0);
+        double urlat = upperRightLat * (Math.PI / 180.0);
 
         double[] intersectPoint = new double[3];
         smallBodyModel.getPointAndCellIdFromLatLon(lllat, 0.0, intersectPoint);
@@ -347,8 +379,8 @@ public class CylindricalImage extends Model
     {
         double[] origin = {0.0, 0.0, 0.0};
         double[] zaxis = {0.0, 0.0, 1.0};
-        double lllat = imageInfo.lllat * (Math.PI / 180.0);
-        double urlat = imageInfo.urlat * (Math.PI / 180.0);
+        double lllat = lowerLeftLat * (Math.PI / 180.0);
+        double urlat = upperRightLat * (Math.PI / 180.0);
 
         // For clipping latitude, first split the shape model in half, do the clipping
         // on each half, and then combine the 2 halves.
@@ -370,7 +402,7 @@ public class CylindricalImage extends Model
         {
             vtkCone cone = new vtkCone();
             cone.SetTransform(transform);
-            cone.SetAngle(90.0 - imageInfo.lllat);
+            cone.SetAngle(90.0 - lowerLeftLat);
 
             clipPolyDataNorth = new vtkClipPolyData();
             clipPolyDataNorth.SetClipFunction(cone);
@@ -382,7 +414,7 @@ public class CylindricalImage extends Model
         {
             vtkCone cone = new vtkCone();
             cone.SetTransform(transform);
-            cone.SetAngle(90.0 - imageInfo.urlat);
+            cone.SetAngle(90.0 - upperRightLat);
 
             clipPolyDataNorth = new vtkClipPolyData();
             clipPolyDataNorth.SetClipFunction(cone);
@@ -400,7 +432,7 @@ public class CylindricalImage extends Model
         {
             vtkCone cone = new vtkCone();
             cone.SetTransform(transform);
-            cone.SetAngle(90.0 + imageInfo.lllat);
+            cone.SetAngle(90.0 + lowerLeftLat);
 
             clipPolyDataSouth = new vtkClipPolyData();
             clipPolyDataSouth.SetClipFunction(cone);
@@ -411,7 +443,7 @@ public class CylindricalImage extends Model
         {
             vtkCone cone = new vtkCone();
             cone.SetTransform(transform);
-            cone.SetAngle(90.0 + imageInfo.urlat);
+            cone.SetAngle(90.0 + upperRightLat);
 
             clipPolyDataSouth = new vtkClipPolyData();
             clipPolyDataSouth.SetClipFunction(cone);
@@ -439,16 +471,16 @@ public class CylindricalImage extends Model
 
         vtkPolyData smallBodyPolyData = smallBodyModel.getSmallBodyPolyData();
 
-        double lllat = imageInfo.lllat;
-        double lllon = imageInfo.lllon;
-        double urlat = imageInfo.urlat;
-        double urlon = imageInfo.urlon;
+        double lllat = lowerLeftLat;
+        double lllon = lowerLeftLon;
+        double urlat = upperRightLat;
+        double urlon = upperRightLon;
 
         // If the texture does not cover the entire model, then clip out the part
         // that it does cover.
         if (lllat != -90.0 || lllon != 0.0 || urlat != 90.0 || urlon != 360.0)
         {
-            if (isShapeModelEllipsoid)
+            if (smallBodyModel.isEllipsoid())
                 smallBodyPolyData = clipOutTextureLatitudeEllipsoid(smallBodyPolyData);
             else
                 smallBodyPolyData = clipOutTextureLatitudeGeneral(smallBodyPolyData);
@@ -477,10 +509,10 @@ public class CylindricalImage extends Model
             boolean isOnLeftSide,
             boolean isOnRightSide)
     {
-        double lllat = imageInfo.lllat * (Math.PI / 180.0);
-        double lllon = imageInfo.lllon * (Math.PI / 180.0);
-        double urlat = imageInfo.urlat * (Math.PI / 180.0);
-        double urlon = imageInfo.urlon * (Math.PI / 180.0);
+        double lllat = lowerLeftLat * (Math.PI / 180.0);
+        double lllon = lowerLeftLon * (Math.PI / 180.0);
+        double urlat = upperRightLat * (Math.PI / 180.0);
+        double urlon = upperRightLon * (Math.PI / 180.0);
 
         // Make sure longitudes are in the interval [0, 2*PI) by converting to
         // rectangular and back to longitude (which puts longitude in interval
@@ -591,7 +623,7 @@ public class CylindricalImage extends Model
      */
     private boolean doLongitudeIntervalsIntersect(double lower1, double upper1, double lower2, double upper2)
     {
-        if (lower1 == lower2 || upper1 == upper2)
+        if (lower1 == lower2 || upper1 == upper2 || lower1 == upper1 || lower2 == upper2)
             return true;
 
         // First test if lower2 or upper2 is contained in the first interval
@@ -619,6 +651,9 @@ public class CylindricalImage extends Model
     {
         if (smallBodyActor == null)
         {
+            initialize();
+            loadImage(getKey().name);
+
             smallBodyMapper = new vtkPolyDataMapper();
             smallBodyMapper.ScalarVisibilityOff();
             smallBodyMapper.SetScalarModeToDefault();
@@ -629,12 +664,13 @@ public class CylindricalImage extends Model
             imageTexture.InterpolateOn();
             imageTexture.RepeatOff();
             imageTexture.EdgeClampOn();
-            vtkImageData image = loadImage(imageInfo.filename);
-            imageTexture.SetInput(image);
+            imageTexture.SetInput(displayedImage);
 
             smallBodyActor = new vtkActor();
             smallBodyActor.SetMapper(smallBodyMapper);
             smallBodyActor.SetTexture(imageTexture);
+            vtkProperty smallBodyProperty = smallBodyActor.GetProperty();
+            smallBodyProperty.LightingOff();
 
             smallBodyActors.add(smallBodyActor);
         }
@@ -642,11 +678,8 @@ public class CylindricalImage extends Model
         return smallBodyActors;
     }
 
-    public void setShowImage(boolean b)
+    public void setVisible(boolean b)
     {
-        if (b)
-            initialize();
-
         if (smallBodyActor != null)
             smallBodyActor.SetVisibility(b ? 1 : 0);
 
@@ -666,13 +699,26 @@ public class CylindricalImage extends Model
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
-    protected vtkImageData loadImage(String name)
+    protected void loadImage(String name)
     {
-        File imageFile = FileCache.getFileFromServer(name);
+        String imageFile = null;
+        if (getKey().source == ImageSource.IMAGE_MAP)
+            imageFile = FileCache.getFileFromServer(name).getAbsolutePath();
+        else
+            imageFile = getKey().name;
+
+        if (rawImage == null)
+            rawImage = new vtkImageData();
+
         vtkPNGReader reader = new vtkPNGReader();
-        reader.SetFileName(imageFile.getAbsolutePath());
+        reader.SetFileName(imageFile);
         reader.Update();
-        return reader.GetOutput();
+        rawImage.DeepCopy(reader.GetOutput());
+
+        double[] scalarRange = rawImage.GetScalarRange();
+        minValue = (float)scalarRange[0];
+        maxValue = (float)scalarRange[1];
+        setDisplayedImageRange(new IntensityRange(0, 255));
     }
 
     public double getDefaultOffset()
@@ -697,5 +743,113 @@ public class CylindricalImage extends Model
 
     public void delete()
     {
+    }
+
+    public void propertyChange(PropertyChangeEvent evt)
+    {
+        if (Properties.MODEL_RESOLUTION_CHANGED.equals(evt.getPropertyName()))
+        {
+            initialized = false;
+            initialize();
+            this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+        }
+    }
+
+    @Override
+    public vtkTexture getTexture()
+    {
+        return imageTexture;
+    }
+
+    @Override
+    public LinkedHashMap<String, String> getProperties() throws IOException
+    {
+        return new LinkedHashMap<String, String>();
+    }
+
+    public void setDisplayedImageRange(IntensityRange range)
+    {
+        if (rawImage.GetNumberOfScalarComponents() > 1)
+        {
+            displayedImage = rawImage;
+            return;
+        }
+
+        if (displayedRange.min != range.min ||
+                displayedRange.max != range.max)
+        {
+            displayedRange = range;
+
+            float dx = (maxValue-minValue)/255.0f;
+            float min = minValue + range.min*dx;
+            float max = minValue + range.max*dx;
+
+            // Update the displayed image
+            vtkLookupTable lut = new vtkLookupTable();
+            lut.SetTableRange(min, max);
+            lut.SetValueRange(0.0, 1.0);
+            lut.SetHueRange(0.0, 0.0);
+            lut.SetSaturationRange(0.0, 0.0);
+            //lut.SetNumberOfTableValues(402);
+            lut.SetRampToLinear();
+            lut.Build();
+
+            /*
+            // Change contrast of each channel separately and then combine the 3 channels into one image
+            int numChannels = rawImage.GetNumberOfScalarComponents();
+            vtkImageAppendComponents appendFilter = new vtkImageAppendComponents();
+            for (int i=0; i<numChannels; ++i)
+            {
+                vtkImageMapToColors mapToColors = new vtkImageMapToColors();
+                mapToColors.SetInput(rawImage);
+                mapToColors.SetOutputFormatToRGB();
+                mapToColors.SetLookupTable(lut);
+                mapToColors.SetActiveComponent(i);
+                mapToColors.Update();
+
+                vtkAlgorithmOutput output = mapToColors.GetOutputPort();
+                vtkImageMagnitude magnitudeFilter = new vtkImageMagnitude();
+                magnitudeFilter.SetInputConnection(output);
+                magnitudeFilter.Update();
+                output = magnitudeFilter.GetOutputPort();
+
+                if (i == 0)
+                    appendFilter.SetInputConnection(0, output);
+                else
+                    appendFilter.AddInputConnection(0, output);
+            }
+
+            appendFilter.Update();
+            vtkImageData appendFilterOutput = appendFilter.GetOutput();
+             */
+
+            vtkImageMapToColors mapToColors = new vtkImageMapToColors();
+            mapToColors.SetInput(rawImage);
+            mapToColors.SetOutputFormatToRGBA();
+            mapToColors.SetLookupTable(lut);
+            mapToColors.Update();
+
+            vtkImageData mapToColorsOutput = mapToColors.GetOutput();
+
+            if (displayedImage == null)
+                displayedImage = new vtkImageData();
+            displayedImage.DeepCopy(mapToColorsOutput);
+
+            mapToColors.Delete();
+            lut.Delete();
+
+            this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+        }
+    }
+
+    public int getNumberOfComponentsOfOriginalImage()
+    {
+        return rawImage.GetNumberOfScalarComponents();
+    }
+
+    @Override
+    public String getImageName()
+    {
+        return imageName;
     }
 }
