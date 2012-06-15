@@ -83,7 +83,7 @@ public class MathildeViewer extends Viewer
         controlPanel.addTab(NAME, new SmallBodyControlPanel(modelManager, NAME));
         if (Configuration.isAPLVersion())
         {
-            //controlPanel.addTab("MSI", new MSIMathildeSearchPanel(modelManager, infoPanelManager, pickManager, renderer));
+            controlPanel.addTab("MSI", new MSIMathildeSearchPanel(modelManager, infoPanelManager, pickManager, renderer));
             controlPanel.addTab("Structures", new StructuresControlPanel(modelManager, pickManager));
             controlPanel.addTab("Images", new CustomImagesPanel(modelManager, infoPanelManager, pickManager, renderer, true, getUniqueName()));
         }

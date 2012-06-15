@@ -59,7 +59,7 @@ public class CylindricalImage extends Image
     private float minValue;
     private float maxValue;
     private IntensityRange displayedRange = new IntensityRange(1,0);
-    private String imageName;
+    private String imageName = "";
 
 
     /**
@@ -86,7 +86,14 @@ public class CylindricalImage extends Image
         this.offset = getDefaultOffset();
 
         loadImageInfoFromConfigFile();
-    }
+
+        // If we're an IMAGE_MAP then the image name is the same as
+        // as the key name.
+        if (getKey().source.equals(ImageSource.IMAGE_MAP))
+        {
+            imageName = getKey().name;
+        }
+}
 
     private void loadImageInfoFromConfigFile()
     {
