@@ -3,9 +3,11 @@ package edu.jhuapl.near.gui;
 import java.awt.BorderLayout;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashSet;
 
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import vtk.vtkAxesActor;
@@ -21,6 +23,7 @@ import vtk.vtkProp;
 import vtk.vtkPropCollection;
 import vtk.vtkProperty;
 import vtk.vtkRenderWindowPanel;
+import vtk.vtkRenderer;
 import vtk.vtkTextProperty;
 
 import edu.jhuapl.near.model.ModelManager;
@@ -44,6 +47,16 @@ public class Renderer extends JPanel implements
     {
         TRACKBALL_CAMERA,
         JOYSTICK_CAMERA
+    }
+
+    public enum AxisType
+    {
+        POSITIVE_X,
+        NEGATIVE_X,
+        POSITIVE_Y,
+        NEGATIVE_Y,
+        POSITIVE_Z,
+        NEGATIVE_Z
     }
 
     private vtkEnhancedRenderWindowPanel renWin;
@@ -247,7 +260,110 @@ public class Renderer extends JPanel implements
 
     public void saveToFile()
     {
-        renWin.saveToFile();
+        File file = ImageFileChooser.showSaveDialog(this, "Export to Image");
+        renWin.saveToFile(file);
+    }
+
+    public void save6ViewsToFile()
+    {
+        File file = ImageFileChooser.showSaveDialog(this, "Export to Image", false);
+        String path = file.getAbsolutePath();
+        String base = path.substring(0, path.lastIndexOf('.'));
+        String ext = path.substring(path.lastIndexOf('.'));
+
+        File[] files = {
+                file = new File(base + "+x" + ext),
+                file = new File(base + "-x" + ext),
+                file = new File(base + "+y" + ext),
+                file = new File(base + "-y" + ext),
+                file = new File(base + "+z" + ext),
+                file = new File(base + "-z" + ext)
+        };
+
+        // Check if one of the files already exist and if so, prompt user.
+        for (File f : files)
+        {
+            if (f.exists())
+            {
+                int response = JOptionPane.showConfirmDialog (JOptionPane.getFrameForComponent(this),
+                  "Overwrite file(s)?","Confirm Overwrite",
+                   JOptionPane.OK_CANCEL_OPTION,
+                   JOptionPane.QUESTION_MESSAGE);
+                if (response == JOptionPane.CANCEL_OPTION)
+                    return;
+                else
+                    break;
+            }
+        }
+
+        AxisType[] axes = {
+                AxisType.POSITIVE_X, AxisType.NEGATIVE_X,
+                AxisType.POSITIVE_Y, AxisType.NEGATIVE_Y,
+                AxisType.POSITIVE_Z, AxisType.NEGATIVE_Z
+        };
+
+        for (int i=0; i<axes.length; ++i)
+        {
+            setCameraOrientationInDirectionOfAxis(axes[i]);
+            renWin.saveToFile(files[i]);
+        }
+    }
+
+    public void setCameraOrientationInDirectionOfAxis(AxisType axisType)
+    {
+        vtkRenderer ren = renWin.GetRenderer();
+        if (ren.VisibleActorCount() == 0) return;
+
+        double[] bounds = modelManager.getSmallBodyModel().getBoundingBox().getBounds();
+        double xSize = Math.abs(bounds[1] - bounds[0]);
+        double ySize = Math.abs(bounds[3] - bounds[2]);
+        double zSize = Math.abs(bounds[5] - bounds[4]);
+        double maxSize = Math.max(Math.max(xSize, ySize), zSize);
+
+        renWin.lock();
+        vtkCamera cam = ren.GetActiveCamera();
+        cam.SetFocalPoint(0.0, 0.0, 0.0);
+
+        if (axisType == AxisType.NEGATIVE_X)
+        {
+            double xpos = xSize / Math.tan(Math.PI/6.0) + 2.0*maxSize;
+            cam.SetPosition(xpos, 0.0, 0.0);
+            cam.SetViewUp(0.0, 0.0, 1.0);
+        }
+        else if (axisType == AxisType.POSITIVE_X)
+        {
+            double xpos = -xSize / Math.tan(Math.PI/6.0) - 2.0*maxSize;
+            cam.SetPosition(xpos, 0.0, 0.0);
+            cam.SetViewUp(0.0, 0.0, 1.0);
+        }
+        else if (axisType == AxisType.NEGATIVE_Y)
+        {
+            double ypos = ySize / Math.tan(Math.PI/6.0) + 2.0*maxSize;
+            cam.SetPosition(0.0, ypos, 0.0);
+            cam.SetViewUp(0.0, 0.0, 1.0);
+        }
+        else if (axisType == AxisType.POSITIVE_Y)
+        {
+            double ypos = -ySize / Math.tan(Math.PI/6.0) - 2.0*maxSize;
+            cam.SetPosition(0.0, ypos, 0.0);
+            cam.SetViewUp(0.0, 0.0, 1.0);
+        }
+        else if (axisType == AxisType.NEGATIVE_Z)
+        {
+            double zpos = zSize / Math.tan(Math.PI/6.0) + 2.0*maxSize;
+            cam.SetPosition(0.0, 0.0, zpos);
+            cam.SetViewUp(0.0, 1.0, 0.0);
+        }
+        else if (axisType == AxisType.POSITIVE_Z)
+        {
+            double zpos = -zSize / Math.tan(Math.PI/6.0) - 2.0*maxSize;
+            cam.SetPosition(0.0, 0.0, zpos);
+            cam.SetViewUp(0.0, 1.0, 0.0);
+        }
+        renWin.unlock();
+
+        renWin.resetCameraClippingRange();
+        renWin.Render();
     }
 
     public void setCameraOrientation(

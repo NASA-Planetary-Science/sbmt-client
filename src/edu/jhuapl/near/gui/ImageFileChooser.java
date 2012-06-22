@@ -116,6 +116,20 @@ public class ImageFileChooser extends FileChooserBase
 
     public static File showSaveDialog(Component parent, String title)
     {
+        return showSaveDialog(parent, title, true);
+    }
+
+    /**
+     * If showConfirmOverwrite is false, then no check is done to see if file already exists and user
+     * is not prompted.
+     *
+     * @param parent
+     * @param title
+     * @param showConfirmOverwrite
+     * @return
+     */
+    public static File showSaveDialog(Component parent, String title, boolean showConfirmOverwrite)
+    {
         JFileChooser fc = new JFileChooser();
         setupFileChooser(fc);
         fc.setDialogTitle(title);
@@ -161,7 +175,7 @@ public class ImageFileChooser extends FileChooserBase
             }
 
             File file = new File(filename);
-            if (file.exists ())
+            if (showConfirmOverwrite && file.exists ())
             {
                 int response = JOptionPane.showConfirmDialog (JOptionPane.getFrameForComponent(parent),
                   "Overwrite " + file.getName() + "?","Confirm Overwrite",

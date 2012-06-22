@@ -25,6 +25,8 @@ public class FileMenu extends JMenu
 
         JMenuItem mi = new JMenuItem(new SaveImageAction());
         this.add(mi);
+        mi = new JMenuItem(new Save6AxesViewsAction());
+        this.add(mi);
         mi = new JMenuItem(new SaveShapeModelAction());
         this.add(mi);
         mi = new JMenuItem(new ShowCameraOrientationAction());
@@ -86,6 +88,19 @@ public class FileMenu extends JMenu
         public void actionPerformed(ActionEvent actionEvent)
         {
             rootPanel.getCurrentViewer().getRenderer().saveToFile();
+        }
+    }
+
+    private class Save6AxesViewsAction extends AbstractAction
+    {
+        public Save6AxesViewsAction()
+        {
+            super("Export Six Views along Axes to Images...");
+        }
+
+        public void actionPerformed(ActionEvent actionEvent)
+        {
+            rootPanel.getCurrentViewer().getRenderer().save6ViewsToFile();
         }
     }
 

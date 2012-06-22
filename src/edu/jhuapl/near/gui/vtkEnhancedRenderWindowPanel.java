@@ -62,9 +62,8 @@ public class vtkEnhancedRenderWindowPanel extends vtkRenderWindowPanel
         // do nothing
     }
 
-    public void saveToFile()
+    public void saveToFile(File file)
     {
-        File file = ImageFileChooser.showSaveDialog(this, "Export to Image");
         if (file != null)
         {
             lock();

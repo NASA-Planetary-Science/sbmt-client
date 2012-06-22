@@ -236,7 +236,8 @@ public class ImageInfoPanel extends ModelInfoWindow implements PropertyChangeLis
         {
             public void actionPerformed(ActionEvent e)
             {
-                renWin.saveToFile();
+                File file = ImageFileChooser.showSaveDialog(renWin, "Export to Image...");
+                renWin.saveToFile(file);
             }
         });
         fileMenu.add(mi);

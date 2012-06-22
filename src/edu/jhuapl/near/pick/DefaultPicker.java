@@ -20,6 +20,7 @@ import vtk.vtkRenderWindowPanel;
 import vtk.vtkRenderer;
 
 import edu.jhuapl.near.gui.Renderer;
+import edu.jhuapl.near.gui.Renderer.AxisType;
 import edu.jhuapl.near.gui.StatusBar;
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelManager;
@@ -36,6 +37,7 @@ import edu.jhuapl.near.util.Properties;
  */
 public class DefaultPicker extends Picker
 {
+    private Renderer renderer;
     private vtkRenderWindowPanel renWin;
     private StatusBar statusBar;
     private ModelManager modelManager;
@@ -53,6 +55,7 @@ public class DefaultPicker extends Picker
             ModelManager modelManager,
             PopupManager popupManager)
     {
+        this.renderer = renderer;
         this.renWin = renderer.getRenderWindowPanel();
         this.statusBar = statusBar;
         this.modelManager = modelManager;
@@ -421,56 +424,18 @@ public class DefaultPicker extends Picker
         {
             char keyChar = e.getKeyChar();
 
-            double[] bounds = modelManager.getSmallBodyModel().getBoundingBox().getBounds();
-            double xSize = Math.abs(bounds[1] - bounds[0]);
-            double ySize = Math.abs(bounds[3] - bounds[2]);
-            double zSize = Math.abs(bounds[5] - bounds[4]);
-            double maxSize = Math.max(Math.max(xSize, ySize), zSize);
-
-            renWin.lock();
-            vtkCamera cam = ren.GetActiveCamera();
-            cam.SetFocalPoint(0.0, 0.0, 0.0);
-
             if ('X' == keyChar)
-            {
-                double xpos = xSize / Math.tan(Math.PI/6.0) + 2.0*maxSize;
-                cam.SetPosition(xpos, 0.0, 0.0);
-                cam.SetViewUp(0.0, 0.0, 1.0);
-            }
+                renderer.setCameraOrientationInDirectionOfAxis(AxisType.NEGATIVE_X);
             else if ('x' == keyChar)
-            {
-                double xpos = -xSize / Math.tan(Math.PI/6.0) - 2.0*maxSize;
-                cam.SetPosition(xpos, 0.0, 0.0);
-                cam.SetViewUp(0.0, 0.0, 1.0);
-            }
+                renderer.setCameraOrientationInDirectionOfAxis(AxisType.POSITIVE_X);
             else if ('Y' == keyChar)
-            {
-                double ypos = ySize / Math.tan(Math.PI/6.0) + 2.0*maxSize;
-                cam.SetPosition(0.0, ypos, 0.0);
-                cam.SetViewUp(0.0, 0.0, 1.0);
-            }
+                renderer.setCameraOrientationInDirectionOfAxis(AxisType.NEGATIVE_Y);
             else if ('y' == keyChar)
-            {
-                double ypos = -ySize / Math.tan(Math.PI/6.0) - 2.0*maxSize;
-                cam.SetPosition(0.0, ypos, 0.0);
-                cam.SetViewUp(0.0, 0.0, 1.0);
-            }
+                renderer.setCameraOrientationInDirectionOfAxis(AxisType.POSITIVE_Y);
             else if ('Z' == keyChar)
-            {
-                double zpos = zSize / Math.tan(Math.PI/6.0) + 2.0*maxSize;
-                cam.SetPosition(0.0, 0.0, zpos);
-                cam.SetViewUp(0.0, 1.0, 0.0);
-            }
+                renderer.setCameraOrientationInDirectionOfAxis(AxisType.NEGATIVE_Z);
             else if ('z' == keyChar)
-            {
-                double zpos = -zSize / Math.tan(Math.PI/6.0) - 2.0*maxSize;
-                cam.SetPosition(0.0, 0.0, zpos);
-                cam.SetViewUp(0.0, 1.0, 0.0);
-            }
-            renWin.unlock();
-
-            renWin.resetCameraClippingRange();
-            renWin.Render();
+                renderer.setCameraOrientationInDirectionOfAxis(AxisType.POSITIVE_Z);
         }
     }
 
