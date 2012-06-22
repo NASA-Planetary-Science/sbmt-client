@@ -164,8 +164,13 @@ public class TopoViewer extends JFrame
         JMenuBar menuBar = new JMenuBar();
 
         JMenu fileMenu = new JMenu("File");
+
         JMenuItem mi = new JMenuItem(new SaveImageAction(renderer));
         fileMenu.add(mi);
+
+        mi = new JMenuItem(new SaveShapeModelAction());
+        fileMenu.add(mi);
+
         fileMenu.setMnemonic('F');
         menuBar.add(fileMenu);
 
@@ -468,6 +473,34 @@ public class TopoViewer extends JFrame
         public void actionPerformed(ActionEvent actionEvent)
         {
             renderer.saveToFile();
+        }
+    }
+
+    private class SaveShapeModelAction extends AbstractAction
+    {
+        public SaveShapeModelAction()
+        {
+            super("Export Shape Model...");
+        }
+
+        public void actionPerformed(ActionEvent actionEvent)
+        {
+            File file = CustomFileChooser.showSaveDialog(null, "Export Shape Model", "model.plt");
+
+            try
+            {
+                if (file != null)
+                    dem.saveAsPLT(file);
+            }
+            catch (Exception e1)
+            {
+                e1.printStackTrace();
+                JOptionPane.showMessageDialog(null,
+                        "An error occurred exporting the shape model.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
         }
     }
 }
