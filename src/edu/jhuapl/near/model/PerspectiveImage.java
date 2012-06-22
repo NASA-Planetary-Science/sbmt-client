@@ -911,7 +911,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
             vtkPointData pointData = footprint.GetPointData();
             pointData.SetTCoords(textureCoords);
-            PolyDataUtil.generateTextureCoordinates(getFrustum(), footprint);
+            PolyDataUtil.generateTextureCoordinates(getFrustum(), getImageWidth(), getImageHeight(), footprint);
             pointData.Delete();
         }
         else

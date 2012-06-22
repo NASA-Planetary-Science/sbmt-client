@@ -1564,7 +1564,7 @@ public class PolyDataUtil
      * @param frustum
      * @param polyData
      */
-    static public void generateTextureCoordinates(Frustum frustum, vtkPolyData footprint)
+    static public void generateTextureCoordinates(Frustum frustum, int width, int height, vtkPolyData footprint)
     {
         int numberOfPoints = footprint.GetNumberOfPoints();
 
@@ -1595,6 +1595,11 @@ public class PolyDataUtil
         double a = MathUtil.vsep(frustum1, frustum3);
         double b = MathUtil.vsep(frustum1, frustum2);
 
+        final double umin = 1.0 / (2.0*height);
+        final double umax = 1.0 - umin;
+        final double vmin = 1.0 / (2.0*width);
+        final double vmax = 1.0 - vmin;
+
         double[] vec = new double[3];
 
         for (int i=0; i<numberOfPoints; ++i)
@@ -1622,9 +1627,16 @@ public class PolyDataUtil
             u = u/a;
 
             if (v < 0.0) v = 0.0;
-            if (v > 1.0) v = 1.0;
+            else if (v > 1.0) v = 1.0;
+
             if (u < 0.0) u = 0.0;
-            if (u > 1.0) u = 1.0;
+            else if (u > 1.0) u = 1.0;
+
+            // We need to map the [0, 1] intervals into the [umin, umax] and [vmin, vmax] intervals.
+            // See the comments to the function adjustTextureCoordinates in Frustum.java for
+            // an explanation as to why this is necessary.
+            u = (umax - umin) * u + umin;
+            v = (vmax - vmin) * v + vmin;
 
             textureCoords.SetTuple2(i, v, u);
         }

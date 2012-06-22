@@ -156,7 +156,10 @@ public class ColorImage extends Model implements PropertyChangeListener
         if (footprint == null)
             throw new NoOverlapException();
 
-        PolyDataUtil.generateTextureCoordinates(redFrustum, footprint);
+        int IMAGE_WIDTH = redImage.getImageWidth();
+        int IMAGE_HEIGHT = redImage.getImageHeight();
+
+        PolyDataUtil.generateTextureCoordinates(redFrustum, IMAGE_WIDTH, IMAGE_HEIGHT, footprint);
 
         shiftedFootprint.DeepCopy(footprint);
         PolyDataUtil.shiftPolyDataInNormalDirection(shiftedFootprint, 2.0*smallBodyModel.getMinShiftAmount());
@@ -211,8 +214,6 @@ public class ColorImage extends Model implements PropertyChangeListener
 
         double scdist = MathUtil.vnorm(spacecraftPosition);
 
-        int IMAGE_WIDTH = redImage.getImageWidth();
-        int IMAGE_HEIGHT = redImage.getImageHeight();
         for (int i=0; i<IMAGE_HEIGHT; ++i)
         {
             // Compute the vector on the left of the row.
@@ -256,7 +257,7 @@ public class ColorImage extends Model implements PropertyChangeListener
 
                     double[] uv = new double[2];
 
-                    greenFrustum.computeTextureCoordinates(x, uv);
+                    greenFrustum.computeTextureCoordinates(x, IMAGE_WIDTH, IMAGE_HEIGHT, uv);
                     float greenValue = ImageDataUtil.interpolateWithinImage(
                             greenPixelData,
                             IMAGE_WIDTH,
@@ -264,7 +265,7 @@ public class ColorImage extends Model implements PropertyChangeListener
                             uv[1],
                             uv[0]);
 
-                    blueFrustum.computeTextureCoordinates(x, uv);
+                    blueFrustum.computeTextureCoordinates(x, IMAGE_WIDTH, IMAGE_HEIGHT, uv);
                     float blueValue = ImageDataUtil.interpolateWithinImage(
                             bluePixelData,
                             IMAGE_WIDTH,
