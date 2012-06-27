@@ -22,6 +22,7 @@ import vtk.vtkProp;
 import edu.jhuapl.near.gui.CustomFileChooser;
 import edu.jhuapl.near.gui.ModelInfoWindowManager;
 import edu.jhuapl.near.gui.NormalOffsetChangerDialog;
+import edu.jhuapl.near.gui.OpacityChanger;
 import edu.jhuapl.near.gui.Renderer;
 import edu.jhuapl.near.gui.Renderer.LightingType;
 import edu.jhuapl.near.model.Image;
@@ -50,6 +51,7 @@ public class ImagePopupMenu extends PopupMenu
     private JMenuItem showFrustumMenuItem;
     private JMenuItem changeNormalOffsetMenuItem;
     private JMenuItem simulateLightingMenuItem;
+    private JMenuItem changeOpacityMenuItem;
     private JMenuItem hideImageMenuItem;
     private ModelInfoWindowManager infoPanelManager;
     private Renderer renderer;
@@ -116,6 +118,10 @@ public class ImagePopupMenu extends PopupMenu
         simulateLightingMenuItem.setText("Simulate Lighting");
         this.add(simulateLightingMenuItem);
 
+        changeOpacityMenuItem = new JMenuItem(new ChangeOpacityAction());
+        changeOpacityMenuItem.setText("Change Opacity...");
+        this.add(changeOpacityMenuItem);
+
         hideImageMenuItem = new JCheckBoxMenuItem(new HideImageAction());
         hideImageMenuItem.setText("Hide Image");
         this.add(hideImageMenuItem);
@@ -164,6 +170,7 @@ public class ImagePopupMenu extends PopupMenu
                 showFrustumMenuItem.setSelected(false);
             showFrustumMenuItem.setEnabled(true);
             simulateLightingMenuItem.setEnabled(true);
+            changeOpacityMenuItem.setEnabled(true);
             hideImageMenuItem.setSelected(!image.isVisible());
             hideImageMenuItem.setEnabled(true);
         }
@@ -172,6 +179,7 @@ public class ImagePopupMenu extends PopupMenu
             showFrustumMenuItem.setSelected(false);
             showFrustumMenuItem.setEnabled(false);
             simulateLightingMenuItem.setEnabled(false);
+            changeOpacityMenuItem.setEnabled(false);
             hideImageMenuItem.setSelected(false);
             hideImageMenuItem.setEnabled(false);
         }
@@ -460,6 +468,20 @@ public class ImagePopupMenu extends PopupMenu
                 double[] sunDir = image.getSunVector();
                 renderer.setFixedLightDirection(sunDir);
                 renderer.setLighting(LightingType.FIXEDLIGHT);
+            }
+        }
+    }
+
+    private class ChangeOpacityAction extends AbstractAction
+    {
+        public void actionPerformed(ActionEvent e)
+        {
+            Image image = imageCollection.getImage(imageKey);
+            if (image != null)
+            {
+                OpacityChanger opacityChanger = new OpacityChanger(image);
+                opacityChanger.setLocationRelativeTo(renderer);
+                opacityChanger.setVisible(true);
             }
         }
     }

@@ -105,6 +105,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     private float minValue;
     private float maxValue;
     private IntensityRange displayedRange = new IntensityRange(1,0);
+    private double imageOpacity = 1.0;
 
     private double[] spacecraftPosition = new double[3];
     private double[] frustum1 = new double[3];
@@ -1544,5 +1545,18 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     public int getNumberOfComponentsOfOriginalImage()
     {
         return rawImage.GetNumberOfScalarComponents();
+    }
+
+    public double getImageOpacity()
+    {
+        return imageOpacity;
+    }
+
+    public void setImageOpacity(double imageOpacity)
+    {
+        this.imageOpacity = imageOpacity;
+        vtkProperty smallBodyProperty = footprintActor.GetProperty();
+        smallBodyProperty.SetOpacity(imageOpacity);
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 }
