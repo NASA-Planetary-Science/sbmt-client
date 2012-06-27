@@ -518,6 +518,88 @@ public class LineModel extends StructureModel implements PropertyChangeListener
     }
 
 
+    public void removeCurrentLineVertex()
+    {
+        Line lin = lines.get(selectedLine);
+
+        if (currentLineVertex < 0 || currentLineVertex >= lin.controlPointIds.size())
+            return;
+
+        int vertexId = currentLineVertex;
+
+        lin.lat.remove(vertexId);
+        lin.lon.remove(vertexId);
+        lin.rad.remove(vertexId);
+
+        // If one of the end points is being removed, then we only need to remove the line connecting the
+        // end point to the adjacent point. If we're removing a non-end point, we need to remove the line
+        // segments connecting the 2 adjacent control points and in addition, we need to draw a new line
+        // connecting the 2 adjacent control points.
+        // Remove points BETWEEN the 2 adjacent control points (If we're removing a point in the middle)
+        if (lin.controlPointIds.size() > 1)
+        {
+            // Remove initial point
+            if (vertexId == 0)
+            {
+                int id2 = lin.controlPointIds.get(vertexId+1);
+                int numberPointsRemoved = id2;
+                for (int i=0; i<numberPointsRemoved; ++i)
+                {
+                    lin.xyzPointList.remove(0);
+                }
+                lin.controlPointIds.remove(vertexId);
+
+                for (int i=0; i<lin.controlPointIds.size(); ++i)
+                    lin.controlPointIds.set(i, lin.controlPointIds.get(i) - numberPointsRemoved);
+            }
+            // Remove final point
+            else if (vertexId == lin.controlPointIds.size()-1)
+            {
+                int id1 = lin.controlPointIds.get(vertexId-1);
+                int id2 = lin.controlPointIds.get(vertexId);
+                int numberPointsRemoved = id2-id1;
+                for (int i=0; i<numberPointsRemoved; ++i)
+                {
+                    lin.xyzPointList.remove(id1+1);
+                }
+                lin.controlPointIds.remove(vertexId);
+            }
+            // Remove a middle point
+            else
+            {
+                int id1 = lin.controlPointIds.get(vertexId-1);
+                int id2 = lin.controlPointIds.get(vertexId+1);
+                int numberPointsRemoved = id2-id1-1;
+                for (int i=0; i<numberPointsRemoved; ++i)
+                {
+                    lin.xyzPointList.remove(id1+1);
+                }
+                lin.controlPointIds.remove(vertexId);
+
+                for (int i=vertexId; i<lin.controlPointIds.size(); ++i)
+                    lin.controlPointIds.set(i, lin.controlPointIds.get(i) - numberPointsRemoved);
+
+                lin.updateSegment(vertexId-1);
+            }
+        }
+        else if (lin.controlPointIds.size() == 1)
+        {
+            lin.controlPointIds.remove(vertexId);
+            lin.xyzPointList.clear();
+        }
+
+        --currentLineVertex;
+        if (currentLineVertex < 0 && lin.controlPointIds.size() > 0)
+            currentLineVertex = 0;
+
+        updatePolyData();
+
+        updateLineSelection();
+
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+    }
+
+
     public void removeStructure(int cellId)
     {
         lines.remove(cellId);
@@ -755,118 +837,6 @@ public class LineModel extends StructureModel implements PropertyChangeListener
     {
         return highlightedStructure;
     }
-
-
-    /*
-    public void removeVertexFromLine(int vertexId)
-    {
-        Line lin = lines.get(selectedLine);
-
-        lin.lat.remove(vertexId);
-        lin.lon.remove(vertexId);
-        lin.rad.remove(vertexId);
-
-        // If one of the end points is being removed, then we only need to remove the line connecting the
-        // end point to the adjacent point. If we're removing a non-end point, we need to remove the line
-        // segments connecting the 2 adjacent control points and in addition, we need to draw a new line
-        // connecting the 2 adjacent control points.
-        // Remove points BETWEEN the 2 adjacent control points (If we're removing a point in the middle)
-        if (lin.controlPointIds.size() > 1)
-        {
-            if (vertexId == 0)
-            {
-                int id2 = lin.controlPointIds.get(vertexId+1);
-                int numberPointsRemoved = id2;
-                for (int i=0; i<numberPointsRemoved; ++i)
-                {
-                    lin.xyzPointList.remove(0);
-                }
-                lin.controlPointIds.remove(vertexId);
-
-                for (int i=vertexId+1; i<lin.controlPointIds.size(); ++i)
-                    lin.controlPointIds.set(i, lin.controlPointIds.get(i) - (numberPointsRemoved-1));
-            }
-            if (vertexId == lin.controlPointIds.size()-1)
-            {
-                int id1 = lin.controlPointIds.get(vertexId-1);
-                int id2 = lin.controlPointIds.get(vertexId);
-                int numberPointRemoved = id2-id1;
-                for (int i=0; i<numberPointRemoved; ++i)
-                {
-                    lin.xyzPointList.remove(id1+1);
-                }
-                lin.controlPointIds.remove(vertexId);
-            }
-            else
-            {
-                int id1 = lin.controlPointIds.get(vertexId-1);
-                int id2 = lin.controlPointIds.get(vertexId+1);
-                for (int i=id1+1; i<id2; ++i)
-                {
-                    lin.xyzPointList.remove(id1+1);
-                }
-                lin.controlPointIds.remove(vertexId);
-                lin.updateSegment(vertexId-1);
-            }
-        }
-
-        if (currentLineVertex < lin.controlPointIds.size()-1)
-        {
-            int id1 = lin.controlPointIds.get(currentLineVertex);
-            int id2 = lin.controlPointIds.get(currentLineVertex+1);
-            int numberPointsRemoved = id2-id1-1;
-            for (int i=0; i<id2-id1-1; ++i)
-            {
-                lin.xyzPointList.remove(id1+1);
-            }
-
-            lin.xyzPointList.add(id1+1, new Point3D(newPoint));
-            lin.controlPointIds.add(currentLineVertex+1, id1+1);
-
-            // Shift the control points ids from currentLineVertex+2 till the end by the right amount.
-            for (int i=currentLineVertex+2; i<lin.controlPointIds.size(); ++i)
-            {
-                lin.controlPointIds.set(i, lin.controlPointIds.get(i) - (numberPointsRemoved-1));
-            }
-        }
-        else
-        {
-            lin.xyzPointList.add(new Point3D(newPoint));
-            lin.controlPointIds.add(lin.xyzPointList.size()-1);
-        }
-
-        if (lin.controlPointIds.size() >= 2)
-        {
-            if (vertexId == 0)
-            {
-                lin.updateSegment(vertexId);
-            }
-            else if (currentLineVertex < lin.controlPointIds.size()-2)
-            {
-                lin.updateSegment(currentLineVertex);
-                lin.updateSegment(currentLineVertex+1);
-            }
-            else
-            {
-                lin.updateSegment(currentLineVertex);
-            }
-        }
-
-        if (vertexId == currentLineVertex)
-        {
-            --currentLineVertex;
-            if (currentLineVertex < 0 && lin.controlPointIds.size() > 0)
-                currentLineVertex = 0;
-        }
-
-        updatePolyData();
-
-        updateLineSelection();
-
-        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-
-    }
-    */
 
     public void redrawAllStructures()
     {
