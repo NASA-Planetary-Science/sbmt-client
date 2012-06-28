@@ -289,7 +289,7 @@ void loadPointsAndInitialOrientation(const char* inputfile, double initialOrient
         exit(1);
     }
 
-    if (imagePoints.size() < 4)
+    if (imagePoints.size() < 3)
     {
         cerr << "Warning: Too few points provided. Algorithm may not converge." << endl;
     }
