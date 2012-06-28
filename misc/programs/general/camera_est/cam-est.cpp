@@ -372,8 +372,7 @@ void usage(char** argv)
     cout << "                      focal length is 1000.\n";
     cout << "  <inputfile>         path to file containing the corresponding\n";
     cout << "                      image/model points as well as a starting\n";
-    cout << "                      guess. The format of this file is explained\n";
-    cout << "                      below.\n";
+    cout << "                      guess.\n";
     cout << "  <output-sumfile>    generated sumfile containing estimated position\n";
     cout << "                      and orientation of camera. The sumfile is in the\n";
     cout << "                      same format used by Bob Gaskell.\n";
