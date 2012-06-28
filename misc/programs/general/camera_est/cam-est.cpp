@@ -5,8 +5,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
-#include "lbfgs.h"
-#include "optimize.h"
+//#include "optimize.h"
 #include "optimize-gsl.h"
 #include "adolc/adolc.h"
 #include "mathutil.h"
@@ -26,7 +25,7 @@ struct Pixel
 };
 
 const unsigned int N = 7; // number of independent variables
-double focal_length = 10066.666666666666;
+double focal_length = 10029.45948178711;
 unsigned int imageWidth = 1024;
 unsigned int imageHeight = 1024;
 vector<Point> objectPoints;
@@ -361,8 +360,24 @@ void printResults(
     }
 }
 
-static void usage()
+void usage(char** argv)
 {
+    cout << "Usage: " << argv[0] << " -w <width> -h <height> -f <focal-length> <inputfile> <output-sumfile>\n";
+    cout << "\n";
+    cout << "  -w <width>          the pixel width of the image\n";
+    cout << "  -h <height>         the pixel height of the image\n";
+    cout << "  -f <focal-length>   the focal length of the camera in pixels. For\n";
+    cout << "                      example, if the focal length is 1 millimeter\n";
+    cout << "                      and the pixel size is 1 micron, then the\n";
+    cout << "                      focal length is 1000.\n";
+    cout << "  <inputfile>         path to file containing the corresponding\n";
+    cout << "                      image/model points as well as a starting\n";
+    cout << "                      guess. The format of this file is explained\n";
+    cout << "                      below.\n";
+    cout << "  <output-sumfile>    generated sumfile containing estimated position\n";
+    cout << "                      and orientation of camera. The sumfile is in the\n";
+    cout << "                      same format used by Bob Gaskell.\n";
+    cout << endl;
     exit(0);
 }
 
@@ -370,7 +385,7 @@ int main(int argc, char** argv)
 {
     const int numberRequiredArgs = 2;
     if (argc-1 < numberRequiredArgs)
-        usage();
+        usage(argv);
 
     int i = 1;
     for(; i<argc; ++i)
@@ -396,7 +411,7 @@ int main(int argc, char** argv)
 
     // There must be numRequiredArgs arguments remaining after the options. Otherwise abort.
     if (argc - i != numberRequiredArgs)
-        usage();
+        usage(argv);
 
     const char* inputfile = argv[i];
     const char* sumfile = argv[i+1];
