@@ -105,3 +105,7 @@ Vertical field of view for various cameras (in degrees):
 Hayabusa's AMICA: 5.839083
 NEAR's MSI:       2.9505
 Galileo's SSI:    0.465815
+
+
+Contact: Please contact Eli Kahn at eliezer.kahn@jhuapl.edu if
+you have any questions about this program.
