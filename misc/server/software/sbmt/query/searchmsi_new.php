@@ -49,13 +49,13 @@ $host="sd-mysql.jhuapl.edu:3306";
 
 if (substr($msiSource, 0, 3) == "PDS")
 {
-	$msiimages="msiimages";
-	$msicubes="msicubes";
+	$msiimages="msiimages_beta2";
+	$msicubes="msicubes_beta2";
 }
 else
 {
-	$msiimages="msiimages_gaskell";
-	$msicubes="msicubes_gaskell";
+	$msiimages="msiimages_gaskell_beta3";
+	$msicubes="msicubes_gaskell_beta3";
 }
 
 $link = mysql_connect($host,$username,$password);

@@ -38,7 +38,7 @@ mysql_connect($host,$username,$password);
 $query = "SELECT DISTINCT nisspectra.id, year, day FROM nisspectra ";
 if (strlen($cubesStr) > 0)
 {
-	$query .= " JOIN niscubes ON nisspectra.id = niscubes.nisspectrumid ";
+	$query .= " JOIN niscubes_beta2 ON nisspectra.id = niscubes_beta2.nisspectrumid ";
 }
 $query .= "WHERE midtime >= " . $startDate;
 $query .= " AND midtime <= " . $stopDate;
@@ -67,7 +67,7 @@ if (strlen($cubesStr) > 0)
 	// Split up the cubes list
 	$cubes = explode(",", $cubesStr);
 
-	$query .= " AND niscubes.cubeid IN (";
+	$query .= " AND niscubes_beta2.cubeid IN (";
 
 	for ($i = 0; $i < count($cubes); $i++)
 	{

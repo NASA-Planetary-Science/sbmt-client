@@ -9,9 +9,9 @@ $database="near";
 $host="sd-mysql.jhuapl.edu:3306";
 
 if (substr($msiSource, 0, 3) == "PDS")
-	$msiimages="msiimages";
+	$msiimages="msiimages_beta2";
 else
-	$msiimages="msiimages_gaskell";
+	$msiimages="msiimages_gaskell_beta3";
 
 mysql_connect($host,$username,$password);
 @mysql_select_db($database) or die();

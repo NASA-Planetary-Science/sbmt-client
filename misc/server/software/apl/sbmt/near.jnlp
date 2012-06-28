@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<jnlp spec="1.0"
+      codebase="http://near.jhuapl.edu/software/apl/sbmt"
+      href="near.jnlp">
+
+    <information>
+        <title>Small Body Mapping Tool</title>
+        <vendor>JHUAPL</vendor>
+        <description>Small Body Mapping Tool</description>
+        <offline-allowed/>
+    </information>
+
+    <security>
+        <all-permissions/>
+    </security>
+
+    <resources>
+        <j2se href="http://java.sun.com/products/autodl/j2se"
+              version="1.6+" initial-heap-size="64m" max-heap-size="512m"/>
+        <property name="sun.java2d.noddraw" value="true"/>
+        <property name="com.apple.mrj.application.apple.menu.about.name" value="Small Body Mapping Tool"/>
+        <jar href="near-apl.jar" main="true"/>
+        <jar href="vtksb.jar"/>
+        <jar href="vtk.jar"/>
+        <jar href="jide-oss-2.7.3.jar"/>
+        <jar href="joda-time-1.6.jar"/>
+        <jar href="jcommon-1.0.16.jar"/>
+        <jar href="jfreechart-1.0.13.jar"/>
+        <jar href="miglayout-3.7.1-swing.jar"/>
+        <jar href="commons-io-2.0.jar"/>
+        <jar href="commons-math-2.2.jar"/>
+        <jar href="h2-1.3.162.jar"/>
+        <jar href="fits-1.04.0.jar"/>
+        <jar href="jgoodies-common-1.1.1.jar"/>
+        <jar href="jgoodies-looks-2.4.0.jar"/>
+    </resources>
+
+    <resources os="Windows" arch="x86">
+      <nativelib href = "vtk-natives-windows-i586.jar" />
+    </resources>
+    <resources os="Linux" arch="i386">
+      <nativelib href = "vtk-natives-linux-i586.jar" />
+    </resources>
+    <resources os="Linux" arch="x86">
+      <nativelib href = "vtk-natives-linux-i586.jar" />
+    </resources>
+    <resources os="Linux" arch="amd64">
+      <nativelib href = "vtk-natives-linux-amd64.jar" />
+    </resources>
+    <resources os="Linux" arch="x86_64">
+      <nativelib href = "vtk-natives-linux-amd64.jar" />
+    </resources>
+    <resources os="Mac OS X" arch="x86_64">
+      <jar href="quaqua-7.3.4-filechooser-only.jar"/>
+      <nativelib href = "libquaqua64.jnilib-7.3.4.jar" />
+      <nativelib href = "vtk-natives-macosx-x86_64.jar" />
+    </resources>
+
+    <application-desc main-class="edu.jhuapl.near.SmallBodyMappingToolAPL"/>
+
+</jnlp>
