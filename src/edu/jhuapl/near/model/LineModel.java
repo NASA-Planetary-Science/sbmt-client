@@ -963,80 +963,6 @@ public class LineModel extends StructureModel implements PropertyChangeListener
         return offset;
     }
 
-    /*
-     // Version of computing profiles that uses normal planes and computes distance to
-     // normal plane. Not so good since results highly dependent on orientation of normal
-     // plane.
-    private double signedDistanceToPlane(double[] x, double[] n, double[] p0)
-    {
-        return (n[0]*(x[0]-p0[0]) + n[1]*(x[1]-p0[1]) + n[2]*(x[2]-p0[2]));
-    }
-    public boolean computeProfile(int cellId, ArrayList<Double> heights, ArrayList<Double> distances)
-    {
-        Line lin = this.lines.get(cellId);
-
-        if (lin.controlPointIds.size() != 2)
-            return false;
-
-        heights.clear();
-        distances.clear();
-
-        int size = lin.xyzPointList.size();
-
-        // Compute the normal plane to the asteroid at the the points on the line
-        double[] p1 = lin.xyzPointList.get(0).xyz;
-        double[] p2 = lin.xyzPointList.get(size-1).xyz;
-        double[] normal1 = smallBodyModel.getNormalAtPoint(p1);
-        double[] normal2 = smallBodyModel.getNormalAtPoint(p2);
-
-        // Take the normal as the average of these 2 normals and the point on the plane as
-        // the midpoint between the first and last points.
-        double[] normal = {
-                (normal1[0] + normal2[0])/2.0,
-                (normal1[1] + normal2[1])/2.0,
-                (normal1[2] + normal2[2])/2.0
-        };
-        MathUtil.vhat(normal, normal);
-        double[] pointOnPlane = {
-                (p1[0] + p2[0])/2.0,
-                (p1[1] + p2[1])/2.0,
-                (p1[2] + p2[2])/2.0
-        };
-
-        double[] lineDir = {
-                p2[0] - p1[0],
-                p2[1] - p1[1],
-                p2[2] - p1[2]
-        };
-        MathUtil.vhat(lineDir, lineDir);
-
-        double[] projectedPointOnPlane = new double[3];
-        double[] projectedPointOnLine = new double[3];
-        double[] notused = new double[1];
-
-        for (int i=0;i<size;++i)
-        {
-            double[] p = lin.xyzPointList.get(i).xyz;
-            // Compute the distance of the point to the normal plane
-            double distanceToPlane = signedDistanceToPlane(p, normal, pointOnPlane);
-
-            // project p onto plane
-            MathUtil.vprjp(p, normal, pointOnPlane, projectedPointOnPlane);
-
-            // project projectedPointOnPlane onto line joining p1 and p2
-            MathUtil.nplnpt(p1, lineDir, projectedPointOnPlane, projectedPointOnLine, notused);
-
-            // Compute the distance of projected point to line to p1
-            double distanceToLineStart = MathUtil.distanceBetween(p1, projectedPointOnLine);
-
-            heights.add(distanceToPlane);
-            distances.add(distanceToLineStart);
-        }
-
-        return true;
-    }
-    */
-
     /**
      * Computes profile (height vs distance along a line) basing elevation on the
      * distance to the center of the asteroid. This is really not correct though.
@@ -1047,13 +973,17 @@ public class LineModel extends StructureModel implements PropertyChangeListener
      * @param heights
      * @param distances
      * @return
+     * @throws Exception
      */
-    public boolean computeProfile(int cellId, ArrayList<Double> heights, ArrayList<Double> distances)
+    public boolean computeProfileWithRespectToOrigin(
+            int cellId,
+            ArrayList<Double> heights,
+            ArrayList<Double> distances) throws Exception
     {
         Line lin = this.lines.get(cellId);
 
         if (lin.controlPointIds.size() != 2)
-            return false;
+            throw new Exception("Line must contain exactly 2 control points.");
 
         heights.clear();
         distances.clear();
@@ -1097,14 +1027,87 @@ public class LineModel extends StructureModel implements PropertyChangeListener
         return true;
     }
 
-    public void saveProfile(int cellId, File file) throws Exception
+    public boolean computeProfileUsingElevationData(
+            int cellId,
+            ArrayList<Double> profileHeights,
+            ArrayList<Double> profileDistances) throws Exception
+    {
+        Line lin = this.lines.get(cellId);
+
+        if (lin.controlPointIds.size() != 2)
+            throw new Exception("Line must contain exactly 2 control points.");
+
+        profileHeights.clear();
+        profileDistances.clear();
+
+        ArrayList<Point3D> xyzPointList = lin.xyzPointList;
+
+        // For each point in xyzPointList, find the cell containing that
+        // point and then, using barycentric coordinates find the value
+        // of the height at that point
+        //
+        // To compute the distance, assume we have a straight line connecting the first
+        // and last points of xyzPointList. For each point, p, in xyzPointList, find the point
+        // on the line closest to p. The distance from p to the start of the line is what
+        // is placed in heights. Use SPICE's nplnpt function for this.
+
+        double[] first = xyzPointList.get(0).xyz;
+        double[] last = xyzPointList.get(xyzPointList.size()-1).xyz;
+        double[] lindir = new double[3];
+        lindir[0] = last[0] - first[0];
+        lindir[1] = last[1] - first[1];
+        lindir[2] = last[2] - first[2];
+
+        // The following can be true if the user clicks on the same point twice
+        boolean zeroLineDir = MathUtil.vzero(lindir);
+
+        double[] pnear = new double[3];
+        double[] notused = new double[1];
+
+        int elevationIndex = smallBodyModel.getElevationDataColoringIndex();
+
+        for (Point3D p : xyzPointList)
+        {
+            double val = smallBodyModel.getColoringValue(elevationIndex, p.xyz);
+
+            profileHeights.add(val);
+
+            if (zeroLineDir)
+            {
+                profileDistances.add(0.0);
+            }
+            else
+            {
+                MathUtil.nplnpt(first, lindir, p.xyz, pnear, notused);
+                double dist = 1000.0 * MathUtil.distanceBetween(first, pnear);
+                profileDistances.add(dist);
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     *
+     * @param cellId
+     * @param file
+     * @param useElevationData - if true, elevation coloring data of the shape model is used.
+     * Otherwise, elevation is computed with respect to the origin of the shape model.
+     * @throws Exception
+     */
+    public void saveProfile(int cellId, File file, boolean useElevationData) throws Exception
     {
         ArrayList<Double> heights = new ArrayList<Double>();
         ArrayList<Double> distances = new ArrayList<Double>();
-        boolean success = computeProfile(cellId, heights, distances);
+
+        boolean success = false;
+        if (useElevationData)
+            success = computeProfileUsingElevationData(cellId, heights, distances);
+        else
+            success = computeProfileWithRespectToOrigin(cellId, heights, distances);
 
         if (!success)
-            throw new Exception("Line must contain exactly 2 control points.");
+            throw new Exception("An error occurred saving the profile.");
 
         int size = heights.size();
 

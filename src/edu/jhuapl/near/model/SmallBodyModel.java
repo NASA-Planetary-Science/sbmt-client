@@ -1724,4 +1724,25 @@ public class SmallBodyModel extends Model
     {
         return false;
     }
+
+    /**
+     * Return the index of the elevation coloring. Return -1 if no elevation
+     * is available.
+     *
+     * @return
+     */
+    public int getElevationDataColoringIndex()
+    {
+        int numberOfColoringTypes = getNumberOfColors();
+        for (int i = 0;i<numberOfColoringTypes; ++i)
+        {
+            String name = getColoringName(i);
+            if (SmallBodyModel.ElevStr.toLowerCase().equals(name.toLowerCase()))
+            {
+                return i;
+            }
+        }
+
+        return -1;
+    }
 }
