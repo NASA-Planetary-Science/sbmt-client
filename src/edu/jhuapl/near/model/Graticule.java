@@ -1,5 +1,6 @@
 package edu.jhuapl.near.model;
 
+import java.awt.Color;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -223,6 +224,19 @@ public class Graticule extends Model implements PropertyChangeListener
             actors.clear();
             this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
         }
+    }
+
+    public void setLineWidth(double value)
+    {
+        actor.GetProperty().SetLineWidth(value);
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+    }
+
+    public void setColor(Color color)
+    {
+        float[] c = color.getRGBColorComponents(null);
+        actor.GetProperty().SetColor(c[0], c[1], c[2]);
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
     public void propertyChange(PropertyChangeEvent evt)

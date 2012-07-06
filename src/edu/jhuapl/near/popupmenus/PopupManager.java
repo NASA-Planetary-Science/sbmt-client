@@ -42,6 +42,9 @@ public class PopupManager
         popupMenu = new PointsPopupMenu(modelManager);
         registerPopup(modelManager.getModel(ModelNames.POINT_STRUCTURES), popupMenu);
 
+        popupMenu = new GraticulePopupMenu(modelManager, renderer);
+        registerPopup(modelManager.getModel(ModelNames.GRATICULE), popupMenu);
+
         ImageCollection imageCollection =
                 (ImageCollection)modelManager.getModel(ModelNames.IMAGES);
         PerspectiveImageBoundaryCollection imageBoundaries =
