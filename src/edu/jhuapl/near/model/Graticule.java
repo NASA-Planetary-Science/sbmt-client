@@ -232,11 +232,22 @@ public class Graticule extends Model implements PropertyChangeListener
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
+    public double getLineWidth()
+    {
+        return actor.GetProperty().GetLineWidth();
+    }
+
     public void setColor(Color color)
     {
         float[] c = color.getRGBColorComponents(null);
         actor.GetProperty().SetColor(c[0], c[1], c[2]);
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+    }
+
+    public Color getColor()
+    {
+        double[] c = actor.GetProperty().GetColor();
+        return new Color((float)c[0], (float)c[1], (float)c[2]);
     }
 
     public void propertyChange(PropertyChangeEvent evt)

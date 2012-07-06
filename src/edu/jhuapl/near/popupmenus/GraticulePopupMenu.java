@@ -44,7 +44,10 @@ public class GraticulePopupMenu extends PopupMenu
     {
         public void actionPerformed(ActionEvent arg0)
         {
-            Color color = ColorChooser.showColorChooser(invoker);
+            Color color = graticule.getColor();
+            int[] initialColor = {color.getRed(), color.getGreen(), color.getBlue()};
+
+            color = ColorChooser.showColorChooser(invoker, initialColor);
 
             if (color == null)
                 return;
@@ -57,7 +60,7 @@ public class GraticulePopupMenu extends PopupMenu
     {
         public void actionPerformed(ActionEvent arg0)
         {
-            SpinnerNumberModel sModel = new SpinnerNumberModel(1.0, 1.0, 100.0, 1.0);
+            SpinnerNumberModel sModel = new SpinnerNumberModel(graticule.getLineWidth(), 1.0, 100.0, 1.0);
             JSpinner spinner = new JSpinner(sModel);
 
             int option = JOptionPane.showOptionDialog(
