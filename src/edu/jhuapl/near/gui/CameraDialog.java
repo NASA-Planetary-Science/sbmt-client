@@ -31,7 +31,7 @@ public class CameraDialog extends JDialog implements ActionListener
     private JFormattedTextField fovField;
     private String lastGood = "";
 
-    private String getCameraOrientationAsString()
+    private void printCameraOrientation()
     {
         double[] position = new double[3];
         double[] cx = new double[3];
@@ -39,8 +39,6 @@ public class CameraDialog extends JDialog implements ActionListener
         double[] cz = new double[3];
         double[] viewAngle = new double[1];
         renderer.getCameraOrientation(position, cx, cy, cz, viewAngle);
-
-        String str = "Camera position: " + position[0] + " " + position[1] + " " + position[2] + "\n";
 
         try
         {
@@ -51,16 +49,21 @@ public class CameraDialog extends JDialog implements ActionListener
             };
 
             Rotation rotation = new Rotation(m, 1.0e-6);
-            str += "Camera orientation (quaternion): " + rotation.getQ0() + " " + rotation.getQ1() + " " + rotation.getQ2() + " " + rotation.getQ3();
+
+            String str = "Camera position and orientation (quaternion):\n";
+            str += position[0] + " " + position[1] + " " + position[2] + "\n";
+            str += rotation.getQ0() + " " + rotation.getQ1() + " " + rotation.getQ2() + " " + rotation.getQ3();
+
+            //str += "\n" + m[0][0] + " " + m[0][1] + " " + m[0][2];
+            //str += "\n" + m[1][0] + " " + m[1][1] + " " + m[1][2];
+            //str += "\n" + m[2][0] + " " + m[2][1] + " " + m[2][2];
+
+            System.out.println(str);
         }
         catch (NotARotationMatrixException e)
         {
             e.printStackTrace();
         }
-
-        System.out.println(str);
-
-        return str;
     }
 
     public CameraDialog(Renderer renderer)
@@ -106,7 +109,7 @@ public class CameraDialog extends JDialog implements ActionListener
         add(panel, BorderLayout.CENTER);
         pack();
 
-        getCameraOrientationAsString();
+        printCameraOrientation();
     }
 
     public void actionPerformed(ActionEvent e)
