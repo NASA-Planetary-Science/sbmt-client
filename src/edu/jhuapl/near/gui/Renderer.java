@@ -93,6 +93,8 @@ public class Renderer extends JPanel implements
                 Preferences.getInstance().get(Preferences.INTERACTOR_STYLE_TYPE, InteractorStyleType.TRACKBALL_CAMERA.toString()));
         setDefaultInteractorStyleType(interactorStyleType);
 
+        setMouseWheelMotionFactor(Preferences.getInstance().getAsDouble(Preferences.MOUSE_WHEEL_MOTION_FACTOR, 1.0));
+
         headlight = renWin.GetRenderer().MakeLight();
         headlight.SetLightTypeToHeadlight();
         headlight.SetConeAngle(180.0);
@@ -405,6 +407,41 @@ public class Renderer extends JPanel implements
     }
 
     /**
+     * Change the distance to the asteroid by simply scaling the unit vector
+     * the points from the center of the asteroid in the direction of the
+     * asteroid.
+     *
+     * @param distance
+     */
+    public void setCameraDistance(double distance)
+    {
+        vtkCamera cam = renWin.GetRenderer().GetActiveCamera();
+
+        double[] pos = cam.GetPosition();
+
+        MathUtil.unorm(pos, pos);
+
+        pos[0] *= distance;
+        pos[1] *= distance;
+        pos[2] *= distance;
+
+        renWin.lock();
+        cam.SetPosition(pos);
+        renWin.unlock();
+        renWin.resetCameraClippingRange();
+        renWin.Render();
+    }
+
+    public double getCameraDistance()
+    {
+        vtkCamera cam = renWin.GetRenderer().GetActiveCamera();
+
+        double[] pos = cam.GetPosition();
+
+        return MathUtil.vnorm(pos);
+    }
+
+    /**
      * Note viewAngle is a 1-element array which is returned to caller
      * @param position
      * @param cx
@@ -614,5 +651,16 @@ public class Renderer extends JPanel implements
     public boolean getOrientationAxesInteractive()
     {
         return interactiveAxes;
+    }
+
+    public void setMouseWheelMotionFactor(double factor)
+    {
+        trackballCameraInteractorStyle.SetMouseWheelMotionFactor(factor);
+        joystickCameraInteractorStyle.SetMouseWheelMotionFactor(factor);
+    }
+
+    public double getMouseWheelMotionFactor()
+    {
+        return trackballCameraInteractorStyle.GetMouseWheelMotionFactor();
     }
 }

@@ -21,6 +21,7 @@ public class Preferences extends MapUtil
     public static final String FIXEDLIGHT_DISTANCE = "FixedLightDistance";
     public static final String INTERACTOR_STYLE_TYPE = "InteractorStyleType";
     public static final String PICK_TOLERANCE = "PickTolerance";
+    public static final String MOUSE_WHEEL_MOTION_FACTOR = "MouseWheelMotionFactor";
 
 
     private static final String preferencesPath = Configuration.getApplicationDataDir() + File.separator + "preferences.txt";

@@ -30,6 +30,9 @@ public class CameraDialog extends JDialog implements ActionListener
     private JButton cancelButton;
     private JFormattedTextField fovField;
     private String lastGood = "";
+    private JLabel distanceLabel;
+    private JFormattedTextField distanceField;
+    private JLabel kmLabel;
 
     private void printCameraOrientation()
     {
@@ -71,7 +74,7 @@ public class CameraDialog extends JDialog implements ActionListener
         this.renderer = renderer;
 
         JPanel panel = new JPanel();
-        panel.setLayout(new MigLayout());
+        panel.setLayout(new MigLayout("", "[][grow][]", "[][][][]"));
 
         NumberFormat nf = NumberFormat.getNumberInstance();
         nf.setGroupingUsed(false);
@@ -98,15 +101,24 @@ public class CameraDialog extends JDialog implements ActionListener
         buttonPanel.add(okayButton);
         buttonPanel.add(cancelButton);
 
-        panel.add(fovLabel);
-        panel.add(fovField);
-        panel.add(degreesLabel, "wrap");
+        panel.add(fovLabel, "cell 0 0");
+        panel.add(fovField, "cell 1 0,growx");
+        panel.add(degreesLabel, "cell 2 0");
 
-        panel.add(buttonPanel, "span, align right");
+        distanceLabel = new JLabel("Distance");
+        panel.add(distanceLabel, "cell 0 1,alignx trailing");
+
+        distanceField = new JFormattedTextField(nf);
+        panel.add(distanceField, "cell 1 1,growx");
+
+        kmLabel = new JLabel("km");
+        panel.add(kmLabel, "cell 2 1");
+
+        panel.add(buttonPanel, "cell 0 2 3 1,alignx right");
 
         setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
 
-        add(panel, BorderLayout.CENTER);
+        getContentPane().add(panel, BorderLayout.CENTER);
         pack();
 
         printCameraOrientation();
@@ -126,6 +138,10 @@ public class CameraDialog extends JDialog implements ActionListener
                 // fully fulfilled (e.g. was negative)
                 double fov = renderer.getCameraViewAngle();
                 fovField.setValue(fov);
+
+                double distance = Double.parseDouble(distanceField.getText());
+
+                renderer.setCameraDistance(distance);
             }
             catch (NumberFormatException ex)
             {
@@ -154,6 +170,8 @@ public class CameraDialog extends JDialog implements ActionListener
 
         fovField.setValue(renderer.getCameraViewAngle());
         lastGood = fovField.getText();
+
+        distanceField.setValue(renderer.getCameraDistance());
 
         super.setVisible(b);
     }

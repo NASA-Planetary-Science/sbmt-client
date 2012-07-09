@@ -72,6 +72,8 @@ public class PreferencesDialog extends javax.swing.JDialog {
             int value = getSliderValueFromTolerance(pickManager.getPickTolerance());
             pickToleranceSlider.setValue(value);
 
+            mouseWheelMotionFactorSpinner.setValue(renderer.getMouseWheelMotionFactor());
+
             updateEnabledItems();
         }
 
@@ -133,6 +135,8 @@ public class PreferencesDialog extends javax.swing.JDialog {
             PickManager pickManager = viewerManager.getCurrentViewer().getPickManager();
             double tolerance = getToleranceFromSliderValue(pickToleranceSlider.getValue());
             pickManager.setPickTolerance(tolerance);
+
+            renderer.setMouseWheelMotionFactor((Double)mouseWheelMotionFactorSpinner.getValue());
         }
     }
 
@@ -198,6 +202,11 @@ public class PreferencesDialog extends javax.swing.JDialog {
         pickToleranceSlider = new javax.swing.JSlider();
         jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
+        jPanel9 = new javax.swing.JPanel();
+        jSeparator6 = new javax.swing.JSeparator();
+        jLabel9 = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
+        mouseWheelMotionFactorSpinner = new javax.swing.JSpinner();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         getContentPane().setLayout(new java.awt.GridBagLayout());
@@ -296,7 +305,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 18;
+        gridBagConstraints.gridy = 20;
         gridBagConstraints.weighty = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(15, 0, 0, 0);
         getContentPane().add(jPanel1, gridBagConstraints);
@@ -547,6 +556,44 @@ public class PreferencesDialog extends javax.swing.JDialog {
         gridBagConstraints.insets = new java.awt.Insets(0, 4, 0, 0);
         getContentPane().add(jPanel7, gridBagConstraints);
 
+        jPanel9.setLayout(new java.awt.GridBagLayout());
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        jPanel9.add(jSeparator6, gridBagConstraints);
+
+        jLabel9.setText("Mouse Wheel");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        jPanel9.add(jLabel9, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 18;
+        gridBagConstraints.gridwidth = 3;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(15, 4, 5, 0);
+        getContentPane().add(jPanel9, gridBagConstraints);
+
+        jLabel8.setText("Motion Factor");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 19;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 4);
+        getContentPane().add(jLabel8, gridBagConstraints);
+
+        mouseWheelMotionFactorSpinner.setModel(new javax.swing.SpinnerNumberModel(Double.valueOf(1.0d), null, null, Double.valueOf(0.1d)));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 19;
+        gridBagConstraints.ipadx = 50;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        getContentPane().add(mouseWheelMotionFactorSpinner, gridBagConstraints);
+
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
@@ -590,6 +637,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
         preferencesMap.put(Preferences.SHOW_SCALE_BAR, ((Boolean)showScaleBarCheckBox.isSelected()).toString());
         preferencesMap.put(Preferences.LIGHT_INTENSITY, ((Double)intensitySpinner.getValue()).toString());
         preferencesMap.put(Preferences.PICK_TOLERANCE, Double.valueOf(getToleranceFromSliderValue(pickToleranceSlider.getValue())).toString());
+        preferencesMap.put(Preferences.MOUSE_WHEEL_MOTION_FACTOR, ((Double)mouseWheelMotionFactorSpinner.getValue()).toString());
         Preferences.getInstance().put(preferencesMap);
     }//GEN-LAST:event_applyToAllButtonActionPerformed
 
@@ -628,6 +676,8 @@ public class PreferencesDialog extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
@@ -635,11 +685,13 @@ public class PreferencesDialog extends javax.swing.JDialog {
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
+    private javax.swing.JPanel jPanel9;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
     private javax.swing.JSeparator jSeparator4;
     private javax.swing.JSeparator jSeparator5;
+    private javax.swing.JSeparator jSeparator6;
     private javax.swing.JRadioButton joystickRadioButton;
     private javax.swing.JLabel latitudeLabel;
     private javax.swing.JFormattedTextField latitudeTextField;
@@ -647,6 +699,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
     private javax.swing.ButtonGroup lightingButtonGroup;
     private javax.swing.JLabel longitudeLabel;
     private javax.swing.JFormattedTextField longitudeTextField;
+    private javax.swing.JSpinner mouseWheelMotionFactorSpinner;
     private javax.swing.JSlider pickToleranceSlider;
     private javax.swing.JCheckBox showAxesCheckBox;
     private javax.swing.JCheckBox showScaleBarCheckBox;
