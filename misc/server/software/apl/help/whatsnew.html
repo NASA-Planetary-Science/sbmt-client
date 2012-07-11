@@ -1,0 +1,245 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
+<title>What's New</title>
+</head>
+<body>
+	<h1>What's New</h1>
+
+	<h3>June 2012</h3>
+	<ul>
+		<li>When right-clicking on an image, there is now an option to
+			change its opacity
+		<li>It is now possible to delete an individual vertex from a Path
+			(previously, it was necessary to delete the entire path and start
+			again). To delete a vertex, press the Delete or Backspace key while
+			in Edit mode and the vertex that is blue will be deleted. There's
+			only one vertex at a time that's blue, all others are red. The blue
+			vertex represents the "current" vertex. To change the current vertex,
+			simply click on a new vertex while hovering over it (so that the
+			cursor changes to a hand shape).
+		<li>Added option to export mapmaker maplet to a plate file.
+		<li>In the File menu, there is now an option to automatically
+			save 6 images of views along both directions of all 3 axes. This
+			option will automatically reorient the view to successively point the
+			virtual camera in the positive x, negative x, positive y, negative y,
+			positive z, and negative z directions and save an image for each
+			view. When prompted to choose a file name in the dialog, the name you
+			choose will be modified to indicate each of the six views. For
+			example, if you choose the name "image.png", then the following six
+			files will get saved out: "image+x.png", "image-x.png",
+			"image+y.png", "image-y.png", "image+z.png", and "image-z.png".
+		<li>There is now a new tab called "Images" for each View to the
+			right of the Structures tab, for both built-in and custom models, so
+			instead of specifying images when you create a new custom shape model
+			(which previously was the only to import custom images), you would
+			now do it in the Images tab, which shows a list of the images you've
+			added. To add a new image, press "New" and a dialog will appear in
+			which you can specify the image and projection parameters. To edit an
+			existing image, click the "Edit" button. And to remove an image from
+			the list press "Delete from List". Adding an image doesn't
+			immediately make it visible on the renderer. To view it, right-click
+			on the image in the list, and press Map Image. To remove it,
+			right-click and press Map Image again (clicking Hide also removes
+			it--the difference is that Map does all the computation needed to map
+			the image to view unlike toggling the Hide option, so using the Hide
+			option is faster). To remove all images from the renderer (not from
+			the list), press the "Remove All from View".
+			<p>The menu that appears when you right-click is the same as the
+				one for the MSI and AMICA images, though some options are not
+				enabled. The "Properties" option allows you to view a 2D view of the
+				image as well as change the contrast (however, contrast stretching
+				is currently only supported for grayscale images).
+			<p>In addition to the cylindrical projection, I've also added the
+				ability to use a perspective projection, which is the same
+				projection used to map the original spacecraft images (i.e. MSI or
+				AMICA). To do this you need to provide a sumfile in the format that
+				Bob Gaskell uses which contains the position and orientation of the
+				spacecraft. You also need to provide the angular field of view of
+				the camera in degrees for both dimensions (e.g. for AMICA images
+				both field of views would be 5.839083 degrees)
+			<p>The "Show Image Map" checkbox which you previously would check
+				to show the images is no longer present in the custom shape models.
+				It is present, however, in several of the built-in models and is
+				used to simply show a single image of the entire asteroid.
+			<p>Existing lists of images (from custom imported shape models)
+				should show up in the list of the Images tab. If this is not the
+				case, please let me know.
+			<p>Some current limitations to be aware of which I hope to
+				address:
+			<p>
+			<ul>
+				<li>When doing a perspective projection, the image must be FITS
+					format, unlike a cylindrical projection where the image can be png,
+					jpg, tiff, etc. (the typical formats), though not FITS.
+				<li>As mentioned already, the adjusting contrast stretching is
+					only available for single channel images, not color images. If the
+					image is really grayscale but stored as a color image (i.e. the 3
+					channels are the same), you will need to use some image processing
+					software to convert it to a true grayscale format. I hope to add
+					stretching for color images as well.
+			</ul>
+		<li>When rescaling data range of plate data (e.g. Elevation or
+			slope), it is now possible to set the min and max values to be less
+			than min value of the data or greater than the max value of the data,
+			respectively.
+		<li>In the File menu, there is now a new Camera option which
+			opens a dialog in which you can specify vertical field of view of the
+			virtual camera. The default value is 30 degrees. Note that the field
+			of view changes if you right click on an MSI or AMICA image and press
+			"Center in Window". When you do that, the field of view changes to
+			the field of view of the MSI or AMICA camera.
+		<li>The Statistics label (at the bottom of the leftmost tab for
+			each view) is now selectable, so it is now possible to copy and paste
+			the values to another program (with Ctrl-C).
+		<li>added options to preferences for setting the pick tolerance
+			and interactor style
+		<li>There is now and option in the Preferences dialog to switch
+			between a "Trackball Interactor Style" and a "Joystick Interactor
+			Style". Until now, only the "Trackball" style has been used by the
+			tool. The Joystick style provides a different way to navigate around
+			the asteroid. One of things you can do with Joystick style is to
+			continuously spin the asteroid around, while holding down the left
+			mouse button.
+		<li>Added SSI tab for Ida and Gaspra, and MSI tab for Mathilde.
+			Only a few images are currently available for these asteroids (Simply
+			click Search to show a list of images--all the search options are
+			currently ignored). Work on adding the remaining images is currently
+			in progress.
+		<li>Some of the AMICA images of Itokawa are not registered well,
+			especially the ones acquired on Nov 12 and Nov 19. We have begun work
+			on correcting some of these misregistered images and you can view the
+			currently available corrected images by selecting "Corrected" from
+			the Source dropdown menu at the top of the AMICA tab and then
+			pressing Search (all the search options are ignored in this case).
+			Work on adding additional corrected images is currently in progress.
+
+
+
+	</ul>
+
+	<h3>April 2012</h3>
+
+	<ul>
+		<li>added requested feature to show a scale bar on the view to
+			indicate size of asteroid at current zoom
+		<li>added option for exporting shape model to plt format
+		<li>Fixed crash which sometimes occurred when changing
+			orientation axes properties in Preferences dialog.
+		<li>Added new lighting options in a new Preferences dialog.
+	</ul>
+
+	<h3>March 2012</h3>
+
+	<ul>
+		<li>Added support for loading in custom plate data when importing
+			a custom shape model.
+		<li>Added support for arbitrary positioning of custom images on
+			custom non-ellipsoidal shape models. Previously images on custom
+			non-ellipsoidal shape models were required to cover the entire model.
+			Also removed all restrictions on the values for longitudes.
+	</ul>
+
+	<h3>February 2012</h3>
+
+	<ul>
+		<li>Added many new shape models to tool such as models by Thomas
+			and Stooke as well as radar based shape models. All of these were
+			obtained from the PDS.
+	</ul>
+
+	<h3>January 2012</h3>
+
+	<ul>
+		<li>Added support for explicitly changing the normal offset
+			(shift) of an image or structure away from the shape model with a new
+			dialog.
+		<li>Improved lidar search capability for both Eros and Itokawa.
+			Has more features which should hopefully make it easier to find,
+			view, and export lidar tracks.
+		<li>Lidar browse functionality now includes options for showing
+			spacecraft.
+		<li>Added unfiltered and optimized versions of Itokawa Lidar data
+			for both searching and browsing.
+		<li>Added extent of small body in statistics label.
+		<li>Added option when searching for "PDS derived" images to
+			exclude Gaskell images.
+	</ul>
+
+	<h3>October 2011</h3>
+
+	<ul>
+		<li>Added Itokawa LIDAR data (new tab).
+	</ul>
+
+	<h3>September 2011</h3>
+
+	<ul>
+		<li>Fixed problem where wrong FOV size was being used for Itokawa
+			images causing incorrect shifts in images.
+		<li>When saving ellipse structures, added column for orientation
+			angle of ellipse relative to gravity vector (for shape models for
+			which such data is available).
+		<li>Improved documentation of structure file formats.
+		<li>Changed cursor to crosshairs when drawing structures.
+		<li>When drawing structures, increased sensitivity when hovering
+			over existing structures.
+		<li>When drawing a circle (by clicking 3 points on perimeter),
+			interacting with other circles is disabled after the first point has
+			been clicked until the completion of the circle.
+		<li>Fixed inability to save structures when no backplane data is
+			available.
+		<li>Use superscripts for exponents in Statistics label.
+		<li>Fixed problem where values on color bar would not get updated
+			when changing resolution level.
+		<li>Added backplanes for very high resolution Itokawa shape model
+			(previously, backplanes were a subsampled version of the high
+			resolution model).
+		<li>Added ability to map multiple images to a custom shape model.
+
+
+		<li>Added ability to edit and duplicate a custom shape model.
+	</ul>
+
+	<h3>August 2011</h3>
+
+	<ul>
+		<li>Added more Itokawa images to AMICA search panels. Pointing
+			info of these images are derived from SPICE kernel files.
+		<li>Added new Hide Image option to image context menu for
+			temporarily hiding an image
+		<li>Added ability to create circle simply by clicking on any 3
+			points on its perimeter.
+		<li>Fixed problem with distortions appearing around edges of
+			images mapped to custom shape models.
+		<li>Removed "seam" that appeared on images mapped to shape model
+			along zero-longitude line.
+		<li>Added new option to set focal point of camera by pressing the
+			c key. Focal point is set to point in 3D view the cursor is currently
+			over.
+	</ul>
+
+	<h3>July 2011</h3>
+
+	<ul>
+		<li>Added ability to import custom shape models into tool and map
+			an image.
+		<li>Fixed problem where 8-bit Itokawa AMICA images were not being
+			displayed correctly.
+		<li>Fixed problem where export to image was not working after
+			switching to a different asteroid.
+		<li>Added slope/elevation/gravity data for medium and high
+			resolution shape models of Itokawa.
+		<li>Speed improvement in loading circles/ellipses/points on
+			Itokawa.
+		<li>New Delete All button in structures tab for deleting all
+			structures at once.
+		<li>Fixed problem with computation of incidence and emission
+			backplanes for MSI and AMICA images.
+		<li>Fixed problem where old circle structure format could not be
+			loaded into new ellipse tab.
+	</ul>
+
+</body>
+</html>
