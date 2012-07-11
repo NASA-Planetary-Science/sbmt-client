@@ -1,20 +1,14 @@
 package edu.jhuapl.near.gui;
 
-import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.io.InputStream;
 
 import javax.swing.AbstractAction;
-import javax.swing.BorderFactory;
-import javax.swing.JEditorPane;
-import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 
 import edu.jhuapl.near.util.Configuration;
 
@@ -30,6 +24,12 @@ public class HelpMenu extends JMenu
 
         JMenuItem mi = new JMenuItem(new ShowHelpContentsAction());
         this.add(mi);
+
+        if (Configuration.isAPLVersion())
+        {
+            mi = new JMenuItem(new ShowRecentChangesAction());
+            this.add(mi);
+        }
 
         // On macs the about action is in the Application menu not the help menu
         if (!Configuration.isMac())
@@ -83,8 +83,6 @@ public class HelpMenu extends JMenu
 
     private class ShowHelpContentsAction extends AbstractAction
     {
-        private JFrame frame = null;
-
         public ShowHelpContentsAction()
         {
             super("Help Contents");
@@ -92,78 +90,37 @@ public class HelpMenu extends JMenu
 
         public void actionPerformed(ActionEvent actionEvent)
         {
-            if (frame == null)
+            String helpRootUrl = Configuration.getHelpRootURL();
+            try
             {
-                frame = new JFrame();
-
-                JEditorPane label;
-                try
-                {
-                    if (Configuration.isAPLVersion())
-                    {
-                        java.net.URL helpURL = HelpMenu.class.getResource(
-                        "/edu/jhuapl/near/data/helpcontents-apl.html");
-
-                        label = new JEditorPane(helpURL);
-                    }
-                    else
-                    {
-                        java.net.URL helpURL = HelpMenu.class.getResource(
-                        "/edu/jhuapl/near/data/helpcontents.html");
-
-                        label = new JEditorPane(helpURL);
-                    }
-                }
-                catch (IOException e)
-                {
-                    e.printStackTrace();
-                    return;
-                }
-                label.setEditable(false);
-                label.setContentType("text/html");
-                label.setBackground(Color.WHITE);
-
-                JScrollPane scrollPane = new JScrollPane(label);
-                scrollPane.setPreferredSize(new Dimension(1024, 768));
-                scrollPane.setMinimumSize(new Dimension(10, 10));
-                scrollPane.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-
-                frame.add(scrollPane);
-
-                frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-                frame.setTitle("Small Body Mapping Tool User Manual");
-                frame.pack();
+                java.awt.Desktop.getDesktop().browse(java.net.URI.create(helpRootUrl + "helpcontents.html"));
             }
-
-            frame.setVisible(true);
-            frame.toFront();
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
         }
+    }
 
-        /*
-        private String removeAPLContentsForPublicVersion() throws IOException
+    private class ShowRecentChangesAction extends AbstractAction
+    {
+        public ShowRecentChangesAction()
         {
-            InputStream is = HelpMenu.class.getResourceAsStream(
-                    "/edu/jhuapl/near/data/helpcontents.html");
-
-            List<String> lines = IOUtils.readLines(is);
-            StringBuilder newFile = new StringBuilder();
-
-            boolean copy = true;
-            for (String line : lines)
-            {
-                if (line.startsWith("<!--APL VERSION START-->"))
-                    copy = false;
-
-                if (copy)
-                    newFile.append(line + "\n");
-
-                if (line.startsWith("<!--APL VERSION END-->"))
-                    copy = true;
-            }
-
-            return newFile.toString();
+            super("Recent Changes");
         }
-        */
+
+        public void actionPerformed(ActionEvent actionEvent)
+        {
+            String helpRootUrl = Configuration.getHelpRootURL();
+            try
+            {
+                java.awt.Desktop.getDesktop().browse(java.net.URI.create(helpRootUrl + "whatsnew.html"));
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+        }
     }
 
     private class AboutAction extends AbstractAction

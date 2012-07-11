@@ -97,6 +97,14 @@ public class Configuration
         return "http://near.jhuapl.edu/software/sbmt/query";
     }
 
+    static public String getHelpRootURL()
+    {
+        if (isAPLVersion())
+            return "http://near.jhuapl.edu/software/apl/help/";
+        else
+            return "http://near.jhuapl.edu/software/sbmt/help/";
+    }
+
     static public String getImportedShapeModelsDir()
     {
         return getApplicationDataDir() + File.separator + "models";

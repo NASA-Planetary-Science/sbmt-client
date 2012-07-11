@@ -36,7 +36,7 @@
 		<pathelement location="${rootdir}/lib/jgoodies-common-1.1.1.jar"/>
 		<pathelement location="${rootdir}/lib/jgoodies-looks-2.4.0.jar"/>
       </classpath>
-    </javac> 
+    </javac>
   </target>
 
   <target name="jarapl" depends="compile">
@@ -63,10 +63,9 @@
 
   <target name="jar" depends="compile">
     <mkdir dir="${rootdir}/build/jar"/>
-    <jar destfile="${rootdir}/build/jar/near.jar" 
+    <jar destfile="${rootdir}/build/jar/near.jar"
          basedir="${rootdir}/build/classes"
          excludes="edu/jhuapl/near/data/LinearFeatures.txt
-                   edu/jhuapl/near/data/helpcontents-apl.html
                    edu/jhuapl/near/SmallBodyMappingToolAPL.class">
       <manifest>
         <attribute name="Class-Path" value="vtksb.jar
@@ -129,7 +128,7 @@
       <classpath>
 		<pathelement location="${rootdir}/lib/vtk.jar"/>
       </classpath>
-    </javac> 
+    </javac>
   </target>
 
   <target name="vtksbjar" depends="compilevtksb">
