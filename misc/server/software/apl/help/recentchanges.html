@@ -2,10 +2,42 @@
 <html>
 <head>
 <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
-<title>What's New</title>
+<title>Recent Changes</title>
 </head>
 <body>
-	<h1>What's New</h1>
+	<h1>Recent Changes</h1>
+
+	<h3>July 2012</h3>
+	<ul>
+		<li>For paths that consists of exactly 2 control points, you can
+			right-click on it and select an option for saving a profile. A
+			profile is a file which contains elevation data vs distance along the
+			path. The file is formatted as a CSV file with the first column being
+			distance and the second elevation. If the current shape model
+			contains elevation data for each plate (which you would normally use
+			to color the spape model in the leftmost tab), then that is used. If
+			no elevation is available, then the user is prompted asking if the
+			tool should evaluate elevation as the distance between a point on the
+			path and the center of the asteroid. While not is accurate as true
+			elevation data, this may be acceptable for bodies that have a
+			circular shape.
+		<li>Added options when right-clicking on a coordinate grid for
+			changing its color and line thickness.
+		<li>In the Camera dialog (available from the File menu) it is now
+			possible to set the distance of the virtual camera to the center of
+			the asteroid. The direction of the camera is not affected when
+			changing this value.
+		<li>In the Preferences dialog it is now possible to set the
+			"Motion Factor" of the mouse wheel. This factor controls the speed of
+			zooming in and out with the mouse wheel. Larger values result in
+			faster speeds and smaller values result in slower speeds. The default
+			value is 1. Negative values reverse the direction of the zoom (i.e.
+			zoom out becomes zoom in and zoom in becomes zoom out).
+		<li>Help contents now load in a web browser rather than a
+			separate window.
+		<li>Added "Recent Changes" option to Help menu which opens this
+			page in a web browser.
+	</ul>
 
 	<h3>June 2012</h3>
 	<ul>
@@ -94,7 +126,6 @@
 			each view) is now selectable, so it is now possible to copy and paste
 			the values to another program (with Ctrl-C).
 		<li>added options to preferences for setting the pick tolerance
-			and interactor style
 		<li>There is now and option in the Preferences dialog to switch
 			between a "Trackball Interactor Style" and a "Joystick Interactor
 			Style". Until now, only the "Trackball" style has been used by the
@@ -114,9 +145,6 @@
 			the Source dropdown menu at the top of the AMICA tab and then
 			pressing Search (all the search options are ignored in this case).
 			Work on adding additional corrected images is currently in progress.
-
-
-
 	</ul>
 
 	<h3>April 2012</h3>
@@ -197,8 +225,6 @@
 			(previously, backplanes were a subsampled version of the high
 			resolution model).
 		<li>Added ability to map multiple images to a custom shape model.
-
-
 		<li>Added ability to edit and duplicate a custom shape model.
 	</ul>
 

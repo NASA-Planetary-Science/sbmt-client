@@ -114,7 +114,7 @@ public class HelpMenu extends JMenu
             String helpRootUrl = Configuration.getHelpRootURL();
             try
             {
-                java.awt.Desktop.getDesktop().browse(java.net.URI.create(helpRootUrl + "whatsnew.html"));
+                java.awt.Desktop.getDesktop().browse(java.net.URI.create(helpRootUrl + "recentchanges.html"));
             }
             catch (IOException e)
             {
