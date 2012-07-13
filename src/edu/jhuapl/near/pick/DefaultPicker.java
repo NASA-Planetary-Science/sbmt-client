@@ -425,17 +425,17 @@ public class DefaultPicker extends Picker
             char keyChar = e.getKeyChar();
 
             if ('X' == keyChar)
-                renderer.setCameraOrientationInDirectionOfAxis(AxisType.NEGATIVE_X);
+                renderer.setCameraOrientationInDirectionOfAxis(AxisType.NEGATIVE_X, false);
             else if ('x' == keyChar)
-                renderer.setCameraOrientationInDirectionOfAxis(AxisType.POSITIVE_X);
+                renderer.setCameraOrientationInDirectionOfAxis(AxisType.POSITIVE_X, false);
             else if ('Y' == keyChar)
-                renderer.setCameraOrientationInDirectionOfAxis(AxisType.NEGATIVE_Y);
+                renderer.setCameraOrientationInDirectionOfAxis(AxisType.NEGATIVE_Y, false);
             else if ('y' == keyChar)
-                renderer.setCameraOrientationInDirectionOfAxis(AxisType.POSITIVE_Y);
+                renderer.setCameraOrientationInDirectionOfAxis(AxisType.POSITIVE_Y, false);
             else if ('Z' == keyChar)
-                renderer.setCameraOrientationInDirectionOfAxis(AxisType.NEGATIVE_Z);
+                renderer.setCameraOrientationInDirectionOfAxis(AxisType.NEGATIVE_Z, false);
             else if ('z' == keyChar)
-                renderer.setCameraOrientationInDirectionOfAxis(AxisType.POSITIVE_Z);
+                renderer.setCameraOrientationInDirectionOfAxis(AxisType.POSITIVE_Z, false);
         }
     }
 

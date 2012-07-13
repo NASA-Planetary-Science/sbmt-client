@@ -306,12 +306,12 @@ public class Renderer extends JPanel implements
 
         for (int i=0; i<axes.length; ++i)
         {
-            setCameraOrientationInDirectionOfAxis(axes[i]);
+            setCameraOrientationInDirectionOfAxis(axes[i], true);
             renWin.saveToFile(files[i]);
         }
     }
 
-    public void setCameraOrientationInDirectionOfAxis(AxisType axisType)
+    public void setCameraOrientationInDirectionOfAxis(AxisType axisType, boolean preserveCurrentDistance)
     {
         vtkRenderer ren = renWin.GetRenderer();
         if (ren.VisibleActorCount() == 0) return;
@@ -321,6 +321,8 @@ public class Renderer extends JPanel implements
         double ySize = Math.abs(bounds[3] - bounds[2]);
         double zSize = Math.abs(bounds[5] - bounds[4]);
         double maxSize = Math.max(Math.max(xSize, ySize), zSize);
+
+        double cameraDistance = getCameraDistance();
 
         renWin.lock();
         vtkCamera cam = ren.GetActiveCamera();
@@ -362,6 +364,20 @@ public class Renderer extends JPanel implements
             cam.SetPosition(0.0, 0.0, zpos);
             cam.SetViewUp(0.0, 1.0, 0.0);
         }
+
+        if (preserveCurrentDistance)
+        {
+            double[] pos = cam.GetPosition();
+
+            MathUtil.unorm(pos, pos);
+
+            pos[0] *= cameraDistance;
+            pos[1] *= cameraDistance;
+            pos[2] *= cameraDistance;
+
+            cam.SetPosition(pos);
+        }
+
         renWin.unlock();
 
         renWin.resetCameraClippingRange();
