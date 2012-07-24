@@ -53,6 +53,7 @@ public abstract class LidarSearchDataCollection extends Model
     private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.US);
 
     private double radialOffset = 0.0;
+    private double[] translation = {0.0, 0.0, 0.0};
 
     private DateTime startDate;
     private DateTime stopDate;
@@ -628,6 +629,38 @@ public abstract class LidarSearchDataCollection extends Model
         selectPoint(selectedPoint);
 
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+    }
+
+    public void setTranslation(double[] translation)
+    {
+        if (this.translation[0] == translation[0] && this.translation[1] == translation[1] && this.translation[2] == translation[2])
+            return;
+
+        this.translation[0] = translation[0];
+        this.translation[1] = translation[1];
+        this.translation[2] = translation[2];
+
+        vtkPoints points = polydata.GetPoints();
+
+        int numberOfPoints = points.GetNumberOfPoints();
+
+        for (int i=0;i<numberOfPoints;++i)
+        {
+            double[] pt = originalPoints.get(i).target;
+            points.SetPoint(i, pt[0]+translation[0], pt[1]+translation[1], pt[2]+translation[2]);
+        }
+
+        polydata.Modified();
+
+        // Force an update on the selected point
+        selectPoint(selectedPoint);
+
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+    }
+
+    public double[] getTranslation()
+    {
+        return this.translation;
     }
 
     public void setPointSize(int size)
