@@ -51,6 +51,7 @@ public abstract class LidarSearchDataCollection extends Model
     private vtkActor actor;
     private vtkActor selectedPointActor;
     private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.US);
+    private vtkPolyData emptyPolyData; // an empty polydata for resetting
 
     private double radialOffset = 0.0;
     private double[] translation = {0.0, 0.0, 0.0};
@@ -110,23 +111,21 @@ public abstract class LidarSearchDataCollection extends Model
     {
         this.smallBodyModel = smallBodyModel;
 
-        polydata = new vtkPolyData();
+        // Initialize an empty polydata for resetting
+        emptyPolyData = new vtkPolyData();
         vtkPoints points = new vtkPoints();
         vtkCellArray vert = new vtkCellArray();
-        polydata.SetPoints( points );
-        polydata.SetVerts( vert );
+        emptyPolyData.SetPoints( points );
+        emptyPolyData.SetVerts( vert );
         vtkUnsignedCharArray colors = new vtkUnsignedCharArray();
         colors.SetNumberOfComponents(4);
-        polydata.GetCellData().SetScalars(colors);
-        vtkUnsignedCharArray hidden = new vtkUnsignedCharArray();
-        hidden.SetNumberOfComponents(1);
-        polydata.GetPointData().SetScalars(hidden);
+        emptyPolyData.GetCellData().SetScalars(colors);
+
+        polydata = new vtkPolyData();
+        polydata.DeepCopy(emptyPolyData);
 
         selectedPointPolydata = new vtkPolyData();
-        points = new vtkPoints();
-        vert = new vtkCellArray();
-        selectedPointPolydata.SetPoints( points );
-        selectedPointPolydata.SetVerts( vert );
+        selectedPointPolydata.DeepCopy(emptyPolyData);
     }
 
     abstract public double getOffsetScale();
@@ -439,6 +438,7 @@ public abstract class LidarSearchDataCollection extends Model
     {
         tracks.get(trackId).hidden = hide;
         updateTrackPolydata();
+        updateSelectedPoint();
     }
 
     public void hideOtherTracksExcept(int trackId)
@@ -451,6 +451,7 @@ public abstract class LidarSearchDataCollection extends Model
         }
 
         updateTrackPolydata();
+        updateSelectedPoint();
     }
 
     public void hideAllTracks()
@@ -461,6 +462,7 @@ public abstract class LidarSearchDataCollection extends Model
         }
 
         updateTrackPolydata();
+        updateSelectedPoint();
     }
 
     public void showAllTracks()
@@ -478,22 +480,24 @@ public abstract class LidarSearchDataCollection extends Model
         return tracks.get(trackId).hidden;
     }
 
+    private int getDisplayPointIdFromOriginalPointId(int ptId)
+    {
+        return displayedPointToOriginalPointMap.indexOf(ptId);
+    }
+
     private void updateTrackPolydata()
     {
         // Place the points into polydata
+        polydata.DeepCopy(emptyPolyData);
         vtkPoints points = polydata.GetPoints();
         vtkCellArray vert = polydata.GetVerts();
         vtkUnsignedCharArray colors = (vtkUnsignedCharArray)polydata.GetCellData().GetScalars();
-        vtkUnsignedCharArray hidden = (vtkUnsignedCharArray)polydata.GetPointData().GetScalars();
 
         vtkIdList idList = new vtkIdList();
         idList.SetNumberOfIds(1);
 
-        points.SetNumberOfPoints(0);
-        colors.SetNumberOfTuples(0);
-        hidden.SetNumberOfTuples(0);
-        vert.Initialize();
         displayedPointToOriginalPointMap.clear();
+        int count = 0;
 
         int numTracks = getNumberOfTrack();
         for (int j=0; j<numTracks; ++j)
@@ -501,29 +505,30 @@ public abstract class LidarSearchDataCollection extends Model
             Track track = getTrack(j);
             int startId = track.startId;
             int stopId = track.stopId;
-            for (int i=startId; i<=stopId; ++i)
+            if (!track.hidden)
             {
-                if (track.hidden)
+                for (int i=startId; i<=stopId; ++i)
                 {
-                    hidden.InsertNextTuple1(1);
-                }
-                else
-                {
-                    points.InsertNextPoint(originalPoints.get(i).target);
-                    idList.SetId(0, i);
+                    double[] pt = originalPoints.get(i).target;
+                    if (radialOffset != 0.0)
+                    {
+                        LatLon lla = MathUtil.reclat(pt);
+                        lla.rad += radialOffset;
+                        pt = MathUtil.latrec(lla);
+                    }
+
+                    points.InsertNextPoint(pt[0]+translation[0], pt[1]+translation[1], pt[2]+translation[2]);
+
+                    idList.SetId(0, count);
                     vert.InsertNextCell(idList);
 
-                    hidden.InsertNextTuple1(0);
-
                     colors.InsertNextTuple4(track.color[0], track.color[1], track.color[2], track.color[3]);
-
                     displayedPointToOriginalPointMap.add(i);
+                    ++count;
                 }
             }
         }
-
         polydata.GetCellData().GetScalars().Modified();
-        polydata.GetPointData().GetScalars().Modified();
         polydata.Modified();
 
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
@@ -610,25 +615,8 @@ public abstract class LidarSearchDataCollection extends Model
 
         radialOffset = offset;
 
-        vtkPoints points = polydata.GetPoints();
-
-        int numberOfPoints = points.GetNumberOfPoints();
-
-        for (int i=0;i<numberOfPoints;++i)
-        {
-            double[] pt = originalPoints.get(i).target;
-            LatLon lla = MathUtil.reclat(pt);
-            lla.rad += offset;
-            pt = MathUtil.latrec(lla);
-            points.SetPoint(i, pt);
-        }
-
-        polydata.Modified();
-
-        // Force an update on the selected point
-        selectPoint(selectedPoint);
-
-        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+        updateTrackPolydata();
+        updateSelectedPoint();
     }
 
     public void setTranslation(double[] translation)
@@ -640,22 +628,8 @@ public abstract class LidarSearchDataCollection extends Model
         this.translation[1] = translation[1];
         this.translation[2] = translation[2];
 
-        vtkPoints points = polydata.GetPoints();
-
-        int numberOfPoints = points.GetNumberOfPoints();
-
-        for (int i=0;i<numberOfPoints;++i)
-        {
-            double[] pt = originalPoints.get(i).target;
-            points.SetPoint(i, pt[0]+translation[0], pt[1]+translation[1], pt[2]+translation[2]);
-        }
-
-        polydata.Modified();
-
-        // Force an update on the selected point
-        selectPoint(selectedPoint);
-
-        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+        updateTrackPolydata();
+        updateSelectedPoint();
     }
 
     public double[] getTranslation()
@@ -795,18 +769,21 @@ public abstract class LidarSearchDataCollection extends Model
         }
     }
 
+    /**
+     * select a point
+     * @param ptId point id which must be id of a displayed point, not an original point
+     */
     public void selectPoint(int ptId)
     {
         if (ptId >= 0)
-            ptId = displayedPointToOriginalPointMap.get(ptId);
+            selectedPoint = displayedPointToOriginalPointMap.get(ptId);
+        else
+            selectedPoint = -1;
 
-        selectedPoint = ptId;
-
+        selectedPointPolydata.DeepCopy(emptyPolyData);
         vtkPoints points = selectedPointPolydata.GetPoints();
         vtkCellArray vert = selectedPointPolydata.GetVerts();
-
-        points.SetNumberOfPoints(0);
-        vert.Initialize();
+        vtkUnsignedCharArray colors = (vtkUnsignedCharArray)selectedPointPolydata.GetCellData().GetScalars();
 
         if (ptId >= 0)
         {
@@ -818,6 +795,28 @@ public abstract class LidarSearchDataCollection extends Model
             points.SetPoint(0, polydata.GetPoints().GetPoint(ptId));
             idList.SetId(0, 0);
             vert.InsertNextCell(idList);
+            colors.InsertNextTuple4(0, 0, 255, 255);
+        }
+
+        selectedPointPolydata.Modified();
+
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+    }
+
+    public void updateSelectedPoint()
+    {
+        int ptId = -1;
+        if (selectedPoint >= 0)
+            ptId = getDisplayPointIdFromOriginalPointId(selectedPoint);
+
+        if (ptId < 0)
+        {
+            selectedPointPolydata.DeepCopy(emptyPolyData);
+        }
+        else
+        {
+            vtkPoints points = selectedPointPolydata.GetPoints();
+            points.SetPoint(0, polydata.GetPoints().GetPoint(ptId));
         }
 
         selectedPointPolydata.Modified();
