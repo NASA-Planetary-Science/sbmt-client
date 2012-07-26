@@ -4,14 +4,14 @@ public class NativeLibraryLoader
 {
     /**
      * Loads in the vtk shared libraries. This needs to be called before any vtk classes
-     * are used. This has been tested with vtk version 5.4.2 only.
+     * are used. This has been tested with vtk version 5.6.0 only.
      *
      */
     static public void loadVtkLibraries()
     {
         // Before loading the native vtk libraries, we want to make sure the
         // awt/swing subsystem is loaded and initialized as much as possible (i.e.
-        // has already done some usefull work) since by doing this, we
+        // has already done some useful work) since by doing this, we
         // ensure that other java-internal shared libraries which vtk depends on are
         // already loaded in. Failure to do so may result in linking errors when
         // loading in the vtk shared libraries (especially vtkRenderingJava).
@@ -82,6 +82,7 @@ public class NativeLibraryLoader
             // $ORIGIN or @loader_path embedded in them so that
             // the dependent libraries are found.
 
+            System.loadLibrary("jawt"); // For some reason this is not loaded automatically on some systems
             System.loadLibrary("vtkCommonJava");
             System.loadLibrary("vtkFilteringJava");
             System.loadLibrary("vtkGraphicsJava");
@@ -105,6 +106,7 @@ public class NativeLibraryLoader
      */
     static public void loadVtkLibrariesLinuxNoX11()
     {
+        System.loadLibrary("jawt"); // For some reason this is not loaded automatically on some systems
         System.loadLibrary("vtkCommonJava");
         System.loadLibrary("vtkFilteringJava");
         System.loadLibrary("vtkGraphicsJava");
