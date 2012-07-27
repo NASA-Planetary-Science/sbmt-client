@@ -1,5 +1,8 @@
 package edu.jhuapl.near.model.eros;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import edu.jhuapl.near.model.LidarSearchDataCollection;
 import edu.jhuapl.near.model.SmallBodyModel;
 
@@ -17,9 +20,10 @@ public class NLRSearchDataCollection extends LidarSearchDataCollection
     }
 
     @Override
-    protected String getCubeFolderPath()
+    public Map<String, String> getLidarDataSourceMap()
     {
-        return "/NLR/cubes";
+        LinkedHashMap<String, String> map = new LinkedHashMap<String, String>();
+        map.put("Default", "/NLR/cubes");
+        return map;
     }
-
 }

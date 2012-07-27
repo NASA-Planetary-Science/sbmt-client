@@ -1,5 +1,8 @@
 package edu.jhuapl.near.model.itokawa;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import edu.jhuapl.near.model.LidarSearchDataCollection;
 import edu.jhuapl.near.model.SmallBodyModel;
 
@@ -19,9 +22,11 @@ public class HayLidarSearchDataCollection extends LidarSearchDataCollection
     }
 
     @Override
-    protected String getCubeFolderPath()
+    public Map<String, String> getLidarDataSourceMap()
     {
-        return "/ITOKAWA/LIDAR/cdr/cubes-optimized";
+        LinkedHashMap<String, String> map = new LinkedHashMap<String, String>();
+        map.put("Optimized", "/ITOKAWA/LIDAR/cdr/cubes-optimized");
+        map.put("Unfiltered", "/ITOKAWA/LIDAR/cdr/cubes-unfiltered");
+        return map;
     }
-
 }

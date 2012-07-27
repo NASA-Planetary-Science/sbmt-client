@@ -7,7 +7,6 @@ import org.joda.time.DateTime;
 import edu.jhuapl.near.gui.LidarSearchPanel;
 import edu.jhuapl.near.gui.Renderer;
 import edu.jhuapl.near.model.ModelManager;
-import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.pick.PickManager;
 
 public class NLRSearchPanel extends LidarSearchPanel
@@ -30,11 +29,4 @@ public class NLRSearchPanel extends LidarSearchPanel
     {
         return new DateTime(2001, 2, 13, 0, 0, 0, 0).toDate();
     }
-
-    @Override
-    protected String getLidarModelName()
-    {
-        return ModelNames.NLR_DATA_SEARCH;
-    }
-
 }

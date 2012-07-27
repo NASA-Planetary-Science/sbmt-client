@@ -30,7 +30,6 @@ import edu.jhuapl.near.model.PointModel;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.itokawa.HayLidarBrowseDataCollection;
 import edu.jhuapl.near.model.itokawa.HayLidarSearchDataCollection;
-import edu.jhuapl.near.model.itokawa.HayLidarUnfilteredSearchDataCollection;
 import edu.jhuapl.near.model.itokawa.Itokawa;
 import edu.jhuapl.near.model.itokawa.ItokawaGraticule;
 import edu.jhuapl.near.pick.PickManager;
@@ -120,9 +119,8 @@ public class ItokawaViewer extends Viewer
         allModels.put(ModelNames.IMAGES, new ImageCollection(itokawaModel));
         allModels.put(ModelNames.COLOR_IMAGES, new ColorImageCollection(itokawaModel));
         allModels.put(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES, new PerspectiveImageBoundaryCollection(itokawaModel));
-        allModels.put(ModelNames.HAYLIDAR_BROWSE, new HayLidarBrowseDataCollection());
-        allModels.put(ModelNames.HAYLIDAR_SEARCH, new HayLidarSearchDataCollection(itokawaModel));
-        allModels.put(ModelNames.HAYLIDAR_SEARCH_UNFILTERED, new HayLidarUnfilteredSearchDataCollection(itokawaModel));
+        allModels.put(ModelNames.LIDAR_BROWSE, new HayLidarBrowseDataCollection());
+        allModels.put(ModelNames.LIDAR_SEARCH, new HayLidarSearchDataCollection(itokawaModel));
         allModels.put(ModelNames.LINE_STRUCTURES, new LineModel(itokawaModel));
         allModels.put(ModelNames.CIRCLE_STRUCTURES, new CircleModel(itokawaModel));
         allModels.put(ModelNames.ELLIPSE_STRUCTURES, new EllipseModel(itokawaModel));
@@ -141,9 +139,7 @@ public class ItokawaViewer extends Viewer
         ImageCollection amicaImages = (ImageCollection)modelManager.getModel(ModelNames.IMAGES);
         PerspectiveImageBoundaryCollection amicaBoundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES);
         ColorImageCollection amicaColorImages = (ColorImageCollection)modelManager.getModel(ModelNames.COLOR_IMAGES);
-        HayLidarSearchDataCollection lidarSearch = (HayLidarSearchDataCollection)modelManager.getModel(ModelNames.HAYLIDAR_SEARCH);
-        HayLidarUnfilteredSearchDataCollection lidarSearchUnfiltered =
-            (HayLidarUnfilteredSearchDataCollection)modelManager.getModel(ModelNames.HAYLIDAR_SEARCH_UNFILTERED);
+        HayLidarSearchDataCollection lidarSearch = (HayLidarSearchDataCollection)modelManager.getModel(ModelNames.LIDAR_SEARCH);
 
         PopupMenu popupMenu = new ImagePopupMenu(amicaImages, amicaBoundaries, infoPanelManager, renderer, renderer);
         popupManager.registerPopup(modelManager.getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES), popupMenu);
@@ -152,10 +148,7 @@ public class ItokawaViewer extends Viewer
         popupManager.registerPopup(modelManager.getModel(ModelNames.COLOR_IMAGES), popupMenu);
 
         popupMenu = new LidarPopupMenu(lidarSearch, renderer);
-        popupManager.registerPopup(modelManager.getModel(ModelNames.HAYLIDAR_SEARCH), popupMenu);
-
-        popupMenu = new LidarPopupMenu(lidarSearchUnfiltered, renderer);
-        popupManager.registerPopup(modelManager.getModel(ModelNames.HAYLIDAR_SEARCH_UNFILTERED), popupMenu);
+        popupManager.registerPopup(modelManager.getModel(ModelNames.LIDAR_SEARCH), popupMenu);
     }
 
     public Renderer getRenderer()

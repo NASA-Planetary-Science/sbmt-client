@@ -17,10 +17,13 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.Map;
 import java.util.TreeSet;
 
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 import javax.swing.SpinnerDateModel;
 
@@ -72,12 +75,22 @@ abstract public class LidarSearchPanel extends javax.swing.JPanel implements Pro
             }
         });
 
+
+        this.lidarModel = (LidarSearchDataCollection)modelManager.getModel(ModelNames.LIDAR_SEARCH);
+
         pickManager.getDefaultPicker().addPropertyChangeListener(this);
-
-
-        this.lidarModel = (LidarSearchDataCollection)modelManager.getModel(getLidarModelName());
+        lidarModel.addPropertyChangeListener(this);
 
         initComponents();
+
+        Map<String, String> sourceMap = lidarModel.getLidarDataSourceMap();
+        DefaultComboBoxModel sourceComboBoxModel = new DefaultComboBoxModel(sourceMap.keySet().toArray());
+        sourceComboBox.setModel(sourceComboBoxModel);
+        if (sourceMap.size() == 1)
+        {
+            sourceLabel.setVisible(false);
+            sourceComboBox.setVisible(false);
+        }
 
         radialOffsetChanger.setModel(lidarModel);
         radialOffsetChanger.setOffsetScale(lidarModel.getOffsetScale());
@@ -92,7 +105,6 @@ abstract public class LidarSearchPanel extends javax.swing.JPanel implements Pro
 
     abstract protected java.util.Date getDefaultStartDate();
     abstract protected java.util.Date getDefaultEndDate();
-    abstract protected String getLidarModelName();
 
     private void showData(
             TreeSet<Integer> cubeList,
@@ -122,6 +134,7 @@ abstract public class LidarSearchPanel extends javax.swing.JPanel implements Pro
         try
         {
             lidarModel.setLidarData(
+                    sourceComboBox.getSelectedItem().toString(),
                     new DateTime(startDate),
                     new DateTime(endDate),
                     cubeList,
@@ -139,6 +152,13 @@ abstract public class LidarSearchPanel extends javax.swing.JPanel implements Pro
             e.printStackTrace();
         }
 
+        populateTracksInfoLabel();
+        populateTracksList();
+        populateTracksErrorLabel();
+    }
+
+    private void populateTracksInfoLabel()
+    {
         String resultsText =
             "<html>" + lidarModel.getNumberOfPoints() + " points matched<br><br>";
 
@@ -150,8 +170,6 @@ abstract public class LidarSearchPanel extends javax.swing.JPanel implements Pro
         resultsText += "</html>";
 
         resultsLabel.setText(resultsText);
-
-        populateTracksList();
     }
 
     private void populateTracksList()
@@ -167,6 +185,16 @@ abstract public class LidarSearchPanel extends javax.swing.JPanel implements Pro
 
         tracksList.setListData(results);
     }
+
+    private void populateTracksErrorLabel()
+    {
+        if (trackErrorCheckBox.isSelected())
+        {
+            String errorText = "" + (float)lidarModel.getTrackError();
+            trackErrorLabel.setText(errorText);
+        }
+    }
+
 
     public void propertyChange(PropertyChangeEvent evt)
     {
@@ -188,6 +216,10 @@ abstract public class LidarSearchPanel extends javax.swing.JPanel implements Pro
                         tracksList.scrollRectToVisible(cellBounds);
                 }
             }
+        }
+        else if (Properties.MODEL_CHANGED.equals(evt.getPropertyName()))
+        {
+            populateTracksErrorLabel();
         }
     }
 
@@ -215,6 +247,8 @@ abstract public class LidarSearchPanel extends javax.swing.JPanel implements Pro
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jPanel4 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         startSpinner = new javax.swing.JSpinner();
@@ -239,6 +273,14 @@ abstract public class LidarSearchPanel extends javax.swing.JPanel implements Pro
         jLabel5 = new javax.swing.JLabel();
         pointSizeSpinner = new javax.swing.JSpinner();
         translateTracksButton = new javax.swing.JButton();
+        dragTracksToggleButton = new javax.swing.JToggleButton();
+        loadTrackButton = new javax.swing.JButton();
+        trackErrorCheckBox = new javax.swing.JCheckBox();
+        trackErrorLabel = new javax.swing.JLabel();
+        sourceLabel = new javax.swing.JLabel();
+        sourceComboBox = new javax.swing.JComboBox();
+
+        setLayout(new java.awt.BorderLayout());
 
         jLabel1.setText("Start Date:");
 
@@ -346,86 +388,140 @@ abstract public class LidarSearchPanel extends javax.swing.JPanel implements Pro
             }
         });
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
-        this.setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(radialOffsetChanger, javax.swing.GroupLayout.DEFAULT_SIZE, 271, Short.MAX_VALUE)
-                            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 271, Short.MAX_VALUE)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 271, Short.MAX_VALUE)
-                            .addComponent(resultsLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 271, Short.MAX_VALUE)
-                            .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 271, Short.MAX_VALUE)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.TRAILING))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(startSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(endSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel3)
-                                    .addComponent(jLabel4))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(minTrackSizeTextField)
-                                    .addComponent(trackSeparationTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 112, Short.MAX_VALUE)))
-                            .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, 271, Short.MAX_VALUE)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(12, 12, 12)
-                                .addComponent(translateTracksButton))))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(16, 16, 16)
+        dragTracksToggleButton.setText("Drag Tracks");
+        dragTracksToggleButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                dragTracksToggleButtonActionPerformed(evt);
+            }
+        });
+
+        loadTrackButton.setText("Load Track From File...");
+        loadTrackButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                loadTrackButtonActionPerformed(evt);
+            }
+        });
+
+        trackErrorCheckBox.setText("Show Track Error:");
+        trackErrorCheckBox.setToolTipText("<html>\nIf checked, the track error will be calculated and shown to the right of this checkbox.<br>\nWhenever a change is made to the tracks, the track error will be updated. This can be<br>\na slow operation which is why this checkbox is provided to disable it.<br>\n<br>\nThe track error is computed as the mean square distance between each lidar point<br>\nand its closest point on the asteroid.");
+        trackErrorCheckBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                trackErrorCheckBoxActionPerformed(evt);
+            }
+        });
+
+        trackErrorLabel.setText(" ");
+
+        sourceLabel.setText("Source:");
+
+        sourceComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Default" }));
+
+        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
+        jPanel4.setLayout(jPanel4Layout);
+        jPanel4Layout.setHorizontalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 360, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel4Layout.createSequentialGroup()
+                        .addComponent(trackErrorCheckBox)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(trackErrorLabel))
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel4Layout.createSequentialGroup()
+                        .addGap(24, 24, 24)
                         .addComponent(jLabel5)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(pointSizeSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(18, 18, 18)
+                        .addComponent(pointSizeSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(loadTrackButton, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(dragTracksToggleButton, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(translateTracksButton, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(radialOffsetChanger, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 360, Short.MAX_VALUE)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 360, Short.MAX_VALUE)
+                    .addComponent(resultsLabel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 360, Short.MAX_VALUE)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 360, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel4Layout.createSequentialGroup()
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(sourceLabel)
+                            .addComponent(jLabel1)
+                            .addComponent(jLabel2))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(sourceComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(startSpinner)
+                            .addComponent(endSpinner))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 109, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel4Layout.createSequentialGroup()
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel3)
+                            .addComponent(jLabel4))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(minTrackSizeTextField)
+                            .addComponent(trackSeparationTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(jPanel3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 360, Short.MAX_VALUE))
                 .addContainerGap())
         );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
+
+        jPanel4Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {endSpinner, sourceComboBox, startSpinner});
+
+        jPanel4Layout.setVerticalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel4Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(sourceComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(sourceLabel))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(startSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
                     .addComponent(endSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
                     .addComponent(minTrackSizeTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
                     .addComponent(trackSeparationTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(loadTrackButton)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(resultsLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 171, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 154, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(radialOffsetChanger, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(translateTracksButton)
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(dragTracksToggleButton)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(trackErrorCheckBox)
+                    .addComponent(trackErrorLabel))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel5)
                     .addComponent(pointSizeSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
+
+        jPanel4Layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {endSpinner, sourceComboBox, startSpinner});
+
+        jScrollPane2.setViewportView(jPanel4);
+
+        add(jScrollPane2, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
 
     private void startSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_startSpinnerStateChanged
@@ -534,12 +630,57 @@ abstract public class LidarSearchPanel extends javax.swing.JPanel implements Pro
         if (translateDialog == null)
             translateDialog = new LidarTrackTranslationDialog(JOptionPane.getFrameForComponent(this), true, lidarModel);
 
+        translateDialog.setLocationRelativeTo(this);
         translateDialog.setVisible(true);
     }//GEN-LAST:event_translateTracksButtonActionPerformed
+
+    private void dragTracksToggleButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dragTracksToggleButtonActionPerformed
+        if (dragTracksToggleButton.isSelected())
+        {
+            pickManager.setPickMode(PickManager.PickMode.LIDAR_SHIFT);
+        }
+        else
+        {
+            pickManager.setPickMode(PickManager.PickMode.DEFAULT);
+        }
+    }//GEN-LAST:event_dragTracksToggleButtonActionPerformed
+
+    private void loadTrackButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadTrackButtonActionPerformed
+        File file = CustomFileChooser.showOpenDialog(this, "Select File");
+
+        if (file != null)
+        {
+            try
+            {
+                lidarModel.loadTrackFromFile(file);
+                radialOffsetChanger.reset();
+            }
+            catch (Exception e)
+            {
+                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
+                        "There was an error reading the file.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+
+                e.printStackTrace();
+            }
+
+            populateTracksInfoLabel();
+            populateTracksList();
+            populateTracksErrorLabel();
+        }
+    }//GEN-LAST:event_loadTrackButtonActionPerformed
+
+    private void trackErrorCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_trackErrorCheckBoxActionPerformed
+        lidarModel.setEnableTrackErrorComputation(trackErrorCheckBox.isSelected());
+        trackErrorLabel.setEnabled(trackErrorCheckBox.isSelected());
+        populateTracksErrorLabel();
+    }//GEN-LAST:event_trackErrorCheckBoxActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton clearRegionButton;
+    private javax.swing.JToggleButton dragTracksToggleButton;
     private javax.swing.JSpinner endSpinner;
     private javax.swing.JButton hideAllButton;
     private javax.swing.JLabel jLabel1;
@@ -550,7 +691,10 @@ abstract public class LidarSearchPanel extends javax.swing.JPanel implements Pro
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JButton loadTrackButton;
     private javax.swing.JFormattedTextField minTrackSizeTextField;
     private javax.swing.JSpinner pointSizeSpinner;
     private edu.jhuapl.near.gui.RadialOffsetChanger radialOffsetChanger;
@@ -558,8 +702,12 @@ abstract public class LidarSearchPanel extends javax.swing.JPanel implements Pro
     private javax.swing.JLabel resultsLabel;
     private javax.swing.JToggleButton selectRegionButton;
     private javax.swing.JButton showAllButton;
+    private javax.swing.JComboBox sourceComboBox;
+    private javax.swing.JLabel sourceLabel;
     private javax.swing.JSpinner startSpinner;
     private javax.swing.JButton submitButton;
+    private javax.swing.JCheckBox trackErrorCheckBox;
+    private javax.swing.JLabel trackErrorLabel;
     private javax.swing.JFormattedTextField trackSeparationTextField;
     private javax.swing.JList tracksList;
     private javax.swing.JButton translateTracksButton;

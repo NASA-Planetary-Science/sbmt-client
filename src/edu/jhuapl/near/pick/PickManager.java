@@ -7,7 +7,9 @@ import vtk.vtkRenderWindowPanel;
 
 import edu.jhuapl.near.gui.Renderer;
 import edu.jhuapl.near.gui.StatusBar;
+import edu.jhuapl.near.model.LidarSearchDataCollection;
 import edu.jhuapl.near.model.ModelManager;
+import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.popupmenus.PopupManager;
 import edu.jhuapl.near.util.Preferences;
 
@@ -20,7 +22,8 @@ public class PickManager extends Picker
         LINE_DRAW,
         CIRCLE_DRAW,
         ELLIPSE_DRAW,
-        POINT_DRAW
+        POINT_DRAW,
+        LIDAR_SHIFT
     }
 
     private PickMode pickMode = PickMode.DEFAULT;
@@ -45,6 +48,10 @@ public class PickManager extends Picker
         nondefaultPickers.put(PickMode.ELLIPSE_DRAW, new EllipsePicker(renderer, modelManager));
         nondefaultPickers.put(PickMode.POINT_DRAW, new PointPicker(renderer, modelManager));
         nondefaultPickers.put(PickMode.CIRCLE_SELECTION, new CircleSelectionPicker(renderer, modelManager));
+
+        LidarSearchDataCollection lidarModel = (LidarSearchDataCollection) modelManager.getModel(ModelNames.LIDAR_SEARCH);
+        if (lidarModel != null)
+            nondefaultPickers.put(PickMode.LIDAR_SHIFT, new LidarShiftPicker(renderer, modelManager));
 
         defaultPicker = new DefaultPicker(renderer, statusBar, modelManager, popupManager);
 

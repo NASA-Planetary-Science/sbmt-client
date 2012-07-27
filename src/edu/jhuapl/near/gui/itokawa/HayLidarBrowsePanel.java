@@ -14,6 +14,6 @@ public class HayLidarBrowsePanel extends LidarBrowsePanel
 
     protected String getModelName()
     {
-        return ModelNames.HAYLIDAR_BROWSE;
+        return ModelNames.LIDAR_BROWSE;
     }
 }

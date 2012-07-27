@@ -34,7 +34,6 @@ import edu.jhuapl.near.model.eros.LineamentModel;
 import edu.jhuapl.near.model.eros.MapletBoundaryCollection;
 import edu.jhuapl.near.model.eros.NISSpectraCollection;
 import edu.jhuapl.near.model.eros.NLRBrowseDataCollection;
-import edu.jhuapl.near.model.eros.NLRDataEverything;
 import edu.jhuapl.near.model.eros.NLRSearchDataCollection;
 import edu.jhuapl.near.pick.PickManager;
 import edu.jhuapl.near.popupmenus.ColorImagePopupMenu;
@@ -119,9 +118,8 @@ public class ErosViewer extends Viewer
         allModels.put(ModelNames.COLOR_IMAGES, new ColorImageCollection(erosModel));
         allModels.put(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES, new PerspectiveImageBoundaryCollection(erosModel));
         allModels.put(ModelNames.NIS_SPECTRA, new NISSpectraCollection(erosModel));
-        allModels.put(ModelNames.NLR_DATA_SUMMARY, new NLRDataEverything());
-        allModels.put(ModelNames.NLR_DATA_BROWSE, new NLRBrowseDataCollection());
-        allModels.put(ModelNames.NLR_DATA_SEARCH, new NLRSearchDataCollection(erosModel));
+        allModels.put(ModelNames.LIDAR_BROWSE, new NLRBrowseDataCollection());
+        allModels.put(ModelNames.LIDAR_SEARCH, new NLRSearchDataCollection(erosModel));
         allModels.put(ModelNames.LINE_STRUCTURES, new LineModel(erosModel));
         allModels.put(ModelNames.CIRCLE_STRUCTURES, new CircleModel(erosModel));
         allModels.put(ModelNames.ELLIPSE_STRUCTURES, new EllipseModel(erosModel));
@@ -143,7 +141,7 @@ public class ErosViewer extends Viewer
         ImageCollection msiImages = (ImageCollection)modelManager.getModel(ModelNames.IMAGES);
         PerspectiveImageBoundaryCollection msiBoundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES);
         ColorImageCollection msiColorImages = (ColorImageCollection)modelManager.getModel(ModelNames.COLOR_IMAGES);
-        NLRSearchDataCollection lidarSearch = (NLRSearchDataCollection)modelManager.getModel(ModelNames.NLR_DATA_SEARCH);
+        NLRSearchDataCollection lidarSearch = (NLRSearchDataCollection)modelManager.getModel(ModelNames.LIDAR_SEARCH);
 
         popupMenu = new ImagePopupMenu(msiImages, msiBoundaries, infoPanelManager, renderer, renderer);
         popupManager.registerPopup(modelManager.getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES), popupMenu);
@@ -155,7 +153,7 @@ public class ErosViewer extends Viewer
         popupManager.registerPopup(modelManager.getModel(ModelNames.NIS_SPECTRA), popupMenu);
 
         popupMenu = new LidarPopupMenu(lidarSearch, renderer);
-        popupManager.registerPopup(modelManager.getModel(ModelNames.NLR_DATA_SEARCH), popupMenu);
+        popupManager.registerPopup(modelManager.getModel(ModelNames.LIDAR_SEARCH), popupMenu);
     }
 
     public Renderer getRenderer()

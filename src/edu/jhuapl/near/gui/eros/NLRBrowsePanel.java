@@ -14,6 +14,6 @@ public class NLRBrowsePanel extends LidarBrowsePanel
 
     protected String getModelName()
     {
-        return ModelNames.NLR_DATA_BROWSE;
+        return ModelNames.LIDAR_BROWSE;
     }
 }

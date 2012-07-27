@@ -19,10 +19,8 @@ public class HayLidarPanel extends JTabbedPane
 
         HayLidarBrowsePanel lidarBrowsePanel = new HayLidarBrowsePanel(modelManager);
         HayLidarSearchPanel lidarSearchPanel = new HayLidarSearchPanel(modelManager, pickManager, renderer);
-        HayLidarSearchPanel lidarSearchPanelUnfiltered = new HayLidarUnfilteredSearchPanel(modelManager, pickManager, renderer);
 
         addTab("Browse", lidarBrowsePanel);
-        addTab("Search (optimized)", lidarSearchPanel);
-        addTab("Search (unfiltered)", lidarSearchPanelUnfiltered);
+        addTab("Search", lidarSearchPanel);
     }
 }
