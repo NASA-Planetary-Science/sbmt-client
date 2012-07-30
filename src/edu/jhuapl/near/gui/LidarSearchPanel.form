@@ -26,6 +26,11 @@
       <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
       <SubComponents>
         <Container class="javax.swing.JPanel" name="jPanel4">
+          <Properties>
+            <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+              <Dimension value="[300, 794]"/>
+            </Property>
+          </Properties>
 
           <Layout>
             <DimensionLayout dim="0">
@@ -33,6 +38,7 @@
                   <Group type="102" alignment="1" attributes="0">
                       <EmptySpace min="-2" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="1" attributes="0">
+                          <Component id="radialOffsetChanger" alignment="0" pref="360" max="32767" attributes="0"/>
                           <Component id="jScrollPane1" alignment="0" pref="360" max="32767" attributes="0"/>
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="trackErrorCheckBox" min="-2" max="-2" attributes="0"/>
@@ -48,7 +54,6 @@
                           <Component id="loadTrackButton" alignment="0" min="-2" max="-2" attributes="0"/>
                           <Component id="dragTracksToggleButton" alignment="0" min="-2" max="-2" attributes="0"/>
                           <Component id="translateTracksButton" alignment="0" min="-2" max="-2" attributes="0"/>
-                          <Component id="radialOffsetChanger" alignment="0" pref="360" max="32767" attributes="0"/>
                           <Component id="jPanel1" alignment="0" pref="360" max="32767" attributes="0"/>
                           <Component id="resultsLabel" alignment="0" pref="360" max="32767" attributes="0"/>
                           <Component id="jPanel2" alignment="1" pref="360" max="32767" attributes="0"/>
@@ -87,9 +92,9 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="sourceComboBox" linkSize="1" min="-2" pref="31" max="-2" attributes="0"/>
-                          <Component id="sourceLabel" min="-2" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="sourceComboBox" linkSize="1" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="sourceLabel" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
@@ -120,14 +125,14 @@
                       <EmptySpace type="unrelated" min="-2" max="-2" attributes="0"/>
                       <Component id="resultsLabel" min="-2" pref="65" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="jScrollPane1" pref="154" max="32767" attributes="0"/>
+                      <Component id="jScrollPane1" pref="108" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="jPanel1" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="radialOffsetChanger" min="-2" pref="67" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
+                      <EmptySpace min="-2" max="-2" attributes="0"/>
+                      <Component id="radialOffsetChanger" min="-2" pref="85" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" max="-2" attributes="0"/>
                       <Component id="translateTracksButton" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
+                      <EmptySpace min="-2" max="-2" attributes="0"/>
                       <Component id="dragTracksToggleButton" min="-2" max="-2" attributes="0"/>
                       <EmptySpace type="unrelated" min="-2" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
