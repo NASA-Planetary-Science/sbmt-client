@@ -82,6 +82,9 @@ int g_actual_number_points;
 
 BodyType g_bodyType;
 
+/* The translation computed for the last track */
+double g_translation[3];
+
 void printPoint(int i)
 {
     printf("point %d: %f %f %f %f %f %f %f \n",
@@ -261,7 +264,7 @@ void optimizeTrack(int startId, int trackSize)
         icpVtk(sources, targets, trackSize, scpos);
     else
 //        icp(sources, targets, trackSize, scpos);
-        icp2(sources, trackSize, scpos);
+        icp2(sources, trackSize, scpos, g_translation);
 
 
     for (i=g_trackStartPoint,j=0; i<endPoint; ++i,++j)
@@ -509,13 +512,13 @@ int checkForBreakInTrack2(int startId, int trackSize)
         length += distFromLastPoint;
         if (length > maxTrackLength)
         {
-            printf("Max track lenght exceeded. Length: %f km, size: %d\n", length, i-startId);
+            printf("Max track length exceeded. Length: %f km, size: %d\n", length, i-startId);
             return (i - startId);
         }
     }
 
 
-    return 1;
+    return i - startId;
 }
 
 
@@ -614,6 +617,15 @@ void savePointsOptimized(const char* outfile)
 }
 
 
+void printTranslationOfLastTrack()
+{
+    printf("\nOptimal Translation:\n%.16g %.16g %.16g\n",
+            g_translation[0],
+            g_translation[1],
+            g_translation[2]);
+}
+
+
 /************************************************************************
 * This program tries to find better positions of the lidar points than
 * is published on the PDS.
@@ -651,6 +663,8 @@ int main(int argc, char** argv)
     optimizeAllTracks();
 
     savePointsOptimized(outfile);
+
+    printTranslationOfLastTrack();
 
     return 0;
 }

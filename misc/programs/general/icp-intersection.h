@@ -4,7 +4,7 @@
 #include "util.h"
 
 
-void icp2(struct Point source[], int n, struct Point* additionalPoints);
+void icp2(struct Point source[], int n, struct Point* additionalPoints, double* translation);
 
 
 #endif

@@ -83,7 +83,7 @@ static double func(const double* translation, void*)
    n. The optimal translation that maps the source points into target
    points is calculated and placed in translation.
  */
-void icp2(struct Point source[], int n, struct Point* additionalPoints)
+void icp2(struct Point source[], int n, struct Point* additionalPoints, double* translation)
 {
     /* For the ICP, we do the following:
 
@@ -103,7 +103,9 @@ void icp2(struct Point source[], int n, struct Point* additionalPoints)
     for (int i=0; i<n; ++i)
         g_source.push_back(source[i]);
 
-    double translation[3] = {0.0, 0.0, 0.0};
+    translation[0] = 0.0;
+    translation[1] = 0.0;
+    translation[2] = 0.0;
     findAllClosestPoints(translation);
     printf("Initial value of objective function with no translation: %f\n",
            func(translation, NULL));
@@ -119,7 +121,7 @@ void icp2(struct Point source[], int n, struct Point* additionalPoints)
 
     /* Now iterate */
 
-    int maxIter = 50;
+    int maxIter = 5000;
     int i;
     for (i=0;i<maxIter;++i)
     {
@@ -136,6 +138,9 @@ void icp2(struct Point source[], int n, struct Point* additionalPoints)
         if (ssd >= prevssd)
             break;
     }
+
+    printf("Final value of objective function with optimal translation: %f\n",
+           func(translation, NULL));
 
     for (i=0; i<n; ++i)
     {
