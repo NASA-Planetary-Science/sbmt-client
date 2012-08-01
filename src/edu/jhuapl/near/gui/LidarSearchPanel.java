@@ -405,7 +405,7 @@ abstract public class LidarSearchPanel extends javax.swing.JPanel implements Pro
         });
 
         trackErrorCheckBox.setText("Show Track Error:");
-        trackErrorCheckBox.setToolTipText("<html>\nIf checked, the track error will be calculated and shown to the right of this checkbox.<br>\nWhenever a change is made to the tracks, the track error will be updated. This can be<br>\na slow operation which is why this checkbox is provided to disable it.<br>\n<br>\nThe track error is computed as the mean square distance between each lidar point<br>\nand its closest point on the asteroid.");
+        trackErrorCheckBox.setToolTipText("<html>\nIf checked, the track error will be calculated and shown to the right of this checkbox.<br>\nWhenever a change is made to the tracks, the track error will be updated. This can be<br>\na slow operation which is why this checkbox is provided to disable it.<br>\n<br>\nThe track error is computed as the mean distance between each lidar point and its<br>\nclosest point on the asteroid.");
         trackErrorCheckBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 trackErrorCheckBoxActionPerformed(evt);

@@ -351,7 +351,7 @@
             <Component class="javax.swing.JCheckBox" name="trackErrorCheckBox">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Show Track Error:"/>
-                <Property name="toolTipText" type="java.lang.String" value="&lt;html&gt;&#xa;If checked, the track error will be calculated and shown to the right of this checkbox.&lt;br&gt;&#xa;Whenever a change is made to the tracks, the track error will be updated. This can be&lt;br&gt;&#xa;a slow operation which is why this checkbox is provided to disable it.&lt;br&gt;&#xa;&lt;br&gt;&#xa;The track error is computed as the mean square distance between each lidar point&lt;br&gt;&#xa;and its closest point on the asteroid."/>
+                <Property name="toolTipText" type="java.lang.String" value="&lt;html&gt;&#xa;If checked, the track error will be calculated and shown to the right of this checkbox.&lt;br&gt;&#xa;Whenever a change is made to the tracks, the track error will be updated. This can be&lt;br&gt;&#xa;a slow operation which is why this checkbox is provided to disable it.&lt;br&gt;&#xa;&lt;br&gt;&#xa;The track error is computed as the mean distance between each lidar point and its&lt;br&gt;&#xa;closest point on the asteroid."/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="trackErrorCheckBoxActionPerformed"/>
