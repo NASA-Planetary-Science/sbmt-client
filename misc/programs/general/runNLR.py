@@ -10,11 +10,11 @@ abspath = os.path.abspath(__file__)
 dname = os.path.dirname(abspath)
 os.chdir(dname)
 
-print sys.argv
 
 if (len(sys.argv) < 2):
     print "Please enter path to lidar file"
     sys.exit(1)
+
 
 def reclat(rectan):
     llr = [0.0, 0.0, 0.0] # longitude, latitude, radius
@@ -34,6 +34,7 @@ def reclat(rectan):
             llr[0] = math.atan2(y1, x1) # longitude
 
     return llr
+
 
 def reformat_input(input_file):
     f = open(input_file)
@@ -63,7 +64,6 @@ def num_lines_in_input(input_file):
     f = open(input_file)
     num_lines = sum(1 for line in f)
     f.close()
-    print "total number of lines " + str(num_lines)
     return num_lines
 
 
@@ -72,10 +72,11 @@ def run_lidar_min():
     startId = '0'
     stopId = str(number_points)
     ii = '0'
-    command = './build/lidar-min-icp '+BODY+' '+DSKFILE+' '+startId+' '+stopId+' '+KERNEL+' '+OUTPUT+' '+INPUT
+    command = './lidar-min-icp '+BODY+' '+DSKFILE+' '+startId+' '+stopId+' '+KERNEL+' '+OUTPUT+' '+INPUT
     print command
     p = subprocess.Popen(command, shell=True)
     p.wait()
+
 
 def do_all():
     global INPUT
@@ -85,10 +86,11 @@ def do_all():
 
 ###########################################################################
 
+
 BODY='EROS'
 DSKFILE=os.environ['HOME']+'/.neartool/cache/2/EROS/ver512q.vtk'
-KERNEL='./naif0009.tls'
+KERNEL='./naif0010.tls'
 INPUT=sys.argv[1]
-OUTPUT=INPUT+'-output'
+OUTPUT='/tmp/'+os.path.basename(INPUT)+'-output-optimize-nlr'
 
 do_all()
