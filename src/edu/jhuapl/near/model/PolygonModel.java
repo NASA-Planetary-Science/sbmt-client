@@ -744,4 +744,22 @@ public class PolygonModel extends ControlPointsStructureModel implements Propert
 
         return new IdPair(startCell, endCell);
     }
+
+    @Override
+    public double getLineWidth()
+    {
+        vtkProperty boundaryProperty = boundaryActor.GetProperty();
+        return boundaryProperty.GetLineWidth();
+    }
+
+    @Override
+    public void setLineWidth(double width)
+    {
+        if (width >= 1.0)
+        {
+            vtkProperty boundaryProperty = boundaryActor.GetProperty();
+            boundaryProperty.SetLineWidth(width);
+            this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+        }
+    }
 }

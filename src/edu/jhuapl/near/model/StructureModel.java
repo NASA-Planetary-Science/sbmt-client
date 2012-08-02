@@ -57,4 +57,8 @@ public abstract class StructureModel extends Model
     public abstract void saveModel(File file) throws Exception;
 
     public abstract void setStructureColor(int idx, int[] color);
+
+    public abstract double getLineWidth();
+
+    public abstract void setLineWidth(double width);
 }

@@ -40,7 +40,7 @@ public class StructuresControlPanel extends JTabbedPane
                         structureModel,
                         pickManager,
                         PickManager.PickMode.LINE_DRAW,
-                        false) {});
+                        true) {});
 
                 structureModel =
                         (StructureModel)modelManager.getModel(ModelNames.POLYGON_STRUCTURES);
@@ -49,7 +49,7 @@ public class StructuresControlPanel extends JTabbedPane
                         structureModel,
                         pickManager,
                         PickManager.PickMode.POLYGON_DRAW,
-                        false) {});
+                        true) {});
 
                 structureModel =
                         (StructureModel)modelManager.getModel(ModelNames.CIRCLE_STRUCTURES);
@@ -58,7 +58,7 @@ public class StructuresControlPanel extends JTabbedPane
                         structureModel,
                         pickManager,
                         PickManager.PickMode.CIRCLE_DRAW,
-                        false) {});
+                        true) {});
 
                 structureModel =
                         (StructureModel)modelManager.getModel(ModelNames.ELLIPSE_STRUCTURES);
@@ -67,7 +67,7 @@ public class StructuresControlPanel extends JTabbedPane
                         structureModel,
                         pickManager,
                         PickManager.PickMode.ELLIPSE_DRAW,
-                        false) {});
+                        true) {});
 
                 pointsStructuresMapperPanel = new PointsMappingControlPanel(
                         modelManager,

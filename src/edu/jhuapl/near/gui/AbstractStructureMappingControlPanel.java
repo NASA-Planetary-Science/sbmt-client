@@ -19,9 +19,11 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
 import javax.swing.JTable;
 import javax.swing.JToggleButton;
 import javax.swing.ListSelectionModel;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.border.Border;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -65,7 +67,7 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
             final StructureModel structureModel,
             final PickManager pickManager,
             final PickManager.PickMode pickMode,
-            boolean compactMode)
+            boolean supportsLineWidth)
     {
         this.modelManager = modelManager;
         //this.pickManager = pickManager;
@@ -102,18 +104,14 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
         this.structuresFileTextField.setEnabled(true);
         this.structuresFileTextField.setPreferredSize(new java.awt.Dimension(150, 22));
 
-        if (!compactMode)
-        {
-            add(this.structuresFileTextField, "span");
+        add(this.structuresFileTextField, "span");
 
-            add(this.loadStructuresButton, "w 100!");
-            add(this.saveStructuresButton, "w 100!");
-            add(this.saveAsStructuresButton, "w 100!, wrap 15px");
-        }
+        add(this.loadStructuresButton, "w 100!");
+        add(this.saveStructuresButton, "w 100!");
+        add(this.saveAsStructuresButton, "w 100!, wrap 15px");
 
         JLabel structureTypeText = new JLabel(" Structures");
-        if (!compactMode)
-            add(structureTypeText, "span");
+        add(structureTypeText, "span");
 
         //String[] options = {LineModel.LINES, CircleModel.CIRCLES};
         //structureTypeComboBox = new JComboBox(options);
@@ -154,8 +152,7 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
 
         //structuresPopupMenu = new StructuresPopupMenu(this.modelManager, this.pickManager, this);
 
-        if (!compactMode)
-            add(tableScrollPane, "span");
+        add(tableScrollPane, "span");
 
 
         if (structureModel.supportsSelection())
@@ -261,6 +258,33 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
                 "button to show a dialog that will allow you to explicitely set the offset<br>" +
                 "amount in meters.</html>");
         add(changeOffsetButton, "span 2, w 200!, wrap");
+
+        if (supportsLineWidth)
+        {
+            JButton changeLineWidthButton = new JButton("Change Line Width...");
+            changeLineWidthButton.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent e)
+                {
+                    SpinnerNumberModel sModel = new SpinnerNumberModel(structureModel.getLineWidth(), 1.0, 100.0, 1.0);
+                    JSpinner spinner = new JSpinner(sModel);
+
+                    int option = JOptionPane.showOptionDialog(
+                            AbstractStructureMappingControlPanel.this,
+                            spinner,
+                            "Enter valid number",
+                            JOptionPane.OK_CANCEL_OPTION,
+                            JOptionPane.QUESTION_MESSAGE,
+                            null, null, null);
+
+                    if (option == JOptionPane.OK_OPTION)
+                    {
+                        structureModel.setLineWidth((Double)spinner.getValue());
+                    }
+                }
+            });
+            add(changeLineWidthButton, "span 2, w 200!, wrap");
+        }
     }
 
     public void actionPerformed(ActionEvent actionEvent)

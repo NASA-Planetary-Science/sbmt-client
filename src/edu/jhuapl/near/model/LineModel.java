@@ -1121,4 +1121,22 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
         out.close();
     }
 
+    @Override
+    public double getLineWidth()
+    {
+        vtkProperty lineProperty = lineActor.GetProperty();
+        return lineProperty.GetLineWidth();
+    }
+
+    @Override
+    public void setLineWidth(double width)
+    {
+        if (width >= 1.0)
+        {
+            vtkProperty lineProperty = lineActor.GetProperty();
+            lineProperty.SetLineWidth(width);
+            this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+        }
+    }
+
 }
