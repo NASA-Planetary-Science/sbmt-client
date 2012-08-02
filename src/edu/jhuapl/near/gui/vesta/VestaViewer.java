@@ -27,6 +27,7 @@ import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.PerspectiveImageBoundaryCollection;
 import edu.jhuapl.near.model.PointModel;
+import edu.jhuapl.near.model.PolygonModel;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.vesta.Vesta;
 import edu.jhuapl.near.model.vesta.VestaGraticule;
@@ -116,6 +117,7 @@ public class VestaViewer extends Viewer
         allModels.put(ModelNames.COLOR_IMAGES, new ColorImageCollection(vestaModel));
         allModels.put(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES, new PerspectiveImageBoundaryCollection(vestaModel));
         allModels.put(ModelNames.LINE_STRUCTURES, new LineModel(vestaModel));
+        allModels.put(ModelNames.POLYGON_STRUCTURES, new PolygonModel(vestaModel));
         allModels.put(ModelNames.CIRCLE_STRUCTURES, new CircleModel(vestaModel));
         allModels.put(ModelNames.ELLIPSE_STRUCTURES, new EllipseModel(vestaModel));
         allModels.put(ModelNames.POINT_STRUCTURES, new PointModel(vestaModel));

@@ -27,6 +27,7 @@ import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.PerspectiveImageBoundaryCollection;
 import edu.jhuapl.near.model.PointModel;
+import edu.jhuapl.near.model.PolygonModel;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.itokawa.HayLidarBrowseDataCollection;
 import edu.jhuapl.near.model.itokawa.HayLidarSearchDataCollection;
@@ -122,6 +123,7 @@ public class ItokawaViewer extends Viewer
         allModels.put(ModelNames.LIDAR_BROWSE, new HayLidarBrowseDataCollection());
         allModels.put(ModelNames.LIDAR_SEARCH, new HayLidarSearchDataCollection(itokawaModel));
         allModels.put(ModelNames.LINE_STRUCTURES, new LineModel(itokawaModel));
+        allModels.put(ModelNames.POLYGON_STRUCTURES, new PolygonModel(itokawaModel));
         allModels.put(ModelNames.CIRCLE_STRUCTURES, new CircleModel(itokawaModel));
         allModels.put(ModelNames.ELLIPSE_STRUCTURES, new EllipseModel(itokawaModel));
         allModels.put(ModelNames.POINT_STRUCTURES, new PointModel(itokawaModel));

@@ -90,4 +90,10 @@ public class LatLon
 
         return midll;
     }
+
+    @Override
+    protected Object clone()
+    {
+        return new LatLon(lat, lon, rad);
+    }
 }

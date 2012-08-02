@@ -48,7 +48,7 @@ import edu.jhuapl.near.util.Properties;
  * @author
  *
  */
-public class LineModel extends StructureModel implements PropertyChangeListener
+public class LineModel extends ControlPointsStructureModel implements PropertyChangeListener
 {
     private ArrayList<Line> lines = new ArrayList<Line>();
     private vtkPolyData linesPolyData;
@@ -271,12 +271,12 @@ public class LineModel extends StructureModel implements PropertyChangeListener
         return selectedLine;
     }
 
-    public vtkActor getLineActor()
+    public vtkActor getStructureActor()
     {
         return lineActor;
     }
 
-    public vtkActor getLineSelectionActor()
+    public vtkActor getSelectionActor()
     {
         return lineSelectionActor;
     }
@@ -350,7 +350,7 @@ public class LineModel extends StructureModel implements PropertyChangeListener
     }
     */
 
-    public void updateSelectedLineVertex(int vertexId, double[] newPoint)
+    public void updateSelectedStructureVertex(int vertexId, double[] newPoint)
     {
         Line lin = lines.get(selectedLine);
 
@@ -445,7 +445,7 @@ public class LineModel extends StructureModel implements PropertyChangeListener
     }
      */
 
-    public void insertVertexIntoSelectedLine(double[] newPoint)
+    public void insertVertexIntoSelectedStructure(double[] newPoint)
     {
         if (selectedLine < 0)
             return;
@@ -518,7 +518,7 @@ public class LineModel extends StructureModel implements PropertyChangeListener
     }
 
 
-    public void removeCurrentLineVertex()
+    public void removeCurrentStructureVertex()
     {
         Line lin = lines.get(selectedLine);
 
@@ -743,7 +743,7 @@ public class LineModel extends StructureModel implements PropertyChangeListener
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
-    public void selectCurrentLineVertex(int idx)
+    public void selectCurrentStructureVertex(int idx)
     {
         currentLineVertex = idx;
 
@@ -929,7 +929,7 @@ public class LineModel extends StructureModel implements PropertyChangeListener
      * @param idx
      * @return
      */
-    public int getLineIdFromSelectionCellId(int idx)
+    public int getStructureIdFromSelectionCellId(int idx)
     {
         int count = 0;
         int numLines = getNumberOfStructures();

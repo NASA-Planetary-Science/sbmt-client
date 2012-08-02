@@ -25,6 +25,7 @@ import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.PointModel;
+import edu.jhuapl.near.model.PolygonModel;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.vesta_old.VestaOld;
 import edu.jhuapl.near.pick.PickManager;
@@ -107,6 +108,7 @@ public class VestaOldViewer extends Viewer
         HashMap<String, Model> allModels = new HashMap<String, Model>();
         allModels.put(ModelNames.SMALL_BODY, vestaModel);
         allModels.put(ModelNames.LINE_STRUCTURES, new LineModel(vestaModel));
+        allModels.put(ModelNames.POLYGON_STRUCTURES, new PolygonModel(vestaModel));
         allModels.put(ModelNames.CIRCLE_STRUCTURES, new CircleModel(vestaModel));
         allModels.put(ModelNames.ELLIPSE_STRUCTURES, new EllipseModel(vestaModel));
         allModels.put(ModelNames.POINT_STRUCTURES, new PointModel(vestaModel));

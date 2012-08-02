@@ -26,6 +26,7 @@ import edu.jhuapl.near.util.FileUtil;
 import edu.jhuapl.near.util.IdPair;
 import edu.jhuapl.near.util.LatLon;
 import edu.jhuapl.near.util.MathUtil;
+import edu.jhuapl.near.util.PolyDataUtil;
 import edu.jhuapl.near.util.Properties;
 
 /**
@@ -314,7 +315,7 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
             interiorPolyData.DeepCopy(interiorAppendFilterOutput);
 
             smallBodyModel.shiftPolyLineInNormalDirection(boundaryPolyData, offset);
-            smallBodyModel.shiftPolyLineInNormalDirection(interiorPolyData, offset);
+            PolyDataUtil.shiftPolyDataInNormalDirection(interiorPolyData, offset);
 
             boundaryColors.SetNumberOfTuples(boundaryPolyData.GetNumberOfCells());
             interiorColors.SetNumberOfTuples(interiorPolyData.GetNumberOfCells());

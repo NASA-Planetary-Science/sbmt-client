@@ -27,6 +27,7 @@ import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.PerspectiveImageBoundaryCollection;
 import edu.jhuapl.near.model.PointModel;
+import edu.jhuapl.near.model.PolygonModel;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.simple.SimpleSmallBody;
 import edu.jhuapl.near.pick.PickManager;
@@ -118,6 +119,7 @@ public class IdaViewer extends Viewer
         allModels.put(ModelNames.COLOR_IMAGES, new ColorImageCollection(smallBodyModel));
         allModels.put(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES, new PerspectiveImageBoundaryCollection(smallBodyModel));
         allModels.put(ModelNames.LINE_STRUCTURES, new LineModel(smallBodyModel));
+        allModels.put(ModelNames.POLYGON_STRUCTURES, new PolygonModel(smallBodyModel));
         allModels.put(ModelNames.CIRCLE_STRUCTURES, new CircleModel(smallBodyModel));
         allModels.put(ModelNames.ELLIPSE_STRUCTURES, new EllipseModel(smallBodyModel));
         allModels.put(ModelNames.POINT_STRUCTURES, new PointModel(smallBodyModel));

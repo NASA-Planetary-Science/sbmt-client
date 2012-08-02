@@ -27,6 +27,7 @@ import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.PerspectiveImageBoundaryCollection;
 import edu.jhuapl.near.model.PointModel;
+import edu.jhuapl.near.model.PolygonModel;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.eros.Eros;
 import edu.jhuapl.near.model.eros.ErosGraticule;
@@ -121,6 +122,7 @@ public class ErosViewer extends Viewer
         allModels.put(ModelNames.LIDAR_BROWSE, new NLRBrowseDataCollection());
         allModels.put(ModelNames.LIDAR_SEARCH, new NLRSearchDataCollection(erosModel));
         allModels.put(ModelNames.LINE_STRUCTURES, new LineModel(erosModel));
+        allModels.put(ModelNames.POLYGON_STRUCTURES, new PolygonModel(erosModel));
         allModels.put(ModelNames.CIRCLE_STRUCTURES, new CircleModel(erosModel));
         allModels.put(ModelNames.ELLIPSE_STRUCTURES, new EllipseModel(erosModel));
         allModels.put(ModelNames.POINT_STRUCTURES, new PointModel(erosModel));

@@ -12,31 +12,40 @@ import vtk.vtkPropCollection;
 import vtk.vtkRenderWindowPanel;
 
 import edu.jhuapl.near.gui.Renderer;
+import edu.jhuapl.near.model.ControlPointsStructureModel;
 import edu.jhuapl.near.model.Line;
-import edu.jhuapl.near.model.LineModel;
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelManager;
-import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.SmallBodyModel;
 
-public class LinePicker extends Picker
+/**
+ * Picker for editing control point based structures such as Paths and Polygons.
+ *
+ * This picker supports something known as "Profile Mode". Profile mode is only
+ * enabled for Paths and the mode simply enforces a maximum limit of 2 control
+ * points per path (since saving out a profile are not supported for paths with
+ * more than 2 control points).
+ *
+ * @author kahneg1
+ *
+ */
+public class ControlPointsStructurePicker extends Picker
 {
     private ModelManager modelManager;
     private vtkRenderWindowPanel renWin;
     private SmallBodyModel smallBodyModel;
-    private LineModel lineModel;
+    private ControlPointsStructureModel structureModel;
 
     private vtkCellPicker smallBodyPicker;
-    private vtkCellPicker linePicker;
-    private vtkCellPicker lineSelectionPicker;
+    private vtkCellPicker structureSelectionPicker;
 
     private int vertexIdBeingEdited = -1;
 
     private boolean profileMode = false;
 
-    // There are 2 types of line editing possible:
+    // There are 2 types of editing possible:
     //   1. Dragging an existing vertex to a new locations
-    //   2. Extending a line by adding new vertices
+    //   2. Extending a structure by adding new vertices
     public enum EditMode
     {
         VERTEX_DRAG_OR_DELETE,
@@ -47,16 +56,17 @@ public class LinePicker extends Picker
 
     private double[] lastDragPosition;
 
-    public LinePicker(
+    public ControlPointsStructurePicker(
             Renderer renderer,
-            ModelManager modelManager
+            ModelManager modelManager,
+            String structureName
             )
     {
         this.renWin = renderer.getRenderWindowPanel();
         this.modelManager = modelManager;
-        this.lineModel = (LineModel)modelManager.getModel(ModelNames.LINE_STRUCTURES);
+        this.structureModel = (ControlPointsStructureModel)modelManager.getModel(structureName);
 
-        profileMode = lineModel.hasProfileMode();
+        profileMode = structureModel.hasProfileMode();
 
         smallBodyPicker = new vtkCellPicker();
         smallBodyPicker.PickFromListOn();
@@ -71,25 +81,18 @@ public class LinePicker extends Picker
         }
         smallBodyPicker.AddLocator(smallBodyModel.getCellLocator());
 
-        linePicker = new vtkCellPicker();
-        linePicker.PickFromListOn();
-        linePicker.InitializePickList();
-        vtkPropCollection linePickList = linePicker.GetPickList();
-        linePickList.RemoveAllItems();
-        linePicker.AddPickList(lineModel.getLineActor());
-
-        lineSelectionPicker = new vtkCellPicker();
-        lineSelectionPicker.PickFromListOn();
-        lineSelectionPicker.InitializePickList();
-        vtkPropCollection lineSelectionPickList = lineSelectionPicker.GetPickList();
-        lineSelectionPickList.RemoveAllItems();
-        lineSelectionPicker.AddPickList(lineModel.getLineSelectionActor());
+        structureSelectionPicker = new vtkCellPicker();
+        structureSelectionPicker.PickFromListOn();
+        structureSelectionPicker.InitializePickList();
+        vtkPropCollection structureSelectionPickList = structureSelectionPicker.GetPickList();
+        structureSelectionPickList.RemoveAllItems();
+        structureSelectionPicker.AddPickList(structureModel.getSelectionActor());
     }
 
     public void mousePressed(MouseEvent e)
     {
-        // If we pressed a vertex of an existing lineament, begin dragging that vertex.
-        // If we pressed a point on the body, begin drawing a new line.
+        // If we pressed a vertex of an existing structure, begin dragging that vertex.
+        // If we pressed a point on the body, begin adding a new control point.
 
 
         vertexIdBeingEdited = -1;
@@ -100,30 +103,30 @@ public class LinePicker extends Picker
             if (e.getButton() != MouseEvent.BUTTON1 && e.getButton() != MouseEvent.BUTTON3)
                 return;
 
-            int pickSucceeded = doPick(e, lineSelectionPicker, renWin);
+            int pickSucceeded = doPick(e, structureSelectionPicker, renWin);
             if (pickSucceeded == 1)
             {
-                vtkActor pickedActor = lineSelectionPicker.GetActor();
+                vtkActor pickedActor = structureSelectionPicker.GetActor();
 
-                if (pickedActor == lineModel.getLineSelectionActor())
+                if (pickedActor == structureModel.getSelectionActor())
                 {
                     if (e.getButton() == MouseEvent.BUTTON1)
                     {
-                        vertexIdBeingEdited = lineSelectionPicker.GetCellId();
+                        vertexIdBeingEdited = structureSelectionPicker.GetCellId();
 
                         if (profileMode)
                         {
-                            int lineId = lineModel.getLineIdFromSelectionCellId(vertexIdBeingEdited);
-                            lineModel.selectStructure(lineId);
+                            int lineId = structureModel.getStructureIdFromSelectionCellId(vertexIdBeingEdited);
+                            structureModel.selectStructure(lineId);
                         }
 
-                        lineModel.selectCurrentLineVertex(vertexIdBeingEdited);
+                        structureModel.selectCurrentStructureVertex(vertexIdBeingEdited);
                     }
                     else
                     {
                         vertexIdBeingEdited = -1;
                         if (profileMode)
-                            lineModel.selectStructure(-1);
+                            structureModel.selectStructure(-1);
                     }
                 }
             }
@@ -145,7 +148,7 @@ public class LinePicker extends Picker
                     double[] pos = smallBodyPicker.GetPickPosition();
                     if (e.getClickCount() == 1)
                     {
-                        lineModel.insertVertexIntoSelectedLine(pos);
+                        structureModel.insertVertexIntoSelectedStructure(pos);
                     }
                 }
             }
@@ -161,9 +164,9 @@ public class LinePicker extends Picker
             int vertexId = vertexIdBeingEdited;
 
             if (profileMode)
-                vertexId = lineModel.getVertexIdFromSelectionCellId(vertexIdBeingEdited);
+                vertexId = structureModel.getVertexIdFromSelectionCellId(vertexIdBeingEdited);
 
-            lineModel.updateSelectedLineVertex(vertexId, lastDragPosition);
+            structureModel.updateSelectedStructureVertex(vertexId, lastDragPosition);
         }
 
         vertexIdBeingEdited = -1;
@@ -188,7 +191,7 @@ public class LinePicker extends Picker
                 {
                     lastDragPosition = smallBodyPicker.GetPickPosition();
 
-                    lineModel.moveSelectionVertex(vertexIdBeingEdited, lastDragPosition);
+                    structureModel.moveSelectionVertex(vertexIdBeingEdited, lastDragPosition);
                 }
             }
         }
@@ -197,7 +200,7 @@ public class LinePicker extends Picker
 
     public void mouseMoved(MouseEvent e)
     {
-        int pickSucceeded = doPick(e, lineSelectionPicker, renWin);
+        int pickSucceeded = doPick(e, structureSelectionPicker, renWin);
 
         // If we're in profile mode, then do not allow dragging of a vertex if we're
         // in the middle of creating a new profile. We can determine if we're in the
@@ -206,17 +209,17 @@ public class LinePicker extends Picker
         boolean profileModeOkToDrag = true;
         if (profileMode)
         {
-            int lineId = lineModel.getNumberOfStructures() - 1;
+            int lineId = structureModel.getNumberOfStructures() - 1;
             if (lineId >= 0)
             {
-                Line line = (Line)lineModel.getStructure(lineId);
+                Line line = (Line)structureModel.getStructure(lineId);
                 if (line.controlPointIds.size() < 2)
                     profileModeOkToDrag = false;
             }
         }
 
         if (pickSucceeded == 1 &&
-            lineSelectionPicker.GetActor() == lineModel.getLineSelectionActor() &&
+            structureSelectionPicker.GetActor() == structureModel.getSelectionActor() &&
             profileModeOkToDrag)
         {
             if (renWin.getCursor().getType() != Cursor.HAND_CURSOR)
@@ -244,7 +247,7 @@ public class LinePicker extends Picker
         int keyCode = e.getKeyCode();
         if (keyCode == KeyEvent.VK_DELETE || keyCode == KeyEvent.VK_BACK_SPACE)
         {
-            lineModel.removeCurrentLineVertex();
+            structureModel.removeCurrentStructureVertex();
         }
     }
 }

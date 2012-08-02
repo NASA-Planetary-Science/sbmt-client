@@ -47,6 +47,7 @@ import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.PointModel;
+import edu.jhuapl.near.model.PolygonModel;
 import edu.jhuapl.near.model.eros.DEMModel;
 import edu.jhuapl.near.model.eros.MapletBoundaryCollection;
 import edu.jhuapl.near.pick.PickManager;
@@ -103,6 +104,7 @@ public class TopoViewer extends JFrame
         lineModel.setMaximumVerticesPerLine(2);
         allModels.put(ModelNames.SMALL_BODY, dem);
         allModels.put(ModelNames.LINE_STRUCTURES, lineModel);
+        allModels.put(ModelNames.POLYGON_STRUCTURES, new PolygonModel(dem));
         allModels.put(ModelNames.CIRCLE_STRUCTURES, new CircleModel(dem));
         allModels.put(ModelNames.ELLIPSE_STRUCTURES, new EllipseModel(dem));
         allModels.put(ModelNames.POINT_STRUCTURES, new PointModel(dem));
@@ -424,8 +426,8 @@ public class TopoViewer extends JFrame
                 lineModel.addNewStructure();
                 lineModel.selectStructure(lineId);
                 lineModel.setStructureColor(lineId, color);
-                lineModel.insertVertexIntoSelectedLine(p1);
-                lineModel.insertVertexIntoSelectedLine(p2);
+                lineModel.insertVertexIntoSelectedStructure(p1);
+                lineModel.insertVertexIntoSelectedStructure(p2);
 
                 ++lineId;
 

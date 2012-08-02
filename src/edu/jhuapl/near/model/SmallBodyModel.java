@@ -453,6 +453,19 @@ public class SmallBodyModel extends Model
         return PolyDataUtil.drawPathOnPolyData(smallBodyPolyData, pointLocator, pt1, pt2);
     }
 
+    public void drawPolygon(
+            ArrayList<LatLon> controlPoints,
+            vtkPolyData outputInterior,
+            vtkPolyData outputBoundary)
+    {
+        PolyDataUtil.drawPolygonOnPolyData(
+                smallBodyPolyData,
+                pointLocator,
+                controlPoints,
+                outputInterior,
+                outputBoundary);
+    }
+
     public void drawRegularPolygon(
             double[] center,
             double radius,

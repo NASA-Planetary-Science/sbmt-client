@@ -531,6 +531,41 @@ public class MathUtil
         return (0.25* Math.sqrt(Math.abs(4.0*a*c - (a-b+c)*(a-b+c))));
     }
 
+    /**
+     * Adapted from VTK's version. Computes (unnormalized) triangle normal
+     */
+    static public void triangleNormalDirection(double[] v1, double[] v2,
+            double[] v3, double[] n)
+    {
+        double ax, ay, az, bx, by, bz;
+
+        // order is important!!! maintain consistency with triangle vertex order
+        ax = v3[0] - v2[0]; ay = v3[1] - v2[1]; az = v3[2] - v2[2];
+        bx = v1[0] - v2[0]; by = v1[1] - v2[1]; bz = v1[2] - v2[2];
+
+        n[0] = (ay * bz - az * by);
+        n[1] = (az * bx - ax * bz);
+        n[2] = (ax * by - ay * bx);
+    }
+
+    /**
+     * Adapted from VTK's version. Computes (normalized) triangle normal.
+     */
+    static public void triangleNormal(double[] v1, double[] v2,
+            double[] v3, double[] n)
+    {
+        double length;
+
+        triangleNormalDirection(v1, v2, v3, n);
+
+        if ( (length = Math.sqrt((n[0]*n[0] + n[1]*n[1] + n[2]*n[2]))) != 0.0 )
+        {
+            n[0] /= length;
+            n[1] /= length;
+            n[2] /= length;
+        }
+    }
+
     static public void barycentricCoords(double[] x, double[] p1, double[] p2, double[] p3, double[] bcoords)
     {
         double area1 = triangleArea(x, p2, p3);

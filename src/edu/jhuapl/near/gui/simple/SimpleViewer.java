@@ -25,6 +25,7 @@ import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.PointModel;
+import edu.jhuapl.near.model.PolygonModel;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.simple.SimpleSmallBody;
 import edu.jhuapl.near.pick.PickManager;
@@ -116,6 +117,7 @@ public class SimpleViewer extends Viewer
         HashMap<String, Model> allModels = new HashMap<String, Model>();
         allModels.put(ModelNames.SMALL_BODY, smallBodyModel);
         allModels.put(ModelNames.LINE_STRUCTURES, new LineModel(smallBodyModel));
+        allModels.put(ModelNames.POLYGON_STRUCTURES, new PolygonModel(smallBodyModel));
         allModels.put(ModelNames.CIRCLE_STRUCTURES, new CircleModel(smallBodyModel));
         allModels.put(ModelNames.POINT_STRUCTURES, new PointModel(smallBodyModel));
         allModels.put(ModelNames.ELLIPSE_STRUCTURES, new EllipseModel(smallBodyModel));

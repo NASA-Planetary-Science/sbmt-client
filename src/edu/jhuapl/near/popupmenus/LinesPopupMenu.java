@@ -96,14 +96,14 @@ public class LinesPopupMenu extends StructuresPopupMenu
     public void showPopup(MouseEvent e, vtkProp pickedProp, int pickedCellId,
             double[] pickedPosition)
     {
-        if (model.getLineActor() == pickedProp)
+        if (model.getStructureActor() == pickedProp)
         {
             this.cellIdLastClicked = pickedCellId;
             getChangeColorAction().setInvoker(e.getComponent());
             getChangeColorAction().setStructureIndex(cellIdLastClicked);
             show(e.getComponent(), e.getX(), e.getY());
         }
-        else if (model.getLineSelectionActor() == pickedProp)
+        else if (model.getSelectionActor() == pickedProp)
         {
             this.cellIdLastClicked = model.getSelectedStructureIndex();
             show(e.getComponent(), e.getX(), e.getY());

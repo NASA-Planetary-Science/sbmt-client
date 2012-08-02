@@ -13,6 +13,7 @@ import java.util.Collections;
 
 import vtk.vtkAbstractPointLocator;
 import vtk.vtkAlgorithmOutput;
+import vtk.vtkAppendPolyData;
 import vtk.vtkCellArray;
 import vtk.vtkCleanPolyData;
 import vtk.vtkClipPolyData;
@@ -38,6 +39,7 @@ import vtk.vtkRegularPolygonSource;
 import vtk.vtkSphere;
 import vtk.vtkTransform;
 import vtk.vtkTransformPolyDataFilter;
+import vtk.vtkTriangle;
 import vtk.vtksbCellLocator;
 
 /**
@@ -870,6 +872,368 @@ public class PolyDataUtil
             return null;
     }
 
+    private static boolean determineIfNeedToReverseTriangleVertices(
+            vtkPolyData polyData,
+            vtkAbstractPointLocator pointLocator,
+            ArrayList<LatLon> controlPoints)
+    {
+        // Determine if we need to reverse the ordering of the triangle vertices.
+        // Do this as follows: Compute the mean normal to the shape model at the 3 vertices.
+        // Then compute the normal to the triangle. If the two vectors face opposite direction
+        // then return false, otherwise return true.
+
+        double[] pt1 = MathUtil.latrec(controlPoints.get(0));
+        double[] pt2 = MathUtil.latrec(controlPoints.get(1));
+        double[] pt3 = MathUtil.latrec(controlPoints.get(2));
+
+        double[] normal1 = getPolyDataNormalAtPoint(pt1, polyData, pointLocator);
+        double[] normal2 = getPolyDataNormalAtPoint(pt2, polyData, pointLocator);
+        double[] normal3 = getPolyDataNormalAtPoint(pt3, polyData, pointLocator);
+        double[] normalOfShapeModel = {
+                (normal1[0] + normal2[0] + normal3[0])/3.0,
+                (normal1[1] + normal2[1] + normal3[1])/3.0,
+                (normal1[2] + normal2[2] + normal3[2])/3.0
+        };
+
+        // Now compute the normal of the triangle
+        double[] normalOfTriangle = new double[3];
+        MathUtil.triangleNormal(pt1, pt2, pt3, normalOfTriangle);
+
+        return MathUtil.vdot(normalOfShapeModel, normalOfTriangle) > 0.0;
+    }
+
+
+    public static void drawTriangleOnPolyData(
+            vtkPolyData polyData,
+            vtkAbstractPointLocator pointLocator,
+            ArrayList<LatLon> controlPoints,
+            vtkPolyData outputInterior,
+            vtkPolyData outputBoundary)
+    {
+        if (controlPoints.size() != 3)
+        {
+            System.err.println("Must have exactly 3 vertices for triangle");
+            return;
+        }
+
+        // Determine if we need to reverse the ordering of the vertices.
+        if (determineIfNeedToReverseTriangleVertices(polyData, pointLocator, controlPoints))
+        {
+            // First clone the control points so we don't modify array passed into function
+            ArrayList<LatLon> clone = new ArrayList<LatLon>(controlPoints.size());
+            for (LatLon llr : controlPoints) clone.add((LatLon)llr.clone());
+            controlPoints = clone;
+            Collections.reverse(controlPoints);
+        }
+
+        // List holding vtk objects to delete at end of function
+        ArrayList<vtkObject> d = new ArrayList<vtkObject>();
+
+        int numberOfSides = controlPoints.size();
+
+        vtkPolyData nextInput = polyData;
+        vtkClipPolyData clipPolyData = null;
+        for (int i=0; i<numberOfSides; ++i)
+        {
+            double[] pt1 = MathUtil.latrec(controlPoints.get(i));
+            double[] pt2 = null;
+            if (i < numberOfSides-1)
+                pt2 = MathUtil.latrec(controlPoints.get(i+1));
+            else
+                pt2 = MathUtil.latrec(controlPoints.get(0));
+
+            double[] normal1 = getPolyDataNormalAtPoint(pt1, polyData, pointLocator);
+            double[] normal2 = getPolyDataNormalAtPoint(pt2, polyData, pointLocator);
+
+            double[] avgNormal = new double[3];
+            avgNormal[0] = (normal1[0] + normal2[0])/2.0;
+            avgNormal[1] = (normal1[1] + normal2[1])/2.0;
+            avgNormal[2] = (normal1[2] + normal2[2])/2.0;
+
+            double[] vec1 = {pt1[0]-pt2[0], pt1[1]-pt2[1], pt1[2]-pt2[2]};
+
+            double[] normal = new double[3];
+            MathUtil.vcrss(vec1, avgNormal, normal);
+            MathUtil.vhat(normal, normal);
+
+            vtkPlane plane = new vtkPlane();
+            plane.SetOrigin(pt1);
+            plane.SetNormal(normal);
+
+
+            //if (i > clipFilters.size()-1)
+            //    clipFilters.add(new vtkClipPolyData());
+            //clipPolyData = clipFilters.get(i);
+            clipPolyData = new vtkClipPolyData();
+            d.add(clipPolyData);
+            clipPolyData.SetInput(nextInput);
+            clipPolyData.SetClipFunction(plane);
+            clipPolyData.SetInsideOut(1);
+            //clipPolyData.Update();
+
+            nextInput = clipPolyData.GetOutput();
+            d.add(nextInput);
+
+            //if (i > clipOutputs.size()-1)
+            //    clipOutputs.add(nextInput);
+            //clipOutputs.set(i, nextInput);
+        }
+
+        clipPolyData.Update();
+
+        vtkPolyDataConnectivityFilter connectivityFilter = new vtkPolyDataConnectivityFilter();
+        d.add(connectivityFilter);
+        vtkAlgorithmOutput clipPolyDataOutput = clipPolyData.GetOutputPort();
+        d.add(clipPolyDataOutput);
+        connectivityFilter.SetInputConnection(clipPolyDataOutput);
+        connectivityFilter.SetExtractionModeToClosestPointRegion();
+        connectivityFilter.SetClosestPoint(MathUtil.latrec(controlPoints.get(0)));
+        connectivityFilter.Update();
+
+        //        polyData = new vtkPolyData();
+        //if (outputPolyData == null)
+        //    outputPolyData = new vtkPolyData();
+
+        if (outputInterior != null)
+        {
+            vtkPolyData connectivityFilterOutput = connectivityFilter.GetOutput();
+            d.add(connectivityFilterOutput);
+            outputInterior.DeepCopy(connectivityFilterOutput);
+        }
+
+        if (outputBoundary != null)
+        {
+            // Compute the bounding edges of this surface
+            vtkFeatureEdges edgeExtracter = new vtkFeatureEdges();
+            d.add(edgeExtracter);
+            vtkAlgorithmOutput connectivityFilterOutput = connectivityFilter.GetOutputPort();
+            d.add(connectivityFilterOutput);
+            edgeExtracter.SetInputConnection(connectivityFilterOutput);
+            edgeExtracter.BoundaryEdgesOn();
+            edgeExtracter.FeatureEdgesOff();
+            edgeExtracter.NonManifoldEdgesOff();
+            edgeExtracter.ManifoldEdgesOff();
+            edgeExtracter.Update();
+
+            vtkPolyData edgeExtracterOutput = edgeExtracter.GetOutput();
+            d.add(edgeExtracterOutput);
+            outputBoundary.DeepCopy(edgeExtracterOutput);
+        }
+
+
+        for (vtkObject o : d)
+            o.Delete();
+    }
+
+    public static void drawPolygonOnPolyData(
+            vtkPolyData polyData,
+            vtkAbstractPointLocator pointLocator,
+            ArrayList<LatLon> controlPoints,
+            vtkPolyData outputInterior,
+            vtkPolyData outputBoundary)
+    {
+        ArrayList<LatLon> originalControlPoints = controlPoints;
+        ArrayList<LatLon> clone = new ArrayList<LatLon>(controlPoints.size());
+        for (LatLon llr : controlPoints) clone.add((LatLon)llr.clone());
+        controlPoints = clone;
+
+        // Do a sort of ear-clipping algorithm to break up the polygon into triangles.
+        int numTriangles = controlPoints.size()-2;
+        if (numTriangles < 1)
+        {
+            vtkPolyData empty = new vtkPolyData();
+            if (outputInterior!=null) outputInterior.DeepCopy(empty);
+            if (outputBoundary!=null) outputBoundary.DeepCopy(empty);
+            empty.Delete();
+            return;
+        }
+
+        vtkGenericCell genericCell = new vtkGenericCell();
+
+        int[] ids = new int[3];
+        ArrayList<LatLon> cp = new ArrayList<LatLon>();
+        ArrayList<vtkPolyData> triangles = new ArrayList<vtkPolyData>();
+
+        // Preallocate these arrays
+        for (int i=0;i<3;++i) cp.add(null);
+        for (int i=0;i<numTriangles;++i) triangles.add(new vtkPolyData());
+
+        for (int i=0; i<numTriangles; ++i)
+        {
+            int numPoints = controlPoints.size();
+            for (int j=0; j<numPoints; ++j)
+            {
+                // Go through consecutive triplets of vertices and check if it is an ear.
+                if (j == 0)
+                {
+                    ids[0] = numPoints-1;
+                    ids[1] = 0;
+                    ids[2] = 1;
+                }
+                else if (j == numPoints-1)
+                {
+                    ids[0] = numPoints-2;
+                    ids[1] = numPoints-1;
+                    ids[2] = 0;
+                }
+                else
+                {
+                    ids[0] = j-1;
+                    ids[1] = j;
+                    ids[2] = j+1;
+                }
+                cp.set(0, controlPoints.get(ids[0]));
+                cp.set(1, controlPoints.get(ids[1]));
+                cp.set(2, controlPoints.get(ids[2]));
+
+                drawTriangleOnPolyData(polyData, pointLocator, cp, triangles.get(i), null);
+
+                // Test if the other vertices intersect this triangle. If not, then this is a valid ear.
+                vtksbCellLocator cellLocator = new vtksbCellLocator();
+                cellLocator.SetDataSet(triangles.get(i));
+                cellLocator.CacheCellBoundsOn();
+                cellLocator.AutomaticOn();
+                cellLocator.BuildLocator();
+
+                boolean intersects = false;
+                for (int k=0; k<numPoints; ++k)
+                {
+                    if (k!=ids[0] && k!=ids[1] && k!=ids[2])
+                    {
+                        // See if the other points touch this triangle by intersecting a ray from the origin
+                        // in the direction of the point.
+                        double[] origin = {0.0, 0.0, 0.0};
+                        double tol = 1e-6;
+                        double[] t = new double[1];
+                        double[] x = new double[3];
+                        double[] pcoords = new double[3];
+                        int[] subId = new int[1];
+                        int[] cellId = new int[1];
+                        double[] lookPt = MathUtil.latrec(controlPoints.get(k));
+                        // Scale the control point
+                        MathUtil.vscl(2.0, lookPt, lookPt);
+
+                        int result = cellLocator.IntersectWithLine(origin, lookPt, tol, t, x, pcoords, subId, cellId, genericCell);
+                        if (result > 0)
+                        {
+                            intersects = true;
+                            break;
+                        }
+                    }
+                }
+
+                cellLocator.Delete();
+
+                if (!intersects)
+                {
+                    // Remove the ear point from the list of control points and break out of
+                    // the inner loop.
+                    controlPoints.remove(j);
+                    break;
+                }
+            }
+        }
+
+        // Now combine all the triangles into a single mesh. A simple clean poly
+        // data should do the trick with merge points on.
+        vtkAppendPolyData appendFilter = new vtkAppendPolyData();
+        appendFilter.UserManagedInputsOn();
+        appendFilter.SetNumberOfInputs(triangles.size());
+        for (int i=0; i<numTriangles; ++i)
+        {
+            vtkPolyData poly = triangles.get(i);
+            if (poly != null)
+                appendFilter.SetInputByNumber(i, poly);
+        }
+        appendFilter.Update();
+        vtkAlgorithmOutput appendFilterOutput = appendFilter.GetOutputPort();
+
+        vtkCleanPolyData cleanFilter = new vtkCleanPolyData();
+        cleanFilter.PointMergingOn();
+        cleanFilter.SetTolerance(0.0);
+        cleanFilter.ConvertLinesToPointsOn();
+        cleanFilter.ConvertPolysToLinesOn();
+        cleanFilter.ConvertStripsToPolysOn();
+        cleanFilter.SetInputConnection(appendFilterOutput);
+        cleanFilter.Update();
+
+        if (outputInterior != null)
+        {
+            vtkPolyData cleanFilterOutput = cleanFilter.GetOutput();
+            outputInterior.DeepCopy(cleanFilterOutput);
+        }
+
+
+        if (outputBoundary != null)
+        {
+            // Note we cannot use vtkFeatureEdges since the polygon really consists of
+            // multiple triangles concatenated together and we would end up having edges
+            // that cut through the polygon.
+            drawClosedLoopOnPolyData(polyData, pointLocator, originalControlPoints, outputBoundary);
+
+            /*
+            vtkFeatureEdges edgeExtracter = new vtkFeatureEdges();
+            vtkAlgorithmOutput cleanFilterOutput = cleanFilter.GetOutputPort();
+            edgeExtracter.SetInputConnection(cleanFilterOutput);
+            edgeExtracter.BoundaryEdgesOn();
+            edgeExtracter.FeatureEdgesOff();
+            edgeExtracter.NonManifoldEdgesOff();
+            edgeExtracter.ManifoldEdgesOff();
+            edgeExtracter.Update();
+
+            vtkPolyData edgeExtracterOutput = edgeExtracter.GetOutput();
+            outputBoundary.DeepCopy(edgeExtracterOutput);
+            */
+        }
+    }
+
+    public static void drawClosedLoopOnPolyData(
+            vtkPolyData polyData,
+            vtkAbstractPointLocator pointLocator,
+            ArrayList<LatLon> controlPoints,
+            vtkPolyData outputBoundary)
+    {
+        int numPoints = controlPoints.size();
+        if (numPoints < 2)
+        {
+            vtkPolyData empty = new vtkPolyData();
+            if (outputBoundary!=null) outputBoundary.DeepCopy(empty);
+            empty.Delete();
+            return;
+        }
+
+        vtkAppendPolyData appendFilter = new vtkAppendPolyData();
+        appendFilter.UserManagedInputsOff();
+
+        double[] pt1 = null;
+        double[] pt2 = null;
+        for (int i=0; i<numPoints; ++i)
+        {
+            pt1 = MathUtil.latrec(controlPoints.get(i));
+            if (i < numPoints-1)
+                pt2 = MathUtil.latrec(controlPoints.get(i+1));
+            else
+                pt2 = MathUtil.latrec(controlPoints.get(0));
+
+            vtkPolyData poly = drawPathOnPolyData(polyData, pointLocator, pt1, pt2);
+
+            // Remove normals (which we don't need) as this causes an error
+            // in the Append filter.
+            poly.GetPointData().SetNormals(null);
+            appendFilter.AddInput(poly);
+        }
+        appendFilter.Update();
+        vtkAlgorithmOutput appendFilterOutput = appendFilter.GetOutputPort();
+
+        vtkCleanPolyData cleanFilter = new vtkCleanPolyData();
+        cleanFilter.PointMergingOn();
+        cleanFilter.SetTolerance(0.0);
+        cleanFilter.SetInputConnection(appendFilterOutput);
+        cleanFilter.Update();
+        vtkPolyData cleanFilterOutput = cleanFilter.GetOutput();
+
+        outputBoundary.ShallowCopy(cleanFilterOutput);
+    }
 
     public static void drawConeOnPolyData(
             vtkPolyData polyData,
@@ -1091,6 +1455,56 @@ public class PolyDataUtil
         pointData.Delete();
         pointNormals.Delete();
         points.Delete();
+    }
+
+
+    /**
+     * Compute and return the surface area of a polydata. This function assumes
+     * the cells of the polydata are all triangles.
+     * @param polydata
+     * @return
+     */
+    static public double computeSurfaceArea(vtkPolyData polydata)
+    {
+        int numberOfCells = polydata.GetNumberOfCells();
+
+        double totalArea = 0.0;
+        for (int i=0; i<numberOfCells; ++i)
+        {
+            totalArea += ((vtkTriangle)polydata.GetCell(i)).ComputeArea();
+        }
+
+        return totalArea;
+    }
+
+    /**
+     * Compute and return the length of a polyline. This function assumes the cells
+     * of the polydata are all lines.
+     * @param polyline
+     * @return
+     */
+    static public double computeLength(vtkPolyData polyline)
+    {
+        vtkPoints points = polyline.GetPoints();
+        vtkCellArray lines = polyline.GetLines();
+        vtkIdTypeArray idArray = lines.GetData();
+
+        int size = idArray.GetNumberOfTuples();
+        double totalLength = 0.0;
+        int index = 0;
+        while (index < size)
+        {
+            int numPointsPerLine = idArray.GetValue(index++);
+            for (int i=0; i<numPointsPerLine-1; ++i)
+            {
+                double[] pt0 = points.GetPoint(idArray.GetValue(index));
+                double[] pt1 = points.GetPoint(idArray.GetValue(++index));
+                totalLength += MathUtil.distanceBetween(pt0, pt1);
+            }
+            ++index;
+        }
+
+        return totalLength;
     }
 
 
