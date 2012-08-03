@@ -7,7 +7,59 @@
 <body>
 	<h1>Recent Changes</h1>
 
+	<h3>August 2012</h3>
+
+	<ul>
+		<li>A new polygons tab has been created for drawing polygon
+			structures. This works similar to the Paths shape and works by
+			placing and dragging control points. The surface area and perimeter
+			length are shown in the table on the left for each polygon. Both
+			convex and concave polygons are supported. However, polygons with
+			crossovers are not drawn correctly and should be avoided (though the
+			tool will not prevent it). Out of all the shapes, polygons are the
+			most expensive to render. Also, as more control points are added, the longer it
+			takes to render.
+		<li>In the structures tab, a new button is provided on the bottom
+			for changing line thickness of structures. This is enabled for all
+			shape types with the exception of Points.
+		<li>In the lidar search tab, there is now a button called
+			"Translate Tracks...". When pressed, a dialog window will open
+			allowing you explicitly specify the translation (3 cartesian
+			coordinates in kilometers). All tracks will then get shifted by this
+			amount.
+		<li>In the lidar search tab, there is now a "Drag Tracks" toggle
+			button. When pressed, a new "drag mode" will be activated which
+			disables standard navigation around the asteroid and allows you to
+			drag the tracks around. As you drag around, the tracks get shifted
+			such that the selected point is moved to the location on the asteroid
+			the mouse is currently positioned over. If there is no selected
+			point, nothing happens. (Note the "selected point" is the point shown
+			in blue after clicking and for which some information about it is
+			shown in the status bar)
+		<li>In the lidar search tabs, there is a new checkbox called
+			"Show Track Error". When pressed, the error of the displaced tracks
+			is shown to the right of the checkbox. This error is computed as the
+			mean distance between each lidar point and its closest point on the
+			asteroid (expressed in km). This error is computed using only the
+			visible tracks, not tracks that are currently hidden. This error is
+			updated every time you make a change to the tracks, e.g. change
+			translation or offset or hide/show a track. There may be a
+			performance penalty for calculating the error which is why this
+			option is provided to disable it. (Note that if you change the
+			resolution level of the asteroid, the error does not get updated. You
+			will then need to uncheck and recheck it to show the correct error).
+		<li>In the lidar search tabs, there is now an option for loading
+			a track you previously saved to disk (using the "Save Track..."
+			option). Click this button, choose the track file and the track will
+			load and replace any existing tracks in the list. Note that it is
+			currently only possible to have a single track loaded from file at a
+			time. You cannot load more than one track at a time from files.
+		<li>Fixed a bug which prevented running the tool using Java
+			version 7 on some Linux systems.
+	</ul>
+
 	<h3>July 2012</h3>
+
 	<ul>
 		<li>For paths that consists of exactly 2 control points, you can
 			right-click on it and select an option for saving a profile. A
@@ -15,7 +67,7 @@
 			path. The file is formatted as a CSV file with the first column being
 			distance and the second elevation. If the current shape model
 			contains elevation data for each plate (which you would normally use
-			to color the spape model in the leftmost tab), then that is used. If
+			to color the shape model in the leftmost tab), then that is used. If
 			no elevation is available, then the user is prompted asking if the
 			tool should evaluate elevation as the distance between a point on the
 			path and the center of the asteroid. While not as accurate as true
@@ -40,6 +92,7 @@
 	</ul>
 
 	<h3>June 2012</h3>
+
 	<ul>
 		<li>When right-clicking on an image, there is now an option to
 			change its opacity
@@ -145,6 +198,7 @@
 			the Source dropdown menu at the top of the AMICA tab and then
 			pressing Search (all the search options are ignored in this case).
 			Work on adding additional corrected images is currently in progress.
+
 	</ul>
 
 	<h3>April 2012</h3>
