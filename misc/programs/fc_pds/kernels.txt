@@ -32,7 +32,7 @@ KERNELS_TO_LOAD = (
                    '/project/nearsdc/spice-kernels/dawn+'
                    '/dawn_rec_110831-110928_111221_v1.bsp'
                    '/project/nearsdc/spice-kernels/dawn+'
-                   '/dawn_rec_110928-111102_111221_v1.bsp'
+                   '/dawn_rec_110928-111102_120615_v1.bsp'
                    '/project/nearsdc/spice-kernels/dawn+'
                    '/dawn_rec_111102-111210_120618_v1.bsp'
                    '/project/nearsdc/spice-kernels/dawn+'
