@@ -38,7 +38,8 @@ public class ViewerManager extends JPanel
         // Gaskell models
         builtInViewers.add(new ErosViewer(statusBar));
         builtInViewers.add(new ItokawaViewer(statusBar));
-        builtInViewers.add(new VestaViewer(statusBar));
+        if (Configuration.isAPLVersion()) // Vesta is currently restricted
+            builtInViewers.add(new VestaViewer(statusBar));
         builtInViewers.add(new SimpleGaskellViewer(statusBar, "Mimas", "/MIMAS"));
         builtInViewers.add(new SimpleGaskellViewer(statusBar, "Phoebe", "/PHOEBE"));
         builtInViewers.add(new SimpleGaskellViewer(statusBar, "Phobos", "/PHOBOS"));
