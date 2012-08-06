@@ -125,7 +125,7 @@ public class VestaModelGenerator
                 writer.Write();
 
                 // Generate the coordinate grid
-                String gridfile = outputdir + "/Vesta_coordinate_grid_res" + i + ".vtk";
+                String gridfile = outputdir + "/coordinate_grid_res" + i + ".vtk";
 
                 vtkPolyData vestaPolyData = new vtkPolyData();
                 vestaPolyData.DeepCopy(vestaReader.GetOutput());
