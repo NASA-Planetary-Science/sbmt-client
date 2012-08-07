@@ -156,6 +156,11 @@ public class ColorImage extends Model implements PropertyChangeListener
         if (footprint == null)
             throw new NoOverlapException();
 
+        // Need to clear out scalar data since if coloring data is being shown,
+        // then the color might mix-in with the image.
+        footprint.GetCellData().SetScalars(null);
+        footprint.GetPointData().SetScalars(null);
+
         int IMAGE_WIDTH = redImage.getImageWidth();
         int IMAGE_HEIGHT = redImage.getImageHeight();
 

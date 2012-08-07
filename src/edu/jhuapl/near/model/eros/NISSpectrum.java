@@ -199,6 +199,11 @@ public class NISSpectrum extends Model implements PropertyChangeListener
 
             if (tmp != null)
             {
+                // Need to clear out scalar data since if coloring data is being shown,
+                // then the color might mix-in with the image.
+                tmp.GetCellData().SetScalars(null);
+                tmp.GetPointData().SetScalars(null);
+
                 footprint.DeepCopy(tmp);
 
                 shiftedFootprint.DeepCopy(tmp);

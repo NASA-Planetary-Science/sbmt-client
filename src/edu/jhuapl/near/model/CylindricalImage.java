@@ -495,6 +495,11 @@ public class CylindricalImage extends Image
 
         smallBodyPolyData = clipOutTextureLongitudeAndGenerateTextureCoordinates(smallBodyPolyData);
 
+        // Need to clear out scalar data since if coloring data is being shown,
+        // then the color might mix-in with the image.
+        smallBodyPolyData.GetCellData().SetScalars(null);
+        smallBodyPolyData.GetPointData().SetScalars(null);
+
         imagePolyData.DeepCopy(smallBodyPolyData);
 
         shiftedImagePolyData.DeepCopy(imagePolyData);

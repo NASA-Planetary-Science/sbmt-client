@@ -908,6 +908,11 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
             if (tmp == null)
                 return;
 
+            // Need to clear out scalar data since if coloring data is being shown,
+            // then the color might mix-in with the image.
+            tmp.GetCellData().SetScalars(null);
+            tmp.GetPointData().SetScalars(null);
+
             footprint.DeepCopy(tmp);
 
             vtkPointData pointData = footprint.GetPointData();
