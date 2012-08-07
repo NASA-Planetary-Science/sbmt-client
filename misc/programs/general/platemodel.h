@@ -62,6 +62,16 @@ public:
                     );
     }
 
+    double getPlateArea(int i)
+    {
+        const Plate& p = plates[i];
+        return TriangleArea(
+                    vertices[p.cell[0]].point,
+                    vertices[p.cell[1]].point,
+                    vertices[p.cell[2]].point
+                    );
+    }
+
     int getNumberOfPoints()
     {
         return vertices.size();

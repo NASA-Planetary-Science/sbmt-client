@@ -71,5 +71,8 @@ target_link_libraries(propagator lidar)
 add_executable(gravity gravity.cpp)
 target_link_libraries(gravity lidar)
 
+add_executable(elevation-slope elevation-slope.cpp)
+target_link_libraries(elevation-slope lidar)
+
 add_executable( cam-est camera_est/cam-est.cpp )
 target_link_libraries( cam-est lidar )
