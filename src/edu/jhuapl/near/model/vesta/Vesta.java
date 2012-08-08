@@ -27,16 +27,18 @@ public class Vesta extends SmallBodyModel
     };
 
     static private final String[] coloringFiles = {
+        "/VESTA/Vesta_Slope",
+        "/VESTA/Vesta_Elevation",
         "/VESTA/Vesta_GravitationalAcceleration",
         "/VESTA/Vesta_GravitationalPotential"
     };
 
     static private final String[] coloringNames = {
-        GravAccStr, GravPotStr
+        SlopeStr, ElevStr, GravAccStr, GravPotStr
     };
 
     static private final String[] coloringUnits = {
-        GravAccUnitsStr, GravPotUnitsStr
+        SlopeUnitsStr, ElevUnitsStr, GravAccUnitsStr, GravPotUnitsStr
     };
 
     public Vesta()
