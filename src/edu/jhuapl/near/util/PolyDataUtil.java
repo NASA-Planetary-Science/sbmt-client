@@ -872,6 +872,115 @@ public class PolyDataUtil
             return null;
     }
 
+    private static boolean determineIfPolygonIsClockwise(
+            vtkPolyData polyData,
+            vtkAbstractPointLocator pointLocator,
+            ArrayList<LatLon> controlPoints)
+    {
+        // To determine if a polygon is clockwise or counterclockwise we do the following:
+        // 1. First compute the mean normal of the polygon by averaging the shape model
+        //    normals at all the control points
+        // 2. Then compute the mean normal by summing the cross products of all adjacent
+        //    edges.
+        // 3. If the dot product of the normals computed in steps 1 and 2 are negative,
+        //    then the polygon is counterclockwise, otherwise it's clockwise.
+
+        int numPoints = controlPoints.size();
+
+        // Step 1
+        double[] normal = {0.0, 0.0, 0.0};
+        for (LatLon llr : controlPoints)
+        {
+            double[] pt = MathUtil.latrec(llr);
+            double[] normalAtPt = getPolyDataNormalAtPoint(pt, polyData, pointLocator);
+            normal[0] += normalAtPt[0];
+            normal[1] += normalAtPt[1];
+            normal[2] += normalAtPt[2];
+        }
+        MathUtil.vhat(normal, normal);
+
+        // Step 2
+        double[] normal2 = {0.0, 0.0, 0.0};
+        for (int i=0; i<numPoints; ++i)
+        {
+            double[] pt1 = MathUtil.latrec(controlPoints.get(i));
+            double[] pt0 = null;
+            double[] pt2 = null;
+            if (i == 0)
+            {
+                pt0 = MathUtil.latrec(controlPoints.get(numPoints-1));
+                pt2 = MathUtil.latrec(controlPoints.get(i+1));
+            }
+            else if (i == numPoints-1)
+            {
+                pt0 = MathUtil.latrec(controlPoints.get(numPoints-2));
+                pt2 = MathUtil.latrec(controlPoints.get(0));
+            }
+            else
+            {
+                pt0 = MathUtil.latrec(controlPoints.get(i-1));
+                pt2 = MathUtil.latrec(controlPoints.get(i+1));
+            }
+
+            double[] edge0 = {pt0[0]-pt1[0], pt0[1]-pt1[1], pt0[2]-pt1[2]};
+            double[] edge1 = {pt2[0]-pt1[0], pt2[1]-pt1[1], pt2[2]-pt1[2]};
+            double[] cross = new double[3];
+            MathUtil.vcrss(edge0, edge1, cross);
+
+            normal2[0] += cross[0];
+            normal2[1] += cross[1];
+            normal2[2] += cross[2];
+        }
+        MathUtil.vhat(normal2, normal2);
+
+        // Step 3
+        return MathUtil.vdot(normal, normal2) > 0.0;
+    }
+
+    /**
+     * Determine if a triangle formed from 3 consecutive vertices of a polygon
+     * contain a reflex vertex. A triangle with reflex vertex is one whose
+     * interior is actually outside of the polygon rather than inside. In order
+     * to determine if a triangle contains a reflex vertex, one must know if the
+     * polygon is clockwise or counterclockwise (which is provided as an argument
+     * to this function).
+     *
+     * @param polyData
+     * @param pointLocator
+     * @param controlPoints
+     * @param isClockwise
+     * @return
+     */
+    private static boolean determineIfTriangleContainsReflexVertex(
+            vtkPolyData polyData,
+            vtkAbstractPointLocator pointLocator,
+            ArrayList<LatLon> controlPoints,
+            boolean isClockwise)
+    {
+        // First compute mean normal to shape model at vertices
+        double[] pt1 = MathUtil.latrec(controlPoints.get(0));
+        double[] pt2 = MathUtil.latrec(controlPoints.get(1));
+        double[] pt3 = MathUtil.latrec(controlPoints.get(2));
+
+        double[] normal1 = getPolyDataNormalAtPoint(pt1, polyData, pointLocator);
+        double[] normal2 = getPolyDataNormalAtPoint(pt2, polyData, pointLocator);
+        double[] normal3 = getPolyDataNormalAtPoint(pt3, polyData, pointLocator);
+        double[] normalOfShapeModel = {
+                (normal1[0] + normal2[0] + normal3[0])/3.0,
+                (normal1[1] + normal2[1] + normal3[1])/3.0,
+                (normal1[2] + normal2[2] + normal3[2])/3.0
+        };
+
+        // Now compute the normal of the triangle
+        double[] normalOfTriangle = new double[3];
+        MathUtil.triangleNormal(pt1, pt2, pt3, normalOfTriangle);
+
+        if (isClockwise)
+            return MathUtil.vdot(normalOfShapeModel, normalOfTriangle) > 0.0;
+        else
+            return MathUtil.vdot(normalOfShapeModel, normalOfTriangle) <= 0.0;
+    }
+
     private static boolean determineIfNeedToReverseTriangleVertices(
             vtkPolyData polyData,
             vtkAbstractPointLocator pointLocator,
@@ -1058,6 +1167,9 @@ public class PolyDataUtil
         for (int i=0;i<3;++i) cp.add(null);
         for (int i=0;i<numTriangles;++i) triangles.add(new vtkPolyData());
 
+        boolean isClockwise = determineIfPolygonIsClockwise(
+                polyData, pointLocator, originalControlPoints);
+
         for (int i=0; i<numTriangles; ++i)
         {
             int numPoints = controlPoints.size();
@@ -1085,6 +1197,13 @@ public class PolyDataUtil
                 cp.set(0, (LatLon) controlPoints.get(ids[0]).clone());
                 cp.set(1, (LatLon) controlPoints.get(ids[1]).clone());
                 cp.set(2, (LatLon) controlPoints.get(ids[2]).clone());
+
+                // First check to see if it's a reflex vertex, and, if so, continue
+                // to next triplet
+                if (determineIfTriangleContainsReflexVertex(polyData, pointLocator, cp, isClockwise))
+                {
+                    continue;
+                }
 
                 drawTriangleOnPolyData(polyData, pointLocator, cp, triangles.get(i), null);
 
