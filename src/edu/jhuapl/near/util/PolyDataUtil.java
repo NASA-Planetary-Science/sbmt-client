@@ -1082,9 +1082,9 @@ public class PolyDataUtil
                     ids[1] = j;
                     ids[2] = j+1;
                 }
-                cp.set(0, controlPoints.get(ids[0]));
-                cp.set(1, controlPoints.get(ids[1]));
-                cp.set(2, controlPoints.get(ids[2]));
+                cp.set(0, (LatLon) controlPoints.get(ids[0]).clone());
+                cp.set(1, (LatLon) controlPoints.get(ids[1]).clone());
+                cp.set(2, (LatLon) controlPoints.get(ids[2]).clone());
 
                 drawTriangleOnPolyData(polyData, pointLocator, cp, triangles.get(i), null);
 
@@ -1134,8 +1134,7 @@ public class PolyDataUtil
             }
         }
 
-        // Now combine all the triangles into a single mesh. A simple clean poly
-        // data should do the trick with merge points on.
+        // Now combine all the triangles into a single mesh.
         vtkAppendPolyData appendFilter = new vtkAppendPolyData();
         appendFilter.UserManagedInputsOn();
         appendFilter.SetNumberOfInputs(triangles.size());
@@ -1149,11 +1148,10 @@ public class PolyDataUtil
         vtkAlgorithmOutput appendFilterOutput = appendFilter.GetOutputPort();
 
         vtkCleanPolyData cleanFilter = new vtkCleanPolyData();
-        cleanFilter.PointMergingOn();
-        cleanFilter.SetTolerance(0.0);
-        cleanFilter.ConvertLinesToPointsOn();
-        cleanFilter.ConvertPolysToLinesOn();
-        cleanFilter.ConvertStripsToPolysOn();
+        cleanFilter.PointMergingOff();
+        cleanFilter.ConvertLinesToPointsOff();
+        cleanFilter.ConvertPolysToLinesOff();
+        cleanFilter.ConvertStripsToPolysOff();
         cleanFilter.SetInputConnection(appendFilterOutput);
         cleanFilter.Update();
 
