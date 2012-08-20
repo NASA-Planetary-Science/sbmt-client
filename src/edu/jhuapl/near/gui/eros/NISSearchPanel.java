@@ -250,7 +250,7 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
                 toEmissionTextField,
                 0.0,
                 180.0,
-                "Emissiom from",
+                "Emission from",
                 "to",
                 "degrees");
 
