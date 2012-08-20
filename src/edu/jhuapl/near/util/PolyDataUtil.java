@@ -872,6 +872,10 @@ public class PolyDataUtil
             return null;
     }
 
+    /*
+
+     // Old version. Doesn't work so well.
+
     private static boolean determineIfPolygonIsClockwise(
             vtkPolyData polyData,
             vtkAbstractPointLocator pointLocator,
@@ -936,6 +940,90 @@ public class PolyDataUtil
         // Step 3
         return MathUtil.vdot(normal, normal2) > 0.0;
     }
+    */
+
+    private static boolean determineIfPolygonIsClockwise(
+            vtkPolyData polyData,
+            vtkAbstractPointLocator pointLocator,
+            ArrayList<LatLon> controlPoints)
+    {
+        // To determine if a polygon is clockwise or counterclockwise we do the following:
+        // 1. First compute the centroid and mean normal of the polygon by averaging the shape model
+        //    normals at all the control points.
+        // 2. Then project each point onto the plane formed using the centroid and normal computed from step 1
+        //    and also find the projected point that is farthest from centroid.
+        // 3. This farthest point is assumed to lie on the convex hull of the polygon. Therefore we can use
+        //    the two edges that share this point to determine if the polygon is clockwise.
+        //    (See https://en.wikipedia.org/wiki/Curve_orientation)
+
+        int numPoints = controlPoints.size();
+
+        // Step 1
+        double[] normal = {0.0, 0.0, 0.0};
+        double[] centroid = {0.0, 0.0, 0.0};
+        for (LatLon llr : controlPoints)
+        {
+            double[] pt = MathUtil.latrec(llr);
+            centroid[0] += pt[0];
+            centroid[1] += pt[1];
+            centroid[2] += pt[2];
+            double[] normalAtPt = getPolyDataNormalAtPoint(pt, polyData, pointLocator);
+            normal[0] += normalAtPt[0];
+            normal[1] += normalAtPt[1];
+            normal[2] += normalAtPt[2];
+        }
+        MathUtil.vhat(normal, normal);
+        centroid[0] /= numPoints;
+        centroid[1] /= numPoints;
+        centroid[2] /= numPoints;
+
+        // Step 2
+        double dist = -Double.MAX_VALUE;
+        int farthestProjectedPointIdx = 0;
+        ArrayList<Object> projectedPoints = new ArrayList<Object>();
+        for (int i=0; i<numPoints; ++i)
+        {
+            double[] pt1 = MathUtil.latrec(controlPoints.get(i));
+            double[] projectedPoint = new double[3];
+            MathUtil.vprjp(pt1, normal, centroid, projectedPoint);
+            double d = MathUtil.distance2Between(centroid, projectedPoint);
+            if (d > dist)
+            {
+                dist = d;
+                farthestProjectedPointIdx = i;
+            }
+            projectedPoints.add(projectedPoint);
+        }
+
+        // Step 3
+        double[] pt1 = (double[])projectedPoints.get(farthestProjectedPointIdx);
+        double[] pt0 = null;
+        double[] pt2 = null;
+        if (farthestProjectedPointIdx == 0)
+        {
+            pt0 = (double[])projectedPoints.get(numPoints-1);
+            pt2 = (double[])projectedPoints.get(1);
+        }
+        else if (farthestProjectedPointIdx == numPoints-1)
+        {
+            pt0 = (double[])projectedPoints.get(numPoints-2);
+            pt2 = (double[])projectedPoints.get(0);
+        }
+        else
+        {
+            pt0 = (double[])projectedPoints.get(farthestProjectedPointIdx-1);
+            pt2 = (double[])projectedPoints.get(farthestProjectedPointIdx+1);
+        }
+
+        double[] edge0 = {pt1[0]-pt0[0], pt1[1]-pt0[1], pt1[2]-pt0[2]};
+        double[] edge1 = {pt2[0]-pt1[0], pt2[1]-pt1[1], pt2[2]-pt1[2]};
+        double[] cross = new double[3];
+        MathUtil.vcrss(edge0, edge1, cross);
+        MathUtil.vhat(cross, cross);
+
+        return MathUtil.vdot(normal, cross) < 0.0;
+    }
+
 
     /**
      * Determine if a triangle formed from 3 consecutive vertices of a polygon
