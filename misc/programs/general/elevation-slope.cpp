@@ -77,7 +77,7 @@ static void loadAcceleration(const string& filename, vector<PlateData>& plateDat
 }
 
 
-static double computeRefGeoid(Platemodel* polyData, vector<PlateData> platedata)
+static double computeRefPotential(Platemodel* polyData, vector<PlateData> platedata)
 {
     int numFaces = polyData->getNumberOfPlates();
 
@@ -128,7 +128,10 @@ int main(int argc, char** argv)
     loadPotential(potentialfile, platedata);
     loadAcceleration(accfile, platedata);
 
-    double refGeoid = computeRefGeoid(polyData, platedata);
+    double refPotential = computeRefPotential(polyData, platedata);
+
+    cout.precision(16);
+    cout << scientific << "reference potential = " << refPotential << endl;
 
     ofstream foutE(outputElev.c_str());
     if (!foutE.is_open())
@@ -146,11 +149,10 @@ int main(int argc, char** argv)
     }
     foutS.precision(16);
 
-    // Compute the edge data
     for (int i=0; i<numFaces; ++i)
     {
         // Compute elevation
-        double elevation = (platedata[i].potential - refGeoid) / platedata[i].accMag;
+        double elevation = (platedata[i].potential - refPotential) / platedata[i].accMag;
 
         // Compute slope
         double cellNormal[3];
