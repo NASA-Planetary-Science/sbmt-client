@@ -3,6 +3,7 @@
 #include <libgen.h>
 #include <vector>
 #include <string>
+#include <stdlib.h>
 #include "platemodel.h"
 #include "util.h"
 #include "mathutil.h"
