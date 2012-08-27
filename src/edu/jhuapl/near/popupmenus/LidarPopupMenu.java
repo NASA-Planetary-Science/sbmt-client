@@ -137,7 +137,7 @@ public class LidarPopupMenu extends PopupMenu
             try
             {
                 if (file != null)
-                    lidarModel.saveTrack(currentTrack, file);
+                    lidarModel.saveTrack(currentTrack, file, false);
             }
             catch (IOException e1)
             {

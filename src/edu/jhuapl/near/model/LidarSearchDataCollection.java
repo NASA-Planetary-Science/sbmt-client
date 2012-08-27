@@ -417,7 +417,17 @@ public abstract class LidarSearchDataCollection extends Model
         track.stopId = size-1;
     }
 
-    public void saveTrack(int trackId, File outfile) throws IOException
+    /**
+     * If transformPoint is true, then the lidar points (not scpos) are translated using the current
+     * radial offset and translation before being saved out. If false, the original points
+     * are saved out unmodified.
+     *
+     * @param trackId
+     * @param outfile
+     * @param transformPoint
+     * @throws IOException
+     */
+    public void saveTrack(int trackId, File outfile, boolean transformPoint) throws IOException
     {
         FileWriter fstream = new FileWriter(outfile);
         BufferedWriter out = new BufferedWriter(fstream);
@@ -430,13 +440,16 @@ public abstract class LidarSearchDataCollection extends Model
         for (int i=startId; i<=stopId; ++i)
         {
             LidarPoint pt = originalPoints.get(i);
+            double[] target = pt.target;
+            if (transformPoint)
+                target = transformPoint(target);
 
             Date date = new Date(pt.time);
 
             out.write(sdf.format(date).replace(' ', 'T') + " " +
-                    pt.target[0] + " " +
-                    pt.target[1] + " " +
-                    pt.target[2] + " " +
+                    target[0] + " " +
+                    target[1] + " " +
+                    target[2] + " " +
                     pt.scpos[0] + " " +
                     pt.scpos[1] + " " +
                     pt.scpos[2] + " " +
@@ -753,7 +766,8 @@ public abstract class LidarSearchDataCollection extends Model
                 for (int i=startId; i<=stopId; ++i)
                 {
                     LidarPoint lp = originalPoints.get(i);
-                    fitter.addObservedPoint(1.0, (double)(lp.time-t0)/1000.0, lp.target[j]);
+                    double[] target = transformPoint(lp.target);
+                    fitter.addObservedPoint(1.0, (double)(lp.time-t0)/1000.0, target[j]);
                 }
 
                 PolynomialFunction fitted = fitter.fit();
@@ -765,7 +779,8 @@ public abstract class LidarSearchDataCollection extends Model
             // Set the fittedLinePoint to the point on the line closest to first track point
             // as this makes it easier to do distance computations along the line.
             double[] dist = new double[1];
-            MathUtil.nplnpt(lineStartPoint, fittedLineDirection, originalPoints.get(startId).target, fittedLinePoint, dist);
+            double[] target = transformPoint(originalPoints.get(startId).target);
+            MathUtil.nplnpt(lineStartPoint, fittedLineDirection, target, fittedLinePoint, dist);
         }
         catch (Exception e)
         {
@@ -814,7 +829,7 @@ public abstract class LidarSearchDataCollection extends Model
                 smallBodyModel.getServerPathToShapeModelFileInPlateFormat());
         gravityProgram.setShapeModelFile(file.getAbsolutePath());
         File trackFile = new File(Configuration.getTempFolder() + File.separator + "track.txt");
-        saveTrack(trackId, trackFile);
+        saveTrack(trackId, trackFile, true);
         gravityProgram.setTrackFile(trackFile.getAbsolutePath());
         Process process = gravityProgram.runGravity();
         process.waitFor();
