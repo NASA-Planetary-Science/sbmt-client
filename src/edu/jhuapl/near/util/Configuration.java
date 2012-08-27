@@ -157,4 +157,17 @@ public class Configuration
     {
         return getApplicationDataDir() + File.separator + "custom-data";
     }
+
+    static public String getTempFolder()
+    {
+        String tmpDir = getApplicationDataDir() + File.separator + "tmp";
+        File dir = new File(tmpDir);
+        if (!dir.exists())
+        {
+            dir.mkdirs();
+        }
+
+        return tmpDir;
+    }
+
 }

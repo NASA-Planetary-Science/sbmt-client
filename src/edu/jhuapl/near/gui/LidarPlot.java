@@ -2,9 +2,22 @@ package edu.jhuapl.near.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 
+import javax.swing.AbstractAction;
 import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import org.jfree.chart.ChartFactory;
@@ -28,32 +41,45 @@ import edu.jhuapl.near.model.LidarSearchDataCollection;
 public class LidarPlot extends JFrame implements ChartMouseListener
 {
     private LidarSearchDataCollection lidarModel;
-    private XYDataset potentialDistanceDataset;
-    private XYDataset potentialTimeDataset;
-    private XYSeries potentialDistanceDataSeries;
-    private XYSeries potentialTimeDataSeries;
-    private XYSeries potentialDistanceSelectionSeries;
-    private XYSeries potentialTimeSelectionSeries;
+    private XYDataset distanceDataset;
+    private XYDataset timeDataset;
+    private XYSeries distanceDataSeries;
+    private XYSeries timeDataSeries;
+    private XYSeries distanceSelectionSeries;
+    private XYSeries timeSelectionSeries;
+    private ArrayList<Double> data;
+    private ArrayList<Double> distance;
+    private ArrayList<Long> time;
+    private String name;
 
-    public LidarPlot(LidarSearchDataCollection lidarModel, int trackId)
+    public LidarPlot(LidarSearchDataCollection lidarModel,
+            ArrayList<Double> data,
+            ArrayList<Double> distance,
+            ArrayList<Long> time,
+            String name,
+            String units)
     {
         this.lidarModel = lidarModel;
+        this.data = data;
+        this.distance = distance;
+        this.time = time;
+        this.name = name;
 
         setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 
         JPanel panel = new JPanel(new BorderLayout());
 
         {
-            potentialDistanceSelectionSeries = new XYSeries("Lidar Selection");
-            potentialDistanceDataSeries = new XYSeries("Lidar Potential");
+            distanceSelectionSeries = new XYSeries("Lidar Selection");
+            distanceDataSeries = new XYSeries("Lidar Data");
 
-            potentialDistanceDataset = new XYSeriesCollection();
-            ((XYSeriesCollection)potentialDistanceDataset).addSeries(potentialDistanceSelectionSeries);
-            ((XYSeriesCollection)potentialDistanceDataset).addSeries(potentialDistanceDataSeries);
+            distanceDataset = new XYSeriesCollection();
+            ((XYSeriesCollection)distanceDataset).addSeries(distanceSelectionSeries);
+            ((XYSeriesCollection)distanceDataset).addSeries(distanceDataSeries);
 
             JFreeChart chart1 = ChartFactory.createXYLineChart
-            ("Potential vs. Distance", "Distance (km)", "Potential (J/kg)",
-                    potentialDistanceDataset, PlotOrientation.VERTICAL, false, true, false);
+            (name + " vs. Distance", "Distance (km)", name + " (" + units + ")",
+                    distanceDataset, PlotOrientation.VERTICAL, false, true, false);
 
             // add the jfreechart graph
             ChartPanel chartPanel = new ChartPanel(chart1);
@@ -79,19 +105,16 @@ public class LidarPlot extends JFrame implements ChartMouseListener
         }
 
         {
-            potentialTimeSelectionSeries = new XYSeries("Lidar Selection");
-            potentialTimeDataSeries = new XYSeries("Lidar Potential");
+            timeSelectionSeries = new XYSeries("Lidar Selection");
+            timeDataSeries = new XYSeries("Lidar Data");
 
-            potentialTimeDataset = new XYSeriesCollection();
-            ((XYSeriesCollection)potentialTimeDataset).addSeries(potentialTimeSelectionSeries);
-            ((XYSeriesCollection)potentialTimeDataset).addSeries(potentialTimeDataSeries);
+            timeDataset = new XYSeriesCollection();
+            ((XYSeriesCollection)timeDataset).addSeries(timeSelectionSeries);
+            ((XYSeriesCollection)timeDataset).addSeries(timeDataSeries);
 
             JFreeChart chart2 = ChartFactory.createXYLineChart
-                    ("Potential vs. Time", "Time (sec)", "Potential (J/kg)",
-                            potentialTimeDataset, PlotOrientation.VERTICAL, false, true, false);
-//            JFreeChart chart2 = ChartFactory.createTimeSeriesChart
-//              ("Lidar Potential vs. Time", "Time (sec)", "Potential (J/kg)",
-//                  xyDataset, true, true, false);
+                    (name + " vs. Time", "Time (sec)", name + " (" + units + ")",
+                            timeDataset, PlotOrientation.VERTICAL, false, true, false);
 
             // add the jfreechart graph
             ChartPanel chartPanel = new ChartPanel(chart2);
@@ -116,67 +139,79 @@ public class LidarPlot extends JFrame implements ChartMouseListener
 
         }
 
-        updateData(trackId);
+        updateData();
 
         add(panel, BorderLayout.CENTER);
 
+        createMenus();
 
-        setTitle("Potential");
+        setTitle(name);
         pack();
         setVisible(true);
     }
 
-    private void updateData(int trackId)
+    private void createMenus()
+    {
+        JMenuBar menuBar = new JMenuBar();
+
+        JMenu fileMenu = new JMenu("File");
+
+        JMenuItem mi = new JMenuItem(new ExportDataAction());
+        fileMenu.add(mi);
+
+        fileMenu.setMnemonic('F');
+        menuBar.add(fileMenu);
+
+        setJMenuBar(menuBar);
+    }
+
+    private void updateData()
     {
         selectPoint(-1);
 
-        ArrayList<Double> potential = new ArrayList<Double>();
-        ArrayList<Double> distance = new ArrayList<Double>();
-        lidarModel.getPotentialVsDistance(trackId, potential, distance);
-
-        potentialDistanceDataSeries.clear();
-        if (potential.size() > 0 && distance.size() > 0)
+        distanceDataSeries.clear();
+        if (data.size() > 0 && distance.size() > 0)
         {
-            for (int i=0; i<potential.size(); ++i)
-                potentialDistanceDataSeries.add(distance.get(i), potential.get(i), false);
+            for (int i=0; i<data.size(); ++i)
+            {
+                distanceDataSeries.add(distance.get(i), data.get(i), false);
+            }
         }
-        potentialDistanceDataSeries.fireSeriesChanged();
+        distanceDataSeries.fireSeriesChanged();
 
 
 
-        potential.clear();
-        ArrayList<Long> time = new ArrayList<Long>();
-        lidarModel.getPotentialVsTime(trackId, potential, time);
-
-        potentialTimeDataSeries.clear();
-        if (potential.size() > 0 && time.size() > 0)
+        timeDataSeries.clear();
+        if (data.size() > 0 && time.size() > 0)
         {
             long t0 = time.get(0);
-            for (int i=0; i<potential.size(); ++i)
-                potentialTimeDataSeries.add((double)(time.get(i)-t0)/1000.0, potential.get(i), false);
+            for (int i=0; i<data.size(); ++i)
+            {
+                timeDataSeries.add((double)(time.get(i)-t0)/1000.0, data.get(i), false);
+            }
         }
-        potentialTimeDataSeries.fireSeriesChanged();
+        timeDataSeries.fireSeriesChanged();
     }
 
 
     public void selectPoint(int ptId)
     {
-        potentialDistanceSelectionSeries.clear();
+        distanceSelectionSeries.clear();
         if (ptId >= 0)
         {
-            potentialDistanceSelectionSeries.add(
-                    potentialDistanceDataSeries.getX(ptId),
-                    potentialDistanceDataSeries.getY(ptId), true);
+            distanceSelectionSeries.add(
+                    distanceDataSeries.getX(ptId),
+                    distanceDataSeries.getY(ptId), true);
         }
 
 
 
-        potentialTimeSelectionSeries.clear();
+        timeSelectionSeries.clear();
         if (ptId >= 0)
         {
-            potentialTimeSelectionSeries.add(
-                    potentialTimeDataSeries.getX(ptId),
-                    potentialTimeDataSeries.getY(ptId), true);
+            timeSelectionSeries.add(
+                    timeDataSeries.getX(ptId),
+                    timeDataSeries.getY(ptId), true);
         }
     }
 
@@ -196,4 +231,52 @@ public class LidarPlot extends JFrame implements ChartMouseListener
     public void chartMouseMoved(ChartMouseEvent arg0)
     {
     }
+
+    private class ExportDataAction extends AbstractAction
+    {
+        private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.US);
+
+        public ExportDataAction()
+        {
+            super("Export Data...");
+        }
+
+        public void actionPerformed(ActionEvent actionEvent)
+        {
+            File file = CustomFileChooser.showSaveDialog(LidarPlot.this, "Export Data", name + ".txt");
+
+            try
+            {
+                if (file != null)
+                {
+                    FileWriter fstream = new FileWriter(file);
+                    BufferedWriter out = new BufferedWriter(fstream);
+
+                    String newline = System.getProperty("line.separator");
+
+                    out.write(name + " Distance Time" + newline);
+
+                    int size = data.size();
+                    for (int i=0; i<size; ++i)
+                    {
+                        Date date = new Date(time.get(i));
+                        out.write(data.get(i) + " " +
+                                distance.get(i) + " " +
+                                sdf.format(date).replace(' ', 'T') + newline);
+                    }
+                    out.close();
+                }
+            }
+            catch (IOException e1)
+            {
+                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(LidarPlot.this),
+                        "Unable to save file to " + file.getAbsolutePath(),
+                        "Error Saving File",
+                        JOptionPane.ERROR_MESSAGE);
+                e1.printStackTrace();
+            }
+
+        }
+    }
+
 }

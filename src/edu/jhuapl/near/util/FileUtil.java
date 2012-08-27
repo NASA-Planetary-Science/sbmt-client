@@ -54,6 +54,35 @@ public class FileUtil
     }
 
     /**
+     * The function takes a file and returns its contents as a list of double,
+     * assuming the file contains one double value per line.
+     * @param filename file to read
+     * @return contents of file as list of strings
+     * @throws IOException
+     */
+    public static ArrayList<Double> getFileLinesAsDoubleList(String filename) throws IOException
+    {
+        InputStream fs = new FileInputStream(filename);
+        if (filename.toLowerCase().endsWith(".gz"))
+            fs = new GZIPInputStream(fs);
+        InputStreamReader isr = new InputStreamReader(fs);
+        BufferedReader in = new BufferedReader(isr);
+
+        ArrayList<Double> values = new ArrayList<Double>();
+        String line;
+
+        while ((line = in.readLine()) != null)
+        {
+            values.add(Double.parseDouble(line));
+        }
+
+        in.close();
+
+        return values;
+    }
+
+
+    /**
      * The function takes a file and returns its contents as a list of strings,
      * one word per string.
      * @param filename file to read

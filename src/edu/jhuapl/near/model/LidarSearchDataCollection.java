@@ -35,7 +35,10 @@ import vtk.vtkProp;
 import vtk.vtkUnsignedCharArray;
 
 import edu.jhuapl.near.util.ColorUtil;
+import edu.jhuapl.near.util.Configuration;
 import edu.jhuapl.near.util.FileCache;
+import edu.jhuapl.near.util.FileUtil;
+import edu.jhuapl.near.util.GravityProgram;
 import edu.jhuapl.near.util.LatLon;
 import edu.jhuapl.near.util.MathUtil;
 import edu.jhuapl.near.util.Properties;
@@ -543,6 +546,18 @@ public abstract class LidarSearchDataCollection extends Model
         return displayedPointToOriginalPointMap.indexOf(ptId);
     }
 
+    private double[] transformPoint(double[] pt)
+    {
+        if (radialOffset != 0.0)
+        {
+            LatLon lla = MathUtil.reclat(pt);
+            lla.rad += radialOffset;
+            pt = MathUtil.latrec(lla);
+        }
+
+        return new double[]{pt[0]+translation[0], pt[1]+translation[1], pt[2]+translation[2]};
+    }
+
     private void updateTrackPolydata()
     {
         // Place the points into polydata
@@ -568,14 +583,8 @@ public abstract class LidarSearchDataCollection extends Model
                 for (int i=startId; i<=stopId; ++i)
                 {
                     double[] pt = originalPoints.get(i).target;
-                    if (radialOffset != 0.0)
-                    {
-                        LatLon lla = MathUtil.reclat(pt);
-                        lla.rad += radialOffset;
-                        pt = MathUtil.latrec(lla);
-                    }
-
-                    points.InsertNextPoint(pt[0]+translation[0], pt[1]+translation[1], pt[2]+translation[2]);
+                    pt = transformPoint(pt);
+                    points.InsertNextPoint(pt);
 
                     idList.SetId(0, count);
                     vert.InsertNextCell(idList);
@@ -778,58 +787,66 @@ public abstract class LidarSearchDataCollection extends Model
     }
 
     /**
-     * Returns the potential plotted as a function of distance for the masked points
-     * @param potential
-     * @param distance
+     * Run gravity program on specified track and return potential, acceleration,
+     * and elevation as function of distance and time.
+     * @param trackId
+     * @throws InterruptedException
      */
-    public void getPotentialVsDistance(int trackId,
+    public void getGravityDataForTrack(
+            int trackId,
             ArrayList<Double> potential,
-            ArrayList<Double> distance)
+            ArrayList<Double> acceleration,
+            ArrayList<Double> elevation,
+            ArrayList<Double> distance,
+            ArrayList<Long> time) throws InterruptedException, IOException
     {
-        potential.clear();
-        distance.clear();
-
         Track track = tracks.get(trackId);
 
         if (originalPoints.size() == 0 || track.startId < 0 || track.stopId < 0)
-            return;
+            throw new IOException();
+
+        // Run the gravity program
+        GravityProgram gravityProgram = new GravityProgram();
+        gravityProgram.setDensity(smallBodyModel.getDensity());
+        gravityProgram.setRotationRate(smallBodyModel.getRotationRate());
+        gravityProgram.setRefPotential(smallBodyModel.getReferencePotential());
+        File file = FileCache.getFileFromServer(
+                smallBodyModel.getServerPathToShapeModelFileInPlateFormat());
+        gravityProgram.setShapeModelFile(file.getAbsolutePath());
+        File trackFile = new File(Configuration.getTempFolder() + File.separator + "track.txt");
+        saveTrack(trackId, trackFile);
+        gravityProgram.setTrackFile(trackFile.getAbsolutePath());
+        Process process = gravityProgram.runGravity();
+        process.waitFor();
+
+
+        potential.clear();
+        acceleration.clear();
+        elevation.clear();
+        distance.clear();
+        time.clear();
+
+        String filename = gravityProgram.getPotentialFile();
+        potential.addAll(FileUtil.getFileLinesAsDoubleList(filename));
+        filename = gravityProgram.getAccelerationMagnitudeFile();
+        acceleration.addAll(FileUtil.getFileLinesAsDoubleList(filename));
+        filename = gravityProgram.getElevationFile();
+        elevation.addAll(FileUtil.getFileLinesAsDoubleList(filename));
+
 
         double[] fittedLinePoint = new double[3];
         double[] fittedLineDirection = new double[3];
         fitLineToTrack(trackId, fittedLinePoint, fittedLineDirection);
-
         for (int i=track.startId; i<=track.stopId; ++i)
         {
             double[] point = originalPoints.get(i).target;
+            point = transformPoint(point);
             double dist = distanceOfClosestPointOnLineToStartOfLine(point, trackId, fittedLinePoint, fittedLineDirection);
-            potential.add(originalPoints.get(i).potential);
             distance.add(dist);
-        }
-    }
-
-    /**
-     * Returns the potential plotted as a function of time for the masked points
-     * @param potential
-     * @param time
-     */
-    public void getPotentialVsTime(int trackId,
-            ArrayList<Double> potential,
-            ArrayList<Long> time)
-    {
-        potential.clear();
-        time.clear();
-
-        Track track = tracks.get(trackId);
-
-        if (originalPoints.size() == 0 || track.startId < 0 || track.stopId < 0)
-            return;
-
-        for (int i=track.startId; i<=track.stopId; ++i)
-        {
-            potential.add(originalPoints.get(i).potential);
             time.add(originalPoints.get(i).time);
         }
     }
+
 
     /**
      * select a point

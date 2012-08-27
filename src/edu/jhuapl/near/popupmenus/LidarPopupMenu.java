@@ -21,6 +21,7 @@ import edu.jhuapl.near.gui.CustomFileChooser;
 import edu.jhuapl.near.gui.LidarPlot;
 import edu.jhuapl.near.model.LidarSearchDataCollection;
 import edu.jhuapl.near.util.ColorUtil;
+import edu.jhuapl.near.util.Configuration;
 
 public class LidarPopupMenu extends PopupMenu
 {
@@ -169,8 +170,42 @@ public class LidarPopupMenu extends PopupMenu
     {
         public void actionPerformed(ActionEvent e)
         {
-            LidarPlot lidarPlot = new LidarPlot(lidarModel, currentTrack);
-            lidarPlot.setVisible(true);
+            if (Configuration.isWindows())
+            {
+                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(invoker),
+                        "This feature is currently not supported in Windows platforms. Please try using Linux\n" +
+                        "or Mac OS X instead. We apologize for any inconvenience.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+
+                return;
+            }
+
+            try
+            {
+                ArrayList<Double> potential = new ArrayList<Double>();
+                ArrayList<Double> acceleration = new ArrayList<Double>();
+                ArrayList<Double> elevation = new ArrayList<Double>();
+                ArrayList<Double> distance = new ArrayList<Double>();
+                ArrayList<Long> time = new ArrayList<Long>();
+
+                lidarModel.getGravityDataForTrack(currentTrack, potential, acceleration, elevation, distance, time);
+
+                LidarPlot lidarPlot = new LidarPlot(lidarModel, potential, distance, time, "Potential", "J/kg");
+                lidarPlot.setVisible(true);
+                lidarPlot = new LidarPlot(lidarModel, acceleration, distance, time, "Acceleration", "m/s^2");
+                lidarPlot.setVisible(true);
+                lidarPlot = new LidarPlot(lidarModel, elevation, distance, time, "Elevation", "m");
+                lidarPlot.setVisible(true);
+            }
+            catch (InterruptedException e1)
+            {
+                e1.printStackTrace();
+            }
+            catch (IOException e1)
+            {
+                e1.printStackTrace();
+            }
         }
     }
 

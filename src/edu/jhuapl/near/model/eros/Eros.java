@@ -46,4 +46,29 @@ public class Eros extends SmallBodyModel
                 ColoringValueType.CELLDATA,
                 true);
     }
+
+
+    @Override
+    public double getDensity()
+    {
+        return 2.67;
+    }
+
+    @Override
+    public double getRotationRate()
+    {
+        return 0.00033116576167064;
+    }
+
+    @Override
+    public double getReferencePotential()
+    {
+        return -5.3754370226447428e+01;
+    }
+
+    @Override
+    public String getServerPathToShapeModelFileInPlateFormat()
+    {
+        return "/EROS/ver64q.tab.gz";
+    }
 }

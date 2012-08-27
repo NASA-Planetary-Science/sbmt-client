@@ -55,4 +55,28 @@ public class Itokawa extends SmallBodyModel
         else
             return null;
     }
+
+    @Override
+    public double getDensity()
+    {
+        return 1.95;
+    }
+
+    @Override
+    public double getRotationRate()
+    {
+        return 0.000143857148947075;
+    }
+
+    @Override
+    public double getReferencePotential()
+    {
+        return -1.3692877423961147e-02;
+    }
+
+    @Override
+    public String getServerPathToShapeModelFileInPlateFormat()
+    {
+        return "/ITOKAWA/ver64q.tab.gz";
+    }
 }

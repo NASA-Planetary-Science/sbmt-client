@@ -1758,4 +1758,52 @@ public class SmallBodyModel extends Model
 
         return -1;
     }
+
+    /**
+     * Subclass should override this if it needs it. Currently only
+     * shape models with lidar data need this.
+     * Return density of shape model in g/cm^3.
+     * @return
+     */
+    public double getDensity()
+    {
+        return 0.0;
+    }
+
+    /**
+     * Subclass should override this if it needs it. Currently only
+     * shape models with lidar data need this.
+     * Return rotation rate in radians/sec.
+     * @return
+     */
+    public double getRotationRate()
+    {
+        return 0.0;
+    }
+
+    /**
+     * Subclass should override this if it needs it. Currently only
+     * shape models with lidar data need this.
+     * Return reference potential in m^2/sec^2. The reference potential
+     * is defined as SUM(P_p*A_p)/SUM(A_p), where P_p is the potential at the
+     * center of plate p, A_p is the area of plate p, and the sum is over
+     * all plates in the shape model.
+     * @return
+     */
+    public double getReferencePotential()
+    {
+        return 0.0;
+    }
+
+    /**
+     * Subclass should override this if it needs it. Currently only
+     * shape models with lidar data need this.
+     * Return path on server to shape model in PLT format. Needed because
+     * gravity program only supports PLT format, not VTK format.
+     * @return
+     */
+    public String getServerPathToShapeModelFileInPlateFormat()
+    {
+        return null;
+    }
 }
