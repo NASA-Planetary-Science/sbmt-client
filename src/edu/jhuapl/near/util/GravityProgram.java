@@ -73,6 +73,12 @@ public class GravityProgram
         processCommand.add("--cheng");
         processCommand.add(shapeModelFile);
 
+        // print out command
+        System.out.println("Running gravity program with this command:");
+        for (String s : processCommand)
+            System.out.print(s + " ");
+        System.out.println();
+
         Process process = processBuilder.start();
 
         return process;
