@@ -27,9 +27,11 @@ public class LidarPopupMenu extends PopupMenu
 {
     private Component invoker;
     private JMenu colorMenu;
+    private JMenu saveMenu;
     private ArrayList<JCheckBoxMenuItem> colorMenuItems = new ArrayList<JCheckBoxMenuItem>();
     private JMenuItem customTrackColorMenuItem;
-    private JMenuItem saveTrackMenuItem;
+    private JMenuItem saveTrackOriginalMenuItem;
+    private JMenuItem saveTrackModifiedMenuItem;
     private JMenuItem hideTrackMenuItem;
     private JMenuItem hideOtherTracksMenuItem;
     private JMenuItem plotTrackMenuItem;
@@ -56,9 +58,16 @@ public class LidarPopupMenu extends PopupMenu
         customTrackColorMenuItem.setText("Custom...");
         colorMenu.add(customTrackColorMenuItem);
 
-        saveTrackMenuItem = new JMenuItem(new SaveTrackAction());
-        saveTrackMenuItem.setText("Save track...");
-        this.add(saveTrackMenuItem);
+        saveMenu = new JMenu("Save track");
+        this.add(saveMenu);
+
+        saveTrackOriginalMenuItem = new JMenuItem(new SaveTrackAction(false));
+        saveTrackOriginalMenuItem.setText("Unmodified...");
+        saveMenu.add(saveTrackOriginalMenuItem);
+
+        saveTrackModifiedMenuItem = new JMenuItem(new SaveTrackAction(true));
+        saveTrackModifiedMenuItem.setText("Radial offset and translation applied...");
+        saveMenu.add(saveTrackModifiedMenuItem);
 
         hideTrackMenuItem = new JCheckBoxMenuItem(new HideTrackAction());
         hideTrackMenuItem.setText("Hide track");
@@ -128,6 +137,13 @@ public class LidarPopupMenu extends PopupMenu
 
     private class SaveTrackAction extends AbstractAction
     {
+        private boolean transformTrack;
+
+        public SaveTrackAction(boolean transformTrack)
+        {
+            this.transformTrack = transformTrack;
+        }
+
         public void actionPerformed(ActionEvent e)
         {
             Component invoker = getInvoker();
@@ -137,7 +153,7 @@ public class LidarPopupMenu extends PopupMenu
             try
             {
                 if (file != null)
-                    lidarModel.saveTrack(currentTrack, file, false);
+                    lidarModel.saveTrack(currentTrack, file, transformTrack);
             }
             catch (IOException e1)
             {

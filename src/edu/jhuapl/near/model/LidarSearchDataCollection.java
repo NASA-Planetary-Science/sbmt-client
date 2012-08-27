@@ -80,14 +80,12 @@ public abstract class LidarSearchDataCollection extends Model
         public double[] target;
         public double[] scpos;
         public Long time;
-        public double potential;
 
-        public LidarPoint(double[] target, double[] scpos, long time, double potential)
+        public LidarPoint(double[] target, double[] scpos, long time)
         {
             this.target = target;
             this.scpos = scpos;
             this.time = time;
-            this.potential = potential;
         }
 
         public int compareTo(LidarPoint o)
@@ -241,7 +239,6 @@ public abstract class LidarSearchDataCollection extends Model
         int scxindex = 4;
         int scyindex = 5;
         int sczindex = 6;
-        int potentialIndex = 7;
 
         for (Integer cubeid : cubeList)
         {
@@ -275,14 +272,12 @@ public abstract class LidarSearchDataCollection extends Model
                 scpos[1] = Double.parseDouble(vals[scyindex]);
                 scpos[2] = Double.parseDouble(vals[sczindex]);
 
-                double potential = Double.parseDouble(vals[potentialIndex]);
-
                 double dist2 = 0.0;
                 if (selectionRegionCenter != null)
                     dist2 = line.DistanceToLine(target, selectionRegionCenter, point2);
                 if (dist2 <= radius2)
                 {
-                    originalPoints.add(new LidarPoint(target, scpos, time, potential));
+                    originalPoints.add(new LidarPoint(target, scpos, time));
                 }
             }
 
@@ -319,7 +314,6 @@ public abstract class LidarSearchDataCollection extends Model
         int scxindex = 4;
         int scyindex = 5;
         int sczindex = 6;
-        int potentialIndex = 7;
 
         InputStream fs = new FileInputStream(file.getAbsolutePath());
         InputStreamReader isr = new InputStreamReader(fs);
@@ -341,9 +335,7 @@ public abstract class LidarSearchDataCollection extends Model
             scpos[1] = Double.parseDouble(vals[scyindex]);
             scpos[2] = Double.parseDouble(vals[sczindex]);
 
-            double potential = Double.parseDouble(vals[potentialIndex]);
-
-            originalPoints.add(new LidarPoint(target, scpos, time, potential));
+            originalPoints.add(new LidarPoint(target, scpos, time));
         }
 
         in.close();
@@ -441,8 +433,12 @@ public abstract class LidarSearchDataCollection extends Model
         {
             LidarPoint pt = originalPoints.get(i);
             double[] target = pt.target;
+            double[] scpos = pt.scpos;
             if (transformPoint)
-                target = transformPoint(target);
+            {
+                target = transformLidarPoint(target);
+                scpos = transformScpos(scpos, target);
+            }
 
             Date date = new Date(pt.time);
 
@@ -450,10 +446,9 @@ public abstract class LidarSearchDataCollection extends Model
                     target[0] + " " +
                     target[1] + " " +
                     target[2] + " " +
-                    pt.scpos[0] + " " +
-                    pt.scpos[1] + " " +
-                    pt.scpos[2] + " " +
-                    pt.potential + newline);
+                    scpos[0] + " " +
+                    scpos[1] + " " +
+                    scpos[2] + newline);
         }
 
         out.close();
@@ -559,7 +554,7 @@ public abstract class LidarSearchDataCollection extends Model
         return displayedPointToOriginalPointMap.indexOf(ptId);
     }
 
-    private double[] transformPoint(double[] pt)
+    private double[] transformLidarPoint(double[] pt)
     {
         if (radialOffset != 0.0)
         {
@@ -569,6 +564,31 @@ public abstract class LidarSearchDataCollection extends Model
         }
 
         return new double[]{pt[0]+translation[0], pt[1]+translation[1], pt[2]+translation[2]};
+    }
+
+    /**
+     * Similar to previous function but specific to spacecraft position. The difference is
+     * that we calculate the radial offset we applied to the lidar and apply that offset
+     * to the spacecraft (rather than computing the radial offset directly for the spacecraft).
+     *
+     * @param scpos
+     * @param lidarPoint
+     * @return
+     */
+    private double[] transformScpos(double[] scpos, double[] lidarPoint)
+    {
+        if (radialOffset != 0.0)
+        {
+            LatLon lla = MathUtil.reclat(lidarPoint);
+            lla.rad += radialOffset;
+            double[] offsetLidarPoint = MathUtil.latrec(lla);
+
+            scpos[0] += (offsetLidarPoint[0]-lidarPoint[0]);
+            scpos[1] += (offsetLidarPoint[1]-lidarPoint[1]);
+            scpos[2] += (offsetLidarPoint[2]-lidarPoint[2]);
+        }
+
+        return new double[]{scpos[0]+translation[0], scpos[1]+translation[1], scpos[2]+translation[2]};
     }
 
     private void updateTrackPolydata()
@@ -596,7 +616,7 @@ public abstract class LidarSearchDataCollection extends Model
                 for (int i=startId; i<=stopId; ++i)
                 {
                     double[] pt = originalPoints.get(i).target;
-                    pt = transformPoint(pt);
+                    pt = transformLidarPoint(pt);
                     points.InsertNextPoint(pt);
 
                     idList.SetId(0, count);
@@ -685,8 +705,7 @@ public abstract class LidarSearchDataCollection extends Model
         {
             cellId = displayedPointToOriginalPointMap.get(cellId);
             Date date = new Date(originalPoints.get(cellId).time);
-            return "Lidar point acquired at " + sdf.format(date)
-                + ", Potential: " + originalPoints.get(cellId).potential + " J/kg";
+            return "Lidar point acquired at " + sdf.format(date);
         }
 
         return "";
@@ -766,7 +785,7 @@ public abstract class LidarSearchDataCollection extends Model
                 for (int i=startId; i<=stopId; ++i)
                 {
                     LidarPoint lp = originalPoints.get(i);
-                    double[] target = transformPoint(lp.target);
+                    double[] target = transformLidarPoint(lp.target);
                     fitter.addObservedPoint(1.0, (double)(lp.time-t0)/1000.0, target[j]);
                 }
 
@@ -779,7 +798,7 @@ public abstract class LidarSearchDataCollection extends Model
             // Set the fittedLinePoint to the point on the line closest to first track point
             // as this makes it easier to do distance computations along the line.
             double[] dist = new double[1];
-            double[] target = transformPoint(originalPoints.get(startId).target);
+            double[] target = transformLidarPoint(originalPoints.get(startId).target);
             MathUtil.nplnpt(lineStartPoint, fittedLineDirection, target, fittedLinePoint, dist);
         }
         catch (Exception e)
@@ -855,7 +874,7 @@ public abstract class LidarSearchDataCollection extends Model
         for (int i=track.startId; i<=track.stopId; ++i)
         {
             double[] point = originalPoints.get(i).target;
-            point = transformPoint(point);
+            point = transformLidarPoint(point);
             double dist = distanceOfClosestPointOnLineToStartOfLine(point, trackId, fittedLinePoint, fittedLineDirection);
             distance.add(dist);
             time.add(originalPoints.get(i).time);
