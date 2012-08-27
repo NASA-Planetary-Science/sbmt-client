@@ -206,7 +206,7 @@ int main(int argc, char** argv)
             howToEvalute = FROM_FILE;
             fieldpointsfile = argv[++i];
         }
-        else if (!strcmp(argv[i], "-ref-potential"))
+        else if (!strcmp(argv[i], "--ref-potential"))
         {
             refPotential = atof(argv[++i]);
             refPotentialProvided = true;
