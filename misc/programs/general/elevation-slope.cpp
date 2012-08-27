@@ -99,7 +99,7 @@ static void usage()
     cout << "This program computes the elevation and slope at the plate centers of a \n"
          << "shape model. It uses the gravitational acceleration vector and potential \n"
          << "files computed using the gravity program.\n"
-         << "Usage: gravity <platemodel-file> <potential-file> <acceleration-vector-file>\n";
+         << "Usage: elevation-slope <platemodel-file> <potential-file> <acceleration-vector-file>\n";
     exit(0);
 }
 
