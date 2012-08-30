@@ -107,7 +107,7 @@ public class NISPopupMenu extends PopupMenu
                 if (showRemoveSpectrumIn3DMenuItem.isSelected())
                     model.addSpectrum(currentSpectrum);
                 else
-                    model.removeImage(currentSpectrum);
+                    model.removeSpectrum(currentSpectrum);
 
                 updateMenuItems();
             }

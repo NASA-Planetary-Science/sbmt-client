@@ -1,39 +1,23 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+/*
+ * NISSearchPanel.java
+ *
+ * Created on May 5, 2011, 3:15:17 PM
+ */
 package edu.jhuapl.near.gui.eros;
 
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.IOException;
-import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.TreeSet;
 
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JFormattedTextField;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSpinner;
-import javax.swing.JToggleButton;
-import javax.swing.ListSelectionModel;
 import javax.swing.SpinnerDateModel;
-import javax.swing.SpinnerNumberModel;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-
-import net.miginfocom.swing.MigLayout;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -41,7 +25,6 @@ import org.joda.time.DateTimeZone;
 import vtk.vtkPolyData;
 
 import edu.jhuapl.near.gui.ModelInfoWindowManager;
-import edu.jhuapl.near.gui.SearchPanelUtil;
 import edu.jhuapl.near.model.AbstractEllipsePolygonModel;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
@@ -54,454 +37,1152 @@ import edu.jhuapl.near.popupmenus.eros.NISPopupMenu;
 import edu.jhuapl.near.query.ErosQuery;
 import edu.jhuapl.near.util.IdPair;
 
-
-public class NISSearchPanel extends JPanel implements ActionListener, MouseListener
+/**
+ *
+ * @author kahneg1
+ */
+public class NISSearchPanel extends javax.swing.JPanel implements MouseListener
 {
-    private final String NIS_REMOVE_ALL_BUTTON_TEXT = "Remove All Footprints";
-
     private final ModelManager modelManager;
-    private PickManager pickManager;
+    private final PickManager pickManager;
     private java.util.Date startDate = new GregorianCalendar(2000, 0, 11, 0, 0, 0).getTime();
     private java.util.Date endDate = new GregorianCalendar(2000, 4, 14, 0, 0, 0).getTime();
-    private JLabel endDateLabel;
-    private JLabel startDateLabel;
-    private static final String START_DATE_LABEL_TEXT = "Start Date:";
-    private static final String END_DATE_LABEL_TEXT = "End Date:";
-    private JSpinner startSpinner;
-    private JSpinner endSpinner;
 
-    private JFormattedTextField fromDistanceTextField;
-    private JFormattedTextField toDistanceTextField;
-    private JFormattedTextField fromIncidenceTextField;
-    private JFormattedTextField toIncidenceTextField;
-    private JFormattedTextField fromEmissionTextField;
-    private JFormattedTextField toEmissionTextField;
-    private JFormattedTextField fromPhaseTextField;
-    private JFormattedTextField toPhaseTextField;
-    private JSpinner minChannelValueTextField;
-    private JSpinner maxChannelValueTextField;
-
-    private JComboBox channelComboBox;
-
-    private JList resultList;
     private NISPopupMenu nisPopupMenu;
     private ArrayList<String> nisRawResults = new ArrayList<String>();
-    private JLabel resultsLabel;
     private String nisResultsLabelText = " ";
-    private JButton nextButton;
-    private JButton prevButton;
-    private JButton removeAllButton;
-    private JComboBox numberOfBoundariesComboBox;
     private IdPair resultIntervalCurrentlyShown = null;
-    private JCheckBox polygonType0CheckBox;
-    private JCheckBox polygonType1CheckBox;
-    private JCheckBox polygonType2CheckBox;
-    private JCheckBox polygonType3CheckBox;
-    private JToggleButton selectRegionButton;
 
 
-    public NISSearchPanel(
-            final ModelManager modelManager,
+    /** Creates new form NISSearchPanel */
+    public NISSearchPanel(final ModelManager modelManager,
             ModelInfoWindowManager infoPanelManager,
             final PickManager pickManager)
     {
-        //setLayout(new BoxLayout(this,
-        //        BoxLayout.PAGE_AXIS));
-        setLayout(new MigLayout("wrap 1, insets 0"));
-
         this.modelManager = modelManager;
         this.pickManager = pickManager;
 
-        this.addComponentListener(new ComponentAdapter()
-        {
-            public void componentHidden(ComponentEvent e)
-            {
-                selectRegionButton.setSelected(false);
-                pickManager.setPickMode(PickMode.DEFAULT);
-            }
-        });
-
-        JPanel pane = new JPanel();
-//        pane.setLayout(new BoxLayout(pane,
-//                BoxLayout.PAGE_AXIS));
-        pane.setLayout(new MigLayout("wrap 1"));
-
-        //pane.setBorder(
-        //        new CompoundBorder(BorderFactory.createEmptyBorder(9, 9, 9, 9),
-        //                           new TitledBorder("Query Editor")));
-
-
-        final JPanel startDatePanel = new JPanel();
-        this.startDateLabel = new JLabel(START_DATE_LABEL_TEXT);
-        startDatePanel.add(this.startDateLabel);
-        startSpinner = new JSpinner(new SpinnerDateModel(startDate, null, null, Calendar.DAY_OF_MONTH));
-        startSpinner.setEditor(new JSpinner.DateEditor(startSpinner, "yyyy-MMM-dd HH:mm:ss"));
-        startSpinner.addChangeListener(new ChangeListener()
-            {
-                public void stateChanged(ChangeEvent e)
-                {
-                    java.util.Date date =
-                        ((SpinnerDateModel)startSpinner.getModel()).getDate();
-                    if (date != null)
-                        startDate = date;
-                }
-            });
-        startDatePanel.add(startSpinner);
-        startSpinner.setEnabled(true);
-        pane.add(startDatePanel);
-
-        final JPanel endDatePanel = new JPanel();
-        this.endDateLabel = new JLabel(END_DATE_LABEL_TEXT);
-        endDatePanel.add(this.endDateLabel);
-        endSpinner = new JSpinner(new SpinnerDateModel(endDate, null, null, Calendar.DAY_OF_MONTH));
-        endSpinner.setEditor(new JSpinner.DateEditor(endSpinner, "yyyy-MMM-dd HH:mm:ss"));
-        endSpinner.addChangeListener(new ChangeListener()
-            {
-                public void stateChanged(ChangeEvent e)
-                {
-                    java.util.Date date =
-                        ((SpinnerDateModel)endSpinner.getModel()).getDate();
-                    if (date != null)
-                        endDate = date;
-                }
-            });
-        endDatePanel.add(endSpinner);
-        endSpinner.setEnabled(true);
-        pane.add(endDatePanel);
-
-
-        JPanel polygonTypePanel = new JPanel();
-        //polygonTypePanel.setLayout(new BoxLayout(polygonTypePanel,
-        //        BoxLayout.PAGE_AXIS));
-        polygonTypePanel.setLayout(new MigLayout("wrap 2"));
-        JLabel polygonTypeLabel = new JLabel("Field-Of-View Polygon Type:");
-        //polygonTypeLabel.setAlignmentX(1.0f);
-
-        polygonType0CheckBox = new JCheckBox();
-        polygonType0CheckBox.setText("Full");
-        polygonType0CheckBox.setSelected(true);
-        polygonType0CheckBox.setToolTipText("All vertices on shape.");
-        //polygonType0CheckBox.setAlignmentX(1.0f);
-        polygonType1CheckBox = new JCheckBox();
-        polygonType1CheckBox.setText("Partial");
-        polygonType1CheckBox.setSelected(false);
-        polygonType1CheckBox.setToolTipText("Single contiguous set of vertices on shape.");
-        //polygonType1CheckBox.setAlignmentX(1.0f);
-        polygonType2CheckBox = new JCheckBox();
-        polygonType2CheckBox.setText("Degenerate");
-        polygonType2CheckBox.setSelected(false);
-        polygonType2CheckBox.setToolTipText("Multiple contiguous sets of vertices on shape.");
-        //polygonType2CheckBox.setAlignmentX(1.0f);
-        polygonType3CheckBox = new JCheckBox();
-        polygonType3CheckBox.setText("Empty");
-        polygonType3CheckBox.setSelected(false);
-        polygonType3CheckBox.setToolTipText("No vertices on shape.");
-        //polygonType3CheckBox.setAlignmentX(1.0f);
-
-        polygonTypePanel.add(polygonTypeLabel, "span");
-        polygonTypePanel.add(polygonType0CheckBox);
-        //polygonTypePanel.add(Box.createHorizontalStrut(15));
-        polygonTypePanel.add(polygonType1CheckBox, "wrap");
-        //polygonTypePanel.add(Box.createHorizontalStrut(15));
-        polygonTypePanel.add(polygonType2CheckBox);
-        //polygonTypePanel.add(Box.createHorizontalStrut(15));
-        //polygonTypePanel.add(polygonType3CheckBox);
-
-
-        NumberFormat nf = NumberFormat.getNumberInstance();
-        nf.setGroupingUsed(false);
-
-        final JPanel distancePanel = new JPanel();
-        distancePanel.setLayout(new BoxLayout(distancePanel,
-                BoxLayout.LINE_AXIS));
-        final JLabel fromDistanceLabel = new JLabel("S/C Distance from ");
-        fromDistanceTextField = new JFormattedTextField(nf);
-        fromDistanceTextField.setValue(0.0);
-        fromDistanceTextField.setMaximumSize(new Dimension(50, 23));
-        fromDistanceTextField.setColumns(5);
-        final JLabel toDistanceLabel = new JLabel(" to ");
-        toDistanceTextField = new JFormattedTextField(nf);
-        toDistanceTextField.setValue(100.0);
-        toDistanceTextField.setMaximumSize(new Dimension(50, 23));
-        toDistanceTextField.setColumns(5);
-        final JLabel endDistanceLabel = new JLabel(" km");
-
-        distancePanel.add(fromDistanceLabel);
-        distancePanel.add(fromDistanceTextField);
-        distancePanel.add(toDistanceLabel);
-        distancePanel.add(toDistanceTextField);
-        distancePanel.add(endDistanceLabel);
-
-        fromIncidenceTextField = new JFormattedTextField(nf);
-        toIncidenceTextField = new JFormattedTextField(nf);
-        JPanel incidencePanel = SearchPanelUtil.createFromToPanel(
-                fromIncidenceTextField,
-                toIncidenceTextField,
-                0.0,
-                180.0,
-                "Incidence from",
-                "to",
-                "degrees");
-
-        fromEmissionTextField = new JFormattedTextField(nf);
-        toEmissionTextField = new JFormattedTextField(nf);
-        JPanel emissionPanel = SearchPanelUtil.createFromToPanel(
-                fromEmissionTextField,
-                toEmissionTextField,
-                0.0,
-                180.0,
-                "Emission from",
-                "to",
-                "degrees");
-
-        fromPhaseTextField = new JFormattedTextField(nf);
-        toPhaseTextField = new JFormattedTextField(nf);
-        JPanel phasePanel = SearchPanelUtil.createFromToPanel(
-                fromPhaseTextField,
-                toPhaseTextField,
-                0.0,
-                180.0,
-                "Phase from",
-                "to",
-                "degrees");
-
-
-        JPanel selectRegionPanel = new JPanel();
-        //selectRegionPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-        selectRegionButton = new JToggleButton("Select Region");
-        selectRegionButton.setEnabled(true);
-        selectRegionButton.addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                if (selectRegionButton.isSelected())
-                    pickManager.setPickMode(PickMode.CIRCLE_SELECTION);
-                else
-                    pickManager.setPickMode(PickMode.DEFAULT);
-            }
-        });
-        selectRegionPanel.add(selectRegionButton);
-
-        final JButton clearRegionButton = new JButton("Clear Region");
-        clearRegionButton.addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
-                selectionModel.removeAllStructures();
-            }
-        });
-        selectRegionPanel.add(clearRegionButton);
-
-
-        final JPanel submitPanel = new JPanel();
-        //panel.setBorder(BorderFactory.createEmptyBorder(9, 9, 9, 9));
-        JButton submitButton = new JButton("Search");
-        submitButton.setEnabled(true);
-        submitButton.addActionListener(this);
-
-        submitPanel.add(submitButton);
-
-
-        pane.add(distancePanel);
-        pane.add(incidencePanel);
-        pane.add(emissionPanel);
-        pane.add(phasePanel);
-        //pane.add(Box.createVerticalStrut(10));
-        pane.add(polygonTypePanel);
-        //pane.add(Box.createVerticalStrut(10));
-        pane.add(selectRegionPanel, "align center");
-        pane.add(submitPanel, "align center");
-
-        this.add(pane);
-
-
-
-
-
-
-
-        JPanel resultsPanel = new JPanel(new MigLayout("insets 0"));
-
         nisPopupMenu = new NISPopupMenu(this.modelManager, infoPanelManager);
 
-        resultsLabel = new JLabel(" ");
+        initComponents();
 
-        //Create the list and put it in a scroll pane.
-        resultList = new JList();
-        resultList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        resultList.addMouseListener(this);
-        JScrollPane listScrollPane = new JScrollPane(resultList);
-        listScrollPane.setPreferredSize(new Dimension(10000, 10000));
-
-
-        //listScrollPane.setBorder(
-        //       new CompoundBorder(BorderFactory.createEmptyBorder(9, 9, 9, 9),
-        //                           new TitledBorder("Query Results")));
-
-        resultsPanel.add(resultsLabel, "north");
-        resultsPanel.add(listScrollPane, "center");
-
-        final JPanel resultControlsPanel = new JPanel(new MigLayout());
-
-        final JPanel resultSub1ControlsPanel = new JPanel();
-
-        resultSub1ControlsPanel.setLayout(new BoxLayout(resultSub1ControlsPanel,
-                BoxLayout.LINE_AXIS));
-
-        final JLabel showLabel = new JLabel("Number Footprints");
-        Object [] options2 = {
-                10, 20, 30, 40, 50, 60, 70, 80, 90, 100,
-                110, 120, 130, 140, 150, 160, 170, 180, 190, 200,
-                210, 220, 230, 240, 250
-                };
-        numberOfBoundariesComboBox = new JComboBox(options2);
-        numberOfBoundariesComboBox.setMaximumSize(new Dimension(150, 23));
-
-        nextButton = new JButton(">");
-        nextButton.setActionCommand(">");
-        nextButton.addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                if (resultIntervalCurrentlyShown != null)
-                {
-                    // Only get the next block if there's something left to show.
-                    if (resultIntervalCurrentlyShown.id2 < resultList.getModel().getSize())
-                    {
-                        resultIntervalCurrentlyShown.nextBlock((Integer)numberOfBoundariesComboBox.getSelectedItem());
-                        showNISBoundaries(resultIntervalCurrentlyShown);
-                    }
-                }
-                else
-                {
-                    resultIntervalCurrentlyShown = new IdPair(0, (Integer)numberOfBoundariesComboBox.getSelectedItem());
-                    showNISBoundaries(resultIntervalCurrentlyShown);
-                }
-            }
-        });
-        nextButton.setEnabled(true);
-
-        prevButton = new JButton("<");
-        prevButton.setActionCommand("<");
-        prevButton.addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                if (resultIntervalCurrentlyShown != null)
-                {
-                    // Only get the prev block if there's something left to show.
-                    if (resultIntervalCurrentlyShown.id1 > 0)
-                    {
-                        resultIntervalCurrentlyShown.prevBlock((Integer)numberOfBoundariesComboBox.getSelectedItem());
-                        showNISBoundaries(resultIntervalCurrentlyShown);
-                    }
-                }
-            }
-        });
-        prevButton.setEnabled(true);
-
-        resultSub1ControlsPanel.add(showLabel);
-        resultSub1ControlsPanel.add(numberOfBoundariesComboBox);
-        resultSub1ControlsPanel.add(Box.createHorizontalStrut(10));
-        resultSub1ControlsPanel.add(prevButton);
-        resultSub1ControlsPanel.add(nextButton);
-
-        JPanel resultSub2ControlsPanel = new JPanel(new MigLayout("insets 0"));
-        removeAllButton = new JButton(NIS_REMOVE_ALL_BUTTON_TEXT);
-        removeAllButton.setActionCommand(NIS_REMOVE_ALL_BUTTON_TEXT);
-        removeAllButton.addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelNames.NIS_SPECTRA);
-                model.removeAllImages();
-                resultIntervalCurrentlyShown = null;
-            }
-        });
-        removeAllButton.setEnabled(true);
-
-
-        resultSub2ControlsPanel.add(removeAllButton, "span, align center");
-
-        JLabel channelLabel = new JLabel("Color by Channel");
-        String[] channels = new String[64];
-        for (int i=1; i<=64; ++i)
-            channels[i-1] = new String("(" + i + ") " + NISSpectrum.bandCenters[i-1] + " nm");
-        channelComboBox = new JComboBox(channels);
-        channelComboBox.setSelectedIndex(NISSpectrum.getChannelToColorBy());
-        channelComboBox.addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                Double minVal = (Double)minChannelValueTextField.getValue();
-                Double maxVal = (Double)maxChannelValueTextField.getValue();
-                NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelNames.NIS_SPECTRA);
-                model.setChannelColoring(channelComboBox.getSelectedIndex(), minVal, maxVal);
-            }
-        });
-
-        JLabel minChannelValueLabel = new JLabel("Min");
-        minChannelValueTextField = new JSpinner(new SpinnerNumberModel(0.0, 0.0, 1.0, 0.01));
-        minChannelValueTextField.setValue(NISSpectrum.getChannelColoringMinValue());
-        minChannelValueTextField.setPreferredSize(new Dimension(80, 23));
-        minChannelValueTextField.addChangeListener(new ChangeListener()
-        {
-            public void stateChanged(ChangeEvent e)
-            {
-                Double minVal = (Double)minChannelValueTextField.getValue();
-                Double maxVal = (Double)maxChannelValueTextField.getValue();
-                if (minVal > maxVal)
-                    minChannelValueTextField.setValue(minChannelValueTextField.getPreviousValue());
-                else
-                {
-                    NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelNames.NIS_SPECTRA);
-                    model.setChannelColoring(channelComboBox.getSelectedIndex(), minVal, maxVal);
-                }
-            }
-        });
-
-
-        JLabel maxChannelValueLabel = new JLabel("Max");
-        maxChannelValueTextField = new JSpinner(new SpinnerNumberModel(0.05, 0.0, 1.0, 0.01));
-        maxChannelValueTextField.setValue(NISSpectrum.getChannelColoringMaxValue());
-        maxChannelValueTextField.setPreferredSize(new Dimension(80, 23));
-        maxChannelValueTextField.addChangeListener(new ChangeListener()
-        {
-            public void stateChanged(ChangeEvent e)
-            {
-                Double minVal = (Double)minChannelValueTextField.getValue();
-                Double maxVal = (Double)maxChannelValueTextField.getValue();
-                if (minVal > maxVal)
-                    maxChannelValueTextField.setValue(maxChannelValueTextField.getPreviousValue());
-                else
-                {
-                    NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelNames.NIS_SPECTRA);
-                    model.setChannelColoring(channelComboBox.getSelectedIndex(), minVal, maxVal);
-                }
-            }
-        });
-
-        resultSub2ControlsPanel.add(channelLabel, "span 2");
-        resultSub2ControlsPanel.add(channelComboBox, "span 2,wrap");
-        resultSub2ControlsPanel.add(minChannelValueLabel);
-        resultSub2ControlsPanel.add(minChannelValueTextField);
-        resultSub2ControlsPanel.add(maxChannelValueLabel);
-        resultSub2ControlsPanel.add(maxChannelValueTextField);
-
-        resultSub2ControlsPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        resultControlsPanel.add(resultSub1ControlsPanel, "wrap");
-        resultControlsPanel.add(resultSub2ControlsPanel);
-
-        resultsPanel.add(resultControlsPanel, "south");
-
-        add(resultsPanel, "growy");
-
+        postInitComponents();
     }
 
-    public void actionPerformed(ActionEvent actionEvent)
+// TODO make this class abstract with these abstract functions. Subclasses will
+// need to redefine them
+//    abstract protected java.util.Date getDefaultStartDate();
+//    abstract protected java.util.Date getDefaultEndDate();
+//    abstract protected QueryBase getQuery();
+//    abstract protected double getDefaultMaxSpacecraftDistance();
+//    abstract protected double[] getBandCenters();
+//    private String getSpectraCollectionModelName()
+//    {
+//        return ModelNames.NIS_SPECTRA;
+//    }
+
+    private void postInitComponents()
     {
+        //startDate = getDefaultStartDate();
+        ((SpinnerDateModel)startSpinner.getModel()).setValue(startDate);
+        //endDate = getDefaultEndDate();
+        ((SpinnerDateModel)endSpinner.getModel()).setValue(endDate);
+
+        //toDistanceTextField.setValue(getDefaultMaxSpacecraftDistance());
+
+        polygonType3CheckBox.setVisible(false);
+
+        for (int i=1; i<=64; ++i)
+        {
+            String channel = new String("(" + i + ") " + NISSpectrum.bandCenters[i-1] + " nm");
+            redComboBox.addItem(channel);
+            greenComboBox.addItem(channel);
+            blueComboBox.addItem(channel);
+        }
+    }
+
+    private void setNISResults(ArrayList<String> results)
+    {
+        nisResultsLabelText = results.size() + " spectra matched";
+        resultsLabel.setText(nisResultsLabelText);
+        nisRawResults = results;
+
+        String[] formattedResults = new String[results.size()];
+
+        // add the results to the list
+        int i=0;
+        for (String str : results)
+        {
+            formattedResults[i] = new String(
+                    str.substring(16, 25)
+                    + ", day: " + str.substring(10, 13) + "/" + str.substring(5, 9)
+                    );
+
+            ++i;
+        }
+
+        resultList.setListData(formattedResults);
+
+        // Show the first set of footprints
+        this.resultIntervalCurrentlyShown = new IdPair(0, Integer.parseInt((String)this.numberOfFootprintsComboBox.getSelectedItem()));
+        this.showNISFootprints(resultIntervalCurrentlyShown);
+    }
+
+    public void mouseClicked(MouseEvent e)
+    {
+    }
+
+    public void mouseEntered(MouseEvent e)
+    {
+    }
+
+    public void mouseExited(MouseEvent e)
+    {
+    }
+
+    public void mousePressed(MouseEvent e)
+    {
+        maybeShowPopup(e);
+    }
+
+    public void mouseReleased(MouseEvent e)
+    {
+        maybeShowPopup(e);
+    }
+
+    private void maybeShowPopup(MouseEvent e)
+    {
+        if (e.isPopupTrigger())
+        {
+            int index = resultList.locationToIndex(e.getPoint());
+
+            if (index >= 0 && resultList.getCellBounds(index, index).contains(e.getPoint()))
+            {
+                resultList.setSelectedIndex(index);
+                nisPopupMenu.setCurrentSpectrum(nisRawResults.get(index));
+                nisPopupMenu.show(e.getComponent(), e.getX(), e.getY());
+            }
+        }
+    }
+
+    private void showNISFootprints(IdPair idPair)
+    {
+        int startId = idPair.id1;
+        int endId = idPair.id2;
+
+        NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelNames.NIS_SPECTRA);
+        model.removeAllSpectra();
+
+        for (int i=startId; i<endId; ++i)
+        {
+            if (i < 0)
+                continue;
+            else if(i >= nisRawResults.size())
+                break;
+
+            try
+            {
+                String currentSpectrum = nisRawResults.get(i);
+                String spectrumName = currentSpectrum.substring(0,currentSpectrum.length()-4) + ".NIS";
+                model.addSpectrum(spectrumName);
+            }
+            catch (IOException e1) {
+                e1.printStackTrace();
+            }
+        }
+    }
+
+    private void updateColoring()
+    {
+        Double redMinVal = (Double)redMinSpinner.getValue();
+        Double redMaxVal = (Double)redMaxSpinner.getValue();
+        if (redMinVal > redMaxVal)
+        {
+            redMaxSpinner.setValue(redMaxSpinner.getPreviousValue());
+            return;
+        }
+
+        Double greenMinVal = (Double)greenMinSpinner.getValue();
+        Double greenMaxVal = (Double)greenMaxSpinner.getValue();
+        if (greenMinVal > greenMaxVal)
+        {
+            greenMaxSpinner.setValue(greenMaxSpinner.getPreviousValue());
+            return;
+        }
+
+        Double blueMinVal = (Double)blueMinSpinner.getValue();
+        Double blueMaxVal = (Double)blueMaxSpinner.getValue();
+        if (blueMinVal > blueMaxVal)
+        {
+            blueMaxSpinner.setValue(blueMaxSpinner.getPreviousValue());
+            return;
+        }
+
+        NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelNames.NIS_SPECTRA);
+        if (grayscaleCheckBox.isSelected())
+        {
+            model.setChannelColoring(
+                    new int[]{redComboBox.getSelectedIndex(), redComboBox.getSelectedIndex(), redComboBox.getSelectedIndex()},
+                    new double[]{redMinVal, redMinVal, redMinVal},
+                    new double[]{redMaxVal, redMaxVal, redMaxVal});
+        }
+        else
+        {
+            model.setChannelColoring(
+                    new int[]{redComboBox.getSelectedIndex(), greenComboBox.getSelectedIndex(), blueComboBox.getSelectedIndex()},
+                    new double[]{redMinVal, greenMinVal, blueMinVal},
+                    new double[]{redMaxVal, greenMaxVal, blueMaxVal});
+        }
+    }
+
+    /** This method is called from within the constructor to
+     * initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is
+     * always regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+        java.awt.GridBagConstraints gridBagConstraints;
+
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jPanel8 = new javax.swing.JPanel();
+        jPanel1 = new javax.swing.JPanel();
+        startDateLabel = new javax.swing.JLabel();
+        startSpinner = new javax.swing.JSpinner();
+        endDateLabel = new javax.swing.JLabel();
+        endSpinner = new javax.swing.JSpinner();
+        jPanel3 = new javax.swing.JPanel();
+        fromDistanceLabel = new javax.swing.JLabel();
+        fromDistanceTextField = new javax.swing.JFormattedTextField();
+        toDistanceLabel = new javax.swing.JLabel();
+        toDistanceTextField = new javax.swing.JFormattedTextField();
+        endDistanceLabel = new javax.swing.JLabel();
+        fromIncidenceLabel = new javax.swing.JLabel();
+        fromIncidenceTextField = new javax.swing.JFormattedTextField();
+        toIncidenceLabel = new javax.swing.JLabel();
+        toIncidenceTextField = new javax.swing.JFormattedTextField();
+        endIncidenceLabel = new javax.swing.JLabel();
+        fromEmissionLabel = new javax.swing.JLabel();
+        fromEmissionTextField = new javax.swing.JFormattedTextField();
+        toEmissionLabel = new javax.swing.JLabel();
+        toEmissionTextField = new javax.swing.JFormattedTextField();
+        endEmissionLabel = new javax.swing.JLabel();
+        fromPhaseLabel = new javax.swing.JLabel();
+        fromPhaseTextField = new javax.swing.JFormattedTextField();
+        toPhaseLabel = new javax.swing.JLabel();
+        toPhaseTextField = new javax.swing.JFormattedTextField();
+        endPhaseLabel = new javax.swing.JLabel();
+        jPanel5 = new javax.swing.JPanel();
+        clearRegionButton = new javax.swing.JButton();
+        submitButton = new javax.swing.JButton();
+        selectRegionButton = new javax.swing.JToggleButton();
+        jPanel6 = new javax.swing.JPanel();
+        resultsLabel = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        resultList = new javax.swing.JList();
+        jPanel7 = new javax.swing.JPanel();
+        jLabel6 = new javax.swing.JLabel();
+        numberOfFootprintsComboBox = new javax.swing.JComboBox();
+        prevButton = new javax.swing.JButton();
+        nextButton = new javax.swing.JButton();
+        removeAllFootprintsButton = new javax.swing.JButton();
+        jPanel9 = new javax.swing.JPanel();
+        jLabel20 = new javax.swing.JLabel();
+        jSeparator1 = new javax.swing.JSeparator();
+        jPanel2 = new javax.swing.JPanel();
+        jPanel12 = new javax.swing.JPanel();
+        redLabel = new javax.swing.JLabel();
+        redComboBox = new javax.swing.JComboBox();
+        jPanel13 = new javax.swing.JPanel();
+        redMaxSpinner = new javax.swing.JSpinner();
+        redMinLabel = new javax.swing.JLabel();
+        redMaxLabel = new javax.swing.JLabel();
+        redMinSpinner = new javax.swing.JSpinner();
+        jPanel4 = new javax.swing.JPanel();
+        jPanel14 = new javax.swing.JPanel();
+        greenLabel = new javax.swing.JLabel();
+        greenComboBox = new javax.swing.JComboBox();
+        jPanel15 = new javax.swing.JPanel();
+        greenMinLabel = new javax.swing.JLabel();
+        greenMaxSpinner = new javax.swing.JSpinner();
+        greenMaxLabel = new javax.swing.JLabel();
+        greenMinSpinner = new javax.swing.JSpinner();
+        jPanel10 = new javax.swing.JPanel();
+        jPanel16 = new javax.swing.JPanel();
+        blueComboBox = new javax.swing.JComboBox();
+        blueLabel = new javax.swing.JLabel();
+        jPanel17 = new javax.swing.JPanel();
+        blueMaxLabel = new javax.swing.JLabel();
+        blueMaxSpinner = new javax.swing.JSpinner();
+        blueMinLabel = new javax.swing.JLabel();
+        blueMinSpinner = new javax.swing.JSpinner();
+        grayscaleCheckBox = new javax.swing.JCheckBox();
+        jPanel11 = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        polygonType0CheckBox = new javax.swing.JCheckBox();
+        polygonType1CheckBox = new javax.swing.JCheckBox();
+        polygonType2CheckBox = new javax.swing.JCheckBox();
+        polygonType3CheckBox = new javax.swing.JCheckBox();
+
+        addComponentListener(new java.awt.event.ComponentAdapter() {
+            public void componentHidden(java.awt.event.ComponentEvent evt) {
+                formComponentHidden(evt);
+            }
+        });
+        setLayout(new java.awt.BorderLayout());
+
+        jPanel8.setLayout(new java.awt.GridBagLayout());
+
+        jPanel1.setLayout(new java.awt.GridBagLayout());
+
+        startDateLabel.setText("Start Date:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.BASELINE_LEADING;
+        gridBagConstraints.insets = new java.awt.Insets(6, 6, 0, 0);
+        jPanel1.add(startDateLabel, gridBagConstraints);
+
+        startSpinner.setModel(new javax.swing.SpinnerDateModel(new java.util.Date(1126411200000L), null, null, java.util.Calendar.DAY_OF_MONTH));
+        startSpinner.setEditor(new javax.swing.JSpinner.DateEditor(startSpinner, "yyyy-MMM-dd HH:mm:ss"));
+        startSpinner.setMinimumSize(new java.awt.Dimension(36, 22));
+        startSpinner.setPreferredSize(new java.awt.Dimension(200, 28));
+        startSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                startSpinnerStateChanged(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.BASELINE_LEADING;
+        jPanel1.add(startSpinner, gridBagConstraints);
+
+        endDateLabel.setText("End Date:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.BASELINE_LEADING;
+        gridBagConstraints.insets = new java.awt.Insets(6, 6, 0, 0);
+        jPanel1.add(endDateLabel, gridBagConstraints);
+
+        endSpinner.setModel(new javax.swing.SpinnerDateModel(new java.util.Date(1132462800000L), null, null, java.util.Calendar.DAY_OF_MONTH));
+        endSpinner.setEditor(new javax.swing.JSpinner.DateEditor(endSpinner, "yyyy-MMM-dd HH:mm:ss"));
+        endSpinner.setMinimumSize(new java.awt.Dimension(36, 22));
+        endSpinner.setPreferredSize(new java.awt.Dimension(200, 28));
+        endSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                endSpinnerStateChanged(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.BASELINE_LEADING;
+        gridBagConstraints.insets = new java.awt.Insets(2, 0, 0, 0);
+        jPanel1.add(endSpinner, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 0);
+        jPanel8.add(jPanel1, gridBagConstraints);
+
+        jPanel3.setLayout(new java.awt.GridBagLayout());
+
+        fromDistanceLabel.setText("S/C Distance from");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
+        gridBagConstraints.insets = new java.awt.Insets(1, 0, 1, 2);
+        jPanel3.add(fromDistanceLabel, gridBagConstraints);
+
+        fromDistanceTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.###"))));
+        fromDistanceTextField.setText("0");
+        fromDistanceTextField.setPreferredSize(new java.awt.Dimension(0, 22));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.ipadx = 50;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(1, 0, 1, 0);
+        jPanel3.add(fromDistanceTextField, gridBagConstraints);
+
+        toDistanceLabel.setText("to");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.insets = new java.awt.Insets(1, 2, 1, 2);
+        jPanel3.add(toDistanceLabel, gridBagConstraints);
+
+        toDistanceTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.###"))));
+        toDistanceTextField.setText("100");
+        toDistanceTextField.setPreferredSize(new java.awt.Dimension(0, 22));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.ipadx = 50;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(1, 0, 1, 0);
+        jPanel3.add(toDistanceTextField, gridBagConstraints);
+
+        endDistanceLabel.setText("km");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 4;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(1, 2, 1, 2);
+        jPanel3.add(endDistanceLabel, gridBagConstraints);
+
+        fromIncidenceLabel.setText("Incidence from");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(1, 0, 1, 2);
+        jPanel3.add(fromIncidenceLabel, gridBagConstraints);
+
+        fromIncidenceTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.###"))));
+        fromIncidenceTextField.setText("0");
+        fromIncidenceTextField.setPreferredSize(new java.awt.Dimension(0, 22));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.ipadx = 50;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(1, 0, 1, 0);
+        jPanel3.add(fromIncidenceTextField, gridBagConstraints);
+
+        toIncidenceLabel.setText("to");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.insets = new java.awt.Insets(1, 2, 1, 2);
+        jPanel3.add(toIncidenceLabel, gridBagConstraints);
+
+        toIncidenceTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.###"))));
+        toIncidenceTextField.setText("180");
+        toIncidenceTextField.setPreferredSize(new java.awt.Dimension(0, 22));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.ipadx = 50;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(1, 0, 1, 0);
+        jPanel3.add(toIncidenceTextField, gridBagConstraints);
+
+        endIncidenceLabel.setText("deg");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 4;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(1, 2, 1, 2);
+        jPanel3.add(endIncidenceLabel, gridBagConstraints);
+
+        fromEmissionLabel.setText("Emission from");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(1, 0, 1, 2);
+        jPanel3.add(fromEmissionLabel, gridBagConstraints);
+
+        fromEmissionTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.###"))));
+        fromEmissionTextField.setText("0");
+        fromEmissionTextField.setPreferredSize(new java.awt.Dimension(0, 22));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.ipadx = 50;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(1, 0, 1, 0);
+        jPanel3.add(fromEmissionTextField, gridBagConstraints);
+
+        toEmissionLabel.setText("to");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.insets = new java.awt.Insets(1, 2, 1, 2);
+        jPanel3.add(toEmissionLabel, gridBagConstraints);
+
+        toEmissionTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.###"))));
+        toEmissionTextField.setText("180");
+        toEmissionTextField.setPreferredSize(new java.awt.Dimension(0, 22));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.ipadx = 50;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(1, 0, 1, 0);
+        jPanel3.add(toEmissionTextField, gridBagConstraints);
+
+        endEmissionLabel.setText("deg");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 4;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(1, 2, 1, 2);
+        jPanel3.add(endEmissionLabel, gridBagConstraints);
+
+        fromPhaseLabel.setText("Phase from");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(1, 0, 1, 2);
+        jPanel3.add(fromPhaseLabel, gridBagConstraints);
+
+        fromPhaseTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.###"))));
+        fromPhaseTextField.setText("0");
+        fromPhaseTextField.setPreferredSize(new java.awt.Dimension(0, 22));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.ipadx = 50;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(1, 0, 1, 0);
+        jPanel3.add(fromPhaseTextField, gridBagConstraints);
+
+        toPhaseLabel.setText("to");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.insets = new java.awt.Insets(1, 2, 1, 2);
+        jPanel3.add(toPhaseLabel, gridBagConstraints);
+
+        toPhaseTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.###"))));
+        toPhaseTextField.setText("180");
+        toPhaseTextField.setPreferredSize(new java.awt.Dimension(0, 22));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.ipadx = 50;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(1, 0, 1, 0);
+        jPanel3.add(toPhaseTextField, gridBagConstraints);
+
+        endPhaseLabel.setText("deg");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 4;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(1, 2, 1, 2);
+        jPanel3.add(endPhaseLabel, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
+        jPanel8.add(jPanel3, gridBagConstraints);
+
+        jPanel5.setLayout(new java.awt.GridBagLayout());
+
+        clearRegionButton.setText("Clear Region");
+        clearRegionButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                clearRegionButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(0, 4, 2, 0);
+        jPanel5.add(clearRegionButton, gridBagConstraints);
+
+        submitButton.setText("Search");
+        submitButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                submitButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(0, 40, 0, 40);
+        jPanel5.add(submitButton, gridBagConstraints);
+
+        selectRegionButton.setText("Select Region");
+        selectRegionButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                selectRegionButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 2, 0);
+        jPanel5.add(selectRegionButton, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.insets = new java.awt.Insets(2, 0, 0, 0);
+        jPanel8.add(jPanel5, gridBagConstraints);
+
+        jPanel6.setLayout(new java.awt.GridBagLayout());
+
+        resultsLabel.setText(" ");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.ipady = 5;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        jPanel6.add(resultsLabel, gridBagConstraints);
+
+        jScrollPane1.setPreferredSize(new java.awt.Dimension(300, 200));
+
+        resultList.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                resultListMousePressed(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                resultListMouseReleased(evt);
+            }
+        });
+        jScrollPane1.setViewportView(resultList);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        jPanel6.add(jScrollPane1, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        jPanel8.add(jPanel6, gridBagConstraints);
+
+        jPanel7.setLayout(new java.awt.GridBagLayout());
+
+        jLabel6.setText("Number Footprints:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 6, 0, 0);
+        jPanel7.add(jLabel6, gridBagConstraints);
+
+        numberOfFootprintsComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "10", "20", "30", "40", "50", "60", "70", "80", "90", "100", "110", "120", "130", "140", "150", "160", "170", "180", "190", "200", "210", "220", "230", "240", "250", " " }));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 6, 0, 0);
+        jPanel7.add(numberOfFootprintsComboBox, gridBagConstraints);
+
+        prevButton.setText("<");
+        prevButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                prevButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 6, 0, 0);
+        jPanel7.add(prevButton, gridBagConstraints);
+
+        nextButton.setText(">");
+        nextButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                nextButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 6, 0, 0);
+        jPanel7.add(nextButton, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 5;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 0);
+        jPanel8.add(jPanel7, gridBagConstraints);
+
+        removeAllFootprintsButton.setText("Remove All Footprints");
+        removeAllFootprintsButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                removeAllFootprintsButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 6;
+        jPanel8.add(removeAllFootprintsButton, gridBagConstraints);
+
+        jPanel9.setLayout(new java.awt.GridBagLayout());
+
+        jLabel20.setText("Coloring");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        jPanel9.add(jLabel20, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        jPanel9.add(jSeparator1, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 7;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(6, 6, 0, 0);
+        jPanel8.add(jPanel9, gridBagConstraints);
+
+        jPanel2.setLayout(new java.awt.GridBagLayout());
+
+        jPanel12.setLayout(new java.awt.GridBagLayout());
+
+        redLabel.setText("Red");
+        redLabel.setPreferredSize(new java.awt.Dimension(40, 16));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
+        jPanel12.add(redLabel, gridBagConstraints);
+
+        redComboBox.setPreferredSize(new java.awt.Dimension(150, 22));
+        redComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                redComboBoxActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
+        jPanel12.add(redComboBox, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridwidth = 4;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        jPanel2.add(jPanel12, gridBagConstraints);
+
+        jPanel13.setLayout(new java.awt.GridBagLayout());
+
+        redMaxSpinner.setModel(new javax.swing.SpinnerNumberModel(0.05d, 0.0d, 1.0d, 0.01d));
+        redMaxSpinner.setPreferredSize(new java.awt.Dimension(100, 28));
+        redMaxSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                redMaxSpinnerStateChanged(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
+        jPanel13.add(redMaxSpinner, gridBagConstraints);
+
+        redMinLabel.setText("Min");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
+        jPanel13.add(redMinLabel, gridBagConstraints);
+
+        redMaxLabel.setText("Max");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
+        jPanel13.add(redMaxLabel, gridBagConstraints);
+
+        redMinSpinner.setModel(new javax.swing.SpinnerNumberModel(0.0d, 0.0d, 1.0d, 0.01d));
+        redMinSpinner.setPreferredSize(new java.awt.Dimension(100, 28));
+        redMinSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                redMinSpinnerStateChanged(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
+        jPanel13.add(redMinSpinner, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridwidth = 4;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        jPanel2.add(jPanel13, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 9;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        jPanel8.add(jPanel2, gridBagConstraints);
+
+        jPanel4.setLayout(new java.awt.GridBagLayout());
+
+        jPanel14.setLayout(new java.awt.GridBagLayout());
+
+        greenLabel.setText("Green");
+        greenLabel.setPreferredSize(new java.awt.Dimension(40, 16));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
+        jPanel14.add(greenLabel, gridBagConstraints);
+
+        greenComboBox.setPreferredSize(new java.awt.Dimension(150, 22));
+        greenComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                greenComboBoxActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
+        jPanel14.add(greenComboBox, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridwidth = 4;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        jPanel4.add(jPanel14, gridBagConstraints);
+
+        jPanel15.setLayout(new java.awt.GridBagLayout());
+
+        greenMinLabel.setText("Min");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
+        jPanel15.add(greenMinLabel, gridBagConstraints);
+
+        greenMaxSpinner.setModel(new javax.swing.SpinnerNumberModel(0.05d, 0.0d, 1.0d, 0.01d));
+        greenMaxSpinner.setPreferredSize(new java.awt.Dimension(100, 28));
+        greenMaxSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                greenMaxSpinnerStateChanged(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
+        jPanel15.add(greenMaxSpinner, gridBagConstraints);
+
+        greenMaxLabel.setText("Max");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
+        jPanel15.add(greenMaxLabel, gridBagConstraints);
+
+        greenMinSpinner.setModel(new javax.swing.SpinnerNumberModel(0.0d, 0.0d, 1.0d, 0.01d));
+        greenMinSpinner.setPreferredSize(new java.awt.Dimension(100, 28));
+        greenMinSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                greenMinSpinnerStateChanged(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
+        jPanel15.add(greenMinSpinner, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridwidth = 4;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        jPanel4.add(jPanel15, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 10;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        jPanel8.add(jPanel4, gridBagConstraints);
+
+        jPanel10.setLayout(new java.awt.GridBagLayout());
+
+        jPanel16.setLayout(new java.awt.GridBagLayout());
+
+        blueComboBox.setPreferredSize(new java.awt.Dimension(150, 22));
+        blueComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                blueComboBoxActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
+        jPanel16.add(blueComboBox, gridBagConstraints);
+
+        blueLabel.setText("Blue");
+        blueLabel.setPreferredSize(new java.awt.Dimension(40, 16));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
+        jPanel16.add(blueLabel, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridwidth = 4;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        jPanel10.add(jPanel16, gridBagConstraints);
+
+        jPanel17.setLayout(new java.awt.GridBagLayout());
+
+        blueMaxLabel.setText("Max");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
+        jPanel17.add(blueMaxLabel, gridBagConstraints);
+
+        blueMaxSpinner.setModel(new javax.swing.SpinnerNumberModel(0.05d, 0.0d, 1.0d, 0.01d));
+        blueMaxSpinner.setPreferredSize(new java.awt.Dimension(100, 28));
+        blueMaxSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                blueMaxSpinnerStateChanged(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
+        jPanel17.add(blueMaxSpinner, gridBagConstraints);
+
+        blueMinLabel.setText("Min");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
+        jPanel17.add(blueMinLabel, gridBagConstraints);
+
+        blueMinSpinner.setModel(new javax.swing.SpinnerNumberModel(0.0d, 0.0d, 1.0d, 0.01d));
+        blueMinSpinner.setPreferredSize(new java.awt.Dimension(100, 28));
+        blueMinSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                blueMinSpinnerStateChanged(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
+        jPanel17.add(blueMinSpinner, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridwidth = 4;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        jPanel10.add(jPanel17, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 11;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        jPanel8.add(jPanel10, gridBagConstraints);
+
+        grayscaleCheckBox.setText("Grayscale");
+        grayscaleCheckBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                grayscaleCheckBoxActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 8;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
+        jPanel8.add(grayscaleCheckBox, gridBagConstraints);
+
+        jPanel11.setLayout(new java.awt.GridBagLayout());
+
+        jLabel1.setText("Field-of-View-Polygon Type:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
+        jPanel11.add(jLabel1, gridBagConstraints);
+
+        polygonType0CheckBox.setSelected(true);
+        polygonType0CheckBox.setText("Full");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
+        jPanel11.add(polygonType0CheckBox, gridBagConstraints);
+
+        polygonType1CheckBox.setText("Partial");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
+        jPanel11.add(polygonType1CheckBox, gridBagConstraints);
+
+        polygonType2CheckBox.setText("Degenerate");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
+        jPanel11.add(polygonType2CheckBox, gridBagConstraints);
+
+        polygonType3CheckBox.setText("Empty");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
+        jPanel11.add(polygonType3CheckBox, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        jPanel8.add(jPanel11, gridBagConstraints);
+
+        jScrollPane2.setViewportView(jPanel8);
+
+        add(jScrollPane2, java.awt.BorderLayout.CENTER);
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void formComponentHidden(java.awt.event.ComponentEvent evt)//GEN-FIRST:event_formComponentHidden
+    {//GEN-HEADEREND:event_formComponentHidden
+        selectRegionButton.setSelected(false);
+        pickManager.setPickMode(PickMode.DEFAULT);
+    }//GEN-LAST:event_formComponentHidden
+
+    private void startSpinnerStateChanged(javax.swing.event.ChangeEvent evt)//GEN-FIRST:event_startSpinnerStateChanged
+    {//GEN-HEADEREND:event_startSpinnerStateChanged
+        java.util.Date date =
+                ((SpinnerDateModel)startSpinner.getModel()).getDate();
+        if (date != null)
+            startDate = date;
+    }//GEN-LAST:event_startSpinnerStateChanged
+
+    private void endSpinnerStateChanged(javax.swing.event.ChangeEvent evt)//GEN-FIRST:event_endSpinnerStateChanged
+    {//GEN-HEADEREND:event_endSpinnerStateChanged
+        java.util.Date date =
+                ((SpinnerDateModel)endSpinner.getModel()).getDate();
+        if (date != null)
+            endDate = date;
+
+    }//GEN-LAST:event_endSpinnerStateChanged
+
+    private void selectRegionButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_selectRegionButtonActionPerformed
+    {//GEN-HEADEREND:event_selectRegionButtonActionPerformed
+        if (selectRegionButton.isSelected())
+            pickManager.setPickMode(PickMode.CIRCLE_SELECTION);
+        else
+            pickManager.setPickMode(PickMode.DEFAULT);
+    }//GEN-LAST:event_selectRegionButtonActionPerformed
+
+    private void clearRegionButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_clearRegionButtonActionPerformed
+    {//GEN-HEADEREND:event_clearRegionButtonActionPerformed
+        AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
+        selectionModel.removeAllStructures();
+    }//GEN-LAST:event_clearRegionButtonActionPerformed
+
+    private void prevButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_prevButtonActionPerformed
+    {//GEN-HEADEREND:event_prevButtonActionPerformed
+        if (resultIntervalCurrentlyShown != null)
+        {
+            // Only get the prev block if there's something left to show.
+            if (resultIntervalCurrentlyShown.id1 > 0)
+            {
+                resultIntervalCurrentlyShown.prevBlock(Integer.parseInt((String)numberOfFootprintsComboBox.getSelectedItem()));
+                showNISFootprints(resultIntervalCurrentlyShown);
+            }
+        }
+    }//GEN-LAST:event_prevButtonActionPerformed
+
+    private void nextButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_nextButtonActionPerformed
+    {//GEN-HEADEREND:event_nextButtonActionPerformed
+        if (resultIntervalCurrentlyShown != null)
+        {
+            // Only get the next block if there's something left to show.
+            if (resultIntervalCurrentlyShown.id2 < resultList.getModel().getSize())
+            {
+                resultIntervalCurrentlyShown.nextBlock(Integer.parseInt((String)numberOfFootprintsComboBox.getSelectedItem()));
+                showNISFootprints(resultIntervalCurrentlyShown);
+            }
+        }
+        else
+        {
+            resultIntervalCurrentlyShown = new IdPair(0, Integer.parseInt((String)numberOfFootprintsComboBox.getSelectedItem()));
+            showNISFootprints(resultIntervalCurrentlyShown);
+        }
+    }//GEN-LAST:event_nextButtonActionPerformed
+
+    private void removeAllFootprintsButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_removeAllFootprintsButtonActionPerformed
+    {//GEN-HEADEREND:event_removeAllFootprintsButtonActionPerformed
+        NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelNames.NIS_SPECTRA);
+        model.removeAllSpectra();
+        resultIntervalCurrentlyShown = null;
+    }//GEN-LAST:event_removeAllFootprintsButtonActionPerformed
+
+    private void submitButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_submitButtonActionPerformed
+    {//GEN-HEADEREND:event_submitButtonActionPerformed
         try
         {
             selectRegionButton.setSelected(false);
@@ -594,98 +1275,153 @@ public class NISSearchPanel extends JPanel implements ActionListener, MouseListe
             System.out.println(e);
             return;
         }
-    }
+    }//GEN-LAST:event_submitButtonActionPerformed
 
+    private void resultListMousePressed(java.awt.event.MouseEvent evt)//GEN-FIRST:event_resultListMousePressed
+    {//GEN-HEADEREND:event_resultListMousePressed
+        maybeShowPopup(evt);
+    }//GEN-LAST:event_resultListMousePressed
 
-    private void setNISResults(ArrayList<String> results)
-    {
-        nisResultsLabelText = results.size() + " spectra matched";
-        resultsLabel.setText(nisResultsLabelText);
-        nisRawResults = results;
+    private void resultListMouseReleased(java.awt.event.MouseEvent evt)//GEN-FIRST:event_resultListMouseReleased
+    {//GEN-HEADEREND:event_resultListMouseReleased
+        maybeShowPopup(evt);
+    }//GEN-LAST:event_resultListMouseReleased
 
-        String[] formattedResults = new String[results.size()];
+    private void redComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_redComboBoxActionPerformed
+        updateColoring();
+    }//GEN-LAST:event_redComboBoxActionPerformed
 
-        // add the results to the list
-        int i=0;
-        for (String str : results)
-        {
-            formattedResults[i] = new String(
-                    str.substring(16, 25)
-                    + ", day: " + str.substring(10, 13) + "/" + str.substring(5, 9)
-                    );
+    private void greenComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_greenComboBoxActionPerformed
+        updateColoring();
+    }//GEN-LAST:event_greenComboBoxActionPerformed
 
-            ++i;
-        }
+    private void blueComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_blueComboBoxActionPerformed
+        updateColoring();
+    }//GEN-LAST:event_blueComboBoxActionPerformed
 
-        resultList.setListData(formattedResults);
+    private void redMinSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_redMinSpinnerStateChanged
+        updateColoring();
+    }//GEN-LAST:event_redMinSpinnerStateChanged
 
-        // Show the first set of boundaries
-        this.resultIntervalCurrentlyShown = new IdPair(0, (Integer)this.numberOfBoundariesComboBox.getSelectedItem());
-        this.showNISBoundaries(resultIntervalCurrentlyShown);
-    }
+    private void greenMinSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_greenMinSpinnerStateChanged
+        updateColoring();
+    }//GEN-LAST:event_greenMinSpinnerStateChanged
 
-    public void mouseClicked(MouseEvent e)
-    {
-    }
+    private void blueMinSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_blueMinSpinnerStateChanged
+        updateColoring();
+    }//GEN-LAST:event_blueMinSpinnerStateChanged
 
-    public void mouseEntered(MouseEvent e)
-    {
-    }
+    private void redMaxSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_redMaxSpinnerStateChanged
+        updateColoring();
+    }//GEN-LAST:event_redMaxSpinnerStateChanged
 
-    public void mouseExited(MouseEvent e)
-    {
-    }
+    private void greenMaxSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_greenMaxSpinnerStateChanged
+        updateColoring();
+    }//GEN-LAST:event_greenMaxSpinnerStateChanged
 
-    public void mousePressed(MouseEvent e)
-    {
-        maybeShowPopup(e);
-    }
+    private void blueMaxSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_blueMaxSpinnerStateChanged
+        updateColoring();
+    }//GEN-LAST:event_blueMaxSpinnerStateChanged
 
-    public void mouseReleased(MouseEvent e)
-    {
-        maybeShowPopup(e);
-    }
+    private void grayscaleCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_grayscaleCheckBoxActionPerformed
+        boolean enableColor = !grayscaleCheckBox.isSelected();
 
-    private void maybeShowPopup(MouseEvent e)
-    {
-        if (e.isPopupTrigger())
-        {
-            int index = resultList.locationToIndex(e.getPoint());
+        redLabel.setVisible(enableColor);
+        greenLabel.setVisible(enableColor);
+        greenComboBox.setVisible(enableColor);
+        greenMinLabel.setVisible(enableColor);
+        greenMinSpinner.setVisible(enableColor);
+        greenMaxLabel.setVisible(enableColor);
+        greenMaxSpinner.setVisible(enableColor);
+        blueLabel.setVisible(enableColor);
+        blueComboBox.setVisible(enableColor);
+        blueMinLabel.setVisible(enableColor);
+        blueMinSpinner.setVisible(enableColor);
+        blueMaxLabel.setVisible(enableColor);
+        blueMaxSpinner.setVisible(enableColor);
 
-            if (index >= 0 && resultList.getCellBounds(index, index).contains(e.getPoint()))
-            {
-                resultList.setSelectedIndex(index);
-                nisPopupMenu.setCurrentSpectrum(nisRawResults.get(index));
-                nisPopupMenu.show(e.getComponent(), e.getX(), e.getY());
-            }
-        }
-    }
+        updateColoring();
+    }//GEN-LAST:event_grayscaleCheckBoxActionPerformed
 
-    private void showNISBoundaries(IdPair idPair)
-    {
-        int startId = idPair.id1;
-        int endId = idPair.id2;
-
-        NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelNames.NIS_SPECTRA);
-        model.removeAllImages();
-
-        for (int i=startId; i<endId; ++i)
-        {
-            if (i < 0)
-                continue;
-            else if(i >= nisRawResults.size())
-                break;
-
-            try
-            {
-                String currentImage = nisRawResults.get(i);
-                String boundaryName = currentImage.substring(0,currentImage.length()-4) + ".NIS";
-                model.addSpectrum(boundaryName);
-            }
-            catch (IOException e1) {
-                // TODO Auto-generated catch block
-                e1.printStackTrace();
-            }
-        }
-    }
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JComboBox blueComboBox;
+    private javax.swing.JLabel blueLabel;
+    private javax.swing.JLabel blueMaxLabel;
+    private javax.swing.JSpinner blueMaxSpinner;
+    private javax.swing.JLabel blueMinLabel;
+    private javax.swing.JSpinner blueMinSpinner;
+    private javax.swing.JButton clearRegionButton;
+    private javax.swing.JLabel endDateLabel;
+    private javax.swing.JLabel endDistanceLabel;
+    private javax.swing.JLabel endEmissionLabel;
+    private javax.swing.JLabel endIncidenceLabel;
+    private javax.swing.JLabel endPhaseLabel;
+    private javax.swing.JSpinner endSpinner;
+    private javax.swing.JLabel fromDistanceLabel;
+    private javax.swing.JFormattedTextField fromDistanceTextField;
+    private javax.swing.JLabel fromEmissionLabel;
+    private javax.swing.JFormattedTextField fromEmissionTextField;
+    private javax.swing.JLabel fromIncidenceLabel;
+    private javax.swing.JFormattedTextField fromIncidenceTextField;
+    private javax.swing.JLabel fromPhaseLabel;
+    private javax.swing.JFormattedTextField fromPhaseTextField;
+    private javax.swing.JCheckBox grayscaleCheckBox;
+    private javax.swing.JComboBox greenComboBox;
+    private javax.swing.JLabel greenLabel;
+    private javax.swing.JLabel greenMaxLabel;
+    private javax.swing.JSpinner greenMaxSpinner;
+    private javax.swing.JLabel greenMinLabel;
+    private javax.swing.JSpinner greenMinSpinner;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel20;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel10;
+    private javax.swing.JPanel jPanel11;
+    private javax.swing.JPanel jPanel12;
+    private javax.swing.JPanel jPanel13;
+    private javax.swing.JPanel jPanel14;
+    private javax.swing.JPanel jPanel15;
+    private javax.swing.JPanel jPanel16;
+    private javax.swing.JPanel jPanel17;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel5;
+    private javax.swing.JPanel jPanel6;
+    private javax.swing.JPanel jPanel7;
+    private javax.swing.JPanel jPanel8;
+    private javax.swing.JPanel jPanel9;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JButton nextButton;
+    private javax.swing.JComboBox numberOfFootprintsComboBox;
+    private javax.swing.JCheckBox polygonType0CheckBox;
+    private javax.swing.JCheckBox polygonType1CheckBox;
+    private javax.swing.JCheckBox polygonType2CheckBox;
+    private javax.swing.JCheckBox polygonType3CheckBox;
+    private javax.swing.JButton prevButton;
+    private javax.swing.JComboBox redComboBox;
+    private javax.swing.JLabel redLabel;
+    private javax.swing.JLabel redMaxLabel;
+    private javax.swing.JSpinner redMaxSpinner;
+    private javax.swing.JLabel redMinLabel;
+    private javax.swing.JSpinner redMinSpinner;
+    private javax.swing.JButton removeAllFootprintsButton;
+    private javax.swing.JList resultList;
+    private javax.swing.JLabel resultsLabel;
+    private javax.swing.JToggleButton selectRegionButton;
+    private javax.swing.JLabel startDateLabel;
+    private javax.swing.JSpinner startSpinner;
+    private javax.swing.JButton submitButton;
+    private javax.swing.JLabel toDistanceLabel;
+    private javax.swing.JFormattedTextField toDistanceTextField;
+    private javax.swing.JLabel toEmissionLabel;
+    private javax.swing.JFormattedTextField toEmissionTextField;
+    private javax.swing.JLabel toIncidenceLabel;
+    private javax.swing.JFormattedTextField toIncidenceTextField;
+    private javax.swing.JLabel toPhaseLabel;
+    private javax.swing.JFormattedTextField toPhaseTextField;
+    // End of variables declaration//GEN-END:variables
 }

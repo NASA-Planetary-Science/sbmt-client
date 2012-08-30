@@ -45,22 +45,19 @@ public class NISSpectraCollection extends Model implements PropertyChangeListene
         fileToSpectrumMap.put(path, spectrum);
         spectraActors.put(spectrum, new ArrayList<vtkProp>());
 
-        // Now texture map this image onto the Eros model.
-        //spectrum.setPolygonOffset(-10.0);
+        ArrayList<vtkProp> props = spectrum.getProps();
 
-        ArrayList<vtkProp> imagePieces = spectrum.getProps();
+        spectraActors.get(spectrum).addAll(props);
 
-        spectraActors.get(spectrum).addAll(imagePieces);
-
-        for (vtkProp act : imagePieces)
+        for (vtkProp act : props)
             actorToFileMap.put(act, path);
 
-        allActors.addAll(imagePieces);
+        allActors.addAll(props);
 
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
-    public void removeImage(String path)
+    public void removeSpectrum(String path)
     {
         NISSpectrum spectrum = fileToSpectrumMap.get(path);
 
@@ -82,11 +79,11 @@ public class NISSpectraCollection extends Model implements PropertyChangeListene
         this.pcs.firePropertyChange(Properties.MODEL_REMOVED, null, spectrum);
     }
 
-    public void removeAllImages()
+    public void removeAllSpectra()
     {
         HashMap<String, NISSpectrum> map = (HashMap<String, NISSpectrum>)fileToSpectrumMap.clone();
         for (String path : map.keySet())
-            removeImage(path);
+            removeSpectrum(path);
     }
 
     public ArrayList<vtkProp> getProps()
@@ -121,12 +118,11 @@ public class NISSpectraCollection extends Model implements PropertyChangeListene
         return fileToSpectrumMap.containsKey(file);
     }
 
-    public void setChannelColoring(int channel, double min, double max)
+    public void setChannelColoring(int[] channels, double[] mins, double[] maxs)
     {
-        NISSpectrum.setChannelColoring(channel, min, max);
         for (String file : this.fileToSpectrumMap.keySet())
         {
-            this.fileToSpectrumMap.get(file).updateChannelColoring();
+            this.fileToSpectrumMap.get(file).updateChannelColoring(channels, mins, maxs);
         }
 
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
