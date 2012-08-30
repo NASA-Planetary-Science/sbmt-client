@@ -102,6 +102,15 @@ public class LidarPlot extends JFrame implements ChartMouseListener
 
             panel.add(chartPanel, BorderLayout.CENTER);
 
+            distanceDataSeries.clear();
+            if (data.size() > 0 && distance.size() > 0)
+            {
+                for (int i=0; i<data.size(); ++i)
+                    distanceDataSeries.add(distance.get(i), data.get(i), false);
+            }
+            distanceDataSeries.fireSeriesChanged();
+
+            plot.getRangeAxis().setRangeWithMargins(distanceDataSeries.getMinY(), distanceDataSeries.getMaxY());
         }
 
         {
@@ -137,9 +146,17 @@ public class LidarPlot extends JFrame implements ChartMouseListener
 
             panel.add(chartPanel, BorderLayout.SOUTH);
 
-        }
+            timeDataSeries.clear();
+            if (data.size() > 0 && time.size() > 0)
+            {
+                long t0 = time.get(0);
+                for (int i=0; i<data.size(); ++i)
+                    timeDataSeries.add((double)(time.get(i)-t0)/1000.0, data.get(i), false);
+            }
+            timeDataSeries.fireSeriesChanged();
 
-        updateData();
+            plot.getRangeAxis().setRangeWithMargins(timeDataSeries.getMinY(), timeDataSeries.getMaxY());
+        }
 
         add(panel, BorderLayout.CENTER);
 
@@ -163,34 +180,6 @@ public class LidarPlot extends JFrame implements ChartMouseListener
         menuBar.add(fileMenu);
 
         setJMenuBar(menuBar);
-    }
-
-    private void updateData()
-    {
-        selectPoint(-1);
-
-        distanceDataSeries.clear();
-        if (data.size() > 0 && distance.size() > 0)
-        {
-            for (int i=0; i<data.size(); ++i)
-            {
-                distanceDataSeries.add(distance.get(i), data.get(i), false);
-            }
-        }
-        distanceDataSeries.fireSeriesChanged();
-
-
-
-        timeDataSeries.clear();
-        if (data.size() > 0 && time.size() > 0)
-        {
-            long t0 = time.get(0);
-            for (int i=0; i<data.size(); ++i)
-            {
-                timeDataSeries.add((double)(time.get(i)-t0)/1000.0, data.get(i), false);
-            }
-        }
-        timeDataSeries.fireSeriesChanged();
     }
 
 
