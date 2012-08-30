@@ -77,12 +77,22 @@ public class LidarPlot extends JFrame implements ChartMouseListener
             ((XYSeriesCollection)distanceDataset).addSeries(distanceSelectionSeries);
             ((XYSeriesCollection)distanceDataset).addSeries(distanceDataSeries);
 
-            JFreeChart chart1 = ChartFactory.createXYLineChart
+            final JFreeChart chart1 = ChartFactory.createXYLineChart
             (name + " vs. Distance", "Distance (km)", name + " (" + units + ")",
                     distanceDataset, PlotOrientation.VERTICAL, false, true, false);
 
             // add the jfreechart graph
-            ChartPanel chartPanel = new ChartPanel(chart1);
+            ChartPanel chartPanel = new ChartPanel(chart1){
+                @Override
+                public void restoreAutoRangeBounds()
+                {
+                    super.restoreAutoRangeBounds();
+                    // This makes sure when the user auto-range's the plot, it will bracket the
+                    // well with a small margin
+                    ((XYPlot)chart1.getPlot()).getRangeAxis().setRangeWithMargins(
+                            distanceDataSeries.getMinY(), distanceDataSeries.getMaxY());
+                }
+            };
             chartPanel.setMouseWheelEnabled(true);
             chartPanel.addChartMouseListener(this);
 
@@ -121,12 +131,22 @@ public class LidarPlot extends JFrame implements ChartMouseListener
             ((XYSeriesCollection)timeDataset).addSeries(timeSelectionSeries);
             ((XYSeriesCollection)timeDataset).addSeries(timeDataSeries);
 
-            JFreeChart chart2 = ChartFactory.createXYLineChart
+            final JFreeChart chart2 = ChartFactory.createXYLineChart
                     (name + " vs. Time", "Time (sec)", name + " (" + units + ")",
                             timeDataset, PlotOrientation.VERTICAL, false, true, false);
 
             // add the jfreechart graph
-            ChartPanel chartPanel = new ChartPanel(chart2);
+            ChartPanel chartPanel = new ChartPanel(chart2){
+                @Override
+                public void restoreAutoRangeBounds()
+                {
+                    super.restoreAutoRangeBounds();
+                    // This makes sure when the user auto-range's the plot, it will bracket the
+                    // well with a small margin
+                    ((XYPlot)chart2.getPlot()).getRangeAxis().setRangeWithMargins(
+                            timeDataSeries.getMinY(), timeDataSeries.getMaxY());
+                }
+            };
             chartPanel.setMouseWheelEnabled(true);
             chartPanel.addChartMouseListener(this);
 
