@@ -232,9 +232,22 @@ public class LidarPlot extends JFrame implements ChartMouseListener
         {
             int id = ((XYItemEntity)entity).getItem();
             selectPoint(id);
-            lidarModel.selectPoint(id);
-        }
 
+            // Only select the point in the renderer if there is only one track
+            // shown and the number of points in the track is the same as the number
+            // points in this plot. Without these conditions, then the selected
+            // point will be incorrect.
+            if (lidarModel.getNumberOfTrack() == 1 &&
+                    lidarModel.getNumberOfPointsPerTrack(0) == data.size())
+            {
+                lidarModel.selectPoint(id);
+            }
+        }
+        else
+        {
+            distanceSelectionSeries.clear();
+            timeSelectionSeries.clear();
+        }
     }
 
     public void chartMouseMoved(ChartMouseEvent arg0)
