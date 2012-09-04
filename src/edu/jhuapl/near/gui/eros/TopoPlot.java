@@ -35,14 +35,14 @@ public class TopoPlot implements ChartMouseListener, PropertyChangeListener
     private LineModel lineModel;
     private DEMModel demModel;
     private ChartPanel chartPanel;
-    
+
     private int numberOfProfilesCreated = 0;
-    
+
     public TopoPlot(LineModel lineModel, DEMModel demModel)
     {
         this.lineModel = lineModel;
         this.demModel = demModel;
-        
+
         lineModel.addPropertyChangeListener(this);
 
         heightDistanceDataset = new XYSeriesCollection();
@@ -59,20 +59,20 @@ public class TopoPlot implements ChartMouseListener, PropertyChangeListener
         XYPlot plot = (XYPlot) chart1.getPlot();
         plot.setDomainPannable(true);
         plot.setRangePannable(true);
-        
-        XYItemRenderer r = plot.getRenderer();                                                                                                 
-        if (r instanceof XYLineAndShapeRenderer) {                                                                                             
-            XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) r;                                                                      
+
+        XYItemRenderer r = plot.getRenderer();
+        if (r instanceof XYLineAndShapeRenderer) {
+            XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) r;
             renderer.setBaseShapesVisible(false);
             renderer.setBaseShapesFilled(true);
         }
     }
-    
+
     public JPanel getChartPanel()
     {
         return chartPanel;
     }
-    
+
     private void setSeriesColor(int lineId)
     {
         Line line = (Line)lineModel.getStructure(lineId);
@@ -80,7 +80,7 @@ public class TopoPlot implements ChartMouseListener, PropertyChangeListener
         ((XYPlot)chartPanel.getChart().getPlot()).getRenderer().setSeriesPaint(
                 lineId, new Color(c[0], c[1], c[2], c[3]));
     }
-    
+
     private void addProfile()
     {
         int lineId = lineModel.getNumberOfStructures()-1;
@@ -91,17 +91,17 @@ public class TopoPlot implements ChartMouseListener, PropertyChangeListener
                 lineId, new BasicStroke(2.0f)); // set line thickness
         updateProfile(lineId);
     }
-    
+
     private void updateProfile(int lineId)
     {
         if (lineId >= ((XYSeriesCollection)heightDistanceDataset).getSeriesCount())
             return;
-            
+
         Line line = (Line)lineModel.getStructure(lineId);
-        ArrayList<Double> height = new ArrayList<Double>(); 
-        ArrayList<Double> distance = new ArrayList<Double>(); 
+        ArrayList<Double> height = new ArrayList<Double>();
+        ArrayList<Double> distance = new ArrayList<Double>();
         demModel.generateProfile(line.xyzPointList, height, distance);
-        
+
         XYSeries series = ((XYSeriesCollection)heightDistanceDataset).getSeries(lineId);
         series.clear();
         int N = height.size();
@@ -109,7 +109,7 @@ public class TopoPlot implements ChartMouseListener, PropertyChangeListener
             series.add(distance.get(i), height.get(i), false);
         series.fireSeriesChanged();
     }
-    
+
     private void removeProfile(int lineId)
     {
         if (lineId < ((XYSeriesCollection)heightDistanceDataset).getSeriesCount())
@@ -119,9 +119,9 @@ public class TopoPlot implements ChartMouseListener, PropertyChangeListener
     public String getProfileAsString(int lineId)
     {
         StringBuilder buffer = new StringBuilder();
-        
+
         XYSeries series = ((XYSeriesCollection)heightDistanceDataset).getSeries(lineId);
-        
+
         String eol = System.getProperty("line.separator");
 
         int N = series.getItemCount();
@@ -140,11 +140,11 @@ public class TopoPlot implements ChartMouseListener, PropertyChangeListener
 
         return buffer.toString();
     }
-    
+
     public void chartMouseClicked(ChartMouseEvent arg0)
     {
         ChartEntity entity = arg0.getEntity();
-        
+
         if (entity instanceof XYItemEntity)
         {
             //int id = ((XYItemEntity)entity).getItem();
@@ -161,7 +161,7 @@ public class TopoPlot implements ChartMouseListener, PropertyChangeListener
         {
             int lineId = (Integer)evt.getNewValue();
             Line line = (Line)lineModel.getStructure(lineId);
-            
+
             if (line.controlPointIds.size() == 2)
                 addProfile();
         }
@@ -174,6 +174,10 @@ public class TopoPlot implements ChartMouseListener, PropertyChangeListener
         {
             int lineId = (Integer)evt.getNewValue();
             removeProfile(lineId);
+        }
+        else if (Properties.ALL_STRUCTURES_REMOVED.equals(evt.getPropertyName()))
+        {
+            ((XYSeriesCollection)heightDistanceDataset).removeAllSeries();
         }
         else if (Properties.COLOR_CHANGED.equals(evt.getPropertyName()))
         {

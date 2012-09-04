@@ -619,8 +619,6 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
 
     public void removeAllStructures()
     {
-        int origNumStructures = getNumberOfStructures();
-
         lines.clear();
 
         updatePolyData();
@@ -630,8 +628,7 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
 
         selectStructure(-1);
 
-        for (int i=0; i<origNumStructures; ++i)
-            this.pcs.firePropertyChange(Properties.STRUCTURE_REMOVED, null, i);
+        this.pcs.firePropertyChange(Properties.ALL_STRUCTURES_REMOVED, null, null);
     }
 
     public void moveSelectionVertex(int vertexId, double[] newPoint)

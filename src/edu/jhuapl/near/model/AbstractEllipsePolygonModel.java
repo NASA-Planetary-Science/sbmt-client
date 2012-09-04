@@ -427,6 +427,7 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
         updatePolyData();
 
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+        this.pcs.firePropertyChange(Properties.STRUCTURE_REMOVED, null, polygonId);
     }
 
     public void removeAllStructures()
@@ -436,6 +437,7 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
         updatePolyData();
 
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+        this.pcs.firePropertyChange(Properties.ALL_STRUCTURES_REMOVED, null, null);
     }
 
     public void movePolygon(int polygonId, double[] newCenter)

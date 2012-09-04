@@ -1,6 +1,7 @@
 package edu.jhuapl.near.pick;
 
 import java.awt.Cursor;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
@@ -195,5 +196,17 @@ public class PointPicker extends Picker
     public int getDefaultCursor()
     {
         return Cursor.CROSSHAIR_CURSOR;
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e)
+    {
+        int keyCode = e.getKeyCode();
+        if (keyCode == KeyEvent.VK_DELETE || keyCode == KeyEvent.VK_BACK_SPACE)
+        {
+            int highlightedStructure = pointModel.getHighlightedStructure();
+            if (highlightedStructure >= 0)
+                pointModel.removeStructure(highlightedStructure);
+        }
     }
 }

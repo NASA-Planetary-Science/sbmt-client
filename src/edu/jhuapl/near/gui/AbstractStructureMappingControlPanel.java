@@ -7,6 +7,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
@@ -190,26 +192,7 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
         {
             public void actionPerformed(ActionEvent e)
             {
-                editButton.setSelected(false);
-
-                int numStructures = structuresTable.getRowCount();
-                int idx = structuresTable.getSelectedRow();
-                if (idx >= 0 && idx < numStructures)
-                {
-                    structureModel.removeStructure(idx);
-                    pickManager.setPickMode(PickManager.PickMode.DEFAULT);
-                    structureModel.selectStructure(-1);
-                    updateStructureTable();
-
-                    numStructures = structuresTable.getRowCount();
-                    if (numStructures > 0)
-                    {
-                        if (idx > numStructures-1)
-                            structuresTable.setRowSelectionInterval(numStructures-1, numStructures-1);
-                        else
-                            structuresTable.setRowSelectionInterval(idx, idx);
-                    }
-                }
+                deleteStructure();
             }
         });
         add(deleteButton, "w 100!");
@@ -235,7 +218,6 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
                 structureModel.removeAllStructures();
                 pickManager.setPickMode(PickManager.PickMode.DEFAULT);
                 structureModel.selectStructure(-1);
-                updateStructureTable();
             }
         });
         add(deleteAllButton, "w 100!, wrap");
@@ -284,6 +266,28 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
                 }
             });
             add(changeLineWidthButton, "span 2, w 200!, wrap");
+        }
+
+        structuresTable.addKeyListener(new KeyAdapter()
+        {
+            public void keyPressed(KeyEvent e)
+            {
+                deleteStructure();
+            }
+        });
+    }
+
+    private void deleteStructure()
+    {
+        editButton.setSelected(false);
+
+        int numStructures = structuresTable.getRowCount();
+        int idx = structuresTable.getSelectedRow();
+        if (idx >= 0 && idx < numStructures)
+        {
+            structureModel.removeStructure(idx);
+            pickManager.setPickMode(PickManager.PickMode.DEFAULT);
+            structureModel.selectStructure(-1);
         }
     }
 
@@ -402,6 +406,31 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
             int idx = structureModel.getNumberOfStructures() - 1;
             structuresTable.setRowSelectionInterval(idx, idx);
             structuresTable.scrollRectToVisible(structuresTable.getCellRect(idx, 0, true));
+        }
+        else if (Properties.STRUCTURE_REMOVED.equals(evt.getPropertyName()))
+        {
+            int idx = (Integer)evt.getNewValue();
+
+            updateStructureTable();
+
+            int numStructures = structuresTable.getRowCount();
+            if (numStructures > 0)
+            {
+                if (idx > numStructures-1)
+                {
+                    structuresTable.setRowSelectionInterval(numStructures-1, numStructures-1);
+                    structuresTable.scrollRectToVisible(structuresTable.getCellRect(numStructures-1, 0, true));
+                }
+                else
+                {
+                    structuresTable.setRowSelectionInterval(idx, idx);
+                    structuresTable.scrollRectToVisible(structuresTable.getCellRect(idx, 0, true));
+                }
+            }
+        }
+        else if (Properties.ALL_STRUCTURES_REMOVED.equals(evt.getPropertyName()))
+        {
+            updateStructureTable();
         }
     }
 

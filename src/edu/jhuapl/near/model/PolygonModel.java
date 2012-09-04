@@ -442,16 +442,13 @@ public class PolygonModel extends ControlPointsStructureModel implements Propert
 
     public void removeAllStructures()
     {
-        int origNumStructures = getNumberOfStructures();
-
         polygons.clear();
 
         updatePolyData();
 
         selectStructure(-1);
 
-        for (int i=0; i<origNumStructures; ++i)
-            this.pcs.firePropertyChange(Properties.STRUCTURE_REMOVED, null, i);
+        this.pcs.firePropertyChange(Properties.ALL_STRUCTURES_REMOVED, null, null);
     }
 
     public void moveSelectionVertex(int vertexId, double[] newPoint)

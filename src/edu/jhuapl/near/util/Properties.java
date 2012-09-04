@@ -16,6 +16,7 @@ public interface Properties
     final String VERTEX_INSERTED_INTO_LINE = "vertex-inserted-into-line";
     final String VERTEX_POSITION_CHANGED = "vertex-position-changed";
     final String STRUCTURE_REMOVED = "structure-removed";
+    final String ALL_STRUCTURES_REMOVED = "all-structure-removed";
     final String COLOR_CHANGED = "color-changed";
     //final String LINE_SELECTED = "line-selected";
 
