@@ -117,7 +117,7 @@ public class Line extends StructureModel.Structure
         return linEle;
     }
 
-    public void fromXmlDomElement(Element element, String shapeModelName)
+    public void fromXmlDomElement(Element element, String shapeModelName, boolean append)
     {
         lat.clear();
         lon.clear();
@@ -125,7 +125,8 @@ public class Line extends StructureModel.Structure
         controlPointIds.clear();
         xyzPointList.clear();
 
-        id = Integer.parseInt(element.getAttribute(ID));
+        if (!append) // If appending, simply use maxId
+            id = Integer.parseInt(element.getAttribute(ID));
 
         if (id > maxId)
             maxId = id;

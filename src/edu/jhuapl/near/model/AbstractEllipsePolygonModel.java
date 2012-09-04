@@ -656,7 +656,7 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
         return new IdPair(startCell, endCell);
     }
 
-    public void loadModel(File file) throws IOException
+    public void loadModel(File file, boolean append) throws IOException
     {
         ArrayList<String> lines = FileUtil.getFileLinesAsStringList(file.getAbsolutePath());
 
@@ -673,7 +673,8 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
             // both versions, so look at how many columns are in the line.
 
             // The first 8 columns are the same in both the old and new formats.
-            pol.id = Integer.parseInt(words[0]);
+            if (!append) // If appending, simply use maxPolygonId
+                pol.id = Integer.parseInt(words[0]);
             pol.name = words[1];
             pol.center[0] = Double.parseDouble(words[2]);
             pol.center[1] = Double.parseDouble(words[3]);
@@ -734,7 +735,10 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
         }
 
         // Only if we reach here and no exception is thrown do we modify this class
-        polygons = newPolygons;
+        if (append)
+            polygons.addAll(newPolygons);
+        else
+            polygons = newPolygons;
 
         updatePolyData();
 

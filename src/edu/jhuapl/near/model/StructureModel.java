@@ -52,7 +52,7 @@ public abstract class StructureModel extends Model
 
     public abstract int getStructureIndexFromCellId(int cellId, vtkProp prop);
 
-    public abstract void loadModel(File file) throws Exception;
+    public abstract void loadModel(File file, boolean append) throws Exception;
 
     public abstract void saveModel(File file) throws Exception;
 

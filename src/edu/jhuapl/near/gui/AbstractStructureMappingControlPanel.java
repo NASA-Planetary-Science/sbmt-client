@@ -336,7 +336,24 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
             {
                 try
                 {
-                    structureModel.loadModel(file);
+                    // If there are already structures, ask user if they want to
+                    // append or overwrite them
+                    boolean append = false;
+                    if (structureModel.getNumberOfStructures() > 0)
+                    {
+                        Object[] options = {"Append", "Replace"};
+                        int n = JOptionPane.showOptionDialog(this,
+                                "Would you like to append to or replace the existing structures?",
+                                "Append or Replace?",
+                                JOptionPane.YES_NO_OPTION,
+                                JOptionPane.QUESTION_MESSAGE,
+                                null,
+                                options,
+                                options[0]);
+                        append = (n == 0 ? true : false);
+                    }
+
+                    structureModel.loadModel(file, append);
                     structuresFileTextField.setText(file.getAbsolutePath());
                     structuresFile = file;
                 }

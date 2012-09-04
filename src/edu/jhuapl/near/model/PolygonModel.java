@@ -172,9 +172,10 @@ public class PolygonModel extends ControlPointsStructureModel implements Propert
         return rootEle;
     }
 
-    public void fromXmlDomElement(Element element)
+    public void fromXmlDomElement(Element element, boolean append)
     {
-        this.polygons.clear();
+        if (!append)
+            this.polygons.clear();
 
         String shapeModelName = null;
         if (element.hasAttribute(SHAPE_MODEL_NAME))
@@ -189,7 +190,7 @@ public class PolygonModel extends ControlPointsStructureModel implements Propert
 
                 Polygon pol = new Polygon(smallBodyModel);
 
-                pol.fromXmlDomElement(el, shapeModelName);
+                pol.fromXmlDomElement(el, shapeModelName, append);
 
                 this.polygons.add(pol);
             }
@@ -532,7 +533,7 @@ public class PolygonModel extends ControlPointsStructureModel implements Propert
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
-    public void loadModel(File file) throws Exception
+    public void loadModel(File file, boolean append) throws Exception
     {
         //get the factory
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -547,7 +548,7 @@ public class PolygonModel extends ControlPointsStructureModel implements Propert
         Element docEle = dom.getDocumentElement();
 
         if (PolygonModel.POLYGONS.equals(docEle.getTagName()))
-            fromXmlDomElement(docEle);
+            fromXmlDomElement(docEle, append);
     }
 
     public void saveModel(File file) throws Exception

@@ -120,11 +120,12 @@ public class Polygon extends StructureModel.Structure
         return polyEle;
     }
 
-    public void fromXmlDomElement(Element element, String shapeModelName)
+    public void fromXmlDomElement(Element element, String shapeModelName, boolean append)
     {
         controlPoints.clear();
 
-        id = Integer.parseInt(element.getAttribute(ID));
+        if (!append) // If appending, simply use maxId
+            id = Integer.parseInt(element.getAttribute(ID));
 
         if (id > maxId)
             maxId = id;

@@ -154,9 +154,10 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
         return rootEle;
     }
 
-    public void fromXmlDomElement(Element element)
+    public void fromXmlDomElement(Element element, boolean append)
     {
-        this.lines.clear();
+        if (!append)
+            this.lines.clear();
 
         String shapeModelName = null;
         if (element.hasAttribute(SHAPE_MODEL_NAME))
@@ -171,7 +172,7 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
 
                 Line lin = new Line(smallBodyModel);
 
-                lin.fromXmlDomElement(el, shapeModelName);
+                lin.fromXmlDomElement(el, shapeModelName, append);
 
                 this.lines.add(lin);
             }
@@ -749,7 +750,7 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
-    public void loadModel(File file) throws Exception
+    public void loadModel(File file, boolean append) throws Exception
     {
         //get the factory
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -764,7 +765,7 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
         Element docEle = dom.getDocumentElement();
 
         if (LineModel.LINES.equals(docEle.getTagName()))
-            fromXmlDomElement(docEle);
+            fromXmlDomElement(docEle, append);
     }
 
     public void saveModel(File file) throws Exception
