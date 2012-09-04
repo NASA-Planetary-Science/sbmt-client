@@ -759,4 +759,12 @@ public class PolygonModel extends ControlPointsStructureModel implements Propert
             this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
         }
     }
+
+    public void setVisible(boolean b)
+    {
+        boundaryActor.SetVisibility(b ? 1 : 0);
+        interiorActor.SetVisibility(b ? 1 : 0);
+        polygonSelectionActor.SetVisibility(b ? 1 : 0);
+        super.setVisible(b);
+    }
 }

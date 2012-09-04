@@ -1136,4 +1136,10 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
         }
     }
 
+    public void setVisible(boolean b)
+    {
+        lineActor.SetVisibility(b ? 1 : 0);
+        lineSelectionActor.SetVisibility(b ? 1 : 0);
+        super.setVisible(b);
+    }
 }

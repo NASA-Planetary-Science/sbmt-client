@@ -27,6 +27,8 @@ import javax.swing.JToggleButton;
 import javax.swing.ListSelectionModel;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.border.Border;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
@@ -58,6 +60,8 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
     private File structuresFile;
     //private StructuresPopupMenu structuresPopupMenu;
     private JToggleButton editButton;
+    private JButton hideAllButton;
+    private JButton showAllButton;
     //private JComboBox structureTypeComboBox;
     //private int selectedIndex = -1;
     private StructureModel structureModel;
@@ -164,6 +168,7 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
             {
                 public void actionPerformed(ActionEvent e)
                 {
+                    structureModel.setVisible(true); // in case user hid everything, make it visible again
                     structureModel.addNewStructure();
                     pickManager.setPickMode(pickMode);
                     editButton.setSelected(true);
@@ -185,6 +190,14 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
                 setEditingEnabled(editButton.isSelected());
             }
         });
+        editButton.addChangeListener(new ChangeListener()
+        {
+            public void stateChanged(ChangeEvent e)
+            {
+                hideAllButton.setEnabled(!editButton.isSelected());
+                showAllButton.setEnabled(!editButton.isSelected());
+            }
+        });
         add(editButton, "w 100!");
 
         JButton deleteButton = new JButton("Delete");
@@ -195,7 +208,27 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
                 deleteStructure();
             }
         });
-        add(deleteButton, "w 100!");
+        add(deleteButton, "w 100!, wrap");
+
+        hideAllButton = new JButton("Hide All");
+        hideAllButton.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                structureModel.setVisible(false);
+            }
+        });
+        add(hideAllButton, "w 100!");
+
+        showAllButton = new JButton("Show All");
+        showAllButton.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                structureModel.setVisible(true);
+            }
+        });
+        add(showAllButton, "w 100!");
 
         JButton deleteAllButton = new JButton("Delete All");
         deleteAllButton.addActionListener(new ActionListener()
@@ -478,6 +511,8 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
     {
         if (enable)
         {
+            structureModel.setVisible(true); // in case user hid everything, make it visible again
+
             if (!editButton.isSelected())
                 editButton.setSelected(true);
         }

@@ -1069,4 +1069,11 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
             this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
         }
     }
+
+    public void setVisible(boolean b)
+    {
+        boundaryActor.SetVisibility(b ? 1 : 0);
+        interiorActor.SetVisibility(b ? 1 : 0);
+        super.setVisible(b);
+    }
 }
