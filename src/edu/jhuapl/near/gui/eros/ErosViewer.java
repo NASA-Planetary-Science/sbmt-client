@@ -43,6 +43,7 @@ import edu.jhuapl.near.popupmenus.LidarPopupMenu;
 import edu.jhuapl.near.popupmenus.PopupManager;
 import edu.jhuapl.near.popupmenus.PopupMenu;
 import edu.jhuapl.near.popupmenus.eros.LineamentPopupMenu;
+import edu.jhuapl.near.popupmenus.eros.MapletBoundaryPopupMenu;
 import edu.jhuapl.near.popupmenus.eros.NISPopupMenu;
 import edu.jhuapl.near.util.Configuration;
 
@@ -156,6 +157,9 @@ public class ErosViewer extends Viewer
 
         popupMenu = new LidarPopupMenu(lidarSearch, renderer);
         popupManager.registerPopup(modelManager.getModel(ModelNames.LIDAR_SEARCH), popupMenu);
+
+        popupMenu = new MapletBoundaryPopupMenu(modelManager, renderer);
+        popupManager.registerPopup(modelManager.getModel(ModelNames.MAPLET_BOUNDARY), popupMenu);
     }
 
     public Renderer getRenderer()

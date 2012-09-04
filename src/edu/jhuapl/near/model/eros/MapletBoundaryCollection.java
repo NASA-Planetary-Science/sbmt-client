@@ -1,5 +1,6 @@
 package edu.jhuapl.near.model.eros;
 
+import java.awt.Color;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
@@ -81,6 +82,31 @@ public class MapletBoundaryCollection extends Model implements PropertyChangeLis
             return dem;
         }
 
+        public Color getColor()
+        {
+            double[] c = actor.GetProperty().GetColor();
+            return new Color((float)c[0], (float)c[1], (float)c[2]);
+        }
+
+        public void setColor(Color color)
+        {
+            float[] c = color.getRGBColorComponents(null);
+            actor.GetProperty().SetColor(c[0], c[1], c[2]);
+            this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+        }
+
+        public Number getLineWidth()
+        {
+            // Note although we call it the line width, it's really point size
+            return actor.GetProperty().GetPointSize();
+        }
+
+        public void setLineWidth(Double value)
+        {
+            // Note although we call it the line width, it's really point size
+            actor.GetProperty().SetPointSize(value);
+            this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+        }
     }
 
 
@@ -174,12 +200,12 @@ public class MapletBoundaryCollection extends Model implements PropertyChangeLis
     {
         return "Boundary of maplet";
     }
-/*
-    public Boundary getBoundary(vtkActor actor)
+
+    public Boundary getBoundary(vtkProp actor)
     {
         return actorToBoundaryMap.get(actor);
     }
-
+/*
     public Boundary getBoundary(DEMModel dem)
     {
         return getBoundaryFromDEM(dem);
