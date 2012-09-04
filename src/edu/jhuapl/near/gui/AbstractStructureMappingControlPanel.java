@@ -305,21 +305,20 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
         {
             public void keyPressed(KeyEvent e)
             {
-                deleteStructure();
+                int keyCode = e.getKeyCode();
+                if (keyCode == KeyEvent.VK_DELETE || keyCode == KeyEvent.VK_BACK_SPACE)
+                    deleteStructure();
             }
         });
     }
 
     private void deleteStructure()
     {
-        editButton.setSelected(false);
-
         int numStructures = structuresTable.getRowCount();
         int idx = structuresTable.getSelectedRow();
         if (idx >= 0 && idx < numStructures)
         {
             structureModel.removeStructure(idx);
-            pickManager.setPickMode(PickManager.PickMode.DEFAULT);
             structureModel.selectStructure(-1);
         }
     }
