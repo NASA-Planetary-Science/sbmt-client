@@ -1051,11 +1051,12 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         }
     }
 
-    // Computes the incidence, emission, and phase at a point with a given normal.
+    // Computes the incidence, emission, and phase at a point on the footprint with a given normal.
+    // (I.e. the normal of the plate which the point is lying on).
     // The output is a 3-vector with the first component equal to the incidence,
     // the second component equal to the emission and the third component equal to
     // the phase.
-    private double[] computeIlluminationAnglesAtPoint(
+    public double[] computeIlluminationAnglesAtPoint(
             double[] pt,
             double[] normal)
     {
