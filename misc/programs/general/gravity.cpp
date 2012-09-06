@@ -39,7 +39,9 @@ struct GravityResult
 
 static void saveResults(char* pltfile,
                         const vector<GravityResult>& results,
-                        bool saveElevation)
+                        bool saveElevation,
+                        bool savePlateCenters,
+                        Platemodel* polyData)
 {
     string pltfilebasename = basename(pltfile);
 
@@ -102,6 +104,28 @@ static void saveResults(char* pltfile,
 
         foutE.close();
     }
+
+    if (savePlateCenters)
+    {
+        string outputCenters = pltfilebasename + "-centers.txt";
+
+        ofstream foutC(outputCenters.c_str());
+        if (!foutC.is_open())
+        {
+            cerr << "Error: Unable to open file for writing" << endl;
+            exit(1);
+        }
+        foutC.precision(16);
+
+        double center[3];
+        for (int i=0; i<size; ++i)
+        {
+            polyData->getPlateCenter(i, center);
+            foutC << center[0] << " " << center[1] << " " << center[2] << endl;
+        }
+
+        foutC.close();
+    }
 }
 
 static void usage()
@@ -136,7 +160,9 @@ static void usage()
          << " --end-plate <value>     use these 2 options to specify a range of plates to process. For example if\n"
          << "                         --start-plate is 1000 and --end-plate is 2000, then only plates 1000 through\n"
          << "                         1999 are processed. This is useful for parallelizing large shape models on\n"
-         << "                         multiple machines. These options are ignored if --file option is provided\n";
+         << "                         multiple machines. These options are ignored if --file option is provided\n"
+         << " --save-plate-centers    If specified, the centers of all plates in the shape model are saved to an\n"
+         << "                         additional file.\n";
 
     exit(0);
 }
@@ -165,6 +191,7 @@ int main(int argc, char** argv)
     int fileColumns[3] = {0, 1, 2};
     int startPlate = -1;
     int endPlate = -1;
+    bool savePlateCenters = false;
 
     int i = 1;
     for(; i<argc; ++i)
@@ -227,6 +254,10 @@ int main(int argc, char** argv)
         else if (!strcmp(argv[i], "--end-plate"))
         {
             endPlate = atoi(argv[++i]);
+        }
+        else if (!strcmp(argv[i], "--save-plate-centers"))
+        {
+            savePlateCenters = true;
         }
         else
         {
@@ -469,7 +500,7 @@ int main(int argc, char** argv)
     // centers only, then a separate program must be used to calculate
     // elevation and slope.
     bool saveElevation = refPotentialProvided && howToEvalute == FROM_FILE;
-    saveResults(pltfile, plateResults, saveElevation);
+    saveResults(pltfile, plateResults, saveElevation, savePlateCenters, polyData);
 
     return 0;
 }
