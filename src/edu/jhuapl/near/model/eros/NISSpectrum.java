@@ -2,16 +2,22 @@ package edu.jhuapl.near.model.eros;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
 import vtk.vtkActor;
 import vtk.vtkCellArray;
+import vtk.vtkFunctionParser;
 import vtk.vtkIdList;
 import vtk.vtkPoints;
 import vtk.vtkPolyData;
@@ -85,16 +91,82 @@ public class NISSpectrum extends Model implements PropertyChangeListener
     // processes on Eros from combined NEAR NIS and MSI data sets"
     // by Noam Izenberg et. al.
     static final public double[] bandCenters = {
-        816.2,  837.8,  859.4,  881.0,  902.7,  924.3,  945.9,  967.5,
-        989.1,  1010.7, 1032.3, 1053.9, 1075.5, 1097.1,    1118.8, 1140.4,
-        1162.0,    1183.6, 1205.2, 1226.8, 1248.4, 1270.0,    1291.6, 1313.2,
-        1334.9,    1356.5, 1378.1, 1399.7, 1421.3, 1442.9,    1464.5, 1486.1,
-        1371.8,    1414.9, 1458.0, 1501.1, 1544.2, 1587.3,    1630.4, 1673.6,
-        1716.7,    1759.8, 1802.9, 1846.0, 1889.1, 1932.2,    1975.3, 2018.4,
-        2061.5,    2104.7, 2147.8, 2190.9, 2234.0, 2277.1,    2320.2, 2363.3,
-        2406.4,    2449.5, 2492.6, 2535.8, 2578.9, 2622.0,    2665.1, 2708.2
+        816.2,  // 0
+        837.8,  // 1
+        859.4,  // 2
+        881.0,  // 3
+        902.7,  // 4
+        924.3,  // 5
+        945.9,  // 6
+        967.5,  // 7
+        989.1,  // 8
+        1010.7, // 9
+        1032.3, // 10
+        1053.9, // 11
+        1075.5, // 12
+        1097.1, // 13
+        1118.8, // 14
+        1140.4, // 15
+        1162.0, // 16
+        1183.6, // 17
+        1205.2, // 18
+        1226.8, // 19
+        1248.4, // 20
+        1270.0, // 21
+        1291.6, // 22
+        1313.2, // 23
+        1334.9, // 24
+        1356.5, // 25
+        1378.1, // 26
+        1399.7, // 27
+        1421.3, // 28
+        1442.9, // 29
+        1464.5, // 30
+        1486.1, // 31
+        1371.8, // 32
+        1414.9, // 33
+        1458.0, // 34
+        1501.1, // 35
+        1544.2, // 36
+        1587.3, // 37
+        1630.4, // 38
+        1673.6, // 39
+        1716.7, // 40
+        1759.8, // 41
+        1802.9, // 42
+        1846.0, // 43
+        1889.1, // 44
+        1932.2, // 45
+        1975.3, // 46
+        2018.4, // 47
+        2061.5, // 48
+        2104.7, // 49
+        2147.8, // 50
+        2190.9, // 51
+        2234.0, // 52
+        2277.1, // 53
+        2320.2, // 54
+        2363.3, // 55
+        2406.4, // 56
+        2449.5, // 57
+        2492.6, // 58
+        2535.8, // 59
+        2578.9, // 60
+        2622.0, // 61
+        2665.1, // 62
+        2708.2  // 63
     };
 
+    static final public String[] derivedParameters = {
+        "B36 - B05",
+        "B01 - B05",
+        "B52 - B36"
+    };
+
+    static private ArrayList<vtkFunctionParser> userDefinedDerivedParameters = new ArrayList<vtkFunctionParser>();
+
+    // A list of channels used in one of the user defined derived parameters
+    static private ArrayList< ArrayList<String>> bandsPerUserDefinedDerivedParameters = new ArrayList<ArrayList<String>>();
 
     /**
      * Because instances of NISSpectrum can be expensive, we want there to be
@@ -398,19 +470,27 @@ public class NISSpectrum extends Model implements PropertyChangeListener
         return bandCenters;
     }
 
+    public static String[] getDerivedParameters()
+    {
+        return derivedParameters;
+    }
+
     public HashMap<String, String> getProperties() throws IOException
     {
-        HashMap<String, String> properties = new HashMap<String, String>();
-        System.out.println(this.fullpath);
-        properties.put("DAY_OF_YEAR", (new File(this.fullpath)).getParentFile().getName());
+        HashMap<String, String> properties = new LinkedHashMap<String, String>();
 
-        //properties.put("YEAR", (new File(this.fullpath)).getParentFile().getParentFile().getName());
+        String name = new File(this.fullpath).getName();
+        properties.put("Name", name.substring(0, name.length()-4));
+
+        properties.put("Date", dateTime.toString());
+
+        properties.put("Day of Year", (new File(this.fullpath)).getParentFile().getName());
+
+        //properties.put("Year", (new File(this.fullpath)).getParentFile().getParentFile().getName());
 
         properties.put("MET", (new File(this.fullpath)).getName().substring(2,11));
 
-        properties.put("DURATION", Double.toString(duration) + " seconds");
-
-        properties.put("Date", dateTime.toString());
+        properties.put("Duration", Double.toString(duration) + " seconds");
 
         String polygonTypeStr = "Missing value";
         switch(this.polygon_type_flag)
@@ -428,7 +508,7 @@ public class NISSpectrum extends Model implements PropertyChangeListener
             polygonTypeStr = "Empty (no vertices on shape)";
             break;
         }
-        properties.put("POLYGON_TYPE_FLAG", polygonTypeStr);
+        properties.put("Polygon Type", polygonTypeStr);
 
         // Note \u00B0 is the unicode degree symbol
         String deg = "\u00B0";
@@ -438,6 +518,10 @@ public class NISSpectrum extends Model implements PropertyChangeListener
         properties.put("Maximum Emission", Double.toString(maxIncidence)+deg);
         properties.put("Minimum Phase", Double.toString(minPhase)+deg);
         properties.put("Maximum Phase", Double.toString(maxPhase)+deg);
+
+        properties.put("Range", this.range + " km");
+        properties.put("Spacecraft Position (km)",
+                spacecraftPosition[0] + " " + spacecraftPosition[1] + " " + spacecraftPosition[2]);
 
         return properties;
     }
@@ -487,12 +571,87 @@ public class NISSpectrum extends Model implements PropertyChangeListener
         return maxPhase;
     }
 
+    private double evaluateDerivedParameters(int channel)
+    {
+        switch(channel)
+        {
+        case 0:
+            return spectrum[35] - spectrum[4];
+        case 1:
+            return spectrum[0] - spectrum[4];
+        case 2:
+            return spectrum[51] - spectrum[35];
+        default:
+            return 0.0;
+        }
+    }
+
+    private double evaluateUserDefinedDerivedParameters(int userDefinedParameter)
+    {
+        ArrayList<String> bands = bandsPerUserDefinedDerivedParameters.get(userDefinedParameter);
+        for (String c : bands)
+            userDefinedDerivedParameters.get(userDefinedParameter).SetScalarVariableValue(c, spectrum[Integer.parseInt(c)]);
+
+        return userDefinedDerivedParameters.get(userDefinedParameter).GetScalarResult();
+    }
+
+    public static boolean addUserDefinedDerivedParameter(String function)
+    {
+        vtkFunctionParser functionParser = new vtkFunctionParser();
+        functionParser.SetFunction(function);
+
+        // Find all variables in the expression of the form BXX where X is a digit
+        // such as B01, b63, B10
+        String patternString = "[Bb]\\d\\d";
+        Pattern pattern = Pattern.compile(patternString);
+        Matcher matcher = pattern.matcher(function);
+
+        ArrayList<String> bands = new ArrayList<String>();
+        int count = 0;
+        while(matcher.find())
+        {
+            bands.add(function.substring(matcher.start(), matcher.end()));
+            count++;
+            System.out.println("found: " + count + " : "
+                    + matcher.start() + " - " + matcher.end() + "  " + function.substring(matcher.start(), matcher.end()));
+        }
+
+        // First try to evaluate it to see if it's valid. Try
+        for (String c : bands)
+            functionParser.SetScalarVariableValue(c, 0.0);
+        if (functionParser.IsScalarResult() == 0)
+            return false;
+
+        bandsPerUserDefinedDerivedParameters.add(bands);
+        userDefinedDerivedParameters.add(functionParser);
+
+        return true;
+    }
+
+    public static void removeUserDefinedDerivedParameters(int userDefinedParameter)
+    {
+        bandsPerUserDefinedDerivedParameters.remove(userDefinedParameter);
+        userDefinedDerivedParameters.remove(userDefinedParameter);
+    }
+
+    public static ArrayList<vtkFunctionParser> getAllUserDefinedDerivedParameters()
+    {
+        return userDefinedDerivedParameters;
+    }
+
     private double[] getChannelColor()
     {
         double[] color = new double[3];
         for (int i=0; i<3; ++i)
         {
-            double val = spectrum[channelsToColorBy[i]];
+            double val = 0.0;
+            if (channelsToColorBy[i] < bandCenters.length)
+                val = spectrum[channelsToColorBy[i]];
+            else if (channelsToColorBy[i] < bandCenters.length + derivedParameters.length)
+                val = evaluateDerivedParameters(channelsToColorBy[i]-bandCenters.length);
+            else
+                val = evaluateUserDefinedDerivedParameters(channelsToColorBy[i]-bandCenters.length-derivedParameters.length);
+
             if (val < 0.0)
                 val = 0.0;
             else if (val > 1.0)
@@ -543,4 +702,35 @@ public class NISSpectrum extends Model implements PropertyChangeListener
         shiftedFootprint.Delete();
     }
 
+    public String getFullPath()
+    {
+        return fullpath;
+    }
+
+    public void saveSpectrum(File file) throws IOException
+    {
+        FileWriter fstream = new FileWriter(file);
+        BufferedWriter out = new BufferedWriter(fstream);
+
+        String nl = System.getProperty("line.separator");
+
+        HashMap<String,String> properties = getProperties();
+        for (String key : properties.keySet())
+        {
+            String value = properties.get(key);
+
+            // Replace unicode degrees symbol (\u00B0) with text ' deg'
+            value = value.replace("\u00B0", " deg");
+
+            out.write(key + " = " + value + nl);
+        }
+
+        out.write(nl + nl + "Wavelength(nm) Reflectance" + nl);
+        for (int i=0; i<bandCenters.length; ++i)
+        {
+            out.write(bandCenters[i] + " " + spectrum[i] + nl);
+        }
+
+        out.close();
+    }
 }

@@ -2,15 +2,18 @@ package edu.jhuapl.near.popupmenus.eros;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
+import java.io.File;
 import java.io.IOException;
 
 import javax.swing.AbstractAction;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 
 import vtk.vtkActor;
 import vtk.vtkProp;
 
+import edu.jhuapl.near.gui.CustomFileChooser;
 import edu.jhuapl.near.gui.ModelInfoWindowManager;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
@@ -27,6 +30,7 @@ public class NISPopupMenu extends PopupMenu
     private JMenuItem showSpectrumInfoMenuItem;
     private JMenuItem centerSpectrumMenuItem;
     private JMenuItem showFrustumMenuItem;
+    private JMenuItem saveSpectrumMenuItem;
     private ModelInfoWindowManager infoPanelManager;
     //private SmallBodyModel erosModel;
 
@@ -63,6 +67,10 @@ public class NISPopupMenu extends PopupMenu
         showFrustumMenuItem = new JCheckBoxMenuItem(new ShowFrustumAction());
         showFrustumMenuItem.setText("Show Frustum");
         this.add(showFrustumMenuItem);
+
+        saveSpectrumMenuItem = new JMenuItem(new SaveSpectrumAction());
+        saveSpectrumMenuItem.setText("Save Spectrum...");
+        this.add(saveSpectrumMenuItem);
     }
 
 
@@ -82,6 +90,8 @@ public class NISPopupMenu extends PopupMenu
 
         if (showSpectrumInfoMenuItem != null)
             showSpectrumInfoMenuItem.setEnabled(containsSpectrum);
+
+        saveSpectrumMenuItem.setEnabled(containsSpectrum);
 
         if (containsSpectrum)
         {
@@ -166,6 +176,39 @@ public class NISPopupMenu extends PopupMenu
 
         }
     }
+
+    private class SaveSpectrumAction extends AbstractAction
+    {
+        public void actionPerformed(ActionEvent e)
+        {
+            try
+            {
+                NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelNames.NIS_SPECTRA);
+                model.addSpectrum(currentSpectrum);
+                NISSpectrum spectrum = model.getSpectrum(currentSpectrum);
+
+                String name = new File(spectrum.getFullPath()).getName();
+                name = name.substring(0, name.length()-4) + ".txt";
+                File file = CustomFileChooser.showSaveDialog(saveSpectrumMenuItem, "Select File", name);
+
+                if (file != null)
+                {
+                    spectrum.saveSpectrum(file);
+                }
+            }
+            catch (IOException e1)
+            {
+                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(saveSpectrumMenuItem),
+                        "There was an error saving the file.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+
+                e1.printStackTrace();
+            }
+        }
+
+    }
+
 
     public void showPopup(MouseEvent e, vtkProp pickedProp, int pickedCellId,
             double[] pickedPosition)

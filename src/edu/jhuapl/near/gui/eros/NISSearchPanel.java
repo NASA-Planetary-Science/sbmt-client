@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.TreeSet;
 
+import javax.swing.JSpinner;
 import javax.swing.SpinnerDateModel;
 
 import org.joda.time.DateTime;
@@ -98,6 +99,14 @@ public class NISSearchPanel extends javax.swing.JPanel implements MouseListener
             redComboBox.addItem(channel);
             greenComboBox.addItem(channel);
             blueComboBox.addItem(channel);
+        }
+
+        String[] derivedParameters = NISSpectrum.getDerivedParameters();
+        for (int i=0; i<derivedParameters.length; ++i)
+        {
+            redComboBox.addItem(derivedParameters[i]);
+            greenComboBox.addItem(derivedParameters[i]);
+            blueComboBox.addItem(derivedParameters[i]);
         }
     }
 
@@ -192,31 +201,48 @@ public class NISSearchPanel extends javax.swing.JPanel implements MouseListener
         }
     }
 
+    private void checkValidMinMax(int channel, boolean minimunStateChange)
+    {
+        JSpinner minSpinner = null;
+        JSpinner maxSpinner = null;
+
+        if (channel == 0)
+        {
+            minSpinner = redMinSpinner;
+            maxSpinner = redMaxSpinner;
+        }
+        else if (channel == 1)
+        {
+            minSpinner = greenMinSpinner;
+            maxSpinner = greenMaxSpinner;
+        }
+        else if (channel == 2)
+        {
+            minSpinner = blueMinSpinner;
+            maxSpinner = blueMaxSpinner;
+        }
+
+        Double minVal = (Double)minSpinner.getValue();
+        Double maxVal = (Double)maxSpinner.getValue();
+        if (minVal > maxVal)
+        {
+            if (minimunStateChange)
+                minSpinner.setValue(maxSpinner.getValue());
+            else
+                maxSpinner.setValue(minSpinner.getValue());
+        }
+    }
+
     private void updateColoring()
     {
         Double redMinVal = (Double)redMinSpinner.getValue();
         Double redMaxVal = (Double)redMaxSpinner.getValue();
-        if (redMinVal > redMaxVal)
-        {
-            redMaxSpinner.setValue(redMaxSpinner.getPreviousValue());
-            return;
-        }
 
         Double greenMinVal = (Double)greenMinSpinner.getValue();
         Double greenMaxVal = (Double)greenMaxSpinner.getValue();
-        if (greenMinVal > greenMaxVal)
-        {
-            greenMaxSpinner.setValue(greenMaxSpinner.getPreviousValue());
-            return;
-        }
 
         Double blueMinVal = (Double)blueMinSpinner.getValue();
         Double blueMaxVal = (Double)blueMaxSpinner.getValue();
-        if (blueMinVal > blueMaxVal)
-        {
-            blueMaxSpinner.setValue(blueMaxSpinner.getPreviousValue());
-            return;
-        }
 
         NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelNames.NIS_SPECTRA);
         if (grayscaleCheckBox.isSelected())
@@ -795,7 +821,7 @@ public class NISSearchPanel extends javax.swing.JPanel implements MouseListener
 
         jPanel13.setLayout(new java.awt.GridBagLayout());
 
-        redMaxSpinner.setModel(new javax.swing.SpinnerNumberModel(0.05d, 0.0d, 1.0d, 0.01d));
+        redMaxSpinner.setModel(new javax.swing.SpinnerNumberModel(Double.valueOf(0.05d), null, null, Double.valueOf(0.01d)));
         redMaxSpinner.setPreferredSize(new java.awt.Dimension(100, 28));
         redMaxSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
@@ -825,7 +851,7 @@ public class NISSearchPanel extends javax.swing.JPanel implements MouseListener
         gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
         jPanel13.add(redMaxLabel, gridBagConstraints);
 
-        redMinSpinner.setModel(new javax.swing.SpinnerNumberModel(0.0d, 0.0d, 1.0d, 0.01d));
+        redMinSpinner.setModel(new javax.swing.SpinnerNumberModel(Double.valueOf(0.0d), null, null, Double.valueOf(0.01d)));
         redMinSpinner.setPreferredSize(new java.awt.Dimension(100, 28));
         redMinSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
@@ -896,7 +922,7 @@ public class NISSearchPanel extends javax.swing.JPanel implements MouseListener
         gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
         jPanel15.add(greenMinLabel, gridBagConstraints);
 
-        greenMaxSpinner.setModel(new javax.swing.SpinnerNumberModel(0.05d, 0.0d, 1.0d, 0.01d));
+        greenMaxSpinner.setModel(new javax.swing.SpinnerNumberModel(Double.valueOf(0.05d), null, null, Double.valueOf(0.01d)));
         greenMaxSpinner.setPreferredSize(new java.awt.Dimension(100, 28));
         greenMaxSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
@@ -918,7 +944,7 @@ public class NISSearchPanel extends javax.swing.JPanel implements MouseListener
         gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
         jPanel15.add(greenMaxLabel, gridBagConstraints);
 
-        greenMinSpinner.setModel(new javax.swing.SpinnerNumberModel(0.0d, 0.0d, 1.0d, 0.01d));
+        greenMinSpinner.setModel(new javax.swing.SpinnerNumberModel(Double.valueOf(0.0d), null, null, Double.valueOf(0.01d)));
         greenMinSpinner.setPreferredSize(new java.awt.Dimension(100, 28));
         greenMinSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
@@ -989,7 +1015,7 @@ public class NISSearchPanel extends javax.swing.JPanel implements MouseListener
         gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
         jPanel17.add(blueMaxLabel, gridBagConstraints);
 
-        blueMaxSpinner.setModel(new javax.swing.SpinnerNumberModel(0.05d, 0.0d, 1.0d, 0.01d));
+        blueMaxSpinner.setModel(new javax.swing.SpinnerNumberModel(Double.valueOf(0.05d), null, null, Double.valueOf(0.01d)));
         blueMaxSpinner.setPreferredSize(new java.awt.Dimension(100, 28));
         blueMaxSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
@@ -1011,7 +1037,7 @@ public class NISSearchPanel extends javax.swing.JPanel implements MouseListener
         gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
         jPanel17.add(blueMinLabel, gridBagConstraints);
 
-        blueMinSpinner.setModel(new javax.swing.SpinnerNumberModel(0.0d, 0.0d, 1.0d, 0.01d));
+        blueMinSpinner.setModel(new javax.swing.SpinnerNumberModel(Double.valueOf(0.0d), null, null, Double.valueOf(0.01d)));
         blueMinSpinner.setPreferredSize(new java.awt.Dimension(100, 28));
         blueMinSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
@@ -1300,26 +1326,32 @@ public class NISSearchPanel extends javax.swing.JPanel implements MouseListener
     }//GEN-LAST:event_blueComboBoxActionPerformed
 
     private void redMinSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_redMinSpinnerStateChanged
+        checkValidMinMax(0, true);
         updateColoring();
     }//GEN-LAST:event_redMinSpinnerStateChanged
 
     private void greenMinSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_greenMinSpinnerStateChanged
+        checkValidMinMax(1, true);
         updateColoring();
     }//GEN-LAST:event_greenMinSpinnerStateChanged
 
     private void blueMinSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_blueMinSpinnerStateChanged
+        checkValidMinMax(2, true);
         updateColoring();
     }//GEN-LAST:event_blueMinSpinnerStateChanged
 
     private void redMaxSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_redMaxSpinnerStateChanged
+        checkValidMinMax(0, false);
         updateColoring();
     }//GEN-LAST:event_redMaxSpinnerStateChanged
 
     private void greenMaxSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_greenMaxSpinnerStateChanged
+        checkValidMinMax(1, false);
         updateColoring();
     }//GEN-LAST:event_greenMaxSpinnerStateChanged
 
     private void blueMaxSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_blueMaxSpinnerStateChanged
+        checkValidMinMax(2, false);
         updateColoring();
     }//GEN-LAST:event_blueMaxSpinnerStateChanged
 
