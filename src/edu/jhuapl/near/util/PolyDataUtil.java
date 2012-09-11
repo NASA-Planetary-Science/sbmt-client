@@ -2651,7 +2651,7 @@ public class PolyDataUtil
      * at its file extension to determine it format. It supports these formats:
      * 1. VTK (.vtk extension)
      * 2. OBJ (.obj extension)
-     * 3. PDS vertex style shape models (.pds extension)
+     * 3. PDS vertex style shape models (.pds, .plt, or .tab extension)
      * 4. Lat, lon, radius format also used in PDS shape models (.llr extension)
      *
      * This function also adds normal vectors to the returned polydata, if not
@@ -2686,7 +2686,9 @@ public class PolyDataUtil
 
             smallBodyReader.Delete();
         }
-        else if (filename.toLowerCase().endsWith(".pds"))
+        else if (filename.toLowerCase().endsWith(".pds") ||
+                filename.toLowerCase().endsWith(".plt") ||
+                filename.toLowerCase().endsWith(".tab"))
         {
             shapeModel = loadPDSShapeModel(filename);
         }
@@ -2769,5 +2771,21 @@ public class PolyDataUtil
 
         idList.Delete();
         out.close();
+    }
+
+    static public void removeDuplicatePoints(String filename) throws Exception
+    {
+        vtkPolyData polydata = loadPDSShapeModel(filename);
+
+        vtkCleanPolyData cleanFilter = new vtkCleanPolyData();
+        cleanFilter.PointMergingOn();
+        cleanFilter.SetTolerance(0.0);
+        cleanFilter.ConvertLinesToPointsOff();
+        cleanFilter.ConvertPolysToLinesOff();
+        cleanFilter.ConvertStripsToPolysOff();
+        cleanFilter.SetInput(polydata);
+        cleanFilter.Update();
+
+        saveShapeModelAsPLT(cleanFilter.GetOutput(), filename);
     }
 }
