@@ -83,9 +83,9 @@ public class NISSpectrum extends Model implements PropertyChangeListener
     private double minPhase;
     private double maxPhase;
     private boolean showFrustum = false;
-    private int[] channelsToColorBy = {0, 0, 0};
-    private double[] channelsColoringMinValue= {0.0, 0.0, 0.0};
-    private double[] channelsColoringMaxValue = {0.05, 0.05, 0.05};
+    static private int[] channelsToColorBy = {0, 0, 0};
+    static private double[] channelsColoringMinValue= {0.0, 0.0, 0.0};
+    static private double[] channelsColoringMaxValue = {0.05, 0.05, 0.05};
 
     // These values were taken from Table 1 of "Spectral properties and geologic
     // processes on Eros from combined NEAR NIS and MSI data sets"
@@ -526,7 +526,7 @@ public class NISSpectrum extends Model implements PropertyChangeListener
         return properties;
     }
 
-    public void updateChannelColoring(
+    static public void setChannelColoring(
             int[] channels, double[] mins, double[] maxs)
     {
         for (int i=0; i<3; ++i)
@@ -535,7 +535,10 @@ public class NISSpectrum extends Model implements PropertyChangeListener
             channelsColoringMinValue[i] = mins[i];
             channelsColoringMaxValue[i] = maxs[i];
         }
+    }
 
+    public void updateChannelColoring()
+    {
         vtkProperty footprintProperty = footprintActor.GetProperty();
         double[] color = getChannelColor();
         footprintProperty.SetColor(color[0], color[1], color[2]);
