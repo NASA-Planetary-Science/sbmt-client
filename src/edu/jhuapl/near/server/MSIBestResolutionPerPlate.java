@@ -179,11 +179,16 @@ public class MSIBestResolutionPerPlate
                     bestResolutionPerPlate.set(cellId, horizPixelScale);
                     //System.out.println(horizPixelScale + " " + vertPixelScale + " " + incidence + " " + emission + " " + dist + " " );
 
-                    numImagesResLessThan5mpp.set(cellId, numImagesResLessThan5mpp.get(cellId)+1);
-                    numImagesResLessThan10mpp.set(cellId, numImagesResLessThan10mpp.get(cellId)+1);
-                    numImagesResLessThan50mpp.set(cellId, numImagesResLessThan50mpp.get(cellId)+1);
-                    numImagesResLessThan100mpp.set(cellId, numImagesResLessThan100mpp.get(cellId)+1);
-                    numImagesResLessThan200mpp.set(cellId, numImagesResLessThan200mpp.get(cellId)+1);
+                    if (horizPixelScale <= 5.0)
+                        numImagesResLessThan5mpp.set(cellId, numImagesResLessThan5mpp.get(cellId)+1);
+                    if (horizPixelScale <= 10.0)
+                        numImagesResLessThan10mpp.set(cellId, numImagesResLessThan10mpp.get(cellId)+1);
+                    if (horizPixelScale <= 50.0)
+                        numImagesResLessThan50mpp.set(cellId, numImagesResLessThan50mpp.get(cellId)+1);
+                    if (horizPixelScale <= 100.0)
+                        numImagesResLessThan100mpp.set(cellId, numImagesResLessThan100mpp.get(cellId)+1);
+                    if (horizPixelScale <= 200.0)
+                        numImagesResLessThan200mpp.set(cellId, numImagesResLessThan200mpp.get(cellId)+1);
 
                     ++numGoodPlates;
 
