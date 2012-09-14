@@ -10,6 +10,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
+import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.util.Configuration;
 
 
@@ -29,6 +30,8 @@ public class FileMenu extends JMenu
         mi = new JMenuItem(new Save6AxesViewsAction());
         this.add(mi);
         mi = new JMenuItem(new SaveShapeModelAction());
+        this.add(mi);
+        mi = new JMenuItem(new SavePlateDataAction());
         this.add(mi);
         mi = new JMenuItem(new ShowCameraOrientationAction());
         this.add(mi);
@@ -128,6 +131,47 @@ public class FileMenu extends JMenu
                 e1.printStackTrace();
                 JOptionPane.showMessageDialog(null,
                         "An error occurred exporting the shape model.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        }
+    }
+
+    private class SavePlateDataAction extends AbstractAction
+    {
+        public SavePlateDataAction()
+        {
+            super("Export Plate Data...");
+        }
+
+        public void actionPerformed(ActionEvent actionEvent)
+        {
+            SmallBodyModel smallBodyModel = rootPanel.getCurrentViewer().getModelManager().getSmallBodyModel();
+            int index = smallBodyModel.getColoringIndex();
+            if (index < 0)
+            {
+                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(rootPanel),
+                        "Please first display the plate data you wish to export.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+
+                return;
+            }
+
+            String name = smallBodyModel.getColoringName(index) + ".txt";
+            File file = CustomFileChooser.showSaveDialog(null, "Export Plate Data", name);
+
+            try
+            {
+                if (file != null)
+                    smallBodyModel.saveCurrentColoringData(file);
+            }
+            catch (Exception e1)
+            {
+                e1.printStackTrace();
+                JOptionPane.showMessageDialog(null,
+                        "An error occurred exporting the plate data.",
                         "Error",
                         JOptionPane.ERROR_MESSAGE);
                 return;

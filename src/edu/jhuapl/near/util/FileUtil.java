@@ -20,6 +20,8 @@ import java.util.zip.ZipFile;
 
 import org.apache.commons.io.FileUtils;
 
+import vtk.vtkDataArray;
+
 public class FileUtil
 {
     private static volatile boolean abortUnzip = false;
@@ -81,6 +83,42 @@ public class FileUtil
         return values;
     }
 
+    public static void saveList(ArrayList<Object> array, String filename) throws IOException
+    {
+        FileWriter fstream = new FileWriter(filename);
+        BufferedWriter out = new BufferedWriter(fstream);
+
+        String nl = System.getProperty("line.separator");
+
+        for (Object o : array)
+            out.write(o.toString() + nl);
+
+        out.close();
+    }
+
+    public static void saveVtkDataArray(vtkDataArray array, String filename) throws IOException
+    {
+        FileWriter fstream = new FileWriter(filename);
+        BufferedWriter out = new BufferedWriter(fstream);
+
+        String nl = System.getProperty("line.separator");
+
+        int numTuples = array.GetNumberOfTuples();
+        int numComponents = array.GetNumberOfComponents();
+        for (int i=0; i<numTuples; ++i)
+        {
+            for (int j=0; j<numComponents; ++j)
+            {
+                double value = array.GetComponent(i, j);
+                if (j < numComponents-1)
+                    out.write(value + " ");
+                else
+                    out.write(value + nl);
+            }
+        }
+
+        out.close();
+    }
 
     /**
      * The function takes a file and returns its contents as a list of strings,

@@ -41,6 +41,7 @@ import edu.jhuapl.near.util.BoundingBox;
 import edu.jhuapl.near.util.Configuration;
 import edu.jhuapl.near.util.ConvertResourceToFile;
 import edu.jhuapl.near.util.FileCache;
+import edu.jhuapl.near.util.FileUtil;
 import edu.jhuapl.near.util.Frustum;
 import edu.jhuapl.near.util.LatLon;
 import edu.jhuapl.near.util.MathUtil;
@@ -1830,4 +1831,14 @@ public class SmallBodyModel extends Model
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
+    public void saveCurrentColoringData(File file) throws IOException
+    {
+        loadColoringData();
+
+        int index = getColoringIndex();
+        if (index >= 0)
+        {
+            FileUtil.saveVtkDataArray(coloringValues[index], file.getAbsolutePath());
+        }
+    }
 }
