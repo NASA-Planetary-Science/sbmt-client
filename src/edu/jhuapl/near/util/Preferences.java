@@ -22,6 +22,7 @@ public class Preferences extends MapUtil
     public static final String INTERACTOR_STYLE_TYPE = "InteractorStyleType";
     public static final String PICK_TOLERANCE = "PickTolerance";
     public static final String MOUSE_WHEEL_MOTION_FACTOR = "MouseWheelMotionFactor";
+    public static final String NIS_CUSTOM_FUNCTIONS = "NISCustomFunctions";
 
 
     private static final String preferencesPath = Configuration.getApplicationDataDir() + File.separator + "preferences.txt";

@@ -32,6 +32,7 @@ import edu.jhuapl.near.util.FileUtil;
 import edu.jhuapl.near.util.LatLon;
 import edu.jhuapl.near.util.MathUtil;
 import edu.jhuapl.near.util.PolyDataUtil;
+import edu.jhuapl.near.util.Preferences;
 import edu.jhuapl.near.util.Properties;
 
 public class NISSpectrum extends Model implements PropertyChangeListener
@@ -69,8 +70,9 @@ public class NISSpectrum extends Model implements PropertyChangeListener
     private vtkActor frustumActor;
     private ArrayList<vtkProp> footprintActors = new ArrayList<vtkProp>();
     private SmallBodyModel erosModel;
-    private double[] spectrum = new double[64];
-    private double[] spectrumEros = new double[64];
+    private static final int numberOfBands = 64;
+    private double[] spectrum = new double[numberOfBands];
+    private double[] spectrumEros = new double[numberOfBands];
     private double[] spacecraftPosition = new double[3];
     private double[] frustum1 = new double[3];
     private double[] frustum2 = new double[3];
@@ -168,6 +170,11 @@ public class NISSpectrum extends Model implements PropertyChangeListener
     // A list of channels used in one of the user defined derived parameters
     static private ArrayList< ArrayList<String>> bandsPerUserDefinedDerivedParameters = new ArrayList<ArrayList<String>>();
 
+    static
+    {
+        loadUserDefinedParametersfromPreferences();
+    }
+
     /**
      * Because instances of NISSpectrum can be expensive, we want there to be
      * no more than one instance of this class per image file on the server.
@@ -236,7 +243,7 @@ public class NISSpectrum extends Model implements PropertyChangeListener
                                    (360.0-Double.parseDouble(values.get(lonIdx))) * Math.PI / 180.0));
         }
 
-        for (int i=0; i<64; ++i)
+        for (int i=0; i<numberOfBands; ++i)
         {
             // The following min and max clamps the value between 0 and 1.
             spectrum[i] = Math.min(1.0, Math.max(0.0, Double.parseDouble(values.get(CALIBRATED_GE_DATA_OFFSET + i))));
@@ -593,14 +600,18 @@ public class NISSpectrum extends Model implements PropertyChangeListener
     {
         ArrayList<String> bands = bandsPerUserDefinedDerivedParameters.get(userDefinedParameter);
         for (String c : bands)
-            userDefinedDerivedParameters.get(userDefinedParameter).SetScalarVariableValue(c, spectrum[Integer.parseInt(c)]);
+        {
+            userDefinedDerivedParameters.get(userDefinedParameter).SetScalarVariableValue(
+                    c, spectrum[Integer.parseInt(c.substring(1))-1]);
+        }
 
         return userDefinedDerivedParameters.get(userDefinedParameter).GetScalarResult();
     }
 
-    public static boolean addUserDefinedDerivedParameter(String function)
+    private static boolean setupUserDefinedDerivedParameter(
+            vtkFunctionParser functionParser, String function, ArrayList<String> bands)
     {
-        vtkFunctionParser functionParser = new vtkFunctionParser();
+        functionParser.RemoveAllVariables();
         functionParser.SetFunction(function);
 
         // Find all variables in the expression of the form BXX where X is a digit
@@ -609,14 +620,18 @@ public class NISSpectrum extends Model implements PropertyChangeListener
         Pattern pattern = Pattern.compile(patternString);
         Matcher matcher = pattern.matcher(function);
 
-        ArrayList<String> bands = new ArrayList<String>();
-        int count = 0;
+        bands.clear();
         while(matcher.find())
         {
-            bands.add(function.substring(matcher.start(), matcher.end()));
-            count++;
-            System.out.println("found: " + count + " : "
-                    + matcher.start() + " - " + matcher.end() + "  " + function.substring(matcher.start(), matcher.end()));
+            String bandName = function.substring(matcher.start(), matcher.end());
+
+            // Flag an error if user tries to create variable out of the range
+            // of valid bands (only from 1 through 64 is allowed)
+            int bandNumber = Integer.parseInt(bandName.substring(1));
+            if (bandNumber < 1 || bandNumber > numberOfBands)
+                return false;
+
+            bands.add(bandName);
         }
 
         // First try to evaluate it to see if it's valid. Try
@@ -625,21 +640,85 @@ public class NISSpectrum extends Model implements PropertyChangeListener
         if (functionParser.IsScalarResult() == 0)
             return false;
 
-        bandsPerUserDefinedDerivedParameters.add(bands);
-        userDefinedDerivedParameters.add(functionParser);
-
         return true;
     }
 
-    public static void removeUserDefinedDerivedParameters(int userDefinedParameter)
+    public static boolean testUserDefinedDerivedParameter(String function)
     {
-        bandsPerUserDefinedDerivedParameters.remove(userDefinedParameter);
-        userDefinedDerivedParameters.remove(userDefinedParameter);
+        vtkFunctionParser functionParser = new vtkFunctionParser();
+        ArrayList<String> bands = new ArrayList<String>();
+
+        return setupUserDefinedDerivedParameter(functionParser, function, bands);
+    }
+
+    public static boolean addUserDefinedDerivedParameter(String function)
+    {
+        vtkFunctionParser functionParser = new vtkFunctionParser();
+        ArrayList<String> bands = new ArrayList<String>();
+
+        boolean success = setupUserDefinedDerivedParameter(functionParser, function, bands);
+
+        if (success)
+        {
+            bandsPerUserDefinedDerivedParameters.add(bands);
+            userDefinedDerivedParameters.add(functionParser);
+            saveUserDefinedParametersToPreferences();
+        }
+
+        return success;
+    }
+
+    public static boolean editUserDefinedDerivedParameter(int index, String function)
+    {
+        vtkFunctionParser functionParser = new vtkFunctionParser();
+        ArrayList<String> bands = new ArrayList<String>();
+
+        boolean success = setupUserDefinedDerivedParameter(functionParser, function, bands);
+
+        if (success)
+        {
+            bandsPerUserDefinedDerivedParameters.set(index, bands);
+            userDefinedDerivedParameters.set(index, functionParser);
+            saveUserDefinedParametersToPreferences();
+        }
+
+        return success;
+    }
+
+    public static void removeUserDefinedDerivedParameters(int index)
+    {
+        bandsPerUserDefinedDerivedParameters.remove(index);
+        userDefinedDerivedParameters.remove(index);
+        saveUserDefinedParametersToPreferences();
     }
 
     public static ArrayList<vtkFunctionParser> getAllUserDefinedDerivedParameters()
     {
         return userDefinedDerivedParameters;
+    }
+
+    public static void loadUserDefinedParametersfromPreferences()
+    {
+        String[] functions = Preferences.getInstance().getAsArray(Preferences.NIS_CUSTOM_FUNCTIONS, ";");
+        if (functions != null)
+        {
+            for (String func : functions)
+                addUserDefinedDerivedParameter(func);
+        }
+    }
+
+    public static void saveUserDefinedParametersToPreferences()
+    {
+        String functionList = "";
+        int numUserDefineParameters = userDefinedDerivedParameters.size();
+        for (int i=0; i<numUserDefineParameters; ++i)
+        {
+            functionList += userDefinedDerivedParameters.get(i).GetFunction();
+            if (i < numUserDefineParameters-1)
+                functionList += ";";
+        }
+
+        Preferences.getInstance().put(Preferences.NIS_CUSTOM_FUNCTIONS, functionList);
     }
 
     private double[] getChannelColor()
@@ -728,10 +807,21 @@ public class NISSpectrum extends Model implements PropertyChangeListener
             out.write(key + " = " + value + nl);
         }
 
-        out.write(nl + nl + "Wavelength(nm) Reflectance" + nl);
+        out.write(nl + nl + "Band Wavelength(nm) Reflectance" + nl);
         for (int i=0; i<bandCenters.length; ++i)
         {
-            out.write(bandCenters[i] + " " + spectrum[i] + nl);
+            out.write((i+1) + " " + bandCenters[i] + " " + spectrum[i] + nl);
+        }
+
+        out.write(nl + nl + "Derived Values" + nl);
+        for (int i=0; i<derivedParameters.length; ++i)
+        {
+            out.write(derivedParameters[i] + " = " + evaluateDerivedParameters(i) + nl);
+        }
+
+        for (int i=0; i<userDefinedDerivedParameters.size(); ++i)
+        {
+            out.write(userDefinedDerivedParameters.get(i).GetFunction() + " = " + evaluateUserDefinedDerivedParameters(i) + nl);
         }
 
         out.close();

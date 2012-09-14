@@ -17,12 +17,15 @@ import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.TreeSet;
 
+import javax.swing.JComboBox;
+import javax.swing.JOptionPane;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerDateModel;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
+import vtk.vtkFunctionParser;
 import vtk.vtkPolyData;
 
 import edu.jhuapl.near.gui.ModelInfoWindowManager;
@@ -53,7 +56,7 @@ public class NISSearchPanel extends javax.swing.JPanel implements MouseListener
     private ArrayList<String> nisRawResults = new ArrayList<String>();
     private String nisResultsLabelText = " ";
     private IdPair resultIntervalCurrentlyShown = null;
-
+    private boolean currentlyEditingUserDefinedFunction = false;
 
     /** Creates new form NISSearchPanel */
     public NISSearchPanel(final ModelManager modelManager,
@@ -93,6 +96,11 @@ public class NISSearchPanel extends javax.swing.JPanel implements MouseListener
 
         polygonType3CheckBox.setVisible(false);
 
+        setupComboBoxes();
+    }
+
+    private void setupComboBoxes()
+    {
         for (int i=1; i<=64; ++i)
         {
             String channel = new String("(" + i + ") " + NISSpectrum.bandCenters[i-1] + " nm");
@@ -107,6 +115,13 @@ public class NISSearchPanel extends javax.swing.JPanel implements MouseListener
             redComboBox.addItem(derivedParameters[i]);
             greenComboBox.addItem(derivedParameters[i]);
             blueComboBox.addItem(derivedParameters[i]);
+        }
+
+        for (vtkFunctionParser fp: NISSpectrum.getAllUserDefinedDerivedParameters())
+        {
+            redComboBox.addItem(fp.GetFunction());
+            greenComboBox.addItem(fp.GetFunction());
+            blueComboBox.addItem(fp.GetFunction());
         }
     }
 
@@ -235,6 +250,12 @@ public class NISSearchPanel extends javax.swing.JPanel implements MouseListener
 
     private void updateColoring()
     {
+        // If we are currently editing user defined functions
+        // (i.e. the dialog is open), do not update the coloring
+        // since we may be in an inconsistent state.
+        if (currentlyEditingUserDefinedFunction)
+            return;
+
         Double redMinVal = (Double)redMinSpinner.getValue();
         Double redMaxVal = (Double)redMaxSpinner.getValue();
 
@@ -350,6 +371,7 @@ public class NISSearchPanel extends javax.swing.JPanel implements MouseListener
         polygonType1CheckBox = new javax.swing.JCheckBox();
         polygonType2CheckBox = new javax.swing.JCheckBox();
         polygonType3CheckBox = new javax.swing.JCheckBox();
+        customFunctionsButton = new javax.swing.JButton();
 
         addComponentListener(new java.awt.event.ComponentAdapter() {
             public void componentHidden(java.awt.event.ComponentEvent evt) {
@@ -809,6 +831,7 @@ public class NISSearchPanel extends javax.swing.JPanel implements MouseListener
         gridBagConstraints.gridy = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
         jPanel12.add(redComboBox, gridBagConstraints);
 
@@ -816,6 +839,7 @@ public class NISSearchPanel extends javax.swing.JPanel implements MouseListener
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.gridwidth = 4;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         jPanel2.add(jPanel12, gridBagConstraints);
 
@@ -874,7 +898,7 @@ public class NISSearchPanel extends javax.swing.JPanel implements MouseListener
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 9;
+        gridBagConstraints.gridy = 10;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         jPanel8.add(jPanel2, gridBagConstraints);
 
@@ -902,6 +926,7 @@ public class NISSearchPanel extends javax.swing.JPanel implements MouseListener
         gridBagConstraints.gridy = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
         jPanel14.add(greenComboBox, gridBagConstraints);
 
@@ -909,6 +934,7 @@ public class NISSearchPanel extends javax.swing.JPanel implements MouseListener
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.gridwidth = 4;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         jPanel4.add(jPanel14, gridBagConstraints);
 
@@ -967,7 +993,7 @@ public class NISSearchPanel extends javax.swing.JPanel implements MouseListener
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 10;
+        gridBagConstraints.gridy = 11;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         jPanel8.add(jPanel4, gridBagConstraints);
 
@@ -986,6 +1012,7 @@ public class NISSearchPanel extends javax.swing.JPanel implements MouseListener
         gridBagConstraints.gridy = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
         jPanel16.add(blueComboBox, gridBagConstraints);
 
@@ -1002,6 +1029,7 @@ public class NISSearchPanel extends javax.swing.JPanel implements MouseListener
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.gridwidth = 4;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         jPanel10.add(jPanel16, gridBagConstraints);
 
@@ -1060,7 +1088,7 @@ public class NISSearchPanel extends javax.swing.JPanel implements MouseListener
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 11;
+        gridBagConstraints.gridy = 12;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         jPanel8.add(jPanel10, gridBagConstraints);
 
@@ -1126,6 +1154,19 @@ public class NISSearchPanel extends javax.swing.JPanel implements MouseListener
         gridBagConstraints.gridy = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         jPanel8.add(jPanel11, gridBagConstraints);
+
+        customFunctionsButton.setText("Custom Functions...");
+        customFunctionsButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                customFunctionsButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 9;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
+        jPanel8.add(customFunctionsButton, gridBagConstraints);
 
         jScrollPane2.setViewportView(jPanel8);
 
@@ -1375,6 +1416,16 @@ public class NISSearchPanel extends javax.swing.JPanel implements MouseListener
         updateColoring();
     }//GEN-LAST:event_grayscaleCheckBoxActionPerformed
 
+    private void customFunctionsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_customFunctionsButtonActionPerformed
+        NISCustomFunctionsPanel customFunctionsPanel = new NISCustomFunctionsPanel(
+                JOptionPane.getFrameForComponent(this),
+                new JComboBox[]{redComboBox, greenComboBox, blueComboBox});
+        currentlyEditingUserDefinedFunction = true;
+        customFunctionsPanel.setVisible(true);
+        currentlyEditingUserDefinedFunction = false;
+        updateColoring();
+    }//GEN-LAST:event_customFunctionsButtonActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox blueComboBox;
     private javax.swing.JLabel blueLabel;
@@ -1383,6 +1434,7 @@ public class NISSearchPanel extends javax.swing.JPanel implements MouseListener
     private javax.swing.JLabel blueMinLabel;
     private javax.swing.JSpinner blueMinSpinner;
     private javax.swing.JButton clearRegionButton;
+    private javax.swing.JButton customFunctionsButton;
     private javax.swing.JLabel endDateLabel;
     private javax.swing.JLabel endDistanceLabel;
     private javax.swing.JLabel endEmissionLabel;

@@ -74,13 +74,18 @@ public class MapUtil
 
     public String[] getAsArray(String key)
     {
+        return getAsArray(key, ",");
+    }
+
+    public String[] getAsArray(String key, String delimiter)
+    {
         if (!map.containsKey(key))
             return null;
         String value = get(key, "").trim();
         if (value.isEmpty())
             return new String[0];
         else
-            return get(key, "").split(",", -1);
+            return get(key, "").split(delimiter, -1);
     }
 
     public double[] getAsDoubleArray(String key)
