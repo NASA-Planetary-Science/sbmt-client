@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.io.File;
 
 import javax.swing.AbstractAction;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -31,6 +32,8 @@ public class FileMenu extends JMenu
         this.add(mi);
         mi = new JMenuItem(new ShowCameraOrientationAction());
         this.add(mi);
+        mi = new JCheckBoxMenuItem(new ShowSimpleCylindricalProjectionAction());
+        //this.add(mi);
 
         // On macs the exit action is in the Application menu not the file menu
         if (!Configuration.isMac())
@@ -142,6 +145,20 @@ public class FileMenu extends JMenu
         public void actionPerformed(ActionEvent e)
         {
             new CameraDialog(rootPanel.getCurrentViewer().getRenderer()).setVisible(true);
+        }
+    }
+
+    private class ShowSimpleCylindricalProjectionAction extends AbstractAction
+    {
+        public ShowSimpleCylindricalProjectionAction()
+        {
+            super("Render using Simple Cylindrical Projection (Experimental)");
+        }
+
+        public void actionPerformed(ActionEvent e)
+        {
+            JCheckBoxMenuItem mi = (JCheckBoxMenuItem)e.getSource();
+            rootPanel.getCurrentViewer().getRenderer().set2DMode(mi.isSelected());
         }
     }
 

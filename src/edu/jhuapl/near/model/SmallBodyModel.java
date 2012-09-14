@@ -1806,4 +1806,28 @@ public class SmallBodyModel extends Model
     {
         return null;
     }
+
+    @Override
+    public boolean supports2DMode()
+    {
+        return true;
+    }
+
+    @Override
+    public void set2DMode(boolean enable)
+    {
+        if (enable)
+        {
+            smallBodyMapper.SetInput(null);
+            smallBodyMapper.SetInputConnection(projectTo2D(smallBodyPolyData));
+        }
+        else
+        {
+            smallBodyMapper.SetInput(smallBodyPolyData);
+        }
+
+        smallBodyMapper.Update();
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+    }
+
 }

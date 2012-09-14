@@ -15,6 +15,7 @@ public class ModelManager extends Model implements PropertyChangeListener
     private ArrayList<vtkProp> propsExceptSmallBody = new ArrayList<vtkProp>();
     private HashMap<vtkProp, Model> propToModelMap = new HashMap<vtkProp, Model>();
     private HashMap<String, Model> allModels = new HashMap<String, Model>();
+    private boolean mode2D = false;
 
     public void setModels(HashMap<String, Model> models)
     {
@@ -97,5 +98,18 @@ public class ModelManager extends Model implements PropertyChangeListener
     {
         for (String modelName : allModels.keySet())
             allModels.get(modelName).delete();
+    }
+
+    public void set2DMode(boolean enable)
+    {
+        mode2D = enable;
+
+        for (String modelName : allModels.keySet())
+            allModels.get(modelName).set2DMode(enable);
+    }
+
+    public boolean is2DMode()
+    {
+        return mode2D;
     }
 }

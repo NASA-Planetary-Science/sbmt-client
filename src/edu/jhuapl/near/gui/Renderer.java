@@ -14,6 +14,7 @@ import vtk.vtkAxesActor;
 import vtk.vtkCamera;
 import vtk.vtkCaptionActor2D;
 import vtk.vtkInteractorStyle;
+import vtk.vtkInteractorStyleImage;
 import vtk.vtkInteractorStyleJoystickCamera;
 import vtk.vtkInteractorStyleTrackballCamera;
 import vtk.vtkLight;
@@ -26,6 +27,7 @@ import vtk.vtkRenderWindowPanel;
 import vtk.vtkRenderer;
 import vtk.vtkTextProperty;
 
+import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.util.LatLon;
 import edu.jhuapl.near.util.MathUtil;
@@ -196,6 +198,25 @@ public class Renderer extends JPanel implements
         {
             if (renWin.GetRenderer().HasViewProp(prop) == 0)
                 renWin.GetRenderer().AddViewProp(prop);
+        }
+
+        // If we are in 2D mode, then remove all props of models that
+        // do not support 2D mode.
+        if (modelManager.is2DMode())
+        {
+            propCollection = renWin.GetRenderer().GetViewProps();
+            size = propCollection.GetNumberOfItems();
+            for (int i=size-1; i>=0; --i)
+            {
+                vtkProp prop = (vtkProp)propCollection.GetItemAsObject(i);
+                Model model = modelManager.getModel(prop);
+                if (model != null && !model.supports2DMode())
+                {
+                    renWin.lock();
+                    renWin.GetRenderer().RemoveViewProp(prop);
+                    renWin.unlock();
+                }
+            }
         }
 
         if (renWin.GetRenderWindow().GetNeverRendered() > 0)
@@ -678,5 +699,30 @@ public class Renderer extends JPanel implements
     public double getMouseWheelMotionFactor()
     {
         return trackballCameraInteractorStyle.GetMouseWheelMotionFactor();
+    }
+
+    public void set2DMode(boolean enable)
+    {
+        modelManager.set2DMode(enable);
+
+        if (enable)
+        {
+            vtkCamera cam = renWin.GetRenderer().GetActiveCamera();
+            cam.ParallelProjectionOn();
+            setCameraOrientationInDirectionOfAxis(AxisType.NEGATIVE_X, false);
+            renWin.lock();
+            cam.SetViewUp(0.0, 1.0, 0.0);
+            renWin.unlock();
+            vtkInteractorStyleImage style = new vtkInteractorStyleImage();
+            renWin.setInteractorStyle(style);
+        }
+        else
+        {
+            renWin.GetRenderer().GetActiveCamera().ParallelProjectionOff();
+            renWin.resetCamera();
+            setInteractorStyleToDefault();
+        }
+
+        renWin.Render();
     }
 }
