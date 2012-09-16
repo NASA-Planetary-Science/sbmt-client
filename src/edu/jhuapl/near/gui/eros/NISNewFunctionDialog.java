@@ -78,7 +78,7 @@ public class NISNewFunctionDialog extends javax.swing.JDialog {
         invalidFunctionLabel.setForeground(new java.awt.Color(255, 0, 0));
         invalidFunctionLabel.setText("  ");
 
-        jLabel1.setText("<html>\nEnter the function below using standard infix notation. Use variables B01<br>\nthrough B64 to refer to specific bands. For example, '(B42 - B01) * 0.5'.");
+        jLabel1.setText("<html>\nEnter the formula below using standard infix notation. Use variables B01<br>\nthrough B64 to refer to specific bands. For example, '(B42 - B01) * 0.5'.");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -99,7 +99,7 @@ public class NISNewFunctionDialog extends javax.swing.JDialog {
                         .addContainerGap())
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                        .addContainerGap(24, Short.MAX_VALUE))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)

@@ -40,7 +40,7 @@
                   </Group>
                   <Group type="102" alignment="0" attributes="0">
                       <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace max="32767" attributes="0"/>
+                      <EmptySpace pref="24" max="32767" attributes="0"/>
                   </Group>
               </Group>
           </Group>
@@ -94,7 +94,7 @@
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel1">
       <Properties>
-        <Property name="text" type="java.lang.String" value="&lt;html&gt;&#xa;Enter the function below using standard infix notation. Use variables B01&lt;br&gt;&#xa;through B64 to refer to specific bands. For example, &apos;(B42 - B01) * 0.5&apos;."/>
+        <Property name="text" type="java.lang.String" value="&lt;html&gt;&#xa;Enter the formula below using standard infix notation. Use variables B01&lt;br&gt;&#xa;through B64 to refer to specific bands. For example, &apos;(B42 - B01) * 0.5&apos;."/>
       </Properties>
     </Component>
   </SubComponents>

@@ -1035,7 +1035,7 @@
             </Container>
             <Component class="javax.swing.JButton" name="customFunctionsButton">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Custom Functions..."/>
+                <Property name="text" type="java.lang.String" value="Custom Formulas..."/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="customFunctionsButtonActionPerformed"/>

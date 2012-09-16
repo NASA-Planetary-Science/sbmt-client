@@ -1155,7 +1155,7 @@ public class NISSearchPanel extends javax.swing.JPanel implements MouseListener
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         jPanel8.add(jPanel11, gridBagConstraints);
 
-        customFunctionsButton.setText("Custom Functions...");
+        customFunctionsButton.setText("Custom Formulas...");
         customFunctionsButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 customFunctionsButtonActionPerformed(evt);

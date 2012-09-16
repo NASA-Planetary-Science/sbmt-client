@@ -138,7 +138,7 @@ public class NISCustomFunctionsPanel extends javax.swing.JDialog {
         gridBagConstraints.insets = new java.awt.Insets(7, 6, 7, 0);
         getContentPane().add(editButton, gridBagConstraints);
 
-        jLabel1.setText("Function List");
+        jLabel1.setText("Formula List");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
