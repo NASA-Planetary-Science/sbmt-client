@@ -3,14 +3,17 @@ package edu.jhuapl.near.gui;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
+import javax.swing.AbstractAction;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -69,6 +72,7 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
     private JLabel opacityLabel;
     private JSpinner imageMapOpacitySpinner;
     private JButton scaleColoringButton;
+    private JButton saveColoringButton;
     private JRadioButton customColorButton;
     private JEditorPane statisticsLabel;
 
@@ -211,6 +215,11 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
             }
         });
 
+        saveColoringButton = new JButton("Save Plate Data...");
+        saveColoringButton.setEnabled(false);
+        saveColoringButton.addActionListener(new SavePlateDataAction());
+        panel.add(saveColoringButton);
+
         gridCheckBox = new JCheckBox();
         gridCheckBox.setText("Show Coordinate Grid");
         gridCheckBox.setSelected(false);
@@ -264,6 +273,7 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
                 panel.add(customColorBlueComboBox, "wrap");
             }
             panel.add(scaleColoringButton, "wrap, gapleft 25");
+            panel.add(saveColoringButton, "wrap, gapleft 25");
         }
         if (modelManager.getSmallBodyModel().isImageMapAvailable())
         {
@@ -400,6 +410,7 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
                 }
 
                 scaleColoringButton.setEnabled(false);
+                saveColoringButton.setEnabled(false);
             }
             else
             {
@@ -407,6 +418,7 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
                     coloringButtons.get(i).setEnabled(true);
 
                 scaleColoringButton.setEnabled(true);
+                saveColoringButton.setEnabled(true);
 
                 if (smallBodyModel.isFalseColoringSupported())
                 {
@@ -418,7 +430,10 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
                     customColorBlueLabel.setEnabled(true);
 
                     if (customColorButton.isSelected())
+                    {
                         scaleColoringButton.setEnabled(false);
+                        saveColoringButton.setEnabled(false);
+                    }
                 }
 
                 setColoring();
@@ -430,9 +445,15 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
                     this.showColoringCheckBox.isSelected())
             {
                 if (customColorButton.isSelected())
+                {
                     scaleColoringButton.setEnabled(false);
+                    saveColoringButton.setEnabled(false);
+                }
                 else
+                {
                     scaleColoringButton.setEnabled(true);
+                    saveColoringButton.setEnabled(true);
+                }
             }
 
             if (this.showColoringCheckBox.isSelected())
@@ -548,5 +569,47 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
                 + "</html>";
 
         statisticsLabel.setText(text);
+    }
+
+    private class SavePlateDataAction extends AbstractAction
+    {
+        public SavePlateDataAction()
+        {
+            super("Export Plate Data...");
+        }
+
+        public void actionPerformed(ActionEvent actionEvent)
+        {
+            SmallBodyModel smallBodyModel = modelManager.getSmallBodyModel();
+            Frame invoker = JOptionPane.getFrameForComponent(SmallBodyControlPanel.this);
+            int index = smallBodyModel.getColoringIndex();
+            if (index < 0)
+            {
+                JOptionPane.showMessageDialog(invoker,
+                        "Please first display the plate data you wish to export.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+
+                return;
+            }
+
+            String name = smallBodyModel.getColoringName(index) + ".txt";
+            File file = CustomFileChooser.showSaveDialog(invoker, "Export Plate Data", name);
+
+            try
+            {
+                if (file != null)
+                    smallBodyModel.saveCurrentColoringData(file);
+            }
+            catch (Exception e1)
+            {
+                e1.printStackTrace();
+                JOptionPane.showMessageDialog(invoker,
+                        "An error occurred exporting the plate data.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        }
     }
 }
