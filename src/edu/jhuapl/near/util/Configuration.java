@@ -4,6 +4,7 @@ import java.io.File;
 
 public class Configuration
 {
+    static private String rootURL = "http://near.jhuapl.edu/software";
     static private String appDir = null;
     static private String cacheDir = null;
     static private String cacheVersion = "2";
@@ -14,9 +15,11 @@ public class Configuration
 
     static
     {
-        //String username = "";
-        //String password = "";
-        //setupPasswordAuthentication(username, password);
+        // If the user sets the sbmt.root.url property then use that
+        // as the root URL. Otherwise use the default.
+        String rootURLProperty = System.getProperty("sbmt.root.url");
+        if (rootURLProperty != null)
+            rootURL = rootURLProperty;
     }
 
     static public void setupPasswordAuthentication(final String username, final String password)
@@ -80,7 +83,7 @@ public class Configuration
      */
     static public String getDataRootURL()
     {
-        return "http://near.jhuapl.edu/software/sbmt/data";
+        return rootURL + "/sbmt/data";
     }
 
     /**
@@ -89,28 +92,28 @@ public class Configuration
      */
     static public String getDataRootURLAPL()
     {
-        return "http://near.jhuapl.edu/software/apl/data-apl";
+        return rootURL + "/apl/data-apl";
     }
 
     static public String getQueryRootURL()
     {
-        return "http://near.jhuapl.edu/software/sbmt/query";
+        return rootURL + "/sbmt/query";
     }
 
     static public String getHelpRootURL()
     {
         if (isAPLVersion())
-            return "http://near.jhuapl.edu/software/apl/help/";
+            return rootURL + "/apl/help/";
         else
-            return "http://near.jhuapl.edu/software/sbmt/help/";
+            return rootURL + "/sbmt/help/";
     }
 
     static public String getFeedbackRootURL()
     {
         if (isAPLVersion())
-            return "http://near.jhuapl.edu/software/apl/feedback/";
+            return rootURL + "/apl/feedback/";
         else
-            return "http://near.jhuapl.edu/software/sbmt/feedback/";
+            return rootURL + "/sbmt/feedback/";
     }
 
     static public String getImportedShapeModelsDir()
