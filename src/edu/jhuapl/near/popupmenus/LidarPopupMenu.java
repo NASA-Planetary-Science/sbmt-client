@@ -77,9 +77,12 @@ public class LidarPopupMenu extends PopupMenu
         hideOtherTracksMenuItem.setText("Hide other tracks");
         this.add(hideOtherTracksMenuItem);
 
-        plotTrackMenuItem = new JMenuItem(new PlotTrackAction());
-        plotTrackMenuItem.setText("Plot track...");
-        this.add(plotTrackMenuItem);
+        if (Configuration.isAPLVersion())
+        {
+            plotTrackMenuItem = new JMenuItem(new PlotTrackAction());
+            plotTrackMenuItem.setText("Plot track...");
+            this.add(plotTrackMenuItem);
+        }
     }
 
     public void setCurrentTrack(int trackId)
