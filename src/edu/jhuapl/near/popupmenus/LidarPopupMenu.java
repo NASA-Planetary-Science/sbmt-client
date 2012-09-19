@@ -189,17 +189,6 @@ public class LidarPopupMenu extends PopupMenu
     {
         public void actionPerformed(ActionEvent e)
         {
-            if (Configuration.isWindows())
-            {
-                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(invoker),
-                        "This feature is currently not supported in Windows platforms. Please try using Linux\n" +
-                        "or Mac OS X instead. We apologize for any inconvenience.",
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE);
-
-                return;
-            }
-
             try
             {
                 ArrayList<Double> potential = new ArrayList<Double>();
