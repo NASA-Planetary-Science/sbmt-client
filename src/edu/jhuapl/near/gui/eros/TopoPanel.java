@@ -22,13 +22,12 @@ import net.miginfocom.swing.MigLayout;
 
 import edu.jhuapl.near.gui.CustomFileChooser;
 import edu.jhuapl.near.gui.DirectoryChooser;
+import edu.jhuapl.near.model.AbstractEllipsePolygonModel;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
-import edu.jhuapl.near.model.AbstractEllipsePolygonModel;
 import edu.jhuapl.near.model.eros.MapletBoundaryCollection;
 import edu.jhuapl.near.pick.PickManager;
 import edu.jhuapl.near.pick.PickManager.PickMode;
-import edu.jhuapl.near.util.Configuration;
 
 public class TopoPanel extends JPanel implements ActionListener
 {
@@ -161,9 +160,6 @@ public class TopoPanel extends JPanel implements ActionListener
 
     public void actionPerformed(ActionEvent e)
     {
-        if (!checkIfPlatformSupported())
-            return;
-
         pickManager.setPickMode(PickMode.DEFAULT);
         selectRegionButton.setSelected(false);
 
@@ -289,21 +285,5 @@ public class TopoPanel extends JPanel implements ActionListener
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-    }
-
-    private boolean checkIfPlatformSupported()
-    {
-        if (Configuration.isWindows())
-        {
-            JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
-                    "This feature is currently not supported in Windows platforms. Please try using Linux\n" +
-                    "or Mac OS X instead. We apologize for any inconvenience.",
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE);
-
-            return false;
-        }
-
-        return true;
     }
 }
