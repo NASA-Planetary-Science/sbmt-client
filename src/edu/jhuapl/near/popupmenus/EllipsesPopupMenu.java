@@ -1,13 +1,18 @@
 package edu.jhuapl.near.popupmenus;
 
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.IOException;
 
 import javax.swing.AbstractAction;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 
 import vtk.vtkProp;
 
+import edu.jhuapl.near.gui.CustomFileChooser;
 import edu.jhuapl.near.model.EllipseModel;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
@@ -17,10 +22,12 @@ public class EllipsesPopupMenu extends StructuresPopupMenu
     private int cellIdLastClicked = -1;
     private EllipseModel model = null;
     private ChangeLatLonAction changeLatLonAction;
+    private Component invoker;
 
-    public EllipsesPopupMenu(ModelManager modelManager)
+    public EllipsesPopupMenu(ModelManager modelManager, Component invoker)
     {
         this.model = (EllipseModel)modelManager.getModel(ModelNames.ELLIPSE_STRUCTURES);
+        this.invoker = invoker;
 
         super.addMenuItems(model);
 
@@ -32,6 +39,10 @@ public class EllipsesPopupMenu extends StructuresPopupMenu
 
         mi = new JMenuItem(new DeleteAction());
         mi.setText("Delete");
+
+        mi = new JMenuItem(new ExportPlateDataInsidePolygon());
+        mi.setText("Save plate data inside polygon...");
+
         this.add(mi);
     }
 
@@ -41,6 +52,30 @@ public class EllipsesPopupMenu extends StructuresPopupMenu
         {
             int idx = model.getPolygonIdFromBoundaryCellId(cellIdLastClicked);
             model.removeStructure(idx);
+        }
+    }
+
+    private class ExportPlateDataInsidePolygon extends AbstractAction
+    {
+        public void actionPerformed(ActionEvent e)
+        {
+            File file = CustomFileChooser.showSaveDialog(invoker, "Save Plate Data", "platedata.txt");
+            if (file != null)
+            {
+                try
+                {
+                    int idx = model.getPolygonIdFromBoundaryCellId(cellIdLastClicked);
+                    model.savePlateDataInsideStructure(idx, file);
+                }
+                catch (IOException e1)
+                {
+                    JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(invoker),
+                            "Unable to save file to " + file.getAbsolutePath(),
+                            "Error Saving File",
+                            JOptionPane.ERROR_MESSAGE);
+                    e1.printStackTrace();
+                }
+            }
         }
     }
 

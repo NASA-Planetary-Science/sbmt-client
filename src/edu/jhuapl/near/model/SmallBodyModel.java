@@ -1,9 +1,11 @@
 package edu.jhuapl.near.model;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -34,6 +36,7 @@ import vtk.vtkProperty;
 import vtk.vtkScalarBarActor;
 import vtk.vtkTextActor;
 import vtk.vtkTextProperty;
+import vtk.vtkTriangle;
 import vtk.vtkUnsignedCharArray;
 import vtk.vtksbCellLocator;
 
@@ -1840,5 +1843,99 @@ public class SmallBodyModel extends Model
         {
             FileUtil.saveVtkDataArray(coloringValues[index], file.getAbsolutePath());
         }
+    }
+
+    /**
+     * Given a polydata that is coincident with part of the shape model, save out the
+     * plate data for all cells of the shape model that touch the polydata (even a
+     * little bit).
+     *
+     * @param polydata
+     * @param file
+     * @throws IOException
+     */
+    public void savePlateDataInsidePolydata(vtkPolyData polydata, File file) throws IOException
+    {
+        // Go through every cell inside the polydata and find the closest cell to it
+        // in the shape model and get the plate data for that cell.
+        // First put the cells into an ordered set, so we don't save out the
+        // same cell twice.
+
+        TreeSet<Integer> cellIds = new TreeSet<Integer>();
+
+        int numCells = polydata.GetNumberOfCells();
+
+        double[] pt0 = new double[3];
+        double[] pt1 = new double[3];
+        double[] pt2 = new double[3];
+        double[] center = new double[3];
+        double[] closestPoint = new double[3];
+
+        for (int i=0; i<numCells; ++i)
+        {
+            vtkTriangle cell = (vtkTriangle) polydata.GetCell(i);
+            vtkPoints points = cell.GetPoints();
+            points.GetPoint(0, pt0);
+            points.GetPoint(1, pt1);
+            points.GetPoint(2, pt2);
+            cell.TriangleCenter(pt0, pt1, pt2, center);
+
+            int cellId = findClosestCell(center, closestPoint);
+
+            cellIds.add(cellId);
+
+            points.Delete();
+            cell.Delete();
+        }
+
+        FileWriter fstream = new FileWriter(file);
+        BufferedWriter out = new BufferedWriter(fstream);
+        String nl = System.getProperty("line.separator");
+
+        out.write("Plate Id\tLatitude\tLongitude\t");
+        int numColoringData = getNumberOfColors();
+        for (int j=0; j<numColoringData; ++j)
+        {
+            out.write(getColoringName(j));
+            if (j < numColoringData-1)
+                out.write("\t");
+        }
+        out.write(nl);
+
+        numCells = cellIds.size();
+        for (int cellId : cellIds)
+        {
+            vtkTriangle cell = (vtkTriangle)smallBodyPolyData.GetCell(cellId);
+            vtkPoints points = cell.GetPoints();
+            points.GetPoint(0, pt0);
+            points.GetPoint(1, pt1);
+            points.GetPoint(2, pt2);
+            cell.TriangleCenter(pt0, pt1, pt2, center);
+
+            LatLon llr = MathUtil.reclat(center);
+            double lat = llr.lat*180.0/Math.PI;
+            double lon = llr.lon*180.0/Math.PI;
+            if (lon < 0.0)
+                lon += 360.0;
+
+            String str = cellId + "\t" + lat + "\t" + lon + "\t";
+
+            double[] values = getAllColoringValues(center);
+            for (int j=0; j<values.length; ++j)
+            {
+                str += values[j];
+                if (j < values.length-1)
+                    str += "\t";
+            }
+
+            str += nl;
+
+            out.write(str);
+
+            points.Delete();
+            cell.Delete();
+        }
+
+        out.close();
     }
 }

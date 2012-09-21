@@ -1080,4 +1080,10 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
         interiorActor.SetVisibility(b ? 1 : 0);
         super.setVisible(b);
     }
+
+    public void savePlateDataInsideStructure(int idx, File file) throws IOException
+    {
+        vtkPolyData polydata = polygons.get(idx).interiorPolyData;
+        smallBodyModel.savePlateDataInsidePolydata(polydata, file);
+    }
 }

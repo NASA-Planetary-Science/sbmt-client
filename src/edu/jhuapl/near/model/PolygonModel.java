@@ -4,6 +4,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
@@ -767,5 +768,11 @@ public class PolygonModel extends ControlPointsStructureModel implements Propert
         interiorActor.SetVisibility(b ? 1 : 0);
         polygonSelectionActor.SetVisibility(b ? 1 : 0);
         super.setVisible(b);
+    }
+
+    public void savePlateDataInsideStructure(int idx, File file) throws IOException
+    {
+        vtkPolyData polydata = polygons.get(idx).interiorPolyData;
+        smallBodyModel.savePlateDataInsidePolydata(polydata, file);
     }
 }
