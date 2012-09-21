@@ -41,7 +41,7 @@ public class CirclesPopupMenu extends StructuresPopupMenu
         mi.setText("Delete");
 
         mi = new JMenuItem(new ExportPlateDataInsidePolygon());
-        mi.setText("Save plate data inside polygon...");
+        mi.setText("Save plate data inside circle...");
 
         this.add(mi);
     }
