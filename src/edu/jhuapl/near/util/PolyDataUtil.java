@@ -1635,7 +1635,16 @@ public class PolyDataUtil
         polyData.Modified();
     }
 
-
+    /**
+     * Unlike the next function, this one takes a point locator to search for
+     * closest points. This version is more useful for shifting lines and polylines
+     * while the other version is more useful for shifting individual points.
+     *
+     * @param polyLine
+     * @param polyData
+     * @param pointLocator
+     * @param shiftAmount
+     */
     public static void shiftPolyLineInNormalDirectionOfPolyData(
             vtkPolyData polyLine,
             vtkPolyData polyData,
@@ -1670,6 +1679,58 @@ public class PolyDataUtil
         pointData.Delete();
         pointNormals.Delete();
         points.Delete();
+    }
+
+    /**
+     * Unlike the previous function, this one takes a cell locator to look for
+     * closest points. The cell normals must also be provided as a separate
+     * input (not included the polydata). This version is more useful for shifting points
+     * while the other version is more useful for shifting lines and polylines.
+     *
+     *
+     * @param polyLine
+     * @param polyData
+     * @param cellLocator
+     * @param shiftAmount
+     */
+    public static void shiftPolyLineInNormalDirectionOfPolyData(
+            vtkPolyData polyLine,
+            vtkPolyData polyData,
+            vtkFloatArray polyDataCellNormals,
+            vtksbCellLocator cellLocator,
+            double shiftAmount)
+    {
+        vtkPoints points = polyLine.GetPoints();
+        int numPoints = points.GetNumberOfPoints();
+
+        double[] closestPoint = new double[3];
+        int[] cellId = new int[1];
+        int[] subId = new int[1];
+        double[] dist2 = new double[1];
+        vtkGenericCell genericCell = new vtkGenericCell();
+
+        for (int i=0; i<numPoints; ++i)
+        {
+            double[] point = points.GetPoint(i);
+
+            cellLocator.FindClosestPoint(point, closestPoint, genericCell, cellId, subId, dist2);
+
+            if (cellId[0] < 0)
+                continue;
+
+            double[] normal = polyDataCellNormals.GetTuple3(cellId[0]);
+
+            point[0] += normal[0]*shiftAmount;
+            point[1] += normal[1]*shiftAmount;
+            point[2] += normal[2]*shiftAmount;
+
+            points.SetPoint(i, point);
+        }
+
+        polyLine.Modified();
+
+        points.Delete();
+        genericCell.Delete();
     }
 
 

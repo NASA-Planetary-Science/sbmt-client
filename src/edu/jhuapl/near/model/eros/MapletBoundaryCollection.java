@@ -51,7 +51,11 @@ public class MapletBoundaryCollection extends Model implements PropertyChangeLis
             }
 
             PolyDataUtil.shiftPolyLineInNormalDirectionOfPolyData(
-                    boundary, erosModel.getSmallBodyPolyData(), erosModel.getPointLocator(), 0.003);
+                    boundary,
+                    erosModel.getSmallBodyPolyData(),
+                    erosModel.getCellNormals(),
+                    erosModel.getCellLocator(),
+                    0.003);
 
             boundaryMapper.SetInput(boundary);
 

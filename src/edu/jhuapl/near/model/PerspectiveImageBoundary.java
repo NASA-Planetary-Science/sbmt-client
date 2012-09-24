@@ -176,7 +176,11 @@ public class PerspectiveImageBoundary extends Model implements PropertyChangeLis
 
 
         PolyDataUtil.shiftPolyLineInNormalDirectionOfPolyData(
-                boundary, smallBodyModel.getSmallBodyPolyData(), smallBodyModel.getPointLocator(), 4.0*smallBodyModel.getMinShiftAmount());
+                boundary,
+                smallBodyModel.getSmallBodyPolyData(),
+                smallBodyModel.getCellNormals(),
+                smallBodyModel.getCellLocator(),
+                3.0*smallBodyModel.getMinShiftAmount());
 
         boundaryMapper.SetInput(boundary);
 
