@@ -1015,6 +1015,11 @@ abstract public class AbstractImageSearchPanel extends javax.swing.JPanel implem
         jPanel7.add(jLabel6, gridBagConstraints);
 
         numberOfBoundariesComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "10", "20", "30", "40", "50", "60", "70", "80", "90", "100", "110", "120", "130", "140", "150", "160", "170", "180", "190", "200", "210", "220", "230", "240", "250", " " }));
+        numberOfBoundariesComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                numberOfBoundariesComboBoxActionPerformed(evt);
+            }
+        });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
@@ -1634,6 +1639,19 @@ abstract public class AbstractImageSearchPanel extends javax.swing.JPanel implem
         ImageSource imageSource = ImageSource.valueOf(((Enum)sourceComboBox.getSelectedItem()).name());
         excludeGaskellCheckBox.setVisible(imageSource == ImageSource.PDS);
     }//GEN-LAST:event_sourceComboBoxItemStateChanged
+
+    private void numberOfBoundariesComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_numberOfBoundariesComboBoxActionPerformed
+        if (resultIntervalCurrentlyShown != null)
+        {
+            // Only update if there's been a change in what is selected
+            int newMaxId = resultIntervalCurrentlyShown.id1 + Integer.parseInt((String)this.numberOfBoundariesComboBox.getSelectedItem());
+            if (newMaxId != resultIntervalCurrentlyShown.id2)
+            {
+                resultIntervalCurrentlyShown.id2 = newMaxId;
+                showImageBoundaries(resultIntervalCurrentlyShown);
+            }
+        }
+    }//GEN-LAST:event_numberOfBoundariesComboBoxActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton blueButton;

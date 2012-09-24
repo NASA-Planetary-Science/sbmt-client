@@ -737,6 +737,11 @@ public class NISSearchPanel extends javax.swing.JPanel implements MouseListener
         jPanel7.add(jLabel6, gridBagConstraints);
 
         numberOfFootprintsComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "10", "20", "30", "40", "50", "60", "70", "80", "90", "100", "110", "120", "130", "140", "150", "160", "170", "180", "190", "200", "210", "220", "230", "240", "250", " " }));
+        numberOfFootprintsComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                numberOfFootprintsComboBoxActionPerformed(evt);
+            }
+        });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
@@ -1425,6 +1430,19 @@ public class NISSearchPanel extends javax.swing.JPanel implements MouseListener
         currentlyEditingUserDefinedFunction = false;
         updateColoring();
     }//GEN-LAST:event_customFunctionsButtonActionPerformed
+
+    private void numberOfFootprintsComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_numberOfFootprintsComboBoxActionPerformed
+        if (resultIntervalCurrentlyShown != null)
+        {
+            // Only update if there's been a change in what is selected
+            int newMaxId = resultIntervalCurrentlyShown.id1 + Integer.parseInt((String)this.numberOfFootprintsComboBox.getSelectedItem());
+            if (newMaxId != resultIntervalCurrentlyShown.id2)
+            {
+                resultIntervalCurrentlyShown.id2 = newMaxId;
+                showNISFootprints(resultIntervalCurrentlyShown);
+            }
+        }
+    }//GEN-LAST:event_numberOfFootprintsComboBoxActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox blueComboBox;
