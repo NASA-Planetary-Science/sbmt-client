@@ -377,6 +377,17 @@ public abstract class LidarSearchDataCollection extends Model
         return tracks.size();
     }
 
+    public int getNumberOfVisibleTracks()
+    {
+        int numVisibleTracks = 0;
+        int numTracks = getNumberOfTrack();
+        for (int i=0; i<numTracks; ++i)
+            if (!getTrack(i).hidden)
+                ++numVisibleTracks;
+
+        return numVisibleTracks;
+    }
+
     private void computeTracks()
     {
         tracks.clear();
@@ -451,6 +462,59 @@ public abstract class LidarSearchDataCollection extends Model
                     scpos[2] + newline);
         }
 
+        out.close();
+    }
+
+    public void saveAllVisibleTracksToFolder(File folder, boolean transformPoint) throws IOException
+    {
+        int numTracks = getNumberOfTrack();
+        for (int i=0; i<numTracks; ++i)
+        {
+            if (!getTrack(i).hidden)
+            {
+                File file = new File(folder.getAbsolutePath(), "track" + i + ".txt");
+                saveTrack(i, file, transformPoint);
+            }
+        }
+    }
+
+    public void saveAllVisibleTracksToSingleFile(File file, boolean transformPoint) throws IOException
+    {
+        FileWriter fstream = new FileWriter(file);
+        BufferedWriter out = new BufferedWriter(fstream);
+
+        String newline = System.getProperty("line.separator");
+
+        for (Track track : tracks)
+        {
+            if (!track.hidden)
+            {
+                int startId = track.startId;
+                int stopId = track.stopId;
+
+                for (int i=startId; i<=stopId; ++i)
+                {
+                    LidarPoint pt = originalPoints.get(i);
+                    double[] target = pt.target;
+                    double[] scpos = pt.scpos;
+                    if (transformPoint)
+                    {
+                        target = transformLidarPoint(target);
+                        scpos = transformScpos(scpos, target);
+                    }
+
+                    Date date = new Date(pt.time);
+
+                    out.write(sdf.format(date).replace(' ', 'T') + " " +
+                            target[0] + " " +
+                            target[1] + " " +
+                            target[2] + " " +
+                            scpos[0] + " " +
+                            scpos[1] + " " +
+                            scpos[2] + newline);
+                }
+            }
+        }
         out.close();
     }
 
