@@ -144,19 +144,26 @@ public class PolyDataUtil
         clipPolyData1.SetInput(polyData);
         clipPolyData1.SetClipFunction(plane1);
         clipPolyData1.SetInsideOut(1);
+        vtkAlgorithmOutput clipPolyData1OutputPort = clipPolyData1.GetOutputPort();
+
         vtkClipPolyData clipPolyData2 = new vtkClipPolyData();
-        clipPolyData2.SetInputConnection(clipPolyData1.GetOutputPort());
+        clipPolyData2.SetInputConnection(clipPolyData1OutputPort);
         clipPolyData2.SetClipFunction(plane2);
         clipPolyData2.SetInsideOut(1);
+        vtkAlgorithmOutput clipPolyData2OutputPort = clipPolyData2.GetOutputPort();
+
         vtkClipPolyData clipPolyData3 = new vtkClipPolyData();
-        clipPolyData3.SetInputConnection(clipPolyData2.GetOutputPort());
+        clipPolyData3.SetInputConnection(clipPolyData2OutputPort);
         clipPolyData3.SetClipFunction(plane3);
         clipPolyData3.SetInsideOut(1);
+        vtkAlgorithmOutput clipPolyData3OutputPort = clipPolyData3.GetOutputPort();
+
         vtkClipPolyData clipPolyData4 = new vtkClipPolyData();
-        clipPolyData4.SetInputConnection(clipPolyData3.GetOutputPort());
+        clipPolyData4.SetInputConnection(clipPolyData3OutputPort);
         clipPolyData4.SetClipFunction(plane4);
         clipPolyData4.SetInsideOut(1);
         clipPolyData4.Update();
+        vtkAlgorithmOutput clipPolyData4OutputPort = clipPolyData4.GetOutputPort();
 
         if (clipPolyData4.GetOutput().GetNumberOfCells() == 0)
         {
@@ -165,14 +172,15 @@ public class PolyDataUtil
         }
 
         vtkPolyDataNormals normalsFilter = new vtkPolyDataNormals();
-        normalsFilter.SetInputConnection(clipPolyData4.GetOutputPort());
+        normalsFilter.SetInputConnection(clipPolyData4OutputPort);
         normalsFilter.SetComputeCellNormals(1);
         normalsFilter.SetComputePointNormals(0);
         normalsFilter.SplittingOff();
         normalsFilter.Update();
+        vtkPolyData normalsFilterOutput = normalsFilter.GetOutput();
 
         vtkPolyData tmpPolyData = new vtkPolyData();
-        tmpPolyData.DeepCopy(normalsFilter.GetOutput());
+        tmpPolyData.DeepCopy(normalsFilterOutput);
 
         // Now remove from this clipped poly data all the cells that are facing away from the viewer.
         vtkDataArray cellNormals = tmpPolyData.GetCellData().GetNormals();
@@ -209,9 +217,10 @@ public class PolyDataUtil
         vtkCleanPolyData cleanPoly = new vtkCleanPolyData();
         cleanPoly.SetInput(tmpPolyData);
         cleanPoly.Update();
+        vtkPolyData cleanPolyOutput = cleanPoly.GetOutput();
 
         //polyData = new vtkPolyData();
-        tmpPolyData.DeepCopy(cleanPoly.GetOutput());
+        tmpPolyData.DeepCopy(cleanPolyOutput);
 
         // If the body was a convex shape we would be done now.
         // Unfortunately, since it's not, it's possible for the polydata to have multiple connected
@@ -302,9 +311,10 @@ public class PolyDataUtil
         //cleanPoly = new vtkCleanPolyData();
         cleanPoly.SetInput(tmpPolyData);
         cleanPoly.Update();
+        cleanPolyOutput = cleanPoly.GetOutput();
 
         //polyData = new vtkPolyData();
-        tmpPolyData.DeepCopy(cleanPoly.GetOutput());
+        tmpPolyData.DeepCopy(cleanPolyOutput);
 
         return tmpPolyData;
     }
