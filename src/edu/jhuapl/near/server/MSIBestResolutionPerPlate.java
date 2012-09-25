@@ -36,6 +36,48 @@ public class MSIBestResolutionPerPlate
     private static ArrayList<Integer> numImagesResLessThan100mpp = new ArrayList<Integer>();
     private static ArrayList<Integer> numImagesResLessThan200mpp = new ArrayList<Integer>();
 
+    private static String[] imagesToIgnoreChecks = {
+        "132590164",
+        "133104552",
+        "133104748",
+        "133105140",
+        "133323662",
+        "134346932",
+        "134441678",
+        "134551532",
+        "136608360",
+        "136814364",
+        "136823993",
+        "136878711",
+        "136880203",
+        "136880513",
+        "136910455",
+        "137666244",
+        "138525100",
+        "138617380",
+        "138619740",
+        "138724484",
+        "139292850",
+        "139400937",
+        "139560643",
+        "139560829",
+        "139758076",
+        "139761466",
+        "139820288",
+        "139827094",
+        "140762785"
+    };
+
+    private static boolean checkIfShouldIgnoreChecks(String filename)
+    {
+        for (String s : imagesToIgnoreChecks)
+        {
+            if (filename.contains(s))
+                return true;
+        }
+        return false;
+    }
+
     private static boolean checkIfMsiFilesExist(String line, MSIImage.ImageSource source)
     {
         File file = new File(line);
@@ -95,6 +137,8 @@ public class MSIBestResolutionPerPlate
 
             File origFile = new File(filename);
 
+            boolean ignoreChecks = checkIfShouldIgnoreChecks(filename);
+            System.out.println("ignore checks: " + ignoreChecks);
 
             File rootFolder = origFile.getParentFile().getParentFile().getParentFile().getParentFile().getParentFile();
             String keyName = origFile.getAbsolutePath().replace(rootFolder.getAbsolutePath(), "");
@@ -127,9 +171,7 @@ public class MSIBestResolutionPerPlate
             double[] frustum1 = frustum.ul;
             double[] frustum2 = frustum.ur;
             double[] frustum3 = frustum.lr;
-            //double horizScaleFactor = 2.0 * Math.tan( MathUtil.vsep(frustum1, frustum3) / 2.0 ) / imageHeight;
             double horizScaleFactor = 2.0 * Math.tan( MathUtil.vsep(frustum1, frustum3) / 2.0 ) / imageWidth;
-            //double vertScaleFactor = 2.0 * Math.tan( MathUtil.vsep(frustum1, frustum2) / 2.0 ) / imageWidth;
             double vertScaleFactor = 2.0 * Math.tan( MathUtil.vsep(frustum1, frustum2) / 2.0 ) / imageHeight;
 
 
@@ -173,8 +215,9 @@ public class MSIBestResolutionPerPlate
                 double emission = illumAngles[1];
 
                 if (horizPixelScale < bestResolutionPerPlate.get(cellId) &&
-                        incidence >= 40.0 && incidence <= 70.0 &&
-                        emission >= 0.0 && emission <= 20.0)
+                        ignoreChecks ||
+                        (incidence >= 40.0 && incidence <= 70.0 &&
+                        emission >= 0.0 && emission <= 20.0))
                 {
                     bestResolutionPerPlate.set(cellId, horizPixelScale);
                     //System.out.println(horizPixelScale + " " + vertPixelScale + " " + incidence + " " + emission + " " + dist + " " );
