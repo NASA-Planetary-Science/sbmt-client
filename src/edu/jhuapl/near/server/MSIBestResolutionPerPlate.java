@@ -169,10 +169,10 @@ public class MSIBestResolutionPerPlate
             System.out.println(imageHeight + " " + imageWidth);
             Frustum frustum = image.getFrustum();
             double[] frustum1 = frustum.ul;
-            double[] frustum2 = frustum.ur;
+            //double[] frustum2 = frustum.ur;
             double[] frustum3 = frustum.lr;
             double horizScaleFactor = 2.0 * Math.tan( MathUtil.vsep(frustum1, frustum3) / 2.0 ) / imageWidth;
-            double vertScaleFactor = 2.0 * Math.tan( MathUtil.vsep(frustum1, frustum2) / 2.0 ) / imageHeight;
+            //double vertScaleFactor = 2.0 * Math.tan( MathUtil.vsep(frustum1, frustum2) / 2.0 ) / imageHeight;
 
 
             footprint.BuildCells();
@@ -201,7 +201,7 @@ public class MSIBestResolutionPerPlate
                 double dist = MathUtil.vnorm(vec);
 
                 double horizPixelScale = 1000.0 * dist * horizScaleFactor;
-                double vertPixelScale = 1000.0 * dist * vertScaleFactor;
+                //double vertPixelScale = 1000.0 * dist * vertScaleFactor;
 
                 int cellId = erosModel.findClosestCell(center,closestPoint);
 
