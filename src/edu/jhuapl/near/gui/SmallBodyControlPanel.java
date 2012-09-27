@@ -218,7 +218,6 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
         saveColoringButton = new JButton("Save Plate Data...");
         saveColoringButton.setEnabled(false);
         saveColoringButton.addActionListener(new SavePlateDataAction());
-        panel.add(saveColoringButton);
 
         gridCheckBox = new JCheckBox();
         gridCheckBox.setText("Show Coordinate Grid");
