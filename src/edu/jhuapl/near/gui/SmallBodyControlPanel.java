@@ -28,6 +28,7 @@ import javax.swing.JSeparator;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -75,6 +76,7 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
     private JButton saveColoringButton;
     private JRadioButton customColorButton;
     private JEditorPane statisticsLabel;
+    private JScrollPane scrollPane;
 
 
     public SmallBodyControlPanel(ModelManager modelManager, String bodyName)
@@ -84,6 +86,8 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
 
         JPanel panel = new JPanel();
         panel.setLayout(new MigLayout());
+
+        scrollPane = new JScrollPane();
 
         modelCheckBox = new JCheckBox();
         modelCheckBox.setText("Show " + bodyName);
@@ -137,7 +141,6 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
         String bodyRule = "body { font-family: " + font.getFamily() + "; " +
                 "font-size: " + font.getSize() + "pt; }";
         ((HTMLDocument)statisticsLabel.getDocument()).getStyleSheet().addRule(bodyRule);
-        setStatisticsLabel();
 
 
         resolutionButtonGroup = new ButtonGroup();
@@ -287,7 +290,6 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
         panel.add(statisticsSeparator, "growx, span, wrap, gaptop 15");
         panel.add(statisticsLabel, "gaptop 15");
 
-        JScrollPane scrollPane = new JScrollPane();
         scrollPane.setViewportView(panel);
 
         add(scrollPane, BorderLayout.CENTER);
@@ -567,7 +569,23 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
                 + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Z: [" + df.format(bb.zmin) + ", " + df.format(bb.zmax) + "] km<sup>&nbsp;</sup><br>"
                 + "</html>";
 
+        // There's some weird thing going one where changing the text of the label causes
+        // the scoll bar of the panel to scroll all the way down. Therefore, reset it to
+        // the original value after changing the text.
+        // TODO not sure if this is the best solution since there is still a slight
+        // flicker occasionally when you start up the tool, probably due to the change
+        // in the scroll bar position.
+        final int originalScrollBarValue = scrollPane.getVerticalScrollBar().getValue();
+
         statisticsLabel.setText(text);
+
+        SwingUtilities.invokeLater(new Runnable()
+        {
+            public void run()
+            {
+                scrollPane.getVerticalScrollBar().setValue(originalScrollBarValue);
+            }
+        });
     }
 
     private class SavePlateDataAction extends AbstractAction
