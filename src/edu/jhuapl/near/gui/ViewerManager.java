@@ -15,6 +15,7 @@ import edu.jhuapl.near.gui.gaspra.GaspraViewer;
 import edu.jhuapl.near.gui.ida.IdaViewer;
 import edu.jhuapl.near.gui.itokawa.ItokawaViewer;
 import edu.jhuapl.near.gui.mathilde.MathildeViewer;
+import edu.jhuapl.near.gui.rq36.RQ36Viewer;
 import edu.jhuapl.near.gui.simple.SimpleGaskellViewer;
 import edu.jhuapl.near.gui.simple.SimpleViewer;
 import edu.jhuapl.near.gui.vesta.VestaViewer;
@@ -38,8 +39,11 @@ public class ViewerManager extends JPanel
         // Gaskell models
         builtInViewers.add(new ErosViewer(statusBar));
         builtInViewers.add(new ItokawaViewer(statusBar));
-        if (Configuration.isAPLVersion()) // Vesta is currently restricted
+        if (Configuration.isAPLVersion()) // Vesta and RQ36 are currently restricted
+        {
             builtInViewers.add(new VestaViewer(statusBar));
+            builtInViewers.add(new RQ36Viewer(statusBar));
+        }
         builtInViewers.add(new SimpleGaskellViewer(statusBar, "Mimas", "/MIMAS"));
         builtInViewers.add(new SimpleGaskellViewer(statusBar, "Phoebe", "/PHOEBE"));
         builtInViewers.add(new SimpleGaskellViewer(statusBar, "Phobos", "/PHOBOS"));
