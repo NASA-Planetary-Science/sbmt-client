@@ -1,4 +1,4 @@
-package edu.jhuapl.near.model.eros;
+package edu.jhuapl.near.model;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -16,7 +16,6 @@ import vtk.vtkPoints;
 import vtk.vtkPolyData;
 import vtk.vtkPolyDataNormals;
 
-import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.util.MathUtil;
 import edu.jhuapl.near.util.Point3D;
 import edu.jhuapl.near.util.PolyDataUtil;

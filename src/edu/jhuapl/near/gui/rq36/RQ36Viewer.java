@@ -14,6 +14,7 @@ import edu.jhuapl.near.gui.Renderer;
 import edu.jhuapl.near.gui.SmallBodyControlPanel;
 import edu.jhuapl.near.gui.StatusBar;
 import edu.jhuapl.near.gui.StructuresControlPanel;
+import edu.jhuapl.near.gui.TopoPanel;
 import edu.jhuapl.near.gui.Viewer;
 import edu.jhuapl.near.model.CircleModel;
 import edu.jhuapl.near.model.CircleSelectionModel;
@@ -21,6 +22,7 @@ import edu.jhuapl.near.model.EllipseModel;
 import edu.jhuapl.near.model.Graticule;
 import edu.jhuapl.near.model.ImageCollection;
 import edu.jhuapl.near.model.LineModel;
+import edu.jhuapl.near.model.MapletBoundaryCollection;
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
@@ -29,7 +31,9 @@ import edu.jhuapl.near.model.PolygonModel;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.rq36.RQ36;
 import edu.jhuapl.near.pick.PickManager;
+import edu.jhuapl.near.popupmenus.MapletBoundaryPopupMenu;
 import edu.jhuapl.near.popupmenus.PopupManager;
+import edu.jhuapl.near.popupmenus.PopupMenu;
 import edu.jhuapl.near.util.Configuration;
 
 /**
@@ -70,6 +74,8 @@ public class RQ36Viewer extends Viewer
 
         renderer = new Renderer(modelManager);
 
+        setupPopupManager();
+
         pickManager = new PickManager(renderer, statusBar, modelManager, popupManager);
 
         controlPanel = new JTabbedPane();
@@ -79,6 +85,7 @@ public class RQ36Viewer extends Viewer
         {
             controlPanel.addTab("Structures", new StructuresControlPanel(modelManager, pickManager));
             controlPanel.addTab("Images", new CustomImagesPanel(modelManager, infoPanelManager, pickManager, renderer, true, getUniqueName()));
+            controlPanel.addTab("Mapmaker", new TopoPanel(modelManager, pickManager, "/RQ36/mapmaker.zip"));
         }
 
         splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
@@ -119,9 +126,18 @@ public class RQ36Viewer extends Viewer
         allModels.put(ModelNames.POINT_STRUCTURES, new PointModel(smallBodyModel));
         allModels.put(ModelNames.CIRCLE_SELECTION, new CircleSelectionModel(smallBodyModel));
         allModels.put(ModelNames.GRATICULE, graticule);
+        allModels.put(ModelNames.MAPLET_BOUNDARY, new MapletBoundaryCollection(smallBodyModel));
 
         modelManager.setModels(allModels);
 
+    }
+
+    private void setupPopupManager()
+    {
+        popupManager = new PopupManager(modelManager, infoPanelManager, renderer);
+
+        PopupMenu popupMenu = new MapletBoundaryPopupMenu(modelManager, renderer);
+        popupManager.registerPopup(modelManager.getModel(ModelNames.MAPLET_BOUNDARY), popupMenu);
     }
 
     public Renderer getRenderer()

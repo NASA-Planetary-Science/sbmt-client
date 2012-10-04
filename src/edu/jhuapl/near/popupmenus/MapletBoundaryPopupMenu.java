@@ -1,4 +1,4 @@
-package edu.jhuapl.near.popupmenus.eros;
+package edu.jhuapl.near.popupmenus;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -14,11 +14,10 @@ import javax.swing.SpinnerNumberModel;
 import vtk.vtkProp;
 
 import edu.jhuapl.near.gui.ColorChooser;
+import edu.jhuapl.near.model.MapletBoundaryCollection;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
-import edu.jhuapl.near.model.eros.MapletBoundaryCollection;
-import edu.jhuapl.near.model.eros.MapletBoundaryCollection.Boundary;
-import edu.jhuapl.near.popupmenus.PopupMenu;
+import edu.jhuapl.near.model.MapletBoundaryCollection.Boundary;
 
 public class MapletBoundaryPopupMenu extends PopupMenu
 {

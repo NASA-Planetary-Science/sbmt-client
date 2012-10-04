@@ -37,12 +37,12 @@ abstract public class ProgressBarSwingWorker extends SwingWorker<Void, Void>
         {
             super(JOptionPane.getFrameForComponent(c));
             JPanel panel = new JPanel(new MigLayout());
-            setPreferredSize(new Dimension(275, 150));
+            setPreferredSize(new Dimension(375, 150));
 
             label = new JLabel(" ");
 
             progressBar = new JProgressBar(0, 100);
-            progressBar.setPreferredSize(new Dimension(250, 20));
+            progressBar.setPreferredSize(new Dimension(350, 20));
             panel.add(label, "wrap");
             panel.add(progressBar, "wrap");
 
@@ -90,7 +90,7 @@ abstract public class ProgressBarSwingWorker extends SwingWorker<Void, Void>
 
         while (true)
         {
-            if (completionTimeEstimate >= 4.0)
+            if (completionTimeEstimate >= 4.0 || completionTimeEstimate < 0.0)
             {
                 break;
             }
@@ -127,7 +127,6 @@ abstract public class ProgressBarSwingWorker extends SwingWorker<Void, Void>
         if ("progress".equals(evt.getPropertyName()))
         {
             int progress = (Integer) evt.getNewValue();
-            System.out.println("progress property change " + progress);
 
             if (indeterminate)
                 progressBar.setIndeterminate(true);

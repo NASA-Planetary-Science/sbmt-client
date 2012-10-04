@@ -1,4 +1,4 @@
-package edu.jhuapl.near.gui.eros;
+package edu.jhuapl.near.gui;
 
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -20,12 +20,11 @@ import javax.swing.SpinnerNumberModel;
 
 import net.miginfocom.swing.MigLayout;
 
-import edu.jhuapl.near.gui.CustomFileChooser;
-import edu.jhuapl.near.gui.DirectoryChooser;
+import edu.jhuapl.near.gui.eros.MapmakerSwingWorker;
 import edu.jhuapl.near.model.AbstractEllipsePolygonModel;
+import edu.jhuapl.near.model.MapletBoundaryCollection;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
-import edu.jhuapl.near.model.eros.MapletBoundaryCollection;
 import edu.jhuapl.near.pick.PickManager;
 import edu.jhuapl.near.pick.PickManager.PickMode;
 
@@ -39,15 +38,18 @@ public class TopoPanel extends JPanel implements ActionListener
     private JButton loadButton;
     private PickManager pickManager;
     private JSpinner halfSizeSpinner;
+    private String mapmakerpath;
 
     public TopoPanel(final ModelManager modelManager,
-            final PickManager pickManager)
+            final PickManager pickManager,
+            String mapmakerPath)
     {
         setLayout(new BoxLayout(this,
                 BoxLayout.PAGE_AXIS));
 
         this.modelManager = modelManager;
         this.pickManager = pickManager;
+        this.mapmakerpath = mapmakerPath;
 
         this.addComponentListener(new ComponentAdapter()
         {
@@ -229,13 +231,14 @@ public class TopoPanel extends JPanel implements ActionListener
         // if it has never been downloaded before.
         // Ask the user beforehand if it's okay to continue.
         final MapmakerSwingWorker mapmakerWorker =
-            new MapmakerSwingWorker(this, "Running Mapmaker", "/MSI/mapmaker.zip");
+                //new MapmakerSwingWorker(this, "Running Mapmaker", "/MSI/mapmaker.zip");
+                new MapmakerSwingWorker(this, "Running Mapmaker", mapmakerpath);
 
         // If we need to download, promt the user that it will take a long time
         if (mapmakerWorker.getIfNeedToDownload())
         {
             int result = JOptionPane.showConfirmDialog(JOptionPane.getFrameForComponent(this),
-                    "Before Mapmaker can be run for the first time, a large 700 MB file needs to be downloaded.\n" +
+                    "Before Mapmaker can be run for the first time, a very large file needs to be downloaded.\n" +
                     "This may take several minutes. Would you like to continue?",
                     "Confirm Download",
                     JOptionPane.YES_NO_OPTION);

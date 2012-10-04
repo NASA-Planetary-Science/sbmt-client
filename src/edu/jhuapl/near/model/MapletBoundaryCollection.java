@@ -1,4 +1,4 @@
-package edu.jhuapl.near.model.eros;
+package edu.jhuapl.near.model;
 
 import java.awt.Color;
 import java.beans.PropertyChangeEvent;
@@ -12,9 +12,6 @@ import vtk.vtkPolyData;
 import vtk.vtkPolyDataMapper;
 import vtk.vtkProp;
 
-import edu.jhuapl.near.model.Model;
-import edu.jhuapl.near.model.ModelNames;
-import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.util.PolyDataUtil;
 import edu.jhuapl.near.util.Properties;
 

@@ -1,4 +1,4 @@
-package edu.jhuapl.near.gui.eros;
+package edu.jhuapl.near.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -34,22 +34,18 @@ import org.jfree.chart.plot.DefaultDrawingSupplier;
 
 import vtk.vtkGlobalJavaHash;
 
-import edu.jhuapl.near.gui.CustomFileChooser;
-import edu.jhuapl.near.gui.Renderer;
-import edu.jhuapl.near.gui.ScaleDataRangeDialog;
-import edu.jhuapl.near.gui.StatusBar;
 import edu.jhuapl.near.model.CircleModel;
 import edu.jhuapl.near.model.CircleSelectionModel;
+import edu.jhuapl.near.model.DEMModel;
 import edu.jhuapl.near.model.EllipseModel;
 import edu.jhuapl.near.model.Line;
 import edu.jhuapl.near.model.LineModel;
+import edu.jhuapl.near.model.MapletBoundaryCollection;
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.PointModel;
 import edu.jhuapl.near.model.PolygonModel;
-import edu.jhuapl.near.model.eros.DEMModel;
-import edu.jhuapl.near.model.eros.MapletBoundaryCollection;
 import edu.jhuapl.near.pick.PickManager;
 import edu.jhuapl.near.pick.PickManager.PickMode;
 import edu.jhuapl.near.popupmenus.PopupManager;
