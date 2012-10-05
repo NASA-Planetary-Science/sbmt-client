@@ -1,4 +1,4 @@
-<?
+<?php
 
 $id=$_POST['id'] + 0;
 $imageSource=$_POST['imageSource'];
@@ -26,14 +26,14 @@ $num=mysql_numrows($result);
 mysql_close();
 
 $i=0;
-while ($i < $num) 
+while ($i < $num)
 {
-	$row       = mysql_fetch_row($result);	
+	$row       = mysql_fetch_row($result);
 	$filename  = $row[0];
 	$starttime = $row[1];
-	
+
 	echo "$filename $starttime\n";
-	
+
 	$i++;
 }
 

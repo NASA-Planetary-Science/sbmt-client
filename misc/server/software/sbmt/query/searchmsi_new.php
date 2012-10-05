@@ -1,4 +1,4 @@
-<?
+<?php
 
 $startDate=$_POST['startDate'] + 0;
 $stopDate=$_POST['stopDate'] + 0;
@@ -132,26 +132,22 @@ $num=mysql_numrows($result);
 mysql_close();
 
 $i=0;
-while ($i < $num) 
+while ($i < $num)
 {
-	$row = mysql_fetch_row($result);	
+	$row = mysql_fetch_row($result);
 	$id   = $row[0];
 	$year = $row[1];
 	$day  = $row[2];
 	$filter   = $row[3];
 	$iofcif   = $row[4];
 	$starttime = $row[5];
-	
+
 
 	echo "$id $year $day $filter $iofcif $starttime\n";
-	
+
 	$i++;
 }
 
 #echo "$query";
 
 ?>
-
-
-
-

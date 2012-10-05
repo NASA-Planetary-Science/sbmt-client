@@ -1,4 +1,4 @@
-<?
+<?php
 
 $startDate=$_POST['startDate'] + 0;
 $stopDate=$_POST['stopDate'] + 0;
@@ -42,8 +42,8 @@ if (strlen($cubesStr) > 0)
 }
 $query .= "WHERE midtime >= " . $startDate;
 $query .= " AND midtime <= " . $stopDate;
-$query .= " AND range >= " . $minScDistance;
-$query .= " AND range <= " . $maxScDistance;
+$query .= " AND nisspectra.range >= " . $minScDistance;
+$query .= " AND nisspectra.range <= " . $maxScDistance;
 if (count($polygonTypes) > 0)
 {
 	$query .= " AND ( ";
@@ -89,19 +89,18 @@ $num=mysql_numrows($result);
 mysql_close();
 
 $i=0;
-while ($i < $num) 
+while ($i < $num)
 {
-	$row = mysql_fetch_row($result);	
+	$row = mysql_fetch_row($result);
 	$id   = $row[0];
 	$year = $row[1];
 	$day  = $row[2];
 
 	echo "$id $year $day\n";
-	
+
 	$i++;
 }
 
 #echo "$query";
 
 ?>
-
