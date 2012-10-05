@@ -33,11 +33,13 @@ cp -R $vtk_dir/linux64 $output_dir/linux64/sbmt/lib
 cp -R $vtk_dir/win64 $output_dir/win64/sbmt/lib
 cp -R $vtk_dir/jre6 $output_dir/win64/sbmt
 
+
 cd $output_dir/mac64/sbmt
 
 jar_files=`ls lib/*.jar`
 jar_files_unix=`echo $jar_files | sed 's/ /:/g'`
 jar_files_win=`echo $jar_files | sed 's/ /;/g'`
+
 
 echo -n -e "#!/bin/sh
 cd \`dirname \$0\`
@@ -48,11 +50,20 @@ java -Djava.library.path=lib/mac64:lib/linux64 -Dcom.apple.mrj.application.apple
 chmod +x $output_dir/mac64/sbmt/runsbmt
 cp $output_dir/mac64/sbmt/runsbmt $output_dir/linux64/sbmt/
 
+echo -n -e "replace-with-username
+replace-with-password
+" > $output_dir/mac64/sbmt/password.txt
+cp $output_dir/mac64/sbmt/password.txt $output_dir/linux64/sbmt/
+
 
 echo -n -e "@echo off\r
 set PATH=lib\\\\win64;%PATH%\r
 jre6\\\\bin\\\\java -Djava.library.path=lib/win64 -Dsun.java2d.noddraw=true -classpath $jar_files_win edu.jhuapl.near.SmallBodyMappingToolAPL\r" > $output_dir/win64/sbmt/runsbmt.bat
 chmod +x $output_dir/win64/sbmt/runsbmt.bat
+
+echo -n -e "replace-with-username\r
+replace-with-password\r
+" > $output_dir/win64/sbmt/password.txt
 
 
 cd $output_dir/mac64

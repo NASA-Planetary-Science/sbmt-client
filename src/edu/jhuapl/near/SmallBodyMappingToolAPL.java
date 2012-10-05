@@ -1,6 +1,9 @@
 package edu.jhuapl.near;
 
+import java.util.ArrayList;
+
 import edu.jhuapl.near.util.Configuration;
+import edu.jhuapl.near.util.FileUtil;
 
 
 /**
@@ -17,10 +20,31 @@ public class SmallBodyMappingToolAPL
     {
         Configuration.setAPLVersion(true);
 
-        // The following ensures that the APL version can always access the
+        // Use default credentials so that the APL version can always access the
         // password-protected files on the server even if run outside the lab.
         String username = "asteroid";
         String password = "crater";
+
+        try
+        {
+            ArrayList<String> credentials = FileUtil.getFileLinesAsStringList("password.txt");
+            if (credentials.size() >= 2)
+            {
+                String user = credentials.get(0);
+                String pass = credentials.get(1);
+
+                if (user != null && user.trim().length() > 0 && !user.trim().toLowerCase().contains("replace-with-") &&
+                    pass != null && pass.trim().length() > 0)
+                {
+                    username = user.trim();
+                    password = pass.trim();
+                }
+            }
+        }
+        catch (Exception e)
+        {
+        }
+
         Configuration.setupPasswordAuthentication(username, password);
 
         // Call the public version's main function
