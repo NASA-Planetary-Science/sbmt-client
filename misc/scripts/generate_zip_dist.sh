@@ -3,13 +3,12 @@
 # This script generates zip file of the compiled code and needed jar
 # files and c++ libraries for distribution to users.  It takes a
 # single argument specifying the folder containing the VTK binary
-# libraries. It is assumed this folder contains these 5 subfolders:
+# libraries. It is assumed this folder contains these 3 subfolders:
 #
-# linux32 - for 32-bit Linux libraries
-# linux64 - for 64-bit Linux libraries
-# win32   - for 32-bit Windows libraries
-# win64   - for 64-bit Windows libraries
 # mac64   - for 64-bit Mac OS X libraries (Intel based Macs only)
+# linux64 - for 64-bit Linux libraries
+# win64   - for 64-bit Windows libraries
+# jre6    - jre for 64-bit Windows systems
 #
 # The generated zip file is placed in $HOME/sbmt
 # The script must be run from the top level folder of the sbmt source tree.
@@ -17,17 +16,24 @@
 vtk_dir=$1
 output_dir=$HOME/sbmt
 
-mkdir -p $output_dir/sbmt/lib
+mkdir -p $output_dir/mac64/sbmt/lib
+mkdir -p $output_dir/linux64/sbmt/lib
+mkdir -p $output_dir/win64/sbmt/lib
 
-cp lib/*.jar $output_dir/sbmt/lib
-cp build/jar/near-apl.jar $output_dir/sbmt/lib
-cp -R $vtk_dir/linux32 $output_dir/sbmt/lib
-cp -R $vtk_dir/linux64 $output_dir/sbmt/lib
-cp -R $vtk_dir/win32 $output_dir/sbmt/lib
-cp -R $vtk_dir/win64 $output_dir/sbmt/lib
-cp -R $vtk_dir/mac64 $output_dir/sbmt/lib
+cp lib/*.jar $output_dir/mac64/sbmt/lib
+cp lib/*.jar $output_dir/linux64/sbmt/lib
+cp lib/*.jar $output_dir/win64/sbmt/lib
 
-cd $output_dir/sbmt
+cp build/jar/near-apl.jar $output_dir/mac64/sbmt/lib
+cp build/jar/near-apl.jar $output_dir/linux64/sbmt/lib
+cp build/jar/near-apl.jar $output_dir/win64/sbmt/lib
+
+cp -R $vtk_dir/mac64 $output_dir/mac64/sbmt/lib
+cp -R $vtk_dir/linux64 $output_dir/linux64/sbmt/lib
+cp -R $vtk_dir/win64 $output_dir/win64/sbmt/lib
+cp -R $vtk_dir/jre6 $output_dir/win64/sbmt
+
+cd $output_dir/mac64/sbmt
 
 jar_files=`ls lib/*.jar`
 jar_files_unix=`echo $jar_files | sed 's/ /:/g'`
@@ -35,25 +41,28 @@ jar_files_win=`echo $jar_files | sed 's/ /;/g'`
 
 echo -n -e "#!/bin/sh
 cd \`dirname \$0\`
-java -version 2>&1 | grep 64-Bit
-if [ \$? -eq 0 ]; then
-    VTK_DIR=lib/mac64:lib/linux64
-else
-    VTK_DIR=lib/mac64:lib/linux32
-fi
-java -Djava.library.path=\${VTK_DIR} -Dcom.apple.mrj.application.apple.menu.about.name=\"Small Body Mapping Tool\" -classpath $jar_files_unix edu.jhuapl.near.SmallBodyMappingToolAPL
-" > $output_dir/sbmt/runsbmt-unix.sh
-chmod +x $output_dir/sbmt/runsbmt-unix.sh
+export DYLD_LIBRARY_PATH=lib/mac64:\$DYLD_LIBRARY_PATH
+export LD_LIBRARY_PATH=lib/linux64:\$LD_LIBRARY_PATH
+java -Djava.library.path=lib/mac64:lib/linux64 -Dcom.apple.mrj.application.apple.menu.about.name=\"Small Body Mapping Tool\" -classpath $jar_files_unix edu.jhuapl.near.SmallBodyMappingToolAPL
+" > $output_dir/mac64/sbmt/runsbmt
+chmod +x $output_dir/mac64/sbmt/runsbmt
+cp $output_dir/mac64/sbmt/runsbmt $output_dir/linux64/sbmt/
+
 
 echo -n -e "@echo off\r
-start javaw -Djava.library.path=lib/win32 -Dsun.java2d.noddraw=true -classpath $jar_files_win edu.jhuapl.near.SmallBodyMappingToolAPL\r" > $output_dir/sbmt/runsbmt-win32.bat
-chmod +x $output_dir/sbmt/runsbmt-win32.bat
-
-echo -n -e "@echo off\r
-start javaw -Djava.library.path=lib/win64 -Dsun.java2d.noddraw=true -classpath $jar_files_win edu.jhuapl.near.SmallBodyMappingToolAPL\r" > $output_dir/sbmt/runsbmt-win64.bat
-chmod +x $output_dir/sbmt/runsbmt-win64.bat
+set PATH=lib\\\\win64;%PATH%\r
+jre6\\\\bin\\\\java -Djava.library.path=lib/win64 -Dsun.java2d.noddraw=true -classpath $jar_files_win edu.jhuapl.near.SmallBodyMappingToolAPL\r" > $output_dir/win64/sbmt/runsbmt.bat
+chmod +x $output_dir/win64/sbmt/runsbmt.bat
 
 
-cd $output_dir
-version=`date +%F`
-zip -q -r sbmt-$version.zip sbmt
+cd $output_dir/mac64
+version=`date +%Y.%m.%d`
+zip -q -r sbmt-$version-macosx-x64.zip sbmt
+
+cd $output_dir/linux64
+version=`date +%Y.%m.%d`
+zip -q -r sbmt-$version-linux-x64.zip sbmt
+
+cd $output_dir/win64
+version=`date +%Y.%m.%d`
+zip -q -r sbmt-$version-windows-x64.zip sbmt
