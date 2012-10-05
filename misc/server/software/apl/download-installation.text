@@ -95,7 +95,7 @@ newer versions.
    editor and enter you username on the first line and password on the
    second line. (This step is not needed if located on the APL
    campus.)
-5. On Mac and Linux platforms, run the 'runsbmt' script. On Windows, run the 'runsbmt.bat' batch script.
+5. On Mac and Linux platforms, run the 'runsbmt' shell script. On Windows, run the 'runsbmt.bat' batch script.
 
 #### Previous releases
 
