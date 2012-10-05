@@ -91,12 +91,11 @@ newer versions.
    -  Windows: [sbmt-2012.10.05-windows-x64.zip](releases/sbmt-2012.10.05-windows-x64.zip)
 2. Unzip the file to any folder
 3. Navigate to the 'sbmt' folder
-4. Open the password.txt file located in the 'sbmt' folder in a text
+4. Open the 'password.txt' file located in the 'sbmt' folder in a text
    editor and enter you username on the first line and password on the
-   second line. (This step is not needed if located at the APL
-   campus. If outside the APL campus, the tool will mostly work if you
-   omit this step but you may not be able to download certain datasets.)
-5. On Mac and Linux platforms, run the runsbmt script. On Windows, run the runsbmt.bat batch script.
+   second line. (This step is not needed if located on the APL
+   campus.)
+5. On Mac and Linux platforms, run the 'runsbmt' script. On Windows, run the 'runsbmt.bat' batch script.
 
 #### Previous releases
 
