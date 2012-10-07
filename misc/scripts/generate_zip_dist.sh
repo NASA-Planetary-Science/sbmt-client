@@ -16,6 +16,8 @@
 vtk_dir=$1
 output_dir=$HOME/sbmt
 
+rm -rf $output_dir
+
 mkdir -p $output_dir/mac64/sbmt/lib
 mkdir -p $output_dir/linux64/sbmt/lib
 mkdir -p $output_dir/win64/sbmt/lib
@@ -44,11 +46,16 @@ jar_files_win=`echo $jar_files | sed 's/ /;/g'`
 echo -n -e "#!/bin/sh
 cd \`dirname \$0\`
 export DYLD_LIBRARY_PATH=lib/mac64:\$DYLD_LIBRARY_PATH
-export LD_LIBRARY_PATH=lib/linux64:\$LD_LIBRARY_PATH
-java -Djava.library.path=lib/mac64:lib/linux64 -Dcom.apple.mrj.application.apple.menu.about.name=\"Small Body Mapping Tool\" -classpath $jar_files_unix edu.jhuapl.near.SmallBodyMappingToolAPL
+/usr/libexec/java_home -v 1.6 -a x86_64 -exec java -Djava.library.path=lib/mac64 -Dcom.apple.mrj.application.apple.menu.about.name=\"Small Body Mapping Tool\" -classpath $jar_files_unix edu.jhuapl.near.SmallBodyMappingToolAPL
 " > $output_dir/mac64/sbmt/runsbmt
 chmod +x $output_dir/mac64/sbmt/runsbmt
-cp $output_dir/mac64/sbmt/runsbmt $output_dir/linux64/sbmt/
+
+echo -n -e "#!/bin/sh
+cd \`dirname \$0\`
+export LD_LIBRARY_PATH=lib/linux64:\$LD_LIBRARY_PATH
+java -Djava.library.path=lib/linux64 -classpath $jar_files_unix edu.jhuapl.near.SmallBodyMappingToolAPL
+" > $output_dir/linux64/sbmt/runsbmt
+chmod +x $output_dir/linux64/sbmt/runsbmt
 
 echo -n -e "replace-with-username
 replace-with-password
