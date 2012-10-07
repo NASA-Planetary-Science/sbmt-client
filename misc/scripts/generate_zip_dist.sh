@@ -8,7 +8,7 @@
 # mac64   - for 64-bit Mac OS X libraries (Intel based Macs only)
 # linux64 - for 64-bit Linux libraries
 # win64   - for 64-bit Windows libraries
-# jre6    - jre for 64-bit Windows systems
+# jre7    - jre for 64-bit Windows systems
 #
 # The generated zip file is placed in $HOME/sbmt
 # The script must be run from the top level folder of the sbmt source tree.
@@ -33,7 +33,7 @@ cp build/jar/near-apl.jar $output_dir/win64/sbmt/lib
 cp -R $vtk_dir/mac64 $output_dir/mac64/sbmt/lib
 cp -R $vtk_dir/linux64 $output_dir/linux64/sbmt/lib
 cp -R $vtk_dir/win64 $output_dir/win64/sbmt/lib
-cp -R $vtk_dir/jre6 $output_dir/win64/sbmt
+cp -R $vtk_dir/jre7 $output_dir/win64/sbmt
 
 
 cd $output_dir/mac64/sbmt
@@ -65,7 +65,7 @@ cp $output_dir/mac64/sbmt/password.txt $output_dir/linux64/sbmt/
 
 echo -n -e "@echo off\r
 set PATH=lib\\\\win64;%PATH%\r
-jre6\\\\bin\\\\java -Djava.library.path=lib/win64 -Dsun.java2d.noddraw=true -classpath $jar_files_win edu.jhuapl.near.SmallBodyMappingToolAPL\r" > $output_dir/win64/sbmt/runsbmt.bat
+jre7\\\\bin\\\\java -Djava.library.path=lib/win64 -Dsun.java2d.noddraw=true -classpath $jar_files_win edu.jhuapl.near.SmallBodyMappingToolAPL\r" > $output_dir/win64/sbmt/runsbmt.bat
 chmod +x $output_dir/win64/sbmt/runsbmt.bat
 
 echo -n -e "replace-with-username\r
