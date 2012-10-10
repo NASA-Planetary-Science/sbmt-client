@@ -634,7 +634,12 @@ public class NISSpectrum extends Model implements PropertyChangeListener
             bands.add(bandName);
         }
 
-        // First try to evaluate it to see if it's valid. Try
+        // First try to evaluate it to see if it's valid. Make sure to set
+        // Replacement value on, so only syntax errors are flagged.
+        // (Division by zero is not flagged).
+        functionParser.SetReplacementValue(0.0);
+        functionParser.ReplaceInvalidValuesOn();
+
         for (String c : bands)
             functionParser.SetScalarVariableValue(c, 0.0);
         if (functionParser.IsScalarResult() == 0)
