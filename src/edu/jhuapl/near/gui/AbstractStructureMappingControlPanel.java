@@ -477,7 +477,8 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
                 }
             }
         }
-        else if (Properties.ALL_STRUCTURES_REMOVED.equals(evt.getPropertyName()))
+        else if (Properties.ALL_STRUCTURES_REMOVED.equals(evt.getPropertyName()) ||
+                 Properties.COLOR_CHANGED.equals(evt.getPropertyName()))
         {
             updateStructureTable();
         }
