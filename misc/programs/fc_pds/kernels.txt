@@ -6,7 +6,7 @@ KERNELS_TO_LOAD = (
                    '/project/nearsdc/spice-kernels/dawn/pck00010.tpc'
                    '/project/nearsdc/spice-kernels/dawn/dawn_vesta_v04.tpc'
 
-                   '/project/nearsdc/spice-kernels/dawn/DAWN_203_SCLKSCET.00032.tsc'
+                   '/project/nearsdc/spice-kernels/dawn/DAWN_203_SCLKSCET.00033.tsc'
 
                    '/project/nearsdc/spice-kernels/dawn/dawn_vesta_v00.tf'
                    '/project/nearsdc/spice-kernels/dawn/dawn_v11.tf'
@@ -24,6 +24,12 @@ KERNELS_TO_LOAD = (
                    '/dawn_ql_120620-120814_120703_v1.bsp'
                    '/project/nearsdc/spice-kernels/dawn+'
                    '/dawn_ql_120627-120826_120719_v1.bsp'
+                   '/project/nearsdc/spice-kernels/dawn+'
+                   '/dawn_ql_120724-120929_120824_v1.bsp'
+                   '/project/nearsdc/spice-kernels/dawn+'
+                   '/dawn_ql_120809-121114_120918_v1.bsp'
+                   '/project/nearsdc/spice-kernels/dawn+'
+                   '/dawn_ql_120826-121114_121002_v1.bsp'
 
                    '/project/nearsdc/spice-kernels/dawn+'
                    '/dawn_rec_110416-110802_110913_v1.bsp'
@@ -107,6 +113,13 @@ KERNELS_TO_LOAD = (
                    '/project/nearsdc/spice-kernels/dawn/dawn_sc_120716_120722.bc'
                    '/project/nearsdc/spice-kernels/dawn/dawn_sc_120723_120729.bc'
                    '/project/nearsdc/spice-kernels/dawn/dawn_sc_120730_120805.bc'
+                   '/project/nearsdc/spice-kernels/dawn/dawn_sc_120806_120812.bc'
+                   '/project/nearsdc/spice-kernels/dawn/dawn_sc_120813_120819.bc'
+                   '/project/nearsdc/spice-kernels/dawn/dawn_sc_120820_120826.bc'
+                   '/project/nearsdc/spice-kernels/dawn/dawn_sc_120827_120902.bc'
+                   '/project/nearsdc/spice-kernels/dawn/dawn_sc_120903_120909.bc'
+                   '/project/nearsdc/spice-kernels/dawn/dawn_sc_120910_120916.bc'
+                   '/project/nearsdc/spice-kernels/dawn/dawn_sc_120917_120923.bc'
                    )
 
 \begintext
