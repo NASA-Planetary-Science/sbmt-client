@@ -4,8 +4,8 @@ Introduction
 This README file describes how to build and run the gravity and
 elevation-slope programs for computing the gravitational acceleration,
 potential, elevation, and slope of an arbitrary triangular plate
-model.  It implements the algorithm by Werner and Scheeres as well as
-simpler, faster algorithm by Andy Cheng.
+model.  It implements the algorithm by Werner and Scheeres[1] as well as
+simpler, faster algorithm by Andy Cheng[2].
 
 
 ------------------------
@@ -158,3 +158,13 @@ Note again as explained above, that the value of the reference
 potential is printed out to standard output when running this
 program. You could use this value for the --ref-potential option for
 computing elevation at arbitrary points.
+
+------------------------------------
+References
+------------------------------------
+[1] Werner, R.A. and Scheeres, D.J., 1997, Exterior gravitation of a
+polyhedron derived and compared with harmonic and mascon gravitation
+representations of asteroid 4769 Castalia, Celestial Mechanics and
+Dynamical Astronomy, Vol. 65, pp. 313-344.
+[2] Cheng, A.F. et al., 2012, Efficient Calculation of Effective
+Potential and Gravity on Small Bodies, ACM, 1667, p. 6447.

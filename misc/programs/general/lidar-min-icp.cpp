@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
+#include <limits>
 #include "SpiceUsr.h"
 #include "lbfgs.h"
 #include "optimize.h"
@@ -85,6 +86,8 @@ BodyType g_bodyType;
 /* The translation computed for the last track */
 double g_translation[3];
 
+bool g_singleTrackMode = false;
+
 void printPoint(int i)
 {
     printf("point %d: %f %f %f %f %f %f %f \n",
@@ -115,8 +118,8 @@ void loadPoints(int argc, char** argv)
     printf("Loading data\n");
     int i;
     int count = 0;
-    /* Element at index 7 of argv is start of input files */
-    for (i=7; i<argc; ++i)
+    /* Element at index 8 of argv is start of input files */
+    for (i=8; i<argc; ++i)
     {
         const char* filename = argv[i];
         FILE *f = fopen(filename, "r");
@@ -135,7 +138,18 @@ void loadPoints(int argc, char** argv)
         {
             struct LidarPoint point;
 
-            if (g_bodyType == ITOKAWA)
+            if (g_singleTrackMode)
+            {
+                sscanf(line, "%s %lf %lf %lf %lf %lf %lf",
+                       point.utc,
+                       &x,
+                       &y,
+                       &z,
+                       &point.scpos[0],
+                       &point.scpos[1],
+                       &point.scpos[2]);
+            }
+            else if (g_bodyType == ITOKAWA)
             {
                 sscanf(line, "%s %s %s %lf %lf %lf %lf %lf %lf",
                        point.met,
@@ -481,7 +495,9 @@ int checkForBreakInTrack2(int startId, int trackSize)
 
 
     double maxTrackLength = 0.0; // in km
-    if (g_bodyType == EROS)
+    if (g_singleTrackMode)
+        maxTrackLength = std::numeric_limits<double>::max();
+    else if (g_bodyType == EROS)
         maxTrackLength = 10.0;
     else if (g_bodyType == ITOKAWA)
         maxTrackLength = 0.25;
@@ -567,7 +583,7 @@ void savePointsOptimized(const char* outfile)
         exit(1);
     }
 
-    if (g_bodyType == EROS)
+    if (g_bodyType == EROS && !g_singleTrackMode)
     {
         fprintf(fout, "Header line 1\n");
         fprintf(fout, "Header line 2\n");
@@ -578,7 +594,18 @@ void savePointsOptimized(const char* outfile)
     {
         struct LidarPoint point = g_pointsOptimized[i];
 
-        if (g_bodyType == ITOKAWA)
+        if (g_singleTrackMode)
+        {
+            fprintf(fout, "%s %.16e %.16e %.16e %.16e %.16e %.16e\n",
+                    point.utc,
+                    point.targetpos[0],
+                    point.targetpos[1],
+                    point.targetpos[2],
+                    point.scpos[0],
+                    point.scpos[1],
+                    point.scpos[2]);
+        }
+        else if (g_bodyType == ITOKAWA)
         {
             fprintf(fout, "%d %s %s %8s %.16e %.16e %.16e %.16e %.16e %.16e\n",
                     g_numberOptimizationsPerPoint[i],
@@ -634,22 +661,26 @@ int main(int argc, char** argv)
 {
     if (argc < 8)
     {
-        printf("Usage: lidar-min-icp <body> <dskfile> <start-point> <stop-point> <kernelfiles> <outputfile> <inputfile1> [<inputfile2> ...]\n");;
+        printf("Usage: lidar-min-icp <body> <--single-track-mode=yes|no> <dskfile> <start-point> <stop-point> <kernelfiles> <outputfile> <inputfile1> [<inputfile2> ...]\n");;
         return 1;
     }
 
     char* body = argv[1];
-    char* dskfile = argv[2];
+    char* singleTrackMode = argv[2];
+    char* dskfile = argv[3];
 
-    g_startPoint = atoi(argv[3]);
-    g_stopPoint  = atoi(argv[4]);
+    g_startPoint = atoi(argv[4]);
+    g_stopPoint  = atoi(argv[5]);
 
-    const char* const kernelfiles = argv[5];
-    const char* const outfile = argv[6];
+    const char* const kernelfiles = argv[6];
+    const char* const outfile = argv[7];
 
     g_bodyType = EROS;
     if (!strcmp(body, "ITOKAWA"))
         g_bodyType = ITOKAWA;
+
+    if (!strcmp(singleTrackMode, "--single-track-mode=yes"))
+        g_singleTrackMode = true;
 
 //    initializeDsk(dskfile);
     initializeVtk(dskfile);

@@ -75,12 +75,12 @@ def combine_output():
         xtarget[i] /= N[i]
         ytarget[i] /= N[i]
         ztarget[i] /= N[i]
-        
+
         output_line = '%s %s %s %.16e %.16e %.16e %.16e %.16e %.16e\n' % (met[i], utc[i], rang[i], xsc[i], ysc[i], zsc[i], xtarget[i], ytarget[i], ztarget[i])
         f.write(output_line)
         output_line = '%s UTC;%.16e;%.16e;%.16e;%.16e;%.16e;%.16e\n' % (utc[i].replace('T', ' '), xsc[i], ysc[i], zsc[i], 0.0, 0.0, 0.0)
         f2.write(output_line)
-        
+
     f.close()
     f2.close()
 
@@ -142,7 +142,7 @@ def run_lidar_min():
         if i == NUM_PROCS-1:
             stopId = str(number_points)
         ii = str(i)
-        command = './lidar-min-icp '+BODY+' '+DSKFILE+' '+startId+' '+stopId+' '+KERNEL+' '+OUTPUT+ii+' '+" ".join(INPUT_FILES)+' > '+LOG+ii+' 2>&1'
+        command = './lidar-min-icp '+BODY+' --single-track-mode=no '+DSKFILE+' '+startId+' '+stopId+' '+KERNEL+' '+OUTPUT+ii+' '+" ".join(INPUT_FILES)+' > '+LOG+ii+' 2>&1'
         #command = './lidar-min-fit '+BODY+' '+DSKFILE+' '+startId+' '+stopId+' '+KERNEL+' '+OUTPUT+ii+' '+" ".join(INPUT_FILES)+' > '+LOG+ii+' 2>&1'
         print command
         p = subprocess.Popen(command, shell=True)
@@ -175,7 +175,7 @@ def run_lidar_save():
 
 def do_all():
     run_lidar_min()
-    
+
     combine_output()
 
 #    if BODY == 'ITOKAWA':
