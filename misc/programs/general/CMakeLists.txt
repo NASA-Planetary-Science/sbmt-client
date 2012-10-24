@@ -20,7 +20,8 @@ ${SPICE_DIR}/src/dsklib_c
 ${LBFGS_DIR}/include
 ${GSL_DIR}/include
 ${ADOLC_DIR}/include
-${CMAKE_SOURCE_DIR})
+${CMAKE_SOURCE_DIR}
+${CMAKE_SOURCE_DIR}/gravity)
 link_directories(${SPICE_DIR}/lib ${LBFGS_DIR}/lib ${GSL_DIR}/lib ${ADOLC_DIR}/lib64)
 
 add_library(lidar
@@ -31,15 +32,15 @@ icp-vtk.cpp
 icp-intersection.cpp
 closest-point-vtk.cpp
 optimize-gsl.cpp
-gravity-werner.cpp
-gravity-cheng.cpp
+gravity/gravity-werner.cpp
+gravity/gravity-cheng.cpp
 lidardata.cpp
 propagator.cpp
 propagatorfit.cpp
-platemodel.cpp
+gravity/platemodel.cpp
 
 constants.h
-gravity-point.h
+gravity/gravity-point.h
 util.h
 mathutil.h
 )
@@ -68,10 +69,10 @@ target_link_libraries(lidar-compute-gaskell-error cspice csupport)
 add_executable(propagator prop-fit.cpp)
 target_link_libraries(propagator lidar)
 
-add_executable(gravity gravity.cpp)
+add_executable(gravity gravity/gravity.cpp)
 target_link_libraries(gravity lidar)
 
-add_executable(elevation-slope elevation-slope.cpp)
+add_executable(elevation-slope gravity/elevation-slope.cpp)
 target_link_libraries(elevation-slope lidar)
 
 add_executable( cam-est camera_est/cam-est.cpp )
