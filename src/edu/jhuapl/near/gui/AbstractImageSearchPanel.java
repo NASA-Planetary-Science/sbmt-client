@@ -189,9 +189,14 @@ abstract public class AbstractImageSearchPanel extends javax.swing.JPanel implem
 
             if (index >= 0 && resultList.getCellBounds(index, index).contains(e.getPoint()))
             {
-                resultList.setSelectedIndex(index);
-                String name = imageRawResults.get(index).get(0);
-                imagePopupMenu.setCurrentImage(new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery));
+                int[] selectedIndices = resultList.getSelectedIndices();
+                ArrayList<ImageKey> imageKeys = new ArrayList<ImageKey>();
+                for (int selectedIndex : selectedIndices)
+                {
+                    String name = imageRawResults.get(selectedIndex).get(0);
+                    imageKeys.add(new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery));
+                }
+                imagePopupMenu.setCurrentImages(imageKeys);
                 imagePopupMenu.show(e.getComponent(), e.getX(), e.getY());
             }
         }

@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 
 import javax.swing.AbstractAction;
 import javax.swing.JCheckBoxMenuItem;
@@ -41,7 +42,7 @@ public class ImagePopupMenu extends PopupMenu
     private Component invoker;
     private ImageCollection imageCollection;
     private PerspectiveImageBoundaryCollection imageBoundaryCollection;
-    private ImageKey imageKey;
+    private ArrayList<ImageKey> imageKeys = new ArrayList<Image.ImageKey>();
     private JMenuItem mapImageMenuItem;
     private JMenuItem mapBoundaryMenuItem;
     private JMenuItem showImageInfoMenuItem;
@@ -130,82 +131,125 @@ public class ImagePopupMenu extends PopupMenu
 
     public void setCurrentImage(ImageKey key)
     {
-        imageKey = key;
+        imageKeys.clear();
+        imageKeys.add(key);
+
+        updateMenuItems();
+    }
+
+    public void setCurrentImages(ArrayList<ImageKey> keys)
+    {
+        imageKeys.clear();
+        imageKeys.addAll(keys);
 
         updateMenuItems();
     }
 
     private void updateMenuItems()
     {
-        boolean containsImage = imageCollection.containsImage(imageKey);
-        boolean containsBoundary = false;
-        if (imageBoundaryCollection != null)
-            containsBoundary = imageBoundaryCollection.containsBoundary(imageKey);
+        boolean selectMapImage = true;
+        boolean enableMapImage = true;
+        boolean selectMapBoundary = true;
+        boolean enableMapBoundary = true;
+        boolean enableCenterImage = false;
+        boolean enableShowImageInfo = false;
+        boolean enableSaveBackplanes = false;
+        boolean enableSaveToDisk = false;
+        boolean enableChangeNormalOffset = false;
+        boolean selectShowFrustum = true;
+        boolean enableShowFrustum = true;
+        boolean enableSimulateLighting = false;
+        boolean enableChangeOpacity = false;
+        boolean selectHideImage = true;
+        boolean enableHideImage = true;
 
-        mapBoundaryMenuItem.setSelected(containsBoundary);
-
-        mapImageMenuItem.setSelected(containsImage);
-
-        if (centerImageMenuItem != null)
+        for (ImageKey imageKey : imageKeys)
         {
-            if (containsBoundary || containsImage)
-                centerImageMenuItem.setEnabled(true);
-            else
-                centerImageMenuItem.setEnabled(false);
-        }
+            boolean containsImage = imageCollection.containsImage(imageKey);
+            boolean containsBoundary = false;
+            if (imageBoundaryCollection != null)
+                containsBoundary = imageBoundaryCollection.containsBoundary(imageKey);
 
-        if (showImageInfoMenuItem != null)
-            showImageInfoMenuItem.setEnabled(containsImage);
+            if (!containsBoundary)
+                selectMapBoundary = containsBoundary;
 
-        saveBackplanesMenuItem.setEnabled(containsImage);
-        saveToDiskMenuItem.setEnabled(containsImage);
-        changeNormalOffsetMenuItem.setEnabled(containsImage);
+            if (!containsImage)
+                selectMapImage = containsImage;
 
-        if (containsImage)
-        {
-            Image image = imageCollection.getImage(imageKey);
-            if (image instanceof PerspectiveImage)
-                showFrustumMenuItem.setSelected(((PerspectiveImage)image).isFrustumShowing());
-            else
-                showFrustumMenuItem.setSelected(false);
-            showFrustumMenuItem.setEnabled(true);
-            simulateLightingMenuItem.setEnabled(true);
-            changeOpacityMenuItem.setEnabled(true);
-            hideImageMenuItem.setSelected(!image.isVisible());
-            hideImageMenuItem.setEnabled(true);
-        }
-        else
-        {
-            showFrustumMenuItem.setSelected(false);
-            showFrustumMenuItem.setEnabled(false);
-            simulateLightingMenuItem.setEnabled(false);
-            changeOpacityMenuItem.setEnabled(false);
-            hideImageMenuItem.setSelected(false);
-            hideImageMenuItem.setEnabled(false);
-        }
-
-        if (imageKey.source == ImageSource.LOCAL_CYLINDRICAL || imageKey.source == ImageSource.IMAGE_MAP)
-        {
-            mapBoundaryMenuItem.setEnabled(false);
-            showFrustumMenuItem.setEnabled(false);
-            simulateLightingMenuItem.setEnabled(false);
-            if (centerImageMenuItem != null)
-                centerImageMenuItem.setEnabled(false);
-            saveBackplanesMenuItem.setEnabled(false);
-            saveToDiskMenuItem.setEnabled(false);
-
-            if (imageKey.source == ImageSource.IMAGE_MAP)
+            if (centerImageMenuItem != null && imageKeys.size() == 1)
             {
-                mapImageMenuItem.setEnabled(false);
-                hideImageMenuItem.setEnabled(false);
+                enableCenterImage = containsBoundary || containsImage;
+            }
+
+            if (showImageInfoMenuItem != null && imageKeys.size() == 1)
+                enableShowImageInfo = containsImage;
+
+            if (imageKeys.size() == 1)
+            {
+                enableSaveBackplanes = containsImage;
+                enableSaveToDisk = containsImage;
+                enableChangeNormalOffset = containsImage;
+                enableChangeOpacity = containsImage;
+            }
+
+            if (containsImage)
+            {
+                Image image = imageCollection.getImage(imageKey);
+                if (!(image instanceof PerspectiveImage) || !((PerspectiveImage)image).isFrustumShowing())
+                    selectShowFrustum = false;
+                if (imageKeys.size() == 1)
+                    enableSimulateLighting = true;
+                if (image.isVisible())
+                    selectHideImage = false;
+            }
+            else
+            {
+                selectShowFrustum = false;
+                enableShowFrustum = false;
+                selectHideImage = false;
+                enableHideImage = false;
+            }
+
+            if (imageKey.source == ImageSource.LOCAL_CYLINDRICAL || imageKey.source == ImageSource.IMAGE_MAP)
+            {
+                enableMapBoundary = false;
+                enableShowFrustum = false;
+                enableSimulateLighting = false;
+                if (centerImageMenuItem != null)
+                    enableCenterImage = false;
+                enableSaveBackplanes = false;
+                enableSaveToDisk = false;
+
+                if (imageKey.source == ImageSource.IMAGE_MAP)
+                {
+                    enableMapImage = false;
+                    enableHideImage = false;
+                }
+            }
+            else if (imageKey.source == ImageSource.LOCAL_PERSPECTIVE)
+            {
+                enableSaveToDisk = false;
+                enableSaveBackplanes = false;
             }
         }
-        else if (imageKey.source == ImageSource.LOCAL_PERSPECTIVE)
-        {
-            saveToDiskMenuItem.setEnabled(false);
-            saveBackplanesMenuItem.setEnabled(false);
-            saveToDiskMenuItem.setEnabled(false);
-        }
+
+        mapImageMenuItem.setSelected(selectMapImage);
+        mapImageMenuItem.setEnabled(enableMapImage);
+        mapBoundaryMenuItem.setSelected(selectMapBoundary);
+        mapBoundaryMenuItem.setEnabled(enableMapBoundary);
+        if (centerImageMenuItem != null)
+            centerImageMenuItem.setEnabled(enableCenterImage);
+        if (showImageInfoMenuItem != null)
+            showImageInfoMenuItem.setEnabled(enableShowImageInfo);
+        saveBackplanesMenuItem.setEnabled(enableSaveBackplanes);
+        saveToDiskMenuItem.setEnabled(enableSaveToDisk);
+        changeNormalOffsetMenuItem.setEnabled(enableChangeNormalOffset);
+        showFrustumMenuItem.setSelected(selectShowFrustum);
+        showFrustumMenuItem.setEnabled(enableShowFrustum);
+        simulateLightingMenuItem.setEnabled(enableSimulateLighting);
+        changeOpacityMenuItem.setEnabled(enableChangeOpacity);
+        hideImageMenuItem.setSelected(selectHideImage);
+        hideImageMenuItem.setEnabled(enableHideImage);
     }
 
 
@@ -213,21 +257,24 @@ public class ImagePopupMenu extends PopupMenu
     {
         public void actionPerformed(ActionEvent e)
         {
-            try
+            for (ImageKey imageKey : imageKeys)
             {
-                if (mapImageMenuItem.isSelected())
-                    imageCollection.addImage(imageKey);
-                else
-                    imageCollection.removeImage(imageKey);
+                try
+                {
+                    if (mapImageMenuItem.isSelected())
+                        imageCollection.addImage(imageKey);
+                    else
+                        imageCollection.removeImage(imageKey);
+                }
+                catch (FitsException e1) {
+                    e1.printStackTrace();
+                }
+                catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+            }
 
-                updateMenuItems();
-            }
-            catch (FitsException e1) {
-                e1.printStackTrace();
-            }
-            catch (IOException e1) {
-                e1.printStackTrace();
-            }
+            updateMenuItems();
         }
     }
 
@@ -235,21 +282,24 @@ public class ImagePopupMenu extends PopupMenu
     {
         public void actionPerformed(ActionEvent e)
         {
-            try
+            for (ImageKey imageKey : imageKeys)
             {
-                if (mapBoundaryMenuItem.isSelected())
-                    imageBoundaryCollection.addBoundary(imageKey);
-                else
-                    imageBoundaryCollection.removeBoundary(imageKey);
+                try
+                {
+                    if (mapBoundaryMenuItem.isSelected())
+                        imageBoundaryCollection.addBoundary(imageKey);
+                    else
+                        imageBoundaryCollection.removeBoundary(imageKey);
+                }
+                catch (FitsException e1) {
+                    e1.printStackTrace();
+                }
+                catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+            }
 
-                updateMenuItems();
-            }
-            catch (FitsException e1) {
-                e1.printStackTrace();
-            }
-            catch (IOException e1) {
-                e1.printStackTrace();
-            }
+            updateMenuItems();
         }
     }
 
@@ -257,6 +307,10 @@ public class ImagePopupMenu extends PopupMenu
     {
         public void actionPerformed(ActionEvent e)
         {
+            if (imageKeys.size() != 1)
+                return;
+            ImageKey imageKey = imageKeys.get(0);
+
             try
             {
                 imageCollection.addImage(imageKey);
@@ -278,6 +332,10 @@ public class ImagePopupMenu extends PopupMenu
     {
         public void actionPerformed(ActionEvent e)
         {
+            if (imageKeys.size() != 1)
+                return;
+            ImageKey imageKey = imageKeys.get(0);
+
             File file = null;
             try
             {
@@ -309,6 +367,10 @@ public class ImagePopupMenu extends PopupMenu
     {
         public void actionPerformed(ActionEvent e)
         {
+            if (imageKeys.size() != 1)
+                return;
+            ImageKey imageKey = imageKeys.get(0);
+
             double[] spacecraftPosition = new double[3];
             double[] focalPoint = new double[3];
             double[] upVector = new double[3];
@@ -341,6 +403,10 @@ public class ImagePopupMenu extends PopupMenu
     {
         public void actionPerformed(ActionEvent e)
         {
+            if (imageKeys.size() != 1)
+                return;
+            ImageKey imageKey = imageKeys.get(0);
+
             // First generate the DDR
 
             String defaultFilename = new File(imageKey.name + "_DDR.IMG").getName();
@@ -428,19 +494,21 @@ public class ImagePopupMenu extends PopupMenu
     {
         public void actionPerformed(ActionEvent e)
         {
-            try
+            for (ImageKey imageKey : imageKeys)
             {
-                imageCollection.addImage(imageKey);
-                PerspectiveImage image = (PerspectiveImage)imageCollection.getImage(imageKey);
-                image.setShowFrustum(showFrustumMenuItem.isSelected());
-
-                updateMenuItems();
+                try
+                {
+                    imageCollection.addImage(imageKey);
+                    PerspectiveImage image = (PerspectiveImage)imageCollection.getImage(imageKey);
+                    image.setShowFrustum(showFrustumMenuItem.isSelected());
+                }
+                catch (Exception ex)
+                {
+                    ex.printStackTrace();
+                }
             }
-            catch (Exception ex)
-            {
-                ex.printStackTrace();
-            }
 
+            updateMenuItems();
         }
     }
 
@@ -448,6 +516,10 @@ public class ImagePopupMenu extends PopupMenu
     {
         public void actionPerformed(ActionEvent e)
         {
+            if (imageKeys.size() != 1)
+                return;
+            ImageKey imageKey = imageKeys.get(0);
+
             Image image = imageCollection.getImage(imageKey);
             if (image != null)
             {
@@ -462,6 +534,10 @@ public class ImagePopupMenu extends PopupMenu
     {
         public void actionPerformed(ActionEvent e)
         {
+            if (imageKeys.size() != 1)
+                return;
+            ImageKey imageKey = imageKeys.get(0);
+
             PerspectiveImage image = (PerspectiveImage)imageCollection.getImage(imageKey);
             if (image != null)
             {
@@ -476,6 +552,10 @@ public class ImagePopupMenu extends PopupMenu
     {
         public void actionPerformed(ActionEvent e)
         {
+            if (imageKeys.size() != 1)
+                return;
+            ImageKey imageKey = imageKeys.get(0);
+
             Image image = imageCollection.getImage(imageKey);
             if (image != null)
             {
@@ -490,19 +570,21 @@ public class ImagePopupMenu extends PopupMenu
     {
         public void actionPerformed(ActionEvent e)
         {
-            try
+            for (ImageKey imageKey : imageKeys)
             {
-                imageCollection.addImage(imageKey);
-                Image image = imageCollection.getImage(imageKey);
-                image.setVisible(!hideImageMenuItem.isSelected());
-
-                updateMenuItems();
+                try
+                {
+                    imageCollection.addImage(imageKey);
+                    Image image = imageCollection.getImage(imageKey);
+                    image.setVisible(!hideImageMenuItem.isSelected());
+                }
+                catch (Exception ex)
+                {
+                    ex.printStackTrace();
+                }
             }
-            catch (Exception ex)
-            {
-                ex.printStackTrace();
-            }
 
+            updateMenuItems();
         }
     }
 

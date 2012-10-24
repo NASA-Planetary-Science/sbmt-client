@@ -18,6 +18,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -417,12 +418,17 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
 
             if (index >= 0 && imageList.getCellBounds(index, index).contains(e.getPoint()))
             {
-                imageList.setSelectedIndex(index);
-                ImageInfo imageInfo = (ImageInfo)((DefaultListModel)imageList.getModel()).get(index);
-                String name = getCustomDataFolder() + File.separator + imageInfo.imagefilename;
-                ImageKey imageKey = new ImageKey(name,
-                        imageInfo.projectionType == ProjectionType.CYLINDRICAL? ImageSource.LOCAL_CYLINDRICAL : ImageSource.LOCAL_PERSPECTIVE);
-                imagePopupMenu.setCurrentImage(imageKey);
+                int[] selectedIndices = imageList.getSelectedIndices();
+                ArrayList<ImageKey> imageKeys = new ArrayList<ImageKey>();
+                for (int selectedIndex : selectedIndices)
+                {
+                    ImageInfo imageInfo = (ImageInfo)((DefaultListModel)imageList.getModel()).get(selectedIndex);
+                    String name = getCustomDataFolder() + File.separator + imageInfo.imagefilename;
+                    ImageKey imageKey = new ImageKey(name,
+                            imageInfo.projectionType == ProjectionType.CYLINDRICAL? ImageSource.LOCAL_CYLINDRICAL : ImageSource.LOCAL_PERSPECTIVE);
+                    imageKeys.add(imageKey);
+                }
+                imagePopupMenu.setCurrentImages(imageKeys);
                 imagePopupMenu.show(e.getComponent(), e.getX(), e.getY());
             }
         }
