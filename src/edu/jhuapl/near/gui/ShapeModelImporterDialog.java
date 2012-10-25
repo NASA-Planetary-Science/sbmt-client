@@ -417,16 +417,16 @@ public class ShapeModelImporterDialog extends javax.swing.JDialog
         }
         catch (NumberFormatException e)
         {
-            return "Numbers are malformatted.";
+            return "Numbers in file '" + path + "' are malformatted.";
         }
         catch (IOException e)
         {
-            return "An error occurred reading the file '" + path + "'";
+            return "An error occurred reading the file '" + path + "'.";
         }
 
         if (lineCount != numCells)
         {
-            return "Number of lines in file must equal number of plates in shape model.";
+            return "Number of lines in file '" + path + "' must equal number of plates in shape model.";
         }
 
         return null;
