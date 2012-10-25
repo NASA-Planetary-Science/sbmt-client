@@ -295,6 +295,22 @@ public class ShapeModelImporterDialog extends javax.swing.JDialog
             }
         }
 
+        // Validate the cell data
+        for (int i=0; i<cellDataInfoList.size(); ++i)
+        {
+            CellDataInfo cellDataInfo = cellDataInfoList.get(i);
+
+            String errorMessage = validateCellDataFile(cellDataInfo.path, shapePoly.GetNumberOfCells());
+            if (errorMessage != null)
+            {
+                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
+                        errorMessage,
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+                return false;
+            }
+        }
+
         // Now save the shape model to the users home folder within the
         // custom-shape-models folders
         File newModelDir = new File(Configuration.getImportedShapeModelsDir() + File.separator + name);
@@ -331,17 +347,7 @@ public class ShapeModelImporterDialog extends javax.swing.JDialog
         {
             CellDataInfo cellDataInfo = cellDataInfoList.get(i);
 
-            String errorMessage = validateCellDataFile(cellDataInfo.path, shapePoly.GetNumberOfCells());
-            if (errorMessage != null)
-            {
-                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
-                        errorMessage,
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE);
-                return false;
-            }
-
-            // Now copy the cell data file to the model directory
+            // Copy the cell data file to the model directory
             try
             {
                 FileUtil.copyFile(cellDataInfo.path, newModelDir.getAbsolutePath() + File.separator + "platedata" + i + ".txt");
