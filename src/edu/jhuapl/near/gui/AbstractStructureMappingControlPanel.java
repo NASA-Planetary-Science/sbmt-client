@@ -182,6 +182,32 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
             add(newButton, "w 100!");
         }
 
+        // Show warning info about how to draw ellipses
+        // for the benefit of user as this has changed. This warning
+        // is only temporarily and should be removed after several months.
+        if (pickMode == PickManager.PickMode.ELLIPSE_DRAW)
+        {
+            String text = "<html>" +
+                    "Warning: Method to create new ellipses<br>" +
+                    "has changed! Click for details..." +
+                    "</html>";
+            JButton ellipsesWarningButton = new JButton(text);
+            ellipsesWarningButton.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent e)
+                {
+                    JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(AbstractStructureMappingControlPanel.this),
+                            "To create a new ellipse, click on 3 points on the shape model in the following manner:\n" +
+                            "The first 2 points should lie on the endpoints of the major axis of the desired ellipse.\n" +
+                            "The third point should lie on one of the endpoints of the minor axis of the desired ellipse.\n" +
+                            "After clicking the third point, an ellipse is drawn that passes through the points.",
+                            "How to Create a New Ellipse",
+                            JOptionPane.PLAIN_MESSAGE);
+                }
+            });
+            add(ellipsesWarningButton, "span 3, wrap");
+        }
+
         editButton = new JToggleButton("Edit");
         editButton.addActionListener(new ActionListener()
         {
