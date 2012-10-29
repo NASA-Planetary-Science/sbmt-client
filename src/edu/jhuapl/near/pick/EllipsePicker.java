@@ -5,6 +5,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
+import javax.swing.JOptionPane;
+
 import vtk.vtkActor;
 import vtk.vtkCellPicker;
 import vtk.vtkProp;
@@ -112,7 +114,10 @@ public class EllipsePicker extends Picker
         else if (this.currentEditMode == EditMode.VERTEX_ADD)
         {
             if (e.getButton() != MouseEvent.BUTTON1)
+            {
+                ellipseModel.resetCircumferencePoints();
                 return;
+            }
 
             int pickSucceeded = doPick(e, smallBodyPicker, renWin);
 
@@ -126,7 +131,13 @@ public class EllipsePicker extends Picker
                     double[] pos = smallBodyPicker.GetPickPosition();
                     if (e.getClickCount() == 1)
                     {
-                        ellipseModel.addNewStructure(pos);
+                        if (!ellipseModel.addCircumferencePoint(pos))
+                        {
+                            JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(renWin),
+                                    "Could not fit ellipse to specified points.",
+                                    "Error",
+                                    JOptionPane.ERROR_MESSAGE);
+                        }
                     }
                 }
             }
@@ -181,7 +192,11 @@ public class EllipsePicker extends Picker
     public void mouseMoved(MouseEvent e)
     {
         int pickSucceeded = doPick(e, ellipsePicker, renWin);
-        if (pickSucceeded == 1 &&
+
+        // Only allow dragging if we are not in the middle of drawing a
+        // new ellipse, i.e. if number of circumference points is zero.
+        if (ellipseModel.getNumberOfCircumferencePoints() == 0 &&
+                pickSucceeded == 1 &&
                 ellipsePicker.GetActor() == ellipseModel.getBoundaryActor())
         {
             if (renWin.getCursor().getType() != Cursor.HAND_CURSOR)

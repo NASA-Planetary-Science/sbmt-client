@@ -407,6 +407,19 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
         // do nothing
     }
 
+    public void addNewStructure(double[] pos, double radius, double flattening, double angle)
+    {
+        EllipsePolygon pol = this.new EllipsePolygon(numberOfSides, type, defaultColor);
+        polygons.add(pol);
+
+        pol.updatePolygon(smallBodyModel, pos, radius, flattening, angle);
+        highlightedStructure = polygons.size()-1;
+        updatePolyData();
+
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+        this.pcs.firePropertyChange(Properties.STRUCTURE_ADDED, null, null);
+    }
+
     public void addNewStructure(double[] pos)
     {
         EllipsePolygon pol = this.new EllipsePolygon(numberOfSides, type, defaultColor);
@@ -477,10 +490,8 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
-    public void changeFlatteningOfPolygon(int polygonId, double[] newPointOnPerimeter)
+    protected double computeFlatteningOfPolygon(double[] center, double radius, double angle, double[] newPointOnPerimeter)
     {
-        EllipsePolygon pol = polygons.get(polygonId);
-
         // The following math does this: we need to find the direction of
         // the semimajor axis of the ellipse. Then once we have that
         // we need to find the distance to that line from the point the mouse
@@ -490,7 +501,7 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
         // is what we call the flattening.
 
         // First compute cross product of normal and z axis
-        double[] normal = smallBodyModel.getNormalAtPoint(pol.center);
+        double[] normal = smallBodyModel.getNormalAtPoint(center);
         double[] zaxis = {0.0, 0.0, 1.0};
         double[] cross = new double[3];
         MathUtil.vcrss(zaxis, normal, cross);
@@ -498,8 +509,9 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
         double sepAngle = MathUtil.vsep(normal, zaxis) * 180.0 / Math.PI;
 
         vtkTransform transform = new vtkTransform();
-        transform.Translate(pol.center);
+        transform.Translate(center);
         transform.RotateWXYZ(sepAngle, cross);
+        transform.RotateZ(angle);
 
         double[] xaxis = {1.0, 0.0, 0.0};
         xaxis = transform.TransformDoubleVector(xaxis);
@@ -508,9 +520,9 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
         // Project newPoint onto the plane perpendicular to the
         // normal of the shape model.
         double[] projPoint = new double[3];
-        MathUtil.vprjp(newPointOnPerimeter, normal, pol.center, projPoint);
+        MathUtil.vprjp(newPointOnPerimeter, normal, center, projPoint);
         double[] projDir = new double[3];
-        MathUtil.vsub(projPoint, pol.center, projDir);
+        MathUtil.vsub(projPoint, center, projDir);
 
         double[] proj = new double[3];
         MathUtil.vproj(projDir, xaxis, proj);
@@ -519,36 +531,43 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
         double newRadius = MathUtil.vnorm(distVec);
 
         double newFlattening = 1.0;
-        if (pol.radius > 0.0)
-            newFlattening = newRadius / pol.radius;
+        if (radius > 0.0)
+            newFlattening = newRadius / radius;
 
         if (newFlattening < 0.001)
             newFlattening = 0.001;
         else if (newFlattening > 1.0)
             newFlattening = 1.0;
 
-        pol.updatePolygon(smallBodyModel, pol.center, pol.radius, newFlattening, pol.angle);
-        updatePolyData();
-        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-
         transform.Delete();
+
+        return newFlattening;
     }
 
-    public void changeAngleOfPolygon(int polygonId, double[] newPointOnPerimeter)
+    public void changeFlatteningOfPolygon(int polygonId, double[] newPointOnPerimeter)
     {
         EllipsePolygon pol = polygons.get(polygonId);
 
+        double newFlattening = computeFlatteningOfPolygon(pol.center, pol.radius, pol.angle, newPointOnPerimeter);
+
+        pol.updatePolygon(smallBodyModel, pol.center, pol.radius, newFlattening, pol.angle);
+        updatePolyData();
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+    }
+
+    protected double computeAngleOfPolygon(double[] center, double[] newPointOnPerimeter)
+    {
         // The following math does this: we need to find the direction of
         // the semimajor axis of the ellipse. Then once we have that
         // we need to find the angular distance between the axis and the
         // vector from the ellipse center to the point the mouse
-        // is hovering, where that vector first projected onto the
+        // is hovering, where that vector is first projected onto the
         // tangent plane of the asteroid at the ellipse center.
         // This angular distance is what we rotate the ellipse by.
 
 
         // First compute cross product of normal and z axis
-        double[] normal = smallBodyModel.getNormalAtPoint(pol.center);
+        double[] normal = smallBodyModel.getNormalAtPoint(center);
         double[] zaxis = {0.0, 0.0, 1.0};
         double[] cross = new double[3];
         MathUtil.vcrss(zaxis, normal, cross);
@@ -556,7 +575,7 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
         double sepAngle = MathUtil.vsep(normal, zaxis) * 180.0 / Math.PI;
 
         vtkTransform transform = new vtkTransform();
-        transform.Translate(pol.center);
+        transform.Translate(center);
         transform.RotateWXYZ(sepAngle, cross);
 
         double[] xaxis = {1.0, 0.0, 0.0};
@@ -566,9 +585,9 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
         // Project newPoint onto the plane perpendicular to the
         // normal of the shape model.
         double[] projPoint = new double[3];
-        MathUtil.vprjp(newPointOnPerimeter, normal, pol.center, projPoint);
+        MathUtil.vprjp(newPointOnPerimeter, normal, center, projPoint);
         double[] projDir = new double[3];
-        MathUtil.vsub(projPoint, pol.center, projDir);
+        MathUtil.vsub(projPoint, center, projDir);
         MathUtil.vhat(projDir, projDir);
 
         // Compute angular distance between projected direction and transformed x-axis
@@ -583,11 +602,20 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
                 newAngle = -newAngle;
         }
 
+        transform.Delete();
+
+        return newAngle;
+    }
+
+    public void changeAngleOfPolygon(int polygonId, double[] newPointOnPerimeter)
+    {
+        EllipsePolygon pol = polygons.get(polygonId);
+
+        double newAngle = computeAngleOfPolygon(pol.center, newPointOnPerimeter);
+
         pol.updatePolygon(smallBodyModel, pol.center, pol.radius, pol.flattening, newAngle);
         updatePolyData();
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-
-        transform.Delete();
     }
 
     public void changeRadiusOfAllPolygons(double newRadius)

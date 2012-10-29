@@ -1,12 +1,157 @@
 package edu.jhuapl.near.model;
 
+import vtk.vtkActor;
+import vtk.vtkCellArray;
+import vtk.vtkIdList;
+import vtk.vtkPoints;
+import vtk.vtkPolyData;
+import vtk.vtkPolyDataMapper;
+import vtk.vtkProperty;
+
+import edu.jhuapl.near.util.MathUtil;
+import edu.jhuapl.near.util.Properties;
+
 public class EllipseModel extends AbstractEllipsePolygonModel
 {
+    private SmallBodyModel smallBodyModel;
+    private vtkPolyData selectionPolyData;
+    private vtkPolyDataMapper lineSelectionMapper;
+    private vtkActor lineSelectionActor;
+    private double[] unshiftedPoint1;
+    private double[] unshiftedPoint2;
+
     public EllipseModel(SmallBodyModel smallBodyModel)
     {
         super(smallBodyModel, 20, Mode.ELLIPSE_MODE, "ellipse", ModelNames.ELLIPSE_STRUCTURES);
+
+        this.smallBodyModel = smallBodyModel;
+
         setInteriorOpacity(0.0);
         int[] color = {255, 0, 255};
         setDefaultColor(color);
+
+        selectionPolyData = new vtkPolyData();
+        vtkPoints points = new vtkPoints();
+        vtkCellArray cells = new vtkCellArray();
+        selectionPolyData.SetPoints(points);
+        selectionPolyData.SetVerts(cells);
+
+        lineSelectionMapper = new vtkPolyDataMapper();
+        lineSelectionMapper.SetInput(selectionPolyData);
+        lineSelectionMapper.Update();
+
+        lineSelectionActor = new vtkActor();
+        lineSelectionActor.PickableOff();
+        vtkProperty lineSelectionProperty = lineSelectionActor.GetProperty();
+        lineSelectionProperty.SetColor(0.0, 0.0, 1.0);
+        lineSelectionProperty.SetPointSize(7.0);
+
+        lineSelectionActor.SetMapper(lineSelectionMapper);
+        lineSelectionActor.Modified();
+
+        getProps().add(lineSelectionActor);
+    }
+
+    /**
+     * Adds a new point on the perimeter of the ellipse. When the point
+     * count equals 3, am ellipse is created and the intermediate points are
+     * deleted.
+     *
+     * @param pt
+     * @return
+     */
+    public boolean addCircumferencePoint(double[] pt)
+    {
+        vtkPoints points = selectionPolyData.GetPoints();
+        vtkCellArray vert = selectionPolyData.GetVerts();
+
+        int numPoints = points.GetNumberOfPoints();
+
+        if (numPoints < 2)
+        {
+            vtkIdList idList = new vtkIdList();
+            idList.SetNumberOfIds(1);
+            idList.SetId(0, numPoints);
+
+            points.InsertNextPoint(pt);
+            vert.InsertNextCell(idList);
+
+            idList.Delete();
+
+            if (numPoints == 0)
+            {
+                unshiftedPoint1 = pt.clone();
+            }
+            if (numPoints == 1)
+            {
+                unshiftedPoint2 = pt.clone();
+                // Since we shift the points afterwards, reset the first
+                // point to the original unshifted position.
+                points.SetPoint(0, unshiftedPoint1);
+            }
+
+            smallBodyModel.shiftPolyLineInNormalDirection(selectionPolyData, getOffset());
+
+            selectionPolyData.Modified();
+            this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+        }
+        else
+        {
+            // Take the 3 points and compute an ellipse that passes through them.
+            // To do this, assume that the first 2 points lie on the end-points of the major axis
+            // and that the third point lies on one of the end-points of the minor axis.
+            double[] pt1 = unshiftedPoint1;
+            double[] pt2 = unshiftedPoint2;
+            double[] pt3 = pt;
+
+            double radius = 0.5 * MathUtil.distanceBetween(pt1, pt2);
+            if (radius == 0.0)
+            {
+                // Cannot fit an ellipse so reset and return
+                resetCircumferencePoints();
+                return false;
+            }
+
+            // First find the point on the asteroid that is midway between
+            // the first 2 points. This is the center of the ellipse.
+            double[] center = new double[3];
+            MathUtil.midpointBetween(pt1, pt2, center);
+
+            double angle = computeAngleOfPolygon(center, pt2);
+
+            double flattening = computeFlatteningOfPolygon(center, radius, angle, pt3);
+
+            addNewStructure(center, radius, flattening, angle);
+
+            resetCircumferencePoints();
+        }
+
+        return true;
+    }
+
+    /**
+     * Cancels the new ellipse currently being created so you can start again.
+     * Intermediate points are deleted.
+     */
+    public void resetCircumferencePoints()
+    {
+        if (selectionPolyData.GetNumberOfPoints() > 0)
+        {
+            unshiftedPoint1 = null;
+            unshiftedPoint2 = null;
+
+            vtkPoints points = new vtkPoints();
+            vtkCellArray cells = new vtkCellArray();
+            selectionPolyData.SetPoints(points);
+            selectionPolyData.SetVerts(cells);
+
+            selectionPolyData.Modified();
+            this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+        }
+    }
+
+    public int getNumberOfCircumferencePoints()
+    {
+        return selectionPolyData.GetNumberOfPoints();
     }
 }
