@@ -10,8 +10,10 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 import vtk.vtkCellArray;
+import vtk.vtkDataArray;
 import vtk.vtkFloatArray;
 import vtk.vtkIdList;
+import vtk.vtkPointDataToCellData;
 import vtk.vtkPoints;
 import vtk.vtkPolyData;
 import vtk.vtkPolyDataNormals;
@@ -27,9 +29,10 @@ public class DEMModel extends SmallBodyModel
     private vtkIdList idList;
     private vtkPolyData dem;
     private vtkPolyData boundary;
-    private vtkFloatArray heightsGravity;
-    private vtkFloatArray heightsPlane;
-    private vtkFloatArray slopes;
+    private vtkFloatArray heightsGravityPerPoint;
+    private vtkFloatArray heightsGravity; // per cell
+    private vtkFloatArray heightsPlane; // per cell
+    private vtkFloatArray slopes; // per cell
     private int liveSize;
     //private int height;
     private int startPixel;
@@ -39,6 +42,7 @@ public class DEMModel extends SmallBodyModel
         idList = new vtkIdList();
         dem = new vtkPolyData();
         boundary = new vtkPolyData();
+        heightsGravityPerPoint = new vtkFloatArray();
         heightsGravity = new vtkFloatArray();
         heightsPlane = new vtkFloatArray();
         slopes = new vtkFloatArray();
@@ -59,7 +63,7 @@ public class DEMModel extends SmallBodyModel
                 "m", "m", "deg"
         };
 
-        setSmallBodyPolyData(dem, coloringValues, coloringNames, coloringUnits, ColoringValueType.POINT_DATA);
+        setSmallBodyPolyData(dem, coloringValues, coloringNames, coloringUnits, ColoringValueType.CELLDATA);
         setColoringIndex(0);
     }
 
@@ -79,6 +83,7 @@ public class DEMModel extends SmallBodyModel
         boundary.SetPoints(boundaryPoints);
         boundary.SetVerts(boundaryPolys);
 
+        heightsGravityPerPoint.SetNumberOfComponents(1);
         heightsGravity.SetNumberOfComponents(1);
         heightsPlane.SetNumberOfComponents(1);
         slopes.SetNumberOfComponents(1);
@@ -193,7 +198,44 @@ public class DEMModel extends SmallBodyModel
         vtkPolyData normalsFilterOutput = normalsFilter.GetOutput();
         dem.DeepCopy(normalsFilterOutput);
 
+        // Make a copy of heightsGravity per point since we need that later for
+        // drawing profile plots.
+        heightsGravityPerPoint.DeepCopy(heightsGravity);
+        convertPointDataToCellData();
+
         return dem;
+    }
+
+    /**
+     * Convert the point data (which is how they are stored in the Gaskell's cube file)
+     * to cell data.
+     */
+    private void convertPointDataToCellData()
+    {
+        vtkFloatArray[] dataArrays = {slopes, heightsGravity, heightsPlane};
+        vtkFloatArray[] cellDataArrays = {null, null, null};
+
+        vtkPointDataToCellData pointToCell = new vtkPointDataToCellData();
+        pointToCell.SetInput(dem);
+
+        for (int i=0; i<dataArrays.length; ++i)
+        {
+            vtkFloatArray array = dataArrays[i];
+            dem.GetPointData().SetScalars(array);
+            pointToCell.Update();
+            vtkFloatArray arrayCell = new vtkFloatArray();
+            vtkDataArray outputScalars = ((vtkPolyData)pointToCell.GetOutput()).GetCellData().GetScalars();
+            arrayCell.DeepCopy(outputScalars);
+            cellDataArrays[i] = arrayCell;
+        }
+
+        dem.GetPointData().SetScalars(null);
+
+        slopes = cellDataArrays[0];
+        heightsGravity = cellDataArrays[1];
+        heightsPlane = cellDataArrays[2];
+
+        pointToCell.Delete();
     }
 
     public vtkPolyData getBoundary()
@@ -239,7 +281,7 @@ public class DEMModel extends SmallBodyModel
         {
             int cellId = findClosestCell(p.xyz);
 
-            double val = PolyDataUtil.interpolateWithinCell(dem, heightsGravity, cellId, p.xyz, idList);
+            double val = PolyDataUtil.interpolateWithinCell(dem, heightsGravityPerPoint, cellId, p.xyz, idList);
 
             profileHeights.add(val);
 
@@ -292,6 +334,7 @@ public class DEMModel extends SmallBodyModel
         idList.Delete();
         dem.Delete();
         boundary.Delete();
+        heightsGravityPerPoint.Delete();
         heightsGravity.Delete();
         heightsPlane.Delete();
         slopes.Delete();
