@@ -418,6 +418,14 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
 
             if (index >= 0 && imageList.getCellBounds(index, index).contains(e.getPoint()))
             {
+                // If the item right-clicked on is not selected, then deselect all the
+                // other items and select the item right-clicked on.
+                if (!imageList.isSelectedIndex(index))
+                {
+                    imageList.clearSelection();
+                    imageList.setSelectedIndex(index);
+                }
+
                 int[] selectedIndices = imageList.getSelectedIndices();
                 ArrayList<ImageKey> imageKeys = new ArrayList<ImageKey>();
                 for (int selectedIndex : selectedIndices)

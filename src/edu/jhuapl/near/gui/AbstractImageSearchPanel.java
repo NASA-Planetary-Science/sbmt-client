@@ -189,6 +189,14 @@ abstract public class AbstractImageSearchPanel extends javax.swing.JPanel implem
 
             if (index >= 0 && resultList.getCellBounds(index, index).contains(e.getPoint()))
             {
+                // If the item right-clicked on is not selected, then deselect all the
+                // other items and select the item right-clicked on.
+                if (!resultList.isSelectedIndex(index))
+                {
+                    resultList.clearSelection();
+                    resultList.setSelectedIndex(index);
+                }
+
                 int[] selectedIndices = resultList.getSelectedIndices();
                 ArrayList<ImageKey> imageKeys = new ArrayList<ImageKey>();
                 for (int selectedIndex : selectedIndices)
