@@ -72,7 +72,7 @@ context menu is displayed with various options depending on the object.
 Control Panel
 -------------
 
-### Eros tab (or the Deimos, Itokawa, and Vesta tabs for those bodies)
+### Leftmost tab with same name as shape model (e.g. Eros, Itokawa)
 
 Each small body has a tab with the same name as the body for controlling
 general options related to that body, such as resolution, how the
@@ -81,22 +81,20 @@ to use (flat or smooth). Some of these options may be different for
 different small bodies. Note that the coordinate grid lines are
 separated by 10 degrees in latitude or longitude.
 
-### MSI tab (Eros only)
+### Imaging tab (e.g. MSI for Eros, AMICA for Itokawa, etc.)
 
-The MSI tab provides options for searching and displaying images
-acquired by the NEAR Multispectral Imager (MSI) which took over 100000
-images of Eros between between Jan 12, 2000 and Feb 12, 2001. One of two
-databases of MSI images can be searched, which can be specified in the
-"MSI Source" dropdown menu:
+The imaging tab (MSI, AMICA, etc.)  provides options for searching and
+displaying images acquired by cameras of several of the
+asteroids. Usually, one of two databases of images can be
+searched, which can be specified in the "Source" dropdown menu:
 
-1.  The original database, submitted to PDS, with over 100000 images.
-    These images may be slightly misaligned with the asteroid due to
-    imprecision in the SPICE kernels from which the pointing information
-    was derived.
-2.  Bob Gaskell's list with high quality pointing information. This list
-    is a subset of the first with about 20000 images which he used to
-    create the Eros shape models. These images are much better
-    registered with the asteroid.
+1.  The original database of images submitted to PDS which use the
+    SPICE kernel files for pointing information.  These images may be
+    slightly misaligned with the asteroid due to imprecision in the
+    SPICE kernels from which the pointing information was derived.
+2.  Bob Gaskell's list which he used to create the shape models. This
+    list is a subset of the first and are much better registered with
+    the asteroid.
 
 To do a search, choose the desired options and click the Search button.
 A list of the matching images will be returned below. When a search is
@@ -118,7 +116,7 @@ the entire asteroid.
 
 You might notice when you do searches that often images are returned
 that are outside of the circle drawn. This is due to the fact that as
-long as a part of the image is within about a kilometer of the circle,
+long as a part of the image is within a small distance of the circle,
 it will be returned in the search. This results from the approximations
 used in the search algorithm.
 
@@ -139,7 +137,7 @@ Image.
 This is the list, in order of the backplanes generated. All values are
 in float (4 bytes)
 
-1.  MSI image pixel value
+1.  image pixel value
 2.  x value of point in body centered coordinates (kilometers)
 3.  y value of point in body centered coordinates (kilometers)
 4.  z value of point in body centered coordinates (kilometers)
@@ -165,19 +163,17 @@ January and May 2000. Each spectrum consists of 64 separate channels
 between 812 nm and 2708 nm. The NIS tab is very similar to the MSI tab
 and much of the information described there applies here as well.
 
-### NLR tab (Eros only)
+### Lidar data tab (NLR for Eros, LIDAR for Itokawa)
 
-The NLR tab provides an interface for showing data from the NEAR Laser
-Rangefinder (NLR). This instrument contained a laser which was used to
-determine the shape of the asteroid. About 16 million data points were
-acquired during the mission. Currently there are 2 tabs within the NLR
-tab, the Browse tab and the Search tab.
+The NLR tab for Eros and the LIDAR tab for Itokawa provides an
+interface showing lidar data. Currently there are 2 subtabs within the
+lidar tab, the Browse tab and the Search tab.
 
 The Browse tab allows you to browse and show data from individual days.
 To show data from a specific data, select a day and click on the Show
 button beneath the list. The text of the button will then change to
 Remove and if you click it again the data will be removed from the
-renderer. Click the Remove All NLR Data to remove all the data being
+renderer. Click the Remove All Lidar Data to remove all the data being
 displayed. The Save button can be used to save the raw data file to
 disk. Since the data may not be well registered with the asteroid a
 slider is provided for changing the radial offset of the data. In
@@ -185,10 +181,10 @@ addition another slider for controlling how much data of a given day is
 shown. There are 2 knobs on the slider which control the start and end
 data points shown.
 
-The Search tab can be used search for NLR by specifying specific start
-and stop dates. In addition, a search region to restrict the search to
-can be specified as well exactly like the MSI and NIS tabs. A radial
-offset slider is provided as in the Browse tab.
+The Search tab can be used search for lidar data by specifying
+specific start and stop dates. In addition, a search region to
+restrict the search to can be specified as well exactly like the
+imaging tab. A radial offset slider is provided as in the Browse tab.
 
 ### Lineament tab (Eros only)
 
@@ -211,24 +207,29 @@ can only be drawing one type of structure at a time.
 
 To draw a circle, ellipse, or point click on the "Edit" button. That
 will activate a special editing mode where the asteroid will be frozen
-and navigation is disabled. For ellipses and points, click anywhere on
-the asteroid and the ellipse or point will appear centered at that
-point. For circles, click on any 3 points on the perimeter of the circle
-and when the 3rd point is clicked, a circle will appear whose perimeter
-passes through these 3 points. Once a circle, ellipse, or point has been
-created, you can drag it around with the left mouse button. To change
-the size of a circle or point, drag it while holding the Control or
-Shift button. For ellipses there are 3 ways to change its shape: To
-change the size of the ellipse while keeping the ratio of the semi-minor
-axis to semi-major axis constant, drag it while holding the Control or
+and navigation is disabled. For circles, click on any 3 points on the
+perimeter of the circle and when the 3rd point is clicked, a circle
+will appear whose perimeter passes through these 3 points. For
+ellipses, click 3 points on the asteroid in the following manner: The
+first 2 points should lie on the endpoints of the major axis of the
+desired ellipse. The third point should lie on one of the endpoints of
+the minor axis of the desired ellipse. After clicking the third point,
+an ellipse is drawn that passes through the points. For points, click
+anywhere on the asteroid and the point will appear centered where you
+clicked. Once a circle, ellipse, or point has been created, you can
+drag it around with the left mouse button. To change the size of a
+circle or point, drag it while holding the Control or Shift
+button. For ellipses there are 3 ways to change its shape: To change
+the size of the ellipse while keeping the ratio of the semi-minor axis
+to semi-major axis constant, drag it while holding the Control or
 Shift button, like for circles or points. To change the flattening of
 the ellipse, i.e. the ratio of the semi-minor axis to semi-major axis,
 drag it while holding the "z" or forward slash ("/") keys down. The
 flattening cannot be greater than 1.0 or less than 0.001. Finally to
-change the orientation of the ellipse, drag it while holding the "x" or
-period (".") keys down. When you're finished editing, press the Edit
-button again and the 3D view will return to the standard rotate/pan/zoom
-mode.
+change the orientation of the ellipse, drag it while holding the "x"
+or period (".") keys down. When you're finished editing, press the
+Edit button again and the 3D view will return to the standard
+rotate/pan/zoom mode.
 
 #### Drawing Paths
 
@@ -384,48 +385,55 @@ Note that you can the pan the profiles graph while holding the Control
 button (Alt on the Mac) and the mousewheel allows you to zoom in and
 out.
 
-In addition an outline of the maplet is shown on the Eros asteroid in
+In addition an outline of the maplet is shown on the asteroid in
 dark green. It disappears when you close the maplet window.
-
-Also note that the mapmaker tab does not work on Windows and currently
-only mac and linux are supported. Those interested in a Windows version
-should contact the development team.
 
 Menu Options
 ------------
 
-In this section we explain all the available menu options in the tool
+This section explains the available menu options in the tool.
 
 ### File Menu
 
-#### Export to Image...
+##### Export to Image...
 
-#### Export
+Use this option to save the current rendering view to an image
+file. You can save it using common image formats such as PNG, JPEG,
+and TIFF formats.
+
+##### Export Six Views along Axes to Images...
+
+##### Export Shape Model...
+
+##### Camera...
 
 ### View Menu
 
 The View menu is divided into 3 section. The top section contains all
 built-in shape models that the tool supports. When you click on a
-shape model from the view menu, that shape model will replace whatever
-is currently being displayed in the renderer and the tabs in the
-control panel on the left will change as well.
+shape model from the view menu, that shape model will be displayed in
+the renderer and the tabs in the control panel on the left will change
+depending on the shape model. Note that the shape model you were
+viewing before changing to a different shape model will still be
+maintained in memory and if you return to it later, it will be in
+exactly the same state you left it.
 
-The second section consists of a single item, "Import Shape Model". See
-below for more information regarding importing shape models.
+The second section consists of a single item, "Import Shape
+Models...".  This option is used to import custom shape models into
+the tool. Two types of shape models can be imported: Shape models from
+files in several supported formats as well as ellipsoids whose size
+you can specify. Upon clicking on the "Import Shape Model..." option,
+a dialog will appear allowing you to enter information about the
+shape model to import.
 
 The third section contains a list of the shape models you have
-important. New items will be added to the list when you import a new
-shape model as explained below
+imported. New items will be added to the list when you import a new
+shape model.
 
 ### Help Menu
 
+##### Help Contents
+Opens a web browser showing this page.
 
-
-Importing Custom Shape Models
------------------------------
-
-It is possible for users to import their own shape models that they have
-in a file. In addition it is also possible to create a custom shape
-model in the shape of an ellipsoid. To do this, click on the "Import
-Shape Model..." option in the View menu. A dialog will appear allowing
-the user to enter information about the shape model to import.
+##### Recent Changes
+Opens a web browser showing recent changes to the SBMT.
