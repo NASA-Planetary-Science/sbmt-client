@@ -9,7 +9,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.TreeSet;
 
 import vtk.vtkAbstractPointLocator;
@@ -87,40 +86,20 @@ public class SmallBodyModel extends Model
     static public final String HighResModelStr = "High (786432 plates)";
     static public final String VeryHighResModelStr = "Very High (3145728 plates)";
 
-    private String[] coloringNames;
-    private String[] coloringUnits;
-    // If true the coloring can contain a null value. Meaning the lowest value
-    // of the data is should be interperted as no data available at that location,
-    // not as a real value. This affects the color table.
-    private boolean[] coloringHasNulls;
-    private double[][] defaultColoringRanges;
-    private double[][] currentColoringRanges;
-    private vtkPolyData smallBodyPolyData;
-    private vtkPolyData lowResSmallBodyPolyData;
-    private vtkActor smallBodyActor;
-    private vtkPolyDataMapper smallBodyMapper;
-    private ArrayList<vtkProp> smallBodyActors = new ArrayList<vtkProp>();
-    private vtksbCellLocator cellLocator;
-    private vtkPointLocator pointLocator;
-    private vtkPointLocator lowResPointLocator;
-    private vtkFloatArray[] coloringValues;
+    // Class storing info related to plate data used to color shape model
+    private class ColoringInfo
+    {
+        private String coloringName = null;
+        private String coloringUnits = null;
+        private boolean coloringHasNulls = false;
+        private double[] defaultColoringRange = null;
+        private double[] currentColoringRange = null;
+        private vtkFloatArray coloringValues = null;
+        private String coloringFile = null;
+    }
+    ArrayList<ColoringInfo> coloringInfo = new ArrayList<ColoringInfo>();
     private ColoringValueType coloringValueType;
-    private vtkScalarBarActor scalarBarActor;
-    private SmallBodyCubes smallBodyCubes;
     private int coloringIndex = -1;
-    private File defaultModelFile;
-    private int resolutionLevel = 0;
-    private vtkGenericCell genericCell;
-    private String[] modelNames;
-    private String[] modelFiles;
-    private String[] coloringFiles;
-    private String[] imageMapNames = null;
-    private BoundingBox boundingBox = null;
-    private vtkIdList idList; // to avoid repeated allocations
-    private vtkUnsignedCharArray colorData;
-    private vtkFloatArray gravityVector;
-    private boolean useAPLServer;
-
     // Does this class support false coloring
     private boolean supportsFalseColoring = false;
     // If true, a false color will be used by using 3 of the existing
@@ -129,7 +108,30 @@ public class SmallBodyModel extends Model
     private int redFalseColor = -1; // red channel for false coloring
     private int greenFalseColor = -1; // green channel for false coloring
     private int blueFalseColor = -1; // blue channel for false coloring
+    private vtkUnsignedCharArray colorData;
     private vtkUnsignedCharArray falseColorArray;
+
+    private vtkPolyData smallBodyPolyData;
+    private vtkPolyData lowResSmallBodyPolyData;
+    private vtkActor smallBodyActor;
+    private vtkPolyDataMapper smallBodyMapper;
+    private ArrayList<vtkProp> smallBodyActors = new ArrayList<vtkProp>();
+    private vtksbCellLocator cellLocator;
+    private vtkPointLocator pointLocator;
+    private vtkPointLocator lowResPointLocator;
+    private vtkScalarBarActor scalarBarActor;
+    private SmallBodyCubes smallBodyCubes;
+    private File defaultModelFile;
+    private int resolutionLevel = 0;
+    private vtkGenericCell genericCell;
+    private String[] modelNames;
+    private String[] modelFiles;
+    private String[] imageMapNames = null;
+    private BoundingBox boundingBox = null;
+    private vtkIdList idList; // to avoid repeated allocations
+    private vtkFloatArray gravityVector;
+    private boolean useAPLServer;
+
     private vtkFloatArray cellNormals;
     private double surfaceArea = -1.0;
     private double volume = -1.0;
@@ -199,25 +201,22 @@ public class SmallBodyModel extends Model
 
         this.modelNames = modelNames;
         this.modelFiles = modelFiles;
-        this.coloringFiles = coloringFiles;
-        this.coloringNames = coloringNames;
-        this.coloringUnits = coloringUnits;
-        this.coloringHasNulls = coloringHasNulls;
         this.supportsFalseColoring = supportsFalseColoring;
         this.imageMapNames = imageMapNames;
         this.coloringValueType = coloringValueType;
         if (coloringNames != null)
         {
-            this.coloringValues = new vtkFloatArray[coloringNames.length];
-
             colorData = new vtkUnsignedCharArray();
 
-            // If coloringHasNulls is null, assume false for all coloring (i.e. all data
-            // is real data, with no missing data)
-            if (coloringHasNulls == null)
+            for (int i=0; i<coloringNames.length; ++i)
             {
-                coloringHasNulls = new boolean[coloringNames.length];
-                Arrays.fill(coloringHasNulls, false);
+                ColoringInfo info = new ColoringInfo();
+                info.coloringName = coloringNames[i];
+                info.coloringFile = coloringFiles[i];
+                info.coloringUnits = coloringUnits[i];
+                if (coloringHasNulls != null)
+                    info.coloringHasNulls = coloringHasNulls[i];
+                coloringInfo.add(info);
             }
         }
 
@@ -245,9 +244,15 @@ public class SmallBodyModel extends Model
             ColoringValueType coloringValueType)
     {
         smallBodyPolyData.DeepCopy(polydata);
-        this.coloringValues = coloringValues;
-        this.coloringNames = coloringNames;
-        this.coloringUnits = coloringUnits;
+        coloringInfo.clear();
+        for (int i=0; i<coloringNames.length; ++i)
+        {
+            ColoringInfo info = new ColoringInfo();
+            info.coloringName = coloringNames[i];
+            info.coloringUnits = coloringUnits[i];
+            info.coloringValues = coloringValues[i];
+            coloringInfo.add(info);
+        }
         this.coloringValueType = coloringValueType;
 
         initializeLocators();
@@ -805,16 +810,20 @@ public class SmallBodyModel extends Model
         if (coloringIndex >= 0)
         {
             float value = (float)getColoringValue(coloringIndex, pickPosition);
-            return coloringNames[coloringIndex] + ": " + value + " " + coloringUnits[coloringIndex];
+            ColoringInfo info = coloringInfo.get(coloringIndex);
+            return info.coloringName + ": " + value + " " + info.coloringUnits;
         }
         else if (useFalseColoring)
         {
             float red = (float)getColoringValue(redFalseColor, pickPosition);
             float green = (float)getColoringValue(greenFalseColor, pickPosition);
             float blue = (float)getColoringValue(blueFalseColor, pickPosition);
-            return coloringNames[redFalseColor] + ": " + red + " " + coloringUnits[redFalseColor] + ", " +
-                   coloringNames[greenFalseColor] + ": " + green + " " + coloringUnits[greenFalseColor] +  ", " +
-                   coloringNames[blueFalseColor] + ": " + blue + " " + coloringUnits[blueFalseColor];
+            ColoringInfo redInfo = coloringInfo.get(redFalseColor);
+            ColoringInfo greenInfo = coloringInfo.get(greenFalseColor);
+            ColoringInfo blueInfo = coloringInfo.get(blueFalseColor);
+            return redInfo.coloringName + ": " + red + " " + redInfo.coloringUnits + ", " +
+                   greenInfo.coloringName + ": " + green + " " + greenInfo.coloringUnits +  ", " +
+                   blueInfo.coloringName + ": " + blue + " " + blueInfo.coloringUnits;
         }
         return "";
     }
@@ -965,15 +974,14 @@ public class SmallBodyModel extends Model
     public void reloadShapeModel() throws IOException
     {
         smallBodyCubes = null;
-        if (coloringValues != null)
+        for (ColoringInfo info : coloringInfo)
         {
-            for (int i=0; i<coloringValues.length; ++i)
-                coloringValues[i] = null;
+            info.coloringValues = null;
+            info.defaultColoringRange = null;
         }
 
         cellNormals = null;
         gravityVector = null;
-        defaultColoringRanges = null;
         boundingBox = null;
 
         File smallBodyFile = defaultModelFile;
@@ -1024,48 +1032,45 @@ public class SmallBodyModel extends Model
      */
     private void loadColoringData() throws IOException
     {
-        if (coloringValues != null && coloringValues.length > 0)
+        for (ColoringInfo info : coloringInfo)
         {
-            for (int i=0; i<coloringValues.length; ++i)
+            // If not null, that means we've already loaded it.
+            if (info.coloringValues != null)
+                continue;
+
+            String filename = info.coloringFile;
+            if (!info.coloringFile.startsWith(FileCache.FILE_PREFIX))
+                filename += "_res" + resolutionLevel + ".txt.gz";
+            File file = FileCache.getFileFromServer(filename, useAPLServer);
+            if (file == null)
+                throw new IOException("Unable to download " + filename);
+
+            FileInputStream fs =  new FileInputStream(file);
+            InputStreamReader isr = new InputStreamReader(fs);
+            BufferedReader in = new BufferedReader(isr);
+
+            vtkFloatArray array = new vtkFloatArray();
+
+            array.SetNumberOfComponents(1);
+            if (coloringValueType == ColoringValueType.POINT_DATA)
+                array.SetNumberOfTuples(smallBodyPolyData.GetNumberOfPoints());
+            else
+                array.SetNumberOfTuples(smallBodyPolyData.GetNumberOfCells());
+
+            String line;
+            int j = 0;
+            while ((line = in.readLine()) != null)
             {
-                // If not null, that means we've already loaded it.
-                if (coloringValues[i] != null)
-                    continue;
-
-                String filename = coloringFiles[i];
-                if (!coloringFiles[i].startsWith(FileCache.FILE_PREFIX))
-                    filename += "_res" + resolutionLevel + ".txt.gz";
-                File file = FileCache.getFileFromServer(filename, useAPLServer);
-                if (file == null)
-                    throw new IOException("Unable to download " + filename);
-
-                FileInputStream fs =  new FileInputStream(file);
-                InputStreamReader isr = new InputStreamReader(fs);
-                BufferedReader in = new BufferedReader(isr);
-
-                vtkFloatArray array = new vtkFloatArray();
-
-                array.SetNumberOfComponents(1);
-                if (coloringValueType == ColoringValueType.POINT_DATA)
-                    array.SetNumberOfTuples(smallBodyPolyData.GetNumberOfPoints());
-                else
-                    array.SetNumberOfTuples(smallBodyPolyData.GetNumberOfCells());
-
-                String line;
-                int j = 0;
-                while ((line = in.readLine()) != null)
-                {
-                    array.SetTuple1(j, Float.parseFloat(line));
-                    ++j;
-                }
-
-                in.close();
-
-                coloringValues[i] = array;
+                array.SetTuple1(j, Float.parseFloat(line));
+                ++j;
             }
 
-            initializeColoringRanges();
+            in.close();
+
+            info.coloringValues = array;
         }
+
+        initializeColoringRanges();
     }
 
     private void invertLookupTableCharArray(vtkUnsignedCharArray table)
@@ -1132,7 +1137,7 @@ public class SmallBodyModel extends Model
 
     public boolean isColoringDataAvailable()
     {
-        return coloringFiles != null;
+        return coloringInfo.size() > 0;
     }
 
     public boolean isImageMapAvailable()
@@ -1147,16 +1152,13 @@ public class SmallBodyModel extends Model
 
     public int getNumberOfColors()
     {
-        if (coloringNames == null)
-            return 0;
-        else
-            return coloringNames.length;
+        return coloringInfo.size();
     }
 
     public String getColoringName(int i)
     {
-        if (coloringNames != null && i < coloringNames.length)
-            return coloringNames[i];
+        if (i < coloringInfo.size())
+            return coloringInfo.get(i).coloringName;
         else
             return null;
     }
@@ -1205,7 +1207,7 @@ public class SmallBodyModel extends Model
     {
         try
         {
-            if (coloringValues != null && index < coloringValues.length && coloringValues[index] == null)
+            if (index >= 0 && index < coloringInfo.size() && coloringInfo.get(index).coloringValues == null)
                 loadColoringData();
         }
         catch (Exception e)
@@ -1214,7 +1216,7 @@ public class SmallBodyModel extends Model
             return 0.0;
         }
 
-        return getColoringValue(pt, coloringValues[index]);
+        return getColoringValue(pt, coloringInfo.get(index).coloringValues);
     }
 
     public double[] getAllColoringValues(double[] pt)
@@ -1232,10 +1234,11 @@ public class SmallBodyModel extends Model
         double[] closestPoint = new double[3];
         int cellId = findClosestCell(pt, closestPoint);
 
-        double[] values = new double[coloringValues.length];
-        for (int i=0; i<coloringValues.length; ++i)
+        int numColors = coloringInfo.size();
+        double[] values = new double[numColors];
+        for (int i=0; i<numColors; ++i)
         {
-            values[i] = getColoringValue(closestPoint, coloringValues[i], cellId);
+            values[i] = getColoringValue(closestPoint, coloringInfo.get(i).coloringValues, cellId);
         }
 
         return values;
@@ -1332,16 +1335,18 @@ public class SmallBodyModel extends Model
     // just higher than the lowest value).
     private double[] computeDefaultColoringRange(int index)//, boolean adjustForColorTable)
     {
-        double[] range = new double[2];
-        coloringValues[index].GetRange(range);
+        ColoringInfo info = coloringInfo.get(index);
 
-        if (coloringHasNulls == null || !coloringHasNulls[index])
+        double[] range = new double[2];
+        info.coloringValues.GetRange(range);
+
+        if (!info.coloringHasNulls)
         {
             return range;
         }
         else
         {
-            vtkFloatArray array = coloringValues[index];
+            vtkFloatArray array = info.coloringValues;
             int numberValues = array.GetNumberOfTuples();
             double adjustedMin = range[1];
             for (int i=0; i<numberValues; ++i)
@@ -1359,40 +1364,43 @@ public class SmallBodyModel extends Model
 
     private void initializeColoringRanges()
     {
-        if (defaultColoringRanges == null)
-        {
-            int numberOfColors = getNumberOfColors();
-            defaultColoringRanges = new double[numberOfColors][2];
-            currentColoringRanges = new double[numberOfColors][2];
+        int numberOfColors = getNumberOfColors();
 
-            for (int i=0; i<numberOfColors; ++i)
+        for (int i=0; i<numberOfColors; ++i)
+        {
+            double[] range = computeDefaultColoringRange(i);
+            ColoringInfo info = coloringInfo.get(i);
+            if (info.defaultColoringRange == null)
             {
-                double[] range = computeDefaultColoringRange(i);
-                defaultColoringRanges[i][0] = range[0];
-                defaultColoringRanges[i][1] = range[1];
-                currentColoringRanges[i][0] = range[0];
-                currentColoringRanges[i][1] = range[1];
+                info.defaultColoringRange = new double[2];
+                info.defaultColoringRange[0] = range[0];
+                info.defaultColoringRange[1] = range[1];
+
+                info.currentColoringRange = new double[2];
+                info.currentColoringRange[0] = range[0];
+                info.currentColoringRange[1] = range[1];
             }
         }
     }
 
     public double[] getDefaultColoringRange(int coloringIndex)
     {
-        return defaultColoringRanges[coloringIndex];
+        return coloringInfo.get(coloringIndex).defaultColoringRange;
     }
 
     public double[] getCurrentColoringRange(int coloringIndex)
     {
-        return currentColoringRanges[coloringIndex];
+        return coloringInfo.get(coloringIndex).currentColoringRange;
     }
 
     public void setCurrentColoringRange(int coloringIndex, double[] range) throws IOException
     {
-        if (range[0] != currentColoringRanges[coloringIndex][0] ||
-            range[1] != currentColoringRanges[coloringIndex][1])
+        ColoringInfo info = coloringInfo.get(coloringIndex);
+        if (range[0] != info.currentColoringRange[0] ||
+            range[1] != info.currentColoringRange[1])
         {
-            currentColoringRanges[coloringIndex][0] = range[0];
-            currentColoringRanges[coloringIndex][1] = range[1];
+            info.currentColoringRange[0] = range[0];
+            info.currentColoringRange[1] = range[1];
 
             paintBody();
         }
@@ -1409,9 +1417,9 @@ public class SmallBodyModel extends Model
             falseColorArray.SetNumberOfComponents(3);
         }
 
-        vtkFloatArray red = coloringValues[redFalseColor];
-        vtkFloatArray green = coloringValues[greenFalseColor];
-        vtkFloatArray blue = coloringValues[blueFalseColor];
+        vtkFloatArray red = coloringInfo.get(redFalseColor).coloringValues;
+        vtkFloatArray green = coloringInfo.get(greenFalseColor).coloringValues;
+        vtkFloatArray blue = coloringInfo.get(blueFalseColor).coloringValues;
 
         double[] redRange = getCurrentColoringRange(redFalseColor);
         double[] greenRange = getCurrentColoringRange(greenFalseColor);
@@ -1448,10 +1456,11 @@ public class SmallBodyModel extends Model
 
         if (coloringIndex >= 0)
         {
-            array = coloringValues[coloringIndex];
-            String title = coloringNames[coloringIndex];
-            if (!coloringUnits[coloringIndex].isEmpty())
-                title += " (" + coloringUnits[coloringIndex] + ")";
+            ColoringInfo info = coloringInfo.get(coloringIndex);
+            array = info.coloringValues;
+            String title = info.coloringName;
+            if (!info.coloringUnits.isEmpty())
+                title += " (" + info.coloringUnits + ")";
             scalarBarActor.SetTitle(title);
         }
         else if (useFalseColoring)
@@ -1472,13 +1481,15 @@ public class SmallBodyModel extends Model
             ((vtkLookupTable)smallBodyMapper.GetLookupTable()).ForceBuild();
             this.invertLookupTable();
 
+            ColoringInfo info = coloringInfo.get(coloringIndex);
+
             // If there's missing data (invalid data), we need to set the
             // color data manually rather than using the lookup table of
             // the mapper
-            if (coloringHasNulls != null && coloringHasNulls[coloringIndex])
+            if (info.coloringHasNulls)
             {
                 vtkLookupTable lookupTable = (vtkLookupTable)smallBodyMapper.GetLookupTable();
-                mapScalarsThroughLookupTable(coloringValues[coloringIndex], lookupTable, colorData);
+                mapScalarsThroughLookupTable(info.coloringValues, lookupTable, colorData);
                 array = colorData;
             }
 
@@ -1841,7 +1852,7 @@ public class SmallBodyModel extends Model
         int index = getColoringIndex();
         if (index >= 0)
         {
-            FileUtil.saveVtkDataArray(coloringValues[index], file.getAbsolutePath());
+            FileUtil.saveVtkDataArray(coloringInfo.get(index).coloringValues, file.getAbsolutePath());
         }
     }
 
