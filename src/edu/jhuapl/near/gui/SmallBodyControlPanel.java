@@ -11,7 +11,6 @@ import java.awt.event.ItemListener;
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 
 import javax.swing.AbstractAction;
 import javax.swing.ButtonGroup;
@@ -53,8 +52,8 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
 {
     private JCheckBox modelCheckBox;
     private ModelManager modelManager;
-    private JCheckBox showColoringCheckBox;
-    private ArrayList<JRadioButton> coloringButtons = new ArrayList<JRadioButton>();
+    private JComboBox coloringComboBox;
+    private JCheckBox customColorCheckBox;
     private JComboBox customColorRedComboBox;
     private JComboBox customColorGreenComboBox;
     private JComboBox customColorBlueComboBox;
@@ -65,7 +64,6 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
     private JRadioButton medResModelButton;
     private JRadioButton highResModelButton;
     private JRadioButton veryHighResModelButton;
-    private ButtonGroup coloringButtonGroup;
     private ButtonGroup resolutionButtonGroup;
     private JCheckBox gridCheckBox;
     private JCheckBox axesCheckBox;
@@ -74,7 +72,6 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
     private JSpinner imageMapOpacitySpinner;
     private JButton scaleColoringButton;
     private JButton saveColoringButton;
-    private JRadioButton customColorButton;
     private JEditorPane statisticsLabel;
     private JScrollPane scrollPane;
 
@@ -150,61 +147,26 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
         resolutionButtonGroup.add(veryHighResModelButton);
         resolutionButtonGroup.setSelected(lowResModelButton.getModel(), true);
 
-        showColoringCheckBox = new JCheckBox();
-        showColoringCheckBox.setText("Color " + bodyName + " by");
-        showColoringCheckBox.setSelected(false);
-        showColoringCheckBox.addItemListener(this);
-
         final SmallBodyModel smallBodyModel = modelManager.getSmallBodyModel();
+
+        JLabel showColoringLabel = new JLabel();
+        showColoringLabel.setText("Color " + bodyName + " by ");
+
+        Object[] coloringOptionsWithNoColorOption = new Object[smallBodyModel.getNumberOfColors()+1];
+        coloringOptionsWithNoColorOption[0] = "No coloring";
+        for (int i=1; i<=smallBodyModel.getNumberOfColors(); ++i)
+            coloringOptionsWithNoColorOption[i] = smallBodyModel.getColoringName(i-1);
+
+        coloringComboBox = new JComboBox(coloringOptionsWithNoColorOption);
+        coloringComboBox.addItemListener(this);
+
         for (int i=0; i<smallBodyModel.getNumberOfColors(); ++i)
         {
             JRadioButton button = new JRadioButton(smallBodyModel.getColoringName(i));
             button.setActionCommand(smallBodyModel.getColoringName(i));
             button.addItemListener(this);
             button.setEnabled(false);
-            coloringButtons.add(button);
         }
-
-        if (smallBodyModel.isFalseColoringSupported())
-        {
-            final String customColor = "Custom";
-            customColorButton = new JRadioButton(customColor);
-            customColorButton.setActionCommand(customColor);
-            customColorButton.addItemListener(this);
-            customColorButton.setEnabled(false);
-            coloringButtons.add(customColorButton);
-
-            customColorRedLabel = new JLabel("Red: ");
-            customColorGreenLabel = new JLabel("Green: ");
-            customColorBlueLabel = new JLabel("Blue: ");
-
-            Object[] coloringOptions = new Object[smallBodyModel.getNumberOfColors()];
-            for (int i=0; i<smallBodyModel.getNumberOfColors(); ++i)
-                coloringOptions[i] = smallBodyModel.getColoringName(i);
-
-            customColorRedComboBox = new JComboBox(coloringOptions);
-            customColorRedComboBox.setMaximumSize(new Dimension(175, 23));
-            customColorRedComboBox.addItemListener(this);
-            customColorGreenComboBox = new JComboBox(coloringOptions);
-            customColorGreenComboBox.setMaximumSize(new Dimension(175, 23));
-            customColorGreenComboBox.addItemListener(this);
-            customColorBlueComboBox = new JComboBox(coloringOptions);
-            customColorBlueComboBox.setMaximumSize(new Dimension(175, 23));
-            customColorBlueComboBox.addItemListener(this);
-
-            customColorRedComboBox.setEnabled(false);
-            customColorGreenComboBox.setEnabled(false);
-            customColorBlueComboBox.setEnabled(false);
-            customColorRedLabel.setEnabled(false);
-            customColorGreenLabel.setEnabled(false);
-            customColorBlueLabel.setEnabled(false);
-        }
-
-        coloringButtonGroup = new ButtonGroup();
-        for (int i=0; i<coloringButtons.size(); ++i)
-            coloringButtonGroup.add(coloringButtons.get(i));
-        if (coloringButtons.size() > 0)
-            coloringButtonGroup.setSelected(coloringButtons.get(0).getModel(), true);
 
         scaleColoringButton = new JButton("Rescale Data Range");
         scaleColoringButton.setEnabled(false);
@@ -221,6 +183,36 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
         saveColoringButton = new JButton("Save Plate Data...");
         saveColoringButton.setEnabled(false);
         saveColoringButton.addActionListener(new SavePlateDataAction());
+
+        if (smallBodyModel.isFalseColoringSupported())
+        {
+            final String customColor = "RGB Coloring";
+            customColorCheckBox = new JCheckBox(customColor);
+            customColorCheckBox.setActionCommand(customColor);
+            customColorCheckBox.addItemListener(this);
+
+            customColorRedLabel = new JLabel("Red: ");
+            customColorGreenLabel = new JLabel("Green: ");
+            customColorBlueLabel = new JLabel("Blue: ");
+
+            Object[] coloringOptions = new Object[smallBodyModel.getNumberOfColors()];
+            for (int i=0; i<smallBodyModel.getNumberOfColors(); ++i)
+                coloringOptions[i] = smallBodyModel.getColoringName(i);
+
+            customColorRedComboBox = new JComboBox(coloringOptions);
+            customColorRedComboBox.addItemListener(this);
+            customColorGreenComboBox = new JComboBox(coloringOptions);
+            customColorGreenComboBox.addItemListener(this);
+            customColorBlueComboBox = new JComboBox(coloringOptions);
+            customColorBlueComboBox.addItemListener(this);
+
+            customColorRedComboBox.setEnabled(false);
+            customColorGreenComboBox.setEnabled(false);
+            customColorBlueComboBox.setEnabled(false);
+            customColorRedLabel.setEnabled(false);
+            customColorGreenLabel.setEnabled(false);
+            customColorBlueLabel.setEnabled(false);
+        }
 
         gridCheckBox = new JCheckBox();
         gridCheckBox.setText("Show Coordinate Grid");
@@ -260,12 +252,14 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
         }
         if (modelManager.getSmallBodyModel().isColoringDataAvailable())
         {
-            panel.add(showColoringCheckBox, "wrap");
-            for (int i=0; i<smallBodyModel.getNumberOfColors(); ++i)
-                panel.add(coloringButtons.get(i), "wrap, gapleft 25");
+            panel.add(showColoringLabel, "split 2");
+            panel.add(coloringComboBox, "wrap");
+            panel.add(scaleColoringButton, "wrap, gapleft 25");
+            panel.add(saveColoringButton, "wrap, gapleft 25");
+
             if (smallBodyModel.isFalseColoringSupported())
             {
-                panel.add(coloringButtons.get(coloringButtons.size()-1), "wrap, gapleft 25");
+                panel.add(customColorCheckBox, "wrap, gapleft 25");
 
                 panel.add(customColorRedLabel, "gapleft 50, split 2, align right");
                 panel.add(customColorRedComboBox, "wrap");
@@ -274,8 +268,6 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
                 panel.add(customColorBlueLabel, "gapleft 50, split 2, align right");
                 panel.add(customColorBlueComboBox, "wrap");
             }
-            panel.add(scaleColoringButton, "wrap, gapleft 25");
-            panel.add(saveColoringButton, "wrap, gapleft 25");
         }
         if (modelManager.getSmallBodyModel().isImageMapAvailable())
         {
@@ -386,21 +378,12 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
                     e1.printStackTrace();
                 }
         }
-        else if (e.getItemSelectable() == this.showColoringCheckBox)
+        else if (e.getItemSelectable() == this.coloringComboBox)
         {
-            if (e.getStateChange() == ItemEvent.DESELECTED)
+            if (coloringComboBox.getSelectedIndex() == 0)
             {
-                for (int i=0; i<coloringButtons.size(); ++i)
-                    coloringButtons.get(i).setEnabled(false);
-                if (smallBodyModel.isFalseColoringSupported())
-                {
-                    customColorRedComboBox.setEnabled(false);
-                    customColorGreenComboBox.setEnabled(false);
-                    customColorBlueComboBox.setEnabled(false);
-                    customColorRedLabel.setEnabled(false);
-                    customColorGreenLabel.setEnabled(false);
-                    customColorBlueLabel.setEnabled(false);
-                }
+                scaleColoringButton.setEnabled(false);
+                saveColoringButton.setEnabled(false);
 
                 try
                 {
@@ -409,56 +392,35 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
                 catch (IOException e1) {
                     e1.printStackTrace();
                 }
-
-                scaleColoringButton.setEnabled(false);
-                saveColoringButton.setEnabled(false);
             }
             else
             {
-                for (int i=0; i<coloringButtons.size(); ++i)
-                    coloringButtons.get(i).setEnabled(true);
-
                 scaleColoringButton.setEnabled(true);
                 saveColoringButton.setEnabled(true);
-
-                if (smallBodyModel.isFalseColoringSupported())
-                {
-                    customColorRedComboBox.setEnabled(true);
-                    customColorGreenComboBox.setEnabled(true);
-                    customColorBlueComboBox.setEnabled(true);
-                    customColorRedLabel.setEnabled(true);
-                    customColorGreenLabel.setEnabled(true);
-                    customColorBlueLabel.setEnabled(true);
-
-                    if (customColorButton.isSelected())
-                    {
-                        scaleColoringButton.setEnabled(false);
-                        saveColoringButton.setEnabled(false);
-                    }
-                }
 
                 setColoring();
             }
         }
-        else
+        else if (e.getItemSelectable() == customColorCheckBox)
         {
-            if (smallBodyModel.isFalseColoringSupported() &&
-                    this.showColoringCheckBox.isSelected())
-            {
-                if (customColorButton.isSelected())
-                {
-                    scaleColoringButton.setEnabled(false);
-                    saveColoringButton.setEnabled(false);
-                }
-                else
-                {
-                    scaleColoringButton.setEnabled(true);
-                    saveColoringButton.setEnabled(true);
-                }
-            }
+            boolean selected = customColorCheckBox.isSelected();
+            scaleColoringButton.setEnabled(!selected && coloringComboBox.getSelectedIndex() > 0);
+            saveColoringButton.setEnabled(!selected && coloringComboBox.getSelectedIndex() > 0);
+            coloringComboBox.setEnabled(!selected);
+            customColorRedComboBox.setEnabled(selected);
+            customColorGreenComboBox.setEnabled(selected);
+            customColorBlueComboBox.setEnabled(selected);
+            customColorRedLabel.setEnabled(selected);
+            customColorGreenLabel.setEnabled(selected);
+            customColorBlueLabel.setEnabled(selected);
 
-            if (this.showColoringCheckBox.isSelected())
-                setColoring();
+            setColoring();
+        }
+        else if (e.getItemSelectable() == customColorRedComboBox ||
+                e.getItemSelectable() == customColorGreenComboBox ||
+                e.getItemSelectable() == customColorBlueComboBox)
+        {
+            setColoring();
         }
 
         Picker.setPickingEnabled(true);
@@ -470,29 +432,19 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
 
         try
         {
-            if (this.showColoringCheckBox.isSelected())
+            // If the false coloring option is selected
+            if (smallBodyModel.isFalseColoringSupported() && customColorCheckBox.isSelected())
             {
-                for (int i=0; i<smallBodyModel.getNumberOfColors(); ++i)
-                {
-                    if (coloringButtonGroup.getSelection() == this.coloringButtons.get(i).getModel())
-                    {
-                        smallBodyModel.setColoringIndex(i);
-                        return;
-                    }
-                }
-
-                // If the false coloring option is selected (which is the last radio button
-                // and is not included in the previous for loop)
-                if (coloringButtonGroup.getSelection() ==
-                    this.coloringButtons.get(smallBodyModel.getNumberOfColors()).getModel())
-                {
-                    smallBodyModel.setFalseColoring(
-                            customColorRedComboBox.getSelectedIndex(),
-                            customColorGreenComboBox.getSelectedIndex(),
-                            customColorBlueComboBox.getSelectedIndex());
-                }
+                smallBodyModel.setFalseColoring(
+                        customColorRedComboBox.getSelectedIndex(),
+                        customColorGreenComboBox.getSelectedIndex(),
+                        customColorBlueComboBox.getSelectedIndex());
             }
-
+            else if (coloringComboBox.getSelectedIndex() > 0)
+            {
+                // Subtract 1 since first option in combo box is always None.
+                smallBodyModel.setColoringIndex(coloringComboBox.getSelectedIndex()-1);
+            }
         }
         catch (IOException e1)
         {
