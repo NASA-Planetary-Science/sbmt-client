@@ -141,6 +141,19 @@ public class MapUtil
         }
     }
 
+    public void remove(String key)
+    {
+        try
+        {
+            map.remove(key);
+            saveMap(map, filename);
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
     private static void saveMap(Map<String, String> map, String filename) throws IOException
     {
         FileWriter fstream = new FileWriter(filename);

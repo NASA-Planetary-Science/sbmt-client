@@ -4,6 +4,9 @@ import edu.jhuapl.near.model.SmallBodyModel;
 
 public class Itokawa extends SmallBodyModel
 {
+    public static final String NAME = "Itokawa";
+    public static final String CATEGORY = "Gaskell";
+
     static private final String[] modelNames = {
             "HAY_A_AMICA_5_ITOKAWASHAPE_V1_0 ver64q",
             "HAY_A_AMICA_5_ITOKAWASHAPE_V1_0 ver128q",
@@ -36,13 +39,14 @@ public class Itokawa extends SmallBodyModel
 
     public Itokawa()
     {
-        super(modelNames,
+        super(NAME,
+                CATEGORY,
+                modelNames,
                 modelFiles,
                 coloringFiles,
                 coloringNames,
                 coloringUnits,
                 null,
-                false,
                 null,
                 ColoringValueType.CELLDATA,
                 false);

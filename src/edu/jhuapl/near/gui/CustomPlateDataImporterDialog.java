@@ -11,49 +11,67 @@
 package edu.jhuapl.near.gui;
 
 import java.awt.Dialog;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 import javax.swing.JOptionPane;
 
-import edu.jhuapl.near.model.custom.CustomShapeModel.CellDataInfo;
+import edu.jhuapl.near.model.SmallBodyModel.ColoringInfo;
 
 
 /**
  *
  * @author eli
  */
-public class ShapeModelCellDataImporterDialog extends javax.swing.JDialog
+public class CustomPlateDataImporterDialog extends javax.swing.JDialog
 {
     private boolean okayPressed = false;
+    private int numCells = 0;
+    private boolean isEditMode;
+    private static final String LEAVE_UNMODIFIED = "<leave unmodified or empty to use existing plate data>";
 
     /** Creates new form ShapeModelImporterDialog */
-    public ShapeModelCellDataImporterDialog(java.awt.Window parent)
+    public CustomPlateDataImporterDialog(java.awt.Window parent, boolean isEditMode)
     {
         super(parent, "Import New Shape Model", Dialog.ModalityType.DOCUMENT_MODAL);
         initComponents();
+        this.isEditMode = isEditMode;
     }
 
     /**
      * Set the cell data info
      */
-    public void setCellDataInfo(CellDataInfo info)
+    public void setCellDataInfo(ColoringInfo info, int numCells)
     {
-        cellDataPathTextField.setText(info.path);
-        nameTextField.setText(info.name);
-        unitsTextField.setText(info.units);
-        hasNullsCheckBox.setSelected(info.hasNulls);
+        if (isEditMode)
+            cellDataPathTextField.setText(LEAVE_UNMODIFIED);
+
+        nameTextField.setText(info.coloringName);
+        unitsTextField.setText(info.coloringUnits);
+        hasNullsCheckBox.setSelected(info.coloringHasNulls);
+        this.numCells = numCells;
     }
 
     /**
      * @return
      */
-    public CellDataInfo getCellDataInfo()
+    public ColoringInfo getCellDataInfo()
     {
-        CellDataInfo info = new CellDataInfo();
-        info.path = cellDataPathTextField.getText();
-        info.name = nameTextField.getText();
-        info.units = unitsTextField.getText();
-        info.hasNulls = hasNullsCheckBox.isSelected();
+        ColoringInfo info = new ColoringInfo();
+        info.coloringFile = cellDataPathTextField.getText();
+
+        if (isEditMode &&
+                (LEAVE_UNMODIFIED.equals(info.coloringFile) || info.coloringFile == null || info.coloringFile.isEmpty()))
+            info.coloringFile = null;
+
+        info.coloringName = nameTextField.getText();
+        info.coloringUnits = unitsTextField.getText();
+        info.coloringHasNulls = hasNullsCheckBox.isSelected();
 
         return info;
     }
@@ -61,22 +79,75 @@ public class ShapeModelCellDataImporterDialog extends javax.swing.JDialog
     private String validateInput()
     {
         String cellDataPath = cellDataPathTextField.getText();
+        if (cellDataPath == null)
+            cellDataPath = "";
 
-        if (cellDataPath == null || cellDataPath.trim().isEmpty())
-            return "Please enter the path to the plate data file.";
+        if (!isEditMode || (!cellDataPath.isEmpty() && !cellDataPath.equals(LEAVE_UNMODIFIED)))
+        {
+            if (cellDataPath.isEmpty())
+                return "Please enter the path to the plate data file.";
 
-        File file = new File(cellDataPath);
-        if (!file.exists() || !file.canRead() || !file.isFile())
-            return cellDataPath + " does not exist or is not readable.";
+            File file = new File(cellDataPath);
+            if (!file.exists() || !file.canRead() || !file.isFile())
+                return cellDataPath + " does not exist or is not readable.";
+
+            if (cellDataPath.contains(","))
+                return "Plate data path may not contain commas.";
+
+            InputStream fs;
+            try
+            {
+                fs = new FileInputStream(cellDataPath);
+            }
+            catch (FileNotFoundException e)
+            {
+                return "The file '" + cellDataPath + "' does not exist or is not readable.";
+            }
+
+            InputStreamReader isr = new InputStreamReader(fs);
+            BufferedReader in = new BufferedReader(isr);
+
+            String line;
+            int lineCount = 0;
+            try
+            {
+                while ((line = in.readLine()) != null)
+                {
+                    Double.parseDouble(line);
+                    ++lineCount;
+                }
+
+                in.close();
+            }
+            catch (NumberFormatException e)
+            {
+                return "Numbers in file '" + cellDataPath + "' are malformatted.";
+            }
+            catch (IOException e)
+            {
+                return "An error occurred reading the file '" + cellDataPath + "'.";
+            }
+
+            if (lineCount != numCells)
+            {
+                return "Number of lines in file '" + cellDataPath + "' must equal number of plates in shape model.";
+            }
+        }
 
         String name = nameTextField.getText();
-        if (name == null || name.trim().isEmpty())
+        if (name == null)
+            name = "";
+        name = name.trim();
+        nameTextField.setText(name);
+        if (name.isEmpty())
             return "Please enter a name for the plate data.";
 
         String units = unitsTextField.getText();
-        if ( (cellDataPath != null && cellDataPath.contains(",")) ||
-             (name != null && name.contains(",")) ||
-             (units != null && units.contains(",")) )
+        if (units == null)
+            units = "";
+        units = units.trim();
+        unitsTextField.setText(units);
+        if ( name.contains(",") || units.contains(",") )
             return "Fields may not contain commas.";
 
         return null;
@@ -112,6 +183,7 @@ public class ShapeModelCellDataImporterDialog extends javax.swing.JDialog
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(600, 167));
+        setModalityType(java.awt.Dialog.ModalityType.APPLICATION_MODAL);
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
         pathLabel2.setText("Path");

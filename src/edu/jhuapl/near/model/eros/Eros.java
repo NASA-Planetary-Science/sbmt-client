@@ -4,6 +4,9 @@ import edu.jhuapl.near.model.SmallBodyModel;
 
 public class Eros extends SmallBodyModel
 {
+    public static final String NAME = "Eros";
+    public static final String CATEGORY = "Gaskell";
+
     static private final String[] modelNames = {
             "NEAR-A-MSI-5-EROSSHAPE-V1.0 ver64q",
             "NEAR-A-MSI-5-EROSSHAPE-V1.0 ver128q",
@@ -35,13 +38,14 @@ public class Eros extends SmallBodyModel
 
     public Eros()
     {
-        super(modelNames,
+        super(NAME,
+                CATEGORY,
+                modelNames,
                 modelFiles,
                 coloringFiles,
                 coloringNames,
                 coloringUnits,
                 null,
-                false,
                 null,
                 ColoringValueType.CELLDATA,
                 true);

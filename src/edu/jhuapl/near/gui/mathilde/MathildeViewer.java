@@ -86,7 +86,7 @@ public class MathildeViewer extends Viewer
         {
             controlPanel.addTab("MSI", new MSIMathildeSearchPanel(modelManager, infoPanelManager, pickManager, renderer));
             controlPanel.addTab("Structures", new StructuresControlPanel(modelManager, pickManager));
-            controlPanel.addTab("Images", new CustomImagesPanel(modelManager, infoPanelManager, pickManager, renderer, true, getUniqueName()));
+            controlPanel.addTab("Images", new CustomImagesPanel(modelManager, infoPanelManager, pickManager, renderer));
         }
 
         splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
@@ -109,6 +109,7 @@ public class MathildeViewer extends Viewer
 
         SmallBodyModel smallBodyModel = new SimpleSmallBody(
                 NAME,
+                getSubmenu(),
                 "/THOMAS/MATHILDE/253mathilde.llr.gz",
                 "/THOMAS/MATHILDE/mathilde_image_map.png");
         Graticule graticule = new Graticule(smallBodyModel);

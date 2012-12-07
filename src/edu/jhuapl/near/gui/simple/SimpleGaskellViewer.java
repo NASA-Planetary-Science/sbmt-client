@@ -78,7 +78,7 @@ public class SimpleGaskellViewer extends Viewer
         if (Configuration.isAPLVersion())
         {
             controlPanel.addTab("Structures", new StructuresControlPanel(modelManager, pickManager));
-            controlPanel.addTab("Images", new CustomImagesPanel(modelManager, null, pickManager, renderer, true, getUniqueName()));
+            controlPanel.addTab("Images", new CustomImagesPanel(modelManager, null, pickManager, renderer));
         }
 
         splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
@@ -118,7 +118,7 @@ public class SimpleGaskellViewer extends Viewer
                 pathToSmallBodyFileOnServer + "/coordinate_grid_res3.vtk.gz"
         };
 
-        SmallBodyModel smallBodyModel = new SimpleSmallBody(names, smallBodyModelPaths);
+        SmallBodyModel smallBodyModel = new SimpleSmallBody(name, "Gaskell", names, smallBodyModelPaths);
         Graticule graticule = new Graticule(smallBodyModel, graticulePaths);
 
         HashMap<String, Model> allModels = new HashMap<String, Model>();

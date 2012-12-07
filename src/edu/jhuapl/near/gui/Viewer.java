@@ -5,6 +5,7 @@ import java.awt.LayoutManager;
 import javax.swing.JPanel;
 
 import edu.jhuapl.near.model.ModelManager;
+import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.pick.PickManager;
 
 
@@ -49,11 +50,7 @@ public abstract class Viewer extends JPanel
      */
     public String getUniqueName()
     {
-        String submenu = getSubmenu();
-        if (submenu != null)
-            return submenu + "/" + getDisplayName();
-        else
-            return getDisplayName();
+        return SmallBodyModel.getUniqueName(getDisplayName(), getSubmenu());
     }
 
     /**

@@ -5,6 +5,9 @@ import edu.jhuapl.near.util.Configuration;
 
 public class Vesta extends SmallBodyModel
 {
+    public static final String NAME = "Vesta";
+    public static final String CATEGORY = "Gaskell";
+
     static private final String[] modelNames = {
         "VESTA low",
         "VESTA med",
@@ -43,13 +46,14 @@ public class Vesta extends SmallBodyModel
 
     public Vesta()
     {
-        super(modelNames,
+        super(NAME,
+                CATEGORY,
+                modelNames,
                 Configuration.isAPLVersion() ? modelFilesAplOnly : modelFilesPublic,
                 Configuration.isAPLVersion() ? coloringFiles : null,
                 Configuration.isAPLVersion() ? coloringNames : null,
                 Configuration.isAPLVersion() ? coloringUnits : null,
                 null,
-                false,
                 null,
                 ColoringValueType.CELLDATA,
                 false,

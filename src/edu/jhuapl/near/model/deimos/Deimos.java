@@ -4,9 +4,8 @@ import edu.jhuapl.near.model.SmallBodyModel;
 
 public class Deimos extends SmallBodyModel
 {
-    static private final String[] modelNames = {
-            "DEIMOS"
-    };
+    public static final String NAME = "Deimos";
+    public static final String CATEGORY = "Thomas";
 
     static private final String[] modelFiles = {
             "/DEIMOS/DEIMOS.vtk.gz"
@@ -33,14 +32,14 @@ public class Deimos extends SmallBodyModel
 
     public Deimos()
     {
-        super(
-                modelNames,
+        super(NAME,
+                CATEGORY,
+                new String[]{NAME.toUpperCase()},
                 modelFiles,
                 coloringFiles,
                 coloringNames,
                 coloringUnits,
                 null,
-                false,
                 imageMap,
                 ColoringValueType.CELLDATA,
                 false);

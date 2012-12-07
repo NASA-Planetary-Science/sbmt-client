@@ -152,7 +152,6 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         String imagePath = imagePathTextField.getText();
         if (imagePath == null)
             imagePath = "";
-        imagePath = imagePath.trim();
 
         if (!isEditMode || (!imagePath.isEmpty() && !imagePath.equals(LEAVE_UNMODIFIED)))
         {
@@ -206,7 +205,6 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
             String sumfilePath = sumfilePathTextField.getText();
             if (sumfilePath == null)
                 sumfilePath = "";
-            sumfilePath = sumfilePath.trim();
 
             if (!isEditMode || (!sumfilePath.isEmpty() && !sumfilePath.equals(LEAVE_UNMODIFIED)))
             {

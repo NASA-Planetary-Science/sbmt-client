@@ -42,8 +42,6 @@ import edu.jhuapl.near.util.Configuration;
  */
 public class DeimosViewer extends Viewer
 {
-    public static final String NAME = "Deimos";
-
     private JSplitPane splitPane;
     private Renderer renderer;
     private JTabbedPane controlPanel;
@@ -78,11 +76,11 @@ public class DeimosViewer extends Viewer
 
         controlPanel = new JTabbedPane();
         controlPanel.setBorder(BorderFactory.createEmptyBorder());
-        controlPanel.addTab("Deimos", new SmallBodyControlPanel(modelManager, "Deimos"));
+        controlPanel.addTab(Deimos.NAME, new SmallBodyControlPanel(modelManager, Deimos.NAME));
         if (Configuration.isAPLVersion())
         {
             controlPanel.addTab("Structures", new StructuresControlPanel(modelManager, pickManager));
-            controlPanel.addTab("Images", new CustomImagesPanel(modelManager, null, pickManager, renderer, true, getUniqueName()));
+            controlPanel.addTab("Images", new CustomImagesPanel(modelManager, null, pickManager, renderer));
         }
 
         splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
@@ -128,12 +126,12 @@ public class DeimosViewer extends Viewer
 
     public String getDisplayName()
     {
-        return NAME;
+        return Deimos.NAME;
     }
 
     public String getSubmenu()
     {
-        return "Thomas";
+        return Deimos.CATEGORY;
     }
 
     public ModelManager getModelManager()

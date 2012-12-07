@@ -5,7 +5,6 @@ import java.io.File;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.util.Configuration;
 import edu.jhuapl.near.util.FileCache;
-import edu.jhuapl.near.util.MapUtil;
 
 public class CustomShapeModel extends SmallBodyModel
 {
@@ -21,39 +20,27 @@ public class CustomShapeModel extends SmallBodyModel
     public static final String PDS_FORMAT = "PDS";
     public static final String OBJ_FORMAT = "OBJ";
     public static final String VTK_FORMAT = "VTK";
-    public static final String CELL_DATA_PATHS = "CellDataPaths";
-    public static final String CELL_DATA_NAMES = "CellDataNames";
-    public static final String CELL_DATA_UNITS = "CellDataUnits";
-    public static final String CELL_DATA_HAS_NULLS = "CellDataHasNulls";
     public static final String LIST_SEPARATOR = ",";
-
-    public static class CellDataInfo
-    {
-        public String path;
-        public String name;
-        public String units;
-        public boolean hasNulls;
-
-        @Override
-        public String toString()
-        {
-            return path + ", " + name + ", " + units;
-        }
-    }
 
     public CustomShapeModel(String name)
     {
         super(
+                name,
+                null,
                 new String[] { name },
                 new String[] { getModelFilename(name) },
-                getPlateDataPaths(name),
-                getPlateDataInfo(name, CELL_DATA_NAMES),
-                getPlateDataInfo(name, CELL_DATA_UNITS),
-                stringArrayToBooleanArray(getPlateDataInfo(name, CELL_DATA_HAS_NULLS)),
-                false,
+                null,
+                null,
+                null,
+                null,
                 null,
                 ColoringValueType.CELLDATA,
                 false);
+    }
+
+    public boolean isBuiltIn()
+    {
+        return false;
     }
 
     private static String getModelFilename(String name)
@@ -64,58 +51,5 @@ public class CustomShapeModel extends SmallBodyModel
                 name +
                 File.separator +
                 "model.vtk";
-    }
-
-    private static String[] getPlateDataPaths(String name)
-    {
-
-        String shapeModelDir = Configuration.getImportedShapeModelsDir() +
-                File.separator + name;
-        String configfile = shapeModelDir + File.separator + "config.txt";
-
-        MapUtil map = new MapUtil(configfile);
-        if (map.containsKey(CELL_DATA_PATHS))
-        {
-            String pathsUnsplit = map.get(CELL_DATA_PATHS).trim();
-            if(pathsUnsplit.isEmpty())
-                return null;
-            String[] paths = pathsUnsplit.split(",", -1);
-            for (int i=0; i<paths.length; ++i)
-            {
-                paths[i] = FileCache.FILE_PREFIX + shapeModelDir + File.separator + "platedata" + i + ".txt";
-            }
-            return paths;
-        }
-
-        return null;
-    }
-
-    private static String[] getPlateDataInfo(String name, String key)
-    {
-        if (getPlateDataPaths(name) == null)
-            return null;
-
-        String configfile = Configuration.getImportedShapeModelsDir() +
-        File.separator +
-        name +
-        File.separator + "config.txt";
-
-        MapUtil map = new MapUtil(configfile);
-        if (map.containsKey(key))
-            return map.get(key).split(",", -1);
-
-        return null;
-    }
-
-    private static boolean[] stringArrayToBooleanArray(String[] strArray)
-    {
-        if (strArray == null)
-            return null;
-
-        boolean[] booleanArray = new boolean[strArray.length];
-        for (int i=0; i<strArray.length; ++i)
-            booleanArray[i] = Boolean.parseBoolean(strArray[i]);
-
-        return booleanArray;
     }
 }

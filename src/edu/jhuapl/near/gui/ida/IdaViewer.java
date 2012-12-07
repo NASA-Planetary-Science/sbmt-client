@@ -86,7 +86,7 @@ public class IdaViewer extends Viewer
         {
             controlPanel.addTab("SSI", new SSIIdaSearchPanel(modelManager, infoPanelManager, pickManager, renderer));
             controlPanel.addTab("Structures", new StructuresControlPanel(modelManager, pickManager));
-            controlPanel.addTab("Images", new CustomImagesPanel(modelManager, infoPanelManager, pickManager, renderer, true, getUniqueName()));
+            controlPanel.addTab("Images", new CustomImagesPanel(modelManager, infoPanelManager, pickManager, renderer));
         }
 
         splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
@@ -109,6 +109,7 @@ public class IdaViewer extends Viewer
 
         SmallBodyModel smallBodyModel = new SimpleSmallBody(
                 NAME,
+                getSubmenu(),
                 "/THOMAS/IDA/243ida.llr.gz",
                 "/THOMAS/IDA/ida_image_map.png");
         Graticule graticule = new Graticule(smallBodyModel);

@@ -89,7 +89,7 @@ public class SimpleViewer extends Viewer
         if (Configuration.isAPLVersion())
         {
             controlPanel.addTab("Structures", new StructuresControlPanel(modelManager, pickManager));
-            controlPanel.addTab("Images", new CustomImagesPanel(modelManager, null, pickManager, renderer, true, getUniqueName()));
+            controlPanel.addTab("Images", new CustomImagesPanel(modelManager, null, pickManager, renderer));
         }
 
         splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
@@ -111,7 +111,7 @@ public class SimpleViewer extends Viewer
         modelManager = new ModelManager();
 
         SmallBodyModel smallBodyModel = new SimpleSmallBody(
-                name, pathToSmallBodyFileOnServer, imageMap);
+                name, getSubmenu(), pathToSmallBodyFileOnServer, imageMap);
         Graticule graticule = new Graticule(smallBodyModel);
 
         HashMap<String, Model> allModels = new HashMap<String, Model>();

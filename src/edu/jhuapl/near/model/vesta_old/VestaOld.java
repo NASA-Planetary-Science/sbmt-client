@@ -4,6 +4,9 @@ import edu.jhuapl.near.model.SmallBodyModel;
 
 public class VestaOld extends SmallBodyModel
 {
+    public static final String NAME = "Vesta";
+    public static final String CATEGORY = "Thomas";
+
     static private final String[] modelNames = {
         "VESTA-old"
     };
@@ -37,13 +40,14 @@ public class VestaOld extends SmallBodyModel
 
     public VestaOld()
     {
-        super(modelNames,
+        super(NAME,
+                CATEGORY,
+                modelNames,
                 modelFiles,
                 coloringFiles,
                 coloringNames,
                 coloringUnits,
                 coloringHasNulls,
-                true,
                 null,
                 ColoringValueType.CELLDATA,
                 false);

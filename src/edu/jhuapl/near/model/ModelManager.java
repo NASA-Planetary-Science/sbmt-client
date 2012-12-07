@@ -17,6 +17,21 @@ public class ModelManager extends Model implements PropertyChangeListener
     private HashMap<String, Model> allModels = new HashMap<String, Model>();
     private boolean mode2D = false;
 
+    public String getUniqueName()
+    {
+        return getSmallBodyModel().getUniqueName();
+    }
+
+    public String getCategory()
+    {
+        return getSmallBodyModel().getCategory();
+    }
+
+    public boolean isBuiltIn()
+    {
+        return getSmallBodyModel().isBuiltIn();
+    }
+
     public void setModels(HashMap<String, Model> models)
     {
         allModels.clear();

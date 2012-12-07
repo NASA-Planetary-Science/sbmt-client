@@ -59,8 +59,6 @@ import edu.jhuapl.near.util.Preferences;
  */
 public class ErosViewer extends Viewer
 {
-    public static final String NAME = "Eros";
-
     private JSplitPane splitPane;
     private Renderer renderer;
     private JTabbedPane controlPanel;
@@ -85,7 +83,7 @@ public class ErosViewer extends Viewer
 
         controlPanel = new JTabbedPane();
         controlPanel.setBorder(BorderFactory.createEmptyBorder());
-        controlPanel.addTab("Eros", new SmallBodyControlPanel(modelManager, "Eros"));
+        controlPanel.addTab(Eros.NAME, new SmallBodyControlPanel(modelManager, Eros.NAME));
         controlPanel.addTab("MSI", new MSISearchPanel(modelManager, infoPanelManager, pickManager, renderer));
         controlPanel.addTab("NIS", new NISSearchPanel(modelManager, infoPanelManager, pickManager));
         controlPanel.addTab("NLR", new NLRPanel(modelManager, pickManager, renderer));
@@ -93,7 +91,7 @@ public class ErosViewer extends Viewer
         {
             controlPanel.addTab("Lineament", new LineamentControlPanel(modelManager));
             controlPanel.addTab("Structures", new StructuresControlPanel(modelManager, pickManager));
-            controlPanel.addTab("Images", new CustomImagesPanel(modelManager, infoPanelManager, pickManager, renderer, true, getUniqueName()));
+            controlPanel.addTab("Images", new CustomImagesPanel(modelManager, infoPanelManager, pickManager, renderer));
             controlPanel.addTab("Mapmaker", new TopoPanel(modelManager, pickManager, "/MSI/mapmaker.zip"));
         }
 
@@ -195,12 +193,12 @@ public class ErosViewer extends Viewer
 
     public String getDisplayName()
     {
-        return NAME;
+        return Eros.NAME;
     }
 
     public String getSubmenu()
     {
-        return "Gaskell";
+        return Eros.CATEGORY;
     }
 
     public ModelManager getModelManager()

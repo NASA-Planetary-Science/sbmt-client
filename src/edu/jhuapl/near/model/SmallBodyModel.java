@@ -39,6 +39,7 @@ import vtk.vtkTriangle;
 import vtk.vtkUnsignedCharArray;
 import vtk.vtksbCellLocator;
 
+import edu.jhuapl.near.model.custom.CustomShapeModel;
 import edu.jhuapl.near.util.BoundingBox;
 import edu.jhuapl.near.util.Configuration;
 import edu.jhuapl.near.util.ConvertResourceToFile;
@@ -46,6 +47,7 @@ import edu.jhuapl.near.util.FileCache;
 import edu.jhuapl.near.util.FileUtil;
 import edu.jhuapl.near.util.Frustum;
 import edu.jhuapl.near.util.LatLon;
+import edu.jhuapl.near.util.MapUtil;
 import edu.jhuapl.near.util.MathUtil;
 import edu.jhuapl.near.util.PolyDataUtil;
 import edu.jhuapl.near.util.Preferences;
@@ -54,6 +56,12 @@ import edu.jhuapl.near.util.SmallBodyCubes;
 
 public class SmallBodyModel extends Model
 {
+    public static final String CELL_DATA_PATHS = "CellDataPaths"; // for backwards compatibility
+    public static final String CELL_DATA_FILENAMES = "CellDataFilenames";
+    public static final String CELL_DATA_NAMES = "CellDataNames";
+    public static final String CELL_DATA_UNITS = "CellDataUnits";
+    public static final String CELL_DATA_HAS_NULLS = "CellDataHasNulls";
+    public static final String CELL_DATA_RESOLUTION_LEVEL = "CellDataResolutionLevel";
 
     public enum ColoringValueType {
         POINT_DATA,
@@ -63,11 +71,6 @@ public class SmallBodyModel extends Model
     public enum ShadingType {
         FLAT,
         SMOOTH,
-    }
-
-    public enum ColoringSource {
-        BUILT_IN,
-        CUSTOM
     }
 
     static public final String SlopeStr = "Slope";
@@ -87,21 +90,34 @@ public class SmallBodyModel extends Model
     static public final String VeryHighResModelStr = "Very High (3145728 plates)";
 
     // Class storing info related to plate data used to color shape model
-    private class ColoringInfo
+    public static class ColoringInfo
     {
-        private String coloringName = null;
-        private String coloringUnits = null;
-        private boolean coloringHasNulls = false;
-        private double[] defaultColoringRange = null;
-        private double[] currentColoringRange = null;
-        private vtkFloatArray coloringValues = null;
-        private String coloringFile = null;
+        public String coloringName = null;
+        public String coloringUnits = null;
+        public boolean coloringHasNulls = false;
+        public int resolutionLevel = 0;
+        public double[] defaultColoringRange = null;
+        public double[] currentColoringRange = null;
+        public vtkFloatArray coloringValues = null;
+        public String coloringFile = null;
+        public boolean builtIn = true;
+
+        @Override
+        public String toString()
+        {
+            String str = coloringName;
+            if (coloringUnits != null && !coloringUnits.isEmpty())
+                str += ", " + coloringUnits;
+            if (coloringHasNulls)
+                str += ", contains invalid data";
+            if (builtIn)
+                str += ", (built-in and cannot be modified)";
+            return str;
+        }
     }
     ArrayList<ColoringInfo> coloringInfo = new ArrayList<ColoringInfo>();
     private ColoringValueType coloringValueType;
     private int coloringIndex = -1;
-    // Does this class support false coloring
-    private boolean supportsFalseColoring = false;
     // If true, a false color will be used by using 3 of the existing
     // colors for the red, green, and blue channels
     private boolean useFalseColoring = false;
@@ -149,6 +165,8 @@ public class SmallBodyModel extends Model
     private double scaleBarWidthInKm = -1.0;
     private boolean showScaleBar = true;
 
+    private String category;
+
     /**
      * Default constructor. Must be followed by a call to setSmallBodyPolyData.
      */
@@ -159,25 +177,32 @@ public class SmallBodyModel extends Model
         idList = new vtkIdList();
     }
 
+    /**
+     * Note that name is used to name this small body model as a whole including all
+     * resolution levels whereas modelNames is an array of names that is specific
+     * for each resolution level.
+     */
     public SmallBodyModel(
+            String name,
+            String category,
             String[] modelNames,
             String[] modelFiles,
             String[] coloringFiles,
             String[] coloringNames,
             String[] coloringUnits,
             boolean[] coloringHasNulls,
-            boolean supportsFalseColoring,
             String[] imageMapNames,
             ColoringValueType coloringValueType,
             boolean lowestResolutionModelStoredInResource)
     {
-        this(modelNames,
+        this(name,
+                category,
+                modelNames,
                 modelFiles,
                 coloringFiles,
                 coloringNames,
                 coloringUnits,
                 coloringHasNulls,
-                supportsFalseColoring,
                 imageMapNames,
                 coloringValueType,
                 lowestResolutionModelStoredInResource,
@@ -185,23 +210,24 @@ public class SmallBodyModel extends Model
     }
 
     public SmallBodyModel(
+            String name,
+            String category,
             String[] modelNames,
             String[] modelFiles,
             String[] coloringFiles,
             String[] coloringNames,
             String[] coloringUnits,
             boolean[] coloringHasNulls,
-            boolean supportsFalseColoring,
             String[] imageMapNames,
             ColoringValueType coloringValueType,
             boolean lowestResolutionModelStoredInResource,
             boolean useAPLServer)
     {
-        super(ModelNames.SMALL_BODY);
+        super(name);
 
+        this.category = category;
         this.modelNames = modelNames;
         this.modelFiles = modelFiles;
-        this.supportsFalseColoring = supportsFalseColoring;
         this.imageMapNames = imageMapNames;
         this.coloringValueType = coloringValueType;
         if (coloringNames != null)
@@ -259,10 +285,167 @@ public class SmallBodyModel extends Model
         initializeColoringRanges();
     }
 
+    public static String getUniqueName(String name, String category)
+    {
+        if (category != null && !category.isEmpty())
+            return category + "/" + name;
+        else
+            return name;
+    }
+
+    public String getUniqueName()
+    {
+        return getUniqueName(getName(), getCategory());
+    }
+
+    public String getCategory()
+    {
+        return category;
+    }
+
+    public boolean isBuiltIn()
+    {
+        return true;
+    }
+
+    private void convertOldConfigFormatToNewVersion(MapUtil configMap)
+    {
+        // In the old format of the config file, the platefiles were assumed
+        // to be named platedata0.txt, platedata1.txt, etc. The CELL_DATA_PATHS key
+        // only stored the original path to the file which the user specified. Now
+        // in the new way, we no longer record in the config file the original path
+        // but instead store the actual filename (not fullpath) of the plate data as
+        // copied over to the custom_data subfolder (within the .neartool folder).
+        // These filenames are now stored in the CELL_DATA_FILENAMES key. Therefore,
+        // in this function we delete the CELL_DATA_PATHS key and create a new
+        // CELL_DATA_FILENAMES key.
+        if (configMap.containsKey(SmallBodyModel.CELL_DATA_PATHS))
+        {
+            String[] cellDataPaths = configMap.get(SmallBodyModel.CELL_DATA_PATHS).split(",", -1);
+            String cellDataFilenames = "";
+
+            for (int i=0; i<cellDataPaths.length; ++i)
+            {
+                cellDataFilenames += "platedata" + i + ".txt";
+                if (i < cellDataPaths.length-1)
+                    cellDataFilenames += CustomShapeModel.LIST_SEPARATOR;
+            }
+
+            configMap.put(SmallBodyModel.CELL_DATA_FILENAMES, cellDataFilenames);
+            configMap.remove(SmallBodyModel.CELL_DATA_PATHS);
+        }
+    }
+
+    public String getCustomDataFolder()
+    {
+        String imagesDir = null;
+        if (isBuiltIn())
+        {
+            imagesDir = Configuration.getCustomDataFolderForBuiltInViewers() + File.separator + getUniqueName();
+        }
+        else
+        {
+            imagesDir = Configuration.getImportedShapeModelsDir() + File.separator + getModelName();
+        }
+
+        // if the directory does not exist, create it
+        File dir = new File(imagesDir);
+        if (!dir.exists())
+        {
+            dir.mkdirs();
+        }
+
+        return imagesDir;
+    }
+
+    public String getConfigFilename()
+    {
+        return getCustomDataFolder() + File.separator + "config.txt";
+    }
+
+    private void clearCustomColoringInfo()
+    {
+        for (int i=coloringInfo.size()-1; i>=0; --i)
+        {
+            if (!coloringInfo.get(i).builtIn)
+                coloringInfo.remove(i);
+        }
+    }
+
+    public void loadCustomColoringInfo() throws IOException
+    {
+        String prevColoringName = null;
+        if (coloringIndex >= 0)
+            prevColoringName = coloringInfo.get(coloringIndex).coloringName;
+
+        clearCustomColoringInfo();
+
+        String configFilename = getConfigFilename();
+
+        if (!(new File(configFilename).exists()))
+            return;
+
+        MapUtil configMap = new MapUtil(configFilename);
+
+        convertOldConfigFormatToNewVersion(configMap);
+
+        if (configMap.containsKey(SmallBodyModel.CELL_DATA_FILENAMES) &&
+                configMap.containsKey(SmallBodyModel.CELL_DATA_NAMES) &&
+                configMap.containsKey(SmallBodyModel.CELL_DATA_UNITS) &&
+                configMap.containsKey(SmallBodyModel.CELL_DATA_HAS_NULLS))
+        {
+            String[] cellDataFilenames = configMap.get(SmallBodyModel.CELL_DATA_FILENAMES).split(",", -1);
+            String[] cellDataNames = configMap.get(SmallBodyModel.CELL_DATA_NAMES).split(",", -1);
+            String[] cellDataUnits = configMap.get(SmallBodyModel.CELL_DATA_UNITS).split(",", -1);
+            String[] cellDataHasNulls = configMap.get(SmallBodyModel.CELL_DATA_HAS_NULLS).split(",", -1);
+            String[] cellDataResolutionLevels = null;
+            if (configMap.containsKey(SmallBodyModel.CELL_DATA_RESOLUTION_LEVEL))
+                cellDataResolutionLevels = configMap.get(SmallBodyModel.CELL_DATA_RESOLUTION_LEVEL).split(",", -1);
+
+            for (int i=0; i<cellDataFilenames.length; ++i)
+            {
+                ColoringInfo info = new ColoringInfo();
+                info.coloringFile = cellDataFilenames[i];
+                if (!info.coloringFile.trim().isEmpty())
+                {
+                    info.coloringName = cellDataNames[i];
+                    info.coloringUnits = cellDataUnits[i];
+                    info.coloringHasNulls = Boolean.parseBoolean(cellDataHasNulls[i]);
+                    info.builtIn = false;
+                    if (cellDataResolutionLevels != null)
+                    {
+                        info.resolutionLevel = Integer.parseInt(cellDataResolutionLevels[i]);
+                        if (info.resolutionLevel == getModelResolution())
+                            coloringInfo.add(info);
+                    }
+                    else
+                    {
+                        info.resolutionLevel = 0;
+                        coloringInfo.add(info);
+                    }
+                }
+            }
+        }
+
+        // See if there's color of the same name as previously shown and set it to that.
+        coloringIndex = -1;
+        for (int i=0; i<coloringInfo.size(); ++i)
+        {
+            if (prevColoringName != null && prevColoringName.equals(coloringInfo.get(i).coloringName))
+            {
+                coloringIndex = i;
+                break;
+            }
+        }
+    }
+
     private void initialize(File modelFile)
     {
+        // Load in custom plate data
         try
         {
+            loadCustomColoringInfo();
+
             smallBodyPolyData.ShallowCopy(
                     PolyDataUtil.loadShapeModel(modelFile.getAbsolutePath()));
         }
@@ -1020,7 +1203,7 @@ public class SmallBodyModel extends Model
 
     public String getModelName()
     {
-        if (resolutionLevel >= 0 && resolutionLevel < 4)
+        if (resolutionLevel >= 0 && resolutionLevel < modelNames.length)
             return modelNames[resolutionLevel];
         else
             return null;
@@ -1039,7 +1222,9 @@ public class SmallBodyModel extends Model
                 continue;
 
             String filename = info.coloringFile;
-            if (!info.coloringFile.startsWith(FileCache.FILE_PREFIX))
+            if (!info.builtIn)
+                filename = FileCache.FILE_PREFIX + getCustomDataFolder() + File.separator + filename;
+            if (!filename.startsWith(FileCache.FILE_PREFIX))
                 filename += "_res" + resolutionLevel + ".txt.gz";
             File file = FileCache.getFileFromServer(filename, useAPLServer);
             if (file == null)
@@ -1135,6 +1320,16 @@ public class SmallBodyModel extends Model
         paintBody();
     }
 
+    public int[] getFalseColoring()
+    {
+        return new int[]{redFalseColor, greenFalseColor, blueFalseColor};
+    }
+
+    public boolean isFalseColoringEnabled()
+    {
+        return useFalseColoring;
+    }
+
     public boolean isColoringDataAvailable()
     {
         return coloringInfo.size() > 0;
@@ -1155,17 +1350,34 @@ public class SmallBodyModel extends Model
         return coloringInfo.size();
     }
 
+    public int getNumberOfCustomColors()
+    {
+        int num = 0;
+        for (ColoringInfo info : coloringInfo)
+        {
+            if (!info.builtIn)
+                ++num;
+        }
+        return num;
+    }
+
+    public int getNumberOfBuiltInColors()
+    {
+        int num = 0;
+        for (ColoringInfo info : coloringInfo)
+        {
+            if (info.builtIn)
+                ++num;
+        }
+        return num;
+    }
+
     public String getColoringName(int i)
     {
         if (i < coloringInfo.size())
             return coloringInfo.get(i).coloringName;
         else
             return null;
-    }
-
-    public boolean isFalseColoringSupported()
-    {
-        return supportsFalseColoring;
     }
 
     private double getColoringValue(double[] pt, vtkFloatArray pointOrCellData)
@@ -1948,5 +2160,90 @@ public class SmallBodyModel extends Model
         }
 
         out.close();
+    }
+
+    public void addCustomPlateData(ColoringInfo info) throws IOException
+    {
+        info.builtIn = false;
+        info.resolutionLevel = resolutionLevel;
+        info.coloringValues = null;
+        info.defaultColoringRange = null;
+        coloringInfo.add(info);
+
+        if (coloringIndex >= 0)
+            loadColoringData();
+    }
+
+    public void setCustomPlateData(int index, ColoringInfo info) throws IOException
+    {
+        if (coloringInfo.get(index).builtIn)
+            return;
+
+        info.builtIn = false;
+        info.coloringValues = null;
+        info.defaultColoringRange = null;
+
+        coloringInfo.set(index, info);
+
+        if (coloringIndex >= 0)
+        {
+            loadColoringData();
+            paintBody();
+        }
+    }
+
+    public void removeCustomPlateData(int index) throws IOException
+    {
+        if (coloringInfo.get(index).builtIn)
+            return;
+
+        boolean needToRepaint = coloringIndex >= 0 || useFalseColoring;
+
+        coloringInfo.remove(index);
+
+        if (useFalseColoring)
+        {
+            if (redFalseColor == index)
+                redFalseColor = -1;
+            else if (redFalseColor > index)
+                --redFalseColor;
+            if (greenFalseColor == index)
+                greenFalseColor = -1;
+            else if (greenFalseColor > index)
+                --greenFalseColor;
+            if (blueFalseColor == index)
+                blueFalseColor = -1;
+            else if (blueFalseColor > index)
+                --blueFalseColor;
+
+            if (redFalseColor < 0 || greenFalseColor < 0 || blueFalseColor < 0)
+                useFalseColoring = false;
+        }
+        else
+        {
+            if (coloringIndex == index)
+                coloringIndex = -1;
+            else if (coloringIndex > index)
+                --coloringIndex;
+        }
+
+        if (needToRepaint)
+            paintBody();
+    }
+
+    public void reloadColoringData() throws IOException
+    {
+        for (ColoringInfo info : coloringInfo)
+        {
+            info.coloringValues = null;
+            info.defaultColoringRange = null;
+        }
+
+        loadColoringData();
+    }
+
+    public ArrayList<ColoringInfo> getColoringInfoList()
+    {
+        return coloringInfo;
     }
 }

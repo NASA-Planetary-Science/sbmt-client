@@ -81,7 +81,7 @@ public class CustomViewer extends Viewer
         if (Configuration.isAPLVersion())
         {
             controlPanel.addTab("Structures", new StructuresControlPanel(modelManager, pickManager));
-            controlPanel.addTab("Images", new CustomImagesPanel(modelManager, null, pickManager, renderer, false, getUniqueName()));
+            controlPanel.addTab("Images", new CustomImagesPanel(modelManager, null, pickManager, renderer));
         }
 
         splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,

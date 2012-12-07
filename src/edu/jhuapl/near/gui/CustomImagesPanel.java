@@ -50,7 +50,6 @@ import edu.jhuapl.near.model.custom.CustomShapeModel;
 import edu.jhuapl.near.pick.PickEvent;
 import edu.jhuapl.near.pick.PickManager;
 import edu.jhuapl.near.popupmenus.ImagePopupMenu;
-import edu.jhuapl.near.util.Configuration;
 import edu.jhuapl.near.util.FileUtil;
 import edu.jhuapl.near.util.MapUtil;
 import edu.jhuapl.near.util.Properties;
@@ -62,8 +61,6 @@ import edu.jhuapl.near.util.Properties;
 public class CustomImagesPanel extends javax.swing.JPanel implements PropertyChangeListener {
 
     private ModelManager modelManager;
-    private boolean isBuiltIn;
-    private String uniqueName;
     private ImagePopupMenu imagePopupMenu;
     private boolean initialized = false;
 
@@ -73,13 +70,9 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
             final ModelManager modelManager,
             ModelInfoWindowManager infoPanelManager,
             final PickManager pickManager,
-            Renderer renderer,
-            boolean isBuiltIn,
-            String uniqueName)
+            Renderer renderer)
     {
         this.modelManager = modelManager;
-        this.isBuiltIn = isBuiltIn;
-        this.uniqueName = uniqueName;
 
         initComponents();
 
@@ -110,30 +103,12 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
 
     private String getCustomDataFolder()
     {
-        String imagesDir = null;
-        if (isBuiltIn)
-        {
-            imagesDir = Configuration.getCustomDataFolderForBuiltInViewers() + File.separator + uniqueName;
-        }
-        else
-        {
-            imagesDir = Configuration.getImportedShapeModelsDir() + File.separator
-            + modelManager.getSmallBodyModel().getModelName();
-        }
-
-        // if the directory does not exist, create it
-        File dir = new File(imagesDir);
-        if (!dir.exists())
-        {
-            dir.mkdirs();
-        }
-
-        return imagesDir;
+        return modelManager.getSmallBodyModel().getCustomDataFolder();
     }
 
     private String getConfigFilename()
     {
-        return getCustomDataFolder() + File.separator + "config.txt";
+        return modelManager.getSmallBodyModel().getConfigFilename();
     }
 
     private void initializeImageList() throws IOException

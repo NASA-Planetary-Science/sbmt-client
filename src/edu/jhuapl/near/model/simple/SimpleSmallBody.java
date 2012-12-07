@@ -4,49 +4,33 @@ import edu.jhuapl.near.model.SmallBodyModel;
 
 public class SimpleSmallBody extends SmallBodyModel
 {
-    public SimpleSmallBody(String name, String path)
+    public SimpleSmallBody(String name, String category, String[] modelNames, String[] paths)
     {
-        super(
+        super(name,
+                category,
+                modelNames,
+                paths,
+                null,
+                null,
+                null,
+                null,
+                null,
+                ColoringValueType.CELLDATA,
+                false);
+    }
+
+    public SimpleSmallBody(String name, String category, String path, String imageMap)
+    {
+        super(name,
+                category,
                 new String[] {name},
                 new String[] {path},
                 null,
                 null,
                 null,
                 null,
-                false,
-                null,
-                ColoringValueType.CELLDATA,
-                false);
-    }
-
-    public SimpleSmallBody(String[] name, String[] path)
-    {
-        super(
-                name,
-                path,
-                null,
-                null,
-                null,
-                null,
-                false,
-                null,
-                ColoringValueType.CELLDATA,
-                false);
-    }
-
-    public SimpleSmallBody(String name, String path, String imageMap)
-    {
-        super(
-                new String[] {name},
-                new String[] {path},
-                null,
-                null,
-                null,
-                null,
-                false,
                 new String[] {imageMap},
                 ColoringValueType.CELLDATA,
                 false);
     }
-
 }

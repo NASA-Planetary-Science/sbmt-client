@@ -45,8 +45,6 @@ import edu.jhuapl.near.util.Configuration;
  */
 public class RQ36Viewer extends Viewer
 {
-    public static final String NAME = "RQ36";
-
     private JSplitPane splitPane;
     private Renderer renderer;
     private JTabbedPane controlPanel;
@@ -80,11 +78,11 @@ public class RQ36Viewer extends Viewer
 
         controlPanel = new JTabbedPane();
         controlPanel.setBorder(BorderFactory.createEmptyBorder());
-        controlPanel.addTab("RQ36", new SmallBodyControlPanel(modelManager, "RQ36"));
+        controlPanel.addTab(RQ36.NAME, new SmallBodyControlPanel(modelManager, RQ36.NAME));
         if (Configuration.isAPLVersion())
         {
             controlPanel.addTab("Structures", new StructuresControlPanel(modelManager, pickManager));
-            controlPanel.addTab("Images", new CustomImagesPanel(modelManager, infoPanelManager, pickManager, renderer, true, getUniqueName()));
+            controlPanel.addTab("Images", new CustomImagesPanel(modelManager, infoPanelManager, pickManager, renderer));
             controlPanel.addTab("Mapmaker", new TopoPanel(modelManager, pickManager, "/RQ36/mapmaker.zip"));
         }
 
@@ -147,12 +145,12 @@ public class RQ36Viewer extends Viewer
 
     public String getDisplayName()
     {
-        return NAME;
+        return RQ36.NAME;
     }
 
     public String getSubmenu()
     {
-        return "Gaskell";
+        return RQ36.CATEGORY;
     }
 
     public ModelManager getModelManager()

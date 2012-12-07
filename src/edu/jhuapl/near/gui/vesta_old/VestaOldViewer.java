@@ -41,8 +41,6 @@ import edu.jhuapl.near.util.Configuration;
  */
 public class VestaOldViewer extends Viewer
 {
-    public static final String NAME = "Vesta";
-
     private JSplitPane splitPane;
     private Renderer renderer;
     private JTabbedPane controlPanel;
@@ -77,11 +75,11 @@ public class VestaOldViewer extends Viewer
 
         controlPanel = new JTabbedPane();
         controlPanel.setBorder(BorderFactory.createEmptyBorder());
-        controlPanel.addTab("Vesta", new SmallBodyControlPanel(modelManager, "Vesta"));
+        controlPanel.addTab(VestaOld.NAME, new SmallBodyControlPanel(modelManager, VestaOld.NAME));
         if (Configuration.isAPLVersion())
         {
             controlPanel.addTab("Structures", new StructuresControlPanel(modelManager, pickManager));
-            controlPanel.addTab("Images", new CustomImagesPanel(modelManager, null, pickManager, renderer, true, getUniqueName()));
+            controlPanel.addTab("Images", new CustomImagesPanel(modelManager, null, pickManager, renderer));
         }
 
         splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
@@ -127,12 +125,12 @@ public class VestaOldViewer extends Viewer
 
     public String getDisplayName()
     {
-        return NAME;
+        return VestaOld.NAME;
     }
 
     public String getSubmenu()
     {
-        return "Thomas";
+        return VestaOld.CATEGORY;
     }
 
     public ModelManager getModelManager()

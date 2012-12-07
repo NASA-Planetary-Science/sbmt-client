@@ -50,8 +50,6 @@ import edu.jhuapl.near.util.Configuration;
  */
 public class ItokawaViewer extends Viewer
 {
-    public static final String NAME = "Itokawa";
-
     private JSplitPane splitPane;
     private Renderer renderer;
     private JTabbedPane controlPanel;
@@ -85,13 +83,13 @@ public class ItokawaViewer extends Viewer
 
         controlPanel = new JTabbedPane();
         controlPanel.setBorder(BorderFactory.createEmptyBorder());
-        controlPanel.addTab("Itokawa", new SmallBodyControlPanel(modelManager, "Itokawa"));
+        controlPanel.addTab(Itokawa.NAME, new SmallBodyControlPanel(modelManager, Itokawa.NAME));
         controlPanel.addTab("AMICA", new AmicaSearchPanel(modelManager, infoPanelManager, pickManager, renderer));
         controlPanel.addTab("LIDAR", new HayLidarPanel(modelManager, pickManager, renderer));
         if (Configuration.isAPLVersion())
         {
             controlPanel.addTab("Structures", new StructuresControlPanel(modelManager, pickManager));
-            controlPanel.addTab("Images", new CustomImagesPanel(modelManager, infoPanelManager, pickManager, renderer, true, getUniqueName()));
+            controlPanel.addTab("Images", new CustomImagesPanel(modelManager, infoPanelManager, pickManager, renderer));
         }
 
         splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
@@ -160,12 +158,12 @@ public class ItokawaViewer extends Viewer
 
     public String getDisplayName()
     {
-        return NAME;
+        return Itokawa.NAME;
     }
 
     public String getSubmenu()
     {
-        return "Gaskell";
+        return Itokawa.CATEGORY;
     }
 
     public ModelManager getModelManager()

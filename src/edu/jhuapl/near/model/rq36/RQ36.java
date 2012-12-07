@@ -4,6 +4,9 @@ import edu.jhuapl.near.model.SmallBodyModel;
 
 public class RQ36 extends SmallBodyModel
 {
+    public static final String NAME = "RQ36";
+    public static final String CATEGORY = "Gaskell";
+
     static private final String[] modelNames = {
         "RQ36 low",
         "RQ36 med",
@@ -35,13 +38,14 @@ public class RQ36 extends SmallBodyModel
 
     public RQ36()
     {
-        super(modelNames,
+        super(NAME,
+                CATEGORY,
+                modelNames,
                 modelFilesAplOnly,
                 coloringFiles,
                 coloringNames,
                 coloringUnits,
                 null,
-                false,
                 null,
                 ColoringValueType.CELLDATA,
                 false,
