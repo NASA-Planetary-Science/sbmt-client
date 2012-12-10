@@ -19,6 +19,7 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -319,8 +320,19 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
         }
 
         ((DefaultListModel)imageList.getModel()).remove(index);
+    }
 
-        updateConfigFile();
+    private void moveDown(int i)
+    {
+        DefaultListModel model = (DefaultListModel)imageList.getModel();
+
+        if (i >= model.getSize())
+            return;
+
+        Object o = model.get(i);
+
+        model.remove(i);
+        model.add(i+1, o);
     }
 
     private void updateConfigFile()
@@ -473,6 +485,8 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
         editButton = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         removeAllButton = new javax.swing.JButton();
+        moveUpButton = new javax.swing.JButton();
+        moveDownButton = new javax.swing.JButton();
 
         setLayout(new java.awt.GridBagLayout());
 
@@ -484,12 +498,17 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
                 imageListMouseReleased(evt);
             }
         });
+        imageList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
+                imageListValueChanged(evt);
+            }
+        });
         jScrollPane1.setViewportView(imageList);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
-        gridBagConstraints.gridwidth = 4;
+        gridBagConstraints.gridwidth = 6;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.ipadx = 377;
         gridBagConstraints.ipady = 241;
@@ -512,19 +531,22 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
         add(newButton, gridBagConstraints);
 
         deleteButton.setText("Delete from List");
+        deleteButton.setEnabled(false);
         deleteButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 deleteButtonActionPerformed(evt);
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.gridwidth = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(7, 6, 0, 0);
         add(deleteButton, gridBagConstraints);
 
         editButton.setText("Edit...");
+        editButton.setEnabled(false);
         editButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 editButtonActionPerformed(evt);
@@ -541,7 +563,7 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.gridwidth = 3;
+        gridBagConstraints.gridwidth = 5;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 2, 0);
@@ -554,11 +576,40 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 3;
-        gridBagConstraints.gridwidth = 3;
+        gridBagConstraints.gridwidth = 4;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(7, 0, 0, 0);
         add(removeAllButton, gridBagConstraints);
+
+        moveUpButton.setText("Move Up");
+        moveUpButton.setEnabled(false);
+        moveUpButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                moveUpButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(7, 6, 0, 0);
+        add(moveUpButton, gridBagConstraints);
+
+        moveDownButton.setText("Move Down");
+        moveDownButton.setEnabled(false);
+        moveDownButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                moveDownButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(7, 6, 0, 0);
+        add(moveDownButton, gridBagConstraints);
     }// </editor-fold>//GEN-END:initComponents
 
     private void newButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newButtonActionPerformed
@@ -584,11 +635,14 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
     }//GEN-LAST:event_newButtonActionPerformed
 
     private void deleteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteButtonActionPerformed
-        int selectedItem = imageList.getSelectedIndex();
-        if (selectedItem >= 0)
+        int[] selectedIndices = imageList.getSelectedIndices();
+        Arrays.sort(selectedIndices);
+        for (int i=selectedIndices.length-1; i>=0; --i)
         {
-            removeImage(selectedItem);
+            removeImage(selectedIndices[i]);
         }
+
+        updateConfigFile();
     }//GEN-LAST:event_deleteButtonActionPerformed
 
     private void editButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editButtonActionPerformed
@@ -635,12 +689,74 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
         removeAllImagesFromRenderer();
     }//GEN-LAST:event_removeAllButtonActionPerformed
 
+    private void moveUpButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_moveUpButtonActionPerformed
+        int minSelectedItem = imageList.getMinSelectionIndex();
+        if (minSelectedItem > 0)
+        {
+            int[] selectedIndices = imageList.getSelectedIndices();
+            Arrays.sort(selectedIndices);
+            for (int i=0; i<selectedIndices.length; ++i)
+            {
+                --selectedIndices[i];
+                moveDown(selectedIndices[i]);
+            }
+
+            imageList.clearSelection();
+            imageList.setSelectedIndices(selectedIndices);
+            imageList.scrollRectToVisible(imageList.getCellBounds(minSelectedItem-1, minSelectedItem-1));
+
+            updateConfigFile();
+        }
+    }//GEN-LAST:event_moveUpButtonActionPerformed
+
+    private void moveDownButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_moveDownButtonActionPerformed
+        int maxSelectedItem = imageList.getMaxSelectionIndex();
+        if (maxSelectedItem >= 0 && maxSelectedItem < imageList.getModel().getSize()-1)
+        {
+            int[] selectedIndices = imageList.getSelectedIndices();
+            Arrays.sort(selectedIndices);
+            for (int i=selectedIndices.length-1; i>=0; --i)
+            {
+                moveDown(selectedIndices[i]);
+                ++selectedIndices[i];
+            }
+
+            imageList.clearSelection();
+            imageList.setSelectedIndices(selectedIndices);
+            imageList.scrollRectToVisible(imageList.getCellBounds(maxSelectedItem+1, maxSelectedItem+1));
+
+            updateConfigFile();
+        }
+    }//GEN-LAST:event_moveDownButtonActionPerformed
+
+    private void imageListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_imageListValueChanged
+        int[] indices = imageList.getSelectedIndices();
+        if (indices == null || indices.length == 0)
+        {
+            editButton.setEnabled(false);
+            moveUpButton.setEnabled(false);
+            moveDownButton.setEnabled(false);
+            deleteButton.setEnabled(false);
+        }
+        else
+        {
+            editButton.setEnabled(indices.length == 1);
+            deleteButton.setEnabled(true);
+            int minSelectedItem = imageList.getMinSelectionIndex();
+            int maxSelectedItem = imageList.getMaxSelectionIndex();
+            moveUpButton.setEnabled(minSelectedItem > 0);
+            moveDownButton.setEnabled(maxSelectedItem < imageList.getModel().getSize()-1);
+        }
+    }//GEN-LAST:event_imageListValueChanged
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton deleteButton;
     private javax.swing.JButton editButton;
     private javax.swing.JList imageList;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JButton moveDownButton;
+    private javax.swing.JButton moveUpButton;
     private javax.swing.JButton newButton;
     private javax.swing.JButton removeAllButton;
     // End of variables declaration//GEN-END:variables
