@@ -193,7 +193,6 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
             if (newImageInfo.imagefilename == null)
             {
                 newImageInfo.imagefilename = oldImageInfo.imagefilename;
-                newImageInfo.name = oldImageInfo.name;
             }
             else
             {
@@ -228,7 +227,6 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
             if (newImageInfo.imagefilename == null)
             {
                 newImageInfo.imagefilename = oldImageInfo.imagefilename;
-                newImageInfo.name = oldImageInfo.name;
             }
             else
             {
