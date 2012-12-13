@@ -481,12 +481,13 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
         jScrollPane1 = new javax.swing.JScrollPane();
         imageList = new javax.swing.JList();
         newButton = new javax.swing.JButton();
-        deleteButton = new javax.swing.JButton();
         editButton = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
-        removeAllButton = new javax.swing.JButton();
         moveUpButton = new javax.swing.JButton();
         moveDownButton = new javax.swing.JButton();
+        jPanel1 = new javax.swing.JPanel();
+        deleteButton = new javax.swing.JButton();
+        removeAllButton = new javax.swing.JButton();
 
         setLayout(new java.awt.GridBagLayout());
 
@@ -530,21 +531,6 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
         gridBagConstraints.insets = new java.awt.Insets(7, 0, 0, 0);
         add(newButton, gridBagConstraints);
 
-        deleteButton.setText("Delete from List");
-        deleteButton.setEnabled(false);
-        deleteButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                deleteButtonActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 3;
-        gridBagConstraints.gridwidth = 2;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(7, 6, 0, 0);
-        add(deleteButton, gridBagConstraints);
-
         editButton.setText("Edit...");
         editButton.setEnabled(false);
         editButton.addActionListener(new java.awt.event.ActionListener() {
@@ -568,20 +554,6 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 2, 0);
         add(jLabel1, gridBagConstraints);
-
-        removeAllButton.setText("Remove All From View");
-        removeAllButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                removeAllButtonActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 3;
-        gridBagConstraints.gridwidth = 4;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(7, 0, 0, 0);
-        add(removeAllButton, gridBagConstraints);
 
         moveUpButton.setText("Move Up");
         moveUpButton.setEnabled(false);
@@ -610,6 +582,44 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(7, 6, 0, 0);
         add(moveDownButton, gridBagConstraints);
+
+        jPanel1.setLayout(new java.awt.GridBagLayout());
+
+        deleteButton.setText("Delete from List");
+        deleteButton.setEnabled(false);
+        deleteButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                deleteButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(7, 6, 0, 0);
+        jPanel1.add(deleteButton, gridBagConstraints);
+
+        removeAllButton.setText("Remove All From View");
+        removeAllButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                removeAllButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridwidth = 4;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(7, 6, 0, 0);
+        jPanel1.add(removeAllButton, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.gridwidth = 6;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        add(jPanel1, gridBagConstraints);
     }// </editor-fold>//GEN-END:initComponents
 
     private void newButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newButtonActionPerformed
@@ -754,6 +764,7 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
     private javax.swing.JButton editButton;
     private javax.swing.JList imageList;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JButton moveDownButton;
     private javax.swing.JButton moveUpButton;
