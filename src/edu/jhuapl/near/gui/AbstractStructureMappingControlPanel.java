@@ -3,10 +3,12 @@ package edu.jhuapl.near.gui;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -42,6 +44,8 @@ import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.StructureModel;
 import edu.jhuapl.near.pick.PickEvent;
 import edu.jhuapl.near.pick.PickManager;
+import edu.jhuapl.near.pick.Picker;
+import edu.jhuapl.near.popupmenus.StructuresPopupMenu;
 import edu.jhuapl.near.util.Properties;
 
 public abstract class AbstractStructureMappingControlPanel extends JPanel implements
@@ -58,7 +62,7 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
     //private JList structuresList;
     private JTable structuresTable;
     private File structuresFile;
-    //private StructuresPopupMenu structuresPopupMenu;
+    private StructuresPopupMenu structuresPopupMenu;
     private JToggleButton editButton;
     private JButton hideAllButton;
     private JButton showAllButton;
@@ -73,6 +77,7 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
             final StructureModel structureModel,
             final PickManager pickManager,
             final PickManager.PickMode pickMode,
+            StructuresPopupMenu structuresPopupMenu,
             boolean supportsLineWidth)
     {
         this.modelManager = modelManager;
@@ -80,6 +85,7 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
         this.structureModel = structureModel;
         this.pickManager = pickManager;
         this.pickMode = pickMode;
+        this.structuresPopupMenu = structuresPopupMenu;
 
         structureModel.addPropertyChangeListener(this);
         this.addComponentListener(new ComponentAdapter()
@@ -146,7 +152,7 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
         structuresTable.setColumnSelectionAllowed(false);
         structuresTable.setRowSelectionAllowed(true);
         structuresTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-        structuresTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        structuresTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         structuresTable.setDefaultRenderer(Color.class, new ColorRenderer());
 //        structuresTable.getColumnModel().getColumn(0).setPreferredWidth(30);
         structuresTable.getModel().addTableModelListener(this);
@@ -155,8 +161,6 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
 
         JScrollPane tableScrollPane = new JScrollPane(structuresTable);
         tableScrollPane.setPreferredSize(new Dimension(10000, 10000));
-
-        //structuresPopupMenu = new StructuresPopupMenu(this.modelManager, this.pickManager, this);
 
         add(tableScrollPane, "span");
 
@@ -466,7 +470,25 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
             {
                 int idx = structureModel.getStructureIndexFromCellId(e.getPickedCellId(), e.getPickedProp());
 
-                structuresTable.setRowSelectionInterval(idx, idx);
+                if (Picker.isPopupTrigger(e.getMouseEvent()))
+                {
+                    // If the item right-clicked on is not selected, then deselect all the
+                    // other items and select the item right-clicked on.
+                    if (!structuresTable.isRowSelected(idx))
+                    {
+                        structuresTable.setRowSelectionInterval(idx, idx);
+                    }
+                }
+                else
+                {
+                    int keyMask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
+                    if (((e.getMouseEvent().getModifiers() & InputEvent.SHIFT_MASK) == InputEvent.SHIFT_MASK) ||
+                        ((e.getMouseEvent().getModifiers() & keyMask) == keyMask))
+                        structuresTable.addRowSelectionInterval(idx, idx);
+                    else
+                        structuresTable.setRowSelectionInterval(idx, idx);
+                }
+
                 structuresTable.scrollRectToVisible(structuresTable.getCellRect(idx, 0, true));
             }
             else
@@ -546,7 +568,7 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
     {
         if (e.getValueIsAdjusting() == false)
         {
-            structureModel.highlightStructure(structuresTable.getSelectedRow());
+            structureModel.highlightStructures(structuresTable.getSelectedRows());
         }
     }
 
@@ -601,6 +623,26 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
             else
             {
                 pickManager.setPickMode(PickManager.PickMode.DEFAULT);
+            }
+        }
+    }
+
+    private void structuresTableMaybeShowPopup(MouseEvent e)
+    {
+        if (e.isPopupTrigger())
+        {
+            int index = structuresTable.rowAtPoint(e.getPoint());
+
+            if (index >= 0)
+            {
+                // If the item right-clicked on is not selected, then deselect all the
+                // other items and select the item right-clicked on.
+                if (!structuresTable.isRowSelected(index))
+                {
+                    structuresTable.setRowSelectionInterval(index, index);
+                }
+
+                structuresPopupMenu.show(e.getComponent(), e.getX(), e.getY());
             }
         }
     }
@@ -699,6 +741,16 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
 
                 structureModel.setStructureColor(row, c);
             }
+        }
+
+        public void mousePressed(MouseEvent evt)
+        {
+            structuresTableMaybeShowPopup(evt);
+        }
+
+        public void mouseReleased(MouseEvent evt)
+        {
+            structuresTableMaybeShowPopup(evt);
         }
     }
 

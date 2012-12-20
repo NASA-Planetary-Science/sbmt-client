@@ -1,6 +1,7 @@
 package edu.jhuapl.near.model;
 
 import java.io.File;
+import java.io.IOException;
 
 import vtk.vtkProp;
 
@@ -38,13 +39,15 @@ public abstract class StructureModel extends Model
 
     public abstract int getSelectedStructureIndex();
 
-    public abstract void highlightStructure(int idx);
+    public abstract void highlightStructures(int[] indices);
 
-    public abstract int getHighlightedStructure();
+    public abstract int[] getHighlightedStructures();
 
     public abstract int getNumberOfStructures();
 
     public abstract void removeStructure(int idx);
+
+    public abstract void removeStructures(int[] indices);
 
     public abstract void removeAllStructures();
 
@@ -61,4 +64,9 @@ public abstract class StructureModel extends Model
     public abstract double getLineWidth();
 
     public abstract void setLineWidth(double width);
+
+    public void savePlateDataInsideStructure(int idx, File file) throws IOException
+    {
+        // do nothing by default. Only structures that have an inside need to implement this.
+    }
 }

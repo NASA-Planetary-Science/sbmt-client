@@ -8,6 +8,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import vtk.vtkActor;
 import vtk.vtkAppendPolyData;
@@ -64,7 +65,7 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
 //    private int[] defaultInteriorColor = {0, 191, 255};
     private double interiorOpacity = 0.3;
     private String type;
-    private int highlightedStructure = -1;
+    private int[] highlightedStructures = null;
     private int[] highlightColor = {0, 0, 255};
     private int maxPolygonId = 0;
     private DecimalFormat df = new DecimalFormat("#.#####");
@@ -323,7 +324,7 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
             {
                 int[] color = polygons.get(i).color;
 
-                if (i == this.highlightedStructure)
+                if (Arrays.binarySearch(this.highlightedStructures, i) >= 0)
                     color = highlightColor;
 
                 IdPair range = this.getCellIdRangeOfPolygon(i, false);
@@ -413,7 +414,7 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
         polygons.add(pol);
 
         pol.updatePolygon(smallBodyModel, pos, radius, flattening, angle);
-        highlightedStructure = polygons.size()-1;
+        highlightedStructures = new int[]{polygons.size()-1};
         updatePolyData();
 
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
@@ -426,7 +427,7 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
         polygons.add(pol);
 
         pol.updatePolygon(smallBodyModel, pos, defaultRadius, 1.0, 0.0);
-        highlightedStructure = polygons.size()-1;
+        highlightedStructures = new int[]{polygons.size()-1};
         updatePolyData();
 
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
@@ -441,6 +442,23 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
 
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
         this.pcs.firePropertyChange(Properties.STRUCTURE_REMOVED, null, polygonId);
+    }
+
+    public void removeStructures(int[] polygonIds)
+    {
+        if (polygonIds == null || polygonIds.length == 0)
+            return;
+
+        Arrays.sort(polygonIds);
+        for (int i=polygonIds.length-1; i>=0; --i)
+        {
+            polygons.remove(polygonIds[i]);
+            this.pcs.firePropertyChange(Properties.STRUCTURE_REMOVED, null, polygonIds[i]);
+        }
+
+        updatePolyData();
+
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
     public void removeAllStructures()
@@ -863,19 +881,17 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
         this.defaultRadius = radius;
     }
 
-    public void highlightStructure(int idx)
+    public void highlightStructures(int[] indices)
     {
-        if (highlightedStructure != idx)
-        {
-            this.highlightedStructure = idx;
-            updatePolyData();
-            this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-        }
+        this.highlightedStructures = indices.clone();
+        Arrays.sort(highlightedStructures);
+        updatePolyData();
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
-    public int getHighlightedStructure()
+    public int[] getHighlightedStructures()
     {
-        return highlightedStructure;
+        return highlightedStructures;
     }
 
     public int getStructureIndexFromCellId(int cellId, vtkProp prop)

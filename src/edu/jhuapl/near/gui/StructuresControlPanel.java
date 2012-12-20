@@ -9,6 +9,8 @@ import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.StructureModel;
 import edu.jhuapl.near.pick.PickManager;
+import edu.jhuapl.near.popupmenus.PopupManager;
+import edu.jhuapl.near.popupmenus.StructuresPopupMenu;
 
 public class StructuresControlPanel extends JTabbedPane
 {
@@ -33,6 +35,8 @@ public class StructuresControlPanel extends JTabbedPane
                 if (initialized)
                     return;
 
+                PopupManager popupManager = pickManager.getPopupManager();
+
                 StructureModel structureModel =
                         (StructureModel)modelManager.getModel(ModelNames.LINE_STRUCTURES);
                 lineStructuresMapperPanel = (new AbstractStructureMappingControlPanel(
@@ -40,6 +44,7 @@ public class StructuresControlPanel extends JTabbedPane
                         structureModel,
                         pickManager,
                         PickManager.PickMode.LINE_DRAW,
+                        (StructuresPopupMenu)popupManager.getPopup(structureModel),
                         true) {});
 
                 structureModel =
@@ -49,6 +54,7 @@ public class StructuresControlPanel extends JTabbedPane
                         structureModel,
                         pickManager,
                         PickManager.PickMode.POLYGON_DRAW,
+                        (StructuresPopupMenu)popupManager.getPopup(structureModel),
                         true) {});
 
                 structureModel =
@@ -58,6 +64,7 @@ public class StructuresControlPanel extends JTabbedPane
                         structureModel,
                         pickManager,
                         PickManager.PickMode.CIRCLE_DRAW,
+                        (StructuresPopupMenu)popupManager.getPopup(structureModel),
                         true) {});
 
                 structureModel =
@@ -67,11 +74,13 @@ public class StructuresControlPanel extends JTabbedPane
                         structureModel,
                         pickManager,
                         PickManager.PickMode.ELLIPSE_DRAW,
+                        (StructuresPopupMenu)popupManager.getPopup(structureModel),
                         true) {});
 
                 pointsStructuresMapperPanel = new PointsMappingControlPanel(
                         modelManager,
-                        pickManager);
+                        pickManager,
+                        StructuresControlPanel.this);
 
                 addTab("Paths", lineStructuresMapperPanel);
                 addTab("Polygons", polygonStructuresMapperPanel);

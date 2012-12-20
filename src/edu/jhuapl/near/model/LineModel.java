@@ -9,6 +9,7 @@ import java.io.FileWriter;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -62,7 +63,7 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
     private SmallBodyModel smallBodyModel;
     private int selectedLine = -1;
     private int currentLineVertex = -1000;
-    private int highlightedStructure = -1;
+    private int[] highlightedStructures = null;
     private int[] highlightColor = {0, 0, 255, 255};
     private int maximumVerticesPerLine = Integer.MAX_VALUE;
     private vtkIdList idList;
@@ -197,7 +198,7 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
 
             int[] color = lin.color;
 
-            if (j == this.highlightedStructure)
+            if (Arrays.binarySearch(this.highlightedStructures, j) >= 0)
                 color = highlightColor;
 
             int size = lin.xyzPointList.size();
@@ -618,6 +619,29 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
         this.pcs.firePropertyChange(Properties.STRUCTURE_REMOVED, null, cellId);
     }
 
+    public void removeStructures(int[] indices)
+    {
+        if (indices == null || indices.length == 0)
+            return;
+
+        Arrays.sort(indices);
+        for (int i=indices.length-1; i>=0; --i)
+        {
+            lines.remove(indices[i]);
+            this.pcs.firePropertyChange(Properties.STRUCTURE_REMOVED, null, indices[i]);
+        }
+
+        updatePolyData();
+
+        if (profileMode)
+            updateLineSelection();
+
+        if (Arrays.binarySearch(indices, selectedLine) < 0)
+            selectStructure(-1);
+        else
+            this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+    }
+
     public void removeAllStructures()
     {
         lines.clear();
@@ -821,19 +845,16 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
             return -1;
     }
 
-    public void highlightStructure(int idx)
+    public void highlightStructures(int[] indices)
     {
-        if (highlightedStructure != idx)
-        {
-            this.highlightedStructure = idx;
-            updatePolyData();
-            this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-        }
+        this.highlightedStructures = indices.clone();
+        updatePolyData();
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
-    public int getHighlightedStructure()
+    public int[] getHighlightedStructures()
     {
-        return highlightedStructure;
+        return highlightedStructures;
     }
 
     public void redrawAllStructures()

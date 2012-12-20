@@ -204,9 +204,8 @@ public class PointPicker extends Picker
         int keyCode = e.getKeyCode();
         if (keyCode == KeyEvent.VK_DELETE || keyCode == KeyEvent.VK_BACK_SPACE)
         {
-            int highlightedStructure = pointModel.getHighlightedStructure();
-            if (highlightedStructure >= 0)
-                pointModel.removeStructure(highlightedStructure);
+            int[] highlightedStructures = pointModel.getHighlightedStructures();
+            pointModel.removeStructures(highlightedStructures);
         }
     }
 }

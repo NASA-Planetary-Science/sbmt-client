@@ -34,6 +34,7 @@ public class PickManager extends Picker
     private DefaultPicker defaultPicker;
 
     private HashMap<PickMode, Picker> nondefaultPickers = new HashMap<PickMode, Picker>();
+    private PopupManager popupManager;
 
     public PickManager(
             Renderer renderer,
@@ -43,6 +44,7 @@ public class PickManager extends Picker
     {
         this.renderer = renderer;
         this.renWin = renderer.getRenderWindowPanel();
+        this.popupManager = popupManager;
 
         nondefaultPickers.put(PickMode.LINE_DRAW, new ControlPointsStructurePicker(renderer, modelManager, ModelNames.LINE_STRUCTURES));
         nondefaultPickers.put(PickMode.POLYGON_DRAW, new ControlPointsStructurePicker(renderer, modelManager, ModelNames.POLYGON_STRUCTURES));
@@ -130,5 +132,10 @@ public class PickManager extends Picker
         defaultPicker.setPickTolerance(pickTolerance);
         for (PickMode pm : nondefaultPickers.keySet())
             nondefaultPickers.get(pm).setPickTolerance(pickTolerance);
+    }
+
+    public PopupManager getPopupManager()
+    {
+        return popupManager;
     }
 }

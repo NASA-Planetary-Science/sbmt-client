@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -74,7 +75,7 @@ public class PolygonModel extends ControlPointsStructureModel implements Propert
     private SmallBodyModel smallBodyModel;
     private int selectedPolygon = -1;
     private int currentPolygonVertex = -1000;
-    private int highlightedStructure = -1;
+    private int[] highlightedStructures = null;
     private int[] highlightColor = {0, 0, 255, 255};
     private int maximumVerticesPerPolygon = Integer.MAX_VALUE;
     private vtkIdList idList;
@@ -235,7 +236,7 @@ public class PolygonModel extends ControlPointsStructureModel implements Propert
             {
                 int[] color = polygons.get(i).color;
 
-                if (i == this.highlightedStructure)
+                if (Arrays.binarySearch(this.highlightedStructures, i) >= 0)
                     color = highlightColor;
 
                 IdPair range = this.getCellIdRangeOfPolygon(i, false);
@@ -442,6 +443,26 @@ public class PolygonModel extends ControlPointsStructureModel implements Propert
         this.pcs.firePropertyChange(Properties.STRUCTURE_REMOVED, null, cellId);
     }
 
+    public void removeStructures(int[] indices)
+    {
+        if (indices == null || indices.length == 0)
+            return;
+
+        Arrays.sort(indices);
+        for (int i=indices.length-1; i>=0; --i)
+        {
+            polygons.remove(indices[i]);
+            this.pcs.firePropertyChange(Properties.STRUCTURE_REMOVED, null, indices[i]);
+        }
+
+        updatePolyData();
+
+        if (Arrays.binarySearch(indices, selectedPolygon) < 0)
+            selectStructure(-1);
+        else
+            this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+    }
+
     public void removeAllStructures()
     {
         polygons.clear();
@@ -613,19 +634,16 @@ public class PolygonModel extends ControlPointsStructureModel implements Propert
         return -1;
     }
 
-    public void highlightStructure(int idx)
+    public void highlightStructures(int[] indices)
     {
-        if (highlightedStructure != idx)
-        {
-            this.highlightedStructure = idx;
-            updatePolyData();
-            this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-        }
+        this.highlightedStructures = indices;
+        updatePolyData();
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
-    public int getHighlightedStructure()
+    public int[] getHighlightedStructures()
     {
-        return highlightedStructure;
+        return highlightedStructures;
     }
 
     public void redrawAllStructures()

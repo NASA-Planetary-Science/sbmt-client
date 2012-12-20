@@ -33,13 +33,13 @@ public class PopupManager
         PopupMenu popupMenu = new LinesPopupMenu(modelManager);
         registerPopup(modelManager.getModel(ModelNames.LINE_STRUCTURES), popupMenu);
 
-        popupMenu = new PolygonsPopupMenu(modelManager, renderer);
+        popupMenu = new PolygonsPopupMenu(modelManager);
         registerPopup(modelManager.getModel(ModelNames.POLYGON_STRUCTURES), popupMenu);
 
-        popupMenu = new CirclesPopupMenu(modelManager, renderer);
+        popupMenu = new CirclesPopupMenu(modelManager);
         registerPopup(modelManager.getModel(ModelNames.CIRCLE_STRUCTURES), popupMenu);
 
-        popupMenu = new EllipsesPopupMenu(modelManager, renderer);
+        popupMenu = new EllipsesPopupMenu(modelManager);
         registerPopup(modelManager.getModel(ModelNames.ELLIPSE_STRUCTURES), popupMenu);
 
         popupMenu = new PointsPopupMenu(modelManager);

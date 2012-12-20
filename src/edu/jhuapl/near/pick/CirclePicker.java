@@ -203,9 +203,8 @@ public class CirclePicker extends Picker
         int keyCode = e.getKeyCode();
         if (keyCode == KeyEvent.VK_DELETE || keyCode == KeyEvent.VK_BACK_SPACE)
         {
-            int highlightedStructure = circleModel.getHighlightedStructure();
-            if (highlightedStructure >= 0)
-                circleModel.removeStructure(highlightedStructure);
+            int[] highlightedStructures = circleModel.getHighlightedStructures();
+            circleModel.removeStructures(highlightedStructures);
         }
     }
 }

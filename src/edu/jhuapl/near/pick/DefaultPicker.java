@@ -172,14 +172,9 @@ public class DefaultPicker extends Picker
         // However, in the renderer, we always want the popup to appear on mouse RELEASE
         // not mouse press regardless of platform, because otherwise the popup will interfere
         // with renderer's zoom in and out feature. Therefore, to avoid this whole
-        // issue we only show the popup within the mouseClicked call when the right
-        // mouse button was pressed, since the mouseClicked event is only thrown
-        // when the mouse is released.
-        if (e.getClickCount() == 1 &&
-                (e.getModifiers() & InputEvent.BUTTON3_MASK) == InputEvent.BUTTON3_MASK)
-        {
-            maybeShowPopup(e);
-        }
+        // issue we only show the popup within the mouseClicked call since the mouseClicked
+        // event is only thrown when the mouse is released.
+        maybeShowPopup(e);
 
         if (e.getClickCount() == 1 &&
                 (e.getModifiers() & InputEvent.BUTTON1_MASK) == InputEvent.BUTTON1_MASK)
@@ -214,6 +209,11 @@ public class DefaultPicker extends Picker
 
     private void maybeShowPopup(MouseEvent e)
     {
+        if (e.getClickCount() != 1 || !isPopupTrigger(e))
+        {
+            return;
+        }
+
         if (suppressPopups)
             return;
 

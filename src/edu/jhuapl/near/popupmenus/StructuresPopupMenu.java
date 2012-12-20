@@ -3,79 +3,108 @@ package edu.jhuapl.near.popupmenus;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.IOException;
 
 import javax.swing.AbstractAction;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
+import vtk.vtkProp;
+
 import edu.jhuapl.near.gui.ChangeLatLonDialog;
 import edu.jhuapl.near.gui.ColorChooser;
+import edu.jhuapl.near.gui.CustomFileChooser;
 import edu.jhuapl.near.model.StructureModel;
 
 abstract public class StructuresPopupMenu extends PopupMenu
 {
-    private ChangeColorAction changeColorAction;
-    private int cellIdLastClicked = -1;
+    private StructureModel model;
+    private JMenuItem changeLatLonAction;
+    private JMenuItem exportPlateDataAction;
+    private JMenuItem editAction;
 
-    /**
-     * Should be called by subclasses to add menu items defined here.
-     *
-     * @param model
-     */
-    protected void addMenuItems(StructureModel model)
+    public StructuresPopupMenu(
+            StructureModel model,
+            boolean showChangeLatLon,
+            boolean showExportPlateDataInsidePolygon)
     {
-        changeColorAction = new ChangeColorAction(model);
-        JMenuItem mi = new JMenuItem(changeColorAction);
-        mi.setText("Change Color...");
-        this.add(mi);
-    }
+        this.model = model;
 
-    protected ChangeColorAction getChangeColorAction()
-    {
-        return changeColorAction;
-    }
+        editAction = new JMenuItem(new EditAction());
+        editAction.setText("Edit");
+        //this.add(mi); // don't show for now
 
-    protected class DeleteAction extends AbstractAction
-    {
-        private StructureModel structureModel;
+        JMenuItem changeColorAction = new JMenuItem(new ChangeColorAction());
+        changeColorAction.setText("Change Color...");
+        this.add(changeColorAction);
 
-        public DeleteAction(StructureModel mod)
+        JMenuItem deleteAction = new JMenuItem(new DeleteAction());
+        deleteAction.setText("Delete");
+        this.add(deleteAction);
+
+        if (showChangeLatLon)
         {
-            this.structureModel = mod;
+            changeLatLonAction = new JMenuItem(new ChangeLatLonAction());
+            changeLatLonAction.setText("Change Latitude/Longitude...");
+            this.add(changeLatLonAction);
         }
 
+        if (showExportPlateDataInsidePolygon)
+        {
+            exportPlateDataAction = new JMenuItem(new ExportPlateDataInsidePolygon());
+            exportPlateDataAction.setText("Save plate data inside polygon...");
+            this.add(exportPlateDataAction);
+        }
+    }
+
+    @Override
+    public void show(Component invoker, int x, int y)
+    {
+        // Disable certain items if more than one structure is highlighted
+        boolean exactlyOne = model.getHighlightedStructures().length == 1;
+
+        if (editAction != null)
+            editAction.setEnabled(exactlyOne);
+
+        if (changeLatLonAction != null)
+            changeLatLonAction.setEnabled(exactlyOne);
+
+        if (exportPlateDataAction != null)
+            exportPlateDataAction.setEnabled(exactlyOne);
+
+        super.show(invoker, x, y);
+    }
+
+    public void showPopup(MouseEvent e, vtkProp pickedProp, int pickedCellId,
+            double[] pickedPosition)
+    {
+        show(e.getComponent(), e.getX(), e.getY());
+    }
+
+    protected class EditAction extends AbstractAction
+    {
         public void actionPerformed(ActionEvent e)
         {
-            structureModel.removeStructure(cellIdLastClicked);
+            int[] highlightedStructures = model.getHighlightedStructures();
+            if (highlightedStructures.length == 1)
+                model.selectStructure(highlightedStructures[0]);
         }
     }
 
-    protected static class ChangeColorAction extends AbstractAction
+    protected class ChangeColorAction extends AbstractAction
     {
-        private Component invoker;
-        private StructureModel structureModel;
-        private int structureIndex;
-
-        public ChangeColorAction(StructureModel structureModel)
-        {
-            this.structureModel = structureModel;
-        }
-
-        public void setInvoker(Component invoker)
-        {
-            this.invoker = invoker;
-        }
-
-        public void setStructureIndex(int idx)
-        {
-            this.structureIndex = idx;
-        }
-
         public void actionPerformed(ActionEvent actionEvent)
         {
+            int[] highlightedStructures = model.getHighlightedStructures();
+            if (highlightedStructures.length == 0)
+                return;
+
+            // Use the color of the first item as the default to show
             Color color = ColorChooser.showColorChooser(
-                    invoker,
-                    structureModel.getStructure(structureIndex).getColor());
+                    getInvoker(),
+                    model.getStructure(highlightedStructures[0]).getColor());
 
             if (color == null)
                 return;
@@ -86,41 +115,57 @@ abstract public class StructuresPopupMenu extends PopupMenu
             c[2] = color.getBlue();
             c[3] = color.getAlpha();
 
-            structureModel.setStructureColor(structureIndex, c);
+            for (int idx : highlightedStructures)
+                model.setStructureColor(idx, c);
         }
     }
 
-    protected static class ChangeLatLonAction extends AbstractAction
+    protected class DeleteAction extends AbstractAction
     {
-        private StructureModel structureModel;
-        private int structureIndex;
-        private Component component;
-
-        public ChangeLatLonAction(StructureModel structureModel)
+        public void actionPerformed(ActionEvent e)
         {
-            this.structureModel = structureModel;
+            int[] highlightedStructures = model.getHighlightedStructures();
+            for (int i=highlightedStructures.length-1; i>=0; --i)
+                model.removeStructure(highlightedStructures[i]);
         }
+    }
 
-        public void setStructureIndex(int idx)
-        {
-            this.structureIndex = idx;
-        }
-
+    protected class ChangeLatLonAction extends AbstractAction
+    {
         public void actionPerformed(ActionEvent actionEvent)
         {
-            ChangeLatLonDialog dialog = new ChangeLatLonDialog(structureModel, structureIndex);
-            dialog.setLocationRelativeTo(JOptionPane.getFrameForComponent(component));
-            dialog.setVisible(true);
+            int[] highlightedStructures = model.getHighlightedStructures();
+            if (highlightedStructures.length == 1)
+            {
+                ChangeLatLonDialog dialog = new ChangeLatLonDialog(model, highlightedStructures[0]);
+                dialog.setLocationRelativeTo(JOptionPane.getFrameForComponent(getInvoker()));
+                dialog.setVisible(true);
+            }
         }
+    }
 
-        /**
-         * Sets the frame which this dialog should be positioned relative to.
-         *
-         * @param component
-         */
-        public void setInvoker(Component component)
+    protected class ExportPlateDataInsidePolygon extends AbstractAction
+    {
+        public void actionPerformed(ActionEvent e)
         {
-            this.component = component;
+            File file = CustomFileChooser.showSaveDialog(getInvoker(), "Save Plate Data", "platedata.txt");
+            if (file != null)
+            {
+                try
+                {
+                    int[] highlightedStructures = model.getHighlightedStructures();
+                    if (highlightedStructures.length == 1)
+                        model.savePlateDataInsideStructure(highlightedStructures[0], file);
+                }
+                catch (IOException e1)
+                {
+                    JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(getInvoker()),
+                            "Unable to save file to " + file.getAbsolutePath(),
+                            "Error Saving File",
+                            JOptionPane.ERROR_MESSAGE);
+                    e1.printStackTrace();
+                }
+            }
         }
     }
 }

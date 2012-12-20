@@ -1,5 +1,7 @@
 package edu.jhuapl.near.gui;
 
+import java.awt.Component;
+
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
@@ -13,6 +15,7 @@ import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.PointModel;
 import edu.jhuapl.near.model.StructureModel;
 import edu.jhuapl.near.pick.PickManager;
+import edu.jhuapl.near.popupmenus.StructuresPopupMenu;
 
 public class PointsMappingControlPanel extends
         AbstractStructureMappingControlPanel implements ChangeListener
@@ -22,12 +25,14 @@ public class PointsMappingControlPanel extends
 
     public PointsMappingControlPanel(
             ModelManager modelManager,
-            PickManager pickManager)
+            PickManager pickManager,
+            Component parent)
     {
         super(modelManager,
                 (StructureModel)modelManager.getModel(ModelNames.POINT_STRUCTURES),
                 pickManager,
                 PickManager.PickMode.POINT_DRAW,
+                (StructuresPopupMenu)pickManager.getPopupManager().getPopup((StructureModel)modelManager.getModel(ModelNames.POINT_STRUCTURES)),
                 false);
 
         pointModel = (PointModel)modelManager.getModel(ModelNames.POINT_STRUCTURES);

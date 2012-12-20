@@ -14,10 +14,13 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
+import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
 import vtk.vtkCellPicker;
 import vtk.vtkRenderWindowPanel;
+
+import edu.jhuapl.near.util.Configuration;
 
 /**
  * A picker is a class that listens on mouse events on the renderer and
@@ -228,4 +231,34 @@ public abstract class Picker implements
 
         return pickSucceeded;
     }
+
+    // We do not rely on the OS for the popup trigger in the renderer (as explained in a comment
+    // in the DefaultPicker.mouseClicked function), we need to role out our own popup trigger logic.
+    // That's we why have the following complicated function. It's easier on non-macs. On macs
+    // we try to mimic the default behaviour where a Control + left mouse click is a popup trigger.
+    // Also for some reason, if you left mouse click while holding down the Command button, then
+    // SwingUtilities.isRightMouseButton() returns true. We therefore also prevent a popup from
+    // showing in this situation.
+    static public boolean isPopupTrigger(MouseEvent e)
+    {
+        if (Configuration.isMac())
+        {
+            if (e.getButton()==MouseEvent.BUTTON1 && e.isControlDown())
+            {
+                return true;
+            }
+
+            if (!(e.getButton()==MouseEvent.BUTTON1 && e.isMetaDown()) && SwingUtilities.isRightMouseButton(e))
+            {
+                return true;
+            }
+        }
+        else if (SwingUtilities.isRightMouseButton(e))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
 }
