@@ -133,14 +133,6 @@ public class PointPicker extends Picker
 
     public void mouseReleased(MouseEvent e)
     {
-//        if (this.currentEditMode == EditMode.VERTEX_DRAG_OR_DELETE &&
-//                vertexIdBeingEdited >= 0 &&
-//                lastDragPosition != null)
-//        {
-//            pointModel.updateSelectedLineVertex(vertexIdBeingEdited, lastDragPosition);
-//        }
-//
-//        vertexIdBeingEdited = -1;
     }
 
     public void mouseDragged(MouseEvent e)

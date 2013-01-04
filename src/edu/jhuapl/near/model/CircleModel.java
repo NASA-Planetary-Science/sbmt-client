@@ -27,9 +27,9 @@ import edu.jhuapl.near.util.Properties;
 public class CircleModel extends AbstractEllipsePolygonModel
 {
     private SmallBodyModel smallBodyModel;
-    private vtkPolyData selectionPolyData;
-    private vtkPolyDataMapper lineSelectionMapper;
-    private vtkActor lineSelectionActor;
+    private vtkPolyData activationPolyData;
+    private vtkPolyDataMapper activationMapper;
+    private vtkActor activationActor;
     private double[] unshiftedPoint1;
     private double[] unshiftedPoint2;
 
@@ -44,26 +44,26 @@ public class CircleModel extends AbstractEllipsePolygonModel
         int[] color = {255, 0, 255};
         setDefaultColor(color);
 
-        selectionPolyData = new vtkPolyData();
+        activationPolyData = new vtkPolyData();
         vtkPoints points = new vtkPoints();
         vtkCellArray cells = new vtkCellArray();
-        selectionPolyData.SetPoints(points);
-        selectionPolyData.SetVerts(cells);
+        activationPolyData.SetPoints(points);
+        activationPolyData.SetVerts(cells);
 
-        lineSelectionMapper = new vtkPolyDataMapper();
-        lineSelectionMapper.SetInput(selectionPolyData);
-        lineSelectionMapper.Update();
+        activationMapper = new vtkPolyDataMapper();
+        activationMapper.SetInput(activationPolyData);
+        activationMapper.Update();
 
-        lineSelectionActor = new vtkActor();
-        lineSelectionActor.PickableOff();
-        vtkProperty lineSelectionProperty = lineSelectionActor.GetProperty();
-        lineSelectionProperty.SetColor(0.0, 0.0, 1.0);
-        lineSelectionProperty.SetPointSize(7.0);
+        activationActor = new vtkActor();
+        activationActor.PickableOff();
+        vtkProperty lineActivationProperty = activationActor.GetProperty();
+        lineActivationProperty.SetColor(0.0, 0.0, 1.0);
+        lineActivationProperty.SetPointSize(7.0);
 
-        lineSelectionActor.SetMapper(lineSelectionMapper);
-        lineSelectionActor.Modified();
+        activationActor.SetMapper(activationMapper);
+        activationActor.Modified();
 
-        getProps().add(lineSelectionActor);
+        getProps().add(activationActor);
     }
 
     /**
@@ -76,8 +76,8 @@ public class CircleModel extends AbstractEllipsePolygonModel
      */
     public boolean addCircumferencePoint(double[] pt)
     {
-        vtkPoints points = selectionPolyData.GetPoints();
-        vtkCellArray vert = selectionPolyData.GetVerts();
+        vtkPoints points = activationPolyData.GetPoints();
+        vtkCellArray vert = activationPolyData.GetVerts();
 
         int numPoints = points.GetNumberOfPoints();
 
@@ -104,9 +104,9 @@ public class CircleModel extends AbstractEllipsePolygonModel
                 points.SetPoint(0, unshiftedPoint1);
             }
 
-            smallBodyModel.shiftPolyLineInNormalDirection(selectionPolyData, getOffset());
+            smallBodyModel.shiftPolyLineInNormalDirection(activationPolyData, getOffset());
 
-            selectionPolyData.Modified();
+            activationPolyData.Modified();
             this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
         }
         else
@@ -170,23 +170,23 @@ public class CircleModel extends AbstractEllipsePolygonModel
      */
     public void resetCircumferencePoints()
     {
-        if (selectionPolyData.GetNumberOfPoints() > 0)
+        if (activationPolyData.GetNumberOfPoints() > 0)
         {
             unshiftedPoint1 = null;
             unshiftedPoint2 = null;
 
             vtkPoints points = new vtkPoints();
             vtkCellArray cells = new vtkCellArray();
-            selectionPolyData.SetPoints(points);
-            selectionPolyData.SetVerts(cells);
+            activationPolyData.SetPoints(points);
+            activationPolyData.SetVerts(cells);
 
-            selectionPolyData.Modified();
+            activationPolyData.Modified();
             this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
         }
     }
 
     public int getNumberOfCircumferencePoints()
     {
-        return selectionPolyData.GetNumberOfPoints();
+        return activationPolyData.GetNumberOfPoints();
     }
 }

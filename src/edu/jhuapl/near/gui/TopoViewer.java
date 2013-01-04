@@ -423,10 +423,10 @@ public class TopoViewer extends JFrame
                 double[] p2 = MathUtil.latrec(end);
 
                 lineModel.addNewStructure();
-                lineModel.selectStructure(lineId);
+                lineModel.activateStructure(lineId);
                 lineModel.setStructureColor(lineId, color);
-                lineModel.insertVertexIntoSelectedStructure(p1);
-                lineModel.insertVertexIntoSelectedStructure(p2);
+                lineModel.insertVertexIntoActivatedStructure(p1);
+                lineModel.insertVertexIntoActivatedStructure(p2);
 
                 ++lineId;
 

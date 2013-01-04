@@ -89,7 +89,7 @@ abstract public class StructuresPopupMenu extends PopupMenu
         {
             int[] highlightedStructures = model.getHighlightedStructures();
             if (highlightedStructures.length == 1)
-                model.selectStructure(highlightedStructures[0]);
+                model.activateStructure(highlightedStructures[0]);
         }
     }
 

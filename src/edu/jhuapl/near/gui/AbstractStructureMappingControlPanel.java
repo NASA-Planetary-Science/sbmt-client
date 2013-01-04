@@ -67,7 +67,6 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
     private JButton hideAllButton;
     private JButton showAllButton;
     //private JComboBox structureTypeComboBox;
-    //private int selectedIndex = -1;
     private StructureModel structureModel;
     private PickManager pickManager;
     private PickManager.PickMode pickMode;
@@ -165,7 +164,7 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
         add(tableScrollPane, "span");
 
 
-        if (structureModel.supportsSelection())
+        if (structureModel.supportsActivation())
         {
             final JButton newButton = new JButton("New");
             newButton.addActionListener(new ActionListener()
@@ -280,7 +279,7 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
 
                 structureModel.removeAllStructures();
                 pickManager.setPickMode(PickManager.PickMode.DEFAULT);
-                structureModel.selectStructure(-1);
+                structureModel.activateStructure(-1);
             }
         });
         add(deleteAllButton, "w 100!, wrap");
@@ -349,7 +348,7 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
         if (idx >= 0 && idx < numStructures)
         {
             structureModel.removeStructure(idx);
-            structureModel.selectStructure(-1);
+            structureModel.activateStructure(-1);
         }
     }
 
@@ -432,9 +431,9 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
         {
             updateStructureTable();
 
-            if (structureModel.supportsSelection())
+            if (structureModel.supportsActivation())
             {
-                int idx = structureModel.getSelectedStructureIndex();
+                int idx = structureModel.getActivatedStructureIndex();
                 if (idx >= 0)
                 {
                     pickManager.setPickMode(pickMode);
@@ -459,7 +458,7 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
         else if (Properties.MODEL_PICKED.equals(evt.getPropertyName()))
         {
             // If we're editing, say, a path, return immediately.
-            if (structureModel.supportsSelection() &&
+            if (structureModel.supportsActivation() &&
                     editButton.isSelected())
             {
                 return;
@@ -587,7 +586,7 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
                 editButton.setSelected(false);
         }
 
-        if (structureModel.supportsSelection())
+        if (structureModel.supportsActivation())
         {
             int idx = structuresTable.getSelectedRow();
 
@@ -596,7 +595,7 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
                 if (idx >= 0)
                 {
                     pickManager.setPickMode(pickMode);
-                    structureModel.selectStructure(idx);
+                    structureModel.activateStructure(idx);
                 }
                 else
                 {
@@ -606,7 +605,7 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
             else
             {
                 pickManager.setPickMode(PickManager.PickMode.DEFAULT);
-                structureModel.selectStructure(-1);
+                structureModel.activateStructure(-1);
             }
 
             // The item in the table might get deselected so select it again here.

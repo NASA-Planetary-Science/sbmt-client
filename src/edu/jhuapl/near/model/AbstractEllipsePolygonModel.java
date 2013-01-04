@@ -647,9 +647,9 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
-    public void selectStructure(int idx)
+    public void activateStructure(int idx)
     {
-        // Do nothing. RegularPolygonModel does not support selection.
+        // Do nothing. RegularPolygonModel does not support activation.
     }
 
     /**
@@ -861,12 +861,12 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
         out.close();
     }
 
-    public int getSelectedStructureIndex()
+    public int getActivatedStructureIndex()
     {
         return -1;
     }
 
-    public boolean supportsSelection()
+    public boolean supportsActivation()
     {
         return false;
     }

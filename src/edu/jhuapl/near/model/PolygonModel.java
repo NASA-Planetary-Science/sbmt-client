@@ -53,7 +53,7 @@ import edu.jhuapl.near.util.Properties;
 public class PolygonModel extends ControlPointsStructureModel implements PropertyChangeListener
 {
     private ArrayList<Polygon> polygons = new ArrayList<Polygon>();
-    private vtkPolyData selectionPolyData;
+    private vtkPolyData activationPolyData;
 
     private vtkPolyData boundaryPolyData;
     private vtkAppendPolyData boundaryAppendFilter;
@@ -69,11 +69,11 @@ public class PolygonModel extends ControlPointsStructureModel implements Propert
     private vtkUnsignedCharArray interiorColors;
 
     private ArrayList<vtkProp> actors = new ArrayList<vtkProp>();
-    private vtkPolyDataMapper polygonSelectionMapper;
-    private vtkActor polygonSelectionActor;
+    private vtkPolyDataMapper polygonActivationMapper;
+    private vtkActor polygonActivationActor;
 
     private SmallBodyModel smallBodyModel;
-    private int selectedPolygon = -1;
+    private int activatedPolygon = -1;
     private int currentPolygonVertex = -1000;
     private int[] highlightedStructures = null;
     private int[] highlightColor = {0, 0, 255, 255};
@@ -131,10 +131,10 @@ public class PolygonModel extends ControlPointsStructureModel implements Propert
 
         actors.add(interiorActor);
 
-        polygonSelectionActor = new vtkActor();
-        vtkProperty polygonSelectionProperty = polygonSelectionActor.GetProperty();
-        polygonSelectionProperty.SetColor(1.0, 0.0, 0.0);
-        polygonSelectionProperty.SetPointSize(7.0);
+        polygonActivationActor = new vtkActor();
+        vtkProperty polygonActivationProperty = polygonActivationActor.GetProperty();
+        polygonActivationProperty.SetColor(1.0, 0.0, 0.0);
+        polygonActivationProperty.SetPointSize(7.0);
 
         // Initialize an empty polydata for resetting
         emptyPolyData = new vtkPolyData();
@@ -148,17 +148,17 @@ public class PolygonModel extends ControlPointsStructureModel implements Propert
         vtkCellData cellData = emptyPolyData.GetCellData();
         cellData.SetScalars(colors);
 
-        selectionPolyData = new vtkPolyData();
-        selectionPolyData.DeepCopy(emptyPolyData);
+        activationPolyData = new vtkPolyData();
+        activationPolyData.DeepCopy(emptyPolyData);
 
-        polygonSelectionMapper = new vtkPolyDataMapper();
-        polygonSelectionMapper.SetInput(selectionPolyData);
-        polygonSelectionMapper.Update();
+        polygonActivationMapper = new vtkPolyDataMapper();
+        polygonActivationMapper.SetInput(activationPolyData);
+        polygonActivationMapper.Update();
 
-        polygonSelectionActor.SetMapper(polygonSelectionMapper);
-        polygonSelectionActor.Modified();
+        polygonActivationActor.SetMapper(polygonActivationMapper);
+        polygonActivationActor.Modified();
 
-        actors.add(polygonSelectionActor);
+        actors.add(polygonActivationActor);
     }
 
     public Element toXmlDomElement(Document dom)
@@ -306,17 +306,17 @@ public class PolygonModel extends ControlPointsStructureModel implements Propert
         return polygons.get(cellId);
     }
 
-    public Polygon getSelectedPolygon()
+    public Polygon getActivatedPolygon()
     {
-        if (selectedPolygon >= 0 && selectedPolygon < polygons.size())
-            return polygons.get(selectedPolygon);
+        if (activatedPolygon >= 0 && activatedPolygon < polygons.size())
+            return polygons.get(activatedPolygon);
         else
             return null;
     }
 
-    public int getSelectedStructureIndex()
+    public int getActivatedStructureIndex()
     {
-        return selectedPolygon;
+        return activatedPolygon;
     }
 
     public vtkActor getBoundaryActor()
@@ -329,9 +329,9 @@ public class PolygonModel extends ControlPointsStructureModel implements Propert
         return interiorActor;
     }
 
-    public vtkActor getSelectionActor()
+    public vtkActor getActivationActor()
     {
-        return polygonSelectionActor;
+        return polygonActivationActor;
     }
 
     /**
@@ -352,13 +352,13 @@ public class PolygonModel extends ControlPointsStructureModel implements Propert
     {
         Polygon pol = new Polygon(smallBodyModel);
         polygons.add(pol);
-        selectStructure(polygons.size()-1);
+        activateStructure(polygons.size()-1);
         this.pcs.firePropertyChange(Properties.STRUCTURE_ADDED, null, null);
     }
 
-    public void updateSelectedStructureVertex(int vertexId, double[] newPoint)
+    public void updateActivatedStructureVertex(int vertexId, double[] newPoint)
     {
-        Polygon pol = polygons.get(selectedPolygon);
+        Polygon pol = polygons.get(activatedPolygon);
 
         LatLon ll = MathUtil.reclat(newPoint);
         pol.controlPoints.set(vertexId, ll);
@@ -367,19 +367,19 @@ public class PolygonModel extends ControlPointsStructureModel implements Propert
 
         updatePolyData();
 
-        updatePolygonSelection();
+        updatePolygonActivation();
 
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-        this.pcs.firePropertyChange(Properties.VERTEX_POSITION_CHANGED, null, selectedPolygon);
+        this.pcs.firePropertyChange(Properties.VERTEX_POSITION_CHANGED, null, activatedPolygon);
     }
 
 
-    public void insertVertexIntoSelectedStructure(double[] newPoint)
+    public void insertVertexIntoActivatedStructure(double[] newPoint)
     {
-        if (selectedPolygon < 0)
+        if (activatedPolygon < 0)
             return;
 
-        Polygon pol = polygons.get(selectedPolygon);
+        Polygon pol = polygons.get(activatedPolygon);
 
         if (pol.controlPoints.size() == maximumVerticesPerPolygon)
             return;
@@ -397,16 +397,16 @@ public class PolygonModel extends ControlPointsStructureModel implements Propert
 
         updatePolyData();
 
-        updatePolygonSelection();
+        updatePolygonActivation();
 
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-        this.pcs.firePropertyChange(Properties.VERTEX_INSERTED_INTO_LINE, null, selectedPolygon);
+        this.pcs.firePropertyChange(Properties.VERTEX_INSERTED_INTO_LINE, null, activatedPolygon);
     }
 
 
     public void removeCurrentStructureVertex()
     {
-        Polygon pol = polygons.get(selectedPolygon);
+        Polygon pol = polygons.get(activatedPolygon);
 
         if (currentPolygonVertex < 0 || currentPolygonVertex >= pol.controlPoints.size())
             return;
@@ -423,7 +423,7 @@ public class PolygonModel extends ControlPointsStructureModel implements Propert
 
         updatePolyData();
 
-        updatePolygonSelection();
+        updatePolygonActivation();
 
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
@@ -435,8 +435,8 @@ public class PolygonModel extends ControlPointsStructureModel implements Propert
 
         updatePolyData();
 
-        if (cellId == selectedPolygon)
-            selectStructure(-1);
+        if (cellId == activatedPolygon)
+            activateStructure(-1);
         else
             this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 
@@ -457,8 +457,8 @@ public class PolygonModel extends ControlPointsStructureModel implements Propert
 
         updatePolyData();
 
-        if (Arrays.binarySearch(indices, selectedPolygon) < 0)
-            selectStructure(-1);
+        if (Arrays.binarySearch(indices, activatedPolygon) < 0)
+            activateStructure(-1);
         else
             this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
@@ -469,35 +469,35 @@ public class PolygonModel extends ControlPointsStructureModel implements Propert
 
         updatePolyData();
 
-        selectStructure(-1);
+        activateStructure(-1);
 
         this.pcs.firePropertyChange(Properties.ALL_STRUCTURES_REMOVED, null, null);
     }
 
-    public void moveSelectionVertex(int vertexId, double[] newPoint)
+    public void moveActivationVertex(int vertexId, double[] newPoint)
     {
-        vtkPoints points = selectionPolyData.GetPoints();
+        vtkPoints points = activationPolyData.GetPoints();
         points.SetPoint(vertexId, newPoint);
-        selectionPolyData.Modified();
+        activationPolyData.Modified();
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
-    protected void updatePolygonSelection()
+    protected void updatePolygonActivation()
     {
-        if (selectedPolygon == -1)
+        if (activatedPolygon == -1)
         {
-            if (actors.contains(polygonSelectionActor))
-                actors.remove(polygonSelectionActor);
+            if (actors.contains(polygonActivationActor))
+                actors.remove(polygonActivationActor);
 
             return;
         }
 
-        Polygon pol = polygons.get(selectedPolygon);
+        Polygon pol = polygons.get(activatedPolygon);
 
-        selectionPolyData.DeepCopy(emptyPolyData);
-        vtkPoints points = selectionPolyData.GetPoints();
-        vtkCellArray vert = selectionPolyData.GetVerts();
-        vtkCellData cellData = selectionPolyData.GetCellData();
+        activationPolyData.DeepCopy(emptyPolyData);
+        vtkPoints points = activationPolyData.GetPoints();
+        vtkCellArray vert = activationPolyData.GetVerts();
+        vtkCellData cellData = activationPolyData.GetCellData();
         vtkUnsignedCharArray colors = (vtkUnsignedCharArray)cellData.GetScalars();
 
         int numPoints = pol.controlPoints.size();
@@ -518,22 +518,22 @@ public class PolygonModel extends ControlPointsStructureModel implements Propert
                 colors.InsertNextTuple4(redColor[0],redColor[1],redColor[2],redColor[3]);
         }
 
-        smallBodyModel.shiftPolyLineInNormalDirection(selectionPolyData, offset);
+        smallBodyModel.shiftPolyLineInNormalDirection(activationPolyData, offset);
 
-        if (!actors.contains(polygonSelectionActor))
-            actors.add(polygonSelectionActor);
+        if (!actors.contains(polygonActivationActor))
+            actors.add(polygonActivationActor);
     }
 
-    public void selectStructure(int cellId)
+    public void activateStructure(int cellId)
     {
-        if (selectedPolygon == cellId)
+        if (activatedPolygon == cellId)
             return;
 
-        selectedPolygon = cellId;
+        activatedPolygon = cellId;
 
         if (cellId >= 0)
         {
-            Polygon pol = polygons.get(selectedPolygon);
+            Polygon pol = polygons.get(activatedPolygon);
             currentPolygonVertex = pol.controlPoints.size()-1;
         }
         else
@@ -541,7 +541,7 @@ public class PolygonModel extends ControlPointsStructureModel implements Propert
             currentPolygonVertex = -1000;
         }
 
-        updatePolygonSelection();
+        updatePolygonActivation();
 
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
@@ -550,7 +550,7 @@ public class PolygonModel extends ControlPointsStructureModel implements Propert
     {
         currentPolygonVertex = idx;
 
-        updatePolygonSelection();
+        updatePolygonActivation();
 
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
@@ -611,7 +611,7 @@ public class PolygonModel extends ControlPointsStructureModel implements Propert
         }
     }
 
-    public boolean supportsSelection()
+    public boolean supportsActivation()
     {
         return true;
     }
@@ -626,9 +626,9 @@ public class PolygonModel extends ControlPointsStructureModel implements Propert
         {
             return getPolygonIdFromInteriorCellId(cellId);
         }
-        else if (prop == polygonSelectionActor)
+        else if (prop == polygonActivationActor)
         {
-            return selectedPolygon;
+            return activatedPolygon;
         }
 
         return -1;
@@ -659,7 +659,7 @@ public class PolygonModel extends ControlPointsStructureModel implements Propert
 
         updatePolyData();
 
-        updatePolygonSelection();
+        updatePolygonActivation();
 
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
@@ -684,9 +684,9 @@ public class PolygonModel extends ControlPointsStructureModel implements Propert
         this.pcs.firePropertyChange(Properties.COLOR_CHANGED, null, idx);
     }
 
-    protected vtkPolyData getSelectionPolyData()
+    protected vtkPolyData getActivationPolyData()
     {
-        return selectionPolyData;
+        return activationPolyData;
     }
 
     protected vtkPolyData getEmptyPolyData()
@@ -784,7 +784,7 @@ public class PolygonModel extends ControlPointsStructureModel implements Propert
     {
         boundaryActor.SetVisibility(b ? 1 : 0);
         interiorActor.SetVisibility(b ? 1 : 0);
-        polygonSelectionActor.SetVisibility(b ? 1 : 0);
+        polygonActivationActor.SetVisibility(b ? 1 : 0);
         super.setVisible(b);
     }
 

@@ -33,11 +33,11 @@ public abstract class StructureModel extends Model
 
     public abstract void addNewStructure();
 
-    public abstract boolean supportsSelection();
+    public abstract boolean supportsActivation();
 
-    public abstract void selectStructure(int idx);
+    public abstract void activateStructure(int idx);
 
-    public abstract int getSelectedStructureIndex();
+    public abstract int getActivatedStructureIndex();
 
     public abstract void highlightStructures(int[] indices);
 

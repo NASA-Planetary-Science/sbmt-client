@@ -19,26 +19,26 @@ public abstract class ControlPointsStructureModel extends StructureModel
         super(name);
     }
 
-    abstract public vtkActor getSelectionActor();
+    abstract public vtkActor getActivationActor();
 
     abstract public void selectCurrentStructureVertex(int idx);
 
-    abstract public void insertVertexIntoSelectedStructure(double[] newPoint);
+    abstract public void insertVertexIntoActivatedStructure(double[] newPoint);
 
-    abstract public void updateSelectedStructureVertex(int vertexId, double[] newPoint);
+    abstract public void updateActivatedStructureVertex(int vertexId, double[] newPoint);
 
-    abstract public void moveSelectionVertex(int vertexId, double[] newPoint);
+    abstract public void moveActivationVertex(int vertexId, double[] newPoint);
 
     abstract public void removeCurrentStructureVertex();
 
     //optional for subclasses
-    public int getStructureIdFromSelectionCellId(int idx)
+    public int getStructureIdFromActivationCellId(int idx)
     {
         return -1;
     }
 
     //optional for subclasses
-    public int getVertexIdFromSelectionCellId(int idx)
+    public int getVertexIdFromActivationCellId(int idx)
     {
         return -1;
     }

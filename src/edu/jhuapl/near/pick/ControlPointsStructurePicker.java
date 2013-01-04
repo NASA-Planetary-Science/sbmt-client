@@ -37,7 +37,7 @@ public class ControlPointsStructurePicker extends Picker
     private ControlPointsStructureModel structureModel;
 
     private vtkCellPicker smallBodyPicker;
-    private vtkCellPicker structureSelectionPicker;
+    private vtkCellPicker structureActivationPicker;
 
     private int vertexIdBeingEdited = -1;
 
@@ -81,12 +81,12 @@ public class ControlPointsStructurePicker extends Picker
         }
         smallBodyPicker.AddLocator(smallBodyModel.getCellLocator());
 
-        structureSelectionPicker = new vtkCellPicker();
-        structureSelectionPicker.PickFromListOn();
-        structureSelectionPicker.InitializePickList();
-        vtkPropCollection structureSelectionPickList = structureSelectionPicker.GetPickList();
-        structureSelectionPickList.RemoveAllItems();
-        structureSelectionPicker.AddPickList(structureModel.getSelectionActor());
+        structureActivationPicker = new vtkCellPicker();
+        structureActivationPicker.PickFromListOn();
+        structureActivationPicker.InitializePickList();
+        vtkPropCollection structureActivationPickList = structureActivationPicker.GetPickList();
+        structureActivationPickList.RemoveAllItems();
+        structureActivationPicker.AddPickList(structureModel.getActivationActor());
     }
 
     public void mousePressed(MouseEvent e)
@@ -103,21 +103,21 @@ public class ControlPointsStructurePicker extends Picker
             if (e.getButton() != MouseEvent.BUTTON1 && e.getButton() != MouseEvent.BUTTON3)
                 return;
 
-            int pickSucceeded = doPick(e, structureSelectionPicker, renWin);
+            int pickSucceeded = doPick(e, structureActivationPicker, renWin);
             if (pickSucceeded == 1)
             {
-                vtkActor pickedActor = structureSelectionPicker.GetActor();
+                vtkActor pickedActor = structureActivationPicker.GetActor();
 
-                if (pickedActor == structureModel.getSelectionActor())
+                if (pickedActor == structureModel.getActivationActor())
                 {
                     if (e.getButton() == MouseEvent.BUTTON1)
                     {
-                        vertexIdBeingEdited = structureSelectionPicker.GetCellId();
+                        vertexIdBeingEdited = structureActivationPicker.GetCellId();
 
                         if (profileMode)
                         {
-                            int lineId = structureModel.getStructureIdFromSelectionCellId(vertexIdBeingEdited);
-                            structureModel.selectStructure(lineId);
+                            int lineId = structureModel.getStructureIdFromActivationCellId(vertexIdBeingEdited);
+                            structureModel.activateStructure(lineId);
                         }
 
                         structureModel.selectCurrentStructureVertex(vertexIdBeingEdited);
@@ -126,7 +126,7 @@ public class ControlPointsStructurePicker extends Picker
                     {
                         vertexIdBeingEdited = -1;
                         if (profileMode)
-                            structureModel.selectStructure(-1);
+                            structureModel.activateStructure(-1);
                     }
                 }
             }
@@ -148,7 +148,7 @@ public class ControlPointsStructurePicker extends Picker
                     double[] pos = smallBodyPicker.GetPickPosition();
                     if (e.getClickCount() == 1)
                     {
-                        structureModel.insertVertexIntoSelectedStructure(pos);
+                        structureModel.insertVertexIntoActivatedStructure(pos);
                     }
                 }
             }
@@ -164,9 +164,9 @@ public class ControlPointsStructurePicker extends Picker
             int vertexId = vertexIdBeingEdited;
 
             if (profileMode)
-                vertexId = structureModel.getVertexIdFromSelectionCellId(vertexIdBeingEdited);
+                vertexId = structureModel.getVertexIdFromActivationCellId(vertexIdBeingEdited);
 
-            structureModel.updateSelectedStructureVertex(vertexId, lastDragPosition);
+            structureModel.updateActivatedStructureVertex(vertexId, lastDragPosition);
         }
 
         vertexIdBeingEdited = -1;
@@ -191,7 +191,7 @@ public class ControlPointsStructurePicker extends Picker
                 {
                     lastDragPosition = smallBodyPicker.GetPickPosition();
 
-                    structureModel.moveSelectionVertex(vertexIdBeingEdited, lastDragPosition);
+                    structureModel.moveActivationVertex(vertexIdBeingEdited, lastDragPosition);
                 }
             }
         }
@@ -200,7 +200,7 @@ public class ControlPointsStructurePicker extends Picker
 
     public void mouseMoved(MouseEvent e)
     {
-        int pickSucceeded = doPick(e, structureSelectionPicker, renWin);
+        int pickSucceeded = doPick(e, structureActivationPicker, renWin);
 
         // If we're in profile mode, then do not allow dragging of a vertex if we're
         // in the middle of creating a new profile. We can determine if we're in the
@@ -219,7 +219,7 @@ public class ControlPointsStructurePicker extends Picker
         }
 
         if (pickSucceeded == 1 &&
-            structureSelectionPicker.GetActor() == structureModel.getSelectionActor() &&
+            structureActivationPicker.GetActor() == structureModel.getActivationActor() &&
             profileModeOkToDrag)
         {
             if (renWin.getCursor().getType() != Cursor.HAND_CURSOR)

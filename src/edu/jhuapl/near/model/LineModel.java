@@ -53,15 +53,15 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
 {
     private ArrayList<Line> lines = new ArrayList<Line>();
     private vtkPolyData linesPolyData;
-    private vtkPolyData selectionPolyData;
+    private vtkPolyData activationPolyData;
 
     private ArrayList<vtkProp> actors = new ArrayList<vtkProp>();
     private vtkPolyDataMapper lineMapper;
-    private vtkPolyDataMapper lineSelectionMapper;
+    private vtkPolyDataMapper lineActivationMapper;
     private vtkActor lineActor;
-    private vtkActor lineSelectionActor;
+    private vtkActor lineActivationActor;
     private SmallBodyModel smallBodyModel;
-    private int selectedLine = -1;
+    private int activatedLine = -1;
     private int currentLineVertex = -1000;
     private int[] highlightedStructures = null;
     private int[] highlightColor = {0, 0, 255, 255};
@@ -109,10 +109,10 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
         if (profileMode)
             lineProperty.SetLineWidth(3.0);
 
-        lineSelectionActor = new vtkActor();
-        vtkProperty lineSelectionProperty = lineSelectionActor.GetProperty();
-        lineSelectionProperty.SetColor(1.0, 0.0, 0.0);
-        lineSelectionProperty.SetPointSize(7.0);
+        lineActivationActor = new vtkActor();
+        vtkProperty lineActivationProperty = lineActivationActor.GetProperty();
+        lineActivationProperty.SetColor(1.0, 0.0, 0.0);
+        lineActivationProperty.SetPointSize(7.0);
 
         // Initialize an empty polydata for resetting
         emptyPolyData = new vtkPolyData();
@@ -129,17 +129,17 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
         linesPolyData = new vtkPolyData();
         linesPolyData.DeepCopy(emptyPolyData);
 
-        selectionPolyData = new vtkPolyData();
-        selectionPolyData.DeepCopy(emptyPolyData);
+        activationPolyData = new vtkPolyData();
+        activationPolyData.DeepCopy(emptyPolyData);
 
-        lineSelectionMapper = new vtkPolyDataMapper();
-        lineSelectionMapper.SetInput(selectionPolyData);
-        lineSelectionMapper.Update();
+        lineActivationMapper = new vtkPolyDataMapper();
+        lineActivationMapper.SetInput(activationPolyData);
+        lineActivationMapper.Update();
 
-        lineSelectionActor.SetMapper(lineSelectionMapper);
-        lineSelectionActor.Modified();
+        lineActivationActor.SetMapper(lineActivationMapper);
+        lineActivationActor.Modified();
 
-        actors.add(lineSelectionActor);
+        actors.add(lineActivationActor);
     }
 
     public Element toXmlDomElement(Document dom)
@@ -260,17 +260,17 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
         return lines.get(cellId);
     }
 
-    public Line getSelectedLine()
+    public Line getActivatedLine()
     {
-        if (selectedLine >= 0 && selectedLine < lines.size())
-            return lines.get(selectedLine);
+        if (activatedLine >= 0 && activatedLine < lines.size())
+            return lines.get(activatedLine);
         else
             return null;
     }
 
-    public int getSelectedStructureIndex()
+    public int getActivatedStructureIndex()
     {
-        return selectedLine;
+        return activatedLine;
     }
 
     public vtkActor getStructureActor()
@@ -278,9 +278,9 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
         return lineActor;
     }
 
-    public vtkActor getSelectionActor()
+    public vtkActor getActivationActor()
     {
-        return lineSelectionActor;
+        return lineActivationActor;
     }
 
     /**
@@ -328,7 +328,7 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
     {
         Line lin = new Line(smallBodyModel);
         lines.add(lin);
-        selectStructure(lines.size()-1);
+        activateStructure(lines.size()-1);
         this.pcs.firePropertyChange(Properties.STRUCTURE_ADDED, null, null);
     }
 
@@ -348,13 +348,13 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
 
         updatePolyData();
 
-        selectLine(lines.size()-1);
+        activateLine(lines.size()-1);
     }
     */
 
-    public void updateSelectedStructureVertex(int vertexId, double[] newPoint)
+    public void updateActivatedStructureVertex(int vertexId, double[] newPoint)
     {
-        Line lin = lines.get(selectedLine);
+        Line lin = lines.get(activatedLine);
 
         int numVertices = lin.lat.size();
 
@@ -382,10 +382,10 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
 
         updatePolyData();
 
-        updateLineSelection();
+        updateLineActivation();
 
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-        this.pcs.firePropertyChange(Properties.VERTEX_POSITION_CHANGED, null, selectedLine);
+        this.pcs.firePropertyChange(Properties.VERTEX_POSITION_CHANGED, null, activatedLine);
     }
 
     /*
@@ -424,9 +424,9 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
     */
 
     /*
-    public void addVertexToSelectedLine(double[] newPoint)
+    public void addVertexToActivatedLine(double[] newPoint)
     {
-        Line lin = lines.get(selectedLine);
+        Line lin = lines.get(activatedLine);
         LatLon ll = Spice.reclat(newPoint);
 
         lin.lat.add(ll.lat);
@@ -441,18 +441,18 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
 
         updatePolyData();
 
-        updateLineSelection();
+        updateLineActivation();
 
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
      */
 
-    public void insertVertexIntoSelectedStructure(double[] newPoint)
+    public void insertVertexIntoActivatedStructure(double[] newPoint)
     {
-        if (selectedLine < 0)
+        if (activatedLine < 0)
             return;
 
-        Line lin = lines.get(selectedLine);
+        Line lin = lines.get(activatedLine);
 
         if (lin.controlPointIds.size() == maximumVerticesPerLine)
             return;
@@ -513,16 +513,16 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
 
         updatePolyData();
 
-        updateLineSelection();
+        updateLineActivation();
 
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-        this.pcs.firePropertyChange(Properties.VERTEX_INSERTED_INTO_LINE, null, selectedLine);
+        this.pcs.firePropertyChange(Properties.VERTEX_INSERTED_INTO_LINE, null, activatedLine);
     }
 
 
     public void removeCurrentStructureVertex()
     {
-        Line lin = lines.get(selectedLine);
+        Line lin = lines.get(activatedLine);
 
         if (currentLineVertex < 0 || currentLineVertex >= lin.controlPointIds.size())
             return;
@@ -596,7 +596,7 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
 
         updatePolyData();
 
-        updateLineSelection();
+        updateLineActivation();
 
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
@@ -609,10 +609,10 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
         updatePolyData();
 
         if (profileMode)
-            updateLineSelection();
+            updateLineActivation();
 
-        if (cellId == selectedLine)
-            selectStructure(-1);
+        if (cellId == activatedLine)
+            activateStructure(-1);
         else
             this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 
@@ -634,10 +634,10 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
         updatePolyData();
 
         if (profileMode)
-            updateLineSelection();
+            updateLineActivation();
 
-        if (Arrays.binarySearch(indices, selectedLine) < 0)
-            selectStructure(-1);
+        if (Arrays.binarySearch(indices, activatedLine) < 0)
+            activateStructure(-1);
         else
             this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
@@ -649,29 +649,29 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
         updatePolyData();
 
         if (profileMode)
-            updateLineSelection();
+            updateLineActivation();
 
-        selectStructure(-1);
+        activateStructure(-1);
 
         this.pcs.firePropertyChange(Properties.ALL_STRUCTURES_REMOVED, null, null);
     }
 
-    public void moveSelectionVertex(int vertexId, double[] newPoint)
+    public void moveActivationVertex(int vertexId, double[] newPoint)
     {
-        vtkPoints points = selectionPolyData.GetPoints();
+        vtkPoints points = activationPolyData.GetPoints();
         points.SetPoint(vertexId, newPoint);
-        selectionPolyData.Modified();
+        activationPolyData.Modified();
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
-    protected void updateLineSelection()
+    protected void updateLineActivation()
     {
         if (profileMode)
         {
-            selectionPolyData.DeepCopy(emptyPolyData);
-            vtkPoints points = selectionPolyData.GetPoints();
-            vtkCellArray vert = selectionPolyData.GetVerts();
-            vtkCellData cellData = selectionPolyData.GetCellData();
+            activationPolyData.DeepCopy(emptyPolyData);
+            vtkPoints points = activationPolyData.GetPoints();
+            vtkCellArray vert = activationPolyData.GetVerts();
+            vtkCellData cellData = activationPolyData.GetCellData();
             vtkUnsignedCharArray colors = (vtkUnsignedCharArray)cellData.GetScalars();
 
             idList.SetNumberOfIds(1);
@@ -696,26 +696,26 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
                 }
             }
 
-            smallBodyModel.shiftPolyLineInNormalDirection(selectionPolyData,
+            smallBodyModel.shiftPolyLineInNormalDirection(activationPolyData,
                     smallBodyModel.getMinShiftAmount());
 
         }
         else
         {
-            if (selectedLine == -1)
+            if (activatedLine == -1)
             {
-                if (actors.contains(lineSelectionActor))
-                    actors.remove(lineSelectionActor);
+                if (actors.contains(lineActivationActor))
+                    actors.remove(lineActivationActor);
 
                 return;
             }
 
-            Line lin = lines.get(selectedLine);
+            Line lin = lines.get(activatedLine);
 
-            selectionPolyData.DeepCopy(emptyPolyData);
-            vtkPoints points = selectionPolyData.GetPoints();
-            vtkCellArray vert = selectionPolyData.GetVerts();
-            vtkCellData cellData = selectionPolyData.GetCellData();
+            activationPolyData.DeepCopy(emptyPolyData);
+            vtkPoints points = activationPolyData.GetPoints();
+            vtkCellArray vert = activationPolyData.GetVerts();
+            vtkCellData cellData = activationPolyData.GetCellData();
             vtkUnsignedCharArray colors = (vtkUnsignedCharArray)cellData.GetScalars();
 
             int numPoints = lin.controlPointIds.size();
@@ -736,23 +736,23 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
                     colors.InsertNextTuple4(redColor[0],redColor[1],redColor[2],redColor[3]);
             }
 
-            smallBodyModel.shiftPolyLineInNormalDirection(selectionPolyData, offset);
+            smallBodyModel.shiftPolyLineInNormalDirection(activationPolyData, offset);
 
-            if (!actors.contains(lineSelectionActor))
-                actors.add(lineSelectionActor);
+            if (!actors.contains(lineActivationActor))
+                actors.add(lineActivationActor);
         }
     }
 
-    public void selectStructure(int cellId)
+    public void activateStructure(int cellId)
     {
-        if (selectedLine == cellId)
+        if (activatedLine == cellId)
             return;
 
-        selectedLine = cellId;
+        activatedLine = cellId;
 
         if (cellId >= 0)
         {
-            Line lin = lines.get(selectedLine);
+            Line lin = lines.get(activatedLine);
             currentLineVertex = lin.controlPointIds.size()-1;
         }
         else
@@ -760,7 +760,7 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
             currentLineVertex = -1000;
         }
 
-        updateLineSelection();
+        updateLineActivation();
 
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
@@ -769,7 +769,7 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
     {
         currentLineVertex = idx;
 
-        updateLineSelection();
+        updateLineActivation();
 
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
@@ -830,7 +830,7 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
         }
     }
 
-    public boolean supportsSelection()
+    public boolean supportsActivation()
     {
         return true;
     }
@@ -839,8 +839,8 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
     {
         if (prop == lineActor)
             return cellId;
-        else if (prop == lineSelectionActor)
-            return selectedLine;
+        else if (prop == lineActivationActor)
+            return activatedLine;
         else
             return -1;
     }
@@ -870,7 +870,7 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
 
         updatePolyData();
 
-        updateLineSelection();
+        updateLineActivation();
 
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
@@ -895,9 +895,9 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
         this.pcs.firePropertyChange(Properties.COLOR_CHANGED, null, idx);
     }
 
-    protected vtkPolyData getSelectionPolyData()
+    protected vtkPolyData getActivationPolyData()
     {
-        return selectionPolyData;
+        return activationPolyData;
     }
 
     protected vtkPolyData getEmptyPolyData()
@@ -912,12 +912,12 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
 
     /**
      * PROFILE MODE ONLY!!
-     * Get the vertex id of the line the selected vertex belongs.
+     * Get the vertex id of the line the specified vertex belongs.
      * Only 0 or 1 can be returned.
      * @param idx
      * @return
      */
-    public int getVertexIdFromSelectionCellId(int idx)
+    public int getVertexIdFromActivationCellId(int idx)
     {
         int numLines = getNumberOfStructures();
         for (int j=0; j<numLines; ++j)
@@ -948,7 +948,7 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
      * @param idx
      * @return
      */
-    public int getStructureIdFromSelectionCellId(int idx)
+    public int getStructureIdFromActivationCellId(int idx)
     {
         int count = 0;
         int numLines = getNumberOfStructures();
@@ -1161,7 +1161,7 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
     public void setVisible(boolean b)
     {
         lineActor.SetVisibility(b ? 1 : 0);
-        lineSelectionActor.SetVisibility(b ? 1 : 0);
+        lineActivationActor.SetVisibility(b ? 1 : 0);
         super.setVisible(b);
     }
 }
