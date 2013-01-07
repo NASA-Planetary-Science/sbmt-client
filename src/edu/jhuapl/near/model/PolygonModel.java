@@ -75,8 +75,8 @@ public class PolygonModel extends ControlPointsStructureModel implements Propert
     private SmallBodyModel smallBodyModel;
     private int activatedPolygon = -1;
     private int currentPolygonVertex = -1000;
-    private int[] highlightedStructures = null;
-    private int[] highlightColor = {0, 0, 255, 255};
+    private int[] selectedStructures = null;
+    private int[] selectionColor = {0, 0, 255, 255};
     private int maximumVerticesPerPolygon = Integer.MAX_VALUE;
     private vtkIdList idList;
 
@@ -236,8 +236,8 @@ public class PolygonModel extends ControlPointsStructureModel implements Propert
             {
                 int[] color = polygons.get(i).color;
 
-                if (Arrays.binarySearch(this.highlightedStructures, i) >= 0)
-                    color = highlightColor;
+                if (Arrays.binarySearch(this.selectedStructures, i) >= 0)
+                    color = selectionColor;
 
                 IdPair range = this.getCellIdRangeOfPolygon(i, false);
                 for (int j=range.id1; j<range.id2; ++j)
@@ -634,16 +634,16 @@ public class PolygonModel extends ControlPointsStructureModel implements Propert
         return -1;
     }
 
-    public void highlightStructures(int[] indices)
+    public void selectStructures(int[] indices)
     {
-        this.highlightedStructures = indices;
+        this.selectedStructures = indices;
         updatePolyData();
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
-    public int[] getHighlightedStructures()
+    public int[] getSelectedStructures()
     {
-        return highlightedStructures;
+        return selectedStructures;
     }
 
     public void redrawAllStructures()

@@ -62,8 +62,8 @@ abstract public class StructuresPopupMenu extends PopupMenu
     @Override
     public void show(Component invoker, int x, int y)
     {
-        // Disable certain items if more than one structure is highlighted
-        boolean exactlyOne = model.getHighlightedStructures().length == 1;
+        // Disable certain items if more than one structure is selected
+        boolean exactlyOne = model.getSelectedStructures().length == 1;
 
         if (editAction != null)
             editAction.setEnabled(exactlyOne);
@@ -87,9 +87,9 @@ abstract public class StructuresPopupMenu extends PopupMenu
     {
         public void actionPerformed(ActionEvent e)
         {
-            int[] highlightedStructures = model.getHighlightedStructures();
-            if (highlightedStructures.length == 1)
-                model.activateStructure(highlightedStructures[0]);
+            int[] selectedStructures = model.getSelectedStructures();
+            if (selectedStructures.length == 1)
+                model.activateStructure(selectedStructures[0]);
         }
     }
 
@@ -97,14 +97,14 @@ abstract public class StructuresPopupMenu extends PopupMenu
     {
         public void actionPerformed(ActionEvent actionEvent)
         {
-            int[] highlightedStructures = model.getHighlightedStructures();
-            if (highlightedStructures.length == 0)
+            int[] selectedStructures = model.getSelectedStructures();
+            if (selectedStructures.length == 0)
                 return;
 
             // Use the color of the first item as the default to show
             Color color = ColorChooser.showColorChooser(
                     getInvoker(),
-                    model.getStructure(highlightedStructures[0]).getColor());
+                    model.getStructure(selectedStructures[0]).getColor());
 
             if (color == null)
                 return;
@@ -115,7 +115,7 @@ abstract public class StructuresPopupMenu extends PopupMenu
             c[2] = color.getBlue();
             c[3] = color.getAlpha();
 
-            for (int idx : highlightedStructures)
+            for (int idx : selectedStructures)
                 model.setStructureColor(idx, c);
         }
     }
@@ -124,9 +124,9 @@ abstract public class StructuresPopupMenu extends PopupMenu
     {
         public void actionPerformed(ActionEvent e)
         {
-            int[] highlightedStructures = model.getHighlightedStructures();
-            for (int i=highlightedStructures.length-1; i>=0; --i)
-                model.removeStructure(highlightedStructures[i]);
+            int[] selectedStructures = model.getSelectedStructures();
+            for (int i=selectedStructures.length-1; i>=0; --i)
+                model.removeStructure(selectedStructures[i]);
         }
     }
 
@@ -134,10 +134,10 @@ abstract public class StructuresPopupMenu extends PopupMenu
     {
         public void actionPerformed(ActionEvent actionEvent)
         {
-            int[] highlightedStructures = model.getHighlightedStructures();
-            if (highlightedStructures.length == 1)
+            int[] selectedStructures = model.getSelectedStructures();
+            if (selectedStructures.length == 1)
             {
-                ChangeLatLonDialog dialog = new ChangeLatLonDialog(model, highlightedStructures[0]);
+                ChangeLatLonDialog dialog = new ChangeLatLonDialog(model, selectedStructures[0]);
                 dialog.setLocationRelativeTo(JOptionPane.getFrameForComponent(getInvoker()));
                 dialog.setVisible(true);
             }
@@ -153,9 +153,9 @@ abstract public class StructuresPopupMenu extends PopupMenu
             {
                 try
                 {
-                    int[] highlightedStructures = model.getHighlightedStructures();
-                    if (highlightedStructures.length == 1)
-                        model.savePlateDataInsideStructure(highlightedStructures[0], file);
+                    int[] selectedStructures = model.getSelectedStructures();
+                    if (selectedStructures.length == 1)
+                        model.savePlateDataInsideStructure(selectedStructures[0], file);
                 }
                 catch (IOException e1)
                 {

@@ -63,8 +63,8 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
     private SmallBodyModel smallBodyModel;
     private int activatedLine = -1;
     private int currentLineVertex = -1000;
-    private int[] highlightedStructures = null;
-    private int[] highlightColor = {0, 0, 255, 255};
+    private int[] selectedStructures = null;
+    private int[] selectionColor = {0, 0, 255, 255};
     private int maximumVerticesPerLine = Integer.MAX_VALUE;
     private vtkIdList idList;
 
@@ -198,8 +198,8 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
 
             int[] color = lin.color;
 
-            if (Arrays.binarySearch(this.highlightedStructures, j) >= 0)
-                color = highlightColor;
+            if (Arrays.binarySearch(this.selectedStructures, j) >= 0)
+                color = selectionColor;
 
             int size = lin.xyzPointList.size();
             idList.SetNumberOfIds(size);
@@ -845,16 +845,16 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
             return -1;
     }
 
-    public void highlightStructures(int[] indices)
+    public void selectStructures(int[] indices)
     {
-        this.highlightedStructures = indices.clone();
+        this.selectedStructures = indices.clone();
         updatePolyData();
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
-    public int[] getHighlightedStructures()
+    public int[] getSelectedStructures()
     {
-        return highlightedStructures;
+        return selectedStructures;
     }
 
     public void redrawAllStructures()

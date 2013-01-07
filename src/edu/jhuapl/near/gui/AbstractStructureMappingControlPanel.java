@@ -567,7 +567,7 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
     {
         if (e.getValueIsAdjusting() == false)
         {
-            structureModel.highlightStructures(structuresTable.getSelectedRows());
+            structureModel.selectStructures(structuresTable.getSelectedRows());
         }
     }
 

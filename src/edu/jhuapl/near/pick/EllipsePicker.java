@@ -215,8 +215,8 @@ public class EllipsePicker extends Picker
         int keyCode = e.getKeyCode();
         if (keyCode == KeyEvent.VK_DELETE || keyCode == KeyEvent.VK_BACK_SPACE)
         {
-            int[] highlightedStructures = ellipseModel.getHighlightedStructures();
-            ellipseModel.removeStructures(highlightedStructures);
+            int[] selectedStructures = ellipseModel.getSelectedStructures();
+            ellipseModel.removeStructures(selectedStructures);
         }
     }
 

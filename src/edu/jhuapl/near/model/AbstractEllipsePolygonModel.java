@@ -65,8 +65,8 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
 //    private int[] defaultInteriorColor = {0, 191, 255};
     private double interiorOpacity = 0.3;
     private String type;
-    private int[] highlightedStructures = null;
-    private int[] highlightColor = {0, 0, 255};
+    private int[] selectedStructures = null;
+    private int[] selectionColor = {0, 0, 255};
     private int maxPolygonId = 0;
     private DecimalFormat df = new DecimalFormat("#.#####");
     private double offset;
@@ -324,8 +324,8 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
             {
                 int[] color = polygons.get(i).color;
 
-                if (Arrays.binarySearch(this.highlightedStructures, i) >= 0)
-                    color = highlightColor;
+                if (Arrays.binarySearch(this.selectedStructures, i) >= 0)
+                    color = selectionColor;
 
                 IdPair range = this.getCellIdRangeOfPolygon(i, false);
                 for (int j=range.id1; j<range.id2; ++j)
@@ -414,7 +414,7 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
         polygons.add(pol);
 
         pol.updatePolygon(smallBodyModel, pos, radius, flattening, angle);
-        highlightedStructures = new int[]{polygons.size()-1};
+        selectedStructures = new int[]{polygons.size()-1};
         updatePolyData();
 
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
@@ -427,7 +427,7 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
         polygons.add(pol);
 
         pol.updatePolygon(smallBodyModel, pos, defaultRadius, 1.0, 0.0);
-        highlightedStructures = new int[]{polygons.size()-1};
+        selectedStructures = new int[]{polygons.size()-1};
         updatePolyData();
 
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
@@ -881,17 +881,17 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
         this.defaultRadius = radius;
     }
 
-    public void highlightStructures(int[] indices)
+    public void selectStructures(int[] indices)
     {
-        this.highlightedStructures = indices.clone();
-        Arrays.sort(highlightedStructures);
+        this.selectedStructures = indices.clone();
+        Arrays.sort(selectedStructures);
         updatePolyData();
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
-    public int[] getHighlightedStructures()
+    public int[] getSelectedStructures()
     {
-        return highlightedStructures;
+        return selectedStructures;
     }
 
     public int getStructureIndexFromCellId(int cellId, vtkProp prop)

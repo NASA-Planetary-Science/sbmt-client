@@ -35,8 +35,8 @@ public class LinesPopupMenu extends StructuresPopupMenu
     @Override
     public void show(Component invoker, int x, int y)
     {
-        // Disable certain items if more than one structure is highlighted
-        boolean exactlyOne = model.getHighlightedStructures().length == 1;
+        // Disable certain items if more than one structure is selected
+        boolean exactlyOne = model.getSelectedStructures().length == 1;
         saveProfileAction.setEnabled(exactlyOne);
 
         super.show(invoker, x, y);
@@ -46,8 +46,8 @@ public class LinesPopupMenu extends StructuresPopupMenu
     {
         public void actionPerformed(ActionEvent e)
         {
-            int[] highlightedStructures = model.getHighlightedStructures();
-            if (highlightedStructures.length != 1)
+            int[] selectedStructures = model.getSelectedStructures();
+            if (selectedStructures.length != 1)
                 return;
 
             try
@@ -65,7 +65,7 @@ public class LinesPopupMenu extends StructuresPopupMenu
 
                 File file = CustomFileChooser.showSaveDialog(getInvoker(), "Save Profile", "profile.csv");
                 if (file != null)
-                    model.saveProfile(highlightedStructures[0], file, hasElevation);
+                    model.saveProfile(selectedStructures[0], file, hasElevation);
             }
             catch (Exception e1)
             {
