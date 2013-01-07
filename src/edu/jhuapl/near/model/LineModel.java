@@ -63,7 +63,7 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
     private SmallBodyModel smallBodyModel;
     private int activatedLine = -1;
     private int currentLineVertex = -1000;
-    private int[] selectedStructures = null;
+    private int[] selectedStructures = {};
     private int[] selectionColor = {0, 0, 255, 255};
     private int maximumVerticesPerLine = Integer.MAX_VALUE;
     private vtkIdList idList;

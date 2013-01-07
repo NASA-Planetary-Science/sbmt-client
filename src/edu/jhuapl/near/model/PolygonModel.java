@@ -75,7 +75,7 @@ public class PolygonModel extends ControlPointsStructureModel implements Propert
     private SmallBodyModel smallBodyModel;
     private int activatedPolygon = -1;
     private int currentPolygonVertex = -1000;
-    private int[] selectedStructures = null;
+    private int[] selectedStructures = {};
     private int[] selectionColor = {0, 0, 255, 255};
     private int maximumVerticesPerPolygon = Integer.MAX_VALUE;
     private vtkIdList idList;

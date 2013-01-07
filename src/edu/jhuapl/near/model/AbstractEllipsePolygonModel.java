@@ -65,7 +65,7 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
 //    private int[] defaultInteriorColor = {0, 191, 255};
     private double interiorOpacity = 0.3;
     private String type;
-    private int[] selectedStructures = null;
+    private int[] selectedStructures = {};
     private int[] selectionColor = {0, 0, 255};
     private int maxPolygonId = 0;
     private DecimalFormat df = new DecimalFormat("#.#####");
