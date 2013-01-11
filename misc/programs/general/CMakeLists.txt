@@ -75,5 +75,8 @@ target_link_libraries(gravity lidar)
 add_executable(elevation-slope gravity/elevation-slope.cpp)
 target_link_libraries(elevation-slope lidar)
 
+add_executable(normals-centers gravity/test/normals-centers.cpp)
+target_link_libraries(normals-centers lidar)
+
 add_executable( cam-est camera_est/cam-est.cpp )
 target_link_libraries( cam-est lidar )

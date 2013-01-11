@@ -21,13 +21,27 @@ return, tokens[second_to_last]
 end
 
 ;-----------------------------------------------------------------------
+function getReferencePotentialFromOutput, filename
+
+; The reference potential can be found by parsing the output
+; file. The last word on the last line contains the reference
+; potenital
+lines = getfile(filename)
+last = n_elements(lines)-1
+tokens = strsplit(lines(last), /extract)
+last = n_elements(tokens)-1
+return, tokens[last]
+
+end
+
+;-----------------------------------------------------------------------
 function computeSphereTruePotential,density,r,x,y,z
 
-  volume = (4.0/3.0) * !dpi * r * r * r
+  volume = (4.0d/3.0d) * !dpi * r * r * r
   mass = density * volume
-  G = 6.67384e-11 * 1.0e-9
+  G = 6.67384d-11 * 1.0d-9
 
-  true_potential = -1.0e6 * 1.0e12 * G * mass / sqrt(x*x + y*y + z*z)
+  true_potential = -1.0d6 * 1.0d12 * G * mass / sqrt(x*x + y*y + z*z)
 
   return, true_potential
 
@@ -36,11 +50,11 @@ end
 ;-----------------------------------------------------------------------
 function computeSphereTrueAcceleration,density,r,x,y,z
 
-  volume = (4.0/3.0) * !dpi * r * r * r
+  volume = (4.0d/3.0d) * !dpi * r * r * r
   mass = density * volume
-  G = 6.67384e-11 * 1.0e-9
+  G = 6.67384d-11 * 1.0d-9
 
-  true_acc = 1.0e3 * 1.0e12 * G * mass / (x*x + y*y + z*z)
+  true_acc = 1.0d3 * 1.0d12 * G * mass / (x*x + y*y + z*z)
 
   return, true_acc
 
@@ -49,8 +63,8 @@ end
 ;-----------------------------------------------------------------------
 function computeSpherePotentialError, potentialfile, centersfile, percent_error=percent_error
 
-  r = 1.0
-  density = 2.5
+  r = 1.0d
+  density = 2.5d
   potentials = getfile(potentialfile)
   lines = getfile(centersfile)
   numLines = n_elements(lines)
@@ -79,8 +93,8 @@ end
 ;-----------------------------------------------------------------------
 function computeSphereAccelerationError, accelerationfile, centersfile, percent_error=percent_error
 
-  r = 1.0
-  density = 2.5
+  r = 1.0d
+  density = 2.5d
   accelerations = getfile(accelerationfile)
   lines = getfile(centersfile)
   numLines = n_elements(lines)
@@ -129,10 +143,10 @@ function computeEllipsoidPotentialError, potentialfile, centersfile, percent_err
      centers[2,i] = double(tokens[2])
   end
 
-  density = 2.5
-  a = 2.0
-  c = 1.0
-  true_potential = 1.0e9 * oblate_spheroid_potential(density, a, c, centers[0,*], centers[1,*], centers[2,*])
+  density = 2.5d
+  a = 2.0d
+  c = 1.0d
+  true_potential = 1.0d9 * oblate_spheroid_potential(density, a, c, centers[0,*], centers[1,*], centers[2,*])
 
   if keyword_set(percent_error) then begin
      errors = (double(potentials) - true_potential) / true_potential
@@ -160,10 +174,10 @@ function computeEllipsoidAccelerationError, accelerationfile, centersfile, perce
      centers[2,i] = double(tokens[2])
   end
 
-  density = 2.5
-  a = 2.0
-  c = 1.0
-  true_acceleration = 1.0e6 * oblate_spheroid_acceleration(density, a, c, centers[0,*], centers[1,*], centers[2,*])
+  density = 2.5d
+  a = 2.0d
+  c = 1.0d
+  true_acceleration = 1.0d6 * oblate_spheroid_acceleration(density, a, c, centers[0,*], centers[1,*], centers[2,*])
 
   if keyword_set(percent_error) then begin
      errors = (double(accelerations) - true_acceleration) / true_acceleration
@@ -174,6 +188,103 @@ function computeEllipsoidAccelerationError, accelerationfile, centersfile, perce
   errors = abs(errors)
 
   return, mean(errors, /double)
+
+end
+
+;-----------------------------------------------------------------------
+pro saveAndPlotAltitudeError, points, errorsCheng, errorsWerner, filenamePrefix
+
+  openw,lun1,filenamePrefix+'.txt',/get_lun
+  ii=0L
+  n = size(points)
+  n = n[2]
+  while ii lt n do begin
+      printf,lun1,points[2,ii],errorsCheng[ii],errorsWerner[ii],format='(2(e15.6,x),e15.6)'
+      ii=ii+1
+  endwhile
+  close,lun1
+
+  set_plot,'ps'
+  device,filename=filenamePrefix+'.ps'
+  plot,points[2,*],errorsCheng,xtitle='radius',ytitle='Fractional Deviation',title='Error as Function of Altitude'
+  oplot,points[2,*],errorsWerner,linestyle=2
+  plots, [0.55, 0.75], [0.88, 0.88], /normal
+  xyouts, 0.8, 0.877, 'Cheng', /normal
+  plots, [0.55, 0.75], [0.84, 0.84], linestyle=2, /normal
+  xyouts, 0.8, 0.837, 'Werner', /normal
+  device, /close
+  set_plot,'x'
+  runCommand, 'ps2pdf '+filenamePrefix+'.ps'
+
+end
+
+;-----------------------------------------------------------------------
+pro runAltitudeTest
+
+fname='/tmp/inputpoints.txt'
+openw,1,fname
+size = 10000
+points = dblarr(3, size)
+dx = 0.001d
+for i = 0, size-1, 1 do begin
+   x = dx * i
+   y = dx * i
+   x = 0.0d
+   y = 0.0d
+   z = 1.0d + dx * i
+   points[0,i] = x
+   points[1,i] = y
+   points[2,i] = z
+   printf,1,x,y,z,format='(F16.10,1X,F16.10,1X,F16.10)'
+end
+close,1
+
+outfile = '/tmp/output'
+a = 2.0d
+c = 1.0d
+r = 1.0d
+densityTrue = 2.5d
+
+platemodelfile = '/project/nearsdc/data/test/SPHERE_v6534.PLT'
+potentialfile = 'SPHERE_v6534.PLT-potential.txt'
+density = '2.5024740395599068'
+
+runCommand, './gravity --cheng --file ' + fname + ' -d ' + density + ' ' + platemodelfile + ' > ' + outfile
+potentials = getfile(potentialfile)
+true_potential = computeSphereTruePotential(densityTrue, r, points[0,*], points[1,*], points[2,*])
+errorsCheng = (double(potentials) - true_potential) / true_potential
+errorsCheng = abs(errorsCheng)
+
+runCommand, './gravity --werner --file ' + fname + ' -d ' + density + ' ' + platemodelfile + ' > ' + outfile
+potentials = getfile(potentialfile)
+true_potential = computeSphereTruePotential(densityTrue, r, points[0,*], points[1,*], points[2,*])
+errorsWerner = (double(potentials) - true_potential) / true_potential
+errorsWerner = abs(errorsWerner)
+
+
+saveAndPlotAltitudeError, points, errorsCheng, errorsWerner, "sphere-altitude-error"
+
+
+
+platemodelfile = '/project/nearsdc/data/test/ELLIPSOID_v6534.PLT'
+potentialfile = 'ELLIPSOID_v6534.PLT-potential.txt'
+density = '2.5028003639373222'
+
+runCommand, './gravity --cheng --file ' + fname + ' -d ' + density + ' ' + platemodelfile + ' > ' + outfile
+potentials = getfile(potentialfile)
+true_potential = 1.0d9 * oblate_spheroid_potential(densityTrue, a, c, points[0,*], points[1,*], points[2,*])
+errorsCheng = (double(potentials) - true_potential) / true_potential
+errorsCheng = abs(errorsCheng)
+
+runCommand, './gravity --werner --file ' + fname + ' -d ' + density + ' ' + platemodelfile + ' > ' + outfile
+potentials = getfile(potentialfile)
+true_potential = 1.0d9 * oblate_spheroid_potential(densityTrue, a, c, points[0,*], points[1,*], points[2,*])
+errorsWerner = (double(potentials) - true_potential) / true_potential
+errorsWerner = abs(errorsWerner)
+
+saveAndPlotAltitudeError, points, errorsCheng, errorsWerner, "ellipsoid-altitude-error"
+
+
 
 end
 
@@ -204,25 +315,26 @@ ellipsoids = [ $
              ]
 
 sphere_volumes = [ $
-                 3.93283985308008, $
-                 4.123096341494543, $
-                 4.172264134573937, $
-                 4.184649009908455, $
-                 4.187754873578247, $
-                 4.188531564762127 $
+                 3.93283985308008d, $
+                 4.123096341494543d, $
+                 4.172264134573937d, $
+                 4.184649009908455d, $
+                 4.187754873578247d, $
+                 4.188531564762127d $
                  ]
 
 ellipsoid_volumes = [ $
-                    15.61096186263374, $
-                    16.458620456230864, $
-                    16.680336076134594, $
-                    16.736413599511888, $
-                    16.750470641171884, $
-                    16.753986665728796 $
+                    15.61096186263374d, $
+                    16.458620456230864d, $
+                    16.680336076134594d, $
+                    16.736413599511888d, $
+                    16.750470641171884d, $
+                    16.753986665728796d $
                     ]
 
-sphere_true_mass = 2.5 * (4.0/3.0) * !dpi * 1.0 * 1.0 * 1.0
-ellipsoid_true_mass = 2.5 * (4.0/3.0) * !dpi * 2.0 * 2.0 * 1.0
+
+sphere_true_mass = 2.5d * (4.0d/3.0d) * !dpi * 1.0d * 1.0d * 1.0d
+ellipsoid_true_mass = 2.5d * (4.0d/3.0d) * !dpi * 2.0d * 2.0d * 1.0d
 
 sphere_densities = string(sphere_true_mass / sphere_volumes, format='(D0.16)')
 ellipsoid_densities = string(ellipsoid_true_mass / ellipsoid_volumes, format='(D0.16)')
@@ -267,25 +379,33 @@ for i = 0, num_res-1, 1 do begin
 ; Do Sphere
    ; run Cheng method
    platemodelfile = data_dir + spheres[i]
-   runCommand, './gravity --save-plate-centers --cheng --centers -d ' + sphere_densities[i] + ' ' + platemodelfile + ' > ' + outfile
-   runCommand, './elevation-slope ' + platemodelfile + ' ' + spheres[i] + '-potential.txt ' + spheres[i] + '-acceleration.txt'
+   ; First compute reference potential which is needed for computing elevation
+   runCommand, './gravity --cheng --centers -d ' + sphere_densities[i] + ' ' + platemodelfile + ' > ' + outfile
+   runCommand, './elevation-slope ' + platemodelfile + ' ' + spheres[i] + '-potential.txt ' + spheres[i] + '-acceleration.txt' + ' > ' + outfile
+   refPotential = getReferencePotentialFromOutput(outfile)
+   runCommand, './normals-centers ' + platemodelfile + ' 1.0 1.0'
+   runCommand, './gravity --cheng --file ' + spheres[i] + '-shifted-centers.txt' + ' -d ' + sphere_densities[i] + ' --ref-potential ' + refPotential + ' ' + platemodelfile + ' > ' + outfile
    times_sphere_cheng[i] = getTimeFromOutput(outfile)
-   error_potential_sphere_cheng[i] = computeSpherePotentialError(spheres[i] + '-potential.txt', spheres[i] + '-centers.txt')
-   error_acceleration_sphere_cheng[i] = computeSphereAccelerationError(spheres[i] + '-acceleration-magnitude.txt', spheres[i] + '-centers.txt')
-   error_percent_potential_sphere_cheng[i] = computeSpherePotentialError(spheres[i] + '-potential.txt', spheres[i] + '-centers.txt', /per)
-   error_percent_acceleration_sphere_cheng[i] = computeSphereAccelerationError(spheres[i] + '-acceleration-magnitude.txt', spheres[i] + '-centers.txt', /per)
+   error_potential_sphere_cheng[i] = computeSpherePotentialError(spheres[i] + '-potential.txt', spheres[i] + '-shifted-centers.txt')
+   error_acceleration_sphere_cheng[i] = computeSphereAccelerationError(spheres[i] + '-acceleration-magnitude.txt', spheres[i] + '-shifted-centers.txt')
+   error_percent_potential_sphere_cheng[i] = computeSpherePotentialError(spheres[i] + '-potential.txt', spheres[i] + '-shifted-centers.txt', /per)
+   error_percent_acceleration_sphere_cheng[i] = computeSphereAccelerationError(spheres[i] + '-acceleration-magnitude.txt', spheres[i] + '-shifted-centers.txt', /per)
    potential_sphere_cheng[i] = computeFileMean(spheres[i] + '-potential.txt')
    acceleration_sphere_cheng[i] = computeFileMean(spheres[i] + '-acceleration-magnitude.txt')
    elevation_sphere_cheng[i] = computeFileMean(spheres[i] + '-elevation.txt')
 
    ; run Werner method
-   runCommand, './gravity --save-plate-centers --werner --centers -d ' + sphere_densities[i] + ' ' + platemodelfile + ' > ' + outfile
-   runCommand, './elevation-slope ' + platemodelfile + ' ' + spheres[i] + '-potential.txt ' + spheres[i] + '-acceleration.txt'
+   ; First compute reference potential which is needed for computing elevation
+   runCommand, './gravity --werner --centers -d ' + sphere_densities[i] + ' ' + platemodelfile + ' > ' + outfile
+   runCommand, './elevation-slope ' + platemodelfile + ' ' + spheres[i] + '-potential.txt ' + spheres[i] + '-acceleration.txt' + ' > ' + outfile
+   refPotential = getReferencePotentialFromOutput(outfile)
+   runCommand, './normals-centers ' + platemodelfile + ' 1.0 1.0'
+   runCommand, './gravity --werner --file ' + spheres[i] + '-shifted-centers.txt' + ' -d ' + sphere_densities[i] + ' --ref-potential ' + refPotential + ' ' + platemodelfile + ' > ' + outfile
    times_sphere_werner[i] = getTimeFromOutput(outfile)
-   error_potential_sphere_werner[i] = computeSpherePotentialError(spheres[i] + '-potential.txt', spheres[i] + '-centers.txt')
-   error_acceleration_sphere_werner[i] = computeSphereAccelerationError(spheres[i] + '-acceleration-magnitude.txt', spheres[i] + '-centers.txt')
-   error_percent_potential_sphere_werner[i] = computeSpherePotentialError(spheres[i] + '-potential.txt', spheres[i] + '-centers.txt', /per)
-   error_percent_acceleration_sphere_werner[i] = computeSphereAccelerationError(spheres[i] + '-acceleration-magnitude.txt', spheres[i] + '-centers.txt', /per)
+   error_potential_sphere_werner[i] = computeSpherePotentialError(spheres[i] + '-potential.txt', spheres[i] + '-shifted-centers.txt')
+   error_acceleration_sphere_werner[i] = computeSphereAccelerationError(spheres[i] + '-acceleration-magnitude.txt', spheres[i] + '-shifted-centers.txt')
+   error_percent_potential_sphere_werner[i] = computeSpherePotentialError(spheres[i] + '-potential.txt', spheres[i] + '-shifted-centers.txt', /per)
+   error_percent_acceleration_sphere_werner[i] = computeSphereAccelerationError(spheres[i] + '-acceleration-magnitude.txt', spheres[i] + '-shifted-centers.txt', /per)
    potential_sphere_werner[i] = computeFileMean(spheres[i] + '-potential.txt')
    acceleration_sphere_werner[i] = computeFileMean(spheres[i] + '-acceleration-magnitude.txt')
    elevation_sphere_werner[i] = computeFileMean(spheres[i] + '-elevation.txt')
@@ -293,22 +413,22 @@ for i = 0, num_res-1, 1 do begin
 ; Do Spheroid
    ; run Cheng method
    platemodelfile = data_dir + ellipsoids[i]
-   runCommand, './gravity --save-plate-centers --cheng --centers -d ' + ellipsoid_densities[i] + ' ' + platemodelfile + ' > ' + outfile
-   runCommand, './elevation-slope ' + platemodelfile + ' ' + ellipsoids[i] + '-potential.txt ' + ellipsoids[i] + '-acceleration.txt'
+   runCommand, './normals-centers ' + platemodelfile + ' 2.0 1.0'
+   runCommand, './gravity --cheng --file ' + ellipsoids[i] + '-shifted-centers.txt' + ' -d ' + ellipsoid_densities[i] + ' ' + platemodelfile + ' > ' + outfile
    times_ellipsoid_cheng[i] = getTimeFromOutput(outfile)
-   error_potential_ellipsoid_cheng[i] = computeEllipsoidPotentialError(ellipsoids[i] + '-potential.txt', ellipsoids[i] + '-centers.txt')
-   error_acceleration_ellipsoid_cheng[i] = computeEllipsoidAccelerationError(ellipsoids[i] + '-acceleration-magnitude.txt', ellipsoids[i] + '-centers.txt')
-   error_percent_potential_ellipsoid_cheng[i] = computeEllipsoidPotentialError(ellipsoids[i] + '-potential.txt', ellipsoids[i] + '-centers.txt', /per)
-   error_percent_acceleration_ellipsoid_cheng[i] = computeEllipsoidAccelerationError(ellipsoids[i] + '-acceleration-magnitude.txt', ellipsoids[i] + '-centers.txt', /per)
+   error_potential_ellipsoid_cheng[i] = computeEllipsoidPotentialError(ellipsoids[i] + '-potential.txt', ellipsoids[i] + '-shifted-centers.txt')
+   error_acceleration_ellipsoid_cheng[i] = computeEllipsoidAccelerationError(ellipsoids[i] + '-acceleration-magnitude.txt', ellipsoids[i] + '-shifted-centers.txt')
+   error_percent_potential_ellipsoid_cheng[i] = computeEllipsoidPotentialError(ellipsoids[i] + '-potential.txt', ellipsoids[i] + '-shifted-centers.txt', /per)
+   error_percent_acceleration_ellipsoid_cheng[i] = computeEllipsoidAccelerationError(ellipsoids[i] + '-acceleration-magnitude.txt', ellipsoids[i] + '-shifted-centers.txt', /per)
 
    ; run Werner method
-   runCommand, './gravity --save-plate-centers --werner --centers -d ' + ellipsoid_densities[i] + ' ' + platemodelfile + ' > ' + outfile
-   runCommand, './elevation-slope ' + platemodelfile + ' ' + ellipsoids[i] + '-potential.txt ' + ellipsoids[i] + '-acceleration.txt'
+   runCommand, './normals-centers ' + platemodelfile + ' 2.0 1.0'
+   runCommand, './gravity --werner --file ' + ellipsoids[i] + '-shifted-centers.txt' + ' -d ' + ellipsoid_densities[i] + ' ' + platemodelfile + ' > ' + outfile
    times_ellipsoid_werner[i] = getTimeFromOutput(outfile)
-   error_potential_ellipsoid_werner[i] = computeEllipsoidPotentialError(ellipsoids[i] + '-potential.txt', ellipsoids[i] + '-centers.txt')
-   error_acceleration_ellipsoid_werner[i] = computeEllipsoidAccelerationError(ellipsoids[i] + '-acceleration-magnitude.txt', ellipsoids[i] + '-centers.txt')
-   error_percent_potential_ellipsoid_werner[i] = computeEllipsoidPotentialError(ellipsoids[i] + '-potential.txt', ellipsoids[i] + '-centers.txt', /per)
-   error_percent_acceleration_ellipsoid_werner[i] = computeEllipsoidAccelerationError(ellipsoids[i] + '-acceleration-magnitude.txt', ellipsoids[i] + '-centers.txt', /per)
+   error_potential_ellipsoid_werner[i] = computeEllipsoidPotentialError(ellipsoids[i] + '-potential.txt', ellipsoids[i] + '-shifted-centers.txt')
+   error_acceleration_ellipsoid_werner[i] = computeEllipsoidAccelerationError(ellipsoids[i] + '-acceleration-magnitude.txt', ellipsoids[i] + '-shifted-centers.txt')
+   error_percent_potential_ellipsoid_werner[i] = computeEllipsoidPotentialError(ellipsoids[i] + '-potential.txt', ellipsoids[i] + '-shifted-centers.txt', /per)
+   error_percent_acceleration_ellipsoid_werner[i] = computeEllipsoidAccelerationError(ellipsoids[i] + '-acceleration-magnitude.txt', ellipsoids[i] + '-shifted-centers.txt', /per)
 
 endfor
 
@@ -350,9 +470,13 @@ print, "acceleration sphere werner    = ", acceleration_sphere_werner
 print, "elevation sphere cheng     = ", elevation_sphere_cheng
 print, "elevation sphere werner    = ", elevation_sphere_werner
 
-r = 1.0
-density = 2.5
-print, "potential sphere true    = ", computeSphereTruePotential(density,r,r,0.0,0.0)
-print, "acceleration sphere true     = ", computeSphereTrueAcceleration(density,r,r,0.0,0.0)
+r = 1.0d
+density = 2.5d
+print, "potential sphere true    = ", computeSphereTruePotential(density,r,r,0.0d,0.0d)
+print, "acceleration sphere true     = ", computeSphereTrueAcceleration(density,r,r,0.0d,0.0d)
+
+
+
+runAltitudeTest
 
 end
