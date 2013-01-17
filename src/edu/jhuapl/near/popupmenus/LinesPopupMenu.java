@@ -9,6 +9,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
 import edu.jhuapl.near.gui.CustomFileChooser;
+import edu.jhuapl.near.gui.Renderer;
 import edu.jhuapl.near.model.LineModel;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
@@ -20,9 +21,9 @@ public class LinesPopupMenu extends StructuresPopupMenu
     private SmallBodyModel smallBodyModel;
     private JMenuItem saveProfileAction;
 
-    public LinesPopupMenu(ModelManager modelManager)
+    public LinesPopupMenu(ModelManager modelManager, Renderer renderer)
     {
-        super((LineModel)modelManager.getModel(ModelNames.LINE_STRUCTURES), false, false);
+        super((LineModel)modelManager.getModel(ModelNames.LINE_STRUCTURES), renderer, false, false);
 
         this.model = (LineModel)modelManager.getModel(ModelNames.LINE_STRUCTURES);
         this.smallBodyModel = modelManager.getSmallBodyModel();

@@ -65,8 +65,16 @@ public abstract class StructureModel extends Model
 
     public abstract void setLineWidth(double width);
 
+    public abstract void setStructuresHidden(int[] indices, boolean hidden);
+
+    public abstract boolean isStructureHidden(int id);
+
     public void savePlateDataInsideStructure(int idx, File file) throws IOException
     {
         // do nothing by default. Only structures that have an inside need to implement this.
     }
+
+    // Get the center of the structure. For ellipses and points, this is obvious.
+    // For paths and polygons, this is the mean of the control points.
+    public abstract double[] getStructureCenter(int id);
 }

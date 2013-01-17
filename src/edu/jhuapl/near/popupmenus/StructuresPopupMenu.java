@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.swing.AbstractAction;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
@@ -16,21 +17,27 @@ import vtk.vtkProp;
 import edu.jhuapl.near.gui.ChangeLatLonDialog;
 import edu.jhuapl.near.gui.ColorChooser;
 import edu.jhuapl.near.gui.CustomFileChooser;
+import edu.jhuapl.near.gui.Renderer;
 import edu.jhuapl.near.model.StructureModel;
 
 abstract public class StructuresPopupMenu extends PopupMenu
 {
     private StructureModel model;
+    private Renderer renderer;
     private JMenuItem changeLatLonAction;
     private JMenuItem exportPlateDataAction;
     private JMenuItem editAction;
+    private JMenuItem centerStructureMenuItem;
+    private JCheckBoxMenuItem hideMenuItem;
 
     public StructuresPopupMenu(
             StructureModel model,
+            Renderer renderer,
             boolean showChangeLatLon,
             boolean showExportPlateDataInsidePolygon)
     {
         this.model = model;
+        this.renderer = renderer;
 
         editAction = new JMenuItem(new EditAction());
         editAction.setText("Edit");
@@ -40,9 +47,17 @@ abstract public class StructuresPopupMenu extends PopupMenu
         changeColorAction.setText("Change Color...");
         this.add(changeColorAction);
 
+        hideMenuItem = new JCheckBoxMenuItem(new ShowHideAction());
+        hideMenuItem.setText("Hide");
+        this.add(hideMenuItem);
+
         JMenuItem deleteAction = new JMenuItem(new DeleteAction());
         deleteAction.setText("Delete");
         this.add(deleteAction);
+
+        centerStructureMenuItem = new JMenuItem(new CenterStructureAction());
+        centerStructureMenuItem.setText("Center in Window");
+        this.add(centerStructureMenuItem);
 
         if (showChangeLatLon)
         {
@@ -73,6 +88,22 @@ abstract public class StructuresPopupMenu extends PopupMenu
 
         if (exportPlateDataAction != null)
             exportPlateDataAction.setEnabled(exactlyOne);
+
+        if (centerStructureMenuItem != null)
+            centerStructureMenuItem.setEnabled(exactlyOne);
+
+        // If any of the selected structures are not hidden then show
+        // the hide menu item as unchecked. Otherwise show it checked.
+        hideMenuItem.setSelected(true);
+        int[] selectedStructures = model.getSelectedStructures();
+        for (int i=0; i<selectedStructures.length; ++i)
+        {
+            if (!model.isStructureHidden(selectedStructures[i]))
+            {
+                hideMenuItem.setSelected(false);
+                break;
+            }
+        }
 
         super.show(invoker, x, y);
     }
@@ -120,6 +151,15 @@ abstract public class StructuresPopupMenu extends PopupMenu
         }
     }
 
+    protected class ShowHideAction extends AbstractAction
+    {
+        public void actionPerformed(ActionEvent e)
+        {
+            int[] selectedStructures = model.getSelectedStructures();
+            model.setStructuresHidden(selectedStructures, hideMenuItem.isSelected());
+        }
+    }
+
     protected class DeleteAction extends AbstractAction
     {
         public void actionPerformed(ActionEvent e)
@@ -127,6 +167,23 @@ abstract public class StructuresPopupMenu extends PopupMenu
             int[] selectedStructures = model.getSelectedStructures();
             for (int i=selectedStructures.length-1; i>=0; --i)
                 model.removeStructure(selectedStructures[i]);
+        }
+    }
+
+    private class CenterStructureAction extends AbstractAction
+    {
+        public void actionPerformed(ActionEvent e)
+        {
+            int[] selectedStructures = model.getSelectedStructures();
+            if (selectedStructures.length != 1)
+                return;
+
+            double[] focalPoint = model.getStructureCenter(selectedStructures[0]);
+            double[] spacecraftPosition = {2.0*focalPoint[0], 2.0*focalPoint[1], 2.0*focalPoint[2]};
+            double[] upVector = {0.0, 0.0, 1.0};
+            double viewAngle = renderer.getCameraViewAngle();
+
+            renderer.setCameraOrientation(spacecraftPosition, focalPoint, upVector, viewAngle);
         }
     }
 

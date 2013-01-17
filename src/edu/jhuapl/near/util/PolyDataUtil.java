@@ -55,6 +55,19 @@ public class PolyDataUtil
     //    System.out.println(s + " " + p[0] + " " + p[1] + " " + p[2]);
     //}
 
+    // This variable should NEVER be modified
+    private static vtkPolyData emptyPolyData;
+    /**
+     * Clear a polydata by deep copying a freshly created empty polydata
+     * @param polydata
+     */
+    public static void clearPolyData(vtkPolyData polydata)
+    {
+        if (emptyPolyData == null)
+            emptyPolyData = new vtkPolyData();
+        polydata.DeepCopy(emptyPolyData);
+    }
+
     public static vtkPolyData computeMultipleFrustumIntersection(
             vtkPolyData polyData,
             vtksbCellLocator locator,

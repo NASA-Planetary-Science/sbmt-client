@@ -782,6 +782,22 @@ public class PolygonModel extends ControlPointsStructureModel implements Propert
 
     public void setVisible(boolean b)
     {
+        boolean needToUpdate = false;
+        for (Polygon pol : polygons)
+        {
+            if (pol.hidden == b)
+            {
+                pol.hidden = !b;
+                pol.updatePolygon(pol.controlPoints);
+                needToUpdate = true;
+            }
+        }
+        if (needToUpdate)
+        {
+            updatePolyData();
+            this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+        }
+
         boundaryActor.SetVisibility(b ? 1 : 0);
         interiorActor.SetVisibility(b ? 1 : 0);
         polygonActivationActor.SetVisibility(b ? 1 : 0);
@@ -792,5 +808,34 @@ public class PolygonModel extends ControlPointsStructureModel implements Propert
     {
         vtkPolyData polydata = polygons.get(idx).interiorPolyData;
         smallBodyModel.savePlateDataInsidePolydata(polydata, file);
+    }
+
+    @Override
+    public void setStructuresHidden(int[] polygonIds, boolean hidden)
+    {
+        for (int i=0; i<polygonIds.length; ++i)
+        {
+            Polygon pol = polygons.get(polygonIds[i]);
+            if (pol.hidden != hidden)
+            {
+                pol.hidden = hidden;
+                pol.updatePolygon(pol.controlPoints);
+            }
+        }
+
+        updatePolyData();
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+    }
+
+    @Override
+    public boolean isStructureHidden(int id)
+    {
+        return polygons.get(id).hidden;
+    }
+
+    @Override
+    public double[] getStructureCenter(int id)
+    {
+        return polygons.get(id).getCentroid();
     }
 }

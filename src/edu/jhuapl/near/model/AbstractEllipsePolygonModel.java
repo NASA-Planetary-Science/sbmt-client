@@ -89,6 +89,7 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
         public double radius; // or semimajor axis
         public double flattening; // ratio of semiminor axis to semimajor axis
         public double angle;
+        public boolean hidden = false;
 
         public vtkPolyData boundaryPolyData;
         public vtkPolyData interiorPolyData;
@@ -170,7 +171,15 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
             this.flattening = flattening;
             this.angle = angle;
 
-            sbModel.drawEllipticalPolygon(center, radius, flattening, angle, numberOfSides, interiorPolyData, boundaryPolyData);
+            if (!hidden)
+            {
+                sbModel.drawEllipticalPolygon(center, radius, flattening, angle, numberOfSides, interiorPolyData, boundaryPolyData);
+            }
+            else
+            {
+                interiorPolyData.DeepCopy(emptyPolyData);
+                boundaryPolyData.DeepCopy(emptyPolyData);
+            }
         }
 
         public String getClickStatusBarText()
@@ -1120,6 +1129,22 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
 
     public void setVisible(boolean b)
     {
+        boolean needToUpdate = false;
+        for (EllipsePolygon pol : polygons)
+        {
+            if (pol.hidden == b)
+            {
+                pol.hidden = !b;
+                pol.updatePolygon(smallBodyModel, pol.center, pol.radius, pol.flattening, pol.angle);
+                needToUpdate = true;
+            }
+        }
+        if (needToUpdate)
+        {
+            updatePolyData();
+            this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+        }
+
         boundaryActor.SetVisibility(b ? 1 : 0);
         interiorActor.SetVisibility(b ? 1 : 0);
         super.setVisible(b);
@@ -1129,5 +1154,34 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
     {
         vtkPolyData polydata = polygons.get(idx).interiorPolyData;
         smallBodyModel.savePlateDataInsidePolydata(polydata, file);
+    }
+
+    @Override
+    public void setStructuresHidden(int[] polygonIds, boolean hidden)
+    {
+        for (int i=0; i<polygonIds.length; ++i)
+        {
+            EllipsePolygon pol = polygons.get(polygonIds[i]);
+            if (pol.hidden != hidden)
+            {
+                pol.hidden = hidden;
+                pol.updatePolygon(smallBodyModel, pol.center, pol.radius, pol.flattening, pol.angle);
+            }
+        }
+
+        updatePolyData();
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+    }
+
+    @Override
+    public boolean isStructureHidden(int id)
+    {
+        return polygons.get(id).hidden;
+    }
+
+    @Override
+    public double[] getStructureCenter(int id)
+    {
+        return polygons.get(id).center;
     }
 }

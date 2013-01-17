@@ -35,6 +35,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
@@ -152,6 +153,7 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
         structuresTable.setRowSelectionAllowed(true);
         structuresTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         structuresTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        structuresTable.setDefaultRenderer(String.class, new StringRenderer());
         structuresTable.setDefaultRenderer(Color.class, new ColorRenderer());
 //        structuresTable.getColumnModel().getColumn(0).setPreferredWidth(30);
         structuresTable.getModel().addTableModelListener(this);
@@ -628,7 +630,7 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
 
     private void structuresTableMaybeShowPopup(MouseEvent e)
     {
-        if (e.isPopupTrigger())
+        if (e.isPopupTrigger() && !editButton.isSelected())
         {
             int index = structuresTable.rowAtPoint(e.getPoint());
 
@@ -643,6 +645,22 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
 
                 structuresPopupMenu.show(e.getComponent(), e.getX(), e.getY());
             }
+        }
+    }
+
+    class StringRenderer extends DefaultTableCellRenderer
+    {
+        public Component getTableCellRendererComponent(
+                JTable table, Object value,
+                boolean isSelected, boolean hasFocus,
+                int row, int column)
+        {
+            Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            if (structureModel.isStructureHidden(row))
+                c.setForeground(Color.GRAY);
+            else
+                c.setForeground(Color.BLACK);
+            return c;
         }
     }
 

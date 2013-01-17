@@ -207,7 +207,10 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
             for (int i=0;i<size;++i)
             {
                 points.InsertNextPoint(lin.xyzPointList.get(i).xyz);
-                idList.SetId(i, c);
+                if (lin.hidden)
+                    idList.SetId(i, 0); // set to degenerate line if hidden
+                else
+                    idList.SetId(i, c);
                 ++c;
             }
 
@@ -1160,8 +1163,48 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
 
     public void setVisible(boolean b)
     {
+        boolean needToUpdate = false;
+        for (Line line : lines)
+        {
+            if (line.hidden == b)
+            {
+                line.hidden = !b;
+                needToUpdate = true;
+            }
+        }
+        if (needToUpdate)
+        {
+            updatePolyData();
+            this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+        }
+
         lineActor.SetVisibility(b ? 1 : 0);
         lineActivationActor.SetVisibility(b ? 1 : 0);
         super.setVisible(b);
+    }
+
+    @Override
+    public void setStructuresHidden(int[] lineIds, boolean hidden)
+    {
+        for (int i=0; i<lineIds.length; ++i)
+        {
+            Line line = lines.get(lineIds[i]);
+            line.hidden = hidden;
+        }
+
+        updatePolyData();
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+    }
+
+    @Override
+    public boolean isStructureHidden(int id)
+    {
+        return lines.get(id).hidden;
+    }
+
+    @Override
+    public double[] getStructureCenter(int id)
+    {
+        return lines.get(id).getCentroid();
     }
 }

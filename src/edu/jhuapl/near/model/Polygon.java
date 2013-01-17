@@ -29,6 +29,7 @@ public class Polygon extends StructureModel.Structure
 
     private double surfaceArea = 0.0;
     private double perimeterLength = 0.0;
+    public boolean hidden = false;
 
     private static final int[] purpleColor = {255, 0, 255, 255}; // RGBA purple
     private static DecimalFormat decimalFormatter = new DecimalFormat("#.###");
@@ -173,12 +174,21 @@ public class Polygon extends StructureModel.Structure
 
     public void updatePolygon(ArrayList<LatLon> controlPoints)
     {
-        this.controlPoints = (ArrayList<LatLon>) controlPoints.clone();
+        if (this.controlPoints != controlPoints)
+            this.controlPoints = (ArrayList<LatLon>) controlPoints.clone();
 
-        smallBodyModel.drawPolygon(controlPoints, interiorPolyData, boundaryPolyData);
+        if (!hidden)
+        {
+            smallBodyModel.drawPolygon(controlPoints, interiorPolyData, boundaryPolyData);
 
-        surfaceArea = PolyDataUtil.computeSurfaceArea(interiorPolyData);
-        perimeterLength = PolyDataUtil.computeLength(boundaryPolyData);
+            surfaceArea = PolyDataUtil.computeSurfaceArea(interiorPolyData);
+            perimeterLength = PolyDataUtil.computeLength(boundaryPolyData);
+        }
+        else
+        {
+            PolyDataUtil.clearPolyData(interiorPolyData);
+            PolyDataUtil.clearPolyData(boundaryPolyData);
+        }
     }
 
     public void shiftPointOnPathToClosestPointOnAsteroid(int idx)
@@ -191,5 +201,28 @@ public class Polygon extends StructureModel.Structure
         double[] closestPoint = smallBodyModel.findClosestPoint(pt);
         llr = MathUtil.reclat(closestPoint);
         controlPoints.set(idx, llr);
+    }
+
+    public double[] getCentroid()
+    {
+        int size = controlPoints.size();
+
+        double[] centroid = {0.0, 0.0, 0.0};
+        for (int i=0;i<size;++i)
+        {
+            LatLon ll = controlPoints.get(i);
+            double[] p = MathUtil.latrec(ll);
+            centroid[0] += p[0];
+            centroid[1] += p[1];
+            centroid[2] += p[2];
+        }
+
+        centroid[0] /= (double)size;
+        centroid[1] /= (double)size;
+        centroid[2] /= (double)size;
+
+        double[] closestPoint = smallBodyModel.findClosestPoint(centroid);
+
+        return closestPoint;
     }
 }

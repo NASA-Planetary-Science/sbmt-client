@@ -29,6 +29,7 @@ public class Line extends StructureModel.Structure
     public ArrayList<Point3D> xyzPointList = new ArrayList<Point3D>();
     public ArrayList<Integer> controlPointIds = new ArrayList<Integer>();
     public int[] color;
+    public boolean hidden = false;
 
     private SmallBodyModel smallBodyModel;
 
@@ -258,5 +259,29 @@ public class Line extends StructureModel.Structure
         lat.set(idx, ll.lat);
         lon.set(idx, ll.lon);
         rad.set(idx, ll.rad);
+    }
+
+
+    public double[] getCentroid()
+    {
+        int size = lat.size();
+
+        double[] centroid = {0.0, 0.0, 0.0};
+        for (int i=0;i<size;++i)
+        {
+            LatLon ll = new LatLon(lat.get(i), lon.get(i), rad.get(i));
+            double[] p = MathUtil.latrec(ll);
+            centroid[0] += p[0];
+            centroid[1] += p[1];
+            centroid[2] += p[2];
+        }
+
+        centroid[0] /= (double)size;
+        centroid[1] /= (double)size;
+        centroid[2] /= (double)size;
+
+        double[] closestPoint = smallBodyModel.findClosestPoint(centroid);
+
+        return closestPoint;
     }
 }
