@@ -16,5 +16,6 @@
 	<classpathentry kind="lib" path="lib/jgoodies-common-1.1.1.jar"/>
 	<classpathentry kind="lib" path="lib/jgoodies-looks-2.4.0.jar"/>
 	<classpathentry kind="lib" path="lib/commons-math-2.2.jar"/>
+	<classpathentry kind="lib" path="lib/guava-13.0.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
