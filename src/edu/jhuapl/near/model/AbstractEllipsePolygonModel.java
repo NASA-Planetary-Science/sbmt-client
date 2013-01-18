@@ -66,7 +66,6 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
     private double interiorOpacity = 0.3;
     private String type;
     private int[] selectedStructures = {};
-    private int[] selectionColor = {0, 0, 255};
     private int maxPolygonId = 0;
     private DecimalFormat df = new DecimalFormat("#.#####");
     private double offset;
@@ -334,7 +333,7 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
                 int[] color = polygons.get(i).color;
 
                 if (Arrays.binarySearch(this.selectedStructures, i) >= 0)
-                    color = selectionColor;
+                    color = getCommonData().getSelectionColor();
 
                 IdPair range = this.getCellIdRangeOfPolygon(i, false);
                 for (int j=range.id1; j<range.id2; ++j)

@@ -64,7 +64,6 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
     private int activatedLine = -1;
     private int currentLineVertex = -1000;
     private int[] selectedStructures = {};
-    private int[] selectionColor = {0, 0, 255, 255};
     private int maximumVerticesPerLine = Integer.MAX_VALUE;
     private vtkIdList idList;
 
@@ -199,7 +198,7 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
             int[] color = lin.color;
 
             if (Arrays.binarySearch(this.selectedStructures, j) >= 0)
-                color = selectionColor;
+                color = getCommonData().getSelectionColor();
 
             int size = lin.xyzPointList.size();
             idList.SetNumberOfIds(size);
@@ -215,7 +214,7 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
             }
 
             lineCells.InsertNextCell(idList);
-            colors.InsertNextTuple4(color[0],color[1],color[2],color[3]);
+            colors.InsertNextTuple4(color[0],color[1],color[2],255);
         }
 
         smallBodyModel.shiftPolyLineInNormalDirection(linesPolyData, offset);

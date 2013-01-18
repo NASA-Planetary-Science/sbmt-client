@@ -36,10 +36,14 @@ public class ModelManager extends Model implements PropertyChangeListener
     {
         allModels.clear();
 
+        CommonData commonData = new CommonData();
+        setCommonData(commonData);
+
         for (String modelName : models.keySet())
         {
             Model model = models.get(modelName);
             model.addPropertyChangeListener(this);
+            model.setCommonData(commonData);
             allModels.put(modelName, model);
         }
 

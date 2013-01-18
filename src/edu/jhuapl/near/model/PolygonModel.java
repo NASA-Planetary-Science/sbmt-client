@@ -76,7 +76,6 @@ public class PolygonModel extends ControlPointsStructureModel implements Propert
     private int activatedPolygon = -1;
     private int currentPolygonVertex = -1000;
     private int[] selectedStructures = {};
-    private int[] selectionColor = {0, 0, 255, 255};
     private int maximumVerticesPerPolygon = Integer.MAX_VALUE;
     private vtkIdList idList;
 
@@ -237,7 +236,7 @@ public class PolygonModel extends ControlPointsStructureModel implements Propert
                 int[] color = polygons.get(i).color;
 
                 if (Arrays.binarySearch(this.selectedStructures, i) >= 0)
-                    color = selectionColor;
+                    color = getCommonData().getSelectionColor();
 
                 IdPair range = this.getCellIdRangeOfPolygon(i, false);
                 for (int j=range.id1; j<range.id2; ++j)

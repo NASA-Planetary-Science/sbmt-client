@@ -10,13 +10,20 @@
  */
 package edu.jhuapl.near.gui;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+
+import javax.swing.JOptionPane;
+
+import com.google.common.base.Joiner;
+import com.google.common.primitives.Ints;
 
 import edu.jhuapl.near.gui.Renderer.InteractorStyleType;
 import edu.jhuapl.near.gui.Renderer.LightingType;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.pick.PickManager;
+import edu.jhuapl.near.util.ColorUtil;
 import edu.jhuapl.near.util.LatLon;
 import edu.jhuapl.near.util.Preferences;
 
@@ -28,6 +35,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
 
     private ViewerManager viewerManager;
     private static final double MAX_TOLERANCE = 0.01;
+    private int[] selectionColor;
 
     /** Creates new form SettingsDialog */
     public PreferencesDialog(java.awt.Frame parent, boolean modal) {
@@ -73,6 +81,9 @@ public class PreferencesDialog extends javax.swing.JDialog {
             pickToleranceSlider.setValue(value);
 
             mouseWheelMotionFactorSpinner.setValue(renderer.getMouseWheelMotionFactor());
+
+            selectionColor = viewerManager.getCurrentViewer().getModelManager().getCommonData().getSelectionColor();
+            updateSelectionColorLabel();
 
             updateEnabledItems();
         }
@@ -137,6 +148,9 @@ public class PreferencesDialog extends javax.swing.JDialog {
             pickManager.setPickTolerance(tolerance);
 
             renderer.setMouseWheelMotionFactor((Double)mouseWheelMotionFactorSpinner.getValue());
+
+            if (selectionColor != null)
+                viewerManager.getCurrentViewer().getModelManager().getCommonData().setSelectionColor(selectionColor);
         }
     }
 
@@ -149,6 +163,13 @@ public class PreferencesDialog extends javax.swing.JDialog {
     {
         return (int)((double)pickToleranceSlider.getMaximum()
                 * tolerance / MAX_TOLERANCE);
+    }
+
+    private void updateSelectionColorLabel()
+    {
+        int[] c = selectionColor;
+        selectionColorLabel.setText("["+c[0]+","+c[1]+","+c[2]+"]");
+        selectionColorLabel.setIcon(new ColorUtil.ColorIcon(new Color(c[0], c[1], c[2])));
     }
 
     /** This method is called from within the constructor to
@@ -207,6 +228,11 @@ public class PreferencesDialog extends javax.swing.JDialog {
         jLabel9 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
         mouseWheelMotionFactorSpinner = new javax.swing.JSpinner();
+        selectionColorLabel = new javax.swing.JLabel();
+        selectionColorButton = new javax.swing.JButton();
+        jPanel10 = new javax.swing.JPanel();
+        jSeparator9 = new javax.swing.JSeparator();
+        jLabel12 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         getContentPane().setLayout(new java.awt.GridBagLayout());
@@ -305,7 +331,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 20;
+        gridBagConstraints.gridy = 22;
         gridBagConstraints.weighty = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(15, 0, 0, 0);
         getContentPane().add(jPanel1, gridBagConstraints);
@@ -564,7 +590,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
         gridBagConstraints.weightx = 1.0;
         jPanel9.add(jSeparator6, gridBagConstraints);
 
-        jLabel9.setText("Mouse Wheel");
+        jLabel9.setText("Selection Color");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -572,7 +598,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 18;
+        gridBagConstraints.gridy = 20;
         gridBagConstraints.gridwidth = 3;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(15, 4, 5, 0);
@@ -593,6 +619,46 @@ public class PreferencesDialog extends javax.swing.JDialog {
         gridBagConstraints.ipadx = 50;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         getContentPane().add(mouseWheelMotionFactorSpinner, gridBagConstraints);
+
+        selectionColorLabel.setText("Default");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 21;
+        getContentPane().add(selectionColorLabel, gridBagConstraints);
+
+        selectionColorButton.setText("Change...");
+        selectionColorButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                selectionColorButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 21;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        getContentPane().add(selectionColorButton, gridBagConstraints);
+
+        jPanel10.setLayout(new java.awt.GridBagLayout());
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        jPanel10.add(jSeparator9, gridBagConstraints);
+
+        jLabel12.setText("Mouse Wheel");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        jPanel10.add(jLabel12, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 18;
+        gridBagConstraints.gridwidth = 3;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(15, 4, 5, 0);
+        getContentPane().add(jPanel10, gridBagConstraints);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -638,6 +704,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
         preferencesMap.put(Preferences.LIGHT_INTENSITY, ((Double)intensitySpinner.getValue()).toString());
         preferencesMap.put(Preferences.PICK_TOLERANCE, Double.valueOf(getToleranceFromSliderValue(pickToleranceSlider.getValue())).toString());
         preferencesMap.put(Preferences.MOUSE_WHEEL_MOTION_FACTOR, ((Double)mouseWheelMotionFactorSpinner.getValue()).toString());
+        preferencesMap.put(Preferences.SELECTION_COLOR, Joiner.on(",").join(Ints.asList(selectionColor)));
         Preferences.getInstance().put(preferencesMap);
     }//GEN-LAST:event_applyToAllButtonActionPerformed
 
@@ -657,6 +724,24 @@ public class PreferencesDialog extends javax.swing.JDialog {
         updateEnabledItems();
     }//GEN-LAST:event_fixedLightRadioButtonActionPerformed
 
+    private void selectionColorButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectionColorButtonActionPerformed
+        Color color = ColorChooser.showColorChooser(
+                JOptionPane.getFrameForComponent(this),
+                viewerManager.getCurrentViewer().getModelManager().getCommonData().getSelectionColor());
+
+        if (color == null)
+            return;
+
+        int[] c = new int[3];
+        c[0] = color.getRed();
+        c[1] = color.getGreen();
+        c[2] = color.getBlue();
+
+        selectionColor = c;
+
+        updateSelectionColorLabel();
+    }//GEN-LAST:event_selectionColorButtonActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton applyToAllButton;
     private javax.swing.JButton applyToCurrentButton;
@@ -670,6 +755,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
     private javax.swing.JCheckBox interactiveCheckBox;
     private javax.swing.ButtonGroup interactorStyleButtonGroup;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -679,6 +765,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
@@ -692,6 +779,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
     private javax.swing.JSeparator jSeparator4;
     private javax.swing.JSeparator jSeparator5;
     private javax.swing.JSeparator jSeparator6;
+    private javax.swing.JSeparator jSeparator9;
     private javax.swing.JRadioButton joystickRadioButton;
     private javax.swing.JLabel latitudeLabel;
     private javax.swing.JFormattedTextField latitudeTextField;
@@ -701,6 +789,8 @@ public class PreferencesDialog extends javax.swing.JDialog {
     private javax.swing.JFormattedTextField longitudeTextField;
     private javax.swing.JSpinner mouseWheelMotionFactorSpinner;
     private javax.swing.JSlider pickToleranceSlider;
+    private javax.swing.JButton selectionColorButton;
+    private javax.swing.JLabel selectionColorLabel;
     private javax.swing.JCheckBox showAxesCheckBox;
     private javax.swing.JCheckBox showScaleBarCheckBox;
     private javax.swing.JRadioButton trackballRadioButton;

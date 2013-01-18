@@ -17,6 +17,7 @@ import vtk.vtkTransformPolyDataFilter;
 
 import edu.jhuapl.near.util.LatLon;
 import edu.jhuapl.near.util.MathUtil;
+import edu.jhuapl.near.util.Preferences;
 import edu.jhuapl.near.util.Properties;
 
 public abstract class Model
@@ -29,6 +30,33 @@ public abstract class Model
 
     private boolean visible = true;
     private String name = null;
+    private CommonData commonData;
+
+    /** The purpose of this class is to store various parameters that are shared
+        across all models, .e.g. selection color. The ModelManager should instantiate
+        an instance of this class and pass on the instance to each model via the
+        setCommonData function. This way each model has access to the data.
+     */
+    public static class CommonData
+    {
+        private int[] selectionColor;
+
+        public CommonData()
+        {
+            selectionColor = Preferences.getInstance().getAsIntArray(Preferences.SELECTION_COLOR, new int[]{0, 0, 255});
+        }
+
+        public int[] getSelectionColor()
+        {
+            return selectionColor;
+        }
+
+        public void setSelectionColor(int[] selectionColor)
+        {
+            this.selectionColor = selectionColor.clone();
+        }
+    }
+
 
     public Model()
     {
@@ -37,6 +65,20 @@ public abstract class Model
     public Model(String name)
     {
         this.name = name;
+    }
+
+    /**
+     * Should be called be the model manager to set the common data.
+     * @param commonData
+     */
+    public void setCommonData(CommonData commonData)
+    {
+        this.commonData = commonData;
+    }
+
+    public CommonData getCommonData()
+    {
+        return this.commonData;
     }
 
     public boolean isVisible()

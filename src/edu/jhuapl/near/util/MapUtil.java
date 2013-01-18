@@ -99,6 +99,20 @@ public class MapUtil
         return values;
     }
 
+    public int[] getAsIntArray(String key, int[] defaultValue)
+    {
+        if (!map.containsKey(key))
+            return defaultValue;
+
+        String[] valuesStr = getAsArray(key);
+        if (valuesStr == null)
+            return null;
+        int[] values = new int[valuesStr.length];
+        for (int i=0; i<values.length; ++i)
+            values[i] = Integer.parseInt(valuesStr[i]);
+        return values;
+    }
+
     public void put(String key, String value)
     {
         try
