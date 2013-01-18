@@ -28,6 +28,8 @@ import javax.swing.JTable;
 import javax.swing.JToggleButton;
 import javax.swing.ListSelectionModel;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.UIDefaults;
+import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -650,16 +652,32 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
 
     class StringRenderer extends DefaultTableCellRenderer
     {
+        private Color selectionForeground;
+        public StringRenderer()
+        {
+            UIDefaults defaults = UIManager.getDefaults();
+            selectionForeground = defaults.getColor("Table.selectionForeground");
+        }
+
         public Component getTableCellRendererComponent(
                 JTable table, Object value,
                 boolean isSelected, boolean hasFocus,
                 int row, int column)
         {
             Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+
             if (structureModel.isStructureHidden(row))
+            {
                 c.setForeground(Color.GRAY);
+            }
             else
-                c.setForeground(Color.BLACK);
+            {
+                if (isSelected)
+                    c.setForeground(selectionForeground);
+                else
+                    c.setForeground(Color.BLACK);
+            }
+
             return c;
         }
     }
