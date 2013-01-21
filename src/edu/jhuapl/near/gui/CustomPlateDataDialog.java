@@ -156,13 +156,9 @@ public class CustomPlateDataDialog extends javax.swing.JDialog {
     {
         String uuid = UUID.randomUUID().toString();
 
-        // If newCellDataInfo.path is null, that means we are in edit mode
-        // and should continue to use the existing cell data
-        if (newCellDataInfo.coloringFile == null)
-        {
-            newCellDataInfo.coloringFile = oldCellDataInfo.coloringFile;
-        }
-        else
+        // If newCellDataInfo.coloringFile is the same as the oldCellDataInfo.coloringFile,
+        // that means we are in edit mode and and the user did not change to a new coloring file.
+        if (oldCellDataInfo == null || !newCellDataInfo.coloringFile.equals(oldCellDataInfo.coloringFile))
         {
             // Copy the cell data file to the model directory
             try
@@ -191,8 +187,6 @@ public class CustomPlateDataDialog extends javax.swing.JDialog {
         {
             model.set(index, newCellDataInfo);
         }
-
-        newCellDataInfo.builtIn = false;
 
         updateConfigFile();
     }

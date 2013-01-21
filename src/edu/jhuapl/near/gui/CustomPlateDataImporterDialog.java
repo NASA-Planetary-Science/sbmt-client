@@ -34,6 +34,7 @@ public class CustomPlateDataImporterDialog extends javax.swing.JDialog
     private int numCells = 0;
     private boolean isEditMode;
     private static final String LEAVE_UNMODIFIED = "<leave unmodified or empty to use existing plate data>";
+    private String origColoringFile; // used in Edit mode only to store original filename
 
     /** Creates new form ShapeModelImporterDialog */
     public CustomPlateDataImporterDialog(java.awt.Window parent, boolean isEditMode)
@@ -49,7 +50,10 @@ public class CustomPlateDataImporterDialog extends javax.swing.JDialog
     public void setCellDataInfo(ColoringInfo info, int numCells)
     {
         if (isEditMode)
+        {
             cellDataPathTextField.setText(LEAVE_UNMODIFIED);
+            origColoringFile = info.coloringFile;
+        }
 
         nameTextField.setText(info.coloringName);
         unitsTextField.setText(info.coloringUnits);
@@ -63,11 +67,12 @@ public class CustomPlateDataImporterDialog extends javax.swing.JDialog
     public ColoringInfo getCellDataInfo()
     {
         ColoringInfo info = new ColoringInfo();
+        info.builtIn = false;
         info.coloringFile = cellDataPathTextField.getText();
 
         if (isEditMode &&
                 (LEAVE_UNMODIFIED.equals(info.coloringFile) || info.coloringFile == null || info.coloringFile.isEmpty()))
-            info.coloringFile = null;
+            info.coloringFile = origColoringFile;
 
         info.coloringName = nameTextField.getText();
         info.coloringUnits = unitsTextField.getText();
