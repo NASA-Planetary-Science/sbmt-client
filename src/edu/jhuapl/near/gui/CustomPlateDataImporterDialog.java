@@ -39,7 +39,7 @@ public class CustomPlateDataImporterDialog extends javax.swing.JDialog
     /** Creates new form ShapeModelImporterDialog */
     public CustomPlateDataImporterDialog(java.awt.Window parent, boolean isEditMode)
     {
-        super(parent, "Import New Shape Model", Dialog.ModalityType.DOCUMENT_MODAL);
+        super(parent, "Import Plate Data", Dialog.ModalityType.DOCUMENT_MODAL);
         initComponents();
         this.isEditMode = isEditMode;
     }
