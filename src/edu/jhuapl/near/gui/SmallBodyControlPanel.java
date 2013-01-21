@@ -80,9 +80,9 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
     private JEditorPane statisticsLabel;
     private JScrollPane scrollPane;
 
-    private static final String NO_COLORING = "No Coloring";
-    private static final String STANDARD_COLORING = "Standard Coloring";
-    private static final String RGB_COLORING = "RGB Coloring";
+    private static final String NO_COLORING = "None";
+    private static final String STANDARD_COLORING = "Standard";
+    private static final String RGB_COLORING = "RGB";
 
     public SmallBodyControlPanel(ModelManager modelManager, String bodyName)
     {
@@ -157,7 +157,7 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
         final SmallBodyModel smallBodyModel = modelManager.getSmallBodyModel();
 
         JLabel coloringLabel = new JLabel();
-        coloringLabel.setText("Coloring");
+        coloringLabel.setText("Plate Coloring");
 
         coloringComboBox = new JComboBox();
         coloringComboBox.addItemListener(this);
@@ -177,7 +177,7 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
         rgbColoringButton.addItemListener(this);
         rgbColoringButton.setEnabled(smallBodyModel.getNumberOfColors() > 0);
 
-        scaleColoringButton = new JButton("Rescale Data Range");
+        scaleColoringButton = new JButton("Rescale Data Range...");
         scaleColoringButton.setEnabled(false);
         scaleColoringButton.addActionListener(new ActionListener()
         {
@@ -211,7 +211,7 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
         customColorGreenLabel.setEnabled(false);
         customColorBlueLabel.setEnabled(false);
 
-        customizeColoringButton = new JButton("Customize...");
+        customizeColoringButton = new JButton("Customize Plate Coloring...");
         customizeColoringButton.setEnabled(true);
         customizeColoringButton.addActionListener(new CustomizePlateDataAction());
 
@@ -260,16 +260,6 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
             panel.add(veryHighResModelButton, "wrap, gapleft 25");
         }
 
-        if (modelManager.getSmallBodyModel().isImageMapAvailable())
-        {
-            panel.add(imageMapCheckBox, "wrap");
-            panel.add(opacityLabel, "gapleft 25, split 2");
-            panel.add(imageMapOpacitySpinner, "wrap");
-        }
-        panel.add(gridCheckBox, "wrap");
-
-        panel.add(surfacePropertiesEditorPanel, "wrap");
-
         // Only show coloring in APL version or if there are built in colors.
         // In the non-APL version, do not allow customization.
         if (Configuration.isAPLVersion() || smallBodyModel.getNumberOfBuiltInColors() > 0)
@@ -292,6 +282,16 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
                 panel.add(customizeColoringButton, "wrap, gapleft 25");
             }
         }
+
+        if (modelManager.getSmallBodyModel().isImageMapAvailable())
+        {
+            panel.add(imageMapCheckBox, "wrap");
+            panel.add(opacityLabel, "gapleft 25, split 2");
+            panel.add(imageMapOpacitySpinner, "wrap");
+        }
+        panel.add(gridCheckBox, "wrap");
+
+        panel.add(surfacePropertiesEditorPanel, "wrap");
 
         panel.add(statisticsSeparator, "growx, span, wrap, gaptop 15");
         panel.add(statisticsLabel, "gaptop 15");
@@ -609,7 +609,9 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
     {
         public void actionPerformed(ActionEvent e)
         {
-            new CustomPlateDataDialog(modelManager).setVisible(true);
+            CustomPlateDataDialog dialog = new CustomPlateDataDialog(modelManager);
+            dialog.setLocationRelativeTo(JOptionPane.getFrameForComponent(SmallBodyControlPanel.this));
+            dialog.setVisible(true);
 
             SmallBodyModel smallBodyModel = modelManager.getSmallBodyModel();
             standardColoringButton.setEnabled(smallBodyModel.getNumberOfColors() > 0);
