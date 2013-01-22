@@ -1295,7 +1295,7 @@ public class SmallBodyModel extends Model
 
     public void setColoringIndex(int index) throws IOException
     {
-        if (coloringIndex != index)
+        if (coloringIndex != index || useFalseColoring)
         {
             coloringIndex = index;
             useFalseColoring = false;
