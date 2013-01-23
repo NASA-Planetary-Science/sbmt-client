@@ -90,7 +90,7 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
         this.modelManager = modelManager;
 
         JPanel panel = new JPanel();
-        panel.setLayout(new MigLayout());
+        panel.setLayout(new MigLayout("wrap 1"));
 
         scrollPane = new JScrollPane();
 
@@ -267,18 +267,18 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
             panel.add(coloringLabel, "wrap");
             panel.add(noColoringButton, "wrap, gapleft 25");
             panel.add(standardColoringButton, "split 2, gapleft 25");
-            panel.add(coloringComboBox, "wrap");
-            panel.add(scaleColoringButton, "wrap, gapleft 50");
-            panel.add(saveColoringButton, "wrap, gapleft 50");
+            panel.add(coloringComboBox, "width 200!, wrap");
+            panel.add(scaleColoringButton, "wrap, gapleft 75");
+            panel.add(saveColoringButton, "wrap, gapleft 75");
             if (Configuration.isAPLVersion())
             {
                 panel.add(rgbColoringButton, "wrap, gapleft 25");
-                panel.add(customColorRedLabel, "gapleft 50, split 2, align right");
-                panel.add(customColorRedComboBox, "wrap");
-                panel.add(customColorGreenLabel, "gapleft 50, split 2, align right");
-                panel.add(customColorGreenComboBox, "wrap");
-                panel.add(customColorBlueLabel, "gapleft 50, split 2, align right");
-                panel.add(customColorBlueComboBox, "wrap");
+                panel.add(customColorRedLabel, "gapleft 75, split 2");
+                panel.add(customColorRedComboBox, "width 200!, gapleft push, wrap");
+                panel.add(customColorGreenLabel, "gapleft 75, split 2");
+                panel.add(customColorGreenComboBox, "width 200!, gapleft push, wrap");
+                panel.add(customColorBlueLabel, "gapleft 75, split 2");
+                panel.add(customColorBlueComboBox, "width 200!, gapleft push, wrap");
                 panel.add(customizeColoringButton, "wrap, gapleft 25");
             }
         }
