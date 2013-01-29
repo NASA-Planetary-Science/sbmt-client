@@ -53,7 +53,7 @@ typedef enum BodyType
 /************************************************************************
 * Structure for storing a lidar point
 ************************************************************************/
-struct LidarPoint
+struct Point
 {
     char met[16];
     char utc[24];
@@ -80,9 +80,9 @@ struct FunctionParams
 * Global varaiables
 ************************************************************************/
 
-std::vector<LidarPoint> g_points;
+std::vector<Point> g_points;
 
-std::vector<LidarPoint> g_pointsOptimized;
+std::vector<Point> g_pointsOptimized;
 
 std::vector<int> g_numberOptimizationsPerPoint;
 
@@ -181,7 +181,7 @@ void loadPoints(int argc, char** argv)
         while ( fgets ( line, LINE_SIZE, f ) != NULL ) /* read a line */
         {
             ++count;
-            struct LidarPoint point;
+            struct Point point;
 
             if (g_bodyType == ITOKAWA)
             {
@@ -299,7 +299,7 @@ double funcAdolc(const double* coef, void* params)
 
     for (int i = startId; i < endPoint; ++i)
     {
-        struct LidarPoint pt = g_points[i];
+        struct Point pt = g_points[i];
         double time = pt.time - startTime;
 
         for (int k=0; k<3; ++k)
@@ -786,7 +786,7 @@ void savePointsOptimized(const char* outfile)
     int numPoints = g_points.size();
     for (i=0; i<numPoints; ++i)
     {
-        struct LidarPoint point = g_pointsOptimized[i];
+        struct Point point = g_pointsOptimized[i];
 
         double targetpos[3];
 

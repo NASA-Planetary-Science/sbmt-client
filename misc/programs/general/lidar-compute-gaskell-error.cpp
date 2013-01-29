@@ -23,7 +23,7 @@ using namespace std;
 /************************************************************************
 * Structure for storing a lidar point
 ************************************************************************/
-struct LidarPoint
+struct Point
 {
     double time;
     double scpos[3];
@@ -35,7 +35,7 @@ struct LidarPoint
 ************************************************************************/
 
 /* Array for storing all lidar points */
-struct LidarPoint g_points[MAX_NUMBER_POINTS];
+struct Point g_points[MAX_NUMBER_POINTS];
 int g_actual_number_points;
 
 // Remove initial and trailing whitespace from string. Modifies string in-place
@@ -114,7 +114,7 @@ void loadPoints(int argc, char** argv)
             sscanf(line, "%*s %s %*s %lf %lf %lf", utc, &sx, &sy, &sz);
 
 
-            struct LidarPoint point;
+            struct Point point;
 
             utc2et_c(utc, &point.time);
 
@@ -145,7 +145,7 @@ bool getLidarPosAtTime(double time, double pos[3])
 
     for (int i=1; i<g_actual_number_points; ++i)
     {
-        struct LidarPoint pt1 = g_points[i];
+        struct Point pt1 = g_points[i];
         double t1 = pt1.time;
 
         if (time == t1)
@@ -164,7 +164,7 @@ bool getLidarPosAtTime(double time, double pos[3])
             }
             else
             {
-                struct LidarPoint pt0 = g_points[i-1];
+                struct Point pt0 = g_points[i-1];
 
                 // do linear interpolation for each dimension
                 for (int j = 0; j<3; ++j)

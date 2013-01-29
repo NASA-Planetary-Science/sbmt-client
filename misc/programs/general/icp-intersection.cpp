@@ -4,10 +4,11 @@
 #include "optimize.h"
 #include "optimize-gsl.h"
 #include "closest-point-vtk.h"
+#include "point.h"
 
 
-static std::vector<Point> g_source;
-static std::vector<Point> g_target;
+static std::vector<PointLite> g_source;
+static std::vector<PointLite> g_target;
 
 
 /* Return distance squared between points x and y */
@@ -26,7 +27,7 @@ static void vadd(const double v1[3], const double v2[3], double vout[3])
     vout[2] = v1[2] + v2[2];
 }
 
-static void centroid(const std::vector<Point>& points, double* centroid)
+static void centroid(const std::vector<PointLite>& points, double* centroid)
 {
     centroid[0] = 0.0;
     centroid[1] = 0.0;
@@ -51,10 +52,10 @@ static void findAllClosestPoints(const double* translation)
     int i;
     for (i=0; i<n; ++i)
     {
-        struct Point s = g_source[i];
+        struct PointLite s = g_source[i];
         vadd(s.p, translation, s.p);
 
-        struct Point closestPoint;
+        struct PointLite closestPoint;
         findClosestPointVtk(s.p, closestPoint.p, &found);
         g_target.push_back(closestPoint);
     }
@@ -67,8 +68,8 @@ static double func(const double* translation, void*)
     double ssd = 0.0;
     for (i=0; i<n; ++i)
     {
-        struct Point s = g_source[i];
-        struct Point t = g_target[i];
+        struct PointLite s = g_source[i];
+        struct PointLite t = g_target[i];
 
         vadd(s.p, translation, s.p);
 
@@ -84,7 +85,7 @@ static double func(const double* translation, void*)
    n. The optimal translation that maps the source points into target
    points is calculated and placed in translation.
  */
-void icp2(struct Point source[], int n, struct Point* additionalPoints, double* translation)
+void icp2(struct PointLite source[], int n, struct PointLite* additionalPoints, double* translation)
 {
     /* For the ICP, we do the following:
 
@@ -112,8 +113,8 @@ void icp2(struct Point source[], int n, struct Point* additionalPoints, double* 
            func(translation, NULL));
 
 
-    struct Point sourceCentroid;
-    struct Point targetCentroid;
+    struct PointLite sourceCentroid;
+    struct PointLite targetCentroid;
     centroid(g_source, sourceCentroid.p);
     centroid(g_target, targetCentroid.p);
     translation[0] = targetCentroid.p[0] - sourceCentroid.p[0];

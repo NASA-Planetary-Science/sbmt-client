@@ -25,7 +25,7 @@ PropagatorFit::PropagatorFit()
     estimateEverythingAtOnce = false;
 }
 
-LidarTrack PropagatorFit::run()
+Track PropagatorFit::run()
 {
     initializeVtk(vtkShapeModelFilename.c_str());
 
@@ -41,7 +41,7 @@ LidarTrack PropagatorFit::run()
 
 void PropagatorFit::computeInitialPosition(double pos[3])
 {
-    const LidarPoint& p = referenceTrajectory__[0];
+    const Point& p = referenceTrajectory__[0];
     pos[0] = p.scpos[0];
     pos[1] = p.scpos[1];
     pos[2] = p.scpos[2];
@@ -67,8 +67,8 @@ void PropagatorFit::computeInitialVelocity(double velocity[3])
 
         for (unsigned int i=1; i<N; ++i)
         {
-            const LidarPoint& p0 = referenceTrajectory__[i-1];
-            const LidarPoint& p1 = referenceTrajectory__[i];
+            const Point& p0 = referenceTrajectory__[i-1];
+            const Point& p1 = referenceTrajectory__[i];
 
             meanVelocity[0] += (p1.scpos[0] - p0.scpos[0]) / (p1.time - p0.time);
             meanVelocity[1] += (p1.scpos[1] - p0.scpos[1]) / (p1.time - p0.time);
@@ -120,7 +120,7 @@ double PropagatorFit::rangeError()
         // already in the body-fixed frame.
         double newPos[3];
         const char* ref = "J2000";
-        const char* frame = LidarData::getBodyFrame();
+        const char* frame = bodyFrame__.c_str();
         double i2bmat[3][3];
         pxform_c(ref, frame, optimalTrajectory__[i].time, i2bmat);
         mxv_c(i2bmat, optimalTrajectory__[i].scpos, newPos);
@@ -203,6 +203,7 @@ double PropagatorFit::funcLeastSquares(const double* x/*, void* params*/)
     propagator__.setInitialPosition(initialPosition__);
     propagator__.setInitialVelocity(initialVelocity__);
     propagator__.setIncrement(400);
+    propagator__.setBody(body__);
 
     optimalTrajectory__ = propagator__.run();
 
@@ -215,7 +216,7 @@ double PropagatorFit::funcLeastSquares(const double* x/*, void* params*/)
     return error__;
 }
 
-LidarTrack PropagatorFit::getFullOptimalTrajectory()
+Track PropagatorFit::getFullOptimalTrajectory()
 {
     propagator__.setDensity(density__);
     propagator__.setPressure(pressure__);
@@ -223,8 +224,9 @@ LidarTrack PropagatorFit::getFullOptimalTrajectory()
     propagator__.setInitialPosition(initialPosition__);
     propagator__.setInitialVelocity(initialVelocity__);
     propagator__.setIncrement(1);
+    propagator__.setBody(body__);
 
-    LidarTrack fullOptTraj = propagator__.run();
+    Track fullOptTraj = propagator__.run();
 
     int found = 0;
     int size = fullOptTraj.size();
@@ -236,7 +238,7 @@ LidarTrack PropagatorFit::getFullOptimalTrajectory()
         // already in the body-fixed frame.
         double newPos[3];
         const char* ref = "J2000";
-        const char* frame = LidarData::getBodyFrame();
+        const char* frame = bodyFrame__.c_str();
         double i2bmat[3][3];
         pxform_c(ref, frame, fullOptTraj[i].time, i2bmat);
         mxv_c(i2bmat, fullOptTraj[i].scpos, newPos);

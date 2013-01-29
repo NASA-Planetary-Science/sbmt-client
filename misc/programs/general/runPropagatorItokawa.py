@@ -33,7 +33,7 @@ def funcToMinimize(x):
         t1 = str(interval[1])
         statsfile = 'stats-' + str(i) + '.txt-' + gethostname()
         OUTPUT='/project/nearsdc/data/ITOKAWA/LIDAR/cdr/prop-traj-' + str(i) + '.txt-' + gethostname()
-        command = './build/propagator -ev -d '+density+' -p '+pressure+' -b '+BODY+\
+        command = './build/prop-fit -ev -d '+density+' -p '+pressure+' -b '+BODY+\
                   ' -s '+VTKFILE+' -t '+PLTFILE+' -k '+KERNEL+' -i '+INPUT+' -o '+OUTPUT+\
                   ' -start '+t0+' -stop '+t1+' -e '+statsfile
         print command
@@ -61,7 +61,7 @@ def funcToMinimize(x):
     if numIntervals == 0:
         print "no valid intervals!"
         return 1.0e100
-    
+
     meanError = totalError/numIntervals
 
     f2.write("Density, pressure: " + str(x) + " Total Error: " + str(totalError) + " Mean Error: " + str(meanError) + "\n")

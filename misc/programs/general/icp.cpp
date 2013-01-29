@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "icp.h"
 #include "optimize.h"
+#include "point.h"
 
 
 /* Return distance squared between points x and y */
@@ -19,7 +20,7 @@ static void vadd(const double v1[3], const double v2[3], double vout[3])
     vout[2] = v1[2] + v2[2];
 }
 
-static void centroid(struct Point points[], int n, double* centroid)
+static void centroid(struct PointLite points[], int n, double* centroid)
 {
     centroid[0] = 0.0;
     centroid[1] = 0.0;
@@ -35,7 +36,7 @@ static void centroid(struct Point points[], int n, double* centroid)
     centroid[2] /= n;
 }
 
-static int findClosestPoint(struct Point targets[], int n, struct Point point)
+static int findClosestPoint(struct PointLite targets[], int n, struct PointLite point)
 {
     double mindist2 = 1.0e20;
     int minidx = 0;
@@ -53,20 +54,20 @@ static int findClosestPoint(struct Point targets[], int n, struct Point point)
     return minidx;
 }
 
-static void findAllClosestPoints(struct Point source[], struct Point target[], int n, const double* translation, int corr[])
+static void findAllClosestPoints(struct PointLite source[], struct PointLite target[], int n, const double* translation, int corr[])
 {
     int i;
     for (i=0; i<n; ++i)
     {
-        struct Point s = source[i];
+        struct PointLite s = source[i];
         vadd(s.p, translation, s.p);
         corr[i] = findClosestPoint(target, n, s);
     }
 }
 
 /* These static variables are used by func since we can't pass them to the function directly */
-static struct Point* g_source = 0;
-static struct Point* g_target = 0;
+static struct PointLite* g_source = 0;
+static struct PointLite* g_target = 0;
 static int* correspondences = 0;
 static int N;
 
@@ -76,8 +77,8 @@ static double func(const double* translation, void* notused)
     double ssd = 0.0;
     for (i=0; i<N; ++i)
     {
-        struct Point s = g_source[i];
-        struct Point t = g_target[correspondences[i]];
+        struct PointLite s = g_source[i];
+        struct PointLite t = g_target[correspondences[i]];
 
         vadd(s.p, translation, s.p);
 
@@ -93,7 +94,7 @@ static double func(const double* translation, void* notused)
    n. The optimal translation that maps the source points into target
    points is calculated and placed in translation.
  */
-void icp(struct Point source[], struct Point target[], int n, struct Point* additionalPoints)
+void icp(struct PointLite source[], struct PointLite target[], int n, struct PointLite* additionalPoints)
 {
     /* For the ICP, we do the following:
 
@@ -118,8 +119,8 @@ void icp(struct Point source[], struct Point target[], int n, struct Point* addi
            func(translation, NULL));
 
 
-    struct Point sourceCentroid;
-    struct Point targetCentroid;
+    struct PointLite sourceCentroid;
+    struct PointLite targetCentroid;
     centroid(source, n, sourceCentroid.p);
     centroid(target, n, targetCentroid.p);
     translation[0] = targetCentroid.p[0] - sourceCentroid.p[0];

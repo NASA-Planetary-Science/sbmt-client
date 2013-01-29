@@ -7,20 +7,19 @@
 #include <stdlib.h>
 
 
-BodyType LidarData::bodyType = ITOKAWA;
-
 LidarData::LidarData()
 {
 }
 
-LidarTrack LidarData::loadTrack(const string &filename,
+Track LidarData::loadTrack(const string& filename,
                                 bool convertToJ2000,
+                                const string& bodyName,
                                 double startTime,
                                 double stopTime)
 {
     ifstream fin(filename.c_str());
 
-    LidarTrack referenceTrajectory;
+    Track referenceTrajectory;
     char utc[24];
 
     if (fin.is_open())
@@ -28,10 +27,10 @@ LidarTrack LidarData::loadTrack(const string &filename,
         string line;
         while (getline(fin, line))
         {
-            LidarPoint p;
+            Point p;
             vector<string> tokens = split(line);
 
-            if (bodyType == ITOKAWA)
+            if (bodyName == "ITOKAWA")
             {
                 string time = tokens[1].c_str();
                 utc2et_c(time.c_str(), &p.time);
@@ -72,7 +71,7 @@ LidarTrack LidarData::loadTrack(const string &filename,
                     }
                 }
             }
-            else if (bodyType == EROS)
+            else if (bodyName == "EROS")
             {
                 // The first 2 lines have as the first character either an 'L' or 'l'.
                 // Ignore them
@@ -133,8 +132,9 @@ LidarTrack LidarData::loadTrack(const string &filename,
 }
 
 void LidarData::saveTrack(const string &filename,
-                          const LidarTrack& track,
-                          bool convertFromJ2000)
+                          const Track& track,
+                          bool convertFromJ2000,
+                          const string& bodyName)
 {
     ofstream fout(filename.c_str());
 
@@ -142,9 +142,9 @@ void LidarData::saveTrack(const string &filename,
     {
         for (unsigned int i = 0; i<track.size(); ++i)
         {
-            const LidarPoint& p = track[i];
+            const Point& p = track[i];
 
-            if (bodyType == ITOKAWA)
+            if (bodyName == "ITOKAWA")
             {
                 char strTime[32];
                 et2utc_c(p.time, "ISOC", 3, 32, strTime);
@@ -172,7 +172,7 @@ void LidarData::saveTrack(const string &filename,
                          << p.intersectpos[0] << " " << p.intersectpos[1] << " " << p.intersectpos[2] << "\n";
                 }
             }
-            else if (bodyType == EROS)
+            else if (bodyName == "EROS")
             {
                 char strTime[32];
                 et2utc_c(p.time, "ISOC", 3, 32, strTime);

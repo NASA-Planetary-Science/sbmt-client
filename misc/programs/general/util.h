@@ -4,18 +4,6 @@
 #include <string>
 #include <vector>
 
-struct Point
-{
-    double p[3];
-    Point() {}
-    Point(double x, double y, double z)
-    {
-        p[0] = x;
-        p[1] = y;
-        p[2] = z;
-    }
-};
-
 // Remove initial and trailing whitespace from string. Modifies string in-place
 inline void trim(std::string& s)
 {

@@ -1,7 +1,11 @@
 #ifndef PROPAGATOR_H
 #define PROPAGATOR_H
 
-#include "lidardata.h"
+#include "point.h"
+#include <string>
+#include <gsl/gsl_odeiv2.h>
+
+using namespace std;
 
 class Propagator
 {
@@ -32,7 +36,7 @@ public:
         initialVelocity__[1] = vel[1];
         initialVelocity__[2] = vel[2];
     }
-    void setReferenceTrajectory(const LidarTrack& traj)
+    void setReferenceTrajectory(const Track& traj)
     {
         referenceTrajectory__ = traj;
     }
@@ -43,7 +47,28 @@ public:
         increment__ = inc;
     }
 
-    LidarTrack run();
+    void setStartTime(double startTime)
+    {
+        startTime__ = startTime;
+    }
+
+    void setStopTime(double stopTime)
+    {
+        stopTime__ = stopTime;
+    }
+
+    void setDt(double dt)
+    {
+        dt__ = dt;
+    }
+
+    void setBody(const string& body)
+    {
+        body__ = body;
+        bodyFrame__ = "IAU_" + body__;
+    }
+
+    Track run();
 
     void totalAcceleration(double t, const double pos[], double acc[]);
 
@@ -54,7 +79,10 @@ private:
     void gravitationAcceleration(double t, const double pos[], double acc[]);
     void solarPressureAcceleration(double t, const double pos[], double acc[]);
     void getInitialState(double initialState[]);
-    LidarTrack computePropagatedTrajectory();
+    bool isInsideBody(double t, const double pos[3]);
+    void findIntersectionPoint(gsl_odeiv2_driver* d, double initTime, const double initState[6], double* t, double y[6]);
+    Track computePropagatedTrajectory();
+    Track computePropagatedTrajectoryNoReferenceTrajectory();
 
 
     double density__;
@@ -63,7 +91,12 @@ private:
     double initialPosition__[3];
     double initialVelocity__[3];
     int increment__;
-    LidarTrack referenceTrajectory__;
+    Track referenceTrajectory__;
+    double startTime__;
+    double stopTime__;
+    double dt__;
+    string body__;
+    string bodyFrame__;
 };
 
 #endif // PROPAGATOR_H

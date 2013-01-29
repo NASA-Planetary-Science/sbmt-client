@@ -4,8 +4,8 @@
 #include "propagator.h"
 #include "SpiceUsr.h"
 #include "gravity-werner.h"
-#include "gravity-cheng.h"
-#include "gravity-point.h"
+//#include "gravity-cheng.h"
+//#include "gravity-point.h"
 #include <iostream>
 
 const double g_G = 6.67384e-11 * 1.0e-9;
@@ -21,9 +21,12 @@ void Propagator::setShapeModelFilename(const string &filename)
     //initializeGravityCheng(filename.c_str());
 }
 
-LidarTrack Propagator::run()
+Track Propagator::run()
 {
-    return computePropagatedTrajectory();
+    if (referenceTrajectory__.empty())
+        return computePropagatedTrajectoryNoReferenceTrajectory();
+    else
+        return computePropagatedTrajectory();
 }
 
 void Propagator::getSunPosition(double et, double sunpos[3])
@@ -32,7 +35,7 @@ void Propagator::getSunPosition(double et, double sunpos[3])
     const char* target = "SUN";
     const char* ref = "J2000";
     const char* abcorr = "LT+S";
-    const char* obs = LidarData::getBodyName();
+    const char* obs = body__.c_str();
 
     spkpos_c(target, et, ref, abcorr, obs, sunpos, &lt);
     if (failed_c())
@@ -47,7 +50,7 @@ void Propagator::gravitationAcceleration(double t, const double pos[3], double a
     // First convert position to body fixed coordinates
     double newPos[3];
     const char* ref = "J2000";
-    const char* frame = LidarData::getBodyFrame();
+    const char* frame = bodyFrame__.c_str();
     double i2bmat[3][3];
     pxform_c(ref, frame, t, i2bmat);
     mxv_c(i2bmat, pos, newPos);
@@ -132,7 +135,7 @@ void Propagator::getInitialState(double initialState[6])
     initialState[5] = initialVelocity__[2];
 }
 
-LidarTrack Propagator::computePropagatedTrajectory()
+Track Propagator::computePropagatedTrajectory()
 {
     // Use GSL's ordinary differential equation solver to
     // propagate the trajectory forward in time
@@ -145,7 +148,7 @@ LidarTrack Propagator::computePropagatedTrajectory()
     double y[6];
     getInitialState(y);
 
-    LidarTrack propagatedTrajectory;
+    Track propagatedTrajectory;
     propagatedTrajectory.push_back(referenceTrajectory__[0]);
     propagatedTrajectory[0].scpos[0] = y[0];
     propagatedTrajectory[0].scpos[1] = y[1];
@@ -170,7 +173,7 @@ LidarTrack Propagator::computePropagatedTrajectory()
             printf ("error, return value=%d\n", status);
             break;
         }
-        LidarPoint p = referenceTrajectory__[i];
+        Point p = referenceTrajectory__[i];
 
         // Keep the reference position around so we can compute the error to it.
         p.ancillary1[0] = p.scpos[0];
@@ -192,6 +195,139 @@ LidarTrack Propagator::computePropagatedTrajectory()
         i += increment__;
         if (i >= size)
             i = size -1;
+    }
+    gsl_odeiv2_driver_free (d);
+
+    return propagatedTrajectory;
+}
+
+bool Propagator::isInsideBody(double t, const double pos[3])
+{
+    // First convert position to body fixed coordinates
+    double newPos[3];
+    const char* ref = "J2000";
+    const char* frame = bodyFrame__.c_str();
+    double i2bmat[3][3];
+    pxform_c(ref, frame, t, i2bmat);
+    mxv_c(i2bmat, pos, newPos);
+    return isInsidePolyhedron(newPos);
+}
+
+void Propagator::findIntersectionPoint(gsl_odeiv2_driver* d, double initTime, const double initState[6], double* t, double y[6])
+{
+    double minTime = initTime;
+    double maxTime = *t;
+    double prevTi = initTime - 1.0;
+
+    for (;;)
+    {
+        double ti = 0.5*(minTime + maxTime);
+        *t = initTime;
+        y[0] = initState[0];
+        y[1] = initState[1];
+        y[2] = initState[2];
+        y[3] = initState[3];
+        y[4] = initState[4];
+        y[5] = initState[5];
+        int status = gsl_odeiv2_driver_apply (d, t, ti, y);
+        if (status != GSL_SUCCESS)
+        {
+            printf ("error, return value=%d\n", status);
+            break;
+        }
+
+        bool isInside = this->isInsideBody(*t, y);
+        if (isInside)
+        {
+            maxTime = *t;
+        }
+        else
+        {
+            minTime = *t;
+        }
+
+        // If the new time has not changed, we're done.
+        if (prevTi == ti)
+            break;
+
+        prevTi = ti;
+    }
+}
+
+Track Propagator::computePropagatedTrajectoryNoReferenceTrajectory()
+{
+    // Use GSL's ordinary differential equation solver to
+    // propagate the trajectory forward in time
+    gsl_odeiv2_system sys = {func, 0, 6, this};
+    gsl_odeiv2_driver * d =
+            gsl_odeiv2_driver_alloc_y_new (&sys, gsl_odeiv2_step_rkf45,
+                                           1e-6, 1e-6, 0.0);
+
+
+    double y[6];
+    getInitialState(y);
+
+
+    Track propagatedTrajectory;
+    propagatedTrajectory.push_back(Point());
+    propagatedTrajectory[0].time = startTime__;
+    propagatedTrajectory[0].scpos[0] = y[0];
+    propagatedTrajectory[0].scpos[1] = y[1];
+    propagatedTrajectory[0].scpos[2] = y[2];
+    propagatedTrajectory[0].ancillary1[0] = y[3];
+    propagatedTrajectory[0].ancillary1[1] = y[4];
+    propagatedTrajectory[0].ancillary1[2] = y[5];
+
+    bool wasPrevInside = this->isInsideBody(startTime__, y);
+
+    double prevTime = startTime__;
+    double prevState[6] = {y[0],y[1],y[2],y[3],y[4],y[5]};
+
+    int size = ceil((stopTime__-startTime__)/dt__);
+    double t = startTime__;
+    double tf = stopTime__;
+    for (int i=1; i<size; ++i)
+    {
+        double ti = startTime__ + (double)i*dt__;
+
+        cout << "Elapsed time: " << ti << " sec" << endl;
+
+        if (ti > tf)
+            break;
+        int status = gsl_odeiv2_driver_apply (d, &t, ti, y);
+        if (status != GSL_SUCCESS)
+        {
+            printf ("error, return value=%d\n", status);
+            break;
+        }
+
+        bool isInside = this->isInsideBody(t, y);
+        if (isInside && !wasPrevInside)
+        {
+            findIntersectionPoint(d, prevTime, prevState, &t, y);
+        }
+
+        Point p;
+
+        p.time = t;
+        p.scpos[0] = y[0];
+        p.scpos[1] = y[1];
+        p.scpos[2] = y[2];
+        p.ancillary1[0] = y[3];
+        p.ancillary1[1] = y[4];
+        p.ancillary1[2] = y[5];
+
+        propagatedTrajectory.push_back(p);
+
+        if (isInside && !wasPrevInside)
+        {
+            break;
+        }
+        wasPrevInside = isInside;
+
+        prevTime = t;
+        prevState[0] = y[0]; prevState[1] = y[1]; prevState[2] = y[2];
+        prevState[3] = y[3]; prevState[4] = y[4]; prevState[5] = y[5];
     }
     gsl_odeiv2_driver_free (d);
 

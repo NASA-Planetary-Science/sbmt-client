@@ -6,7 +6,7 @@
 
 Platemodel* initializeGravityWerner(const char* filename);
 double getGravityWerner(const double fieldPoint[3], double acc[3]);
-
+bool isInsidePolyhedron(const double fieldPoint[3]);
 
 
 #endif // GRAVITY_H

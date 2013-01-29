@@ -52,7 +52,7 @@ int main(int argc, char** argv)
         return 1;
     }
 
-    char* body = 0;
+    string body;
     char* vtkfile = 0;
     char* pltfile = 0;
     const char* kernelfiles = 0;
@@ -67,7 +67,6 @@ int main(int argc, char** argv)
     bool initialPositionProvided = false;
     PropagatorFit::WhatToEstimate whatToEstimate = PropagatorFit::ESTIMATE_DENSITY;
     bool optimizeRange = false;
-    BodyType bodyType;
     double startTime = 0.0;
     double stopTime = 0.0;
     for(int i = 1; i<argc; ++i)
@@ -129,6 +128,8 @@ int main(int argc, char** argv)
         else if (!strcmp(argv[i], "-b"))
         {
             body = argv[++i];
+            // convert body to upper case
+            std::transform(body.begin(), body.end(), body.begin(), ::toupper);
         }
         else if (!strcmp(argv[i], "-s"))
         {
@@ -156,14 +157,9 @@ int main(int argc, char** argv)
         }
     }
 
-    bodyType = EROS;
-    if (!strcmp(body, "ITOKAWA"))
-        bodyType = ITOKAWA;
-    LidarData::setBodyType(bodyType);
-
     furnsh_c(kernelfiles);
 
-    LidarTrack referenceTrajectory = LidarData::loadTrack(trajectoryfile, true, startTime, stopTime);
+    Track referenceTrajectory = LidarData::loadTrack(trajectoryfile, true, body, startTime, stopTime);
     if (referenceTrajectory.size() < 300)
     {
         cout << "Error: Reference trajectory too short!" << endl;
@@ -180,12 +176,13 @@ int main(int argc, char** argv)
     propFit.setReferenceTrajectory(referenceTrajectory);
     propFit.setWhatToEstimate(whatToEstimate);
     propFit.setShapeModelFilename(vtkfile, pltfile);
+    propFit.setBody(body);
 
-    LidarTrack optimalTrack = propFit.run();
+    Track optimalTrack = propFit.run();
 
-    LidarData::saveTrack(outfile, optimalTrack, true);
-    LidarData::saveTrack(outfile+"-ref", referenceTrajectory, true);
-    LidarData::saveTrack(outfile+"-full", propFit.getFullOptimalTrajectory(), true);
+    LidarData::saveTrack(outfile, optimalTrack, true, body);
+    LidarData::saveTrack(outfile+"-ref", referenceTrajectory, true, body);
+    LidarData::saveTrack(outfile+"-full", propFit.getFullOptimalTrajectory(), true, body);
 
     // save out the error stats to a text file
     ofstream fout(statsfile);

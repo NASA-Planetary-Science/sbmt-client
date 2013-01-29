@@ -2,9 +2,11 @@
 #define PROPAGATORFIT_H
 
 
-#include "lidardata.h"
 #include "propagator.h"
 #include <string>
+
+
+using namespace std;
 
 class PropagatorFit
 {
@@ -53,7 +55,7 @@ public:
         initialVelocity__[2] = vel[2];
         initialVelocityProvided__ = true;
     }
-    void setReferenceTrajectory(const LidarTrack& traj)
+    void setReferenceTrajectory(const Track& traj)
     {
         referenceTrajectory__ = traj;
         propagator__.setReferenceTrajectory(traj);
@@ -93,13 +95,18 @@ public:
         return &initialVelocity__[0];
     }
 
+    void setBody(const string& body)
+    {
+        body__ = body;
+        bodyFrame__ = "IAU_" + body__;
+    }
 
-    LidarTrack run();
+    Track run();
     double funcLeastSquares(const double *x);
 
     //! Get the full optimal trajectory with data at time for
     //! for which the reference trajectory has data.
-    LidarTrack getFullOptimalTrajectory();
+    Track getFullOptimalTrajectory();
 
 private:
 
@@ -116,8 +123,8 @@ private:
     double initialVelocity__[3];
     bool initialPositionProvided__;
     bool initialVelocityProvided__;
-    LidarTrack referenceTrajectory__;
-    LidarTrack optimalTrajectory__;
+    Track referenceTrajectory__;
+    Track optimalTrajectory__;
     WhatToEstimate whatToEstimate__;
     WhatToOptimizeOver whatToOptimizeOver__;
     Propagator propagator__;
@@ -127,6 +134,8 @@ private:
     bool spiceKernelsContainVelocity__;
     bool estimateEverythingCyclicly;
     bool estimateEverythingAtOnce;
+    string body__;
+    string bodyFrame__;
 };
 
 #endif // PROPAGATORFIT_H

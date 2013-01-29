@@ -11,6 +11,7 @@
 #include "icp-intersection.h"
 #include "closest-point-dsk.h"
 #include "closest-point-vtk.h"
+#include "point.h"
 
 
 /************************************************************************
@@ -38,31 +39,13 @@ typedef enum BodyType
 
 
 /************************************************************************
-* Structure for storing a lidar point
-************************************************************************/
-struct LidarPoint
-{
-    char met[16];
-    char utc[24];
-    char rangeStr[12];
-    double range;
-    double time;
-    double scpos[3];
-    double targetpos[3];
-    double closestpoint[3]; /* closest point on asteroid to targetpos */
-    double boredir[3];
-    unsigned char isNoise; /* 1 if considered noise, 0 otherwise */
-};
-
-
-/************************************************************************
 * Global varaiables
 ************************************************************************/
 
 /* Array for storing all lidar points */
-std::vector<LidarPoint> g_points;
+std::vector<Point> g_points;
 
-std::vector<LidarPoint> g_pointsOptimized;
+std::vector<Point> g_pointsOptimized;
 
 std::vector<int> g_numberOptimizationsPerPoint;
 
@@ -136,7 +119,7 @@ void loadPoints(int argc, char** argv)
 
         while ( fgets ( line, LINE_SIZE, f ) != NULL ) /* read a line */
         {
-            struct LidarPoint point;
+            struct Point point;
 
             if (g_singleTrackMode)
             {
@@ -254,13 +237,13 @@ void optimizeTrack(int startId, int trackSize)
 
     printf("Beginning ICP\n");
 
-    struct Point sources[trackSize];
-    struct Point targets[trackSize];
-    struct Point scpos[trackSize];
+    struct PointLite sources[trackSize];
+    struct PointLite targets[trackSize];
+    struct PointLite scpos[trackSize];
     int i,j;
     for (i=g_trackStartPoint,j=0; i<endPoint; ++i,++j)
     {
-        struct LidarPoint pt = g_points[i];
+        struct Point pt = g_points[i];
         sources[j].p[0] = pt.targetpos[0];
         sources[j].p[1] = pt.targetpos[1];
         sources[j].p[2] = pt.targetpos[2];
@@ -283,7 +266,7 @@ void optimizeTrack(int startId, int trackSize)
 
     for (i=g_trackStartPoint,j=0; i<endPoint; ++i,++j)
     {
-        struct LidarPoint pt = g_points[i];
+        struct Point pt = g_points[i];
 
         pt.scpos[0] = scpos[j].p[0];
         pt.scpos[1] = scpos[j].p[1];
@@ -293,7 +276,7 @@ void optimizeTrack(int startId, int trackSize)
         pt.targetpos[1] = sources[j].p[1];
         pt.targetpos[2] = sources[j].p[2];
 
-        struct LidarPoint ptOpt = g_pointsOptimized[i];
+        struct Point ptOpt = g_pointsOptimized[i];
 
         vadd_c(ptOpt.scpos, pt.scpos, ptOpt.scpos);
 
@@ -317,7 +300,7 @@ void initializeClosestPoints()
         if (i% 1000 == 0)
             printf("finding closest point %d\n", i);
 
-        struct LidarPoint pt = g_points[i];
+        struct Point pt = g_points[i];
         double closestPoint[3];
         double boredir[3] = {
             pt.targetpos[0] - pt.scpos[0],
@@ -592,7 +575,7 @@ void savePointsOptimized(const char* outfile)
     int i;
     for (i=0; i<g_actual_number_points; ++i)
     {
-        struct LidarPoint point = g_pointsOptimized[i];
+        struct Point point = g_pointsOptimized[i];
 
         if (g_singleTrackMode)
         {

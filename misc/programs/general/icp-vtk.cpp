@@ -9,11 +9,12 @@
 #include <vtkMath.h>
 
 #include "icp.h"
+#include "point.h"
 
 // This file is adapted from the example at
 // http://www.vtk.org/Wiki/VTK/Examples/Cxx/Filters/IterativeClosestPointsTransform
 
-static void CreatePolyData(struct Point pts[], int n, vtkSmartPointer<vtkPolyData> polydata)
+static void CreatePolyData(struct PointLite pts[], int n, vtkSmartPointer<vtkPolyData> polydata)
 {
     vtkSmartPointer<vtkPoints> points =
         vtkSmartPointer<vtkPoints>::New();
@@ -58,7 +59,7 @@ static bool isValidMatrix(vtkSmartPointer<vtkMatrix4x4> m)
    * additionalPoints I/O     if not null, additional points to transform using the computed
                               transformation. Assumed to be size n.
  */
-void icpVtk(struct Point source[], struct Point target[], int n, struct Point* additionalPoints)
+void icpVtk(struct PointLite source[], struct PointLite target[], int n, struct PointLite* additionalPoints)
 {
     // Create source and target polydata
 

@@ -10,6 +10,7 @@
 #include "adolc/adolc.h"
 #include "mathutil.h"
 #include "util.h"
+#include "point.h"
 
 using namespace std;
 
@@ -28,7 +29,7 @@ const unsigned int N = 7; // number of independent variables
 double focal_length = 10029.45948178711;
 unsigned int imageWidth = 1024;
 unsigned int imageHeight = 1024;
-vector<Point> objectPoints;
+vector<PointLite> objectPoints;
 vector<Pixel> imagePoints;
 // The purpose of the following factor is as follows. When solving the optimization
 // we want the values of the independent variables to be approximately the same size.
@@ -102,7 +103,7 @@ void applyRotationToVector(
 
 template <class Double>
 void getPixelFromPoint(
-        const Point& point,
+        const PointLite& point,
         const Double scpos[3],
         const Double& q0,
         const Double& q1,
@@ -178,7 +179,7 @@ double func(const double* u, void* params)
 
     for (unsigned int i=0; i<objectPoints.size(); ++i)
     {
-        const Point& point = objectPoints[i];
+        const PointLite& point = objectPoints[i];
         const Pixel& pixel = imagePoints[i];
 
         getPixelFromPoint(point, scpos, q0, q1, q2, q3, projectedPixelX, projectedPixelY);
@@ -258,7 +259,7 @@ void loadPointsAndInitialOrientation(const char* inputfile, double initialOrient
                 }
                 else if (tokens.size() == 3)
                 {
-                    objectPoints.push_back(Point(atof(tokens[0].c_str()),
+                    objectPoints.push_back(PointLite(atof(tokens[0].c_str()),
                                                  atof(tokens[1].c_str()),
                                                  atof(tokens[2].c_str())));
                 }
@@ -338,7 +339,7 @@ void printResults(
 {
     for (unsigned int i=0; i<objectPoints.size(); ++i)
     {
-        const Point& point = objectPoints[i];
+        const PointLite& point = objectPoints[i];
         const Pixel& pixel = imagePoints[i];
 
         double projectedPixelX;

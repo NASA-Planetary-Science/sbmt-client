@@ -330,3 +330,29 @@ double getGravityWerner(const double fieldPoint[3], double acc[])
 
     return 0.5 * potential;
 }
+
+bool isInsidePolyhedron(const double fieldPoint[3])
+{
+    // Cache all the vectors from field point to vertices and their magnitudes
+    int numPoints = polyData->getNumberOfPoints();
+    pointData.resize(numPoints);
+    for (int i=0; i<numPoints; ++i)
+    {
+        PointData& pd = pointData[i];
+        polyData->getPoint(i, pd.r);
+        Subtract(pd.r, fieldPoint, pd.r);
+        pd.r_mag = Norm(pd.r);
+    }
+
+    double sum = 0.0;
+    int numFaces = polyData->getNumberOfPlates();
+    for (int i=0; i<numFaces; ++i)
+    {
+        const FaceData& fd = faceData[i];
+        sum += compute_wf(fd);
+    }
+
+    // This sum is equal to 4*pi if the point is inside the polyhedron and
+    // equals zero when outside.
+    return sum >= 2.0*M_PI;
+}

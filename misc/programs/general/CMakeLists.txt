@@ -39,10 +39,10 @@ propagator.cpp
 propagatorfit.cpp
 gravity/platemodel.cpp
 
-constants.h
 gravity/gravity-point.h
 util.h
 mathutil.h
+point.h
 )
 target_link_libraries(lidar vtkHybrid dsklib_c cspice csupport lbfgs gsl gslcblas adolc)
 
@@ -66,8 +66,11 @@ target_link_libraries(lidar-convert-edr cspice csupport m)
 add_executable(lidar-compute-gaskell-error lidar-compute-gaskell-error.cpp)
 target_link_libraries(lidar-compute-gaskell-error cspice csupport)
 
-add_executable(propagator prop-fit.cpp)
-target_link_libraries(propagator lidar)
+add_executable(prop-fit prop-fit.cpp)
+target_link_libraries(prop-fit lidar)
+
+add_executable(prop prop.cpp)
+target_link_libraries(prop lidar)
 
 add_executable(gravity gravity/gravity.cpp)
 target_link_libraries(gravity lidar)

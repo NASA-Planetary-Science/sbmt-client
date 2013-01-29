@@ -14,7 +14,7 @@
 /************************************************************************
 * Structure for storing a lidar point
 ************************************************************************/
-struct LidarPoint
+struct Point
 {
     double scpos[3];
     double targetpos[3];
@@ -28,7 +28,7 @@ struct LidarPoint
 * Global varaiables
 ************************************************************************/
 
-struct LidarPoint g_pointsOptimized[MAX_NUMBER_POINTS];
+struct Point g_pointsOptimized[MAX_NUMBER_POINTS];
 
 /* The actual number of points read in from the file */
 int g_actual_number_points;
@@ -54,7 +54,7 @@ void loadPoints(const char* filename)
 
     while ( fgets ( line, LINE_SIZE, f ) != NULL ) /* read a line */
     {
-        struct LidarPoint point;
+        struct Point point;
 
         sscanf(line, "%s %s %s %lf %lf %lf %lf %lf %lf",
                point.met,
@@ -124,7 +124,7 @@ void savePointsOptimized(const char* filename)
 
     for (i=0; i<g_actual_number_points; ++i)
     {
-        struct LidarPoint point = g_pointsOptimized[count];
+        struct Point point = g_pointsOptimized[count];
         ++count;
 
         const char* met = point.met;

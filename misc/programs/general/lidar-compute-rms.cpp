@@ -18,7 +18,7 @@
 /************************************************************************
 * Structure for storing a lidar point
 ************************************************************************/
-struct LidarPoint
+struct Point
 {
     double scpos[3];
     double targetpos[3];
@@ -37,7 +37,7 @@ typedef enum BodyType
 ************************************************************************/
 
 /* Array for storing all lidar points */
-std::vector<LidarPoint> g_points;
+std::vector<Point> g_points;
 
 /************************************************************************
 * Function which loads points from "tab" files into points
@@ -65,7 +65,7 @@ void loadPoints(int argc, char** argv, BodyType bodyType)
         while ( fgets ( line, sizeof line, f ) != NULL ) /* read a line */
         {
             ++count;
-            struct LidarPoint point;
+            struct Point point;
 
             if (bodyType == ITOKAWA)
             {
@@ -137,7 +137,7 @@ void computeRMS()
         if (i % 1000 == 0)
             printf("finding closest point %d\n", i);
 
-        struct LidarPoint pt = g_points[i];
+        struct Point pt = g_points[i];
         double closestPoint[3];
         double boredir[3] = {
             pt.targetpos[0] - pt.scpos[0],
