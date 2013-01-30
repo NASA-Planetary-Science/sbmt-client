@@ -39,6 +39,12 @@
     <resources os="Windows" arch="x86">
       <nativelib href = "vtk-natives-windows-i586.jar" />
     </resources>
+    <resources os="Windows" arch="amd64">
+      <nativelib href = "vtk-natives-windows-amd64.jar" />
+    </resources>
+    <resources os="Windows" arch="x86_64">
+      <nativelib href = "vtk-natives-windows-amd64.jar" />
+    </resources>
     <resources os="Linux" arch="i386">
       <nativelib href = "vtk-natives-linux-i586.jar" />
     </resources>

@@ -6,6 +6,8 @@
 pandoc --toc -t html -s download-installation.text -o download-installation.html
 -->
 
+Please read through this entire page carefully before attempting to run the
+Small Body Mapping Tool.
 
 ## System Requirements
 
@@ -16,7 +18,7 @@ on the following platforms:
 -   Linux (32- or 64-bit)
 -   Mac OS X version 10.5 or higher (64-bit Intel-based Macs only)
 
-It is also recommended that your machine is equipped with a good
+It is also recommended that your machine be equipped with a good
 graphics card.
 
 Please note that we plan to drop support for 32-bit systems in the
@@ -37,18 +39,24 @@ or is available as an add-on directly from Apple (10.7 or later).
 
 #### Java 7 Support
 
-Note that Java 7 which was recently released for Macs (10.7.3 or later,
-available at [http://www.java.com](http://www.java.com)) is currently
-not supported. Mac users running Lion or Mountain Lion must use Java 6,
-as shipped by Apple, to run the SBMT, not Java 7. On Windows and Linux
-platforms, however, Java 7 should work fine with no problems.
+Note that Java 7 for Mac OS X which was recently released (for 10.7.3
+or later, available at [http://www.java.com](http://www.java.com)) is
+currently not supported. Mac users running Lion or Mountain Lion must
+use Java 6, as shipped by Apple, to run the SBMT, not Java 7. On
+Windows and Linux platforms, however, Java 7 should work fine with no
+problems.
 
-## Starting the SBMT Using Java Web Start
+## Starting the Small Body Mapping Tool
 
-Clicking on the first link on the main page (or
+There are 2 ways to run the SBMT: Using Java Web Start or
+downloading a complete standalone copy of the tool.
+
+### Starting the SBMT Using Java Web Start
+
+Clicking on the specified link on the main page (or
 [here](sbmt/near.jnlp)) will launch the tool if your browser supports
 Java Web Start. Java Web Start is a technology that allows one to
-launch Java programs directly from within browser by clicking on a
+launch Java programs directly from within a browser by clicking on a
 link. Java Web Start also insures that you are running the most
 up-to-date version of the software. Most browsers have Java Web Start
 support enabled by default and no further configuration should be
@@ -58,9 +66,20 @@ found at
 Java Web Start is not enabled in your browser, please contact you
 system administrator or consider using the standalone version below.
 
-Please note that launching the tool with Java Web Start is not
-officially supported on 64-bit Windows (It may work though on some
-machines). Please use the standalone version instead.
+#### Important Requirement for 64-bit Windows Users
+
+Users running 64-bit versions of Java on Windows may need to install
+the Microsoft Visual C++ 2010 Redistributable Package. This package is
+available at
+[http://www.microsoft.com/en-us/download/details.aspx?id=14632](http://www.microsoft.com/en-us/download/details.aspx?id=14632).
+
+If the SBMT works fine without installing it, then it is already
+installed on your system and no further action is necessary. If an
+error prevents you from loading the tool, please install the package
+as described on the Microsoft website.
+
+It is *not* necessary to install this package when using the standalone
+version below. It is only necessary when using Java Web Start.
 
 #### Mac Application Bundle (Mac only)
 
@@ -68,13 +87,13 @@ For Mac users, a Mac Application Bundle is available which provides a
 convenient way to start the tool. Internally, it uses Java Web
 Start so that the latest version is always run. Download the file
 [sbmt-launcher.zip](sbmt-launcher.zip) and unzip it to any
-directory. From within Finder, you can then double-click on the SBMT
+folder. From within Finder, you can then double-click on the SBMT
 Launcher application to launch the tool. In addition, you can drag the
 application to the Dock and launch it from there.
 
-## Starting the SBMT Using the Standalone Version
+### Starting the SBMT Using the Standalone Version
 
-We also provide a standalone version of the SBMT as self contained zip
+We also provide a standalone version of the SBMT as self-contained zip
 files which contain all the executable code needed to run the tool
 (with the exception of Java itself on Mac and Linux. On Windows, Java
 is included as well). When run in this manner, the tool is not
@@ -84,19 +103,20 @@ newer versions.
 
 #### Follow these steps to run the standalone version:
 
-1. Download the appropriate file for you platform (only 64-bit
-   versions are provided)
-   -  Mac: [sbmt-2012.10.05-macosx-x64.zip](releases/sbmt-2012.10.05-macosx-x64.zip)
-   -  Linux: [sbmt-2012.10.05-linux-x64.zip](releases/sbmt-2012.10.05-linux-x64.zip)
-   -  Windows: [sbmt-2012.10.05-windows-x64.zip](releases/sbmt-2012.10.05-windows-x64.zip)
-2. Unzip the file to any folder
-3. Navigate to the 'sbmt' folder
-4. Open the 'password.txt' file located in the 'sbmt' folder in a text
-   editor and enter you username on the first line and password on the
-   second line. (This step is not needed if located on the APL
+1. (Mac and Linux only) Make sure Java is installed on your system.
+2. Download the appropriate file for your platform (only 64-bit
+   versions are provided):
+   -  Mac: [sbmt-2013.01.24-macosx-x64.zip](releases/sbmt-2013.01.24-macosx-x64.zip)
+   -  Linux: [sbmt-2013.01.24-linux-x64.zip](releases/sbmt-2013.01.24-linux-x64.zip)
+   -  Windows: [sbmt-2013.01.24-windows-x64.zip](releases/sbmt-2013.01.24-windows-x64.zip)
+3. Unzip the file to any folder
+4. Navigate to the 'sbmt' folder
+5. Open the 'password.txt' file located in the 'sbmt' folder in a text
+   editor and enter your username on the first line and password on the
+   second line. (This step may be omitted if located on the APL
    campus.)
-5. On Mac and Linux platforms, run the 'runsbmt' shell script. On Windows, run the 'runsbmt.bat' batch script.
+6. On Mac and Linux platforms, run the 'runsbmt' shell script. On Windows, run the 'runsbmt.bat' batch script.
 
-#### Previous releases
+#### Previous Releases
 
 Previous standalone releases of the tool can be found [here](releases).

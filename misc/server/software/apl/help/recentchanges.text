@@ -6,8 +6,60 @@
 pandoc -t html -s recentchanges.text -o recentchanges.html
 -->
 
-Recent Changes
-==============
+### January 24, 2013
+
+-   There are now options in the main leftmost tab of each view for
+    customization of the plate data by the user. To customize plate
+    data, click the Customize button. This will allow users to load
+    their own plate data for both built-in and imported shape models
+    (previously it was only possible to customize plate data for
+    imported models. When importing new shape models, you will no
+    longer see the options for loading custom plate data since this
+    functionality is now available in the main tab of each view.)
+    Also made all views support RGB false coloring.
+-   Added buttons in Images tab for moving items up and down. Also
+    made the Delete button delete all selected items.
+-   Added ability to change the name of an image in Images panel and show
+    name in image list.
+-   Implemented multi-selection for structures. You can now select
+    multiple structures in the structures list and apply certain
+    operations to all the selected structures (such as Delete or
+    change color). To select multiple structures, you need to click on
+    the items with the mouse while holding down the Shift or Control
+    (Command on Mac) key (with the shift key, a single contiguous
+    block of items will be selected and with the Control or Command
+    key, multiple contiguous blocks can be selected). Note also that
+    multiple structures can be selected in the renderer itself as
+    well by holding down the shift or control (command on Mac) key.
+-   Added option for hiding subset of structures by right-clicking on
+    structures and clicking Hide. Hidden structures are now grayed out.
+-   Added option for centering a structure in the window (similar to
+    the way images can be centered) by right-clicking on a
+    structure and clicking Center in Window. After centering a
+    structure the shape model will be oriented such that the top of
+    the window points in the direction of the north pole.
+-   Added ability to change selection color in preferences.
+
+### October 30, 2012
+
+-   Added support for multi-selection in image lists popup menu. This
+    works with the list of images that's returned when doing a search
+    (MSI, AMICA, etc) as well as the list of images in the Images
+    tab. To select multiple images, you need to click on the items
+    with the mouse while holding down the Shift or Control (Command on
+    Mac) key (with the shift key, a single contiguous block of items
+    will be selected and with the Control or Command key, multiple
+    contiguous blocks can be selected).
+-   Changed how drawing of ellipses is done so that now it is similar
+    to circles in that you click 3 point and an ellipse is drawn to
+    fit them. Also fixed earlier problem where interactive changing of
+    the flattening did not always follow the current mouse position
+    exactly. Also added warning info about new way to create ellipses
+
+### October 9, 2012
+
+-   Fixed problem where NIS custom formulas did not allow dividing by a
+    band (e.g. B01/B02 was flagged as invalid)
 
 ### September 2012
 
@@ -47,6 +99,8 @@ Recent Changes
 -   added ability to change line thickness and color of maplet boundary.
 -   In lidar panels (for Eros and Itokawa), added options for saving
     both modified and unmodified tracks.
+-   In lidar panels (for Eros and Itokawa), added options for saving
+    all visible tracks at once.
 -   In the NIS panel for Eros, you can now use RGB color to color NIS footprints, unlike
     previously where only grayscale was supported.
 -   In the NIS panel for Eros, you can now save out an individual NIS spectrum to a text file (by right

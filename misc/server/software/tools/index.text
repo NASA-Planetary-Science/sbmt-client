@@ -45,6 +45,18 @@ README.txt file in the zip archive for usage instructions.
 
 Download: [lidar-opt-1.0.0.zip](releases/lidar-opt-1.0.0.zip)
 
+
+## Trajectory Propagation
+
+This tool uses a shape model, an initial position and velocity at a
+specified time and computes the trajectory of an object propagated
+forward in time with these initial conditions by integrating the
+equations of motion. Please see the README.txt file in the zip archive
+for usage instructions.
+
+Download: [propagator-1.0.0.zip](releases/propagator-1.0.0.zip)
+
+
 <!---
 ## Previous Releases
 
