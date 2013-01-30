@@ -10,7 +10,8 @@ G=6.67384d-11 ;m^3 kg^-1 s^-2
 Const=G*!dpi*rho*a*a*c
 
 
-; The following 2 lines were auto-generated
+; The following 2 lines were auto-generated and then edited to work
+; with IDL. See the file oblate_spheroid_potential-solve-quadratic.py for example code.
 root1 = -a^2.0d/2.0d - c^2.0d/2.0d + x^2.0d/2.0d + y^2.0d/2.0d + z^2.0d/2.0d - sqrt(a^4.0d - 2.0d*a^2.0d*c^2.0d - 2.0d*a^2.0d*x^2.0d - 2.0d*a^2.0d*y^2.0d + 2.0d*a^2.0d*z^2.0d + c^4.0d + 2.0d*c^2.0d*x^2.0d + 2.0d*c^2.0d*y^2.0d - 2.0d*c^2.0d*z^2.0d + x^4.0d + 2.0d*x^2.0d*y^2.0d + 2.0d*x^2.0d*z^2.0d + y^4.0d + 2.0d*y^2.0d*z^2.0d + z^4.0d)/2.0d
 root2 = -a^2.0d/2.0d - c^2.0d/2.0d + x^2.0d/2.0d + y^2.0d/2.0d + z^2.0d/2.0d + sqrt(a^4.0d - 2.0d*a^2.0d*c^2.0d - 2.0d*a^2.0d*x^2.0d - 2.0d*a^2.0d*y^2.0d + 2.0d*a^2.0d*z^2.0d + c^4.0d + 2.0d*c^2.0d*x^2.0d + 2.0d*c^2.0d*y^2.0d - 2.0d*c^2.0d*z^2.0d + x^4.0d + 2.0d*x^2.0d*y^2.0d + 2.0d*x^2.0d*z^2.0d + y^4.0d + 2.0d*y^2.0d*z^2.0d + z^4.0d)/2.0d
 
