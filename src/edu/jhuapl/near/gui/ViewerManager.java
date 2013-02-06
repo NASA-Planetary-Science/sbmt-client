@@ -66,7 +66,7 @@ public class ViewerManager extends JPanel
         builtInViewers.add(new SimpleViewer(statusBar, "Ida", "/STOOKE/243ida.llr.gz", "/STOOKE/ida_image_map.png"));
         builtInViewers.add(new SimpleViewer(statusBar, "Gaspra", "/STOOKE/951gaspra.llr.gz", "/STOOKE/gaspra_image_map.png"));
         builtInViewers.add(new SimpleViewer(statusBar, "Amalthea", "/STOOKE/j5amalthea.llr.gz"));
-        builtInViewers.add(new SimpleViewer(statusBar, "Arissa", "/STOOKE/n7larissa.llr.gz"));
+        builtInViewers.add(new SimpleViewer(statusBar, "Larissa", "/STOOKE/n7larissa.llr.gz"));
         builtInViewers.add(new SimpleViewer(statusBar, "Proteus", "/STOOKE/n8proteus.llr.gz"));
         builtInViewers.add(new SimpleViewer(statusBar, "Janus", "/STOOKE/s10janus.llr.gz"));
         builtInViewers.add(new SimpleViewer(statusBar, "Epimetheus", "/STOOKE/s11epimetheus.llr.gz"));
