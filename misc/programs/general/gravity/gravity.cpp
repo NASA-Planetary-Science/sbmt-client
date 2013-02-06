@@ -41,13 +41,14 @@ static void saveResults(char* pltfile,
                         const vector<GravityResult>& results,
                         bool saveElevation,
                         bool savePlateCenters,
-                        Platemodel* polyData)
+                        Platemodel* polyData,
+                        string suffix)
 {
     string pltfilebasename = basename(pltfile);
 
-    string outputPot = pltfilebasename + "-potential.txt";
-    string outputAcc = pltfilebasename + "-acceleration.txt";
-    string outputAccMag = pltfilebasename + "-acceleration-magnitude.txt";
+    string outputPot = pltfilebasename + "-potential.txt" + suffix;
+    string outputAcc = pltfilebasename + "-acceleration.txt" + suffix;
+    string outputAccMag = pltfilebasename + "-acceleration-magnitude.txt" + suffix;
 
     ofstream foutP(outputPot.c_str());
     if (!foutP.is_open())
@@ -87,7 +88,7 @@ static void saveResults(char* pltfile,
 
     if (saveElevation)
     {
-        string outputElev = pltfilebasename + "-elevation.txt";
+        string outputElev = pltfilebasename + "-elevation.txt" + suffix;
 
         ofstream foutE(outputElev.c_str());
         if (!foutE.is_open())
@@ -107,7 +108,7 @@ static void saveResults(char* pltfile,
 
     if (savePlateCenters)
     {
-        string outputCenters = pltfilebasename + "-centers.txt";
+        string outputCenters = pltfilebasename + "-centers.txt" + suffix;
 
         ofstream foutC(outputCenters.c_str());
         if (!foutC.is_open())
@@ -192,6 +193,7 @@ int main(int argc, char** argv)
     int startPlate = -1;
     int endPlate = -1;
     bool savePlateCenters = false;
+    string suffix = "";
 
     int i = 1;
     for(; i<argc; ++i)
@@ -258,6 +260,10 @@ int main(int argc, char** argv)
         else if (!strcmp(argv[i], "--save-plate-centers"))
         {
             savePlateCenters = true;
+        }
+        else if (!strcmp(argv[i], "--suffix"))
+        {
+            suffix = argv[++i];
         }
         else
         {
@@ -500,7 +506,7 @@ int main(int argc, char** argv)
     // centers only, then a separate program must be used to calculate
     // elevation and slope.
     bool saveElevation = refPotentialProvided && howToEvalute == FROM_FILE;
-    saveResults(pltfile, plateResults, saveElevation, savePlateCenters, polyData);
+    saveResults(pltfile, plateResults, saveElevation, savePlateCenters, polyData, suffix);
 
     return 0;
 }
