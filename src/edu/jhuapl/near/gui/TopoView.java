@@ -52,7 +52,7 @@ import edu.jhuapl.near.popupmenus.PopupManager;
 import edu.jhuapl.near.util.LatLon;
 import edu.jhuapl.near.util.MathUtil;
 
-public class TopoViewer extends JFrame
+public class TopoView extends JFrame
 {
     private JButton newButton;
     private JToggleButton editButton;
@@ -79,7 +79,7 @@ public class TopoViewer extends JFrame
     private static final String Color = "Color";
 
 
-    public TopoViewer(File cubFile, File lblFile, MapletBoundaryCollection mapletBoundaries) throws IOException
+    public TopoView(File cubFile, File lblFile, MapletBoundaryCollection mapletBoundaries) throws IOException
     {
         this.mapletBoundaries = mapletBoundaries;
 
@@ -143,7 +143,7 @@ public class TopoViewer extends JFrame
         {
             public void windowClosing(WindowEvent e)
             {
-                TopoViewer.this.mapletBoundaries.removeBoundary(dem);
+                TopoView.this.mapletBoundaries.removeBoundary(dem);
                 System.gc();
                 vtkGlobalJavaHash.GC();
             }
@@ -284,7 +284,7 @@ public class TopoViewer extends JFrame
                     file = CustomFileChooser.showSaveDialog(saveButton, "Save Profiles", "profiles.txt");
                     if (file != null)
                     {
-                        saveViewer(file);
+                        saveView(file);
                     }
                 }
                 catch (Exception ex)
@@ -310,7 +310,7 @@ public class TopoViewer extends JFrame
                     file = CustomFileChooser.showOpenDialog(loadButton, "Load Profiles");
                     if (file != null)
                     {
-                        loadViewer(file);
+                        loadView(file);
                     }
                 }
                 catch (Exception ex)
@@ -338,7 +338,7 @@ public class TopoViewer extends JFrame
         return new int[] {c.getRed(), c.getGreen(), c.getBlue(), c.getAlpha()};
     }
 
-    private void saveViewer(File file) throws IOException
+    private void saveView(File file) throws IOException
     {
         FileWriter fstream = new FileWriter(file);
         BufferedWriter out = new BufferedWriter(fstream);
@@ -370,7 +370,7 @@ public class TopoViewer extends JFrame
         out.close();
     }
 
-    private void loadViewer(File file) throws IOException
+    private void loadView(File file) throws IOException
     {
         removeAllProfiles();
 
@@ -517,7 +517,7 @@ public class TopoViewer extends JFrame
             int index = dem.getColoringIndex();
             if (index < 0)
             {
-                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(TopoViewer.this),
+                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(TopoView.this),
                         "Please first display the plate data you wish to export.",
                         "Error",
                         JOptionPane.ERROR_MESSAGE);
@@ -526,7 +526,7 @@ public class TopoViewer extends JFrame
             }
 
             String name = dem.getColoringName(index) + ".txt";
-            File file = CustomFileChooser.showSaveDialog(TopoViewer.this, "Export Plate Data", name);
+            File file = CustomFileChooser.showSaveDialog(TopoView.this, "Export Plate Data", name);
 
             try
             {
@@ -536,7 +536,7 @@ public class TopoViewer extends JFrame
             catch (Exception e1)
             {
                 e1.printStackTrace();
-                JOptionPane.showMessageDialog(TopoViewer.this,
+                JOptionPane.showMessageDialog(TopoView.this,
                         "An error occurred exporting the plate data.",
                         "Error",
                         JOptionPane.ERROR_MESSAGE);

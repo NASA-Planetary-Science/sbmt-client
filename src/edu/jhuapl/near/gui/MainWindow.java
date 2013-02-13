@@ -20,7 +20,7 @@ public class MainWindow extends JFrame
     private FileMenu fileMenu;
     private ViewMenu viewMenu;
     private HelpMenu helpMenu;
-    private ViewerManager rootPanel;
+    private ViewManager rootPanel;
 
     public MainWindow()
     {
@@ -28,7 +28,7 @@ public class MainWindow extends JFrame
 
         createStatusBar();
 
-        rootPanel = new ViewerManager(statusBar);
+        rootPanel = new ViewManager(statusBar);
 
         createMenus();
 

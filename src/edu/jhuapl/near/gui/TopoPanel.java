@@ -259,7 +259,7 @@ public class TopoPanel extends JPanel implements ActionListener
 
         try
         {
-            new TopoViewer(mapmakerWorker.getCubeFile(), mapmakerWorker.getLabelFile(),
+            new TopoView(mapmakerWorker.getCubeFile(), mapmakerWorker.getLabelFile(),
                     (MapletBoundaryCollection) modelManager.getModel(ModelNames.MAPLET_BOUNDARY));
         }
         catch (IOException e1)
@@ -280,7 +280,7 @@ public class TopoPanel extends JPanel implements ActionListener
         File lblFile = new File(filename.substring(0, filename.length()-3) + "lbl");
         try
         {
-            new TopoViewer(file, lblFile,
+            new TopoView(file, lblFile,
                     (MapletBoundaryCollection) modelManager.getModel(ModelNames.MAPLET_BOUNDARY));
         }
         catch (IOException e)

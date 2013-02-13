@@ -33,7 +33,7 @@ import edu.jhuapl.near.util.Preferences;
  */
 public class PreferencesDialog extends javax.swing.JDialog {
 
-    private ViewerManager viewerManager;
+    private ViewManager viewManager;
     private static final double MAX_TOLERANCE = 0.01;
     private int[] selectionColor;
 
@@ -44,15 +44,15 @@ public class PreferencesDialog extends javax.swing.JDialog {
         setTitle("Preferences");
     }
 
-    public void setViewerManager(ViewerManager viewerManager)
+    public void setViewManager(ViewManager viewManager)
     {
-        this.viewerManager = viewerManager;
+        this.viewManager = viewManager;
     }
 
     public void setVisible(boolean b) {
         if (b)
         {
-            Renderer renderer = viewerManager.getCurrentViewer().getRenderer();
+            Renderer renderer = viewManager.getCurrentView().getRenderer();
             if (renderer.getLighting() == Renderer.LightingType.LIGHT_KIT)
                 lightKitRadioButton.setSelected(true);
             else if (renderer.getLighting() == Renderer.LightingType.HEADLIGHT)
@@ -73,16 +73,16 @@ public class PreferencesDialog extends javax.swing.JDialog {
                 trackballRadioButton.setSelected(true);
 
             SmallBodyModel smallBodyModel =
-                    viewerManager.getCurrentViewer().getModelManager().getSmallBodyModel();
+                    viewManager.getCurrentView().getModelManager().getSmallBodyModel();
             showScaleBarCheckBox.setSelected(smallBodyModel.getShowScaleBar());
 
-            PickManager pickManager = viewerManager.getCurrentViewer().getPickManager();
+            PickManager pickManager = viewManager.getCurrentView().getPickManager();
             int value = getSliderValueFromTolerance(pickManager.getPickTolerance());
             pickToleranceSlider.setValue(value);
 
             mouseWheelMotionFactorSpinner.setValue(renderer.getMouseWheelMotionFactor());
 
-            selectionColor = viewerManager.getCurrentViewer().getModelManager().getCommonData().getSelectionColor();
+            selectionColor = viewManager.getCurrentView().getModelManager().getCommonData().getSelectionColor();
             updateSelectionColorLabel();
 
             updateEnabledItems();
@@ -105,7 +105,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
         distanceTextField.setEnabled(enabled);
     }
 
-    private void applyToViewer(Viewer v)
+    private void applyToView(View v)
     {
         Renderer renderer = v.getRenderer();
         if (renderer != null)
@@ -140,17 +140,17 @@ public class PreferencesDialog extends javax.swing.JDialog {
                 renderer.setDefaultInteractorStyleType(InteractorStyleType.TRACKBALL_CAMERA);
 
             SmallBodyModel smallBodyModel =
-                    viewerManager.getCurrentViewer().getModelManager().getSmallBodyModel();
+                    viewManager.getCurrentView().getModelManager().getSmallBodyModel();
             smallBodyModel.setShowScaleBar(showScaleBarCheckBox.isSelected());
 
-            PickManager pickManager = viewerManager.getCurrentViewer().getPickManager();
+            PickManager pickManager = viewManager.getCurrentView().getPickManager();
             double tolerance = getToleranceFromSliderValue(pickToleranceSlider.getValue());
             pickManager.setPickTolerance(tolerance);
 
             renderer.setMouseWheelMotionFactor((Double)mouseWheelMotionFactorSpinner.getValue());
 
             if (selectionColor != null)
-                viewerManager.getCurrentViewer().getModelManager().getCommonData().setSelectionColor(selectionColor);
+                viewManager.getCurrentView().getModelManager().getCommonData().setSelectionColor(selectionColor);
         }
     }
 
@@ -664,14 +664,14 @@ public class PreferencesDialog extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void applyToCurrentButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_applyToCurrentButtonActionPerformed
-        applyToViewer(viewerManager.getCurrentViewer());
+        applyToView(viewManager.getCurrentView());
     }//GEN-LAST:event_applyToCurrentButtonActionPerformed
 
     private void applyToAllButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_applyToAllButtonActionPerformed
-        ArrayList<Viewer> viewers = viewerManager.getAllViewers();
-        for (Viewer v : viewers)
+        ArrayList<View> views = viewManager.getAllViews();
+        for (View v : views)
         {
-            applyToViewer(v);
+            applyToView(v);
         }
 
         // In addition, save in preferences file for future use
@@ -727,7 +727,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
     private void selectionColorButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectionColorButtonActionPerformed
         Color color = ColorChooser.showColorChooser(
                 JOptionPane.getFrameForComponent(this),
-                viewerManager.getCurrentViewer().getModelManager().getCommonData().getSelectionColor());
+                viewManager.getCurrentView().getModelManager().getCommonData().getSelectionColor());
 
         if (color == null)
             return;

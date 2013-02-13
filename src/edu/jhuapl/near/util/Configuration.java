@@ -156,7 +156,7 @@ public class Configuration
         return APLVersion;
     }
 
-    static public String getCustomDataFolderForBuiltInViewers()
+    static public String getCustomDataFolderForBuiltInViews()
     {
         return getApplicationDataDir() + File.separator + "custom-data";
     }

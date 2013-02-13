@@ -16,10 +16,10 @@ import edu.jhuapl.near.util.Configuration;
 public class FileMenu extends JMenu
 {
     private PreferencesDialog preferencesDialog;
-    private ViewerManager rootPanel;
+    private ViewManager rootPanel;
     public JFrame frame;
 
-    public FileMenu(ViewerManager rootPanel)
+    public FileMenu(ViewManager rootPanel)
     {
         super("File");
         this.rootPanel = rootPanel;
@@ -69,7 +69,7 @@ public class FileMenu extends JMenu
         if (preferencesDialog == null)
         {
             preferencesDialog = new PreferencesDialog(null, false);
-            preferencesDialog.setViewerManager(rootPanel);
+            preferencesDialog.setViewManager(rootPanel);
         }
 
         preferencesDialog.setLocationRelativeTo(rootPanel);
@@ -90,7 +90,7 @@ public class FileMenu extends JMenu
 
         public void actionPerformed(ActionEvent actionEvent)
         {
-            rootPanel.getCurrentViewer().getRenderer().saveToFile();
+            rootPanel.getCurrentView().getRenderer().saveToFile();
         }
     }
 
@@ -103,7 +103,7 @@ public class FileMenu extends JMenu
 
         public void actionPerformed(ActionEvent actionEvent)
         {
-            rootPanel.getCurrentViewer().getRenderer().save6ViewsToFile();
+            rootPanel.getCurrentView().getRenderer().save6ViewsToFile();
         }
     }
 
@@ -121,7 +121,7 @@ public class FileMenu extends JMenu
             try
             {
                 if (file != null)
-                    rootPanel.getCurrentViewer().getModelManager().getSmallBodyModel().saveAsPLT(file);
+                    rootPanel.getCurrentView().getModelManager().getSmallBodyModel().saveAsPLT(file);
             }
             catch (Exception e1)
             {
@@ -144,7 +144,7 @@ public class FileMenu extends JMenu
 
         public void actionPerformed(ActionEvent e)
         {
-            new CameraDialog(rootPanel.getCurrentViewer().getRenderer()).setVisible(true);
+            new CameraDialog(rootPanel.getCurrentView().getRenderer()).setVisible(true);
         }
     }
 
@@ -158,7 +158,7 @@ public class FileMenu extends JMenu
         public void actionPerformed(ActionEvent e)
         {
             JCheckBoxMenuItem mi = (JCheckBoxMenuItem)e.getSource();
-            rootPanel.getCurrentViewer().getRenderer().set2DMode(mi.isSelected());
+            rootPanel.getCurrentView().getRenderer().set2DMode(mi.isSelected());
         }
     }
 

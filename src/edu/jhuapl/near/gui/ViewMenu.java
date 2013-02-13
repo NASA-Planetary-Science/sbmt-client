@@ -20,11 +20,11 @@ import edu.jhuapl.near.util.Properties;
 
 public class ViewMenu extends JMenu implements PropertyChangeListener
 {
-    private ViewerManager rootPanel;
+    private ViewManager rootPanel;
     private ButtonGroup group;
     private ShapeModelImporterManagerDialog shapeModelImportedDialog;
 
-    public ViewMenu(ViewerManager rootPanel)
+    public ViewMenu(ViewManager rootPanel)
     {
         super("View");
 
@@ -38,25 +38,25 @@ public class ViewMenu extends JMenu implements PropertyChangeListener
         JMenu hudsonMenu = new JMenu("Hudson (Radar) Shape Models");
         JMenu moreMenu = new JMenu("More Shape Models");
 
-        for (int i=0; i < rootPanel.getNumberOfBuiltInViewers(); ++i)
+        for (int i=0; i < rootPanel.getNumberOfBuiltInViews(); ++i)
         {
-            Viewer viewer = rootPanel.getBuiltInViewer(i);
-            JMenuItem mi = new JRadioButtonMenuItem(new ShowBodyAction(viewer));
-            mi.setText(viewer.getDisplayName());
+            View view = rootPanel.getBuiltInView(i);
+            JMenuItem mi = new JRadioButtonMenuItem(new ShowBodyAction(view));
+            mi.setText(view.getDisplayName());
             if (i==0)
                 mi.setSelected(true);
             group.add(mi);
             this.add(mi);
 
-            if ("Gaskell".equals(viewer.getSubmenu()))
+            if ("Gaskell".equals(view.getSubmenu()))
                 gaskellMenu.add(mi);
-            else if ("Thomas".equals(viewer.getSubmenu()))
+            else if ("Thomas".equals(view.getSubmenu()))
                 thomasMenu.add(mi);
-            else if ("Stooke".equals(viewer.getSubmenu()))
+            else if ("Stooke".equals(view.getSubmenu()))
                 stookeMenu.add(mi);
-            else if ("Hudson".equals(viewer.getSubmenu()))
+            else if ("Hudson".equals(view.getSubmenu()))
                 hudsonMenu.add(mi);
-            else if ("Other".equals(viewer.getSubmenu()))
+            else if ("Other".equals(view.getSubmenu()))
                 moreMenu.add(mi);
             else
                 System.out.println("Error: invalid submenu");
@@ -75,14 +75,14 @@ public class ViewMenu extends JMenu implements PropertyChangeListener
             JMenuItem mi = new JMenuItem(new ImportShapeModelsAction());
             this.add(mi);
 
-            if (rootPanel.getNumberOfCustomViewers() > 0)
+            if (rootPanel.getNumberOfCustomViews() > 0)
                 this.addSeparator();
 
-            for (int i=0; i < rootPanel.getNumberOfCustomViewers(); ++i)
+            for (int i=0; i < rootPanel.getNumberOfCustomViews(); ++i)
             {
-                Viewer viewer = rootPanel.getCustomViewer(i);
-                mi = new JRadioButtonMenuItem(new ShowBodyAction(viewer));
-                mi.setText(viewer.getDisplayName());
+                View view = rootPanel.getCustomView(i);
+                mi = new JRadioButtonMenuItem(new ShowBodyAction(view));
+                mi.setText(view.getDisplayName());
                 if (i==0)
                     mi.setSelected(true);
                 group.add(mi);
@@ -91,18 +91,18 @@ public class ViewMenu extends JMenu implements PropertyChangeListener
         }
     }
 
-    public void addCustomMenuItem(Viewer viewer)
+    public void addCustomMenuItem(View view)
     {
-        if (rootPanel.getNumberOfCustomViewers() == 1)
+        if (rootPanel.getNumberOfCustomViews() == 1)
             this.addSeparator();
 
-        JMenuItem mi = new JRadioButtonMenuItem(new ShowBodyAction(viewer));
-        mi.setText(viewer.getDisplayName());
+        JMenuItem mi = new JRadioButtonMenuItem(new ShowBodyAction(view));
+        mi.setText(view.getDisplayName());
         group.add(mi);
         this.add(mi);
     }
 
-    public void removeCustomMenuItem(Viewer viewer)
+    public void removeCustomMenuItem(View view)
     {
         int numberItems = this.getItemCount();
         for (int i=0; i<numberItems; ++i)
@@ -114,13 +114,13 @@ public class ViewMenu extends JMenu implements PropertyChangeListener
                 if (action instanceof ShowBodyAction)
                 {
                     ShowBodyAction showBodyAction = (ShowBodyAction) action;
-                    if (viewer == showBodyAction.viewer)
+                    if (view == showBodyAction.view)
                     {
                         this.remove(item);
                         group.remove(item);
 
                         // Remove the final separator if no custom models remain
-                        if (rootPanel.getNumberOfCustomViewers() == 0)
+                        if (rootPanel.getNumberOfCustomViews() == 0)
                             removeFinalSeparator();
 
                         return;
@@ -149,21 +149,21 @@ public class ViewMenu extends JMenu implements PropertyChangeListener
         if (Properties.CUSTOM_MODEL_ADDED.equals(evt.getPropertyName()))
         {
             String name = (String) evt.getNewValue();
-            Viewer viewer = rootPanel.addCustomViewer(name);
-            addCustomMenuItem(viewer);
+            View view = rootPanel.addCustomView(name);
+            addCustomMenuItem(view);
         }
         else if (Properties.CUSTOM_MODEL_DELETED.equals(evt.getPropertyName()))
         {
             String name = (String) evt.getNewValue();
-            Viewer viewer = rootPanel.removeCustomViewer(name);
-            removeCustomMenuItem(viewer);
+            View view = rootPanel.removeCustomView(name);
+            removeCustomMenuItem(view);
         }
         else if (Properties.CUSTOM_MODEL_EDITED.equals(evt.getPropertyName()))
         {
             String name = (String) evt.getNewValue();
-            Viewer viewer = rootPanel.getCustomViewer(name);
+            View view = rootPanel.getCustomView(name);
 
-            ModelManager modelManager = viewer.getModelManager();
+            ModelManager modelManager = view.getModelManager();
 
             // If model manager is null, it means the model has not been displayed yet,
             // so no need to reset anything.
@@ -185,17 +185,17 @@ public class ViewMenu extends JMenu implements PropertyChangeListener
 
     private class ShowBodyAction extends AbstractAction
     {
-        private Viewer viewer;
+        private View view;
 
-        public ShowBodyAction(Viewer viewer)
+        public ShowBodyAction(View view)
         {
-            super(viewer.getUniqueName());
-            this.viewer = viewer;
+            super(view.getUniqueName());
+            this.view = view;
         }
 
         public void actionPerformed(ActionEvent actionEvent)
         {
-            rootPanel.setCurrentViewer(viewer);
+            rootPanel.setCurrentView(view);
         }
     }
 

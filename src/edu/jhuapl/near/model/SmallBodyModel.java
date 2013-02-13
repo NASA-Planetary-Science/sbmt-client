@@ -341,7 +341,7 @@ public class SmallBodyModel extends Model
         String imagesDir = null;
         if (isBuiltIn())
         {
-            imagesDir = Configuration.getCustomDataFolderForBuiltInViewers() + File.separator + getUniqueName();
+            imagesDir = Configuration.getCustomDataFolderForBuiltInViews() + File.separator + getUniqueName();
         }
         else
         {
