@@ -194,7 +194,7 @@ public class NISSearchPanel extends javax.swing.JPanel implements MouseListener
         int startId = idPair.id1;
         int endId = idPair.id2;
 
-        NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelNames.NIS_SPECTRA);
+        NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
         model.removeAllSpectra();
 
         for (int i=startId; i<endId; ++i)
@@ -265,7 +265,7 @@ public class NISSearchPanel extends javax.swing.JPanel implements MouseListener
         Double blueMinVal = (Double)blueMinSpinner.getValue();
         Double blueMaxVal = (Double)blueMaxSpinner.getValue();
 
-        NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelNames.NIS_SPECTRA);
+        NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
         if (grayscaleCheckBox.isSelected())
         {
             model.setChannelColoring(
@@ -1248,7 +1248,7 @@ public class NISSearchPanel extends javax.swing.JPanel implements MouseListener
 
     private void removeAllFootprintsButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_removeAllFootprintsButtonActionPerformed
     {//GEN-HEADEREND:event_removeAllFootprintsButtonActionPerformed
-        NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelNames.NIS_SPECTRA);
+        NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
         model.removeAllSpectra();
         resultIntervalCurrentlyShown = null;
     }//GEN-LAST:event_removeAllFootprintsButtonActionPerformed

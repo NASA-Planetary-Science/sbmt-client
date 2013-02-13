@@ -26,7 +26,7 @@ public class NISSpectraCollection extends Model implements PropertyChangeListene
 
     public NISSpectraCollection(SmallBodyModel eros)
     {
-        super(ModelNames.NIS_SPECTRA);
+        super(ModelNames.SPECTRA);
 
         this.erosModel = eros;
     }

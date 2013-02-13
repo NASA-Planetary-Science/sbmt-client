@@ -38,7 +38,7 @@ public class NLRSummaryPanel extends JPanel
                 BoxLayout.PAGE_AXIS));
 
         //this.modelManager = modelManager;
-        this.nlrModel = (NLRDataEverything)modelManager.getModel(ModelNames.NLR_DATA_SUMMARY);
+        this.nlrModel = (NLRDataEverything)modelManager.getModel(ModelNames.LIDAR_SUMMARY);
 
         showHideButton = new JCheckBox("Show all NLR data");
         showHideButton.setActionCommand("Show all NLR data");

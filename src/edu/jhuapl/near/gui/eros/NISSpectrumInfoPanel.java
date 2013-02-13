@@ -151,7 +151,7 @@ public class NISSpectrumInfoPanel extends ModelInfoWindow implements PropertyCha
 
     public Model getCollectionModel()
     {
-        return modelManager.getModel(ModelNames.NIS_SPECTRA);
+        return modelManager.getModel(ModelNames.SPECTRA);
     }
 
 

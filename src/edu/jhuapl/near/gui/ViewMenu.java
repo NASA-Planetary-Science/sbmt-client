@@ -12,7 +12,6 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JRadioButtonMenuItem;
 
-import edu.jhuapl.near.gui.custom.CustomViewer;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.SmallBodyModel;
@@ -162,7 +161,7 @@ public class ViewMenu extends JMenu implements PropertyChangeListener
         else if (Properties.CUSTOM_MODEL_EDITED.equals(evt.getPropertyName()))
         {
             String name = (String) evt.getNewValue();
-            CustomViewer viewer = (CustomViewer) rootPanel.getCustomViewer(name);
+            Viewer viewer = rootPanel.getCustomViewer(name);
 
             ModelManager modelManager = viewer.getModelManager();
 

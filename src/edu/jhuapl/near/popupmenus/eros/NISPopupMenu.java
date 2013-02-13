@@ -83,7 +83,7 @@ public class NISPopupMenu extends PopupMenu
 
     private void updateMenuItems()
     {
-        NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelNames.NIS_SPECTRA);
+        NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
 
         boolean containsSpectrum = model.containsSpectrum(currentSpectrum);
         showRemoveSpectrumIn3DMenuItem.setSelected(containsSpectrum);
@@ -111,7 +111,7 @@ public class NISPopupMenu extends PopupMenu
     {
         public void actionPerformed(ActionEvent e)
         {
-            NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelNames.NIS_SPECTRA);
+            NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
             try
             {
                 if (showRemoveSpectrumIn3DMenuItem.isSelected())
@@ -133,7 +133,7 @@ public class NISPopupMenu extends PopupMenu
         {
             try
             {
-                NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelNames.NIS_SPECTRA);
+                NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
                 model.addSpectrum(currentSpectrum);
                 infoPanelManager.addData(model.getSpectrum(currentSpectrum));
 
@@ -161,7 +161,7 @@ public class NISPopupMenu extends PopupMenu
         {
             try
             {
-                NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelNames.NIS_SPECTRA);
+                NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
                 model.addSpectrum(currentSpectrum);
                 NISSpectrum spectrum = model.getSpectrum(currentSpectrum);
 
@@ -183,7 +183,7 @@ public class NISPopupMenu extends PopupMenu
         {
             try
             {
-                NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelNames.NIS_SPECTRA);
+                NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
                 model.addSpectrum(currentSpectrum);
                 NISSpectrum spectrum = model.getSpectrum(currentSpectrum);
 
@@ -215,7 +215,7 @@ public class NISPopupMenu extends PopupMenu
     {
         if (pickedProp instanceof vtkActor)
         {
-            NISSpectraCollection msiImages = (NISSpectraCollection)modelManager.getModel(ModelNames.NIS_SPECTRA);
+            NISSpectraCollection msiImages = (NISSpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
             String name = msiImages.getSpectrumName((vtkActor)pickedProp);
             setCurrentSpectrum(name);
             show(e.getComponent(), e.getX(), e.getY());
