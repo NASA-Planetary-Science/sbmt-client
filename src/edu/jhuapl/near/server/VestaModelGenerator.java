@@ -48,8 +48,10 @@ public class VestaModelGenerator
         String datadir = args[0];
         String outputdir = args[1];
 
+        String name = "Vesta";
+
         String[] pltfiles = {"SHAPE64","SHAPE128","SHAPE256","SHAPE512"};
-        String[] outfiles = {"Vesta_res0","Vesta_res1","Vesta_res2","Vesta_res3"};
+        String[] outfiles = {name+"_res0",name+"_res1",name+"_res2",name+"_res3"};
 
         try
         {
@@ -73,7 +75,7 @@ public class VestaModelGenerator
                     numPlates = Integer.parseInt(val[1]);
 
                 out.write("# vtk DataFile Version 2.0\n");
-                out.write("VESTA\n");
+                out.write(name.toUpperCase() + "\n");
                 out.write("ASCII\n");
                 out.write("DATASET POLYDATA\n");
                 out.write("POINTS " + numPoints + " float\n");
@@ -115,6 +117,7 @@ public class VestaModelGenerator
                 normalsFilter.SetInputConnection(vestaReader.GetOutputPort());
                 normalsFilter.SetComputeCellNormals(0);
                 normalsFilter.SetComputePointNormals(1);
+                normalsFilter.AutoOrientNormalsOn();
                 normalsFilter.SplittingOff();
                 normalsFilter.Update();
 
