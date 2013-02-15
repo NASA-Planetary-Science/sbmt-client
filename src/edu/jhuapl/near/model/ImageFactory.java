@@ -13,7 +13,10 @@ import edu.jhuapl.near.model.gaspra.SSIGaspraImage;
 import edu.jhuapl.near.model.ida.SSIIdaImage;
 import edu.jhuapl.near.model.itokawa.AmicaImage;
 import edu.jhuapl.near.model.itokawa.Itokawa;
+import edu.jhuapl.near.model.lutetia.OsirisImage;
 import edu.jhuapl.near.model.mathilde.MSIMathildeImage;
+import edu.jhuapl.near.model.phobos.Phobos;
+import edu.jhuapl.near.model.phobos.PhobosImage;
 import edu.jhuapl.near.model.vesta.FcImage;
 import edu.jhuapl.near.model.vesta.Vesta;
 
@@ -34,6 +37,10 @@ public class ImageFactory
                 return new AmicaImage(key, smallBodyModel, loadPointingOnly, rootFolder);
             else if (smallBodyModel instanceof Vesta)
                 return new FcImage(key, smallBodyModel, loadPointingOnly, rootFolder);
+            else if (smallBodyModel instanceof Phobos)
+                return new PhobosImage(key, smallBodyModel, loadPointingOnly, rootFolder);
+            else if (smallBodyModel.getModelName().toLowerCase().startsWith("lutetia"))
+                return new OsirisImage(key, smallBodyModel, loadPointingOnly, rootFolder);
             else if (smallBodyModel.getModelName().toLowerCase().equals("gaspra"))
                 return new SSIGaspraImage(key, smallBodyModel, loadPointingOnly, rootFolder);
             else if (smallBodyModel.getModelName().toLowerCase().equals("ida"))

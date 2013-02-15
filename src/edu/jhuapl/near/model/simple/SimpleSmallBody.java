@@ -4,7 +4,7 @@ import edu.jhuapl.near.model.SmallBodyModel;
 
 public class SimpleSmallBody extends SmallBodyModel
 {
-    public SimpleSmallBody(String name, String category, String[] modelNames, String[] paths)
+    public SimpleSmallBody(String name, String category, String[] modelNames, String[] paths, boolean useAPLServer)
     {
         super(name,
                 category,
@@ -16,7 +16,8 @@ public class SimpleSmallBody extends SmallBodyModel
                 null,
                 null,
                 ColoringValueType.CELLDATA,
-                false);
+                false,
+                useAPLServer);
     }
 
     public SimpleSmallBody(String name, String category, String path, String imageMap)

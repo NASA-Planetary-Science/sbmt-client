@@ -3,7 +3,9 @@ package edu.jhuapl.near.util;
 import vtk.vtkFloatArray;
 import vtk.vtkImageData;
 import vtk.vtkImageFlip;
+import vtk.vtkImageReslice;
 import vtk.vtkPointData;
+import vtk.vtkTransform;
 
 public class ImageDataUtil
 {
@@ -82,5 +84,35 @@ public class ImageDataUtil
 
         vtkImageData flipOutput = flip.GetOutput();
         image.DeepCopy(flipOutput);
+    }
+
+    /**
+     *  Rotate image specified number of degrees
+     *
+     * @param image
+     */
+    static public void rotateImage(vtkImageData image, double angle)
+    {
+        int[] dims = image.GetDimensions();
+        double[] center = {(dims[1]-1.0)/2.0, (dims[0]-1.0)/2.0};
+
+        vtkTransform imageTransform = new vtkTransform();
+        imageTransform.PostMultiply();
+        imageTransform.Translate(-center[1], -center[0], 0.0);
+        imageTransform.RotateZ(angle);
+        imageTransform.Translate(center[1], center[0], 0.0);
+
+        vtkImageReslice algo = new vtkImageReslice();
+        algo.SetInput(image);
+        algo.SetInformationInput(image);
+        algo.SetResliceTransform(imageTransform);
+        algo.SetInterpolationModeToNearestNeighbor();
+        algo.SetOutputSpacing(1.0, 1.0, 1.0);
+        algo.SetOutputOrigin(0.0, 0.0, 0.0);
+        algo.SetOutputExtent(0, dims[1]-1, 0, dims[0]-1, 0, 0);
+        algo.Update();
+
+        vtkImageData output = algo.GetOutput();
+        image.DeepCopy(output);
     }
 }

@@ -20,7 +20,9 @@ import edu.jhuapl.near.gui.gaspra.SSIGaspraSearchPanel;
 import edu.jhuapl.near.gui.ida.SSIIdaSearchPanel;
 import edu.jhuapl.near.gui.itokawa.AmicaSearchPanel;
 import edu.jhuapl.near.gui.itokawa.HayLidarPanel;
+import edu.jhuapl.near.gui.lutetia.OsirisImagingDataSearchPanel;
 import edu.jhuapl.near.gui.mathilde.MSIMathildeSearchPanel;
+import edu.jhuapl.near.gui.phobos.PhobosImagingDataSearchPanel;
 import edu.jhuapl.near.gui.vesta.FCSearchPanel;
 import edu.jhuapl.near.model.CircleModel;
 import edu.jhuapl.near.model.CircleSelectionModel;
@@ -49,6 +51,7 @@ import edu.jhuapl.near.model.eros.NLRSearchDataCollection;
 import edu.jhuapl.near.model.itokawa.HayLidarBrowseDataCollection;
 import edu.jhuapl.near.model.itokawa.HayLidarSearchDataCollection;
 import edu.jhuapl.near.model.itokawa.Itokawa;
+import edu.jhuapl.near.model.phobos.Phobos;
 import edu.jhuapl.near.model.rq36.RQ36;
 import edu.jhuapl.near.model.simple.SimpleSmallBody;
 import edu.jhuapl.near.model.vesta.Vesta;
@@ -375,7 +378,7 @@ public class View extends JPanel
     static private final String PHOEBE = "Phoebe";
     static private final String PHOBOS = "Phobos";
     static private final String RQ36 = "RQ36";
-    //static private final String LUTETIA = "Lutetia";
+    static private final String LUTETIA = "Lutetia";
     static private final String IDA = "Ida";
     static private final String GASPRA = "Gaspra";
     static private final String MATHILDE = "Mathilde";
@@ -417,6 +420,7 @@ public class View extends JPanel
     static private final String LIDAR = "LIDAR";
     static private final String FC = "FC";
     static private final String SSI = "SSI";
+    static private final String OSIRIS = "OSIRIS";
     static private final String IMAGING_DATA = "Imaging Data";
 
     public static class ViewConfig
@@ -490,6 +494,8 @@ public class View extends JPanel
                 return SSI;
             else if (GASPRA.equals(name))
                 return SSI;
+            else if (LUTETIA.equals(name))
+                return OSIRIS;
             else
                 return IMAGING_DATA;
         }
@@ -517,9 +523,11 @@ public class View extends JPanel
         new ViewConfig(EROS, GASKELL, "/GASKELL/EROS", false, true, true, true, true, true),
         new ViewConfig(ITOKAWA, GASKELL, "/GASKELL/ITOKAWA", false, true, true, false, false, false),
         new ViewConfig(VESTA, GASKELL, "/GASKELL/VESTA", false, true),
-        new ViewConfig(RQ36, GASKELL, "/GASKELL/RQ36", true),
+        new ViewConfig(RQ36, GASKELL, "/GASKELL/RQ36"),
         new ViewConfig(MIMAS, GASKELL, "/GASKELL/MIMAS"),
         new ViewConfig(PHOEBE, GASKELL, "/GASKELL/PHOEBE"),
+        new ViewConfig(PHOBOS, GASKELL, "/GASKELL/PHOBOS", false, false),
+        new ViewConfig(LUTETIA, GASKELL, "/GASKELL/LUTETIA", false, true),
         new ViewConfig(IDA, THOMAS, "/THOMAS/IDA/243ida.llr.gz", true, true),
         new ViewConfig(GASPRA, THOMAS, "/THOMAS/GASPRA/951gaspra.llr.gz", true, true),
         new ViewConfig(MATHILDE, THOMAS, "/THOMAS/MATHILDE/253mathilde.llr.gz", true, true),
@@ -566,6 +574,8 @@ public class View extends JPanel
                 return new Itokawa();
             else if (VESTA.equals(name))
                 return new Vesta();
+            else if (PHOBOS.equals(name))
+                return new Phobos();
             else if (RQ36.equals(name))
                 return new RQ36();
             else
@@ -583,7 +593,11 @@ public class View extends JPanel
                         viewConfig.pathOnServer + "/ver512q.vtk.gz"
                 };
 
-                return new SimpleSmallBody(name, submenu, names, paths);
+                boolean useAPLServer = false;
+                if (VESTA.equals(name) || RQ36.equals(name) || LUTETIA.equals(name))
+                    useAPLServer = true;
+
+                return new SimpleSmallBody(name, submenu, names, paths, useAPLServer);
             }
         }
         else if (THOMAS.equals(submenu))
@@ -618,7 +632,12 @@ public class View extends JPanel
                     viewConfig.pathOnServer + "/coordinate_grid_res3.vtk.gz"
             };
 
-            return new Graticule(smallBodyModel, graticulePaths);
+            boolean useAPLServer = false;
+            String name = viewConfig.name;
+            if (VESTA.equals(name) || RQ36.equals(name) || LUTETIA.equals(name))
+                useAPLServer = true;
+
+            return new Graticule(smallBodyModel, graticulePaths, useAPLServer);
         }
         else if (CUSTOM.equals(submenu))
         {
@@ -670,6 +689,10 @@ public class View extends JPanel
             return new AmicaSearchPanel(modelManager, infoPanelManager, pickManager, renderer);
         else if (smallBodyModel instanceof Vesta)
             return new FCSearchPanel(modelManager, infoPanelManager, pickManager, renderer);
+        else if (smallBodyModel instanceof Phobos)
+            return new PhobosImagingDataSearchPanel(modelManager, infoPanelManager, pickManager, renderer);
+        else if (LUTETIA.equals(name))
+            return new OsirisImagingDataSearchPanel(modelManager, infoPanelManager, pickManager, renderer);
         else if (GASPRA.equals(name))
             return new SSIGaspraSearchPanel(modelManager, infoPanelManager, pickManager, renderer);
         else if (IDA.equals(name))
