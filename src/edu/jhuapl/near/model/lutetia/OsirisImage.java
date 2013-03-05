@@ -7,7 +7,9 @@ import java.util.LinkedHashMap;
 
 import nom.tam.fits.FitsException;
 
+import vtk.vtkImageConstantPad;
 import vtk.vtkImageData;
+import vtk.vtkImageTranslateExtent;
 
 import edu.jhuapl.near.model.PerspectiveImage;
 import edu.jhuapl.near.model.SmallBodyModel;
@@ -16,14 +18,12 @@ import edu.jhuapl.near.util.ImageDataUtil;
 
 public class OsirisImage extends PerspectiveImage
 {
-    // These values are slightly different from those in the instrument kernel.
-    // They seem to work okay. Note the tangent!
-    public static final double FOV_NAC_PARAMETER1 = -Math.tan(0.0385386967361/2.0);
-    public static final double FOV_NAC_PARAMETER2 = -Math.tan(0.0385386967361/2.0);
-    public static final double FOV_NAC_PARAMETER3 = 1.0;
-    public static final double FOV_WAC_PARAMETER1 = -Math.tan(0.207/2.0);
-    public static final double FOV_WAC_PARAMETER2 = -Math.tan(0.207/2.0);
-    public static final double FOV_WAC_PARAMETER3 = 1.0;
+    // These values are derived from the sumfiles.
+    public static final double FOV_NAC_PARAMETER1 = -Math.tan(0.0385386832509/2.0);
+    public static final double FOV_WAC_PARAMETER1 = -Math.tan(0.203281068933/2.0);
+    public static final double FOV_NAC_PARAMETER2 = -Math.tan(0.0385386832509/2.0);
+    public static final double FOV_WAC_PARAMETER2 = -Math.tan(0.203281068933/2.0);
+    public static final double FOV_PARAMETER3 = 1.0;
 
     public OsirisImage(ImageKey key,
             SmallBodyModel smallBodyModel,
@@ -36,7 +36,7 @@ public class OsirisImage extends PerspectiveImage
     @Override
     protected void processRawImage(vtkImageData rawImage)
     {
-        // Flip image along y axis an rotate it. Only needed for NAC images.
+        // Flip image along y axis and rotate it. Only needed for NAC images.
         ImageKey key = getKey();
         File keyFile = new File(key.name);
         if (keyFile.getName().startsWith("N"))
@@ -44,6 +44,36 @@ public class OsirisImage extends PerspectiveImage
             ImageDataUtil.flipImageYAxis(rawImage);
             ImageDataUtil.rotateImage(rawImage, 180.0);
         }
+
+        // If image is smaller than 2048x2048 we need to extend it to that size.
+        // Therefore, the following pads the images with zero back to
+        // original size. The vtkImageTranslateExtent first translates the cropped image
+        // to its proper position in the original and the vtkImageConstantPad then pads
+        // it with zero to size 2048x2048.
+        int[] dims = rawImage.GetDimensions();
+        if (dims[0] == 2048 && dims[1] == 2048)
+            return;
+
+        // Currently this correction only works with NAC images of size 1024x1024.
+        // Other images don't align well with the shape model using this shift amount.
+        int xshift = 559;
+        int yshift = 575;
+
+        vtkImageTranslateExtent translateExtent = new vtkImageTranslateExtent();
+        translateExtent.SetInputConnection(rawImage.GetProducerPort());
+        translateExtent.SetTranslation(xshift, yshift, 0);
+        translateExtent.Update();
+
+        vtkImageConstantPad pad = new vtkImageConstantPad();
+        pad.SetInputConnection(translateExtent.GetOutputPort());
+        pad.SetOutputWholeExtent(0, 2047, 0, 2047, 0, 0);
+        pad.Update();
+
+        vtkImageData padOutput = pad.GetOutput();
+        rawImage.DeepCopy(padOutput);
+
+        // shift origin back to zero
+        rawImage.SetOrigin(0.0, 0.0, 0.0);
     }
 
     public String generateBackplanesLabel() throws IOException
@@ -76,12 +106,7 @@ public class OsirisImage extends PerspectiveImage
     @Override
     public double getFovParameter3()
     {
-        ImageKey key = getKey();
-        File keyFile = new File(key.name);
-        if (keyFile.getName().startsWith("N"))
-            return FOV_NAC_PARAMETER3;
-        else
-            return FOV_WAC_PARAMETER3;
+        return FOV_PARAMETER3;
     }
 
     @Override
