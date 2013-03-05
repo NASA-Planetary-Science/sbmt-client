@@ -855,6 +855,8 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         MathUtil.vhat(cz, boresightDirection);
         MathUtil.vhat(cx, upVector);
         MathUtil.vhat(sz, sunVector);
+
+        in.close();
     }
 
     private void loadSumfile() throws NumberFormatException, IOException
