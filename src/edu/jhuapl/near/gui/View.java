@@ -594,10 +594,14 @@ public class View extends JPanel
                 };
 
                 boolean useAPLServer = false;
-                if (VESTA.equals(name) || RQ36.equals(name) || LUTETIA.equals(name))
+                if (LUTETIA.equals(name))
                     useAPLServer = true;
 
-                return new SimpleSmallBody(name, submenu, names, paths, useAPLServer);
+                boolean hasColoringData = false;
+                if (LUTETIA.equals(name))
+                    hasColoringData = true;
+
+                return new SimpleSmallBody(name, submenu, names, paths, hasColoringData, useAPLServer);
             }
         }
         else if (THOMAS.equals(submenu))

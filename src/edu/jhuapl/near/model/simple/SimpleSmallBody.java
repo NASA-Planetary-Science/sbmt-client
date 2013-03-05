@@ -4,15 +4,39 @@ import edu.jhuapl.near.model.SmallBodyModel;
 
 public class SimpleSmallBody extends SmallBodyModel
 {
-    public SimpleSmallBody(String name, String category, String[] modelNames, String[] paths, boolean useAPLServer)
+    static private String[] getColoringFiles(String name)
+    {
+        return new String[] {
+        "/GASKELL/" + name.toUpperCase() + "/Slope",
+        "/GASKELL/" + name.toUpperCase() + "/Elevation",
+        "/GASKELL/" + name.toUpperCase() + "/GravitationalAcceleration",
+        "/GASKELL/" + name.toUpperCase() + "/GravitationalPotential"
+        };
+    }
+
+    static private final String[] coloringNames = {
+        SlopeStr, ElevStr, GravAccStr, GravPotStr
+    };
+
+    static private final String[] coloringUnits = {
+        SlopeUnitsStr, ElevUnitsStr, GravAccUnitsStr, GravPotUnitsStr
+    };
+
+    public SimpleSmallBody(
+            String name,
+            String category,
+            String[] modelNames,
+            String[] paths,
+            boolean hasColoringData,
+            boolean useAPLServer)
     {
         super(name,
                 category,
                 modelNames,
                 paths,
-                null,
-                null,
-                null,
+                hasColoringData ? getColoringFiles(name) : null,
+                hasColoringData ? coloringNames : null,
+                hasColoringData ? coloringUnits : null,
                 null,
                 null,
                 ColoringValueType.CELLDATA,
