@@ -30,7 +30,7 @@ public class SimpleSmallBody extends SmallBodyModel
                 null,
                 null,
                 null,
-                new String[] {imageMap},
+                imageMap != null ? new String[] {imageMap} : null,
                 ColoringValueType.CELLDATA,
                 false);
     }
