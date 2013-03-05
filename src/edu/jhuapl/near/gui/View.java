@@ -51,7 +51,6 @@ import edu.jhuapl.near.model.eros.NLRSearchDataCollection;
 import edu.jhuapl.near.model.itokawa.HayLidarBrowseDataCollection;
 import edu.jhuapl.near.model.itokawa.HayLidarSearchDataCollection;
 import edu.jhuapl.near.model.itokawa.Itokawa;
-import edu.jhuapl.near.model.phobos.Phobos;
 import edu.jhuapl.near.model.rq36.RQ36;
 import edu.jhuapl.near.model.simple.SimpleSmallBody;
 import edu.jhuapl.near.model.vesta.Vesta;
@@ -526,7 +525,7 @@ public class View extends JPanel
         new ViewConfig(RQ36, GASKELL, "/GASKELL/RQ36"),
         new ViewConfig(MIMAS, GASKELL, "/GASKELL/MIMAS"),
         new ViewConfig(PHOEBE, GASKELL, "/GASKELL/PHOEBE"),
-        new ViewConfig(PHOBOS, GASKELL, "/GASKELL/PHOBOS", false, false),
+        new ViewConfig(PHOBOS, GASKELL, "/GASKELL/PHOBOS", false, true),
         new ViewConfig(LUTETIA, GASKELL, "/GASKELL/LUTETIA", false, true),
         new ViewConfig(IDA, THOMAS, "/THOMAS/IDA/243ida.llr.gz", true, true),
         new ViewConfig(GASPRA, THOMAS, "/THOMAS/GASPRA/951gaspra.llr.gz", true, true),
@@ -574,8 +573,6 @@ public class View extends JPanel
                 return new Itokawa();
             else if (VESTA.equals(name))
                 return new Vesta();
-            else if (PHOBOS.equals(name))
-                return new Phobos();
             else if (RQ36.equals(name))
                 return new RQ36();
             else
@@ -693,7 +690,7 @@ public class View extends JPanel
             return new AmicaSearchPanel(modelManager, infoPanelManager, pickManager, renderer);
         else if (smallBodyModel instanceof Vesta)
             return new FCSearchPanel(modelManager, infoPanelManager, pickManager, renderer);
-        else if (smallBodyModel instanceof Phobos)
+        else if (PHOBOS.equals(name))
             return new PhobosImagingDataSearchPanel(modelManager, infoPanelManager, pickManager, renderer);
         else if (LUTETIA.equals(name))
             return new OsirisImagingDataSearchPanel(modelManager, infoPanelManager, pickManager, renderer);

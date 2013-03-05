@@ -34,7 +34,7 @@ public class PhobosImagingDataSearchPanel extends AbstractImageSearchPanel
     @Override
     protected Date getDefaultEndDate()
     {
-        return new GregorianCalendar(2012, 7, 27, 0, 0, 0).getTime();
+        return new GregorianCalendar(1989, 2, 26, 0, 0, 0).getTime();
     }
 
     @Override
@@ -46,16 +46,14 @@ public class PhobosImagingDataSearchPanel extends AbstractImageSearchPanel
     @Override
     protected int getNumberOfFilters()
     {
-        return 8;
+        return 6;
     }
 
     @Override
     protected String[] getFilterNames()
     {
         return new String[]{
-                "Phobos 2 VSK, Channel 1",
                 "Phobos 2 VSK, Channel 2",
-                "Phobos 2 VSK, Channel 3",
                 "Viking Orbiter VIS, Clear",
                 "Viking Orbiter VIS, Green",
                 "Viking Orbiter VIS, Minus Blue",

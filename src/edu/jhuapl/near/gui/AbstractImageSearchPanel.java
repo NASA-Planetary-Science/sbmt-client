@@ -152,16 +152,37 @@ abstract public class AbstractImageSearchPanel extends javax.swing.JPanel implem
         int numberOfFilters = getNumberOfFilters();
         if (numberOfFilters < 8)
             filter8CheckBox.setVisible(false);
+        if (numberOfFilters < 7)
+            filter7CheckBox.setVisible(false);
+        if (numberOfFilters < 6)
+            filter6CheckBox.setVisible(false);
+        if (numberOfFilters < 5)
+            filter5CheckBox.setVisible(false);
+        if (numberOfFilters < 4)
+            filter4CheckBox.setVisible(false);
+        if (numberOfFilters < 3)
+            filter3CheckBox.setVisible(false);
+        if (numberOfFilters < 2)
+            filter2CheckBox.setVisible(false);
+        if (numberOfFilters < 1)
+            filter1CheckBox.setVisible(false);
 
         String[] filterNames = getFilterNames();
-        filter1CheckBox.setText(filterNames[0]);
-        filter2CheckBox.setText(filterNames[1]);
-        filter3CheckBox.setText(filterNames[2]);
-        filter4CheckBox.setText(filterNames[3]);
-        filter5CheckBox.setText(filterNames[4]);
-        filter6CheckBox.setText(filterNames[5]);
-        filter7CheckBox.setText(filterNames[6]);
-        if (numberOfFilters == 8)
+        if (numberOfFilters > 0)
+            filter1CheckBox.setText(filterNames[0]);
+        if (numberOfFilters > 1)
+            filter2CheckBox.setText(filterNames[1]);
+        if (numberOfFilters > 2)
+            filter3CheckBox.setText(filterNames[2]);
+        if (numberOfFilters > 3)
+            filter4CheckBox.setText(filterNames[3]);
+        if (numberOfFilters > 4)
+            filter5CheckBox.setText(filterNames[4]);
+        if (numberOfFilters > 5)
+            filter6CheckBox.setText(filterNames[5]);
+        if (numberOfFilters > 6)
+            filter7CheckBox.setText(filterNames[6]);
+        if (numberOfFilters > 7)
             filter8CheckBox.setText(filterNames[7]);
 
         if (hasUserDefinedCheckBoxes())

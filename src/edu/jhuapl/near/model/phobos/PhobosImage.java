@@ -15,13 +15,13 @@ import edu.jhuapl.near.util.FileCache;
 
 public class PhobosImage extends PerspectiveImage
 {
-    // Values derived from instrument kernel file. Note the tangent!
-    public static final double FOV_VIKING_PARAMETER1 = -Math.tan(0.02953097/2.0);
-    public static final double FOV_VIKING_PARAMETER2 = -Math.tan(0.02693043/2.0);
-    public static final double FOV_VIKING_PARAMETER3 = 1.0;
-    public static final double FOV_PHOBOS2_PARAMETER1 = -Math.tan(0.095480/2.0);
-    public static final double FOV_PHOBOS2_PARAMETER2 = -Math.tan(0.095420/2.0);
-    public static final double FOV_PHOBOS2_PARAMETER3 = 1.0;
+    public static final double FOV_VIKING_PARAMETER1 = -Math.tan(0.0316815603057/2.0);
+    public static final double FOV_VIKING_PARAMETER2 = -Math.tan(0.0277876855117/2.0);
+    public static final double FOV_PHOBOS2_FILTER2_PARAMETER1 = -Math.tan(0.091734880135/2.0);
+    public static final double FOV_PHOBOS2_FILTER2_PARAMETER2 = -Math.tan(0.0714889658869/2.0);
+    public static final double FOV_PHOBOS2_FILTER13_PARAMETER1 = -Math.tan(0.486390796269/2.0);
+    public static final double FOV_PHOBOS2_FILTER13_PARAMETER2 = -Math.tan(0.381881868455/2.0);
+    public static final double FOV_PARAMETER3 = 1.0;
 
     public PhobosImage(ImageKey key,
             SmallBodyModel smallBodyModel,
@@ -48,8 +48,10 @@ public class PhobosImage extends PerspectiveImage
         File keyFile = new File(key.name);
         if (keyFile.getName().startsWith("V"))
             return FOV_VIKING_PARAMETER1;
+        else if (keyFile.getName().endsWith("2"))
+            return FOV_PHOBOS2_FILTER2_PARAMETER1;
         else
-            return FOV_PHOBOS2_PARAMETER1;
+            return FOV_PHOBOS2_FILTER13_PARAMETER1;
     }
 
     @Override
@@ -59,19 +61,16 @@ public class PhobosImage extends PerspectiveImage
         File keyFile = new File(key.name);
         if (keyFile.getName().startsWith("V"))
             return FOV_VIKING_PARAMETER2;
+        else if (keyFile.getName().endsWith("2"))
+            return FOV_PHOBOS2_FILTER2_PARAMETER2;
         else
-            return FOV_PHOBOS2_PARAMETER2;
+            return FOV_PHOBOS2_FILTER13_PARAMETER2;
     }
 
     @Override
     public double getFovParameter3()
     {
-        ImageKey key = getKey();
-        File keyFile = new File(key.name);
-        if (keyFile.getName().startsWith("V"))
-            return FOV_VIKING_PARAMETER3;
-        else
-            return FOV_PHOBOS2_PARAMETER3;
+        return FOV_PARAMETER3;
     }
 
     @Override
