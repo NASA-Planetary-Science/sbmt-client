@@ -4,7 +4,7 @@ import java.io.File;
 
 public class Configuration
 {
-    static private String rootURL = "http://near.jhuapl.edu/software";
+    static private String rootURL = "http://near.jhuapl.edu/software/apl";
     static private String appDir = null;
     static private String cacheDir = null;
     static private String cacheVersion = "2";
@@ -83,7 +83,7 @@ public class Configuration
      */
     static public String getDataRootURL()
     {
-        return rootURL + "/sbmt/data";
+        return rootURL + "/data";
     }
 
     /**
@@ -92,28 +92,22 @@ public class Configuration
      */
     static public String getDataRootURLAPL()
     {
-        return rootURL + "/apl/data-apl";
+        return rootURL + "/data-apl";
     }
 
     static public String getQueryRootURL()
     {
-        return rootURL + "/sbmt/query";
+        return rootURL + "/query";
     }
 
     static public String getHelpRootURL()
     {
-        if (isAPLVersion())
-            return rootURL + "/apl/help/";
-        else
-            return rootURL + "/sbmt/help/";
+        return rootURL + "/help/";
     }
 
     static public String getFeedbackRootURL()
     {
-        if (isAPLVersion())
-            return rootURL + "/apl/feedback/";
-        else
-            return rootURL + "/sbmt/feedback/";
+        return rootURL + "/feedback/";
     }
 
     static public String getImportedShapeModelsDir()
