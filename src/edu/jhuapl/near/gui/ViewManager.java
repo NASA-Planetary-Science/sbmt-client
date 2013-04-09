@@ -8,6 +8,7 @@ import java.util.Arrays;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 
+import edu.jhuapl.near.model.ModelFactory;
 import edu.jhuapl.near.util.Configuration;
 
 public class ViewManager extends JPanel
@@ -23,7 +24,7 @@ public class ViewManager extends JPanel
         setBorder(BorderFactory.createEmptyBorder());
         this.statusBar = statusBar;
 
-        for (View.ViewConfig config: View.builtInViewConfigs)
+        for (ModelFactory.ModelConfig config: ModelFactory.builtInModelConfigs)
         {
             // Vesta, RQ36, and Lutetia are currently restricted
             if (Configuration.isAPLVersion() ||
