@@ -1954,6 +1954,11 @@ public class SmallBodyModel extends Model
         PolyDataUtil.saveShapeModelAsPLT(smallBodyPolyData, file.getAbsolutePath());
     }
 
+    public void saveAsOBJ(File file) throws IOException
+    {
+        PolyDataUtil.saveShapeModelAsOBJ(smallBodyPolyData, file.getAbsolutePath());
+    }
+
     /**
      * Return if this model is an ellipsoid. If so, some operations on ellipsoids
      * are much easier than general shape models. By default return false, unless

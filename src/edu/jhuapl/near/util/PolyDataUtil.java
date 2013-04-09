@@ -2857,6 +2857,40 @@ public class PolyDataUtil
         out.close();
     }
 
+    static public void saveShapeModelAsOBJ(vtkPolyData polydata, String filename) throws IOException
+    {
+        // This saves it out in OBJ format
+
+        FileWriter fstream = new FileWriter(filename);
+        BufferedWriter out = new BufferedWriter(fstream);
+
+        vtkPoints points = polydata.GetPoints();
+
+        int numberPoints = polydata.GetNumberOfPoints();
+        int numberCells = polydata.GetNumberOfCells();
+
+        double[] p = new double[3];
+        for (int i=0; i<numberPoints; ++i)
+        {
+            points.GetPoint(i, p);
+            out.write("v " + (float)p[0] + " " + (float)p[1] + " " + (float)p[2] + "\r\n");
+        }
+
+        polydata.BuildCells();
+        vtkIdList idList = new vtkIdList();
+        for (int i=0; i<numberCells; ++i)
+        {
+            polydata.GetCellPoints(i, idList);
+            int id0 = idList.GetId(0);
+            int id1 = idList.GetId(1);
+            int id2 = idList.GetId(2);
+            out.write("f " + (id0+1) + " " + (id1+1) + " " + (id2+1) + "\r\n");
+        }
+
+        idList.Delete();
+        out.close();
+    }
+
     static public void removeDuplicatePoints(String filename) throws Exception
     {
         vtkPolyData polydata = loadPDSShapeModel(filename);

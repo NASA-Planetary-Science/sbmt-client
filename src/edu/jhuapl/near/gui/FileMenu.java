@@ -28,10 +28,14 @@ public class FileMenu extends JMenu
         this.add(mi);
         mi = new JMenuItem(new Save6AxesViewsAction());
         this.add(mi);
-        mi = new JMenuItem(new SaveShapeModelAction());
+        mi = new JMenuItem(new SaveShapeModelAsPLTAction());
+        this.add(mi);
+        mi = new JMenuItem(new SaveShapeModelAsOBJAction());
         this.add(mi);
         mi = new JMenuItem(new ShowCameraOrientationAction());
         this.add(mi);
+        mi = new JMenuItem(new CopyToClipboardAction());
+        //this.add(mi);
         mi = new JCheckBoxMenuItem(new ShowSimpleCylindricalProjectionAction());
         //this.add(mi);
 
@@ -107,21 +111,49 @@ public class FileMenu extends JMenu
         }
     }
 
-    private class SaveShapeModelAction extends AbstractAction
+    private class SaveShapeModelAsPLTAction extends AbstractAction
     {
-        public SaveShapeModelAction()
+        public SaveShapeModelAsPLTAction()
         {
-            super("Export Shape Model...");
+            super("Export Shape Model as PLT...");
         }
 
         public void actionPerformed(ActionEvent actionEvent)
         {
-            File file = CustomFileChooser.showSaveDialog(null, "Export Shape Model", "model.plt");
+            File file = CustomFileChooser.showSaveDialog(null, "Export Shape Model as PLT", "model.plt");
 
             try
             {
                 if (file != null)
                     rootPanel.getCurrentView().getModelManager().getSmallBodyModel().saveAsPLT(file);
+            }
+            catch (Exception e1)
+            {
+                e1.printStackTrace();
+                JOptionPane.showMessageDialog(null,
+                        "An error occurred exporting the shape model.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        }
+    }
+
+    private class SaveShapeModelAsOBJAction extends AbstractAction
+    {
+        public SaveShapeModelAsOBJAction()
+        {
+            super("Export Shape Model as OBJ...");
+        }
+
+        public void actionPerformed(ActionEvent actionEvent)
+        {
+            File file = CustomFileChooser.showSaveDialog(null, "Export Shape Model as OBJ", "model.obj");
+
+            try
+            {
+                if (file != null)
+                    rootPanel.getCurrentView().getModelManager().getSmallBodyModel().saveAsOBJ(file);
             }
             catch (Exception e1)
             {
@@ -145,6 +177,19 @@ public class FileMenu extends JMenu
         public void actionPerformed(ActionEvent e)
         {
             new CameraDialog(rootPanel.getCurrentView().getRenderer()).setVisible(true);
+        }
+    }
+
+    private class CopyToClipboardAction extends AbstractAction
+    {
+        public CopyToClipboardAction()
+        {
+            super("Copy to Clipboard...");
+        }
+
+        public void actionPerformed(ActionEvent e)
+        {
+
         }
     }
 
