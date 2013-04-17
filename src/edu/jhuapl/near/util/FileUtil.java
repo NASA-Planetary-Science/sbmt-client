@@ -83,6 +83,35 @@ public class FileUtil
         return values;
     }
 
+    /**
+     * Returns the first line of the file that matches the specified string
+     * @param filename the file to search through
+     * @param prefix search for the line that begins with this
+     * @return the complete line that begins with prefix
+     * @throws IOException
+     */
+    public static String getFirstLineStartingWith(String filename, String prefix) throws IOException
+    {
+        InputStream fs = new FileInputStream(filename);
+        if (filename.toLowerCase().endsWith(".gz"))
+            fs = new GZIPInputStream(fs);
+        InputStreamReader isr = new InputStreamReader(fs);
+        BufferedReader in = new BufferedReader(isr);
+
+        String line;
+
+        while ((line = in.readLine()) != null)
+        {
+            if (line.startsWith(prefix))
+                break;
+        }
+
+        in.close();
+
+        return line;
+    }
+
+
     public static void saveList(ArrayList<Object> array, String filename) throws IOException
     {
         FileWriter fstream = new FileWriter(filename);

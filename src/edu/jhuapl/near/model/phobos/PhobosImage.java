@@ -12,6 +12,7 @@ import vtk.vtkImageData;
 import edu.jhuapl.near.model.PerspectiveImage;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.util.FileCache;
+import edu.jhuapl.near.util.FileUtil;
 
 public class PhobosImage extends PerspectiveImage
 {
@@ -96,7 +97,19 @@ public class PhobosImage extends PerspectiveImage
     @Override
     protected String initializeLabelFileFullPath(File rootFolder)
     {
-        return null;
+        ImageKey key = getKey();
+        File keyFile = new File(key.name);
+        if (!keyFile.getName().startsWith("V"))
+            return null;
+        String labelFilename = keyFile.getParent() + "/f" + keyFile.getName().substring(2, 8).toLowerCase() + ".lbl";
+        if (rootFolder == null)
+        {
+            return FileCache.getFileFromServer(labelFilename).getAbsolutePath();
+        }
+        else
+        {
+            return rootFolder.getAbsolutePath() + labelFilename;
+        }
     }
 
     @Override
@@ -136,7 +149,136 @@ public class PhobosImage extends PerspectiveImage
     @Override
     public int getFilter()
     {
-        return 1; // TODO fix this
+        // For Phobos 2 image, return 1, 2, or 3 which we can get by looking at the last number in the filename.
+        // For viking images, we need to parse the label file to get the filter.
+        ImageKey key = getKey();
+        File keyFile = new File(key.name);
+        if (keyFile.getName().startsWith("P"))
+        {
+            return Integer.parseInt(keyFile.getName().substring(7, 8));
+        }
+        else
+        {
+            try
+            {
+                String filterLine = FileUtil.getFirstLineStartingWith(getLabelFileFullPath(), "FILTER_NAME");
+                String[] words = filterLine.trim().split("\\s+");
+                return getVikingFilterNumberFromName(words[2]);
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+            return -1;
+        }
+    }
+
+    private int getVikingFilterNumberFromName(String name)
+    {
+        int num = -1;
+        if (name.equals("BLUE"))
+            num = 4;
+        if (name.equals("MINUS_BLUE"))
+            num = 5;
+        else if (name.equals("VIOLET"))
+            num = 6;
+        else if (name.equals("CLEAR"))
+            num = 7;
+        else if (name.equals("GREEN"))
+            num = 8;
+        else if (name.equals("RED"))
+            num = 9;
+
+        return num;
+    }
+
+    private String getFilterNameFromNumber(int num)
+    {
+        String name = "";
+        if (num == 1)
+            name = "Channel 1";
+        else if (num == 2)
+            name = "Channel 2";
+        else if (num == 3)
+            name = "Channel 3";
+        else if (num == 4)
+            name = "BLUE";
+        else if (num == 5)
+            name = "MINUS_BLUE";
+        else if (num == 6)
+            name = "VIOLET";
+        else if (num == 7)
+            name = "CLEAR";
+        else if (num == 8)
+            name = "GREEN";
+        else if (num == 9)
+            name = "RED";
+
+        return name;
+    }
+
+    private String getCameraNameFromNumber(int num)
+    {
+        String name = "";
+        if (num == 1)
+            name = "Phobos 2, VSK";
+        else if (num == 2)
+            name = "Viking Orbiter 1, Camera A";
+        else if (num == 3)
+            name = "Viking Orbiter 1, Camera B";
+        else if (num == 4)
+            name = "Viking Orbiter 2, Camera A";
+        else if (num == 5)
+            name = "Viking Orbiter 2, Camera B";
+
+        return name;
+    }
+
+    @Override
+    public int getCamera()
+    {
+        // Return the following:
+        // 1 for phobos 2 images
+        // 2 for viking orbiter 1 images camera A
+        // 3 for viking orbiter 1 images camera B
+        // 4 for viking orbiter 2 images camera A
+        // 5 for viking orbiter 2 images camera B
+        // We need to parse the label file to get which viking spacecraft
+
+        ImageKey key = getKey();
+        File keyFile = new File(key.name);
+        String name = keyFile.getName();
+        if (name.startsWith("P"))
+        {
+            return 1;
+        }
+        else
+        {
+            try
+            {
+                String filterLine = FileUtil.getFirstLineStartingWith(getLabelFileFullPath(), "SPACECRAFT_NAME");
+                String[] words = filterLine.trim().split("\\s+");
+                if (words[2].equals("VIKING_ORBITER_1"))
+                {
+                    if (name.contains("A"))
+                        return 2;
+                    else
+                        return 3;
+                }
+                else
+                {
+                    if (name.contains("A"))
+                        return 4;
+                    else
+                        return 5;
+                }
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+            return -1;
+        }
     }
 
     @Override
@@ -155,7 +297,8 @@ public class PhobosImage extends PerspectiveImage
         properties.put("Name", new File(getFitFileFullPath()).getName()); //TODO remove extension and possibly prefix
         properties.put("Time", getStartTime());
         properties.put("Spacecraft Distance", df.format(getSpacecraftDistance()) + " km");
-        properties.put("Filter", String.valueOf(getFilter()));
+        properties.put("Filter", getFilterNameFromNumber(getFilter()));
+        properties.put("Camera", getCameraNameFromNumber(getCamera()));
 
         // Note \u00B0 is the unicode degree symbol
         String deg = "\u00B0";

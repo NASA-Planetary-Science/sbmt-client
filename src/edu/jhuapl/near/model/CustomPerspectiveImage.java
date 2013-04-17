@@ -123,7 +123,7 @@ public class CustomPerspectiveImage extends PerspectiveImage
     }
 
     @Override
-    protected int getFilter()
+    public int getFilter()
     {
         return 0;
     }

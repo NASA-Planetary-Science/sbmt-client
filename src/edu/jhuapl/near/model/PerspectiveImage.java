@@ -320,7 +320,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
      */
     abstract protected int[] getMaskSizes();
 
-    abstract protected int getFilter();
+    abstract public int getFilter();
 
     abstract public String generateBackplanesLabel() throws IOException;
 
@@ -328,6 +328,19 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     abstract protected String initializeLabelFileFullPath(File rootFolder);
     abstract protected String initializeInfoFileFullPath(File rootFolder);
     abstract protected String initializeSumfileFullPath(File rootFolder);
+
+    /**
+     * Return the camera id. We assign an integer id to each camera.
+     * For example, if there are 2 cameras on the spacecraft, return
+     * either 1 or 2. If there are 2 spacecrafts each with a single
+     * camera, then also return either 1 or 2.
+     *
+     * @return
+     */
+    public int getCamera()
+    {
+        return 0;
+    }
 
     public int getImageWidth()
     {
