@@ -43,12 +43,6 @@ public class MSISearchPanel extends AbstractImageSearchPanel
     }
 
     @Override
-    protected int getNumberOfFilters()
-    {
-        return 7;
-    }
-
-    @Override
     protected String[] getFilterNames()
     {
         return new String[]{
@@ -60,12 +54,6 @@ public class MSISearchPanel extends AbstractImageSearchPanel
                 "Filter 6 (1000 nm)",
                 "Filter 7 (1050 nm)"
         };
-    }
-
-    @Override
-    protected boolean hasUserDefinedCheckBoxes()
-    {
-        return true;
     }
 
     @Override

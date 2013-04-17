@@ -44,36 +44,15 @@ public class OsirisImagingDataSearchPanel extends AbstractImageSearchPanel
     }
 
     @Override
-    protected int getNumberOfFilters()
-    {
-        return 8;
-    }
-
-    @Override
     protected String[] getFilterNames()
     {
-        return new String[]{
-                "Filter 1",
-                "Filter 2",
-                "Filter 3",
-                "Filter 4",
-                "Filter 5",
-                "Filter 6",
-                "Filter 7",
-                "Filter 8"
-        };
-    }
-
-    @Override
-    protected boolean hasUserDefinedCheckBoxes()
-    {
-        return false;
+        return new String[]{};
     }
 
     @Override
     protected String[] getUserDefinedCheckBoxesNames()
     {
-        return new String[]{"", ""};
+        return new String[]{};
     }
 
     @Override

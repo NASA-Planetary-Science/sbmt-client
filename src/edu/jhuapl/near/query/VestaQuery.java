@@ -41,8 +41,7 @@ public class VestaQuery extends QueryBase
             DateTime startDate,
             DateTime stopDate,
             ArrayList<Integer> filters,
-            boolean fc1,
-            boolean fc2,
+            ArrayList<Boolean> userDefined,
             double startDistance,
             double stopDistance,
             double startResolution,
@@ -84,7 +83,7 @@ public class VestaQuery extends QueryBase
                 }
                 catch (NumberFormatException e)
                 {
-                    e.printStackTrace();
+
                 }
 
                 if (results != null && results.size() > 0)
@@ -93,6 +92,9 @@ public class VestaQuery extends QueryBase
                 }
                 return results;
             }
+
+            boolean fc1 = userDefined.get(0);
+            boolean fc2 = userDefined.get(1);
 
             if (filters.isEmpty()|| (fc1 == false && fc2 == false))
                 return results;

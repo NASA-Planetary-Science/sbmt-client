@@ -44,12 +44,6 @@ public class FCSearchPanel extends AbstractImageSearchPanel
     }
 
     @Override
-    protected int getNumberOfFilters()
-    {
-        return 8;
-    }
-
-    @Override
     protected String[] getFilterNames()
     {
         return new String[]{
@@ -62,12 +56,6 @@ public class FCSearchPanel extends AbstractImageSearchPanel
                 "Filter 7 (650 nm)",
                 "Filter 8 (428 nm)"
         };
-    }
-
-    @Override
-    protected boolean hasUserDefinedCheckBoxes()
-    {
-        return true;
     }
 
     @Override

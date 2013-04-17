@@ -1,4 +1,4 @@
-<?php
+<?
 
 $startDate=$_POST['startDate'] + 0;
 $stopDate=$_POST['stopDate'] + 0;
@@ -42,8 +42,8 @@ if (strlen($cubesStr) > 0)
 }
 $query .= "WHERE midtime >= " . $startDate;
 $query .= " AND midtime <= " . $stopDate;
-$query .= " AND nisspectra.range >= " . $minScDistance;
-$query .= " AND nisspectra.range <= " . $maxScDistance;
+$query .= " AND range >= " . $minScDistance;
+$query .= " AND range <= " . $maxScDistance;
 if (count($polygonTypes) > 0)
 {
 	$query .= " AND ( ";

@@ -129,8 +129,7 @@ public class ErosQuery extends QueryBase
             DateTime startDate,
             DateTime stopDate,
             ArrayList<Integer> filters,
-            boolean iofdbl,
-            boolean cifdbl,
+            ArrayList<Boolean> userDefined,
             double startDistance,
             double stopDistance,
             double startResolution,
@@ -172,7 +171,7 @@ public class ErosQuery extends QueryBase
                 }
                 catch (NumberFormatException e)
                 {
-                    e.printStackTrace();
+
                 }
 
                 if (results != null && results.size() > 0)
@@ -181,6 +180,9 @@ public class ErosQuery extends QueryBase
                 }
                 return results;
             }
+
+            boolean iofdbl = userDefined.get(0);
+            boolean cifdbl = userDefined.get(1);
 
             if (filters.isEmpty() || (iofdbl == false && cifdbl == false))
                 return results;

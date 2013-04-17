@@ -44,35 +44,15 @@ public class SSIIdaSearchPanel extends AbstractImageSearchPanel
     }
 
     @Override
-    protected int getNumberOfFilters()
-    {
-        return 0;
-    }
-
-    @Override
     protected String[] getFilterNames()
     {
-        return new String[]{
-                "Filter 1 (550 nm)",
-                "Filter 2 (450 nm)",
-                "Filter 3 (760 nm)",
-                "Filter 4 (950 nm)",
-                "Filter 5 (900 nm)",
-                "Filter 6 (1000 nm)",
-                "Filter 7 (1050 nm)"
-        };
-    }
-
-    @Override
-    protected boolean hasUserDefinedCheckBoxes()
-    {
-        return false;
+        return new String[]{};
     }
 
     @Override
     protected String[] getUserDefinedCheckBoxesNames()
     {
-        return null;
+        return new String[]{};
     }
 
     @Override

@@ -27,6 +27,7 @@ import java.util.TreeSet;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
+import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
 import javax.swing.SpinnerDateModel;
 
@@ -74,6 +75,8 @@ abstract public class AbstractImageSearchPanel extends javax.swing.JPanel implem
     private ImageKey selectedRedKey;
     private ImageKey selectedGreenKey;
     private ImageKey selectedBlueKey;
+    private JCheckBox[] filterCheckBoxes;
+    private JCheckBox[] userDefinedCheckBoxes;
 
     // The source of the images of the most recently executed query
     private PerspectiveImage.ImageSource sourceOfLastQuery = PerspectiveImage.ImageSource.PDS;
@@ -108,14 +111,29 @@ abstract public class AbstractImageSearchPanel extends javax.swing.JPanel implem
     abstract protected java.util.Date getDefaultStartDate();
     abstract protected java.util.Date getDefaultEndDate();
     abstract protected QueryBase getQuery();
-    abstract protected int getNumberOfFilters();
     abstract protected String[] getFilterNames();
-    abstract protected boolean hasUserDefinedCheckBoxes();
     abstract protected String[] getUserDefinedCheckBoxesNames();
     abstract protected double getDefaultMaxSpacecraftDistance();
     abstract protected double getDefaultMaxResolution();
     abstract protected ImageSource[] getImageSources();
 
+    private int getNumberOfFiltersActuallyUsed()
+    {
+        String[] names = getFilterNames();
+        if (names == null)
+            return 0;
+        else
+            return names.length;
+    }
+
+    private int getNumberOfUserDefinedCheckBoxesActuallyUsed()
+    {
+        String[] names = getUserDefinedCheckBoxesNames();
+        if (names == null)
+            return 0;
+        else
+            return names.length;
+    }
 
     private String getImageCollectionModelName()
     {
@@ -149,52 +167,68 @@ abstract public class AbstractImageSearchPanel extends javax.swing.JPanel implem
         endDate = getDefaultEndDate();
         ((SpinnerDateModel)endSpinner.getModel()).setValue(endDate);
 
-        int numberOfFilters = getNumberOfFilters();
-        if (numberOfFilters < 8)
-            filter8CheckBox.setVisible(false);
-        if (numberOfFilters < 7)
-            filter7CheckBox.setVisible(false);
-        if (numberOfFilters < 6)
-            filter6CheckBox.setVisible(false);
-        if (numberOfFilters < 5)
-            filter5CheckBox.setVisible(false);
-        if (numberOfFilters < 4)
-            filter4CheckBox.setVisible(false);
-        if (numberOfFilters < 3)
-            filter3CheckBox.setVisible(false);
-        if (numberOfFilters < 2)
-            filter2CheckBox.setVisible(false);
-        if (numberOfFilters < 1)
-            filter1CheckBox.setVisible(false);
+
+
+        filterCheckBoxes = new JCheckBox[]{
+                filter1CheckBox,
+                filter2CheckBox,
+                filter3CheckBox,
+                filter4CheckBox,
+                filter5CheckBox,
+                filter6CheckBox,
+                filter7CheckBox,
+                filter8CheckBox,
+                filter9CheckBox,
+                filter10CheckBox,
+        };
 
         String[] filterNames = getFilterNames();
-        if (numberOfFilters > 0)
-            filter1CheckBox.setText(filterNames[0]);
-        if (numberOfFilters > 1)
-            filter2CheckBox.setText(filterNames[1]);
-        if (numberOfFilters > 2)
-            filter3CheckBox.setText(filterNames[2]);
-        if (numberOfFilters > 3)
-            filter4CheckBox.setText(filterNames[3]);
-        if (numberOfFilters > 4)
-            filter5CheckBox.setText(filterNames[4]);
-        if (numberOfFilters > 5)
-            filter6CheckBox.setText(filterNames[5]);
-        if (numberOfFilters > 6)
-            filter7CheckBox.setText(filterNames[6]);
-        if (numberOfFilters > 7)
-            filter8CheckBox.setText(filterNames[7]);
+        int numberOfFiltersActuallyUsed = getNumberOfFiltersActuallyUsed();
+        for (int i=filterCheckBoxes.length-1; i>=0; --i)
+        {
+            if (numberOfFiltersActuallyUsed < i+1)
+            {
+                filterCheckBoxes[i].setSelected(false);
+                filterCheckBoxes[i].setVisible(false);
+            }
+        }
 
-        if (hasUserDefinedCheckBoxes())
+        for (int i=0; i<filterCheckBoxes.length; ++i)
         {
-            userDefined1CheckBox.setText(getUserDefinedCheckBoxesNames()[0]);
-            userDefined2CheckBox.setText(getUserDefinedCheckBoxesNames()[1]);
+            if (numberOfFiltersActuallyUsed > i)
+                filterCheckBoxes[i].setText(filterNames[i]);
         }
-        else
+
+
+
+        userDefinedCheckBoxes = new JCheckBox[]{
+                userDefined1CheckBox,
+                userDefined2CheckBox,
+                userDefined3CheckBox,
+                userDefined4CheckBox,
+                userDefined5CheckBox,
+                userDefined6CheckBox
+        };
+
+        String[] userDefinedNames = getUserDefinedCheckBoxesNames();
+        int numberOfUserDefinedCheckBoxesActuallyUsed = getNumberOfUserDefinedCheckBoxesActuallyUsed();
+
+        for (int i=userDefinedCheckBoxes.length-1; i>=0; --i)
         {
-            userDefined1CheckBox.setVisible(false);
-            userDefined2CheckBox.setVisible(false);
+            if (numberOfUserDefinedCheckBoxesActuallyUsed < i+1)
+            {
+                userDefinedCheckBoxes[i].setSelected(false);
+                userDefinedCheckBoxes[i].setVisible(false);
+            }
         }
+
+        for (int i=0; i<userDefinedCheckBoxes.length; ++i)
+        {
+            if (numberOfUserDefinedCheckBoxesActuallyUsed > i)
+                userDefinedCheckBoxes[i].setText(userDefinedNames[i]);
+        }
+
+
 
         toDistanceTextField.setValue(getDefaultMaxSpacecraftDistance());
         toResolutionTextField.setValue(getDefaultMaxResolution());
@@ -433,6 +467,8 @@ abstract public class AbstractImageSearchPanel extends javax.swing.JPanel implem
         filter6CheckBox = new javax.swing.JCheckBox();
         filter7CheckBox = new javax.swing.JCheckBox();
         filter8CheckBox = new javax.swing.JCheckBox();
+        filter9CheckBox = new javax.swing.JCheckBox();
+        filter10CheckBox = new javax.swing.JCheckBox();
         jPanel3 = new javax.swing.JPanel();
         fromDistanceLabel = new javax.swing.JLabel();
         fromDistanceTextField = new javax.swing.JFormattedTextField();
@@ -497,6 +533,10 @@ abstract public class AbstractImageSearchPanel extends javax.swing.JPanel implem
         jPanel12 = new javax.swing.JPanel();
         userDefined1CheckBox = new javax.swing.JCheckBox();
         userDefined2CheckBox = new javax.swing.JCheckBox();
+        userDefined3CheckBox = new javax.swing.JCheckBox();
+        userDefined4CheckBox = new javax.swing.JCheckBox();
+        userDefined5CheckBox = new javax.swing.JCheckBox();
+        userDefined6CheckBox = new javax.swing.JCheckBox();
 
         addComponentListener(new java.awt.event.ComponentAdapter() {
             public void componentHidden(java.awt.event.ComponentEvent evt) {
@@ -624,7 +664,7 @@ abstract public class AbstractImageSearchPanel extends javax.swing.JPanel implem
         gridBagConstraints.gridy = 3;
         gridBagConstraints.ipadx = 10;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(6, 7, 6, 0);
+        gridBagConstraints.insets = new java.awt.Insets(6, 7, 0, 0);
         jPanel2.add(filter4CheckBox, gridBagConstraints);
 
         filter5CheckBox.setSelected(true);
@@ -663,8 +703,26 @@ abstract public class AbstractImageSearchPanel extends javax.swing.JPanel implem
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
-        gridBagConstraints.insets = new java.awt.Insets(6, 8, 6, 6);
+        gridBagConstraints.insets = new java.awt.Insets(6, 8, 0, 6);
         jPanel2.add(filter8CheckBox, gridBagConstraints);
+
+        filter9CheckBox.setSelected(true);
+        filter9CheckBox.setText("Filter 9");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(6, 7, 6, 0);
+        jPanel2.add(filter9CheckBox, gridBagConstraints);
+
+        filter10CheckBox.setSelected(true);
+        filter10CheckBox.setText("Filter 10");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(6, 8, 6, 6);
+        jPanel2.add(filter10CheckBox, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -921,7 +979,7 @@ abstract public class AbstractImageSearchPanel extends javax.swing.JPanel implem
 
         jPanel4.setLayout(new java.awt.GridBagLayout());
 
-        searchByNumberCheckBox.setText("Search by number");
+        searchByNumberCheckBox.setText("Search by ID");
         searchByNumberCheckBox.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 searchByNumberCheckBoxItemStateChanged(evt);
@@ -1277,16 +1335,54 @@ abstract public class AbstractImageSearchPanel extends javax.swing.JPanel implem
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 6);
         jPanel12.add(userDefined1CheckBox, gridBagConstraints);
 
         userDefined2CheckBox.setSelected(true);
-        userDefined2CheckBox.setText("userDefine2");
+        userDefined2CheckBox.setText("userDefined2");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 6);
         jPanel12.add(userDefined2CheckBox, gridBagConstraints);
+
+        userDefined3CheckBox.setSelected(true);
+        userDefined3CheckBox.setText("userDefined3");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 6);
+        jPanel12.add(userDefined3CheckBox, gridBagConstraints);
+
+        userDefined4CheckBox.setSelected(true);
+        userDefined4CheckBox.setText("userDefined4");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 6);
+        jPanel12.add(userDefined4CheckBox, gridBagConstraints);
+
+        userDefined5CheckBox.setSelected(true);
+        userDefined5CheckBox.setText("userDefined5");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 6);
+        jPanel12.add(userDefined5CheckBox, gridBagConstraints);
+
+        userDefined6CheckBox.setSelected(true);
+        userDefined6CheckBox.setText("userDefined6");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 6);
+        jPanel12.add(userDefined6CheckBox, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -1510,25 +1606,11 @@ abstract public class AbstractImageSearchPanel extends javax.swing.JPanel implem
             pickManager.setPickMode(PickMode.DEFAULT);
 
             ArrayList<Integer> filtersChecked = new ArrayList<Integer>();
-
-            if (filter1CheckBox.isSelected())
-                filtersChecked.add(1);
-            if (filter2CheckBox.isSelected())
-                filtersChecked.add(2);
-            if (filter3CheckBox.isSelected())
-                filtersChecked.add(3);
-            if (filter4CheckBox.isSelected())
-                filtersChecked.add(4);
-            if (filter5CheckBox.isSelected())
-                filtersChecked.add(5);
-            if (filter6CheckBox.isSelected())
-                filtersChecked.add(6);
-            if (filter7CheckBox.isSelected())
-                filtersChecked.add(7);
-            if (getNumberOfFilters() > 7)
+            int numberOfFilters = getNumberOfFiltersActuallyUsed();
+            for (int i=0; i<numberOfFilters; ++i)
             {
-                if (filter8CheckBox.isSelected())
-                    filtersChecked.add(8);
+                if (filterCheckBoxes[i].isSelected())
+                    filtersChecked.add(i+1);
             }
 
             String searchField = null;
@@ -1581,13 +1663,20 @@ abstract public class AbstractImageSearchPanel extends javax.swing.JPanel implem
             }
 
             ImageSource imageSource = ImageSource.valueOf(((Enum)sourceComboBox.getSelectedItem()).name());
+
+            ArrayList<Boolean> userDefinedChecked = new ArrayList<Boolean>();
+            int numberOfUserDefined = getNumberOfUserDefinedCheckBoxesActuallyUsed();
+            for (int i=0; i<numberOfUserDefined; ++i)
+            {
+                userDefinedChecked.add(userDefinedCheckBoxes[i].isSelected());
+            }
+
             ArrayList<ArrayList<String>> results = getQuery().runQuery(
                     "",
                     startDateJoda,
                     endDateJoda,
                     filtersChecked,
-                    userDefined1CheckBox.isSelected(),
-                    userDefined2CheckBox.isSelected(),
+                    userDefinedChecked,
                     Double.parseDouble(fromDistanceTextField.getText()),
                     Double.parseDouble(toDistanceTextField.getText()),
                     Double.parseDouble(fromResolutionTextField.getText()),
@@ -1614,8 +1703,7 @@ abstract public class AbstractImageSearchPanel extends javax.swing.JPanel implem
                         startDateJoda,
                         endDateJoda,
                         filtersChecked,
-                        userDefined1CheckBox.isSelected(),
-                        userDefined2CheckBox.isSelected(),
+                        userDefinedChecked,
                         Double.parseDouble(fromDistanceTextField.getText()),
                         Double.parseDouble(toDistanceTextField.getText()),
                         Double.parseDouble(fromResolutionTextField.getText()),
@@ -1700,6 +1788,7 @@ abstract public class AbstractImageSearchPanel extends javax.swing.JPanel implem
     private javax.swing.JLabel endResolutionLabel;
     private javax.swing.JSpinner endSpinner;
     private javax.swing.JCheckBox excludeGaskellCheckBox;
+    private javax.swing.JCheckBox filter10CheckBox;
     private javax.swing.JCheckBox filter1CheckBox;
     private javax.swing.JCheckBox filter2CheckBox;
     private javax.swing.JCheckBox filter3CheckBox;
@@ -1708,6 +1797,7 @@ abstract public class AbstractImageSearchPanel extends javax.swing.JPanel implem
     private javax.swing.JCheckBox filter6CheckBox;
     private javax.swing.JCheckBox filter7CheckBox;
     private javax.swing.JCheckBox filter8CheckBox;
+    private javax.swing.JCheckBox filter9CheckBox;
     private javax.swing.JLabel fromDistanceLabel;
     private javax.swing.JFormattedTextField fromDistanceTextField;
     private javax.swing.JLabel fromEmissionLabel;
@@ -1771,5 +1861,9 @@ abstract public class AbstractImageSearchPanel extends javax.swing.JPanel implem
     private javax.swing.JFormattedTextField toResolutionTextField;
     private javax.swing.JCheckBox userDefined1CheckBox;
     private javax.swing.JCheckBox userDefined2CheckBox;
+    private javax.swing.JCheckBox userDefined3CheckBox;
+    private javax.swing.JCheckBox userDefined4CheckBox;
+    private javax.swing.JCheckBox userDefined5CheckBox;
+    private javax.swing.JCheckBox userDefined6CheckBox;
     // End of variables declaration//GEN-END:variables
 }

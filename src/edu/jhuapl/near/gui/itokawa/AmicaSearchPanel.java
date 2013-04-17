@@ -48,12 +48,6 @@ public class AmicaSearchPanel extends AbstractImageSearchPanel
     }
 
     @Override
-    protected int getNumberOfFilters()
-    {
-        return 7;
-    }
-
-    @Override
     protected String[] getFilterNames()
     {
         return new String[]{
@@ -68,15 +62,9 @@ public class AmicaSearchPanel extends AbstractImageSearchPanel
     }
 
     @Override
-    protected boolean hasUserDefinedCheckBoxes()
-    {
-        return false;
-    }
-
-    @Override
     protected String[] getUserDefinedCheckBoxesNames()
     {
-        return null;
+        return new String[]{};
     }
 
     @Override

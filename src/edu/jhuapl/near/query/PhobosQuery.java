@@ -1,6 +1,7 @@
 package edu.jhuapl.near.query;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.TreeSet;
 
 import org.joda.time.DateTime;
@@ -10,6 +11,11 @@ import edu.jhuapl.near.model.Image.ImageSource;
 public class PhobosQuery extends QueryBase
 {
     private static PhobosQuery ref = null;
+
+    private void changePathToFullPath(ArrayList<String> result)
+    {
+        result.set(0, "/GASKELL/PHOBOS/IMAGING/images/" + result.get(0));
+    }
 
     public static PhobosQuery getInstance()
     {
@@ -34,8 +40,7 @@ public class PhobosQuery extends QueryBase
             DateTime startDate,
             DateTime stopDate,
             ArrayList<Integer> filters,
-            boolean fc1,
-            boolean fc2,
+            ArrayList<Boolean> userDefined,
             double startDistance,
             double stopDistance,
             double startResolution,
@@ -52,10 +57,6 @@ public class PhobosQuery extends QueryBase
             ImageSource imageSource,
             int limbType)
     {
-        return getResultsFromFileListOnServer(
-                "/GASKELL/PHOBOS/IMAGING/imagelist.txt",
-                "/GASKELL/PHOBOS/IMAGING/images/");
-/*
         ArrayList<ArrayList<String>> results = new ArrayList<ArrayList<String>>();
 
         double minIncidence = Math.min(fromIncidence, toIncidence);
@@ -65,33 +66,47 @@ public class PhobosQuery extends QueryBase
         double minPhase = Math.min(fromPhase, toPhase);
         double maxPhase = Math.max(fromPhase, toPhase);
 
-        //if ("FC".equals(type))
+        //if ("".equals(type))
         {
             if (searchString != null)
             {
                 try
                 {
+                    // Note that the image name for viking images has an A or B
+                    // in the name, but in the database it is stored as an integer with the
+                    // A replaced with 1 and B replaced with 2.
+                    searchString = searchString.toUpperCase().replace("A", "1");
+                    searchString = searchString.toUpperCase().replace("B", "2");
+
                     long id = Long.parseLong(searchString);
 
                     HashMap<String, String> args = new HashMap<String, String>();
                     args.put("imageSource", imageSource.toString());
                     args.put("id", String.valueOf(id));
 
-                    results = doQuery("searchfc_id.php", constructUrlArguments(args));
+                    results = doQuery("searchphobosimages_id.php", constructUrlArguments(args));
                 }
                 catch (NumberFormatException e)
                 {
-                    e.printStackTrace();
+
                 }
 
                 if (results != null && results.size() > 0)
                 {
-                    this.changeFcPathToFullPath(results.get(0));
+                    this.changePathToFullPath(results.get(0));
                 }
                 return results;
             }
 
-            if (filters.isEmpty()|| (fc1 == false && fc2 == false))
+            boolean phobos2 = userDefined.get(0);
+            boolean vikingOrbiter1A = userDefined.get(1);
+            boolean vikingOrbiter1B = userDefined.get(2);
+            boolean vikingOrbiter2A = userDefined.get(3);
+            boolean vikingOrbiter2B = userDefined.get(4);
+
+            if (filters.isEmpty() || (phobos2 == false &&
+                    vikingOrbiter1A == false && vikingOrbiter1B == false &&
+                    vikingOrbiter2A == false && vikingOrbiter2B == false))
                 return results;
 
             try
@@ -116,9 +131,12 @@ public class PhobosQuery extends QueryBase
                 args.put("minPhase", String.valueOf(minPhase));
                 args.put("maxPhase", String.valueOf(maxPhase));
                 args.put("limbType", String.valueOf(limbType));
-                args.put("fc1", fc1==true ? "1" : "0");
-                args.put("fc2", fc2==true ? "1" : "0");
-                for (int i=1; i<=8; ++i)
+                args.put("phobos2", phobos2==true ? "1" : "0");
+                args.put("vikingOrbiter1A", vikingOrbiter1A==true ? "1" : "0");
+                args.put("vikingOrbiter1B", vikingOrbiter1B==true ? "1" : "0");
+                args.put("vikingOrbiter2A", vikingOrbiter2A==true ? "1" : "0");
+                args.put("vikingOrbiter2B", vikingOrbiter2B==true ? "1" : "0");
+                for (int i=1; i<=9; ++i)
                 {
                     if (filters.contains(i))
                         args.put("filterType"+i, "1");
@@ -140,11 +158,11 @@ public class PhobosQuery extends QueryBase
                     args.put("cubes", cubes);
                 }
 
-                results = doQuery("searchfc.php", constructUrlArguments(args));
+                results = doQuery("searchphobosimages.php", constructUrlArguments(args));
 
                 for (ArrayList<String> res : results)
                 {
-                    this.changeFcPathToFullPath(res);
+                    this.changePathToFullPath(res);
                 }
             }
             catch (Exception e)
@@ -154,7 +172,6 @@ public class PhobosQuery extends QueryBase
         }
 
         return results;
-        */
     }
 
 }

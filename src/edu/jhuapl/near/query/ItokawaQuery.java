@@ -58,8 +58,7 @@ public class ItokawaQuery extends QueryBase
             DateTime startDate,
             DateTime stopDate,
             ArrayList<Integer> filters,
-            boolean unused1,
-            boolean unused2,
+            ArrayList<Boolean> unused,
             double startDistance,
             double stopDistance,
             double startResolution,
@@ -108,7 +107,7 @@ public class ItokawaQuery extends QueryBase
                 }
                 catch (NumberFormatException e)
                 {
-                    e.printStackTrace();
+
                 }
 
                 if (results != null && results.size() > 0)

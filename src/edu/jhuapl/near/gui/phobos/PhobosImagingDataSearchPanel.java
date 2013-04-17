@@ -44,46 +44,37 @@ public class PhobosImagingDataSearchPanel extends AbstractImageSearchPanel
     }
 
     @Override
-    protected int getNumberOfFilters()
-    {
-        return 6;
-    }
-
-    @Override
     protected String[] getFilterNames()
     {
         return new String[]{
-                "Phobos 2 VSK, Channel 2",
-                "Viking Orbiter VIS, Clear",
-                "Viking Orbiter VIS, Green",
-                "Viking Orbiter VIS, Minus Blue",
-                "Viking Orbiter VIS, Red",
-                "Viking Orbiter VIS, Violet",
+                "VSK, Channel 1",
+                "VSK, Channel 2",
+                "VSK, Channel 3",
+                "VIS, Blue",
+                "VIS, Minus Blue",
+                "VIS, Violet",
+                "VIS, Clear",
+                "VIS, Green",
+                "VIS, Red",
         };
-    }
-
-    @Override
-    protected boolean hasUserDefinedCheckBoxes()
-    {
-        return false;
     }
 
     @Override
     protected String[] getUserDefinedCheckBoxesNames()
     {
-        return new String[]{"Viking", "Phobos 2 VSK"};
+        return new String[]{"Phobos 2", "Viking Orbiter 1-A", "Viking Orbiter 1-B", "Viking Orbiter 2-A", "Viking Orbiter 2-B"};
     }
 
     @Override
     protected double getDefaultMaxSpacecraftDistance()
     {
-        return 40000.0;
+        return 9000.0;
     }
 
     @Override
     protected double getDefaultMaxResolution()
     {
-        return 4000.0;
+        return 300.0;
     }
 
     @Override

@@ -9,14 +9,14 @@ $database="near";
 $host="sd-mysql.jhuapl.edu:3306";
 
 if (substr($imageSource, 0, 3) == "PDS")
-	$fcimages="fcimages_pds";
+	$phobosimages="phobosimages_pds";
 else
-	$fcimages="fcimages_gaskell";
+	$phobosimages="phobosimages_gaskell";
 
 mysql_connect($host,$username,$password);
 @mysql_select_db($database) or die();
 
-$query = "SELECT filename, starttime FROM $fcimages ";
+$query = "SELECT filename, starttime FROM $phobosimages ";
 $query .= "WHERE id = " . $id;
 
 $result=mysql_query($query);

@@ -44,15 +44,9 @@ public class MSIMathildeSearchPanel extends MSISearchPanel
     }
 
     @Override
-    protected boolean hasUserDefinedCheckBoxes()
-    {
-        return false;
-    }
-
-    @Override
     protected String[] getUserDefinedCheckBoxesNames()
     {
-        return null;
+        return new String[]{};
     }
 
     @Override
