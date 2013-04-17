@@ -312,7 +312,7 @@ public class ModelFactory
                     useAPLServer = true;
 
                 boolean hasColoringData = false;
-                if (LUTETIA.equals(name))
+                if (LUTETIA.equals(name) || PHOBOS.equals(name))
                     hasColoringData = true;
 
                 return new SimpleSmallBody(name, submenu, names, paths, hasColoringData, useAPLServer);
