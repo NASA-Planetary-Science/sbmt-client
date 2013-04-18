@@ -10,10 +10,10 @@ Small Body Mapping Tool User Manual
 ===================================
 
 The Small Body Mapping Tool is divided into 2 panels, the rendering
-panel on the right for displaying small bodies and their associated data
-and a control panel on the left consisting of several tabs controlling
-how the data is displayed in the rendering panel. In addition there is a
-status bar on the bottom and a menu bar on top.
+panel on the right for displaying small bodies and their associated
+data in 3D and a control panel on the left consisting of several tabs
+controlling how the data is displayed in the rendering panel. In
+addition there is a status bar on the bottom and a menu bar on top.
 
 When the Small Body Mapping Tool is started, initially, a low resolution
 model of the Eros asteroid is shown. The small body shown can be changed

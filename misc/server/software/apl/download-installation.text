@@ -81,15 +81,37 @@ as described on the Microsoft website.
 It is *not* necessary to install this package when using the standalone
 version below. It is only necessary when using Java Web Start.
 
+#### Important Note for Mac Users
+
+Recent updates by Apple may have disabled Java Web Start. To reenable
+Java Web Start, try running the following command (as explained
+[here](http://www.racoonlab.com/2013/01/java-web-service-doesnt-start-bad-installation-no-jre-found-in-configuration-file/)):
+
+    sudo /usr/libexec/PlistBuddy -c "Delete :JavaWebComponentVersionMinimum" /System/Library/CoreServices/CoreTypes.bundle/Contents/Resources/XProtect.meta.plist
+
 #### Mac Application Bundle (Mac only)
 
 For Mac users, a Mac Application Bundle is available which provides a
-convenient way to start the tool. Internally, it uses Java Web
-Start so that the latest version is always run. Download the file
+convenient way to start the tool. Internally, it uses Java Web Start
+so that the latest version is always run. Download the file
 [sbmt-launcher.zip](sbmt-launcher.zip) and unzip it to any
 folder. From within Finder, you can then double-click on the SBMT
 Launcher application to launch the tool. In addition, you can drag the
 application to the Dock and launch it from there.
+
+(Please read the note in the previous section if you experience
+problems running the launcher as the launcher uses Java Web Start
+internally.)
+
+#### OpenJDK on Linux
+
+Java Web Start does not appear to currently work on Linux when using
+OpenJDK. Linux users should therefore use either Oracle's Java
+implementation available from
+[http://www.java.com](http://www.java.com), or, if they prefer to use
+OpenJDK, the standalone version of the tool below. In addition, if
+using OpenJDK, OpenJDK 7 should be used rather then OpenJDK 6, as the
+former appears to work better with the SBMT.
 
 ### Starting the SBMT Using the Standalone Version
 
@@ -106,9 +128,9 @@ newer versions.
 1. (Mac and Linux only) Make sure Java is installed on your system.
 2. Download the appropriate file for your platform (only 64-bit
    versions are provided):
-   -  Mac: [sbmt-2013.01.24-macosx-x64.zip](releases/sbmt-2013.01.24-macosx-x64.zip)
-   -  Linux: [sbmt-2013.01.24-linux-x64.zip](releases/sbmt-2013.01.24-linux-x64.zip)
-   -  Windows: [sbmt-2013.01.24-windows-x64.zip](releases/sbmt-2013.01.24-windows-x64.zip)
+   -  Mac: [sbmt-2013.03.05-macosx-x64.zip](releases/sbmt-2013.03.05-macosx-x64.zip)
+   -  Linux: [sbmt-2013.03.05-linux-x64.zip](releases/sbmt-2013.03.05-linux-x64.zip)
+   -  Windows: [sbmt-2013.03.05-windows-x64.zip](releases/sbmt-2013.03.05-windows-x64.zip)
 3. Unzip the file to any folder
 4. Navigate to the 'sbmt' folder
 5. Open the 'password.txt' file located in the 'sbmt' folder in a text

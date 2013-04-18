@@ -6,6 +6,31 @@
 pandoc -t html -s recentchanges.text -o recentchanges.html
 -->
 
+### April 17, 2013
+
+-   Phobos images have been indexed in the database so
+    search options are now functional.
+-   Added slope, elevation, gravitation acceleration and potential
+    plate data for Phobos.
+-   Added option in File menu for exporting currently shown shape
+    model to Wavefront OBJ format.
+
+### March 5, 2013
+
+-   Added new tab to Phobos shape model for mapping Viking and Phobos
+    2 images. The various search options are not functional
+    yet. Simply click the Search button to show a list of available
+    images.
+-   Fixed problem where checkbox to show image map would appear for some
+    shape models for which there was none.
+
+### Feb 15, 2013
+
+-   Added Robert Gaskell's Lutetia shape model. This shape model,
+    however, has not yet been released to the public so most users
+    will not be able to access it yet (only a few accounts have access
+    to it).
+
 ### January 24, 2013
 
 -   There are now options in the main leftmost tab of each view for
