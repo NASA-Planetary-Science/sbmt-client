@@ -11,6 +11,7 @@ import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 
+import edu.jhuapl.near.gui.dione.DioneImagingSearchPanel;
 import edu.jhuapl.near.gui.eros.LineamentControlPanel;
 import edu.jhuapl.near.gui.eros.MSISearchPanel;
 import edu.jhuapl.near.gui.eros.NISSearchPanel;
@@ -370,6 +371,8 @@ public class View extends JPanel
             return new PhobosImagingDataSearchPanel(modelManager, infoPanelManager, pickManager, renderer);
         else if (ModelFactory.LUTETIA.equals(name))
             return new OsirisImagingDataSearchPanel(modelManager, infoPanelManager, pickManager, renderer);
+        else if (ModelFactory.DIONE.equals(name))
+            return new DioneImagingSearchPanel(modelManager, infoPanelManager, pickManager, renderer);
         else if (ModelFactory.GASPRA.equals(name))
             return new SSIGaspraSearchPanel(modelManager, infoPanelManager, pickManager, renderer);
         else if (ModelFactory.IDA.equals(name))

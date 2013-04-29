@@ -11,6 +11,7 @@ import edu.jhuapl.near.model.Image.ImageSource;
 import edu.jhuapl.near.model.custom.CustomGraticule;
 import edu.jhuapl.near.model.custom.CustomShapeModel;
 import edu.jhuapl.near.model.deimos.Deimos;
+import edu.jhuapl.near.model.dione.DioneImage;
 import edu.jhuapl.near.model.eros.Eros;
 import edu.jhuapl.near.model.eros.LineamentModel;
 import edu.jhuapl.near.model.eros.MSIImage;
@@ -42,6 +43,9 @@ public class ModelFactory
     static public final String PHOEBE = "Phoebe";
     static public final String PHOBOS = "Phobos";
     static public final String RQ36 = "RQ36";
+    static public final String DIONE = "Dione";
+    static public final String RHEA = "Rhea";
+    static public final String TETHYS = "Tethys";
     static public final String LUTETIA = "Lutetia";
     static public final String IDA = "Ida";
     static public final String GASPRA = "Gaspra";
@@ -91,11 +95,16 @@ public class ModelFactory
         new ModelConfig(EROS, GASKELL, "/GASKELL/EROS", false, true, true, true, true, true),
         new ModelConfig(ITOKAWA, GASKELL, "/GASKELL/ITOKAWA", false, true, true, false, false, false),
         new ModelConfig(VESTA, GASKELL, "/GASKELL/VESTA", false, true),
-        new ModelConfig(RQ36, GASKELL, "/GASKELL/RQ36"),
         new ModelConfig(MIMAS, GASKELL, "/GASKELL/MIMAS"),
         new ModelConfig(PHOEBE, GASKELL, "/GASKELL/PHOEBE"),
         new ModelConfig(PHOBOS, GASKELL, "/GASKELL/PHOBOS", false, true),
+        new ModelConfig(RQ36, GASKELL, "/GASKELL/RQ36"),
         new ModelConfig(LUTETIA, GASKELL, "/GASKELL/LUTETIA", false, true),
+        new ModelConfig(DIONE, GASKELL, "/GASKELL/DIONE", false, true),
+        new ModelConfig(RHEA, GASKELL, "/GASKELL/RHEA"),
+        new ModelConfig(HYPERION, GASKELL, "/GASKELL/HYPERION"),
+        new ModelConfig(TETHYS, GASKELL, "/GASKELL/TETHYS"),
+        new ModelConfig(TEMPEL_1, GASKELL, "/GASKELL/TEMPEL1"),
         new ModelConfig(IDA, THOMAS, "/THOMAS/IDA/243ida.llr.gz", true, true),
         new ModelConfig(GASPRA, THOMAS, "/THOMAS/GASPRA/951gaspra.llr.gz", true, true),
         new ModelConfig(MATHILDE, THOMAS, "/THOMAS/MATHILDE/253mathilde.llr.gz", true, true),
@@ -258,6 +267,8 @@ public class ModelFactory
                 return new PhobosImage(key, smallBodyModel, loadPointingOnly, rootFolder);
             else if (smallBodyModel.getModelName().toLowerCase().startsWith("lutetia"))
                 return new OsirisImage(key, smallBodyModel, loadPointingOnly, rootFolder);
+            else if (smallBodyModel.getModelName().toLowerCase().startsWith("dione"))
+                return new DioneImage(key, smallBodyModel, loadPointingOnly, rootFolder);
             else if (smallBodyModel.getModelName().toLowerCase().equals("gaspra"))
                 return new SSIGaspraImage(key, smallBodyModel, loadPointingOnly, rootFolder);
             else if (smallBodyModel.getModelName().toLowerCase().equals("ida"))
@@ -292,6 +303,20 @@ public class ModelFactory
                 return new Vesta();
             else if (RQ36.equals(name))
                 return new RQ36();
+            else if (TEMPEL_1.equals(name))
+            {
+                String[] names = {
+                        name + " low"
+                };
+                String[] paths = {
+                        config.pathOnServer + "/ver64q.vtk.gz",
+                };
+
+                boolean useAPLServer = true;
+                boolean hasColoringData = true;
+
+                return new SimpleSmallBody(name, submenu, names, paths, hasColoringData, useAPLServer);
+            }
             else
             {
                 String[] names = {
@@ -308,8 +333,14 @@ public class ModelFactory
                 };
 
                 boolean useAPLServer = false;
-                if (LUTETIA.equals(name))
+                if (LUTETIA.equals(name) ||
+                        DIONE.equals(name) ||
+                        RHEA.equals(name) ||
+                        HYPERION.equals(name) ||
+                        TETHYS.equals(name))
+                {
                     useAPLServer = true;
+                }
 
                 boolean hasColoringData = true;
 
@@ -341,17 +372,37 @@ public class ModelFactory
 
         if (GASKELL.equals(submenu))
         {
-            String[] graticulePaths = {
-                    config.pathOnServer + "/coordinate_grid_res0.vtk.gz",
-                    config.pathOnServer + "/coordinate_grid_res1.vtk.gz",
-                    config.pathOnServer + "/coordinate_grid_res2.vtk.gz",
-                    config.pathOnServer + "/coordinate_grid_res3.vtk.gz"
+            String name = config.name;
+
+            String[] graticulePaths = null;
+            if (TEMPEL_1.equals(name))
+            {
+                graticulePaths = new String[]{
+                        config.pathOnServer + "/coordinate_grid_res0.vtk.gz"
+                };
+            }
+            else
+            {
+                graticulePaths = new String[]{
+                        config.pathOnServer + "/coordinate_grid_res0.vtk.gz",
+                        config.pathOnServer + "/coordinate_grid_res1.vtk.gz",
+                        config.pathOnServer + "/coordinate_grid_res2.vtk.gz",
+                        config.pathOnServer + "/coordinate_grid_res3.vtk.gz"
+                };
             };
 
             boolean useAPLServer = false;
-            String name = config.name;
-            if (VESTA.equals(name) || RQ36.equals(name) || LUTETIA.equals(name))
+            if (VESTA.equals(name) ||
+                    RQ36.equals(name) ||
+                    LUTETIA.equals(name) ||
+                    DIONE.equals(name) ||
+                    RHEA.equals(name) ||
+                    HYPERION.equals(name) ||
+                    TETHYS.equals(name) ||
+                    TEMPEL_1.equals(name))
+            {
                 useAPLServer = true;
+            }
 
             return new Graticule(smallBodyModel, graticulePaths, useAPLServer);
         }

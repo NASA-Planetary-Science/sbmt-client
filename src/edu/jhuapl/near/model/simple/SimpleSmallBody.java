@@ -7,10 +7,10 @@ public class SimpleSmallBody extends SmallBodyModel
     static private String[] getColoringFiles(String name)
     {
         return new String[] {
-        "/GASKELL/" + name.toUpperCase() + "/Slope",
-        "/GASKELL/" + name.toUpperCase() + "/Elevation",
-        "/GASKELL/" + name.toUpperCase() + "/GravitationalAcceleration",
-        "/GASKELL/" + name.toUpperCase() + "/GravitationalPotential"
+        "/GASKELL/" + name.toUpperCase().replace(" ", "") + "/Slope",
+        "/GASKELL/" + name.toUpperCase().replace(" ", "") + "/Elevation",
+        "/GASKELL/" + name.toUpperCase().replace(" ", "") + "/GravitationalAcceleration",
+        "/GASKELL/" + name.toUpperCase().replace(" ", "") + "/GravitationalPotential"
         };
     }
 
