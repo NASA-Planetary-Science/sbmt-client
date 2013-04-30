@@ -1,4 +1,4 @@
-package edu.jhuapl.near.model.dione;
+package edu.jhuapl.near.model.saturnmoon;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,7 +11,7 @@ import edu.jhuapl.near.model.PerspectiveImage;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.util.FileCache;
 
-public class DioneImage extends PerspectiveImage
+public class SaturnMoonImage extends PerspectiveImage
 {
     // These values are derived from the sumfiles.
     public static final double FOV_NAC_PARAMETER1 = -Math.tan(0.006129698948356052/2.0);
@@ -22,12 +22,24 @@ public class DioneImage extends PerspectiveImage
     public static final double FOV_VOY_PARAMETER2 = -Math.tan(0.007603911064821517/2.0);
     public static final double FOV_PARAMETER3 = 1.0;
 
-    public DioneImage(ImageKey key,
+    public SaturnMoonImage(ImageKey key,
             SmallBodyModel smallBodyModel,
             boolean loadPointingOnly,
             File rootFolder) throws FitsException, IOException
     {
         super(key, smallBodyModel, loadPointingOnly, rootFolder);
+    }
+
+    private boolean getIfUseAPLServer()
+    {
+        ImageKey key = getKey();
+
+        boolean useAPLServer = true;
+
+        if (key.name.toLowerCase().contains("phoebe") || key.name.toLowerCase().contains("mimas"))
+            useAPLServer = false;
+
+        return useAPLServer;
     }
 
     public String generateBackplanesLabel() throws IOException
@@ -79,7 +91,8 @@ public class DioneImage extends PerspectiveImage
         ImageKey key = getKey();
         if (rootFolder == null)
         {
-            return FileCache.getFileFromServer(key.name + ".FIT", true).getAbsolutePath();
+            boolean useAPLServer = getIfUseAPLServer();
+            return FileCache.getFileFromServer(key.name + ".FIT", useAPLServer).getAbsolutePath();
         }
         else
         {
@@ -102,7 +115,8 @@ public class DioneImage extends PerspectiveImage
         + keyFile.getName() + ".INFO";
         if (rootFolder == null)
         {
-            return FileCache.getFileFromServer(sumFilename, true).getAbsolutePath();
+            boolean useAPLServer = getIfUseAPLServer();
+            return FileCache.getFileFromServer(sumFilename, useAPLServer).getAbsolutePath();
         }
         else
         {
@@ -119,7 +133,8 @@ public class DioneImage extends PerspectiveImage
         + keyFile.getName() + ".SUM";
         if (rootFolder == null)
         {
-            return FileCache.getFileFromServer(sumFilename, true).getAbsolutePath();
+            boolean useAPLServer = getIfUseAPLServer();
+            return FileCache.getFileFromServer(sumFilename, useAPLServer).getAbsolutePath();
         }
         else
         {

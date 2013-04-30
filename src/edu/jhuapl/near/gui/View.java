@@ -11,7 +11,6 @@ import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 
-import edu.jhuapl.near.gui.dione.DioneImagingSearchPanel;
 import edu.jhuapl.near.gui.eros.LineamentControlPanel;
 import edu.jhuapl.near.gui.eros.MSISearchPanel;
 import edu.jhuapl.near.gui.eros.NISSearchPanel;
@@ -23,6 +22,7 @@ import edu.jhuapl.near.gui.itokawa.HayLidarPanel;
 import edu.jhuapl.near.gui.lutetia.OsirisImagingDataSearchPanel;
 import edu.jhuapl.near.gui.mathilde.MSIMathildeSearchPanel;
 import edu.jhuapl.near.gui.phobos.PhobosImagingDataSearchPanel;
+import edu.jhuapl.near.gui.saturnmoon.SaturnMoonImagingSearchPanel;
 import edu.jhuapl.near.gui.vesta.FCSearchPanel;
 import edu.jhuapl.near.model.CircleModel;
 import edu.jhuapl.near.model.CircleSelectionModel;
@@ -372,7 +372,11 @@ public class View extends JPanel
         else if (ModelFactory.LUTETIA.equals(name))
             return new OsirisImagingDataSearchPanel(modelManager, infoPanelManager, pickManager, renderer);
         else if (ModelFactory.DIONE.equals(name))
-            return new DioneImagingSearchPanel(modelManager, infoPanelManager, pickManager, renderer);
+            return new SaturnMoonImagingSearchPanel(modelManager, infoPanelManager, pickManager, renderer);
+        else if (ModelFactory.PHOEBE.equals(name))
+            return new SaturnMoonImagingSearchPanel(modelManager, infoPanelManager, pickManager, renderer);
+        else if (ModelFactory.MIMAS.equals(name))
+            return new SaturnMoonImagingSearchPanel(modelManager, infoPanelManager, pickManager, renderer);
         else if (ModelFactory.GASPRA.equals(name))
             return new SSIGaspraSearchPanel(modelManager, infoPanelManager, pickManager, renderer);
         else if (ModelFactory.IDA.equals(name))

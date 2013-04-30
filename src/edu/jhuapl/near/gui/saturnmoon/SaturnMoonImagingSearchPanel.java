@@ -1,4 +1,4 @@
-package edu.jhuapl.near.gui.dione;
+package edu.jhuapl.near.gui.saturnmoon;
 
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -9,13 +9,14 @@ import edu.jhuapl.near.gui.Renderer;
 import edu.jhuapl.near.model.Image.ImageSource;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.pick.PickManager;
-import edu.jhuapl.near.query.DioneQuery;
+import edu.jhuapl.near.query.SaturnMoonQuery;
 import edu.jhuapl.near.query.QueryBase;
 
-public class DioneImagingSearchPanel extends AbstractImageSearchPanel
+public class SaturnMoonImagingSearchPanel extends AbstractImageSearchPanel
 {
+    private QueryBase query;
 
-    public DioneImagingSearchPanel(
+    public SaturnMoonImagingSearchPanel(
             ModelManager modelManager,
             ModelInfoWindowManager infoPanelManager,
             PickManager pickManager,
@@ -23,6 +24,14 @@ public class DioneImagingSearchPanel extends AbstractImageSearchPanel
     {
         super(modelManager, infoPanelManager, pickManager, renderer);
 
+        String smallBodyModelName = modelManager.getSmallBodyModel().getModelName().toLowerCase();
+
+        if (smallBodyModelName.startsWith("dione"))
+            query = new SaturnMoonQuery("/GASKELL/DIONE/IMAGING");
+        else if (smallBodyModelName.startsWith("phoebe"))
+            query = new SaturnMoonQuery("/GASKELL/PHOEBE/IMAGING");
+        else if (smallBodyModelName.startsWith("mimas"))
+            query = new SaturnMoonQuery("/GASKELL/MIMAS/IMAGING");
     }
 
     @Override
@@ -40,7 +49,7 @@ public class DioneImagingSearchPanel extends AbstractImageSearchPanel
     @Override
     protected QueryBase getQuery()
     {
-        return DioneQuery.getInstance();
+        return query;
     }
 
     @Override

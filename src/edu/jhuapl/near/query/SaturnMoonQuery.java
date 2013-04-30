@@ -7,25 +7,13 @@ import org.joda.time.DateTime;
 
 import edu.jhuapl.near.model.Image.ImageSource;
 
-public class DioneQuery extends QueryBase
+public class SaturnMoonQuery extends QueryBase
 {
-    private static DioneQuery ref = null;
+    private String path;
 
-    public static DioneQuery getInstance()
+    public SaturnMoonQuery(String path)
     {
-        if (ref == null)
-            ref = new DioneQuery();
-        return ref;
-    }
-
-    public Object clone()
-        throws CloneNotSupportedException
-    {
-        throw new CloneNotSupportedException();
-    }
-
-    private DioneQuery()
-    {
+        this.path = path;
     }
 
     @Override
@@ -51,9 +39,8 @@ public class DioneQuery extends QueryBase
             ImageSource imageSource,
             int limbType)
     {
-        return getResultsFromFileListOnServer(
-                "/GASKELL/DIONE/IMAGING/imagelist.txt",
-                "/GASKELL/DIONE/IMAGING/images/");
+        return getResultsFromFileListOnServer(path + "/imagelist.txt",
+                path + "/images/");
     }
 
 }

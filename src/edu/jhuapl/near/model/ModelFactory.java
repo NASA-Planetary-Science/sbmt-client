@@ -11,7 +11,6 @@ import edu.jhuapl.near.model.Image.ImageSource;
 import edu.jhuapl.near.model.custom.CustomGraticule;
 import edu.jhuapl.near.model.custom.CustomShapeModel;
 import edu.jhuapl.near.model.deimos.Deimos;
-import edu.jhuapl.near.model.dione.DioneImage;
 import edu.jhuapl.near.model.eros.Eros;
 import edu.jhuapl.near.model.eros.LineamentModel;
 import edu.jhuapl.near.model.eros.MSIImage;
@@ -28,6 +27,7 @@ import edu.jhuapl.near.model.lutetia.OsirisImage;
 import edu.jhuapl.near.model.mathilde.MSIMathildeImage;
 import edu.jhuapl.near.model.phobos.PhobosImage;
 import edu.jhuapl.near.model.rq36.RQ36;
+import edu.jhuapl.near.model.saturnmoon.SaturnMoonImage;
 import edu.jhuapl.near.model.simple.SimpleSmallBody;
 import edu.jhuapl.near.model.vesta.FcImage;
 import edu.jhuapl.near.model.vesta.Vesta;
@@ -95,8 +95,8 @@ public class ModelFactory
         new ModelConfig(EROS, GASKELL, "/GASKELL/EROS", false, true, true, true, true, true),
         new ModelConfig(ITOKAWA, GASKELL, "/GASKELL/ITOKAWA", false, true, true, false, false, false),
         new ModelConfig(VESTA, GASKELL, "/GASKELL/VESTA", false, true),
-        new ModelConfig(MIMAS, GASKELL, "/GASKELL/MIMAS"),
-        new ModelConfig(PHOEBE, GASKELL, "/GASKELL/PHOEBE"),
+        new ModelConfig(MIMAS, GASKELL, "/GASKELL/MIMAS", false, true),
+        new ModelConfig(PHOEBE, GASKELL, "/GASKELL/PHOEBE", false, true),
         new ModelConfig(PHOBOS, GASKELL, "/GASKELL/PHOBOS", false, true),
         new ModelConfig(RQ36, GASKELL, "/GASKELL/RQ36"),
         new ModelConfig(LUTETIA, GASKELL, "/GASKELL/LUTETIA", false, true),
@@ -268,7 +268,11 @@ public class ModelFactory
             else if (smallBodyModel.getModelName().toLowerCase().startsWith("lutetia"))
                 return new OsirisImage(key, smallBodyModel, loadPointingOnly, rootFolder);
             else if (smallBodyModel.getModelName().toLowerCase().startsWith("dione"))
-                return new DioneImage(key, smallBodyModel, loadPointingOnly, rootFolder);
+                return new SaturnMoonImage(key, smallBodyModel, loadPointingOnly, rootFolder);
+            else if (smallBodyModel.getModelName().toLowerCase().startsWith("mimas"))
+                return new SaturnMoonImage(key, smallBodyModel, loadPointingOnly, rootFolder);
+            else if (smallBodyModel.getModelName().toLowerCase().startsWith("phoebe"))
+                return new SaturnMoonImage(key, smallBodyModel, loadPointingOnly, rootFolder);
             else if (smallBodyModel.getModelName().toLowerCase().equals("gaspra"))
                 return new SSIGaspraImage(key, smallBodyModel, loadPointingOnly, rootFolder);
             else if (smallBodyModel.getModelName().toLowerCase().equals("ida"))
