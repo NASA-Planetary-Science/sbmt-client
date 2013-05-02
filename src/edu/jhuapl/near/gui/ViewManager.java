@@ -26,14 +26,7 @@ public class ViewManager extends JPanel
 
         for (ModelFactory.ModelConfig config: ModelFactory.builtInModelConfigs)
         {
-            // Vesta, RQ36, and Lutetia are currently restricted
-            if (Configuration.isAPLVersion() ||
-                    (!config.name.equals("Vesta") &&
-                     !config.name.equals("RQ36") &&
-                     !config.name.equals("Lutetia")))
-            {
-                builtInViews.add(new View(statusBar, config));
-            }
+            builtInViews.add(new View(statusBar, config));
         }
 
 

@@ -119,8 +119,14 @@ public class View extends JPanel
 
         if (modelConfig.hasPerspectiveImages)
         {
-            JComponent component = createPerspectiveImageSearchTab(modelConfig, modelManager, infoPanelManager, pickManager, renderer);
-            controlPanel.addTab(modelConfig.getImagingInstrumentName(), component);
+            // For the public version, only include image tab for Gaskell's Eros and Itokawa shape models
+            if (Configuration.isAPLVersion() ||
+                    (modelConfig.name.equals(ModelFactory.EROS) && modelConfig.submenu.equals(ModelFactory.GASKELL)) ||
+                    (modelConfig.name.equals(ModelFactory.ITOKAWA) && modelConfig.submenu.equals(ModelFactory.GASKELL)))
+            {
+                JComponent component = createPerspectiveImageSearchTab(modelConfig, modelManager, infoPanelManager, pickManager, renderer);
+                controlPanel.addTab(modelConfig.getImagingInstrumentName(), component);
+            }
         }
 
         if (modelConfig.hasSpectralData)

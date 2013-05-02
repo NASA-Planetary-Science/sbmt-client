@@ -2,6 +2,7 @@ package edu.jhuapl.near.model;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import nom.tam.fits.FitsException;
@@ -32,6 +33,7 @@ import edu.jhuapl.near.model.simple.SimpleSmallBody;
 import edu.jhuapl.near.model.vesta.FcImage;
 import edu.jhuapl.near.model.vesta.Vesta;
 import edu.jhuapl.near.model.vesta_old.VestaOld;
+import edu.jhuapl.near.util.Configuration;
 
 public class ModelFactory
 {
@@ -91,52 +93,59 @@ public class ModelFactory
     static public final String OSIRIS = "OSIRIS";
     static public final String IMAGING_DATA = "Imaging Data";
 
-    static public final ModelConfig[] builtInModelConfigs = {
-        new ModelConfig(EROS, GASKELL, "/GASKELL/EROS", false, true, true, true, true, true),
-        new ModelConfig(ITOKAWA, GASKELL, "/GASKELL/ITOKAWA", false, true, true, false, false, false),
-        new ModelConfig(VESTA, GASKELL, "/GASKELL/VESTA", false, true),
-        new ModelConfig(MIMAS, GASKELL, "/GASKELL/MIMAS", false, true),
-        new ModelConfig(PHOEBE, GASKELL, "/GASKELL/PHOEBE", false, true),
-        new ModelConfig(PHOBOS, GASKELL, "/GASKELL/PHOBOS", false, true),
-        new ModelConfig(RQ36, GASKELL, "/GASKELL/RQ36"),
-        new ModelConfig(LUTETIA, GASKELL, "/GASKELL/LUTETIA", false, true),
-        new ModelConfig(DIONE, GASKELL, "/GASKELL/DIONE", false, true),
-        new ModelConfig(RHEA, GASKELL, "/GASKELL/RHEA"),
-        new ModelConfig(HYPERION, GASKELL, "/GASKELL/HYPERION"),
-        new ModelConfig(TETHYS, GASKELL, "/GASKELL/TETHYS"),
-        new ModelConfig(TEMPEL_1, GASKELL, "/GASKELL/TEMPEL1"),
-        new ModelConfig(IDA, THOMAS, "/THOMAS/IDA/243ida.llr.gz", true, true),
-        new ModelConfig(GASPRA, THOMAS, "/THOMAS/GASPRA/951gaspra.llr.gz", true, true),
-        new ModelConfig(MATHILDE, THOMAS, "/THOMAS/MATHILDE/253mathilde.llr.gz", true, true),
-        new ModelConfig(VESTA, THOMAS, "/THOMAS/VESTA_OLD"),
-        new ModelConfig(DEIMOS, THOMAS, "/THOMAS/DEIMOS", true),
-        new ModelConfig(PHOBOS, THOMAS, "/THOMAS/PHOBOS/m1phobos.llr.gz"),
-        new ModelConfig(JANUS, THOMAS, "/THOMAS/JANUS/s10janus.llr.gz"),
-        new ModelConfig(EPIMETHEUS, THOMAS, "/THOMAS/EPIMETHEUS/s11epimetheus.llr.gz"),
-        new ModelConfig(HYPERION, THOMAS, "/THOMAS/HYPERION/s7hyperion.llr.gz"),
-        new ModelConfig(TEMPEL_1, THOMAS, "/THOMAS/TEMPEL1/tempel1_cart.t1.gz"),
-        new ModelConfig(IDA, STOOKE, "/STOOKE/IDA/243ida.llr.gz", true),
-        new ModelConfig(GASPRA, STOOKE, "/STOOKE/GASPRA/951gaspra.llr.gz", true),
-        new ModelConfig(HALLEY, STOOKE, "/STOOKE/HALLEY/1682q1halley.llr.gz"),
-        new ModelConfig(AMALTHEA, STOOKE, "/STOOKE/AMALTHEA/j5amalthea.llr.gz"),
-        new ModelConfig(LARISSA, STOOKE, "/STOOKE/LARISSA/n7larissa.llr.gz"),
-        new ModelConfig(PROTEUS, STOOKE, "/STOOKE/PROTEUS/n8proteus.llr.gz"),
-        new ModelConfig(JANUS, STOOKE, "/STOOKE/JANUS/s10janus.llr.gz"),
-        new ModelConfig(EPIMETHEUS, STOOKE, "/STOOKE/EPIMETHEUS/s11epimetheus.llr.gz"),
-        new ModelConfig(PROMETHEUS, STOOKE, "/STOOKE/PROMETHEUS/s16prometheus.llr.gz"),
-        new ModelConfig(PANDORA, STOOKE, "/STOOKE/PANDORA/s17pandora.llr.gz"),
-        new ModelConfig(GEOGRAPHOS, HUDSON, "/HUDSON/GEOGRAPHOS/1620geographos.obj.gz"),
-        new ModelConfig(KY26, HUDSON, "/HUDSON/KY26/1998ky26.obj.gz"),
-        new ModelConfig(BACCHUS, HUDSON, "/HUDSON/BACCHUS/2063bacchus.obj.gz"),
-        new ModelConfig(KLEOPATRA, HUDSON, "/HUDSON/KLEOPATRA/216kleopatra.obj.gz"),
-        new ModelConfig(ITOKAWA, HUDSON, "/HUDSON/ITOKAWA/25143itokawa.obj.gz"),
-        new ModelConfig(TOUTATIS_LOW_RES, HUDSON, "/HUDSON/TOUTATIS/4179toutatis.obj.gz"),
-        new ModelConfig(TOUTATIS_HIGH_RES, HUDSON, "/HUDSON/TOUTATIS2/4179toutatis2.obj.gz"),
-        new ModelConfig(CASTALIA, HUDSON, "/HUDSON/CASTALIA/4769castalia.obj.gz"),
-        new ModelConfig(_52760_1998_ML14, HUDSON, "/HUDSON/52760/52760.obj.gz"),
-        new ModelConfig(GOLEVKA, HUDSON, "/HUDSON/GOLEVKA/6489golevka.obj.gz"),
-        new ModelConfig(WILD_2, OTHER, "/OTHER/WILD2/wild2_cart_full.w2.gz")
-    };
+    static public final ArrayList<ModelConfig> builtInModelConfigs = new ArrayList<ModelConfig>();
+    static
+    {
+        ArrayList<ModelConfig> c = builtInModelConfigs;
+
+        c.add(new ModelConfig(EROS, GASKELL, "/GASKELL/EROS", false, true, true, true, true, true));
+        c.add(new ModelConfig(ITOKAWA, GASKELL, "/GASKELL/ITOKAWA", false, true, true, false, false, false));
+        c.add(new ModelConfig(MIMAS, GASKELL, "/GASKELL/MIMAS", false, true));
+        c.add(new ModelConfig(PHOEBE, GASKELL, "/GASKELL/PHOEBE", false, true));
+        c.add(new ModelConfig(PHOBOS, GASKELL, "/GASKELL/PHOBOS", false, true));
+        if (Configuration.isAPLVersion())
+        {
+            c.add(new ModelConfig(VESTA, GASKELL, "/GASKELL/VESTA", false, true));
+            c.add(new ModelConfig(RQ36, GASKELL, "/GASKELL/RQ36"));
+            c.add(new ModelConfig(LUTETIA, GASKELL, "/GASKELL/LUTETIA", false, true));
+            c.add(new ModelConfig(DIONE, GASKELL, "/GASKELL/DIONE", false, true));
+            c.add(new ModelConfig(RHEA, GASKELL, "/GASKELL/RHEA"));
+            c.add(new ModelConfig(HYPERION, GASKELL, "/GASKELL/HYPERION"));
+            c.add(new ModelConfig(TETHYS, GASKELL, "/GASKELL/TETHYS"));
+            c.add(new ModelConfig(TEMPEL_1, GASKELL, "/GASKELL/TEMPEL1"));
+        }
+        c.add(new ModelConfig(IDA, THOMAS, "/THOMAS/IDA/243ida.llr.gz", true, true));
+        c.add(new ModelConfig(GASPRA, THOMAS, "/THOMAS/GASPRA/951gaspra.llr.gz", true, true));
+        c.add(new ModelConfig(MATHILDE, THOMAS, "/THOMAS/MATHILDE/253mathilde.llr.gz", true, true));
+        c.add(new ModelConfig(VESTA, THOMAS, "/THOMAS/VESTA_OLD"));
+        c.add(new ModelConfig(DEIMOS, THOMAS, "/THOMAS/DEIMOS", true));
+        c.add(new ModelConfig(PHOBOS, THOMAS, "/THOMAS/PHOBOS/m1phobos.llr.gz"));
+        c.add(new ModelConfig(JANUS, THOMAS, "/THOMAS/JANUS/s10janus.llr.gz"));
+        c.add(new ModelConfig(EPIMETHEUS, THOMAS, "/THOMAS/EPIMETHEUS/s11epimetheus.llr.gz"));
+        c.add(new ModelConfig(HYPERION, THOMAS, "/THOMAS/HYPERION/s7hyperion.llr.gz"));
+        c.add(new ModelConfig(TEMPEL_1, THOMAS, "/THOMAS/TEMPEL1/tempel1_cart.t1.gz"));
+        c.add(new ModelConfig(IDA, STOOKE, "/STOOKE/IDA/243ida.llr.gz", true));
+        c.add(new ModelConfig(GASPRA, STOOKE, "/STOOKE/GASPRA/951gaspra.llr.gz", true));
+        c.add(new ModelConfig(HALLEY, STOOKE, "/STOOKE/HALLEY/1682q1halley.llr.gz"));
+        c.add(new ModelConfig(AMALTHEA, STOOKE, "/STOOKE/AMALTHEA/j5amalthea.llr.gz"));
+        c.add(new ModelConfig(LARISSA, STOOKE, "/STOOKE/LARISSA/n7larissa.llr.gz"));
+        c.add(new ModelConfig(PROTEUS, STOOKE, "/STOOKE/PROTEUS/n8proteus.llr.gz"));
+        c.add(new ModelConfig(JANUS, STOOKE, "/STOOKE/JANUS/s10janus.llr.gz"));
+        c.add(new ModelConfig(EPIMETHEUS, STOOKE, "/STOOKE/EPIMETHEUS/s11epimetheus.llr.gz"));
+        c.add(new ModelConfig(PROMETHEUS, STOOKE, "/STOOKE/PROMETHEUS/s16prometheus.llr.gz"));
+        c.add(new ModelConfig(PANDORA, STOOKE, "/STOOKE/PANDORA/s17pandora.llr.gz"));
+        c.add(new ModelConfig(GEOGRAPHOS, HUDSON, "/HUDSON/GEOGRAPHOS/1620geographos.obj.gz"));
+        c.add(new ModelConfig(KY26, HUDSON, "/HUDSON/KY26/1998ky26.obj.gz"));
+        c.add(new ModelConfig(BACCHUS, HUDSON, "/HUDSON/BACCHUS/2063bacchus.obj.gz"));
+        c.add(new ModelConfig(KLEOPATRA, HUDSON, "/HUDSON/KLEOPATRA/216kleopatra.obj.gz"));
+        c.add(new ModelConfig(ITOKAWA, HUDSON, "/HUDSON/ITOKAWA/25143itokawa.obj.gz"));
+        c.add(new ModelConfig(TOUTATIS_LOW_RES, HUDSON, "/HUDSON/TOUTATIS/4179toutatis.obj.gz"));
+        c.add(new ModelConfig(TOUTATIS_HIGH_RES, HUDSON, "/HUDSON/TOUTATIS2/4179toutatis2.obj.gz"));
+        c.add(new ModelConfig(CASTALIA, HUDSON, "/HUDSON/CASTALIA/4769castalia.obj.gz"));
+        c.add(new ModelConfig(_52760_1998_ML14, HUDSON, "/HUDSON/52760/52760.obj.gz"));
+        c.add(new ModelConfig(GOLEVKA, HUDSON, "/HUDSON/GOLEVKA/6489golevka.obj.gz"));
+        c.add(new ModelConfig(WILD_2, OTHER, "/OTHER/WILD2/wild2_cart_full.w2.gz"));
+    }
 
 
     /**
