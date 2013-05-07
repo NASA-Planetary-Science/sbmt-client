@@ -340,33 +340,17 @@ public class View extends JPanel
         if (modelConfig.author.equals(ModelFactory.CUSTOM))
             return modelConfig.name;
         else
-            return modelConfig.name + " [" + modelConfig.author + "]";
+            return modelConfig.author;
     }
 
-    /**
-     * Return the author of the model in this view.
-     * If null (the default), then this is a custom model.
-     *
-     * @return
-     */
-    public String getAuthor()
+    public ModelConfig getModelConfig()
     {
-        return modelConfig.author;
-    }
-
-    public String getType()
-    {
-        return modelConfig.type;
-    }
-
-    public String getPopulation()
-    {
-        return modelConfig.population;
+        return modelConfig;
     }
 
     static public View createCustomView(StatusBar statusBar, String name)
     {
-        ModelConfig config = new ModelConfig(name, null, null, ModelFactory.CUSTOM, null);
+        ModelConfig config = new ModelConfig(name, null, null, null, ModelFactory.CUSTOM, null);
         return new View(statusBar, config);
     }
 

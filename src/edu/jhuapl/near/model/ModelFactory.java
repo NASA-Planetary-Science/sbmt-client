@@ -44,7 +44,7 @@ public class ModelFactory
     static public final String MIMAS = "Mimas";
     static public final String PHOEBE = "Phoebe";
     static public final String PHOBOS = "Phobos";
-    static public final String RQ36 = "RQ36";
+    static public final String RQ36 = "Bennu";
     static public final String DIONE = "Dione";
     static public final String RHEA = "Rhea";
     static public final String TETHYS = "Tethys";
@@ -93,7 +93,14 @@ public class ModelFactory
     static public final String STOOKE = "Stooke";
     static public final String HUDSON = "Hudson";
     static public final String DUXBURY = "Duxbury";
+    static public final String OSTRO = "Ostro";
     static public final String CUSTOM = "Custom";
+
+    // Data used to construct shape model (either images, radar, lidar, or fake)
+    static public final String IMAGE_BASED = "Image Based";
+    static public final String RADAR_BASED = "Radar Based";
+    static public final String LIDAR_BASED = "Lidar Based";
+    static public final String FAKE = "Fake";
 
     // Names of instruments
     static public final String MSI = "MSI";
@@ -111,59 +118,59 @@ public class ModelFactory
     {
         ArrayList<ModelConfig> c = builtInModelConfigs;
 
-        c.add(new ModelConfig(EROS, ASTEROID, NEO, GASKELL, "/GASKELL/EROS", false, true, true, true, true, true));
-        c.add(new ModelConfig(ITOKAWA, ASTEROID, NEO, GASKELL, "/GASKELL/ITOKAWA", false, true, true, false, false, false));
-        c.add(new ModelConfig(ITOKAWA, ASTEROID, NEO, HUDSON, "/HUDSON/ITOKAWA/25143itokawa.obj.gz"));
-        c.add(new ModelConfig(PHOBOS, SATELLITES, MARS, GASKELL, "/GASKELL/PHOBOS", false, true));
-        c.add(new ModelConfig(PHOBOS, SATELLITES, MARS, THOMAS, "/THOMAS/PHOBOS/m1phobos.llr.gz"));
-        c.add(new ModelConfig(AMALTHEA, SATELLITES, JUPITER, STOOKE, "/STOOKE/AMALTHEA/j5amalthea.llr.gz"));
-        c.add(new ModelConfig(MIMAS, SATELLITES, SATURN, GASKELL, "/GASKELL/MIMAS", false, true));
-        c.add(new ModelConfig(PHOEBE, SATELLITES, SATURN, GASKELL, "/GASKELL/PHOEBE", false, true));
+        c.add(new ModelConfig(EROS, ASTEROID, NEO, IMAGE_BASED, GASKELL, "/GASKELL/EROS", false, true, true, true, true, true));
+        c.add(new ModelConfig(ITOKAWA, ASTEROID, NEO, IMAGE_BASED, GASKELL, "/GASKELL/ITOKAWA", false, true, true, false, false, false));
+        c.add(new ModelConfig(ITOKAWA, ASTEROID, NEO, RADAR_BASED, OSTRO, "/HUDSON/ITOKAWA/25143itokawa.obj.gz"));
+        c.add(new ModelConfig(PHOBOS, SATELLITES, MARS, IMAGE_BASED, GASKELL, "/GASKELL/PHOBOS", false, true));
+        c.add(new ModelConfig(PHOBOS, SATELLITES, MARS, IMAGE_BASED, THOMAS, "/THOMAS/PHOBOS/m1phobos.llr.gz"));
+        c.add(new ModelConfig(AMALTHEA, SATELLITES, JUPITER, IMAGE_BASED, STOOKE, "/STOOKE/AMALTHEA/j5amalthea.llr.gz"));
+        c.add(new ModelConfig(MIMAS, SATELLITES, SATURN, IMAGE_BASED, GASKELL, "/GASKELL/MIMAS", false, true));
+        c.add(new ModelConfig(PHOEBE, SATELLITES, SATURN, IMAGE_BASED, GASKELL, "/GASKELL/PHOEBE", false, true));
         if (Configuration.isAPLVersion())
         {
-            c.add(new ModelConfig(VESTA, ASTEROID, MAIN_BELT, GASKELL, "/GASKELL/VESTA", false, true));
+            c.add(new ModelConfig(VESTA, ASTEROID, MAIN_BELT, IMAGE_BASED, GASKELL, "/GASKELL/VESTA", false, true));
         }
-        c.add(new ModelConfig(VESTA, ASTEROID, MAIN_BELT, THOMAS, "/THOMAS/VESTA_OLD"));
-        c.add(new ModelConfig(IDA, ASTEROID, MAIN_BELT, THOMAS, "/THOMAS/IDA/243ida.llr.gz", true, true));
-        c.add(new ModelConfig(IDA, ASTEROID, MAIN_BELT, STOOKE, "/STOOKE/IDA/243ida.llr.gz", true));
-        c.add(new ModelConfig(GASPRA, ASTEROID, MAIN_BELT, THOMAS, "/THOMAS/GASPRA/951gaspra.llr.gz", true, true));
-        c.add(new ModelConfig(GASPRA, ASTEROID, MAIN_BELT, STOOKE, "/STOOKE/GASPRA/951gaspra.llr.gz", true));
-        c.add(new ModelConfig(MATHILDE, ASTEROID, MAIN_BELT, THOMAS, "/THOMAS/MATHILDE/253mathilde.llr.gz", true, true));
-        c.add(new ModelConfig(DEIMOS, SATELLITES, MARS, THOMAS, "/THOMAS/DEIMOS", true));
-        c.add(new ModelConfig(JANUS, SATELLITES, SATURN, THOMAS, "/THOMAS/JANUS/s10janus.llr.gz"));
-        c.add(new ModelConfig(JANUS, SATELLITES, SATURN, STOOKE, "/STOOKE/JANUS/s10janus.llr.gz"));
-        c.add(new ModelConfig(EPIMETHEUS, SATELLITES, SATURN, THOMAS, "/THOMAS/EPIMETHEUS/s11epimetheus.llr.gz"));
-        c.add(new ModelConfig(EPIMETHEUS, SATELLITES, SATURN, STOOKE, "/STOOKE/EPIMETHEUS/s11epimetheus.llr.gz"));
-        c.add(new ModelConfig(HALLEY, COMETS, null, STOOKE, "/STOOKE/HALLEY/1682q1halley.llr.gz"));
-        c.add(new ModelConfig(LARISSA, SATELLITES, NEPTUNE, STOOKE, "/STOOKE/LARISSA/n7larissa.llr.gz"));
-        c.add(new ModelConfig(PROTEUS, SATELLITES, NEPTUNE, STOOKE, "/STOOKE/PROTEUS/n8proteus.llr.gz"));
-        c.add(new ModelConfig(PROMETHEUS, SATELLITES, SATURN, STOOKE, "/STOOKE/PROMETHEUS/s16prometheus.llr.gz"));
-        c.add(new ModelConfig(PANDORA, SATELLITES, SATURN, STOOKE, "/STOOKE/PANDORA/s17pandora.llr.gz"));
-        c.add(new ModelConfig(GEOGRAPHOS, ASTEROID, NEO, HUDSON, "/HUDSON/GEOGRAPHOS/1620geographos.obj.gz"));
-        c.add(new ModelConfig(KY26, ASTEROID, NEO, HUDSON, "/HUDSON/KY26/1998ky26.obj.gz"));
-        c.add(new ModelConfig(BACCHUS, ASTEROID, NEO, HUDSON, "/HUDSON/BACCHUS/2063bacchus.obj.gz"));
-        c.add(new ModelConfig(KLEOPATRA, ASTEROID, MAIN_BELT, HUDSON, "/HUDSON/KLEOPATRA/216kleopatra.obj.gz"));
-        c.add(new ModelConfig(TOUTATIS_LOW_RES, ASTEROID, NEO, HUDSON, "/HUDSON/TOUTATIS/4179toutatis.obj.gz"));
-        c.add(new ModelConfig(TOUTATIS_HIGH_RES, ASTEROID, NEO, HUDSON, "/HUDSON/TOUTATIS2/4179toutatis2.obj.gz"));
-        c.add(new ModelConfig(CASTALIA, ASTEROID, NEO, HUDSON, "/HUDSON/CASTALIA/4769castalia.obj.gz"));
-        c.add(new ModelConfig(_52760_1998_ML14, ASTEROID, NEO, HUDSON, "/HUDSON/52760/52760.obj.gz"));
-        c.add(new ModelConfig(GOLEVKA, ASTEROID, NEO, HUDSON, "/HUDSON/GOLEVKA/6489golevka.obj.gz"));
+        c.add(new ModelConfig(VESTA, ASTEROID, MAIN_BELT, IMAGE_BASED, THOMAS, "/THOMAS/VESTA_OLD"));
+        c.add(new ModelConfig(IDA, ASTEROID, MAIN_BELT, IMAGE_BASED, THOMAS, "/THOMAS/IDA/243ida.llr.gz", true, true));
+        c.add(new ModelConfig(IDA, ASTEROID, MAIN_BELT, IMAGE_BASED, STOOKE, "/STOOKE/IDA/243ida.llr.gz", true));
+        c.add(new ModelConfig(GASPRA, ASTEROID, MAIN_BELT, IMAGE_BASED, THOMAS, "/THOMAS/GASPRA/951gaspra.llr.gz", true, true));
+        c.add(new ModelConfig(GASPRA, ASTEROID, MAIN_BELT, IMAGE_BASED, STOOKE, "/STOOKE/GASPRA/951gaspra.llr.gz", true));
+        c.add(new ModelConfig(MATHILDE, ASTEROID, MAIN_BELT, IMAGE_BASED, THOMAS, "/THOMAS/MATHILDE/253mathilde.llr.gz", true, true));
+        c.add(new ModelConfig(DEIMOS, SATELLITES, MARS, IMAGE_BASED, THOMAS, "/THOMAS/DEIMOS", true));
+        c.add(new ModelConfig(JANUS, SATELLITES, SATURN, IMAGE_BASED, THOMAS, "/THOMAS/JANUS/s10janus.llr.gz"));
+        c.add(new ModelConfig(JANUS, SATELLITES, SATURN, IMAGE_BASED, STOOKE, "/STOOKE/JANUS/s10janus.llr.gz"));
+        c.add(new ModelConfig(EPIMETHEUS, SATELLITES, SATURN, IMAGE_BASED, THOMAS, "/THOMAS/EPIMETHEUS/s11epimetheus.llr.gz"));
+        c.add(new ModelConfig(EPIMETHEUS, SATELLITES, SATURN, IMAGE_BASED, STOOKE, "/STOOKE/EPIMETHEUS/s11epimetheus.llr.gz"));
+        c.add(new ModelConfig(HALLEY, COMETS, null, IMAGE_BASED, STOOKE, "/STOOKE/HALLEY/1682q1halley.llr.gz"));
+        c.add(new ModelConfig(LARISSA, SATELLITES, NEPTUNE, IMAGE_BASED, STOOKE, "/STOOKE/LARISSA/n7larissa.llr.gz"));
+        c.add(new ModelConfig(PROTEUS, SATELLITES, NEPTUNE, IMAGE_BASED, STOOKE, "/STOOKE/PROTEUS/n8proteus.llr.gz"));
+        c.add(new ModelConfig(PROMETHEUS, SATELLITES, SATURN, IMAGE_BASED, STOOKE, "/STOOKE/PROMETHEUS/s16prometheus.llr.gz"));
+        c.add(new ModelConfig(PANDORA, SATELLITES, SATURN, IMAGE_BASED, STOOKE, "/STOOKE/PANDORA/s17pandora.llr.gz"));
+        c.add(new ModelConfig(GEOGRAPHOS, ASTEROID, NEO, RADAR_BASED, HUDSON, "/HUDSON/GEOGRAPHOS/1620geographos.obj.gz"));
+        c.add(new ModelConfig(KY26, ASTEROID, NEO, RADAR_BASED, HUDSON, "/HUDSON/KY26/1998ky26.obj.gz"));
+        c.add(new ModelConfig(BACCHUS, ASTEROID, NEO, RADAR_BASED, HUDSON, "/HUDSON/BACCHUS/2063bacchus.obj.gz"));
+        c.add(new ModelConfig(KLEOPATRA, ASTEROID, MAIN_BELT, RADAR_BASED, HUDSON, "/HUDSON/KLEOPATRA/216kleopatra.obj.gz"));
+        c.add(new ModelConfig(TOUTATIS_LOW_RES, ASTEROID, NEO, RADAR_BASED, HUDSON, "/HUDSON/TOUTATIS/4179toutatis.obj.gz"));
+        c.add(new ModelConfig(TOUTATIS_HIGH_RES, ASTEROID, NEO, RADAR_BASED, HUDSON, "/HUDSON/TOUTATIS2/4179toutatis2.obj.gz"));
+        c.add(new ModelConfig(CASTALIA, ASTEROID, NEO, RADAR_BASED, HUDSON, "/HUDSON/CASTALIA/4769castalia.obj.gz"));
+        c.add(new ModelConfig(_52760_1998_ML14, ASTEROID, NEO, RADAR_BASED, HUDSON, "/HUDSON/52760/52760.obj.gz"));
+        c.add(new ModelConfig(GOLEVKA, ASTEROID, NEO, RADAR_BASED, HUDSON, "/HUDSON/GOLEVKA/6489golevka.obj.gz"));
         if (Configuration.isAPLVersion())
         {
-            c.add(new ModelConfig(RQ36, ASTEROID, NEO, GASKELL, "/GASKELL/RQ36"));
-            c.add(new ModelConfig(LUTETIA, ASTEROID, MAIN_BELT, GASKELL, "/GASKELL/LUTETIA", false, true));
-            c.add(new ModelConfig(DIONE, SATELLITES, SATURN, GASKELL, "/GASKELL/DIONE", false, true));
-            c.add(new ModelConfig(RHEA, SATELLITES, SATURN, GASKELL, "/GASKELL/RHEA"));
-            c.add(new ModelConfig(TETHYS, SATELLITES, SATURN, GASKELL, "/GASKELL/TETHYS"));
-            c.add(new ModelConfig(HYPERION, SATELLITES, SATURN, GASKELL, "/GASKELL/HYPERION"));
+            c.add(new ModelConfig(RQ36, ASTEROID, NEO, FAKE, GASKELL, "/GASKELL/RQ36"));
+            c.add(new ModelConfig(LUTETIA, ASTEROID, MAIN_BELT, IMAGE_BASED, GASKELL, "/GASKELL/LUTETIA", false, true));
+            c.add(new ModelConfig(DIONE, SATELLITES, SATURN, IMAGE_BASED, GASKELL, "/GASKELL/DIONE", false, true));
+            c.add(new ModelConfig(RHEA, SATELLITES, SATURN, IMAGE_BASED, GASKELL, "/GASKELL/RHEA"));
+            c.add(new ModelConfig(TETHYS, SATELLITES, SATURN, IMAGE_BASED, GASKELL, "/GASKELL/TETHYS"));
+            c.add(new ModelConfig(HYPERION, SATELLITES, SATURN, IMAGE_BASED, GASKELL, "/GASKELL/HYPERION"));
         }
-        c.add(new ModelConfig(HYPERION, SATELLITES, SATURN, THOMAS, "/THOMAS/HYPERION/s7hyperion.llr.gz"));
+        c.add(new ModelConfig(HYPERION, SATELLITES, SATURN, IMAGE_BASED, THOMAS, "/THOMAS/HYPERION/s7hyperion.llr.gz"));
         if (Configuration.isAPLVersion())
         {
-            c.add(new ModelConfig(TEMPEL_1, COMETS, null, GASKELL, "/GASKELL/TEMPEL1"));
+            c.add(new ModelConfig(TEMPEL_1, COMETS, null, IMAGE_BASED, GASKELL, "/GASKELL/TEMPEL1"));
         }
-        c.add(new ModelConfig(TEMPEL_1, COMETS, null, THOMAS, "/THOMAS/TEMPEL1/tempel1_cart.t1.gz"));
-        c.add(new ModelConfig(WILD_2, COMETS, null, DUXBURY, "/OTHER/WILD2/wild2_cart_full.w2.gz"));
+        c.add(new ModelConfig(TEMPEL_1, COMETS, null, IMAGE_BASED, THOMAS, "/THOMAS/TEMPEL1/tempel1_cart.t1.gz"));
+        c.add(new ModelConfig(WILD_2, COMETS, null, IMAGE_BASED, DUXBURY, "/OTHER/WILD2/wild2_cart_full.w2.gz"));
     }
 
 
@@ -182,6 +189,7 @@ public class ModelFactory
         public final String name;
         public final String type; // e.g. asteroid, comet, satellite
         public final String population; // e.g. Mars for satellites or main belt for asteroids
+        public final String dataUsed; // e.g. images, radar, lidar, or fake
         public final String author; // e.g. Gaskell
         public final String pathOnServer;
         public final boolean hasImageMap;
@@ -194,36 +202,40 @@ public class ModelFactory
                 String name,
                 String type,
                 String population,
+                String dataUsed,
                 String author,
                 String pathOnServer)
         {
-            this(name, type, population, author, pathOnServer, false, false, false, false, false, false);
+            this(name, type, population, dataUsed, author, pathOnServer, false, false, false, false, false, false);
         }
         public ModelConfig(
                 String name,
                 String type,
                 String population,
+                String dataUsed,
                 String author,
                 String pathOnServer,
                 boolean hasImageMap)
         {
-            this(name, type, population, author, pathOnServer, hasImageMap, false, false, false, false, false);
+            this(name, type, population, dataUsed, author, pathOnServer, hasImageMap, false, false, false, false, false);
         }
         public ModelConfig(
                 String name,
                 String type,
                 String population,
+                String dataUsed,
                 String author,
                 String pathOnServer,
                 boolean hasImageMap,
                 boolean hasPerspectiveImages)
         {
-            this(name, type, population, author, pathOnServer, hasImageMap, hasPerspectiveImages, false, false, false, false);
+            this(name, type, population, dataUsed, author, pathOnServer, hasImageMap, hasPerspectiveImages, false, false, false, false);
         }
         public ModelConfig(
                 String name,
                 String type,
                 String population,
+                String dataUsed,
                 String author,
                 String pathOnServer,
                 boolean hasImageMap,
@@ -236,6 +248,7 @@ public class ModelFactory
             this.name = name;
             this.type = type;
             this.population = population;
+            this.dataUsed = dataUsed;
             this.author = author;
             this.pathOnServer = pathOnServer;
             this.hasImageMap = hasImageMap;

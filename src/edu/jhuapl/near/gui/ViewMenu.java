@@ -13,6 +13,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JRadioButtonMenuItem;
 
+import edu.jhuapl.near.model.ModelFactory.ModelConfig;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.SmallBodyModel;
@@ -42,7 +43,9 @@ public class ViewMenu extends JMenu implements PropertyChangeListener
                 mi.setSelected(true);
             group.add(mi);
 
-            String type = view.getType();
+            ModelConfig modelConfig = view.getModelConfig();
+
+            String type = modelConfig.type;
             JMenu typeMenu = getChildMenu(this, type);
             if (typeMenu == null)
             {
@@ -50,7 +53,9 @@ public class ViewMenu extends JMenu implements PropertyChangeListener
                 add(typeMenu);
             }
 
-            String population = view.getPopulation();
+            JMenu parentMenu = typeMenu; // will either be population menu or type menu depending on if population is null
+
+            String population = modelConfig.population;
             if (population != null)
             {
                 JMenu populationMenu = getChildMenu(typeMenu, population);
@@ -59,13 +64,26 @@ public class ViewMenu extends JMenu implements PropertyChangeListener
                     populationMenu = new JMenu(population);
                     typeMenu.add(populationMenu);
                 }
+                parentMenu = populationMenu;
+            }
 
-                populationMenu.add(mi);
-            }
-            else
+            String name = modelConfig.name;
+            JMenu nameMenu = getChildMenu(parentMenu, name);
+            if (nameMenu == null)
             {
-                typeMenu.add(mi);
+                nameMenu = new JMenu(name);
+                parentMenu.add(nameMenu);
             }
+
+            String dataUsed = modelConfig.dataUsed;
+            JMenu dataUsedMenu = getChildMenu(nameMenu, dataUsed);
+            if (dataUsedMenu == null)
+            {
+                dataUsedMenu = new JMenu(dataUsed);
+                nameMenu.add(dataUsedMenu);
+            }
+
+            dataUsedMenu.add(mi);
         }
 
         if (Configuration.isAPLVersion())
