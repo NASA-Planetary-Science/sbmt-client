@@ -3,7 +3,7 @@
 %
 
 <!--- To convert this markdown to HTML use this command (pandoc required)
-pandoc -t html -s index.text -o index.html
+pandoc -t html -s index.md -o index.html
 -->
 
 This page contains links to additional tools that you may find useful.

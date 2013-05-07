@@ -1,10 +1,8 @@
-% References
-%
-%
+---
+title: References
+---
 
-<!--- To convert this markdown to HTML use this command (pandoc required)
-pandoc -t html -s references.text -o references.html
--->
+# References
 
 This page contains a listing of all datasets used in the Small
 Body Mapping Tool and where they were obtained from.

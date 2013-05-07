@@ -6,6 +6,18 @@
 pandoc -t html -s recentchanges.text -o recentchanges.html
 -->
 
+### April 30, 2013
+
+-   Added slope, elevation, gravitation acceleration and potential
+    plate data for Phoebe and Mimas.
+-   Added Robert Gaskell's shape models of Dione, Rhea, Tethys,
+    Hyperion, and Tempel 1. These are experimental and only available
+    to several accounts.
+-   Added Imaging Data for Phoebe and Mimas. These images have not yet
+    been indexed in the database, so simply press the search button and
+    all the available images will be listed. The images listed are
+    those Robert Gaskell used to create the shape model.
+
 ### April 17, 2013
 
 -   Phobos images have been indexed in the database so
