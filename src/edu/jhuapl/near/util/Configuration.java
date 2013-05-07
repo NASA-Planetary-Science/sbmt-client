@@ -4,7 +4,7 @@ import java.io.File;
 
 public class Configuration
 {
-    static private String rootURL = "http://near.jhuapl.edu/software/apl";
+    static private String rootURL = "http://sbmt.jhuapl.edu/sbmt";
     static private String appDir = null;
     static private String cacheDir = null;
     static private String cacheVersion = "2";
@@ -143,6 +143,17 @@ public class Configuration
     static public void setAPLVersion(boolean b)
     {
         APLVersion = b;
+
+        // If APL version, then change root URL to the default internal root URL
+        // unless user set sbmt.root.url property.
+        if (APLVersion)
+        {
+            String rootURLProperty = System.getProperty("sbmt.root.url");
+            if (rootURLProperty == null)
+            {
+                rootURL = "http://sbmt.jhuapl.edu/internal/sbmt";
+            }
+        }
     }
 
     static public boolean isAPLVersion()
