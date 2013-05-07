@@ -74,12 +74,25 @@ public class ModelFactory
     static public final String GOLEVKA = "Golevka";
     static public final String WILD_2 = "Wild 2";
 
-    // Names of submenus
+    // Types of bodies
+    static public final String ASTEROID = "Asteroids";
+    static public final String SATELLITES = "Satellites";
+    static public final String COMETS = "Comets";
+
+    // Populations
+    static public final String MARS = "Mars";
+    static public final String JUPITER = "Jupiter";
+    static public final String SATURN = "Saturn";
+    static public final String NEPTUNE = "Neptune";
+    static public final String NEO = "Near-Earth";
+    static public final String MAIN_BELT = "Main Belt";
+
+    // Names of authors
     static public final String GASKELL = "Gaskell";
     static public final String THOMAS = "Thomas";
     static public final String STOOKE = "Stooke";
     static public final String HUDSON = "Hudson";
-    static public final String OTHER = "Other";
+    static public final String DUXBURY = "Duxbury";
     static public final String CUSTOM = "Custom";
 
     // Names of instruments
@@ -98,53 +111,59 @@ public class ModelFactory
     {
         ArrayList<ModelConfig> c = builtInModelConfigs;
 
-        c.add(new ModelConfig(EROS, GASKELL, "/GASKELL/EROS", false, true, true, true, true, true));
-        c.add(new ModelConfig(ITOKAWA, GASKELL, "/GASKELL/ITOKAWA", false, true, true, false, false, false));
-        c.add(new ModelConfig(MIMAS, GASKELL, "/GASKELL/MIMAS", false, true));
-        c.add(new ModelConfig(PHOEBE, GASKELL, "/GASKELL/PHOEBE", false, true));
-        c.add(new ModelConfig(PHOBOS, GASKELL, "/GASKELL/PHOBOS", false, true));
+        c.add(new ModelConfig(EROS, ASTEROID, NEO, GASKELL, "/GASKELL/EROS", false, true, true, true, true, true));
+        c.add(new ModelConfig(ITOKAWA, ASTEROID, NEO, GASKELL, "/GASKELL/ITOKAWA", false, true, true, false, false, false));
+        c.add(new ModelConfig(ITOKAWA, ASTEROID, NEO, HUDSON, "/HUDSON/ITOKAWA/25143itokawa.obj.gz"));
+        c.add(new ModelConfig(PHOBOS, SATELLITES, MARS, GASKELL, "/GASKELL/PHOBOS", false, true));
+        c.add(new ModelConfig(PHOBOS, SATELLITES, MARS, THOMAS, "/THOMAS/PHOBOS/m1phobos.llr.gz"));
+        c.add(new ModelConfig(AMALTHEA, SATELLITES, JUPITER, STOOKE, "/STOOKE/AMALTHEA/j5amalthea.llr.gz"));
+        c.add(new ModelConfig(MIMAS, SATELLITES, SATURN, GASKELL, "/GASKELL/MIMAS", false, true));
+        c.add(new ModelConfig(PHOEBE, SATELLITES, SATURN, GASKELL, "/GASKELL/PHOEBE", false, true));
         if (Configuration.isAPLVersion())
         {
-            c.add(new ModelConfig(VESTA, GASKELL, "/GASKELL/VESTA", false, true));
-            c.add(new ModelConfig(RQ36, GASKELL, "/GASKELL/RQ36"));
-            c.add(new ModelConfig(LUTETIA, GASKELL, "/GASKELL/LUTETIA", false, true));
-            c.add(new ModelConfig(DIONE, GASKELL, "/GASKELL/DIONE", false, true));
-            c.add(new ModelConfig(RHEA, GASKELL, "/GASKELL/RHEA"));
-            c.add(new ModelConfig(HYPERION, GASKELL, "/GASKELL/HYPERION"));
-            c.add(new ModelConfig(TETHYS, GASKELL, "/GASKELL/TETHYS"));
-            c.add(new ModelConfig(TEMPEL_1, GASKELL, "/GASKELL/TEMPEL1"));
+            c.add(new ModelConfig(VESTA, ASTEROID, MAIN_BELT, GASKELL, "/GASKELL/VESTA", false, true));
         }
-        c.add(new ModelConfig(IDA, THOMAS, "/THOMAS/IDA/243ida.llr.gz", true, true));
-        c.add(new ModelConfig(GASPRA, THOMAS, "/THOMAS/GASPRA/951gaspra.llr.gz", true, true));
-        c.add(new ModelConfig(MATHILDE, THOMAS, "/THOMAS/MATHILDE/253mathilde.llr.gz", true, true));
-        c.add(new ModelConfig(VESTA, THOMAS, "/THOMAS/VESTA_OLD"));
-        c.add(new ModelConfig(DEIMOS, THOMAS, "/THOMAS/DEIMOS", true));
-        c.add(new ModelConfig(PHOBOS, THOMAS, "/THOMAS/PHOBOS/m1phobos.llr.gz"));
-        c.add(new ModelConfig(JANUS, THOMAS, "/THOMAS/JANUS/s10janus.llr.gz"));
-        c.add(new ModelConfig(EPIMETHEUS, THOMAS, "/THOMAS/EPIMETHEUS/s11epimetheus.llr.gz"));
-        c.add(new ModelConfig(HYPERION, THOMAS, "/THOMAS/HYPERION/s7hyperion.llr.gz"));
-        c.add(new ModelConfig(TEMPEL_1, THOMAS, "/THOMAS/TEMPEL1/tempel1_cart.t1.gz"));
-        c.add(new ModelConfig(IDA, STOOKE, "/STOOKE/IDA/243ida.llr.gz", true));
-        c.add(new ModelConfig(GASPRA, STOOKE, "/STOOKE/GASPRA/951gaspra.llr.gz", true));
-        c.add(new ModelConfig(HALLEY, STOOKE, "/STOOKE/HALLEY/1682q1halley.llr.gz"));
-        c.add(new ModelConfig(AMALTHEA, STOOKE, "/STOOKE/AMALTHEA/j5amalthea.llr.gz"));
-        c.add(new ModelConfig(LARISSA, STOOKE, "/STOOKE/LARISSA/n7larissa.llr.gz"));
-        c.add(new ModelConfig(PROTEUS, STOOKE, "/STOOKE/PROTEUS/n8proteus.llr.gz"));
-        c.add(new ModelConfig(JANUS, STOOKE, "/STOOKE/JANUS/s10janus.llr.gz"));
-        c.add(new ModelConfig(EPIMETHEUS, STOOKE, "/STOOKE/EPIMETHEUS/s11epimetheus.llr.gz"));
-        c.add(new ModelConfig(PROMETHEUS, STOOKE, "/STOOKE/PROMETHEUS/s16prometheus.llr.gz"));
-        c.add(new ModelConfig(PANDORA, STOOKE, "/STOOKE/PANDORA/s17pandora.llr.gz"));
-        c.add(new ModelConfig(GEOGRAPHOS, HUDSON, "/HUDSON/GEOGRAPHOS/1620geographos.obj.gz"));
-        c.add(new ModelConfig(KY26, HUDSON, "/HUDSON/KY26/1998ky26.obj.gz"));
-        c.add(new ModelConfig(BACCHUS, HUDSON, "/HUDSON/BACCHUS/2063bacchus.obj.gz"));
-        c.add(new ModelConfig(KLEOPATRA, HUDSON, "/HUDSON/KLEOPATRA/216kleopatra.obj.gz"));
-        c.add(new ModelConfig(ITOKAWA, HUDSON, "/HUDSON/ITOKAWA/25143itokawa.obj.gz"));
-        c.add(new ModelConfig(TOUTATIS_LOW_RES, HUDSON, "/HUDSON/TOUTATIS/4179toutatis.obj.gz"));
-        c.add(new ModelConfig(TOUTATIS_HIGH_RES, HUDSON, "/HUDSON/TOUTATIS2/4179toutatis2.obj.gz"));
-        c.add(new ModelConfig(CASTALIA, HUDSON, "/HUDSON/CASTALIA/4769castalia.obj.gz"));
-        c.add(new ModelConfig(_52760_1998_ML14, HUDSON, "/HUDSON/52760/52760.obj.gz"));
-        c.add(new ModelConfig(GOLEVKA, HUDSON, "/HUDSON/GOLEVKA/6489golevka.obj.gz"));
-        c.add(new ModelConfig(WILD_2, OTHER, "/OTHER/WILD2/wild2_cart_full.w2.gz"));
+        c.add(new ModelConfig(VESTA, ASTEROID, MAIN_BELT, THOMAS, "/THOMAS/VESTA_OLD"));
+        c.add(new ModelConfig(IDA, ASTEROID, MAIN_BELT, THOMAS, "/THOMAS/IDA/243ida.llr.gz", true, true));
+        c.add(new ModelConfig(IDA, ASTEROID, MAIN_BELT, STOOKE, "/STOOKE/IDA/243ida.llr.gz", true));
+        c.add(new ModelConfig(GASPRA, ASTEROID, MAIN_BELT, THOMAS, "/THOMAS/GASPRA/951gaspra.llr.gz", true, true));
+        c.add(new ModelConfig(GASPRA, ASTEROID, MAIN_BELT, STOOKE, "/STOOKE/GASPRA/951gaspra.llr.gz", true));
+        c.add(new ModelConfig(MATHILDE, ASTEROID, MAIN_BELT, THOMAS, "/THOMAS/MATHILDE/253mathilde.llr.gz", true, true));
+        c.add(new ModelConfig(DEIMOS, SATELLITES, MARS, THOMAS, "/THOMAS/DEIMOS", true));
+        c.add(new ModelConfig(JANUS, SATELLITES, SATURN, THOMAS, "/THOMAS/JANUS/s10janus.llr.gz"));
+        c.add(new ModelConfig(JANUS, SATELLITES, SATURN, STOOKE, "/STOOKE/JANUS/s10janus.llr.gz"));
+        c.add(new ModelConfig(EPIMETHEUS, SATELLITES, SATURN, THOMAS, "/THOMAS/EPIMETHEUS/s11epimetheus.llr.gz"));
+        c.add(new ModelConfig(EPIMETHEUS, SATELLITES, SATURN, STOOKE, "/STOOKE/EPIMETHEUS/s11epimetheus.llr.gz"));
+        c.add(new ModelConfig(HALLEY, COMETS, null, STOOKE, "/STOOKE/HALLEY/1682q1halley.llr.gz"));
+        c.add(new ModelConfig(LARISSA, SATELLITES, NEPTUNE, STOOKE, "/STOOKE/LARISSA/n7larissa.llr.gz"));
+        c.add(new ModelConfig(PROTEUS, SATELLITES, NEPTUNE, STOOKE, "/STOOKE/PROTEUS/n8proteus.llr.gz"));
+        c.add(new ModelConfig(PROMETHEUS, SATELLITES, SATURN, STOOKE, "/STOOKE/PROMETHEUS/s16prometheus.llr.gz"));
+        c.add(new ModelConfig(PANDORA, SATELLITES, SATURN, STOOKE, "/STOOKE/PANDORA/s17pandora.llr.gz"));
+        c.add(new ModelConfig(GEOGRAPHOS, ASTEROID, NEO, HUDSON, "/HUDSON/GEOGRAPHOS/1620geographos.obj.gz"));
+        c.add(new ModelConfig(KY26, ASTEROID, NEO, HUDSON, "/HUDSON/KY26/1998ky26.obj.gz"));
+        c.add(new ModelConfig(BACCHUS, ASTEROID, NEO, HUDSON, "/HUDSON/BACCHUS/2063bacchus.obj.gz"));
+        c.add(new ModelConfig(KLEOPATRA, ASTEROID, MAIN_BELT, HUDSON, "/HUDSON/KLEOPATRA/216kleopatra.obj.gz"));
+        c.add(new ModelConfig(TOUTATIS_LOW_RES, ASTEROID, NEO, HUDSON, "/HUDSON/TOUTATIS/4179toutatis.obj.gz"));
+        c.add(new ModelConfig(TOUTATIS_HIGH_RES, ASTEROID, NEO, HUDSON, "/HUDSON/TOUTATIS2/4179toutatis2.obj.gz"));
+        c.add(new ModelConfig(CASTALIA, ASTEROID, NEO, HUDSON, "/HUDSON/CASTALIA/4769castalia.obj.gz"));
+        c.add(new ModelConfig(_52760_1998_ML14, ASTEROID, NEO, HUDSON, "/HUDSON/52760/52760.obj.gz"));
+        c.add(new ModelConfig(GOLEVKA, ASTEROID, NEO, HUDSON, "/HUDSON/GOLEVKA/6489golevka.obj.gz"));
+        if (Configuration.isAPLVersion())
+        {
+            c.add(new ModelConfig(RQ36, ASTEROID, NEO, GASKELL, "/GASKELL/RQ36"));
+            c.add(new ModelConfig(LUTETIA, ASTEROID, MAIN_BELT, GASKELL, "/GASKELL/LUTETIA", false, true));
+            c.add(new ModelConfig(DIONE, SATELLITES, SATURN, GASKELL, "/GASKELL/DIONE", false, true));
+            c.add(new ModelConfig(RHEA, SATELLITES, SATURN, GASKELL, "/GASKELL/RHEA"));
+            c.add(new ModelConfig(TETHYS, SATELLITES, SATURN, GASKELL, "/GASKELL/TETHYS"));
+            c.add(new ModelConfig(HYPERION, SATELLITES, SATURN, GASKELL, "/GASKELL/HYPERION"));
+        }
+        c.add(new ModelConfig(HYPERION, SATELLITES, SATURN, THOMAS, "/THOMAS/HYPERION/s7hyperion.llr.gz"));
+        if (Configuration.isAPLVersion())
+        {
+            c.add(new ModelConfig(TEMPEL_1, COMETS, null, GASKELL, "/GASKELL/TEMPEL1"));
+        }
+        c.add(new ModelConfig(TEMPEL_1, COMETS, null, THOMAS, "/THOMAS/TEMPEL1/tempel1_cart.t1.gz"));
+        c.add(new ModelConfig(WILD_2, COMETS, null, DUXBURY, "/OTHER/WILD2/wild2_cart_full.w2.gz"));
     }
 
 
@@ -161,7 +180,9 @@ public class ModelFactory
     public static class ModelConfig
     {
         public final String name;
-        public final String submenu;
+        public final String type; // e.g. asteroid, comet, satellite
+        public final String population; // e.g. Mars for satellites or main belt for asteroids
+        public final String author; // e.g. Gaskell
         public final String pathOnServer;
         public final boolean hasImageMap;
         public final boolean hasPerspectiveImages;
@@ -171,31 +192,39 @@ public class ModelFactory
         public final boolean hasLineamentData;
         public ModelConfig(
                 String name,
-                String submenu,
+                String type,
+                String population,
+                String author,
                 String pathOnServer)
         {
-            this(name, submenu, pathOnServer, false, false, false, false, false, false);
+            this(name, type, population, author, pathOnServer, false, false, false, false, false, false);
         }
         public ModelConfig(
                 String name,
-                String submenu,
+                String type,
+                String population,
+                String author,
                 String pathOnServer,
                 boolean hasImageMap)
         {
-            this(name, submenu, pathOnServer, hasImageMap, false, false, false, false, false);
+            this(name, type, population, author, pathOnServer, hasImageMap, false, false, false, false, false);
         }
         public ModelConfig(
                 String name,
-                String submenu,
+                String type,
+                String population,
+                String author,
                 String pathOnServer,
                 boolean hasImageMap,
                 boolean hasPerspectiveImages)
         {
-            this(name, submenu, pathOnServer, hasImageMap, hasPerspectiveImages, false, false, false, false);
+            this(name, type, population, author, pathOnServer, hasImageMap, hasPerspectiveImages, false, false, false, false);
         }
         public ModelConfig(
                 String name,
-                String submenu,
+                String type,
+                String population,
+                String author,
                 String pathOnServer,
                 boolean hasImageMap,
                 boolean hasPerspectiveImages,
@@ -205,7 +234,9 @@ public class ModelFactory
                 boolean hasLineamentData)
         {
             this.name = name;
-            this.submenu = submenu;
+            this.type = type;
+            this.population = population;
+            this.author = author;
             this.pathOnServer = pathOnServer;
             this.hasImageMap = hasImageMap;
             this.hasPerspectiveImages = hasPerspectiveImages;
@@ -304,9 +335,9 @@ public class ModelFactory
     static public SmallBodyModel createSmallBodyModel(ModelConfig config)
     {
         String name = config.name;
-        String submenu = config.submenu;
+        String author = config.author;
 
-        if (GASKELL.equals(submenu))
+        if (GASKELL.equals(author))
         {
             if (EROS.equals(name))
                 return new Eros();
@@ -328,7 +359,7 @@ public class ModelFactory
                 boolean useAPLServer = true;
                 boolean hasColoringData = true;
 
-                return new SimpleSmallBody(name, submenu, names, paths, hasColoringData, useAPLServer);
+                return new SimpleSmallBody(name, author, names, paths, hasColoringData, useAPLServer);
             }
             else
             {
@@ -357,17 +388,17 @@ public class ModelFactory
 
                 boolean hasColoringData = true;
 
-                return new SimpleSmallBody(name, submenu, names, paths, hasColoringData, useAPLServer);
+                return new SimpleSmallBody(name, author, names, paths, hasColoringData, useAPLServer);
             }
         }
-        else if (THOMAS.equals(submenu))
+        else if (THOMAS.equals(author))
         {
             if (DEIMOS.equals(name))
                 return new Deimos();
             else if (VESTA.equals(name))
                 return new VestaOld();
         }
-        else if (CUSTOM.equals(submenu))
+        else if (CUSTOM.equals(author))
         {
             return new CustomShapeModel(name);
         }
@@ -376,14 +407,14 @@ public class ModelFactory
         if (config.hasImageMap)
             imageMap = (new File(config.pathOnServer)).getParent() + "/image_map.png";
 
-        return new SimpleSmallBody(name, submenu, config.pathOnServer, imageMap);
+        return new SimpleSmallBody(name, author, config.pathOnServer, imageMap);
     }
 
     static public Graticule createGraticule(ModelConfig config, SmallBodyModel smallBodyModel)
     {
-        String submenu = config.submenu;
+        String author = config.author;
 
-        if (GASKELL.equals(submenu))
+        if (GASKELL.equals(author))
         {
             String name = config.name;
 
@@ -419,7 +450,7 @@ public class ModelFactory
 
             return new Graticule(smallBodyModel, graticulePaths, useAPLServer);
         }
-        else if (CUSTOM.equals(submenu))
+        else if (CUSTOM.equals(author))
         {
             return new CustomGraticule(smallBodyModel);
         }

@@ -1,11 +1,12 @@
 package edu.jhuapl.near.model.rq36;
 
+import edu.jhuapl.near.model.ModelFactory;
 import edu.jhuapl.near.model.SmallBodyModel;
 
 public class RQ36 extends SmallBodyModel
 {
-    public static final String NAME = "RQ36";
-    public static final String CATEGORY = "Gaskell";
+    public static final String NAME = ModelFactory.RQ36;
+    public static final String AUTHOR = ModelFactory.GASKELL;
 
     static private final String[] modelNames = {
         "RQ36 low",
@@ -39,7 +40,7 @@ public class RQ36 extends SmallBodyModel
     public RQ36()
     {
         super(NAME,
-                CATEGORY,
+                AUTHOR,
                 modelNames,
                 modelFilesAplOnly,
                 coloringFiles,

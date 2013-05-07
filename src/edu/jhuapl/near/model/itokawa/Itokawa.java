@@ -1,11 +1,12 @@
 package edu.jhuapl.near.model.itokawa;
 
+import edu.jhuapl.near.model.ModelFactory;
 import edu.jhuapl.near.model.SmallBodyModel;
 
 public class Itokawa extends SmallBodyModel
 {
-    public static final String NAME = "Itokawa";
-    public static final String CATEGORY = "Gaskell";
+    public static final String NAME = ModelFactory.ITOKAWA;
+    public static final String AUTHOR = ModelFactory.GASKELL;
 
     static private final String[] modelNames = {
             "HAY_A_AMICA_5_ITOKAWASHAPE_V1_0 ver64q",
@@ -40,7 +41,7 @@ public class Itokawa extends SmallBodyModel
     public Itokawa()
     {
         super(NAME,
-                CATEGORY,
+                AUTHOR,
                 modelNames,
                 modelFiles,
                 coloringFiles,

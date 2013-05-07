@@ -165,7 +165,7 @@ public class SmallBodyModel extends Model
     private double scaleBarWidthInKm = -1.0;
     private boolean showScaleBar = true;
 
-    private String category;
+    private String author;
 
     /**
      * Default constructor. Must be followed by a call to setSmallBodyPolyData.
@@ -184,7 +184,7 @@ public class SmallBodyModel extends Model
      */
     public SmallBodyModel(
             String name,
-            String category,
+            String author,
             String[] modelNames,
             String[] modelFiles,
             String[] coloringFiles,
@@ -196,7 +196,7 @@ public class SmallBodyModel extends Model
             boolean lowestResolutionModelStoredInResource)
     {
         this(name,
-                category,
+                author,
                 modelNames,
                 modelFiles,
                 coloringFiles,
@@ -211,7 +211,7 @@ public class SmallBodyModel extends Model
 
     public SmallBodyModel(
             String name,
-            String category,
+            String author,
             String[] modelNames,
             String[] modelFiles,
             String[] coloringFiles,
@@ -225,7 +225,7 @@ public class SmallBodyModel extends Model
     {
         super(name);
 
-        this.category = category;
+        this.author = author;
         this.modelNames = modelNames;
         this.modelFiles = modelFiles;
         this.imageMapNames = imageMapNames;
@@ -285,22 +285,22 @@ public class SmallBodyModel extends Model
         initializeColoringRanges();
     }
 
-    public static String getUniqueName(String name, String category)
+    public static String getUniqueName(String name, String author)
     {
-        if (category != null && !category.isEmpty())
-            return category + "/" + name;
+        if (author != null && !author.isEmpty())
+            return author + "/" + name;
         else
             return name;
     }
 
     public String getUniqueName()
     {
-        return getUniqueName(getName(), getCategory());
+        return getUniqueName(getName(), getAuthor());
     }
 
-    public String getCategory()
+    public String getAuthor()
     {
-        return category;
+        return author;
     }
 
     public boolean isBuiltIn()

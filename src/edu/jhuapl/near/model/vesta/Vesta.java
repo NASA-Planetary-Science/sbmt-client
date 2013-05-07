@@ -1,12 +1,13 @@
 package edu.jhuapl.near.model.vesta;
 
+import edu.jhuapl.near.model.ModelFactory;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.util.Configuration;
 
 public class Vesta extends SmallBodyModel
 {
-    public static final String NAME = "Vesta";
-    public static final String CATEGORY = "Gaskell";
+    public static final String NAME = ModelFactory.VESTA;
+    public static final String AUTHOR = ModelFactory.GASKELL;
 
     static private final String[] modelNames = {
         "VESTA low",
@@ -47,7 +48,7 @@ public class Vesta extends SmallBodyModel
     public Vesta()
     {
         super(NAME,
-                CATEGORY,
+                AUTHOR,
                 modelNames,
                 Configuration.isAPLVersion() ? modelFilesAplOnly : modelFilesPublic,
                 Configuration.isAPLVersion() ? coloringFiles : null,

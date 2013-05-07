@@ -1,5 +1,6 @@
 package edu.jhuapl.near.gui;
 
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -32,12 +33,6 @@ public class ViewMenu extends JMenu implements PropertyChangeListener
 
         group = new ButtonGroup();
 
-        JMenu gaskellMenu = new JMenu("Gaskell Shape Models");
-        JMenu thomasMenu = new JMenu("Thomas Shape Models");
-        JMenu stookeMenu = new JMenu("Stooke Shape Models");
-        JMenu hudsonMenu = new JMenu("Hudson (Radar) Shape Models");
-        JMenu moreMenu = new JMenu("More Shape Models");
-
         for (int i=0; i < rootPanel.getNumberOfBuiltInViews(); ++i)
         {
             View view = rootPanel.getBuiltInView(i);
@@ -46,27 +41,32 @@ public class ViewMenu extends JMenu implements PropertyChangeListener
             if (i==0)
                 mi.setSelected(true);
             group.add(mi);
-            this.add(mi);
 
-            if ("Gaskell".equals(view.getSubmenu()))
-                gaskellMenu.add(mi);
-            else if ("Thomas".equals(view.getSubmenu()))
-                thomasMenu.add(mi);
-            else if ("Stooke".equals(view.getSubmenu()))
-                stookeMenu.add(mi);
-            else if ("Hudson".equals(view.getSubmenu()))
-                hudsonMenu.add(mi);
-            else if ("Other".equals(view.getSubmenu()))
-                moreMenu.add(mi);
+            String type = view.getType();
+            JMenu typeMenu = getChildMenu(this, type);
+            if (typeMenu == null)
+            {
+                typeMenu = new JMenu(type);
+                add(typeMenu);
+            }
+
+            String population = view.getPopulation();
+            if (population != null)
+            {
+                JMenu populationMenu = getChildMenu(typeMenu, population);
+                if (populationMenu == null)
+                {
+                    populationMenu = new JMenu(population);
+                    typeMenu.add(populationMenu);
+                }
+
+                populationMenu.add(mi);
+            }
             else
-                System.out.println("Error: invalid submenu");
+            {
+                typeMenu.add(mi);
+            }
         }
-
-        this.add(gaskellMenu);
-        this.add(thomasMenu);
-        this.add(stookeMenu);
-        this.add(hudsonMenu);
-        this.add(moreMenu);
 
         if (Configuration.isAPLVersion())
         {
@@ -89,6 +89,21 @@ public class ViewMenu extends JMenu implements PropertyChangeListener
                 this.add(mi);
             }
         }
+    }
+
+    private JMenu getChildMenu(JMenu menu, String childName)
+    {
+        Component[] components = menu.getMenuComponents();
+        for (Component comp : components)
+        {
+            if (comp instanceof JMenu)
+            {
+                if (((JMenu)comp).getText().equals(childName))
+                    return (JMenu)comp;
+            }
+        }
+
+        return null;
     }
 
     public void addCustomMenuItem(View view)

@@ -24,14 +24,14 @@ public class SimpleSmallBody extends SmallBodyModel
 
     public SimpleSmallBody(
             String name,
-            String category,
+            String author,
             String[] modelNames,
             String[] paths,
             boolean hasColoringData,
             boolean useAPLServer)
     {
         super(name,
-                category,
+                author,
                 modelNames,
                 paths,
                 hasColoringData ? getColoringFiles(name) : null,
@@ -44,10 +44,10 @@ public class SimpleSmallBody extends SmallBodyModel
                 useAPLServer);
     }
 
-    public SimpleSmallBody(String name, String category, String path, String imageMap)
+    public SimpleSmallBody(String name, String author, String path, String imageMap)
     {
         super(name,
-                category,
+                author,
                 new String[] {name},
                 new String[] {path},
                 null,

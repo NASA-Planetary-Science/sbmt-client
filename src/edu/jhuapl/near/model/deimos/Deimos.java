@@ -1,11 +1,12 @@
 package edu.jhuapl.near.model.deimos;
 
+import edu.jhuapl.near.model.ModelFactory;
 import edu.jhuapl.near.model.SmallBodyModel;
 
 public class Deimos extends SmallBodyModel
 {
-    public static final String NAME = "Deimos";
-    public static final String CATEGORY = "Thomas";
+    public static final String NAME = ModelFactory.DEIMOS;
+    public static final String AUTHOR = ModelFactory.THOMAS;
 
     static private final String[] modelFiles = {
             "/DEIMOS/DEIMOS.vtk.gz"
@@ -33,7 +34,7 @@ public class Deimos extends SmallBodyModel
     public Deimos()
     {
         super(NAME,
-                CATEGORY,
+                AUTHOR,
                 new String[]{NAME.toUpperCase()},
                 modelFiles,
                 coloringFiles,

@@ -22,9 +22,9 @@ public class ModelManager extends Model implements PropertyChangeListener
         return getSmallBodyModel().getUniqueName();
     }
 
-    public String getCategory()
+    public String getAuthor()
     {
-        return getSmallBodyModel().getCategory();
+        return getSmallBodyModel().getAuthor();
     }
 
     public boolean isBuiltIn()

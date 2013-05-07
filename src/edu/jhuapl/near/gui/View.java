@@ -121,8 +121,8 @@ public class View extends JPanel
         {
             // For the public version, only include image tab for Gaskell's Eros and Itokawa shape models
             if (Configuration.isAPLVersion() ||
-                    (modelConfig.name.equals(ModelFactory.EROS) && modelConfig.submenu.equals(ModelFactory.GASKELL)) ||
-                    (modelConfig.name.equals(ModelFactory.ITOKAWA) && modelConfig.submenu.equals(ModelFactory.GASKELL)))
+                    (modelConfig.name.equals(ModelFactory.EROS) && modelConfig.author.equals(ModelFactory.GASKELL)) ||
+                    (modelConfig.name.equals(ModelFactory.ITOKAWA) && modelConfig.author.equals(ModelFactory.GASKELL)))
             {
                 JComponent component = createPerspectiveImageSearchTab(modelConfig, modelManager, infoPanelManager, pickManager, renderer);
                 controlPanel.addTab(modelConfig.getImagingInstrumentName(), component);
@@ -319,14 +319,14 @@ public class View extends JPanel
      * Return a unique name for this view. No other view may have this
      * name. Note that only applies within built-in views or custom views
      * but a custom view can share the name of a built-in one or vice versa.
-     * By default simply return the submenu concatenated with the display
-     * name if the submenu is not null or just the display name if the submenu
+     * By default simply return the author concatenated with the
+     * name if the author is not null or just the name if the author
      * is null.
      * @return
      */
     public String getUniqueName()
     {
-        return SmallBodyModel.getUniqueName(getDisplayName(), getSubmenu());
+        return SmallBodyModel.getUniqueName(modelConfig.name, modelConfig.author);
     }
 
 
@@ -337,24 +337,36 @@ public class View extends JPanel
      */
     public String getDisplayName()
     {
-        return modelConfig.name;
+        if (modelConfig.author.equals(ModelFactory.CUSTOM))
+            return modelConfig.name;
+        else
+            return modelConfig.name + " [" + modelConfig.author + "]";
     }
 
     /**
-     * Return the submenu in which this view should be placed.
-     * If null (the default), do not place in a submenu but in the
-     * top menu.
+     * Return the author of the model in this view.
+     * If null (the default), then this is a custom model.
      *
      * @return
      */
-    public String getSubmenu()
+    public String getAuthor()
     {
-        return modelConfig.submenu;
+        return modelConfig.author;
+    }
+
+    public String getType()
+    {
+        return modelConfig.type;
+    }
+
+    public String getPopulation()
+    {
+        return modelConfig.population;
     }
 
     static public View createCustomView(StatusBar statusBar, String name)
     {
-        ModelConfig config = new ModelConfig(name, ModelFactory.CUSTOM, null);
+        ModelConfig config = new ModelConfig(name, null, null, ModelFactory.CUSTOM, null);
         return new View(statusBar, config);
     }
 
