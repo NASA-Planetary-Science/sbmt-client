@@ -2,9 +2,11 @@
 %
 %
 
-<!--- To convert this markdown to HTML use this command (pandoc required)
-pandoc -t html -s recentchanges.text -o recentchanges.html
--->
+# Recent Changes
+
+### May 8, 2013
+
+-   Reorganized list of shape models in View menu.
 
 ### April 30, 2013
 

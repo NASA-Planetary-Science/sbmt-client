@@ -1,13 +1,9 @@
-% Small Body Mapping Tool User Manual
-%
-%
+---
+title: User Manual
+---
 
-<!--- To convert this markdown to HTML use this command (pandoc required)
-pandoc -t html --toc -s helpcontents.text -o helpcontents.html
--->
-
-Small Body Mapping Tool User Manual
-===================================
+User Manual
+===========
 
 The Small Body Mapping Tool is divided into 2 panels, the rendering
 panel on the right for displaying small bodies and their associated

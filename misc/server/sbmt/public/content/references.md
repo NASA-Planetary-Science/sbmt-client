@@ -2,7 +2,8 @@
 title: References
 ---
 
-# References
+References
+==========
 
 This page contains a listing of all datasets used in the Small
 Body Mapping Tool and where they were obtained from.

@@ -2,7 +2,8 @@
 title: User Manual
 ---
 
-# User Manual
+User Manual
+===========
 
 The Small Body Mapping Tool is divided into 2 panels, the rendering
 panel on the right for displaying small bodies and their associated
