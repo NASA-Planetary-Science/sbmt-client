@@ -97,6 +97,8 @@ public class Renderer extends JPanel implements
 
         setMouseWheelMotionFactor(Preferences.getInstance().getAsDouble(Preferences.MOUSE_WHEEL_MOTION_FACTOR, 1.0));
 
+        setBackgroundColor(Preferences.getInstance().getAsIntArray(Preferences.BACKGROUND_COLOR, new int[]{0, 0, 0}));
+
         headlight = renWin.GetRenderer().MakeLight();
         headlight.SetLightTypeToHeadlight();
         headlight.SetConeAngle(180.0);
@@ -111,7 +113,6 @@ public class Renderer extends JPanel implements
                 Preferences.getInstance().getAsDouble(Preferences.FIXEDLIGHT_DISTANCE, 1.0e8));
         setFixedLightPosition(defaultPosition);
         setLightIntensity(Preferences.getInstance().getAsDouble(Preferences.LIGHT_INTENSITY, 1.0));
-
 
         renWin.GetRenderer().AutomaticLightCreationOff();
         lightKit = new vtkLightKit();
@@ -699,6 +700,19 @@ public class Renderer extends JPanel implements
     public double getMouseWheelMotionFactor()
     {
         return trackballCameraInteractorStyle.GetMouseWheelMotionFactor();
+    }
+
+    public int[] getBackgroundColor()
+    {
+        double[] bg = renWin.GetRenderer().GetBackground();
+        return new int[]{(int)(255.0*bg[0]), (int)(255.0*bg[1]), (int)(255.0*bg[2])};
+    }
+
+    public void setBackgroundColor(int[] color)
+    {
+        renWin.GetRenderer().SetBackground(color[0]/255.0, color[1]/255.0, color[2]/255.0);
+        if (renWin.GetRenderWindow().GetNeverRendered() == 0)
+            renWin.Render();
     }
 
     public void set2DMode(boolean enable)

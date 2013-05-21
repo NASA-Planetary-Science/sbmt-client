@@ -36,6 +36,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
     private ViewManager viewManager;
     private static final double MAX_TOLERANCE = 0.01;
     private int[] selectionColor;
+    private int[] backgroundColor;
 
     /** Creates new form SettingsDialog */
     public PreferencesDialog(java.awt.Frame parent, boolean modal) {
@@ -84,6 +85,9 @@ public class PreferencesDialog extends javax.swing.JDialog {
 
             selectionColor = viewManager.getCurrentView().getModelManager().getCommonData().getSelectionColor();
             updateSelectionColorLabel();
+
+            backgroundColor = viewManager.getCurrentView().getRenderer().getBackgroundColor();
+            updateBackgroundColorLabel();
 
             updateEnabledItems();
         }
@@ -151,6 +155,9 @@ public class PreferencesDialog extends javax.swing.JDialog {
 
             if (selectionColor != null)
                 viewManager.getCurrentView().getModelManager().getCommonData().setSelectionColor(selectionColor);
+
+            if (backgroundColor != null)
+                viewManager.getCurrentView().getRenderer().setBackgroundColor(backgroundColor);
         }
     }
 
@@ -170,6 +177,13 @@ public class PreferencesDialog extends javax.swing.JDialog {
         int[] c = selectionColor;
         selectionColorLabel.setText("["+c[0]+","+c[1]+","+c[2]+"]");
         selectionColorLabel.setIcon(new ColorUtil.ColorIcon(new Color(c[0], c[1], c[2])));
+    }
+
+    private void updateBackgroundColorLabel()
+    {
+        int[] c = backgroundColor;
+        backgroundColorLabel.setText("["+c[0]+","+c[1]+","+c[2]+"]");
+        backgroundColorLabel.setIcon(new ColorUtil.ColorIcon(new Color(c[0], c[1], c[2])));
     }
 
     /** This method is called from within the constructor to
@@ -233,6 +247,11 @@ public class PreferencesDialog extends javax.swing.JDialog {
         jPanel10 = new javax.swing.JPanel();
         jSeparator9 = new javax.swing.JSeparator();
         jLabel12 = new javax.swing.JLabel();
+        jPanel8 = new javax.swing.JPanel();
+        jLabel10 = new javax.swing.JLabel();
+        jSeparator7 = new javax.swing.JSeparator();
+        backgroundColorLabel = new javax.swing.JLabel();
+        backgroundColorButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         getContentPane().setLayout(new java.awt.GridBagLayout());
@@ -331,7 +350,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 22;
+        gridBagConstraints.gridy = 24;
         gridBagConstraints.weighty = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(15, 0, 0, 0);
         getContentPane().add(jPanel1, gridBagConstraints);
@@ -660,6 +679,46 @@ public class PreferencesDialog extends javax.swing.JDialog {
         gridBagConstraints.insets = new java.awt.Insets(15, 4, 5, 0);
         getContentPane().add(jPanel10, gridBagConstraints);
 
+        jPanel8.setLayout(new java.awt.GridBagLayout());
+
+        jLabel10.setText("Background Color");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        jPanel8.add(jLabel10, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        jPanel8.add(jSeparator7, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 22;
+        gridBagConstraints.gridwidth = 3;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(15, 4, 5, 0);
+        getContentPane().add(jPanel8, gridBagConstraints);
+
+        backgroundColorLabel.setText("Default");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 23;
+        getContentPane().add(backgroundColorLabel, gridBagConstraints);
+
+        backgroundColorButton.setText("Change...");
+        backgroundColorButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                backgroundColorButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 23;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        getContentPane().add(backgroundColorButton, gridBagConstraints);
+
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
@@ -705,6 +764,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
         preferencesMap.put(Preferences.PICK_TOLERANCE, Double.valueOf(getToleranceFromSliderValue(pickToleranceSlider.getValue())).toString());
         preferencesMap.put(Preferences.MOUSE_WHEEL_MOTION_FACTOR, ((Double)mouseWheelMotionFactorSpinner.getValue()).toString());
         preferencesMap.put(Preferences.SELECTION_COLOR, Joiner.on(",").join(Ints.asList(selectionColor)));
+        preferencesMap.put(Preferences.BACKGROUND_COLOR, Joiner.on(",").join(Ints.asList(backgroundColor)));
         Preferences.getInstance().put(preferencesMap);
     }//GEN-LAST:event_applyToAllButtonActionPerformed
 
@@ -742,9 +802,29 @@ public class PreferencesDialog extends javax.swing.JDialog {
         updateSelectionColorLabel();
     }//GEN-LAST:event_selectionColorButtonActionPerformed
 
+    private void backgroundColorButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_backgroundColorButtonActionPerformed
+        Color color = ColorChooser.showColorChooser(
+                JOptionPane.getFrameForComponent(this),
+                viewManager.getCurrentView().getRenderer().getBackgroundColor());
+
+        if (color == null)
+            return;
+
+        int[] c = new int[3];
+        c[0] = color.getRed();
+        c[1] = color.getGreen();
+        c[2] = color.getBlue();
+
+        backgroundColor = c;
+
+        updateBackgroundColorLabel();
+    }//GEN-LAST:event_backgroundColorButtonActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton applyToAllButton;
     private javax.swing.JButton applyToCurrentButton;
+    private javax.swing.JButton backgroundColorButton;
+    private javax.swing.JLabel backgroundColorLabel;
     private javax.swing.JButton closeButton;
     private javax.swing.JLabel distanceLabel;
     private javax.swing.JFormattedTextField distanceTextField;
@@ -755,6 +835,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
     private javax.swing.JCheckBox interactiveCheckBox;
     private javax.swing.ButtonGroup interactorStyleButtonGroup;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -772,6 +853,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
+    private javax.swing.JPanel jPanel8;
     private javax.swing.JPanel jPanel9;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
@@ -779,6 +861,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
     private javax.swing.JSeparator jSeparator4;
     private javax.swing.JSeparator jSeparator5;
     private javax.swing.JSeparator jSeparator6;
+    private javax.swing.JSeparator jSeparator7;
     private javax.swing.JSeparator jSeparator9;
     private javax.swing.JRadioButton joystickRadioButton;
     private javax.swing.JLabel latitudeLabel;
