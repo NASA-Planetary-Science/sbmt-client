@@ -84,10 +84,6 @@ public class SmallBodyModel extends Model
 
     static public final String FlatShadingStr = "Flat";
     static public final String SmoothShadingStr = "Smooth";
-    static public final String LowResModelStr = "Low (49152 plates)";
-    static public final String MedResModelStr = "Medium (196608 plates)";
-    static public final String HighResModelStr = "High (786432 plates)";
-    static public final String VeryHighResModelStr = "Very High (3145728 plates)";
 
     // Class storing info related to plate data used to color shape model
     public static class ColoringInfo
@@ -1148,8 +1144,8 @@ public class SmallBodyModel extends Model
         resolutionLevel = level;
         if (level < 0)
             resolutionLevel = 0;
-        else if (level > 3)
-            resolutionLevel = 3;
+        else if (level > getNumberResolutionLevels()-1)
+            resolutionLevel = getNumberResolutionLevels()-1;
 
         reloadShapeModel();
     }
@@ -1168,17 +1164,9 @@ public class SmallBodyModel extends Model
         boundingBox = null;
 
         File smallBodyFile = defaultModelFile;
-        switch(resolutionLevel)
+        if (resolutionLevel > 0)
         {
-        case 1:
-            smallBodyFile = FileCache.getFileFromServer(modelFiles[1], useAPLServer);
-            break;
-        case 2:
-            smallBodyFile = FileCache.getFileFromServer(modelFiles[2], useAPLServer);
-            break;
-        case 3:
-            smallBodyFile = FileCache.getFileFromServer(modelFiles[3], useAPLServer);
-            break;
+            smallBodyFile = FileCache.getFileFromServer(modelFiles[resolutionLevel], useAPLServer);
         }
 
         this.initialize(smallBodyFile);

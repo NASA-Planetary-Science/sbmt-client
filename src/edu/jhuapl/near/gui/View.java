@@ -42,7 +42,6 @@ import edu.jhuapl.near.model.PerspectiveImageBoundaryCollection;
 import edu.jhuapl.near.model.PointModel;
 import edu.jhuapl.near.model.PolygonModel;
 import edu.jhuapl.near.model.SmallBodyModel;
-import edu.jhuapl.near.model.eros.Eros;
 import edu.jhuapl.near.model.itokawa.Itokawa;
 import edu.jhuapl.near.model.vesta.Vesta;
 import edu.jhuapl.near.pick.PickManager;
@@ -119,9 +118,9 @@ public class View extends JPanel
 
         if (modelConfig.hasPerspectiveImages)
         {
-            // For the public version, only include image tab for Gaskell's Eros and Itokawa shape models
+            // For the public version, only include image tab for Eros (all) and Gaskell's Itokawa shape models.
             if (Configuration.isAPLVersion() ||
-                    (modelConfig.name.equals(ModelFactory.EROS) && modelConfig.author.equals(ModelFactory.GASKELL)) ||
+                    modelConfig.name.equals(ModelFactory.EROS) ||
                     (modelConfig.name.equals(ModelFactory.ITOKAWA) && modelConfig.author.equals(ModelFactory.GASKELL)))
             {
                 JComponent component = createPerspectiveImageSearchTab(modelConfig, modelManager, infoPanelManager, pickManager, renderer);
@@ -137,7 +136,7 @@ public class View extends JPanel
 
         if (modelConfig.hasLidarData)
         {
-            JComponent component = createLidarDataSearchTab(modelManager, pickManager, renderer);
+            JComponent component = createLidarDataSearchTab(modelConfig, modelManager, pickManager, renderer);
             controlPanel.addTab(modelConfig.getLidarInstrumentName(), component);
         }
 
@@ -363,7 +362,7 @@ public class View extends JPanel
     {
         SmallBodyModel smallBodyModel = modelManager.getSmallBodyModel();
         String name = modelConfig.name;
-        if (smallBodyModel instanceof Eros)
+        if (ModelFactory.EROS.equals(name))
             return new MSISearchPanel(modelManager, infoPanelManager, pickManager, renderer);
         else if (smallBodyModel instanceof Itokawa)
             return new AmicaSearchPanel(modelManager, infoPanelManager, pickManager, renderer);
@@ -398,12 +397,14 @@ public class View extends JPanel
     }
 
     static private JComponent createLidarDataSearchTab(
+            ModelConfig modelConfig,
             ModelManager modelManager,
             PickManager pickManager,
             Renderer renderer)
     {
         SmallBodyModel smallBodyModel = modelManager.getSmallBodyModel();
-        if (smallBodyModel instanceof Eros)
+        String name = modelConfig.name;
+        if (ModelFactory.EROS.equals(name))
             return new NLRPanel(modelManager, pickManager, renderer);
         else if (smallBodyModel instanceof Itokawa)
             return new HayLidarPanel(modelManager, pickManager, renderer);

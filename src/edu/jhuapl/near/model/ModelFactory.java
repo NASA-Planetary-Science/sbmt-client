@@ -13,6 +13,7 @@ import edu.jhuapl.near.model.custom.CustomGraticule;
 import edu.jhuapl.near.model.custom.CustomShapeModel;
 import edu.jhuapl.near.model.deimos.Deimos;
 import edu.jhuapl.near.model.eros.Eros;
+import edu.jhuapl.near.model.eros.ErosThomas;
 import edu.jhuapl.near.model.eros.LineamentModel;
 import edu.jhuapl.near.model.eros.MSIImage;
 import edu.jhuapl.near.model.eros.NISSpectraCollection;
@@ -95,6 +96,7 @@ public class ModelFactory
     static public final String DUXBURY = "Duxbury";
     static public final String OSTRO = "Ostro";
     static public final String CUSTOM = "Custom";
+    static public final String NAV = "NAV";
 
     // Data used to construct shape model (either images, radar, lidar, or fake)
     static public final String IMAGE_BASED = "Image Based";
@@ -119,6 +121,9 @@ public class ModelFactory
         ArrayList<ModelConfig> c = builtInModelConfigs;
 
         c.add(new ModelConfig(EROS, ASTEROID, NEO, IMAGE_BASED, GASKELL, "/GASKELL/EROS", false, true, true, true, true, true));
+        c.add(new ModelConfig(EROS, ASTEROID, NEO, IMAGE_BASED, THOMAS, "/THOMAS/EROS", false, true, true, false, true, true));
+        c.add(new ModelConfig(EROS, ASTEROID, NEO, LIDAR_BASED, NLR, "/OTHER/EROS/nlrshape.llr2.gz", false, true, true, false, true, true));
+        c.add(new ModelConfig(EROS, ASTEROID, NEO, LIDAR_BASED, NAV, "/OTHER/EROS/navplate.obj.gz", false, true, true, false, true, true));
         c.add(new ModelConfig(ITOKAWA, ASTEROID, NEO, IMAGE_BASED, GASKELL, "/GASKELL/ITOKAWA", false, true, true, false, false, false));
         c.add(new ModelConfig(ITOKAWA, ASTEROID, NEO, RADAR_BASED, OSTRO, "/HUDSON/ITOKAWA/25143itokawa.obj.gz"));
         c.add(new ModelConfig(PHOBOS, SATELLITES, MARS, IMAGE_BASED, GASKELL, "/GASKELL/PHOBOS", false, true));
@@ -310,7 +315,9 @@ public class ModelFactory
                 ImageSource.GASKELL.equals(key.source) ||
                 ImageSource.CORRECTED.equals(key.source))
         {
-            if (smallBodyModel instanceof Eros)
+            if (smallBodyModel.getModelName().toLowerCase().equals("eros") ||
+                smallBodyModel.getModelName().toLowerCase().startsWith("433 eros") ||
+                smallBodyModel.getModelName().toLowerCase().startsWith("near-a-msi-5-erosshape"))
                 return new MSIImage(key, smallBodyModel, loadPointingOnly, rootFolder);
             else if (smallBodyModel instanceof Itokawa)
                 return new AmicaImage(key, smallBodyModel, loadPointingOnly, rootFolder);
@@ -406,7 +413,9 @@ public class ModelFactory
         }
         else if (THOMAS.equals(author))
         {
-            if (DEIMOS.equals(name))
+            if (EROS.equals(name))
+                return new ErosThomas();
+            else if (DEIMOS.equals(name))
                 return new Deimos();
             else if (VESTA.equals(name))
                 return new VestaOld();
@@ -484,7 +493,9 @@ public class ModelFactory
     static public HashMap<String, Model> createLidarModels(SmallBodyModel smallBodyModel)
     {
         HashMap<String, Model> models = new HashMap<String, Model>();
-        if (smallBodyModel instanceof Eros)
+        if (smallBodyModel.getModelName().toLowerCase().equals("eros") ||
+            smallBodyModel.getModelName().toLowerCase().startsWith("433 eros") ||
+            smallBodyModel.getModelName().toLowerCase().startsWith("near-a-msi-5-erosshape"))
         {
             models.put(ModelNames.LIDAR_BROWSE, new NLRBrowseDataCollection());
             models.put(ModelNames.LIDAR_SEARCH, new NLRSearchDataCollection(smallBodyModel));

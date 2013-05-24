@@ -64,10 +64,12 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
     private JLabel customColorRedLabel;
     private JLabel customColorGreenLabel;
     private JLabel customColorBlueLabel;
-    private JRadioButton lowResModelButton;
-    private JRadioButton medResModelButton;
-    private JRadioButton highResModelButton;
-    private JRadioButton veryHighResModelButton;
+    private JRadioButton res0ModelButton;
+    private JRadioButton res1ModelButton;
+    private JRadioButton res2ModelButton;
+    private JRadioButton res3ModelButton;
+    private JRadioButton res4ModelButton;
+    private JRadioButton res5ModelButton;
     private ButtonGroup resolutionButtonGroup;
     private JCheckBox gridCheckBox;
     private JCheckBox axesCheckBox;
@@ -101,37 +103,88 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
 
         JLabel resolutionLabel = new JLabel("Resolution");
 
-        lowResModelButton = new JRadioButton(SmallBodyModel.LowResModelStr);
-        lowResModelButton.setActionCommand(SmallBodyModel.LowResModelStr);
-        lowResModelButton.addItemListener(this);
-        lowResModelButton.setEnabled(true);
-        lowResModelButton.setToolTipText(
-                "<html>Click here to show a low resolution model of " + bodyName + " <br />" +
-                "containing 49152 plates or triangles</html>");
+        // For now hard code in the labels and tooltips. Ideally this info
+        // should be obtained from the small body model. Currently there
+        // are only 2 type of models with more than one resolution level:
+        // Bob Gaskell's models (which have 4 levels) and Peter Thomas' Eros
+        // model which has 6 (http://sbn.psi.edu/pds/resource/nearbrowse.html).
+        String[] labels = null;
+        int[] plateCount = null;
+        if (modelManager.getSmallBodyModel().getNumberResolutionLevels() == 4)
+        {
+            plateCount = new int[]{49152, 196608, 786432, 3145728,
+                    0, // not used
+                    0, // not used
+            };
+            labels = new String[]{
+                    "Low (49152 plates)",
+                    "Medium (196608 plates)",
+                    "High (786432 plates)",
+                    "Very High (3145728 plates)",
+                    " ", // not used
+                    " " // not used
+                    };
+        }
+        else
+        {
+            plateCount = new int[]{1708, 7790, 10152, 22540, 89398, 200700};
+            labels = new String[]{
+                    "1708 plates",
+                    "7790 plates",
+                    "10152 plates",
+                    "22540 plates",
+                    "89398 plates",
+                    "200700 plates"
+            };
+        }
 
-        medResModelButton = new JRadioButton(SmallBodyModel.MedResModelStr);
-        medResModelButton.setActionCommand(SmallBodyModel.MedResModelStr);
-        medResModelButton.addItemListener(this);
-        medResModelButton.setEnabled(true);
-        medResModelButton.setToolTipText(
-                "<html>Click here to show a medium resolution model of " + bodyName + " <br />" +
-                "containing 196608 plates or triangles</html>");
+        res0ModelButton = new JRadioButton(labels[0]);
+        res0ModelButton.setActionCommand(labels[0]);
+        res0ModelButton.addItemListener(this);
+        res0ModelButton.setEnabled(true);
+        res0ModelButton.setToolTipText(
+                "<html>Click here to show a model of " + bodyName + " <br />" +
+                "containing " + plateCount[0] + " plates</html>");
 
-        highResModelButton = new JRadioButton(SmallBodyModel.HighResModelStr);
-        highResModelButton.setActionCommand(SmallBodyModel.HighResModelStr);
-        highResModelButton.addItemListener(this);
-        highResModelButton.setEnabled(true);
-        highResModelButton.setToolTipText(
-                "<html>Click here to show a high resolution model of " + bodyName + " <br />" +
-                "containing 786432 plates or triangles</html>");
+        res1ModelButton = new JRadioButton(labels[1]);
+        res1ModelButton.setActionCommand(labels[1]);
+        res1ModelButton.addItemListener(this);
+        res1ModelButton.setEnabled(true);
+        res1ModelButton.setToolTipText(
+                "<html>Click here to show a model of " + bodyName + " <br />" +
+                "containing " + plateCount[1] + " plates</html>");
 
-        veryHighResModelButton = new JRadioButton(SmallBodyModel.VeryHighResModelStr);
-        veryHighResModelButton.setActionCommand(SmallBodyModel.VeryHighResModelStr);
-        veryHighResModelButton.addItemListener(this);
-        veryHighResModelButton.setEnabled(true);
-        veryHighResModelButton.setToolTipText(
-                "<html>Click here to show a very high resolution model of " + bodyName + " <br />" +
-                "containing 3145728 plates or triangles </html>");
+        res2ModelButton = new JRadioButton(labels[2]);
+        res2ModelButton.setActionCommand(labels[2]);
+        res2ModelButton.addItemListener(this);
+        res2ModelButton.setEnabled(true);
+        res2ModelButton.setToolTipText(
+                "<html>Click here to show a model of " + bodyName + " <br />" +
+                "containing " + plateCount[2] + " plates</html>");
+
+        res3ModelButton = new JRadioButton(labels[3]);
+        res3ModelButton.setActionCommand(labels[3]);
+        res3ModelButton.addItemListener(this);
+        res3ModelButton.setEnabled(true);
+        res3ModelButton.setToolTipText(
+                "<html>Click here to show a model of " + bodyName + " <br />" +
+                "containing " + plateCount[3] + " plates</html>");
+
+        res4ModelButton = new JRadioButton(labels[4]);
+        res4ModelButton.setActionCommand(labels[4]);
+        res4ModelButton.addItemListener(this);
+        res4ModelButton.setEnabled(true);
+        res4ModelButton.setToolTipText(
+                "<html>Click here to show a model of " + bodyName + " <br />" +
+                "containing " + plateCount[4] + " plates</html>");
+
+        res5ModelButton = new JRadioButton(labels[5]);
+        res5ModelButton.setActionCommand(labels[5]);
+        res5ModelButton.addItemListener(this);
+        res5ModelButton.setEnabled(true);
+        res5ModelButton.setToolTipText(
+                "<html>Click here to show a model of " + bodyName + " <br />" +
+                "containing " + plateCount[5] + " plates</html>");
 
         // The following snippet was taken from https://explodingpixels.wordpress.com/2008/10/28/make-jeditorpane-use-the-system-font/
         // which shows how to make a JEditorPane behave look like a JLabel but still be selectable.
@@ -149,10 +202,12 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
 
 
         resolutionButtonGroup = new ButtonGroup();
-        resolutionButtonGroup.add(lowResModelButton);
-        resolutionButtonGroup.add(medResModelButton);
-        resolutionButtonGroup.add(highResModelButton);
-        resolutionButtonGroup.add(veryHighResModelButton);
+        resolutionButtonGroup.add(res0ModelButton);
+        resolutionButtonGroup.add(res1ModelButton);
+        resolutionButtonGroup.add(res2ModelButton);
+        resolutionButtonGroup.add(res3ModelButton);
+        resolutionButtonGroup.add(res4ModelButton);
+        resolutionButtonGroup.add(res5ModelButton);
 
         final SmallBodyModel smallBodyModel = modelManager.getSmallBodyModel();
 
@@ -221,7 +276,7 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
         coloringButtonGroup.add(rgbColoringButton);
         coloringButtonGroup.setSelected(noColoringButton.getModel(), true);
 
-        resolutionButtonGroup.setSelected(lowResModelButton.getModel(), true);
+        resolutionButtonGroup.setSelected(res0ModelButton.getModel(), true);
 
         gridCheckBox = new JCheckBox();
         gridCheckBox.setText("Show Coordinate Grid");
@@ -251,13 +306,19 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
         JPanel surfacePropertiesEditorPanel = new DisplayPropertyEditorPanel(smallBodyModel);
 
         panel.add(modelCheckBox, "wrap");
-        if (modelManager.getSmallBodyModel().getNumberResolutionLevels() > 1)
+        if (modelManager.getSmallBodyModel().getNumberResolutionLevels() >= 4)
         {
             panel.add(resolutionLabel, "wrap");
-            panel.add(lowResModelButton, "wrap, gapleft 25");
-            panel.add(medResModelButton, "wrap, gapleft 25");
-            panel.add(highResModelButton, "wrap, gapleft 25");
-            panel.add(veryHighResModelButton, "wrap, gapleft 25");
+            panel.add(res0ModelButton, "wrap, gapleft 25");
+            panel.add(res1ModelButton, "wrap, gapleft 25");
+            panel.add(res2ModelButton, "wrap, gapleft 25");
+            panel.add(res3ModelButton, "wrap, gapleft 25");
+
+            if (modelManager.getSmallBodyModel().getNumberResolutionLevels() == 6)
+            {
+                panel.add(res4ModelButton, "wrap, gapleft 25");
+                panel.add(res5ModelButton, "wrap, gapleft 25");
+            }
         }
 
         // Only show coloring in APL version or if there are built in colors.
@@ -352,9 +413,9 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
                 imageMapOpacitySpinner.setEnabled(false);
             }
         }
-        else if (e.getItemSelectable() == this.lowResModelButton)
+        else if (e.getItemSelectable() == this.res0ModelButton)
         {
-            if (this.lowResModelButton.isSelected())
+            if (this.res0ModelButton.isSelected())
                 try {
                     smallBodyModel.setModelResolution(0);
                     setStatisticsLabel();
@@ -363,9 +424,9 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
                     e1.printStackTrace();
                 }
         }
-        else if (e.getItemSelectable() == this.medResModelButton)
+        else if (e.getItemSelectable() == this.res1ModelButton)
         {
-            if (this.medResModelButton.isSelected())
+            if (this.res1ModelButton.isSelected())
                 try {
                     smallBodyModel.setModelResolution(1);
                     setStatisticsLabel();
@@ -374,9 +435,9 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
                     e1.printStackTrace();
                 }
         }
-        else if (e.getItemSelectable() == this.highResModelButton)
+        else if (e.getItemSelectable() == this.res2ModelButton)
         {
-            if (this.highResModelButton.isSelected())
+            if (this.res2ModelButton.isSelected())
                 try {
                     smallBodyModel.setModelResolution(2);
                     setStatisticsLabel();
@@ -385,11 +446,33 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
                     e1.printStackTrace();
                 }
         }
-        else if (e.getItemSelectable() == this.veryHighResModelButton)
+        else if (e.getItemSelectable() == this.res3ModelButton)
         {
-            if (this.veryHighResModelButton.isSelected())
+            if (this.res3ModelButton.isSelected())
                 try {
                     smallBodyModel.setModelResolution(3);
+                    setStatisticsLabel();
+                    updateColoringComboBoxes();
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+        }
+        else if (e.getItemSelectable() == this.res4ModelButton)
+        {
+            if (this.res4ModelButton.isSelected())
+                try {
+                    smallBodyModel.setModelResolution(4);
+                    setStatisticsLabel();
+                    updateColoringComboBoxes();
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+        }
+        else if (e.getItemSelectable() == this.res5ModelButton)
+        {
+            if (this.res5ModelButton.isSelected())
+                try {
+                    smallBodyModel.setModelResolution(5);
                     setStatisticsLabel();
                     updateColoringComboBoxes();
                 } catch (IOException e1) {

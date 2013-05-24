@@ -2731,6 +2731,193 @@ public class PolyDataUtil
     }
 
     /**
+     * This function is used to load the Eros model based on NLR data available from
+     * http://sbn.psi.edu/pds/resource/nearbrowse.html. It is very similar to the
+     * previous function but with several subtle differences.
+     *
+     * @param filename
+     * @param westLongitude
+     * @return
+     * @throws Exception
+     */
+    static public vtkPolyData loadLLR2ShapeModel(String filename, boolean westLongitude) throws Exception
+    {
+        double latLonSpacing = 1.0;
+        int latIndex = 1;
+        int lonIndex = 0;
+
+
+        InputStream fs = new FileInputStream(filename);
+        InputStreamReader isr = new InputStreamReader(fs);
+        BufferedReader in = new BufferedReader(isr);
+
+        vtkPolyData body = new vtkPolyData();
+        vtkPoints points = new vtkPoints();
+        vtkCellArray polys = new vtkCellArray();
+        body.SetPoints(points);
+        body.SetPolys(polys);
+
+        int numRows = (int)Math.round(180.0 / latLonSpacing) + 2;
+        int numCols = (int)Math.round(360.0 / latLonSpacing);
+
+        int count = 0;
+        int[][] indices = new int[numRows][numCols];
+        String line;
+        double[] northPole = {0.0, 0.0, 0.0};
+        double[] southPole = {0.0, 0.0, 0.0};
+
+        indices[0][0] = count++;
+        points.InsertNextPoint(southPole); // placeholder for south pole
+
+        while ((line = in.readLine()) != null)
+        {
+            String[] vals = line.trim().split("\\s+");
+            double lat = Double.parseDouble(vals[latIndex]);
+            double lon = Double.parseDouble(vals[lonIndex]);
+            double rad = Double.parseDouble(vals[2]) / 1000.0;
+
+            int row = (int)Math.round((lat + 89.5) / latLonSpacing) + 1;
+            int col = (int)Math.round((lon - 0.5) / latLonSpacing);
+
+            if (westLongitude)
+                lon = -lon;
+
+            indices[row][col] = count++;
+            LatLon ll = new LatLon(lat*Math.PI/180.0, lon*Math.PI/180.0, rad);
+            double[] pt = MathUtil.latrec(ll);
+            points.InsertNextPoint(pt);
+
+            // We need to compute the pole points (not included in the file)
+            // by avereging the points at latitudes 89.5 and -89.5
+            if ( lat == -89.5)
+            {
+                southPole[0] += pt[0];
+                southPole[1] += pt[1];
+                southPole[2] += pt[2];
+            }
+            else if ( lat == 89.5)
+            {
+                northPole[0] += pt[0];
+                northPole[1] += pt[1];
+                northPole[2] += pt[2];
+            }
+        }
+
+        in.close();
+
+        for (int i=0;i<3;++i)
+        {
+            southPole[i] /= 360.0;
+            northPole[i] /= 360.0;
+        }
+
+        points.SetPoint(0, southPole);
+
+        indices[numRows-1][0] = count++;
+        points.InsertNextPoint(northPole); // north pole
+
+
+        // Now add connectivity information
+        int i0, i1, i2, i3;
+        vtkIdList idList = new vtkIdList();
+        idList.SetNumberOfIds(3);
+        for (int m=0; m <= numRows-2; ++m)
+            for (int n=0; n <= numCols-1; ++n)
+            {
+                // Add triangles touching south pole
+                if (m == 0)
+                {
+                    i0 = indices[m][0]; // index of south pole point
+                    i1 = indices[m+1][n];
+                    if (n == numCols-1)
+                        i2 = indices[m+1][0];
+                    else
+                        i2 = indices[m+1][n+1];
+
+                    if (i0>=0 && i1>=0 && i2>=0)
+                    {
+                        idList.SetId(0, i0);
+                        idList.SetId(1, i1);
+                        idList.SetId(2, i2);
+                        polys.InsertNextCell(idList);
+                    }
+                    else
+                    {
+                        System.out.println("Error occurred");
+                    }
+
+                }
+                // Add triangles touching north pole
+                else if (m == numRows-2)
+                {
+                    i0 = indices[m+1][0]; // index of north pole point
+                    i1 = indices[m][n];
+                    if (n == numCols-1)
+                        i2 = indices[m][0];
+                    else
+                        i2 = indices[m][n+1];
+
+                    if (i0>=0 && i1>=0 && i2>=0)
+                    {
+                        idList.SetId(0, i0);
+                        idList.SetId(1, i1);
+                        idList.SetId(2, i2);
+                        polys.InsertNextCell(idList);
+                    }
+                    else
+                    {
+                        System.out.println("Error occurred");
+                    }
+                }
+                // Add middle triangles that do not touch either pole
+                else
+                {
+                    // Get the indices of the 4 corners of the rectangle to the upper right
+                    i0 = indices[m][n];
+                    i1 = indices[m+1][n];
+                    if (n == numCols-1)
+                    {
+                        i2 = indices[m][0];
+                        i3 = indices[m+1][0];
+                    }
+                    else
+                    {
+                        i2 = indices[m][n+1];
+                        i3 = indices[m+1][n+1];
+                    }
+
+                    // Add upper left triangle
+                    if (i0>=0 && i1>=0 && i2>=0)
+                    {
+                        idList.SetId(0, i0);
+                        idList.SetId(1, i1);
+                        idList.SetId(2, i2);
+                        polys.InsertNextCell(idList);
+                    }
+                    else
+                    {
+                        System.out.println("Error occurred");
+                    }
+
+                    // Add bottom right triangle
+                    if (i2>=0 && i1>=0 && i3>=0)
+                    {
+                        idList.SetId(0, i2);
+                        idList.SetId(1, i1);
+                        idList.SetId(2, i3);
+                        polys.InsertNextCell(idList);
+                    }
+                    else
+                    {
+                        System.out.println("Error occurred");
+                    }
+                }
+            }
+
+        return body;
+    }
+
+    /**
      * This function loads a shape model in a variety of formats. It looks
      * at its file extension to determine it format. It supports these formats:
      * 1. VTK (.vtk extension)
@@ -2785,6 +2972,10 @@ public class PolyDataUtil
             if (filename.toLowerCase().contains("thomas") && filename.toLowerCase().contains("243ida"))
                 westLongitude = false;
             shapeModel = loadLLRShapeModel(filename, westLongitude);
+        }
+        else if (filename.toLowerCase().endsWith(".llr2"))
+        {
+            shapeModel = loadLLR2ShapeModel(filename, false);
         }
         else if (filename.toLowerCase().endsWith(".t1"))
         {
