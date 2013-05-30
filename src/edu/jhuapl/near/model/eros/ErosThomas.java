@@ -26,20 +26,20 @@ public class ErosThomas extends SmallBodyModel
             "/THOMAS/EROS/eros200700.obj.gz"
     };
 
-//    static private final String[] coloringFiles = {
-//            "/THOMAS/EROS/Eros_Slope",
-//            "/THOMAS/EROS/Eros_Elevation",
-//            "/THOMAS/EROS/Eros_GravitationalAcceleration",
-//            "/THOMAS/EROS/Eros_GravitationalPotential"
-//    };
-//
-//    static private final String[] coloringNames = {
-//            SlopeStr, ElevStr, GravAccStr, GravPotStr
-//    };
-//
-//    static private final String[] coloringUnits = {
-//            SlopeUnitsStr, ElevUnitsStr, GravAccUnitsStr, GravPotUnitsStr
-//    };
+    static private final String[] coloringFiles = {
+            "/THOMAS/EROS/Slope",
+            "/THOMAS/EROS/Elevation",
+            "/THOMAS/EROS/GravitationalAcceleration",
+            "/THOMAS/EROS/GravitationalPotential"
+    };
+
+    static private final String[] coloringNames = {
+            SlopeStr, ElevStr, GravAccStr, GravPotStr
+    };
+
+    static private final String[] coloringUnits = {
+            SlopeUnitsStr, ElevUnitsStr, GravAccUnitsStr, GravPotUnitsStr
+    };
 
     public ErosThomas()
     {
@@ -47,9 +47,9 @@ public class ErosThomas extends SmallBodyModel
                 AUTHOR,
                 modelNames,
                 modelFiles,
-                null,
-                null,
-                null,
+                coloringFiles,
+                coloringNames,
+                coloringUnits,
                 null,
                 null,
                 ColoringValueType.CELLDATA,

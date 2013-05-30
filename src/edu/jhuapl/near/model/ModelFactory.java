@@ -96,7 +96,8 @@ public class ModelFactory
     static public final String DUXBURY = "Duxbury";
     static public final String OSTRO = "Ostro";
     static public final String CUSTOM = "Custom";
-    static public final String NAV = "NAV";
+    static public final String EROSNAV = "NAV";
+    static public final String EROSNLR = "NLR";
 
     // Data used to construct shape model (either images, radar, lidar, or fake)
     static public final String IMAGE_BASED = "Image Based";
@@ -122,8 +123,8 @@ public class ModelFactory
 
         c.add(new ModelConfig(EROS, ASTEROID, NEO, IMAGE_BASED, GASKELL, "/GASKELL/EROS", false, true, true, true, true, true));
         c.add(new ModelConfig(EROS, ASTEROID, NEO, IMAGE_BASED, THOMAS, "/THOMAS/EROS", false, true, true, false, true, true));
-        c.add(new ModelConfig(EROS, ASTEROID, NEO, LIDAR_BASED, NLR, "/OTHER/EROS/nlrshape.llr2.gz", false, true, true, false, true, true));
-        c.add(new ModelConfig(EROS, ASTEROID, NEO, LIDAR_BASED, NAV, "/OTHER/EROS/navplate.obj.gz", false, true, true, false, true, true));
+        c.add(new ModelConfig(EROS, ASTEROID, NEO, LIDAR_BASED, EROSNLR, "/OTHER/EROSNLR/nlrshape.llr2.gz", false, true, true, false, true, true));
+        c.add(new ModelConfig(EROS, ASTEROID, NEO, LIDAR_BASED, EROSNAV, "/OTHER/EROSNAV/navplate.obj.gz", false, true, true, false, true, true));
         c.add(new ModelConfig(ITOKAWA, ASTEROID, NEO, IMAGE_BASED, GASKELL, "/GASKELL/ITOKAWA", false, true, true, false, false, false));
         c.add(new ModelConfig(ITOKAWA, ASTEROID, NEO, RADAR_BASED, OSTRO, "/HUDSON/ITOKAWA/25143itokawa.obj.gz"));
         c.add(new ModelConfig(PHOBOS, SATELLITES, MARS, IMAGE_BASED, GASKELL, "/GASKELL/PHOBOS", false, true));
@@ -429,7 +430,11 @@ public class ModelFactory
         if (config.hasImageMap)
             imageMap = (new File(config.pathOnServer)).getParent() + "/image_map.png";
 
-        return new SimpleSmallBody(name, author, config.pathOnServer, imageMap);
+        boolean hasColoringData = false;
+        if (EROS.equals(name))
+            hasColoringData = true;
+
+        return new SimpleSmallBody(name, author, config.pathOnServer, imageMap, hasColoringData);
     }
 
     static public Graticule createGraticule(ModelConfig config, SmallBodyModel smallBodyModel)
