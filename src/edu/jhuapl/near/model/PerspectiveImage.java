@@ -1144,7 +1144,8 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
         points.Delete();
         footprintCellData.Delete();
-        normals.Delete();
+        if (normals != null)
+            normals.Delete();
     }
 
     protected void computePixelScale()
