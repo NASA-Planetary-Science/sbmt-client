@@ -99,11 +99,11 @@ public class ModelFactory
     static public final String EROSNAV = "NAV";
     static public final String EROSNLR = "NLR";
 
-    // Data used to construct shape model (either images, radar, lidar, or fake)
+    // Data used to construct shape model (either images, radar, lidar, or enhanced)
     static public final String IMAGE_BASED = "Image Based";
     static public final String RADAR_BASED = "Radar Based";
     static public final String LIDAR_BASED = "Lidar Based";
-    static public final String FAKE = "Fake";
+    static public final String ENHANCED = "Enhanced";
 
     // Names of instruments
     static public final String MSI = "MSI";
@@ -163,7 +163,7 @@ public class ModelFactory
         c.add(new ModelConfig(GOLEVKA, ASTEROID, NEO, RADAR_BASED, HUDSON, "/HUDSON/GOLEVKA/6489golevka.obj.gz"));
         if (Configuration.isAPLVersion())
         {
-            c.add(new ModelConfig(RQ36, ASTEROID, NEO, FAKE, GASKELL, "/GASKELL/RQ36"));
+            c.add(new ModelConfig(RQ36, ASTEROID, NEO, ENHANCED, GASKELL, "/GASKELL/RQ36"));
             c.add(new ModelConfig(LUTETIA, ASTEROID, MAIN_BELT, IMAGE_BASED, GASKELL, "/GASKELL/LUTETIA", false, true));
             c.add(new ModelConfig(DIONE, SATELLITES, SATURN, IMAGE_BASED, GASKELL, "/GASKELL/DIONE", false, true));
             c.add(new ModelConfig(RHEA, SATELLITES, SATURN, IMAGE_BASED, GASKELL, "/GASKELL/RHEA"));
@@ -195,7 +195,7 @@ public class ModelFactory
         public final String name;
         public final String type; // e.g. asteroid, comet, satellite
         public final String population; // e.g. Mars for satellites or main belt for asteroids
-        public final String dataUsed; // e.g. images, radar, lidar, or fake
+        public final String dataUsed; // e.g. images, radar, lidar, or enhanced
         public final String author; // e.g. Gaskell
         public final String pathOnServer;
         public final boolean hasImageMap;
