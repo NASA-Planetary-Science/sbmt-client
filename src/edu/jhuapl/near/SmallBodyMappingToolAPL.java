@@ -1,5 +1,6 @@
 package edu.jhuapl.near;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import edu.jhuapl.near.util.Configuration;
@@ -27,17 +28,31 @@ public class SmallBodyMappingToolAPL
 
         try
         {
-            ArrayList<String> credentials = FileUtil.getFileLinesAsStringList("password.txt");
-            if (credentials.size() >= 2)
-            {
-                String user = credentials.get(0);
-                String pass = credentials.get(1);
+            // First try to see if there's a password.txt file in ~/.neartool, otherwise
+            // try the current directory.
+            String[] passwordFilesToTry = {
+                    Configuration.getApplicationDataDir() + File.separator + "password.txt",
+                    "password.txt"
+            };
 
-                if (user != null && user.trim().length() > 0 && !user.trim().toLowerCase().contains("replace-with-") &&
-                    pass != null && pass.trim().length() > 0)
+            for (String passwordFile : passwordFilesToTry)
+            {
+                if (new File(passwordFile).exists())
                 {
-                    username = user.trim();
-                    password = pass.trim();
+                    ArrayList<String> credentials = FileUtil.getFileLinesAsStringList(passwordFile);
+                    if (credentials.size() >= 2)
+                    {
+                        String user = credentials.get(0);
+                        String pass = credentials.get(1);
+
+                        if (user != null && user.trim().length() > 0 && !user.trim().toLowerCase().contains("replace-with-") &&
+                            pass != null && pass.trim().length() > 0)
+                        {
+                            username = user.trim();
+                            password = pass.trim();
+                            break;
+                        }
+                    }
                 }
             }
         }
