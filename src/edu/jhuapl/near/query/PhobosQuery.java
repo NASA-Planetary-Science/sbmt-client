@@ -57,6 +57,13 @@ public class PhobosQuery extends QueryBase
             ImageSource imageSource,
             int limbType)
     {
+        if (imageSource == ImageSource.PDS)
+        {
+            return getResultsFromFileListOnServer(
+                    "/GASKELL/PHOBOS/IMAGING/imagelist.txt",
+                    "/GASKELL/PHOBOS/IMAGING/images/");
+        }
+
         ArrayList<ArrayList<String>> results = new ArrayList<ArrayList<String>>();
 
         double minIncidence = Math.min(fromIncidence, toIncidence);

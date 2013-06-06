@@ -62,7 +62,7 @@ public class PhobosImagingDataSearchPanel extends AbstractImageSearchPanel
     @Override
     protected String[] getUserDefinedCheckBoxesNames()
     {
-        return new String[]{"Phobos 2", "Viking Orbiter 1-A", "Viking Orbiter 1-B", "Viking Orbiter 2-A", "Viking Orbiter 2-B"};
+        return new String[]{"Phobos 2", "Viking Orbiter 1-A", "Viking Orbiter 1-B", "Viking Orbiter 2-A", "Viking Orbiter 2-B", "MEX HRSC"};
     }
 
     @Override
@@ -80,6 +80,6 @@ public class PhobosImagingDataSearchPanel extends AbstractImageSearchPanel
     @Override
     protected ImageSource[] getImageSources()
     {
-        return new ImageSource[]{ImageSource.GASKELL};
+        return new ImageSource[]{ImageSource.GASKELL, ImageSource.PDS};
     }
 }

@@ -22,6 +22,8 @@ public class PhobosImage extends PerspectiveImage
     public static final double FOV_PHOBOS2_FILTER2_PARAMETER2 = -Math.tan(0.0714889658869/2.0);
     public static final double FOV_PHOBOS2_FILTER13_PARAMETER1 = -Math.tan(0.486390796269/2.0);
     public static final double FOV_PHOBOS2_FILTER13_PARAMETER2 = -Math.tan(0.381881868455/2.0);
+    public static final double FOV_MEX_HRSC_SRC_PARAMETER1 = -Math.tan(0.0094/2.0);
+    public static final double FOV_MEX_HRSC_SRC_PARAMETER2 = -Math.tan(0.0094/2.0);
     public static final double FOV_PARAMETER3 = 1.0;
 
     public PhobosImage(ImageKey key,
@@ -47,7 +49,9 @@ public class PhobosImage extends PerspectiveImage
     {
         ImageKey key = getKey();
         File keyFile = new File(key.name);
-        if (keyFile.getName().startsWith("V"))
+        if (keyFile.getName().startsWith("h"))
+            return FOV_MEX_HRSC_SRC_PARAMETER1;
+        else if (keyFile.getName().startsWith("V"))
             return FOV_VIKING_PARAMETER1;
         else if (keyFile.getName().endsWith("2"))
             return FOV_PHOBOS2_FILTER2_PARAMETER1;
@@ -60,7 +64,9 @@ public class PhobosImage extends PerspectiveImage
     {
         ImageKey key = getKey();
         File keyFile = new File(key.name);
-        if (keyFile.getName().startsWith("V"))
+        if (keyFile.getName().startsWith("h"))
+            return FOV_MEX_HRSC_SRC_PARAMETER2;
+        else if (keyFile.getName().startsWith("V"))
             return FOV_VIKING_PARAMETER2;
         else if (keyFile.getName().endsWith("2"))
             return FOV_PHOBOS2_FILTER2_PARAMETER2;
@@ -151,9 +157,14 @@ public class PhobosImage extends PerspectiveImage
     {
         // For Phobos 2 image, return 1, 2, or 3 which we can get by looking at the last number in the filename.
         // For viking images, we need to parse the label file to get the filter.
+        // for MEX images, return -1
         ImageKey key = getKey();
         File keyFile = new File(key.name);
-        if (keyFile.getName().startsWith("P"))
+        if (keyFile.getName().startsWith("h"))
+        {
+            return -1;
+        }
+        else if (keyFile.getName().startsWith("P"))
         {
             return Integer.parseInt(keyFile.getName().substring(7, 8));
         }
@@ -230,6 +241,8 @@ public class PhobosImage extends PerspectiveImage
             name = "Viking Orbiter 2, Camera A";
         else if (num == 5)
             name = "Viking Orbiter 2, Camera B";
+        else if (num == 6)
+            name = "Mars Express, HRSC";
 
         return name;
     }
@@ -243,12 +256,17 @@ public class PhobosImage extends PerspectiveImage
         // 3 for viking orbiter 1 images camera B
         // 4 for viking orbiter 2 images camera A
         // 5 for viking orbiter 2 images camera B
+        // 6 for MEX HRSC camera
         // We need to parse the label file to get which viking spacecraft
 
         ImageKey key = getKey();
         File keyFile = new File(key.name);
         String name = keyFile.getName();
-        if (name.startsWith("P"))
+        if (name.startsWith("h"))
+        {
+            return 6;
+        }
+        else if (name.startsWith("P"))
         {
             return 1;
         }
