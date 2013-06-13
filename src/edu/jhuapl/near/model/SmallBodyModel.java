@@ -1835,13 +1835,13 @@ public class SmallBodyModel extends Model
         vtkPoints points = new vtkPoints();
         vtkCellArray polys = new vtkCellArray();
         scaleBarPolydata.SetPoints(points);
-        scaleBarPolydata.SetLines(polys);
+        scaleBarPolydata.SetPolys(polys);
 
-        points.SetNumberOfPoints(5);
+        points.SetNumberOfPoints(4);
 
         vtkIdList idList = new vtkIdList();
-        idList.SetNumberOfIds(5);
-        for (int i=0; i<5; ++i)
+        idList.SetNumberOfIds(4);
+        for (int i=0; i<4; ++i)
             idList.SetId(i, i);
         polys.InsertNextCell(idList);
 
@@ -1857,7 +1857,9 @@ public class SmallBodyModel extends Model
         smallBodyActors.add(scaleBarTextActor);
 
         scaleBarActor.GetProperty().SetColor(1.0, 1.0, 1.0);
-        scaleBarTextActor.GetTextProperty().SetColor(1.0, 1.0, 1.0);
+        scaleBarActor.GetProperty().SetOpacity(0.33);
+        scaleBarTextActor.GetTextProperty().SetColor(0.0, 0.0, 0.0);
+        scaleBarTextActor.GetTextProperty().SetJustificationToCentered();
         scaleBarTextActor.GetTextProperty().BoldOn();
 
         scaleBarActor.VisibilityOff();
@@ -1882,9 +1884,8 @@ public class SmallBodyModel extends Model
         points.SetPoint(1, x+scaleBarWidthInPixels, y, 0.0);
         points.SetPoint(2, x+scaleBarWidthInPixels, y+scaleBarHeight, 0.0);
         points.SetPoint(3, x, y+scaleBarHeight, 0.0);
-        points.SetPoint(4, x, y, 0.0);
 
-        scaleBarTextActor.SetPosition(x+2, y+2);
+        scaleBarTextActor.SetPosition(x+scaleBarWidthInPixels/2, y+2);
         scaleBarTextActor.GetTextProperty().SetFontSize(scaleBarHeight-4);
 
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
