@@ -2,8 +2,6 @@ package edu.jhuapl.near.model.phobos;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.DecimalFormat;
-import java.util.LinkedHashMap;
 
 import nom.tam.fits.FitsException;
 
@@ -205,7 +203,7 @@ public class PhobosImage extends PerspectiveImage
 
     private String getFilterNameFromNumber(int num)
     {
-        String name = "";
+        String name = null;
         if (num == 1)
             name = "Channel 1";
         else if (num == 2)
@@ -230,7 +228,7 @@ public class PhobosImage extends PerspectiveImage
 
     private String getCameraNameFromNumber(int num)
     {
-        String name = "";
+        String name = null;
         if (num == 1)
             name = "Phobos 2, VSK";
         else if (num == 2)
@@ -245,6 +243,18 @@ public class PhobosImage extends PerspectiveImage
             name = "Mars Express, HRSC";
 
         return name;
+    }
+
+    @Override
+    public String getFilterName()
+    {
+        return getFilterNameFromNumber(getFilter());
+    }
+
+    @Override
+    public String getCameraName()
+    {
+        return getCameraNameFromNumber(getCamera());
     }
 
     @Override
@@ -297,40 +307,5 @@ public class PhobosImage extends PerspectiveImage
             }
             return -1;
         }
-    }
-
-    @Override
-    public LinkedHashMap<String, String> getProperties() throws IOException
-    {
-        LinkedHashMap<String, String> properties = new LinkedHashMap<String, String>();
-
-        if (getMaxPhase() < getMinPhase())
-        {
-            this.computeIlluminationAngles();
-            this.computePixelScale();
-        }
-
-        DecimalFormat df = new DecimalFormat("#.######");
-
-        properties.put("Name", new File(getFitFileFullPath()).getName()); //TODO remove extension and possibly prefix
-        properties.put("Time", getStartTime());
-        properties.put("Spacecraft Distance", df.format(getSpacecraftDistance()) + " km");
-        properties.put("Filter", getFilterNameFromNumber(getFilter()));
-        properties.put("Camera", getCameraNameFromNumber(getCamera()));
-
-        // Note \u00B0 is the unicode degree symbol
-        String deg = "\u00B0";
-        properties.put("Minimum Incidence", df.format(getMinIncidence())+deg);
-        properties.put("Maximum Incidence", df.format(getMaxIncidence())+deg);
-        properties.put("Minimum Emission", df.format(getMinEmission())+deg);
-        properties.put("Maximum Emission", df.format(getMaxIncidence())+deg);
-        properties.put("Minimum Phase", df.format(getMinPhase())+deg);
-        properties.put("Maximum Phase", df.format(getMaxPhase())+deg);
-        properties.put("Minimum Horizontal Pixel Scale", df.format(1000.0*getMinimumHorizontalPixelScale()) + " meters/pixel");
-        properties.put("Maximum Horizontal Pixel Scale", df.format(1000.0*getMaximumHorizontalPixelScale()) + " meters/pixel");
-        properties.put("Minimum Vertical Pixel Scale", df.format(1000.0*getMinimumVerticalPixelScale()) + " meters/pixel");
-        properties.put("Maximum Vertical Pixel Scale", df.format(1000.0*getMaximumVerticalPixelScale()) + " meters/pixel");
-
-        return properties;
     }
 }

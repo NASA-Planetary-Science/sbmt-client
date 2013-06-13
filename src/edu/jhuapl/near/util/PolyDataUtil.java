@@ -14,6 +14,7 @@ import java.util.Collections;
 import vtk.vtkAbstractPointLocator;
 import vtk.vtkAlgorithmOutput;
 import vtk.vtkAppendPolyData;
+import vtk.vtkCell;
 import vtk.vtkCellArray;
 import vtk.vtkCleanPolyData;
 import vtk.vtkClipPolyData;
@@ -2343,6 +2344,35 @@ public class PolyDataUtil
 
             textureCoords.SetTuple2(i, v, u);
         }
+    }
+
+    /**
+     * Compute surface area of polydata. Unlike vtkMassProperties which can
+     * compute surface area, this one works even for non-closed surface.
+     * It simply adds the areas of all the triangles.
+     * @param polydata
+     * @return
+     */
+    static public double getSurfaceArea(vtkPolyData polydata)
+    {
+        double area = 0.0;
+
+        int numberOfCells = polydata.GetNumberOfCells();
+
+        for (int i=0; i<numberOfCells; ++i)
+        {
+            vtkCell cell = polydata.GetCell(i);
+            vtkPoints points = cell.GetPoints();
+            double[] pt0 = points.GetPoint(0);
+            double[] pt1 = points.GetPoint(1);
+            double[] pt2 = points.GetPoint(2);
+
+            area += MathUtil.triangleArea(pt0, pt1, pt2);
+            points.Delete();
+            cell.Delete();
+        }
+
+        return area;
     }
 
     /**

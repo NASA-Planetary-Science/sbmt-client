@@ -2,7 +2,6 @@ package edu.jhuapl.near.model;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.LinkedHashMap;
 
 import nom.tam.fits.FitsException;
 
@@ -123,22 +122,9 @@ public class CustomPerspectiveImage extends PerspectiveImage
     }
 
     @Override
-    public int getFilter()
-    {
-        return 0;
-    }
-
-    @Override
     public String generateBackplanesLabel() throws IOException
     {
         return "";
-    }
-
-    @Override
-    public LinkedHashMap<String, String> getProperties() throws IOException
-    {
-        LinkedHashMap<String, String> properties = new LinkedHashMap<String, String>();
-        return properties;
     }
 
     @Override

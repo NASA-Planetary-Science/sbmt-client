@@ -8,7 +8,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.StringTokenizer;
 
 import nom.tam.fits.BasicHDU;
@@ -320,8 +322,6 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
      */
     abstract protected int[] getMaskSizes();
 
-    abstract public int getFilter();
-
     abstract public String generateBackplanesLabel() throws IOException;
 
     abstract protected String initializeFitFileFullPath(File rootFolder);
@@ -330,16 +330,54 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     abstract protected String initializeSumfileFullPath(File rootFolder);
 
     /**
+     * Get filter as an integer id. Return -1 if no filter is available.
+     * @return
+     */
+    public int getFilter()
+    {
+        return -1;
+    }
+
+    /**
+     * Get filter name as string. By default cast filter id to string.
+     * Return null if filter id is negative.
+     * @return
+     */
+    public String getFilterName()
+    {
+        int filter = getFilter();
+        if (filter < 0)
+            return null;
+        else
+            return String.valueOf(filter);
+    }
+
+    /**
      * Return the camera id. We assign an integer id to each camera.
      * For example, if there are 2 cameras on the spacecraft, return
      * either 1 or 2. If there are 2 spacecrafts each with a single
-     * camera, then also return either 1 or 2.
+     * camera, then also return either 1 or 2. Return -1 if camera is
+     * not available.
      *
      * @return
      */
     public int getCamera()
     {
-        return 0;
+        return -1;
+    }
+
+    /**
+     * Get camera name as string. By default cast camera id to string.
+     * Return null if camera id is negative.
+     * @return
+     */
+    public String getCameraName()
+    {
+        int camera = getCamera();
+        if (camera < 0)
+            return null;
+        else
+            return String.valueOf(camera);
     }
 
     public int getImageWidth()
@@ -1569,6 +1607,15 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         return rawImage.GetNumberOfScalarComponents();
     }
 
+    /**
+     * Return surface area of footprint (unshifted) of image.
+     * @return
+     */
+    public double getSurfaceArea()
+    {
+        return PolyDataUtil.getSurfaceArea(footprint);
+    }
+
     public double getImageOpacity()
     {
         return imageOpacity;
@@ -1580,5 +1627,47 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         vtkProperty smallBodyProperty = footprintActor.GetProperty();
         smallBodyProperty.SetOpacity(imageOpacity);
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+    }
+
+    @Override
+    public LinkedHashMap<String, String> getProperties() throws IOException
+    {
+        LinkedHashMap<String, String> properties = new LinkedHashMap<String, String>();
+
+        if (getMaxPhase() < getMinPhase())
+        {
+            this.computeIlluminationAngles();
+            this.computePixelScale();
+        }
+
+        DecimalFormat df = new DecimalFormat("#.######");
+
+        properties.put("Name", new File(getFitFileFullPath()).getName()); //TODO remove extension and possibly prefix
+        properties.put("Start Time", getStartTime());
+        properties.put("Stop Time", getStopTime());
+        properties.put("Spacecraft Distance", df.format(getSpacecraftDistance()) + " km");
+        if (getCameraName() != null)
+            properties.put("Camera", getCameraName());
+        if (getFilterName() != null)
+            properties.put("Filter", getFilterName());
+
+        // Note \u00B2 is the unicode superscript 2 symbol
+        String ss2 = "\u00B2";
+        properties.put("Surface Area", df.format(getSurfaceArea()) + " km" + ss2);
+
+        // Note \u00B0 is the unicode degree symbol
+        String deg = "\u00B0";
+        properties.put("Minimum Incidence", df.format(getMinIncidence())+deg);
+        properties.put("Maximum Incidence", df.format(getMaxIncidence())+deg);
+        properties.put("Minimum Emission", df.format(getMinEmission())+deg);
+        properties.put("Maximum Emission", df.format(getMaxIncidence())+deg);
+        properties.put("Minimum Phase", df.format(getMinPhase())+deg);
+        properties.put("Maximum Phase", df.format(getMaxPhase())+deg);
+        properties.put("Minimum Horizontal Pixel Scale", df.format(1000.0*getMinimumHorizontalPixelScale()) + " meters/pixel");
+        properties.put("Maximum Horizontal Pixel Scale", df.format(1000.0*getMaximumHorizontalPixelScale()) + " meters/pixel");
+        properties.put("Minimum Vertical Pixel Scale", df.format(1000.0*getMinimumVerticalPixelScale()) + " meters/pixel");
+        properties.put("Maximum Vertical Pixel Scale", df.format(1000.0*getMaximumVerticalPixelScale()) + " meters/pixel");
+
+        return properties;
     }
 }
