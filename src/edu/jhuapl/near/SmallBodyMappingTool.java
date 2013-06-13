@@ -1,6 +1,9 @@
 package edu.jhuapl.near;
 
 import java.lang.reflect.Method;
+import java.net.CookieHandler;
+import java.net.CookieManager;
+import java.net.CookiePolicy;
 import java.util.concurrent.TimeUnit;
 
 import javax.swing.ImageIcon;
@@ -75,6 +78,9 @@ public class SmallBodyMappingTool
 
     public static void main(String[] args)
     {
+        // The following line appears to be needed on some systems to prevent server redirect errors.
+        CookieHandler.setDefault(new CookieManager(null, CookiePolicy.ACCEPT_ALL));
+
         try
         {
             javax.swing.SwingUtilities.invokeLater(new Runnable()
