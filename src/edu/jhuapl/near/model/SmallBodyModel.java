@@ -1368,6 +1368,14 @@ public class SmallBodyModel extends Model
             return null;
     }
 
+    public String getColoringUnits(int i)
+    {
+        if (i < coloringInfo.size())
+            return coloringInfo.get(i).coloringUnits;
+        else
+            return null;
+    }
+
     private double getColoringValue(double[] pt, vtkFloatArray pointOrCellData)
     {
         double[] closestPoint = new double[3];

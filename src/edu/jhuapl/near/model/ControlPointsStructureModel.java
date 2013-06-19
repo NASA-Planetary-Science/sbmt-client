@@ -54,10 +54,9 @@ public abstract class ControlPointsStructureModel extends StructureModel
      *
      * @param cellId
      * @param file
-     * @param useElevationData
      * @throws Exception
      */
-    public void saveProfile(int cellId, File file, boolean useElevationData) throws Exception
+    public void saveProfile(int cellId, File file) throws Exception
     {
         // do nothing
     }

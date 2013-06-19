@@ -985,81 +985,34 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
     }
 
     /**
-     * Computes profile (height vs distance along a line) basing elevation on the
-     * distance to the center of the asteroid. This is really not correct though.
-     * Instead we need to use true elevation with respect to a geoid. Also
-     * this function only works for lines consisting of exactly 2 control points.
-     *
-     * @param cellId
-     * @param heights
-     * @param distances
-     * @return
-     * @throws Exception
+     * Save out a file which contains the value of the various coloring data
+     * as a function of distance along the profile. A profile is path with
+     * only 2 control points.
      */
-    public boolean computeProfileWithRespectToOrigin(
-            int cellId,
-            ArrayList<Double> heights,
-            ArrayList<Double> distances) throws Exception
+    public void saveProfile(int cellId, File file) throws Exception
     {
         Line lin = this.lines.get(cellId);
 
         if (lin.controlPointIds.size() != 2)
             throw new Exception("Line must contain exactly 2 control points.");
 
-        heights.clear();
-        distances.clear();
+        final String lineSeparator = System.getProperty("line.separator");
 
-        int size = lin.xyzPointList.size();
+        FileWriter fstream = new FileWriter(file);
+        BufferedWriter out = new BufferedWriter(fstream);
 
-        // Compute the normal plane to the asteroid at the the points on the line
-        double[] p1 = lin.xyzPointList.get(0).xyz;
-        double[] p2 = lin.xyzPointList.get(size-1).xyz;
-
-        double[] lineDir = {
-                p2[0] - p1[0],
-                p2[1] - p1[1],
-                p2[2] - p1[2]
-        };
-        MathUtil.vhat(lineDir, lineDir);
-
-        double[] projectedPointOnLine = new double[3];
-        double[] notused = new double[1];
-
-        for (int i=0;i<size;++i)
+        // write header
+        out.write("Distance (m)");
+        int numColors = smallBodyModel.getNumberOfColors();
+        for (int i=0; i<numColors; ++i)
         {
-            double[] p = lin.xyzPointList.get(i).xyz;
-
-            // Compute the height as the distance to center of asteroid.
-            // TODO: computing height as distance to center of asteroid
-            // is not correct. Need to use true elevation with respect to
-            // a geoid.
-            double height = MathUtil.vnorm(p);
-
-            // project p onto line
-            MathUtil.nplnpt(p1, lineDir, p, projectedPointOnLine, notused);
-
-            // Compute the distance of projected point to start of line
-            double distanceToLineStart = MathUtil.distanceBetween(p1, projectedPointOnLine);
-
-            heights.add(height);
-            distances.add(distanceToLineStart);
+            out.write("," + smallBodyModel.getColoringName(i));
+            String units = smallBodyModel.getColoringUnits(i);
+            if (units != null && !units.isEmpty())
+                out.write(" (" + units + ")");
         }
+        out.write(lineSeparator);
 
-        return true;
-    }
-
-    public boolean computeProfileUsingElevationData(
-            int cellId,
-            ArrayList<Double> profileHeights,
-            ArrayList<Double> profileDistances) throws Exception
-    {
-        Line lin = this.lines.get(cellId);
-
-        if (lin.controlPointIds.size() != 2)
-            throw new Exception("Line must contain exactly 2 control points.");
-
-        profileHeights.clear();
-        profileDistances.clear();
 
         ArrayList<Point3D> xyzPointList = lin.xyzPointList;
 
@@ -1085,59 +1038,24 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
         double[] pnear = new double[3];
         double[] notused = new double[1];
 
-        int elevationIndex = smallBodyModel.getElevationDataColoringIndex();
-
         for (Point3D p : xyzPointList)
         {
-            double val = smallBodyModel.getColoringValue(elevationIndex, p.xyz);
-
-            profileHeights.add(val);
-
-            if (zeroLineDir)
-            {
-                profileDistances.add(0.0);
-            }
-            else
+            double distance = 0.0;
+            if (!zeroLineDir)
             {
                 MathUtil.nplnpt(first, lindir, p.xyz, pnear, notused);
-                double dist = 1000.0 * MathUtil.distanceBetween(first, pnear);
-                profileDistances.add(dist);
+                distance = 1000.0 * MathUtil.distanceBetween(first, pnear);
             }
+
+            out.write(String.valueOf(distance));
+
+            double[] vals = smallBodyModel.getAllColoringValues(p.xyz);
+
+            for (double val : vals)
+                out.write("," + val);
+
+            out.write(lineSeparator);
         }
-
-        return true;
-    }
-
-    /**
-     *
-     * @param cellId
-     * @param file
-     * @param useElevationData - if true, elevation coloring data of the shape model is used.
-     * Otherwise, elevation is computed with respect to the origin of the shape model.
-     * @throws Exception
-     */
-    public void saveProfile(int cellId, File file, boolean useElevationData) throws Exception
-    {
-        ArrayList<Double> heights = new ArrayList<Double>();
-        ArrayList<Double> distances = new ArrayList<Double>();
-
-        boolean success = false;
-        if (useElevationData)
-            success = computeProfileUsingElevationData(cellId, heights, distances);
-        else
-            success = computeProfileWithRespectToOrigin(cellId, heights, distances);
-
-        if (!success)
-            throw new Exception("An error occurred saving the profile.");
-
-        int size = heights.size();
-
-        FileWriter fstream = new FileWriter(file);
-        BufferedWriter out = new BufferedWriter(fstream);
-
-        final String lineSeparator = System.getProperty("line.separator");
-        for (int i=0; i<size; ++i)
-            out.write(distances.get(i) + "," + heights.get(i) + lineSeparator);
 
         out.close();
     }

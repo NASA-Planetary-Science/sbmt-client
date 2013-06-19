@@ -53,20 +53,22 @@ public class LinesPopupMenu extends StructuresPopupMenu
 
             try
             {
-                boolean hasElevation = smallBodyModel.getElevationDataColoringIndex() >= 0;
-                if (!hasElevation)
+                if (smallBodyModel.getNumberOfColors() == 0)
                 {
-                    int option = JOptionPane.showConfirmDialog(getInvoker(),
-                            "No elevation data is available with this shape model. Calculate elevation" +
-                            " as distance to center of shape model instead?",
-                            "Confirm Elevation Calculation", JOptionPane.YES_NO_OPTION);
-                    if (option == JOptionPane.NO_OPTION)
-                        return;
+                    JOptionPane.showMessageDialog(getInvoker(),
+                            "No data is associated with the plates of the current shape model. At least\n" +
+                            "one set of plate data must be associated with the shape model in order to\n" +
+                            "save out a profile. Plate data can be added to the shape model by clicking\n" +
+                            "'Customize Plate Coloring...' in the leftmost tab.",
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE);
+
+                    return;
                 }
 
                 File file = CustomFileChooser.showSaveDialog(getInvoker(), "Save Profile", "profile.csv");
                 if (file != null)
-                    model.saveProfile(selectedStructures[0], file, hasElevation);
+                    model.saveProfile(selectedStructures[0], file);
             }
             catch (Exception e1)
             {
