@@ -13,12 +13,10 @@ import edu.jhuapl.near.gui.Renderer;
 import edu.jhuapl.near.model.LineModel;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
-import edu.jhuapl.near.model.SmallBodyModel;
 
 public class LinesPopupMenu extends StructuresPopupMenu
 {
     private LineModel model = null;
-    private SmallBodyModel smallBodyModel;
     private JMenuItem saveProfileAction;
 
     public LinesPopupMenu(ModelManager modelManager, Renderer renderer)
@@ -26,7 +24,6 @@ public class LinesPopupMenu extends StructuresPopupMenu
         super((LineModel)modelManager.getModel(ModelNames.LINE_STRUCTURES), renderer, false, false);
 
         this.model = (LineModel)modelManager.getModel(ModelNames.LINE_STRUCTURES);
-        this.smallBodyModel = modelManager.getSmallBodyModel();
 
         saveProfileAction = new JMenuItem(new SaveProfileAction());
         saveProfileAction.setText("Save Profile...");
@@ -53,19 +50,6 @@ public class LinesPopupMenu extends StructuresPopupMenu
 
             try
             {
-                if (smallBodyModel.getNumberOfColors() == 0)
-                {
-                    JOptionPane.showMessageDialog(getInvoker(),
-                            "No data is associated with the plates of the current shape model. At least\n" +
-                            "one set of plate data must be associated with the shape model in order to\n" +
-                            "save out a profile. Plate data can be added to the shape model by clicking\n" +
-                            "'Customize Plate Coloring...' in the leftmost tab.",
-                            "Error",
-                            JOptionPane.ERROR_MESSAGE);
-
-                    return;
-                }
-
                 File file = CustomFileChooser.showSaveDialog(getInvoker(), "Save Profile", "profile.csv");
                 if (file != null)
                     model.saveProfile(selectedStructures[0], file);

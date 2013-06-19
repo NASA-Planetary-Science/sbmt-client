@@ -1003,6 +1003,13 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
 
         // write header
         out.write("Distance (m)");
+        out.write(",X (m)");
+        out.write(",Y (m)");
+        out.write(",Z (m)");
+        out.write(",Latitude (deg)");
+        out.write(",Longitude (deg)");
+        out.write(",Radius (m)");
+
         int numColors = smallBodyModel.getNumberOfColors();
         for (int i=0; i<numColors; ++i)
         {
@@ -1050,6 +1057,15 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
             out.write(String.valueOf(distance));
 
             double[] vals = smallBodyModel.getAllColoringValues(p.xyz);
+
+            out.write("," + 1000.0 * p.xyz[0]);
+            out.write("," + 1000.0 * p.xyz[1]);
+            out.write("," + 1000.0 * p.xyz[2]);
+
+            LatLon llr = MathUtil.reclat(p.xyz).toDegrees();
+            out.write("," + llr.lat);
+            out.write("," + llr.lon);
+            out.write("," + 1000.0 * llr.rad);
 
             for (double val : vals)
                 out.write("," + val);
