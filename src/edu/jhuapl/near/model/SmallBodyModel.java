@@ -1865,7 +1865,7 @@ public class SmallBodyModel extends Model
         smallBodyActors.add(scaleBarTextActor);
 
         scaleBarActor.GetProperty().SetColor(1.0, 1.0, 1.0);
-        scaleBarActor.GetProperty().SetOpacity(0.33);
+        scaleBarActor.GetProperty().SetOpacity(0.5);
         scaleBarTextActor.GetTextProperty().SetColor(0.0, 0.0, 0.0);
         scaleBarTextActor.GetTextProperty().SetJustificationToCentered();
         scaleBarTextActor.GetTextProperty().BoldOn();
