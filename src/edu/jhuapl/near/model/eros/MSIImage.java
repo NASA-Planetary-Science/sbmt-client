@@ -100,8 +100,11 @@ public class MSIImage extends PerspectiveImage
             }
 
             // The planes in the downloaded ddr are all wrong
-            if (str.trim().startsWith("BANDS"))
+            if (str.trim().startsWith("SAMPLE_TYPE"))
             {
+                strbuf.append("    SAMPLE_TYPE              = IEEE_REAL\r\n");
+                strbuf.append("    SAMPLE_BITS              = 32\r\n");
+                strbuf.append("    CORE_NULL                = 16#F49DC5AE#\r\n"); // bit pattern of -1.0e32 in hex
                 strbuf.append("    BANDS                    = 16\r\n");
                 strbuf.append("    BAND_STORAGE_TYPE        = BAND_SEQUENTIAL\r\n");
                 strbuf.append("    BAND_NAME                = (\"MSI pixel value\",\r\n");
