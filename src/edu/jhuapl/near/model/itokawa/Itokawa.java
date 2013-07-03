@@ -29,6 +29,20 @@ public class Itokawa extends SmallBodyModel
         "/ITOKAWA/Itokawa_GravitationalPotential"
     };
 
+    static private final String[] modelFilesInPlateFormat = {
+        "/ITOKAWA/ver64q.tab.gz",
+        "/ITOKAWA/ver128q.tab.gz",
+        "/ITOKAWA/ver256q.tab.gz",
+        "/ITOKAWA/ver512q.tab.gz"
+    };
+
+    static private final double[] referencePotentials = {
+        -1.3691195735566755e-02,
+        -1.3667124673091627e-02,
+        -1.3661583750037485e-02,
+        -1.4684684411415587e-02
+    };
+
     static private final String[] coloringNames = {
         SlopeStr, ElevStr, GravAccStr, GravPotStr
     };
@@ -76,12 +90,12 @@ public class Itokawa extends SmallBodyModel
     @Override
     public double getReferencePotential()
     {
-        return -1.3692877423961147e-02;
+        return referencePotentials[getModelResolution()];
     }
 
     @Override
     public String getServerPathToShapeModelFileInPlateFormat()
     {
-        return "/ITOKAWA/ver64q.tab.gz";
+        return modelFilesInPlateFormat[getModelResolution()];
     }
 }

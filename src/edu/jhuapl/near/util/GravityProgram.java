@@ -70,7 +70,6 @@ public class GravityProgram
         processCommand.add(trackFile);
         processCommand.add("--columns");
         processCommand.add("1,2,3");
-        processCommand.add("--cheng");
         processCommand.add(shapeModelFile);
 
         // print out command

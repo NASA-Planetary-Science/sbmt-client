@@ -29,6 +29,20 @@ public class Eros extends SmallBodyModel
             "/EROS/Eros_GravitationalPotential"
     };
 
+    static private final String[] modelFilesInPlateFormat = {
+        "/EROS/ver64q.tab.gz",
+        "/EROS/ver128q.tab.gz",
+        "/EROS/ver256q.tab.gz",
+        "/EROS/ver512q.tab.gz"
+    };
+
+    static private final double[] referencePotentials = {
+        -5.3754128803056872e+01,
+        -5.3762823321417372e+01,
+        -5.3764665276229927e+01,
+        -5.3765039959572114e+01
+    };
+
     static private final String[] coloringNames = {
             SlopeStr, ElevStr, GravAccStr, GravPotStr
     };
@@ -68,12 +82,12 @@ public class Eros extends SmallBodyModel
     @Override
     public double getReferencePotential()
     {
-        return -5.3754370226447428e+01;
+        return referencePotentials[getModelResolution()];
     }
 
     @Override
     public String getServerPathToShapeModelFileInPlateFormat()
     {
-        return "/EROS/ver64q.tab.gz";
+        return modelFilesInPlateFormat[getModelResolution()];
     }
 }
