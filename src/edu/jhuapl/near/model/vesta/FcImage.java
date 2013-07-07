@@ -42,11 +42,6 @@ public class FcImage extends PerspectiveImage
         return Integer.parseInt(cameraId);
     }
 
-    public String generateBackplanesLabel() throws IOException
-    {
-        return "";
-    }
-
     @Override
     public double getFovParameter1()
     {

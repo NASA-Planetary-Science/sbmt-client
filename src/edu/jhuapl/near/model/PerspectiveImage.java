@@ -9,7 +9,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.StringTokenizer;
 
@@ -322,12 +324,91 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
      */
     abstract protected int[] getMaskSizes();
 
-    abstract public String generateBackplanesLabel() throws IOException;
-
     abstract protected String initializeFitFileFullPath(File rootFolder);
     abstract protected String initializeLabelFileFullPath(File rootFolder);
     abstract protected String initializeInfoFileFullPath(File rootFolder);
     abstract protected String initializeSumfileFullPath(File rootFolder);
+
+    protected void appendWithPadding(StringBuffer strbuf, String str)
+    {
+        strbuf.append(str);
+
+        int length = str.length();
+        while(length < 78)
+        {
+            strbuf.append(' ');
+            ++length;
+        }
+
+        strbuf.append("\r\n");
+    }
+
+    public String generateBackplanesLabel(String imgName) throws IOException
+    {
+        StringBuffer strbuf = new StringBuffer("");
+
+        int numBands = 16;
+
+        appendWithPadding(strbuf, "PDS_VERSION_ID               = PDS3");
+        appendWithPadding(strbuf, "");
+
+        appendWithPadding(strbuf, "PRODUCT_TYPE                 = DDR");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date date = new Date();
+        String dateStr = sdf.format(date).replace(' ', 'T');
+        appendWithPadding(strbuf, "PRODUCT_CREATION_TIME        = " + dateStr);
+        appendWithPadding(strbuf, "PRODUCER_INSTITUTION_NAME    = \"APPLIED PHYSICS LABORATORY\"");
+        appendWithPadding(strbuf, "SOFTWARE_NAME                = \"Small Body Mapping Tool\"");
+        appendWithPadding(strbuf, "SHAPE_MODEL                  = \"" + smallBodyModel.getModelName() + "\"");
+
+        appendWithPadding(strbuf, "");
+        appendWithPadding(strbuf, "/* This DDR label describes one data file:                               */");
+        appendWithPadding(strbuf, "/* 1. A multiple-band backplane image file with wavelength-independent,  */");
+        appendWithPadding(strbuf, "/* spatial pixel-dependent geometric and timing information.             */");
+        appendWithPadding(strbuf, "");
+        appendWithPadding(strbuf, "OBJECT                       = FILE");
+
+        appendWithPadding(strbuf, "  ^IMAGE                     = \"" + imgName + "\"");
+
+        appendWithPadding(strbuf, "  RECORD_TYPE                = FIXED_LENGTH");
+        appendWithPadding(strbuf, "  RECORD_BYTES               = " + (imageHeight * 4));
+        appendWithPadding(strbuf, "  FILE_RECORDS               = " + (imageWidth * numBands));
+        appendWithPadding(strbuf, "");
+
+        appendWithPadding(strbuf, "  OBJECT                     = IMAGE");
+        appendWithPadding(strbuf, "    LINES                    = " + imageHeight);
+        appendWithPadding(strbuf, "    LINE_SAMPLES             = " + imageWidth);
+        appendWithPadding(strbuf, "    SAMPLE_TYPE              = IEEE_REAL");
+        appendWithPadding(strbuf, "    SAMPLE_BITS              = 32");
+        appendWithPadding(strbuf, "    CORE_NULL                = 16#F49DC5AE#"); // bit pattern of -1.0e32 in hex
+
+        appendWithPadding(strbuf, "    BANDS                    = " + numBands);
+        appendWithPadding(strbuf, "    BAND_STORAGE_TYPE        = BAND_SEQUENTIAL");
+        appendWithPadding(strbuf, "    BAND_NAME                = (\"Pixel value\",");
+        appendWithPadding(strbuf, "                                \"x coordinate of center of pixel, km\",");
+        appendWithPadding(strbuf, "                                \"y coordinate of center of pixel, km\",");
+        appendWithPadding(strbuf, "                                \"z coordinate of center of pixel, km\",");
+        appendWithPadding(strbuf, "                                \"Latitude, deg\",");
+        appendWithPadding(strbuf, "                                \"Longitude, deg\",");
+        appendWithPadding(strbuf, "                                \"Distance from center of body, km\",");
+        appendWithPadding(strbuf, "                                \"Incidence angle, deg\",");
+        appendWithPadding(strbuf, "                                \"Emission angle, deg\",");
+        appendWithPadding(strbuf, "                                \"Phase angle, deg\",");
+        appendWithPadding(strbuf, "                                \"Horizontal pixel scale, km per pixel\",");
+        appendWithPadding(strbuf, "                                \"Vertical pixel scale, km per pixel\",");
+        appendWithPadding(strbuf, "                                \"Slope, deg\",");
+        appendWithPadding(strbuf, "                                \"Elevation, m\",");
+        appendWithPadding(strbuf, "                                \"Gravitational acceleration, m/s^2\",");
+        appendWithPadding(strbuf, "                                \"Gravitational potential, J/kg\")");
+        appendWithPadding(strbuf, "");
+        appendWithPadding(strbuf, "  END_OBJECT                 = IMAGE");
+        appendWithPadding(strbuf, "END_OBJECT                   = FILE");
+
+        appendWithPadding(strbuf, "");
+        appendWithPadding(strbuf, "END");
+
+        return strbuf.toString();
+    }
 
     /**
      * Get filter as an integer id. Return -1 if no filter is available.

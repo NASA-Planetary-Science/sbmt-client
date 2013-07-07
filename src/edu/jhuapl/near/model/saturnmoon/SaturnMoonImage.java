@@ -40,11 +40,6 @@ public class SaturnMoonImage extends PerspectiveImage
         return useAPLServer;
     }
 
-    public String generateBackplanesLabel() throws IOException
-    {
-        return "";
-    }
-
     @Override
     public double getFovParameter1()
     {

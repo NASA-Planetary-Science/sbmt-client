@@ -37,11 +37,6 @@ public class PhobosImage extends PerspectiveImage
     {
     }
 
-    public String generateBackplanesLabel() throws IOException
-    {
-        return "";
-    }
-
     @Override
     public double getFovParameter1()
     {

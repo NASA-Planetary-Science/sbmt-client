@@ -59,12 +59,6 @@ public class SSIIdaImage extends PerspectiveImage
     }
 
     @Override
-    public String generateBackplanesLabel() throws IOException
-    {
-        return "";
-    }
-
-    @Override
     protected String initializeFitFileFullPath(File rootFolder)
     {
         ImageKey key = getKey();

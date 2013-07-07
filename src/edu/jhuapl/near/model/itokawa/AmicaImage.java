@@ -151,21 +151,8 @@ public class AmicaImage extends PerspectiveImage
         }
     }
 
-    private void appendWithPadding(StringBuffer strbuf, String str)
-    {
-        strbuf.append(str);
-
-        int length = str.length();
-        while(length < 78)
-        {
-            strbuf.append(' ');
-            ++length;
-        }
-
-        strbuf.append("\r\n");
-    }
-
-    public String generateBackplanesLabel() throws IOException
+    @Override
+    public String generateBackplanesLabel(String imgName) throws IOException
     {
         String lblFilename = getLabelFileFullPath();
 
@@ -240,9 +227,7 @@ public class AmicaImage extends PerspectiveImage
                 appendWithPadding(strbuf, "");
                 appendWithPadding(strbuf, "OBJECT                       = FILE");
 
-                String[] tokens = productName.split(":");
-                String imageName = tokens[1].trim().toLowerCase();
-                appendWithPadding(strbuf, "  ^IMAGE                     = \"" + imageName + "\"");
+                appendWithPadding(strbuf, "  ^IMAGE                     = \"" + imgName + "\"");
 
                 appendWithPadding(strbuf, "  RECORD_TYPE                = FIXED_LENGTH");
                 appendWithPadding(strbuf, "  RECORD_BYTES               = " + (croppedSize[1] * 4));

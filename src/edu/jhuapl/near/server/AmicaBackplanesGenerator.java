@@ -186,7 +186,7 @@ public class AmicaBackplanesGenerator
             // Generate the label file
             String ddrLabelFilename = filename.substring(0, filename.length()-4) + "_ddr.lbl";
             out = new FileOutputStream(ddrLabelFilename);
-            String lblstr = image.generateBackplanesLabel();
+            String lblstr = image.generateBackplanesLabel(ddrFilename);
             byte[] bytes = lblstr.getBytes();
             out.write(bytes, 0, bytes.length);
             out.close();
@@ -325,7 +325,7 @@ public class AmicaBackplanesGenerator
             // Generate the label file
             String ddrLabelFilename = filename.substring(0, filename.length()-4) + "_ddr.lbl";
             out = new FileOutputStream(ddrLabelFilename);
-            String lblstr = image.generateBackplanesLabel();
+            String lblstr = image.generateBackplanesLabel(ddrFilename);
             byte[] bytes = lblstr.getBytes();
             out.write(bytes, 0, bytes.length);
             out.close();

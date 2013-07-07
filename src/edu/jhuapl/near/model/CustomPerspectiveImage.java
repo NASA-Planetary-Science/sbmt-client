@@ -122,12 +122,6 @@ public class CustomPerspectiveImage extends PerspectiveImage
     }
 
     @Override
-    public String generateBackplanesLabel() throws IOException
-    {
-        return "";
-    }
-
-    @Override
     protected String initializeFitFileFullPath(File rootFolder)
     {
         return getKey().name;

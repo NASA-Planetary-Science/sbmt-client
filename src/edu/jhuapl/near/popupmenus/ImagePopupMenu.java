@@ -455,6 +455,8 @@ public class ImagePopupMenu extends PopupMenu
             {
                 if (file != null)
                 {
+                    String imgName = file.getName();
+
                     String lblName = file.getAbsolutePath();
                     lblName = lblName.substring(0, lblName.length()-4);
                     if (file.getAbsolutePath().endsWith("img"))
@@ -471,7 +473,7 @@ public class ImagePopupMenu extends PopupMenu
 
                     updateMenuItems();
 
-                    String lblstr = image.generateBackplanesLabel();
+                    String lblstr = image.generateBackplanesLabel(imgName);
 
                     byte[] bytes = lblstr.getBytes();
                     out.write(bytes, 0, bytes.length);

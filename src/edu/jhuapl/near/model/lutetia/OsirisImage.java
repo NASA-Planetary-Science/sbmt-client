@@ -74,11 +74,6 @@ public class OsirisImage extends PerspectiveImage
         rawImage.SetOrigin(0.0, 0.0, 0.0);
     }
 
-    public String generateBackplanesLabel() throws IOException
-    {
-        return "";
-    }
-
     @Override
     public double getFovParameter1()
     {

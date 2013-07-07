@@ -67,7 +67,8 @@ public class MSIImage extends PerspectiveImage
         rawImage.SetSpacing(1, 1, 1);
     }
 
-    public String generateBackplanesLabel() throws IOException
+    @Override
+    public String generateBackplanesLabel(String imgName) throws IOException
     {
         String lblFilename = getLabelFileFullPath();
 
@@ -96,6 +97,12 @@ public class MSIImage extends PerspectiveImage
             if (str.trim().startsWith("SOFTWARE_VERSION_ID"))
             {
                 strbuf.append("SOFTWARE_VERSION_ID          = \"2.0\"\r\n");
+                continue;
+            }
+
+            if (str.trim().startsWith("^IMAGE"))
+            {
+                strbuf.append("  ^IMAGE                     = \"" + imgName + "\"\r\n");
                 continue;
             }
 
