@@ -98,9 +98,18 @@ public class PhobosImage extends PerspectiveImage
     {
         ImageKey key = getKey();
         File keyFile = new File(key.name);
-        if (!keyFile.getName().startsWith("V"))
+
+        // Note Viking images begin either with an upper case V or a lower case f.
+
+        if (!keyFile.getName().startsWith("V") && !keyFile.getName().startsWith("f"))
             return null;
-        String labelFilename = keyFile.getParent() + "/f" + keyFile.getName().substring(2, 8).toLowerCase() + ".lbl";
+
+        String labelFilename = null;
+        if (keyFile.getName().startsWith("V"))
+            labelFilename = keyFile.getParent() + "/f" + keyFile.getName().substring(2, 8).toLowerCase() + ".lbl";
+        else //if (keyFile.getName().startsWith("f"))
+            labelFilename = key.name + ".lbl";
+
         if (rootFolder == null)
         {
             return FileCache.getFileFromServer(labelFilename).getAbsolutePath();
@@ -283,14 +292,14 @@ public class PhobosImage extends PerspectiveImage
                 String[] words = filterLine.trim().split("\\s+");
                 if (words[2].equals("VIKING_ORBITER_1"))
                 {
-                    if (name.contains("A"))
+                    if (name.toLowerCase().contains("a"))
                         return 2;
                     else
                         return 3;
                 }
                 else
                 {
-                    if (name.contains("A"))
+                    if (name.toLowerCase().contains("a"))
                         return 4;
                     else
                         return 5;

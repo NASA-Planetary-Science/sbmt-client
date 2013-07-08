@@ -12,6 +12,7 @@ import edu.jhuapl.near.model.Image.ImageSource;
 import edu.jhuapl.near.model.custom.CustomGraticule;
 import edu.jhuapl.near.model.custom.CustomShapeModel;
 import edu.jhuapl.near.model.deimos.Deimos;
+import edu.jhuapl.near.model.deimos.DeimosImage;
 import edu.jhuapl.near.model.eros.Eros;
 import edu.jhuapl.near.model.eros.ErosThomas;
 import edu.jhuapl.near.model.eros.LineamentModel;
@@ -142,7 +143,7 @@ public class ModelFactory
         c.add(new ModelConfig(GASPRA, ASTEROID, MAIN_BELT, IMAGE_BASED, THOMAS, "/THOMAS/GASPRA/951gaspra.llr.gz", true, true));
         c.add(new ModelConfig(GASPRA, ASTEROID, MAIN_BELT, IMAGE_BASED, STOOKE, "/STOOKE/GASPRA/951gaspra.llr.gz", true));
         c.add(new ModelConfig(MATHILDE, ASTEROID, MAIN_BELT, IMAGE_BASED, THOMAS, "/THOMAS/MATHILDE/253mathilde.llr.gz", true, true));
-        c.add(new ModelConfig(DEIMOS, SATELLITES, MARS, IMAGE_BASED, THOMAS, "/THOMAS/DEIMOS", true));
+        c.add(new ModelConfig(DEIMOS, SATELLITES, MARS, IMAGE_BASED, THOMAS, "/THOMAS/DEIMOS", true, true));
         c.add(new ModelConfig(JANUS, SATELLITES, SATURN, IMAGE_BASED, THOMAS, "/THOMAS/JANUS/s10janus.llr.gz"));
         c.add(new ModelConfig(JANUS, SATELLITES, SATURN, IMAGE_BASED, STOOKE, "/STOOKE/JANUS/s10janus.llr.gz"));
         c.add(new ModelConfig(EPIMETHEUS, SATELLITES, SATURN, IMAGE_BASED, THOMAS, "/THOMAS/EPIMETHEUS/s11epimetheus.llr.gz"));
@@ -326,6 +327,8 @@ public class ModelFactory
                 return new FcImage(key, smallBodyModel, loadPointingOnly, rootFolder);
             else if (smallBodyModel.getModelName().toLowerCase().startsWith("phobos"))
                 return new PhobosImage(key, smallBodyModel, loadPointingOnly, rootFolder);
+            else if (smallBodyModel.getModelName().toLowerCase().startsWith("deimos"))
+                return new DeimosImage(key, smallBodyModel, loadPointingOnly, rootFolder);
             else if (smallBodyModel.getModelName().toLowerCase().startsWith("lutetia"))
                 return new OsirisImage(key, smallBodyModel, loadPointingOnly, rootFolder);
             else if (smallBodyModel.getModelName().toLowerCase().startsWith("dione"))

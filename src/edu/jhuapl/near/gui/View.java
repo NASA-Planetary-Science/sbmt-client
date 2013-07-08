@@ -11,6 +11,7 @@ import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 
+import edu.jhuapl.near.gui.deimos.DeimosImagingDataSearchPanel;
 import edu.jhuapl.near.gui.eros.LineamentControlPanel;
 import edu.jhuapl.near.gui.eros.MSISearchPanel;
 import edu.jhuapl.near.gui.eros.NISSearchPanel;
@@ -370,6 +371,8 @@ public class View extends JPanel
             return new FCSearchPanel(modelManager, infoPanelManager, pickManager, renderer);
         else if (ModelFactory.PHOBOS.equals(name))
             return new PhobosImagingDataSearchPanel(modelManager, infoPanelManager, pickManager, renderer);
+        else if (ModelFactory.DEIMOS.equals(name))
+            return new DeimosImagingDataSearchPanel(modelManager, infoPanelManager, pickManager, renderer);
         else if (ModelFactory.LUTETIA.equals(name))
             return new OsirisImagingDataSearchPanel(modelManager, infoPanelManager, pickManager, renderer);
         else if (ModelFactory.DIONE.equals(name))
