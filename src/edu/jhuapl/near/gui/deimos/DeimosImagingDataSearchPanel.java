@@ -34,7 +34,7 @@ public class DeimosImagingDataSearchPanel extends AbstractImageSearchPanel
     @Override
     protected Date getDefaultEndDate()
     {
-        return new GregorianCalendar(1978, 9, 19, 0, 0, 0).getTime();
+        return new GregorianCalendar(2011, 7, 10, 0, 0, 0).getTime();
     }
 
     @Override
