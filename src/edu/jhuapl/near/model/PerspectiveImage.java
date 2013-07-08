@@ -1624,12 +1624,10 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
      */
     public double getFovAngle()
     {
-        double fov = Math.max(Math.abs(getFovParameter1()), Math.abs(getFovParameter2()));
+        double fovHoriz = MathUtil.vsep(frustum1, frustum3) * 180.0 / Math.PI;
+        double fovVert = MathUtil.vsep(frustum1, frustum2) * 180.0 / Math.PI;
 
-        double[] v1 = {fov, 0.0, getFovParameter3()};
-        double[] v2 = {-fov, 0.0, getFovParameter3()};
-
-        return MathUtil.vsep(v1, v2) * 180.0 / Math.PI;
+        return Math.max(fovHoriz, fovVert);
     }
 
     public double[] getSpacecraftPosition()
