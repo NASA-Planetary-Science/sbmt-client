@@ -40,16 +40,13 @@ void removeTrailingZ(string& str)
         str = str.substr(0, length-1);
 }
 
-void getEt(const string& fitfile,
+void getEt(const string& labelfilename,
            string& startutc,
            double& startet,
            string& stoputc,
            double& stopet)
 {
-    int length = fitfile.size();
-    string lblfilename = fitfile.substr(0, length-4) + ".img_label";
-
-    ifstream fin(lblfilename.c_str());
+    ifstream fin(labelfilename.c_str());
 
     if (fin.is_open())
     {
@@ -70,14 +67,14 @@ void getEt(const string& fitfile,
                 utc2et_c(str.c_str(), &startet);
                 stopet = startet;
 
-                cout << fitfile << " IMAGE_TIME " << startutc << " " << startet << std::endl;
+                cout << labelfilename << " IMAGE_TIME " << startutc << " " << startet << std::endl;
                 break;
             }
         }
     }
     else
     {
-        cerr << "Error: Unable to open file '" << fitfile << "'" << endl;
+        cerr << "Error: Unable to open file '" << labelfilename << "'" << endl;
         exit(1);
     }
 
@@ -258,12 +255,9 @@ void saveInfoFile(string filename,
     fout << scientific << sunpos[2] << " )\n";
 }
 
-string getCamera(string fitfile)
+string getCamera(string labelfilename)
 {
-    int length = fitfile.size();
-    string lblfilename = fitfile.substr(0, length-4) + ".img_label";
-
-    ifstream fin(lblfilename.c_str());
+    ifstream fin(labelfilename.c_str());
 
     if (fin.is_open())
     {
@@ -277,7 +271,7 @@ string getCamera(string fitfile)
                 fin >> str; // the equals character
                 fin >> str; // the detector id
 
-                cout << fitfile << " DETECTOR_ID " << str << std::endl;
+                cout << labelfilename << " DETECTOR_ID " << str << std::endl;
 
                 fin.close();
                 return str;
@@ -286,7 +280,7 @@ string getCamera(string fitfile)
     }
     else
     {
-        cerr << "Error: Unable to open file '" << fitfile << "'" << endl;
+        cerr << "Error: Unable to open file '" << labelfilename << "'" << endl;
         exit(1);
     }
 
@@ -297,14 +291,14 @@ string getCamera(string fitfile)
 
 /*
 
-  This program creates an info file for each fit file. For example the
-  file N2516167681.INFO is created for the fit file N2516167681.FIT.
+  This program creates an info file for each label file. For example the
+  file f339b23.INFO is created for the label file f339b23.img_label.
 
   This program takes the following input arguments:
 
   1. Body name - either DEIMOS or PHOBOS
   1. kernelfiles - a file containing the kernel files
-  2. fit file list - a file containing a list of fit files to process, one per line
+  2. label file list - a file containing a list of label files to process, one per line
   3. output folder - path to folder where infofiles should be saved to
 
 */
@@ -312,24 +306,24 @@ int main(int argc, char** argv)
 {
     if (argc < 4)
     {
-        cerr << "Usage: create_info_files <body> <kernelfiles> <fitfilelist> <outputfolder>" << endl;
+        cerr << "Usage: create_info_files <body> <kernelfiles> <labelfilelist> <outputfolder>" << endl;
         return 1;
     }
 
     string body = argv[1];
     string kernelfiles = argv[2];
-    string fitfilelist = argv[3];
+    string labelfilelist = argv[3];
     string outputfolder = argv[4];
 
     furnsh_c(kernelfiles.c_str());
 
     erract_c("SET", 1, (char*)"RETURN");
 
-    vector<string> fitfiles = loadFileList(fitfilelist);
+    vector<string> labelfiles = loadFileList(labelfilelist);
 
-    for (unsigned int i=0; i<fitfiles.size(); ++i)
+    for (unsigned int i=0; i<labelfiles.size(); ++i)
     {
-        cout << "starting " << fitfiles[i] << endl;
+        cout << "starting " << labelfiles[i] << endl;
         reset_c();
 
         string startutc;
@@ -343,14 +337,14 @@ int main(int argc, char** argv)
         double frustum[12];
         double sunPosition[3];
 
-        string camera = getCamera(fitfiles[i]);
+        string camera = getCamera(labelfiles[i]);
         if (camera != "MEX_HRSC_SRC")
         {
             cout << "NOT MEX_HRSC_SRC!" << endl;
             continue;
         }
 
-        getEt(fitfiles[i], startutc, startet, stoputc, stopet);
+        getEt(labelfiles[i], startutc, startet, stoputc, stopet);
         if (failed_c())
             continue;
 
@@ -364,9 +358,9 @@ int main(int argc, char** argv)
         if (failed_c())
             continue;
 
-        string fitbasename = basename((char*)fitfiles[i].c_str());
-        int length = fitbasename.size();
-        string infofilename = outputfolder + "/" + fitbasename.substr(0, length-4) + ".INFO";
+        string labelbasename = basename((char*)labelfiles[i].c_str());
+        unsigned found = labelbasename.find_last_of(".");
+        string infofilename = outputfolder + "/" + labelbasename.substr(0, found) + ".INFO";
         saveInfoFile(infofilename, startutc, stoputc, scposb, boredir, updir, frustum, sunPosition);
         cout << "finished " << infofilename << endl;
     }
