@@ -5,8 +5,6 @@ import java.io.IOException;
 
 import nom.tam.fits.FitsException;
 
-import vtk.vtkImageData;
-
 import edu.jhuapl.near.model.PerspectiveImage;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.util.FileCache;
@@ -32,9 +30,44 @@ public class PhobosImage extends PerspectiveImage
         super(key, smallBodyModel, loadPointingOnly, rootFolder);
     }
 
-    @Override
-    protected void processRawImage(vtkImageData rawImage)
+    /**
+     * Return whether or not this is an HRSC image
+     * @param key
+     * @return
+     */
+    private boolean isHrsc(String filename)
     {
+        return filename.startsWith("h");
+    }
+
+    /**
+     * Return whether or not this is a Viking image
+     * @param key
+     * @return
+     */
+    private boolean isViking(String filename)
+    {
+        return filename.startsWith("V") || filename.startsWith("f");
+    }
+
+    /**
+     * Is this a Phobos2 image taken with filter 2
+     * @param key
+     * @return
+     */
+    private boolean isPhobos2Filter2(String filename)
+    {
+        return filename.startsWith("P") && filename.endsWith("2");
+    }
+
+    /**
+     * Is this a Phobos2 image taken with filters 1 or 3
+     * @param key
+     * @return
+     */
+    private boolean isPhobos2Filter1Or3(String filename)
+    {
+        return filename.startsWith("P") && !filename.endsWith("2");
     }
 
     @Override
@@ -42,11 +75,12 @@ public class PhobosImage extends PerspectiveImage
     {
         ImageKey key = getKey();
         File keyFile = new File(key.name);
-        if (keyFile.getName().startsWith("h"))
+        String filename = keyFile.getName();
+        if (isHrsc(filename))
             return FOV_MEX_HRSC_SRC_PARAMETER1;
-        else if (keyFile.getName().startsWith("V"))
+        else if (isViking(filename))
             return FOV_VIKING_PARAMETER1;
-        else if (keyFile.getName().endsWith("2"))
+        else if (isPhobos2Filter2(filename))
             return FOV_PHOBOS2_FILTER2_PARAMETER1;
         else
             return FOV_PHOBOS2_FILTER13_PARAMETER1;
@@ -57,11 +91,12 @@ public class PhobosImage extends PerspectiveImage
     {
         ImageKey key = getKey();
         File keyFile = new File(key.name);
-        if (keyFile.getName().startsWith("h"))
+        String filename = keyFile.getName();
+        if (isHrsc(filename))
             return FOV_MEX_HRSC_SRC_PARAMETER2;
-        else if (keyFile.getName().startsWith("V"))
+        else if (isViking(filename))
             return FOV_VIKING_PARAMETER2;
-        else if (keyFile.getName().endsWith("2"))
+        else if (isPhobos2Filter2(filename))
             return FOV_PHOBOS2_FILTER2_PARAMETER2;
         else
             return FOV_PHOBOS2_FILTER13_PARAMETER2;
@@ -98,10 +133,11 @@ public class PhobosImage extends PerspectiveImage
     {
         ImageKey key = getKey();
         File keyFile = new File(key.name);
+        String filename = keyFile.getName();
 
         // Note Viking images begin either with an upper case V or a lower case f.
 
-        if (!keyFile.getName().startsWith("V") && !keyFile.getName().startsWith("f"))
+        if (!isViking(filename))
             return null;
 
         String labelFilename = null;
@@ -141,8 +177,11 @@ public class PhobosImage extends PerspectiveImage
     protected String initializeSumfileFullPath(File rootFolder)
     {
         ImageKey key = getKey();
+        String sumfilesdir = "sumfiles";
+        if (key.source == ImageSource.CORRECTED)
+            sumfilesdir += "-corrected";
         File keyFile = new File(key.name);
-        String sumFilename = keyFile.getParentFile().getParent() + "/sumfiles/"
+        String sumFilename = keyFile.getParentFile().getParent() + "/" + sumfilesdir + "/"
         + keyFile.getName() + ".SUM";
         if (rootFolder == null)
         {
@@ -158,19 +197,20 @@ public class PhobosImage extends PerspectiveImage
     public int getFilter()
     {
         // For Phobos 2 image, return 1, 2, or 3 which we can get by looking at the last number in the filename.
-        // For viking images, we need to parse the label file to get the filter.
+        // For Viking images, we need to parse the label file to get the filter.
         // for MEX images, return -1
         ImageKey key = getKey();
         File keyFile = new File(key.name);
-        if (keyFile.getName().startsWith("h"))
+        String filename = keyFile.getName();
+        if (isHrsc(filename))
         {
             return -1;
         }
-        else if (keyFile.getName().startsWith("P"))
+        else if (isPhobos2Filter2(filename) || isPhobos2Filter1Or3(filename))
         {
             return Integer.parseInt(keyFile.getName().substring(7, 8));
         }
-        else
+        else // is Viking
         {
             try
             {
@@ -275,16 +315,16 @@ public class PhobosImage extends PerspectiveImage
 
         ImageKey key = getKey();
         File keyFile = new File(key.name);
-        String name = keyFile.getName();
-        if (name.startsWith("h"))
+        String filename = keyFile.getName();
+        if (isHrsc(filename))
         {
             return 6;
         }
-        else if (name.startsWith("P"))
+        else if (isPhobos2Filter2(filename) || isPhobos2Filter1Or3(filename))
         {
             return 1;
         }
-        else
+        else // is Viking
         {
             try
             {
@@ -292,14 +332,14 @@ public class PhobosImage extends PerspectiveImage
                 String[] words = filterLine.trim().split("\\s+");
                 if (words[2].equals("VIKING_ORBITER_1"))
                 {
-                    if (name.toLowerCase().contains("a"))
+                    if (filename.toLowerCase().contains("a"))
                         return 2;
                     else
                         return 3;
                 }
                 else
                 {
-                    if (name.toLowerCase().contains("a"))
+                    if (filename.toLowerCase().contains("a"))
                         return 4;
                     else
                         return 5;

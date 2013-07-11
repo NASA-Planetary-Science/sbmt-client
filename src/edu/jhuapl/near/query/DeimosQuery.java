@@ -51,9 +51,21 @@ public class DeimosQuery extends QueryBase
             ImageSource imageSource,
             int limbType)
     {
-        return getResultsFromFileListOnServer(
-                "/THOMAS/DEIMOS/IMAGING/imagelist.txt",
-                "/THOMAS/DEIMOS/IMAGING/images/");
+        if (imageSource == ImageSource.PDS)
+        {
+            return getResultsFromFileListOnServer(
+                    "/THOMAS/DEIMOS/IMAGING/imagelist.txt",
+                    "/THOMAS/DEIMOS/IMAGING/images/");
+        }
+
+        if (imageSource == ImageSource.CORRECTED)
+        {
+            return getResultsFromFileListOnServer(
+                    "/THOMAS/DEIMOS/IMAGING/sumfiles-corrected/imagelist.txt",
+                    "/THOMAS/DEIMOS/IMAGING/images/");
+        }
+
+        return null;
     }
 
 }

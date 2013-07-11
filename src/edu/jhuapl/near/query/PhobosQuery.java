@@ -64,6 +64,13 @@ public class PhobosQuery extends QueryBase
                     "/GASKELL/PHOBOS/IMAGING/images/");
         }
 
+        if (imageSource == ImageSource.CORRECTED)
+        {
+            return getResultsFromFileListOnServer(
+                    "/GASKELL/PHOBOS/IMAGING/sumfiles-corrected/imagelist.txt",
+                    "/GASKELL/PHOBOS/IMAGING/images/");
+        }
+
         ArrayList<ArrayList<String>> results = new ArrayList<ArrayList<String>>();
 
         double minIncidence = Math.min(fromIncidence, toIncidence);

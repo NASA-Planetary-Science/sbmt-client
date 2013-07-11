@@ -77,6 +77,6 @@ public class DeimosImagingDataSearchPanel extends AbstractImageSearchPanel
     @Override
     protected ImageSource[] getImageSources()
     {
-        return new ImageSource[]{ImageSource.PDS};
+        return new ImageSource[]{ImageSource.PDS, ImageSource.CORRECTED};
     }
 }
