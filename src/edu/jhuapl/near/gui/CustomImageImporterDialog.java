@@ -47,8 +47,6 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         public double urlat = 90.0;
         public double urlon = 360.0;
         public String sumfilename = "null"; // filename of sumfile on disk
-        public double xfov = 1.0;
-        public double yfov = 1.0;
 
         @Override
         public String toString()
@@ -102,8 +100,6 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
 
             if (isEditMode)
                 sumfilePathTextField.setText(LEAVE_UNMODIFIED);
-            xFovTextField.setValue(info.xfov);
-            yFovTextField.setValue(info.yfov);
         }
 
         updateEnabledItems();
@@ -139,8 +135,6 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
             info.sumfilename = sumfilePathTextField.getText();
             if (LEAVE_UNMODIFIED.equals(info.sumfilename) || info.sumfilename == null || info.sumfilename.isEmpty())
                 info.sumfilename = null;
-            info.xfov = Double.parseDouble(xFovTextField.getText());
-            info.yfov = Double.parseDouble(yFovTextField.getText());
         }
 
         // If name is not provided, set name to filename
@@ -230,18 +224,6 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
                 if (sumfilePath.contains(","))
                     return "Path may not contain commas.";
             }
-
-            try
-            {
-                double xfov = Double.parseDouble(xFovTextField.getText());
-                double yfov = Double.parseDouble(yFovTextField.getText());
-                if (xfov < 0.00000001 || xfov > 179.0 || yfov < 0.00000001 || yfov > 179.0)
-                    return "Field of view must be between 0.00000001 and 179 degrees.";
-            }
-            catch (NumberFormatException e)
-            {
-                return "An error occurred parsing one of the required fields.";
-            }
         }
 
         return null;
@@ -265,10 +247,6 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         urlonFormattedTextField.setEnabled(enable);
         sumfilePathLabel.setEnabled(!enable);
         sumfilePathTextField.setEnabled(!enable);
-        xFovLabel.setEnabled(!enable);
-        xFovTextField.setEnabled(!enable);
-        yFovLabel.setEnabled(!enable);
-        yFovTextField.setEnabled(!enable);
     }
 
     /** This method is called from within the constructor to
@@ -301,10 +279,6 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         sumfilePathLabel = new javax.swing.JLabel();
         sumfilePathTextField = new javax.swing.JTextField();
         browseSumfileButton = new javax.swing.JButton();
-        xFovLabel = new javax.swing.JLabel();
-        yFovLabel = new javax.swing.JLabel();
-        xFovTextField = new javax.swing.JFormattedTextField();
-        yFovTextField = new javax.swing.JFormattedTextField();
         imageLabel = new javax.swing.JLabel();
         imageNameTextField = new javax.swing.JTextField();
 
@@ -402,7 +376,7 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 11;
+        gridBagConstraints.gridy = 9;
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.PAGE_END;
         gridBagConstraints.weighty = 1.0;
@@ -505,40 +479,6 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         gridBagConstraints.insets = new java.awt.Insets(0, 5, 4, 5);
         getContentPane().add(browseSumfileButton, gridBagConstraints);
 
-        xFovLabel.setText("X FOV (degrees)");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 9;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 25, 0, 0);
-        getContentPane().add(xFovLabel, gridBagConstraints);
-
-        yFovLabel.setText("Y FOV (degrees)");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 10;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 25, 0, 0);
-        getContentPane().add(yFovLabel, gridBagConstraints);
-
-        xFovTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.########"))));
-        xFovTextField.setText("1");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 9;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new java.awt.Insets(0, 5, 4, 0);
-        getContentPane().add(xFovTextField, gridBagConstraints);
-
-        yFovTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.########"))));
-        yFovTextField.setText("1");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 10;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new java.awt.Insets(0, 5, 4, 0);
-        getContentPane().add(yFovTextField, gridBagConstraints);
-
         imageLabel.setText("Name");
         imageLabel.setToolTipText("A name describing the image that will be displayed in the image list.");
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -640,9 +580,5 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
     private javax.swing.JLabel urlatLabel;
     private javax.swing.JFormattedTextField urlonFormattedTextField;
     private javax.swing.JLabel urlonLabel;
-    private javax.swing.JLabel xFovLabel;
-    private javax.swing.JFormattedTextField xFovTextField;
-    private javax.swing.JLabel yFovLabel;
-    private javax.swing.JFormattedTextField yFovTextField;
     // End of variables declaration//GEN-END:variables
 }

@@ -310,10 +310,6 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     }
 
 
-    abstract public double getFovParameter1();
-    abstract public double getFovParameter2();
-    abstract public double getFovParameter3();
-
     /**
      * Return the mask sizes as a 4 element integer array where the:
      * first  element is the top    mask size,
@@ -888,9 +884,6 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
     protected void loadSumfile(
             String sumfilename,
-            double fovParameter1,
-            double fovParameter2,
-            double fovParameter3,
             String[] startTime,
             String[] stopTime,
             double[] spacecraftPosition,
@@ -913,10 +906,15 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         startTime[0] = datetime;
         stopTime[0] = datetime;
 
-        in.readLine();
-        in.readLine();
-
         String[] tmp = in.readLine().trim().split("\\s+");
+        double npx = Integer.parseInt(tmp[0]);
+        double nln = Integer.parseInt(tmp[1]);
+
+        tmp = in.readLine().trim().split("\\s+");
+        replaceDwithE(tmp);
+        double focalLengthMillimeters = Double.parseDouble(tmp[0]);
+
+        tmp = in.readLine().trim().split("\\s+");
         replaceDwithE(tmp);
         spacecraftPosition[0] = -Double.parseDouble(tmp[0]);
         spacecraftPosition[1] = -Double.parseDouble(tmp[1]);
@@ -951,30 +949,42 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         sz[1] = Double.parseDouble(tmp[1]);
         sz[2] = Double.parseDouble(tmp[2]);
 
-        double fx = fovParameter1;
-        double fy = fovParameter2;
-        double fz = fovParameter3;
+        tmp = in.readLine().trim().split("\\s+");
+        replaceDwithE(tmp);
+        double kmatrix00 = Math.abs(Double.parseDouble(tmp[0]));
+        double kmatrix11 = Math.abs(Double.parseDouble(tmp[4]));
+
+        double[] cornerVector = new double[3];
+        double fov1 = Math.atan((npx-0.0)/(2.0*focalLengthMillimeters*kmatrix00));
+        double fov2 = Math.atan((nln-0.0)/(2.0*focalLengthMillimeters*kmatrix11));
+        cornerVector[0] = -Math.tan(fov1);
+        cornerVector[1] = -Math.tan(fov2);
+        cornerVector[2] = 1.0;
+
+        double fx = cornerVector[0];
+        double fy = cornerVector[1];
+        double fz = cornerVector[2];
         frustum3[0] = fx*cx[0] + fy*cy[0] + fz*cz[0];
         frustum3[1] = fx*cx[1] + fy*cy[1] + fz*cz[1];
         frustum3[2] = fx*cx[2] + fy*cy[2] + fz*cz[2];
 
-        fx = -fovParameter1;
-        fy = fovParameter2;
-        fz = fovParameter3;
+        fx = -cornerVector[0];
+        fy = cornerVector[1];
+        fz = cornerVector[2];
         frustum4[0] = fx*cx[0] + fy*cy[0] + fz*cz[0];
         frustum4[1] = fx*cx[1] + fy*cy[1] + fz*cz[1];
         frustum4[2] = fx*cx[2] + fy*cy[2] + fz*cz[2];
 
-        fx = fovParameter1;
-        fy = -fovParameter2;
-        fz = fovParameter3;
+        fx = cornerVector[0];
+        fy = -cornerVector[1];
+        fz = cornerVector[2];
         frustum1[0] = fx*cx[0] + fy*cy[0] + fz*cz[0];
         frustum1[1] = fx*cx[1] + fy*cy[1] + fz*cz[1];
         frustum1[2] = fx*cx[2] + fy*cy[2] + fz*cz[2];
 
-        fx = -fovParameter1;
-        fy = -fovParameter2;
-        fz = fovParameter3;
+        fx = -cornerVector[0];
+        fy = -cornerVector[1];
+        fz = cornerVector[2];
         frustum2[0] = fx*cx[0] + fy*cy[0] + fz*cz[0];
         frustum2[1] = fx*cx[1] + fy*cy[1] + fz*cz[1];
         frustum2[2] = fx*cx[2] + fy*cy[2] + fz*cz[2];
@@ -998,9 +1008,6 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
         loadSumfile(
                 getSumfileFullPath(),
-                getFovParameter1(),
-                getFovParameter2(),
-                getFovParameter3(),
                 start,
                 stop,
                 spacecraftPosition,

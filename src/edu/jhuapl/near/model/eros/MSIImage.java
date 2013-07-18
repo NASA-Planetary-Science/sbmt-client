@@ -22,11 +22,6 @@ public class MSIImage extends PerspectiveImage
     public static final int RESAMPLED_IMAGE_WIDTH = 537;
     public static final int RESAMPLED_IMAGE_HEIGHT = 412;
 
-    // Values from MSI instrument kernel file.
-    public static final double FOV_PARAMETER1 = -0.025753661240;
-    public static final double FOV_PARAMETER2 = -0.019744857140;
-    public static final double FOV_PARAMETER3 = 1.0;
-
     // Number of pixels on each side of the image that are
     // masked out (invalid) due to filtering.
     public static final int LEFT_MASK = 14;
@@ -176,24 +171,6 @@ public class MSIImage extends PerspectiveImage
 
         return str.toString();
         */
-    }
-
-    @Override
-    public double getFovParameter1()
-    {
-        return FOV_PARAMETER1;
-    }
-
-    @Override
-    public double getFovParameter2()
-    {
-        return FOV_PARAMETER2;
-    }
-
-    @Override
-    public double getFovParameter3()
-    {
-        return FOV_PARAMETER3;
     }
 
     @Override

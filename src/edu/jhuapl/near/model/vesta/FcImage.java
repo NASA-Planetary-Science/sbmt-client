@@ -14,11 +14,6 @@ import edu.jhuapl.near.util.ImageDataUtil;
 
 public class FcImage extends PerspectiveImage
 {
-    // Values derived from FC instrument kernel file. Note the tangent!
-    public static final double FOV_PARAMETER1 = -Math.tan(0.095480/2.0);
-    public static final double FOV_PARAMETER2 = -Math.tan(0.095420/2.0);
-    public static final double FOV_PARAMETER3 = 1.0;
-
     public FcImage(ImageKey key,
             SmallBodyModel smallBodyModel,
             boolean loadPointingOnly,
@@ -40,24 +35,6 @@ public class FcImage extends PerspectiveImage
         ImageKey key = getKey();
         String cameraId = new File(key.name).getName().substring(2, 3);
         return Integer.parseInt(cameraId);
-    }
-
-    @Override
-    public double getFovParameter1()
-    {
-        return FOV_PARAMETER1;
-    }
-
-    @Override
-    public double getFovParameter2()
-    {
-        return FOV_PARAMETER2;
-    }
-
-    @Override
-    public double getFovParameter3()
-    {
-        return FOV_PARAMETER3;
     }
 
     @Override

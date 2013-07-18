@@ -147,8 +147,6 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
             double[] urlats = configMap.getAsDoubleArray(CylindricalImage.UPPER_RIGHT_LATITUDES);
             double[] urlons = configMap.getAsDoubleArray(CylindricalImage.UPPER_RIGHT_LONGITUDES);
             String[] sumfileNames = configMap.getAsArray(CustomPerspectiveImage.SUMFILENAMES);
-            double[] xfovs = configMap.getAsDoubleArray(CustomPerspectiveImage.X_FOV);
-            double[] yfovs = configMap.getAsDoubleArray(CustomPerspectiveImage.Y_FOV);
 
             int numImages = lllats != null ? lllats.length : (projectionTypes != null ? projectionTypes.length : 0);
             for (int i=0; i<numImages; ++i)
@@ -168,8 +166,6 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
                 else if (ProjectionType.PERSPECTIVE.toString().equals(projectionTypes[i]))
                 {
                     imageInfo.sumfilename = sumfileNames[i];
-                    imageInfo.xfov = xfovs[i];
-                    imageInfo.yfov = yfovs[i];
                 }
 
                 ((DefaultListModel)imageList.getModel()).addElement(imageInfo);
@@ -345,8 +341,6 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
         String urlats = "";
         String urlons = "";
         String sumfilenames = "";
-        String xfovs = "";
-        String yfovs = "";
 
         DefaultListModel imageListModel = (DefaultListModel)imageList.getModel();
         for (int i=0; i<imageListModel.size(); ++i)
@@ -361,8 +355,6 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
             urlats += String.valueOf(imageInfo.urlat);
             urlons += String.valueOf(imageInfo.urlon);
             sumfilenames += imageInfo.sumfilename;
-            xfovs += String.valueOf(imageInfo.xfov);
-            yfovs += String.valueOf(imageInfo.yfov);
 
             if (i < imageListModel.size()-1)
             {
@@ -374,8 +366,6 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
                 urlats += CustomShapeModel.LIST_SEPARATOR;
                 urlons += CustomShapeModel.LIST_SEPARATOR;
                 sumfilenames += CustomShapeModel.LIST_SEPARATOR;
-                xfovs += CustomShapeModel.LIST_SEPARATOR;
-                yfovs += CustomShapeModel.LIST_SEPARATOR;
             }
         }
 
@@ -389,8 +379,6 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
         newMap.put(CylindricalImage.UPPER_RIGHT_LATITUDES, urlats);
         newMap.put(CylindricalImage.UPPER_RIGHT_LONGITUDES, urlons);
         newMap.put(CustomPerspectiveImage.SUMFILENAMES, sumfilenames);
-        newMap.put(CustomPerspectiveImage.X_FOV, xfovs);
-        newMap.put(CustomPerspectiveImage.Y_FOV, yfovs);
 
         configMap.put(newMap);
     }

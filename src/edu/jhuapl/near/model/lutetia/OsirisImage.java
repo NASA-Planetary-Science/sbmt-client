@@ -16,13 +16,6 @@ import edu.jhuapl.near.util.ImageDataUtil;
 
 public class OsirisImage extends PerspectiveImage
 {
-    // These values are derived from the sumfiles.
-    public static final double FOV_NAC_PARAMETER1 = -Math.tan(0.0385386832509/2.0);
-    public static final double FOV_WAC_PARAMETER1 = -Math.tan(0.203281068933/2.0);
-    public static final double FOV_NAC_PARAMETER2 = -Math.tan(0.0385386832509/2.0);
-    public static final double FOV_WAC_PARAMETER2 = -Math.tan(0.203281068933/2.0);
-    public static final double FOV_PARAMETER3 = 1.0;
-
     public OsirisImage(ImageKey key,
             SmallBodyModel smallBodyModel,
             boolean loadPointingOnly,
@@ -72,34 +65,6 @@ public class OsirisImage extends PerspectiveImage
 
         // shift origin back to zero
         rawImage.SetOrigin(0.0, 0.0, 0.0);
-    }
-
-    @Override
-    public double getFovParameter1()
-    {
-        ImageKey key = getKey();
-        File keyFile = new File(key.name);
-        if (keyFile.getName().startsWith("N"))
-            return FOV_NAC_PARAMETER1;
-        else
-            return FOV_WAC_PARAMETER1;
-    }
-
-    @Override
-    public double getFovParameter2()
-    {
-        ImageKey key = getKey();
-        File keyFile = new File(key.name);
-        if (keyFile.getName().startsWith("N"))
-            return FOV_NAC_PARAMETER2;
-        else
-            return FOV_WAC_PARAMETER2;
-    }
-
-    @Override
-    public double getFovParameter3()
-    {
-        return FOV_PARAMETER3;
     }
 
     @Override

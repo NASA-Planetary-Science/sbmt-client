@@ -14,11 +14,6 @@ import edu.jhuapl.near.util.ImageDataUtil;
 
 public class SSIIdaImage extends PerspectiveImage
 {
-    // Note the tangent!
-    public static final double FOV_PARAMETER1 = -Math.tan(0.00813/2.0);
-    public static final double FOV_PARAMETER2 = -Math.tan(0.00813/2.0);
-    public static final double FOV_PARAMETER3 = 1.0;
-
     public SSIIdaImage(ImageKey key, SmallBodyModel smallBodyModel,
             boolean loadPointingOnly, File rootFolder) throws FitsException,
             IOException
@@ -32,24 +27,6 @@ public class SSIIdaImage extends PerspectiveImage
         // Flip image along y axis. For some reason we need to do
         // this so the image is displayed properly.
         ImageDataUtil.flipImageYAxis(rawImage);
-    }
-
-    @Override
-    public double getFovParameter1()
-    {
-        return FOV_PARAMETER1;
-    }
-
-    @Override
-    public double getFovParameter2()
-    {
-        return FOV_PARAMETER2;
-    }
-
-    @Override
-    public double getFovParameter3()
-    {
-        return FOV_PARAMETER3;
     }
 
     @Override

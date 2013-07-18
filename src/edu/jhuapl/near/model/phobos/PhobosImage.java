@@ -12,16 +12,6 @@ import edu.jhuapl.near.util.FileUtil;
 
 public class PhobosImage extends PerspectiveImage
 {
-    public static final double FOV_VIKING_PARAMETER1 = -Math.tan(0.0316815603057/2.0);
-    public static final double FOV_VIKING_PARAMETER2 = -Math.tan(0.0277876855117/2.0);
-    public static final double FOV_PHOBOS2_FILTER2_PARAMETER1 = -Math.tan(0.091734880135/2.0);
-    public static final double FOV_PHOBOS2_FILTER2_PARAMETER2 = -Math.tan(0.0714889658869/2.0);
-    public static final double FOV_PHOBOS2_FILTER13_PARAMETER1 = -Math.tan(0.486390796269/2.0);
-    public static final double FOV_PHOBOS2_FILTER13_PARAMETER2 = -Math.tan(0.381881868455/2.0);
-    public static final double FOV_MEX_HRSC_SRC_PARAMETER1 = -Math.tan(0.0094/2.0);
-    public static final double FOV_MEX_HRSC_SRC_PARAMETER2 = -Math.tan(0.0094/2.0);
-    public static final double FOV_PARAMETER3 = 1.0;
-
     public PhobosImage(ImageKey key,
             SmallBodyModel smallBodyModel,
             boolean loadPointingOnly,
@@ -78,44 +68,6 @@ public class PhobosImage extends PerspectiveImage
     private boolean isPhobos2Filter1Or3(String filename)
     {
         return filename.startsWith("P") && !filename.endsWith("2") && !filename.startsWith("PSP");
-    }
-
-    @Override
-    public double getFovParameter1()
-    {
-        ImageKey key = getKey();
-        File keyFile = new File(key.name);
-        String filename = keyFile.getName();
-        if (isHrsc(filename))
-            return FOV_MEX_HRSC_SRC_PARAMETER1;
-        else if (isViking(filename))
-            return FOV_VIKING_PARAMETER1;
-        else if (isPhobos2Filter2(filename))
-            return FOV_PHOBOS2_FILTER2_PARAMETER1;
-        else
-            return FOV_PHOBOS2_FILTER13_PARAMETER1;
-    }
-
-    @Override
-    public double getFovParameter2()
-    {
-        ImageKey key = getKey();
-        File keyFile = new File(key.name);
-        String filename = keyFile.getName();
-        if (isHrsc(filename))
-            return FOV_MEX_HRSC_SRC_PARAMETER2;
-        else if (isViking(filename))
-            return FOV_VIKING_PARAMETER2;
-        else if (isPhobos2Filter2(filename))
-            return FOV_PHOBOS2_FILTER2_PARAMETER2;
-        else
-            return FOV_PHOBOS2_FILTER13_PARAMETER2;
-    }
-
-    @Override
-    public double getFovParameter3()
-    {
-        return FOV_PARAMETER3;
     }
 
     @Override

@@ -26,11 +26,6 @@ public class AmicaImage extends PerspectiveImage
     //private static final int IMAGE_WIDTH = 1024;
     //private static final int IMAGE_HEIGHT = 1024;
 
-    // Values from AMICA instrument kernel file.
-    public static final double FOV_PARAMETER1 = -0.006144;
-    public static final double FOV_PARAMETER2 = -0.006144;
-    public static final double FOV_PARAMETER3 = 0.1204711614;
-
     public AmicaImage(ImageKey key,
             SmallBodyModel smallBodyModel,
             boolean loadPointingOnly,
@@ -278,24 +273,6 @@ public class AmicaImage extends PerspectiveImage
         in.close();
 
         return strbuf.toString();
-    }
-
-    @Override
-    public double getFovParameter1()
-    {
-        return FOV_PARAMETER1;
-    }
-
-    @Override
-    public double getFovParameter2()
-    {
-        return FOV_PARAMETER2;
-    }
-
-    @Override
-    public double getFovParameter3()
-    {
-        return FOV_PARAMETER3;
     }
 
     public float[] cropBackplanes(float[] backplanes)
