@@ -31,6 +31,16 @@ public class PhobosImage extends PerspectiveImage
     }
 
     /**
+     * Return whether or not this is a HiRISE image
+     * @param key
+     * @return
+     */
+    private boolean isHiRISE(String filename)
+    {
+        return filename.startsWith("ESP") || filename.startsWith("PSP");
+    }
+
+    /**
      * Return whether or not this is an HRSC image
      * @param key
      * @return
@@ -57,7 +67,7 @@ public class PhobosImage extends PerspectiveImage
      */
     private boolean isPhobos2Filter2(String filename)
     {
-        return filename.startsWith("P") && filename.endsWith("2");
+        return filename.startsWith("P") && filename.endsWith("2") && !filename.startsWith("PSP");
     }
 
     /**
@@ -67,7 +77,7 @@ public class PhobosImage extends PerspectiveImage
      */
     private boolean isPhobos2Filter1Or3(String filename)
     {
-        return filename.startsWith("P") && !filename.endsWith("2");
+        return filename.startsWith("P") && !filename.endsWith("2") && !filename.startsWith("PSP");
     }
 
     @Override
@@ -198,11 +208,11 @@ public class PhobosImage extends PerspectiveImage
     {
         // For Phobos 2 image, return 1, 2, or 3 which we can get by looking at the last number in the filename.
         // For Viking images, we need to parse the label file to get the filter.
-        // for MEX images, return -1
+        // for MEX or HiRISE images, return -1
         ImageKey key = getKey();
         File keyFile = new File(key.name);
         String filename = keyFile.getName();
-        if (isHrsc(filename))
+        if (isHrsc(filename) || isHiRISE(filename))
         {
             return -1;
         }
@@ -285,6 +295,8 @@ public class PhobosImage extends PerspectiveImage
             name = "Viking Orbiter 2, Camera B";
         else if (num == 6)
             name = "Mars Express, HRSC";
+        else if (num == 7)
+            name = "Mars Reconnaissance Orbiter, HiRISE";
 
         return name;
     }
@@ -311,6 +323,7 @@ public class PhobosImage extends PerspectiveImage
         // 4 for viking orbiter 2 images camera A
         // 5 for viking orbiter 2 images camera B
         // 6 for MEX HRSC camera
+        // 7 for HiRISE
         // We need to parse the label file to get which viking spacecraft
 
         ImageKey key = getKey();
@@ -319,6 +332,10 @@ public class PhobosImage extends PerspectiveImage
         if (isHrsc(filename))
         {
             return 6;
+        }
+        else if (isHiRISE(filename))
+        {
+            return 7;
         }
         else if (isPhobos2Filter2(filename) || isPhobos2Filter1Or3(filename))
         {
