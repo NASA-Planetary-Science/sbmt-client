@@ -955,8 +955,8 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         double kmatrix11 = Math.abs(Double.parseDouble(tmp[4]));
 
         double[] cornerVector = new double[3];
-        double fov1 = Math.atan((npx-0.0)/(2.0*focalLengthMillimeters*kmatrix00));
-        double fov2 = Math.atan((nln-0.0)/(2.0*focalLengthMillimeters*kmatrix11));
+        double fov1 = Math.atan(npx/(2.0*focalLengthMillimeters*kmatrix00));
+        double fov2 = Math.atan(nln/(2.0*focalLengthMillimeters*kmatrix11));
         cornerVector[0] = -Math.tan(fov1);
         cornerVector[1] = -Math.tan(fov2);
         cornerVector[2] = 1.0;
