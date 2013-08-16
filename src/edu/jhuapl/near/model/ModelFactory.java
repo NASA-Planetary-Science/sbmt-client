@@ -434,7 +434,7 @@ public class ModelFactory
             imageMap = (new File(config.pathOnServer)).getParent() + "/image_map.png";
 
         boolean hasColoringData = false;
-        if (EROS.equals(name) || IDA.equals(name) || GASPRA.equals(name))
+        if (EROS.equals(name) || IDA.equals(name) || GASPRA.equals(name) || MATHILDE.equals(name))
             hasColoringData = true;
 
         return new SimpleSmallBody(name, author, config.pathOnServer, imageMap, hasColoringData);
