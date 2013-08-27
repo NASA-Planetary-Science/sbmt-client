@@ -5,13 +5,9 @@ import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.text.NumberFormat;
 
-import javax.swing.InputVerifier;
 import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JDialog;
-import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -28,10 +24,9 @@ public class CameraDialog extends JDialog implements ActionListener
     private JButton resetButton;
     private JButton okayButton;
     private JButton cancelButton;
-    private JFormattedTextField fovField;
-    private String lastGood = "";
+    private JTextField fovField;
     private JLabel distanceLabel;
-    private JFormattedTextField distanceField;
+    private JTextField distanceField;
     private JLabel kmLabel;
 
     private void printCameraOrientation()
@@ -76,14 +71,10 @@ public class CameraDialog extends JDialog implements ActionListener
         JPanel panel = new JPanel();
         panel.setLayout(new MigLayout("", "[][grow][]", "[][][][]"));
 
-        NumberFormat nf = NumberFormat.getNumberInstance();
-        nf.setGroupingUsed(false);
-        nf.setMaximumFractionDigits(6);
-
         JLabel fovLabel = new JLabel("Vertical Field of View");
-        fovField = new JFormattedTextField(nf);
+        fovField = new JTextField();
         fovField.setPreferredSize(new Dimension(125, 23));
-        fovField.setInputVerifier(new DoubleVerifier());
+        fovField.setInputVerifier(JTextFieldDoubleVerifier.getVerifier(fovField, 0.00000001, 179.0));
         JLabel degreesLabel = new JLabel("degrees");
 
 
@@ -108,7 +99,8 @@ public class CameraDialog extends JDialog implements ActionListener
         distanceLabel = new JLabel("Distance");
         panel.add(distanceLabel, "cell 0 1,alignx trailing");
 
-        distanceField = new JFormattedTextField(nf);
+        distanceField = new JTextField();
+        distanceField.setInputVerifier(JTextFieldDoubleVerifier.getVerifier(distanceField));
         panel.add(distanceField, "cell 1 1,growx");
 
         kmLabel = new JLabel("km");
@@ -131,31 +123,29 @@ public class CameraDialog extends JDialog implements ActionListener
             try
             {
                 double newFov = Double.parseDouble(fovField.getText());
-
                 renderer.setCameraViewAngle(newFov);
+            }
+            catch (NumberFormatException ex)
+            {
+            }
+            // Reset the text field in case the requested change was not fulfilled.
+            fovField.setText(String.valueOf(renderer.getCameraViewAngle()));
 
-                // Reset the text field in case the requested fov change was not
-                // fully fulfilled (e.g. was negative)
-                double fov = renderer.getCameraViewAngle();
-                fovField.setValue(fov);
-
+            try
+            {
                 double distance = Double.parseDouble(distanceField.getText());
-
                 renderer.setCameraDistance(distance);
             }
             catch (NumberFormatException ex)
             {
-                return;
             }
+            // Reset the text field in case the requested change was not fulfilled.
+            distanceField.setText(String.valueOf(renderer.getCameraDistance()));
         }
         else if (e.getSource() == resetButton)
         {
             renderer.resetToDefaultCameraViewAngle();
-
-            // Reset the text field in case the requested offset change was not
-            // fully fulfilled.
-            double fov = renderer.getCameraViewAngle();
-            fovField.setValue(fov);
+            fovField.setText(String.valueOf(renderer.getCameraViewAngle()));
         }
 
         if (e.getSource() == okayButton || e.getSource() == cancelButton)
@@ -168,33 +158,9 @@ public class CameraDialog extends JDialog implements ActionListener
     {
         setTitle("Camera");
 
-        fovField.setValue(renderer.getCameraViewAngle());
-        lastGood = fovField.getText();
-
-        distanceField.setValue(renderer.getCameraDistance());
+        fovField.setText(String.valueOf(renderer.getCameraViewAngle()));
+        distanceField.setText(String.valueOf(renderer.getCameraDistance()));
 
         super.setVisible(b);
-    }
-
-    private class DoubleVerifier extends InputVerifier
-    {
-        public boolean verify(JComponent input)
-        {
-            JTextField text = (JTextField)input;
-            String value = text.getText().trim();
-            try
-            {
-                double v = Double.parseDouble(value);
-                if (v < 0.00000001 || v > 179.0) // These limits are from vtkCamera.cxx
-                    throw new NumberFormatException();
-                lastGood = value;
-            }
-            catch (NumberFormatException e)
-            {
-                text.setText(lastGood);
-                return false;
-            }
-            return true;
-        }
     }
 }
