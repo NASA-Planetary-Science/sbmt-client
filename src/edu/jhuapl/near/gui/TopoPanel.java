@@ -260,6 +260,7 @@ public class TopoPanel extends JPanel implements ActionListener
         try
         {
             new TopoView(mapmakerWorker.getCubeFile(), mapmakerWorker.getLabelFile(),
+                    modelManager.getSmallBodyModel(),
                     (MapletBoundaryCollection) modelManager.getModel(ModelNames.MAPLET_BOUNDARY));
         }
         catch (IOException e1)
@@ -281,6 +282,7 @@ public class TopoPanel extends JPanel implements ActionListener
         try
         {
             new TopoView(file, lblFile,
+                    modelManager.getSmallBodyModel(),
                     (MapletBoundaryCollection) modelManager.getModel(ModelNames.MAPLET_BOUNDARY));
         }
         catch (IOException e)

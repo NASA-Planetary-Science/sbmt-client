@@ -38,6 +38,8 @@ import vtk.vtkProp;
 import vtk.vtkProperty;
 import vtk.vtkUnsignedCharArray;
 
+import edu.jhuapl.near.util.FileCache;
+import edu.jhuapl.near.util.GravityProgram;
 import edu.jhuapl.near.util.LatLon;
 import edu.jhuapl.near.util.MathUtil;
 import edu.jhuapl.near.util.Point3D;
@@ -989,6 +991,7 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
      * as a function of distance along the profile. A profile is path with
      * only 2 control points.
      */
+    @Override
     public void saveProfile(int cellId, File file) throws Exception
     {
         Line lin = this.lines.get(cellId);
@@ -1071,6 +1074,120 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
                 out.write("," + val);
 
             out.write(lineSeparator);
+        }
+
+        out.close();
+    }
+
+    /**
+     * Similar to the saveProfile function but this one uses the gravity program
+     * directly to compute the elevation, acceleration, and potential columns
+     * rather than simply getting the value from the plate data. It also does
+     * not save out any of the plate data.
+     *
+     * @param cellId
+     * @param file
+     * @param smallBodyModel
+     * @throws Exception
+     */
+    public void saveProfileUsingGravityProgram(int cellId, File file, SmallBodyModel smallBodyModel) throws Exception
+    {
+        if (smallBodyModel == null)
+            smallBodyModel = this.smallBodyModel;
+
+        Line lin = this.lines.get(cellId);
+
+        if (lin.controlPointIds.size() != 2)
+            throw new Exception("Line must contain exactly 2 control points.");
+
+        final String lineSeparator = System.getProperty("line.separator");
+
+        FileWriter fstream = new FileWriter(file);
+        BufferedWriter out = new BufferedWriter(fstream);
+
+        // write header
+        out.write("Distance (m)");
+        out.write(",X (m)");
+        out.write(",Y (m)");
+        out.write(",Z (m)");
+        out.write(",Latitude (deg)");
+        out.write(",Longitude (deg)");
+        out.write(",Radius (m)");
+
+        out.write(",Elevation (m)");
+        out.write(",Gravitational Acceleration (m/s^2)");
+        out.write(",Gravitational Potential (J/kg)");
+
+        out.write(lineSeparator);
+
+
+        ArrayList<Point3D> xyzPointList = lin.xyzPointList;
+
+        // Run the gravity program
+        File shapeModelFile = FileCache.getFileFromServer(
+                smallBodyModel.getServerPathToShapeModelFileInPlateFormat());
+        ArrayList<Double> elevation = new ArrayList<Double>();
+        ArrayList<Double> acceleration = new ArrayList<Double>();
+        ArrayList<Double> potential = new ArrayList<Double>();
+        GravityProgram.getGravityAtPoints(
+                xyzPointList,
+                smallBodyModel.getDensity(),
+                smallBodyModel.getRotationRate(),
+                smallBodyModel.getReferencePotential(),
+                shapeModelFile.getAbsolutePath(),
+                elevation,
+                acceleration,
+                potential);
+
+        // For each point in xyzPointList, find the cell containing that
+        // point and then, using barycentric coordinates find the value
+        // of the height at that point
+        //
+        // To compute the distance, assume we have a straight line connecting the first
+        // and last points of xyzPointList. For each point, p, in xyzPointList, find the point
+        // on the line closest to p. The distance from p to the start of the line is what
+        // is placed in heights. Use SPICE's nplnpt function for this.
+
+        double[] first = xyzPointList.get(0).xyz;
+        double[] last = xyzPointList.get(xyzPointList.size()-1).xyz;
+        double[] lindir = new double[3];
+        lindir[0] = last[0] - first[0];
+        lindir[1] = last[1] - first[1];
+        lindir[2] = last[2] - first[2];
+
+        // The following can be true if the user clicks on the same point twice
+        boolean zeroLineDir = MathUtil.vzero(lindir);
+
+        double[] pnear = new double[3];
+        double[] notused = new double[1];
+
+        int i = 0;
+        for (Point3D p : xyzPointList)
+        {
+            double distance = 0.0;
+            if (!zeroLineDir)
+            {
+                MathUtil.nplnpt(first, lindir, p.xyz, pnear, notused);
+                distance = 1000.0 * MathUtil.distanceBetween(first, pnear);
+            }
+
+            out.write(String.valueOf(distance));
+
+            out.write("," + 1000.0 * p.xyz[0]);
+            out.write("," + 1000.0 * p.xyz[1]);
+            out.write("," + 1000.0 * p.xyz[2]);
+
+            LatLon llr = MathUtil.reclat(p.xyz).toDegrees();
+            out.write("," + llr.lat);
+            out.write("," + llr.lon);
+            out.write("," + 1000.0 * llr.rad);
+
+            out.write("," + elevation.get(i));
+            out.write("," + acceleration.get(i));
+            out.write("," + potential.get(i));
+
+            out.write(lineSeparator);
+            ++i;
         }
 
         out.close();

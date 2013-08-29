@@ -908,6 +908,7 @@ public abstract class LidarSearchDataCollection extends Model
         gravityProgram.setDensity(smallBodyModel.getDensity());
         gravityProgram.setRotationRate(smallBodyModel.getRotationRate());
         gravityProgram.setRefPotential(smallBodyModel.getReferencePotential());
+        gravityProgram.setColumnsToUse("1,2,3");
         File file = FileCache.getFileFromServer(
                 smallBodyModel.getServerPathToShapeModelFileInPlateFormat());
         gravityProgram.setShapeModelFile(file.getAbsolutePath());

@@ -46,9 +46,12 @@ import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.PointModel;
 import edu.jhuapl.near.model.PolygonModel;
+import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.pick.PickManager;
 import edu.jhuapl.near.pick.PickManager.PickMode;
+import edu.jhuapl.near.popupmenus.MapmakerLinesPopupMenu;
 import edu.jhuapl.near.popupmenus.PopupManager;
+import edu.jhuapl.near.popupmenus.PopupMenu;
 import edu.jhuapl.near.util.LatLon;
 import edu.jhuapl.near.util.MathUtil;
 
@@ -79,7 +82,8 @@ public class TopoView extends JFrame
     private static final String Color = "Color";
 
 
-    public TopoView(File cubFile, File lblFile, MapletBoundaryCollection mapletBoundaries) throws IOException
+    public TopoView(File cubFile, File lblFile, SmallBodyModel parentSmallBodyModel,
+            MapletBoundaryCollection mapletBoundaries) throws IOException
     {
         this.mapletBoundaries = mapletBoundaries;
 
@@ -109,8 +113,10 @@ public class TopoView extends JFrame
 
         renderer = new Renderer(modelManager);
 
-
         PopupManager popupManager = new PopupManager(modelManager, null, renderer);
+        // The following replaces LinesPopupMenu with MapmakerLinesPopupMenu
+        PopupMenu popupMenu = new MapmakerLinesPopupMenu(modelManager, parentSmallBodyModel, renderer);
+        popupManager.registerPopup(lineModel, popupMenu);
 
         pickManager = new PickManager(renderer, statusBar, modelManager, popupManager);
 

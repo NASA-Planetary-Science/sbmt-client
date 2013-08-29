@@ -13,6 +13,7 @@ public class GravityProgram
     private double density;
     private double rotationRate;
     private double refPotential;
+    private String columns = "1,2,3";
     private String shapeModelFile;
     private String trackFile;
 
@@ -69,7 +70,7 @@ public class GravityProgram
         processCommand.add("--file");
         processCommand.add(trackFile);
         processCommand.add("--columns");
-        processCommand.add("1,2,3");
+        processCommand.add(columns);
         processCommand.add(shapeModelFile);
 
         // print out command
@@ -123,6 +124,11 @@ public class GravityProgram
         this.trackFile = trackFile;
     }
 
+    public void setColumnsToUse(String columns)
+    {
+        this.columns = columns;
+    }
+
     public double getRefPotential()
     {
         return refPotential;
@@ -150,4 +156,57 @@ public class GravityProgram
         return processBuilder.directory() + File.separator +
                 (new File(shapeModelFile)).getName() + "-elevation.txt";
     }
+
+    /**
+     * Convenience function for running the gravity program at an array of points.
+     * On output, the elevation, acceleration and potential arrays will contain
+     * values at each point.
+     *
+     * @param points
+     * @param density
+     * @param rotationRate
+     * @param referencePotential
+     * @param shapeModelFile
+     * @param elevation
+     * @param acceleration
+     * @param potential
+     * @throws IOException
+     * @throws InterruptedException
+     */
+   static public void getGravityAtPoints(
+           ArrayList<Point3D> points,
+           double density,
+           double rotationRate,
+           double referencePotential,
+           String shapeModelFile,
+           ArrayList<Double> elevation,
+           ArrayList<Double> acceleration,
+           ArrayList<Double> potential) throws IOException, InterruptedException
+   {
+       // First create a temporary file containing these points
+       File pointsFile = new File(Configuration.getTempFolder() + File.separator + "gravity-points.txt");
+       Point3D.savePointArray(points, pointsFile);
+
+       // Run the gravity program
+       GravityProgram gravityProgram = new GravityProgram();
+       gravityProgram.setDensity(density);
+       gravityProgram.setRotationRate(rotationRate);
+       gravityProgram.setRefPotential(referencePotential);
+       gravityProgram.setShapeModelFile(shapeModelFile);
+       gravityProgram.setTrackFile(pointsFile.getAbsolutePath());
+       gravityProgram.setColumnsToUse("0,1,2");
+       Process process = gravityProgram.runGravity();
+       process.waitFor();
+
+       elevation.clear();
+       acceleration.clear();
+       potential.clear();
+
+       String filename = gravityProgram.getElevationFile();
+       elevation.addAll(FileUtil.getFileLinesAsDoubleList(filename));
+       filename = gravityProgram.getAccelerationMagnitudeFile();
+       acceleration.addAll(FileUtil.getFileLinesAsDoubleList(filename));
+       filename = gravityProgram.getPotentialFile();
+       potential.addAll(FileUtil.getFileLinesAsDoubleList(filename));
+   }
 }

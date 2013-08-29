@@ -1,5 +1,11 @@
 package edu.jhuapl.near.util;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+
 public class Point3D
 {
     public double[] xyz = new double[3];
@@ -24,5 +30,18 @@ public class Point3D
     static public double distanceBetween(Point3D pt1, Point3D pt2)
     {
         return MathUtil.distanceBetween(pt1.xyz, pt2.xyz);
+    }
+
+    static public void savePointArray(ArrayList<Point3D> pointArray, File file) throws IOException
+    {
+        FileWriter fstream = new FileWriter(file);
+        BufferedWriter out = new BufferedWriter(fstream);
+        for (Point3D p : pointArray)
+        {
+            out.write(p.xyz[0] + " " +
+                    p.xyz[1] + " " +
+                    p.xyz[2] + "\n");
+        }
+        out.close();
     }
 }
