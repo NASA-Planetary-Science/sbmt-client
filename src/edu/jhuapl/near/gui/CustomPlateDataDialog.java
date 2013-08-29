@@ -166,6 +166,7 @@ public class CustomPlateDataDialog extends javax.swing.JDialog {
                 String newFilename = "platedata-" + uuid + ".txt";
                 String newFilepath = getCustomDataFolder() + File.separator + newFilename;
                 FileUtil.copyFile(newCellDataInfo.coloringFile, newFilepath);
+                // Change coloringFile to the new filename
                 newCellDataInfo.coloringFile = newFilename;
             }
             catch (IOException e)
@@ -328,8 +329,8 @@ public class CustomPlateDataDialog extends javax.swing.JDialog {
             if (dialog.getOkayPressed())
             {
                 cellDataInfo = dialog.getCellDataInfo();
-                modelManager.getSmallBodyModel().addCustomPlateData(cellDataInfo);
                 saveCellData(((DefaultListModel)cellDataList.getModel()).getSize(), null, cellDataInfo);
+                modelManager.getSmallBodyModel().addCustomPlateData(cellDataInfo);
             }
         }
         catch (IOException e)
@@ -364,8 +365,8 @@ public class CustomPlateDataDialog extends javax.swing.JDialog {
                 if (dialog.getOkayPressed())
                 {
                     ColoringInfo cellDataInfo = dialog.getCellDataInfo();
-                    modelManager.getSmallBodyModel().setCustomPlateData(selectedItem, cellDataInfo);
                     saveCellData(selectedItem, oldCellDataInfo, cellDataInfo);
+                    modelManager.getSmallBodyModel().setCustomPlateData(selectedItem, cellDataInfo);
                 }
             }
         }
