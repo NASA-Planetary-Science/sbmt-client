@@ -36,13 +36,32 @@ public class MSIMathildeImage extends MSIImage
     @Override
     protected String initializeLabelFileFullPath(File rootFolder)
     {
-        return null;
+        ImageKey key = getKey();
+        if (rootFolder == null)
+        {
+            return FileCache.getFileFromServer(key.name + ".LBL").getAbsolutePath();
+        }
+        else
+        {
+            return rootFolder.getAbsolutePath() + key.name + ".LBL";
+        }
     }
 
     @Override
     protected String initializeInfoFileFullPath(File rootFolder)
     {
-        return null;
+        ImageKey key = getKey();
+        File keyFile = new File(key.name);
+        String sumFilename = keyFile.getParentFile().getParent() + "/infofiles/"
+        + keyFile.getName().substring(0, 20) + ".INFO";
+        if (rootFolder == null)
+        {
+            return FileCache.getFileFromServer(sumFilename, false).getAbsolutePath();
+        }
+        else
+        {
+            return rootFolder.getAbsolutePath() + sumFilename;
+        }
     }
 
     @Override
