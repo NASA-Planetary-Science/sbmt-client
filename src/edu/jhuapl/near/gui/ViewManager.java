@@ -101,7 +101,7 @@ public class ViewManager extends JPanel
     {
         View view = View.createCustomView(statusBar, name);
         customViews.add(view);
-        add(view, name);
+        add(view, view.getUniqueName());
         return view;
     }
 
