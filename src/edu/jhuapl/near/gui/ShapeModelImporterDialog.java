@@ -120,7 +120,7 @@ public class ShapeModelImporterDialog extends javax.swing.JDialog
             {
                 for (File dir : dirs)
                 {
-                    if (dir.getName().equals(name))
+                    if (dir.getName().equalsIgnoreCase(name))
                         return "Name already exists.";
                 }
             }

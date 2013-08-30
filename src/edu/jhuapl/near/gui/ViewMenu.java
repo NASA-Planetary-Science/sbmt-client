@@ -5,6 +5,9 @@ import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -124,6 +127,46 @@ public class ViewMenu extends JMenu implements PropertyChangeListener
         return null;
     }
 
+    private void sortCustomMenuItems()
+    {
+        // First create a list of the custom menu items and remove them
+        // from the menu.
+        ArrayList<JMenuItem> customMenuItems = new ArrayList<JMenuItem>();
+        int numberItems = this.getItemCount();
+        for (int i=numberItems-1; i>=0; --i)
+        {
+            JMenuItem item = this.getItem(i);
+            if (item != null)
+            {
+                Action action = item.getAction();
+                if (action instanceof ShowBodyAction)
+                {
+                    customMenuItems.add(item);
+                    this.remove(item);
+                }
+            }
+        }
+
+        // Then sort them
+        Collections.sort(customMenuItems, new Comparator<JMenuItem>()
+        {
+            @Override
+            public int compare(JMenuItem o1, JMenuItem o2)
+            {
+                return o1.getText().compareToIgnoreCase(o2.getText());
+            }
+        });
+
+
+        // Now add back in the items
+        numberItems = customMenuItems.size();
+        for (int i=0; i<numberItems; ++i)
+        {
+            JMenuItem item = customMenuItems.get(i);
+            this.add(item);
+        }
+    }
+
     public void addCustomMenuItem(View view)
     {
         if (rootPanel.getNumberOfCustomViews() == 1)
@@ -133,6 +176,8 @@ public class ViewMenu extends JMenu implements PropertyChangeListener
         mi.setText(view.getDisplayName());
         group.add(mi);
         this.add(mi);
+
+        sortCustomMenuItems();
     }
 
     public void removeCustomMenuItem(View view)
