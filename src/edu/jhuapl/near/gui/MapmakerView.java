@@ -55,7 +55,7 @@ import edu.jhuapl.near.popupmenus.PopupMenu;
 import edu.jhuapl.near.util.LatLon;
 import edu.jhuapl.near.util.MathUtil;
 
-public class TopoView extends JFrame
+public class MapmakerView extends JFrame
 {
     private JButton newButton;
     private JToggleButton editButton;
@@ -64,7 +64,7 @@ public class TopoView extends JFrame
     private JButton loadButton;
     private LineModel lineModel;
     private PickManager pickManager;
-    private TopoPlot plot;
+    private MapmakerPlot plot;
     private int currentColorIndex = 0;
     private MapletBoundaryCollection mapletBoundaries;
     private JComboBox coloringTypeComboBox;
@@ -82,7 +82,7 @@ public class TopoView extends JFrame
     private static final String Color = "Color";
 
 
-    public TopoView(File cubFile, File lblFile, SmallBodyModel parentSmallBodyModel,
+    public MapmakerView(File cubFile, File lblFile, SmallBodyModel parentSmallBodyModel,
             MapletBoundaryCollection mapletBoundaries) throws IOException
     {
         this.mapletBoundaries = mapletBoundaries;
@@ -128,7 +128,7 @@ public class TopoView extends JFrame
 
         JPanel panel = new JPanel(new BorderLayout());
 
-        plot = new TopoPlot(lineModel, dem);
+        plot = new MapmakerPlot(lineModel, dem);
         plot.getChartPanel().setMinimumSize(new Dimension(100, 100));
         plot.getChartPanel().setPreferredSize(new Dimension(400, 400));
 
@@ -149,7 +149,7 @@ public class TopoView extends JFrame
         {
             public void windowClosing(WindowEvent e)
             {
-                TopoView.this.mapletBoundaries.removeBoundary(dem);
+                MapmakerView.this.mapletBoundaries.removeBoundary(dem);
                 System.gc();
                 vtkGlobalJavaHash.GC();
             }
@@ -523,7 +523,7 @@ public class TopoView extends JFrame
             int index = dem.getColoringIndex();
             if (index < 0)
             {
-                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(TopoView.this),
+                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(MapmakerView.this),
                         "Please first display the plate data you wish to export.",
                         "Error",
                         JOptionPane.ERROR_MESSAGE);
@@ -532,7 +532,7 @@ public class TopoView extends JFrame
             }
 
             String name = dem.getColoringName(index) + ".txt";
-            File file = CustomFileChooser.showSaveDialog(TopoView.this, "Export Plate Data", name);
+            File file = CustomFileChooser.showSaveDialog(MapmakerView.this, "Export Plate Data", name);
 
             try
             {
@@ -542,7 +542,7 @@ public class TopoView extends JFrame
             catch (Exception e1)
             {
                 e1.printStackTrace();
-                JOptionPane.showMessageDialog(TopoView.this,
+                JOptionPane.showMessageDialog(MapmakerView.this,
                         "An error occurred exporting the plate data.",
                         "Error",
                         JOptionPane.ERROR_MESSAGE);

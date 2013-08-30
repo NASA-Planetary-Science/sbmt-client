@@ -27,7 +27,7 @@ import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.pick.PickManager;
 import edu.jhuapl.near.pick.PickManager.PickMode;
 
-public class TopoPanel extends JPanel implements ActionListener
+public class MapmakerPanel extends JPanel implements ActionListener
 {
     private ModelManager modelManager;
     private JToggleButton selectRegionButton;
@@ -39,7 +39,7 @@ public class TopoPanel extends JPanel implements ActionListener
     private JSpinner halfSizeSpinner;
     private String mapmakerpath;
 
-    public TopoPanel(final ModelManager modelManager,
+    public MapmakerPanel(final ModelManager modelManager,
             final PickManager pickManager,
             String mapmakerPath)
     {
@@ -258,7 +258,7 @@ public class TopoPanel extends JPanel implements ActionListener
 
         try
         {
-            new TopoView(mapmakerWorker.getCubeFile(), mapmakerWorker.getLabelFile(),
+            new MapmakerView(mapmakerWorker.getCubeFile(), mapmakerWorker.getLabelFile(),
                     modelManager.getSmallBodyModel(),
                     (MapletBoundaryCollection) modelManager.getModel(ModelNames.MAPLET_BOUNDARY));
         }
@@ -280,7 +280,7 @@ public class TopoPanel extends JPanel implements ActionListener
         File lblFile = new File(filename.substring(0, filename.length()-3) + "lbl");
         try
         {
-            new TopoView(file, lblFile,
+            new MapmakerView(file, lblFile,
                     modelManager.getSmallBodyModel(),
                     (MapletBoundaryCollection) modelManager.getModel(ModelNames.MAPLET_BOUNDARY));
         }

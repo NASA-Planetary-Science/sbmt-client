@@ -29,7 +29,7 @@ import edu.jhuapl.near.model.LineModel;
 import edu.jhuapl.near.util.Properties;
 
 
-public class TopoPlot implements ChartMouseListener, PropertyChangeListener
+public class MapmakerPlot implements ChartMouseListener, PropertyChangeListener
 {
     private XYDataset heightDistanceDataset;
     private LineModel lineModel;
@@ -38,7 +38,7 @@ public class TopoPlot implements ChartMouseListener, PropertyChangeListener
 
     private int numberOfProfilesCreated = 0;
 
-    public TopoPlot(LineModel lineModel, DEMModel demModel)
+    public MapmakerPlot(LineModel lineModel, DEMModel demModel)
     {
         this.lineModel = lineModel;
         this.demModel = demModel;

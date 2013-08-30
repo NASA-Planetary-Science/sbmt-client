@@ -422,6 +422,6 @@ public class View extends JPanel
 
     static private JComponent createMapmakerTab(ModelConfig modelConfig, ModelManager modelManager, PickManager pickManager)
     {
-        return new TopoPanel(modelManager, pickManager, modelConfig.pathOnServer + "/mapmaker.zip");
+        return new MapmakerPanel(modelManager, pickManager, modelConfig.pathOnServer + "/mapmaker.zip");
     }
 }
