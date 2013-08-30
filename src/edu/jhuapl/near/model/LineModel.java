@@ -1081,19 +1081,22 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
 
     /**
      * Similar to the saveProfile function but this one uses the gravity program
-     * directly to compute the elevation, acceleration, and potential columns
-     * rather than simply getting the value from the plate data. It also does
-     * not save out any of the plate data.
+     * directly to compute the slope, elevation, acceleration, and potential columns
+     * rather than simply getting the value from the plate data. It also has
+     * a third argument for passing in a different shape model to use which is useful
+     * for saving profiles on mapmaker maplets since we can't run the gravity program
+     * on a maplet. It also does not save out any of the plate data.
      *
      * @param cellId
      * @param file
-     * @param smallBodyModel
+     * @param otherSmallBodyModel - use this small body for running gravity program. If null
+     *                              use small body model passed into constructor.
      * @throws Exception
      */
-    public void saveProfileUsingGravityProgram(int cellId, File file, SmallBodyModel smallBodyModel) throws Exception
+    public void saveProfileUsingGravityProgram(int cellId, File file, SmallBodyModel otherSmallBodyModel) throws Exception
     {
-        if (smallBodyModel == null)
-            smallBodyModel = this.smallBodyModel;
+        if (otherSmallBodyModel == null)
+            otherSmallBodyModel = this.smallBodyModel;
 
         Line lin = this.lines.get(cellId);
 
@@ -1114,6 +1117,7 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
         out.write(",Longitude (deg)");
         out.write(",Radius (m)");
 
+        out.write(",Slope (deg)");
         out.write(",Elevation (m)");
         out.write(",Gravitational Acceleration (m/s^2)");
         out.write(",Gravitational Potential (J/kg)");
@@ -1125,24 +1129,22 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
 
         // Run the gravity program
         File shapeModelFile = FileCache.getFileFromServer(
-                smallBodyModel.getServerPathToShapeModelFileInPlateFormat());
+                otherSmallBodyModel.getServerPathToShapeModelFileInPlateFormat());
         ArrayList<Double> elevation = new ArrayList<Double>();
-        ArrayList<Double> acceleration = new ArrayList<Double>();
+        ArrayList<Double> accelerationMagnitude = new ArrayList<Double>();
+        ArrayList<Point3D> accelerationVector = new ArrayList<Point3D>();
         ArrayList<Double> potential = new ArrayList<Double>();
         GravityProgram.getGravityAtPoints(
                 xyzPointList,
-                smallBodyModel.getDensity(),
-                smallBodyModel.getRotationRate(),
-                smallBodyModel.getReferencePotential(),
+                otherSmallBodyModel.getDensity(),
+                otherSmallBodyModel.getRotationRate(),
+                otherSmallBodyModel.getReferencePotential(),
                 shapeModelFile.getAbsolutePath(),
                 elevation,
-                acceleration,
+                accelerationMagnitude,
+                accelerationVector,
                 potential);
 
-        // For each point in xyzPointList, find the cell containing that
-        // point and then, using barycentric coordinates find the value
-        // of the height at that point
-        //
         // To compute the distance, assume we have a straight line connecting the first
         // and last points of xyzPointList. For each point, p, in xyzPointList, find the point
         // on the line closest to p. The distance from p to the start of the line is what
@@ -1182,8 +1184,20 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
             out.write("," + llr.lon);
             out.write("," + 1000.0 * llr.rad);
 
+            // compute slope. Note to get the normal, use the smallBodyModel passed into constructor of
+            // this class, not the smallBodyModel passed into this function.
+            // The slope is the angular separation between the (negative) acceleration vector and
+            // the normal vector.
+            double[] normal = this.smallBodyModel.getClosestNormal(p.xyz);
+            double[] accVector = accelerationVector.get(i).xyz;
+            accVector[0] = -accVector[0];
+            accVector[1] = -accVector[1];
+            accVector[2] = -accVector[2];
+            double slope = MathUtil.vsep(normal, accVector) * 180.0 / Math.PI;
+
+            out.write("," + slope);
             out.write("," + elevation.get(i));
-            out.write("," + acceleration.get(i));
+            out.write("," + accelerationMagnitude.get(i));
             out.write("," + potential.get(i));
 
             out.write(lineSeparator);

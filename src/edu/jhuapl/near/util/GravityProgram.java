@@ -151,6 +151,12 @@ public class GravityProgram
                 (new File(shapeModelFile)).getName() + "-acceleration-magnitude.txt";
     }
 
+    public String getAccelerationVectorFile()
+    {
+        return processBuilder.directory() + File.separator +
+                (new File(shapeModelFile)).getName() + "-acceleration.txt";
+    }
+
     public String getElevationFile()
     {
         return processBuilder.directory() + File.separator +
@@ -168,7 +174,8 @@ public class GravityProgram
      * @param referencePotential
      * @param shapeModelFile
      * @param elevation
-     * @param acceleration
+     * @param accelerationMagnitude
+     * @param accelerationVector
      * @param potential
      * @throws IOException
      * @throws InterruptedException
@@ -180,7 +187,8 @@ public class GravityProgram
            double referencePotential,
            String shapeModelFile,
            ArrayList<Double> elevation,
-           ArrayList<Double> acceleration,
+           ArrayList<Double> accelerationMagnitude,
+           ArrayList<Point3D> accelerationVector,
            ArrayList<Double> potential) throws IOException, InterruptedException
    {
        // First create a temporary file containing these points
@@ -199,13 +207,18 @@ public class GravityProgram
        process.waitFor();
 
        elevation.clear();
-       acceleration.clear();
+       accelerationMagnitude.clear();
        potential.clear();
 
        String filename = gravityProgram.getElevationFile();
        elevation.addAll(FileUtil.getFileLinesAsDoubleList(filename));
+
        filename = gravityProgram.getAccelerationMagnitudeFile();
-       acceleration.addAll(FileUtil.getFileLinesAsDoubleList(filename));
+       accelerationMagnitude.addAll(FileUtil.getFileLinesAsDoubleList(filename));
+
+       filename = gravityProgram.getAccelerationVectorFile();
+       accelerationVector.addAll(Point3D.loadPointArray(filename));
+
        filename = gravityProgram.getPotentialFile();
        potential.addAll(FileUtil.getFileLinesAsDoubleList(filename));
    }

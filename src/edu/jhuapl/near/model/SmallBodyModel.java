@@ -752,6 +752,12 @@ public class SmallBodyModel extends Model
         return PolyDataUtil.getPolyDataNormalAtPoint(point, smallBodyPolyData, pointLocator);
     }
 
+    public double[] getClosestNormal(double[] point)
+    {
+        int closestCell = findClosestCell(point);
+        return getCellNormals().GetTuple3(closestCell);
+    }
+
     /**
      * This returns the closest point to the model to pt. Note the returned point need
      * not be a vertex of the model and can lie anywhere on a plate.

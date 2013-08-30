@@ -1,10 +1,15 @@
 package edu.jhuapl.near.util;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.zip.GZIPInputStream;
 
 public class Point3D
 {
@@ -43,5 +48,31 @@ public class Point3D
                     p.xyz[2] + "\n");
         }
         out.close();
+    }
+
+    public static ArrayList<Point3D> loadPointArray(String filename) throws IOException
+    {
+        InputStream fs = new FileInputStream(filename);
+        if (filename.toLowerCase().endsWith(".gz"))
+            fs = new GZIPInputStream(fs);
+        InputStreamReader isr = new InputStreamReader(fs);
+        BufferedReader in = new BufferedReader(isr);
+
+        ArrayList<Point3D> values = new ArrayList<Point3D>();
+        String line;
+
+        while ((line = in.readLine()) != null)
+        {
+            String [] tokens = line.trim().split("\\s+");
+
+            values.add(new Point3D(new double[]{
+                    Double.parseDouble(tokens[0]),
+                    Double.parseDouble(tokens[1]),
+                    Double.parseDouble(tokens[2])}));
+        }
+
+        in.close();
+
+        return values;
     }
 }
