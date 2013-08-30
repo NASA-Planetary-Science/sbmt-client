@@ -5,14 +5,14 @@ This README file describes how to build and run the gravity and
 elevation-slope programs for computing the gravitational acceleration,
 potential, elevation, and slope of an arbitrary triangular plate
 model.  It implements the algorithm by Werner and Scheeres[1] as well as
-simpler, faster algorithm by Andy Cheng[2].
+the simpler, faster algorithm by Andy Cheng[2].
 
 
 ------------------------
 Compilation instructions
 ------------------------
 Precompiled binaries are provided for 64-bit Intel based macs running
-10.5 are higher. To build it from source, unzip and change into the folder
+10.6 or higher. To build it from source, unzip and change into the folder
 called 'source' and run the compile.sh shell script. This will create
 the gravity and elevation-slope executables in the current
 directory. Note that on Windows platforms you will likely need cygwin
