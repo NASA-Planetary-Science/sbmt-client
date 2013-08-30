@@ -1,10 +1,9 @@
-package edu.jhuapl.near.gui.eros;
+package edu.jhuapl.near.gui;
 
 import java.awt.Component;
 import java.io.File;
 import java.io.IOException;
 
-import edu.jhuapl.near.gui.FileDownloadSwingWorker;
 import edu.jhuapl.near.util.FileCache;
 import edu.jhuapl.near.util.LatLon;
 import edu.jhuapl.near.util.Mapmaker;

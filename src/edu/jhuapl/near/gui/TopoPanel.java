@@ -20,7 +20,6 @@ import javax.swing.SpinnerNumberModel;
 
 import net.miginfocom.swing.MigLayout;
 
-import edu.jhuapl.near.gui.eros.MapmakerSwingWorker;
 import edu.jhuapl.near.model.AbstractEllipsePolygonModel;
 import edu.jhuapl.near.model.MapletBoundaryCollection;
 import edu.jhuapl.near.model.ModelManager;
