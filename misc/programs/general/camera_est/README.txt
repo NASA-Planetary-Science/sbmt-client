@@ -12,7 +12,7 @@ Usage: ./cam-est -w <width> -h <height> -f <focal-length> <inputfile> <output-su
                       below.
   <output-sumfile>    generated sumfile containing estimated position
                       and orientation of camera. The sumfile is in the
-                      same format used by Bob Gaskell.                      
+                      same format used by Bob Gaskell.
 
 This program estimates the position and orientation of a camera when
 an image was acquired using a set of corresponding 2D image points and
@@ -20,7 +20,7 @@ an image was acquired using a set of corresponding 2D image points and
 must supply the pixel width and height of the image and the focal
 length of the camera in pixels.
 
-The initial guess as well as the corresponding image and pixel points
+The initial guess as well as the corresponding image and model points
 must be placed in an input file with the following format: The first
 line must contain the initial guess of the spacecraft position
 expressed in Cartesian coordinates, where each of the 3 coordinates
@@ -30,7 +30,8 @@ the 4 values defining the quaternion are separated by spaces. The
 third line and on-wards should contain the corresponding 2D image and
 3D model points. The model points must be expressed in Cartesian
 coordinates (separated by spaces), and the image points should be
-expressed in pixel space (separated by spaces). Fractional pixel
+expressed in pixel space (separated by spaces), with the bottom left
+corner of the image assumed to be at (0,0). Fractional pixel
 coordinates are allowed. There is no limit to the number of
 corresponding points, but at least 3 point pairs should be provided
 for best results.
@@ -77,7 +78,7 @@ get each of the 3 types of input:
 1. Shape model points: To get the position of a shape model point,
 simply click on the point in the asteroid and the point will be
 printed in the Java Console (If the Java Console is not visible, you
-will need to show it using the Java preferences). 
+will need to show it using the Java preferences).
 2. Pixel coordinates: To get the pixel coordinates of an image point,
 you will need to load the image into the tool (using a dummy
 sumfile--since obviously we don't have one yet!). Then open up a 2D
@@ -100,11 +101,14 @@ Focal Lengths for various cameras (in pixels):
 Hayabusa's AMICA: 10029.45948178711
 NEAR's MSI:       10407.030418092796
 Galileo's SSI:    98493.37270341207
+HRSC/SRC          109844.44444444444
 
 Vertical field of view for various cameras (in degrees):
 Hayabusa's AMICA: 5.839083
 NEAR's MSI:       2.9505
 Galileo's SSI:    0.465815
+HRSC/SRC          0.5385803274229739
+
 
 
 Contact: Please contact Eli Kahn at eliezer.kahn@jhuapl.edu if
