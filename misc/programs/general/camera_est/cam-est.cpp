@@ -314,7 +314,7 @@ void saveSumfile(const char* sumfilename,
     fout << "IMAGE-NAME\n";
     fout << "2000 JAN 01 00:00:00.000\n";
     fout << imageWidth << " " << imageHeight << " 0 0 NPX, NLN, THRSH\n";
-    fout << "0 0 0 MMFL, CTR\n";
+    fout << focal_length << " 0 0 MMFL, CTR\n";
     fout << -scpos[0] << " " << -scpos[1] << " " << -scpos[2] << " SCOBJ\n";
 
     double m[3][3];
@@ -324,7 +324,7 @@ void saveSumfile(const char* sumfilename,
     fout << m[1][0] << " " << m[1][1] << " " << m[1][2] << " CY\n";
     fout << m[2][0] << " " << m[2][1] << " " << m[2][2] << " CZ\n";
     fout << "0 0 1 SZ\n";
-
+    fout << "1 0 0 0 1 0 K-MATRIX\n";
     fout << flush;
 
     fout.close();
