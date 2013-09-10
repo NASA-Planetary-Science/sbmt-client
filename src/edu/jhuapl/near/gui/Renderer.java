@@ -61,6 +61,22 @@ public class Renderer extends JPanel implements
         NEGATIVE_Z
     }
 
+    public enum ProjectionType
+    {
+        PERSPECTIVE {
+            @Override
+            public String toString() {
+                return "Perspective";
+            }
+        },
+        ORTHOGRAPHIC {
+            @Override
+            public String toString() {
+                return "Orthographic";
+            }
+        }
+    }
+
     private vtkEnhancedRenderWindowPanel renWin;
     private ModelManager modelManager;
     private vtkInteractorStyleTrackballCamera trackballCameraInteractorStyle;
@@ -442,6 +458,28 @@ public class Renderer extends JPanel implements
     public void resetToDefaultCameraViewAngle()
     {
         setCameraViewAngle(30.0);
+    }
+
+    public void setProjectionType(ProjectionType projectionType)
+    {
+        renWin.lock();
+        vtkCamera cam = renWin.GetRenderer().GetActiveCamera();
+        if (projectionType == ProjectionType.ORTHOGRAPHIC)
+            cam.ParallelProjectionOn();
+        else
+            cam.ParallelProjectionOff();
+        renWin.unlock();
+        renWin.resetCameraClippingRange();
+        renWin.Render();
+    }
+
+    public ProjectionType getProjectionType()
+    {
+        vtkCamera cam = renWin.GetRenderer().GetActiveCamera();
+        if (cam.GetParallelProjection() != 0)
+            return ProjectionType.ORTHOGRAPHIC;
+        else
+            return ProjectionType.PERSPECTIVE;
     }
 
     /**

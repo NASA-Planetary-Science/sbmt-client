@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -16,6 +17,8 @@ import net.miginfocom.swing.MigLayout;
 
 import org.apache.commons.math.geometry.NotARotationMatrixException;
 import org.apache.commons.math.geometry.Rotation;
+
+import edu.jhuapl.near.gui.Renderer.ProjectionType;
 
 public class CameraDialog extends JDialog implements ActionListener
 {
@@ -28,6 +31,8 @@ public class CameraDialog extends JDialog implements ActionListener
     private JLabel distanceLabel;
     private JTextField distanceField;
     private JLabel kmLabel;
+    private JLabel projLabel;
+    private JComboBox projComboBox;
 
     private void printCameraOrientation()
     {
@@ -106,7 +111,12 @@ public class CameraDialog extends JDialog implements ActionListener
         kmLabel = new JLabel("km");
         panel.add(kmLabel, "cell 2 1");
 
-        panel.add(buttonPanel, "cell 0 2 3 1,alignx right");
+        projLabel = new JLabel("Projection Type");
+        projComboBox = new JComboBox(Renderer.ProjectionType.values());
+        panel.add(projLabel, "cell 0 2,alignx trailing");
+        panel.add(projComboBox, "cell 1 2,growx");
+
+        panel.add(buttonPanel, "cell 0 3 3 1,alignx right");
 
         setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
 
@@ -141,6 +151,8 @@ public class CameraDialog extends JDialog implements ActionListener
             }
             // Reset the text field in case the requested change was not fulfilled.
             distanceField.setText(String.valueOf(renderer.getCameraDistance()));
+
+            renderer.setProjectionType((ProjectionType)projComboBox.getSelectedItem());
         }
         else if (e.getSource() == resetButton)
         {
@@ -160,6 +172,7 @@ public class CameraDialog extends JDialog implements ActionListener
 
         fovField.setText(String.valueOf(renderer.getCameraViewAngle()));
         distanceField.setText(String.valueOf(renderer.getCameraDistance()));
+        projComboBox.setSelectedItem(renderer.getProjectionType());
 
         super.setVisible(b);
     }
