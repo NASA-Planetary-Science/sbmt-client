@@ -252,6 +252,8 @@ public class PreferencesDialog extends javax.swing.JDialog {
 
         lightingButtonGroup = new javax.swing.ButtonGroup();
         interactorStyleButtonGroup = new javax.swing.ButtonGroup();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jPanel11 = new javax.swing.JPanel();
         headlightRadioButton = new javax.swing.JRadioButton();
         intensityLabel = new javax.swing.JLabel();
         showAxesCheckBox = new javax.swing.JCheckBox();
@@ -330,7 +332,9 @@ public class PreferencesDialog extends javax.swing.JDialog {
         fontColorButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        getContentPane().setLayout(new java.awt.GridBagLayout());
+        getContentPane().setLayout(new java.awt.GridLayout());
+
+        jPanel11.setLayout(new java.awt.GridBagLayout());
 
         lightingButtonGroup.add(headlightRadioButton);
         headlightRadioButton.setText("Headlight");
@@ -345,7 +349,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 4, 0, 0);
-        getContentPane().add(headlightRadioButton, gridBagConstraints);
+        jPanel11.add(headlightRadioButton, gridBagConstraints);
 
         intensityLabel.setText("Intensity");
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -353,7 +357,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 4;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 4);
-        getContentPane().add(intensityLabel, gridBagConstraints);
+        jPanel11.add(intensityLabel, gridBagConstraints);
 
         showAxesCheckBox.setText("Show Axes");
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -361,7 +365,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 9;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 4, 0, 0);
-        getContentPane().add(showAxesCheckBox, gridBagConstraints);
+        jPanel11.add(showAxesCheckBox, gridBagConstraints);
 
         interactiveCheckBox.setText("Interactive");
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -369,10 +373,9 @@ public class PreferencesDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 10;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 4, 0, 0);
-        getContentPane().add(interactiveCheckBox, gridBagConstraints);
+        jPanel11.add(interactiveCheckBox, gridBagConstraints);
 
         lightingButtonGroup.add(lightKitRadioButton);
-        lightKitRadioButton.setSelected(true);
         lightKitRadioButton.setText("Light Kit");
         lightKitRadioButton.setToolTipText("A Light Kit is a set of several lights of various strengths positioned to provide suitable illumination for most situations.");
         lightKitRadioButton.addActionListener(new java.awt.event.ActionListener() {
@@ -385,7 +388,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 1;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 4, 0, 0);
-        getContentPane().add(lightKitRadioButton, gridBagConstraints);
+        jPanel11.add(lightKitRadioButton, gridBagConstraints);
 
         jPanel1.setLayout(new java.awt.GridBagLayout());
 
@@ -430,7 +433,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.weighty = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(15, 0, 0, 0);
-        getContentPane().add(jPanel1, gridBagConstraints);
+        jPanel11.add(jPanel1, gridBagConstraints);
 
         jPanel2.setLayout(new java.awt.GridBagLayout());
 
@@ -455,7 +458,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(10, 4, 5, 0);
-        getContentPane().add(jPanel2, gridBagConstraints);
+        jPanel11.add(jPanel2, gridBagConstraints);
 
         jPanel3.setLayout(new java.awt.GridBagLayout());
 
@@ -478,7 +481,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
         gridBagConstraints.gridwidth = 4;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(15, 4, 5, 0);
-        getContentPane().add(jPanel3, gridBagConstraints);
+        jPanel11.add(jPanel3, gridBagConstraints);
 
         intensitySpinner.setModel(new javax.swing.SpinnerNumberModel(1.0d, 0.0d, 1.0d, 0.1d));
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -487,7 +490,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.ipadx = 50;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        getContentPane().add(intensitySpinner, gridBagConstraints);
+        jPanel11.add(intensitySpinner, gridBagConstraints);
 
         lightingButtonGroup.add(fixedLightRadioButton);
         fixedLightRadioButton.setText("Fixed Light");
@@ -502,7 +505,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 4, 0, 0);
-        getContentPane().add(fixedLightRadioButton, gridBagConstraints);
+        jPanel11.add(fixedLightRadioButton, gridBagConstraints);
 
         latitudeLabel.setText("Latitude");
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -510,7 +513,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 5;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 4);
-        getContentPane().add(latitudeLabel, gridBagConstraints);
+        jPanel11.add(latitudeLabel, gridBagConstraints);
 
         latitudeTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.00"))));
         latitudeTextField.setPreferredSize(new java.awt.Dimension(100, 22));
@@ -519,7 +522,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 5;
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        getContentPane().add(latitudeTextField, gridBagConstraints);
+        jPanel11.add(latitudeTextField, gridBagConstraints);
 
         longitudeLabel.setText("Longitude");
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -527,7 +530,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 6;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 4);
-        getContentPane().add(longitudeLabel, gridBagConstraints);
+        jPanel11.add(longitudeLabel, gridBagConstraints);
 
         longitudeTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.00"))));
         longitudeTextField.setPreferredSize(new java.awt.Dimension(100, 22));
@@ -536,7 +539,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 6;
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        getContentPane().add(longitudeTextField, gridBagConstraints);
+        jPanel11.add(longitudeTextField, gridBagConstraints);
 
         distanceLabel.setText("Distance");
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -544,7 +547,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 7;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 4);
-        getContentPane().add(distanceLabel, gridBagConstraints);
+        jPanel11.add(distanceLabel, gridBagConstraints);
 
         distanceTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.00"))));
         distanceTextField.setPreferredSize(new java.awt.Dimension(100, 22));
@@ -553,7 +556,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 7;
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        getContentPane().add(distanceTextField, gridBagConstraints);
+        jPanel11.add(distanceTextField, gridBagConstraints);
 
         jPanel4.setLayout(new java.awt.GridBagLayout());
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -577,7 +580,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.insets = new java.awt.Insets(15, 4, 5, 0);
-        getContentPane().add(jPanel4, gridBagConstraints);
+        jPanel11.add(jPanel4, gridBagConstraints);
 
         showScaleBarCheckBox.setText("Show Scale Bar");
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -585,7 +588,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 21;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 4, 0, 0);
-        getContentPane().add(showScaleBarCheckBox, gridBagConstraints);
+        jPanel11.add(showScaleBarCheckBox, gridBagConstraints);
 
         jPanel5.setLayout(new java.awt.GridBagLayout());
 
@@ -608,7 +611,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
         gridBagConstraints.gridwidth = 4;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(15, 4, 5, 0);
-        getContentPane().add(jPanel5, gridBagConstraints);
+        jPanel11.add(jPanel5, gridBagConstraints);
 
         interactorStyleButtonGroup.add(trackballRadioButton);
         trackballRadioButton.setText("Trackball");
@@ -617,7 +620,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 23;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 4, 0, 0);
-        getContentPane().add(trackballRadioButton, gridBagConstraints);
+        jPanel11.add(trackballRadioButton, gridBagConstraints);
 
         interactorStyleButtonGroup.add(joystickRadioButton);
         joystickRadioButton.setText("Joystick");
@@ -626,7 +629,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 24;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 4, 0, 0);
-        getContentPane().add(joystickRadioButton, gridBagConstraints);
+        jPanel11.add(joystickRadioButton, gridBagConstraints);
 
         jPanel6.setLayout(new java.awt.GridBagLayout());
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -649,7 +652,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
         gridBagConstraints.gridwidth = 4;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(15, 4, 5, 0);
-        getContentPane().add(jPanel6, gridBagConstraints);
+        jPanel11.add(jPanel6, gridBagConstraints);
 
         jPanel7.setLayout(new java.awt.GridBagLayout());
 
@@ -680,7 +683,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
         gridBagConstraints.gridwidth = 3;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(0, 4, 0, 0);
-        getContentPane().add(jPanel7, gridBagConstraints);
+        jPanel11.add(jPanel7, gridBagConstraints);
 
         jPanel9.setLayout(new java.awt.GridBagLayout());
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -702,7 +705,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
         gridBagConstraints.gridwidth = 4;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(15, 4, 5, 0);
-        getContentPane().add(jPanel9, gridBagConstraints);
+        jPanel11.add(jPanel9, gridBagConstraints);
 
         jLabel8.setText("Motion Factor");
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -710,7 +713,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 28;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 4);
-        getContentPane().add(jLabel8, gridBagConstraints);
+        jPanel11.add(jLabel8, gridBagConstraints);
 
         mouseWheelMotionFactorSpinner.setModel(new javax.swing.SpinnerNumberModel(Double.valueOf(1.0d), null, null, Double.valueOf(0.1d)));
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -719,14 +722,14 @@ public class PreferencesDialog extends javax.swing.JDialog {
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.ipadx = 50;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        getContentPane().add(mouseWheelMotionFactorSpinner, gridBagConstraints);
+        jPanel11.add(mouseWheelMotionFactorSpinner, gridBagConstraints);
 
         selectionColorLabel.setText("Default");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 30;
         gridBagConstraints.insets = new java.awt.Insets(0, 4, 0, 0);
-        getContentPane().add(selectionColorLabel, gridBagConstraints);
+        jPanel11.add(selectionColorLabel, gridBagConstraints);
 
         selectionColorButton.setText("Change...");
         selectionColorButton.addActionListener(new java.awt.event.ActionListener() {
@@ -739,7 +742,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 30;
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        getContentPane().add(selectionColorButton, gridBagConstraints);
+        jPanel11.add(selectionColorButton, gridBagConstraints);
 
         jPanel10.setLayout(new java.awt.GridBagLayout());
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -761,7 +764,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
         gridBagConstraints.gridwidth = 4;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(15, 4, 5, 0);
-        getContentPane().add(jPanel10, gridBagConstraints);
+        jPanel11.add(jPanel10, gridBagConstraints);
 
         jPanel8.setLayout(new java.awt.GridBagLayout());
 
@@ -783,14 +786,14 @@ public class PreferencesDialog extends javax.swing.JDialog {
         gridBagConstraints.gridwidth = 4;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(15, 4, 5, 0);
-        getContentPane().add(jPanel8, gridBagConstraints);
+        jPanel11.add(jPanel8, gridBagConstraints);
 
         backgroundColorLabel.setText("Default");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 32;
         gridBagConstraints.insets = new java.awt.Insets(0, 4, 0, 0);
-        getContentPane().add(backgroundColorLabel, gridBagConstraints);
+        jPanel11.add(backgroundColorLabel, gridBagConstraints);
 
         backgroundColorButton.setText("Change...");
         backgroundColorButton.addActionListener(new java.awt.event.ActionListener() {
@@ -803,14 +806,14 @@ public class PreferencesDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 32;
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        getContentPane().add(backgroundColorButton, gridBagConstraints);
+        jPanel11.add(backgroundColorButton, gridBagConstraints);
 
         jLabel20.setText("X Axis Color");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 11;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        getContentPane().add(jLabel20, gridBagConstraints);
+        jPanel11.add(jLabel20, gridBagConstraints);
 
         xAxisColorButton.setText("Change...");
         xAxisColorButton.addActionListener(new java.awt.event.ActionListener() {
@@ -822,21 +825,21 @@ public class PreferencesDialog extends javax.swing.JDialog {
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 11;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        getContentPane().add(xAxisColorButton, gridBagConstraints);
+        jPanel11.add(xAxisColorButton, gridBagConstraints);
 
         jLabel21.setText("Y Axis Color");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 12;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        getContentPane().add(jLabel21, gridBagConstraints);
+        jPanel11.add(jLabel21, gridBagConstraints);
 
         jLabel22.setText("Z Axis Color");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 13;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        getContentPane().add(jLabel22, gridBagConstraints);
+        jPanel11.add(jLabel22, gridBagConstraints);
 
         yAxisColorButton.setText("Change...");
         yAxisColorButton.addActionListener(new java.awt.event.ActionListener() {
@@ -848,7 +851,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 12;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        getContentPane().add(yAxisColorButton, gridBagConstraints);
+        jPanel11.add(yAxisColorButton, gridBagConstraints);
 
         zAxisColorButton.setText("Change...");
         zAxisColorButton.addActionListener(new java.awt.event.ActionListener() {
@@ -860,7 +863,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 13;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        getContentPane().add(zAxisColorButton, gridBagConstraints);
+        jPanel11.add(zAxisColorButton, gridBagConstraints);
 
         xAxisColorLabel.setText("Default");
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -868,7 +871,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 11;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.insets = new java.awt.Insets(0, 4, 0, 0);
-        getContentPane().add(xAxisColorLabel, gridBagConstraints);
+        jPanel11.add(xAxisColorLabel, gridBagConstraints);
 
         yAxisColorLabel.setText("Default");
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -876,7 +879,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 12;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.insets = new java.awt.Insets(0, 4, 0, 0);
-        getContentPane().add(yAxisColorLabel, gridBagConstraints);
+        jPanel11.add(yAxisColorLabel, gridBagConstraints);
 
         zAxisColorLabel.setText("Default");
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -884,7 +887,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 13;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.insets = new java.awt.Insets(0, 4, 0, 0);
-        getContentPane().add(zAxisColorLabel, gridBagConstraints);
+        jPanel11.add(zAxisColorLabel, gridBagConstraints);
 
         jLabel15.setText("Size");
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -892,7 +895,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 15;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 4);
-        getContentPane().add(jLabel15, gridBagConstraints);
+        jPanel11.add(jLabel15, gridBagConstraints);
 
         axesSizeSpinner.setModel(new javax.swing.SpinnerNumberModel(0.2d, 0.0d, 1.0d, 0.1d));
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -901,7 +904,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.ipadx = 50;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        getContentPane().add(axesSizeSpinner, gridBagConstraints);
+        jPanel11.add(axesSizeSpinner, gridBagConstraints);
 
         jLabel16.setText("Line Width");
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -909,7 +912,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 16;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 4);
-        getContentPane().add(jLabel16, gridBagConstraints);
+        jPanel11.add(jLabel16, gridBagConstraints);
 
         axesLineWidthSpinner.setModel(new javax.swing.SpinnerNumberModel(1.0d, 1.0d, 128.0d, 1.0d));
         axesLineWidthSpinner.setMinimumSize(new java.awt.Dimension(41, 28));
@@ -920,7 +923,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.ipadx = 50;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        getContentPane().add(axesLineWidthSpinner, gridBagConstraints);
+        jPanel11.add(axesLineWidthSpinner, gridBagConstraints);
 
         jLabel17.setText("Font Size");
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -928,7 +931,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 17;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 4);
-        getContentPane().add(jLabel17, gridBagConstraints);
+        jPanel11.add(jLabel17, gridBagConstraints);
 
         jLabel18.setText("Cone Length");
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -936,7 +939,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 18;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 4);
-        getContentPane().add(jLabel18, gridBagConstraints);
+        jPanel11.add(jLabel18, gridBagConstraints);
 
         jLabel19.setText("Cone Radius");
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -944,7 +947,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 19;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 4);
-        getContentPane().add(jLabel19, gridBagConstraints);
+        jPanel11.add(jLabel19, gridBagConstraints);
 
         axesFontSpinner.setModel(new javax.swing.SpinnerNumberModel(12, 0, 128, 1));
         axesFontSpinner.setMinimumSize(new java.awt.Dimension(41, 28));
@@ -955,7 +958,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.ipadx = 50;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        getContentPane().add(axesFontSpinner, gridBagConstraints);
+        jPanel11.add(axesFontSpinner, gridBagConstraints);
 
         axesConeLengthSpinner.setModel(new javax.swing.SpinnerNumberModel(0.2d, 0.0d, 1.0d, 0.1d));
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -964,7 +967,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.ipadx = 50;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        getContentPane().add(axesConeLengthSpinner, gridBagConstraints);
+        jPanel11.add(axesConeLengthSpinner, gridBagConstraints);
 
         axesConeRadiusSpinner.setModel(new javax.swing.SpinnerNumberModel(0.4d, 0.0d, 1.0d, 0.1d));
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -973,14 +976,14 @@ public class PreferencesDialog extends javax.swing.JDialog {
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.ipadx = 50;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        getContentPane().add(axesConeRadiusSpinner, gridBagConstraints);
+        jPanel11.add(axesConeRadiusSpinner, gridBagConstraints);
 
         jLabel11.setText("Font Color");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 14;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        getContentPane().add(jLabel11, gridBagConstraints);
+        jPanel11.add(jLabel11, gridBagConstraints);
 
         fontColorLabel.setText("Default");
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -988,7 +991,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 14;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.insets = new java.awt.Insets(0, 4, 0, 0);
-        getContentPane().add(fontColorLabel, gridBagConstraints);
+        jPanel11.add(fontColorLabel, gridBagConstraints);
 
         fontColorButton.setText("Change...");
         fontColorButton.addActionListener(new java.awt.event.ActionListener() {
@@ -1000,7 +1003,11 @@ public class PreferencesDialog extends javax.swing.JDialog {
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 14;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        getContentPane().add(fontColorButton, gridBagConstraints);
+        jPanel11.add(fontColorButton, gridBagConstraints);
+
+        jScrollPane1.setViewportView(jPanel11);
+
+        getContentPane().add(jScrollPane1);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -1143,6 +1150,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
+    private javax.swing.JPanel jPanel11;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
@@ -1151,6 +1159,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
     private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
     private javax.swing.JPanel jPanel9;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
