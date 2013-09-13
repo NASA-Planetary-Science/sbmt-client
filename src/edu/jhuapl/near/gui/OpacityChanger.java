@@ -31,7 +31,7 @@ public class OpacityChanger extends JDialog implements ChangeListener
         this.image = image;
 
         opacityLabel = new JLabel("Opacity");
-        imageMapOpacitySpinner = new JSpinner(new SpinnerNumberModel(1.0, 0.0, 1.0, 0.1));
+        imageMapOpacitySpinner = new JSpinner(new SpinnerNumberModel(image.getImageOpacity(), 0.0, 1.0, 0.1));
         imageMapOpacitySpinner.setEditor(new JSpinner.NumberEditor(imageMapOpacitySpinner, "0.00"));
         imageMapOpacitySpinner.setPreferredSize(new Dimension(80, 21));
         imageMapOpacitySpinner.addChangeListener(this);
