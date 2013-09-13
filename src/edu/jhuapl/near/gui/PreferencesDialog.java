@@ -949,7 +949,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 4);
         jPanel11.add(jLabel19, gridBagConstraints);
 
-        axesFontSpinner.setModel(new javax.swing.SpinnerNumberModel(12, 0, 128, 1));
+        axesFontSpinner.setModel(new javax.swing.SpinnerNumberModel(12, 4, 128, 1));
         axesFontSpinner.setMinimumSize(new java.awt.Dimension(41, 28));
         axesFontSpinner.setPreferredSize(new java.awt.Dimension(41, 28));
         gridBagConstraints = new java.awt.GridBagConstraints();
