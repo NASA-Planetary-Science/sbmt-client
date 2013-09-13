@@ -91,6 +91,7 @@ public class Renderer extends JPanel implements
     // We need a separate flag for this since we should modify interaction if
     // axes are enabled
     private boolean interactiveAxes = true;
+    private double axesSize; // needed because java wrappers do not expose vtkOrientationMarkerWidget.GetViewport() function.
 
     public Renderer(final ModelManager modelManager)
     {
@@ -143,38 +144,38 @@ public class Renderer extends JPanel implements
 
         axes = new vtkAxesActor();
 
-        // Set the z axis to yellow since the blue default is
-        // hard to see on a black background.
-        vtkProperty property = axes.GetZAxisShaftProperty();
-        property.SetColor(1.0, 1.0, 0.0);
-        property = axes.GetZAxisTipProperty();
-        property.SetColor(1.0, 1.0, 0.0);
-
         vtkCaptionActor2D caption = axes.GetXAxisCaptionActor2D();
-        //caption.GetTextActor().SetTextScaleModeToNone();
+        caption.GetTextActor().SetTextScaleModeToNone();
         vtkTextProperty textProperty = caption.GetCaptionTextProperty();
-        //textProperty.SetFontSize(14);
         textProperty.BoldOff();
         textProperty.ItalicOff();
 
         caption = axes.GetYAxisCaptionActor2D();
-        //caption.GetTextActor().SetTextScaleModeToNone();
+        caption.GetTextActor().SetTextScaleModeToNone();
         textProperty = caption.GetCaptionTextProperty();
-        //textProperty.SetFontSize(14);
         textProperty.BoldOff();
         textProperty.ItalicOff();
 
         caption = axes.GetZAxisCaptionActor2D();
-        //caption.GetTextActor().SetTextScaleModeToNone();
+        caption.GetTextActor().SetTextScaleModeToNone();
         textProperty = caption.GetCaptionTextProperty();
-        //textProperty.SetFontSize(14);
         textProperty.BoldOff();
         textProperty.ItalicOff();
+
+        setXAxisColor(Preferences.getInstance().getAsIntArray(Preferences.AXES_XAXIS_COLOR, new int[]{255, 0, 0}));
+        setYAxisColor(Preferences.getInstance().getAsIntArray(Preferences.AXES_YAXIS_COLOR, new int[]{0, 255, 0}));
+        setZAxisColor(Preferences.getInstance().getAsIntArray(Preferences.AXES_ZAXIS_COLOR, new int[]{255, 255, 0}));
+        setAxesLabelFontSize((int)Preferences.getInstance().getAsLong(Preferences.AXES_FONT_SIZE, 14L));
+        setAxesLabelFontColor(Preferences.getInstance().getAsIntArray(Preferences.AXES_FONT_COLOR, new int[]{255, 255, 255}));
+        setAxesLineWidth(Preferences.getInstance().getAsDouble(Preferences.AXES_LINE_WIDTH, 1.0));
+        setAxesConeLength(Preferences.getInstance().getAsDouble(Preferences.AXES_CONE_LENGTH, 0.2));
+        setAxesConeRadius(Preferences.getInstance().getAsDouble(Preferences.AXES_CONE_RADIUS, 0.4));
 
         orientationWidget = new vtkOrientationMarkerWidget();
         orientationWidget.SetOrientationMarker(axes);
         orientationWidget.SetInteractor(renWin.getIren());
         orientationWidget.SetTolerance(10);
+        setAxesSize(Preferences.getInstance().getAsDouble(Preferences.AXES_SIZE, 0.2));
 
         javax.swing.SwingUtilities.invokeLater(new Runnable()
         {
@@ -776,5 +777,160 @@ public class Renderer extends JPanel implements
         }
 
         renWin.Render();
+    }
+
+    public void setAxesSize(double size)
+    {
+        this.axesSize = size;
+        orientationWidget.SetViewport(0.0, 0.0, size, size);
+        if (renWin.GetRenderWindow().GetNeverRendered() == 0)
+            renWin.Render();
+    }
+
+    public double getAxesSize()
+    {
+        return axesSize;
+    }
+
+    public void setAxesLineWidth(double width)
+    {
+        vtkProperty property = axes.GetXAxisShaftProperty();
+        property.SetLineWidth(width);
+        property = axes.GetYAxisShaftProperty();
+        property.SetLineWidth(width);
+        property = axes.GetZAxisShaftProperty();
+        property.SetLineWidth(width);
+        if (renWin.GetRenderWindow().GetNeverRendered() == 0)
+            renWin.Render();
+    }
+
+    public double getAxesLineWidth()
+    {
+        vtkProperty property = axes.GetXAxisShaftProperty();
+        return property.GetLineWidth();
+    }
+
+    public void setAxesLabelFontSize(int size)
+    {
+        vtkCaptionActor2D caption = axes.GetXAxisCaptionActor2D();
+        vtkTextProperty textProperty = caption.GetCaptionTextProperty();
+        textProperty.SetFontSize(size);
+        caption = axes.GetYAxisCaptionActor2D();
+        textProperty = caption.GetCaptionTextProperty();
+        textProperty.SetFontSize(size);
+        caption = axes.GetZAxisCaptionActor2D();
+        textProperty = caption.GetCaptionTextProperty();
+        textProperty.SetFontSize(size);
+        if (renWin.GetRenderWindow().GetNeverRendered() == 0)
+            renWin.Render();
+    }
+
+    public int getAxesLabelFontSize()
+    {
+        vtkCaptionActor2D caption = axes.GetXAxisCaptionActor2D();
+        vtkTextProperty textProperty = caption.GetCaptionTextProperty();
+        return textProperty.GetFontSize();
+    }
+
+    public void setAxesLabelFontColor(int[] color)
+    {
+        vtkCaptionActor2D caption = axes.GetXAxisCaptionActor2D();
+        vtkTextProperty textProperty = caption.GetCaptionTextProperty();
+        textProperty.SetColor(color[0]/255.0, color[1]/255.0, color[2]/255.0);
+        caption = axes.GetYAxisCaptionActor2D();
+        textProperty = caption.GetCaptionTextProperty();
+        textProperty.SetColor(color[0]/255.0, color[1]/255.0, color[2]/255.0);
+        caption = axes.GetZAxisCaptionActor2D();
+        textProperty = caption.GetCaptionTextProperty();
+        textProperty.SetColor(color[0]/255.0, color[1]/255.0, color[2]/255.0);
+        if (renWin.GetRenderWindow().GetNeverRendered() == 0)
+            renWin.Render();
+    }
+
+    public int[] getAxesLabelFontColor()
+    {
+        vtkCaptionActor2D caption = axes.GetXAxisCaptionActor2D();
+        vtkTextProperty textProperty = caption.GetCaptionTextProperty();
+        double[] c = textProperty.GetColor();
+        return new int[]{(int)(255.0*c[0]), (int)(255.0*c[1]), (int)(255.0*c[2])};
+    }
+
+    public void setXAxisColor(int[] color)
+    {
+        vtkProperty property = axes.GetXAxisShaftProperty();
+        property.SetColor(color[0]/255.0, color[1]/255.0, color[2]/255.0);
+        property = axes.GetXAxisTipProperty();
+        property.SetColor(color[0]/255.0, color[1]/255.0, color[2]/255.0);
+        if (renWin.GetRenderWindow().GetNeverRendered() == 0)
+            renWin.Render();
+    }
+
+    public int[] getXAxisColor()
+    {
+        vtkProperty property = axes.GetXAxisShaftProperty();
+        double[] c = property.GetColor();
+        return new int[]{(int)(255.0*c[0]), (int)(255.0*c[1]), (int)(255.0*c[2])};
+    }
+
+    public void setYAxisColor(int[] color)
+    {
+        vtkProperty property = axes.GetYAxisShaftProperty();
+        property.SetColor(color[0]/255.0, color[1]/255.0, color[2]/255.0);
+        property = axes.GetYAxisTipProperty();
+        property.SetColor(color[0]/255.0, color[1]/255.0, color[2]/255.0);
+        if (renWin.GetRenderWindow().GetNeverRendered() == 0)
+            renWin.Render();
+    }
+
+    public int[] getYAxisColor()
+    {
+        vtkProperty property = axes.GetYAxisShaftProperty();
+        double[] c = property.GetColor();
+        return new int[]{(int)(255.0*c[0]), (int)(255.0*c[1]), (int)(255.0*c[2])};
+    }
+
+    public void setZAxisColor(int[] color)
+    {
+        vtkProperty property = axes.GetZAxisShaftProperty();
+        property.SetColor(color[0]/255.0, color[1]/255.0, color[2]/255.0);
+        property = axes.GetZAxisTipProperty();
+        property.SetColor(color[0]/255.0, color[1]/255.0, color[2]/255.0);
+        if (renWin.GetRenderWindow().GetNeverRendered() == 0)
+            renWin.Render();
+    }
+
+    public int[] getZAxisColor()
+    {
+        vtkProperty property = axes.GetZAxisShaftProperty();
+        double[] c = property.GetColor();
+        return new int[]{(int)(255.0*c[0]), (int)(255.0*c[1]), (int)(255.0*c[2])};
+    }
+
+    public void setAxesConeLength(double size)
+    {
+        if (size > 1.0) size = 1.0;
+        if (size < 0.0) size = 0.0;
+        axes.SetNormalizedTipLength(size, size, size);
+        // Change the shaft length also to fill in any space.
+        axes.SetNormalizedShaftLength(1.0-size, 1.0-size, 1.0-size);
+        if (renWin.GetRenderWindow().GetNeverRendered() == 0)
+            renWin.Render();
+    }
+
+    public double getAxesConeLength()
+    {
+        return axes.GetNormalizedTipLength()[0];
+    }
+
+    public void setAxesConeRadius(double size)
+    {
+        axes.SetConeRadius(size);
+        if (renWin.GetRenderWindow().GetNeverRendered() == 0)
+            renWin.Render();
+    }
+
+    public double getAxesConeRadius()
+    {
+        return axes.GetConeRadius();
     }
 }

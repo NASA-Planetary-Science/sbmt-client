@@ -88,5 +88,10 @@ public class ColorUtil
         public int getIconHeight() {
             return height;
         }
+
+        public Color getColor()
+        {
+            return color;
+        }
     }
 }
