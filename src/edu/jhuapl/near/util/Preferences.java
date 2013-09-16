@@ -29,6 +29,15 @@ public class Preferences extends MapUtil
     public static final String RENDERER_PANEL_HEIGHT = "RendererPanelHeight";
     public static final String BACKGROUND_COLOR = "BackgroundColor";
     public static final String SELECTION_COLOR = "SelectionColor";
+    public static final String AXES_XAXIS_COLOR = "AxesXAxisColor";
+    public static final String AXES_YAXIS_COLOR = "AxesYAxisColor";
+    public static final String AXES_ZAXIS_COLOR = "AxesZAxisColor";
+    public static final String AXES_SIZE = "AxesSize";
+    public static final String AXES_LINE_WIDTH = "AxesLineWidth";
+    public static final String AXES_FONT_SIZE = "AxesFontSize";
+    public static final String AXES_FONT_COLOR = "AxesFontColor";
+    public static final String AXES_CONE_LENGTH = "AxesConeLength";
+    public static final String AXES_CONE_RADIUS = "AxesConeRadius";
 
 
     private static final String preferencesPath = Configuration.getApplicationDataDir() + File.separator + "preferences.txt";
