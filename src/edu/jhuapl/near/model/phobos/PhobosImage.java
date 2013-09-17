@@ -80,9 +80,14 @@ public class PhobosImage extends PerspectiveImage
     protected String initializeFitFileFullPath(File rootFolder)
     {
         ImageKey key = getKey();
+
+        boolean useAPLServer = false;
+        if (key.name.contains("PHOBOSEXPERIMENTAL"))
+            useAPLServer = true;
+
         if (rootFolder == null)
         {
-            return FileCache.getFileFromServer(key.name + ".FIT").getAbsolutePath();
+            return FileCache.getFileFromServer(key.name + ".FIT", useAPLServer).getAbsolutePath();
         }
         else
         {
@@ -108,9 +113,13 @@ public class PhobosImage extends PerspectiveImage
         else //if (keyFile.getName().startsWith("f"))
             labelFilename = key.name + ".lbl";
 
+        boolean useAPLServer = false;
+        if (key.name.contains("PHOBOSEXPERIMENTAL"))
+            useAPLServer = true;
+
         if (rootFolder == null)
         {
-            return FileCache.getFileFromServer(labelFilename).getAbsolutePath();
+            return FileCache.getFileFromServer(labelFilename, useAPLServer).getAbsolutePath();
         }
         else
         {
@@ -122,12 +131,17 @@ public class PhobosImage extends PerspectiveImage
     protected String initializeInfoFileFullPath(File rootFolder)
     {
         ImageKey key = getKey();
+
+        boolean useAPLServer = false;
+        if (key.name.contains("PHOBOSEXPERIMENTAL"))
+            useAPLServer = true;
+
         File keyFile = new File(key.name);
         String sumFilename = keyFile.getParentFile().getParent() + "/infofiles/"
         + keyFile.getName() + ".INFO";
         if (rootFolder == null)
         {
-            return FileCache.getFileFromServer(sumFilename).getAbsolutePath();
+            return FileCache.getFileFromServer(sumFilename, useAPLServer).getAbsolutePath();
         }
         else
         {
@@ -145,9 +159,14 @@ public class PhobosImage extends PerspectiveImage
         File keyFile = new File(key.name);
         String sumFilename = keyFile.getParentFile().getParent() + "/" + sumfilesdir + "/"
         + keyFile.getName() + ".SUM";
+
+        boolean useAPLServer = false;
+        if (key.name.contains("PHOBOSEXPERIMENTAL"))
+            useAPLServer = true;
+
         if (rootFolder == null)
         {
-            return FileCache.getFileFromServer(sumFilename).getAbsolutePath();
+            return FileCache.getFileFromServer(sumFilename, useAPLServer).getAbsolutePath();
         }
         else
         {

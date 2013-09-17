@@ -9,13 +9,13 @@ import edu.jhuapl.near.gui.Renderer;
 import edu.jhuapl.near.model.Image.ImageSource;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.pick.PickManager;
-import edu.jhuapl.near.query.PhobosQuery;
+import edu.jhuapl.near.query.PhobosExperimentalQuery;
 import edu.jhuapl.near.query.QueryBase;
 
-public class PhobosImagingDataSearchPanel extends AbstractImageSearchPanel
+public class PhobosExperimentalImagingDataSearchPanel extends AbstractImageSearchPanel
 {
 
-    public PhobosImagingDataSearchPanel(
+    public PhobosExperimentalImagingDataSearchPanel(
             ModelManager modelManager,
             ModelInfoWindowManager infoPanelManager,
             PickManager pickManager,
@@ -40,7 +40,7 @@ public class PhobosImagingDataSearchPanel extends AbstractImageSearchPanel
     @Override
     protected QueryBase getQuery()
     {
-        return PhobosQuery.getInstance();
+        return PhobosExperimentalQuery.getInstance();
     }
 
     @Override
@@ -80,6 +80,6 @@ public class PhobosImagingDataSearchPanel extends AbstractImageSearchPanel
     @Override
     protected ImageSource[] getImageSources()
     {
-        return new ImageSource[]{ImageSource.GASKELL, ImageSource.PDS};
+        return new ImageSource[]{ImageSource.GASKELL, ImageSource.CORRECTED};
     }
 }
