@@ -80,6 +80,6 @@ public class PhobosImagingDataSearchPanel extends AbstractImageSearchPanel
     @Override
     protected ImageSource[] getImageSources()
     {
-        return new ImageSource[]{ImageSource.GASKELL, ImageSource.PDS, ImageSource.CORRECTED};
+        return new ImageSource[]{ImageSource.GASKELL, ImageSource.PDS};
     }
 }
