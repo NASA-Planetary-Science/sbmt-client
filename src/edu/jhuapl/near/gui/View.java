@@ -22,6 +22,7 @@ import edu.jhuapl.near.gui.itokawa.AmicaSearchPanel;
 import edu.jhuapl.near.gui.itokawa.HayLidarPanel;
 import edu.jhuapl.near.gui.lutetia.OsirisImagingDataSearchPanel;
 import edu.jhuapl.near.gui.mathilde.MSIMathildeSearchPanel;
+import edu.jhuapl.near.gui.phobos.PhobosExperimentalImagingDataSearchPanel;
 import edu.jhuapl.near.gui.phobos.PhobosImagingDataSearchPanel;
 import edu.jhuapl.near.gui.saturnmoon.SaturnMoonImagingSearchPanel;
 import edu.jhuapl.near.gui.vesta.FCSearchPanel;
@@ -369,6 +370,8 @@ public class View extends JPanel
             return new AmicaSearchPanel(modelManager, infoPanelManager, pickManager, renderer);
         else if (smallBodyModel instanceof Vesta)
             return new FCSearchPanel(modelManager, infoPanelManager, pickManager, renderer);
+        else if (ModelFactory.PHOBOS.equals(name) && ModelFactory.EXPERIMENTAL.equals(modelConfig.author))
+            return new PhobosExperimentalImagingDataSearchPanel(modelManager, infoPanelManager, pickManager, renderer);
         else if (ModelFactory.PHOBOS.equals(name))
             return new PhobosImagingDataSearchPanel(modelManager, infoPanelManager, pickManager, renderer);
         else if (ModelFactory.DEIMOS.equals(name))
