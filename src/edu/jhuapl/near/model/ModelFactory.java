@@ -99,6 +99,7 @@ public class ModelFactory
     static public final String CUSTOM = "Custom";
     static public final String EROSNAV = "NAV";
     static public final String EROSNLR = "NLR";
+    static public final String EXPERIMENTAL = "Experimental";
 
     // Data used to construct shape model (either images, radar, lidar, or enhanced)
     static public final String IMAGE_BASED = "Image Based";
@@ -130,6 +131,7 @@ public class ModelFactory
         c.add(new ModelConfig(ITOKAWA, ASTEROID, NEO, RADAR_BASED, OSTRO, "/HUDSON/ITOKAWA/25143itokawa.obj.gz"));
         c.add(new ModelConfig(PHOBOS, SATELLITES, MARS, IMAGE_BASED, GASKELL, "/GASKELL/PHOBOS", false, true));
         c.add(new ModelConfig(PHOBOS, SATELLITES, MARS, IMAGE_BASED, THOMAS, "/THOMAS/PHOBOS/m1phobos.llr.gz"));
+        c.add(new ModelConfig(PHOBOS, SATELLITES, MARS, IMAGE_BASED, EXPERIMENTAL, "/GASKELL/PHOBOSEXPERIMENTAL", false, true));
         c.add(new ModelConfig(AMALTHEA, SATELLITES, JUPITER, IMAGE_BASED, STOOKE, "/STOOKE/AMALTHEA/j5amalthea.llr.gz"));
         c.add(new ModelConfig(MIMAS, SATELLITES, SATURN, IMAGE_BASED, GASKELL, "/GASKELL/MIMAS", false, true));
         c.add(new ModelConfig(PHOEBE, SATELLITES, SATURN, IMAGE_BASED, GASKELL, "/GASKELL/PHOEBE", false, true));
@@ -361,7 +363,7 @@ public class ModelFactory
         String name = config.name;
         String author = config.author;
 
-        if (GASKELL.equals(author))
+        if (GASKELL.equals(author) || EXPERIMENTAL.equals(author))
         {
             if (EROS.equals(name))
                 return new Eros();
@@ -399,13 +401,13 @@ public class ModelFactory
                         config.pathOnServer + "/ver256q.vtk.gz",
                         config.pathOnServer + "/ver512q.vtk.gz"
                 };
-
                 boolean useAPLServer = false;
                 if (LUTETIA.equals(name) ||
                         DIONE.equals(name) ||
                         RHEA.equals(name) ||
                         HYPERION.equals(name) ||
-                        TETHYS.equals(name))
+                        TETHYS.equals(name) ||
+                        (PHOBOS.equals(name) && EXPERIMENTAL.equals(author)))
                 {
                     useAPLServer = true;
                 }
