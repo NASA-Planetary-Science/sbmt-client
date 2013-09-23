@@ -5,10 +5,13 @@ import java.io.IOException;
 
 import nom.tam.fits.FitsException;
 
+import vtk.vtkImageData;
+
 import edu.jhuapl.near.model.PerspectiveImage;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.util.FileCache;
 import edu.jhuapl.near.util.FileUtil;
+import edu.jhuapl.near.util.ImageDataUtil;
 
 public class PhobosImage extends PerspectiveImage
 {
@@ -18,6 +21,17 @@ public class PhobosImage extends PerspectiveImage
             File rootFolder) throws FitsException, IOException
     {
         super(key, smallBodyModel, loadPointingOnly, rootFolder);
+    }
+
+    @Override
+    protected void processRawImage(vtkImageData rawImage)
+    {
+        // Flip MOC images along y axis.
+        ImageKey key = getKey();
+        File keyFile = new File(key.name);
+        String filename = keyFile.getName();
+        if (isMoc(filename))
+            ImageDataUtil.flipImageYAxis(rawImage);
     }
 
     /**
@@ -68,6 +82,16 @@ public class PhobosImage extends PerspectiveImage
     private boolean isPhobos2Filter1Or3(String filename)
     {
         return filename.startsWith("P") && !filename.endsWith("2") && !filename.startsWith("PSP");
+    }
+
+    /**
+     * Return whether or not this is a MOC image
+     * @param key
+     * @return
+     */
+    private boolean isMoc(String filename)
+    {
+        return filename.startsWith("sp2");
     }
 
     @Override
@@ -179,11 +203,11 @@ public class PhobosImage extends PerspectiveImage
     {
         // For Phobos 2 image, return 1, 2, or 3 which we can get by looking at the last number in the filename.
         // For Viking images, we need to parse the label file to get the filter.
-        // for MEX or HiRISE images, return -1
+        // for MEX, HiRISE, or MOC images, return -1
         ImageKey key = getKey();
         File keyFile = new File(key.name);
         String filename = keyFile.getName();
-        if (isHrsc(filename) || isHiRISE(filename))
+        if (isHrsc(filename) || isHiRISE(filename) || isMoc(filename))
         {
             return -1;
         }
@@ -268,6 +292,8 @@ public class PhobosImage extends PerspectiveImage
             name = "Mars Express, HRSC";
         else if (num == 7)
             name = "Mars Reconnaissance Orbiter, HiRISE";
+        else if (num == 8)
+            name = "Mars Global Surveyor, MOC";
 
         return name;
     }
@@ -295,6 +321,7 @@ public class PhobosImage extends PerspectiveImage
         // 5 for viking orbiter 2 images camera B
         // 6 for MEX HRSC camera
         // 7 for HiRISE
+        // 8 for MOC
         // We need to parse the label file to get which viking spacecraft
 
         ImageKey key = getKey();
@@ -307,6 +334,10 @@ public class PhobosImage extends PerspectiveImage
         else if (isHiRISE(filename))
         {
             return 7;
+        }
+        else if (isMoc(filename))
+        {
+            return 8;
         }
         else if (isPhobos2Filter2(filename) || isPhobos2Filter1Or3(filename))
         {
