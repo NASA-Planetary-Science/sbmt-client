@@ -4,6 +4,107 @@
 
 # Recent Changes
 
+### September 23, 2013
+
+-   Added options in the Preferences panel for changing the look of the
+    orientation axes such as the color, size, font size and color,
+    thickness, and cone (tip) size and radius.
+-   Added option in Camera dialog (available in File menu) for using
+    orthographic projection in renderer (previoulsy only perspective
+    projection was supported).
+
+
+### August 30, 2013
+
+-   In the mapmaker view window, you can now right click on a profile
+    and an option called "Save Profile" will appear. (Previously there
+    were several options but none of them worked). This will invoke the
+    gravity program which will compute the acceleration, potential,
+    elevation and slope at all points along the profile using the shape
+    model at the resolution currently set for, say, the Eros shape
+    model. The file will be in CSV format.
+    Note that the save profile option is similar to the save profile
+    option in the main renderer view (when you right click on a path with
+    exactly 2 points) except that the latter does yet not currently use
+    the gravity program but instead gets the gravity values from the plate
+    data closest to the points.
+-   Fixed bug when importing new shape models which required you to
+    restart the tool to view the new shape model. This is no longer
+    required.
+-   Added mapmaker tab back to Bennu shape model (had accidentally
+    removed it)
+-   Added slope, elevation, acceleration, potential data for Mathilde
+    and fixed a problem that occurred when generating backplanes for the
+    MSI image currently available.
+-   Fixed a bug which prevented importing custom plate data
+
+
+### July 8, 2013
+
+-   Added Imaging tab to Thomas Deimos shape model with SPICE derived
+    Viking and HRSC (framing camera only) images. Unfortunately, the
+    pointing is not very accurate so the images do not line up with
+    the asteroid. We are working on improving this. Simply press the
+    Search button to see a list of images as the search options do not
+    work yet.
+-   Added generation of backplanes label files for all
+    cameras. Previously backplane label files were only being
+    generated for MSI and AMICA images.
+-   Added slope, elevation, gravitation acceleration and potential
+    plate data for Ida and Gaspra.
+
+
+### July 3, 2013
+
+-   When plotting elevation, acceleration and potential of a lidar track
+    (which you can do by right-clicking on a track and selecting "Plot
+    Track..." in the menu), the shape model used when computing the
+    plots values is at the same resolution as is currently viewed in
+    the renderer. Previously, the lowest resolution shape model was
+    always used regardless of the current resolution. Because of this
+    change, plotting will take much longer when using high resolution
+    shape models. Also changed algorithm to use Werner method rather
+    than Cheng method since the former is more accurate, though it is
+    slower.
+-   Fixed problem in MSI backplanes label file where MSI backplanes
+    could not be loaded into ISIS.
+
+### June 19, 2013
+
+-   Fixed problem on Mac and Linux platforms where tool would not start
+    if placed in folder with a space in its path.
+-   When saving out profile of a path (i.e. when right-clicking on a
+    path with only 2 control points and clicking "Save Profile..." in
+    the popup menu), now cartesian coordinates,
+    latitute/longitude/radius, and all plate data (as listed in the
+    leftmost tab in the Plate Coloring section) along the profile are
+    saved out to separate columns in a CSV file.
+-   Changed scale bar in renderer to have black text on white background
+    (partially transparent) with text centered justified.
+-   When right-clicking on an image and clicking Properties in the popup
+    menu, the surface area of the image footprint is shown in the list of
+    properties.
+
+### June 6, 2013
+
+-   Added MEX HRSC images (framing camera only) for phobos using SPICE
+    pointing data. In the Imaging tab for phobos, in the source drop
+    down menu, select "PDS derived" and just click search and you'll
+    see a list of 1655 images (these images are not indexed in the
+    database so the other search options do not work). Unfortunately,
+    these images are not registered very well with the asteroid,
+    probably due to imprecisions in the SPICE kernels, and do not line
+    up well with the surface features. We are working on improving
+    this.
+
+### May 30, 2013
+
+-   Added 3 new shape models of Eros, available at
+    [http://sbn.psi.edu/pds/resource/nearbrowse.html](http://sbn.psi.edu/pds/resource/nearbrowse.html). They
+    are: 1. Peter Thomas' model based on MSI images (6 resolution
+    levels), 2. NAV Plate Model, and 3. NLR Shape Data.
+-   Added option in preferences for changing background color of renderer view.
+
 ### May 8, 2013
 
 -   Reorganized list of shape models in View menu.

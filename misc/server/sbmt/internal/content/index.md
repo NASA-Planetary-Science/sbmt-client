@@ -15,15 +15,20 @@ quickly search and visualize small body data.
 
 ## Quick Start
 
-Latest version: 2013.05.08
+Latest version: 2013.09.23
 
 Download the file below appropriate for your platform, unzip, navigate
 to the 'sbmt' folder and run the 'runsbmt' program.
 
-   -  Mac: [sbmt-2013.05.08-macosx-x64.zip](releases/sbmt-2013.05.08-macosx-x64.zip)
-   -  Linux: [sbmt-2013.05.08-linux-x64.zip](releases/sbmt-2013.05.08-linux-x64.zip)
-   -  Windows: [sbmt-2013.05.08-windows-x64.zip](releases/sbmt-2013.05.08-windows-x64.zip) (does not include Java)
-   -  Windows: [sbmt-2013.05.08-windows-x64-with-java.zip](releases/sbmt-2013.05.08-windows-x64-with-java.zip) (includes Java)
+   -  Mac: [sbmt-2013.09.23-macosx-x64.zip](releases/sbmt-2013.09.23-macosx-x64.zip)
+   -  Linux: [sbmt-2013.09.23-linux-x64.zip](releases/sbmt-2013.09.23-linux-x64.zip)
+   -  Windows: [sbmt-2013.09.23-windows-x64.zip](releases/sbmt-2013.09.23-windows-x64.zip) (does not include Java)
+   -  Windows: [sbmt-2013.09.23-windows-x64-with-java.zip](releases/sbmt-2013.09.23-windows-x64-with-java.zip) (includes Java)
+
+If using the tool outside the APL campus, open the 'password.txt' file
+located in the 'sbmt' folder in a text editor and enter your username
+on the first line and password on the second line. This will allow the
+tool to run queries and download data.
 
 For more detailed installation instructions, including system requirements, click [here](installation.html).
 
