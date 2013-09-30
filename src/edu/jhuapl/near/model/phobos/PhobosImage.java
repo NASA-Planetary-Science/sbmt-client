@@ -5,13 +5,10 @@ import java.io.IOException;
 
 import nom.tam.fits.FitsException;
 
-import vtk.vtkImageData;
-
 import edu.jhuapl.near.model.PerspectiveImage;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.util.FileCache;
 import edu.jhuapl.near.util.FileUtil;
-import edu.jhuapl.near.util.ImageDataUtil;
 
 public class PhobosImage extends PerspectiveImage
 {
@@ -21,17 +18,6 @@ public class PhobosImage extends PerspectiveImage
             File rootFolder) throws FitsException, IOException
     {
         super(key, smallBodyModel, loadPointingOnly, rootFolder);
-    }
-
-    @Override
-    protected void processRawImage(vtkImageData rawImage)
-    {
-        // Flip MOC images along y axis.
-        ImageKey key = getKey();
-        File keyFile = new File(key.name);
-        String filename = keyFile.getName();
-        if (isMoc(filename))
-            ImageDataUtil.flipImageYAxis(rawImage);
     }
 
     /**
