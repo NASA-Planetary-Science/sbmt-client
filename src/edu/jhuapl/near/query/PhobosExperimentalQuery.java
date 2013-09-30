@@ -91,7 +91,7 @@ public class PhobosExperimentalQuery extends QueryBase
                     args.put("imageSource", imageSource.toString());
                     args.put("id", String.valueOf(id));
 
-                    results = doQuery("searchphobosimages_id.php", constructUrlArguments(args));
+                    results = doQuery("searchphobosexpimages_id.php", constructUrlArguments(args));
                 }
                 catch (NumberFormatException e)
                 {
@@ -110,10 +110,13 @@ public class PhobosExperimentalQuery extends QueryBase
             boolean vikingOrbiter1B = userDefined.get(2);
             boolean vikingOrbiter2A = userDefined.get(3);
             boolean vikingOrbiter2B = userDefined.get(4);
+            boolean mexHrsc = userDefined.get(5);
 
-            if (filters.isEmpty() || (phobos2 == false &&
+            // TODO the following is confusing
+            if ((filters.isEmpty() && !mexHrsc) || (phobos2 == false &&
                     vikingOrbiter1A == false && vikingOrbiter1B == false &&
-                    vikingOrbiter2A == false && vikingOrbiter2B == false))
+                    vikingOrbiter2A == false && vikingOrbiter2B == false &&
+                    mexHrsc == false))
                 return results;
 
             try
@@ -143,6 +146,7 @@ public class PhobosExperimentalQuery extends QueryBase
                 args.put("vikingOrbiter1B", vikingOrbiter1B==true ? "1" : "0");
                 args.put("vikingOrbiter2A", vikingOrbiter2A==true ? "1" : "0");
                 args.put("vikingOrbiter2B", vikingOrbiter2B==true ? "1" : "0");
+                args.put("mexHrsc", mexHrsc==true ? "1" : "0");
                 for (int i=1; i<=9; ++i)
                 {
                     if (filters.contains(i))
@@ -150,6 +154,10 @@ public class PhobosExperimentalQuery extends QueryBase
                     else
                         args.put("filterType"+i, "0");
                 }
+                if (mexHrsc)
+                    args.put("filterType10", "1");
+                else
+                    args.put("filterType10", "0");
                 if (cubeList != null && cubeList.size() > 0)
                 {
                     String cubes = "";
@@ -165,7 +173,7 @@ public class PhobosExperimentalQuery extends QueryBase
                     args.put("cubes", cubes);
                 }
 
-                results = doQuery("searchphobosimages.php", constructUrlArguments(args));
+                results = doQuery("searchphobosexpimages.php", constructUrlArguments(args));
 
                 for (ArrayList<String> res : results)
                 {

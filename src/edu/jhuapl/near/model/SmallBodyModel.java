@@ -228,8 +228,6 @@ public class SmallBodyModel extends Model
         this.coloringValueType = coloringValueType;
         if (coloringNames != null)
         {
-            colorData = new vtkUnsignedCharArray();
-
             for (int i=0; i<coloringNames.length; ++i)
             {
                 ColoringInfo info = new ColoringInfo();
@@ -242,6 +240,7 @@ public class SmallBodyModel extends Model
             }
         }
 
+        colorData = new vtkUnsignedCharArray();
         smallBodyPolyData = new vtkPolyData();
         genericCell = new vtkGenericCell();
         idList = new vtkIdList();

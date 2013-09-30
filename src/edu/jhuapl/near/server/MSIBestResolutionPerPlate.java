@@ -17,7 +17,7 @@ import vtk.vtkTriangle;
 import edu.jhuapl.near.model.Image.ImageKey;
 import edu.jhuapl.near.model.Image.ImageSource;
 import edu.jhuapl.near.model.SmallBodyModel;
-import edu.jhuapl.near.model.eros.Eros;
+import edu.jhuapl.near.model.eros.ErosThomas;
 import edu.jhuapl.near.model.eros.MSIImage;
 import edu.jhuapl.near.util.FileUtil;
 import edu.jhuapl.near.util.Frustum;
@@ -35,48 +35,7 @@ public class MSIBestResolutionPerPlate
     private static ArrayList<Integer> numImagesResLessThan50mpp = new ArrayList<Integer>();
     private static ArrayList<Integer> numImagesResLessThan100mpp = new ArrayList<Integer>();
     private static ArrayList<Integer> numImagesResLessThan200mpp = new ArrayList<Integer>();
-
-    private static String[] imagesToIgnoreChecks = {
-        "132590164",
-        "133104552",
-        "133104748",
-        "133105140",
-        "133323662",
-        "134346932",
-        "134441678",
-        "134551532",
-        "136608360",
-        "136814364",
-        "136823993",
-        "136878711",
-        "136880203",
-        "136880513",
-        "136910455",
-        "137666244",
-        "138525100",
-        "138617380",
-        "138619740",
-        "138724484",
-        "139292850",
-        "139400937",
-        "139560643",
-        "139560829",
-        "139758076",
-        "139761466",
-        "139820288",
-        "139827094",
-        "140762785"
-    };
-
-    private static boolean checkIfShouldIgnoreChecks(String filename)
-    {
-        for (String s : imagesToIgnoreChecks)
-        {
-            if (filename.contains(s))
-                return true;
-        }
-        return false;
-    }
+    private static ArrayList<String> msiFilesWithAtLeastOneGoodPlate = new ArrayList<String>();
 
     private static boolean checkIfMsiFilesExist(String line, MSIImage.ImageSource source)
     {
@@ -136,9 +95,6 @@ public class MSIBestResolutionPerPlate
             }
 
             File origFile = new File(filename);
-
-            boolean ignoreChecks = checkIfShouldIgnoreChecks(filename);
-            System.out.println("ignore checks: " + ignoreChecks);
 
             File rootFolder = origFile.getParentFile().getParentFile().getParentFile().getParentFile().getParentFile();
             String keyName = origFile.getAbsolutePath().replace(rootFolder.getAbsolutePath(), "");
@@ -215,9 +171,8 @@ public class MSIBestResolutionPerPlate
                 double emission = illumAngles[1];
 
                 if (horizPixelScale < bestResolutionPerPlate.get(cellId) &&
-                        ignoreChecks ||
-                        (incidence >= 40.0 && incidence <= 70.0 &&
-                        emission >= 0.0 && emission <= 20.0))
+                        (incidence >= 20.0 && incidence <= 70.0 &&
+                        emission >= 0.0 && emission <= 60.0))
                 {
                     bestResolutionPerPlate.set(cellId, horizPixelScale);
                     //System.out.println(horizPixelScale + " " + vertPixelScale + " " + incidence + " " + emission + " " + dist + " " );
@@ -241,6 +196,9 @@ public class MSIBestResolutionPerPlate
                 cell.Delete();
             }
 
+            if (numGoodPlates > 0)
+                msiFilesWithAtLeastOneGoodPlate.add(filename);
+
             System.out.println("num good plates: " + numGoodPlates);
             image.Delete();
             System.gc();
@@ -255,6 +213,7 @@ public class MSIBestResolutionPerPlate
 
     private static void saveDataArrays() throws IOException
     {
+        saveSingleDataArray("./eros-images-with-at-least-one-good-plate.txt", msiFilesWithAtLeastOneGoodPlate);
         saveSingleDataArray("./eros-best-resolutions-per-plate.txt", bestResolutionPerPlate);
         saveSingleDataArray("./eros-num-images-less-than-5mpp-per-plate.txt", numImagesResLessThan5mpp);
         saveSingleDataArray("./eros-num-images-less-than-10mpp-per-plate.txt", numImagesResLessThan10mpp);
@@ -286,7 +245,7 @@ public class MSIBestResolutionPerPlate
 
         String msiFileList=args[0];
 
-        erosModel = new Eros();
+        erosModel = new ErosThomas();
         resolutionLevel = Integer.parseInt(args[1]);
         try {
             erosModel.setModelResolution(resolutionLevel);

@@ -45,8 +45,9 @@ public class PhobosDatabaseGeneratorSql extends DatabaseGeneratorBaseSql
                 ModelFactory.SATELLITES,
                 ModelFactory.MARS,
                 ModelFactory.IMAGE_BASED,
-                ModelFactory.THOMAS,
-                "/THOMAS/PHOBOS/m1phobos.llr.gz");
+                ModelFactory.EXPERIMENTAL,
+                "/GASKELL/PHOBOSEXPERIMENTAL", false, true);
+
         return ModelFactory.createSmallBodyModel(config);
     }
 
@@ -58,11 +59,15 @@ public class PhobosDatabaseGeneratorSql extends DatabaseGeneratorBaseSql
         {
             return Long.parseLong(filename.substring(1, 8), 10);
         }
-        else
+        else if (filename.startsWith("V"))
         {
             filename = filename.replace("A", "1");
             filename = filename.replace("B", "2");
             return Long.parseLong(filename.substring(2, 8), 10);
+        }
+        else //if (filename.startsWith("h"))
+        {
+            return Long.parseLong(filename.substring(1, 5) + filename.substring(6, 10), 10);
         }
     }
 

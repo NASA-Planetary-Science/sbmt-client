@@ -34,7 +34,7 @@ public class PhobosExperimentalImagingDataSearchPanel extends AbstractImageSearc
     @Override
     protected Date getDefaultEndDate()
     {
-        return new GregorianCalendar(1989, 2, 26, 0, 0, 0).getTime();
+        return new GregorianCalendar(2011, 6, 7, 0, 0, 0).getTime();
     }
 
     @Override

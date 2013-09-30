@@ -153,7 +153,7 @@ public class ViewMenu extends JMenu implements PropertyChangeListener
             @Override
             public int compare(JMenuItem o1, JMenuItem o2)
             {
-                return o1.getText().compareToIgnoreCase(o2.getText());
+                return o1.getText().compareTo(o2.getText());
             }
         });
 
