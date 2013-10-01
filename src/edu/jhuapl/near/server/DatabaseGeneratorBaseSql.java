@@ -303,8 +303,11 @@ abstract public class DatabaseGeneratorBaseSql
 
             // If the sumfile has no landmarks, then ignore it. Sumfiles that have no landmarks
             // are 1296 bytes long or less
-            if (file.length() <= 1296)
-                return false;
+            if (ignoreSumfilesWithNoLandmarks(id))
+            {
+                if (file.length() <= 1296)
+                    return false;
+            }
         }
         else
         {
@@ -332,6 +335,16 @@ abstract public class DatabaseGeneratorBaseSql
     {
         return files;
     }
+
+    /**
+     * Subclasses may redefine this to include images even if they do not
+     * have landmarks
+     */
+    protected boolean ignoreSumfilesWithNoLandmarks(String filename)
+    {
+        return true;
+    }
+
 
     abstract String getImagesGaskellTableNames();
     abstract String getCubesGaskellTableNames();

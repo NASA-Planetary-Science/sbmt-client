@@ -18,6 +18,8 @@ $vikingOrbiter1B=$_POST['vikingOrbiter1B'] + 0;
 $vikingOrbiter2A=$_POST['vikingOrbiter2A'] + 0;
 $vikingOrbiter2B=$_POST['vikingOrbiter2B'] + 0;
 $mexHrsc=$_POST['mexHrsc'] + 0;
+$mroHirise=$_POST['mroHirise'] + 0;
+$mgsMoc=$_POST['mgsMoc'] + 0;
 $filterType1=$_POST['filterType1'] + 0;
 $filterType2=$_POST['filterType2'] + 0;
 $filterType3=$_POST['filterType3'] + 0;
@@ -51,7 +53,7 @@ if ($filterType8 == 1)
 	$filterTypes[] = 8;
 if ($filterType9 == 1)
 	$filterTypes[] = 9;
-// the following filter is a dummy filter for HRSC
+// the following filter is a dummy filter for HRSC, HiRISE, and MOC
 if ($filterType10 == 1)
 	$filterTypes[] = -1;
 
@@ -68,6 +70,10 @@ if ($vikingOrbiter2B == 1)
 	$cameraTypes[] = 5;
 if ($mexHrsc == 1)
 	$cameraTypes[] = 6;
+if ($mroHirise == 1)
+	$cameraTypes[] = 7;
+if ($mgsMoc == 1)
+	$cameraTypes[] = 8;
 
 $username="nearuser";
 $password="n3ar!usr";

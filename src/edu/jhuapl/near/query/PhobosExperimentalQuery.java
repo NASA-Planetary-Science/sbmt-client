@@ -111,12 +111,14 @@ public class PhobosExperimentalQuery extends QueryBase
             boolean vikingOrbiter2A = userDefined.get(3);
             boolean vikingOrbiter2B = userDefined.get(4);
             boolean mexHrsc = userDefined.get(5);
+            boolean mroHirise = userDefined.get(6);
+            boolean mgsMoc = userDefined.get(7);
 
             // TODO the following is confusing
-            if ((filters.isEmpty() && !mexHrsc) || (phobos2 == false &&
+            if ((filters.isEmpty() && !mexHrsc && !mroHirise && !mgsMoc) || (phobos2 == false &&
                     vikingOrbiter1A == false && vikingOrbiter1B == false &&
                     vikingOrbiter2A == false && vikingOrbiter2B == false &&
-                    mexHrsc == false))
+                    mexHrsc == false && mroHirise == false && mgsMoc == false))
                 return results;
 
             try
@@ -147,6 +149,8 @@ public class PhobosExperimentalQuery extends QueryBase
                 args.put("vikingOrbiter2A", vikingOrbiter2A==true ? "1" : "0");
                 args.put("vikingOrbiter2B", vikingOrbiter2B==true ? "1" : "0");
                 args.put("mexHrsc", mexHrsc==true ? "1" : "0");
+                args.put("mroHirise", mroHirise==true ? "1" : "0");
+                args.put("mgsMoc", mgsMoc==true ? "1" : "0");
                 for (int i=1; i<=9; ++i)
                 {
                     if (filters.contains(i))
@@ -154,7 +158,7 @@ public class PhobosExperimentalQuery extends QueryBase
                     else
                         args.put("filterType"+i, "0");
                 }
-                if (mexHrsc)
+                if (mexHrsc || mroHirise || mgsMoc)
                     args.put("filterType10", "1");
                 else
                     args.put("filterType10", "0");
