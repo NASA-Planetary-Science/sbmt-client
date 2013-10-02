@@ -44,7 +44,6 @@ import edu.jhuapl.near.util.BoundingBox;
 import edu.jhuapl.near.util.Configuration;
 import edu.jhuapl.near.util.ConvertResourceToFile;
 import edu.jhuapl.near.util.FileCache;
-import edu.jhuapl.near.util.FileUtil;
 import edu.jhuapl.near.util.Frustum;
 import edu.jhuapl.near.util.LatLon;
 import edu.jhuapl.near.util.MapUtil;
@@ -2064,15 +2063,90 @@ public class SmallBodyModel extends Model
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
-    public void saveCurrentColoringData(File file) throws IOException
+    /**
+     * Saves out file with information about each plate of shape model that contains these columns.
+     * Each row contains information about a single plate in the order the plates define the model.
+     *
+     * 1. Surface area of plate
+     * 2. X coordinate of center of plate
+     * 3. Y coordinate of center of plate
+     * 4. Z coordinate of center of plate
+     * 5. Latitude of center of plate (in degrees)
+     * 6. Longitude of center of plate (in degrees)
+     * 7. Distance of center of plate to origin
+     * 8+. coloring data of plate, both built-in and custom
+     *
+     * @param polydata
+     * @param file
+     * @throws IOException
+     */
+    public void savePlateData(File file) throws IOException
     {
         loadColoringData();
 
-        int index = getColoringIndex();
-        if (index >= 0)
+        FileWriter fstream = new FileWriter(file);
+        BufferedWriter out = new BufferedWriter(fstream);
+
+        final String lineSeparator = System.getProperty("line.separator");
+
+        out.write("Area (km^2)");
+        out.write(",Center X (km)");
+        out.write(",Center Y (km)");
+        out.write(",Center Z (km)");
+        out.write(",Center Latitude (deg)");
+        out.write(",Center Longitude (deg)");
+        out.write(",Center Radius (km)");
+        int numColors = getNumberOfColors();
+        for (int i=0; i<numColors; ++i)
         {
-            FileUtil.saveVtkDataArray(coloringInfo.get(index).coloringValues, file.getAbsolutePath());
+            out.write("," + getColoringName(i));
+            String units = getColoringUnits(i);
+            if (units != null && !units.isEmpty())
+                out.write(" (" + units + ")");
         }
+        out.write(lineSeparator);
+
+        vtkTriangle triangle = new vtkTriangle();
+
+        vtkPoints points = smallBodyPolyData.GetPoints();
+        int numberCells = smallBodyPolyData.GetNumberOfCells();
+        smallBodyPolyData.BuildCells();
+        vtkIdList idList = new vtkIdList();
+        double[] pt0 = new double[3];
+        double[] pt1 = new double[3];
+        double[] pt2 = new double[3];
+        double[] center = new double[3];
+        for (int i=0; i<numberCells; ++i)
+        {
+            smallBodyPolyData.GetCellPoints(i, idList);
+            int id0 = idList.GetId(0);
+            int id1 = idList.GetId(1);
+            int id2 = idList.GetId(2);
+            points.GetPoint(id0, pt0);
+            points.GetPoint(id1, pt1);
+            points.GetPoint(id2, pt2);
+
+            double area = triangle.TriangleArea(pt0, pt1, pt2);
+            triangle.TriangleCenter(pt0, pt1, pt2, center);
+            LatLon llr = MathUtil.reclat(center);
+
+            out.write(area + ",");
+            out.write(center[0] + ",");
+            out.write(center[1] + ",");
+            out.write(center[2] + ",");
+            out.write((llr.lat*180.0/Math.PI) + ",");
+            out.write((llr.lon*180.0/Math.PI) + ",");
+            out.write(String.valueOf(llr.rad));
+
+            for (int j=0; j<numColors; ++j)
+                out.write("," + coloringInfo.get(j).coloringValues.GetTuple1(i));
+
+            out.write(lineSeparator);
+        }
+
+        triangle.Delete();
+        idList.Delete();
+        out.close();
     }
 
     /**

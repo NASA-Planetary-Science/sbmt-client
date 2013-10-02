@@ -520,24 +520,13 @@ public class MapmakerView extends JFrame
 
         public void actionPerformed(ActionEvent actionEvent)
         {
-            int index = dem.getColoringIndex();
-            if (index < 0)
-            {
-                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(MapmakerView.this),
-                        "Please first display the plate data you wish to export.",
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE);
-
-                return;
-            }
-
-            String name = dem.getColoringName(index) + ".txt";
+            String name = "platedata.csv";
             File file = CustomFileChooser.showSaveDialog(MapmakerView.this, "Export Plate Data", name);
 
             try
             {
                 if (file != null)
-                    dem.saveCurrentColoringData(file);
+                    dem.savePlateData(file);
             }
             catch (Exception e1)
             {
