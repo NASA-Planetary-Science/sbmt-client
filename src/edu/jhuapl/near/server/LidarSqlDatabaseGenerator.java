@@ -240,6 +240,7 @@ public abstract class LidarSqlDatabaseGenerator
                 }
 
                 ++filecount;
+                in.close();
             }
 
             db.shutdown();

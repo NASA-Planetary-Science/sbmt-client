@@ -397,7 +397,10 @@ public class MapmakerView extends JFrame
                 continue;
             String[] tokens = line.trim().split("=");
             if (tokens.length != 2)
+            {
+                in.close();
                 throw new IOException("Error parsing file");
+            }
             //System.out.println(tokens[0]);
 
             String key = tokens[0].trim();

@@ -2415,6 +2415,7 @@ public class PolyDataUtil
         }
         else
         {
+            in.close();
             throw new IOException("Format not valid");
         }
 
@@ -2448,6 +2449,8 @@ public class PolyDataUtil
         }
 
         idList.Delete();
+
+        in.close();
 
         return polydata;
     }
@@ -2486,6 +2489,7 @@ public class PolyDataUtil
         }
         else
         {
+            in.close();
             throw new IOException("Format not valid");
         }
 
@@ -2521,6 +2525,8 @@ public class PolyDataUtil
         }
 
         idList.Delete();
+
+        in.close();
 
         return polydata;
     }
