@@ -40,14 +40,14 @@ public class PhobosDatabaseGeneratorSql extends DatabaseGeneratorBaseSql
     @Override
     SmallBodyModel createSmallBodyModel()
     {
-        ModelConfig config = new ModelConfig(
-                ModelFactory.PHOBOS,
-                ModelFactory.SATELLITES,
-                ModelFactory.MARS,
-                ModelFactory.IMAGE_BASED,
-                ModelFactory.EXPERIMENTAL,
-                "/GASKELL/PHOBOSEXPERIMENTAL", false, true);
-
+        ModelConfig config = new ModelConfig();
+        config.name = ModelFactory.PHOBOS;
+        config.type = ModelFactory.SATELLITES;
+        config.population = ModelFactory.MARS;
+        config.dataUsed = ModelFactory.IMAGE_BASED;
+        config.author = ModelFactory.EXPERIMENTAL;
+        config.pathOnServer = "/GASKELL/PHOBOSEXPERIMENTAL";
+        config.hasPerspectiveImages = true;
         return ModelFactory.createSmallBodyModel(config);
     }
 

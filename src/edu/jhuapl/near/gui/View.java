@@ -351,7 +351,9 @@ public class View extends JPanel
 
     static public View createCustomView(StatusBar statusBar, String name)
     {
-        ModelConfig config = new ModelConfig(name, null, null, null, ModelFactory.CUSTOM, null);
+        ModelConfig config = new ModelConfig();
+        config.name = name;
+        config.author = ModelFactory.CUSTOM;
         return new View(statusBar, config);
     }
 
