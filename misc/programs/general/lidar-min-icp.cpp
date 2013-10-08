@@ -3,6 +3,7 @@
 #include <string.h>
 #include <math.h>
 #include <limits>
+#include <vector>
 #include "SpiceUsr.h"
 #include "lbfgs.h"
 #include "optimize.h"
@@ -237,9 +238,9 @@ void optimizeTrack(int startId, int trackSize)
 
     printf("Beginning ICP\n");
 
-    struct PointLite sources[trackSize];
-    struct PointLite targets[trackSize];
-    struct PointLite scpos[trackSize];
+    std::vector<struct PointLite> sources(trackSize);
+    std::vector<struct PointLite> targets(trackSize);
+    std::vector<struct PointLite> scpos(trackSize);
     int i,j;
     for (i=g_trackStartPoint,j=0; i<endPoint; ++i,++j)
     {
@@ -258,10 +259,10 @@ void optimizeTrack(int startId, int trackSize)
     }
 
     if (USE_VTK_ICP)
-        icpVtk(sources, targets, trackSize, scpos);
+        icpVtk(&sources[0], &targets[0], trackSize, &scpos[0]);
     else
 //        icp(sources, targets, trackSize, scpos);
-        icp2(sources, trackSize, scpos, g_translation);
+        icp2(&sources[0], trackSize, &scpos[0], g_translation);
 
 
     for (i=g_trackStartPoint,j=0; i<endPoint; ++i,++j)
