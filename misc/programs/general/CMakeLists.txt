@@ -83,3 +83,6 @@ target_link_libraries(normals-centers lidar)
 
 add_executable( cam-est camera_est/cam-est.cpp )
 target_link_libraries( cam-est lidar )
+
+add_executable( ola-level1-to-level2 ola/ola-level1-to-level2.c )
+target_link_libraries( ola-level1-to-level2 lidar )
