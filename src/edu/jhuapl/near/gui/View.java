@@ -110,20 +110,20 @@ public class View extends JPanel
                     modelConfig.name.equals(ModelFactory.EROS) ||
                     (modelConfig.name.equals(ModelFactory.ITOKAWA) && modelConfig.author.equals(ModelFactory.GASKELL)))
             {
-                JComponent component = createPerspectiveImageSearchTab(modelConfig, modelManager, infoPanelManager, pickManager, renderer);
+                JComponent component = new AbstractImageSearchPanel(modelConfig, modelManager, infoPanelManager, pickManager, renderer);
                 controlPanel.addTab(modelConfig.getImagingInstrumentName(), component);
             }
         }
 
         if (modelConfig.hasSpectralData)
         {
-            JComponent component = createSpectralDataSearchTab(modelManager, infoPanelManager, pickManager);
+            JComponent component = new NISSearchPanel(modelManager, infoPanelManager, pickManager);
             controlPanel.addTab(modelConfig.getSpectrographName(), component);
         }
 
         if (modelConfig.hasLidarData)
         {
-            JComponent component = createLidarDataSearchTab(modelConfig, modelManager, pickManager, renderer);
+            JComponent component = new LidarPanel(modelConfig, modelManager, pickManager, renderer);
             controlPanel.addTab(modelConfig.getLidarInstrumentName(), component);
         }
 
@@ -131,7 +131,7 @@ public class View extends JPanel
         {
             if (modelConfig.hasLineamentData)
             {
-                JComponent component = createLineamentTab(modelManager);
+                JComponent component = new LineamentControlPanel(modelManager);
                 controlPanel.addTab("Lineament", component);
             }
 
@@ -140,7 +140,7 @@ public class View extends JPanel
 
             if (modelConfig.hasMapmaker)
             {
-                JComponent component = createMapmakerTab(modelConfig, modelManager, pickManager);
+                JComponent component = new MapmakerPanel(modelManager, pickManager, modelConfig.pathOnServer + "/mapmaker.zip");
                 controlPanel.addTab("Mapmaker", component);
             }
         }
@@ -340,42 +340,5 @@ public class View extends JPanel
         config.name = name;
         config.author = ModelFactory.CUSTOM;
         return new View(statusBar, config);
-    }
-
-    static private JComponent createPerspectiveImageSearchTab(
-            ModelConfig modelConfig,
-            ModelManager modelManager,
-            ModelInfoWindowManager infoPanelManager,
-            PickManager pickManager,
-            Renderer renderer)
-    {
-        return new AbstractImageSearchPanel(modelConfig, modelManager, infoPanelManager, pickManager, renderer);
-    }
-
-    static private JComponent createSpectralDataSearchTab(
-            ModelManager modelManager,
-            ModelInfoWindowManager infoPanelManager,
-            PickManager pickManager)
-    {
-        return new NISSearchPanel(modelManager, infoPanelManager, pickManager);
-    }
-
-    static private JComponent createLidarDataSearchTab(
-            ModelConfig modelConfig,
-            ModelManager modelManager,
-            PickManager pickManager,
-            Renderer renderer)
-    {
-        return new LidarPanel(modelConfig, modelManager, pickManager, renderer);
-    }
-
-    static private JComponent createLineamentTab(ModelManager modelManager)
-    {
-        return new LineamentControlPanel(modelManager);
-    }
-
-    static private JComponent createMapmakerTab(ModelConfig modelConfig, ModelManager modelManager, PickManager pickManager)
-    {
-        return new MapmakerPanel(modelManager, pickManager, modelConfig.pathOnServer + "/mapmaker.zip");
     }
 }
