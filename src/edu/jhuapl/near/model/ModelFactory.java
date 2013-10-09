@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import nom.tam.fits.FitsException;
 
@@ -22,13 +24,9 @@ import edu.jhuapl.near.model.eros.ErosThomas;
 import edu.jhuapl.near.model.eros.LineamentModel;
 import edu.jhuapl.near.model.eros.MSIImage;
 import edu.jhuapl.near.model.eros.NISSpectraCollection;
-import edu.jhuapl.near.model.eros.NLRBrowseDataCollection;
-import edu.jhuapl.near.model.eros.NLRSearchDataCollection;
 import edu.jhuapl.near.model.gaspra.SSIGaspraImage;
 import edu.jhuapl.near.model.ida.SSIIdaImage;
 import edu.jhuapl.near.model.itokawa.AmicaImage;
-import edu.jhuapl.near.model.itokawa.HayLidarBrowseDataCollection;
-import edu.jhuapl.near.model.itokawa.HayLidarSearchDataCollection;
 import edu.jhuapl.near.model.itokawa.Itokawa;
 import edu.jhuapl.near.model.lutetia.OsirisImage;
 import edu.jhuapl.near.model.mathilde.MSIMathildeImage;
@@ -172,6 +170,17 @@ public class ModelFactory
         c.imageSearchImageSources = new ImageSource[]{ImageSource.GASKELL, ImageSource.PDS};
         c.lidarSearchDefaultStartDate = new DateTime(2000, 2, 28, 0, 0, 0, 0).toDate();
         c.lidarSearchDefaultEndDate = new DateTime(2001, 2, 13, 0, 0, 0, 0).toDate();
+        c.lidarSearchDataSourceMap = new LinkedHashMap<String, String>();
+        c.lidarSearchDataSourceMap.put("Default", "/NLR/cubes");
+        c.lidarBrowseXYZIndices = new int[]{14, 15, 16};
+        c.lidarBrowseSpacecraftIndices = new int[]{8, 9, 10};
+        c.lidarBrowseIsSpacecraftInSphericalCoordinates = true;
+        c.lidarBrowseTimeIndex = 4;
+        c.lidarBrowseNoiseIndex = 7;
+        c.lidarBrowseFileListResourcePath = "/edu/jhuapl/near/data/NlrFiles.txt";
+        c.lidarBrowseNumberHeaderLines = 2;
+        c.lidarBrowseIsInMeters = true;
+        c.lidarOffsetScale = 0.025;
         configArray.add(c);
 
         // Thomas Eros
@@ -227,6 +236,20 @@ public class ModelFactory
         c.imageSearchImageSources = new ImageSource[]{ImageSource.GASKELL, ImageSource.PDS, ImageSource.CORRECTED};
         c.lidarSearchDefaultStartDate = new DateTime(2005, 9, 1, 0, 0, 0, 0).toDate();
         c.lidarSearchDefaultEndDate = new DateTime(2005, 11, 30, 0, 0, 0, 0).toDate();
+        c.lidarSearchDataSourceMap = new LinkedHashMap<String, String>();
+        c.lidarSearchDataSourceMap.put("Optimized", "/ITOKAWA/LIDAR/cdr/cubes-optimized");
+        c.lidarSearchDataSourceMap.put("Unfiltered", "/ITOKAWA/LIDAR/cdr/cubes-unfiltered");
+        c.lidarBrowseXYZIndices = new int[]{6, 7, 8};
+        c.lidarBrowseSpacecraftIndices = new int[]{3, 4, 5};
+        c.lidarBrowseIsSpacecraftInSphericalCoordinates = false;
+        c.lidarBrowseTimeIndex = 1;
+        c.lidarBrowseNoiseIndex = -1;
+        c.lidarBrowseFileListResourcePath = "/edu/jhuapl/near/data/HayLidarFiles.txt";
+        c.lidarBrowseNumberHeaderLines = 0;
+        c.lidarBrowseIsInMeters = false;
+        // The following value is the Itokawa diagonal length divided by 1546.4224133453388.
+        // The value 1546.4224133453388 was chosen so that for Eros the offset scale is 0.025 km.
+        c.lidarOffsetScale = 0.00044228259621279913;
         configArray.add(c);
 
         // Ostro Itokawa
@@ -893,6 +916,19 @@ public class ModelFactory
         // if hasLidarData is true, the following must be filled in
         public Date lidarSearchDefaultStartDate;
         public Date lidarSearchDefaultEndDate;
+        public Map<String, String> lidarSearchDataSourceMap;
+        public int[] lidarBrowseXYZIndices;
+        public int[] lidarBrowseSpacecraftIndices;
+        public boolean lidarBrowseIsSpacecraftInSphericalCoordinates;
+        public int lidarBrowseTimeIndex;
+        public int lidarBrowseNoiseIndex;
+        public String lidarBrowseFileListResourcePath;
+        public int lidarBrowseNumberHeaderLines;
+        // Return whether or not the units of the lidar points are in meters. If false
+        // they are assumed to be in kilometers.
+        public boolean lidarBrowseIsInMeters;
+        public double lidarOffsetScale;
+
 
         protected ModelConfig clone()
         {
@@ -924,6 +960,16 @@ public class ModelFactory
             {
                 c.lidarSearchDefaultStartDate = (Date)this.lidarSearchDefaultStartDate.clone();
                 c.lidarSearchDefaultEndDate = (Date)this.lidarSearchDefaultEndDate.clone();
+                c.lidarSearchDataSourceMap = new LinkedHashMap<String, String>(this.lidarSearchDataSourceMap);
+                c.lidarBrowseXYZIndices = this.lidarBrowseXYZIndices.clone();
+                c.lidarBrowseSpacecraftIndices = this.lidarBrowseSpacecraftIndices.clone();
+                c.lidarBrowseIsSpacecraftInSphericalCoordinates = this.lidarBrowseIsSpacecraftInSphericalCoordinates;
+                c.lidarBrowseTimeIndex = this.lidarBrowseTimeIndex;
+                c.lidarBrowseNoiseIndex = this.lidarBrowseNoiseIndex;
+                c.lidarBrowseFileListResourcePath = this.lidarBrowseFileListResourcePath;
+                c.lidarBrowseNumberHeaderLines = this.lidarBrowseNumberHeaderLines;
+                c.lidarBrowseIsInMeters = this.lidarBrowseIsInMeters;
+                c.lidarOffsetScale = this.lidarOffsetScale;
             }
             return c;
         };
@@ -1157,21 +1203,12 @@ public class ModelFactory
         return new NISSpectraCollection(smallBodyModel);
     }
 
-    static public HashMap<String, Model> createLidarModels(SmallBodyModel smallBodyModel)
+    static public HashMap<String, Model> createLidarModels(ModelConfig modelConfig, SmallBodyModel smallBodyModel)
     {
         HashMap<String, Model> models = new HashMap<String, Model>();
-        if (smallBodyModel.getModelName().toLowerCase().equals("eros") ||
-            smallBodyModel.getModelName().toLowerCase().startsWith("433 eros") ||
-            smallBodyModel.getModelName().toLowerCase().startsWith("near-a-msi-5-erosshape"))
-        {
-            models.put(ModelNames.LIDAR_BROWSE, new NLRBrowseDataCollection());
-            models.put(ModelNames.LIDAR_SEARCH, new NLRSearchDataCollection(smallBodyModel));
-        }
-        else if (smallBodyModel instanceof Itokawa)
-        {
-            models.put(ModelNames.LIDAR_BROWSE, new HayLidarBrowseDataCollection());
-            models.put(ModelNames.LIDAR_SEARCH, new HayLidarSearchDataCollection(smallBodyModel));
-        }
+
+        models.put(ModelNames.LIDAR_BROWSE, new LidarBrowseDataCollection(modelConfig));
+        models.put(ModelNames.LIDAR_SEARCH, new LidarSearchDataCollection(modelConfig, smallBodyModel));
 
         return models;
     }
