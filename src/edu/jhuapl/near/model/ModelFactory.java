@@ -4,9 +4,12 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 
 import nom.tam.fits.FitsException;
+
+import org.joda.time.DateTime;
 
 import edu.jhuapl.near.model.Image.ImageKey;
 import edu.jhuapl.near.model.Image.ImageSource;
@@ -36,7 +39,18 @@ import edu.jhuapl.near.model.simple.SimpleSmallBody;
 import edu.jhuapl.near.model.vesta.FcImage;
 import edu.jhuapl.near.model.vesta.Vesta;
 import edu.jhuapl.near.model.vesta_old.VestaOld;
+import edu.jhuapl.near.query.DeimosQuery;
+import edu.jhuapl.near.query.ErosQuery;
+import edu.jhuapl.near.query.GaspraQuery;
+import edu.jhuapl.near.query.IdaQuery;
+import edu.jhuapl.near.query.ItokawaQuery;
+import edu.jhuapl.near.query.LutetiaQuery;
+import edu.jhuapl.near.query.MathildeQuery;
+import edu.jhuapl.near.query.PhobosExperimentalQuery;
+import edu.jhuapl.near.query.PhobosQuery;
 import edu.jhuapl.near.query.QueryBase;
+import edu.jhuapl.near.query.SaturnMoonQuery;
+import edu.jhuapl.near.query.VestaQuery;
 import edu.jhuapl.near.util.Configuration;
 
 public class ModelFactory
@@ -140,6 +154,24 @@ public class ModelFactory
         c.hasMapmaker = true;
         c.hasSpectralData = true;
         c.hasLineamentData = true;
+        c.imageSearchDefaultStartDate = new GregorianCalendar(2000, 0, 12, 0, 0, 0).getTime();
+        c.imageSearchDefaultEndDate = new GregorianCalendar(2001, 1, 13, 0, 0, 0).getTime();
+        c.imageSearchQuery = ErosQuery.getInstance();
+        c.imageSearchFilterNames = new String[]{
+                "Filter 1 (550 nm)",
+                "Filter 2 (450 nm)",
+                "Filter 3 (760 nm)",
+                "Filter 4 (950 nm)",
+                "Filter 5 (900 nm)",
+                "Filter 6 (1000 nm)",
+                "Filter 7 (1050 nm)"
+        };
+        c.imageSearchUserDefinedCheckBoxesNames = new String[]{"iofdbl", "cifdbl"};
+        c.imageSearchDefaultMaxSpacecraftDistance = 100.0;
+        c.imageSearchDefaultMaxResolution = 50.0;
+        c.imageSearchImageSources = new ImageSource[]{ImageSource.GASKELL, ImageSource.PDS};
+        c.lidarSearchDefaultStartDate = new DateTime(2000, 2, 28, 0, 0, 0, 0).toDate();
+        c.lidarSearchDefaultEndDate = new DateTime(2001, 2, 13, 0, 0, 0, 0).toDate();
         configArray.add(c);
 
         // Thomas Eros
@@ -177,6 +209,24 @@ public class ModelFactory
         c.pathOnServer = "/GASKELL/ITOKAWA";
         c.hasPerspectiveImages = true;
         c.hasLidarData = true;
+        c.imageSearchDefaultStartDate = new GregorianCalendar(2005, 8, 1, 0, 0, 0).getTime();;
+        c.imageSearchDefaultEndDate = new GregorianCalendar(2005, 10, 31, 0, 0, 0).getTime();
+        c.imageSearchQuery = ItokawaQuery.getInstance();
+        c.imageSearchFilterNames = new String[]{
+                "Filter ul (381 nm)",
+                "Filter b (429 nm)",
+                "Filter v (553 nm)",
+                "Filter w (700 nm)",
+                "Filter x (861 nm)",
+                "Filter p (960 nm)",
+                "Filter zs (1008 nm)"
+        };
+        c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
+        c.imageSearchDefaultMaxSpacecraftDistance = 26.0;
+        c.imageSearchDefaultMaxResolution = 3.0;
+        c.imageSearchImageSources = new ImageSource[]{ImageSource.GASKELL, ImageSource.PDS, ImageSource.CORRECTED};
+        c.lidarSearchDefaultStartDate = new DateTime(2005, 9, 1, 0, 0, 0, 0).toDate();
+        c.lidarSearchDefaultEndDate = new DateTime(2005, 11, 30, 0, 0, 0, 0).toDate();
         configArray.add(c);
 
         // Ostro Itokawa
@@ -200,6 +250,24 @@ public class ModelFactory
         c.author = GASKELL;
         c.pathOnServer = "/GASKELL/PHOBOS";
         c.hasPerspectiveImages = true;
+        c.imageSearchDefaultStartDate = new GregorianCalendar(1976, 6, 24, 0, 0, 0).getTime();
+        c.imageSearchDefaultEndDate = new GregorianCalendar(1989, 2, 26, 0, 0, 0).getTime();
+        c.imageSearchQuery = PhobosQuery.getInstance();
+        c.imageSearchFilterNames = new String[]{
+                "VSK, Channel 1",
+                "VSK, Channel 2",
+                "VSK, Channel 3",
+                "VIS, Blue",
+                "VIS, Minus Blue",
+                "VIS, Violet",
+                "VIS, Clear",
+                "VIS, Green",
+                "VIS, Red",
+        };
+        c.imageSearchUserDefinedCheckBoxesNames = new String[]{"Phobos 2", "Viking Orbiter 1-A", "Viking Orbiter 1-B", "Viking Orbiter 2-A", "Viking Orbiter 2-B", "MEX HRSC"};
+        c.imageSearchDefaultMaxSpacecraftDistance = 9000.0;
+        c.imageSearchDefaultMaxResolution = 300.0;
+        c.imageSearchImageSources = new ImageSource[]{ImageSource.GASKELL, ImageSource.PDS};
         configArray.add(c);
 
         // Thomas Phobos
@@ -211,7 +279,6 @@ public class ModelFactory
         c.dataUsed = IMAGE_BASED;
         c.author = THOMAS;
         c.pathOnServer = "/THOMAS/PHOBOS/m1phobos.llr.gz";
-        c.hasPerspectiveImages = true;
         configArray.add(c);
 
         // New Gaskell Phobos (experimental)
@@ -224,6 +291,33 @@ public class ModelFactory
         c.author = EXPERIMENTAL;
         c.pathOnServer = "/GASKELL/PHOBOSEXPERIMENTAL";
         c.hasPerspectiveImages = true;
+        c.imageSearchDefaultStartDate = new GregorianCalendar(1976, 6, 24, 0, 0, 0).getTime();
+        c.imageSearchDefaultEndDate = new GregorianCalendar(2011, 6, 7, 0, 0, 0).getTime();
+        c.imageSearchQuery = PhobosExperimentalQuery.getInstance();
+        c.imageSearchFilterNames = new String[]{
+                "VSK, Channel 1",
+                "VSK, Channel 2",
+                "VSK, Channel 3",
+                "VIS, Blue",
+                "VIS, Minus Blue",
+                "VIS, Violet",
+                "VIS, Clear",
+                "VIS, Green",
+                "VIS, Red",
+        };
+        c.imageSearchUserDefinedCheckBoxesNames = new String[]{
+                "Phobos 2",
+                "Viking Orbiter 1-A",
+                "Viking Orbiter 1-B",
+                "Viking Orbiter 2-A",
+                "Viking Orbiter 2-B",
+                "MEX HRSC",
+                "MRO HiRISE",
+                "MGS MOC"
+                };
+        c.imageSearchDefaultMaxSpacecraftDistance = 9000.0;
+        c.imageSearchDefaultMaxResolution = 300.0;
+        c.imageSearchImageSources = new ImageSource[]{ImageSource.GASKELL};
         configArray.add(c);
 
 //      c.add(new ModelConfig(AMALTHEA, SATELLITES, JUPITER, IMAGE_BASED, STOOKE, "/STOOKE/AMALTHEA/j5amalthea.llr.gz"));
@@ -244,6 +338,15 @@ public class ModelFactory
         c.dataUsed = IMAGE_BASED;
         c.author = GASKELL;
         c.pathOnServer = "/GASKELL/MIMAS";
+        c.hasPerspectiveImages = true;
+        c.imageSearchDefaultStartDate = new GregorianCalendar(1980, 10, 10, 0, 0, 0).getTime();
+        c.imageSearchDefaultEndDate = new GregorianCalendar(2011, 0, 31, 0, 0, 0).getTime();
+        c.imageSearchQuery = new SaturnMoonQuery("/GASKELL/MIMAS/IMAGING");
+        c.imageSearchFilterNames = new String[]{};
+        c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
+        c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
+        c.imageSearchDefaultMaxResolution = 4000.0;
+        c.imageSearchImageSources = new ImageSource[]{ImageSource.GASKELL};
         configArray.add(c);
 
 //      c.add(new ModelConfig(PHOEBE, SATELLITES, SATURN, IMAGE_BASED, GASKELL, "/GASKELL/PHOEBE", false, true));
@@ -254,6 +357,15 @@ public class ModelFactory
         c.dataUsed = IMAGE_BASED;
         c.author = GASKELL;
         c.pathOnServer = "/GASKELL/PHOEBE";
+        c.hasPerspectiveImages = true;
+        c.imageSearchDefaultStartDate = new GregorianCalendar(1980, 10, 10, 0, 0, 0).getTime();
+        c.imageSearchDefaultEndDate = new GregorianCalendar(2011, 0, 31, 0, 0, 0).getTime();
+        c.imageSearchQuery = new SaturnMoonQuery("/GASKELL/PHOEBE/IMAGING");
+        c.imageSearchFilterNames = new String[]{};
+        c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
+        c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
+        c.imageSearchDefaultMaxResolution = 4000.0;
+        c.imageSearchImageSources = new ImageSource[]{ImageSource.GASKELL};
         configArray.add(c);
 
 //      if (Configuration.isAPLVersion())
@@ -269,6 +381,24 @@ public class ModelFactory
             c.dataUsed = IMAGE_BASED;
             c.author = GASKELL;
             c.pathOnServer = "/GASKELL/VESTA";
+            c.hasPerspectiveImages = true;
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2011, 4, 3, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2012, 7, 27, 0, 0, 0).getTime();
+            c.imageSearchQuery = VestaQuery.getInstance();
+            c.imageSearchFilterNames = new String[]{
+                    "Filter 1 (735 nm)",
+                    "Filter 2 (548 nm)",
+                    "Filter 3 (749 nm)",
+                    "Filter 4 (918 nm)",
+                    "Filter 5 (978 nm)",
+                    "Filter 6 (829 nm)",
+                    "Filter 7 (650 nm)",
+                    "Filter 8 (428 nm)"
+            };
+            c.imageSearchUserDefinedCheckBoxesNames = new String[]{"FC1", "FC2"};
+            c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
+            c.imageSearchDefaultMaxResolution = 4000.0;
+            c.imageSearchImageSources = new ImageSource[]{ImageSource.GASKELL, ImageSource.PDS};
             configArray.add(c);
         }
 
@@ -292,6 +422,14 @@ public class ModelFactory
         c.pathOnServer = "/THOMAS/IDA/243ida.llr.gz";
         c.hasImageMap = true;
         c.hasPerspectiveImages = true;
+        c.imageSearchDefaultStartDate = new GregorianCalendar(1993, 7, 28, 0, 0, 0).getTime();
+        c.imageSearchDefaultEndDate = new GregorianCalendar(1993, 7, 29, 0, 0, 0).getTime();
+        c.imageSearchQuery = IdaQuery.getInstance();
+        c.imageSearchFilterNames = new String[]{};
+        c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
+        c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
+        c.imageSearchDefaultMaxResolution = 4000.0;
+        c.imageSearchImageSources = new ImageSource[]{ImageSource.CORRECTED};
         configArray.add(c);
 
         //        c.add(new ModelConfig(IDA, ASTEROID, MAIN_BELT, IMAGE_BASED, STOOKE, "/STOOKE/IDA/243ida.llr.gz", true));
@@ -315,6 +453,14 @@ public class ModelFactory
         c.pathOnServer = "/THOMAS/GASPRA/951gaspra.llr.gz";
         c.hasImageMap = true;
         c.hasPerspectiveImages = true;
+        c.imageSearchDefaultStartDate = new GregorianCalendar(1991, 9, 29, 0, 0, 0).getTime();
+        c.imageSearchDefaultEndDate = new GregorianCalendar(1991, 9, 30, 0, 0, 0).getTime();
+        c.imageSearchQuery = GaspraQuery.getInstance();
+        c.imageSearchFilterNames = new String[]{};
+        c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
+        c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
+        c.imageSearchDefaultMaxResolution = 4000.0;
+        c.imageSearchImageSources = new ImageSource[]{ImageSource.CORRECTED};
         configArray.add(c);
 
 //        c.add(new ModelConfig(GASPRA, ASTEROID, MAIN_BELT, IMAGE_BASED, STOOKE, "/STOOKE/GASPRA/951gaspra.llr.gz", true));
@@ -326,7 +472,6 @@ public class ModelFactory
         c.author = STOOKE;
         c.pathOnServer = "/STOOKE/GASPRA/951gaspra.llr.gz";
         c.hasImageMap = true;
-        c.hasPerspectiveImages = true;
         configArray.add(c);
 
 //        c.add(new ModelConfig(MATHILDE, ASTEROID, MAIN_BELT, IMAGE_BASED, THOMAS, "/THOMAS/MATHILDE/253mathilde.llr.gz", true, true));
@@ -339,6 +484,22 @@ public class ModelFactory
         c.pathOnServer = "/THOMAS/MATHILDE/253mathilde.llr.gz";
         c.hasImageMap = true;
         c.hasPerspectiveImages = true;
+        c.imageSearchDefaultStartDate = new GregorianCalendar(1997, 5, 27, 0, 0, 0).getTime();
+        c.imageSearchDefaultEndDate = new GregorianCalendar(1997, 5, 28, 0, 0, 0).getTime();
+        c.imageSearchQuery = MathildeQuery.getInstance();
+        c.imageSearchFilterNames = new String[]{
+                "Filter 1 (550 nm)",
+                "Filter 2 (450 nm)",
+                "Filter 3 (760 nm)",
+                "Filter 4 (950 nm)",
+                "Filter 5 (900 nm)",
+                "Filter 6 (1000 nm)",
+                "Filter 7 (1050 nm)"
+        };
+        c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
+        c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
+        c.imageSearchDefaultMaxResolution = 4000.0;
+        c.imageSearchImageSources = new ImageSource[]{ImageSource.CORRECTED};
         configArray.add(c);
 
 //        c.add(new ModelConfig(DEIMOS, SATELLITES, MARS, IMAGE_BASED, THOMAS, "/THOMAS/DEIMOS", true, true));
@@ -351,6 +512,21 @@ public class ModelFactory
         c.pathOnServer = "/THOMAS/DEIMOS";
         c.hasImageMap = true;
         c.hasPerspectiveImages = true;
+        c.imageSearchDefaultStartDate = new GregorianCalendar(1976, 7, 16, 0, 0, 0).getTime();
+        c.imageSearchDefaultEndDate = new GregorianCalendar(2011, 7, 10, 0, 0, 0).getTime();
+        c.imageSearchQuery = DeimosQuery.getInstance();
+        c.imageSearchFilterNames = new String[]{
+                "VIS, Blue",
+                "VIS, Minus Blue",
+                "VIS, Violet",
+                "VIS, Clear",
+                "VIS, Green",
+                "VIS, Red",
+        };
+        c.imageSearchUserDefinedCheckBoxesNames = new String[]{"Viking Orbiter 1-A", "Viking Orbiter 1-B", "Viking Orbiter 2-A", "Viking Orbiter 2-B", "MEX HRSC"};
+        c.imageSearchDefaultMaxSpacecraftDistance = 9000.0;
+        c.imageSearchDefaultMaxResolution = 300.0;
+        c.imageSearchImageSources = new ImageSource[]{ImageSource.PDS, ImageSource.CORRECTED};
         configArray.add(c);
 
         //        c.add(new ModelConfig(JANUS, SATELLITES, SATURN, IMAGE_BASED, THOMAS, "/THOMAS/JANUS/s10janus.llr.gz"));
@@ -560,6 +736,14 @@ public class ModelFactory
             c.author = GASKELL;
             c.pathOnServer = "/GASKELL/LUTETIA";
             c.hasPerspectiveImages = true;
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2010, 6, 10, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2010, 6, 11, 0, 0, 0).getTime();
+            c.imageSearchQuery = LutetiaQuery.getInstance();
+            c.imageSearchFilterNames = new String[]{};
+            c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
+            c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
+            c.imageSearchDefaultMaxResolution = 4000.0;
+            c.imageSearchImageSources = new ImageSource[]{ImageSource.GASKELL};
             configArray.add(c);
         }
 
@@ -574,6 +758,14 @@ public class ModelFactory
             c.author = GASKELL;
             c.pathOnServer = "/GASKELL/DIONE";
             c.hasPerspectiveImages = true;
+            c.imageSearchDefaultStartDate = new GregorianCalendar(1980, 10, 10, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2011, 0, 31, 0, 0, 0).getTime();
+            c.imageSearchQuery = new SaturnMoonQuery("/GASKELL/DIONE/IMAGING");
+            c.imageSearchFilterNames = new String[]{};
+            c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
+            c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
+            c.imageSearchDefaultMaxResolution = 4000.0;
+            c.imageSearchImageSources = new ImageSource[]{ImageSource.GASKELL};
             configArray.add(c);
         }
 
@@ -717,22 +909,22 @@ public class ModelFactory
             c.hasMapmaker = this.hasMapmaker;
             c.hasSpectralData = this.hasSpectralData;
             c.hasLineamentData = this.hasLineamentData;
-//            if (this.hasPerspectiveImages)
-//            {
-//                c.imageSearchDefaultStartDate = (Date)this.imageSearchDefaultStartDate.clone();
-//                c.imageSearchDefaultEndDate = (Date)this.imageSearchDefaultEndDate.clone();
-//                c.imageSearchQuery = this.imageSearchQuery;
-//                c.imageSearchFilterNames = this.imageSearchFilterNames.clone();
-//                c.imageSearchUserDefinedCheckBoxesNames = this.imageSearchFilterNames.clone();
-//                c.imageSearchDefaultMaxSpacecraftDistance = this.imageSearchDefaultMaxSpacecraftDistance;
-//                c.imageSearchDefaultMaxResolution = this.imageSearchDefaultMaxResolution;
-//                c.imageSearchImageSources = this.imageSearchImageSources.clone();
-//            }
-//            if (this.hasLidarData)
-//            {
-//                c.lidarSearchDefaultStartDate = (Date)this.lidarSearchDefaultStartDate.clone();
-//                c.lidarSearchDefaultEndDate = (Date)this.lidarSearchDefaultEndDate.clone();
-//            }
+            if (this.hasPerspectiveImages)
+            {
+                c.imageSearchDefaultStartDate = (Date)this.imageSearchDefaultStartDate.clone();
+                c.imageSearchDefaultEndDate = (Date)this.imageSearchDefaultEndDate.clone();
+                c.imageSearchQuery = this.imageSearchQuery;
+                c.imageSearchFilterNames = this.imageSearchFilterNames.clone();
+                c.imageSearchUserDefinedCheckBoxesNames = this.imageSearchFilterNames.clone();
+                c.imageSearchDefaultMaxSpacecraftDistance = this.imageSearchDefaultMaxSpacecraftDistance;
+                c.imageSearchDefaultMaxResolution = this.imageSearchDefaultMaxResolution;
+                c.imageSearchImageSources = this.imageSearchImageSources.clone();
+            }
+            if (this.hasLidarData)
+            {
+                c.lidarSearchDefaultStartDate = (Date)this.lidarSearchDefaultStartDate.clone();
+                c.lidarSearchDefaultEndDate = (Date)this.lidarSearchDefaultEndDate.clone();
+            }
             return c;
         };
 

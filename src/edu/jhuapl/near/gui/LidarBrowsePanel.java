@@ -30,11 +30,12 @@ import com.jidesoft.swing.RangeSlider;
 
 import edu.jhuapl.near.model.LidarBrowseDataCollection;
 import edu.jhuapl.near.model.ModelManager;
+import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.util.FileCache;
 import edu.jhuapl.near.util.FileUtil;
 
 
-abstract public class LidarBrowsePanel extends JPanel implements ListSelectionListener
+public class LidarBrowsePanel extends JPanel implements ListSelectionListener
 {
     private final String LIDAR_REMOVE_ALL_BUTTON_TEXT = "Remove All Lidar Data";
 
@@ -83,7 +84,7 @@ abstract public class LidarBrowsePanel extends JPanel implements ListSelectionLi
         setLayout(new BoxLayout(this,
                 BoxLayout.PAGE_AXIS));
 
-        this.lidarModel = (LidarBrowseDataCollection)modelManager.getModel(getModelName());
+        this.lidarModel = (LidarBrowseDataCollection)modelManager.getModel(ModelNames.LIDAR_BROWSE);
 
 
         JPanel resultsPanel = new JPanel(new BorderLayout());
@@ -199,7 +200,7 @@ abstract public class LidarBrowsePanel extends JPanel implements ListSelectionLi
         {
             public void actionPerformed(ActionEvent e)
             {
-                LidarBrowseDataCollection model = (LidarBrowseDataCollection)modelManager.getModel(getModelName());
+                LidarBrowseDataCollection model = (LidarBrowseDataCollection)modelManager.getModel(ModelNames.LIDAR_BROWSE);
                 model.removeAllLidarData();
 
                 showHideButton.setText("Show");
@@ -271,6 +272,4 @@ abstract public class LidarBrowsePanel extends JPanel implements ListSelectionLi
             }
         }
     }
-
-    abstract protected String getModelName();
 }

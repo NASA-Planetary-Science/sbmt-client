@@ -47,6 +47,7 @@ import edu.jhuapl.near.model.Image.ImageKey;
 import edu.jhuapl.near.model.Image.ImageSource;
 import edu.jhuapl.near.model.ImageCollection;
 import edu.jhuapl.near.model.Model;
+import edu.jhuapl.near.model.ModelFactory.ModelConfig;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.PerspectiveImage;
@@ -57,7 +58,6 @@ import edu.jhuapl.near.pick.PickManager;
 import edu.jhuapl.near.pick.PickManager.PickMode;
 import edu.jhuapl.near.popupmenus.ColorImagePopupMenu;
 import edu.jhuapl.near.popupmenus.ImagePopupMenu;
-import edu.jhuapl.near.query.QueryBase;
 import edu.jhuapl.near.util.IdPair;
 import edu.jhuapl.near.util.Properties;
 
@@ -65,8 +65,9 @@ import edu.jhuapl.near.util.Properties;
  *
  * @author kahneg1
  */
-abstract public class AbstractImageSearchPanel extends javax.swing.JPanel implements PropertyChangeListener
+public class AbstractImageSearchPanel extends javax.swing.JPanel implements PropertyChangeListener
 {
+    private ModelConfig modelConfig;
     private final ModelManager modelManager;
     private final PickManager pickManager;
     private java.util.Date startDate = null;
@@ -86,11 +87,13 @@ abstract public class AbstractImageSearchPanel extends javax.swing.JPanel implem
     private ColorImagePopupMenu colorImagePopupMenu;
 
     /** Creates new form AbstractImageSearchPanel */
-    public AbstractImageSearchPanel(final ModelManager modelManager,
+    public AbstractImageSearchPanel(ModelConfig modelConfig,
+            final ModelManager modelManager,
             ModelInfoWindowManager infoPanelManager,
             final PickManager pickManager,
             Renderer renderer)
     {
+        this.modelConfig = modelConfig;
         this.modelManager = modelManager;
         this.pickManager = pickManager;
 
@@ -108,18 +111,9 @@ abstract public class AbstractImageSearchPanel extends javax.swing.JPanel implem
         colorImagePopupMenu = new ColorImagePopupMenu(colorImages, infoPanelManager);
     }
 
-    abstract protected java.util.Date getDefaultStartDate();
-    abstract protected java.util.Date getDefaultEndDate();
-    abstract protected QueryBase getQuery();
-    abstract protected String[] getFilterNames();
-    abstract protected String[] getUserDefinedCheckBoxesNames();
-    abstract protected double getDefaultMaxSpacecraftDistance();
-    abstract protected double getDefaultMaxResolution();
-    abstract protected ImageSource[] getImageSources();
-
     private int getNumberOfFiltersActuallyUsed()
     {
-        String[] names = getFilterNames();
+        String[] names = modelConfig.imageSearchFilterNames;
         if (names == null)
             return 0;
         else
@@ -128,7 +122,7 @@ abstract public class AbstractImageSearchPanel extends javax.swing.JPanel implem
 
     private int getNumberOfUserDefinedCheckBoxesActuallyUsed()
     {
-        String[] names = getUserDefinedCheckBoxesNames();
+        String[] names = modelConfig.imageSearchUserDefinedCheckBoxesNames;
         if (names == null)
             return 0;
         else
@@ -154,7 +148,7 @@ abstract public class AbstractImageSearchPanel extends javax.swing.JPanel implem
     {
         excludeGaskellCheckBox.setVisible(false);
 
-        ImageSource imageSources[] = getImageSources();
+        ImageSource imageSources[] = modelConfig.imageSearchImageSources;
         DefaultComboBoxModel sourceComboBoxModel = new DefaultComboBoxModel(imageSources);
         sourceComboBox.setModel(sourceComboBoxModel);
 
@@ -162,9 +156,9 @@ abstract public class AbstractImageSearchPanel extends javax.swing.JPanel implem
         sourceLabel.setVisible(showSourceLabelAndComboBox);
         sourceComboBox.setVisible(showSourceLabelAndComboBox);
 
-        startDate = getDefaultStartDate();
+        startDate = modelConfig.imageSearchDefaultStartDate;
         ((SpinnerDateModel)startSpinner.getModel()).setValue(startDate);
-        endDate = getDefaultEndDate();
+        endDate = modelConfig.imageSearchDefaultEndDate;
         ((SpinnerDateModel)endSpinner.getModel()).setValue(endDate);
 
 
@@ -182,7 +176,7 @@ abstract public class AbstractImageSearchPanel extends javax.swing.JPanel implem
                 filter10CheckBox,
         };
 
-        String[] filterNames = getFilterNames();
+        String[] filterNames = modelConfig.imageSearchFilterNames;
         int numberOfFiltersActuallyUsed = getNumberOfFiltersActuallyUsed();
         for (int i=filterCheckBoxes.length-1; i>=0; --i)
         {
@@ -212,7 +206,7 @@ abstract public class AbstractImageSearchPanel extends javax.swing.JPanel implem
                 userDefined8CheckBox
         };
 
-        String[] userDefinedNames = getUserDefinedCheckBoxesNames();
+        String[] userDefinedNames = modelConfig.imageSearchUserDefinedCheckBoxesNames;
         int numberOfUserDefinedCheckBoxesActuallyUsed = getNumberOfUserDefinedCheckBoxesActuallyUsed();
 
         for (int i=userDefinedCheckBoxes.length-1; i>=0; --i)
@@ -232,8 +226,8 @@ abstract public class AbstractImageSearchPanel extends javax.swing.JPanel implem
 
 
 
-        toDistanceTextField.setValue(getDefaultMaxSpacecraftDistance());
-        toResolutionTextField.setValue(getDefaultMaxResolution());
+        toDistanceTextField.setValue(modelConfig.imageSearchDefaultMaxSpacecraftDistance);
+        toResolutionTextField.setValue(modelConfig.imageSearchDefaultMaxResolution);
 
         colorImagesDisplayedList.setModel(new DefaultListModel());
     }
@@ -1701,7 +1695,7 @@ abstract public class AbstractImageSearchPanel extends javax.swing.JPanel implem
                 userDefinedChecked.add(userDefinedCheckBoxes[i].isSelected());
             }
 
-            ArrayList<ArrayList<String>> results = getQuery().runQuery(
+            ArrayList<ArrayList<String>> results = modelConfig.imageSearchQuery.runQuery(
                     "",
                     startDateJoda,
                     endDateJoda,
@@ -1728,7 +1722,7 @@ abstract public class AbstractImageSearchPanel extends javax.swing.JPanel implem
             // an additional search.
             if (imageSource == ImageSource.PDS && excludeGaskellCheckBox.isSelected())
             {
-                ArrayList<ArrayList<String>> resultsOtherSource = getQuery().runQuery(
+                ArrayList<ArrayList<String>> resultsOtherSource = modelConfig.imageSearchQuery.runQuery(
                         "",
                         startDateJoda,
                         endDateJoda,

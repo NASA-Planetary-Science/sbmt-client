@@ -11,21 +11,8 @@ import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 
-import edu.jhuapl.near.gui.deimos.DeimosImagingDataSearchPanel;
 import edu.jhuapl.near.gui.eros.LineamentControlPanel;
-import edu.jhuapl.near.gui.eros.MSISearchPanel;
 import edu.jhuapl.near.gui.eros.NISSearchPanel;
-import edu.jhuapl.near.gui.eros.NLRPanel;
-import edu.jhuapl.near.gui.gaspra.SSIGaspraSearchPanel;
-import edu.jhuapl.near.gui.ida.SSIIdaSearchPanel;
-import edu.jhuapl.near.gui.itokawa.AmicaSearchPanel;
-import edu.jhuapl.near.gui.itokawa.HayLidarPanel;
-import edu.jhuapl.near.gui.lutetia.OsirisImagingDataSearchPanel;
-import edu.jhuapl.near.gui.mathilde.MSIMathildeSearchPanel;
-import edu.jhuapl.near.gui.phobos.PhobosExperimentalImagingDataSearchPanel;
-import edu.jhuapl.near.gui.phobos.PhobosImagingDataSearchPanel;
-import edu.jhuapl.near.gui.saturnmoon.SaturnMoonImagingSearchPanel;
-import edu.jhuapl.near.gui.vesta.FCSearchPanel;
 import edu.jhuapl.near.model.CircleModel;
 import edu.jhuapl.near.model.CircleSelectionModel;
 import edu.jhuapl.near.model.ColorImageCollection;
@@ -44,8 +31,6 @@ import edu.jhuapl.near.model.PerspectiveImageBoundaryCollection;
 import edu.jhuapl.near.model.PointModel;
 import edu.jhuapl.near.model.PolygonModel;
 import edu.jhuapl.near.model.SmallBodyModel;
-import edu.jhuapl.near.model.itokawa.Itokawa;
-import edu.jhuapl.near.model.vesta.Vesta;
 import edu.jhuapl.near.pick.PickManager;
 import edu.jhuapl.near.popupmenus.ColorImagePopupMenu;
 import edu.jhuapl.near.popupmenus.ImagePopupMenu;
@@ -364,36 +349,7 @@ public class View extends JPanel
             PickManager pickManager,
             Renderer renderer)
     {
-        SmallBodyModel smallBodyModel = modelManager.getSmallBodyModel();
-        String name = modelConfig.name;
-        if (ModelFactory.EROS.equals(name))
-            return new MSISearchPanel(modelManager, infoPanelManager, pickManager, renderer);
-        else if (smallBodyModel instanceof Itokawa)
-            return new AmicaSearchPanel(modelManager, infoPanelManager, pickManager, renderer);
-        else if (smallBodyModel instanceof Vesta)
-            return new FCSearchPanel(modelManager, infoPanelManager, pickManager, renderer);
-        else if (ModelFactory.PHOBOS.equals(name) && ModelFactory.EXPERIMENTAL.equals(modelConfig.author))
-            return new PhobosExperimentalImagingDataSearchPanel(modelManager, infoPanelManager, pickManager, renderer);
-        else if (ModelFactory.PHOBOS.equals(name))
-            return new PhobosImagingDataSearchPanel(modelManager, infoPanelManager, pickManager, renderer);
-        else if (ModelFactory.DEIMOS.equals(name))
-            return new DeimosImagingDataSearchPanel(modelManager, infoPanelManager, pickManager, renderer);
-        else if (ModelFactory.LUTETIA.equals(name))
-            return new OsirisImagingDataSearchPanel(modelManager, infoPanelManager, pickManager, renderer);
-        else if (ModelFactory.DIONE.equals(name))
-            return new SaturnMoonImagingSearchPanel(modelManager, infoPanelManager, pickManager, renderer);
-        else if (ModelFactory.PHOEBE.equals(name))
-            return new SaturnMoonImagingSearchPanel(modelManager, infoPanelManager, pickManager, renderer);
-        else if (ModelFactory.MIMAS.equals(name))
-            return new SaturnMoonImagingSearchPanel(modelManager, infoPanelManager, pickManager, renderer);
-        else if (ModelFactory.GASPRA.equals(name))
-            return new SSIGaspraSearchPanel(modelManager, infoPanelManager, pickManager, renderer);
-        else if (ModelFactory.IDA.equals(name))
-            return new SSIIdaSearchPanel(modelManager, infoPanelManager, pickManager, renderer);
-        else if (ModelFactory.MATHILDE.equals(name))
-            return new MSIMathildeSearchPanel(modelManager, infoPanelManager, pickManager, renderer);
-        else
-            return null;
+        return new AbstractImageSearchPanel(modelConfig, modelManager, infoPanelManager, pickManager, renderer);
     }
 
     static private JComponent createSpectralDataSearchTab(
@@ -410,14 +366,7 @@ public class View extends JPanel
             PickManager pickManager,
             Renderer renderer)
     {
-        SmallBodyModel smallBodyModel = modelManager.getSmallBodyModel();
-        String name = modelConfig.name;
-        if (ModelFactory.EROS.equals(name))
-            return new NLRPanel(modelManager, pickManager, renderer);
-        else if (smallBodyModel instanceof Itokawa)
-            return new HayLidarPanel(modelManager, pickManager, renderer);
-        else
-            return null;
+        return new LidarPanel(modelConfig, modelManager, pickManager, renderer);
     }
 
     static private JComponent createLineamentTab(ModelManager modelManager)
