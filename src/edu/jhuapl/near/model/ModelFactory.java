@@ -130,6 +130,7 @@ public class ModelFactory
     static public final String FC = "FC";
     static public final String SSI = "SSI";
     static public final String OSIRIS = "OSIRIS";
+    static public final String OLA = "OLA";
     static public final String IMAGING_DATA = "Imaging Data";
 
     static public final ArrayList<ModelConfig> builtInModelConfigs = new ArrayList<ModelConfig>();
@@ -744,7 +745,21 @@ public class ModelFactory
             c.dataUsed = ENHANCED;
             c.author = GASKELL;
             c.pathOnServer = "/GASKELL/RQ36";
+            c.hasLidarData = true;
             c.hasMapmaker = true;
+            c.lidarSearchDefaultStartDate = new DateTime(2000, 1, 1, 0, 0, 0, 0).toDate();
+            c.lidarSearchDefaultEndDate = new DateTime(2050, 1, 1, 0, 0, 0, 0).toDate();
+            c.lidarSearchDataSourceMap = new LinkedHashMap<String, String>();
+            c.lidarSearchDataSourceMap.put("Default", "/GASKELL/RQ36/OLA/cubes");
+            c.lidarBrowseXYZIndices = new int[]{1, 2, 3};
+            c.lidarBrowseSpacecraftIndices = new int[]{4, 5, 6};
+            c.lidarBrowseIsSpacecraftInSphericalCoordinates = false;
+            c.lidarBrowseTimeIndex = 0;
+            c.lidarBrowseNoiseIndex = -1;
+            c.lidarBrowseFileListResourcePath = "/edu/jhuapl/near/data/OlaLidarFiles.txt";
+            c.lidarBrowseNumberHeaderLines = 0;
+            c.lidarBrowseIsInMeters = false;
+            c.lidarOffsetScale = 0.0005;
             configArray.add(c);
         }
 
@@ -1000,6 +1015,8 @@ public class ModelFactory
                 return NLR;
             else if (ITOKAWA.equals(name))
                 return LIDAR;
+            else if (RQ36.equals(name))
+                return OLA;
             else
                 return null;
         }
