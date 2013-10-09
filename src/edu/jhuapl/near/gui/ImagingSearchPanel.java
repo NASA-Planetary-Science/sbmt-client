@@ -4,7 +4,7 @@
  */
 
 /*
- * AbstractImageSearchPanel.java
+ * ImagingSearchPanel.java
  *
  * Created on May 5, 2011, 3:15:17 PM
  */
@@ -65,7 +65,7 @@ import edu.jhuapl.near.util.Properties;
  *
  * @author kahneg1
  */
-public class AbstractImageSearchPanel extends javax.swing.JPanel implements PropertyChangeListener
+public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyChangeListener
 {
     private ModelConfig modelConfig;
     private final ModelManager modelManager;
@@ -86,8 +86,8 @@ public class AbstractImageSearchPanel extends javax.swing.JPanel implements Prop
     private ImagePopupMenu imagePopupMenu;
     private ColorImagePopupMenu colorImagePopupMenu;
 
-    /** Creates new form AbstractImageSearchPanel */
-    public AbstractImageSearchPanel(ModelConfig modelConfig,
+    /** Creates new form ImagingSearchPanel */
+    public ImagingSearchPanel(ModelConfig modelConfig,
             final ModelManager modelManager,
             ModelInfoWindowManager infoPanelManager,
             final PickManager pickManager,

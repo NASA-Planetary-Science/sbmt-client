@@ -110,7 +110,7 @@ public class View extends JPanel
                     modelConfig.name.equals(ModelFactory.EROS) ||
                     (modelConfig.name.equals(ModelFactory.ITOKAWA) && modelConfig.author.equals(ModelFactory.GASKELL)))
             {
-                JComponent component = new AbstractImageSearchPanel(modelConfig, modelManager, infoPanelManager, pickManager, renderer);
+                JComponent component = new ImagingSearchPanel(modelConfig, modelManager, infoPanelManager, pickManager, renderer);
                 controlPanel.addTab(modelConfig.getImagingInstrumentName(), component);
             }
         }
