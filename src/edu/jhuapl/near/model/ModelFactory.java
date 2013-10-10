@@ -307,42 +307,46 @@ public class ModelFactory
 
         // New Gaskell Phobos (experimental)
 //      c.add(new ModelConfig(PHOBOS, SATELLITES, MARS, IMAGE_BASED, EXPERIMENTAL, "/GASKELL/PHOBOSEXPERIMENTAL", false, true));
-        c = new ModelConfig();
-        c.name = PHOBOS;
-        c.type = SATELLITES;
-        c.population = MARS;
-        c.dataUsed = IMAGE_BASED;
-        c.author = EXPERIMENTAL;
-        c.pathOnServer = "/GASKELL/PHOBOSEXPERIMENTAL";
-        c.hasPerspectiveImages = true;
-        c.imageSearchDefaultStartDate = new GregorianCalendar(1976, 6, 24, 0, 0, 0).getTime();
-        c.imageSearchDefaultEndDate = new GregorianCalendar(2011, 6, 7, 0, 0, 0).getTime();
-        c.imageSearchQuery = PhobosExperimentalQuery.getInstance();
-        c.imageSearchFilterNames = new String[]{
-                "VSK, Channel 1",
-                "VSK, Channel 2",
-                "VSK, Channel 3",
-                "VIS, Blue",
-                "VIS, Minus Blue",
-                "VIS, Violet",
-                "VIS, Clear",
-                "VIS, Green",
-                "VIS, Red",
-        };
-        c.imageSearchUserDefinedCheckBoxesNames = new String[]{
-                "Phobos 2",
-                "Viking Orbiter 1-A",
-                "Viking Orbiter 1-B",
-                "Viking Orbiter 2-A",
-                "Viking Orbiter 2-B",
-                "MEX HRSC",
-                "MRO HiRISE",
-                "MGS MOC"
-                };
-        c.imageSearchDefaultMaxSpacecraftDistance = 9000.0;
-        c.imageSearchDefaultMaxResolution = 300.0;
-        c.imageSearchImageSources = new ImageSource[]{ImageSource.GASKELL};
-        configArray.add(c);
+        if (Configuration.isAPLVersion())
+        {
+            c = new ModelConfig();
+            c.name = PHOBOS;
+            c.type = SATELLITES;
+            c.population = MARS;
+            c.dataUsed = IMAGE_BASED;
+            c.author = EXPERIMENTAL;
+            c.pathOnServer = "/GASKELL/PHOBOSEXPERIMENTAL";
+            c.useAPLServer = true;
+            c.hasPerspectiveImages = true;
+            c.imageSearchDefaultStartDate = new GregorianCalendar(1976, 6, 24, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2011, 6, 7, 0, 0, 0).getTime();
+            c.imageSearchQuery = PhobosExperimentalQuery.getInstance();
+            c.imageSearchFilterNames = new String[]{
+                    "VSK, Channel 1",
+                    "VSK, Channel 2",
+                    "VSK, Channel 3",
+                    "VIS, Blue",
+                    "VIS, Minus Blue",
+                    "VIS, Violet",
+                    "VIS, Clear",
+                    "VIS, Green",
+                    "VIS, Red",
+            };
+            c.imageSearchUserDefinedCheckBoxesNames = new String[]{
+                    "Phobos 2",
+                    "Viking Orbiter 1-A",
+                    "Viking Orbiter 1-B",
+                    "Viking Orbiter 2-A",
+                    "Viking Orbiter 2-B",
+                    "MEX HRSC",
+                    "MRO HiRISE",
+                    "MGS MOC"
+            };
+            c.imageSearchDefaultMaxSpacecraftDistance = 9000.0;
+            c.imageSearchDefaultMaxResolution = 300.0;
+            c.imageSearchImageSources = new ImageSource[]{ImageSource.GASKELL};
+            configArray.add(c);
+        }
 
 //      c.add(new ModelConfig(AMALTHEA, SATELLITES, JUPITER, IMAGE_BASED, STOOKE, "/STOOKE/AMALTHEA/j5amalthea.llr.gz"));
         c = new ModelConfig();
@@ -405,6 +409,7 @@ public class ModelFactory
             c.dataUsed = IMAGE_BASED;
             c.author = GASKELL;
             c.pathOnServer = "/GASKELL/VESTA";
+            c.useAPLServer = true;
             c.hasPerspectiveImages = true;
             c.imageSearchDefaultStartDate = new GregorianCalendar(2011, 4, 3, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2012, 7, 27, 0, 0, 0).getTime();
@@ -745,6 +750,7 @@ public class ModelFactory
             c.dataUsed = ENHANCED;
             c.author = GASKELL;
             c.pathOnServer = "/GASKELL/RQ36";
+            c.useAPLServer = true;
             c.hasLidarData = true;
             c.hasMapmaker = true;
             c.lidarSearchDefaultStartDate = new DateTime(2000, 1, 1, 0, 0, 0, 0).toDate();
@@ -773,6 +779,7 @@ public class ModelFactory
             c.dataUsed = IMAGE_BASED;
             c.author = GASKELL;
             c.pathOnServer = "/GASKELL/LUTETIA";
+            c.useAPLServer = true;
             c.hasPerspectiveImages = true;
             c.imageSearchDefaultStartDate = new GregorianCalendar(2010, 6, 10, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2010, 6, 11, 0, 0, 0).getTime();
@@ -795,6 +802,7 @@ public class ModelFactory
             c.dataUsed = IMAGE_BASED;
             c.author = GASKELL;
             c.pathOnServer = "/GASKELL/DIONE";
+            c.useAPLServer = true;
             c.hasPerspectiveImages = true;
             c.imageSearchDefaultStartDate = new GregorianCalendar(1980, 10, 10, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2011, 0, 31, 0, 0, 0).getTime();
@@ -817,6 +825,7 @@ public class ModelFactory
             c.dataUsed = IMAGE_BASED;
             c.author = GASKELL;
             c.pathOnServer = "/GASKELL/RHEA";
+            c.useAPLServer = true;
             configArray.add(c);
         }
 
@@ -830,6 +839,7 @@ public class ModelFactory
             c.dataUsed = IMAGE_BASED;
             c.author = GASKELL;
             c.pathOnServer = "/GASKELL/TETHYS";
+            c.useAPLServer = true;
             configArray.add(c);
         }
 
@@ -844,6 +854,7 @@ public class ModelFactory
             c.dataUsed = IMAGE_BASED;
             c.author = GASKELL;
             c.pathOnServer = "/GASKELL/HYPERION";
+            c.useAPLServer = true;
             configArray.add(c);
         }
 
@@ -870,6 +881,7 @@ public class ModelFactory
             c.dataUsed = IMAGE_BASED;
             c.author = GASKELL;
             c.pathOnServer = "/GASKELL/TEMPEL1";
+            c.useAPLServer = true;
             configArray.add(c);
         }
 
@@ -913,6 +925,7 @@ public class ModelFactory
         public String dataUsed; // e.g. images, radar, lidar, or enhanced
         public String author; // e.g. Gaskell
         public String pathOnServer;
+        public boolean useAPLServer = false;
         public boolean hasImageMap = false;
         public boolean hasPerspectiveImages = false;
         public boolean hasLidarData = false;
@@ -954,6 +967,7 @@ public class ModelFactory
             c.dataUsed = this.dataUsed;
             c.author = this.author;
             c.pathOnServer = this.pathOnServer;
+            c.useAPLServer = this.useAPLServer;
             c.hasImageMap = this.hasImageMap;
             c.hasPerspectiveImages = this.hasPerspectiveImages;
             c.hasLidarData = this.hasLidarData;
@@ -1102,10 +1116,9 @@ public class ModelFactory
                         config.pathOnServer + "/ver64q.vtk.gz",
                 };
 
-                boolean useAPLServer = true;
                 boolean hasColoringData = true;
 
-                return new SimpleSmallBody(name, author, names, paths, hasColoringData, useAPLServer);
+                return new SimpleSmallBody(name, author, names, paths, hasColoringData, config.useAPLServer);
             }
             else
             {
@@ -1121,20 +1134,10 @@ public class ModelFactory
                         config.pathOnServer + "/ver256q.vtk.gz",
                         config.pathOnServer + "/ver512q.vtk.gz"
                 };
-                boolean useAPLServer = false;
-                if (LUTETIA.equals(name) ||
-                        DIONE.equals(name) ||
-                        RHEA.equals(name) ||
-                        HYPERION.equals(name) ||
-                        TETHYS.equals(name) ||
-                        (PHOBOS.equals(name) && EXPERIMENTAL.equals(author)))
-                {
-                    useAPLServer = true;
-                }
 
                 boolean hasColoringData = true;
 
-                return new SimpleSmallBody(name, author, names, paths, hasColoringData, useAPLServer);
+                return new SimpleSmallBody(name, author, names, paths, hasColoringData, config.useAPLServer);
             }
         }
         else if (THOMAS.equals(author))
@@ -1187,20 +1190,7 @@ public class ModelFactory
                 };
             };
 
-            boolean useAPLServer = false;
-            if (VESTA.equals(name) ||
-                    RQ36.equals(name) ||
-                    LUTETIA.equals(name) ||
-                    DIONE.equals(name) ||
-                    RHEA.equals(name) ||
-                    HYPERION.equals(name) ||
-                    TETHYS.equals(name) ||
-                    TEMPEL_1.equals(name))
-            {
-                useAPLServer = true;
-            }
-
-            return new Graticule(smallBodyModel, graticulePaths, useAPLServer);
+            return new Graticule(smallBodyModel, graticulePaths, config.useAPLServer);
         }
         else if (CUSTOM.equals(author))
         {
