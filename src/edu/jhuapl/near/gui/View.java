@@ -214,7 +214,7 @@ public class View extends JPanel
         modelManager = new ModelManager();
 
         SmallBodyModel smallBodyModel = ModelFactory.createSmallBodyModel(modelConfig);
-        Graticule graticule = ModelFactory.createGraticule(modelConfig, smallBodyModel);
+        Graticule graticule = ModelFactory.createGraticule(smallBodyModel);
 
         HashMap<String, Model> allModels = new HashMap<String, Model>();
         allModels.put(ModelNames.SMALL_BODY, smallBodyModel);

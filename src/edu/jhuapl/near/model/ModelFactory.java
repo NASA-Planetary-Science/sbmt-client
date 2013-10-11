@@ -1192,8 +1192,9 @@ public class ModelFactory
         return new SimpleSmallBody(config, imageMap, hasColoringData);
     }
 
-    static public Graticule createGraticule(ModelConfig config, SmallBodyModel smallBodyModel)
+    static public Graticule createGraticule(SmallBodyModel smallBodyModel)
     {
+        ModelConfig config = smallBodyModel.getModelConfig();
         String author = config.author;
 
         if (GASKELL.equals(author) && smallBodyModel.getNumberResolutionLevels() == 4)
