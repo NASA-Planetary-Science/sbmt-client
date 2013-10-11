@@ -111,20 +111,20 @@ public class View extends JPanel
                     (modelConfig.name.equals(ModelFactory.ITOKAWA) && modelConfig.author.equals(ModelFactory.GASKELL)))
             {
                 JComponent component = new ImagingSearchPanel(modelConfig, modelManager, infoPanelManager, pickManager, renderer);
-                controlPanel.addTab(modelConfig.getImagingInstrumentName(), component);
+                controlPanel.addTab(modelConfig.imageInstrumentName, component);
             }
         }
 
         if (modelConfig.hasSpectralData)
         {
             JComponent component = new NISSearchPanel(modelManager, infoPanelManager, pickManager);
-            controlPanel.addTab(modelConfig.getSpectrographName(), component);
+            controlPanel.addTab(ModelFactory.NIS, component);
         }
 
         if (modelConfig.hasLidarData)
         {
             JComponent component = new LidarPanel(modelConfig, modelManager, pickManager, renderer);
-            controlPanel.addTab(modelConfig.getLidarInstrumentName(), component);
+            controlPanel.addTab(modelConfig.lidarInstrumentName, component);
         }
 
         if (Configuration.isAPLVersion())

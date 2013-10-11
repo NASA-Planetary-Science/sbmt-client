@@ -183,6 +183,7 @@ public class ModelFactory
         c.imageSearchDefaultMaxResolution = 50.0;
         c.imageSearchImageSources = new ImageSource[]{ImageSource.GASKELL, ImageSource.PDS};
         c.imageType = ImageType.MSI_IMAGE;
+        c.imageInstrumentName = MSI;
         c.lidarSearchDefaultStartDate = new DateTime(2000, 2, 28, 0, 0, 0, 0).toDate();
         c.lidarSearchDefaultEndDate = new DateTime(2001, 2, 13, 0, 0, 0, 0).toDate();
         c.lidarSearchDataSourceMap = new LinkedHashMap<String, String>();
@@ -196,6 +197,7 @@ public class ModelFactory
         c.lidarBrowseNumberHeaderLines = 2;
         c.lidarBrowseIsInMeters = true;
         c.lidarOffsetScale = 0.025;
+        c.lidarInstrumentName = NLR;
         configArray.add(c);
 
         // Thomas Eros
@@ -250,6 +252,7 @@ public class ModelFactory
         c.imageSearchDefaultMaxResolution = 3.0;
         c.imageSearchImageSources = new ImageSource[]{ImageSource.GASKELL, ImageSource.PDS, ImageSource.CORRECTED};
         c.imageType = ImageType.AMICA_IMAGE;
+        c.imageInstrumentName = AMICA;
         c.lidarSearchDefaultStartDate = new DateTime(2005, 9, 1, 0, 0, 0, 0).toDate();
         c.lidarSearchDefaultEndDate = new DateTime(2005, 11, 30, 0, 0, 0, 0).toDate();
         c.lidarSearchDataSourceMap = new LinkedHashMap<String, String>();
@@ -266,6 +269,7 @@ public class ModelFactory
         // The following value is the Itokawa diagonal length divided by 1546.4224133453388.
         // The value 1546.4224133453388 was chosen so that for Eros the offset scale is 0.025 km.
         c.lidarOffsetScale = 0.00044228259621279913;
+        c.lidarInstrumentName = LIDAR;
         configArray.add(c);
 
         // Ostro Itokawa
@@ -308,6 +312,7 @@ public class ModelFactory
         c.imageSearchDefaultMaxResolution = 300.0;
         c.imageSearchImageSources = new ImageSource[]{ImageSource.GASKELL, ImageSource.PDS};
         c.imageType = ImageType.PHOBOS_IMAGE;
+        c.imageInstrumentName = IMAGING_DATA;
         configArray.add(c);
 
         // Thomas Phobos
@@ -362,6 +367,7 @@ public class ModelFactory
             c.imageSearchDefaultMaxResolution = 300.0;
             c.imageSearchImageSources = new ImageSource[]{ImageSource.GASKELL};
             c.imageType = ImageType.PHOBOS_IMAGE;
+            c.imageInstrumentName = IMAGING_DATA;
             configArray.add(c);
         }
 
@@ -393,6 +399,7 @@ public class ModelFactory
         c.imageSearchDefaultMaxResolution = 4000.0;
         c.imageSearchImageSources = new ImageSource[]{ImageSource.GASKELL};
         c.imageType = ImageType.SATURN_MOON_IMAGE;
+        c.imageInstrumentName = IMAGING_DATA;
         configArray.add(c);
 
 //      c.add(new ModelConfig(PHOEBE, SATELLITES, SATURN, IMAGE_BASED, GASKELL, "/GASKELL/PHOEBE", false, true));
@@ -413,6 +420,7 @@ public class ModelFactory
         c.imageSearchDefaultMaxResolution = 4000.0;
         c.imageSearchImageSources = new ImageSource[]{ImageSource.GASKELL};
         c.imageType = ImageType.SATURN_MOON_IMAGE;
+        c.imageInstrumentName = IMAGING_DATA;
         configArray.add(c);
 
 //      if (Configuration.isAPLVersion())
@@ -448,6 +456,7 @@ public class ModelFactory
             c.imageSearchDefaultMaxResolution = 4000.0;
             c.imageSearchImageSources = new ImageSource[]{ImageSource.GASKELL, ImageSource.PDS};
             c.imageType = ImageType.FC_IMAGE;
+            c.imageInstrumentName = FC;
             configArray.add(c);
         }
 
@@ -480,6 +489,7 @@ public class ModelFactory
         c.imageSearchDefaultMaxResolution = 4000.0;
         c.imageSearchImageSources = new ImageSource[]{ImageSource.CORRECTED};
         c.imageType = ImageType.SSI_IDA_IMAGE;
+        c.imageInstrumentName = SSI;
         configArray.add(c);
 
         //        c.add(new ModelConfig(IDA, ASTEROID, MAIN_BELT, IMAGE_BASED, STOOKE, "/STOOKE/IDA/243ida.llr.gz", true));
@@ -512,6 +522,7 @@ public class ModelFactory
         c.imageSearchDefaultMaxResolution = 4000.0;
         c.imageSearchImageSources = new ImageSource[]{ImageSource.CORRECTED};
         c.imageType = ImageType.SSI_GASPRA_IMAGE;
+        c.imageInstrumentName = SSI;
         configArray.add(c);
 
 //        c.add(new ModelConfig(GASPRA, ASTEROID, MAIN_BELT, IMAGE_BASED, STOOKE, "/STOOKE/GASPRA/951gaspra.llr.gz", true));
@@ -552,6 +563,7 @@ public class ModelFactory
         c.imageSearchDefaultMaxResolution = 4000.0;
         c.imageSearchImageSources = new ImageSource[]{ImageSource.CORRECTED};
         c.imageType = ImageType.MSI_MATHILDE_IMAGE;
+        c.imageInstrumentName = MSI;
         configArray.add(c);
 
 //        c.add(new ModelConfig(DEIMOS, SATELLITES, MARS, IMAGE_BASED, THOMAS, "/THOMAS/DEIMOS", true, true));
@@ -580,6 +592,7 @@ public class ModelFactory
         c.imageSearchDefaultMaxResolution = 300.0;
         c.imageSearchImageSources = new ImageSource[]{ImageSource.PDS, ImageSource.CORRECTED};
         c.imageType = ImageType.DEIMOS_IMAGE;
+        c.imageInstrumentName = IMAGING_DATA;
         configArray.add(c);
 
         //        c.add(new ModelConfig(JANUS, SATELLITES, SATURN, IMAGE_BASED, THOMAS, "/THOMAS/JANUS/s10janus.llr.gz"));
@@ -790,6 +803,7 @@ public class ModelFactory
             c.lidarBrowseNumberHeaderLines = 0;
             c.lidarBrowseIsInMeters = false;
             c.lidarOffsetScale = 0.0005;
+            c.lidarInstrumentName = OLA;
             configArray.add(c);
         }
 
@@ -814,6 +828,7 @@ public class ModelFactory
             c.imageSearchDefaultMaxResolution = 4000.0;
             c.imageSearchImageSources = new ImageSource[]{ImageSource.GASKELL};
             c.imageType = ImageType.OSIRIS_IMAGE;
+            c.imageInstrumentName = OSIRIS;
             configArray.add(c);
         }
 
@@ -838,6 +853,7 @@ public class ModelFactory
             c.imageSearchDefaultMaxResolution = 4000.0;
             c.imageSearchImageSources = new ImageSource[]{ImageSource.GASKELL};
             c.imageType = ImageType.SATURN_MOON_IMAGE;
+            c.imageInstrumentName = IMAGING_DATA;
             configArray.add(c);
         }
 
@@ -968,6 +984,7 @@ public class ModelFactory
         public double imageSearchDefaultMaxResolution;
         public ImageSource[] imageSearchImageSources;
         public ImageType imageType;
+        public String imageInstrumentName = IMAGING_DATA;
         // if hasLidarData is true, the following must be filled in
         public Date lidarSearchDefaultStartDate;
         public Date lidarSearchDefaultEndDate;
@@ -983,6 +1000,7 @@ public class ModelFactory
         // they are assumed to be in kilometers.
         public boolean lidarBrowseIsInMeters;
         public double lidarOffsetScale;
+        public String lidarInstrumentName = LIDAR;
 
 
         protected ModelConfig clone()
@@ -1012,6 +1030,7 @@ public class ModelFactory
                 c.imageSearchDefaultMaxResolution = this.imageSearchDefaultMaxResolution;
                 c.imageSearchImageSources = this.imageSearchImageSources.clone();
                 c.imageType = this.imageType;
+                c.imageInstrumentName = this.imageInstrumentName;
             }
             if (this.hasLidarData)
             {
@@ -1027,49 +1046,10 @@ public class ModelFactory
                 c.lidarBrowseNumberHeaderLines = this.lidarBrowseNumberHeaderLines;
                 c.lidarBrowseIsInMeters = this.lidarBrowseIsInMeters;
                 c.lidarOffsetScale = this.lidarOffsetScale;
+                c.lidarInstrumentName = this.lidarInstrumentName;
             }
             return c;
         };
-
-        public String getImagingInstrumentName()
-        {
-            if (EROS.equals(name))
-                return MSI;
-            else if (MATHILDE.equals(name))
-                return MSI;
-            else if (ITOKAWA.equals(name))
-                return AMICA;
-            else if (VESTA.equals(name))
-                return FC;
-            else if (IDA.equals(name))
-                return SSI;
-            else if (GASPRA.equals(name))
-                return SSI;
-            else if (LUTETIA.equals(name))
-                return OSIRIS;
-            else
-                return IMAGING_DATA;
-        }
-
-        public String getLidarInstrumentName()
-        {
-            if (EROS.equals(name))
-                return NLR;
-            else if (ITOKAWA.equals(name))
-                return LIDAR;
-            else if (RQ36.equals(name))
-                return OLA;
-            else
-                return null;
-        }
-
-        public String getSpectrographName()
-        {
-            if (EROS.equals(name))
-                return NIS;
-            else
-                return null;
-        }
     }
 
     /**
