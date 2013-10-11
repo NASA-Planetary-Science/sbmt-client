@@ -16,6 +16,7 @@ import vtk.vtkTriangle;
 
 import edu.jhuapl.near.model.Image.ImageKey;
 import edu.jhuapl.near.model.Image.ImageSource;
+import edu.jhuapl.near.model.ModelFactory;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.eros.ErosThomas;
 import edu.jhuapl.near.model.eros.MSIImage;
@@ -245,7 +246,7 @@ public class MSIBestResolutionPerPlate
 
         String msiFileList=args[0];
 
-        erosModel = new ErosThomas();
+        erosModel = new ErosThomas(ModelFactory.getModelConfig(ModelFactory.EROS, ModelFactory.THOMAS));
         resolutionLevel = Integer.parseInt(args[1]);
         try {
             erosModel.setModelResolution(resolutionLevel);

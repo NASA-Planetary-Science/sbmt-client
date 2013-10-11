@@ -1,6 +1,7 @@
 package edu.jhuapl.near.model.deimos;
 
 import edu.jhuapl.near.model.ModelFactory;
+import edu.jhuapl.near.model.ModelFactory.ModelConfig;
 import edu.jhuapl.near.model.SmallBodyModel;
 
 public class Deimos extends SmallBodyModel
@@ -31,9 +32,10 @@ public class Deimos extends SmallBodyModel
             SlopeUnitsStr, ElevUnitsStr, GravAccUnitsStr, GravPotUnitsStr
     };
 
-    public Deimos()
+    public Deimos(ModelConfig config)
     {
-        super(NAME,
+        super(config,
+                NAME,
                 AUTHOR,
                 new String[]{NAME.toUpperCase()},
                 modelFiles,

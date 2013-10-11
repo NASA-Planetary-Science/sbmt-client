@@ -1,6 +1,7 @@
 package edu.jhuapl.near.model.vesta;
 
 import edu.jhuapl.near.model.ModelFactory;
+import edu.jhuapl.near.model.ModelFactory.ModelConfig;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.util.Configuration;
 
@@ -45,9 +46,10 @@ public class Vesta extends SmallBodyModel
         SlopeUnitsStr, ElevUnitsStr, GravAccUnitsStr, GravPotUnitsStr
     };
 
-    public Vesta()
+    public Vesta(ModelConfig config)
     {
-        super(NAME,
+        super(config,
+                NAME,
                 AUTHOR,
                 modelNames,
                 Configuration.isAPLVersion() ? modelFilesAplOnly : modelFilesPublic,

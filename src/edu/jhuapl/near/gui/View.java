@@ -234,7 +234,7 @@ public class View extends JPanel
 
         if (modelConfig.hasLidarData)
         {
-            allModels.putAll(ModelFactory.createLidarModels(modelConfig, smallBodyModel));
+            allModels.putAll(ModelFactory.createLidarModels(smallBodyModel));
         }
 
         if (modelConfig.hasLineamentData)

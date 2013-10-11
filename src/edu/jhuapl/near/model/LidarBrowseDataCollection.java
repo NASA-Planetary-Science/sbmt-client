@@ -27,9 +27,9 @@ public class LidarBrowseDataCollection extends Model implements PropertyChangeLi
     private double stopPercent = 1.0;
     private boolean showSpacecraftPosition = true;
 
-    public LidarBrowseDataCollection(ModelConfig modelConfig)
+    public LidarBrowseDataCollection(SmallBodyModel smallBodyModel)
     {
-        this.modelConfig = modelConfig;
+        this.modelConfig = smallBodyModel.getModelConfig();
     }
 
     public void addLidarData(String path) throws IOException

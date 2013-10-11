@@ -133,6 +133,19 @@ public class ModelFactory
     static public final String OLA = "OLA";
     static public final String IMAGING_DATA = "Imaging Data";
 
+    static public enum ImageType {
+        MSI_IMAGE,
+        AMICA_IMAGE,
+        FC_IMAGE,
+        PHOBOS_IMAGE,
+        DEIMOS_IMAGE,
+        OSIRIS_IMAGE,
+        SATURN_MOON_IMAGE,
+        SSI_GASPRA_IMAGE,
+        SSI_IDA_IMAGE,
+        MSI_MATHILDE_IMAGE
+    }
+
     static public final ArrayList<ModelConfig> builtInModelConfigs = new ArrayList<ModelConfig>();
 
     static
@@ -169,6 +182,7 @@ public class ModelFactory
         c.imageSearchDefaultMaxSpacecraftDistance = 100.0;
         c.imageSearchDefaultMaxResolution = 50.0;
         c.imageSearchImageSources = new ImageSource[]{ImageSource.GASKELL, ImageSource.PDS};
+        c.imageType = ImageType.MSI_IMAGE;
         c.lidarSearchDefaultStartDate = new DateTime(2000, 2, 28, 0, 0, 0, 0).toDate();
         c.lidarSearchDefaultEndDate = new DateTime(2001, 2, 13, 0, 0, 0, 0).toDate();
         c.lidarSearchDataSourceMap = new LinkedHashMap<String, String>();
@@ -235,6 +249,7 @@ public class ModelFactory
         c.imageSearchDefaultMaxSpacecraftDistance = 26.0;
         c.imageSearchDefaultMaxResolution = 3.0;
         c.imageSearchImageSources = new ImageSource[]{ImageSource.GASKELL, ImageSource.PDS, ImageSource.CORRECTED};
+        c.imageType = ImageType.AMICA_IMAGE;
         c.lidarSearchDefaultStartDate = new DateTime(2005, 9, 1, 0, 0, 0, 0).toDate();
         c.lidarSearchDefaultEndDate = new DateTime(2005, 11, 30, 0, 0, 0, 0).toDate();
         c.lidarSearchDataSourceMap = new LinkedHashMap<String, String>();
@@ -292,6 +307,7 @@ public class ModelFactory
         c.imageSearchDefaultMaxSpacecraftDistance = 9000.0;
         c.imageSearchDefaultMaxResolution = 300.0;
         c.imageSearchImageSources = new ImageSource[]{ImageSource.GASKELL, ImageSource.PDS};
+        c.imageType = ImageType.PHOBOS_IMAGE;
         configArray.add(c);
 
         // Thomas Phobos
@@ -345,6 +361,7 @@ public class ModelFactory
             c.imageSearchDefaultMaxSpacecraftDistance = 9000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
             c.imageSearchImageSources = new ImageSource[]{ImageSource.GASKELL};
+            c.imageType = ImageType.PHOBOS_IMAGE;
             configArray.add(c);
         }
 
@@ -375,6 +392,7 @@ public class ModelFactory
         c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
         c.imageSearchDefaultMaxResolution = 4000.0;
         c.imageSearchImageSources = new ImageSource[]{ImageSource.GASKELL};
+        c.imageType = ImageType.SATURN_MOON_IMAGE;
         configArray.add(c);
 
 //      c.add(new ModelConfig(PHOEBE, SATELLITES, SATURN, IMAGE_BASED, GASKELL, "/GASKELL/PHOEBE", false, true));
@@ -394,6 +412,7 @@ public class ModelFactory
         c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
         c.imageSearchDefaultMaxResolution = 4000.0;
         c.imageSearchImageSources = new ImageSource[]{ImageSource.GASKELL};
+        c.imageType = ImageType.SATURN_MOON_IMAGE;
         configArray.add(c);
 
 //      if (Configuration.isAPLVersion())
@@ -428,6 +447,7 @@ public class ModelFactory
             c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
             c.imageSearchDefaultMaxResolution = 4000.0;
             c.imageSearchImageSources = new ImageSource[]{ImageSource.GASKELL, ImageSource.PDS};
+            c.imageType = ImageType.FC_IMAGE;
             configArray.add(c);
         }
 
@@ -459,6 +479,7 @@ public class ModelFactory
         c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
         c.imageSearchDefaultMaxResolution = 4000.0;
         c.imageSearchImageSources = new ImageSource[]{ImageSource.CORRECTED};
+        c.imageType = ImageType.SSI_IDA_IMAGE;
         configArray.add(c);
 
         //        c.add(new ModelConfig(IDA, ASTEROID, MAIN_BELT, IMAGE_BASED, STOOKE, "/STOOKE/IDA/243ida.llr.gz", true));
@@ -490,6 +511,7 @@ public class ModelFactory
         c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
         c.imageSearchDefaultMaxResolution = 4000.0;
         c.imageSearchImageSources = new ImageSource[]{ImageSource.CORRECTED};
+        c.imageType = ImageType.SSI_GASPRA_IMAGE;
         configArray.add(c);
 
 //        c.add(new ModelConfig(GASPRA, ASTEROID, MAIN_BELT, IMAGE_BASED, STOOKE, "/STOOKE/GASPRA/951gaspra.llr.gz", true));
@@ -529,6 +551,7 @@ public class ModelFactory
         c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
         c.imageSearchDefaultMaxResolution = 4000.0;
         c.imageSearchImageSources = new ImageSource[]{ImageSource.CORRECTED};
+        c.imageType = ImageType.MSI_MATHILDE_IMAGE;
         configArray.add(c);
 
 //        c.add(new ModelConfig(DEIMOS, SATELLITES, MARS, IMAGE_BASED, THOMAS, "/THOMAS/DEIMOS", true, true));
@@ -556,6 +579,7 @@ public class ModelFactory
         c.imageSearchDefaultMaxSpacecraftDistance = 9000.0;
         c.imageSearchDefaultMaxResolution = 300.0;
         c.imageSearchImageSources = new ImageSource[]{ImageSource.PDS, ImageSource.CORRECTED};
+        c.imageType = ImageType.DEIMOS_IMAGE;
         configArray.add(c);
 
         //        c.add(new ModelConfig(JANUS, SATELLITES, SATURN, IMAGE_BASED, THOMAS, "/THOMAS/JANUS/s10janus.llr.gz"));
@@ -789,6 +813,7 @@ public class ModelFactory
             c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
             c.imageSearchDefaultMaxResolution = 4000.0;
             c.imageSearchImageSources = new ImageSource[]{ImageSource.GASKELL};
+            c.imageType = ImageType.OSIRIS_IMAGE;
             configArray.add(c);
         }
 
@@ -812,6 +837,7 @@ public class ModelFactory
             c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
             c.imageSearchDefaultMaxResolution = 4000.0;
             c.imageSearchImageSources = new ImageSource[]{ImageSource.GASKELL};
+            c.imageType = ImageType.SATURN_MOON_IMAGE;
             configArray.add(c);
         }
 
@@ -941,6 +967,7 @@ public class ModelFactory
         public double imageSearchDefaultMaxSpacecraftDistance;
         public double imageSearchDefaultMaxResolution;
         public ImageSource[] imageSearchImageSources;
+        public ImageType imageType;
         // if hasLidarData is true, the following must be filled in
         public Date lidarSearchDefaultStartDate;
         public Date lidarSearchDefaultEndDate;
@@ -984,6 +1011,7 @@ public class ModelFactory
                 c.imageSearchDefaultMaxSpacecraftDistance = this.imageSearchDefaultMaxSpacecraftDistance;
                 c.imageSearchDefaultMaxResolution = this.imageSearchDefaultMaxResolution;
                 c.imageSearchImageSources = this.imageSearchImageSources.clone();
+                c.imageType = this.imageType;
             }
             if (this.hasLidarData)
             {
@@ -1044,40 +1072,59 @@ public class ModelFactory
         }
     }
 
-    static public Image createImage(ImageKey key,
+    /**
+     * Get a ModelConfig of a specific name and author.
+     * Note a ModelConfig is uniquely described by its name and author.
+     * No two model configs can have both the same.
+     *
+     * @param name
+     * @param author
+     * @return
+     */
+    static public ModelConfig getModelConfig(String name, String author)
+    {
+        for (ModelConfig config : builtInModelConfigs)
+        {
+            if (config.name.equals(name) && config.author.equals(author))
+                return config;
+        }
+
+        System.err.println("Error: Cannot find ModelConfig with name " + name + " and author " + author);
+
+        return null;
+    }
+
+    static public Image createImage(
+            ImageKey key,
             SmallBodyModel smallBodyModel,
             boolean loadPointingOnly,
             File rootFolder) throws FitsException, IOException
     {
+        ModelConfig config = smallBodyModel.getModelConfig();
+
         if (ImageSource.PDS.equals(key.source) ||
                 ImageSource.GASKELL.equals(key.source) ||
                 ImageSource.CORRECTED.equals(key.source))
         {
-            if (smallBodyModel.getModelName().toLowerCase().equals("eros") ||
-                smallBodyModel.getModelName().toLowerCase().startsWith("433 eros") ||
-                smallBodyModel.getModelName().toLowerCase().startsWith("near-a-msi-5-erosshape"))
+            if (config.imageType == ImageType.MSI_IMAGE)
                 return new MSIImage(key, smallBodyModel, loadPointingOnly, rootFolder);
-            else if (smallBodyModel instanceof Itokawa)
+            else if (config.imageType == ImageType.AMICA_IMAGE)
                 return new AmicaImage(key, smallBodyModel, loadPointingOnly, rootFolder);
-            else if (smallBodyModel instanceof Vesta)
+            else if (config.imageType == ImageType.FC_IMAGE)
                 return new FcImage(key, smallBodyModel, loadPointingOnly, rootFolder);
-            else if (smallBodyModel.getModelName().toLowerCase().startsWith("phobos"))
+            else if (config.imageType == ImageType.PHOBOS_IMAGE)
                 return new PhobosImage(key, smallBodyModel, loadPointingOnly, rootFolder);
-            else if (smallBodyModel.getModelName().toLowerCase().startsWith("deimos"))
+            else if (config.imageType == ImageType.DEIMOS_IMAGE)
                 return new DeimosImage(key, smallBodyModel, loadPointingOnly, rootFolder);
-            else if (smallBodyModel.getModelName().toLowerCase().startsWith("lutetia"))
+            else if (config.imageType == ImageType.OSIRIS_IMAGE)
                 return new OsirisImage(key, smallBodyModel, loadPointingOnly, rootFolder);
-            else if (smallBodyModel.getModelName().toLowerCase().startsWith("dione"))
+            else if (config.imageType == ImageType.SATURN_MOON_IMAGE)
                 return new SaturnMoonImage(key, smallBodyModel, loadPointingOnly, rootFolder);
-            else if (smallBodyModel.getModelName().toLowerCase().startsWith("mimas"))
-                return new SaturnMoonImage(key, smallBodyModel, loadPointingOnly, rootFolder);
-            else if (smallBodyModel.getModelName().toLowerCase().startsWith("phoebe"))
-                return new SaturnMoonImage(key, smallBodyModel, loadPointingOnly, rootFolder);
-            else if (smallBodyModel.getModelName().toLowerCase().equals("gaspra"))
+            else if (config.imageType == ImageType.SSI_GASPRA_IMAGE)
                 return new SSIGaspraImage(key, smallBodyModel, loadPointingOnly, rootFolder);
-            else if (smallBodyModel.getModelName().toLowerCase().equals("ida"))
+            else if (config.imageType == ImageType.SSI_IDA_IMAGE)
                 return new SSIIdaImage(key, smallBodyModel, loadPointingOnly, rootFolder);
-            else if (smallBodyModel.getModelName().toLowerCase().equals("mathilde"))
+            else if (config.imageType == ImageType.MSI_MATHILDE_IMAGE)
                 return new MSIMathildeImage(key, smallBodyModel, loadPointingOnly, rootFolder);
             else
                 return null;
@@ -1100,13 +1147,13 @@ public class ModelFactory
         if (GASKELL.equals(author) || EXPERIMENTAL.equals(author))
         {
             if (EROS.equals(name))
-                return new Eros();
+                return new Eros(config);
             else if (ITOKAWA.equals(name))
-                return new Itokawa();
+                return new Itokawa(config);
             else if (VESTA.equals(name))
-                return new Vesta();
+                return new Vesta(config);
             else if (RQ36.equals(name))
-                return new RQ36();
+                return new RQ36(config);
             else if (TEMPEL_1.equals(name))
             {
                 String[] names = {
@@ -1118,7 +1165,7 @@ public class ModelFactory
 
                 boolean hasColoringData = true;
 
-                return new SimpleSmallBody(name, author, names, paths, hasColoringData, config.useAPLServer);
+                return new SimpleSmallBody(config, names, paths, hasColoringData);
             }
             else
             {
@@ -1137,21 +1184,21 @@ public class ModelFactory
 
                 boolean hasColoringData = true;
 
-                return new SimpleSmallBody(name, author, names, paths, hasColoringData, config.useAPLServer);
+                return new SimpleSmallBody(config, names, paths, hasColoringData);
             }
         }
         else if (THOMAS.equals(author))
         {
             if (EROS.equals(name))
-                return new ErosThomas();
+                return new ErosThomas(config);
             else if (DEIMOS.equals(name))
-                return new Deimos();
+                return new Deimos(config);
             else if (VESTA.equals(name))
-                return new VestaOld();
+                return new VestaOld(config);
         }
         else if (CUSTOM.equals(author))
         {
-            return new CustomShapeModel(name);
+            return new CustomShapeModel(config);
         }
 
         String imageMap = null;
@@ -1162,7 +1209,7 @@ public class ModelFactory
         if (EROS.equals(name) || IDA.equals(name) || GASPRA.equals(name) || MATHILDE.equals(name))
             hasColoringData = true;
 
-        return new SimpleSmallBody(name, author, config.pathOnServer, imageMap, hasColoringData);
+        return new SimpleSmallBody(config, imageMap, hasColoringData);
     }
 
     static public Graticule createGraticule(ModelConfig config, SmallBodyModel smallBodyModel)
@@ -1198,12 +1245,12 @@ public class ModelFactory
         return new NISSpectraCollection(smallBodyModel);
     }
 
-    static public HashMap<String, Model> createLidarModels(ModelConfig modelConfig, SmallBodyModel smallBodyModel)
+    static public HashMap<String, Model> createLidarModels(SmallBodyModel smallBodyModel)
     {
         HashMap<String, Model> models = new HashMap<String, Model>();
 
-        models.put(ModelNames.LIDAR_BROWSE, new LidarBrowseDataCollection(modelConfig));
-        models.put(ModelNames.LIDAR_SEARCH, new LidarSearchDataCollection(modelConfig, smallBodyModel));
+        models.put(ModelNames.LIDAR_BROWSE, new LidarBrowseDataCollection(smallBodyModel));
+        models.put(ModelNames.LIDAR_SEARCH, new LidarSearchDataCollection(smallBodyModel));
 
         return models;
     }

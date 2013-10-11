@@ -114,10 +114,10 @@ public class LidarSearchDataCollection extends Model
         }
     }
 
-    public LidarSearchDataCollection(ModelConfig modelConfig, SmallBodyModel smallBodyModel)
+    public LidarSearchDataCollection(SmallBodyModel smallBodyModel)
     {
-        this.modelConfig = modelConfig;
         this.smallBodyModel = smallBodyModel;
+        this.modelConfig = smallBodyModel.getModelConfig();
 
         // Initialize an empty polydata for resetting
         emptyPolyData = new vtkPolyData();

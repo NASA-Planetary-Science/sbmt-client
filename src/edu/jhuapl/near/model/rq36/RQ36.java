@@ -1,6 +1,7 @@
 package edu.jhuapl.near.model.rq36;
 
 import edu.jhuapl.near.model.ModelFactory;
+import edu.jhuapl.near.model.ModelFactory.ModelConfig;
 import edu.jhuapl.near.model.SmallBodyModel;
 
 public class RQ36 extends SmallBodyModel
@@ -37,9 +38,10 @@ public class RQ36 extends SmallBodyModel
         SlopeUnitsStr, ElevUnitsStr, GravAccUnitsStr, GravPotUnitsStr
     };
 
-    public RQ36()
+    public RQ36(ModelConfig config)
     {
-        super(NAME,
+        super(config,
+                NAME,
                 AUTHOR,
                 modelNames,
                 modelFilesAplOnly,
