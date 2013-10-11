@@ -1169,25 +1169,13 @@ public class ModelFactory
     {
         String author = config.author;
 
-        if (GASKELL.equals(author))
+        if (GASKELL.equals(author) && smallBodyModel.getNumberResolutionLevels() == 4)
         {
-            String name = config.name;
-
-            String[] graticulePaths = null;
-            if (TEMPEL_1.equals(name))
-            {
-                graticulePaths = new String[]{
-                        config.pathOnServer + "/coordinate_grid_res0.vtk.gz"
-                };
-            }
-            else
-            {
-                graticulePaths = new String[]{
-                        config.pathOnServer + "/coordinate_grid_res0.vtk.gz",
-                        config.pathOnServer + "/coordinate_grid_res1.vtk.gz",
-                        config.pathOnServer + "/coordinate_grid_res2.vtk.gz",
-                        config.pathOnServer + "/coordinate_grid_res3.vtk.gz"
-                };
+            String[] graticulePaths = new String[]{
+                    config.pathOnServer + "/coordinate_grid_res0.vtk.gz",
+                    config.pathOnServer + "/coordinate_grid_res1.vtk.gz",
+                    config.pathOnServer + "/coordinate_grid_res2.vtk.gz",
+                    config.pathOnServer + "/coordinate_grid_res3.vtk.gz"
             };
 
             return new Graticule(smallBodyModel, graticulePaths, config.useAPLServer);
