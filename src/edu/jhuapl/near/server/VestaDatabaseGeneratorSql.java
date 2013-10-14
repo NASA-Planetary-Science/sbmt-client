@@ -21,10 +21,10 @@ import edu.jhuapl.near.model.Image;
 import edu.jhuapl.near.model.Image.ImageKey;
 import edu.jhuapl.near.model.Image.ImageSource;
 import edu.jhuapl.near.model.ModelFactory;
+import edu.jhuapl.near.model.ModelFactory.ModelConfig;
 import edu.jhuapl.near.model.PerspectiveImage;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.vesta.FcImage;
-import edu.jhuapl.near.model.vesta.Vesta;
 import edu.jhuapl.near.util.Configuration;
 import edu.jhuapl.near.util.FileUtil;
 import edu.jhuapl.near.util.NativeLibraryLoader;
@@ -501,7 +501,8 @@ public class VestaDatabaseGeneratorSql
 
         NativeLibraryLoader.loadVtkLibraries();
 
-        vestaModel = new Vesta(ModelFactory.getModelConfig(ModelFactory.VESTA, ModelFactory.GASKELL));
+        ModelConfig modelConfig = ModelFactory.getModelConfig(ModelFactory.VESTA, ModelFactory.GASKELL);
+        vestaModel = ModelFactory.createSmallBodyModel(modelConfig);
 
         String fcFileList=args[0];
         //String sumfilelistFilename=args[1];

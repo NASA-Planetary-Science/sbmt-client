@@ -17,7 +17,6 @@ import edu.jhuapl.near.model.Image.ImageKey;
 import edu.jhuapl.near.model.Image.ImageSource;
 import edu.jhuapl.near.model.custom.CustomGraticule;
 import edu.jhuapl.near.model.custom.CustomShapeModel;
-import edu.jhuapl.near.model.deimos.Deimos;
 import edu.jhuapl.near.model.deimos.DeimosImage;
 import edu.jhuapl.near.model.eros.Eros;
 import edu.jhuapl.near.model.eros.ErosThomas;
@@ -31,11 +30,9 @@ import edu.jhuapl.near.model.itokawa.Itokawa;
 import edu.jhuapl.near.model.lutetia.OsirisImage;
 import edu.jhuapl.near.model.mathilde.MSIMathildeImage;
 import edu.jhuapl.near.model.phobos.PhobosImage;
-import edu.jhuapl.near.model.rq36.RQ36;
 import edu.jhuapl.near.model.saturnmoon.SaturnMoonImage;
 import edu.jhuapl.near.model.simple.SimpleSmallBody;
 import edu.jhuapl.near.model.vesta.FcImage;
-import edu.jhuapl.near.model.vesta.Vesta;
 import edu.jhuapl.near.model.vesta_old.VestaOld;
 import edu.jhuapl.near.query.DeimosQuery;
 import edu.jhuapl.near.query.ErosQuery;
@@ -573,7 +570,7 @@ public class ModelFactory
         c.population = MARS;
         c.dataUsed = IMAGE_BASED;
         c.author = THOMAS;
-        c.pathOnServer = "/THOMAS/DEIMOS";
+        c.pathOnServer = "/THOMAS/DEIMOS/DEIMOS.vtk.gz";
         c.hasImageMap = true;
         c.hasPerspectiveImages = true;
         c.imageSearchDefaultStartDate = new GregorianCalendar(1976, 7, 16, 0, 0, 0).getTime();
@@ -1130,10 +1127,6 @@ public class ModelFactory
                 return new Eros(config);
             else if (ITOKAWA.equals(name))
                 return new Itokawa(config);
-            else if (VESTA.equals(name))
-                return new Vesta(config);
-            else if (RQ36.equals(name))
-                return new RQ36(config);
             else if (TEMPEL_1.equals(name))
             {
                 String[] names = {
@@ -1167,8 +1160,6 @@ public class ModelFactory
         {
             if (EROS.equals(name))
                 return new ErosThomas(config);
-            else if (DEIMOS.equals(name))
-                return new Deimos(config);
             else if (VESTA.equals(name))
                 return new VestaOld(config);
         }
