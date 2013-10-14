@@ -1143,9 +1143,7 @@ public class ModelFactory
                         config.pathOnServer + "/ver64q.vtk.gz",
                 };
 
-                boolean hasColoringData = true;
-
-                return new SimpleSmallBody(config, names, paths, hasColoringData);
+                return new SimpleSmallBody(config, names, paths, true);
             }
             else
             {
@@ -1162,9 +1160,7 @@ public class ModelFactory
                         config.pathOnServer + "/ver512q.vtk.gz"
                 };
 
-                boolean hasColoringData = true;
-
-                return new SimpleSmallBody(config, names, paths, hasColoringData);
+                return new SimpleSmallBody(config, names, paths, true);
             }
         }
         else if (THOMAS.equals(author))
@@ -1185,11 +1181,7 @@ public class ModelFactory
         if (config.hasImageMap)
             imageMap = (new File(config.pathOnServer)).getParent() + "/image_map.png";
 
-        boolean hasColoringData = false;
-        if (EROS.equals(name) || IDA.equals(name) || GASPRA.equals(name) || MATHILDE.equals(name))
-            hasColoringData = true;
-
-        return new SimpleSmallBody(config, imageMap, hasColoringData);
+        return new SimpleSmallBody(config, imageMap, true);
     }
 
     static public Graticule createGraticule(SmallBodyModel smallBodyModel)
