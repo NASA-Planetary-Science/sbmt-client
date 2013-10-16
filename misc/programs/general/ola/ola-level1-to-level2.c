@@ -1,13 +1,14 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdint.h>
+#include <string.h>
 #include "SpiceUsr.h"
 
 
 /************************************************************************
 * This program takes OLA Level 1 science data and also SPICE data and
 * outputs OLA Level 2 science data. Refer to the relevant ICD document
-* for descriptions of this format.
+* for descriptions of these formats.
 ************************************************************************/
 
 
@@ -15,43 +16,24 @@
 * Constants
 ************************************************************************/
 
-#define LEVEL1_RECORD_SIZE_BYTES 16
-
-#define L1_MET_OFFSET 0
-#define L1_MET_LENGTH 40
-#define L1_LASER_SELECTION_OFFSET (L1_MET_OFFSET+L1_MET_LENGTH)
-#define L1_LASER_SELECTION_LENGTH 1
-#define L1_SCAN_MODE_OFFSET (L1_LASER_SELECTION_OFFSET+L1_LASER_SELECTION_LENGTH)
-#define L1_SCAN_MODE_LENGTH 4
-#define L1_FLAG_STATUS_OFFSET (L1_SCAN_MODE_OFFSET+L1_SCAN_MODE_LENGTH)
-#define L1_FLAG_STATUS_LENGTH 2
-#define L1_RANGE_OFFSET (L1_FLAG_STATUS_OFFSET+L1_FLAG_STATUS_LENGTH)
-#define L1_RANGE_LENGTH 24
-#define L1_AZIMUTH_OFFSET (L1_RANGE_OFFSET+L1_RANGE_LENGTH)
-#define L1_AZIMUTH_LENGTH 14
-#define L1_ELEVATION_OFFSET (L1_AZIMUTH_OFFSET+L1_AZIMUTH_LENGTH)
-#define L1_ELEVATION_LENGTH 14
-#define L1_INTENSITY_T0_OFFSET (L1_ELEVATION_OFFSET+L1_ELEVATION_LENGTH)
-#define L1_INTENSITY_T0_LENGTH 14
-#define L1_INTENSITY_TRR_OFFSET (L1_INTENSITY_T0_OFFSET+L1_INTENSITY_T0_LENGTH)
-#define L1_INTENSITY_TRR_LENGTH 14
+#define MET_SIZE_BYTES 18 /* does not include null terminating character */
 
 struct Level1Record
 {
-    uint64_t met;
-    uint8_t laser_selection;
-    uint8_t scan_mode;
-    uint8_t flag_status;
-    uint32_t range;
-    uint16_t azimuth;
-    uint16_t elevation;
-    uint16_t intensity_t0;
-    uint16_t intensity_trr;
+    char met[MET_SIZE_BYTES+1]; /* add 1 to include null terminating character */
+    uint16_t laser_selection;
+    uint16_t scan_mode;
+    uint16_t flag_status;
+    double range;
+    double azimuth;
+    double elevation;
+    double intensity_t0;
+    double intensity_trr;
 };
 
 struct Level2Record
 {
-    uint64_t met;
+    char met[MET_SIZE_BYTES+1]; /* add 1 to include null terminating character */
     char utc[25];
     double et;
     double x;
@@ -60,122 +42,98 @@ struct Level2Record
     double elongitude;
     double latitude;
     double radius;
-    uint8_t laser_selection;
-    uint8_t scan_mode;
-    uint8_t flag_status;
+    uint16_t laser_selection;
+    uint16_t scan_mode;
+    uint16_t flag_status;
     double range;
-    float azimuth;
-    float elevation;
-    uint16_t intensity_t0;
-    uint16_t intensity_trr;
+    double azimuth;
+    double elevation;
+    double intensity_t0;
+    double intensity_trr;
 };
 
 
 /**
  * This function parses the rawdata and puts it into a Level1Record structure.
  *
- * The level 1 science data is stored as follows:
+ * The level 1 science data is stored as follows where each character represents one byte:
  *
- * MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMLCCCCFFRRRRRRRRRRRRRRRRRRRRRRRRAAAAAAAAAAAAAAEEEEEEEEEEEEEEIIIIIIIIIIIIIIiiiiiiiiiiiiii
+ * MMMMMMMMMMMMMMMMMMLLCCFFRRRRRRRRAAAAAAAAEEEEEEEEIIIIIIIIiiiiiiii
  *
  * where:
  *
- * MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM - met (40 bits)
- * L - laser selection (1 bit)
- * CCCC - scan mode (4 bits)
- * FF - flag status (2 bits)
- * RRRRRRRRRRRRRRRRRRRRRRRR - range (24 bits)
- * AAAAAAAAAAAAAA - azimuth (14 bits)
- * EEEEEEEEEEEEEE - elevation (14 bits)
- * IIIIIIIIIIIIII - intensity T0 (14 bits)
- * iiiiiiiiiiiiii - intensity TRr (14 bits)
+ * MMMMMMMMMMMMMMMMMM - met (18 byte string)
+ * LL - laser selection (2 byte integer)
+ * CC - scan mode (2 byte integer)
+ * FF - flag status (2 byte integer)
+ * RRRRRRRR - range (8 byte double)
+ * AAAAAAAA - azimuth (8 byte double)
+ * EEEEEEEE - elevation (8 byte double)
+ * IIIIIIII - intensity T0 (8 byte double)
+ * iiiiiiii - intensity TRr (8 byte double)
  *
- * @param rawdata (input) The raw data loaded from the file
- * @param Level1Record (output) structure filled in by this function
- *                     containing values parsed from the input
+ * @param fin (input) level 1 file stream pointer
+ * @param level1Record (output) structure filled in by this function
+ *                     containing values parsed from the level 1 file
+ * @return 0 if parsed successfully, 1 otherwise
  */
-void parseLevel1Record(const char* rawdata, struct Level1Record* level1Record)
+int parseLevel1Record(FILE* fin, struct Level1Record* level1Record)
 {
-    int recordoffset = 0;
-    int fieldoffset = 0;
-    int bitvalue = 0;
-    int i, j;
+    if (fread ( &level1Record->met, MET_SIZE_BYTES, 1, fin ) != 1)
+        return 1;
+    if (fread ( &level1Record->laser_selection, 2, 1, fin ) != 1)
+        return 1;
+    if (fread ( &level1Record->scan_mode, 2, 1, fin ) != 1)
+        return 1;
+    if (fread ( &level1Record->flag_status, 2, 1, fin ) != 1)
+        return 1;
+    if (fread ( &level1Record->range, 8, 1, fin ) != 1)
+        return 1;
+    if (fread ( &level1Record->azimuth, 8, 1, fin ) != 1)
+        return 1;
+    if (fread ( &level1Record->elevation, 8, 1, fin ) != 1)
+        return 1;
+    if (fread ( &level1Record->intensity_t0, 8, 1, fin ) != 1)
+        return 1;
+    if (fread ( &level1Record->intensity_trr, 8, 1, fin ) != 1)
+        return 1;
 
-    level1Record->met = 0;
-    level1Record->laser_selection = 0;
-    level1Record->scan_mode = 0;
-    level1Record->flag_status = 0;
-    level1Record->range = 0;
-    level1Record->azimuth = 0;
-    level1Record->elevation = 0;
-    level1Record->intensity_t0 = 0;
-    level1Record->intensity_trr = 0;
+    /* Set null terminating character of met string */
+    level1Record->met[MET_SIZE_BYTES] = 0;
 
-    for (i=0; i<LEVEL1_RECORD_SIZE_BYTES; ++i)
-    {
-        for (j=0; j<8; ++j)
-        {
-            bitvalue = 1 & (rawdata[i] >> j);
-            if (bitvalue == 1)
-            {
-                if (recordoffset < L1_MET_OFFSET+L1_MET_LENGTH)
-                {
-                    fieldoffset = recordoffset - L1_MET_OFFSET;
-                    level1Record->met |= 1 << fieldoffset;
-                }
-                else if (recordoffset < L1_LASER_SELECTION_OFFSET+L1_LASER_SELECTION_LENGTH)
-                {
-                    fieldoffset = recordoffset - L1_LASER_SELECTION_OFFSET;
-                    level1Record->laser_selection |= 1 << fieldoffset;
-                }
-                else if (recordoffset < L1_SCAN_MODE_OFFSET+L1_SCAN_MODE_LENGTH)
-                {
-                    fieldoffset = recordoffset - L1_SCAN_MODE_OFFSET;
-                    level1Record->scan_mode |= 1 << fieldoffset;
-                }
-                else if (recordoffset < L1_FLAG_STATUS_OFFSET+L1_FLAG_STATUS_LENGTH)
-                {
-                    fieldoffset = recordoffset - L1_FLAG_STATUS_OFFSET;
-                    level1Record->flag_status |= 1 << fieldoffset;
-                }
-                else if (recordoffset < L1_RANGE_OFFSET+L1_RANGE_LENGTH)
-                {
-                    fieldoffset = recordoffset - L1_RANGE_OFFSET;
-                    level1Record->range |= 1 << fieldoffset;
-                }
-                else if (recordoffset < L1_AZIMUTH_OFFSET+L1_AZIMUTH_LENGTH)
-                {
-                    fieldoffset = recordoffset - L1_AZIMUTH_OFFSET;
-                    level1Record->azimuth |= 1 << fieldoffset;
-                }
-                else if (recordoffset < L1_ELEVATION_OFFSET+L1_ELEVATION_LENGTH)
-                {
-                    fieldoffset = recordoffset - L1_ELEVATION_OFFSET;
-                    level1Record->elevation |= 1 << fieldoffset;
-                }
-                else if (recordoffset < L1_INTENSITY_T0_OFFSET+L1_INTENSITY_T0_LENGTH)
-                {
-                    fieldoffset = recordoffset - L1_INTENSITY_T0_OFFSET;
-                    level1Record->intensity_t0 |= 1 << fieldoffset;
-                }
-                else if (recordoffset < L1_INTENSITY_TRR_OFFSET+L1_INTENSITY_TRR_LENGTH)
-                {
-                    fieldoffset = recordoffset - L1_INTENSITY_TRR_OFFSET;
-                    level1Record->intensity_trr |= 1 << fieldoffset;
-                }
-            }
-            ++recordoffset;
-        }
-    }
+    return 0;
 }
 
 /**
  * This function converts a Level1Record to a Level2Record using the SPICE kernel
  * files.
  *
+ * * The level 2 science data is stored as follows where each character represents one byte:
+ *
+ * MMMMMMMMMMMMMMMMMMXXXXXXXXYYYYYYYYZZZZZZZZNNNNNNNNTTTTTTTTDDDDDDDDLLCCFFRRRRRRRRAAAAAAAAEEEEEEEEIIIIIIIIiiiiiiii
+ *
+ * where:
+ *
+ * MMMMMMMMMMMMMMMMMM - met (18 byte string)
+ * XXXXXXXX - x (8 byte double)
+ * YYYYYYYY - y (8 byte double)
+ * ZZZZZZZZ - z (8 byte double)
+ * NNNNNNNN - E. longitude (8 byte double)
+ * TTTTTTTT - latitude (8 byte double)
+ * DDDDDDDD - radius (8 byte double)
+ * LL - laser selection (2 byte integer)
+ * CC - scan mode (2 byte integer)
+ * FF - flag status (2 byte integer)
+ * RRRRRRRR - range (8 byte double)
+ * AAAAAAAA - azimuth (8 byte double)
+ * EEEEEEEE - elevation (8 byte double)
+ * IIIIIIII - intensity T0 (8 byte double)
+ * iiiiiiii - intensity TRr (8 byte double)
+
+ *
  * @param level1Record (input) The level 1 data
  * @param level2Record (output) The level 2 data
- * @return non-zero value if successfully converted, zero otherwise
+ * @return 0 if converted successfully, 1 otherwise
  */
 int convertLevel1ToLevel2(const struct Level1Record* level1Record, struct Level2Record* level2Record)
 {
@@ -184,7 +142,6 @@ int convertLevel1ToLevel2(const struct Level1Record* level1Record, struct Level2
     const char* abcorr = "NONE";
     const char* bodyname = "BENNU";
     const char* instrumentframe = "ORX_NADIR";
-    double etStartOfMission = 0.0;
     double scposb[3];
     double boredir[3];
     double lt;
@@ -192,11 +149,17 @@ int convertLevel1ToLevel2(const struct Level1Record* level1Record, struct Level2
     double vpxi[3] = {0.0, 0.0, 1.0};
     double ci[3];
     double targetpos[3];
+    int found;
+    int id;
 
     /* Convert met to ephemeris time */
-    level2Record->et = etStartOfMission + 1.0e-4 * level1Record->met;
+    strncpy(level2Record->met, level1Record->met, MET_SIZE_BYTES+1);
+    bodn2c_c(scname, &id, &found);
+    if (found == 0)
+        return 1;
+    scs2e_c(id, level2Record->met, &level2Record->et);
 
-    level2Record->met = level1Record->met;
+    /* convert ephemeris time to UTC */
     et2utc_c(level2Record->et, "ISOC", 4, 25, level2Record->utc);
 
     /* Get spacecraft position */
@@ -254,7 +217,6 @@ int main(int argc, char** argv)
     FILE* fout;
     struct Level1Record level1Record;
     struct Level2Record level2Record;
-    char rawdata[LEVEL1_RECORD_SIZE_BYTES];
     int status;
 
     if (argc < 4)
@@ -286,15 +248,22 @@ int main(int argc, char** argv)
         exit(1);
     }
 
-    while ( fread ( &level1Record, LEVEL1_RECORD_SIZE_BYTES, 1, fin ) != 1 ) /* read a record */
+    for ( ;; ) /* loop until we break out */
     {
-        parseLevel1Record(rawdata, &level1Record);
+        /* Read in level 1 record */
+        status = parseLevel1Record(fin, &level1Record);
+        if (status != 0)
+            break;
 
+        /* Convert level 1 record to level 2 */
         status = convertLevel1ToLevel2(&level1Record, &level2Record);
+        if (status != 0)
+            break;
 
         /* save out the level 2 record */
-        if (status == 0)
-            fwrite(&level2Record, sizeof(level2Record), 1, fout);
+        status = fwrite(&level2Record, sizeof(level2Record), 1, fout);
+        if (status != 1)
+            break;
     }
 
     /* Close open files */
