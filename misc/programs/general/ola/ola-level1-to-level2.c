@@ -56,22 +56,6 @@ struct Level2Record
 /**
  * This function parses the rawdata and puts it into a Level1Record structure.
  *
- * The level 1 science data is stored as follows where each character represents one byte:
- *
- * MMMMMMMMMMMMMMMMMMLLCCFFRRRRRRRRAAAAAAAAEEEEEEEEIIIIIIIIiiiiiiii
- *
- * where:
- *
- * MMMMMMMMMMMMMMMMMM - met (18 byte string)
- * LL - laser selection (2 byte integer)
- * CC - scan mode (2 byte integer)
- * FF - flag status (2 byte integer)
- * RRRRRRRR - range (8 byte double)
- * AAAAAAAA - azimuth (8 byte double)
- * EEEEEEEE - elevation (8 byte double)
- * IIIIIIII - intensity T0 (8 byte double)
- * iiiiiiii - intensity TRr (8 byte double)
- *
  * @param fin (input) level 1 file stream pointer
  * @param level1Record (output) structure filled in by this function
  *                     containing values parsed from the level 1 file
@@ -107,29 +91,6 @@ int parseLevel1Record(FILE* fin, struct Level1Record* level1Record)
 /**
  * This function converts a Level1Record to a Level2Record using the SPICE kernel
  * files.
- *
- * * The level 2 science data is stored as follows where each character represents one byte:
- *
- * MMMMMMMMMMMMMMMMMMXXXXXXXXYYYYYYYYZZZZZZZZNNNNNNNNTTTTTTTTDDDDDDDDLLCCFFRRRRRRRRAAAAAAAAEEEEEEEEIIIIIIIIiiiiiiii
- *
- * where:
- *
- * MMMMMMMMMMMMMMMMMM - met (18 byte string)
- * XXXXXXXX - x (8 byte double)
- * YYYYYYYY - y (8 byte double)
- * ZZZZZZZZ - z (8 byte double)
- * NNNNNNNN - E. longitude (8 byte double)
- * TTTTTTTT - latitude (8 byte double)
- * DDDDDDDD - radius (8 byte double)
- * LL - laser selection (2 byte integer)
- * CC - scan mode (2 byte integer)
- * FF - flag status (2 byte integer)
- * RRRRRRRR - range (8 byte double)
- * AAAAAAAA - azimuth (8 byte double)
- * EEEEEEEE - elevation (8 byte double)
- * IIIIIIII - intensity T0 (8 byte double)
- * iiiiiiii - intensity TRr (8 byte double)
-
  *
  * @param level1Record (input) The level 1 data
  * @param level2Record (output) The level 2 data
