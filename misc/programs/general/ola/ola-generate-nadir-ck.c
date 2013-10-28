@@ -43,7 +43,7 @@ struct Level1Record
  *                     containing values parsed from the level 1 file
  * @return 0 if parsed successfully, 1 otherwise
  */
-int parseLevel1Record(FILE* fin, struct Level1Record* level1Record)
+int readLevel1Record(FILE* fin, struct Level1Record* level1Record)
 {
     if (fread ( &level1Record->met, MET_SIZE_BYTES, 1, fin ) != 1)
         return 1;
@@ -138,7 +138,7 @@ int main(int argc, char** argv)
     for ( ;; ) /* loop until we break out */
     {
         /* Read in level 1 record */
-        status = parseLevel1Record(fin, &level1Record);
+        status = readLevel1Record(fin, &level1Record);
         if (status != 0)
             break;
 
