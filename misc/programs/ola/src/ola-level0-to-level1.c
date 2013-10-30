@@ -2,9 +2,10 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
-#include <time.h>
 #include <math.h>
+#include <libgen.h>
 #include "SpiceUsr.h"
+#include "ola-common.h"
 
 
 /************************************************************************
@@ -34,8 +35,8 @@
 /************************************************************************
 * Constants
 ************************************************************************/
-#define MET_SIZE_BYTES 18 /* does not include null terminating character */
 #define UTC_SIZE_BYTES 24 /* does not include null terminating character */
+
 
 /************************************************************************
 * Global variables (prefixed with g_)
@@ -43,19 +44,268 @@
 static int32_t g_scan_point_id = 0;
 static int32_t g_block_number = -1;
 
+struct Level0Record
+{
+    uint16_t laser_selection;
+    char notused1[10];
+    uint16_t block_number;
+    char notused2[8];
+    uint16_t scan_mode;
+    char notused3[6];
+    uint16_t sc_clock_partition;
+    uint32_t ola_time_seconds;
+    uint16_t ola_time_sub_seconds;
+    char notused4[6];
+    int16_t time_delta_to_mrtu;
+    double range;
+    double azimuth;
+    double elevation;
+    double intensity_t0;
+    double intensity_trr;
+    uint16_t flag_status;
+    int16_t scan_point_alignment_difference;
+};
 
 /**
- * Get current date/time, format is YYYY-MM-DDTHH:mm:ss
- * @param[out] buf character buffer in which to place time. Caller must allocate enough memory for it.
+ * This function reads the level 0 binary data and puts it into a Level0Record structure.
+ *
+ * The level 0 science data is stored as follows:
+ * @param[in] fin level 1 file stream pointer to open level 1 data file
+ * @param[out] Level0Record structure filled in by this function
+ *                     containing values read from the file
  */
-void getCurrentDateTime(char* buf)
+int readLevel0Record(FILE* fin, struct Level0Record* level0Record)
 {
-    struct tm  tstruct;
-    time_t     now = time(0);
-    tstruct = *gmtime(&now);
-    strftime(buf, 64, "%Y-%m-%dT%XZ", &tstruct);
+    if (fread ( &level0Record->laser_selection, sizeof(level0Record->laser_selection), 1, fin ) != 1)
+        return 1;
+    if (fread ( &level0Record->notused1, sizeof(level0Record->notused1), 1, fin ) != 1)
+        return 1;
+    if (fread ( &level0Record->block_number, sizeof(level0Record->block_number), 1, fin ) != 1)
+        return 1;
+    if (fread ( &level0Record->notused2, sizeof(level0Record->notused2), 1, fin ) != 1)
+        return 1;
+    if (fread ( &level0Record->scan_mode, sizeof(level0Record->scan_mode), 1, fin ) != 1)
+        return 1;
+    if (fread ( &level0Record->notused3, sizeof(level0Record->notused3), 1, fin ) != 1)
+        return 1;
+    if (fread ( &level0Record->sc_clock_partition, sizeof(level0Record->sc_clock_partition), 1, fin ) != 1)
+        return 1;
+    if (fread ( &level0Record->ola_time_seconds, sizeof(level0Record->ola_time_seconds), 1, fin ) != 1)
+        return 1;
+    if (fread ( &level0Record->ola_time_sub_seconds, sizeof(level0Record->ola_time_sub_seconds), 1, fin ) != 1)
+        return 1;
+    if (fread ( &level0Record->notused4, sizeof(level0Record->notused4), 1, fin ) != 1)
+        return 1;
+    if (fread ( &level0Record->time_delta_to_mrtu, sizeof(level0Record->time_delta_to_mrtu), 1, fin ) != 1)
+        return 1;
+    if (fread ( &level0Record->range, sizeof(level0Record->range), 1, fin ) != 1)
+        return 1;
+    if (fread ( &level0Record->azimuth, sizeof(level0Record->azimuth), 1, fin ) != 1)
+        return 1;
+    if (fread ( &level0Record->elevation, sizeof(level0Record->elevation), 1, fin ) != 1)
+        return 1;
+    if (fread ( &level0Record->intensity_t0, sizeof(level0Record->intensity_t0), 1, fin ) != 1)
+        return 1;
+    if (fread ( &level0Record->intensity_trr, sizeof(level0Record->intensity_trr), 1, fin ) != 1)
+        return 1;
+    if (fread ( &level0Record->flag_status, sizeof(level0Record->flag_status), 1, fin ) != 1)
+        return 1;
+    if (fread ( &level0Record->scan_point_alignment_difference, sizeof(level0Record->scan_point_alignment_difference), 1, fin ) != 1)
+        return 1;
+
+    return 0;
 }
 
+/**
+ * This function calibrates the range value by converting the uncalibrated
+ * range value using a polynomial function. Currently the calibration formula
+ * is unknown so this function just returns the original value. When the
+ * calibration is known, this function will need to be modified.
+ *
+ * @param[in] range uncalibrated range
+ * @return calibrated range
+ */
+double calibrateRange(double range)
+{
+    return range;
+}
+
+/**
+ * This function calibrates the azimuth value by converting the uncalibrated
+ * azimuth value using a polynomial function. Currently the calibration formula
+ * is unknown so this function just returns the original value. When the
+ * calibration is known, this function will need to be modified.
+ *
+ * @param[in] azimuth uncalibrated azimuth
+ * @return calibrated azimuth
+ */
+double calibrateAzimuth(double azimuth)
+{
+    return azimuth;
+}
+
+/**
+ * This function calibrates the elevation value by converting the uncalibrated
+ * elevation value using a polynomial function. Currently the calibration formula
+ * is unknown so this function just returns the original value. When the
+ * calibration is known, this function will need to be modified.
+ *
+ * @param[in] elevation uncalibrated elevation
+ * @return calibrated elevation
+ */
+double calibrateElevation(double elevation)
+{
+    return elevation;
+}
+
+/**
+ * This function calibrates the intensity value by converting the uncalibrated
+ * intensity value using a polynomial function. Currently the calibration formula
+ * is unknown so this function just returns the original value. When the
+ * calibration is known, this function will need to be modified.
+ *
+ * @param[in] intensity uncalibrated intensity T0
+ * @return calibrated intensity T0
+ */
+double calibrateInensityT0(double intensity)
+{
+    return intensity;
+}
+
+/**
+ * This function calibrates the intensity value by converting the uncalibrated
+ * intensity value using a polynomial function. Currently the calibration formula
+ * is unknown so this function just returns the original value. When the
+ * calibration is known, this function will need to be modified.
+ *
+ * @param[in] intensity uncalibrated intensity TRr
+ * @return calibrated intensity TRr
+ */
+double calibrateIntensityTrr(double intensity)
+{
+    return intensity;
+}
+
+/**
+ * This function computes the spacecraft clock time using the various time quantities
+ * in the level 0 binary data.
+ *
+ * @param[in] sc_clock_partition spacecraft clock partition number (e.g. is sc clock string is 1/0647854072.00097
+ *            then partition number is 1)
+ * @param[in] seconds
+ * @param[in] subseconds
+ * @param[in] time_delta_to_mrtu
+ * @param[in] scan_point_alignment_difference
+ * @param[in] firing_rate
+ * @param[out] met spacecraft clock as a string calculated by this function
+ */
+void computeTime(uint16_t sc_clock_partition,
+                 double seconds,
+                 double subseconds,
+                 double time_delta_to_mrtu,
+                 double scan_point_alignment_difference,
+                 double firing_rate,
+                 uint32_t scan_point_id,
+                 char met[MET_SIZE_BYTES+1])
+{
+    double t;
+    t = seconds + (subseconds / 65536.0) - (time_delta_to_mrtu / 1000000.0);
+    t += (((double)scan_point_id - 1.0) / firing_rate) + (scan_point_alignment_difference / 1000000.0);
+
+    /* Now break t up into a seconds part and a subseconds part */
+    seconds = floor(t);
+    subseconds = t - seconds;
+
+    /* transform subseconds part to within range of 0 to 2^16-1 */
+    subseconds = subseconds * 65536.0;
+
+    /* round subseconds to nearest integer */
+    subseconds = round(subseconds);
+
+    /* if subseconds is 65536, then increment seconds and set subseconds to 0 */
+    if (subseconds == 65536.0)
+    {
+        subseconds = 0.0;
+        seconds = seconds + 1.0;
+    }
+
+    snprintf(met, MET_SIZE_BYTES+1, "%u/%010u.%05u", sc_clock_partition, (uint32_t)seconds, (uint32_t)subseconds);
+}
+
+/**
+ * This function converts a Level0Record to a Level1Record.
+ *
+ * @param[in] level0Record The level 0 data
+ * @param[out] level1Record The level 1 data
+ * @return 0 if converted successfully, 1 otherwise
+ */
+int convertLevel0ToLevel1(const struct Level0Record* level0Record, struct Level1Record* level1Record)
+{
+    uint32_t firing_rate = 10000;
+
+    level1Record->laser_selection = level0Record->laser_selection;
+    level1Record->scan_mode = level0Record->scan_mode;
+    level1Record->flag_status = level0Record->flag_status;
+    level1Record->range = calibrateRange(level0Record->range);
+    level1Record->azimuth = calibrateAzimuth(level0Record->azimuth);
+    level1Record->elevation = calibrateElevation(level0Record->elevation);
+    level1Record->intensity_t0 = calibrateInensityT0(level0Record->intensity_t0);
+    level1Record->intensity_trr = calibrateIntensityTrr(level0Record->intensity_trr);
+
+    /* firing rate is number of shots per second which is 10000 when in LELT
+       and 100 when in HELT */
+    if (level1Record->laser_selection == 0)
+        firing_rate = 100;
+
+    ++g_scan_point_id;
+    if (level0Record->block_number != g_block_number)
+    {
+        g_block_number = level0Record->block_number;
+        g_scan_point_id = 1;
+    }
+
+    computeTime(level0Record->sc_clock_partition,
+                level0Record->ola_time_seconds,
+                level0Record->ola_time_sub_seconds,
+                level0Record->time_delta_to_mrtu,
+                level0Record->scan_point_alignment_difference,
+                firing_rate,
+                g_scan_point_id,
+                level1Record->met);
+
+    return 0;
+}
+
+/**
+ * Write out a level 1 record to a file using the fout FILE pointer.
+ *
+ * @param[in] fout file pointer
+ * @param[in] level1Record record to write out
+ * @return
+ */
+int writeLevel1Record(FILE* fout, const struct Level1Record* level1Record)
+{
+    if (fwrite(level1Record->met, MET_SIZE_BYTES, 1, fout) != 1)
+        return 1;
+    if (fwrite(&level1Record->laser_selection, sizeof(level1Record->laser_selection), 1, fout) != 1)
+        return 1;
+    if (fwrite(&level1Record->scan_mode, sizeof(level1Record->scan_mode), 1, fout) != 1)
+        return 1;
+    if (fwrite(&level1Record->flag_status, sizeof(level1Record->flag_status), 1, fout) != 1)
+        return 1;
+    if (fwrite(&level1Record->range, sizeof(level1Record->range), 1, fout) != 1)
+        return 1;
+    if (fwrite(&level1Record->azimuth, sizeof(level1Record->azimuth), 1, fout) != 1)
+        return 1;
+    if (fwrite(&level1Record->elevation, sizeof(level1Record->elevation), 1, fout) != 1)
+        return 1;
+    if (fwrite(&level1Record->intensity_t0, sizeof(level1Record->intensity_t0), 1, fout) != 1)
+        return 1;
+    if (fwrite(&level1Record->intensity_trr, sizeof(level1Record->intensity_trr), 1, fout) != 1)
+        return 1;
+
+    return 0;
+}
 
 /*
  * Write out a PDS4 complient label (which is in XML format).
@@ -71,7 +321,7 @@ void writeLabel(
         const char* datafilename,
         const char* metstarttime,
         const char* metstoptime,
-        uint64_t numRecords)
+        uint32_t numRecords)
 {
     FILE* fout;
     char currentDateTime[256];
@@ -80,6 +330,9 @@ void writeLabel(
     double et;
     char utcstarttime[UTC_SIZE_BYTES+1];
     char utcstoptime[UTC_SIZE_BYTES+1];
+    const char* base_name;
+    char base_name_underscore[1024];
+    char* pointer_to_period;
 
     /* Open the output file */
     fout = fopen(labelfile, "w");
@@ -88,6 +341,17 @@ void writeLabel(
         printf("Could not open %s\n", labelfile);
         exit(1);
     }
+
+    /* the following extracts out the filename without the leading directory part */
+    base_name = strrchr(datafilename, '/') + 1;
+    if (base_name == NULL)
+        base_name = datafilename;
+
+    /* The next 4 lines replace the final period in basename with an underscore */
+    strncpy(base_name_underscore, base_name, sizeof(base_name_underscore));
+    pointer_to_period = strrchr(base_name_underscore, '.');
+    if (pointer_to_period != NULL)
+        *pointer_to_period  = '_';
 
     getCurrentDateTime(currentDateTime);
 
@@ -101,7 +365,7 @@ void writeLabel(
     fprintf(fout, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n");
     fprintf(fout, "<Product_Observational xmlns=\"http://pds.nasa.gov/schema/pds4/pds/v07\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\r\n");
     fprintf(fout, "    <Identification_Area>\r\n");
-    fprintf(fout, "        <logical_identifier>OLA_LEVEL1_%s</logical_identifier>\r\n", datafilename);
+    fprintf(fout, "        <logical_identifier>OLA_LEVEL1_%s</logical_identifier>\r\n", base_name_underscore);
     fprintf(fout, "        <version_id>1.0</version_id>\r\n");
     fprintf(fout, "        <title>OLA LEVEL 1 LIDAR DATA</title>\r\n");
     fprintf(fout, "        <information_model_version>1.0</information_model_version>\r\n");
@@ -116,7 +380,7 @@ void writeLabel(
     fprintf(fout, "            <name>OSIRIS-REX with OLA</name>\r\n");
     fprintf(fout, "            <type>Mission</type>\r\n");
     fprintf(fout, "            <Internal_Reference>\r\n");
-    fprintf(fout, "                <lid_reference>urn:nasa:pds:osiris-rex_ola:ola_level1:%s</lid_reference>\r\n", datafilename);
+    fprintf(fout, "                <lid_reference>urn:nasa:pds:osiris-rex_ola:ola_level1:%s</lid_reference>\r\n", base_name_underscore);
     fprintf(fout, "                <reference_type>has_investigation</reference_type>\r\n");
     fprintf(fout, "            </Internal_Reference>\r\n");
     fprintf(fout, "        </Investigation_Area>\r\n");
@@ -139,20 +403,20 @@ void writeLabel(
     fprintf(fout, "    </Observation_Area>\r\n");
     fprintf(fout, "    <File_Area_Observational>\r\n");
     fprintf(fout, "        <File>\r\n");
-    fprintf(fout, "            <file_name>%s</file_name>\r\n", datafilename);
-    fprintf(fout, "            <local_identifier>OLA_LEVEL1_%s</local_identifier>\r\n", datafilename);
+    fprintf(fout, "            <file_name>%s</file_name>\r\n", base_name);
+    fprintf(fout, "            <local_identifier>OLA_LEVEL1_%s</local_identifier>\r\n", base_name_underscore);
     fprintf(fout, "            <creation_date_time>%s</creation_date_time>\r\n", currentDateTime);
-    fprintf(fout, "            <file_size unit=\"byte\">%llu</file_size>\r\n", numRecords * 64);
-    fprintf(fout, "            <records>%llu</records>\r\n", numRecords);
+    fprintf(fout, "            <file_size unit=\"byte\">%.0f</file_size>\r\n", (double)numRecords * LEVEL1_RECORD_SIZE_BYTES);
+    fprintf(fout, "            <records>%u</records>\r\n", numRecords);
     fprintf(fout, "        </File>\r\n");
     fprintf(fout, "        <Table_Binary>\r\n");
     fprintf(fout, "            <local_identifier>OLA-LEVEL1-DIR_TABLE_BINARY</local_identifier>\r\n");
     fprintf(fout, "            <offset unit=\"byte\">0</offset>\r\n");
-    fprintf(fout, "            <records>%llu</records>\r\n", numRecords);
+    fprintf(fout, "            <records>%u</records>\r\n", numRecords);
     fprintf(fout, "            <Record_Binary>\r\n");
     fprintf(fout, "                <fields>9</fields>\r\n");
     fprintf(fout, "                <groups>0</groups>\r\n");
-    fprintf(fout, "                <record_length unit=\"byte\">%d</record_length>\r\n", 64);
+    fprintf(fout, "                <record_length unit=\"byte\">%d</record_length>\r\n", LEVEL1_RECORD_SIZE_BYTES);
     fprintf(fout, "                <Field_Binary>\r\n");
     fprintf(fout, "                    <name>MET</name>\r\n");
     fprintf(fout, "                    <field_number>1</field_number>\r\n");
@@ -240,251 +504,6 @@ void writeLabel(
     fclose(fout);
 }
 
-struct Level0Record
-{
-    uint16_t laser_selection;
-    char notused1[14];
-    uint16_t block_number;
-    char notused2[4];
-    uint16_t scan_mode;
-    char notused3[4];
-    uint32_t ola_time_seconds;
-    uint16_t ola_time_sub_seconds;
-    char notused4[10];
-    uint16_t time_delta_to_mrtu;
-    double range;
-    double azimuth;
-    double elevation;
-    double intensity_t0;
-    double intensity_trr;
-    uint16_t flag_status;
-    uint16_t scan_point_alignment_difference;
-};
-
-struct Level1Record
-{
-    char met[MET_SIZE_BYTES+1]; /* add 1 to include null terminating character */
-    uint16_t laser_selection;
-    uint16_t scan_mode;
-    uint16_t flag_status;
-    double range;
-    double azimuth;
-    double elevation;
-    double intensity_t0;
-    double intensity_trr;
-};
-
-
-/**
- * This function reads the level 0 binary data and puts it into a Level0Record structure.
- *
- * The level 0 science data is stored as follows:
- * @param[in] fin level 1 file stream pointer to open level 1 data file
- * @param[out] Level0Record structure filled in by this function
- *                     containing values parsed from the input
- */
-int readLevel0Record(FILE* fin, struct Level0Record* level0Record)
-{
-    if (fread ( &level0Record->laser_selection, sizeof(level0Record->laser_selection), 1, fin ) != 1)
-        return 1;
-    if (fread ( &level0Record->notused1, sizeof(level0Record->notused1), 1, fin ) != 1)
-        return 1;
-    if (fread ( &level0Record->block_number, sizeof(level0Record->block_number), 1, fin ) != 1)
-        return 1;
-    if (fread ( &level0Record->notused2, sizeof(level0Record->notused2), 1, fin ) != 1)
-        return 1;
-    if (fread ( &level0Record->scan_mode, sizeof(level0Record->scan_mode), 1, fin ) != 1)
-        return 1;
-    if (fread ( &level0Record->notused3, sizeof(level0Record->notused3), 1, fin ) != 1)
-        return 1;
-    if (fread ( &level0Record->ola_time_seconds, sizeof(level0Record->ola_time_seconds), 1, fin ) != 1)
-        return 1;
-    if (fread ( &level0Record->ola_time_sub_seconds, sizeof(level0Record->ola_time_sub_seconds), 1, fin ) != 1)
-        return 1;
-    if (fread ( &level0Record->notused4, sizeof(level0Record->notused4), 1, fin ) != 1)
-        return 1;
-    if (fread ( &level0Record->time_delta_to_mrtu, sizeof(level0Record->time_delta_to_mrtu), 1, fin ) != 1)
-        return 1;
-    if (fread ( &level0Record->range, sizeof(level0Record->range), 1, fin ) != 1)
-        return 1;
-    if (fread ( &level0Record->azimuth, sizeof(level0Record->azimuth), 1, fin ) != 1)
-        return 1;
-    if (fread ( &level0Record->elevation, sizeof(level0Record->elevation), 1, fin ) != 1)
-        return 1;
-    if (fread ( &level0Record->intensity_t0, sizeof(level0Record->intensity_t0), 1, fin ) != 1)
-        return 1;
-    if (fread ( &level0Record->intensity_trr, sizeof(level0Record->intensity_trr), 1, fin ) != 1)
-        return 1;
-    if (fread ( &level0Record->flag_status, sizeof(level0Record->flag_status), 1, fin ) != 1)
-        return 1;
-    if (fread ( &level0Record->scan_point_alignment_difference, sizeof(level0Record->scan_point_alignment_difference), 1, fin ) != 1)
-        return 1;
-
-    return 0;
-}
-
-/**
- * @param[in] range
- * @return
- */
-double calibrateRange(double range)
-{
-    return range;
-}
-
-/**
- * @param[in] azimuth
- * @return
- */
-double calibrateAzimuth(double azimuth)
-{
-    return azimuth;
-}
-
-/**
- * @param[in] elevation
- * @return
- */
-double calibrateElevation(double elevation)
-{
-    return elevation;
-}
-
-/**
- * @param[in] intensity
- * @return
- */
-double calibrateInensityT0(double intensity)
-{
-    return intensity;
-}
-
-/**
- * @param[in] intensity
- * @return
- */
-double calibrateIntensityTrr(double intensity)
-{
-    return intensity;
-}
-
-/**
- * This function computes the spacecraft clock time using the various time quantities
- * in the level 0 binary data.
- *
- * @param[in] seconds
- * @param[in] subseconds
- * @param[in] time_delta_to_mrtu
- * @param[in] scan_point_alignment_difference
- * @param[in] firing_rate
- * @param[out] met spacecraft clock as a string calculated by this function
- */
-void computeTime(double seconds,
-                 double subseconds,
-                 double time_delta_to_mrtu,
-                 double scan_point_alignment_difference,
-                 double firing_rate,
-                 char met[MET_SIZE_BYTES+1])
-{
-    double t;
-    printf("%g %g %g %g %g %d\n", seconds, subseconds, time_delta_to_mrtu, scan_point_alignment_difference, firing_rate, g_scan_point_id);
-    t = seconds + (subseconds / 65536.0) - (time_delta_to_mrtu / 1000000.0);
-    t += (((double)g_scan_point_id - 1.0) / firing_rate) + (scan_point_alignment_difference / 1000000.0);
-
-    /* Now break t up into a seconds part and a subseconds part */
-    seconds = floor(t);
-    subseconds = t - seconds;
-
-    /* transform subseconds part to within range of 0 to 2^16-1 */
-    subseconds = subseconds * 65536.0;
-
-    /* round subseconds to nearest integer */
-    subseconds = round(subseconds);
-
-    /* if subseconds is 65536, then increment seconds and set subseconds to 0 */
-    if (subseconds == 65536.0)
-    {
-        subseconds = 0.0;
-        seconds = seconds + 1.0;
-    }
-
-    snprintf(met, MET_SIZE_BYTES+1, "1/%010u.%05u", (uint32_t)seconds, (uint32_t)subseconds);
-}
-
-/**
- * This function converts a Level0Record to a Level1Record.
- *
- * @param[in] level0Record The level 0 data
- * @param[out] level1Record The level 1 data
- * @return 0 if converted successfully, 1 otherwise
- */
-int convertLevel0ToLevel1(const struct Level0Record* level0Record, struct Level1Record* level1Record)
-{
-    uint32_t firing_rate = 10000;
-
-    level1Record->laser_selection = level0Record->laser_selection;
-    level1Record->scan_mode = level0Record->scan_mode;
-    level1Record->flag_status = level0Record->flag_status;
-    level1Record->range = calibrateRange(level0Record->range);
-    level1Record->azimuth = calibrateAzimuth(level0Record->azimuth);
-    level1Record->elevation = calibrateElevation(level0Record->elevation);
-    level1Record->intensity_t0 = calibrateInensityT0(level0Record->intensity_t0);
-    level1Record->intensity_trr = calibrateIntensityTrr(level0Record->intensity_trr);
-
-    /* firing rate is number of shots per second which is 10000 when in LELT
-       and 100 when in HELT */
-    if (level1Record->laser_selection == 1)
-        firing_rate = 100;
-
-    ++g_scan_point_id;
-    if (level0Record->block_number != g_block_number)
-    {
-        g_block_number = level0Record->block_number;
-        g_scan_point_id = 0;
-    }
-
-    computeTime(level0Record->ola_time_seconds,
-                level0Record->ola_time_sub_seconds,
-                level0Record->time_delta_to_mrtu,
-                level0Record->scan_point_alignment_difference,
-                firing_rate,
-                level1Record->met);
-
-    return 0;
-}
-
-/**
- * Write out a level 1 record to a file using the fout FILE pointer.
- *
- * @param[in] fout file pointer
- * @param[in] level1Record record to write out
- * @return
- */
-int writeLevel1Record(FILE* fout, const struct Level1Record* level1Record)
-{
-    if (fwrite(level1Record->met, MET_SIZE_BYTES, 1, fout) != 1)
-        return 1;
-    if (fwrite(&level1Record->laser_selection, sizeof(level1Record->laser_selection), 1, fout) != 1)
-        return 1;
-    if (fwrite(&level1Record->scan_mode, sizeof(level1Record->scan_mode), 1, fout) != 1)
-        return 1;
-    if (fwrite(&level1Record->flag_status, sizeof(level1Record->flag_status), 1, fout) != 1)
-        return 1;
-    if (fwrite(&level1Record->range, sizeof(level1Record->range), 1, fout) != 1)
-        return 1;
-    if (fwrite(&level1Record->azimuth, sizeof(level1Record->azimuth), 1, fout) != 1)
-        return 1;
-    if (fwrite(&level1Record->elevation, sizeof(level1Record->elevation), 1, fout) != 1)
-        return 1;
-    if (fwrite(&level1Record->intensity_t0, sizeof(level1Record->intensity_t0), 1, fout) != 1)
-        return 1;
-    if (fwrite(&level1Record->intensity_trr, sizeof(level1Record->intensity_trr), 1, fout) != 1)
-        return 1;
-
-    return 0;
-}
-
-
 int main(int argc, char** argv)
 {
     const char* meta_kernel_file;
@@ -498,7 +517,7 @@ int main(int argc, char** argv)
     int status;
     char metstarttime[MET_SIZE_BYTES+1];
     char metstoptime[MET_SIZE_BYTES+1];
-    uint64_t numberRecords = 0;
+    uint32_t numberRecords = 0;
 
     if (argc < 5)
     {

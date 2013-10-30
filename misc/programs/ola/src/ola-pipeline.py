@@ -2,7 +2,7 @@
 
 # This program takes OLA level 0 data and generates OLA level 1 and
 # level 2 data. It is assumed the following directory structure is
-# setup where ROOT is the root directoyry structure passed in as a
+# setup where ROOT is the root directory structure passed in as a
 # command line parameter to this file
 #
 # ROOT/level0sci - contains level 0 science files
@@ -16,15 +16,20 @@
 import sys
 import os
 
+if len(sys.argv) < 2:
+    print "Usage: " + sys.argv[0] + " <level0-filelist> <data-dir>\n"
+    sys.exit()
 
 # folders used by the pipeline
-rootDir = sys.argv[1]
-level0SciDir = rootDir + "/level0sci/"
-level1SciDir = rootDir + "/level1sci/"
-spiceDir = rootDir + "/spice/"
-level2Dir = rootDir + "/level2/"
-exeDir = rootDir + "/exe/"
-tmpDir = rootDir + "/tmp/"
+level0FileList = sys.argv[1]
+rootDataDir = sys.argv[2]
+
+level0SciDir = rootDataDir + "/level0sci/"
+level1SciDir = rootDataDir + "/level1sci/"
+spiceDir = rootDataDir + "/spice/"
+level2Dir = rootDataDir + "/level2/"
+exeDir = rootDataDir + "/exe/"
+tmpDir = rootDataDir + "/tmp/"
 
 # file paths used by the pipeline which are the same for all days
 kernelFile = spiceDir + "kernels.txt"
@@ -33,8 +38,7 @@ sclkKernelFile = spiceDir + "sclk/ORX_SCLKSCET.00000.example.tsc"
 framesKernelFile = spiceDir + "fk/orx_ola_v000.tf"
 
 # Load the files we need to process and return them as a list
-def loadFiles():
-    infile = rootDir + "/level0-filelist.txt"
+def loadFiles(infile):
     fin = open(infile,'r')
     filelist = fin.readlines()
     return filelist
@@ -55,7 +59,7 @@ def process(level0SciBaseFileName):
     # First run level 0 to level 1 conversion
     command = exeDir + "ola-level0-to-level1 " + kernelFile + " " + level0SciFile + " " + level1SciFile + " " + level1SciLabel
     print command
-    #os.system(command)
+    os.system(command)
 
     # Next run level 1 to CK conversion. This generates a file which is used as input to msopck
     command = exeDir + "ola-level1-to-ck " + level1SciFile + " " + lskKernelFile + " " + sclkKernelFile + " " + framesKernelFile + " " + msopckInputDataFile + " " + msopckInputSetupFile
@@ -77,7 +81,7 @@ def process(level0SciBaseFileName):
     os.system(command)
 
 
-filelist = loadFiles()
+filelist = loadFiles(level0FileList)
 for f in filelist:
     process(f.rstrip())
 

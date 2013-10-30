@@ -2,8 +2,8 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
-#include <time.h>
 #include "SpiceUsr.h"
+#include "ola-common.h"
 
 
 /************************************************************************
@@ -38,25 +38,8 @@
 * Constants
 ************************************************************************/
 
-#define MET_SIZE_BYTES 18 /* does not include null terminating character */
 #define UTC_SIZE_BYTES 24 /* does not include null terminating character */
-
-/**
- * The Level1Record struct stores the values of a single Level 1 record. See
- * the ICD for an explanantion of each field.
- */
-struct Level1Record
-{
-    char met[MET_SIZE_BYTES+1]; /* add 1 to include null terminating character */
-    uint16_t laser_selection;
-    uint16_t scan_mode;
-    uint16_t flag_status;
-    double range;
-    double azimuth;
-    double elevation;
-    double intensity_t0;
-    double intensity_trr;
-};
+#define LEVEL2_RECORD_SIZE_BYTES 144
 
 /**
  * The Level2Record struct stores the values of a single Level 2 record. See
@@ -85,46 +68,11 @@ struct Level2Record
 
 
 /**
- * This function reads the level 1 binary data and puts it into a Level1Record structure.
- *
- * @param[in] fin level 1 file stream pointer to open level 1 data file
- * @param[out] level1Record structure filled in by this function
- *                     containing values read from the level 1 file
- * @return 0 if read successfully, 1 otherwise
- */
-int readLevel1Record(FILE* fin, struct Level1Record* level1Record)
-{
-    if (fread ( &level1Record->met, MET_SIZE_BYTES, 1, fin ) != 1)
-        return 1;
-    if (fread ( &level1Record->laser_selection, 2, 1, fin ) != 1)
-        return 1;
-    if (fread ( &level1Record->scan_mode, 2, 1, fin ) != 1)
-        return 1;
-    if (fread ( &level1Record->flag_status, 2, 1, fin ) != 1)
-        return 1;
-    if (fread ( &level1Record->range, 8, 1, fin ) != 1)
-        return 1;
-    if (fread ( &level1Record->azimuth, 8, 1, fin ) != 1)
-        return 1;
-    if (fread ( &level1Record->elevation, 8, 1, fin ) != 1)
-        return 1;
-    if (fread ( &level1Record->intensity_t0, 8, 1, fin ) != 1)
-        return 1;
-    if (fread ( &level1Record->intensity_trr, 8, 1, fin ) != 1)
-        return 1;
-
-    /* Set null terminating character of met string */
-    level1Record->met[MET_SIZE_BYTES] = 0;
-
-    return 0;
-}
-
-/**
  * This function converts a Level1Record to a Level2Record using the SPICE kernel
  * files.
  *
- * @param[in] level1Record The level 1 data
- * @param[out] level2Record The level 2 data
+ * @param[in] level1Record The level 1 data is read from here
+ * @param[out] level2Record The level 2 data is written here. Caller must make sure pointer is valid.
  * @return 0 if converted successfully, 1 otherwise
  */
 int convertLevel1ToLevel2(const struct Level1Record* level1Record, struct Level2Record* level2Record)
@@ -134,7 +82,9 @@ int convertLevel1ToLevel2(const struct Level1Record* level1Record, struct Level2
     const char* ref = "IAU_BENNU";
     const char* abcorr = "NONE";
     const char* bodyname = "BENNU";
-    const char* instrumentframe = "ORX_OLA_HIGH";
+    const char* ola_hi_frame = "ORX_OLA_HIGH";
+    const char* ola_low_frame = "ORX_OLA_LOW";
+    const char* ola_frame;
     double scposb[3];
     double boredir[3];
     double lt;
@@ -160,7 +110,11 @@ int convertLevel1ToLevel2(const struct Level1Record* level1Record, struct Level2
     scposb[2] *= 1000.0;
 
     /* Compute boresite direction */
-    pxform_c(instrumentframe, ref, level2Record->et, i2bmat);
+    if (level1Record->laser_selection == 0)
+        ola_frame = ola_hi_frame;
+    else
+        ola_frame = ola_low_frame;
+    pxform_c(ola_frame, ref, level2Record->et, i2bmat);
     if (failed_c())
         return 1;
     vpack_c(vpxi[0], vpxi[1], vpxi[2], ci);
@@ -196,17 +150,6 @@ int convertLevel1ToLevel2(const struct Level1Record* level1Record, struct Level2
     return 0;
 }
 
-/**
- * Get current date/time, format is YYYY-MM-DDTHH:mm:ss
- * @param[out] buf character buffer in which to place time. Caller must allocate enough memory for it.
- */
-void getCurrentDateTime(char* buf)
-{
-    struct tm  tstruct;
-    time_t     now = time(0);
-    tstruct = *gmtime(&now);
-    strftime(buf, 64, "%Y-%m-%dT%XZ", &tstruct);
-}
 
 /**
  * @brief writeLevel2Record
@@ -268,7 +211,7 @@ void writeLabel(
         const char* datafilename,
         const char* metstarttime,
         const char* metstoptime,
-        uint64_t numRecords)
+        uint32_t numRecords)
 {
     FILE* fout;
     char currentDateTime[256];
@@ -277,6 +220,9 @@ void writeLabel(
     double et;
     char utcstarttime[UTC_SIZE_BYTES+1];
     char utcstoptime[UTC_SIZE_BYTES+1];
+    const char* base_name;
+    char base_name_underscore[1024];
+    char* pointer_to_period;
 
     /* Open the output file */
     fout = fopen(labelfile, "w");
@@ -285,6 +231,17 @@ void writeLabel(
         printf("Could not open %s\n", labelfile);
         exit(1);
     }
+
+    /* the following extracts out the filename without the leading directory part */
+    base_name = strrchr(datafilename, '/') + 1;
+    if (base_name == NULL)
+        base_name = datafilename;
+
+    /* The next 4 lines replace the final period in basename with an underscore */
+    strncpy(base_name_underscore, base_name, sizeof(base_name_underscore));
+    pointer_to_period = strrchr(base_name_underscore, '.');
+    if (pointer_to_period != NULL)
+        *pointer_to_period = '_';
 
     getCurrentDateTime(currentDateTime);
 
@@ -297,7 +254,7 @@ void writeLabel(
     fprintf(fout, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n");
     fprintf(fout, "<Product_Observational xmlns=\"http://pds.nasa.gov/schema/pds4/pds/v07\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\r\n");
     fprintf(fout, "    <Identification_Area>\r\n");
-    fprintf(fout, "        <logical_identifier>OLA_LEVEL2_%s</logical_identifier>\r\n", datafilename);
+    fprintf(fout, "        <logical_identifier>OLA_LEVEL2_%s</logical_identifier>\r\n", base_name_underscore);
     fprintf(fout, "        <version_id>1.0</version_id>\r\n");
     fprintf(fout, "        <title>OLA LEVEL 2 LIDAR DATA</title>\r\n");
     fprintf(fout, "        <information_model_version>1.0</information_model_version>\r\n");
@@ -312,7 +269,7 @@ void writeLabel(
     fprintf(fout, "            <name>OSIRIS-REX with OLA</name>\r\n");
     fprintf(fout, "            <type>Mission</type>\r\n");
     fprintf(fout, "            <Internal_Reference>\r\n");
-    fprintf(fout, "                <lid_reference>urn:nasa:pds:osiris-rex_ola:ola_level2:%s</lid_reference>\r\n", datafilename);
+    fprintf(fout, "                <lid_reference>urn:nasa:pds:osiris-rex_ola:ola_level2:%s</lid_reference>\r\n", base_name_underscore);
     fprintf(fout, "                <reference_type>has_investigation</reference_type>\r\n");
     fprintf(fout, "            </Internal_Reference>\r\n");
     fprintf(fout, "        </Investigation_Area>\r\n");
@@ -335,20 +292,20 @@ void writeLabel(
     fprintf(fout, "    </Observation_Area>\r\n");
     fprintf(fout, "    <File_Area_Observational>\r\n");
     fprintf(fout, "        <File>\r\n");
-    fprintf(fout, "            <file_name>%s</file_name>\r\n", datafilename);
-    fprintf(fout, "            <local_identifier>OLA_LEVEL2_%s</local_identifier>\r\n", datafilename);
+    fprintf(fout, "            <file_name>%s</file_name>\r\n", base_name);
+    fprintf(fout, "            <local_identifier>OLA_LEVEL2_%s</local_identifier>\r\n", base_name_underscore);
     fprintf(fout, "            <creation_date_time>%s</creation_date_time>\r\n", currentDateTime);
-    fprintf(fout, "            <file_size unit=\"byte\">%llu</file_size>\r\n", numRecords * 144);
-    fprintf(fout, "            <records>%llu</records>\r\n", numRecords);
+    fprintf(fout, "            <file_size unit=\"byte\">%.0f</file_size>\r\n", (double)numRecords * LEVEL2_RECORD_SIZE_BYTES);
+    fprintf(fout, "            <records>%u</records>\r\n", numRecords);
     fprintf(fout, "        </File>\r\n");
     fprintf(fout, "        <Table_Binary>\r\n");
     fprintf(fout, "            <local_identifier>OLA-LEVEL2-DIR_TABLE_BINARY</local_identifier>\r\n");
     fprintf(fout, "            <offset unit=\"byte\">0</offset>\r\n");
-    fprintf(fout, "            <records>%llu</records>\r\n", numRecords);
+    fprintf(fout, "            <records>%u</records>\r\n", numRecords);
     fprintf(fout, "            <Record_Binary>\r\n");
     fprintf(fout, "                <fields>17</fields>\r\n");
     fprintf(fout, "                <groups>0</groups>\r\n");
-    fprintf(fout, "                <record_length unit=\"byte\">%d</record_length>\r\n", 144);
+    fprintf(fout, "                <record_length unit=\"byte\">%d</record_length>\r\n", LEVEL2_RECORD_SIZE_BYTES);
     fprintf(fout, "                <Field_Binary>\r\n");
     fprintf(fout, "                    <name>MET</name>\r\n");
     fprintf(fout, "                    <field_number>1</field_number>\r\n");
@@ -518,7 +475,7 @@ int main(int argc, char** argv)
     struct Level1Record level1Record;
     struct Level2Record level2Record;
     int32_t status;
-    uint64_t numberRecords = 0;
+    uint32_t numberRecords = 0;
     char metstarttime[MET_SIZE_BYTES+1];
     char metstoptime[MET_SIZE_BYTES+1];
 
