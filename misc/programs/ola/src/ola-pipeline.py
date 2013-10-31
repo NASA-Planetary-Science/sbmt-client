@@ -7,7 +7,7 @@
 #
 # ROOT/level0sci - contains level 0 science files
 # ROOT/level1sci - contains level 1 science files
-# ROOT/spice - contains SPICE kernel file and related data
+# ROOT/ck - contains OLA CK kernel files
 # ROOT/level2 - contains level 2 files
 # ROOT/exe - contains executables called by this script
 # ROOT/tmp - contains temperory files
@@ -16,26 +16,25 @@
 import sys
 import os
 
-if len(sys.argv) != 3:
-    print "Usage: " + sys.argv[0] + " <level0-filelist> <data-dir>"
+if len(sys.argv) != 7:
+    print "Usage: " + sys.argv[0] + " <data-dir> <level0-filelist> <spice-kernel-meta-file> <spice-lsk-kernel-file> <spice-sclk-kernel-file> <spice-frames-kernel-file>"
     sys.exit()
 
 # folders used by the pipeline
-level0FileList = sys.argv[1]
-rootDataDir = sys.argv[2]
+rootDataDir = sys.argv[1]
+level0FileList = sys.argv[2]
+kernelFile = sys.argv[3]
+lskKernelFile = sys.argv[4]
+sclkKernelFile = sys.argv[5]
+framesKernelFile = sys.argv[6]
+
 
 level0SciDir = rootDataDir + "/level0sci/"
 level1SciDir = rootDataDir + "/level1sci/"
-spiceDir = rootDataDir + "/spice/"
+ckDir = rootDataDir + "/ck/"
 level2Dir = rootDataDir + "/level2/"
 exeDir = rootDataDir + "/exe/"
 tmpDir = rootDataDir + "/tmp/"
-
-# file paths used by the pipeline which are the same for all days
-kernelFile = spiceDir + "kernels.txt"
-lskKernelFile = spiceDir + "lsk/naif0010.tls"
-sclkKernelFile = spiceDir + "sclk/ORX_SCLKSCET.00000.example.tsc"
-framesKernelFile = spiceDir + "fk/orx_ola_v000.tf"
 
 # Load the files we need to process and return them as a list
 def loadFiles(infile):
@@ -52,7 +51,7 @@ def process(level0SciBaseFileName):
     level1SciLabel = level1SciDir + level0SciBaseFileName[0:7] + '1' + level0SciBaseFileName[8:-4] + ".XML"
     msopckInputDataFile = tmpDir + "msopckInputData-" + level0SciBaseFileName[8:-4] + ".txt"
     msopckInputSetupFile = tmpDir + "msopckInputSetup-" + level0SciBaseFileName[8:-4] + ".txt"
-    msopckOutputCkFile = spiceDir + "ck/OLA" + level0SciBaseFileName[8:-4] + ".bc"
+    msopckOutputCkFile = ckDir + "OLA" + level0SciBaseFileName[8:-4] + ".bc"
     level2File = level2Dir + level0SciBaseFileName[0:7] + '2' + level0SciBaseFileName[8:]
     level2Label = level2Dir + level0SciBaseFileName[0:7] + '2' + level0SciBaseFileName[8:-4] + ".XML"
 
