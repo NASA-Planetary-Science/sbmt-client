@@ -16,8 +16,8 @@
 import sys
 import os
 
-if len(sys.argv) < 2:
-    print "Usage: " + sys.argv[0] + " <level0-filelist> <data-dir>\n"
+if len(sys.argv) != 3:
+    print "Usage: " + sys.argv[0] + " <level0-filelist> <data-dir>"
     sys.exit()
 
 # folders used by the pipeline
