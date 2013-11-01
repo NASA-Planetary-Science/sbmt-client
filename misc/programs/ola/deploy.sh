@@ -21,4 +21,4 @@ cp data/SciData/OLA/level0-filelist.txt $ROOT/data/SciData/OLA/
 cp data/SPICE/spice-kernels.mk $ROOT/data/SPICE
 
 rm -f $ROOT.tar.gz
-tar czf $ROOT.tar.gz $ROOT
+gtar czf $ROOT.tar.gz $ROOT
