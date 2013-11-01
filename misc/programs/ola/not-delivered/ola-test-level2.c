@@ -126,15 +126,26 @@ int main(int argc, char** argv)
         if (status != 0)
             break;
 
-        /* save out next lidar position in km*/
-        status = fprintf(fout, "%s %.16e %.16e %.16e %.16e %.16e %.16e\n",
+        /* save out next lidar position in km. Save it out in the order needed by SBMT
+           so it can load in the track file */
+        status = fprintf(fout, "%s %g %g %g %g %g %g %s %f %d %d %d %g %g %g %g %g\n",
                          level2Record.utc,
                          0.001*level2Record.x,
                          0.001*level2Record.y,
                          0.001*level2Record.z,
                          level2Record.elongitude,
                          level2Record.latitude,
-                         level2Record.radius);
+                         level2Record.radius,
+                         level2Record.met,
+                         level2Record.et,
+                         level2Record.laser_selection,
+                         level2Record.scan_mode,
+                         level2Record.flag_status,
+                         level2Record.range,
+                         level2Record.azimuth,
+                         level2Record.elevation,
+                         level2Record.intensity_t0,
+                         level2Record.intensity_trr);
 
         if (status < 0)
             break;

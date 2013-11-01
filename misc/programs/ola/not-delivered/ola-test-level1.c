@@ -63,7 +63,7 @@ int main(int argc, char** argv)
             break;
 
         /* save out next lidar position in km*/
-        status = fprintf(fout, "%s %d %d %d %.16e %.16e %.16e %.16e %.16e\n",
+        status = fprintf(fout, "%s %d %d %d %g %g %g %g %g\n",
                          level1Record.met,
                          level1Record.laser_selection,
                          level1Record.scan_mode,
