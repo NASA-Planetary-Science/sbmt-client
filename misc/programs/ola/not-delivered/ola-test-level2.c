@@ -41,7 +41,7 @@ struct Level2Record
     double radius;
 };
 
-int parseLevel2Record(FILE* fin, struct Level2Record* level2Record)
+int readLevel2Record(FILE* fin, struct Level2Record* level2Record)
 {
     if (fread ( &level2Record->met, MET_SIZE_BYTES, 1, fin ) != 1)
         return 1;
@@ -122,13 +122,20 @@ int main(int argc, char** argv)
     for ( ;; ) /* loop until we break out */
     {
         /* Read in level 2 record */
-        status = parseLevel2Record(fin, &level2Record);
+        status = readLevel2Record(fin, &level2Record);
         if (status != 0)
             break;
 
         /* save out next lidar position in km*/
-        status = fprintf(fout, "%s %.16e %.16e %.16e %.16e %.16e %.16e\n", level2Record.utc, 0.001*level2Record.x, 0.001*level2Record.y, 0.001*level2Record.z, level2Record.elongitude, level2Record.latitude, level2Record.radius);
-//        status = fprintf(fout, "%s %.16e %.16e %.16e %.16e %.16e %.16e\n", level2Record.utc, level2Record.x, level2Record.y, level2Record.z, level2Record.elongitude, level2Record.latitude, level2Record.radius);
+        status = fprintf(fout, "%s %.16e %.16e %.16e %.16e %.16e %.16e\n",
+                         level2Record.utc,
+                         0.001*level2Record.x,
+                         0.001*level2Record.y,
+                         0.001*level2Record.z,
+                         level2Record.elongitude,
+                         level2Record.latitude,
+                         level2Record.radius);
+
         if (status < 0)
             break;
     }

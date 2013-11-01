@@ -12,10 +12,6 @@ ${CMAKE_SOURCE_DIR}
 ${CMAKE_SOURCE_DIR}/src)
 link_directories(${SPICE_DIR}/lib)
 
-#add_library(lidar
-#)
-#target_link_libraries(lidar cspice)
-
 add_executable( ola-level0-to-level1 src/ola-level0-to-level1.c src/ola-common.h )
 target_link_libraries( ola-level0-to-level1 cspice )
 
@@ -25,8 +21,11 @@ target_link_libraries( ola-level1-to-ck cspice )
 add_executable( ola-level1-to-level2 src/ola-level1-to-level2.c src/ola-common.h )
 target_link_libraries( ola-level1-to-level2 cspice )
 
-#add_executable( ola-test-level2 src/ola-test-level2.c src/ola-common.h )
-#target_link_libraries( ola-test-level2 cspice )
+add_executable( ola-test-level2 not-delivered/ola-test-level2.c src/ola-common.h )
+target_link_libraries( ola-test-level2 cspice )
 
-#add_executable( ola-generate-nadir-ck src/ola-generate-nadir-ck.c src/ola-common.h )
-#target_link_libraries( ola-generate-nadir-ck cspice )
+add_executable( ola-test-level1 not-delivered/ola-test-level1.c src/ola-common.h )
+target_link_libraries( ola-test-level1 cspice )
+
+add_executable( ola-generate-nadir-ck not-delivered/ola-generate-nadir-ck.c src/ola-common.h )
+target_link_libraries( ola-generate-nadir-ck cspice )

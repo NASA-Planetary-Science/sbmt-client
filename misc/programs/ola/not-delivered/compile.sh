@@ -11,6 +11,8 @@
 SPICE_DIR=/project/nearsdc/software/spice/cspice
 
 gcc -o ola-generate-nadir-ck ola-generate-nadir-ck.c -O2 -std=c99 -pedantic -Wall -Wextra \
-    -I$SPICE_DIR/include $SPICE_DIR/lib/cspice.a -lm
+    -I../src -I$SPICE_DIR/include $SPICE_DIR/lib/cspice.a -lm
 gcc -o ola-test-level2 ola-test-level2.c -O2 -std=c99 -pedantic -Wall -Wextra \
-    -I$SPICE_DIR/include $SPICE_DIR/lib/cspice.a -lm
+    -I../src -I$SPICE_DIR/include $SPICE_DIR/lib/cspice.a -lm
+gcc -o ola-test-level1 ola-test-level1.c -O2 -std=c99 -pedantic -Wall -Wextra \
+    -I../src -I$SPICE_DIR/include $SPICE_DIR/lib/cspice.a -lm
