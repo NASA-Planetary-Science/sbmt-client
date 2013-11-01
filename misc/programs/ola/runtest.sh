@@ -11,5 +11,5 @@ ola-pipeline.py
 cd ../../not-delivered
 ./compile.sh
 cd -
-../../not-delivered/ola-test-level2 SciData/OLA/2020/202/L2/orx_ola_scil2_t00002_200720.tab aaa-track.txt
+../../not-delivered/ola-test-level2 SciData/OLA/2020/202/L2/orx_ola_scil2_t00002_200720_v001.tab aaa-track.txt
 cp aaa-track.txt ~/

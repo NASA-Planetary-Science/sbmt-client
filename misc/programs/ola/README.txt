@@ -85,11 +85,11 @@ have provided:
    to date.
 
    On completion of this command using the provided data, the L1
-   folder will contain the files orx_ola_scil1_t00002_200720.tab and
-   orx_ola_scil1_t00002_200720.xml, the CK folder will contain the
-   file orx_ola_t00002_200720.bc and the L2 folder will contain the
-   files orx_ola_scil2_t00002_200720.tab and
-   orx_ola_scil2_t00002_200720.xml.
+   folder will contain the files orx_ola_scil1_t00002_200720_v001.tab
+   and orx_ola_scil1_t00002_200720_v001.xml, the CK folder will
+   contain the file orx_ola_t00002_200720_v001.bc and the L2 folder
+   will contain the files orx_ola_scil2_t00002_200720_v001.tab and
+   orx_ola_scil2_t00002_200720_v001.xml.
 
 
 =======
