@@ -134,7 +134,7 @@ int convertLevel1ToLevel2(const struct Level1Record* level1Record, struct Level2
     reclat_c(targetpos, &level2Record->radius, &level2Record->elongitude, &level2Record->latitude);
     /* convert to degrees */
     level2Record->elongitude *= dpr_c();
-    /* convert to degrees and east longitude*/
+    /* convert to degrees */
     level2Record->latitude *= dpr_c();
     /* convert radius from meters to km */
     level2Record->radius *= 1.0e-3;
@@ -152,10 +152,11 @@ int convertLevel1ToLevel2(const struct Level1Record* level1Record, struct Level2
 
 
 /**
- * @brief writeLevel2Record
+ * Write out a level 2 record to a file using the fout FILE pointer.
+ *
  * @param[in] fout
  * @param[in] level2Record
- * @return 0 if converted successfully, 1 otherwise
+ * @return 0 if written successfully, 1 otherwise
  */
 int writeLevel2Record(FILE* fout, const struct Level2Record* level2Record)
 {

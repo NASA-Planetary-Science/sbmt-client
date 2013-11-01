@@ -281,7 +281,7 @@ int convertLevel0ToLevel1(const struct Level0Record* level0Record, struct Level1
  *
  * @param[in] fout file pointer
  * @param[in] level1Record record to write out
- * @return
+ * @return 0 if written successfully, 1 otherwise
  */
 int writeLevel1Record(FILE* fout, const struct Level1Record* level1Record)
 {
