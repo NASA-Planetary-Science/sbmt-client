@@ -13,8 +13,11 @@ a CK kernel file of the OLA scanning platform.
 3. a program for converting OLA science level 1 data to OLA level 2
 data.
 
-Refer to the relevant ICDs which explain the pipeline and these programs
-in great detail.
+Refer to the relevant ICDs which explain the pipeline and these
+programs in great detail as well as the required directory structure
+and files that need to be present in order for the pipeline to work
+(such as the SPICE metakernel file and a list of level 0 files to
+process).
 
 The above 3 programs are written in C and make up the building blocks
 of the OLA pipleline. In addition, a python script is provided (called
@@ -46,7 +49,8 @@ have provided:
    the pipeline. The pipeline expects these directories to be
    present. From here onwards we will call this folder the DATA
    folder. This step is optional: you could run the pipeline directly
-   from the data folder.
+   from the data folder. See the ICDs for more details about the DATA
+   folder and how it is organized.
 
 2. Change into the src folder.
 
@@ -56,99 +60,48 @@ have provided:
 
 4. Run the compile.sh script. This will create 3 executables in the
    src folder: ola-level0-to-level1, ola-level1-to-ck, and
-   ola-level1-to-level2
+   ola-level1-to-level2.
 
-5. Copy these 3 binary executables to the exe folder within the DATA folder.
+5. Copy these 3 binary executables to your PATH.
 
 6. (optional) Copy the ola-pipeline.py script to any location (or run
    it from the location you extracted it to). The ola-pipeline.py is
    main driver program which runs the pipeline.
 
 7. The pipeline requires the msopck program available from the CSPICE
-   toolkit. Copy this program from the CSPICE toolkit into the exe
-   folder within the DATA folder.
+   toolkit. Add this file to your PATH.
 
 8. You are now ready to run the pipeline. Run the ola-pipeline.py
-   script (see step 6). It takes 6 command line arguments, all of them
-   required, in the following order:
+   script (see step 6). It takes a single command line arguments:
 
-     1. <data-dir> - path to DATA folder.
-
-     2. <level0-filelist> - path to file containing list of OLA Level
-           0 files to process. These files must be present in the
-           level0 folder with the DATA folder. Only the level 0
-           filenames should be listed, not the full path (i.e. omit
-           the folder from the name).  The pipeline looks in this file
-           to determine which files to process.
-
-     3. <spice-kernel-meta-file> - path to SPICE meta-kernel
-           file. This file should contain all the binary and text
-           kernels needed to compute the spacecraft position and
-           pointing at any given time.
-
-     4. <spice-lsk-kernel-file> - path to SPICE leap second
-           kernel. Note even though a SPICE meta kernel file has
-           already been provided, the leap second kernel file must be
-           specified explicitly because it is needed by the msopck
-           program.
-
-     5. <spice-sclk-kernel-file> - path to SPICE spacecraft clock
-           kernel. Note even though a SPICE meta kernel file has
-           already been provided, the spacecraft clock kernel file
-           must be specified explicitly because it is needed by the
-           msopck program.
-
-
-     6. <spice-frames-kernel-file> - path to SPICE frames kernel. This
-           kernel must define the ORX_OLA_HIGH and ORX_OLA_LOW
-           frames. Note even though a SPICE meta kernel file has
-           already been provided, the frames kernel file must be
-           specified explicitly because it is needed by the msopck
-           program.
+     <data-dir> - path to DATA folder.
 
 
 =======
 Example
 =======
 
-To run the pipeline from within the data folder we have provided, you
-could run the following:
+The SPOC will setup the directory structure required to run the
+pipeline. To test our code however, we also provide a folder
+hierarchy which contains all the necessary files and folders. This is
+located in the 'data' folder.
 
-../src/ola-pipeline.py . level0-filelist.txt spice-kernels.txt spice/lsk/naif0010.tls spice/sclk/ORX_SCLKSCET.00000.example.tsc spice/fk/orx_ola_v000.tf
+Within that folder, the file 'level0-filelist.txt' contains a list of
+level 0 files that need to processed.
 
-Since we are already within the DATA we use a '.' for the data
-directory. The second argument, level0-filelist.txt, is a file which
-we have provided and it contains the level 0 binary. The third
-argument is the spice meta kernel file we have provided and the
-remaining 3 arguments are the leap second, spacecraft clock and frames
-kernel, respectively.
+To run the pipeline using this data folder we have provided, you
+could run the following (assuming you are within this folder):
 
-On completion of this command, the level1 folder will contain the
-files OLASCIL120194.TAB and OLASCIL120194.XML, the ck folder will
-contain the file OLA20194.bc and the level2 folder will contain the
-files OLASCIL220194.TAB OLASCIL220194.XML
+../src/ola-pipeline.py .
 
+Since we are already within the DATA folder, we use a '.' for the data
+directory.
 
-======================================
-Explanation of Contents of DATA Folder
-======================================
-
-These folders need to be created inside the DATA prior to running the
-pipeline.
-
-ROOT/exe       - executables compiled as described above go here
-ROOT/level0sci - level 0 science data should be placed here prior to running the pipeline
-ROOT/level1sci - level 1 science data is placed here
-ROOT/level2    - level 2 data is placed here
-ROOT/ck        - OLA ck spice kernel files are placed here
-ROOT/tmp       - temporary files go here
-
-Note that the data folder we have provided contains a spice folder
-which contains all the SPICE files needed by the pipeline. This folder
-can be located anywhere and we have placed it in the data forlder for
-convenience, since the SPICE meta-kernel file which must be provided
-as a command line argument can contain to paths to kernels anywhere on
-disk.
+On completion of this command, the L1 folder will contain the files
+orx_ola_scil1_t00002_200720.tab and orx_ola_scil1_t00002_200720.xml,
+the CK folder will contain the file orx_ola_t00002_200720.bc and the
+L2 folder will contain the files orx_ola_scil2_t00002_200720.tab and
+orx_ola_scil2_t00002_200720.xml.
 
 
 =======

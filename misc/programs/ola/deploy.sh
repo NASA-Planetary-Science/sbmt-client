@@ -8,21 +8,17 @@ mkdir $ROOT/src
 cp README.txt $ROOT
 cp src/compile.sh src/*.c src/*.h src/*.py $ROOT/src
 
-mkdir $ROOT/data
-mkdir $ROOT/data/exe
-mkdir $ROOT/data/level0sci
-mkdir $ROOT/data/level1sci
-mkdir $ROOT/data/ck
-mkdir $ROOT/data/level2
-mkdir $ROOT/data/spice
-mkdir $ROOT/data/tmp
+SPICE=$ROOT/data/SPICE/Kernels
 
-cp -RL data/spice $ROOT/data
-rm -f $ROOT/data/spice/fk/orx_nadir.tf-* $ROOT/data/spice/ck/OLA* $ROOT/data/spice/spice.tar.gz $ROOT/data/spice/kernels.txt
+mkdir -p $ROOT/data/SciData/OLA/2020/202/L0
+mkdir -p $SPICE
 
-cp data/level0sci/OLASCIL020194.TAB $ROOT/data/level0sci
-cp data/level0-filelist.txt $ROOT/data
-cp data/spice-kernels.txt $ROOT/data
+cp -RL data/spice/Kernels/* $SPICE
+rm -f $SPICE/FK/orx_nadir.tf-* $SPICE/CK/orx_ola_* $SPICE/spice.tar.gz $SPICE/kernels.txt
+
+cp data/SciData/OLA/2020/202/L0/orx_ola_scil0_t00002_200720.tab $ROOT/data/SciData/OLA/2020/202/L0
+cp data/SciData/OLA/level0-filelist.txt $ROOT/data/SciData/OLA/
+cp data/SPICE/spice-kernels.mk $ROOT/data/SPICE
 
 rm -f $ROOT.tar.gz
 tar czf $ROOT.tar.gz $ROOT

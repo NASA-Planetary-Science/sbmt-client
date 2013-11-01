@@ -34,6 +34,9 @@
  * 6. <msopck-setup-file> name of the msopck setup file to generate
 ************************************************************************/
 
+#define  FILLEN   1024
+#define  TYPLEN   32
+#define  SRCLEN   1024
 
 /**
  * write the msopck setup file
@@ -43,18 +46,80 @@
  * @param[in] sclk_kernel
  * @param[in] frames_kernel
  */
-void writeMsopckSetupFile(
-        const char* filename,
-        const char* lsk_kernel,
-        const char* sclk_kernel,
-        const char* frames_kernel)
+void writeMsopckSetupFile(const char* filename)
 {
     FILE* fout;
+    SpiceInt which;
+    SpiceInt handle;
+    SpiceInt count;
+    SpiceChar file[FILLEN];
+    SpiceChar file_copy[FILLEN];
+    SpiceChar filtyp[TYPLEN];
+    SpiceChar source[SRCLEN];
+    SpiceBoolean found;
+    char* base_name; /* basename of kernel, e.g. 'naif0010.tls' */
+    const char* dir_name; /* folder of kernel, e.g. 'LSK' */
+    char lsk_kernel[FILLEN];
+    char sclk_kernel[FILLEN];
+    char frames_kernel[FILLEN];
+
     /* Open the output file */
     fout = fopen(filename, "w");
     if (fout == NULL)
     {
         printf("Could not open %s\n", filename);
+        exit(1);
+    }
+
+    /* Look at the loaded kernel files and look for the leap second, sclk, and frames kernel files
+       which are needed in the msopck setup file */
+    ktotal_c ( "text", &count );
+
+    if ( count == 0 )
+    {
+        printf ( "No kernel files loaded at this time.\n" );
+        exit(1);
+    }
+
+    for ( which = 0;  which < count;  which++ )
+    {
+        kdata_c ( which,  "text",    FILLEN,   TYPLEN, SRCLEN,
+                  file,   filtyp,  source, &handle,  &found );
+
+        strncpy(file_copy, file, FILLEN);
+
+        /* the following extracts out the basename and final folder of the kernel path.
+         * E.g. if the path is SPICE/Kernels/FK/orx_ola_v000.tf, then it extract out
+         * 'orx_ola_v000.tf' as the basename and 'FK' as the folder.
+         * Unfortunately, this is tedious in C */
+        base_name = strrchr(file_copy, '/');
+        if (base_name != NULL)
+            *base_name = '\0';
+        else
+        {
+            printf("kernel filename not in expected format\n");
+            exit(1);
+        }
+        base_name = base_name + 1;
+
+        dir_name = strrchr(file_copy, '/') + 1;
+        if (dir_name == NULL)
+        {
+            printf("kernel filename not in expected format\n");
+            exit(1);
+        }
+
+        if (strncasecmp(dir_name, "LSK", 3) == 0 && strncasecmp(base_name, "naif", 4) == 0)
+            strncpy(lsk_kernel, file, FILLEN);
+        else if (strncasecmp(dir_name, "SCLK", 4) == 0 && strncasecmp(base_name, "ORX_SCLKSCET", 12) == 0)
+            strncpy(sclk_kernel, file, FILLEN);
+        else if (strncasecmp(dir_name, "FK", 2) == 0 && strncasecmp(base_name, "orx_ola_", 8) == 0)
+            strncpy(frames_kernel, file, FILLEN);
+    }
+
+    if (lsk_kernel == NULL || sclk_kernel == NULL || frames_kernel == NULL)
+    {
+        printf("Error: could not determine leap second, spacecraft clock or frames kernel file needed for msopck.\n");
         exit(1);
     }
 
@@ -79,9 +144,7 @@ void writeMsopckSetupFile(
 int main(int argc, char** argv)
 {
     const char* level1_input_data_file;
-    const char* lsk_kernel;
-    const char* sclk_kernel;
-    const char* frames_kernel;
+    const char* meta_kernel_file;
     const char* msopck_data_file;
     const char* msopck_setup_file;
     FILE* fin;
@@ -89,18 +152,19 @@ int main(int argc, char** argv)
     struct Level1Record level1Record;
     int status;
 
-    if (argc < 4)
+    if (argc < 5)
     {
-        printf("Usage: ./ola-level1-to-ck <level1-input-data-file> <lsk-kernel-filename> <sclk-kernel-filename> <frames-kernel-filename> <msopck-data-file> <msopck-setup-file>\n");
+        printf("Usage: ./ola-level1-to-ck <level1-input-data-file> <meta-kernel-filename> <msopck-data-file> <msopck-setup-file>\n");
         return 1;
     }
 
     level1_input_data_file = argv[1];
-    lsk_kernel = argv[2];
-    sclk_kernel = argv[3];
-    frames_kernel = argv[4];
-    msopck_data_file = argv[5];
-    msopck_setup_file = argv[6];
+    meta_kernel_file = argv[2];
+    msopck_data_file = argv[3];
+    msopck_setup_file = argv[4];
+
+    /* Load in SPICE kernel files */
+    furnsh_c(meta_kernel_file);
 
     /* Open the input file */
     fin = fopen(level1_input_data_file, "r");
@@ -138,7 +202,7 @@ int main(int argc, char** argv)
     fclose (fin);
     fclose (fout);
 
-    writeMsopckSetupFile(msopck_setup_file, lsk_kernel, sclk_kernel, frames_kernel);
+    writeMsopckSetupFile(msopck_setup_file);
 
     return 0;
 }

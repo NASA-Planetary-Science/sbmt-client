@@ -4,12 +4,12 @@
 cd ola-pipeline-1.0.0
 cd src
 ./compile.sh
-cp * ../data/exe/
-cp /project/nearsdc/software/spice/cspice/exe/msopck ../data/exe/
+export PATH=`pwd`:/project/nearsdc/software/spice/cspice/exe:$PATH
 cd ../data
-../src/ola-pipeline.py . level0-filelist.txt spice-kernels.txt spice/lsk/naif0010.tls spice/sclk/ORX_SCLKSCET.00000.example.tsc spice/fk/orx_ola_v000.tf
+../src/ola-pipeline.py .
 
 cd ../../not-delivered
 ./compile.sh
 cd -
-../../not-delivered/ola-test-level2 level2/OLASCIL220194.TAB aaa-track.txt
+../../not-delivered/ola-test-level2 SciData/OLA/2020/202/L2/orx_ola_scil2_t00002_200720.tab aaa-track.txt
+cp aaa-track.txt ~/
