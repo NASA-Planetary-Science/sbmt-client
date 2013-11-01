@@ -6,7 +6,7 @@ cd src
 ./compile.sh
 export PATH=`pwd`:/project/nearsdc/software/spice/cspice/exe:$PATH
 cd ../data
-../src/ola-pipeline.py .
+ola-pipeline.py
 
 cd ../../not-delivered
 ./compile.sh

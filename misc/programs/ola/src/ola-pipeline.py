@@ -11,11 +11,12 @@ import tempfile
 import datetime
 
 
-if len(sys.argv) != 2:
-    print "Usage: " + sys.argv[0] + " <data-dir> <level0-filelist> <spice-kernel-meta-file> <spice-lsk-kernel-file> <spice-sclk-kernel-file> <spice-frames-kernel-file>"
+if len(sys.argv) != 1:
+    print "Error: This script takes no arguments."
     sys.exit()
 
-rootDataDir = sys.argv[1]
+rootDataDir = "."
+
 level0FileList = rootDataDir + "/SciData/OLA/level0-filelist.txt"
 kernelFile = rootDataDir + "/SPICE/spice-kernels.mk"
 
