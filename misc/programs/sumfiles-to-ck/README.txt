@@ -2,10 +2,10 @@
 CK Kernel Generation from Sumfiles
 ----------------------------------
 
-This program generates a CK kernel of specific instrment using
-sumfiles (usually provided by Bob Gaskell as a byproduct of his SPC
-code). This CK stores the orientation of the specified instrument
-relative to J2000.
+This program generates a CK kernel of a specific instrment from a list
+of sumfiles (usually provided by Bob Gaskell as a byproduct of his SPC
+code). The generated CK stores the orientation of the specified
+instrument relative to J2000.
 
 To generate CK kernels several files are needed, which we provide:
 
