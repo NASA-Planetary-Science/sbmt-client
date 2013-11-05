@@ -4,10 +4,7 @@
 #include <string>
 #include <algorithm>
 #include <stdlib.h>
-extern "C"
-{
 #include "SpiceUsr.h"
-}
 
 
 struct TimeMatrix
@@ -39,7 +36,7 @@ std::vector<std::string> loadFileList(const std::string& filelist)
     std::ifstream fin(filelist.c_str());
 
     std::vector<std::string> files;
-    
+
     if (fin.is_open())
     {
         std::string line;
@@ -57,8 +54,9 @@ std::vector<std::string> loadFileList(const std::string& filelist)
 
 
 void loadSumFile(const std::string& sumfile,
+                 const std::string& asteroidframe,
                  std::string& utc,
-                 double mat[3][3])
+                 double j2000_to_instrument[3][3])
 {
     std::ifstream fin(sumfile.c_str());
 
@@ -72,13 +70,13 @@ void loadSumFile(const std::string& sumfile,
 
         std::string name;
         std::string dummy;
-        
+
         std::getline(fin, name);
         trim(name);
 
         std::getline(fin, utc);
         trim(utc);
-	
+
         // Replace spaces with dashes in the utc string
         std::replace(utc.begin(), utc.end(), ' ', '-');
 
@@ -104,32 +102,28 @@ void loadSumFile(const std::string& sumfile,
 
         utc2et_c(utc.c_str(), &et);
 
-        double msi_to_eros[3][3];
-        msi_to_eros[0][0] = cx[0];
-        msi_to_eros[0][1] = cx[1];
-        msi_to_eros[0][2] = cx[2];
-        msi_to_eros[1][0] = cy[0];
-        msi_to_eros[1][1] = cy[1];
-        msi_to_eros[1][2] = cy[2];
-        msi_to_eros[2][0] = cz[0];
-        msi_to_eros[2][1] = cz[1];
-        msi_to_eros[2][2] = cz[2];
+        vhat_c(cx, cx);
+        vhat_c(cy, cy);
+        vhat_c(cz, cz);
 
-        invert_c(msi_to_eros, msi_to_eros);
-        
-        double sc_bus_prime_to_msi[3][3];
-        pxform_c("NEAR_SC_BUS_PRIME", "NEAR_MSI", et, sc_bus_prime_to_msi);
+        double instrument_to_asteroid[3][3];
+        instrument_to_asteroid[0][0] = cx[0];
+        instrument_to_asteroid[1][0] = cx[1];
+        instrument_to_asteroid[2][0] = cx[2];
+        instrument_to_asteroid[0][1] = cy[0];
+        instrument_to_asteroid[1][1] = cy[1];
+        instrument_to_asteroid[2][1] = cy[2];
+        instrument_to_asteroid[0][2] = cz[0];
+        instrument_to_asteroid[1][2] = cz[1];
+        instrument_to_asteroid[2][2] = cz[2];
 
-        double eros_to_j2000[3][3];
-        pxform_c("IAU_EROS", "J2000", et, eros_to_j2000);
+        double asteroid_to_j2000[3][3];
+        pxform_c(asteroidframe.c_str(), "J2000", et, asteroid_to_j2000);
 
-        double tmp[3][3];
-        mxm_c(eros_to_j2000, msi_to_eros, tmp);
+        double instrument_to_j2000[3][3];
+        mxm_c(instrument_to_asteroid, asteroid_to_j2000, instrument_to_j2000);
 
-        double tmp2[3][3];
-        mxm_c(tmp, sc_bus_prime_to_msi, tmp2);
-
-        invert_c(tmp2, mat);
+        invert_c(instrument_to_j2000, j2000_to_instrument);
     }
     else
     {
@@ -172,31 +166,34 @@ void createMsopckInputDataFile(const std::vector<TimeMatrix>& data)
 
 int main(int argc, char** argv)
 {
-    if (argc < 3)
+    if (argc < 4)
     {
-        std::cout << "Usage: process_sumfiles <kernelfiles> <sumfilelist>" << std::endl;
+        std::cout << "Usage: process_sumfiles <kernelfiles> <sumfilelist> <name-of-asteroid-frame>" << std::endl;
         return 1;
     }
-    
+
     std::string kernelfiles = argv[1];
     std::string sumfilelist = argv[2];
+    std::string asteroidframe = argv[3];
 
     furnsh_c(kernelfiles.c_str());
 
     std::vector<std::string> sumfiles = loadFileList(sumfilelist);
 
     std::cout.precision(16);
-    
+
     std::vector<TimeMatrix> data;
-    
+
     for (unsigned int i=0; i<sumfiles.size(); ++i)
     {
         TimeMatrix tm;
 
-        loadSumFile(sumfiles[i], tm.utc, tm.mat);
-        
+        loadSumFile(sumfiles[i], asteroidframe, tm.utc, tm.mat);
+
         data.push_back(tm);
     }
 
-    createMsopckInputDataFile(data);    
+    createMsopckInputDataFile(data);
+
+    return 0;
 }

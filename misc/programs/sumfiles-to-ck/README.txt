@@ -2,6 +2,10 @@
 CK Kernel Generation from Sumfiles
 ----------------------------------
 
+This program generates a CK kernel of specific instrment using
+sumfiles (usually provided by Bob Gaskell as a byproduct of his SPC
+code). This CK stores the orientation of the specified instrument
+relative to J2000.
 
 To generate CK kernels several files are needed:
 
@@ -31,7 +35,7 @@ and the file process_sumfiles will be created
 
 (2) Run process_sumfiles
 
-Run the process_sumfiles executable. This program takes 2
+Run the process_sumfiles executable. This program takes 3
 arguments:
 
 The first argument is the name of a file containing a list of spice
@@ -40,13 +44,17 @@ kernels.txt file included as an example (not sure if all of those
 kernels are really needed). You will need to modify the paths in that
 file.
 
-The second argument is the name of a file containing a list of
+The second arguments is the name of a file containing a list of
 sumfiles to process, one file per line. See the file sumfilelist.txt
 included for an example.
 
+The third argument is the name of the SPICE frame of the asteroid,
+with respect to which the orientation matrix in the sumfile is given,
+e.g. IAU_EROS
+
 Then to run the program type:
 
-./process_sumfiles kernelfiles.txt sumfilelist.txt
+./process_sumfiles kernels.txt sumfilelist.txt IAU_EROS
 
 One new file will be generated in the current directory called "msopckinputdata"
 
@@ -62,13 +70,10 @@ done extensive testing to make sure it's correct.)
 Open up the msopcksetup file (included) and edit the lines beginning
 with:
 
-LSK_FILE_NAME (path to leap second kernel), 
-SCLK_FILE_NAME (path to spacraft clock kernel), 
+LSK_FILE_NAME (path to leap second kernel),
+SCLK_FILE_NAME (path to spacraft clock kernel),
 PRODUCER_ID (your name)
-
-and possibly also
-
-INSTRUMENT_ID (if for a different instrument). 
+INSTRUMENT_ID (id of instrument).
 
 You shouldn't need to modify the other lines.
 
@@ -83,7 +88,8 @@ you would like the new CK kernel file to have. For example:
 
 ./msopck msopcksetup msopckinputdata ckfile
 
-The file ckfile will be generated which is the CK kernel file.
+The file ckfile will be generated which is the CK kernel file storing
+the orientation of the instrument relative to J2000.
 
 Note that if you want to rerun this program, make sure to delete the
 ckfile first since the msopck program simply appends to this file

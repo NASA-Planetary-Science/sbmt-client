@@ -1,11 +1,11 @@
 \begindata
-LSK_FILE_NAME          = '/home/kahneg1/src/near/kernels/LSK/NAIF0007.TLS'
-SCLK_FILE_NAME         = '/home/kahneg1/src/near/kernels/SCLK/NEAR_171.TSC'
+LSK_FILE_NAME          = '/project/nearsdc/spice-kernels/near/LSK/NAIF0007.TLS'
+SCLK_FILE_NAME         = '/project/nearsdc/spice-kernels/near/SCLK/NEAR_171.TSC'
 CK_TYPE                = 3
 INSTRUMENT_ID          = -93000
 REFERENCE_FRAME_NAME   = 'J2000'
 ANGULAR_RATE_PRESENT   = 'MAKE UP/NO AVERAGING'
 INPUT_TIME_TYPE        = 'UTC'
 INPUT_DATA_TYPE        = 'MATRICES'
-PRODUCER_ID            = 'E. Kahn, JHUAPL'
+PRODUCER_ID            = 'JHUAPL'
 \begintext
