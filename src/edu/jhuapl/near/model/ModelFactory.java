@@ -150,7 +150,6 @@ public class ModelFactory
         ArrayList<ModelConfig> configArray = builtInModelConfigs;
 
         // Gaskell Eros
-//      c.add(new ModelConfig(EROS, ASTEROID, NEO, IMAGE_BASED, GASKELL, "/GASKELL/EROS", false, true, true, true, true, true));
         ModelConfig c = new ModelConfig();
         c.name = EROS;
         c.type = ASTEROID;
@@ -198,7 +197,6 @@ public class ModelFactory
         configArray.add(c);
 
         // Thomas Eros
-//      c.add(new ModelConfig(EROS, ASTEROID, NEO, IMAGE_BASED, THOMAS, "/THOMAS/EROS", false, true, true, false, true, true));
         c = c.clone();
         c.author = THOMAS;
         c.pathOnServer = "/THOMAS/EROS";
@@ -206,7 +204,6 @@ public class ModelFactory
         configArray.add(c);
 
         // Eros NLR
-//      c.add(new ModelConfig(EROS, ASTEROID, NEO, LIDAR_BASED, EROSNLR, "/OTHER/EROSNLR/nlrshape.llr2.gz", false, true, true, false, true, true));
         c = c.clone();
         c.dataUsed = LIDAR_BASED;
         c.author = EROSNLR;
@@ -214,7 +211,6 @@ public class ModelFactory
         configArray.add(c);
 
         // Eros NAV
-//      c.add(new ModelConfig(EROS, ASTEROID, NEO, LIDAR_BASED, EROSNAV, "/OTHER/EROSNAV/navplate.obj.gz", false, true, true, false, true, true));
         c = c.clone();
         c.dataUsed = LIDAR_BASED;
         c.author = EROSNAV;
@@ -222,7 +218,6 @@ public class ModelFactory
         configArray.add(c);
 
         // Gaskell Itokawa
-//      c.add(new ModelConfig(ITOKAWA, ASTEROID, NEO, IMAGE_BASED, GASKELL, "/GASKELL/ITOKAWA", false, true, true, false, false, false));
         c = new ModelConfig();
         c.name = ITOKAWA;
         c.type = ASTEROID;
@@ -270,7 +265,6 @@ public class ModelFactory
         configArray.add(c);
 
         // Ostro Itokawa
-//      c.add(new ModelConfig(ITOKAWA, ASTEROID, NEO, RADAR_BASED, OSTRO, "/HUDSON/ITOKAWA/25143itokawa.obj.gz"));
         c = new ModelConfig();
         c.name = ITOKAWA;
         c.type = ASTEROID;
@@ -281,7 +275,6 @@ public class ModelFactory
         configArray.add(c);
 
         // Gaskell Phobos
-//      c.add(new ModelConfig(PHOBOS, SATELLITES, MARS, IMAGE_BASED, GASKELL, "/GASKELL/PHOBOS", false, true));
         c = new ModelConfig();
         c.name = PHOBOS;
         c.type = SATELLITES;
@@ -313,7 +306,6 @@ public class ModelFactory
         configArray.add(c);
 
         // Thomas Phobos
-//      c.add(new ModelConfig(PHOBOS, SATELLITES, MARS, IMAGE_BASED, THOMAS, "/THOMAS/PHOBOS/m1phobos.llr.gz"));
         c = new ModelConfig();
         c.name = PHOBOS;
         c.type = SATELLITES;
@@ -324,7 +316,6 @@ public class ModelFactory
         configArray.add(c);
 
         // New Gaskell Phobos (experimental)
-//      c.add(new ModelConfig(PHOBOS, SATELLITES, MARS, IMAGE_BASED, EXPERIMENTAL, "/GASKELL/PHOBOSEXPERIMENTAL", false, true));
         if (Configuration.isAPLVersion())
         {
             c = new ModelConfig();
@@ -368,7 +359,6 @@ public class ModelFactory
             configArray.add(c);
         }
 
-//      c.add(new ModelConfig(AMALTHEA, SATELLITES, JUPITER, IMAGE_BASED, STOOKE, "/STOOKE/AMALTHEA/j5amalthea.llr.gz"));
         c = new ModelConfig();
         c.name = AMALTHEA;
         c.type = SATELLITES;
@@ -378,7 +368,6 @@ public class ModelFactory
         c.pathOnServer = "/STOOKE/AMALTHEA/j5amalthea.llr.gz";
         configArray.add(c);
 
-//      c.add(new ModelConfig(MIMAS, SATELLITES, SATURN, IMAGE_BASED, GASKELL, "/GASKELL/MIMAS", false, true));
         c = new ModelConfig();
         c.name = MIMAS;
         c.type = SATELLITES;
@@ -399,7 +388,6 @@ public class ModelFactory
         c.imageInstrumentName = IMAGING_DATA;
         configArray.add(c);
 
-//      c.add(new ModelConfig(PHOEBE, SATELLITES, SATURN, IMAGE_BASED, GASKELL, "/GASKELL/PHOEBE", false, true));
         c = new ModelConfig();
         c.name = PHOEBE;
         c.type = SATELLITES;
@@ -420,10 +408,6 @@ public class ModelFactory
         c.imageInstrumentName = IMAGING_DATA;
         configArray.add(c);
 
-//      if (Configuration.isAPLVersion())
-//      {
-//          c.add(new ModelConfig(VESTA, ASTEROID, MAIN_BELT, IMAGE_BASED, GASKELL, "/GASKELL/VESTA", false, true));
-//      }
         if (Configuration.isAPLVersion())
         {
             c = new ModelConfig();
@@ -457,7 +441,6 @@ public class ModelFactory
             configArray.add(c);
         }
 
-//        c.add(new ModelConfig(VESTA, ASTEROID, MAIN_BELT, IMAGE_BASED, THOMAS, "/THOMAS/VESTA_OLD"));
         c = new ModelConfig();
         c.name = VESTA;
         c.type = ASTEROID;
@@ -467,7 +450,6 @@ public class ModelFactory
         c.pathOnServer = "/THOMAS/VESTA_OLD";
         configArray.add(c);
 
-        //        c.add(new ModelConfig(IDA, ASTEROID, MAIN_BELT, IMAGE_BASED, THOMAS, "/THOMAS/IDA/243ida.llr.gz", true, true));
         c = new ModelConfig();
         c.name = IDA;
         c.type = ASTEROID;
@@ -489,7 +471,6 @@ public class ModelFactory
         c.imageInstrumentName = SSI;
         configArray.add(c);
 
-        //        c.add(new ModelConfig(IDA, ASTEROID, MAIN_BELT, IMAGE_BASED, STOOKE, "/STOOKE/IDA/243ida.llr.gz", true));
         c = new ModelConfig();
         c.name = IDA;
         c.type = ASTEROID;
@@ -500,7 +481,6 @@ public class ModelFactory
         c.hasImageMap = true;
         configArray.add(c);
 
-//        c.add(new ModelConfig(GASPRA, ASTEROID, MAIN_BELT, IMAGE_BASED, THOMAS, "/THOMAS/GASPRA/951gaspra.llr.gz", true, true));
         c = new ModelConfig();
         c.name = GASPRA;
         c.type = ASTEROID;
@@ -522,7 +502,6 @@ public class ModelFactory
         c.imageInstrumentName = SSI;
         configArray.add(c);
 
-//        c.add(new ModelConfig(GASPRA, ASTEROID, MAIN_BELT, IMAGE_BASED, STOOKE, "/STOOKE/GASPRA/951gaspra.llr.gz", true));
         c = new ModelConfig();
         c.name = GASPRA;
         c.type = ASTEROID;
@@ -533,7 +512,6 @@ public class ModelFactory
         c.hasImageMap = true;
         configArray.add(c);
 
-//        c.add(new ModelConfig(MATHILDE, ASTEROID, MAIN_BELT, IMAGE_BASED, THOMAS, "/THOMAS/MATHILDE/253mathilde.llr.gz", true, true));
         c = new ModelConfig();
         c.name = MATHILDE;
         c.type = ASTEROID;
@@ -563,7 +541,6 @@ public class ModelFactory
         c.imageInstrumentName = MSI;
         configArray.add(c);
 
-//        c.add(new ModelConfig(DEIMOS, SATELLITES, MARS, IMAGE_BASED, THOMAS, "/THOMAS/DEIMOS", true, true));
         c = new ModelConfig();
         c.name = DEIMOS;
         c.type = SATELLITES;
@@ -592,7 +569,6 @@ public class ModelFactory
         c.imageInstrumentName = IMAGING_DATA;
         configArray.add(c);
 
-        //        c.add(new ModelConfig(JANUS, SATELLITES, SATURN, IMAGE_BASED, THOMAS, "/THOMAS/JANUS/s10janus.llr.gz"));
         c = new ModelConfig();
         c.name = JANUS;
         c.type = SATELLITES;
@@ -602,7 +578,6 @@ public class ModelFactory
         c.pathOnServer = "/THOMAS/JANUS/s10janus.llr.gz";
         configArray.add(c);
 
-//        c.add(new ModelConfig(JANUS, SATELLITES, SATURN, IMAGE_BASED, STOOKE, "/STOOKE/JANUS/s10janus.llr.gz"));
         c = new ModelConfig();
         c.name = JANUS;
         c.type = SATELLITES;
@@ -612,7 +587,6 @@ public class ModelFactory
         c.pathOnServer = "/STOOKE/JANUS/s10janus.llr.gz";
         configArray.add(c);
 
-//        c.add(new ModelConfig(EPIMETHEUS, SATELLITES, SATURN, IMAGE_BASED, THOMAS, "/THOMAS/EPIMETHEUS/s11epimetheus.llr.gz"));
         c = new ModelConfig();
         c.name = EPIMETHEUS;
         c.type = SATELLITES;
@@ -622,7 +596,6 @@ public class ModelFactory
         c.pathOnServer = "/THOMAS/EPIMETHEUS/s11epimetheus.llr.gz";
         configArray.add(c);
 
-//        c.add(new ModelConfig(EPIMETHEUS, SATELLITES, SATURN, IMAGE_BASED, STOOKE, "/STOOKE/EPIMETHEUS/s11epimetheus.llr.gz"));
         c = new ModelConfig();
         c.name = EPIMETHEUS;
         c.type = SATELLITES;
@@ -632,7 +605,6 @@ public class ModelFactory
         c.pathOnServer = "/STOOKE/EPIMETHEUS/s11epimetheus.llr.gz";
         configArray.add(c);
 
-//        c.add(new ModelConfig(HALLEY, COMETS, null, IMAGE_BASED, STOOKE, "/STOOKE/HALLEY/1682q1halley.llr.gz"));
         c = new ModelConfig();
         c.name = HALLEY;
         c.type = COMETS;
@@ -642,7 +614,6 @@ public class ModelFactory
         c.pathOnServer = "/STOOKE/HALLEY/1682q1halley.llr.gz";
         configArray.add(c);
 
-//        c.add(new ModelConfig(LARISSA, SATELLITES, NEPTUNE, IMAGE_BASED, STOOKE, "/STOOKE/LARISSA/n7larissa.llr.gz"));
         c = new ModelConfig();
         c.name = LARISSA;
         c.type = SATELLITES;
@@ -652,7 +623,6 @@ public class ModelFactory
         c.pathOnServer = "/STOOKE/LARISSA/n7larissa.llr.gz";
         configArray.add(c);
 
-//        c.add(new ModelConfig(PROTEUS, SATELLITES, NEPTUNE, IMAGE_BASED, STOOKE, "/STOOKE/PROTEUS/n8proteus.llr.gz"));
         c = new ModelConfig();
         c.name = PROTEUS;
         c.type = SATELLITES;
@@ -662,7 +632,6 @@ public class ModelFactory
         c.pathOnServer = "/STOOKE/PROTEUS/n8proteus.llr.gz";
         configArray.add(c);
 
-//        c.add(new ModelConfig(PROMETHEUS, SATELLITES, SATURN, IMAGE_BASED, STOOKE, "/STOOKE/PROMETHEUS/s16prometheus.llr.gz"));
         c = new ModelConfig();
         c.name = PROMETHEUS;
         c.type = SATELLITES;
@@ -672,7 +641,6 @@ public class ModelFactory
         c.pathOnServer = "/STOOKE/PROMETHEUS/s16prometheus.llr.gz";
         configArray.add(c);
 
-//        c.add(new ModelConfig(PANDORA, SATELLITES, SATURN, IMAGE_BASED, STOOKE, "/STOOKE/PANDORA/s17pandora.llr.gz"));
         c = new ModelConfig();
         c.name = PANDORA;
         c.type = SATELLITES;
@@ -682,7 +650,6 @@ public class ModelFactory
         c.pathOnServer = "/STOOKE/PANDORA/s17pandora.llr.gz";
         configArray.add(c);
 
-//        c.add(new ModelConfig(GEOGRAPHOS, ASTEROID, NEO, RADAR_BASED, HUDSON, "/HUDSON/GEOGRAPHOS/1620geographos.obj.gz"));
         c = new ModelConfig();
         c.name = GEOGRAPHOS;
         c.type = ASTEROID;
@@ -692,7 +659,6 @@ public class ModelFactory
         c.pathOnServer = "/HUDSON/GEOGRAPHOS/1620geographos.obj.gz";
         configArray.add(c);
 
-//        c.add(new ModelConfig(KY26, ASTEROID, NEO, RADAR_BASED, HUDSON, "/HUDSON/KY26/1998ky26.obj.gz"));
         c = new ModelConfig();
         c.name = KY26;
         c.type = ASTEROID;
@@ -702,7 +668,6 @@ public class ModelFactory
         c.pathOnServer = "/HUDSON/KY26/1998ky26.obj.gz";
         configArray.add(c);
 
-//        c.add(new ModelConfig(BACCHUS, ASTEROID, NEO, RADAR_BASED, HUDSON, "/HUDSON/BACCHUS/2063bacchus.obj.gz"));
         c = new ModelConfig();
         c.name = BACCHUS;
         c.type = ASTEROID;
@@ -712,7 +677,6 @@ public class ModelFactory
         c.pathOnServer = "/HUDSON/BACCHUS/2063bacchus.obj.gz";
         configArray.add(c);
 
-//        c.add(new ModelConfig(KLEOPATRA, ASTEROID, MAIN_BELT, RADAR_BASED, HUDSON, "/HUDSON/KLEOPATRA/216kleopatra.obj.gz"));
         c = new ModelConfig();
         c.name = KLEOPATRA;
         c.type = ASTEROID;
@@ -722,7 +686,6 @@ public class ModelFactory
         c.pathOnServer = "/HUDSON/KLEOPATRA/216kleopatra.obj.gz";
         configArray.add(c);
 
-//        c.add(new ModelConfig(TOUTATIS_LOW_RES, ASTEROID, NEO, RADAR_BASED, HUDSON, "/HUDSON/TOUTATIS/4179toutatis.obj.gz"));
         c = new ModelConfig();
         c.name = TOUTATIS_LOW_RES;
         c.type = ASTEROID;
@@ -732,7 +695,6 @@ public class ModelFactory
         c.pathOnServer = "/HUDSON/TOUTATIS/4179toutatis.obj.gz";
         configArray.add(c);
 
-//        c.add(new ModelConfig(TOUTATIS_HIGH_RES, ASTEROID, NEO, RADAR_BASED, HUDSON, "/HUDSON/TOUTATIS2/4179toutatis2.obj.gz"));
         c = new ModelConfig();
         c.name = TOUTATIS_HIGH_RES;
         c.type = ASTEROID;
@@ -742,7 +704,6 @@ public class ModelFactory
         c.pathOnServer = "/HUDSON/TOUTATIS2/4179toutatis2.obj.gz";
         configArray.add(c);
 
-//        c.add(new ModelConfig(CASTALIA, ASTEROID, NEO, RADAR_BASED, HUDSON, "/HUDSON/CASTALIA/4769castalia.obj.gz"));
         c = new ModelConfig();
         c.name = CASTALIA;
         c.type = ASTEROID;
@@ -752,7 +713,6 @@ public class ModelFactory
         c.pathOnServer = "/HUDSON/CASTALIA/4769castalia.obj.gz";
         configArray.add(c);
 
-//        c.add(new ModelConfig(_52760_1998_ML14, ASTEROID, NEO, RADAR_BASED, HUDSON, "/HUDSON/52760/52760.obj.gz"));
         c = new ModelConfig();
         c.name = _52760_1998_ML14;
         c.type = ASTEROID;
@@ -762,7 +722,6 @@ public class ModelFactory
         c.pathOnServer = "/HUDSON/52760/52760.obj.gz";
         configArray.add(c);
 
-//        c.add(new ModelConfig(GOLEVKA, ASTEROID, NEO, RADAR_BASED, HUDSON, "/HUDSON/GOLEVKA/6489golevka.obj.gz"));
         c = new ModelConfig();
         c.name = GOLEVKA;
         c.type = ASTEROID;
@@ -772,9 +731,6 @@ public class ModelFactory
         c.pathOnServer = "/HUDSON/GOLEVKA/6489golevka.obj.gz";
         configArray.add(c);
 
-//        if (Configuration.isAPLVersion())
-//        {
-//            c.add(new ModelConfig(RQ36, ASTEROID, NEO, ENHANCED, GASKELL, "/GASKELL/RQ36", false, false, false, true, false, false));
         if (Configuration.isAPLVersion())
         {
             c = new ModelConfig();
@@ -804,7 +760,6 @@ public class ModelFactory
             configArray.add(c);
         }
 
-//            c.add(new ModelConfig(LUTETIA, ASTEROID, MAIN_BELT, IMAGE_BASED, GASKELL, "/GASKELL/LUTETIA", false, true));
         if (Configuration.isAPLVersion())
         {
             c = new ModelConfig();
@@ -829,7 +784,6 @@ public class ModelFactory
             configArray.add(c);
         }
 
-//            c.add(new ModelConfig(DIONE, SATELLITES, SATURN, IMAGE_BASED, GASKELL, "/GASKELL/DIONE", false, true));
         if (Configuration.isAPLVersion())
         {
             c = new ModelConfig();
@@ -854,7 +808,6 @@ public class ModelFactory
             configArray.add(c);
         }
 
-//            c.add(new ModelConfig(RHEA, SATELLITES, SATURN, IMAGE_BASED, GASKELL, "/GASKELL/RHEA"));
         if (Configuration.isAPLVersion())
         {
             c = new ModelConfig();
@@ -868,7 +821,6 @@ public class ModelFactory
             configArray.add(c);
         }
 
-//            c.add(new ModelConfig(TETHYS, SATELLITES, SATURN, IMAGE_BASED, GASKELL, "/GASKELL/TETHYS"));
         if (Configuration.isAPLVersion())
         {
             c = new ModelConfig();
@@ -882,8 +834,6 @@ public class ModelFactory
             configArray.add(c);
         }
 
-//            c.add(new ModelConfig(HYPERION, SATELLITES, SATURN, IMAGE_BASED, GASKELL, "/GASKELL/HYPERION"));
-//        }
         if (Configuration.isAPLVersion())
         {
             c = new ModelConfig();
@@ -897,7 +847,6 @@ public class ModelFactory
             configArray.add(c);
         }
 
-//        c.add(new ModelConfig(HYPERION, SATELLITES, SATURN, IMAGE_BASED, THOMAS, "/THOMAS/HYPERION/s7hyperion.llr.gz"));
         c = new ModelConfig();
         c.name = HYPERION;
         c.type = SATELLITES;
@@ -907,10 +856,6 @@ public class ModelFactory
         c.pathOnServer = "/THOMAS/HYPERION/s7hyperion.llr.gz";
         configArray.add(c);
 
-//        if (Configuration.isAPLVersion())
-//        {
-//            c.add(new ModelConfig(TEMPEL_1, COMETS, null, IMAGE_BASED, GASKELL, "/GASKELL/TEMPEL1"));
-//        }
         if (Configuration.isAPLVersion())
         {
             c = new ModelConfig();
@@ -924,7 +869,6 @@ public class ModelFactory
             configArray.add(c);
         }
 
-//        c.add(new ModelConfig(TEMPEL_1, COMETS, null, IMAGE_BASED, THOMAS, "/THOMAS/TEMPEL1/tempel1_cart.t1.gz"));
         c = new ModelConfig();
         c.name = TEMPEL_1;
         c.type = COMETS;
@@ -934,7 +878,6 @@ public class ModelFactory
         c.pathOnServer = "/THOMAS/TEMPEL1/tempel1_cart.t1.gz";
         configArray.add(c);
 
-//        c.add(new ModelConfig(WILD_2, COMETS, null, IMAGE_BASED, DUXBURY, "/OTHER/WILD2/wild2_cart_full.w2.gz"));
         c = new ModelConfig();
         c.name = WILD_2;
         c.type = COMETS;
