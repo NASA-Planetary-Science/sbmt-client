@@ -39,6 +39,7 @@ import vtk.vtkTriangle;
 import vtk.vtkUnsignedCharArray;
 import vtk.vtksbCellLocator;
 
+import edu.jhuapl.near.model.ModelFactory.ModelConfig;
 import edu.jhuapl.near.model.custom.CustomShapeModel;
 import edu.jhuapl.near.util.BoundingBox;
 import edu.jhuapl.near.util.Configuration;
@@ -161,6 +162,7 @@ public class SmallBodyModel extends Model
     private boolean showScaleBar = true;
 
     private String author;
+    private ModelConfig modelConfig;
 
     /**
      * Default constructor. Must be followed by a call to setSmallBodyPolyData.
@@ -178,6 +180,7 @@ public class SmallBodyModel extends Model
      * for each resolution level.
      */
     public SmallBodyModel(
+            ModelConfig config,
             String name,
             String author,
             String[] modelNames,
@@ -190,7 +193,8 @@ public class SmallBodyModel extends Model
             ColoringValueType coloringValueType,
             boolean lowestResolutionModelStoredInResource)
     {
-        this(name,
+        this(config,
+                name,
                 author,
                 modelNames,
                 modelFiles,
@@ -205,6 +209,7 @@ public class SmallBodyModel extends Model
     }
 
     public SmallBodyModel(
+            ModelConfig config,
             String name,
             String author,
             String[] modelNames,
@@ -220,6 +225,7 @@ public class SmallBodyModel extends Model
     {
         super(name);
 
+        this.modelConfig = config;
         this.author = author;
         this.modelNames = modelNames;
         this.modelFiles = modelFiles;
@@ -277,6 +283,11 @@ public class SmallBodyModel extends Model
 
         initializeLocators();
         initializeColoringRanges();
+    }
+
+    public ModelConfig getModelConfig()
+    {
+        return modelConfig;
     }
 
     public static String getUniqueName(String name, String author)

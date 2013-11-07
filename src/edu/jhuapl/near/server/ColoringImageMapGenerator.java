@@ -3,8 +3,9 @@ package edu.jhuapl.near.server;
 import vtk.vtkImageData;
 import vtk.vtkStructuredPointsWriter;
 
+import edu.jhuapl.near.model.ModelFactory;
+import edu.jhuapl.near.model.ModelFactory.ModelConfig;
 import edu.jhuapl.near.model.SmallBodyModel;
-import edu.jhuapl.near.model.deimos.Deimos;
 import edu.jhuapl.near.util.NativeLibraryLoader;
 
 public class ColoringImageMapGenerator
@@ -19,7 +20,8 @@ public class ColoringImageMapGenerator
         java.awt.Toolkit.getDefaultToolkit();
         NativeLibraryLoader.loadVtkLibrariesLinuxNoX11();
 
-        SmallBodyModel model = new Deimos();
+        ModelConfig modelConfig = ModelFactory.getModelConfig(ModelFactory.DEIMOS, ModelFactory.THOMAS);
+        SmallBodyModel model = ModelFactory.createSmallBodyModel(modelConfig);
 
         vtkImageData slopeImage = new vtkImageData();
         slopeImage.SetDimensions(3600, 1800, 1);

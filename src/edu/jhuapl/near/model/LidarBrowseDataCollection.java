@@ -12,10 +12,12 @@ import java.util.HashMap;
 import vtk.vtkActor;
 import vtk.vtkProp;
 
+import edu.jhuapl.near.model.ModelFactory.ModelConfig;
 import edu.jhuapl.near.util.Properties;
 
-abstract public class LidarBrowseDataCollection extends Model implements PropertyChangeListener
+public class LidarBrowseDataCollection extends Model implements PropertyChangeListener
 {
+    private ModelConfig modelConfig;
     private ArrayList<vtkProp> lidarPerUnitActors = new ArrayList<vtkProp>();
 
     private HashMap<String, LidarDataPerUnit> fileToLidarPerUnitMap = new HashMap<String, LidarDataPerUnit>();
@@ -25,8 +27,9 @@ abstract public class LidarBrowseDataCollection extends Model implements Propert
     private double stopPercent = 1.0;
     private boolean showSpacecraftPosition = true;
 
-    public LidarBrowseDataCollection()
+    public LidarBrowseDataCollection(SmallBodyModel smallBodyModel)
     {
+        this.modelConfig = smallBodyModel.getModelConfig();
     }
 
     public void addLidarData(String path) throws IOException
@@ -36,13 +39,13 @@ abstract public class LidarBrowseDataCollection extends Model implements Propert
 
         LidarDataPerUnit lidarData = new LidarDataPerUnit(
                 path,
-                getXYZIndices(),
-                getSpacecraftIndices(),
-                isSpacecraftInSphericalCoordinates(),
-                getTimeIndex(),
-                getNumberHeaderLines(),
-                isInMeters(),
-                getNoiseIndex());
+                modelConfig.lidarBrowseXYZIndices,
+                modelConfig.lidarBrowseSpacecraftIndices,
+                modelConfig.lidarBrowseIsSpacecraftInSphericalCoordinates,
+                modelConfig.lidarBrowseTimeIndex,
+                modelConfig.lidarBrowseNumberHeaderLines,
+                modelConfig.lidarBrowseIsInMeters,
+                modelConfig.lidarBrowseNoiseIndex);
         lidarData.setShowSpacecraftPosition(showSpacecraftPosition);
 
         lidarData.addPropertyChangeListener(this);
@@ -113,7 +116,7 @@ abstract public class LidarBrowseDataCollection extends Model implements Propert
     {
         ArrayList<String> paths = new ArrayList<String>();
 
-        InputStream is = getClass().getResourceAsStream(getFileListResourcePath());
+        InputStream is = getClass().getResourceAsStream(modelConfig.lidarBrowseFileListResourcePath);
         InputStreamReader isr = new InputStreamReader(is);
         BufferedReader in = new BufferedReader(isr);
 
@@ -186,31 +189,8 @@ abstract public class LidarBrowseDataCollection extends Model implements Propert
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
-    abstract protected int[] getXYZIndices();
-
-    abstract protected int[] getSpacecraftIndices();
-
-    /**
-     * For Eros NLR data, the spacecraft position is in spherical coordinates,
-     * not Cartesian. Hence we need this function.
-     * @return
-     */
-    abstract protected boolean isSpacecraftInSphericalCoordinates();
-
-    abstract protected int getTimeIndex();
-
-    abstract protected int getNoiseIndex();
-
-    abstract protected String getFileListResourcePath();
-
-    abstract protected int getNumberHeaderLines();
-
-    /**
-     * Return whether or not the units of the lidar points are in meters. If false
-     * they are assumed to be in kilometers.
-     * @return
-     */
-    abstract protected boolean isInMeters();
-
-    abstract public double getOffsetScale();
+    public double getOffsetScale()
+    {
+        return modelConfig.lidarOffsetScale;
+    }
 }

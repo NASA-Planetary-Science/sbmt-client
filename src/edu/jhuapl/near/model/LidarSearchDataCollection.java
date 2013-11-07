@@ -34,6 +34,7 @@ import vtk.vtkPolyDataMapper;
 import vtk.vtkProp;
 import vtk.vtkUnsignedCharArray;
 
+import edu.jhuapl.near.model.ModelFactory.ModelConfig;
 import edu.jhuapl.near.util.ColorUtil;
 import edu.jhuapl.near.util.Configuration;
 import edu.jhuapl.near.util.FileCache;
@@ -43,8 +44,9 @@ import edu.jhuapl.near.util.LatLon;
 import edu.jhuapl.near.util.MathUtil;
 import edu.jhuapl.near.util.Properties;
 
-public abstract class LidarSearchDataCollection extends Model
+public class LidarSearchDataCollection extends Model
 {
+    private ModelConfig modelConfig;
     private SmallBodyModel smallBodyModel;
     private vtkPolyData polydata;
     private vtkPolyData selectedPointPolydata;
@@ -115,6 +117,7 @@ public abstract class LidarSearchDataCollection extends Model
     public LidarSearchDataCollection(SmallBodyModel smallBodyModel)
     {
         this.smallBodyModel = smallBodyModel;
+        this.modelConfig = smallBodyModel.getModelConfig();
 
         // Initialize an empty polydata for resetting
         emptyPolyData = new vtkPolyData();
@@ -153,8 +156,15 @@ public abstract class LidarSearchDataCollection extends Model
         actors.add(selectedPointActor);
     }
 
-    abstract public double getOffsetScale();
-    abstract public Map<String, String> getLidarDataSourceMap();
+    public double getOffsetScale()
+    {
+        return modelConfig.lidarOffsetScale;
+    }
+
+    public Map<String, String> getLidarDataSourceMap()
+    {
+        return modelConfig.lidarSearchDataSourceMap;
+    }
 
 
     public void setLidarData(
@@ -243,7 +253,7 @@ public abstract class LidarSearchDataCollection extends Model
         for (Integer cubeid : cubeList)
         {
             String filename = getLidarDataSourceMap().get(dataSource) + "/" + cubeid + ".lidarcube";
-            File file = FileCache.getFileFromServer(filename);
+            File file = FileCache.getFileFromServer(filename, modelConfig.useAPLServer);
 
             if (file == null)
                 continue;

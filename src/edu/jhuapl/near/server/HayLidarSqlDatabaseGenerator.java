@@ -2,6 +2,7 @@ package edu.jhuapl.near.server;
 
 import java.io.IOException;
 
+import edu.jhuapl.near.model.ModelFactory;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.itokawa.Itokawa;
 
@@ -27,7 +28,7 @@ public class HayLidarSqlDatabaseGenerator extends LidarSqlDatabaseGenerator
     {
         if (itokawa == null)
         {
-            itokawa = new Itokawa();
+            itokawa = new Itokawa(ModelFactory.getModelConfig(ModelFactory.ITOKAWA, ModelFactory.GASKELL));
 
             try
             {

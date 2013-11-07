@@ -1,6 +1,7 @@
 package edu.jhuapl.near.model.vesta_old;
 
 import edu.jhuapl.near.model.ModelFactory;
+import edu.jhuapl.near.model.ModelFactory.ModelConfig;
 import edu.jhuapl.near.model.SmallBodyModel;
 
 public class VestaOld extends SmallBodyModel
@@ -39,9 +40,10 @@ public class VestaOld extends SmallBodyModel
             false, false, false, false, true, true, true, true
     };
 
-    public VestaOld()
+    public VestaOld(ModelConfig config)
     {
-        super(NAME,
+        super(config,
+                NAME,
                 AUTHOR,
                 modelNames,
                 modelFiles,

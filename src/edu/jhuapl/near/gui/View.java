@@ -11,21 +11,8 @@ import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 
-import edu.jhuapl.near.gui.deimos.DeimosImagingDataSearchPanel;
 import edu.jhuapl.near.gui.eros.LineamentControlPanel;
-import edu.jhuapl.near.gui.eros.MSISearchPanel;
 import edu.jhuapl.near.gui.eros.NISSearchPanel;
-import edu.jhuapl.near.gui.eros.NLRPanel;
-import edu.jhuapl.near.gui.gaspra.SSIGaspraSearchPanel;
-import edu.jhuapl.near.gui.ida.SSIIdaSearchPanel;
-import edu.jhuapl.near.gui.itokawa.AmicaSearchPanel;
-import edu.jhuapl.near.gui.itokawa.HayLidarPanel;
-import edu.jhuapl.near.gui.lutetia.OsirisImagingDataSearchPanel;
-import edu.jhuapl.near.gui.mathilde.MSIMathildeSearchPanel;
-import edu.jhuapl.near.gui.phobos.PhobosExperimentalImagingDataSearchPanel;
-import edu.jhuapl.near.gui.phobos.PhobosImagingDataSearchPanel;
-import edu.jhuapl.near.gui.saturnmoon.SaturnMoonImagingSearchPanel;
-import edu.jhuapl.near.gui.vesta.FCSearchPanel;
 import edu.jhuapl.near.model.CircleModel;
 import edu.jhuapl.near.model.CircleSelectionModel;
 import edu.jhuapl.near.model.ColorImageCollection;
@@ -44,8 +31,6 @@ import edu.jhuapl.near.model.PerspectiveImageBoundaryCollection;
 import edu.jhuapl.near.model.PointModel;
 import edu.jhuapl.near.model.PolygonModel;
 import edu.jhuapl.near.model.SmallBodyModel;
-import edu.jhuapl.near.model.itokawa.Itokawa;
-import edu.jhuapl.near.model.vesta.Vesta;
 import edu.jhuapl.near.pick.PickManager;
 import edu.jhuapl.near.popupmenus.ColorImagePopupMenu;
 import edu.jhuapl.near.popupmenus.ImagePopupMenu;
@@ -125,28 +110,28 @@ public class View extends JPanel
                     modelConfig.name.equals(ModelFactory.EROS) ||
                     (modelConfig.name.equals(ModelFactory.ITOKAWA) && modelConfig.author.equals(ModelFactory.GASKELL)))
             {
-                JComponent component = createPerspectiveImageSearchTab(modelConfig, modelManager, infoPanelManager, pickManager, renderer);
-                controlPanel.addTab(modelConfig.getImagingInstrumentName(), component);
+                JComponent component = new ImagingSearchPanel(modelConfig, modelManager, infoPanelManager, pickManager, renderer);
+                controlPanel.addTab(modelConfig.imageInstrumentName, component);
             }
         }
 
         if (modelConfig.hasSpectralData)
         {
-            JComponent component = createSpectralDataSearchTab(modelManager, infoPanelManager, pickManager);
-            controlPanel.addTab(modelConfig.getSpectrographName(), component);
+            JComponent component = new NISSearchPanel(modelManager, infoPanelManager, pickManager);
+            controlPanel.addTab(ModelFactory.NIS, component);
         }
 
         if (modelConfig.hasLidarData)
         {
-            JComponent component = createLidarDataSearchTab(modelConfig, modelManager, pickManager, renderer);
-            controlPanel.addTab(modelConfig.getLidarInstrumentName(), component);
+            JComponent component = new LidarPanel(modelConfig, modelManager, pickManager, renderer);
+            controlPanel.addTab(modelConfig.lidarInstrumentName, component);
         }
 
         if (Configuration.isAPLVersion())
         {
             if (modelConfig.hasLineamentData)
             {
-                JComponent component = createLineamentTab(modelManager);
+                JComponent component = new LineamentControlPanel(modelManager);
                 controlPanel.addTab("Lineament", component);
             }
 
@@ -155,7 +140,7 @@ public class View extends JPanel
 
             if (modelConfig.hasMapmaker)
             {
-                JComponent component = createMapmakerTab(modelConfig, modelManager, pickManager);
+                JComponent component = new MapmakerPanel(modelManager, pickManager, modelConfig.pathOnServer + "/mapmaker.zip");
                 controlPanel.addTab("Mapmaker", component);
             }
         }
@@ -229,7 +214,7 @@ public class View extends JPanel
         modelManager = new ModelManager();
 
         SmallBodyModel smallBodyModel = ModelFactory.createSmallBodyModel(modelConfig);
-        Graticule graticule = ModelFactory.createGraticule(modelConfig, smallBodyModel);
+        Graticule graticule = ModelFactory.createGraticule(smallBodyModel);
 
         HashMap<String, Model> allModels = new HashMap<String, Model>();
         allModels.put(ModelNames.SMALL_BODY, smallBodyModel);
@@ -351,80 +336,9 @@ public class View extends JPanel
 
     static public View createCustomView(StatusBar statusBar, String name)
     {
-        ModelConfig config = new ModelConfig(name, null, null, null, ModelFactory.CUSTOM, null);
+        ModelConfig config = new ModelConfig();
+        config.name = name;
+        config.author = ModelFactory.CUSTOM;
         return new View(statusBar, config);
-    }
-
-    static private JComponent createPerspectiveImageSearchTab(
-            ModelConfig modelConfig,
-            ModelManager modelManager,
-            ModelInfoWindowManager infoPanelManager,
-            PickManager pickManager,
-            Renderer renderer)
-    {
-        SmallBodyModel smallBodyModel = modelManager.getSmallBodyModel();
-        String name = modelConfig.name;
-        if (ModelFactory.EROS.equals(name))
-            return new MSISearchPanel(modelManager, infoPanelManager, pickManager, renderer);
-        else if (smallBodyModel instanceof Itokawa)
-            return new AmicaSearchPanel(modelManager, infoPanelManager, pickManager, renderer);
-        else if (smallBodyModel instanceof Vesta)
-            return new FCSearchPanel(modelManager, infoPanelManager, pickManager, renderer);
-        else if (ModelFactory.PHOBOS.equals(name) && ModelFactory.EXPERIMENTAL.equals(modelConfig.author))
-            return new PhobosExperimentalImagingDataSearchPanel(modelManager, infoPanelManager, pickManager, renderer);
-        else if (ModelFactory.PHOBOS.equals(name))
-            return new PhobosImagingDataSearchPanel(modelManager, infoPanelManager, pickManager, renderer);
-        else if (ModelFactory.DEIMOS.equals(name))
-            return new DeimosImagingDataSearchPanel(modelManager, infoPanelManager, pickManager, renderer);
-        else if (ModelFactory.LUTETIA.equals(name))
-            return new OsirisImagingDataSearchPanel(modelManager, infoPanelManager, pickManager, renderer);
-        else if (ModelFactory.DIONE.equals(name))
-            return new SaturnMoonImagingSearchPanel(modelManager, infoPanelManager, pickManager, renderer);
-        else if (ModelFactory.PHOEBE.equals(name))
-            return new SaturnMoonImagingSearchPanel(modelManager, infoPanelManager, pickManager, renderer);
-        else if (ModelFactory.MIMAS.equals(name))
-            return new SaturnMoonImagingSearchPanel(modelManager, infoPanelManager, pickManager, renderer);
-        else if (ModelFactory.GASPRA.equals(name))
-            return new SSIGaspraSearchPanel(modelManager, infoPanelManager, pickManager, renderer);
-        else if (ModelFactory.IDA.equals(name))
-            return new SSIIdaSearchPanel(modelManager, infoPanelManager, pickManager, renderer);
-        else if (ModelFactory.MATHILDE.equals(name))
-            return new MSIMathildeSearchPanel(modelManager, infoPanelManager, pickManager, renderer);
-        else
-            return null;
-    }
-
-    static private JComponent createSpectralDataSearchTab(
-            ModelManager modelManager,
-            ModelInfoWindowManager infoPanelManager,
-            PickManager pickManager)
-    {
-        return new NISSearchPanel(modelManager, infoPanelManager, pickManager);
-    }
-
-    static private JComponent createLidarDataSearchTab(
-            ModelConfig modelConfig,
-            ModelManager modelManager,
-            PickManager pickManager,
-            Renderer renderer)
-    {
-        SmallBodyModel smallBodyModel = modelManager.getSmallBodyModel();
-        String name = modelConfig.name;
-        if (ModelFactory.EROS.equals(name))
-            return new NLRPanel(modelManager, pickManager, renderer);
-        else if (smallBodyModel instanceof Itokawa)
-            return new HayLidarPanel(modelManager, pickManager, renderer);
-        else
-            return null;
-    }
-
-    static private JComponent createLineamentTab(ModelManager modelManager)
-    {
-        return new LineamentControlPanel(modelManager);
-    }
-
-    static private JComponent createMapmakerTab(ModelConfig modelConfig, ModelManager modelManager, PickManager pickManager)
-    {
-        return new MapmakerPanel(modelManager, pickManager, modelConfig.pathOnServer + "/mapmaker.zip");
     }
 }

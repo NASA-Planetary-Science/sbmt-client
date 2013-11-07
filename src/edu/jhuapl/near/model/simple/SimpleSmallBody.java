@@ -2,6 +2,7 @@ package edu.jhuapl.near.model.simple;
 
 import java.io.File;
 
+import edu.jhuapl.near.model.ModelFactory.ModelConfig;
 import edu.jhuapl.near.model.SmallBodyModel;
 
 public class SimpleSmallBody extends SmallBodyModel
@@ -25,15 +26,14 @@ public class SimpleSmallBody extends SmallBodyModel
     };
 
     public SimpleSmallBody(
-            String name,
-            String author,
+            ModelConfig config,
             String[] modelNames,
             String[] paths,
-            boolean hasColoringData,
-            boolean useAPLServer)
+            boolean hasColoringData)
     {
-        super(name,
-                author,
+        super(config,
+                config.name,
+                config.author,
                 modelNames,
                 paths,
                 hasColoringData ? getColoringFiles(paths[0]) : null,
@@ -43,16 +43,17 @@ public class SimpleSmallBody extends SmallBodyModel
                 null,
                 ColoringValueType.CELLDATA,
                 false,
-                useAPLServer);
+                config.useAPLServer);
     }
 
-    public SimpleSmallBody(String name, String author, String path, String imageMap, boolean hasColoringData)
+    public SimpleSmallBody(ModelConfig config, String imageMap, boolean hasColoringData)
     {
-        super(name,
-                author,
-                new String[] {name},
-                new String[] {path},
-                hasColoringData ? getColoringFiles(path) : null,
+        super(config,
+                config.name,
+                config.author,
+                new String[] {config.name},
+                new String[] {config.pathOnServer},
+                hasColoringData ? getColoringFiles(config.pathOnServer) : null,
                 hasColoringData ? coloringNames : null,
                 hasColoringData ? coloringUnits : null,
                 null,

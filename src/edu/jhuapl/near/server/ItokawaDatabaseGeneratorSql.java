@@ -22,6 +22,7 @@ import vtk.vtkPolyData;
 import edu.jhuapl.near.model.Image;
 import edu.jhuapl.near.model.Image.ImageKey;
 import edu.jhuapl.near.model.Image.ImageSource;
+import edu.jhuapl.near.model.ModelFactory;
 import edu.jhuapl.near.model.PerspectiveImage;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.itokawa.AmicaImage;
@@ -381,7 +382,7 @@ public class ItokawaDatabaseGeneratorSql
     {
         NativeLibraryLoader.loadVtkLibraries();
 
-        itokawaModel = new Itokawa();
+        itokawaModel = new Itokawa(ModelFactory.getModelConfig(ModelFactory.ITOKAWA, ModelFactory.GASKELL));
 
         String amicaFileList=args[0];
         String inertialFilename = args[1];
