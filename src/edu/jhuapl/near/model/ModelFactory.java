@@ -232,7 +232,7 @@ public class ModelFactory
         c.pathOnServer = "/GASKELL/ITOKAWA";
         c.hasPerspectiveImages = true;
         c.hasLidarData = true;
-        c.imageSearchDefaultStartDate = new GregorianCalendar(2005, 8, 1, 0, 0, 0).getTime();;
+        c.imageSearchDefaultStartDate = new GregorianCalendar(2005, 8, 1, 0, 0, 0).getTime();
         c.imageSearchDefaultEndDate = new GregorianCalendar(2005, 10, 31, 0, 0, 0).getTime();
         c.imageSearchQuery = ItokawaQuery.getInstance();
         c.imageSearchFilterNames = new String[]{
