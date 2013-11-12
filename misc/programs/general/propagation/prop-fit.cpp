@@ -6,6 +6,7 @@
 #include <fstream>
 #include <string.h>
 #include <string>
+#include <algorithm>
 #include "SpiceUsr.h"
 #include "util.h"
 #include "propagatorfit.h"
