@@ -21,55 +21,64 @@ ${LBFGS_DIR}/include
 ${GSL_DIR}/include
 ${ADOLC_DIR}/include
 ${CMAKE_SOURCE_DIR}
-${CMAKE_SOURCE_DIR}/gravity)
+${CMAKE_SOURCE_DIR}/gravity
+${CMAKE_SOURCE_DIR}/lidar
+${CMAKE_SOURCE_DIR}/icp
+${CMAKE_SOURCE_DIR}/common
+${CMAKE_SOURCE_DIR}/propagation
+${CMAKE_SOURCE_DIR}/optimization)
 link_directories(${SPICE_DIR}/lib ${LBFGS_DIR}/lib ${GSL_DIR}/lib ${ADOLC_DIR}/lib64)
 
 add_library(lidar
-optimize.cpp
-closest-point-dsk.cpp
-icp.cpp
-icp-vtk.cpp
-icp-intersection.cpp
-closest-point-vtk.cpp
-optimize-gsl.cpp
+icp/icp.cpp
+icp/icp-vtk.cpp
+icp/icp-intersection.cpp
+
+optimization/optimize.cpp
+optimization/optimize-gsl.cpp
+
 gravity/gravity-werner.cpp
 gravity/gravity-cheng.cpp
-lidardata.cpp
-propagator.cpp
-propagatorfit.cpp
+gravity/gravity-point.h
 gravity/platemodel.cpp
 
-gravity/gravity-point.h
-util.h
-mathutil.h
-point.h
+lidar/lidardata.cpp
+
+propagation/propagator.cpp
+propagation/propagatorfit.cpp
+
+common/closest-point-dsk.cpp
+common/closest-point-vtk.cpp
+common/util.h
+common/mathutil.h
+common/point.h
 )
 target_link_libraries(lidar vtkHybrid dsklib_c cspice csupport lbfgs gsl gslcblas adolc)
 
-add_executable(lidar-min-icp lidar-min-icp.cpp)
+add_executable(lidar-min-icp lidar/lidar-min-icp.cpp)
 target_link_libraries(lidar-min-icp lidar)
 
-add_executable(lidar-min-fit lidar-min-fit.cpp)
+add_executable(lidar-min-fit lidar/lidar-min-fit.cpp)
 target_link_libraries(lidar-min-fit lidar)
 
-add_executable(lidar-compute-rms lidar-compute-rms.cpp)
+add_executable(lidar-compute-rms lidar/lidar-compute-rms.cpp)
 target_link_libraries(lidar-compute-rms lidar)
 
-add_executable(lidar-save-min-icp lidar-save-min-icp.cpp)
+add_executable(lidar-save-min-icp lidar/lidar-save-min-icp.cpp)
 target_link_libraries(lidar-save-min-icp lidar)
 
-add_executable(lidar-remove-duplicates lidar-remove-duplicates.cpp)
+add_executable(lidar-remove-duplicates lidar/lidar-remove-duplicates.cpp)
 
-add_executable(lidar-convert-edr lidar-convert-edr.cpp)
+add_executable(lidar-convert-edr lidar/lidar-convert-edr.cpp)
 target_link_libraries(lidar-convert-edr cspice csupport m)
 
-add_executable(lidar-compute-gaskell-error lidar-compute-gaskell-error.cpp)
+add_executable(lidar-compute-gaskell-error lidar/lidar-compute-gaskell-error.cpp)
 target_link_libraries(lidar-compute-gaskell-error cspice csupport)
 
-add_executable(prop-fit prop-fit.cpp)
+add_executable(prop-fit propagation/prop-fit.cpp)
 target_link_libraries(prop-fit lidar)
 
-add_executable(prop prop.cpp)
+add_executable(prop propagation/prop.cpp)
 target_link_libraries(prop lidar)
 
 add_executable(gravity gravity/gravity.cpp)
@@ -81,5 +90,5 @@ target_link_libraries(elevation-slope lidar)
 add_executable(normals-centers gravity/test/normals-centers.cpp)
 target_link_libraries(normals-centers lidar)
 
-add_executable( cam-est camera_est/cam-est.cpp )
-target_link_libraries( cam-est lidar )
+add_executable(cam-est camera_est/cam-est.cpp)
+target_link_libraries(cam-est lidar)
