@@ -194,20 +194,22 @@ end
 ;-----------------------------------------------------------------------
 pro saveAndPlotAltitudeError, points, errorsCheng, errorsWerner, filenamePrefix
 
+  radii = sqrt(points[0,*]*points[0,*] + points[1,*]*points[1,*] + points[2,*]*points[2,*])
+
   openw,lun1,filenamePrefix+'.txt',/get_lun
   ii=0L
   n = size(points)
   n = n[2]
   while ii lt n do begin
-      printf,lun1,points[2,ii],errorsCheng[ii],errorsWerner[ii],format='(2(e15.6,x),e15.6)'
+      printf,lun1,radii[ii],errorsCheng[ii],errorsWerner[ii],format='(2(e15.6,x),e15.6)'
       ii=ii+1
   endwhile
   close,lun1
 
   set_plot,'ps'
   device,filename=filenamePrefix+'.ps'
-  plot,points[2,*],errorsCheng,xtitle='radius',ytitle='Fractional Deviation',title='Error as Function of Altitude'
-  oplot,points[2,*],errorsWerner,linestyle=2
+  plot,radii,errorsCheng,xtitle='radius',ytitle='Fractional Deviation',title='Error as Function of Altitude'
+  oplot,radii,errorsWerner,linestyle=2
   plots, [0.55, 0.75], [0.88, 0.88], /normal
   xyouts, 0.8, 0.877, 'Cheng', /normal
   plots, [0.55, 0.75], [0.84, 0.84], linestyle=2, /normal
@@ -223,18 +225,24 @@ pro runAltitudeTest
 
 fname='/tmp/inputpoints.txt'
 openw,1,fname
-size = 10000
+size = 3000
 points = dblarr(3, size)
 dx = 0.001d
+dir = [.2d, .45d, .23d]
+mag = sqrt(dir[0]*dir[0] + dir[1]*dir[1] + dir[2]*dir[2])
+dir = dir / mag
 for i = 0, size-1, 1 do begin
-   x = dx * i
-   y = dx * i
    x = 0.0d
-   y = 0.0d
-   z = 1.0d + dx * i
+   z = 0.0d
+   y = 1.0d + dx * i
    points[0,i] = x
    points[1,i] = y
    points[2,i] = z
+
+   points[*,i] = dir * (1.0d + dx * i)
+   x = points[0,i]
+   y = points[1,i]
+   z = points[2,i]
    printf,1,x,y,z,format='(F16.10,1X,F16.10,1X,F16.10)'
 end
 close,1
@@ -245,9 +253,12 @@ c = 1.0d
 r = 1.0d
 densityTrue = 2.5d
 
-platemodelfile = '/project/nearsdc/data/test/SPHERE_v6534.PLT'
-potentialfile = 'SPHERE_v6534.PLT-potential.txt'
-density = '2.5024740395599068'
+;platemodelfile = '/project/nearsdc/data/test/SPHERE_v6534.PLT'
+;potentialfile = 'SPHERE_v6534.PLT-potential.txt'
+;density = '2.5024740395599068'
+platemodelfile = '/project/nearsdc/data/test/SPHERE_V99846.PLT'
+potentialfile = 'SPHERE_V99846.PLT-potential.txt'
+density = '2.5001543739257208'
 
 runCommand, './gravity --cheng --file ' + fname + ' -d ' + density + ' ' + platemodelfile + ' > ' + outfile
 potentials = getfile(potentialfile)
@@ -266,9 +277,12 @@ saveAndPlotAltitudeError, points, errorsCheng, errorsWerner, "sphere-altitude-er
 
 
 
-platemodelfile = '/project/nearsdc/data/test/ELLIPSOID_v6534.PLT'
-potentialfile = 'ELLIPSOID_v6534.PLT-potential.txt'
-density = '2.5028003639373222'
+;platemodelfile = '/project/nearsdc/data/test/ELLIPSOID_v6534.PLT'
+;potentialfile = 'ELLIPSOID_v6534.PLT-potential.txt'
+;density = '2.5028003639373222'
+platemodelfile = '/project/nearsdc/data/test/ELLIPSOID_v99846.PLT'
+potentialfile = 'ELLIPSOID_v99846.PLT-potential.txt'
+density = '2.5001752050780794'
 
 runCommand, './gravity --cheng --file ' + fname + ' -d ' + density + ' ' + platemodelfile + ' > ' + outfile
 potentials = getfile(potentialfile)
