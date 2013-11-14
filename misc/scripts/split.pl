@@ -18,7 +18,7 @@ chomp($num_input_lines);
 $num_output_lines = ceil($num_input_lines / $num_output_files);
 
 # Run the split command using numeric suffixes
-system("split -d -l $num_output_lines $input_file $input_file.");
+system("gsplit -d -l $num_output_lines $input_file $input_file.");
 
 
 
