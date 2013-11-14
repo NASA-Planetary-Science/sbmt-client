@@ -27,7 +27,6 @@ import org.joda.time.DateTime;
 import vtk.vtkActor;
 import vtk.vtkCellArray;
 import vtk.vtkIdList;
-import vtk.vtkLine;
 import vtk.vtkPoints;
 import vtk.vtkPolyData;
 import vtk.vtkPolyDataMapper;
@@ -172,8 +171,7 @@ public class LidarSearchDataCollection extends Model
             DateTime startDate,
             DateTime stopDate,
             TreeSet<Integer> cubeList,
-            double[] selectionRegionCenter,
-            double selectionRegionRadius,
+            PointInRegionChecker pointInRegionChecker,
             long timeSeparationBetweenTracks,
             int minTrackLength) throws IOException, ParseException
     {
@@ -182,8 +180,7 @@ public class LidarSearchDataCollection extends Model
                 startDate,
                 stopDate,
                 cubeList,
-                selectionRegionCenter,
-                selectionRegionRadius,
+                pointInRegionChecker,
                 timeSeparationBetweenTracks,
                 minTrackLength);
 
@@ -198,8 +195,7 @@ public class LidarSearchDataCollection extends Model
             DateTime startDate,
             DateTime stopDate,
             TreeSet<Integer> cubeList,
-            double[] selectionRegionCenter,
-            double selectionRegionRadius,
+            PointInRegionChecker pointInRegionChecker,
             long timeSeparationBetweenTracks,
             int minTrackLength) throws IOException, ParseException
     {
@@ -227,20 +223,6 @@ public class LidarSearchDataCollection extends Model
         long stop = stopDate.getMillis();
 
         originalPoints.clear();
-
-        double[] point2 = null;
-        double radius2 = Double.MAX_VALUE;
-        vtkLine line = new vtkLine();
-        if (selectionRegionCenter != null)
-        {
-            double[] normal = smallBodyModel.getNormalAtPoint(selectionRegionCenter);
-            point2 = new double[]{
-                selectionRegionCenter[0] + normal[0],
-                selectionRegionCenter[1] + normal[1],
-                selectionRegionCenter[2] + normal[2],
-            };
-            radius2 = selectionRegionRadius * selectionRegionRadius;
-        }
 
         int timeindex = 0;
         int xindex = 1;
@@ -282,10 +264,7 @@ public class LidarSearchDataCollection extends Model
                 scpos[1] = Double.parseDouble(vals[scyindex]);
                 scpos[2] = Double.parseDouble(vals[sczindex]);
 
-                double dist2 = 0.0;
-                if (selectionRegionCenter != null)
-                    dist2 = line.DistanceToLine(target, selectionRegionCenter, point2);
-                if (dist2 <= radius2)
+                if (pointInRegionChecker.checkPointIsInRegion(target))
                 {
                     originalPoints.add(new LidarPoint(target, scpos, time));
                 }

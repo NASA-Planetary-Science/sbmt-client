@@ -333,7 +333,11 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
                 int[] color = polygons.get(i).color;
 
                 if (Arrays.binarySearch(this.selectedStructures, i) >= 0)
-                    color = getCommonData().getSelectionColor();
+                {
+                    CommonData commonData = getCommonData();
+                    if (commonData != null)
+                        color = commonData.getSelectionColor();
+                }
 
                 IdPair range = this.getCellIdRangeOfPolygon(i, false);
                 for (int j=range.id1; j<range.id2; ++j)

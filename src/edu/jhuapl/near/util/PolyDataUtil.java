@@ -36,6 +36,7 @@ import vtk.vtkPolyData;
 import vtk.vtkPolyDataConnectivityFilter;
 import vtk.vtkPolyDataNormals;
 import vtk.vtkPolyDataReader;
+import vtk.vtkPolyDataWriter;
 import vtk.vtkRegularPolygonSource;
 import vtk.vtkSphere;
 import vtk.vtkTransform;
@@ -2133,6 +2134,32 @@ public class PolyDataUtil
         return normal;
     }
 
+    /**
+     * Compute the mean normal vector over the entire vtkPolyData by averaging all the normal vectors.
+     */
+    public static double[] computePolyDataNormal(
+            vtkPolyData polyData)
+    {
+        // Average the normals
+        double[] normal = {0.0, 0.0, 0.0};
+
+        int N = polyData.GetNumberOfPoints();
+        vtkDataArray normals = polyData.GetPointData().GetNormals();
+        for (int i=0; i<N; ++i)
+        {
+            double[] tmp = normals.GetTuple3(i);
+            normal[0] += tmp[0];
+            normal[1] += tmp[1];
+            normal[2] += tmp[2];
+        }
+
+        normal[0] /= N;
+        normal[1] /= N;
+        normal[2] /= N;
+
+        return normal;
+    }
+
 
     /**
      * Get the area of a given cell. Assumes cells are triangles.
@@ -3116,6 +3143,30 @@ public class PolyDataUtil
 
         idList.Delete();
         out.close();
+    }
+
+    static public void saveShapeModelAsVTK(vtkPolyData polydata, String filename) throws IOException
+    {
+        // First make a copy of polydata and remove all cell and point data since we don't want to save that out
+        vtkPolyData newpolydata = new vtkPolyData();
+        newpolydata.DeepCopy(polydata);
+        newpolydata.GetPointData().Reset();
+        newpolydata.GetCellData().Reset();
+
+        // regenerate point normals
+        vtkPolyDataNormals normalsFilter = new vtkPolyDataNormals();
+        normalsFilter.SetInput(newpolydata);
+        normalsFilter.SetComputeCellNormals(0);
+        normalsFilter.SetComputePointNormals(1);
+        normalsFilter.AutoOrientNormalsOn();
+        normalsFilter.SplittingOff();
+        normalsFilter.Update();
+
+        vtkPolyDataWriter writer = new vtkPolyDataWriter();
+        writer.SetInputConnection(normalsFilter.GetOutputPort());
+        writer.SetFileName(filename);
+        writer.SetFileTypeToBinary();
+        writer.Write();
     }
 
     static public void removeDuplicatePoints(String filename) throws Exception

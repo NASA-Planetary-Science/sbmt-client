@@ -1971,6 +1971,12 @@ public class SmallBodyModel extends Model
         PolyDataUtil.saveShapeModelAsOBJ(smallBodyPolyData, file.getAbsolutePath());
     }
 
+    public void saveAsVTK(File file) throws IOException
+    {
+        PolyDataUtil.saveShapeModelAsVTK(smallBodyPolyData, file.getAbsolutePath());
+    }
+
+
     /**
      * Return if this model is an ellipsoid. If so, some operations on ellipsoids
      * are much easier than general shape models. By default return false, unless

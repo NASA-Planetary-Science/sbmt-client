@@ -36,6 +36,8 @@ public class DEMModel extends SmallBodyModel
     private int liveSize;
     //private int height;
     private int startPixel;
+    private double[] centerOfDEM = null;
+    private double[] normalOfDEM = null;
 
     public DEMModel(String filename, String lblfilename) throws IOException
     {
@@ -203,6 +205,12 @@ public class DEMModel extends SmallBodyModel
         heightsGravityPerPoint.DeepCopy(heightsGravity);
         convertPointDataToCellData();
 
+        int centerIndex = startPixel + (endPixel - startPixel) / 2;
+        centerOfDEM = new double[3];
+        centerOfDEM[0] = data[index(centerIndex,centerIndex,3)];
+        centerOfDEM[1] = data[index(centerIndex,centerIndex,4)];
+        centerOfDEM[2] = data[index(centerIndex,centerIndex,5)];
+
         return dem;
     }
 
@@ -327,6 +335,61 @@ public class DEMModel extends SmallBodyModel
         }
 
         in.close();
+    }
+
+    /**
+     * Return whether or not point is inside the DEM. By "inside the DEM" we
+     * mean that the point is displaced parallel to the mean normal vector of the
+     * DEM, it will intersect the DEM.
+     *
+     * @param point
+     * @return
+     */
+    public boolean isPointWithinDEM(double[] point)
+    {
+        // Take the point and using the normal vector, form a line parallel
+        // to the normal vector which passes through the given point.
+        // If this line intersects the DEM, return true. Otherwise return
+        // false.
+        double[] normal = getNormal();
+
+        double size = getBoundingBoxDiagonalLength();
+        double[] origin = {
+                point[0] + size*normal[0],
+                point[1] + size*normal[1],
+                point[2] + size*normal[2]
+        };
+
+        double[] direction = {
+                -normal[0],
+                -normal[1],
+                -normal[2]
+        };
+
+        double[] intersectPoint = new double[3];
+        int cellId = computeRayIntersection(origin, direction, intersectPoint );
+
+        return cellId >= 0;
+    }
+
+    /**
+     * Return the center point of the DEM.
+     */
+    public double[] getCenter()
+    {
+        return centerOfDEM;
+    }
+
+    /**
+     * return the mean normal vector to the DEM. This is computed by averaging
+     * the normal vectors of all plates in the DEM.
+     */
+    public double[] getNormal()
+    {
+        if (normalOfDEM == null)
+            normalOfDEM = PolyDataUtil.computePolyDataNormal(dem);
+
+        return centerOfDEM;
     }
 
     public void delete()

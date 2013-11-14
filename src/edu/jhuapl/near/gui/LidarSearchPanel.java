@@ -32,6 +32,7 @@ import org.joda.time.DateTime;
 import vtk.vtkPolyData;
 
 import edu.jhuapl.near.model.AbstractEllipsePolygonModel;
+import edu.jhuapl.near.model.PointInCylinderChecker;
 import edu.jhuapl.near.model.LidarSearchDataCollection;
 import edu.jhuapl.near.model.ModelFactory.ModelConfig;
 import edu.jhuapl.near.model.ModelManager;
@@ -132,13 +133,13 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
 
         try
         {
+            System.out.println(sourceComboBox.getSelectedItem().toString());
             lidarModel.setLidarData(
                     sourceComboBox.getSelectedItem().toString(),
                     new DateTime(startDate),
                     new DateTime(endDate),
                     cubeList,
-                    selectionRegionCenter,
-                    selectionRegionRadius,
+                    new PointInCylinderChecker(modelManager.getSmallBodyModel(), selectionRegionCenter, selectionRegionRadius),
                     Math.round(1000.0*timeSeparationBetweenTracks), // convert to milliseconds
                     minTrackLength);
         }
