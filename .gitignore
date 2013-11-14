@@ -3,3 +3,4 @@ build
 nbbuild
 nbproject/private
 *.pyc
+CMakeLists.txt.user
