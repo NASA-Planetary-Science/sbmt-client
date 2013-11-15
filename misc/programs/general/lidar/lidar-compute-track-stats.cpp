@@ -21,7 +21,7 @@ void writeStats(const string& outputfile,
     {
         fout << "track,min-distance,max-distance,rms\n";
 
-        for (int i=0;i<tracks.size(); ++i)
+        for (size_t i=0;i<tracks.size(); ++i)
         {
             double minError, maxError, rms;
             computeTrackStats(tracks.at(i), minError, maxError, rms);
@@ -67,7 +67,7 @@ int main(int argc, char** argv)
     initializeVtk(vtkfile.c_str());
 
     vector<Track> tracks;
-    for (int i=0;i<trackfiles.size(); ++i)
+    for (size_t i=0;i<trackfiles.size(); ++i)
         tracks.push_back(LidarData::loadTrack(trackfiles.at(i), false));
 
     writeStats(outputfile, trackfiles, tracks);
