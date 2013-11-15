@@ -1,14 +1,10 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
 import os
 import sys
 import subprocess
 import math
 
-# Change to folder containing this script
-abspath = os.path.abspath(__file__)
-dname = os.path.dirname(abspath)
-os.chdir(dname)
 
 
 if (len(sys.argv) < 3):
@@ -17,32 +13,73 @@ if (len(sys.argv) < 3):
 
 
 # Compute total number on lines in provided list of files
-def num_lines_in_input(input_file):
-    f = open(input_file)
+def num_lines_in_input(inputfile):
+    f = open(inputfile)
     num_lines = sum(1 for line in f)
     f.close()
     return num_lines
 
 
-def run_lidar_min():
-    number_points = num_lines_in_input(INPUT)
+def run_lidar_min(inputfile, body, vtkfile, kernelfile, outputfile):
+    number_points = num_lines_in_input(inputfile)
     startId = '0'
     stopId = str(number_points)
-    command = './lidar-min-icp '+BODY+' --single-track-mode=yes '+VTKFILE+' '+startId+' '+stopId+' '+KERNEL+' '+OUTPUT+' '+INPUT
+    # dname is folder containing this script
+    abspath = os.path.abspath(__file__)
+    dname = os.path.dirname(abspath)
+    command = dname +'/lidar-min-icp '+body+' --single-track-mode=yes '+vtkfile+' '+startId+' '+stopId+' '+kernelfile+' '+outputfile+' '+inputfile
     print command
     p = subprocess.Popen(command, shell=True)
     p.wait()
 
 
+def run_lidar_compute_track_stats(vtkfile, outputfile, files):
+    # dname is folder containing this script
+    abspath = os.path.abspath(__file__)
+    dname = os.path.dirname(abspath)
+    command = dname +'/lidar-compute-track-stats '+vtkfile+' '+outputfile+' '+' '.join(files)
+    print command
+    p = subprocess.Popen(command, shell=True)
+    p.wait()
+
+def write_track_stats(vtkfile, beforefiles, afterfiles):
+    # write a file containing track error statistics both before and after the optimization
+    errorbeforefile = os.path.dirname(beforefiles[0])+'/errors-before.csv'
+    errorafterfile = os.path.dirname(afterfiles[0])+'/errors-after.csv'
+    errorcombinedfile = os.path.dirname(afterfiles[0])+'/track-errors.csv'
+    run_lidar_compute_track_stats(VTKFILE, errorbeforefile, beforefiles)
+    run_lidar_compute_track_stats(VTKFILE, errorafterfile, afterfiles)
+    # Now load these 2 files and combine them
+    fb = open(errorbeforefile)
+    fa = open(errorafterfile)
+    fcombined = open(errorcombinedfile, "w")
+
+    beforelines = fb.readlines();
+    afterlines = fa.readlines();
+
+    count = 0
+    for bline, aline in zip(beforelines, afterlines):
+        if count == 0:
+            fcombined.write("track,min distance before,max distance before,rms before,min distance after,max distance after,rms after\n")
+        else:
+            bline = bline.rstrip()
+            fields = aline.split(',')
+            fcombined.write(bline + ',' + ','.join(fields[1:]))
+        count = count + 1
+
+    fb.close()
+    fa.close()
+    fcombined.close()
+
+    os.remove(errorbeforefile)
+    os.remove(errorafterfile)
+
+
 def concat_output_tracks(files):
     # Concatenate all output files into a single file
-    command = 'cat '
-    for f in files:
-        INPUT=f
-        OUTPUT=INPUT+'-optimized.txt'
-        command = command + OUTPUT + ' '
-    CONCAT_OUTPUT = os.path.dirname(files[0])+'/all-tracks-optimized.txt'
-    command = command + ' > ' + CONCAT_OUTPUT
+    command = 'cat ' + ' '.join(files)
+    concatOutput = os.path.dirname(files[0])+'/all-tracks-optimized.txt'
+    command = command + ' > ' + concatOutput
     print command
     p = subprocess.Popen(command, shell=True)
     p.wait()
@@ -58,8 +95,8 @@ elif sys.argv[1] == '--itokawa' or sys.argv[1] == '-itokawa':
     BODY='ITOKAWA'
     VTKFILE=os.environ['HOME']+'/.neartool/cache/2/ITOKAWA/ver512q.vtk'
 else:
-    print "Error: first option must be either -eros or -itokawa"
-    sys.exit(1)
+    BODY='EROS'
+    VTKFILE=sys.argv[1]
 
 # Check to make sure shape model file exists
 if os.path.exists(VTKFILE) == False:
@@ -67,12 +104,20 @@ if os.path.exists(VTKFILE) == False:
     print "Please run the SBMT and display the highest resolution shape model of Eros or Itokawa before continuing."
     sys.exit(1)
 
-KERNEL='./naif0010.tls'
+# dname is folder containing this script
+abspath = os.path.abspath(__file__)
+dname = os.path.dirname(abspath)
+KERNEL=dname + "/naif0010.tls"
+
 inputFiles = sys.argv[2:]
 
+outputFiles = []
 for f in inputFiles:
     INPUT=f
-    OUTPUT=INPUT+'-optimized.txt'
-    run_lidar_min()
+    output=INPUT+'-optimized.txt'
+    outputFiles.append(output)
+    run_lidar_min(INPUT, BODY, VTKFILE, KERNEL, output)
 
-concat_output_tracks(inputFiles)
+concat_output_tracks(outputFiles)
+
+write_track_stats(VTKFILE, inputFiles, outputFiles)

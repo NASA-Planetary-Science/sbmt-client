@@ -210,3 +210,78 @@ void LidarData::saveTrack(const string &filename,
         exit(1);
     }
 }
+
+Track LidarData::loadTrack(const string& filename,
+                           bool convertUtcToEt)
+{
+    ifstream fin(filename.c_str());
+
+    Track referenceTrajectory;
+
+    if (fin.is_open())
+    {
+        string line;
+        while (getline(fin, line))
+        {
+            Point p;
+            vector<string> tokens = split(line);
+
+            copy(tokens[0].begin(), tokens[0].end(), p.utc);
+            p.utc[tokens[0].length()] = '\0';
+
+            p.targetpos[0] = atof(tokens[1].c_str());
+            p.targetpos[1] = atof(tokens[2].c_str());
+            p.targetpos[2] = atof(tokens[3].c_str());
+
+            p.scpos[0] = atof(tokens[4].c_str());
+            p.scpos[1] = atof(tokens[5].c_str());
+            p.scpos[2] = atof(tokens[6].c_str());
+
+            p.boredir[0] = p.targetpos[0] - p.scpos[0];
+            p.boredir[1] = p.targetpos[1] - p.scpos[1];
+            p.boredir[2] = p.targetpos[2] - p.scpos[2];
+
+            vhat_c(p.boredir, p.boredir);
+
+            if (convertUtcToEt)
+                utc2et_c(p.utc, &p.time);
+
+            referenceTrajectory.push_back(p);
+        }
+
+        fin.close();
+    }
+    else
+    {
+        cerr << "Error: Unable to open file '" << filename << "'" << endl;
+        exit(1);
+    }
+
+    return referenceTrajectory;
+}
+
+void LidarData::saveTrack(const string &filename,
+                          const Track& track)
+{
+    ofstream fout(filename.c_str());
+
+    if (fout.is_open())
+    {
+        for (unsigned int i = 0; i<track.size(); ++i)
+        {
+            const Point& p = track[i];
+
+            fout << p.utc << " "
+                 << p.targetpos[0] << " " << p.targetpos[1] << " " << p.targetpos[2] << " "
+                 << p.scpos[0] << " " << p.scpos[1] << " " << p.scpos[2] << "\n";
+
+        }
+
+        fout.close();
+    }
+    else
+    {
+        cerr << "Error: Unable to open file '" << filename << "'" << endl;
+        exit(1);
+    }
+}

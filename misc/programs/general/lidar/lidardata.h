@@ -2,7 +2,7 @@
 #define LIDARDATA_H
 
 #include <string>
-#include "point.h"
+#include "track.h"
 
 using namespace std;
 
@@ -21,6 +21,13 @@ public:
                           const Track& track,
                           bool convertFromJ2000,
                           const string& bodyName);
+
+    static Track loadTrack(const string& filename,
+                           bool convertUtcToEt);
+
+    static void saveTrack(const string& filename,
+                          const Track& track);
+
 };
 
 #endif // LIDARDATA_H

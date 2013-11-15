@@ -49,6 +49,7 @@ propagation/propagatorfit.cpp
 
 common/closest-point-dsk.cpp
 common/closest-point-vtk.cpp
+common/track.cpp
 common/util.h
 common/mathutil.h
 common/point.h
@@ -63,6 +64,9 @@ target_link_libraries(lidar-min-fit lidar)
 
 add_executable(lidar-compute-rms lidar/lidar-compute-rms.cpp)
 target_link_libraries(lidar-compute-rms lidar)
+
+add_executable(lidar-compute-track-stats lidar/lidar-compute-track-stats.cpp)
+target_link_libraries(lidar-compute-track-stats lidar)
 
 add_executable(lidar-save-min-icp lidar/lidar-save-min-icp.cpp)
 target_link_libraries(lidar-save-min-icp lidar)

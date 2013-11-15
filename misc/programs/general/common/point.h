@@ -40,7 +40,5 @@ struct Point
     }
 };
 
-typedef std::vector<Point> Track;
-
 
 #endif

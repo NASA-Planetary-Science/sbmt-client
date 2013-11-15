@@ -1,7 +1,7 @@
 #ifndef PROPAGATOR_H
 #define PROPAGATOR_H
 
-#include "point.h"
+#include "track.h"
 #include <string>
 #include <gsl/gsl_odeiv2.h>
 
