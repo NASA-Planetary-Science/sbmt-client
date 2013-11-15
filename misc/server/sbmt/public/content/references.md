@@ -1,6 +1,6 @@
----
-title: References
----
+% References
+%
+%
 
 References
 ==========
@@ -15,6 +15,12 @@ Body Mapping Tool and where they were obtained from.
     (Gaskell, R.W., Gaskell Eros Shape Model
     V1.0. NEAR-A-MSI-5-EROSSHAPE-V1.0. NASA Planetary Data System,
     2008.)
+-   Peter Thomas' shape models of Eros is available at
+    [http://sbn.psi.edu/pds/resource/nearbrowse.html](http://sbn.psi.edu/pds/resource/nearbrowse.html).
+-   The lidar-based shape model of Eros created by the NLR team is available at
+    [http://sbn.psi.edu/pds/resource/nearbrowse.html](http://sbn.psi.edu/pds/resource/nearbrowse.html).
+-   The lidar-based shape model of Eros created by the Navigation team is available at
+    [http://sbn.psi.edu/pds/resource/nearbrowse.html](http://sbn.psi.edu/pds/resource/nearbrowse.html).
 -   MSI imagery is available at
     [http://sbn.psi.edu/pds/resource/near/msiinst.html](http://sbn.psi.edu/pds/resource/near/msiinst.html)
     (calibrated data).
@@ -103,10 +109,8 @@ Body Mapping Tool and where they were obtained from.
 ### Other Shape Models
 
 -   Shape model of Tempel 1 is available at
-    [http://pdssbn.astro.umd.edu/holdings/dif-c-hriv_its_mri-5-tempel1-shape-v1.0/dataset.html](http://pdssbn.astro.umd.edu/holdings/dif-c-hriv_its_mri-5-tempel1-shape-v1.0/dataset.html),
-    (Farnham, T.L. and Thomas, P.C, SHAPE MODEL OF COMET TEMPEL 1,
-    DIF-C-HRIV/ITS/MRI-5-TEMPEL1-SHAPE-MODEL-V1.0, NASA Planetary Data
-    System, 2006.)
+    [http://pdssbn.astro.umd.edu/holdings/dif-c-hriv_its_mri-5-tempel1-shape-v2.0/dataset.html](http://pdssbn.astro.umd.edu/holdings/dif-c-hriv_its_mri-5-tempel1-shape-v2.0/dataset.html),
+    (Farnham, T.L. and Thomas, P.C, PLATE SHAPE MODEL OF COMET 9P/TEMPEL 1 V2.0, DIF-C-HRIV/ITS/MRI-5-TEMPEL1-SHAPE-MODEL-V2.0, NASA Planetary Data System, 2013.)
 -   Shape model of Wild 2 is available at
     [http://pdssbn.astro.umd.edu/holdings/sdu-c-navcam-5-wild2-shape-model-v2.1/dataset.html](http://pdssbn.astro.umd.edu/holdings/sdu-c-navcam-5-wild2-shape-model-v2.1/dataset.html),
     (Farnham, T.L., T. Duxbury and J.-Y. Li, SHAPE MODELS OF COMET
@@ -131,16 +135,21 @@ Body Mapping Tool and where they were obtained from.
     4769 Castalia, *Celestial Mechanics and Dynamical Astronomy*,
     Vol. 65, pp. 313-344) or the algorithm of Andy Cheng (Cheng,
     A.F. et al., 2012, Efficient Calculation of Effective Potential
-    and Gravity on Small Bodies, *ACM*, 1667, p. 6447).
+    and Gravity on Small Bodies, *ACM*, 1667, p. 6447). The
+    acceleration and potential were evaluated at each plate center
+    using one of these algorithms. Also, an additional term was
+    added to both the potential and acceleration to correct for the
+    rotation of the small body. Values of densities and rotation
+    rates were obtained from Wikipedia.
 -   Slope data was computed as the angular separation in degrees between
     the plate normal vector and the gravitational acceleration vector
-    at each plate center. The formula used is as follows: If N is the
-    normal vector and A is the acclereration vector, then the slope is
-    arccos(-dot(N,A))*180/pi.
--   Elevation data was computed as follows. First a reference
-    potential, R,  was computed by averaging the potential weighted by the
-    plate area. I.e. R = SUM(P_i*A_i)/SUM(A_i) where P_i is the
-    potential at the center of the ith plate and A_i is the area of
-    the ith plate. The sum is over all plates. Then the elevation, E, is
-    computed as: E = (P_i-R)/g, where g is the magnitude of the
-    acceleration vector at the ith plate center.
+    (computed as explained above) at each plate center. The formula
+    used is as follows: If N is the normal vector and A is the
+    acceleration vector, then the slope is arccos(-dot(N,A))*180/pi.
+-   Elevation data was computed as follows. First a reference potential,
+    R, was computed by averaging the potential (computed as explained
+    above) weighted by the plate area. I.e. R = SUM(P_i*A_i)/SUM(A_i)
+    where P_i is the potential at the center of the ith plate and A_i
+    is the area of the ith plate. The sum is over all plates. Then the
+    elevation, E, is computed as: E = (P_i-R)/g, where g is the
+    magnitude of the acceleration vector at the ith plate center.

@@ -32,7 +32,9 @@ import org.joda.time.DateTime;
 import vtk.vtkPolyData;
 
 import edu.jhuapl.near.model.AbstractEllipsePolygonModel;
+import edu.jhuapl.near.model.PointInCylinderChecker;
 import edu.jhuapl.near.model.LidarSearchDataCollection;
+import edu.jhuapl.near.model.ModelFactory.ModelConfig;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.SmallBodyModel;
@@ -48,7 +50,7 @@ import edu.jhuapl.near.util.Properties;
  *
  * @author kahneg1
  */
-abstract public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChangeListener
+public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChangeListener
 {
     private final ModelManager modelManager;
     private PickManager pickManager;
@@ -59,7 +61,8 @@ abstract public class LidarSearchPanel extends javax.swing.JPanel implements Pro
     private LidarTrackTranslationDialog translateDialog;
 
     /** Creates new form LidarSearchPanel */
-    public LidarSearchPanel(final ModelManager modelManager,
+    public LidarSearchPanel(ModelConfig modelConfig,
+            final ModelManager modelManager,
             final PickManager pickManager,
             Renderer renderer)
     {
@@ -97,14 +100,11 @@ abstract public class LidarSearchPanel extends javax.swing.JPanel implements Pro
 
         lidarPopupMenu = new LidarPopupMenu(lidarModel, renderer);
 
-        startDate = getDefaultStartDate();
+        startDate = modelConfig.lidarSearchDefaultStartDate;
         ((SpinnerDateModel)startSpinner.getModel()).setValue(startDate);
-        endDate = getDefaultEndDate();
+        endDate = modelConfig.lidarSearchDefaultEndDate;
         ((SpinnerDateModel)endSpinner.getModel()).setValue(endDate);
     }
-
-    abstract protected java.util.Date getDefaultStartDate();
-    abstract protected java.util.Date getDefaultEndDate();
 
     private void showData(
             TreeSet<Integer> cubeList,
@@ -133,13 +133,13 @@ abstract public class LidarSearchPanel extends javax.swing.JPanel implements Pro
 
         try
         {
+            System.out.println(sourceComboBox.getSelectedItem().toString());
             lidarModel.setLidarData(
                     sourceComboBox.getSelectedItem().toString(),
                     new DateTime(startDate),
                     new DateTime(endDate),
                     cubeList,
-                    selectionRegionCenter,
-                    selectionRegionRadius,
+                    new PointInCylinderChecker(modelManager.getSmallBodyModel(), selectionRegionCenter, selectionRegionRadius),
                     Math.round(1000.0*timeSeparationBetweenTracks), // convert to milliseconds
                     minTrackLength);
         }

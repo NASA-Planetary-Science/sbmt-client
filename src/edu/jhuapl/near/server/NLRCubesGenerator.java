@@ -1,5 +1,6 @@
 package edu.jhuapl.near.server;
 
+import edu.jhuapl.near.model.ModelFactory;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.eros.Eros;
 
@@ -27,7 +28,7 @@ public class NLRCubesGenerator extends LidarCubesGenerator
     {
         if (eros == null)
         {
-            eros = new Eros();
+            eros = new Eros(ModelFactory.getModelConfig(ModelFactory.EROS, ModelFactory.GASKELL));
         }
 
         return eros;

@@ -397,7 +397,10 @@ public class MapmakerView extends JFrame
                 continue;
             String[] tokens = line.trim().split("=");
             if (tokens.length != 2)
+            {
+                in.close();
                 throw new IOException("Error parsing file");
+            }
             //System.out.println(tokens[0]);
 
             String key = tokens[0].trim();
@@ -520,24 +523,13 @@ public class MapmakerView extends JFrame
 
         public void actionPerformed(ActionEvent actionEvent)
         {
-            int index = dem.getColoringIndex();
-            if (index < 0)
-            {
-                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(MapmakerView.this),
-                        "Please first display the plate data you wish to export.",
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE);
-
-                return;
-            }
-
-            String name = dem.getColoringName(index) + ".txt";
+            String name = "platedata.csv";
             File file = CustomFileChooser.showSaveDialog(MapmakerView.this, "Export Plate Data", name);
 
             try
             {
                 if (file != null)
-                    dem.saveCurrentColoringData(file);
+                    dem.savePlateData(file);
             }
             catch (Exception e1)
             {

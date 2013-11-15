@@ -244,10 +244,6 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
             }
         });
 
-        saveColoringButton = new JButton("Save Plate Data...");
-        saveColoringButton.setEnabled(false);
-        saveColoringButton.addActionListener(new SavePlateDataAction());
-
         customColorRedLabel = new JLabel("Red: ");
         customColorGreenLabel = new JLabel("Green: ");
         customColorBlueLabel = new JLabel("Blue: ");
@@ -265,6 +261,10 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
         customColorRedLabel.setEnabled(false);
         customColorGreenLabel.setEnabled(false);
         customColorBlueLabel.setEnabled(false);
+
+        saveColoringButton = new JButton("Save Plate Data...");
+        saveColoringButton.setEnabled(true);
+        saveColoringButton.addActionListener(new SavePlateDataAction());
 
         customizeColoringButton = new JButton("Customize Plate Coloring...");
         customizeColoringButton.setEnabled(true);
@@ -330,7 +330,6 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
             panel.add(standardColoringButton, "split 2, gapleft 25");
             panel.add(coloringComboBox, "width 200!, wrap");
             panel.add(scaleColoringButton, "wrap, gapleft 75");
-            panel.add(saveColoringButton, "wrap, gapleft 75");
             if (Configuration.isAPLVersion())
             {
                 panel.add(rgbColoringButton, "wrap, gapleft 25");
@@ -340,6 +339,10 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
                 panel.add(customColorGreenComboBox, "width 200!, gapleft push, wrap");
                 panel.add(customColorBlueLabel, "gapleft 75, split 2");
                 panel.add(customColorBlueComboBox, "width 200!, gapleft push, wrap");
+            }
+            panel.add(saveColoringButton, "wrap, gapleft 25");
+            if (Configuration.isAPLVersion())
+            {
                 panel.add(customizeColoringButton, "wrap, gapleft 25");
             }
         }
@@ -524,7 +527,6 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
         boolean selected = standardColoringButton.isSelected();
         coloringComboBox.setEnabled(selected);
         scaleColoringButton.setEnabled(selected);
-        saveColoringButton.setEnabled(selected);
         selected = rgbColoringButton.isSelected();
         customColorRedComboBox.setEnabled(selected);
         customColorGreenComboBox.setEnabled(selected);
@@ -713,24 +715,13 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
         {
             SmallBodyModel smallBodyModel = modelManager.getSmallBodyModel();
             Frame invoker = JOptionPane.getFrameForComponent(SmallBodyControlPanel.this);
-            int index = smallBodyModel.getColoringIndex();
-            if (index < 0)
-            {
-                JOptionPane.showMessageDialog(invoker,
-                        "Please first display the plate data you wish to export.",
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE);
-
-                return;
-            }
-
-            String name = smallBodyModel.getColoringName(index) + ".txt";
+            String name = "platedata.csv";
             File file = CustomFileChooser.showSaveDialog(invoker, "Export Plate Data", name);
 
             try
             {
                 if (file != null)
-                    smallBodyModel.saveCurrentColoringData(file);
+                    smallBodyModel.savePlateData(file);
             }
             catch (Exception e1)
             {

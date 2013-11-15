@@ -1317,7 +1317,6 @@ public class NISSearchPanel extends javax.swing.JPanel implements MouseListener
             }
 
             ArrayList<String> results = ErosQuery.getInstance().runQueryNIS(
-                    ErosQuery.Datatype.NIS,
                     startDateJoda,
                     endDateJoda,
                     null,

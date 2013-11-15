@@ -14,7 +14,6 @@ import vtk.vtkPolyDataReader;
 import vtk.vtkPolyDataWriter;
 
 import edu.jhuapl.near.model.Graticule;
-import edu.jhuapl.near.model.vesta.VestaGraticule;
 import edu.jhuapl.near.util.NativeLibraryLoader;
 
 public class VestaModelGenerator
@@ -133,7 +132,7 @@ public class VestaModelGenerator
                 vtkPolyData vestaPolyData = new vtkPolyData();
                 vestaPolyData.DeepCopy(vestaReader.GetOutput());
 
-                Graticule grid = new VestaGraticule(null);
+                Graticule grid = new Graticule(null);
                 grid.generateGrid(vestaPolyData);
 
                 writer = new vtkPolyDataWriter();

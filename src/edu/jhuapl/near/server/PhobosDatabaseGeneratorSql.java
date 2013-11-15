@@ -3,7 +3,6 @@ package edu.jhuapl.near.server;
 import java.io.IOException;
 
 import edu.jhuapl.near.model.ModelFactory;
-import edu.jhuapl.near.model.ModelFactory.ModelConfig;
 import edu.jhuapl.near.model.SmallBodyModel;
 
 public class PhobosDatabaseGeneratorSql extends DatabaseGeneratorBaseSql
@@ -40,15 +39,7 @@ public class PhobosDatabaseGeneratorSql extends DatabaseGeneratorBaseSql
     @Override
     SmallBodyModel createSmallBodyModel()
     {
-        ModelConfig config = new ModelConfig(
-                ModelFactory.PHOBOS,
-                ModelFactory.SATELLITES,
-                ModelFactory.MARS,
-                ModelFactory.IMAGE_BASED,
-                ModelFactory.EXPERIMENTAL,
-                "/GASKELL/PHOBOSEXPERIMENTAL", false, true);
-
-        return ModelFactory.createSmallBodyModel(config);
+        return ModelFactory.createSmallBodyModel(ModelFactory.getModelConfig(ModelFactory.PHOBOS, ModelFactory.EXPERIMENTAL));
     }
 
 

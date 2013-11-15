@@ -19,8 +19,6 @@ import edu.jhuapl.near.model.eros.MSIImage;
  */
 public class ErosQuery extends QueryBase
 {
-    public enum Datatype {MSI, NIS};
-
     private static ErosQuery ref = null;
 
     private void fixResult(ArrayList<String> result)
@@ -250,7 +248,6 @@ public class ErosQuery extends QueryBase
     }
 
     public ArrayList<String> runQueryNIS(
-            Datatype datatype,
             DateTime startDate,
             DateTime stopDate,
             ArrayList<Integer> filters,
@@ -282,62 +279,56 @@ public class ErosQuery extends QueryBase
         double minPhase = Math.min(fromPhase, toPhase);
         double maxPhase = Math.max(fromPhase, toPhase);
 
-        switch (datatype)
+        try
         {
-        case NIS:
-            try
+            double minScDistance = Math.min(startDistance, stopDistance);
+            double maxScDistance = Math.max(startDistance, stopDistance);
+
+            HashMap<String, String> args = new HashMap<String, String>();
+            args.put("startDate", String.valueOf(startDate.getMillis()));
+            args.put("stopDate", String.valueOf(stopDate.getMillis()));
+            args.put("minScDistance", String.valueOf(minScDistance));
+            args.put("maxScDistance", String.valueOf(maxScDistance));
+            args.put("minIncidence", String.valueOf(minIncidence));
+            args.put("maxIncidence", String.valueOf(maxIncidence));
+            args.put("minEmission", String.valueOf(minEmission));
+            args.put("maxEmission", String.valueOf(maxEmission));
+            args.put("minPhase", String.valueOf(minPhase));
+            args.put("maxPhase", String.valueOf(maxPhase));
+            for (int i=0; i<4; ++i)
             {
-                double minScDistance = Math.min(startDistance, stopDistance);
-                double maxScDistance = Math.max(startDistance, stopDistance);
-
-                HashMap<String, String> args = new HashMap<String, String>();
-                args.put("startDate", String.valueOf(startDate.getMillis()));
-                args.put("stopDate", String.valueOf(stopDate.getMillis()));
-                args.put("minScDistance", String.valueOf(minScDistance));
-                args.put("maxScDistance", String.valueOf(maxScDistance));
-                args.put("minIncidence", String.valueOf(minIncidence));
-                args.put("maxIncidence", String.valueOf(maxIncidence));
-                args.put("minEmission", String.valueOf(minEmission));
-                args.put("maxEmission", String.valueOf(maxEmission));
-                args.put("minPhase", String.valueOf(minPhase));
-                args.put("maxPhase", String.valueOf(maxPhase));
-                for (int i=0; i<4; ++i)
-                {
-                    if (polygonTypes.contains(i))
-                        args.put("polygonType"+i, "1");
-                    else
-                        args.put("polygonType"+i, "0");
-                }
-                if (cubeList != null && cubeList.size() > 0)
-                {
-                    String cubesStr = "";
-                    int size = cubeList.size();
-                    int count = 0;
-                    for (Integer i : cubeList)
-                    {
-                        cubesStr += "" + i;
-                        if (count < size-1)
-                            cubesStr += ",";
-                        ++count;
-                    }
-                    args.put("cubes", cubesStr);
-                }
-
-                results = doQuery("searchnis.php", constructUrlArguments(args));
-
-                for (ArrayList<String> res : results)
-                {
-                    String path = this.getNisPath(res);
-
-                    matchedImages.add(path);
-                }
+                if (polygonTypes.contains(i))
+                    args.put("polygonType"+i, "1");
+                else
+                    args.put("polygonType"+i, "0");
             }
-            catch (Exception e)
+            if (cubeList != null && cubeList.size() > 0)
             {
-                e.printStackTrace();
+                String cubesStr = "";
+                int size = cubeList.size();
+                int count = 0;
+                for (Integer i : cubeList)
+                {
+                    cubesStr += "" + i;
+                    if (count < size-1)
+                        cubesStr += ",";
+                    ++count;
+                }
+                args.put("cubes", cubesStr);
             }
 
-            break;
+            results = doQuery("searchnis.php", constructUrlArguments(args));
+
+            for (ArrayList<String> res : results)
+            {
+                String path = this.getNisPath(res);
+
+                matchedImages.add(path);
+            }
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
         }
 
         return matchedImages;

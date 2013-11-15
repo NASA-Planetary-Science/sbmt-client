@@ -14,7 +14,6 @@ import vtk.vtkPolyDataReader;
 import vtk.vtkPolyDataWriter;
 
 import edu.jhuapl.near.model.Graticule;
-import edu.jhuapl.near.model.eros.ErosGraticule;
 import edu.jhuapl.near.util.NativeLibraryLoader;
 
 public class ErosModelGenerator {
@@ -131,7 +130,7 @@ public class ErosModelGenerator {
                 vtkPolyData erosPolyData = new vtkPolyData();
                 erosPolyData.DeepCopy(erosReader.GetOutput());
 
-                Graticule grid = new ErosGraticule(null);
+                Graticule grid = new Graticule(null);
                 grid.generateGrid(erosPolyData);
 
                 writer = new vtkPolyDataWriter();

@@ -1,0 +1,24 @@
+\begindata
+
+KERNELS_TO_LOAD = ('/project/nearsdc/spice-kernels/near/LSK/NAIF0007.TLS'
+                   '/project/nearsdc/spice-kernels/near/PCK/PCK00007.TPC'
+                   '/project/nearsdc/spice-kernels/near/PCK/EROSATT_1998329_2001157_V01.BPC'
+                   '/project/nearsdc/spice-kernels/near/PCK/EROSATT_1999304_2001151.BPC'
+                   '/project/nearsdc/spice-kernels/near/SCLK/NEAR_171.TSC'
+                   '/project/nearsdc/spice-kernels/near/IK/GRS12.TI'
+                   '/project/nearsdc/spice-kernels/near/IK/MSI15.TI'
+                   '/project/nearsdc/spice-kernels/near/IK/NIS14.TI'
+                   '/project/nearsdc/spice-kernels/near/IK/XRS12.TI'
+                   '/project/nearsdc/spice-kernels/near/SPK/NEAR_CRUISE_NAV_V1.BSP'
+                   '/project/nearsdc/spice-kernels/near/SPK/NEAR_EROSORBIT_NAV_V1.BSP'
+                   '/project/nearsdc/spice-kernels/near/SPK/NEAR_EROSORBIT_RS_V1.BSP'
+                   '/project/nearsdc/spice-kernels/near/SPK/NEAR_EROSORBIT_NLR_V1.BSP'
+                   '/project/nearsdc/spice-kernels/near/SPK/NEAR_EROSLANDED_NAV_V1.BSP'
+                   '/project/nearsdc/spice-kernels/near/SPK/EROSEPHEM_1999004_2002181.BSP'
+                   '/project/nearsdc/spice-kernels/near/SPK/EROS80.BSP'
+                   '/project/nearsdc/spice-kernels/near/SPK/MATH9749.BSP'
+                   '/project/nearsdc/spice-kernels/near/SPK/DE403S.BSP'
+                   '/project/nearsdc/spice-kernels/near/SPK/STATIONS.BSP'
+                   )
+
+\begintext

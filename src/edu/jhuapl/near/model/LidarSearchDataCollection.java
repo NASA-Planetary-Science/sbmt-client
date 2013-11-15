@@ -27,13 +27,13 @@ import org.joda.time.DateTime;
 import vtk.vtkActor;
 import vtk.vtkCellArray;
 import vtk.vtkIdList;
-import vtk.vtkLine;
 import vtk.vtkPoints;
 import vtk.vtkPolyData;
 import vtk.vtkPolyDataMapper;
 import vtk.vtkProp;
 import vtk.vtkUnsignedCharArray;
 
+import edu.jhuapl.near.model.ModelFactory.ModelConfig;
 import edu.jhuapl.near.util.ColorUtil;
 import edu.jhuapl.near.util.Configuration;
 import edu.jhuapl.near.util.FileCache;
@@ -43,8 +43,9 @@ import edu.jhuapl.near.util.LatLon;
 import edu.jhuapl.near.util.MathUtil;
 import edu.jhuapl.near.util.Properties;
 
-public abstract class LidarSearchDataCollection extends Model
+public class LidarSearchDataCollection extends Model
 {
+    private ModelConfig modelConfig;
     private SmallBodyModel smallBodyModel;
     private vtkPolyData polydata;
     private vtkPolyData selectedPointPolydata;
@@ -115,6 +116,7 @@ public abstract class LidarSearchDataCollection extends Model
     public LidarSearchDataCollection(SmallBodyModel smallBodyModel)
     {
         this.smallBodyModel = smallBodyModel;
+        this.modelConfig = smallBodyModel.getModelConfig();
 
         // Initialize an empty polydata for resetting
         emptyPolyData = new vtkPolyData();
@@ -153,8 +155,15 @@ public abstract class LidarSearchDataCollection extends Model
         actors.add(selectedPointActor);
     }
 
-    abstract public double getOffsetScale();
-    abstract public Map<String, String> getLidarDataSourceMap();
+    public double getOffsetScale()
+    {
+        return modelConfig.lidarOffsetScale;
+    }
+
+    public Map<String, String> getLidarDataSourceMap()
+    {
+        return modelConfig.lidarSearchDataSourceMap;
+    }
 
 
     public void setLidarData(
@@ -162,8 +171,7 @@ public abstract class LidarSearchDataCollection extends Model
             DateTime startDate,
             DateTime stopDate,
             TreeSet<Integer> cubeList,
-            double[] selectionRegionCenter,
-            double selectionRegionRadius,
+            PointInRegionChecker pointInRegionChecker,
             long timeSeparationBetweenTracks,
             int minTrackLength) throws IOException, ParseException
     {
@@ -172,8 +180,7 @@ public abstract class LidarSearchDataCollection extends Model
                 startDate,
                 stopDate,
                 cubeList,
-                selectionRegionCenter,
-                selectionRegionRadius,
+                pointInRegionChecker,
                 timeSeparationBetweenTracks,
                 minTrackLength);
 
@@ -188,8 +195,7 @@ public abstract class LidarSearchDataCollection extends Model
             DateTime startDate,
             DateTime stopDate,
             TreeSet<Integer> cubeList,
-            double[] selectionRegionCenter,
-            double selectionRegionRadius,
+            PointInRegionChecker pointInRegionChecker,
             long timeSeparationBetweenTracks,
             int minTrackLength) throws IOException, ParseException
     {
@@ -218,20 +224,6 @@ public abstract class LidarSearchDataCollection extends Model
 
         originalPoints.clear();
 
-        double[] point2 = null;
-        double radius2 = Double.MAX_VALUE;
-        vtkLine line = new vtkLine();
-        if (selectionRegionCenter != null)
-        {
-            double[] normal = smallBodyModel.getNormalAtPoint(selectionRegionCenter);
-            point2 = new double[]{
-                selectionRegionCenter[0] + normal[0],
-                selectionRegionCenter[1] + normal[1],
-                selectionRegionCenter[2] + normal[2],
-            };
-            radius2 = selectionRegionRadius * selectionRegionRadius;
-        }
-
         int timeindex = 0;
         int xindex = 1;
         int yindex = 2;
@@ -243,7 +235,7 @@ public abstract class LidarSearchDataCollection extends Model
         for (Integer cubeid : cubeList)
         {
             String filename = getLidarDataSourceMap().get(dataSource) + "/" + cubeid + ".lidarcube";
-            File file = FileCache.getFileFromServer(filename);
+            File file = FileCache.getFileFromServer(filename, modelConfig.useAPLServer);
 
             if (file == null)
                 continue;
@@ -272,10 +264,7 @@ public abstract class LidarSearchDataCollection extends Model
                 scpos[1] = Double.parseDouble(vals[scyindex]);
                 scpos[2] = Double.parseDouble(vals[sczindex]);
 
-                double dist2 = 0.0;
-                if (selectionRegionCenter != null)
-                    dist2 = line.DistanceToLine(target, selectionRegionCenter, point2);
-                if (dist2 <= radius2)
+                if (pointInRegionChecker.checkPointIsInRegion(target))
                 {
                     originalPoints.add(new LidarPoint(target, scpos, time));
                 }

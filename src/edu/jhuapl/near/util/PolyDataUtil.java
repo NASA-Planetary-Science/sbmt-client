@@ -36,6 +36,7 @@ import vtk.vtkPolyData;
 import vtk.vtkPolyDataConnectivityFilter;
 import vtk.vtkPolyDataNormals;
 import vtk.vtkPolyDataReader;
+import vtk.vtkPolyDataWriter;
 import vtk.vtkRegularPolygonSource;
 import vtk.vtkSphere;
 import vtk.vtkTransform;
@@ -2133,6 +2134,32 @@ public class PolyDataUtil
         return normal;
     }
 
+    /**
+     * Compute the mean normal vector over the entire vtkPolyData by averaging all the normal vectors.
+     */
+    public static double[] computePolyDataNormal(
+            vtkPolyData polyData)
+    {
+        // Average the normals
+        double[] normal = {0.0, 0.0, 0.0};
+
+        int N = polyData.GetNumberOfPoints();
+        vtkDataArray normals = polyData.GetPointData().GetNormals();
+        for (int i=0; i<N; ++i)
+        {
+            double[] tmp = normals.GetTuple3(i);
+            normal[0] += tmp[0];
+            normal[1] += tmp[1];
+            normal[2] += tmp[2];
+        }
+
+        normal[0] /= N;
+        normal[1] /= N;
+        normal[2] /= N;
+
+        return normal;
+    }
+
 
     /**
      * Get the area of a given cell. Assumes cells are triangles.
@@ -2415,6 +2442,7 @@ public class PolyDataUtil
         }
         else
         {
+            in.close();
             throw new IOException("Format not valid");
         }
 
@@ -2448,6 +2476,8 @@ public class PolyDataUtil
         }
 
         idList.Delete();
+
+        in.close();
 
         return polydata;
     }
@@ -2486,6 +2516,7 @@ public class PolyDataUtil
         }
         else
         {
+            in.close();
             throw new IOException("Format not valid");
         }
 
@@ -2521,6 +2552,8 @@ public class PolyDataUtil
         }
 
         idList.Delete();
+
+        in.close();
 
         return polydata;
     }
@@ -3112,6 +3145,30 @@ public class PolyDataUtil
         out.close();
     }
 
+    static public void saveShapeModelAsVTK(vtkPolyData polydata, String filename) throws IOException
+    {
+        // First make a copy of polydata and remove all cell and point data since we don't want to save that out
+        vtkPolyData newpolydata = new vtkPolyData();
+        newpolydata.DeepCopy(polydata);
+        newpolydata.GetPointData().Reset();
+        newpolydata.GetCellData().Reset();
+
+        // regenerate point normals
+        vtkPolyDataNormals normalsFilter = new vtkPolyDataNormals();
+        normalsFilter.SetInput(newpolydata);
+        normalsFilter.SetComputeCellNormals(0);
+        normalsFilter.SetComputePointNormals(1);
+        normalsFilter.AutoOrientNormalsOn();
+        normalsFilter.SplittingOff();
+        normalsFilter.Update();
+
+        vtkPolyDataWriter writer = new vtkPolyDataWriter();
+        writer.SetInputConnection(normalsFilter.GetOutputPort());
+        writer.SetFileName(filename);
+        writer.SetFileTypeToBinary();
+        writer.Write();
+    }
+
     static public void removeDuplicatePoints(String filename) throws Exception
     {
         vtkPolyData polydata = loadPDSShapeModel(filename);
@@ -3126,55 +3183,5 @@ public class PolyDataUtil
         cleanFilter.Update();
 
         saveShapeModelAsPLT(cleanFilter.GetOutput(), filename);
-    }
-
-    /**
-     * Saves out file with information about plates of polydata that contains these 4 columns:
-     * 1. Surface area of plate
-     * 2. Latitude of center of plate (in degrees)
-     * 3. Longitude of center of plate (in degrees)
-     * 4. Distance of center of plate to origin
-
-     * @param polydata
-     * @param filename
-     * @throws IOException
-     */
-    static public void savePolyDataPlateInfo(vtkPolyData polydata, String filename) throws IOException
-    {
-        FileWriter fstream = new FileWriter(filename);
-        BufferedWriter out = new BufferedWriter(fstream);
-
-        out.write("surface-area center-latitude center-longitude center-radius\n");
-
-        vtkTriangle triangle = new vtkTriangle();
-
-        vtkPoints points = polydata.GetPoints();
-        int numberCells = polydata.GetNumberOfCells();
-        polydata.BuildCells();
-        vtkIdList idList = new vtkIdList();
-        double[] pt0 = new double[3];
-        double[] pt1 = new double[3];
-        double[] pt2 = new double[3];
-        double[] center = new double[3];
-        for (int i=0; i<numberCells; ++i)
-        {
-            polydata.GetCellPoints(i, idList);
-            int id0 = idList.GetId(0);
-            int id1 = idList.GetId(1);
-            int id2 = idList.GetId(2);
-            points.GetPoint(id0, pt0);
-            points.GetPoint(id1, pt1);
-            points.GetPoint(id2, pt2);
-
-            double area = triangle.TriangleArea(pt0, pt1, pt2);
-            triangle.TriangleCenter(pt0, pt1, pt2, center);
-            LatLon llr = MathUtil.reclat(center);
-
-            out.write(area + " " + (llr.lat*180.0/Math.PI) + " " + (llr.lon*180.0/Math.PI) + " " + llr.rad + "\n");
-        }
-
-        triangle.Delete();
-        idList.Delete();
-        out.close();
     }
 }
