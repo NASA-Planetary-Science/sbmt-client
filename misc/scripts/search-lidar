@@ -1,4 +1,8 @@
 #!/bin/sh
+
+# Program to search for lidar that overlaps with a mapmaker cube.
+# Copy this file into the SBMT release (into the same folder as the runsbmt file).
+
 DIR=`dirname "$0"`
 cd "$DIR"
 export DYLD_LIBRARY_PATH=lib/mac64:$DYLD_LIBRARY_PATH
