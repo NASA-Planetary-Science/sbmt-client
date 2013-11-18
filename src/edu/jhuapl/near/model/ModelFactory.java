@@ -327,6 +327,7 @@ public class ModelFactory
             c.pathOnServer = "/GASKELL/PHOBOSEXPERIMENTAL";
             c.useAPLServer = true;
             c.hasPerspectiveImages = true;
+            c.hasMapmaker = true;
             c.imageSearchDefaultStartDate = new GregorianCalendar(1976, 6, 24, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2011, 6, 7, 0, 0, 0).getTime();
             c.imageSearchQuery = PhobosExperimentalQuery.getInstance();
