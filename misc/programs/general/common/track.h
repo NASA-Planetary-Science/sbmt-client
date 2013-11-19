@@ -6,9 +6,12 @@
 
 typedef std::vector<Point> Track;
 
-void computeTrackStats(const Track& track, double& minError, double& maxError, double& rms);
+void computeTrackStats(const Track& track, double& minError, double& maxError, double& rms, double& meanError, double& std);
 
-void computeTracksStats(const std::vector<Track>& tracks, double& minError, double& maxError, double& rms);
+void computeMeanTranslationBetweenTracks(const Track& track1, const Track& track2, double distance[3]);
 
+void timeSortTrack(Track& track);
+
+Track concatTracks(const std::vector<Track>& tracks, bool timeSort);
 
 #endif
