@@ -16,7 +16,7 @@ public class ConvertGaskellMapmakerCube
     {
         if (args.length != 3)
         {
-            System.out.println("Usage: ConvertGaskellMapmakerCube -obj|-plt <cube-file> <output-file>");
+            System.out.println("Usage: ConvertGaskellMapmakerCube -obj|-plt|-vtk <cube-file> <output-file>");
             System.exit(0);
         }
 
