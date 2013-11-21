@@ -28,6 +28,12 @@ will be created. In the second example above, files
 /path/to/track0.tab-optimized.txt /path/to/track1.tab-optimized.txt
 /path/to/track2.tab-optimized.txt will be created.
 
+Note also that an additional 3 columns are added to these
+'-optimized.txt' files.  These are the points on the surface of the
+shape model closest to the lidar points.  The optimization algorithm
+attempted to find the optimal translation that brought the original
+lidar points closest to these surface points.
+
 In addition a file called 'all-tracks-optimized.txt' will be created
 (in the same folder as the first track file listed when running the
 program) which contains all the optimized tracks concatenated
@@ -41,18 +47,34 @@ In addition a file called 'track-errors.csv' will be created
 program) which contains a table with the following columns:
 
 Column 1 -> track : name of track file
-Column 2 -> min distance before : the distance prior to
+Column 2 -> start time : time of first lidar point in track
+Column 3 -> end time : time of last lidar point in track
+Column 4 -> x translation : the optimal x translation computed for this track
+Column 5 -> y translation : the optimal y translation computed for this track
+Column 6 -> z translation : the optimal z translation computed for this track
+Column 7 -> total translation : the magnitude of the optinal translation vector
+                                computed for this track
+Column 8 -> min distance before : the distance prior to
             optimization between of the lidar point closest to the shape model
-Column 3 -> max distance before : the distance prior to
+Column 9 -> max distance before : the distance prior to
             optimization between of the lidar point farthest from the shape model
-Column 4 -> RMS before : Root mean squared distance of lidar points to
+Column 10 -> RMS before : Root mean squared distance of lidar points to
                          shape model prior to optimization
-Column 5 -> min distance before : the distance after
+Column 11 -> mean distance before : mean distance of lidar points to
+                                   shape model prior to optimization
+Column 12 -> stdev before : standard deviation of distances of lidar points to
+                                   shape model prior to optimization
+Column 13 -> min distance before : the distance after
             optimization between of the lidar point closest to the shape model
-Column 6 -> max distance before : the distance after
+Column 14 -> max distance before : the distance after
             optimization between of the lidar point farthest from the shape model
-Column 7 -> RMS before : Root mean squared distance of lidar points to
+Column 15 -> RMS before : Root mean squared distance of lidar points to
                          shape model after optimization
+Column 16 -> mean distance after : mean distance of lidar points to
+                                   shape model after optimization
+Column 17 -> stdev after : standard deviation of distances of lidar points to
+                                   shape model after optimization
+
 
 Note the final row in the CSV file (with "all" in the first column)
 contains these values for all tracks combined together, whereas the
