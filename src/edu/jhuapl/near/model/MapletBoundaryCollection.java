@@ -58,7 +58,7 @@ public class MapletBoundaryCollection extends Model implements PropertyChangeLis
 
             actor.SetMapper(boundaryMapper);
             actor.GetProperty().SetColor(0.0, 0.392, 0.0);
-            actor.GetProperty().SetPointSize(1.0);
+            actor.GetProperty().SetLineWidth(1.0);
         }
 
         public void propertyChange(PropertyChangeEvent evt)
@@ -98,14 +98,12 @@ public class MapletBoundaryCollection extends Model implements PropertyChangeLis
 
         public Number getLineWidth()
         {
-            // Note although we call it the line width, it's really point size
-            return actor.GetProperty().GetPointSize();
+            return actor.GetProperty().GetLineWidth();
         }
 
         public void setLineWidth(Double value)
         {
-            // Note although we call it the line width, it's really point size
-            actor.GetProperty().SetPointSize(value);
+            actor.GetProperty().SetLineWidth(value);
             this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
         }
     }

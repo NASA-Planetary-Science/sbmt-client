@@ -80,11 +80,6 @@ public class DEMModel extends SmallBodyModel
         dem.SetPolys(polys);
         //dem.GetPointData().SetScalars(heights);
 
-        vtkPoints boundaryPoints = new vtkPoints();
-        vtkCellArray boundaryPolys = new vtkCellArray();
-        boundary.SetPoints(boundaryPoints);
-        boundary.SetVerts(boundaryPolys);
-
         heightsGravityPerPoint.SetNumberOfComponents(1);
         heightsGravity.SetNumberOfComponents(1);
         heightsPlane.SetNumberOfComponents(1);
@@ -103,12 +98,8 @@ public class DEMModel extends SmallBodyModel
 
         in.close();
 
-        idList = new vtkIdList();
-        idList.SetNumberOfIds(1);
-
         int[][] indices = new int[MAX_WIDTH][MAX_HEIGHT];
         int c = 0;
-        int d = 0;
         float x, y, z, h, h2, s;
         int i0, i1, i2, i3;
 
@@ -130,14 +121,6 @@ public class DEMModel extends SmallBodyModel
                     h = 1000.0f * data[index(m,n,0)];
                     h2 = 1000.0f * data[index(m,n,1)];
                     s = (float)(180.0/Math.PI) * data[index(m,n,2)];
-
-                    if (m == startPixel || m == endPixel || n == startPixel || n == endPixel)
-                    {
-                        boundaryPoints.InsertNextPoint(x, y, z);
-                        idList.SetId(0, d);
-                        boundaryPolys.InsertNextCell(idList);
-                        ++d;
-                    }
 
                     //points.SetPoint(c, x, y, z);
                     points.InsertNextPoint(x, y, z);
@@ -199,6 +182,10 @@ public class DEMModel extends SmallBodyModel
 
         vtkPolyData normalsFilterOutput = normalsFilter.GetOutput();
         dem.DeepCopy(normalsFilterOutput);
+
+        PolyDataUtil.getBoundary(dem, boundary);
+        // Remove scalar data since it interferes with setting the boundary color
+        boundary.GetCellData().SetScalars(null);
 
         // Make a copy of heightsGravity per point since we need that later for
         // drawing profile plots.

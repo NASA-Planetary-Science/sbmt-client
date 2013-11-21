@@ -2402,6 +2402,23 @@ public class PolyDataUtil
         return area;
     }
 
+    static public void getBoundary(vtkPolyData polydata, vtkPolyData boundary)
+    {
+        // Compute the bounding edges of this surface
+        vtkFeatureEdges edgeExtracter = new vtkFeatureEdges();
+        edgeExtracter.SetInput(polydata);
+        edgeExtracter.BoundaryEdgesOn();
+        edgeExtracter.FeatureEdgesOff();
+        edgeExtracter.NonManifoldEdgesOff();
+        edgeExtracter.ManifoldEdgesOff();
+        edgeExtracter.Update();
+
+        vtkPolyData edgeExtracterOutput = edgeExtracter.GetOutput();
+        boundary.DeepCopy(edgeExtracterOutput);
+
+        edgeExtracter.Delete();
+    }
+
     /**
      * Read in PDS vertex file format. There are 2 variants of this file. In
      * one the first line contains the number of points and the number of cells
