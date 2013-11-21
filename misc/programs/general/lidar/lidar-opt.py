@@ -8,7 +8,7 @@ import math
 
 
 if (len(sys.argv) < 3):
-    print "Usage: run-lidar-opt.py <-eros|-itokawa> track0.txt [track1.txt ...]"
+    print "Usage: run-lidar-opt.py <-eros|-itokawa|/path/to/VTK/file> track0.txt [track1.txt ...]"
     sys.exit(1)
 
 
