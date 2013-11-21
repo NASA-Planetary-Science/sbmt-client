@@ -76,7 +76,7 @@ Track concatTracks(const std::vector<Track>& tracks, bool timeSort)
 {
     Track track;
 
-    for (int i=0; i<tracks.size(); ++i)
+    for (size_t i=0; i<tracks.size(); ++i)
     {
         track.insert(track.end(), tracks.at(i).begin(), tracks.at(i).end());
     }
