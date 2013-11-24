@@ -3,8 +3,11 @@ package edu.jhuapl.near.server;
 import java.io.File;
 import java.io.IOException;
 
+import vtk.vtkPolyData;
+
 import edu.jhuapl.near.model.DEMModel;
 import edu.jhuapl.near.util.NativeLibraryLoader;
+import edu.jhuapl.near.util.PolyDataUtil;
 
 public class ConvertGaskellMapmakerCube
 {
@@ -12,37 +15,61 @@ public class ConvertGaskellMapmakerCube
         OBJ, PLT, VTK
     }
 
+    private static void usage()
+    {
+        System.out.println("Usage: ConvertGaskellMapmakerCube -obj|-plt|-vtk [-boundary] <cube-file> <output-file>");
+        System.exit(0);
+    }
+
     public static void main(String[] args)
     {
-        if (args.length != 3)
+        if (args.length < 3)
         {
-            System.out.println("Usage: ConvertGaskellMapmakerCube -obj|-plt|-vtk <cube-file> <output-file>");
-            System.exit(0);
+            usage();
         }
 
-        String outputType = args[0];
-        String cubeFile = args[1];
-        String outputFile = args[2];
 
         OutputType outputTypeEnum = null;
+        boolean boundaryOnly = false;
 
-        if (outputType.equals("-obj") || outputType.equals("--obj"))
+        int i = 0;
+        for(; i<args.length; ++i)
         {
-            outputTypeEnum = OutputType.OBJ;
+            if (args[i].equals("-obj") || args[i].equals("--obj"))
+            {
+                outputTypeEnum = OutputType.OBJ;
+            }
+            else if (args[i].equals("-plt") || args[i].equals("--plt"))
+            {
+                outputTypeEnum = OutputType.PLT;
+            }
+            else if (args[i].equals("-vtk") || args[i].equals("--vtk"))
+            {
+                outputTypeEnum = OutputType.VTK;
+            }
+            else if (args[i].equals("-boundary") || args[i].equals("--boundary"))
+            {
+                boundaryOnly = true;
+            }
+            else
+            {
+                break;
+            }
         }
-        else if (outputType.equals("-plt") || outputType.equals("--plt"))
+
+        // There must be numRequiredArgs arguments remaining after the options. Otherwise abort.
+        int numberRequiredArgs = 2;
+        if (args.length - i != numberRequiredArgs )
+            usage();
+
+        if ((outputTypeEnum == OutputType.PLT || outputTypeEnum == OutputType.OBJ) && boundaryOnly)
         {
-            outputTypeEnum = OutputType.PLT;
-        }
-        else if (outputType.equals("-vtk") || outputType.equals("--vtk"))
-        {
-            outputTypeEnum = OutputType.VTK;
-        }
-        else
-        {
-            System.out.println("Error. Unsupported file type. Valid options are -obj for OBJ format, -plt for Gaskell plate format, or -vtk for VTK format.");
+            System.out.println("When saving boundry, only VTK format is supported");
             System.exit(1);
         }
+
+        String cubeFile = args[i++];
+        String outputFile = args[i];
 
         NativeLibraryLoader.loadVtkLibraries();
 
@@ -60,17 +87,25 @@ public class ConvertGaskellMapmakerCube
 
         try
         {
-            if (outputTypeEnum == OutputType.OBJ)
+            if (boundaryOnly)
             {
-                dem.saveAsOBJ(new File(outputFile));
+                vtkPolyData boundary = dem.getBoundary();
+                PolyDataUtil.saveShapeModelAsVTK(boundary, outputFile);
             }
-            else if (outputTypeEnum == OutputType.PLT)
+            else
             {
-                dem.saveAsPLT(new File(outputFile));
-            }
-            else if (outputTypeEnum == OutputType.VTK)
-            {
-                dem.saveAsVTK(new File(outputFile));
+                if (outputTypeEnum == OutputType.OBJ)
+                {
+                    dem.saveAsOBJ(new File(outputFile));
+                }
+                else if (outputTypeEnum == OutputType.PLT)
+                {
+                    dem.saveAsPLT(new File(outputFile));
+                }
+                else if (outputTypeEnum == OutputType.VTK)
+                {
+                    dem.saveAsVTK(new File(outputFile));
+                }
             }
         }
         catch (IOException e)
