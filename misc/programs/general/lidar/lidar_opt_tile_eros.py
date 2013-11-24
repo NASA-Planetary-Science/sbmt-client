@@ -129,7 +129,7 @@ def runMapmakerAtLonLat(lon, lat):
     if "darwin" in sys.platform:
         command = "MAPMAKERO.macosx"
     else:
-        command = "MAPMAKER.linux64"
+        command = "MAPMAKERO.linux64"
     p = subprocess.Popen(command, shell=True, stdin=subprocess.PIPE, env=myEnv, cwd=folder)
     name="lat"+str(lat)+"_lon"+str(lon)
     arguments = name+"\n513 5.0\nL\n" + str(lat) + "," + str(lon) + "\nn\nn\nn\nn\nn\nn\n"
