@@ -5,6 +5,7 @@
 
 
 import os
+import sys
 import subprocess
 from euclid import Vector3
 import math
@@ -124,7 +125,11 @@ def runMapmakerAtLonLat(lon, lat):
     folder = myEnv["HOME"] + "/.neartool/cache/2/GASKELL/EROS/mapmaker"
     myEnv["PATH"] = folder + "/EXECUTABLES:" + myEnv["PATH"]
     myEnv["DYLD_LIBRARY_PATH"] = folder + "/EXECUTABLES:"
-    command = "MAPMAKERO.macosx"
+    myEnv["LD_LIBRARY_PATH"] = folder + "/EXECUTABLES:"
+    if "darwin" in sys.platform:
+        command = "MAPMAKERO.macosx"
+    else:
+        command = "MAPMAKER.linux64"
     p = subprocess.Popen(command, shell=True, stdin=subprocess.PIPE, env=myEnv, cwd=folder)
     name="lat"+str(lat)+"_lon"+str(lon)
     arguments = name+"\n513 5.0\nL\n" + str(lat) + "," + str(lon) + "\nn\nn\nn\nn\nn\nn\n"
