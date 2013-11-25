@@ -121,16 +121,18 @@ def vertsToLatLon(verts):
 
 
 def runMapmakerAtLonLat(lon, lat):
-    myEnv = os.environ.copy()
-    folder = myEnv["HOME"] + "/.neartool/cache/2/GASKELL/EROS/mapmaker"
-    myEnv["PATH"] = folder + "/EXECUTABLES:" + myEnv["PATH"]
-    myEnv["DYLD_LIBRARY_PATH"] = folder + "/EXECUTABLES:"
-    myEnv["LD_LIBRARY_PATH"] = folder + "/EXECUTABLES:"
+    folder = os.environ["HOME"] + "/.neartool/cache/2/GASKELL/EROS/mapmaker"
+    os.environ["PATH"] = folder + "/EXECUTABLES:" + os.environ["PATH"]
     if "darwin" in sys.platform:
+        os.environ["DYLD_LIBRARY_PATH"] = folder + "/EXECUTABLES:"
         command = "MAPMAKERO.macosx"
-    else:
+    else: # assume Linux
+        os.environ["DISPLAY"] = ":20"
+        os.system("Xvfb :20 &") # needed to run in headless mode
+        os.environ["LD_LIBRARY_PATH"] = os.environ["JAVA_HOME"]+"/jre/lib/amd64:"+os.environ["JAVA_HOME"]+"/jre/lib/amd64/xawt"
+        os.environ["LD_LIBRARY_PATH"] = folder + "/EXECUTABLES:" + os.environ["LD_LIBRARY_PATH"]
         command = "MAPMAKERO.linux64"
-    p = subprocess.Popen(command, shell=True, stdin=subprocess.PIPE, env=myEnv, cwd=folder)
+    p = subprocess.Popen(command, shell=True, stdin=subprocess.PIPE, env=os.environ, cwd=folder)
     name="lat"+str(lat)+"_lon"+str(lon)
     arguments = name+"\n513 5.0\nL\n" + str(lat) + "," + str(lon) + "\nn\nn\nn\nn\nn\nn\n"
     print arguments
@@ -146,8 +148,8 @@ def runMapmakerAtLonLat(lon, lat):
     os.mkdir(name)
     newCubeFile = name + "/" + name + ".cub"
     newLblFile = name + "/" + name + ".lbl"
-    os.rename(cubeFile, newCubeFile)
-    os.rename(lblFile, newLblFile)
+    os.system("mv " + cubeFile + " " + newCubeFile)
+    os.system("mv " + lblFile  + " " + newLblFile)
     cubeFile = newCubeFile
     lblFile = newLblFile
 
@@ -172,7 +174,7 @@ def runMapmakerAtLonLat(lon, lat):
 
     # Optimize these tracks
     trackFiles = glob.glob(tracksDir + "/*.txt")
-    command = "./lidar-opt.py " + cubeFileVtk + " " + " ".join(trackFiles)
+    command = "./lidar-opt.py " + cubeFileVtk + " " + " ".join(trackFiles) + " > /dev/null 2>&1"
     print command
     os.system(command)
 
