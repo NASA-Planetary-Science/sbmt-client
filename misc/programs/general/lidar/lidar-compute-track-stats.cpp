@@ -26,7 +26,7 @@ void writeStats(const string& outputfile,
     }
 
     fout.precision(16);
-    fout << "track,start time,end time,x translation,y translation,z translation,total translation,"
+    fout << "track,start time,end time,track size,x translation,y translation,z translation,total translation,"
          << "min distance before,max distance before,rms before,mean distance before,stdev before,"
          << "min distance after,max distance after,rms after,mean distance after,stdev after\n";
 
@@ -56,6 +56,7 @@ void writeStats(const string& outputfile,
         fout << basename(&name[0]) << ","
                                    << trackBefore[0].utc << ","
                                    << trackAfter[trackAfter.size()-1].utc << ","
+                                   << trackBefore.size() << ","
                                    << translation[0] << ","
                                    << translation[1] << ","
                                    << translation[2] << ","
@@ -90,6 +91,7 @@ void writeStats(const string& outputfile,
     fout << "all,"
          << allTracksBefore[0].utc << ","
          << allTracksBefore[allTracksBefore.size()-1].utc << ","
+         << allTracksBefore.size() << ","
          << translation[0] << ","
          << translation[1] << ","
          << translation[2] << ","
