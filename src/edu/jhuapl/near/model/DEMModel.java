@@ -26,6 +26,7 @@ public class DEMModel extends SmallBodyModel
 {
     private static final int MAX_WIDTH = 1027;
     private static final int MAX_HEIGHT = 1027;
+    private static final float INVALID_VALUE = -1.0e38f;
     private vtkIdList idList;
     private vtkPolyData dem;
     private vtkPolyData boundary;
@@ -113,28 +114,37 @@ public class DEMModel extends SmallBodyModel
 //        for (int m=startPixel; m<=endPixel; ++m)
 //            for (int n=startPixel; n<=endPixel; ++n)
             {
+                indices[m][n] = -1;
+
                 if (m >= startPixel && m <= endPixel && n >= startPixel && n <= endPixel)
                 {
+                    // A pixel value of -1.0e38 means that pixel is invalid and should be skipped
                     x = data[index(m,n,3)];
                     y = data[index(m,n,4)];
                     z = data[index(m,n,5)];
-                    h = 1000.0f * data[index(m,n,0)];
-                    h2 = 1000.0f * data[index(m,n,1)];
-                    s = (float)(180.0/Math.PI) * data[index(m,n,2)];
+                    h = data[index(m,n,0)];
+                    h2 = data[index(m,n,1)];
+                    s = data[index(m,n,2)];
 
-                    //points.SetPoint(c, x, y, z);
-                    points.InsertNextPoint(x, y, z);
-                    heightsGravity.InsertNextTuple1(h);
-                    heightsPlane.InsertNextTuple1(h2);
-                    slopes.InsertNextTuple1(s);
+                    boolean valid = (x != INVALID_VALUE && y != INVALID_VALUE && z != INVALID_VALUE
+                            && h != INVALID_VALUE && h2 != INVALID_VALUE && s != INVALID_VALUE);
 
-                    indices[m][n] = c;
+                    if (valid)
+                    {
+                        h = 1000.0f * h;
+                        h2 = 1000.0f * h2;
+                        s = (float)(180.0/Math.PI) * s;
 
-                    ++c;
-                }
-                else
-                {
-                    indices[m][n] = -1;
+                        //points.SetPoint(c, x, y, z);
+                        points.InsertNextPoint(x, y, z);
+                        heightsGravity.InsertNextTuple1(h);
+                        heightsPlane.InsertNextTuple1(h2);
+                        slopes.InsertNextTuple1(s);
+
+                        indices[m][n] = c;
+
+                        ++c;
+                    }
                 }
             }
 
