@@ -1,6 +1,5 @@
 package edu.jhuapl.near.server;
 
-import java.io.File;
 import java.io.IOException;
 
 import vtk.vtkPolyData;
@@ -17,7 +16,7 @@ public class ConvertGaskellMapmakerCube
 
     private static void usage()
     {
-        System.out.println("Usage: ConvertGaskellMapmakerCube -obj|-plt|-vtk [-boundary] <cube-file> <output-file>");
+        System.out.println("Usage: ConvertGaskellMapmakerCube -obj|-plt|-vtk [-boundary|-decimate] <cube-file> <output-file>");
         System.exit(0);
     }
 
@@ -31,6 +30,7 @@ public class ConvertGaskellMapmakerCube
 
         OutputType outputTypeEnum = null;
         boolean boundaryOnly = false;
+        boolean decimate = false;
 
         int i = 0;
         for(; i<args.length; ++i)
@@ -50,6 +50,10 @@ public class ConvertGaskellMapmakerCube
             else if (args[i].equals("-boundary") || args[i].equals("--boundary"))
             {
                 boundaryOnly = true;
+            }
+            else if (args[i].equals("-decimate") || args[i].equals("--decimate"))
+            {
+                decimate = true;
             }
             else
             {
@@ -94,17 +98,24 @@ public class ConvertGaskellMapmakerCube
             }
             else
             {
+                vtkPolyData polydata = dem.getSmallBodyPolyData();
+
+                if (decimate)
+                {
+                    PolyDataUtil.decimatePolyData(polydata, 0.99);
+                }
+
                 if (outputTypeEnum == OutputType.OBJ)
                 {
-                    dem.saveAsOBJ(new File(outputFile));
+                    PolyDataUtil.saveShapeModelAsOBJ(polydata, outputFile);
                 }
                 else if (outputTypeEnum == OutputType.PLT)
                 {
-                    dem.saveAsPLT(new File(outputFile));
+                    PolyDataUtil.saveShapeModelAsPLT(polydata, outputFile);
                 }
                 else if (outputTypeEnum == OutputType.VTK)
                 {
-                    dem.saveAsVTK(new File(outputFile));
+                    PolyDataUtil.saveShapeModelAsVTK(polydata, outputFile);
                 }
             }
         }

@@ -20,6 +20,7 @@ import vtk.vtkCleanPolyData;
 import vtk.vtkClipPolyData;
 import vtk.vtkCutter;
 import vtk.vtkDataArray;
+import vtk.vtkDecimatePro;
 import vtk.vtkExtractPolyDataGeometry;
 import vtk.vtkFeatureEdges;
 import vtk.vtkFloatArray;
@@ -3200,5 +3201,22 @@ public class PolyDataUtil
         cleanFilter.Update();
 
         saveShapeModelAsPLT(cleanFilter.GetOutput(), filename);
+    }
+
+    static public void decimatePolyData(vtkPolyData polydata, double targetReduction)
+    {
+        vtkDecimatePro dec = new vtkDecimatePro();
+        dec.SetInput(polydata);
+        dec.SetTargetReduction(targetReduction);
+        dec.PreserveTopologyOn();
+        dec.SplittingOff();
+        dec.BoundaryVertexDeletionOff();
+        dec.SetMaximumError(Double.MAX_VALUE);
+        dec.AccumulateErrorOn();
+        dec.PreSplitMeshOn();
+        dec.Update();
+        vtkPolyData decOutput = dec.GetOutput();
+
+        polydata.DeepCopy(decOutput);
     }
 }

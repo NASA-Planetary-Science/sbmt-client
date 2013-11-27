@@ -7,99 +7,52 @@
 import os
 import sys
 import subprocess
-from euclid import Vector3
 import math
 import spice
 from joblib import Parallel, delayed
 import shutil
 import glob
 
+def loadVerticesFromPDSFile(filename):
+    """Loads vertices from specified file and returns them as a list"""
+    fin = open(filename,'r')
+    firstLine = fin.readline().split()
+    numPoints = firstLine[0]
+    verts = []
+    for i in range(int(numPoints)):
+        line = fin.readline()
+        p = line.split()
+        verts.append( (float(p[1]),float(p[2]),float(p[3])) )
+    fin.close()
+    return verts
 
-def icosahedron():
-    """Construct a 20-sided polyhedron"""
-    X = 0.525731112119133606
-    Z = 0.850650808352039932
+def distance2BetweenPoints(p1, p2):
+    return ((p2[0] - p1[0]) ** 2 +
+            (p2[1] - p1[1]) ** 2 +
+            (p2[2] - p1[2]) ** 2)
 
-    verts = [ \
-             (-X, 0.0, Z),
-             (X, 0.0, Z),
-             (-X, 0.0, -Z),
-             (X, 0.0, -Z),
-             (0.0, Z, X),
-             (0.0, Z, -X),
-             (0.0, -Z, X),
-             (0.0, -Z, -X),
-             (Z, X, 0.0),
-             (-Z, X, 0.0),
-             (Z, -X, 0.0),
-             (-Z, -X, 0.0) ]
-    faces = [ \
-             (0, 4, 1),
-             (0, 9, 4),
-             (9, 5, 4),
-             (4, 5, 8),
-             (4, 8, 1),
-             (8, 10, 1),
-             (8, 3, 10),
-             (5, 3, 8),
-             (5, 2, 3),
-             (2, 7, 3),
-             (7, 10, 3),
-             (7, 6, 10),
-             (7, 11, 6),
-             (11, 0, 6),
-             (0, 1, 6),
-             (6, 1, 10),
-             (9, 0, 11),
-             (9, 11, 2),
-             (9, 2, 5),
-             (7, 2, 11) ]
-    return verts, faces
+def isVertexNearOtherVertices(otherVertices, v, minDistance):
+    """Tests whether v is within minDistance of otherVertices. If it is True
+    is return, otherwise False is returned."""
+    for vert in otherVertices:
+        if distance2BetweenPoints(vert, v) <= (minDistance*minDistance):
+            return True
+    return False
 
 
-def subdivide(verts, faces):
-    """Subdivide each triangle into four triangles, pushing verts to the unit sphere"""
-    triangles = len(faces)
-    for faceIndex in xrange(triangles):
-
-        # Create three new verts at the midpoints of each edge:
-        face = faces[faceIndex]
-        a,b,c = (Vector3(*verts[vertIndex]) for vertIndex in face)
-        verts.append((a + b).normalized()[:])
-        verts.append((b + c).normalized()[:])
-        verts.append((a + c).normalized()[:])
-
-        # Split the current triangle into four smaller triangles:
-        i = len(verts) - 3
-        j, k = i+1, i+2
-        faces.append((i, j, k))
-        faces.append((face[0], i, k))
-        faces.append((i, face[1], j))
-        faces[faceIndex] = (k, j, face[2])
-
-    return verts, faces
-
-
-def scaleIcosahedron(verts, sx, sy, sz):
-    for i in range(len(verts)):
-        v = verts[i]
-        v = (v[0]*sx, v[1]*sy, v[2]*sz)
-        verts[i] = v
-
-
-def printToOBJ(verts, faces):
-    """Print out mesh in OBJ format"""
+def findUniformlySpacedPoints(verts, meanDistanceBetweenPoints):
+    """Given a list of vertices, returns a subset of these that are all
+    meanDistanceBetweenPoints apart from each other"""
+    spacedPoints = []
     for v in verts:
-        print "v " + str(v[0]) + " " + str(v[1]) + " " + str(v[2])
-    for f in faces:
-        print "f " + str(f[0]+1) + " " + str(f[1]+1) + " " + str(f[2]+1)
+        if isVertexNearOtherVertices(spacedPoints, v, meanDistanceBetweenPoints) == False:
+            print "found new point " + str(v)
+            spacedPoints.append(v)
+    return spacedPoints
 
-
-def subdividedIcosahedron(numSubdivisions):
-    verts, faces = icosahedron()
-    for x in xrange(numSubdivisions):
-        verts, faces = subdivide(verts, faces)
-    return verts, faces
+def printPointsAsTrackFile(verts):
+    for v in verts:
+        print "2000-01-01T00:00:00 " + str(v[0]) + " " + str(v[1]) + " " + str(v[2]) + " 0.0 0.0 0.0"
 
 
 def vertsToLatLon(verts):
@@ -116,7 +69,7 @@ def vertsToLatLon(verts):
             lon = lon - 360.0
         ll = (lon, lat)
         lonLat.append(ll)
-    # Note the list contains duplicates so remove them
+    # Note the list may contain duplicates so remove them
     return list(set(lonLat))
 
 
@@ -132,8 +85,9 @@ def runMapmakerAtLonLat(lon, lat):
         os.environ["LD_LIBRARY_PATH"] = os.environ["JAVA_HOME"]+"/jre/lib/amd64:"+os.environ["JAVA_HOME"]+"/jre/lib/amd64/xawt"
         os.environ["LD_LIBRARY_PATH"] = folder + "/EXECUTABLES:" + os.environ["LD_LIBRARY_PATH"]
         command = "MAPMAKERO.linux64"
-    p = subprocess.Popen(command, shell=True, stdin=subprocess.PIPE, env=os.environ, cwd=folder)
     name="lat"+str(lat)+"_lon"+str(lon)
+
+    p = subprocess.Popen(command, shell=True, stdin=subprocess.PIPE, env=os.environ, cwd=folder)
     arguments = name+"\n513 5.0\nL\n" + str(lat) + "," + str(lon) + "\nn\nn\nn\nn\nn\nn\n"
     print arguments
     p.communicate(arguments)
@@ -165,6 +119,12 @@ def runMapmakerAtLonLat(lon, lat):
     print command
     os.system(command)
 
+    # convert the cube file to VTK format but decimate it so we can combine all the cubes together
+    decimatedFileVtk = name+"/"+name+"-decimated.vtk"
+    command = "./convert-mapmaker-cube -vtk -decimate " + cubeFile + " " + decimatedFileVtk
+    print command
+    os.system(command)
+
     # get all tracks inside cube
     tracksDir = name + "/tracks"
     os.mkdir(tracksDir)
@@ -178,18 +138,21 @@ def runMapmakerAtLonLat(lon, lat):
     print command
     os.system(command)
 
+    # tar up the folder
+    command = "tar czf " + name + ".tar.gz " + name
+    print command
+    os.system(command)
+
 
 def runMapmakerAtAllLonLat(lonLat, numJobs):
     Parallel(n_jobs=numJobs)(delayed(runMapmakerAtLonLat)(ll[0], ll[1]) for ll in lonLat)
 
 
-(verts, faces) = subdividedIcosahedron(2)
 
-# scale points to fit on ellipsoidal shape similar to Eros
-#scaleIcosahedron(verts, 16.32921, 8.44172, 5.979465)
-scaleIcosahedron(verts, 15.0, 8.44172, 5.979465)
-
-#printToOBJ(verts, faces)
+erosModelPds = os.environ["HOME"] + "/.neartool/cache/2/EROS/ver512q.tab"
+verts = loadVerticesFromPDSFile(erosModelPds)
+verts = findUniformlySpacedPoints(verts, 3.0);
+printPointsAsTrackFile(verts)
 
 lonLat = vertsToLatLon(verts)
 
