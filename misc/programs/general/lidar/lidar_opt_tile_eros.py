@@ -73,29 +73,18 @@ def vertsToLatLon(verts):
     return list(set(lonLat))
 
 
-def runMapmakerAtLonLat(lon, lat):
-    folder = os.environ["HOME"] + "/.neartool/cache/2/GASKELL/EROS/mapmaker"
-    os.environ["PATH"] = folder + "/EXECUTABLES:" + os.environ["PATH"]
-    if "darwin" in sys.platform:
-        os.environ["DYLD_LIBRARY_PATH"] = folder + "/EXECUTABLES:"
-        command = "MAPMAKERO.macosx"
-    else: # assume Linux
-        os.environ["DISPLAY"] = ":20"
-        os.system("Xvfb :20 &") # needed to run in headless mode
-        os.environ["LD_LIBRARY_PATH"] = os.environ["JAVA_HOME"]+"/jre/lib/amd64:"+os.environ["JAVA_HOME"]+"/jre/lib/amd64/xawt"
-        os.environ["LD_LIBRARY_PATH"] = folder + "/EXECUTABLES:" + os.environ["LD_LIBRARY_PATH"]
-        command = "MAPMAKERO.linux64"
+def runMapmakerAtLonLat(lon, lat, mapmakerFolder, mapmakerCommand):
     name="lat"+str(lat)+"_lon"+str(lon)
 
-    p = subprocess.Popen(command, shell=True, stdin=subprocess.PIPE, env=os.environ, cwd=folder)
+    p = subprocess.Popen(mapmakerCommand, shell=True, stdin=subprocess.PIPE, env=os.environ, cwd=mapmakerFolder)
     arguments = name+"\n513 5.0\nL\n" + str(lat) + "," + str(lon) + "\nn\nn\nn\nn\nn\nn\n"
     print arguments
     p.communicate(arguments)
     p.wait()
     print name
 
-    cubeFile = folder+"/OUTPUT/"+name+".cub"
-    lblFile = folder+"/OUTPUT/"+name+".lbl"
+    cubeFile = mapmakerFolder+"/OUTPUT/"+name+".cub"
+    lblFile = mapmakerFolder+"/OUTPUT/"+name+".lbl"
 
     # mv these files into a separate folder
     shutil.rmtree(name, ignore_errors=True)
@@ -144,9 +133,21 @@ def runMapmakerAtLonLat(lon, lat):
     os.system(command)
 
 
-def runMapmakerAtAllLonLat(lonLat, numJobs):
-    Parallel(n_jobs=numJobs)(delayed(runMapmakerAtLonLat)(ll[0], ll[1]) for ll in lonLat)
+def runMapmakerAtAllLonLat(lonLat, numJobs, mapmakerFolder, mapmakerCommand):
+    Parallel(n_jobs=numJobs)(delayed(runMapmakerAtLonLat)(ll[0], ll[1], mapmakerFolder, mapmakerCommand) for ll in lonLat)
 
+
+mapmakerFolder = os.environ["HOME"] + "/.neartool/cache/2/GASKELL/EROS/mapmaker"
+os.environ["PATH"] = mapmakerFolder + "/EXECUTABLES:" + os.environ["PATH"]
+if "darwin" in sys.platform:
+    os.environ["DYLD_LIBRARY_PATH"] = mapmakerFolder + "/EXECUTABLES:"
+    mapmakerCommand = "MAPMAKERO.macosx"
+else: # assume Linux
+    os.environ["DISPLAY"] = ":20"
+    os.system("/usr/bin/nohup Xvfb :20 &") # needed to run in headless mode
+    os.environ["LD_LIBRARY_PATH"] = os.environ["JAVA_HOME"]+"/jre/lib/amd64:"+os.environ["JAVA_HOME"]+"/jre/lib/amd64/xawt"
+    os.environ["LD_LIBRARY_PATH"] = mapmakerFolder + "/EXECUTABLES:" + os.environ["LD_LIBRARY_PATH"]
+    mapmakerCommand = "MAPMAKERO.linux64"
 
 
 erosModelPds = os.environ["HOME"] + "/.neartool/cache/2/EROS/ver512q.tab"
@@ -158,4 +159,4 @@ lonLat = vertsToLatLon(verts)
 
 print "number of maplets to do: " + str(len(lonLat))
 
-runMapmakerAtAllLonLat(lonLat, 8)
+runMapmakerAtAllLonLat(lonLat, 8, mapmakerFolder, mapmakerCommand)
