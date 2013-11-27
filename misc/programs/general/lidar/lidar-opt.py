@@ -20,14 +20,14 @@ def num_lines_in_input(inputfile):
     return num_lines
 
 
-def run_lidar_min(inputfile, body, vtkfile, kernelfile, outputfile):
+def run_lidar_min(vtkfile, kernelfile, outputfile, inputfile):
     number_points = num_lines_in_input(inputfile)
     startId = '0'
     stopId = str(number_points)
     # dname is folder containing this script
     abspath = os.path.abspath(__file__)
     dname = os.path.dirname(abspath)
-    command = dname +'/lidar-min-icp '+body+' --single-track-mode=yes '+vtkfile+' '+startId+' '+stopId+' '+kernelfile+' '+outputfile+' '+inputfile
+    command = dname +'/lidar-optimize-track '+vtkfile+' '+kernelfile+' '+outputfile+' '+inputfile
     print command
     p = subprocess.Popen(command, shell=True)
     p.wait()
@@ -56,13 +56,10 @@ def run_lidar_compute_track_stats(vtkfile, kernelfile, outputfile, files):
 
 
 if sys.argv[1] == '--eros' or sys.argv[1] == '-eros':
-    BODY='EROS'
     VTKFILE=os.environ['HOME']+'/.neartool/cache/2/EROS/ver512q.vtk'
 elif sys.argv[1] == '--itokawa' or sys.argv[1] == '-itokawa':
-    BODY='ITOKAWA'
     VTKFILE=os.environ['HOME']+'/.neartool/cache/2/ITOKAWA/ver512q.vtk'
 else:
-    BODY='EROS'
     VTKFILE=sys.argv[1]
 
 # Check to make sure shape model file exists
@@ -84,7 +81,7 @@ for f in inputFiles:
     INPUT=f
     output=INPUT+'-optimized.txt'
     outputFiles.append(output)
-    run_lidar_min(INPUT, BODY, VTKFILE, KERNEL, output)
+    run_lidar_min(VTKFILE, KERNEL, output, INPUT)
     inputOutputFiles.append(INPUT)
     inputOutputFiles.append(output)
 
