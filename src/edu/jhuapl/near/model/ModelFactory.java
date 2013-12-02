@@ -86,6 +86,8 @@ public class ModelFactory
     static public final String _52760_1998_ML14 = "52760 (1998 ML14)";
     static public final String GOLEVKA = "Golevka";
     static public final String WILD_2 = "Wild 2";
+    static public final String STEINS = "Steins";
+    static public final String HARTLEY = "Hartley";
 
     // Types of bodies
     static public final String ASTEROID = "Asteroids";
@@ -107,6 +109,8 @@ public class ModelFactory
     static public final String HUDSON = "Hudson";
     static public final String DUXBURY = "Duxbury";
     static public final String OSTRO = "Ostro";
+    static public final String JORDA = "Jorda";
+    static public final String NOLAN = "Nolan";
     static public final String CUSTOM = "Custom";
     static public final String EROSNAV = "NAV";
     static public final String EROSNLR = "NLR";
@@ -732,6 +736,15 @@ public class ModelFactory
         c.pathOnServer = "/HUDSON/GOLEVKA/6489golevka.obj.gz";
         configArray.add(c);
 
+        c = new ModelConfig();
+        c.name = RQ36;
+        c.type = ASTEROID;
+        c.population = NEO;
+        c.dataUsed = RADAR_BASED;
+        c.author = NOLAN;
+        c.pathOnServer = "/NOLAN/BENNU/101955bennu.obj.gz";
+        configArray.add(c);
+
         if (Configuration.isAPLVersion())
         {
             c = new ModelConfig();
@@ -784,6 +797,15 @@ public class ModelFactory
             c.imageInstrumentName = OSIRIS;
             configArray.add(c);
         }
+
+        c = new ModelConfig();
+        c.name = STEINS;
+        c.type = ASTEROID;
+        c.population = MAIN_BELT;
+        c.dataUsed = IMAGE_BASED;
+        c.author = JORDA;
+        c.pathOnServer = "/JORDA/STEINS/steins_cart.plt.gz";
+        configArray.add(c);
 
         if (Configuration.isAPLVersion())
         {
@@ -886,6 +908,15 @@ public class ModelFactory
         c.dataUsed = IMAGE_BASED;
         c.author = DUXBURY;
         c.pathOnServer = "/OTHER/WILD2/wild2_cart_full.w2.gz";
+        configArray.add(c);
+
+        c = new ModelConfig();
+        c.name = HARTLEY;
+        c.type = COMETS;
+        c.population = null;
+        c.dataUsed = IMAGE_BASED;
+        c.author = THOMAS;
+        c.pathOnServer = "/THOMAS/HARTLEY/hartley2_2012_cart.plt.gz";
         configArray.add(c);
     }
 
