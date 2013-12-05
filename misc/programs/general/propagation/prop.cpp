@@ -131,7 +131,7 @@ int main(int argc, char** argv)
         else if (!strcmp(argv[i], "-ip"))
         {
             string values = argv[++i];
-            vector<string> vel = split(values, ",");
+            vector<string> vel = split(values, ',');
             initialPosition[0] = atof(vel[0].c_str());
             initialPosition[1] = atof(vel[1].c_str());
             initialPosition[2] = atof(vel[2].c_str());
@@ -139,7 +139,7 @@ int main(int argc, char** argv)
         else if (!strcmp(argv[i], "-iv"))
         {
             string values = argv[++i];
-            vector<string> vel = split(values, ",");
+            vector<string> vel = split(values, ',');
             initialVelocity[0] = atof(vel[0].c_str());
             initialVelocity[1] = atof(vel[1].c_str());
             initialVelocity[2] = atof(vel[2].c_str());
