@@ -143,8 +143,6 @@ if "darwin" in sys.platform:
     os.environ["DYLD_LIBRARY_PATH"] = mapmakerFolder + "/EXECUTABLES:"
     mapmakerCommand = "MAPMAKERO.macosx"
 else: # assume Linux
-    os.environ["DISPLAY"] = ":20"
-    os.system("/usr/bin/nohup Xvfb :20 &") # needed to run in headless mode
     os.environ["LD_LIBRARY_PATH"] = os.environ["JAVA_HOME"]+"/jre/lib/amd64:"+os.environ["JAVA_HOME"]+"/jre/lib/amd64/xawt"
     os.environ["LD_LIBRARY_PATH"] = mapmakerFolder + "/EXECUTABLES:" + os.environ["LD_LIBRARY_PATH"]
     mapmakerCommand = "MAPMAKERO.linux64"
@@ -156,6 +154,10 @@ verts = findUniformlySpacedPoints(verts, 3.0);
 printPointsAsTrackFile(verts)
 
 lonLat = vertsToLatLon(verts)
+
+# Note we need to manually add a point to fully cover the asteroid since
+# the above scheme leaves some wholes
+lonLat.append((360.0-187.304, 2.061))
 
 print "number of maplets to do: " + str(len(lonLat))
 
