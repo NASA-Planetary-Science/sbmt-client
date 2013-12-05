@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# *** EXPORT CONTROLLED (12/2013) ***
+
 # Program to search for lidar that overlaps with a mapmaker cube.
 # Copy this file into the SBMT release (into the same folder as the runsbmt file).
 

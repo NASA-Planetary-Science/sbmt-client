@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+# *** EXPORT CONTROLLED (12/2013) ***
+
 import os
 import sys
 import subprocess

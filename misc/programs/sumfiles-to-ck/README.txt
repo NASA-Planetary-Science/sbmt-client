@@ -1,3 +1,5 @@
+*** EXPORT CONTROLLED (12/2013) ***
+
 ----------------------------------
 CK Kernel Generation from Sumfiles
 ----------------------------------

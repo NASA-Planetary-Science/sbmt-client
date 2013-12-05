@@ -1,3 +1,5 @@
+*** EXPORT CONTROLLED (12/2013) ***
+
 This program determines the optimal translation that minimizes the
 error of a lidar track to the asteroid. To use this program, first
 save out to disk the tracks you are interested in optimizing in the
