@@ -155,10 +155,9 @@ Body Mapping Tool and where they were obtained from.
     rotation of the small body. Values of densities and rotation
     rates were obtained from Wikipedia.
 -   Slope data was computed as the angular separation in degrees between
-    the plate normal vector and the gravitational acceleration vector
-    (computed as explained above) at each plate center. The formula
-    used is as follows: If N is the normal vector and A is the
-    acceleration vector, then the slope is arccos(-dot(N,A))*180/pi.
+    the plate normal vector and the negative gravitational
+    acceleration vector (computed as explained above) at each plate
+    center.
 -   Elevation data was computed as follows. First a reference potential,
     R, was computed by averaging the potential (computed as explained
     above) weighted by the plate area. I.e. R = SUM(P_i*A_i)/SUM(A_i)
