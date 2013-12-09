@@ -27,6 +27,7 @@ import edu.jhuapl.near.model.gaspra.SSIGaspraImage;
 import edu.jhuapl.near.model.ida.SSIIdaImage;
 import edu.jhuapl.near.model.itokawa.AmicaImage;
 import edu.jhuapl.near.model.itokawa.Itokawa;
+import edu.jhuapl.near.model.lutetia.Lutetia;
 import edu.jhuapl.near.model.lutetia.OsirisImage;
 import edu.jhuapl.near.model.mathilde.MSIMathildeImage;
 import edu.jhuapl.near.model.phobos.PhobosImage;
@@ -147,6 +148,20 @@ public class ModelFactory
         MSI_MATHILDE_IMAGE
     }
 
+    static private final String[] DEFAULT_GASKELL_LABELS_PER_RESOLUTION = {
+        "Low (49152 plates)",
+        "Medium (196608 plates)",
+        "High (786432 plates)",
+        "Very High (3145728 plates)"
+    };
+
+    static private final int[] DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION = {
+        49152,
+        196608,
+        786432,
+        3145728
+    };
+
     static public final ArrayList<ModelConfig> builtInModelConfigs = new ArrayList<ModelConfig>();
 
     static
@@ -161,6 +176,8 @@ public class ModelFactory
         c.dataUsed = IMAGE_BASED;
         c.author = GASKELL;
         c.pathOnServer = "/GASKELL/EROS";
+        c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
+        c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
         c.hasPerspectiveImages = true;
         c.hasLidarData = true;
         c.hasMapmaker = true;
@@ -204,6 +221,13 @@ public class ModelFactory
         c = c.clone();
         c.author = THOMAS;
         c.pathOnServer = "/THOMAS/EROS";
+        c.smallBodyLabelPerResolutionLevel = new String[]{
+                "1708 plates", "7790 plates", "10152 plates",
+                "22540 plates", "89398 plates", "200700 plates"
+        };
+        c.smallBodyNumberOfPlatesPerResolutionLevel = new int[]{
+                1708, 7790, 10152, 22540, 89398, 200700
+        };
         c.hasMapmaker = false;
         configArray.add(c);
 
@@ -229,6 +253,8 @@ public class ModelFactory
         c.dataUsed = IMAGE_BASED;
         c.author = GASKELL;
         c.pathOnServer = "/GASKELL/ITOKAWA";
+        c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
+        c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
         c.hasPerspectiveImages = true;
         c.hasLidarData = true;
         c.imageSearchDefaultStartDate = new GregorianCalendar(2005, 8, 1, 0, 0, 0).getTime();
@@ -286,6 +312,8 @@ public class ModelFactory
         c.dataUsed = IMAGE_BASED;
         c.author = GASKELL;
         c.pathOnServer = "/GASKELL/PHOBOS";
+        c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
+        c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
         c.hasPerspectiveImages = true;
         c.imageSearchDefaultStartDate = new GregorianCalendar(1976, 6, 24, 0, 0, 0).getTime();
         c.imageSearchDefaultEndDate = new GregorianCalendar(1989, 2, 26, 0, 0, 0).getTime();
@@ -329,6 +357,8 @@ public class ModelFactory
             c.dataUsed = IMAGE_BASED;
             c.author = EXPERIMENTAL;
             c.pathOnServer = "/GASKELL/PHOBOSEXPERIMENTAL";
+            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
+            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
             c.useAPLServer = true;
             c.hasPerspectiveImages = true;
             c.hasMapmaker = true;
@@ -380,6 +410,8 @@ public class ModelFactory
         c.dataUsed = IMAGE_BASED;
         c.author = GASKELL;
         c.pathOnServer = "/GASKELL/MIMAS";
+        c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
+        c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
         c.hasPerspectiveImages = true;
         c.imageSearchDefaultStartDate = new GregorianCalendar(1980, 10, 10, 0, 0, 0).getTime();
         c.imageSearchDefaultEndDate = new GregorianCalendar(2011, 0, 31, 0, 0, 0).getTime();
@@ -400,6 +432,8 @@ public class ModelFactory
         c.dataUsed = IMAGE_BASED;
         c.author = GASKELL;
         c.pathOnServer = "/GASKELL/PHOEBE";
+        c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
+        c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
         c.hasPerspectiveImages = true;
         c.imageSearchDefaultStartDate = new GregorianCalendar(1980, 10, 10, 0, 0, 0).getTime();
         c.imageSearchDefaultEndDate = new GregorianCalendar(2011, 0, 31, 0, 0, 0).getTime();
@@ -422,6 +456,8 @@ public class ModelFactory
             c.dataUsed = IMAGE_BASED;
             c.author = GASKELL;
             c.pathOnServer = "/GASKELL/VESTA";
+            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
+            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
             c.useAPLServer = true;
             c.hasPerspectiveImages = true;
             c.imageSearchDefaultStartDate = new GregorianCalendar(2011, 4, 3, 0, 0, 0).getTime();
@@ -754,6 +790,8 @@ public class ModelFactory
             c.dataUsed = ENHANCED;
             c.author = GASKELL;
             c.pathOnServer = "/GASKELL/RQ36";
+            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
+            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
             c.useAPLServer = true;
             c.hasLidarData = true;
             c.hasMapmaker = true;
@@ -783,6 +821,8 @@ public class ModelFactory
             c.dataUsed = IMAGE_BASED;
             c.author = GASKELL;
             c.pathOnServer = "/GASKELL/LUTETIA";
+            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
+            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
             c.useAPLServer = true;
             c.hasPerspectiveImages = true;
             c.imageSearchDefaultStartDate = new GregorianCalendar(2010, 6, 10, 0, 0, 0).getTime();
@@ -797,6 +837,24 @@ public class ModelFactory
             c.imageInstrumentName = OSIRIS;
             configArray.add(c);
         }
+
+        c = new ModelConfig();
+        c.name = LUTETIA;
+        c.type = ASTEROID;
+        c.population = MAIN_BELT;
+        c.dataUsed = IMAGE_BASED;
+        c.author = JORDA;
+        c.pathOnServer = "/JORDA/LUTETIA";
+        c.smallBodyLabelPerResolutionLevel = new String[]{
+                "2962 plates ", "5824 plates ", "11954 plates ", "24526 plates ",
+                "47784 plates ", "98280 plates ", "189724 plates ", "244128 plates ",
+                "382620 plates ", "784510 plates ", "1586194 plates ", "3145728 plates"
+        };
+        c.smallBodyNumberOfPlatesPerResolutionLevel = new int[]{
+                2962, 5824, 11954, 24526, 47784, 98280, 189724,
+                244128, 382620, 784510, 1586194, 3145728
+        };
+        configArray.add(c);
 
         c = new ModelConfig();
         c.name = STEINS;
@@ -816,6 +874,8 @@ public class ModelFactory
             c.dataUsed = IMAGE_BASED;
             c.author = GASKELL;
             c.pathOnServer = "/GASKELL/DIONE";
+            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
+            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
             c.useAPLServer = true;
             c.hasPerspectiveImages = true;
             c.imageSearchDefaultStartDate = new GregorianCalendar(1980, 10, 10, 0, 0, 0).getTime();
@@ -840,6 +900,8 @@ public class ModelFactory
             c.dataUsed = IMAGE_BASED;
             c.author = GASKELL;
             c.pathOnServer = "/GASKELL/RHEA";
+            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
+            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
             c.useAPLServer = true;
             configArray.add(c);
         }
@@ -853,6 +915,8 @@ public class ModelFactory
             c.dataUsed = IMAGE_BASED;
             c.author = GASKELL;
             c.pathOnServer = "/GASKELL/TETHYS";
+            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
+            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
             c.useAPLServer = true;
             configArray.add(c);
         }
@@ -866,6 +930,8 @@ public class ModelFactory
             c.dataUsed = IMAGE_BASED;
             c.author = GASKELL;
             c.pathOnServer = "/GASKELL/HYPERION";
+            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
+            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
             c.useAPLServer = true;
             configArray.add(c);
         }
@@ -939,6 +1005,8 @@ public class ModelFactory
         public String dataUsed; // e.g. images, radar, lidar, or enhanced
         public String author; // e.g. Gaskell
         public String pathOnServer;
+        public String[] smallBodyLabelPerResolutionLevel; // only needed when number resolution levels > 1
+        public int[] smallBodyNumberOfPlatesPerResolutionLevel; // only needed when number resolution levels > 1
         public boolean useAPLServer = false;
         public boolean hasImageMap = false;
         public boolean hasPerspectiveImages = false;
@@ -991,6 +1059,10 @@ public class ModelFactory
             c.hasMapmaker = this.hasMapmaker;
             c.hasSpectralData = this.hasSpectralData;
             c.hasLineamentData = this.hasLineamentData;
+            if (this.smallBodyLabelPerResolutionLevel != null)
+                c.smallBodyLabelPerResolutionLevel = this.smallBodyLabelPerResolutionLevel.clone();
+            if (this.smallBodyNumberOfPlatesPerResolutionLevel != null)
+                c.smallBodyNumberOfPlatesPerResolutionLevel = this.smallBodyNumberOfPlatesPerResolutionLevel.clone();
             if (this.hasPerspectiveImages)
             {
                 c.imageSearchDefaultStartDate = (Date)this.imageSearchDefaultStartDate.clone();
@@ -1137,6 +1209,11 @@ public class ModelFactory
                 return new ErosThomas(config);
             else if (VESTA.equals(name))
                 return new VestaOld(config);
+        }
+        else if (JORDA.equals(author))
+        {
+            if (LUTETIA.equals(name))
+                return new Lutetia(config);
         }
         else if (CUSTOM.equals(author))
         {

@@ -11,8 +11,10 @@ import java.awt.event.ItemListener;
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 
 import javax.swing.AbstractAction;
+import javax.swing.AbstractButton;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -64,12 +66,7 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
     private JLabel customColorRedLabel;
     private JLabel customColorGreenLabel;
     private JLabel customColorBlueLabel;
-    private JRadioButton res0ModelButton;
-    private JRadioButton res1ModelButton;
-    private JRadioButton res2ModelButton;
-    private JRadioButton res3ModelButton;
-    private JRadioButton res4ModelButton;
-    private JRadioButton res5ModelButton;
+    private ArrayList<JRadioButton> resModelButtons = new ArrayList<JRadioButton>();
     private ButtonGroup resolutionButtonGroup;
     private JCheckBox gridCheckBox;
     private JCheckBox axesCheckBox;
@@ -103,88 +100,32 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
 
         JLabel resolutionLabel = new JLabel("Resolution");
 
-        // For now hard code in the labels and tooltips. Ideally this info
-        // should be obtained from the small body model. Currently there
-        // are only 2 type of models with more than one resolution level:
-        // Bob Gaskell's models (which have 4 levels) and Peter Thomas' Eros
-        // model which has 6 (http://sbn.psi.edu/pds/resource/nearbrowse.html).
-        String[] labels = null;
-        int[] plateCount = null;
-        if (modelManager.getSmallBodyModel().getNumberResolutionLevels() == 4)
+        final SmallBodyModel smallBodyModel = modelManager.getSmallBodyModel();
+
+        int numberResolutionLevels = smallBodyModel.getNumberResolutionLevels();
+        String[] labels = smallBodyModel.getModelConfig().smallBodyLabelPerResolutionLevel;
+        int[] plateCount = smallBodyModel.getModelConfig().smallBodyNumberOfPlatesPerResolutionLevel;
+
+        if (numberResolutionLevels > 1)
         {
-            plateCount = new int[]{49152, 196608, 786432, 3145728,
-                    0, // not used
-                    0, // not used
-            };
-            labels = new String[]{
-                    "Low (49152 plates)",
-                    "Medium (196608 plates)",
-                    "High (786432 plates)",
-                    "Very High (3145728 plates)",
-                    " ", // not used
-                    " " // not used
-                    };
+            resolutionButtonGroup = new ButtonGroup();
+
+            for (int i=0; i < numberResolutionLevels; ++i)
+            {
+                JRadioButton resButton = new JRadioButton(labels[i]);
+                if (i == 0)
+                    resButton.setSelected(true);
+                resButton.setActionCommand(labels[i]);
+                resButton.addItemListener(this);
+                resButton.setEnabled(true);
+                resButton.setToolTipText(
+                        "<html>Click here to show a model of " + bodyName + " <br />" +
+                                "containing " + plateCount[i] + " plates</html>");
+                resModelButtons.add(resButton);
+
+                resolutionButtonGroup.add(resButton);
+            }
         }
-        else
-        {
-            plateCount = new int[]{1708, 7790, 10152, 22540, 89398, 200700};
-            labels = new String[]{
-                    "1708 plates",
-                    "7790 plates",
-                    "10152 plates",
-                    "22540 plates",
-                    "89398 plates",
-                    "200700 plates"
-            };
-        }
-
-        res0ModelButton = new JRadioButton(labels[0]);
-        res0ModelButton.setActionCommand(labels[0]);
-        res0ModelButton.addItemListener(this);
-        res0ModelButton.setEnabled(true);
-        res0ModelButton.setToolTipText(
-                "<html>Click here to show a model of " + bodyName + " <br />" +
-                "containing " + plateCount[0] + " plates</html>");
-
-        res1ModelButton = new JRadioButton(labels[1]);
-        res1ModelButton.setActionCommand(labels[1]);
-        res1ModelButton.addItemListener(this);
-        res1ModelButton.setEnabled(true);
-        res1ModelButton.setToolTipText(
-                "<html>Click here to show a model of " + bodyName + " <br />" +
-                "containing " + plateCount[1] + " plates</html>");
-
-        res2ModelButton = new JRadioButton(labels[2]);
-        res2ModelButton.setActionCommand(labels[2]);
-        res2ModelButton.addItemListener(this);
-        res2ModelButton.setEnabled(true);
-        res2ModelButton.setToolTipText(
-                "<html>Click here to show a model of " + bodyName + " <br />" +
-                "containing " + plateCount[2] + " plates</html>");
-
-        res3ModelButton = new JRadioButton(labels[3]);
-        res3ModelButton.setActionCommand(labels[3]);
-        res3ModelButton.addItemListener(this);
-        res3ModelButton.setEnabled(true);
-        res3ModelButton.setToolTipText(
-                "<html>Click here to show a model of " + bodyName + " <br />" +
-                "containing " + plateCount[3] + " plates</html>");
-
-        res4ModelButton = new JRadioButton(labels[4]);
-        res4ModelButton.setActionCommand(labels[4]);
-        res4ModelButton.addItemListener(this);
-        res4ModelButton.setEnabled(true);
-        res4ModelButton.setToolTipText(
-                "<html>Click here to show a model of " + bodyName + " <br />" +
-                "containing " + plateCount[4] + " plates</html>");
-
-        res5ModelButton = new JRadioButton(labels[5]);
-        res5ModelButton.setActionCommand(labels[5]);
-        res5ModelButton.addItemListener(this);
-        res5ModelButton.setEnabled(true);
-        res5ModelButton.setToolTipText(
-                "<html>Click here to show a model of " + bodyName + " <br />" +
-                "containing " + plateCount[5] + " plates</html>");
 
         // The following snippet was taken from https://explodingpixels.wordpress.com/2008/10/28/make-jeditorpane-use-the-system-font/
         // which shows how to make a JEditorPane behave look like a JLabel but still be selectable.
@@ -199,17 +140,6 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
         String bodyRule = "body { font-family: " + font.getFamily() + "; " +
                 "font-size: " + font.getSize() + "pt; }";
         ((HTMLDocument)statisticsLabel.getDocument()).getStyleSheet().addRule(bodyRule);
-
-
-        resolutionButtonGroup = new ButtonGroup();
-        resolutionButtonGroup.add(res0ModelButton);
-        resolutionButtonGroup.add(res1ModelButton);
-        resolutionButtonGroup.add(res2ModelButton);
-        resolutionButtonGroup.add(res3ModelButton);
-        resolutionButtonGroup.add(res4ModelButton);
-        resolutionButtonGroup.add(res5ModelButton);
-
-        final SmallBodyModel smallBodyModel = modelManager.getSmallBodyModel();
 
         JLabel coloringLabel = new JLabel();
         coloringLabel.setText("Plate Coloring");
@@ -276,7 +206,8 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
         coloringButtonGroup.add(rgbColoringButton);
         coloringButtonGroup.setSelected(noColoringButton.getModel(), true);
 
-        resolutionButtonGroup.setSelected(res0ModelButton.getModel(), true);
+        setStatisticsLabel();
+        updateColoringComboBoxes();
 
         gridCheckBox = new JCheckBox();
         gridCheckBox.setText("Show Coordinate Grid");
@@ -306,19 +237,11 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
         JPanel surfacePropertiesEditorPanel = new DisplayPropertyEditorPanel(smallBodyModel);
 
         panel.add(modelCheckBox, "wrap");
-        if (modelManager.getSmallBodyModel().getNumberResolutionLevels() >= 4)
+        if (smallBodyModel.getNumberResolutionLevels() > 1)
         {
             panel.add(resolutionLabel, "wrap");
-            panel.add(res0ModelButton, "wrap, gapleft 25");
-            panel.add(res1ModelButton, "wrap, gapleft 25");
-            panel.add(res2ModelButton, "wrap, gapleft 25");
-            panel.add(res3ModelButton, "wrap, gapleft 25");
-
-            if (modelManager.getSmallBodyModel().getNumberResolutionLevels() == 6)
-            {
-                panel.add(res4ModelButton, "wrap, gapleft 25");
-                panel.add(res5ModelButton, "wrap, gapleft 25");
-            }
+            for (JRadioButton rb : resModelButtons)
+                panel.add(rb, "wrap, gapleft 25");
         }
 
         // Only show coloring in APL version or if there are built in colors.
@@ -416,66 +339,12 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
                 imageMapOpacitySpinner.setEnabled(false);
             }
         }
-        else if (e.getItemSelectable() == this.res0ModelButton)
+        else if (this.resModelButtons.contains(e.getItemSelectable()))
         {
-            if (this.res0ModelButton.isSelected())
+            if (((AbstractButton)e.getItemSelectable()).isSelected())
                 try {
-                    smallBodyModel.setModelResolution(0);
-                    setStatisticsLabel();
-                    updateColoringComboBoxes();
-                } catch (IOException e1) {
-                    e1.printStackTrace();
-                }
-        }
-        else if (e.getItemSelectable() == this.res1ModelButton)
-        {
-            if (this.res1ModelButton.isSelected())
-                try {
-                    smallBodyModel.setModelResolution(1);
-                    setStatisticsLabel();
-                    updateColoringComboBoxes();
-                } catch (IOException e1) {
-                    e1.printStackTrace();
-                }
-        }
-        else if (e.getItemSelectable() == this.res2ModelButton)
-        {
-            if (this.res2ModelButton.isSelected())
-                try {
-                    smallBodyModel.setModelResolution(2);
-                    setStatisticsLabel();
-                    updateColoringComboBoxes();
-                } catch (IOException e1) {
-                    e1.printStackTrace();
-                }
-        }
-        else if (e.getItemSelectable() == this.res3ModelButton)
-        {
-            if (this.res3ModelButton.isSelected())
-                try {
-                    smallBodyModel.setModelResolution(3);
-                    setStatisticsLabel();
-                    updateColoringComboBoxes();
-                } catch (IOException e1) {
-                    e1.printStackTrace();
-                }
-        }
-        else if (e.getItemSelectable() == this.res4ModelButton)
-        {
-            if (this.res4ModelButton.isSelected())
-                try {
-                    smallBodyModel.setModelResolution(4);
-                    setStatisticsLabel();
-                    updateColoringComboBoxes();
-                } catch (IOException e1) {
-                    e1.printStackTrace();
-                }
-        }
-        else if (e.getItemSelectable() == this.res5ModelButton)
-        {
-            if (this.res5ModelButton.isSelected())
-                try {
-                    smallBodyModel.setModelResolution(5);
+                    int level = this.resModelButtons.indexOf(e.getItemSelectable());
+                    smallBodyModel.setModelResolution(level);
                     setStatisticsLabel();
                     updateColoringComboBoxes();
                 } catch (IOException e1) {
