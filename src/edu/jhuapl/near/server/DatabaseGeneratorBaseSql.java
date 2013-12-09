@@ -361,7 +361,7 @@ abstract public class DatabaseGeneratorBaseSql
     {
         Configuration.setAPLVersion(true);
 
-        NativeLibraryLoader.loadVtkLibraries();
+        NativeLibraryLoader.loadVtkLibrariesNoGui();
 
         smallBodyModel = createSmallBodyModel();
 

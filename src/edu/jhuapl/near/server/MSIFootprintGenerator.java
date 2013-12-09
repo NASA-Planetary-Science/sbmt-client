@@ -148,7 +148,7 @@ public class MSIFootprintGenerator
      */
     public static void main(String[] args)
     {
-        NativeLibraryLoader.loadVtkLibrariesLinuxNoX11();
+        NativeLibraryLoader.loadVtkLibrariesNoGui();
 
         String msiFileList=args[0];
 

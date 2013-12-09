@@ -24,7 +24,7 @@ public class ResampleLowResColoringData
      */
     public static void main(String[] args) throws IOException
     {
-        NativeLibraryLoader.loadVtkLibraries();
+        NativeLibraryLoader.loadVtkLibrariesNoGui();
 
         // Load in the low res model
         SmallBodyModel modelLow = new Eros(ModelFactory.getModelConfig(ModelFactory.EROS, ModelFactory.GASKELL));

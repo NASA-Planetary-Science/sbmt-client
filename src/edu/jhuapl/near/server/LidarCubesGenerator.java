@@ -79,7 +79,7 @@ abstract public class LidarCubesGenerator
 
     public void run()
     {
-        NativeLibraryLoader.loadVtkLibraries();
+        NativeLibraryLoader.loadVtkLibrariesNoGui();
 
         SmallBodyModel smallBodyModel = getSmallBodyModel();
 

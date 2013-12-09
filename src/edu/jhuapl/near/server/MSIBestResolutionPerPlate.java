@@ -242,7 +242,7 @@ public class MSIBestResolutionPerPlate
      */
     public static void main(String[] args) throws IOException
     {
-        NativeLibraryLoader.loadVtkLibrariesLinuxNoX11();
+        NativeLibraryLoader.loadVtkLibrariesNoGui();
 
         String msiFileList=args[0];
 

@@ -118,7 +118,7 @@ public abstract class LidarSqlDatabaseGenerator
 
     public void run()
     {
-        NativeLibraryLoader.loadVtkLibraries();
+        NativeLibraryLoader.loadVtkLibrariesNoGui();
 
         SmallBodyModel smallBodyModel = getSmallBodyModel();
 

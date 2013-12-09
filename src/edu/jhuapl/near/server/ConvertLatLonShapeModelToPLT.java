@@ -20,7 +20,7 @@ public class ConvertLatLonShapeModelToPLT
 {
     public static void main(String[] args) throws Exception
     {
-        NativeLibraryLoader.loadVtkLibraries();
+        NativeLibraryLoader.loadVtkLibrariesNoGui();
 
         boolean westLongitude = true;
         int i = 0;

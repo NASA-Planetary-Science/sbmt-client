@@ -24,6 +24,15 @@ public class NativeLibraryLoader
             }
         });
 
+        loadVtkLibrariesNoGui();
+    }
+
+    /**
+     * For batch processing jobs, we don't need any GUI,
+     * so don't initialize swing stuff.
+     */
+    static public void loadVtkLibrariesNoGui()
+    {
         if (Configuration.isWindows())
         {
             // On windows, just load all the libraries
@@ -98,21 +107,5 @@ public class NativeLibraryLoader
             System.loadLibrary("vtkVolumeRenderingJava");
             System.loadLibrary("vtksbUnsortedJava");
         }
-    }
-
-    /**
-     * For batch processing jobs on linux, we don't need any rendering,
-     * so don't load the rendering related libraries.
-     */
-    static public void loadVtkLibrariesLinuxNoX11()
-    {
-        System.loadLibrary("jawt"); // For some reason this is not loaded automatically on some systems
-        System.loadLibrary("vtkCommonJava");
-        System.loadLibrary("vtkFilteringJava");
-        System.loadLibrary("vtkGraphicsJava");
-        System.loadLibrary("vtkGenericFilteringJava");
-        System.loadLibrary("vtkIOJava");
-        System.loadLibrary("vtkImagingJava");
-        System.loadLibrary("vtksbUnsortedJava");
     }
 }

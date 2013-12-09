@@ -70,7 +70,7 @@ public class SearchLidarDataInsideMapmakerCube
 
         File outputFolder = new File(args[5]);
 
-        NativeLibraryLoader.loadVtkLibraries();
+        NativeLibraryLoader.loadVtkLibrariesNoGui();
 
         String labelFile = cubeFile.substring(0, cubeFile.length()-3) + "lbl";
         DEMModel dem = null;

@@ -75,7 +75,7 @@ public class ConvertGaskellMapmakerCube
         String cubeFile = args[i++];
         String outputFile = args[i];
 
-        NativeLibraryLoader.loadVtkLibraries();
+        NativeLibraryLoader.loadVtkLibrariesNoGui();
 
         String labelFile = cubeFile.substring(0, cubeFile.length()-3) + "lbl";
         DEMModel dem = null;

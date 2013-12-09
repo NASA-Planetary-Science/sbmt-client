@@ -493,7 +493,7 @@ public class AmicaBackplanesGenerator
      */
     public static void main(String[] args) throws IOException
     {
-        NativeLibraryLoader.loadVtkLibraries();
+        NativeLibraryLoader.loadVtkLibrariesNoGui();
 
         String amicaFileList=args[0];
         String inertialFilename = args[1];

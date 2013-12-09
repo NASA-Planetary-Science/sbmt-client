@@ -499,7 +499,7 @@ public class VestaDatabaseGeneratorSql
     {
         Configuration.setAPLVersion(true);
 
-        NativeLibraryLoader.loadVtkLibraries();
+        NativeLibraryLoader.loadVtkLibrariesNoGui();
 
         ModelConfig modelConfig = ModelFactory.getModelConfig(ModelFactory.VESTA, ModelFactory.GASKELL);
         vestaModel = ModelFactory.createSmallBodyModel(modelConfig);

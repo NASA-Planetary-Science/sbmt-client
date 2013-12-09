@@ -380,7 +380,7 @@ public class ItokawaDatabaseGeneratorSql
      */
     public static void main(String[] args) throws IOException
     {
-        NativeLibraryLoader.loadVtkLibraries();
+        NativeLibraryLoader.loadVtkLibrariesNoGui();
 
         itokawaModel = new Itokawa(ModelFactory.getModelConfig(ModelFactory.ITOKAWA, ModelFactory.GASKELL));
 

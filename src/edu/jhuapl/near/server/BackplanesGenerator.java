@@ -149,7 +149,7 @@ public class BackplanesGenerator
      */
     public void doMain(String[] args) throws IOException
     {
-        NativeLibraryLoader.loadVtkLibraries();
+        NativeLibraryLoader.loadVtkLibrariesNoGui();
 
         String body = args[0];
 
