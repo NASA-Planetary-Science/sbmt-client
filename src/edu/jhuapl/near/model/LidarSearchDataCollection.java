@@ -292,9 +292,10 @@ public class LidarSearchDataCollection extends Model
      * with a single track.
      * @param filename
      */
-    public void loadTrackFromFile(File file) throws IOException
+    public void loadTracksFromFiles(File[] files) throws IOException
     {
         originalPoints.clear();
+        tracks.clear();
 
         int timeindex = 0;
         int xindex = 1;
@@ -304,36 +305,44 @@ public class LidarSearchDataCollection extends Model
         int scyindex = 5;
         int sczindex = 6;
 
-        InputStream fs = new FileInputStream(file.getAbsolutePath());
-        InputStreamReader isr = new InputStreamReader(fs);
-        BufferedReader in = new BufferedReader(isr);
-
-        String lineRead;
-        while ((lineRead = in.readLine()) != null)
+        for (File file : files)
         {
-            String[] vals = lineRead.trim().split("\\s+");
+            InputStream fs = new FileInputStream(file.getAbsolutePath());
+            InputStreamReader isr = new InputStreamReader(fs);
+            BufferedReader in = new BufferedReader(isr);
 
-            long time = new DateTime(vals[timeindex]).getMillis();
+            Track track = new Track();
+            track.startId = originalPoints.size();
 
-            double[] scpos = new double[3];
-            double[] target = new double[3];
-            target[0] = Double.parseDouble(vals[xindex]);
-            target[1] = Double.parseDouble(vals[yindex]);
-            target[2] = Double.parseDouble(vals[zindex]);
-            scpos[0] = Double.parseDouble(vals[scxindex]);
-            scpos[1] = Double.parseDouble(vals[scyindex]);
-            scpos[2] = Double.parseDouble(vals[sczindex]);
+            String lineRead;
+            while ((lineRead = in.readLine()) != null)
+            {
+                String[] vals = lineRead.trim().split("\\s+");
 
-            originalPoints.add(new LidarPoint(target, scpos, time));
+                long time = new DateTime(vals[timeindex]).getMillis();
+
+                double[] scpos = new double[3];
+                double[] target = new double[3];
+                target[0] = Double.parseDouble(vals[xindex]);
+                target[1] = Double.parseDouble(vals[yindex]);
+                target[2] = Double.parseDouble(vals[zindex]);
+                scpos[0] = Double.parseDouble(vals[scxindex]);
+                scpos[1] = Double.parseDouble(vals[scyindex]);
+                scpos[2] = Double.parseDouble(vals[sczindex]);
+
+                originalPoints.add(new LidarPoint(target, scpos, time));
+            }
+
+            in.close();
+
+            track.stopId = originalPoints.size() - 1;
+            tracks.add(track);
         }
-
-        in.close();
 
         timeSeparationBetweenTracks = Long.MAX_VALUE;
         radialOffset = 0.0;
         translation[0] = translation[1] = translation[2] = 0.0;
 
-        computeTracks();
         assignInitialColorToTrack();
         updateTrackPolydata();
     }
