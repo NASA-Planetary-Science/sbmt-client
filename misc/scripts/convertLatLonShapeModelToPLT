@@ -1,5 +1,6 @@
 #!/bin/sh
 
-cd `dirname $0`
-
-java -Djava.library.path=lib/mac64 -Dcom.apple.mrj.application.apple.menu.about.name="ConvertLatLonShapeModelToPLT" -classpath lib/commons-io-2.0.jar:lib/commons-math-2.2.jar:lib/fits-1.04.0.jar:lib/h2-1.3.162.jar:lib/jcommon-1.0.16.jar:lib/jcommon-1.0.17.jar:lib/jfreechart-1.0.13.jar:lib/jfreechart-1.0.14.jar:lib/jgoodies-common-1.1.1.jar:lib/jgoodies-looks-2.4.0.jar:lib/jide-oss-2.7.3.jar:lib/joda-time-1.6.jar:lib/libquaqua64.jnilib-7.3.4.jar:lib/miglayout-3.7.1-swing.jar:lib/miglayout-4.0-swing.jar:lib/mysql-connector-java-5.1.10-bin.jar:lib/near-apl.jar:lib/quaqua-7.3.4-filechooser-only.jar:lib/quaqua-7.3.4.jar:lib/vtk.jar:lib/vtksb.jar edu.jhuapl.near.server.ConvertLatLonShapeModelToPLT $@
+DIR=`dirname "$0"`
+cd "$DIR"
+export DYLD_LIBRARY_PATH=lib/mac64:$DYLD_LIBRARY_PATH
+/usr/libexec/java_home -v 1.6 -a x86_64 -exec java -Djava.library.path=lib/mac64 -cp lib/near.jar edu.jhuapl.near.server.ConvertLatLonShapeModelToPLT $@

@@ -19,9 +19,13 @@ import java.util.Map;
 import java.util.TreeSet;
 import java.util.zip.GZIPInputStream;
 
-import org.apache.commons.math.analysis.polynomials.PolynomialFunction;
-import org.apache.commons.math.optimization.fitting.PolynomialFitter;
-import org.apache.commons.math.optimization.general.LevenbergMarquardtOptimizer;
+import org.apache.commons.math3.analysis.polynomials.PolynomialFunction;
+import org.apache.commons.math3.fitting.PolynomialFitter;
+import org.apache.commons.math3.linear.Array2DRowRealMatrix;
+import org.apache.commons.math3.linear.LUDecomposition;
+import org.apache.commons.math3.linear.RealMatrix;
+import org.apache.commons.math3.linear.SingularValueDecomposition;
+import org.apache.commons.math3.optim.nonlinear.vector.jacobian.LevenbergMarquardtOptimizer;
 import org.joda.time.DateTime;
 
 import vtk.vtkActor;
@@ -843,7 +847,7 @@ public class LidarSearchDataCollection extends Model
             double[] lineStartPoint = new double[3];
             for (int j=0; j<3; ++j)
             {
-                PolynomialFitter fitter = new PolynomialFitter(1, new LevenbergMarquardtOptimizer());
+                PolynomialFitter fitter = new PolynomialFitter(new LevenbergMarquardtOptimizer());
                 for (int i=startId; i<=stopId; ++i)
                 {
                     LidarPoint lp = originalPoints.get(i);
@@ -851,7 +855,7 @@ public class LidarSearchDataCollection extends Model
                     fitter.addObservedPoint(1.0, (double)(lp.time-t0)/1000.0, target[j]);
                 }
 
-                PolynomialFunction fitted = fitter.fit();
+                PolynomialFunction fitted = new PolynomialFunction(fitter.fit(new double[2]));
                 fittedLineDirection[j] = fitted.getCoefficients()[1];
                 lineStartPoint[j] = fitted.value(0.0);
             }
