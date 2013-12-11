@@ -22,6 +22,8 @@ public class ConvertGaskellMapmakerCube
 
     public static void main(String[] args)
     {
+        System.setProperty("java.awt.headless", "true");
+
         if (args.length < 3)
         {
             usage();
@@ -75,7 +77,7 @@ public class ConvertGaskellMapmakerCube
         String cubeFile = args[i++];
         String outputFile = args[i];
 
-        NativeLibraryLoader.loadVtkLibrariesNoGui();
+        NativeLibraryLoader.loadVtkLibraries();
 
         String labelFile = cubeFile.substring(0, cubeFile.length()-3) + "lbl";
         DEMModel dem = null;

@@ -497,9 +497,11 @@ public class VestaDatabaseGeneratorSql
      */
     public static void main(String[] args) throws IOException
     {
+        System.setProperty("java.awt.headless", "true");
+
         Configuration.setAPLVersion(true);
 
-        NativeLibraryLoader.loadVtkLibrariesNoGui();
+        NativeLibraryLoader.loadVtkLibraries();
 
         ModelConfig modelConfig = ModelFactory.getModelConfig(ModelFactory.VESTA, ModelFactory.GASKELL);
         vestaModel = ModelFactory.createSmallBodyModel(modelConfig);

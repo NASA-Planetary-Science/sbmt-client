@@ -149,7 +149,8 @@ public class BackplanesGenerator
      */
     public void doMain(String[] args) throws IOException
     {
-        NativeLibraryLoader.loadVtkLibrariesNoGui();
+        System.setProperty("java.awt.headless", "true");
+        NativeLibraryLoader.loadVtkLibraries();
 
         String body = args[0];
 

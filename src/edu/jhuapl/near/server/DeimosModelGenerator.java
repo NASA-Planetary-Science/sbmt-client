@@ -34,15 +34,8 @@ public class DeimosModelGenerator {
      */
     public static void main(String[] args)
     {
-        javax.swing.SwingUtilities.invokeLater(new Runnable()
-        {
-            public void run()
-            {
-                // do nothing
-            }
-        });
-
-        NativeLibraryLoader.loadVtkLibrariesNoGui();
+        System.setProperty("java.awt.headless", "true");
+        NativeLibraryLoader.loadVtkLibraries();
 
         String datadir = args[0];
         String outputdir = args[1];

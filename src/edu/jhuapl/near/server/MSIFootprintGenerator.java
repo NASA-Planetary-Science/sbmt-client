@@ -148,7 +148,8 @@ public class MSIFootprintGenerator
      */
     public static void main(String[] args)
     {
-        NativeLibraryLoader.loadVtkLibrariesNoGui();
+        System.setProperty("java.awt.headless", "true");
+        NativeLibraryLoader.loadVtkLibraries();
 
         String msiFileList=args[0];
 

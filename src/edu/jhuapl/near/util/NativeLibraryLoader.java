@@ -1,5 +1,6 @@
 package edu.jhuapl.near.util;
 
+
 public class NativeLibraryLoader
 {
     /**
@@ -10,8 +11,7 @@ public class NativeLibraryLoader
     static public void loadVtkLibraries()
     {
         // Before loading the native vtk libraries, we want to make sure the
-        // awt/swing subsystem is loaded and initialized as much as possible (i.e.
-        // has already done some useful work) since by doing this, we
+        // awt/swing subsystem is loaded and initialized since by doing this, we
         // ensure that other java-internal shared libraries which vtk depends on are
         // already loaded in. Failure to do so may result in linking errors when
         // loading in the vtk shared libraries (especially vtkRenderingJava).
@@ -24,22 +24,13 @@ public class NativeLibraryLoader
             }
         });
 
-        loadVtkLibrariesNoGui();
-    }
-
-    /**
-     * For batch processing jobs, we don't need any GUI,
-     * so don't initialize swing stuff.
-     */
-    static public void loadVtkLibrariesNoGui()
-    {
         if (Configuration.isWindows())
         {
             // On windows, just load all the libraries
             // manually rather than dealing with how to find dependent libraries.
             // Note they must be loaded in the following order.
 
-            System.loadLibrary("jawt"); // For some reason this is not loaded automatically on Windows
+            System.loadLibrary("jawt"); // For some reason this is not loaded automatically
             System.loadLibrary("vtkzlib");
             System.loadLibrary("vtkNetCDF");
             System.loadLibrary("vtksys");
@@ -91,7 +82,7 @@ public class NativeLibraryLoader
             // $ORIGIN or @loader_path embedded in them so that
             // the dependent libraries are found.
 
-            System.loadLibrary("jawt"); // For some reason this is not loaded automatically on some systems
+            System.loadLibrary("jawt"); // For some reason this is not loaded automatically
             System.loadLibrary("vtkCommonJava");
             System.loadLibrary("vtkFilteringJava");
             System.loadLibrary("vtkGraphicsJava");

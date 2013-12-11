@@ -23,6 +23,8 @@ public class SearchLidarDataInsideMapmakerCube
 {
     public static void main(String[] args)
     {
+        System.setProperty("java.awt.headless", "true");
+
         if (args.length != 6)
         {
             System.out.println("Usage: SearchLidarDataInsideMapmakerCube <cube-file> <start-date> <end-date> <min-track-size> <track-separation-time> <output-folder>");
@@ -70,7 +72,7 @@ public class SearchLidarDataInsideMapmakerCube
 
         File outputFolder = new File(args[5]);
 
-        NativeLibraryLoader.loadVtkLibrariesNoGui();
+        NativeLibraryLoader.loadVtkLibraries();
 
         String labelFile = cubeFile.substring(0, cubeFile.length()-3) + "lbl";
         DEMModel dem = null;

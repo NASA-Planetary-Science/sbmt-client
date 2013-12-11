@@ -8,8 +8,6 @@ abspath = os.path.abspath(__file__)
 dname = os.path.dirname(abspath)
 os.chdir(dname)
 
-#os.system('export DISPLAY=":20"; Xvfb $DISPLAY &')
-
 
 # Compute total number on lines in provided list of files
 def num_lines_in_input(inputs):
