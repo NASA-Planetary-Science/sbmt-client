@@ -13,12 +13,7 @@ void TrackOptimizer::optimize()
 {
     int trackSize = track__.size();
     printf("Optimizing track with size %d\n", trackSize);
-
-    char fromTime[32];
-    char toTime[32];
-    et2utc_c(track__[0].time, "ISOD", 3, 32, fromTime);
-    et2utc_c(track__[trackSize-1].time, "ISOD", 3, 32, toTime);
-    printf("From %s to %s\n\n", fromTime, toTime);
+    printf("From %s to %s\n\n", track__[0].utc, track__[trackSize-1].utc);
 
 
     printf("Beginning ICP\n");

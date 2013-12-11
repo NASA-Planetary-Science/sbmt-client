@@ -8,30 +8,26 @@
 /************************************************************************
 * This program optimizes the location of a track by trying to compute the best
 * translation that best aligns the track with a shape model. This program
-* requires 4 arguments to run in this order:
+* requires 3 arguments to run in this order:
 * 1. vtkfile - the shape model in VTK format
-* 2. kernelfile - SPICE leap second kernel file
-* 3. outputfile - the name to be given to the optimized track file
-* 4. inputfile - path to input track file to be optimized
+* 2. outputfile - the name to be given to the optimized track file
+* 3. inputfile - path to input track file to be optimized
 ************************************************************************/
 int main(int argc, char** argv)
 {
-    if (argc < 5)
+    if (argc < 4)
     {
-        printf("Usage: lidar-min-icp <vtkfile> <kernelfiles> <outputfile> <inputfile>\n");
+        printf("Usage: lidar-min-icp <vtkfile> <outputfile> <inputfile>\n");
         return 1;
     }
 
     char* vtkfile = argv[1];
-    const char* const kernelfiles = argv[2];
-    const char* const outfile = argv[3];
-    const char* const infile = argv[4];
+    const char* const outfile = argv[2];
+    const char* const infile = argv[3];
 
     initializeVtk(vtkfile);
 
-    furnsh_c(kernelfiles);
-
-    Track track = LidarData::loadTrack(infile, true);
+    Track track = LidarData::loadTrack(infile, false);
 
     TrackOptimizer trackOptimizer;
     trackOptimizer.setTrack(track);

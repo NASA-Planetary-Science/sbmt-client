@@ -118,36 +118,33 @@ void writeStats(const string& outputfile,
 ************************************************************************/
 int main(int argc, char** argv)
 {
-    if (argc < 5)
+    if (argc < 4)
     {
-        cout << "Usage: lidar-compute-track-stats <vtkfile> <kernelfile> <output-file> <track1-before> <track1-after> [<track2-before> <track2-after> ...]" << endl;
+        cout << "Usage: lidar-compute-track-stats <vtkfile> <output-file> <track1-before> <track1-after> [<track2-before> <track2-after> ...]" << endl;
         return 1;
     }
 
     string vtkfile = argv[1];
-    string kernelfile = argv[2];
-    string outputfile = argv[3];
+    string outputfile = argv[2];
 
     vector<string> trackfilesBefore;
     vector<string> trackfilesAfter;
-    for (int i=4; i<argc; ++i)
+    for (int i=3; i<argc; ++i)
     {
         trackfilesBefore.push_back(argv[i]);
         ++i;
         trackfilesAfter.push_back(argv[i]);
     }
 
-    furnsh_c(kernelfile.c_str());
-
     initializeVtk(vtkfile.c_str());
 
     vector<Track> tracksBefore;
     for (size_t i=0;i<trackfilesBefore.size(); ++i)
-        tracksBefore.push_back(LidarData::loadTrack(trackfilesBefore.at(i), true));
+        tracksBefore.push_back(LidarData::loadTrack(trackfilesBefore.at(i), false));
 
     vector<Track> tracksAfter;
     for (size_t i=0;i<trackfilesAfter.size(); ++i)
-        tracksAfter.push_back(LidarData::loadTrack(trackfilesAfter.at(i), true));
+        tracksAfter.push_back(LidarData::loadTrack(trackfilesAfter.at(i), false));
 
     writeStats(outputfile, trackfilesBefore, tracksBefore, tracksAfter);
 
