@@ -43,6 +43,7 @@ gravity/gravity-point.h
 gravity/platemodel.cpp
 
 lidar/lidardata.cpp
+lidar/track-optimizer.cpp
 
 propagation/propagator.cpp
 propagation/propagatorfit.cpp
@@ -58,6 +59,9 @@ target_link_libraries(lidar vtkHybrid dsklib_c cspice csupport lbfgs gsl gslcbla
 
 add_executable(lidar-min-icp lidar/lidar-min-icp.cpp)
 target_link_libraries(lidar-min-icp lidar)
+
+add_executable(lidar-optimize-track lidar/lidar-optimize-track.cpp)
+target_link_libraries(lidar-optimize-track lidar)
 
 add_executable(lidar-min-fit lidar/lidar-min-fit.cpp)
 target_link_libraries(lidar-min-fit lidar)
