@@ -20,8 +20,7 @@ import edu.jhuapl.near.util.NativeLibraryLoader;
  *
  * On output this program also generates a file containing the transformation matrix which
  * was used to convert the original track to the new coordinate system. This file has the
- * same name as <output-track> but with "-transformation" added to the name (before the
- * extension).
+ * same name as <output-track> but with "-transformation.txt" appended to it.
  */
 public class ReprojectLidarTrackToFittedPlane
 {
@@ -49,7 +48,7 @@ public class ReprojectLidarTrackToFittedPlane
         {
             lidarModel.loadTracksFromFiles(new File[]{new File(inputFile)});
 
-            String transformationFile = outputFile.substring(0, outputFile.length()-4) + "-transformation.txt";
+            String transformationFile = outputFile + "-transformation.txt";
             lidarModel.reprojectedTrackOntoFittedPlane(0, new File(outputFile), new File(transformationFile));
         }
         catch (Exception e)
