@@ -6,6 +6,5 @@
 # Copy this file into the SBMT release (into the same folder as the runsbmt file).
 
 DIR=`dirname "$0"`
-cd "$DIR"
-export DYLD_LIBRARY_PATH=lib/mac64:$DYLD_LIBRARY_PATH
-/usr/libexec/java_home -v 1.6 -a x86_64 -exec java -Djava.library.path=lib/mac64 -cp lib/near.jar edu.jhuapl.near.server.SearchLidarDataInsideMapmakerCube $@
+export DYLD_LIBRARY_PATH="$DIR/lib/mac64:$DYLD_LIBRARY_PATH"
+/usr/libexec/java_home -v 1.6 -a x86_64 -exec java "-Djava.library.path=$DIR/lib/mac64" -cp "$DIR/lib/near.jar" edu.jhuapl.near.server.SearchLidarDataInsideMapmakerCube $@
