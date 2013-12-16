@@ -108,7 +108,7 @@
                 </Component>
                 <Component class="javax.swing.JLabel" name="sourceLabel">
                   <Properties>
-                    <Property name="text" type="java.lang.String" value="Source:"/>
+                    <Property name="text" type="java.lang.String" value="Pointing:"/>
                   </Properties>
                   <Constraints>
                     <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
