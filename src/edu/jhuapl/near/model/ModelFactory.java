@@ -799,14 +799,16 @@ public class ModelFactory
             c.lidarSearchDefaultEndDate = new DateTime(2050, 1, 1, 0, 0, 0, 0).toDate();
             c.lidarSearchDataSourceMap = new LinkedHashMap<String, String>();
             c.lidarSearchDataSourceMap.put("Default", "/GASKELL/RQ36/OLA/cubes");
-            c.lidarBrowseXYZIndices = new int[]{1, 2, 3};
-            c.lidarBrowseSpacecraftIndices = new int[]{4, 5, 6};
+            c.lidarBrowseXYZIndices = new int[]{96, 104, 112};
+            c.lidarBrowseSpacecraftIndices = new int[]{-1, -1, -1};
             c.lidarBrowseIsSpacecraftInSphericalCoordinates = false;
-            c.lidarBrowseTimeIndex = 0;
+            c.lidarBrowseTimeIndex = 18;
             c.lidarBrowseNoiseIndex = -1;
             c.lidarBrowseFileListResourcePath = "/edu/jhuapl/near/data/OlaLidarFiles.txt";
             c.lidarBrowseNumberHeaderLines = 0;
-            c.lidarBrowseIsInMeters = false;
+            c.lidarBrowseIsInMeters = true;
+            c.lidarBrowseIsBinary = true;
+            c.lidarBrowseBinaryRecordSize = 144;
             c.lidarOffsetScale = 0.0005;
             c.lidarInstrumentName = OLA;
             configArray.add(c);
@@ -1036,6 +1038,8 @@ public class ModelFactory
         public int lidarBrowseNoiseIndex;
         public String lidarBrowseFileListResourcePath;
         public int lidarBrowseNumberHeaderLines;
+        public boolean lidarBrowseIsBinary = false;
+        public int lidarBrowseBinaryRecordSize; // only required if lidarBrowseIsBinary is true
         // Return whether or not the units of the lidar points are in meters. If false
         // they are assumed to be in kilometers.
         public boolean lidarBrowseIsInMeters;
@@ -1089,6 +1093,8 @@ public class ModelFactory
                 c.lidarBrowseFileListResourcePath = this.lidarBrowseFileListResourcePath;
                 c.lidarBrowseNumberHeaderLines = this.lidarBrowseNumberHeaderLines;
                 c.lidarBrowseIsInMeters = this.lidarBrowseIsInMeters;
+                c.lidarBrowseIsBinary = this.lidarBrowseIsBinary;
+                c.lidarBrowseBinaryRecordSize = this.lidarBrowseBinaryRecordSize;
                 c.lidarOffsetScale = this.lidarOffsetScale;
                 c.lidarInstrumentName = this.lidarInstrumentName;
             }

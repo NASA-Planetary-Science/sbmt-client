@@ -38,14 +38,7 @@ public class LidarBrowseDataCollection extends Model implements PropertyChangeLi
             return;
 
         LidarDataPerUnit lidarData = new LidarDataPerUnit(
-                path,
-                modelConfig.lidarBrowseXYZIndices,
-                modelConfig.lidarBrowseSpacecraftIndices,
-                modelConfig.lidarBrowseIsSpacecraftInSphericalCoordinates,
-                modelConfig.lidarBrowseTimeIndex,
-                modelConfig.lidarBrowseNumberHeaderLines,
-                modelConfig.lidarBrowseIsInMeters,
-                modelConfig.lidarBrowseNoiseIndex);
+                path, modelConfig);
         lidarData.setShowSpacecraftPosition(showSpacecraftPosition);
 
         lidarData.addPropertyChangeListener(this);

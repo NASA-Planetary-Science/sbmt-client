@@ -4,10 +4,11 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.channels.FileChannel;
 import java.util.ArrayList;
-import java.util.zip.GZIPInputStream;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -24,6 +25,7 @@ import vtk.vtkPolyData;
 import vtk.vtkPolyDataMapper;
 import vtk.vtkProp;
 
+import edu.jhuapl.near.model.ModelFactory.ModelConfig;
 import edu.jhuapl.near.util.DoublePair;
 import edu.jhuapl.near.util.FileCache;
 import edu.jhuapl.near.util.LatLon;
@@ -46,26 +48,24 @@ public class LidarDataPerUnit extends Model
     private vtkActor actorSpacecraft;
 
     public LidarDataPerUnit(String path,
-            int[] xyzIndices,
-            int[] scXyzIndices,
-            boolean isSpacecraftInSphericalCoordinates,
-            int timeindex,
-            int numberHeaderLines,
-            boolean isInMeters,
-            int noiseindex) throws IOException
+            ModelConfig modelConfig) throws IOException
     {
-        File file = FileCache.getFileFromServer(path);
+        int[] xyzIndices = modelConfig.lidarBrowseXYZIndices;
+        int[] scXyzIndices = modelConfig.lidarBrowseSpacecraftIndices;
+        boolean isSpacecraftInSphericalCoordinates = modelConfig.lidarBrowseIsSpacecraftInSphericalCoordinates;
+        int timeindex = modelConfig.lidarBrowseTimeIndex;
+        int numberHeaderLines = modelConfig.lidarBrowseNumberHeaderLines;
+        boolean isInMeters = modelConfig.lidarBrowseIsInMeters;
+        int noiseindex = modelConfig.lidarBrowseNoiseIndex;
+        boolean isBinary = modelConfig.lidarBrowseIsBinary;
+        int binaryRecordSize = modelConfig.lidarBrowseBinaryRecordSize;
+
+        File file = FileCache.getFileFromServer(path, modelConfig.useAPLServer);
 
         if (file == null)
             throw new IOException(path + " could not be loaded");
 
         filepath = path;
-
-        InputStream fs = new FileInputStream(file.getAbsolutePath());
-        if (file.getAbsolutePath().toLowerCase().endsWith(".gz"))
-            fs = new GZIPInputStream(fs);
-        InputStreamReader isr = new InputStreamReader(fs);
-        BufferedReader in = new BufferedReader(isr);
 
 
         polydata = new vtkPolyData();
@@ -90,70 +90,133 @@ public class LidarDataPerUnit extends Model
         int xindex = xyzIndices[0];
         int yindex = xyzIndices[1];
         int zindex = xyzIndices[2];
-
         int scxindex = scXyzIndices[0];
         int scyindex = scXyzIndices[1];
         int sczindex = scXyzIndices[2];
 
-        for (int i=0; i<numberHeaderLines; ++i)
-            in.readLine();
-
-        String line;
-
         int count = 0;
-        while ((line = in.readLine()) != null)
+
+        FileInputStream fs = new FileInputStream(file.getAbsolutePath());
+
+        if (isBinary)
         {
-            String[] vals = line.trim().split("\\s+");
-
-            // Don't include noise
-            if (noiseindex >=0 && vals[noiseindex].equals("1"))
-                continue;
-
-            double x = Double.parseDouble(vals[xindex]);
-            double y = Double.parseDouble(vals[yindex]);
-            double z = Double.parseDouble(vals[zindex]);
-            double scx = Double.parseDouble(vals[scxindex]);
-            double scy = Double.parseDouble(vals[scyindex]);
-            double scz = Double.parseDouble(vals[sczindex]);
-
-            // If spacecraft position is in spherical coordinates,
-            // do the conversion here.
-            if (isSpacecraftInSphericalCoordinates)
+            FileChannel channel = fs.getChannel();
+            ByteBuffer bb = ByteBuffer.allocateDirect((int) file.length());
+            bb.clear();
+            bb.order(ByteOrder.LITTLE_ENDIAN);
+            if (channel.read(bb) != file.length())
             {
-                double[] xyz = MathUtil.latrec(new LatLon(scy*Math.PI/180.0, scx*Math.PI/180.0, scz));
-                scx = xyz[0];
-                scy = xyz[1];
-                scz = xyz[2];
+                fs.close();
+                throw new IOException("Error reading " + path);
             }
 
-            if (isInMeters)
+            byte[] utcArray = new byte[24];
+
+            int numRecords = (int) (file.length() / binaryRecordSize);
+            for (count = 0; count < numRecords; ++count)
             {
-                x /= 1000.0;
-                y /= 1000.0;
-                z /= 1000.0;
-                scx /= 1000.0;
-                scy /= 1000.0;
-                scz /= 1000.0;
+                int xoffset = count*binaryRecordSize + xindex;
+                int yoffset = count*binaryRecordSize + yindex;
+                int zoffset = count*binaryRecordSize + zindex;
+
+                double x = bb.getDouble(xoffset);
+                double y = bb.getDouble(yoffset);
+                double z = bb.getDouble(zoffset);
+
+                if (isInMeters)
+                {
+                    x /= 1000.0;
+                    y /= 1000.0;
+                    z /= 1000.0;
+                }
+                points.InsertNextPoint(x, y, z);
+                idList.SetId(0, count);
+                vert.InsertNextCell(idList);
+
+                // assume no spacecraft position for now
+
+                int timeoffset = count*binaryRecordSize + timeindex;
+
+                bb.position(timeoffset);
+                bb.get(utcArray);
+                String utc = new String(utcArray);
+
+                // We store the times in a vtk array. By storing in a vtk array, we don't have to
+                // worry about java out of memory errors since java doesn't know about c++ memory. We
+                // store in a double array rather than a long long array, since not sure if the conversion
+                // from a java long to a c++ long long is supported by vtk wrappers. Therefore convert
+                // the java long to a double using Double.longBitsToDouble function.
+                double t = Double.longBitsToDouble(new DateTime(utc, DateTimeZone.UTC).getMillis());
+                times.InsertNextValue(t);
             }
-            points.InsertNextPoint(x, y, z);
-            idList.SetId(0, count);
-            vert.InsertNextCell(idList);
 
-            pointsSc.InsertNextPoint(scx, scy, scz);
-            vertSc.InsertNextCell(idList);
+            fs.close();
+        }
+        else
+        {
+            InputStreamReader isr = new InputStreamReader(fs);
+            BufferedReader in = new BufferedReader(isr);
 
-            // We store the times in a vtk array. By storing in a vtk array, we don't have to
-            // worry about java out of memory errors since java doesn't know about c++ memory. We
-            // store in a double array rather than a long long array, since not sure if the conversion
-            // from a java long to a c++ long long is supported by vtk wrappers. Therefore convert
-            // the java long to a double using Double.longBitsToDouble function.
-            double t = Double.longBitsToDouble(new DateTime(vals[timeindex], DateTimeZone.UTC).getMillis());
-            times.InsertNextValue(t);
+            for (int i=0; i<numberHeaderLines; ++i)
+                in.readLine();
 
-            ++count;
+            String line;
+
+            while ((line = in.readLine()) != null)
+            {
+                String[] vals = line.trim().split("\\s+");
+
+                // Don't include noise
+                if (noiseindex >=0 && vals[noiseindex].equals("1"))
+                    continue;
+
+                double x = Double.parseDouble(vals[xindex]);
+                double y = Double.parseDouble(vals[yindex]);
+                double z = Double.parseDouble(vals[zindex]);
+                double scx = Double.parseDouble(vals[scxindex]);
+                double scy = Double.parseDouble(vals[scyindex]);
+                double scz = Double.parseDouble(vals[sczindex]);
+
+                // If spacecraft position is in spherical coordinates,
+                // do the conversion here.
+                if (isSpacecraftInSphericalCoordinates)
+                {
+                    double[] xyz = MathUtil.latrec(new LatLon(scy*Math.PI/180.0, scx*Math.PI/180.0, scz));
+                    scx = xyz[0];
+                    scy = xyz[1];
+                    scz = xyz[2];
+                }
+
+                if (isInMeters)
+                {
+                    x /= 1000.0;
+                    y /= 1000.0;
+                    z /= 1000.0;
+                    scx /= 1000.0;
+                    scy /= 1000.0;
+                    scz /= 1000.0;
+                }
+                points.InsertNextPoint(x, y, z);
+                idList.SetId(0, count);
+                vert.InsertNextCell(idList);
+
+                pointsSc.InsertNextPoint(scx, scy, scz);
+                vertSc.InsertNextCell(idList);
+
+                // We store the times in a vtk array. By storing in a vtk array, we don't have to
+                // worry about java out of memory errors since java doesn't know about c++ memory. We
+                // store in a double array rather than a long long array, since not sure if the conversion
+                // from a java long to a c++ long long is supported by vtk wrappers. Therefore convert
+                // the java long to a double using Double.longBitsToDouble function.
+                double t = Double.longBitsToDouble(new DateTime(vals[timeindex], DateTimeZone.UTC).getMillis());
+                times.InsertNextValue(t);
+
+                ++count;
+            }
+
+            in.close();
         }
 
-        in.close();
 
         originalPoints = new vtkPoints();
         originalPoints.DeepCopy(points);
