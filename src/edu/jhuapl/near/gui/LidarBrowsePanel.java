@@ -29,6 +29,7 @@ import javax.swing.event.ListSelectionListener;
 import com.jidesoft.swing.RangeSlider;
 
 import edu.jhuapl.near.model.LidarBrowseDataCollection;
+import edu.jhuapl.near.model.LidarBrowseDataCollection.LidarDataFileSpec;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.util.FileCache;
@@ -42,7 +43,7 @@ public class LidarBrowsePanel extends JPanel implements ListSelectionListener
     private LidarBrowseDataCollection lidarModel;
     private JList resultList;
     private DefaultListModel lidarResultListModel;
-    private ArrayList<String> lidarRawResults = new ArrayList<String>();
+    //private ArrayList<LidarDataSpec> lidarRawResults = new ArrayList<LidarDataSpec>();
     private JLabel resultsLabel;
     private JButton showHideButton;
     private JButton removeAllButton;
@@ -93,12 +94,10 @@ public class LidarBrowsePanel extends JPanel implements ListSelectionListener
 
         lidarResultListModel = new DefaultListModel();
 
-        lidarRawResults = lidarModel.getAllLidarPaths();
-        for (String str : lidarRawResults)
+        ArrayList<LidarDataFileSpec> lidarPaths = lidarModel.getAllLidarPaths();
+        for (LidarDataFileSpec spec : lidarPaths)
         {
-            if (str.toLowerCase().endsWith(".gz"))
-                str = str.substring(0, str.length()-3);
-            lidarResultListModel.addElement(new File(str).getName());
+            lidarResultListModel.addElement(spec);
         }
 
         //Create the list and put it in a scroll pane.
@@ -131,13 +130,13 @@ public class LidarBrowsePanel extends JPanel implements ListSelectionListener
                     {
                         if (showHideButton.getText().startsWith("Show"))
                         {
-                            lidarModel.addLidarData(lidarRawResults.get(index));
+                            lidarModel.addLidarData(((LidarDataFileSpec)lidarResultListModel.get(index)).path);
 
                             showHideButton.setText("Remove");
                         }
                         else
                         {
-                            lidarModel.removeLidarData(lidarRawResults.get(index));
+                            lidarModel.removeLidarData(((LidarDataFileSpec)lidarResultListModel.get(index)).path);
 
                             showHideButton.setText("Show");
                         }
@@ -161,7 +160,7 @@ public class LidarBrowsePanel extends JPanel implements ListSelectionListener
                 int index = resultList.getSelectedIndex();
                 if (index >= 0)
                 {
-                    File tmp = new File(lidarRawResults.get(index));
+                    File tmp = new File(((LidarDataFileSpec)lidarResultListModel.get(index)).path);
                     File file = CustomFileChooser.showSaveDialog(
                             saveButton.getParent(),
                             "Save Lidar data",
@@ -171,7 +170,7 @@ public class LidarBrowsePanel extends JPanel implements ListSelectionListener
                     {
                         if (file != null)
                         {
-                            File lidarFile = FileCache.getFileFromServer(lidarRawResults.get(index));
+                            File lidarFile = FileCache.getFileFromServer(((LidarDataFileSpec)lidarResultListModel.get(index)).path);
 
                             FileUtil.copyFile(lidarFile, file);
                         }
@@ -255,7 +254,7 @@ public class LidarBrowsePanel extends JPanel implements ListSelectionListener
                 showHideButton.setEnabled(true);
                 saveButton.setEnabled(true);
 
-                if (lidarModel.containsLidarData(lidarRawResults.get(index)))
+                if (lidarModel.containsLidarData(((LidarDataFileSpec)lidarResultListModel.get(index)).path))
                 {
                     showHideButton.setText("Remove");
                 }

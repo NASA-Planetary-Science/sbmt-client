@@ -1,168 +1,167 @@
-/ITOKAWA/LIDAR/cdr/cdr_f_20050911_20050930.tab.gz
-/ITOKAWA/LIDAR/cdr/cdr_f_20051001_20051031.tab.gz
-/ITOKAWA/LIDAR/cdr/cdr_f_20051101_20051118.tab.gz
-/ITOKAWA/LIDAR/cdr/cdr_uf_20050911_20050930.tab.gz
-/ITOKAWA/LIDAR/cdr/cdr_uf_20051001_20051031.tab.gz
-/ITOKAWA/LIDAR/cdr/cdr_uf_20051101_20051118.tab.gz
-/ITOKAWA/LIDAR/cdr/cdr_uf_20050911_20050930_v2.tab.gz
-/ITOKAWA/LIDAR/cdr/cdr_uf_20051001_20051031_v2.tab.gz
-/ITOKAWA/LIDAR/cdr/cdr_uf_20051101_20051118_v2.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-09-11.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-09-12.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-09-13.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-09-14.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-09-15.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-09-16.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-09-17.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-09-18.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-09-19.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-09-20.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-09-21.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-09-22.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-09-26.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-09-27.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-09-28.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-09-29.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-09-30.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-10-01.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-10-02.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-10-03.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-10-05.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-10-06.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-10-07.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-10-08.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-10-09.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-10-10.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-10-11.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-10-12.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-10-13.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-10-14.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-10-15.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-10-16.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-10-17.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-10-18.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-10-19.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-10-20.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-10-22.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-10-23.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-10-24.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-10-25.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-10-26.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-10-27.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-10-28.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-10-29.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-10-30.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-10-31.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-11-01.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-11-02.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-11-03.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-11-08.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-11-11.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-11-16.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-11-18.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-09-11.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-09-12.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-09-13.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-09-14.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-09-15.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-09-16.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-09-17.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-09-18.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-09-19.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-09-20.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-09-21.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-09-22.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-09-26.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-09-27.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-09-28.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-09-29.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-09-30.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-01.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-02.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-03.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-05.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-06.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-07.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-08.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-09.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-10.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-11.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-12.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-13.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-14.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-15.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-16.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-17.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-18.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-19.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-20.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-22.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-23.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-24.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-25.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-26.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-27.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-28.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-29.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-30.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-31.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-11-01.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-11-02.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-11-03.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-11-08.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-11-11.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-11-16.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-11-18.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-09-11_v2.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-09-12_v2.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-09-13_v2.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-09-14_v2.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-09-15_v2.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-09-16_v2.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-09-17_v2.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-09-18_v2.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-09-19_v2.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-09-20_v2.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-09-21_v2.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-09-22_v2.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-09-26_v2.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-09-27_v2.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-09-28_v2.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-09-29_v2.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-09-30_v2.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-01_v2.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-02_v2.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-03_v2.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-05_v2.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-06_v2.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-07_v2.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-08_v2.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-09_v2.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-10_v2.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-11_v2.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-12_v2.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-13_v2.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-14_v2.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-15_v2.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-16_v2.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-17_v2.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-18_v2.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-19_v2.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-20_v2.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-22_v2.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-23_v2.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-24_v2.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-25_v2.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-26_v2.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-27_v2.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-28_v2.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-29_v2.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-30_v2.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-31_v2.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-11-01_v2.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-11-02_v2.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-11-03_v2.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-11-08_v2.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-11-11_v2.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-11-16_v2.tab.gz
-/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-11-18_v2.tab.gz
+/ITOKAWA/LIDAR/cdr/cdr_f_20050911_20050930.tab.gz 2005-09-11T05:51:38.145 - 2005-09-30T23:59:59.237
+/ITOKAWA/LIDAR/cdr/cdr_f_20051001_20051031.tab.gz 2005-10-01T00:00:00.237 - 2005-10-31T23:42:01.291
+/ITOKAWA/LIDAR/cdr/cdr_f_20051101_20051118.tab.gz 2005-10-31T23:59:55.266 - 2005-11-18T21:56:22.216
+/ITOKAWA/LIDAR/cdr/cdr_uf_20050911_20050930.tab.gz 2005-09-11T05:51:38.145 - 2005-09-30T23:59:59.237
+/ITOKAWA/LIDAR/cdr/cdr_uf_20051001_20051031.tab.gz 2005-10-01T00:00:00.237 - 2005-10-31T23:42:01.291
+/ITOKAWA/LIDAR/cdr/cdr_uf_20051101_20051118.tab.gz 2005-10-31T23:59:55.266 - 2005-11-18T21:56:22.216
+/ITOKAWA/LIDAR/cdr/cdr_uf_20050911_20050930_v2.tab.gz 2005-09-11T05:51:38.145 - 2005-09-30T23:59:59.237
+/ITOKAWA/LIDAR/cdr/cdr_uf_20051001_20051031_v2.tab.gz 2005-10-01T00:00:00.237 - 2005-10-31T23:59:59.266
+/ITOKAWA/LIDAR/cdr/cdr_uf_20051101_20051118_v2.tab.gz 2005-11-01T00:00:00.266 - 2005-11-18T21:56:22.216
+/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-09-11.tab.gz 2005-09-11T05:51:38.145 - 2005-09-11T13:37:23.625
+/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-09-12.tab.gz 2005-09-12T03:17:11.650 - 2005-09-12T08:23:19.309
+/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-09-13.tab.gz 2005-09-13T03:02:25.021 - 2005-09-13T22:11:27.737
+/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-09-14.tab.gz 2005-09-14T04:26:42.293 - 2005-09-14T19:01:52.304
+/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-09-15.tab.gz 2005-09-15T03:07:29.748 - 2005-09-15T18:14:38.720
+/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-09-17.tab.gz 2005-09-17T01:44:00.570 - 2005-09-17T23:59:59.065
+/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-09-18.tab.gz 2005-09-18T00:00:00.065 - 2005-09-18T23:59:59.426
+/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-09-19.tab.gz 2005-09-19T00:00:00.426 - 2005-09-19T23:59:18.824
+/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-09-20.tab.gz 2005-09-20T11:07:55.075 - 2005-09-20T23:59:59.196
+/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-09-21.tab.gz 2005-09-21T00:00:00.196 - 2005-09-21T23:59:59.564
+/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-09-22.tab.gz 2005-09-22T00:00:00.564 - 2005-09-22T21:28:03.141
+/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-09-26.tab.gz 2005-09-26T03:14:08.892 - 2005-09-26T08:19:12.578
+/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-09-27.tab.gz 2005-09-27T03:30:52.309 - 2005-09-27T19:02:55.303
+/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-09-28.tab.gz 2005-09-28T05:58:38.355 - 2005-09-28T12:48:39.010
+/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-09-29.tab.gz 2005-09-29T04:01:29.123 - 2005-09-29T19:41:50.113
+/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-09-30.tab.gz 2005-09-30T01:04:30.754 - 2005-09-30T23:59:59.237
+/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-10-01.tab.gz 2005-10-01T00:00:00.237 - 2005-10-01T22:35:20.752
+/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-10-02.tab.gz 2005-10-02T06:21:44.055 - 2005-10-02T22:57:04.149
+/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-10-03.tab.gz 2005-10-03T03:36:19.771 - 2005-10-03T06:20:10.641
+/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-10-05.tab.gz 2005-10-05T11:36:35.028 - 2005-10-05T21:57:15.511
+/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-10-06.tab.gz 2005-10-06T08:18:16.688 - 2005-10-06T18:32:27.143
+/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-10-07.tab.gz 2005-10-07T04:38:49.322 - 2005-10-07T11:58:21.939
+/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-10-08.tab.gz 2005-10-08T09:28:30.496 - 2005-10-08T19:23:26.961
+/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-10-09.tab.gz 2005-10-09T04:24:29.195 - 2005-10-09T18:00:02.473
+/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-10-10.tab.gz 2005-10-10T04:24:27.650 - 2005-10-10T21:54:44.721
+/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-10-11.tab.gz 2005-10-11T05:29:43.042 - 2005-10-11T18:06:40.398
+/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-10-12.tab.gz 2005-10-12T05:41:15.488 - 2005-10-12T19:35:45.814
+/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-10-13.tab.gz 2005-10-13T03:44:20.107 - 2005-10-13T19:37:51.278
+/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-10-14.tab.gz 2005-10-14T04:10:25.511 - 2005-10-14T20:42:04.650
+/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-10-15.tab.gz 2005-10-15T07:47:23.006 - 2005-10-15T21:52:44.112
+/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-10-16.tab.gz 2005-10-16T06:20:50.570 - 2005-10-16T21:53:32.613
+/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-10-17.tab.gz 2005-10-17T06:33:21.853 - 2005-10-17T23:40:46.970
+/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-10-18.tab.gz 2005-10-18T00:40:15.898 - 2005-10-18T20:56:09.612
+/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-10-19.tab.gz 2005-10-19T07:38:03.728 - 2005-10-19T15:00:36.292
+/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-10-20.tab.gz 2005-10-20T00:05:16.681 - 2005-10-20T02:31:54.537
+/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-10-22.tab.gz 2005-10-22T04:48:57.452 - 2005-10-22T20:36:45.668
+/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-10-23.tab.gz 2005-10-23T06:09:58.892 - 2005-10-23T21:46:54.119
+/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-10-24.tab.gz 2005-10-24T06:09:42.429 - 2005-10-24T17:04:07.867
+/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-10-25.tab.gz 2005-10-25T06:39:58.914 - 2005-10-25T17:33:07.378
+/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-10-26.tab.gz 2005-10-26T06:36:42.435 - 2005-10-26T21:33:14.678
+/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-10-27.tab.gz 2005-10-27T00:57:32.507 - 2005-10-27T22:21:30.194
+/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-10-28.tab.gz 2005-10-28T09:06:23.381 - 2005-10-28T20:53:26.804
+/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-10-29.tab.gz 2005-10-29T07:54:00.961 - 2005-10-29T23:59:59.143
+/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-10-30.tab.gz 2005-10-30T00:00:00.143 - 2005-10-30T20:18:53.951
+/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-10-31.tab.gz 2005-10-31T12:04:02.855 - 2005-10-31T23:59:59.266
+/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-11-01.tab.gz 2005-11-01T00:00:00.266 - 2005-11-01T22:11:29.914
+/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-11-02.tab.gz 2005-11-02T06:45:56.171 - 2005-11-02T23:59:59.263
+/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-11-03.tab.gz 2005-11-03T00:00:00.263 - 2005-11-03T22:18:02.005
+/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-11-08.tab.gz 2005-11-08T10:05:57.939 - 2005-11-08T20:05:36.327
+/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-11-11.tab.gz 2005-11-11T12:09:59.509 - 2005-11-11T20:58:49.832
+/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-11-16.tab.gz 2005-11-16T03:55:35.056 - 2005-11-16T23:16:27.775
+/ITOKAWA/LIDAR/cdr/per-day/cdr_f_2005-11-18.tab.gz 2005-11-18T14:14:30.630 - 2005-11-18T21:56:22.216
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-09-11.tab.gz 2005-09-11T05:51:38.145 - 2005-09-11T13:37:31.625
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-09-12.tab.gz 2005-09-12T03:17:11.650 - 2005-09-12T08:23:49.309
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-09-13.tab.gz 2005-09-13T03:02:12.022 - 2005-09-13T22:12:40.735
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-09-14.tab.gz 2005-09-14T04:26:35.293 - 2005-09-14T21:59:40.096
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-09-15.tab.gz 2005-09-15T03:07:29.748 - 2005-09-15T18:25:22.704
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-09-16.tab.gz 2005-09-16T05:25:41.942 - 2005-09-16T05:26:41.940
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-09-17.tab.gz 2005-09-17T01:44:00.570 - 2005-09-17T23:59:59.065
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-09-18.tab.gz 2005-09-18T00:00:00.065 - 2005-09-18T23:59:59.426
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-09-19.tab.gz 2005-09-19T00:00:00.426 - 2005-09-19T23:59:27.824
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-09-20.tab.gz 2005-09-20T11:07:55.075 - 2005-09-20T23:59:59.196
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-09-21.tab.gz 2005-09-21T00:00:00.196 - 2005-09-21T23:59:59.564
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-09-22.tab.gz 2005-09-22T00:00:00.564 - 2005-09-22T21:28:03.141
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-09-26.tab.gz 2005-09-26T03:14:06.892 - 2005-09-26T08:19:12.578
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-09-27.tab.gz 2005-09-27T03:30:51.309 - 2005-09-27T19:03:08.303
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-09-28.tab.gz 2005-09-28T05:58:38.355 - 2005-09-28T17:20:15.772
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-09-29.tab.gz 2005-09-29T04:01:20.123 - 2005-09-29T19:41:50.113
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-09-30.tab.gz 2005-09-30T01:04:30.754 - 2005-09-30T23:59:59.237
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-01.tab.gz 2005-10-01T00:00:00.237 - 2005-10-01T22:35:20.752
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-02.tab.gz 2005-10-02T06:21:44.055 - 2005-10-02T22:57:04.149
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-03.tab.gz 2005-10-03T03:34:33.771 - 2005-10-03T17:36:35.764
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-05.tab.gz 2005-10-05T03:20:52.492 - 2005-10-05T21:57:31.510
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-06.tab.gz 2005-10-06T08:18:11.688 - 2005-10-06T18:32:52.143
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-07.tab.gz 2005-10-07T04:38:48.323 - 2005-10-07T11:58:34.938
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-08.tab.gz 2005-10-08T09:28:30.496 - 2005-10-08T20:48:48.888
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-09.tab.gz 2005-10-09T04:24:29.195 - 2005-10-09T18:18:54.450
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-10.tab.gz 2005-10-10T04:24:27.650 - 2005-10-10T21:58:26.717
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-11.tab.gz 2005-10-11T05:29:13.043 - 2005-10-11T18:06:40.398
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-12.tab.gz 2005-10-12T05:32:40.498 - 2005-10-12T19:35:47.814
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-13.tab.gz 2005-10-13T03:44:20.107 - 2005-10-13T19:37:52.278
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-14.tab.gz 2005-10-14T04:09:53.511 - 2005-10-14T20:42:04.650
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-15.tab.gz 2005-10-15T07:47:23.006 - 2005-10-15T21:52:49.112
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-16.tab.gz 2005-10-16T06:19:46.571 - 2005-10-16T21:53:32.613
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-17.tab.gz 2005-10-17T06:32:31.854 - 2005-10-17T23:40:46.970
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-18.tab.gz 2005-10-18T00:40:15.898 - 2005-10-18T20:56:14.612
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-19.tab.gz 2005-10-19T06:40:48.809 - 2005-10-19T15:00:47.292
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-20.tab.gz 2005-10-20T00:03:51.683 - 2005-10-20T02:31:54.537
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-22.tab.gz 2005-10-22T04:40:44.462 - 2005-10-22T20:36:45.668
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-23.tab.gz 2005-10-23T06:09:43.892 - 2005-10-23T21:46:54.119
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-24.tab.gz 2005-10-24T06:09:42.429 - 2005-10-24T17:04:07.867
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-25.tab.gz 2005-10-25T06:39:58.914 - 2005-10-25T17:33:07.378
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-26.tab.gz 2005-10-26T06:36:35.435 - 2005-10-26T21:33:20.677
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-27.tab.gz 2005-10-27T00:57:32.507 - 2005-10-27T22:21:31.194
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-28.tab.gz 2005-10-28T09:06:23.381 - 2005-10-28T20:53:26.804
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-29.tab.gz 2005-10-29T04:49:51.118 - 2005-10-29T23:59:59.143
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-30.tab.gz 2005-10-30T00:00:00.143 - 2005-10-30T20:19:08.951
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-31.tab.gz 2005-10-31T12:04:02.855 - 2005-10-31T23:59:59.266
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-11-01.tab.gz 2005-11-01T00:00:00.266 - 2005-11-01T22:11:30.914
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-11-02.tab.gz 2005-11-02T06:45:03.172 - 2005-11-02T23:59:59.263
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-11-03.tab.gz 2005-11-03T00:00:00.263 - 2005-11-03T22:18:02.005
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-11-08.tab.gz 2005-11-08T10:05:05.941 - 2005-11-08T20:05:36.327
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-11-11.tab.gz 2005-11-11T12:09:56.509 - 2005-11-11T20:58:49.832
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-11-16.tab.gz 2005-11-16T03:55:35.056 - 2005-11-16T23:19:45.765
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-11-18.tab.gz 2005-11-18T14:14:26.630 - 2005-11-18T21:56:22.216
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-09-11_v2.tab.gz 2005-09-11T05:51:38.145 - 2005-09-11T13:37:31.625
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-09-12_v2.tab.gz 2005-09-12T03:17:11.650 - 2005-09-12T08:23:49.309
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-09-13_v2.tab.gz 2005-09-13T03:02:12.022 - 2005-09-13T22:12:40.735
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-09-14_v2.tab.gz 2005-09-14T04:26:35.293 - 2005-09-14T21:59:40.096
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-09-15_v2.tab.gz 2005-09-15T03:07:29.748 - 2005-09-15T18:08:32.729
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-09-16_v2.tab.gz 2005-09-16T05:25:41.942 - 2005-09-16T05:26:41.940
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-09-17_v2.tab.gz 2005-09-17T03:14:53.456 - 2005-09-17T23:59:59.065
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-09-18_v2.tab.gz 2005-09-18T00:00:00.065 - 2005-09-18T23:59:59.426
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-09-19_v2.tab.gz 2005-09-19T00:00:00.426 - 2005-09-19T23:59:27.824
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-09-20_v2.tab.gz 2005-09-20T11:07:55.075 - 2005-09-20T23:59:59.196
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-09-21_v2.tab.gz 2005-09-21T00:00:00.196 - 2005-09-21T23:59:59.564
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-09-22_v2.tab.gz 2005-09-22T00:00:00.564 - 2005-09-22T21:28:03.141
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-09-26_v2.tab.gz 2005-09-26T03:14:06.892 - 2005-09-26T08:19:12.578
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-09-27_v2.tab.gz 2005-09-27T03:30:51.309 - 2005-09-27T19:03:08.303
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-09-28_v2.tab.gz 2005-09-28T05:58:38.355 - 2005-09-28T17:20:15.772
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-09-29_v2.tab.gz 2005-09-29T04:01:20.123 - 2005-09-29T19:41:50.113
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-09-30_v2.tab.gz 2005-09-30T01:04:31.754 - 2005-09-30T23:59:59.237
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-01_v2.tab.gz 2005-10-01T00:00:00.237 - 2005-10-01T22:35:20.752
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-02_v2.tab.gz 2005-10-02T06:21:44.055 - 2005-10-02T22:57:04.149
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-03_v2.tab.gz 2005-10-03T03:34:33.771 - 2005-10-03T17:36:35.764
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-05_v2.tab.gz 2005-10-05T03:20:52.492 - 2005-10-05T21:57:31.510
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-06_v2.tab.gz 2005-10-06T08:18:12.688 - 2005-10-06T18:32:52.143
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-07_v2.tab.gz 2005-10-07T04:38:48.323 - 2005-10-07T11:58:34.938
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-08_v2.tab.gz 2005-10-08T09:28:30.496 - 2005-10-08T20:48:48.888
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-09_v2.tab.gz 2005-10-09T04:24:29.195 - 2005-10-09T18:18:54.450
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-10_v2.tab.gz 2005-10-10T04:24:27.650 - 2005-10-10T21:58:26.717
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-11_v2.tab.gz 2005-10-11T05:29:13.043 - 2005-10-11T18:06:40.398
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-12_v2.tab.gz 2005-10-12T05:32:40.498 - 2005-10-12T19:35:44.814
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-13_v2.tab.gz 2005-10-13T03:44:20.107 - 2005-10-13T19:37:52.278
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-14_v2.tab.gz 2005-10-14T04:09:53.511 - 2005-10-14T20:42:04.650
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-15_v2.tab.gz 2005-10-15T07:47:23.006 - 2005-10-15T21:52:49.112
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-16_v2.tab.gz 2005-10-16T06:19:46.571 - 2005-10-16T21:53:31.613
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-17_v2.tab.gz 2005-10-17T06:32:31.854 - 2005-10-17T23:40:46.970
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-18_v2.tab.gz 2005-10-18T00:40:15.898 - 2005-10-18T20:56:14.612
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-19_v2.tab.gz 2005-10-19T06:40:48.809 - 2005-10-19T15:00:47.292
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-20_v2.tab.gz 2005-10-20T00:03:51.683 - 2005-10-20T02:31:54.537
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-22_v2.tab.gz 2005-10-22T04:40:44.462 - 2005-10-22T20:36:43.668
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-23_v2.tab.gz 2005-10-23T06:09:43.892 - 2005-10-23T21:46:52.119
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-24_v2.tab.gz 2005-10-24T06:09:42.429 - 2005-10-24T17:04:07.867
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-25_v2.tab.gz 2005-10-25T06:39:58.914 - 2005-10-25T17:33:07.378
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-26_v2.tab.gz 2005-10-26T06:36:35.435 - 2005-10-26T21:33:20.677
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-27_v2.tab.gz 2005-10-27T00:57:32.507 - 2005-10-27T22:21:31.194
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-28_v2.tab.gz 2005-10-28T09:06:29.381 - 2005-10-28T20:53:26.804
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-29_v2.tab.gz 2005-10-29T04:49:51.118 - 2005-10-29T23:59:59.143
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-30_v2.tab.gz 2005-10-30T00:00:00.143 - 2005-10-30T20:19:08.951
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-10-31_v2.tab.gz 2005-10-31T12:04:05.855 - 2005-10-31T23:59:59.266
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-11-01_v2.tab.gz 2005-11-01T00:00:00.266 - 2005-11-01T22:11:30.914
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-11-02_v2.tab.gz 2005-11-02T06:45:03.172 - 2005-11-02T23:59:59.263
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-11-03_v2.tab.gz 2005-11-03T00:00:00.263 - 2005-11-03T22:18:02.005
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-11-08_v2.tab.gz 2005-11-08T10:05:05.941 - 2005-11-08T20:05:36.327
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-11-11_v2.tab.gz 2005-11-11T12:09:56.509 - 2005-11-11T20:58:49.832
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-11-16_v2.tab.gz 2005-11-16T03:55:35.056 - 2005-11-16T23:19:45.765
+/ITOKAWA/LIDAR/cdr/per-day/cdr_uf_2005-11-18_v2.tab.gz 2005-11-18T14:14:26.630 - 2005-11-18T21:56:22.216

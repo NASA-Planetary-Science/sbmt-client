@@ -3,6 +3,7 @@ package edu.jhuapl.near.model;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -17,6 +18,22 @@ import edu.jhuapl.near.util.Properties;
 
 public class LidarBrowseDataCollection extends Model implements PropertyChangeListener
 {
+    /**
+     * Contains information about a single lidar file.
+     */
+    public static class LidarDataFileSpec
+    {
+        public String path;
+        public String name;
+        public String comment;
+
+        @Override
+        public String toString()
+        {
+            return name + " (" + comment + ")";
+        }
+    }
+
     private ModelConfig modelConfig;
     private ArrayList<vtkProp> lidarPerUnitActors = new ArrayList<vtkProp>();
 
@@ -105,9 +122,9 @@ public class LidarBrowseDataCollection extends Model implements PropertyChangeLi
         return fileToLidarPerUnitMap.containsKey(file);
     }
 
-    public ArrayList<String> getAllLidarPaths()
+    public ArrayList<LidarDataFileSpec> getAllLidarPaths()
     {
-        ArrayList<String> paths = new ArrayList<String>();
+        ArrayList<LidarDataFileSpec> lidarSpecs = new ArrayList<LidarDataFileSpec>();
 
         InputStream is = getClass().getResourceAsStream(modelConfig.lidarBrowseFileListResourcePath);
         InputStreamReader isr = new InputStreamReader(is);
@@ -118,14 +135,21 @@ public class LidarBrowseDataCollection extends Model implements PropertyChangeLi
         {
             while ((line = in.readLine()) != null)
             {
-                paths.add(line);
+                LidarDataFileSpec lidarSpec = new LidarDataFileSpec();
+                int indexFirstSpace = line.indexOf(' ');
+                lidarSpec.path = line.substring(0,indexFirstSpace);
+                lidarSpec.comment = line.substring(indexFirstSpace+1);
+                lidarSpec.name = new File(lidarSpec.path).getName();
+                if (lidarSpec.name.toLowerCase().endsWith(".gz"))
+                    lidarSpec.name = lidarSpec.name.substring(0, lidarSpec.name.length()-3);
+                lidarSpecs.add(lidarSpec);
             }
         }
         catch (IOException e) {
             e.printStackTrace();
         }
 
-        return paths;
+        return lidarSpecs;
     }
 
     public void propertyChange(PropertyChangeEvent evt)
