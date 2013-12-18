@@ -47,9 +47,6 @@ import vtk.vtksbCellLocator;
 
 /**
  * This class contains various utility functions for operating on a vtkPolyData.
- *
- * @author kahneg1
- *
  */
 public class PolyDataUtil
 {
@@ -2164,8 +2161,6 @@ public class PolyDataUtil
 
     /**
      * Get the area of a given cell. Assumes cells are triangles.
-     * @author eli
-     *
      */
     /*
         // The idList parameter is needed only to avoid repeated memory

@@ -994,9 +994,6 @@ public class ModelFactory
      * have imaging, spectral, and lidar data whereas other models may only have
      * imaging data. This class is also used when creating (to know which tabs
      * to create).
-     *
-     * @author kahneg1
-     *
      */
     public static class ModelConfig
     {

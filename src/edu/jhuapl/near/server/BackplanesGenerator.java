@@ -35,9 +35,6 @@ import edu.jhuapl.near.util.NativeLibraryLoader;
  * AmicaBackplanesGenerator. That program is a mess and was meant for a specific
  * deliverable of Itokawa backplanes and will hopefully never be used again. This one is
  * meant to be more general and should be independent of shape model used.
- *
- * @author E. Kahn
- *
  */
 public class BackplanesGenerator
 {

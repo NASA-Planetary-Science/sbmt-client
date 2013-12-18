@@ -20,10 +20,6 @@ import vtk.vtkImageReader2;
 import vtk.vtkImageReader2Factory;
 
 
-/**
- *
- * @author eli
- */
 public class CustomImageImporterDialog extends javax.swing.JDialog
 {
     private boolean okayPressed = false;

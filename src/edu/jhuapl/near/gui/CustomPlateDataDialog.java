@@ -27,10 +27,7 @@ import edu.jhuapl.near.model.custom.CustomShapeModel;
 import edu.jhuapl.near.util.FileUtil;
 import edu.jhuapl.near.util.MapUtil;
 
-/**
- *
- * @author kahneg1
- */
+
 public class CustomPlateDataDialog extends javax.swing.JDialog {
 
     private ModelManager modelManager;

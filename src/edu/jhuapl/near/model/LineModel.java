@@ -47,9 +47,6 @@ import edu.jhuapl.near.util.Properties;
 
 /**
  * Model of line structures drawn on a body.
- *
- * @author
- *
  */
 public class LineModel extends ControlPointsStructureModel implements PropertyChangeListener
 {

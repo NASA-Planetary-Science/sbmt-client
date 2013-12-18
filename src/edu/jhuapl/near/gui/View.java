@@ -50,9 +50,6 @@ import edu.jhuapl.near.util.Preferences;
  * body. This class is used to build all built-in and custom views.
  * All the configuration details of all the built-in and custom views
  * are contained in this class.
-
- * @author kahneg1
- *
  */
 public class View extends JPanel
 {

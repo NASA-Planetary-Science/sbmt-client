@@ -8,9 +8,6 @@ import vtk.vtkActor;
 /**
  * A type of structure which uses a set of control points to describe it. This
  * currently includes only paths (LineModel) and polygons (PolygonModel).
- *
- * @author kahneg1
- *
  */
 public abstract class ControlPointsStructureModel extends StructureModel
 {

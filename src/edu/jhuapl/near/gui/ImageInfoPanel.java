@@ -41,10 +41,7 @@ import edu.jhuapl.near.model.PerspectiveImageBoundaryCollection;
 import edu.jhuapl.near.popupmenus.ImagePopupMenu;
 import edu.jhuapl.near.util.IntensityRange;
 
-/**
- *
- * @author eli
- */
+
 public class ImageInfoPanel extends ModelInfoWindow implements PropertyChangeListener
 {
     private vtkEnhancedRenderWindowPanel renWin;

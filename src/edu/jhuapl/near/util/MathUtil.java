@@ -3,8 +3,6 @@ package edu.jhuapl.near.util;
 /**
  * This class contains miscellaneous geometry functions. Many of these functions
  * are from the SPICE toolkit that have been ported to Java.
- * @author eli
- *
  */
 public class MathUtil
 {

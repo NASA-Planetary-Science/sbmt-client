@@ -3,9 +3,6 @@ package edu.jhuapl.near.model;
 
 /**
  * Model of line structures drawn on a body.
- *
- * @author
- *
  */
 public class PointModel extends AbstractEllipsePolygonModel
 {

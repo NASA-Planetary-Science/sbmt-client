@@ -9,10 +9,6 @@ import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileFilter;
 
 
-/**
- * @author kahneg1
- *
- */
 public class CustomFileChooser extends FileChooserBase
 {
     private static class CustomExtensionFilter extends FileFilter

@@ -11,9 +11,6 @@ import edu.jhuapl.near.util.FileUtil;
  * This class contains the "main" function called at the start of the program
  * for the APL internal version. It sets up some APL version specific configuration
  * options and then calls the public (non-APL) version's main function.
- *
- * @author kahneg1
- *
  */
 public class SmallBodyMappingToolAPL
 {

@@ -13,10 +13,7 @@ package edu.jhuapl.near.gui;
 
 import edu.jhuapl.near.model.Model;
 
-/**
- *
- * @author kahneg1
- */
+
 public class RadialOffsetChanger extends javax.swing.JPanel
 {
     private Model model;

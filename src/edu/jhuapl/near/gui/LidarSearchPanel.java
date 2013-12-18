@@ -46,10 +46,7 @@ import edu.jhuapl.near.popupmenus.LidarPopupMenu;
 import edu.jhuapl.near.util.BoundingBox;
 import edu.jhuapl.near.util.Properties;
 
-/**
- *
- * @author kahneg1
- */
+
 public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChangeListener
 {
     private final ModelManager modelManager;

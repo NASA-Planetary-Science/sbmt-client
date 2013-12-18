@@ -20,9 +20,6 @@ import edu.jhuapl.near.model.SmallBodyModel;
 /**
  * Popup menu used by the mapmaker view for profiles. It is meant to replace LinesPopupMenu
  * which is used in the regular views.
- *
- * @author kahneg1
- *
  */
 public class MapmakerLinesPopupMenu extends PopupMenu
 {

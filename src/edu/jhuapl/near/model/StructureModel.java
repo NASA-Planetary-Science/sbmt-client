@@ -8,9 +8,6 @@ import vtk.vtkProp;
 
 /**
  * Model of structures drawn on a body such as lines and circles.
- *
- * @author
- *
  */
 public abstract class StructureModel extends Model
 {

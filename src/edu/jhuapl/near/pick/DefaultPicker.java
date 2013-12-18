@@ -32,8 +32,6 @@ import edu.jhuapl.near.util.Properties;
 
 /**
  * This is the picker normally in use by default.
- * @author eli
- *
  */
 public class DefaultPicker extends Picker
 {

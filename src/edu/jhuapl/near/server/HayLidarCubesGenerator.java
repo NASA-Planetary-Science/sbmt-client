@@ -12,9 +12,6 @@ import edu.jhuapl.near.model.itokawa.Itokawa;
  *
  * This program also can generate a single vtk file containing all
  * the NLR data (see comments in code).
- *
- * @author kahneg1
- *
  */
 public class HayLidarCubesGenerator extends LidarCubesGenerator
 {

@@ -3,11 +3,7 @@ package edu.jhuapl.near.model;
 
 /**
  * Model of circle structures drawn on a body.
- *
- * @author
- *
  */
-
 public class CircleSelectionModel extends AbstractEllipsePolygonModel
 {
     public CircleSelectionModel(SmallBodyModel smallBodyModel)

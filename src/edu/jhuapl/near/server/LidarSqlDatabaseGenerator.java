@@ -36,9 +36,6 @@ import edu.jhuapl.near.util.NativeLibraryLoader;
  * 9.  y sc point
  * 10. z sc point
  * 11. potential
- *
- * @author kahneg1
- *
  */
 public abstract class LidarSqlDatabaseGenerator
 {

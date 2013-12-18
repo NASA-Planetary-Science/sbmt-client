@@ -26,9 +26,6 @@ public class FileCache
 
     /**
      * Information returned about a remote file on the server
-     *
-     * @author kahneg1
-     *
      */
     public static class FileInfo
     {

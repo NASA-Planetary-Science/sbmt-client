@@ -24,10 +24,6 @@ import javax.swing.JOptionPane;
 import edu.jhuapl.near.model.SmallBodyModel.ColoringInfo;
 
 
-/**
- *
- * @author eli
- */
 public class CustomPlateDataImporterDialog extends javax.swing.JDialog
 {
     private boolean okayPressed = false;

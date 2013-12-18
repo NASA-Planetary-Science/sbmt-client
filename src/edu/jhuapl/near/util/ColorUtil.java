@@ -52,9 +52,6 @@ public class ColorUtil
      * Purpose: this icon simply draws a square with its border in black and
      * its inside in the specified color (passed into the constructor).
      * It is used for showing the current color of something.
-     *
-     * @author kahneg1
-     *
      */
     public static class ColorIcon implements Icon
     {

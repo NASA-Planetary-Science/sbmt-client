@@ -61,10 +61,7 @@ import edu.jhuapl.near.popupmenus.ImagePopupMenu;
 import edu.jhuapl.near.util.IdPair;
 import edu.jhuapl.near.util.Properties;
 
-/**
- *
- * @author kahneg1
- */
+
 public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyChangeListener
 {
     private ModelConfig modelConfig;

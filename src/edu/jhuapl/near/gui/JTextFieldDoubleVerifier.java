@@ -13,9 +13,6 @@ import javax.swing.event.DocumentListener;
  * any form of scientific notation). With this class, any string that can be parsed as
  * a double will be accepted in the JTextField. If it is not a valid double, it will
  * be reverted to the previous valid value.
- *
- * @author kahneg1
- *
  */
 public class JTextFieldDoubleVerifier extends InputVerifier
 {

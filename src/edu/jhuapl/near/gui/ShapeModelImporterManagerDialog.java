@@ -23,10 +23,7 @@ import org.apache.commons.io.FileUtils;
 import edu.jhuapl.near.util.Configuration;
 import edu.jhuapl.near.util.Properties;
 
-/**
- *
- * @author kahneg1
- */
+
 public class ShapeModelImporterManagerDialog extends javax.swing.JDialog
 {
     /** Creates new form ShapeModelManagerDialog */

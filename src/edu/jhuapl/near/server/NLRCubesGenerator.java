@@ -10,9 +10,6 @@ import edu.jhuapl.near.model.eros.Eros;
  *
  * This program also can generate a single vtk file containing all
  * the NLR data (see comments in code).
- *
- * @author kahneg1
- *
  */
 public class NLRCubesGenerator extends LidarCubesGenerator
 {

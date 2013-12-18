@@ -32,9 +32,6 @@ import edu.jhuapl.near.util.Properties;
 
 /**
  * Model of regular polygon structures drawn on a body.
- *
- * @author
- *
  */
 
 abstract public class AbstractEllipsePolygonModel extends StructureModel implements PropertyChangeListener

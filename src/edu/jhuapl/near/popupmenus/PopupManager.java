@@ -16,8 +16,6 @@ import edu.jhuapl.near.model.PerspectiveImageBoundaryCollection;
 /**
  * This class is responsible for the creation of popups and for the routing
  * of the right click events (i.e. show popup events) to the correct model.
- * @author eli
- *
  */
 public class PopupManager
 {

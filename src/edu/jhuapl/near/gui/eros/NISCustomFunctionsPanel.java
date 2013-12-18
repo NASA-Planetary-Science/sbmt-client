@@ -21,10 +21,7 @@ import vtk.vtkFunctionParser;
 
 import edu.jhuapl.near.model.eros.NISSpectrum;
 
-/**
- *
- * @author kahneg1
- */
+
 public class NISCustomFunctionsPanel extends javax.swing.JDialog {
 
     private JComboBox[] comboBoxes;

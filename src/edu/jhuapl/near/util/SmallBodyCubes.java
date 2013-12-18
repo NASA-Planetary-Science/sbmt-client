@@ -8,8 +8,6 @@ import vtk.vtkPolyData;
 /**
  * This class is used to subdivide the bounding box of a shape model
  * into a contiguous grid of 3D cubes.
- * @author kahneg1
- *
  */
 public class SmallBodyCubes
 {

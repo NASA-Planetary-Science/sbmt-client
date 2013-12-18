@@ -61,8 +61,6 @@ public abstract class Image extends Model implements PropertyChangeListener
     /**
      * An ImageKey should be used to uniquely distinguish one image from another.
      * No two images will have the same values for the fields of this class.
-     * @author kahn
-     *
      */
     public static class ImageKey
     {

@@ -55,10 +55,7 @@ import edu.jhuapl.near.util.FileUtil;
 import edu.jhuapl.near.util.MapUtil;
 import edu.jhuapl.near.util.Properties;
 
-/**
- *
- * @author kahneg1
- */
+
 public class CustomImagesPanel extends javax.swing.JPanel implements PropertyChangeListener {
 
     private ModelManager modelManager;

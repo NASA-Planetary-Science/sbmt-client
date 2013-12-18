@@ -13,9 +13,6 @@ import edu.jhuapl.near.model.eros.MSIImage;
 /**
  * This class represents a database storing information about all the
  * data. It also provides functions for querying the database.
- *
- * @author kahneg1
- *
  */
 public class ErosQuery extends QueryBase
 {
