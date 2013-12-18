@@ -1099,7 +1099,22 @@ public class ModelFactory
                 c.lidarInstrumentName = this.lidarInstrumentName;
             }
             return c;
-        };
+        }
+
+        /**
+         * Returns model as a path. e.g. "Asteroid > Near-Earth > Eros > Image Based > Gaskell"
+         */
+        public String getPathRepresentation()
+        {
+            String path = type;
+            if (population != null)
+                path += " > " + population;
+            path += " > " + name
+                    + " > " + dataUsed
+                    + " > " + author;
+            return path;
+        }
+
     }
 
     /**

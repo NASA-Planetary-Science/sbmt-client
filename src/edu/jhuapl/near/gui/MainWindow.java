@@ -28,7 +28,7 @@ public class MainWindow extends JFrame
 
         createStatusBar();
 
-        rootPanel = new ViewManager(statusBar);
+        rootPanel = new ViewManager(statusBar, this);
 
         createMenus();
 
@@ -36,7 +36,6 @@ public class MainWindow extends JFrame
 
         ImageIcon erosIcon = new ImageIcon(getClass().getResource("/edu/jhuapl/near/data/eros.png"));
         setIconImage(erosIcon.getImage());
-        setTitle("Small Body Mapping Tool");
         pack();
 
 //        // Center the application on the screen.

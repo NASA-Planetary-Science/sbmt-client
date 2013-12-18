@@ -1,6 +1,7 @@
 package edu.jhuapl.near.gui;
 
 import java.awt.CardLayout;
+import java.awt.Frame;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,12 +18,21 @@ public class ViewManager extends JPanel
     private ArrayList<View> customViews = new ArrayList<View>();
     private View currentView;
     private final StatusBar statusBar;
+    private final Frame frame;
 
-    public ViewManager(StatusBar statusBar)
+    /**
+     * The top level frame is required so that the title can be updated
+     * when the view changes.
+     *
+     * @param statusBar
+     * @param frame
+     */
+    public ViewManager(StatusBar statusBar, Frame frame)
     {
         super(new CardLayout());
         setBorder(BorderFactory.createEmptyBorder());
         this.statusBar = statusBar;
+        this.frame = frame;
 
         for (ModelFactory.ModelConfig config: ModelFactory.builtInModelConfigs)
         {
@@ -32,6 +42,8 @@ public class ViewManager extends JPanel
 
         currentView = builtInViews.get(0);
         currentView.initialize();
+
+        frame.setTitle(currentView.getModelConfig().getPathRepresentation());
 
         for (View view : builtInViews)
             add(view, view.getUniqueName());
@@ -75,6 +87,8 @@ public class ViewManager extends JPanel
         view.initialize();
 
         currentView = view;
+
+        frame.setTitle(currentView.getModelConfig().getPathRepresentation());
     }
 
     public View getBuiltInView(int i)
