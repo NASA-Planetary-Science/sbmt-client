@@ -17,7 +17,6 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TreeSet;
-import java.util.zip.GZIPInputStream;
 
 import org.apache.commons.math3.analysis.polynomials.PolynomialFunction;
 import org.apache.commons.math3.fitting.PolynomialFitter;
@@ -245,8 +244,6 @@ public class LidarSearchDataCollection extends Model
                 continue;
 
             InputStream fs = new FileInputStream(file.getAbsolutePath());
-            if (file.getAbsolutePath().toLowerCase().endsWith(".gz"))
-                fs = new GZIPInputStream(fs);
             InputStreamReader isr = new InputStreamReader(fs);
             BufferedReader in = new BufferedReader(isr);
 
