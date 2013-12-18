@@ -25,6 +25,9 @@ public class HelpMenu extends JMenu
         JMenuItem mi = new JMenuItem(new ShowHelpContentsAction());
         this.add(mi);
 
+        mi = new JMenuItem(new ShowSourceOfDataAction());
+        this.add(mi);
+
         if (Configuration.isAPLVersion())
         {
             mi = new JMenuItem(new ShowRecentChangesAction());
@@ -94,6 +97,27 @@ public class HelpMenu extends JMenu
             try
             {
                 java.awt.Desktop.getDesktop().browse(java.net.URI.create(helpRootUrl + "helpcontents.html"));
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private class ShowSourceOfDataAction extends AbstractAction
+    {
+        public ShowSourceOfDataAction()
+        {
+            super("Where does the data come from?");
+        }
+
+        public void actionPerformed(ActionEvent actionEvent)
+        {
+            String helpRootUrl = Configuration.getHelpRootURL();
+            try
+            {
+                java.awt.Desktop.getDesktop().browse(java.net.URI.create(helpRootUrl + "references.html"));
             }
             catch (IOException e)
             {
