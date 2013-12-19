@@ -238,7 +238,7 @@ public class LidarSearchDataCollection extends Model
         for (Integer cubeid : cubeList)
         {
             String filename = getLidarDataSourceMap().get(dataSource) + "/" + cubeid + ".lidarcube";
-            File file = FileCache.getFileFromServer(filename, modelConfig.useAPLServer);
+            File file = FileCache.getFileFromServer(filename);
 
             if (file == null)
                 continue;

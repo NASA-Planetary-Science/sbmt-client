@@ -91,20 +91,12 @@ abstract public class QueryBase
             String pathToFileListOnServer,
             String pathToImageFolderOnServer)
     {
-        return getResultsFromFileListOnServer(pathToFileListOnServer, pathToImageFolderOnServer, false);
-    }
-
-    protected ArrayList<ArrayList<String>> getResultsFromFileListOnServer(
-            String pathToFileListOnServer,
-            String pathToImageFolderOnServer,
-            boolean useAPLServer)
-    {
         if (!pathToImageFolderOnServer.endsWith("/"))
             pathToImageFolderOnServer += "/";
 
         ArrayList<ArrayList<String>> results = new ArrayList<ArrayList<String>>();
 
-        File file = FileCache.getFileFromServer(pathToFileListOnServer, useAPLServer);
+        File file = FileCache.getFileFromServer(pathToFileListOnServer);
 
         if (file != null)
         {

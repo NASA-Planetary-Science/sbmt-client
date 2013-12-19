@@ -70,7 +70,7 @@ public class FileCache
      * @param path
      * @return
      */
-    static private FileInfo getFileInfoFromServer(String path, boolean doDownloadIfNeeded, boolean useAPLServer)
+    static private FileInfo getFileInfoFromServer(String path, boolean doDownloadIfNeeded)
     {
         path = replaceBackslashesWithForwardSlashes(path);
 
@@ -97,11 +97,7 @@ public class FileCache
         // Open a connection the file on the server
         try
         {
-            URL u = null;
-            if (useAPLServer)
-                u = new URL(Configuration.getDataRootURLAPL() + path);
-            else
-                u = new URL(Configuration.getDataRootURL() + path);
+            URL u = new URL(Configuration.getDataRootURL() + path);
 
             URLConnection conn = u.openConnection();
 
@@ -158,56 +154,16 @@ public class FileCache
      * Get information about the file on the server without actually downloading.
      *
      * @param path
-     * @param useAPLServer whether or not to use the APL in-house server
-     * @return
-     */
-    static public FileInfo getFileInfoFromServer(String path, boolean useAPLServer)
-    {
-        return getFileInfoFromServer(path, false, useAPLServer);
-    }
-
-    /**
-     * Get (download) the file from the server. Place it in the cache for
-     * future access.
-     * If the path begins with "file://", then the file is assumed to be local
-     * on disk and no server is contacted.
-     *
-     * @param path
-     * @param useAPLServer whether or not to use the APL in-house server
-     * @return
-     */
-    static public File getFileFromServer(String path, boolean useAPLServer)
-    {
-        if (path.startsWith(FILE_PREFIX))
-        {
-            return new File(path.substring(FILE_PREFIX.length()));
-        }
-        else
-        {
-            FileInfo fi = getFileInfoFromServer(path, true, useAPLServer);
-            if (fi != null)
-                return fi.file;
-            else
-                return null;
-        }
-    }
-
-    /**
-     * Get information about the file on the server without actually downloading.
-     * This function uses the public (non APL-only) server
-     *
-     * @param path
      * @return
      */
     static public FileInfo getFileInfoFromServer(String path)
     {
-        return getFileInfoFromServer(path, false, false);
+        return getFileInfoFromServer(path, false);
     }
 
     /**
      * Get (download) the file from the server. Place it in the cache for
      * future access.
-     * This function uses the public (non APL-only) server.
      * If the path begins with "file://", then the file is assumed to be local
      * on disk and no server is contacted.
      *
@@ -216,7 +172,18 @@ public class FileCache
      */
     static public File getFileFromServer(String path)
     {
-        return getFileFromServer(path, false);
+        if (path.startsWith(FILE_PREFIX))
+        {
+            return new File(path.substring(FILE_PREFIX.length()));
+        }
+        else
+        {
+            FileInfo fi = getFileInfoFromServer(path, true);
+            if (fi != null)
+                return fi.file;
+            else
+                return null;
+        }
     }
 
     /**

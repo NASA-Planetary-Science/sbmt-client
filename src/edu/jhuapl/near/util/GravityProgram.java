@@ -20,7 +20,7 @@ public class GravityProgram
 
     public GravityProgram()
     {
-        File file = FileCache.getFileFromServer("/GRAVITY/gravity.zip", true);
+        File file = FileCache.getFileFromServer("/GRAVITY/gravity.zip");
         FileUtil.unzipFile(file);
 
         String execDir = file.getParent() + File.separator + "gravity";

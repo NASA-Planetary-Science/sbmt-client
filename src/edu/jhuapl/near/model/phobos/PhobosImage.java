@@ -91,13 +91,9 @@ public class PhobosImage extends PerspectiveImage
     {
         ImageKey key = getKey();
 
-        boolean useAPLServer = false;
-        if (key.name.contains("PHOBOSEXPERIMENTAL"))
-            useAPLServer = true;
-
         if (rootFolder == null)
         {
-            return FileCache.getFileFromServer(key.name + ".FIT", useAPLServer).getAbsolutePath();
+            return FileCache.getFileFromServer(key.name + ".FIT").getAbsolutePath();
         }
         else
         {
@@ -123,13 +119,9 @@ public class PhobosImage extends PerspectiveImage
         else //if (keyFile.getName().startsWith("f"))
             labelFilename = key.name + ".lbl";
 
-        boolean useAPLServer = false;
-        if (key.name.contains("PHOBOSEXPERIMENTAL"))
-            useAPLServer = true;
-
         if (rootFolder == null)
         {
-            return FileCache.getFileFromServer(labelFilename, useAPLServer).getAbsolutePath();
+            return FileCache.getFileFromServer(labelFilename).getAbsolutePath();
         }
         else
         {
@@ -142,16 +134,12 @@ public class PhobosImage extends PerspectiveImage
     {
         ImageKey key = getKey();
 
-        boolean useAPLServer = false;
-        if (key.name.contains("PHOBOSEXPERIMENTAL"))
-            useAPLServer = true;
-
         File keyFile = new File(key.name);
         String sumFilename = keyFile.getParentFile().getParent() + "/infofiles/"
         + keyFile.getName() + ".INFO";
         if (rootFolder == null)
         {
-            return FileCache.getFileFromServer(sumFilename, useAPLServer).getAbsolutePath();
+            return FileCache.getFileFromServer(sumFilename).getAbsolutePath();
         }
         else
         {
@@ -170,13 +158,9 @@ public class PhobosImage extends PerspectiveImage
         String sumFilename = keyFile.getParentFile().getParent() + "/" + sumfilesdir + "/"
         + keyFile.getName() + ".SUM";
 
-        boolean useAPLServer = false;
-        if (key.name.contains("PHOBOSEXPERIMENTAL"))
-            useAPLServer = true;
-
         if (rootFolder == null)
         {
-            return FileCache.getFileFromServer(sumFilename, useAPLServer).getAbsolutePath();
+            return FileCache.getFileFromServer(sumFilename).getAbsolutePath();
         }
         else
         {

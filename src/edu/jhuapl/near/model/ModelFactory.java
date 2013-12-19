@@ -359,7 +359,6 @@ public class ModelFactory
             c.pathOnServer = "/GASKELL/PHOBOSEXPERIMENTAL";
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
             c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
-            c.useAPLServer = true;
             c.hasPerspectiveImages = true;
             c.hasMapmaker = true;
             c.imageSearchDefaultStartDate = new GregorianCalendar(1976, 6, 24, 0, 0, 0).getTime();
@@ -458,7 +457,6 @@ public class ModelFactory
             c.pathOnServer = "/GASKELL/VESTA";
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
             c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
-            c.useAPLServer = true;
             c.hasPerspectiveImages = true;
             c.imageSearchDefaultStartDate = new GregorianCalendar(2011, 4, 3, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2012, 7, 27, 0, 0, 0).getTime();
@@ -792,7 +790,6 @@ public class ModelFactory
             c.pathOnServer = "/GASKELL/RQ36";
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
             c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
-            c.useAPLServer = true;
             c.hasLidarData = true;
             c.hasMapmaker = true;
             c.lidarSearchDefaultStartDate = new DateTime(2000, 1, 1, 0, 0, 0, 0).toDate();
@@ -825,7 +822,6 @@ public class ModelFactory
             c.pathOnServer = "/GASKELL/LUTETIA";
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
             c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
-            c.useAPLServer = true;
             c.hasPerspectiveImages = true;
             c.imageSearchDefaultStartDate = new GregorianCalendar(2010, 6, 10, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2010, 6, 11, 0, 0, 0).getTime();
@@ -878,7 +874,6 @@ public class ModelFactory
             c.pathOnServer = "/GASKELL/DIONE";
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
             c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
-            c.useAPLServer = true;
             c.hasPerspectiveImages = true;
             c.imageSearchDefaultStartDate = new GregorianCalendar(1980, 10, 10, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2011, 0, 31, 0, 0, 0).getTime();
@@ -904,7 +899,6 @@ public class ModelFactory
             c.pathOnServer = "/GASKELL/RHEA";
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
             c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
-            c.useAPLServer = true;
             configArray.add(c);
         }
 
@@ -919,7 +913,6 @@ public class ModelFactory
             c.pathOnServer = "/GASKELL/TETHYS";
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
             c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
-            c.useAPLServer = true;
             configArray.add(c);
         }
 
@@ -934,7 +927,6 @@ public class ModelFactory
             c.pathOnServer = "/GASKELL/HYPERION";
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
             c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
-            c.useAPLServer = true;
             configArray.add(c);
         }
 
@@ -956,7 +948,6 @@ public class ModelFactory
             c.dataUsed = IMAGE_BASED;
             c.author = GASKELL;
             c.pathOnServer = "/GASKELL/TEMPEL1";
-            c.useAPLServer = true;
             configArray.add(c);
         }
 
@@ -1006,7 +997,6 @@ public class ModelFactory
         public String pathOnServer;
         public String[] smallBodyLabelPerResolutionLevel; // only needed when number resolution levels > 1
         public int[] smallBodyNumberOfPlatesPerResolutionLevel; // only needed when number resolution levels > 1
-        public boolean useAPLServer = false;
         public boolean hasImageMap = false;
         public boolean hasPerspectiveImages = false;
         public boolean hasLidarData = false;
@@ -1053,7 +1043,6 @@ public class ModelFactory
             c.dataUsed = this.dataUsed;
             c.author = this.author;
             c.pathOnServer = this.pathOnServer;
-            c.useAPLServer = this.useAPLServer;
             c.hasImageMap = this.hasImageMap;
             c.hasPerspectiveImages = this.hasPerspectiveImages;
             c.hasLidarData = this.hasLidarData;
@@ -1259,7 +1248,7 @@ public class ModelFactory
                     config.pathOnServer + "/coordinate_grid_res3.vtk.gz"
             };
 
-            return new Graticule(smallBodyModel, graticulePaths, config.useAPLServer);
+            return new Graticule(smallBodyModel, graticulePaths);
         }
         else if (CUSTOM.equals(author))
         {

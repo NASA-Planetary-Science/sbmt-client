@@ -41,7 +41,7 @@ public class SSIIdaImage extends PerspectiveImage
         ImageKey key = getKey();
         if (rootFolder == null)
         {
-            return FileCache.getFileFromServer(key.name + ".fit", false).getAbsolutePath();
+            return FileCache.getFileFromServer(key.name + ".fit").getAbsolutePath();
         }
         else
         {
@@ -70,7 +70,7 @@ public class SSIIdaImage extends PerspectiveImage
         + keyFile.getName().substring(0, 5) + ".SUM";
         if (rootFolder == null)
         {
-            return FileCache.getFileFromServer(sumFilename, false).getAbsolutePath();
+            return FileCache.getFileFromServer(sumFilename).getAbsolutePath();
         }
         else
         {

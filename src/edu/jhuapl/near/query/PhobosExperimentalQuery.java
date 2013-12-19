@@ -61,7 +61,7 @@ public class PhobosExperimentalQuery extends QueryBase
         {
             return getResultsFromFileListOnServer(
                     "/GASKELL/PHOBOSEXPERIMENTAL/IMAGING/sumfiles-corrected/imagelist.txt",
-                    "/GASKELL/PHOBOSEXPERIMENTAL/IMAGING/images/", true);
+                    "/GASKELL/PHOBOSEXPERIMENTAL/IMAGING/images/");
         }
 
         ArrayList<ArrayList<String>> results = new ArrayList<ArrayList<String>>();

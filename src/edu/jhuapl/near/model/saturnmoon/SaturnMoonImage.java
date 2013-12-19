@@ -19,18 +19,6 @@ public class SaturnMoonImage extends PerspectiveImage
         super(key, smallBodyModel, loadPointingOnly, rootFolder);
     }
 
-    private boolean getIfUseAPLServer()
-    {
-        ImageKey key = getKey();
-
-        boolean useAPLServer = true;
-
-        if (key.name.toLowerCase().contains("phoebe") || key.name.toLowerCase().contains("mimas"))
-            useAPLServer = false;
-
-        return useAPLServer;
-    }
-
     @Override
     protected int[] getMaskSizes()
     {
@@ -43,8 +31,7 @@ public class SaturnMoonImage extends PerspectiveImage
         ImageKey key = getKey();
         if (rootFolder == null)
         {
-            boolean useAPLServer = getIfUseAPLServer();
-            return FileCache.getFileFromServer(key.name + ".FIT", useAPLServer).getAbsolutePath();
+            return FileCache.getFileFromServer(key.name + ".FIT").getAbsolutePath();
         }
         else
         {
@@ -67,8 +54,7 @@ public class SaturnMoonImage extends PerspectiveImage
         + keyFile.getName() + ".INFO";
         if (rootFolder == null)
         {
-            boolean useAPLServer = getIfUseAPLServer();
-            return FileCache.getFileFromServer(sumFilename, useAPLServer).getAbsolutePath();
+            return FileCache.getFileFromServer(sumFilename).getAbsolutePath();
         }
         else
         {
@@ -85,8 +71,7 @@ public class SaturnMoonImage extends PerspectiveImage
         + keyFile.getName() + ".SUM";
         if (rootFolder == null)
         {
-            boolean useAPLServer = getIfUseAPLServer();
-            return FileCache.getFileFromServer(sumFilename, useAPLServer).getAbsolutePath();
+            return FileCache.getFileFromServer(sumFilename).getAbsolutePath();
         }
         else
         {

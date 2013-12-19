@@ -60,7 +60,7 @@ public class LidarDataPerUnit extends Model
         boolean isBinary = modelConfig.lidarBrowseIsBinary;
         int binaryRecordSize = modelConfig.lidarBrowseBinaryRecordSize;
 
-        File file = FileCache.getFileFromServer(path, modelConfig.useAPLServer);
+        File file = FileCache.getFileFromServer(path);
 
         if (file == null)
             throw new IOException(path + " could not be loaded");

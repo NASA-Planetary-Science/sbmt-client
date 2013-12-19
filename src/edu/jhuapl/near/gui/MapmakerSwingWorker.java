@@ -21,7 +21,7 @@ public class MapmakerSwingWorker extends FileDownloadSwingWorker
 
     public MapmakerSwingWorker(Component c, String title, String filename)
     {
-        super(c, title, filename, true);
+        super(c, title, filename);
     }
 
 
@@ -83,7 +83,7 @@ public class MapmakerSwingWorker extends FileDownloadSwingWorker
 
         try
         {
-            File file = FileCache.getFileFromServer(this.getFileDownloaded(), true);
+            File file = FileCache.getFileFromServer(this.getFileDownloaded());
             String mapmakerRootDir = file.getParent() + File.separator + "mapmaker";
 
             Mapmaker mapmaker = new Mapmaker(mapmakerRootDir);
