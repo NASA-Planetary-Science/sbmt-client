@@ -863,30 +863,27 @@ public class ModelFactory
         c.pathOnServer = "/JORDA/STEINS/steins_cart.plt.gz";
         configArray.add(c);
 
-        if (Configuration.isAPLVersion())
-        {
-            c = new ModelConfig();
-            c.name = DIONE;
-            c.type = SATELLITES;
-            c.population = SATURN;
-            c.dataUsed = IMAGE_BASED;
-            c.author = GASKELL;
-            c.pathOnServer = "/GASKELL/DIONE";
-            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
-            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
-            c.hasPerspectiveImages = true;
-            c.imageSearchDefaultStartDate = new GregorianCalendar(1980, 10, 10, 0, 0, 0).getTime();
-            c.imageSearchDefaultEndDate = new GregorianCalendar(2011, 0, 31, 0, 0, 0).getTime();
-            c.imageSearchQuery = new SaturnMoonQuery("/GASKELL/DIONE/IMAGING");
-            c.imageSearchFilterNames = new String[]{};
-            c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
-            c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
-            c.imageSearchDefaultMaxResolution = 4000.0;
-            c.imageSearchImageSources = new ImageSource[]{ImageSource.GASKELL};
-            c.imageType = ImageType.SATURN_MOON_IMAGE;
-            c.imageInstrumentName = IMAGING_DATA;
-            configArray.add(c);
-        }
+        c = new ModelConfig();
+        c.name = DIONE;
+        c.type = SATELLITES;
+        c.population = SATURN;
+        c.dataUsed = IMAGE_BASED;
+        c.author = GASKELL;
+        c.pathOnServer = "/GASKELL/DIONE";
+        c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
+        c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
+        c.hasPerspectiveImages = true;
+        c.imageSearchDefaultStartDate = new GregorianCalendar(1980, 10, 10, 0, 0, 0).getTime();
+        c.imageSearchDefaultEndDate = new GregorianCalendar(2011, 0, 31, 0, 0, 0).getTime();
+        c.imageSearchQuery = new SaturnMoonQuery("/GASKELL/DIONE/IMAGING");
+        c.imageSearchFilterNames = new String[]{};
+        c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
+        c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
+        c.imageSearchDefaultMaxResolution = 4000.0;
+        c.imageSearchImageSources = new ImageSource[]{ImageSource.GASKELL};
+        c.imageType = ImageType.SATURN_MOON_IMAGE;
+        c.imageInstrumentName = IMAGING_DATA;
+        configArray.add(c);
 
         if (Configuration.isAPLVersion())
         {
@@ -902,19 +899,16 @@ public class ModelFactory
             configArray.add(c);
         }
 
-        if (Configuration.isAPLVersion())
-        {
-            c = new ModelConfig();
-            c.name = TETHYS;
-            c.type = SATELLITES;
-            c.population = SATURN;
-            c.dataUsed = IMAGE_BASED;
-            c.author = GASKELL;
-            c.pathOnServer = "/GASKELL/TETHYS";
-            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
-            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
-            configArray.add(c);
-        }
+        c = new ModelConfig();
+        c.name = TETHYS;
+        c.type = SATELLITES;
+        c.population = SATURN;
+        c.dataUsed = IMAGE_BASED;
+        c.author = GASKELL;
+        c.pathOnServer = "/GASKELL/TETHYS";
+        c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
+        c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
+        configArray.add(c);
 
         if (Configuration.isAPLVersion())
         {
