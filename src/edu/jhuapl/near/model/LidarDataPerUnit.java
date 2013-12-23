@@ -118,22 +118,33 @@ public class LidarDataPerUnit extends Model
                 int xoffset = count*binaryRecordSize + xindex;
                 int yoffset = count*binaryRecordSize + yindex;
                 int zoffset = count*binaryRecordSize + zindex;
+                int scxoffset = count*binaryRecordSize + scxindex;
+                int scyoffset = count*binaryRecordSize + scyindex;
+                int sczoffset = count*binaryRecordSize + sczindex;
 
                 double x = bb.getDouble(xoffset);
                 double y = bb.getDouble(yoffset);
                 double z = bb.getDouble(zoffset);
+                double scx = bb.getDouble(scxoffset);
+                double scy = bb.getDouble(scyoffset);
+                double scz = bb.getDouble(sczoffset);
 
                 if (isInMeters)
                 {
                     x /= 1000.0;
                     y /= 1000.0;
                     z /= 1000.0;
+                    scx /= 1000.0;
+                    scy /= 1000.0;
+                    scz /= 1000.0;
                 }
                 points.InsertNextPoint(x, y, z);
                 idList.SetId(0, count);
                 vert.InsertNextCell(idList);
 
                 // assume no spacecraft position for now
+                pointsSc.InsertNextPoint(scx, scy, scz);
+                vertSc.InsertNextCell(idList);
 
                 int timeoffset = count*binaryRecordSize + timeindex;
 

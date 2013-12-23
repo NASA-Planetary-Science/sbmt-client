@@ -797,7 +797,7 @@ public class ModelFactory
             c.lidarSearchDataSourceMap = new LinkedHashMap<String, String>();
             c.lidarSearchDataSourceMap.put("Default", "/GASKELL/RQ36/OLA/cubes");
             c.lidarBrowseXYZIndices = new int[]{96, 104, 112};
-            c.lidarBrowseSpacecraftIndices = new int[]{-1, -1, -1};
+            c.lidarBrowseSpacecraftIndices = new int[]{144, 152, 160};
             c.lidarBrowseIsSpacecraftInSphericalCoordinates = false;
             c.lidarBrowseTimeIndex = 18;
             c.lidarBrowseNoiseIndex = -1;
@@ -805,7 +805,7 @@ public class ModelFactory
             c.lidarBrowseNumberHeaderLines = 0;
             c.lidarBrowseIsInMeters = true;
             c.lidarBrowseIsBinary = true;
-            c.lidarBrowseBinaryRecordSize = 144;
+            c.lidarBrowseBinaryRecordSize = 168;
             c.lidarOffsetScale = 0.0005;
             c.lidarInstrumentName = OLA;
             configArray.add(c);
