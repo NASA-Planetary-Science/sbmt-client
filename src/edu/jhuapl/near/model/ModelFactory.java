@@ -885,20 +885,6 @@ public class ModelFactory
         c.imageInstrumentName = IMAGING_DATA;
         configArray.add(c);
 
-        if (Configuration.isAPLVersion())
-        {
-            c = new ModelConfig();
-            c.name = RHEA;
-            c.type = SATELLITES;
-            c.population = SATURN;
-            c.dataUsed = IMAGE_BASED;
-            c.author = GASKELL;
-            c.pathOnServer = "/GASKELL/RHEA";
-            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
-            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
-            configArray.add(c);
-        }
-
         c = new ModelConfig();
         c.name = TETHYS;
         c.type = SATELLITES;
@@ -919,6 +905,20 @@ public class ModelFactory
             c.dataUsed = IMAGE_BASED;
             c.author = GASKELL;
             c.pathOnServer = "/GASKELL/HYPERION";
+            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
+            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
+            configArray.add(c);
+        }
+
+        if (Configuration.isAPLVersion())
+        {
+            c = new ModelConfig();
+            c.name = RHEA;
+            c.type = SATELLITES;
+            c.population = SATURN;
+            c.dataUsed = IMAGE_BASED;
+            c.author = GASKELL;
+            c.pathOnServer = "/GASKELL/RHEA";
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
             c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
             configArray.add(c);
