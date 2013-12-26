@@ -201,6 +201,13 @@ from the people or teams producing them and are not listed below.
    RO-A-OSINAC/OSIWAC-5-LUTETIA-SHAPE-V1.0, NASA Planetary Data
    System, 2013.)
 
+### Steins (Jorda)
+
+-  [http://pdssbn.astro.umd.edu/holdings/ro-a-osinac_osiwac-5-steins-shape-v1.0/dataset.html](http://pdssbn.astro.umd.edu/holdings/ro-a-osinac_osiwac-5-steins-shape-v1.0/dataset.html),
+   (Farnham, T.L., Jorda, L., SHAPE MODEL OF ASTEROID 2867 STEINS,
+   RO-A-OSINAC/OSIWAC-5-STEINS-SHAPE-V1.0, NASA Planetary Data System,
+   2013.)
+
 
 ## Satellites
 
