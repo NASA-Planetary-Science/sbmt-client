@@ -4,6 +4,29 @@
 
 # Recent Changes
 
+### December 26, 2013
+
+-   Fixed problem which prevented importing custom plate data for custom
+    shape models.
+-   Changed how plate data are saved out so that all plate data is
+    saved out to a single file including information about plates
+    such as as area and coordinates of center of plate.
+-   Added plate data (slope, elevation, acceleration, potential) to most
+    shape models.
+-   Added new Steins, Hartley, Lutetia, Bennu, Dione, Tethys, Mimas and
+    Phoebe shape models which were recently delivered to the
+    PDS. Dione and Tethys are now no longer restricted to only certain
+    accounts.
+-   Added support for loading multiple custom lidar tracks in lidar
+    search panel at once (when pressing "Load Tracks From Files...").
+-   Changed "Source:" to "Pointing:" in image search tabs.
+-   In lidar browse panels, show start and stop times of each file.
+-   Changed title of main window to display name of shape model currently being viewed.
+-   Added option in Help menu for opening web page listing sources of all data.
+-   [OSIRIS-REx team only] Added OLA tab to Bennu shape model and
+    added some simulated lidar data.
+
+
 ### September 23, 2013
 
 -   Added options in the Preferences panel for changing the look of the

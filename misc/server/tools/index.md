@@ -1,4 +1,4 @@
-% Additional Tools
+% Small Body Mapping Tools
 %
 %
 
@@ -6,56 +6,31 @@
 pandoc -t html -s index.md -o index.html
 -->
 
-This page contains links to additional tools that you may find useful.
+This page contains a version of the SBMT with extra command line
+tools. See the README files in the doc folder for explanations of
+these tools.
 
-## Camera Position and Orientation Estimation
+Currently only Mac OS X 10.8 or higher is supported. If other
+platforms are desired, let us know.
 
-This tool can be used to estimate the position and orientation of a
-camera at the time it acquired a specific image. Please see the
-README.txt file in the zip archive for usage instructions.
+Download: [sbmt-extras-2013.12.11-macosx-x64.zip](releases/sbmt-extras-2013.12.11-macosx-x64.zip)
 
-Download: [camera-estimation-1.0.0.zip](releases/camera-estimation-1.0.0.zip)
+The following additional tools are included:
 
-## Gravity Estimation
-
-This tool estimates the gravitational potential, gravitational
-acceleration, elevation, and slope of a general polyhedron. It
-implements the algorithm of Werner and Scheeres as well as that of
-Andy Cheng (see references below). Please see the README.txt file in
-the zip archive for usage instructions.
-
-Download: [gravity-1.0.0.zip](releases/gravity-1.0.0.zip)
-
-#### References
-
-1.  Werner, R.A. and Scheeres, D.J., 1997, Exterior gravitation of a
-polyhedron derived and compared with harmonic and mascon gravitation
-representations of asteroid 4769 Castalia, *Celestial Mechanics and
-Dynamical Astronomy*, Vol. 65, pp. 313-344.
-2.  Cheng, A.F. et al., 2012, Efficient Calculation of Effective
-Potential and Gravity on Small Bodies, *ACM*, 1667, p. 6447.
-
-
-## Lidar Track Optimization
-
-This tool can be used to determine the optimal translation that
-minimizes the error of a lidar track to the asteroid. Currently lidar
-data from the NEAR or Hayabusa missions are supported. Please see the
-README.txt file in the zip archive for usage instructions.
-
-Download: [lidar-opt-1.0.0.zip](releases/lidar-opt-1.0.0.zip)
-
-
-## Trajectory Propagation
-
-This tool uses a shape model, an initial position and velocity at a
-specified time and computes the trajectory of an object propagated
-forward in time with these initial conditions by integrating the
-equations of motion. Please see the README.txt file in the zip archive
-for usage instructions.
-
-Download: [propagator-1.0.0.zip](releases/propagator-1.0.0.zip)
-
+1. Camera Position and Orientation Estimation - This tool can be used
+   to estimate the position and orientation of a camera at the time it
+   acquired a specific image.
+2. Gravity Estimation - This tool estimates the gravitational
+   potential, gravitational acceleration, elevation, and slope of a
+   general polyhedron. It implements the algorithms of Werner and Scheeres
+   as well as that of Andy Cheng.
+3. Lidar Track Optimization - This tool can be used to determine the
+   optimal translation that minimizes the error of a lidar track to the
+   asteroid.
+4. Trajectory Propagation - This tool uses a shape model, an initial
+   position and velocity at a specified time and computes the trajectory
+   of an object propagated forward in time with these initial conditions
+   by integrating the equations of motion.
 
 <!---
 ## Previous Releases
