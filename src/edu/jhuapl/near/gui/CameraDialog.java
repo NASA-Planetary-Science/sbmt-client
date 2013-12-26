@@ -15,8 +15,8 @@ import javax.swing.JTextField;
 
 import net.miginfocom.swing.MigLayout;
 
-import org.apache.commons.math.geometry.NotARotationMatrixException;
-import org.apache.commons.math.geometry.Rotation;
+import org.apache.commons.math3.geometry.euclidean.threed.NotARotationMatrixException;
+import org.apache.commons.math3.geometry.euclidean.threed.Rotation;
 
 import edu.jhuapl.near.gui.Renderer.ProjectionType;
 

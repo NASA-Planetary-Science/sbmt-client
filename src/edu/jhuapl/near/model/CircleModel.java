@@ -19,11 +19,7 @@ import edu.jhuapl.near.util.Properties;
  * to create a new circle by simply clicking any 3 points on the perimeter of
  * the circle. The circle is formed by using VTK's vtkTriangle::Circumcircle
  * function.
- *
- * @author
- *
  */
-
 public class CircleModel extends AbstractEllipsePolygonModel
 {
     private SmallBodyModel smallBodyModel;

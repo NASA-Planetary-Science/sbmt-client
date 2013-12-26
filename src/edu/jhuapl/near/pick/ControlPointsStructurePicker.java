@@ -25,9 +25,6 @@ import edu.jhuapl.near.model.SmallBodyModel;
  * enabled for Paths and the mode simply enforces a maximum limit of 2 control
  * points per path (since saving out a profile are not supported for paths with
  * more than 2 control points).
- *
- * @author kahneg1
- *
  */
 public class ControlPointsStructurePicker extends Picker
 {

@@ -1,8 +1,5 @@
 #!/bin/sh
 
-export DISPLAY=":20"
-Xvfb $DISPLAY &
-
 cd `dirname $0`
 
 #NUMBER_POINTS=1114386

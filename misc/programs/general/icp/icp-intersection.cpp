@@ -85,7 +85,7 @@ static double func(const double* translation, void*)
    n. The optimal translation that maps the source points into target
    points is calculated and placed in translation.
  */
-void icp2(struct PointLite source[], int n, struct PointLite* additionalPoints, double* translation)
+void icp2(struct PointLite source[], int n, struct PointLite* additionalPoints, double* translation, struct PointLite* closestPoints)
 {
     /* For the ICP, we do the following:
 
@@ -147,6 +147,10 @@ void icp2(struct PointLite source[], int n, struct PointLite* additionalPoints, 
 
     for (i=0; i<n; ++i)
     {
+        closestPoints[i].p[0] = g_target[i].p[0];
+        closestPoints[i].p[1] = g_target[i].p[1];
+        closestPoints[i].p[2] = g_target[i].p[2];
+
         vadd(source[i].p, translation, source[i].p);
         if (additionalPoints != 0)
             vadd(additionalPoints[i].p, translation, additionalPoints[i].p);

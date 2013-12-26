@@ -27,6 +27,7 @@ import edu.jhuapl.near.model.gaspra.SSIGaspraImage;
 import edu.jhuapl.near.model.ida.SSIIdaImage;
 import edu.jhuapl.near.model.itokawa.AmicaImage;
 import edu.jhuapl.near.model.itokawa.Itokawa;
+import edu.jhuapl.near.model.lutetia.Lutetia;
 import edu.jhuapl.near.model.lutetia.OsirisImage;
 import edu.jhuapl.near.model.mathilde.MSIMathildeImage;
 import edu.jhuapl.near.model.phobos.PhobosImage;
@@ -86,6 +87,8 @@ public class ModelFactory
     static public final String _52760_1998_ML14 = "52760 (1998 ML14)";
     static public final String GOLEVKA = "Golevka";
     static public final String WILD_2 = "Wild 2";
+    static public final String STEINS = "Steins";
+    static public final String HARTLEY = "Hartley";
 
     // Types of bodies
     static public final String ASTEROID = "Asteroids";
@@ -107,6 +110,8 @@ public class ModelFactory
     static public final String HUDSON = "Hudson";
     static public final String DUXBURY = "Duxbury";
     static public final String OSTRO = "Ostro";
+    static public final String JORDA = "Jorda";
+    static public final String NOLAN = "Nolan";
     static public final String CUSTOM = "Custom";
     static public final String EROSNAV = "NAV";
     static public final String EROSNLR = "NLR";
@@ -143,6 +148,20 @@ public class ModelFactory
         MSI_MATHILDE_IMAGE
     }
 
+    static private final String[] DEFAULT_GASKELL_LABELS_PER_RESOLUTION = {
+        "Low (49152 plates)",
+        "Medium (196608 plates)",
+        "High (786432 plates)",
+        "Very High (3145728 plates)"
+    };
+
+    static private final int[] DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION = {
+        49152,
+        196608,
+        786432,
+        3145728
+    };
+
     static public final ArrayList<ModelConfig> builtInModelConfigs = new ArrayList<ModelConfig>();
 
     static
@@ -157,6 +176,8 @@ public class ModelFactory
         c.dataUsed = IMAGE_BASED;
         c.author = GASKELL;
         c.pathOnServer = "/GASKELL/EROS";
+        c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
+        c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
         c.hasPerspectiveImages = true;
         c.hasLidarData = true;
         c.hasMapmaker = true;
@@ -200,6 +221,13 @@ public class ModelFactory
         c = c.clone();
         c.author = THOMAS;
         c.pathOnServer = "/THOMAS/EROS";
+        c.smallBodyLabelPerResolutionLevel = new String[]{
+                "1708 plates", "7790 plates", "10152 plates",
+                "22540 plates", "89398 plates", "200700 plates"
+        };
+        c.smallBodyNumberOfPlatesPerResolutionLevel = new int[]{
+                1708, 7790, 10152, 22540, 89398, 200700
+        };
         c.hasMapmaker = false;
         configArray.add(c);
 
@@ -225,6 +253,8 @@ public class ModelFactory
         c.dataUsed = IMAGE_BASED;
         c.author = GASKELL;
         c.pathOnServer = "/GASKELL/ITOKAWA";
+        c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
+        c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
         c.hasPerspectiveImages = true;
         c.hasLidarData = true;
         c.imageSearchDefaultStartDate = new GregorianCalendar(2005, 8, 1, 0, 0, 0).getTime();
@@ -282,6 +312,8 @@ public class ModelFactory
         c.dataUsed = IMAGE_BASED;
         c.author = GASKELL;
         c.pathOnServer = "/GASKELL/PHOBOS";
+        c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
+        c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
         c.hasPerspectiveImages = true;
         c.imageSearchDefaultStartDate = new GregorianCalendar(1976, 6, 24, 0, 0, 0).getTime();
         c.imageSearchDefaultEndDate = new GregorianCalendar(1989, 2, 26, 0, 0, 0).getTime();
@@ -325,7 +357,8 @@ public class ModelFactory
             c.dataUsed = IMAGE_BASED;
             c.author = EXPERIMENTAL;
             c.pathOnServer = "/GASKELL/PHOBOSEXPERIMENTAL";
-            c.useAPLServer = true;
+            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
+            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
             c.hasPerspectiveImages = true;
             c.hasMapmaker = true;
             c.imageSearchDefaultStartDate = new GregorianCalendar(1976, 6, 24, 0, 0, 0).getTime();
@@ -376,6 +409,8 @@ public class ModelFactory
         c.dataUsed = IMAGE_BASED;
         c.author = GASKELL;
         c.pathOnServer = "/GASKELL/MIMAS";
+        c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
+        c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
         c.hasPerspectiveImages = true;
         c.imageSearchDefaultStartDate = new GregorianCalendar(1980, 10, 10, 0, 0, 0).getTime();
         c.imageSearchDefaultEndDate = new GregorianCalendar(2011, 0, 31, 0, 0, 0).getTime();
@@ -396,6 +431,8 @@ public class ModelFactory
         c.dataUsed = IMAGE_BASED;
         c.author = GASKELL;
         c.pathOnServer = "/GASKELL/PHOEBE";
+        c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
+        c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
         c.hasPerspectiveImages = true;
         c.imageSearchDefaultStartDate = new GregorianCalendar(1980, 10, 10, 0, 0, 0).getTime();
         c.imageSearchDefaultEndDate = new GregorianCalendar(2011, 0, 31, 0, 0, 0).getTime();
@@ -418,7 +455,8 @@ public class ModelFactory
             c.dataUsed = IMAGE_BASED;
             c.author = GASKELL;
             c.pathOnServer = "/GASKELL/VESTA";
-            c.useAPLServer = true;
+            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
+            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
             c.hasPerspectiveImages = true;
             c.imageSearchDefaultStartDate = new GregorianCalendar(2011, 4, 3, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2012, 7, 27, 0, 0, 0).getTime();
@@ -732,6 +770,15 @@ public class ModelFactory
         c.pathOnServer = "/HUDSON/GOLEVKA/6489golevka.obj.gz";
         configArray.add(c);
 
+        c = new ModelConfig();
+        c.name = RQ36;
+        c.type = ASTEROID;
+        c.population = NEO;
+        c.dataUsed = RADAR_BASED;
+        c.author = NOLAN;
+        c.pathOnServer = "/NOLAN/BENNU/101955bennu.obj.gz";
+        configArray.add(c);
+
         if (Configuration.isAPLVersion())
         {
             c = new ModelConfig();
@@ -741,21 +788,24 @@ public class ModelFactory
             c.dataUsed = ENHANCED;
             c.author = GASKELL;
             c.pathOnServer = "/GASKELL/RQ36";
-            c.useAPLServer = true;
+            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
+            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
             c.hasLidarData = true;
             c.hasMapmaker = true;
             c.lidarSearchDefaultStartDate = new DateTime(2000, 1, 1, 0, 0, 0, 0).toDate();
             c.lidarSearchDefaultEndDate = new DateTime(2050, 1, 1, 0, 0, 0, 0).toDate();
             c.lidarSearchDataSourceMap = new LinkedHashMap<String, String>();
             c.lidarSearchDataSourceMap.put("Default", "/GASKELL/RQ36/OLA/cubes");
-            c.lidarBrowseXYZIndices = new int[]{1, 2, 3};
-            c.lidarBrowseSpacecraftIndices = new int[]{4, 5, 6};
+            c.lidarBrowseXYZIndices = new int[]{96, 104, 112};
+            c.lidarBrowseSpacecraftIndices = new int[]{144, 152, 160};
             c.lidarBrowseIsSpacecraftInSphericalCoordinates = false;
-            c.lidarBrowseTimeIndex = 0;
+            c.lidarBrowseTimeIndex = 18;
             c.lidarBrowseNoiseIndex = -1;
             c.lidarBrowseFileListResourcePath = "/edu/jhuapl/near/data/OlaLidarFiles.txt";
             c.lidarBrowseNumberHeaderLines = 0;
-            c.lidarBrowseIsInMeters = false;
+            c.lidarBrowseIsInMeters = true;
+            c.lidarBrowseIsBinary = true;
+            c.lidarBrowseBinaryRecordSize = 168;
             c.lidarOffsetScale = 0.0005;
             c.lidarInstrumentName = OLA;
             configArray.add(c);
@@ -770,7 +820,8 @@ public class ModelFactory
             c.dataUsed = IMAGE_BASED;
             c.author = GASKELL;
             c.pathOnServer = "/GASKELL/LUTETIA";
-            c.useAPLServer = true;
+            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
+            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
             c.hasPerspectiveImages = true;
             c.imageSearchDefaultStartDate = new GregorianCalendar(2010, 6, 10, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2010, 6, 11, 0, 0, 0).getTime();
@@ -785,27 +836,77 @@ public class ModelFactory
             configArray.add(c);
         }
 
+        c = new ModelConfig();
+        c.name = LUTETIA;
+        c.type = ASTEROID;
+        c.population = MAIN_BELT;
+        c.dataUsed = IMAGE_BASED;
+        c.author = JORDA;
+        c.pathOnServer = "/JORDA/LUTETIA";
+        c.smallBodyLabelPerResolutionLevel = new String[]{
+                "2962 plates ", "5824 plates ", "11954 plates ", "24526 plates ",
+                "47784 plates ", "98280 plates ", "189724 plates ", "244128 plates ",
+                "382620 plates ", "784510 plates ", "1586194 plates ", "3145728 plates"
+        };
+        c.smallBodyNumberOfPlatesPerResolutionLevel = new int[]{
+                2962, 5824, 11954, 24526, 47784, 98280, 189724,
+                244128, 382620, 784510, 1586194, 3145728
+        };
+        configArray.add(c);
+
+        c = new ModelConfig();
+        c.name = STEINS;
+        c.type = ASTEROID;
+        c.population = MAIN_BELT;
+        c.dataUsed = IMAGE_BASED;
+        c.author = JORDA;
+        c.pathOnServer = "/JORDA/STEINS/steins_cart.plt.gz";
+        configArray.add(c);
+
+        c = new ModelConfig();
+        c.name = DIONE;
+        c.type = SATELLITES;
+        c.population = SATURN;
+        c.dataUsed = IMAGE_BASED;
+        c.author = GASKELL;
+        c.pathOnServer = "/GASKELL/DIONE";
+        c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
+        c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
+        c.hasPerspectiveImages = true;
+        c.imageSearchDefaultStartDate = new GregorianCalendar(1980, 10, 10, 0, 0, 0).getTime();
+        c.imageSearchDefaultEndDate = new GregorianCalendar(2011, 0, 31, 0, 0, 0).getTime();
+        c.imageSearchQuery = new SaturnMoonQuery("/GASKELL/DIONE/IMAGING");
+        c.imageSearchFilterNames = new String[]{};
+        c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
+        c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
+        c.imageSearchDefaultMaxResolution = 4000.0;
+        c.imageSearchImageSources = new ImageSource[]{ImageSource.GASKELL};
+        c.imageType = ImageType.SATURN_MOON_IMAGE;
+        c.imageInstrumentName = IMAGING_DATA;
+        configArray.add(c);
+
+        c = new ModelConfig();
+        c.name = TETHYS;
+        c.type = SATELLITES;
+        c.population = SATURN;
+        c.dataUsed = IMAGE_BASED;
+        c.author = GASKELL;
+        c.pathOnServer = "/GASKELL/TETHYS";
+        c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
+        c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
+        configArray.add(c);
+
         if (Configuration.isAPLVersion())
         {
             c = new ModelConfig();
-            c.name = DIONE;
+            c.name = HYPERION;
             c.type = SATELLITES;
             c.population = SATURN;
             c.dataUsed = IMAGE_BASED;
             c.author = GASKELL;
-            c.pathOnServer = "/GASKELL/DIONE";
-            c.useAPLServer = true;
-            c.hasPerspectiveImages = true;
-            c.imageSearchDefaultStartDate = new GregorianCalendar(1980, 10, 10, 0, 0, 0).getTime();
-            c.imageSearchDefaultEndDate = new GregorianCalendar(2011, 0, 31, 0, 0, 0).getTime();
-            c.imageSearchQuery = new SaturnMoonQuery("/GASKELL/DIONE/IMAGING");
-            c.imageSearchFilterNames = new String[]{};
-            c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
-            c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
-            c.imageSearchDefaultMaxResolution = 4000.0;
-            c.imageSearchImageSources = new ImageSource[]{ImageSource.GASKELL};
-            c.imageType = ImageType.SATURN_MOON_IMAGE;
-            c.imageInstrumentName = IMAGING_DATA;
+            c.pathOnServer = "/GASKELL/HYPERION";
+            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
+            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
             configArray.add(c);
         }
 
@@ -818,33 +919,8 @@ public class ModelFactory
             c.dataUsed = IMAGE_BASED;
             c.author = GASKELL;
             c.pathOnServer = "/GASKELL/RHEA";
-            c.useAPLServer = true;
-            configArray.add(c);
-        }
-
-        if (Configuration.isAPLVersion())
-        {
-            c = new ModelConfig();
-            c.name = TETHYS;
-            c.type = SATELLITES;
-            c.population = SATURN;
-            c.dataUsed = IMAGE_BASED;
-            c.author = GASKELL;
-            c.pathOnServer = "/GASKELL/TETHYS";
-            c.useAPLServer = true;
-            configArray.add(c);
-        }
-
-        if (Configuration.isAPLVersion())
-        {
-            c = new ModelConfig();
-            c.name = HYPERION;
-            c.type = SATELLITES;
-            c.population = SATURN;
-            c.dataUsed = IMAGE_BASED;
-            c.author = GASKELL;
-            c.pathOnServer = "/GASKELL/HYPERION";
-            c.useAPLServer = true;
+            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
+            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
             configArray.add(c);
         }
 
@@ -866,7 +942,6 @@ public class ModelFactory
             c.dataUsed = IMAGE_BASED;
             c.author = GASKELL;
             c.pathOnServer = "/GASKELL/TEMPEL1";
-            c.useAPLServer = true;
             configArray.add(c);
         }
 
@@ -887,6 +962,15 @@ public class ModelFactory
         c.author = DUXBURY;
         c.pathOnServer = "/OTHER/WILD2/wild2_cart_full.w2.gz";
         configArray.add(c);
+
+        c = new ModelConfig();
+        c.name = HARTLEY;
+        c.type = COMETS;
+        c.population = null;
+        c.dataUsed = IMAGE_BASED;
+        c.author = THOMAS;
+        c.pathOnServer = "/THOMAS/HARTLEY/hartley2_2012_cart.plt.gz";
+        configArray.add(c);
     }
 
     /**
@@ -895,9 +979,6 @@ public class ModelFactory
      * have imaging, spectral, and lidar data whereas other models may only have
      * imaging data. This class is also used when creating (to know which tabs
      * to create).
-     *
-     * @author kahneg1
-     *
      */
     public static class ModelConfig
     {
@@ -908,7 +989,8 @@ public class ModelFactory
         public String dataUsed; // e.g. images, radar, lidar, or enhanced
         public String author; // e.g. Gaskell
         public String pathOnServer;
-        public boolean useAPLServer = false;
+        public String[] smallBodyLabelPerResolutionLevel; // only needed when number resolution levels > 1
+        public int[] smallBodyNumberOfPlatesPerResolutionLevel; // only needed when number resolution levels > 1
         public boolean hasImageMap = false;
         public boolean hasPerspectiveImages = false;
         public boolean hasLidarData = false;
@@ -937,6 +1019,8 @@ public class ModelFactory
         public int lidarBrowseNoiseIndex;
         public String lidarBrowseFileListResourcePath;
         public int lidarBrowseNumberHeaderLines;
+        public boolean lidarBrowseIsBinary = false;
+        public int lidarBrowseBinaryRecordSize; // only required if lidarBrowseIsBinary is true
         // Return whether or not the units of the lidar points are in meters. If false
         // they are assumed to be in kilometers.
         public boolean lidarBrowseIsInMeters;
@@ -953,13 +1037,16 @@ public class ModelFactory
             c.dataUsed = this.dataUsed;
             c.author = this.author;
             c.pathOnServer = this.pathOnServer;
-            c.useAPLServer = this.useAPLServer;
             c.hasImageMap = this.hasImageMap;
             c.hasPerspectiveImages = this.hasPerspectiveImages;
             c.hasLidarData = this.hasLidarData;
             c.hasMapmaker = this.hasMapmaker;
             c.hasSpectralData = this.hasSpectralData;
             c.hasLineamentData = this.hasLineamentData;
+            if (this.smallBodyLabelPerResolutionLevel != null)
+                c.smallBodyLabelPerResolutionLevel = this.smallBodyLabelPerResolutionLevel.clone();
+            if (this.smallBodyNumberOfPlatesPerResolutionLevel != null)
+                c.smallBodyNumberOfPlatesPerResolutionLevel = this.smallBodyNumberOfPlatesPerResolutionLevel.clone();
             if (this.hasPerspectiveImages)
             {
                 c.imageSearchDefaultStartDate = (Date)this.imageSearchDefaultStartDate.clone();
@@ -986,11 +1073,28 @@ public class ModelFactory
                 c.lidarBrowseFileListResourcePath = this.lidarBrowseFileListResourcePath;
                 c.lidarBrowseNumberHeaderLines = this.lidarBrowseNumberHeaderLines;
                 c.lidarBrowseIsInMeters = this.lidarBrowseIsInMeters;
+                c.lidarBrowseIsBinary = this.lidarBrowseIsBinary;
+                c.lidarBrowseBinaryRecordSize = this.lidarBrowseBinaryRecordSize;
                 c.lidarOffsetScale = this.lidarOffsetScale;
                 c.lidarInstrumentName = this.lidarInstrumentName;
             }
             return c;
-        };
+        }
+
+        /**
+         * Returns model as a path. e.g. "Asteroid > Near-Earth > Eros > Image Based > Gaskell"
+         */
+        public String getPathRepresentation()
+        {
+            String path = type;
+            if (population != null)
+                path += " > " + population;
+            path += " > " + name
+                    + " > " + dataUsed
+                    + " > " + author;
+            return path;
+        }
+
     }
 
     /**
@@ -1107,6 +1211,11 @@ public class ModelFactory
             else if (VESTA.equals(name))
                 return new VestaOld(config);
         }
+        else if (JORDA.equals(author))
+        {
+            if (LUTETIA.equals(name))
+                return new Lutetia(config);
+        }
         else if (CUSTOM.equals(author))
         {
             return new CustomShapeModel(config);
@@ -1133,7 +1242,7 @@ public class ModelFactory
                     config.pathOnServer + "/coordinate_grid_res3.vtk.gz"
             };
 
-            return new Graticule(smallBodyModel, graticulePaths, config.useAPLServer);
+            return new Graticule(smallBodyModel, graticulePaths);
         }
         else if (CUSTOM.equals(author))
         {

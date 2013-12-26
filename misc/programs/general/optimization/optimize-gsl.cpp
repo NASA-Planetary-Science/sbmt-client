@@ -21,7 +21,7 @@ struct FuncParam
 
 static void printCurrentValue(size_t iter, double fx, const gsl_vector* x, size_t N)
 {
-    printf("Iter: %ld,  fx = %f", iter, fx);
+    printf("Iter: %ld,  fx = %.12f", iter, fx);
     /*size_t i;
     for (i=0; i<N; ++i)
     {

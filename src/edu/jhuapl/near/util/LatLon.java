@@ -3,8 +3,6 @@ package edu.jhuapl.near.util;
 
 /**
  * Note it is unspecified whether lat and lon are in degrees or radians.
- * @author kahneg1
- *
  */
 public class LatLon
 {

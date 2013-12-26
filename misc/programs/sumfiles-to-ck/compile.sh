@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# *** EXPORT CONTROLLED (12/2013) ***
+
 # IMPORTANT!! Change the next line to the path of your c-spice installation!
 SPICE_DIR=/project/nearsdc/software/spice/cspice
 

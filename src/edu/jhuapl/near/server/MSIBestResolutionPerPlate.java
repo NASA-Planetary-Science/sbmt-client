@@ -242,7 +242,8 @@ public class MSIBestResolutionPerPlate
      */
     public static void main(String[] args) throws IOException
     {
-        NativeLibraryLoader.loadVtkLibrariesLinuxNoX11();
+        System.setProperty("java.awt.headless", "true");
+        NativeLibraryLoader.loadVtkLibraries();
 
         String msiFileList=args[0];
 

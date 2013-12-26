@@ -56,9 +56,6 @@ import edu.jhuapl.near.util.Properties;
 
 /**
  * This class represents an absract image of a spacecraft imager instrument.
- *
- * @author kahneg1
- *
  */
 abstract public class PerspectiveImage extends Image implements PropertyChangeListener
 {

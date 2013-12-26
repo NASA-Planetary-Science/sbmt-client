@@ -19,6 +19,8 @@ vtk_dir=$1
 output_dir=$2
 version=$3
 
+top_level_dir=`pwd`
+
 mkdir -p $output_dir/mac64/sbmt/lib
 mkdir -p $output_dir/linux64/sbmt/lib
 mkdir -p $output_dir/win64/sbmt/lib
@@ -93,17 +95,57 @@ fi
 
 
 cd $output_dir/mac64
-version=`date +%Y.%m.%d`
-zip -q -r sbmt-$version-macosx-x64.zip sbmt
+version_number=`date +%Y.%m.%d`
+zip -q -r sbmt-$version_number-macosx-x64.zip sbmt
 
 cd $output_dir/linux64
-version=`date +%Y.%m.%d`
-zip -q -r sbmt-$version-linux-x64.zip sbmt
+version_number=`date +%Y.%m.%d`
+zip -q -r sbmt-$version_number-linux-x64.zip sbmt
 
 cd $output_dir/win64
-version=`date +%Y.%m.%d`
-zip -q -r sbmt-$version-windows-x64.zip sbmt
+version_number=`date +%Y.%m.%d`
+zip -q -r sbmt-$version_number-windows-x64.zip sbmt
 
 cd $output_dir/win64-with-jre
-version=`date +%Y.%m.%d`
-zip -q -r sbmt-$version-windows-x64-with-java.zip sbmt
+version_number=`date +%Y.%m.%d`
+zip -q -r sbmt-$version_number-windows-x64-with-java.zip sbmt
+
+
+# For Mac internal version add extra tools
+if [ "$version" == "-internal" ]
+then
+
+build_dir=/tmp/build-sbmt-general
+rm -rf $build_dir
+mkdir -p $build_dir
+cd $build_dir
+cmake $top_level_dir/misc/programs/general \
+    -DCMAKE_BUILD_TYPE:String=Release \
+    -DCMAKE_CXX_FLAGS_RELEASE:String="-O2 -DNDEBUG" \
+    -DCMAKE_C_FLAGS_RELEASE:String="-O2 -DNDEBUG"
+make
+
+cp gravity $output_dir/mac64/sbmt
+cp elevation-slope $output_dir/mac64/sbmt
+cp cam-est $output_dir/mac64/sbmt
+cp lidar-optimize-track $output_dir/mac64/sbmt
+cp lidar-compute-track-stats $output_dir/mac64/sbmt
+cp prop $output_dir/mac64/sbmt
+
+cd $top_level_dir
+cp misc/scripts/search-lidar $output_dir/mac64/sbmt
+cp misc/scripts/convert-mapmaker-cube $output_dir/mac64/sbmt
+cp misc/scripts/reproject-lidar-to-fitted-plane $output_dir/mac64/sbmt
+cp misc/programs/general/lidar/lidar-opt.py $output_dir/mac64/sbmt
+
+mkdir -p $output_dir/mac64/sbmt/doc
+cp misc/programs/general/propagation/README-propagator.txt $output_dir/mac64/sbmt/doc
+cp misc/programs/general/gravity/README-gravity.txt $output_dir/mac64/sbmt/doc
+cp misc/programs/general/camera_est/README-camera-estimation.txt $output_dir/mac64/sbmt/doc
+cp misc/programs/general/lidar/README-lidar-opt.txt $output_dir/mac64/sbmt/doc
+
+cd $output_dir/mac64
+version_number=`date +%Y.%m.%d`
+zip -q -r sbmt-extras-$version_number-macosx-x64.zip sbmt
+
+fi

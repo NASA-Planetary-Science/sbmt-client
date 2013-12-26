@@ -359,6 +359,8 @@ abstract public class DatabaseGeneratorBaseSql
      */
     public void doMain(String[] args) throws IOException
     {
+        System.setProperty("java.awt.headless", "true");
+
         Configuration.setAPLVersion(true);
 
         NativeLibraryLoader.loadVtkLibraries();

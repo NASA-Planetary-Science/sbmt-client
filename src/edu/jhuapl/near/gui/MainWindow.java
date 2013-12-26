@@ -11,8 +11,6 @@ import javax.swing.JMenuBar;
  * This class contains the "main" function called at the start of the program.
  * This class sets up the top level window and instantiates all the "managers" used
  * through out the program.
- * @author kahneg1
- *
  */
 public class MainWindow extends JFrame
 {
@@ -28,7 +26,7 @@ public class MainWindow extends JFrame
 
         createStatusBar();
 
-        rootPanel = new ViewManager(statusBar);
+        rootPanel = new ViewManager(statusBar, this);
 
         createMenus();
 
@@ -36,7 +34,6 @@ public class MainWindow extends JFrame
 
         ImageIcon erosIcon = new ImageIcon(getClass().getResource("/edu/jhuapl/near/data/eros.png"));
         setIconImage(erosIcon.getImage());
-        setTitle("Small Body Mapping Tool");
         pack();
 
 //        // Center the application on the screen.

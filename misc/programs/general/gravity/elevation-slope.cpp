@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include <stdlib.h>
+#include "SpiceUsr.h"
 #include "platemodel.h"
 #include "util.h"
 #include "mathutil.h"
@@ -157,7 +158,11 @@ int main(int argc, char** argv)
         // Compute slope
         double cellNormal[3];
         polyData->getNormal(i, cellNormal);
-        double slope = acos(-1.0 * Dot(cellNormal, platedata[i].acc)) * 180.0 / M_PI;
+        double negaticeAcc[3];
+        negaticeAcc[0] = -platedata[i].acc[0];
+        negaticeAcc[1] = -platedata[i].acc[1];
+        negaticeAcc[2] = -platedata[i].acc[2];
+        double slope = vsep_c(cellNormal, negaticeAcc) * 180.0 / M_PI;
 
         foutE << elevation << endl;
         foutS << slope << endl;

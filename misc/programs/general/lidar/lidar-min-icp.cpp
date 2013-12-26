@@ -262,7 +262,7 @@ void optimizeTrack(int startId, int trackSize)
         icpVtk(&sources[0], &targets[0], trackSize, &scpos[0]);
     else
 //        icp(sources, targets, trackSize, scpos);
-        icp2(&sources[0], trackSize, &scpos[0], g_translation);
+        icp2(&sources[0], trackSize, &scpos[0], g_translation, &targets[0]);
 
 
     for (i=g_trackStartPoint,j=0; i<endPoint; ++i,++j)
@@ -278,6 +278,10 @@ void optimizeTrack(int startId, int trackSize)
         pt.targetpos[2] = sources[j].p[2];
 
         struct Point ptOpt = g_pointsOptimized[i];
+
+        ptOpt.closestpoint[0] = targets[j].p[0];
+        ptOpt.closestpoint[1] = targets[j].p[1];
+        ptOpt.closestpoint[2] = targets[j].p[2];
 
         vadd_c(ptOpt.scpos, pt.scpos, ptOpt.scpos);
 
@@ -580,14 +584,17 @@ void savePointsOptimized(const char* outfile)
 
         if (g_singleTrackMode)
         {
-            fprintf(fout, "%s %.16e %.16e %.16e %.16e %.16e %.16e\n",
+            fprintf(fout, "%s %.16e %.16e %.16e %.16e %.16e %.16e %.16e %.16e %.16e\n",
                     point.utc,
                     point.targetpos[0],
                     point.targetpos[1],
                     point.targetpos[2],
                     point.scpos[0],
                     point.scpos[1],
-                    point.scpos[2]);
+                    point.scpos[2],
+                    point.closestpoint[0],
+                    point.closestpoint[1],
+                    point.closestpoint[2]);
         }
         else if (g_bodyType == ITOKAWA)
         {

@@ -242,7 +242,7 @@ int main(int argc, char** argv)
         }
         else if (!strcmp(argv[i], "--columns"))
         {
-            vector<string> tokens = split(argv[++i], ",");
+            vector<string> tokens = split(argv[++i], ',');
             if (tokens.size() != 3)
                 usage();
             fileColumns[0] = atoi(tokens[0].c_str());

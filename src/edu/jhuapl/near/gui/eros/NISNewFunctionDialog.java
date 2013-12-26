@@ -13,10 +13,6 @@ package edu.jhuapl.near.gui.eros;
 import edu.jhuapl.near.model.eros.NISSpectrum;
 
 
-/**
- *
- * @author kahneg1
- */
 public class NISNewFunctionDialog extends javax.swing.JDialog {
 
     private boolean success = false;

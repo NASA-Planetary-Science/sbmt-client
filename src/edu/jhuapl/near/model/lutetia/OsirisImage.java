@@ -79,7 +79,7 @@ public class OsirisImage extends PerspectiveImage
         ImageKey key = getKey();
         if (rootFolder == null)
         {
-            return FileCache.getFileFromServer(key.name + ".FIT", true).getAbsolutePath();
+            return FileCache.getFileFromServer(key.name + ".FIT").getAbsolutePath();
         }
         else
         {
@@ -102,7 +102,7 @@ public class OsirisImage extends PerspectiveImage
         + keyFile.getName() + ".INFO";
         if (rootFolder == null)
         {
-            return FileCache.getFileFromServer(sumFilename, true).getAbsolutePath();
+            return FileCache.getFileFromServer(sumFilename).getAbsolutePath();
         }
         else
         {
@@ -119,7 +119,7 @@ public class OsirisImage extends PerspectiveImage
         + keyFile.getName() + ".SUM";
         if (rootFolder == null)
         {
-            return FileCache.getFileFromServer(sumFilename, true).getAbsolutePath();
+            return FileCache.getFileFromServer(sumFilename).getAbsolutePath();
         }
         else
         {

@@ -46,9 +46,6 @@ import edu.jhuapl.near.util.Properties;
 
 /**
  * Model of polygon structures drawn on a body.
- *
- * @author
- *
  */
 public class PolygonModel extends ControlPointsStructureModel implements PropertyChangeListener
 {

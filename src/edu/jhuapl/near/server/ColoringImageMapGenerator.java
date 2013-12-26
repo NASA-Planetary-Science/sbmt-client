@@ -17,8 +17,8 @@ public class ColoringImageMapGenerator
      */
     public static void main(String[] args) throws Exception
     {
-        java.awt.Toolkit.getDefaultToolkit();
-        NativeLibraryLoader.loadVtkLibrariesLinuxNoX11();
+        System.setProperty("java.awt.headless", "true");
+        NativeLibraryLoader.loadVtkLibraries();
 
         ModelConfig modelConfig = ModelFactory.getModelConfig(ModelFactory.DEIMOS, ModelFactory.THOMAS);
         SmallBodyModel model = ModelFactory.createSmallBodyModel(modelConfig);

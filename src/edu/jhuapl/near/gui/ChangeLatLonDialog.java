@@ -22,9 +22,6 @@ import edu.jhuapl.near.util.MathUtil;
 
 /**
  * The purpose of this dialog is to change
- *
- * @author kahneg1
- *
  */
 public class ChangeLatLonDialog extends JDialog implements ActionListener
 {

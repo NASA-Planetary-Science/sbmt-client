@@ -56,7 +56,7 @@ public class MSIMathildeImage extends MSIImage
         + keyFile.getName().substring(0, 20) + ".INFO";
         if (rootFolder == null)
         {
-            return FileCache.getFileFromServer(sumFilename, false).getAbsolutePath();
+            return FileCache.getFileFromServer(sumFilename).getAbsolutePath();
         }
         else
         {
@@ -73,7 +73,7 @@ public class MSIMathildeImage extends MSIImage
         + keyFile.getName().substring(0, 20) + ".SUM";
         if (rootFolder == null)
         {
-            return FileCache.getFileFromServer(sumFilename, false).getAbsolutePath();
+            return FileCache.getFileFromServer(sumFilename).getAbsolutePath();
         }
         else
         {

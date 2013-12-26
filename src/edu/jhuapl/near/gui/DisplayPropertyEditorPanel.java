@@ -20,8 +20,6 @@ import edu.jhuapl.near.model.SmallBodyModel;
 
 /**
  * Swing panel for editing a vtkProperty
- * @author eli
- *
  */
 public class DisplayPropertyEditorPanel extends JPanel implements ChangeListener, ItemListener
 {

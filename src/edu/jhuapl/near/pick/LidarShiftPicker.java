@@ -21,9 +21,6 @@ import edu.jhuapl.near.model.SmallBodyModel;
  * This class is used to allow the user to translate a lidar track to a new location.
  * This works as follows. All the tracks are translated such that the currently selected
  * point is translated to the point on the asteroid the user clicked on.
- *
- * @author kahneg1
- *
  */
 public class LidarShiftPicker extends Picker
 {

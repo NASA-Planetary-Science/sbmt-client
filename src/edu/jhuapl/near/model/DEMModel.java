@@ -26,6 +26,7 @@ public class DEMModel extends SmallBodyModel
 {
     private static final int MAX_WIDTH = 1027;
     private static final int MAX_HEIGHT = 1027;
+    private static final float INVALID_VALUE = -1.0e38f;
     private vtkIdList idList;
     private vtkPolyData dem;
     private vtkPolyData boundary;
@@ -80,11 +81,6 @@ public class DEMModel extends SmallBodyModel
         dem.SetPolys(polys);
         //dem.GetPointData().SetScalars(heights);
 
-        vtkPoints boundaryPoints = new vtkPoints();
-        vtkCellArray boundaryPolys = new vtkCellArray();
-        boundary.SetPoints(boundaryPoints);
-        boundary.SetVerts(boundaryPolys);
-
         heightsGravityPerPoint.SetNumberOfComponents(1);
         heightsGravity.SetNumberOfComponents(1);
         heightsPlane.SetNumberOfComponents(1);
@@ -103,12 +99,8 @@ public class DEMModel extends SmallBodyModel
 
         in.close();
 
-        idList = new vtkIdList();
-        idList.SetNumberOfIds(1);
-
         int[][] indices = new int[MAX_WIDTH][MAX_HEIGHT];
         int c = 0;
-        int d = 0;
         float x, y, z, h, h2, s;
         int i0, i1, i2, i3;
 
@@ -122,36 +114,37 @@ public class DEMModel extends SmallBodyModel
 //        for (int m=startPixel; m<=endPixel; ++m)
 //            for (int n=startPixel; n<=endPixel; ++n)
             {
+                indices[m][n] = -1;
+
                 if (m >= startPixel && m <= endPixel && n >= startPixel && n <= endPixel)
                 {
+                    // A pixel value of -1.0e38 means that pixel is invalid and should be skipped
                     x = data[index(m,n,3)];
                     y = data[index(m,n,4)];
                     z = data[index(m,n,5)];
-                    h = 1000.0f * data[index(m,n,0)];
-                    h2 = 1000.0f * data[index(m,n,1)];
-                    s = (float)(180.0/Math.PI) * data[index(m,n,2)];
+                    h = data[index(m,n,0)];
+                    h2 = data[index(m,n,1)];
+                    s = data[index(m,n,2)];
 
-                    if (m == startPixel || m == endPixel || n == startPixel || n == endPixel)
+                    boolean valid = (x != INVALID_VALUE && y != INVALID_VALUE && z != INVALID_VALUE
+                            && h != INVALID_VALUE && h2 != INVALID_VALUE && s != INVALID_VALUE);
+
+                    if (valid)
                     {
-                        boundaryPoints.InsertNextPoint(x, y, z);
-                        idList.SetId(0, d);
-                        boundaryPolys.InsertNextCell(idList);
-                        ++d;
+                        h = 1000.0f * h;
+                        h2 = 1000.0f * h2;
+                        s = (float)(180.0/Math.PI) * s;
+
+                        //points.SetPoint(c, x, y, z);
+                        points.InsertNextPoint(x, y, z);
+                        heightsGravity.InsertNextTuple1(h);
+                        heightsPlane.InsertNextTuple1(h2);
+                        slopes.InsertNextTuple1(s);
+
+                        indices[m][n] = c;
+
+                        ++c;
                     }
-
-                    //points.SetPoint(c, x, y, z);
-                    points.InsertNextPoint(x, y, z);
-                    heightsGravity.InsertNextTuple1(h);
-                    heightsPlane.InsertNextTuple1(h2);
-                    slopes.InsertNextTuple1(s);
-
-                    indices[m][n] = c;
-
-                    ++c;
-                }
-                else
-                {
-                    indices[m][n] = -1;
                 }
             }
 
@@ -199,6 +192,10 @@ public class DEMModel extends SmallBodyModel
 
         vtkPolyData normalsFilterOutput = normalsFilter.GetOutput();
         dem.DeepCopy(normalsFilterOutput);
+
+        PolyDataUtil.getBoundary(dem, boundary);
+        // Remove scalar data since it interferes with setting the boundary color
+        boundary.GetCellData().SetScalars(null);
 
         // Make a copy of heightsGravity per point since we need that later for
         // drawing profile plots.

@@ -42,8 +42,7 @@ public class SimpleSmallBody extends SmallBodyModel
                 null,
                 null,
                 ColoringValueType.CELLDATA,
-                false,
-                config.useAPLServer);
+                false);
     }
 
     public SimpleSmallBody(ModelConfig config, String imageMap, boolean hasColoringData)

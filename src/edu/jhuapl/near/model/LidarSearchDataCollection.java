@@ -17,11 +17,14 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TreeSet;
-import java.util.zip.GZIPInputStream;
 
-import org.apache.commons.math.analysis.polynomials.PolynomialFunction;
-import org.apache.commons.math.optimization.fitting.PolynomialFitter;
-import org.apache.commons.math.optimization.general.LevenbergMarquardtOptimizer;
+import org.apache.commons.math3.analysis.polynomials.PolynomialFunction;
+import org.apache.commons.math3.fitting.PolynomialFitter;
+import org.apache.commons.math3.linear.Array2DRowRealMatrix;
+import org.apache.commons.math3.linear.LUDecomposition;
+import org.apache.commons.math3.linear.RealMatrix;
+import org.apache.commons.math3.linear.SingularValueDecomposition;
+import org.apache.commons.math3.optim.nonlinear.vector.jacobian.LevenbergMarquardtOptimizer;
 import org.joda.time.DateTime;
 
 import vtk.vtkActor;
@@ -235,14 +238,12 @@ public class LidarSearchDataCollection extends Model
         for (Integer cubeid : cubeList)
         {
             String filename = getLidarDataSourceMap().get(dataSource) + "/" + cubeid + ".lidarcube";
-            File file = FileCache.getFileFromServer(filename, modelConfig.useAPLServer);
+            File file = FileCache.getFileFromServer(filename);
 
             if (file == null)
                 continue;
 
             InputStream fs = new FileInputStream(file.getAbsolutePath());
-            if (file.getAbsolutePath().toLowerCase().endsWith(".gz"))
-                fs = new GZIPInputStream(fs);
             InputStreamReader isr = new InputStreamReader(fs);
             BufferedReader in = new BufferedReader(isr);
 
@@ -292,9 +293,10 @@ public class LidarSearchDataCollection extends Model
      * with a single track.
      * @param filename
      */
-    public void loadTrackFromFile(File file) throws IOException
+    public void loadTracksFromFiles(File[] files) throws IOException
     {
         originalPoints.clear();
+        tracks.clear();
 
         int timeindex = 0;
         int xindex = 1;
@@ -304,36 +306,44 @@ public class LidarSearchDataCollection extends Model
         int scyindex = 5;
         int sczindex = 6;
 
-        InputStream fs = new FileInputStream(file.getAbsolutePath());
-        InputStreamReader isr = new InputStreamReader(fs);
-        BufferedReader in = new BufferedReader(isr);
-
-        String lineRead;
-        while ((lineRead = in.readLine()) != null)
+        for (File file : files)
         {
-            String[] vals = lineRead.trim().split("\\s+");
+            InputStream fs = new FileInputStream(file.getAbsolutePath());
+            InputStreamReader isr = new InputStreamReader(fs);
+            BufferedReader in = new BufferedReader(isr);
 
-            long time = new DateTime(vals[timeindex]).getMillis();
+            Track track = new Track();
+            track.startId = originalPoints.size();
 
-            double[] scpos = new double[3];
-            double[] target = new double[3];
-            target[0] = Double.parseDouble(vals[xindex]);
-            target[1] = Double.parseDouble(vals[yindex]);
-            target[2] = Double.parseDouble(vals[zindex]);
-            scpos[0] = Double.parseDouble(vals[scxindex]);
-            scpos[1] = Double.parseDouble(vals[scyindex]);
-            scpos[2] = Double.parseDouble(vals[sczindex]);
+            String lineRead;
+            while ((lineRead = in.readLine()) != null)
+            {
+                String[] vals = lineRead.trim().split("\\s+");
 
-            originalPoints.add(new LidarPoint(target, scpos, time));
+                long time = new DateTime(vals[timeindex]).getMillis();
+
+                double[] scpos = new double[3];
+                double[] target = new double[3];
+                target[0] = Double.parseDouble(vals[xindex]);
+                target[1] = Double.parseDouble(vals[yindex]);
+                target[2] = Double.parseDouble(vals[zindex]);
+                scpos[0] = Double.parseDouble(vals[scxindex]);
+                scpos[1] = Double.parseDouble(vals[scyindex]);
+                scpos[2] = Double.parseDouble(vals[sczindex]);
+
+                originalPoints.add(new LidarPoint(target, scpos, time));
+            }
+
+            in.close();
+
+            track.stopId = originalPoints.size() - 1;
+            tracks.add(track);
         }
-
-        in.close();
 
         timeSeparationBetweenTracks = Long.MAX_VALUE;
         radialOffset = 0.0;
         translation[0] = translation[1] = translation[2] = 0.0;
 
-        computeTracks();
         assignInitialColorToTrack();
         updateTrackPolydata();
     }
@@ -834,7 +844,7 @@ public class LidarSearchDataCollection extends Model
             double[] lineStartPoint = new double[3];
             for (int j=0; j<3; ++j)
             {
-                PolynomialFitter fitter = new PolynomialFitter(1, new LevenbergMarquardtOptimizer());
+                PolynomialFitter fitter = new PolynomialFitter(new LevenbergMarquardtOptimizer());
                 for (int i=startId; i<=stopId; ++i)
                 {
                     LidarPoint lp = originalPoints.get(i);
@@ -842,7 +852,7 @@ public class LidarSearchDataCollection extends Model
                     fitter.addObservedPoint(1.0, (double)(lp.time-t0)/1000.0, target[j]);
                 }
 
-                PolynomialFunction fitted = fitter.fit();
+                PolynomialFunction fitted = new PolynomialFunction(fitter.fit(new double[2]));
                 fittedLineDirection[j] = fitted.getCoefficients()[1];
                 lineStartPoint[j] = fitted.value(0.0);
             }
@@ -1046,4 +1056,144 @@ public class LidarSearchDataCollection extends Model
     {
         return trackError;
     }
+
+    private double[] getCentroidOfTrack(int trackId)
+    {
+        Track track = tracks.get(trackId);
+        int startId = track.startId;
+        int stopId = track.stopId;
+
+        double[] centroid = {0.0, 0.0, 0.0};
+        for (int i=startId; i<=stopId; ++i)
+        {
+            LidarPoint lp = originalPoints.get(i);
+            double[] target = transformLidarPoint(lp.target);
+            centroid[0] += target[0];
+            centroid[1] += target[1];
+            centroid[2] += target[2];
+        }
+
+        int trackSize = track.getNumberOfPoints();
+        if (trackSize > 0)
+        {
+            centroid[0] /= trackSize;
+            centroid[1] /= trackSize;
+            centroid[2] /= trackSize;
+        }
+
+        return centroid;
+    }
+
+    /** It is useful to fit a plane to the track. The following function computes
+     * the parameters of such a plane, namely, a point on the plane
+     * and a vector pointing in the normal direction of the plane.
+     * Note that the returned pointOnPlane is the point on the plane closest to
+     * the centroid of the track.
+     */
+    private void fitPlaneToTrack(int trackId, double[] pointOnPlane, RealMatrix planeOrientation)
+    {
+        Track track = tracks.get(trackId);
+        int startId = track.startId;
+        int stopId = track.stopId;
+
+        if (startId == stopId)
+            return;
+
+        try
+        {
+            double[] centroid = getCentroidOfTrack(trackId);
+
+            // subtract out the centroid from the track
+            int trackSize = track.getNumberOfPoints();
+            double[][] points = new double[3][trackSize];
+            for (int i=startId,j=0; i<=stopId; ++i,++j)
+            {
+                LidarPoint lp = originalPoints.get(i);
+                double[] target = transformLidarPoint(lp.target);
+                points[0][j] = target[0] - centroid[0];
+                points[1][j] = target[1] - centroid[1];
+                points[2][j] = target[2] - centroid[2];
+            }
+            RealMatrix pointMatrix = new Array2DRowRealMatrix(points, false);
+
+            // Now do SVD on this matrix
+            SingularValueDecomposition svd = new SingularValueDecomposition(pointMatrix);
+            RealMatrix u = svd.getU();
+
+            planeOrientation.setSubMatrix(u.copy().getData(), 0, 0);
+
+            pointOnPlane[0] = centroid[0];
+            pointOnPlane[1] = centroid[1];
+            pointOnPlane[2] = centroid[2];
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * This function takes a lidar track, fits a plane through it and reorients the track into
+     * a new coordinate system such that the fitted plane is the XY plane in the new coordinate
+     * system, and saves the reoriented track and the transformation to a file.
+
+     * @param trackId
+     * @param outfile - save reoriented track to this file
+     * @param rotationMatrixFile - save transformation matrix to this file
+     * @throws IOException
+     */
+    public void reprojectedTrackOntoFittedPlane(int trackId, File outfile, File rotationMatrixFile) throws IOException
+    {
+        Track track = tracks.get(trackId);
+        int startId = track.startId;
+        int stopId = track.stopId;
+
+        if (startId == stopId)
+            return;
+
+        double[] pointOnPlane = new double[3];
+        RealMatrix planeOrientation = new Array2DRowRealMatrix(3, 3);
+
+        fitPlaneToTrack(trackId, pointOnPlane, planeOrientation);
+        planeOrientation = new LUDecomposition(planeOrientation).getSolver().getInverse();
+
+        FileWriter fstream = new FileWriter(outfile);
+        BufferedWriter out = new BufferedWriter(fstream);
+
+        String newline = System.getProperty("line.separator");
+
+        for (int i=startId; i<=stopId; ++i)
+        {
+            LidarPoint lp = originalPoints.get(i);
+            double[] target = transformLidarPoint(lp.target);
+
+            target[0] = target[0] - pointOnPlane[0];
+            target[1] = target[1] - pointOnPlane[1];
+            target[2] = target[2] - pointOnPlane[2];
+
+            target = planeOrientation.operate(target);
+
+            Date date = new Date(lp.time);
+
+            out.write(sdf.format(date).replace(' ', 'T') + " " +
+                    target[0] + " " +
+                    target[1] + " " +
+                    target[2] + newline);
+        }
+
+        out.close();
+
+
+        // Also save out the orientation matrix.
+        fstream = new FileWriter(rotationMatrixFile);
+        out = new BufferedWriter(fstream);
+
+        double[][] data = planeOrientation.getData();
+        out.write(data[0][0] + " " + data[0][1] + " " + data[0][2] + " " + pointOnPlane[0] + "\n");
+        out.write(data[1][0] + " " + data[1][1] + " " + data[1][2] + " " + pointOnPlane[1] + "\n");
+        out.write(data[2][0] + " " + data[2][1] + " " + data[2][2] + " " + pointOnPlane[2] + "\n");
+
+        out.close();
+    }
+
 }

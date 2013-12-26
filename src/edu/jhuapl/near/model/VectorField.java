@@ -21,9 +21,6 @@ import edu.jhuapl.near.util.Properties;
 /**
  * Model for showing gravity vector field. Currently only used for testing,
  * not the released versions.
- *
- * @author eli
- *
  */
 public class VectorField extends Model implements PropertyChangeListener
 {

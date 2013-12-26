@@ -25,8 +25,8 @@ void initializeVtk(const char* dskfile)
     cellLocator->SetDataSet(polyData);
     cellLocator->CacheCellBoundsOn();
     cellLocator->AutomaticOn();
-    //cellLocator->SetMaxLevel(10);
-    //cellLocator->SetNumberOfCellsPerNode(5);
+    cellLocator->SetMaxLevel(100);
+    cellLocator->SetNumberOfCellsPerNode(1);
     cellLocator->BuildLocator();
 
     genericCell = vtkGenericCell::New();

@@ -20,10 +20,6 @@ import vtk.vtkImageReader2;
 import vtk.vtkImageReader2Factory;
 
 
-/**
- *
- * @author eli
- */
 public class CustomImageImporterDialog extends javax.swing.JDialog
 {
     private boolean okayPressed = false;
@@ -425,7 +421,7 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
 
         projectionButtonGroup.add(cylindricalProjectionRadioButton);
         cylindricalProjectionRadioButton.setSelected(true);
-        cylindricalProjectionRadioButton.setText("Cylindrical Projection");
+        cylindricalProjectionRadioButton.setText("Simple Cylindrical Projection");
         cylindricalProjectionRadioButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cylindricalProjectionRadioButtonActionPerformed(evt);

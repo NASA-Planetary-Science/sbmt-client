@@ -20,9 +20,6 @@ import vtk.vtkWindowToImageFilter;
  * which for some reason appears to be missing. It also prevents the render window
  * from accepting focus when the mouse hovers over it, which for some reason is
  * the default in the base class.
- *
- * @author kahneg1
- *
  */
 public class vtkEnhancedRenderWindowPanel extends vtkRenderWindowPanel
                                                 implements

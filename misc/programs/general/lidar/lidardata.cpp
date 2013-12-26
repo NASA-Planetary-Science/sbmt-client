@@ -267,14 +267,15 @@ void LidarData::saveTrack(const string &filename,
 
     if (fout.is_open())
     {
-        for (unsigned int i = 0; i<track.size(); ++i)
+        for (size_t i = 0; i<track.size(); ++i)
         {
             const Point& p = track[i];
 
-            fout << p.utc << " "
+            fout.precision(16);
+            fout << scientific << p.utc << " "
                  << p.targetpos[0] << " " << p.targetpos[1] << " " << p.targetpos[2] << " "
-                 << p.scpos[0] << " " << p.scpos[1] << " " << p.scpos[2] << "\n";
-
+                 << p.scpos[0] << " " << p.scpos[1] << " " << p.scpos[2] << " "
+                 << p.closestpoint[0] << " " << p.closestpoint[1] << " " << p.closestpoint[2] << "\n";
         }
 
         fout.close();

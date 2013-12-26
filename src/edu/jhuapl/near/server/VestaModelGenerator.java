@@ -34,15 +34,8 @@ public class VestaModelGenerator
     */
     public static void main(String[] args)
     {
-        javax.swing.SwingUtilities.invokeLater(new Runnable()
-        {
-            public void run()
-            {
-                // do nothing
-            }
-        });
-
-        NativeLibraryLoader.loadVtkLibrariesLinuxNoX11();
+        System.setProperty("java.awt.headless", "true");
+        NativeLibraryLoader.loadVtkLibraries();
 
         String datadir = args[0];
         String outputdir = args[1];
@@ -156,15 +149,8 @@ public class VestaModelGenerator
      *
     public static void main(String[] args)
     {
-        javax.swing.SwingUtilities.invokeLater(new Runnable()
-        {
-            public void run()
-            {
-                // do nothing
-            }
-        });
-
-        NativeLibraryLoader.loadVtkLibrariesLinuxNoX11();
+        System.setProperty("java.awt.headless", "true");
+        NativeLibraryLoader.loadVtkLibraries();
 
         String shapefile = args[0];
         String outputdir = args[1];
@@ -337,15 +323,8 @@ public class VestaModelGenerator
 
     public static void main(String[] args)
     {
-        javax.swing.SwingUtilities.invokeLater(new Runnable()
-        {
-            public void run()
-            {
-                // do nothing
-            }
-        });
-
-        NativeLibraryLoader.loadVtkLibrariesLinuxNoX11();
+        System.setProperty("java.awt.headless", "true");
+        NativeLibraryLoader.loadVtkLibraries();
 
         String datadir = args[0];
         String outputdir = args[1];

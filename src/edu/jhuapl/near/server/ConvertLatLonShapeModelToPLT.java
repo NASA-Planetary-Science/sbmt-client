@@ -12,14 +12,12 @@ import edu.jhuapl.near.util.PolyDataUtil;
  * way) into PLT format. If the --east or -east option is provided,
  * it is assumed to be in east longitude. Otherwise west longitude
  * is assumed.
- *
- * @author kahneg1
- *
  */
 public class ConvertLatLonShapeModelToPLT
 {
     public static void main(String[] args) throws Exception
     {
+        System.setProperty("java.awt.headless", "true");
         NativeLibraryLoader.loadVtkLibraries();
 
         boolean westLongitude = true;

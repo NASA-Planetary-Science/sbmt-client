@@ -61,10 +61,7 @@ import edu.jhuapl.near.popupmenus.ImagePopupMenu;
 import edu.jhuapl.near.util.IdPair;
 import edu.jhuapl.near.util.Properties;
 
-/**
- *
- * @author kahneg1
- */
+
 public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyChangeListener
 {
     private ModelConfig modelConfig;
@@ -595,7 +592,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         gridBagConstraints.insets = new java.awt.Insets(2, 0, 0, 0);
         jPanel1.add(endSpinner, gridBagConstraints);
 
-        sourceLabel.setText("Source:");
+        sourceLabel.setText("Pointing:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;

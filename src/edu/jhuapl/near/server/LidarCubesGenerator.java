@@ -21,9 +21,6 @@ import edu.jhuapl.near.util.NativeLibraryLoader;
 /**
  * This program goes through all the lidar data and divides all the data
  * up into cubes and saves each cube to a separate file.
- *
- * @author kahneg1
- *
  */
 abstract public class LidarCubesGenerator
 {
@@ -79,6 +76,7 @@ abstract public class LidarCubesGenerator
 
     public void run()
     {
+        System.setProperty("java.awt.headless", "true");
         NativeLibraryLoader.loadVtkLibraries();
 
         SmallBodyModel smallBodyModel = getSmallBodyModel();

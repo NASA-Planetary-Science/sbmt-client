@@ -142,7 +142,6 @@ public class SmallBodyModel extends Model
     private BoundingBox boundingBox = null;
     private vtkIdList idList; // to avoid repeated allocations
     private vtkFloatArray gravityVector;
-    private boolean useAPLServer;
 
     private vtkFloatArray cellNormals;
     private double surfaceArea = -1.0;
@@ -193,36 +192,6 @@ public class SmallBodyModel extends Model
             ColoringValueType coloringValueType,
             boolean lowestResolutionModelStoredInResource)
     {
-        this(config,
-                name,
-                author,
-                modelNames,
-                modelFiles,
-                coloringFiles,
-                coloringNames,
-                coloringUnits,
-                coloringHasNulls,
-                imageMapNames,
-                coloringValueType,
-                lowestResolutionModelStoredInResource,
-                false);
-    }
-
-    public SmallBodyModel(
-            ModelConfig config,
-            String name,
-            String author,
-            String[] modelNames,
-            String[] modelFiles,
-            String[] coloringFiles,
-            String[] coloringNames,
-            String[] coloringUnits,
-            boolean[] coloringHasNulls,
-            String[] imageMapNames,
-            ColoringValueType coloringValueType,
-            boolean lowestResolutionModelStoredInResource,
-            boolean useAPLServer)
-    {
         super(name);
 
         this.modelConfig = config;
@@ -250,15 +219,13 @@ public class SmallBodyModel extends Model
         genericCell = new vtkGenericCell();
         idList = new vtkIdList();
 
-        this.useAPLServer = useAPLServer;
-
         if (lowestResolutionModelStoredInResource)
             defaultModelFile = ConvertResourceToFile.convertResourceToRealFile(
                     this,
                     modelFiles[0],
                     Configuration.getApplicationDataDir());
         else
-            defaultModelFile = FileCache.getFileFromServer(modelFiles[0], useAPLServer);
+            defaultModelFile = FileCache.getFileFromServer(modelFiles[0]);
 
         initialize(defaultModelFile);
     }
@@ -1181,7 +1148,7 @@ public class SmallBodyModel extends Model
         File smallBodyFile = defaultModelFile;
         if (resolutionLevel > 0)
         {
-            smallBodyFile = FileCache.getFileFromServer(modelFiles[resolutionLevel], useAPLServer);
+            smallBodyFile = FileCache.getFileFromServer(modelFiles[resolutionLevel]);
         }
 
         this.initialize(smallBodyFile);
@@ -1229,7 +1196,7 @@ public class SmallBodyModel extends Model
                 filename = FileCache.FILE_PREFIX + getCustomDataFolder() + File.separator + filename;
             if (!filename.startsWith(FileCache.FILE_PREFIX))
                 filename += "_res" + resolutionLevel + ".txt.gz";
-            File file = FileCache.getFileFromServer(filename, useAPLServer);
+            File file = FileCache.getFileFromServer(filename);
             if (file == null)
                 throw new IOException("Unable to download " + filename);
 
@@ -1526,7 +1493,7 @@ public class SmallBodyModel extends Model
         if (coloringValueType == ColoringValueType.POINT_DATA)
             return false;
 
-        File file = FileCache.getFileFromServer(filePath, useAPLServer);
+        File file = FileCache.getFileFromServer(filePath);
 
         gravityVector = new vtkFloatArray();
         gravityVector.SetNumberOfComponents(3);

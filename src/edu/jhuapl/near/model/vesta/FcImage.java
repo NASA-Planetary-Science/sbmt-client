@@ -49,7 +49,7 @@ public class FcImage extends PerspectiveImage
         ImageKey key = getKey();
         if (rootFolder == null)
         {
-            return FileCache.getFileFromServer(key.name + ".FIT", true).getAbsolutePath();
+            return FileCache.getFileFromServer(key.name + ".FIT").getAbsolutePath();
         }
         else
         {
@@ -72,7 +72,7 @@ public class FcImage extends PerspectiveImage
         + keyFile.getName() + ".INFO";
         if (rootFolder == null)
         {
-            return FileCache.getFileFromServer(sumFilename, true).getAbsolutePath();
+            return FileCache.getFileFromServer(sumFilename).getAbsolutePath();
         }
         else
         {
@@ -89,7 +89,7 @@ public class FcImage extends PerspectiveImage
         + keyFile.getName().substring(0, 12).replace('B', 'A') + ".SUM";
         if (rootFolder == null)
         {
-            return FileCache.getFileFromServer(sumFilename, true).getAbsolutePath();
+            return FileCache.getFileFromServer(sumFilename).getAbsolutePath();
         }
         else
         {

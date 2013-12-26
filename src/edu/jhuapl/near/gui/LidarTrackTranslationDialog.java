@@ -12,10 +12,7 @@ package edu.jhuapl.near.gui;
 
 import edu.jhuapl.near.model.LidarSearchDataCollection;
 
-/**
- *
- * @author eli
- */
+
 public class LidarTrackTranslationDialog extends javax.swing.JDialog {
 
     LidarSearchDataCollection lidarModel;

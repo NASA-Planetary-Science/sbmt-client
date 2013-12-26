@@ -9,10 +9,6 @@ import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileFilter;
 
 
-/**
- * @author kahneg1
- *
- */
 public class ImageFileChooser extends FileChooserBase
 {
     private static String BMP_DESCRIPTION = "BMP Files";

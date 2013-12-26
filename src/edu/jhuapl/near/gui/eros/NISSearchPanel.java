@@ -41,10 +41,7 @@ import edu.jhuapl.near.popupmenus.eros.NISPopupMenu;
 import edu.jhuapl.near.query.ErosQuery;
 import edu.jhuapl.near.util.IdPair;
 
-/**
- *
- * @author kahneg1
- */
+
 public class NISSearchPanel extends javax.swing.JPanel implements MouseListener
 {
     private final ModelManager modelManager;

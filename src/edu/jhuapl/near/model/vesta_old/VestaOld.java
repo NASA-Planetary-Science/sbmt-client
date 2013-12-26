@@ -29,7 +29,7 @@ public class VestaOld extends SmallBodyModel
     };
 
     static private final String[] coloringNames = {
-            SlopeStr, ElevStr, GravAccStr, GravPotStr, "439 nm", "673 nm", "953 nm", "1042 nm"
+            SlopeStr, ElevStr, GravAccStr, GravPotStr, "HST 439 nm", "HST 673 nm", "HST 953 nm", "HST 1042 nm"
     };
 
     static private final String[] coloringUnits = {

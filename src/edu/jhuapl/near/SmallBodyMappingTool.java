@@ -24,8 +24,6 @@ import edu.jhuapl.near.util.NativeLibraryLoader;
 /**
  * This class contains the "main" function called at the start of the program.
  * This class sets up the top level window and other initialization.
- * @author kahneg1
- *
  */
 public class SmallBodyMappingTool
 {

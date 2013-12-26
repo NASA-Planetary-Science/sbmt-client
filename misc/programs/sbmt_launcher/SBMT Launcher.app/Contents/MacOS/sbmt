@@ -1,0 +1,78 @@
+#!/bin/bash
+
+# This script checks to see if there is a newer version of the SBMT,
+# and if so downloads it and runs it. If the version on the server is
+# the same as on disk, nothing is downloaded. To access the server
+# outside the lab, a password.txt file must exist in the folder
+# ${HOME}/.neartool which contains the username on the first line and
+# the password on the second line.
+
+# Read in the password file if one exists.
+username=username
+password=password
+password_file=${HOME}/.neartool/password.txt
+if [[ -f $password_file ]]; then
+    lines=($(cat $password_file))
+    username=${lines[0]}
+    password=${lines[1]}
+fi
+
+# create and cd into folder into which we will extract the app
+sbmt_app_folder=${HOME}/.neartool/app
+mkdir -p $sbmt_app_folder
+cd $sbmt_app_folder
+
+# If we could not change folders, exit
+if [[ $? -ne 0 ]]; then
+    exit
+fi
+
+
+# Determine platform specific zip file
+zip_file=sbmt-latest-macosx-x64.zip
+unamestr=`uname`
+if [[ "$unamestr" == 'Linux' ]]; then
+    zip_file=sbmt-latest-linux-x64.zip
+fi
+
+# Before downloading the zip file, if an existing one is already
+# present, check to make sure that the file is a valid zip file, and
+# if not, delete it.
+if [[ -f $zip_file ]]; then
+    unzip -l $zip_file > /dev/null 2>&1
+    if [[ $? -ne 0 ]]; then
+        rm -f $zip_file
+    fi
+fi
+
+prev_time_stamp=`ls -l $zip_file`
+
+# Download the app if newer
+curl -R -u "${username}:${password}" -z "$zip_file" -O http://sbmt.jhuapl.edu/internal/releases/$zip_file
+
+new_time_stamp=`ls -l $zip_file`
+
+echo $prev_time_stamp
+echo $new_time_stamp
+
+sbmt_folder=sbmt
+
+# If the time stamp changed delete the sbmt folder which is the folder
+# into which we will extract the zip file. (We don't want to extract
+# the zip file into a non-empty folder).
+if [[ "$prev_time_stamp=" != "$new_time_stamp=" ]]; then
+    rm -rf $sbmt_folder
+fi
+
+mkdir -p $sbmt_folder
+
+# Unzip the app only extracting new or newer files.
+unzip -o -u $zip_file -d $sbmt_folder
+
+# copy the password file over if it exists
+#if [[ -f $password_file ]]; then
+#    cp -f $password_file `find . -type f -name password.txt`
+#fi
+
+# run sbmt and exit this script
+nohup `find $sbmt_folder -type f -name runsbmt` > /dev/null 2>&1 &

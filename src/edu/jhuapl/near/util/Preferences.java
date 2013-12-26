@@ -4,9 +4,6 @@ import java.io.File;
 
 /**
  * Singleton preferences class for managing all preferences
- *
- * @author kahneg1
- *
  */
 public class Preferences extends MapUtil
 {

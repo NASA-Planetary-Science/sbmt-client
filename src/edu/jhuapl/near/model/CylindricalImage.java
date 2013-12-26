@@ -68,7 +68,7 @@ public class CylindricalImage extends Image
      * the image.
      * If key.source is LOCAL_CYLINDRICAL, then key.name is the FULL PATH to the image file
      * on disk. For example:
-     * /Users/kahneg1/.neartool/custom-data-for-built-in-models/Gaskell/Eros/image-92197644-7bd9-4a4e-92c8-b7c193ed6906.png
+     * /Users/joe/.neartool/custom-data-for-built-in-models/Gaskell/Eros/image-92197644-7bd9-4a4e-92c8-b7c193ed6906.png
      *
      * @param key
      * @param smallBodyModel

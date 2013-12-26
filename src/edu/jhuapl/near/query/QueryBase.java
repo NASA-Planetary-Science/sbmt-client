@@ -23,9 +23,6 @@ import edu.jhuapl.near.util.FileUtil;
 /**
  * This class represents a database storing information about all the
  * data. It also provides functions for querying the database.
- *
- * @author kahneg1
- *
  */
 abstract public class QueryBase
 {
@@ -94,20 +91,12 @@ abstract public class QueryBase
             String pathToFileListOnServer,
             String pathToImageFolderOnServer)
     {
-        return getResultsFromFileListOnServer(pathToFileListOnServer, pathToImageFolderOnServer, false);
-    }
-
-    protected ArrayList<ArrayList<String>> getResultsFromFileListOnServer(
-            String pathToFileListOnServer,
-            String pathToImageFolderOnServer,
-            boolean useAPLServer)
-    {
         if (!pathToImageFolderOnServer.endsWith("/"))
             pathToImageFolderOnServer += "/";
 
         ArrayList<ArrayList<String>> results = new ArrayList<ArrayList<String>>();
 
-        File file = FileCache.getFileFromServer(pathToFileListOnServer, useAPLServer);
+        File file = FileCache.getFileFromServer(pathToFileListOnServer);
 
         if (file != null)
         {

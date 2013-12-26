@@ -15,15 +15,15 @@ quickly search and visualize small body data.
 
 ## Quick Start
 
-Latest version: 2013.09.23
+Latest version: 2013.12.26
 
 Download the file below appropriate for your platform, unzip, navigate
 to the 'sbmt' folder and run the 'runsbmt' program.
 
-   -  Mac: [sbmt-2013.09.23-macosx-x64.zip](releases/sbmt-2013.09.23-macosx-x64.zip)
-   -  Linux: [sbmt-2013.09.23-linux-x64.zip](releases/sbmt-2013.09.23-linux-x64.zip)
-   -  Windows: [sbmt-2013.09.23-windows-x64.zip](releases/sbmt-2013.09.23-windows-x64.zip) (does not include Java)
-   -  Windows: [sbmt-2013.09.23-windows-x64-with-java.zip](releases/sbmt-2013.09.23-windows-x64-with-java.zip) (includes Java)
+   -  Mac: [sbmt-2013.12.26-macosx-x64.zip](releases/sbmt-2013.12.26-macosx-x64.zip)
+   -  Linux: [sbmt-2013.12.26-linux-x64.zip](releases/sbmt-2013.12.26-linux-x64.zip)
+   -  Windows: [sbmt-2013.12.26-windows-x64.zip](releases/sbmt-2013.12.26-windows-x64.zip) (does not include Java)
+   -  Windows: [sbmt-2013.12.26-windows-x64-with-java.zip](releases/sbmt-2013.12.26-windows-x64-with-java.zip) (includes Java)
 
 If using the tool outside the APL campus, open the 'password.txt' file
 located in the 'sbmt' folder in a text editor and enter your username

@@ -13,32 +13,30 @@ public class FileDownloadSwingWorker extends ProgressBarSwingWorker
 {
     private String filename;
     private DecimalFormat df = new DecimalFormat("0.00");
-    private boolean useAPLServer;
 
-    public FileDownloadSwingWorker(Component c, String title, String filename, boolean useAPLServer)
+    public FileDownloadSwingWorker(Component c, String title, String filename)
     {
         super(c, title);
         this.filename = filename;
-        this.useAPLServer = useAPLServer;
         setLabelText("<html>Downloading file<br>0% completed</html>");
     }
 
-    public static boolean downloadFile(Component c, String title, String filename, boolean useAPLServer)
+    public static boolean downloadFile(Component c, String title, String filename)
     {
-        FileDownloadSwingWorker worker = new FileDownloadSwingWorker(c, title, filename, useAPLServer);
+        FileDownloadSwingWorker worker = new FileDownloadSwingWorker(c, title, filename);
         worker.executeDialog();
         return !worker.isCancelled();
     }
 
     public boolean getIfNeedToDownload()
     {
-        return FileCache.getFileInfoFromServer(filename, useAPLServer).needToDownload;
+        return FileCache.getFileInfoFromServer(filename).needToDownload;
     }
 
     @Override
     protected Void doInBackground()
     {
-        final FileInfo fileInfo = FileCache.getFileInfoFromServer(filename, useAPLServer);
+        final FileInfo fileInfo = FileCache.getFileInfoFromServer(filename);
         final boolean needToDownload = fileInfo.needToDownload;
 
         String zipfile = fileInfo.file.getAbsolutePath();
@@ -65,7 +63,7 @@ public class FileDownloadSwingWorker extends ProgressBarSwingWorker
         {
             public void run()
             {
-                File file = FileCache.getFileFromServer(filename, useAPLServer);
+                File file = FileCache.getFileFromServer(filename);
 
                 if (file != null && needToUnzip)
                     FileUtil.unzipFile(file);

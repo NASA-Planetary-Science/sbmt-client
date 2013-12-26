@@ -1,0 +1,5 @@
+#!/bin/sh
+
+DIR=`dirname "$0"`
+export DYLD_LIBRARY_PATH="$DIR/lib/mac64:$DYLD_LIBRARY_PATH"
+/usr/libexec/java_home -v 1.6 -a x86_64 -exec java "-Djava.library.path=$DIR/lib/mac64" -cp "$DIR/lib/near.jar" edu.jhuapl.near.server.ReprojectLidarTrackToFittedPlane $@

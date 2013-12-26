@@ -24,6 +24,7 @@ public class ResampleLowResColoringData
      */
     public static void main(String[] args) throws IOException
     {
+        System.setProperty("java.awt.headless", "true");
         NativeLibraryLoader.loadVtkLibraries();
 
         // Load in the low res model

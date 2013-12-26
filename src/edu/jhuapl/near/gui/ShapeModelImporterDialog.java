@@ -20,10 +20,7 @@ import edu.jhuapl.near.gui.ShapeModelImporter.ShapeModelType;
 import edu.jhuapl.near.model.custom.CustomShapeModel;
 import edu.jhuapl.near.util.MapUtil;
 
-/**
- *
- * @author eli
- */
+
 public class ShapeModelImporterDialog extends javax.swing.JDialog
 {
     // True if we're editing an existing model rather than creating a new one.

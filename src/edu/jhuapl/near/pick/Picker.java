@@ -27,9 +27,6 @@ import edu.jhuapl.near.util.Configuration;
  * responds appropriately. There can be more than 1 picker active at any
  * given time. The PickManager class (also a subclass of this) is responsible
  * for initializing and managing all the pickers.
- *
- * @author eli
- *
  */
 public abstract class Picker implements
     MouseListener,

@@ -20,6 +20,7 @@ import vtk.vtkCleanPolyData;
 import vtk.vtkClipPolyData;
 import vtk.vtkCutter;
 import vtk.vtkDataArray;
+import vtk.vtkDecimatePro;
 import vtk.vtkExtractPolyDataGeometry;
 import vtk.vtkFeatureEdges;
 import vtk.vtkFloatArray;
@@ -46,9 +47,6 @@ import vtk.vtksbCellLocator;
 
 /**
  * This class contains various utility functions for operating on a vtkPolyData.
- *
- * @author kahneg1
- *
  */
 public class PolyDataUtil
 {
@@ -2163,8 +2161,6 @@ public class PolyDataUtil
 
     /**
      * Get the area of a given cell. Assumes cells are triangles.
-     * @author eli
-     *
      */
     /*
         // The idList parameter is needed only to avoid repeated memory
@@ -2400,6 +2396,23 @@ public class PolyDataUtil
         }
 
         return area;
+    }
+
+    static public void getBoundary(vtkPolyData polydata, vtkPolyData boundary)
+    {
+        // Compute the bounding edges of this surface
+        vtkFeatureEdges edgeExtracter = new vtkFeatureEdges();
+        edgeExtracter.SetInput(polydata);
+        edgeExtracter.BoundaryEdgesOn();
+        edgeExtracter.FeatureEdgesOff();
+        edgeExtracter.NonManifoldEdgesOff();
+        edgeExtracter.ManifoldEdgesOff();
+        edgeExtracter.Update();
+
+        vtkPolyData edgeExtracterOutput = edgeExtracter.GetOutput();
+        boundary.DeepCopy(edgeExtracterOutput);
+
+        edgeExtracter.Delete();
     }
 
     /**
@@ -3183,5 +3196,22 @@ public class PolyDataUtil
         cleanFilter.Update();
 
         saveShapeModelAsPLT(cleanFilter.GetOutput(), filename);
+    }
+
+    static public void decimatePolyData(vtkPolyData polydata, double targetReduction)
+    {
+        vtkDecimatePro dec = new vtkDecimatePro();
+        dec.SetInput(polydata);
+        dec.SetTargetReduction(targetReduction);
+        dec.PreserveTopologyOn();
+        dec.SplittingOff();
+        dec.BoundaryVertexDeletionOff();
+        dec.SetMaximumError(Double.MAX_VALUE);
+        dec.AccumulateErrorOn();
+        dec.PreSplitMeshOn();
+        dec.Update();
+        vtkPolyData decOutput = dec.GetOutput();
+
+        polydata.DeepCopy(decOutput);
     }
 }

@@ -28,10 +28,7 @@ import edu.jhuapl.near.util.ColorUtil;
 import edu.jhuapl.near.util.LatLon;
 import edu.jhuapl.near.util.Preferences;
 
-/**
- *
- * @author eli
- */
+
 public class PreferencesDialog extends javax.swing.JDialog {
 
     private ViewManager viewManager;

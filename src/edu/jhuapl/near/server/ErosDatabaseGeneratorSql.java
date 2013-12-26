@@ -634,7 +634,8 @@ public class ErosDatabaseGeneratorSql
      */
     public static void main(String[] args) throws IOException
     {
-        NativeLibraryLoader.loadVtkLibrariesLinuxNoX11();
+        System.setProperty("java.awt.headless", "true");
+        NativeLibraryLoader.loadVtkLibraries();
 
         erosModel = new Eros(ModelFactory.getModelConfig(ModelFactory.EROS, ModelFactory.GASKELL));
 
