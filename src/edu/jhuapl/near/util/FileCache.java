@@ -28,6 +28,7 @@ public class FileCache
     // it from the cache if it exists. Usually set to false, but some batch scripts
     // may set it to true.
     private static boolean offlineMode = false;
+    private static String offlineModeRootFolder = null;
 
     /**
      * Information returned about a remote file on the server
@@ -81,6 +82,15 @@ public class FileCache
 
         FileInfo fi = new FileInfo();
 
+        if (offlineMode)
+        {
+            File file = new File(offlineModeRootFolder + File.separator + path);
+            fi.file = file;
+            if (file.exists())
+                fi.length = file.length();
+            return fi;
+        }
+
         String unzippedPath = path;
         if (unzippedPath.toLowerCase().endsWith(".gz"))
             unzippedPath = unzippedPath.substring(0, unzippedPath.length() - 3);
@@ -99,50 +109,47 @@ public class FileCache
             return fi;
         }
 
-        // Open a connection to the server if not in offline mode
-        if (!offlineMode)
+        // Open a connection to the server
+        try
         {
-            try
+            URL u = new URL(Configuration.getDataRootURL() + path);
+
+            URLConnection conn = u.openConnection();
+
+            long urlLastModified = conn.getLastModified();
+
+            if (exists && file.lastModified() >= urlLastModified)
             {
-                URL u = new URL(Configuration.getDataRootURL() + path);
-
-                URLConnection conn = u.openConnection();
-
-                long urlLastModified = conn.getLastModified();
-
-                if (exists && file.lastModified() >= urlLastModified)
+                fi.length = file.length();
+                return fi;
+            }
+            else
+            {
+                if (doDownloadIfNeeded)
                 {
-                    fi.length = file.length();
-                    return fi;
-                }
-                else
-                {
-                    if (doDownloadIfNeeded)
+                    file = addToCache(path, conn.getInputStream(), urlLastModified, conn.getContentLength());
+                    if (file != null) // file can be null if the user aborted the download
                     {
-                        file = addToCache(path, conn.getInputStream(), urlLastModified, conn.getContentLength());
-                        if (file != null) // file can be null if the user aborted the download
-                        {
-                            downloadedFiles.put(path, "");
-                            fi.length = file.length();
-                        }
-                        else
-                        {
-                            return null;
-                        }
+                        downloadedFiles.put(path, "");
+                        fi.length = file.length();
                     }
                     else
                     {
-                        fi.needToDownload = true;
-                        fi.length = conn.getContentLength();
+                        return null;
                     }
-
-                    return fi;
                 }
+                else
+                {
+                    fi.needToDownload = true;
+                    fi.length = conn.getContentLength();
+                }
+
+                return fi;
             }
-            catch (IOException e)
-            {
-                e.printStackTrace();
-            }
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
         }
 
         // If we reach here, simply return the file if it exists.
@@ -313,9 +320,10 @@ public class FileCache
         return path.replace('\\', '/');
     }
 
-    static public void setOfflineMode(boolean offline)
+    static public void setOfflineMode(boolean offline, String rootFolder)
     {
         offlineMode = offline;
+        offlineModeRootFolder = rootFolder;
     }
 
     static public boolean getOfflineMode()
