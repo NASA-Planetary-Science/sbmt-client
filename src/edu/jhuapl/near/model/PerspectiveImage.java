@@ -951,6 +951,20 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         double kmatrix00 = Math.abs(Double.parseDouble(tmp[0]));
         double kmatrix11 = Math.abs(Double.parseDouble(tmp[4]));
 
+        // Here we calculate the image width and height using the K-matrix values.
+        // This is used only when the constructor of this function was called with
+        // loadPointingOnly set to true. When set to false, the image width and
+        // and height is set in the loadImage function (after this function is called
+        // and will overwrite these values here--though they should not be different).
+        // But when in pointing-only mode, the loadImage function is not called so
+        // we therefore set the image width and height here since some functions need it.
+        imageWidth = (int)npx;
+        imageHeight = (int)nln;
+        if (kmatrix00 > kmatrix11)
+            imageHeight = (int)Math.round(nln * (kmatrix00 / kmatrix11));
+        else if (kmatrix11 > kmatrix00)
+            imageWidth = (int)Math.round(npx * (kmatrix11 / kmatrix00));
+
         double[] cornerVector = new double[3];
         double fov1 = Math.atan(npx/(2.0*focalLengthMillimeters*kmatrix00));
         double fov2 = Math.atan(nln/(2.0*focalLengthMillimeters*kmatrix11));
@@ -1652,6 +1666,80 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     public double[] getUpVector()
     {
         return upVector;
+    }
+
+    /**
+     * Get the direction from the spacecraft of pixel with specified sample and line.
+     * Note that sample is along image width and line is along image height.
+     */
+    public double[] getPixelDirection(int sample, int line)
+    {
+        double[] corner1 = {
+                spacecraftPosition[0] + frustum1[0],
+                spacecraftPosition[1] + frustum1[1],
+                spacecraftPosition[2] + frustum1[2]
+        };
+        double[] corner2 = {
+                spacecraftPosition[0] + frustum2[0],
+                spacecraftPosition[1] + frustum2[1],
+                spacecraftPosition[2] + frustum2[2]
+        };
+        double[] corner3 = {
+                spacecraftPosition[0] + frustum3[0],
+                spacecraftPosition[1] + frustum3[1],
+                spacecraftPosition[2] + frustum3[2]
+        };
+        double[] vec12 = {
+                corner2[0] - corner1[0],
+                corner2[1] - corner1[1],
+                corner2[2] - corner1[2]
+        };
+        double[] vec13 = {
+                corner3[0] - corner1[0],
+                corner3[1] - corner1[1],
+                corner3[2] - corner1[2]
+        };
+
+        // Compute the vector on the left of the row.
+        double fracHeight = ((double)line / (double)(imageHeight-1));
+        double[] left = {
+                corner1[0] + fracHeight*vec13[0],
+                corner1[1] + fracHeight*vec13[1],
+                corner1[2] + fracHeight*vec13[2]
+        };
+
+        double fracWidth = ((double)sample / (double)(imageWidth-1));
+        double[] dir = {
+                left[0] + fracWidth*vec12[0],
+                left[1] + fracWidth*vec12[1],
+                left[2] + fracWidth*vec12[2]
+        };
+        dir[0] -= spacecraftPosition[0];
+        dir[1] -= spacecraftPosition[1];
+        dir[2] -= spacecraftPosition[2];
+        MathUtil.unorm(dir, dir);
+
+        return dir;
+    }
+
+    /**
+     * Get point on surface that intersects a ray originating from spacecraft
+     * in direction of pixel with specified sample and line.
+     * Note that sample is along image width and line is along image height.
+     * If there is no intersect point, null is returned.
+     */
+    public double[] getPixelSurfaceIntercept(int sample, int line)
+    {
+        double[] dir = getPixelDirection(sample, line);
+
+        double[] intersectPoint = new double[3];
+
+        int result = smallBodyModel.computeRayIntersection(spacecraftPosition, dir, intersectPoint);
+
+        if (result >= 0)
+            return intersectPoint;
+        else
+            return null;
     }
 
     public void setVisible(boolean b)
