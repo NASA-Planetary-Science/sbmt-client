@@ -28,6 +28,8 @@ public class FileCache
     // it from the cache if it exists. Usually set to false, but some batch scripts
     // may set it to true.
     private static boolean offlineMode = false;
+
+    // When in offline mode, files are retrieved relative to this folder
     private static String offlineModeRootFolder = null;
 
     /**
