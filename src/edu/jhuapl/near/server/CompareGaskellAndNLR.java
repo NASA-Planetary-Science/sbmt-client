@@ -83,6 +83,7 @@ public class CompareGaskellAndNLR
     {
         long time;
         double range;
+        double[] point;
 
         @Override
         public int compareTo(LidarPoint o)
@@ -109,7 +110,7 @@ public class CompareGaskellAndNLR
         int timeindex = modelConfig.lidarBrowseTimeIndex;
         int numberHeaderLines = modelConfig.lidarBrowseNumberHeaderLines;
         boolean isInMeters = modelConfig.lidarBrowseIsInMeters;
-        //int noiseindex = modelConfig.lidarBrowseNoiseIndex;
+        int noiseindex = modelConfig.lidarBrowseNoiseIndex;
 
         int xindex = xyzIndices[0];
         int yindex = xyzIndices[1];
@@ -136,9 +137,9 @@ public class CompareGaskellAndNLR
         {
             String[] vals = line.trim().split("\\s+");
 
-            // // Don't include noise
-            // if (noiseindex >=0 && vals[noiseindex].equals("1"))
-            //     continue;
+            // Don't include noise
+            if (noiseindex >=0 && vals[noiseindex].equals("1"))
+                continue;
 
             double x = Double.parseDouble(vals[xindex]);
             double y = Double.parseDouble(vals[yindex]);
@@ -177,6 +178,7 @@ public class CompareGaskellAndNLR
 
             point.time = time;
             point.range = range;
+            point.point = pt1;
 
             points.add(point);
         }
@@ -265,7 +267,7 @@ public class CompareGaskellAndNLR
         FileWriter fstream = new FileWriter("results.csv");
         BufferedWriter out = new BufferedWriter(fstream);
 
-        out.write("Image ID,Image Range (km),Lidar Range (km),Image Time (UTC), Lidar Time (UTC), Range Diff (km), Time Diff (sec)\n");
+        out.write("Image ID,Image Range (km),Lidar Range (km),Image Time (UTC), Lidar Time (UTC), Range Diff (km), Time Diff (sec), X-image (km), Y-image (km), Z-image (km), X-lidar (km), Y-lidar (km), Z-lidar (km)\n");
 
         count = 1;
         for (String filename : msiFiles)
@@ -308,12 +310,15 @@ public class CompareGaskellAndNLR
                 double imageRange = MathUtil.distanceBetween(scPos, imageSurfacePoint);
 
                 out.write(imageId + "," + imageRange + "," + lidarPoint.range + "," + imageTime + "," + lidarPoint.getFormattedTime()
-                        + "," + (Math.abs(imageRange-lidarPoint.range)) + "," + ((double)Math.abs(time - lidarPoint.time)/1000.0) + "\n");
+                        + "," + (Math.abs(imageRange-lidarPoint.range)) + "," + ((double)Math.abs(time - lidarPoint.time)/1000.0) + ","
+                        + imageSurfacePoint[0] + "," + imageSurfacePoint[1] + "," + imageSurfacePoint[2] + ","
+                        + lidarPoint.point[0] + "," + lidarPoint.point[1] + "," + lidarPoint.point[2] + "\n");
             }
             else
             {
                 out.write(imageId + "," + "NA" + "," + lidarPoint.range + "," + imageTime + "," + lidarPoint.getFormattedTime()
-                        + "," + "NA" + "," + ((double)Math.abs(time - lidarPoint.time)/1000.0) + "\n");
+                        + "," + "NA" + "," + ((double)Math.abs(time - lidarPoint.time)/1000.0) + ",NA,NA,NA,"
+                + lidarPoint.point[0] + "," + lidarPoint.point[1] + "," + lidarPoint.point[2] + "\n");
             }
         }
 
