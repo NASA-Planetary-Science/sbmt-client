@@ -18,8 +18,9 @@ import edu.jhuapl.near.model.Image.ImageKey;
 import edu.jhuapl.near.model.Image.ImageSource;
 import edu.jhuapl.near.model.ModelFactory;
 import edu.jhuapl.near.model.SmallBodyModel;
-import edu.jhuapl.near.model.eros.ErosThomas;
+import edu.jhuapl.near.model.eros.Eros;
 import edu.jhuapl.near.model.eros.MSIImage;
+import edu.jhuapl.near.util.Configuration;
 import edu.jhuapl.near.util.FileUtil;
 import edu.jhuapl.near.util.Frustum;
 import edu.jhuapl.near.util.MathUtil;
@@ -63,6 +64,12 @@ public class MSIBestResolutionPerPlate
             file = new File(name);
             if (!file.exists())
                 return false;
+
+            // If the sumfile has no landmarks, then ignore it. Sumfiles that have no landmarks
+            // are 1153 bytes long or less
+            if (file.length() <= 1153)
+                return false;
+
         }
 
         return true;
@@ -171,9 +178,9 @@ public class MSIBestResolutionPerPlate
                 double incidence = illumAngles[0];
                 double emission = illumAngles[1];
 
-                if (horizPixelScale < bestResolutionPerPlate.get(cellId) &&
-                        (incidence >= 20.0 && incidence <= 70.0 &&
-                        emission >= 0.0 && emission <= 60.0))
+                if (horizPixelScale < bestResolutionPerPlate.get(cellId))// &&
+//                        (incidence >= 20.0 && incidence <= 70.0 &&
+//                        emission >= 0.0 && emission <= 60.0))
                 {
                     bestResolutionPerPlate.set(cellId, horizPixelScale);
                     //System.out.println(horizPixelScale + " " + vertPixelScale + " " + incidence + " " + emission + " " + dist + " " );
@@ -242,12 +249,13 @@ public class MSIBestResolutionPerPlate
      */
     public static void main(String[] args) throws IOException
     {
-        System.setProperty("java.awt.headless", "true");
+        if (!Configuration.isLinux())
+            System.setProperty("java.awt.headless", "true");
         NativeLibraryLoader.loadVtkLibraries();
 
         String msiFileList=args[0];
 
-        erosModel = new ErosThomas(ModelFactory.getModelConfig(ModelFactory.EROS, ModelFactory.THOMAS));
+        erosModel = new Eros(ModelFactory.getModelConfig(ModelFactory.EROS, ModelFactory.GASKELL));
         resolutionLevel = Integer.parseInt(args[1]);
         try {
             erosModel.setModelResolution(resolutionLevel);
@@ -267,8 +275,8 @@ public class MSIBestResolutionPerPlate
 
         try
         {
-            computeBestResolutionPerPlate(msiFiles, ImageSource.PDS);
-            //computeBestResolutionPerPlate(msiFiles, ImageSource.GASKELL);
+            //computeBestResolutionPerPlate(msiFiles, ImageSource.PDS);
+            computeBestResolutionPerPlate(msiFiles, ImageSource.GASKELL);
         }
         catch (Exception e1) {
             e1.printStackTrace();
