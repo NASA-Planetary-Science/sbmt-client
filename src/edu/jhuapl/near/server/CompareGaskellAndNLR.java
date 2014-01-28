@@ -229,6 +229,43 @@ public class CompareGaskellAndNLR
         }
     }
 
+    static LidarPoint[] get2ClosestLidarPoints(long time)
+    {
+        LidarPoint dummyPoint = new LidarPoint();
+        dummyPoint.time = time;
+
+        int idx = Collections.binarySearch(points, dummyPoint);
+
+        if (idx >= 0)
+        {
+            return new LidarPoint[]{points.get(idx)};
+        }
+        else
+        {
+            idx = -(idx + 1);
+            // Look at the points before and after the insertion point and return
+            // the closest to time
+            if (idx == 0)
+                return new LidarPoint[]{points.get(0)};
+            else if (idx == points.size())
+                return new LidarPoint[]{points.get(points.size()-1)};
+            else
+            {
+                long beforeTime = points.get(idx-1).time;
+                long afterTime = points.get(idx).time;
+
+                // test to make sure signs are as expected
+                if (time-beforeTime <= 0 || afterTime-time <= 0)
+                {
+                    System.out.println("Uh oh. times seem to bring wrong!");
+                    System.exit(1);
+                }
+
+                return new LidarPoint[]{points.get(idx-1), points.get(idx)};
+            }
+        }
+    }
+
     public static void main(String[] args) throws IOException, FitsException
     {
         System.setProperty("java.awt.headless", "true");
@@ -298,6 +335,7 @@ public class CompareGaskellAndNLR
             String imageTime = fmt.print(dt);
 
             LidarPoint lidarPoint = getClosestLidarPoint(time);
+            LidarPoint[] lidarPoints = get2ClosestLidarPoints(time);
 
             String imageId = new File(key.name).getName();
             imageId = imageId.substring(0, imageId.length()-4);
@@ -305,18 +343,27 @@ public class CompareGaskellAndNLR
             double[] scPos = image.getSpacecraftPosition();
             double[] imageSurfacePoint = image.getPixelSurfaceIntercept(259, 411-219);
 
+            double lidarRange = lidarPoint.range;
+            if (lidarPoints.length == 2)
+            {
+                lidarRange = MathUtil.linearInterpolate2Points(
+                        lidarPoints[0].time, lidarPoints[0].range,
+                        lidarPoints[1].time, lidarPoints[1].range,
+                        time);
+            }
+
             if (imageSurfacePoint != null)
             {
                 double imageRange = MathUtil.distanceBetween(scPos, imageSurfacePoint);
 
-                out.write(imageId + "," + imageRange + "," + lidarPoint.range + "," + imageTime + "," + lidarPoint.getFormattedTime()
-                        + "," + (Math.abs(imageRange-lidarPoint.range)) + "," + ((double)Math.abs(time - lidarPoint.time)/1000.0) + ","
+                out.write(imageId + "," + imageRange + "," + lidarRange + "," + imageTime + "," + lidarPoint.getFormattedTime()
+                        + "," + (Math.abs(imageRange-lidarRange)) + "," + ((double)Math.abs(time - lidarPoint.time)/1000.0) + ","
                         + imageSurfacePoint[0] + "," + imageSurfacePoint[1] + "," + imageSurfacePoint[2] + ","
                         + lidarPoint.point[0] + "," + lidarPoint.point[1] + "," + lidarPoint.point[2] + "\n");
             }
             else
             {
-                out.write(imageId + "," + "NA" + "," + lidarPoint.range + "," + imageTime + "," + lidarPoint.getFormattedTime()
+                out.write(imageId + "," + "NA" + "," + lidarRange + "," + imageTime + "," + lidarPoint.getFormattedTime()
                         + "," + "NA" + "," + ((double)Math.abs(time - lidarPoint.time)/1000.0) + ",NA,NA,NA,"
                 + lidarPoint.point[0] + "," + lidarPoint.point[1] + "," + lidarPoint.point[2] + "\n");
             }
