@@ -9,6 +9,6 @@ public class EllipsesPopupMenu extends StructuresPopupMenu
 {
     public EllipsesPopupMenu(ModelManager modelManager, Renderer renderer)
     {
-        super((EllipseModel)modelManager.getModel(ModelNames.ELLIPSE_STRUCTURES), renderer, true, true);
+        super((EllipseModel)modelManager.getModel(ModelNames.ELLIPSE_STRUCTURES), renderer, true, true, false);
     }
 }

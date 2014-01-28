@@ -28,13 +28,15 @@ abstract public class StructuresPopupMenu extends PopupMenu
     private JMenuItem exportPlateDataAction;
     private JMenuItem editAction;
     private JMenuItem centerStructureMenuItem;
+    private JMenuItem displayInteriorMenuItem;
     private JCheckBoxMenuItem hideMenuItem;
 
     public StructuresPopupMenu(
             StructureModel model,
             Renderer renderer,
             boolean showChangeLatLon,
-            boolean showExportPlateDataInsidePolygon)
+            boolean showExportPlateDataInsidePolygon,
+            boolean showDisplayInterior)
     {
         this.model = model;
         this.renderer = renderer;
@@ -72,6 +74,13 @@ abstract public class StructuresPopupMenu extends PopupMenu
             exportPlateDataAction.setText("Save plate data inside polygon...");
             this.add(exportPlateDataAction);
         }
+
+        if (showDisplayInterior)
+        {
+            displayInteriorMenuItem = new JCheckBoxMenuItem(new DisplayInteriorAction());
+            displayInteriorMenuItem.setText("Display Interior");
+            this.add(displayInteriorMenuItem);
+        }
     }
 
     @Override
@@ -101,6 +110,19 @@ abstract public class StructuresPopupMenu extends PopupMenu
             if (!model.isStructureHidden(selectedStructures[i]))
             {
                 hideMenuItem.setSelected(false);
+                break;
+            }
+        }
+
+        // If any of the selected structures are displaying interior then show
+        // the display interior menu item as unchecked. Otherwise show it checked.
+        displayInteriorMenuItem.setSelected(true);
+        selectedStructures = model.getSelectedStructures();
+        for (int i=0; i<selectedStructures.length; ++i)
+        {
+            if (!model.isShowStructureInterior(selectedStructures[i]))
+            {
+                displayInteriorMenuItem.setSelected(false);
                 break;
             }
         }
@@ -223,6 +245,16 @@ abstract public class StructuresPopupMenu extends PopupMenu
                     e1.printStackTrace();
                 }
             }
+        }
+    }
+
+    protected class DisplayInteriorAction extends AbstractAction
+    {
+        @Override
+        public void actionPerformed(ActionEvent e)
+        {
+            int[] selectedStructures = model.getSelectedStructures();
+            model.setShowStructuresInterior(selectedStructures, displayInteriorMenuItem.isSelected());
         }
     }
 }

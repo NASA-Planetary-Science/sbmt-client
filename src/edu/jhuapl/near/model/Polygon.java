@@ -31,6 +31,8 @@ public class Polygon extends StructureModel.Structure
     private double perimeterLength = 0.0;
     public boolean hidden = false;
 
+    public boolean showInterior = false;
+
     private static final int[] purpleColor = {255, 0, 255, 255}; // RGBA purple
     private static DecimalFormat decimalFormatter = new DecimalFormat("#.###");
 
@@ -179,9 +181,18 @@ public class Polygon extends StructureModel.Structure
 
         if (!hidden)
         {
-            smallBodyModel.drawPolygon(controlPoints, interiorPolyData, boundaryPolyData);
+            if (showInterior)
+            {
+                smallBodyModel.drawPolygon(controlPoints, interiorPolyData, boundaryPolyData);
+                surfaceArea = PolyDataUtil.computeSurfaceArea(interiorPolyData);
+            }
+            else
+            {
+                smallBodyModel.drawPolygon(controlPoints, null, boundaryPolyData);
+                PolyDataUtil.clearPolyData(interiorPolyData);
+                surfaceArea = 0.0;
+            }
 
-            surfaceArea = PolyDataUtil.computeSurfaceArea(interiorPolyData);
             perimeterLength = PolyDataUtil.computeLength(boundaryPolyData);
         }
         else

@@ -1252,6 +1252,19 @@ public class PolyDataUtil
             vtkPolyData outputInterior,
             vtkPolyData outputBoundary)
     {
+        if (outputBoundary == null)
+        {
+            System.err.println("Error: outputBoundary is null");
+            return;
+        }
+
+        // If interior polydata is null, then only return boundary
+        if (outputInterior == null)
+        {
+            drawClosedLoopOnPolyData(polyData, pointLocator, controlPoints, outputBoundary);
+            return;
+        }
+
         ArrayList<LatLon> originalControlPoints = controlPoints;
         ArrayList<LatLon> clone = new ArrayList<LatLon>(controlPoints.size());
         for (LatLon llr : controlPoints) clone.add((LatLon)llr.clone());
@@ -1262,8 +1275,8 @@ public class PolyDataUtil
         if (numTriangles < 1)
         {
             vtkPolyData empty = new vtkPolyData();
-            if (outputInterior!=null) outputInterior.DeepCopy(empty);
-            if (outputBoundary!=null) outputBoundary.DeepCopy(empty);
+            outputInterior.DeepCopy(empty);
+            outputBoundary.DeepCopy(empty);
             empty.Delete();
             return;
         }
@@ -1385,21 +1398,16 @@ public class PolyDataUtil
         cleanFilter.SetInputConnection(appendFilterOutput);
         cleanFilter.Update();
 
-        if (outputInterior != null)
-        {
-            vtkPolyData cleanFilterOutput = cleanFilter.GetOutput();
-            outputInterior.DeepCopy(cleanFilterOutput);
-        }
+        vtkPolyData cleanFilterOutput = cleanFilter.GetOutput();
+        outputInterior.DeepCopy(cleanFilterOutput);
 
 
-        if (outputBoundary != null)
-        {
-            // Note we cannot use vtkFeatureEdges since the polygon really consists of
-            // multiple triangles concatenated together and we would end up having edges
-            // that cut through the polygon.
-            drawClosedLoopOnPolyData(polyData, pointLocator, originalControlPoints, outputBoundary);
+        // Note we cannot use vtkFeatureEdges since the polygon really consists of
+        // multiple triangles concatenated together and we would end up having edges
+        // that cut through the polygon.
+        drawClosedLoopOnPolyData(polyData, pointLocator, originalControlPoints, outputBoundary);
 
-            /*
+        /*
             vtkFeatureEdges edgeExtracter = new vtkFeatureEdges();
             vtkAlgorithmOutput cleanFilterOutput = cleanFilter.GetOutputPort();
             edgeExtracter.SetInputConnection(cleanFilterOutput);
@@ -1411,8 +1419,7 @@ public class PolyDataUtil
 
             vtkPolyData edgeExtracterOutput = edgeExtracter.GetOutput();
             outputBoundary.DeepCopy(edgeExtracterOutput);
-            */
-        }
+         */
     }
 
     public static void drawClosedLoopOnPolyData(

@@ -359,6 +359,8 @@ public class PolygonModel extends ControlPointsStructureModel implements Propert
         LatLon ll = MathUtil.reclat(newPoint);
         pol.controlPoints.set(vertexId, ll);
 
+        pol.showInterior = false;
+
         pol.updatePolygon(pol.controlPoints);
 
         updatePolyData();
@@ -387,6 +389,8 @@ public class PolygonModel extends ControlPointsStructureModel implements Propert
 
         pol.controlPoints.add(currentPolygonVertex+1, ll);
 
+        pol.showInterior = false;
+
         pol.updatePolygon(pol.controlPoints);
 
         ++currentPolygonVertex;
@@ -410,6 +414,8 @@ public class PolygonModel extends ControlPointsStructureModel implements Propert
         int vertexId = currentPolygonVertex;
 
         pol.controlPoints.remove(vertexId);
+
+        pol.showInterior = false;
 
         pol.updatePolygon(pol.controlPoints);
 
@@ -833,5 +839,27 @@ public class PolygonModel extends ControlPointsStructureModel implements Propert
     public double[] getStructureCenter(int id)
     {
         return polygons.get(id).getCentroid();
+    }
+
+    @Override
+    public void setShowStructuresInterior(int[] polygonIds, boolean show)
+    {
+        for (int i=0; i<polygonIds.length; ++i)
+        {
+            Polygon pol = polygons.get(polygonIds[i]);
+            if (pol.showInterior != show)
+            {
+                pol.showInterior = show;
+                pol.updatePolygon(pol.controlPoints);
+            }
+        }
+
+        updatePolyData();
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+    }
+
+    public boolean isShowStructureInterior(int id)
+    {
+        return polygons.get(id).showInterior;
     }
 }
