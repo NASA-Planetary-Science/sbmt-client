@@ -358,13 +358,15 @@ public class MapmakerView extends JFrame
             if (line.controlPointIds.size() != 2)
                 continue;
 
+            LatLon ll0 = line.controlPoints.get(0);
+            LatLon ll1 = line.controlPoints.get(1);
             out.write(eol + Profile + "=" + i + eol);
-            out.write(StartLatitude + "=" + line.lat.get(0) + eol);
-            out.write(StartLongitude + "=" + line.lon.get(0) + eol);
-            out.write(StartRadius + "=" + line.rad.get(0) + eol);
-            out.write(EndLatitude + "=" + line.lat.get(1) + eol);
-            out.write(EndLongitude + "=" + line.lon.get(1) + eol);
-            out.write(EndRadius + "=" + line.rad.get(1) + eol);
+            out.write(StartLatitude + "=" + ll0.lat + eol);
+            out.write(StartLongitude + "=" + ll0.lon + eol);
+            out.write(StartRadius + "=" + ll0.rad + eol);
+            out.write(EndLatitude + "=" + ll1.lat + eol);
+            out.write(EndLongitude + "=" + ll1.lon + eol);
+            out.write(EndRadius + "=" + ll1.rad + eol);
             out.write(Color + "=" +
                     line.color[0] + " " +
                     line.color[1] + " " +

@@ -304,7 +304,7 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
         int numberOfPoints = 0;
         for (Line lin : this.lines)
         {
-            numberOfPoints += lin.lat.size();
+            numberOfPoints += lin.controlPoints.size();
         }
         return numberOfPoints;
     }
@@ -368,12 +368,10 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
     {
         Line lin = lines.get(activatedLine);
 
-        int numVertices = lin.lat.size();
+        int numVertices = lin.controlPoints.size();
 
         LatLon ll = MathUtil.reclat(newPoint);
-        lin.lat.set(vertexId, ll.lat);
-        lin.lon.set(vertexId, ll.lon);
-        lin.rad.set(vertexId, ll.rad);
+        lin.controlPoints.set(vertexId, ll);
 
         // If we're modifying the last vertex
         if (vertexId == numVertices - 1)
@@ -474,9 +472,7 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
 
         LatLon ll = MathUtil.reclat(newPoint);
 
-        lin.lat.add(currentLineVertex+1, ll.lat);
-        lin.lon.add(currentLineVertex+1, ll.lon);
-        lin.rad.add(currentLineVertex+1, ll.rad);
+        lin.controlPoints.add(currentLineVertex+1, ll);
 
         // Remove points BETWEEN the 2 control points (If we're adding a point in the middle)
         if (currentLineVertex < lin.controlPointIds.size()-1)
@@ -541,9 +537,7 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
 
         int vertexId = currentLineVertex;
 
-        lin.lat.remove(vertexId);
-        lin.lon.remove(vertexId);
-        lin.rad.remove(vertexId);
+        lin.controlPoints.remove(vertexId);
 
         // If one of the end points is being removed, then we only need to remove the line connecting the
         // end point to the adjacent point. If we're removing a non-end point, we need to remove the line
