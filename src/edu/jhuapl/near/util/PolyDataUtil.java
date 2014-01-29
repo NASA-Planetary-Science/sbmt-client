@@ -1252,9 +1252,8 @@ public class PolyDataUtil
             vtkPolyData outputInterior,
             vtkPolyData outputBoundary)
     {
-        if (outputBoundary == null)
+        if (outputInterior == null && outputBoundary == null)
         {
-            System.err.println("Error: outputBoundary is null");
             return;
         }
 
@@ -1276,7 +1275,7 @@ public class PolyDataUtil
         {
             vtkPolyData empty = new vtkPolyData();
             outputInterior.DeepCopy(empty);
-            outputBoundary.DeepCopy(empty);
+            if (outputBoundary != null) outputBoundary.DeepCopy(empty);
             empty.Delete();
             return;
         }
@@ -1405,7 +1404,10 @@ public class PolyDataUtil
         // Note we cannot use vtkFeatureEdges since the polygon really consists of
         // multiple triangles concatenated together and we would end up having edges
         // that cut through the polygon.
-        drawClosedLoopOnPolyData(polyData, pointLocator, originalControlPoints, outputBoundary);
+        if (outputBoundary != null)
+        {
+            drawClosedLoopOnPolyData(polyData, pointLocator, originalControlPoints, outputBoundary);
+        }
 
         /*
             vtkFeatureEdges edgeExtracter = new vtkFeatureEdges();

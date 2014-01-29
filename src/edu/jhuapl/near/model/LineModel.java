@@ -53,7 +53,8 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
     public enum Mode
     {
         DEFAULT,
-        PROFILE
+        PROFILE,
+        CLOSED
     }
 
     private ArrayList<Line> lines = new ArrayList<Line>();
@@ -151,9 +152,14 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
         actors.add(lineActivationActor);
     }
 
+    protected String getType()
+    {
+        return LINES;
+    }
+
     public Element toXmlDomElement(Document dom)
     {
-        Element rootEle = dom.createElement(LINES);
+        Element rootEle = dom.createElement(getType());
         rootEle.setAttribute(SHAPE_MODEL_NAME, smallBodyModel.getModelName());
 
         for (Line lin : this.lines)
@@ -173,7 +179,8 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
         if (element.hasAttribute(SHAPE_MODEL_NAME))
             shapeModelName= element.getAttribute(SHAPE_MODEL_NAME);
 
-        NodeList nl = element.getElementsByTagName(Line.PATH);
+        Line dummyLine = (Line) createStructure(smallBodyModel);
+        NodeList nl = element.getElementsByTagName(dummyLine.getType());
         if(nl != null && nl.getLength() > 0)
         {
             for(int i = 0 ; i < nl.getLength();i++)
@@ -192,7 +199,7 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
-    private void updatePolyData()
+    protected void updatePolyData()
     {
         linesPolyData.DeepCopy(emptyPolyData);
         vtkPoints points = linesPolyData.GetPoints();
@@ -794,7 +801,7 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
         //get the root element
         Element docEle = dom.getDocumentElement();
 
-        if (LineModel.LINES.equals(docEle.getTagName()))
+        if (getType().equals(docEle.getTagName()))
             fromXmlDomElement(docEle, append);
     }
 

@@ -31,7 +31,7 @@ public class Line extends StructureModel.Structure
     private SmallBodyModel smallBodyModel;
 
     private static final int[] purpleColor = {255, 0, 255, 255}; // RGBA purple
-    private static DecimalFormat decimalFormatter = new DecimalFormat("#.###");
+    protected static final DecimalFormat decimalFormatter = new DecimalFormat("#.###");
 
     private static int maxId = 0;
 
