@@ -50,6 +50,12 @@ import edu.jhuapl.near.util.Properties;
  */
 public class LineModel extends ControlPointsStructureModel implements PropertyChangeListener
 {
+    public enum Mode
+    {
+        DEFAULT,
+        PROFILE
+    }
+
     private ArrayList<Line> lines = new ArrayList<Line>();
     private vtkPolyData linesPolyData;
     private vtkPolyData activationPolyData;
@@ -68,7 +74,7 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
 
     private vtkPolyData emptyPolyData;
 
-    private boolean profileMode = false;
+    private Mode mode = Mode.DEFAULT;
 
     private double offset;
 
@@ -85,14 +91,19 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
 
     public LineModel(SmallBodyModel smallBodyModel, boolean profileMode)
     {
-        super(ModelNames.LINE_STRUCTURES);
+        this(smallBodyModel, profileMode ? Mode.PROFILE : Mode.DEFAULT, ModelNames.LINE_STRUCTURES);
+    }
+
+    public LineModel(SmallBodyModel smallBodyModel, Mode mode, String name)
+    {
+        super(name);
 
         this.smallBodyModel = smallBodyModel;
-        this.profileMode = profileMode;
+        this.mode = mode;
 
         this.offset = getDefaultOffset();
 
-        if (profileMode)
+        if (hasProfileMode())
             setMaximumVerticesPerLine(2);
 
         this.smallBodyModel.addPropertyChangeListener(this);
@@ -104,7 +115,7 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
 
         lineProperty.SetLineWidth(2.0);
 
-        if (profileMode)
+        if (hasProfileMode())
             lineProperty.SetLineWidth(3.0);
 
         lineActivationActor = new vtkActor();
@@ -169,7 +180,7 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
             {
                 Element el = (Element)nl.item(i);
 
-                Line lin = new Line(smallBodyModel);
+                Line lin = (Line)createStructure(smallBodyModel);
 
                 lin.fromXmlDomElement(el, shapeModelName, append);
 
@@ -327,7 +338,7 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
 
     public void addNewStructure()
     {
-        Line lin = new Line(smallBodyModel);
+        Line lin = (Line)createStructure(smallBodyModel);
         lines.add(lin);
         activateStructure(lines.size()-1);
         this.pcs.firePropertyChange(Properties.STRUCTURE_ADDED, null, null);
@@ -609,7 +620,7 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
 
         updatePolyData();
 
-        if (profileMode)
+        if (hasProfileMode())
             updateLineActivation();
 
         if (cellId == activatedLine)
@@ -634,7 +645,7 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
 
         updatePolyData();
 
-        if (profileMode)
+        if (hasProfileMode())
             updateLineActivation();
 
         if (Arrays.binarySearch(indices, activatedLine) < 0)
@@ -649,7 +660,7 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
 
         updatePolyData();
 
-        if (profileMode)
+        if (hasProfileMode())
             updateLineActivation();
 
         activateStructure(-1);
@@ -667,7 +678,7 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
 
     protected void updateLineActivation()
     {
-        if (profileMode)
+        if (hasProfileMode())
         {
             activationPolyData.DeepCopy(emptyPolyData);
             vtkPoints points = activationPolyData.GetPoints();
@@ -908,7 +919,7 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
 
     public boolean hasProfileMode()
     {
-        return profileMode;
+        return mode == Mode.PROFILE;
     }
 
     /**
@@ -1267,5 +1278,10 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
     public double[] getStructureCenter(int id)
     {
         return lines.get(id).getCentroid();
+    }
+
+    protected StructureModel.Structure createStructure(SmallBodyModel smallBodyModel)
+    {
+        return new Line(smallBodyModel);
     }
 }
