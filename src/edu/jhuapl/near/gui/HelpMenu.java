@@ -79,7 +79,7 @@ public class HelpMenu extends JMenu
 
         JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(rootPanel),
                 "Small Body Mapping Tool\n" + versionString +
-                COPYRIGHT + " 2013 The Johns Hopkins University Applied Physics Laboratory\n",
+                COPYRIGHT + " 2014 The Johns Hopkins University Applied Physics Laboratory\n",
                 "About Small Body Mapping Tool",
                 JOptionPane.PLAIN_MESSAGE);
     }
