@@ -116,14 +116,17 @@ abstract public class StructuresPopupMenu extends PopupMenu
 
         // If any of the selected structures are displaying interior then show
         // the display interior menu item as unchecked. Otherwise show it checked.
-        displayInteriorMenuItem.setSelected(true);
-        selectedStructures = model.getSelectedStructures();
-        for (int i=0; i<selectedStructures.length; ++i)
+        if (displayInteriorMenuItem != null)
         {
-            if (!model.isShowStructureInterior(selectedStructures[i]))
+            displayInteriorMenuItem.setSelected(true);
+            selectedStructures = model.getSelectedStructures();
+            for (int i=0; i<selectedStructures.length; ++i)
             {
-                displayInteriorMenuItem.setSelected(false);
-                break;
+                if (!model.isShowStructureInterior(selectedStructures[i]))
+                {
+                    displayInteriorMenuItem.setSelected(false);
+                    break;
+                }
             }
         }
 
