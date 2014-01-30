@@ -33,7 +33,7 @@ public class Polygon extends Line
 
     public String getClickStatusBarText()
     {
-        return "Path, Id = " + id
+        return "Polygon, Id = " + id
         + ", Length = " + decimalFormatter.format(getPathLength()) + " km"
         + ", Surface Area = " + decimalFormatter.format(surfaceArea) + " km^2"
         + ", Number of Vertices = " + controlPoints.size();
