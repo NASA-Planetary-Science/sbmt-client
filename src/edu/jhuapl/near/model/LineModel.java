@@ -384,10 +384,14 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
         if (vertexId == numVertices - 1)
         {
             lin.updateSegment(vertexId-1);
+            if (mode == Mode.CLOSED)
+                lin.updateSegment(vertexId);
         }
         // If we're modifying the first vertex
         else if (vertexId == 0)
         {
+            if (mode == Mode.CLOSED)
+                lin.updateSegment(numVertices-1);
             lin.updateSegment(vertexId);
         }
         // If we're modifying a middle vertex
@@ -521,6 +525,8 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
             else
             {
                 lin.updateSegment(currentLineVertex);
+                if (mode == Mode.CLOSED)
+                    lin.updateSegment(currentLineVertex+1);
             }
         }
 
@@ -546,11 +552,15 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
 
         lin.controlPoints.remove(vertexId);
 
+        // If not in CLOSED mode:
         // If one of the end points is being removed, then we only need to remove the line connecting the
         // end point to the adjacent point. If we're removing a non-end point, we need to remove the line
         // segments connecting the 2 adjacent control points and in addition, we need to draw a new line
         // connecting the 2 adjacent control points.
-        // Remove points BETWEEN the 2 adjacent control points (If we're removing a point in the middle)
+        //
+        // But if in CLOSED mode:
+        // We always need to remove 2 adjacent segments to the control point that was removed and draw a
+        // new line connecting the 2 adjacent control point.
         if (lin.controlPointIds.size() > 1)
         {
             // Remove initial point
@@ -566,10 +576,33 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
 
                 for (int i=0; i<lin.controlPointIds.size(); ++i)
                     lin.controlPointIds.set(i, lin.controlPointIds.get(i) - numberPointsRemoved);
+
+                if (mode == Mode.CLOSED)
+                {
+                    int id = lin.controlPointIds.get(lin.controlPointIds.size()-1);
+                    numberPointsRemoved = lin.xyzPointList.size()-id-1;;
+                    for (int i=0; i<numberPointsRemoved; ++i)
+                    {
+                        lin.xyzPointList.remove(id+1);
+                    }
+
+                    // redraw segment connecting last point to first
+                    lin.updateSegment(lin.controlPointIds.size()-1);
+                }
             }
             // Remove final point
             else if (vertexId == lin.controlPointIds.size()-1)
             {
+                if (mode == Mode.CLOSED)
+                {
+                    int id = lin.controlPointIds.get(lin.controlPointIds.size()-1);
+                    int numberPointsRemoved = lin.xyzPointList.size()-id-1;;
+                    for (int i=0; i<numberPointsRemoved; ++i)
+                    {
+                        lin.xyzPointList.remove(id+1);
+                    }
+                }
+
                 int id1 = lin.controlPointIds.get(vertexId-1);
                 int id2 = lin.controlPointIds.get(vertexId);
                 int numberPointsRemoved = id2-id1;
@@ -578,10 +611,17 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
                     lin.xyzPointList.remove(id1+1);
                 }
                 lin.controlPointIds.remove(vertexId);
+
+                if (mode == Mode.CLOSED)
+                {
+                    // redraw segment connecting last point to first
+                    lin.updateSegment(lin.controlPointIds.size()-1);
+                }
             }
             // Remove a middle point
             else
             {
+                // Remove points BETWEEN the 2 adjacent control points
                 int id1 = lin.controlPointIds.get(vertexId-1);
                 int id2 = lin.controlPointIds.get(vertexId+1);
                 int numberPointsRemoved = id2-id1-1;
@@ -879,6 +919,9 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
 
             for (int i=0; i<lin.controlPointIds.size()-1; ++i)
                 lin.updateSegment(i);
+
+            if (mode == Mode.CLOSED)
+                lin.updateSegment(lin.controlPoints.size()-1);
         }
 
         updatePolyData();

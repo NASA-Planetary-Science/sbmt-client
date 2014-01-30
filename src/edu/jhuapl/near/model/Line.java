@@ -33,6 +33,7 @@ public class Line extends StructureModel.Structure
     private static final int[] purpleColor = {255, 0, 255, 255}; // RGBA purple
     protected static final DecimalFormat decimalFormatter = new DecimalFormat("#.###");
 
+    private boolean closed = false;
     private static int maxId = 0;
 
     public static final String PATH = "path";
@@ -44,7 +45,13 @@ public class Line extends StructureModel.Structure
 
     public Line(SmallBodyModel smallBodyModel)
     {
+        this(smallBodyModel, false);
+    }
+
+    public Line(SmallBodyModel smallBodyModel, boolean closed)
+    {
         this.smallBodyModel = smallBodyModel;
+        this.closed = closed;
         id = ++maxId;
         color = (int[])purpleColor.clone();
     }
@@ -187,18 +194,28 @@ public class Line extends StructureModel.Structure
             length += dist;
         }
 
+        if (closed && size > 1)
+        {
+            double dist = xyzPointList.get(size-1).distanceTo(xyzPointList.get(0));
+            length += dist;
+        }
+
         return length;
     }
 
     public void updateSegment(int segment)
     {
+        int nextSegment = segment + 1;
+        if (nextSegment == controlPoints.size())
+            nextSegment = 0;
+
         LatLon ll1 = controlPoints.get(segment);
-        LatLon ll2 = controlPoints.get(segment+1);
+        LatLon ll2 = controlPoints.get(nextSegment);
         double pt1[] = MathUtil.latrec(ll1);
         double pt2[] = MathUtil.latrec(ll2);
 
         int id1 = controlPointIds.get(segment);
-        int id2 = controlPointIds.get(segment+1);
+        int id2 = controlPointIds.get(nextSegment);
 
         // Set the 2 control points
         xyzPointList.set(id1, new Point3D(pt1));
@@ -223,7 +240,10 @@ public class Line extends StructureModel.Structure
         }
 
         // Remove points BETWEEN the 2 control points
-        for (int i=0; i<id2-id1-1; ++i)
+        int numberPointsToRemove = id2-id1-1;
+        if (nextSegment == 0)
+            numberPointsToRemove = xyzPointList.size()-id1-1;
+        for (int i=0; i<numberPointsToRemove; ++i)
         {
             xyzPointList.remove(id1+1);
         }

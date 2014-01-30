@@ -15,7 +15,7 @@ public class Polygon extends Line
 
     public Polygon(SmallBodyModel smallBodyModel)
     {
-        super(smallBodyModel);
+        super(smallBodyModel, true);
 
         this.smallBodyModel = smallBodyModel;
         interiorPolyData = new vtkPolyData();
