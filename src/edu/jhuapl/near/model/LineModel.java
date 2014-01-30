@@ -316,33 +316,6 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
         return numberOfPoints;
     }
 
-    /*
-    public void addNewLine(double[] pt1, double[] pt2)
-    {
-        LatLon ll1 = Spice.reclat(pt1);
-        LatLon ll2 = Spice.reclat(pt2);
-
-        Line lin = new Line();
-        lin.lat.add(ll1.lat);
-        lin.lon.add(ll1.lon);
-        lin.rad.add(ll1.rad);
-        lin.lat.add(ll2.lat);
-        lin.lon.add(ll2.lon);
-        lin.rad.add(ll2.rad);
-
-        lin.xyzPointList.add(new Point3D(pt1));
-        lin.xyzPointList.add(new Point3D(pt2));
-        lin.controlPointIds.add(0);
-        lin.controlPointIds.add(1);
-        lin.updateSegment(smallBodyModel, 0);
-        lines.add(lin);
-
-        updatePolyData();
-
-        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-    }
-    */
-
     public void addNewStructure()
     {
         Line lin = (Line)createStructure(smallBodyModel);
@@ -350,26 +323,6 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
         activateStructure(lines.size()-1);
         this.pcs.firePropertyChange(Properties.STRUCTURE_ADDED, null, null);
     }
-
-    /*
-    public void addNewLine(double[] pt1)
-    {
-        LatLon ll1 = Spice.reclat(pt1);
-
-        Line lin = new Line();
-        lin.lat.add(ll1.lat);
-        lin.lon.add(ll1.lon);
-        lin.rad.add(ll1.rad);
-
-        lin.xyzPointList.add(new Point3D(pt1));
-        lin.controlPointIds.add(0);
-        lines.add(lin);
-
-        updatePolyData();
-
-        activateLine(lines.size()-1);
-    }
-    */
 
     public void updateActivatedStructureVertex(int vertexId, double[] newPoint)
     {
@@ -408,65 +361,6 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
         this.pcs.firePropertyChange(Properties.VERTEX_POSITION_CHANGED, null, activatedLine);
     }
-
-    /*
-    public void addVertexToLine(int cellId, double[] newPoint)
-    {
-        Line lin = lines.get(cellId);
-        LatLon ll = Spice.reclat(newPoint);
-
-        // If the added point is the same as the current last point, return doing nothing.
-        System.out.println(lin.lat.size());
-        int lastIdx = lin.lat.size() - 1;
-        int prevIdx = lin.lat.size() - 2;
-
-        System.out.println(new LatLon(lin.lat.get(lastIdx), lin.lon.get(lastIdx), lin.rad.get(lastIdx)));
-        System.out.println(new LatLon(lin.lat.get(prevIdx), lin.lon.get(prevIdx), lin.rad.get(prevIdx)));
-
-        if (prevIdx >= 0 &&
-            Math.abs(lin.lat.get(prevIdx) - lin.lat.get(lastIdx)) < 1e-8 &&
-            Math.abs(lin.lon.get(prevIdx) - lin.lon.get(lastIdx)) < 1e-8 &&
-            Math.abs(lin.rad.get(prevIdx) - lin.rad.get(lastIdx)) < 1e-8)
-        {
-            System.out.println("Warning: new vertex same as last vertex");
-//            return;
-        }
-
-        lin.lat.add(ll.lat);
-        lin.lon.add(ll.lon);
-        lin.rad.add(ll.rad);
-
-        lin.xyzPointList.add(new Point3D(newPoint));
-        lin.controlPointIds.add(lin.xyzPointList.size()-1);
-
-        updatePolyData();
-        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-    }
-    */
-
-    /*
-    public void addVertexToActivatedLine(double[] newPoint)
-    {
-        Line lin = lines.get(activatedLine);
-        LatLon ll = Spice.reclat(newPoint);
-
-        lin.lat.add(ll.lat);
-        lin.lon.add(ll.lon);
-        lin.rad.add(ll.rad);
-
-        lin.xyzPointList.add(new Point3D(newPoint));
-        lin.controlPointIds.add(lin.xyzPointList.size()-1);
-
-        if (lin.controlPointIds.size() >= 2)
-            lin.updateSegment(lin.lat.size()-2);
-
-        updatePolyData();
-
-        updateLineActivation();
-
-        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-    }
-     */
 
     public void insertVertexIntoActivatedStructure(double[] newPoint)
     {
