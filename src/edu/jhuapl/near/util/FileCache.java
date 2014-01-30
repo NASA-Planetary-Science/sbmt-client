@@ -24,6 +24,14 @@ public class FileCache
     // Download progress. Equal to number of bytes downloaded so far.
     private static volatile long downloadProgress = 0;
 
+    // If true do not make a network connection to get the file but only retrieve
+    // it from the cache if it exists. Usually set to false, but some batch scripts
+    // may set it to true.
+    private static boolean offlineMode = false;
+
+    // When in offline mode, files are retrieved relative to this folder
+    private static String offlineModeRootFolder = null;
+
     /**
      * Information returned about a remote file on the server
      */
@@ -76,6 +84,15 @@ public class FileCache
 
         FileInfo fi = new FileInfo();
 
+        if (offlineMode)
+        {
+            File file = new File(offlineModeRootFolder + File.separator + path);
+            fi.file = file;
+            if (file.exists())
+                fi.length = file.length();
+            return fi;
+        }
+
         String unzippedPath = path;
         if (unzippedPath.toLowerCase().endsWith(".gz"))
             unzippedPath = unzippedPath.substring(0, unzippedPath.length() - 3);
@@ -94,7 +111,7 @@ public class FileCache
             return fi;
         }
 
-        // Open a connection the file on the server
+        // Open a connection to the server
         try
         {
             URL u = new URL(Configuration.getDataRootURL() + path);
@@ -137,8 +154,7 @@ public class FileCache
             e.printStackTrace();
         }
 
-        // If something happens that we reach here, simply return the file if it
-        // exists.
+        // If we reach here, simply return the file if it exists.
         if (exists)
         {
             fi.length = file.length();
@@ -304,5 +320,16 @@ public class FileCache
     static private String replaceBackslashesWithForwardSlashes(String path)
     {
         return path.replace('\\', '/');
+    }
+
+    static public void setOfflineMode(boolean offline, String rootFolder)
+    {
+        offlineMode = offline;
+        offlineModeRootFolder = rootFolder;
+    }
+
+    static public boolean getOfflineMode()
+    {
+        return offlineMode;
     }
 }

@@ -71,6 +71,19 @@ public abstract class StructureModel extends Model
         // do nothing by default. Only structures that have an inside need to implement this.
     }
 
+    // For polygons which take a long time to draw, implement this function
+    // to only show interior when explicitly told. If not reimplemented, then interiod
+    // is always shown.
+    public void setShowStructuresInterior(int[] indices, boolean show)
+    {
+        // by default do nothing
+    }
+
+    public boolean isShowStructureInterior(int id)
+    {
+        return false;
+    }
+
     // Get the center of the structure. For ellipses and points, this is obvious.
     // For paths and polygons, this is the mean of the control points.
     public abstract double[] getStructureCenter(int id);

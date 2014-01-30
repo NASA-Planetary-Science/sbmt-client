@@ -18,8 +18,9 @@ import edu.jhuapl.near.model.Image.ImageKey;
 import edu.jhuapl.near.model.Image.ImageSource;
 import edu.jhuapl.near.model.ModelFactory;
 import edu.jhuapl.near.model.SmallBodyModel;
-import edu.jhuapl.near.model.eros.ErosThomas;
+import edu.jhuapl.near.model.eros.Eros;
 import edu.jhuapl.near.model.eros.MSIImage;
+import edu.jhuapl.near.util.Configuration;
 import edu.jhuapl.near.util.FileUtil;
 import edu.jhuapl.near.util.Frustum;
 import edu.jhuapl.near.util.MathUtil;
@@ -30,12 +31,44 @@ public class MSIBestResolutionPerPlate
     private static SmallBodyModel erosModel;
     private static int resolutionLevel = 0;
 
-    private static ArrayList<Double> bestResolutionPerPlate = new ArrayList<Double>();
-    private static ArrayList<Integer> numImagesResLessThan5mpp = new ArrayList<Integer>();
-    private static ArrayList<Integer> numImagesResLessThan10mpp = new ArrayList<Integer>();
-    private static ArrayList<Integer> numImagesResLessThan50mpp = new ArrayList<Integer>();
-    private static ArrayList<Integer> numImagesResLessThan100mpp = new ArrayList<Integer>();
-    private static ArrayList<Integer> numImagesResLessThan200mpp = new ArrayList<Integer>();
+    private static class PlateStatistics {
+        public double bestResolution = Double.MAX_VALUE;
+        public double meanResolution = 0.0;
+        public double medianResolution = 0.0;
+        public int[] histogram = new int[200];
+
+        public int getNumberOfSamples()
+        {
+            int count = 0;
+            for (int bin : histogram)
+                count += bin;
+            return count;
+        }
+
+        public double getPercentile(double p)
+        {
+            int numberOfSamples = getNumberOfSamples();
+            int count = 0;
+            for (int i=0; i<histogram.length; ++i)
+            {
+                if (count >= (p*numberOfSamples))
+                    return i;
+                count += histogram[i];
+            }
+            return histogram.length;
+        }
+
+        @Override
+        public String toString()
+        {
+            String s = bestResolution + "," + meanResolution+ "," + medianResolution;
+            for (int i = 0; i < 50; ++i)
+                s += "," + histogram[i];
+            return s;
+        }
+    }
+
+    private static ArrayList<PlateStatistics> statisticsPerPlate = new ArrayList<PlateStatistics>();
     private static ArrayList<String> msiFilesWithAtLeastOneGoodPlate = new ArrayList<String>();
 
     private static boolean checkIfMsiFilesExist(String line, MSIImage.ImageSource source)
@@ -63,6 +96,12 @@ public class MSIBestResolutionPerPlate
             file = new File(name);
             if (!file.exists())
                 return false;
+
+            // If the sumfile has no landmarks, then ignore it. Sumfiles that have no landmarks
+            // are 1153 bytes long or less
+            if (file.length() <= 1153)
+                return false;
+
         }
 
         return true;
@@ -74,12 +113,7 @@ public class MSIBestResolutionPerPlate
         int numPlatesInSmallBodyModel = erosModel.getSmallBodyPolyData().GetNumberOfCells();
         for (int i=0; i<numPlatesInSmallBodyModel; ++i)
         {
-            bestResolutionPerPlate.add(Double.MAX_VALUE);
-            numImagesResLessThan5mpp.add(0);
-            numImagesResLessThan10mpp.add(0);
-            numImagesResLessThan50mpp.add(0);
-            numImagesResLessThan100mpp.add(0);
-            numImagesResLessThan200mpp.add(0);
+            statisticsPerPlate.add(new PlateStatistics());
         }
         vtkFloatArray normals = erosModel.getCellNormals();
 
@@ -171,23 +205,18 @@ public class MSIBestResolutionPerPlate
                 double incidence = illumAngles[0];
                 double emission = illumAngles[1];
 
-                if (horizPixelScale < bestResolutionPerPlate.get(cellId) &&
-                        (incidence >= 20.0 && incidence <= 70.0 &&
-                        emission >= 0.0 && emission <= 60.0))
+                if (incidence >= 0.0 && incidence <= 80.0 &&
+                        emission >= 0.0 && emission <= 70.0)
                 {
-                    bestResolutionPerPlate.set(cellId, horizPixelScale);
-                    //System.out.println(horizPixelScale + " " + vertPixelScale + " " + incidence + " " + emission + " " + dist + " " );
+                    if (horizPixelScale < statisticsPerPlate.get(cellId).bestResolution)
+                        statisticsPerPlate.get(cellId).bestResolution = horizPixelScale;
 
-                    if (horizPixelScale <= 5.0)
-                        numImagesResLessThan5mpp.set(cellId, numImagesResLessThan5mpp.get(cellId)+1);
-                    if (horizPixelScale <= 10.0)
-                        numImagesResLessThan10mpp.set(cellId, numImagesResLessThan10mpp.get(cellId)+1);
-                    if (horizPixelScale <= 50.0)
-                        numImagesResLessThan50mpp.set(cellId, numImagesResLessThan50mpp.get(cellId)+1);
-                    if (horizPixelScale <= 100.0)
-                        numImagesResLessThan100mpp.set(cellId, numImagesResLessThan100mpp.get(cellId)+1);
-                    if (horizPixelScale <= 200.0)
-                        numImagesResLessThan200mpp.set(cellId, numImagesResLessThan200mpp.get(cellId)+1);
+                    statisticsPerPlate.get(cellId).meanResolution += horizPixelScale;
+
+                    int binIdx = (int) Math.floor(horizPixelScale);
+                    statisticsPerPlate.get(cellId).histogram[binIdx] += 1;
+
+                    //System.out.println(horizPixelScale + " " + vertPixelScale + " " + incidence + " " + emission + " " + dist + " " );
 
                     ++numGoodPlates;
 
@@ -208,19 +237,20 @@ public class MSIBestResolutionPerPlate
             System.out.println("\n\n");
 
             if (count % 1000 == 0)
-                saveSingleDataArray("./eros-best-resolutions-per-plate-" + count + ".txt", bestResolutionPerPlate);
+                saveSingleDataArray("./eros-best-resolutions-per-plate-" + count + ".txt", statisticsPerPlate);
+        }
+
+        for (PlateStatistics ps : statisticsPerPlate)
+        {
+            ps.meanResolution /= ps.getNumberOfSamples();
+            ps.medianResolution = ps.getPercentile(0.5);
         }
     }
 
     private static void saveDataArrays() throws IOException
     {
         saveSingleDataArray("./eros-images-with-at-least-one-good-plate.txt", msiFilesWithAtLeastOneGoodPlate);
-        saveSingleDataArray("./eros-best-resolutions-per-plate.txt", bestResolutionPerPlate);
-        saveSingleDataArray("./eros-num-images-less-than-5mpp-per-plate.txt", numImagesResLessThan5mpp);
-        saveSingleDataArray("./eros-num-images-less-than-10mpp-per-plate.txt", numImagesResLessThan10mpp);
-        saveSingleDataArray("./eros-num-images-less-than-50mpp-per-plate.txt", numImagesResLessThan50mpp);
-        saveSingleDataArray("./eros-num-images-less-than-100mpp-per-plate.txt", numImagesResLessThan100mpp);
-        saveSingleDataArray("./eros-num-images-less-than-200mpp-per-plate.txt", numImagesResLessThan200mpp);
+        saveSingleDataArray("./eros-best-resolutions-per-plate.txt", statisticsPerPlate);
     }
 
     private static void saveSingleDataArray(String filename, ArrayList dataarray) throws IOException
@@ -242,12 +272,13 @@ public class MSIBestResolutionPerPlate
      */
     public static void main(String[] args) throws IOException
     {
-        System.setProperty("java.awt.headless", "true");
+        if (!Configuration.isLinux())
+            System.setProperty("java.awt.headless", "true");
         NativeLibraryLoader.loadVtkLibraries();
 
         String msiFileList=args[0];
 
-        erosModel = new ErosThomas(ModelFactory.getModelConfig(ModelFactory.EROS, ModelFactory.THOMAS));
+        erosModel = new Eros(ModelFactory.getModelConfig(ModelFactory.EROS, ModelFactory.GASKELL));
         resolutionLevel = Integer.parseInt(args[1]);
         try {
             erosModel.setModelResolution(resolutionLevel);
@@ -267,8 +298,8 @@ public class MSIBestResolutionPerPlate
 
         try
         {
-            computeBestResolutionPerPlate(msiFiles, ImageSource.PDS);
-            //computeBestResolutionPerPlate(msiFiles, ImageSource.GASKELL);
+            //computeBestResolutionPerPlate(msiFiles, ImageSource.PDS);
+            computeBestResolutionPerPlate(msiFiles, ImageSource.GASKELL);
         }
         catch (Exception e1) {
             e1.printStackTrace();

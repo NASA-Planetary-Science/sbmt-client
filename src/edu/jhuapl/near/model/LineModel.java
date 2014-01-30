@@ -50,6 +50,13 @@ import edu.jhuapl.near.util.Properties;
  */
 public class LineModel extends ControlPointsStructureModel implements PropertyChangeListener
 {
+    public enum Mode
+    {
+        DEFAULT,
+        PROFILE,
+        CLOSED
+    }
+
     private ArrayList<Line> lines = new ArrayList<Line>();
     private vtkPolyData linesPolyData;
     private vtkPolyData activationPolyData;
@@ -68,7 +75,7 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
 
     private vtkPolyData emptyPolyData;
 
-    private boolean profileMode = false;
+    private Mode mode = Mode.DEFAULT;
 
     private double offset;
 
@@ -85,14 +92,19 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
 
     public LineModel(SmallBodyModel smallBodyModel, boolean profileMode)
     {
-        super(ModelNames.LINE_STRUCTURES);
+        this(smallBodyModel, profileMode ? Mode.PROFILE : Mode.DEFAULT, ModelNames.LINE_STRUCTURES);
+    }
+
+    public LineModel(SmallBodyModel smallBodyModel, Mode mode, String name)
+    {
+        super(name);
 
         this.smallBodyModel = smallBodyModel;
-        this.profileMode = profileMode;
+        this.mode = mode;
 
         this.offset = getDefaultOffset();
 
-        if (profileMode)
+        if (hasProfileMode())
             setMaximumVerticesPerLine(2);
 
         this.smallBodyModel.addPropertyChangeListener(this);
@@ -104,7 +116,7 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
 
         lineProperty.SetLineWidth(2.0);
 
-        if (profileMode)
+        if (hasProfileMode())
             lineProperty.SetLineWidth(3.0);
 
         lineActivationActor = new vtkActor();
@@ -140,9 +152,14 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
         actors.add(lineActivationActor);
     }
 
+    protected String getType()
+    {
+        return LINES;
+    }
+
     public Element toXmlDomElement(Document dom)
     {
-        Element rootEle = dom.createElement(LINES);
+        Element rootEle = dom.createElement(getType());
         rootEle.setAttribute(SHAPE_MODEL_NAME, smallBodyModel.getModelName());
 
         for (Line lin : this.lines)
@@ -162,14 +179,15 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
         if (element.hasAttribute(SHAPE_MODEL_NAME))
             shapeModelName= element.getAttribute(SHAPE_MODEL_NAME);
 
-        NodeList nl = element.getElementsByTagName(Line.PATH);
+        Line dummyLine = (Line) createStructure(smallBodyModel);
+        NodeList nl = element.getElementsByTagName(dummyLine.getType());
         if(nl != null && nl.getLength() > 0)
         {
             for(int i = 0 ; i < nl.getLength();i++)
             {
                 Element el = (Element)nl.item(i);
 
-                Line lin = new Line(smallBodyModel);
+                Line lin = (Line)createStructure(smallBodyModel);
 
                 lin.fromXmlDomElement(el, shapeModelName, append);
 
@@ -181,7 +199,7 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
-    private void updatePolyData()
+    protected void updatePolyData()
     {
         linesPolyData.DeepCopy(emptyPolyData);
         vtkPoints points = linesPolyData.GetPoints();
@@ -293,85 +311,40 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
         int numberOfPoints = 0;
         for (Line lin : this.lines)
         {
-            numberOfPoints += lin.lat.size();
+            numberOfPoints += lin.controlPoints.size();
         }
         return numberOfPoints;
     }
 
-    /*
-    public void addNewLine(double[] pt1, double[] pt2)
-    {
-        LatLon ll1 = Spice.reclat(pt1);
-        LatLon ll2 = Spice.reclat(pt2);
-
-        Line lin = new Line();
-        lin.lat.add(ll1.lat);
-        lin.lon.add(ll1.lon);
-        lin.rad.add(ll1.rad);
-        lin.lat.add(ll2.lat);
-        lin.lon.add(ll2.lon);
-        lin.rad.add(ll2.rad);
-
-        lin.xyzPointList.add(new Point3D(pt1));
-        lin.xyzPointList.add(new Point3D(pt2));
-        lin.controlPointIds.add(0);
-        lin.controlPointIds.add(1);
-        lin.updateSegment(smallBodyModel, 0);
-        lines.add(lin);
-
-        updatePolyData();
-
-        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-    }
-    */
-
     public void addNewStructure()
     {
-        Line lin = new Line(smallBodyModel);
+        Line lin = (Line)createStructure(smallBodyModel);
         lines.add(lin);
         activateStructure(lines.size()-1);
         this.pcs.firePropertyChange(Properties.STRUCTURE_ADDED, null, null);
     }
 
-    /*
-    public void addNewLine(double[] pt1)
-    {
-        LatLon ll1 = Spice.reclat(pt1);
-
-        Line lin = new Line();
-        lin.lat.add(ll1.lat);
-        lin.lon.add(ll1.lon);
-        lin.rad.add(ll1.rad);
-
-        lin.xyzPointList.add(new Point3D(pt1));
-        lin.controlPointIds.add(0);
-        lines.add(lin);
-
-        updatePolyData();
-
-        activateLine(lines.size()-1);
-    }
-    */
-
     public void updateActivatedStructureVertex(int vertexId, double[] newPoint)
     {
         Line lin = lines.get(activatedLine);
 
-        int numVertices = lin.lat.size();
+        int numVertices = lin.controlPoints.size();
 
         LatLon ll = MathUtil.reclat(newPoint);
-        lin.lat.set(vertexId, ll.lat);
-        lin.lon.set(vertexId, ll.lon);
-        lin.rad.set(vertexId, ll.rad);
+        lin.controlPoints.set(vertexId, ll);
 
         // If we're modifying the last vertex
         if (vertexId == numVertices - 1)
         {
             lin.updateSegment(vertexId-1);
+            if (mode == Mode.CLOSED)
+                lin.updateSegment(vertexId);
         }
         // If we're modifying the first vertex
         else if (vertexId == 0)
         {
+            if (mode == Mode.CLOSED)
+                lin.updateSegment(numVertices-1);
             lin.updateSegment(vertexId);
         }
         // If we're modifying a middle vertex
@@ -389,65 +362,6 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
         this.pcs.firePropertyChange(Properties.VERTEX_POSITION_CHANGED, null, activatedLine);
     }
 
-    /*
-    public void addVertexToLine(int cellId, double[] newPoint)
-    {
-        Line lin = lines.get(cellId);
-        LatLon ll = Spice.reclat(newPoint);
-
-        // If the added point is the same as the current last point, return doing nothing.
-        System.out.println(lin.lat.size());
-        int lastIdx = lin.lat.size() - 1;
-        int prevIdx = lin.lat.size() - 2;
-
-        System.out.println(new LatLon(lin.lat.get(lastIdx), lin.lon.get(lastIdx), lin.rad.get(lastIdx)));
-        System.out.println(new LatLon(lin.lat.get(prevIdx), lin.lon.get(prevIdx), lin.rad.get(prevIdx)));
-
-        if (prevIdx >= 0 &&
-            Math.abs(lin.lat.get(prevIdx) - lin.lat.get(lastIdx)) < 1e-8 &&
-            Math.abs(lin.lon.get(prevIdx) - lin.lon.get(lastIdx)) < 1e-8 &&
-            Math.abs(lin.rad.get(prevIdx) - lin.rad.get(lastIdx)) < 1e-8)
-        {
-            System.out.println("Warning: new vertex same as last vertex");
-//            return;
-        }
-
-        lin.lat.add(ll.lat);
-        lin.lon.add(ll.lon);
-        lin.rad.add(ll.rad);
-
-        lin.xyzPointList.add(new Point3D(newPoint));
-        lin.controlPointIds.add(lin.xyzPointList.size()-1);
-
-        updatePolyData();
-        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-    }
-    */
-
-    /*
-    public void addVertexToActivatedLine(double[] newPoint)
-    {
-        Line lin = lines.get(activatedLine);
-        LatLon ll = Spice.reclat(newPoint);
-
-        lin.lat.add(ll.lat);
-        lin.lon.add(ll.lon);
-        lin.rad.add(ll.rad);
-
-        lin.xyzPointList.add(new Point3D(newPoint));
-        lin.controlPointIds.add(lin.xyzPointList.size()-1);
-
-        if (lin.controlPointIds.size() >= 2)
-            lin.updateSegment(lin.lat.size()-2);
-
-        updatePolyData();
-
-        updateLineActivation();
-
-        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-    }
-     */
-
     public void insertVertexIntoActivatedStructure(double[] newPoint)
     {
         if (activatedLine < 0)
@@ -463,9 +377,7 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
 
         LatLon ll = MathUtil.reclat(newPoint);
 
-        lin.lat.add(currentLineVertex+1, ll.lat);
-        lin.lon.add(currentLineVertex+1, ll.lon);
-        lin.rad.add(currentLineVertex+1, ll.rad);
+        lin.controlPoints.add(currentLineVertex+1, ll);
 
         // Remove points BETWEEN the 2 control points (If we're adding a point in the middle)
         if (currentLineVertex < lin.controlPointIds.size()-1)
@@ -507,6 +419,8 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
             else
             {
                 lin.updateSegment(currentLineVertex);
+                if (mode == Mode.CLOSED)
+                    lin.updateSegment(currentLineVertex+1);
             }
         }
 
@@ -530,15 +444,17 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
 
         int vertexId = currentLineVertex;
 
-        lin.lat.remove(vertexId);
-        lin.lon.remove(vertexId);
-        lin.rad.remove(vertexId);
+        lin.controlPoints.remove(vertexId);
 
+        // If not in CLOSED mode:
         // If one of the end points is being removed, then we only need to remove the line connecting the
         // end point to the adjacent point. If we're removing a non-end point, we need to remove the line
         // segments connecting the 2 adjacent control points and in addition, we need to draw a new line
         // connecting the 2 adjacent control points.
-        // Remove points BETWEEN the 2 adjacent control points (If we're removing a point in the middle)
+        //
+        // But if in CLOSED mode:
+        // We always need to remove 2 adjacent segments to the control point that was removed and draw a
+        // new line connecting the 2 adjacent control point.
         if (lin.controlPointIds.size() > 1)
         {
             // Remove initial point
@@ -554,10 +470,33 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
 
                 for (int i=0; i<lin.controlPointIds.size(); ++i)
                     lin.controlPointIds.set(i, lin.controlPointIds.get(i) - numberPointsRemoved);
+
+                if (mode == Mode.CLOSED)
+                {
+                    int id = lin.controlPointIds.get(lin.controlPointIds.size()-1);
+                    numberPointsRemoved = lin.xyzPointList.size()-id-1;;
+                    for (int i=0; i<numberPointsRemoved; ++i)
+                    {
+                        lin.xyzPointList.remove(id+1);
+                    }
+
+                    // redraw segment connecting last point to first
+                    lin.updateSegment(lin.controlPointIds.size()-1);
+                }
             }
             // Remove final point
             else if (vertexId == lin.controlPointIds.size()-1)
             {
+                if (mode == Mode.CLOSED)
+                {
+                    int id = lin.controlPointIds.get(lin.controlPointIds.size()-1);
+                    int numberPointsRemoved = lin.xyzPointList.size()-id-1;;
+                    for (int i=0; i<numberPointsRemoved; ++i)
+                    {
+                        lin.xyzPointList.remove(id+1);
+                    }
+                }
+
                 int id1 = lin.controlPointIds.get(vertexId-1);
                 int id2 = lin.controlPointIds.get(vertexId);
                 int numberPointsRemoved = id2-id1;
@@ -566,10 +505,17 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
                     lin.xyzPointList.remove(id1+1);
                 }
                 lin.controlPointIds.remove(vertexId);
+
+                if (mode == Mode.CLOSED)
+                {
+                    // redraw segment connecting last point to first
+                    lin.updateSegment(lin.controlPointIds.size()-1);
+                }
             }
             // Remove a middle point
             else
             {
+                // Remove points BETWEEN the 2 adjacent control points
                 int id1 = lin.controlPointIds.get(vertexId-1);
                 int id2 = lin.controlPointIds.get(vertexId+1);
                 int numberPointsRemoved = id2-id1-1;
@@ -609,7 +555,7 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
 
         updatePolyData();
 
-        if (profileMode)
+        if (hasProfileMode())
             updateLineActivation();
 
         if (cellId == activatedLine)
@@ -634,7 +580,7 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
 
         updatePolyData();
 
-        if (profileMode)
+        if (hasProfileMode())
             updateLineActivation();
 
         if (Arrays.binarySearch(indices, activatedLine) < 0)
@@ -649,7 +595,7 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
 
         updatePolyData();
 
-        if (profileMode)
+        if (hasProfileMode())
             updateLineActivation();
 
         activateStructure(-1);
@@ -667,7 +613,7 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
 
     protected void updateLineActivation()
     {
-        if (profileMode)
+        if (hasProfileMode())
         {
             activationPolyData.DeepCopy(emptyPolyData);
             vtkPoints points = activationPolyData.GetPoints();
@@ -789,7 +735,7 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
         //get the root element
         Element docEle = dom.getDocumentElement();
 
-        if (LineModel.LINES.equals(docEle.getTagName()))
+        if (getType().equals(docEle.getTagName()))
             fromXmlDomElement(docEle, append);
     }
 
@@ -867,6 +813,9 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
 
             for (int i=0; i<lin.controlPointIds.size()-1; ++i)
                 lin.updateSegment(i);
+
+            if (mode == Mode.CLOSED)
+                lin.updateSegment(lin.controlPoints.size()-1);
         }
 
         updatePolyData();
@@ -908,7 +857,7 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
 
     public boolean hasProfileMode()
     {
-        return profileMode;
+        return mode == Mode.PROFILE;
     }
 
     /**
@@ -1267,5 +1216,10 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
     public double[] getStructureCenter(int id)
     {
         return lines.get(id).getCentroid();
+    }
+
+    protected StructureModel.Structure createStructure(SmallBodyModel smallBodyModel)
+    {
+        return new Line(smallBodyModel);
     }
 }

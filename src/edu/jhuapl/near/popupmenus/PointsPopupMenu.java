@@ -9,6 +9,6 @@ public class PointsPopupMenu extends StructuresPopupMenu
 {
     public PointsPopupMenu(ModelManager modelManager, Renderer renderer)
     {
-        super((PointModel)modelManager.getModel(ModelNames.POINT_STRUCTURES), renderer, true, false);
+        super((PointModel)modelManager.getModel(ModelNames.POINT_STRUCTURES), renderer, true, false, false);
     }
 }

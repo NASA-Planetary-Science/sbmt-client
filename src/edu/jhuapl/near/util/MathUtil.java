@@ -615,4 +615,12 @@ public class MathUtil
         return Float.intBitsToFloat(intValue);
     }
 
+    /**
+     * Given 2 points (x0,y0) and (x1,y1) find y at x along line that connects the 2 points.
+     */
+    static public double linearInterpolate2Points(double x0, double y0, double x1, double y1, double x)
+    {
+        double y = y0 + ((y1-y0)*(x-x0)/(x1-x0));
+        return y;
+    }
 }
