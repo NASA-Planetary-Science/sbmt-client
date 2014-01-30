@@ -167,6 +167,12 @@ public class Line extends StructureModel.Structure
             ++count;
         }
 
+        if (closed)
+        {
+            // In CLOSED mode need to add segment connecting final point to initial point
+            this.updateSegment(controlPointIds.size()-1);
+        }
+
         tmp = element.getAttribute(COLOR);
         if (tmp.length() == 0)
             return;
