@@ -93,7 +93,7 @@ public class Line extends StructureModel.Structure
 
     public Element toXmlDomElement(Document dom)
     {
-        Element linEle = dom.createElement(PATH);
+        Element linEle = dom.createElement(getType());
         linEle.setAttribute(ID, String.valueOf(id));
         linEle.setAttribute(NAME, name);
         linEle.setAttribute(LENGTH, String.valueOf(getPathLength()));
