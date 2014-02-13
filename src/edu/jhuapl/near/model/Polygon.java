@@ -1,5 +1,8 @@
 package edu.jhuapl.near.model;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
 import vtk.vtkPolyData;
 
 import edu.jhuapl.near.util.PolyDataUtil;
@@ -12,6 +15,7 @@ public class Polygon extends Line
     private boolean showInterior = false;
 
     public static final String POLYGON = "polygon";
+    public static final String AREA = "area";
 
     public Polygon(SmallBodyModel smallBodyModel)
     {
@@ -58,5 +62,21 @@ public class Polygon extends Line
     public boolean isShowInterior()
     {
         return showInterior;
+    }
+
+    @Override
+    public Element toXmlDomElement(Document dom)
+    {
+        Element element = super.toXmlDomElement(dom);
+        element.setAttribute(AREA, String.valueOf(surfaceArea));
+        return element;
+    }
+
+    @Override
+    public void fromXmlDomElement(Element element, String shapeModelName,
+            boolean append)
+    {
+        super.fromXmlDomElement(element, shapeModelName, append);
+        surfaceArea = Double.parseDouble(element.getAttribute(AREA));
     }
 }
