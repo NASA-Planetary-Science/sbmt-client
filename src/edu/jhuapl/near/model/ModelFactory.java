@@ -601,8 +601,8 @@ public class ModelFactory
                 "VIS, Red",
         };
         c.imageSearchUserDefinedCheckBoxesNames = new String[]{"Viking Orbiter 1-A", "Viking Orbiter 1-B", "Viking Orbiter 2-A", "Viking Orbiter 2-B", "MEX HRSC"};
-        c.imageSearchDefaultMaxSpacecraftDistance = 9000.0;
-        c.imageSearchDefaultMaxResolution = 300.0;
+        c.imageSearchDefaultMaxSpacecraftDistance = 30000.0;
+        c.imageSearchDefaultMaxResolution = 800.0;
         c.imageSearchImageSources = new ImageSource[]{ImageSource.PDS, ImageSource.CORRECTED};
         c.imageType = ImageType.DEIMOS_IMAGE;
         c.imageInstrumentName = IMAGING_DATA;
