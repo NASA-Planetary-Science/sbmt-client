@@ -77,6 +77,9 @@ public class Polygon extends Line
             boolean append)
     {
         super.fromXmlDomElement(element, shapeModelName, append);
-        surfaceArea = Double.parseDouble(element.getAttribute(AREA));
+        if (element.hasAttribute(AREA))
+            surfaceArea = Double.parseDouble(element.getAttribute(AREA));
+        else
+            surfaceArea = 0.0;
     }
 }
