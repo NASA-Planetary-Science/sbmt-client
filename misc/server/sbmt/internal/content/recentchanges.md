@@ -4,6 +4,43 @@
 
 # Recent Changes
 
+### February 14, 2014
+
+-   When saving out polygons to file, area is now written out as
+    well. Note though that if the area was not already computed by
+    right-clicking on a polygon and clicking "Display Interior" then
+    zero is written out. Thus you must for click "Display Interior"
+    for a polygon for the correct area to be saved to the file. Also,
+    when loading polygons from a file, the area saved in the file is
+    displayed in the table (even though "Display Interior" has not been
+    clicked.
+-   Deimos images are now indexed in the database so that search options
+    work now.
+
+### January 30, 2014
+
+-   Fixed performance issue when drawing large polygons which still
+    remained in previous release. Drawing polygons should now be as
+    fast as drawing paths, even with polygons with hundreds of
+    vertices. Displaying the interior of polygons with many vertices
+    is still very slow though.
+-   Fixed bug in which popup menu would not appear when right-clicking
+    on paths.
+
+### January 28, 2014
+
+-   Improved performance somewhat when drawing large polygon
+    structures. By default interior of polygon is now not
+    displayed. To display the interior, right-click on a polygon and
+    select "Display Interior". At this point, the area of the polygon
+    will be calculated and shown in the table. As soon as you start
+    editing again, the interior of the polygon will no longer be shown
+    and will only reappear if you click "Display Interior"
+    again. Performance still degrades with large polygons but is not
+    as bad as previously. We hope to improve this further in the near
+    future.
+
+
 ### December 26, 2013
 
 -   Fixed problem which prevented importing custom plate data for custom
@@ -33,7 +70,7 @@
     orientation axes such as the color, size, font size and color,
     thickness, and cone (tip) size and radius.
 -   Added option in Camera dialog (available in File menu) for using
-    orthographic projection in renderer (previoulsy only perspective
+    orthographic projection in renderer (previously only perspective
     projection was supported).
 
 
@@ -99,7 +136,7 @@
 -   When saving out profile of a path (i.e. when right-clicking on a
     path with only 2 control points and clicking "Save Profile..." in
     the popup menu), now cartesian coordinates,
-    latitute/longitude/radius, and all plate data (as listed in the
+    latitude/longitude/radius, and all plate data (as listed in the
     leftmost tab in the Plate Coloring section) along the profile are
     saved out to separate columns in a CSV file.
 -   Changed scale bar in renderer to have black text on white background
@@ -110,8 +147,8 @@
 
 ### June 6, 2013
 
--   Added MEX HRSC images (framing camera only) for phobos using SPICE
-    pointing data. In the Imaging tab for phobos, in the source drop
+-   Added MEX HRSC images (framing camera only) for Phobos using SPICE
+    pointing data. In the Imaging tab for Phobos, in the source drop
     down menu, select "PDS derived" and just click search and you'll
     see a list of 1655 images (these images are not indexed in the
     database so the other search options do not work). Unfortunately,
