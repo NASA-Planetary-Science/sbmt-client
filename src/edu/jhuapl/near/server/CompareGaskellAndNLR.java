@@ -73,8 +73,14 @@ import edu.jhuapl.near.util.NativeLibraryLoader;
  *
  * Olivier wrote:
  *
- * Its different. NLR is not boresighted with MSI, but comes out of  pixel 260/220.
+ * Its different. NLR is not boresighted with MSI, but comes out of pixel 260/220.
  * So no - boresight will not work.
+ *
+ * Olivier wrote asking to run it using 4 neighboring pixels to pixel 260/220:
+ *
+ * In the meanwhile take four pixels neighboring the 260-220 pixel. And send the files.
+ * Should give me an idea if the largish offset I'm measuring is just because of where
+ * we think the lidar is in Msi.
  *
  */
 public class CompareGaskellAndNLR
@@ -266,6 +272,85 @@ public class CompareGaskellAndNLR
         }
     }
 
+    static void doComparison(
+            ArrayList<String> msiFiles,
+            SmallBodyModel smallBodyModel,
+            String resultsFilename,
+            int sampleOffset,
+            int lineOffset
+            ) throws IOException, FitsException
+    {
+        FileWriter fstream = new FileWriter(resultsFilename);
+        BufferedWriter out = new BufferedWriter(fstream);
+
+        out.write("Image ID,Image Range (km),Lidar Range (km),Image Time (UTC), Lidar Time (UTC), Range Diff (km), Time Diff (sec), X-image (km), Y-image (km), Z-image (km), X-lidar (km), Y-lidar (km), Z-lidar (km)\n");
+
+        int count = 1;
+        for (String filename : msiFiles)
+        {
+            System.out.println("starting msi " + (count++) + " / " + msiFiles.size() + " " + filename + "\n");
+
+            File origFile = new File(filename);
+
+            // If the sumfile has no landmarks, then ignore it. Sumfiles that have no landmarks
+            // are 1153 bytes long or less
+            if (origFile.length() <= 1153)
+                continue;
+
+            File rootFolder = origFile.getParentFile().getParentFile().getParentFile().getParentFile().getParentFile();
+            String keyName = origFile.getAbsolutePath().replace(rootFolder.getAbsolutePath(), "");
+            ImageKey key = new ImageKey(keyName, ImageSource.GASKELL);
+            MSIImage image = new MSIImage(key, smallBodyModel, true, rootFolder);
+
+            String startTimeStr = image.getStartTime();
+            String stopTimeStr = image.getStopTime();
+
+            double startTime = new DateTime(startTimeStr, DateTimeZone.UTC).getMillis();
+            double stopTime = new DateTime(stopTimeStr, DateTimeZone.UTC).getMillis();
+
+            long time = (long) (startTime + ((stopTime - startTime) / 2.0));
+
+            DateTime dt = new DateTime(time, DateTimeZone.UTC);
+            String imageTime = fmt.print(dt);
+
+            LidarPoint lidarPoint = getClosestLidarPoint(time);
+            LidarPoint[] lidarPoints = get2ClosestLidarPoints(time);
+
+            String imageId = new File(key.name).getName();
+            imageId = imageId.substring(0, imageId.length()-4);
+
+            double[] scPos = image.getSpacecraftPosition();
+            double[] imageSurfacePoint = image.getPixelSurfaceIntercept(259 + sampleOffset, 411 - (219 + lineOffset));
+
+            double lidarRange = lidarPoint.range;
+            if (lidarPoints.length == 2)
+            {
+                lidarRange = MathUtil.linearInterpolate2Points(
+                        lidarPoints[0].time, lidarPoints[0].range,
+                        lidarPoints[1].time, lidarPoints[1].range,
+                        time);
+            }
+
+            if (imageSurfacePoint != null)
+            {
+                double imageRange = MathUtil.distanceBetween(scPos, imageSurfacePoint);
+
+                out.write(imageId + "," + imageRange + "," + lidarRange + "," + imageTime + "," + lidarPoint.getFormattedTime()
+                        + "," + (Math.abs(imageRange-lidarRange)) + "," + ((double)Math.abs(time - lidarPoint.time)/1000.0) + ","
+                        + imageSurfacePoint[0] + "," + imageSurfacePoint[1] + "," + imageSurfacePoint[2] + ","
+                        + lidarPoint.point[0] + "," + lidarPoint.point[1] + "," + lidarPoint.point[2] + "\n");
+            }
+            else
+            {
+                out.write(imageId + "," + "NA" + "," + lidarRange + "," + imageTime + "," + lidarPoint.getFormattedTime()
+                        + "," + "NA" + "," + ((double)Math.abs(time - lidarPoint.time)/1000.0) + ",NA,NA,NA,"
+                + lidarPoint.point[0] + "," + lidarPoint.point[1] + "," + lidarPoint.point[2] + "\n");
+            }
+        }
+
+        out.close();
+    }
+
     public static void main(String[] args) throws IOException, FitsException
     {
         System.setProperty("java.awt.headless", "true");
@@ -301,74 +386,10 @@ public class CompareGaskellAndNLR
 
         PerspectiveImage.setFootprintIsOnLocalDisk(true);
 
-        FileWriter fstream = new FileWriter("results.csv");
-        BufferedWriter out = new BufferedWriter(fstream);
-
-        out.write("Image ID,Image Range (km),Lidar Range (km),Image Time (UTC), Lidar Time (UTC), Range Diff (km), Time Diff (sec), X-image (km), Y-image (km), Z-image (km), X-lidar (km), Y-lidar (km), Z-lidar (km)\n");
-
-        count = 1;
-        for (String filename : msiFiles)
-        {
-            System.out.println("starting msi " + (count++) + " / " + msiFiles.size() + " " + filename + "\n");
-
-            File origFile = new File(filename);
-
-            // If the sumfile has no landmarks, then ignore it. Sumfiles that have no landmarks
-            // are 1153 bytes long or less
-            if (origFile.length() <= 1153)
-                continue;
-
-            File rootFolder = origFile.getParentFile().getParentFile().getParentFile().getParentFile().getParentFile();
-            String keyName = origFile.getAbsolutePath().replace(rootFolder.getAbsolutePath(), "");
-            ImageKey key = new ImageKey(keyName, ImageSource.GASKELL);
-            MSIImage image = new MSIImage(key, smallBodyModel, true, rootFolder);
-
-            String startTimeStr = image.getStartTime();
-            String stopTimeStr = image.getStopTime();
-
-            double startTime = new DateTime(startTimeStr, DateTimeZone.UTC).getMillis();
-            double stopTime = new DateTime(stopTimeStr, DateTimeZone.UTC).getMillis();
-
-            long time = (long) (startTime + ((stopTime - startTime) / 2.0));
-
-            DateTime dt = new DateTime(time, DateTimeZone.UTC);
-            String imageTime = fmt.print(dt);
-
-            LidarPoint lidarPoint = getClosestLidarPoint(time);
-            LidarPoint[] lidarPoints = get2ClosestLidarPoints(time);
-
-            String imageId = new File(key.name).getName();
-            imageId = imageId.substring(0, imageId.length()-4);
-
-            double[] scPos = image.getSpacecraftPosition();
-            double[] imageSurfacePoint = image.getPixelSurfaceIntercept(259, 411-219);
-
-            double lidarRange = lidarPoint.range;
-            if (lidarPoints.length == 2)
-            {
-                lidarRange = MathUtil.linearInterpolate2Points(
-                        lidarPoints[0].time, lidarPoints[0].range,
-                        lidarPoints[1].time, lidarPoints[1].range,
-                        time);
-            }
-
-            if (imageSurfacePoint != null)
-            {
-                double imageRange = MathUtil.distanceBetween(scPos, imageSurfacePoint);
-
-                out.write(imageId + "," + imageRange + "," + lidarRange + "," + imageTime + "," + lidarPoint.getFormattedTime()
-                        + "," + (Math.abs(imageRange-lidarRange)) + "," + ((double)Math.abs(time - lidarPoint.time)/1000.0) + ","
-                        + imageSurfacePoint[0] + "," + imageSurfacePoint[1] + "," + imageSurfacePoint[2] + ","
-                        + lidarPoint.point[0] + "," + lidarPoint.point[1] + "," + lidarPoint.point[2] + "\n");
-            }
-            else
-            {
-                out.write(imageId + "," + "NA" + "," + lidarRange + "," + imageTime + "," + lidarPoint.getFormattedTime()
-                        + "," + "NA" + "," + ((double)Math.abs(time - lidarPoint.time)/1000.0) + ",NA,NA,NA,"
-                + lidarPoint.point[0] + "," + lidarPoint.point[1] + "," + lidarPoint.point[2] + "\n");
-            }
-        }
-
-        out.close();
+        doComparison(msiFiles, smallBodyModel, "results-260-220.csv", 0, 0);
+        doComparison(msiFiles, smallBodyModel, "results-260-221.csv", 0, 1);
+        doComparison(msiFiles, smallBodyModel, "results-260-219.csv", 0, -1);
+        doComparison(msiFiles, smallBodyModel, "results-259-220.csv", 1, 0);
+        doComparison(msiFiles, smallBodyModel, "results-261-220.csv", -1, 0);
     }
 }
