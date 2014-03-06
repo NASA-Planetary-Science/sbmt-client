@@ -12,11 +12,13 @@ import java.util.ArrayList;
 import vtk.vtkCellArray;
 import vtk.vtkDataArray;
 import vtk.vtkFloatArray;
+import vtk.vtkGenericCell;
 import vtk.vtkIdList;
 import vtk.vtkPointDataToCellData;
 import vtk.vtkPoints;
 import vtk.vtkPolyData;
 import vtk.vtkPolyDataNormals;
+import vtk.vtksbCellLocator;
 
 import edu.jhuapl.near.util.MathUtil;
 import edu.jhuapl.near.util.Point3D;
@@ -39,6 +41,8 @@ public class DEMModel extends SmallBodyModel
     private int startPixel;
     private double[] centerOfDEM = null;
     private double[] normalOfDEM = null;
+    private vtksbCellLocator boundaryLocator;
+    private vtkGenericCell genericCell;
 
     public DEMModel(String filename, String lblfilename) throws IOException
     {
@@ -334,15 +338,43 @@ public class DEMModel extends SmallBodyModel
         in.close();
     }
 
+    private double getDistanceToBoundary(double[] point)
+    {
+        if (boundaryLocator == null)
+        {
+            boundaryLocator = new vtksbCellLocator();
+            boundaryLocator.FreeSearchStructure();
+            boundaryLocator.SetDataSet(boundary);
+            boundaryLocator.CacheCellBoundsOn();
+            boundaryLocator.AutomaticOn();
+            //boundaryLocator.SetMaxLevel(10);
+            //boundaryLocator.SetNumberOfCellsPerNode(5);
+            boundaryLocator.BuildLocator();
+
+            genericCell = new vtkGenericCell();
+        }
+
+        double[] closestPoint = new double[3];
+        int[] cellId = new int[1];
+        int[] subId = new int[1];
+        double[] dist2 = new double[1];
+
+        boundaryLocator.FindClosestPoint(point, closestPoint, genericCell, cellId, subId, dist2);
+
+        return MathUtil.distanceBetween(point, closestPoint);
+    }
+
     /**
      * Return whether or not point is inside the DEM. By "inside the DEM" we
      * mean that the point is displaced parallel to the mean normal vector of the
      * DEM, it will intersect the DEM.
      *
      * @param point
+     * @param minDistanceToBoundary only consider point inside if it is minDistanceToBoundary
+     *        or greater away from the boundary
      * @return
      */
-    public boolean isPointWithinDEM(double[] point)
+    public boolean isPointWithinDEM(double[] point, double minDistanceToBoundary)
     {
         // Take the point and using the normal vector, form a line parallel
         // to the normal vector which passes through the given point.
@@ -366,7 +398,10 @@ public class DEMModel extends SmallBodyModel
         double[] intersectPoint = new double[3];
         int cellId = computeRayIntersection(origin, direction, intersectPoint );
 
-        return cellId >= 0;
+        if (cellId >= 0 && getDistanceToBoundary(intersectPoint) >= minDistanceToBoundary)
+            return true;
+        else
+            return false;
     }
 
     /**

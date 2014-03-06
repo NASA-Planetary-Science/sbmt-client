@@ -25,9 +25,9 @@ public class SearchLidarDataInsideMapmakerCube
     {
         System.setProperty("java.awt.headless", "true");
 
-        if (args.length != 6)
+        if (args.length != 7)
         {
-            System.out.println("Usage: SearchLidarDataInsideMapmakerCube <cube-file> <start-date> <end-date> <min-track-size> <track-separation-time> <output-folder>");
+            System.out.println("Usage: SearchLidarDataInsideMapmakerCube <cube-file> <start-date> <end-date> <min-track-size> <track-separation-time> <min_distance-from-boundary> <output-folder>");
             System.exit(0);
         }
 
@@ -36,6 +36,7 @@ public class SearchLidarDataInsideMapmakerCube
         DateTime endDate = new DateTime(args[2]);
         int minTrackLength = 10;
         double timeSeparationBetweenTracks = 10.0;
+        double minDistanceFromBoundary = 1.0;
 
         try
         {
@@ -70,7 +71,23 @@ public class SearchLidarDataInsideMapmakerCube
             System.exit(1);
         }
 
-        File outputFolder = new File(args[5]);
+        try
+        {
+            minDistanceFromBoundary = Double.parseDouble(args[5]);
+
+            if (minDistanceFromBoundary < 0.0)
+            {
+                System.out.println("Error: Minimum distance from boundary nonnegative.");
+                System.exit(1);
+            }
+        }
+        catch(NumberFormatException e)
+        {
+            System.out.println("An error occurred parsing the minimum distance from boundary.");
+            System.exit(1);
+        }
+
+        File outputFolder = new File(args[6]);
 
         NativeLibraryLoader.loadVtkLibraries();
 
@@ -106,7 +123,7 @@ public class SearchLidarDataInsideMapmakerCube
                     startDate,
                     endDate,
                     cubeList,
-                    new PointInDEMChecker(dem),
+                    new PointInDEMChecker(dem, minDistanceFromBoundary),
                     Math.round(1000.0*timeSeparationBetweenTracks), // convert to milliseconds
                     minTrackLength);
 

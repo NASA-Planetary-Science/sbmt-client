@@ -98,32 +98,32 @@ def runMapmakerAtLonLat(lon, lat, mapmakerFolder, mapmakerCommand):
 
     # extract out the boundary of the maplet into a separate VTK so we can view the coverage of the maplets in the SBMT
     boundaryFile = name+"/"+name+"-boundary.vtk"
-    command = "./convert-mapmaker-cube -vtk -boundary " + cubeFile + " " + boundaryFile
+    command = "run_java_program.sh edu.jhuapl.near.server.ConvertGaskellMapmakerCube -vtk -boundary " + cubeFile + " " + boundaryFile
     print command
     os.system(command)
 
     # convert the cube file to VTK format since this format is required by the lidar-opt script
     cubeFileVtk = name+"/"+name+".vtk"
-    command = "./convert-mapmaker-cube -vtk " + cubeFile + " " + cubeFileVtk
+    command = "run_java_program.sh edu.jhuapl.near.server.ConvertGaskellMapmakerCube -vtk " + cubeFile + " " + cubeFileVtk
     print command
     os.system(command)
 
     # convert the cube file to VTK format but decimate it so we can combine all the cubes together
     decimatedFileVtk = name+"/"+name+"-decimated.vtk"
-    command = "./convert-mapmaker-cube -vtk -decimate " + cubeFile + " " + decimatedFileVtk
+    command = "run_java_program.sh edu.jhuapl.near.server.ConvertGaskellMapmakerCube -vtk -decimate " + cubeFile + " " + decimatedFileVtk
     print command
     os.system(command)
 
     # get all tracks inside cube
     tracksDir = name + "/tracks"
     os.mkdir(tracksDir)
-    command = "./search-lidar " + cubeFile + " 1900-01-01 2100-01-01 100 10 " + tracksDir
+    command = "run_java_program.sh edu.jhuapl.near.server.SearchLidarDataInsideMapmakerCube " + cubeFile + " 1900-01-01 2100-01-01 100 10 1 " + tracksDir
     print command
     os.system(command)
 
     # Optimize these tracks
     trackFiles = glob.glob(tracksDir + "/*.txt")
-    command = "./lidar-opt.py " + cubeFileVtk + " " + " ".join(trackFiles) + " > /dev/null 2>&1"
+    command = "lidar-opt.py " + cubeFileVtk + " " + " ".join(trackFiles) + " > /dev/null 2>&1"
     print command
     os.system(command)
 
@@ -139,6 +139,9 @@ def runMapmakerAtAllLonLat(lonLat, numJobs, mapmakerFolder, mapmakerCommand):
 
 mapmakerFolder = os.environ["HOME"] + "/.neartool/cache/2/GASKELL/EROS/mapmaker"
 os.environ["PATH"] = mapmakerFolder + "/EXECUTABLES:" + os.environ["PATH"]
+os.environ["PATH"] = os.environ["SBMT_ROOT"] + "/misc/programs/general/lidar:" + os.environ["PATH"]
+os.environ["PATH"] = os.environ["SBMT_ROOT"] + "/misc/programs/general/build:" + os.environ["PATH"]
+os.environ["PATH"] = os.environ["SBMT_ROOT"] + "/misc/scripts:" + os.environ["PATH"]
 if "darwin" in sys.platform:
     os.environ["DYLD_LIBRARY_PATH"] = mapmakerFolder + "/EXECUTABLES:"
     mapmakerCommand = "MAPMAKERO.macosx"
