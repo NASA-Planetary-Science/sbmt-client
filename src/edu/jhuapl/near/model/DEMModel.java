@@ -1,13 +1,11 @@
 package edu.jhuapl.near.model;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.DataInputStream;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
+
+import nom.tam.fits.BasicHDU;
+import nom.tam.fits.Fits;
+import nom.tam.fits.FitsException;
 
 import vtk.vtkCellArray;
 import vtk.vtkDataArray;
@@ -26,8 +24,6 @@ import edu.jhuapl.near.util.PolyDataUtil;
 
 public class DEMModel extends SmallBodyModel
 {
-    private static final int MAX_WIDTH = 1027;
-    private static final int MAX_HEIGHT = 1027;
     private static final float INVALID_VALUE = -1.0e38f;
     private vtkIdList idList;
     private vtkPolyData dem;
@@ -36,15 +32,12 @@ public class DEMModel extends SmallBodyModel
     private vtkFloatArray heightsGravity; // per cell
     private vtkFloatArray heightsPlane; // per cell
     private vtkFloatArray slopes; // per cell
-    private int liveSize;
-    //private int height;
-    private int startPixel;
     private double[] centerOfDEM = null;
     private double[] normalOfDEM = null;
     private vtksbCellLocator boundaryLocator;
     private vtkGenericCell genericCell;
 
-    public DEMModel(String filename, String lblfilename) throws IOException
+    public DEMModel(String filename) throws IOException, FitsException
     {
         idList = new vtkIdList();
         dem = new vtkPolyData();
@@ -54,7 +47,7 @@ public class DEMModel extends SmallBodyModel
         heightsPlane = new vtkFloatArray();
         slopes = new vtkFloatArray();
 
-        initializeDEM(filename, lblfilename);
+        initializeDEM(filename);
 
         vtkFloatArray[] coloringValues =
         {
@@ -74,93 +67,79 @@ public class DEMModel extends SmallBodyModel
         setColoringIndex(0);
     }
 
-    private vtkPolyData initializeDEM(String filename, String lblfilename) throws IOException
+    private vtkPolyData initializeDEM(String filename) throws IOException, FitsException
     {
-        loadLblFile(lblfilename);
-
         vtkPoints points = new vtkPoints();
         vtkCellArray polys = new vtkCellArray();
-        //vtkFloatArray heights = new vtkFloatArray();
         dem.SetPoints(points);
         dem.SetPolys(polys);
-        //dem.GetPointData().SetScalars(heights);
 
         heightsGravityPerPoint.SetNumberOfComponents(1);
         heightsGravity.SetNumberOfComponents(1);
         heightsPlane.SetNumberOfComponents(1);
         slopes.SetNumberOfComponents(1);
 
-        FileInputStream fs = new FileInputStream(filename);
-        BufferedInputStream bs = new BufferedInputStream(fs);
-        DataInputStream in = new DataInputStream(bs);
 
-        float[] data = new float[MAX_WIDTH*MAX_HEIGHT*6];
+        Fits f = new Fits(filename);
+        BasicHDU hdu = f.getHDU(0);
 
-        for (int i=0;i<data.length; ++i)
+        int[] axes = hdu.getAxes();
+
+        final int NUM_PLANES = 6;
+        if (axes.length != 3 || axes[0] != NUM_PLANES || axes[1] != axes[2])
         {
-            data[i] = MathUtil.swap(in.readFloat());
+            throw new IOException("FITS file has incorrect dimensions");
         }
 
-        in.close();
+        int liveSize = axes[1];
 
-        int[][] indices = new int[MAX_WIDTH][MAX_HEIGHT];
+        float[][][] data = (float[][][])hdu.getData().getData();
+        f.getStream().close();
+
+        int[][] indices = new int[liveSize][liveSize];
         int c = 0;
         float x, y, z, h, h2, s;
         int i0, i1, i2, i3;
 
-        int endPixel = startPixel + liveSize - 1;
-
         // First add points to the vtkPoints array
-//        for (int m=0; m<WIDTH-500; ++m)
-//            for (int n=0; n<HEIGHT-500; ++n)
-        for (int m=0; m<MAX_WIDTH; ++m)
-            for (int n=0; n<MAX_HEIGHT; ++n)
-//        for (int m=startPixel; m<=endPixel; ++m)
-//            for (int n=startPixel; n<=endPixel; ++n)
+        for (int m=0; m<liveSize; ++m)
+            for (int n=0; n<liveSize; ++n)
             {
                 indices[m][n] = -1;
 
-                if (m >= startPixel && m <= endPixel && n >= startPixel && n <= endPixel)
+                // A pixel value of -1.0e38 means that pixel is invalid and should be skipped
+                x = data[3][m][n];
+                y = data[4][m][n];
+                z = data[5][m][n];
+                h = data[0][m][n];
+                h2 = data[1][m][n];
+                s = data[2][m][n];
+
+                boolean valid = (x != INVALID_VALUE && y != INVALID_VALUE && z != INVALID_VALUE
+                        && h != INVALID_VALUE && h2 != INVALID_VALUE && s != INVALID_VALUE);
+
+                if (valid)
                 {
-                    // A pixel value of -1.0e38 means that pixel is invalid and should be skipped
-                    x = data[index(m,n,3)];
-                    y = data[index(m,n,4)];
-                    z = data[index(m,n,5)];
-                    h = data[index(m,n,0)];
-                    h2 = data[index(m,n,1)];
-                    s = data[index(m,n,2)];
+                    h = 1000.0f * h;
+                    h2 = 1000.0f * h2;
+                    s = (float)(180.0/Math.PI) * s;
 
-                    boolean valid = (x != INVALID_VALUE && y != INVALID_VALUE && z != INVALID_VALUE
-                            && h != INVALID_VALUE && h2 != INVALID_VALUE && s != INVALID_VALUE);
+                    points.InsertNextPoint(x, y, z);
+                    heightsGravity.InsertNextTuple1(h);
+                    heightsPlane.InsertNextTuple1(h2);
+                    slopes.InsertNextTuple1(s);
 
-                    if (valid)
-                    {
-                        h = 1000.0f * h;
-                        h2 = 1000.0f * h2;
-                        s = (float)(180.0/Math.PI) * s;
+                    indices[m][n] = c;
 
-                        //points.SetPoint(c, x, y, z);
-                        points.InsertNextPoint(x, y, z);
-                        heightsGravity.InsertNextTuple1(h);
-                        heightsPlane.InsertNextTuple1(h2);
-                        slopes.InsertNextTuple1(s);
-
-                        indices[m][n] = c;
-
-                        ++c;
-                    }
+                    ++c;
                 }
             }
 
         idList.SetNumberOfIds(3);
 
         // Now add connectivity information
-//        for (int m=1; m<WIDTH-500; ++m)
-//            for (int n=1; n<HEIGHT-500; ++n)
-//        for (int m=1; m<MAX_WIDTH; ++m)
-//            for (int n=1; n<MAX_HEIGHT; ++n)
-        for (int m=startPixel+1; m<=endPixel; ++m)
-            for (int n=startPixel+1; n<=endPixel; ++n)
+        for (int m=1; m<liveSize; ++m)
+            for (int n=1; n<liveSize; ++n)
             {
                 // Get the indices of the 4 corners of the rectangle to the upper left
                 i0 = indices[m-1][n-1];
@@ -206,11 +185,11 @@ public class DEMModel extends SmallBodyModel
         heightsGravityPerPoint.DeepCopy(heightsGravity);
         convertPointDataToCellData();
 
-        int centerIndex = startPixel + (endPixel - startPixel) / 2;
+        int centerIndex = liveSize / 2;
         centerOfDEM = new double[3];
-        centerOfDEM[0] = data[index(centerIndex,centerIndex,3)];
-        centerOfDEM[1] = data[index(centerIndex,centerIndex,4)];
-        centerOfDEM[2] = data[index(centerIndex,centerIndex,5)];
+        centerOfDEM[0] = data[3][centerIndex][centerIndex];
+        centerOfDEM[1] = data[4][centerIndex][centerIndex];
+        centerOfDEM[2] = data[5][centerIndex][centerIndex];
 
         return dem;
     }
@@ -250,11 +229,6 @@ public class DEMModel extends SmallBodyModel
     public vtkPolyData getBoundary()
     {
         return boundary;
-    }
-
-    private static int index(int i, int j, int k)
-    {
-        return ((k * MAX_HEIGHT + j) * MAX_WIDTH + i);
     }
 
     public void generateProfile(ArrayList<Point3D> xyzPointList,
@@ -305,37 +279,6 @@ public class DEMModel extends SmallBodyModel
                 profileDistances.add(dist);
             }
         }
-    }
-
-    private void loadLblFile(String file) throws IOException
-    {
-        InputStream fs = new FileInputStream(file);
-        InputStreamReader isr = new InputStreamReader(fs);
-        BufferedReader in = new BufferedReader(isr);
-
-        String line;
-
-        while ((line = in.readLine()) != null)
-        {
-            line = line.trim();
-
-            if (line.startsWith("NAXIS1_LIVE"))
-            {
-                String[] tokens = line.split("=");
-                String size = tokens[1].trim();
-                tokens = size.split("/");
-                size = tokens[0].trim();
-                liveSize = Integer.parseInt(size);
-            }
-            else if (line.startsWith("NAXIS1_0"))
-            {
-                String[] tokens = line.split("=");
-                String size = tokens[1].trim();
-                startPixel = Integer.parseInt(size);
-            }
-        }
-
-        in.close();
     }
 
     private double getDistanceToBoundary(double[] point)

@@ -15,8 +15,7 @@ public class MapmakerSwingWorker extends FileDownloadSwingWorker
     private double[] centerPoint;
     private double radius;
     private File outputFolder;
-    private File cubeFile;
-    private File lblFile;
+    private File mapletFile;
     private int halfSize;
 
     public MapmakerSwingWorker(Component c, String title, String filename)
@@ -54,14 +53,9 @@ public class MapmakerSwingWorker extends FileDownloadSwingWorker
     }
 
 
-    public File getCubeFile()
+    public File getMapletFile()
     {
-        return cubeFile;
-    }
-
-    public File getLabelFile()
-    {
-        return lblFile;
+        return mapletFile;
     }
 
     @Override
@@ -116,9 +110,8 @@ public class MapmakerSwingWorker extends FileDownloadSwingWorker
                 Thread.sleep(333);
             }
 
-            mapmaker.copyGeneratedFilesToOutputFolder();
-            cubeFile = mapmaker.getCubeFile();
-            lblFile = mapmaker.getLabelFile();
+            mapmaker.convertCubeToFitsAndSaveInOutputFolder();
+            mapletFile = mapmaker.getMapletFile();
         }
         catch (IOException e)
         {

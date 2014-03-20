@@ -6,12 +6,12 @@
 
 import os
 import sys
-import subprocess
 import math
 import spice
 from joblib import Parallel, delayed
 import shutil
 import glob
+
 
 def loadVerticesFromPDSFile(filename):
     """Loads vertices from specified file and returns them as a list"""
@@ -73,57 +73,50 @@ def vertsToLatLon(verts):
     return list(set(lonLat))
 
 
-def runMapmakerAtLonLat(lon, lat, mapmakerFolder, mapmakerCommand):
+def runMapmakerAtLonLat(lon, lat, mapmakerFolder):
     name="lat"+str(lat)+"_lon"+str(lon)
+    outputFolder = mapmakerFolder+"/OUTPUT/"
 
-    p = subprocess.Popen(mapmakerCommand, shell=True, stdin=subprocess.PIPE, env=os.environ, cwd=mapmakerFolder)
-    arguments = name+"\n513 5.0\nL\n" + str(lat) + "," + str(lon) + "\nn\nn\nn\nn\nn\nn\n"
-    print arguments
-    p.communicate(arguments)
-    p.wait()
-    print name
+    command = "run_java_program.sh edu.jhuapl.near.server.RunMapmaker " + mapmakerFolder + " " + name + " 513 5.0 " + str(lat) + " " + str(lon) + " " + outputFolder
+    print command
+    os.system(command)
 
-    cubeFile = mapmakerFolder+"/OUTPUT/"+name+".cub"
-    lblFile = mapmakerFolder+"/OUTPUT/"+name+".lbl"
-
-    # mv these files into a separate folder
+    # mv the maplet file into a separate folder
+    mapletFile = mapmakerFolder+"/OUTPUT/"+name+".FIT"
     shutil.rmtree(name, ignore_errors=True)
     os.mkdir(name)
-    newCubeFile = name + "/" + name + ".cub"
-    newLblFile = name + "/" + name + ".lbl"
-    os.system("mv " + cubeFile + " " + newCubeFile)
-    os.system("mv " + lblFile  + " " + newLblFile)
-    cubeFile = newCubeFile
-    lblFile = newLblFile
+    newMapletFile = name + "/" + name + ".FIT"
+    os.system("mv " + mapletFile + " " + newMapletFile)
+    mapletFile = newMapletFile
 
     # extract out the boundary of the maplet into a separate VTK so we can view the coverage of the maplets in the SBMT
     boundaryFile = name+"/"+name+"-boundary.vtk"
-    command = "run_java_program.sh edu.jhuapl.near.server.ConvertGaskellMapmakerCube -vtk -boundary " + cubeFile + " " + boundaryFile
+    command = "run_java_program.sh edu.jhuapl.near.server.ConvertGaskellMapmakerCube -vtk -boundary " + mapletFile + " " + boundaryFile
     print command
     os.system(command)
 
-    # convert the cube file to VTK format since this format is required by the lidar-opt script
-    cubeFileVtk = name+"/"+name+".vtk"
-    command = "run_java_program.sh edu.jhuapl.near.server.ConvertGaskellMapmakerCube -vtk " + cubeFile + " " + cubeFileVtk
+    # convert the maplet file to VTK format since this format is required by the lidar-opt script
+    mapletFileVtk = name+"/"+name+".vtk"
+    command = "run_java_program.sh edu.jhuapl.near.server.ConvertGaskellMapmakerCube -vtk " + mapletFile + " " + mapletFileVtk
     print command
     os.system(command)
 
-    # convert the cube file to VTK format but decimate it so we can combine all the cubes together
+    # convert the maplet file to VTK format but decimate it so we can combine all the maplets together
     decimatedFileVtk = name+"/"+name+"-decimated.vtk"
-    command = "run_java_program.sh edu.jhuapl.near.server.ConvertGaskellMapmakerCube -vtk -decimate " + cubeFile + " " + decimatedFileVtk
+    command = "run_java_program.sh edu.jhuapl.near.server.ConvertGaskellMapmakerCube -vtk -decimate " + mapletFile + " " + decimatedFileVtk
     print command
     os.system(command)
 
-    # get all tracks inside cube
+    # get all tracks inside the maplet
     tracksDir = name + "/tracks"
     os.mkdir(tracksDir)
-    command = "run_java_program.sh edu.jhuapl.near.server.SearchLidarDataInsideMapmakerCube " + cubeFile + " 1900-01-01 2100-01-01 100 10 1 " + tracksDir
+    command = "run_java_program.sh edu.jhuapl.near.server.SearchLidarDataInsideMapmakerCube " + mapletFile + " 1900-01-01 2100-01-01 100 10 1 " + tracksDir
     print command
     os.system(command)
 
     # Optimize these tracks
     trackFiles = glob.glob(tracksDir + "/*.txt")
-    command = "lidar-opt.py " + cubeFileVtk + " " + " ".join(trackFiles) + " > /dev/null 2>&1"
+    command = "lidar-opt.py " + mapletFileVtk + " " + " ".join(trackFiles) + " > /dev/null 2>&1"
     print command
     os.system(command)
 
@@ -133,35 +126,34 @@ def runMapmakerAtLonLat(lon, lat, mapmakerFolder, mapmakerCommand):
     os.system(command)
 
 
-def runMapmakerAtAllLonLat(lonLat, numJobs, mapmakerFolder, mapmakerCommand):
-    Parallel(n_jobs=numJobs)(delayed(runMapmakerAtLonLat)(ll[0], ll[1], mapmakerFolder, mapmakerCommand) for ll in lonLat)
+def runMapmakerAtAllLonLat(lonLat, numJobs, mapmakerFolder):
+    Parallel(n_jobs=numJobs)(delayed(runMapmakerAtLonLat)(ll[0], ll[1], mapmakerFolder) for ll in lonLat)
 
 
-mapmakerFolder = os.environ["HOME"] + "/.neartool/cache/2/GASKELL/EROS/mapmaker"
-os.environ["PATH"] = mapmakerFolder + "/EXECUTABLES:" + os.environ["PATH"]
-os.environ["PATH"] = os.environ["SBMT_ROOT"] + "/misc/programs/general/lidar:" + os.environ["PATH"]
-os.environ["PATH"] = os.environ["SBMT_ROOT"] + "/misc/programs/general/build:" + os.environ["PATH"]
-os.environ["PATH"] = os.environ["SBMT_ROOT"] + "/misc/scripts:" + os.environ["PATH"]
-if "darwin" in sys.platform:
-    os.environ["DYLD_LIBRARY_PATH"] = mapmakerFolder + "/EXECUTABLES:"
-    mapmakerCommand = "MAPMAKERO.macosx"
-else: # assume Linux
-    os.environ["LD_LIBRARY_PATH"] = os.environ["JAVA_HOME"]+"/jre/lib/amd64:"+os.environ["JAVA_HOME"]+"/jre/lib/amd64/xawt"
-    os.environ["LD_LIBRARY_PATH"] = mapmakerFolder + "/EXECUTABLES:" + os.environ["LD_LIBRARY_PATH"]
-    mapmakerCommand = "MAPMAKERO.linux64"
+def runMain():
+    mapmakerFolder = os.environ["HOME"] + "/.neartool/cache/2/GASKELL/EROS/mapmaker"
+    os.environ["PATH"] = os.environ["SBMT_ROOT"] + "/misc/programs/general/lidar:" + os.environ["PATH"]
+    os.environ["PATH"] = os.environ["SBMT_ROOT"] + "/misc/programs/general/build:" + os.environ["PATH"]
+    os.environ["PATH"] = os.environ["SBMT_ROOT"] + "/misc/scripts:" + os.environ["PATH"]
+    if "linux" in sys.platform:
+        os.environ["LD_LIBRARY_PATH"] = os.environ["JAVA_HOME"]+"/jre/lib/amd64:"+os.environ["JAVA_HOME"]+"/jre/lib/amd64/xawt"
 
 
-erosModelPds = os.environ["HOME"] + "/.neartool/cache/2/EROS/ver512q.tab"
-verts = loadVerticesFromPDSFile(erosModelPds)
-verts = findUniformlySpacedPoints(verts, 3.0);
-printPointsAsTrackFile(verts)
+    erosModelPds = os.environ["HOME"] + "/.neartool/cache/2/EROS/ver512q.tab"
+    verts = loadVerticesFromPDSFile(erosModelPds)
+    verts = findUniformlySpacedPoints(verts, 3.0);
+    printPointsAsTrackFile(verts)
 
-lonLat = vertsToLatLon(verts)
+    lonLat = vertsToLatLon(verts)
 
-# Note we need to manually add a point to fully cover the asteroid since
-# the above scheme leaves some wholes
-lonLat.append((360.0-187.304, 2.061))
+    # Note we need to manually add a point to fully cover the asteroid since
+    # the above scheme leaves some wholes
+    lonLat.append((360.0-187.304, 2.061))
 
-print "number of maplets to do: " + str(len(lonLat))
+    print "number of maplets to do: " + str(len(lonLat))
 
-runMapmakerAtAllLonLat(lonLat, 8, mapmakerFolder, mapmakerCommand)
+    runMapmakerAtAllLonLat(lonLat, 8, mapmakerFolder)
+
+
+if __name__ == '__main__':
+    runMain()

@@ -1,7 +1,6 @@
 package edu.jhuapl.near.server;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.TreeSet;
 
 import org.joda.time.DateTime;
@@ -27,11 +26,11 @@ public class SearchLidarDataInsideMapmakerCube
 
         if (args.length != 7)
         {
-            System.out.println("Usage: SearchLidarDataInsideMapmakerCube <cube-file> <start-date> <end-date> <min-track-size> <track-separation-time> <min_distance-from-boundary> <output-folder>");
+            System.out.println("Usage: SearchLidarDataInsideMapmakerCube <maplet-file> <start-date> <end-date> <min-track-size> <track-separation-time> <min_distance-from-boundary> <output-folder>");
             System.exit(0);
         }
 
-        String cubeFile = args[0];
+        String mapletFile = args[0];
         DateTime startDate = new DateTime(args[1]);
         DateTime endDate = new DateTime(args[2]);
         int minTrackLength = 10;
@@ -91,15 +90,14 @@ public class SearchLidarDataInsideMapmakerCube
 
         NativeLibraryLoader.loadVtkLibraries();
 
-        String labelFile = cubeFile.substring(0, cubeFile.length()-3) + "lbl";
         DEMModel dem = null;
         try
         {
-            dem = new DEMModel(cubeFile, labelFile);
+            dem = new DEMModel(mapletFile);
         }
-        catch (IOException e)
+        catch (Exception e)
         {
-            System.out.println("An error occurred loading the cube file. Check that both the cube and label files exist and are in the correct format.");
+            System.out.println("An error occurred loading the maplet file. Check that the maplet file exists and is in the correct format.");
             System.exit(1);
         }
 

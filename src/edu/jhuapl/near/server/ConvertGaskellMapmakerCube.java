@@ -16,7 +16,7 @@ public class ConvertGaskellMapmakerCube
 
     private static void usage()
     {
-        System.out.println("Usage: ConvertGaskellMapmakerCube -obj|-plt|-vtk [-boundary|-decimate] <cube-file> <output-file>");
+        System.out.println("Usage: ConvertGaskellMapmakerCube -obj|-plt|-vtk [-boundary|-decimate] <maplet-file> <output-file>");
         System.exit(0);
     }
 
@@ -74,20 +74,19 @@ public class ConvertGaskellMapmakerCube
             System.exit(1);
         }
 
-        String cubeFile = args[i++];
+        String mapletFile = args[i++];
         String outputFile = args[i];
 
         NativeLibraryLoader.loadVtkLibraries();
 
-        String labelFile = cubeFile.substring(0, cubeFile.length()-3) + "lbl";
         DEMModel dem = null;
         try
         {
-            dem = new DEMModel(cubeFile, labelFile);
+            dem = new DEMModel(mapletFile);
         }
-        catch (IOException e)
+        catch (Exception e)
         {
-            System.out.println("An error occurred loading the cube file. Check that both the cube and label files exist and are in the correct format.");
+            System.out.println("An error occurred loading the maplet file. Check that the maplet file exists and is in the correct format.");
             System.exit(1);
         }
 
