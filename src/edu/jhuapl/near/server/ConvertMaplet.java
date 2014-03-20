@@ -8,7 +8,7 @@ import edu.jhuapl.near.model.DEMModel;
 import edu.jhuapl.near.util.NativeLibraryLoader;
 import edu.jhuapl.near.util.PolyDataUtil;
 
-public class ConvertGaskellMapmakerCube
+public class ConvertMaplet
 {
     private enum OutputType {
         OBJ, PLT, VTK
@@ -16,7 +16,7 @@ public class ConvertGaskellMapmakerCube
 
     private static void usage()
     {
-        System.out.println("Usage: ConvertGaskellMapmakerCube -obj|-plt|-vtk [-boundary|-decimate] <maplet-file> <output-file>");
+        System.out.println("Usage: ConvertMaplet -obj|-plt|-vtk [-boundary|-decimate] <maplet-file> <output-file>");
         System.exit(0);
     }
 

@@ -18,7 +18,7 @@ import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.util.BoundingBox;
 import edu.jhuapl.near.util.NativeLibraryLoader;
 
-public class SearchLidarDataInsideMapmakerCube
+public class SearchLidarDataInsideMaplet
 {
     public static void main(String[] args)
     {
@@ -26,7 +26,7 @@ public class SearchLidarDataInsideMapmakerCube
 
         if (args.length != 7)
         {
-            System.out.println("Usage: SearchLidarDataInsideMapmakerCube <maplet-file> <start-date> <end-date> <min-track-size> <track-separation-time> <min_distance-from-boundary> <output-folder>");
+            System.out.println("Usage: SearchLidarDataInsideMaplet <maplet-file> <start-date> <end-date> <min-track-size> <track-separation-time> <min_distance-from-boundary> <output-folder>");
             System.exit(0);
         }
 
