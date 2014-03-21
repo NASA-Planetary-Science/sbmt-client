@@ -1,34 +1,38 @@
-package edu.jhuapl.near.server;
+package edu.jhuapl.near.tools;
 
 import java.io.IOException;
 
 import edu.jhuapl.near.model.ModelFactory;
 import edu.jhuapl.near.model.SmallBodyModel;
-import edu.jhuapl.near.model.eros.Eros;
+import edu.jhuapl.near.model.itokawa.Itokawa;
 
-public class NLRLidarSqlDatabaseGenerator extends LidarSqlDatabaseGenerator
+public class HayLidarSqlDatabaseGenerator extends LidarSqlDatabaseGenerator
 {
     private static String fileListPath = null;
     private static String dbName = null;
-    private static Eros eros = null;
+    private static Itokawa itokawa = null;
 
     static public void main(String[] args)
     {
-        fileListPath = "/project/nearsdc/data/NLR/NlrFiles.txt";
-        dbName = "/project/nearsdc/data/NLR/lidar";
-        new NLRLidarSqlDatabaseGenerator().run();
+        fileListPath = "/project/nearsdc/data/ITOKAWA/LIDAR/HayLidarFiles.txt";
+        dbName = "/project/nearsdc/data/ITOKAWA/LIDAR/lidar";
+        new HayLidarSqlDatabaseGenerator().run();
+
+        fileListPath = "/project/nearsdc/data/ITOKAWA/LIDAR/HayLidarFilesUnfiltered.txt";
+        dbName = "/project/nearsdc/data/ITOKAWA/LIDAR/lidar-unfiltered";
+        new HayLidarSqlDatabaseGenerator().run();
     }
 
     @Override
     protected SmallBodyModel getSmallBodyModel()
     {
-        if (eros == null)
+        if (itokawa == null)
         {
-            eros = new Eros(ModelFactory.getModelConfig(ModelFactory.EROS, ModelFactory.GASKELL));
+            itokawa = new Itokawa(ModelFactory.getModelConfig(ModelFactory.ITOKAWA, ModelFactory.GASKELL));
 
             try
             {
-                eros.setModelResolution(3);
+                itokawa.setModelResolution(3);
             }
             catch (IOException e)
             {
@@ -36,37 +40,37 @@ public class NLRLidarSqlDatabaseGenerator extends LidarSqlDatabaseGenerator
             }
         }
 
-        return eros;
+        return itokawa;
     }
 
     @Override
     protected int[] getXYZIndices()
     {
-        return new int[]{14, 15, 16};
+        return new int[]{6, 7, 8};
     }
 
     @Override
     protected int[] getSpacecraftIndices()
     {
-        return new int[]{8, 9, 10};
+        return new int[]{3, 4, 5};
     }
 
     @Override
     protected boolean isSpacecraftInSphericalCoordinates()
     {
-        return true;
+        return false;
     }
 
     @Override
     protected int getTimeIndex()
     {
-        return 4;
+        return 1;
     }
 
     @Override
     protected int getNoiseIndex()
     {
-        return 7;
+        return -1;
     }
 
     @Override
@@ -78,19 +82,19 @@ public class NLRLidarSqlDatabaseGenerator extends LidarSqlDatabaseGenerator
     @Override
     protected int getNumberHeaderLines()
     {
-        return 2;
+        return 0;
     }
 
     @Override
     protected boolean isInMeters()
     {
-        return true;
+        return false;
     }
 
     @Override
     protected int getPotentialIndex()
     {
-        return 18;
+        return -1;
     }
 
     @Override

@@ -12,9 +12,9 @@ SUMFILELIST=/project/nearsdc/data-apl/VESTA/FC/PICTLIST_HC1.TXT
 find -L $FC_DIR -name "*.FIT" -type f | sort > $FC_FIT_FILES
 
 
-$JAVA_COMMAND edu.jhuapl.near.server.VestaDatabaseGeneratorSql $FC_FIT_FILES $SUMFILELIST 1 > sqlgeneration-vesta1.log 2>&1 &
-$JAVA_COMMAND edu.jhuapl.near.server.VestaDatabaseGeneratorSql $FC_FIT_FILES $SUMFILELIST 2 > sqlgeneration-vesta2.log 2>&1 &
-$JAVA_COMMAND edu.jhuapl.near.server.VestaDatabaseGeneratorSql $FC_FIT_FILES $SUMFILELIST 3 > sqlgeneration-vesta3.log 2>&1 &
-$JAVA_COMMAND edu.jhuapl.near.server.VestaDatabaseGeneratorSql $FC_FIT_FILES $SUMFILELIST 4 > sqlgeneration-vesta4.log 2>&1 &
+$JAVA_COMMAND edu.jhuapl.near.tools.VestaDatabaseGeneratorSql $FC_FIT_FILES $SUMFILELIST 1 > sqlgeneration-vesta1.log 2>&1 &
+$JAVA_COMMAND edu.jhuapl.near.tools.VestaDatabaseGeneratorSql $FC_FIT_FILES $SUMFILELIST 2 > sqlgeneration-vesta2.log 2>&1 &
+$JAVA_COMMAND edu.jhuapl.near.tools.VestaDatabaseGeneratorSql $FC_FIT_FILES $SUMFILELIST 3 > sqlgeneration-vesta3.log 2>&1 &
+$JAVA_COMMAND edu.jhuapl.near.tools.VestaDatabaseGeneratorSql $FC_FIT_FILES $SUMFILELIST 4 > sqlgeneration-vesta4.log 2>&1 &
 
 wait

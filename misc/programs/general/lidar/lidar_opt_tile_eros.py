@@ -77,7 +77,7 @@ def runMapmakerAtLonLat(lon, lat, mapmakerFolder):
     name="lat"+str(lat)+"_lon"+str(lon)
     outputFolder = mapmakerFolder+"/OUTPUT/"
 
-    command = "run_java_program.sh edu.jhuapl.near.server.RunMapmaker " + mapmakerFolder + " " + name + " 513 5.0 " + str(lat) + " " + str(lon) + " " + outputFolder
+    command = "run_java_program.sh edu.jhuapl.near.tools.RunMapmaker " + mapmakerFolder + " " + name + " 513 5.0 " + str(lat) + " " + str(lon) + " " + outputFolder
     print command
     os.system(command)
 
@@ -91,26 +91,26 @@ def runMapmakerAtLonLat(lon, lat, mapmakerFolder):
 
     # extract out the boundary of the maplet into a separate VTK so we can view the coverage of the maplets in the SBMT
     boundaryFile = name+"/"+name+"-boundary.vtk"
-    command = "run_java_program.sh edu.jhuapl.near.server.ConvertMaplet -vtk -boundary " + mapletFile + " " + boundaryFile
+    command = "run_java_program.sh edu.jhuapl.near.tools.ConvertMaplet -vtk -boundary " + mapletFile + " " + boundaryFile
     print command
     os.system(command)
 
     # convert the maplet file to VTK format since this format is required by the lidar-opt script
     mapletFileVtk = name+"/"+name+".vtk"
-    command = "run_java_program.sh edu.jhuapl.near.server.ConvertMaplet -vtk " + mapletFile + " " + mapletFileVtk
+    command = "run_java_program.sh edu.jhuapl.near.tools.ConvertMaplet -vtk " + mapletFile + " " + mapletFileVtk
     print command
     os.system(command)
 
     # convert the maplet file to VTK format but decimate it so we can combine all the maplets together
     decimatedFileVtk = name+"/"+name+"-decimated.vtk"
-    command = "run_java_program.sh edu.jhuapl.near.server.ConvertMaplet -vtk -decimate " + mapletFile + " " + decimatedFileVtk
+    command = "run_java_program.sh edu.jhuapl.near.tools.ConvertMaplet -vtk -decimate " + mapletFile + " " + decimatedFileVtk
     print command
     os.system(command)
 
     # get all tracks inside the maplet
     tracksDir = name + "/tracks"
     os.mkdir(tracksDir)
-    command = "run_java_program.sh edu.jhuapl.near.server.SearchLidarDataInsideMaplet " + mapletFile + " 1900-01-01 2100-01-01 100 10 1 " + tracksDir
+    command = "run_java_program.sh edu.jhuapl.near.tools.SearchLidarDataInsideMaplet " + mapletFile + " 1900-01-01 2100-01-01 100 10 1 " + tracksDir
     print command
     os.system(command)
 

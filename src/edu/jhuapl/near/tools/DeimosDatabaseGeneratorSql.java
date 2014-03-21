@@ -1,16 +1,16 @@
-package edu.jhuapl.near.server;
+package edu.jhuapl.near.tools;
 
 import java.io.IOException;
 
 import edu.jhuapl.near.model.ModelFactory;
 import edu.jhuapl.near.model.SmallBodyModel;
 
-public class PhobosDatabaseGeneratorSql extends DatabaseGeneratorBaseSql
+public class DeimosDatabaseGeneratorSql extends DatabaseGeneratorBaseSql
 {
-    static private final String ImagesGaskellTable = "phobosimages_gaskell_beta";
-    static private final String CubesGaskellTable = "phoboscubes_gaskell_beta";
-    static private final String ImagesPdsTable = "phobosimages_pds_beta";
-    static private final String CubesPdsTable = "phoboscubes_pds_beta";
+    static private final String ImagesGaskellTable = "deimosimages_gaskell_beta";
+    static private final String CubesGaskellTable = "deimoscubes_gaskell_beta";
+    static private final String ImagesPdsTable = "deimosimages_pds_beta";
+    static private final String CubesPdsTable = "deimoscubes_pds_beta";
 
     @Override
     String getImagesGaskellTableNames()
@@ -39,7 +39,7 @@ public class PhobosDatabaseGeneratorSql extends DatabaseGeneratorBaseSql
     @Override
     SmallBodyModel createSmallBodyModel()
     {
-        return ModelFactory.createSmallBodyModel(ModelFactory.getModelConfig(ModelFactory.PHOBOS, ModelFactory.EXPERIMENTAL));
+        return ModelFactory.createSmallBodyModel(ModelFactory.getModelConfig(ModelFactory.DEIMOS, ModelFactory.THOMAS));
     }
 
 
@@ -64,6 +64,12 @@ public class PhobosDatabaseGeneratorSql extends DatabaseGeneratorBaseSql
             filename = filename.replace("A", "1");
             filename = filename.replace("B", "2");
             return Long.parseLong(filename.substring(2, 8), 10);
+        }
+        else if (filename.startsWith("f"))
+        {
+            filename = filename.replace("a", "1");
+            filename = filename.replace("b", "2");
+            return Long.parseLong(filename.substring(1, 7), 10);
         }
         else if (filename.startsWith("h"))
         {
@@ -95,7 +101,7 @@ public class PhobosDatabaseGeneratorSql extends DatabaseGeneratorBaseSql
      */
     public static void main(String[] args) throws IOException
     {
-        PhobosDatabaseGeneratorSql generator = new PhobosDatabaseGeneratorSql();
+        DeimosDatabaseGeneratorSql generator = new DeimosDatabaseGeneratorSql();
         generator.doMain(args);
     }
 }

@@ -1,4 +1,4 @@
-package edu.jhuapl.near.server;
+package edu.jhuapl.near.tools;
 
 import edu.jhuapl.near.model.ModelFactory;
 import edu.jhuapl.near.model.SmallBodyModel;

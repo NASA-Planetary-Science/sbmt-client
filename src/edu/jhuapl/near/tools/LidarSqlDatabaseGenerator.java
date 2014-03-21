@@ -1,16 +1,17 @@
-package edu.jhuapl.near.server;
+package edu.jhuapl.near.tools;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.TreeSet;
 import java.util.zip.GZIPInputStream;
+
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.util.FileUtil;
@@ -19,18 +20,70 @@ import edu.jhuapl.near.util.MathUtil;
 import edu.jhuapl.near.util.NativeLibraryLoader;
 
 /**
- * This program goes through all the lidar data and divides all the data
- * up into cubes and saves each cube to a separate file.
+ * This program goes through all the Lidar data and creates an sql database
+ * containing all the data.
+ *
+ * The database consists of the following columns
+ *
+ * 1.  time (as 64-bit long integer)
+ * 2.  x closest point
+ * 3.  y closest point
+ * 4.  z closest point
+ * 5.  x target point
+ * 6.  y target point
+ * 7.  z target point
+ * 8.  x sc point
+ * 9.  y sc point
+ * 10. z sc point
+ * 11. potential
  */
-abstract public class LidarCubesGenerator
+public abstract class LidarSqlDatabaseGenerator
 {
+    static private SqlManager db = null;
+
+    private void createTable()
+    {
+        System.out.println("creating database");
+        try {
+
+            //make a table
+            try
+            {
+                db.dropTable("lidar");
+            }
+            catch(Exception e)
+            {
+                e.printStackTrace();
+            }
+
+            db.update(
+                    "create table lidar(" +
+                    "UTC bigint PRIMARY KEY, " +
+                    "xclosest real, " +
+                    "yclosest real, " +
+                    "zclosest real, " +
+                    "xtarget real, " +
+                    "ytarget real, " +
+                    "ztarget real, " +
+                    "xsc real, " +
+                    "ysc real, " +
+                    "zsc real, " +
+                    "potential real" +
+                    ")"
+                );
+        } catch (SQLException ex2) {
+
+            //ignore
+            ex2.printStackTrace();  // second time we run program
+            //  should throw execption since table
+            // already there
+            //
+            // this will have no effect on the db
+        }
+    }
+
     abstract protected SmallBodyModel getSmallBodyModel();
     abstract protected int[] getXYZIndices();
-
-    abstract protected String getFileListPath();
-    abstract protected String getOutputFolderPath();
-
-    abstract protected int getNumberHeaderLines();
 
     abstract protected int[] getSpacecraftIndices();
 
@@ -45,8 +98,9 @@ abstract public class LidarCubesGenerator
 
     abstract protected int getNoiseIndex();
 
-    abstract protected int getPotentialIndex();
+    abstract protected String getFileListPath();
 
+    abstract protected int getNumberHeaderLines();
 
     /**
      * Return whether or not the units of the lidar points are in meters. If false
@@ -55,24 +109,9 @@ abstract public class LidarCubesGenerator
      */
     abstract protected boolean isInMeters();
 
-    /**
-     * First create empty files for all the cubes files
-     * @throws IOException
-     */
-    private void createInitialFiles() throws IOException
-    {
-        SmallBodyModel smallBodyModel = getSmallBodyModel();
-        String outputFolder = getOutputFolderPath();
+    abstract protected int getPotentialIndex();
 
-        TreeSet<Integer> cubes = smallBodyModel.getIntersectingCubes(smallBodyModel.getLowResSmallBodyPolyData());
-
-        for (Integer cubeid : cubes)
-        {
-            FileWriter fstream = new FileWriter(outputFolder + "/" + cubeid + ".lidarcube");
-            BufferedWriter out = new BufferedWriter(fstream);
-            out.close();
-        }
-    }
+    abstract protected String getDatabasePath();
 
     public void run()
     {
@@ -82,23 +121,25 @@ abstract public class LidarCubesGenerator
         SmallBodyModel smallBodyModel = getSmallBodyModel();
 
         String lidarFileList = getFileListPath();
-        String outputFolder = getOutputFolderPath();
-
-        new File(outputFolder).mkdirs();
 
         ArrayList<String> lidarFiles = null;
-        try
-        {
+        try {
             lidarFiles = FileUtil.getFileLinesAsStringList(lidarFileList);
-
-            createInitialFiles();
-        }
-        catch (IOException e2) {
+        } catch (IOException e2) {
             e2.printStackTrace();
         }
 
+        PreparedStatement msiInsert = null;
+
         try
         {
+            db = new SqlManager("org.h2.Driver", "jdbc:h2:" + getDatabasePath());
+
+            createTable();
+
+            msiInsert = db.preparedStatement(
+            "insert into lidar values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+
             int xindex = getXYZIndices()[0];
             int yindex = getXYZIndices()[1];
             int zindex = getXYZIndices()[2];
@@ -112,10 +153,10 @@ abstract public class LidarCubesGenerator
             int potentialIndex = getPotentialIndex();
 
             int filecount = 1;
-
             for (String filename : lidarFiles)
             {
-                System.out.println("Begin processing file " + filename + " - " + filecount++ + " / " + lidarFiles.size());
+
+                System.out.println("Begin processing file " + filename + " - " + filecount + " / " + lidarFiles.size());
 
                 InputStream fs = new FileInputStream(filename);
                 if (filename.toLowerCase().endsWith(".gz"))
@@ -124,9 +165,7 @@ abstract public class LidarCubesGenerator
                 BufferedReader in = new BufferedReader(isr);
 
                 for (int i=0; i<getNumberHeaderLines(); ++i)
-                {
                     in.readLine();
-                }
 
                 String line;
 
@@ -165,6 +204,8 @@ abstract public class LidarCubesGenerator
                         scz /= 1000.0;
                     }
 
+                    long time = new DateTime(vals[timeindex], DateTimeZone.UTC).getMillis();
+
                     // Compute closest point on asteroid to target
                     double[] closest = smallBodyModel.findClosestPoint(new double[]{x,y,z});
 
@@ -181,28 +222,26 @@ abstract public class LidarCubesGenerator
                         potential = coloringValues[3];
                     }
 
-                    int cubeid = smallBodyModel.getCubeId(closest);
+                    msiInsert.setLong(1, time);
+                    msiInsert.setFloat(2, (float)closest[0]);
+                    msiInsert.setFloat(3, (float)closest[1]);
+                    msiInsert.setFloat(4, (float)closest[2]);
+                    msiInsert.setFloat(5, (float)x);
+                    msiInsert.setFloat(6, (float)y);
+                    msiInsert.setFloat(7, (float)z);
+                    msiInsert.setFloat(8, (float)scx);
+                    msiInsert.setFloat(9, (float)scy);
+                    msiInsert.setFloat(10, (float)scz);
+                    msiInsert.setFloat(11, (float)potential);
 
-                    if (cubeid >= 0)
-                    {
-                        // Open the file for appending
-                        FileWriter fstream = new FileWriter(outputFolder + "/" + cubeid + ".lidarcube", true);
-                        BufferedWriter out = new BufferedWriter(fstream);
-
-                        String record =
-                            vals[timeindex] + " " +
-                            (float)x + " " + (float)y + " " + (float)z + " " +
-                            (float)scx + " " + (float)scy + " " + (float)scz + " " +
-                            (float)potential + "\n";
-
-                        out.write(record);
-
-                        out.close();
-                    }
+                    msiInsert.executeUpdate();
                 }
 
+                ++filecount;
                 in.close();
             }
+
+            db.shutdown();
         }
         catch (Exception e)
         {

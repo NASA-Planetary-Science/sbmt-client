@@ -1,4 +1,4 @@
-package edu.jhuapl.near.server;
+package edu.jhuapl.near.tools;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
