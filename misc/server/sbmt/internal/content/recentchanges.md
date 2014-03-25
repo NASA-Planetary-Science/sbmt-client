@@ -4,6 +4,18 @@
 
 # Recent Changes
 
+### March 25, 2014
+
+-   When saving lidar tracks to file (by right-clicking on a track and
+    selecting one of the Save Track options), a new column is written
+    out listing the range of each lidar point.
+-   When running the Mapmaker tool, the output maplet file is now
+    written out in FITS format. There is no label file saved out
+    anymore but some information about the maplet is saved in the
+    header portion of the FITS file. Also when loading in a maplet
+    file (by clicking the Load button in the Mapmaker tab), the file
+    must now be in FITS format.
+
 ### February 14, 2014
 
 -   When saving out polygons to file, area is now written out as

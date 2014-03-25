@@ -39,10 +39,10 @@ versions of the tool, one with Java and one without. If you download
 the version with Java included, then you do not need to install Java
 separately on your system.
 
-   -  Mac: [sbmt-2014.02.14-macosx-x64.zip](releases/sbmt-2014.02.14-macosx-x64.zip)
-   -  Linux: [sbmt-2014.02.14-linux-x64.zip](releases/sbmt-2014.02.14-linux-x64.zip)
-   -  Windows: [sbmt-2014.02.14-windows-x64.zip](releases/sbmt-2014.02.14-windows-x64.zip) (does not include Java)
-   -  Windows: [sbmt-2014.02.14-windows-x64-with-java.zip](releases/sbmt-2014.02.14-windows-x64-with-java.zip) (includes Java)
+   -  Mac: [sbmt-2014.03.25-macosx-x64.zip](releases/sbmt-2014.03.25-macosx-x64.zip)
+   -  Linux: [sbmt-2014.03.25-linux-x64.zip](releases/sbmt-2014.03.25-linux-x64.zip)
+   -  Windows: [sbmt-2014.03.25-windows-x64.zip](releases/sbmt-2014.03.25-windows-x64.zip) (does not include Java)
+   -  Windows: [sbmt-2014.03.25-windows-x64-with-java.zip](releases/sbmt-2014.03.25-windows-x64-with-java.zip) (includes Java)
 
 For those who have previously used the tool, please note that we no
 longer support launching it with Java Web Start. The only way to launch
