@@ -73,6 +73,7 @@
       </fileset>
       <fileset dir="${rootdir}/build/classes">
         <include name="edu/jhuapl/near/tools/SmallBodyMappingTool.class"/>
+        <include name="edu/jhuapl/near/tools/SmallBodyMappingTool$*.class"/>
       </fileset>
       <manifest>
         <attribute name="Class-Path" value="vtksb.jar
