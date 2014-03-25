@@ -19,6 +19,7 @@ import javax.swing.JToggleButton;
 import javax.swing.SpinnerNumberModel;
 
 import net.miginfocom.swing.MigLayout;
+import nom.tam.fits.FitsException;
 
 import edu.jhuapl.near.model.AbstractEllipsePolygonModel;
 import edu.jhuapl.near.model.MapletBoundaryCollection;
@@ -258,7 +259,7 @@ public class MapmakerPanel extends JPanel implements ActionListener
 
         try
         {
-            new MapmakerView(mapmakerWorker.getCubeFile(), mapmakerWorker.getLabelFile(),
+            new MapmakerView(mapmakerWorker.getMapletFile(),
                     modelManager.getSmallBodyModel(),
                     (MapletBoundaryCollection) modelManager.getModel(ModelNames.MAPLET_BOUNDARY));
         }
@@ -266,27 +267,32 @@ public class MapmakerPanel extends JPanel implements ActionListener
         {
             e1.printStackTrace();
         }
+        catch (FitsException e1)
+        {
+            e1.printStackTrace();
+        }
     }
 
     private void loadCubeFile()
     {
-        File file = CustomFileChooser.showOpenDialog(this, "Load Cube File", "cub");
+        File file = CustomFileChooser.showOpenDialog(this, "Load Maplet", "fit");
         if (file == null)
         {
             return;
         }
 
-        String filename = file.getAbsolutePath();
-        File lblFile = new File(filename.substring(0, filename.length()-3) + "lbl");
         try
         {
-            new MapmakerView(file, lblFile,
+            new MapmakerView(file,
                     modelManager.getSmallBodyModel(),
                     (MapletBoundaryCollection) modelManager.getModel(ModelNames.MAPLET_BOUNDARY));
         }
         catch (IOException e)
         {
-            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        catch (FitsException e)
+        {
             e.printStackTrace();
         }
     }

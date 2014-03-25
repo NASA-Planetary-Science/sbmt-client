@@ -9,4 +9,4 @@ MSI_FIT_FILES=/project/nearsdc/data/internal/allMsiFiles.txt
 find -L $MSI_DIR -name "*.FIT" -type f | sort > $MSI_FIT_FILES
 
 
-./run_java_program.sh edu.jhuapl.near.server.MSIBestResolutionPerPlate $MSI_FIT_FILES 0 > msi-best-resolution-per-plate.log 2>&1
+./run_java_program.sh edu.jhuapl.near.tools.MSIBestResolutionPerPlate $MSI_FIT_FILES 0 > msi-best-resolution-per-plate.log 2>&1

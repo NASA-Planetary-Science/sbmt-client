@@ -1,14 +1,27 @@
 package edu.jhuapl.near.util;
 
+import java.io.BufferedInputStream;
+import java.io.DataInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Map;
 
+import nom.tam.fits.BasicHDU;
+import nom.tam.fits.Fits;
+import nom.tam.fits.FitsException;
+import nom.tam.fits.FitsFactory;
+import nom.tam.util.BufferedFile;
+
 
 public class Mapmaker
 {
+    private static final int MAX_WIDTH = 1027;
+    private static final int MAX_HEIGHT = 1027;
+    private static final int MAX_PLANES = 6;
+
     private ProcessBuilder processBuilder;
     private String mapmakerRootDir;
     private String name;
@@ -17,8 +30,7 @@ public class Mapmaker
     private int halfSize = 513;
     private double pixelSize;
     private File outputFolder;
-    private File cubeFile;
-    private File lblFile;
+    private File mapletFitsFile;
 
     public Mapmaker(String mapmakerRootDir) throws IOException
     {
@@ -73,17 +85,75 @@ public class Mapmaker
         return process;
     }
 
-    public void copyGeneratedFilesToOutputFolder() throws IOException
+    public void convertCubeToFitsAndSaveInOutputFolder()
     {
-        // Copy output files to output folder
-        File origCubeFile = new File(mapmakerRootDir + File.separator + "OUTPUT" + File.separator + name + ".cub");
-        File origLblFile = new File(mapmakerRootDir + File.separator + "OUTPUT" + File.separator + name + ".lbl");
+        try
+        {
+            File origCubeFile = new File(mapmakerRootDir + File.separator + "OUTPUT" + File.separator + name + ".cub");
 
-        cubeFile = new File(outputFolder + File.separator + name + ".cub");
-        lblFile = new File(outputFolder + File.separator + name + ".lbl");
+            FileInputStream fs = new FileInputStream(origCubeFile);
+            BufferedInputStream bs = new BufferedInputStream(fs);
+            DataInputStream in = new DataInputStream(bs);
 
-        FileUtil.copyFile(origCubeFile, cubeFile);
-        FileUtil.copyFile(origLblFile, lblFile);
+            int liveSize = 2 * halfSize + 1;
+            int startPixel = (MAX_HEIGHT - liveSize) / 2;
+
+            float[] indata = new float[MAX_WIDTH*MAX_HEIGHT*MAX_PLANES];
+            for (int i=0;i<indata.length; ++i)
+            {
+                indata[i] = MathUtil.swap(in.readFloat());
+            }
+
+            float[][][] outdata = new float[MAX_PLANES][liveSize][liveSize];
+
+            int endPixel = startPixel + liveSize - 1;
+            for (int p=0; p<MAX_PLANES; ++p)
+                for (int m=0; m<MAX_HEIGHT; ++m)
+                    for (int n=0; n<MAX_WIDTH; ++n)
+                    {
+                        if (m >= startPixel && m <= endPixel && n >= startPixel && n <= endPixel)
+                        {
+                            outdata[p][m-startPixel][n-startPixel] = indata[index(n,m,p)];
+                        }
+                    }
+
+            in.close();
+
+
+            mapletFitsFile = new File(outputFolder + File.separator + name + ".FIT");
+
+            Fits f = new Fits();
+            BasicHDU hdu = FitsFactory.HDUFactory(outdata);
+
+            hdu.getHeader().addValue("PLANE1", "Elevation Relative to Gravity (kilometers)", null);
+            hdu.getHeader().addValue("PLANE2", "Elevation Relative to Normal Plane (kilometers)", null);
+            hdu.getHeader().addValue("PLANE3", "Slope (radians)", null);
+            hdu.getHeader().addValue("PLANE4", "X coordinate of maplet vertices (kilometers)", null);
+            hdu.getHeader().addValue("PLANE5", "Y coordinate of maplet vertices (kilometers)", null);
+            hdu.getHeader().addValue("PLANE6", "Z coordinate of maplet vertices (kilometers)", null);
+            hdu.getHeader().addValue("HALFSIZE", halfSize, "Half Size (pixels)");
+            hdu.getHeader().addValue("SCALE", pixelSize, "Horizontal Scale (meters per pixel)");
+            hdu.getHeader().addValue("LATITUDE", latitude, "Latitude of Maplet Center (degrees)");
+            hdu.getHeader().addValue("LONGTUDE", longitude, "Longitude of Maplet Center (degrees)");
+
+            f.addHDU(hdu);
+            BufferedFile bf = new BufferedFile(mapletFitsFile, "rw");
+            f.write(bf);
+            bf.close();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+        catch (FitsException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    private static int index(int i, int j, int k)
+    {
+        return ((k * MAX_HEIGHT + j) * MAX_WIDTH + i);
     }
 
     public String getName()
@@ -147,14 +217,9 @@ public class Mapmaker
         this.pixelSize = pixelSize;
     }
 
-    public File getCubeFile()
+    public File getMapletFile()
     {
-        return cubeFile;
-    }
-
-    public File getLabelFile()
-    {
-        return lblFile;
+        return mapletFitsFile;
     }
 
     public File getOutputFolder()

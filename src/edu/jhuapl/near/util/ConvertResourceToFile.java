@@ -1,14 +1,43 @@
 package edu.jhuapl.near.util;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.apache.commons.io.IOUtils;
+
 public class ConvertResourceToFile
 {
+    private static boolean resourceEqualsFile(Object o, String resource, File file)
+    {
+        if (!file.exists())
+            return false;
+
+        boolean equals = false;
+
+        try
+        {
+            InputStream ris = o.getClass().getResourceAsStream(resource);
+            FileInputStream fis = new FileInputStream(file);
+
+            equals = IOUtils.contentEquals(ris, fis);
+
+            ris.close();
+            fis.close();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+
+        return equals;
+    }
+
     /**
      * Convert a specified resource to a real file to be placed in a certain directory.
+     * Only write out the file if it does not already exist or is different from the resource.
      * @param o
      * @param resource
      * @param parentDir
@@ -25,6 +54,10 @@ public class ConvertResourceToFile
             parent.mkdirs();
 
         File file = new File(parentDir + File.separator + name);
+
+        if (resourceEqualsFile(o, resource, file))
+            return file;
+
         try
         {
             InputStream is = o.getClass().getResourceAsStream(resource);

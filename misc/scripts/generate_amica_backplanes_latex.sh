@@ -7,4 +7,4 @@ cd `dirname $0`
 AMICA_DIR=/project/nearsdc/data/ITOKAWA/AMICA/images
 INERTIAL_FILE=/project/nearsdc/data/ITOKAWA/AMICA/INERTIAL.TXT
 
-$JAVA_COMMAND edu.jhuapl.near.server.AmicaBackplanesLatexGenerator $AMICA_DIR $INERTIAL_FILE
+$JAVA_COMMAND edu.jhuapl.near.tools.AmicaBackplanesLatexGenerator $AMICA_DIR $INERTIAL_FILE

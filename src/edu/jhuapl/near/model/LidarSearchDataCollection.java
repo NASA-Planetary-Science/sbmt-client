@@ -458,7 +458,8 @@ public class LidarSearchDataCollection extends Model
                     target[2] + " " +
                     scpos[0] + " " +
                     scpos[1] + " " +
-                    scpos[2] + newline);
+                    scpos[2] + " " +
+                    MathUtil.distanceBetween(pt.scpos, pt.target) + newline);
         }
 
         out.close();
@@ -510,7 +511,8 @@ public class LidarSearchDataCollection extends Model
                             target[2] + " " +
                             scpos[0] + " " +
                             scpos[1] + " " +
-                            scpos[2] + newline);
+                            scpos[2] + " " +
+                            MathUtil.distanceBetween(pt.scpos, pt.target) + newline);
                 }
             }
         }

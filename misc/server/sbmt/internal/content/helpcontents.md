@@ -182,6 +182,36 @@ specific start and stop dates. In addition, a search region to
 restrict the search to can be specified as well exactly like the
 imaging tab. A radial offset slider is provided as in the Browse tab.
 
+After selecting the desired options and clicking Search, a list of
+tracks will be displayed. Right-clicking on a track (either in the list
+or directly on the track in the 3D view) will display a popup with
+various options. The following is an explanation of these options:
+
+-   Track Color - Change color of track
+-   Save Track - Save selected track to a text file. The text file contains
+    these columns in order:
+      1. Time of lidar point in UTC
+      2. X lidar point in kilometers in body frame coordinates
+      3. Y lidar point in kilometers in body frame coordinates
+      4. Z lidar point in kilometers in body frame coordinates
+      5. X spacecraft position in kilometers in body frame coordinates
+      6. Y spacecraft position in kilometers in body frame coordinates
+      7. Z spacecraft position in kilometers in body frame coordinates
+      8. Lidar range in kilometers (distance in kilometers between
+         lidar point and spacecraft position)
+-   Save All Visible Tracks - Save all visible tracks (i.e. excluding
+    tracks which are hidden using options below). Output files have
+    same format as the Save Track option.
+-   Hide Track - Hide track
+-   Hide Other Tracks - Hide all other tracks
+-   Plot Track... - Create 6 plots showing elevation, potential, and
+    acceleration vs. distance and time. The algorithm of Werner and
+    Scheeres is used for the computation as explained at the bottom of
+    [this](references.html) web page. The data in each of these plots
+    can be saved to a text file using the "Export Data..." option in the
+    File menu of each plot window.
+
+
 ### Lineament tab (Eros only)
 
 The Lineament tab shows lineaments structures drawn by Debra Buczkowski

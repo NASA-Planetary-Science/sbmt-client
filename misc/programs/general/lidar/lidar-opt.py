@@ -26,10 +26,7 @@ def run_lidar_min(vtkfile, outputfile, inputfile):
     number_points = num_lines_in_input(inputfile)
     startId = '0'
     stopId = str(number_points)
-    # dname is folder containing this script
-    abspath = os.path.abspath(__file__)
-    dname = os.path.dirname(abspath)
-    command = dname +'/lidar-optimize-track '+vtkfile+' '+outputfile+' '+inputfile
+    command = 'lidar-optimize-track '+vtkfile+' '+outputfile+' '+inputfile
     print command
     p = subprocess.Popen(command, shell=True)
     p.wait()
@@ -46,10 +43,7 @@ def concat_output_tracks(files):
 
 
 def run_lidar_compute_track_stats(vtkfile, outputfile, files):
-    # dname is folder containing this script
-    abspath = os.path.abspath(__file__)
-    dname = os.path.dirname(abspath)
-    command = dname +'/lidar-compute-track-stats '+vtkfile+' '+outputfile+' '+' '.join(files)
+    command = 'lidar-compute-track-stats '+vtkfile+' '+outputfile+' '+' '.join(files)
     print command
     p = subprocess.Popen(command, shell=True)
     p.wait()
@@ -69,6 +63,13 @@ if os.path.exists(VTKFILE) == False:
     print "Error: Shape model file does not exist. This program uses the shape model file (highest resolution) available in the SBMT cache."
     print "Please run the SBMT and display the highest resolution shape model of Eros or Itokawa before continuing."
     sys.exit(1)
+
+
+# Add folder containing this script to PATH
+abspath = os.path.abspath(__file__)
+dname = os.path.dirname(abspath)
+os.environ["PATH"] = dname + ":" + os.environ["PATH"]
+
 
 inputFiles = sys.argv[2:]
 

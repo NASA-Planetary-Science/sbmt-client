@@ -30,6 +30,8 @@ import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.JToggleButton;
 
+import nom.tam.fits.FitsException;
+
 import org.jfree.chart.plot.DefaultDrawingSupplier;
 
 import vtk.vtkGlobalJavaHash;
@@ -82,8 +84,8 @@ public class MapmakerView extends JFrame
     private static final String Color = "Color";
 
 
-    public MapmakerView(File cubFile, File lblFile, SmallBodyModel parentSmallBodyModel,
-            MapletBoundaryCollection mapletBoundaries) throws IOException
+    public MapmakerView(File cubFile, SmallBodyModel parentSmallBodyModel,
+            MapletBoundaryCollection mapletBoundaries) throws IOException, FitsException
     {
         this.mapletBoundaries = mapletBoundaries;
 
@@ -96,10 +98,9 @@ public class MapmakerView extends JFrame
         add(statusBar, BorderLayout.PAGE_END);
 
         String filename = cubFile.getAbsolutePath();
-        String lblfilename = lblFile.getAbsolutePath();
         final ModelManager modelManager = new ModelManager();
         HashMap<String, Model> allModels = new HashMap<String, Model>();
-        dem = new DEMModel(filename, lblfilename);
+        dem = new DEMModel(filename);
         lineModel = new LineModel(dem, true);
         lineModel.setMaximumVerticesPerLine(2);
         allModels.put(ModelNames.SMALL_BODY, dem);

@@ -8,7 +8,7 @@
 #
 # Example:
 #
-# run_java_program.sh edu.jhuapl.near.SmallBodyMappingTool
+# run_java_program.sh edu.jhuapl.near.tools.SmallBodyMappingTool
 
 
 VTK_LIB_DIR=/project/nearsdc/software/vtk_all_platforms/current
