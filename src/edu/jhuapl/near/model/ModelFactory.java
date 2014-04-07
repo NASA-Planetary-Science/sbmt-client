@@ -27,6 +27,7 @@ import edu.jhuapl.near.model.gaspra.SSIGaspraImage;
 import edu.jhuapl.near.model.ida.SSIIdaImage;
 import edu.jhuapl.near.model.itokawa.AmicaImage;
 import edu.jhuapl.near.model.itokawa.Itokawa;
+import edu.jhuapl.near.model.lorri.LorriImage;
 import edu.jhuapl.near.model.lutetia.Lutetia;
 import edu.jhuapl.near.model.lutetia.OsirisImage;
 import edu.jhuapl.near.model.mathilde.MSIMathildeImage;
@@ -40,6 +41,7 @@ import edu.jhuapl.near.query.ErosQuery;
 import edu.jhuapl.near.query.GaspraQuery;
 import edu.jhuapl.near.query.IdaQuery;
 import edu.jhuapl.near.query.ItokawaQuery;
+import edu.jhuapl.near.query.FixedListQuery;
 import edu.jhuapl.near.query.LutetiaQuery;
 import edu.jhuapl.near.query.MathildeQuery;
 import edu.jhuapl.near.query.PhobosExperimentalQuery;
@@ -73,6 +75,10 @@ public class ModelFactory
     static public final String TEMPEL_1 = "Tempel 1";
     static public final String HALLEY = "Halley";
     static public final String AMALTHEA = "Amalthea";
+    static public final String CALLISTO = "Callisto";
+    static public final String EUROPA = "Europa";
+    static public final String GANYMEDE = "Ganymede";
+    static public final String IO = "Io";
     static public final String LARISSA = "Larissa";
     static public final String PROTEUS = "Proteus";
     static public final String PROMETHEUS = "Prometheus";
@@ -94,6 +100,7 @@ public class ModelFactory
     static public final String ASTEROID = "Asteroids";
     static public final String SATELLITES = "Satellites";
     static public final String COMETS = "Comets";
+    static public final String PLANETS = "Planets";
 
     // Populations
     static public final String MARS = "Mars";
@@ -134,6 +141,7 @@ public class ModelFactory
     static public final String OSIRIS = "OSIRIS";
     static public final String OLA = "OLA";
     static public final String IMAGING_DATA = "Imaging Data";
+    static public final String LORRI = "LORRI";
 
     static public enum ImageType {
         MSI_IMAGE,
@@ -145,7 +153,8 @@ public class ModelFactory
         SATURN_MOON_IMAGE,
         SSI_GASPRA_IMAGE,
         SSI_IDA_IMAGE,
-        MSI_MATHILDE_IMAGE
+        MSI_MATHILDE_IMAGE,
+        LORRI_IMAGE,
     }
 
     static private final String[] DEFAULT_GASKELL_LABELS_PER_RESOLUTION = {
@@ -390,6 +399,74 @@ public class ModelFactory
             c.imageSearchImageSources = new ImageSource[]{ImageSource.GASKELL};
             c.imageType = ImageType.PHOBOS_IMAGE;
             c.imageInstrumentName = IMAGING_DATA;
+            configArray.add(c);
+        }
+
+        if (Configuration.isAPLVersion())
+        {
+            c = new ModelConfig();
+            c.name = JUPITER;
+            c.type = SATELLITES;
+            c.population = JUPITER;
+            c.dataUsed = null;
+            c.author = JUPITER;
+            c.pathOnServer = "/NEWHORIZONS/JUPITER/shape_res0.vtk.gz";
+            c.hasImageMap = true;
+            c.hasPerspectiveImages = true;
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2007, 0, 8, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2007, 2, 5, 0, 0, 0).getTime();
+            c.imageSearchQuery = new FixedListQuery("/NEWHORIZONS/JUPITER/IMAGING");
+            c.imageSearchFilterNames = new String[]{};
+            c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
+            c.imageSearchDefaultMaxSpacecraftDistance = 1.0e9;
+            c.imageSearchDefaultMaxResolution = 1.0e6;
+            c.imageSearchImageSources = new ImageSource[]{ImageSource.PDS};
+            c.imageType = ImageType.LORRI_IMAGE;
+            c.imageInstrumentName = LORRI;
+            configArray.add(c);
+
+            c = c.clone();
+            c.name = CALLISTO;
+            c.type = SATELLITES;
+            c.population = JUPITER;
+            c.dataUsed = null;
+            c.author = CALLISTO;
+            c.pathOnServer = "/NEWHORIZONS/CALLISTO/shape_res0.vtk.gz";
+            c.hasImageMap = true;
+            c.imageSearchQuery = new FixedListQuery("/NEWHORIZONS/CALLISTO/IMAGING");
+            configArray.add(c);
+
+            c = c.clone();
+            c.name = EUROPA;
+            c.type = SATELLITES;
+            c.population = JUPITER;
+            c.dataUsed = null;
+            c.author = EUROPA;
+            c.pathOnServer = "/NEWHORIZONS/EUROPA/shape_res0.vtk.gz";
+            c.hasImageMap = true;
+            c.imageSearchQuery = new FixedListQuery("/NEWHORIZONS/EUROPA/IMAGING");
+            configArray.add(c);
+
+            c = c.clone();
+            c.name = GANYMEDE;
+            c.type = SATELLITES;
+            c.population = JUPITER;
+            c.dataUsed = null;
+            c.author = GANYMEDE;
+            c.pathOnServer = "/NEWHORIZONS/GANYMEDE/shape_res0.vtk.gz";
+            c.hasImageMap = true;
+            c.imageSearchQuery = new FixedListQuery("/NEWHORIZONS/GANYMEDE/IMAGING");
+            configArray.add(c);
+
+            c = c.clone();
+            c.name = IO;
+            c.type = SATELLITES;
+            c.population = JUPITER;
+            c.dataUsed = null;
+            c.author = IO;
+            c.pathOnServer = "/NEWHORIZONS/IO/shape_res0.vtk.gz";
+            c.hasImageMap = true;
+            c.imageSearchQuery = new FixedListQuery("/NEWHORIZONS/IO/IMAGING");
             configArray.add(c);
         }
 
@@ -1151,6 +1228,8 @@ public class ModelFactory
                 return new SSIIdaImage(key, smallBodyModel, loadPointingOnly, rootFolder);
             else if (config.imageType == ImageType.MSI_MATHILDE_IMAGE)
                 return new MSIMathildeImage(key, smallBodyModel, loadPointingOnly, rootFolder);
+            else if (config.imageType == ImageType.LORRI_IMAGE)
+                return new LorriImage(key, smallBodyModel, loadPointingOnly, rootFolder);
             else
                 return null;
         }
