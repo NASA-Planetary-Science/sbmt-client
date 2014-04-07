@@ -6,7 +6,7 @@ import sys
 
 path = os.path.abspath(os.path.dirname(sys.argv[0]))
 
-def make_gallery(file_glob, output_dir, title):
+def make_gallery(file_glob, output_dir, title, valid_file_list):
 
     files = sorted(glob.glob(file_glob))
 
@@ -110,6 +110,9 @@ li{
 
     for f in files:
         print "processing " + f
+        if valid_file_list != None:
+            if not any(valid_file in f for valid_file in valid_file_list):
+                continue
         
         thumbnail = f+"-small.jpeg"
         command = "convert -resize 200x200 " + f + " " + output_dir+"/"+thumbnail
@@ -140,4 +143,9 @@ file_glob = sys.argv[1]
 output_dir = sys.argv[2]
 title = sys.argv[3]
 
-make_gallery(file_glob, output_dir, title)
+valid_file_list = None
+if len(sys.argv) >= 5:
+    with open(sys.argv[4]) as f:
+        valid_file_list = [line.strip() for line in f]
+
+make_gallery(file_glob, output_dir, title, valid_file_list)

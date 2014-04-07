@@ -4,3 +4,4 @@ list of images. The script takes these arguments in order:
 1. file_glob = e.g. "*.jpeg"
 2. output_dir = e.g."./output"
 3. title - e.g. "My Images"
+4. (optional) filter list - only process files that match files in this file
