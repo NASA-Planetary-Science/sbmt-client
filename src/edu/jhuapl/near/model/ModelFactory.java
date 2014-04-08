@@ -39,9 +39,9 @@ import edu.jhuapl.near.model.vesta_old.VestaOld;
 import edu.jhuapl.near.query.DeimosQuery;
 import edu.jhuapl.near.query.ErosQuery;
 import edu.jhuapl.near.query.GaspraQuery;
+import edu.jhuapl.near.query.GenericPhpQuery;
 import edu.jhuapl.near.query.IdaQuery;
 import edu.jhuapl.near.query.ItokawaQuery;
-import edu.jhuapl.near.query.FixedListQuery;
 import edu.jhuapl.near.query.LutetiaQuery;
 import edu.jhuapl.near.query.MathildeQuery;
 import edu.jhuapl.near.query.PhobosExperimentalQuery;
@@ -415,7 +415,7 @@ public class ModelFactory
             c.hasPerspectiveImages = true;
             c.imageSearchDefaultStartDate = new GregorianCalendar(2007, 0, 8, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2007, 2, 5, 0, 0, 0).getTime();
-            c.imageSearchQuery = new FixedListQuery("/NEWHORIZONS/JUPITER/IMAGING");
+            c.imageSearchQuery = new GenericPhpQuery("/NEWHORIZONS/JUPITER/IMAGING/images", JUPITER);
             c.imageSearchFilterNames = new String[]{};
             c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
             c.imageSearchDefaultMaxSpacecraftDistance = 1.0e9;
@@ -433,7 +433,7 @@ public class ModelFactory
             c.author = CALLISTO;
             c.pathOnServer = "/NEWHORIZONS/CALLISTO/shape_res0.vtk.gz";
             c.hasImageMap = true;
-            c.imageSearchQuery = new FixedListQuery("/NEWHORIZONS/CALLISTO/IMAGING");
+            c.imageSearchQuery = new GenericPhpQuery("/NEWHORIZONS/CALLISTO/IMAGING/images", CALLISTO);
             configArray.add(c);
 
             c = c.clone();
@@ -444,7 +444,7 @@ public class ModelFactory
             c.author = EUROPA;
             c.pathOnServer = "/NEWHORIZONS/EUROPA/shape_res0.vtk.gz";
             c.hasImageMap = true;
-            c.imageSearchQuery = new FixedListQuery("/NEWHORIZONS/EUROPA/IMAGING");
+            c.imageSearchQuery = new GenericPhpQuery("/NEWHORIZONS/EUROPA/IMAGING/images", EUROPA);
             configArray.add(c);
 
             c = c.clone();
@@ -455,7 +455,7 @@ public class ModelFactory
             c.author = GANYMEDE;
             c.pathOnServer = "/NEWHORIZONS/GANYMEDE/shape_res0.vtk.gz";
             c.hasImageMap = true;
-            c.imageSearchQuery = new FixedListQuery("/NEWHORIZONS/GANYMEDE/IMAGING");
+            c.imageSearchQuery = new GenericPhpQuery("/NEWHORIZONS/GANYMEDE/IMAGING/images", GANYMEDE);
             configArray.add(c);
 
             c = c.clone();
@@ -466,7 +466,7 @@ public class ModelFactory
             c.author = IO;
             c.pathOnServer = "/NEWHORIZONS/IO/shape_res0.vtk.gz";
             c.hasImageMap = true;
-            c.imageSearchQuery = new FixedListQuery("/NEWHORIZONS/IO/IMAGING");
+            c.imageSearchQuery = new GenericPhpQuery("/NEWHORIZONS/IO/IMAGING/images", IO);
             configArray.add(c);
         }
 
