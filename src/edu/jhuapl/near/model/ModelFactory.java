@@ -414,7 +414,7 @@ public class ModelFactory
             c.type = PLANETS_AND_SATELLITES;
             c.population = JUPITER;
             c.dataUsed = null;
-            c.author = JUPITER;
+            c.author = null;
             c.pathOnServer = "/NEWHORIZONS/JUPITER/shape_res0.vtk.gz";
             c.hasColoringData = false;
             c.hasImageMap = false;
@@ -436,7 +436,7 @@ public class ModelFactory
             c.type = PLANETS_AND_SATELLITES;
             c.population = JUPITER;
             c.dataUsed = null;
-            c.author = CALLISTO;
+            c.author = null;
             c.pathOnServer = "/NEWHORIZONS/CALLISTO/shape_res0.vtk.gz";
             c.hasImageMap = true;
             c.imageSearchQuery = new GenericPhpQuery("/NEWHORIZONS/CALLISTO/IMAGING/images", CALLISTO);
@@ -447,7 +447,7 @@ public class ModelFactory
             c.type = PLANETS_AND_SATELLITES;
             c.population = JUPITER;
             c.dataUsed = null;
-            c.author = EUROPA;
+            c.author = null;
             c.pathOnServer = "/NEWHORIZONS/EUROPA/shape_res0.vtk.gz";
             c.hasImageMap = true;
             c.imageSearchQuery = new GenericPhpQuery("/NEWHORIZONS/EUROPA/IMAGING/images", EUROPA);
@@ -458,7 +458,7 @@ public class ModelFactory
             c.type = PLANETS_AND_SATELLITES;
             c.population = JUPITER;
             c.dataUsed = null;
-            c.author = GANYMEDE;
+            c.author = null;
             c.pathOnServer = "/NEWHORIZONS/GANYMEDE/shape_res0.vtk.gz";
             c.hasImageMap = true;
             c.imageSearchQuery = new GenericPhpQuery("/NEWHORIZONS/GANYMEDE/IMAGING/images", GANYMEDE);
@@ -469,7 +469,7 @@ public class ModelFactory
             c.type = PLANETS_AND_SATELLITES;
             c.population = JUPITER;
             c.dataUsed = null;
-            c.author = IO;
+            c.author = null;
             c.pathOnServer = "/NEWHORIZONS/IO/shape_res0.vtk.gz";
             c.hasImageMap = true;
             c.imageSearchQuery = new GenericPhpQuery("/NEWHORIZONS/IO/IMAGING/images", IO);
@@ -1062,7 +1062,7 @@ public class ModelFactory
             c.type = PLANETS_AND_SATELLITES;
             c.population = PLUTO;
             c.dataUsed = null;
-            c.author = PLUTO;
+            c.author = null;
             c.pathOnServer = "/NEWHORIZONS/PLUTO/shape_res0.vtk.gz";
             c.hasColoringData = false;
             configArray.add(c);
@@ -1072,7 +1072,7 @@ public class ModelFactory
             c.type = PLANETS_AND_SATELLITES;
             c.population = PLUTO;
             c.dataUsed = null;
-            c.author = CHARON;
+            c.author = null;
             c.pathOnServer = "/NEWHORIZONS/CHARON/shape_res0.vtk.gz";
             c.hasColoringData = false;
             configArray.add(c);
@@ -1082,7 +1082,7 @@ public class ModelFactory
             c.type = PLANETS_AND_SATELLITES;
             c.population = PLUTO;
             c.dataUsed = null;
-            c.author = HYDRA;
+            c.author = null;
             c.pathOnServer = "/NEWHORIZONS/HYDRA/shape_res0.vtk.gz";
             c.hasColoringData = false;
             configArray.add(c);
@@ -1092,7 +1092,7 @@ public class ModelFactory
             c.type = PLANETS_AND_SATELLITES;
             c.population = PLUTO;
             c.dataUsed = null;
-            c.author = KERBEROS;
+            c.author = null;
             c.pathOnServer = "/NEWHORIZONS/KERBEROS/shape_res0.vtk.gz";
             c.hasColoringData = false;
             configArray.add(c);
@@ -1102,7 +1102,7 @@ public class ModelFactory
             c.type = PLANETS_AND_SATELLITES;
             c.population = PLUTO;
             c.dataUsed = null;
-            c.author = NIX;
+            c.author = null;
             c.pathOnServer = "/NEWHORIZONS/NIX/shape_res0.vtk.gz";
             c.hasColoringData = false;
             configArray.add(c);
@@ -1112,7 +1112,7 @@ public class ModelFactory
             c.type = PLANETS_AND_SATELLITES;
             c.population = PLUTO;
             c.dataUsed = null;
-            c.author = STYX;
+            c.author = null;
             c.pathOnServer = "/NEWHORIZONS/STYX/shape_res0.vtk.gz";
             c.hasColoringData = false;
             configArray.add(c);
@@ -1237,9 +1237,11 @@ public class ModelFactory
             String path = type;
             if (population != null)
                 path += " > " + population;
-            path += " > " + name
-                    + " > " + dataUsed
-                    + " > " + author;
+            path += " > " + name;
+            if (dataUsed != null)
+                path += " > " + dataUsed;
+            if (author != null)
+                path += " > " + author;
             return path;
         }
 

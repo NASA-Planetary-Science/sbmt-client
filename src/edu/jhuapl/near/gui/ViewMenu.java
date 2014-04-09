@@ -48,7 +48,7 @@ public class ViewMenu extends JMenu implements PropertyChangeListener
 
             ModelConfig modelConfig = view.getModelConfig();
 
-            addMenuItem(mi, modelConfig.type, modelConfig.population, modelConfig.name, modelConfig.dataUsed);
+            addMenuItem(mi, modelConfig);
         }
 
         if (Configuration.isAPLVersion())
@@ -74,17 +74,17 @@ public class ViewMenu extends JMenu implements PropertyChangeListener
         }
     }
 
-    private void addMenuItem(JMenuItem mi, String type, String population, String name, String dataUsed)
+    private void addMenuItem(JMenuItem mi, ModelConfig modelConfig)
     {
         ArrayList<String> tree = new ArrayList<String>();
-        if (type != null)
-            tree.add(type);
-        if (population != null)
-            tree.add(population);
-        if (name != null)
-            tree.add(name);
-        if (dataUsed != null)
-            tree.add(dataUsed);
+        if (modelConfig.type != null)
+            tree.add(modelConfig.type);
+        if (modelConfig.population != null)
+            tree.add(modelConfig.population);
+        if (modelConfig.name != null && modelConfig.author != null)
+            tree.add(modelConfig.name);
+        if (modelConfig.dataUsed != null && modelConfig.author != null)
+            tree.add(modelConfig.dataUsed);
 
         JMenu parentMenu = this;
         for (String subMenu : tree)
