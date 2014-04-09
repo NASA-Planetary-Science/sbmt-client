@@ -28,33 +28,32 @@ public class SimpleSmallBody extends SmallBodyModel
     public SimpleSmallBody(
             ModelConfig config,
             String[] modelNames,
-            String[] paths,
-            boolean hasColoringData)
+            String[] paths)
     {
         super(config,
                 config.name,
                 config.author,
                 modelNames,
                 paths,
-                hasColoringData ? getColoringFiles(paths[0]) : null,
-                hasColoringData ? coloringNames : null,
-                hasColoringData ? coloringUnits : null,
+                config.hasColoringData ? getColoringFiles(paths[0]) : null,
+                config.hasColoringData ? coloringNames : null,
+                config.hasColoringData ? coloringUnits : null,
                 null,
                 null,
                 ColoringValueType.CELLDATA,
                 false);
     }
 
-    public SimpleSmallBody(ModelConfig config, String imageMap, boolean hasColoringData)
+    public SimpleSmallBody(ModelConfig config, String imageMap)
     {
         super(config,
                 config.name,
                 config.author,
                 new String[] {config.name},
                 new String[] {config.pathOnServer},
-                hasColoringData ? getColoringFiles(config.pathOnServer) : null,
-                hasColoringData ? coloringNames : null,
-                hasColoringData ? coloringUnits : null,
+                config.hasColoringData ? getColoringFiles(config.pathOnServer) : null,
+                config.hasColoringData ? coloringNames : null,
+                config.hasColoringData ? coloringUnits : null,
                 null,
                 imageMap != null ? new String[] {imageMap} : null,
                 ColoringValueType.CELLDATA,

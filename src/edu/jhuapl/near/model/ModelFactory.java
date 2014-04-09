@@ -411,6 +411,7 @@ public class ModelFactory
             c.dataUsed = null;
             c.author = JUPITER;
             c.pathOnServer = "/NEWHORIZONS/JUPITER/shape_res0.vtk.gz";
+            c.hasColoringData = false;
             c.hasImageMap = true;
             c.hasPerspectiveImages = true;
             c.imageSearchDefaultStartDate = new GregorianCalendar(2007, 0, 8, 0, 0, 0).getTime();
@@ -1068,6 +1069,7 @@ public class ModelFactory
         public String pathOnServer;
         public String[] smallBodyLabelPerResolutionLevel; // only needed when number resolution levels > 1
         public int[] smallBodyNumberOfPlatesPerResolutionLevel; // only needed when number resolution levels > 1
+        public boolean hasColoringData = true;
         public boolean hasImageMap = false;
         public boolean hasPerspectiveImages = false;
         public boolean hasLidarData = false;
@@ -1114,6 +1116,7 @@ public class ModelFactory
             c.dataUsed = this.dataUsed;
             c.author = this.author;
             c.pathOnServer = this.pathOnServer;
+            c.hasColoringData = this.hasColoringData;
             c.hasImageMap = this.hasImageMap;
             c.hasPerspectiveImages = this.hasPerspectiveImages;
             c.hasLidarData = this.hasLidarData;
@@ -1263,7 +1266,7 @@ public class ModelFactory
                         config.pathOnServer + "/ver64q.vtk.gz",
                 };
 
-                return new SimpleSmallBody(config, names, paths, true);
+                return new SimpleSmallBody(config, names, paths);
             }
             else
             {
@@ -1280,7 +1283,7 @@ public class ModelFactory
                         config.pathOnServer + "/ver512q.vtk.gz"
                 };
 
-                return new SimpleSmallBody(config, names, paths, true);
+                return new SimpleSmallBody(config, names, paths);
             }
         }
         else if (THOMAS.equals(author))
@@ -1304,7 +1307,7 @@ public class ModelFactory
         if (config.hasImageMap)
             imageMap = (new File(config.pathOnServer)).getParent() + "/image_map.png";
 
-        return new SimpleSmallBody(config, imageMap, true);
+        return new SimpleSmallBody(config, imageMap);
     }
 
     static public Graticule createGraticule(SmallBodyModel smallBodyModel)
