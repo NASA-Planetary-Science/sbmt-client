@@ -2,7 +2,7 @@
 
 $imagesDatabase=$_POST['imagesDatabase'];
 $cubesDatabase=$_POST['cubesDatabase'];
-$id=$_POST['id'];
+$searchString=$_POST['searchString'];
 $startDate=$_POST['startDate'] + 0;
 $stopDate=$_POST['stopDate'] + 0;
 $minScDistance=(float)$_POST['minScDistance'];
@@ -97,10 +97,10 @@ if (!$link) {
 
 $query = "";
 
-if( isset($_POST['id']) )
+if( isset($_POST['searchString']) )
 {
     $query = "SELECT filename, starttime FROM $imagesDatabase ";
-    $query .= 'WHERE filename LIKE "%' . $id . '%"';
+    $query .= 'WHERE filename LIKE "%' . $searchString . '%"';
 }
 else
 {

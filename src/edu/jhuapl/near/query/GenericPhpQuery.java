@@ -77,7 +77,7 @@ public class GenericPhpQuery extends QueryBase
             HashMap<String, String> args = new HashMap<String, String>();
             args.put("imagesDatabase", imagesDatabase);
             args.put("imageSource", imageSource.toString());
-            args.put("id", searchString);
+            args.put("searchString", searchString);
 
             results = doQuery("searchimages.php", constructUrlArguments(args));
 
