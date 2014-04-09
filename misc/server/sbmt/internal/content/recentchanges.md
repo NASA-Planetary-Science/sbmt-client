@@ -4,6 +4,16 @@
 
 # Recent Changes
 
+### April 9, 2014
+
+-   Added shape models of Jupiter, Callisto, Europa, Ganymede, and Io
+    along with LORRI images from New Horizons flyby in 2007. These
+    shape models are simple ellipsoid models and have been added for
+    the benefit of the New Horizons team in preparation of the Pluto
+    flyby in 2015.
+-   Also added preliminary shape models of Pluto and its 5 moons in
+    preparation of the Pluto flyby in 2015.
+
 ### March 25, 2014
 
 -   When saving lidar tracks to file (by right-clicking on a track and
