@@ -95,6 +95,11 @@ public class ModelFactory
     static public final String WILD_2 = "Wild 2";
     static public final String STEINS = "Steins";
     static public final String HARTLEY = "Hartley";
+    static public final String CHARON = "Charon";
+    static public final String HYDRA = "Hydra";
+    static public final String KERBEROS = "Kerberos";
+    static public final String NIX = "Nix";
+    static public final String STYX = "Styx";
 
     // Types of bodies
     static public final String ASTEROID = "Asteroids";
@@ -109,6 +114,7 @@ public class ModelFactory
     static public final String NEPTUNE = "Neptune";
     static public final String NEO = "Near-Earth";
     static public final String MAIN_BELT = "Main Belt";
+    static public final String PLUTO = "Pluto";
 
     // Names of authors
     static public final String GASKELL = "Gaskell";
@@ -1049,6 +1055,69 @@ public class ModelFactory
         c.author = THOMAS;
         c.pathOnServer = "/THOMAS/HARTLEY/hartley2_2012_cart.plt.gz";
         configArray.add(c);
+
+        if (Configuration.isAPLVersion())
+        {
+            c = new ModelConfig();
+            c.name = PLUTO;
+            c.type = SATELLITES;
+            c.population = PLUTO;
+            c.dataUsed = null;
+            c.author = PLUTO;
+            c.pathOnServer = "/NEWHORIZONS/PLUTO/shape_res0.vtk.gz";
+            c.hasColoringData = false;
+            configArray.add(c);
+
+            c = new ModelConfig();
+            c.name = CHARON;
+            c.type = SATELLITES;
+            c.population = PLUTO;
+            c.dataUsed = null;
+            c.author = CHARON;
+            c.pathOnServer = "/NEWHORIZONS/CHARON/shape_res0.vtk.gz";
+            c.hasColoringData = false;
+            configArray.add(c);
+
+            c = new ModelConfig();
+            c.name = HYDRA;
+            c.type = SATELLITES;
+            c.population = PLUTO;
+            c.dataUsed = null;
+            c.author = HYDRA;
+            c.pathOnServer = "/NEWHORIZONS/HYDRA/shape_res0.vtk.gz";
+            c.hasColoringData = false;
+            configArray.add(c);
+
+            c = new ModelConfig();
+            c.name = KERBEROS;
+            c.type = SATELLITES;
+            c.population = PLUTO;
+            c.dataUsed = null;
+            c.author = KERBEROS;
+            c.pathOnServer = "/NEWHORIZONS/KERBEROS/shape_res0.vtk.gz";
+            c.hasColoringData = false;
+            configArray.add(c);
+
+            c = new ModelConfig();
+            c.name = NIX;
+            c.type = SATELLITES;
+            c.population = PLUTO;
+            c.dataUsed = null;
+            c.author = NIX;
+            c.pathOnServer = "/NEWHORIZONS/NIX/shape_res0.vtk.gz";
+            c.hasColoringData = false;
+            configArray.add(c);
+
+            c = new ModelConfig();
+            c.name = STYX;
+            c.type = SATELLITES;
+            c.population = PLUTO;
+            c.dataUsed = null;
+            c.author = STYX;
+            c.pathOnServer = "/NEWHORIZONS/STYX/shape_res0.vtk.gz";
+            c.hasColoringData = false;
+            configArray.add(c);
+        }
     }
 
     /**
