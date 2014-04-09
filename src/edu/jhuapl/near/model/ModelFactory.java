@@ -417,7 +417,7 @@ public class ModelFactory
             c.author = JUPITER;
             c.pathOnServer = "/NEWHORIZONS/JUPITER/shape_res0.vtk.gz";
             c.hasColoringData = false;
-            c.hasImageMap = true;
+            c.hasImageMap = false;
             c.hasPerspectiveImages = true;
             c.imageSearchDefaultStartDate = new GregorianCalendar(2007, 0, 8, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2007, 2, 5, 0, 0, 0).getTime();
