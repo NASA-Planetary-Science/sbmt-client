@@ -103,9 +103,8 @@ public class ModelFactory
 
     // Types of bodies
     static public final String ASTEROID = "Asteroids";
-    static public final String SATELLITES = "Satellites";
+    static public final String PLANETS_AND_SATELLITES = "Planets and Satellites";
     static public final String COMETS = "Comets";
-    static public final String PLANETS = "Planets";
 
     // Populations
     static public final String MARS = "Mars";
@@ -322,7 +321,7 @@ public class ModelFactory
         // Gaskell Phobos
         c = new ModelConfig();
         c.name = PHOBOS;
-        c.type = SATELLITES;
+        c.type = PLANETS_AND_SATELLITES;
         c.population = MARS;
         c.dataUsed = IMAGE_BASED;
         c.author = GASKELL;
@@ -355,7 +354,7 @@ public class ModelFactory
         // Thomas Phobos
         c = new ModelConfig();
         c.name = PHOBOS;
-        c.type = SATELLITES;
+        c.type = PLANETS_AND_SATELLITES;
         c.population = MARS;
         c.dataUsed = IMAGE_BASED;
         c.author = THOMAS;
@@ -367,7 +366,7 @@ public class ModelFactory
         {
             c = new ModelConfig();
             c.name = PHOBOS;
-            c.type = SATELLITES;
+            c.type = PLANETS_AND_SATELLITES;
             c.population = MARS;
             c.dataUsed = IMAGE_BASED;
             c.author = EXPERIMENTAL;
@@ -412,7 +411,7 @@ public class ModelFactory
         {
             c = new ModelConfig();
             c.name = JUPITER;
-            c.type = SATELLITES;
+            c.type = PLANETS_AND_SATELLITES;
             c.population = JUPITER;
             c.dataUsed = null;
             c.author = JUPITER;
@@ -434,7 +433,7 @@ public class ModelFactory
 
             c = c.clone();
             c.name = CALLISTO;
-            c.type = SATELLITES;
+            c.type = PLANETS_AND_SATELLITES;
             c.population = JUPITER;
             c.dataUsed = null;
             c.author = CALLISTO;
@@ -445,7 +444,7 @@ public class ModelFactory
 
             c = c.clone();
             c.name = EUROPA;
-            c.type = SATELLITES;
+            c.type = PLANETS_AND_SATELLITES;
             c.population = JUPITER;
             c.dataUsed = null;
             c.author = EUROPA;
@@ -456,7 +455,7 @@ public class ModelFactory
 
             c = c.clone();
             c.name = GANYMEDE;
-            c.type = SATELLITES;
+            c.type = PLANETS_AND_SATELLITES;
             c.population = JUPITER;
             c.dataUsed = null;
             c.author = GANYMEDE;
@@ -467,7 +466,7 @@ public class ModelFactory
 
             c = c.clone();
             c.name = IO;
-            c.type = SATELLITES;
+            c.type = PLANETS_AND_SATELLITES;
             c.population = JUPITER;
             c.dataUsed = null;
             c.author = IO;
@@ -479,7 +478,7 @@ public class ModelFactory
 
         c = new ModelConfig();
         c.name = AMALTHEA;
-        c.type = SATELLITES;
+        c.type = PLANETS_AND_SATELLITES;
         c.population = JUPITER;
         c.dataUsed = IMAGE_BASED;
         c.author = STOOKE;
@@ -488,7 +487,7 @@ public class ModelFactory
 
         c = new ModelConfig();
         c.name = MIMAS;
-        c.type = SATELLITES;
+        c.type = PLANETS_AND_SATELLITES;
         c.population = SATURN;
         c.dataUsed = IMAGE_BASED;
         c.author = GASKELL;
@@ -510,7 +509,7 @@ public class ModelFactory
 
         c = new ModelConfig();
         c.name = PHOEBE;
-        c.type = SATELLITES;
+        c.type = PLANETS_AND_SATELLITES;
         c.population = SATURN;
         c.dataUsed = IMAGE_BASED;
         c.author = GASKELL;
@@ -666,7 +665,7 @@ public class ModelFactory
 
         c = new ModelConfig();
         c.name = DEIMOS;
-        c.type = SATELLITES;
+        c.type = PLANETS_AND_SATELLITES;
         c.population = MARS;
         c.dataUsed = IMAGE_BASED;
         c.author = THOMAS;
@@ -694,7 +693,7 @@ public class ModelFactory
 
         c = new ModelConfig();
         c.name = JANUS;
-        c.type = SATELLITES;
+        c.type = PLANETS_AND_SATELLITES;
         c.population = SATURN;
         c.dataUsed = IMAGE_BASED;
         c.author = THOMAS;
@@ -703,7 +702,7 @@ public class ModelFactory
 
         c = new ModelConfig();
         c.name = JANUS;
-        c.type = SATELLITES;
+        c.type = PLANETS_AND_SATELLITES;
         c.population = SATURN;
         c.dataUsed = IMAGE_BASED;
         c.author = STOOKE;
@@ -712,7 +711,7 @@ public class ModelFactory
 
         c = new ModelConfig();
         c.name = EPIMETHEUS;
-        c.type = SATELLITES;
+        c.type = PLANETS_AND_SATELLITES;
         c.population = SATURN;
         c.dataUsed = IMAGE_BASED;
         c.author = THOMAS;
@@ -721,7 +720,7 @@ public class ModelFactory
 
         c = new ModelConfig();
         c.name = EPIMETHEUS;
-        c.type = SATELLITES;
+        c.type = PLANETS_AND_SATELLITES;
         c.population = SATURN;
         c.dataUsed = IMAGE_BASED;
         c.author = STOOKE;
@@ -739,7 +738,7 @@ public class ModelFactory
 
         c = new ModelConfig();
         c.name = LARISSA;
-        c.type = SATELLITES;
+        c.type = PLANETS_AND_SATELLITES;
         c.population = NEPTUNE;
         c.dataUsed = IMAGE_BASED;
         c.author = STOOKE;
@@ -748,7 +747,7 @@ public class ModelFactory
 
         c = new ModelConfig();
         c.name = PROTEUS;
-        c.type = SATELLITES;
+        c.type = PLANETS_AND_SATELLITES;
         c.population = NEPTUNE;
         c.dataUsed = IMAGE_BASED;
         c.author = STOOKE;
@@ -757,7 +756,7 @@ public class ModelFactory
 
         c = new ModelConfig();
         c.name = PROMETHEUS;
-        c.type = SATELLITES;
+        c.type = PLANETS_AND_SATELLITES;
         c.population = SATURN;
         c.dataUsed = IMAGE_BASED;
         c.author = STOOKE;
@@ -766,7 +765,7 @@ public class ModelFactory
 
         c = new ModelConfig();
         c.name = PANDORA;
-        c.type = SATELLITES;
+        c.type = PLANETS_AND_SATELLITES;
         c.population = SATURN;
         c.dataUsed = IMAGE_BASED;
         c.author = STOOKE;
@@ -949,7 +948,7 @@ public class ModelFactory
 
         c = new ModelConfig();
         c.name = DIONE;
-        c.type = SATELLITES;
+        c.type = PLANETS_AND_SATELLITES;
         c.population = SATURN;
         c.dataUsed = IMAGE_BASED;
         c.author = GASKELL;
@@ -971,7 +970,7 @@ public class ModelFactory
 
         c = new ModelConfig();
         c.name = TETHYS;
-        c.type = SATELLITES;
+        c.type = PLANETS_AND_SATELLITES;
         c.population = SATURN;
         c.dataUsed = IMAGE_BASED;
         c.author = GASKELL;
@@ -984,7 +983,7 @@ public class ModelFactory
         {
             c = new ModelConfig();
             c.name = HYPERION;
-            c.type = SATELLITES;
+            c.type = PLANETS_AND_SATELLITES;
             c.population = SATURN;
             c.dataUsed = IMAGE_BASED;
             c.author = GASKELL;
@@ -998,7 +997,7 @@ public class ModelFactory
         {
             c = new ModelConfig();
             c.name = RHEA;
-            c.type = SATELLITES;
+            c.type = PLANETS_AND_SATELLITES;
             c.population = SATURN;
             c.dataUsed = IMAGE_BASED;
             c.author = GASKELL;
@@ -1010,7 +1009,7 @@ public class ModelFactory
 
         c = new ModelConfig();
         c.name = HYPERION;
-        c.type = SATELLITES;
+        c.type = PLANETS_AND_SATELLITES;
         c.population = SATURN;
         c.dataUsed = IMAGE_BASED;
         c.author = THOMAS;
@@ -1060,7 +1059,7 @@ public class ModelFactory
         {
             c = new ModelConfig();
             c.name = PLUTO;
-            c.type = SATELLITES;
+            c.type = PLANETS_AND_SATELLITES;
             c.population = PLUTO;
             c.dataUsed = null;
             c.author = PLUTO;
@@ -1070,7 +1069,7 @@ public class ModelFactory
 
             c = new ModelConfig();
             c.name = CHARON;
-            c.type = SATELLITES;
+            c.type = PLANETS_AND_SATELLITES;
             c.population = PLUTO;
             c.dataUsed = null;
             c.author = CHARON;
@@ -1080,7 +1079,7 @@ public class ModelFactory
 
             c = new ModelConfig();
             c.name = HYDRA;
-            c.type = SATELLITES;
+            c.type = PLANETS_AND_SATELLITES;
             c.population = PLUTO;
             c.dataUsed = null;
             c.author = HYDRA;
@@ -1090,7 +1089,7 @@ public class ModelFactory
 
             c = new ModelConfig();
             c.name = KERBEROS;
-            c.type = SATELLITES;
+            c.type = PLANETS_AND_SATELLITES;
             c.population = PLUTO;
             c.dataUsed = null;
             c.author = KERBEROS;
@@ -1100,7 +1099,7 @@ public class ModelFactory
 
             c = new ModelConfig();
             c.name = NIX;
-            c.type = SATELLITES;
+            c.type = PLANETS_AND_SATELLITES;
             c.population = PLUTO;
             c.dataUsed = null;
             c.author = NIX;
@@ -1110,7 +1109,7 @@ public class ModelFactory
 
             c = new ModelConfig();
             c.name = STYX;
-            c.type = SATELLITES;
+            c.type = PLANETS_AND_SATELLITES;
             c.population = PLUTO;
             c.dataUsed = null;
             c.author = STYX;
