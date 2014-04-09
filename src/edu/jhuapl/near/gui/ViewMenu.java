@@ -48,45 +48,7 @@ public class ViewMenu extends JMenu implements PropertyChangeListener
 
             ModelConfig modelConfig = view.getModelConfig();
 
-            String type = modelConfig.type;
-            JMenu typeMenu = getChildMenu(this, type);
-            if (typeMenu == null)
-            {
-                typeMenu = new JMenu(type);
-                add(typeMenu);
-            }
-
-            JMenu parentMenu = typeMenu; // will either be population menu or type menu depending on if population is null
-
-            String population = modelConfig.population;
-            if (population != null)
-            {
-                JMenu populationMenu = getChildMenu(typeMenu, population);
-                if (populationMenu == null)
-                {
-                    populationMenu = new JMenu(population);
-                    typeMenu.add(populationMenu);
-                }
-                parentMenu = populationMenu;
-            }
-
-            String name = modelConfig.name;
-            JMenu nameMenu = getChildMenu(parentMenu, name);
-            if (nameMenu == null)
-            {
-                nameMenu = new JMenu(name);
-                parentMenu.add(nameMenu);
-            }
-
-            String dataUsed = modelConfig.dataUsed;
-            JMenu dataUsedMenu = getChildMenu(nameMenu, dataUsed);
-            if (dataUsedMenu == null)
-            {
-                dataUsedMenu = new JMenu(dataUsed);
-                nameMenu.add(dataUsedMenu);
-            }
-
-            dataUsedMenu.add(mi);
+            addMenuItem(mi, modelConfig);
         }
 
         if (Configuration.isAPLVersion())
@@ -110,6 +72,33 @@ public class ViewMenu extends JMenu implements PropertyChangeListener
                 this.add(mi);
             }
         }
+    }
+
+    private void addMenuItem(JMenuItem mi, ModelConfig modelConfig)
+    {
+        ArrayList<String> tree = new ArrayList<String>();
+        if (modelConfig.type != null)
+            tree.add(modelConfig.type);
+        if (modelConfig.population != null)
+            tree.add(modelConfig.population);
+        if (modelConfig.name != null && modelConfig.author != null)
+            tree.add(modelConfig.name);
+        if (modelConfig.dataUsed != null && modelConfig.author != null)
+            tree.add(modelConfig.dataUsed);
+
+        JMenu parentMenu = this;
+        for (String subMenu : tree)
+        {
+            JMenu childMenu = getChildMenu(parentMenu, subMenu);
+            if (childMenu == null)
+            {
+                childMenu = new JMenu(subMenu);
+                parentMenu.add(childMenu);
+            }
+            parentMenu = childMenu;
+        }
+
+        parentMenu.add(mi);
     }
 
     private JMenu getChildMenu(JMenu menu, String childName)

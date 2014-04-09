@@ -38,7 +38,7 @@ public class Graticule extends Model implements PropertyChangeListener
     private vtkTransform transform;
     private vtkPolyDataReader reader;
     private String[] gridFiles;
-    private double shiftFactor = 5.0;
+    private double shiftFactor = 7.0;
 
     public Graticule(SmallBodyModel smallBodyModel)
     {

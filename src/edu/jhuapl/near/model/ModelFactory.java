@@ -27,6 +27,7 @@ import edu.jhuapl.near.model.gaspra.SSIGaspraImage;
 import edu.jhuapl.near.model.ida.SSIIdaImage;
 import edu.jhuapl.near.model.itokawa.AmicaImage;
 import edu.jhuapl.near.model.itokawa.Itokawa;
+import edu.jhuapl.near.model.lorri.LorriImage;
 import edu.jhuapl.near.model.lutetia.Lutetia;
 import edu.jhuapl.near.model.lutetia.OsirisImage;
 import edu.jhuapl.near.model.mathilde.MSIMathildeImage;
@@ -38,6 +39,7 @@ import edu.jhuapl.near.model.vesta_old.VestaOld;
 import edu.jhuapl.near.query.DeimosQuery;
 import edu.jhuapl.near.query.ErosQuery;
 import edu.jhuapl.near.query.GaspraQuery;
+import edu.jhuapl.near.query.GenericPhpQuery;
 import edu.jhuapl.near.query.IdaQuery;
 import edu.jhuapl.near.query.ItokawaQuery;
 import edu.jhuapl.near.query.LutetiaQuery;
@@ -73,6 +75,10 @@ public class ModelFactory
     static public final String TEMPEL_1 = "Tempel 1";
     static public final String HALLEY = "Halley";
     static public final String AMALTHEA = "Amalthea";
+    static public final String CALLISTO = "Callisto";
+    static public final String EUROPA = "Europa";
+    static public final String GANYMEDE = "Ganymede";
+    static public final String IO = "Io";
     static public final String LARISSA = "Larissa";
     static public final String PROTEUS = "Proteus";
     static public final String PROMETHEUS = "Prometheus";
@@ -89,10 +95,15 @@ public class ModelFactory
     static public final String WILD_2 = "Wild 2";
     static public final String STEINS = "Steins";
     static public final String HARTLEY = "Hartley";
+    static public final String CHARON = "Charon";
+    static public final String HYDRA = "Hydra";
+    static public final String KERBEROS = "Kerberos";
+    static public final String NIX = "Nix";
+    static public final String STYX = "Styx";
 
     // Types of bodies
     static public final String ASTEROID = "Asteroids";
-    static public final String SATELLITES = "Satellites";
+    static public final String PLANETS_AND_SATELLITES = "Planets and Satellites";
     static public final String COMETS = "Comets";
 
     // Populations
@@ -102,6 +113,7 @@ public class ModelFactory
     static public final String NEPTUNE = "Neptune";
     static public final String NEO = "Near-Earth";
     static public final String MAIN_BELT = "Main Belt";
+    static public final String PLUTO = "Pluto";
 
     // Names of authors
     static public final String GASKELL = "Gaskell";
@@ -134,6 +146,7 @@ public class ModelFactory
     static public final String OSIRIS = "OSIRIS";
     static public final String OLA = "OLA";
     static public final String IMAGING_DATA = "Imaging Data";
+    static public final String LORRI = "LORRI";
 
     static public enum ImageType {
         MSI_IMAGE,
@@ -145,7 +158,8 @@ public class ModelFactory
         SATURN_MOON_IMAGE,
         SSI_GASPRA_IMAGE,
         SSI_IDA_IMAGE,
-        MSI_MATHILDE_IMAGE
+        MSI_MATHILDE_IMAGE,
+        LORRI_IMAGE,
     }
 
     static private final String[] DEFAULT_GASKELL_LABELS_PER_RESOLUTION = {
@@ -307,7 +321,7 @@ public class ModelFactory
         // Gaskell Phobos
         c = new ModelConfig();
         c.name = PHOBOS;
-        c.type = SATELLITES;
+        c.type = PLANETS_AND_SATELLITES;
         c.population = MARS;
         c.dataUsed = IMAGE_BASED;
         c.author = GASKELL;
@@ -340,7 +354,7 @@ public class ModelFactory
         // Thomas Phobos
         c = new ModelConfig();
         c.name = PHOBOS;
-        c.type = SATELLITES;
+        c.type = PLANETS_AND_SATELLITES;
         c.population = MARS;
         c.dataUsed = IMAGE_BASED;
         c.author = THOMAS;
@@ -352,7 +366,7 @@ public class ModelFactory
         {
             c = new ModelConfig();
             c.name = PHOBOS;
-            c.type = SATELLITES;
+            c.type = PLANETS_AND_SATELLITES;
             c.population = MARS;
             c.dataUsed = IMAGE_BASED;
             c.author = EXPERIMENTAL;
@@ -393,9 +407,78 @@ public class ModelFactory
             configArray.add(c);
         }
 
+        if (Configuration.isAPLVersion())
+        {
+            c = new ModelConfig();
+            c.name = JUPITER;
+            c.type = PLANETS_AND_SATELLITES;
+            c.population = JUPITER;
+            c.dataUsed = null;
+            c.author = null;
+            c.pathOnServer = "/NEWHORIZONS/JUPITER/shape_res0.vtk.gz";
+            c.hasColoringData = false;
+            c.hasImageMap = false;
+            c.hasPerspectiveImages = true;
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2007, 0, 8, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2007, 2, 5, 0, 0, 0).getTime();
+            c.imageSearchQuery = new GenericPhpQuery("/NEWHORIZONS/JUPITER/IMAGING/images", JUPITER);
+            c.imageSearchFilterNames = new String[]{};
+            c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
+            c.imageSearchDefaultMaxSpacecraftDistance = 1.0e9;
+            c.imageSearchDefaultMaxResolution = 1.0e6;
+            c.imageSearchImageSources = new ImageSource[]{ImageSource.PDS};
+            c.imageType = ImageType.LORRI_IMAGE;
+            c.imageInstrumentName = LORRI;
+            configArray.add(c);
+
+            c = c.clone();
+            c.name = CALLISTO;
+            c.type = PLANETS_AND_SATELLITES;
+            c.population = JUPITER;
+            c.dataUsed = null;
+            c.author = null;
+            c.pathOnServer = "/NEWHORIZONS/CALLISTO/shape_res0.vtk.gz";
+            c.hasImageMap = true;
+            c.imageSearchQuery = new GenericPhpQuery("/NEWHORIZONS/CALLISTO/IMAGING/images", CALLISTO);
+            configArray.add(c);
+
+            c = c.clone();
+            c.name = EUROPA;
+            c.type = PLANETS_AND_SATELLITES;
+            c.population = JUPITER;
+            c.dataUsed = null;
+            c.author = null;
+            c.pathOnServer = "/NEWHORIZONS/EUROPA/shape_res0.vtk.gz";
+            c.hasImageMap = true;
+            c.imageSearchQuery = new GenericPhpQuery("/NEWHORIZONS/EUROPA/IMAGING/images", EUROPA);
+            configArray.add(c);
+
+            c = c.clone();
+            c.name = GANYMEDE;
+            c.type = PLANETS_AND_SATELLITES;
+            c.population = JUPITER;
+            c.dataUsed = null;
+            c.author = null;
+            c.pathOnServer = "/NEWHORIZONS/GANYMEDE/shape_res0.vtk.gz";
+            c.hasImageMap = true;
+            c.imageSearchQuery = new GenericPhpQuery("/NEWHORIZONS/GANYMEDE/IMAGING/images", GANYMEDE);
+            configArray.add(c);
+
+            c = c.clone();
+            c.name = IO;
+            c.type = PLANETS_AND_SATELLITES;
+            c.population = JUPITER;
+            c.dataUsed = null;
+            c.author = null;
+            c.pathOnServer = "/NEWHORIZONS/IO/shape_res0.vtk.gz";
+            c.hasImageMap = true;
+            c.imageSearchQuery = new GenericPhpQuery("/NEWHORIZONS/IO/IMAGING/images", IO);
+            configArray.add(c);
+        }
+
         c = new ModelConfig();
         c.name = AMALTHEA;
-        c.type = SATELLITES;
+        c.type = PLANETS_AND_SATELLITES;
         c.population = JUPITER;
         c.dataUsed = IMAGE_BASED;
         c.author = STOOKE;
@@ -404,7 +487,7 @@ public class ModelFactory
 
         c = new ModelConfig();
         c.name = MIMAS;
-        c.type = SATELLITES;
+        c.type = PLANETS_AND_SATELLITES;
         c.population = SATURN;
         c.dataUsed = IMAGE_BASED;
         c.author = GASKELL;
@@ -426,7 +509,7 @@ public class ModelFactory
 
         c = new ModelConfig();
         c.name = PHOEBE;
-        c.type = SATELLITES;
+        c.type = PLANETS_AND_SATELLITES;
         c.population = SATURN;
         c.dataUsed = IMAGE_BASED;
         c.author = GASKELL;
@@ -582,7 +665,7 @@ public class ModelFactory
 
         c = new ModelConfig();
         c.name = DEIMOS;
-        c.type = SATELLITES;
+        c.type = PLANETS_AND_SATELLITES;
         c.population = MARS;
         c.dataUsed = IMAGE_BASED;
         c.author = THOMAS;
@@ -610,7 +693,7 @@ public class ModelFactory
 
         c = new ModelConfig();
         c.name = JANUS;
-        c.type = SATELLITES;
+        c.type = PLANETS_AND_SATELLITES;
         c.population = SATURN;
         c.dataUsed = IMAGE_BASED;
         c.author = THOMAS;
@@ -619,7 +702,7 @@ public class ModelFactory
 
         c = new ModelConfig();
         c.name = JANUS;
-        c.type = SATELLITES;
+        c.type = PLANETS_AND_SATELLITES;
         c.population = SATURN;
         c.dataUsed = IMAGE_BASED;
         c.author = STOOKE;
@@ -628,7 +711,7 @@ public class ModelFactory
 
         c = new ModelConfig();
         c.name = EPIMETHEUS;
-        c.type = SATELLITES;
+        c.type = PLANETS_AND_SATELLITES;
         c.population = SATURN;
         c.dataUsed = IMAGE_BASED;
         c.author = THOMAS;
@@ -637,7 +720,7 @@ public class ModelFactory
 
         c = new ModelConfig();
         c.name = EPIMETHEUS;
-        c.type = SATELLITES;
+        c.type = PLANETS_AND_SATELLITES;
         c.population = SATURN;
         c.dataUsed = IMAGE_BASED;
         c.author = STOOKE;
@@ -655,7 +738,7 @@ public class ModelFactory
 
         c = new ModelConfig();
         c.name = LARISSA;
-        c.type = SATELLITES;
+        c.type = PLANETS_AND_SATELLITES;
         c.population = NEPTUNE;
         c.dataUsed = IMAGE_BASED;
         c.author = STOOKE;
@@ -664,7 +747,7 @@ public class ModelFactory
 
         c = new ModelConfig();
         c.name = PROTEUS;
-        c.type = SATELLITES;
+        c.type = PLANETS_AND_SATELLITES;
         c.population = NEPTUNE;
         c.dataUsed = IMAGE_BASED;
         c.author = STOOKE;
@@ -673,7 +756,7 @@ public class ModelFactory
 
         c = new ModelConfig();
         c.name = PROMETHEUS;
-        c.type = SATELLITES;
+        c.type = PLANETS_AND_SATELLITES;
         c.population = SATURN;
         c.dataUsed = IMAGE_BASED;
         c.author = STOOKE;
@@ -682,7 +765,7 @@ public class ModelFactory
 
         c = new ModelConfig();
         c.name = PANDORA;
-        c.type = SATELLITES;
+        c.type = PLANETS_AND_SATELLITES;
         c.population = SATURN;
         c.dataUsed = IMAGE_BASED;
         c.author = STOOKE;
@@ -865,7 +948,7 @@ public class ModelFactory
 
         c = new ModelConfig();
         c.name = DIONE;
-        c.type = SATELLITES;
+        c.type = PLANETS_AND_SATELLITES;
         c.population = SATURN;
         c.dataUsed = IMAGE_BASED;
         c.author = GASKELL;
@@ -887,7 +970,7 @@ public class ModelFactory
 
         c = new ModelConfig();
         c.name = TETHYS;
-        c.type = SATELLITES;
+        c.type = PLANETS_AND_SATELLITES;
         c.population = SATURN;
         c.dataUsed = IMAGE_BASED;
         c.author = GASKELL;
@@ -900,7 +983,7 @@ public class ModelFactory
         {
             c = new ModelConfig();
             c.name = HYPERION;
-            c.type = SATELLITES;
+            c.type = PLANETS_AND_SATELLITES;
             c.population = SATURN;
             c.dataUsed = IMAGE_BASED;
             c.author = GASKELL;
@@ -914,7 +997,7 @@ public class ModelFactory
         {
             c = new ModelConfig();
             c.name = RHEA;
-            c.type = SATELLITES;
+            c.type = PLANETS_AND_SATELLITES;
             c.population = SATURN;
             c.dataUsed = IMAGE_BASED;
             c.author = GASKELL;
@@ -926,7 +1009,7 @@ public class ModelFactory
 
         c = new ModelConfig();
         c.name = HYPERION;
-        c.type = SATELLITES;
+        c.type = PLANETS_AND_SATELLITES;
         c.population = SATURN;
         c.dataUsed = IMAGE_BASED;
         c.author = THOMAS;
@@ -971,6 +1054,69 @@ public class ModelFactory
         c.author = THOMAS;
         c.pathOnServer = "/THOMAS/HARTLEY/hartley2_2012_cart.plt.gz";
         configArray.add(c);
+
+        if (Configuration.isAPLVersion())
+        {
+            c = new ModelConfig();
+            c.name = PLUTO;
+            c.type = PLANETS_AND_SATELLITES;
+            c.population = PLUTO;
+            c.dataUsed = null;
+            c.author = null;
+            c.pathOnServer = "/NEWHORIZONS/PLUTO/shape_res0.vtk.gz";
+            c.hasColoringData = false;
+            configArray.add(c);
+
+            c = new ModelConfig();
+            c.name = CHARON;
+            c.type = PLANETS_AND_SATELLITES;
+            c.population = PLUTO;
+            c.dataUsed = null;
+            c.author = null;
+            c.pathOnServer = "/NEWHORIZONS/CHARON/shape_res0.vtk.gz";
+            c.hasColoringData = false;
+            configArray.add(c);
+
+            c = new ModelConfig();
+            c.name = HYDRA;
+            c.type = PLANETS_AND_SATELLITES;
+            c.population = PLUTO;
+            c.dataUsed = null;
+            c.author = null;
+            c.pathOnServer = "/NEWHORIZONS/HYDRA/shape_res0.vtk.gz";
+            c.hasColoringData = false;
+            configArray.add(c);
+
+            c = new ModelConfig();
+            c.name = KERBEROS;
+            c.type = PLANETS_AND_SATELLITES;
+            c.population = PLUTO;
+            c.dataUsed = null;
+            c.author = null;
+            c.pathOnServer = "/NEWHORIZONS/KERBEROS/shape_res0.vtk.gz";
+            c.hasColoringData = false;
+            configArray.add(c);
+
+            c = new ModelConfig();
+            c.name = NIX;
+            c.type = PLANETS_AND_SATELLITES;
+            c.population = PLUTO;
+            c.dataUsed = null;
+            c.author = null;
+            c.pathOnServer = "/NEWHORIZONS/NIX/shape_res0.vtk.gz";
+            c.hasColoringData = false;
+            configArray.add(c);
+
+            c = new ModelConfig();
+            c.name = STYX;
+            c.type = PLANETS_AND_SATELLITES;
+            c.population = PLUTO;
+            c.dataUsed = null;
+            c.author = null;
+            c.pathOnServer = "/NEWHORIZONS/STYX/shape_res0.vtk.gz";
+            c.hasColoringData = false;
+            configArray.add(c);
+        }
     }
 
     /**
@@ -991,6 +1137,7 @@ public class ModelFactory
         public String pathOnServer;
         public String[] smallBodyLabelPerResolutionLevel; // only needed when number resolution levels > 1
         public int[] smallBodyNumberOfPlatesPerResolutionLevel; // only needed when number resolution levels > 1
+        public boolean hasColoringData = true;
         public boolean hasImageMap = false;
         public boolean hasPerspectiveImages = false;
         public boolean hasLidarData = false;
@@ -1037,6 +1184,7 @@ public class ModelFactory
             c.dataUsed = this.dataUsed;
             c.author = this.author;
             c.pathOnServer = this.pathOnServer;
+            c.hasColoringData = this.hasColoringData;
             c.hasImageMap = this.hasImageMap;
             c.hasPerspectiveImages = this.hasPerspectiveImages;
             c.hasLidarData = this.hasLidarData;
@@ -1089,9 +1237,11 @@ public class ModelFactory
             String path = type;
             if (population != null)
                 path += " > " + population;
-            path += " > " + name
-                    + " > " + dataUsed
-                    + " > " + author;
+            path += " > " + name;
+            if (dataUsed != null)
+                path += " > " + dataUsed;
+            if (author != null)
+                path += " > " + author;
             return path;
         }
 
@@ -1151,6 +1301,8 @@ public class ModelFactory
                 return new SSIIdaImage(key, smallBodyModel, loadPointingOnly, rootFolder);
             else if (config.imageType == ImageType.MSI_MATHILDE_IMAGE)
                 return new MSIMathildeImage(key, smallBodyModel, loadPointingOnly, rootFolder);
+            else if (config.imageType == ImageType.LORRI_IMAGE)
+                return new LorriImage(key, smallBodyModel, loadPointingOnly, rootFolder);
             else
                 return null;
         }
@@ -1184,7 +1336,7 @@ public class ModelFactory
                         config.pathOnServer + "/ver64q.vtk.gz",
                 };
 
-                return new SimpleSmallBody(config, names, paths, true);
+                return new SimpleSmallBody(config, names, paths);
             }
             else
             {
@@ -1201,7 +1353,7 @@ public class ModelFactory
                         config.pathOnServer + "/ver512q.vtk.gz"
                 };
 
-                return new SimpleSmallBody(config, names, paths, true);
+                return new SimpleSmallBody(config, names, paths);
             }
         }
         else if (THOMAS.equals(author))
@@ -1225,7 +1377,7 @@ public class ModelFactory
         if (config.hasImageMap)
             imageMap = (new File(config.pathOnServer)).getParent() + "/image_map.png";
 
-        return new SimpleSmallBody(config, imageMap, true);
+        return new SimpleSmallBody(config, imageMap);
     }
 
     static public Graticule createGraticule(SmallBodyModel smallBodyModel)

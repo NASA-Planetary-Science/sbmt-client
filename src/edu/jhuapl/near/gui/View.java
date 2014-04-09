@@ -105,7 +105,7 @@ public class View extends JPanel
             // For the public version, only include image tab for Eros (all) and Gaskell's Itokawa shape models.
             if (Configuration.isAPLVersion() ||
                     modelConfig.name.equals(ModelFactory.EROS) ||
-                    (modelConfig.name.equals(ModelFactory.ITOKAWA) && modelConfig.author.equals(ModelFactory.GASKELL)))
+                    (modelConfig.name.equals(ModelFactory.ITOKAWA) && ModelFactory.GASKELL.equals(modelConfig.author)))
             {
                 JComponent component = new ImagingSearchPanel(modelConfig, modelManager, infoPanelManager, pickManager, renderer);
                 controlPanel.addTab(modelConfig.imageInstrumentName, component);
@@ -320,7 +320,7 @@ public class View extends JPanel
      */
     public String getDisplayName()
     {
-        if (modelConfig.author.equals(ModelFactory.CUSTOM))
+        if (modelConfig.author == null || modelConfig.author.equals(ModelFactory.CUSTOM))
             return modelConfig.name;
         else
             return modelConfig.author;

@@ -139,6 +139,7 @@ abstract public class DatabaseGeneratorBaseSql
             File rootFolder = origFile.getParentFile().getParentFile().getParentFile().getParentFile();
             String keyName = origFile.getAbsolutePath().replace(rootFolder.getAbsolutePath(), "");
             keyName = keyName.replace(".FIT", "");
+            keyName = keyName.replace(".fit", "");
             ImageKey key = new ImageKey(keyName, imageSource);
             PerspectiveImage image = (PerspectiveImage)ModelFactory.createImage(key, smallBodyModel, false, rootFolder);
 
@@ -247,6 +248,7 @@ abstract public class DatabaseGeneratorBaseSql
             File rootFolder = origFile.getParentFile().getParentFile().getParentFile().getParentFile();
             String keyName = origFile.getAbsolutePath().replace(rootFolder.getAbsolutePath(), "");
             keyName = keyName.replace(".FIT", "");
+            keyName = keyName.replace(".fit", "");
             ImageKey key = new ImageKey(keyName, imageSource);
             PerspectiveImage image = (PerspectiveImage)ModelFactory.createImage(key, smallBodyModel, false, rootFolder);
 
