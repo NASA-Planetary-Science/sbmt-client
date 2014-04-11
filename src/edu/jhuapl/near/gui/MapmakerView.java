@@ -173,7 +173,10 @@ public class MapmakerView extends JFrame
         JMenuItem mi = new JMenuItem(new SaveImageAction(renderer));
         fileMenu.add(mi);
 
-        mi = new JMenuItem(new SaveShapeModelAction());
+        mi = new JMenuItem(new SaveShapeModelAsPLTAction());
+        fileMenu.add(mi);
+
+        mi = new JMenuItem(new SaveShapeModelAsOBJAction());
         fileMenu.add(mi);
 
         mi = new JMenuItem(new SavePlateDataAction());
@@ -489,21 +492,49 @@ public class MapmakerView extends JFrame
         }
     }
 
-    private class SaveShapeModelAction extends AbstractAction
+    private class SaveShapeModelAsPLTAction extends AbstractAction
     {
-        public SaveShapeModelAction()
+        public SaveShapeModelAsPLTAction()
         {
-            super("Export Shape Model...");
+            super("Export Shape Model as PLT...");
         }
 
         public void actionPerformed(ActionEvent actionEvent)
         {
-            File file = CustomFileChooser.showSaveDialog(null, "Export Shape Model", "model.plt");
+            File file = CustomFileChooser.showSaveDialog(null, "Export Shape Model as PLT", "model.plt");
 
             try
             {
                 if (file != null)
                     dem.saveAsPLT(file);
+            }
+            catch (Exception e1)
+            {
+                e1.printStackTrace();
+                JOptionPane.showMessageDialog(null,
+                        "An error occurred exporting the shape model.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        }
+    }
+
+    private class SaveShapeModelAsOBJAction extends AbstractAction
+    {
+        public SaveShapeModelAsOBJAction()
+        {
+            super("Export Shape Model as OBJ...");
+        }
+
+        public void actionPerformed(ActionEvent actionEvent)
+        {
+            File file = CustomFileChooser.showSaveDialog(null, "Export Shape Model as OBJ", "model.obj");
+
+            try
+            {
+                if (file != null)
+                    dem.saveAsOBJ(file);
             }
             catch (Exception e1)
             {
