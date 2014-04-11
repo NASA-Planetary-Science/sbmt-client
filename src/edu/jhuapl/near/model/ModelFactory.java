@@ -1234,15 +1234,22 @@ public class ModelFactory
          */
         public String getPathRepresentation()
         {
-            String path = type;
-            if (population != null)
-                path += " > " + population;
-            path += " > " + name;
-            if (dataUsed != null)
-                path += " > " + dataUsed;
-            if (author != null)
-                path += " > " + author;
-            return path;
+            if (CUSTOM.equals(author))
+            {
+                return CUSTOM + " > " + name;
+            }
+            else
+            {
+                String path = type;
+                if (population != null)
+                    path += " > " + population;
+                path += " > " + name;
+                if (dataUsed != null)
+                    path += " > " + dataUsed;
+                if (author != null)
+                    path += " > " + author;
+                return path;
+            }
         }
 
     }
