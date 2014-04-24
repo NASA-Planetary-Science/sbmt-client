@@ -47,7 +47,7 @@ import edu.jhuapl.near.model.Image.ImageKey;
 import edu.jhuapl.near.model.Image.ImageSource;
 import edu.jhuapl.near.model.ImageCollection;
 import edu.jhuapl.near.model.Model;
-import edu.jhuapl.near.model.ModelFactory.ModelConfig;
+import edu.jhuapl.near.model.ModelConfig;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.PerspectiveImage;

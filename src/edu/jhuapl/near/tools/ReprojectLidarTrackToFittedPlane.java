@@ -3,10 +3,10 @@ package edu.jhuapl.near.tools;
 import java.io.File;
 
 import edu.jhuapl.near.model.LidarSearchDataCollection;
+import edu.jhuapl.near.model.ModelConfig;
+import edu.jhuapl.near.model.ModelConfig.ShapeModelAuthor;
+import edu.jhuapl.near.model.ModelConfig.ShapeModelBody;
 import edu.jhuapl.near.model.ModelFactory;
-import edu.jhuapl.near.model.ModelFactory.ModelConfig;
-import edu.jhuapl.near.model.ModelFactory.ShapeModelAuthor;
-import edu.jhuapl.near.model.ModelFactory.ShapeModelBody;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.util.NativeLibraryLoader;
@@ -41,7 +41,7 @@ public class ReprojectLidarTrackToFittedPlane
         String inputFile = args[0];
         String outputFile = args[1];
 
-        ModelConfig config = ModelFactory.getModelConfig(ShapeModelBody.EROS, ShapeModelAuthor.GASKELL);
+        ModelConfig config = ModelConfig.getModelConfig(ShapeModelBody.EROS, ShapeModelAuthor.GASKELL);
         SmallBodyModel smallBodyModel = ModelFactory.createSmallBodyModel(config);
         LidarSearchDataCollection lidarModel = (LidarSearchDataCollection) ModelFactory.
                 createLidarModels(smallBodyModel).get(ModelNames.LIDAR_SEARCH);

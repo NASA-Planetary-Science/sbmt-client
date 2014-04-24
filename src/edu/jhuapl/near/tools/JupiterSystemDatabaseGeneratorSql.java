@@ -2,9 +2,9 @@ package edu.jhuapl.near.tools;
 
 import java.io.IOException;
 
+import edu.jhuapl.near.model.ModelConfig;
+import edu.jhuapl.near.model.ModelConfig.ShapeModelBody;
 import edu.jhuapl.near.model.ModelFactory;
-import edu.jhuapl.near.model.ModelFactory.ModelConfig;
-import edu.jhuapl.near.model.ModelFactory.ShapeModelBody;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.util.Configuration;
 import edu.jhuapl.near.util.NativeLibraryLoader;
@@ -72,11 +72,11 @@ public class JupiterSystemDatabaseGeneratorSql extends DatabaseGeneratorBaseSql
 
     private enum RunInfo
     {
-        JUPITER(ModelFactory.getModelConfig(ShapeModelBody.JUPITER, null), "/project/nearsdc/data/NEWHORIZONS/JUPITER/IMAGING/imagelist-fullpath.txt"),
-        CALLISTO(ModelFactory.getModelConfig(ShapeModelBody.CALLISTO, null), "/project/nearsdc/data/NEWHORIZONS/CALLISTO/IMAGING/imagelist-fullpath.txt"),
-        EUROPA(ModelFactory.getModelConfig(ShapeModelBody.EUROPA, null), "/project/nearsdc/data/NEWHORIZONS/EUROPA/IMAGING/imagelist-fullpath.txt"),
-        GANYMEDE(ModelFactory.getModelConfig(ShapeModelBody.GANYMEDE, null), "/project/nearsdc/data/NEWHORIZONS/GANYMEDE/IMAGING/imagelist-fullpath.txt"),
-        IO(ModelFactory.getModelConfig(ShapeModelBody.IO, null), "/project/nearsdc/data/NEWHORIZONS/IO/IMAGING/imagelist-fullpath.txt");
+        JUPITER(ModelConfig.getModelConfig(ShapeModelBody.JUPITER, null), "/project/nearsdc/data/NEWHORIZONS/JUPITER/IMAGING/imagelist-fullpath.txt"),
+        CALLISTO(ModelConfig.getModelConfig(ShapeModelBody.CALLISTO, null), "/project/nearsdc/data/NEWHORIZONS/CALLISTO/IMAGING/imagelist-fullpath.txt"),
+        EUROPA(ModelConfig.getModelConfig(ShapeModelBody.EUROPA, null), "/project/nearsdc/data/NEWHORIZONS/EUROPA/IMAGING/imagelist-fullpath.txt"),
+        GANYMEDE(ModelConfig.getModelConfig(ShapeModelBody.GANYMEDE, null), "/project/nearsdc/data/NEWHORIZONS/GANYMEDE/IMAGING/imagelist-fullpath.txt"),
+        IO(ModelConfig.getModelConfig(ShapeModelBody.IO, null), "/project/nearsdc/data/NEWHORIZONS/IO/IMAGING/imagelist-fullpath.txt");
 
         public final ModelConfig config;
         public final String pathToFileList;

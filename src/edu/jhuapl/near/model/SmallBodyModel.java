@@ -39,7 +39,6 @@ import vtk.vtkTriangle;
 import vtk.vtkUnsignedCharArray;
 import vtk.vtksbCellLocator;
 
-import edu.jhuapl.near.model.ModelFactory.ModelConfig;
 import edu.jhuapl.near.model.custom.CustomShapeModel;
 import edu.jhuapl.near.util.BoundingBox;
 import edu.jhuapl.near.util.Configuration;

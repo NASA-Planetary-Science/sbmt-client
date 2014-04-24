@@ -9,7 +9,7 @@ import java.util.Arrays;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 
-import edu.jhuapl.near.model.ModelFactory;
+import edu.jhuapl.near.model.ModelConfig;
 import edu.jhuapl.near.util.Configuration;
 
 public class ViewManager extends JPanel
@@ -34,7 +34,7 @@ public class ViewManager extends JPanel
         this.statusBar = statusBar;
         this.frame = frame;
 
-        for (ModelFactory.ModelConfig config: ModelFactory.builtInModelConfigs)
+        for (ModelConfig config: ModelConfig.builtInModelConfigs)
         {
             builtInViews.add(new View(statusBar, config));
         }

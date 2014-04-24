@@ -3,7 +3,7 @@ package edu.jhuapl.near.gui;
 import javax.swing.BorderFactory;
 import javax.swing.JTabbedPane;
 
-import edu.jhuapl.near.model.ModelFactory.ModelConfig;
+import edu.jhuapl.near.model.ModelConfig;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.pick.PickManager;
 

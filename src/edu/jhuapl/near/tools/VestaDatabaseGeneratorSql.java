@@ -20,10 +20,10 @@ import vtk.vtkPolyData;
 import edu.jhuapl.near.model.Image;
 import edu.jhuapl.near.model.Image.ImageKey;
 import edu.jhuapl.near.model.Image.ImageSource;
+import edu.jhuapl.near.model.ModelConfig;
+import edu.jhuapl.near.model.ModelConfig.ShapeModelAuthor;
+import edu.jhuapl.near.model.ModelConfig.ShapeModelBody;
 import edu.jhuapl.near.model.ModelFactory;
-import edu.jhuapl.near.model.ModelFactory.ModelConfig;
-import edu.jhuapl.near.model.ModelFactory.ShapeModelAuthor;
-import edu.jhuapl.near.model.ModelFactory.ShapeModelBody;
 import edu.jhuapl.near.model.PerspectiveImage;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.vesta.FcImage;
@@ -505,7 +505,7 @@ public class VestaDatabaseGeneratorSql
 
         NativeLibraryLoader.loadVtkLibraries();
 
-        ModelConfig modelConfig = ModelFactory.getModelConfig(ShapeModelBody.VESTA, ShapeModelAuthor.GASKELL);
+        ModelConfig modelConfig = ModelConfig.getModelConfig(ShapeModelBody.VESTA, ShapeModelAuthor.GASKELL);
         vestaModel = ModelFactory.createSmallBodyModel(modelConfig);
 
         String fcFileList=args[0];

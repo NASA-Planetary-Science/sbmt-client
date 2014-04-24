@@ -36,7 +36,6 @@ import vtk.vtkPolyDataMapper;
 import vtk.vtkProp;
 import vtk.vtkUnsignedCharArray;
 
-import edu.jhuapl.near.model.ModelFactory.ModelConfig;
 import edu.jhuapl.near.util.ColorUtil;
 import edu.jhuapl.near.util.Configuration;
 import edu.jhuapl.near.util.FileCache;

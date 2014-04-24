@@ -25,7 +25,6 @@ import vtk.vtkPolyData;
 import vtk.vtkPolyDataMapper;
 import vtk.vtkProp;
 
-import edu.jhuapl.near.model.ModelFactory.ModelConfig;
 import edu.jhuapl.near.util.DoublePair;
 import edu.jhuapl.near.util.FileCache;
 import edu.jhuapl.near.util.LatLon;

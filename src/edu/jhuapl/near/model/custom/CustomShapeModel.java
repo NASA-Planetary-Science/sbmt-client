@@ -2,7 +2,7 @@ package edu.jhuapl.near.model.custom;
 
 import java.io.File;
 
-import edu.jhuapl.near.model.ModelFactory.ModelConfig;
+import edu.jhuapl.near.model.ModelConfig;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.util.Configuration;
 import edu.jhuapl.near.util.FileCache;

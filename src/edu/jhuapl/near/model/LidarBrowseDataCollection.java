@@ -13,7 +13,6 @@ import java.util.HashMap;
 import vtk.vtkActor;
 import vtk.vtkProp;
 
-import edu.jhuapl.near.model.ModelFactory.ModelConfig;
 import edu.jhuapl.near.util.Properties;
 
 public class LidarBrowseDataCollection extends Model implements PropertyChangeListener

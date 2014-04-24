@@ -2,9 +2,10 @@ package edu.jhuapl.near.tools;
 
 import java.io.IOException;
 
+import edu.jhuapl.near.model.ModelConfig;
+import edu.jhuapl.near.model.ModelConfig.ShapeModelAuthor;
+import edu.jhuapl.near.model.ModelConfig.ShapeModelBody;
 import edu.jhuapl.near.model.ModelFactory;
-import edu.jhuapl.near.model.ModelFactory.ShapeModelAuthor;
-import edu.jhuapl.near.model.ModelFactory.ShapeModelBody;
 import edu.jhuapl.near.model.SmallBodyModel;
 
 public class DeimosDatabaseGeneratorSql extends DatabaseGeneratorBaseSql
@@ -41,7 +42,7 @@ public class DeimosDatabaseGeneratorSql extends DatabaseGeneratorBaseSql
     @Override
     SmallBodyModel createSmallBodyModel()
     {
-        return ModelFactory.createSmallBodyModel(ModelFactory.getModelConfig(ShapeModelBody.DEIMOS, ShapeModelAuthor.THOMAS));
+        return ModelFactory.createSmallBodyModel(ModelConfig.getModelConfig(ShapeModelBody.DEIMOS, ShapeModelAuthor.THOMAS));
     }
 
 
