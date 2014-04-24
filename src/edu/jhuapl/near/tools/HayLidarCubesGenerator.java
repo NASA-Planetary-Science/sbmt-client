@@ -3,6 +3,8 @@ package edu.jhuapl.near.tools;
 import java.io.IOException;
 
 import edu.jhuapl.near.model.ModelFactory;
+import edu.jhuapl.near.model.ModelFactory.ShapeModelAuthor;
+import edu.jhuapl.near.model.ModelFactory.ShapeModelBody;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.itokawa.Itokawa;
 
@@ -36,7 +38,7 @@ public class HayLidarCubesGenerator extends LidarCubesGenerator
     {
         if (itokawa == null)
         {
-            itokawa = new Itokawa(ModelFactory.getModelConfig(ModelFactory.ITOKAWA, ModelFactory.GASKELL));
+            itokawa = new Itokawa(ModelFactory.getModelConfig(ShapeModelBody.ITOKAWA, ShapeModelAuthor.GASKELL));
 
             try
             {

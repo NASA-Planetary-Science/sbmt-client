@@ -78,13 +78,13 @@ public class ViewMenu extends JMenu implements PropertyChangeListener
     {
         ArrayList<String> tree = new ArrayList<String>();
         if (modelConfig.type != null)
-            tree.add(modelConfig.type);
+            tree.add(modelConfig.type.toString());
         if (modelConfig.population != null)
-            tree.add(modelConfig.population);
+            tree.add(modelConfig.population.toString());
         if (modelConfig.name != null && modelConfig.author != null)
-            tree.add(modelConfig.name);
+            tree.add(modelConfig.name.toString());
         if (modelConfig.dataUsed != null && modelConfig.author != null)
-            tree.add(modelConfig.dataUsed);
+            tree.add(modelConfig.dataUsed.toString());
 
         JMenu parentMenu = this;
         for (String subMenu : tree)

@@ -24,7 +24,10 @@ import edu.jhuapl.near.model.LineModel;
 import edu.jhuapl.near.model.MapletBoundaryCollection;
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelFactory;
+import edu.jhuapl.near.model.ModelFactory.Instrument;
 import edu.jhuapl.near.model.ModelFactory.ModelConfig;
+import edu.jhuapl.near.model.ModelFactory.ShapeModelAuthor;
+import edu.jhuapl.near.model.ModelFactory.ShapeModelBody;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.PerspectiveImageBoundaryCollection;
@@ -98,30 +101,30 @@ public class View extends JPanel
 
         controlPanel = new JTabbedPane();
         controlPanel.setBorder(BorderFactory.createEmptyBorder());
-        controlPanel.addTab(modelConfig.name, new SmallBodyControlPanel(modelManager, modelConfig.name));
+        controlPanel.addTab(modelConfig.getShapeModelName(), new SmallBodyControlPanel(modelManager, modelConfig.getShapeModelName()));
 
         if (modelConfig.hasPerspectiveImages)
         {
             // For the public version, only include image tab for Eros (all) and Gaskell's Itokawa shape models.
             if (Configuration.isAPLVersion() ||
-                    modelConfig.name.equals(ModelFactory.EROS) ||
-                    (modelConfig.name.equals(ModelFactory.ITOKAWA) && ModelFactory.GASKELL.equals(modelConfig.author)))
+                    modelConfig.name == ShapeModelBody.EROS ||
+                    (modelConfig.name == ShapeModelBody.ITOKAWA && ShapeModelAuthor.GASKELL == modelConfig.author))
             {
                 JComponent component = new ImagingSearchPanel(modelConfig, modelManager, infoPanelManager, pickManager, renderer);
-                controlPanel.addTab(modelConfig.imageInstrumentName, component);
+                controlPanel.addTab(modelConfig.imageInstrumentName.toString(), component);
             }
         }
 
         if (modelConfig.hasSpectralData)
         {
             JComponent component = new NISSearchPanel(modelManager, infoPanelManager, pickManager);
-            controlPanel.addTab(ModelFactory.NIS, component);
+            controlPanel.addTab(Instrument.NIS.toString(), component);
         }
 
         if (modelConfig.hasLidarData)
         {
             JComponent component = new LidarPanel(modelConfig, modelManager, pickManager, renderer);
-            controlPanel.addTab(modelConfig.lidarInstrumentName, component);
+            controlPanel.addTab(modelConfig.lidarInstrumentName.toString(), component);
         }
 
         if (Configuration.isAPLVersion())
@@ -309,7 +312,7 @@ public class View extends JPanel
      */
     public String getUniqueName()
     {
-        return SmallBodyModel.getUniqueName(modelConfig.name, modelConfig.author);
+        return modelConfig.getUniqueName();
     }
 
 
@@ -320,10 +323,12 @@ public class View extends JPanel
      */
     public String getDisplayName()
     {
-        if (modelConfig.author == null || modelConfig.author.equals(ModelFactory.CUSTOM))
-            return modelConfig.name;
+        if (modelConfig.author == ShapeModelAuthor.CUSTOM)
+            return modelConfig.customName;
+        else if (modelConfig.author == null)
+            return modelConfig.name.toString();
         else
-            return modelConfig.author;
+            return modelConfig.author.toString();
     }
 
     public ModelConfig getModelConfig()
@@ -334,8 +339,8 @@ public class View extends JPanel
     static public View createCustomView(StatusBar statusBar, String name)
     {
         ModelConfig config = new ModelConfig();
-        config.name = name;
-        config.author = ModelFactory.CUSTOM;
+        config.customName = name;
+        config.author = ShapeModelAuthor.CUSTOM;
         return new View(statusBar, config);
     }
 }

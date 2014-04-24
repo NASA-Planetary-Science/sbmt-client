@@ -26,10 +26,8 @@ public class CustomShapeModel extends SmallBodyModel
     public CustomShapeModel(ModelConfig config)
     {
         super(config,
-                config.name,
-                null,
-                new String[] { config.name },
-                new String[] { getModelFilename(config.name) },
+                new String[] { config.customName },
+                new String[] { getModelFilename(config.customName) },
                 null,
                 null,
                 null,

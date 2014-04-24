@@ -18,6 +18,8 @@ import vtk.vtkPolyData;
 import edu.jhuapl.near.model.Image.ImageKey;
 import edu.jhuapl.near.model.Image.ImageSource;
 import edu.jhuapl.near.model.ModelFactory;
+import edu.jhuapl.near.model.ModelFactory.ShapeModelAuthor;
+import edu.jhuapl.near.model.ModelFactory.ShapeModelBody;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.eros.Eros;
 import edu.jhuapl.near.model.eros.MSIImage;
@@ -637,7 +639,7 @@ public class ErosDatabaseGeneratorSql
         System.setProperty("java.awt.headless", "true");
         NativeLibraryLoader.loadVtkLibraries();
 
-        erosModel = new Eros(ModelFactory.getModelConfig(ModelFactory.EROS, ModelFactory.GASKELL));
+        erosModel = new Eros(ModelFactory.getModelConfig(ShapeModelBody.EROS, ShapeModelAuthor.GASKELL));
 
 //        computeMeanPlateSizeAtAllResolutions();
 

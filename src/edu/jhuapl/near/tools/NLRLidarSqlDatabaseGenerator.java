@@ -3,6 +3,8 @@ package edu.jhuapl.near.tools;
 import java.io.IOException;
 
 import edu.jhuapl.near.model.ModelFactory;
+import edu.jhuapl.near.model.ModelFactory.ShapeModelAuthor;
+import edu.jhuapl.near.model.ModelFactory.ShapeModelBody;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.eros.Eros;
 
@@ -24,7 +26,7 @@ public class NLRLidarSqlDatabaseGenerator extends LidarSqlDatabaseGenerator
     {
         if (eros == null)
         {
-            eros = new Eros(ModelFactory.getModelConfig(ModelFactory.EROS, ModelFactory.GASKELL));
+            eros = new Eros(ModelFactory.getModelConfig(ShapeModelBody.EROS, ShapeModelAuthor.GASKELL));
 
             try
             {

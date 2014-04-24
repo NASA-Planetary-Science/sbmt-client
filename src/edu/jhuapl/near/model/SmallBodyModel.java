@@ -160,7 +160,6 @@ public class SmallBodyModel extends Model
     private double scaleBarWidthInKm = -1.0;
     private boolean showScaleBar = true;
 
-    private String author;
     private ModelConfig modelConfig;
 
     /**
@@ -180,8 +179,6 @@ public class SmallBodyModel extends Model
      */
     public SmallBodyModel(
             ModelConfig config,
-            String name,
-            String author,
             String[] modelNames,
             String[] modelFiles,
             String[] coloringFiles,
@@ -192,10 +189,7 @@ public class SmallBodyModel extends Model
             ColoringValueType coloringValueType,
             boolean lowestResolutionModelStoredInResource)
     {
-        super(name);
-
         this.modelConfig = config;
-        this.author = author;
         this.modelNames = modelNames;
         this.modelFiles = modelFiles;
         this.imageMapNames = imageMapNames;
@@ -257,24 +251,6 @@ public class SmallBodyModel extends Model
         return modelConfig;
     }
 
-    public static String getUniqueName(String name, String author)
-    {
-        if (author != null && !author.isEmpty())
-            return author + "/" + name;
-        else
-            return name;
-    }
-
-    public String getUniqueName()
-    {
-        return getUniqueName(getName(), getAuthor());
-    }
-
-    public String getAuthor()
-    {
-        return author;
-    }
-
     public boolean isBuiltIn()
     {
         return true;
@@ -313,7 +289,7 @@ public class SmallBodyModel extends Model
         String imagesDir = null;
         if (isBuiltIn())
         {
-            imagesDir = Configuration.getCustomDataFolderForBuiltInViews() + File.separator + getUniqueName();
+            imagesDir = Configuration.getCustomDataFolderForBuiltInViews() + File.separator + modelConfig.getUniqueName();
         }
         else
         {

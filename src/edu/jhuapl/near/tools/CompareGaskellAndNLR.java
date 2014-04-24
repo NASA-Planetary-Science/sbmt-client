@@ -24,6 +24,8 @@ import edu.jhuapl.near.model.LidarBrowseDataCollection;
 import edu.jhuapl.near.model.LidarBrowseDataCollection.LidarDataFileSpec;
 import edu.jhuapl.near.model.ModelFactory;
 import edu.jhuapl.near.model.ModelFactory.ModelConfig;
+import edu.jhuapl.near.model.ModelFactory.ShapeModelAuthor;
+import edu.jhuapl.near.model.ModelFactory.ShapeModelBody;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.PerspectiveImage;
 import edu.jhuapl.near.model.SmallBodyModel;
@@ -357,7 +359,7 @@ public class CompareGaskellAndNLR
         NativeLibraryLoader.loadVtkLibraries();
 
 
-        ModelConfig config = ModelFactory.getModelConfig(ModelFactory.EROS, ModelFactory.GASKELL);
+        ModelConfig config = ModelFactory.getModelConfig(ShapeModelBody.EROS, ShapeModelAuthor.GASKELL);
         SmallBodyModel smallBodyModel = ModelFactory.createSmallBodyModel(config);
         smallBodyModel.setModelResolution(3);
 

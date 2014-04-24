@@ -1,6 +1,5 @@
 package edu.jhuapl.near.model.lutetia;
 
-import edu.jhuapl.near.model.ModelFactory;
 import edu.jhuapl.near.model.ModelFactory.ModelConfig;
 import edu.jhuapl.near.model.SmallBodyModel;
 
@@ -54,8 +53,6 @@ public class Lutetia extends SmallBodyModel
     public Lutetia(ModelConfig config)
     {
         super(config,
-                ModelFactory.LUTETIA,
-                ModelFactory.JORDA,
                 modelNames,
                 modelFiles,
                 coloringFiles,

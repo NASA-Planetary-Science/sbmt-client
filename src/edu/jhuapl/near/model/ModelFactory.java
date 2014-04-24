@@ -54,101 +54,194 @@ import edu.jhuapl.near.util.Configuration;
 public class ModelFactory
 {
     // Names of built-in small body models
-    static public final String EROS = "Eros";
-    static public final String ITOKAWA = "Itokawa";
-    static public final String VESTA = "Vesta";
-    static public final String MIMAS = "Mimas";
-    static public final String PHOEBE = "Phoebe";
-    static public final String PHOBOS = "Phobos";
-    static public final String RQ36 = "Bennu";
-    static public final String DIONE = "Dione";
-    static public final String RHEA = "Rhea";
-    static public final String TETHYS = "Tethys";
-    static public final String LUTETIA = "Lutetia";
-    static public final String IDA = "Ida";
-    static public final String GASPRA = "Gaspra";
-    static public final String MATHILDE = "Mathilde";
-    static public final String DEIMOS = "Deimos";
-    static public final String JANUS = "Janus";
-    static public final String EPIMETHEUS = "Epimetheus";
-    static public final String HYPERION = "Hyperion";
-    static public final String TEMPEL_1 = "Tempel 1";
-    static public final String HALLEY = "Halley";
-    static public final String AMALTHEA = "Amalthea";
-    static public final String CALLISTO = "Callisto";
-    static public final String EUROPA = "Europa";
-    static public final String GANYMEDE = "Ganymede";
-    static public final String IO = "Io";
-    static public final String LARISSA = "Larissa";
-    static public final String PROTEUS = "Proteus";
-    static public final String PROMETHEUS = "Prometheus";
-    static public final String PANDORA = "Pandora";
-    static public final String GEOGRAPHOS = "Geographos";
-    static public final String KY26 = "KY26";
-    static public final String BACCHUS = "Bacchus";
-    static public final String KLEOPATRA = "Kleopatra";
-    static public final String TOUTATIS_LOW_RES = "Toutatis (Low Res)";
-    static public final String TOUTATIS_HIGH_RES = "Toutatis (High Res)";
-    static public final String CASTALIA = "Castalia";
-    static public final String _52760_1998_ML14 = "52760 (1998 ML14)";
-    static public final String GOLEVKA = "Golevka";
-    static public final String WILD_2 = "Wild 2";
-    static public final String STEINS = "Steins";
-    static public final String HARTLEY = "Hartley";
-    static public final String CHARON = "Charon";
-    static public final String HYDRA = "Hydra";
-    static public final String KERBEROS = "Kerberos";
-    static public final String NIX = "Nix";
-    static public final String STYX = "Styx";
+    static public enum ShapeModelBody
+    {
+        EROS("Eros"),
+        ITOKAWA("Itokawa"),
+        VESTA("Vesta"),
+        MIMAS("Mimas"),
+        PHOEBE("Phoebe"),
+        PHOBOS("Phobos"),
+        RQ36("Bennu"),
+        DIONE("Dione"),
+        RHEA("Rhea"),
+        TETHYS("Tethys"),
+        LUTETIA("Lutetia"),
+        IDA("Ida"),
+        GASPRA("Gaspra"),
+        MATHILDE("Mathilde"),
+        DEIMOS("Deimos"),
+        JANUS("Janus"),
+        EPIMETHEUS("Epimetheus"),
+        HYPERION("Hyperion"),
+        TEMPEL_1("Tempel 1"),
+        HALLEY("Halley"),
+        JUPITER("Jupiter"),
+        AMALTHEA("Amalthea"),
+        CALLISTO("Callisto"),
+        EUROPA("Europa"),
+        GANYMEDE("Ganymede"),
+        IO("Io"),
+        LARISSA("Larissa"),
+        PROTEUS("Proteus"),
+        PROMETHEUS("Prometheus"),
+        PANDORA("Pandora"),
+        GEOGRAPHOS("Geographos"),
+        KY26("KY26"),
+        BACCHUS("Bacchus"),
+        KLEOPATRA("Kleopatra"),
+        TOUTATIS_LOW_RES("Toutatis (Low Res)"),
+        TOUTATIS_HIGH_RES("Toutatis (High Res)"),
+        CASTALIA("Castalia"),
+        _52760_1998_ML14("52760 (1998 ML14)"),
+        GOLEVKA("Golevka"),
+        WILD_2("Wild 2"),
+        STEINS("Steins"),
+        HARTLEY("Hartley"),
+        PLUTO("Pluto"),
+        CHARON("Charon"),
+        HYDRA("Hydra"),
+        KERBEROS("Kerberos"),
+        NIX("Nix"),
+        STYX("Styx");
+
+        final private String str;
+        private ShapeModelBody(String str)
+        {
+            this.str = str;
+        }
+
+        @Override
+        public String toString()
+        {
+            return str;
+        }
+    }
 
     // Types of bodies
-    static public final String ASTEROID = "Asteroids";
-    static public final String PLANETS_AND_SATELLITES = "Planets and Satellites";
-    static public final String COMETS = "Comets";
+    static public enum ShapeModelType
+    {
+        ASTEROID("Asteroids"),
+        PLANETS_AND_SATELLITES("Planets and Satellites"),
+        COMETS("Comets");
+
+        final private String str;
+        private ShapeModelType(String str)
+        {
+            this.str = str;
+        }
+
+        @Override
+        public String toString()
+        {
+            return str;
+        }
+    }
 
     // Populations
-    static public final String MARS = "Mars";
-    static public final String JUPITER = "Jupiter";
-    static public final String SATURN = "Saturn";
-    static public final String NEPTUNE = "Neptune";
-    static public final String NEO = "Near-Earth";
-    static public final String MAIN_BELT = "Main Belt";
-    static public final String PLUTO = "Pluto";
+    static public enum ShapeModelPopulation
+    {
+        MARS("Mars"),
+        JUPITER("Jupiter"),
+        SATURN("Saturn"),
+        NEPTUNE("Neptune"),
+        NEO("Near-Earth"),
+        MAIN_BELT("Main Belt"),
+        PLUTO("Pluto");
+
+        final private String str;
+        private ShapeModelPopulation(String str)
+        {
+            this.str = str;
+        }
+
+        @Override
+        public String toString()
+        {
+            return str;
+        }
+    }
 
     // Names of authors
-    static public final String GASKELL = "Gaskell";
-    static public final String THOMAS = "Thomas";
-    static public final String STOOKE = "Stooke";
-    static public final String HUDSON = "Hudson";
-    static public final String DUXBURY = "Duxbury";
-    static public final String OSTRO = "Ostro";
-    static public final String JORDA = "Jorda";
-    static public final String NOLAN = "Nolan";
-    static public final String CUSTOM = "Custom";
-    static public final String EROSNAV = "NAV";
-    static public final String EROSNLR = "NLR";
-    static public final String EXPERIMENTAL = "Experimental";
+    static public enum ShapeModelAuthor
+    {
+        GASKELL("Gaskell"),
+        THOMAS("Thomas"),
+        STOOKE("Stooke"),
+        HUDSON("Hudson"),
+        DUXBURY("Duxbury"),
+        OSTRO("Ostro"),
+        JORDA("Jorda"),
+        NOLAN("Nolan"),
+        CUSTOM("Custom"),
+        EROSNAV("NAV"),
+        EROSNLR("NLR"),
+        EXPERIMENTAL("Experimental");
+
+        final private String str;
+        private ShapeModelAuthor(String str)
+        {
+            this.str = str;
+        }
+
+        @Override
+        public String toString()
+        {
+            return str;
+        }
+    }
 
     // Data used to construct shape model (either images, radar, lidar, or enhanced)
-    static public final String IMAGE_BASED = "Image Based";
-    static public final String RADAR_BASED = "Radar Based";
-    static public final String LIDAR_BASED = "Lidar Based";
-    static public final String ENHANCED = "Enhanced";
+    static public enum ShapeModelDataUsed
+    {
+        IMAGE_BASED("Image Based"),
+        RADAR_BASED("Radar Based"),
+        LIDAR_BASED("Lidar Based"),
+        ENHANCED("Enhanced");
+
+        final private String str;
+        private ShapeModelDataUsed(String str)
+        {
+            this.str = str;
+        }
+
+        @Override
+        public String toString()
+        {
+            return str;
+        }
+    }
 
     // Names of instruments
-    static public final String MSI = "MSI";
-    static public final String NLR = "NLR";
-    static public final String NIS = "NIS";
-    static public final String AMICA = "AMICA";
-    static public final String LIDAR = "LIDAR";
-    static public final String FC = "FC";
-    static public final String SSI = "SSI";
-    static public final String OSIRIS = "OSIRIS";
-    static public final String OLA = "OLA";
-    static public final String IMAGING_DATA = "Imaging Data";
-    static public final String LORRI = "LORRI";
+    static public enum Instrument
+    {
+        MSI("MSI"),
+        NLR("NLR"),
+        NIS("NIS"),
+        AMICA("AMICA"),
+        LIDAR("LIDAR"),
+        FC("FC"),
+        SSI("SSI"),
+        OSIRIS("OSIRIS"),
+        OLA("OLA"),
+        IMAGING_DATA("Imaging Data"),
+        LORRI("LORRI");
 
-    static public enum ImageType {
+        final private String str;
+        private Instrument(String str)
+        {
+            this.str = str;
+        }
+
+        @Override
+        public String toString()
+        {
+            return str;
+        }
+    }
+
+    static public enum ImageType
+    {
         MSI_IMAGE,
         AMICA_IMAGE,
         FC_IMAGE,
@@ -184,11 +277,11 @@ public class ModelFactory
 
         // Gaskell Eros
         ModelConfig c = new ModelConfig();
-        c.name = EROS;
-        c.type = ASTEROID;
-        c.population = NEO;
-        c.dataUsed = IMAGE_BASED;
-        c.author = GASKELL;
+        c.name = ShapeModelBody.EROS;
+        c.type = ShapeModelType.ASTEROID;
+        c.population = ShapeModelPopulation.NEO;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelAuthor.GASKELL;
         c.pathOnServer = "/GASKELL/EROS";
         c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
         c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
@@ -214,7 +307,7 @@ public class ModelFactory
         c.imageSearchDefaultMaxResolution = 50.0;
         c.imageSearchImageSources = new ImageSource[]{ImageSource.GASKELL, ImageSource.PDS};
         c.imageType = ImageType.MSI_IMAGE;
-        c.imageInstrumentName = MSI;
+        c.imageInstrumentName = Instrument.MSI;
         c.lidarSearchDefaultStartDate = new DateTime(2000, 2, 28, 0, 0, 0, 0).toDate();
         c.lidarSearchDefaultEndDate = new DateTime(2001, 2, 13, 0, 0, 0, 0).toDate();
         c.lidarSearchDataSourceMap = new LinkedHashMap<String, String>();
@@ -228,12 +321,12 @@ public class ModelFactory
         c.lidarBrowseNumberHeaderLines = 2;
         c.lidarBrowseIsInMeters = true;
         c.lidarOffsetScale = 0.025;
-        c.lidarInstrumentName = NLR;
+        c.lidarInstrumentName = Instrument.NLR;
         configArray.add(c);
 
         // Thomas Eros
         c = c.clone();
-        c.author = THOMAS;
+        c.author = ShapeModelAuthor.THOMAS;
         c.pathOnServer = "/THOMAS/EROS";
         c.smallBodyLabelPerResolutionLevel = new String[]{
                 "1708 plates", "7790 plates", "10152 plates",
@@ -247,25 +340,25 @@ public class ModelFactory
 
         // Eros NLR
         c = c.clone();
-        c.dataUsed = LIDAR_BASED;
-        c.author = EROSNLR;
+        c.dataUsed = ShapeModelDataUsed.LIDAR_BASED;
+        c.author = ShapeModelAuthor.EROSNLR;
         c.pathOnServer = "/OTHER/EROSNLR/nlrshape.llr2.gz";
         configArray.add(c);
 
         // Eros NAV
         c = c.clone();
-        c.dataUsed = LIDAR_BASED;
-        c.author = EROSNAV;
+        c.dataUsed = ShapeModelDataUsed.LIDAR_BASED;
+        c.author = ShapeModelAuthor.EROSNAV;
         c.pathOnServer = "/OTHER/EROSNAV/navplate.obj.gz";
         configArray.add(c);
 
         // Gaskell Itokawa
         c = new ModelConfig();
-        c.name = ITOKAWA;
-        c.type = ASTEROID;
-        c.population = NEO;
-        c.dataUsed = IMAGE_BASED;
-        c.author = GASKELL;
+        c.name = ShapeModelBody.ITOKAWA;
+        c.type = ShapeModelType.ASTEROID;
+        c.population = ShapeModelPopulation.NEO;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelAuthor.GASKELL;
         c.pathOnServer = "/GASKELL/ITOKAWA";
         c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
         c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
@@ -288,7 +381,7 @@ public class ModelFactory
         c.imageSearchDefaultMaxResolution = 3.0;
         c.imageSearchImageSources = new ImageSource[]{ImageSource.GASKELL, ImageSource.PDS, ImageSource.CORRECTED};
         c.imageType = ImageType.AMICA_IMAGE;
-        c.imageInstrumentName = AMICA;
+        c.imageInstrumentName = Instrument.AMICA;
         c.lidarSearchDefaultStartDate = new DateTime(2005, 9, 1, 0, 0, 0, 0).toDate();
         c.lidarSearchDefaultEndDate = new DateTime(2005, 11, 30, 0, 0, 0, 0).toDate();
         c.lidarSearchDataSourceMap = new LinkedHashMap<String, String>();
@@ -305,26 +398,26 @@ public class ModelFactory
         // The following value is the Itokawa diagonal length divided by 1546.4224133453388.
         // The value 1546.4224133453388 was chosen so that for Eros the offset scale is 0.025 km.
         c.lidarOffsetScale = 0.00044228259621279913;
-        c.lidarInstrumentName = LIDAR;
+        c.lidarInstrumentName = Instrument.LIDAR;
         configArray.add(c);
 
         // Ostro Itokawa
         c = new ModelConfig();
-        c.name = ITOKAWA;
-        c.type = ASTEROID;
-        c.population = NEO;
-        c.dataUsed = RADAR_BASED;
-        c.author = OSTRO;
+        c.name = ShapeModelBody.ITOKAWA;
+        c.type = ShapeModelType.ASTEROID;
+        c.population = ShapeModelPopulation.NEO;
+        c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
+        c.author = ShapeModelAuthor.OSTRO;
         c.pathOnServer = "/HUDSON/ITOKAWA/25143itokawa.obj.gz";
         configArray.add(c);
 
         // Gaskell Phobos
         c = new ModelConfig();
-        c.name = PHOBOS;
-        c.type = PLANETS_AND_SATELLITES;
-        c.population = MARS;
-        c.dataUsed = IMAGE_BASED;
-        c.author = GASKELL;
+        c.name = ShapeModelBody.PHOBOS;
+        c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+        c.population = ShapeModelPopulation.MARS;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelAuthor.GASKELL;
         c.pathOnServer = "/GASKELL/PHOBOS";
         c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
         c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
@@ -348,16 +441,16 @@ public class ModelFactory
         c.imageSearchDefaultMaxResolution = 300.0;
         c.imageSearchImageSources = new ImageSource[]{ImageSource.GASKELL, ImageSource.PDS};
         c.imageType = ImageType.PHOBOS_IMAGE;
-        c.imageInstrumentName = IMAGING_DATA;
+        c.imageInstrumentName = Instrument.IMAGING_DATA;
         configArray.add(c);
 
         // Thomas Phobos
         c = new ModelConfig();
-        c.name = PHOBOS;
-        c.type = PLANETS_AND_SATELLITES;
-        c.population = MARS;
-        c.dataUsed = IMAGE_BASED;
-        c.author = THOMAS;
+        c.name = ShapeModelBody.PHOBOS;
+        c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+        c.population = ShapeModelPopulation.MARS;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelAuthor.THOMAS;
         c.pathOnServer = "/THOMAS/PHOBOS/m1phobos.llr.gz";
         configArray.add(c);
 
@@ -365,11 +458,11 @@ public class ModelFactory
         if (Configuration.isAPLVersion())
         {
             c = new ModelConfig();
-            c.name = PHOBOS;
-            c.type = PLANETS_AND_SATELLITES;
-            c.population = MARS;
-            c.dataUsed = IMAGE_BASED;
-            c.author = EXPERIMENTAL;
+            c.name = ShapeModelBody.PHOBOS;
+            c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+            c.population = ShapeModelPopulation.MARS;
+            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.author = ShapeModelAuthor.EXPERIMENTAL;
             c.pathOnServer = "/GASKELL/PHOBOSEXPERIMENTAL";
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
             c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
@@ -403,16 +496,16 @@ public class ModelFactory
             c.imageSearchDefaultMaxResolution = 300.0;
             c.imageSearchImageSources = new ImageSource[]{ImageSource.GASKELL};
             c.imageType = ImageType.PHOBOS_IMAGE;
-            c.imageInstrumentName = IMAGING_DATA;
+            c.imageInstrumentName = Instrument.IMAGING_DATA;
             configArray.add(c);
         }
 
         if (Configuration.isAPLVersion())
         {
             c = new ModelConfig();
-            c.name = JUPITER;
-            c.type = PLANETS_AND_SATELLITES;
-            c.population = JUPITER;
+            c.name = ShapeModelBody.JUPITER;
+            c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+            c.population = ShapeModelPopulation.JUPITER;
             c.dataUsed = null;
             c.author = null;
             c.pathOnServer = "/NEWHORIZONS/JUPITER/shape_res0.vtk.gz";
@@ -421,76 +514,76 @@ public class ModelFactory
             c.hasPerspectiveImages = true;
             c.imageSearchDefaultStartDate = new GregorianCalendar(2007, 0, 8, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2007, 2, 5, 0, 0, 0).getTime();
-            c.imageSearchQuery = new GenericPhpQuery("/NEWHORIZONS/JUPITER/IMAGING/images", JUPITER);
+            c.imageSearchQuery = new GenericPhpQuery("/NEWHORIZONS/JUPITER/IMAGING/images", "JUPITER");
             c.imageSearchFilterNames = new String[]{};
             c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
             c.imageSearchDefaultMaxSpacecraftDistance = 1.0e9;
             c.imageSearchDefaultMaxResolution = 1.0e6;
             c.imageSearchImageSources = new ImageSource[]{ImageSource.PDS};
             c.imageType = ImageType.LORRI_IMAGE;
-            c.imageInstrumentName = LORRI;
+            c.imageInstrumentName = Instrument.LORRI;
             configArray.add(c);
 
             c = c.clone();
-            c.name = CALLISTO;
-            c.type = PLANETS_AND_SATELLITES;
-            c.population = JUPITER;
+            c.name = ShapeModelBody.CALLISTO;
+            c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+            c.population = ShapeModelPopulation.JUPITER;
             c.dataUsed = null;
             c.author = null;
             c.pathOnServer = "/NEWHORIZONS/CALLISTO/shape_res0.vtk.gz";
             c.hasImageMap = true;
-            c.imageSearchQuery = new GenericPhpQuery("/NEWHORIZONS/CALLISTO/IMAGING/images", CALLISTO);
+            c.imageSearchQuery = new GenericPhpQuery("/NEWHORIZONS/CALLISTO/IMAGING/images", "CALLISTO");
             configArray.add(c);
 
             c = c.clone();
-            c.name = EUROPA;
-            c.type = PLANETS_AND_SATELLITES;
-            c.population = JUPITER;
+            c.name = ShapeModelBody.EUROPA;
+            c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+            c.population = ShapeModelPopulation.JUPITER;
             c.dataUsed = null;
             c.author = null;
             c.pathOnServer = "/NEWHORIZONS/EUROPA/shape_res0.vtk.gz";
             c.hasImageMap = true;
-            c.imageSearchQuery = new GenericPhpQuery("/NEWHORIZONS/EUROPA/IMAGING/images", EUROPA);
+            c.imageSearchQuery = new GenericPhpQuery("/NEWHORIZONS/EUROPA/IMAGING/images", "EUROPA");
             configArray.add(c);
 
             c = c.clone();
-            c.name = GANYMEDE;
-            c.type = PLANETS_AND_SATELLITES;
-            c.population = JUPITER;
+            c.name = ShapeModelBody.GANYMEDE;
+            c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+            c.population = ShapeModelPopulation.JUPITER;
             c.dataUsed = null;
             c.author = null;
             c.pathOnServer = "/NEWHORIZONS/GANYMEDE/shape_res0.vtk.gz";
             c.hasImageMap = true;
-            c.imageSearchQuery = new GenericPhpQuery("/NEWHORIZONS/GANYMEDE/IMAGING/images", GANYMEDE);
+            c.imageSearchQuery = new GenericPhpQuery("/NEWHORIZONS/GANYMEDE/IMAGING/images", "GANYMEDE");
             configArray.add(c);
 
             c = c.clone();
-            c.name = IO;
-            c.type = PLANETS_AND_SATELLITES;
-            c.population = JUPITER;
+            c.name = ShapeModelBody.IO;
+            c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+            c.population = ShapeModelPopulation.JUPITER;
             c.dataUsed = null;
             c.author = null;
             c.pathOnServer = "/NEWHORIZONS/IO/shape_res0.vtk.gz";
             c.hasImageMap = true;
-            c.imageSearchQuery = new GenericPhpQuery("/NEWHORIZONS/IO/IMAGING/images", IO);
+            c.imageSearchQuery = new GenericPhpQuery("/NEWHORIZONS/IO/IMAGING/images", "IO");
             configArray.add(c);
         }
 
         c = new ModelConfig();
-        c.name = AMALTHEA;
-        c.type = PLANETS_AND_SATELLITES;
-        c.population = JUPITER;
-        c.dataUsed = IMAGE_BASED;
-        c.author = STOOKE;
+        c.name = ShapeModelBody.AMALTHEA;
+        c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+        c.population = ShapeModelPopulation.JUPITER;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelAuthor.STOOKE;
         c.pathOnServer = "/STOOKE/AMALTHEA/j5amalthea.llr.gz";
         configArray.add(c);
 
         c = new ModelConfig();
-        c.name = MIMAS;
-        c.type = PLANETS_AND_SATELLITES;
-        c.population = SATURN;
-        c.dataUsed = IMAGE_BASED;
-        c.author = GASKELL;
+        c.name = ShapeModelBody.MIMAS;
+        c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+        c.population = ShapeModelPopulation.SATURN;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelAuthor.GASKELL;
         c.pathOnServer = "/GASKELL/MIMAS";
         c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
         c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
@@ -504,15 +597,15 @@ public class ModelFactory
         c.imageSearchDefaultMaxResolution = 4000.0;
         c.imageSearchImageSources = new ImageSource[]{ImageSource.GASKELL};
         c.imageType = ImageType.SATURN_MOON_IMAGE;
-        c.imageInstrumentName = IMAGING_DATA;
+        c.imageInstrumentName = Instrument.IMAGING_DATA;
         configArray.add(c);
 
         c = new ModelConfig();
-        c.name = PHOEBE;
-        c.type = PLANETS_AND_SATELLITES;
-        c.population = SATURN;
-        c.dataUsed = IMAGE_BASED;
-        c.author = GASKELL;
+        c.name = ShapeModelBody.PHOEBE;
+        c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+        c.population = ShapeModelPopulation.SATURN;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelAuthor.GASKELL;
         c.pathOnServer = "/GASKELL/PHOEBE";
         c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
         c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
@@ -526,17 +619,17 @@ public class ModelFactory
         c.imageSearchDefaultMaxResolution = 4000.0;
         c.imageSearchImageSources = new ImageSource[]{ImageSource.GASKELL};
         c.imageType = ImageType.SATURN_MOON_IMAGE;
-        c.imageInstrumentName = IMAGING_DATA;
+        c.imageInstrumentName = Instrument.IMAGING_DATA;
         configArray.add(c);
 
         if (Configuration.isAPLVersion())
         {
             c = new ModelConfig();
-            c.name = VESTA;
-            c.type = ASTEROID;
-            c.population = MAIN_BELT;
-            c.dataUsed = IMAGE_BASED;
-            c.author = GASKELL;
+            c.name = ShapeModelBody.VESTA;
+            c.type = ShapeModelType.ASTEROID;
+            c.population = ShapeModelPopulation.MAIN_BELT;
+            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.author = ShapeModelAuthor.GASKELL;
             c.pathOnServer = "/GASKELL/VESTA";
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
             c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
@@ -559,25 +652,25 @@ public class ModelFactory
             c.imageSearchDefaultMaxResolution = 4000.0;
             c.imageSearchImageSources = new ImageSource[]{ImageSource.GASKELL, ImageSource.PDS};
             c.imageType = ImageType.FC_IMAGE;
-            c.imageInstrumentName = FC;
+            c.imageInstrumentName = Instrument.FC;
             configArray.add(c);
         }
 
         c = new ModelConfig();
-        c.name = VESTA;
-        c.type = ASTEROID;
-        c.population = MAIN_BELT;
-        c.dataUsed = IMAGE_BASED;
-        c.author = THOMAS;
+        c.name = ShapeModelBody.VESTA;
+        c.type = ShapeModelType.ASTEROID;
+        c.population = ShapeModelPopulation.MAIN_BELT;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelAuthor.THOMAS;
         c.pathOnServer = "/THOMAS/VESTA_OLD";
         configArray.add(c);
 
         c = new ModelConfig();
-        c.name = IDA;
-        c.type = ASTEROID;
-        c.population = MAIN_BELT;
-        c.dataUsed = IMAGE_BASED;
-        c.author = THOMAS;
+        c.name = ShapeModelBody.IDA;
+        c.type = ShapeModelType.ASTEROID;
+        c.population = ShapeModelPopulation.MAIN_BELT;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelAuthor.THOMAS;
         c.pathOnServer = "/THOMAS/IDA/243ida.llr.gz";
         c.hasImageMap = true;
         c.hasPerspectiveImages = true;
@@ -590,25 +683,25 @@ public class ModelFactory
         c.imageSearchDefaultMaxResolution = 4000.0;
         c.imageSearchImageSources = new ImageSource[]{ImageSource.CORRECTED};
         c.imageType = ImageType.SSI_IDA_IMAGE;
-        c.imageInstrumentName = SSI;
+        c.imageInstrumentName = Instrument.SSI;
         configArray.add(c);
 
         c = new ModelConfig();
-        c.name = IDA;
-        c.type = ASTEROID;
-        c.population = MAIN_BELT;
-        c.dataUsed = IMAGE_BASED;
-        c.author = STOOKE;
+        c.name = ShapeModelBody.IDA;
+        c.type = ShapeModelType.ASTEROID;
+        c.population = ShapeModelPopulation.MAIN_BELT;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelAuthor.STOOKE;
         c.pathOnServer = "/STOOKE/IDA/243ida.llr.gz";
         c.hasImageMap = true;
         configArray.add(c);
 
         c = new ModelConfig();
-        c.name = GASPRA;
-        c.type = ASTEROID;
-        c.population = MAIN_BELT;
-        c.dataUsed = IMAGE_BASED;
-        c.author = THOMAS;
+        c.name = ShapeModelBody.GASPRA;
+        c.type = ShapeModelType.ASTEROID;
+        c.population = ShapeModelPopulation.MAIN_BELT;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelAuthor.THOMAS;
         c.pathOnServer = "/THOMAS/GASPRA/951gaspra.llr.gz";
         c.hasImageMap = true;
         c.hasPerspectiveImages = true;
@@ -621,25 +714,25 @@ public class ModelFactory
         c.imageSearchDefaultMaxResolution = 4000.0;
         c.imageSearchImageSources = new ImageSource[]{ImageSource.CORRECTED};
         c.imageType = ImageType.SSI_GASPRA_IMAGE;
-        c.imageInstrumentName = SSI;
+        c.imageInstrumentName = Instrument.SSI;
         configArray.add(c);
 
         c = new ModelConfig();
-        c.name = GASPRA;
-        c.type = ASTEROID;
-        c.population = MAIN_BELT;
-        c.dataUsed = IMAGE_BASED;
-        c.author = STOOKE;
+        c.name = ShapeModelBody.GASPRA;
+        c.type = ShapeModelType.ASTEROID;
+        c.population = ShapeModelPopulation.MAIN_BELT;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelAuthor.STOOKE;
         c.pathOnServer = "/STOOKE/GASPRA/951gaspra.llr.gz";
         c.hasImageMap = true;
         configArray.add(c);
 
         c = new ModelConfig();
-        c.name = MATHILDE;
-        c.type = ASTEROID;
-        c.population = MAIN_BELT;
-        c.dataUsed = IMAGE_BASED;
-        c.author = THOMAS;
+        c.name = ShapeModelBody.MATHILDE;
+        c.type = ShapeModelType.ASTEROID;
+        c.population = ShapeModelPopulation.MAIN_BELT;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelAuthor.THOMAS;
         c.pathOnServer = "/THOMAS/MATHILDE/253mathilde.llr.gz";
         c.hasImageMap = true;
         c.hasPerspectiveImages = true;
@@ -660,15 +753,15 @@ public class ModelFactory
         c.imageSearchDefaultMaxResolution = 4000.0;
         c.imageSearchImageSources = new ImageSource[]{ImageSource.CORRECTED};
         c.imageType = ImageType.MSI_MATHILDE_IMAGE;
-        c.imageInstrumentName = MSI;
+        c.imageInstrumentName = Instrument.MSI;
         configArray.add(c);
 
         c = new ModelConfig();
-        c.name = DEIMOS;
-        c.type = PLANETS_AND_SATELLITES;
-        c.population = MARS;
-        c.dataUsed = IMAGE_BASED;
-        c.author = THOMAS;
+        c.name = ShapeModelBody.DEIMOS;
+        c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+        c.population = ShapeModelPopulation.MARS;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelAuthor.THOMAS;
         c.pathOnServer = "/THOMAS/DEIMOS/DEIMOS.vtk.gz";
         c.hasImageMap = true;
         c.hasPerspectiveImages = true;
@@ -688,188 +781,188 @@ public class ModelFactory
         c.imageSearchDefaultMaxResolution = 800.0;
         c.imageSearchImageSources = new ImageSource[]{ImageSource.PDS, ImageSource.CORRECTED};
         c.imageType = ImageType.DEIMOS_IMAGE;
-        c.imageInstrumentName = IMAGING_DATA;
+        c.imageInstrumentName = Instrument.IMAGING_DATA;
         configArray.add(c);
 
         c = new ModelConfig();
-        c.name = JANUS;
-        c.type = PLANETS_AND_SATELLITES;
-        c.population = SATURN;
-        c.dataUsed = IMAGE_BASED;
-        c.author = THOMAS;
+        c.name = ShapeModelBody.JANUS;
+        c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+        c.population = ShapeModelPopulation.SATURN;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelAuthor.THOMAS;
         c.pathOnServer = "/THOMAS/JANUS/s10janus.llr.gz";
         configArray.add(c);
 
         c = new ModelConfig();
-        c.name = JANUS;
-        c.type = PLANETS_AND_SATELLITES;
-        c.population = SATURN;
-        c.dataUsed = IMAGE_BASED;
-        c.author = STOOKE;
+        c.name = ShapeModelBody.JANUS;
+        c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+        c.population = ShapeModelPopulation.SATURN;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelAuthor.STOOKE;
         c.pathOnServer = "/STOOKE/JANUS/s10janus.llr.gz";
         configArray.add(c);
 
         c = new ModelConfig();
-        c.name = EPIMETHEUS;
-        c.type = PLANETS_AND_SATELLITES;
-        c.population = SATURN;
-        c.dataUsed = IMAGE_BASED;
-        c.author = THOMAS;
+        c.name = ShapeModelBody.EPIMETHEUS;
+        c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+        c.population = ShapeModelPopulation.SATURN;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelAuthor.THOMAS;
         c.pathOnServer = "/THOMAS/EPIMETHEUS/s11epimetheus.llr.gz";
         configArray.add(c);
 
         c = new ModelConfig();
-        c.name = EPIMETHEUS;
-        c.type = PLANETS_AND_SATELLITES;
-        c.population = SATURN;
-        c.dataUsed = IMAGE_BASED;
-        c.author = STOOKE;
+        c.name = ShapeModelBody.EPIMETHEUS;
+        c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+        c.population = ShapeModelPopulation.SATURN;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelAuthor.STOOKE;
         c.pathOnServer = "/STOOKE/EPIMETHEUS/s11epimetheus.llr.gz";
         configArray.add(c);
 
         c = new ModelConfig();
-        c.name = HALLEY;
-        c.type = COMETS;
+        c.name = ShapeModelBody.HALLEY;
+        c.type = ShapeModelType.COMETS;
         c.population = null;
-        c.dataUsed = IMAGE_BASED;
-        c.author = STOOKE;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelAuthor.STOOKE;
         c.pathOnServer = "/STOOKE/HALLEY/1682q1halley.llr.gz";
         configArray.add(c);
 
         c = new ModelConfig();
-        c.name = LARISSA;
-        c.type = PLANETS_AND_SATELLITES;
-        c.population = NEPTUNE;
-        c.dataUsed = IMAGE_BASED;
-        c.author = STOOKE;
+        c.name = ShapeModelBody.LARISSA;
+        c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+        c.population = ShapeModelPopulation.NEPTUNE;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelAuthor.STOOKE;
         c.pathOnServer = "/STOOKE/LARISSA/n7larissa.llr.gz";
         configArray.add(c);
 
         c = new ModelConfig();
-        c.name = PROTEUS;
-        c.type = PLANETS_AND_SATELLITES;
-        c.population = NEPTUNE;
-        c.dataUsed = IMAGE_BASED;
-        c.author = STOOKE;
+        c.name = ShapeModelBody.PROTEUS;
+        c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+        c.population = ShapeModelPopulation.NEPTUNE;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelAuthor.STOOKE;
         c.pathOnServer = "/STOOKE/PROTEUS/n8proteus.llr.gz";
         configArray.add(c);
 
         c = new ModelConfig();
-        c.name = PROMETHEUS;
-        c.type = PLANETS_AND_SATELLITES;
-        c.population = SATURN;
-        c.dataUsed = IMAGE_BASED;
-        c.author = STOOKE;
+        c.name = ShapeModelBody.PROMETHEUS;
+        c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+        c.population = ShapeModelPopulation.SATURN;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelAuthor.STOOKE;
         c.pathOnServer = "/STOOKE/PROMETHEUS/s16prometheus.llr.gz";
         configArray.add(c);
 
         c = new ModelConfig();
-        c.name = PANDORA;
-        c.type = PLANETS_AND_SATELLITES;
-        c.population = SATURN;
-        c.dataUsed = IMAGE_BASED;
-        c.author = STOOKE;
+        c.name = ShapeModelBody.PANDORA;
+        c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+        c.population = ShapeModelPopulation.SATURN;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelAuthor.STOOKE;
         c.pathOnServer = "/STOOKE/PANDORA/s17pandora.llr.gz";
         configArray.add(c);
 
         c = new ModelConfig();
-        c.name = GEOGRAPHOS;
-        c.type = ASTEROID;
-        c.population = NEO;
-        c.dataUsed = RADAR_BASED;
-        c.author = HUDSON;
+        c.name = ShapeModelBody.GEOGRAPHOS;
+        c.type = ShapeModelType.ASTEROID;
+        c.population = ShapeModelPopulation.NEO;
+        c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
+        c.author = ShapeModelAuthor.HUDSON;
         c.pathOnServer = "/HUDSON/GEOGRAPHOS/1620geographos.obj.gz";
         configArray.add(c);
 
         c = new ModelConfig();
-        c.name = KY26;
-        c.type = ASTEROID;
-        c.population = NEO;
-        c.dataUsed = RADAR_BASED;
-        c.author = HUDSON;
+        c.name = ShapeModelBody.KY26;
+        c.type = ShapeModelType.ASTEROID;
+        c.population = ShapeModelPopulation.NEO;
+        c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
+        c.author = ShapeModelAuthor.HUDSON;
         c.pathOnServer = "/HUDSON/KY26/1998ky26.obj.gz";
         configArray.add(c);
 
         c = new ModelConfig();
-        c.name = BACCHUS;
-        c.type = ASTEROID;
-        c.population = NEO;
-        c.dataUsed = RADAR_BASED;
-        c.author = HUDSON;
+        c.name = ShapeModelBody.BACCHUS;
+        c.type = ShapeModelType.ASTEROID;
+        c.population = ShapeModelPopulation.NEO;
+        c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
+        c.author = ShapeModelAuthor.HUDSON;
         c.pathOnServer = "/HUDSON/BACCHUS/2063bacchus.obj.gz";
         configArray.add(c);
 
         c = new ModelConfig();
-        c.name = KLEOPATRA;
-        c.type = ASTEROID;
-        c.population = MAIN_BELT;
-        c.dataUsed = RADAR_BASED;
-        c.author = HUDSON;
+        c.name = ShapeModelBody.KLEOPATRA;
+        c.type = ShapeModelType.ASTEROID;
+        c.population = ShapeModelPopulation.MAIN_BELT;
+        c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
+        c.author = ShapeModelAuthor.HUDSON;
         c.pathOnServer = "/HUDSON/KLEOPATRA/216kleopatra.obj.gz";
         configArray.add(c);
 
         c = new ModelConfig();
-        c.name = TOUTATIS_LOW_RES;
-        c.type = ASTEROID;
-        c.population = NEO;
-        c.dataUsed = RADAR_BASED;
-        c.author = HUDSON;
+        c.name = ShapeModelBody.TOUTATIS_LOW_RES;
+        c.type = ShapeModelType.ASTEROID;
+        c.population = ShapeModelPopulation.NEO;
+        c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
+        c.author = ShapeModelAuthor.HUDSON;
         c.pathOnServer = "/HUDSON/TOUTATIS/4179toutatis.obj.gz";
         configArray.add(c);
 
         c = new ModelConfig();
-        c.name = TOUTATIS_HIGH_RES;
-        c.type = ASTEROID;
-        c.population = NEO;
-        c.dataUsed = RADAR_BASED;
-        c.author = HUDSON;
+        c.name = ShapeModelBody.TOUTATIS_HIGH_RES;
+        c.type = ShapeModelType.ASTEROID;
+        c.population = ShapeModelPopulation.NEO;
+        c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
+        c.author = ShapeModelAuthor.HUDSON;
         c.pathOnServer = "/HUDSON/TOUTATIS2/4179toutatis2.obj.gz";
         configArray.add(c);
 
         c = new ModelConfig();
-        c.name = CASTALIA;
-        c.type = ASTEROID;
-        c.population = NEO;
-        c.dataUsed = RADAR_BASED;
-        c.author = HUDSON;
+        c.name = ShapeModelBody.CASTALIA;
+        c.type = ShapeModelType.ASTEROID;
+        c.population = ShapeModelPopulation.NEO;
+        c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
+        c.author = ShapeModelAuthor.HUDSON;
         c.pathOnServer = "/HUDSON/CASTALIA/4769castalia.obj.gz";
         configArray.add(c);
 
         c = new ModelConfig();
-        c.name = _52760_1998_ML14;
-        c.type = ASTEROID;
-        c.population = NEO;
-        c.dataUsed = RADAR_BASED;
-        c.author = HUDSON;
+        c.name = ShapeModelBody._52760_1998_ML14;
+        c.type = ShapeModelType.ASTEROID;
+        c.population = ShapeModelPopulation.NEO;
+        c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
+        c.author = ShapeModelAuthor.HUDSON;
         c.pathOnServer = "/HUDSON/52760/52760.obj.gz";
         configArray.add(c);
 
         c = new ModelConfig();
-        c.name = GOLEVKA;
-        c.type = ASTEROID;
-        c.population = NEO;
-        c.dataUsed = RADAR_BASED;
-        c.author = HUDSON;
+        c.name = ShapeModelBody.GOLEVKA;
+        c.type = ShapeModelType.ASTEROID;
+        c.population = ShapeModelPopulation.NEO;
+        c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
+        c.author = ShapeModelAuthor.HUDSON;
         c.pathOnServer = "/HUDSON/GOLEVKA/6489golevka.obj.gz";
         configArray.add(c);
 
         c = new ModelConfig();
-        c.name = RQ36;
-        c.type = ASTEROID;
-        c.population = NEO;
-        c.dataUsed = RADAR_BASED;
-        c.author = NOLAN;
+        c.name = ShapeModelBody.RQ36;
+        c.type = ShapeModelType.ASTEROID;
+        c.population = ShapeModelPopulation.NEO;
+        c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
+        c.author = ShapeModelAuthor.NOLAN;
         c.pathOnServer = "/NOLAN/BENNU/101955bennu.obj.gz";
         configArray.add(c);
 
         if (Configuration.isAPLVersion())
         {
             c = new ModelConfig();
-            c.name = RQ36;
-            c.type = ASTEROID;
-            c.population = NEO;
-            c.dataUsed = ENHANCED;
-            c.author = GASKELL;
+            c.name = ShapeModelBody.RQ36;
+            c.type = ShapeModelType.ASTEROID;
+            c.population = ShapeModelPopulation.NEO;
+            c.dataUsed = ShapeModelDataUsed.ENHANCED;
+            c.author = ShapeModelAuthor.GASKELL;
             c.pathOnServer = "/GASKELL/RQ36";
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
             c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
@@ -890,18 +983,18 @@ public class ModelFactory
             c.lidarBrowseIsBinary = true;
             c.lidarBrowseBinaryRecordSize = 168;
             c.lidarOffsetScale = 0.0005;
-            c.lidarInstrumentName = OLA;
+            c.lidarInstrumentName = Instrument.OLA;
             configArray.add(c);
         }
 
         if (Configuration.isAPLVersion())
         {
             c = new ModelConfig();
-            c.name = LUTETIA;
-            c.type = ASTEROID;
-            c.population = MAIN_BELT;
-            c.dataUsed = IMAGE_BASED;
-            c.author = GASKELL;
+            c.name = ShapeModelBody.LUTETIA;
+            c.type = ShapeModelType.ASTEROID;
+            c.population = ShapeModelPopulation.MAIN_BELT;
+            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.author = ShapeModelAuthor.GASKELL;
             c.pathOnServer = "/GASKELL/LUTETIA";
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
             c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
@@ -915,16 +1008,16 @@ public class ModelFactory
             c.imageSearchDefaultMaxResolution = 4000.0;
             c.imageSearchImageSources = new ImageSource[]{ImageSource.GASKELL};
             c.imageType = ImageType.OSIRIS_IMAGE;
-            c.imageInstrumentName = OSIRIS;
+            c.imageInstrumentName = Instrument.OSIRIS;
             configArray.add(c);
         }
 
         c = new ModelConfig();
-        c.name = LUTETIA;
-        c.type = ASTEROID;
-        c.population = MAIN_BELT;
-        c.dataUsed = IMAGE_BASED;
-        c.author = JORDA;
+        c.name = ShapeModelBody.LUTETIA;
+        c.type = ShapeModelType.ASTEROID;
+        c.population = ShapeModelPopulation.MAIN_BELT;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelAuthor.JORDA;
         c.pathOnServer = "/JORDA/LUTETIA";
         c.smallBodyLabelPerResolutionLevel = new String[]{
                 "2962 plates ", "5824 plates ", "11954 plates ", "24526 plates ",
@@ -938,20 +1031,20 @@ public class ModelFactory
         configArray.add(c);
 
         c = new ModelConfig();
-        c.name = STEINS;
-        c.type = ASTEROID;
-        c.population = MAIN_BELT;
-        c.dataUsed = IMAGE_BASED;
-        c.author = JORDA;
+        c.name = ShapeModelBody.STEINS;
+        c.type = ShapeModelType.ASTEROID;
+        c.population = ShapeModelPopulation.MAIN_BELT;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelAuthor.JORDA;
         c.pathOnServer = "/JORDA/STEINS/steins_cart.plt.gz";
         configArray.add(c);
 
         c = new ModelConfig();
-        c.name = DIONE;
-        c.type = PLANETS_AND_SATELLITES;
-        c.population = SATURN;
-        c.dataUsed = IMAGE_BASED;
-        c.author = GASKELL;
+        c.name = ShapeModelBody.DIONE;
+        c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+        c.population = ShapeModelPopulation.SATURN;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelAuthor.GASKELL;
         c.pathOnServer = "/GASKELL/DIONE";
         c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
         c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
@@ -965,15 +1058,15 @@ public class ModelFactory
         c.imageSearchDefaultMaxResolution = 4000.0;
         c.imageSearchImageSources = new ImageSource[]{ImageSource.GASKELL};
         c.imageType = ImageType.SATURN_MOON_IMAGE;
-        c.imageInstrumentName = IMAGING_DATA;
+        c.imageInstrumentName = Instrument.IMAGING_DATA;
         configArray.add(c);
 
         c = new ModelConfig();
-        c.name = TETHYS;
-        c.type = PLANETS_AND_SATELLITES;
-        c.population = SATURN;
-        c.dataUsed = IMAGE_BASED;
-        c.author = GASKELL;
+        c.name = ShapeModelBody.TETHYS;
+        c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+        c.population = ShapeModelPopulation.SATURN;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelAuthor.GASKELL;
         c.pathOnServer = "/GASKELL/TETHYS";
         c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
         c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
@@ -982,11 +1075,11 @@ public class ModelFactory
         if (Configuration.isAPLVersion())
         {
             c = new ModelConfig();
-            c.name = HYPERION;
-            c.type = PLANETS_AND_SATELLITES;
-            c.population = SATURN;
-            c.dataUsed = IMAGE_BASED;
-            c.author = GASKELL;
+            c.name = ShapeModelBody.HYPERION;
+            c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+            c.population = ShapeModelPopulation.SATURN;
+            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.author = ShapeModelAuthor.GASKELL;
             c.pathOnServer = "/GASKELL/HYPERION";
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
             c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
@@ -996,11 +1089,11 @@ public class ModelFactory
         if (Configuration.isAPLVersion())
         {
             c = new ModelConfig();
-            c.name = RHEA;
-            c.type = PLANETS_AND_SATELLITES;
-            c.population = SATURN;
-            c.dataUsed = IMAGE_BASED;
-            c.author = GASKELL;
+            c.name = ShapeModelBody.RHEA;
+            c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+            c.population = ShapeModelPopulation.SATURN;
+            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.author = ShapeModelAuthor.GASKELL;
             c.pathOnServer = "/GASKELL/RHEA";
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
             c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
@@ -1008,59 +1101,59 @@ public class ModelFactory
         }
 
         c = new ModelConfig();
-        c.name = HYPERION;
-        c.type = PLANETS_AND_SATELLITES;
-        c.population = SATURN;
-        c.dataUsed = IMAGE_BASED;
-        c.author = THOMAS;
+        c.name = ShapeModelBody.HYPERION;
+        c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+        c.population = ShapeModelPopulation.SATURN;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelAuthor.THOMAS;
         c.pathOnServer = "/THOMAS/HYPERION/s7hyperion.llr.gz";
         configArray.add(c);
 
         if (Configuration.isAPLVersion())
         {
             c = new ModelConfig();
-            c.name = TEMPEL_1;
-            c.type = COMETS;
+            c.name = ShapeModelBody.TEMPEL_1;
+            c.type = ShapeModelType.COMETS;
             c.population = null;
-            c.dataUsed = IMAGE_BASED;
-            c.author = GASKELL;
+            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.author = ShapeModelAuthor.GASKELL;
             c.pathOnServer = "/GASKELL/TEMPEL1";
             configArray.add(c);
         }
 
         c = new ModelConfig();
-        c.name = TEMPEL_1;
-        c.type = COMETS;
+        c.name = ShapeModelBody.TEMPEL_1;
+        c.type = ShapeModelType.COMETS;
         c.population = null;
-        c.dataUsed = IMAGE_BASED;
-        c.author = THOMAS;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelAuthor.THOMAS;
         c.pathOnServer = "/THOMAS/TEMPEL1/tempel1_cart.t1.gz";
         configArray.add(c);
 
         c = new ModelConfig();
-        c.name = WILD_2;
-        c.type = COMETS;
+        c.name = ShapeModelBody.WILD_2;
+        c.type = ShapeModelType.COMETS;
         c.population = null;
-        c.dataUsed = IMAGE_BASED;
-        c.author = DUXBURY;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelAuthor.DUXBURY;
         c.pathOnServer = "/OTHER/WILD2/wild2_cart_full.w2.gz";
         configArray.add(c);
 
         c = new ModelConfig();
-        c.name = HARTLEY;
-        c.type = COMETS;
+        c.name = ShapeModelBody.HARTLEY;
+        c.type = ShapeModelType.COMETS;
         c.population = null;
-        c.dataUsed = IMAGE_BASED;
-        c.author = THOMAS;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelAuthor.THOMAS;
         c.pathOnServer = "/THOMAS/HARTLEY/hartley2_2012_cart.plt.gz";
         configArray.add(c);
 
         if (Configuration.isAPLVersion())
         {
             c = new ModelConfig();
-            c.name = PLUTO;
-            c.type = PLANETS_AND_SATELLITES;
-            c.population = PLUTO;
+            c.name = ShapeModelBody.PLUTO;
+            c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+            c.population = ShapeModelPopulation.PLUTO;
             c.dataUsed = null;
             c.author = null;
             c.pathOnServer = "/NEWHORIZONS/PLUTO/shape_res0.vtk.gz";
@@ -1068,9 +1161,9 @@ public class ModelFactory
             configArray.add(c);
 
             c = new ModelConfig();
-            c.name = CHARON;
-            c.type = PLANETS_AND_SATELLITES;
-            c.population = PLUTO;
+            c.name = ShapeModelBody.CHARON;
+            c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+            c.population = ShapeModelPopulation.PLUTO;
             c.dataUsed = null;
             c.author = null;
             c.pathOnServer = "/NEWHORIZONS/CHARON/shape_res0.vtk.gz";
@@ -1078,9 +1171,9 @@ public class ModelFactory
             configArray.add(c);
 
             c = new ModelConfig();
-            c.name = HYDRA;
-            c.type = PLANETS_AND_SATELLITES;
-            c.population = PLUTO;
+            c.name = ShapeModelBody.HYDRA;
+            c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+            c.population = ShapeModelPopulation.PLUTO;
             c.dataUsed = null;
             c.author = null;
             c.pathOnServer = "/NEWHORIZONS/HYDRA/shape_res0.vtk.gz";
@@ -1088,9 +1181,9 @@ public class ModelFactory
             configArray.add(c);
 
             c = new ModelConfig();
-            c.name = KERBEROS;
-            c.type = PLANETS_AND_SATELLITES;
-            c.population = PLUTO;
+            c.name = ShapeModelBody.KERBEROS;
+            c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+            c.population = ShapeModelPopulation.PLUTO;
             c.dataUsed = null;
             c.author = null;
             c.pathOnServer = "/NEWHORIZONS/KERBEROS/shape_res0.vtk.gz";
@@ -1098,9 +1191,9 @@ public class ModelFactory
             configArray.add(c);
 
             c = new ModelConfig();
-            c.name = NIX;
-            c.type = PLANETS_AND_SATELLITES;
-            c.population = PLUTO;
+            c.name = ShapeModelBody.NIX;
+            c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+            c.population = ShapeModelPopulation.PLUTO;
             c.dataUsed = null;
             c.author = null;
             c.pathOnServer = "/NEWHORIZONS/NIX/shape_res0.vtk.gz";
@@ -1108,9 +1201,9 @@ public class ModelFactory
             configArray.add(c);
 
             c = new ModelConfig();
-            c.name = STYX;
-            c.type = PLANETS_AND_SATELLITES;
-            c.population = PLUTO;
+            c.name = ShapeModelBody.STYX;
+            c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+            c.population = ShapeModelPopulation.PLUTO;
             c.dataUsed = null;
             c.author = null;
             c.pathOnServer = "/NEWHORIZONS/STYX/shape_res0.vtk.gz";
@@ -1129,11 +1222,11 @@ public class ModelFactory
     public static class ModelConfig
     {
 
-        public String name;
-        public String type; // e.g. asteroid, comet, satellite
-        public String population; // e.g. Mars for satellites or main belt for asteroids
-        public String dataUsed; // e.g. images, radar, lidar, or enhanced
-        public String author; // e.g. Gaskell
+        public ShapeModelBody name;
+        public ShapeModelType type; // e.g. asteroid, comet, satellite
+        public ShapeModelPopulation population; // e.g. Mars for satellites or main belt for asteroids
+        public ShapeModelDataUsed dataUsed; // e.g. images, radar, lidar, or enhanced
+        public ShapeModelAuthor author; // e.g. Gaskell
         public String pathOnServer;
         public String[] smallBodyLabelPerResolutionLevel; // only needed when number resolution levels > 1
         public int[] smallBodyNumberOfPlatesPerResolutionLevel; // only needed when number resolution levels > 1
@@ -1154,7 +1247,7 @@ public class ModelFactory
         public double imageSearchDefaultMaxResolution;
         public ImageSource[] imageSearchImageSources;
         public ImageType imageType;
-        public String imageInstrumentName = IMAGING_DATA;
+        public Instrument imageInstrumentName = Instrument.IMAGING_DATA;
         // if hasLidarData is true, the following must be filled in
         public Date lidarSearchDefaultStartDate;
         public Date lidarSearchDefaultEndDate;
@@ -1172,7 +1265,8 @@ public class ModelFactory
         // they are assumed to be in kilometers.
         public boolean lidarBrowseIsInMeters;
         public double lidarOffsetScale;
-        public String lidarInstrumentName = LIDAR;
+        public Instrument lidarInstrumentName = Instrument.LIDAR;
+        public String customName;
 
 
         protected ModelConfig clone()
@@ -1226,6 +1320,7 @@ public class ModelFactory
                 c.lidarOffsetScale = this.lidarOffsetScale;
                 c.lidarInstrumentName = this.lidarInstrumentName;
             }
+            c.customName = this.customName;
             return c;
         }
 
@@ -1234,13 +1329,13 @@ public class ModelFactory
          */
         public String getPathRepresentation()
         {
-            if (CUSTOM.equals(author))
+            if (ShapeModelAuthor.CUSTOM == author)
             {
-                return CUSTOM + " > " + name;
+                return ShapeModelAuthor.CUSTOM + " > " + customName;
             }
             else
             {
-                String path = type;
+                String path = type.str;
                 if (population != null)
                     path += " > " + population;
                 path += " > " + name;
@@ -1252,6 +1347,32 @@ public class ModelFactory
             }
         }
 
+        /**
+         * Return a unique name for this model. No other model may have this
+         * name. Note that only applies within built-in models or custom models
+         * but a custom model can share the name of a built-in one or vice versa.
+         * By default simply return the author concatenated with the
+         * name if the author is not null or just the name if the author
+         * is null.
+         * @return
+         */
+        public String getUniqueName()
+        {
+            if (ShapeModelAuthor.CUSTOM == author)
+                return author + "/" + customName;
+            else if (author != null)
+                return author + "/" + name;
+            else
+                return name.toString();
+        }
+
+        public String getShapeModelName()
+        {
+            if (author == ShapeModelAuthor.CUSTOM)
+                return customName;
+            else
+                return name.toString();
+        }
     }
 
     /**
@@ -1263,11 +1384,11 @@ public class ModelFactory
      * @param author
      * @return
      */
-    static public ModelConfig getModelConfig(String name, String author)
+    static public ModelConfig getModelConfig(ShapeModelBody name, ShapeModelAuthor author)
     {
         for (ModelConfig config : builtInModelConfigs)
         {
-            if (config.name.equals(name) && config.author.equals(author))
+            if (config.name == name && config.author == author)
                 return config;
         }
 
@@ -1325,16 +1446,16 @@ public class ModelFactory
 
     static public SmallBodyModel createSmallBodyModel(ModelConfig config)
     {
-        String name = config.name;
-        String author = config.author;
+        ShapeModelBody name = config.name;
+        ShapeModelAuthor author = config.author;
 
-        if (GASKELL.equals(author) || EXPERIMENTAL.equals(author))
+        if (ShapeModelAuthor.GASKELL == author || ShapeModelAuthor.EXPERIMENTAL == author)
         {
-            if (EROS.equals(name))
+            if (ShapeModelBody.EROS == name)
                 return new Eros(config);
-            else if (ITOKAWA.equals(name))
+            else if (ShapeModelBody.ITOKAWA == name)
                 return new Itokawa(config);
-            else if (TEMPEL_1.equals(name))
+            else if (ShapeModelBody.TEMPEL_1 == name)
             {
                 String[] names = {
                         name + " low"
@@ -1363,19 +1484,19 @@ public class ModelFactory
                 return new SimpleSmallBody(config, names, paths);
             }
         }
-        else if (THOMAS.equals(author))
+        else if (ShapeModelAuthor.THOMAS == author)
         {
-            if (EROS.equals(name))
+            if (ShapeModelBody.EROS == name)
                 return new ErosThomas(config);
-            else if (VESTA.equals(name))
+            else if (ShapeModelBody.VESTA == name)
                 return new VestaOld(config);
         }
-        else if (JORDA.equals(author))
+        else if (ShapeModelAuthor.JORDA == author)
         {
-            if (LUTETIA.equals(name))
+            if (ShapeModelBody.LUTETIA == name)
                 return new Lutetia(config);
         }
-        else if (CUSTOM.equals(author))
+        else if (ShapeModelAuthor.CUSTOM == author)
         {
             return new CustomShapeModel(config);
         }
@@ -1390,9 +1511,9 @@ public class ModelFactory
     static public Graticule createGraticule(SmallBodyModel smallBodyModel)
     {
         ModelConfig config = smallBodyModel.getModelConfig();
-        String author = config.author;
+        ShapeModelAuthor author = config.author;
 
-        if (GASKELL.equals(author) && smallBodyModel.getNumberResolutionLevels() == 4)
+        if (ShapeModelAuthor.GASKELL == author && smallBodyModel.getNumberResolutionLevels() == 4)
         {
             String[] graticulePaths = new String[]{
                     config.pathOnServer + "/coordinate_grid_res0.vtk.gz",
@@ -1403,7 +1524,7 @@ public class ModelFactory
 
             return new Graticule(smallBodyModel, graticulePaths);
         }
-        else if (CUSTOM.equals(author))
+        else if (ShapeModelAuthor.CUSTOM == author)
         {
             return new CustomGraticule(smallBodyModel);
         }

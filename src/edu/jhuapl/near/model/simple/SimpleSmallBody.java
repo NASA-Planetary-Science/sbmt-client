@@ -31,8 +31,6 @@ public class SimpleSmallBody extends SmallBodyModel
             String[] paths)
     {
         super(config,
-                config.name,
-                config.author,
                 modelNames,
                 paths,
                 config.hasColoringData ? getColoringFiles(paths[0]) : null,
@@ -47,9 +45,7 @@ public class SimpleSmallBody extends SmallBodyModel
     public SimpleSmallBody(ModelConfig config, String imageMap)
     {
         super(config,
-                config.name,
-                config.author,
-                new String[] {config.name},
+                new String[] {config.name.toString()},
                 new String[] {config.pathOnServer},
                 config.hasColoringData ? getColoringFiles(config.pathOnServer) : null,
                 config.hasColoringData ? coloringNames : null,
