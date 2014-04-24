@@ -45,7 +45,7 @@ public class SimpleSmallBody extends SmallBodyModel
     public SimpleSmallBody(ModelConfig config, String imageMap)
     {
         super(config,
-                new String[] {config.name.toString()},
+                new String[] {config.body.toString()},
                 new String[] {config.pathOnServer},
                 config.hasColoringData ? getColoringFiles(config.pathOnServer) : null,
                 config.hasColoringData ? coloringNames : null,

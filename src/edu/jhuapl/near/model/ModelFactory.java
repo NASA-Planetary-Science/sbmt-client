@@ -277,7 +277,7 @@ public class ModelFactory
 
         // Gaskell Eros
         ModelConfig c = new ModelConfig();
-        c.name = ShapeModelBody.EROS;
+        c.body = ShapeModelBody.EROS;
         c.type = ShapeModelType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
@@ -354,7 +354,7 @@ public class ModelFactory
 
         // Gaskell Itokawa
         c = new ModelConfig();
-        c.name = ShapeModelBody.ITOKAWA;
+        c.body = ShapeModelBody.ITOKAWA;
         c.type = ShapeModelType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
@@ -403,7 +403,7 @@ public class ModelFactory
 
         // Ostro Itokawa
         c = new ModelConfig();
-        c.name = ShapeModelBody.ITOKAWA;
+        c.body = ShapeModelBody.ITOKAWA;
         c.type = ShapeModelType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
@@ -413,7 +413,7 @@ public class ModelFactory
 
         // Gaskell Phobos
         c = new ModelConfig();
-        c.name = ShapeModelBody.PHOBOS;
+        c.body = ShapeModelBody.PHOBOS;
         c.type = ShapeModelType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.MARS;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
@@ -446,7 +446,7 @@ public class ModelFactory
 
         // Thomas Phobos
         c = new ModelConfig();
-        c.name = ShapeModelBody.PHOBOS;
+        c.body = ShapeModelBody.PHOBOS;
         c.type = ShapeModelType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.MARS;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
@@ -458,7 +458,7 @@ public class ModelFactory
         if (Configuration.isAPLVersion())
         {
             c = new ModelConfig();
-            c.name = ShapeModelBody.PHOBOS;
+            c.body = ShapeModelBody.PHOBOS;
             c.type = ShapeModelType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.MARS;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
@@ -503,7 +503,7 @@ public class ModelFactory
         if (Configuration.isAPLVersion())
         {
             c = new ModelConfig();
-            c.name = ShapeModelBody.JUPITER;
+            c.body = ShapeModelBody.JUPITER;
             c.type = ShapeModelType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.JUPITER;
             c.dataUsed = null;
@@ -525,7 +525,7 @@ public class ModelFactory
             configArray.add(c);
 
             c = c.clone();
-            c.name = ShapeModelBody.CALLISTO;
+            c.body = ShapeModelBody.CALLISTO;
             c.type = ShapeModelType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.JUPITER;
             c.dataUsed = null;
@@ -536,7 +536,7 @@ public class ModelFactory
             configArray.add(c);
 
             c = c.clone();
-            c.name = ShapeModelBody.EUROPA;
+            c.body = ShapeModelBody.EUROPA;
             c.type = ShapeModelType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.JUPITER;
             c.dataUsed = null;
@@ -547,7 +547,7 @@ public class ModelFactory
             configArray.add(c);
 
             c = c.clone();
-            c.name = ShapeModelBody.GANYMEDE;
+            c.body = ShapeModelBody.GANYMEDE;
             c.type = ShapeModelType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.JUPITER;
             c.dataUsed = null;
@@ -558,7 +558,7 @@ public class ModelFactory
             configArray.add(c);
 
             c = c.clone();
-            c.name = ShapeModelBody.IO;
+            c.body = ShapeModelBody.IO;
             c.type = ShapeModelType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.JUPITER;
             c.dataUsed = null;
@@ -570,7 +570,7 @@ public class ModelFactory
         }
 
         c = new ModelConfig();
-        c.name = ShapeModelBody.AMALTHEA;
+        c.body = ShapeModelBody.AMALTHEA;
         c.type = ShapeModelType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.JUPITER;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
@@ -579,7 +579,7 @@ public class ModelFactory
         configArray.add(c);
 
         c = new ModelConfig();
-        c.name = ShapeModelBody.MIMAS;
+        c.body = ShapeModelBody.MIMAS;
         c.type = ShapeModelType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.SATURN;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
@@ -601,7 +601,7 @@ public class ModelFactory
         configArray.add(c);
 
         c = new ModelConfig();
-        c.name = ShapeModelBody.PHOEBE;
+        c.body = ShapeModelBody.PHOEBE;
         c.type = ShapeModelType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.SATURN;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
@@ -625,7 +625,7 @@ public class ModelFactory
         if (Configuration.isAPLVersion())
         {
             c = new ModelConfig();
-            c.name = ShapeModelBody.VESTA;
+            c.body = ShapeModelBody.VESTA;
             c.type = ShapeModelType.ASTEROID;
             c.population = ShapeModelPopulation.MAIN_BELT;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
@@ -657,7 +657,7 @@ public class ModelFactory
         }
 
         c = new ModelConfig();
-        c.name = ShapeModelBody.VESTA;
+        c.body = ShapeModelBody.VESTA;
         c.type = ShapeModelType.ASTEROID;
         c.population = ShapeModelPopulation.MAIN_BELT;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
@@ -666,7 +666,7 @@ public class ModelFactory
         configArray.add(c);
 
         c = new ModelConfig();
-        c.name = ShapeModelBody.IDA;
+        c.body = ShapeModelBody.IDA;
         c.type = ShapeModelType.ASTEROID;
         c.population = ShapeModelPopulation.MAIN_BELT;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
@@ -687,7 +687,7 @@ public class ModelFactory
         configArray.add(c);
 
         c = new ModelConfig();
-        c.name = ShapeModelBody.IDA;
+        c.body = ShapeModelBody.IDA;
         c.type = ShapeModelType.ASTEROID;
         c.population = ShapeModelPopulation.MAIN_BELT;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
@@ -697,7 +697,7 @@ public class ModelFactory
         configArray.add(c);
 
         c = new ModelConfig();
-        c.name = ShapeModelBody.GASPRA;
+        c.body = ShapeModelBody.GASPRA;
         c.type = ShapeModelType.ASTEROID;
         c.population = ShapeModelPopulation.MAIN_BELT;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
@@ -718,7 +718,7 @@ public class ModelFactory
         configArray.add(c);
 
         c = new ModelConfig();
-        c.name = ShapeModelBody.GASPRA;
+        c.body = ShapeModelBody.GASPRA;
         c.type = ShapeModelType.ASTEROID;
         c.population = ShapeModelPopulation.MAIN_BELT;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
@@ -728,7 +728,7 @@ public class ModelFactory
         configArray.add(c);
 
         c = new ModelConfig();
-        c.name = ShapeModelBody.MATHILDE;
+        c.body = ShapeModelBody.MATHILDE;
         c.type = ShapeModelType.ASTEROID;
         c.population = ShapeModelPopulation.MAIN_BELT;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
@@ -757,7 +757,7 @@ public class ModelFactory
         configArray.add(c);
 
         c = new ModelConfig();
-        c.name = ShapeModelBody.DEIMOS;
+        c.body = ShapeModelBody.DEIMOS;
         c.type = ShapeModelType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.MARS;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
@@ -785,7 +785,7 @@ public class ModelFactory
         configArray.add(c);
 
         c = new ModelConfig();
-        c.name = ShapeModelBody.JANUS;
+        c.body = ShapeModelBody.JANUS;
         c.type = ShapeModelType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.SATURN;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
@@ -794,7 +794,7 @@ public class ModelFactory
         configArray.add(c);
 
         c = new ModelConfig();
-        c.name = ShapeModelBody.JANUS;
+        c.body = ShapeModelBody.JANUS;
         c.type = ShapeModelType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.SATURN;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
@@ -803,7 +803,7 @@ public class ModelFactory
         configArray.add(c);
 
         c = new ModelConfig();
-        c.name = ShapeModelBody.EPIMETHEUS;
+        c.body = ShapeModelBody.EPIMETHEUS;
         c.type = ShapeModelType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.SATURN;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
@@ -812,7 +812,7 @@ public class ModelFactory
         configArray.add(c);
 
         c = new ModelConfig();
-        c.name = ShapeModelBody.EPIMETHEUS;
+        c.body = ShapeModelBody.EPIMETHEUS;
         c.type = ShapeModelType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.SATURN;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
@@ -821,7 +821,7 @@ public class ModelFactory
         configArray.add(c);
 
         c = new ModelConfig();
-        c.name = ShapeModelBody.HALLEY;
+        c.body = ShapeModelBody.HALLEY;
         c.type = ShapeModelType.COMETS;
         c.population = null;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
@@ -830,7 +830,7 @@ public class ModelFactory
         configArray.add(c);
 
         c = new ModelConfig();
-        c.name = ShapeModelBody.LARISSA;
+        c.body = ShapeModelBody.LARISSA;
         c.type = ShapeModelType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.NEPTUNE;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
@@ -839,7 +839,7 @@ public class ModelFactory
         configArray.add(c);
 
         c = new ModelConfig();
-        c.name = ShapeModelBody.PROTEUS;
+        c.body = ShapeModelBody.PROTEUS;
         c.type = ShapeModelType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.NEPTUNE;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
@@ -848,7 +848,7 @@ public class ModelFactory
         configArray.add(c);
 
         c = new ModelConfig();
-        c.name = ShapeModelBody.PROMETHEUS;
+        c.body = ShapeModelBody.PROMETHEUS;
         c.type = ShapeModelType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.SATURN;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
@@ -857,7 +857,7 @@ public class ModelFactory
         configArray.add(c);
 
         c = new ModelConfig();
-        c.name = ShapeModelBody.PANDORA;
+        c.body = ShapeModelBody.PANDORA;
         c.type = ShapeModelType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.SATURN;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
@@ -866,7 +866,7 @@ public class ModelFactory
         configArray.add(c);
 
         c = new ModelConfig();
-        c.name = ShapeModelBody.GEOGRAPHOS;
+        c.body = ShapeModelBody.GEOGRAPHOS;
         c.type = ShapeModelType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
@@ -875,7 +875,7 @@ public class ModelFactory
         configArray.add(c);
 
         c = new ModelConfig();
-        c.name = ShapeModelBody.KY26;
+        c.body = ShapeModelBody.KY26;
         c.type = ShapeModelType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
@@ -884,7 +884,7 @@ public class ModelFactory
         configArray.add(c);
 
         c = new ModelConfig();
-        c.name = ShapeModelBody.BACCHUS;
+        c.body = ShapeModelBody.BACCHUS;
         c.type = ShapeModelType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
@@ -893,7 +893,7 @@ public class ModelFactory
         configArray.add(c);
 
         c = new ModelConfig();
-        c.name = ShapeModelBody.KLEOPATRA;
+        c.body = ShapeModelBody.KLEOPATRA;
         c.type = ShapeModelType.ASTEROID;
         c.population = ShapeModelPopulation.MAIN_BELT;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
@@ -902,7 +902,7 @@ public class ModelFactory
         configArray.add(c);
 
         c = new ModelConfig();
-        c.name = ShapeModelBody.TOUTATIS_LOW_RES;
+        c.body = ShapeModelBody.TOUTATIS_LOW_RES;
         c.type = ShapeModelType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
@@ -911,7 +911,7 @@ public class ModelFactory
         configArray.add(c);
 
         c = new ModelConfig();
-        c.name = ShapeModelBody.TOUTATIS_HIGH_RES;
+        c.body = ShapeModelBody.TOUTATIS_HIGH_RES;
         c.type = ShapeModelType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
@@ -920,7 +920,7 @@ public class ModelFactory
         configArray.add(c);
 
         c = new ModelConfig();
-        c.name = ShapeModelBody.CASTALIA;
+        c.body = ShapeModelBody.CASTALIA;
         c.type = ShapeModelType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
@@ -929,7 +929,7 @@ public class ModelFactory
         configArray.add(c);
 
         c = new ModelConfig();
-        c.name = ShapeModelBody._52760_1998_ML14;
+        c.body = ShapeModelBody._52760_1998_ML14;
         c.type = ShapeModelType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
@@ -938,7 +938,7 @@ public class ModelFactory
         configArray.add(c);
 
         c = new ModelConfig();
-        c.name = ShapeModelBody.GOLEVKA;
+        c.body = ShapeModelBody.GOLEVKA;
         c.type = ShapeModelType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
@@ -947,7 +947,7 @@ public class ModelFactory
         configArray.add(c);
 
         c = new ModelConfig();
-        c.name = ShapeModelBody.RQ36;
+        c.body = ShapeModelBody.RQ36;
         c.type = ShapeModelType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
@@ -958,7 +958,7 @@ public class ModelFactory
         if (Configuration.isAPLVersion())
         {
             c = new ModelConfig();
-            c.name = ShapeModelBody.RQ36;
+            c.body = ShapeModelBody.RQ36;
             c.type = ShapeModelType.ASTEROID;
             c.population = ShapeModelPopulation.NEO;
             c.dataUsed = ShapeModelDataUsed.ENHANCED;
@@ -990,7 +990,7 @@ public class ModelFactory
         if (Configuration.isAPLVersion())
         {
             c = new ModelConfig();
-            c.name = ShapeModelBody.LUTETIA;
+            c.body = ShapeModelBody.LUTETIA;
             c.type = ShapeModelType.ASTEROID;
             c.population = ShapeModelPopulation.MAIN_BELT;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
@@ -1013,7 +1013,7 @@ public class ModelFactory
         }
 
         c = new ModelConfig();
-        c.name = ShapeModelBody.LUTETIA;
+        c.body = ShapeModelBody.LUTETIA;
         c.type = ShapeModelType.ASTEROID;
         c.population = ShapeModelPopulation.MAIN_BELT;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
@@ -1031,7 +1031,7 @@ public class ModelFactory
         configArray.add(c);
 
         c = new ModelConfig();
-        c.name = ShapeModelBody.STEINS;
+        c.body = ShapeModelBody.STEINS;
         c.type = ShapeModelType.ASTEROID;
         c.population = ShapeModelPopulation.MAIN_BELT;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
@@ -1040,7 +1040,7 @@ public class ModelFactory
         configArray.add(c);
 
         c = new ModelConfig();
-        c.name = ShapeModelBody.DIONE;
+        c.body = ShapeModelBody.DIONE;
         c.type = ShapeModelType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.SATURN;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
@@ -1062,7 +1062,7 @@ public class ModelFactory
         configArray.add(c);
 
         c = new ModelConfig();
-        c.name = ShapeModelBody.TETHYS;
+        c.body = ShapeModelBody.TETHYS;
         c.type = ShapeModelType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.SATURN;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
@@ -1075,7 +1075,7 @@ public class ModelFactory
         if (Configuration.isAPLVersion())
         {
             c = new ModelConfig();
-            c.name = ShapeModelBody.HYPERION;
+            c.body = ShapeModelBody.HYPERION;
             c.type = ShapeModelType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.SATURN;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
@@ -1089,7 +1089,7 @@ public class ModelFactory
         if (Configuration.isAPLVersion())
         {
             c = new ModelConfig();
-            c.name = ShapeModelBody.RHEA;
+            c.body = ShapeModelBody.RHEA;
             c.type = ShapeModelType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.SATURN;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
@@ -1101,7 +1101,7 @@ public class ModelFactory
         }
 
         c = new ModelConfig();
-        c.name = ShapeModelBody.HYPERION;
+        c.body = ShapeModelBody.HYPERION;
         c.type = ShapeModelType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.SATURN;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
@@ -1112,7 +1112,7 @@ public class ModelFactory
         if (Configuration.isAPLVersion())
         {
             c = new ModelConfig();
-            c.name = ShapeModelBody.TEMPEL_1;
+            c.body = ShapeModelBody.TEMPEL_1;
             c.type = ShapeModelType.COMETS;
             c.population = null;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
@@ -1122,7 +1122,7 @@ public class ModelFactory
         }
 
         c = new ModelConfig();
-        c.name = ShapeModelBody.TEMPEL_1;
+        c.body = ShapeModelBody.TEMPEL_1;
         c.type = ShapeModelType.COMETS;
         c.population = null;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
@@ -1131,7 +1131,7 @@ public class ModelFactory
         configArray.add(c);
 
         c = new ModelConfig();
-        c.name = ShapeModelBody.WILD_2;
+        c.body = ShapeModelBody.WILD_2;
         c.type = ShapeModelType.COMETS;
         c.population = null;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
@@ -1140,7 +1140,7 @@ public class ModelFactory
         configArray.add(c);
 
         c = new ModelConfig();
-        c.name = ShapeModelBody.HARTLEY;
+        c.body = ShapeModelBody.HARTLEY;
         c.type = ShapeModelType.COMETS;
         c.population = null;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
@@ -1151,7 +1151,7 @@ public class ModelFactory
         if (Configuration.isAPLVersion())
         {
             c = new ModelConfig();
-            c.name = ShapeModelBody.PLUTO;
+            c.body = ShapeModelBody.PLUTO;
             c.type = ShapeModelType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.PLUTO;
             c.dataUsed = null;
@@ -1161,7 +1161,7 @@ public class ModelFactory
             configArray.add(c);
 
             c = new ModelConfig();
-            c.name = ShapeModelBody.CHARON;
+            c.body = ShapeModelBody.CHARON;
             c.type = ShapeModelType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.PLUTO;
             c.dataUsed = null;
@@ -1171,7 +1171,7 @@ public class ModelFactory
             configArray.add(c);
 
             c = new ModelConfig();
-            c.name = ShapeModelBody.HYDRA;
+            c.body = ShapeModelBody.HYDRA;
             c.type = ShapeModelType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.PLUTO;
             c.dataUsed = null;
@@ -1181,7 +1181,7 @@ public class ModelFactory
             configArray.add(c);
 
             c = new ModelConfig();
-            c.name = ShapeModelBody.KERBEROS;
+            c.body = ShapeModelBody.KERBEROS;
             c.type = ShapeModelType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.PLUTO;
             c.dataUsed = null;
@@ -1191,7 +1191,7 @@ public class ModelFactory
             configArray.add(c);
 
             c = new ModelConfig();
-            c.name = ShapeModelBody.NIX;
+            c.body = ShapeModelBody.NIX;
             c.type = ShapeModelType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.PLUTO;
             c.dataUsed = null;
@@ -1201,7 +1201,7 @@ public class ModelFactory
             configArray.add(c);
 
             c = new ModelConfig();
-            c.name = ShapeModelBody.STYX;
+            c.body = ShapeModelBody.STYX;
             c.type = ShapeModelType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.PLUTO;
             c.dataUsed = null;
@@ -1222,7 +1222,7 @@ public class ModelFactory
     public static class ModelConfig
     {
 
-        public ShapeModelBody name;
+        public ShapeModelBody body; // e.g. EROS or ITOKAWA
         public ShapeModelType type; // e.g. asteroid, comet, satellite
         public ShapeModelPopulation population; // e.g. Mars for satellites or main belt for asteroids
         public ShapeModelDataUsed dataUsed; // e.g. images, radar, lidar, or enhanced
@@ -1272,7 +1272,7 @@ public class ModelFactory
         protected ModelConfig clone()
         {
             ModelConfig c = new ModelConfig();
-            c.name = this.name;
+            c.body = this.body;
             c.type = this.type;
             c.population = this.population;
             c.dataUsed = this.dataUsed;
@@ -1338,7 +1338,7 @@ public class ModelFactory
                 String path = type.str;
                 if (population != null)
                     path += " > " + population;
-                path += " > " + name;
+                path += " > " + body;
                 if (dataUsed != null)
                     path += " > " + dataUsed;
                 if (author != null)
@@ -1361,9 +1361,9 @@ public class ModelFactory
             if (ShapeModelAuthor.CUSTOM == author)
                 return author + "/" + customName;
             else if (author != null)
-                return author + "/" + name;
+                return author + "/" + body;
             else
-                return name.toString();
+                return body.toString();
         }
 
         public String getShapeModelName()
@@ -1371,7 +1371,7 @@ public class ModelFactory
             if (author == ShapeModelAuthor.CUSTOM)
                 return customName;
             else
-                return name.toString();
+                return body.toString();
         }
     }
 
@@ -1388,7 +1388,7 @@ public class ModelFactory
     {
         for (ModelConfig config : builtInModelConfigs)
         {
-            if (config.name == name && config.author == author)
+            if (config.body == name && config.author == author)
                 return config;
         }
 
@@ -1446,7 +1446,7 @@ public class ModelFactory
 
     static public SmallBodyModel createSmallBodyModel(ModelConfig config)
     {
-        ShapeModelBody name = config.name;
+        ShapeModelBody name = config.body;
         ShapeModelAuthor author = config.author;
 
         if (ShapeModelAuthor.GASKELL == author || ShapeModelAuthor.EXPERIMENTAL == author)

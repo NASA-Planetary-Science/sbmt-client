@@ -17,25 +17,25 @@ public class JupiterSystemDatabaseGeneratorSql extends DatabaseGeneratorBaseSql
     @Override
     String getImagesGaskellTableNames()
     {
-        return modelConfig.name.toString().toLowerCase() + "images_gaskell" + betaSuffix;
+        return modelConfig.body.toString().toLowerCase() + "images_gaskell" + betaSuffix;
     }
 
     @Override
     String getCubesGaskellTableNames()
     {
-        return modelConfig.name.toString().toLowerCase() + "cubes_gaskell" + betaSuffix;
+        return modelConfig.body.toString().toLowerCase() + "cubes_gaskell" + betaSuffix;
     }
 
     @Override
     String getImagesPdsTableNames()
     {
-        return modelConfig.name.toString().toLowerCase() + "images_pds" + betaSuffix;
+        return modelConfig.body.toString().toLowerCase() + "images_pds" + betaSuffix;
     }
 
     @Override
     String getCubesPdsTableNames()
     {
-        return modelConfig.name.toString().toLowerCase() + "cubes_pds" + betaSuffix;
+        return modelConfig.body.toString().toLowerCase() + "cubes_pds" + betaSuffix;
     }
 
     @Override
