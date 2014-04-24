@@ -47,17 +47,17 @@ public class LidarDataPerUnit extends Model
     private vtkActor actorSpacecraft;
 
     public LidarDataPerUnit(String path,
-            ModelConfig modelConfig) throws IOException
+            SmallBodyConfig smallBodyConfig) throws IOException
     {
-        int[] xyzIndices = modelConfig.lidarBrowseXYZIndices;
-        int[] scXyzIndices = modelConfig.lidarBrowseSpacecraftIndices;
-        boolean isSpacecraftInSphericalCoordinates = modelConfig.lidarBrowseIsSpacecraftInSphericalCoordinates;
-        int timeindex = modelConfig.lidarBrowseTimeIndex;
-        int numberHeaderLines = modelConfig.lidarBrowseNumberHeaderLines;
-        boolean isInMeters = modelConfig.lidarBrowseIsInMeters;
-        int noiseindex = modelConfig.lidarBrowseNoiseIndex;
-        boolean isBinary = modelConfig.lidarBrowseIsBinary;
-        int binaryRecordSize = modelConfig.lidarBrowseBinaryRecordSize;
+        int[] xyzIndices = smallBodyConfig.lidarBrowseXYZIndices;
+        int[] scXyzIndices = smallBodyConfig.lidarBrowseSpacecraftIndices;
+        boolean isSpacecraftInSphericalCoordinates = smallBodyConfig.lidarBrowseIsSpacecraftInSphericalCoordinates;
+        int timeindex = smallBodyConfig.lidarBrowseTimeIndex;
+        int numberHeaderLines = smallBodyConfig.lidarBrowseNumberHeaderLines;
+        boolean isInMeters = smallBodyConfig.lidarBrowseIsInMeters;
+        int noiseindex = smallBodyConfig.lidarBrowseNoiseIndex;
+        boolean isBinary = smallBodyConfig.lidarBrowseIsBinary;
+        int binaryRecordSize = smallBodyConfig.lidarBrowseBinaryRecordSize;
 
         File file = FileCache.getFileFromServer(path);
 

@@ -2,7 +2,7 @@ package edu.jhuapl.near.model.simple;
 
 import java.io.File;
 
-import edu.jhuapl.near.model.ModelConfig;
+import edu.jhuapl.near.model.SmallBodyConfig;
 import edu.jhuapl.near.model.SmallBodyModel;
 
 public class SimpleSmallBody extends SmallBodyModel
@@ -26,7 +26,7 @@ public class SimpleSmallBody extends SmallBodyModel
     };
 
     public SimpleSmallBody(
-            ModelConfig config,
+            SmallBodyConfig config,
             String[] modelNames,
             String[] paths)
     {
@@ -42,7 +42,7 @@ public class SimpleSmallBody extends SmallBodyModel
                 false);
     }
 
-    public SimpleSmallBody(ModelConfig config, String imageMap)
+    public SimpleSmallBody(SmallBodyConfig config, String imageMap)
     {
         super(config,
                 new String[] {config.body.toString()},

@@ -1,6 +1,6 @@
 package edu.jhuapl.near.model.lutetia;
 
-import edu.jhuapl.near.model.ModelConfig;
+import edu.jhuapl.near.model.SmallBodyConfig;
 import edu.jhuapl.near.model.SmallBodyModel;
 
 public class Lutetia extends SmallBodyModel
@@ -50,7 +50,7 @@ public class Lutetia extends SmallBodyModel
             SlopeUnitsStr, ElevUnitsStr, GravAccUnitsStr, GravPotUnitsStr
     };
 
-    public Lutetia(ModelConfig config)
+    public Lutetia(SmallBodyConfig config)
     {
         super(config,
                 modelNames,

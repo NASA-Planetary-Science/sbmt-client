@@ -3,9 +3,9 @@ package edu.jhuapl.near.tools;
 import vtk.vtkImageData;
 import vtk.vtkStructuredPointsWriter;
 
-import edu.jhuapl.near.model.ModelConfig;
-import edu.jhuapl.near.model.ModelConfig.ShapeModelAuthor;
-import edu.jhuapl.near.model.ModelConfig.ShapeModelBody;
+import edu.jhuapl.near.model.SmallBodyConfig;
+import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelAuthor;
+import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelBody;
 import edu.jhuapl.near.model.ModelFactory;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.util.NativeLibraryLoader;
@@ -22,8 +22,8 @@ public class ColoringImageMapGenerator
         System.setProperty("java.awt.headless", "true");
         NativeLibraryLoader.loadVtkLibraries();
 
-        ModelConfig modelConfig = ModelConfig.getModelConfig(ShapeModelBody.DEIMOS, ShapeModelAuthor.THOMAS);
-        SmallBodyModel model = ModelFactory.createSmallBodyModel(modelConfig);
+        SmallBodyConfig smallBodyConfig = SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.DEIMOS, ShapeModelAuthor.THOMAS);
+        SmallBodyModel model = ModelFactory.createSmallBodyModel(smallBodyConfig);
 
         vtkImageData slopeImage = new vtkImageData();
         slopeImage.SetDimensions(3600, 1800, 1);

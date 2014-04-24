@@ -2,7 +2,7 @@ package edu.jhuapl.near.model.custom;
 
 import java.io.File;
 
-import edu.jhuapl.near.model.ModelConfig;
+import edu.jhuapl.near.model.SmallBodyConfig;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.util.Configuration;
 import edu.jhuapl.near.util.FileCache;
@@ -23,7 +23,7 @@ public class CustomShapeModel extends SmallBodyModel
     public static final String VTK_FORMAT = "VTK";
     public static final String LIST_SEPARATOR = ",";
 
-    public CustomShapeModel(ModelConfig config)
+    public CustomShapeModel(SmallBodyConfig config)
     {
         super(config,
                 new String[] { config.customName },

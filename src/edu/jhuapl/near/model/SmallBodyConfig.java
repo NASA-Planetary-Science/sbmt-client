@@ -25,13 +25,13 @@ import edu.jhuapl.near.query.VestaQuery;
 import edu.jhuapl.near.util.Configuration;
 
 /**
- * A ModelConfig is a class for storing all which models should be instantiated
+ * A SmallBodyConfig is a class for storing all which models should be instantiated
  * together with a particular small body. For example some models like Eros
  * have imaging, spectral, and lidar data whereas other models may only have
  * imaging data. This class is also used when creating (to know which tabs
  * to create).
  */
-public class ModelConfig
+public class SmallBodyConfig
 {
     // Names of built-in small body models
     static public enum ShapeModelBody
@@ -249,14 +249,14 @@ public class ModelConfig
         3145728
     };
 
-    static public final ArrayList<ModelConfig> builtInModelConfigs = new ArrayList<ModelConfig>();
+    static public final ArrayList<SmallBodyConfig> builtInSmallBodyConfigs = new ArrayList<SmallBodyConfig>();
 
     static
     {
-        ArrayList<ModelConfig> configArray = builtInModelConfigs;
+        ArrayList<SmallBodyConfig> configArray = builtInSmallBodyConfigs;
 
         // Gaskell Eros
-        ModelConfig c = new ModelConfig();
+        SmallBodyConfig c = new SmallBodyConfig();
         c.body = ShapeModelBody.EROS;
         c.type = ShapeModelType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
@@ -333,7 +333,7 @@ public class ModelConfig
         configArray.add(c);
 
         // Gaskell Itokawa
-        c = new ModelConfig();
+        c = new SmallBodyConfig();
         c.body = ShapeModelBody.ITOKAWA;
         c.type = ShapeModelType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
@@ -382,7 +382,7 @@ public class ModelConfig
         configArray.add(c);
 
         // Ostro Itokawa
-        c = new ModelConfig();
+        c = new SmallBodyConfig();
         c.body = ShapeModelBody.ITOKAWA;
         c.type = ShapeModelType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
@@ -392,7 +392,7 @@ public class ModelConfig
         configArray.add(c);
 
         // Gaskell Phobos
-        c = new ModelConfig();
+        c = new SmallBodyConfig();
         c.body = ShapeModelBody.PHOBOS;
         c.type = ShapeModelType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.MARS;
@@ -425,7 +425,7 @@ public class ModelConfig
         configArray.add(c);
 
         // Thomas Phobos
-        c = new ModelConfig();
+        c = new SmallBodyConfig();
         c.body = ShapeModelBody.PHOBOS;
         c.type = ShapeModelType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.MARS;
@@ -437,7 +437,7 @@ public class ModelConfig
         // New Gaskell Phobos (experimental)
         if (Configuration.isAPLVersion())
         {
-            c = new ModelConfig();
+            c = new SmallBodyConfig();
             c.body = ShapeModelBody.PHOBOS;
             c.type = ShapeModelType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.MARS;
@@ -482,7 +482,7 @@ public class ModelConfig
 
         if (Configuration.isAPLVersion())
         {
-            c = new ModelConfig();
+            c = new SmallBodyConfig();
             c.body = ShapeModelBody.JUPITER;
             c.type = ShapeModelType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.JUPITER;
@@ -549,7 +549,7 @@ public class ModelConfig
             configArray.add(c);
         }
 
-        c = new ModelConfig();
+        c = new SmallBodyConfig();
         c.body = ShapeModelBody.AMALTHEA;
         c.type = ShapeModelType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.JUPITER;
@@ -558,7 +558,7 @@ public class ModelConfig
         c.pathOnServer = "/STOOKE/AMALTHEA/j5amalthea.llr.gz";
         configArray.add(c);
 
-        c = new ModelConfig();
+        c = new SmallBodyConfig();
         c.body = ShapeModelBody.MIMAS;
         c.type = ShapeModelType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.SATURN;
@@ -580,7 +580,7 @@ public class ModelConfig
         c.imageInstrumentName = Instrument.IMAGING_DATA;
         configArray.add(c);
 
-        c = new ModelConfig();
+        c = new SmallBodyConfig();
         c.body = ShapeModelBody.PHOEBE;
         c.type = ShapeModelType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.SATURN;
@@ -604,7 +604,7 @@ public class ModelConfig
 
         if (Configuration.isAPLVersion())
         {
-            c = new ModelConfig();
+            c = new SmallBodyConfig();
             c.body = ShapeModelBody.VESTA;
             c.type = ShapeModelType.ASTEROID;
             c.population = ShapeModelPopulation.MAIN_BELT;
@@ -636,7 +636,7 @@ public class ModelConfig
             configArray.add(c);
         }
 
-        c = new ModelConfig();
+        c = new SmallBodyConfig();
         c.body = ShapeModelBody.VESTA;
         c.type = ShapeModelType.ASTEROID;
         c.population = ShapeModelPopulation.MAIN_BELT;
@@ -645,7 +645,7 @@ public class ModelConfig
         c.pathOnServer = "/THOMAS/VESTA_OLD";
         configArray.add(c);
 
-        c = new ModelConfig();
+        c = new SmallBodyConfig();
         c.body = ShapeModelBody.IDA;
         c.type = ShapeModelType.ASTEROID;
         c.population = ShapeModelPopulation.MAIN_BELT;
@@ -666,7 +666,7 @@ public class ModelConfig
         c.imageInstrumentName = Instrument.SSI;
         configArray.add(c);
 
-        c = new ModelConfig();
+        c = new SmallBodyConfig();
         c.body = ShapeModelBody.IDA;
         c.type = ShapeModelType.ASTEROID;
         c.population = ShapeModelPopulation.MAIN_BELT;
@@ -676,7 +676,7 @@ public class ModelConfig
         c.hasImageMap = true;
         configArray.add(c);
 
-        c = new ModelConfig();
+        c = new SmallBodyConfig();
         c.body = ShapeModelBody.GASPRA;
         c.type = ShapeModelType.ASTEROID;
         c.population = ShapeModelPopulation.MAIN_BELT;
@@ -697,7 +697,7 @@ public class ModelConfig
         c.imageInstrumentName = Instrument.SSI;
         configArray.add(c);
 
-        c = new ModelConfig();
+        c = new SmallBodyConfig();
         c.body = ShapeModelBody.GASPRA;
         c.type = ShapeModelType.ASTEROID;
         c.population = ShapeModelPopulation.MAIN_BELT;
@@ -707,7 +707,7 @@ public class ModelConfig
         c.hasImageMap = true;
         configArray.add(c);
 
-        c = new ModelConfig();
+        c = new SmallBodyConfig();
         c.body = ShapeModelBody.MATHILDE;
         c.type = ShapeModelType.ASTEROID;
         c.population = ShapeModelPopulation.MAIN_BELT;
@@ -736,7 +736,7 @@ public class ModelConfig
         c.imageInstrumentName = Instrument.MSI;
         configArray.add(c);
 
-        c = new ModelConfig();
+        c = new SmallBodyConfig();
         c.body = ShapeModelBody.DEIMOS;
         c.type = ShapeModelType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.MARS;
@@ -764,7 +764,7 @@ public class ModelConfig
         c.imageInstrumentName = Instrument.IMAGING_DATA;
         configArray.add(c);
 
-        c = new ModelConfig();
+        c = new SmallBodyConfig();
         c.body = ShapeModelBody.JANUS;
         c.type = ShapeModelType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.SATURN;
@@ -773,7 +773,7 @@ public class ModelConfig
         c.pathOnServer = "/THOMAS/JANUS/s10janus.llr.gz";
         configArray.add(c);
 
-        c = new ModelConfig();
+        c = new SmallBodyConfig();
         c.body = ShapeModelBody.JANUS;
         c.type = ShapeModelType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.SATURN;
@@ -782,7 +782,7 @@ public class ModelConfig
         c.pathOnServer = "/STOOKE/JANUS/s10janus.llr.gz";
         configArray.add(c);
 
-        c = new ModelConfig();
+        c = new SmallBodyConfig();
         c.body = ShapeModelBody.EPIMETHEUS;
         c.type = ShapeModelType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.SATURN;
@@ -791,7 +791,7 @@ public class ModelConfig
         c.pathOnServer = "/THOMAS/EPIMETHEUS/s11epimetheus.llr.gz";
         configArray.add(c);
 
-        c = new ModelConfig();
+        c = new SmallBodyConfig();
         c.body = ShapeModelBody.EPIMETHEUS;
         c.type = ShapeModelType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.SATURN;
@@ -800,7 +800,7 @@ public class ModelConfig
         c.pathOnServer = "/STOOKE/EPIMETHEUS/s11epimetheus.llr.gz";
         configArray.add(c);
 
-        c = new ModelConfig();
+        c = new SmallBodyConfig();
         c.body = ShapeModelBody.HALLEY;
         c.type = ShapeModelType.COMETS;
         c.population = null;
@@ -809,7 +809,7 @@ public class ModelConfig
         c.pathOnServer = "/STOOKE/HALLEY/1682q1halley.llr.gz";
         configArray.add(c);
 
-        c = new ModelConfig();
+        c = new SmallBodyConfig();
         c.body = ShapeModelBody.LARISSA;
         c.type = ShapeModelType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.NEPTUNE;
@@ -818,7 +818,7 @@ public class ModelConfig
         c.pathOnServer = "/STOOKE/LARISSA/n7larissa.llr.gz";
         configArray.add(c);
 
-        c = new ModelConfig();
+        c = new SmallBodyConfig();
         c.body = ShapeModelBody.PROTEUS;
         c.type = ShapeModelType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.NEPTUNE;
@@ -827,7 +827,7 @@ public class ModelConfig
         c.pathOnServer = "/STOOKE/PROTEUS/n8proteus.llr.gz";
         configArray.add(c);
 
-        c = new ModelConfig();
+        c = new SmallBodyConfig();
         c.body = ShapeModelBody.PROMETHEUS;
         c.type = ShapeModelType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.SATURN;
@@ -836,7 +836,7 @@ public class ModelConfig
         c.pathOnServer = "/STOOKE/PROMETHEUS/s16prometheus.llr.gz";
         configArray.add(c);
 
-        c = new ModelConfig();
+        c = new SmallBodyConfig();
         c.body = ShapeModelBody.PANDORA;
         c.type = ShapeModelType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.SATURN;
@@ -845,7 +845,7 @@ public class ModelConfig
         c.pathOnServer = "/STOOKE/PANDORA/s17pandora.llr.gz";
         configArray.add(c);
 
-        c = new ModelConfig();
+        c = new SmallBodyConfig();
         c.body = ShapeModelBody.GEOGRAPHOS;
         c.type = ShapeModelType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
@@ -854,7 +854,7 @@ public class ModelConfig
         c.pathOnServer = "/HUDSON/GEOGRAPHOS/1620geographos.obj.gz";
         configArray.add(c);
 
-        c = new ModelConfig();
+        c = new SmallBodyConfig();
         c.body = ShapeModelBody.KY26;
         c.type = ShapeModelType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
@@ -863,7 +863,7 @@ public class ModelConfig
         c.pathOnServer = "/HUDSON/KY26/1998ky26.obj.gz";
         configArray.add(c);
 
-        c = new ModelConfig();
+        c = new SmallBodyConfig();
         c.body = ShapeModelBody.BACCHUS;
         c.type = ShapeModelType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
@@ -872,7 +872,7 @@ public class ModelConfig
         c.pathOnServer = "/HUDSON/BACCHUS/2063bacchus.obj.gz";
         configArray.add(c);
 
-        c = new ModelConfig();
+        c = new SmallBodyConfig();
         c.body = ShapeModelBody.KLEOPATRA;
         c.type = ShapeModelType.ASTEROID;
         c.population = ShapeModelPopulation.MAIN_BELT;
@@ -881,7 +881,7 @@ public class ModelConfig
         c.pathOnServer = "/HUDSON/KLEOPATRA/216kleopatra.obj.gz";
         configArray.add(c);
 
-        c = new ModelConfig();
+        c = new SmallBodyConfig();
         c.body = ShapeModelBody.TOUTATIS_LOW_RES;
         c.type = ShapeModelType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
@@ -890,7 +890,7 @@ public class ModelConfig
         c.pathOnServer = "/HUDSON/TOUTATIS/4179toutatis.obj.gz";
         configArray.add(c);
 
-        c = new ModelConfig();
+        c = new SmallBodyConfig();
         c.body = ShapeModelBody.TOUTATIS_HIGH_RES;
         c.type = ShapeModelType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
@@ -899,7 +899,7 @@ public class ModelConfig
         c.pathOnServer = "/HUDSON/TOUTATIS2/4179toutatis2.obj.gz";
         configArray.add(c);
 
-        c = new ModelConfig();
+        c = new SmallBodyConfig();
         c.body = ShapeModelBody.CASTALIA;
         c.type = ShapeModelType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
@@ -908,7 +908,7 @@ public class ModelConfig
         c.pathOnServer = "/HUDSON/CASTALIA/4769castalia.obj.gz";
         configArray.add(c);
 
-        c = new ModelConfig();
+        c = new SmallBodyConfig();
         c.body = ShapeModelBody._52760_1998_ML14;
         c.type = ShapeModelType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
@@ -917,7 +917,7 @@ public class ModelConfig
         c.pathOnServer = "/HUDSON/52760/52760.obj.gz";
         configArray.add(c);
 
-        c = new ModelConfig();
+        c = new SmallBodyConfig();
         c.body = ShapeModelBody.GOLEVKA;
         c.type = ShapeModelType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
@@ -926,7 +926,7 @@ public class ModelConfig
         c.pathOnServer = "/HUDSON/GOLEVKA/6489golevka.obj.gz";
         configArray.add(c);
 
-        c = new ModelConfig();
+        c = new SmallBodyConfig();
         c.body = ShapeModelBody.RQ36;
         c.type = ShapeModelType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
@@ -937,7 +937,7 @@ public class ModelConfig
 
         if (Configuration.isAPLVersion())
         {
-            c = new ModelConfig();
+            c = new SmallBodyConfig();
             c.body = ShapeModelBody.RQ36;
             c.type = ShapeModelType.ASTEROID;
             c.population = ShapeModelPopulation.NEO;
@@ -969,7 +969,7 @@ public class ModelConfig
 
         if (Configuration.isAPLVersion())
         {
-            c = new ModelConfig();
+            c = new SmallBodyConfig();
             c.body = ShapeModelBody.LUTETIA;
             c.type = ShapeModelType.ASTEROID;
             c.population = ShapeModelPopulation.MAIN_BELT;
@@ -992,7 +992,7 @@ public class ModelConfig
             configArray.add(c);
         }
 
-        c = new ModelConfig();
+        c = new SmallBodyConfig();
         c.body = ShapeModelBody.LUTETIA;
         c.type = ShapeModelType.ASTEROID;
         c.population = ShapeModelPopulation.MAIN_BELT;
@@ -1010,7 +1010,7 @@ public class ModelConfig
         };
         configArray.add(c);
 
-        c = new ModelConfig();
+        c = new SmallBodyConfig();
         c.body = ShapeModelBody.STEINS;
         c.type = ShapeModelType.ASTEROID;
         c.population = ShapeModelPopulation.MAIN_BELT;
@@ -1019,7 +1019,7 @@ public class ModelConfig
         c.pathOnServer = "/JORDA/STEINS/steins_cart.plt.gz";
         configArray.add(c);
 
-        c = new ModelConfig();
+        c = new SmallBodyConfig();
         c.body = ShapeModelBody.DIONE;
         c.type = ShapeModelType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.SATURN;
@@ -1041,7 +1041,7 @@ public class ModelConfig
         c.imageInstrumentName = Instrument.IMAGING_DATA;
         configArray.add(c);
 
-        c = new ModelConfig();
+        c = new SmallBodyConfig();
         c.body = ShapeModelBody.TETHYS;
         c.type = ShapeModelType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.SATURN;
@@ -1054,7 +1054,7 @@ public class ModelConfig
 
         if (Configuration.isAPLVersion())
         {
-            c = new ModelConfig();
+            c = new SmallBodyConfig();
             c.body = ShapeModelBody.HYPERION;
             c.type = ShapeModelType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.SATURN;
@@ -1068,7 +1068,7 @@ public class ModelConfig
 
         if (Configuration.isAPLVersion())
         {
-            c = new ModelConfig();
+            c = new SmallBodyConfig();
             c.body = ShapeModelBody.RHEA;
             c.type = ShapeModelType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.SATURN;
@@ -1080,7 +1080,7 @@ public class ModelConfig
             configArray.add(c);
         }
 
-        c = new ModelConfig();
+        c = new SmallBodyConfig();
         c.body = ShapeModelBody.HYPERION;
         c.type = ShapeModelType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.SATURN;
@@ -1091,7 +1091,7 @@ public class ModelConfig
 
         if (Configuration.isAPLVersion())
         {
-            c = new ModelConfig();
+            c = new SmallBodyConfig();
             c.body = ShapeModelBody.TEMPEL_1;
             c.type = ShapeModelType.COMETS;
             c.population = null;
@@ -1101,7 +1101,7 @@ public class ModelConfig
             configArray.add(c);
         }
 
-        c = new ModelConfig();
+        c = new SmallBodyConfig();
         c.body = ShapeModelBody.TEMPEL_1;
         c.type = ShapeModelType.COMETS;
         c.population = null;
@@ -1110,7 +1110,7 @@ public class ModelConfig
         c.pathOnServer = "/THOMAS/TEMPEL1/tempel1_cart.t1.gz";
         configArray.add(c);
 
-        c = new ModelConfig();
+        c = new SmallBodyConfig();
         c.body = ShapeModelBody.WILD_2;
         c.type = ShapeModelType.COMETS;
         c.population = null;
@@ -1119,7 +1119,7 @@ public class ModelConfig
         c.pathOnServer = "/OTHER/WILD2/wild2_cart_full.w2.gz";
         configArray.add(c);
 
-        c = new ModelConfig();
+        c = new SmallBodyConfig();
         c.body = ShapeModelBody.HARTLEY;
         c.type = ShapeModelType.COMETS;
         c.population = null;
@@ -1130,7 +1130,7 @@ public class ModelConfig
 
         if (Configuration.isAPLVersion())
         {
-            c = new ModelConfig();
+            c = new SmallBodyConfig();
             c.body = ShapeModelBody.PLUTO;
             c.type = ShapeModelType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.PLUTO;
@@ -1140,7 +1140,7 @@ public class ModelConfig
             c.hasColoringData = false;
             configArray.add(c);
 
-            c = new ModelConfig();
+            c = new SmallBodyConfig();
             c.body = ShapeModelBody.CHARON;
             c.type = ShapeModelType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.PLUTO;
@@ -1150,7 +1150,7 @@ public class ModelConfig
             c.hasColoringData = false;
             configArray.add(c);
 
-            c = new ModelConfig();
+            c = new SmallBodyConfig();
             c.body = ShapeModelBody.HYDRA;
             c.type = ShapeModelType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.PLUTO;
@@ -1160,7 +1160,7 @@ public class ModelConfig
             c.hasColoringData = false;
             configArray.add(c);
 
-            c = new ModelConfig();
+            c = new SmallBodyConfig();
             c.body = ShapeModelBody.KERBEROS;
             c.type = ShapeModelType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.PLUTO;
@@ -1170,7 +1170,7 @@ public class ModelConfig
             c.hasColoringData = false;
             configArray.add(c);
 
-            c = new ModelConfig();
+            c = new SmallBodyConfig();
             c.body = ShapeModelBody.NIX;
             c.type = ShapeModelType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.PLUTO;
@@ -1180,7 +1180,7 @@ public class ModelConfig
             c.hasColoringData = false;
             configArray.add(c);
 
-            c = new ModelConfig();
+            c = new SmallBodyConfig();
             c.body = ShapeModelBody.STYX;
             c.type = ShapeModelType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.PLUTO;
@@ -1239,9 +1239,9 @@ public class ModelConfig
     public String customName;
 
 
-    protected ModelConfig clone()
+    protected SmallBodyConfig clone()
     {
-        ModelConfig c = new ModelConfig();
+        SmallBodyConfig c = new SmallBodyConfig();
         c.body = this.body;
         c.type = this.type;
         c.population = this.population;
@@ -1345,23 +1345,23 @@ public class ModelConfig
      }
 
     /**
-     * Get a ModelConfig of a specific name and author.
-     * Note a ModelConfig is uniquely described by its name and author.
-     * No two model configs can have both the same.
+     * Get a SmallBodyConfig of a specific name and author.
+     * Note a SmallBodyConfig is uniquely described by its name and author.
+     * No two small body configs can have both the same.
      *
      * @param name
      * @param author
      * @return
      */
-    static public ModelConfig getModelConfig(ShapeModelBody name, ShapeModelAuthor author)
+    static public SmallBodyConfig getSmallBodyConfig(ShapeModelBody name, ShapeModelAuthor author)
     {
-        for (ModelConfig config : builtInModelConfigs)
+        for (SmallBodyConfig config : builtInSmallBodyConfigs)
         {
             if (config.body == name && config.author == author)
                 return config;
         }
 
-        System.err.println("Error: Cannot find ModelConfig with name " + name + " and author " + author);
+        System.err.println("Error: Cannot find SmallBodyConfig with name " + name + " and author " + author);
 
         return null;
     }

@@ -47,7 +47,7 @@ import edu.jhuapl.near.util.Properties;
 
 public class LidarSearchDataCollection extends Model
 {
-    private ModelConfig modelConfig;
+    private SmallBodyConfig smallBodyConfig;
     private SmallBodyModel smallBodyModel;
     private vtkPolyData polydata;
     private vtkPolyData selectedPointPolydata;
@@ -118,7 +118,7 @@ public class LidarSearchDataCollection extends Model
     public LidarSearchDataCollection(SmallBodyModel smallBodyModel)
     {
         this.smallBodyModel = smallBodyModel;
-        this.modelConfig = smallBodyModel.getModelConfig();
+        this.smallBodyConfig = smallBodyModel.getSmallBodyConfig();
 
         // Initialize an empty polydata for resetting
         emptyPolyData = new vtkPolyData();
@@ -159,12 +159,12 @@ public class LidarSearchDataCollection extends Model
 
     public double getOffsetScale()
     {
-        return modelConfig.lidarOffsetScale;
+        return smallBodyConfig.lidarOffsetScale;
     }
 
     public Map<String, String> getLidarDataSourceMap()
     {
-        return modelConfig.lidarSearchDataSourceMap;
+        return smallBodyConfig.lidarSearchDataSourceMap;
     }
 
 

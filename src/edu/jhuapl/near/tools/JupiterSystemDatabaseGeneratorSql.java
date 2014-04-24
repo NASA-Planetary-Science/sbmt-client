@@ -2,8 +2,8 @@ package edu.jhuapl.near.tools;
 
 import java.io.IOException;
 
-import edu.jhuapl.near.model.ModelConfig;
-import edu.jhuapl.near.model.ModelConfig.ShapeModelBody;
+import edu.jhuapl.near.model.SmallBodyConfig;
+import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelBody;
 import edu.jhuapl.near.model.ModelFactory;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.util.Configuration;
@@ -11,37 +11,37 @@ import edu.jhuapl.near.util.NativeLibraryLoader;
 
 public class JupiterSystemDatabaseGeneratorSql extends DatabaseGeneratorBaseSql
 {
-    private ModelConfig modelConfig;
+    private SmallBodyConfig smallBodyConfig;
     private String betaSuffix = "_beta";
 
     @Override
     String getImagesGaskellTableNames()
     {
-        return modelConfig.body.toString().toLowerCase() + "images_gaskell" + betaSuffix;
+        return smallBodyConfig.body.toString().toLowerCase() + "images_gaskell" + betaSuffix;
     }
 
     @Override
     String getCubesGaskellTableNames()
     {
-        return modelConfig.body.toString().toLowerCase() + "cubes_gaskell" + betaSuffix;
+        return smallBodyConfig.body.toString().toLowerCase() + "cubes_gaskell" + betaSuffix;
     }
 
     @Override
     String getImagesPdsTableNames()
     {
-        return modelConfig.body.toString().toLowerCase() + "images_pds" + betaSuffix;
+        return smallBodyConfig.body.toString().toLowerCase() + "images_pds" + betaSuffix;
     }
 
     @Override
     String getCubesPdsTableNames()
     {
-        return modelConfig.body.toString().toLowerCase() + "cubes_pds" + betaSuffix;
+        return smallBodyConfig.body.toString().toLowerCase() + "cubes_pds" + betaSuffix;
     }
 
     @Override
     SmallBodyModel createSmallBodyModel()
     {
-        return ModelFactory.createSmallBodyModel(modelConfig);
+        return ModelFactory.createSmallBodyModel(smallBodyConfig);
     }
 
 
@@ -65,23 +65,23 @@ public class JupiterSystemDatabaseGeneratorSql extends DatabaseGeneratorBaseSql
         return true;
     }
 
-    public JupiterSystemDatabaseGeneratorSql(ModelConfig modelConfig)
+    public JupiterSystemDatabaseGeneratorSql(SmallBodyConfig smallBodyConfig)
     {
-        this.modelConfig = modelConfig;
+        this.smallBodyConfig = smallBodyConfig;
     }
 
     private enum RunInfo
     {
-        JUPITER(ModelConfig.getModelConfig(ShapeModelBody.JUPITER, null), "/project/nearsdc/data/NEWHORIZONS/JUPITER/IMAGING/imagelist-fullpath.txt"),
-        CALLISTO(ModelConfig.getModelConfig(ShapeModelBody.CALLISTO, null), "/project/nearsdc/data/NEWHORIZONS/CALLISTO/IMAGING/imagelist-fullpath.txt"),
-        EUROPA(ModelConfig.getModelConfig(ShapeModelBody.EUROPA, null), "/project/nearsdc/data/NEWHORIZONS/EUROPA/IMAGING/imagelist-fullpath.txt"),
-        GANYMEDE(ModelConfig.getModelConfig(ShapeModelBody.GANYMEDE, null), "/project/nearsdc/data/NEWHORIZONS/GANYMEDE/IMAGING/imagelist-fullpath.txt"),
-        IO(ModelConfig.getModelConfig(ShapeModelBody.IO, null), "/project/nearsdc/data/NEWHORIZONS/IO/IMAGING/imagelist-fullpath.txt");
+        JUPITER(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.JUPITER, null), "/project/nearsdc/data/NEWHORIZONS/JUPITER/IMAGING/imagelist-fullpath.txt"),
+        CALLISTO(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.CALLISTO, null), "/project/nearsdc/data/NEWHORIZONS/CALLISTO/IMAGING/imagelist-fullpath.txt"),
+        EUROPA(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.EUROPA, null), "/project/nearsdc/data/NEWHORIZONS/EUROPA/IMAGING/imagelist-fullpath.txt"),
+        GANYMEDE(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.GANYMEDE, null), "/project/nearsdc/data/NEWHORIZONS/GANYMEDE/IMAGING/imagelist-fullpath.txt"),
+        IO(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.IO, null), "/project/nearsdc/data/NEWHORIZONS/IO/IMAGING/imagelist-fullpath.txt");
 
-        public final ModelConfig config;
+        public final SmallBodyConfig config;
         public final String pathToFileList;
 
-        private RunInfo(ModelConfig config, String pathToFileList)
+        private RunInfo(SmallBodyConfig config, String pathToFileList)
         {
             this.config = config;
             this.pathToFileList = pathToFileList;

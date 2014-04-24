@@ -2,9 +2,9 @@ package edu.jhuapl.near.tools;
 
 import java.io.IOException;
 
-import edu.jhuapl.near.model.ModelConfig;
-import edu.jhuapl.near.model.ModelConfig.ShapeModelAuthor;
-import edu.jhuapl.near.model.ModelConfig.ShapeModelBody;
+import edu.jhuapl.near.model.SmallBodyConfig;
+import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelAuthor;
+import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelBody;
 import edu.jhuapl.near.model.ModelFactory;
 import edu.jhuapl.near.model.SmallBodyModel;
 
@@ -42,7 +42,7 @@ public class PhobosDatabaseGeneratorSql extends DatabaseGeneratorBaseSql
     @Override
     SmallBodyModel createSmallBodyModel()
     {
-        return ModelFactory.createSmallBodyModel(ModelConfig.getModelConfig(ShapeModelBody.PHOBOS, ShapeModelAuthor.EXPERIMENTAL));
+        return ModelFactory.createSmallBodyModel(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.PHOBOS, ShapeModelAuthor.EXPERIMENTAL));
     }
 
 

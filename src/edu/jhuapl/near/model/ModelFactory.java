@@ -8,9 +8,9 @@ import nom.tam.fits.FitsException;
 
 import edu.jhuapl.near.model.Image.ImageKey;
 import edu.jhuapl.near.model.Image.ImageSource;
-import edu.jhuapl.near.model.ModelConfig.ImageType;
-import edu.jhuapl.near.model.ModelConfig.ShapeModelAuthor;
-import edu.jhuapl.near.model.ModelConfig.ShapeModelBody;
+import edu.jhuapl.near.model.SmallBodyConfig.ImageType;
+import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelAuthor;
+import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelBody;
 import edu.jhuapl.near.model.custom.CustomGraticule;
 import edu.jhuapl.near.model.custom.CustomShapeModel;
 import edu.jhuapl.near.model.deimos.DeimosImage;
@@ -41,7 +41,7 @@ public class ModelFactory
             boolean loadPointingOnly,
             File rootFolder) throws FitsException, IOException
     {
-        ModelConfig config = smallBodyModel.getModelConfig();
+        SmallBodyConfig config = smallBodyModel.getSmallBodyConfig();
 
         if (ImageSource.PDS.equals(key.source) ||
                 ImageSource.GASKELL.equals(key.source) ||
@@ -82,7 +82,7 @@ public class ModelFactory
         }
     }
 
-    static public SmallBodyModel createSmallBodyModel(ModelConfig config)
+    static public SmallBodyModel createSmallBodyModel(SmallBodyConfig config)
     {
         ShapeModelBody name = config.body;
         ShapeModelAuthor author = config.author;
@@ -148,7 +148,7 @@ public class ModelFactory
 
     static public Graticule createGraticule(SmallBodyModel smallBodyModel)
     {
-        ModelConfig config = smallBodyModel.getModelConfig();
+        SmallBodyConfig config = smallBodyModel.getSmallBodyConfig();
         ShapeModelAuthor author = config.author;
 
         if (ShapeModelAuthor.GASKELL == author && smallBodyModel.getNumberResolutionLevels() == 4)

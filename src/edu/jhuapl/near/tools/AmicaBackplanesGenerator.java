@@ -22,9 +22,9 @@ import vtk.vtkGlobalJavaHash;
 
 import edu.jhuapl.near.model.Image.ImageKey;
 import edu.jhuapl.near.model.Image.ImageSource;
-import edu.jhuapl.near.model.ModelConfig;
-import edu.jhuapl.near.model.ModelConfig.ShapeModelAuthor;
-import edu.jhuapl.near.model.ModelConfig.ShapeModelBody;
+import edu.jhuapl.near.model.SmallBodyConfig;
+import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelAuthor;
+import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelBody;
 import edu.jhuapl.near.model.PerspectiveImage;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.eros.MSIImage;
@@ -502,7 +502,7 @@ public class AmicaBackplanesGenerator
         String inertialFilename = args[1];
         int mode = Integer.parseInt(args[2]);
 
-        itokawaModel = new Itokawa(ModelConfig.getModelConfig(ShapeModelBody.ITOKAWA, ShapeModelAuthor.GASKELL));
+        itokawaModel = new Itokawa(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.ITOKAWA, ShapeModelAuthor.GASKELL));
 
         computeMeanPlateSizeAtAllResolutions();
 

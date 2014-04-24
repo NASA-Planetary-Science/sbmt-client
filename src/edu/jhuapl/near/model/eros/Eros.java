@@ -1,6 +1,6 @@
 package edu.jhuapl.near.model.eros;
 
-import edu.jhuapl.near.model.ModelConfig;
+import edu.jhuapl.near.model.SmallBodyConfig;
 import edu.jhuapl.near.model.SmallBodyModel;
 
 public class Eros extends SmallBodyModel
@@ -48,7 +48,7 @@ public class Eros extends SmallBodyModel
             SlopeUnitsStr, ElevUnitsStr, GravAccUnitsStr, GravPotUnitsStr
     };
 
-    public Eros(ModelConfig config)
+    public Eros(SmallBodyConfig config)
     {
         super(config,
                 modelNames,

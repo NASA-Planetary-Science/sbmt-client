@@ -2,9 +2,9 @@ package edu.jhuapl.near.tools;
 
 import java.io.IOException;
 
-import edu.jhuapl.near.model.ModelConfig;
-import edu.jhuapl.near.model.ModelConfig.ShapeModelAuthor;
-import edu.jhuapl.near.model.ModelConfig.ShapeModelBody;
+import edu.jhuapl.near.model.SmallBodyConfig;
+import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelAuthor;
+import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelBody;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.itokawa.Itokawa;
 
@@ -30,7 +30,7 @@ public class HayLidarSqlDatabaseGenerator extends LidarSqlDatabaseGenerator
     {
         if (itokawa == null)
         {
-            itokawa = new Itokawa(ModelConfig.getModelConfig(ShapeModelBody.ITOKAWA, ShapeModelAuthor.GASKELL));
+            itokawa = new Itokawa(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.ITOKAWA, ShapeModelAuthor.GASKELL));
 
             try
             {

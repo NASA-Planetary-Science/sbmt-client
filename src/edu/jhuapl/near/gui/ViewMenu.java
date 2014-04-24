@@ -16,7 +16,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JRadioButtonMenuItem;
 
-import edu.jhuapl.near.model.ModelConfig;
+import edu.jhuapl.near.model.SmallBodyConfig;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.SmallBodyModel;
@@ -46,9 +46,9 @@ public class ViewMenu extends JMenu implements PropertyChangeListener
                 mi.setSelected(true);
             group.add(mi);
 
-            ModelConfig modelConfig = view.getModelConfig();
+            SmallBodyConfig smallBodyConfig = view.getSmallBodyConfig();
 
-            addMenuItem(mi, modelConfig);
+            addMenuItem(mi, smallBodyConfig);
         }
 
         if (Configuration.isAPLVersion())
@@ -74,17 +74,17 @@ public class ViewMenu extends JMenu implements PropertyChangeListener
         }
     }
 
-    private void addMenuItem(JMenuItem mi, ModelConfig modelConfig)
+    private void addMenuItem(JMenuItem mi, SmallBodyConfig smallBodyConfig)
     {
         ArrayList<String> tree = new ArrayList<String>();
-        if (modelConfig.type != null)
-            tree.add(modelConfig.type.toString());
-        if (modelConfig.population != null)
-            tree.add(modelConfig.population.toString());
-        if (modelConfig.body != null && modelConfig.author != null)
-            tree.add(modelConfig.body.toString());
-        if (modelConfig.dataUsed != null && modelConfig.author != null)
-            tree.add(modelConfig.dataUsed.toString());
+        if (smallBodyConfig.type != null)
+            tree.add(smallBodyConfig.type.toString());
+        if (smallBodyConfig.population != null)
+            tree.add(smallBodyConfig.population.toString());
+        if (smallBodyConfig.body != null && smallBodyConfig.author != null)
+            tree.add(smallBodyConfig.body.toString());
+        if (smallBodyConfig.dataUsed != null && smallBodyConfig.author != null)
+            tree.add(smallBodyConfig.dataUsed.toString());
 
         JMenu parentMenu = this;
         for (String subMenu : tree)

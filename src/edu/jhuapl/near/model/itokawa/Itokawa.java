@@ -1,6 +1,6 @@
 package edu.jhuapl.near.model.itokawa;
 
-import edu.jhuapl.near.model.ModelConfig;
+import edu.jhuapl.near.model.SmallBodyConfig;
 import edu.jhuapl.near.model.SmallBodyModel;
 
 public class Itokawa extends SmallBodyModel
@@ -49,7 +49,7 @@ public class Itokawa extends SmallBodyModel
     };
 
 
-    public Itokawa(ModelConfig config)
+    public Itokawa(SmallBodyConfig config)
     {
         super(config,
                 modelNames,

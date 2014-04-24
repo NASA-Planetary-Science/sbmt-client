@@ -22,9 +22,9 @@ import edu.jhuapl.near.model.Image.ImageKey;
 import edu.jhuapl.near.model.Image.ImageSource;
 import edu.jhuapl.near.model.LidarBrowseDataCollection;
 import edu.jhuapl.near.model.LidarBrowseDataCollection.LidarDataFileSpec;
-import edu.jhuapl.near.model.ModelConfig;
-import edu.jhuapl.near.model.ModelConfig.ShapeModelAuthor;
-import edu.jhuapl.near.model.ModelConfig.ShapeModelBody;
+import edu.jhuapl.near.model.SmallBodyConfig;
+import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelAuthor;
+import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelBody;
 import edu.jhuapl.near.model.ModelFactory;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.PerspectiveImage;
@@ -110,15 +110,15 @@ public class CompareGaskellAndNLR
     static DateTimeFormatter fmt = ISODateTimeFormat.dateTime();
 
 
-    static void loadPoints(String path, ModelConfig modelConfig) throws IOException
+    static void loadPoints(String path, SmallBodyConfig smallBodyConfig) throws IOException
     {
-        int[] xyzIndices = modelConfig.lidarBrowseXYZIndices;
-        int[] scXyzIndices = modelConfig.lidarBrowseSpacecraftIndices;
-        boolean isSpacecraftInSphericalCoordinates = modelConfig.lidarBrowseIsSpacecraftInSphericalCoordinates;
-        int timeindex = modelConfig.lidarBrowseTimeIndex;
-        int numberHeaderLines = modelConfig.lidarBrowseNumberHeaderLines;
-        boolean isInMeters = modelConfig.lidarBrowseIsInMeters;
-        int noiseindex = modelConfig.lidarBrowseNoiseIndex;
+        int[] xyzIndices = smallBodyConfig.lidarBrowseXYZIndices;
+        int[] scXyzIndices = smallBodyConfig.lidarBrowseSpacecraftIndices;
+        boolean isSpacecraftInSphericalCoordinates = smallBodyConfig.lidarBrowseIsSpacecraftInSphericalCoordinates;
+        int timeindex = smallBodyConfig.lidarBrowseTimeIndex;
+        int numberHeaderLines = smallBodyConfig.lidarBrowseNumberHeaderLines;
+        boolean isInMeters = smallBodyConfig.lidarBrowseIsInMeters;
+        int noiseindex = smallBodyConfig.lidarBrowseNoiseIndex;
 
         int xindex = xyzIndices[0];
         int yindex = xyzIndices[1];
@@ -359,7 +359,7 @@ public class CompareGaskellAndNLR
         NativeLibraryLoader.loadVtkLibraries();
 
 
-        ModelConfig config = ModelConfig.getModelConfig(ShapeModelBody.EROS, ShapeModelAuthor.GASKELL);
+        SmallBodyConfig config = SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.EROS, ShapeModelAuthor.GASKELL);
         SmallBodyModel smallBodyModel = ModelFactory.createSmallBodyModel(config);
         smallBodyModel.setModelResolution(3);
 

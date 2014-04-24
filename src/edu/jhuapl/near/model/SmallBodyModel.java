@@ -159,7 +159,7 @@ public class SmallBodyModel extends Model
     private double scaleBarWidthInKm = -1.0;
     private boolean showScaleBar = true;
 
-    private ModelConfig modelConfig;
+    private SmallBodyConfig smallBodyConfig;
 
     /**
      * Default constructor. Must be followed by a call to setSmallBodyPolyData.
@@ -177,7 +177,7 @@ public class SmallBodyModel extends Model
      * for each resolution level.
      */
     public SmallBodyModel(
-            ModelConfig config,
+            SmallBodyConfig config,
             String[] modelNames,
             String[] modelFiles,
             String[] coloringFiles,
@@ -188,7 +188,7 @@ public class SmallBodyModel extends Model
             ColoringValueType coloringValueType,
             boolean lowestResolutionModelStoredInResource)
     {
-        this.modelConfig = config;
+        this.smallBodyConfig = config;
         this.modelNames = modelNames;
         this.modelFiles = modelFiles;
         this.imageMapNames = imageMapNames;
@@ -245,9 +245,9 @@ public class SmallBodyModel extends Model
         initializeColoringRanges();
     }
 
-    public ModelConfig getModelConfig()
+    public SmallBodyConfig getSmallBodyConfig()
     {
-        return modelConfig;
+        return smallBodyConfig;
     }
 
     public boolean isBuiltIn()
@@ -288,7 +288,7 @@ public class SmallBodyModel extends Model
         String imagesDir = null;
         if (isBuiltIn())
         {
-            imagesDir = Configuration.getCustomDataFolderForBuiltInViews() + File.separator + modelConfig.getUniqueName();
+            imagesDir = Configuration.getCustomDataFolderForBuiltInViews() + File.separator + smallBodyConfig.getUniqueName();
         }
         else
         {

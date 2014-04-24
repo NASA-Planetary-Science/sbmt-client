@@ -13,9 +13,9 @@ import vtk.vtkGlobalJavaHash;
 
 import edu.jhuapl.near.model.Image.ImageKey;
 import edu.jhuapl.near.model.Image.ImageSource;
-import edu.jhuapl.near.model.ModelConfig;
-import edu.jhuapl.near.model.ModelConfig.ShapeModelAuthor;
-import edu.jhuapl.near.model.ModelConfig.ShapeModelBody;
+import edu.jhuapl.near.model.SmallBodyConfig;
+import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelAuthor;
+import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelBody;
 import edu.jhuapl.near.model.ModelFactory;
 import edu.jhuapl.near.model.PerspectiveImage;
 import edu.jhuapl.near.model.SmallBodyModel;
@@ -159,9 +159,9 @@ public class BackplanesGenerator
         String outputFolder = args[2];
 
         if (body.toUpperCase().equals("EROS"))
-            smallBodyModel = ModelFactory.createSmallBodyModel(ModelConfig.getModelConfig(ShapeModelBody.EROS, ShapeModelAuthor.GASKELL));
+            smallBodyModel = ModelFactory.createSmallBodyModel(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.EROS, ShapeModelAuthor.GASKELL));
         else if (body.toUpperCase().equals("ITOKAWA"))
-            smallBodyModel = ModelFactory.createSmallBodyModel(ModelConfig.getModelConfig(ShapeModelBody.ITOKAWA, ShapeModelAuthor.GASKELL));
+            smallBodyModel = ModelFactory.createSmallBodyModel(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.ITOKAWA, ShapeModelAuthor.GASKELL));
 
         PerspectiveImage.setGenerateFootprint(true);
 
