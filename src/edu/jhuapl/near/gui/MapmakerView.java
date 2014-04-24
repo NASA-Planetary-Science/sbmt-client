@@ -99,7 +99,7 @@ public class MapmakerView extends JFrame
 
         String filename = cubFile.getAbsolutePath();
         final ModelManager modelManager = new ModelManager();
-        HashMap<String, Model> allModels = new HashMap<String, Model>();
+        HashMap<ModelNames, Model> allModels = new HashMap<ModelNames, Model>();
         dem = new DEMModel(filename);
         lineModel = new LineModel(dem, true);
         lineModel.setMaximumVerticesPerLine(2);

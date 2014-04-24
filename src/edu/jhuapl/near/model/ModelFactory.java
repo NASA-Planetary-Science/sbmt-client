@@ -180,9 +180,9 @@ public class ModelFactory
         return new NISSpectraCollection(smallBodyModel);
     }
 
-    static public HashMap<String, Model> createLidarModels(SmallBodyModel smallBodyModel)
+    static public HashMap<ModelNames, Model> createLidarModels(SmallBodyModel smallBodyModel)
     {
-        HashMap<String, Model> models = new HashMap<String, Model>();
+        HashMap<ModelNames, Model> models = new HashMap<ModelNames, Model>();
 
         models.put(ModelNames.LIDAR_BROWSE, new LidarBrowseDataCollection(smallBodyModel));
         models.put(ModelNames.LIDAR_SEARCH, new LidarSearchDataCollection(smallBodyModel));

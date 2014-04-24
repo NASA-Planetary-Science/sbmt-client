@@ -16,6 +16,7 @@ import edu.jhuapl.near.model.ControlPointsStructureModel;
 import edu.jhuapl.near.model.Line;
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelManager;
+import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.SmallBodyModel;
 
 /**
@@ -56,7 +57,7 @@ public class ControlPointsStructurePicker extends Picker
     public ControlPointsStructurePicker(
             Renderer renderer,
             ModelManager modelManager,
-            String structureName
+            ModelNames structureName
             )
     {
         this.renWin = renderer.getRenderWindowPanel();

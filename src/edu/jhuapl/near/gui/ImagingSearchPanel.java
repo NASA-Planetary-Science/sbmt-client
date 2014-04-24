@@ -126,17 +126,17 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             return names.length;
     }
 
-    private String getImageCollectionModelName()
+    private ModelNames getImageCollectionModelName()
     {
         return ModelNames.IMAGES;
     }
 
-    private String getImageBoundaryCollectionModelName()
+    private ModelNames getImageBoundaryCollectionModelName()
     {
         return ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES;
     }
 
-    private String getColorImageCollectionModelName()
+    private ModelNames getColorImageCollectionModelName()
     {
         return ModelNames.COLOR_IMAGES;
     }

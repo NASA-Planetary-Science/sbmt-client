@@ -216,7 +216,7 @@ public class View extends JPanel
         SmallBodyModel smallBodyModel = ModelFactory.createSmallBodyModel(modelConfig);
         Graticule graticule = ModelFactory.createGraticule(smallBodyModel);
 
-        HashMap<String, Model> allModels = new HashMap<String, Model>();
+        HashMap<ModelNames, Model> allModels = new HashMap<ModelNames, Model>();
         allModels.put(ModelNames.SMALL_BODY, smallBodyModel);
         allModels.put(ModelNames.GRATICULE, graticule);
         allModels.put(ModelNames.IMAGES, new ImageCollection(smallBodyModel));
