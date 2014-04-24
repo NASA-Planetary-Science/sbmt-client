@@ -115,8 +115,6 @@ public class MapletBoundaryCollection extends Model implements PropertyChangeLis
 
     public MapletBoundaryCollection(SmallBodyModel erosModel)
     {
-        super(ModelNames.MAPLET_BOUNDARY);
-
         this.erosModel = erosModel;
     }
 

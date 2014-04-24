@@ -189,11 +189,8 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
             SmallBodyModel smallBodyModel,
             int numberOfSides,
             Mode mode,
-            String type,
-            String name)
+            String type)
     {
-        super(name);
-
         this.smallBodyModel = smallBodyModel;
 
         this.offset = getDefaultOffset();

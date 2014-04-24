@@ -92,13 +92,11 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
 
     public LineModel(SmallBodyModel smallBodyModel, boolean profileMode)
     {
-        this(smallBodyModel, profileMode ? Mode.PROFILE : Mode.DEFAULT, ModelNames.LINE_STRUCTURES);
+        this(smallBodyModel, profileMode ? Mode.PROFILE : Mode.DEFAULT);
     }
 
-    public LineModel(SmallBodyModel smallBodyModel, Mode mode, String name)
+    public LineModel(SmallBodyModel smallBodyModel, Mode mode)
     {
-        super(name);
-
         this.smallBodyModel = smallBodyModel;
         this.mode = mode;
 

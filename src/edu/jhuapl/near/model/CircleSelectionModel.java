@@ -8,7 +8,7 @@ public class CircleSelectionModel extends AbstractEllipsePolygonModel
 {
     public CircleSelectionModel(SmallBodyModel smallBodyModel)
     {
-        super(smallBodyModel, 20, Mode.CIRCLE_MODE, "Selection", ModelNames.CIRCLE_SELECTION);
+        super(smallBodyModel, 20, Mode.CIRCLE_MODE, "Selection");
         //setInteriorOpacity(1.0);
         //int[] color = {255, 0, 255};
         //setDefaultColor(color);

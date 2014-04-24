@@ -23,11 +23,6 @@ public abstract class StructureModel extends Model
         public abstract void setColor(int[] color);
     }
 
-    public StructureModel(String name)
-    {
-        super(name);
-    }
-
     public abstract void addNewStructure();
 
     public abstract boolean supportsActivation();

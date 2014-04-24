@@ -29,7 +29,6 @@ public abstract class Model
     { this.pcs.removePropertyChangeListener( listener ); }
 
     private boolean visible = true;
-    private String name = null;
     private CommonData commonData;
 
     /** The purpose of this class is to store various parameters that are shared
@@ -55,16 +54,6 @@ public abstract class Model
         {
             this.selectionColor = selectionColor.clone();
         }
-    }
-
-
-    public Model()
-    {
-    }
-
-    public Model(String name)
-    {
-        this.name = name;
     }
 
     /**
@@ -134,11 +123,6 @@ public abstract class Model
     {
         // Subclasses should redefine this if they support offset.
         return 0.0;
-    }
-
-    public String getName()
-    {
-        return name;
     }
 
     public void delete()

@@ -44,7 +44,7 @@ public class PolygonModel extends LineModel
 
     public PolygonModel(SmallBodyModel smallBodyModel)
     {
-        super(smallBodyModel, Mode.CLOSED, ModelNames.POLYGON_STRUCTURES);
+        super(smallBodyModel, Mode.CLOSED);
 
         this.smallBodyModel = smallBodyModel;
 

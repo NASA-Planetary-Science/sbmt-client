@@ -22,7 +22,7 @@ public class EllipseModel extends AbstractEllipsePolygonModel
 
     public EllipseModel(SmallBodyModel smallBodyModel)
     {
-        super(smallBodyModel, 20, Mode.ELLIPSE_MODE, "ellipse", ModelNames.ELLIPSE_STRUCTURES);
+        super(smallBodyModel, 20, Mode.ELLIPSE_MODE, "ellipse");
 
         this.smallBodyModel = smallBodyModel;
 
