@@ -461,17 +461,17 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         return fitFileFullPath;
     }
 
-    protected String getLabelFileFullPath()
+    public String getLabelFileFullPath()
     {
         return labelFileFullPath;
     }
 
-    protected String getInfoFileFullPath()
+    public String getInfoFileFullPath()
     {
         return infoFileFullPath;
     }
 
-    protected String getSumfileFullPath()
+    public String getSumfileFullPath()
     {
         return sumfileFullPath;
     }
