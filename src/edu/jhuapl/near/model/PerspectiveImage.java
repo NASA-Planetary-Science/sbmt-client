@@ -150,18 +150,10 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
      * If loadPointingOnly is true then only pointing information about this
      * image will be downloaded/loaded. The image itself will not be loaded.
      * Used by ImageBoundary to get pointing info.
-     *
-     * If rootFolder is not null, then rather than downloading the relevant files
-     * from the server, this class will assume that all files are located on
-     * the local disk under rootFolder. The image key specifies the remaining
-     * part of the path for the files. Setting rootFolder to something non-null
-     * is only done by the server programs in the server package. The GUI program
-     * should always set this value to null since it always downloads the files.
      */
     public PerspectiveImage(ImageKey key,
             SmallBodyModel smallBodyModel,
-            boolean loadPointingOnly,
-            File rootFolder) throws FitsException, IOException
+            boolean loadPointingOnly) throws FitsException, IOException
     {
         super(key);
         this.smallBodyModel = smallBodyModel;
@@ -170,14 +162,14 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
         if (!loadPointingOnly)
         {
-            fitFileFullPath = initializeFitFileFullPath(rootFolder);
-            labelFileFullPath = initializeLabelFileFullPath(rootFolder);
+            fitFileFullPath = initializeFitFileFullPath();
+            labelFileFullPath = initializeLabelFileFullPath();
         }
 
         if (key.source.equals(ImageSource.PDS))
-            infoFileFullPath = initializeInfoFileFullPath(rootFolder);
+            infoFileFullPath = initializeInfoFileFullPath();
         else
-            sumfileFullPath = initializeSumfileFullPath(rootFolder);
+            sumfileFullPath = initializeSumfileFullPath();
 
         loadPointing();
 
@@ -317,10 +309,10 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
      */
     abstract protected int[] getMaskSizes();
 
-    abstract protected String initializeFitFileFullPath(File rootFolder);
-    abstract protected String initializeLabelFileFullPath(File rootFolder);
-    abstract protected String initializeInfoFileFullPath(File rootFolder);
-    abstract protected String initializeSumfileFullPath(File rootFolder);
+    abstract protected String initializeFitFileFullPath();
+    abstract protected String initializeLabelFileFullPath();
+    abstract protected String initializeInfoFileFullPath();
+    abstract protected String initializeSumfileFullPath();
 
     protected void appendWithPadding(StringBuffer strbuf, String str)
     {

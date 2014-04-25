@@ -13,72 +13,43 @@ public class MSIMathildeImage extends MSIImage
 {
     public MSIMathildeImage(ImageKey key,
             SmallBodyModel smallBodyModel,
-            boolean loadPointingOnly,
-            File rootFolder) throws FitsException, IOException
+            boolean loadPointingOnly) throws FitsException, IOException
     {
-        super(key, smallBodyModel, loadPointingOnly, rootFolder);
+        super(key, smallBodyModel, loadPointingOnly);
     }
 
     @Override
-    protected String initializeFitFileFullPath(File rootFolder)
-    {
-        ImageKey key = getKey();
-        if (rootFolder == null)
-        {
-            return FileCache.getFileFromServer(key.name + ".FIT").getAbsolutePath();
-        }
-        else
-        {
-            return rootFolder.getAbsolutePath() + key.name + ".FIT";
-        }
-    }
-
-    @Override
-    protected String initializeLabelFileFullPath(File rootFolder)
+    protected String initializeFitFileFullPath()
     {
         ImageKey key = getKey();
-        if (rootFolder == null)
-        {
-            return FileCache.getFileFromServer(key.name + ".LBL").getAbsolutePath();
-        }
-        else
-        {
-            return rootFolder.getAbsolutePath() + key.name + ".LBL";
-        }
+        return FileCache.getFileFromServer(key.name + ".FIT").getAbsolutePath();
     }
 
     @Override
-    protected String initializeInfoFileFullPath(File rootFolder)
+    protected String initializeLabelFileFullPath()
+    {
+        ImageKey key = getKey();
+        return FileCache.getFileFromServer(key.name + ".LBL").getAbsolutePath();
+    }
+
+    @Override
+    protected String initializeInfoFileFullPath()
     {
         ImageKey key = getKey();
         File keyFile = new File(key.name);
         String sumFilename = keyFile.getParentFile().getParent() + "/infofiles/"
         + keyFile.getName().substring(0, 20) + ".INFO";
-        if (rootFolder == null)
-        {
-            return FileCache.getFileFromServer(sumFilename).getAbsolutePath();
-        }
-        else
-        {
-            return rootFolder.getAbsolutePath() + sumFilename;
-        }
+        return FileCache.getFileFromServer(sumFilename).getAbsolutePath();
     }
 
     @Override
-    protected String initializeSumfileFullPath(File rootFolder)
+    protected String initializeSumfileFullPath()
     {
         ImageKey key = getKey();
         File keyFile = new File(key.name);
         String sumFilename = keyFile.getParentFile().getParent() + "/sumfiles/"
         + keyFile.getName().substring(0, 20) + ".SUM";
-        if (rootFolder == null)
-        {
-            return FileCache.getFileFromServer(sumFilename).getAbsolutePath();
-        }
-        else
-        {
-            return rootFolder.getAbsolutePath() + sumFilename;
-        }
+        return FileCache.getFileFromServer(sumFilename).getAbsolutePath();
     }
 
 }

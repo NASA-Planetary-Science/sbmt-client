@@ -38,8 +38,7 @@ public class ModelFactory
     static public Image createImage(
             ImageKey key,
             SmallBodyModel smallBodyModel,
-            boolean loadPointingOnly,
-            File rootFolder) throws FitsException, IOException
+            boolean loadPointingOnly) throws FitsException, IOException
     {
         SmallBodyConfig config = smallBodyModel.getSmallBodyConfig();
 
@@ -48,33 +47,33 @@ public class ModelFactory
                 ImageSource.CORRECTED.equals(key.source))
         {
             if (config.imageType == ImageType.MSI_IMAGE)
-                return new MSIImage(key, smallBodyModel, loadPointingOnly, rootFolder);
+                return new MSIImage(key, smallBodyModel, loadPointingOnly);
             else if (config.imageType == ImageType.AMICA_IMAGE)
-                return new AmicaImage(key, smallBodyModel, loadPointingOnly, rootFolder);
+                return new AmicaImage(key, smallBodyModel, loadPointingOnly);
             else if (config.imageType == ImageType.FC_IMAGE)
-                return new FcImage(key, smallBodyModel, loadPointingOnly, rootFolder);
+                return new FcImage(key, smallBodyModel, loadPointingOnly);
             else if (config.imageType == ImageType.PHOBOS_IMAGE)
-                return new PhobosImage(key, smallBodyModel, loadPointingOnly, rootFolder);
+                return new PhobosImage(key, smallBodyModel, loadPointingOnly);
             else if (config.imageType == ImageType.DEIMOS_IMAGE)
-                return new DeimosImage(key, smallBodyModel, loadPointingOnly, rootFolder);
+                return new DeimosImage(key, smallBodyModel, loadPointingOnly);
             else if (config.imageType == ImageType.OSIRIS_IMAGE)
-                return new OsirisImage(key, smallBodyModel, loadPointingOnly, rootFolder);
+                return new OsirisImage(key, smallBodyModel, loadPointingOnly);
             else if (config.imageType == ImageType.SATURN_MOON_IMAGE)
-                return new SaturnMoonImage(key, smallBodyModel, loadPointingOnly, rootFolder);
+                return new SaturnMoonImage(key, smallBodyModel, loadPointingOnly);
             else if (config.imageType == ImageType.SSI_GASPRA_IMAGE)
-                return new SSIGaspraImage(key, smallBodyModel, loadPointingOnly, rootFolder);
+                return new SSIGaspraImage(key, smallBodyModel, loadPointingOnly);
             else if (config.imageType == ImageType.SSI_IDA_IMAGE)
-                return new SSIIdaImage(key, smallBodyModel, loadPointingOnly, rootFolder);
+                return new SSIIdaImage(key, smallBodyModel, loadPointingOnly);
             else if (config.imageType == ImageType.MSI_MATHILDE_IMAGE)
-                return new MSIMathildeImage(key, smallBodyModel, loadPointingOnly, rootFolder);
+                return new MSIMathildeImage(key, smallBodyModel, loadPointingOnly);
             else if (config.imageType == ImageType.LORRI_IMAGE)
-                return new LorriImage(key, smallBodyModel, loadPointingOnly, rootFolder);
+                return new LorriImage(key, smallBodyModel, loadPointingOnly);
             else
                 return null;
         }
         else if (ImageSource.LOCAL_PERSPECTIVE.equals(key.source))
         {
-            return new CustomPerspectiveImage(key, smallBodyModel, loadPointingOnly, rootFolder);
+            return new CustomPerspectiveImage(key, smallBodyModel, loadPointingOnly);
         }
         else
         {

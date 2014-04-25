@@ -22,12 +22,12 @@ import edu.jhuapl.near.model.Image.ImageKey;
 import edu.jhuapl.near.model.Image.ImageSource;
 import edu.jhuapl.near.model.LidarBrowseDataCollection;
 import edu.jhuapl.near.model.LidarBrowseDataCollection.LidarDataFileSpec;
-import edu.jhuapl.near.model.SmallBodyConfig;
-import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelAuthor;
-import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelBody;
 import edu.jhuapl.near.model.ModelFactory;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.PerspectiveImage;
+import edu.jhuapl.near.model.SmallBodyConfig;
+import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelAuthor;
+import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelBody;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.eros.MSIImage;
 import edu.jhuapl.near.util.FileCache;
@@ -302,7 +302,7 @@ public class CompareGaskellAndNLR
             File rootFolder = origFile.getParentFile().getParentFile().getParentFile().getParentFile().getParentFile();
             String keyName = origFile.getAbsolutePath().replace(rootFolder.getAbsolutePath(), "");
             ImageKey key = new ImageKey(keyName, ImageSource.GASKELL);
-            MSIImage image = new MSIImage(key, smallBodyModel, true, rootFolder);
+            MSIImage image = new MSIImage(key, smallBodyModel, true);
 
             String startTimeStr = image.getStartTime();
             String stopTimeStr = image.getStopTime();

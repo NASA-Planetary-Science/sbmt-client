@@ -13,11 +13,11 @@ import vtk.vtkGlobalJavaHash;
 
 import edu.jhuapl.near.model.Image.ImageKey;
 import edu.jhuapl.near.model.Image.ImageSource;
+import edu.jhuapl.near.model.ModelFactory;
+import edu.jhuapl.near.model.PerspectiveImage;
 import edu.jhuapl.near.model.SmallBodyConfig;
 import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelAuthor;
 import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelBody;
-import edu.jhuapl.near.model.ModelFactory;
-import edu.jhuapl.near.model.PerspectiveImage;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.util.FileUtil;
 import edu.jhuapl.near.util.NativeLibraryLoader;
@@ -67,14 +67,14 @@ public class BackplanesGenerator
             try
             {
                 key = new ImageKey(filename.replace(".fit", ""), ImageSource.GASKELL);
-                image = (PerspectiveImage)ModelFactory.createImage(key, smallBodyModel, false, null);
+                image = (PerspectiveImage)ModelFactory.createImage(key, smallBodyModel, false);
             }
             catch (Exception e)
             {
                 try
                 {
                     key = new ImageKey(filename.replace(".fit", ""), ImageSource.PDS);
-                    image = (PerspectiveImage)ModelFactory.createImage(key, smallBodyModel, false, null);
+                    image = (PerspectiveImage)ModelFactory.createImage(key, smallBodyModel, false);
                 }
                 catch (Exception e1)
                 {

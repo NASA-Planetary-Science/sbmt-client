@@ -22,10 +22,10 @@ import vtk.vtkPolyData;
 import edu.jhuapl.near.model.Image;
 import edu.jhuapl.near.model.Image.ImageKey;
 import edu.jhuapl.near.model.Image.ImageSource;
+import edu.jhuapl.near.model.PerspectiveImage;
 import edu.jhuapl.near.model.SmallBodyConfig;
 import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelAuthor;
 import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelBody;
-import edu.jhuapl.near.model.PerspectiveImage;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.itokawa.AmicaImage;
 import edu.jhuapl.near.model.itokawa.Itokawa;
@@ -152,7 +152,7 @@ public class ItokawaDatabaseGeneratorSql
             String keyName = origFile.getAbsolutePath().replace(rootFolder.getAbsolutePath(), "");
             keyName = keyName.replace(".fit", "");
             ImageKey key = new ImageKey(keyName, amicaSource);
-            AmicaImage image = new AmicaImage(key, itokawaModel, false, rootFolder);
+            AmicaImage image = new AmicaImage(key, itokawaModel, false);
 
             image.loadFootprint();
             if (image.getUnshiftedFootprint().GetNumberOfCells() == 0)
@@ -274,7 +274,7 @@ public class ItokawaDatabaseGeneratorSql
             String keyName = origFile.getAbsolutePath().replace(rootFolder.getAbsolutePath(), "");
             keyName = keyName.replace(".fit", "");
             ImageKey key = new ImageKey(keyName, amicaSource);
-            AmicaImage image = new AmicaImage(key, itokawaModel, false, rootFolder);
+            AmicaImage image = new AmicaImage(key, itokawaModel, false);
 
             image.loadFootprint();
             footprintPolyData.DeepCopy(image.getUnshiftedFootprint());

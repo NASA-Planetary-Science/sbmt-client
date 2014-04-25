@@ -20,11 +20,11 @@ import vtk.vtkPolyData;
 import edu.jhuapl.near.model.Image;
 import edu.jhuapl.near.model.Image.ImageKey;
 import edu.jhuapl.near.model.Image.ImageSource;
+import edu.jhuapl.near.model.ModelFactory;
+import edu.jhuapl.near.model.PerspectiveImage;
 import edu.jhuapl.near.model.SmallBodyConfig;
 import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelAuthor;
 import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelBody;
-import edu.jhuapl.near.model.ModelFactory;
-import edu.jhuapl.near.model.PerspectiveImage;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.vesta.FcImage;
 import edu.jhuapl.near.util.Configuration;
@@ -152,7 +152,7 @@ public class VestaDatabaseGeneratorSql
             String keyName = origFile.getAbsolutePath().replace(rootFolder.getAbsolutePath(), "");
             keyName = keyName.replace(".FIT", "");
             ImageKey key = new ImageKey(keyName, fcSource);
-            FcImage image = new FcImage(key, vestaModel, false, rootFolder);
+            FcImage image = new FcImage(key, vestaModel, false);
 
             image.loadFootprint();
             if (image.getUnshiftedFootprint().GetNumberOfCells() == 0)
@@ -276,7 +276,7 @@ public class VestaDatabaseGeneratorSql
             String keyName = origFile.getAbsolutePath().replace(rootFolder.getAbsolutePath(), "");
             keyName = keyName.replace(".FIT", "");
             ImageKey key = new ImageKey(keyName, fcSource);
-            FcImage image = new FcImage(key, vestaModel, false, rootFolder);
+            FcImage image = new FcImage(key, vestaModel, false);
 
             image.loadFootprint();
             footprintPolyData.DeepCopy(image.getUnshiftedFootprint());

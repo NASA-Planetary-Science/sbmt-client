@@ -22,10 +22,10 @@ import vtk.vtkGlobalJavaHash;
 
 import edu.jhuapl.near.model.Image.ImageKey;
 import edu.jhuapl.near.model.Image.ImageSource;
+import edu.jhuapl.near.model.PerspectiveImage;
 import edu.jhuapl.near.model.SmallBodyConfig;
 import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelAuthor;
 import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelBody;
-import edu.jhuapl.near.model.PerspectiveImage;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.eros.MSIImage;
 import edu.jhuapl.near.model.itokawa.AmicaImage;
@@ -230,7 +230,7 @@ public class AmicaBackplanesGenerator
             String keyName = origFile.getAbsolutePath().replace(rootFolder.getAbsolutePath(), "");
             keyName = keyName.replace(".fit", "");
             ImageKey key = new ImageKey(keyName, amicaSource);
-            AmicaImage image = new AmicaImage(key, itokawaModel, false, rootFolder);
+            AmicaImage image = new AmicaImage(key, itokawaModel, false);
             int[] croppedSize = image.getCroppedSize();
             currentCroppedWidth = croppedSize[1];
             currentCroppedHeight = croppedSize[0];
@@ -286,7 +286,7 @@ public class AmicaBackplanesGenerator
                 itokawaModel.setModelResolution(res);
             }
 
-            AmicaImage image = new AmicaImage(key, itokawaModel, false, rootFolder);
+            AmicaImage image = new AmicaImage(key, itokawaModel, false);
             int[] croppedSize = image.getCroppedSize();
             currentCroppedWidth = croppedSize[1];
             currentCroppedHeight = croppedSize[0];

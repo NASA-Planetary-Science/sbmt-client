@@ -137,7 +137,7 @@ public class MSIBestResolutionPerPlate
             String keyName = origFile.getAbsolutePath().replace(rootFolder.getAbsolutePath(), "");
             keyName = keyName.replace(".FIT", "");
             ImageKey key = new ImageKey(keyName, msiSource);
-            MSIImage image = new MSIImage(key, erosModel, false, rootFolder);
+            MSIImage image = new MSIImage(key, erosModel, false);
 
 
             //System.out.println("id: " + Integer.parseInt(origFile.getName().substring(2, 11)));

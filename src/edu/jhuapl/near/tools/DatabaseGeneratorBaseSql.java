@@ -141,7 +141,7 @@ abstract public class DatabaseGeneratorBaseSql
             keyName = keyName.replace(".FIT", "");
             keyName = keyName.replace(".fit", "");
             ImageKey key = new ImageKey(keyName, imageSource);
-            PerspectiveImage image = (PerspectiveImage)ModelFactory.createImage(key, smallBodyModel, false, rootFolder);
+            PerspectiveImage image = (PerspectiveImage)ModelFactory.createImage(key, smallBodyModel, false);
 
             image.loadFootprint();
             if (image.getUnshiftedFootprint().GetNumberOfCells() == 0)
@@ -250,7 +250,7 @@ abstract public class DatabaseGeneratorBaseSql
             keyName = keyName.replace(".FIT", "");
             keyName = keyName.replace(".fit", "");
             ImageKey key = new ImageKey(keyName, imageSource);
-            PerspectiveImage image = (PerspectiveImage)ModelFactory.createImage(key, smallBodyModel, false, rootFolder);
+            PerspectiveImage image = (PerspectiveImage)ModelFactory.createImage(key, smallBodyModel, false);
 
             image.loadFootprint();
             footprintPolyData.DeepCopy(image.getUnshiftedFootprint());

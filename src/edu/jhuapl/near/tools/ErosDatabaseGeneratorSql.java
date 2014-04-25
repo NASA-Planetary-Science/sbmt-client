@@ -239,7 +239,7 @@ public class ErosDatabaseGeneratorSql
             String keyName = origFile.getAbsolutePath().replace(rootFolder.getAbsolutePath(), "");
             keyName = keyName.replace(".FIT", "");
             ImageKey key = new ImageKey(keyName, msiSource);
-            MSIImage image = new MSIImage(key, erosModel, false, rootFolder);
+            MSIImage image = new MSIImage(key, erosModel, false);
 
             // Calling this forces the calculation of incidence, emission, phase, and pixel scale
             image.getProperties();
@@ -438,7 +438,7 @@ public class ErosDatabaseGeneratorSql
             String keyName = origFile.getAbsolutePath().replace(rootFolder.getAbsolutePath(), "");
             keyName = keyName.replace(".FIT", "");
             ImageKey key = new ImageKey(keyName, msiSource);
-            MSIImage image = new MSIImage(key, erosModel, false, rootFolder);
+            MSIImage image = new MSIImage(key, erosModel, false);
 
             image.loadFootprint();
             footprintPolyData.DeepCopy(image.getUnshiftedFootprint());
