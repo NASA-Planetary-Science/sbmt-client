@@ -75,6 +75,12 @@ public class FileCache
      *
      * Note the cache mirrors the file hierarchy on the server.
      *
+     * Note also that if the Root URL (as returned by Configuration.getDataRootURL())
+     * begins with "file://", then that means the "server" is not really an http server but
+     * is really the local disk. In such a situation the cache is not used and the file
+     * is returned directly. This is useful for running batch scripts so no http connections
+     * are made.
+     *
      * @param path
      * @return
      */
@@ -83,6 +89,16 @@ public class FileCache
         path = replaceBackslashesWithForwardSlashes(path);
 
         FileInfo fi = new FileInfo();
+
+        // If root URL starts with "file://", return file directly without caching it
+        if (Configuration.getDataRootURL().startsWith(FILE_PREFIX))
+        {
+            File file = new File(Configuration.getDataRootURL().substring(FILE_PREFIX.length()) + path);
+            fi.file = file;
+            if (file.exists())
+                fi.length = file.length();
+            return fi;
+        }
 
         if (offlineMode)
         {
