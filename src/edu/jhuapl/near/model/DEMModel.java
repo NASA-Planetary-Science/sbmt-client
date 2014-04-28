@@ -151,16 +151,16 @@ public class DEMModel extends SmallBodyModel
                 if (i0>=0 && i1>=0 && i2>=0)
                 {
                     idList.SetId(0, i0);
-                    idList.SetId(1, i1);
-                    idList.SetId(2, i2);
+                    idList.SetId(1, i2);
+                    idList.SetId(2, i1);
                     polys.InsertNextCell(idList);
                 }
                 // Add bottom right triangle
                 if (i2>=0 && i1>=0 && i3>=0)
                 {
                     idList.SetId(0, i2);
-                    idList.SetId(1, i1);
-                    idList.SetId(2, i3);
+                    idList.SetId(1, i3);
+                    idList.SetId(2, i1);
                     polys.InsertNextCell(idList);
                 }
             }
