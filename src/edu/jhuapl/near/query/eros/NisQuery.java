@@ -1,4 +1,4 @@
-package edu.jhuapl.near.query;
+package edu.jhuapl.near.query.eros;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,14 +8,15 @@ import org.joda.time.DateTime;
 
 import edu.jhuapl.near.model.PerspectiveImage;
 import edu.jhuapl.near.model.eros.MSIImage;
+import edu.jhuapl.near.query.QueryBase;
 
 
 /**
  * This class provides functions for querying the database.
  */
-public class ErosQuery extends QueryBase
+public class NisQuery extends QueryBase
 {
-    private static ErosQuery ref = null;
+    private static NisQuery ref = null;
 
     private String getNisPath(ArrayList<String> result)
     {
@@ -43,10 +44,10 @@ public class ErosQuery extends QueryBase
         return str;
     }
 
-    public static ErosQuery getInstance()
+    public static NisQuery getInstance()
     {
         if (ref == null)
-            ref = new ErosQuery();
+            ref = new NisQuery();
         return ref;
     }
 
@@ -56,7 +57,7 @@ public class ErosQuery extends QueryBase
         throw new CloneNotSupportedException();
     }
 
-    private ErosQuery()
+    private NisQuery()
     {
     }
 
