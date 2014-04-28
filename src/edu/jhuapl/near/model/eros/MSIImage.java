@@ -112,4 +112,9 @@ public class MSIImage extends PerspectiveImage
         else // CIF
             return 2;
     }
+
+    public String getCameraName()
+    {
+        return "MSI";
+    }
 }
