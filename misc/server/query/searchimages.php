@@ -130,11 +130,12 @@ else
 
     if (count($filterTypes) > 0)
     {
-        $query .= " AND ( ";
+        // Note we need to include filters with id equal to -1 since that
+        // will match cameras with only one filter (which get assigned to -1)
+        $query .= " AND ( filter = -1 ";
         for ($i = 0; $i < count($filterTypes); $i++)
         {
-            if ($i > 0)
-                $query .= " OR ";
+            $query .= " OR ";
             $query .= " filter = " . $filterTypes[$i];
         }
         $query .= " ) ";

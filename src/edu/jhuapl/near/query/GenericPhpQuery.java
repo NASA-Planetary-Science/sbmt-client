@@ -13,15 +13,15 @@ public class GenericPhpQuery extends QueryBase
     private String imagesPath;
     private String tablePrefix;
 
-    private void changePathToFullPath(ArrayList<String> result)
-    {
-        result.set(0, imagesPath + "/" + result.get(0));
-    }
-
     public GenericPhpQuery(String imagesPath, String tablePrefix)
     {
         this.imagesPath = imagesPath;
         this.tablePrefix = tablePrefix.toLowerCase();
+    }
+
+    private void changePathToFullPath(ArrayList<String> result)
+    {
+        result.set(0, imagesPath + "/images/" + result.get(0));
     }
 
     @Override
@@ -47,6 +47,12 @@ public class GenericPhpQuery extends QueryBase
             ImageSource imageSource,
             int limbType)
     {
+        if (imageSource == ImageSource.CORRECTED)
+        {
+            return getResultsFromFileListOnServer(imagesPath + "/sumfiles-corrected/imagelist.txt",
+                    imagesPath + "/images/");
+        }
+
         ArrayList<ArrayList<String>> results = new ArrayList<ArrayList<String>>();
 
         double minIncidence = Math.min(fromIncidence, toIncidence);
@@ -95,7 +101,9 @@ public class GenericPhpQuery extends QueryBase
         for (int i=0; i<userDefined.size(); ++i)
         {
             if (userDefined.get(i))
-                cameras.add(i);
+            {
+                cameras.add(i+1);
+            }
         }
 
         try

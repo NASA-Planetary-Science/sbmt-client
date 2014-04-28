@@ -79,7 +79,9 @@ public class FileCache
      * begins with "file://", then that means the "server" is not really an http server but
      * is really the local disk. In such a situation the cache is not used and the file
      * is returned directly. This is useful for running batch scripts so no http connections
-     * are made.
+     * are made. If the file is gzipped, you will need to manually gunzip (in the same folder)
+     * it in order for the following to work. Remember to leave the gzipped version
+     * in place since otherwise you will break the web server!
      *
      * @param path
      * @return
@@ -93,6 +95,11 @@ public class FileCache
         // If root URL starts with "file://", return file directly without caching it
         if (Configuration.getDataRootURL().startsWith(FILE_PREFIX))
         {
+            // If the file is gzipped, you will need to manually gunzip (in the same folder)
+            // it in order for the following to work. Remember to leave the gzipped version
+            // in place since otherwise you will break the web server!
+            if (path.toLowerCase().endsWith(".gz"))
+                path = path.substring(0, path.length()-3);
             File file = new File(Configuration.getDataRootURL().substring(FILE_PREFIX.length()) + path);
             fi.file = file;
             if (file.exists())

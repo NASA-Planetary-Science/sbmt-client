@@ -20,19 +20,28 @@ import edu.jhuapl.near.model.Image.ImageKey;
 import edu.jhuapl.near.model.Image.ImageSource;
 import edu.jhuapl.near.model.ModelFactory;
 import edu.jhuapl.near.model.PerspectiveImage;
+import edu.jhuapl.near.model.SmallBodyConfig;
+import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelAuthor;
+import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelBody;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.util.Configuration;
 import edu.jhuapl.near.util.FileUtil;
 import edu.jhuapl.near.util.NativeLibraryLoader;
 
-
-abstract public class DatabaseGeneratorBaseSql
+public class DatabaseGeneratorSql
 {
     private SqlManager db = null;
-    private PreparedStatement insertStatement = null;
-    private PreparedStatement insertStatement2 = null;
     private SmallBodyModel smallBodyModel;
-    private vtkPolyData footprintPolyData;
+    private SmallBodyConfig smallBodyConfig;
+    private String betaSuffix = "_beta";
+    private String databasePrefix;
+
+
+    public DatabaseGeneratorSql(SmallBodyConfig smallBodyConfig, String databasePrefix)
+    {
+        this.smallBodyConfig = smallBodyConfig;
+        this.databasePrefix = databasePrefix;
+    }
 
     private void createTables(String tableName)
     {
@@ -51,7 +60,7 @@ abstract public class DatabaseGeneratorBaseSql
 
             db.update(
                     "create table " + tableName + "(" +
-                    "id bigint PRIMARY KEY, " +
+                    "id int PRIMARY KEY, " +
                     "filename char(128), " +
                     "starttime bigint, " +
                     "stoptime bigint, " +
@@ -99,7 +108,7 @@ abstract public class DatabaseGeneratorBaseSql
             db.update(
                     "create table " + tableName + "(" +
                     "id int PRIMARY KEY, " +
-                    "imageid bigint, " +
+                    "imageid int, " +
                     "cubeid int)"
                 );
         } catch (SQLException ex2) {
@@ -116,32 +125,49 @@ abstract public class DatabaseGeneratorBaseSql
     private void populateTables(
             ArrayList<String> imageFiles,
             String tableName,
+            String cubesTableName,
             PerspectiveImage.ImageSource imageSource) throws IOException, SQLException, FitsException
     {
         smallBodyModel.setModelResolution(0);
-        PerspectiveImage.setGenerateFootprint(true);
-        PerspectiveImage.setFootprintIsOnLocalDisk(true);
+
+        PreparedStatement insertStatement = db.preparedStatement(
+                "insert into " + tableName + " values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        PreparedStatement insertStatement2 = db.preparedStatement(
+                "insert into " + cubesTableName + " values (?, ?, ?)");
 
         int count = 0;
+        int cubeTablePrimaryKey = 0;
+        int primaryKey = 0;
 
         for (String filename : imageFiles)
         {
-            boolean filesExist = checkIfAllFilesExist(filename, imageSource);
-            if (filesExist == false)
+
+            System.out.println("\n\nstarting image " + count++ + "  " + filename);
+
+            String keyName = filename;
+            keyName = keyName.replace(".FIT", "");
+            keyName = keyName.replace(".fit", "");
+            ImageKey key = new ImageKey(keyName, imageSource);
+            PerspectiveImage image = null;
+
+            try
+            {
+                image = (PerspectiveImage)ModelFactory.createImage(key, smallBodyModel, false);
+                boolean filesExist = checkIfAllFilesExist(image, imageSource);
+                if (filesExist == false)
+                {
+                    System.out.println("skipping image " + filename);
+                    image.Delete();
+                    System.gc();
+                    System.out.println("deleted " + vtkGlobalJavaHash.GC());
+                    continue;
+                }
+            }
+            catch (Exception e)
             {
                 System.out.println("skipping image " + filename);
                 continue;
             }
-
-            System.out.println("starting image " + count++ + "  " + filename);
-
-            File origFile = new File(filename);
-            File rootFolder = origFile.getParentFile().getParentFile().getParentFile().getParentFile();
-            String keyName = origFile.getAbsolutePath().replace(rootFolder.getAbsolutePath(), "");
-            keyName = keyName.replace(".FIT", "");
-            keyName = keyName.replace(".fit", "");
-            ImageKey key = new ImageKey(keyName, imageSource);
-            PerspectiveImage image = (PerspectiveImage)ModelFactory.createImage(key, smallBodyModel, false);
 
             image.loadFootprint();
             if (image.getUnshiftedFootprint().GetNumberOfCells() == 0)
@@ -158,20 +184,14 @@ abstract public class DatabaseGeneratorBaseSql
             // Calling this forces the calculation of incidence, emission, phase, and pixel scale
             image.getProperties();
 
-            if (insertStatement == null)
-            {
-                insertStatement = db.preparedStatement(
-                    "insert into " + tableName + " values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-            }
-
             DateTime startTime = new DateTime(image.getStartTime(), DateTimeZone.UTC);
             DateTime stopTime = new DateTime(image.getStopTime(), DateTimeZone.UTC);
             // Replace the "T" with a space
             //startTime = startTime.substring(0, 10) + " " + startTime.substring(11, startTime.length());
             //stopTime = stopTime.substring(0, 10) + " " + stopTime.substring(11, stopTime.length());
 
-            System.out.println("id: " + getIdFromImageName(origFile.getName()));
-            System.out.println("filename: " + origFile.getName());
+            System.out.println("id: " + primaryKey);
+            System.out.println("filename: " + new File(filename).getName());
             System.out.println("starttime: " + startTime);
             System.out.println("stoptime: " + stopTime);
             System.out.println("filter: " + image.getFilter());
@@ -189,8 +209,8 @@ abstract public class DatabaseGeneratorBaseSql
             System.out.println("minPhase: " + image.getMinPhase());
             System.out.println("maxPhase: " + image.getMaxPhase());
 
-            insertStatement.setLong(1, getIdFromImageName(origFile.getName()));
-            insertStatement.setString(2, origFile.getName());
+            insertStatement.setInt(1, primaryKey);
+            insertStatement.setString(2, new File(filename).getName());
             insertStatement.setLong(3, startTime.getMillis());
             insertStatement.setLong(4, stopTime.getMillis());
             insertStatement.setByte(5, (byte)image.getFilter());
@@ -211,171 +231,90 @@ abstract public class DatabaseGeneratorBaseSql
             insertStatement.executeUpdate();
 
 
-            image.Delete();
-            System.gc();
-            System.out.println("deleted " + vtkGlobalJavaHash.GC());
-            System.out.println(" ");
-            System.out.println(" ");
-        }
-    }
-
-    private void populateTablesCubes(
-            ArrayList<String> imageFiles,
-            String tableName,
-            PerspectiveImage.ImageSource imageSource) throws SQLException, IOException, FitsException
-    {
-        smallBodyModel.setModelResolution(0);
-        PerspectiveImage.setGenerateFootprint(true);
-        PerspectiveImage.setFootprintIsOnLocalDisk(true);
-
-        int count = 0;
-        for (String filename : imageFiles)
-        {
-            boolean filesExist = checkIfAllFilesExist(filename, imageSource);
-            if (filesExist == false)
-            {
-                System.out.println("skipping image " + filename);
-                continue;
-            }
-
-            System.out.println("\n\nstarting image " + filename);
-
-            File origFile = new File(filename);
-
-            if (footprintPolyData == null)
-                footprintPolyData = new vtkPolyData();
-
-            File rootFolder = origFile.getParentFile().getParentFile().getParentFile().getParentFile();
-            String keyName = origFile.getAbsolutePath().replace(rootFolder.getAbsolutePath(), "");
-            keyName = keyName.replace(".FIT", "");
-            keyName = keyName.replace(".fit", "");
-            ImageKey key = new ImageKey(keyName, imageSource);
-            PerspectiveImage image = (PerspectiveImage)ModelFactory.createImage(key, smallBodyModel, false);
-
-            image.loadFootprint();
-            footprintPolyData.DeepCopy(image.getUnshiftedFootprint());
-
-            if (insertStatement2 == null)
-            {
-                insertStatement2 = db.preparedStatement(
-                        "insert into " + tableName + " values (?, ?, ?)");
-            }
-
+            // Now populate cubes table
+            vtkPolyData footprintPolyData = image.getUnshiftedFootprint();
             TreeSet<Integer> cubeIds = smallBodyModel.getIntersectingCubes(footprintPolyData);
             System.out.println("cubeIds:  " + cubeIds);
             System.out.println("number of cubes: " + cubeIds.size());
-            System.out.println("id: " + count);
+            System.out.println("id: " + cubeTablePrimaryKey);
             System.out.println("number of cells in polydata " + footprintPolyData.GetNumberOfCells());
-
-            for (Integer i : cubeIds)
+            for (Integer cubeid : cubeIds)
             {
-                insertStatement2.setInt(1, count);
-                insertStatement2.setLong(2, getIdFromImageName(origFile.getName()));
-                insertStatement2.setInt(3, i);
+                insertStatement2.setInt(1, cubeTablePrimaryKey);
+                insertStatement2.setInt(2, primaryKey);
+                insertStatement2.setInt(3, cubeid);
 
                 insertStatement2.executeUpdate();
 
-                ++count;
+                ++cubeTablePrimaryKey;
             }
+
+            ++primaryKey;
 
             image.Delete();
             System.gc();
             System.out.println("deleted " + vtkGlobalJavaHash.GC());
+            System.out.println(" ");
+            System.out.println(" ");
         }
     }
 
-    boolean checkIfAllFilesExist(String line, PerspectiveImage.ImageSource source)
+    boolean checkIfAllFilesExist(PerspectiveImage image, PerspectiveImage.ImageSource source)
     {
-        File file = new File(line);
-        if (!file.exists())
+        File fitfile = new File(image.getFitFileFullPath());
+        if (!fitfile.exists())
             return false;
 
         // Check for the sumfile if source is Gaskell
         if (source.equals(ImageSource.GASKELL))
         {
-            File rootdir = (new File(line)).getParentFile().getParentFile();
-            System.out.println(line);
-            String id = (new File(line)).getName();
-            id = id.substring(0, id.length()-4);
-            String name = rootdir.getAbsolutePath() + "/sumfiles/" + id + ".SUM";
-            System.out.println(name);
-            file = new File(name);
-            if (!file.exists())
+            File sumfile = new File(image.getSumfileFullPath());
+            System.out.println(sumfile);
+            if (!sumfile.exists())
                 return false;
 
             // If the sumfile has no landmarks, then ignore it. Sumfiles that have no landmarks
             // are 1296 bytes long or less
-            if (ignoreSumfilesWithNoLandmarks(id))
-            {
-                if (file.length() <= 1296)
-                    return false;
-            }
+            if (sumfile.length() <= 1296)
+                return false;
         }
         else
         {
-            File rootdir = (new File(line)).getParentFile().getParentFile();
-            System.out.println(line);
-            String id = (new File(line)).getName();
-            id = id.substring(0, id.length()-4);
-            String name = rootdir.getAbsolutePath() + "/infofiles/" + id + ".INFO";
-            System.out.println(name);
-            file = new File(name);
-            if (!file.exists())
+            File infofile = new File(image.getInfoFileFullPath());
+            if (!infofile.exists())
                 return false;
         }
 
         return true;
     }
 
-    /**
-     * Subclasses may redefine this to filter out bad files from the list.
-     * By default original file list is returned unchanged.
-     * @param files
-     * @return
-     */
-    private ArrayList<String> removeBadFiles(ArrayList<String> files)
+    String getImagesGaskellTableNames()
     {
-        return files;
+        return databasePrefix.toLowerCase() + "images_gaskell" + betaSuffix;
     }
 
-    /**
-     * Subclasses may redefine this to include images even if they do not
-     * have landmarks
-     */
-    protected boolean ignoreSumfilesWithNoLandmarks(String filename)
+    String getCubesGaskellTableNames()
     {
-        return true;
+        return databasePrefix.toLowerCase() + "cubes_gaskell" + betaSuffix;
     }
 
-
-    abstract String getImagesGaskellTableNames();
-    abstract String getCubesGaskellTableNames();
-    abstract String getImagesPdsTableNames();
-    abstract String getCubesPdsTableNames();
-    abstract SmallBodyModel createSmallBodyModel();
-    abstract long getIdFromImageName(String filename);
-
-    /**
-     * @param args
-     * @throws IOException
-     */
-    public void doMain(String[] args) throws IOException
+    String getImagesPdsTableNames()
     {
-        System.setProperty("java.awt.headless", "true");
+        return databasePrefix.toLowerCase() + "images_pds" + betaSuffix;
+    }
 
-        Configuration.setAPLVersion(true);
+    String getCubesPdsTableNames()
+    {
+        return databasePrefix.toLowerCase() + "cubes_pds" + betaSuffix;
+    }
 
-        NativeLibraryLoader.loadVtkLibraries();
-
-        smallBodyModel = createSmallBodyModel();
-
-        String fileList=args[0];
-        int mode = Integer.parseInt(args[1]);
+    public void run(String fileList, int mode) throws IOException
+    {
+        smallBodyModel = ModelFactory.createSmallBodyModel(smallBodyConfig);
 
         ArrayList<String> files = null;
         try {
             files = FileUtil.getFileLinesAsStringList(fileList);
-            files = removeBadFiles(files);
         } catch (IOException e2) {
             e2.printStackTrace();
             return;
@@ -390,35 +329,36 @@ abstract public class DatabaseGeneratorBaseSql
             return;
         }
 
-        String ImagesGaskellTable = getImagesGaskellTableNames();
-        String CubesGaskellTable = getCubesGaskellTableNames();
-        String ImagesPdsTable = getImagesPdsTableNames();
-        String CubesPdsTable = getCubesPdsTableNames();
+        String imagesGaskellTable = getImagesGaskellTableNames();
+        String cubesGaskellTable = getCubesGaskellTableNames();
+        String imagesPdsTable = getImagesPdsTableNames();
+        String cubesPdsTable = getCubesPdsTableNames();
 
         if (mode == 1 || mode == 0)
-            createTables(ImagesGaskellTable);
-        if (mode == 1 || mode == 0)
-            createTablesCubes(CubesGaskellTable);
+        {
+            createTables(imagesGaskellTable);
+            createTablesCubes(cubesGaskellTable);
+        }
         if (mode == 2 || mode == 0)
-            createTables(ImagesPdsTable);
-        if (mode == 2 || mode == 0)
-            createTablesCubes(CubesPdsTable);
+        {
+            createTables(imagesPdsTable);
+            createTablesCubes(cubesPdsTable);
+        }
 
         try
         {
             if (mode == 1 || mode == 0)
-                populateTables(files, ImagesGaskellTable, Image.ImageSource.GASKELL);
-            if (mode == 1 || mode == 0)
-                populateTablesCubes(files, CubesGaskellTable, Image.ImageSource.GASKELL);
+            {
+                populateTables(files, imagesGaskellTable, cubesGaskellTable, Image.ImageSource.GASKELL);
+            }
             if (mode == 2 || mode == 0)
-                populateTables(files, ImagesPdsTable, Image.ImageSource.PDS);
-            if (mode == 2 || mode == 0)
-                populateTablesCubes(files, CubesPdsTable, Image.ImageSource.PDS);
+            {
+                populateTables(files, imagesPdsTable, cubesPdsTable, Image.ImageSource.PDS);
+            }
         }
         catch (Exception e1) {
             e1.printStackTrace();
         }
-
 
         try
         {
@@ -429,4 +369,68 @@ abstract public class DatabaseGeneratorBaseSql
         }
     }
 
+    private enum RunInfo
+    {
+        EROS(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.EROS, ShapeModelAuthor.GASKELL),
+                "/project/nearsdc/data/GASKELL/EROS/MSI/msiImageList.txt"),
+        ITOKAWA(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.ITOKAWA, ShapeModelAuthor.GASKELL),
+                "/project/nearsdc/data/"),
+        VESTA(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.VESTA, ShapeModelAuthor.GASKELL),
+                "/project/nearsdc/data/"),
+        DEIMOS(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.DEIMOS, ShapeModelAuthor.THOMAS),
+                "/project/nearsdc/data/"),
+        PHOBOS(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.PHOBOS, ShapeModelAuthor.GASKELL),
+                "/project/nearsdc/data/GASKELL/PHOBOS/IMAGING/pdsImageList.txt"),
+        PHOBOSEXPERIMENTAL(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.PHOBOS, ShapeModelAuthor.EXPERIMENTAL),
+                "/project/nearsdc/data/", "phobosexp"),
+        JUPITER(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.JUPITER, null),
+                "/project/nearsdc/data/NEWHORIZONS/JUPITER/IMAGING/imagelist-fullpath.txt"),
+        CALLISTO(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.CALLISTO, null),
+                "/project/nearsdc/data/NEWHORIZONS/CALLISTO/IMAGING/imagelist-fullpath.txt"),
+        EUROPA(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.EUROPA, null),
+                "/project/nearsdc/data/NEWHORIZONS/EUROPA/IMAGING/imagelist-fullpath.txt"),
+        GANYMEDE(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.GANYMEDE, null),
+                "/project/nearsdc/data/NEWHORIZONS/GANYMEDE/IMAGING/imagelist-fullpath.txt"),
+        IO(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.IO, null),
+                "/project/nearsdc/data/NEWHORIZONS/IO/IMAGING/imagelist-fullpath.txt");
+
+        public final SmallBodyConfig config;
+        public final String pathToFileList;
+        public final String databasePrefix;
+
+        private RunInfo(SmallBodyConfig config, String pathToFileList)
+        {
+            this.config = config;
+            this.pathToFileList = pathToFileList;
+            this.databasePrefix = config.body.toString().toLowerCase();
+        }
+
+        private RunInfo(SmallBodyConfig config, String pathToFileList, String databasePrefix)
+        {
+            this.config = config;
+            this.pathToFileList = pathToFileList;
+            this.databasePrefix = databasePrefix;
+        }
+    }
+
+    /**
+     * @param args
+     * @throws IOException
+     */
+    public static void main(String[] args) throws IOException
+    {
+        //System.setProperty("java.awt.headless", "true");
+        Configuration.setAPLVersion(true);
+        NativeLibraryLoader.loadVtkLibraries();
+
+        int mode = Integer.parseInt(args[0]);
+
+        for (int i=1; i<args.length; ++i)
+        {
+            String body = args[i];
+            RunInfo ri = RunInfo.valueOf(body.toUpperCase());
+            DatabaseGeneratorSql generator = new DatabaseGeneratorSql(ri.config, ri.databasePrefix);
+            generator.run(ri.pathToFileList, mode);
+        }
+    }
 }

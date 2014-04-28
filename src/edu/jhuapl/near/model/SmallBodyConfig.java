@@ -9,19 +9,9 @@ import java.util.Map;
 import org.joda.time.DateTime;
 
 import edu.jhuapl.near.model.Image.ImageSource;
-import edu.jhuapl.near.query.DeimosQuery;
-import edu.jhuapl.near.query.ErosQuery;
-import edu.jhuapl.near.query.GaspraQuery;
+import edu.jhuapl.near.query.FixedListQuery;
 import edu.jhuapl.near.query.GenericPhpQuery;
-import edu.jhuapl.near.query.IdaQuery;
-import edu.jhuapl.near.query.ItokawaQuery;
-import edu.jhuapl.near.query.LutetiaQuery;
-import edu.jhuapl.near.query.MathildeQuery;
-import edu.jhuapl.near.query.PhobosExperimentalQuery;
-import edu.jhuapl.near.query.PhobosQuery;
 import edu.jhuapl.near.query.QueryBase;
-import edu.jhuapl.near.query.SaturnMoonQuery;
-import edu.jhuapl.near.query.VestaQuery;
 import edu.jhuapl.near.util.Configuration;
 
 /**
@@ -272,7 +262,7 @@ public class SmallBodyConfig
         c.hasLineamentData = true;
         c.imageSearchDefaultStartDate = new GregorianCalendar(2000, 0, 12, 0, 0, 0).getTime();
         c.imageSearchDefaultEndDate = new GregorianCalendar(2001, 1, 13, 0, 0, 0).getTime();
-        c.imageSearchQuery = ErosQuery.getInstance();
+        c.imageSearchQuery = new GenericPhpQuery("/GASKELL/EROS/MSI", "EROS");
         c.imageSearchFilterNames = new String[]{
                 "Filter 1 (550 nm)",
                 "Filter 2 (450 nm)",
@@ -346,7 +336,7 @@ public class SmallBodyConfig
         c.hasLidarData = true;
         c.imageSearchDefaultStartDate = new GregorianCalendar(2005, 8, 1, 0, 0, 0).getTime();
         c.imageSearchDefaultEndDate = new GregorianCalendar(2005, 10, 31, 0, 0, 0).getTime();
-        c.imageSearchQuery = ItokawaQuery.getInstance();
+        c.imageSearchQuery = new GenericPhpQuery("/GASKELL/ITOKAWA/AMICA", "AMICA");
         c.imageSearchFilterNames = new String[]{
                 "Filter ul (381 nm)",
                 "Filter b (429 nm)",
@@ -403,8 +393,8 @@ public class SmallBodyConfig
         c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
         c.hasPerspectiveImages = true;
         c.imageSearchDefaultStartDate = new GregorianCalendar(1976, 6, 24, 0, 0, 0).getTime();
-        c.imageSearchDefaultEndDate = new GregorianCalendar(1989, 2, 26, 0, 0, 0).getTime();
-        c.imageSearchQuery = PhobosQuery.getInstance();
+        c.imageSearchDefaultEndDate = new GregorianCalendar(2011, 6, 7, 0, 0, 0).getTime();
+        c.imageSearchQuery = new GenericPhpQuery("/GASKELL/PHOBOS/IMAGING", "PHOBOS");
         c.imageSearchFilterNames = new String[]{
                 "VSK, Channel 1",
                 "VSK, Channel 2",
@@ -417,7 +407,7 @@ public class SmallBodyConfig
                 "VIS, Red",
         };
         c.imageSearchUserDefinedCheckBoxesNames = new String[]{"Phobos 2", "Viking Orbiter 1-A", "Viking Orbiter 1-B", "Viking Orbiter 2-A", "Viking Orbiter 2-B", "MEX HRSC"};
-        c.imageSearchDefaultMaxSpacecraftDistance = 9000.0;
+        c.imageSearchDefaultMaxSpacecraftDistance = 12000.0;
         c.imageSearchDefaultMaxResolution = 300.0;
         c.imageSearchImageSources = new ImageSource[]{ImageSource.GASKELL, ImageSource.PDS};
         c.imageType = ImageType.PHOBOS_IMAGE;
@@ -450,7 +440,7 @@ public class SmallBodyConfig
             c.hasMapmaker = true;
             c.imageSearchDefaultStartDate = new GregorianCalendar(1976, 6, 24, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2011, 6, 7, 0, 0, 0).getTime();
-            c.imageSearchQuery = PhobosExperimentalQuery.getInstance();
+            c.imageSearchQuery = new GenericPhpQuery("/GASKELL/PHOBOSEXPERIMENTAL/IMAGING", "PHOBOSEXP");
             c.imageSearchFilterNames = new String[]{
                     "VSK, Channel 1",
                     "VSK, Channel 2",
@@ -472,7 +462,7 @@ public class SmallBodyConfig
                     "MRO HiRISE",
                     "MGS MOC"
             };
-            c.imageSearchDefaultMaxSpacecraftDistance = 9000.0;
+            c.imageSearchDefaultMaxSpacecraftDistance = 12000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
             c.imageSearchImageSources = new ImageSource[]{ImageSource.GASKELL};
             c.imageType = ImageType.PHOBOS_IMAGE;
@@ -494,7 +484,7 @@ public class SmallBodyConfig
             c.hasPerspectiveImages = true;
             c.imageSearchDefaultStartDate = new GregorianCalendar(2007, 0, 8, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2007, 2, 5, 0, 0, 0).getTime();
-            c.imageSearchQuery = new GenericPhpQuery("/NEWHORIZONS/JUPITER/IMAGING/images", "JUPITER");
+            c.imageSearchQuery = new GenericPhpQuery("/NEWHORIZONS/JUPITER/IMAGING", "JUPITER");
             c.imageSearchFilterNames = new String[]{};
             c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
             c.imageSearchDefaultMaxSpacecraftDistance = 1.0e9;
@@ -512,7 +502,7 @@ public class SmallBodyConfig
             c.author = null;
             c.pathOnServer = "/NEWHORIZONS/CALLISTO/shape_res0.vtk.gz";
             c.hasImageMap = true;
-            c.imageSearchQuery = new GenericPhpQuery("/NEWHORIZONS/CALLISTO/IMAGING/images", "CALLISTO");
+            c.imageSearchQuery = new GenericPhpQuery("/NEWHORIZONS/CALLISTO/IMAGING", "CALLISTO");
             configArray.add(c);
 
             c = c.clone();
@@ -523,7 +513,7 @@ public class SmallBodyConfig
             c.author = null;
             c.pathOnServer = "/NEWHORIZONS/EUROPA/shape_res0.vtk.gz";
             c.hasImageMap = true;
-            c.imageSearchQuery = new GenericPhpQuery("/NEWHORIZONS/EUROPA/IMAGING/images", "EUROPA");
+            c.imageSearchQuery = new GenericPhpQuery("/NEWHORIZONS/EUROPA/IMAGING", "EUROPA");
             configArray.add(c);
 
             c = c.clone();
@@ -534,7 +524,7 @@ public class SmallBodyConfig
             c.author = null;
             c.pathOnServer = "/NEWHORIZONS/GANYMEDE/shape_res0.vtk.gz";
             c.hasImageMap = true;
-            c.imageSearchQuery = new GenericPhpQuery("/NEWHORIZONS/GANYMEDE/IMAGING/images", "GANYMEDE");
+            c.imageSearchQuery = new GenericPhpQuery("/NEWHORIZONS/GANYMEDE/IMAGING", "GANYMEDE");
             configArray.add(c);
 
             c = c.clone();
@@ -545,7 +535,7 @@ public class SmallBodyConfig
             c.author = null;
             c.pathOnServer = "/NEWHORIZONS/IO/shape_res0.vtk.gz";
             c.hasImageMap = true;
-            c.imageSearchQuery = new GenericPhpQuery("/NEWHORIZONS/IO/IMAGING/images", "IO");
+            c.imageSearchQuery = new GenericPhpQuery("/NEWHORIZONS/IO/IMAGING", "IO");
             configArray.add(c);
         }
 
@@ -570,7 +560,7 @@ public class SmallBodyConfig
         c.hasPerspectiveImages = true;
         c.imageSearchDefaultStartDate = new GregorianCalendar(1980, 10, 10, 0, 0, 0).getTime();
         c.imageSearchDefaultEndDate = new GregorianCalendar(2011, 0, 31, 0, 0, 0).getTime();
-        c.imageSearchQuery = new SaturnMoonQuery("/GASKELL/MIMAS/IMAGING");
+        c.imageSearchQuery = new FixedListQuery("/GASKELL/MIMAS/IMAGING");
         c.imageSearchFilterNames = new String[]{};
         c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
         c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
@@ -592,7 +582,7 @@ public class SmallBodyConfig
         c.hasPerspectiveImages = true;
         c.imageSearchDefaultStartDate = new GregorianCalendar(1980, 10, 10, 0, 0, 0).getTime();
         c.imageSearchDefaultEndDate = new GregorianCalendar(2011, 0, 31, 0, 0, 0).getTime();
-        c.imageSearchQuery = new SaturnMoonQuery("/GASKELL/PHOEBE/IMAGING");
+        c.imageSearchQuery = new FixedListQuery("/GASKELL/PHOEBE/IMAGING");
         c.imageSearchFilterNames = new String[]{};
         c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
         c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
@@ -616,7 +606,7 @@ public class SmallBodyConfig
             c.hasPerspectiveImages = true;
             c.imageSearchDefaultStartDate = new GregorianCalendar(2011, 4, 3, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2012, 7, 27, 0, 0, 0).getTime();
-            c.imageSearchQuery = VestaQuery.getInstance();
+            c.imageSearchQuery = new GenericPhpQuery("/GASKELL/VESTA/FC", "FC");
             c.imageSearchFilterNames = new String[]{
                     "Filter 1 (735 nm)",
                     "Filter 2 (548 nm)",
@@ -656,7 +646,7 @@ public class SmallBodyConfig
         c.hasPerspectiveImages = true;
         c.imageSearchDefaultStartDate = new GregorianCalendar(1993, 7, 28, 0, 0, 0).getTime();
         c.imageSearchDefaultEndDate = new GregorianCalendar(1993, 7, 29, 0, 0, 0).getTime();
-        c.imageSearchQuery = IdaQuery.getInstance();
+        c.imageSearchQuery = new FixedListQuery("/THOMAS/IDA/SSI");
         c.imageSearchFilterNames = new String[]{};
         c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
         c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
@@ -687,7 +677,7 @@ public class SmallBodyConfig
         c.hasPerspectiveImages = true;
         c.imageSearchDefaultStartDate = new GregorianCalendar(1991, 9, 29, 0, 0, 0).getTime();
         c.imageSearchDefaultEndDate = new GregorianCalendar(1991, 9, 30, 0, 0, 0).getTime();
-        c.imageSearchQuery = GaspraQuery.getInstance();
+        c.imageSearchQuery = new FixedListQuery("/THOMAS/GASPRA/SSI");
         c.imageSearchFilterNames = new String[]{};
         c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
         c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
@@ -718,7 +708,7 @@ public class SmallBodyConfig
         c.hasPerspectiveImages = true;
         c.imageSearchDefaultStartDate = new GregorianCalendar(1997, 5, 27, 0, 0, 0).getTime();
         c.imageSearchDefaultEndDate = new GregorianCalendar(1997, 5, 28, 0, 0, 0).getTime();
-        c.imageSearchQuery = MathildeQuery.getInstance();
+        c.imageSearchQuery = new FixedListQuery("/THOMAS/MATHILDE/MSI");
         c.imageSearchFilterNames = new String[]{
                 "Filter 1 (550 nm)",
                 "Filter 2 (450 nm)",
@@ -747,7 +737,7 @@ public class SmallBodyConfig
         c.hasPerspectiveImages = true;
         c.imageSearchDefaultStartDate = new GregorianCalendar(1976, 7, 16, 0, 0, 0).getTime();
         c.imageSearchDefaultEndDate = new GregorianCalendar(2011, 7, 10, 0, 0, 0).getTime();
-        c.imageSearchQuery = DeimosQuery.getInstance();
+        c.imageSearchQuery = new GenericPhpQuery("/THOMAS/DEIMOS/IMAGING", "DEIMOS");
         c.imageSearchFilterNames = new String[]{
                 "VIS, Blue",
                 "VIS, Minus Blue",
@@ -981,7 +971,7 @@ public class SmallBodyConfig
             c.hasPerspectiveImages = true;
             c.imageSearchDefaultStartDate = new GregorianCalendar(2010, 6, 10, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2010, 6, 11, 0, 0, 0).getTime();
-            c.imageSearchQuery = LutetiaQuery.getInstance();
+            c.imageSearchQuery = new FixedListQuery("/GASKELL/LUTETIA/IMAGING");
             c.imageSearchFilterNames = new String[]{};
             c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
             c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
@@ -1031,7 +1021,7 @@ public class SmallBodyConfig
         c.hasPerspectiveImages = true;
         c.imageSearchDefaultStartDate = new GregorianCalendar(1980, 10, 10, 0, 0, 0).getTime();
         c.imageSearchDefaultEndDate = new GregorianCalendar(2011, 0, 31, 0, 0, 0).getTime();
-        c.imageSearchQuery = new SaturnMoonQuery("/GASKELL/DIONE/IMAGING");
+        c.imageSearchQuery = new FixedListQuery("/GASKELL/DIONE/IMAGING");
         c.imageSearchFilterNames = new String[]{};
         c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
         c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
