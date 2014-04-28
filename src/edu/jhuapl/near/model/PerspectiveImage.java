@@ -142,10 +142,6 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     // If false, then the footprint is downloaded from the server. This setting is used by the GUI.
     private static boolean generateFootprint = true;
 
-    // If true the footprint will be loaded from the local disk rather than being
-    // downloaded from from the server
-    private static boolean footprintIsOnLocalDisk = false;
-
     /**
      * If loadPointingOnly is true then only pointing information about this
      * image will be downloaded/loaded. The image itself will not be loaded.
@@ -626,11 +622,6 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         generateFootprint = b;
     }
 
-    public static void setFootprintIsOnLocalDisk(boolean b)
-    {
-        footprintIsOnLocalDisk = b;
-    }
-
     public ArrayList<vtkProp> getProps()
     {
         if (footprintActor == null)
@@ -1071,25 +1062,12 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
             String footprintFilename = null;
             File file = null;
 
-            if (footprintIsOnLocalDisk)
-            {
-                String fullpath = getFitFileFullPath();
-                if (key.source == ImageSource.PDS)
-                    footprintFilename = fullpath.substring(0, fullpath.length()-4) + "_FOOTPRINT_RES" + resolutionLevel + "_PDS.VTP";
-                else
-                    footprintFilename = fullpath.substring(0, fullpath.length()-4) + "_FOOTPRINT_RES" + resolutionLevel + "_GASKELL.VTP";
-
-                file = new File(footprintFilename);
-            }
+            if (key.source == ImageSource.PDS)
+                footprintFilename = key.name + "_FOOTPRINT_RES" + resolutionLevel + "_PDS.VTP";
             else
-            {
-                if (key.source == ImageSource.PDS)
-                    footprintFilename = key.name + "_FOOTPRINT_RES" + resolutionLevel + "_PDS.VTP";
-                else
-                    footprintFilename = key.name + "_FOOTPRINT_RES" + resolutionLevel + "_GASKELL.VTP";
+                footprintFilename = key.name + "_FOOTPRINT_RES" + resolutionLevel + "_GASKELL.VTP";
 
-                file = FileCache.getFileFromServer(footprintFilename);
-            }
+            file = FileCache.getFileFromServer(footprintFilename);
 
             if (file == null || !file.exists())
             {

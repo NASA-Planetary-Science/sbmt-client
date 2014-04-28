@@ -24,7 +24,6 @@ import edu.jhuapl.near.model.LidarBrowseDataCollection;
 import edu.jhuapl.near.model.LidarBrowseDataCollection.LidarDataFileSpec;
 import edu.jhuapl.near.model.ModelFactory;
 import edu.jhuapl.near.model.ModelNames;
-import edu.jhuapl.near.model.PerspectiveImage;
 import edu.jhuapl.near.model.SmallBodyConfig;
 import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelAuthor;
 import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelBody;
@@ -385,8 +384,6 @@ public class CompareGaskellAndNLR
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        PerspectiveImage.setFootprintIsOnLocalDisk(true);
 
         doComparison(msiFiles, smallBodyModel, "results-260-220.csv", 0, 0);
         doComparison(msiFiles, smallBodyModel, "results-260-221.csv", 0, 1);
