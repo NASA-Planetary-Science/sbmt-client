@@ -489,7 +489,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         toPhaseTextField = new javax.swing.JFormattedTextField();
         endPhaseLabel = new javax.swing.JLabel();
         jPanel4 = new javax.swing.JPanel();
-        searchByNumberCheckBox = new javax.swing.JCheckBox();
+        searchByFilenameCheckBox = new javax.swing.JCheckBox();
         searchByNumberTextField = new javax.swing.JFormattedTextField();
         jPanel5 = new javax.swing.JPanel();
         clearRegionButton = new javax.swing.JButton();
@@ -974,17 +974,17 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
         jPanel4.setLayout(new java.awt.GridBagLayout());
 
-        searchByNumberCheckBox.setText("Search by ID");
-        searchByNumberCheckBox.addItemListener(new java.awt.event.ItemListener() {
+        searchByFilenameCheckBox.setText("Search by Filename");
+        searchByFilenameCheckBox.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                searchByNumberCheckBoxItemStateChanged(evt);
+                searchByFilenameCheckBoxItemStateChanged(evt);
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        jPanel4.add(searchByNumberCheckBox, gridBagConstraints);
+        jPanel4.add(searchByFilenameCheckBox, gridBagConstraints);
 
         searchByNumberTextField.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -1431,8 +1431,8 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
     }//GEN-LAST:event_endSpinnerStateChanged
 
-    private void searchByNumberCheckBoxItemStateChanged(java.awt.event.ItemEvent evt)//GEN-FIRST:event_searchByNumberCheckBoxItemStateChanged
-    {//GEN-HEADEREND:event_searchByNumberCheckBoxItemStateChanged
+    private void searchByFilenameCheckBoxItemStateChanged(java.awt.event.ItemEvent evt)//GEN-FIRST:event_searchByFilenameCheckBoxItemStateChanged
+    {//GEN-HEADEREND:event_searchByFilenameCheckBoxItemStateChanged
         boolean enable = evt.getStateChange() == ItemEvent.SELECTED;
         searchByNumberTextField.setEnabled(enable);
         startDateLabel.setEnabled(!enable);
@@ -1484,7 +1484,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         toPhaseLabel.setEnabled(!enable);
         toPhaseTextField.setEnabled(!enable);
         endPhaseLabel.setEnabled(!enable);
-    }//GEN-LAST:event_searchByNumberCheckBoxItemStateChanged
+    }//GEN-LAST:event_searchByFilenameCheckBoxItemStateChanged
 
     private void selectRegionButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_selectRegionButtonActionPerformed
     {//GEN-HEADEREND:event_selectRegionButtonActionPerformed
@@ -1635,7 +1635,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             }
 
             String searchField = null;
-            if (searchByNumberCheckBox.isSelected())
+            if (searchByFilenameCheckBox.isSelected())
                 searchField = searchByNumberTextField.getText();
 
             GregorianCalendar startDateGreg = new GregorianCalendar();
@@ -1862,7 +1862,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     private javax.swing.JButton removeColorImageButton;
     private javax.swing.JList resultList;
     private javax.swing.JLabel resultsLabel;
-    private javax.swing.JCheckBox searchByNumberCheckBox;
+    private javax.swing.JCheckBox searchByFilenameCheckBox;
     private javax.swing.JFormattedTextField searchByNumberTextField;
     private javax.swing.JToggleButton selectRegionButton;
     private javax.swing.JComboBox sourceComboBox;

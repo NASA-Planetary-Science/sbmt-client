@@ -590,12 +590,12 @@
 
               <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout"/>
               <SubComponents>
-                <Component class="javax.swing.JCheckBox" name="searchByNumberCheckBox">
+                <Component class="javax.swing.JCheckBox" name="searchByFilenameCheckBox">
                   <Properties>
-                    <Property name="text" type="java.lang.String" value="Search by ID"/>
+                    <Property name="text" type="java.lang.String" value="Search by Filename"/>
                   </Properties>
                   <Events>
-                    <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="searchByNumberCheckBoxItemStateChanged"/>
+                    <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="searchByFilenameCheckBoxItemStateChanged"/>
                   </Events>
                   <Constraints>
                     <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
