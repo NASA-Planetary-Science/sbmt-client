@@ -29,8 +29,8 @@ public class GenericPhpQuery extends QueryBase
             String type,
             DateTime startDate,
             DateTime stopDate,
-            ArrayList<Integer> filters,
-            ArrayList<Boolean> userDefined,
+            ArrayList<Boolean> filtersChecked,
+            ArrayList<Boolean> camerasChecked,
             double startDistance,
             double stopDistance,
             double startResolution,
@@ -97,14 +97,27 @@ public class GenericPhpQuery extends QueryBase
             return results;
         }
 
-        ArrayList<Integer> cameras = new ArrayList<Integer>();
-        for (int i=0; i<userDefined.size(); ++i)
+        ArrayList<Integer> filters = new ArrayList<Integer>();
+        for (int i=0; i<filtersChecked.size(); ++i)
         {
-            if (userDefined.get(i))
+            if (filtersChecked.get(i))
+            {
+                filters.add(i+1);
+            }
+        }
+        if (!filtersChecked.isEmpty() && filters.isEmpty())
+            return results;
+
+        ArrayList<Integer> cameras = new ArrayList<Integer>();
+        for (int i=0; i<camerasChecked.size(); ++i)
+        {
+            if (camerasChecked.get(i))
             {
                 cameras.add(i+1);
             }
         }
+        if (!camerasChecked.isEmpty() && cameras.isEmpty())
+            return results;
 
         try
         {

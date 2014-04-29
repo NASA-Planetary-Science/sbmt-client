@@ -1626,12 +1626,11 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             selectRegionButton.setSelected(false);
             pickManager.setPickMode(PickMode.DEFAULT);
 
-            ArrayList<Integer> filtersChecked = new ArrayList<Integer>();
+            ArrayList<Boolean> filtersChecked = new ArrayList<Boolean>();
             int numberOfFilters = getNumberOfFiltersActuallyUsed();
             for (int i=0; i<numberOfFilters; ++i)
             {
-                if (filterCheckBoxes[i].isSelected())
-                    filtersChecked.add(i+1);
+                filtersChecked.add(filterCheckBoxes[i].isSelected());
             }
 
             String searchField = null;
