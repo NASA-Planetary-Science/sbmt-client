@@ -435,6 +435,37 @@ public class DefaultPicker extends Picker
             else if ('z' == keyChar)
                 renderer.setCameraOrientationInDirectionOfAxis(AxisType.POSITIVE_Z, false);
         }
+        else if (keyCode == KeyEvent.VK_N &&
+                 renWin.getIren().GetInteractorStyle() != null)
+      {
+            // The following spins the view along the boresight of the current
+            // camera so that the Z axis of the body is up.
+            renWin.lock();
+            vtkCamera activeCamera = renWin.GetRenderer().GetActiveCamera();
+            double[] position = activeCamera.GetPosition();
+            double[] focalPoint = activeCamera.GetFocalPoint();
+            double viewAngle = renderer.getCameraViewAngle();
+
+            double[] dir = {focalPoint[0]-position[0],
+                    focalPoint[1]-position[1],
+                    focalPoint[2]-position[2]
+            };
+            MathUtil.vhat(dir, dir);
+
+            double[] zAxis = {0.0, 0.0, 1.0};
+            double[] upVector = new double[3];
+            MathUtil.vcrss(dir, zAxis, upVector);
+
+            if (upVector[0] != 0.0 || upVector[1] != 0.0 || upVector[2] != 0.0)
+            {
+                MathUtil.vcrss(upVector, dir, upVector);
+                renderer.setCameraOrientation(position, focalPoint, upVector, viewAngle);
+            }
+
+            renWin.unlock();
+            renWin.resetCameraClippingRange();
+            renWin.Render();
+      }
     }
 
 }
