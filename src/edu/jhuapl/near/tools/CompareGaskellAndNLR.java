@@ -287,21 +287,19 @@ public class CompareGaskellAndNLR
         out.write("Image ID,Image Range (km),Lidar Range (km),Image Time (UTC), Lidar Time (UTC), Range Diff (km), Time Diff (sec), X-image (km), Y-image (km), Z-image (km), X-lidar (km), Y-lidar (km), Z-lidar (km)\n");
 
         int count = 1;
-        for (String filename : msiFiles)
+        for (String keyName : msiFiles)
         {
-            System.out.println("starting msi " + (count++) + " / " + msiFiles.size() + " " + filename + "\n");
+            System.out.println("starting msi " + (count++) + " / " + msiFiles.size() + " " + keyName + "\n");
 
-            File origFile = new File(filename);
+            keyName = keyName.replace(".FIT", "");
+            ImageKey key = new ImageKey(keyName, ImageSource.GASKELL);
+            MSIImage image = new MSIImage(key, smallBodyModel, true);
 
             // If the sumfile has no landmarks, then ignore it. Sumfiles that have no landmarks
             // are 1153 bytes long or less
-            if (origFile.length() <= 1153)
+            File sumfile = new File(image.getSumfileFullPath());
+            if (!sumfile.exists() || sumfile.length() <= 1153)
                 continue;
-
-            File rootFolder = origFile.getParentFile().getParentFile().getParentFile().getParentFile().getParentFile();
-            String keyName = origFile.getAbsolutePath().replace(rootFolder.getAbsolutePath(), "");
-            ImageKey key = new ImageKey(keyName, ImageSource.GASKELL);
-            MSIImage image = new MSIImage(key, smallBodyModel, true);
 
             String startTimeStr = image.getStartTime();
             String stopTimeStr = image.getStopTime();
@@ -390,5 +388,13 @@ public class CompareGaskellAndNLR
         doComparison(msiFiles, smallBodyModel, "results-260-219.csv", 0, -1);
         doComparison(msiFiles, smallBodyModel, "results-259-220.csv", 1, 0);
         doComparison(msiFiles, smallBodyModel, "results-261-220.csv", -1, 0);
+        doComparison(msiFiles, smallBodyModel, "results-259-221.csv", 1, 1);
+        doComparison(msiFiles, smallBodyModel, "results-261-221.csv", -1, 1);
+        doComparison(msiFiles, smallBodyModel, "results-260-222.csv", 0, 2);
+        doComparison(msiFiles, smallBodyModel, "results-259-222.csv", 1, 2);
+        doComparison(msiFiles, smallBodyModel, "results-261-222.csv", -1, 2);
+        doComparison(msiFiles, smallBodyModel, "results-259-223.csv", 1, 3);
+        doComparison(msiFiles, smallBodyModel, "results-260-223.csv", 0, 3);
+        doComparison(msiFiles, smallBodyModel, "results-261-223.csv", -1, 3);
     }
 }
