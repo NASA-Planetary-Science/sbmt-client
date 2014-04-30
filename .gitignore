@@ -4,3 +4,4 @@ nbbuild
 nbproject/private
 *.pyc
 CMakeLists.txt.user
+.DS_Store
