@@ -601,7 +601,7 @@ public class PolyDataUtil
         // If the number of points are too small, then vtkExtractPolyDataGeometry
         // as used here might fail, so skip this part (which is just an optimization
         // not really needed when the points are few) in this case.
-        if (polyData.GetNumberOfPoints() >= 10000)
+        if (polyData.GetNumberOfPoints() >= 20000)
         {
             // Reduce the size of the polydata we need to process by only
             // considering cells within 1.2 times the radius. We make sure,
