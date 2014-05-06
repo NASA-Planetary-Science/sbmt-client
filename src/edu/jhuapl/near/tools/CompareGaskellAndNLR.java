@@ -396,5 +396,8 @@ public class CompareGaskellAndNLR
         doComparison(msiFiles, smallBodyModel, "results-259-223.csv", 1, 3);
         doComparison(msiFiles, smallBodyModel, "results-260-223.csv", 0, 3);
         doComparison(msiFiles, smallBodyModel, "results-261-223.csv", -1, 3);
+        doComparison(msiFiles, smallBodyModel, "results-259-224.csv", 1, 4);
+        doComparison(msiFiles, smallBodyModel, "results-260-224.csv", 0, 4);
+        doComparison(msiFiles, smallBodyModel, "results-261-224.csv", -1, 4);
     }
 }
