@@ -124,6 +124,66 @@ Body Mapping Tool and where they were obtained from.
     V2.0. EAR-A-5-DDR-RADARSHAPE-MODELS-V2.0, NASA Planetary Data
     System, 2004.)
 
+### 54509 YORP (Hudson)
+
+-   [http://echo.jpl.nasa.gov/asteroids/shapes/shapes.html](http://echo.jpl.nasa.gov/asteroids/shapes/shapes.html)
+
+### 33342 1998 WT24 (Hudson)
+
+-   [http://echo.jpl.nasa.gov/asteroids/shapes/shapes.html](http://echo.jpl.nasa.gov/asteroids/shapes/shapes.html)
+
+### 10115 1992 SK (Hudson)
+
+-   [http://echo.jpl.nasa.gov/asteroids/shapes/shapes.html](http://echo.jpl.nasa.gov/asteroids/shapes/shapes.html)
+
+### 2100 Ra-Shalom (Hudson)
+
+-   [http://echo.jpl.nasa.gov/asteroids/shapes/shapes.html](http://echo.jpl.nasa.gov/asteroids/shapes/shapes.html)
+
+### 4660 Nereus (Hudson)
+
+-   [http://echo.jpl.nasa.gov/asteroids/shapes/shapes.html](http://echo.jpl.nasa.gov/asteroids/shapes/shapes.html)
+
+### 4486 Mithra (Hudson)
+
+-   [http://echo.jpl.nasa.gov/asteroids/shapes/shapes.html](http://echo.jpl.nasa.gov/asteroids/shapes/shapes.html)
+
+### 66391 1999 KW4 Alpha (Hudson)
+
+-   [http://echo.jpl.nasa.gov/asteroids/shapes/shapes.html](http://echo.jpl.nasa.gov/asteroids/shapes/shapes.html)
+
+### 66391 1999 KW4 Beta (Hudson)
+
+-   [http://echo.jpl.nasa.gov/asteroids/shapes/shapes.html](http://echo.jpl.nasa.gov/asteroids/shapes/shapes.html)
+
+### 8567 1996 HW1 (Hudson)
+
+-   [http://echo.jpl.nasa.gov/asteroids/shapes/shapes.html](http://echo.jpl.nasa.gov/asteroids/shapes/shapes.html)
+
+### 2008 EV5 (Hudson)
+
+-   [http://echo.jpl.nasa.gov/asteroids/shapes/shapes.html](http://echo.jpl.nasa.gov/asteroids/shapes/shapes.html)
+
+### 2002 CE26 Alpha (Hudson)
+
+-   [http://echo.jpl.nasa.gov/asteroids/shapes/shapes.html](http://echo.jpl.nasa.gov/asteroids/shapes/shapes.html)
+
+### 136617 1994 CC Alpha (Hudson)
+
+-   [http://echo.jpl.nasa.gov/asteroids/shapes/shapes.html](http://echo.jpl.nasa.gov/asteroids/shapes/shapes.html)
+
+### 1580 Betulia (Hudson)
+
+-   [http://echo.jpl.nasa.gov/asteroids/shapes/shapes.html](http://echo.jpl.nasa.gov/asteroids/shapes/shapes.html)
+
+### 29075 1950 DA prograde (Hudson)
+
+-   [http://echo.jpl.nasa.gov/asteroids/shapes/shapes.html](http://echo.jpl.nasa.gov/asteroids/shapes/shapes.html)
+
+### 29075 1950 DA retrograde (Hudson)
+
+-   [http://echo.jpl.nasa.gov/asteroids/shapes/shapes.html](http://echo.jpl.nasa.gov/asteroids/shapes/shapes.html)
+
 ### Bennu (Nolan)
 
 -   [http://sbn.psi.edu/pds/resource/bennushape.html](http://sbn.psi.edu/pds/resource/bennushape.html),

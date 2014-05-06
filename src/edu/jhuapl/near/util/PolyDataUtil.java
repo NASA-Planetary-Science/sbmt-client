@@ -3031,7 +3031,8 @@ public class PolyDataUtil
 
             smallBodyReader.Delete();
         }
-        else if (filename.toLowerCase().endsWith(".obj"))
+        else if (filename.toLowerCase().endsWith(".obj") ||
+                filename.toLowerCase().endsWith(".wf"))
         {
             vtkOBJReader smallBodyReader = new vtkOBJReader();
             smallBodyReader.SetFileName(filename);

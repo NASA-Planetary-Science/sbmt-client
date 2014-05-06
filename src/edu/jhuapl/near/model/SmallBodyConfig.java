@@ -73,7 +73,22 @@ public class SmallBodyConfig
         HYDRA("Hydra"),
         KERBEROS("Kerberos"),
         NIX("Nix"),
-        STYX("Styx");
+        STYX("Styx"),
+        _1950DAPROGRADE("1950 DA Prograde"),
+        _1950DARETROGRADE("1950 DA Retrograde"),
+        BETULIA("Betulia"),
+        CCALPHA("1994 CC Alpha"),
+        CE26("CE26 Alpha"),
+        EV5("EV5"),
+        HW1("1996 HW1"),
+        KW4A("KW4 Alpha"),
+        KW4B("KW4 Beta"),
+        MITHRA("Mithra"),
+        NEREUS("Nereus"),
+        RASHALOM("Ra-Shalom"),
+        SK("SK"),
+        WT24("WT24"),
+        YORP("YORP");
 
         final private String str;
         private ShapeModelBody(String str)
@@ -914,6 +929,156 @@ public class SmallBodyConfig
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
         c.author = ShapeModelAuthor.HUDSON;
         c.pathOnServer = "/HUDSON/GOLEVKA/6489golevka.obj.gz";
+        configArray.add(c);
+
+        c = new SmallBodyConfig();
+        c.body = ShapeModelBody.YORP;
+        c.type = ShapeModelType.ASTEROID;
+        c.population = ShapeModelPopulation.NEO;
+        c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
+        c.author = ShapeModelAuthor.HUDSON;
+        c.pathOnServer = "/HUDSON/YORP/yorp.obj.gz";
+        c.hasColoringData = false;
+        configArray.add(c);
+
+        c = new SmallBodyConfig();
+        c.body = ShapeModelBody.WT24;
+        c.type = ShapeModelType.ASTEROID;
+        c.population = ShapeModelPopulation.NEO;
+        c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
+        c.author = ShapeModelAuthor.HUDSON;
+        c.pathOnServer = "/HUDSON/WT24/wt24.obj.gz";
+        c.hasColoringData = false;
+        configArray.add(c);
+
+        c = new SmallBodyConfig();
+        c.body = ShapeModelBody.SK;
+        c.type = ShapeModelType.ASTEROID;
+        c.population = ShapeModelPopulation.NEO;
+        c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
+        c.author = ShapeModelAuthor.HUDSON;
+        c.pathOnServer = "/HUDSON/SK/sk.obj.gz";
+        c.hasColoringData = false;
+        configArray.add(c);
+
+        c = new SmallBodyConfig();
+        c.body = ShapeModelBody.RASHALOM;
+        c.type = ShapeModelType.ASTEROID;
+        c.population = ShapeModelPopulation.NEO;
+        c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
+        c.author = ShapeModelAuthor.HUDSON;
+        c.pathOnServer = "/HUDSON/RASHALOM/rashalom.obj.gz";
+        c.hasColoringData = false;
+        configArray.add(c);
+
+        c = new SmallBodyConfig();
+        c.body = ShapeModelBody.NEREUS;
+        c.type = ShapeModelType.ASTEROID;
+        c.population = ShapeModelPopulation.NEO;
+        c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
+        c.author = ShapeModelAuthor.HUDSON;
+        c.pathOnServer = "/HUDSON/NEREUS/Nereus_alt1.mod.wf.gz";
+        c.hasColoringData = false;
+        configArray.add(c);
+
+        c = new SmallBodyConfig();
+        c.body = ShapeModelBody.MITHRA;
+        c.type = ShapeModelType.ASTEROID;
+        c.population = ShapeModelPopulation.NEO;
+        c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
+        c.author = ShapeModelAuthor.HUDSON;
+        c.pathOnServer = "/HUDSON/MITHRA/Mithra.v1.PA.prograde.mod.obj.gz";
+        c.hasColoringData = false;
+        configArray.add(c);
+
+        c = new SmallBodyConfig();
+        c.body = ShapeModelBody.KW4A;
+        c.type = ShapeModelType.ASTEROID;
+        c.population = ShapeModelPopulation.NEO;
+        c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
+        c.author = ShapeModelAuthor.HUDSON;
+        c.pathOnServer = "/HUDSON/KW4A/kw4a.obj.gz";
+        c.hasColoringData = false;
+        configArray.add(c);
+
+        c = new SmallBodyConfig();
+        c.body = ShapeModelBody.KW4B;
+        c.type = ShapeModelType.ASTEROID;
+        c.population = ShapeModelPopulation.NEO;
+        c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
+        c.author = ShapeModelAuthor.HUDSON;
+        c.pathOnServer = "/HUDSON/KW4B/kw4b.obj.gz";
+        c.hasColoringData = false;
+        configArray.add(c);
+
+        c = new SmallBodyConfig();
+        c.body = ShapeModelBody.HW1;
+        c.type = ShapeModelType.ASTEROID;
+        c.population = ShapeModelPopulation.NEO;
+        c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
+        c.author = ShapeModelAuthor.HUDSON;
+        c.pathOnServer = "/HUDSON/HW1/1996hw1.obj.gz";
+        c.hasColoringData = false;
+        configArray.add(c);
+
+        c = new SmallBodyConfig();
+        c.body = ShapeModelBody.EV5;
+        c.type = ShapeModelType.ASTEROID;
+        c.population = ShapeModelPopulation.NEO;
+        c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
+        c.author = ShapeModelAuthor.HUDSON;
+        c.pathOnServer = "/HUDSON/EV5/2008ev5.obj.gz";
+        c.hasColoringData = false;
+        configArray.add(c);
+
+        c = new SmallBodyConfig();
+        c.body = ShapeModelBody.CE26;
+        c.type = ShapeModelType.ASTEROID;
+        c.population = ShapeModelPopulation.NEO;
+        c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
+        c.author = ShapeModelAuthor.HUDSON;
+        c.pathOnServer = "/HUDSON/CE26/ce26.obj.gz";
+        c.hasColoringData = false;
+        configArray.add(c);
+
+        c = new SmallBodyConfig();
+        c.body = ShapeModelBody.CCALPHA;
+        c.type = ShapeModelType.ASTEROID;
+        c.population = ShapeModelPopulation.NEO;
+        c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
+        c.author = ShapeModelAuthor.HUDSON;
+        c.pathOnServer = "/HUDSON/CCALPHA/1994CC_nominal.mod.wf.gz";
+        c.hasColoringData = false;
+        configArray.add(c);
+
+        c = new SmallBodyConfig();
+        c.body = ShapeModelBody.BETULIA;
+        c.type = ShapeModelType.ASTEROID;
+        c.population = ShapeModelPopulation.NEO;
+        c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
+        c.author = ShapeModelAuthor.HUDSON;
+        c.pathOnServer = "/HUDSON/BETULIA/betulia.obj.gz";
+        c.hasColoringData = false;
+        configArray.add(c);
+
+        c = new SmallBodyConfig();
+        c.body = ShapeModelBody._1950DAPROGRADE;
+        c.type = ShapeModelType.ASTEROID;
+        c.population = ShapeModelPopulation.NEO;
+        c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
+        c.author = ShapeModelAuthor.HUDSON;
+        c.pathOnServer = "/HUDSON/1950DAPROGRADE/1950DA_ProgradeModel.wf.gz";
+        c.hasColoringData = false;
+        configArray.add(c);
+
+        c = new SmallBodyConfig();
+        c.body = ShapeModelBody._1950DARETROGRADE;
+        c.type = ShapeModelType.ASTEROID;
+        c.population = ShapeModelPopulation.NEO;
+        c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
+        c.author = ShapeModelAuthor.HUDSON;
+        c.pathOnServer = "/HUDSON/1950DARETROGRADE/1950DA_RetrogradeModel.wf.gz";
+        c.hasColoringData = false;
         configArray.add(c);
 
         c = new SmallBodyConfig();
