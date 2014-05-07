@@ -440,7 +440,6 @@ public class DefaultPicker extends Picker
       {
             // The following spins the view along the boresight of the current
             // camera so that the Z axis of the body is up.
-            renWin.lock();
             vtkCamera activeCamera = renWin.GetRenderer().GetActiveCamera();
             double[] position = activeCamera.GetPosition();
             double[] focalPoint = activeCamera.GetFocalPoint();
@@ -461,10 +460,6 @@ public class DefaultPicker extends Picker
                 MathUtil.vcrss(upVector, dir, upVector);
                 renderer.setCameraOrientation(position, focalPoint, upVector, viewAngle);
             }
-
-            renWin.unlock();
-            renWin.resetCameraClippingRange();
-            renWin.Render();
       }
     }
 
