@@ -1216,6 +1216,19 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
         return lines.get(id).getCentroid();
     }
 
+    @Override
+    public double[] getStructureNormal(int id)
+    {
+        double[] center = getStructureCenter(id);
+        return smallBodyModel.getNormalAtPoint(center);
+    }
+
+    @Override
+    public double getStructureSize(int id)
+    {
+        return lines.get(id).getSize();
+    }
+
     protected StructureModel.Structure createStructure(SmallBodyModel smallBodyModel)
     {
         return new Line(smallBodyModel);

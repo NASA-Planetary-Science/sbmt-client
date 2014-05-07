@@ -12,33 +12,41 @@ import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
+import vtk.vtkCamera;
 import vtk.vtkProp;
+import vtk.vtkRenderWindowPanel;
 
 import edu.jhuapl.near.gui.ChangeLatLonDialog;
 import edu.jhuapl.near.gui.ColorChooser;
 import edu.jhuapl.near.gui.CustomFileChooser;
 import edu.jhuapl.near.gui.Renderer;
+import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.StructureModel;
+import edu.jhuapl.near.util.MathUtil;
 
 abstract public class StructuresPopupMenu extends PopupMenu
 {
     private StructureModel model;
+    private SmallBodyModel smallBodyModel;
     private Renderer renderer;
     private JMenuItem changeLatLonAction;
     private JMenuItem exportPlateDataAction;
     private JMenuItem editAction;
     private JMenuItem centerStructureMenuItem;
+    private JMenuItem centerStructurePreserveDistanceMenuItem;
     private JMenuItem displayInteriorMenuItem;
     private JCheckBoxMenuItem hideMenuItem;
 
     public StructuresPopupMenu(
             StructureModel model,
+            SmallBodyModel smallBodyModel,
             Renderer renderer,
             boolean showChangeLatLon,
             boolean showExportPlateDataInsidePolygon,
             boolean showDisplayInterior)
     {
         this.model = model;
+        this.smallBodyModel = smallBodyModel;
         this.renderer = renderer;
 
         editAction = new JMenuItem(new EditAction());
@@ -57,9 +65,13 @@ abstract public class StructuresPopupMenu extends PopupMenu
         deleteAction.setText("Delete");
         this.add(deleteAction);
 
-        centerStructureMenuItem = new JMenuItem(new CenterStructureAction());
-        centerStructureMenuItem.setText("Center in Window");
+        centerStructureMenuItem = new JMenuItem(new CenterStructureAction(false));
+        centerStructureMenuItem.setText("Center in Window (Close Up)");
         this.add(centerStructureMenuItem);
+
+        centerStructurePreserveDistanceMenuItem = new JMenuItem(new CenterStructureAction(true));
+        centerStructurePreserveDistanceMenuItem.setText("Center in Window (Preserve Distance)");
+        this.add(centerStructurePreserveDistanceMenuItem);
 
         if (showChangeLatLon)
         {
@@ -100,6 +112,9 @@ abstract public class StructuresPopupMenu extends PopupMenu
 
         if (centerStructureMenuItem != null)
             centerStructureMenuItem.setEnabled(exactlyOne);
+
+        if (centerStructurePreserveDistanceMenuItem != null)
+            centerStructurePreserveDistanceMenuItem.setEnabled(exactlyOne);
 
         // If any of the selected structures are not hidden then show
         // the hide menu item as unchecked. Otherwise show it checked.
@@ -197,18 +212,59 @@ abstract public class StructuresPopupMenu extends PopupMenu
 
     private class CenterStructureAction extends AbstractAction
     {
+        private boolean preserveCurrentDistance = false;
+
+        public CenterStructureAction(boolean preserveCurrentDistance)
+        {
+            this.preserveCurrentDistance = preserveCurrentDistance;
+        }
+
         public void actionPerformed(ActionEvent e)
         {
             int[] selectedStructures = model.getSelectedStructures();
             if (selectedStructures.length != 1)
                 return;
 
-            double[] focalPoint = model.getStructureCenter(selectedStructures[0]);
-            double[] spacecraftPosition = {2.0*focalPoint[0], 2.0*focalPoint[1], 2.0*focalPoint[2]};
-            double[] upVector = {0.0, 0.0, 1.0};
             double viewAngle = renderer.getCameraViewAngle();
+            double[] focalPoint = model.getStructureCenter(selectedStructures[0]);
+            double[] normal = model.getStructureNormal(selectedStructures[0]);
+            vtkRenderWindowPanel renWin = renderer.getRenderWindowPanel();
 
-            renderer.setCameraOrientation(spacecraftPosition, focalPoint, upVector, viewAngle);
+            double distanceToStructure = 0.0;
+            if (preserveCurrentDistance)
+            {
+                vtkCamera activeCamera = renWin.GetRenderer().GetActiveCamera();
+                double[] pos = activeCamera.GetPosition();
+                double[] closestPoint = smallBodyModel.findClosestPoint(pos);
+                distanceToStructure = MathUtil.distanceBetween(pos, closestPoint);
+            }
+            else
+            {
+                double size = model.getStructureSize(selectedStructures[0]);
+                distanceToStructure = size / Math.tan(Math.toRadians(viewAngle)/2.0);
+            }
+
+            double[] newPos = {focalPoint[0] + distanceToStructure*normal[0],
+                    focalPoint[1] + distanceToStructure*normal[1],
+                    focalPoint[2] + distanceToStructure*normal[2]
+            };
+
+            // compute up vector
+            double[] dir = {focalPoint[0]-newPos[0],
+                    focalPoint[1]-newPos[1],
+                    focalPoint[2]-newPos[2]
+            };
+            MathUtil.vhat(dir, dir);
+            double[] zAxis = {0.0, 0.0, 1.0};
+            double[] upVector = new double[3];
+            MathUtil.vcrss(dir, zAxis, upVector);
+
+            if (upVector[0] != 0.0 || upVector[1] != 0.0 || upVector[2] != 0.0)
+                MathUtil.vcrss(upVector, dir, upVector);
+            else
+                upVector = new double[]{1.0, 0.0, 0.0};
+
+            renderer.setCameraOrientation(newPos, focalPoint, upVector, viewAngle);
         }
     }
 

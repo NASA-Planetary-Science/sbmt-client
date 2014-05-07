@@ -1181,4 +1181,18 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
     {
         return polygons.get(id).center;
     }
+
+    @Override
+    public double[] getStructureNormal(int id)
+    {
+        double[] center = getStructureCenter(id);
+        return smallBodyModel.getNormalAtPoint(center);
+    }
+
+    @Override
+    public double getStructureSize(int id)
+    {
+        return 2.0*polygons.get(id).radius;
+    }
+
 }
