@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <launchConfiguration type="org.eclipse.jdt.launching.localJavaApplication">
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
-<listEntry value="/near_vis/src/edu/jhuapl/near/tools/SmallBodyMappingToolAPL.java"/>
+<listEntry value="/sbmt/src/edu/jhuapl/near/tools/SmallBodyMappingToolAPL.java"/>
 </listAttribute>
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
 <listEntry value="1"/>
@@ -12,6 +12,6 @@
 </listAttribute>
 <booleanAttribute key="org.eclipse.jdt.launching.ATTR_USE_START_ON_FIRST_THREAD" value="true"/>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="edu.jhuapl.near.tools.SmallBodyMappingToolAPL"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="near_vis"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="sbmt"/>
 <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Djava.library.path=/project/nearsdc/software/vtk_all_platforms/current  -Xmx4096M -Dcom.apple.mrj.application.apple.menu.about.name=&quot;Small Body Mapping Tool&quot;"/>
 </launchConfiguration>
