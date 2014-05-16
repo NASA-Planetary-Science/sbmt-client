@@ -19,6 +19,8 @@ import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
 import nom.tam.fits.FitsException;
 
+import org.apache.commons.math3.geometry.euclidean.threed.Rotation;
+
 import vtk.vtkActor;
 import vtk.vtkCell;
 import vtk.vtkCellArray;
@@ -1598,6 +1600,43 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         }
     }
 
+    /**
+     * Same as previous but return a (4 element) quaternion instead.
+     * First element is the scalar followed by the 3 element vector.
+     * Also returns a rotation matrix.
+     * @param spacecraftPosition
+     * @param quaternion
+     * @return Rotation matrix
+     */
+    public Rotation getCameraOrientation(double[] spacecraftPosition,
+            double[] quaternion)
+    {
+        double[] cx = upVector;
+        double[] cz = new double[3];
+        MathUtil.unorm(boresightDirection, cz);
+
+        double[] cy = new double[3];
+        MathUtil.vcrss(cz, cx, cy);
+
+        double[][] m = {
+                {cx[0], cx[1], cx[2]},
+                {cy[0], cy[1], cy[2]},
+                {cz[0], cz[1], cz[2]}
+        };
+
+        Rotation rotation = new Rotation(m, 1.0e-6);
+
+        for (int i=0; i<3; ++i)
+            spacecraftPosition[i] = this.spacecraftPosition[i];
+
+        quaternion[0] = rotation.getQ0();
+        quaternion[1] = rotation.getQ1();
+        quaternion[2] = rotation.getQ2();
+        quaternion[3] = rotation.getQ3();
+
+        return rotation;
+    }
+
     public Frustum getFrustum()
     {
         return new Frustum(spacecraftPosition, frustum1, frustum3, frustum4, frustum2);
@@ -1787,6 +1826,15 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         properties.put("Start Time", getStartTime());
         properties.put("Stop Time", getStopTime());
         properties.put("Spacecraft Distance", df.format(getSpacecraftDistance()) + " km");
+        properties.put("Spacecraft Position",
+                df.format(spacecraftPosition[0]) + ", " + df.format(spacecraftPosition[1]) + ", " + df.format(spacecraftPosition[2]) + " km");
+        double[] quaternion = new double[4];
+        double[] notused = new double[4];
+        getCameraOrientation(notused, quaternion);
+        properties.put("Spacecraft Orientation (quaternion)",
+                "(" + df.format(quaternion[0]) + ", [" + df.format(quaternion[1]) + ", " + df.format(quaternion[2]) + ", " + df.format(quaternion[3]) + "])");
+        properties.put("Sun Vector",
+                df.format(sunVector[0]) + ", " + df.format(sunVector[1]) + ", " + df.format(sunVector[2]));
         if (getCameraName() != null)
             properties.put("Camera", getCameraName());
         if (getFilterName() != null)
