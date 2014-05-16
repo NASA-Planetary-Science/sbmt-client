@@ -1918,6 +1918,11 @@ public class SmallBodyModel extends Model
         PolyDataUtil.saveShapeModelAsVTK(smallBodyPolyData, file.getAbsolutePath());
     }
 
+    public void saveAsSTL(File file) throws IOException
+    {
+        PolyDataUtil.saveShapeModelAsSTL(smallBodyPolyData, file.getAbsolutePath());
+    }
+
 
     /**
      * Return if this model is an ellipsoid. If so, some operations on ellipsoids

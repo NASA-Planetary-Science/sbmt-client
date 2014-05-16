@@ -39,6 +39,7 @@ import vtk.vtkPolyDataNormals;
 import vtk.vtkPolyDataReader;
 import vtk.vtkPolyDataWriter;
 import vtk.vtkRegularPolygonSource;
+import vtk.vtkSTLWriter;
 import vtk.vtkSphere;
 import vtk.vtkTransform;
 import vtk.vtkTransformPolyDataFilter;
@@ -3187,6 +3188,21 @@ public class PolyDataUtil
 
         vtkPolyDataWriter writer = new vtkPolyDataWriter();
         writer.SetInputConnection(normalsFilter.GetOutputPort());
+        writer.SetFileName(filename);
+        writer.SetFileTypeToBinary();
+        writer.Write();
+    }
+
+    static public void saveShapeModelAsSTL(vtkPolyData polydata, String filename) throws IOException
+    {
+        // First make a copy of polydata and remove all cell and point data since we don't want to save that out
+        vtkPolyData newpolydata = new vtkPolyData();
+        newpolydata.DeepCopy(polydata);
+        newpolydata.GetPointData().Reset();
+        newpolydata.GetCellData().Reset();
+
+        vtkSTLWriter writer = new vtkSTLWriter();
+        writer.SetInput(newpolydata);
         writer.SetFileName(filename);
         writer.SetFileTypeToBinary();
         writer.Write();
