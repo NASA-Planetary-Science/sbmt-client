@@ -290,7 +290,7 @@ public class SmallBodyConfig
         c.imageSearchUserDefinedCheckBoxesNames = new String[]{"iofdbl", "cifdbl"};
         c.imageSearchDefaultMaxSpacecraftDistance = 100.0;
         c.imageSearchDefaultMaxResolution = 50.0;
-        c.imageSearchImageSources = new ImageSource[]{ImageSource.GASKELL, ImageSource.PDS};
+        c.imageSearchImageSources = new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE};
         c.imageType = ImageType.MSI_IMAGE;
         c.imageInstrumentName = Instrument.MSI;
         c.lidarSearchDefaultStartDate = new DateTime(2000, 2, 28, 0, 0, 0, 0).toDate();
@@ -364,7 +364,7 @@ public class SmallBodyConfig
         c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
         c.imageSearchDefaultMaxSpacecraftDistance = 26.0;
         c.imageSearchDefaultMaxResolution = 3.0;
-        c.imageSearchImageSources = new ImageSource[]{ImageSource.GASKELL, ImageSource.PDS, ImageSource.CORRECTED};
+        c.imageSearchImageSources = new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE, ImageSource.CORRECTED};
         c.imageType = ImageType.AMICA_IMAGE;
         c.imageInstrumentName = Instrument.AMICA;
         c.lidarSearchDefaultStartDate = new DateTime(2005, 9, 1, 0, 0, 0, 0).toDate();
@@ -424,7 +424,7 @@ public class SmallBodyConfig
         c.imageSearchUserDefinedCheckBoxesNames = new String[]{"Phobos 2", "Viking Orbiter 1-A", "Viking Orbiter 1-B", "Viking Orbiter 2-A", "Viking Orbiter 2-B", "MEX HRSC"};
         c.imageSearchDefaultMaxSpacecraftDistance = 12000.0;
         c.imageSearchDefaultMaxResolution = 300.0;
-        c.imageSearchImageSources = new ImageSource[]{ImageSource.GASKELL, ImageSource.PDS};
+        c.imageSearchImageSources = new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE};
         c.imageType = ImageType.PHOBOS_IMAGE;
         c.imageInstrumentName = Instrument.IMAGING_DATA;
         configArray.add(c);
@@ -504,7 +504,7 @@ public class SmallBodyConfig
             c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
             c.imageSearchDefaultMaxSpacecraftDistance = 1.0e9;
             c.imageSearchDefaultMaxResolution = 1.0e6;
-            c.imageSearchImageSources = new ImageSource[]{ImageSource.PDS};
+            c.imageSearchImageSources = new ImageSource[]{ImageSource.SPICE};
             c.imageType = ImageType.LORRI_IMAGE;
             c.imageInstrumentName = Instrument.LORRI;
             configArray.add(c);
@@ -635,7 +635,7 @@ public class SmallBodyConfig
             c.imageSearchUserDefinedCheckBoxesNames = new String[]{"FC1", "FC2"};
             c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
             c.imageSearchDefaultMaxResolution = 4000.0;
-            c.imageSearchImageSources = new ImageSource[]{ImageSource.GASKELL, ImageSource.PDS};
+            c.imageSearchImageSources = new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE};
             c.imageType = ImageType.FC_IMAGE;
             c.imageInstrumentName = Instrument.FC;
             configArray.add(c);
@@ -764,7 +764,7 @@ public class SmallBodyConfig
         c.imageSearchUserDefinedCheckBoxesNames = new String[]{"Viking Orbiter 1-A", "Viking Orbiter 1-B", "Viking Orbiter 2-A", "Viking Orbiter 2-B", "MEX HRSC"};
         c.imageSearchDefaultMaxSpacecraftDistance = 30000.0;
         c.imageSearchDefaultMaxResolution = 800.0;
-        c.imageSearchImageSources = new ImageSource[]{ImageSource.PDS, ImageSource.CORRECTED};
+        c.imageSearchImageSources = new ImageSource[]{ImageSource.SPICE, ImageSource.CORRECTED};
         c.imageType = ImageType.DEIMOS_IMAGE;
         c.imageInstrumentName = Instrument.IMAGING_DATA;
         configArray.add(c);

@@ -42,7 +42,7 @@ public class ModelFactory
     {
         SmallBodyConfig config = smallBodyModel.getSmallBodyConfig();
 
-        if (ImageSource.PDS.equals(key.source) ||
+        if (ImageSource.SPICE.equals(key.source) ||
                 ImageSource.GASKELL.equals(key.source) ||
                 ImageSource.CORRECTED.equals(key.source))
         {

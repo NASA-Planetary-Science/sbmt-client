@@ -77,7 +77,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     private JCheckBox[] userDefinedCheckBoxes;
 
     // The source of the images of the most recently executed query
-    private PerspectiveImage.ImageSource sourceOfLastQuery = PerspectiveImage.ImageSource.PDS;
+    private PerspectiveImage.ImageSource sourceOfLastQuery = PerspectiveImage.ImageSource.SPICE;
 
     private ArrayList<ArrayList<String>> imageRawResults = new ArrayList<ArrayList<String>>();
     private ImagePopupMenu imagePopupMenu;
@@ -1615,7 +1615,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     {//GEN-HEADEREND:event_removeAllImagesButtonActionPerformed
         ImageCollection model = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
         model.removeImages(ImageSource.GASKELL);
-        model.removeImages(ImageSource.PDS);
+        model.removeImages(ImageSource.SPICE);
         model.removeImages(ImageSource.CORRECTED);
     }//GEN-LAST:event_removeAllImagesButtonActionPerformed
 
@@ -1713,10 +1713,10 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                     imageSource,
                     hasLimbComboBox.getSelectedIndex());
 
-            // If PDS Derived (exclude Gaskell) or Gaskell Derived (exlude PDS) is selected,
+            // If SPICE Derived (exclude Gaskell) or Gaskell Derived (exlude SPICE) is selected,
             // then remove from the list images which are contained in the other list by doing
             // an additional search.
-            if (imageSource == ImageSource.PDS && excludeGaskellCheckBox.isSelected())
+            if (imageSource == ImageSource.SPICE && excludeGaskellCheckBox.isSelected())
             {
                 ArrayList<ArrayList<String>> resultsOtherSource = smallBodyConfig.imageSearchQuery.runQuery(
                         "",
@@ -1737,7 +1737,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                         Double.parseDouble(fromPhaseTextField.getText()),
                         Double.parseDouble(toPhaseTextField.getText()),
                         cubeList,
-                        imageSource == PerspectiveImage.ImageSource.PDS ? PerspectiveImage.ImageSource.GASKELL : PerspectiveImage.ImageSource.PDS,
+                        imageSource == PerspectiveImage.ImageSource.SPICE ? PerspectiveImage.ImageSource.GASKELL : PerspectiveImage.ImageSource.SPICE,
                         hasLimbComboBox.getSelectedIndex());
 
                 int numOtherResults = resultsOtherSource.size();
@@ -1779,7 +1779,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     private void sourceComboBoxItemStateChanged(java.awt.event.ItemEvent evt)
     {//GEN-FIRST:event_sourceComboBoxItemStateChanged
         ImageSource imageSource = ImageSource.valueOf(((Enum)sourceComboBox.getSelectedItem()).name());
-        excludeGaskellCheckBox.setVisible(imageSource == ImageSource.PDS);
+        excludeGaskellCheckBox.setVisible(imageSource == ImageSource.SPICE);
     }//GEN-LAST:event_sourceComboBoxItemStateChanged
 
     private void numberOfBoundariesComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_numberOfBoundariesComboBoxActionPerformed

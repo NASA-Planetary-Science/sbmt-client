@@ -83,7 +83,7 @@ public class MSIFootprintGenerator
             yearStr = f.getName();
 
             String vtkfile = null;
-            if (msiSource == ImageSource.PDS)
+            if (msiSource == ImageSource.SPICE)
                 vtkfile = filename.substring(0, filename.length()-4) + "_FOOTPRINT_RES" + resolutionLevel + "_PDS.VTP";
             else
                 vtkfile = filename.substring(0, filename.length()-4) + "_FOOTPRINT_RES" + resolutionLevel + "_GASKELL.VTP";
@@ -175,7 +175,7 @@ public class MSIFootprintGenerator
 
         try
         {
-            generateMSIFootprints(msiFiles, ImageSource.PDS);
+            generateMSIFootprints(msiFiles, ImageSource.SPICE);
             generateMSIFootprints(msiFiles, ImageSource.GASKELL);
         }
         catch (Exception e1) {

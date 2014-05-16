@@ -20,10 +20,10 @@ public abstract class Image extends Model implements PropertyChangeListener
 
     public enum ImageSource
     {
-        PDS {
+        SPICE {
             public String toString()
             {
-                return "PDS derived";
+                return "SPICE derived";
             }
         },
         GASKELL {

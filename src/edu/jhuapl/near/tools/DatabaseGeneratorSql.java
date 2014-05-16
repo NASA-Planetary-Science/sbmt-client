@@ -353,7 +353,7 @@ public class DatabaseGeneratorSql
             }
             if (mode == 2 || mode == 0)
             {
-                populateTables(files, imagesPdsTable, cubesPdsTable, Image.ImageSource.PDS);
+                populateTables(files, imagesPdsTable, cubesPdsTable, Image.ImageSource.SPICE);
             }
         }
         catch (Exception e1) {

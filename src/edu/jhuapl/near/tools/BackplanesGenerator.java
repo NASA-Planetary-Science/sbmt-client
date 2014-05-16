@@ -73,7 +73,7 @@ public class BackplanesGenerator
             {
                 try
                 {
-                    key = new ImageKey(filename.replace(".fit", ""), ImageSource.PDS);
+                    key = new ImageKey(filename.replace(".fit", ""), ImageSource.SPICE);
                     image = (PerspectiveImage)ModelFactory.createImage(key, smallBodyModel, false);
                 }
                 catch (Exception e1)
@@ -103,7 +103,7 @@ public class BackplanesGenerator
             String source = "";
             if (key.source == ImageSource.GASKELL)
                 source = "Gaskell";
-            else if (key.source == ImageSource.PDS)
+            else if (key.source == ImageSource.SPICE)
                 source = "SPICE";
 
             String fname = new File(filename).getName();

@@ -76,7 +76,7 @@ public class AmicaBackplanesGenerator
             return false;
 
         // If source is Gaskell, only process it if a sumfile exists.
-        // If source is PDS, only process it if an infofile exists and a sumfile DOES NOT exist.
+        // If source is SPICE, only process it if an infofile exists and a sumfile DOES NOT exist.
 
         // First check if it's a valid Gaskell file
         File amicarootdir = (new File(line)).getParentFile().getParentFile();
@@ -93,7 +93,7 @@ public class AmicaBackplanesGenerator
             hasSumfile = false;
         }
 
-        // Next check if it's a valid PDS file
+        // Next check if it's a valid infofile file
         String filename = (new File(line)).getName();
         amicaId = filename.substring(0, filename.indexOf('.'));
         name = amicarootdir.getAbsolutePath() + "/infofiles/" + amicaId + ".INFO";
@@ -524,7 +524,7 @@ public class AmicaBackplanesGenerator
             }
             else if (mode == 2 || mode == 0)
             {
-                generateBackplanes(amicaFiles, ImageSource.PDS);
+                generateBackplanes(amicaFiles, ImageSource.SPICE);
             }
         }
         catch (Exception e1) {
