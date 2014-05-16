@@ -102,6 +102,7 @@ Hayabusa's AMICA: 10029.45948178711
 NEAR's MSI:       10407.030418092796
 Galileo's SSI:    98493.37270341207
 HRSC/SRC          109844.44444444444
+Viking VIS (all): 40349.1410917108
 
 Vertical field of view for various cameras (in degrees):
 Hayabusa's AMICA: 5.839083
