@@ -383,21 +383,13 @@ public class CompareGaskellAndNLR
             e.printStackTrace();
         }
 
-        doComparison(msiFiles, smallBodyModel, "results-260-220.csv", 0, 0);
-        doComparison(msiFiles, smallBodyModel, "results-260-221.csv", 0, 1);
-        doComparison(msiFiles, smallBodyModel, "results-260-219.csv", 0, -1);
-        doComparison(msiFiles, smallBodyModel, "results-259-220.csv", 1, 0);
-        doComparison(msiFiles, smallBodyModel, "results-261-220.csv", -1, 0);
-        doComparison(msiFiles, smallBodyModel, "results-259-221.csv", 1, 1);
-        doComparison(msiFiles, smallBodyModel, "results-261-221.csv", -1, 1);
-        doComparison(msiFiles, smallBodyModel, "results-260-222.csv", 0, 2);
-        doComparison(msiFiles, smallBodyModel, "results-259-222.csv", 1, 2);
-        doComparison(msiFiles, smallBodyModel, "results-261-222.csv", -1, 2);
-        doComparison(msiFiles, smallBodyModel, "results-259-223.csv", 1, 3);
-        doComparison(msiFiles, smallBodyModel, "results-260-223.csv", 0, 3);
-        doComparison(msiFiles, smallBodyModel, "results-261-223.csv", -1, 3);
-        doComparison(msiFiles, smallBodyModel, "results-259-224.csv", 1, 4);
-        doComparison(msiFiles, smallBodyModel, "results-260-224.csv", 0, 4);
-        doComparison(msiFiles, smallBodyModel, "results-261-224.csv", -1, 4);
+        int size = 4;
+        for (int i=-size; i<=size; ++i)
+            for (int j=-size; j<=size; ++j)
+            {
+                int sample = 260 + i;
+                int line = 220 + j;
+                doComparison(msiFiles, smallBodyModel, "results-" + sample + "-" + line + ".csv", -i, j);
+            }
     }
 }
