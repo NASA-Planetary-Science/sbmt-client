@@ -23,6 +23,7 @@ cmake $MAC_OPTIONS \
     -DCMAKE_BUILD_TYPE:String=Release \
     -DBUILD_SHARED_LIBS:BOOL=ON \
     -DBUILD_TESTING:BOOL=OFF \
+    -DVTK_DEBUG_LEAKS:BOOL=ON \
     -DVTK_WRAP_JAVA:BOOL=ON \
     ../VTK5.10.1
 
@@ -40,6 +41,7 @@ cmake $MAC_OPTIONS \
     -DVTK_DIR=../build-vtk \
     -DCMAKE_BUILD_TYPE:String=Release \
     -DBUILD_SHARED_LIBS:BOOL=ON \
+    -DVTK_DEBUG_LEAKS:BOOL=ON \
     -DVTK_WRAP_JAVA:BOOL=ON \
     -DVTKSB_WRAP_JAVA:BOOL=ON \
     ../vtksb

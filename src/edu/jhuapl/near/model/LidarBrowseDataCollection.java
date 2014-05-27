@@ -13,7 +13,6 @@ import java.util.HashMap;
 import vtk.vtkActor;
 import vtk.vtkProp;
 
-import edu.jhuapl.near.model.ModelFactory.ModelConfig;
 import edu.jhuapl.near.util.Properties;
 
 public class LidarBrowseDataCollection extends Model implements PropertyChangeListener
@@ -34,7 +33,7 @@ public class LidarBrowseDataCollection extends Model implements PropertyChangeLi
         }
     }
 
-    private ModelConfig modelConfig;
+    private SmallBodyConfig smallBodyConfig;
     private ArrayList<vtkProp> lidarPerUnitActors = new ArrayList<vtkProp>();
 
     private HashMap<String, LidarDataPerUnit> fileToLidarPerUnitMap = new HashMap<String, LidarDataPerUnit>();
@@ -46,7 +45,7 @@ public class LidarBrowseDataCollection extends Model implements PropertyChangeLi
 
     public LidarBrowseDataCollection(SmallBodyModel smallBodyModel)
     {
-        this.modelConfig = smallBodyModel.getModelConfig();
+        this.smallBodyConfig = smallBodyModel.getSmallBodyConfig();
     }
 
     public void addLidarData(String path) throws IOException
@@ -55,7 +54,7 @@ public class LidarBrowseDataCollection extends Model implements PropertyChangeLi
             return;
 
         LidarDataPerUnit lidarData = new LidarDataPerUnit(
-                path, modelConfig);
+                path, smallBodyConfig);
         lidarData.setShowSpacecraftPosition(showSpacecraftPosition);
 
         lidarData.addPropertyChangeListener(this);
@@ -126,7 +125,7 @@ public class LidarBrowseDataCollection extends Model implements PropertyChangeLi
     {
         ArrayList<LidarDataFileSpec> lidarSpecs = new ArrayList<LidarDataFileSpec>();
 
-        InputStream is = getClass().getResourceAsStream(modelConfig.lidarBrowseFileListResourcePath);
+        InputStream is = getClass().getResourceAsStream(smallBodyConfig.lidarBrowseFileListResourcePath);
         InputStreamReader isr = new InputStreamReader(is);
         BufferedReader in = new BufferedReader(isr);
 
@@ -208,6 +207,6 @@ public class LidarBrowseDataCollection extends Model implements PropertyChangeLi
 
     public double getOffsetScale()
     {
-        return modelConfig.lidarOffsetScale;
+        return smallBodyConfig.lidarOffsetScale;
     }
 }

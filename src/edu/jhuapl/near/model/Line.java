@@ -282,7 +282,6 @@ public class Line extends StructureModel.Structure
         controlPoints.set(idx, ll);
     }
 
-
     public double[] getCentroid()
     {
         int size = controlPoints.size();
@@ -304,5 +303,23 @@ public class Line extends StructureModel.Structure
         double[] closestPoint = smallBodyModel.findClosestPoint(centroid);
 
         return closestPoint;
+    }
+
+    public double getSize()
+    {
+        int size = controlPoints.size();
+
+        double[] centroid = getCentroid();
+        double maxDistFromCentroid = 0.0;
+        for (int i=0;i<size;++i)
+        {
+            LatLon ll = controlPoints.get(i);
+            double[] p = MathUtil.latrec(ll);
+            double dist = MathUtil.distanceBetween(centroid, p);
+            if (dist > maxDistFromCentroid)
+                maxDistFromCentroid = dist;
+        }
+
+        return maxDistFromCentroid;
     }
 }

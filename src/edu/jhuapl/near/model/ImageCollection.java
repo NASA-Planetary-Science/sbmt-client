@@ -31,7 +31,7 @@ public class ImageCollection extends Model implements PropertyChangeListener
 
     protected Image createImage(ImageKey key, SmallBodyModel smallBodyModel) throws FitsException, IOException
     {
-        return ModelFactory.createImage(key, smallBodyModel, false, null);
+        return ModelFactory.createImage(key, smallBodyModel, false);
     }
 
     private boolean containsKey(ImageKey key)

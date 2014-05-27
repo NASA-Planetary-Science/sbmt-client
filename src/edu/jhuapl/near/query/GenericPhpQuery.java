@@ -13,15 +13,15 @@ public class GenericPhpQuery extends QueryBase
     private String imagesPath;
     private String tablePrefix;
 
-    private void changePathToFullPath(ArrayList<String> result)
-    {
-        result.set(0, imagesPath + "/" + result.get(0));
-    }
-
     public GenericPhpQuery(String imagesPath, String tablePrefix)
     {
         this.imagesPath = imagesPath;
         this.tablePrefix = tablePrefix.toLowerCase();
+    }
+
+    private void changePathToFullPath(ArrayList<String> result)
+    {
+        result.set(0, imagesPath + "/images/" + result.get(0));
     }
 
     @Override
@@ -29,8 +29,8 @@ public class GenericPhpQuery extends QueryBase
             String type,
             DateTime startDate,
             DateTime stopDate,
-            ArrayList<Integer> filters,
-            ArrayList<Boolean> userDefined,
+            ArrayList<Boolean> filtersChecked,
+            ArrayList<Boolean> camerasChecked,
             double startDistance,
             double stopDistance,
             double startResolution,
@@ -47,6 +47,12 @@ public class GenericPhpQuery extends QueryBase
             ImageSource imageSource,
             int limbType)
     {
+        if (imageSource == ImageSource.CORRECTED)
+        {
+            return getResultsFromFileListOnServer(imagesPath + "/sumfiles-corrected/imagelist.txt",
+                    imagesPath + "/images/");
+        }
+
         ArrayList<ArrayList<String>> results = new ArrayList<ArrayList<String>>();
 
         double minIncidence = Math.min(fromIncidence, toIncidence);
@@ -71,9 +77,6 @@ public class GenericPhpQuery extends QueryBase
 
         if (searchString != null)
         {
-            if (searchString.isEmpty())
-                return results;
-
             HashMap<String, String> args = new HashMap<String, String>();
             args.put("imagesDatabase", imagesDatabase);
             args.put("imageSource", imageSource.toString());
@@ -91,12 +94,27 @@ public class GenericPhpQuery extends QueryBase
             return results;
         }
 
-        ArrayList<Integer> cameras = new ArrayList<Integer>();
-        for (int i=0; i<userDefined.size(); ++i)
+        ArrayList<Integer> filters = new ArrayList<Integer>();
+        for (int i=0; i<filtersChecked.size(); ++i)
         {
-            if (userDefined.get(i))
-                cameras.add(i);
+            if (filtersChecked.get(i))
+            {
+                filters.add(i+1);
+            }
         }
+        if (!filtersChecked.isEmpty() && filters.isEmpty())
+            return results;
+
+        ArrayList<Integer> cameras = new ArrayList<Integer>();
+        for (int i=0; i<camerasChecked.size(); ++i)
+        {
+            if (camerasChecked.get(i))
+            {
+                cameras.add(i+1);
+            }
+        }
+        if (!camerasChecked.isEmpty() && cameras.isEmpty())
+            return results;
 
         try
         {

@@ -1,6 +1,5 @@
 package edu.jhuapl.near.model.deimos;
 
-import java.io.File;
 import java.io.IOException;
 
 import nom.tam.fits.FitsException;
@@ -12,9 +11,8 @@ public class DeimosImage extends PhobosImage
 {
     public DeimosImage(ImageKey key,
             SmallBodyModel smallBodyModel,
-            boolean loadPointingOnly,
-            File rootFolder) throws FitsException, IOException
+            boolean loadPointingOnly) throws FitsException, IOException
     {
-        super(key, smallBodyModel, loadPointingOnly, rootFolder);
+        super(key, smallBodyModel, loadPointingOnly);
     }
 }

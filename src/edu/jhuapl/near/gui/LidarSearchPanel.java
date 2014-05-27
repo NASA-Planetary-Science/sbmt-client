@@ -33,7 +33,7 @@ import vtk.vtkPolyData;
 
 import edu.jhuapl.near.model.AbstractEllipsePolygonModel;
 import edu.jhuapl.near.model.LidarSearchDataCollection;
-import edu.jhuapl.near.model.ModelFactory.ModelConfig;
+import edu.jhuapl.near.model.SmallBodyConfig;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.PointInCylinderChecker;
@@ -58,7 +58,7 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
     private LidarTrackTranslationDialog translateDialog;
 
     /** Creates new form LidarSearchPanel */
-    public LidarSearchPanel(ModelConfig modelConfig,
+    public LidarSearchPanel(SmallBodyConfig smallBodyConfig,
             final ModelManager modelManager,
             final PickManager pickManager,
             Renderer renderer)
@@ -97,9 +97,9 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
 
         lidarPopupMenu = new LidarPopupMenu(lidarModel, renderer);
 
-        startDate = modelConfig.lidarSearchDefaultStartDate;
+        startDate = smallBodyConfig.lidarSearchDefaultStartDate;
         ((SpinnerDateModel)startSpinner.getModel()).setValue(startDate);
-        endDate = modelConfig.lidarSearchDefaultEndDate;
+        endDate = smallBodyConfig.lidarSearchDefaultEndDate;
         ((SpinnerDateModel)endSpinner.getModel()).setValue(endDate);
     }
 

@@ -15,10 +15,10 @@ import edu.jhuapl.near.util.ImageDataUtil;
 public class SSIIdaImage extends PerspectiveImage
 {
     public SSIIdaImage(ImageKey key, SmallBodyModel smallBodyModel,
-            boolean loadPointingOnly, File rootFolder) throws FitsException,
+            boolean loadPointingOnly) throws FitsException,
             IOException
     {
-        super(key, smallBodyModel, loadPointingOnly, rootFolder);
+        super(key, smallBodyModel, loadPointingOnly);
     }
 
     @Override
@@ -36,46 +36,32 @@ public class SSIIdaImage extends PerspectiveImage
     }
 
     @Override
-    protected String initializeFitFileFullPath(File rootFolder)
+    protected String initializeFitFileFullPath()
     {
         ImageKey key = getKey();
-        if (rootFolder == null)
-        {
-            return FileCache.getFileFromServer(key.name + ".fit").getAbsolutePath();
-        }
-        else
-        {
-            return rootFolder.getAbsolutePath() + key.name + ".fit";
-        }
+        return FileCache.getFileFromServer(key.name + ".fit").getAbsolutePath();
     }
 
     @Override
-    protected String initializeLabelFileFullPath(File rootFolder)
+    protected String initializeLabelFileFullPath()
     {
         return null;
     }
 
     @Override
-    protected String initializeInfoFileFullPath(File rootFolder)
+    protected String initializeInfoFileFullPath()
     {
         return null;
     }
 
     @Override
-    protected String initializeSumfileFullPath(File rootFolder)
+    protected String initializeSumfileFullPath()
     {
         ImageKey key = getKey();
         File keyFile = new File(key.name);
         String sumFilename = keyFile.getParentFile().getParent() + "/sumfiles/"
         + keyFile.getName().substring(0, 5) + ".SUM";
-        if (rootFolder == null)
-        {
-            return FileCache.getFileFromServer(sumFilename).getAbsolutePath();
-        }
-        else
-        {
-            return rootFolder.getAbsolutePath() + sumFilename;
-        }
+        return FileCache.getFileFromServer(sumFilename).getAbsolutePath();
     }
 
 }

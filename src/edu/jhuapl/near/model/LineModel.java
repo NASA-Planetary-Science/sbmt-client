@@ -92,13 +92,11 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
 
     public LineModel(SmallBodyModel smallBodyModel, boolean profileMode)
     {
-        this(smallBodyModel, profileMode ? Mode.PROFILE : Mode.DEFAULT, ModelNames.LINE_STRUCTURES);
+        this(smallBodyModel, profileMode ? Mode.PROFILE : Mode.DEFAULT);
     }
 
-    public LineModel(SmallBodyModel smallBodyModel, Mode mode, String name)
+    public LineModel(SmallBodyModel smallBodyModel, Mode mode)
     {
-        super(name);
-
         this.smallBodyModel = smallBodyModel;
         this.mode = mode;
 
@@ -1216,6 +1214,19 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
     public double[] getStructureCenter(int id)
     {
         return lines.get(id).getCentroid();
+    }
+
+    @Override
+    public double[] getStructureNormal(int id)
+    {
+        double[] center = getStructureCenter(id);
+        return smallBodyModel.getNormalAtPoint(center);
+    }
+
+    @Override
+    public double getStructureSize(int id)
+    {
+        return lines.get(id).getSize();
     }
 
     protected StructureModel.Structure createStructure(SmallBodyModel smallBodyModel)

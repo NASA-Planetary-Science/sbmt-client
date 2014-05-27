@@ -16,7 +16,9 @@ import vtk.vtkTriangle;
 
 import edu.jhuapl.near.model.Image.ImageKey;
 import edu.jhuapl.near.model.Image.ImageSource;
-import edu.jhuapl.near.model.ModelFactory;
+import edu.jhuapl.near.model.SmallBodyConfig;
+import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelAuthor;
+import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelBody;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.eros.Eros;
 import edu.jhuapl.near.model.eros.MSIImage;
@@ -135,7 +137,7 @@ public class MSIBestResolutionPerPlate
             String keyName = origFile.getAbsolutePath().replace(rootFolder.getAbsolutePath(), "");
             keyName = keyName.replace(".FIT", "");
             ImageKey key = new ImageKey(keyName, msiSource);
-            MSIImage image = new MSIImage(key, erosModel, false, rootFolder);
+            MSIImage image = new MSIImage(key, erosModel, false);
 
 
             //System.out.println("id: " + Integer.parseInt(origFile.getName().substring(2, 11)));
@@ -278,7 +280,7 @@ public class MSIBestResolutionPerPlate
 
         String msiFileList=args[0];
 
-        erosModel = new Eros(ModelFactory.getModelConfig(ModelFactory.EROS, ModelFactory.GASKELL));
+        erosModel = new Eros(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.EROS, ShapeModelAuthor.GASKELL));
         resolutionLevel = Integer.parseInt(args[1]);
         try {
             erosModel.setModelResolution(resolutionLevel);

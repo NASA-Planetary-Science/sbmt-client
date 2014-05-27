@@ -1,14 +1,10 @@
 package edu.jhuapl.near.model.eros;
 
-import edu.jhuapl.near.model.ModelFactory;
-import edu.jhuapl.near.model.ModelFactory.ModelConfig;
+import edu.jhuapl.near.model.SmallBodyConfig;
 import edu.jhuapl.near.model.SmallBodyModel;
 
 public class ErosThomas extends SmallBodyModel
 {
-    public static final String NAME = ModelFactory.EROS;
-    public static final String AUTHOR = ModelFactory.THOMAS;
-
     static private final String[] modelNames = {
             "433 EROS PLATE MODEL MSI 1708",
             "433 EROS PLATE MODEL MSI 7790",
@@ -42,11 +38,9 @@ public class ErosThomas extends SmallBodyModel
             SlopeUnitsStr, ElevUnitsStr, GravAccUnitsStr, GravPotUnitsStr
     };
 
-    public ErosThomas(ModelConfig config)
+    public ErosThomas(SmallBodyConfig config)
     {
         super(config,
-                NAME,
-                AUTHOR,
                 modelNames,
                 modelFiles,
                 coloringFiles,

@@ -23,9 +23,10 @@ import edu.jhuapl.near.model.Image.ImageSource;
 import edu.jhuapl.near.model.LidarBrowseDataCollection;
 import edu.jhuapl.near.model.LidarBrowseDataCollection.LidarDataFileSpec;
 import edu.jhuapl.near.model.ModelFactory;
-import edu.jhuapl.near.model.ModelFactory.ModelConfig;
 import edu.jhuapl.near.model.ModelNames;
-import edu.jhuapl.near.model.PerspectiveImage;
+import edu.jhuapl.near.model.SmallBodyConfig;
+import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelAuthor;
+import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelBody;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.eros.MSIImage;
 import edu.jhuapl.near.util.FileCache;
@@ -108,15 +109,15 @@ public class CompareGaskellAndNLR
     static DateTimeFormatter fmt = ISODateTimeFormat.dateTime();
 
 
-    static void loadPoints(String path, ModelConfig modelConfig) throws IOException
+    static void loadPoints(String path, SmallBodyConfig smallBodyConfig) throws IOException
     {
-        int[] xyzIndices = modelConfig.lidarBrowseXYZIndices;
-        int[] scXyzIndices = modelConfig.lidarBrowseSpacecraftIndices;
-        boolean isSpacecraftInSphericalCoordinates = modelConfig.lidarBrowseIsSpacecraftInSphericalCoordinates;
-        int timeindex = modelConfig.lidarBrowseTimeIndex;
-        int numberHeaderLines = modelConfig.lidarBrowseNumberHeaderLines;
-        boolean isInMeters = modelConfig.lidarBrowseIsInMeters;
-        int noiseindex = modelConfig.lidarBrowseNoiseIndex;
+        int[] xyzIndices = smallBodyConfig.lidarBrowseXYZIndices;
+        int[] scXyzIndices = smallBodyConfig.lidarBrowseSpacecraftIndices;
+        boolean isSpacecraftInSphericalCoordinates = smallBodyConfig.lidarBrowseIsSpacecraftInSphericalCoordinates;
+        int timeindex = smallBodyConfig.lidarBrowseTimeIndex;
+        int numberHeaderLines = smallBodyConfig.lidarBrowseNumberHeaderLines;
+        boolean isInMeters = smallBodyConfig.lidarBrowseIsInMeters;
+        int noiseindex = smallBodyConfig.lidarBrowseNoiseIndex;
 
         int xindex = xyzIndices[0];
         int yindex = xyzIndices[1];
@@ -286,21 +287,19 @@ public class CompareGaskellAndNLR
         out.write("Image ID,Image Range (km),Lidar Range (km),Image Time (UTC), Lidar Time (UTC), Range Diff (km), Time Diff (sec), X-image (km), Y-image (km), Z-image (km), X-lidar (km), Y-lidar (km), Z-lidar (km)\n");
 
         int count = 1;
-        for (String filename : msiFiles)
+        for (String keyName : msiFiles)
         {
-            System.out.println("starting msi " + (count++) + " / " + msiFiles.size() + " " + filename + "\n");
+            System.out.println("starting msi " + (count++) + " / " + msiFiles.size() + " " + keyName + "\n");
 
-            File origFile = new File(filename);
+            keyName = keyName.replace(".FIT", "");
+            ImageKey key = new ImageKey(keyName, ImageSource.GASKELL);
+            MSIImage image = new MSIImage(key, smallBodyModel, true);
 
             // If the sumfile has no landmarks, then ignore it. Sumfiles that have no landmarks
             // are 1153 bytes long or less
-            if (origFile.length() <= 1153)
+            File sumfile = new File(image.getSumfileFullPath());
+            if (!sumfile.exists() || sumfile.length() <= 1153)
                 continue;
-
-            File rootFolder = origFile.getParentFile().getParentFile().getParentFile().getParentFile().getParentFile();
-            String keyName = origFile.getAbsolutePath().replace(rootFolder.getAbsolutePath(), "");
-            ImageKey key = new ImageKey(keyName, ImageSource.GASKELL);
-            MSIImage image = new MSIImage(key, smallBodyModel, true, rootFolder);
 
             String startTimeStr = image.getStartTime();
             String stopTimeStr = image.getStopTime();
@@ -357,7 +356,7 @@ public class CompareGaskellAndNLR
         NativeLibraryLoader.loadVtkLibraries();
 
 
-        ModelConfig config = ModelFactory.getModelConfig(ModelFactory.EROS, ModelFactory.GASKELL);
+        SmallBodyConfig config = SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.EROS, ShapeModelAuthor.GASKELL);
         SmallBodyModel smallBodyModel = ModelFactory.createSmallBodyModel(config);
         smallBodyModel.setModelResolution(3);
 
@@ -384,12 +383,13 @@ public class CompareGaskellAndNLR
             e.printStackTrace();
         }
 
-        PerspectiveImage.setFootprintIsOnLocalDisk(true);
-
-        doComparison(msiFiles, smallBodyModel, "results-260-220.csv", 0, 0);
-        doComparison(msiFiles, smallBodyModel, "results-260-221.csv", 0, 1);
-        doComparison(msiFiles, smallBodyModel, "results-260-219.csv", 0, -1);
-        doComparison(msiFiles, smallBodyModel, "results-259-220.csv", 1, 0);
-        doComparison(msiFiles, smallBodyModel, "results-261-220.csv", -1, 0);
+        int size = 4;
+        for (int i=-size; i<=size; ++i)
+            for (int j=-size; j<=size; ++j)
+            {
+                int sample = 260 + i;
+                int line = 220 + j;
+                doComparison(msiFiles, smallBodyModel, "results-" + sample + "-" + line + ".csv", -i, j);
+            }
     }
 }

@@ -2,7 +2,7 @@ package edu.jhuapl.near.model.simple;
 
 import java.io.File;
 
-import edu.jhuapl.near.model.ModelFactory.ModelConfig;
+import edu.jhuapl.near.model.SmallBodyConfig;
 import edu.jhuapl.near.model.SmallBodyModel;
 
 public class SimpleSmallBody extends SmallBodyModel
@@ -26,13 +26,11 @@ public class SimpleSmallBody extends SmallBodyModel
     };
 
     public SimpleSmallBody(
-            ModelConfig config,
+            SmallBodyConfig config,
             String[] modelNames,
             String[] paths)
     {
         super(config,
-                config.name,
-                config.author,
                 modelNames,
                 paths,
                 config.hasColoringData ? getColoringFiles(paths[0]) : null,
@@ -44,12 +42,10 @@ public class SimpleSmallBody extends SmallBodyModel
                 false);
     }
 
-    public SimpleSmallBody(ModelConfig config, String imageMap)
+    public SimpleSmallBody(SmallBodyConfig config, String imageMap)
     {
         super(config,
-                config.name,
-                config.author,
-                new String[] {config.name},
+                new String[] {config.body.toString()},
                 new String[] {config.pathOnServer},
                 config.hasColoringData ? getColoringFiles(config.pathOnServer) : null,
                 config.hasColoringData ? coloringNames : null,

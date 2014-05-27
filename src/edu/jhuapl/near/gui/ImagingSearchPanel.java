@@ -47,11 +47,11 @@ import edu.jhuapl.near.model.Image.ImageKey;
 import edu.jhuapl.near.model.Image.ImageSource;
 import edu.jhuapl.near.model.ImageCollection;
 import edu.jhuapl.near.model.Model;
-import edu.jhuapl.near.model.ModelFactory.ModelConfig;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.PerspectiveImage;
 import edu.jhuapl.near.model.PerspectiveImageBoundaryCollection;
+import edu.jhuapl.near.model.SmallBodyConfig;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.pick.PickEvent;
 import edu.jhuapl.near.pick.PickManager;
@@ -64,7 +64,7 @@ import edu.jhuapl.near.util.Properties;
 
 public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyChangeListener
 {
-    private ModelConfig modelConfig;
+    private SmallBodyConfig smallBodyConfig;
     private final ModelManager modelManager;
     private final PickManager pickManager;
     private java.util.Date startDate = null;
@@ -77,20 +77,20 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     private JCheckBox[] userDefinedCheckBoxes;
 
     // The source of the images of the most recently executed query
-    private PerspectiveImage.ImageSource sourceOfLastQuery = PerspectiveImage.ImageSource.PDS;
+    private PerspectiveImage.ImageSource sourceOfLastQuery = PerspectiveImage.ImageSource.SPICE;
 
     private ArrayList<ArrayList<String>> imageRawResults = new ArrayList<ArrayList<String>>();
     private ImagePopupMenu imagePopupMenu;
     private ColorImagePopupMenu colorImagePopupMenu;
 
     /** Creates new form ImagingSearchPanel */
-    public ImagingSearchPanel(ModelConfig modelConfig,
+    public ImagingSearchPanel(SmallBodyConfig smallBodyConfig,
             final ModelManager modelManager,
             ModelInfoWindowManager infoPanelManager,
             final PickManager pickManager,
             Renderer renderer)
     {
-        this.modelConfig = modelConfig;
+        this.smallBodyConfig = smallBodyConfig;
         this.modelManager = modelManager;
         this.pickManager = pickManager;
 
@@ -110,7 +110,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
     private int getNumberOfFiltersActuallyUsed()
     {
-        String[] names = modelConfig.imageSearchFilterNames;
+        String[] names = smallBodyConfig.imageSearchFilterNames;
         if (names == null)
             return 0;
         else
@@ -119,24 +119,24 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
     private int getNumberOfUserDefinedCheckBoxesActuallyUsed()
     {
-        String[] names = modelConfig.imageSearchUserDefinedCheckBoxesNames;
+        String[] names = smallBodyConfig.imageSearchUserDefinedCheckBoxesNames;
         if (names == null)
             return 0;
         else
             return names.length;
     }
 
-    private String getImageCollectionModelName()
+    private ModelNames getImageCollectionModelName()
     {
         return ModelNames.IMAGES;
     }
 
-    private String getImageBoundaryCollectionModelName()
+    private ModelNames getImageBoundaryCollectionModelName()
     {
         return ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES;
     }
 
-    private String getColorImageCollectionModelName()
+    private ModelNames getColorImageCollectionModelName()
     {
         return ModelNames.COLOR_IMAGES;
     }
@@ -145,7 +145,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     {
         excludeGaskellCheckBox.setVisible(false);
 
-        ImageSource imageSources[] = modelConfig.imageSearchImageSources;
+        ImageSource imageSources[] = smallBodyConfig.imageSearchImageSources;
         DefaultComboBoxModel sourceComboBoxModel = new DefaultComboBoxModel(imageSources);
         sourceComboBox.setModel(sourceComboBoxModel);
 
@@ -153,9 +153,9 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         sourceLabel.setVisible(showSourceLabelAndComboBox);
         sourceComboBox.setVisible(showSourceLabelAndComboBox);
 
-        startDate = modelConfig.imageSearchDefaultStartDate;
+        startDate = smallBodyConfig.imageSearchDefaultStartDate;
         ((SpinnerDateModel)startSpinner.getModel()).setValue(startDate);
-        endDate = modelConfig.imageSearchDefaultEndDate;
+        endDate = smallBodyConfig.imageSearchDefaultEndDate;
         ((SpinnerDateModel)endSpinner.getModel()).setValue(endDate);
 
 
@@ -173,7 +173,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                 filter10CheckBox,
         };
 
-        String[] filterNames = modelConfig.imageSearchFilterNames;
+        String[] filterNames = smallBodyConfig.imageSearchFilterNames;
         int numberOfFiltersActuallyUsed = getNumberOfFiltersActuallyUsed();
         for (int i=filterCheckBoxes.length-1; i>=0; --i)
         {
@@ -203,7 +203,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                 userDefined8CheckBox
         };
 
-        String[] userDefinedNames = modelConfig.imageSearchUserDefinedCheckBoxesNames;
+        String[] userDefinedNames = smallBodyConfig.imageSearchUserDefinedCheckBoxesNames;
         int numberOfUserDefinedCheckBoxesActuallyUsed = getNumberOfUserDefinedCheckBoxesActuallyUsed();
 
         for (int i=userDefinedCheckBoxes.length-1; i>=0; --i)
@@ -223,8 +223,8 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
 
 
-        toDistanceTextField.setValue(modelConfig.imageSearchDefaultMaxSpacecraftDistance);
-        toResolutionTextField.setValue(modelConfig.imageSearchDefaultMaxResolution);
+        toDistanceTextField.setValue(smallBodyConfig.imageSearchDefaultMaxSpacecraftDistance);
+        toResolutionTextField.setValue(smallBodyConfig.imageSearchDefaultMaxResolution);
 
         colorImagesDisplayedList.setModel(new DefaultListModel());
     }
@@ -489,7 +489,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         toPhaseTextField = new javax.swing.JFormattedTextField();
         endPhaseLabel = new javax.swing.JLabel();
         jPanel4 = new javax.swing.JPanel();
-        searchByNumberCheckBox = new javax.swing.JCheckBox();
+        searchByFilenameCheckBox = new javax.swing.JCheckBox();
         searchByNumberTextField = new javax.swing.JFormattedTextField();
         jPanel5 = new javax.swing.JPanel();
         clearRegionButton = new javax.swing.JButton();
@@ -974,17 +974,17 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
         jPanel4.setLayout(new java.awt.GridBagLayout());
 
-        searchByNumberCheckBox.setText("Search by ID");
-        searchByNumberCheckBox.addItemListener(new java.awt.event.ItemListener() {
+        searchByFilenameCheckBox.setText("Search by Filename");
+        searchByFilenameCheckBox.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                searchByNumberCheckBoxItemStateChanged(evt);
+                searchByFilenameCheckBoxItemStateChanged(evt);
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        jPanel4.add(searchByNumberCheckBox, gridBagConstraints);
+        jPanel4.add(searchByFilenameCheckBox, gridBagConstraints);
 
         searchByNumberTextField.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -1431,8 +1431,8 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
     }//GEN-LAST:event_endSpinnerStateChanged
 
-    private void searchByNumberCheckBoxItemStateChanged(java.awt.event.ItemEvent evt)//GEN-FIRST:event_searchByNumberCheckBoxItemStateChanged
-    {//GEN-HEADEREND:event_searchByNumberCheckBoxItemStateChanged
+    private void searchByFilenameCheckBoxItemStateChanged(java.awt.event.ItemEvent evt)//GEN-FIRST:event_searchByFilenameCheckBoxItemStateChanged
+    {//GEN-HEADEREND:event_searchByFilenameCheckBoxItemStateChanged
         boolean enable = evt.getStateChange() == ItemEvent.SELECTED;
         searchByNumberTextField.setEnabled(enable);
         startDateLabel.setEnabled(!enable);
@@ -1484,7 +1484,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         toPhaseLabel.setEnabled(!enable);
         toPhaseTextField.setEnabled(!enable);
         endPhaseLabel.setEnabled(!enable);
-    }//GEN-LAST:event_searchByNumberCheckBoxItemStateChanged
+    }//GEN-LAST:event_searchByFilenameCheckBoxItemStateChanged
 
     private void selectRegionButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_selectRegionButtonActionPerformed
     {//GEN-HEADEREND:event_selectRegionButtonActionPerformed
@@ -1615,7 +1615,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     {//GEN-HEADEREND:event_removeAllImagesButtonActionPerformed
         ImageCollection model = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
         model.removeImages(ImageSource.GASKELL);
-        model.removeImages(ImageSource.PDS);
+        model.removeImages(ImageSource.SPICE);
         model.removeImages(ImageSource.CORRECTED);
     }//GEN-LAST:event_removeAllImagesButtonActionPerformed
 
@@ -1626,16 +1626,15 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             selectRegionButton.setSelected(false);
             pickManager.setPickMode(PickMode.DEFAULT);
 
-            ArrayList<Integer> filtersChecked = new ArrayList<Integer>();
+            ArrayList<Boolean> filtersChecked = new ArrayList<Boolean>();
             int numberOfFilters = getNumberOfFiltersActuallyUsed();
             for (int i=0; i<numberOfFilters; ++i)
             {
-                if (filterCheckBoxes[i].isSelected())
-                    filtersChecked.add(i+1);
+                filtersChecked.add(filterCheckBoxes[i].isSelected());
             }
 
             String searchField = null;
-            if (searchByNumberCheckBox.isSelected())
+            if (searchByFilenameCheckBox.isSelected())
                 searchField = searchByNumberTextField.getText();
 
             GregorianCalendar startDateGreg = new GregorianCalendar();
@@ -1692,7 +1691,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                 userDefinedChecked.add(userDefinedCheckBoxes[i].isSelected());
             }
 
-            ArrayList<ArrayList<String>> results = modelConfig.imageSearchQuery.runQuery(
+            ArrayList<ArrayList<String>> results = smallBodyConfig.imageSearchQuery.runQuery(
                     "",
                     startDateJoda,
                     endDateJoda,
@@ -1714,12 +1713,12 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                     imageSource,
                     hasLimbComboBox.getSelectedIndex());
 
-            // If PDS Derived (exclude Gaskell) or Gaskell Derived (exlude PDS) is selected,
+            // If SPICE Derived (exclude Gaskell) or Gaskell Derived (exlude SPICE) is selected,
             // then remove from the list images which are contained in the other list by doing
             // an additional search.
-            if (imageSource == ImageSource.PDS && excludeGaskellCheckBox.isSelected())
+            if (imageSource == ImageSource.SPICE && excludeGaskellCheckBox.isSelected())
             {
-                ArrayList<ArrayList<String>> resultsOtherSource = modelConfig.imageSearchQuery.runQuery(
+                ArrayList<ArrayList<String>> resultsOtherSource = smallBodyConfig.imageSearchQuery.runQuery(
                         "",
                         startDateJoda,
                         endDateJoda,
@@ -1738,7 +1737,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                         Double.parseDouble(fromPhaseTextField.getText()),
                         Double.parseDouble(toPhaseTextField.getText()),
                         cubeList,
-                        imageSource == PerspectiveImage.ImageSource.PDS ? PerspectiveImage.ImageSource.GASKELL : PerspectiveImage.ImageSource.PDS,
+                        imageSource == PerspectiveImage.ImageSource.SPICE ? PerspectiveImage.ImageSource.GASKELL : PerspectiveImage.ImageSource.SPICE,
                         hasLimbComboBox.getSelectedIndex());
 
                 int numOtherResults = resultsOtherSource.size();
@@ -1780,7 +1779,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     private void sourceComboBoxItemStateChanged(java.awt.event.ItemEvent evt)
     {//GEN-FIRST:event_sourceComboBoxItemStateChanged
         ImageSource imageSource = ImageSource.valueOf(((Enum)sourceComboBox.getSelectedItem()).name());
-        excludeGaskellCheckBox.setVisible(imageSource == ImageSource.PDS);
+        excludeGaskellCheckBox.setVisible(imageSource == ImageSource.SPICE);
     }//GEN-LAST:event_sourceComboBoxItemStateChanged
 
     private void numberOfBoundariesComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_numberOfBoundariesComboBoxActionPerformed
@@ -1862,7 +1861,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     private javax.swing.JButton removeColorImageButton;
     private javax.swing.JList resultList;
     private javax.swing.JLabel resultsLabel;
-    private javax.swing.JCheckBox searchByNumberCheckBox;
+    private javax.swing.JCheckBox searchByFilenameCheckBox;
     private javax.swing.JFormattedTextField searchByNumberTextField;
     private javax.swing.JToggleButton selectRegionButton;
     private javax.swing.JComboBox sourceComboBox;

@@ -28,10 +28,9 @@ public class AmicaImage extends PerspectiveImage
 
     public AmicaImage(ImageKey key,
             SmallBodyModel smallBodyModel,
-            boolean loadPointingOnly,
-            File rootFolder) throws FitsException, IOException
+            boolean loadPointingOnly) throws FitsException, IOException
     {
-        super(key, smallBodyModel, loadPointingOnly, rootFolder);
+        super(key, smallBodyModel, loadPointingOnly);
     }
 
     @Override
@@ -368,53 +367,32 @@ public class AmicaImage extends PerspectiveImage
     }
 
     @Override
-    protected String initializeFitFileFullPath(File rootFolder)
+    protected String initializeFitFileFullPath()
     {
         ImageKey key = getKey();
-        if (rootFolder == null)
-        {
-            return FileCache.getFileFromServer(key.name + ".fit").getAbsolutePath();
-        }
-        else
-        {
-            return rootFolder.getAbsolutePath() + key.name + ".fit";
-        }
+        return FileCache.getFileFromServer(key.name + ".fit").getAbsolutePath();
     }
 
     @Override
-    protected String initializeLabelFileFullPath(File rootFolder)
+    protected String initializeLabelFileFullPath()
     {
         ImageKey key = getKey();
         String imgLblFilename = key.name + ".lbl";
-        if (rootFolder == null)
-        {
-            return FileCache.getFileFromServer(imgLblFilename).getAbsolutePath();
-        }
-        else
-        {
-            return rootFolder.getAbsolutePath() + imgLblFilename;
-        }
+        return FileCache.getFileFromServer(imgLblFilename).getAbsolutePath();
     }
 
     @Override
-    protected String initializeInfoFileFullPath(File rootFolder)
+    protected String initializeInfoFileFullPath()
     {
         ImageKey key = getKey();
         File keyFile = new File(key.name);
         String sumFilename = keyFile.getParentFile().getParent()
         + "/infofiles/" + keyFile.getName() + ".INFO";
-        if (rootFolder == null)
-        {
-            return FileCache.getFileFromServer(sumFilename).getAbsolutePath();
-        }
-        else
-        {
-            return rootFolder.getAbsolutePath() + sumFilename;
-        }
+        return FileCache.getFileFromServer(sumFilename).getAbsolutePath();
     }
 
     @Override
-    protected String initializeSumfileFullPath(File rootFolder)
+    protected String initializeSumfileFullPath()
     {
         ImageKey key = getKey();
         String sumfilesdir = "sumfiles";
@@ -423,14 +401,7 @@ public class AmicaImage extends PerspectiveImage
         File keyFile = new File(key.name);
         String sumFilename = keyFile.getParentFile().getParent()
         + "/" + sumfilesdir + "/N" + keyFile.getName().substring(3, 13) + ".SUM";
-        if (rootFolder == null)
-        {
-            return FileCache.getFileFromServer(sumFilename).getAbsolutePath();
-        }
-        else
-        {
-            return rootFolder.getAbsolutePath() + sumFilename;
-        }
+        return FileCache.getFileFromServer(sumFilename).getAbsolutePath();
     }
 
     @Override

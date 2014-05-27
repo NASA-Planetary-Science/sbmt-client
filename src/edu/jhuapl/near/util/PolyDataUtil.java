@@ -39,6 +39,7 @@ import vtk.vtkPolyDataNormals;
 import vtk.vtkPolyDataReader;
 import vtk.vtkPolyDataWriter;
 import vtk.vtkRegularPolygonSource;
+import vtk.vtkSTLWriter;
 import vtk.vtkSphere;
 import vtk.vtkTransform;
 import vtk.vtkTransformPolyDataFilter;
@@ -601,7 +602,7 @@ public class PolyDataUtil
         // If the number of points are too small, then vtkExtractPolyDataGeometry
         // as used here might fail, so skip this part (which is just an optimization
         // not really needed when the points are few) in this case.
-        if (polyData.GetNumberOfPoints() >= 10000)
+        if (polyData.GetNumberOfPoints() >= 20000)
         {
             // Reduce the size of the polydata we need to process by only
             // considering cells within 1.2 times the radius. We make sure,
@@ -3031,7 +3032,8 @@ public class PolyDataUtil
 
             smallBodyReader.Delete();
         }
-        else if (filename.toLowerCase().endsWith(".obj"))
+        else if (filename.toLowerCase().endsWith(".obj") ||
+                filename.toLowerCase().endsWith(".wf"))
         {
             vtkOBJReader smallBodyReader = new vtkOBJReader();
             smallBodyReader.SetFileName(filename);
@@ -3186,6 +3188,21 @@ public class PolyDataUtil
 
         vtkPolyDataWriter writer = new vtkPolyDataWriter();
         writer.SetInputConnection(normalsFilter.GetOutputPort());
+        writer.SetFileName(filename);
+        writer.SetFileTypeToBinary();
+        writer.Write();
+    }
+
+    static public void saveShapeModelAsSTL(vtkPolyData polydata, String filename) throws IOException
+    {
+        // First make a copy of polydata and remove all cell and point data since we don't want to save that out
+        vtkPolyData newpolydata = new vtkPolyData();
+        newpolydata.DeepCopy(polydata);
+        newpolydata.GetPointData().Reset();
+        newpolydata.GetCellData().Reset();
+
+        vtkSTLWriter writer = new vtkSTLWriter();
+        writer.SetInput(newpolydata);
         writer.SetFileName(filename);
         writer.SetFileTypeToBinary();
         writer.Write();

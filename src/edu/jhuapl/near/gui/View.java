@@ -24,12 +24,15 @@ import edu.jhuapl.near.model.LineModel;
 import edu.jhuapl.near.model.MapletBoundaryCollection;
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelFactory;
-import edu.jhuapl.near.model.ModelFactory.ModelConfig;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.PerspectiveImageBoundaryCollection;
 import edu.jhuapl.near.model.PointModel;
 import edu.jhuapl.near.model.PolygonModel;
+import edu.jhuapl.near.model.SmallBodyConfig;
+import edu.jhuapl.near.model.SmallBodyConfig.Instrument;
+import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelAuthor;
+import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelBody;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.pick.PickManager;
 import edu.jhuapl.near.popupmenus.ColorImagePopupMenu;
@@ -62,7 +65,7 @@ public class View extends JPanel
     private ModelInfoWindowManager infoPanelManager;
     private StatusBar statusBar;
     private boolean initialized = false;
-    private ModelConfig modelConfig;
+    private SmallBodyConfig smallBodyConfig;
     static private boolean initializedPanelSizing = false;
 
     /**
@@ -74,11 +77,11 @@ public class View extends JPanel
      */
     public View(
             StatusBar statusBar,
-            ModelConfig modelConfig)
+            SmallBodyConfig smallBodyConfig)
     {
         super(new BorderLayout());
         this.statusBar = statusBar;
-        this.modelConfig = modelConfig;
+        this.smallBodyConfig = smallBodyConfig;
     }
 
     public void initialize()
@@ -98,35 +101,35 @@ public class View extends JPanel
 
         controlPanel = new JTabbedPane();
         controlPanel.setBorder(BorderFactory.createEmptyBorder());
-        controlPanel.addTab(modelConfig.name, new SmallBodyControlPanel(modelManager, modelConfig.name));
+        controlPanel.addTab(smallBodyConfig.getShapeModelName(), new SmallBodyControlPanel(modelManager, smallBodyConfig.getShapeModelName()));
 
-        if (modelConfig.hasPerspectiveImages)
+        if (smallBodyConfig.hasPerspectiveImages)
         {
             // For the public version, only include image tab for Eros (all) and Gaskell's Itokawa shape models.
             if (Configuration.isAPLVersion() ||
-                    modelConfig.name.equals(ModelFactory.EROS) ||
-                    (modelConfig.name.equals(ModelFactory.ITOKAWA) && ModelFactory.GASKELL.equals(modelConfig.author)))
+                    smallBodyConfig.body == ShapeModelBody.EROS ||
+                    (smallBodyConfig.body == ShapeModelBody.ITOKAWA && ShapeModelAuthor.GASKELL == smallBodyConfig.author))
             {
-                JComponent component = new ImagingSearchPanel(modelConfig, modelManager, infoPanelManager, pickManager, renderer);
-                controlPanel.addTab(modelConfig.imageInstrumentName, component);
+                JComponent component = new ImagingSearchPanel(smallBodyConfig, modelManager, infoPanelManager, pickManager, renderer);
+                controlPanel.addTab(smallBodyConfig.imageInstrumentName.toString(), component);
             }
         }
 
-        if (modelConfig.hasSpectralData)
+        if (smallBodyConfig.hasSpectralData)
         {
             JComponent component = new NISSearchPanel(modelManager, infoPanelManager, pickManager);
-            controlPanel.addTab(ModelFactory.NIS, component);
+            controlPanel.addTab(Instrument.NIS.toString(), component);
         }
 
-        if (modelConfig.hasLidarData)
+        if (smallBodyConfig.hasLidarData)
         {
-            JComponent component = new LidarPanel(modelConfig, modelManager, pickManager, renderer);
-            controlPanel.addTab(modelConfig.lidarInstrumentName, component);
+            JComponent component = new LidarPanel(smallBodyConfig, modelManager, pickManager, renderer);
+            controlPanel.addTab(smallBodyConfig.lidarInstrumentName.toString(), component);
         }
 
         if (Configuration.isAPLVersion())
         {
-            if (modelConfig.hasLineamentData)
+            if (smallBodyConfig.hasLineamentData)
             {
                 JComponent component = new LineamentControlPanel(modelManager);
                 controlPanel.addTab("Lineament", component);
@@ -135,9 +138,9 @@ public class View extends JPanel
             controlPanel.addTab("Structures", new StructuresControlPanel(modelManager, pickManager));
             controlPanel.addTab("Images", new CustomImagesPanel(modelManager, infoPanelManager, pickManager, renderer));
 
-            if (modelConfig.hasMapmaker)
+            if (smallBodyConfig.hasMapmaker)
             {
-                JComponent component = new MapmakerPanel(modelManager, pickManager, modelConfig.pathOnServer + "/mapmaker.zip");
+                JComponent component = new MapmakerPanel(modelManager, pickManager, smallBodyConfig.pathOnServer + "/mapmaker.zip");
                 controlPanel.addTab("Mapmaker", component);
             }
         }
@@ -210,36 +213,36 @@ public class View extends JPanel
     {
         modelManager = new ModelManager();
 
-        SmallBodyModel smallBodyModel = ModelFactory.createSmallBodyModel(modelConfig);
+        SmallBodyModel smallBodyModel = ModelFactory.createSmallBodyModel(smallBodyConfig);
         Graticule graticule = ModelFactory.createGraticule(smallBodyModel);
 
-        HashMap<String, Model> allModels = new HashMap<String, Model>();
+        HashMap<ModelNames, Model> allModels = new HashMap<ModelNames, Model>();
         allModels.put(ModelNames.SMALL_BODY, smallBodyModel);
         allModels.put(ModelNames.GRATICULE, graticule);
         allModels.put(ModelNames.IMAGES, new ImageCollection(smallBodyModel));
 
-        if (modelConfig.hasPerspectiveImages)
+        if (smallBodyConfig.hasPerspectiveImages)
         {
             allModels.put(ModelNames.COLOR_IMAGES, new ColorImageCollection(smallBodyModel));
             allModels.put(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES, new PerspectiveImageBoundaryCollection(smallBodyModel));
         }
 
-        if (modelConfig.hasSpectralData)
+        if (smallBodyConfig.hasSpectralData)
         {
             allModels.put(ModelNames.SPECTRA, ModelFactory.createSpectralModel(smallBodyModel));
         }
 
-        if (modelConfig.hasLidarData)
+        if (smallBodyConfig.hasLidarData)
         {
             allModels.putAll(ModelFactory.createLidarModels(smallBodyModel));
         }
 
-        if (modelConfig.hasLineamentData)
+        if (smallBodyConfig.hasLineamentData)
         {
             allModels.put(ModelNames.LINEAMENT, ModelFactory.createLineament());
         }
 
-        if (modelConfig.hasMapmaker)
+        if (smallBodyConfig.hasMapmaker)
         {
             allModels.put(ModelNames.MAPLET_BOUNDARY, new MapletBoundaryCollection(smallBodyModel));
         }
@@ -259,7 +262,7 @@ public class View extends JPanel
     {
         popupManager = new PopupManager(modelManager, infoPanelManager, renderer);
 
-        if (modelConfig.hasPerspectiveImages)
+        if (smallBodyConfig.hasPerspectiveImages)
         {
             ImageCollection images = (ImageCollection)modelManager.getModel(ModelNames.IMAGES);
             PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES);
@@ -272,26 +275,26 @@ public class View extends JPanel
             popupManager.registerPopup(modelManager.getModel(ModelNames.COLOR_IMAGES), popupMenu);
         }
 
-        if (modelConfig.hasSpectralData)
+        if (smallBodyConfig.hasSpectralData)
         {
             PopupMenu popupMenu = new NISPopupMenu(modelManager, infoPanelManager);
             popupManager.registerPopup(modelManager.getModel(ModelNames.SPECTRA), popupMenu);
         }
 
-        if (modelConfig.hasLidarData)
+        if (smallBodyConfig.hasLidarData)
         {
             LidarSearchDataCollection lidarSearch = (LidarSearchDataCollection)modelManager.getModel(ModelNames.LIDAR_SEARCH);
             PopupMenu popupMenu = new LidarPopupMenu(lidarSearch, renderer);
             popupManager.registerPopup(lidarSearch, popupMenu);
         }
 
-        if (modelConfig.hasLineamentData)
+        if (smallBodyConfig.hasLineamentData)
         {
             PopupMenu popupMenu = new LineamentPopupMenu(modelManager);
             popupManager.registerPopup(modelManager.getModel(ModelNames.LINEAMENT), popupMenu);
         }
 
-        if (modelConfig.hasMapmaker)
+        if (smallBodyConfig.hasMapmaker)
         {
             PopupMenu popupMenu = new MapletBoundaryPopupMenu(modelManager, renderer);
             popupManager.registerPopup(modelManager.getModel(ModelNames.MAPLET_BOUNDARY), popupMenu);
@@ -309,7 +312,7 @@ public class View extends JPanel
      */
     public String getUniqueName()
     {
-        return SmallBodyModel.getUniqueName(modelConfig.name, modelConfig.author);
+        return smallBodyConfig.getUniqueName();
     }
 
 
@@ -320,22 +323,24 @@ public class View extends JPanel
      */
     public String getDisplayName()
     {
-        if (modelConfig.author == null || modelConfig.author.equals(ModelFactory.CUSTOM))
-            return modelConfig.name;
+        if (smallBodyConfig.author == ShapeModelAuthor.CUSTOM)
+            return smallBodyConfig.customName;
+        else if (smallBodyConfig.author == null)
+            return smallBodyConfig.body.toString();
         else
-            return modelConfig.author;
+            return smallBodyConfig.author.toString();
     }
 
-    public ModelConfig getModelConfig()
+    public SmallBodyConfig getSmallBodyConfig()
     {
-        return modelConfig;
+        return smallBodyConfig;
     }
 
     static public View createCustomView(StatusBar statusBar, String name)
     {
-        ModelConfig config = new ModelConfig();
-        config.name = name;
-        config.author = ModelFactory.CUSTOM;
+        SmallBodyConfig config = new SmallBodyConfig();
+        config.customName = name;
+        config.author = ShapeModelAuthor.CUSTOM;
         return new View(statusBar, config);
     }
 }

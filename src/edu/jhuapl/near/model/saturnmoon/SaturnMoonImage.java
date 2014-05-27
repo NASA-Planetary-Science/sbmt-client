@@ -13,10 +13,9 @@ public class SaturnMoonImage extends PerspectiveImage
 {
     public SaturnMoonImage(ImageKey key,
             SmallBodyModel smallBodyModel,
-            boolean loadPointingOnly,
-            File rootFolder) throws FitsException, IOException
+            boolean loadPointingOnly) throws FitsException, IOException
     {
-        super(key, smallBodyModel, loadPointingOnly, rootFolder);
+        super(key, smallBodyModel, loadPointingOnly);
     }
 
     @Override
@@ -26,56 +25,35 @@ public class SaturnMoonImage extends PerspectiveImage
     }
 
     @Override
-    protected String initializeFitFileFullPath(File rootFolder)
+    protected String initializeFitFileFullPath()
     {
         ImageKey key = getKey();
-        if (rootFolder == null)
-        {
-            return FileCache.getFileFromServer(key.name + ".FIT").getAbsolutePath();
-        }
-        else
-        {
-            return rootFolder.getAbsolutePath() + key.name + ".FIT";
-        }
+        return FileCache.getFileFromServer(key.name + ".FIT").getAbsolutePath();
     }
 
     @Override
-    protected String initializeLabelFileFullPath(File rootFolder)
+    protected String initializeLabelFileFullPath()
     {
         return null;
     }
 
     @Override
-    protected String initializeInfoFileFullPath(File rootFolder)
+    protected String initializeInfoFileFullPath()
     {
         ImageKey key = getKey();
         File keyFile = new File(key.name);
         String sumFilename = keyFile.getParentFile().getParent() + "/infofiles/"
         + keyFile.getName() + ".INFO";
-        if (rootFolder == null)
-        {
-            return FileCache.getFileFromServer(sumFilename).getAbsolutePath();
-        }
-        else
-        {
-            return rootFolder.getAbsolutePath() + sumFilename;
-        }
+        return FileCache.getFileFromServer(sumFilename).getAbsolutePath();
     }
 
     @Override
-    protected String initializeSumfileFullPath(File rootFolder)
+    protected String initializeSumfileFullPath()
     {
         ImageKey key = getKey();
         File keyFile = new File(key.name);
         String sumFilename = keyFile.getParentFile().getParent() + "/sumfiles/"
         + keyFile.getName() + ".SUM";
-        if (rootFolder == null)
-        {
-            return FileCache.getFileFromServer(sumFilename).getAbsolutePath();
-        }
-        else
-        {
-            return rootFolder.getAbsolutePath() + sumFilename;
-        }
+        return FileCache.getFileFromServer(sumFilename).getAbsolutePath();
     }
 }

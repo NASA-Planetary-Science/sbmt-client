@@ -1,14 +1,10 @@
 package edu.jhuapl.near.model.vesta_old;
 
-import edu.jhuapl.near.model.ModelFactory;
-import edu.jhuapl.near.model.ModelFactory.ModelConfig;
+import edu.jhuapl.near.model.SmallBodyConfig;
 import edu.jhuapl.near.model.SmallBodyModel;
 
 public class VestaOld extends SmallBodyModel
 {
-    public static final String NAME = ModelFactory.VESTA;
-    public static final String AUTHOR = ModelFactory.THOMAS;
-
     static private final String[] modelNames = {
         "VESTA-old"
     };
@@ -40,11 +36,9 @@ public class VestaOld extends SmallBodyModel
             false, false, false, false, true, true, true, true
     };
 
-    public VestaOld(ModelConfig config)
+    public VestaOld(SmallBodyConfig config)
     {
         super(config,
-                NAME,
-                AUTHOR,
                 modelNames,
                 modelFiles,
                 coloringFiles,

@@ -10,8 +10,10 @@ import edu.jhuapl.near.model.AbstractEllipsePolygonModel.EllipsePolygon;
 import edu.jhuapl.near.model.CircleSelectionModel;
 import edu.jhuapl.near.model.DEMModel;
 import edu.jhuapl.near.model.LidarSearchDataCollection;
+import edu.jhuapl.near.model.SmallBodyConfig;
+import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelAuthor;
+import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelBody;
 import edu.jhuapl.near.model.ModelFactory;
-import edu.jhuapl.near.model.ModelFactory.ModelConfig;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.PointInDEMChecker;
 import edu.jhuapl.near.model.SmallBodyModel;
@@ -101,7 +103,7 @@ public class SearchLidarDataInsideMaplet
             System.exit(1);
         }
 
-        ModelConfig config = ModelFactory.getModelConfig(ModelFactory.EROS, ModelFactory.GASKELL);
+        SmallBodyConfig config = SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.EROS, ShapeModelAuthor.GASKELL);
         SmallBodyModel smallBodyModel = ModelFactory.createSmallBodyModel(config);
         LidarSearchDataCollection lidarModel = (LidarSearchDataCollection) ModelFactory.
                 createLidarModels(smallBodyModel).get(ModelNames.LIDAR_SEARCH);

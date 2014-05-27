@@ -14,32 +14,22 @@ public class ModelManager extends Model implements PropertyChangeListener
     private ArrayList<vtkProp> props = new ArrayList<vtkProp>();
     private ArrayList<vtkProp> propsExceptSmallBody = new ArrayList<vtkProp>();
     private HashMap<vtkProp, Model> propToModelMap = new HashMap<vtkProp, Model>();
-    private HashMap<String, Model> allModels = new HashMap<String, Model>();
+    private HashMap<ModelNames, Model> allModels = new HashMap<ModelNames, Model>();
     private boolean mode2D = false;
-
-    public String getUniqueName()
-    {
-        return getSmallBodyModel().getUniqueName();
-    }
-
-    public String getAuthor()
-    {
-        return getSmallBodyModel().getAuthor();
-    }
 
     public boolean isBuiltIn()
     {
         return getSmallBodyModel().isBuiltIn();
     }
 
-    public void setModels(HashMap<String, Model> models)
+    public void setModels(HashMap<ModelNames, Model> models)
     {
         allModels.clear();
 
         CommonData commonData = new CommonData();
         setCommonData(commonData);
 
-        for (String modelName : models.keySet())
+        for (ModelNames modelName : models.keySet())
         {
             Model model = models.get(modelName);
             model.addPropertyChangeListener(this);
@@ -75,7 +65,7 @@ public class ModelManager extends Model implements PropertyChangeListener
         propsExceptSmallBody.clear();
         propToModelMap.clear();
 
-        for (String modelName : allModels.keySet())
+        for (ModelNames modelName : allModels.keySet())
         {
             Model model = allModels.get(modelName);
             if (model.isVisible())
@@ -96,14 +86,14 @@ public class ModelManager extends Model implements PropertyChangeListener
         return propToModelMap.get(prop);
     }
 
-    public Model getModel(String modelName)
+    public Model getModel(ModelNames modelName)
     {
         return allModels.get(modelName);
     }
 
     public SmallBodyModel getSmallBodyModel()
     {
-        for (String modelName : allModels.keySet())
+        for (ModelNames modelName : allModels.keySet())
         {
             Model model = allModels.get(modelName);
             if (model instanceof SmallBodyModel)
@@ -115,7 +105,7 @@ public class ModelManager extends Model implements PropertyChangeListener
 
     public void deleteAllModels()
     {
-        for (String modelName : allModels.keySet())
+        for (ModelNames modelName : allModels.keySet())
             allModels.get(modelName).delete();
     }
 
@@ -123,7 +113,7 @@ public class ModelManager extends Model implements PropertyChangeListener
     {
         mode2D = enable;
 
-        for (String modelName : allModels.keySet())
+        for (ModelNames modelName : allModels.keySet())
             allModels.get(modelName).set2DMode(enable);
     }
 

@@ -27,10 +27,9 @@ public class MSIImage extends PerspectiveImage
 
     public MSIImage(ImageKey key,
             SmallBodyModel smallBodyModel,
-            boolean loadPointingOnly,
-            File rootFolder) throws FitsException, IOException
+            boolean loadPointingOnly) throws FitsException, IOException
     {
-        super(key, smallBodyModel, loadPointingOnly, rootFolder);
+        super(key, smallBodyModel, loadPointingOnly);
     }
 
     @Override
@@ -59,55 +58,38 @@ public class MSIImage extends PerspectiveImage
     }
 
     @Override
-    protected String initializeFitFileFullPath(File rootFolder)
+    protected String initializeFitFileFullPath()
     {
         ImageKey key = getKey();
-        if (rootFolder == null)
-        {
-            return FileCache.getFileFromServer(key.name + ".FIT").getAbsolutePath();
-        }
-        else
-        {
-            return rootFolder.getAbsolutePath() + key.name + ".FIT";
-        }
+        return FileCache.getFileFromServer(key.name + ".FIT").getAbsolutePath();
     }
 
     @Override
-    protected String initializeLabelFileFullPath(File rootFolder)
+    protected String initializeLabelFileFullPath()
     {
         ImageKey key = getKey();
-        String imgLblFilename = key.name + "_DDR.LBL";
-        if (rootFolder == null)
-        {
-            return FileCache.getFileFromServer(imgLblFilename).getAbsolutePath();
-        }
-        else
-        {
-            return rootFolder.getAbsolutePath() + imgLblFilename;
-        }
+        String imgLblFilename = key.name + ".LBL";
+        return FileCache.getFileFromServer(imgLblFilename).getAbsolutePath();
     }
 
     @Override
-    protected String initializeInfoFileFullPath(File rootFolder)
-    {
-        return initializeLabelFileFullPath(rootFolder);
-    }
-
-    @Override
-    protected String initializeSumfileFullPath(File rootFolder)
+    protected String initializeInfoFileFullPath()
     {
         ImageKey key = getKey();
         File keyFile = new File(key.name);
-        String sumFilename = keyFile.getParentFile().getParentFile().getParentFile().getParent()
+        String infoFilename = keyFile.getParentFile().getParent()
+        + "/infofiles/" + keyFile.getName() + ".INFO";
+        return FileCache.getFileFromServer(infoFilename).getAbsolutePath();
+    }
+
+    @Override
+    protected String initializeSumfileFullPath()
+    {
+        ImageKey key = getKey();
+        File keyFile = new File(key.name);
+        String sumFilename = keyFile.getParentFile().getParent()
         + "/sumfiles/" + keyFile.getName().substring(0, 11) + ".SUM";
-        if (rootFolder == null)
-        {
-            return FileCache.getFileFromServer(sumFilename).getAbsolutePath();
-        }
-        else
-        {
-            return rootFolder.getAbsolutePath() + sumFilename;
-        }
+        return FileCache.getFileFromServer(sumFilename).getAbsolutePath();
     }
 
     @Override
@@ -115,5 +97,24 @@ public class MSIImage extends PerspectiveImage
     {
         String fitName = new File(getFitFileFullPath()).getName();
         return Integer.parseInt(fitName.substring(12,13));
+    }
+
+    /**
+     * Note although there is only 1 MSI camera, we are abusing the following function
+     * to return 1 if image is IOF or 2 if image is CIF.
+     */
+    @Override
+    public int getCamera()
+    {
+        String fitName = new File(getFitFileFullPath()).getName();
+        if (fitName.toUpperCase().contains("_IOF_"))
+            return 1;
+        else // CIF
+            return 2;
+    }
+
+    public String getCameraName()
+    {
+        return "MSI";
     }
 }

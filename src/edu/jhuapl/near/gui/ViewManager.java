@@ -9,7 +9,7 @@ import java.util.Arrays;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 
-import edu.jhuapl.near.model.ModelFactory;
+import edu.jhuapl.near.model.SmallBodyConfig;
 import edu.jhuapl.near.util.Configuration;
 
 public class ViewManager extends JPanel
@@ -34,7 +34,7 @@ public class ViewManager extends JPanel
         this.statusBar = statusBar;
         this.frame = frame;
 
-        for (ModelFactory.ModelConfig config: ModelFactory.builtInModelConfigs)
+        for (SmallBodyConfig config: SmallBodyConfig.builtInSmallBodyConfigs)
         {
             builtInViews.add(new View(statusBar, config));
         }
@@ -43,7 +43,7 @@ public class ViewManager extends JPanel
         currentView = builtInViews.get(0);
         currentView.initialize();
 
-        frame.setTitle(currentView.getModelConfig().getPathRepresentation());
+        frame.setTitle(currentView.getSmallBodyConfig().getPathRepresentation());
 
         for (View view : builtInViews)
             add(view, view.getUniqueName());
@@ -88,7 +88,7 @@ public class ViewManager extends JPanel
 
         currentView = view;
 
-        frame.setTitle(currentView.getModelConfig().getPathRepresentation());
+        frame.setTitle(currentView.getSmallBodyConfig().getPathRepresentation());
     }
 
     public View getBuiltInView(int i)

@@ -3,15 +3,15 @@ package edu.jhuapl.near.gui;
 import javax.swing.BorderFactory;
 import javax.swing.JTabbedPane;
 
-import edu.jhuapl.near.model.ModelFactory.ModelConfig;
 import edu.jhuapl.near.model.ModelManager;
+import edu.jhuapl.near.model.SmallBodyConfig;
 import edu.jhuapl.near.pick.PickManager;
 
 
 public class LidarPanel extends JTabbedPane
 {
     public LidarPanel(
-            ModelConfig modelConfig,
+            SmallBodyConfig smallBodyConfig,
             ModelManager modelManager,
             PickManager pickManager,
             Renderer renderer)
@@ -19,7 +19,7 @@ public class LidarPanel extends JTabbedPane
         setBorder(BorderFactory.createEmptyBorder());
 
         LidarBrowsePanel lidarBrowsePanel = new LidarBrowsePanel(modelManager);
-        LidarSearchPanel lidarSearchPanel = new LidarSearchPanel(modelConfig, modelManager, pickManager, renderer);
+        LidarSearchPanel lidarSearchPanel = new LidarSearchPanel(smallBodyConfig, modelManager, pickManager, renderer);
 
         addTab("Browse", lidarBrowsePanel);
         addTab("Search", lidarSearchPanel);

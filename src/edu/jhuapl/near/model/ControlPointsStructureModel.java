@@ -11,11 +11,6 @@ import vtk.vtkActor;
  */
 public abstract class ControlPointsStructureModel extends StructureModel
 {
-    public ControlPointsStructureModel(String name)
-    {
-        super(name);
-    }
-
     abstract public vtkActor getActivationActor();
 
     abstract public void selectCurrentStructureVertex(int idx);

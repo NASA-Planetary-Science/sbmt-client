@@ -23,11 +23,6 @@ public abstract class StructureModel extends Model
         public abstract void setColor(int[] color);
     }
 
-    public StructureModel(String name)
-    {
-        super(name);
-    }
-
     public abstract void addNewStructure();
 
     public abstract boolean supportsActivation();
@@ -87,4 +82,11 @@ public abstract class StructureModel extends Model
     // Get the center of the structure. For ellipses and points, this is obvious.
     // For paths and polygons, this is the mean of the control points.
     public abstract double[] getStructureCenter(int id);
+
+    // Get a measure of the size of the structure. For ellipses and points, this is the diameter.
+    // For paths and polygons, this is twice the distance from the centroid to the farthers point
+    // from the centroid.
+    public abstract double getStructureSize(int id);
+
+    public abstract double[] getStructureNormal(int id);
 }

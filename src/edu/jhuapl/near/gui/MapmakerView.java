@@ -99,7 +99,7 @@ public class MapmakerView extends JFrame
 
         String filename = cubFile.getAbsolutePath();
         final ModelManager modelManager = new ModelManager();
-        HashMap<String, Model> allModels = new HashMap<String, Model>();
+        HashMap<ModelNames, Model> allModels = new HashMap<ModelNames, Model>();
         dem = new DEMModel(filename);
         lineModel = new LineModel(dem, true);
         lineModel.setMaximumVerticesPerLine(2);
@@ -173,8 +173,17 @@ public class MapmakerView extends JFrame
         JMenuItem mi = new JMenuItem(new SaveImageAction(renderer));
         fileMenu.add(mi);
 
-        mi = new JMenuItem(new SaveShapeModelAction());
-        fileMenu.add(mi);
+        JMenu saveShapeModelMenu = new JMenu("Export Shape Model to");
+        fileMenu.add(saveShapeModelMenu);
+
+        mi = new JMenuItem(new SaveShapeModelAsPLTAction());
+        saveShapeModelMenu.add(mi);
+
+        mi = new JMenuItem(new SaveShapeModelAsOBJAction());
+        saveShapeModelMenu.add(mi);
+
+        mi = new JMenuItem(new SaveShapeModelAsSTLAction());
+        saveShapeModelMenu.add(mi);
 
         mi = new JMenuItem(new SavePlateDataAction());
         fileMenu.add(mi);
@@ -489,21 +498,77 @@ public class MapmakerView extends JFrame
         }
     }
 
-    private class SaveShapeModelAction extends AbstractAction
+    private class SaveShapeModelAsPLTAction extends AbstractAction
     {
-        public SaveShapeModelAction()
+        public SaveShapeModelAsPLTAction()
         {
-            super("Export Shape Model...");
+            super("PLT (Gaskell Format)...");
         }
 
         public void actionPerformed(ActionEvent actionEvent)
         {
-            File file = CustomFileChooser.showSaveDialog(null, "Export Shape Model", "model.plt");
+            File file = CustomFileChooser.showSaveDialog(null, "Export Shape Model to PLT", "model.plt");
 
             try
             {
                 if (file != null)
                     dem.saveAsPLT(file);
+            }
+            catch (Exception e1)
+            {
+                e1.printStackTrace();
+                JOptionPane.showMessageDialog(null,
+                        "An error occurred exporting the shape model.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        }
+    }
+
+    private class SaveShapeModelAsOBJAction extends AbstractAction
+    {
+        public SaveShapeModelAsOBJAction()
+        {
+            super("OBJ...");
+        }
+
+        public void actionPerformed(ActionEvent actionEvent)
+        {
+            File file = CustomFileChooser.showSaveDialog(null, "Export Shape Model to OBJ", "model.obj");
+
+            try
+            {
+                if (file != null)
+                    dem.saveAsOBJ(file);
+            }
+            catch (Exception e1)
+            {
+                e1.printStackTrace();
+                JOptionPane.showMessageDialog(null,
+                        "An error occurred exporting the shape model.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        }
+    }
+
+    private class SaveShapeModelAsSTLAction extends AbstractAction
+    {
+        public SaveShapeModelAsSTLAction()
+        {
+            super("STL...");
+        }
+
+        public void actionPerformed(ActionEvent actionEvent)
+        {
+            File file = CustomFileChooser.showSaveDialog(null, "Export Shape Model to STL", "model.stl");
+
+            try
+            {
+                if (file != null)
+                    dem.saveAsSTL(file);
             }
             catch (Exception e1)
             {

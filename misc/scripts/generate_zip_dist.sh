@@ -64,6 +64,9 @@ chmod +x $output_dir/win64-with-jre/sbmt/runsbmt.exe
 
 
 echo -n -e "#!/bin/sh
+echo '**********************************'
+echo 'CLOSING THIS WINDOW WILL QUIT SBMT'
+echo '**********************************'
 DIR=\`dirname \"\$0\"\`
 cd \"\$DIR\"
 export DYLD_LIBRARY_PATH=lib/mac64:\$DYLD_LIBRARY_PATH

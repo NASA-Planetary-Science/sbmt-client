@@ -39,7 +39,6 @@ import vtk.vtkTriangle;
 import vtk.vtkUnsignedCharArray;
 import vtk.vtksbCellLocator;
 
-import edu.jhuapl.near.model.ModelFactory.ModelConfig;
 import edu.jhuapl.near.model.custom.CustomShapeModel;
 import edu.jhuapl.near.util.BoundingBox;
 import edu.jhuapl.near.util.Configuration;
@@ -160,8 +159,7 @@ public class SmallBodyModel extends Model
     private double scaleBarWidthInKm = -1.0;
     private boolean showScaleBar = true;
 
-    private String author;
-    private ModelConfig modelConfig;
+    private SmallBodyConfig smallBodyConfig;
 
     /**
      * Default constructor. Must be followed by a call to setSmallBodyPolyData.
@@ -179,9 +177,7 @@ public class SmallBodyModel extends Model
      * for each resolution level.
      */
     public SmallBodyModel(
-            ModelConfig config,
-            String name,
-            String author,
+            SmallBodyConfig config,
             String[] modelNames,
             String[] modelFiles,
             String[] coloringFiles,
@@ -192,10 +188,7 @@ public class SmallBodyModel extends Model
             ColoringValueType coloringValueType,
             boolean lowestResolutionModelStoredInResource)
     {
-        super(name);
-
-        this.modelConfig = config;
-        this.author = author;
+        this.smallBodyConfig = config;
         this.modelNames = modelNames;
         this.modelFiles = modelFiles;
         this.imageMapNames = imageMapNames;
@@ -252,27 +245,9 @@ public class SmallBodyModel extends Model
         initializeColoringRanges();
     }
 
-    public ModelConfig getModelConfig()
+    public SmallBodyConfig getSmallBodyConfig()
     {
-        return modelConfig;
-    }
-
-    public static String getUniqueName(String name, String author)
-    {
-        if (author != null && !author.isEmpty())
-            return author + "/" + name;
-        else
-            return name;
-    }
-
-    public String getUniqueName()
-    {
-        return getUniqueName(getName(), getAuthor());
-    }
-
-    public String getAuthor()
-    {
-        return author;
+        return smallBodyConfig;
     }
 
     public boolean isBuiltIn()
@@ -313,7 +288,7 @@ public class SmallBodyModel extends Model
         String imagesDir = null;
         if (isBuiltIn())
         {
-            imagesDir = Configuration.getCustomDataFolderForBuiltInViews() + File.separator + getUniqueName();
+            imagesDir = Configuration.getCustomDataFolderForBuiltInViews() + File.separator + smallBodyConfig.getUniqueName();
         }
         else
         {
@@ -1941,6 +1916,11 @@ public class SmallBodyModel extends Model
     public void saveAsVTK(File file) throws IOException
     {
         PolyDataUtil.saveShapeModelAsVTK(smallBodyPolyData, file.getAbsolutePath());
+    }
+
+    public void saveAsSTL(File file) throws IOException
+    {
+        PolyDataUtil.saveShapeModelAsSTL(smallBodyPolyData, file.getAbsolutePath());
     }
 
 

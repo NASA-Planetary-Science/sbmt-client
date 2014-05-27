@@ -1,14 +1,10 @@
 package edu.jhuapl.near.model.eros;
 
-import edu.jhuapl.near.model.ModelFactory;
-import edu.jhuapl.near.model.ModelFactory.ModelConfig;
+import edu.jhuapl.near.model.SmallBodyConfig;
 import edu.jhuapl.near.model.SmallBodyModel;
 
 public class Eros extends SmallBodyModel
 {
-    public static final String NAME = ModelFactory.EROS;
-    public static final String AUTHOR = ModelFactory.GASKELL;
-
     static private final String[] modelNames = {
             "NEAR-A-MSI-5-EROSSHAPE-V1.0 ver64q",
             "NEAR-A-MSI-5-EROSSHAPE-V1.0 ver128q",
@@ -52,11 +48,9 @@ public class Eros extends SmallBodyModel
             SlopeUnitsStr, ElevUnitsStr, GravAccUnitsStr, GravPotUnitsStr
     };
 
-    public Eros(ModelConfig config)
+    public Eros(SmallBodyConfig config)
     {
         super(config,
-                NAME,
-                AUTHOR,
                 modelNames,
                 modelFiles,
                 coloringFiles,

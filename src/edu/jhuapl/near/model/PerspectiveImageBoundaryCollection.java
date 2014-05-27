@@ -30,7 +30,7 @@ public class PerspectiveImageBoundaryCollection extends Model implements Propert
             ImageKey key,
             SmallBodyModel smallBodyModel) throws IOException, FitsException
     {
-        return new PerspectiveImageBoundary((PerspectiveImage)ModelFactory.createImage(key, smallBodyModel, true, null), smallBodyModel);
+        return new PerspectiveImageBoundary((PerspectiveImage)ModelFactory.createImage(key, smallBodyModel, true), smallBodyModel);
     }
 
     private boolean containsKey(ImageKey key)

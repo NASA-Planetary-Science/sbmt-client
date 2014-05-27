@@ -17,10 +17,10 @@ public class CustomPerspectiveImage extends PerspectiveImage
     private String imageName;
 
     public CustomPerspectiveImage(ImageKey key, SmallBodyModel smallBodyModel,
-            boolean loadPointingOnly, File rootFolder) throws FitsException,
+            boolean loadPointingOnly) throws FitsException,
             IOException
     {
-        super(key, smallBodyModel, loadPointingOnly, rootFolder);
+        super(key, smallBodyModel, loadPointingOnly);
 
         loadImageInfoFromConfigFile();
     }
@@ -59,25 +59,25 @@ public class CustomPerspectiveImage extends PerspectiveImage
     }
 
     @Override
-    protected String initializeFitFileFullPath(File rootFolder)
+    protected String initializeFitFileFullPath()
     {
         return getKey().name;
     }
 
     @Override
-    protected String initializeLabelFileFullPath(File rootFolder)
+    protected String initializeLabelFileFullPath()
     {
         return null;
     }
 
     @Override
-    protected String initializeInfoFileFullPath(File rootFolder)
+    protected String initializeInfoFileFullPath()
     {
         return null;
     }
 
     @Override
-    protected String initializeSumfileFullPath(File rootFolder)
+    protected String initializeSumfileFullPath()
     {
         // TODO this is bad in that we read from the config file 3 times in this class
 

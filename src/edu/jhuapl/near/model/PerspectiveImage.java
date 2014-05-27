@@ -19,6 +19,8 @@ import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
 import nom.tam.fits.FitsException;
 
+import org.apache.commons.math3.geometry.euclidean.threed.Rotation;
+
 import vtk.vtkActor;
 import vtk.vtkCell;
 import vtk.vtkCellArray;
@@ -142,26 +144,14 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     // If false, then the footprint is downloaded from the server. This setting is used by the GUI.
     private static boolean generateFootprint = true;
 
-    // If true the footprint will be loaded from the local disk rather than being
-    // downloaded from from the server
-    private static boolean footprintIsOnLocalDisk = false;
-
     /**
      * If loadPointingOnly is true then only pointing information about this
      * image will be downloaded/loaded. The image itself will not be loaded.
      * Used by ImageBoundary to get pointing info.
-     *
-     * If rootFolder is not null, then rather than downloading the relevant files
-     * from the server, this class will assume that all files are located on
-     * the local disk under rootFolder. The image key specifies the remaining
-     * part of the path for the files. Setting rootFolder to something non-null
-     * is only done by the server programs in the server package. The GUI program
-     * should always set this value to null since it always downloads the files.
      */
     public PerspectiveImage(ImageKey key,
             SmallBodyModel smallBodyModel,
-            boolean loadPointingOnly,
-            File rootFolder) throws FitsException, IOException
+            boolean loadPointingOnly) throws FitsException, IOException
     {
         super(key);
         this.smallBodyModel = smallBodyModel;
@@ -170,14 +160,14 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
         if (!loadPointingOnly)
         {
-            fitFileFullPath = initializeFitFileFullPath(rootFolder);
-            labelFileFullPath = initializeLabelFileFullPath(rootFolder);
+            fitFileFullPath = initializeFitFileFullPath();
+            labelFileFullPath = initializeLabelFileFullPath();
         }
 
-        if (key.source.equals(ImageSource.PDS))
-            infoFileFullPath = initializeInfoFileFullPath(rootFolder);
+        if (key.source.equals(ImageSource.SPICE))
+            infoFileFullPath = initializeInfoFileFullPath();
         else
-            sumfileFullPath = initializeSumfileFullPath(rootFolder);
+            sumfileFullPath = initializeSumfileFullPath();
 
         loadPointing();
 
@@ -317,10 +307,10 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
      */
     abstract protected int[] getMaskSizes();
 
-    abstract protected String initializeFitFileFullPath(File rootFolder);
-    abstract protected String initializeLabelFileFullPath(File rootFolder);
-    abstract protected String initializeInfoFileFullPath(File rootFolder);
-    abstract protected String initializeSumfileFullPath(File rootFolder);
+    abstract protected String initializeFitFileFullPath();
+    abstract protected String initializeLabelFileFullPath();
+    abstract protected String initializeInfoFileFullPath();
+    abstract protected String initializeSumfileFullPath();
 
     protected void appendWithPadding(StringBuffer strbuf, String str)
     {
@@ -469,17 +459,17 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         return fitFileFullPath;
     }
 
-    protected String getLabelFileFullPath()
+    public String getLabelFileFullPath()
     {
         return labelFileFullPath;
     }
 
-    protected String getInfoFileFullPath()
+    public String getInfoFileFullPath()
     {
         return infoFileFullPath;
     }
 
-    protected String getSumfileFullPath()
+    public String getSumfileFullPath()
     {
         return sumfileFullPath;
     }
@@ -597,7 +587,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
     protected void loadPointing() throws FitsException, IOException
     {
-        if (key.source.equals(ImageSource.PDS))
+        if (key.source.equals(ImageSource.SPICE))
         {
             loadImageInfo();
         }
@@ -632,11 +622,6 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     public static void setGenerateFootprint(boolean b)
     {
         generateFootprint = b;
-    }
-
-    public static void setFootprintIsOnLocalDisk(boolean b)
-    {
-        footprintIsOnLocalDisk = b;
     }
 
     public ArrayList<vtkProp> getProps()
@@ -1079,25 +1064,12 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
             String footprintFilename = null;
             File file = null;
 
-            if (footprintIsOnLocalDisk)
-            {
-                String fullpath = getFitFileFullPath();
-                if (key.source == ImageSource.PDS)
-                    footprintFilename = fullpath.substring(0, fullpath.length()-4) + "_FOOTPRINT_RES" + resolutionLevel + "_PDS.VTP";
-                else
-                    footprintFilename = fullpath.substring(0, fullpath.length()-4) + "_FOOTPRINT_RES" + resolutionLevel + "_GASKELL.VTP";
-
-                file = new File(footprintFilename);
-            }
+            if (key.source == ImageSource.SPICE)
+                footprintFilename = key.name + "_FOOTPRINT_RES" + resolutionLevel + "_PDS.VTP";
             else
-            {
-                if (key.source == ImageSource.PDS)
-                    footprintFilename = key.name + "_FOOTPRINT_RES" + resolutionLevel + "_PDS.VTP";
-                else
-                    footprintFilename = key.name + "_FOOTPRINT_RES" + resolutionLevel + "_GASKELL.VTP";
+                footprintFilename = key.name + "_FOOTPRINT_RES" + resolutionLevel + "_GASKELL.VTP";
 
-                file = FileCache.getFileFromServer(footprintFilename);
-            }
+            file = FileCache.getFileFromServer(footprintFilename);
 
             if (file == null || !file.exists())
             {
@@ -1628,24 +1600,71 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         }
     }
 
+    /**
+     * Same as previous but return a (4 element) quaternion instead.
+     * First element is the scalar followed by the 3 element vector.
+     * Also returns a rotation matrix.
+     * @param spacecraftPosition
+     * @param quaternion
+     * @return Rotation matrix
+     */
+    public Rotation getCameraOrientation(double[] spacecraftPosition,
+            double[] quaternion)
+    {
+        double[] cx = upVector;
+        double[] cz = new double[3];
+        MathUtil.unorm(boresightDirection, cz);
+
+        double[] cy = new double[3];
+        MathUtil.vcrss(cz, cx, cy);
+
+        double[][] m = {
+                {cx[0], cx[1], cx[2]},
+                {cy[0], cy[1], cy[2]},
+                {cz[0], cz[1], cz[2]}
+        };
+
+        Rotation rotation = new Rotation(m, 1.0e-6);
+
+        for (int i=0; i<3; ++i)
+            spacecraftPosition[i] = this.spacecraftPosition[i];
+
+        quaternion[0] = rotation.getQ0();
+        quaternion[1] = rotation.getQ1();
+        quaternion[2] = rotation.getQ2();
+        quaternion[3] = rotation.getQ3();
+
+        return rotation;
+    }
+
     public Frustum getFrustum()
     {
         return new Frustum(spacecraftPosition, frustum1, frustum3, frustum4, frustum2);
     }
 
     /**
-     *  Get the maximum FOV angle in degrees of the image. I.e., return the
+     *  Get the maximum FOV angle in degrees of the image (the max of either
+     *  the horizontal or vetical FOV). I.e., return the
      *  angular separation in degrees between two corners of the frustum where the
      *  two corners are both on the longer side.
      *
      * @return
      */
-    public double getFovAngle()
+    public double getMaxFovAngle()
+    {
+        return Math.max(getHorizontalFovAngle(), getVerticalFovAngle());
+    }
+
+    public double getHorizontalFovAngle()
     {
         double fovHoriz = MathUtil.vsep(frustum1, frustum3) * 180.0 / Math.PI;
-        double fovVert = MathUtil.vsep(frustum1, frustum2) * 180.0 / Math.PI;
+        return fovHoriz;
+    }
 
-        return Math.max(fovHoriz, fovVert);
+    public double getVerticalFovAngle()
+    {
+        double fovVert = MathUtil.vsep(frustum1, frustum2) * 180.0 / Math.PI;
+        return fovVert;
     }
 
     public double[] getSpacecraftPosition()
@@ -1817,6 +1836,15 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         properties.put("Start Time", getStartTime());
         properties.put("Stop Time", getStopTime());
         properties.put("Spacecraft Distance", df.format(getSpacecraftDistance()) + " km");
+        properties.put("Spacecraft Position",
+                df.format(spacecraftPosition[0]) + ", " + df.format(spacecraftPosition[1]) + ", " + df.format(spacecraftPosition[2]) + " km");
+        double[] quaternion = new double[4];
+        double[] notused = new double[4];
+        getCameraOrientation(notused, quaternion);
+        properties.put("Spacecraft Orientation (quaternion)",
+                "(" + df.format(quaternion[0]) + ", [" + df.format(quaternion[1]) + ", " + df.format(quaternion[2]) + ", " + df.format(quaternion[3]) + "])");
+        properties.put("Sun Vector",
+                df.format(sunVector[0]) + ", " + df.format(sunVector[1]) + ", " + df.format(sunVector[2]));
         if (getCameraName() != null)
             properties.put("Camera", getCameraName());
         if (getFilterName() != null)
@@ -1824,10 +1852,12 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
         // Note \u00B2 is the unicode superscript 2 symbol
         String ss2 = "\u00B2";
-        properties.put("Surface Area", df.format(getSurfaceArea()) + " km" + ss2);
+        properties.put("Footprint Surface Area", df.format(getSurfaceArea()) + " km" + ss2);
 
         // Note \u00B0 is the unicode degree symbol
         String deg = "\u00B0";
+        properties.put("FOV", df.format(getHorizontalFovAngle())+deg + " x " + df.format(getVerticalFovAngle())+deg);
+
         properties.put("Minimum Incidence", df.format(getMinIncidence())+deg);
         properties.put("Maximum Incidence", df.format(getMaxIncidence())+deg);
         properties.put("Minimum Emission", df.format(getMinEmission())+deg);

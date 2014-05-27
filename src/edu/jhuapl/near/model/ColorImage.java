@@ -127,7 +127,7 @@ public class ColorImage extends Model implements PropertyChangeListener
 
     protected PerspectiveImage createImage(ImageKey key, SmallBodyModel smallBodyModel) throws FitsException, IOException
     {
-        return (PerspectiveImage)ModelFactory.createImage(key, smallBodyModel, false, null);
+        return (PerspectiveImage)ModelFactory.createImage(key, smallBodyModel, false);
     }
 
     private void computeFootprintAndColorImage() throws NoOverlapException

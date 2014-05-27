@@ -28,10 +28,14 @@ public class FileMenu extends JMenu
         this.add(mi);
         mi = new JMenuItem(new Save6AxesViewsAction());
         this.add(mi);
+        JMenu saveShapeModelMenu = new JMenu("Export Shape Model to");
+        this.add(saveShapeModelMenu);
         mi = new JMenuItem(new SaveShapeModelAsPLTAction());
-        this.add(mi);
+        saveShapeModelMenu.add(mi);
         mi = new JMenuItem(new SaveShapeModelAsOBJAction());
-        this.add(mi);
+        saveShapeModelMenu.add(mi);
+        mi = new JMenuItem(new SaveShapeModelAsSTLAction());
+        saveShapeModelMenu.add(mi);
         mi = new JMenuItem(new ShowCameraOrientationAction());
         this.add(mi);
         mi = new JMenuItem(new CopyToClipboardAction());
@@ -115,12 +119,12 @@ public class FileMenu extends JMenu
     {
         public SaveShapeModelAsPLTAction()
         {
-            super("Export Shape Model as PLT...");
+            super("PLT (Gaskell Format)...");
         }
 
         public void actionPerformed(ActionEvent actionEvent)
         {
-            File file = CustomFileChooser.showSaveDialog(null, "Export Shape Model as PLT", "model.plt");
+            File file = CustomFileChooser.showSaveDialog(null, "Export Shape Model to PLT (Gaskell Format)", "model.plt");
 
             try
             {
@@ -143,17 +147,45 @@ public class FileMenu extends JMenu
     {
         public SaveShapeModelAsOBJAction()
         {
-            super("Export Shape Model as OBJ...");
+            super("OBJ...");
         }
 
         public void actionPerformed(ActionEvent actionEvent)
         {
-            File file = CustomFileChooser.showSaveDialog(null, "Export Shape Model as OBJ", "model.obj");
+            File file = CustomFileChooser.showSaveDialog(null, "Export Shape Model to OBJ", "model.obj");
 
             try
             {
                 if (file != null)
                     rootPanel.getCurrentView().getModelManager().getSmallBodyModel().saveAsOBJ(file);
+            }
+            catch (Exception e1)
+            {
+                e1.printStackTrace();
+                JOptionPane.showMessageDialog(null,
+                        "An error occurred exporting the shape model.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        }
+    }
+
+    private class SaveShapeModelAsSTLAction extends AbstractAction
+    {
+        public SaveShapeModelAsSTLAction()
+        {
+            super("STL...");
+        }
+
+        public void actionPerformed(ActionEvent actionEvent)
+        {
+            File file = CustomFileChooser.showSaveDialog(null, "Export Shape Model to STL", "model.stl");
+
+            try
+            {
+                if (file != null)
+                    rootPanel.getCurrentView().getModelManager().getSmallBodyModel().saveAsSTL(file);
             }
             catch (Exception e1)
             {

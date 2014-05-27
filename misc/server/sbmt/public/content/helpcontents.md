@@ -50,6 +50,7 @@ and key bindings work with the rendering panel:
     direction
 -   Keypress Z (uppercase): reorient camera to point in negative z
     direction
+-   Keypress n: spin camera so that positive z points up
 
 In addition, whenever one moves the mouse pointer over a point of the
 small body, the latitude, longitude, radius, and distance is shown on

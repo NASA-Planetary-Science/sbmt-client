@@ -86,15 +86,6 @@ public class Configuration
         return rootURL + "/data";
     }
 
-    /**
-     * @return Return the url of the server where data is downloaded from.
-     * for use by the APL in-house version
-     */
-    static public String getDataRootURLAPL()
-    {
-        return rootURL + "/data-apl";
-    }
-
     static public String getQueryRootURL()
     {
         return rootURL + "/query";
@@ -103,11 +94,6 @@ public class Configuration
     static public String getHelpRootURL()
     {
         return rootURL + "/help/";
-    }
-
-    static public String getFeedbackRootURL()
-    {
-        return rootURL + "/feedback/";
     }
 
     static public String getImportedShapeModelsDir()

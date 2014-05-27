@@ -22,8 +22,10 @@ import vtk.vtkGlobalJavaHash;
 
 import edu.jhuapl.near.model.Image.ImageKey;
 import edu.jhuapl.near.model.Image.ImageSource;
-import edu.jhuapl.near.model.ModelFactory;
 import edu.jhuapl.near.model.PerspectiveImage;
+import edu.jhuapl.near.model.SmallBodyConfig;
+import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelAuthor;
+import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelBody;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.eros.MSIImage;
 import edu.jhuapl.near.model.itokawa.AmicaImage;
@@ -74,7 +76,7 @@ public class AmicaBackplanesGenerator
             return false;
 
         // If source is Gaskell, only process it if a sumfile exists.
-        // If source is PDS, only process it if an infofile exists and a sumfile DOES NOT exist.
+        // If source is SPICE, only process it if an infofile exists and a sumfile DOES NOT exist.
 
         // First check if it's a valid Gaskell file
         File amicarootdir = (new File(line)).getParentFile().getParentFile();
@@ -91,7 +93,7 @@ public class AmicaBackplanesGenerator
             hasSumfile = false;
         }
 
-        // Next check if it's a valid PDS file
+        // Next check if it's a valid infofile file
         String filename = (new File(line)).getName();
         amicaId = filename.substring(0, filename.indexOf('.'));
         name = amicarootdir.getAbsolutePath() + "/infofiles/" + amicaId + ".INFO";
@@ -228,7 +230,7 @@ public class AmicaBackplanesGenerator
             String keyName = origFile.getAbsolutePath().replace(rootFolder.getAbsolutePath(), "");
             keyName = keyName.replace(".fit", "");
             ImageKey key = new ImageKey(keyName, amicaSource);
-            AmicaImage image = new AmicaImage(key, itokawaModel, false, rootFolder);
+            AmicaImage image = new AmicaImage(key, itokawaModel, false);
             int[] croppedSize = image.getCroppedSize();
             currentCroppedWidth = croppedSize[1];
             currentCroppedHeight = croppedSize[0];
@@ -284,7 +286,7 @@ public class AmicaBackplanesGenerator
                 itokawaModel.setModelResolution(res);
             }
 
-            AmicaImage image = new AmicaImage(key, itokawaModel, false, rootFolder);
+            AmicaImage image = new AmicaImage(key, itokawaModel, false);
             int[] croppedSize = image.getCroppedSize();
             currentCroppedWidth = croppedSize[1];
             currentCroppedHeight = croppedSize[0];
@@ -500,7 +502,7 @@ public class AmicaBackplanesGenerator
         String inertialFilename = args[1];
         int mode = Integer.parseInt(args[2]);
 
-        itokawaModel = new Itokawa(ModelFactory.getModelConfig(ModelFactory.ITOKAWA, ModelFactory.GASKELL));
+        itokawaModel = new Itokawa(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.ITOKAWA, ShapeModelAuthor.GASKELL));
 
         computeMeanPlateSizeAtAllResolutions();
 
@@ -522,7 +524,7 @@ public class AmicaBackplanesGenerator
             }
             else if (mode == 2 || mode == 0)
             {
-                generateBackplanes(amicaFiles, ImageSource.PDS);
+                generateBackplanes(amicaFiles, ImageSource.SPICE);
             }
         }
         catch (Exception e1) {

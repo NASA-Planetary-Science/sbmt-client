@@ -103,8 +103,8 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
         final SmallBodyModel smallBodyModel = modelManager.getSmallBodyModel();
 
         int numberResolutionLevels = smallBodyModel.getNumberResolutionLevels();
-        String[] labels = smallBodyModel.getModelConfig().smallBodyLabelPerResolutionLevel;
-        int[] plateCount = smallBodyModel.getModelConfig().smallBodyNumberOfPlatesPerResolutionLevel;
+        String[] labels = smallBodyModel.getSmallBodyConfig().smallBodyLabelPerResolutionLevel;
+        int[] plateCount = smallBodyModel.getSmallBodyConfig().smallBodyNumberOfPlatesPerResolutionLevel;
 
         if (numberResolutionLevels > 1)
         {

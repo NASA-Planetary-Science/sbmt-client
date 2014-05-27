@@ -2,8 +2,7 @@ cmake_minimum_required(VERSION 2.6)
 
 PROJECT(lidar)
 
-set(VTK_DIR /project/nearsdc/software/vtk/build)
-#set(VTK_DIR /Users/kahneg1/software/vtk/vtk-5.8.0/build)
+set(VTK_DIR /project/nearsdc/software/vtk/vtk-5.6.0/build-static)
 find_package(VTK REQUIRED)
 include(${VTK_USE_FILE})
 
@@ -11,6 +10,7 @@ set(SPICE_DIR /project/nearsdc/software/spice/alpha_dsk_c CACHE PATH "Path to Sp
 set(LBFGS_DIR /project/nearsdc/software/liblbfgs/install CACHE PATH "Path to Lbfgs")
 set(ADOLC_DIR /project/nearsdc/software/adolc/install CACHE PATH "Path to ADOLC")
 set(GSL_DIR /project/nearsdc/software/gsl/install CACHE PATH "Path to GSL")
+set(GOOGLE_TEST_DIR /project/nearsdc/software/googletest/gtest-1.7.0 CACHE PATH "Path to googletest")
 
 add_definitions(-ansi -Wall)
 
@@ -20,6 +20,7 @@ ${SPICE_DIR}/src/dsklib_c
 ${LBFGS_DIR}/include
 ${GSL_DIR}/include
 ${ADOLC_DIR}/include
+${GOOGLE_TEST_DIR}/include
 ${CMAKE_SOURCE_DIR}
 ${CMAKE_SOURCE_DIR}/gravity
 ${CMAKE_SOURCE_DIR}/lidar
@@ -27,7 +28,8 @@ ${CMAKE_SOURCE_DIR}/icp
 ${CMAKE_SOURCE_DIR}/common
 ${CMAKE_SOURCE_DIR}/propagation
 ${CMAKE_SOURCE_DIR}/optimization)
-link_directories(${SPICE_DIR}/lib ${LBFGS_DIR}/lib ${GSL_DIR}/lib ${ADOLC_DIR}/lib64)
+
+link_directories(${SPICE_DIR}/lib ${LBFGS_DIR}/lib ${GSL_DIR}/lib ${ADOLC_DIR}/lib64 ${GOOGLE_TEST_DIR})
 
 add_library(lidar
 icp/icp.cpp
@@ -100,3 +102,6 @@ target_link_libraries(normals-centers lidar)
 
 add_executable(cam-est camera_est/cam-est.cpp)
 target_link_libraries(cam-est lidar)
+
+add_executable(runtests test/util-test.cpp)
+target_link_libraries(runtests lidar gtest_main gtest )
