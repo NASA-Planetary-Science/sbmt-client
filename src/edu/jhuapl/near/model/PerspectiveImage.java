@@ -1643,18 +1643,28 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     }
 
     /**
-     *  Get the maximum FOV angle in degrees of the image. I.e., return the
+     *  Get the maximum FOV angle in degrees of the image (the max of either
+     *  the horizontal or vetical FOV). I.e., return the
      *  angular separation in degrees between two corners of the frustum where the
      *  two corners are both on the longer side.
      *
      * @return
      */
-    public double getFovAngle()
+    public double getMaxFovAngle()
+    {
+        return Math.max(getHorizontalFovAngle(), getVerticalFovAngle());
+    }
+
+    public double getHorizontalFovAngle()
     {
         double fovHoriz = MathUtil.vsep(frustum1, frustum3) * 180.0 / Math.PI;
-        double fovVert = MathUtil.vsep(frustum1, frustum2) * 180.0 / Math.PI;
+        return fovHoriz;
+    }
 
-        return Math.max(fovHoriz, fovVert);
+    public double getVerticalFovAngle()
+    {
+        double fovVert = MathUtil.vsep(frustum1, frustum2) * 180.0 / Math.PI;
+        return fovVert;
     }
 
     public double[] getSpacecraftPosition()
@@ -1842,10 +1852,12 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
         // Note \u00B2 is the unicode superscript 2 symbol
         String ss2 = "\u00B2";
-        properties.put("Surface Area", df.format(getSurfaceArea()) + " km" + ss2);
+        properties.put("Footprint Surface Area", df.format(getSurfaceArea()) + " km" + ss2);
 
         // Note \u00B0 is the unicode degree symbol
         String deg = "\u00B0";
+        properties.put("FOV", df.format(getHorizontalFovAngle())+deg + " x " + df.format(getVerticalFovAngle())+deg);
+
         properties.put("Minimum Incidence", df.format(getMinIncidence())+deg);
         properties.put("Maximum Incidence", df.format(getMaxIncidence())+deg);
         properties.put("Minimum Emission", df.format(getMinEmission())+deg);
