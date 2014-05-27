@@ -77,9 +77,6 @@ public class GenericPhpQuery extends QueryBase
 
         if (searchString != null)
         {
-            if (searchString.isEmpty())
-                return results;
-
             HashMap<String, String> args = new HashMap<String, String>();
             args.put("imagesDatabase", imagesDatabase);
             args.put("imageSource", imageSource.toString());
