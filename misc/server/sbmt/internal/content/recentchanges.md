@@ -4,6 +4,41 @@
 
 # Recent Changes
 
+### May 27, 2014
+
+-   In image properties window, adding spacecraft position, orientation,
+    camera FOV, and sun vector to property list.
+-   In image search panel, changed PDS to read SPICE in pointing drop
+    down menu (since that better describes it).
+-   In File menu, added option for exporting shape model to STL format.
+-   Improved centering of structures (when using options when
+    right-clicking on a structure).  There are now 2 options: 1)
+    center in window and move up close to structure and 2) center in
+    window but preserve original distance.
+-   Fixed problem in which some circles would not draw.
+-   add 15 more Hudson shape models (YORP, WT24, SK, Ra-Shalom, Nereus,
+    Mithra, KW4 Alpha, KW4 Beta, HW1, EV5, CE26 Alpha, CC Alpha,
+    Betulia, DA Prograde, DA Retrograde). Available from
+    [http://echo.jpl.nasa.gov/asteroids/shapes/shapes.html](http://echo.jpl.nasa.gov/asteroids/shapes/shapes.html).
+-   Added N key press shortcut for spinning view along boresight so that Z axis is up.
+-   Added link to data folder on SBMT home page.
+-   Fixed wrong orientation of triangles in Mapmaker renderer view.
+-   In Imaging search panels, changed label to read Search by Filename
+    (instead of Search by ID) since we now do text search in filename. This
+    means that when you enter a search term, it does not need to be an
+    integer (as was the case previously). It can be any part of the
+    filename. For example, if you are searching for MSI image
+    M0131076086F4_2P_IOF_DBL.FIT, you can now enter the full name
+    "M0131076086F4_2P_IOF_DBL.FIT" (without quotes) rather than
+    131076086. In addition you can enter any part of the name, and all
+    images that contain the text entered in the filename, will be
+    returned. For example, if you enter "M013", then all images
+    beginning with M013 will be returned. If you leave the field
+    empty, all images in the database with the specified pointing will
+    be returned.
+-   In Mapmaker rendering view, adding export to OBJ format in File menu
+    (was missing previously).
+
 ### April 9, 2014
 
 -   Added shape models of Jupiter, Callisto, Europa, Ganymede, and Io
