@@ -39,12 +39,6 @@ public class ViewManager extends JPanel
             builtInViews.add(new View(statusBar, config));
         }
 
-
-        currentView = builtInViews.get(0);
-        currentView.initialize();
-
-        frame.setTitle(currentView.getSmallBodyConfig().getPathRepresentation());
-
         for (View view : builtInViews)
             add(view, view.getUniqueName());
 
@@ -52,6 +46,8 @@ public class ViewManager extends JPanel
 
         for (View view : customViews)
             add(view, view.getUniqueName());
+
+        setCurrentView(builtInViews.get(0));
     }
 
     private void loadCustomViews()
