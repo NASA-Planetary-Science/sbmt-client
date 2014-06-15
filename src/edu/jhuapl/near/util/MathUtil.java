@@ -529,6 +529,15 @@ public class MathUtil
         return (0.25* Math.sqrt(Math.abs(4.0*a*c - (a-b+c)*(a-b+c))));
     }
 
+    static public void triangleCenter(double[] p1, double[] p2,
+            double[] p3, double[] center)
+    {
+        center[0] = (p1[0]+p2[0]+p3[0]) / 3.0;
+        center[1] = (p1[1]+p2[1]+p3[1]) / 3.0;
+        center[2] = (p1[2]+p2[2]+p3[2]) / 3.0;
+    }
+
+
     /**
      * Adapted from VTK's version. Computes (unnormalized) triangle normal
      */
