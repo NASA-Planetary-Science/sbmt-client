@@ -76,7 +76,6 @@ abstract public class LidarCubesGenerator
 
     public void run()
     {
-        System.setProperty("java.awt.headless", "true");
         NativeLibraryLoader.loadVtkLibraries();
 
         SmallBodyModel smallBodyModel = getSmallBodyModel();
