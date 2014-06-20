@@ -3003,6 +3003,38 @@ public class PolyDataUtil
         return body;
     }
 
+    static public vtkPolyData loadVTKShapeModel(String filename) throws Exception
+    {
+        vtkPolyDataReader smallBodyReader = new vtkPolyDataReader();
+        smallBodyReader.SetFileName(filename);
+        smallBodyReader.Update();
+
+        vtkPolyData output = smallBodyReader.GetOutput();
+
+        vtkPolyData shapeModel = new vtkPolyData();
+        shapeModel.ShallowCopy(output);
+
+        smallBodyReader.Delete();
+
+        return shapeModel;
+    }
+
+    static public vtkPolyData loadOBJShapeModel(String filename) throws Exception
+    {
+        vtkOBJReader smallBodyReader = new vtkOBJReader();
+        smallBodyReader.SetFileName(filename);
+        smallBodyReader.Update();
+
+        vtkPolyData output = smallBodyReader.GetOutput();
+
+        vtkPolyData shapeModel = new vtkPolyData();
+        shapeModel.ShallowCopy(output);
+
+        smallBodyReader.Delete();
+
+        return shapeModel;
+    }
+
     /**
      * This function loads a shape model in a variety of formats. It looks
      * at its file extension to determine it format. It supports these formats:
@@ -3023,26 +3055,12 @@ public class PolyDataUtil
         vtkPolyData shapeModel = new vtkPolyData();
         if (filename.toLowerCase().endsWith(".vtk"))
         {
-            vtkPolyDataReader smallBodyReader = new vtkPolyDataReader();
-            smallBodyReader.SetFileName(filename);
-            smallBodyReader.Update();
-
-            vtkPolyData output = smallBodyReader.GetOutput();
-            shapeModel.ShallowCopy(output);
-
-            smallBodyReader.Delete();
+            shapeModel = loadVTKShapeModel(filename);
         }
         else if (filename.toLowerCase().endsWith(".obj") ||
                 filename.toLowerCase().endsWith(".wf"))
         {
-            vtkOBJReader smallBodyReader = new vtkOBJReader();
-            smallBodyReader.SetFileName(filename);
-            smallBodyReader.Update();
-
-            vtkPolyData output = smallBodyReader.GetOutput();
-            shapeModel.ShallowCopy(output);
-
-            smallBodyReader.Delete();
+            shapeModel = loadOBJShapeModel(filename);
         }
         else if (filename.toLowerCase().endsWith(".pds") ||
                 filename.toLowerCase().endsWith(".plt") ||
