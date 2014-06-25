@@ -2,6 +2,7 @@
 #include <fstream>
 #include <time.h>
 #include <libgen.h>
+#include "SpiceUsr.h"
 #include "gravity-werner.h"
 #include "gravity-cheng.h"
 #include "gravity-point.h"
@@ -42,7 +43,8 @@ static void saveResults(char* pltfile,
                         bool saveElevation,
                         bool savePlateCenters,
                         Platemodel* polyData,
-                        string suffix)
+                        string suffix,
+                        HowToEvaluateAtPlate howToEvaluate)
 {
     string pltfilebasename = basename(pltfile);
 
@@ -79,7 +81,25 @@ static void saveResults(char* pltfile,
     {
         foutP << results[i].potential << endl;
         foutA << results[i].acc[0] << " " << results[i].acc[1] << " " << results[i].acc[2] << endl;
-        foutAM << Norm(results[i].acc) << endl;
+
+        double mag = Norm(results[i].acc);
+        // If slope is greater than 90 deg, give the acc mag a negative number. Otherwise give it a positive number.
+        // Only do this when computing gravity at plate centers.
+        if (howToEvaluate != FROM_FILE)
+        {
+            double cellNormal[3];
+            polyData->getNormal(i, cellNormal);
+            double negaticeAcc[3];
+            negaticeAcc[0] = -results[i].acc[0];
+            negaticeAcc[1] = -results[i].acc[1];
+            negaticeAcc[2] = -results[i].acc[2];
+            double slope = vsep_c(cellNormal, negaticeAcc) * 180.0 / M_PI;
+            if (slope > 90.0)
+                mag = -fabs(mag);
+            else
+                mag = fabs(mag);
+        }
+        foutAM << mag << endl;
     }
 
     foutP.close();
@@ -506,7 +526,7 @@ int main(int argc, char** argv)
     // centers only, then a separate program must be used to calculate
     // elevation and slope.
     bool saveElevation = refPotentialProvided && howToEvalute == FROM_FILE;
-    saveResults(pltfile, plateResults, saveElevation, savePlateCenters, polyData, suffix);
+    saveResults(pltfile, plateResults, saveElevation, savePlateCenters, polyData, suffix, howToEvalute);
 
     return 0;
 }
