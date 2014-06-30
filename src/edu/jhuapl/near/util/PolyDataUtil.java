@@ -3226,10 +3226,8 @@ public class PolyDataUtil
         writer.Write();
     }
 
-    static public void removeDuplicatePoints(String filename) throws Exception
+    static public void removeDuplicatePoints(vtkPolyData polydata) throws Exception
     {
-        vtkPolyData polydata = loadPDSShapeModel(filename);
-
         vtkCleanPolyData cleanFilter = new vtkCleanPolyData();
         cleanFilter.PointMergingOn();
         cleanFilter.SetTolerance(0.0);
@@ -3238,8 +3236,9 @@ public class PolyDataUtil
         cleanFilter.ConvertStripsToPolysOff();
         cleanFilter.SetInput(polydata);
         cleanFilter.Update();
+        vtkPolyData cleanOutput = cleanFilter.GetOutput();
 
-        saveShapeModelAsPLT(cleanFilter.GetOutput(), filename);
+        polydata.DeepCopy(cleanOutput);
     }
 
     static public void decimatePolyData(vtkPolyData polydata, double targetReduction)
