@@ -39,7 +39,6 @@ import vtk.vtkTriangle;
 import vtk.vtkUnsignedCharArray;
 import vtk.vtksbCellLocator;
 
-import edu.jhuapl.near.model.custom.CustomShapeModel;
 import edu.jhuapl.near.util.BoundingBox;
 import edu.jhuapl.near.util.Configuration;
 import edu.jhuapl.near.util.ConvertResourceToFile;
@@ -295,7 +294,7 @@ public class SmallBodyModel extends Model
             {
                 cellDataFilenames += "platedata" + i + ".txt";
                 if (i < cellDataPaths.length-1)
-                    cellDataFilenames += CustomShapeModel.LIST_SEPARATOR;
+                    cellDataFilenames += SmallBodyModel.LIST_SEPARATOR;
             }
 
             configMap.put(SmallBodyModel.CELL_DATA_FILENAMES, cellDataFilenames);
