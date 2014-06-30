@@ -172,6 +172,22 @@ public class SmallBodyModel extends Model
     }
 
     /**
+     * Convenience method for initializing a SmallBodyModel with just a vtkPolyData.
+     * @param polyData
+     */
+    public SmallBodyModel(vtkPolyData polyData)
+    {
+        this();
+
+        vtkFloatArray[] coloringValues = {};
+        String[] coloringNames = {};
+        String[] coloringUnits = {};
+        ColoringValueType coloringValueType = ColoringValueType.CELLDATA;
+
+        setSmallBodyPolyData(polyData, coloringValues, coloringNames, coloringUnits, coloringValueType);
+    }
+
+    /**
      * Note that name is used to name this small body model as a whole including all
      * resolution levels whereas modelNames is an array of names that is specific
      * for each resolution level.
@@ -243,6 +259,9 @@ public class SmallBodyModel extends Model
 
         initializeLocators();
         initializeColoringRanges();
+
+        lowResSmallBodyPolyData = smallBodyPolyData;
+        lowResPointLocator = pointLocator;
     }
 
     public SmallBodyConfig getSmallBodyConfig()
