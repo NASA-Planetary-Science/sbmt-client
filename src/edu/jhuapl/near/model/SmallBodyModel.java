@@ -55,6 +55,7 @@ import edu.jhuapl.near.util.SmallBodyCubes;
 
 public class SmallBodyModel extends Model
 {
+    public static final String LIST_SEPARATOR = ",";
     public static final String CELL_DATA_PATHS = "CellDataPaths"; // for backwards compatibility
     public static final String CELL_DATA_FILENAMES = "CellDataFilenames";
     public static final String CELL_DATA_NAMES = "CellDataNames";

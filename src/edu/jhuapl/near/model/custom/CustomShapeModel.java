@@ -21,7 +21,6 @@ public class CustomShapeModel extends SmallBodyModel
     public static final String PDS_FORMAT = "PDS";
     public static final String OBJ_FORMAT = "OBJ";
     public static final String VTK_FORMAT = "VTK";
-    public static final String LIST_SEPARATOR = ",";
 
     public CustomShapeModel(SmallBodyConfig config)
     {
