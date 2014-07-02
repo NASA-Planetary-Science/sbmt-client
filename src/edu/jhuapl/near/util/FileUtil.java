@@ -112,14 +112,14 @@ public class FileUtil
     }
 
 
-    public static void saveList(ArrayList<Object> array, String filename) throws IOException
+    public static <T> void saveList(ArrayList<T> array, String filename) throws IOException
     {
         FileWriter fstream = new FileWriter(filename);
         BufferedWriter out = new BufferedWriter(fstream);
 
         String nl = System.getProperty("line.separator");
 
-        for (Object o : array)
+        for (T o : array)
             out.write(o.toString() + nl);
 
         out.close();
