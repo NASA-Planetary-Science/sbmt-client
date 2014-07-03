@@ -39,6 +39,7 @@ struct GravityResult
 };
 
 static void saveResults(char* pltfile,
+                        string outputFolder,
                         const vector<GravityResult>& results,
                         bool saveElevation,
                         bool savePlateCenters,
@@ -48,9 +49,9 @@ static void saveResults(char* pltfile,
 {
     string pltfilebasename = basename(pltfile);
 
-    string outputPot = pltfilebasename + "-potential.txt" + suffix;
-    string outputAcc = pltfilebasename + "-acceleration.txt" + suffix;
-    string outputAccMag = pltfilebasename + "-acceleration-magnitude.txt" + suffix;
+    string outputPot = outputFolder + "/" + pltfilebasename + "-potential.txt" + suffix;
+    string outputAcc = outputFolder + "/" + pltfilebasename + "-acceleration.txt" + suffix;
+    string outputAccMag = outputFolder + "/" + pltfilebasename + "-acceleration-magnitude.txt" + suffix;
 
     ofstream foutP(outputPot.c_str());
     if (!foutP.is_open())
@@ -108,7 +109,7 @@ static void saveResults(char* pltfile,
 
     if (saveElevation)
     {
-        string outputElev = pltfilebasename + "-elevation.txt" + suffix;
+        string outputElev = outputFolder + "/" + pltfilebasename + "-elevation.txt" + suffix;
 
         ofstream foutE(outputElev.c_str());
         if (!foutE.is_open())
@@ -128,7 +129,7 @@ static void saveResults(char* pltfile,
 
     if (savePlateCenters)
     {
-        string outputCenters = pltfilebasename + "-centers.txt" + suffix;
+        string outputCenters = outputFolder + "/" + pltfilebasename + "-centers.txt" + suffix;
 
         ofstream foutC(outputCenters.c_str());
         if (!foutC.is_open())
@@ -183,7 +184,9 @@ static void usage()
          << "                         1999 are processed. This is useful for parallelizing large shape models on\n"
          << "                         multiple machines. These options are ignored if --file option is provided\n"
          << " --save-plate-centers    If specified, the centers of all plates in the shape model are saved to an\n"
-         << "                         additional file.\n";
+         << "                         additional file.\n"
+         << " --output-folder <folder>\n"
+         << "                         Path to folder in which to place output files (defualt is current directory).\n";
 
     exit(0);
 }
@@ -214,6 +217,7 @@ int main(int argc, char** argv)
     int endPlate = -1;
     bool savePlateCenters = false;
     string suffix = "";
+    string outputFolder = ".";
 
     int i = 1;
     for(; i<argc; ++i)
@@ -284,6 +288,10 @@ int main(int argc, char** argv)
         else if (!strcmp(argv[i], "--suffix"))
         {
             suffix = argv[++i];
+        }
+        else if (!strcmp(argv[i], "--output-folder"))
+        {
+            outputFolder = argv[++i];
         }
         else
         {
@@ -526,7 +534,7 @@ int main(int argc, char** argv)
     // centers only, then a separate program must be used to calculate
     // elevation and slope.
     bool saveElevation = refPotentialProvided && howToEvalute == FROM_FILE;
-    saveResults(pltfile, plateResults, saveElevation, savePlateCenters, polyData, suffix, howToEvalute);
+    saveResults(pltfile, outputFolder, plateResults, saveElevation, savePlateCenters, polyData, suffix, howToEvalute);
 
     return 0;
 }
