@@ -197,6 +197,9 @@ static void usage()
          << "                         multiple machines.\n"
          << " --save-plate-centers    If specified, the centers of all plates in the shape model are saved to an\n"
          << "                         additional file.\n"
+         << " --suffix <value>        If specified, the suffix will be appended to all output files. This is needed when\n"
+         << "                         splitting large shape models into mulitple runs so that each run will be output to\n"
+         << "                         different files.\n"
          << " --output-folder <folder>\n"
          << "                         Path to folder in which to place output files (defualt is current directory).\n";
 
