@@ -194,7 +194,7 @@ static void usage()
          << " --end-index <value>     use these 2 options to specify a range of plates or points to process. For example if\n"
          << "                         --start-index is 1000 and --end-index is 2000, then only plates or points 1000 through\n"
          << "                         1999 are processed. This is useful for parallelizing large shape models on\n"
-         << "                         multiple machines. These options are ignored if --file option is provided\n"
+         << "                         multiple machines.\n"
          << " --save-plate-centers    If specified, the centers of all plates in the shape model are saved to an\n"
          << "                         additional file.\n"
          << " --output-folder <folder>\n"
@@ -357,8 +357,16 @@ int main(int argc, char** argv)
             t1 = clock();
             string line;
             int count = 0;
+            int lineNumber = -1;
             while (getline(fin, line))
             {
+                ++lineNumber;
+                if (startIndex >= 0 && endIndex >= 0)
+                {
+                    if (lineNumber < startIndex || lineNumber >= endIndex)
+                        continue;
+                }
+
                 vector<string> tokens = split(line);
                 double pt[3] = {
                     atof(tokens[ fileColumns[0] ].c_str()),
