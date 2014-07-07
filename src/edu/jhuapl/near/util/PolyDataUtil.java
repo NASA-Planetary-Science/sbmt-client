@@ -2221,9 +2221,12 @@ public class PolyDataUtil
             return 0.0;
         }
 
-        double[] p1 = polydata.GetPoint(idList.GetId(0));
-        double[] p2 = polydata.GetPoint(idList.GetId(1));
-        double[] p3 = polydata.GetPoint(idList.GetId(2));
+        double[] p1 = new double[3];
+        double[] p2 = new double[3];
+        double[] p3 = new double[3];
+        polydata.GetPoint(idList.GetId(0), p1);
+        polydata.GetPoint(idList.GetId(1), p2);
+        polydata.GetPoint(idList.GetId(2), p3);
         double v1 = pointdata.GetTuple1(idList.GetId(0));
         double v2 = pointdata.GetTuple1(idList.GetId(1));
         double v3 = pointdata.GetTuple1(idList.GetId(2));
