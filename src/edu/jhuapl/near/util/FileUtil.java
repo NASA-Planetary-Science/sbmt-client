@@ -83,6 +83,26 @@ public class FileUtil
         return values;
     }
 
+    public static long getNumberOfLinesInfile(String filename) throws IOException
+    {
+        InputStream fs = new FileInputStream(filename);
+        if (filename.toLowerCase().endsWith(".gz"))
+            fs = new GZIPInputStream(fs);
+        InputStreamReader isr = new InputStreamReader(fs);
+        BufferedReader in = new BufferedReader(isr);
+
+        long count = 0;
+
+        while (in.readLine() != null)
+        {
+            ++count;
+        }
+
+        in.close();
+
+        return count;
+    }
+
     /**
      * Returns the first line of the file that matches the specified string
      * @param filename the file to search through
