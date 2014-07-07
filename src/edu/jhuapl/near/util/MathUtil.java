@@ -605,6 +605,23 @@ public class MathUtil
         return v1*bcoords[0] + v2*bcoords[1] + v3*bcoords[2];
     }
 
+    /** Vector version of previous function */
+    static public double[] interpolateWithinTriangle(
+            double[] x,
+            double[] p1,
+            double[] p2,
+            double[] p3,
+            double[] v1,
+            double[] v2,
+            double[] v3) {
+        double[] bcoords = new double[3];
+        barycentricCoords(x, p1, p2, p3, bcoords);
+        double[] interpolatedValue = new double[v1.length];
+        for (int i = 0; i < v1.length; ++i)
+            interpolatedValue[i] = v1[i] * bcoords[0] + v2[i] * bcoords[1] + v3[i] * bcoords[2];
+        return interpolatedValue;
+    }
+
     // This function is taken from http://www.java2s.com/Code/Java/Language-Basics/Utilityforbyteswappingofalljavadatatypes.htm
     static public int swap(int value)
     {
