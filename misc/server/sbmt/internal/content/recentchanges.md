@@ -16,7 +16,7 @@
     center in window and move up close to structure and 2) center in
     window but preserve original distance.
 -   Fixed problem in which some circles would not draw.
--   add 15 more Hudson shape models (YORP, WT24, SK, Ra-Shalom, Nereus,
+-   Added 15 more Hudson shape models (YORP, WT24, SK, Ra-Shalom, Nereus,
     Mithra, KW4 Alpha, KW4 Beta, HW1, EV5, CE26 Alpha, CC Alpha,
     Betulia, DA Prograde, DA Retrograde). Available from
     [http://echo.jpl.nasa.gov/asteroids/shapes/shapes.html](http://echo.jpl.nasa.gov/asteroids/shapes/shapes.html).
@@ -24,13 +24,13 @@
 -   Added link to data folder on SBMT home page.
 -   Fixed wrong orientation of triangles in Mapmaker renderer view.
 -   In Imaging search panels, changed label to read Search by Filename
-    (instead of Search by ID) since we now do text search in filename. This
-    means that when you enter a search term, it does not need to be an
-    integer (as was the case previously). It can be any part of the
-    filename. For example, if you are searching for MSI image
-    M0131076086F4_2P_IOF_DBL.FIT, you can now enter the full name
-    "M0131076086F4_2P_IOF_DBL.FIT" (without quotes) rather than
-    131076086. In addition you can enter any part of the name, and all
+    (instead of Search by ID) since we now do text search in
+    filename. This means that when you enter a search term, it does
+    not need to be an integer (as was the case previously). It can be
+    any part of the filename. For example, if you are searching for
+    MSI image M0131076086F4_2P_IOF_DBL.FIT, you can now enter the full
+    name "M0131076086F4_2P_IOF_DBL.FIT" (without quotes) rather than
+    "131076086". In addition you can enter any part of the name, and all
     images that contain the text entered in the filename, will be
     returned. For example, if you enter "M013", then all images
     beginning with M013 will be returned. If you leave the field
