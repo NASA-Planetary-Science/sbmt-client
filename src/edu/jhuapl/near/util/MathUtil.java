@@ -649,4 +649,16 @@ public class MathUtil
         double y = y0 + ((y1-y0)*(x-x0)/(x1-x0));
         return y;
     }
+
+    static public void printArray(double[] p)
+    {
+        System.out.print("[");
+        for (int i=0;i<p.length; ++i)
+        {
+            System.out.print(p[i]);
+            if (i < p.length-1)
+                System.out.print(" ");
+        }
+        System.out.println("]");
+    }
 }
