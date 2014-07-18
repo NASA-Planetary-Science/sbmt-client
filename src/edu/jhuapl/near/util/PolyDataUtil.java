@@ -2505,6 +2505,8 @@ public class PolyDataUtil
 
         in.close();
 
+        addPointNormalsToShapeModel(polydata);
+
         return polydata;
     }
 
@@ -2580,6 +2582,8 @@ public class PolyDataUtil
         idList.Delete();
 
         in.close();
+
+        addPointNormalsToShapeModel(polydata);
 
         return polydata;
     }
@@ -2815,6 +2819,7 @@ public class PolyDataUtil
         ////writer.SetFileTypeToBinary();
         //writer.Write();
 
+        addPointNormalsToShapeModel(body);
 
         return body;
     }
@@ -3003,6 +3008,8 @@ public class PolyDataUtil
                 }
             }
 
+        addPointNormalsToShapeModel(body);
+
         return body;
     }
 
@@ -3019,6 +3026,8 @@ public class PolyDataUtil
 
         smallBodyReader.Delete();
 
+        addPointNormalsToShapeModel(shapeModel);
+
         return shapeModel;
     }
 
@@ -3034,6 +3043,8 @@ public class PolyDataUtil
         shapeModel.ShallowCopy(output);
 
         smallBodyReader.Delete();
+
+        addPointNormalsToShapeModel(shapeModel);
 
         return shapeModel;
     }
@@ -3099,24 +3110,30 @@ public class PolyDataUtil
             return null;
         }
 
-        if (shapeModel.GetPointData().GetNormals() == null)
+        addPointNormalsToShapeModel(shapeModel);
+
+        return shapeModel;
+    }
+
+    static public void addPointNormalsToShapeModel(vtkPolyData polydata)
+    {
+        if (polydata.GetPointData().GetNormals() == null)
         {
             // Add normal vectors
             vtkPolyDataNormals normalsFilter = new vtkPolyDataNormals();
-            normalsFilter.SetInput(shapeModel);
+            normalsFilter.SetInput(polydata);
             normalsFilter.SetComputeCellNormals(0);
             normalsFilter.SetComputePointNormals(1);
             normalsFilter.SplittingOff();
             normalsFilter.AutoOrientNormalsOn();
+            normalsFilter.ConsistencyOn();
             normalsFilter.Update();
 
             vtkPolyData normalsOutput = normalsFilter.GetOutput();
-            shapeModel.ShallowCopy(normalsOutput);
+            polydata.ShallowCopy(normalsOutput);
 
             normalsFilter.Delete();
         }
-
-        return shapeModel;
     }
 
     static public void saveShapeModelAsPLT(vtkPolyData polydata, String filename) throws IOException
