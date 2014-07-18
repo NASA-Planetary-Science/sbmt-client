@@ -101,7 +101,7 @@ static void usage()
          << "shape model. It uses the gravitational acceleration vector and potential \n"
          << "files computed using the gravity program.\n"
          << "Usage: elevation-slope <platemodel-file> <potential-file> <acceleration-vector-file>\n";
-    exit(0);
+    exit(1);
 }
 
 

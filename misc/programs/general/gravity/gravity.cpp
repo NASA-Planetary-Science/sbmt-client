@@ -206,7 +206,7 @@ static void usage()
          << "                          Path to folder in which to place output files (defualt is current directory).\n"
          << endl;
 
-    exit(0);
+    exit(1);
 }
 
 int main(int argc, char** argv)
