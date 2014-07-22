@@ -84,7 +84,7 @@ public class VectorField extends Model implements PropertyChangeListener
         arrowSource.SetShaftRadius(0.005);
 
         vtkGlyph3D glyph3D = new vtkGlyph3D();
-        glyph3D.SetSource(arrowSource.GetOutput());
+        glyph3D.SetSourceConnection(arrowSource.GetOutputPort());
         glyph3D.SetVectorModeToUseVector();
         glyph3D.SetInput(polydata);
         glyph3D.SetScaleFactor(.01);
@@ -92,7 +92,7 @@ public class VectorField extends Model implements PropertyChangeListener
 
         if (mapper == null)
             mapper = new vtkPolyDataMapper();
-        mapper.SetInput(glyph3D.GetOutput());
+        mapper.SetInputConnection(glyph3D.GetOutputPort());
         mapper.Update();
 
         if (actor == null)

@@ -83,7 +83,7 @@ public class ShapeModelImporter
             {
                 // Turn it into ellipsoid
                 vtkTransformPolyDataFilter filter = new vtkTransformPolyDataFilter();
-                filter.SetInput(shapePoly);
+                filter.SetInputConnection(sphereSource.GetOutputPort());
 
                 vtkTransform transform = new vtkTransform();
                 transform.Scale(1.0, 1.0, polarRadius/equRadius);

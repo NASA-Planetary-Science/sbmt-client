@@ -101,7 +101,7 @@ public class AmicaImage extends PerspectiveImage
         }
 
         vtkImageTranslateExtent translateExtent = new vtkImageTranslateExtent();
-        translateExtent.SetInputConnection(rawImage.GetProducerPort());
+        translateExtent.SetInput(rawImage);
         translateExtent.SetTranslation(leftMask, bottomMask, 0);
         translateExtent.Update();
 

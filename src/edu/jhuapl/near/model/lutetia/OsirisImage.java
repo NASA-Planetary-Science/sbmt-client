@@ -50,7 +50,7 @@ public class OsirisImage extends PerspectiveImage
         int yshift = 575;
 
         vtkImageTranslateExtent translateExtent = new vtkImageTranslateExtent();
-        translateExtent.SetInputConnection(rawImage.GetProducerPort());
+        translateExtent.SetInput(rawImage);
         translateExtent.SetTranslation(xshift, yshift, 0);
         translateExtent.Update();
 
