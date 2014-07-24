@@ -684,7 +684,7 @@ public class PolyDataUtil
             sides.add(i);
         Collections.shuffle(sides);
 
-        vtkPolyData nextInput = polyData;
+        vtkAlgorithmOutput nextInput = null;
         vtkClipPolyData clipPolyData = null;
         for (int i=0; i<sides.size(); ++i)
         {
@@ -720,13 +720,15 @@ public class PolyDataUtil
             //clipPolyData = clipFilters.get(i);
             clipPolyData = new vtkClipPolyData();
             d.add(clipPolyData);
-            clipPolyData.SetInput(nextInput);
+            if (i==0)
+                clipPolyData.SetInput(polyData);
+            else
+                clipPolyData.SetInputConnection(nextInput);
             clipPolyData.SetClipFunction(plane);
             clipPolyData.SetInsideOut(1);
             //clipPolyData.Update();
 
-            nextInput = clipPolyData.GetOutput();
-            d.add(nextInput);
+            nextInput = clipPolyData.GetOutputPort();
 
             //if (i > clipOutputs.size()-1)
             //    clipOutputs.add(nextInput);
@@ -1152,7 +1154,7 @@ public class PolyDataUtil
 
         int numberOfSides = controlPoints.size();
 
-        vtkPolyData nextInput = polyData;
+        vtkAlgorithmOutput nextInput = null;
         vtkClipPolyData clipPolyData = null;
         for (int i=0; i<numberOfSides; ++i)
         {
@@ -1187,13 +1189,15 @@ public class PolyDataUtil
             //clipPolyData = clipFilters.get(i);
             clipPolyData = new vtkClipPolyData();
             d.add(clipPolyData);
-            clipPolyData.SetInput(nextInput);
+            if (i==0)
+                clipPolyData.SetInput(polyData);
+            else
+                clipPolyData.SetInputConnection(nextInput);
             clipPolyData.SetClipFunction(plane);
             clipPolyData.SetInsideOut(1);
             //clipPolyData.Update();
 
-            nextInput = clipPolyData.GetOutput();
-            d.add(nextInput);
+            nextInput = clipPolyData.GetOutputPort();
 
             //if (i > clipOutputs.size()-1)
             //    clipOutputs.add(nextInput);
@@ -1526,7 +1530,7 @@ public class PolyDataUtil
 
         ArrayList<vtkClipPolyData> clipFilters = new ArrayList<vtkClipPolyData>();
         ArrayList<vtkPlane> clipPlanes = new ArrayList<vtkPlane>();
-        ArrayList<vtkPolyData> clipOutputs = new ArrayList<vtkPolyData>(); // not sure is this one is really needed
+        ArrayList<vtkAlgorithmOutput> clipOutputs = new ArrayList<vtkAlgorithmOutput>(); // not sure is this one is really needed
 
         // randomly shuffling the order of the sides we process can speed things up
         ArrayList<Integer> sides = new ArrayList<Integer>();
@@ -1534,7 +1538,7 @@ public class PolyDataUtil
             sides.add(i);
         Collections.shuffle(sides);
 
-        vtkPolyData nextInput = polyData;
+        vtkAlgorithmOutput nextInput = null;
         vtkClipPolyData clipPolyData = null;
         for (int i=0; i<sides.size(); ++i)
         {
@@ -1573,12 +1577,15 @@ public class PolyDataUtil
                 clipFilters.add(new vtkClipPolyData());
             clipPolyData = clipFilters.get(i);
             //            clipPolyData = new vtkClipPolyData();
-            clipPolyData.SetInput(nextInput);
+            if (i == 0)
+                clipPolyData.SetInput(polyData);
+            else
+                clipPolyData.SetInputConnection(nextInput);
             clipPolyData.SetClipFunction(plane);
             clipPolyData.SetInsideOut(1);
             //clipPolyData.Update();
 
-            nextInput = clipPolyData.GetOutput();
+            nextInput = clipPolyData.GetOutputPort();
 
             if (i > clipOutputs.size()-1)
                 clipOutputs.add(nextInput);
@@ -1606,7 +1613,7 @@ public class PolyDataUtil
         {
             // Compute the bounding edges of this surface
             vtkFeatureEdges edgeExtracter = new vtkFeatureEdges();
-            edgeExtracter.SetInput(connectivityFilter.GetOutput());
+            edgeExtracter.SetInputConnection(connectivityFilter.GetOutputPort());
             edgeExtracter.BoundaryEdgesOn();
             edgeExtracter.FeatureEdgesOff();
             edgeExtracter.NonManifoldEdgesOff();
