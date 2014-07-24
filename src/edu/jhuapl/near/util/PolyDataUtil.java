@@ -3276,5 +3276,7 @@ public class PolyDataUtil
         vtkPolyData decOutput = dec.GetOutput();
 
         polydata.DeepCopy(decOutput);
+
+        dec.Delete();
     }
 }
