@@ -623,6 +623,15 @@ public class MathUtil
     }
 
     // This function is taken from http://www.java2s.com/Code/Java/Language-Basics/Utilityforbyteswappingofalljavadatatypes.htm
+    static public short swap(short value)
+    {
+        int b1 = value & 0xff;
+        int b2 = (value >> 8) & 0xff;
+
+        return (short) (b1 << 8 | b2 << 0);
+    }
+
+    // This function is taken from http://www.java2s.com/Code/Java/Language-Basics/Utilityforbyteswappingofalljavadatatypes.htm
     static public int swap(int value)
     {
         int b1 = (value >>  0) & 0xff;
