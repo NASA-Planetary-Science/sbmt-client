@@ -27,7 +27,7 @@ public class Mapmaker
     private String name;
     private double latitude;
     private double longitude;
-    private int halfSize = 513;
+    private int halfSize = 512;
     private double pixelSize;
     private File outputFolder;
     private File mapletFitsFile;

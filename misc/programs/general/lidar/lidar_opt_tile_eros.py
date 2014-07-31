@@ -77,7 +77,7 @@ def runMapmakerAtLonLat(lon, lat, mapmakerFolder):
     name="lat"+str(lat)+"_lon"+str(lon)
     outputFolder = mapmakerFolder+"/OUTPUT/"
 
-    command = "run_java_program.sh edu.jhuapl.near.tools.RunMapmaker " + mapmakerFolder + " " + name + " 513 5.0 " + str(lat) + " " + str(lon) + " " + outputFolder
+    command = "run_java_program.sh edu.jhuapl.near.tools.RunMapmaker " + mapmakerFolder + " " + name + " 512 5.0 " + str(lat) + " " + str(lon) + " " + outputFolder
     print command
     os.system(command)
 
