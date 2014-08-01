@@ -16,7 +16,12 @@ public class ConvertMaplet
 
     private static void usage()
     {
-        System.out.println("Usage: ConvertMaplet -obj|-plt|-vtk [-boundary|-decimate] <maplet-file> <output-file>");
+        String usage = "This program takes a FITS file which was output from the Mapmaker program and converts\n"
+                + "it to a shape model in either OBJ, PLT or VTK format. You can also optionally decimate\n"
+                + "it (to 1% its original size) or save out only the boundary of the maplet.\n\n"
+                + "Usage: ConvertMaplet -obj|-plt|-vtk [-boundary|-decimate] <maplet-file> <output-file>\n";
+        System.out.println(usage);
+
         System.exit(0);
     }
 
