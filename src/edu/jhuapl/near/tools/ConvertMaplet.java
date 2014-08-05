@@ -38,6 +38,7 @@ public class ConvertMaplet
         OutputType outputTypeEnum = null;
         boolean boundaryOnly = false;
         boolean decimate = false;
+        double decimationPercentage = 0.99;
 
         int i = 0;
         for(; i<args.length; ++i)
@@ -61,6 +62,7 @@ public class ConvertMaplet
             else if (args[i].equals("-decimate") || args[i].equals("--decimate"))
             {
                 decimate = true;
+                decimationPercentage = Double.parseDouble(args[++i]);
             }
             else
             {
@@ -108,7 +110,7 @@ public class ConvertMaplet
 
                 if (decimate)
                 {
-                    PolyDataUtil.decimatePolyData(polydata, 0.99);
+                    PolyDataUtil.decimatePolyData(polydata, decimationPercentage);
                 }
 
                 if (outputTypeEnum == OutputType.OBJ)
