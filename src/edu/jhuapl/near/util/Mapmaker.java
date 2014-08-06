@@ -85,7 +85,7 @@ public class Mapmaker
         return process;
     }
 
-    public void convertCubeToFitsAndSaveInOutputFolder()
+    public void convertCubeToFitsAndSaveInOutputFolder(boolean deleteCub)
     {
         try
         {
@@ -140,6 +140,13 @@ public class Mapmaker
             BufferedFile bf = new BufferedFile(mapletFitsFile, "rw");
             f.write(bf);
             bf.close();
+
+            if (deleteCub)
+            {
+                origCubeFile.delete();
+                File origLblFile = new File(mapmakerRootDir + File.separator + "OUTPUT" + File.separator + name + ".lbl");
+                origLblFile.delete();
+            }
         }
         catch (IOException e)
         {

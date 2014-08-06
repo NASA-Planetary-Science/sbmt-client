@@ -110,7 +110,7 @@ public class MapmakerSwingWorker extends FileDownloadSwingWorker
                 Thread.sleep(333);
             }
 
-            mapmaker.convertCubeToFitsAndSaveInOutputFolder();
+            mapmaker.convertCubeToFitsAndSaveInOutputFolder(false);
             mapletFile = mapmaker.getMapletFile();
         }
         catch (IOException e)
