@@ -82,7 +82,7 @@ public class MapmakerSwingWorker extends FileDownloadSwingWorker
 
             Mapmaker mapmaker = new Mapmaker(mapmakerRootDir);
             mapmaker.setName(name);
-            LatLon ll = MathUtil.reclat(centerPoint);
+            LatLon ll = MathUtil.reclat(centerPoint).toDegrees();
             mapmaker.setLatitude(ll.lat);
             mapmaker.setLongitude(ll.lon);
             mapmaker.setHalfSize(halfSize);

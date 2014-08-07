@@ -179,12 +179,12 @@ public class Mapmaker
     }
 
     /**
-     * set the latitude in radians
+     * set the latitude in degrees
      * @param latitude
      */
     public void setLatitude(double latitude)
     {
-        this.latitude = latitude * 180.0 / Math.PI;
+        this.latitude = latitude;
     }
 
     public double getLongitude()
@@ -193,12 +193,12 @@ public class Mapmaker
     }
 
     /**
-     * set the longitude in radians and as West Longitude (not east as is shown in the status bar)
+     * set the longitude in degrees and as West Longitude (not east as is shown in the status bar)
      * @param longitude
      */
     public void setLongitude(double longitude)
     {
-        this.longitude = longitude * 180.0 / Math.PI;
+        this.longitude = longitude;
         this.longitude = 360.0 - this.longitude;
         if (this.longitude < 0.0)
             this.longitude += 360.0;
