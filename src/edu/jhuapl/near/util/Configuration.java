@@ -78,6 +78,16 @@ public class Configuration
         return cacheDir;
     }
 
+    public static String getRootURL()
+    {
+        return rootURL;
+    }
+
+    public static void setRootURL(String rootURL)
+    {
+        Configuration.rootURL = rootURL;
+    }
+
     /**
      * @return Return the url of the server where data is downloaded from.
      */
