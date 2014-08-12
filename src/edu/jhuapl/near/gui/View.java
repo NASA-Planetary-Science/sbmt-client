@@ -136,7 +136,10 @@ public class View extends JPanel
             }
 
             controlPanel.addTab("Structures", new StructuresControlPanel(modelManager, pickManager));
-            controlPanel.addTab("Images", new CustomImagesPanel(modelManager, infoPanelManager, pickManager, renderer));
+            if (!smallBodyConfig.customTemporary)
+            {
+                controlPanel.addTab("Images", new CustomImagesPanel(modelManager, infoPanelManager, pickManager, renderer));
+            }
 
             if (smallBodyConfig.hasMapmaker)
             {
@@ -340,6 +343,15 @@ public class View extends JPanel
     {
         SmallBodyConfig config = new SmallBodyConfig();
         config.customName = name;
+        config.author = ShapeModelAuthor.CUSTOM;
+        return new View(statusBar, config);
+    }
+
+    static public View createTemporaryCustomView(StatusBar statusBar, String pathToShapeModel)
+    {
+        SmallBodyConfig config = new SmallBodyConfig();
+        config.customName = pathToShapeModel;
+        config.customTemporary = true;
         config.author = ShapeModelAuthor.CUSTOM;
         return new View(statusBar, config);
     }

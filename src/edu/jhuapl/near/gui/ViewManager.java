@@ -26,8 +26,12 @@ public class ViewManager extends JPanel
      *
      * @param statusBar
      * @param frame
+     * @param tempCustomShapeModelPath path to shape model. May be null.
+     * If non-null, the main window will create a temporary custom view of the shape model
+     * which will be shown first. This temporary view is not saved into the custom application
+     * folder and will not be available unless explicitely imported.
      */
-    public ViewManager(StatusBar statusBar, Frame frame)
+    public ViewManager(StatusBar statusBar, Frame frame, String tempCustomShapeModelPath)
     {
         super(new CardLayout());
         setBorder(BorderFactory.createEmptyBorder());
@@ -42,16 +46,28 @@ public class ViewManager extends JPanel
         for (View view : builtInViews)
             add(view, view.getUniqueName());
 
-        loadCustomViews();
+        loadCustomViews(tempCustomShapeModelPath);
 
         for (View view : customViews)
             add(view, view.getUniqueName());
 
-        setCurrentView(builtInViews.get(0));
+        if (tempCustomShapeModelPath == null)
+        {
+            setCurrentView(builtInViews.get(0));
+        }
+        else
+        {
+            setCurrentView(customViews.get(0));
+        }
     }
 
-    private void loadCustomViews()
+    private void loadCustomViews(String newCustomShapeModelPath)
     {
+        if (newCustomShapeModelPath != null)
+        {
+            customViews.add(View.createTemporaryCustomView(statusBar, newCustomShapeModelPath));
+        }
+
         File modelsDir = new File(Configuration.getImportedShapeModelsDir());
         File[] dirs = modelsDir.listFiles();
         if (dirs != null && dirs.length > 0)

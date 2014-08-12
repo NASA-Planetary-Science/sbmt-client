@@ -161,7 +161,7 @@ public class ModelFactory
 
             return new Graticule(smallBodyModel, graticulePaths);
         }
-        else if (ShapeModelAuthor.CUSTOM == author)
+        else if (ShapeModelAuthor.CUSTOM == author && !config.customTemporary)
         {
             return new CustomGraticule(smallBodyModel);
         }

@@ -20,13 +20,19 @@ public class MainWindow extends JFrame
     private HelpMenu helpMenu;
     private ViewManager rootPanel;
 
-    public MainWindow()
+    /**
+     * @param tempCustomShapeModelPath path to shape model. May be null.
+     * If non-null, the main window will create a temporary custom view of the shape model
+     * which will be shown first. This temporary view is not saved into the custom application
+     * folder and will not be available unless explicitely imported.
+     */
+    public MainWindow(String tempCustomShapeModelPath)
     {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         createStatusBar();
 
-        rootPanel = new ViewManager(statusBar, this);
+        rootPanel = new ViewManager(statusBar, this, tempCustomShapeModelPath);
 
         createMenus();
 
