@@ -65,19 +65,16 @@ public class BatchSubmission
 
     private static boolean runBatchSubmitProgramGridEngine(ArrayList<String> commandList) throws InterruptedException, IOException
     {
-        // Create a text file with all the commands that should be run, one per
-        // line
+        // Create a text file for input to qsub making use of qsub's job array option
         File temp = File.createTempFile("altwg-batch-list", ".bash", null);
 
         FileWriter ofs = new FileWriter(temp);
         BufferedWriter out = new BufferedWriter(ofs);
-
-        for (String o : commandList)
-            out.write("echo " + o.toString() + " | qsub\n");
-
+        for (int i=1; i<=commandList.size(); ++i)
+            out.write("if [ $SGE_TASK_ID -eq " + i + " ]; then \n "+ commandList.get(i-1) + "\n exit $?\nfi\n");
         out.close();
 
-        String batchSubmitCommand = "/bin/bash " + temp.getAbsolutePath();
+        String batchSubmitCommand = "qsub -S /bin/bash -V -sync y -t 1-" + commandList.size() + " " + temp.getAbsolutePath();
 
         return runProgramAndWait(batchSubmitCommand);
     }

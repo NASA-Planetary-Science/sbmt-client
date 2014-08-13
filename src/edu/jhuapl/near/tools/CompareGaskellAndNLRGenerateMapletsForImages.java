@@ -82,7 +82,10 @@ public class CompareGaskellAndNLRGenerateMapletsForImages
             // are 1153 bytes long or less
             File sumfile = new File(image.getSumfileFullPath());
             if (!sumfile.exists() || sumfile.length() <= 1153)
+            {
+                System.out.println("no sumfile or no landmarks");
                 continue;
+            }
 
             String imageId = new File(key.name).getName();
             imageId = imageId.substring(0, imageId.length()-4);
@@ -107,8 +110,8 @@ public class CompareGaskellAndNLRGenerateMapletsForImages
             //testIntersect(mapletFileVtk, key, sampleOffset, lineOffset);
         }
 
-        BatchSubmission.runBatchSubmitPrograms(mapmakerCommands, BatchType.LOCAL_PARALLEL);
-        BatchSubmission.runBatchSubmitPrograms(convertCommands, BatchType.LOCAL_PARALLEL);
+        BatchSubmission.runBatchSubmitPrograms(mapmakerCommands, BatchType.GRID_ENGINE);
+        BatchSubmission.runBatchSubmitPrograms(convertCommands, BatchType.GRID_ENGINE);
     }
 
 
