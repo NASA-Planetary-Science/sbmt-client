@@ -410,7 +410,7 @@ public class CompareGaskellAndNLR
                 double imageRange = MathUtil.distanceBetween(scPos, imageSurfacePoint);
 
                 out.write(imageId + "," + imageRange + "," + lidarRange + "," + imageTime + "," + lidarPoint.getFormattedTime()
-                        + "," + (Math.abs(imageRange-lidarRange)) + "," + ((double)Math.abs(time - lidarPoint.time)/1000.0) + ","
+                        + "," + (imageRange-lidarRange) + "," + ((double)Math.abs(time - lidarPoint.time)/1000.0) + ","
                         + imageSurfacePoint[0] + "," + imageSurfacePoint[1] + "," + imageSurfacePoint[2] + ","
                         + lidarPoint.point[0] + "," + lidarPoint.point[1] + "," + lidarPoint.point[2] + "\n");
             }
@@ -516,7 +516,7 @@ public class CompareGaskellAndNLR
                 double[] illumAngles = image.computeIlluminationAnglesAtPoint(imageSurfacePoint, imageSurfaceNormal);
                 double incidence = illumAngles[0];
                 double emission = illumAngles[1];
-                double rangediff = Math.abs(imageRange-lidarRange);
+                double rangediff = imageRange-lidarRange;
                 long timediff = Math.abs(time - lidarPoint.time);
 
                 out.write(imageId + "," + imageRange + "," + lidarRange + "," + imageTime + "," + lidarPoint.getFormattedTime()
