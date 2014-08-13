@@ -99,4 +99,16 @@ public class NativeLibraryLoader
             System.loadLibrary("vtksbUnsortedJava");
         }
     }
+
+    static public void loadVtkLibrariesHeadless()
+    {
+        System.loadLibrary("vtkCommonJava");
+        System.loadLibrary("vtkFilteringJava");
+        System.loadLibrary("vtkGraphicsJava");
+        System.loadLibrary("vtkGenericFilteringJava");
+        System.loadLibrary("vtkIOJava");
+        System.loadLibrary("vtkImagingJava");
+        System.loadLibrary("vtksbUnsortedJava");
+    }
+
 }
