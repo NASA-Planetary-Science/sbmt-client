@@ -141,6 +141,8 @@ public class View extends JPanel
                 controlPanel.addTab("Images", new CustomImagesPanel(modelManager, infoPanelManager, pickManager, renderer));
             }
 
+            controlPanel.addTab("Tracks", new TrackPanel(smallBodyConfig, modelManager, pickManager, renderer));
+
             if (smallBodyConfig.hasMapmaker)
             {
                 JComponent component = new MapmakerPanel(modelManager, pickManager, smallBodyConfig.pathOnServer + "/mapmaker.zip");
@@ -256,6 +258,7 @@ public class View extends JPanel
         allModels.put(ModelNames.ELLIPSE_STRUCTURES, new EllipseModel(smallBodyModel));
         allModels.put(ModelNames.POINT_STRUCTURES, new PointModel(smallBodyModel));
         allModels.put(ModelNames.CIRCLE_SELECTION, new CircleSelectionModel(smallBodyModel));
+        allModels.put(ModelNames.TRACKS, new LidarSearchDataCollection(smallBodyModel));
 
         modelManager.setModels(allModels);
     }

@@ -19,5 +19,6 @@ public enum ModelNames
     LIDAR_SUMMARY,
     LIDAR_BROWSE,
     LIDAR_SEARCH,
-    MAPLET_BOUNDARY
+    MAPLET_BOUNDARY,
+    TRACKS
 }
