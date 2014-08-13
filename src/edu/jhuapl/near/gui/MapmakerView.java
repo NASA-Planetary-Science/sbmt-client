@@ -101,6 +101,7 @@ public class MapmakerView extends JFrame
         final ModelManager modelManager = new ModelManager();
         HashMap<ModelNames, Model> allModels = new HashMap<ModelNames, Model>();
         dem = new DEMModel(filename);
+        dem.setColoringIndex(0);
         lineModel = new LineModel(dem, true);
         lineModel.setMaximumVerticesPerLine(2);
         allModels.put(ModelNames.SMALL_BODY, dem);
