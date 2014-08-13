@@ -1,4 +1,4 @@
- ---
+---
 title: Small Body Mapping Tool
 ---
 
@@ -15,15 +15,15 @@ quickly search and visualize small body data.
 
 ## Quick Start
 
-Latest version: 2013.12.26
+Latest version: VERSIONXXXXXX
 
 Download the file below appropriate for your platform, unzip, navigate
 to the 'sbmt' folder and run the 'runsbmt' program.
 
-   -  Mac: [sbmt-2013.12.26-macosx-x64.zip](releases/sbmt-2013.12.26-macosx-x64.zip)
-   -  Linux: [sbmt-2013.12.26-linux-x64.zip](releases/sbmt-2013.12.26-linux-x64.zip)
-   -  Windows: [sbmt-2013.12.26-windows-x64.zip](releases/sbmt-2013.12.26-windows-x64.zip) (does not include Java)
-   -  Windows: [sbmt-2013.12.26-windows-x64-with-java.zip](releases/sbmt-2013.12.26-windows-x64-with-java.zip) (includes Java)
+   -  Mac: [sbmt-VERSIONXXXXXX-macosx-x64.zip](releases/sbmt-VERSIONXXXXXX-macosx-x64.zip)
+   -  Linux: [sbmt-VERSIONXXXXXX-linux-x64.zip](releases/sbmt-VERSIONXXXXXX-linux-x64.zip)
+   -  Windows: [sbmt-VERSIONXXXXXX-windows-x64.zip](releases/sbmt-VERSIONXXXXXX-windows-x64.zip) (does not include Java)
+   -  Windows: [sbmt-VERSIONXXXXXX-windows-x64-with-java.zip](releases/sbmt-VERSIONXXXXXX-windows-x64-with-java.zip) (includes Java)
 
 For more detailed installation instructions, including system requirements, click [here](installation.html).
 
