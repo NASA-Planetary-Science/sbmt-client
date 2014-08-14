@@ -164,7 +164,7 @@ int main(int argc, char** argv)
     if (referenceTrajectory.size() < 300)
     {
         cout << "Error: Reference trajectory too short!" << endl;
-        exit(0);
+        exit(1);
     }
 
     PropagatorFit propFit;

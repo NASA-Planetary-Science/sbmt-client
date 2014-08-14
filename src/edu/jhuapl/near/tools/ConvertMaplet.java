@@ -16,7 +16,12 @@ public class ConvertMaplet
 
     private static void usage()
     {
-        System.out.println("Usage: ConvertMaplet -obj|-plt|-vtk [-boundary|-decimate] <maplet-file> <output-file>");
+        String usage = "This program takes a FITS file which was output from the Mapmaker program and converts\n"
+                + "it to a shape model in either OBJ, PLT or VTK format. You can also optionally decimate\n"
+                + "it (to 1% its original size) or save out only the boundary of the maplet.\n\n"
+                + "Usage: ConvertMaplet -obj|-plt|-vtk [-boundary|-decimate] <maplet-file> <output-file>\n";
+        System.out.println(usage);
+
         System.exit(0);
     }
 
@@ -33,6 +38,7 @@ public class ConvertMaplet
         OutputType outputTypeEnum = null;
         boolean boundaryOnly = false;
         boolean decimate = false;
+        double decimationPercentage = 0.99;
 
         int i = 0;
         for(; i<args.length; ++i)
@@ -56,6 +62,7 @@ public class ConvertMaplet
             else if (args[i].equals("-decimate") || args[i].equals("--decimate"))
             {
                 decimate = true;
+                decimationPercentage = Double.parseDouble(args[++i]);
             }
             else
             {
@@ -77,7 +84,7 @@ public class ConvertMaplet
         String mapletFile = args[i++];
         String outputFile = args[i];
 
-        NativeLibraryLoader.loadVtkLibraries();
+        NativeLibraryLoader.loadVtkLibrariesHeadless();
 
         DEMModel dem = null;
         try
@@ -103,7 +110,7 @@ public class ConvertMaplet
 
                 if (decimate)
                 {
-                    PolyDataUtil.decimatePolyData(polydata, 0.99);
+                    PolyDataUtil.decimatePolyData(polydata, decimationPercentage);
                 }
 
                 if (outputTypeEnum == OutputType.OBJ)

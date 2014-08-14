@@ -253,7 +253,7 @@ public class LidarDataPerUnit extends Model
         geometryFilterSc.SetPointMaximum(count);
 
         vtkPolyDataMapper pointsMapper = new vtkPolyDataMapper();
-        pointsMapper.SetInput(geometryFilter.GetOutput());
+        pointsMapper.SetInputConnection(geometryFilter.GetOutputPort());
 
         vtkActor actor = new vtkActor();
         actor.SetMapper(pointsMapper);
@@ -265,7 +265,7 @@ public class LidarDataPerUnit extends Model
 
 
         vtkPolyDataMapper pointsMapperSc = new vtkPolyDataMapper();
-        pointsMapperSc.SetInput(geometryFilterSc.GetOutput());
+        pointsMapperSc.SetInputConnection(geometryFilterSc.GetOutputPort());
 
         actorSpacecraft = new vtkActor();
         actorSpacecraft.SetMapper(pointsMapperSc);

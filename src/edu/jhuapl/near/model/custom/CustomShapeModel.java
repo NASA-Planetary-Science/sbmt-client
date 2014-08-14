@@ -21,13 +21,12 @@ public class CustomShapeModel extends SmallBodyModel
     public static final String PDS_FORMAT = "PDS";
     public static final String OBJ_FORMAT = "OBJ";
     public static final String VTK_FORMAT = "VTK";
-    public static final String LIST_SEPARATOR = ",";
 
     public CustomShapeModel(SmallBodyConfig config)
     {
         super(config,
                 new String[] { config.customName },
-                new String[] { getModelFilename(config.customName) },
+                new String[] { getModelFilename(config) },
                 null,
                 null,
                 null,
@@ -42,13 +41,20 @@ public class CustomShapeModel extends SmallBodyModel
         return false;
     }
 
-    private static String getModelFilename(String name)
+    private static String getModelFilename(SmallBodyConfig config)
     {
-        return FileCache.FILE_PREFIX +
-                Configuration.getImportedShapeModelsDir() +
-                File.separator +
-                name +
-                File.separator +
-                "model.vtk";
+        if (config.customTemporary)
+        {
+            return FileCache.FILE_PREFIX + config.customName;
+        }
+        else
+        {
+            return FileCache.FILE_PREFIX +
+                    Configuration.getImportedShapeModelsDir() +
+                    File.separator +
+                    config.customName +
+                    File.separator +
+                    "model.vtk";
+        }
     }
 }

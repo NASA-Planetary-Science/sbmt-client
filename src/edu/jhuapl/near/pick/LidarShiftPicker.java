@@ -14,7 +14,6 @@ import edu.jhuapl.near.gui.Renderer;
 import edu.jhuapl.near.model.LidarSearchDataCollection;
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelManager;
-import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.SmallBodyModel;
 
 /**
@@ -33,12 +32,13 @@ public class LidarShiftPicker extends Picker
 
     public LidarShiftPicker(
             Renderer renderer,
-            ModelManager modelManager
+            ModelManager modelManager,
+            LidarSearchDataCollection lidarModel
             )
     {
         this.renWin = renderer.getRenderWindowPanel();
         this.modelManager = modelManager;
-        this.lidarModel = (LidarSearchDataCollection)modelManager.getModel(ModelNames.LIDAR_SEARCH);
+        this.lidarModel = lidarModel;
 
         smallBodyPicker = new vtkCellPicker();
         smallBodyPicker.PickFromListOn();

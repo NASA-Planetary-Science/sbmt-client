@@ -83,6 +83,26 @@ public class FileUtil
         return values;
     }
 
+    public static long getNumberOfLinesInfile(String filename) throws IOException
+    {
+        InputStream fs = new FileInputStream(filename);
+        if (filename.toLowerCase().endsWith(".gz"))
+            fs = new GZIPInputStream(fs);
+        InputStreamReader isr = new InputStreamReader(fs);
+        BufferedReader in = new BufferedReader(isr);
+
+        long count = 0;
+
+        while (in.readLine() != null)
+        {
+            ++count;
+        }
+
+        in.close();
+
+        return count;
+    }
+
     /**
      * Returns the first line of the file that matches the specified string
      * @param filename the file to search through
@@ -112,14 +132,14 @@ public class FileUtil
     }
 
 
-    public static void saveList(ArrayList<Object> array, String filename) throws IOException
+    public static <T> void saveList(ArrayList<T> array, String filename) throws IOException
     {
         FileWriter fstream = new FileWriter(filename);
         BufferedWriter out = new BufferedWriter(fstream);
 
         String nl = System.getProperty("line.separator");
 
-        for (Object o : array)
+        for (T o : array)
             out.write(o.toString() + nl);
 
         out.close();

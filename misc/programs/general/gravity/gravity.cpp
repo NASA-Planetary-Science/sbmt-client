@@ -2,6 +2,7 @@
 #include <fstream>
 #include <time.h>
 #include <libgen.h>
+#include "SpiceUsr.h"
 #include "gravity-werner.h"
 #include "gravity-cheng.h"
 #include "gravity-point.h"
@@ -25,6 +26,7 @@ typedef enum GravityAlgorithmType
 typedef enum HowToEvaluateAtPlate
 {
     EVALUATE_AT_CENTER,
+    EVALUATE_AT_VERTEX,
     AVERAGE_VERTICES,
     FROM_FILE
 } HowToEvaluateAtPlate;
@@ -38,17 +40,19 @@ struct GravityResult
 };
 
 static void saveResults(char* pltfile,
+                        string outputFolder,
                         const vector<GravityResult>& results,
                         bool saveElevation,
                         bool savePlateCenters,
                         Platemodel* polyData,
-                        string suffix)
+                        string suffix,
+                        HowToEvaluateAtPlate howToEvaluate)
 {
     string pltfilebasename = basename(pltfile);
 
-    string outputPot = pltfilebasename + "-potential.txt" + suffix;
-    string outputAcc = pltfilebasename + "-acceleration.txt" + suffix;
-    string outputAccMag = pltfilebasename + "-acceleration-magnitude.txt" + suffix;
+    string outputPot = outputFolder + "/" + pltfilebasename + "-potential.txt" + suffix;
+    string outputAcc = outputFolder + "/" + pltfilebasename + "-acceleration.txt" + suffix;
+    string outputAccMag = outputFolder + "/" + pltfilebasename + "-acceleration-magnitude.txt" + suffix;
 
     ofstream foutP(outputPot.c_str());
     if (!foutP.is_open())
@@ -66,29 +70,54 @@ static void saveResults(char* pltfile,
     }
     foutA.precision(16);
 
-    ofstream foutAM(outputAccMag.c_str());
-    if (!foutAM.is_open())
-    {
-        cerr << "Error: Unable to open file for writing" << endl;
-        exit(1);
-    }
-    foutAM.precision(16);
-
     int size = results.size();
     for (int i=0; i<size; ++i)
     {
         foutP << results[i].potential << endl;
         foutA << results[i].acc[0] << " " << results[i].acc[1] << " " << results[i].acc[2] << endl;
-        foutAM << Norm(results[i].acc) << endl;
     }
 
     foutP.close();
     foutA.close();
-    foutAM.close();
+
+    if (howToEvaluate == EVALUATE_AT_CENTER || howToEvaluate == AVERAGE_VERTICES)
+    {
+        ofstream foutAM(outputAccMag.c_str());
+        if (!foutAM.is_open())
+        {
+            cerr << "Error: Unable to open file for writing" << endl;
+            exit(1);
+        }
+        foutAM.precision(16);
+
+        for (int i=0; i<size; ++i)
+        {
+            double mag = Norm(results[i].acc);
+            // If slope is greater than 90 deg, give the acc mag a negative number. Otherwise give it a positive number.
+            // Only do this when computing gravity at plate centers.
+            if (howToEvaluate != FROM_FILE)
+            {
+                double cellNormal[3];
+                polyData->getNormal(i, cellNormal);
+                double negaticeAcc[3];
+                negaticeAcc[0] = -results[i].acc[0];
+                negaticeAcc[1] = -results[i].acc[1];
+                negaticeAcc[2] = -results[i].acc[2];
+                double slope = vsep_c(cellNormal, negaticeAcc) * 180.0 / M_PI;
+                if (slope > 90.0)
+                    mag = -fabs(mag);
+                else
+                    mag = fabs(mag);
+            }
+            foutAM << mag << endl;
+        }
+
+        foutAM.close();
+    }
 
     if (saveElevation)
     {
-        string outputElev = pltfilebasename + "-elevation.txt" + suffix;
+        string outputElev = outputFolder + "/" + pltfilebasename + "-elevation.txt" + suffix;
 
         ofstream foutE(outputElev.c_str());
         if (!foutE.is_open())
@@ -108,7 +137,7 @@ static void saveResults(char* pltfile,
 
     if (savePlateCenters)
     {
-        string outputCenters = pltfilebasename + "-centers.txt" + suffix;
+        string outputCenters = outputFolder + "/" + pltfilebasename + "-centers.txt" + suffix;
 
         ofstream foutC(outputCenters.c_str());
         if (!foutC.is_open())
@@ -119,6 +148,7 @@ static void saveResults(char* pltfile,
         foutC.precision(16);
 
         double center[3];
+        size = polyData->getNumberOfPlates();
         for (int i=0; i<size; ++i)
         {
             polyData->getPlateCenter(i, center);
@@ -132,40 +162,51 @@ static void saveResults(char* pltfile,
 static void usage()
 {
     cout << "This program computes the gravitational acceleration and potential of a \n"
-         << "shape model at specified points and saves the values to files.\n"
-         << "Usage: gravity [options] <platemodelfile>\n"
+         << "shape model at specified points and saves the values to files.\n\n"
+         << "Usage: gravity [options] <platemodelfile>\n\n"
+         << "Where:\n"
+         << "  <platemodelfile>        Path to shape model file in OBJ or Gaskell PLT format.\n\n"
          << "Options:\n"
-         << " -d <value>              Density of shape model in g/cm^3 (default is 1)\n"
-         << " -r <value>              Rotation rate of shape model in radians/sec (default is 0)\n"
-         << " --werner                Use the Werner algorithm for computing the gravity (this is the\n"
-         << "                         default if neither --werner or --cheng option provided)\n"
-         << " --cheng                 Use Andy Cheng's algorithm for computing the gravity (default is to\n"
-         << "                         use Werner method if neither --werner or --cheng option provided)\n"
-         << " --centers               Evaluate gravity directly at the centers of plates (this is the default\n"
-         << "                         if neither --centers or -vertices or --file option provided)\n"
-         << " --vertices              Evaluate gravity of each plate by averaging the gravity computed at the\n"
-         << "                         3 vertices of the plate (default is to evaluate at centers)\n"
-         << " --file <filename>       Evaluate gravity at points specified in file (default is to evaluate\n"
-         << "                         at centers)\n"
-         << " --ref-potential <value> If the --file option is provided, then use this option to specify the reference\n"
-         << "                         potential which is needed for calculating elevation. This option is ignored if\n"
-         << "                         --file is not provided. If --file is provided but --ref-potential is not\n"
-         << "                         provided then no elevation data is saved out.\n"
-         << " --columns <int,int,int> If --file is provided, then this options controls which columns of the file are\n"
-         << "                         assumed to contain the x, y, and z coordinates of the points. By default, columns\n"
-         << "                         0, 1, and 2 are read. If you wanted, say, columns 3, 4, and 5 instead you would\n"
-         << "                         include this option as for example: --columns 3,4,5. Note that they are separated\n"
-         << "                         by commas (no spaces) and are zero based. If --file is not provided, then this\n"
-         << "                         option is ignored.\n"
-         << " --start-plate <value>\n"
-         << " --end-plate <value>     use these 2 options to specify a range of plates to process. For example if\n"
-         << "                         --start-plate is 1000 and --end-plate is 2000, then only plates 1000 through\n"
-         << "                         1999 are processed. This is useful for parallelizing large shape models on\n"
-         << "                         multiple machines. These options are ignored if --file option is provided\n"
-         << " --save-plate-centers    If specified, the centers of all plates in the shape model are saved to an\n"
-         << "                         additional file.\n";
+         << "  -d <value>              Density of shape model in g/cm^3 (default is 1)\n"
+         << "  -r <value>              Rotation rate of shape model in radians/sec (default is 0)\n"
+         << "  --werner                Use the Werner algorithm for computing the gravity (this is the\n"
+         << "                          default if neither --werner or --cheng option provided)\n"
+         << "  --cheng                 Use Andy Cheng's algorithm for computing the gravity (default is to\n"
+         << "                          use Werner method if neither --werner or --cheng option provided)\n"
+         << "  --centers               Evaluate gravity directly at the centers of plates (this is the default\n"
+         << "                          if neither --centers or -vertices or --file option provided)\n"
+         << "  --average-vertices      Evaluate gravity of each plate by averaging the gravity computed at the\n"
+         << "                          3 vertices of the plate (default is to evaluate at centers)\n"
+         << "  --vertices              Evaluate gravity directly at each vertex (default is to evaluate at centers)\n"
+         << "                          When using this option, you must also add the --cheng option since singularities\n"
+         << "                          occur at the vertices with the Werner algorithm.\n"
+         << "  --file <filename>       Evaluate gravity at points specified in file (default is to evaluate\n"
+         << "                          at centers)\n"
+         << "  --ref-potential <value> If the --file option is provided, then use this option to specify the reference\n"
+         << "                          potential which is needed for calculating elevation. This option is ignored if\n"
+         << "                          --file is not provided. If --file is provided but --ref-potential is not\n"
+         << "                          provided then no elevation data is saved out.\n"
+         << "  --columns <int,int,int> If --file is provided, then this options controls which columns of the file are\n"
+         << "                          assumed to contain the x, y, and z coordinates of the points. By default, columns\n"
+         << "                          0, 1, and 2 are read. If you wanted, say, columns 3, 4, and 5 instead you would\n"
+         << "                          include this option as for example: --columns 3,4,5. Note that they are separated\n"
+         << "                          by commas (no spaces) and are zero based. If --file is not provided, then this\n"
+         << "                          option is ignored.\n"
+         << "  --start-index <value>\n"
+         << "  --end-index <value>     use these 2 options to specify a range of plates or points to process. For example if\n"
+         << "                          --start-index is 1000 and --end-index is 2000, then only plates or points 1000 through\n"
+         << "                          1999 are processed. This is useful for parallelizing large shape models on\n"
+         << "                          multiple machines.\n"
+         << "  --save-plate-centers    If specified, the centers of all plates in the shape model are saved to an\n"
+         << "                          additional file.\n"
+         << "  --suffix <value>        If specified, the suffix will be appended to all output files. This is needed when\n"
+         << "                          splitting large shape models into mulitple runs so that each run will be output to\n"
+         << "                          different files.\n"
+         << "  --output-folder <folder>\n"
+         << "                          Path to folder in which to place output files (defualt is current directory).\n"
+         << endl;
 
-    exit(0);
+    exit(1);
 }
 
 int main(int argc, char** argv)
@@ -190,10 +231,11 @@ int main(int argc, char** argv)
     double refPotential = 0.0;
     bool refPotentialProvided = false;
     int fileColumns[3] = {0, 1, 2};
-    int startPlate = -1;
-    int endPlate = -1;
+    int startIndex = -1;
+    int endIndex = -1;
     bool savePlateCenters = false;
     string suffix = "";
+    string outputFolder = ".";
 
     int i = 1;
     for(; i<argc; ++i)
@@ -226,9 +268,13 @@ int main(int argc, char** argv)
         {
             howToEvalute = EVALUATE_AT_CENTER;
         }
-        else if (!strcmp(argv[i], "--vertices"))
+        else if (!strcmp(argv[i], "--average-vertices"))
         {
             howToEvalute = AVERAGE_VERTICES;
+        }
+        else if (!strcmp(argv[i], "--vertices"))
+        {
+            howToEvalute = EVALUATE_AT_VERTEX;
         }
         else if (!strcmp(argv[i], "--file"))
         {
@@ -249,13 +295,13 @@ int main(int argc, char** argv)
             fileColumns[1] = atoi(tokens[1].c_str());
             fileColumns[2] = atoi(tokens[2].c_str());
         }
-        else if (!strcmp(argv[i], "--start-plate"))
+        else if (!strcmp(argv[i], "--start-index"))
         {
-            startPlate = atoi(argv[++i]);
+            startIndex = atoi(argv[++i]);
         }
-        else if (!strcmp(argv[i], "--end-plate"))
+        else if (!strcmp(argv[i], "--end-index"))
         {
-            endPlate = atoi(argv[++i]);
+            endIndex = atoi(argv[++i]);
         }
         else if (!strcmp(argv[i], "--save-plate-centers"))
         {
@@ -264,6 +310,10 @@ int main(int argc, char** argv)
         else if (!strcmp(argv[i], "--suffix"))
         {
             suffix = argv[++i];
+        }
+        else if (!strcmp(argv[i], "--output-folder"))
+        {
+            outputFolder = argv[++i];
         }
         else
         {
@@ -274,6 +324,13 @@ int main(int argc, char** argv)
     // There must be numRequiredArgs arguments remaining after the options. Otherwise abort.
     if (argc - i != numberRequiredArgs)
         usage();
+
+    if ((howToEvalute == EVALUATE_AT_VERTEX || howToEvalute == AVERAGE_VERTICES) && gravityType == WERNER)
+    {
+        cout << "Warning: When evaluating at vertices, use the Cheng algorithm since\n"
+             << "singularities occur at vertices with the Werner algorithm. Continuing anyway."
+             << endl;
+    }
 
     char* pltfile = argv[i];
 
@@ -306,8 +363,16 @@ int main(int argc, char** argv)
             t1 = clock();
             string line;
             int count = 0;
+            int lineNumber = -1;
             while (getline(fin, line))
             {
+                ++lineNumber;
+                if (startIndex >= 0 && endIndex >= 0)
+                {
+                    if (lineNumber < startIndex || lineNumber >= endIndex)
+                        continue;
+                }
+
                 vector<string> tokens = split(line);
                 double pt[3] = {
                     atof(tokens[ fileColumns[0] ].c_str()),
@@ -366,33 +431,35 @@ int main(int argc, char** argv)
         t1 = clock();
 
         vector<GravityResult> pointResults;
+        int numFilled = 0;
         if (howToEvalute == AVERAGE_VERTICES)
         {
             int numPoints = polyData->getNumberOfPoints();
             pointResults.resize(numPoints);
-            for (int i=0; i<numPoints; ++i)
+            for (i=0; i<numPoints; ++i)
                 pointResults[i].filled = false;
         }
 
         int idList[3];
 
-        int numVertices = 0;
         int numPlates = polyData->getNumberOfPlates();
+        int numPoints = polyData->getNumberOfPoints();
 
-        int startId = 0;
-        int endId = numPlates;
-        if (startPlate >= 0)
-            startId = startPlate;
-        if (endPlate >= 0)
-            endId = endPlate;
-
-        for (int i=startId; i<endId; ++i)
+        if (startIndex < 0 || endIndex < 0)
         {
-            // Get center of cell
-            polyData->getPlatePoints(i, idList);
+            startIndex = 0;
+            if (howToEvalute == EVALUATE_AT_VERTEX)
+                endIndex = numPoints;
+            else
+                endIndex = numPlates;
+        }
 
+        for (i=startIndex; i<endIndex; ++i)
+        {
             if (howToEvalute == EVALUATE_AT_CENTER)
             {
+                polyData->getPlatePoints(i, idList);
+
                 double pt1[3];
                 double pt2[3];
                 double pt3[3];
@@ -431,6 +498,8 @@ int main(int argc, char** argv)
             }
             else if(howToEvalute == AVERAGE_VERTICES)
             {
+                polyData->getPlatePoints(i, idList);
+
                 double pt[3];
                 acc[0] = 0.0;
                 acc[1] = 0.0;
@@ -464,13 +533,13 @@ int main(int argc, char** argv)
 
                         result.filled = true;
 
-                        if ((numVertices+1) % 100 == 0)
+                        if ((numFilled+1) % 100 == 0)
                         {
                             t2 = clock();
                             double elapsed_time = (double)(t2 - t1) / CLOCKS_PER_SEC;
-                            cout << "Time to evaluate " << numVertices+1 << " vertices: " << elapsed_time  << " sec" << endl;
+                            cout << "Time to evaluate " << numFilled+1 << " vertices: " << elapsed_time  << " sec" << endl;
                         }
-                        ++numVertices;
+                        ++numFilled;
                     }
 
                     potential += result.potential;
@@ -484,6 +553,36 @@ int main(int argc, char** argv)
                 acc[1] /= 3.0;
                 acc[2] /= 3.0;
             }
+            else if (howToEvalute == EVALUATE_AT_VERTEX)
+            {
+                double pt[3];
+                polyData->getPoint(i, pt);
+
+                if (gravityType == WERNER)
+                    potential = 1.0e6*1.0e12*g_G*density*getGravityWerner(pt, acc);
+                else
+                    potential = 1.0e6*1.0e12*g_G*density*getGravityCheng(pt, acc);
+
+                acc[0] *= 1.0e3 * 1.0e12 * g_G * density;
+                acc[1] *= 1.0e3 * 1.0e12 * g_G * density;
+                acc[2] *= 1.0e3 * 1.0e12 * g_G * density;
+
+                // add centrifugal force
+                if (omega != 0.0)
+                {
+                    potential -= 1.0e6 * 0.5 * omega*omega * (pt[0]*pt[0] + pt[1]*pt[1]);
+                    acc[0] += 1.0e3 * omega*omega * pt[0];
+                    acc[1] += 1.0e3 * omega*omega * pt[1];
+                    // do nothing for z component
+                }
+
+                if ((i+1) % 100 == 0)
+                {
+                    t2 = clock();
+                    double elapsed_time = (double)(t2 - t1) / CLOCKS_PER_SEC;
+                    cout << "Time to evaluate " << i+1 << " vertices: " << elapsed_time  << " sec" << endl;
+                }
+            }
 
             GravityResult result;
             result.potential = potential;
@@ -495,10 +594,7 @@ int main(int argc, char** argv)
 
         t2 = clock();
         double elapsed_time = (double)(t2 - t1) / CLOCKS_PER_SEC;
-        if (howToEvalute == EVALUATE_AT_CENTER)
-            cout << "Time to evaluate " << (endId-startId) << " plates: " << elapsed_time  << " sec" << endl;
-        else if(howToEvalute == AVERAGE_VERTICES)
-            cout << "Time to evaluate " << numVertices << " vertices: " << elapsed_time  << " sec" << endl;
+        cout << "Total time: " << elapsed_time  << " sec" << endl;
     }
 
     // Only save out elevation if user provided a list of points and
@@ -506,7 +602,7 @@ int main(int argc, char** argv)
     // centers only, then a separate program must be used to calculate
     // elevation and slope.
     bool saveElevation = refPotentialProvided && howToEvalute == FROM_FILE;
-    saveResults(pltfile, plateResults, saveElevation, savePlateCenters, polyData, suffix);
+    saveResults(pltfile, outputFolder, plateResults, saveElevation, savePlateCenters, polyData, suffix, howToEvalute);
 
     return 0;
 }

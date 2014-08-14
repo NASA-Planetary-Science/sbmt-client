@@ -5,10 +5,7 @@ import java.util.LinkedHashMap;
 
 import org.apache.commons.io.FileUtils;
 
-import vtk.vtkOBJReader;
 import vtk.vtkPolyData;
-import vtk.vtkPolyDataNormals;
-import vtk.vtkPolyDataReader;
 import vtk.vtkPolyDataWriter;
 import vtk.vtkSphereSource;
 import vtk.vtkTransform;
@@ -86,7 +83,7 @@ public class ShapeModelImporter
             {
                 // Turn it into ellipsoid
                 vtkTransformPolyDataFilter filter = new vtkTransformPolyDataFilter();
-                filter.SetInput(shapePoly);
+                filter.SetInputConnection(sphereSource.GetOutputPort());
 
                 vtkTransform transform = new vtkTransform();
                 transform.Scale(1.0, 1.0, polarRadius/equRadius);
@@ -125,34 +122,33 @@ public class ShapeModelImporter
                     return false;
                 }
 
-                vtkPolyDataNormals normalsFilter = new vtkPolyDataNormals();
-                normalsFilter.SetInput(shapePoly);
-                normalsFilter.SetComputeCellNormals(0);
-                normalsFilter.SetComputePointNormals(1);
-                normalsFilter.SplittingOff();
-                normalsFilter.Update();
-
-                shapePoly = normalsFilter.GetOutput();
-
                 configMap.put(CustomShapeModel.CUSTOM_SHAPE_MODEL_FORMAT, CustomShapeModel.PDS_FORMAT);
             }
             else if (format == FormatType.OBJ)
             {
-                vtkOBJReader reader = new vtkOBJReader();
-                reader.SetFileName(modelPath);
-                reader.Update();
-
-                shapePoly = reader.GetOutput();
+                try
+                {
+                    shapePoly = PolyDataUtil.loadOBJShapeModel(modelPath);
+                }
+                catch (Exception ex)
+                {
+                    errorMessage[0] = "The was an error loading " + modelPath + ".\nAre you sure you specified the right format?";
+                    return false;
+                }
 
                 configMap.put(CustomShapeModel.CUSTOM_SHAPE_MODEL_FORMAT, CustomShapeModel.OBJ_FORMAT);
             }
             else if (format == FormatType.VTK)
             {
-                vtkPolyDataReader reader = new vtkPolyDataReader();
-                reader.SetFileName(modelPath);
-                reader.Update();
-
-                shapePoly = reader.GetOutput();
+                try
+                {
+                    shapePoly = PolyDataUtil.loadVTKShapeModel(modelPath);
+                }
+                catch (Exception ex)
+                {
+                    errorMessage[0] = "The was an error loading " + modelPath + ".\nAre you sure you specified the right format?";
+                    return false;
+                }
 
                 configMap.put(CustomShapeModel.CUSTOM_SHAPE_MODEL_FORMAT, CustomShapeModel.VTK_FORMAT);
             }

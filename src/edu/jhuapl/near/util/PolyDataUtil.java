@@ -684,7 +684,7 @@ public class PolyDataUtil
             sides.add(i);
         Collections.shuffle(sides);
 
-        vtkPolyData nextInput = polyData;
+        vtkAlgorithmOutput nextInput = null;
         vtkClipPolyData clipPolyData = null;
         for (int i=0; i<sides.size(); ++i)
         {
@@ -720,13 +720,15 @@ public class PolyDataUtil
             //clipPolyData = clipFilters.get(i);
             clipPolyData = new vtkClipPolyData();
             d.add(clipPolyData);
-            clipPolyData.SetInput(nextInput);
+            if (i==0)
+                clipPolyData.SetInput(polyData);
+            else
+                clipPolyData.SetInputConnection(nextInput);
             clipPolyData.SetClipFunction(plane);
             clipPolyData.SetInsideOut(1);
             //clipPolyData.Update();
 
-            nextInput = clipPolyData.GetOutput();
-            d.add(nextInput);
+            nextInput = clipPolyData.GetOutputPort();
 
             //if (i > clipOutputs.size()-1)
             //    clipOutputs.add(nextInput);
@@ -1152,7 +1154,7 @@ public class PolyDataUtil
 
         int numberOfSides = controlPoints.size();
 
-        vtkPolyData nextInput = polyData;
+        vtkAlgorithmOutput nextInput = null;
         vtkClipPolyData clipPolyData = null;
         for (int i=0; i<numberOfSides; ++i)
         {
@@ -1187,13 +1189,15 @@ public class PolyDataUtil
             //clipPolyData = clipFilters.get(i);
             clipPolyData = new vtkClipPolyData();
             d.add(clipPolyData);
-            clipPolyData.SetInput(nextInput);
+            if (i==0)
+                clipPolyData.SetInput(polyData);
+            else
+                clipPolyData.SetInputConnection(nextInput);
             clipPolyData.SetClipFunction(plane);
             clipPolyData.SetInsideOut(1);
             //clipPolyData.Update();
 
-            nextInput = clipPolyData.GetOutput();
-            d.add(nextInput);
+            nextInput = clipPolyData.GetOutputPort();
 
             //if (i > clipOutputs.size()-1)
             //    clipOutputs.add(nextInput);
@@ -1526,7 +1530,7 @@ public class PolyDataUtil
 
         ArrayList<vtkClipPolyData> clipFilters = new ArrayList<vtkClipPolyData>();
         ArrayList<vtkPlane> clipPlanes = new ArrayList<vtkPlane>();
-        ArrayList<vtkPolyData> clipOutputs = new ArrayList<vtkPolyData>(); // not sure is this one is really needed
+        ArrayList<vtkAlgorithmOutput> clipOutputs = new ArrayList<vtkAlgorithmOutput>(); // not sure is this one is really needed
 
         // randomly shuffling the order of the sides we process can speed things up
         ArrayList<Integer> sides = new ArrayList<Integer>();
@@ -1534,7 +1538,7 @@ public class PolyDataUtil
             sides.add(i);
         Collections.shuffle(sides);
 
-        vtkPolyData nextInput = polyData;
+        vtkAlgorithmOutput nextInput = null;
         vtkClipPolyData clipPolyData = null;
         for (int i=0; i<sides.size(); ++i)
         {
@@ -1573,12 +1577,15 @@ public class PolyDataUtil
                 clipFilters.add(new vtkClipPolyData());
             clipPolyData = clipFilters.get(i);
             //            clipPolyData = new vtkClipPolyData();
-            clipPolyData.SetInput(nextInput);
+            if (i == 0)
+                clipPolyData.SetInput(polyData);
+            else
+                clipPolyData.SetInputConnection(nextInput);
             clipPolyData.SetClipFunction(plane);
             clipPolyData.SetInsideOut(1);
             //clipPolyData.Update();
 
-            nextInput = clipPolyData.GetOutput();
+            nextInput = clipPolyData.GetOutputPort();
 
             if (i > clipOutputs.size()-1)
                 clipOutputs.add(nextInput);
@@ -1606,7 +1613,7 @@ public class PolyDataUtil
         {
             // Compute the bounding edges of this surface
             vtkFeatureEdges edgeExtracter = new vtkFeatureEdges();
-            edgeExtracter.SetInput(connectivityFilter.GetOutput());
+            edgeExtracter.SetInputConnection(connectivityFilter.GetOutputPort());
             edgeExtracter.BoundaryEdgesOn();
             edgeExtracter.FeatureEdgesOff();
             edgeExtracter.NonManifoldEdgesOff();
@@ -2221,9 +2228,12 @@ public class PolyDataUtil
             return 0.0;
         }
 
-        double[] p1 = polydata.GetPoint(idList.GetId(0));
-        double[] p2 = polydata.GetPoint(idList.GetId(1));
-        double[] p3 = polydata.GetPoint(idList.GetId(2));
+        double[] p1 = new double[3];
+        double[] p2 = new double[3];
+        double[] p3 = new double[3];
+        polydata.GetPoint(idList.GetId(0), p1);
+        polydata.GetPoint(idList.GetId(1), p2);
+        polydata.GetPoint(idList.GetId(2), p3);
         double v1 = pointdata.GetTuple1(idList.GetId(0));
         double v2 = pointdata.GetTuple1(idList.GetId(1));
         double v3 = pointdata.GetTuple1(idList.GetId(2));
@@ -2502,6 +2512,8 @@ public class PolyDataUtil
 
         in.close();
 
+        addPointNormalsToShapeModel(polydata);
+
         return polydata;
     }
 
@@ -2577,6 +2589,8 @@ public class PolyDataUtil
         idList.Delete();
 
         in.close();
+
+        addPointNormalsToShapeModel(polydata);
 
         return polydata;
     }
@@ -2812,6 +2826,7 @@ public class PolyDataUtil
         ////writer.SetFileTypeToBinary();
         //writer.Write();
 
+        addPointNormalsToShapeModel(body);
 
         return body;
     }
@@ -3000,7 +3015,45 @@ public class PolyDataUtil
                 }
             }
 
+        addPointNormalsToShapeModel(body);
+
         return body;
+    }
+
+    static public vtkPolyData loadVTKShapeModel(String filename) throws Exception
+    {
+        vtkPolyDataReader smallBodyReader = new vtkPolyDataReader();
+        smallBodyReader.SetFileName(filename);
+        smallBodyReader.Update();
+
+        vtkPolyData output = smallBodyReader.GetOutput();
+
+        vtkPolyData shapeModel = new vtkPolyData();
+        shapeModel.ShallowCopy(output);
+
+        smallBodyReader.Delete();
+
+        addPointNormalsToShapeModel(shapeModel);
+
+        return shapeModel;
+    }
+
+    static public vtkPolyData loadOBJShapeModel(String filename) throws Exception
+    {
+        vtkOBJReader smallBodyReader = new vtkOBJReader();
+        smallBodyReader.SetFileName(filename);
+        smallBodyReader.Update();
+
+        vtkPolyData output = smallBodyReader.GetOutput();
+
+        vtkPolyData shapeModel = new vtkPolyData();
+        shapeModel.ShallowCopy(output);
+
+        smallBodyReader.Delete();
+
+        addPointNormalsToShapeModel(shapeModel);
+
+        return shapeModel;
     }
 
     /**
@@ -3023,26 +3076,12 @@ public class PolyDataUtil
         vtkPolyData shapeModel = new vtkPolyData();
         if (filename.toLowerCase().endsWith(".vtk"))
         {
-            vtkPolyDataReader smallBodyReader = new vtkPolyDataReader();
-            smallBodyReader.SetFileName(filename);
-            smallBodyReader.Update();
-
-            vtkPolyData output = smallBodyReader.GetOutput();
-            shapeModel.ShallowCopy(output);
-
-            smallBodyReader.Delete();
+            shapeModel = loadVTKShapeModel(filename);
         }
         else if (filename.toLowerCase().endsWith(".obj") ||
                 filename.toLowerCase().endsWith(".wf"))
         {
-            vtkOBJReader smallBodyReader = new vtkOBJReader();
-            smallBodyReader.SetFileName(filename);
-            smallBodyReader.Update();
-
-            vtkPolyData output = smallBodyReader.GetOutput();
-            shapeModel.ShallowCopy(output);
-
-            smallBodyReader.Delete();
+            shapeModel = loadOBJShapeModel(filename);
         }
         else if (filename.toLowerCase().endsWith(".pds") ||
                 filename.toLowerCase().endsWith(".plt") ||
@@ -3078,24 +3117,30 @@ public class PolyDataUtil
             return null;
         }
 
-        if (shapeModel.GetPointData().GetNormals() == null)
+        addPointNormalsToShapeModel(shapeModel);
+
+        return shapeModel;
+    }
+
+    static public void addPointNormalsToShapeModel(vtkPolyData polydata)
+    {
+        if (polydata.GetPointData().GetNormals() == null)
         {
             // Add normal vectors
             vtkPolyDataNormals normalsFilter = new vtkPolyDataNormals();
-            normalsFilter.SetInput(shapeModel);
+            normalsFilter.SetInput(polydata);
             normalsFilter.SetComputeCellNormals(0);
             normalsFilter.SetComputePointNormals(1);
             normalsFilter.SplittingOff();
             normalsFilter.AutoOrientNormalsOn();
+            normalsFilter.ConsistencyOn();
             normalsFilter.Update();
 
             vtkPolyData normalsOutput = normalsFilter.GetOutput();
-            shapeModel.ShallowCopy(normalsOutput);
+            polydata.ShallowCopy(normalsOutput);
 
             normalsFilter.Delete();
         }
-
-        return shapeModel;
     }
 
     static public void saveShapeModelAsPLT(vtkPolyData polydata, String filename) throws IOException
@@ -3208,10 +3253,8 @@ public class PolyDataUtil
         writer.Write();
     }
 
-    static public void removeDuplicatePoints(String filename) throws Exception
+    static public void removeDuplicatePoints(vtkPolyData polydata) throws Exception
     {
-        vtkPolyData polydata = loadPDSShapeModel(filename);
-
         vtkCleanPolyData cleanFilter = new vtkCleanPolyData();
         cleanFilter.PointMergingOn();
         cleanFilter.SetTolerance(0.0);
@@ -3220,8 +3263,9 @@ public class PolyDataUtil
         cleanFilter.ConvertStripsToPolysOff();
         cleanFilter.SetInput(polydata);
         cleanFilter.Update();
+        vtkPolyData cleanOutput = cleanFilter.GetOutput();
 
-        saveShapeModelAsPLT(cleanFilter.GetOutput(), filename);
+        polydata.DeepCopy(cleanOutput);
     }
 
     static public void decimatePolyData(vtkPolyData polydata, double targetReduction)
@@ -3239,5 +3283,7 @@ public class PolyDataUtil
         vtkPolyData decOutput = dec.GetOutput();
 
         polydata.DeepCopy(decOutput);
+
+        dec.Delete();
     }
 }

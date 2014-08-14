@@ -1,7 +1,6 @@
 package edu.jhuapl.near.tools;
 
 import vtk.vtkPolyData;
-import vtk.vtkPolyDataNormals;
 
 import edu.jhuapl.near.util.NativeLibraryLoader;
 import edu.jhuapl.near.util.PolyDataUtil;
@@ -45,19 +44,6 @@ public class ConvertLatLonShapeModelToPLT
 
         vtkPolyData polydata = PolyDataUtil.loadLLRShapeModel(infile, westLongitude);
 
-        // put it through a normal vector filter with auto orient on. This
-        // will fix shape models where the point ids in the plates are not
-        // oriented correctly.
-        vtkPolyDataNormals normalsFilter = new vtkPolyDataNormals();
-        normalsFilter.SetInput(polydata);
-        normalsFilter.SetComputeCellNormals(0);
-        normalsFilter.SetComputePointNormals(1);
-        normalsFilter.SplittingOff();
-        normalsFilter.AutoOrientNormalsOn();
-        normalsFilter.Update();
-        vtkPolyData normalsOutput = normalsFilter.GetOutput();
-        polydata.ShallowCopy(normalsOutput);
-
-        PolyDataUtil.saveShapeModelAsPLT(polydata, outfile);
+        PolyDataUtil.saveShapeModelAsOBJ(polydata, outfile);
     }
 }

@@ -109,6 +109,8 @@ public class FileCache
 
         if (offlineMode)
         {
+            if (path.toLowerCase().endsWith(".gz"))
+                path = path.substring(0, path.length()-3);
             File file = new File(offlineModeRootFolder + File.separator + path);
             fi.file = file;
             if (file.exists())

@@ -15,19 +15,35 @@ public class RunMapmaker
     {
         System.setProperty("java.awt.headless", "true");
 
-        if (args.length != 7)
+        boolean deleteCub = false;
+
+        int i = 0;
+        for(; i<args.length; ++i)
         {
-            System.out.println("Usage: RunMapmaker <mapmaker-root-dir> <name> <half-size> <scale> <latitude> <longitude> <output-dir>");
+            if (args[i].equals("--delete-cub"))
+            {
+                deleteCub = true;
+            }
+            else
+            {
+                break;
+            }
+        }
+
+        int numberRequiredArgs = 7;
+        if (args.length - i != numberRequiredArgs )
+        {
+            System.out.println("Usage: RunMapmaker [--delete-cub] <mapmaker-root-dir> <name> <half-size> <scale> <latitude> <longitude> <output-dir>");
             System.exit(0);
         }
 
-        String mapmakerRootDir = args[0];
-        String name = args[1];
-        int halfSize = Integer.parseInt(args[2]);
-        double scale = Double.parseDouble(args[3]);
-        double lat = Double.parseDouble(args[4]);
-        double lon = Double.parseDouble(args[5]);
-        File outputFolder = new File(args[6]);
+        String mapmakerRootDir = args[i++];
+        String name = args[i++];
+        int halfSize = Integer.parseInt(args[i++]);
+        double scale = Double.parseDouble(args[i++]);
+        double lat = Double.parseDouble(args[i++]);
+        double lon = Double.parseDouble(args[i++]);
+        File outputFolder = new File(args[i++]);
 
         Mapmaker mapmaker = new Mapmaker(mapmakerRootDir);
         mapmaker.setName(name);
@@ -40,7 +56,9 @@ public class RunMapmaker
         Process mapmakerProcess = mapmaker.runMapmaker();
         mapmakerProcess.waitFor();
 
-        mapmaker.convertCubeToFitsAndSaveInOutputFolder();
+        mapmaker.convertCubeToFitsAndSaveInOutputFolder(deleteCub);
+
+
     }
 
 }

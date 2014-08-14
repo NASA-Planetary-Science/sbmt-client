@@ -1392,6 +1392,7 @@ public class SmallBodyConfig
     public double lidarOffsetScale;
     public Instrument lidarInstrumentName = Instrument.LIDAR;
     public String customName;
+    public boolean customTemporary = false;
 
 
     protected SmallBodyConfig clone()
@@ -1446,6 +1447,7 @@ public class SmallBodyConfig
             c.lidarInstrumentName = this.lidarInstrumentName;
         }
         c.customName = this.customName;
+        c.customTemporary = this.customTemporary;
         return c;
     }
 

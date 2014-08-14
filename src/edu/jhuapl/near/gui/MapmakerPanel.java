@@ -100,7 +100,7 @@ public class MapmakerPanel extends JPanel implements ActionListener
         namePanel.add(nameTextField);
 
         final JLabel halfSizeLabel = new JLabel("Half Size (pixels)");
-        halfSizeSpinner = new JSpinner(new SpinnerNumberModel(513, 1, 513, 1));
+        halfSizeSpinner = new JSpinner(new SpinnerNumberModel(512, 1, 512, 1));
         halfSizeSpinner.setMaximumSize(new Dimension(50, 23));
         JPanel halfSizePanel = new JPanel();
         halfSizePanel.add(halfSizeLabel);

@@ -45,4 +45,11 @@ public class IdPair
     {
         return id1 + " " + id2;
     }
+
+    @Override
+    public int hashCode() {
+        // This hash seems to produce efficient look ups. Not sure what
+        // the best hash is though.
+        return id1;
+    }
 }

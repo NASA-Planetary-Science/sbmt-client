@@ -33,10 +33,10 @@ public class NLRDataEverything extends Model
 
         vtkPolyDataReader nlrReader = new vtkPolyDataReader();
         nlrReader.SetFileName(file.getAbsolutePath());
-        nlrReader.Update();
 
         vtkPolyDataMapper pointsMapper = new vtkPolyDataMapper();
-        pointsMapper.SetInput(nlrReader.GetOutput());
+        pointsMapper.SetInputConnection(nlrReader.GetOutputPort());
+        pointsMapper.Update();
 
         vtkActor actor = new vtkActor();
         actor.SetMapper(pointsMapper);

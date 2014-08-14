@@ -40,52 +40,47 @@
                       <Group type="103" groupAlignment="1" attributes="0">
                           <Component id="radialOffsetChanger" alignment="0" pref="360" max="32767" attributes="0"/>
                           <Component id="jScrollPane1" alignment="0" pref="360" max="32767" attributes="0"/>
-                          <Component id="jPanel1" alignment="0" pref="374" max="32767" attributes="0"/>
+                          <Component id="jPanel1" alignment="0" pref="368" max="32767" attributes="0"/>
                           <Component id="resultsLabel" alignment="0" pref="360" max="32767" attributes="0"/>
-                          <Component id="jPanel2" alignment="1" pref="360" max="32767" attributes="0"/>
-                          <Component id="jPanel3" alignment="0" pref="360" max="32767" attributes="0"/>
+                          <Component id="selectRegionPanel" alignment="1" pref="360" max="32767" attributes="0"/>
+                          <Component id="submitPanel" alignment="0" pref="360" max="32767" attributes="0"/>
+                          <Group type="102" alignment="0" attributes="0">
+                              <Component id="trackErrorCheckBox" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="trackErrorLabel" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <Group type="102" alignment="0" attributes="0">
+                              <EmptySpace min="24" pref="24" max="24" attributes="0"/>
+                              <Component id="jLabel5" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace type="separate" max="-2" attributes="0"/>
+                              <Component id="pointSizeSpinner" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <Component id="loadTrackButton" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="dragTracksToggleButton" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="translateTracksButton" alignment="0" min="-2" max="-2" attributes="0"/>
                           <Group type="102" alignment="0" attributes="0">
                               <Group type="103" groupAlignment="1" attributes="0">
-                                  <Group type="102" alignment="0" attributes="0">
-                                      <Component id="trackErrorCheckBox" min="-2" max="-2" attributes="0"/>
-                                      <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="trackErrorLabel" min="-2" max="-2" attributes="0"/>
-                                  </Group>
-                                  <Group type="102" alignment="0" attributes="0">
-                                      <EmptySpace min="24" pref="24" max="24" attributes="0"/>
-                                      <Component id="jLabel5" min="-2" max="-2" attributes="0"/>
-                                      <EmptySpace type="separate" max="-2" attributes="0"/>
-                                      <Component id="pointSizeSpinner" min="-2" max="-2" attributes="0"/>
-                                  </Group>
-                                  <Component id="loadTrackButton" alignment="0" min="-2" max="-2" attributes="0"/>
-                                  <Component id="dragTracksToggleButton" alignment="0" min="-2" max="-2" attributes="0"/>
-                                  <Component id="translateTracksButton" alignment="0" min="-2" max="-2" attributes="0"/>
-                                  <Group type="102" alignment="0" attributes="0">
-                                      <Group type="103" groupAlignment="1" attributes="0">
-                                          <Component id="sourceLabel" min="-2" max="-2" attributes="0"/>
-                                          <Component id="jLabel1" alignment="1" min="-2" max="-2" attributes="0"/>
-                                          <Component id="jLabel2" alignment="1" min="-2" max="-2" attributes="0"/>
-                                      </Group>
-                                      <EmptySpace max="-2" attributes="0"/>
-                                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                                          <Component id="sourceComboBox" linkSize="2" max="32767" attributes="1"/>
-                                          <Component id="startSpinner" linkSize="2" alignment="0" max="32767" attributes="1"/>
-                                          <Component id="endSpinner" linkSize="2" alignment="0" max="32767" attributes="1"/>
-                                      </Group>
-                                  </Group>
-                                  <Group type="102" alignment="0" attributes="0">
-                                      <Group type="103" groupAlignment="0" attributes="0">
-                                          <Component id="jLabel3" alignment="0" min="-2" max="-2" attributes="0"/>
-                                          <Component id="jLabel4" alignment="0" min="-2" max="-2" attributes="0"/>
-                                      </Group>
-                                      <EmptySpace max="-2" attributes="0"/>
-                                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                                          <Component id="minTrackSizeTextField" max="32767" attributes="1"/>
-                                          <Component id="trackSeparationTextField" alignment="0" min="-2" pref="112" max="-2" attributes="1"/>
-                                      </Group>
-                                  </Group>
+                                  <Component id="sourceLabel" min="-2" max="-2" attributes="0"/>
+                                  <Component id="startLabel" alignment="1" min="-2" max="-2" attributes="0"/>
+                                  <Component id="endLabel" alignment="1" min="-2" max="-2" attributes="0"/>
                               </Group>
-                              <EmptySpace max="32767" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                  <Component id="sourceComboBox" linkSize="2" max="32767" attributes="1"/>
+                                  <Component id="startSpinner" linkSize="2" alignment="0" max="32767" attributes="1"/>
+                                  <Component id="endSpinner" linkSize="2" alignment="0" max="32767" attributes="1"/>
+                              </Group>
+                          </Group>
+                          <Group type="102" alignment="0" attributes="0">
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Component id="minTrackSizeLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Component id="trackSeparationLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                  <Component id="minTrackSizeTextField" max="32767" attributes="1"/>
+                                  <Component id="trackSeparationTextField" alignment="0" min="-2" pref="112" max="-2" attributes="1"/>
+                              </Group>
                           </Group>
                       </Group>
                       <EmptySpace min="-2" max="-2" attributes="0"/>
@@ -102,28 +97,28 @@
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="jLabel1" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="startLabel" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="startSpinner" linkSize="1" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace min="-2" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="jLabel2" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="endLabel" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="endSpinner" linkSize="1" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace type="unrelated" min="-2" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="jLabel3" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="minTrackSizeLabel" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="minTrackSizeTextField" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace min="-2" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="jLabel4" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="trackSeparationLabel" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="trackSeparationTextField" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace min="-2" max="-2" attributes="0"/>
-                      <Component id="jPanel2" min="-2" max="-2" attributes="0"/>
+                      <Component id="selectRegionPanel" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="-2" max="-2" attributes="0"/>
-                      <Component id="jPanel3" min="-2" pref="35" max="-2" attributes="0"/>
+                      <Component id="submitPanel" min="-2" pref="35" max="-2" attributes="0"/>
                       <EmptySpace type="unrelated" min="-2" max="-2" attributes="0"/>
                       <Component id="loadTrackButton" min="-2" max="-2" attributes="0"/>
                       <EmptySpace type="unrelated" min="-2" max="-2" attributes="0"/>
@@ -154,12 +149,12 @@
             </DimensionLayout>
           </Layout>
           <SubComponents>
-            <Component class="javax.swing.JLabel" name="jLabel1">
+            <Component class="javax.swing.JLabel" name="startLabel">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Start Date:"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JLabel" name="jLabel2">
+            <Component class="javax.swing.JLabel" name="endLabel">
               <Properties>
                 <Property name="text" type="java.lang.String" value="End Date:"/>
               </Properties>
@@ -251,7 +246,7 @@
                 </Component>
               </SubComponents>
             </Container>
-            <Container class="javax.swing.JPanel" name="jPanel2">
+            <Container class="javax.swing.JPanel" name="selectRegionPanel">
 
               <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
               <SubComponents>
@@ -273,7 +268,7 @@
                 </Component>
               </SubComponents>
             </Container>
-            <Container class="javax.swing.JPanel" name="jPanel3">
+            <Container class="javax.swing.JPanel" name="submitPanel">
 
               <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
               <SubComponents>
@@ -287,12 +282,12 @@
                 </Component>
               </SubComponents>
             </Container>
-            <Component class="javax.swing.JLabel" name="jLabel3">
+            <Component class="javax.swing.JLabel" name="minTrackSizeLabel">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Minumum Track Size:"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JLabel" name="jLabel4">
+            <Component class="javax.swing.JLabel" name="trackSeparationLabel">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Track Separation (sec):"/>
               </Properties>
@@ -346,7 +341,7 @@
             </Component>
             <Component class="javax.swing.JButton" name="loadTrackButton">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Load Tracks From Files..."/>
+                <Property name="text" type="java.lang.String" value="Load Tracks..."/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="loadTrackButtonActionPerformed"/>

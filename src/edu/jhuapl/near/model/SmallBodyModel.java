@@ -39,7 +39,6 @@ import vtk.vtkTriangle;
 import vtk.vtkUnsignedCharArray;
 import vtk.vtksbCellLocator;
 
-import edu.jhuapl.near.model.custom.CustomShapeModel;
 import edu.jhuapl.near.util.BoundingBox;
 import edu.jhuapl.near.util.Configuration;
 import edu.jhuapl.near.util.ConvertResourceToFile;
@@ -55,6 +54,7 @@ import edu.jhuapl.near.util.SmallBodyCubes;
 
 public class SmallBodyModel extends Model
 {
+    public static final String LIST_SEPARATOR = ",";
     public static final String CELL_DATA_PATHS = "CellDataPaths"; // for backwards compatibility
     public static final String CELL_DATA_FILENAMES = "CellDataFilenames";
     public static final String CELL_DATA_NAMES = "CellDataNames";
@@ -172,6 +172,22 @@ public class SmallBodyModel extends Model
     }
 
     /**
+     * Convenience method for initializing a SmallBodyModel with just a vtkPolyData.
+     * @param polyData
+     */
+    public SmallBodyModel(vtkPolyData polyData)
+    {
+        this();
+
+        vtkFloatArray[] coloringValues = {};
+        String[] coloringNames = {};
+        String[] coloringUnits = {};
+        ColoringValueType coloringValueType = ColoringValueType.CELLDATA;
+
+        setSmallBodyPolyData(polyData, coloringValues, coloringNames, coloringUnits, coloringValueType);
+    }
+
+    /**
      * Note that name is used to name this small body model as a whole including all
      * resolution levels whereas modelNames is an array of names that is specific
      * for each resolution level.
@@ -243,6 +259,9 @@ public class SmallBodyModel extends Model
 
         initializeLocators();
         initializeColoringRanges();
+
+        lowResSmallBodyPolyData = smallBodyPolyData;
+        lowResPointLocator = pointLocator;
     }
 
     public SmallBodyConfig getSmallBodyConfig()
@@ -275,7 +294,7 @@ public class SmallBodyModel extends Model
             {
                 cellDataFilenames += "platedata" + i + ".txt";
                 if (i < cellDataPaths.length-1)
-                    cellDataFilenames += CustomShapeModel.LIST_SEPARATOR;
+                    cellDataFilenames += SmallBodyModel.LIST_SEPARATOR;
             }
 
             configMap.put(SmallBodyModel.CELL_DATA_FILENAMES, cellDataFilenames);

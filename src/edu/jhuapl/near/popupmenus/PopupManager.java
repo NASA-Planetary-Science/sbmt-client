@@ -8,6 +8,7 @@ import vtk.vtkProp;
 import edu.jhuapl.near.gui.ModelInfoWindowManager;
 import edu.jhuapl.near.gui.Renderer;
 import edu.jhuapl.near.model.ImageCollection;
+import edu.jhuapl.near.model.LidarSearchDataCollection;
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
@@ -53,6 +54,9 @@ public class PopupManager
         popupMenu = new ImagePopupMenu(imageCollection, imageBoundaries, infoPanelManager, renderer, renderer);
         registerPopup(modelManager.getModel(ModelNames.IMAGES), popupMenu);
 
+        LidarSearchDataCollection tracks = (LidarSearchDataCollection)modelManager.getModel(ModelNames.TRACKS);
+        popupMenu = new LidarPopupMenu(tracks, renderer);
+        registerPopup(tracks, popupMenu);
     }
 
     public PopupMenu getPopup(Model model)

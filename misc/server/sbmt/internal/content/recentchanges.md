@@ -4,6 +4,31 @@
 
 # Recent Changes
 
+### August 13, 2014
+
+-   Added units to labels in shape model importer dialog.
+-   In the Mapmaker tab, changed max half size to 512 rather then 513
+    since 513 causes array out of bounds error in mapmaker fortran code.
+-   When launching the SBMT on the command line, the program now takes
+    one optional argument, namely a path to a shape model. If such an
+    argument is specified, the shape model is loaded and displayed
+    rather than the default Eros shape model. This is similar to
+    importing a custom shape model except that when loading the shape
+    model via the command line, the shape model is only available
+    temporarily for that run of the tool and is not saved to
+    disk for future runs of the tool as is the case when importing the
+    shape model. The format of the shape model is determined based on
+    the extension of the file as follows:
+     - OBJ format valid extensions: .obj, .wf
+     - Gaskell PLT format valid extensions: .pds, .plt, .tab
+     - VTK format valid extensions: .vtk
+    Note that case is ignored.
+-   Created new independent tab called "Tracks" for showing custom lidar
+    tracks. Therefore, removed the "Load Track" button for loading
+    custom tracks from existing lidar search panel such as for
+    NLR. This new tab is available for all shape models.
+
+
 ### May 27, 2014
 
 -   In image properties window, adding spacecraft position, orientation,
@@ -16,7 +41,7 @@
     center in window and move up close to structure and 2) center in
     window but preserve original distance.
 -   Fixed problem in which some circles would not draw.
--   add 15 more Hudson shape models (YORP, WT24, SK, Ra-Shalom, Nereus,
+-   Added 15 more Hudson shape models (YORP, WT24, SK, Ra-Shalom, Nereus,
     Mithra, KW4 Alpha, KW4 Beta, HW1, EV5, CE26 Alpha, CC Alpha,
     Betulia, DA Prograde, DA Retrograde). Available from
     [http://echo.jpl.nasa.gov/asteroids/shapes/shapes.html](http://echo.jpl.nasa.gov/asteroids/shapes/shapes.html).
@@ -24,13 +49,13 @@
 -   Added link to data folder on SBMT home page.
 -   Fixed wrong orientation of triangles in Mapmaker renderer view.
 -   In Imaging search panels, changed label to read Search by Filename
-    (instead of Search by ID) since we now do text search in filename. This
-    means that when you enter a search term, it does not need to be an
-    integer (as was the case previously). It can be any part of the
-    filename. For example, if you are searching for MSI image
-    M0131076086F4_2P_IOF_DBL.FIT, you can now enter the full name
-    "M0131076086F4_2P_IOF_DBL.FIT" (without quotes) rather than
-    131076086. In addition you can enter any part of the name, and all
+    (instead of Search by ID) since we now do text search in
+    filename. This means that when you enter a search term, it does
+    not need to be an integer (as was the case previously). It can be
+    any part of the filename. For example, if you are searching for
+    MSI image M0131076086F4_2P_IOF_DBL.FIT, you can now enter the full
+    name "M0131076086F4_2P_IOF_DBL.FIT" (without quotes) rather than
+    "131076086". In addition you can enter any part of the name, and all
     images that contain the text entered in the filename, will be
     returned. For example, if you enter "M013", then all images
     beginning with M013 will be returned. If you leave the field

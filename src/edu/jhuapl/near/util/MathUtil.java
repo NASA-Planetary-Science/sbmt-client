@@ -529,6 +529,15 @@ public class MathUtil
         return (0.25* Math.sqrt(Math.abs(4.0*a*c - (a-b+c)*(a-b+c))));
     }
 
+    static public void triangleCenter(double[] p1, double[] p2,
+            double[] p3, double[] center)
+    {
+        center[0] = (p1[0]+p2[0]+p3[0]) / 3.0;
+        center[1] = (p1[1]+p2[1]+p3[1]) / 3.0;
+        center[2] = (p1[2]+p2[2]+p3[2]) / 3.0;
+    }
+
+
     /**
      * Adapted from VTK's version. Computes (unnormalized) triangle normal
      */
@@ -596,6 +605,32 @@ public class MathUtil
         return v1*bcoords[0] + v2*bcoords[1] + v3*bcoords[2];
     }
 
+    /** Vector version of previous function */
+    static public double[] interpolateWithinTriangle(
+            double[] x,
+            double[] p1,
+            double[] p2,
+            double[] p3,
+            double[] v1,
+            double[] v2,
+            double[] v3) {
+        double[] bcoords = new double[3];
+        barycentricCoords(x, p1, p2, p3, bcoords);
+        double[] interpolatedValue = new double[v1.length];
+        for (int i = 0; i < v1.length; ++i)
+            interpolatedValue[i] = v1[i] * bcoords[0] + v2[i] * bcoords[1] + v3[i] * bcoords[2];
+        return interpolatedValue;
+    }
+
+    // This function is taken from http://www.java2s.com/Code/Java/Language-Basics/Utilityforbyteswappingofalljavadatatypes.htm
+    static public short swap(short value)
+    {
+        int b1 = value & 0xff;
+        int b2 = (value >> 8) & 0xff;
+
+        return (short) (b1 << 8 | b2 << 0);
+    }
+
     // This function is taken from http://www.java2s.com/Code/Java/Language-Basics/Utilityforbyteswappingofalljavadatatypes.htm
     static public int swap(int value)
     {
@@ -622,5 +657,17 @@ public class MathUtil
     {
         double y = y0 + ((y1-y0)*(x-x0)/(x1-x0));
         return y;
+    }
+
+    static public void printArray(double[] p)
+    {
+        System.out.print("[");
+        for (int i=0;i<p.length; ++i)
+        {
+            System.out.print(p[i]);
+            if (i < p.length-1)
+                System.out.print(" ");
+        }
+        System.out.println("]");
     }
 }

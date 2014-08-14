@@ -127,7 +127,6 @@ public class ShapeModelImporterDialog extends javax.swing.JDialog
         shapeModelFormatLabel = new javax.swing.JLabel();
         shapeModelFormatComboBox = new javax.swing.JComboBox();
         pathLabel = new javax.swing.JLabel();
-        jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         getContentPane().setLayout(new java.awt.GridBagLayout());
@@ -199,7 +198,7 @@ public class ShapeModelImporterDialog extends javax.swing.JDialog
         gridBagConstraints.insets = new java.awt.Insets(0, 5, 4, 5);
         getContentPane().add(browseShapeModelButton, gridBagConstraints);
 
-        equRadiusLabel.setText("Equatorial Radius");
+        equRadiusLabel.setText("Equatorial Radius (km)");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
@@ -207,7 +206,7 @@ public class ShapeModelImporterDialog extends javax.swing.JDialog
         gridBagConstraints.insets = new java.awt.Insets(0, 25, 0, 0);
         getContentPane().add(equRadiusLabel, gridBagConstraints);
 
-        polarRadiusLabel.setText("Polar Radius");
+        polarRadiusLabel.setText("Polar Radius (km)");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 3;
@@ -253,7 +252,7 @@ public class ShapeModelImporterDialog extends javax.swing.JDialog
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 9;
+        gridBagConstraints.gridy = 8;
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.PAGE_END;
         gridBagConstraints.weighty = 1.0;
@@ -316,16 +315,6 @@ public class ShapeModelImporterDialog extends javax.swing.JDialog
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 25, 0, 0);
         getContentPane().add(pathLabel, gridBagConstraints);
-
-        jLabel1.setForeground(java.awt.Color.red);
-        jLabel1.setText("<html>Note: Loading of images has been moved to the new Images tab.<br>Loading of plate data has been moved to the main tab of each view.");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 8;
-        gridBagConstraints.gridwidth = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.insets = new java.awt.Insets(20, 20, 20, 0);
-        getContentPane().add(jLabel1, gridBagConstraints);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -408,7 +397,6 @@ public class ShapeModelImporterDialog extends javax.swing.JDialog
     private javax.swing.JRadioButton ellipsoidRadioButton;
     private javax.swing.JFormattedTextField equRadiusFormattedTextField;
     private javax.swing.JLabel equRadiusLabel;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JLabel nameLabel;
     private javax.swing.JTextField nameTextField;

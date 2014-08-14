@@ -378,7 +378,7 @@ void usage(char** argv)
     cout << "                      and orientation of camera. The sumfile is in the\n";
     cout << "                      same format used by Bob Gaskell.\n";
     cout << endl;
-    exit(0);
+    exit(1);
 }
 
 int main(int argc, char** argv)

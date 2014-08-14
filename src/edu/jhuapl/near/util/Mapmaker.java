@@ -27,7 +27,7 @@ public class Mapmaker
     private String name;
     private double latitude;
     private double longitude;
-    private int halfSize = 513;
+    private int halfSize = 512;
     private double pixelSize;
     private File outputFolder;
     private File mapletFitsFile;
@@ -85,7 +85,7 @@ public class Mapmaker
         return process;
     }
 
-    public void convertCubeToFitsAndSaveInOutputFolder()
+    public void convertCubeToFitsAndSaveInOutputFolder(boolean deleteCub)
     {
         try
         {
@@ -140,6 +140,13 @@ public class Mapmaker
             BufferedFile bf = new BufferedFile(mapletFitsFile, "rw");
             f.write(bf);
             bf.close();
+
+            if (deleteCub)
+            {
+                origCubeFile.delete();
+                File origLblFile = new File(mapmakerRootDir + File.separator + "OUTPUT" + File.separator + name + ".lbl");
+                origLblFile.delete();
+            }
         }
         catch (IOException e)
         {
@@ -172,12 +179,12 @@ public class Mapmaker
     }
 
     /**
-     * set the latitude in radians
+     * set the latitude in degrees
      * @param latitude
      */
     public void setLatitude(double latitude)
     {
-        this.latitude = latitude * 180.0 / Math.PI;
+        this.latitude = latitude;
     }
 
     public double getLongitude()
@@ -186,12 +193,12 @@ public class Mapmaker
     }
 
     /**
-     * set the longitude in radians and as West Longitude (not east as is shown in the status bar)
+     * set the longitude in degrees and as West Longitude (not east as is shown in the status bar)
      * @param longitude
      */
     public void setLongitude(double longitude)
     {
-        this.longitude = longitude * 180.0 / Math.PI;
+        this.longitude = longitude;
         this.longitude = 360.0 - this.longitude;
         if (this.longitude < 0.0)
             this.longitude += 360.0;

@@ -4,6 +4,7 @@
 
 <!--- To convert this markdown to HTML use this command (pandoc required)
 pandoc -t html -s index.md -o index.html
+sed -i "" "s/VERSIONXXXXXX/${TODAYSDATE}/g" index.html
 -->
 
 This page contains a version of the SBMT with extra command line
@@ -13,7 +14,7 @@ these tools.
 Currently only Mac OS X 10.8 or higher is supported. If other
 platforms are desired, let us know.
 
-Download: [sbmt-extras-2013.12.11-macosx-x64.zip](releases/sbmt-extras-2013.12.11-macosx-x64.zip)
+Download: [sbmt-extras-VERSIONXXXXXX-macosx-x64.zip](releases/sbmt-extras-VERSIONXXXXXX-macosx-x64.zip)
 
 The following additional tools are included:
 

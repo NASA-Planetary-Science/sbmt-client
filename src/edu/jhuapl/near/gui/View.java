@@ -136,7 +136,12 @@ public class View extends JPanel
             }
 
             controlPanel.addTab("Structures", new StructuresControlPanel(modelManager, pickManager));
-            controlPanel.addTab("Images", new CustomImagesPanel(modelManager, infoPanelManager, pickManager, renderer));
+            if (!smallBodyConfig.customTemporary)
+            {
+                controlPanel.addTab("Images", new CustomImagesPanel(modelManager, infoPanelManager, pickManager, renderer));
+            }
+
+            controlPanel.addTab("Tracks", new TrackPanel(smallBodyConfig, modelManager, pickManager, renderer));
 
             if (smallBodyConfig.hasMapmaker)
             {
@@ -253,6 +258,7 @@ public class View extends JPanel
         allModels.put(ModelNames.ELLIPSE_STRUCTURES, new EllipseModel(smallBodyModel));
         allModels.put(ModelNames.POINT_STRUCTURES, new PointModel(smallBodyModel));
         allModels.put(ModelNames.CIRCLE_SELECTION, new CircleSelectionModel(smallBodyModel));
+        allModels.put(ModelNames.TRACKS, new LidarSearchDataCollection(smallBodyModel));
 
         modelManager.setModels(allModels);
     }
@@ -340,6 +346,15 @@ public class View extends JPanel
     {
         SmallBodyConfig config = new SmallBodyConfig();
         config.customName = name;
+        config.author = ShapeModelAuthor.CUSTOM;
+        return new View(statusBar, config);
+    }
+
+    static public View createTemporaryCustomView(StatusBar statusBar, String pathToShapeModel)
+    {
+        SmallBodyConfig config = new SmallBodyConfig();
+        config.customName = pathToShapeModel;
+        config.customTemporary = true;
         config.author = ShapeModelAuthor.CUSTOM;
         return new View(statusBar, config);
     }

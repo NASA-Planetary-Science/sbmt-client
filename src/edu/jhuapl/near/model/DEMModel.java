@@ -64,7 +64,6 @@ public class DEMModel extends SmallBodyModel
         };
 
         setSmallBodyPolyData(dem, coloringValues, coloringNames, coloringUnits, ColoringValueType.CELLDATA);
-        setColoringIndex(0);
     }
 
     private vtkPolyData initializeDEM(String filename) throws IOException, FitsException
