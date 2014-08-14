@@ -22,7 +22,8 @@
      - OBJ format valid extensions: .obj, .wf
      - Gaskell PLT format valid extensions: .pds, .plt, .tab
      - VTK format valid extensions: .vtk
-    Note that case is ignored.
+    Note that case is ignored. This feature is only supported on Mac and
+    Linux platforms.
 -   Created new independent tab called "Tracks" for showing custom lidar
     tracks. Therefore, removed the "Load Track" button for loading
     custom tracks from existing lidar search panel such as for
