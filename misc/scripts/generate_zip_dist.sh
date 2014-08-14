@@ -70,7 +70,7 @@ echo '**********************************'
 DIR=\`dirname \"\$0\"\`
 cd \"\$DIR\"
 export DYLD_LIBRARY_PATH=lib/mac64:\$DYLD_LIBRARY_PATH
-/usr/libexec/java_home -v 1.6 -a x86_64 -exec java -Djava.library.path=lib/mac64 -Dcom.apple.mrj.application.apple.menu.about.name=\"Small Body Mapping Tool\" -jar lib/near.jar
+/usr/libexec/java_home -v 1.6 -a x86_64 -exec java -Djava.library.path=lib/mac64 -Dcom.apple.mrj.application.apple.menu.about.name=\"Small Body Mapping Tool\" -jar lib/near.jar \$@
 " > $output_dir/mac64/sbmt/runsbmt
 chmod +x $output_dir/mac64/sbmt/runsbmt
 
@@ -78,7 +78,7 @@ echo -n -e "#!/bin/sh
 DIR=\`dirname \"\$0\"\`
 cd \"\$DIR\"
 export LD_LIBRARY_PATH=lib/linux64:\$LD_LIBRARY_PATH
-java -Djava.library.path=lib/linux64 -jar lib/near.jar
+java -Djava.library.path=lib/linux64 -jar lib/near.jar \$@
 " > $output_dir/linux64/sbmt/runsbmt
 chmod +x $output_dir/linux64/sbmt/runsbmt
 
