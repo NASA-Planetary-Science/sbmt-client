@@ -83,26 +83,29 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
 
         initComponents();
 
-        Map<String, String> sourceMap = lidarModel.getLidarDataSourceMap();
-        DefaultComboBoxModel sourceComboBoxModel = new DefaultComboBoxModel(sourceMap.keySet().toArray());
-        sourceComboBox.setModel(sourceComboBoxModel);
-        if (sourceMap.size() == 1)
-        {
-            sourceLabel.setVisible(false);
-            sourceComboBox.setVisible(false);
-        }
-
         loadTrackButton.setVisible(false);
+
+        Map<String, String> sourceMap = lidarModel.getLidarDataSourceMap();
+        if (smallBodyConfig.hasLidarData)
+        {
+            DefaultComboBoxModel sourceComboBoxModel = new DefaultComboBoxModel(sourceMap.keySet().toArray());
+            sourceComboBox.setModel(sourceComboBoxModel);
+            if (sourceMap.size() == 1)
+            {
+                sourceLabel.setVisible(false);
+                sourceComboBox.setVisible(false);
+            }
+
+            startDate = smallBodyConfig.lidarSearchDefaultStartDate;
+            ((SpinnerDateModel)startSpinner.getModel()).setValue(startDate);
+            endDate = smallBodyConfig.lidarSearchDefaultEndDate;
+            ((SpinnerDateModel)endSpinner.getModel()).setValue(endDate);
+        }
 
         radialOffsetChanger.setModel(lidarModel);
         radialOffsetChanger.setOffsetScale(lidarModel.getOffsetScale());
 
         lidarPopupMenu = new LidarPopupMenu(lidarModel, renderer);
-
-        startDate = smallBodyConfig.lidarSearchDefaultStartDate;
-        ((SpinnerDateModel)startSpinner.getModel()).setValue(startDate);
-        endDate = smallBodyConfig.lidarSearchDefaultEndDate;
-        ((SpinnerDateModel)endSpinner.getModel()).setValue(endDate);
     }
 
     protected ModelNames getLidarModelName()

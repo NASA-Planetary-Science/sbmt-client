@@ -5,6 +5,10 @@ import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.SmallBodyConfig;
 import edu.jhuapl.near.pick.PickManager;
 
+/**
+ * Panel used for showing custom tracks. It is essentially the LidarSearchPanel but with the search
+ * controls removed.
+ */
 public class TrackPanel extends LidarSearchPanel
 {
 
@@ -13,7 +17,7 @@ public class TrackPanel extends LidarSearchPanel
             Renderer renderer)
     {
         super(smallBodyConfig, modelManager, pickManager, renderer);
-        enableTrackMode();
+        hideSearchControls();
     }
 
     @Override

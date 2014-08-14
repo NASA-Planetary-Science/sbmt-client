@@ -55,7 +55,10 @@ public class PickManager extends Picker
 
         LidarSearchDataCollection lidarModel = (LidarSearchDataCollection) modelManager.getModel(ModelNames.LIDAR_SEARCH);
         if (lidarModel != null)
-            nondefaultPickers.put(PickMode.LIDAR_SHIFT, new LidarShiftPicker(renderer, modelManager));
+            nondefaultPickers.put(PickMode.LIDAR_SHIFT, new LidarShiftPicker(renderer, modelManager, lidarModel));
+        lidarModel = (LidarSearchDataCollection) modelManager.getModel(ModelNames.TRACKS);
+        if (lidarModel != null)
+            nondefaultPickers.put(PickMode.LIDAR_SHIFT, new LidarShiftPicker(renderer, modelManager, lidarModel));
 
         defaultPicker = new DefaultPicker(renderer, statusBar, modelManager, popupManager);
 

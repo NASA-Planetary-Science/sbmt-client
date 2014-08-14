@@ -159,7 +159,14 @@ public class LidarSearchDataCollection extends Model
 
     public double getOffsetScale()
     {
-        return smallBodyConfig.lidarOffsetScale;
+        if (smallBodyConfig.lidarOffsetScale <= 0.0)
+        {
+            return smallBodyModel.getBoundingBoxDiagonalLength()/1546.4224133453388;
+        }
+        else
+        {
+            return smallBodyConfig.lidarOffsetScale;
+        }
     }
 
     public Map<String, String> getLidarDataSourceMap()
