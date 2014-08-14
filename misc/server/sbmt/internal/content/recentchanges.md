@@ -4,6 +4,31 @@
 
 # Recent Changes
 
+### August 13, 2014
+
+-   Added units to labels in shape model importer dialog.
+-   In the Mapmaker tab, changed max half size to 512 rather then 513
+    since 513 causes array out of bounds error in mapmaker fortran code.
+-   When launching the SBMT on the command line, the program now takes
+    one optional argument, namely a path to a shape model. If such an
+    argument is specified, the shape model is loaded and displayed
+    rather than the default Eros shape model. This is similar to
+    importing a custom shape model except that when loading the shape
+    model via the command line, the shape model is only available
+    temporarily for that run of the tool and is not saved to
+    disk for future runs of the tool as is the case when importing the
+    shape model. The format of the shape model is determined based on
+    the extension of the file as follows:
+     - OBJ format valid extensions: .obj, .wf
+     - Gaskell PLT format valid extensions: .pds, .plt, .tab
+     - VTK format valid extensions: .vtk
+    Note that case is ignored.
+-   Created new independent tab called "Tracks" for showing custom lidar
+    tracks. Therefore, removed the "Load Track" button for loading
+    custom tracks from existing lidar search panel such as for
+    NLR. This new tab is available for all shape models.
+
+
 ### May 27, 2014
 
 -   In image properties window, adding spacecraft position, orientation,
