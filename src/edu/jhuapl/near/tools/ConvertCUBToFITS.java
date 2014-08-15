@@ -91,13 +91,7 @@ public class ConvertCUBToFITS
     {
         System.setProperty("java.awt.headless", "true");
 
-        if (args.length < 2)
-        {
-            usage();
-        }
-
-        int numberRequiredArgs = 3;
-        if (args.length != numberRequiredArgs )
+        if (args.length != 3)
             usage();
 
         int halfSize = Integer.parseInt(args[0]);
