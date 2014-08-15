@@ -64,7 +64,6 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
     private String type;
     private int[] selectedStructures = {};
     private int maxPolygonId = 0;
-    private DecimalFormat df = new DecimalFormat("#.#####");
     private double offset;
 
     protected enum Mode
@@ -76,7 +75,7 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
 
     private Mode mode;
 
-    public class EllipsePolygon extends StructureModel.Structure
+    public static class EllipsePolygon extends StructureModel.Structure
     {
         public String name = "default";
         public int id;
@@ -92,15 +91,19 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
         public int numberOfSides;
         public String type;
         public int[] color;
+        private Mode mode;
 
-        public EllipsePolygon(int numberOfSides, String type, int[] color)
+        private static DecimalFormat df = new DecimalFormat("#.#####");
+
+        public EllipsePolygon(int numberOfSides, String type, int[] color, Mode mode, int id)
         {
-            id = ++maxPolygonId;
+            this.id = id;
             boundaryPolyData = new vtkPolyData();
             interiorPolyData = new vtkPolyData();
             this.numberOfSides = numberOfSides;
             this.type = type;
             this.color = (int[])color.clone();
+            this.mode = mode;
         }
 
         public int getId()
@@ -173,8 +176,8 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
             }
             else
             {
-                interiorPolyData.DeepCopy(emptyPolyData);
-                boundaryPolyData.DeepCopy(emptyPolyData);
+                PolyDataUtil.clearPolyData(interiorPolyData);
+                PolyDataUtil.clearPolyData(boundaryPolyData);
             }
         }
 
@@ -416,7 +419,7 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
 
     public void addNewStructure(double[] pos, double radius, double flattening, double angle)
     {
-        EllipsePolygon pol = this.new EllipsePolygon(numberOfSides, type, defaultColor);
+        EllipsePolygon pol = new EllipsePolygon(numberOfSides, type, defaultColor, mode, ++maxPolygonId);
         polygons.add(pol);
 
         pol.updatePolygon(smallBodyModel, pos, radius, flattening, angle);
@@ -429,7 +432,7 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
 
     public void addNewStructure(double[] pos)
     {
-        EllipsePolygon pol = this.new EllipsePolygon(numberOfSides, type, defaultColor);
+        EllipsePolygon pol = new EllipsePolygon(numberOfSides, type, defaultColor, mode, ++maxPolygonId);
         polygons.add(pol);
 
         pol.updatePolygon(smallBodyModel, pos, defaultRadius, 1.0, 0.0);
@@ -715,7 +718,7 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
         ArrayList<EllipsePolygon> newPolygons = new ArrayList<EllipsePolygon>();
         for (int i=0; i<lines.size(); ++i)
         {
-            EllipsePolygon pol = this.new EllipsePolygon(numberOfSides, type, defaultColor);
+            EllipsePolygon pol = new EllipsePolygon(numberOfSides, type, defaultColor, mode, ++maxPolygonId);
             pol.center = new double[3];
 
             String[] words = lines.get(i).trim().split("\\s+");
