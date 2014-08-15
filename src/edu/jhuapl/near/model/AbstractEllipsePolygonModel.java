@@ -66,7 +66,7 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
     private int maxPolygonId = 0;
     private double offset;
 
-    protected enum Mode
+    public enum Mode
     {
         POINT_MODE,
         CIRCLE_MODE,
