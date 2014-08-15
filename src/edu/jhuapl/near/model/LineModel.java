@@ -72,6 +72,7 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
     private int[] selectedStructures = {};
     private int maximumVerticesPerLine = Integer.MAX_VALUE;
     private vtkIdList idList;
+    private int maxPolygonId = 0;
 
     private vtkPolyData emptyPolyData;
 
@@ -1231,6 +1232,6 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
 
     protected StructureModel.Structure createStructure(SmallBodyModel smallBodyModel)
     {
-        return new Line(smallBodyModel);
+        return new Line(smallBodyModel, false, ++maxPolygonId);
     }
 }

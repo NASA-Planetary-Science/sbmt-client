@@ -43,16 +43,11 @@ public class Line extends StructureModel.Structure
     public static final String LENGTH = "length";
     public static final String COLOR = "color";
 
-    public Line(SmallBodyModel smallBodyModel)
-    {
-        this(smallBodyModel, false);
-    }
-
-    public Line(SmallBodyModel smallBodyModel, boolean closed)
+    public Line(SmallBodyModel smallBodyModel, boolean closed, int id)
     {
         this.smallBodyModel = smallBodyModel;
         this.closed = closed;
-        id = ++maxId;
+        this.id = id;
         color = (int[])purpleColor.clone();
     }
 
