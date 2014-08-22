@@ -4,32 +4,17 @@ KERNELS_TO_LOAD = (
                    '/project/nearsdc/spice-kernels/dawn/naif0010.tls'
 
                    '/project/nearsdc/spice-kernels/dawn/pck00010.tpc'
-                   '/project/nearsdc/spice-kernels/dawn/dawn_vesta_v04.tpc'
+                   '/project/nearsdc/spice-kernels/dawn/dawn_vesta_v05.tpc'
 
-                   '/project/nearsdc/spice-kernels/dawn/DAWN_203_SCLKSCET.00033.tsc'
+                   '/project/nearsdc/spice-kernels/dawn/DAWN_203_SCLKSCET.00047.tsc'
 
                    '/project/nearsdc/spice-kernels/dawn/dawn_vesta_v00.tf'
-                   '/project/nearsdc/spice-kernels/dawn/dawn_v11.tf'
+                   '/project/nearsdc/spice-kernels/dawn/dawn_v12.tf'
 
-                   '/project/nearsdc/spice-kernels/dawn/dawn_fc_v02.ti'
+                   '/project/nearsdc/spice-kernels/dawn/dawn_fc_v10.ti'
 
                    '/project/nearsdc/spice-kernels/dawn/de421.bsp'
-                   '/project/nearsdc/spice-kernels/dawn/sb_vesta_110211.bsp'
-
-                   '/project/nearsdc/spice-kernels/dawn+'
-                   '/dawn_ql_120606-120726_120620_v1.bsp'
-                   '/project/nearsdc/spice-kernels/dawn+'
-                   '/dawn_ql_120613-120726_120622_v1.bsp'
-                   '/project/nearsdc/spice-kernels/dawn+'
-                   '/dawn_ql_120620-120814_120703_v1.bsp'
-                   '/project/nearsdc/spice-kernels/dawn+'
-                   '/dawn_ql_120627-120826_120719_v1.bsp'
-                   '/project/nearsdc/spice-kernels/dawn+'
-                   '/dawn_ql_120724-120929_120824_v1.bsp'
-                   '/project/nearsdc/spice-kernels/dawn+'
-                   '/dawn_ql_120809-121114_120918_v1.bsp'
-                   '/project/nearsdc/spice-kernels/dawn+'
-                   '/dawn_ql_120826-121114_121002_v1.bsp'
+                   '/project/nearsdc/spice-kernels/dawn/sb_vesta_nav_120628.bsp'
 
                    '/project/nearsdc/spice-kernels/dawn+'
                    '/dawn_rec_110416-110802_110913_v1.bsp'
@@ -45,6 +30,10 @@ KERNELS_TO_LOAD = (
                    '/dawn_rec_111211-120501_120620_v1.bsp'
                    '/project/nearsdc/spice-kernels/dawn+'
                    '/dawn_rec_120501-120611_120625_v1.bsp'
+                   '/project/nearsdc/spice-kernels/dawn+'
+                   '/dawn_rec_120611-120724_121101_v1.bsp'
+                   '/project/nearsdc/spice-kernels/dawn+'
+                   '/dawn_rec_120724-120913_121213_v1.bsp'
 
                    '/project/nearsdc/spice-kernels/dawn/dawn_sc_110425_110501.bc'
                    '/project/nearsdc/spice-kernels/dawn/dawn_sc_110502_110508.bc'
