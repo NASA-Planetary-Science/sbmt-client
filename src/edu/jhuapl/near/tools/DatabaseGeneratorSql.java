@@ -376,7 +376,7 @@ public class DatabaseGeneratorSql
         ITOKAWA(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.ITOKAWA, ShapeModelAuthor.GASKELL),
                 "/project/nearsdc/data/"),
         VESTA(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.VESTA, ShapeModelAuthor.GASKELL),
-                "/project/nearsdc/data/"),
+                "/project/nearsdc/data/GASKELL/VESTA/FC/uniqFcFiles.txt"),
         DEIMOS(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.DEIMOS, ShapeModelAuthor.THOMAS),
                 "/project/nearsdc/data/"),
         PHOBOS(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.PHOBOS, ShapeModelAuthor.GASKELL),
@@ -419,9 +419,9 @@ public class DatabaseGeneratorSql
      */
     public static void main(String[] args) throws IOException
     {
-        //System.setProperty("java.awt.headless", "true");
+        System.setProperty("java.awt.headless", "true");
         Configuration.setAPLVersion(true);
-        NativeLibraryLoader.loadVtkLibraries();
+        NativeLibraryLoader.loadVtkLibrariesHeadless();
 
         int mode = Integer.parseInt(args[0]);
 
