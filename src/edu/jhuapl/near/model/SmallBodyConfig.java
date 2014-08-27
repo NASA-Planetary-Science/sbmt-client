@@ -618,7 +618,7 @@ public class SmallBodyConfig
             c.pathOnServer = "/GASKELL/VESTA";
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
             c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
-            c.hasMapmaker = true;
+            c.hasMapmaker = false;
             c.hasPerspectiveImages = true;
             c.imageSearchDefaultStartDate = new GregorianCalendar(2011, 4, 3, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2012, 7, 27, 0, 0, 0).getTime();
