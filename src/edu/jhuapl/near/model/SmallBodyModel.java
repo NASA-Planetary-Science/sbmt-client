@@ -410,7 +410,8 @@ public class SmallBodyModel extends Model
         // Load in custom plate data
         try
         {
-            loadCustomColoringInfo();
+            if (!smallBodyConfig.customTemporary)
+                loadCustomColoringInfo();
 
             smallBodyPolyData.ShallowCopy(
                     PolyDataUtil.loadShapeModel(modelFile.getAbsolutePath()));
