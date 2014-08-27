@@ -4,6 +4,12 @@
 
 # Recent Changes
 
+### August 27, 2014
+
+-   Fixed problem which sometimes occured in previous release when
+    loading the same shape model from the command line multiple times
+    in which SBMT would display a blank window.
+
 ### August 13, 2014
 
 -   Added units to labels in shape model importer dialog.
