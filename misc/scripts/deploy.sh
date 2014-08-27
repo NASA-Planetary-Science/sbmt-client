@@ -26,8 +26,6 @@ scp build/dist/public/mac64/sbmt-${TODAYSDATE}-macosx-x64.zip                   
 scp build/dist/public/win64-with-jre/sbmt-${TODAYSDATE}-windows-x64-with-java.zip  ${TARGET}/releases/
 scp build/dist/public/win64/sbmt-${TODAYSDATE}-windows-x64.zip                     ${TARGET}/releases/
 
-scp build/dist/internal/mac64/sbmt-extras-${TODAYSDATE}-macosx-x64.zip ${TARGET}/internal/tools/releases/
-
 (
 cd misc/server/sbmt/internal
 rm -rf output
@@ -44,13 +42,6 @@ mkdir output
 nanoc
 sed -i "" "s/VERSIONXXXXXX/${TODAYSDATE}/g" output/index.html output/installation.html
 scp -r output/* ${TARGET}/
-)
-
-(
-cd misc/server/tools
-pandoc -t html -s index.md -o index.html
-sed -i "" "s/VERSIONXXXXXX/${TODAYSDATE}/g" index.html
-scp index.html ${TARGET}/internal/tools/
 )
 
 ssh ${TARGETHOST} rm -f ${TARGETDIR}/internal/releases/sbmt-latest-linux-x64.zip
