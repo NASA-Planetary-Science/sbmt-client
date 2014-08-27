@@ -19,9 +19,10 @@
     disk for future runs of the tool as is the case when importing the
     shape model. The format of the shape model is determined based on
     the extension of the file as follows:
-     - OBJ format valid extensions: .obj, .wf
-     - Gaskell PLT format valid extensions: .pds, .plt, .tab
-     - VTK format valid extensions: .vtk
+    -   OBJ format valid extensions: .obj, .wf
+    -   Gaskell PLT format valid extensions: .pds, .plt, .tab
+    -   VTK format valid extensions: .vtk
+
     Note that case is ignored. This feature is only supported on Mac and
     Linux platforms.
 -   Created new independent tab called "Tracks" for showing custom lidar
