@@ -75,12 +75,13 @@ public class ViewManager extends JPanel
             Arrays.sort(dirs);
             for (File dir : dirs)
             {
-                if (dir.isDirectory())
+                if (new File(dir, "model.vtk").isFile())
                 {
                     customViews.add(View.createCustomView(statusBar, dir.getName()));
                 }
             }
         }
+
     }
 
     public View getCurrentView()

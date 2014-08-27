@@ -37,6 +37,7 @@ public class PolygonModel extends LineModel
     private SmallBodyModel smallBodyModel;
 
     private double interiorOpacity = 0.3;
+    private int maxPolygonId = 0;
 
     private vtkPolyData emptyPolyData;
 
@@ -275,7 +276,7 @@ public class PolygonModel extends LineModel
 
     protected StructureModel.Structure createStructure(SmallBodyModel smallBodyModel)
     {
-        return new Polygon(smallBodyModel);
+        return new Polygon(smallBodyModel, ++maxPolygonId);
     }
 
     private Polygon getPolygon(int i)

@@ -4,6 +4,12 @@
 
 # Recent Changes
 
+### August 27, 2014
+
+-   Fixed problem which sometimes occured in previous release when
+    loading the same shape model from the command line multiple times
+    in which SBMT would display a blank window.
+
 ### August 13, 2014
 
 -   Added units to labels in shape model importer dialog.
@@ -19,9 +25,10 @@
     disk for future runs of the tool as is the case when importing the
     shape model. The format of the shape model is determined based on
     the extension of the file as follows:
-     - OBJ format valid extensions: .obj, .wf
-     - Gaskell PLT format valid extensions: .pds, .plt, .tab
-     - VTK format valid extensions: .vtk
+    -   OBJ format valid extensions: .obj, .wf
+    -   Gaskell PLT format valid extensions: .pds, .plt, .tab
+    -   VTK format valid extensions: .vtk
+
     Note that case is ignored. This feature is only supported on Mac and
     Linux platforms.
 -   Created new independent tab called "Tracks" for showing custom lidar

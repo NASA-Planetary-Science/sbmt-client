@@ -18,9 +18,9 @@ import nom.tam.util.BufferedFile;
 
 public class Mapmaker
 {
-    private static final int MAX_WIDTH = 1027;
-    private static final int MAX_HEIGHT = 1027;
-    private static final int MAX_PLANES = 6;
+    public static final int MAX_WIDTH = 1027;
+    public static final int MAX_HEIGHT = 1027;
+    public static final int MAX_PLANES = 6;
 
     private ProcessBuilder processBuilder;
     private String mapmakerRootDir;
@@ -158,7 +158,7 @@ public class Mapmaker
         }
     }
 
-    private static int index(int i, int j, int k)
+    public static int index(int i, int j, int k)
     {
         return ((k * MAX_HEIGHT + j) * MAX_WIDTH + i);
     }

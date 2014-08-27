@@ -197,7 +197,10 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
         saveColoringButton.addActionListener(new SavePlateDataAction());
 
         customizeColoringButton = new JButton("Customize Plate Coloring...");
-        customizeColoringButton.setEnabled(true);
+        if (smallBodyModel.getSmallBodyConfig().customTemporary)
+            customizeColoringButton.setEnabled(false);
+        else
+            customizeColoringButton.setEnabled(true);
         customizeColoringButton.addActionListener(new CustomizePlateDataAction());
 
         coloringButtonGroup = new ButtonGroup();

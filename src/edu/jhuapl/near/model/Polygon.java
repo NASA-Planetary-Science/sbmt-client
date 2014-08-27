@@ -17,9 +17,9 @@ public class Polygon extends Line
     public static final String POLYGON = "polygon";
     public static final String AREA = "area";
 
-    public Polygon(SmallBodyModel smallBodyModel)
+    public Polygon(SmallBodyModel smallBodyModel, int id)
     {
-        super(smallBodyModel, true);
+        super(smallBodyModel, true, id);
 
         this.smallBodyModel = smallBodyModel;
         interiorPolyData = new vtkPolyData();
