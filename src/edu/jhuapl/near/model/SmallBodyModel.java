@@ -1797,20 +1797,21 @@ public class SmallBodyModel extends Model
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
+    public void setCullBackface(boolean enable)
+    {
+        smallBodyActor.GetProperty().SetBackfaceCulling(enable ? 1 : 0);
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+    }
+
 
     public void delete()
     {
-        if (smallBodyPolyData != null) smallBodyPolyData.Delete();
-        if (lowResSmallBodyPolyData != null) lowResSmallBodyPolyData.Delete();
-        if (smallBodyActor != null) smallBodyActor.Delete();
-        if (smallBodyMapper != null) smallBodyMapper.Delete();
-        for (vtkProp prop : smallBodyActors)
-            if (prop != null) prop.Delete();
         if (cellLocator != null) cellLocator.Delete();
         if (pointLocator != null) pointLocator.Delete();
-        if (lowResPointLocator != null) lowResPointLocator.Delete();
-        if (scalarBarActor != null) scalarBarActor.Delete();
+        //if (lowResPointLocator != null) lowResPointLocator.Delete();
         if (genericCell != null) genericCell.Delete();
+        if (smallBodyPolyData != null) smallBodyPolyData.Delete();
+        //if (lowResSmallBodyPolyData != null) lowResSmallBodyPolyData.Delete();
     }
 
     private void setupScaleBar()
