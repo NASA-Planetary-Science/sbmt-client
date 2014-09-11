@@ -16,7 +16,7 @@ TARGETDIR=/disks/d0180/htdocs-sbmt
 #TARGETDIR=$TARGETDIR/internal/stage
 TARGET="${TARGETHOST}:${TARGETDIR}"
 
-scp build/dist/internal/mac64/sbmt-extras-${TODAYSDATE}-macosx-x64.zip ${TARGET}/internal/tools/releases/
+scp build/sbmt-extras-${TODAYSDATE}-macosx-x64.zip ${TARGET}/internal/tools/releases/
 
 (
 cd misc/server/tools
