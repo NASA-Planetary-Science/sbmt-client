@@ -103,7 +103,7 @@
     for a polygon for the correct area to be saved to the file. Also,
     when loading polygons from a file, the area saved in the file is
     displayed in the table (even though "Display Interior" has not been
-    clicked.
+    clicked).
 -   Deimos images are now indexed in the database so that search options
     work now.
 
