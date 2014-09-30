@@ -748,6 +748,20 @@ public class SmallBodyModel extends Model
     }
 
     /**
+     * This returns the closest vertex in the shape model to pt. Unlike findClosestPoin
+     * this functions only returns one of the vertices of the shape model not an arbitrary
+     * point lying on a cell.
+     *
+     * @param pt
+     * @return
+     */
+    public double[] findClosestVertex(double[] pt)
+    {
+        int id = pointLocator.FindClosestPoint(pt);
+        return smallBodyPolyData.GetPoint(id).clone();
+    }
+
+    /**
      * This returns the index of the closest cell in the model to pt.
      * The closest point within the cell is returned in closestPoint
      * @param pt
