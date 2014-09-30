@@ -154,7 +154,11 @@ public class FileCache
             {
                 if (doDownloadIfNeeded)
                 {
-                    file = addToCache(path, conn.getInputStream(), urlLastModified, conn.getContentLength());
+                    long contentLength = 0;
+                    String contentLengthStr = conn.getHeaderField("content-length");
+                    if (contentLengthStr != null)
+                        contentLength = Long.parseLong(contentLengthStr);
+                    file = addToCache(path, conn.getInputStream(), urlLastModified, contentLength);
                     if (file != null) // file can be null if the user aborted the download
                     {
                         downloadedFiles.put(path, "");
@@ -168,7 +172,9 @@ public class FileCache
                 else
                 {
                     fi.needToDownload = true;
-                    fi.length = conn.getContentLength();
+                    String contentLengthStr = conn.getHeaderField("content-length");
+                    if (contentLengthStr != null)
+                        fi.length = Long.parseLong(contentLengthStr);
                 }
 
                 return fi;
