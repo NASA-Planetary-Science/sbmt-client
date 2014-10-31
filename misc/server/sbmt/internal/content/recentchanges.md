@@ -4,6 +4,13 @@
 
 # Recent Changes
 
+### October 31, 2014
+
+-   Changed error shown for lidar tracks to be RMS (root mean square) in NLR, LIDAR, and Tracks tabs.
+-   Added 3 new shape models (Pallas, Daphne, and Hermione) from
+    [http://benoit.carry.free.fr/database/shapemodels.php](http://benoit.carry.free.fr/database/shapemodels.php).
+-   Added Mapmaker tab to Vesta.
+
 ### August 27, 2014
 
 -   Fixed problem which sometimes occured in previous release when

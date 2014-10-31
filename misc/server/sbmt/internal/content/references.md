@@ -264,6 +264,18 @@ from the people or teams producing them and are not listed below.
    RO-A-OSINAC/OSIWAC-5-STEINS-SHAPE-V1.0, NASA Planetary Data System,
    2013.)
 
+### Pallas (Carry)
+
+-   [http://benoit.carry.free.fr/database/shapemodels.php](http://benoit.carry.free.fr/database/shapemodels.php)
+
+### Daphne (Carry)
+
+-   [http://benoit.carry.free.fr/database/shapemodels.php](http://benoit.carry.free.fr/database/shapemodels.php)
+
+### Hermione (Carry)
+
+-   [http://benoit.carry.free.fr/database/shapemodels.php](http://benoit.carry.free.fr/database/shapemodels.php)
+
 
 ## Satellites
 
