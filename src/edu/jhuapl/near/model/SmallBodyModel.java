@@ -2024,7 +2024,38 @@ public class SmallBodyModel extends Model
      */
     public double getReferencePotential()
     {
-        return 0.0;
+        try
+        {
+            loadColoringData();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            return Double.MAX_VALUE;
+        }
+
+        int numColors = coloringInfo.size();
+        for (int j=0; j<numColors; ++j)
+        {
+            if (coloringInfo.get(j).coloringName.equals(GravPotStr))
+            {
+                double potTimesAreaSum = 0.0;
+                double totalArea = 0.0;
+                int numFaces = smallBodyPolyData.GetNumberOfCells();
+                for (int i = 0; i < numFaces; ++i)
+                {
+                    double potential = coloringInfo.get(j).coloringValues.GetTuple1(i);
+                    double area = ((vtkTriangle)smallBodyPolyData.GetCell(i)).ComputeArea();
+
+                    potTimesAreaSum += potential * area;
+                    totalArea += area;
+                }
+
+                return potTimesAreaSum / totalArea;
+            }
+        }
+
+        return Double.MAX_VALUE;
     }
 
     /**
