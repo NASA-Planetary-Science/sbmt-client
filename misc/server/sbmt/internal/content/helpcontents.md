@@ -450,8 +450,10 @@ Models...".  This option is used to import custom shape models into
 the tool. Two types of shape models can be imported: Shape models from
 files in several supported formats as well as ellipsoids whose size
 you can specify. Upon clicking on the "Import Shape Model..." option,
-a dialog will appear allowing you to enter information about the
-shape model to import.
+a dialog will appear allowing you to enter information about the shape
+model to import. Note that when importing shape models, only pure
+triangular plate models are supported. Shape models with plates
+consisting of polygons with more than 3 sides may not work well.
 
 The third section contains a list of the shape models you have
 imported. New items will be added to the list when you import a new
