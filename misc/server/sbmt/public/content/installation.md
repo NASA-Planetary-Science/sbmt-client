@@ -58,6 +58,4 @@ the tool now is by downloading one of the above files.
 
 ## Previous Releases
 
-Previous releases of the tool can be found [here](releases). Previous
-releases are not supported. They are provided only as a fallback in
-case of a problem with the most recent version.
+Previous releases of the tool can be found [here](releases).
