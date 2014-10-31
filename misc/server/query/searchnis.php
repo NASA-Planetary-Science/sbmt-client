@@ -1,4 +1,4 @@
-<?
+<?php
 
 $startDate=$_POST['startDate'] + 0;
 $stopDate=$_POST['stopDate'] + 0;
