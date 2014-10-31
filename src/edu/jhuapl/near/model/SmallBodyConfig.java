@@ -88,7 +88,10 @@ public class SmallBodyConfig
         RASHALOM("Ra-Shalom"),
         SK("SK"),
         WT24("WT24"),
-        YORP("YORP");
+        YORP("YORP"),
+        PALLAS("Pallas"),
+        DAPHNE("Daphne"),
+        HERMIONE("Hermione");
 
         final private String str;
         private ShapeModelBody(String str)
@@ -161,7 +164,8 @@ public class SmallBodyConfig
         CUSTOM("Custom"),
         EROSNAV("NAV"),
         EROSNLR("NLR"),
-        EXPERIMENTAL("Experimental");
+        EXPERIMENTAL("Experimental"),
+        CARRY("Carry");
 
         final private String str;
         private ShapeModelAuthor(String str)
@@ -1282,6 +1286,33 @@ public class SmallBodyConfig
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.THOMAS;
         c.pathOnServer = "/THOMAS/HARTLEY/hartley2_2012_cart.plt.gz";
+        configArray.add(c);
+
+        c = new SmallBodyConfig();
+        c.body = ShapeModelBody.PALLAS;
+        c.type = ShapeModelType.ASTEROID;
+        c.population = ShapeModelPopulation.MAIN_BELT;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelAuthor.CARRY;
+        c.pathOnServer = "/CARRY/PALLAS/pallas.obj.gz";
+        configArray.add(c);
+
+        c = new SmallBodyConfig();
+        c.body = ShapeModelBody.DAPHNE;
+        c.type = ShapeModelType.ASTEROID;
+        c.population = ShapeModelPopulation.MAIN_BELT;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelAuthor.CARRY;
+        c.pathOnServer = "/CARRY/DAPHNE/daphne.obj.gz";
+        configArray.add(c);
+
+        c = new SmallBodyConfig();
+        c.body = ShapeModelBody.HERMIONE;
+        c.type = ShapeModelType.ASTEROID;
+        c.population = ShapeModelPopulation.MAIN_BELT;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelAuthor.CARRY;
+        c.pathOnServer = "/CARRY/HERMIONE/hermione.obj.gz";
         configArray.add(c);
 
         if (Configuration.isAPLVersion())

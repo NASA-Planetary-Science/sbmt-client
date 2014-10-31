@@ -52,3 +52,9 @@
 #./elevation-slope hartley.plt hartley.plt-potential.txt hartley.plt-acceleration.txt
 #./gravity --werner --centers -d 1.8 -r 0.000288636316183 steins.plt
 #./elevation-slope steins.plt steins.plt-potential.txt steins.plt-acceleration.txt
+#gravity --werner --centers -d 2.8 -r 0.000223381517385 pallas.obj
+#elevation-slope pallas.obj pallas.obj-potential.txt pallas.obj-acceleration.txt
+#gravity --werner --centers -d 1.95 -r 0.00029147209723 daphne.obj
+#elevation-slope daphne.obj daphne.obj-potential.txt daphne.obj-acceleration.txt
+#gravity --werner --centers -d 1.37 -r 0.000314423997788 hermione.obj
+#elevation-slope hermione.obj hermione.obj-potential.txt hermione.obj-acceleration.txt
