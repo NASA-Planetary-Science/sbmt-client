@@ -1053,11 +1053,13 @@ public class LidarSearchDataCollection extends Model
         {
             points.GetPoint(i, pt);
             double[] closestPt = smallBodyModel.findClosestPoint(pt);
-            trackError += MathUtil.distanceBetween(pt, closestPt);
+            trackError += MathUtil.distance2Between(pt, closestPt);
         }
 
         if (numberOfPoints > 0)
             trackError /= (double)numberOfPoints;
+
+        trackError = Math.sqrt(trackError);
     }
 
     public double getTrackError()

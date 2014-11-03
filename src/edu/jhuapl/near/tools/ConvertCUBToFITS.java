@@ -11,8 +11,8 @@ import nom.tam.fits.FitsException;
 import nom.tam.fits.FitsFactory;
 import nom.tam.util.BufferedFile;
 
+import edu.jhuapl.near.util.FileUtil;
 import edu.jhuapl.near.util.Mapmaker;
-import edu.jhuapl.near.util.MathUtil;
 
 public class ConvertCUBToFITS
 {
@@ -30,7 +30,7 @@ public class ConvertCUBToFITS
             float[] indata = new float[Mapmaker.MAX_WIDTH*Mapmaker.MAX_HEIGHT*Mapmaker.MAX_PLANES];
             for (int i=0;i<indata.length; ++i)
             {
-                indata[i] = MathUtil.swap(in.readFloat());
+                indata[i] = FileUtil.readFloatAndSwap(in);
             }
 
             float[][][] outdata = new float[Mapmaker.MAX_PLANES][liveSize][liveSize];

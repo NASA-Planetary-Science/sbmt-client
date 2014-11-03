@@ -101,7 +101,7 @@ public class Mapmaker
             float[] indata = new float[MAX_WIDTH*MAX_HEIGHT*MAX_PLANES];
             for (int i=0;i<indata.length; ++i)
             {
-                indata[i] = MathUtil.swap(in.readFloat());
+                indata[i] = FileUtil.readFloatAndSwap(in);
             }
 
             float[][][] outdata = new float[MAX_PLANES][liveSize][liveSize];

@@ -108,6 +108,4 @@ SBMT to the folder '$HOME/.neartool/app'.
 
 ## Previous Releases
 
-Previous releases of the tool can be found [here](releases). Previous
-releases are not supported and are provided only as a fallback in
-case of a problem with the most recent version.
+Previous releases of the tool can be found [here](releases).

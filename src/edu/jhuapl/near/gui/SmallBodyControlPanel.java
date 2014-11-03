@@ -33,6 +33,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.text.BadLocationException;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
 
@@ -78,6 +79,7 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
     private JButton customizeColoringButton;
     private JEditorPane statisticsLabel;
     private JScrollPane scrollPane;
+    private JButton additionalStatisticsButton;
 
     private static final String NO_COLORING = "None";
     private static final String STANDARD_COLORING = "Standard";
@@ -239,6 +241,17 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
 
         JPanel surfacePropertiesEditorPanel = new DisplayPropertyEditorPanel(smallBodyModel);
 
+        additionalStatisticsButton = new JButton("Show more statistics");
+        additionalStatisticsButton.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                additionalStatisticsButton.setVisible(false);
+                addAdditionalStatisticsToLabel();
+            }
+        });
+
         panel.add(modelCheckBox, "wrap");
         if (smallBodyModel.getNumberResolutionLevels() > 1)
         {
@@ -285,6 +298,7 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
 
         panel.add(statisticsSeparator, "growx, span, wrap, gaptop 15");
         panel.add(statisticsLabel, "gaptop 15");
+        panel.add(additionalStatisticsButton, "gaptop 15");
 
         scrollPane.setViewportView(panel);
 
@@ -349,6 +363,7 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
                     int level = this.resModelButtons.indexOf(e.getItemSelectable());
                     smallBodyModel.setModelResolution(level);
                     setStatisticsLabel();
+                    additionalStatisticsButton.setVisible(true);
                     updateColoringComboBoxes();
                 } catch (IOException e1) {
                     e1.printStackTrace();
@@ -540,8 +555,7 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
                 + "&nbsp;&nbsp;&nbsp;Extent:<sup>&nbsp;</sup><br>"
                 + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;X: [" + df.format(bb.xmin) + ", " + df.format(bb.xmax) + "] km<sup>&nbsp;</sup><br>"
                 + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Y: [" + df.format(bb.ymin) + ", " + df.format(bb.ymax) + "] km<sup>&nbsp;</sup><br>"
-                + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Z: [" + df.format(bb.zmin) + ", " + df.format(bb.zmax) + "] km<sup>&nbsp;</sup><br>"
-                + "</html>";
+                + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Z: [" + df.format(bb.zmin) + ", " + df.format(bb.zmax) + "] km<sup>&nbsp;</sup><br>";
 
         // There's some weird thing going one where changing the text of the label causes
         // the scoll bar of the panel to scroll all the way down. Therefore, reset it to
@@ -560,6 +574,50 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
                 scrollPane.getVerticalScrollBar().setValue(originalScrollBarValue);
             }
         });
+    }
+
+    private void addAdditionalStatisticsToLabel()
+    {
+//        DecimalFormat df = new DecimalFormat("#.#####");
+        SmallBodyModel smallBodyModel = modelManager.getSmallBodyModel();
+        Double refPotential = smallBodyModel.getReferencePotential();
+//        PolyDataStatistics stat = PolyDataUtil2.getPolyDataStatistics(smallBodyModel.getSmallBodyPolyData());
+        String refPotentialString = refPotential != Double.MAX_VALUE ? String.valueOf(refPotential) : "(not available)";
+
+        String newText = "&nbsp;&nbsp;&nbsp;Reference Potential: " + refPotentialString + " J/kg<sup>&nbsp;</sup><br>"
+//                + "&nbsp;&nbsp;&nbsp;Number of edges: " + stat.numberEdges + " <sup>&nbsp;</sup><br>"
+//                + "&nbsp;&nbsp;&nbsp;Standard deviation plate area" + stat.stdCellArea + " <sup>&nbsp;</sup><br>"
+//                + "&nbsp;&nbsp;&nbsp;Variance plate area" + stat.varCellArea + " <sup>&nbsp;</sup><br>"
+//                + "&nbsp;&nbsp;&nbsp;Average plate area: " + df.format(1.0e6 * smallBodyModel.getMeanCellArea()) + " m<sup>2</sup><br>"
+//                + "&nbsp;&nbsp;&nbsp;Minimum plate area: " + df.format(1.0e6 * smallBodyModel.getMinCellArea()) + " m<sup>2</sup><br>"
+//                + "&nbsp;&nbsp;&nbsp;Maximum plate area: " + df.format(1.0e6 * smallBodyModel.getMaxCellArea()) + " m<sup>2</sup><br>"
+                ;
+
+        try
+        {
+
+            ((HTMLEditorKit)statisticsLabel.getEditorKit()).insertHTML(
+                    (HTMLDocument)statisticsLabel.getDocument(),
+                    statisticsLabel.getDocument().getLength(),
+                    newText, 0, 0, null);
+
+            final int originalScrollBarValue = scrollPane.getVerticalScrollBar().getValue();
+            SwingUtilities.invokeLater(new Runnable()
+            {
+                public void run()
+                {
+                    scrollPane.getVerticalScrollBar().setValue(originalScrollBarValue);
+                }
+            });
+        }
+        catch (BadLocationException e)
+        {
+            e.printStackTrace();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     private class CustomizePlateDataAction extends AbstractAction

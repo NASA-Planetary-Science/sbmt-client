@@ -274,8 +274,9 @@ public class DatabaseGeneratorSql
                 return false;
 
             // If the sumfile has no landmarks, then ignore it. Sumfiles that have no landmarks
-            // are 1296 bytes long or less
-            if (sumfile.length() <= 1296)
+            // are 1296 bytes long or less. If it's very small in size though it is probably
+            // a sumfile that was generated via another method so keep it.
+            if (sumfile.length() <= 1296 && sumfile.length() >= 500)
                 return false;
         }
         else
@@ -382,7 +383,7 @@ public class DatabaseGeneratorSql
         PHOBOS(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.PHOBOS, ShapeModelAuthor.GASKELL),
                 "/project/nearsdc/data/GASKELL/PHOBOS/IMAGING/pdsImageList.txt"),
         PHOBOSEXPERIMENTAL(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.PHOBOS, ShapeModelAuthor.EXPERIMENTAL),
-                "/project/nearsdc/data/", "phobosexp"),
+                "/project/nearsdc/data/GASKELL/PHOBOSEXPERIMENTAL/IMAGING/imagelist.txt", "phobosexp"),
         JUPITER(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.JUPITER, null),
                 "/project/nearsdc/data/NEWHORIZONS/JUPITER/IMAGING/imagelist-fullpath.txt"),
         CALLISTO(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.CALLISTO, null),

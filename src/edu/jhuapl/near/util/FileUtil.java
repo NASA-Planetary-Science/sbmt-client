@@ -3,6 +3,8 @@ package edu.jhuapl.near.util;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -297,6 +299,34 @@ public class FileUtil
 
         in.close();
         out.close();
+    }
+
+    static public float readFloatAndSwap(DataInputStream is) throws IOException
+    {
+        int intValue = is.readInt();
+        intValue = MathUtil.swap(intValue);
+        return Float.intBitsToFloat(intValue);
+    }
+
+    static public double readDoubleAndSwap(DataInputStream is) throws IOException
+    {
+        long longValue = is.readLong();
+        longValue = MathUtil.swap(longValue);
+        return Double.longBitsToDouble(longValue);
+    }
+
+    static public void writesFloatAndSwap(DataOutputStream os, float value) throws IOException
+    {
+        int intValue = Float.floatToRawIntBits(value);
+        intValue = MathUtil.swap(intValue);
+        os.writeInt(intValue);
+    }
+
+    static public void writeDoubleAndSwap(DataOutputStream os, double value) throws IOException
+    {
+        long longValue = Double.doubleToRawLongBits(value);
+        longValue = MathUtil.swap(longValue);
+        os.writeLong(longValue);
     }
 
     static public String getTemporarySuffix()

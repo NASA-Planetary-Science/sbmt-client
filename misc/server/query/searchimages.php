@@ -1,4 +1,4 @@
-<?
+<?php
 
 $imagesDatabase=$_POST['imagesDatabase'];
 $cubesDatabase=$_POST['cubesDatabase'];
