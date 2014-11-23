@@ -304,14 +304,6 @@ public class LidarSearchDataCollection extends Model
         originalPoints.clear();
         tracks.clear();
 
-        int timeindex = 0;
-        int xindex = 1;
-        int yindex = 2;
-        int zindex = 3;
-        int scxindex = 4;
-        int scyindex = 5;
-        int sczindex = 6;
-
         for (File file : files)
         {
             InputStream fs = new FileInputStream(file.getAbsolutePath());
@@ -326,16 +318,49 @@ public class LidarSearchDataCollection extends Model
             {
                 String[] vals = lineRead.trim().split("\\s+");
 
-                long time = new DateTime(vals[timeindex]).getMillis();
+                long time = 0;
+                double[] target = {0.0, 0.0, 0.0};
+                double[] scpos = {0.0, 0.0, 0.0};
 
-                double[] scpos = new double[3];
-                double[] target = new double[3];
-                target[0] = Double.parseDouble(vals[xindex]);
-                target[1] = Double.parseDouble(vals[yindex]);
-                target[2] = Double.parseDouble(vals[zindex]);
-                scpos[0] = Double.parseDouble(vals[scxindex]);
-                scpos[1] = Double.parseDouble(vals[scyindex]);
-                scpos[2] = Double.parseDouble(vals[sczindex]);
+                // The lines in the file may contain either 3, or greater columns.
+                // If 3, they are assumed to contain the lidar point only and time and spacecraft
+                // position are set to zero. If 4 or 5, they are assumed to contain time and lidar point
+                // and spacecraft position is set to zero. If 6, they are assumed to contain
+                // lidar position and spacecraft position and time is set to zero. If 7 or greater,
+                // they are assumed to contain time, lidar position, and spacecraft position.
+                // In the case of 5 columns, the last column is ignored and in the case of
+                // greater than 7 columns, columns 8 or higher are ignored.
+                if (vals.length == 4 || vals.length == 5 || vals.length >= 7)
+                {
+                    time = new DateTime(vals[0]).getMillis();
+                    target[0] = Double.parseDouble(vals[1]);
+                    target[1] = Double.parseDouble(vals[2]);
+                    target[2] = Double.parseDouble(vals[3]);
+                }
+                if (vals.length >= 7)
+                {
+                    scpos[0] = Double.parseDouble(vals[4]);
+                    scpos[1] = Double.parseDouble(vals[5]);
+                    scpos[2] = Double.parseDouble(vals[6]);
+                }
+                if (vals.length == 3 || vals.length == 6)
+                {
+                    target[0] = Double.parseDouble(vals[0]);
+                    target[1] = Double.parseDouble(vals[1]);
+                    target[2] = Double.parseDouble(vals[2]);
+                }
+                if (vals.length == 6)
+                {
+                    scpos[0] = Double.parseDouble(vals[3]);
+                    scpos[1] = Double.parseDouble(vals[4]);
+                    scpos[2] = Double.parseDouble(vals[5]);
+                }
+
+                if (vals.length < 3)
+                {
+                    in.close();
+                    throw new IOException("Error: Incorrect file format!");
+                }
 
                 originalPoints.add(new LidarPoint(target, scpos, time));
             }
