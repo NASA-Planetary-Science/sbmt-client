@@ -18,7 +18,7 @@ public class GravityProgram
     private String trackFile;
 
 
-    public GravityProgram()
+    private GravityProgram()
     {
         File file = FileCache.getFileFromServer("/GRAVITY/gravity.zip");
         FileUtil.unzipFile(file);

@@ -37,12 +37,11 @@ import vtk.vtkProp;
 import vtk.vtkUnsignedCharArray;
 
 import edu.jhuapl.near.util.ColorUtil;
-import edu.jhuapl.near.util.Configuration;
 import edu.jhuapl.near.util.FileCache;
-import edu.jhuapl.near.util.FileUtil;
 import edu.jhuapl.near.util.GravityProgram;
 import edu.jhuapl.near.util.LatLon;
 import edu.jhuapl.near.util.MathUtil;
+import edu.jhuapl.near.util.Point3D;
 import edu.jhuapl.near.util.Properties;
 
 public class LidarSearchDataCollection extends Model
@@ -936,34 +935,29 @@ public class LidarSearchDataCollection extends Model
             throw new IOException();
 
         // Run the gravity program
-        GravityProgram gravityProgram = new GravityProgram();
-        gravityProgram.setDensity(smallBodyModel.getDensity());
-        gravityProgram.setRotationRate(smallBodyModel.getRotationRate());
-        gravityProgram.setRefPotential(smallBodyModel.getReferencePotential());
-        gravityProgram.setColumnsToUse("1,2,3");
-        File file = FileCache.getFileFromServer(
+        File shapeModelFile = FileCache.getFileFromServer(
                 smallBodyModel.getServerPathToShapeModelFileInPlateFormat());
-        gravityProgram.setShapeModelFile(file.getAbsolutePath());
-        File trackFile = new File(Configuration.getTempFolder() + File.separator + "track.txt");
-        saveTrack(trackId, trackFile, true);
-        gravityProgram.setTrackFile(trackFile.getAbsolutePath());
-        Process process = gravityProgram.runGravity();
-        process.waitFor();
-
-
-        potential.clear();
-        acceleration.clear();
-        elevation.clear();
-        distance.clear();
-        time.clear();
-
-        String filename = gravityProgram.getPotentialFile();
-        potential.addAll(FileUtil.getFileLinesAsDoubleList(filename));
-        filename = gravityProgram.getAccelerationMagnitudeFile();
-        acceleration.addAll(FileUtil.getFileLinesAsDoubleList(filename));
-        filename = gravityProgram.getElevationFile();
-        elevation.addAll(FileUtil.getFileLinesAsDoubleList(filename));
-
+        int startId = tracks.get(trackId).startId;
+        int stopId = tracks.get(trackId).stopId;
+        ArrayList<Point3D> xyzPointList = new ArrayList<Point3D>();
+        for (int i=startId; i<=stopId; ++i)
+        {
+            LidarPoint pt = originalPoints.get(i);
+            double[] target = pt.target;
+            target = transformLidarPoint(target);
+            xyzPointList.add(new Point3D(target));
+        }
+        ArrayList<Point3D> accelerationVector = new ArrayList<Point3D>();
+        GravityProgram.getGravityAtPoints(
+                xyzPointList,
+                smallBodyModel.getDensity(),
+                smallBodyModel.getRotationRate(),
+                smallBodyModel.getReferencePotential(),
+                shapeModelFile.getAbsolutePath(),
+                elevation,
+                acceleration,
+                accelerationVector,
+                potential);
 
         double[] fittedLinePoint = new double[3];
         double[] fittedLineDirection = new double[3];
