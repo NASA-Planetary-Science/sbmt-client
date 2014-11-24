@@ -312,11 +312,7 @@ public class LidarPopupMenu extends PopupMenu
                 lidarPlot = new LidarPlot(lidarModel, elevation, distance, time, "Elevation", "m");
                 lidarPlot.setVisible(true);
             }
-            catch (InterruptedException e1)
-            {
-                e1.printStackTrace();
-            }
-            catch (IOException e1)
+            catch (Exception e1)
             {
                 e1.printStackTrace();
             }

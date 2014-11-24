@@ -38,11 +38,11 @@ import vtk.vtkUnsignedCharArray;
 
 import edu.jhuapl.near.util.ColorUtil;
 import edu.jhuapl.near.util.FileCache;
-import edu.jhuapl.near.util.GravityProgram;
 import edu.jhuapl.near.util.LatLon;
 import edu.jhuapl.near.util.MathUtil;
 import edu.jhuapl.near.util.Point3D;
 import edu.jhuapl.near.util.Properties;
+import edu.jhuapl.near.util.gravity.Gravity;
 
 public class LidarSearchDataCollection extends Model
 {
@@ -919,7 +919,7 @@ public class LidarSearchDataCollection extends Model
      * Run gravity program on specified track and return potential, acceleration,
      * and elevation as function of distance and time.
      * @param trackId
-     * @throws InterruptedException
+     * @throws Exception
      */
     public void getGravityDataForTrack(
             int trackId,
@@ -927,7 +927,7 @@ public class LidarSearchDataCollection extends Model
             ArrayList<Double> acceleration,
             ArrayList<Double> elevation,
             ArrayList<Double> distance,
-            ArrayList<Long> time) throws InterruptedException, IOException
+            ArrayList<Long> time) throws Exception
     {
         Track track = tracks.get(trackId);
 
@@ -935,25 +935,23 @@ public class LidarSearchDataCollection extends Model
             throw new IOException();
 
         // Run the gravity program
-        File shapeModelFile = FileCache.getFileFromServer(
-                smallBodyModel.getServerPathToShapeModelFileInPlateFormat());
         int startId = tracks.get(trackId).startId;
         int stopId = tracks.get(trackId).stopId;
-        ArrayList<Point3D> xyzPointList = new ArrayList<Point3D>();
+        ArrayList<double[]> xyzPointList = new ArrayList<double[]>();
         for (int i=startId; i<=stopId; ++i)
         {
             LidarPoint pt = originalPoints.get(i);
             double[] target = pt.target;
             target = transformLidarPoint(target);
-            xyzPointList.add(new Point3D(target));
+            xyzPointList.add(target);
         }
         ArrayList<Point3D> accelerationVector = new ArrayList<Point3D>();
-        GravityProgram.getGravityAtPoints(
+        Gravity.getGravityAtPoints(
                 xyzPointList,
                 smallBodyModel.getDensity(),
                 smallBodyModel.getRotationRate(),
                 smallBodyModel.getReferencePotential(),
-                shapeModelFile.getAbsolutePath(),
+                smallBodyModel.getSmallBodyPolyData(),
                 elevation,
                 acceleration,
                 accelerationVector,
