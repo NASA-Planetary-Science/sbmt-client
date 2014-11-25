@@ -301,7 +301,7 @@ public class LidarPopupMenu extends PopupMenu
                 ArrayList<Double> acceleration = new ArrayList<Double>();
                 ArrayList<Double> elevation = new ArrayList<Double>();
                 ArrayList<Double> distance = new ArrayList<Double>();
-                ArrayList<Long> time = new ArrayList<Long>();
+                ArrayList<Double> time = new ArrayList<Double>();
 
                 lidarModel.getGravityDataForTrack(currentTrack, potential, acceleration, elevation, distance, time);
 

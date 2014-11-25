@@ -1,8 +1,10 @@
 package edu.jhuapl.near.model;
 
 import java.awt.Color;
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
@@ -10,11 +12,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
-import java.util.Locale;
 import java.util.Map;
 import java.util.TreeSet;
 
@@ -25,7 +24,6 @@ import org.apache.commons.math3.linear.LUDecomposition;
 import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.linear.SingularValueDecomposition;
 import org.apache.commons.math3.optim.nonlinear.vector.jacobian.LevenbergMarquardtOptimizer;
-import org.joda.time.DateTime;
 
 import vtk.vtkActor;
 import vtk.vtkCellArray;
@@ -38,10 +36,12 @@ import vtk.vtkUnsignedCharArray;
 
 import edu.jhuapl.near.util.ColorUtil;
 import edu.jhuapl.near.util.FileCache;
+import edu.jhuapl.near.util.FileUtil;
 import edu.jhuapl.near.util.LatLon;
 import edu.jhuapl.near.util.MathUtil;
 import edu.jhuapl.near.util.Point3D;
 import edu.jhuapl.near.util.Properties;
+import edu.jhuapl.near.util.TimeUtil;
 import edu.jhuapl.near.util.gravity.Gravity;
 
 public class LidarSearchDataCollection extends Model
@@ -56,21 +56,20 @@ public class LidarSearchDataCollection extends Model
     private vtkPolyDataMapper selectedPointMapper;
     private vtkActor actor;
     private vtkActor selectedPointActor;
-    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.US);
     private vtkPolyData emptyPolyData; // an empty polydata for resetting
 
     private double radialOffset = 0.0;
     private double[] translation = {0.0, 0.0, 0.0};
 
     private String dataSource;
-    private DateTime startDate;
-    private DateTime stopDate;
+    private double startDate;
+    private double stopDate;
     private TreeSet<Integer> cubeList;
 
     private int selectedPoint = -1;
 
     private ArrayList<Track> tracks = new ArrayList<Track>();
-    private long timeSeparationBetweenTracks = 10000; // In milliseconds
+    private double timeSeparationBetweenTracks = 10.0; // In seconds
     private int minTrackLength = 1;
     private int[] defaultColor = {0, 0, 255, 255};
     private ArrayList<Integer> displayedPointToOriginalPointMap = new ArrayList<Integer>();
@@ -81,9 +80,9 @@ public class LidarSearchDataCollection extends Model
     {
         public double[] target;
         public double[] scpos;
-        public Long time;
+        public Double time;
 
-        public LidarPoint(double[] target, double[] scpos, long time)
+        public LidarPoint(double[] target, double[] scpos, double time)
         {
             this.target = target;
             this.scpos = scpos;
@@ -176,11 +175,11 @@ public class LidarSearchDataCollection extends Model
 
     public void setLidarData(
             String dataSource,
-            DateTime startDate,
-            DateTime stopDate,
+            double startDate,
+            double stopDate,
             TreeSet<Integer> cubeList,
             PointInRegionChecker pointInRegionChecker,
-            long timeSeparationBetweenTracks,
+            double timeSeparationBetweenTracks,
             int minTrackLength) throws IOException, ParseException
     {
         runQuery(
@@ -200,16 +199,16 @@ public class LidarSearchDataCollection extends Model
 
     private void runQuery(
             String dataSource,
-            DateTime startDate,
-            DateTime stopDate,
+            double startDate,
+            double stopDate,
             TreeSet<Integer> cubeList,
             PointInRegionChecker pointInRegionChecker,
-            long timeSeparationBetweenTracks,
+            double timeSeparationBetweenTracks,
             int minTrackLength) throws IOException, ParseException
     {
         if (dataSource.equals(this.dataSource) &&
-                startDate.equals(this.startDate) &&
-                stopDate.equals(this.stopDate) &&
+                startDate == this.startDate &&
+                stopDate == this.stopDate &&
                 cubeList.equals(this.cubeList) &&
                 timeSeparationBetweenTracks == this.timeSeparationBetweenTracks &&
                 minTrackLength == this.minTrackLength)
@@ -220,15 +219,15 @@ public class LidarSearchDataCollection extends Model
         // Make clones since otherwise the previous if statement might
         // evaluate to true even if something changed.
         this.dataSource = new String(dataSource);
-        this.startDate = new DateTime(startDate);
-        this.stopDate = new DateTime(stopDate);
+        this.startDate = startDate;
+        this.stopDate = stopDate;
         this.cubeList = (TreeSet<Integer>)cubeList.clone();
         this.timeSeparationBetweenTracks = timeSeparationBetweenTracks;
         this.minTrackLength = minTrackLength;
 
 
-        long start = startDate.getMillis();
-        long stop = stopDate.getMillis();
+        double start = startDate;
+        double stop = stopDate;
 
         originalPoints.clear();
 
@@ -257,7 +256,7 @@ public class LidarSearchDataCollection extends Model
             {
                 String[] vals = lineRead.trim().split("\\s+");
 
-                long time = new DateTime(vals[timeindex]).getMillis();
+                double time = TimeUtil.str2et(vals[timeindex]);
                 if (time < start || time > stop)
                     continue;
 
@@ -293,84 +292,135 @@ public class LidarSearchDataCollection extends Model
         updateTrackPolydata();
     }
 
+    public void loadTrackAscii(File file) throws IOException
+    {
+        InputStream fs = new FileInputStream(file.getAbsolutePath());
+        InputStreamReader isr = new InputStreamReader(fs);
+        BufferedReader in = new BufferedReader(isr);
+
+        Track track = new Track();
+        track.startId = originalPoints.size();
+
+        String lineRead;
+        while ((lineRead = in.readLine()) != null)
+        {
+            String[] vals = lineRead.trim().split("\\s+");
+
+            double time = 0;
+            double[] target = {0.0, 0.0, 0.0};
+            double[] scpos = {0.0, 0.0, 0.0};
+
+            // The lines in the file may contain either 3, or greater columns.
+            // If 3, they are assumed to contain the lidar point only and time and spacecraft
+            // position are set to zero. If 4 or 5, they are assumed to contain time and lidar point
+            // and spacecraft position is set to zero. If 6, they are assumed to contain
+            // lidar position and spacecraft position and time is set to zero. If 7 or greater,
+            // they are assumed to contain time, lidar position, and spacecraft position.
+            // In the case of 5 columns, the last column is ignored and in the case of
+            // greater than 7 columns, columns 8 or higher are ignored.
+            if (vals.length == 4 || vals.length == 5 || vals.length >= 7)
+            {
+                time = TimeUtil.str2et(vals[0]);
+                if (time == -Double.MIN_VALUE)
+                {
+                    in.close();
+                    throw new IOException("Error: Incorrect file format!");
+                }
+                target[0] = Double.parseDouble(vals[1]);
+                target[1] = Double.parseDouble(vals[2]);
+                target[2] = Double.parseDouble(vals[3]);
+            }
+            if (vals.length >= 7)
+            {
+                scpos[0] = Double.parseDouble(vals[4]);
+                scpos[1] = Double.parseDouble(vals[5]);
+                scpos[2] = Double.parseDouble(vals[6]);
+            }
+            if (vals.length == 3 || vals.length == 6)
+            {
+                target[0] = Double.parseDouble(vals[0]);
+                target[1] = Double.parseDouble(vals[1]);
+                target[2] = Double.parseDouble(vals[2]);
+            }
+            if (vals.length == 6)
+            {
+                scpos[0] = Double.parseDouble(vals[3]);
+                scpos[1] = Double.parseDouble(vals[4]);
+                scpos[2] = Double.parseDouble(vals[5]);
+            }
+
+            if (vals.length < 3)
+            {
+                in.close();
+                throw new IOException("Error: Incorrect file format!");
+            }
+
+            originalPoints.add(new LidarPoint(target, scpos, time));
+        }
+
+        in.close();
+
+        track.stopId = originalPoints.size() - 1;
+        tracks.add(track);
+    }
+
+    public void loadTrackBinary(File file) throws IOException
+    {
+        DataInputStream in = new DataInputStream(new BufferedInputStream(new FileInputStream(file)));
+
+        Track track = new Track();
+        track.startId = originalPoints.size();
+
+        while (true)
+        {
+            double time = 0;
+            double[] target = {0.0, 0.0, 0.0};
+            double[] scpos = {0.0, 0.0, 0.0};
+
+            try
+            {
+                time = FileUtil.readDoubleAndSwap(in);
+                target[0] = FileUtil.readDoubleAndSwap(in);
+                target[1] = FileUtil.readDoubleAndSwap(in);
+                target[2] = FileUtil.readDoubleAndSwap(in);
+                scpos[0] = FileUtil.readDoubleAndSwap(in);
+                scpos[1] = FileUtil.readDoubleAndSwap(in);
+                scpos[2] = FileUtil.readDoubleAndSwap(in);
+            }
+            catch(IOException e)
+            {
+                break;
+            }
+
+            originalPoints.add(new LidarPoint(target, scpos, time));
+        }
+
+        in.close();
+
+        track.stopId = originalPoints.size() - 1;
+        tracks.add(track);
+    }
+
     /**
      * Load a track from a file. This will replace all currently existing tracks
      * with a single track.
      * @param filename
+     * @throws IOException
      */
-    public void loadTracksFromFiles(File[] files) throws IOException
+    public void loadTracksFromFiles(File[] files, boolean binary) throws IOException
     {
         originalPoints.clear();
         tracks.clear();
 
         for (File file : files)
         {
-            InputStream fs = new FileInputStream(file.getAbsolutePath());
-            InputStreamReader isr = new InputStreamReader(fs);
-            BufferedReader in = new BufferedReader(isr);
-
-            Track track = new Track();
-            track.startId = originalPoints.size();
-
-            String lineRead;
-            while ((lineRead = in.readLine()) != null)
-            {
-                String[] vals = lineRead.trim().split("\\s+");
-
-                long time = 0;
-                double[] target = {0.0, 0.0, 0.0};
-                double[] scpos = {0.0, 0.0, 0.0};
-
-                // The lines in the file may contain either 3, or greater columns.
-                // If 3, they are assumed to contain the lidar point only and time and spacecraft
-                // position are set to zero. If 4 or 5, they are assumed to contain time and lidar point
-                // and spacecraft position is set to zero. If 6, they are assumed to contain
-                // lidar position and spacecraft position and time is set to zero. If 7 or greater,
-                // they are assumed to contain time, lidar position, and spacecraft position.
-                // In the case of 5 columns, the last column is ignored and in the case of
-                // greater than 7 columns, columns 8 or higher are ignored.
-                if (vals.length == 4 || vals.length == 5 || vals.length >= 7)
-                {
-                    time = new DateTime(vals[0]).getMillis();
-                    target[0] = Double.parseDouble(vals[1]);
-                    target[1] = Double.parseDouble(vals[2]);
-                    target[2] = Double.parseDouble(vals[3]);
-                }
-                if (vals.length >= 7)
-                {
-                    scpos[0] = Double.parseDouble(vals[4]);
-                    scpos[1] = Double.parseDouble(vals[5]);
-                    scpos[2] = Double.parseDouble(vals[6]);
-                }
-                if (vals.length == 3 || vals.length == 6)
-                {
-                    target[0] = Double.parseDouble(vals[0]);
-                    target[1] = Double.parseDouble(vals[1]);
-                    target[2] = Double.parseDouble(vals[2]);
-                }
-                if (vals.length == 6)
-                {
-                    scpos[0] = Double.parseDouble(vals[3]);
-                    scpos[1] = Double.parseDouble(vals[4]);
-                    scpos[2] = Double.parseDouble(vals[5]);
-                }
-
-                if (vals.length < 3)
-                {
-                    in.close();
-                    throw new IOException("Error: Incorrect file format!");
-                }
-
-                originalPoints.add(new LidarPoint(target, scpos, time));
-            }
-
-            in.close();
-
-            track.stopId = originalPoints.size() - 1;
-            tracks.add(track);
+            if (binary)
+                loadTrackBinary(file);
+            else
+                loadTrackAscii(file);
         }
 
-        timeSeparationBetweenTracks = Long.MAX_VALUE;
+        timeSeparationBetweenTracks = Double.MAX_VALUE;
         radialOffset = 0.0;
         translation[0] = translation[1] = translation[2] = 0.0;
 
@@ -425,14 +475,14 @@ public class LidarSearchDataCollection extends Model
         if (size == 0)
             return;
 
-        long prevTime = originalPoints.get(0).time;
+        double prevTime = originalPoints.get(0).time;
         Track track = new Track();
         track.startId = 0;
         tracks.add(track);
 
         for (int i=1; i<size; ++i)
         {
-            long currentTime = originalPoints.get(i).time;
+            double currentTime = originalPoints.get(i).time;
             if (currentTime - prevTime >= timeSeparationBetweenTracks)
             {
                 track.stopId = i-1;
@@ -480,9 +530,9 @@ public class LidarSearchDataCollection extends Model
                 scpos = transformScpos(scpos, target);
             }
 
-            Date date = new Date(pt.time);
+            String timeString = TimeUtil.et2str(pt.time);
 
-            out.write(sdf.format(date).replace(' ', 'T') + " " +
+            out.write(timeString + " " +
                     target[0] + " " +
                     target[1] + " " +
                     target[2] + " " +
@@ -533,9 +583,9 @@ public class LidarSearchDataCollection extends Model
                         scpos = transformScpos(scpos, target);
                     }
 
-                    Date date = new Date(pt.time);
+                    String timeString = TimeUtil.et2str(pt.time);
 
-                    out.write(sdf.format(date).replace(' ', 'T') + " " +
+                    out.write(timeString + " " +
                             target[0] + " " +
                             target[1] + " " +
                             target[2] + " " +
@@ -769,8 +819,8 @@ public class LidarSearchDataCollection extends Model
         tracks.clear();
 
         this.dataSource = null;
-        this.startDate = null;
-        this.stopDate = null;
+        this.startDate = -Double.MIN_VALUE;
+        this.stopDate = -Double.MIN_VALUE;
         this.cubeList = null;
 
         selectPoint(-1);
@@ -799,8 +849,8 @@ public class LidarSearchDataCollection extends Model
         if (!originalPoints.isEmpty() && !tracks.isEmpty())
         {
             cellId = displayedPointToOriginalPointMap.get(cellId);
-            Date date = new Date(originalPoints.get(cellId).time);
-            return "Lidar point acquired at " + sdf.format(date);
+            double et = originalPoints.get(cellId).time;
+            return String.format("Lidar point acquired at " + TimeUtil.et2str(et) + ", ET = %f", et);
         }
 
         return "";
@@ -849,7 +899,7 @@ public class LidarSearchDataCollection extends Model
         return originalPoints.size();
     }
 
-    public long getTimeOfPoint(int i)
+    public double getTimeOfPoint(int i)
     {
         return originalPoints.get(i).time;
     }
@@ -871,7 +921,7 @@ public class LidarSearchDataCollection extends Model
 
         try
         {
-            long t0 = originalPoints.get(startId).time;
+            double t0 = originalPoints.get(startId).time;
 
             double[] lineStartPoint = new double[3];
             for (int j=0; j<3; ++j)
@@ -881,7 +931,7 @@ public class LidarSearchDataCollection extends Model
                 {
                     LidarPoint lp = originalPoints.get(i);
                     double[] target = transformLidarPoint(lp.target);
-                    fitter.addObservedPoint(1.0, (double)(lp.time-t0)/1000.0, target[j]);
+                    fitter.addObservedPoint(1.0, lp.time-t0, target[j]);
                 }
 
                 PolynomialFunction fitted = new PolynomialFunction(fitter.fit(new double[2]));
@@ -927,7 +977,7 @@ public class LidarSearchDataCollection extends Model
             ArrayList<Double> acceleration,
             ArrayList<Double> elevation,
             ArrayList<Double> distance,
-            ArrayList<Long> time) throws Exception
+            ArrayList<Double> time) throws Exception
     {
         Track track = tracks.get(trackId);
 
@@ -1040,11 +1090,10 @@ public class LidarSearchDataCollection extends Model
         if (originalPoints.size() == 0 || track.startId < 0 || track.stopId < 0)
             return "";
 
-        long t0 = originalPoints.get(track.startId).time;
-        long t1 = originalPoints.get(track.stopId).time;
+        double t0 = originalPoints.get(track.startId).time;
+        double t1 = originalPoints.get(track.stopId).time;
 
-        return sdf.format(new Date(t0)).replace(' ', 'T') + " - " +
-            sdf.format(new Date(t1)).replace(' ', 'T');
+        return TimeUtil.et2str(t0) + " - " + TimeUtil.et2str(t1);
     }
 
     public int getNumberOfPointsPerTrack(int trackId)
@@ -1200,9 +1249,7 @@ public class LidarSearchDataCollection extends Model
 
             target = planeOrientation.operate(target);
 
-            Date date = new Date(lp.time);
-
-            out.write(sdf.format(date).replace(' ', 'T') + " " +
+            out.write(TimeUtil.et2str(lp.time) + " " +
                     target[0] + " " +
                     target[1] + " " +
                     target[2] + newline);
@@ -1222,5 +1269,4 @@ public class LidarSearchDataCollection extends Model
 
         out.close();
     }
-
 }

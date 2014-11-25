@@ -7,10 +7,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Locale;
 
 import javax.swing.AbstractAction;
 import javax.swing.JFrame;
@@ -36,6 +33,7 @@ import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
 import edu.jhuapl.near.model.LidarSearchDataCollection;
+import edu.jhuapl.near.util.TimeUtil;
 
 
 public class LidarPlot extends JFrame implements ChartMouseListener
@@ -49,13 +47,13 @@ public class LidarPlot extends JFrame implements ChartMouseListener
     private XYSeries timeSelectionSeries;
     private ArrayList<Double> data;
     private ArrayList<Double> distance;
-    private ArrayList<Long> time;
+    private ArrayList<Double> time;
     private String name;
 
     public LidarPlot(LidarSearchDataCollection lidarModel,
             ArrayList<Double> data,
             ArrayList<Double> distance,
-            ArrayList<Long> time,
+            ArrayList<Double> time,
             String name,
             String units)
     {
@@ -169,9 +167,9 @@ public class LidarPlot extends JFrame implements ChartMouseListener
             timeDataSeries.clear();
             if (data.size() > 0 && time.size() > 0)
             {
-                long t0 = time.get(0);
+                double t0 = time.get(0);
                 for (int i=0; i<data.size(); ++i)
-                    timeDataSeries.add((double)(time.get(i)-t0)/1000.0, data.get(i), false);
+                    timeDataSeries.add(time.get(i)-t0, data.get(i), false);
             }
             timeDataSeries.fireSeriesChanged();
 
@@ -256,8 +254,6 @@ public class LidarPlot extends JFrame implements ChartMouseListener
 
     private class ExportDataAction extends AbstractAction
     {
-        private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.US);
-
         public ExportDataAction()
         {
             super("Export Data...");
@@ -281,10 +277,9 @@ public class LidarPlot extends JFrame implements ChartMouseListener
                     int size = data.size();
                     for (int i=0; i<size; ++i)
                     {
-                        Date date = new Date(time.get(i));
                         out.write(data.get(i) + " " +
                                 distance.get(i) + " " +
-                                sdf.format(date).replace(' ', 'T') + newline);
+                                TimeUtil.et2str(time.get(i)) + newline);
                     }
                     out.close();
                 }

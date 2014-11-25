@@ -20,14 +20,14 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TreeSet;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 import javax.swing.SpinnerDateModel;
-
-import org.joda.time.DateTime;
 
 import vtk.vtkPolyData;
 
@@ -45,6 +45,7 @@ import edu.jhuapl.near.pick.Picker;
 import edu.jhuapl.near.popupmenus.LidarPopupMenu;
 import edu.jhuapl.near.util.BoundingBox;
 import edu.jhuapl.near.util.Properties;
+import edu.jhuapl.near.util.TimeUtil;
 
 
 public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChangeListener
@@ -161,13 +162,16 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
         try
         {
             System.out.println(sourceComboBox.getSelectedItem().toString());
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.US);
+            double start = TimeUtil.str2et(sdf.format(startDate).replace(' ', 'T'));
+            double end = TimeUtil.str2et(sdf.format(endDate).replace(' ', 'T'));
             lidarModel.setLidarData(
                     sourceComboBox.getSelectedItem().toString(),
-                    new DateTime(startDate),
-                    new DateTime(endDate),
+                    start,
+                    end,
                     cubeList,
                     new PointInCylinderChecker(modelManager.getSmallBodyModel(), selectionRegionCenter, selectionRegionRadius),
-                    Math.round(1000.0*timeSeparationBetweenTracks), // convert to milliseconds
+                    timeSeparationBetweenTracks,
                     minTrackLength);
         }
         catch (IOException e)
@@ -680,7 +684,7 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
         {
             try
             {
-                lidarModel.loadTracksFromFiles(files);
+                lidarModel.loadTracksFromFiles(files, false);
                 radialOffsetChanger.reset();
             }
             catch (Exception e)

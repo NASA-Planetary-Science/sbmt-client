@@ -3,11 +3,11 @@ package edu.jhuapl.near.tools;
 import java.io.File;
 
 import edu.jhuapl.near.model.LidarSearchDataCollection;
+import edu.jhuapl.near.model.ModelFactory;
+import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.SmallBodyConfig;
 import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelAuthor;
 import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelBody;
-import edu.jhuapl.near.model.ModelFactory;
-import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.util.NativeLibraryLoader;
 
@@ -48,7 +48,7 @@ public class ReprojectLidarTrackToFittedPlane
 
         try
         {
-            lidarModel.loadTracksFromFiles(new File[]{new File(inputFile)});
+            lidarModel.loadTracksFromFiles(new File[]{new File(inputFile)}, false);
 
             String transformationFile = outputFile + "-transformation.txt";
             lidarModel.reprojectedTrackOntoFittedPlane(0, new File(outputFile), new File(transformationFile));
