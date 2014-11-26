@@ -2,11 +2,15 @@ package edu.jhuapl.near.model;
 
 import java.awt.Color;
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -380,6 +384,14 @@ public class LidarSearchDataCollection extends Model
             try
             {
                 time = FileUtil.readDoubleAndSwap(in);
+            }
+            catch(EOFException e)
+            {
+                break;
+            }
+
+            try
+            {
                 target[0] = FileUtil.readDoubleAndSwap(in);
                 target[1] = FileUtil.readDoubleAndSwap(in);
                 target[2] = FileUtil.readDoubleAndSwap(in);
@@ -389,7 +401,8 @@ public class LidarSearchDataCollection extends Model
             }
             catch(IOException e)
             {
-                break;
+                in.close();
+                throw e;
             }
 
             originalPoints.add(new LidarPoint(target, scpos, time));
@@ -1269,4 +1282,54 @@ public class LidarSearchDataCollection extends Model
 
         out.close();
     }
+
+    /**
+     * Save track as binary file. Each record consists of 7 double precision values as follows:
+     * 1. ET
+     * 2. X target
+     * 3. Y target
+     * 4. Z target
+     * 5. X sc pos
+     * 6. Y sc pos
+     * 7. Z sc pos
+     * If transformPoint is true, then the lidar points (not scpos) are translated using the current
+     * radial offset and translation before being saved out. If false, the original points
+     * are saved out unmodified.
+     *
+     * @param trackId
+     * @param outfile
+     * @param transformPoint
+     * @throws IOException
+     */
+    public void saveTrackBinary(int trackId, File outfile, boolean transformPoint) throws IOException
+    {
+        outfile = new File(outfile.getAbsolutePath() + ".bin");
+        DataOutputStream out = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(outfile)));
+
+        int startId = tracks.get(trackId).startId;
+        int stopId = tracks.get(trackId).stopId;
+
+        for (int i=startId; i<=stopId; ++i)
+        {
+            LidarPoint pt = originalPoints.get(i);
+            double[] target = pt.target;
+            double[] scpos = pt.scpos;
+            if (transformPoint)
+            {
+                target = transformLidarPoint(target);
+                scpos = transformScpos(scpos, target);
+            }
+
+            FileUtil.writeDoubleAndSwap(out, pt.time);
+            FileUtil.writeDoubleAndSwap(out, target[0]);
+            FileUtil.writeDoubleAndSwap(out, target[1]);
+            FileUtil.writeDoubleAndSwap(out, target[2]);
+            FileUtil.writeDoubleAndSwap(out, scpos[0]);
+            FileUtil.writeDoubleAndSwap(out, scpos[1]);
+            FileUtil.writeDoubleAndSwap(out, scpos[2]);
+        }
+
+        out.close();
+    }
+
 }

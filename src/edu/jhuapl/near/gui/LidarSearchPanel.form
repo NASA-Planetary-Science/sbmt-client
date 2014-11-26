@@ -45,42 +45,53 @@
                           <Component id="selectRegionPanel" alignment="1" pref="360" max="32767" attributes="0"/>
                           <Component id="submitPanel" alignment="0" pref="360" max="32767" attributes="0"/>
                           <Group type="102" alignment="0" attributes="0">
-                              <Component id="trackErrorCheckBox" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="trackErrorLabel" min="-2" max="-2" attributes="0"/>
-                          </Group>
-                          <Group type="102" alignment="0" attributes="0">
-                              <EmptySpace min="24" pref="24" max="24" attributes="0"/>
-                              <Component id="jLabel5" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace type="separate" max="-2" attributes="0"/>
-                              <Component id="pointSizeSpinner" min="-2" max="-2" attributes="0"/>
-                          </Group>
-                          <Component id="loadTrackButton" alignment="0" min="-2" max="-2" attributes="0"/>
-                          <Component id="dragTracksToggleButton" alignment="0" min="-2" max="-2" attributes="0"/>
-                          <Component id="translateTracksButton" alignment="0" min="-2" max="-2" attributes="0"/>
-                          <Group type="102" alignment="0" attributes="0">
                               <Group type="103" groupAlignment="1" attributes="0">
-                                  <Component id="sourceLabel" min="-2" max="-2" attributes="0"/>
-                                  <Component id="startLabel" alignment="1" min="-2" max="-2" attributes="0"/>
-                                  <Component id="endLabel" alignment="1" min="-2" max="-2" attributes="0"/>
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <Component id="trackErrorCheckBox" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="trackErrorLabel" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <EmptySpace min="24" pref="24" max="24" attributes="0"/>
+                                      <Component id="jLabel5" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                                      <Component id="pointSizeSpinner" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <Component id="loadTrackButton" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                                      <Component id="fileTypeLabel" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="fileTypeComboBox" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                                  <Component id="dragTracksToggleButton" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Component id="translateTracksButton" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <Group type="103" groupAlignment="1" attributes="0">
+                                          <Component id="sourceLabel" min="-2" max="-2" attributes="0"/>
+                                          <Component id="startLabel" alignment="1" min="-2" max="-2" attributes="0"/>
+                                          <Component id="endLabel" alignment="1" min="-2" max="-2" attributes="0"/>
+                                      </Group>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                          <Component id="sourceComboBox" linkSize="2" max="32767" attributes="1"/>
+                                          <Component id="startSpinner" linkSize="2" alignment="0" max="32767" attributes="1"/>
+                                          <Component id="endSpinner" linkSize="2" alignment="0" max="32767" attributes="1"/>
+                                      </Group>
+                                  </Group>
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <Group type="103" groupAlignment="0" attributes="0">
+                                          <Component id="minTrackSizeLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                          <Component id="trackSeparationLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                      </Group>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                          <Component id="minTrackSizeTextField" max="32767" attributes="1"/>
+                                          <Component id="trackSeparationTextField" alignment="0" min="-2" pref="112" max="-2" attributes="1"/>
+                                      </Group>
+                                  </Group>
                               </Group>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                                  <Component id="sourceComboBox" linkSize="2" max="32767" attributes="1"/>
-                                  <Component id="startSpinner" linkSize="2" alignment="0" max="32767" attributes="1"/>
-                                  <Component id="endSpinner" linkSize="2" alignment="0" max="32767" attributes="1"/>
-                              </Group>
-                          </Group>
-                          <Group type="102" alignment="0" attributes="0">
-                              <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="minTrackSizeLabel" alignment="0" min="-2" max="-2" attributes="0"/>
-                                  <Component id="trackSeparationLabel" alignment="0" min="-2" max="-2" attributes="0"/>
-                              </Group>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                                  <Component id="minTrackSizeTextField" max="32767" attributes="1"/>
-                                  <Component id="trackSeparationTextField" alignment="0" min="-2" pref="112" max="-2" attributes="1"/>
-                              </Group>
+                              <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                       <EmptySpace min="-2" max="-2" attributes="0"/>
@@ -120,7 +131,11 @@
                       <EmptySpace min="-2" max="-2" attributes="0"/>
                       <Component id="submitPanel" min="-2" pref="35" max="-2" attributes="0"/>
                       <EmptySpace type="unrelated" min="-2" max="-2" attributes="0"/>
-                      <Component id="loadTrackButton" min="-2" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="loadTrackButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="fileTypeComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="fileTypeLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
                       <EmptySpace type="unrelated" min="-2" max="-2" attributes="0"/>
                       <Component id="resultsLabel" min="-2" pref="65" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
@@ -373,6 +388,22 @@
                     <StringItem index="0" value="Default"/>
                   </StringArray>
                 </Property>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JComboBox" name="fileTypeComboBox">
+              <Properties>
+                <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+                  <StringArray count="2">
+                    <StringItem index="0" value="Text"/>
+                    <StringItem index="1" value="Binary"/>
+                  </StringArray>
+                </Property>
+                <Property name="toolTipText" type="java.lang.String" value="&lt;html&gt;&#xa;Track file can be in either text or binary format.&lt;br&gt;&lt;br&gt;&#xa;If text, file may contain 3 or more space-delimited columns.&lt;br&gt;&#xa;Depending on the number of columns, the file is interpreted the following way:&lt;br&gt;&#xa; - 3 columns: X, Y, and Z target position. Time and spacecraft position set to zero.&lt;br&gt; &#xa; - 4 columns: time, X, Y, and Z target position. Spacecraft position set to zero.&lt;br&gt;&#xa; - 5 columns: time, X, Y, and Z target position. Spacecraft position set to zero. 5th column ignored.&lt;br&gt;&#xa; - 6 columns: X, Y, Z target position, X, Y, Z spacecraft position. Time set to zero.&lt;br&gt;&#xa; - 7 or more columns: time, X, Y, and Z target position, X, Y, Z spacecraft position. Additional columns ignored.&lt;br&gt;&#xa;Note that time is expressed as a UTC string such as 2000-04-06T13:19:12.153.&lt;br&gt;&#xa;&lt;br&gt;&#xa;If binary, each record consists of 7 double precision values:&lt;br&gt;&#xa;1. ET&lt;br&gt;&#xa;2. X target&lt;br&gt;&#xa;3. Y target&lt;br&gt;&#xa;4. Z target&lt;br&gt;&#xa;5. X spacecraft position&lt;br&gt;&#xa;6. Y spacecraft position&lt;br&gt;&#xa;7. Z spacecraft position&lt;br&gt;&#xa;"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JLabel" name="fileTypeLabel">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="File Type:"/>
               </Properties>
             </Component>
           </SubComponents>
