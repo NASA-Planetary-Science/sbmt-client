@@ -22,18 +22,6 @@ public class FitsUtil {
 
         Fits f = new Fits();
         BasicHDU hdu = FitsFactory.HDUFactory(dataF);
-
-        if (data.length > 6) {
-            for (HduTags plane : HduTags.values()) {
-                hdu.getHeader().addValue(plane.toString(), plane.hduValue(), plane.hduComment());
-            }
-        }
-        else {
-            for (HduTags plane : HduTags.first6HTags) {
-                hdu.getHeader().addValue(plane.toString(), plane.hduValue(), plane.hduComment());
-            }
-        }
-
         f.addHDU(hdu);
         BufferedFile bf = new BufferedFile(outfile, "rw");
         f.write(bf);
