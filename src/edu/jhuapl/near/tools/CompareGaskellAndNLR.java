@@ -16,10 +16,6 @@ import java.util.List;
 import nom.tam.fits.FitsException;
 
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.ISODateTimeFormat;
 
 import vtk.vtkGlobalJavaHash;
 import vtk.vtkPolyData;
@@ -41,6 +37,7 @@ import edu.jhuapl.near.util.LatLon;
 import edu.jhuapl.near.util.MathUtil;
 import edu.jhuapl.near.util.NativeLibraryLoader;
 import edu.jhuapl.near.util.PolyDataUtil;
+import edu.jhuapl.near.util.TimeUtil;
 
 
 /**
@@ -99,25 +96,23 @@ public class CompareGaskellAndNLR
 {
     static class LidarPoint implements Comparable<LidarPoint>
     {
-        long time;
+        double time;
         double range;
         double[] point;
 
         @Override
         public int compareTo(LidarPoint o)
         {
-            return Long.valueOf(this.time).compareTo(o.time);
+            return Double.valueOf(this.time).compareTo(o.time);
         }
 
         String getFormattedTime()
         {
-            DateTime dt = new DateTime(time, DateTimeZone.UTC);
-            return fmt.print(dt);
+            return TimeUtil.et2str(time);
         }
     }
 
     static List<LidarPoint> points = new ArrayList<LidarPoint>();
-    static DateTimeFormatter fmt = ISODateTimeFormat.dateTime();
 
 
     static void loadPoints(String path, SmallBodyConfig smallBodyConfig) throws IOException
@@ -196,7 +191,7 @@ public class CompareGaskellAndNLR
             double range = MathUtil.distanceBetween(pt1, pt2);
 
             LidarPoint point = new LidarPoint();
-            long time = new DateTime(vals[timeindex], DateTimeZone.UTC).getMillis();
+            double time = TimeUtil.str2et(vals[timeindex]);
 
             point.time = time;
             point.range = range;
@@ -215,7 +210,7 @@ public class CompareGaskellAndNLR
         Collections.sort(points);
     }
 
-    static LidarPoint getClosestLidarPoint(long time)
+    static LidarPoint getClosestLidarPoint(double time)
     {
         LidarPoint dummyPoint = new LidarPoint();
         dummyPoint.time = time;
@@ -237,8 +232,8 @@ public class CompareGaskellAndNLR
                 return points.get(points.size()-1);
             else
             {
-                long beforeTime = points.get(idx-1).time;
-                long afterTime = points.get(idx).time;
+                double beforeTime = points.get(idx-1).time;
+                double afterTime = points.get(idx).time;
 
                 // test to make sure signs are as expected
                 if (time-beforeTime <= 0 || afterTime-time <= 0)
@@ -255,7 +250,7 @@ public class CompareGaskellAndNLR
         }
     }
 
-    static LidarPoint[] get2ClosestLidarPoints(long time)
+    static LidarPoint[] get2ClosestLidarPoints(double time)
     {
         LidarPoint dummyPoint = new LidarPoint();
         dummyPoint.time = time;
@@ -277,8 +272,8 @@ public class CompareGaskellAndNLR
                 return new LidarPoint[]{points.get(points.size()-1)};
             else
             {
-                long beforeTime = points.get(idx-1).time;
-                long afterTime = points.get(idx).time;
+                double beforeTime = points.get(idx-1).time;
+                double afterTime = points.get(idx).time;
 
                 // test to make sure signs are as expected
                 if (time-beforeTime <= 0 || afterTime-time <= 0)
@@ -379,13 +374,12 @@ public class CompareGaskellAndNLR
             String startTimeStr = image.getStartTime();
             String stopTimeStr = image.getStopTime();
 
-            double startTime = new DateTime(startTimeStr, DateTimeZone.UTC).getMillis();
-            double stopTime = new DateTime(stopTimeStr, DateTimeZone.UTC).getMillis();
+            double startTime = TimeUtil.str2et(startTimeStr);
+            double stopTime = TimeUtil.str2et(stopTimeStr);
 
-            long time = (long) (startTime + ((stopTime - startTime) / 2.0));
+            double time = startTime + ((stopTime - startTime) / 2.0);
 
-            DateTime dt = new DateTime(time, DateTimeZone.UTC);
-            String imageTime = fmt.print(dt);
+            String imageTime = TimeUtil.et2str(time);
 
             LidarPoint lidarPoint = getClosestLidarPoint(time);
             LidarPoint[] lidarPoints = get2ClosestLidarPoints(time);
@@ -410,14 +404,14 @@ public class CompareGaskellAndNLR
                 double imageRange = MathUtil.distanceBetween(scPos, imageSurfacePoint);
 
                 out.write(imageId + "," + imageRange + "," + lidarRange + "," + imageTime + "," + lidarPoint.getFormattedTime()
-                        + "," + (imageRange-lidarRange) + "," + ((double)Math.abs(time - lidarPoint.time)/1000.0) + ","
+                        + "," + (imageRange-lidarRange) + "," + Math.abs(time - lidarPoint.time) + ","
                         + imageSurfacePoint[0] + "," + imageSurfacePoint[1] + "," + imageSurfacePoint[2] + ","
                         + lidarPoint.point[0] + "," + lidarPoint.point[1] + "," + lidarPoint.point[2] + "\n");
             }
             else
             {
                 out.write(imageId + "," + "NA" + "," + lidarRange + "," + imageTime + "," + lidarPoint.getFormattedTime()
-                        + "," + "NA" + "," + ((double)Math.abs(time - lidarPoint.time)/1000.0) + ",NA,NA,NA,"
+                        + "," + "NA" + "," + Math.abs(time - lidarPoint.time) + ",NA,NA,NA,"
                 + lidarPoint.point[0] + "," + lidarPoint.point[1] + "," + lidarPoint.point[2] + "\n");
             }
         }
@@ -484,13 +478,12 @@ public class CompareGaskellAndNLR
             String startTimeStr = image.getStartTime();
             String stopTimeStr = image.getStopTime();
 
-            double startTime = new DateTime(startTimeStr, DateTimeZone.UTC).getMillis();
-            double stopTime = new DateTime(stopTimeStr, DateTimeZone.UTC).getMillis();
+            double startTime = TimeUtil.str2et(startTimeStr);
+            double stopTime = TimeUtil.str2et(stopTimeStr);
 
-            long time = (long) (startTime + ((stopTime - startTime) / 2.0));
+            double time = startTime + ((stopTime - startTime) / 2.0);
 
-            DateTime dt = new DateTime(time, DateTimeZone.UTC);
-            String imageTime = fmt.print(dt);
+            String imageTime = TimeUtil.et2str(time);
 
             LidarPoint lidarPoint = getClosestLidarPoint(time);
             LidarPoint[] lidarPoints = get2ClosestLidarPoints(time);
@@ -517,15 +510,15 @@ public class CompareGaskellAndNLR
                 double incidence = illumAngles[0];
                 double emission = illumAngles[1];
                 double rangediff = imageRange-lidarRange;
-                long timediff = Math.abs(time - lidarPoint.time);
+                double timediff = Math.abs(time - lidarPoint.time);
 
                 out.write(imageId + "," + imageRange + "," + lidarRange + "," + imageTime + "," + lidarPoint.getFormattedTime()
-                        + "," + rangediff + "," + ((double)timediff/1000.0) + ","
+                        + "," + rangediff + "," + timediff + ","
                         + imageSurfacePoint[0] + "," + imageSurfacePoint[1] + "," + imageSurfacePoint[2] + ","
                         + lidarPoint.point[0] + "," + lidarPoint.point[1] + "," + lidarPoint.point[2] + "," + incidence + "," + emission + "\n");
 
                 // Only consider situations where offset is less than 300 meters and time difference less than 1 second
-                if (rangediff <= 0.3 && timediff <= 1000)
+                if (rangediff <= 0.3 && timediff <= 1.0)
                 {
                     int cellId = lowResSmallBodyModel.findClosestCell(imageSurfacePoint);
                     if (!plateMap.containsKey(cellId))
@@ -539,7 +532,7 @@ public class CompareGaskellAndNLR
             {
                 System.out.println("Error: no intercept to maplet! We should not reach here!");
                 out.write(imageId + "," + "NA" + "," + lidarRange + "," + imageTime + "," + lidarPoint.getFormattedTime()
-                        + "," + "NA" + "," + ((double)Math.abs(time - lidarPoint.time)/1000.0) + ",NA,NA,NA,"
+                        + "," + "NA" + "," + Math.abs(time - lidarPoint.time) + ",NA,NA,NA,"
                 + lidarPoint.point[0] + "," + lidarPoint.point[1] + "," + lidarPoint.point[2] + ",NA,NA\n");
             }
 

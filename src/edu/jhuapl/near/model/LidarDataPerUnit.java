@@ -10,11 +10,6 @@ import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
-
 import vtk.vtkActor;
 import vtk.vtkCellArray;
 import vtk.vtkDoubleArray;
@@ -30,6 +25,7 @@ import edu.jhuapl.near.util.FileCache;
 import edu.jhuapl.near.util.LatLon;
 import edu.jhuapl.near.util.MathUtil;
 import edu.jhuapl.near.util.Properties;
+import edu.jhuapl.near.util.TimeUtil;
 
 public class LidarDataPerUnit extends Model
 {
@@ -152,11 +148,8 @@ public class LidarDataPerUnit extends Model
                 String utc = new String(utcArray);
 
                 // We store the times in a vtk array. By storing in a vtk array, we don't have to
-                // worry about java out of memory errors since java doesn't know about c++ memory. We
-                // store in a double array rather than a long long array, since not sure if the conversion
-                // from a java long to a c++ long long is supported by vtk wrappers. Therefore convert
-                // the java long to a double using Double.longBitsToDouble function.
-                double t = Double.longBitsToDouble(new DateTime(utc, DateTimeZone.UTC).getMillis());
+                // worry about java out of memory errors since java doesn't know about c++ memory.
+                double t = TimeUtil.str2et(utc);
                 times.InsertNextValue(t);
             }
 
@@ -214,11 +207,8 @@ public class LidarDataPerUnit extends Model
                 vertSc.InsertNextCell(idList);
 
                 // We store the times in a vtk array. By storing in a vtk array, we don't have to
-                // worry about java out of memory errors since java doesn't know about c++ memory. We
-                // store in a double array rather than a long long array, since not sure if the conversion
-                // from a java long to a c++ long long is supported by vtk wrappers. Therefore convert
-                // the java long to a double using Double.longBitsToDouble function.
-                double t = Double.longBitsToDouble(new DateTime(vals[timeindex], DateTimeZone.UTC).getMillis());
+                // worry about java out of memory errors since java doesn't know about c++ memory.
+                double t = TimeUtil.str2et(vals[timeindex]);
                 times.InsertNextValue(t);
 
                 ++count;
@@ -337,11 +327,9 @@ public class LidarDataPerUnit extends Model
             filepath2 = filepath2.substring(0, filepath2.length()-3);
         File file = new File(filepath2);
 
-        DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
-        long time = Double.doubleToRawLongBits(times.GetValue(cellId));
-        String timeStr = new DateTime(time, DateTimeZone.UTC).toString(fmt);
+        String timeStr = TimeUtil.et2str(times.GetValue(cellId));
 
-        return "Lidar point " + file.getName() + " acquired at " + timeStr;
+        return String.format("Lidar point " + file.getName() + " acquired at " + timeStr + ", ET = %f", times.GetValue(cellId));
     }
 
     public ArrayList<vtkProp> getProps()

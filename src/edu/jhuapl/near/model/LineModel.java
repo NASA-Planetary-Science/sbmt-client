@@ -38,12 +38,11 @@ import vtk.vtkProp;
 import vtk.vtkProperty;
 import vtk.vtkUnsignedCharArray;
 
-import edu.jhuapl.near.util.FileCache;
-import edu.jhuapl.near.util.GravityProgram;
 import edu.jhuapl.near.util.LatLon;
 import edu.jhuapl.near.util.MathUtil;
 import edu.jhuapl.near.util.Point3D;
 import edu.jhuapl.near.util.Properties;
+import edu.jhuapl.near.util.gravity.Gravity;
 
 /**
  * Model of line structures drawn on a body.
@@ -1073,18 +1072,19 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
         ArrayList<Point3D> xyzPointList = lin.xyzPointList;
 
         // Run the gravity program
-        File shapeModelFile = FileCache.getFileFromServer(
-                otherSmallBodyModel.getServerPathToShapeModelFileInPlateFormat());
         ArrayList<Double> elevation = new ArrayList<Double>();
         ArrayList<Double> accelerationMagnitude = new ArrayList<Double>();
         ArrayList<Point3D> accelerationVector = new ArrayList<Point3D>();
         ArrayList<Double> potential = new ArrayList<Double>();
-        GravityProgram.getGravityAtPoints(
-                xyzPointList,
-                otherSmallBodyModel.getDensity(),
-                otherSmallBodyModel.getRotationRate(),
-                otherSmallBodyModel.getReferencePotential(),
-                shapeModelFile.getAbsolutePath(),
+        ArrayList<double[]> pointList = new ArrayList<double[]>();
+        for (Point3D p : lin.xyzPointList)
+            pointList.add(p.xyz);
+        Gravity.getGravityAtPoints(
+                pointList,
+                smallBodyModel.getDensity(),
+                smallBodyModel.getRotationRate(),
+                smallBodyModel.getReferencePotential(),
+                smallBodyModel.getSmallBodyPolyData(),
                 elevation,
                 accelerationMagnitude,
                 accelerationVector,

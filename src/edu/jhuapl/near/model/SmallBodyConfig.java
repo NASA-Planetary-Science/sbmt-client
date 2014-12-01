@@ -6,8 +6,6 @@ import java.util.GregorianCalendar;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.joda.time.DateTime;
-
 import edu.jhuapl.near.model.Image.ImageSource;
 import edu.jhuapl.near.query.FixedListQuery;
 import edu.jhuapl.near.query.GenericPhpQuery;
@@ -297,8 +295,8 @@ public class SmallBodyConfig
         c.imageSearchImageSources = new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE};
         c.imageType = ImageType.MSI_IMAGE;
         c.imageInstrumentName = Instrument.MSI;
-        c.lidarSearchDefaultStartDate = new DateTime(2000, 2, 28, 0, 0, 0, 0).toDate();
-        c.lidarSearchDefaultEndDate = new DateTime(2001, 2, 13, 0, 0, 0, 0).toDate();
+        c.lidarSearchDefaultStartDate = new GregorianCalendar(2000, 1, 28, 0, 0, 0).getTime();
+        c.lidarSearchDefaultEndDate = new GregorianCalendar(2001, 1, 13, 0, 0, 0).getTime();
         c.lidarSearchDataSourceMap = new LinkedHashMap<String, String>();
         c.lidarSearchDataSourceMap.put("Default", "/NLR/cubes");
         c.lidarBrowseXYZIndices = new int[]{14, 15, 16};
@@ -371,8 +369,8 @@ public class SmallBodyConfig
         c.imageSearchImageSources = new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE, ImageSource.CORRECTED};
         c.imageType = ImageType.AMICA_IMAGE;
         c.imageInstrumentName = Instrument.AMICA;
-        c.lidarSearchDefaultStartDate = new DateTime(2005, 9, 1, 0, 0, 0, 0).toDate();
-        c.lidarSearchDefaultEndDate = new DateTime(2005, 11, 30, 0, 0, 0, 0).toDate();
+        c.lidarSearchDefaultStartDate = new GregorianCalendar(2005, 8, 1, 0, 0, 0).getTime();
+        c.lidarSearchDefaultEndDate = new GregorianCalendar(2005, 10, 30, 0, 0, 0).getTime();
         c.lidarSearchDataSourceMap = new LinkedHashMap<String, String>();
         c.lidarSearchDataSourceMap.put("Optimized", "/ITOKAWA/LIDAR/cdr/cubes-optimized");
         c.lidarSearchDataSourceMap.put("Unfiltered", "/ITOKAWA/LIDAR/cdr/cubes-unfiltered");
@@ -1108,8 +1106,8 @@ public class SmallBodyConfig
             c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
             c.hasLidarData = true;
             c.hasMapmaker = true;
-            c.lidarSearchDefaultStartDate = new DateTime(2000, 1, 1, 0, 0, 0, 0).toDate();
-            c.lidarSearchDefaultEndDate = new DateTime(2050, 1, 1, 0, 0, 0, 0).toDate();
+            c.lidarSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
+            c.lidarSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDataSourceMap = new LinkedHashMap<String, String>();
             c.lidarSearchDataSourceMap.put("Default", "/GASKELL/RQ36/OLA/cubes");
             c.lidarBrowseXYZIndices = new int[]{96, 104, 112};

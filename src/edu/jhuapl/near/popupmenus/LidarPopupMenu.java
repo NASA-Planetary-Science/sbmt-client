@@ -301,7 +301,7 @@ public class LidarPopupMenu extends PopupMenu
                 ArrayList<Double> acceleration = new ArrayList<Double>();
                 ArrayList<Double> elevation = new ArrayList<Double>();
                 ArrayList<Double> distance = new ArrayList<Double>();
-                ArrayList<Long> time = new ArrayList<Long>();
+                ArrayList<Double> time = new ArrayList<Double>();
 
                 lidarModel.getGravityDataForTrack(currentTrack, potential, acceleration, elevation, distance, time);
 
@@ -312,11 +312,7 @@ public class LidarPopupMenu extends PopupMenu
                 lidarPlot = new LidarPlot(lidarModel, elevation, distance, time, "Elevation", "m");
                 lidarPlot.setVisible(true);
             }
-            catch (InterruptedException e1)
-            {
-                e1.printStackTrace();
-            }
-            catch (IOException e1)
+            catch (Exception e1)
             {
                 e1.printStackTrace();
             }

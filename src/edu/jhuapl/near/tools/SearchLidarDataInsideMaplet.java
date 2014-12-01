@@ -3,22 +3,21 @@ package edu.jhuapl.near.tools;
 import java.io.File;
 import java.util.TreeSet;
 
-import org.joda.time.DateTime;
-
 import edu.jhuapl.near.model.AbstractEllipsePolygonModel;
 import edu.jhuapl.near.model.AbstractEllipsePolygonModel.EllipsePolygon;
 import edu.jhuapl.near.model.CircleSelectionModel;
 import edu.jhuapl.near.model.DEMModel;
 import edu.jhuapl.near.model.LidarSearchDataCollection;
-import edu.jhuapl.near.model.SmallBodyConfig;
-import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelAuthor;
-import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelBody;
 import edu.jhuapl.near.model.ModelFactory;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.PointInDEMChecker;
+import edu.jhuapl.near.model.SmallBodyConfig;
+import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelAuthor;
+import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelBody;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.util.BoundingBox;
 import edu.jhuapl.near.util.NativeLibraryLoader;
+import edu.jhuapl.near.util.TimeUtil;
 
 public class SearchLidarDataInsideMaplet
 {
@@ -33,8 +32,8 @@ public class SearchLidarDataInsideMaplet
         }
 
         String mapletFile = args[0];
-        DateTime startDate = new DateTime(args[1]);
-        DateTime endDate = new DateTime(args[2]);
+        double startDate = TimeUtil.str2et(args[1]);
+        double endDate = TimeUtil.str2et(args[2]);
         int minTrackLength = 10;
         double timeSeparationBetweenTracks = 10.0;
         double minDistanceFromBoundary = 1.0;
@@ -124,7 +123,7 @@ public class SearchLidarDataInsideMaplet
                     endDate,
                     cubeList,
                     new PointInDEMChecker(dem, minDistanceFromBoundary),
-                    Math.round(1000.0*timeSeparationBetweenTracks), // convert to milliseconds
+                    timeSeparationBetweenTracks,
                     minTrackLength);
 
             lidarModel.saveAllVisibleTracksToFolder(outputFolder, false);
