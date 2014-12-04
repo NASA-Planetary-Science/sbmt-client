@@ -379,6 +379,37 @@ should evaluate elevation as the distance between a point on the path
 and the center of the asteroid. While not as accurate as true elevation
 data, this may be acceptable for bodies that have a circular shape.
 
+### Tracks tab
+
+Unlike the lidar tab (or NLR tab for Eros) described above which
+allows one to load mission specific lidar data, this tab allows one to
+load custom tracks. It has a similar set of controls to the lidar data
+but instead of search controls it contains a "Load Tracks..." button
+for loading one or more tracks. In addition, to the right of this
+button is a control allowing one to choose between text or binary
+tracks. If text, file may contain 3 or more space-delimited columns.
+Depending on the number of columns, the file is interpreted the
+following way:
+
+-   3 columns: X, Y, and Z target position. Time and spacecraft position set to zero. 
+-   4 columns: time, X, Y, and Z target position. Spacecraft position set to zero.
+-   5 columns: time, X, Y, and Z target position. Spacecraft position set to zero. 5th column ignored.
+-   6 columns: X, Y, Z target position, X, Y, Z spacecraft position. Time set to zero.
+-   7 or more columns: time, X, Y, and Z target position, X, Y, Z spacecraft position. Additional columns ignored.
+
+Note that time is expressed as a UTC string such as 2000-04-06T13:19:12.153.
+
+If binary, each record must consist of 7 double precision values:
+
+1. ET
+2. X target
+3. Y target
+4. Z target
+5. X spacecraft position
+6. Y spacecraft position
+7. Z spacecraft position
+
+
 ### Mapmaker tab (Eros only)
 
 The Mapmaker tab provides an interface for running Bob Gaskell's
