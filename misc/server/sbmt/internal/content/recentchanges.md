@@ -4,6 +4,14 @@
 
 # Recent Changes
 
+### December 4, 2014
+
+-   In NLR, LIDAR, and Tracks tabs, now displaying both UTC and ET of
+    lidar point in status bar when user clicks on lidar point.
+-   In Tracks tab, added support for loading track in binary
+    format. Previously only text format was supported. See the [user
+    guide](helpcontents.html) for description of the allowed formats.
+
 ### October 31, 2014
 
 -   Changed error shown for lidar tracks to be RMS (root mean square) in NLR, LIDAR, and Tracks tabs.
