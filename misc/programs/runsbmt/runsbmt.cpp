@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <tchar.h>
 #include <string>
+#include <sstream>
 #include <fstream>
 
 using namespace std;
@@ -53,6 +54,23 @@ static bool exists(const string& file)
     return false;
 }
 
+template <typename T>
+string numberToString ( T Number )
+{
+  ostringstream ss;
+  ss << Number;
+  return ss.str();
+}
+
+// Get memory size in kilobytes
+static size_t getMemorySize()
+{
+  MEMORYSTATUSEX status;
+  status.dwLength = sizeof(status);
+  GlobalMemoryStatusEx( &status );
+  return (size_t)(status.ullTotalPhys/1024);
+}
+
 int main(int argc, char *argv[])
 {
     // See if a jre exists in the current folder or a few standard locations
@@ -95,6 +113,8 @@ int main(int argc, char *argv[])
         command = "javaw";
     }
 
+    size_t memory = getMemorySize();
+    command += " -Xmx" + numberToString(memory) + "K";
     command += " -Djava.library.path=lib/win64 -Dsun.java2d.noddraw=true -jar lib/near.jar";
 
     // change PATH environmental variable
