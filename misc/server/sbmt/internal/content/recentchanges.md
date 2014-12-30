@@ -10,6 +10,8 @@
 -   At bottom is Statistics information on leftmost tab, added new
     button for showing additional statistics. These statistics take
     longer to compute so are not shown by default.
+-   Added control in Eros Lineament tab for changing line width of
+    lineaments.
 
 ### December 4, 2014
 
