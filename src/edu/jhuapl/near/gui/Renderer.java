@@ -544,6 +544,7 @@ public class Renderer extends JPanel implements
         cx[0] = up[0];
         cx[1] = up[1];
         cx[2] = up[2];
+        MathUtil.vhat(cx, cx);
 
         double[] fp = cam.GetFocalPoint();
         cz[0] = fp[0] - position[0];
@@ -552,6 +553,7 @@ public class Renderer extends JPanel implements
         MathUtil.vhat(cz, cz);
 
         MathUtil.vcrss(cz, cx, cy);
+        MathUtil.vhat(cy, cy);
 
         viewAngle[0] = cam.GetViewAngle();
     }
