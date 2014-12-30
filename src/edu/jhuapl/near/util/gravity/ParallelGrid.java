@@ -60,6 +60,8 @@ public class ParallelGrid<T> {
                 }
         }
 
+        executor.shutdown();
+
         return results;
     }
 }

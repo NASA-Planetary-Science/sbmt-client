@@ -48,6 +48,8 @@ public class ParallelLoop<T> {
             results.addAll(f.get());
         }
 
+        executor.shutdown();
+
         return results;
     }
 }
