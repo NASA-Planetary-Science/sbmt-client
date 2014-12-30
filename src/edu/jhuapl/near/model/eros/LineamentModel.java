@@ -292,4 +292,11 @@ public class LineamentModel extends Model
             return "";
     }
 
+    public void setLineWidth(double value)
+    {
+        if (lineamentActors.isEmpty())
+            initialize();
+        lineamentActor.GetProperty().SetLineWidth(value);
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+    }
 }
