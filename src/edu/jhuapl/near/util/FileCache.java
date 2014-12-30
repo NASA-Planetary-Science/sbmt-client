@@ -142,6 +142,7 @@ public class FileCache
             URL u = new URL(Configuration.getDataRootURL() + path);
 
             URLConnection conn = u.openConnection();
+            conn.setRequestProperty("User-Agent", "Mozilla/4.0");
 
             long urlLastModified = conn.getLastModified();
 

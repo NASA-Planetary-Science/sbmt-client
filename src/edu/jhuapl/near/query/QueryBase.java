@@ -36,6 +36,7 @@ abstract public class QueryBase
             URLConnection conn = u.openConnection();
             conn.setDoOutput(true);
             conn.setUseCaches(false);
+            conn.setRequestProperty("User-Agent", "Mozilla/4.0");
 
             OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
             wr.write(data);
