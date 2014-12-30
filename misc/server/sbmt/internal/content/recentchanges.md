@@ -4,6 +4,13 @@
 
 # Recent Changes
 
+### December 30, 2014
+
+-   Fixed issue performing search queries.
+-   At bottom is Statistics information on leftmost tab, added new
+    button for showing additional statistics. These statistics take
+    longer to compute so are not shown by default.
+
 ### December 4, 2014
 
 -   In NLR, LIDAR, and Tracks tabs, now displaying both UTC and ET of
