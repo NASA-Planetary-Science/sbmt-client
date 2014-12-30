@@ -1,5 +1,13 @@
 <project default="generatezip">
 
+  <fail message="Unsupported Java version: ${ant.java.version}. Make sure that the Java version is 1.6.">
+    <condition>
+      <not>
+        <equals arg1="${ant.java.version}" arg2="1.6"/>
+      </not>
+  </condition>
+  </fail>
+
   <property name="rootdir" location="${basedir}"/>
   <property name="vtkrootdir" location="/home/kahneg1/src/near/vtk_all_platforms"/>
 
