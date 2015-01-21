@@ -30,6 +30,11 @@ from the people or teams producing them and are not listed below.
 -   NLR data is available at
     [http://sbn.psi.edu/pds/resource/near/nlrinst.html](http://sbn.psi.edu/pds/resource/near/nlrinst.html)
     (higher-level data).
+-   Image map of Eros (displayed when clicking the "Show Image Map" checkbox) is available at
+    [http://sbn.psi.edu/pds/resource/stookemaps.html](http://sbn.psi.edu/pds/resource/stookemaps.html),
+    (Stooke. P., Stooke Small Bodies Maps
+    V1.0. MULTI-SA-MULTI-6-STOOKEMAPS-V1.0. NASA Planetary Data
+    System, 2011.)
 -   Lineament data was obtained from Debra Buczkowski (433 Eros
     lineaments: Global mapping and analysis, Icarus, Volume 193, Issue
     1, January 2008, Pages 39-52, Debra L. Buczkowski, Olivier
@@ -40,16 +45,31 @@ from the people or teams producing them and are not listed below.
 
 -   Peter Thomas' shape models of Eros is available at
     [http://sbn.psi.edu/pds/resource/nearbrowse.html](http://sbn.psi.edu/pds/resource/nearbrowse.html).
+-   Image map of Eros (displayed when clicking the "Show Image Map" checkbox) is available at
+    [http://sbn.psi.edu/pds/resource/stookemaps.html](http://sbn.psi.edu/pds/resource/stookemaps.html),
+    (Stooke. P., Stooke Small Bodies Maps
+    V1.0. MULTI-SA-MULTI-6-STOOKEMAPS-V1.0. NASA Planetary Data
+    System, 2011.)
 
 ### Eros (NLR Team)
 
 -   The lidar-based shape model of Eros created by the NLR team is available at
     [http://sbn.psi.edu/pds/resource/nearbrowse.html](http://sbn.psi.edu/pds/resource/nearbrowse.html).
+-   Image map of Eros (displayed when clicking the "Show Image Map" checkbox) is available at
+    [http://sbn.psi.edu/pds/resource/stookemaps.html](http://sbn.psi.edu/pds/resource/stookemaps.html),
+    (Stooke. P., Stooke Small Bodies Maps
+    V1.0. MULTI-SA-MULTI-6-STOOKEMAPS-V1.0. NASA Planetary Data
+    System, 2011.)
 
 ### Eros (Navigation Team)
 
 -   The lidar-based shape model of Eros created by the Navigation team is available at
     [http://sbn.psi.edu/pds/resource/nearbrowse.html](http://sbn.psi.edu/pds/resource/nearbrowse.html).
+-   Image map of Eros (displayed when clicking the "Show Image Map" checkbox) is available at
+    [http://sbn.psi.edu/pds/resource/stookemaps.html](http://sbn.psi.edu/pds/resource/stookemaps.html),
+    (Stooke. P., Stooke Small Bodies Maps
+    V1.0. MULTI-SA-MULTI-6-STOOKEMAPS-V1.0. NASA Planetary Data
+    System, 2011.)
 
 ### Itokawa (Gaskell)
 

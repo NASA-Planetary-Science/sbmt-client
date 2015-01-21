@@ -4,6 +4,15 @@
 
 # Recent Changes
 
+### December 21, 2015
+
+-   Added Stooke Eros image map (available at
+    [http://sbn.psi.edu/pds/resource/stookemaps.html](http://sbn.psi.edu/pds/resource/stookemaps.html))
+    to Eros shape models (Gaskell, Thomas, NLR, NAV). There is now a
+    "Show Image Map" checkbox in the leftmost tab for each of these
+    shape models.
+-   Now applying flat field correction to Itokawa AMICA images.
+
 ### December 30, 2014
 
 -   Fixed issue performing search queries.
