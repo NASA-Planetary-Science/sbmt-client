@@ -14,6 +14,7 @@ import nom.tam.fits.FitsException;
 
 import vtk.vtkImageConstantPad;
 import vtk.vtkImageData;
+import vtk.vtkImageMathematics;
 import vtk.vtkImageReslice;
 import vtk.vtkImageTranslateExtent;
 
@@ -33,12 +34,85 @@ public class AmicaImage extends PerspectiveImage
         super(key, smallBodyModel, loadPointingOnly);
     }
 
+    /**
+     * Apply a flat field correction to the image. In the AMICA dataset, a flat field
+     * file is provided for each of the filters. This AMICA image needs to be divided
+     * by the flat field image to get the final better looking image. This function
+     * downloads the appropriate flat field image and then divides the raw image by
+     * the flat field and overwrites the raw image with this new ratio image.
+     *
+     * @param rawImage
+     */
+    private void doFlatFieldCorrection(vtkImageData rawImage)
+    {
+        // Download appropriate flat field depending on filter of current image
+        ImageKey key = getKey();
+        File keyFile = new File(key.name);
+        String imagesDir = keyFile.getParentFile().getAbsolutePath();
+        String flatFileName = "flat_" + getFilterName() + ".fit";
+        String flatfile = FileCache.getFileFromServer(imagesDir + "/" + flatFileName).getAbsolutePath();
+
+        try
+        {
+            // Load the flat field file into a vtkImageData
+            Fits f = new Fits(flatfile);
+            BasicHDU h = f.getHDU(0);
+
+            float[][] array = null;
+            int[] axes = h.getAxes();
+            int originalWidth = axes[1];
+            int originalHeight = axes[0];
+
+            Object data = h.getData().getData();
+            if (data instanceof float[][])
+            {
+                array = (float[][])data;
+            }
+            f.getStream().close();
+
+            vtkImageData flatImage = new vtkImageData();
+            flatImage.SetScalarTypeToFloat();
+            flatImage.SetDimensions(originalWidth, originalHeight, 1);
+            flatImage.SetSpacing(1.0, 1.0, 1.0);
+            flatImage.SetOrigin(0.0, 0.0, 0.0);
+            flatImage.SetNumberOfScalarComponents(1);
+
+            for (int i=0; i<originalHeight; ++i)
+                for (int j=0; j<originalWidth; ++j)
+                {
+                    flatImage.SetScalarComponentFromDouble(j, originalHeight-1-i, 0, 0, array[i][j]);
+                }
+
+            // Finally construct the ratio image
+            vtkImageMathematics divideFilter = new vtkImageMathematics();
+            divideFilter.SetInput1(rawImage);
+            divideFilter.SetInput2(flatImage);
+            divideFilter.SetOperationToDivide();
+            divideFilter.Update();
+
+            vtkImageData divideOutput = divideFilter.GetOutput();
+            rawImage.DeepCopy(divideOutput);
+            divideFilter.Delete();
+        }
+        catch (FitsException e)
+        {
+            e.printStackTrace();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
     @Override
     protected void processRawImage(vtkImageData rawImage)
     {
         int[] dims = rawImage.GetDimensions();
         if (dims[0] == 1024 && dims[1] == 1024)
+        {
+            doFlatFieldCorrection(rawImage);
             return;
+        }
 
         // Some of the AMICA images were cropped from their original size
         // of 1024x1024. Therefore, the following pads the images with zero back to
@@ -143,6 +217,8 @@ public class AmicaImage extends PerspectiveImage
             vtkImageData resampleOutput = resample.GetOutput();
             rawImage.DeepCopy(resampleOutput);
         }
+
+        doFlatFieldCorrection(rawImage);
     }
 
     @Override
