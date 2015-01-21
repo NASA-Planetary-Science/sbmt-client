@@ -272,6 +272,7 @@ public class SmallBodyConfig
         c.pathOnServer = "/GASKELL/EROS";
         c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
         c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
+        c.hasImageMap = true;
         c.hasPerspectiveImages = true;
         c.hasLidarData = true;
         c.hasMapmaker = true;

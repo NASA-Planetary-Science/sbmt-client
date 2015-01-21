@@ -33,6 +33,10 @@ public class Eros extends SmallBodyModel
         "/EROS/ver512q.tab.gz"
     };
 
+    static private final String[] imageMap = {
+        "/EROS/image_map.png"
+    };
+
     static private final double[] referencePotentials = {
         -5.3754128803056872e+01,
         -5.3762823321417372e+01,
@@ -57,7 +61,7 @@ public class Eros extends SmallBodyModel
                 coloringNames,
                 coloringUnits,
                 null,
-                null,
+                imageMap,
                 ColoringValueType.CELLDATA,
                 true);
     }

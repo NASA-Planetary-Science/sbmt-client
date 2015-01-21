@@ -30,6 +30,10 @@ public class ErosThomas extends SmallBodyModel
             "/THOMAS/EROS/GravitationalPotential"
     };
 
+    static private final String[] imageMap = {
+        "/THOMAS/EROS/image_map.png"
+    };
+
     static private final String[] coloringNames = {
             SlopeStr, ElevStr, GravAccStr, GravPotStr
     };
@@ -47,7 +51,7 @@ public class ErosThomas extends SmallBodyModel
                 coloringNames,
                 coloringUnits,
                 null,
-                null,
+                imageMap,
                 ColoringValueType.CELLDATA,
                 false);
     }
