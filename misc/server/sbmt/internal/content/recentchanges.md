@@ -4,7 +4,7 @@
 
 # Recent Changes
 
-### December 21, 2015
+### January 21, 2015
 
 -   Added Stooke Eros image map (available at
     [http://sbn.psi.edu/pds/resource/stookemaps.html](http://sbn.psi.edu/pds/resource/stookemaps.html))
