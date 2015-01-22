@@ -89,7 +89,8 @@ public class SmallBodyConfig
         YORP("YORP"),
         PALLAS("Pallas"),
         DAPHNE("Daphne"),
-        HERMIONE("Hermione");
+        HERMIONE("Hermione"),
+        _67P("67P");
 
         final private String str;
         private ShapeModelBody(String str)
@@ -1286,6 +1287,31 @@ public class SmallBodyConfig
         c.author = ShapeModelAuthor.THOMAS;
         c.pathOnServer = "/THOMAS/HARTLEY/hartley2_2012_cart.plt.gz";
         configArray.add(c);
+
+        if (Configuration.isAPLVersion())
+        {
+            c = new SmallBodyConfig();
+            c.body = ShapeModelBody._67P;
+            c.type = ShapeModelType.COMETS;
+            c.population = null;
+            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.author = ShapeModelAuthor.GASKELL;
+            c.pathOnServer = "/GASKELL/67P";
+            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
+            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
+            c.hasPerspectiveImages = true;
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2014, 6, 11, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2014, 11, 8, 0, 0, 0).getTime();
+            c.imageSearchQuery = new FixedListQuery("/GASKELL/67P/IMAGING");
+            c.imageSearchFilterNames = new String[]{};
+            c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
+            c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
+            c.imageSearchDefaultMaxResolution = 4000.0;
+            c.imageSearchImageSources = new ImageSource[]{ImageSource.GASKELL};
+            c.imageType = ImageType.OSIRIS_IMAGE;
+            c.imageInstrumentName = Instrument.OSIRIS;
+            configArray.add(c);
+        }
 
         c = new SmallBodyConfig();
         c.body = ShapeModelBody.PALLAS;
