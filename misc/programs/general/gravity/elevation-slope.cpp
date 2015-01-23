@@ -17,7 +17,6 @@ struct PlateData
 {
     double potential;
     double acc[3];
-    double accMag;
 };
 
 
@@ -53,20 +52,13 @@ static void loadAcceleration(const string& filename, vector<PlateData>& plateDat
     {
         int i = 0;
         string line;
-        double acc[3];
         while (getline(fin, line))
         {
             trim(line);
             vector<string> tokens = split(line);
-            acc[0] = atof(tokens[0].c_str());
-            acc[1] = atof(tokens[1].c_str());
-            acc[2] = atof(tokens[2].c_str());
-
-            double accMag = Normalize(acc);
-            plateData[i].acc[0] = acc[0];
-            plateData[i].acc[1] = acc[1];
-            plateData[i].acc[2] = acc[2];
-            plateData[i].accMag = accMag;
+            plateData[i].acc[0] = atof(tokens[0].c_str());
+            plateData[i].acc[1] = atof(tokens[1].c_str());
+            plateData[i].acc[2] = atof(tokens[2].c_str());
             ++i;
         }
     }
@@ -97,9 +89,9 @@ static double computeRefPotential(Platemodel* polyData, vector<PlateData> plated
 
 static void usage()
 {
-    cout << "This program computes the elevation and slope at the plate centers of a \n"
-         << "shape model. It uses the gravitational acceleration vector and potential \n"
-         << "files computed using the gravity program.\n"
+    cout << "This program computes the elevation, slope and acceleration magnitude at\n"
+         << "the plate centers of a shape model. It uses the gravitational acceleration\n"
+         << "vector and potential files computed using the gravity program.\n"
          << "Usage: elevation-slope <platemodel-file> <potential-file> <acceleration-vector-file>\n";
     exit(1);
 }
@@ -117,6 +109,7 @@ int main(int argc, char** argv)
     string pltfilebasename = basename(argv[1]);
     string outputElev = pltfilebasename + "-elevation.txt";
     string outputSlope = pltfilebasename + "-slope.txt";
+    string outputAccMag = pltfilebasename + "-acceleration-magnitude.txt";
 
     Platemodel* polyData = new Platemodel();
     polyData->load(pltfile);
@@ -127,12 +120,13 @@ int main(int argc, char** argv)
     platedata.resize(numFaces);
 
     loadPotential(potentialfile, platedata);
-    loadAcceleration(accfile, platedata);
 
     double refPotential = computeRefPotential(polyData, platedata);
 
     cout.precision(16);
     cout << scientific << "reference potential = " << refPotential << endl;
+
+    loadAcceleration(accfile, platedata);
 
     ofstream foutE(outputElev.c_str());
     if (!foutE.is_open())
@@ -150,10 +144,19 @@ int main(int argc, char** argv)
     }
     foutS.precision(16);
 
+    ofstream foutAM(outputAccMag.c_str());
+    if (!foutAM.is_open())
+    {
+        cerr << "Error: Unable to open file for writing" << endl;
+        exit(1);
+    }
+    foutAM.precision(16);
+
     for (int i=0; i<numFaces; ++i)
     {
         // Compute elevation
-        double elevation = (platedata[i].potential - refPotential) / platedata[i].accMag;
+        double accMag = Norm(platedata[i].acc);
+        double elevation = (platedata[i].potential - refPotential) / accMag;
 
         // Compute slope
         double cellNormal[3];
@@ -163,13 +166,17 @@ int main(int argc, char** argv)
         negaticeAcc[1] = -platedata[i].acc[1];
         negaticeAcc[2] = -platedata[i].acc[2];
         double slope = vsep_c(cellNormal, negaticeAcc) * 180.0 / M_PI;
+        if (slope > 90.0)
+            accMag = -accMag;
 
         foutE << elevation << endl;
         foutS << slope << endl;
+        foutAM << accMag << endl;
     }
 
     foutE.close();
     foutS.close();
+    foutAM.close();
 
     return 0;
 }
