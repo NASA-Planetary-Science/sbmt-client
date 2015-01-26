@@ -164,6 +164,9 @@ public class SmallBodyConfig
         EROSNAV("NAV"),
         EROSNLR("NLR"),
         EXPERIMENTAL("Experimental"),
+        LORRI("LORRI"), // experiment for New Horizons data -turnerj1
+        MVIC("MVIC"), // experiment for New Horizons data -turnerj1
+//        NEWHORIZONS("NewHorizons"), // experiment for New Horizons data -turnerj1
         CARRY("Carry");
 
         final private String str;
@@ -213,6 +216,7 @@ public class SmallBodyConfig
         OSIRIS("OSIRIS"),
         OLA("OLA"),
         IMAGING_DATA("Imaging Data"),
+        MVIC("MVIC"),
         LORRI("LORRI");
 
         final private String str;
@@ -240,6 +244,8 @@ public class SmallBodyConfig
         SSI_GASPRA_IMAGE,
         SSI_IDA_IMAGE,
         MSI_MATHILDE_IMAGE,
+        MVIC_GASPRA_IMAGE,
+        MVIC_JUPITER_IMAGE,
         LORRI_IMAGE,
     }
 
@@ -495,8 +501,8 @@ public class SmallBodyConfig
             c.body = ShapeModelBody.JUPITER;
             c.type = ShapeModelType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.JUPITER;
-            c.dataUsed = null;
-            c.author = null;
+            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.author = ShapeModelAuthor.LORRI;
             c.pathOnServer = "/NEWHORIZONS/JUPITER/shape_res0.vtk.gz";
             c.hasColoringData = false;
             c.hasImageMap = false;
@@ -511,6 +517,28 @@ public class SmallBodyConfig
             c.imageSearchImageSources = new ImageSource[]{ImageSource.SPICE};
             c.imageType = ImageType.LORRI_IMAGE;
             c.imageInstrumentName = Instrument.LORRI;
+            configArray.add(c);
+
+            c = new SmallBodyConfig();
+            c.body = ShapeModelBody.JUPITER;
+            c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+            c.population = ShapeModelPopulation.JUPITER;
+            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.author = ShapeModelAuthor.MVIC;
+            c.pathOnServer = "/NEWHORIZONS/JUPITER/shape_res0.vtk.gz";
+            c.hasColoringData = false;
+            c.hasImageMap = false;
+            c.hasPerspectiveImages = true;
+            c.imageSearchDefaultStartDate = new GregorianCalendar(1991, 9, 29, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(1991, 9, 30, 0, 0, 0).getTime();
+            c.imageSearchQuery = new FixedListQuery("/MVIC/JUPITER/");
+            c.imageSearchFilterNames = new String[]{};
+            c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
+            c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
+            c.imageSearchDefaultMaxResolution = 4000.0;
+            c.imageSearchImageSources = new ImageSource[]{ImageSource.CORRECTED};
+            c.imageType = ImageType.MVIC_JUPITER_IMAGE;
+            c.imageInstrumentName = Instrument.MVIC;
             configArray.add(c);
 
             c = c.clone();

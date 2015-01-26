@@ -27,6 +27,7 @@ import edu.jhuapl.near.model.lorri.LorriImage;
 import edu.jhuapl.near.model.lutetia.Lutetia;
 import edu.jhuapl.near.model.lutetia.OsirisImage;
 import edu.jhuapl.near.model.mathilde.MSIMathildeImage;
+import edu.jhuapl.near.model.mvic.MVICJupiterImage;
 import edu.jhuapl.near.model.phobos.PhobosImage;
 import edu.jhuapl.near.model.saturnmoon.SaturnMoonImage;
 import edu.jhuapl.near.model.simple.SimpleSmallBody;
@@ -68,6 +69,8 @@ public class ModelFactory
                 return new MSIMathildeImage(key, smallBodyModel, loadPointingOnly);
             else if (config.imageType == ImageType.LORRI_IMAGE)
                 return new LorriImage(key, smallBodyModel, loadPointingOnly);
+            else if (config.imageType == ImageType.MVIC_JUPITER_IMAGE)
+                return new MVICJupiterImage(key, smallBodyModel, loadPointingOnly);
             else
                 return null;
         }
