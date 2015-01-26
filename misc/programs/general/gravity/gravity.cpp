@@ -43,16 +43,12 @@ static void saveResults(char* pltfile,
                         string outputFolder,
                         const vector<GravityResult>& results,
                         bool saveElevation,
-                        bool savePlateCenters,
-                        Platemodel* polyData,
-                        string suffix,
-                        HowToEvaluateAtPlate howToEvaluate)
+                        string suffix)
 {
     string pltfilebasename = basename(pltfile);
 
     string outputPot = outputFolder + "/" + pltfilebasename + "-potential.txt" + suffix;
     string outputAcc = outputFolder + "/" + pltfilebasename + "-acceleration.txt" + suffix;
-    string outputAccMag = outputFolder + "/" + pltfilebasename + "-acceleration-magnitude.txt" + suffix;
 
     ofstream foutP(outputPot.c_str());
     if (!foutP.is_open())
@@ -80,41 +76,6 @@ static void saveResults(char* pltfile,
     foutP.close();
     foutA.close();
 
-    if (howToEvaluate == EVALUATE_AT_CENTER || howToEvaluate == AVERAGE_VERTICES)
-    {
-        ofstream foutAM(outputAccMag.c_str());
-        if (!foutAM.is_open())
-        {
-            cerr << "Error: Unable to open file for writing" << endl;
-            exit(1);
-        }
-        foutAM.precision(16);
-
-        for (int i=0; i<size; ++i)
-        {
-            double mag = Norm(results[i].acc);
-            // If slope is greater than 90 deg, give the acc mag a negative number. Otherwise give it a positive number.
-            // Only do this when computing gravity at plate centers.
-            if (howToEvaluate != FROM_FILE)
-            {
-                double cellNormal[3];
-                polyData->getNormal(i, cellNormal);
-                double negaticeAcc[3];
-                negaticeAcc[0] = -results[i].acc[0];
-                negaticeAcc[1] = -results[i].acc[1];
-                negaticeAcc[2] = -results[i].acc[2];
-                double slope = vsep_c(cellNormal, negaticeAcc) * 180.0 / M_PI;
-                if (slope > 90.0)
-                    mag = -fabs(mag);
-                else
-                    mag = fabs(mag);
-            }
-            foutAM << mag << endl;
-        }
-
-        foutAM.close();
-    }
-
     if (saveElevation)
     {
         string outputElev = outputFolder + "/" + pltfilebasename + "-elevation.txt" + suffix;
@@ -133,29 +94,6 @@ static void saveResults(char* pltfile,
         }
 
         foutE.close();
-    }
-
-    if (savePlateCenters)
-    {
-        string outputCenters = outputFolder + "/" + pltfilebasename + "-centers.txt" + suffix;
-
-        ofstream foutC(outputCenters.c_str());
-        if (!foutC.is_open())
-        {
-            cerr << "Error: Unable to open file for writing" << endl;
-            exit(1);
-        }
-        foutC.precision(16);
-
-        double center[3];
-        size = polyData->getNumberOfPlates();
-        for (int i=0; i<size; ++i)
-        {
-            polyData->getPlateCenter(i, center);
-            foutC << center[0] << " " << center[1] << " " << center[2] << endl;
-        }
-
-        foutC.close();
     }
 }
 
@@ -197,8 +135,6 @@ static void usage()
          << "                          --start-index is 1000 and --end-index is 2000, then only plates or points 1000 through\n"
          << "                          1999 are processed. This is useful for parallelizing large shape models on\n"
          << "                          multiple machines.\n"
-         << "  --save-plate-centers    If specified, the centers of all plates in the shape model are saved to an\n"
-         << "                          additional file.\n"
          << "  --suffix <value>        If specified, the suffix will be appended to all output files. This is needed when\n"
          << "                          splitting large shape models into mulitple runs so that each run will be output to\n"
          << "                          different files.\n"
@@ -233,7 +169,6 @@ int main(int argc, char** argv)
     int fileColumns[3] = {0, 1, 2};
     int startIndex = -1;
     int endIndex = -1;
-    bool savePlateCenters = false;
     string suffix = "";
     string outputFolder = ".";
 
@@ -302,10 +237,6 @@ int main(int argc, char** argv)
         else if (!strcmp(argv[i], "--end-index"))
         {
             endIndex = atoi(argv[++i]);
-        }
-        else if (!strcmp(argv[i], "--save-plate-centers"))
-        {
-            savePlateCenters = true;
         }
         else if (!strcmp(argv[i], "--suffix"))
         {
@@ -602,7 +533,7 @@ int main(int argc, char** argv)
     // centers only, then a separate program must be used to calculate
     // elevation and slope.
     bool saveElevation = refPotentialProvided && howToEvalute == FROM_FILE;
-    saveResults(pltfile, outputFolder, plateResults, saveElevation, savePlateCenters, polyData, suffix, howToEvalute);
+    saveResults(pltfile, outputFolder, plateResults, saveElevation, suffix);
 
     return 0;
 }
