@@ -81,7 +81,7 @@ The imaging tab (MSI, AMICA, etc.)  provides options for searching and
 displaying images acquired by cameras of several of the
 asteroids. Only several shape models currently have this tab. Usually,
 one of two databases of images can be searched, which can be specified
-in the "Source" dropdown menu:
+in the "Pointing" dropdown menu:
 
 1.  The original database of images submitted to PDS which use the
     SPICE kernel files for pointing information.  These images may be
@@ -117,7 +117,7 @@ used in the search algorithm.
 
 To map the image directly onto the asteroid, right-click either on the
 outline in the renderer or on an item in the returned list in the
-control panel. A popup menu will appear and clicking on the "Show Image"
+control panel. A popup menu will appear and clicking on the "Map Image"
 option will map the image onto the asteroid. Once an image is shown,
 additional menu items become active such as showing a properties window
 and generation of backplanes.

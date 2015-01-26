@@ -83,7 +83,7 @@ separated by 10 degrees in latitude or longitude.
 The imaging tab (MSI, AMICA, etc.)  provides options for searching and
 displaying images acquired by cameras of several of the
 asteroids. Usually, one of two databases of images can be
-searched, which can be specified in the "Source" dropdown menu:
+searched, which can be specified in the "Pointing" dropdown menu:
 
 1.  The original database of images submitted to PDS which use the
     SPICE kernel files for pointing information.  These images may be
@@ -119,7 +119,7 @@ used in the search algorithm.
 
 To map the image directly onto the asteroid, right-click either on the
 outline in the renderer or on an item in the returned list in the
-control panel. A popup menu will appear and clicking on the "Show Image"
+control panel. A popup menu will appear and clicking on the "Map Image"
 option will map the image onto the asteroid. Once an image is shown,
 additional menu items become active such as showing a properties window
 and generation of backplanes.
@@ -391,7 +391,7 @@ tracks. If text, file may contain 3 or more space-delimited columns.
 Depending on the number of columns, the file is interpreted the
 following way:
 
--   3 columns: X, Y, and Z target position. Time and spacecraft position set to zero. 
+-   3 columns: X, Y, and Z target position. Time and spacecraft position set to zero.
 -   4 columns: time, X, Y, and Z target position. Spacecraft position set to zero.
 -   5 columns: time, X, Y, and Z target position. Spacecraft position set to zero. 5th column ignored.
 -   6 columns: X, Y, Z target position, X, Y, Z spacecraft position. Time set to zero.
