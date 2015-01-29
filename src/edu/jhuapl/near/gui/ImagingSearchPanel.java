@@ -150,7 +150,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     {
         excludeGaskellCheckBox.setVisible(false);
 
-        ImageSource imageSources[] = smallBodyConfig.imageSearchImageSources;
+        ImageSource imageSources[] = isMultispectral ? smallBodyConfig.multispectralImageSearchImageSources : smallBodyConfig.imageSearchImageSources;
         DefaultComboBoxModel sourceComboBoxModel = new DefaultComboBoxModel(imageSources);
         sourceComboBox.setModel(sourceComboBoxModel);
 

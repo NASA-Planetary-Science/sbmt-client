@@ -508,18 +508,16 @@ public class SmallBodyConfig
             c.hasImageMap = false;
             c.hasPerspectiveImages = true;
             c.hasMultispectralImages = false;
-//            c.hasMultispectralImages = true;
             c.imageSearchDefaultStartDate = new GregorianCalendar(2007, 0, 8, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2007, 2, 5, 0, 0, 0).getTime();
             c.imageSearchQuery = new GenericPhpQuery("/NEWHORIZONS/JUPITER/IMAGING", "JUPITER");
-            c.multispectralImageSearchQuery = new FixedListQuery("/NEWHORIZONS/JUPITER/IMAGING");
-//            c.multispectralImageSearchQuery = new FixedListQuery("/NEWHORIZONS/JUPITER/MVIC");
+            c.multispectralImageSearchQuery = new FixedListQuery("/NEWHORIZONS/JUPITER/MVIC");
             c.imageSearchFilterNames = new String[]{};
             c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
             c.imageSearchDefaultMaxSpacecraftDistance = 1.0e9;
             c.imageSearchDefaultMaxResolution = 1.0e6;
             c.imageSearchImageSources = new ImageSource[]{ImageSource.SPICE};
-//            c.multispectralImageSearchImageSources = new ImageSource[]{ImageSource.GASKELL};
+            c.multispectralImageSearchImageSources = new ImageSource[]{ImageSource.GASKELL};
             c.imageType = ImageType.LORRI_IMAGE;
             c.multispectralImageType = ImageType.MVIC_JUPITER_IMAGE;
             c.imageInstrumentName = Instrument.LORRI;
@@ -1443,6 +1441,7 @@ public class SmallBodyConfig
     public double imageSearchDefaultMaxSpacecraftDistance;
     public double imageSearchDefaultMaxResolution;
     public ImageSource[] imageSearchImageSources;
+    public ImageSource[] multispectralImageSearchImageSources;
     public ImageType imageType;
     public ImageType multispectralImageType;
     public Instrument imageInstrumentName = Instrument.IMAGING_DATA;
