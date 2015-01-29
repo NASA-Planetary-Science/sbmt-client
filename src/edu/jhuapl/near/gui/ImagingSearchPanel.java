@@ -255,7 +255,9 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                 for (int selectedIndex : selectedIndices)
                 {
                     String name = imageRawResults.get(selectedIndex).get(0);
-                    imageKeys.add(new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery));
+                    ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery);
+                    key.isMultispectral = this.isMultispectral;
+                    imageKeys.add(key);
                 }
                 imagePopupMenu.setCurrentImages(imageKeys);
                 imagePopupMenu.show(e.getComponent(), e.getX(), e.getY());
@@ -333,7 +335,9 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                 //String boundaryName = currentImage.substring(0,currentImage.length()-4) + "_BOUNDARY.VTK";
                 //String boundaryName = currentImage.substring(0,currentImage.length()-4) + "_DDR.LBL";
                 String boundaryName = currentImage.substring(0,currentImage.length()-4);
-                model.addBoundary(new ImageKey(boundaryName, sourceOfLastQuery));
+                ImageKey key = new ImageKey(boundaryName, sourceOfLastQuery);
+                key.isMultispectral = this.isMultispectral;
+                model.addBoundary(key);
             }
             catch (FitsException e1) {
                 // TODO Auto-generated catch block

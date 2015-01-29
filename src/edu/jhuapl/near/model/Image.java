@@ -71,6 +71,8 @@ public abstract class Image extends Model implements PropertyChangeListener
 
         public ImageSource source;
 
+        public boolean isMultispectral;
+
         public ImageKey()
         {
         }
