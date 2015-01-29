@@ -507,16 +507,23 @@ public class SmallBodyConfig
             c.hasColoringData = false;
             c.hasImageMap = false;
             c.hasPerspectiveImages = true;
+            c.hasMultispectralImages = false;
+//            c.hasMultispectralImages = true;
             c.imageSearchDefaultStartDate = new GregorianCalendar(2007, 0, 8, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2007, 2, 5, 0, 0, 0).getTime();
             c.imageSearchQuery = new GenericPhpQuery("/NEWHORIZONS/JUPITER/IMAGING", "JUPITER");
+            c.multispectralImageSearchQuery = new FixedListQuery("/NEWHORIZONS/JUPITER/IMAGING");
+//            c.multispectralImageSearchQuery = new FixedListQuery("/NEWHORIZONS/JUPITER/MVIC");
             c.imageSearchFilterNames = new String[]{};
             c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
             c.imageSearchDefaultMaxSpacecraftDistance = 1.0e9;
             c.imageSearchDefaultMaxResolution = 1.0e6;
             c.imageSearchImageSources = new ImageSource[]{ImageSource.SPICE};
+//            c.multispectralImageSearchImageSources = new ImageSource[]{ImageSource.GASKELL};
             c.imageType = ImageType.LORRI_IMAGE;
+            c.multispectralImageType = ImageType.MVIC_JUPITER_IMAGE;
             c.imageInstrumentName = Instrument.LORRI;
+            c.multispectralImageInstrumentName = Instrument.MVIC;
             configArray.add(c);
 
             c = c.clone();
@@ -1421,6 +1428,7 @@ public class SmallBodyConfig
     public boolean hasColoringData = true;
     public boolean hasImageMap = false;
     public boolean hasPerspectiveImages = false;
+    public boolean hasMultispectralImages = false;
     public boolean hasLidarData = false;
     public boolean hasMapmaker = false;
     public boolean hasSpectralData = false;
@@ -1429,13 +1437,16 @@ public class SmallBodyConfig
     public Date imageSearchDefaultStartDate;
     public Date imageSearchDefaultEndDate;
     public QueryBase imageSearchQuery;
+    public QueryBase multispectralImageSearchQuery;
     public String[] imageSearchFilterNames;
     public String[] imageSearchUserDefinedCheckBoxesNames;
     public double imageSearchDefaultMaxSpacecraftDistance;
     public double imageSearchDefaultMaxResolution;
     public ImageSource[] imageSearchImageSources;
     public ImageType imageType;
+    public ImageType multispectralImageType;
     public Instrument imageInstrumentName = Instrument.IMAGING_DATA;
+    public Instrument multispectralImageInstrumentName = Instrument.MVIC;
     // if hasLidarData is true, the following must be filled in
     public Date lidarSearchDefaultStartDate;
     public Date lidarSearchDefaultEndDate;
