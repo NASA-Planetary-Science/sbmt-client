@@ -517,7 +517,7 @@ public class SmallBodyConfig
             c.imageSearchDefaultMaxSpacecraftDistance = 1.0e9;
             c.imageSearchDefaultMaxResolution = 1.0e6;
             c.imageSearchImageSources = new ImageSource[]{ImageSource.SPICE};
-            c.multispectralImageSearchImageSources = new ImageSource[]{ImageSource.GASKELL};
+            c.multispectralImageSearchImageSources = new ImageSource[]{ImageSource.GASKELL, ImageSource.LABEL};
             c.imageType = ImageType.LORRI_IMAGE;
             c.multispectralImageType = ImageType.MVIC_JUPITER_IMAGE;
             c.imageInstrumentName = Instrument.LORRI;
