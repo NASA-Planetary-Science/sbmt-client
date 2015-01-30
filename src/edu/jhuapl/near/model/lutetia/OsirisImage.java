@@ -35,35 +35,42 @@ public class OsirisImage extends PerspectiveImage
             ImageDataUtil.rotateImage(rawImage, 180.0);
         }
 
-        // If image is smaller than 2048x2048 we need to extend it to that size.
-        // Therefore, the following pads the images with zero back to
-        // original size. The vtkImageTranslateExtent first translates the cropped image
-        // to its proper position in the original and the vtkImageConstantPad then pads
-        // it with zero to size 2048x2048.
-        int[] dims = rawImage.GetDimensions();
-        if (dims[0] == 2048 && dims[1] == 2048)
+        if (key.name.contains("67P"))
+        {
             return;
+        }
+        else // for lutetia
+        {
+            // If image is smaller than 2048x2048 we need to extend it to that size.
+            // Therefore, the following pads the images with zero back to
+            // original size. The vtkImageTranslateExtent first translates the cropped image
+            // to its proper position in the original and the vtkImageConstantPad then pads
+            // it with zero to size 2048x2048.
+            int[] dims = rawImage.GetDimensions();
+            if (dims[0] == 2048 && dims[1] == 2048)
+                return;
 
-        // Currently this correction only works with NAC images of size 1024x1024.
-        // Other images don't align well with the shape model using this shift amount.
-        int xshift = 559;
-        int yshift = 575;
+            // Currently this correction only works with NAC images of size 1024x1024.
+            // Other images don't align well with the shape model using this shift amount.
+            int xshift = 559;
+            int yshift = 575;
 
-        vtkImageTranslateExtent translateExtent = new vtkImageTranslateExtent();
-        translateExtent.SetInput(rawImage);
-        translateExtent.SetTranslation(xshift, yshift, 0);
-        translateExtent.Update();
+            vtkImageTranslateExtent translateExtent = new vtkImageTranslateExtent();
+            translateExtent.SetInput(rawImage);
+            translateExtent.SetTranslation(xshift, yshift, 0);
+            translateExtent.Update();
 
-        vtkImageConstantPad pad = new vtkImageConstantPad();
-        pad.SetInputConnection(translateExtent.GetOutputPort());
-        pad.SetOutputWholeExtent(0, 2047, 0, 2047, 0, 0);
-        pad.Update();
+            vtkImageConstantPad pad = new vtkImageConstantPad();
+            pad.SetInputConnection(translateExtent.GetOutputPort());
+            pad.SetOutputWholeExtent(0, 2047, 0, 2047, 0, 0);
+            pad.Update();
 
-        vtkImageData padOutput = pad.GetOutput();
-        rawImage.DeepCopy(padOutput);
+            vtkImageData padOutput = pad.GetOutput();
+            rawImage.DeepCopy(padOutput);
 
-        // shift origin back to zero
-        rawImage.SetOrigin(0.0, 0.0, 0.0);
+            // shift origin back to zero
+            rawImage.SetOrigin(0.0, 0.0, 0.0);
+        }
     }
 
     @Override
@@ -103,5 +110,87 @@ public class OsirisImage extends PerspectiveImage
         String sumFilename = keyFile.getParentFile().getParent() + "/sumfiles/"
         + keyFile.getName() + ".SUM";
         return FileCache.getFileFromServer(sumFilename).getAbsolutePath();
+    }
+
+    @Override
+    public int getFilter()
+    {
+        int filter = Integer.parseInt(getFilterName());
+
+        switch(filter)
+        {
+        case 12:
+            return 1;
+        case 16:
+            return 2;
+        case 18:
+            return 3;
+        case 22:
+            return 4;
+        case 23:
+            return 5;
+        case 24:
+            return 6;
+        case 27:
+            return 7;
+        case 28:
+            return 8;
+        case 41:
+            return 9;
+        case 51:
+            return 10;
+        case 54:
+            return 11;
+        case 61:
+            return 12;
+        }
+
+        return 0;
+    }
+
+    @Override
+    public String getFilterName()
+    {
+        ImageKey key = getKey();
+        File keyFile = new File(key.name);
+        String filename = keyFile.getName();
+
+        return filename.substring(filename.length()-2, filename.length());
+    }
+
+
+    private String getCameraNameFromNumber(int num)
+    {
+        String name = null;
+        if (num == 1)
+            name = "NAC";
+        else if (num == 2)
+            name = "WAC";
+
+        return name;
+    }
+
+    @Override
+    public String getCameraName()
+    {
+        return getCameraNameFromNumber(getCamera());
+    }
+
+    @Override
+    public int getCamera()
+    {
+        // Return the following:
+        // 1 for NAC
+        // 2 for WAC
+        ImageKey key = getKey();
+        File keyFile = new File(key.name);
+        if (keyFile.getName().startsWith("N"))
+        {
+            return 1;
+        }
+        else
+        {
+            return 2;
+        }
     }
 }

@@ -90,7 +90,7 @@ public class SmallBodyConfig
         PALLAS("Pallas"),
         DAPHNE("Daphne"),
         HERMIONE("Hermione"),
-        _67P("67P");
+        _67P("67P (SHAP5 V0.3)");
 
         final private String str;
         private ShapeModelBody(String str)
@@ -1306,11 +1306,24 @@ public class SmallBodyConfig
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
             c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
             c.hasPerspectiveImages = true;
-            c.imageSearchDefaultStartDate = new GregorianCalendar(2014, 6, 11, 0, 0, 0).getTime();
-            c.imageSearchDefaultEndDate = new GregorianCalendar(2014, 11, 8, 0, 0, 0).getTime();
-            c.imageSearchQuery = new FixedListQuery("/GASKELL/67P/IMAGING");
-            c.imageSearchFilterNames = new String[]{};
-            c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2014, 7, 1, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2014, 11, 31, 0, 0, 0).getTime();
+            c.imageSearchQuery = new GenericPhpQuery("/GASKELL/67P/IMAGING", "67P");
+            c.imageSearchFilterNames = new String[]{
+                    "Filter 12",
+                    "Filter 16",
+                    "Filter 18",
+                    "Filter 22",
+                    "Filter 23",
+                    "Filter 24",
+                    "Filter 27",
+                    "Filter 28",
+                    "Filter 41",
+                    "Filter 51",
+                    "Filter 54",
+                    "Filter 61"
+            };
+            c.imageSearchUserDefinedCheckBoxesNames = new String[]{"NAC", "WAC"};
             c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
             c.imageSearchDefaultMaxResolution = 4000.0;
             c.imageSearchImageSources = new ImageSource[]{ImageSource.GASKELL};

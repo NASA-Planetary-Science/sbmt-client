@@ -139,14 +139,14 @@ public class GenericPhpQuery extends QueryBase
             args.put("minPhase", String.valueOf(minPhase));
             args.put("maxPhase", String.valueOf(maxPhase));
             args.put("limbType", String.valueOf(limbType));
-            for (int i=1; i<=10; ++i)
+            for (int i=1; i<=filtersChecked.size(); ++i)
             {
                 if (filters.contains(i))
                     args.put("filterType"+i, "1");
                 else
                     args.put("filterType"+i, "0");
             }
-            for (int i=1; i<=10; ++i)
+            for (int i=1; i<=camerasChecked.size(); ++i)
             {
                 if (cameras.contains(i))
                     args.put("cameraType"+i, "1");

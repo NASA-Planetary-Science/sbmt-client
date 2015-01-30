@@ -276,8 +276,8 @@ public class DatabaseGeneratorSql
             // If the sumfile has no landmarks, then ignore it. Sumfiles that have no landmarks
             // are 1296 bytes long or less. If it's very small in size though it is probably
             // a sumfile that was generated via another method so keep it.
-            if (sumfile.length() <= 1296 && sumfile.length() >= 500)
-                return false;
+            //if (sumfile.length() <= 1296 && sumfile.length() >= 500)
+            //    return false;
         }
         else
         {
@@ -384,6 +384,8 @@ public class DatabaseGeneratorSql
                 "/project/nearsdc/data/GASKELL/PHOBOS/IMAGING/pdsImageList.txt"),
         PHOBOSEXPERIMENTAL(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.PHOBOS, ShapeModelAuthor.EXPERIMENTAL),
                 "/project/nearsdc/data/GASKELL/PHOBOSEXPERIMENTAL/IMAGING/imagelist.txt", "phobosexp"),
+        _67P(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody._67P, ShapeModelAuthor.GASKELL),
+                "/project/nearsdc/data/GASKELL/67P/IMAGING/imagelist-fullpath.txt", "67p"),
         JUPITER(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.JUPITER, null),
                 "/project/nearsdc/data/NEWHORIZONS/JUPITER/IMAGING/imagelist-fullpath.txt"),
         CALLISTO(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.CALLISTO, null),
@@ -422,6 +424,7 @@ public class DatabaseGeneratorSql
     {
         System.setProperty("java.awt.headless", "true");
         Configuration.setAPLVersion(true);
+        Configuration.setRootURL("file:///disks/d0180/htdocs-sbmt/internal/sbmt");
         NativeLibraryLoader.loadVtkLibrariesHeadless();
 
         int mode = Integer.parseInt(args[0]);
