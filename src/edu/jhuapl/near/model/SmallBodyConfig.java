@@ -507,7 +507,7 @@ public class SmallBodyConfig
             c.hasColoringData = false;
             c.hasImageMap = false;
             c.hasPerspectiveImages = true;
-            c.hasMultispectralImages = true;
+            c.hasMultispectralImages = false;
             c.imageSearchDefaultStartDate = new GregorianCalendar(2007, 0, 8, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2007, 2, 5, 0, 0, 0).getTime();
             c.imageSearchQuery = new GenericPhpQuery("/NEWHORIZONS/JUPITER/IMAGING", "JUPITER");
