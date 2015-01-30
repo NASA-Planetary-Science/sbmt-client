@@ -1,4 +1,4 @@
-package edu.jhuapl.near.model.lutetia;
+package edu.jhuapl.near.model.rosetta;
 
 import java.io.File;
 import java.io.IOException;
