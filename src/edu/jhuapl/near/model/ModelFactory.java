@@ -45,34 +45,43 @@ public class ModelFactory
 
         if (ImageSource.SPICE.equals(key.source) ||
                 ImageSource.GASKELL.equals(key.source) ||
+                ImageSource.LABEL.equals(key.source) ||
                 ImageSource.CORRECTED.equals(key.source))
         {
-            if (config.imageType == ImageType.MSI_IMAGE)
-                return new MSIImage(key, smallBodyModel, loadPointingOnly);
-            else if (config.imageType == ImageType.AMICA_IMAGE)
-                return new AmicaImage(key, smallBodyModel, loadPointingOnly);
-            else if (config.imageType == ImageType.FC_IMAGE)
-                return new FcImage(key, smallBodyModel, loadPointingOnly);
-            else if (config.imageType == ImageType.PHOBOS_IMAGE)
-                return new PhobosImage(key, smallBodyModel, loadPointingOnly);
-            else if (config.imageType == ImageType.DEIMOS_IMAGE)
-                return new DeimosImage(key, smallBodyModel, loadPointingOnly);
-            else if (config.imageType == ImageType.OSIRIS_IMAGE)
-                return new OsirisImage(key, smallBodyModel, loadPointingOnly);
-            else if (config.imageType == ImageType.SATURN_MOON_IMAGE)
-                return new SaturnMoonImage(key, smallBodyModel, loadPointingOnly);
-            else if (config.imageType == ImageType.SSI_GASPRA_IMAGE)
-                return new SSIGaspraImage(key, smallBodyModel, loadPointingOnly);
-            else if (config.imageType == ImageType.SSI_IDA_IMAGE)
-                return new SSIIdaImage(key, smallBodyModel, loadPointingOnly);
-            else if (config.imageType == ImageType.MSI_MATHILDE_IMAGE)
-                return new MSIMathildeImage(key, smallBodyModel, loadPointingOnly);
-            else if (config.imageType == ImageType.LORRI_IMAGE)
-                return new LorriImage(key, smallBodyModel, loadPointingOnly);
-            else if (config.imageType == ImageType.MVIC_JUPITER_IMAGE)
-                return new MVICJupiterImage(key, smallBodyModel, loadPointingOnly);
+            if (key.isMultispectral)
+            {
+                if (config.multispectralImageType == ImageType.MVIC_JUPITER_IMAGE)
+                    return new MVICJupiterImage(key, smallBodyModel, loadPointingOnly);
+                else
+                    return null;
+            }
             else
-                return null;
+            {
+                if (config.imageType == ImageType.MSI_IMAGE)
+                    return new MSIImage(key, smallBodyModel, loadPointingOnly);
+                else if (config.imageType == ImageType.AMICA_IMAGE)
+                    return new AmicaImage(key, smallBodyModel, loadPointingOnly);
+                else if (config.imageType == ImageType.FC_IMAGE)
+                    return new FcImage(key, smallBodyModel, loadPointingOnly);
+                else if (config.imageType == ImageType.PHOBOS_IMAGE)
+                    return new PhobosImage(key, smallBodyModel, loadPointingOnly);
+                else if (config.imageType == ImageType.DEIMOS_IMAGE)
+                    return new DeimosImage(key, smallBodyModel, loadPointingOnly);
+                else if (config.imageType == ImageType.OSIRIS_IMAGE)
+                    return new OsirisImage(key, smallBodyModel, loadPointingOnly);
+                else if (config.imageType == ImageType.SATURN_MOON_IMAGE)
+                    return new SaturnMoonImage(key, smallBodyModel, loadPointingOnly);
+                else if (config.imageType == ImageType.SSI_GASPRA_IMAGE)
+                    return new SSIGaspraImage(key, smallBodyModel, loadPointingOnly);
+                else if (config.imageType == ImageType.SSI_IDA_IMAGE)
+                    return new SSIIdaImage(key, smallBodyModel, loadPointingOnly);
+                else if (config.imageType == ImageType.MSI_MATHILDE_IMAGE)
+                    return new MSIMathildeImage(key, smallBodyModel, loadPointingOnly);
+                else if (config.imageType == ImageType.LORRI_IMAGE)
+                    return new LorriImage(key, smallBodyModel, loadPointingOnly);
+                else
+                    return null;
+            }
         }
         else if (ImageSource.LOCAL_PERSPECTIVE.equals(key.source))
         {

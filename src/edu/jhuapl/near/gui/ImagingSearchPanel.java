@@ -84,6 +84,8 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     private JCheckBox[] filterCheckBoxes;
     private JCheckBox[] userDefinedCheckBoxes;
 
+    private boolean isMultispectral = false;
+
     // The source of the images of the most recently executed query
     private PerspectiveImage.ImageSource sourceOfLastQuery = PerspectiveImage.ImageSource.SPICE;
 
@@ -96,11 +98,14 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             final ModelManager modelManager,
             ModelInfoWindowManager infoPanelManager,
             final PickManager pickManager,
-            Renderer renderer)
+            Renderer renderer,
+            boolean isMultispectral)
     {
         this.smallBodyConfig = smallBodyConfig;
         this.modelManager = modelManager;
         this.pickManager = pickManager;
+
+        this.isMultispectral = isMultispectral;
 
         pickManager.getDefaultPicker().addPropertyChangeListener(this);
 
@@ -157,7 +162,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     {
         excludeGaskellCheckBox.setVisible(false);
 
-        ImageSource imageSources[] = smallBodyConfig.imageSearchImageSources;
+        ImageSource imageSources[] = isMultispectral ? smallBodyConfig.multispectralImageSearchImageSources : smallBodyConfig.imageSearchImageSources;
         DefaultComboBoxModel sourceComboBoxModel = new DefaultComboBoxModel(imageSources);
         sourceComboBox.setModel(sourceComboBoxModel);
 
@@ -264,7 +269,9 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                 for (int selectedIndex : selectedIndices)
                 {
                     String name = imageRawResults.get(selectedIndex).get(0);
-                    imageKeys.add(new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery));
+                    ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery);
+                    key.isMultispectral = this.isMultispectral;
+                    imageKeys.add(key);
                 }
                 imagePopupMenu.setCurrentImages(imageKeys);
                 imagePopupMenu.show(e.getComponent(), e.getX(), e.getY());
@@ -342,7 +349,9 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                 //String boundaryName = currentImage.substring(0,currentImage.length()-4) + "_BOUNDARY.VTK";
                 //String boundaryName = currentImage.substring(0,currentImage.length()-4) + "_DDR.LBL";
                 String boundaryName = currentImage.substring(0,currentImage.length()-4);
-                model.addBoundary(new ImageKey(boundaryName, sourceOfLastQuery));
+                ImageKey key = new ImageKey(boundaryName, sourceOfLastQuery);
+                key.isMultispectral = this.isMultispectral;
+                model.addBoundary(key);
             }
             catch (FitsException e1) {
                 // TODO Auto-generated catch block
@@ -1730,7 +1739,11 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                 userDefinedChecked.add(userDefinedCheckBoxes[i].isSelected());
             }
 
-            ArrayList<ArrayList<String>> results = smallBodyConfig.imageSearchQuery.runQuery(
+            ArrayList<ArrayList<String>> results = null;
+
+            if (isMultispectral)
+            {
+                results = smallBodyConfig.multispectralImageSearchQuery.runQuery(
                     "",
                     startDateJoda,
                     endDateJoda,
@@ -1751,6 +1764,31 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                     cubeList,
                     imageSource,
                     hasLimbComboBox.getSelectedIndex());
+            }
+            else
+            {
+                results = smallBodyConfig.imageSearchQuery.runQuery(
+                    "",
+                    startDateJoda,
+                    endDateJoda,
+                    filtersChecked,
+                    userDefinedChecked,
+                    Double.parseDouble(fromDistanceTextField.getText()),
+                    Double.parseDouble(toDistanceTextField.getText()),
+                    Double.parseDouble(fromResolutionTextField.getText()),
+                    Double.parseDouble(toResolutionTextField.getText()),
+                    searchField,
+                    null,
+                    Double.parseDouble(fromIncidenceTextField.getText()),
+                    Double.parseDouble(toIncidenceTextField.getText()),
+                    Double.parseDouble(fromEmissionTextField.getText()),
+                    Double.parseDouble(toEmissionTextField.getText()),
+                    Double.parseDouble(fromPhaseTextField.getText()),
+                    Double.parseDouble(toPhaseTextField.getText()),
+                    cubeList,
+                    imageSource,
+                    hasLimbComboBox.getSelectedIndex());
+            }
 
             // If SPICE Derived (exclude Gaskell) or Gaskell Derived (exlude SPICE) is selected,
             // then remove from the list images which are contained in the other list by doing

@@ -45,7 +45,11 @@ public class MVICJupiterImage extends PerspectiveImage
     @Override
     protected String initializeLabelFileFullPath()
     {
-        return null;
+        ImageKey key = getKey();
+        File keyFile = new File(key.name);
+        String sumFilename = keyFile.getParentFile().getParent() + "/labelfiles/"
+        + keyFile.getName().split("\\.")[0] + ".lbl";
+        return FileCache.getFileFromServer(sumFilename).getAbsolutePath();
     }
 
     @Override
@@ -60,7 +64,7 @@ public class MVICJupiterImage extends PerspectiveImage
         ImageKey key = getKey();
         File keyFile = new File(key.name);
         String sumFilename = keyFile.getParentFile().getParent() + "/sumfiles/"
-        + keyFile.getName().substring(0, 5) + ".SUM";
+        + keyFile.getName().split("\\.")[0] + ".SUM";
         return FileCache.getFileFromServer(sumFilename).getAbsolutePath();
     }
 

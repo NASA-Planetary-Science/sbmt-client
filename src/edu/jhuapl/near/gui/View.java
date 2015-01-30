@@ -110,8 +110,17 @@ public class View extends JPanel
                     smallBodyConfig.body == ShapeModelBody.EROS ||
                     (smallBodyConfig.body == ShapeModelBody.ITOKAWA && ShapeModelAuthor.GASKELL == smallBodyConfig.author))
             {
-                JComponent component = new ImagingSearchPanel(smallBodyConfig, modelManager, infoPanelManager, pickManager, renderer);
+                JComponent component = new ImagingSearchPanel(smallBodyConfig, modelManager, infoPanelManager, pickManager, renderer, false);
                 controlPanel.addTab(smallBodyConfig.imageInstrumentName.toString(), component);
+            }
+        }
+
+        if (smallBodyConfig.hasMultispectralImages)
+        {
+            if (Configuration.isAPLVersion())
+            {
+                JComponent component = new ImagingSearchPanel(smallBodyConfig, modelManager, infoPanelManager, pickManager, renderer, true);
+                controlPanel.addTab(smallBodyConfig.multispectralImageInstrumentName.toString(), component);
             }
         }
 
@@ -232,6 +241,12 @@ public class View extends JPanel
             allModels.put(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES, new PerspectiveImageBoundaryCollection(smallBodyModel));
         }
 
+        if (smallBodyConfig.hasMultispectralImages)
+        {
+            allModels.put(ModelNames.COLOR_IMAGES, new ColorImageCollection(smallBodyModel));
+            allModels.put(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES, new PerspectiveImageBoundaryCollection(smallBodyModel));
+        }
+
         if (smallBodyConfig.hasSpectralData)
         {
             allModels.put(ModelNames.SPECTRA, ModelFactory.createSpectralModel(smallBodyModel));
@@ -269,6 +284,19 @@ public class View extends JPanel
         popupManager = new PopupManager(modelManager, infoPanelManager, renderer);
 
         if (smallBodyConfig.hasPerspectiveImages)
+        {
+            ImageCollection images = (ImageCollection)modelManager.getModel(ModelNames.IMAGES);
+            PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES);
+            ColorImageCollection colorImages = (ColorImageCollection)modelManager.getModel(ModelNames.COLOR_IMAGES);
+
+            PopupMenu popupMenu = new ImagePopupMenu(images, boundaries, infoPanelManager, renderer, renderer);
+            popupManager.registerPopup(modelManager.getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES), popupMenu);
+
+            popupMenu = new ColorImagePopupMenu(colorImages, infoPanelManager);
+            popupManager.registerPopup(modelManager.getModel(ModelNames.COLOR_IMAGES), popupMenu);
+        }
+
+        if (smallBodyConfig.hasMultispectralImages)
         {
             ImageCollection images = (ImageCollection)modelManager.getModel(ModelNames.IMAGES);
             PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES);

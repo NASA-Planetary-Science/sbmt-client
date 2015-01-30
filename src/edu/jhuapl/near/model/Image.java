@@ -32,6 +32,12 @@ public abstract class Image extends Model implements PropertyChangeListener
                 return "Gaskell derived";
             }
         },
+        LABEL {
+            public String toString()
+            {
+                return "Label (.lbl) derived";
+            }
+        },
         CORRECTED {
             public String toString()
             {
@@ -70,6 +76,8 @@ public abstract class Image extends Model implements PropertyChangeListener
         public String name;
 
         public ImageSource source;
+
+        public boolean isMultispectral;
 
         public ImageKey()
         {
