@@ -507,7 +507,7 @@ public class SmallBodyConfig
             c.hasColoringData = false;
             c.hasImageMap = false;
             c.hasPerspectiveImages = true;
-            c.hasMultispectralImages = false;
+            c.hasMultispectralImages = true;
             c.imageSearchDefaultStartDate = new GregorianCalendar(2007, 0, 8, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2007, 2, 5, 0, 0, 0).getTime();
             c.imageSearchQuery = new GenericPhpQuery("/NEWHORIZONS/JUPITER/IMAGING", "JUPITER");
@@ -517,7 +517,8 @@ public class SmallBodyConfig
             c.imageSearchDefaultMaxSpacecraftDistance = 1.0e9;
             c.imageSearchDefaultMaxResolution = 1.0e6;
             c.imageSearchImageSources = new ImageSource[]{ImageSource.SPICE};
-            c.multispectralImageSearchImageSources = new ImageSource[]{ImageSource.GASKELL, ImageSource.LABEL};
+            c.multispectralImageSearchImageSources = new ImageSource[]{ImageSource.LABEL};
+//            c.multispectralImageSearchImageSources = new ImageSource[]{ImageSource.GASKELL, ImageSource.LABEL};
             c.imageType = ImageType.LORRI_IMAGE;
             c.multispectralImageType = ImageType.MVIC_JUPITER_IMAGE;
             c.imageInstrumentName = Instrument.LORRI;

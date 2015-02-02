@@ -35,7 +35,7 @@ public abstract class Image extends Model implements PropertyChangeListener
         LABEL {
             public String toString()
             {
-                return "Label (.lbl) derived";
+                return "Label derived";
             }
         },
         CORRECTED {
