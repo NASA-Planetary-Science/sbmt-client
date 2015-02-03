@@ -1374,9 +1374,20 @@ public class SmallBodyConfig
             c.author = null;
             c.pathOnServer = "/NEWHORIZONS/PLUTO/shape_res0.vtk.gz";
             c.hasColoringData = false;
+            c.hasPerspectiveImages = true;
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2015, 0, 1, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2016, 1, 1, 0, 0, 0).getTime();
+            c.imageSearchQuery = new FixedListQuery("/NEWHORIZONS/PLUTO/IMAGING");
+            c.imageSearchFilterNames = new String[]{};
+            c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
+            c.imageSearchDefaultMaxSpacecraftDistance = 1.0e9;
+            c.imageSearchDefaultMaxResolution = 1.0e6;
+            c.imageSearchImageSources = new ImageSource[]{ImageSource.SPICE};
+            c.imageType = ImageType.LORRI_IMAGE;
+            c.imageInstrumentName = Instrument.LORRI;
             configArray.add(c);
 
-            c = new SmallBodyConfig();
+            c = c.clone();
             c.body = ShapeModelBody.CHARON;
             c.type = ShapeModelType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.PLUTO;
@@ -1384,6 +1395,7 @@ public class SmallBodyConfig
             c.author = null;
             c.pathOnServer = "/NEWHORIZONS/CHARON/shape_res0.vtk.gz";
             c.hasColoringData = false;
+            c.imageSearchQuery = new FixedListQuery("/NEWHORIZONS/CHARON/IMAGING");
             configArray.add(c);
 
             c = new SmallBodyConfig();
