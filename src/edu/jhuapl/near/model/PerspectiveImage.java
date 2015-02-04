@@ -181,9 +181,11 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
     protected double getFocalLength() { return 0.0; }
 
-    protected double getNumberOfPixels() { return 0.0; }
+    private double numberOfPixels = 0.0;
+    protected double getNumberOfPixels() { return numberOfPixels; }
 
-    protected double getNumberOfLines() { return 0.0; }
+    private double numberOfLines = 0.0;
+    protected double getNumberOfLines() { return numberOfLines; }
 
     protected double getPixelWidth() { return 0.0; }
 
@@ -1038,6 +1040,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     private String targetName = null;
     private String instrumentId = null;
     private String filterName = null;
+    private String objectName = null;
 
     private String startTimeString = null;
     private String stopTimeString = null;
@@ -1080,6 +1083,18 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
             instrumentId = value;
         else if (key.equals("FILTER_NAME"))
             filterName = value;
+        else if (key.equals("OBJECT"))
+            objectName = value;
+        else if (key.equals("LINE_SAMPLES"))
+        {
+            if (objectName.equals("EXTENSION_CALGEOM_IMAGE"))
+                numberOfPixels = Double.parseDouble(value);
+        }
+        else if (key.equals("LINES"))
+        {
+            if (objectName.equals("EXTENSION_CALGEOM_IMAGE"))
+                numberOfLines = Double.parseDouble(value);
+        }
         else if (key.equals("START_TIME"))
         {
             startTimeString = value;

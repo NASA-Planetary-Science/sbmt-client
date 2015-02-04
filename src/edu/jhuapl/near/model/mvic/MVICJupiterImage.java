@@ -44,10 +44,6 @@ public class MVICJupiterImage extends PerspectiveImage
 
     protected double getFocalLength() { return 657.5; }    // in mm
 
-    protected double getNumberOfPixels() { return 5134.0; }
-
-    protected double getNumberOfLines() { return 2493.0; }
-
     protected double getPixelWidth() { return 0.013; }    // in mm
 
     protected double getPixelHeight() { return 0.013; }   // in mm
