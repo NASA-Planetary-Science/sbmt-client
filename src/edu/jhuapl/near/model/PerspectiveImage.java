@@ -1139,7 +1139,11 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         InputStreamReader isr = new InputStreamReader(fs);
         BufferedReader in = new BufferedReader(isr);
 
-        // parse each line of the stream and process each key-value pair
+        //
+        // Parse each line of the stream and process each key-value pair,
+        // merging multiline numeric ("vector") values into a single-line
+        // string. Multi-line quoted strings are ignored.
+        //
         boolean inStringLiteral = false;
         boolean inVector = false;
         List<String> vector = new ArrayList<String>();
@@ -1151,6 +1155,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
             if (line.length() == 0)
                 continue;
 
+            // for now, multi-line quoted strings are ignored (i.e. treated as comments)
             if (line.trim().equals("\""))
             {
                 inStringLiteral = false;
@@ -1160,6 +1165,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
             if (inStringLiteral)
                 continue;
 
+            // terminate a multi-line numeric value (a "vector")
             if (line.trim().equals(")"))
             {
                 inVector = false;
@@ -1185,6 +1191,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
                 continue;
             }
 
+            // add a line to the current vector
             if (inVector)
             {
                 vector.add(line.trim());
@@ -1206,7 +1213,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
                 continue;
             }
 
-            // detect and accumulate vectors
+            // start to accumulate numeric vector values
             if (value.equals("("))
             {
                 inVector = true;
@@ -1245,20 +1252,20 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         this.kmatrix00 = 1.0 / getPixelWidth();
         this.kmatrix11 = 1.0 / getPixelHeight();
 
-        Vector3D boresightVector3D = scOrientation.applyTo(k);
-        boresightDirection[0] = cy[0] = boresightVector3D.getX();
-        boresightDirection[1] = cy[1] = boresightVector3D.getY();
-        boresightDirection[2] = cy[2] = boresightVector3D.getZ();
+        Vector3D boresightVector3D = scOrientation.applyTo(i);
+        boresightDirection[0] = cz[0] = boresightVector3D.getX();
+        boresightDirection[1] = cz[1] = boresightVector3D.getY();
+        boresightDirection[2] = cz[2] = boresightVector3D.getZ();
 
         Vector3D upVector3D = scOrientation.applyTo(j);
-        upVector[0] = cx[0] = upVector3D.getX();
-        upVector[1] = cx[1] = upVector3D.getY();
-        upVector[2] = cx[2] = upVector3D.getZ();
+        upVector[0] = cy[0] = upVector3D.getX();
+        upVector[1] = cy[1] = upVector3D.getY();
+        upVector[2] = cy[2] = upVector3D.getZ();
 
-        Vector3D leftVector3D = scOrientation.applyTo(i);
-        cz[0] = leftVector3D.getX();
-        cz[1] = leftVector3D.getY();
-        cz[2] = leftVector3D.getZ();
+        Vector3D leftVector3D = scOrientation.applyTo(k);
+        cx[0] = -leftVector3D.getX();
+        cx[1] = -leftVector3D.getY();
+        cx[2] = -leftVector3D.getZ();
 
 //      double kmatrix00 = Math.abs(Double.parseDouble(tmp[0]));
 //      double kmatrix11 = Math.abs(Double.parseDouble(tmp[4]));
