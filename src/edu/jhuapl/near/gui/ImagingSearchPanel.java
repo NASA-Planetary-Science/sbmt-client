@@ -206,7 +206,17 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         for (int i=0; i<filterCheckBoxes.length; ++i)
         {
             if (numberOfFiltersActuallyUsed > i)
-                filterCheckBoxes[i].setText(filterNames[i]);
+            {
+                if (filterNames[i].startsWith("*"))
+                {
+                    filterCheckBoxes[i].setText(filterNames[i].substring(1));
+                    filterCheckBoxes[i].setSelected(false);
+                }
+                else
+                {
+                    filterCheckBoxes[i].setText(filterNames[i]);
+                }
+            }
         }
 
 
@@ -237,7 +247,17 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         for (int i=0; i<userDefinedCheckBoxes.length; ++i)
         {
             if (numberOfUserDefinedCheckBoxesActuallyUsed > i)
-                userDefinedCheckBoxes[i].setText(userDefinedNames[i]);
+            {
+                if (userDefinedNames[i].startsWith("*"))
+                {
+                    userDefinedCheckBoxes[i].setText(userDefinedNames[i].substring(1));
+                    userDefinedCheckBoxes[i].setSelected(false);
+                }
+                else
+                {
+                    userDefinedCheckBoxes[i].setText(userDefinedNames[i]);
+                }
+            }
         }
 
 
