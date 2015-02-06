@@ -15,6 +15,7 @@ import java.awt.Component;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -31,13 +32,11 @@ import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
 import javax.swing.JCheckBox;
-import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.ListCellRenderer;
 import javax.swing.SpinnerDateModel;
 import javax.swing.border.Border;
-import javax.swing.border.LineBorder;
 
 import nom.tam.fits.FitsException;
 
@@ -1894,44 +1893,92 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
     public class MyListCellRenderer implements ListCellRenderer
     {
-        private final JLabel jlblCell = new JLabel(" ", JLabel.LEFT);
+        private final JCheckBox jcheckboxCell = new JCheckBox(" ");
         Border lineBorder = BorderFactory.createLineBorder(Color.BLACK, 1);
         Border emptyBorder = BorderFactory.createEmptyBorder(2, 2, 2, 2);
         PerspectiveImageBoundaryCollection model = (PerspectiveImageBoundaryCollection)modelManager.getModel(getImageBoundaryCollectionModelName());
+        ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
+
+        public MyListCellRenderer()
+        {
+            resultList.addMouseListener(new MouseAdapter()
+            {
+               public void mousePressed(MouseEvent e)
+               {
+                   int index = resultList.locationToIndex(e.getPoint());
+
+                   if (index != -1 && e.getClickCount() == 2) {
+                       String name = imageRawResults.get(index).get(0);
+                       ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery);
+                       try
+                       {
+                           if (!images.containsImage(key))
+                               images.addImage(key);
+                           else
+                               images.removeImage(key);
+                       }
+                       catch (FitsException e1) {
+                           e1.printStackTrace();
+                       }
+                       catch (IOException e1) {
+                           e1.printStackTrace();
+                       }
+
+                       repaint();
+                   }
+               }
+            });
+        }
 
         @Override
         public Component getListCellRendererComponent(JList jList, Object value,
                 int index, boolean isSelected, boolean cellHasFocus)
         {
-            jlblCell.setOpaque(true);
-
-            if (isSelected)
-            {
-                jlblCell.setForeground(jList.getSelectionForeground());
-                jlblCell.setBackground(jList.getSelectionBackground());
-            }
-            else
-            {
-                jlblCell.setForeground(jList.getForeground());
-                jlblCell.setBackground(jList.getBackground());
-            }
+            jcheckboxCell.setOpaque(true);
 
             String text = (String) jList.getModel().getElementAt(index);
-            jlblCell.setText(text);
+            jcheckboxCell.setText(text);
 
             String name = imageRawResults.get(index).get(0);
             ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery);
             if (model.containsBoundary(key))
             {
                 int[] c = model.getBoundary(key).getBoundaryColor();
-                jlblCell.setBorder(new LineBorder(new Color(c[0], c[1], c[2])));
+                if (isSelected)
+                {
+                    jcheckboxCell.setForeground(new Color(c[0], c[1], c[2]));
+                    jcheckboxCell.setBackground(jList.getSelectionBackground());
+                }
+                else
+                {
+                    jcheckboxCell.setForeground(new Color(c[0], c[1], c[2]));
+                    jcheckboxCell.setBackground(jList.getBackground());
+                }
             }
             else
             {
-                jlblCell.setBorder(emptyBorder);
+                if (isSelected)
+                {
+                    jcheckboxCell.setForeground(jList.getSelectionForeground());
+                    jcheckboxCell.setBackground(jList.getSelectionBackground());
+                }
+                else
+                {
+                    jcheckboxCell.setForeground(jList.getForeground());
+                    jcheckboxCell.setBackground(jList.getBackground());
+                }
             }
 
-            return jlblCell;
+            if (images.containsImage(key))
+            {
+                jcheckboxCell.setSelected(true);
+            }
+            else
+            {
+                jcheckboxCell.setSelected(false);
+            }
+
+            return jcheckboxCell;
         }
     }
 
