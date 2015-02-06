@@ -19,7 +19,9 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -553,8 +555,6 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         numberOfBoundariesComboBox = new javax.swing.JComboBox();
         prevButton = new javax.swing.JButton();
         nextButton = new javax.swing.JButton();
-        removeAllButton = new javax.swing.JButton();
-        removeAllImagesButton = new javax.swing.JButton();
         jPanel9 = new javax.swing.JPanel();
         jLabel20 = new javax.swing.JLabel();
         jSeparator1 = new javax.swing.JSeparator();
@@ -581,6 +581,10 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         userDefined6CheckBox = new javax.swing.JCheckBox();
         userDefined7CheckBox = new javax.swing.JCheckBox();
         userDefined8CheckBox = new javax.swing.JCheckBox();
+        jPanel13 = new javax.swing.JPanel();
+        removeAllButton = new javax.swing.JButton();
+        removeAllImagesButton = new javax.swing.JButton();
+        saveImageListButton = new javax.swing.JButton();
 
         addComponentListener(new java.awt.event.ComponentAdapter() {
             public void componentHidden(java.awt.event.ComponentEvent evt) {
@@ -1211,29 +1215,6 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 0);
         jPanel8.add(jPanel7, gridBagConstraints);
 
-        removeAllButton.setText("Remove All Boundaries");
-        removeAllButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                removeAllButtonActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 9;
-        gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 0);
-        jPanel8.add(removeAllButton, gridBagConstraints);
-
-        removeAllImagesButton.setText("Remove All Images");
-        removeAllImagesButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                removeAllImagesButtonActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 10;
-        jPanel8.add(removeAllImagesButton, gridBagConstraints);
-
         jPanel9.setLayout(new java.awt.GridBagLayout());
 
         jLabel20.setText("Color Image Generation");
@@ -1469,6 +1450,47 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         gridBagConstraints.gridy = 2;
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 4, 0);
         jPanel8.add(jPanel12, gridBagConstraints);
+
+        jPanel13.setLayout(new java.awt.GridBagLayout());
+
+        removeAllButton.setText("Remove All Boundaries");
+        removeAllButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                removeAllButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 0);
+        jPanel13.add(removeAllButton, gridBagConstraints);
+
+        removeAllImagesButton.setText("Remove All Images");
+        removeAllImagesButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                removeAllImagesButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        jPanel13.add(removeAllImagesButton, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 9;
+        jPanel8.add(jPanel13, gridBagConstraints);
+
+        saveImageListButton.setText("Save Image List...");
+        saveImageListButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                saveImageListButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 10;
+        jPanel8.add(saveImageListButton, gridBagConstraints);
 
         jScrollPane2.setViewportView(jPanel8);
 
@@ -1891,6 +1913,38 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         }
     }//GEN-LAST:event_numberOfBoundariesComboBoxActionPerformed
 
+    private void saveImageListButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveImageListButtonActionPerformed
+        File file = CustomFileChooser.showSaveDialog(this, "Select File");
+
+        if (file != null)
+        {
+            try
+            {
+                FileWriter fstream = new FileWriter(file);
+                BufferedWriter out = new BufferedWriter(fstream);
+
+                String nl = System.getProperty("line.separator");
+                int size = imageRawResults.size();
+                for (int i=0; i<size; ++i)
+                {
+                    String image = new File(imageRawResults.get(i).get(0)).getName();
+                    out.write(image + nl);
+                }
+
+                out.close();
+            }
+            catch (Exception e)
+            {
+                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
+                        "There was an error saving the file.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+
+                e.printStackTrace();
+            }
+        }
+    }//GEN-LAST:event_saveImageListButtonActionPerformed
+
     public class MyListCellRenderer implements ListCellRenderer
     {
         private final JCheckBox jcheckboxCell = new JCheckBox(" ");
@@ -2028,6 +2082,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel11;
     private javax.swing.JPanel jPanel12;
+    private javax.swing.JPanel jPanel13;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
@@ -2050,6 +2105,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     private javax.swing.JButton removeColorImageButton;
     private javax.swing.JList resultList;
     private javax.swing.JLabel resultsLabel;
+    private javax.swing.JButton saveImageListButton;
     private javax.swing.JCheckBox searchByFilenameCheckBox;
     private javax.swing.JFormattedTextField searchByNumberTextField;
     private javax.swing.JToggleButton selectRegionButton;
