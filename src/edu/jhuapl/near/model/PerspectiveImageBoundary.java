@@ -1,5 +1,6 @@
 package edu.jhuapl.near.model;
 
+import java.awt.Color;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
@@ -243,4 +244,21 @@ public class PerspectiveImageBoundary extends Model implements PropertyChangeLis
             focalPoint[2] = spacecraftPosition[2] + distanceToCenter*direction[2];
         }
     }
+
+    public void setBoundaryColor(Color color)
+    {
+        double r = color.getRed();
+        double g = color.getGreen();
+        double b = color.getBlue();
+        actor.GetProperty().SetColor(r/255.0, g/255.0, b/255.0);
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+    }
+
+    public int[] getBoundaryColor()
+    {
+        double[] c = new double[3];
+        actor.GetProperty().GetColor(c);
+        return new int[] {(int) (c[0]*255.0), (int) (c[1]*255.0), (int) (c[2]*255.0)};
+    }
+
 }

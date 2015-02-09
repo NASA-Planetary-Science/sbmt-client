@@ -1,5 +1,6 @@
 package edu.jhuapl.near.popupmenus;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
@@ -9,9 +10,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import javax.swing.AbstractAction;
 import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
@@ -20,6 +23,7 @@ import nom.tam.fits.FitsException;
 import vtk.vtkActor;
 import vtk.vtkProp;
 
+import edu.jhuapl.near.gui.ColorChooser;
 import edu.jhuapl.near.gui.CustomFileChooser;
 import edu.jhuapl.near.gui.ModelInfoWindowManager;
 import edu.jhuapl.near.gui.NormalOffsetChangerDialog;
@@ -33,6 +37,7 @@ import edu.jhuapl.near.model.ImageCollection;
 import edu.jhuapl.near.model.PerspectiveImage;
 import edu.jhuapl.near.model.PerspectiveImageBoundary;
 import edu.jhuapl.near.model.PerspectiveImageBoundaryCollection;
+import edu.jhuapl.near.util.ColorUtil;
 import edu.jhuapl.near.util.FileCache;
 import edu.jhuapl.near.util.FileUtil;
 
@@ -54,6 +59,9 @@ public class ImagePopupMenu extends PopupMenu
     private JMenuItem simulateLightingMenuItem;
     private JMenuItem changeOpacityMenuItem;
     private JMenuItem hideImageMenuItem;
+    private JMenu colorMenu;
+    private ArrayList<JCheckBoxMenuItem> colorMenuItems = new ArrayList<JCheckBoxMenuItem>();
+    private JMenuItem customColorMenuItem;
     private ModelInfoWindowManager infoPanelManager;
     private Renderer renderer;
 
@@ -127,6 +135,20 @@ public class ImagePopupMenu extends PopupMenu
         hideImageMenuItem.setText("Hide Image");
         this.add(hideImageMenuItem);
 
+        colorMenu = new JMenu("Boundary Color");
+        this.add(colorMenu);
+        for (ColorUtil.DefaultColor color : ColorUtil.DefaultColor.values())
+        {
+            JCheckBoxMenuItem colorMenuItem = new JCheckBoxMenuItem(new BoundaryColorAction(color.color()));
+            colorMenuItems.add(colorMenuItem);
+            colorMenuItem.setText(color.toString().toLowerCase().replace('_', ' '));
+            colorMenu.add(colorMenuItem);
+        }
+        colorMenu.addSeparator();
+        customColorMenuItem = new JMenuItem(new CustomBoundaryColorAction());
+        customColorMenuItem.setText("Custom...");
+        colorMenu.add(customColorMenuItem);
+
     }
 
     public void setCurrentImage(ImageKey key)
@@ -162,6 +184,7 @@ public class ImagePopupMenu extends PopupMenu
         boolean enableChangeOpacity = false;
         boolean selectHideImage = true;
         boolean enableHideImage = true;
+        boolean enableBoundaryColor = true;
 
         for (ImageKey imageKey : imageKeys)
         {
@@ -171,7 +194,10 @@ public class ImagePopupMenu extends PopupMenu
                 containsBoundary = imageBoundaryCollection.containsBoundary(imageKey);
 
             if (!containsBoundary)
+            {
                 selectMapBoundary = containsBoundary;
+                enableBoundaryColor = false;
+            }
 
             if (!containsImage)
                 selectMapImage = containsImage;
@@ -233,6 +259,36 @@ public class ImagePopupMenu extends PopupMenu
             }
         }
 
+        if (enableBoundaryColor)
+        {
+            HashSet<String> colors = new HashSet<String>();
+            for (ImageKey imageKey : imageKeys)
+            {
+                int[] c = imageBoundaryCollection.getBoundary(imageKey).getBoundaryColor();
+                colors.add(c[0] + " " + c[1] + " " + c[2]);
+            }
+
+            // If the boundary color equals one of the predefined colors, then check
+            // the corresponding menu item.
+            int[] currentColor = imageBoundaryCollection.getBoundary(imageKeys.get(0)).getBoundaryColor();
+            for (JCheckBoxMenuItem item : colorMenuItems)
+            {
+                BoundaryColorAction action = (BoundaryColorAction)item.getAction();
+                Color color = action.color;
+                if (colors.size() == 1 &&
+                        currentColor[0] == color.getRed() &&
+                        currentColor[1] == color.getGreen() &&
+                        currentColor[2] == color.getBlue())
+                {
+                    item.setSelected(true);
+                }
+                else
+                {
+                    item.setSelected(false);
+                }
+            }
+        }
+
         mapImageMenuItem.setSelected(selectMapImage);
         mapImageMenuItem.setEnabled(enableMapImage);
         mapBoundaryMenuItem.setSelected(selectMapBoundary);
@@ -250,6 +306,7 @@ public class ImagePopupMenu extends PopupMenu
         changeOpacityMenuItem.setEnabled(enableChangeOpacity);
         hideImageMenuItem.setSelected(selectHideImage);
         hideImageMenuItem.setEnabled(enableHideImage);
+        colorMenu.setEnabled(enableBoundaryColor);
     }
 
 
@@ -587,6 +644,45 @@ public class ImagePopupMenu extends PopupMenu
             }
 
             updateMenuItems();
+        }
+    }
+
+    private class BoundaryColorAction extends AbstractAction
+    {
+        private Color color;
+
+        public BoundaryColorAction(Color color)
+        {
+            this.color = color;
+        }
+
+        public void actionPerformed(ActionEvent e)
+        {
+            for (ImageKey imageKey : imageKeys)
+            {
+                PerspectiveImageBoundary boundary = imageBoundaryCollection.getBoundary(imageKey);
+                boundary.setBoundaryColor(color);
+            }
+
+            updateMenuItems();
+        }
+    }
+
+    private class CustomBoundaryColorAction extends AbstractAction
+    {
+        public void actionPerformed(ActionEvent e)
+        {
+            PerspectiveImageBoundary boundary = imageBoundaryCollection.getBoundary(imageKeys.get(0));
+            int[] currentColor = boundary.getBoundaryColor();
+            Color newColor = ColorChooser.showColorChooser(invoker, currentColor);
+            if (newColor != null)
+            {
+                for (ImageKey imageKey : imageKeys)
+                {
+                    boundary = imageBoundaryCollection.getBoundary(imageKey);
+                    boundary.setBoundaryColor(newColor);
+                }
+            }
         }
     }
 

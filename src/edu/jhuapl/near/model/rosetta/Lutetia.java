@@ -1,4 +1,4 @@
-package edu.jhuapl.near.model.lutetia;
+package edu.jhuapl.near.model.rosetta;
 
 import edu.jhuapl.near.model.SmallBodyConfig;
 import edu.jhuapl.near.model.SmallBodyModel;
