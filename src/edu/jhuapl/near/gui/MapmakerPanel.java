@@ -10,11 +10,13 @@ import java.io.IOException;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
+import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.SpinnerNumberModel;
 
@@ -25,8 +27,11 @@ import edu.jhuapl.near.model.AbstractEllipsePolygonModel;
 import edu.jhuapl.near.model.MapletBoundaryCollection;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
+import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.pick.PickManager;
 import edu.jhuapl.near.pick.PickManager.PickMode;
+import edu.jhuapl.near.util.gravity.Gravity.HowToEvaluate;
+import edu.jhuapl.near.util.gravity.GravityWerner;
 
 public class MapmakerPanel extends JPanel implements ActionListener
 {
@@ -34,6 +39,15 @@ public class MapmakerPanel extends JPanel implements ActionListener
     private JToggleButton selectRegionButton;
     private JFormattedTextField nameTextField;
     private JFormattedTextField outputFolderTextField;
+    private JCheckBox setSpecifyRegionManuallyCheckbox;
+    private JTextField pixelScaleTextField;
+    private JTextField latitudeTextField;
+    private JTextField longitudeTextField;
+    private JCheckBox runGravityCheckbox;
+    private JTextField densityTextField;
+    private JTextField rotationRateTextField;
+    private JTextField referencePotentialTextField;
+    private JTextField tiltRadiusTextField;
     private JButton submitButton;
     private JButton loadButton;
     private PickManager pickManager;
@@ -64,7 +78,6 @@ public class MapmakerPanel extends JPanel implements ActionListener
         pane.setLayout(new MigLayout("wrap 1"));
 
         JPanel selectRegionPanel = new JPanel();
-        //selectRegionPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         selectRegionButton = new JToggleButton("Select Region");
         selectRegionButton.setEnabled(true);
         selectRegionButton.addActionListener(new ActionListener()
@@ -92,25 +105,116 @@ public class MapmakerPanel extends JPanel implements ActionListener
 
         final JLabel nameLabel = new JLabel("Name");
         nameTextField = new JFormattedTextField();
-        nameTextField.setPreferredSize(new Dimension(125, 24));
+        nameTextField.setPreferredSize(new Dimension(200, 24));
         nameTextField.setText("map");
-
-        JPanel namePanel = new JPanel();
-        namePanel.add(nameLabel);
-        namePanel.add(nameTextField);
 
         final JLabel halfSizeLabel = new JLabel("Half Size (pixels)");
         halfSizeSpinner = new JSpinner(new SpinnerNumberModel(512, 1, 512, 1));
-        halfSizeSpinner.setMaximumSize(new Dimension(50, 23));
-        JPanel halfSizePanel = new JPanel();
-        halfSizePanel.add(halfSizeLabel);
-        halfSizePanel.add(halfSizeSpinner);
+        halfSizeSpinner.setPreferredSize(new Dimension(75, 23));
 
+        setSpecifyRegionManuallyCheckbox = new JCheckBox("Enter Manual Region:");
+        setSpecifyRegionManuallyCheckbox.setSelected(false);
 
-        JPanel outputFolderPanel = new JPanel(new MigLayout("wrap 2"));
+        final JLabel pixelScaleLabel = new JLabel("Pixel Scale (meters)");
+        pixelScaleLabel.setEnabled(false);
+        pixelScaleTextField = new JTextField();
+        pixelScaleTextField.setPreferredSize(new Dimension(200, 24));
+        pixelScaleTextField.setInputVerifier(JTextFieldDoubleVerifier.getVerifier(pixelScaleTextField, Double.MIN_VALUE, Double.MAX_VALUE));
+        pixelScaleTextField.setEnabled(false);
+
+        final JLabel latitudeLabel = new JLabel("Latitude (deg)");
+        latitudeLabel.setEnabled(false);
+        latitudeTextField = new JTextField();
+        latitudeTextField.setPreferredSize(new Dimension(200, 24));
+        latitudeTextField.setInputVerifier(JTextFieldDoubleVerifier.getVerifier(latitudeTextField, -90.0, 90.0));
+        latitudeTextField.setEnabled(false);
+
+        final JLabel longitudeLabel = new JLabel("Longitude (deg)");
+        longitudeLabel.setEnabled(false);
+        longitudeTextField = new JTextField();
+        longitudeTextField.setPreferredSize(new Dimension(200, 24));
+        longitudeTextField.setInputVerifier(JTextFieldDoubleVerifier.getVerifier(longitudeTextField, -90.0, 90.0));
+        longitudeTextField.setEnabled(false);
+
+        setSpecifyRegionManuallyCheckbox.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent arg0)
+            {
+                boolean isSelected = setSpecifyRegionManuallyCheckbox.isSelected();
+                pixelScaleLabel.setEnabled(isSelected);
+                pixelScaleTextField.setEnabled(isSelected);
+                latitudeLabel.setEnabled(isSelected);
+                latitudeTextField.setEnabled(isSelected);
+                longitudeLabel.setEnabled(isSelected);
+                longitudeTextField.setEnabled(isSelected);
+                selectRegionButton.setEnabled(!isSelected);
+                clearRegionButton.setEnabled(!isSelected);
+                if (isSelected)
+                {
+                    selectRegionButton.setSelected(false);
+                    pickManager.setPickMode(PickMode.DEFAULT);
+                }
+            }
+        });
+
+        runGravityCheckbox = new JCheckBox("Calculate Gravity");
+        runGravityCheckbox.setSelected(false);
+
+        SmallBodyModel smallBodyModel = modelManager.getSmallBodyModel();
+
+        final JLabel densityLabel = new JLabel("Density (g/cm^3)");
+        densityLabel.setEnabled(false);
+        densityTextField = new JTextField();
+        densityTextField.setText(String.valueOf(smallBodyModel.getDensity()));
+        densityTextField.setPreferredSize(new Dimension(200, 24));
+        densityTextField.setInputVerifier(JTextFieldDoubleVerifier.getVerifier(densityTextField, Double.MIN_VALUE, Double.MAX_VALUE));
+        densityTextField.setEnabled(false);
+
+        final JLabel rotationRateLabel = new JLabel("Rotation Rate (rad/sec)");
+        rotationRateLabel.setEnabled(false);
+        rotationRateTextField = new JTextField();
+        rotationRateTextField.setText(String.valueOf(smallBodyModel.getRotationRate()));
+        rotationRateTextField.setPreferredSize(new Dimension(200, 24));
+        rotationRateTextField.setInputVerifier(JTextFieldDoubleVerifier.getVerifier(rotationRateTextField, Double.MIN_VALUE, Double.MAX_VALUE));
+        rotationRateTextField.setEnabled(false);
+
+        final JLabel referencePotentialLabel = new JLabel("Reference Potential (J/kg) ");
+        referencePotentialLabel.setEnabled(false);
+        referencePotentialTextField = new JTextField();
+        referencePotentialTextField.setText(String.valueOf(smallBodyModel.getReferencePotential()));
+        referencePotentialTextField.setPreferredSize(new Dimension(200, 24));
+        referencePotentialTextField.setInputVerifier(JTextFieldDoubleVerifier.getVerifier(referencePotentialTextField));
+        referencePotentialTextField.setEnabled(false);
+
+        final JLabel tiltRadiusLabel = new JLabel("Tilt Radius (J/kg) ");
+        tiltRadiusLabel.setEnabled(false);
+        tiltRadiusTextField = new JTextField();
+        tiltRadiusTextField.setText("0.0");
+        tiltRadiusTextField.setPreferredSize(new Dimension(200, 24));
+        tiltRadiusTextField.setInputVerifier(JTextFieldDoubleVerifier.getVerifier(tiltRadiusTextField, Double.MIN_VALUE, Double.MAX_VALUE));
+        tiltRadiusTextField.setEnabled(false);
+
+        runGravityCheckbox.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                boolean isSelected = runGravityCheckbox.isSelected();
+                densityLabel.setEnabled(isSelected);
+                densityTextField.setEnabled(isSelected);
+                rotationRateLabel.setEnabled(isSelected);
+                rotationRateTextField.setEnabled(isSelected);
+                referencePotentialLabel.setEnabled(isSelected);
+                referencePotentialTextField.setEnabled(isSelected);
+                tiltRadiusLabel.setEnabled(isSelected);
+                tiltRadiusTextField.setEnabled(isSelected);
+            }
+        });
+
         final JButton outputFolderButton = new JButton("Output Folder...");
         outputFolderTextField = new JFormattedTextField();
-        outputFolderTextField.setPreferredSize(new Dimension(150, 24));
+        outputFolderTextField.setPreferredSize(new Dimension(200, 24));
         outputFolderTextField.setText(System.getProperty("user.home"));
         outputFolderButton.addActionListener(new ActionListener()
         {
@@ -123,11 +227,8 @@ public class MapmakerPanel extends JPanel implements ActionListener
                 }
             }
         });
-        outputFolderPanel.add(outputFolderButton);
-        outputFolderPanel.add(outputFolderTextField);
 
         final JPanel submitPanel = new JPanel();
-        //panel.setBorder(BorderFactory.createEmptyBorder(9, 9, 9, 9));
         submitButton = new JButton("Run Mapmaker");
         submitButton.setEnabled(true);
         submitButton.addActionListener(this);
@@ -136,7 +237,7 @@ public class MapmakerPanel extends JPanel implements ActionListener
         submitPanel.add(submitButton);
 
         final JPanel loadPanel = new JPanel();
-        loadButton = new JButton("Load Cube File...");
+        loadButton = new JButton("Load FITS Cube File...");
         loadButton.setEnabled(true);
         loadButton.addActionListener(new ActionListener()
         {
@@ -150,9 +251,30 @@ public class MapmakerPanel extends JPanel implements ActionListener
         loadPanel.add(loadButton);
 
         pane.add(selectRegionPanel, "align center");
-        pane.add(namePanel);
-        pane.add(halfSizePanel);
-        pane.add(outputFolderPanel);
+        pane.add(setSpecifyRegionManuallyCheckbox, "wrap");
+        pane.add(latitudeLabel, ", gapleft 25, split 2");
+        pane.add(latitudeTextField, "width 200!, gapleft push, wrap");
+        pane.add(longitudeLabel, ", gapleft 25, split 2");
+        pane.add(longitudeTextField, "width 200!, gapleft push, wrap");
+        pane.add(pixelScaleLabel, ", gapleft 25, split 2");
+        pane.add(pixelScaleTextField, "width 200!, gapleft push, wrap");
+        pane.add(nameLabel, "split 2");
+        pane.add(nameTextField);
+        pane.add(halfSizeLabel, "split 2");
+        pane.add(halfSizeSpinner);
+        /*
+        pane.add(runGravityCheckbox, "wrap");
+        pane.add(densityLabel, ", gapleft 25, split 2");
+        pane.add(densityTextField, "width 200!, gapleft push, wrap");
+        pane.add(rotationRateLabel, ", gapleft 25, split 2");
+        pane.add(rotationRateTextField, "width 200!, gapleft push, wrap");
+        pane.add(referencePotentialLabel, ", gapleft 25, split 2");
+        pane.add(referencePotentialTextField, "width 200!, gapleft push, wrap");
+        pane.add(tiltRadiusLabel, ", gapleft 25, split 2");
+        pane.add(tiltRadiusTextField, "width 200!, gapleft push, wrap");
+        */
+        pane.add(outputFolderButton, "split 2");
+        pane.add(outputFolderTextField);
         pane.add(submitPanel, "align center");
         pane.add(loadPanel, "align center");
 
@@ -165,27 +287,30 @@ public class MapmakerPanel extends JPanel implements ActionListener
         pickManager.setPickMode(PickMode.DEFAULT);
         selectRegionButton.setSelected(false);
 
-        // Run Bob Gaskell's map maker fortran program
+        // Run Bob Gaskell's mapmaker fortran program
 
         // First get the center point and radius of the selection circle
         double [] centerPoint = null;
         double radius = 0.0;
 
-        AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
-        if (selectionModel.getNumberOfStructures() > 0)
+        if (!setSpecifyRegionManuallyCheckbox.isSelected())
         {
-            AbstractEllipsePolygonModel.EllipsePolygon region = (AbstractEllipsePolygonModel.EllipsePolygon)selectionModel.getStructure(0);
+            AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
+            if (selectionModel.getNumberOfStructures() > 0)
+            {
+                AbstractEllipsePolygonModel.EllipsePolygon region = (AbstractEllipsePolygonModel.EllipsePolygon)selectionModel.getStructure(0);
 
-            centerPoint = region.center;
-            radius = region.radius;
-        }
-        else
-        {
-            JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
-                    "Please select a region on the asteroid.",
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE);
-            return;
+                centerPoint = region.center;
+                radius = region.radius;
+            }
+            else
+            {
+                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
+                        "Please select a region on the asteroid.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
         }
 
         final String name = this.nameTextField.getText();
@@ -231,7 +356,6 @@ public class MapmakerPanel extends JPanel implements ActionListener
         // if it has never been downloaded before.
         // Ask the user beforehand if it's okay to continue.
         final MapmakerSwingWorker mapmakerWorker =
-                //new MapmakerSwingWorker(this, "Running Mapmaker", "/MSI/mapmaker.zip");
                 new MapmakerSwingWorker(this, "Running Mapmaker", mapmakerpath);
 
         // If we need to download, promt the user that it will take a long time
@@ -246,9 +370,27 @@ public class MapmakerPanel extends JPanel implements ActionListener
                 return;
         }
 
-        mapmakerWorker.setCenterPoint(centerPoint);
+        if (setSpecifyRegionManuallyCheckbox.isSelected())
+        {
+            if (latitudeTextField.getText().isEmpty() || longitudeTextField.getText().isEmpty() || pixelScaleTextField.getText().isEmpty())
+            {
+                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
+                        "Please enter values for the latitude, longitude, and pixel scale.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            mapmakerWorker.setLatitude(Double.parseDouble(latitudeTextField.getText()));
+            mapmakerWorker.setLongitude(Double.parseDouble(longitudeTextField.getText()));
+            mapmakerWorker.setPixelScale(Double.parseDouble(pixelScaleTextField.getText()));
+            mapmakerWorker.setRegionSpecifiedWithLatLonScale(true);
+        }
+        else
+        {
+            mapmakerWorker.setCenterPoint(centerPoint);
+            mapmakerWorker.setRadius(radius);
+        }
         mapmakerWorker.setName(name);
-        mapmakerWorker.setRadius(radius);
         mapmakerWorker.setHalfSize((Integer)halfSizeSpinner.getValue());
         mapmakerWorker.setOutputFolder(outputFolder);
 
@@ -256,6 +398,50 @@ public class MapmakerPanel extends JPanel implements ActionListener
 
         if (mapmakerWorker.isCancelled())
             return;
+
+        if (runGravityCheckbox.isSelected())
+        {
+            if (densityTextField.getText().isEmpty() || rotationRateTextField.getText().isEmpty() ||
+                    referencePotentialTextField.getText().isEmpty() || tiltRadiusTextField.getText().isEmpty())
+            {
+                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
+                        "Please enter values for the density, rotation rate, reference potential, and tilt radius.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            SmallBodyModel smallBodyModel = modelManager.getSmallBodyModel();
+            GravityWerner gravity = new GravityWerner(smallBodyModel.getLowResSmallBodyPolyData());
+            gravity.setDensity(Double.parseDouble(densityTextField.getText()));
+            gravity.setRotationRate(Double.parseDouble(rotationRateTextField.getText()));
+            gravity.setHowToEvalute(HowToEvaluate.EVALUATE_AT_POINTS_IN_FITS_FILE);
+            gravity.setInputfitsfile(mapmakerWorker.getMapletFile().getAbsolutePath());
+            gravity.setRefPotential(Double.parseDouble(referencePotentialTextField.getText()));
+            gravity.setRefPotentialProvided(true);
+            //gravity.setNumCores(Runtime.getRuntime().availableProcessors());
+            //gravity.setOutputFolder(outputFolder.getAbsolutePath());
+            //gravity.setBatchType(BatchType.LOCAL_PARALLEL);
+            gravity.setTiltRadius(Double.parseDouble(tiltRadiusTextField.getText()));
+            gravity.setLocalFits(true);
+            gravity.setOutfile(mapmakerWorker.getMapletFile().getAbsolutePath()); // overwrite input fits file
+            //gravity.setGlobalShapeModelPolyData(smallBodyModel.getSmallBodyPolyData());
+            //gravity.setObjfile(FileCache.getFileFromServer(smallBodyModel.getServerPathToShapeModelFileInPlateFormat()).getAbsolutePath());
+            //gravity.downloadGravityProgram();
+            try
+            {
+                gravity.runGravity();
+            }
+            catch (Exception e1)
+            {
+                e1.printStackTrace();
+                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
+                        "An error occurred when computing gravity.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        }
 
         try
         {
