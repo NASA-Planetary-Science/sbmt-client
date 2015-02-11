@@ -30,15 +30,18 @@ import java.util.GregorianCalendar;
 import java.util.TimeZone;
 import java.util.TreeSet;
 
-import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
 import javax.swing.JCheckBox;
-import javax.swing.JList;
 import javax.swing.JOptionPane;
-import javax.swing.ListCellRenderer;
+import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
 import javax.swing.SpinnerDateModel;
-import javax.swing.border.Border;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
 
 import nom.tam.fits.FitsException;
 
@@ -52,6 +55,7 @@ import edu.jhuapl.near.model.AbstractEllipsePolygonModel;
 import edu.jhuapl.near.model.ColorImage.ColorImageKey;
 import edu.jhuapl.near.model.ColorImage.NoOverlapException;
 import edu.jhuapl.near.model.ColorImageCollection;
+import edu.jhuapl.near.model.Image;
 import edu.jhuapl.near.model.Image.ImageKey;
 import edu.jhuapl.near.model.Image.ImageSource;
 import edu.jhuapl.near.model.ImageCollection;
@@ -71,7 +75,7 @@ import edu.jhuapl.near.util.IdPair;
 import edu.jhuapl.near.util.Properties;
 
 
-public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyChangeListener
+public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyChangeListener, TableModelListener
 {
     private SmallBodyConfig smallBodyConfig;
     private final ModelManager modelManager;
@@ -118,12 +122,10 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(getImageBoundaryCollectionModelName());
         imagePopupMenu = new ImagePopupMenu(images, boundaries, infoPanelManager, renderer, this);
         boundaries.addPropertyChangeListener(this);
+        images.addPropertyChangeListener(this);
 
         ColorImageCollection colorImages = (ColorImageCollection)modelManager.getModel(getColorImageCollectionModelName());
         colorImagePopupMenu = new ColorImagePopupMenu(colorImages, infoPanelManager);
-
-        MyListCellRenderer cellRenderer = new MyListCellRenderer();
-        resultList.setCellRenderer(cellRenderer);
     }
 
     private int getNumberOfFiltersActuallyUsed()
@@ -162,6 +164,25 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     private void postInitComponents()
     {
         excludeGaskellCheckBox.setVisible(false);
+
+        String[] columnNames = {
+                "Map",
+                "Hide",
+                "Id",
+                "Filename",
+                "Date"
+        };
+        Object[][] data = new Object[0][5];
+        resultList.setModel(new StructuresTableModel(data, columnNames));
+        resultList.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        resultList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        resultList.setDefaultRenderer(String.class, new StringRenderer());
+        resultList.getColumnModel().getColumn(0).setPreferredWidth(30);
+        resultList.getColumnModel().getColumn(1).setPreferredWidth(30);
+        resultList.getColumnModel().getColumn(0).setResizable(false);
+        resultList.getColumnModel().getColumn(1).setResizable(false);
+        resultList.addMouseListener(new TableMouseHandler());
+        resultList.getModel().addTableModelListener(this);
 
         ImageSource imageSources[] = isMultispectral ? smallBodyConfig.multispectralImageSearchImageSources : smallBodyConfig.imageSearchImageSources;
         DefaultComboBoxModel sourceComboBoxModel = new DefaultComboBoxModel(imageSources);
@@ -273,19 +294,19 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     {
         if (e.isPopupTrigger())
         {
-            int index = resultList.locationToIndex(e.getPoint());
+            int index = resultList.rowAtPoint(e.getPoint());
 
-            if (index >= 0 && resultList.getCellBounds(index, index).contains(e.getPoint()))
+            if (index >= 0)
             {
                 // If the item right-clicked on is not selected, then deselect all the
                 // other items and select the item right-clicked on.
-                if (!resultList.isSelectedIndex(index))
+                if (!resultList.isRowSelected(index))
                 {
                     resultList.clearSelection();
-                    resultList.setSelectedIndex(index);
+                    resultList.setRowSelectionInterval(index, index);
                 }
 
-                int[] selectedIndices = resultList.getSelectedIndices();
+                int[] selectedIndices = resultList.getSelectedRows();
                 ArrayList<ImageKey> imageKeys = new ArrayList<ImageKey>();
                 for (int selectedIndex : selectedIndices)
                 {
@@ -322,26 +343,55 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         resultsLabel.setText(results.size() + " images matched");
         imageRawResults = results;
 
-        String[] formattedResults = new String[results.size()];
-
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss.SSS");
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
 
+        ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
+
+        resultList.getModel().removeTableModelListener(this);
+        images.removePropertyChangeListener(this);
+
+        int[] widths = new int[5];
+
         // add the results to the list
+        ((DefaultTableModel)resultList.getModel()).setRowCount(results.size());
         int i=0;
         for (ArrayList<String> str : results)
         {
             Date dt = new Date(Long.parseLong(str.get(1)));
-            formattedResults[i] = new String(
-                    (i+1) + ": " +
-                    str.get(0).substring(str.get(0).lastIndexOf("/") + 1) +
-                    " " + sdf.format(dt)
-                    );
+
+            String name = imageRawResults.get(i).get(0);
+            ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery);
+            if (images.containsImage(key))
+            {
+                resultList.setValueAt(true, i, 0);
+                Image image = images.getImage(key);
+                resultList.setValueAt(!image.isVisible(), i, 1);
+            }
+            else
+            {
+                resultList.setValueAt(false, i, 0);
+                resultList.setValueAt(false, i, 1);
+            }
+            resultList.setValueAt(i+1, i, 2);
+            resultList.setValueAt(str.get(0).substring(str.get(0).lastIndexOf("/") + 1), i, 3);
+            resultList.setValueAt(sdf.format(dt), i, 4);
+
+            for (int j=2; j<5; ++j)
+            {
+                TableCellRenderer renderer = resultList.getCellRenderer(i, j);
+                Component comp = resultList.prepareRenderer(renderer, i, j);
+                widths[j] = Math.max (comp.getPreferredSize().width, widths[j]);
+            }
 
             ++i;
         }
 
-        resultList.setListData(formattedResults);
+        for (int j=2; j<5; ++j)
+            resultList.getColumnModel().getColumn(j).setPreferredWidth(widths[j] + 5);
+
+        resultList.getModel().addTableModelListener(this);
+        images.addPropertyChangeListener(this);
 
         // Show the first set of boundaries
         this.resultIntervalCurrentlyShown = new IdPair(0, Integer.parseInt((String)this.numberOfBoundariesComboBox.getSelectedItem()));
@@ -466,8 +516,8 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
                 if (idx >= 0)
                 {
-                    resultList.setSelectionInterval(idx, idx);
-                    Rectangle cellBounds = resultList.getCellBounds(idx, idx);
+                    resultList.setRowSelectionInterval(idx, idx);
+                    Rectangle cellBounds = resultList.getCellRect(idx, 0, true);
                     if (cellBounds != null)
                         resultList.scrollRectToVisible(cellBounds);
                 }
@@ -475,6 +525,26 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         }
         else if (Properties.MODEL_CHANGED.equals(evt.getPropertyName()))
         {
+            resultList.getModel().removeTableModelListener(this);
+            int size = imageRawResults.size();
+            ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
+            for (int i=0; i<size; ++i)
+            {
+                String name = imageRawResults.get(i).get(0);
+                ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery);
+                if (images.containsImage(key))
+                {
+                    resultList.setValueAt(true, i, 0);
+                    Image image = images.getImage(key);
+                    resultList.setValueAt(!image.isVisible(), i, 1);
+                }
+                else
+                {
+                    resultList.setValueAt(false, i, 0);
+                    resultList.setValueAt(false, i, 1);
+                }
+            }
+            resultList.getModel().addTableModelListener(this);
             // Repaint the list in case the boundary colors has changed
             resultList.repaint();
         }
@@ -548,8 +618,8 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         selectRegionButton = new javax.swing.JToggleButton();
         jPanel6 = new javax.swing.JPanel();
         resultsLabel = new javax.swing.JLabel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        resultList = new javax.swing.JList();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        resultList = new javax.swing.JTable();
         jPanel7 = new javax.swing.JPanel();
         jLabel6 = new javax.swing.JLabel();
         numberOfBoundariesComboBox = new javax.swing.JComboBox();
@@ -1132,17 +1202,32 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         jPanel6.add(resultsLabel, gridBagConstraints);
 
-        jScrollPane1.setPreferredSize(new java.awt.Dimension(300, 200));
+        resultList.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
 
-        resultList.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mousePressed(java.awt.event.MouseEvent evt) {
-                resultListMousePressed(evt);
+            },
+            new String [] {
+                "", "Id", "Filename", "Date"
             }
-            public void mouseReleased(java.awt.event.MouseEvent evt) {
-                resultListMouseReleased(evt);
+        ) {
+            Class[] types = new Class [] {
+                java.lang.Object.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
             }
         });
-        jScrollPane1.setViewportView(resultList);
+        resultList.getTableHeader().setReorderingAllowed(false);
+        jScrollPane4.setViewportView(resultList);
+        resultList.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -1151,7 +1236,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
-        jPanel6.add(jScrollPane1, gridBagConstraints);
+        jPanel6.add(jScrollPane4, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -1608,7 +1693,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         if (resultIntervalCurrentlyShown != null)
         {
             // Only get the next block if there's something left to show.
-            if (resultIntervalCurrentlyShown.id2 < resultList.getModel().getSize())
+            if (resultIntervalCurrentlyShown.id2 < resultList.getModel().getRowCount())
             {
                 resultIntervalCurrentlyShown.nextBlock(Integer.parseInt((String)this.numberOfBoundariesComboBox.getSelectedItem()));
                 showImageBoundaries(resultIntervalCurrentlyShown);
@@ -1623,7 +1708,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
     private void redButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_redButtonActionPerformed
     {//GEN-HEADEREND:event_redButtonActionPerformed
-        int index = resultList.getSelectedIndex();
+        int index = resultList.getSelectedRow();
         if (index >= 0)
         {
             String image = imageRawResults.get(index).get(0);
@@ -1636,7 +1721,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
     private void greenButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_greenButtonActionPerformed
     {//GEN-HEADEREND:event_greenButtonActionPerformed
-        int index = resultList.getSelectedIndex();
+        int index = resultList.getSelectedRow();
         if (index >= 0)
         {
             String image = imageRawResults.get(index).get(0);
@@ -1649,7 +1734,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
     private void blueButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_blueButtonActionPerformed
     {//GEN-HEADEREND:event_blueButtonActionPerformed
-        int index = resultList.getSelectedIndex();
+        int index = resultList.getSelectedRow();
         if (index >= 0)
         {
             String image = imageRawResults.get(index).get(0);
@@ -1884,16 +1969,6 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         }
     }//GEN-LAST:event_submitButtonActionPerformed
 
-    private void resultListMousePressed(java.awt.event.MouseEvent evt)//GEN-FIRST:event_resultListMousePressed
-    {//GEN-HEADEREND:event_resultListMousePressed
-        resultsListMaybeShowPopup(evt);
-    }//GEN-LAST:event_resultListMousePressed
-
-    private void resultListMouseReleased(java.awt.event.MouseEvent evt)//GEN-FIRST:event_resultListMouseReleased
-    {//GEN-HEADEREND:event_resultListMouseReleased
-        resultsListMaybeShowPopup(evt);
-    }//GEN-LAST:event_resultListMouseReleased
-
     private void sourceComboBoxItemStateChanged(java.awt.event.ItemEvent evt)
     {//GEN-FIRST:event_sourceComboBoxItemStateChanged
         ImageSource imageSource = ImageSource.valueOf(((Enum)sourceComboBox.getSelectedItem()).name());
@@ -1945,94 +2020,156 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         }
     }//GEN-LAST:event_saveImageListButtonActionPerformed
 
-    public class MyListCellRenderer implements ListCellRenderer
+
+    @Override
+    public void tableChanged(TableModelEvent e)
     {
-        private final JCheckBox jcheckboxCell = new JCheckBox(" ");
-        Border lineBorder = BorderFactory.createLineBorder(Color.BLACK, 1);
-        Border emptyBorder = BorderFactory.createEmptyBorder(2, 2, 2, 2);
-        PerspectiveImageBoundaryCollection model = (PerspectiveImageBoundaryCollection)modelManager.getModel(getImageBoundaryCollectionModelName());
-        ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
-
-        public MyListCellRenderer()
+        if (e.getColumn() == 0)
         {
-            resultList.addMouseListener(new MouseAdapter()
+            int row = e.getFirstRow();
+            String name = imageRawResults.get(row).get(0);
+            ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery);
+            try
             {
-               public void mousePressed(MouseEvent e)
-               {
-                   int index = resultList.locationToIndex(e.getPoint());
-
-                   if (index != -1 && e.getClickCount() == 2) {
-                       String name = imageRawResults.get(index).get(0);
-                       ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery);
-                       try
-                       {
-                           if (!images.containsImage(key))
-                               images.addImage(key);
-                           else
-                               images.removeImage(key);
-                       }
-                       catch (FitsException e1) {
-                           e1.printStackTrace();
-                       }
-                       catch (IOException e1) {
-                           e1.printStackTrace();
-                       }
-
-                       repaint();
-                   }
-               }
-            });
+                ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
+                if (!images.containsImage(key))
+                    images.addImage(key);
+                else
+                    images.removeImage(key);
+            }
+            catch (FitsException e1) {
+                e1.printStackTrace();
+            }
+            catch (IOException e1) {
+                e1.printStackTrace();
+            }
         }
-
-        @Override
-        public Component getListCellRendererComponent(JList jList, Object value,
-                int index, boolean isSelected, boolean cellHasFocus)
+        else if (e.getColumn() == 1)
         {
-            jcheckboxCell.setOpaque(true);
+            int row = e.getFirstRow();
+            String name = imageRawResults.get(row).get(0);
+            ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery);
+            ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
+            if (images.containsImage(key))
+            {
+                Image image = images.getImage(key);
+                image.setVisible(!(Boolean)resultList.getValueAt(row, 1));
+            }
+        }
+    }
 
-            String text = (String) jList.getModel().getElementAt(index);
-            jcheckboxCell.setText(text);
+    class StringRenderer extends DefaultTableCellRenderer
+    {
+        PerspectiveImageBoundaryCollection model = (PerspectiveImageBoundaryCollection)modelManager.getModel(getImageBoundaryCollectionModelName());
 
-            String name = imageRawResults.get(index).get(0);
+        public Component getTableCellRendererComponent(
+                JTable table, Object value,
+                boolean isSelected, boolean hasFocus,
+                int row, int column)
+        {
+            Component co = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+
+            String name = imageRawResults.get(row).get(0);
             ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery);
             if (model.containsBoundary(key))
             {
                 int[] c = model.getBoundary(key).getBoundaryColor();
                 if (isSelected)
                 {
-                    jcheckboxCell.setForeground(new Color(c[0], c[1], c[2]));
-                    jcheckboxCell.setBackground(jList.getSelectionBackground());
+                    co.setForeground(new Color(c[0], c[1], c[2]));
+                    co.setBackground(table.getSelectionBackground());
                 }
                 else
                 {
-                    jcheckboxCell.setForeground(new Color(c[0], c[1], c[2]));
-                    jcheckboxCell.setBackground(jList.getBackground());
+                    co.setForeground(new Color(c[0], c[1], c[2]));
+                    co.setBackground(table.getBackground());
                 }
             }
             else
             {
                 if (isSelected)
                 {
-                    jcheckboxCell.setForeground(jList.getSelectionForeground());
-                    jcheckboxCell.setBackground(jList.getSelectionBackground());
+                    co.setForeground(table.getSelectionForeground());
+                    co.setBackground(table.getSelectionBackground());
                 }
                 else
                 {
-                    jcheckboxCell.setForeground(jList.getForeground());
-                    jcheckboxCell.setBackground(jList.getBackground());
+                    co.setForeground(table.getForeground());
+                    co.setBackground(table.getBackground());
                 }
             }
 
-            if (images.containsImage(key))
+            return co;
+        }
+    }
+
+    class StructuresTableModel extends DefaultTableModel
+    {
+        public StructuresTableModel(Object[][] data, String[] columnNames)
+        {
+            super(data, columnNames);
+        }
+
+        public boolean isCellEditable(int row, int column)
+        {
+            // Only allow editing the hide column if the image is mapped
+            if (column == 1)
             {
-                jcheckboxCell.setSelected(true);
+                String name = imageRawResults.get(row).get(0);
+                ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery);
+                ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
+                return images.containsImage(key);
             }
             else
             {
-                jcheckboxCell.setSelected(false);
+                return column == 0;
             }
+        }
 
-            return jcheckboxCell;
+        public Class<?> getColumnClass(int columnIndex)
+        {
+            if (columnIndex <= 1)
+                return Boolean.class;
+            else
+                return String.class;
+        }
+    }
+
+    class TableMouseHandler extends MouseAdapter
+    {
+        public void mousePressed(MouseEvent e)
+        {
+            resultsListMaybeShowPopup(e);
+
+            // Map image if user double clicks on non-checkbox columns
+            int row = resultList.rowAtPoint(e.getPoint());
+            int col = resultList.columnAtPoint(e.getPoint());
+
+            if (row != -1 && e.getClickCount() == 2 && col >= 2) {
+                String name = imageRawResults.get(row).get(0);
+                ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery);
+                try
+                {
+                    ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
+                    if (!images.containsImage(key))
+                        images.addImage(key);
+                    else
+                        images.removeImage(key);
+                }
+                catch (FitsException e1) {
+                    e1.printStackTrace();
+                }
+                catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+
+                repaint();
+            }
+        }
+
+        public void mouseReleased(MouseEvent e)
+        {
+            resultsListMaybeShowPopup(e);
         }
     }
 
@@ -2091,9 +2228,9 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
     private javax.swing.JPanel jPanel9;
-    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JButton nextButton;
     private javax.swing.JComboBox numberOfBoundariesComboBox;
@@ -2103,7 +2240,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     private javax.swing.JButton removeAllButton;
     private javax.swing.JButton removeAllImagesButton;
     private javax.swing.JButton removeColorImageButton;
-    private javax.swing.JList resultList;
+    private javax.swing.JTable resultList;
     private javax.swing.JLabel resultsLabel;
     private javax.swing.JButton saveImageListButton;
     private javax.swing.JCheckBox searchByFilenameCheckBox;
