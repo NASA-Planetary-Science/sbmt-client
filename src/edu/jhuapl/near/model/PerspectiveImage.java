@@ -857,12 +857,12 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
     private void loadImageInfo() throws NumberFormatException, IOException
     {
-        String lblFilename = getInfoFileFullPath();
+        String infoFilename = getInfoFileFullPath();
 
         String[] start = new String[1];
         String[] stop = new String[1];
         loadImageInfo(
-                lblFilename,
+                infoFilename,
                 start,
                 stop,
                 spacecraftPosition,

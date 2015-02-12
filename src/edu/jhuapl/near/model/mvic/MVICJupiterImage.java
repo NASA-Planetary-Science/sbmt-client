@@ -61,7 +61,11 @@ public class MVICJupiterImage extends PerspectiveImage
     @Override
     protected String initializeInfoFileFullPath()
     {
-        return null;
+        ImageKey key = getKey();
+        File keyFile = new File(key.name);
+        String sumFilename = keyFile.getParentFile().getParent() + "/infofiles/"
+        + keyFile.getName() + ".INFO";
+        return FileCache.getFileFromServer(sumFilename).getAbsolutePath();
     }
 
     @Override
