@@ -109,6 +109,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
     private float minValue;
     private float maxValue;
+
     private IntensityRange displayedRange = new IntensityRange(1,0);
     private double imageOpacity = 1.0;
 
@@ -190,6 +191,26 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     protected double getPixelWidth() { return 0.0; }
 
     protected double getPixelHeight() { return 0.0; }
+
+    public float getMinValue()
+    {
+        return minValue;
+    }
+
+    public void setMinValue(float minValue)
+    {
+        this.minValue = minValue;
+    }
+
+    public float getMaxValue()
+    {
+        return maxValue;
+    }
+
+    public void setMaxValue(float maxValue)
+    {
+        this.maxValue = maxValue;
+    }
 
     protected void loadImageInfo(
             String lblFilename,
@@ -506,7 +527,35 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         // By default do nothing
     }
 
-    protected void loadRawImage() throws FitsException, IOException
+    protected vtkImageData createRawImage(int originalWidth, int originalHeight, float[][] array)
+    {
+        vtkImageData image = new vtkImageData();
+        image.SetScalarTypeToFloat();
+        image.SetDimensions(originalWidth, originalHeight, 1);
+        image.SetSpacing(1.0, 1.0, 1.0);
+        image.SetOrigin(0.0, 0.0, 0.0);
+        image.SetNumberOfScalarComponents(1);
+
+        float maxValue = -Float.MAX_VALUE;
+        float minValue = Float.MAX_VALUE;
+        for (int i=0; i<originalHeight; ++i)
+            for (int j=0; j<originalWidth; ++j)
+            {
+                image.SetScalarComponentFromDouble(j, originalHeight-1-i, 0, 0, array[i][j]);
+
+                if (array[i][j] > maxValue)
+                    maxValue = array[i][j];
+                if (array[i][j] < minValue)
+                    minValue = array[i][j];
+            }
+
+        setMaxValue(maxValue);
+        setMinValue(minValue);
+
+        return image;
+    }
+
+    protected void loadImage() throws FitsException, IOException
     {
         String filename = getFitFileFullPath();
 
@@ -553,30 +602,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
         f.getStream().close();
 
-        rawImage = new vtkImageData();
-        rawImage.SetScalarTypeToFloat();
-        rawImage.SetDimensions(originalWidth, originalHeight, 1);
-        rawImage.SetSpacing(1.0, 1.0, 1.0);
-        rawImage.SetOrigin(0.0, 0.0, 0.0);
-        rawImage.SetNumberOfScalarComponents(1);
-
-        maxValue = -Float.MAX_VALUE;
-        minValue = Float.MAX_VALUE;
-        for (int i=0; i<originalHeight; ++i)
-            for (int j=0; j<originalWidth; ++j)
-            {
-                rawImage.SetScalarComponentFromDouble(j, originalHeight-1-i, 0, 0, array[i][j]);
-
-                if (array[i][j] > maxValue)
-                    maxValue = array[i][j];
-                if (array[i][j] < minValue)
-                    minValue = array[i][j];
-            }
-    }
-
-    protected void loadImage() throws FitsException, IOException
-    {
-        loadRawImage();
+        rawImage = createRawImage(originalWidth, originalHeight, array);
 
         processRawImage(rawImage);
 

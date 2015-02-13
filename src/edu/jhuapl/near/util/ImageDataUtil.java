@@ -65,6 +65,28 @@ public class ImageDataUtil
     }
 
     /**
+     *  Flip image along x axis.
+     *
+     * @param image
+     */
+    static public void flipImageXAxis(vtkImageData image)
+    {
+        int[] dims = image.GetDimensions();
+        vtkImageFlip flip = new vtkImageFlip();
+        flip.SetInput(image);
+        flip.SetInterpolationModeToNearestNeighbor();
+        flip.SetOutputSpacing(1.0, 1.0, 1.0);
+        flip.SetOutputOrigin(0.0, 0.0, 0.0);
+        flip.SetOutputExtent(0, dims[1]-1, 0, dims[0]-1, 0, 0);
+        flip.FlipAboutOriginOff();
+        flip.SetFilteredAxes(0);
+        flip.Update();
+
+        vtkImageData flipOutput = flip.GetOutput();
+        image.DeepCopy(flipOutput);
+    }
+
+    /**
      *  Flip image along y axis.
      *
      * @param image
