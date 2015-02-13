@@ -506,7 +506,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         // By default do nothing
     }
 
-    protected void loadImage() throws FitsException, IOException
+    protected void loadRawImage() throws FitsException, IOException
     {
         String filename = getFitFileFullPath();
 
@@ -572,6 +572,11 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
                 if (array[i][j] < minValue)
                     minValue = array[i][j];
             }
+    }
+
+    protected void loadImage() throws FitsException, IOException
+    {
+        loadRawImage();
 
         processRawImage(rawImage);
 
