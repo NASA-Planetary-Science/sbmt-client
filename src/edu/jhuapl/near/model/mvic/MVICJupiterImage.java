@@ -24,9 +24,10 @@ public class MVICJupiterImage extends PerspectiveImage
     @Override
     protected void processRawImage(vtkImageData rawImage)
     {
-        // Flip image along y axis. For some reason we need to do
+        // Flip image along y axis and y axis. For some reason we need to do
         // this so the image is displayed properly.
         ImageDataUtil.flipImageYAxis(rawImage);
+        ImageDataUtil.flipImageXAxis(rawImage);
     }
 
     @Override
@@ -42,6 +43,12 @@ public class MVICJupiterImage extends PerspectiveImage
         return FileCache.getFileFromServer(key.name + ".fit").getAbsolutePath();
     }
 
+    protected double getFocalLength() { return 657.5; }    // in mm
+
+    protected double getPixelWidth() { return 0.013; }    // in mm
+
+    protected double getPixelHeight() { return 0.013; }   // in mm
+
     @Override
     protected String initializeLabelFileFullPath()
     {
@@ -55,7 +62,11 @@ public class MVICJupiterImage extends PerspectiveImage
     @Override
     protected String initializeInfoFileFullPath()
     {
-        return null;
+        ImageKey key = getKey();
+        File keyFile = new File(key.name);
+        String sumFilename = keyFile.getParentFile().getParent() + "/infofiles/"
+        + keyFile.getName() + ".INFO";
+        return FileCache.getFileFromServer(sumFilename).getAbsolutePath();
     }
 
     @Override
@@ -66,6 +77,34 @@ public class MVICJupiterImage extends PerspectiveImage
         String sumFilename = keyFile.getParentFile().getParent() + "/sumfiles/"
         + keyFile.getName().split("\\.")[0] + ".SUM";
         return FileCache.getFileFromServer(sumFilename).getAbsolutePath();
+    }
+
+    protected vtkImageData createRawImage(int originalWidth, int originalHeight, float[][] array)
+    {
+        vtkImageData image = new vtkImageData();
+        image.SetScalarTypeToFloat();
+        image.SetDimensions(originalHeight, originalWidth, 1);
+        image.SetSpacing(1.0, 1.0, 1.0);
+        image.SetOrigin(0.0, 0.0, 0.0);
+        image.SetNumberOfScalarComponents(1);
+
+        float maxValue = -Float.MAX_VALUE;
+        float minValue = Float.MAX_VALUE;
+        for (int i=0; i<originalHeight; ++i)
+            for (int j=0; j<originalWidth; ++j)
+            {
+                image.SetScalarComponentFromDouble(i, originalWidth-1-j, 0, 0, array[i][j]);
+
+                if (array[i][j] > maxValue)
+                    maxValue = array[i][j];
+                if (array[i][j] < minValue)
+                    minValue = array[i][j];
+            }
+
+        setMaxValue(maxValue);
+        setMinValue(minValue);
+
+        return image;
     }
 
 }

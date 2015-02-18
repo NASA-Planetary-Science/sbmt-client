@@ -13,6 +13,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.StringTokenizer;
 
 import nom.tam.fits.BasicHDU;
@@ -20,6 +21,7 @@ import nom.tam.fits.Fits;
 import nom.tam.fits.FitsException;
 
 import org.apache.commons.math3.geometry.euclidean.threed.Rotation;
+import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 
 import vtk.vtkActor;
 import vtk.vtkCell;
@@ -107,6 +109,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
     private float minValue;
     private float maxValue;
+
     private IntensityRange displayedRange = new IntensityRange(1,0);
     private double imageOpacity = 1.0;
 
@@ -175,6 +178,38 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
         if (!loadPointingOnly)
             loadImage();
+    }
+
+    protected double getFocalLength() { return 0.0; }
+
+    private double numberOfPixels = 0.0;
+    protected double getNumberOfPixels() { return numberOfPixels; }
+
+    private double numberOfLines = 0.0;
+    protected double getNumberOfLines() { return numberOfLines; }
+
+    protected double getPixelWidth() { return 0.0; }
+
+    protected double getPixelHeight() { return 0.0; }
+
+    public float getMinValue()
+    {
+        return minValue;
+    }
+
+    public void setMinValue(float minValue)
+    {
+        this.minValue = minValue;
+    }
+
+    public float getMaxValue()
+    {
+        return maxValue;
+    }
+
+    public void setMaxValue(float maxValue)
+    {
+        this.maxValue = maxValue;
     }
 
     protected void loadImageInfo(
@@ -492,6 +527,34 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         // By default do nothing
     }
 
+    protected vtkImageData createRawImage(int originalWidth, int originalHeight, float[][] array)
+    {
+        vtkImageData image = new vtkImageData();
+        image.SetScalarTypeToFloat();
+        image.SetDimensions(originalWidth, originalHeight, 1);
+        image.SetSpacing(1.0, 1.0, 1.0);
+        image.SetOrigin(0.0, 0.0, 0.0);
+        image.SetNumberOfScalarComponents(1);
+
+        float maxValue = -Float.MAX_VALUE;
+        float minValue = Float.MAX_VALUE;
+        for (int i=0; i<originalHeight; ++i)
+            for (int j=0; j<originalWidth; ++j)
+            {
+                image.SetScalarComponentFromDouble(j, originalHeight-1-i, 0, 0, array[i][j]);
+
+                if (array[i][j] > maxValue)
+                    maxValue = array[i][j];
+                if (array[i][j] < minValue)
+                    minValue = array[i][j];
+            }
+
+        setMaxValue(maxValue);
+        setMinValue(minValue);
+
+        return image;
+    }
+
     protected void loadImage() throws FitsException, IOException
     {
         String filename = getFitFileFullPath();
@@ -539,25 +602,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
         f.getStream().close();
 
-        rawImage = new vtkImageData();
-        rawImage.SetScalarTypeToFloat();
-        rawImage.SetDimensions(originalWidth, originalHeight, 1);
-        rawImage.SetSpacing(1.0, 1.0, 1.0);
-        rawImage.SetOrigin(0.0, 0.0, 0.0);
-        rawImage.SetNumberOfScalarComponents(1);
-
-        maxValue = -Float.MAX_VALUE;
-        minValue = Float.MAX_VALUE;
-        for (int i=0; i<originalHeight; ++i)
-            for (int j=0; j<originalWidth; ++j)
-            {
-                rawImage.SetScalarComponentFromDouble(j, originalHeight-1-i, 0, 0, array[i][j]);
-
-                if (array[i][j] > maxValue)
-                    maxValue = array[i][j];
-                if (array[i][j] < minValue)
-                    minValue = array[i][j];
-            }
+        rawImage = createRawImage(originalWidth, originalHeight, array);
 
         processRawImage(rawImage);
 
@@ -843,12 +888,12 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
     private void loadImageInfo() throws NumberFormatException, IOException
     {
-        String lblFilename = getInfoFileFullPath();
+        String infoFilename = getInfoFileFullPath();
 
         String[] start = new String[1];
         String[] stop = new String[1];
         loadImageInfo(
-                lblFilename,
+                infoFilename,
                 start,
                 stop,
                 spacecraftPosition,
@@ -1015,6 +1060,111 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         in.close();
     }
 
+    //
+    // Label (.lbl) file parsing methods
+    //
+
+    private static final Vector3D i = new Vector3D(1.0, 0.0, 0.0);
+    private static final Vector3D j = new Vector3D(0.0, 1.0, 0.0);
+    private static final Vector3D k = new Vector3D(0.0, 0.0, 1.0);
+
+    private String targetName = null;
+    private String instrumentId = null;
+    private String filterName = null;
+    private String objectName = null;
+
+    private String startTimeString = null;
+    private String stopTimeString = null;
+    private double exposureDuration = 0.0;
+
+    private String scTargetPositionString = null;
+    private String targetSunPositionString = null;
+    private String scOrientationString = null;
+    private Rotation scOrientation = null;
+    private double[] q = new double[4];
+    private double[] cx = new double[3];
+    private double[] cy = new double[3];
+    private double[] cz = new double[3];
+
+    private double focalLengthMillimeters = 100.0;
+    private double npx = 4096.0;
+    private double nln = 32.0;
+    private double kmatrix00 = 1.0;
+    private double kmatrix11 = 1.0;
+
+    private void parseLabelKeyValuePair(
+            String key,
+            String value,
+            String[] startTime,
+            String[] stopTime,
+            double[] spacecraftPosition,
+            double[] sunVector,
+            double[] frustum1,
+            double[] frustum2,
+            double[] frustum3,
+            double[] frustum4,
+            double[] boresightDirection,
+            double[] upVector) throws IOException
+    {
+        System.out.println("Label file key: " + key + " = " + value);
+
+        if (key.equals("TARGET_NAME"))
+            targetName = value;
+        else if (key.equals("INSTRUMENT_ID"))
+            instrumentId = value;
+        else if (key.equals("FILTER_NAME"))
+            filterName = value;
+        else if (key.equals("OBJECT"))
+            objectName = value;
+        else if (key.equals("LINE_SAMPLES"))
+        {
+            if (objectName.equals("EXTENSION_CALGEOM_IMAGE"))
+                numberOfPixels = Double.parseDouble(value);
+        }
+        else if (key.equals("LINES"))
+        {
+            if (objectName.equals("EXTENSION_CALGEOM_IMAGE"))
+                numberOfLines = Double.parseDouble(value);
+        }
+        else if (key.equals("START_TIME"))
+        {
+            startTimeString = value;
+            startTime[0] = startTimeString;
+        }
+        else if (key.equals("STOP_TIME"))
+        {
+            stopTimeString = value;
+            stopTime[0] = stopTimeString;
+        }
+        else if (key.equals("SC_TARGET_POSITION_VECTOR"))
+        {
+            scTargetPositionString = value;
+            String p[] = scTargetPositionString.split(",");
+            spacecraftPosition[0] = Double.parseDouble(p[0].trim().split("\\s+")[0].trim());
+            spacecraftPosition[1] = Double.parseDouble(p[1].trim().split("\\s+")[0].trim());
+            spacecraftPosition[2] = Double.parseDouble(p[2].trim().split("\\s+")[0].trim());
+        }
+        else if (key.equals("TARGET_SUN_POSITION_VECTOR"))
+        {
+            targetSunPositionString = value;
+            String p[] = targetSunPositionString.split(",");
+            sunVector[0] = -Double.parseDouble(p[0].trim().split("\\s+")[0].trim());
+            sunVector[1] = -Double.parseDouble(p[1].trim().split("\\s+")[0].trim());
+            sunVector[2] = -Double.parseDouble(p[2].trim().split("\\s+")[0].trim());
+        }
+        else if (key.equals("QUATERNION"))
+        {
+            scOrientationString = value;
+            String qstr[] = scOrientationString.split(",");
+            q[0] = Double.parseDouble(qstr[0].trim().split("\\s+")[0].trim());
+            q[1] = Double.parseDouble(qstr[1].trim().split("\\s+")[0].trim());
+            q[2] = Double.parseDouble(qstr[2].trim().split("\\s+")[0].trim());
+            q[3] = Double.parseDouble(qstr[3].trim().split("\\s+")[0].trim());
+            scOrientation = new Rotation(q[0], q[1], q[2], q[3], false);
+        }
+
+    }
+
     protected void loadLabelFile(
             String labelFileName,
             String[] startTime,
@@ -1030,124 +1180,217 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     {
         System.out.println(labelFileName);
 
+        // open a file input stream
         FileInputStream fs = new FileInputStream(labelFileName);
         InputStreamReader isr = new InputStreamReader(fs);
         BufferedReader in = new BufferedReader(isr);
 
-        in.readLine();
+        //
+        // Parse each line of the stream and process each key-value pair,
+        // merging multiline numeric ("vector") values into a single-line
+        // string. Multi-line quoted strings are ignored.
+        //
+        boolean inStringLiteral = false;
+        boolean inVector = false;
+        List<String> vector = new ArrayList<String>();
+        String key = null;
+        String value = null;
+        String line = null;
+        while ((line = in.readLine()) != null)
+        {
+            if (line.length() == 0)
+                continue;
 
-        String datetime = in.readLine().trim();
-        datetime = DateTimeUtil.convertDateTimeFormat(datetime);
-        startTime[0] = datetime;
-        stopTime[0] = datetime;
+            // for now, multi-line quoted strings are ignored (i.e. treated as comments)
+            if (line.trim().equals("\""))
+            {
+                inStringLiteral = false;
+                continue;
+            }
 
-        String[] tmp = in.readLine().trim().split("\\s+");
-        double npx = Integer.parseInt(tmp[0]);
-        double nln = Integer.parseInt(tmp[1]);
+            if (inStringLiteral)
+                continue;
 
-        tmp = in.readLine().trim().split("\\s+");
-        replaceDwithE(tmp);
-        double focalLengthMillimeters = Double.parseDouble(tmp[0]);
+            // terminate a multi-line numeric value (a "vector")
+            if (line.trim().equals(")"))
+            {
+                inVector = false;
+                value = "";
+                for (String element : vector)
+                    value = value + element;
 
-        tmp = in.readLine().trim().split("\\s+");
-        replaceDwithE(tmp);
-        spacecraftPosition[0] = -Double.parseDouble(tmp[0]);
-        spacecraftPosition[1] = -Double.parseDouble(tmp[1]);
-        spacecraftPosition[2] = -Double.parseDouble(tmp[2]);
+                parseLabelKeyValuePair(
+                        key,
+                        value,
+                        startTime,
+                        stopTime,
+                        spacecraftPosition,
+                        sunVector,
+                        frustum1,
+                        frustum2,
+                        frustum3,
+                        frustum4,
+                        boresightDirection,
+                        upVector);
 
-        double[] cx = new double[3];
-        double[] cy = new double[3];
-        double[] cz = new double[3];
-        double[] sz = new double[3];
+                vector.clear();
+                continue;
+            }
 
-        tmp = in.readLine().trim().split("\\s+");
-        replaceDwithE(tmp);
-        cx[0] = Double.parseDouble(tmp[0]);
-        cx[1] = Double.parseDouble(tmp[1]);
-        cx[2] = Double.parseDouble(tmp[2]);
+            // add a line to the current vector
+            if (inVector)
+            {
+                vector.add(line.trim());
+                continue;
+            }
 
-        tmp = in.readLine().trim().split("\\s+");
-        replaceDwithE(tmp);
-        cy[0] = Double.parseDouble(tmp[0]);
-        cy[1] = Double.parseDouble(tmp[1]);
-        cy[2] = Double.parseDouble(tmp[2]);
+            // extract key value pair
+            String tokens[] = line.split("=");
+            if (tokens.length < 2)
+                continue;
 
-        tmp = in.readLine().trim().split("\\s+");
-        replaceDwithE(tmp);
-        cz[0] = Double.parseDouble(tmp[0]);
-        cz[1] = Double.parseDouble(tmp[1]);
-        cz[2] = Double.parseDouble(tmp[2]);
+            key = tokens[0].trim();
+            value = tokens[1].trim();
 
-        tmp = in.readLine().trim().split("\\s+");
-        replaceDwithE(tmp);
-        sz[0] = Double.parseDouble(tmp[0]);
-        sz[1] = Double.parseDouble(tmp[1]);
-        sz[2] = Double.parseDouble(tmp[2]);
+            // detect and ignore comments
+            if (value.equals("\""))
+            {
+                inStringLiteral = true;
+                continue;
+            }
 
-        tmp = in.readLine().trim().split("\\s+");
-        replaceDwithE(tmp);
-        double kmatrix00 = Math.abs(Double.parseDouble(tmp[0]));
-        double kmatrix11 = Math.abs(Double.parseDouble(tmp[4]));
+            // start to accumulate numeric vector values
+            if (value.equals("("))
+            {
+                inVector = true;
+                continue;
+            }
 
-        // Here we calculate the image width and height using the K-matrix values.
-        // This is used only when the constructor of this function was called with
-        // loadPointingOnly set to true. When set to false, the image width and
-        // and height is set in the loadImage function (after this function is called
-        // and will overwrite these values here--though they should not be different).
-        // But when in pointing-only mode, the loadImage function is not called so
-        // we therefore set the image width and height here since some functions need it.
-        imageWidth = (int)npx;
-        imageHeight = (int)nln;
-        if (kmatrix00 > kmatrix11)
-            imageHeight = (int)Math.round(nln * (kmatrix00 / kmatrix11));
-        else if (kmatrix11 > kmatrix00)
-            imageWidth = (int)Math.round(npx * (kmatrix11 / kmatrix00));
+            if (value.startsWith("("))
+                value = stripBraces(value);
+            else
+                value = stripQuotes(value);
 
-        double[] cornerVector = new double[3];
-        double fov1 = Math.atan(npx/(2.0*focalLengthMillimeters*kmatrix00));
-        double fov2 = Math.atan(nln/(2.0*focalLengthMillimeters*kmatrix11));
-        cornerVector[0] = -Math.tan(fov1);
-        cornerVector[1] = -Math.tan(fov2);
-        cornerVector[2] = 1.0;
+            parseLabelKeyValuePair(
+                    key,
+                    value,
+                    startTime,
+                    stopTime,
+                    spacecraftPosition,
+                    sunVector,
+                    frustum1,
+                    frustum2,
+                    frustum3,
+                    frustum4,
+                    boresightDirection,
+                    upVector);
 
-        double fx = cornerVector[0];
-        double fy = cornerVector[1];
-        double fz = cornerVector[2];
-        frustum3[0] = fx*cx[0] + fy*cy[0] + fz*cz[0];
-        frustum3[1] = fx*cx[1] + fy*cy[1] + fz*cz[1];
-        frustum3[2] = fx*cx[2] + fy*cy[2] + fz*cz[2];
-
-        fx = -cornerVector[0];
-        fy = cornerVector[1];
-        fz = cornerVector[2];
-        frustum4[0] = fx*cx[0] + fy*cy[0] + fz*cz[0];
-        frustum4[1] = fx*cx[1] + fy*cy[1] + fz*cz[1];
-        frustum4[2] = fx*cx[2] + fy*cy[2] + fz*cz[2];
-
-        fx = cornerVector[0];
-        fy = -cornerVector[1];
-        fz = cornerVector[2];
-        frustum1[0] = fx*cx[0] + fy*cy[0] + fz*cz[0];
-        frustum1[1] = fx*cx[1] + fy*cy[1] + fz*cz[1];
-        frustum1[2] = fx*cx[2] + fy*cy[2] + fz*cz[2];
-
-        fx = -cornerVector[0];
-        fy = -cornerVector[1];
-        fz = cornerVector[2];
-        frustum2[0] = fx*cx[0] + fy*cy[0] + fz*cz[0];
-        frustum2[1] = fx*cx[1] + fy*cy[1] + fz*cz[1];
-        frustum2[2] = fx*cx[2] + fy*cy[2] + fz*cz[2];
-
-        MathUtil.vhat(frustum1, frustum1);
-        MathUtil.vhat(frustum2, frustum2);
-        MathUtil.vhat(frustum3, frustum3);
-        MathUtil.vhat(frustum4, frustum4);
-
-        MathUtil.vhat(cz, boresightDirection);
-        MathUtil.vhat(cx, upVector);
-        MathUtil.vhat(sz, sunVector);
+        }
 
         in.close();
+
+        //
+        // calculate image projection from the parsed parameters
+        //
+        this.focalLengthMillimeters = getFocalLength();
+        this.npx = getNumberOfPixels();
+        this.nln = getNumberOfLines();
+        this.kmatrix00 = 1.0 / getPixelWidth();
+        this.kmatrix11 = 1.0 / getPixelHeight();
+
+        Vector3D boresightVector3D = scOrientation.applyTo(i);
+        boresightDirection[0] = cz[0] = boresightVector3D.getX();
+        boresightDirection[1] = cz[1] = boresightVector3D.getY();
+        boresightDirection[2] = cz[2] = boresightVector3D.getZ();
+
+        Vector3D upVector3D = scOrientation.applyTo(j);
+        upVector[0] = cy[0] = upVector3D.getX();
+        upVector[1] = cy[1] = upVector3D.getY();
+        upVector[2] = cy[2] = upVector3D.getZ();
+
+        Vector3D leftVector3D = scOrientation.applyTo(k);
+        cx[0] = -leftVector3D.getX();
+        cx[1] = -leftVector3D.getY();
+        cx[2] = -leftVector3D.getZ();
+
+//      double kmatrix00 = Math.abs(Double.parseDouble(tmp[0]));
+//      double kmatrix11 = Math.abs(Double.parseDouble(tmp[4]));
+
+      // Here we calculate the image width and height using the K-matrix values.
+      // This is used only when the constructor of this function was called with
+      // loadPointingOnly set to true. When set to false, the image width and
+      // and height is set in the loadImage function (after this function is called
+      // and will overwrite these values here--though they should not be different).
+      // But when in pointing-only mode, the loadImage function is not called so
+      // we therefore set the image width and height here since some functions need it.
+      imageWidth = (int)npx;
+      imageHeight = (int)nln;
+//      if (kmatrix00 > kmatrix11)
+//          imageHeight = (int)Math.round(nln * (kmatrix00 / kmatrix11));
+//      else if (kmatrix11 > kmatrix00)
+//          imageWidth = (int)Math.round(npx * (kmatrix11 / kmatrix00));
+
+      double[] cornerVector = new double[3];
+      double fov1 = Math.atan(npx/(2.0*focalLengthMillimeters*kmatrix00));
+      double fov2 = Math.atan(nln/(2.0*focalLengthMillimeters*kmatrix11));
+      cornerVector[0] = -Math.tan(fov1);
+      cornerVector[1] = -Math.tan(fov2);
+      cornerVector[2] = 1.0;
+
+      double fx = cornerVector[0];
+      double fy = cornerVector[1];
+      double fz = cornerVector[2];
+      frustum3[0] = fx*cx[0] + fy*cy[0] + fz*cz[0];
+      frustum3[1] = fx*cx[1] + fy*cy[1] + fz*cz[1];
+      frustum3[2] = fx*cx[2] + fy*cy[2] + fz*cz[2];
+
+      fx = -cornerVector[0];
+      fy = cornerVector[1];
+      fz = cornerVector[2];
+      frustum4[0] = fx*cx[0] + fy*cy[0] + fz*cz[0];
+      frustum4[1] = fx*cx[1] + fy*cy[1] + fz*cz[1];
+      frustum4[2] = fx*cx[2] + fy*cy[2] + fz*cz[2];
+
+      fx = cornerVector[0];
+      fy = -cornerVector[1];
+      fz = cornerVector[2];
+      frustum1[0] = fx*cx[0] + fy*cy[0] + fz*cz[0];
+      frustum1[1] = fx*cx[1] + fy*cy[1] + fz*cz[1];
+      frustum1[2] = fx*cx[2] + fy*cy[2] + fz*cz[2];
+
+      fx = -cornerVector[0];
+      fy = -cornerVector[1];
+      fz = cornerVector[2];
+      frustum2[0] = fx*cx[0] + fy*cy[0] + fz*cz[0];
+      frustum2[1] = fx*cx[1] + fy*cy[1] + fz*cz[1];
+      frustum2[2] = fx*cx[2] + fy*cy[2] + fz*cz[2];
+
+      MathUtil.vhat(frustum1, frustum1);
+      MathUtil.vhat(frustum2, frustum2);
+      MathUtil.vhat(frustum3, frustum3);
+      MathUtil.vhat(frustum4, frustum4);
+
+
+    }
+
+    private String stripQuotes(String input)
+    {
+        String result = input;
+        if (input.startsWith("\""))
+            result = result.substring(1);
+        if (input.endsWith("\""))
+            result = result.substring(0, input.length()-2);
+        return result;
+    }
+
+    private String stripBraces(String input)
+    {
+        String result = input;
+        if (input.startsWith("("))
+            result = result.substring(1);
+        if (input.endsWith(")"))
+            result = result.substring(0, input.length()-2);
+        return result;
     }
 
     private void loadSumfile() throws NumberFormatException, IOException

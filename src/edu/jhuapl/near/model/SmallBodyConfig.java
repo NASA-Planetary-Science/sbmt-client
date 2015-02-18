@@ -507,7 +507,7 @@ public class SmallBodyConfig
             c.hasColoringData = false;
             c.hasImageMap = false;
             c.hasPerspectiveImages = true;
-            c.hasMultispectralImages = false;
+            c.hasMultispectralImages = true;
             c.imageSearchDefaultStartDate = new GregorianCalendar(2007, 0, 8, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2007, 2, 5, 0, 0, 0).getTime();
             c.imageSearchQuery = new GenericPhpQuery("/NEWHORIZONS/JUPITER/IMAGING", "JUPITER");
@@ -517,7 +517,8 @@ public class SmallBodyConfig
             c.imageSearchDefaultMaxSpacecraftDistance = 1.0e9;
             c.imageSearchDefaultMaxResolution = 1.0e6;
             c.imageSearchImageSources = new ImageSource[]{ImageSource.SPICE};
-            c.multispectralImageSearchImageSources = new ImageSource[]{ImageSource.GASKELL, ImageSource.LABEL};
+//            c.multispectralImageSearchImageSources = new ImageSource[]{ImageSource.LABEL};
+            c.multispectralImageSearchImageSources = new ImageSource[]{ImageSource.SPICE};
             c.imageType = ImageType.LORRI_IMAGE;
             c.multispectralImageType = ImageType.MVIC_JUPITER_IMAGE;
             c.imageInstrumentName = Instrument.LORRI;
@@ -544,6 +545,21 @@ public class SmallBodyConfig
             c.pathOnServer = "/NEWHORIZONS/EUROPA/shape_res0.vtk.gz";
             c.hasImageMap = true;
             c.imageSearchQuery = new GenericPhpQuery("/NEWHORIZONS/EUROPA/IMAGING", "EUROPA");
+            c.hasPerspectiveImages = true;
+            c.hasMultispectralImages = true;
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2007, 0, 8, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2007, 2, 5, 0, 0, 0).getTime();
+            c.multispectralImageSearchQuery = new FixedListQuery("/NEWHORIZONS/EUROPA/MVIC");
+            c.imageSearchFilterNames = new String[]{};
+            c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
+            c.imageSearchDefaultMaxSpacecraftDistance = 1.0e9;
+            c.imageSearchDefaultMaxResolution = 1.0e6;
+            c.imageSearchImageSources = new ImageSource[]{ImageSource.SPICE};
+            c.multispectralImageSearchImageSources = new ImageSource[]{ImageSource.LABEL};
+            c.imageType = ImageType.LORRI_IMAGE;
+            c.multispectralImageType = ImageType.MVIC_JUPITER_IMAGE;
+            c.imageInstrumentName = Instrument.LORRI;
+            c.multispectralImageInstrumentName = Instrument.MVIC;
             configArray.add(c);
 
             c = c.clone();
@@ -555,7 +571,22 @@ public class SmallBodyConfig
             c.pathOnServer = "/NEWHORIZONS/GANYMEDE/shape_res0.vtk.gz";
             c.hasImageMap = true;
             c.imageSearchQuery = new GenericPhpQuery("/NEWHORIZONS/GANYMEDE/IMAGING", "GANYMEDE");
-            configArray.add(c);
+            c.hasPerspectiveImages = true;
+            c.hasMultispectralImages = true;
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2007, 0, 8, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2007, 2, 5, 0, 0, 0).getTime();
+            c.multispectralImageSearchQuery = new FixedListQuery("/NEWHORIZONS/GANYMEDE/MVIC");
+            c.imageSearchFilterNames = new String[]{};
+            c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
+            c.imageSearchDefaultMaxSpacecraftDistance = 1.0e9;
+            c.imageSearchDefaultMaxResolution = 1.0e6;
+            c.imageSearchImageSources = new ImageSource[]{ImageSource.SPICE};
+            c.multispectralImageSearchImageSources = new ImageSource[]{ImageSource.LABEL};
+            c.imageType = ImageType.LORRI_IMAGE;
+            c.multispectralImageType = ImageType.MVIC_JUPITER_IMAGE;
+            c.imageInstrumentName = Instrument.LORRI;
+            c.multispectralImageInstrumentName = Instrument.MVIC;
+             configArray.add(c);
 
             c = c.clone();
             c.body = ShapeModelBody.IO;
@@ -566,6 +597,21 @@ public class SmallBodyConfig
             c.pathOnServer = "/NEWHORIZONS/IO/shape_res0.vtk.gz";
             c.hasImageMap = true;
             c.imageSearchQuery = new GenericPhpQuery("/NEWHORIZONS/IO/IMAGING", "IO");
+            c.hasPerspectiveImages = true;
+            c.hasMultispectralImages = true;
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2007, 0, 8, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2007, 2, 5, 0, 0, 0).getTime();
+            c.multispectralImageSearchQuery = new FixedListQuery("/NEWHORIZONS/IO/MVIC");
+            c.imageSearchFilterNames = new String[]{};
+            c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
+            c.imageSearchDefaultMaxSpacecraftDistance = 1.0e9;
+            c.imageSearchDefaultMaxResolution = 1.0e6;
+            c.imageSearchImageSources = new ImageSource[]{ImageSource.SPICE};
+            c.multispectralImageSearchImageSources = new ImageSource[]{ImageSource.LABEL};
+            c.imageType = ImageType.LORRI_IMAGE;
+            c.multispectralImageType = ImageType.MVIC_JUPITER_IMAGE;
+            c.imageInstrumentName = Instrument.LORRI;
+            c.multispectralImageInstrumentName = Instrument.MVIC;
             configArray.add(c);
         }
 
