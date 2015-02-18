@@ -1,5 +1,6 @@
 package edu.jhuapl.near.model;
 
+import java.awt.Color;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -20,6 +21,11 @@ public class PerspectiveImageBoundaryCollection extends Model implements Propert
     private HashMap<PerspectiveImageBoundary, ArrayList<vtkProp>> boundaryToActorsMap = new HashMap<PerspectiveImageBoundary, ArrayList<vtkProp>>();
     private HashMap<vtkProp, PerspectiveImageBoundary> actorToBoundaryMap = new HashMap<vtkProp, PerspectiveImageBoundary>();
     private SmallBodyModel smallBodyModel;
+    // Create a buffer of initial boundary colors to use. We cycle through these colors when creating new boundaries
+    private Color[] initialColors = {Color.RED, Color.PINK, Color.ORANGE,
+            Color.GREEN, Color.MAGENTA, Color.CYAN, Color.BLUE, Color.LIGHT_GRAY,
+            Color.GRAY, Color.DARK_GRAY};
+    private int initialColorIndex = 0;
 
     public PerspectiveImageBoundaryCollection(SmallBodyModel smallBodyModel)
     {
@@ -30,7 +36,11 @@ public class PerspectiveImageBoundaryCollection extends Model implements Propert
             ImageKey key,
             SmallBodyModel smallBodyModel) throws IOException, FitsException
     {
-        return new PerspectiveImageBoundary((PerspectiveImage)ModelFactory.createImage(key, smallBodyModel, true), smallBodyModel);
+        PerspectiveImageBoundary boundary = new PerspectiveImageBoundary((PerspectiveImage)ModelFactory.createImage(key, smallBodyModel, true), smallBodyModel);
+        boundary.setBoundaryColor(initialColors[initialColorIndex++]);
+        if (initialColorIndex >= initialColors.length)
+            initialColorIndex = 0;
+        return boundary;
     }
 
     private boolean containsKey(ImageKey key)
