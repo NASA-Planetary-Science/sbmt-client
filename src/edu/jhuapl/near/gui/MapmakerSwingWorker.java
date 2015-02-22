@@ -11,12 +11,16 @@ import edu.jhuapl.near.util.MathUtil;
 
 public class MapmakerSwingWorker extends FileDownloadSwingWorker
 {
+    boolean regionSpecifiedWithLatLonScale = false;
     private String name;
     private double[] centerPoint;
     private double radius;
     private File outputFolder;
     private File mapletFile;
     private int halfSize;
+    private double pixelScale;
+    private double latitude;
+    private double longitude;
 
     public MapmakerSwingWorker(Component c, String title, String filename)
     {
@@ -52,11 +56,36 @@ public class MapmakerSwingWorker extends FileDownloadSwingWorker
         this.outputFolder = outputFolder;
     }
 
+    public void setPixelScale(double pixelScale)
+    {
+        this.pixelScale = pixelScale;
+    }
+
+
+    public void setLatitude(double latitude)
+    {
+        this.latitude = latitude;
+    }
+
+
+    public void setLongitude(double longitude)
+    {
+        this.longitude = longitude;
+    }
+
 
     public File getMapletFile()
     {
         return mapletFile;
     }
+
+
+    public void setRegionSpecifiedWithLatLonScale(
+            boolean regionSpecifiedWithLatLonScale)
+    {
+        this.regionSpecifiedWithLatLonScale = regionSpecifiedWithLatLonScale;
+    }
+
 
     @Override
     protected Void doInBackground()
@@ -82,11 +111,20 @@ public class MapmakerSwingWorker extends FileDownloadSwingWorker
 
             Mapmaker mapmaker = new Mapmaker(mapmakerRootDir);
             mapmaker.setName(name);
-            LatLon ll = MathUtil.reclat(centerPoint).toDegrees();
-            mapmaker.setLatitude(ll.lat);
-            mapmaker.setLongitude(ll.lon);
+            if (regionSpecifiedWithLatLonScale)
+            {
+                mapmaker.setLatitude(latitude);
+                mapmaker.setLongitude(longitude);
+                mapmaker.setPixelSize(pixelScale);
+            }
+            else
+            {
+                LatLon ll = MathUtil.reclat(centerPoint).toDegrees();
+                mapmaker.setLatitude(ll.lat);
+                mapmaker.setLongitude(ll.lon);
+                mapmaker.setPixelSize(1000.0 * 1.5 * radius / (double)halfSize);
+            }
             mapmaker.setHalfSize(halfSize);
-            mapmaker.setPixelSize(1000.0 * 1.5 * radius / (double)halfSize);
             mapmaker.setOutputFolder(outputFolder);
 
             mapmakerProcess = mapmaker.runMapmaker();

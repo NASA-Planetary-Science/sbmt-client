@@ -1361,20 +1361,21 @@ public class SmallBodyConfig
             c.imageSearchDefaultEndDate = new GregorianCalendar(2014, 11, 31, 0, 0, 0).getTime();
             c.imageSearchQuery = new GenericPhpQuery("/GASKELL/67P/IMAGING", "67P");
             c.imageSearchFilterNames = new String[]{
-                    "Filter 12",
-                    "Filter 16",
-                    "Filter 18",
+                    // If a name, begins with a star, it is not selected by default
+                    "*Filter 12",
+                    "*Filter 16",
+                    "*Filter 18",
                     "Filter 22",
-                    "Filter 23",
-                    "Filter 24",
-                    "Filter 27",
-                    "Filter 28",
-                    "Filter 41",
-                    "Filter 51",
-                    "Filter 54",
-                    "Filter 61"
+                    "*Filter 23",
+                    "*Filter 24",
+                    "*Filter 27",
+                    "*Filter 28",
+                    "*Filter 41",
+                    "*Filter 51",
+                    "*Filter 54",
+                    "*Filter 61"
             };
-            c.imageSearchUserDefinedCheckBoxesNames = new String[]{"NAC", "WAC"};
+            c.imageSearchUserDefinedCheckBoxesNames = new String[]{"NAC", "*WAC"};
             c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
             c.imageSearchDefaultMaxResolution = 4000.0;
             c.imageSearchImageSources = new ImageSource[]{ImageSource.GASKELL};
