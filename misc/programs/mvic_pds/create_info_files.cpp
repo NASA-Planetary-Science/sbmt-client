@@ -86,6 +86,7 @@ void getFieldsFromFitsHeader(const string& labelfilename,
                              string& startmet,
                              string& stopmet,
                              string& target,
+                             string& frame,
                              int& naxis1,
                              int& naxis2)
 {
@@ -121,6 +122,10 @@ void getFieldsFromFitsHeader(const string& labelfilename,
             else if (key == "TARGET")
             {
                 target = value;
+            }
+            else if (key == "SPCINST0")
+            {
+                frame = value;
             }
         }
     }
@@ -171,8 +176,8 @@ void getEt(const string& startmet,
   frustum:
 
 */
-void getScOrientation(double et, string body, double scposb[3], double boredir[3], double updir[3],
-                      double frustum[12], int naxis1, int naxis2)
+void getScOrientation(double et, string body, string frame, double scposb[3], double boredir[3], 
+                      double updir[3], double frustum[12], int naxis1, int naxis2)
 {
     double lt;
     double i2bmat[3][3];
@@ -193,7 +198,7 @@ void getScOrientation(double et, string body, double scposb[3], double boredir[3
     // specify intstrument -turnerj1
     //const char* frame = "NH_LORRI";
     // const char* frame = "NH_RALPH_MVIC";
-    const char* frame = "NH_RALPH_MVIC_METHANE";
+    // const char* frame = "NH_RALPH_MVIC_METHANE";
 
     spkpos_c(target, et, ref.c_str(), abcorr, obs, scposb, &lt);
     if (failed_c())
@@ -202,7 +207,7 @@ void getScOrientation(double et, string body, double scposb[3], double boredir[3
     cout.precision(16);
     cout << "Spacecraft Position: " << scposb[0] << " " << scposb[1] << " " << scposb[2] << endl;
 
-    pxform_c(frame, ref.c_str(), et, i2bmat);
+    pxform_c(frame.c_str(), ref.c_str(), et, i2bmat);
     if (failed_c())
         return;
 
@@ -400,6 +405,7 @@ int main(int argc, char** argv)
         string startmet;
         string stopmet;
         string target;
+        string frame;
         int naxis1;
         int naxis2;
         string startutc;
@@ -413,7 +419,7 @@ int main(int argc, char** argv)
         double frustum[12];
         double sunPosition[3];
 
-        getFieldsFromFitsHeader(labelfiles[i], startmet, stopmet, target, naxis1, naxis2);
+        getFieldsFromFitsHeader(labelfiles[i], startmet, stopmet, target, frame, naxis1, naxis2);
 
 	// change to not ignore 1024 pixel images -turnerj1
 //        if (target != body || naxis1 != 1024 || naxis2 != 1024)
@@ -425,7 +431,7 @@ int main(int argc, char** argv)
 
         et = startet + (stopet - startet) / 2.0;
 
-        getScOrientation(et, body, scposb, boredir, updir, frustum, naxis1, naxis2);
+        getScOrientation(et, body, frame, scposb, boredir, updir, frustum, naxis1, naxis2);
         if (failed_c())
             continue;
 
