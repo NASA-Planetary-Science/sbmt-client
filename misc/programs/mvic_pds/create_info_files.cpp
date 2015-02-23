@@ -195,11 +195,6 @@ void getScOrientation(double et, string body, string frame, double scposb[3], do
     const char* abcorr = "NONE";
     const char* obs = body.c_str();
 
-    // specify intstrument -turnerj1
-    //const char* frame = "NH_LORRI";
-    // const char* frame = "NH_RALPH_MVIC";
-    // const char* frame = "NH_RALPH_MVIC_METHANE";
-
     spkpos_c(target, et, ref.c_str(), abcorr, obs, scposb, &lt);
     if (failed_c())
         return;
@@ -211,7 +206,7 @@ void getScOrientation(double et, string body, string frame, double scposb[3], do
     if (failed_c())
         return;
 
-    // specify FOV -turnerj1
+    // specify FOV
     focalLength = 657.5;
     pixelsizex = 0.013;
     pixelsizey = 0.013;
@@ -421,9 +416,9 @@ int main(int argc, char** argv)
 
         getFieldsFromFitsHeader(labelfiles[i], startmet, stopmet, target, frame, naxis1, naxis2);
 
-	// change to not ignore 1024 pixel images -turnerj1
-//        if (target != body || naxis1 != 1024 || naxis2 != 1024)
-//            continue;
+	// ignore bodies other than the specified one
+        if (target != body)
+            continue;
 
         getEt(startmet, stopmet, startutc, startet, stoputc, stopet);
         if (failed_c())
