@@ -133,7 +133,7 @@ public class MapmakerPanel extends JPanel implements ActionListener
         longitudeLabel.setEnabled(false);
         longitudeTextField = new JTextField();
         longitudeTextField.setPreferredSize(new Dimension(200, 24));
-        longitudeTextField.setInputVerifier(JTextFieldDoubleVerifier.getVerifier(longitudeTextField, -90.0, 90.0));
+        longitudeTextField.setInputVerifier(JTextFieldDoubleVerifier.getVerifier(longitudeTextField, -360.0, 360.0));
         longitudeTextField.setEnabled(false);
 
         setSpecifyRegionManuallyCheckbox.addActionListener(new ActionListener()
