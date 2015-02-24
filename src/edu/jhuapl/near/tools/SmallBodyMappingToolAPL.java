@@ -18,10 +18,8 @@ public class SmallBodyMappingToolAPL
     {
         Configuration.setAPLVersion(true);
 
-        // Use default credentials so that the APL version can always access the
-        // password-protected files on the server even if run outside the lab.
-        String username = "asteroid";
-        String password = "crater";
+        String username = null;
+        String password = null;
 
         try
         {
@@ -57,7 +55,16 @@ public class SmallBodyMappingToolAPL
         {
         }
 
-        Configuration.setupPasswordAuthentication(username, password);
+        if (username != null && password != null)
+        {
+            Configuration.setupPasswordAuthentication(username, password);
+            System.out.println("Password file found.  Username: " + username + "  Password: " + password);
+        }
+        else
+        {
+            System.out.println("Warning: no correctly formatted password file found. "
+                    + "Continuing without password. Certain functionality may not work.");
+        }
 
         // Call the public version's main function
         SmallBodyMappingTool.main(args);
