@@ -23,11 +23,13 @@ public class SmallBodyMappingToolAPL
 
         try
         {
-            // First try to see if there's a password.txt file in ~/.neartool, otherwise
-            // try the current directory.
+            // First try to see if there's a password.txt file in ~/.neartool. Then try the folder
+            // containing the runsbmt script.
+            String jarLocation = SmallBodyMappingToolAPL.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+            String parent = new File(jarLocation).getParentFile().getParent();
             String[] passwordFilesToTry = {
                     Configuration.getApplicationDataDir() + File.separator + "password.txt",
-                    "password.txt"
+                    parent + File.separator + "password.txt"
             };
 
             for (String passwordFile : passwordFilesToTry)
@@ -58,7 +60,6 @@ public class SmallBodyMappingToolAPL
         if (username != null && password != null)
         {
             Configuration.setupPasswordAuthentication(username, password);
-            System.out.println("Password file found.  Username: " + username + "  Password: " + password);
         }
         else
         {
