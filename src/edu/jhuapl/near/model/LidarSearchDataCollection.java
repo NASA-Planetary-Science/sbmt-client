@@ -50,6 +50,13 @@ import edu.jhuapl.near.util.gravity.Gravity;
 
 public class LidarSearchDataCollection extends Model
 {
+    public enum TrackFileType
+    {
+        TEXT,
+        BINARY,
+        OLA_LEVEL_2
+    };
+
     private SmallBodyConfig smallBodyConfig;
     private SmallBodyModel smallBodyModel;
     private vtkPolyData polydata;
@@ -414,23 +421,83 @@ public class LidarSearchDataCollection extends Model
         tracks.add(track);
     }
 
+    private void skip(DataInputStream in, int n) throws IOException
+    {
+        for (int i = 0; i < n; ++i)
+        {
+            in.readByte();
+        }
+    }
+
+    public void loadTrackOlaL2(File file) throws IOException
+    {
+        DataInputStream in = new DataInputStream(new BufferedInputStream(new FileInputStream(file)));
+
+        Track track = new Track();
+        track.startId = originalPoints.size();
+
+        while (true)
+        {
+            double time = 0;
+            double[] target = {0.0, 0.0, 0.0};
+            double[] scpos = {0.0, 0.0, 0.0};
+
+            try
+            {
+                in.readByte();
+            }
+            catch(EOFException e)
+            {
+                break;
+            }
+
+            try
+            {
+                skip(in, 17 + 8 + 24);
+                time = FileUtil.readDoubleAndSwap(in);
+                skip(in, 8 + 2 * 3 + 2 + 8 + 8 * 4);
+                target[0] = FileUtil.readDoubleAndSwap(in) / 1000.0;
+                target[1] = FileUtil.readDoubleAndSwap(in) / 1000.0;
+                target[2] = FileUtil.readDoubleAndSwap(in) / 1000.0;
+                skip(in, 8 * 3);
+                scpos[0] = FileUtil.readDoubleAndSwap(in) / 1000.0;
+                scpos[1] = FileUtil.readDoubleAndSwap(in) / 1000.0;
+                scpos[2] = FileUtil.readDoubleAndSwap(in) / 1000.0;
+            }
+            catch(IOException e)
+            {
+                in.close();
+                throw e;
+            }
+
+            originalPoints.add(new LidarPoint(target, scpos, time));
+        }
+
+        in.close();
+
+        track.stopId = originalPoints.size() - 1;
+        tracks.add(track);
+    }
+
     /**
      * Load a track from a file. This will replace all currently existing tracks
      * with a single track.
      * @param filename
      * @throws IOException
      */
-    public void loadTracksFromFiles(File[] files, boolean binary) throws IOException
+    public void loadTracksFromFiles(File[] files, TrackFileType trackFileType) throws IOException
     {
         originalPoints.clear();
         tracks.clear();
 
         for (File file : files)
         {
-            if (binary)
+            if (trackFileType == TrackFileType.TEXT)
+                loadTrackAscii(file);
+            else if (trackFileType == TrackFileType.BINARY)
                 loadTrackBinary(file);
             else
-                loadTrackAscii(file);
+                loadTrackOlaL2(file);
         }
 
         timeSeparationBetweenTracks = Double.MAX_VALUE;
