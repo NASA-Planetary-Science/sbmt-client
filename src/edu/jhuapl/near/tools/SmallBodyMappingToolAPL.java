@@ -18,18 +18,18 @@ public class SmallBodyMappingToolAPL
     {
         Configuration.setAPLVersion(true);
 
-        // Use default credentials so that the APL version can always access the
-        // password-protected files on the server even if run outside the lab.
-        String username = "asteroid";
-        String password = "crater";
+        String username = null;
+        String password = null;
 
         try
         {
-            // First try to see if there's a password.txt file in ~/.neartool, otherwise
-            // try the current directory.
+            // First try to see if there's a password.txt file in ~/.neartool. Then try the folder
+            // containing the runsbmt script.
+            String jarLocation = SmallBodyMappingToolAPL.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+            String parent = new File(jarLocation).getParentFile().getParent();
             String[] passwordFilesToTry = {
                     Configuration.getApplicationDataDir() + File.separator + "password.txt",
-                    "password.txt"
+                    parent + File.separator + "password.txt"
             };
 
             for (String passwordFile : passwordFilesToTry)
@@ -57,7 +57,15 @@ public class SmallBodyMappingToolAPL
         {
         }
 
-        Configuration.setupPasswordAuthentication(username, password);
+        if (username != null && password != null)
+        {
+            Configuration.setupPasswordAuthentication(username, password);
+        }
+        else
+        {
+            System.out.println("Warning: no correctly formatted password file found. "
+                    + "Continuing without password. Certain functionality may not work.");
+        }
 
         // Call the public version's main function
         SmallBodyMappingTool.main(args);

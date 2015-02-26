@@ -68,9 +68,7 @@ echo '**********************************'
 echo 'CLOSING THIS WINDOW WILL QUIT SBMT'
 echo '**********************************'
 DIR=\`dirname \"\$0\"\`
-pushd \"\$DIR\" > /dev/null
-DIR=\`pwd\`
-popd > /dev/null
+DIR=\"\`(cd \"\$DIR\"; pwd)\`\"
 export DYLD_LIBRARY_PATH=\"\$DIR/lib/mac64\":\$DYLD_LIBRARY_PATH
 MEMSIZE=\`sysctl hw.memsize | awk '{print int(\$2/1024)}'\`
 /usr/libexec/java_home -v 1.6 -a x86_64 -exec java -Xmx\${MEMSIZE}K -Djava.library.path=\"\$DIR/lib/mac64\" -Dcom.apple.mrj.application.apple.menu.about.name=\"Small Body Mapping Tool\" -jar \"\$DIR/lib/near.jar\" \$@
@@ -79,9 +77,7 @@ chmod +x $output_dir/mac64/sbmt/runsbmt
 
 echo -n -e "#!/bin/sh
 DIR=\`dirname \"\$0\"\`
-pushd \"\$DIR\" > /dev/null
-DIR=\`pwd\`
-popd > /dev/null
+DIR=\"\`(cd \"\$DIR\"; pwd)\`\"
 export LD_LIBRARY_PATH=\"\$DIR/lib/linux64\":\$LD_LIBRARY_PATH
 MEMSIZE=\`grep MemTotal /proc/meminfo | awk '{print \$2}'\`
 java -Xmx\${MEMSIZE}K -Djava.library.path=\"\$DIR/lib/linux64\" -jar \"\$DIR/lib/near.jar\" \$@
