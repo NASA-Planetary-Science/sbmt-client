@@ -85,8 +85,14 @@ public abstract class Image extends Model implements PropertyChangeListener
 
         public ImageKey(String name, ImageSource source)
         {
+            this(name, source, false);
+        }
+
+        public ImageKey(String name, ImageSource source, boolean isMultispectral)
+        {
             this.name = name;
             this.source = source;
+            this.isMultispectral = isMultispectral;
         }
 
         @Override
