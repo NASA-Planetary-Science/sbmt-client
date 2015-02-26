@@ -2,6 +2,7 @@ package edu.jhuapl.near.gui;
 
 import java.awt.Component;
 
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
@@ -45,16 +46,21 @@ public class PointsMappingControlPanel extends
         panel.add(radiusLabel);
 
         double bbLength = modelManager.getSmallBodyModel().getBoundingBoxDiagonalLength();
-        double min = bbLength / 4000.0;
-        double max =bbLength / 10.0;
-        double step = max / 40.0;
+        double max = 10.0 * bbLength;
+        double step = bbLength / 400.0;
 
         SpinnerModel model = new SpinnerNumberModel(diameter, //initial value
-                min,
+                0.00001,
                 max,
                 step);
 
-        spinner = new JSpinner(model);
+        spinner = new JSpinner(model) {
+            @Override
+            protected JComponent createEditor( SpinnerModel model )
+            {
+              return new NumberEditor(this, "0.00000");
+            }
+          };
         spinner.addChangeListener(this);
         radiusLabel.setLabelFor(spinner);
         panel.add(spinner);
