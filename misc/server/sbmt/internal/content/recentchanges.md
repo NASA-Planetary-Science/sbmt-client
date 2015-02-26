@@ -4,6 +4,29 @@
 
 # Recent Changes
 
+
+### February 26, 2015
+
+-   When loading a shape model by specifying path to shape model on the
+    command line, fixed issue in which full path of shape model was
+    required rather than a relative path.
+-   In Mapmaker tab, added ability to manually specify search region,
+    rather than via region selection with mouse.
+-   In image search tabs, added checkboxes to list of matching images
+    for mapping and hiding images.
+-   In image search tabs, added button (below search list) for saving
+    out list of matched images to a text file.
+-   In image search tabs, when searching for images, image boundaries
+    are now shown in different colors which can be changed by the user
+    by right-clicking.
+-   When starting SBMT, if the password.txt file cannot be found, a
+    warning is printed out to the console.
+-   In Tracks tab added ability to load OLA Level 2 format.
+-   [New Horizons team only] Added MVIC tab to Jupiter body and moons
+    for viewing MVIC data.
+-   [New Horizons team only] Added Imaging tab to Pluto and Charon
+    models for viewing latest LORRI images.
+
 ### January 21, 2015
 
 -   Added Stooke Eros image map (available at
