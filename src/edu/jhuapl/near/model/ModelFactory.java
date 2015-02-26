@@ -27,6 +27,7 @@ import edu.jhuapl.near.model.lorri.LorriImage;
 import edu.jhuapl.near.model.mathilde.MSIMathildeImage;
 import edu.jhuapl.near.model.mvic.MVICJupiterImage;
 import edu.jhuapl.near.model.phobos.PhobosImage;
+import edu.jhuapl.near.model.rosetta.CG;
 import edu.jhuapl.near.model.rosetta.Lutetia;
 import edu.jhuapl.near.model.rosetta.OsirisImage;
 import edu.jhuapl.near.model.saturnmoon.SaturnMoonImage;
@@ -144,6 +145,11 @@ public class ModelFactory
         {
             if (ShapeModelBody.LUTETIA == name)
                 return new Lutetia(config);
+        }
+        else if (ShapeModelAuthor.DLR == author)
+        {
+            if (ShapeModelBody._67P == name)
+                return new CG(config);
         }
         else if (ShapeModelAuthor.CUSTOM == author)
         {

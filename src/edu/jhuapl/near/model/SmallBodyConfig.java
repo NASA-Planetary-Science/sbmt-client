@@ -90,7 +90,7 @@ public class SmallBodyConfig
         PALLAS("Pallas"),
         DAPHNE("Daphne"),
         HERMIONE("Hermione"),
-        _67P("67P (SHAP5 V0.3)");
+        _67P("67P");
 
         final private String str;
         private ShapeModelBody(String str)
@@ -167,7 +167,8 @@ public class SmallBodyConfig
         LORRI("LORRI"), // experiment for New Horizons data -turnerj1
         MVIC("MVIC"), // experiment for New Horizons data -turnerj1
 //        NEWHORIZONS("NewHorizons"), // experiment for New Horizons data -turnerj1
-        CARRY("Carry");
+        CARRY("Carry"),
+        DLR("DLR");
 
         final private String str;
         private ShapeModelAuthor(String str)
@@ -1352,6 +1353,7 @@ public class SmallBodyConfig
             c.population = null;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelAuthor.GASKELL;
+            c.version = "SHAP5 V0.3";
             c.pathOnServer = "/GASKELL/67P";
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
             c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
@@ -1380,6 +1382,20 @@ public class SmallBodyConfig
             c.imageSearchImageSources = new ImageSource[]{ImageSource.GASKELL};
             c.imageType = ImageType.OSIRIS_IMAGE;
             c.imageInstrumentName = Instrument.OSIRIS;
+            configArray.add(c);
+
+            c = c.clone();
+            c.author = ShapeModelAuthor.DLR;
+            c.pathOnServer = "/DLR/67P";
+            c.version = "SHAP4S";
+            c.hasPerspectiveImages = false;
+            c.smallBodyLabelPerResolutionLevel = new String[]{
+                    "17442 plates ", "72770 plates ", "298442 plates ", "1214922 plates ",
+                    "4895631 plates ", "16745283 plates "
+            };
+            c.smallBodyNumberOfPlatesPerResolutionLevel = new int[]{
+                    17442, 72770, 298442, 1214922, 4895631, 16745283
+            };
             configArray.add(c);
         }
 
@@ -1491,6 +1507,7 @@ public class SmallBodyConfig
     public ShapeModelPopulation population; // e.g. Mars for satellites or main belt for asteroids
     public ShapeModelDataUsed dataUsed; // e.g. images, radar, lidar, or enhanced
     public ShapeModelAuthor author; // e.g. Gaskell
+    public String version; // e.g. 2.0
     public String pathOnServer;
     public String[] smallBodyLabelPerResolutionLevel; // only needed when number resolution levels > 1
     public int[] smallBodyNumberOfPlatesPerResolutionLevel; // only needed when number resolution levels > 1
@@ -1539,6 +1556,7 @@ public class SmallBodyConfig
     public boolean customTemporary = false;
 
 
+
     protected SmallBodyConfig clone()
     {
         SmallBodyConfig c = new SmallBodyConfig();
@@ -1547,6 +1565,7 @@ public class SmallBodyConfig
         c.population = this.population;
         c.dataUsed = this.dataUsed;
         c.author = this.author;
+        c.version = this.version;
         c.pathOnServer = this.pathOnServer;
         c.hasColoringData = this.hasColoringData;
         c.hasImageMap = this.hasImageMap;
@@ -1614,6 +1633,8 @@ public class SmallBodyConfig
                  path += " > " + dataUsed;
              if (author != null)
                  path += " > " + author;
+             if (version != null)
+                 path += " (" + version + ")";
              return path;
          }
      }
@@ -1642,7 +1663,12 @@ public class SmallBodyConfig
          if (author == ShapeModelAuthor.CUSTOM)
              return customName;
          else
-             return body.toString();
+         {
+             String ver = "";
+             if (version != null)
+                 ver += " (" + version + ")";
+             return body.toString() + ver;
+         }
      }
 
     /**

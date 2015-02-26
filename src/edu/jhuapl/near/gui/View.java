@@ -362,7 +362,12 @@ public class View extends JPanel
         else if (smallBodyConfig.author == null)
             return smallBodyConfig.body.toString();
         else
-            return smallBodyConfig.author.toString();
+        {
+            String version = "";
+            if (smallBodyConfig.version != null)
+                version += " (" + smallBodyConfig.version + ")";
+            return smallBodyConfig.author.toString() + version;
+        }
     }
 
     public SmallBodyConfig getSmallBodyConfig()

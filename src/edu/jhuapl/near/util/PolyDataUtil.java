@@ -29,6 +29,7 @@ import vtk.vtkIdList;
 import vtk.vtkIdTypeArray;
 import vtk.vtkOBJReader;
 import vtk.vtkObject;
+import vtk.vtkPLYReader;
 import vtk.vtkPlane;
 import vtk.vtkPointData;
 import vtk.vtkPointLocator;
@@ -3056,6 +3057,24 @@ public class PolyDataUtil
         return shapeModel;
     }
 
+    static public vtkPolyData loadPLYShapeModel(String filename) throws Exception
+    {
+        vtkPLYReader smallBodyReader = new vtkPLYReader();
+        smallBodyReader.SetFileName(filename);
+        smallBodyReader.Update();
+
+        vtkPolyData output = smallBodyReader.GetOutput();
+
+        vtkPolyData shapeModel = new vtkPolyData();
+        shapeModel.ShallowCopy(output);
+
+        smallBodyReader.Delete();
+
+        addPointNormalsToShapeModel(shapeModel);
+
+        return shapeModel;
+    }
+
     /**
      * This function loads a shape model in a variety of formats. It looks
      * at its file extension to determine it format. It supports these formats:
@@ -3110,6 +3129,10 @@ public class PolyDataUtil
         else if (filename.toLowerCase().endsWith(".w2"))
         {
             shapeModel = loadTempel1AndWild2ShapeModel(filename, true);
+        }
+        else if (filename.toLowerCase().endsWith(".ply"))
+        {
+            shapeModel = loadPLYShapeModel(filename);
         }
         else
         {
