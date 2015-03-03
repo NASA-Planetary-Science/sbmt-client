@@ -395,8 +395,15 @@ int main(int argc, char** argv)
 
         getFieldsFromFitsHeader(labelfiles[i], startmet, stopmet, target, naxis1, naxis2);
 
-        if (target != body || naxis1 != 1024 || naxis2 != 1024)
+        if (naxis1 != 1024 || naxis2 != 1024)
             continue;
+
+        if (target != "PLUTO" && target != "CHARON" && target != "HYDRA" &&
+            target != "KERBEROS" && target != "NIX" && target != "STYX")
+        {
+            if (target != body)
+                continue;
+        }
 
         getEt(startmet, stopmet, startutc, startet, stoputc, stopet);
         if (failed_c())
