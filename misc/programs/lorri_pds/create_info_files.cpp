@@ -395,9 +395,6 @@ int main(int argc, char** argv)
 
         getFieldsFromFitsHeader(labelfiles[i], startmet, stopmet, target, naxis1, naxis2);
 
-        if (naxis1 != 1024 || naxis2 != 1024)
-            continue;
-
         getEt(startmet, stopmet, startutc, startet, stoputc, stopet);
         if (failed_c())
             continue;
