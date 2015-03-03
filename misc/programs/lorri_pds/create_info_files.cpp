@@ -398,18 +398,18 @@ int main(int argc, char** argv)
         if (naxis1 != 1024 || naxis2 != 1024)
             continue;
 
-        if (target != "PLUTO" && target != "CHARON" && target != "HYDRA" &&
-            target != "KERBEROS" && target != "NIX" && target != "STYX")
-        {
-            if (target != body)
-                continue;
-        }
-
         getEt(startmet, stopmet, startutc, startet, stoputc, stopet);
         if (failed_c())
             continue;
 
         et = startet + (stopet - startet) / 2.0;
+
+        // omit checking for target for pluto images
+        if (et < 473342467)
+        {
+            if (target != body)
+                continue;
+        }
 
         getScOrientation(et, body, scposb, boredir, updir, frustum);
         if (failed_c())
