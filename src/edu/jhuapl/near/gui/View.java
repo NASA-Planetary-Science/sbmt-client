@@ -2,6 +2,7 @@ package edu.jhuapl.near.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
@@ -104,7 +105,7 @@ public class View extends JPanel
         controlPanel.setBorder(BorderFactory.createEmptyBorder());
         controlPanel.addTab(smallBodyConfig.getShapeModelName(), new SmallBodyControlPanel(modelManager, smallBodyConfig.getShapeModelName()));
 
-        if (smallBodyConfig.hasPerspectiveImages)
+        if (Arrays.asList(smallBodyConfig.spectralModes).contains(SpectralMode.MONO))
         {
             // For the public version, only include image tab for Eros (all) and Gaskell's Itokawa shape models.
             if (Configuration.isAPLVersion() ||
@@ -116,7 +117,7 @@ public class View extends JPanel
             }
         }
 
-        if (smallBodyConfig.hasMultispectralImages)
+        if (Arrays.asList(smallBodyConfig.spectralModes).contains(SpectralMode.MULTI))
         {
             if (Configuration.isAPLVersion())
             {
@@ -236,13 +237,13 @@ public class View extends JPanel
         allModels.put(ModelNames.GRATICULE, graticule);
         allModels.put(ModelNames.IMAGES, new ImageCollection(smallBodyModel));
 
-        if (smallBodyConfig.hasPerspectiveImages)
+        if (Arrays.asList(smallBodyConfig.spectralModes).contains(SpectralMode.MONO))
         {
             allModels.put(ModelNames.COLOR_IMAGES, new ColorImageCollection(smallBodyModel));
             allModels.put(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES, new PerspectiveImageBoundaryCollection(smallBodyModel));
         }
 
-        if (smallBodyConfig.hasMultispectralImages)
+        if (Arrays.asList(smallBodyConfig.spectralModes).contains(SpectralMode.MULTI))
         {
             allModels.put(ModelNames.COLOR_IMAGES, new ColorImageCollection(smallBodyModel));
             allModels.put(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES, new PerspectiveImageBoundaryCollection(smallBodyModel));
@@ -284,7 +285,7 @@ public class View extends JPanel
     {
         popupManager = new PopupManager(modelManager, infoPanelManager, renderer);
 
-        if (smallBodyConfig.hasPerspectiveImages)
+        if (Arrays.asList(smallBodyConfig.spectralModes).contains(SpectralMode.MONO))
         {
             ImageCollection images = (ImageCollection)modelManager.getModel(ModelNames.IMAGES);
             PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES);
@@ -297,7 +298,7 @@ public class View extends JPanel
             popupManager.registerPopup(modelManager.getModel(ModelNames.COLOR_IMAGES), popupMenu);
         }
 
-        if (smallBodyConfig.hasMultispectralImages)
+        if (Arrays.asList(smallBodyConfig.spectralModes).contains(SpectralMode.MULTI))
         {
             ImageCollection images = (ImageCollection)modelManager.getModel(ModelNames.IMAGES);
             PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES);

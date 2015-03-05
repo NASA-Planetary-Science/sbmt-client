@@ -1,12 +1,14 @@
 package edu.jhuapl.near.model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import edu.jhuapl.near.model.Image.ImageSource;
+import edu.jhuapl.near.model.Image.SpectralMode;
 import edu.jhuapl.near.query.FixedListQuery;
 import edu.jhuapl.near.query.GenericPhpQuery;
 import edu.jhuapl.near.query.QueryBase;
@@ -281,7 +283,7 @@ public class SmallBodyConfig
         c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
         c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
         c.hasImageMap = true;
-        c.hasPerspectiveImages = true;
+        c.spectralModes = new SpectralMode[] { SpectralMode.MONO };
         c.hasLidarData = true;
         c.hasMapmaker = true;
         c.hasSpectralData = true;
@@ -358,7 +360,7 @@ public class SmallBodyConfig
         c.pathOnServer = "/GASKELL/ITOKAWA";
         c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
         c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
-        c.hasPerspectiveImages = true;
+        c.spectralModes = new SpectralMode[] { SpectralMode.MONO };
         c.hasLidarData = true;
         c.imageSearchDefaultStartDate = new GregorianCalendar(2005, 8, 1, 0, 0, 0).getTime();
         c.imageSearchDefaultEndDate = new GregorianCalendar(2005, 10, 31, 0, 0, 0).getTime();
@@ -417,7 +419,7 @@ public class SmallBodyConfig
         c.pathOnServer = "/GASKELL/PHOBOS";
         c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
         c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
-        c.hasPerspectiveImages = true;
+        c.spectralModes = new SpectralMode[] { SpectralMode.MONO };
         c.imageSearchDefaultStartDate = new GregorianCalendar(1976, 6, 24, 0, 0, 0).getTime();
         c.imageSearchDefaultEndDate = new GregorianCalendar(2011, 6, 7, 0, 0, 0).getTime();
         c.imageSearchQuery = new GenericPhpQuery("/GASKELL/PHOBOS/IMAGING", "PHOBOS");
@@ -462,7 +464,7 @@ public class SmallBodyConfig
             c.pathOnServer = "/GASKELL/PHOBOSEXPERIMENTAL";
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
             c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
-            c.hasPerspectiveImages = true;
+            c.spectralModes = new SpectralMode[] { SpectralMode.MONO };
             c.hasMapmaker = true;
             c.imageSearchDefaultStartDate = new GregorianCalendar(1976, 6, 24, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2011, 6, 7, 0, 0, 0).getTime();
@@ -507,8 +509,7 @@ public class SmallBodyConfig
             c.pathOnServer = "/NEWHORIZONS/JUPITER/shape_res0.vtk.gz";
             c.hasColoringData = false;
             c.hasImageMap = false;
-            c.hasPerspectiveImages = true;
-            c.hasMultispectralImages = true;
+            c.spectralModes = new SpectralMode[] { SpectralMode.MONO, SpectralMode.MULTI };
             c.imageSearchDefaultStartDate = new GregorianCalendar(2007, 0, 8, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2007, 2, 5, 0, 0, 0).getTime();
             c.imageSearchQuery = new GenericPhpQuery("/NEWHORIZONS/JUPITER/IMAGING", "JUPITER");
@@ -545,8 +546,7 @@ public class SmallBodyConfig
             c.pathOnServer = "/NEWHORIZONS/EUROPA/shape_res0.vtk.gz";
             c.hasImageMap = true;
             c.imageSearchQuery = new GenericPhpQuery("/NEWHORIZONS/EUROPA/IMAGING", "EUROPA");
-            c.hasPerspectiveImages = true;
-            c.hasMultispectralImages = true;
+            c.spectralModes = new SpectralMode[] { SpectralMode.MONO, SpectralMode.MULTI };
             c.imageSearchDefaultStartDate = new GregorianCalendar(2007, 0, 8, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2007, 2, 5, 0, 0, 0).getTime();
             c.multispectralImageSearchQuery = new FixedListQuery("/NEWHORIZONS/EUROPA/MVIC");
@@ -571,8 +571,7 @@ public class SmallBodyConfig
             c.pathOnServer = "/NEWHORIZONS/GANYMEDE/shape_res0.vtk.gz";
             c.hasImageMap = true;
             c.imageSearchQuery = new GenericPhpQuery("/NEWHORIZONS/GANYMEDE/IMAGING", "GANYMEDE");
-            c.hasPerspectiveImages = true;
-            c.hasMultispectralImages = true;
+            c.spectralModes = new SpectralMode[] { SpectralMode.MONO, SpectralMode.MULTI };
             c.imageSearchDefaultStartDate = new GregorianCalendar(2007, 0, 8, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2007, 2, 5, 0, 0, 0).getTime();
             c.multispectralImageSearchQuery = new FixedListQuery("/NEWHORIZONS/GANYMEDE/MVIC");
@@ -597,8 +596,7 @@ public class SmallBodyConfig
             c.pathOnServer = "/NEWHORIZONS/IO/shape_res0.vtk.gz";
             c.hasImageMap = true;
             c.imageSearchQuery = new GenericPhpQuery("/NEWHORIZONS/IO/IMAGING", "IO");
-            c.hasPerspectiveImages = true;
-            c.hasMultispectralImages = true;
+            c.spectralModes = new SpectralMode[] { SpectralMode.MONO, SpectralMode.MULTI };
             c.imageSearchDefaultStartDate = new GregorianCalendar(2007, 0, 8, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2007, 2, 5, 0, 0, 0).getTime();
             c.multispectralImageSearchQuery = new FixedListQuery("/NEWHORIZONS/IO/MVIC");
@@ -633,7 +631,7 @@ public class SmallBodyConfig
         c.pathOnServer = "/GASKELL/MIMAS";
         c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
         c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
-        c.hasPerspectiveImages = true;
+        c.spectralModes = new SpectralMode[] { SpectralMode.MONO };
         c.imageSearchDefaultStartDate = new GregorianCalendar(1980, 10, 10, 0, 0, 0).getTime();
         c.imageSearchDefaultEndDate = new GregorianCalendar(2011, 0, 31, 0, 0, 0).getTime();
         c.imageSearchQuery = new FixedListQuery("/GASKELL/MIMAS/IMAGING");
@@ -655,7 +653,7 @@ public class SmallBodyConfig
         c.pathOnServer = "/GASKELL/PHOEBE";
         c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
         c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
-        c.hasPerspectiveImages = true;
+        c.spectralModes = new SpectralMode[] { SpectralMode.MONO };
         c.imageSearchDefaultStartDate = new GregorianCalendar(1980, 10, 10, 0, 0, 0).getTime();
         c.imageSearchDefaultEndDate = new GregorianCalendar(2011, 0, 31, 0, 0, 0).getTime();
         c.imageSearchQuery = new FixedListQuery("/GASKELL/PHOEBE/IMAGING");
@@ -680,7 +678,7 @@ public class SmallBodyConfig
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
             c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
             c.hasMapmaker = true;
-            c.hasPerspectiveImages = true;
+            c.spectralModes = new SpectralMode[] { SpectralMode.MONO };
             c.imageSearchDefaultStartDate = new GregorianCalendar(2011, 4, 3, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2012, 7, 27, 0, 0, 0).getTime();
             c.imageSearchQuery = new GenericPhpQuery("/GASKELL/VESTA/FC", "FC");
@@ -720,7 +718,7 @@ public class SmallBodyConfig
         c.author = ShapeModelAuthor.THOMAS;
         c.pathOnServer = "/THOMAS/IDA/243ida.llr.gz";
         c.hasImageMap = true;
-        c.hasPerspectiveImages = true;
+        c.spectralModes = new SpectralMode[] { SpectralMode.MONO };
         c.imageSearchDefaultStartDate = new GregorianCalendar(1993, 7, 28, 0, 0, 0).getTime();
         c.imageSearchDefaultEndDate = new GregorianCalendar(1993, 7, 29, 0, 0, 0).getTime();
         c.imageSearchQuery = new FixedListQuery("/THOMAS/IDA/SSI");
@@ -751,7 +749,7 @@ public class SmallBodyConfig
         c.author = ShapeModelAuthor.THOMAS;
         c.pathOnServer = "/THOMAS/GASPRA/951gaspra.llr.gz";
         c.hasImageMap = true;
-        c.hasPerspectiveImages = true;
+        c.spectralModes = new SpectralMode[] { SpectralMode.MONO };
         c.imageSearchDefaultStartDate = new GregorianCalendar(1991, 9, 29, 0, 0, 0).getTime();
         c.imageSearchDefaultEndDate = new GregorianCalendar(1991, 9, 30, 0, 0, 0).getTime();
         c.imageSearchQuery = new FixedListQuery("/THOMAS/GASPRA/SSI");
@@ -782,7 +780,7 @@ public class SmallBodyConfig
         c.author = ShapeModelAuthor.THOMAS;
         c.pathOnServer = "/THOMAS/MATHILDE/253mathilde.llr.gz";
         c.hasImageMap = true;
-        c.hasPerspectiveImages = true;
+        c.spectralModes = new SpectralMode[] { SpectralMode.MONO };
         c.imageSearchDefaultStartDate = new GregorianCalendar(1997, 5, 27, 0, 0, 0).getTime();
         c.imageSearchDefaultEndDate = new GregorianCalendar(1997, 5, 28, 0, 0, 0).getTime();
         c.imageSearchQuery = new FixedListQuery("/THOMAS/MATHILDE/MSI");
@@ -811,7 +809,7 @@ public class SmallBodyConfig
         c.author = ShapeModelAuthor.THOMAS;
         c.pathOnServer = "/THOMAS/DEIMOS/DEIMOS.vtk.gz";
         c.hasImageMap = true;
-        c.hasPerspectiveImages = true;
+        c.spectralModes = new SpectralMode[] { SpectralMode.MONO };
         c.imageSearchDefaultStartDate = new GregorianCalendar(1976, 7, 16, 0, 0, 0).getTime();
         c.imageSearchDefaultEndDate = new GregorianCalendar(2011, 7, 10, 0, 0, 0).getTime();
         c.imageSearchQuery = new GenericPhpQuery("/THOMAS/DEIMOS/IMAGING", "DEIMOS");
@@ -1195,7 +1193,7 @@ public class SmallBodyConfig
             c.pathOnServer = "/GASKELL/LUTETIA";
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
             c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
-            c.hasPerspectiveImages = true;
+            c.spectralModes = new SpectralMode[] { SpectralMode.MONO };
             c.imageSearchDefaultStartDate = new GregorianCalendar(2010, 6, 10, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2010, 6, 11, 0, 0, 0).getTime();
             c.imageSearchQuery = new FixedListQuery("/GASKELL/LUTETIA/IMAGING");
@@ -1245,7 +1243,7 @@ public class SmallBodyConfig
         c.pathOnServer = "/GASKELL/DIONE";
         c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
         c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
-        c.hasPerspectiveImages = true;
+        c.spectralModes = new SpectralMode[] { SpectralMode.MONO };
         c.imageSearchDefaultStartDate = new GregorianCalendar(1980, 10, 10, 0, 0, 0).getTime();
         c.imageSearchDefaultEndDate = new GregorianCalendar(2011, 0, 31, 0, 0, 0).getTime();
         c.imageSearchQuery = new FixedListQuery("/GASKELL/DIONE/IMAGING");
@@ -1357,7 +1355,7 @@ public class SmallBodyConfig
             c.pathOnServer = "/GASKELL/67P";
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
             c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
-            c.hasPerspectiveImages = true;
+            c.spectralModes = new SpectralMode[] { SpectralMode.MONO };
             c.imageSearchDefaultStartDate = new GregorianCalendar(2014, 7, 1, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2014, 11, 31, 0, 0, 0).getTime();
             c.imageSearchQuery = new GenericPhpQuery("/GASKELL/67P/IMAGING", "67P");
@@ -1388,7 +1386,7 @@ public class SmallBodyConfig
             c.author = ShapeModelAuthor.DLR;
             c.pathOnServer = "/DLR/67P";
             c.version = "SHAP4S";
-            c.hasPerspectiveImages = false;
+            c.spectralModes = new SpectralMode[] { };
             c.smallBodyLabelPerResolutionLevel = new String[]{
                     "17442 plates ", "72770 plates ", "298442 plates ", "1214922 plates ",
                     "4895631 plates ", "16745283 plates "
@@ -1436,7 +1434,7 @@ public class SmallBodyConfig
             c.author = null;
             c.pathOnServer = "/NEWHORIZONS/PLUTO/shape_res0.vtk.gz";
             c.hasColoringData = false;
-            c.hasPerspectiveImages = true;
+            c.spectralModes = new SpectralMode[] { SpectralMode.MONO };
             c.imageSearchDefaultStartDate = new GregorianCalendar(2015, 0, 1, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2016, 1, 1, 0, 0, 0).getTime();
             c.imageSearchQuery = new FixedListQuery("/NEWHORIZONS/PLUTO/IMAGING");
@@ -1513,13 +1511,12 @@ public class SmallBodyConfig
     public int[] smallBodyNumberOfPlatesPerResolutionLevel; // only needed when number resolution levels > 1
     public boolean hasColoringData = true;
     public boolean hasImageMap = false;
-    public boolean hasPerspectiveImages = false;
-    public boolean hasMultispectralImages = false;
+    public SpectralMode[] spectralModes = {};
     public boolean hasLidarData = false;
     public boolean hasMapmaker = false;
     public boolean hasSpectralData = false;
     public boolean hasLineamentData = false;
-    // if hasPerspectiveImages is true, the following must be filled in
+    // if spectralModes is not empty, the following must be filled in
     public Date imageSearchDefaultStartDate;
     public Date imageSearchDefaultEndDate;
     public QueryBase imageSearchQuery;
@@ -1569,7 +1566,7 @@ public class SmallBodyConfig
         c.pathOnServer = this.pathOnServer;
         c.hasColoringData = this.hasColoringData;
         c.hasImageMap = this.hasImageMap;
-        c.hasPerspectiveImages = this.hasPerspectiveImages;
+        c.spectralModes = this.spectralModes.clone();
         c.hasLidarData = this.hasLidarData;
         c.hasMapmaker = this.hasMapmaker;
         c.hasSpectralData = this.hasSpectralData;
@@ -1578,7 +1575,7 @@ public class SmallBodyConfig
             c.smallBodyLabelPerResolutionLevel = this.smallBodyLabelPerResolutionLevel.clone();
         if (this.smallBodyNumberOfPlatesPerResolutionLevel != null)
             c.smallBodyNumberOfPlatesPerResolutionLevel = this.smallBodyNumberOfPlatesPerResolutionLevel.clone();
-        if (this.hasPerspectiveImages)
+        if (Arrays.asList(this.spectralModes).contains(SpectralMode.MONO))
         {
             c.imageSearchDefaultStartDate = (Date)this.imageSearchDefaultStartDate.clone();
             c.imageSearchDefaultEndDate = (Date)this.imageSearchDefaultEndDate.clone();
