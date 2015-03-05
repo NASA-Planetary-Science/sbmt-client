@@ -58,6 +58,7 @@ import edu.jhuapl.near.model.ColorImageCollection;
 import edu.jhuapl.near.model.Image;
 import edu.jhuapl.near.model.Image.ImageKey;
 import edu.jhuapl.near.model.Image.ImageSource;
+import edu.jhuapl.near.model.Image.SpectralMode;
 import edu.jhuapl.near.model.ImageCollection;
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelManager;
@@ -89,7 +90,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     private JCheckBox[] filterCheckBoxes;
     private JCheckBox[] userDefinedCheckBoxes;
 
-    private boolean isMultispectral = false;
+    private SpectralMode spectralMode = SpectralMode.MONO;
 
     // The source of the images of the most recently executed query
     private PerspectiveImage.ImageSource sourceOfLastQuery = PerspectiveImage.ImageSource.SPICE;
@@ -104,13 +105,13 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             ModelInfoWindowManager infoPanelManager,
             final PickManager pickManager,
             Renderer renderer,
-            boolean isMultispectral)
+            SpectralMode spectralMode)
     {
         this.smallBodyConfig = smallBodyConfig;
         this.modelManager = modelManager;
         this.pickManager = pickManager;
 
-        this.isMultispectral = isMultispectral;
+        this.spectralMode = spectralMode;
 
         pickManager.getDefaultPicker().addPropertyChangeListener(this);
 
@@ -184,7 +185,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         resultList.addMouseListener(new TableMouseHandler());
         resultList.getModel().addTableModelListener(this);
 
-        ImageSource imageSources[] = isMultispectral ? smallBodyConfig.multispectralImageSearchImageSources : smallBodyConfig.imageSearchImageSources;
+        ImageSource imageSources[] = spectralMode == SpectralMode.MULTI ? smallBodyConfig.multispectralImageSearchImageSources : smallBodyConfig.imageSearchImageSources;
         DefaultComboBoxModel sourceComboBoxModel = new DefaultComboBoxModel(imageSources);
         sourceComboBox.setModel(sourceComboBoxModel);
 
@@ -311,7 +312,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                 for (int selectedIndex : selectedIndices)
                 {
                     String name = imageRawResults.get(selectedIndex).get(0);
-                    ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, isMultispectral);
+                    ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, spectralMode);
                     imageKeys.add(key);
                 }
                 imagePopupMenu.setCurrentImages(imageKeys);
@@ -360,7 +361,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             Date dt = new Date(Long.parseLong(str.get(1)));
 
             String name = imageRawResults.get(i).get(0);
-            ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, isMultispectral);
+            ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, spectralMode);
             if (images.containsImage(key))
             {
                 resultList.setValueAt(true, i, 0);
@@ -419,8 +420,8 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                 //String boundaryName = currentImage.substring(0,currentImage.length()-4) + "_BOUNDARY.VTK";
                 //String boundaryName = currentImage.substring(0,currentImage.length()-4) + "_DDR.LBL";
                 String boundaryName = currentImage.substring(0,currentImage.length()-4);
-                ImageKey key = new ImageKey(boundaryName, sourceOfLastQuery, isMultispectral);
-                key.isMultispectral = this.isMultispectral;
+                ImageKey key = new ImageKey(boundaryName, sourceOfLastQuery, spectralMode);
+                key.spectralMode = this.spectralMode;
                 model.addBoundary(key);
             }
             catch (FitsException e1) {
@@ -530,7 +531,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             for (int i=0; i<size; ++i)
             {
                 String name = imageRawResults.get(i).get(0);
-                ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, isMultispectral);
+                ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, spectralMode);
                 if (images.containsImage(key))
                 {
                     resultList.setValueAt(true, i, 0);
@@ -1714,7 +1715,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             String name = new File(image).getName();
             image = image.substring(0,image.length()-4);
             redLabel.setText(name);
-            selectedRedKey = new ImageKey(image, sourceOfLastQuery, isMultispectral);
+            selectedRedKey = new ImageKey(image, sourceOfLastQuery, spectralMode);
         }
     }//GEN-LAST:event_redButtonActionPerformed
 
@@ -1727,7 +1728,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             String name = new File(image).getName();
             image = image.substring(0,image.length()-4);
             greenLabel.setText(name);
-            selectedGreenKey = new ImageKey(image, sourceOfLastQuery, isMultispectral);
+            selectedGreenKey = new ImageKey(image, sourceOfLastQuery, spectralMode);
         }
     }//GEN-LAST:event_greenButtonActionPerformed
 
@@ -1740,7 +1741,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             String name = new File(image).getName();
             image = image.substring(0,image.length()-4);
             blueLabel.setText(name);
-            selectedBlueKey = new ImageKey(image, sourceOfLastQuery, isMultispectral);
+            selectedBlueKey = new ImageKey(image, sourceOfLastQuery, spectralMode);
         }
     }//GEN-LAST:event_blueButtonActionPerformed
 
@@ -1866,7 +1867,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
             ArrayList<ArrayList<String>> results = null;
 
-            if (isMultispectral)
+            if (spectralMode == SpectralMode.MULTI)
             {
                 results = smallBodyConfig.multispectralImageSearchQuery.runQuery(
                     "",
@@ -2027,7 +2028,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         {
             int row = e.getFirstRow();
             String name = imageRawResults.get(row).get(0);
-            ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, isMultispectral);
+            ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, spectralMode);
             try
             {
                 ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
@@ -2047,7 +2048,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         {
             int row = e.getFirstRow();
             String name = imageRawResults.get(row).get(0);
-            ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, isMultispectral);
+            ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, spectralMode);
             ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
             if (images.containsImage(key))
             {
@@ -2069,7 +2070,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             Component co = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 
             String name = imageRawResults.get(row).get(0);
-            ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, isMultispectral);
+            ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, spectralMode);
             if (model.containsBoundary(key))
             {
                 int[] c = model.getBoundary(key).getBoundaryColor();
@@ -2115,7 +2116,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             if (column == 1)
             {
                 String name = imageRawResults.get(row).get(0);
-                ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, isMultispectral);
+                ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, spectralMode);
                 ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
                 return images.containsImage(key);
             }
@@ -2146,7 +2147,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
             if (row != -1 && e.getClickCount() == 2 && col >= 2) {
                 String name = imageRawResults.get(row).get(0);
-                ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, isMultispectral);
+                ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, spectralMode);
                 try
                 {
                     ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());

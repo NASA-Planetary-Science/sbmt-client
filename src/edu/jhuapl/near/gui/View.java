@@ -18,6 +18,7 @@ import edu.jhuapl.near.model.CircleSelectionModel;
 import edu.jhuapl.near.model.ColorImageCollection;
 import edu.jhuapl.near.model.EllipseModel;
 import edu.jhuapl.near.model.Graticule;
+import edu.jhuapl.near.model.Image.SpectralMode;
 import edu.jhuapl.near.model.ImageCollection;
 import edu.jhuapl.near.model.LidarSearchDataCollection;
 import edu.jhuapl.near.model.LineModel;
@@ -110,7 +111,7 @@ public class View extends JPanel
                     smallBodyConfig.body == ShapeModelBody.EROS ||
                     (smallBodyConfig.body == ShapeModelBody.ITOKAWA && ShapeModelAuthor.GASKELL == smallBodyConfig.author))
             {
-                JComponent component = new ImagingSearchPanel(smallBodyConfig, modelManager, infoPanelManager, pickManager, renderer, false);
+                JComponent component = new ImagingSearchPanel(smallBodyConfig, modelManager, infoPanelManager, pickManager, renderer, SpectralMode.MONO);
                 controlPanel.addTab(smallBodyConfig.imageInstrumentName.toString(), component);
             }
         }
@@ -119,7 +120,7 @@ public class View extends JPanel
         {
             if (Configuration.isAPLVersion())
             {
-                JComponent component = new ImagingSearchPanel(smallBodyConfig, modelManager, infoPanelManager, pickManager, renderer, true);
+                JComponent component = new ImagingSearchPanel(smallBodyConfig, modelManager, infoPanelManager, pickManager, renderer, SpectralMode.MULTI);
                 controlPanel.addTab(smallBodyConfig.multispectralImageInstrumentName.toString(), component);
             }
         }

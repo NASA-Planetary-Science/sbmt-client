@@ -8,6 +8,7 @@ import nom.tam.fits.FitsException;
 
 import edu.jhuapl.near.model.Image.ImageKey;
 import edu.jhuapl.near.model.Image.ImageSource;
+import edu.jhuapl.near.model.Image.SpectralMode;
 import edu.jhuapl.near.model.SmallBodyConfig.ImageType;
 import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelAuthor;
 import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelBody;
@@ -49,7 +50,7 @@ public class ModelFactory
                 ImageSource.LABEL.equals(key.source) ||
                 ImageSource.CORRECTED.equals(key.source))
         {
-            if (key.isMultispectral)
+            if (key.spectralMode == SpectralMode.MULTI)
             {
                 if (config.multispectralImageType == ImageType.MVIC_JUPITER_IMAGE)
                     return new MVICJupiterImage(key, smallBodyModel, loadPointingOnly);

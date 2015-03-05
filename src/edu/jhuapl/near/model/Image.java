@@ -64,6 +64,30 @@ public abstract class Image extends Model implements PropertyChangeListener
         }
     }
 
+
+    public enum SpectralMode
+    {
+        MONO {
+            public String toString()
+            {
+                return "Monospectral";
+            }
+        },
+        MULTI {
+            public String toString()
+            {
+                return "Multispectral";
+            }
+        },
+        HYPER {
+            public String toString()
+            {
+                return "Hyperspectral";
+            }
+        },
+    }
+
+
     /**
      * An ImageKey should be used to uniquely distinguish one image from another.
      * No two images will have the same values for the fields of this class.
@@ -77,7 +101,7 @@ public abstract class Image extends Model implements PropertyChangeListener
 
         public ImageSource source;
 
-        public boolean isMultispectral;
+        public SpectralMode spectralMode;
 
         public ImageKey()
         {
@@ -85,14 +109,14 @@ public abstract class Image extends Model implements PropertyChangeListener
 
         public ImageKey(String name, ImageSource source)
         {
-            this(name, source, false);
+            this(name, source, SpectralMode.MONO);
         }
 
-        public ImageKey(String name, ImageSource source, boolean isMultispectral)
+        public ImageKey(String name, ImageSource source, SpectralMode spectralMode)
         {
             this.name = name;
             this.source = source;
-            this.isMultispectral = isMultispectral;
+            this.spectralMode = spectralMode;
         }
 
         @Override
