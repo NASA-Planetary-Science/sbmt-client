@@ -1,17 +1,16 @@
 package edu.jhuapl.near.model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import edu.jhuapl.near.model.Image.ImageSource;
+import edu.jhuapl.near.model.Image.ImagingInstrument;
 import edu.jhuapl.near.model.Image.SpectralMode;
 import edu.jhuapl.near.query.FixedListQuery;
 import edu.jhuapl.near.query.GenericPhpQuery;
-import edu.jhuapl.near.query.QueryBase;
 import edu.jhuapl.near.util.Configuration;
 
 /**
@@ -166,9 +165,8 @@ public class SmallBodyConfig
         EROSNAV("NAV"),
         EROSNLR("NLR"),
         EXPERIMENTAL("Experimental"),
-        LORRI("LORRI"), // experiment for New Horizons data -turnerj1
-        MVIC("MVIC"), // experiment for New Horizons data -turnerj1
-//        NEWHORIZONS("NewHorizons"), // experiment for New Horizons data -turnerj1
+        LORRI("LORRI"),
+        MVIC("MVIC"),
         CARRY("Carry"),
         DLR("DLR");
 
@@ -283,14 +281,23 @@ public class SmallBodyConfig
         c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
         c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
         c.hasImageMap = true;
-        c.spectralModes = new SpectralMode[] { SpectralMode.MONO };
+
+        c.imagingInstruments = new ImagingInstrument[] {
+                new ImagingInstrument(
+                        SpectralMode.MONO,
+                        new GenericPhpQuery("/GASKELL/EROS/MSI", "EROS"),
+                        ImageType.MSI_IMAGE,
+                        new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE},
+                        Instrument.MSI
+                        )
+        };
+
         c.hasLidarData = true;
         c.hasMapmaker = true;
         c.hasSpectralData = true;
         c.hasLineamentData = true;
         c.imageSearchDefaultStartDate = new GregorianCalendar(2000, 0, 12, 0, 0, 0).getTime();
         c.imageSearchDefaultEndDate = new GregorianCalendar(2001, 1, 13, 0, 0, 0).getTime();
-        c.imageSearchQuery = new GenericPhpQuery("/GASKELL/EROS/MSI", "EROS");
         c.imageSearchFilterNames = new String[]{
                 "Filter 1 (550 nm)",
                 "Filter 2 (450 nm)",
@@ -303,9 +310,6 @@ public class SmallBodyConfig
         c.imageSearchUserDefinedCheckBoxesNames = new String[]{"iofdbl", "cifdbl"};
         c.imageSearchDefaultMaxSpacecraftDistance = 100.0;
         c.imageSearchDefaultMaxResolution = 50.0;
-        c.imageSearchImageSources = new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE};
-        c.imageType = ImageType.MSI_IMAGE;
-        c.imageInstrumentName = Instrument.MSI;
         c.lidarSearchDefaultStartDate = new GregorianCalendar(2000, 1, 28, 0, 0, 0).getTime();
         c.lidarSearchDefaultEndDate = new GregorianCalendar(2001, 1, 13, 0, 0, 0).getTime();
         c.lidarSearchDataSourceMap = new LinkedHashMap<String, String>();
@@ -360,11 +364,20 @@ public class SmallBodyConfig
         c.pathOnServer = "/GASKELL/ITOKAWA";
         c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
         c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
-        c.spectralModes = new SpectralMode[] { SpectralMode.MONO };
+
+        c.imagingInstruments = new ImagingInstrument[] {
+                new ImagingInstrument(
+                        SpectralMode.MONO,
+                        new GenericPhpQuery("/GASKELL/ITOKAWA/AMICA", "AMICA"),
+                        ImageType.AMICA_IMAGE,
+                        new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE, ImageSource.CORRECTED},
+                        Instrument.AMICA
+                        )
+        };
+
         c.hasLidarData = true;
         c.imageSearchDefaultStartDate = new GregorianCalendar(2005, 8, 1, 0, 0, 0).getTime();
         c.imageSearchDefaultEndDate = new GregorianCalendar(2005, 10, 31, 0, 0, 0).getTime();
-        c.imageSearchQuery = new GenericPhpQuery("/GASKELL/ITOKAWA/AMICA", "AMICA");
         c.imageSearchFilterNames = new String[]{
                 "Filter ul (381 nm)",
                 "Filter b (429 nm)",
@@ -377,9 +390,6 @@ public class SmallBodyConfig
         c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
         c.imageSearchDefaultMaxSpacecraftDistance = 26.0;
         c.imageSearchDefaultMaxResolution = 3.0;
-        c.imageSearchImageSources = new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE, ImageSource.CORRECTED};
-        c.imageType = ImageType.AMICA_IMAGE;
-        c.imageInstrumentName = Instrument.AMICA;
         c.lidarSearchDefaultStartDate = new GregorianCalendar(2005, 8, 1, 0, 0, 0).getTime();
         c.lidarSearchDefaultEndDate = new GregorianCalendar(2005, 10, 30, 0, 0, 0).getTime();
         c.lidarSearchDataSourceMap = new LinkedHashMap<String, String>();
@@ -419,10 +429,19 @@ public class SmallBodyConfig
         c.pathOnServer = "/GASKELL/PHOBOS";
         c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
         c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
-        c.spectralModes = new SpectralMode[] { SpectralMode.MONO };
+
+        c.imagingInstruments = new ImagingInstrument[] {
+                new ImagingInstrument(
+                        SpectralMode.MONO,
+                        new GenericPhpQuery("/GASKELL/PHOBOS/IMAGING", "PHOBOS"),
+                        ImageType.PHOBOS_IMAGE,
+                        new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE},
+                        Instrument.IMAGING_DATA
+                        )
+        };
+
         c.imageSearchDefaultStartDate = new GregorianCalendar(1976, 6, 24, 0, 0, 0).getTime();
         c.imageSearchDefaultEndDate = new GregorianCalendar(2011, 6, 7, 0, 0, 0).getTime();
-        c.imageSearchQuery = new GenericPhpQuery("/GASKELL/PHOBOS/IMAGING", "PHOBOS");
         c.imageSearchFilterNames = new String[]{
                 "VSK, Channel 1",
                 "VSK, Channel 2",
@@ -437,9 +456,6 @@ public class SmallBodyConfig
         c.imageSearchUserDefinedCheckBoxesNames = new String[]{"Phobos 2", "Viking Orbiter 1-A", "Viking Orbiter 1-B", "Viking Orbiter 2-A", "Viking Orbiter 2-B", "MEX HRSC"};
         c.imageSearchDefaultMaxSpacecraftDistance = 12000.0;
         c.imageSearchDefaultMaxResolution = 300.0;
-        c.imageSearchImageSources = new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE};
-        c.imageType = ImageType.PHOBOS_IMAGE;
-        c.imageInstrumentName = Instrument.IMAGING_DATA;
         configArray.add(c);
 
         // Thomas Phobos
@@ -464,11 +480,20 @@ public class SmallBodyConfig
             c.pathOnServer = "/GASKELL/PHOBOSEXPERIMENTAL";
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
             c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
-            c.spectralModes = new SpectralMode[] { SpectralMode.MONO };
+
+            c.imagingInstruments = new ImagingInstrument[] {
+                    new ImagingInstrument(
+                            SpectralMode.MONO,
+                            new GenericPhpQuery("/GASKELL/PHOBOSEXPERIMENTAL/IMAGING", "PHOBOSEXP"),
+                            ImageType.PHOBOS_IMAGE,
+                            new ImageSource[]{ImageSource.GASKELL},
+                            Instrument.IMAGING_DATA
+                            )
+            };
+
             c.hasMapmaker = true;
             c.imageSearchDefaultStartDate = new GregorianCalendar(1976, 6, 24, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2011, 6, 7, 0, 0, 0).getTime();
-            c.imageSearchQuery = new GenericPhpQuery("/GASKELL/PHOBOSEXPERIMENTAL/IMAGING", "PHOBOSEXP");
             c.imageSearchFilterNames = new String[]{
                     "VSK, Channel 1",
                     "VSK, Channel 2",
@@ -492,9 +517,6 @@ public class SmallBodyConfig
             };
             c.imageSearchDefaultMaxSpacecraftDistance = 12000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
-            c.imageSearchImageSources = new ImageSource[]{ImageSource.GASKELL};
-            c.imageType = ImageType.PHOBOS_IMAGE;
-            c.imageInstrumentName = Instrument.IMAGING_DATA;
             configArray.add(c);
         }
 
@@ -509,21 +531,32 @@ public class SmallBodyConfig
             c.pathOnServer = "/NEWHORIZONS/JUPITER/shape_res0.vtk.gz";
             c.hasColoringData = false;
             c.hasImageMap = false;
-            c.spectralModes = new SpectralMode[] { SpectralMode.MONO, SpectralMode.MULTI };
+
+            // imaging instruments
+            c.imagingInstruments = new ImagingInstrument[] {
+                    new ImagingInstrument(
+                            SpectralMode.MONO,
+                            new GenericPhpQuery("/NEWHORIZONS/JUPITER/IMAGING", "JUPITER"),
+                            ImageType.LORRI_IMAGE,
+                            new ImageSource[]{ImageSource.SPICE},
+                            Instrument.LORRI
+                            ),
+
+                    new ImagingInstrument(
+                            SpectralMode.MULTI,
+                            new FixedListQuery("/NEWHORIZONS/JUPITER/MVIC"),
+                            ImageType.MVIC_JUPITER_IMAGE,
+                            new ImageSource[]{ImageSource.SPICE},
+                            Instrument.MVIC
+                            )
+                    };
+
             c.imageSearchDefaultStartDate = new GregorianCalendar(2007, 0, 8, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2007, 2, 5, 0, 0, 0).getTime();
-            c.imageSearchQuery = new GenericPhpQuery("/NEWHORIZONS/JUPITER/IMAGING", "JUPITER");
-            c.multispectralImageSearchQuery = new FixedListQuery("/NEWHORIZONS/JUPITER/MVIC");
             c.imageSearchFilterNames = new String[]{};
             c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
             c.imageSearchDefaultMaxSpacecraftDistance = 1.0e9;
             c.imageSearchDefaultMaxResolution = 1.0e6;
-            c.imageSearchImageSources = new ImageSource[]{ImageSource.SPICE};
-            c.multispectralImageSearchImageSources = new ImageSource[]{ImageSource.SPICE};
-            c.imageType = ImageType.LORRI_IMAGE;
-            c.multispectralImageType = ImageType.MVIC_JUPITER_IMAGE;
-            c.imageInstrumentName = Instrument.LORRI;
-            c.multispectralImageInstrumentName = Instrument.MVIC;
             configArray.add(c);
 
             c = c.clone();
@@ -534,7 +567,18 @@ public class SmallBodyConfig
             c.author = null;
             c.pathOnServer = "/NEWHORIZONS/CALLISTO/shape_res0.vtk.gz";
             c.hasImageMap = true;
-            c.imageSearchQuery = new GenericPhpQuery("/NEWHORIZONS/CALLISTO/IMAGING", "CALLISTO");
+
+            // imaging instruments
+            c.imagingInstruments = new ImagingInstrument[] {
+                    new ImagingInstrument(
+                            SpectralMode.MONO,
+                            new GenericPhpQuery("/NEWHORIZONS/CALLISTO/IMAGING", "CALLISTO"),
+                            ImageType.LORRI_IMAGE,
+                            new ImageSource[]{ImageSource.SPICE},
+                            Instrument.LORRI
+                            )
+            };
+
             configArray.add(c);
 
             c = c.clone();
@@ -545,21 +589,32 @@ public class SmallBodyConfig
             c.author = null;
             c.pathOnServer = "/NEWHORIZONS/EUROPA/shape_res0.vtk.gz";
             c.hasImageMap = true;
-            c.imageSearchQuery = new GenericPhpQuery("/NEWHORIZONS/EUROPA/IMAGING", "EUROPA");
-            c.spectralModes = new SpectralMode[] { SpectralMode.MONO, SpectralMode.MULTI };
+
+            // imaging instruments
+            c.imagingInstruments = new ImagingInstrument[] {
+                    new ImagingInstrument(
+                            SpectralMode.MONO,
+                            new GenericPhpQuery("/NEWHORIZONS/EUROPA/IMAGING", "EUROPA"),
+                            ImageType.LORRI_IMAGE,
+                            new ImageSource[]{ImageSource.SPICE},
+                            Instrument.LORRI
+                            ),
+
+                    new ImagingInstrument(
+                            SpectralMode.MULTI,
+                            new FixedListQuery("/NEWHORIZONS/EUROPA/MVIC"),
+                            ImageType.MVIC_JUPITER_IMAGE,
+                            new ImageSource[]{ImageSource.SPICE},
+                            Instrument.MVIC
+                            )
+                    };
+
             c.imageSearchDefaultStartDate = new GregorianCalendar(2007, 0, 8, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2007, 2, 5, 0, 0, 0).getTime();
-            c.multispectralImageSearchQuery = new FixedListQuery("/NEWHORIZONS/EUROPA/MVIC");
             c.imageSearchFilterNames = new String[]{};
             c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
             c.imageSearchDefaultMaxSpacecraftDistance = 1.0e9;
             c.imageSearchDefaultMaxResolution = 1.0e6;
-            c.imageSearchImageSources = new ImageSource[]{ImageSource.SPICE};
-            c.multispectralImageSearchImageSources = new ImageSource[]{ImageSource.SPICE};
-            c.imageType = ImageType.LORRI_IMAGE;
-            c.multispectralImageType = ImageType.MVIC_JUPITER_IMAGE;
-            c.imageInstrumentName = Instrument.LORRI;
-            c.multispectralImageInstrumentName = Instrument.MVIC;
             configArray.add(c);
 
             c = c.clone();
@@ -570,21 +625,32 @@ public class SmallBodyConfig
             c.author = null;
             c.pathOnServer = "/NEWHORIZONS/GANYMEDE/shape_res0.vtk.gz";
             c.hasImageMap = true;
-            c.imageSearchQuery = new GenericPhpQuery("/NEWHORIZONS/GANYMEDE/IMAGING", "GANYMEDE");
-            c.spectralModes = new SpectralMode[] { SpectralMode.MONO, SpectralMode.MULTI };
             c.imageSearchDefaultStartDate = new GregorianCalendar(2007, 0, 8, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2007, 2, 5, 0, 0, 0).getTime();
-            c.multispectralImageSearchQuery = new FixedListQuery("/NEWHORIZONS/GANYMEDE/MVIC");
+
+            // imaging instruments
+            c.imagingInstruments = new ImagingInstrument[] {
+                    new ImagingInstrument(
+                            SpectralMode.MONO,
+                            new GenericPhpQuery("/NEWHORIZONS/GANYMEDE/IMAGING", "GANYMEDE"),
+                            ImageType.LORRI_IMAGE,
+                            new ImageSource[]{ImageSource.SPICE},
+                            Instrument.LORRI
+                            ),
+
+                    new ImagingInstrument(
+                            SpectralMode.MULTI,
+                            new FixedListQuery("/NEWHORIZONS/GANYMEDE/MVIC"),
+                            ImageType.MVIC_JUPITER_IMAGE,
+                            new ImageSource[]{ImageSource.SPICE},
+                            Instrument.MVIC
+                            )
+                    };
+
             c.imageSearchFilterNames = new String[]{};
             c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
             c.imageSearchDefaultMaxSpacecraftDistance = 1.0e9;
             c.imageSearchDefaultMaxResolution = 1.0e6;
-            c.imageSearchImageSources = new ImageSource[]{ImageSource.SPICE};
-            c.multispectralImageSearchImageSources = new ImageSource[]{ImageSource.SPICE};
-            c.imageType = ImageType.LORRI_IMAGE;
-            c.multispectralImageType = ImageType.MVIC_JUPITER_IMAGE;
-            c.imageInstrumentName = Instrument.LORRI;
-            c.multispectralImageInstrumentName = Instrument.MVIC;
              configArray.add(c);
 
             c = c.clone();
@@ -595,21 +661,32 @@ public class SmallBodyConfig
             c.author = null;
             c.pathOnServer = "/NEWHORIZONS/IO/shape_res0.vtk.gz";
             c.hasImageMap = true;
-            c.imageSearchQuery = new GenericPhpQuery("/NEWHORIZONS/IO/IMAGING", "IO");
-            c.spectralModes = new SpectralMode[] { SpectralMode.MONO, SpectralMode.MULTI };
             c.imageSearchDefaultStartDate = new GregorianCalendar(2007, 0, 8, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2007, 2, 5, 0, 0, 0).getTime();
-            c.multispectralImageSearchQuery = new FixedListQuery("/NEWHORIZONS/IO/MVIC");
+
+            // imaging instruments
+            c.imagingInstruments = new ImagingInstrument[] {
+                    new ImagingInstrument(
+                            SpectralMode.MONO,
+                            new GenericPhpQuery("/NEWHORIZONS/IO/IMAGING", "IO"),
+                            ImageType.LORRI_IMAGE,
+                            new ImageSource[]{ImageSource.SPICE},
+                            Instrument.LORRI
+                            ),
+
+                    new ImagingInstrument(
+                            SpectralMode.MULTI,
+                            new FixedListQuery("/NEWHORIZONS/IO/MVIC"),
+                            ImageType.MVIC_JUPITER_IMAGE,
+                            new ImageSource[]{ImageSource.SPICE},
+                            Instrument.MVIC
+                            )
+                    };
+
             c.imageSearchFilterNames = new String[]{};
             c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
             c.imageSearchDefaultMaxSpacecraftDistance = 1.0e9;
             c.imageSearchDefaultMaxResolution = 1.0e6;
-            c.imageSearchImageSources = new ImageSource[]{ImageSource.SPICE};
-            c.multispectralImageSearchImageSources = new ImageSource[]{ImageSource.SPICE};
-            c.imageType = ImageType.LORRI_IMAGE;
-            c.multispectralImageType = ImageType.MVIC_JUPITER_IMAGE;
-            c.imageInstrumentName = Instrument.LORRI;
-            c.multispectralImageInstrumentName = Instrument.MVIC;
             configArray.add(c);
         }
 
@@ -631,17 +708,23 @@ public class SmallBodyConfig
         c.pathOnServer = "/GASKELL/MIMAS";
         c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
         c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
-        c.spectralModes = new SpectralMode[] { SpectralMode.MONO };
+
+        c.imagingInstruments = new ImagingInstrument[] {
+                new ImagingInstrument(
+                        SpectralMode.MONO,
+                        new FixedListQuery("/GASKELL/MIMAS/IMAGING"),
+                        ImageType.SATURN_MOON_IMAGE,
+                        new ImageSource[]{ImageSource.GASKELL},
+                        Instrument.IMAGING_DATA
+                        )
+        };
+
         c.imageSearchDefaultStartDate = new GregorianCalendar(1980, 10, 10, 0, 0, 0).getTime();
         c.imageSearchDefaultEndDate = new GregorianCalendar(2011, 0, 31, 0, 0, 0).getTime();
-        c.imageSearchQuery = new FixedListQuery("/GASKELL/MIMAS/IMAGING");
         c.imageSearchFilterNames = new String[]{};
         c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
         c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
         c.imageSearchDefaultMaxResolution = 4000.0;
-        c.imageSearchImageSources = new ImageSource[]{ImageSource.GASKELL};
-        c.imageType = ImageType.SATURN_MOON_IMAGE;
-        c.imageInstrumentName = Instrument.IMAGING_DATA;
         configArray.add(c);
 
         c = new SmallBodyConfig();
@@ -653,17 +736,24 @@ public class SmallBodyConfig
         c.pathOnServer = "/GASKELL/PHOEBE";
         c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
         c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
-        c.spectralModes = new SpectralMode[] { SpectralMode.MONO };
+
+
+        c.imagingInstruments = new ImagingInstrument[] {
+                new ImagingInstrument(
+                        SpectralMode.MONO,
+                        new FixedListQuery("/GASKELL/PHOEBE/IMAGING"),
+                        ImageType.SATURN_MOON_IMAGE,
+                        new ImageSource[]{ImageSource.GASKELL},
+                        Instrument.IMAGING_DATA
+                        )
+        };
+
         c.imageSearchDefaultStartDate = new GregorianCalendar(1980, 10, 10, 0, 0, 0).getTime();
         c.imageSearchDefaultEndDate = new GregorianCalendar(2011, 0, 31, 0, 0, 0).getTime();
-        c.imageSearchQuery = new FixedListQuery("/GASKELL/PHOEBE/IMAGING");
         c.imageSearchFilterNames = new String[]{};
         c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
         c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
         c.imageSearchDefaultMaxResolution = 4000.0;
-        c.imageSearchImageSources = new ImageSource[]{ImageSource.GASKELL};
-        c.imageType = ImageType.SATURN_MOON_IMAGE;
-        c.imageInstrumentName = Instrument.IMAGING_DATA;
         configArray.add(c);
 
         if (Configuration.isAPLVersion())
@@ -678,10 +768,19 @@ public class SmallBodyConfig
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
             c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
             c.hasMapmaker = true;
-            c.spectralModes = new SpectralMode[] { SpectralMode.MONO };
+
+            c.imagingInstruments = new ImagingInstrument[] {
+                    new ImagingInstrument(
+                            SpectralMode.MONO,
+                            new GenericPhpQuery("/GASKELL/VESTA/FC", "FC"),
+                            ImageType.FC_IMAGE,
+                            new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE},
+                            Instrument.FC
+                            )
+            };
+
             c.imageSearchDefaultStartDate = new GregorianCalendar(2011, 4, 3, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2012, 7, 27, 0, 0, 0).getTime();
-            c.imageSearchQuery = new GenericPhpQuery("/GASKELL/VESTA/FC", "FC");
             c.imageSearchFilterNames = new String[]{
                     "Filter 1 (735 nm)",
                     "Filter 2 (548 nm)",
@@ -695,9 +794,6 @@ public class SmallBodyConfig
             c.imageSearchUserDefinedCheckBoxesNames = new String[]{"FC1", "FC2"};
             c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
             c.imageSearchDefaultMaxResolution = 4000.0;
-            c.imageSearchImageSources = new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE};
-            c.imageType = ImageType.FC_IMAGE;
-            c.imageInstrumentName = Instrument.FC;
             configArray.add(c);
         }
 
@@ -718,17 +814,23 @@ public class SmallBodyConfig
         c.author = ShapeModelAuthor.THOMAS;
         c.pathOnServer = "/THOMAS/IDA/243ida.llr.gz";
         c.hasImageMap = true;
-        c.spectralModes = new SpectralMode[] { SpectralMode.MONO };
+
+        c.imagingInstruments = new ImagingInstrument[] {
+                new ImagingInstrument(
+                        SpectralMode.MONO,
+                        new FixedListQuery("/THOMAS/IDA/SSI"),
+                        ImageType.SSI_IDA_IMAGE,
+                        new ImageSource[]{ImageSource.CORRECTED},
+                        Instrument.SSI
+                        )
+        };
+
         c.imageSearchDefaultStartDate = new GregorianCalendar(1993, 7, 28, 0, 0, 0).getTime();
         c.imageSearchDefaultEndDate = new GregorianCalendar(1993, 7, 29, 0, 0, 0).getTime();
-        c.imageSearchQuery = new FixedListQuery("/THOMAS/IDA/SSI");
         c.imageSearchFilterNames = new String[]{};
         c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
         c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
         c.imageSearchDefaultMaxResolution = 4000.0;
-        c.imageSearchImageSources = new ImageSource[]{ImageSource.CORRECTED};
-        c.imageType = ImageType.SSI_IDA_IMAGE;
-        c.imageInstrumentName = Instrument.SSI;
         configArray.add(c);
 
         c = new SmallBodyConfig();
@@ -749,17 +851,23 @@ public class SmallBodyConfig
         c.author = ShapeModelAuthor.THOMAS;
         c.pathOnServer = "/THOMAS/GASPRA/951gaspra.llr.gz";
         c.hasImageMap = true;
-        c.spectralModes = new SpectralMode[] { SpectralMode.MONO };
+
+        c.imagingInstruments = new ImagingInstrument[] {
+                new ImagingInstrument(
+                        SpectralMode.MONO,
+                        new FixedListQuery("/THOMAS/GASPRA/SSI"),
+                        ImageType.SSI_GASPRA_IMAGE,
+                        new ImageSource[]{ImageSource.CORRECTED},
+                        Instrument.SSI
+                        )
+        };
+
         c.imageSearchDefaultStartDate = new GregorianCalendar(1991, 9, 29, 0, 0, 0).getTime();
         c.imageSearchDefaultEndDate = new GregorianCalendar(1991, 9, 30, 0, 0, 0).getTime();
-        c.imageSearchQuery = new FixedListQuery("/THOMAS/GASPRA/SSI");
         c.imageSearchFilterNames = new String[]{};
         c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
         c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
         c.imageSearchDefaultMaxResolution = 4000.0;
-        c.imageSearchImageSources = new ImageSource[]{ImageSource.CORRECTED};
-        c.imageType = ImageType.SSI_GASPRA_IMAGE;
-        c.imageInstrumentName = Instrument.SSI;
         configArray.add(c);
 
         c = new SmallBodyConfig();
@@ -780,10 +888,19 @@ public class SmallBodyConfig
         c.author = ShapeModelAuthor.THOMAS;
         c.pathOnServer = "/THOMAS/MATHILDE/253mathilde.llr.gz";
         c.hasImageMap = true;
-        c.spectralModes = new SpectralMode[] { SpectralMode.MONO };
+
+        c.imagingInstruments = new ImagingInstrument[] {
+                new ImagingInstrument(
+                        SpectralMode.MONO,
+                        new FixedListQuery("/THOMAS/MATHILDE/MSI"),
+                        ImageType.MSI_MATHILDE_IMAGE,
+                        new ImageSource[]{ImageSource.CORRECTED},
+                        Instrument.MSI
+                        )
+        };
+
         c.imageSearchDefaultStartDate = new GregorianCalendar(1997, 5, 27, 0, 0, 0).getTime();
         c.imageSearchDefaultEndDate = new GregorianCalendar(1997, 5, 28, 0, 0, 0).getTime();
-        c.imageSearchQuery = new FixedListQuery("/THOMAS/MATHILDE/MSI");
         c.imageSearchFilterNames = new String[]{
                 "Filter 1 (550 nm)",
                 "Filter 2 (450 nm)",
@@ -796,9 +913,6 @@ public class SmallBodyConfig
         c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
         c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
         c.imageSearchDefaultMaxResolution = 4000.0;
-        c.imageSearchImageSources = new ImageSource[]{ImageSource.CORRECTED};
-        c.imageType = ImageType.MSI_MATHILDE_IMAGE;
-        c.imageInstrumentName = Instrument.MSI;
         configArray.add(c);
 
         c = new SmallBodyConfig();
@@ -809,10 +923,18 @@ public class SmallBodyConfig
         c.author = ShapeModelAuthor.THOMAS;
         c.pathOnServer = "/THOMAS/DEIMOS/DEIMOS.vtk.gz";
         c.hasImageMap = true;
-        c.spectralModes = new SpectralMode[] { SpectralMode.MONO };
+
+        c.imagingInstruments = new ImagingInstrument[] {
+                new ImagingInstrument(
+                        SpectralMode.MONO,
+                        new GenericPhpQuery("/THOMAS/DEIMOS/IMAGING", "DEIMOS"),
+                        ImageType.DEIMOS_IMAGE,
+                        new ImageSource[]{ImageSource.SPICE, ImageSource.CORRECTED},
+                        Instrument.IMAGING_DATA
+                        )
+        };
         c.imageSearchDefaultStartDate = new GregorianCalendar(1976, 7, 16, 0, 0, 0).getTime();
         c.imageSearchDefaultEndDate = new GregorianCalendar(2011, 7, 10, 0, 0, 0).getTime();
-        c.imageSearchQuery = new GenericPhpQuery("/THOMAS/DEIMOS/IMAGING", "DEIMOS");
         c.imageSearchFilterNames = new String[]{
                 "VIS, Blue",
                 "VIS, Minus Blue",
@@ -824,9 +946,6 @@ public class SmallBodyConfig
         c.imageSearchUserDefinedCheckBoxesNames = new String[]{"Viking Orbiter 1-A", "Viking Orbiter 1-B", "Viking Orbiter 2-A", "Viking Orbiter 2-B", "MEX HRSC"};
         c.imageSearchDefaultMaxSpacecraftDistance = 30000.0;
         c.imageSearchDefaultMaxResolution = 800.0;
-        c.imageSearchImageSources = new ImageSource[]{ImageSource.SPICE, ImageSource.CORRECTED};
-        c.imageType = ImageType.DEIMOS_IMAGE;
-        c.imageInstrumentName = Instrument.IMAGING_DATA;
         configArray.add(c);
 
         c = new SmallBodyConfig();
@@ -1193,17 +1312,23 @@ public class SmallBodyConfig
             c.pathOnServer = "/GASKELL/LUTETIA";
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
             c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
-            c.spectralModes = new SpectralMode[] { SpectralMode.MONO };
+
+            c.imagingInstruments = new ImagingInstrument[] {
+                    new ImagingInstrument(
+                            SpectralMode.MONO,
+                            new FixedListQuery("/GASKELL/LUTETIA/IMAGING"),
+                            ImageType.OSIRIS_IMAGE,
+                            new ImageSource[]{ImageSource.GASKELL},
+                            Instrument.OSIRIS
+                            )
+            };
+
             c.imageSearchDefaultStartDate = new GregorianCalendar(2010, 6, 10, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2010, 6, 11, 0, 0, 0).getTime();
-            c.imageSearchQuery = new FixedListQuery("/GASKELL/LUTETIA/IMAGING");
             c.imageSearchFilterNames = new String[]{};
             c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
             c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
             c.imageSearchDefaultMaxResolution = 4000.0;
-            c.imageSearchImageSources = new ImageSource[]{ImageSource.GASKELL};
-            c.imageType = ImageType.OSIRIS_IMAGE;
-            c.imageInstrumentName = Instrument.OSIRIS;
             configArray.add(c);
         }
 
@@ -1243,17 +1368,23 @@ public class SmallBodyConfig
         c.pathOnServer = "/GASKELL/DIONE";
         c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
         c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
-        c.spectralModes = new SpectralMode[] { SpectralMode.MONO };
+
+        c.imagingInstruments = new ImagingInstrument[] {
+                new ImagingInstrument(
+                        SpectralMode.MONO,
+                        new FixedListQuery("/GASKELL/DIONE/IMAGING"),
+                        ImageType.SATURN_MOON_IMAGE,
+                        new ImageSource[]{ImageSource.GASKELL},
+                        Instrument.IMAGING_DATA
+                        )
+        };
+
         c.imageSearchDefaultStartDate = new GregorianCalendar(1980, 10, 10, 0, 0, 0).getTime();
         c.imageSearchDefaultEndDate = new GregorianCalendar(2011, 0, 31, 0, 0, 0).getTime();
-        c.imageSearchQuery = new FixedListQuery("/GASKELL/DIONE/IMAGING");
         c.imageSearchFilterNames = new String[]{};
         c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
         c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
         c.imageSearchDefaultMaxResolution = 4000.0;
-        c.imageSearchImageSources = new ImageSource[]{ImageSource.GASKELL};
-        c.imageType = ImageType.SATURN_MOON_IMAGE;
-        c.imageInstrumentName = Instrument.IMAGING_DATA;
         configArray.add(c);
 
         c = new SmallBodyConfig();
@@ -1355,10 +1486,18 @@ public class SmallBodyConfig
             c.pathOnServer = "/GASKELL/67P";
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
             c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
-            c.spectralModes = new SpectralMode[] { SpectralMode.MONO };
+
+            c.imagingInstruments = new ImagingInstrument[] {
+                    new ImagingInstrument(
+                            SpectralMode.MONO,
+                            new GenericPhpQuery("/GASKELL/67P/IMAGING", "67P"),
+                            ImageType.OSIRIS_IMAGE,
+                            new ImageSource[]{ImageSource.GASKELL},
+                            Instrument.OSIRIS
+                            )
+            };
             c.imageSearchDefaultStartDate = new GregorianCalendar(2014, 7, 1, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2014, 11, 31, 0, 0, 0).getTime();
-            c.imageSearchQuery = new GenericPhpQuery("/GASKELL/67P/IMAGING", "67P");
             c.imageSearchFilterNames = new String[]{
                     // If a name, begins with a star, it is not selected by default
                     "*Filter 12",
@@ -1377,16 +1516,13 @@ public class SmallBodyConfig
             c.imageSearchUserDefinedCheckBoxesNames = new String[]{"NAC", "*WAC"};
             c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
             c.imageSearchDefaultMaxResolution = 4000.0;
-            c.imageSearchImageSources = new ImageSource[]{ImageSource.GASKELL};
-            c.imageType = ImageType.OSIRIS_IMAGE;
-            c.imageInstrumentName = Instrument.OSIRIS;
             configArray.add(c);
 
             c = c.clone();
             c.author = ShapeModelAuthor.DLR;
             c.pathOnServer = "/DLR/67P";
             c.version = "SHAP4S";
-            c.spectralModes = new SpectralMode[] { };
+            c.imagingInstruments = new ImagingInstrument[] { };
             c.smallBodyLabelPerResolutionLevel = new String[]{
                     "17442 plates ", "72770 plates ", "298442 plates ", "1214922 plates ",
                     "4895631 plates ", "16745283 plates "
@@ -1434,17 +1570,23 @@ public class SmallBodyConfig
             c.author = null;
             c.pathOnServer = "/NEWHORIZONS/PLUTO/shape_res0.vtk.gz";
             c.hasColoringData = false;
-            c.spectralModes = new SpectralMode[] { SpectralMode.MONO };
+
+            c.imagingInstruments = new ImagingInstrument[] {
+                    new ImagingInstrument(
+                            SpectralMode.MONO,
+                            new FixedListQuery("/NEWHORIZONS/PLUTO/IMAGING"),
+                            ImageType.LORRI_IMAGE,
+                            new ImageSource[]{ImageSource.SPICE},
+                            Instrument.LORRI
+                            )
+            };
+
             c.imageSearchDefaultStartDate = new GregorianCalendar(2015, 0, 1, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2016, 1, 1, 0, 0, 0).getTime();
-            c.imageSearchQuery = new FixedListQuery("/NEWHORIZONS/PLUTO/IMAGING");
             c.imageSearchFilterNames = new String[]{};
             c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
             c.imageSearchDefaultMaxSpacecraftDistance = 1.0e9;
             c.imageSearchDefaultMaxResolution = 1.0e6;
-            c.imageSearchImageSources = new ImageSource[]{ImageSource.SPICE};
-            c.imageType = ImageType.LORRI_IMAGE;
-            c.imageInstrumentName = Instrument.LORRI;
             configArray.add(c);
 
             c = c.clone();
@@ -1455,7 +1597,17 @@ public class SmallBodyConfig
             c.author = null;
             c.pathOnServer = "/NEWHORIZONS/CHARON/shape_res0.vtk.gz";
             c.hasColoringData = false;
-            c.imageSearchQuery = new FixedListQuery("/NEWHORIZONS/CHARON/IMAGING");
+
+            c.imagingInstruments = new ImagingInstrument[] {
+                    new ImagingInstrument(
+                            SpectralMode.MONO,
+                            new FixedListQuery("/NEWHORIZONS/CHARON/IMAGING"),
+                            ImageType.LORRI_IMAGE,
+                            new ImageSource[]{ImageSource.SPICE},
+                            Instrument.LORRI
+                            )
+            };
+
             configArray.add(c);
 
             c = new SmallBodyConfig();
@@ -1511,26 +1663,20 @@ public class SmallBodyConfig
     public int[] smallBodyNumberOfPlatesPerResolutionLevel; // only needed when number resolution levels > 1
     public boolean hasColoringData = true;
     public boolean hasImageMap = false;
-    public SpectralMode[] spectralModes = {};
+    public ImagingInstrument[] imagingInstruments = {};
     public boolean hasLidarData = false;
     public boolean hasMapmaker = false;
     public boolean hasSpectralData = false;
     public boolean hasLineamentData = false;
+
     // if spectralModes is not empty, the following must be filled in
     public Date imageSearchDefaultStartDate;
     public Date imageSearchDefaultEndDate;
-    public QueryBase imageSearchQuery;
-    public QueryBase multispectralImageSearchQuery;
     public String[] imageSearchFilterNames;
     public String[] imageSearchUserDefinedCheckBoxesNames;
     public double imageSearchDefaultMaxSpacecraftDistance;
     public double imageSearchDefaultMaxResolution;
-    public ImageSource[] imageSearchImageSources;
-    public ImageSource[] multispectralImageSearchImageSources;
-    public ImageType imageType;
-    public ImageType multispectralImageType;
-    public Instrument imageInstrumentName = Instrument.IMAGING_DATA;
-    public Instrument multispectralImageInstrumentName = Instrument.MVIC;
+
     // if hasLidarData is true, the following must be filled in
     public Date lidarSearchDefaultStartDate;
     public Date lidarSearchDefaultEndDate;
@@ -1544,6 +1690,7 @@ public class SmallBodyConfig
     public int lidarBrowseNumberHeaderLines;
     public boolean lidarBrowseIsBinary = false;
     public int lidarBrowseBinaryRecordSize; // only required if lidarBrowseIsBinary is true
+
     // Return whether or not the units of the lidar points are in meters. If false
     // they are assumed to be in kilometers.
     public boolean lidarBrowseIsInMeters;
@@ -1566,7 +1713,7 @@ public class SmallBodyConfig
         c.pathOnServer = this.pathOnServer;
         c.hasColoringData = this.hasColoringData;
         c.hasImageMap = this.hasImageMap;
-        c.spectralModes = this.spectralModes.clone();
+        c.imagingInstruments = this.imagingInstruments.clone();
         c.hasLidarData = this.hasLidarData;
         c.hasMapmaker = this.hasMapmaker;
         c.hasSpectralData = this.hasSpectralData;
@@ -1575,19 +1722,10 @@ public class SmallBodyConfig
             c.smallBodyLabelPerResolutionLevel = this.smallBodyLabelPerResolutionLevel.clone();
         if (this.smallBodyNumberOfPlatesPerResolutionLevel != null)
             c.smallBodyNumberOfPlatesPerResolutionLevel = this.smallBodyNumberOfPlatesPerResolutionLevel.clone();
-        if (Arrays.asList(this.spectralModes).contains(SpectralMode.MONO))
-        {
-            c.imageSearchDefaultStartDate = (Date)this.imageSearchDefaultStartDate.clone();
-            c.imageSearchDefaultEndDate = (Date)this.imageSearchDefaultEndDate.clone();
-            c.imageSearchQuery = this.imageSearchQuery;
-            c.imageSearchFilterNames = this.imageSearchFilterNames.clone();
-            c.imageSearchUserDefinedCheckBoxesNames = this.imageSearchFilterNames.clone();
-            c.imageSearchDefaultMaxSpacecraftDistance = this.imageSearchDefaultMaxSpacecraftDistance;
-            c.imageSearchDefaultMaxResolution = this.imageSearchDefaultMaxResolution;
-            c.imageSearchImageSources = this.imageSearchImageSources.clone();
-            c.imageType = this.imageType;
-            c.imageInstrumentName = this.imageInstrumentName;
-        }
+
+        if (this.imagingInstruments != null)
+            c.imagingInstruments = this.imagingInstruments.clone();
+
         if (this.hasLidarData)
         {
             c.lidarSearchDefaultStartDate = (Date)this.lidarSearchDefaultStartDate.clone();

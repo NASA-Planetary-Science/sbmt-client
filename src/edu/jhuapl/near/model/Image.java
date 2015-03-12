@@ -7,6 +7,9 @@ import java.util.LinkedHashMap;
 
 import vtk.vtkTexture;
 
+import edu.jhuapl.near.model.SmallBodyConfig.ImageType;
+import edu.jhuapl.near.model.SmallBodyConfig.Instrument;
+import edu.jhuapl.near.query.QueryBase;
 import edu.jhuapl.near.util.IntensityRange;
 import edu.jhuapl.near.util.Properties;
 
@@ -88,6 +91,35 @@ public abstract class Image extends Model implements PropertyChangeListener
     }
 
 
+    public static class ImagingInstrument
+    {
+        public SpectralMode spectralMode;
+        public QueryBase searchQuery;
+        public ImageSource[] searchImageSources;
+        public ImageType type;
+        public Instrument instrumentName;
+
+        public ImagingInstrument()
+        {
+            this(SpectralMode.MONO, null, null, null, null);
+        }
+
+        public ImagingInstrument(SpectralMode spectralMode)
+        {
+            this(spectralMode, null, null, null, null);
+        }
+
+        public ImagingInstrument(SpectralMode spectralMode, QueryBase searchQuery, ImageType type, ImageSource[] searchImageSources, Instrument instrumentName)
+        {
+            this.spectralMode = spectralMode;
+            this.searchQuery = searchQuery;
+            this.type = type;
+            this.searchImageSources = searchImageSources;
+            this.instrumentName = instrumentName;
+        }
+    }
+
+
     /**
      * An ImageKey should be used to uniquely distinguish one image from another.
      * No two images will have the same values for the fields of this class.
@@ -101,22 +133,22 @@ public abstract class Image extends Model implements PropertyChangeListener
 
         public ImageSource source;
 
-        public SpectralMode spectralMode;
+        public ImagingInstrument instrument;
 
-        public ImageKey()
-        {
-        }
-
+//        public ImageKey()
+//        {
+//        }
+//
         public ImageKey(String name, ImageSource source)
         {
-            this(name, source, SpectralMode.MONO);
+            this(name, source, null); // new ImagingInstrument());
         }
 
-        public ImageKey(String name, ImageSource source, SpectralMode spectralMode)
+        public ImageKey(String name, ImageSource source, ImagingInstrument instrument)
         {
             this.name = name;
             this.source = source;
-            this.spectralMode = spectralMode;
+            this.instrument = instrument;
         }
 
         @Override
