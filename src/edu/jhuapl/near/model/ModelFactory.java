@@ -24,6 +24,7 @@ import edu.jhuapl.near.model.gaspra.SSIGaspraImage;
 import edu.jhuapl.near.model.ida.SSIIdaImage;
 import edu.jhuapl.near.model.itokawa.AmicaImage;
 import edu.jhuapl.near.model.itokawa.Itokawa;
+import edu.jhuapl.near.model.leisa.LEISAJupiterImage;
 import edu.jhuapl.near.model.lorri.LorriImage;
 import edu.jhuapl.near.model.mathilde.MSIMathildeImage;
 import edu.jhuapl.near.model.mvic.MVICJupiterImage;
@@ -57,7 +58,14 @@ public class ModelFactory
                 else
                     return null;
             }
-            else
+            else if (key.instrument.spectralMode == SpectralMode.HYPER)
+            {
+                if (key.instrument.type == ImageType.LEISA_JUPITER_IMAGE)
+                    return new LEISAJupiterImage(key, smallBodyModel, loadPointingOnly);
+                else
+                    return null;
+            }
+            else // SpectralMode.MONO
             {
                 if (key.instrument.type == ImageType.MSI_IMAGE)
                     return new MSIImage(key, smallBodyModel, loadPointingOnly);

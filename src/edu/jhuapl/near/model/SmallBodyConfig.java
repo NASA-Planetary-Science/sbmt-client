@@ -218,6 +218,7 @@ public class SmallBodyConfig
         OLA("OLA"),
         IMAGING_DATA("Imaging Data"),
         MVIC("MVIC"),
+        LEISA("LEISA"),
         LORRI("LORRI");
 
         final private String str;
@@ -245,8 +246,8 @@ public class SmallBodyConfig
         SSI_GASPRA_IMAGE,
         SSI_IDA_IMAGE,
         MSI_MATHILDE_IMAGE,
-        MVIC_GASPRA_IMAGE,
         MVIC_JUPITER_IMAGE,
+        LEISA_JUPITER_IMAGE,
         LORRI_IMAGE,
     }
 
@@ -548,6 +549,14 @@ public class SmallBodyConfig
                             ImageType.MVIC_JUPITER_IMAGE,
                             new ImageSource[]{ImageSource.SPICE},
                             Instrument.MVIC
+                            ),
+
+                    new ImagingInstrument(
+                            SpectralMode.HYPER,
+                            new FixedListQuery("/NEWHORIZONS/JUPITER/MVIC"),
+                            ImageType.LEISA_JUPITER_IMAGE,
+                            new ImageSource[]{ImageSource.SPICE},
+                            Instrument.LEISA
                             )
                     };
 

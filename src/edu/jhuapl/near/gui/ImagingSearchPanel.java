@@ -186,7 +186,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         resultList.addMouseListener(new TableMouseHandler());
         resultList.getModel().addTableModelListener(this);
 
-        ImageSource imageSources[] = instrument.searchImageSources; // spectralMode == SpectralMode.MULTI ? smallBodyConfig.multispectralImageSearchImageSources : smallBodyConfig.imageSearchImageSources;
+        ImageSource imageSources[] = instrument.searchImageSources;
         DefaultComboBoxModel sourceComboBoxModel = new DefaultComboBoxModel(imageSources);
         sourceComboBox.setModel(sourceComboBoxModel);
 
@@ -1870,7 +1870,30 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
             if (instrument.spectralMode == SpectralMode.MULTI)
             {
-//                results = smallBodyConfig.multispectralImageSearchQuery.runQuery(
+                results = instrument.searchQuery.runQuery(
+                    "",
+                    startDateJoda,
+                    endDateJoda,
+                    filtersChecked,
+                    userDefinedChecked,
+                    Double.parseDouble(fromDistanceTextField.getText()),
+                    Double.parseDouble(toDistanceTextField.getText()),
+                    Double.parseDouble(fromResolutionTextField.getText()),
+                    Double.parseDouble(toResolutionTextField.getText()),
+                    searchField,
+                    null,
+                    Double.parseDouble(fromIncidenceTextField.getText()),
+                    Double.parseDouble(toIncidenceTextField.getText()),
+                    Double.parseDouble(fromEmissionTextField.getText()),
+                    Double.parseDouble(toEmissionTextField.getText()),
+                    Double.parseDouble(fromPhaseTextField.getText()),
+                    Double.parseDouble(toPhaseTextField.getText()),
+                    cubeList,
+                    imageSource,
+                    hasLimbComboBox.getSelectedIndex());
+            }
+            else if (instrument.spectralMode == SpectralMode.HYPER)
+            {
                 results = instrument.searchQuery.runQuery(
                     "",
                     startDateJoda,
