@@ -564,11 +564,29 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
         float[][] array = null;
         int[] axes = h.getAxes();
-        int originalWidth = axes[1];
+        int naxes = axes.length;
+        // for 2D pixel arrays, width is axis 1, for 3D pixel arrays, width axis is 2
+        int originalWidth = naxes == 2 ? axes[1] : axes[2];
+        // height is axis 0
         int originalHeight = axes[0];
 
         Object data = h.getData().getData();
-        if (data instanceof float[][])
+
+        // for 3D arrays we consider the second axis the "spectral" axis
+        if (data instanceof float[][][])
+        {
+            float[][][] array3D = null;
+            array3D = (float[][][])data;
+            System.out.println("3D pixel array detected: " + array3D.length + "x" + array3D[0].length + "x" + array3D[0][0].length);
+            array = new float[originalHeight][originalWidth];
+
+            for (int i=0; i<originalHeight; ++i)
+                for (int j=0; j<originalWidth; ++j)
+                {
+                    array[i][j] = array3D[i][0][j];
+                }
+        }
+        else if (data instanceof float[][])
         {
             array = (float[][])data;
         }

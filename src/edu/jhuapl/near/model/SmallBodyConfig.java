@@ -553,7 +553,7 @@ public class SmallBodyConfig
 
                     new ImagingInstrument(
                             SpectralMode.HYPER,
-                            new FixedListQuery("/NEWHORIZONS/JUPITER/MVIC"),
+                            new FixedListQuery("/NEWHORIZONS/JUPITER/LEISA"),
                             ImageType.LEISA_JUPITER_IMAGE,
                             new ImageSource[]{ImageSource.SPICE},
                             Instrument.LEISA
