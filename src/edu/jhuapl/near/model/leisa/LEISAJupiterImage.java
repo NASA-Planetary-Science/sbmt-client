@@ -26,7 +26,7 @@ public class LEISAJupiterImage extends PerspectiveImage
     {
         // Flip image along y axis and y axis. For some reason we need to do
         // this so the image is displayed properly.
-        ImageDataUtil.flipImageYAxis(rawImage);
+//        ImageDataUtil.flipImageYAxis(rawImage);
         ImageDataUtil.flipImageXAxis(rawImage);
     }
 

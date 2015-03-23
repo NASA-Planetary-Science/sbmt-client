@@ -583,7 +583,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
             for (int i=0; i<originalHeight; ++i)
                 for (int j=0; j<originalWidth; ++j)
                 {
-                    array[i][j] = array3D[i][0][j];
+                    array[i][j] = array3D[i][127][j];
                 }
         }
         else if (data instanceof float[][])
