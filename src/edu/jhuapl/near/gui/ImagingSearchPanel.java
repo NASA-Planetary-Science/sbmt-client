@@ -30,6 +30,7 @@ import java.util.GregorianCalendar;
 import java.util.TimeZone;
 import java.util.TreeSet;
 
+import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
 import javax.swing.JCheckBox;
@@ -288,6 +289,43 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         toResolutionTextField.setValue(smallBodyConfig.imageSearchDefaultMaxResolution);
 
         colorImagesDisplayedList.setModel(new DefaultListModel());
+
+        redComboBox.setVisible(false);
+        greenComboBox.setVisible(false);
+        blueComboBox.setVisible(false);
+
+        ComboBoxModel redModel = getRedComboBoxModel();
+        ComboBoxModel greenModel = getGreenComboBoxModel();
+        ComboBoxModel blueModel = getBlueComboBoxModel();
+        if (redModel != null && greenModel != null && blueModel != null)
+        {
+            redComboBox.setModel(redModel);
+            greenComboBox.setModel(greenModel);
+            blueComboBox.setModel(blueModel);
+
+            redComboBox.setVisible(true);
+            greenComboBox.setVisible(true);
+            blueComboBox.setVisible(true);
+
+            redButton.setVisible(false);
+            greenButton.setVisible(false);
+            blueButton.setVisible(false);
+        }
+    }
+
+    protected ComboBoxModel getRedComboBoxModel()
+    {
+        return null;
+    }
+
+    protected ComboBoxModel getGreenComboBoxModel()
+    {
+        return null;
+    }
+
+    protected ComboBoxModel getBlueComboBoxModel()
+    {
+        return null;
     }
 
     private void resultsListMaybeShowPopup(MouseEvent e)
@@ -434,7 +472,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         }
     }
 
-    private void showColorImage(ActionEvent e)
+    protected void showColorImage(ActionEvent e)
     {
         ColorImageCollection model = (ColorImageCollection)modelManager.getModel(getColorImageCollectionModelName());
 
@@ -479,6 +517,24 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                         "Error",
                         JOptionPane.ERROR_MESSAGE);
             }
+        }
+    }
+
+    protected void removeColorImage(ActionEvent e)
+    {
+        int index = colorImagesDisplayedList.getSelectedIndex();
+        if (index >= 0)
+        {
+            ColorImageKey colorKey = (ColorImageKey)((DefaultListModel)colorImagesDisplayedList.getModel()).remove(index);
+            ColorImageCollection model = (ColorImageCollection)modelManager.getModel(getColorImageCollectionModelName());
+            model.removeImage(colorKey);
+
+            // Select the element in its place (unless it's the last one in which case
+            // select the previous one)
+            if (index >= colorImagesDisplayedList.getModel().getSize())
+                --index;
+            if (index >= 0)
+                colorImagesDisplayedList.setSelectionInterval(index, index);
         }
     }
 
@@ -634,6 +690,9 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         blueButton = new javax.swing.JButton();
         greenLabel = new javax.swing.JLabel();
         blueLabel = new javax.swing.JLabel();
+        redComboBox = new javax.swing.JComboBox();
+        greenComboBox = new javax.swing.JComboBox();
+        blueComboBox = new javax.swing.JComboBox();
         generateColorImageButton = new javax.swing.JButton();
         jScrollPane3 = new javax.swing.JScrollPane();
         colorImagesDisplayedList = new javax.swing.JList();
@@ -1337,7 +1396,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         jPanel10.add(redButton, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.weightx = 1.0;
@@ -1372,17 +1431,32 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         jPanel10.add(blueButton, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 1;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.weightx = 1.0;
         jPanel10.add(greenLabel, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.weightx = 1.0;
         jPanel10.add(blueLabel, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        jPanel10.add(redComboBox, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        jPanel10.add(greenComboBox, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        jPanel10.add(blueComboBox, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -1751,20 +1825,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
     private void removeColorImageButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_removeColorImageButtonActionPerformed
     {//GEN-HEADEREND:event_removeColorImageButtonActionPerformed
-        int index = colorImagesDisplayedList.getSelectedIndex();
-        if (index >= 0)
-        {
-            ColorImageKey colorKey = (ColorImageKey)((DefaultListModel)colorImagesDisplayedList.getModel()).remove(index);
-            ColorImageCollection model = (ColorImageCollection)modelManager.getModel(getColorImageCollectionModelName());
-            model.removeImage(colorKey);
-
-            // Select the element in its place (unless it's the last one in which case
-            // select the previous one)
-            if (index >= colorImagesDisplayedList.getModel().getSize())
-                --index;
-            if (index >= 0)
-                colorImagesDisplayedList.setSelectionInterval(index, index);
-        }
+        removeColorImage(evt);
     }//GEN-LAST:event_removeColorImageButtonActionPerformed
 
     private void colorImagesDisplayedListMousePressed(java.awt.event.MouseEvent evt)//GEN-FIRST:event_colorImagesDisplayedListMousePressed
@@ -2174,6 +2235,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton blueButton;
+    private javax.swing.JComboBox blueComboBox;
     private javax.swing.JLabel blueLabel;
     private javax.swing.JButton clearRegionButton;
     private javax.swing.JList colorImagesDisplayedList;
@@ -2209,6 +2271,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     private javax.swing.JFormattedTextField fromResolutionTextField;
     private javax.swing.JButton generateColorImageButton;
     private javax.swing.JButton greenButton;
+    private javax.swing.JComboBox greenComboBox;
     private javax.swing.JLabel greenLabel;
     private javax.swing.JComboBox hasLimbComboBox;
     private javax.swing.JLabel hasLimbLabel;
@@ -2235,6 +2298,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     private javax.swing.JComboBox numberOfBoundariesComboBox;
     private javax.swing.JButton prevButton;
     private javax.swing.JButton redButton;
+    private javax.swing.JComboBox redComboBox;
     private javax.swing.JLabel redLabel;
     private javax.swing.JButton removeAllButton;
     private javax.swing.JButton removeAllImagesButton;
