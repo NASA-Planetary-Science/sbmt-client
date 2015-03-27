@@ -274,7 +274,7 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
 
         // Remove the image from the renderer
         ImageKey imageKey = new ImageKey(filename,
-                imageInfo.projectionType == ProjectionType.CYLINDRICAL ? ImageSource.LOCAL_CYLINDRICAL : ImageSource.LOCAL_PERSPECTIVE, false);
+                imageInfo.projectionType == ProjectionType.CYLINDRICAL ? ImageSource.LOCAL_CYLINDRICAL : ImageSource.LOCAL_PERSPECTIVE);
         ImageCollection imageCollection = (ImageCollection)modelManager.getModel(ModelNames.IMAGES);
 
         if (imageCollection.containsImage(imageKey))
@@ -300,7 +300,7 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
 
         // Remove the image from the renderer
         ImageKey imageKey = new ImageKey(filename,
-                imageInfo.projectionType == ProjectionType.CYLINDRICAL ? ImageSource.LOCAL_CYLINDRICAL : ImageSource.LOCAL_PERSPECTIVE, false);
+                imageInfo.projectionType == ProjectionType.CYLINDRICAL ? ImageSource.LOCAL_CYLINDRICAL : ImageSource.LOCAL_PERSPECTIVE);
         ImageCollection imageCollection = (ImageCollection)modelManager.getModel(ModelNames.IMAGES);
         imageCollection.removeImage(imageKey);
 
@@ -403,7 +403,7 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
                     ImageInfo imageInfo = (ImageInfo)((DefaultListModel)imageList.getModel()).get(selectedIndex);
                     String name = getCustomDataFolder() + File.separator + imageInfo.imagefilename;
                     ImageKey imageKey = new ImageKey(name,
-                            imageInfo.projectionType == ProjectionType.CYLINDRICAL? ImageSource.LOCAL_CYLINDRICAL : ImageSource.LOCAL_PERSPECTIVE, false);
+                            imageInfo.projectionType == ProjectionType.CYLINDRICAL? ImageSource.LOCAL_CYLINDRICAL : ImageSource.LOCAL_PERSPECTIVE);
                     imageKeys.add(imageKey);
                 }
                 imagePopupMenu.setCurrentImages(imageKeys);

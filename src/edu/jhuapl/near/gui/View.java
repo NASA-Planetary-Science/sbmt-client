@@ -18,6 +18,8 @@ import edu.jhuapl.near.model.CircleSelectionModel;
 import edu.jhuapl.near.model.ColorImageCollection;
 import edu.jhuapl.near.model.EllipseModel;
 import edu.jhuapl.near.model.Graticule;
+import edu.jhuapl.near.model.Image.ImagingInstrument;
+import edu.jhuapl.near.model.Image.SpectralMode;
 import edu.jhuapl.near.model.ImageCollection;
 import edu.jhuapl.near.model.LidarSearchDataCollection;
 import edu.jhuapl.near.model.LineModel;
@@ -103,24 +105,35 @@ public class View extends JPanel
         controlPanel.setBorder(BorderFactory.createEmptyBorder());
         controlPanel.addTab(smallBodyConfig.getShapeModelName(), new SmallBodyControlPanel(modelManager, smallBodyConfig.getShapeModelName()));
 
-        if (smallBodyConfig.hasPerspectiveImages)
+        for (ImagingInstrument instrument : smallBodyConfig.imagingInstruments)
         {
-            // For the public version, only include image tab for Eros (all) and Gaskell's Itokawa shape models.
-            if (Configuration.isAPLVersion() ||
-                    smallBodyConfig.body == ShapeModelBody.EROS ||
-                    (smallBodyConfig.body == ShapeModelBody.ITOKAWA && ShapeModelAuthor.GASKELL == smallBodyConfig.author))
+            if (instrument.spectralMode == SpectralMode.MONO)
             {
-                JComponent component = new ImagingSearchPanel(smallBodyConfig, modelManager, infoPanelManager, pickManager, renderer, false);
-                controlPanel.addTab(smallBodyConfig.imageInstrumentName.toString(), component);
+                // For the public version, only include image tab for Eros (all) and Gaskell's Itokawa shape models.
+                if (Configuration.isAPLVersion() ||
+                        smallBodyConfig.body == ShapeModelBody.EROS ||
+                        (smallBodyConfig.body == ShapeModelBody.ITOKAWA && ShapeModelAuthor.GASKELL == smallBodyConfig.author))
+                {
+                    JComponent component = new ImagingSearchPanel(smallBodyConfig, modelManager, infoPanelManager, pickManager, renderer, instrument);
+                    controlPanel.addTab(instrument.instrumentName.toString(), component);
+                }
             }
-        }
 
-        if (smallBodyConfig.hasMultispectralImages)
-        {
-            if (Configuration.isAPLVersion())
+            else if (instrument.spectralMode == SpectralMode.MULTI)
             {
-                JComponent component = new ImagingSearchPanel(smallBodyConfig, modelManager, infoPanelManager, pickManager, renderer, true);
-                controlPanel.addTab(smallBodyConfig.multispectralImageInstrumentName.toString(), component);
+                if (Configuration.isAPLVersion())
+                {
+                    JComponent component = new ImagingSearchPanel(smallBodyConfig, modelManager, infoPanelManager, pickManager, renderer, instrument);
+                    controlPanel.addTab(instrument.instrumentName.toString(), component);
+                }
+            }
+            else if (instrument.spectralMode == SpectralMode.HYPER)
+            {
+                if (Configuration.isAPLVersion())
+                {
+                    JComponent component = new ImagingSearchPanel(smallBodyConfig, modelManager, infoPanelManager, pickManager, renderer, instrument);
+                    controlPanel.addTab(instrument.instrumentName.toString(), component);
+                }
             }
         }
 
@@ -235,16 +248,24 @@ public class View extends JPanel
         allModels.put(ModelNames.GRATICULE, graticule);
         allModels.put(ModelNames.IMAGES, new ImageCollection(smallBodyModel));
 
-        if (smallBodyConfig.hasPerspectiveImages)
+        for (ImagingInstrument instrument : smallBodyConfig.imagingInstruments)
         {
-            allModels.put(ModelNames.COLOR_IMAGES, new ColorImageCollection(smallBodyModel));
-            allModels.put(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES, new PerspectiveImageBoundaryCollection(smallBodyModel));
-        }
+            if (instrument.spectralMode == SpectralMode.MONO)
+            {
+                allModels.put(ModelNames.COLOR_IMAGES, new ColorImageCollection(smallBodyModel));
+                allModels.put(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES, new PerspectiveImageBoundaryCollection(smallBodyModel));
+            }
 
-        if (smallBodyConfig.hasMultispectralImages)
-        {
-            allModels.put(ModelNames.COLOR_IMAGES, new ColorImageCollection(smallBodyModel));
-            allModels.put(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES, new PerspectiveImageBoundaryCollection(smallBodyModel));
+            else if (instrument.spectralMode == SpectralMode.MULTI)
+            {
+                allModels.put(ModelNames.COLOR_IMAGES, new ColorImageCollection(smallBodyModel));
+                allModels.put(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES, new PerspectiveImageBoundaryCollection(smallBodyModel));
+            }
+            else if (instrument.spectralMode == SpectralMode.HYPER)
+            {
+                allModels.put(ModelNames.COLOR_IMAGES, new ColorImageCollection(smallBodyModel));
+                allModels.put(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES, new PerspectiveImageBoundaryCollection(smallBodyModel));
+            }
         }
 
         if (smallBodyConfig.hasSpectralData)
@@ -283,31 +304,46 @@ public class View extends JPanel
     {
         popupManager = new PopupManager(modelManager, infoPanelManager, renderer);
 
-        if (smallBodyConfig.hasPerspectiveImages)
+        for (ImagingInstrument instrument : smallBodyConfig.imagingInstruments)
         {
-            ImageCollection images = (ImageCollection)modelManager.getModel(ModelNames.IMAGES);
-            PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES);
-            ColorImageCollection colorImages = (ColorImageCollection)modelManager.getModel(ModelNames.COLOR_IMAGES);
+            if (instrument.spectralMode == SpectralMode.MONO)
+            {
+                ImageCollection images = (ImageCollection)modelManager.getModel(ModelNames.IMAGES);
+                PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES);
+                ColorImageCollection colorImages = (ColorImageCollection)modelManager.getModel(ModelNames.COLOR_IMAGES);
 
-            PopupMenu popupMenu = new ImagePopupMenu(images, boundaries, infoPanelManager, renderer, renderer);
-            popupManager.registerPopup(modelManager.getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES), popupMenu);
+                PopupMenu popupMenu = new ImagePopupMenu(images, boundaries, infoPanelManager, renderer, renderer);
+                popupManager.registerPopup(modelManager.getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES), popupMenu);
 
-            popupMenu = new ColorImagePopupMenu(colorImages, infoPanelManager);
-            popupManager.registerPopup(modelManager.getModel(ModelNames.COLOR_IMAGES), popupMenu);
-        }
+                popupMenu = new ColorImagePopupMenu(colorImages, infoPanelManager);
+                popupManager.registerPopup(modelManager.getModel(ModelNames.COLOR_IMAGES), popupMenu);
+            }
 
-        if (smallBodyConfig.hasMultispectralImages)
-        {
-            ImageCollection images = (ImageCollection)modelManager.getModel(ModelNames.IMAGES);
-            PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES);
-            ColorImageCollection colorImages = (ColorImageCollection)modelManager.getModel(ModelNames.COLOR_IMAGES);
+            else if (instrument.spectralMode == SpectralMode.MULTI)
+            {
+                ImageCollection images = (ImageCollection)modelManager.getModel(ModelNames.IMAGES);
+                PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES);
+                ColorImageCollection colorImages = (ColorImageCollection)modelManager.getModel(ModelNames.COLOR_IMAGES);
 
-            PopupMenu popupMenu = new ImagePopupMenu(images, boundaries, infoPanelManager, renderer, renderer);
-            popupManager.registerPopup(modelManager.getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES), popupMenu);
+                PopupMenu popupMenu = new ImagePopupMenu(images, boundaries, infoPanelManager, renderer, renderer);
+                popupManager.registerPopup(modelManager.getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES), popupMenu);
 
-            popupMenu = new ColorImagePopupMenu(colorImages, infoPanelManager);
-            popupManager.registerPopup(modelManager.getModel(ModelNames.COLOR_IMAGES), popupMenu);
-        }
+                popupMenu = new ColorImagePopupMenu(colorImages, infoPanelManager);
+                popupManager.registerPopup(modelManager.getModel(ModelNames.COLOR_IMAGES), popupMenu);
+            }
+            else if (instrument.spectralMode == SpectralMode.HYPER)
+            {
+                ImageCollection images = (ImageCollection)modelManager.getModel(ModelNames.IMAGES);
+                PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES);
+                ColorImageCollection colorImages = (ColorImageCollection)modelManager.getModel(ModelNames.COLOR_IMAGES);
+
+                PopupMenu popupMenu = new ImagePopupMenu(images, boundaries, infoPanelManager, renderer, renderer);
+                popupManager.registerPopup(modelManager.getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES), popupMenu);
+
+                popupMenu = new ColorImagePopupMenu(colorImages, infoPanelManager);
+                popupManager.registerPopup(modelManager.getModel(ModelNames.COLOR_IMAGES), popupMenu);
+            }
+            }
 
         if (smallBodyConfig.hasSpectralData)
         {
