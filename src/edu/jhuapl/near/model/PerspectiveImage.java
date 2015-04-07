@@ -672,7 +672,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
                 System.out.println("Label file not available");
             }
         }
-        else if (key.source.equals(ImageSource.GASKELL))
+        else
         {
             try
             {
