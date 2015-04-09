@@ -15,8 +15,8 @@ import java.awt.Component;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.BufferedWriter;
@@ -78,11 +78,13 @@ import edu.jhuapl.near.util.IdPair;
 import edu.jhuapl.near.util.Properties;
 
 
-public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyChangeListener, TableModelListener
+public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyChangeListener, TableModelListener, MouseListener
 {
     private SmallBodyConfig smallBodyConfig;
     private final ModelManager modelManager;
+    private final ModelInfoWindowManager infoPanelManager;
     private final PickManager pickManager;
+    private final Renderer renderer;
     private java.util.Date startDate = null;
     private java.util.Date endDate = null;
     private IdPair resultIntervalCurrentlyShown = null;
@@ -111,10 +113,15 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     {
         this.smallBodyConfig = smallBodyConfig;
         this.modelManager = modelManager;
+        this.infoPanelManager = infoPanelManager;
+        this.renderer = renderer;
         this.pickManager = pickManager;
 
         this.instrument = instrument;
+    }
 
+    public ImagingSearchPanel init()
+    {
         pickManager.getDefaultPicker().addPropertyChangeListener(this);
 
         initComponents();
@@ -129,6 +136,8 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
         ColorImageCollection colorImages = (ColorImageCollection)modelManager.getModel(getColorImageCollectionModelName());
         colorImagePopupMenu = new ColorImagePopupMenu(colorImages, infoPanelManager);
+
+        return this;
     }
 
     private int getNumberOfFiltersActuallyUsed()
@@ -184,7 +193,8 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         resultList.getColumnModel().getColumn(1).setPreferredWidth(30);
         resultList.getColumnModel().getColumn(0).setResizable(false);
         resultList.getColumnModel().getColumn(1).setResizable(false);
-        resultList.addMouseListener(new TableMouseHandler());
+//        resultList.addMouseListener(new TableMouseHandler());
+        resultList.addMouseListener(this);
         resultList.getModel().addTableModelListener(this);
 
         ImageSource imageSources[] = instrument.searchImageSources;
@@ -313,6 +323,21 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             greenButton.setVisible(false);
             blueButton.setVisible(false);
         }
+    }
+
+    protected javax.swing.JComboBox getRedComboBox()
+    {
+        return redComboBox;
+    }
+
+    protected javax.swing.JComboBox getGreenComboBox()
+    {
+        return greenComboBox;
+    }
+
+    protected javax.swing.JComboBox getBlueComboBox()
+    {
+        return blueComboBox;
     }
 
     protected ComboBoxModel getRedComboBoxModel()
@@ -2221,8 +2246,8 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         }
     }
 
-    class TableMouseHandler extends MouseAdapter
-    {
+//    class TableMouseHandler extends MouseAdapter
+//    {
         public void mousePressed(MouseEvent e)
         {
             resultsListMaybeShowPopup(e);
@@ -2257,7 +2282,31 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         {
             resultsListMaybeShowPopup(e);
         }
-    }
+
+
+//    }
+
+    @Override
+        public void mouseClicked(MouseEvent arg0)
+        {
+            // TODO Auto-generated method stub
+
+        }
+
+        @Override
+        public void mouseEntered(MouseEvent arg0)
+        {
+            // TODO Auto-generated method stub
+
+        }
+
+        @Override
+        public void mouseExited(MouseEvent arg0)
+        {
+            // TODO Auto-generated method stub
+
+        }
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton blueButton;

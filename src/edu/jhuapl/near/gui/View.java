@@ -114,7 +114,7 @@ public class View extends JPanel
                         smallBodyConfig.body == ShapeModelBody.EROS ||
                         (smallBodyConfig.body == ShapeModelBody.ITOKAWA && ShapeModelAuthor.GASKELL == smallBodyConfig.author))
                 {
-                    JComponent component = new ImagingSearchPanel(smallBodyConfig, modelManager, infoPanelManager, pickManager, renderer, instrument);
+                    JComponent component = new ImagingSearchPanel(smallBodyConfig, modelManager, infoPanelManager, pickManager, renderer, instrument).init();
                     controlPanel.addTab(instrument.instrumentName.toString(), component);
                 }
             }
@@ -123,7 +123,7 @@ public class View extends JPanel
             {
                 if (Configuration.isAPLVersion())
                 {
-                    JComponent component = new ImagingSearchPanel(smallBodyConfig, modelManager, infoPanelManager, pickManager, renderer, instrument);
+                    JComponent component = new MultispectralImagingSearchPanel(smallBodyConfig, modelManager, infoPanelManager, pickManager, renderer, instrument).init();
                     controlPanel.addTab(instrument.instrumentName.toString(), component);
                 }
             }
@@ -131,7 +131,7 @@ public class View extends JPanel
             {
                 if (Configuration.isAPLVersion())
                 {
-                    JComponent component = new ImagingSearchPanel(smallBodyConfig, modelManager, infoPanelManager, pickManager, renderer, instrument);
+                    JComponent component = new ImagingSearchPanel(smallBodyConfig, modelManager, infoPanelManager, pickManager, renderer, instrument).init();
                     controlPanel.addTab(instrument.instrumentName.toString(), component);
                 }
             }
