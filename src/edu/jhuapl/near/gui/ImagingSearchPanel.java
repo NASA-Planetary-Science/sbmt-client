@@ -2072,13 +2072,18 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
             sourceOfLastQuery = imageSource;
 
-            setImageResults(results);
+            setImageResults(processResults(results));
         }
         catch (Exception e)
         {
             e.printStackTrace();
         }
     }//GEN-LAST:event_submitButtonActionPerformed
+
+    protected ArrayList<ArrayList<String>> processResults(ArrayList<ArrayList<String>> input)
+    {
+        return input;
+    }
 
     private void sourceComboBoxItemStateChanged(java.awt.event.ItemEvent evt)
     {//GEN-FIRST:event_sourceComboBoxItemStateChanged
