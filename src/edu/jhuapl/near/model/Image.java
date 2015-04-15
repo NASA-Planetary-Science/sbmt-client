@@ -117,6 +117,11 @@ public abstract class Image extends Model implements PropertyChangeListener
             this.searchImageSources = searchImageSources;
             this.instrumentName = instrumentName;
         }
+
+        public ImagingInstrument clone()
+        {
+            return new ImagingInstrument(spectralMode, searchQuery.clone(), type, searchImageSources.clone(), instrumentName);
+        }
     }
 
 

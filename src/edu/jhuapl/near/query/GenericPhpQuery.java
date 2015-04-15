@@ -13,6 +13,11 @@ public class GenericPhpQuery extends QueryBase
     private String imagesPath;
     private String tablePrefix;
 
+    public GenericPhpQuery clone()
+    {
+        return new GenericPhpQuery(imagesPath, tablePrefix);
+    }
+
     public GenericPhpQuery(String imagesPath, String tablePrefix)
     {
         this.imagesPath = imagesPath;

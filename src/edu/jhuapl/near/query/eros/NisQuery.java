@@ -51,10 +51,9 @@ public class NisQuery extends QueryBase
         return ref;
     }
 
-    public Object clone()
-        throws CloneNotSupportedException
+    public QueryBase clone()
     {
-        throw new CloneNotSupportedException();
+        return null;
     }
 
     private NisQuery()

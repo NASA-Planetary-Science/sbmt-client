@@ -26,6 +26,11 @@ import edu.jhuapl.near.util.FileUtil;
  */
 abstract public class QueryBase
 {
+    public QueryBase clone()
+    {
+        return null;
+    }
+
     protected ArrayList<ArrayList<String>> doQuery(String phpScript, String data)
     {
         ArrayList<ArrayList<String>> results = new ArrayList<ArrayList<String>>();

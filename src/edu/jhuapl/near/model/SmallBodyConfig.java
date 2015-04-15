@@ -1722,7 +1722,16 @@ public class SmallBodyConfig
         c.pathOnServer = this.pathOnServer;
         c.hasColoringData = this.hasColoringData;
         c.hasImageMap = this.hasImageMap;
-        c.imagingInstruments = this.imagingInstruments.clone();
+
+        // deep clone imaging instruments
+        if (this.imagingInstruments != null)
+        {
+            int length = this.imagingInstruments.length;
+            c.imagingInstruments = new ImagingInstrument[length];
+            for (int i = 0; i < length; i++)
+                c.imagingInstruments[i] = this.imagingInstruments[i].clone();
+        }
+
         c.hasLidarData = this.hasLidarData;
         c.hasMapmaker = this.hasMapmaker;
         c.hasSpectralData = this.hasSpectralData;
