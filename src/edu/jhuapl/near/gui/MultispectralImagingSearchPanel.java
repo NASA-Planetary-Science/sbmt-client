@@ -10,6 +10,8 @@
  */
 package edu.jhuapl.near.gui;
 
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -22,6 +24,8 @@ import java.util.Set;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 import edu.jhuapl.near.model.Image.ImageKey;
 import edu.jhuapl.near.model.Image.ImageSource;
@@ -33,12 +37,15 @@ import edu.jhuapl.near.pick.PickManager;
 
 public class MultispectralImagingSearchPanel extends ImagingSearchPanel implements ActionListener
 {
+    private JPanel bandPanel;
+    private JComboBox monoComboBox;
+    private ComboBoxModel monoComboBoxModel;
 
     private ComboBoxModel redComboBoxModel;
     private ComboBoxModel greenComboBoxModel;
     private ComboBoxModel blueComboBoxModel;
 
-    private String monochromeImagePrefix = "mc3_";
+    private String monoImagePrefix = "mc3_";
     private String redImagePrefix = "mc3_";
     private String greenImagePrefix = "mc3_";
     private String blueImagePrefix = "mc3_";
@@ -109,7 +116,7 @@ public class MultispectralImagingSearchPanel extends ImagingSearchPanel implemen
         String[] imagePathArray = imagePathName.split("/");
         int size = imagePathArray.length;
         String fileName = imagePathArray[size-1];
-        String prefixedFileName = monochromeImagePrefix + fileName;
+        String prefixedFileName = monoImagePrefix + fileName;
         String fullImagePathName = "/";
         for (int i=0; i<size-1; i++)
             fullImagePathName += imagePathArray[i] + "/";
@@ -134,6 +141,19 @@ public class MultispectralImagingSearchPanel extends ImagingSearchPanel implemen
         return this;
     }
 
+    protected void initExtraComponents()
+    {
+        bandPanel = new JPanel(new FlowLayout(FlowLayout.LEADING));
+
+        bandPanel.add(new JLabel("Band:"));
+        monoComboBoxModel = new DefaultComboBoxModel(bandNames);
+        monoComboBox = new JComboBox(monoComboBoxModel);
+        monoComboBox.addActionListener(this);
+        bandPanel.add(monoComboBox);
+
+        add(bandPanel, BorderLayout.NORTH);
+    }
+
     protected ComboBoxModel getRedComboBoxModel()
     {
         return redComboBoxModel;
@@ -154,7 +174,7 @@ public class MultispectralImagingSearchPanel extends ImagingSearchPanel implemen
     {
         String item = (String)((JComboBox)arg0.getSource()).getSelectedItem();
         System.out.println("ComboBox Value Changed: " + item);
-        monochromeImagePrefix = bandNamesToPrefixes.get(item);
+        monoImagePrefix = bandNamesToPrefixes.get(item);
     }
 
 

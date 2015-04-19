@@ -127,6 +127,8 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
         initComponents();
 
+        initExtraComponents();
+
         postInitComponents(instrument);
 
         ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
@@ -139,6 +141,11 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         colorImagePopupMenu = new ColorImagePopupMenu(colorImages, infoPanelManager);
 
         return this;
+    }
+
+    protected void initExtraComponents()
+    {
+        // to be overridden by subclasses
     }
 
     private int getNumberOfFiltersActuallyUsed()
@@ -2189,7 +2196,6 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         {
             int row = e.getFirstRow();
             String name = imageRawResults.get(row).get(0);
-//            ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
             ImageKey key = createImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
             ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
             if (images.containsImage(key))
