@@ -104,6 +104,11 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     private ImagePopupMenu imagePopupMenu;
     private ColorImagePopupMenu colorImagePopupMenu;
 
+    protected ModelManager getModelManager()
+    {
+        return modelManager;
+    }
+
     /** Creates new form ImagingSearchPanel */
     public ImagingSearchPanel(SmallBodyConfig smallBodyConfig,
             final ModelManager modelManager,
@@ -166,7 +171,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             return names.length;
     }
 
-    private ModelNames getImageCollectionModelName()
+    protected ModelNames getImageCollectionModelName()
     {
         return ModelNames.IMAGES;
     }
@@ -2175,7 +2180,6 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         {
             int row = e.getFirstRow();
             String name = imageRawResults.get(row).get(0);
-//            ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
             ImageKey key = createImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
             try
             {
