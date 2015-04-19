@@ -27,6 +27,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.TimeZone;
 import java.util.TreeSet;
 
@@ -376,7 +377,8 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                 for (int selectedIndex : selectedIndices)
                 {
                     String name = imageRawResults.get(selectedIndex).get(0);
-                    ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
+//                    ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
+                    ImageKey key = createImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
                     imageKeys.add(key);
                 }
                 imagePopupMenu.setCurrentImages(imageKeys);
@@ -425,7 +427,8 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             Date dt = new Date(Long.parseLong(str.get(1)));
 
             String name = imageRawResults.get(i).get(0);
-            ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
+//            ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
+            ImageKey key = createImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
             if (images.containsImage(key))
             {
                 resultList.setValueAt(true, i, 0);
@@ -463,6 +466,18 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     }
 
 
+    protected List<ImageKey> createImageKeys(String boundaryName, ImageSource sourceOfLastQuery, ImagingInstrument instrument)
+    {
+        List<ImageKey> result = new ArrayList<ImageKey>();
+        result.add(createImageKey(boundaryName, sourceOfLastQuery, instrument));
+        return result;
+    }
+
+    protected ImageKey createImageKey(String imagePathName, ImageSource sourceOfLastQuery, ImagingInstrument instrument)
+    {
+        return new ImageKey(imagePathName, sourceOfLastQuery, instrument);
+    }
+
     private void showImageBoundaries(IdPair idPair)
     {
         int startId = idPair.id1;
@@ -484,9 +499,14 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                 //String boundaryName = currentImage.substring(0,currentImage.length()-4) + "_BOUNDARY.VTK";
                 //String boundaryName = currentImage.substring(0,currentImage.length()-4) + "_DDR.LBL";
                 String boundaryName = currentImage.substring(0,currentImage.length()-4);
-                ImageKey key = new ImageKey(boundaryName, sourceOfLastQuery, instrument);
-                key.instrument = this.instrument;
-                model.addBoundary(key);
+//                ImageKey key = new ImageKey(boundaryName, sourceOfLastQuery, instrument);
+
+                List<ImageKey> keys = createImageKeys(boundaryName, sourceOfLastQuery, instrument);
+                for (ImageKey key : keys)
+                {
+                    key.instrument = this.instrument;
+                    model.addBoundary(key);
+                }
             }
             catch (FitsException e1) {
                 // TODO Auto-generated catch block
@@ -613,7 +633,8 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             for (int i=0; i<size; ++i)
             {
                 String name = imageRawResults.get(i).get(0);
-                ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
+//                ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
+                ImageKey key = createImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
                 if (images.containsImage(key))
                 {
                     resultList.setValueAt(true, i, 0);
@@ -1815,7 +1836,8 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             String name = new File(image).getName();
             image = image.substring(0,image.length()-4);
             redLabel.setText(name);
-            selectedRedKey = new ImageKey(image, sourceOfLastQuery, instrument);
+//            selectedRedKey = new ImageKey(image, sourceOfLastQuery, instrument);
+            selectedRedKey = createImageKey(image, sourceOfLastQuery, instrument);
         }
     }//GEN-LAST:event_redButtonActionPerformed
 
@@ -1828,7 +1850,8 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             String name = new File(image).getName();
             image = image.substring(0,image.length()-4);
             greenLabel.setText(name);
-            selectedGreenKey = new ImageKey(image, sourceOfLastQuery, instrument);
+//            selectedGreenKey = new ImageKey(image, sourceOfLastQuery, instrument);
+            selectedGreenKey = createImageKey(image, sourceOfLastQuery, instrument);
         }
     }//GEN-LAST:event_greenButtonActionPerformed
 
@@ -1841,7 +1864,8 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             String name = new File(image).getName();
             image = image.substring(0,image.length()-4);
             blueLabel.setText(name);
-            selectedBlueKey = new ImageKey(image, sourceOfLastQuery, instrument);
+//            selectedBlueKey = new ImageKey(image, sourceOfLastQuery, instrument);
+            selectedBlueKey = createImageKey(image, sourceOfLastQuery, instrument);
         }
     }//GEN-LAST:event_blueButtonActionPerformed
 
@@ -2144,7 +2168,8 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         {
             int row = e.getFirstRow();
             String name = imageRawResults.get(row).get(0);
-            ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
+//            ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
+            ImageKey key = createImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
             try
             {
                 ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
@@ -2164,7 +2189,8 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         {
             int row = e.getFirstRow();
             String name = imageRawResults.get(row).get(0);
-            ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
+//            ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
+            ImageKey key = createImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
             ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
             if (images.containsImage(key))
             {
@@ -2186,7 +2212,8 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             Component co = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 
             String name = imageRawResults.get(row).get(0);
-            ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
+//            ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
+            ImageKey key = createImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
             if (model.containsBoundary(key))
             {
                 int[] c = model.getBoundary(key).getBoundaryColor();
@@ -2232,7 +2259,8 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             if (column == 1)
             {
                 String name = imageRawResults.get(row).get(0);
-                ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
+//                ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
+                ImageKey key = createImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
                 ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
                 return images.containsImage(key);
             }
@@ -2263,7 +2291,8 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
             if (row != -1 && e.getClickCount() == 2 && col >= 2) {
                 String name = imageRawResults.get(row).get(0);
-                ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
+//                ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
+                ImageKey key = createImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
                 try
                 {
                     ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
