@@ -167,7 +167,13 @@ public abstract class Image extends Model implements PropertyChangeListener
         @Override
         public boolean equals(Object obj)
         {
-            return name.equals(((ImageKey)obj).name) && source == ((ImageKey)obj).source;
+            return name.equals(((ImageKey)obj).name) && source.equals(((ImageKey)obj).source);
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return name.hashCode();
         }
     }
 

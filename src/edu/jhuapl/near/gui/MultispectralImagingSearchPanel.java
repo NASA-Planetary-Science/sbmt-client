@@ -166,6 +166,15 @@ public class MultispectralImagingSearchPanel extends ImagingSearchPanel implemen
         }
         imageKeys.add(result);
 
+        System.out.println("bandNamesToKeys:");
+        for (String band : bandNamesToKeys.keySet())
+        {
+            System.out.println(band + ":");
+            Set<ImageKey> keys = bandNamesToKeys.get(band);
+            for (ImageKey key : keys)
+                System.out.println("Image Key: " + key.name + ", " + key.source + ", " + key.instrument + ", " + key.band);
+        }
+
         return result;
     }
 
@@ -226,7 +235,8 @@ public class MultispectralImagingSearchPanel extends ImagingSearchPanel implemen
              Image image = images.getImage(imageKey);
              if (image.isVisible())
              {
-                 image.setVisible(false);
+//                 image.setVisible(false);
+                 images.removeImage(imageKey);
 
                  // load or make visible the new band versions of any images currently visible
                  ImageKey newImageKey = createImageKey(imageKey, newBandName);
