@@ -153,7 +153,12 @@ public class MultispectralImagingSearchPanel extends ImagingSearchPanel implemen
         String prefixedFileName = prefix + fileName;
         String fullImagePathName = "/";
         for (int i=0; i<size-1; i++)
-            fullImagePathName += imagePathArray[i] + "/";
+        {
+            String element = imagePathArray[i];
+            if (element.length() > 0)
+                fullImagePathName += element + "/";
+        }
+
         fullImagePathName += prefixedFileName;
 
         ImageKey result = new ImageKey(fullImagePathName, sourceOfLastQuery, instrument, bandName);
@@ -166,14 +171,14 @@ public class MultispectralImagingSearchPanel extends ImagingSearchPanel implemen
         }
         imageKeys.add(result);
 
-        System.out.println("bandNamesToKeys:");
-        for (String band : bandNamesToKeys.keySet())
-        {
-            System.out.println(band + ":");
-            Set<ImageKey> keys = bandNamesToKeys.get(band);
-            for (ImageKey key : keys)
-                System.out.println("Image Key: " + key.name + ", " + key.source + ", " + key.instrument + ", " + key.band);
-        }
+//        System.out.println("bandNamesToKeys:");
+//        for (String band : bandNamesToKeys.keySet())
+//        {
+//            System.out.println(band + ":");
+//            Set<ImageKey> keys = bandNamesToKeys.get(band);
+//            for (ImageKey key : keys)
+//                System.out.println("Image Key: " + key.name + ", " + key.source + ", " + key.instrument + ", " + key.band);
+//        }
 
         return result;
     }
@@ -235,15 +240,15 @@ public class MultispectralImagingSearchPanel extends ImagingSearchPanel implemen
              Image image = images.getImage(imageKey);
              if (image.isVisible())
              {
-//                 image.setVisible(false);
-                 images.removeImage(imageKey);
+                 image.setVisible(false);
+//                 images.removeImage(imageKey);
 
                  // load or make visible the new band versions of any images currently visible
                  ImageKey newImageKey = createImageKey(imageKey, newBandName);
                  try
                  {
                    if (!images.containsImage(newImageKey))
-                     images.addImage(newImageKey);
+                       images.addImage(newImageKey);
                    else
                        images.getImage(newImageKey).setVisible(true);
                  }
@@ -258,7 +263,7 @@ public class MultispectralImagingSearchPanel extends ImagingSearchPanel implemen
         }
 
         // show all images in the currently selected band
-        Set<ImageKey> newImageKeys = new HashSet<ImageKey>(bandNamesToKeys.get(monoBandName));
+        Set<ImageKey> newImageKeys = new HashSet<ImageKey>(bandNamesToKeys.get(newBandName));
         for (ImageKey imageKey : newImageKeys)
         {
            if (images.containsImage(imageKey))
