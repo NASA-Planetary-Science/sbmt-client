@@ -1747,7 +1747,7 @@ public class SmallBodyConfig
             c.imageSearchDefaultStartDate = (Date)this.imageSearchDefaultStartDate.clone();
             c.imageSearchDefaultEndDate = (Date)this.imageSearchDefaultEndDate.clone();
             c.imageSearchFilterNames = this.imageSearchFilterNames.clone();
-            c.imageSearchUserDefinedCheckBoxesNames = this.imageSearchFilterNames.clone();
+            c.imageSearchUserDefinedCheckBoxesNames = this.imageSearchUserDefinedCheckBoxesNames.clone();
             c.imageSearchDefaultMaxSpacecraftDistance = this.imageSearchDefaultMaxSpacecraftDistance;
             c.imageSearchDefaultMaxResolution = this.imageSearchDefaultMaxResolution;
         }
