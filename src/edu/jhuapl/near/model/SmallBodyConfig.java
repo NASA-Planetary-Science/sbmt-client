@@ -1742,7 +1742,15 @@ public class SmallBodyConfig
             c.smallBodyNumberOfPlatesPerResolutionLevel = this.smallBodyNumberOfPlatesPerResolutionLevel.clone();
 
         if (this.imagingInstruments != null)
+        {
             c.imagingInstruments = this.imagingInstruments.clone();
+            c.imageSearchDefaultStartDate = (Date)this.imageSearchDefaultStartDate.clone();
+            c.imageSearchDefaultEndDate = (Date)this.imageSearchDefaultEndDate.clone();
+            c.imageSearchFilterNames = this.imageSearchFilterNames.clone();
+            c.imageSearchUserDefinedCheckBoxesNames = this.imageSearchFilterNames.clone();
+            c.imageSearchDefaultMaxSpacecraftDistance = this.imageSearchDefaultMaxSpacecraftDistance;
+            c.imageSearchDefaultMaxResolution = this.imageSearchDefaultMaxResolution;
+        }
 
         if (this.hasLidarData)
         {
