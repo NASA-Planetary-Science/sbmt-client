@@ -1531,7 +1531,7 @@ public class SmallBodyConfig
             c.author = ShapeModelAuthor.DLR;
             c.pathOnServer = "/DLR/67P";
             c.version = "SHAP4S";
-            c.imagingInstruments = new ImagingInstrument[] { };
+            c.imagingInstruments[0].searchQuery = new GenericPhpQuery("/DLR/67P/IMAGING", "67P_DLR");
             c.smallBodyLabelPerResolutionLevel = new String[]{
                     "17442 plates ", "72770 plates ", "298442 plates ", "1214922 plates ",
                     "4895631 plates ", "16745283 plates "
