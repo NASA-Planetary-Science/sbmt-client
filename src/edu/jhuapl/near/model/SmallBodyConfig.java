@@ -1531,7 +1531,7 @@ public class SmallBodyConfig
             c.author = ShapeModelAuthor.DLR;
             c.pathOnServer = "/DLR/67P";
             c.version = "SHAP4S";
-            c.imagingInstruments = new ImagingInstrument[] { };
+            c.imagingInstruments[0].searchQuery = new GenericPhpQuery("/DLR/67P/IMAGING", "67P_DLR");
             c.smallBodyLabelPerResolutionLevel = new String[]{
                     "17442 plates ", "72770 plates ", "298442 plates ", "1214922 plates ",
                     "4895631 plates ", "16745283 plates "
@@ -1742,7 +1742,15 @@ public class SmallBodyConfig
             c.smallBodyNumberOfPlatesPerResolutionLevel = this.smallBodyNumberOfPlatesPerResolutionLevel.clone();
 
         if (this.imagingInstruments != null)
+        {
             c.imagingInstruments = this.imagingInstruments.clone();
+            c.imageSearchDefaultStartDate = (Date)this.imageSearchDefaultStartDate.clone();
+            c.imageSearchDefaultEndDate = (Date)this.imageSearchDefaultEndDate.clone();
+            c.imageSearchFilterNames = this.imageSearchFilterNames.clone();
+            c.imageSearchUserDefinedCheckBoxesNames = this.imageSearchUserDefinedCheckBoxesNames.clone();
+            c.imageSearchDefaultMaxSpacecraftDistance = this.imageSearchDefaultMaxSpacecraftDistance;
+            c.imageSearchDefaultMaxResolution = this.imageSearchDefaultMaxResolution;
+        }
 
         if (this.hasLidarData)
         {
