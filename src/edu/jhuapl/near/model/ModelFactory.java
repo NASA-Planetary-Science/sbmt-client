@@ -1,6 +1,5 @@
 package edu.jhuapl.near.model;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 
@@ -108,7 +107,8 @@ public class ModelFactory
         ShapeModelBody name = config.body;
         ShapeModelAuthor author = config.author;
 
-        if (ShapeModelAuthor.GASKELL == author || ShapeModelAuthor.EXPERIMENTAL == author)
+        if (ShapeModelAuthor.GASKELL == author ||
+                (ShapeModelAuthor.EXPERIMENTAL == author && ShapeModelBody.DEIMOS != name))
         {
             if (ShapeModelBody.EROS == name)
                 return new Eros(config);
@@ -165,11 +165,7 @@ public class ModelFactory
             return new CustomShapeModel(config);
         }
 
-        String imageMap = null;
-        if (config.hasImageMap)
-            imageMap = (new File(config.pathOnServer)).getParent() + "/image_map.png";
-
-        return new SimpleSmallBody(config, imageMap);
+        return new SimpleSmallBody(config);
     }
 
     static public Graticule createGraticule(SmallBodyModel smallBodyModel)

@@ -932,31 +932,44 @@ public class SmallBodyConfig
         c.author = ShapeModelAuthor.THOMAS;
         c.pathOnServer = "/THOMAS/DEIMOS/DEIMOS.vtk.gz";
         c.hasImageMap = true;
-
-        c.imagingInstruments = new ImagingInstrument[] {
-                new ImagingInstrument(
-                        SpectralMode.MONO,
-                        new GenericPhpQuery("/THOMAS/DEIMOS/IMAGING", "DEIMOS"),
-                        ImageType.DEIMOS_IMAGE,
-                        new ImageSource[]{ImageSource.SPICE, ImageSource.CORRECTED},
-                        Instrument.IMAGING_DATA
-                        )
-        };
-        c.imageSearchDefaultStartDate = new GregorianCalendar(1976, 7, 16, 0, 0, 0).getTime();
-        c.imageSearchDefaultEndDate = new GregorianCalendar(2011, 7, 10, 0, 0, 0).getTime();
-        c.imageSearchFilterNames = new String[]{
-                "VIS, Blue",
-                "VIS, Minus Blue",
-                "VIS, Violet",
-                "VIS, Clear",
-                "VIS, Green",
-                "VIS, Red",
-        };
-        c.imageSearchUserDefinedCheckBoxesNames = new String[]{"Viking Orbiter 1-A", "Viking Orbiter 1-B", "Viking Orbiter 2-A", "Viking Orbiter 2-B", "MEX HRSC"};
-        c.imageSearchDefaultMaxSpacecraftDistance = 30000.0;
-        c.imageSearchDefaultMaxResolution = 800.0;
         configArray.add(c);
 
+        if (Configuration.isAPLVersion())
+        {
+            c = new SmallBodyConfig();
+            c.body = ShapeModelBody.DEIMOS;
+            c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+            c.population = ShapeModelPopulation.MARS;
+            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.author = ShapeModelAuthor.EXPERIMENTAL;
+            c.pathOnServer = "/THOMAS/DEIMOSEXPERIMENTAL/DEIMOS.vtk.gz";
+            c.hasImageMap = true;
+
+            c.imagingInstruments = new ImagingInstrument[] {
+                    new ImagingInstrument(
+                            SpectralMode.MONO,
+                            new GenericPhpQuery("/THOMAS/DEIMOSEXPERIMENTAL/IMAGING", "DEIMOS"),
+                            ImageType.DEIMOS_IMAGE,
+                            new ImageSource[]{ImageSource.SPICE, ImageSource.CORRECTED},
+                            Instrument.IMAGING_DATA
+                            )
+            };
+            c.imageSearchDefaultStartDate = new GregorianCalendar(1976, 7, 16, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2011, 7, 10, 0, 0, 0).getTime();
+            c.imageSearchFilterNames = new String[]{
+                    "VIS, Blue",
+                    "VIS, Minus Blue",
+                    "VIS, Violet",
+                    "VIS, Clear",
+                    "VIS, Green",
+                    "VIS, Red",
+            };
+            c.imageSearchUserDefinedCheckBoxesNames = new String[]{"Viking Orbiter 1-A", "Viking Orbiter 1-B", "Viking Orbiter 2-A", "Viking Orbiter 2-B", "MEX HRSC"};
+            c.imageSearchDefaultMaxSpacecraftDistance = 30000.0;
+            c.imageSearchDefaultMaxResolution = 800.0;
+            configArray.add(c);
+
+        }
         c = new SmallBodyConfig();
         c.body = ShapeModelBody.JANUS;
         c.type = ShapeModelType.PLANETS_AND_SATELLITES;

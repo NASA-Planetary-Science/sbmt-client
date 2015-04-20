@@ -17,6 +17,12 @@ public class SimpleSmallBody extends SmallBodyModel
         };
     }
 
+    static private String[] getImageMap(SmallBodyConfig config)
+    {
+        System.out.println((new File(config.pathOnServer)).getParent() + "/image_map.png");
+        return new String[] {(new File(config.pathOnServer)).getParent() + "/image_map.png"};
+    }
+
     static private final String[] coloringNames = {
         SlopeStr, ElevStr, GravAccStr, GravPotStr
     };
@@ -37,12 +43,12 @@ public class SimpleSmallBody extends SmallBodyModel
                 config.hasColoringData ? coloringNames : null,
                 config.hasColoringData ? coloringUnits : null,
                 null,
-                null,
+                config.hasImageMap ? getImageMap(config) : null,
                 ColoringValueType.CELLDATA,
                 false);
     }
 
-    public SimpleSmallBody(SmallBodyConfig config, String imageMap)
+    public SimpleSmallBody(SmallBodyConfig config)
     {
         super(config,
                 new String[] {config.body.toString()},
@@ -51,7 +57,7 @@ public class SimpleSmallBody extends SmallBodyModel
                 config.hasColoringData ? coloringNames : null,
                 config.hasColoringData ? coloringUnits : null,
                 null,
-                imageMap != null ? new String[] {imageMap} : null,
+                config.hasImageMap ? getImageMap(config) : null,
                 ColoringValueType.CELLDATA,
                 false);
     }
