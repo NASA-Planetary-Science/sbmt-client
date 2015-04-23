@@ -22,9 +22,9 @@ public class PerspectiveImageBoundaryCollection extends Model implements Propert
     private HashMap<vtkProp, PerspectiveImageBoundary> actorToBoundaryMap = new HashMap<vtkProp, PerspectiveImageBoundary>();
     private SmallBodyModel smallBodyModel;
     // Create a buffer of initial boundary colors to use. We cycle through these colors when creating new boundaries
-    private Color[] initialColors = {Color.RED, Color.PINK, Color.ORANGE,
-            Color.GREEN, Color.MAGENTA, Color.CYAN, Color.BLUE, Color.LIGHT_GRAY,
-            Color.GRAY, Color.DARK_GRAY};
+    private Color[] initialColors = {Color.RED, Color.PINK.darker(), Color.ORANGE.darker(),
+            Color.GREEN.darker(), Color.MAGENTA, Color.CYAN.darker(), Color.BLUE,
+            Color.GRAY, Color.DARK_GRAY, Color.BLACK};
     private int initialColorIndex = 0;
 
     public PerspectiveImageBoundaryCollection(SmallBodyModel smallBodyModel)
