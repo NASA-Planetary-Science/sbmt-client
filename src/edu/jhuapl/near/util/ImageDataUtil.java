@@ -21,9 +21,11 @@ public class ImageDataUtil
         int[] dims = image.GetDimensions();
         int height = dims[0];
         int width = dims[1];
+//        int depth = image.getCurrentSlice();
         vtkPointData pointdata = image.GetPointData();
         vtkFloatArray data = (vtkFloatArray)pointdata.GetScalars();
-        float[][] array = new float[height][width];
+      float[][] array = new float[height][width];
+//      float[][] array = new float[height][width][depth];
         int count = 0;
         for (int j=0; j < width; ++j)
             for (int i=0; i < height; ++i)

@@ -195,8 +195,9 @@ public class MultispectralImagingSearchPanel extends ImagingSearchPanel implemen
         return this;
     }
 
-    protected void initExtraComponents()
+    protected void populateMonochromePanel(JPanel panel)
     {
+        panel.setLayout(new BorderLayout());
         bandPanel = new JPanel(new FlowLayout(FlowLayout.LEADING));
 
         bandPanel.add(new JLabel("Band:"));
@@ -205,7 +206,7 @@ public class MultispectralImagingSearchPanel extends ImagingSearchPanel implemen
         monoComboBox.addActionListener(this);
         bandPanel.add(monoComboBox);
 
-        add(bandPanel, BorderLayout.NORTH);
+        panel.add(bandPanel, BorderLayout.WEST);
     }
 
     protected ComboBoxModel getRedComboBoxModel()
@@ -227,7 +228,7 @@ public class MultispectralImagingSearchPanel extends ImagingSearchPanel implemen
     public void actionPerformed(ActionEvent arg0)
     {
         String newBandName = (String)((JComboBox)arg0.getSource()).getSelectedItem();
-        System.out.println("ComboBox Value Changed: " + newBandName);
+//        System.out.println("ComboBox Value Changed: " + newBandName);
 
         ImageCollection images = (ImageCollection)getModelManager().getModel(getImageCollectionModelName());
 

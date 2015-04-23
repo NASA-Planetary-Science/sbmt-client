@@ -77,6 +77,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
     private SmallBodyModel smallBodyModel;
 
+    private vtkImageData raw3DImage;
     private vtkImageData rawImage;
     private vtkImageData displayedImage;
 
@@ -694,6 +695,13 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     {
         return displayedImage;
     }
+
+//    public void setCurrentSlice(int slice)
+//    {
+//        this.currentSlice = slice;
+//        displayedImage = .....;
+//        fireProp...
+//    }
 
     public vtkTexture getTexture()
     {
