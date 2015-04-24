@@ -1,5 +1,3 @@
-/*** EXPORT CONTROLLED (12/2013) ***/
-
 #include <fstream>
 #include <iostream>
 #include <vector>
