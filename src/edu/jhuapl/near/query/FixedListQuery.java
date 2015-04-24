@@ -13,11 +13,17 @@ import edu.jhuapl.near.model.Image.ImageSource;
  */
 public class FixedListQuery extends QueryBase
 {
-    private String path;
+    private String rootPath;
 
-    public FixedListQuery(String path)
+    public FixedListQuery(String rootPath)
     {
-        this.path = path;
+        this.rootPath = rootPath;
+    }
+
+    @Override
+    public String getImagesPath()
+    {
+        return rootPath + "/images";
     }
 
     @Override
@@ -43,8 +49,8 @@ public class FixedListQuery extends QueryBase
             ImageSource imageSource,
             int limbType)
     {
-        return getResultsFromFileListOnServer(path + "/imagelist.txt",
-                path + "/images/");
+        return getResultsFromFileListOnServer(rootPath + "/imagelist.txt",
+                rootPath + "/images/");
     }
 
 }

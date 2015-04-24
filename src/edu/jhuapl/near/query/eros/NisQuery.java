@@ -60,6 +60,11 @@ public class NisQuery extends QueryBase
     {
     }
 
+    @Override
+    public String getImagesPath()
+    {
+        return null;
+    }
 
     /**
      * Run a query which searches for msi images between the specified dates.

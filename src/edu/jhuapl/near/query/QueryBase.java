@@ -127,6 +127,8 @@ abstract public class QueryBase
         return results;
     }
 
+    abstract public String getImagesPath();
+
     /**
      * Run a query and return an array containing the results. The returned array
      * is a list of list of strings where each a list in the containing list

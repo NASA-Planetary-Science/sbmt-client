@@ -76,6 +76,7 @@ import edu.jhuapl.near.pick.PickManager;
 import edu.jhuapl.near.pick.PickManager.PickMode;
 import edu.jhuapl.near.popupmenus.ColorImagePopupMenu;
 import edu.jhuapl.near.popupmenus.ImagePopupMenu;
+import edu.jhuapl.near.util.FileUtil;
 import edu.jhuapl.near.util.IdPair;
 import edu.jhuapl.near.util.Properties;
 
@@ -528,13 +529,14 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                     model.addBoundary(key);
                 }
             }
-            catch (FitsException e1) {
-                // TODO Auto-generated catch block
+            catch (Exception e1) {
+                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
+                        "There was an error mapping the boundary.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+
                 e1.printStackTrace();
-            }
-            catch (IOException e1) {
-                // TODO Auto-generated catch block
-                e1.printStackTrace();
+                break;
             }
         }
     }
@@ -571,10 +573,18 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             }
             catch (IOException e1)
             {
+                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
+                        "There was an error mapping the image.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
                 e1.printStackTrace();
             }
             catch (FitsException e1)
             {
+                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
+                        "There was an error mapping the image.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
                 e1.printStackTrace();
             }
             catch (NoOverlapException e1)
@@ -780,8 +790,10 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         jPanel13 = new javax.swing.JPanel();
         removeAllButton = new javax.swing.JButton();
         removeAllImagesButton = new javax.swing.JButton();
-        saveImageListButton = new javax.swing.JButton();
         monochromePanel = new javax.swing.JPanel();
+        jPanel14 = new javax.swing.JPanel();
+        saveImageListButton = new javax.swing.JButton();
+        loadImageListButton = new javax.swing.JButton();
 
         addComponentListener(new java.awt.event.ComponentAdapter() {
             public void componentHidden(java.awt.event.ComponentEvent evt) {
@@ -1707,6 +1719,13 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 9;
         jPanel8.add(jPanel13, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 11;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        jPanel8.add(monochromePanel, gridBagConstraints);
+
+        jPanel14.setLayout(new java.awt.GridBagLayout());
 
         saveImageListButton.setText("Save Image List...");
         saveImageListButton.addActionListener(new java.awt.event.ActionListener() {
@@ -1716,13 +1735,24 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 10;
-        jPanel8.add(saveImageListButton, gridBagConstraints);
+        gridBagConstraints.gridy = 0;
+        jPanel14.add(saveImageListButton, gridBagConstraints);
+
+        loadImageListButton.setText("Load Image List...");
+        loadImageListButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                loadImageListButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        jPanel14.add(loadImageListButton, gridBagConstraints);
+
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 11;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        jPanel8.add(monochromePanel, gridBagConstraints);
+        gridBagConstraints.gridy = 10;
+        jPanel8.add(jPanel14, gridBagConstraints);
 
         jScrollPane2.setViewportView(jPanel8);
 
@@ -2155,7 +2185,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     }//GEN-LAST:event_numberOfBoundariesComboBoxActionPerformed
 
     private void saveImageListButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveImageListButtonActionPerformed
-        File file = CustomFileChooser.showSaveDialog(this, "Select File");
+        File file = CustomFileChooser.showSaveDialog(this, "Select File", "imagelist.txt");
 
         if (file != null)
         {
@@ -2164,12 +2194,18 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                 FileWriter fstream = new FileWriter(file);
                 BufferedWriter out = new BufferedWriter(fstream);
 
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+                sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+
                 String nl = System.getProperty("line.separator");
                 int size = imageRawResults.size();
                 for (int i=0; i<size; ++i)
                 {
                     String image = new File(imageRawResults.get(i).get(0)).getName();
-                    out.write(image + nl);
+                    String dtStr = imageRawResults.get(i).get(1);
+                    Date dt = new Date(Long.parseLong(dtStr));
+
+                    out.write(image + " " + sdf.format(dt) + " " + sourceOfLastQuery.name() + nl);
                 }
 
                 out.close();
@@ -2185,6 +2221,46 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             }
         }
     }//GEN-LAST:event_saveImageListButtonActionPerformed
+
+    private void loadImageListButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadImageListButtonActionPerformed
+        File file = CustomFileChooser.showOpenDialog(this, "Select File");
+
+        if (file != null)
+        {
+            try
+            {
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+                sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+                ArrayList<ArrayList<String>> results = new ArrayList<ArrayList<String>>();
+                ArrayList<String> lines = FileUtil.getFileLinesAsStringList(file.getAbsolutePath());
+                for (int i=0; i<lines.size(); ++i)
+                {
+                    String[] words = lines.get(i).trim().split("\\s+");
+                    ArrayList<String> result = new ArrayList<String>();
+                    String name = instrument.searchQuery.getImagesPath() + "/" + words[0];
+                    result.add(name);
+                    Date dt = sdf.parse(words[1]);
+                    result.add(String.valueOf(dt.getTime()));
+                    results.add(result);
+                }
+
+                sourceOfLastQuery = ImageSource.valueOf(((Enum)sourceComboBox.getSelectedItem()).name());
+
+                setImageResults(processResults(results));
+            }
+            catch (Exception e)
+            {
+                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
+                        "There was an error reading the file.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+
+                e.printStackTrace();
+            }
+        }
+
+    }//GEN-LAST:event_loadImageListButtonActionPerformed
 
 
     @Override
@@ -2203,10 +2279,12 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                 else
                     images.removeImage(key);
             }
-            catch (FitsException e1) {
-                e1.printStackTrace();
-            }
-            catch (IOException e1) {
+            catch (Exception e1) {
+                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
+                        "There was an error mapping the image.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+
                 e1.printStackTrace();
             }
         }
@@ -2325,10 +2403,11 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                     else
                         images.removeImage(key);
                 }
-                catch (FitsException e1) {
-                    e1.printStackTrace();
-                }
-                catch (IOException e1) {
+                catch (Exception e1) {
+                    JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
+                            "There was an error mapping the image.",
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE);
                     e1.printStackTrace();
                 }
 
@@ -2415,6 +2494,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     private javax.swing.JPanel jPanel11;
     private javax.swing.JPanel jPanel12;
     private javax.swing.JPanel jPanel13;
+    private javax.swing.JPanel jPanel14;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
@@ -2427,6 +2507,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JButton loadImageListButton;
     private javax.swing.JPanel monochromePanel;
     private javax.swing.JButton nextButton;
     private javax.swing.JComboBox numberOfBoundariesComboBox;
