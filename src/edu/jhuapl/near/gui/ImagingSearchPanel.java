@@ -2386,33 +2386,6 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         public void mousePressed(MouseEvent e)
         {
             resultsListMaybeShowPopup(e);
-
-            // Map image if user double clicks on non-checkbox columns
-            int row = resultList.rowAtPoint(e.getPoint());
-            int col = resultList.columnAtPoint(e.getPoint());
-
-            if (row != -1 && e.getClickCount() == 2 && col >= 2) {
-                String name = imageRawResults.get(row).get(0);
-//                ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
-                ImageKey key = createImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
-                try
-                {
-                    ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
-                    if (!images.containsImage(key))
-                        images.addImage(key);
-                    else
-                        images.removeImage(key);
-                }
-                catch (Exception e1) {
-                    JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
-                            "There was an error mapping the image.",
-                            "Error",
-                            JOptionPane.ERROR_MESSAGE);
-                    e1.printStackTrace();
-                }
-
-                repaint();
-            }
         }
 
         public void mouseReleased(MouseEvent e)
