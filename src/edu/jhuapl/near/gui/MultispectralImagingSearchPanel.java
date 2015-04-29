@@ -80,7 +80,10 @@ public class MultispectralImagingSearchPanel extends ImagingSearchPanel implemen
 
     }
 
-
+    protected boolean imageVisible(ImageKey key)
+    {
+        return key.band.equals(monoBandName);
+    }
 
     @Override
     protected ArrayList<ArrayList<String>> processResults(ArrayList<ArrayList<String>> input)
@@ -117,12 +120,22 @@ public class MultispectralImagingSearchPanel extends ImagingSearchPanel implemen
     protected List<ImageKey> createImageKeys(String imagePathName, ImageSource sourceOfLastQuery, ImagingInstrument instrument)
     {
         List<ImageKey> result = new ArrayList<ImageKey>();
-        result.add(createImageKey(imagePathName, sourceOfLastQuery, instrument));
+
+        // use the current band of the multispectral image for the boundary
+        ImageKey imageKey = createImageKey(imagePathName, sourceOfLastQuery, instrument);
+        result.add(imageKey);
+
+//        for (String bandName : bandNames)
+//        {
+//            ImageKey imageKey = createImageKey(imagePathName, sourceOfLastQuery, instrument, bandName);
+//            result.add(imageKey);
+//        }
+
         return result;
     }
 
 
-    protected ImageKey createImageKey(ImageKey oldKey, String bandName)
+    private ImageKey createImageKey(ImageKey oldKey, String bandName)
     {
         String path = oldKey.name;
         String[] pathArray = path.split("/");
@@ -141,6 +154,7 @@ public class MultispectralImagingSearchPanel extends ImagingSearchPanel implemen
     protected ImageKey createImageKey(String imagePathName, ImageSource sourceOfLastQuery, ImagingInstrument instrument)
     {
         ImageKey result = createImageKey(imagePathName, sourceOfLastQuery, instrument, monoBandName);
+//        ImageKey result = createImageKey(imagePathName, sourceOfLastQuery, instrument, bandNames[0]);
         return result;
     }
 
