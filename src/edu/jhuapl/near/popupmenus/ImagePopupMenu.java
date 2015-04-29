@@ -314,6 +314,7 @@ public class ImagePopupMenu extends PopupMenu
     {
         public void actionPerformed(ActionEvent e)
         {
+//            System.out.println("MapImageAction.actionPerformed()");
             for (ImageKey imageKey : imageKeys)
             {
                 try

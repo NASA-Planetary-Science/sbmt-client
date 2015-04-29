@@ -2196,6 +2196,13 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         return true;
     }
 
+    protected void loadImage(ImageKey key, ImageCollection images) throws FitsException, IOException
+    {
+        images.addImage(key);
+        if (!imageVisible(key))
+            images.getImage(key).setVisible(false);
+    }
+
     protected void loadImages(String name)
     {
 
@@ -2207,9 +2214,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                 ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
                 if (!images.containsImage(key))
                 {
-                    images.addImage(key);
-                    if (!imageVisible(key))
-                        images.getImage(key).setVisible(false);
+                    loadImage(key, images);
                 }
             }
             catch (FitsException e1) {
@@ -2222,6 +2227,12 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         }
    }
 
+    protected void unloadImage(ImageKey key, ImageCollection images)
+    {
+        images.removeImage(key);
+
+    }
+
     protected void unloadImages(String name)
     {
 
@@ -2229,9 +2240,15 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         for (ImageKey key : keys)
         {
             ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
-            images.removeImage(key);
+            unloadImage(key, images);
         }
    }
+
+    protected void setImageVisibility(ImageKey key, ImageCollection images, boolean visible)
+    {
+        Image image = images.getImage(key);
+        image.setVisible(visible);
+    }
 
     protected void setImageVisibility(String name, boolean visible)
     {
@@ -2243,9 +2260,9 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             {
                 Image image = images.getImage(key);
                 if (imageVisible(key) && visible)
-                    image.setVisible(true);
+                    setImageVisibility(key, images, true);
                 else
-                    image.setVisible(false);
+                    setImageVisibility(key, images, false);
             }
         }
     }
