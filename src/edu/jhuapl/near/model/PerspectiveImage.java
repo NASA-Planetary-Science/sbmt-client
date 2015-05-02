@@ -531,11 +531,14 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         // By default do nothing
     }
 
-    protected vtkImageData createRawImage(int height, int width, float[][] array)
+    protected vtkImageData createRawImage(int height, int width, boolean transpose, float[][] array)
     {
         vtkImageData image = new vtkImageData();
         image.SetScalarTypeToFloat();
-        image.SetDimensions(width, height, 1);
+        if (transpose)
+            image.SetDimensions(width, height, 1);
+        else
+            image.SetDimensions(height, width, 1);
         image.SetSpacing(1.0, 1.0, 1.0);
         image.SetOrigin(0.0, 0.0, 0.0);
         image.SetNumberOfScalarComponents(1);
@@ -545,7 +548,10 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         for (int i=0; i<height; ++i)
             for (int j=0; j<width; ++j)
             {
-                image.SetScalarComponentFromDouble(j, height-1-i, 0, 0, array[i][j]);
+                if (transpose)
+                    image.SetScalarComponentFromDouble(j, height-1-i, 0, 0, array[i][j]);
+                else
+                    image.SetScalarComponentFromDouble(i, width-1-j, 0, 0, array[i][j]);
 
                 if (array[i][j] > maxValue)
                     maxValue = array[i][j];
@@ -664,9 +670,9 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
         if (data instanceof float[][][])
             // image cube
-            rawImage = createRawImage(height, depth, array2D);
+            rawImage = createRawImage(height, depth, false, array2D);
         else
-            rawImage = createRawImage(height, width, array2D);
+            rawImage = createRawImage(height, width, true, array2D);
 
         processRawImage(rawImage);
 

@@ -79,32 +79,4 @@ public class LEISAJupiterImage extends PerspectiveImage
         return FileCache.getFileFromServer(sumFilename).getAbsolutePath();
     }
 
-    protected vtkImageData createRawImage(int height, int width, float[][] array)
-    {
-        vtkImageData image = new vtkImageData();
-        image.SetScalarTypeToFloat();
-        image.SetDimensions(height, width, 1);
-        image.SetSpacing(1.0, 1.0, 1.0);
-        image.SetOrigin(0.0, 0.0, 0.0);
-        image.SetNumberOfScalarComponents(1);
-
-        float maxValue = -Float.MAX_VALUE;
-        float minValue = Float.MAX_VALUE;
-        for (int i=0; i<height; ++i)
-            for (int j=0; j<width; ++j)
-            {
-                image.SetScalarComponentFromDouble(i, width-1-j, 0, 0, array[i][j]);
-
-                if (array[i][j] > maxValue)
-                    maxValue = array[i][j];
-                if (array[i][j] < minValue)
-                    minValue = array[i][j];
-            }
-
-        setMaxValue(maxValue);
-        setMinValue(minValue);
-
-        return image;
-    }
-
 }
