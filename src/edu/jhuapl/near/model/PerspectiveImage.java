@@ -36,6 +36,7 @@ import vtk.vtkImageCanvasSource2D;
 import vtk.vtkImageData;
 import vtk.vtkImageMapToColors;
 import vtk.vtkImageMask;
+import vtk.vtkImageReslice;
 import vtk.vtkLookupTable;
 import vtk.vtkPointData;
 import vtk.vtkPoints;
@@ -82,6 +83,9 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     private vtkImageData displayedImage;
     private int[] axes;
     private int naxes = 0;
+    private int height;
+    private int width;
+    private int depth;
     private int currentSlice = 127;
 
     private vtkPolyData footprint;
@@ -111,8 +115,8 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     private double maxVerticalPixelScale = -Double.MAX_VALUE;
     private double meanVerticalPixelScale = 0.0;
 
-    private float minValue;
-    private float maxValue;
+    private float[] minValue;
+    private float[] maxValue;
 
     private IntensityRange displayedRange = new IntensityRange(1,0);
     private double imageOpacity = 1.0;
@@ -135,8 +139,8 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     private vtkImageCanvasSource2D maskSource;
 
     private int imageWidth;
-
     private int imageHeight;
+    private int imageDepth;
 
     private String fitFileFullPath; // The actual path of the image stored on the local disk (after downloading from the server)
     private String labelFileFullPath;
@@ -198,22 +202,22 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
     public float getMinValue()
     {
-        return minValue;
+        return minValue[currentSlice];
     }
 
     public void setMinValue(float minValue)
     {
-        this.minValue = minValue;
+        this.minValue[currentSlice] = minValue;
     }
 
     public float getMaxValue()
     {
-        return maxValue;
+        return maxValue[currentSlice];
     }
 
     public void setMaxValue(float maxValue)
     {
-        this.maxValue = maxValue;
+        this.maxValue[currentSlice] = maxValue;
     }
 
     protected void loadImageInfo(
@@ -495,6 +499,11 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         return imageHeight;
     }
 
+    public int getImageDepth()
+    {
+        return imageDepth;
+    }
+
     public String getFitFileFullPath()
     {
         return fitFileFullPath;
@@ -542,65 +551,51 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         vtkImageData image = new vtkImageData();
         image.SetScalarTypeToFloat();
         if (transpose)
-            image.SetDimensions(width, height, 1);
+            image.SetDimensions(width, height, depth);
         else
-            image.SetDimensions(height, width, 1);
+            image.SetDimensions(height, width, depth);
         image.SetSpacing(1.0, 1.0, 1.0);
         image.SetOrigin(0.0, 0.0, 0.0);
         image.SetNumberOfScalarComponents(1);
 
-        float maxValue = -Float.MAX_VALUE;
-        float minValue = Float.MAX_VALUE;
+//        float maxValue = -Float.MAX_VALUE;
+//        float minValue = Float.MAX_VALUE;
+        maxValue = new float[depth];
+        minValue = new float[depth];
+
+        for (int k=0; k<depth; k++)
+        {
+            maxValue[k] = -Float.MAX_VALUE;
+            minValue[k] = Float.MAX_VALUE;
+        }
+
         for (int i=0; i<height; ++i)
             for (int j=0; j<width; ++j)
-            {
-                if (transpose)
-                    image.SetScalarComponentFromDouble(j, height-1-i, 0, 0, array2D[i][j]);
-                else
-                    image.SetScalarComponentFromDouble(i, width-1-j, 0, 0, array2D[i][j]);
-
-                if (array2D[i][j] > maxValue)
-                    maxValue = array2D[i][j];
-                if (array2D[i][j] < minValue)
-                    minValue = array2D[i][j];
-            }
-
-        setMaxValue(maxValue);
-        setMinValue(minValue);
-
-        return image;
-    }
-
-    protected vtkImageData createRawImage(int height, int width, int depth, float[][][] array)
-    {
-        vtkImageData image = new vtkImageData();
-        image.SetScalarTypeToFloat();
-        image.SetDimensions(width, height, depth);
-        image.SetSpacing(1.0, 1.0, 1.0);
-        image.SetOrigin(0.0, 0.0, 0.0);
-        image.SetNumberOfScalarComponents(1);
-
-        float maxValue = -Float.MAX_VALUE;
-        float minValue = Float.MAX_VALUE;
-        for (int i=0; i<height; ++i)
-            for (int j=0; j<width; ++j)
-            {
-                for (int k=0; k<depth; ++k)
+                for (int k=0; k<depth; k++)
                 {
-                    image.SetScalarComponentFromDouble(j, height-1-i, k, 0, array[i][j][k]);
+                    float value = 0.0f;
+                    if (array2D != null)
+                        value = array2D[i][j];
+                    else if (array3D != null)
+                        value = array3D[i][k][j];
 
-                    if (array[i][j][k] > maxValue)
-                        maxValue = array[i][j][k];
-                    if (array[i][j][k] < minValue)
-                        minValue = array[i][j][k];
+                    if (transpose)
+                        image.SetScalarComponentFromDouble(j, height-1-i, k, 0, value);
+                    else
+                        image.SetScalarComponentFromDouble(i, width-1-j, k, 0, value);
+
+                    if (value > maxValue[k])
+                        maxValue[k] = value;
+                    if (value < minValue[k])
+                        minValue[k] = value;
                 }
-            }
 
-        setMaxValue(maxValue);
-        setMinValue(minValue);
+//        setMaxValue(maxValue);
+//        setMinValue(minValue);
 
         return image;
     }
+
 
     protected void loadImage() throws FitsException, IOException
     {
@@ -614,31 +609,20 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         axes = h.getAxes();
         naxes = axes.length;
         // height is axis 0
-        int height = axes[0];
-        int width = axes[1];
-        int depth = naxes == 3 ? axes[2] : 1;
-//        // for 2D pixel arrays, width is axis 1, for 3D pixel arrays, width axis is 2
-//        int width = naxes == 2 ? axes[1] : axes[2];
-//        // for 2D pixel arrays, depth is 0, for 3D pixel arrays, depth axis is 1
-//        int depth = naxes == 2 ? 0 : axes[1];
+        height = axes[0];
+        // for 2D pixel arrays, width is axis 1, for 3D pixel arrays, width axis is 2
+        width = naxes == 3 ? axes[2] : axes[1];
+        // for 2D pixel arrays, depth is 0, for 3D pixel arrays, depth axis is 1
+        int depth = naxes == 3 ? axes[1] : 1;
+//        depth = 130;
 
         Object data = h.getData().getData();
 
         // for 3D arrays we consider the second axis the "spectral" axis
         if (data instanceof float[][][])
         {
-            System.out.println("Image cube");
             array3D = (float[][][])data;
             System.out.println("3D pixel array detected: " + array3D.length + "x" + array3D[0].length + "x" + array3D[0][0].length);
-            array2D = new float[height][depth];
-
-            for (int i=0; i<height; ++i)
-                for (int j=0; j<depth; ++j)
-                    array2D[i][j] = array3D[i][currentSlice][j];
-//                    for (int k=0; k<originalDepth; k++)
-//                    {
-//                        array2D[i][j] = array3D[i][k][j];
-//                    }
         }
         else if (data instanceof float[][])
         {
@@ -674,17 +658,16 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
         f.getStream().close();
 
-        if (data instanceof float[][][])
-            // image cube
-            rawImage = createRawImage(height, depth, 1, false, array2D, null);
-        else
-            rawImage = createRawImage(height, width, 1, array2D, null);
+        rawImage = createRawImage(height, width, depth, array2D, array3D);
+
+//        array3D = (float[][][])data;
 
         processRawImage(rawImage);
 
         int[] dims = rawImage.GetDimensions();
         imageWidth = dims[0];
         imageHeight = dims[1];
+        imageDepth = dims[2];
 
         int[] masking = getMaskSizes();
         int topMask =    masking[0];
@@ -695,6 +678,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         maskSource = new vtkImageCanvasSource2D();
         maskSource.SetScalarTypeToUnsignedChar();
         maskSource.SetNumberOfScalarComponents(1);
+//        maskSource.SetExtent(0, imageWidth-1, 0, imageHeight-1, 0, imageDepth-1);
         maskSource.SetExtent(0, imageWidth-1, 0, imageHeight-1, 0, 0);
         // Initialize the mask to black which masks out the image
         maskSource.SetDrawColor(0.0, 0.0, 0.0, 0.0);
@@ -705,7 +689,6 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         maskSource.Update();
 
         setDisplayedImageRange(new IntensityRange(0, 255));
-
 
         footprint = new vtkPolyData();
         shiftedFootprint = new vtkPolyData();
@@ -909,14 +892,15 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
     public void setDisplayedImageRange(IntensityRange range)
     {
-        if (displayedRange.min != range.min ||
-                displayedRange.max != range.max)
+        if (range == null || displayedRange.min != range.min || displayedRange.max != range.max)
         {
-            displayedRange = range;
+            displayedRange = range != null ? range : new IntensityRange(0, 255);
 
+            float minValue = getMinValue();
+            float maxValue = getMaxValue();
             float dx = (maxValue-minValue)/255.0f;
-            float min = minValue + range.min*dx;
-            float max = minValue + range.max*dx;
+            float min = minValue + displayedRange.min*dx;
+            float max = minValue + displayedRange.max*dx;
 
             // Update the displayed image
             vtkLookupTable lut = new vtkLookupTable();
@@ -930,23 +914,27 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
             // for 3D images, take the current slice
             vtkImageData image2D = rawImage;
-//            if (naxes == 3)
-//            {
-//                System.out.println("Slicing image...");
-//                vtkImageReslice slicer = new vtkImageReslice();
-//                slicer.SetInput(rawImage);
+            if (naxes == 3)
+            {
+                System.out.println("Slicing image...");
+                vtkImageReslice slicer = new vtkImageReslice();
+                slicer.SetInput(rawImage);
 //                slicer.SetInformationInput(rawImage);
-//                slicer.SetOutputDimensionality(2);
-//                slicer.SetInterpolationModeToNearestNeighbor();
-//                slicer.SetOutputSpacing(1.0, 1.0, 1.0);
-//                slicer.SetResliceAxesDirectionCosines(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0);
-////                slicer.SetOutputOrigin(0.0, 0.0, (double)currentSlice);
-//                slicer. SetResliceAxesOrigin(0.0, 0.0, (double)currentSlice);
-////                slicer. SetResliceAxesOrigin(0.0, 0.0, 0.0);
-//                slicer.SetOutputExtent(0, axes[1]-1, 0, axes[0]-1, 0, 0);
-//                slicer.Update();
-//                image2D = slicer.GetOutput();
-//            }
+                slicer.SetOutputDimensionality(2);
+                slicer.SetInterpolationModeToNearestNeighbor();
+                slicer.SetOutputSpacing(1.0, 1.0, 1.0);
+                slicer.SetResliceAxesDirectionCosines(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0);
+
+                slicer.SetOutputOrigin(0.0, 0.0, (double)currentSlice);
+                slicer. SetResliceAxesOrigin(0.0, 0.0, (double)currentSlice);
+
+//                slicer.SetOutputOrigin(0.0, 0.0, 127.0);
+//                slicer. SetResliceAxesOrigin(0.0, 0.0, 127.0);
+
+                slicer.SetOutputExtent(0, height-1, 0, width-1, 0, 0);
+                slicer.Update();
+                image2D = slicer.GetOutput();
+            }
 
             vtkImageMapToColors mapToColors = new vtkImageMapToColors();
             mapToColors.SetInput(image2D);
