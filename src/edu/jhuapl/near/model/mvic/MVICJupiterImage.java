@@ -79,32 +79,37 @@ public class MVICJupiterImage extends PerspectiveImage
         return FileCache.getFileFromServer(sumFilename).getAbsolutePath();
     }
 
-    protected vtkImageData createRawImage(int originalWidth, int originalHeight, float[][] array)
+    protected vtkImageData createRawImage(int height, int width, int depth, float[][] array2D, float[][][] array3D)
     {
-        vtkImageData image = new vtkImageData();
-        image.SetScalarTypeToFloat();
-        image.SetDimensions(originalHeight, originalWidth, 1);
-        image.SetSpacing(1.0, 1.0, 1.0);
-        image.SetOrigin(0.0, 0.0, 0.0);
-        image.SetNumberOfScalarComponents(1);
-
-        float maxValue = -Float.MAX_VALUE;
-        float minValue = Float.MAX_VALUE;
-        for (int i=0; i<originalHeight; ++i)
-            for (int j=0; j<originalWidth; ++j)
-            {
-                image.SetScalarComponentFromDouble(i, originalWidth-1-j, 0, 0, array[i][j]);
-
-                if (array[i][j] > maxValue)
-                    maxValue = array[i][j];
-                if (array[i][j] < minValue)
-                    minValue = array[i][j];
-            }
-
-        setMaxValue(maxValue);
-        setMinValue(minValue);
-
-        return image;
+        return createRawImage(height, width, depth, false, array2D, array3D);
     }
+
+//    protected vtkImageData createRawImage(int originalWidth, int originalHeight, float[][] array)
+//    {
+//        vtkImageData image = new vtkImageData();
+//        image.SetScalarTypeToFloat();
+//        image.SetDimensions(originalHeight, originalWidth, 1);
+//        image.SetSpacing(1.0, 1.0, 1.0);
+//        image.SetOrigin(0.0, 0.0, 0.0);
+//        image.SetNumberOfScalarComponents(1);
+//
+//        float maxValue = -Float.MAX_VALUE;
+//        float minValue = Float.MAX_VALUE;
+//        for (int i=0; i<originalHeight; ++i)
+//            for (int j=0; j<originalWidth; ++j)
+//            {
+//                image.SetScalarComponentFromDouble(i, originalWidth-1-j, 0, 0, array[i][j]);
+//
+//                if (array[i][j] > maxValue)
+//                    maxValue = array[i][j];
+//                if (array[i][j] < minValue)
+//                    minValue = array[i][j];
+//            }
+//
+//        setMaxValue(maxValue);
+//        setMinValue(minValue);
+//
+//        return image;
+//    }
 
 }

@@ -79,4 +79,9 @@ public class LEISAJupiterImage extends PerspectiveImage
         return FileCache.getFileFromServer(sumFilename).getAbsolutePath();
     }
 
+    protected vtkImageData createRawImage(int height, int width, int depth, float[][] array2D, float[][][] array3D)
+    {
+        return createRawImage(height, width, depth, false, array2D, array3D);
+    }
+
 }

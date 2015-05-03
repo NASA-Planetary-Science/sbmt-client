@@ -531,7 +531,13 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         // By default do nothing
     }
 
-    protected vtkImageData createRawImage(int height, int width, boolean transpose, float[][] array)
+    protected vtkImageData createRawImage(int height, int width, int depth, float[][] array2D, float[][][] array3D)
+    {
+        return createRawImage(height, width, depth, true, array2D, array3D);
+    }
+
+
+    protected vtkImageData createRawImage(int height, int width, int depth, boolean transpose, float[][] array2D, float[][][] array3D)
     {
         vtkImageData image = new vtkImageData();
         image.SetScalarTypeToFloat();
@@ -549,14 +555,14 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
             for (int j=0; j<width; ++j)
             {
                 if (transpose)
-                    image.SetScalarComponentFromDouble(j, height-1-i, 0, 0, array[i][j]);
+                    image.SetScalarComponentFromDouble(j, height-1-i, 0, 0, array2D[i][j]);
                 else
-                    image.SetScalarComponentFromDouble(i, width-1-j, 0, 0, array[i][j]);
+                    image.SetScalarComponentFromDouble(i, width-1-j, 0, 0, array2D[i][j]);
 
-                if (array[i][j] > maxValue)
-                    maxValue = array[i][j];
-                if (array[i][j] < minValue)
-                    minValue = array[i][j];
+                if (array2D[i][j] > maxValue)
+                    maxValue = array2D[i][j];
+                if (array2D[i][j] < minValue)
+                    minValue = array2D[i][j];
             }
 
         setMaxValue(maxValue);
@@ -670,9 +676,9 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
         if (data instanceof float[][][])
             // image cube
-            rawImage = createRawImage(height, depth, false, array2D);
+            rawImage = createRawImage(height, depth, 1, false, array2D, null);
         else
-            rawImage = createRawImage(height, width, true, array2D);
+            rawImage = createRawImage(height, width, 1, array2D, null);
 
         processRawImage(rawImage);
 
