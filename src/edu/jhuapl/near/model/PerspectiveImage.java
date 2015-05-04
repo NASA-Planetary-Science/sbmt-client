@@ -916,10 +916,9 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
             vtkImageData image2D = rawImage;
             if (naxes == 3)
             {
-                System.out.println("Slicing image...");
+//                System.out.println("Slicing image...");
                 vtkImageReslice slicer = new vtkImageReslice();
                 slicer.SetInput(rawImage);
-//                slicer.SetInformationInput(rawImage);
                 slicer.SetOutputDimensionality(2);
                 slicer.SetInterpolationModeToNearestNeighbor();
                 slicer.SetOutputSpacing(1.0, 1.0, 1.0);
@@ -927,9 +926,6 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
                 slicer.SetOutputOrigin(0.0, 0.0, (double)currentSlice);
                 slicer. SetResliceAxesOrigin(0.0, 0.0, (double)currentSlice);
-
-//                slicer.SetOutputOrigin(0.0, 0.0, 127.0);
-//                slicer. SetResliceAxesOrigin(0.0, 0.0, 127.0);
 
                 slicer.SetOutputExtent(0, height-1, 0, width-1, 0, 0);
                 slicer.Update();
