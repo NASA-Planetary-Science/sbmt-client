@@ -86,7 +86,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     private int height;
     private int width;
     private int depth;
-    private int currentSlice = 127;
+    private int currentSlice = 0;
 
     private vtkPolyData footprint;
     private vtkPolyData shiftedFootprint;
@@ -115,8 +115,8 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     private double maxVerticalPixelScale = -Double.MAX_VALUE;
     private double meanVerticalPixelScale = 0.0;
 
-    private float[] minValue;
-    private float[] maxValue;
+    private float[] minValue = new float[1];
+    private float[] maxValue = new float[1];
 
     private IntensityRange displayedRange = new IntensityRange(1,0);
     private double imageOpacity = 1.0;
