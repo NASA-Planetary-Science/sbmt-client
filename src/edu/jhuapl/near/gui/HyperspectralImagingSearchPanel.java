@@ -173,6 +173,8 @@ public class HyperspectralImagingSearchPanel extends ImagingSearchPanel implemen
                      PerspectiveImage image = (PerspectiveImage)images.getImage(imageKey);
                      image.setCurrentSlice(fps);
                      image.setDisplayedImageRange(null);
+                     image.loadFootprint();
+                     image.firePropertyChange();
                    }
                 }
             }

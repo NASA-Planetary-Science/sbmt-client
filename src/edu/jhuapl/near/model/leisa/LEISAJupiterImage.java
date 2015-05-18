@@ -30,6 +30,11 @@ public class LEISAJupiterImage extends PerspectiveImage
         ImageDataUtil.flipImageXAxis(rawImage);
     }
 
+    protected int getNumberBands()
+    {
+        return 256;
+    }
+
     @Override
     protected int[] getMaskSizes()
     {
