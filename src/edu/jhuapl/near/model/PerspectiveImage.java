@@ -166,9 +166,22 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
             SmallBodyModel smallBodyModel,
             boolean loadPointingOnly) throws FitsException, IOException
     {
-        super(key);
-        this.smallBodyModel = smallBodyModel;
+            this(key, smallBodyModel, loadPointingOnly, 0);
+    }
 
+    /**
+     * If loadPointingOnly is true then only pointing information about this
+     * image will be downloaded/loaded. The image itself will not be loaded.
+     * Used by ImageBoundary to get pointing info.
+     */
+    public PerspectiveImage(ImageKey key,
+            SmallBodyModel smallBodyModel,
+            boolean loadPointingOnly, int currentSlice) throws FitsException, IOException
+    {
+        super(key);
+
+        this.currentSlice = currentSlice;
+        this.smallBodyModel = smallBodyModel;
         this.offset = getDefaultOffset();
 
         if (!loadPointingOnly)
@@ -804,8 +817,6 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     public void setCurrentSlice(int slice)
     {
         this.currentSlice = slice;
-//        displayedImage = .....;
-//        fireProp...
     }
 
     public vtkTexture getTexture()

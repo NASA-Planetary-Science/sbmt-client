@@ -156,32 +156,32 @@ public class HyperspectralImagingSearchPanel extends ImagingSearchPanel implemen
     public void stateChanged(ChangeEvent e)
     {
         JSlider source = (JSlider)e.getSource();
-        if (!source.getValueIsAdjusting())
+        int fps = (int)source.getValue();
+        bandValue.setText(Integer.toString(fps));
+
+        ImageCollection images = (ImageCollection)getModelManager().getModel(getImageCollectionModelName());
+
+        if (!visible.isEmpty())
         {
-            int fps = (int)source.getValue();
-            bandValue.setText(Integer.toString(fps));
-
-            ImageCollection images = (ImageCollection)getModelManager().getModel(getImageCollectionModelName());
-
-            if (!visible.isEmpty())
+            Set<ImageKey> currentVisibleKeys = new HashSet<ImageKey>(visible);
+            for (ImageKey imageKey : currentVisibleKeys)
             {
-                Set<ImageKey> currentVisibleKeys = new HashSet<ImageKey>(visible);
-                for (ImageKey imageKey : currentVisibleKeys)
-                {
-                   if (images.containsImage(imageKey))
-                   {
-                     PerspectiveImage image = (PerspectiveImage)images.getImage(imageKey);
-                     image.setCurrentSlice(fps);
-                     image.setDisplayedImageRange(null);
+               if (images.containsImage(imageKey))
+               {
+                 PerspectiveImage image = (PerspectiveImage)images.getImage(imageKey);
+                 image.setCurrentSlice(fps);
+                 image.setDisplayedImageRange(null);
+                 if (!source.getValueIsAdjusting())
+                 {
+                     System.out.println("Recalculate footprint...");
                      image.loadFootprint();
                      image.firePropertyChange();
-                   }
-                }
+                 }
+               }
             }
-
+        }
 
 //            System.out.println("State changed: " + fps);
-        }
     }
 
 }

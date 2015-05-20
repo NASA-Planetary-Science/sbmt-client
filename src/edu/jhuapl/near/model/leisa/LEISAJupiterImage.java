@@ -18,7 +18,7 @@ public class LEISAJupiterImage extends PerspectiveImage
             boolean loadPointingOnly) throws FitsException,
             IOException
     {
-        super(key, smallBodyModel, loadPointingOnly);
+        super(key, smallBodyModel, loadPointingOnly, 127);
     }
 
     @Override
