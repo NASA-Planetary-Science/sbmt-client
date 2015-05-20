@@ -85,6 +85,7 @@ void splitFitsHeaderLineIntoKeyAndValue(const string& line,
 void getFieldsFromFitsHeader(const string& labelfilename,
                              string& startmet,
                              string& stopmet,
+                             string& duration,
                              string& target,
                              string& frame,
                              int& naxis1,
@@ -119,6 +120,10 @@ void getFieldsFromFitsHeader(const string& labelfilename,
             {
                 startmet = value;
                 stopmet = value;
+            }
+            else if (key == "DURMET")
+            {
+                duration = value;
             }
             else if (key == "TARGET")
             {
@@ -289,28 +294,21 @@ void getSunPosition(double et, string body, double sunpos[3])
 }
 
 
-void saveInfoFile(string filename,
+void saveInfoFileHeader(ostream &fout,
                   string startutc,
-                  string stoputc,
+                  string stoputc)
+{
+    fout << "START_TIME          = " << startutc << "\n";
+    fout << "STOP_TIME           = " << stoputc << "\n";
+}
+
+void saveInfoFileFrame(ostream &fout,
                   const double scposb[3],
                   const double boredir[3],
                   const double updir[3],
                   const double frustum[12],
                   const double sunpos[3])
 {
-    ofstream fout(filename.c_str());
-
-    if (!fout.is_open())
-    {
-        cerr << "Error: Unable to open file for writing" << endl;
-        exit(1);
-    }
-
-    fout.precision(16);
-
-    fout << "START_TIME          = " << startutc << "\n";
-    fout << "STOP_TIME           = " << stoputc << "\n";
-
     fout << "SPACECRAFT_POSITION = ( ";
     fout << scientific << scposb[0] << " , ";
     fout << scientific << scposb[1] << " , ";
@@ -409,14 +407,15 @@ int main(int argc, char** argv)
         double startet;
         string stoputc;
         double stopet;
-        double et;
+        string durstr;
+        double duration;
         double scposb[3];
         double boredir[3];
         double updir[3];
         double frustum[12];
         double sunPosition[3];
 
-        getFieldsFromFitsHeader(labelfiles[i], startmet, stopmet, target, frame, naxis1, naxis2);
+        getFieldsFromFitsHeader(labelfiles[i], startmet, stopmet, durstr, target, frame, naxis1, naxis2);
 
 	// ignore bodies other than the specified one
         if (target != body)
@@ -428,20 +427,50 @@ int main(int argc, char** argv)
         if (failed_c())
             continue;
 
-        et = startet + (stopet - startet) / 2.0;
-
-        getScOrientation(et, body, frame, scposb, boredir, updir, frustum, naxis1, naxis2);
-        if (failed_c())
-            continue;
-
-        getSunPosition(et, body, sunPosition);
-        if (failed_c())
-            continue;
+	// calculate duration
+	duration = strtod(durstr.c_str(), NULL);
+        // start and stop et are initially both set to the mid-observation time
+        // duration seems to be too long, guess a scale factor. -turnerj1
+        startet = startet - duration * 0.25;
+        stopet = stopet + duration * 0.25;
+//        startet = startet - duration / 4.0;
+//        stopet = stopet + duration / 4.0;
 
         string labelbasename = basename((char*)labelfiles[i].c_str());
         unsigned found = labelbasename.find_last_of(".");
         string infofilename = outputfolder + "/" + labelbasename.substr(0, found) + ".INFO";
-        saveInfoFile(infofilename, startutc, stoputc, scposb, boredir, updir, frustum, sunPosition);
+
+        ofstream ifout(infofilename.c_str());
+        if (!ifout.is_open())
+        {
+            cerr << "Error: Unable to open file for writing" << endl;
+            exit(1);
+        }
+        ifout.precision(16);
+
+        saveInfoFileHeader(ifout, startutc, stoputc);
+
+        double deltat = (stopet - startet) / (double)255.0;
+//        cout << "startet= " << startet << endl;
+//        cout << "stopet= " << stopet << endl;
+//        cout << "deltat = " << deltat << endl;
+
+        for (int j=0; j<256; j++)
+        {
+            double et = startet + (double)j * deltat;
+//            cout << "et = " << et << endl;
+
+            getScOrientation(et, body, frame, scposb, boredir, updir, frustum, naxis1, naxis2);
+            if (failed_c())
+                continue;
+
+            getSunPosition(et, body, sunPosition);
+            if (failed_c())
+                continue;
+
+            saveInfoFileFrame(ifout, scposb, boredir, updir, frustum, sunPosition);
+        }
+
 
 	fout << labelbasename << " " << startutc << endl;
 
