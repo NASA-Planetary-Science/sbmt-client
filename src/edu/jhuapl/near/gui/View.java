@@ -131,7 +131,7 @@ public class View extends JPanel
             {
                 if (Configuration.isAPLVersion())
                 {
-                    JComponent component = new HyperspectralImagingSearchPanel(smallBodyConfig, modelManager, infoPanelManager, pickManager, renderer, instrument).init();
+                    JComponent component = new HyperspectralImagingSearchPanel(smallBodyConfig, modelManager, infoPanelManager, pickManager, renderer, instrument, SmallBodyConfig.LEISA_NBANDS).init();
                     controlPanel.addTab(instrument.instrumentName.toString(), component);
                 }
             }

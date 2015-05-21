@@ -57,6 +57,7 @@ public class HyperspectralImagingSearchPanel extends ImagingSearchPanel implemen
     private Set<ImageKey> mapped = new HashSet<ImageKey>();
     private Set<ImageKey> visible = new HashSet<ImageKey>();
 
+    private int nbands;
 
     private String[] bandNames = { "125", "126", "127", "128" };
     private String[] bandPrefixes = { "125", "126", "127", "128" };
@@ -68,9 +69,12 @@ public class HyperspectralImagingSearchPanel extends ImagingSearchPanel implemen
             ModelInfoWindowManager infoPanelManager,
             final PickManager pickManager,
             Renderer renderer,
-            ImagingInstrument instrument)
+            ImagingInstrument instrument,
+            int nbands)
     {
         super(smallBodyConfig, modelManager, infoPanelManager, pickManager, renderer, instrument);
+
+        this.nbands = nbands;
 
         redComboBoxModel = new DefaultComboBoxModel(bandNames);
         greenComboBoxModel = new DefaultComboBoxModel(bandNames);
@@ -99,7 +103,7 @@ public class HyperspectralImagingSearchPanel extends ImagingSearchPanel implemen
         bandPanel.add(new JLabel("Band:"));
         bandValue = new JLabel("127");
         bandPanel.add(bandValue);
-        monoBoundedRangeModel = new DefaultBoundedRangeModel(127, 0, 0, 255);
+        monoBoundedRangeModel = new DefaultBoundedRangeModel(nbands / 2, 0, 0, nbands);
         monoSlider = new JSlider(monoBoundedRangeModel);
         monoSlider.addChangeListener(this);
         bandPanel.add(monoSlider);

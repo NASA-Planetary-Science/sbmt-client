@@ -251,6 +251,9 @@ public class SmallBodyConfig
         LORRI_IMAGE,
     }
 
+    static public final int LEISA_NBANDS = 256;
+    static public final int MVIC_NBANDS = 4;
+
     static private final String[] DEFAULT_GASKELL_LABELS_PER_RESOLUTION = {
         "Low (49152 plates)",
         "Medium (196608 plates)",
