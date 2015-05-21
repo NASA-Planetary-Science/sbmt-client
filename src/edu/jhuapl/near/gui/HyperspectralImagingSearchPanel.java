@@ -33,6 +33,7 @@ import javax.swing.event.ChangeListener;
 
 import nom.tam.fits.FitsException;
 
+import edu.jhuapl.near.model.Image;
 import edu.jhuapl.near.model.Image.ImageKey;
 import edu.jhuapl.near.model.Image.ImagingInstrument;
 import edu.jhuapl.near.model.ImageCollection;
@@ -161,23 +162,24 @@ public class HyperspectralImagingSearchPanel extends ImagingSearchPanel implemen
 
         ImageCollection images = (ImageCollection)getModelManager().getModel(getImageCollectionModelName());
 
-        if (!visible.isEmpty())
+        Set<Image> imageSet = images.getImages();
+        for (Image i : imageSet)
         {
-            Set<ImageKey> currentVisibleKeys = new HashSet<ImageKey>(visible);
-            for (ImageKey imageKey : currentVisibleKeys)
+            String name = i.getImageName();
+            Boolean isVisible = i.isVisible();
+            System.out.println(name + ": " + isVisible);
+            PerspectiveImage image = (PerspectiveImage)i;
+
+            if (image.isVisible())
             {
-               if (images.containsImage(imageKey))
-               {
-                 PerspectiveImage image = (PerspectiveImage)images.getImage(imageKey);
-                 image.setCurrentSlice(fps);
-                 image.setDisplayedImageRange(null);
-                 if (!source.getValueIsAdjusting())
-                 {
-                     System.out.println("Recalculate footprint...");
-                     image.loadFootprint();
-                     image.firePropertyChange();
-                 }
-               }
+               image.setCurrentSlice(fps);
+               image.setDisplayedImageRange(null);
+               if (!source.getValueIsAdjusting())
+                {
+                    System.out.println("Recalculate footprint...");
+                    image.loadFootprint();
+                    image.firePropertyChange();
+                }
             }
         }
 

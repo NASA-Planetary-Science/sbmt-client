@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Set;
 
 import nom.tam.fits.FitsException;
 
@@ -54,6 +55,11 @@ public class ImageCollection extends Model implements PropertyChangeListener
         }
 
         return null;
+    }
+
+    public Set<Image> getImages()
+    {
+        return imageToActorsMap.keySet();
     }
 
     public void addImage(ImageKey key) throws FitsException, IOException
