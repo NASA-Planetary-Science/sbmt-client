@@ -2367,6 +2367,29 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                     setImageVisibility(key, images, false);
             }
         }
+    }
+
+    @Override
+    public void tableChanged(TableModelEvent e)
+    {
+        if (e.getColumn() == 0)
+        {
+            int row = e.getFirstRow();
+            String name = imageRawResults.get(row).get(0);
+            String namePrefix = name.substring(0, name.length()-4);
+            if ((Boolean)resultList.getValueAt(row, 0))
+                loadImages(namePrefix);
+            else
+                unloadImages(namePrefix);
+        }
+        else if (e.getColumn() == 1)
+        {
+            int row = e.getFirstRow();
+            String name = imageRawResults.get(row).get(0);
+            String namePrefix = name.substring(0, name.length()-4);
+            boolean visible = !(Boolean)resultList.getValueAt(row, 1);
+            setImageVisibility(namePrefix, visible);
+        }
         else if (e.getColumn() == 2)
         {
             int row = e.getFirstRow();
@@ -2400,29 +2423,6 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
                 e1.printStackTrace();
             }
-        }
-    }
-
-    @Override
-    public void tableChanged(TableModelEvent e)
-    {
-        if (e.getColumn() == 0)
-        {
-            int row = e.getFirstRow();
-            String name = imageRawResults.get(row).get(0);
-            String namePrefix = name.substring(0, name.length()-4);
-            if ((Boolean)resultList.getValueAt(row, 0))
-                loadImages(namePrefix);
-            else
-                unloadImages(namePrefix);
-        }
-        else if (e.getColumn() == 1)
-        {
-            int row = e.getFirstRow();
-            String name = imageRawResults.get(row).get(0);
-            String namePrefix = name.substring(0, name.length()-4);
-            boolean visible = !(Boolean)resultList.getValueAt(row, 1);
-            setImageVisibility(namePrefix, visible);
         }
     }
 
