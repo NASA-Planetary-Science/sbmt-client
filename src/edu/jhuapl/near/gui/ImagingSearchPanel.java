@@ -537,14 +537,18 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                 //String boundaryName = currentImage.substring(0,currentImage.length()-4) + "_BOUNDARY.VTK";
                 //String boundaryName = currentImage.substring(0,currentImage.length()-4) + "_DDR.LBL";
                 String boundaryName = currentImage.substring(0,currentImage.length()-4);
+
 //                ImageKey key = new ImageKey(boundaryName, sourceOfLastQuery, instrument);
 
-                List<ImageKey> keys = createImageKeys(boundaryName, sourceOfLastQuery, instrument);
-                for (ImageKey key : keys)
-                {
-                    key.instrument = this.instrument;
-                    model.addBoundary(key);
-                }
+                ImageKey key = createImageKey(boundaryName, sourceOfLastQuery, instrument);
+                model.addBoundary(key);
+
+//                List<ImageKey> keys = createImageKeys(boundaryName, sourceOfLastQuery, instrument);
+//                for (ImageKey key : keys)
+//                {
+//                    key.instrument = this.instrument;
+//                    model.addBoundary(key);
+//                }
             }
             catch (Exception e1) {
                 JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
@@ -2287,21 +2291,31 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     }//GEN-LAST:event_loadImageListButtonActionPerformed
 
 
-    @Override
-    public void tableChanged(TableModelEvent e)
+    protected boolean imageVisible(ImageKey key)
     {
-        if (e.getColumn() == 0)
+        return true;
+    }
+
+    protected void loadImage(ImageKey key, ImageCollection images) throws FitsException, IOException
+    {
+        images.addImage(key);
+        if (!imageVisible(key))
+            images.getImage(key).setVisible(false);
+    }
+
+    protected void loadImages(String name)
+    {
+
+        List<ImageKey> keys = createImageKeys(name, sourceOfLastQuery, instrument);
+        for (ImageKey key : keys)
         {
-            int row = e.getFirstRow();
-            String name = imageRawResults.get(row).get(0);
-            ImageKey key = createImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
             try
             {
                 ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
                 if (!images.containsImage(key))
-                    images.addImage(key);
-                else
-                    images.removeImage(key);
+                {
+                    loadImage(key, images);
+                }
             }
             catch (Exception e1) {
                 JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
@@ -2311,17 +2325,46 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
                 e1.printStackTrace();
             }
+
         }
-        else if (e.getColumn() == 1)
+   }
+
+    protected void unloadImage(ImageKey key, ImageCollection images)
+    {
+        images.removeImage(key);
+
+    }
+
+    protected void unloadImages(String name)
+    {
+
+        List<ImageKey> keys = createImageKeys(name, sourceOfLastQuery, instrument);
+        for (ImageKey key : keys)
         {
-            int row = e.getFirstRow();
-            String name = imageRawResults.get(row).get(0);
-            ImageKey key = createImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
             ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
+            unloadImage(key, images);
+        }
+   }
+
+    protected void setImageVisibility(ImageKey key, ImageCollection images, boolean visible)
+    {
+        Image image = images.getImage(key);
+        image.setVisible(visible);
+    }
+
+    protected void setImageVisibility(String name, boolean visible)
+    {
+        List<ImageKey> keys = createImageKeys(name, sourceOfLastQuery, instrument);
+        ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
+        for (ImageKey key : keys)
+        {
             if (images.containsImage(key))
             {
                 Image image = images.getImage(key);
-                image.setVisible(!(Boolean)resultList.getValueAt(row, 1));
+                if (imageVisible(key) && visible)
+                    setImageVisibility(key, images, true);
+                else
+                    setImageVisibility(key, images, false);
             }
         }
         else if (e.getColumn() == 2)
@@ -2357,6 +2400,29 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
                 e1.printStackTrace();
             }
+        }
+    }
+
+    @Override
+    public void tableChanged(TableModelEvent e)
+    {
+        if (e.getColumn() == 0)
+        {
+            int row = e.getFirstRow();
+            String name = imageRawResults.get(row).get(0);
+            String namePrefix = name.substring(0, name.length()-4);
+            if ((Boolean)resultList.getValueAt(row, 0))
+                loadImages(namePrefix);
+            else
+                unloadImages(namePrefix);
+        }
+        else if (e.getColumn() == 1)
+        {
+            int row = e.getFirstRow();
+            String name = imageRawResults.get(row).get(0);
+            String namePrefix = name.substring(0, name.length()-4);
+            boolean visible = !(Boolean)resultList.getValueAt(row, 1);
+            setImageVisibility(namePrefix, visible);
         }
     }
 

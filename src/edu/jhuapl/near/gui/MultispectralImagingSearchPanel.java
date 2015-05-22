@@ -60,6 +60,8 @@ public class MultispectralImagingSearchPanel extends ImagingSearchPanel implemen
     private String[] bandPrefixes = { "mc0_", "mc1_", "mc2_", "mc3_" };
     private Map<String, String> bandNamesToPrefixes = new HashMap<String, String>();
     private Map<String, Set<ImageKey>> bandNamesToKeys = new HashMap<String, Set<ImageKey>>();
+    private Set<ImageKey> mapped = new HashSet<ImageKey>();
+    private Set<ImageKey> visible = new HashSet<ImageKey>();
 
     /** Creates new form ImagingSearchPanel */
     public MultispectralImagingSearchPanel(SmallBodyConfig smallBodyConfig,
@@ -80,7 +82,10 @@ public class MultispectralImagingSearchPanel extends ImagingSearchPanel implemen
 
     }
 
-
+    protected boolean imageVisible(ImageKey key)
+    {
+        return key.band.equals(monoBandName);
+    }
 
     @Override
     protected ArrayList<ArrayList<String>> processResults(ArrayList<ArrayList<String>> input)
@@ -117,12 +122,22 @@ public class MultispectralImagingSearchPanel extends ImagingSearchPanel implemen
     protected List<ImageKey> createImageKeys(String imagePathName, ImageSource sourceOfLastQuery, ImagingInstrument instrument)
     {
         List<ImageKey> result = new ArrayList<ImageKey>();
-        result.add(createImageKey(imagePathName, sourceOfLastQuery, instrument));
+
+        // use the current band of the multispectral image for the boundary
+        ImageKey imageKey = createImageKey(imagePathName, sourceOfLastQuery, instrument);
+        result.add(imageKey);
+
+//        for (String bandName : bandNames)
+//        {
+//            ImageKey imageKey = createImageKey(imagePathName, sourceOfLastQuery, instrument, bandName);
+//            result.add(imageKey);
+//        }
+
         return result;
     }
 
 
-    protected ImageKey createImageKey(ImageKey oldKey, String bandName)
+    private ImageKey createImageKey(ImageKey oldKey, String bandName)
     {
         String path = oldKey.name;
         String[] pathArray = path.split("/");
@@ -141,6 +156,7 @@ public class MultispectralImagingSearchPanel extends ImagingSearchPanel implemen
     protected ImageKey createImageKey(String imagePathName, ImageSource sourceOfLastQuery, ImagingInstrument instrument)
     {
         ImageKey result = createImageKey(imagePathName, sourceOfLastQuery, instrument, monoBandName);
+//        ImageKey result = createImageKey(imagePathName, sourceOfLastQuery, instrument, bandNames[0]);
         return result;
     }
 
@@ -224,37 +240,61 @@ public class MultispectralImagingSearchPanel extends ImagingSearchPanel implemen
         return blueComboBoxModel;
     }
 
+    protected void loadImage(ImageKey key, ImageCollection images) throws FitsException, IOException
+    {
+        super.loadImage(key, images);
+        this.mapped.add(key);
+        this.visible.add(key);
+    }
+
+    protected void unloadImage(ImageKey key, ImageCollection images)
+    {
+        super.unloadImage(key, images);
+        this.mapped.remove(key);
+        this.visible.remove(key);
+    }
+
+    protected void setImageVisibility(ImageKey key, ImageCollection images, boolean isVisible)
+    {
+        super.setImageVisibility(key, images, isVisible);
+        if (isVisible)
+            this.visible.add(key);
+        else
+            this.visible.remove(key);
+    }
+
+
     @Override
     public void actionPerformed(ActionEvent arg0)
     {
         String newBandName = (String)((JComboBox)arg0.getSource()).getSelectedItem();
 //        System.out.println("ComboBox Value Changed: " + newBandName);
+//        System.out.println("Mapped: " + mapped);
+//        System.out.println("Visible: " + visible);
 
         ImageCollection images = (ImageCollection)getModelManager().getModel(getImageCollectionModelName());
 
-        // hide all the currently loaded images in the currently selected band
-        Set<ImageKey> currentImageKeys = bandNamesToKeys.get(monoBandName);
-        if (currentImageKeys != null)
+        if (!visible.isEmpty())
         {
-            currentImageKeys = new HashSet<ImageKey>(currentImageKeys);
-            for (ImageKey imageKey : currentImageKeys)
+            Set<ImageKey> currentVisibleKeys = new HashSet<ImageKey>(visible);
+            for (ImageKey imageKey : currentVisibleKeys)
             {
                if (images.containsImage(imageKey))
                {
+                 // set the previous band image to be invisible
                  Image image = images.getImage(imageKey);
-                 if (image.isVisible())
-                 {
-                     image.setVisible(false);
-    //                 images.removeImage(imageKey);
+                 setImageVisibility(imageKey, images, false);
 
-                     // load or make visible the new band versions of any images currently visible
-                     ImageKey newImageKey = createImageKey(imageKey, newBandName);
-                     try
+                 // find the new band image key
+                 ImageKey newImageKey = createImageKey(imageKey, newBandName);
+                 try
                      {
-                       if (!images.containsImage(newImageKey))
-                           images.addImage(newImageKey);
-                       else
-                           images.getImage(newImageKey).setVisible(true);
+                         // if the new image hasn't been loaded in yet, do so
+                         if (!mapped.contains(newImageKey))
+                             loadImage(newImageKey, images);
+
+                         // make the new image visible
+                         setImageVisibility(newImageKey, images, true);
                      }
                      catch (FitsException e1) {
                          e1.printStackTrace();
@@ -265,23 +305,6 @@ public class MultispectralImagingSearchPanel extends ImagingSearchPanel implemen
                  }
                }
             }
-        }
-
-        // show all images in the currently selected band
-        Set<ImageKey> newImageKeys = bandNamesToKeys.get(newBandName);
-        if (newImageKeys != null)
-        {
-            // make a copy of the hash set
-            newImageKeys = new HashSet<ImageKey>(newImageKeys);
-            for (ImageKey imageKey : newImageKeys)
-            {
-               if (images.containsImage(imageKey))
-               {
-                 Image image = images.getImage(imageKey);
-                 image.setVisible(true);
-               }
-            }
-        }
 
         monoBandName = newBandName;
         monoImagePrefix = bandNamesToPrefixes.get(newBandName);
