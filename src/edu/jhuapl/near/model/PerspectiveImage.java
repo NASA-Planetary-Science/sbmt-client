@@ -2442,14 +2442,14 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         properties.put("Stop Time", getStopTime());
         properties.put("Spacecraft Distance", df.format(getSpacecraftDistance()) + " km");
         properties.put("Spacecraft Position",
-                df.format(spacecraftPosition[0]) + ", " + df.format(spacecraftPosition[1]) + ", " + df.format(spacecraftPosition[2]) + " km");
+                df.format(spacecraftPosition[currentSlice][0]) + ", " + df.format(spacecraftPosition[currentSlice][1]) + ", " + df.format(spacecraftPosition[currentSlice][2]) + " km");
         double[] quaternion = new double[4];
         double[] notused = new double[4];
         getCameraOrientation(notused, quaternion);
         properties.put("Spacecraft Orientation (quaternion)",
                 "(" + df.format(quaternion[0]) + ", [" + df.format(quaternion[1]) + ", " + df.format(quaternion[2]) + ", " + df.format(quaternion[3]) + "])");
         properties.put("Sun Vector",
-                df.format(sunVector[0]) + ", " + df.format(sunVector[1]) + ", " + df.format(sunVector[2]));
+                df.format(sunVector[currentSlice][0]) + ", " + df.format(sunVector[currentSlice][1]) + ", " + df.format(sunVector[currentSlice][2]));
         if (getCameraName() != null)
             properties.put("Camera", getCameraName());
         if (getFilterName() != null)
