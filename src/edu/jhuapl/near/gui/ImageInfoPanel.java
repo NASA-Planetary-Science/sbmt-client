@@ -99,10 +99,10 @@ public class ImageInfoPanel extends ModelInfoWindow implements PropertyChangeLis
         }
 
         int[] masking = image.getCurrentMask();
-        topSpinner.setValue(masking[0]);
-        rightSpinner.setValue(masking[1]);
-        bottomSpinner.setValue(masking[2]);
-        leftSpinner.setValue(masking[3]);
+        leftSpinner.setValue(masking[0]);
+        topSpinner.setValue(masking[1]);
+        rightSpinner.setValue(masking[2]);
+        bottomSpinner.setValue(masking[3]);
 
         double[] center = displayedImage.GetCenter();
         int[] dims = displayedImage.GetDimensions();
@@ -318,10 +318,10 @@ public class ImageInfoPanel extends ModelInfoWindow implements PropertyChangeLis
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
+        leftSpinner = new javax.swing.JSpinner();
         topSpinner = new javax.swing.JSpinner();
         rightSpinner = new javax.swing.JSpinner();
         bottomSpinner = new javax.swing.JSpinner();
-        leftSpinner = new javax.swing.JSpinner();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         getContentPane().setLayout(new java.awt.GridBagLayout());
@@ -386,37 +386,50 @@ public class ImageInfoPanel extends ModelInfoWindow implements PropertyChangeLis
         gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 0);
         getContentPane().add(jLabel2, gridBagConstraints);
 
-        jLabel3.setText("Top");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 4;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 2);
-        getContentPane().add(jLabel3, gridBagConstraints);
-
-        jLabel4.setText("Right");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 5;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 2);
-        getContentPane().add(jLabel4, gridBagConstraints);
-
-        jLabel5.setText("Bottom");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 6;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 2);
-        getContentPane().add(jLabel5, gridBagConstraints);
-
-        jLabel6.setText("Left");
+        jLabel3.setText("Left");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 7;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 2);
+        getContentPane().add(jLabel3, gridBagConstraints);
+
+        jLabel4.setText("Top");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 2);
+        getContentPane().add(jLabel4, gridBagConstraints);
+
+        jLabel5.setText("Right");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 5;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 2);
+        getContentPane().add(jLabel5, gridBagConstraints);
+
+        jLabel6.setText("Bottom");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 6;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 2);
         getContentPane().add(jLabel6, gridBagConstraints);
+
+        leftSpinner.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(0), Integer.valueOf(0), null, Integer.valueOf(1)));
+        leftSpinner.setPreferredSize(new java.awt.Dimension(60, 28));
+        leftSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                leftSpinnerStateChanged(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 7;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        getContentPane().add(leftSpinner, gridBagConstraints);
 
         topSpinner.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(0), Integer.valueOf(0), null, Integer.valueOf(1)));
         topSpinner.setPreferredSize(new java.awt.Dimension(60, 28));
@@ -457,19 +470,6 @@ public class ImageInfoPanel extends ModelInfoWindow implements PropertyChangeLis
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         getContentPane().add(bottomSpinner, gridBagConstraints);
 
-        leftSpinner.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(0), Integer.valueOf(0), null, Integer.valueOf(1)));
-        leftSpinner.setPreferredSize(new java.awt.Dimension(60, 28));
-        leftSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
-            public void stateChanged(javax.swing.event.ChangeEvent evt) {
-                leftSpinnerStateChanged(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 7;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        getContentPane().add(leftSpinner, gridBagConstraints);
-
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
@@ -491,6 +491,10 @@ public class ImageInfoPanel extends ModelInfoWindow implements PropertyChangeLis
         renWin.Render();
     }//GEN-LAST:event_interpolateCheckBoxActionPerformed
 
+    private void leftSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_leftSpinnerStateChanged
+        croppingChanged();
+    }//GEN-LAST:event_leftSpinnerStateChanged
+
     private void topSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_topSpinnerStateChanged
         croppingChanged();
     }//GEN-LAST:event_topSpinnerStateChanged
@@ -503,19 +507,15 @@ public class ImageInfoPanel extends ModelInfoWindow implements PropertyChangeLis
         croppingChanged();
     }//GEN-LAST:event_bottomSpinnerStateChanged
 
-    private void leftSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_leftSpinnerStateChanged
-        croppingChanged();
-    }//GEN-LAST:event_leftSpinnerStateChanged
-
     private void croppingChanged()
     {
         if (!initialized)
             return;
 
-        Integer top = (Integer) topSpinner.getValue();
-        Integer right = (Integer) rightSpinner.getValue();
-        Integer bottom = (Integer) bottomSpinner.getValue();
-        Integer left = (Integer) leftSpinner.getValue();
+        Integer top = (Integer) leftSpinner.getValue();
+        Integer right = (Integer) topSpinner.getValue();
+        Integer bottom = (Integer) rightSpinner.getValue();
+        Integer left = (Integer) bottomSpinner.getValue();
 
         int[] masking = {top, right, bottom, left};
 
