@@ -227,4 +227,15 @@ public abstract class Image extends Model implements PropertyChangeListener
     }
 
     abstract public int getNumberOfComponentsOfOriginalImage();
+
+    public int[] getCurrentMask()
+    {
+        return new int[] {0, 0, 0, 0};
+    }
+
+    public void setCurrentMask(int[] masking)
+    {
+
+    }
+
 }

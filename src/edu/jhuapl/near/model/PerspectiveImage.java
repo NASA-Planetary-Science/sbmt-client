@@ -118,6 +118,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
     private float[] minValue = new float[1];
     private float[] maxValue = new float[1];
+    private int[] currentMask = new int[4];
 
     private IntensityRange displayedRange = new IntensityRange(1,0);
     private double imageOpacity = 1.0;
@@ -421,7 +422,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
 
     /**
-     * Return the mask sizes as a 4 element integer array where the:
+     * Return the default mask sizes as a 4 element integer array where the:
      * first  element is the top    mask size,
      * second element is the right  mask size,
      * third  element is the bottom mask size,
@@ -752,6 +753,8 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         int rightMask =  masking[1];
         int bottomMask = masking[2];
         int leftMask =   masking[3];
+        for (int i=0; i<masking.length; ++i)
+            currentMask[i] = masking[i];
 
         maskSource = new vtkImageCanvasSource2D();
         maskSource.SetScalarTypeToUnsignedChar();
@@ -2480,5 +2483,31 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     public void firePropertyChange()
     {
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+    }
+
+    public void setCurrentMask(int[] masking)
+    {
+        int topMask =    masking[0];
+        int rightMask =  masking[1];
+        int bottomMask = masking[2];
+        int leftMask =   masking[3];
+        // Initialize the mask to black which masks out the image
+        maskSource.SetDrawColor(0.0, 0.0, 0.0, 0.0);
+        maskSource.FillBox(0, imageWidth-1, 0, imageHeight-1);
+        // Create a square inside mask which passes through the image.
+        maskSource.SetDrawColor(255.0, 255.0, 255.0, 255.0);
+        maskSource.FillBox(leftMask, imageWidth-1-rightMask, bottomMask, imageHeight-1-topMask);
+        maskSource.Update();
+
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+        setDisplayedImageRange(null);
+
+        for (int i=0; i<masking.length; ++i)
+            currentMask[i] = masking[i];
+    }
+
+    public int[] getCurrentMask()
+    {
+        return currentMask.clone();
     }
 }
