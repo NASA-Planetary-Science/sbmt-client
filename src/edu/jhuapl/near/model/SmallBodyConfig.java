@@ -1600,6 +1600,22 @@ public class SmallBodyConfig
                             ImageType.LORRI_IMAGE,
                             new ImageSource[]{ImageSource.SPICE},
                             Instrument.LORRI
+                            ),
+
+                    new ImagingInstrument(
+                            SpectralMode.MULTI,
+                            new FixedListQuery("/NEWHORIZONS/PLUTO/MVIC"),
+                            ImageType.MVIC_JUPITER_IMAGE,
+                            new ImageSource[]{ImageSource.SPICE},
+                            Instrument.MVIC
+                            ),
+
+                    new ImagingInstrument(
+                            SpectralMode.HYPER,
+                            new FixedListQuery("/NEWHORIZONS/PLUTO/LEISA"),
+                            ImageType.LEISA_JUPITER_IMAGE,
+                            new ImageSource[]{ImageSource.SPICE},
+                            Instrument.LEISA
                             )
             };
 
@@ -1627,6 +1643,22 @@ public class SmallBodyConfig
                             ImageType.LORRI_IMAGE,
                             new ImageSource[]{ImageSource.SPICE},
                             Instrument.LORRI
+                            ),
+
+                    new ImagingInstrument(
+                            SpectralMode.MULTI,
+                            new FixedListQuery("/NEWHORIZONS/CHARON/MVIC"),
+                            ImageType.MVIC_JUPITER_IMAGE,
+                            new ImageSource[]{ImageSource.SPICE},
+                            Instrument.MVIC
+                            ),
+
+                    new ImagingInstrument(
+                            SpectralMode.HYPER,
+                            new FixedListQuery("/NEWHORIZONS/CHARON/LEISA"),
+                            ImageType.LEISA_JUPITER_IMAGE,
+                            new ImageSource[]{ImageSource.SPICE},
+                            Instrument.LEISA
                             )
             };
 
@@ -1754,7 +1786,7 @@ public class SmallBodyConfig
         if (this.smallBodyNumberOfPlatesPerResolutionLevel != null)
             c.smallBodyNumberOfPlatesPerResolutionLevel = this.smallBodyNumberOfPlatesPerResolutionLevel.clone();
 
-        if (this.imagingInstruments != null)
+        if (this.imagingInstruments != null && this.imagingInstruments.length > 0)
         {
             c.imagingInstruments = this.imagingInstruments.clone();
             c.imageSearchDefaultStartDate = (Date)this.imageSearchDefaultStartDate.clone();
