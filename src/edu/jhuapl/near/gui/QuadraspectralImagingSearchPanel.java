@@ -102,9 +102,11 @@ public class QuadraspectralImagingSearchPanel extends ImagingSearchPanel impleme
         panel.setLayout(new BorderLayout());
         bandPanel = new JPanel(new FlowLayout(FlowLayout.LEADING));
         bandPanel.add(new JLabel("Band:"));
-        bandValue = new JLabel("127");
+        int midband = nbands / 2;
+        String midbandString = Integer.toString(midband);
+        bandValue = new JLabel(midbandString);
         bandPanel.add(bandValue);
-        monoBoundedRangeModel = new DefaultBoundedRangeModel(nbands / 2, 0, 0, nbands);
+        monoBoundedRangeModel = new DefaultBoundedRangeModel(midband, 0, 0, nbands-1);
         monoSlider = new JSlider(monoBoundedRangeModel);
         monoSlider.addChangeListener(this);
         bandPanel.add(monoSlider);
