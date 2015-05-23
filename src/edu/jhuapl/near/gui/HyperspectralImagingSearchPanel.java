@@ -182,7 +182,7 @@ public class HyperspectralImagingSearchPanel extends ImagingSearchPanel implemen
                image.setDisplayedImageRange(null);
                if (!source.getValueIsAdjusting())
                 {
-                    System.out.println("Recalculate footprint...");
+//                    System.out.println("Recalculate footprint...");
                     image.loadFootprint();
                     image.firePropertyChange();
                 }

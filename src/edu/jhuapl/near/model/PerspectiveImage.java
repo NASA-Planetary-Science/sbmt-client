@@ -82,11 +82,11 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 //    private vtkImageData raw3DImage;
     private vtkImageData rawImage;
     private vtkImageData displayedImage;
-    private int[] fitsAxes;
-    private int fitsNAxes = 0;
-    private int fitsHeight;
-    private int fitsWidth;
-    private int fitsDepth;
+//    private int[] fitsAxes;
+//    private int fitsNAxes = 0;
+//    private int fitsHeight;
+//    private int fitsWidth;
+//    private int fitsDepth;
     private int currentSlice = 0;
 
     private vtkPolyData footprint;
@@ -287,7 +287,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
                     st.nextToken();
                     stopTime[0] = st.nextToken();
                 }
-// eventually, we should parse the number of exposures from the INFO file, for now it is hard-coded
+// eventually, we should parse the number of exposures from the INFO file, for now it is hard-coded -turnerj1
 //                if (NUMBER_EXPOSURES.equals(token))
 //                {
 //                    numberExposures = Integer.parseInt(st.nextToken());
@@ -653,8 +653,6 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         image.SetOrigin(0.0, 0.0, 0.0);
         image.SetNumberOfScalarComponents(1);
 
-//        float maxValue = -Float.MAX_VALUE;
-//        float minValue = Float.MAX_VALUE;
         maxValue = new float[depth];
         minValue = new float[depth];
 
@@ -685,9 +683,6 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
                         minValue[k] = value;
                 }
 
-//        setMaxValue(maxValue);
-//        setMinValue(minValue);
-
         return image;
     }
 
@@ -700,7 +695,16 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         float[][] array2D = null;
         float[][][] array3D = null;
 
-        // single file images
+        int[] fitsAxes = null;
+        int fitsNAxes = 0;
+        // height is axis 0
+        int fitsHeight = 0;
+        // for 2D pixel arrays, width is axis 1, for 3D pixel arrays, width axis is 2
+        int fitsWidth = 0;
+        // for 2D pixel arrays, depth is 0, for 3D pixel arrays, depth axis is 1
+        int fitsDepth = 0;
+
+        // single file images (e.g. LORRI and LEISA)
         if (filenames.length == 1)
         {
             Fits f = new Fits(filename);
@@ -708,11 +712,8 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
             fitsAxes = h.getAxes();
             fitsNAxes = fitsAxes.length;
-            // height is axis 0
             fitsHeight = fitsAxes[0];
-            // for 2D pixel arrays, width is axis 1, for 3D pixel arrays, width axis is 2
             fitsWidth = fitsNAxes == 3 ? fitsAxes[2] : fitsAxes[1];
-            // for 2D pixel arrays, depth is 0, for 3D pixel arrays, depth axis is 1
             fitsDepth = fitsNAxes == 3 ? fitsAxes[1] : 1;
 
             Object data = h.getData().getData();
@@ -721,7 +722,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
             if (data instanceof float[][][])
             {
                 array3D = (float[][][])data;
-                System.out.println("3D pixel array detected: " + array3D.length + "x" + array3D[0].length + "x" + array3D[0][0].length);
+//                System.out.println("3D pixel array detected: " + array3D.length + "x" + array3D[0].length + "x" + array3D[0][0].length);
             }
             else if (data instanceof float[][])
             {
@@ -757,7 +758,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
             f.getStream().close();
         }
-        // for multi-file images
+        // for multi-file images (e.g. MVIC)
         else if (filenames.length > 1)
         {
             fitsDepth = filenames.length;
@@ -791,6 +792,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
                 if (data instanceof float[][])
                 {
+                    // NOTE: could performance be improved if depth was the first index and the entire 2D array could be assigned to a each slice? -turnerj1
                     for (int i=0; i<fitsHeight; ++i)
                         for (int j=0; j<fitsWidth; ++j)
                         {
@@ -829,8 +831,6 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
 
         rawImage = createRawImage(fitsHeight, fitsWidth, fitsDepth, array2D, array3D);
-
-//        array3D = (float[][][])data;
 
         processRawImage(rawImage);
 
@@ -1090,9 +1090,8 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
             // for 3D images, take the current slice
             vtkImageData image2D = rawImage;
-            if (fitsNAxes == 3)
+            if (imageDepth > 1)
             {
-//                System.out.println("Slicing image...");
                 vtkImageReslice slicer = new vtkImageReslice();
                 slicer.SetInput(rawImage);
                 slicer.SetOutputDimensionality(2);
@@ -1103,7 +1102,6 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
                 slicer.SetOutputOrigin(0.0, 0.0, (double)currentSlice);
                 slicer. SetResliceAxesOrigin(0.0, 0.0, (double)currentSlice);
 
-//                slicer.SetOutputExtent(0, fitsHeight-1, 0, fitsWidth-1, 0, 0);
                 slicer.SetOutputExtent(0, imageWidth-1, 0, imageHeight-1, 0, 0);
 
                 slicer.Update();
@@ -1157,11 +1155,6 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
         int nfiles = infoFileNames.length;
         int nslices = getNumberBands();
-//        if (depth != nslices)
-//        {
-//            System.err.println("Number of bands does not match the number of INFO files");
-//            return;
-//        }
 
         if (nslices > 1)
         {

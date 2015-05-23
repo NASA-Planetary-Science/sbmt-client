@@ -205,7 +205,6 @@ public class QuadraspectralImagingSearchPanel extends ImagingSearchPanel impleme
         {
             String name = i.getImageName();
             Boolean isVisible = i.isVisible();
-            System.out.println(name + ": " + isVisible);
             PerspectiveImage image = (PerspectiveImage)i;
 
             if (image.isVisible())
@@ -214,7 +213,7 @@ public class QuadraspectralImagingSearchPanel extends ImagingSearchPanel impleme
                image.setDisplayedImageRange(null);
                if (!source.getValueIsAdjusting())
                 {
-                    System.out.println("Recalculate footprint...");
+//                    System.out.println("Recalculate footprint...");
                     image.loadFootprint();
                     image.firePropertyChange();
                 }
