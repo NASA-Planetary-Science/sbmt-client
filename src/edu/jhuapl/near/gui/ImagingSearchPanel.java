@@ -76,6 +76,7 @@ import edu.jhuapl.near.pick.PickManager;
 import edu.jhuapl.near.pick.PickManager.PickMode;
 import edu.jhuapl.near.popupmenus.ColorImagePopupMenu;
 import edu.jhuapl.near.popupmenus.ImagePopupMenu;
+import edu.jhuapl.near.util.FileUtil;
 import edu.jhuapl.near.util.IdPair;
 import edu.jhuapl.near.util.Properties;
 
@@ -201,20 +202,25 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         String[] columnNames = {
                 "Map",
                 "Hide",
+                "Frus",
+                "Bndr",
                 "Id",
                 "Filename",
                 "Date"
         };
-        Object[][] data = new Object[0][5];
+        Object[][] data = new Object[0][7];
         resultList.setModel(new StructuresTableModel(data, columnNames));
         resultList.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         resultList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         resultList.setDefaultRenderer(String.class, new StringRenderer());
-        resultList.getColumnModel().getColumn(0).setPreferredWidth(30);
-        resultList.getColumnModel().getColumn(1).setPreferredWidth(30);
+        resultList.getColumnModel().getColumn(0).setPreferredWidth(31);
+        resultList.getColumnModel().getColumn(1).setPreferredWidth(31);
+        resultList.getColumnModel().getColumn(2).setPreferredWidth(31);
+        resultList.getColumnModel().getColumn(3).setPreferredWidth(31);
         resultList.getColumnModel().getColumn(0).setResizable(false);
         resultList.getColumnModel().getColumn(1).setResizable(false);
-//        resultList.addMouseListener(new TableMouseHandler());
+        resultList.getColumnModel().getColumn(2).setResizable(false);
+        resultList.getColumnModel().getColumn(3).setResizable(false);
         resultList.addMouseListener(this);
         resultList.getModel().addTableModelListener(this);
 
@@ -433,11 +439,13 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
 
         ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
+        PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(getImageBoundaryCollectionModelName());
 
         resultList.getModel().removeTableModelListener(this);
         images.removePropertyChangeListener(this);
+        boundaries.removePropertyChangeListener(this);
 
-        int[] widths = new int[5];
+        int[] widths = new int[7];
 
         // add the results to the list
         ((DefaultTableModel)resultList.getModel()).setRowCount(results.size());
@@ -452,19 +460,28 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             if (images.containsImage(key))
             {
                 resultList.setValueAt(true, i, 0);
-                Image image = images.getImage(key);
+                PerspectiveImage image = (PerspectiveImage) images.getImage(key);
                 resultList.setValueAt(!image.isVisible(), i, 1);
+                resultList.setValueAt(!image.isFrustumShowing(), i, 2);
             }
             else
             {
                 resultList.setValueAt(false, i, 0);
                 resultList.setValueAt(false, i, 1);
+                resultList.setValueAt(false, i, 2);
             }
-            resultList.setValueAt(i+1, i, 2);
-            resultList.setValueAt(str.get(0).substring(str.get(0).lastIndexOf("/") + 1), i, 3);
-            resultList.setValueAt(sdf.format(dt), i, 4);
 
-            for (int j=2; j<5; ++j)
+
+            if (boundaries.containsBoundary(key))
+                resultList.setValueAt(true, i, 3);
+            else
+                resultList.setValueAt(false, i, 3);
+
+            resultList.setValueAt(i+1, i, 4);
+            resultList.setValueAt(str.get(0).substring(str.get(0).lastIndexOf("/") + 1), i, 5);
+            resultList.setValueAt(sdf.format(dt), i, 6);
+
+            for (int j=4; j<7; ++j)
             {
                 TableCellRenderer renderer = resultList.getCellRenderer(i, j);
                 Component comp = resultList.prepareRenderer(renderer, i, j);
@@ -474,11 +491,12 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             ++i;
         }
 
-        for (int j=2; j<5; ++j)
+        for (int j=4; j<7; ++j)
             resultList.getColumnModel().getColumn(j).setPreferredWidth(widths[j] + 5);
 
         resultList.getModel().addTableModelListener(this);
         images.addPropertyChangeListener(this);
+        boundaries.addPropertyChangeListener(this);
 
         // Show the first set of boundaries
         this.resultIntervalCurrentlyShown = new IdPair(0, Integer.parseInt((String)this.numberOfBoundariesComboBox.getSelectedItem()));
@@ -532,13 +550,14 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 //                    model.addBoundary(key);
 //                }
             }
-            catch (FitsException e1) {
-                // TODO Auto-generated catch block
+            catch (Exception e1) {
+                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
+                        "There was an error mapping the boundary.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+
                 e1.printStackTrace();
-            }
-            catch (IOException e1) {
-                // TODO Auto-generated catch block
-                e1.printStackTrace();
+                break;
             }
         }
     }
@@ -575,10 +594,18 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             }
             catch (IOException e1)
             {
+                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
+                        "There was an error mapping the image.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
                 e1.printStackTrace();
             }
             catch (FitsException e1)
             {
+                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
+                        "There was an error mapping the image.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
                 e1.printStackTrace();
             }
             catch (NoOverlapException e1)
@@ -654,6 +681,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             resultList.getModel().removeTableModelListener(this);
             int size = imageRawResults.size();
             ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
+            PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(getImageBoundaryCollectionModelName());
             for (int i=0; i<size; ++i)
             {
                 String name = imageRawResults.get(i).get(0);
@@ -662,14 +690,20 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                 if (images.containsImage(key))
                 {
                     resultList.setValueAt(true, i, 0);
-                    Image image = images.getImage(key);
+                    PerspectiveImage image = (PerspectiveImage) images.getImage(key);
                     resultList.setValueAt(!image.isVisible(), i, 1);
+                    resultList.setValueAt(image.isFrustumShowing(), i, 2);
                 }
                 else
                 {
                     resultList.setValueAt(false, i, 0);
                     resultList.setValueAt(false, i, 1);
+                    resultList.setValueAt(false, i, 2);
                 }
+                if (boundaries.containsBoundary(key))
+                    resultList.setValueAt(true, i, 3);
+                else
+                    resultList.setValueAt(false, i, 3);
             }
             resultList.getModel().addTableModelListener(this);
             // Repaint the list in case the boundary colors has changed
@@ -784,8 +818,10 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         jPanel13 = new javax.swing.JPanel();
         removeAllButton = new javax.swing.JButton();
         removeAllImagesButton = new javax.swing.JButton();
-        saveImageListButton = new javax.swing.JButton();
         monochromePanel = new javax.swing.JPanel();
+        jPanel14 = new javax.swing.JPanel();
+        saveImageListButton = new javax.swing.JButton();
+        loadImageListButton = new javax.swing.JButton();
 
         addComponentListener(new java.awt.event.ComponentAdapter() {
             public void componentHidden(java.awt.event.ComponentEvent evt) {
@@ -1711,6 +1747,13 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 9;
         jPanel8.add(jPanel13, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 11;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        jPanel8.add(monochromePanel, gridBagConstraints);
+
+        jPanel14.setLayout(new java.awt.GridBagLayout());
 
         saveImageListButton.setText("Save Image List...");
         saveImageListButton.addActionListener(new java.awt.event.ActionListener() {
@@ -1720,13 +1763,24 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 10;
-        jPanel8.add(saveImageListButton, gridBagConstraints);
+        gridBagConstraints.gridy = 0;
+        jPanel14.add(saveImageListButton, gridBagConstraints);
+
+        loadImageListButton.setText("Load Image List...");
+        loadImageListButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                loadImageListButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        jPanel14.add(loadImageListButton, gridBagConstraints);
+
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 11;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        jPanel8.add(monochromePanel, gridBagConstraints);
+        gridBagConstraints.gridy = 10;
+        jPanel8.add(jPanel14, gridBagConstraints);
 
         jScrollPane2.setViewportView(jPanel8);
 
@@ -2159,7 +2213,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     }//GEN-LAST:event_numberOfBoundariesComboBoxActionPerformed
 
     private void saveImageListButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveImageListButtonActionPerformed
-        File file = CustomFileChooser.showSaveDialog(this, "Select File");
+        File file = CustomFileChooser.showSaveDialog(this, "Select File", "imagelist.txt");
 
         if (file != null)
         {
@@ -2168,12 +2222,18 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                 FileWriter fstream = new FileWriter(file);
                 BufferedWriter out = new BufferedWriter(fstream);
 
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+                sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+
                 String nl = System.getProperty("line.separator");
                 int size = imageRawResults.size();
                 for (int i=0; i<size; ++i)
                 {
                     String image = new File(imageRawResults.get(i).get(0)).getName();
-                    out.write(image + nl);
+                    String dtStr = imageRawResults.get(i).get(1);
+                    Date dt = new Date(Long.parseLong(dtStr));
+
+                    out.write(image + " " + sdf.format(dt) + " " + sourceOfLastQuery.name() + nl);
                 }
 
                 out.close();
@@ -2189,6 +2249,46 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             }
         }
     }//GEN-LAST:event_saveImageListButtonActionPerformed
+
+    private void loadImageListButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadImageListButtonActionPerformed
+        File file = CustomFileChooser.showOpenDialog(this, "Select File");
+
+        if (file != null)
+        {
+            try
+            {
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+                sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+                ArrayList<ArrayList<String>> results = new ArrayList<ArrayList<String>>();
+                ArrayList<String> lines = FileUtil.getFileLinesAsStringList(file.getAbsolutePath());
+                for (int i=0; i<lines.size(); ++i)
+                {
+                    String[] words = lines.get(i).trim().split("\\s+");
+                    ArrayList<String> result = new ArrayList<String>();
+                    String name = instrument.searchQuery.getImagesPath() + "/" + words[0];
+                    result.add(name);
+                    Date dt = sdf.parse(words[1]);
+                    result.add(String.valueOf(dt.getTime()));
+                    results.add(result);
+                }
+
+                sourceOfLastQuery = ImageSource.valueOf(((Enum)sourceComboBox.getSelectedItem()).name());
+
+                setImageResults(processResults(results));
+            }
+            catch (Exception e)
+            {
+                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
+                        "There was an error reading the file.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+
+                e.printStackTrace();
+            }
+        }
+
+    }//GEN-LAST:event_loadImageListButtonActionPerformed
 
 
     protected boolean imageVisible(ImageKey key)
@@ -2217,10 +2317,12 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                     loadImage(key, images);
                 }
             }
-            catch (FitsException e1) {
-                e1.printStackTrace();
-            }
-            catch (IOException e1) {
+            catch (Exception e1) {
+                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
+                        "There was an error mapping the image.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+
                 e1.printStackTrace();
             }
 
@@ -2288,6 +2390,40 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             boolean visible = !(Boolean)resultList.getValueAt(row, 1);
             setImageVisibility(namePrefix, visible);
         }
+        else if (e.getColumn() == 2)
+        {
+            int row = e.getFirstRow();
+            String name = imageRawResults.get(row).get(0);
+            ImageKey key = createImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
+            ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
+            if (images.containsImage(key))
+            {
+                PerspectiveImage image = (PerspectiveImage) images.getImage(key);
+                image.setShowFrustum(!image.isFrustumShowing());
+            }
+        }
+        else if (e.getColumn() == 3)
+        {
+            int row = e.getFirstRow();
+            String name = imageRawResults.get(row).get(0);
+            ImageKey key = createImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
+            try
+            {
+                PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(getImageBoundaryCollectionModelName());
+                if (!boundaries.containsBoundary(key))
+                    boundaries.addBoundary(key);
+                else
+                    boundaries.removeBoundary(key);
+            }
+            catch (Exception e1) {
+                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
+                        "There was an error mapping the boundary.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+
+                e1.printStackTrace();
+            }
+        }
     }
 
     class StringRenderer extends DefaultTableCellRenderer
@@ -2346,7 +2482,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         public boolean isCellEditable(int row, int column)
         {
             // Only allow editing the hide column if the image is mapped
-            if (column == 1)
+            if (column == 1 || column == 2)
             {
                 String name = imageRawResults.get(row).get(0);
 //                ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
@@ -2356,13 +2492,13 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             }
             else
             {
-                return column == 0;
+                return column == 0 || column == 3;
             }
         }
 
         public Class<?> getColumnClass(int columnIndex)
         {
-            if (columnIndex <= 1)
+            if (columnIndex <= 3)
                 return Boolean.class;
             else
                 return String.class;
@@ -2374,32 +2510,6 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         public void mousePressed(MouseEvent e)
         {
             resultsListMaybeShowPopup(e);
-
-            // Map image if user double clicks on non-checkbox columns
-            int row = resultList.rowAtPoint(e.getPoint());
-            int col = resultList.columnAtPoint(e.getPoint());
-
-            if (row != -1 && e.getClickCount() == 2 && col >= 2) {
-                String name = imageRawResults.get(row).get(0);
-//                ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
-                ImageKey key = createImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
-                try
-                {
-                    ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
-                    if (!images.containsImage(key))
-                        images.addImage(key);
-                    else
-                        images.removeImage(key);
-                }
-                catch (FitsException e1) {
-                    e1.printStackTrace();
-                }
-                catch (IOException e1) {
-                    e1.printStackTrace();
-                }
-
-                repaint();
-            }
         }
 
         public void mouseReleased(MouseEvent e)
@@ -2481,6 +2591,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     private javax.swing.JPanel jPanel11;
     private javax.swing.JPanel jPanel12;
     private javax.swing.JPanel jPanel13;
+    private javax.swing.JPanel jPanel14;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
@@ -2493,6 +2604,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JButton loadImageListButton;
     private javax.swing.JPanel monochromePanel;
     private javax.swing.JButton nextButton;
     private javax.swing.JComboBox numberOfBoundariesComboBox;

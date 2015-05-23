@@ -1,0 +1,12 @@
+/project/nearsdc/data/MSI/sumfiles/M0125733285.SUM
+/project/nearsdc/data/MSI/sumfiles/M0125734013.SUM
+/project/nearsdc/data/MSI/sumfiles/M0125743165.SUM
+/project/nearsdc/data/MSI/sumfiles/M0125743191.SUM
+/project/nearsdc/data/MSI/sumfiles/M0125990473.SUM
+/project/nearsdc/data/MSI/sumfiles/M0126036283.SUM
+/project/nearsdc/data/MSI/sumfiles/M0126106919.SUM
+/project/nearsdc/data/MSI/sumfiles/M0126108375.SUM
+/project/nearsdc/data/MSI/sumfiles/M0126108499.SUM
+/project/nearsdc/data/MSI/sumfiles/M0126109227.SUM
+/project/nearsdc/data/MSI/sumfiles/M0126110079.SUM
+/project/nearsdc/data/MSI/sumfiles/M0126113967.SUM

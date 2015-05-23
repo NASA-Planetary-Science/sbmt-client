@@ -1,27 +1,26 @@
-*** EXPORT CONTROLLED (12/2013) ***
+------------------------------------------
+CK and SPK Kernel Generation from Sumfiles
+------------------------------------------
 
-----------------------------------
-CK Kernel Generation from Sumfiles
-----------------------------------
+This program generates CK and SPK kernels of a specific instrment from
+a list of sumfiles (usually provided by Bob Gaskell as a byproduct of
+his SPC code).
 
-This program generates a CK kernel of a specific instrment from a list
-of sumfiles (usually provided by Bob Gaskell as a byproduct of his SPC
-code). The generated CK stores the orientation of the specified
-instrument relative to J2000.
-
-To generate CK kernels several files are needed, which we provide:
+To generate the kernels several files are needed, which we provide:
 
 process_sumfiles.cpp - C++ source code of program
 compile.sh -           shell script to compile C++ code
 kernels.txt -          Spice metakernel file
 sumfilelist.txt -      list of sumfiles
 msopcksetup -          msopcksetup file
+mkspksetup -           mkspksetup file
 
 In addition you need to download the C version of spice as well as the
-msopck program which can be found at http://naif.jpl.nasa.gov/naif/utilities.html
-You will also need a C++ compiler (g++).
+msopck and mkspk programs which can be found at
+http://naif.jpl.nasa.gov/naif/utilities.html. You will also need a C++
+compiler (g++).
 
-Here are the steps needed to generate the CK kernel:
+Here are the steps needed to generate the kernels:
 
 
 (1) Compile C++ code:
@@ -58,18 +57,23 @@ Then to run the program type:
 
 ./process_sumfiles kernels.txt sumfilelist.txt IAU_EROS
 
-One new file will be generated in the current directory called "msopckinputdata"
+Two new files will be generated in the current directory called
+"msopckinputdata" and "mkspkinputdata".
 
-(This file will be used as input to the msopck program. Each line in
-the msopckinputdata file contains 10 values. The first is the time in
-UTC and the next 9 numbers define the orientation matrix at that
-time.)
+(The msopckinputdata file will be used as input to the msopck
+program. Each line in the msopckinputdata file contains 10 values. The
+first is the time in UTC and the next 9 numbers define the orientation
+matrix at that time. The mkspkinputdata file will be used as input to
+the mkspk program. Each line in the msopckinputdata file contains 7
+values. The first is the time in UTC and the next 3 numbers define the
+spacecraft position in body fixed coordinates at that time and the
+final 3 numbers define the spacecraft velocity at that time.)
 
 
 (3) Edit the msopcksetup file
 
 Open up the msopcksetup file (included) and edit the lines beginning
-with:
+with, if necessary:
 
 LSK_FILE_NAME (path to leap second kernel),
 SCLK_FILE_NAME (path to spacraft clock kernel),
@@ -79,7 +83,23 @@ INSTRUMENT_ID (id of instrument).
 You shouldn't need to modify the other lines.
 
 
-(4) Run the msopck program to generate the CK kernel:
+(4) Edit the mkspksetup file
+
+Open up the mkspksetup file (included) and edit the lines beginning
+with, if necessary:
+
+        OBJECT_ID         = -93
+        OBJECT_NAME       = 'NEAR'
+        CENTER_ID         = 2000433 
+        CENTER_NAME       = 'EROS'
+        REF_FRAME_NAME    = 'IAU_EROS'
+        PRODUCER_ID       = 'JHUAPL'
+        LEAPSECONDS_FILE  = '/project/nearsdc/spice-kernels/near/LSK/NAIF0007.TLS'
+
+You shouldn't need to modify the other lines.
+
+
+(5) Run the msopck program to generate the CK kernel:
 
 Download the program from http://naif.jpl.nasa.gov/naif/utilities.html
 and run it. It takes 3 arguments. The first is the
@@ -96,3 +116,15 @@ Note that if you want to rerun this program, make sure to delete the
 CK file first since the msopck program simply appends to this file
 every time it's run and does not delete it first.
 
+(6) Run the mkspk program to generate the SPK kernel:
+
+Download the program from http://naif.jpl.nasa.gov/naif/utilities.html
+and run it, for example, like this:
+
+mkspk -setup mkspksetup -input mkspkinputdata -output spkfile
+
+The file spkfile will be generated which is the SPK kernel file.
+
+Note that if you want to rerun this program, make sure to delete the
+SPK file first since the mkspk program simply appends to this file
+every time it's run and does not delete it first.

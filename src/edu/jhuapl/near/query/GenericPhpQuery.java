@@ -10,23 +10,28 @@ import edu.jhuapl.near.model.Image.ImageSource;
 
 public class GenericPhpQuery extends QueryBase
 {
-    private String imagesPath;
+    private String rootPath;
     private String tablePrefix;
 
     public GenericPhpQuery clone()
     {
-        return new GenericPhpQuery(imagesPath, tablePrefix);
+        return new GenericPhpQuery(rootPath, tablePrefix);
     }
 
-    public GenericPhpQuery(String imagesPath, String tablePrefix)
+    public GenericPhpQuery(String rootPath, String tablePrefix)
     {
-        this.imagesPath = imagesPath;
+        this.rootPath = rootPath;
         this.tablePrefix = tablePrefix.toLowerCase();
+    }
+
+    public String getImagesPath()
+    {
+        return rootPath + "/images";
     }
 
     private void changePathToFullPath(ArrayList<String> result)
     {
-        result.set(0, imagesPath + "/images/" + result.get(0));
+        result.set(0, rootPath + "/images/" + result.get(0));
     }
 
     @Override
@@ -54,8 +59,8 @@ public class GenericPhpQuery extends QueryBase
     {
         if (imageSource == ImageSource.CORRECTED)
         {
-            return getResultsFromFileListOnServer(imagesPath + "/sumfiles-corrected/imagelist.txt",
-                    imagesPath + "/images/");
+            return getResultsFromFileListOnServer(rootPath + "/sumfiles-corrected/imagelist.txt",
+                    rootPath + "/images/");
         }
 
         ArrayList<ArrayList<String>> results = new ArrayList<ArrayList<String>>();

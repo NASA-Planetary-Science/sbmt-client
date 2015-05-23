@@ -1,5 +1,3 @@
-/*** EXPORT CONTROLLED (12/2013) ***/
-
 #include <fstream>
 #include <iostream>
 #include <vector>
@@ -13,6 +11,7 @@ struct TimeMatrix
 {
     std::string utc;
     double mat[3][3];
+    double pos[3];
 };
 
 
@@ -54,11 +53,20 @@ std::vector<std::string> loadFileList(const std::string& filelist)
     return files;
 }
 
+void myReplace(std::string& str, const std::string& oldStr, const std::string& newStr){
+  size_t pos = 0;
+  while((pos = str.find(oldStr, pos)) != std::string::npos){
+    str.replace(pos, oldStr.length(), newStr);
+    pos += newStr.length();
+  }
+}
+
 
 void loadSumFile(const std::string& sumfile,
                  const std::string& asteroidframe,
                  std::string& utc,
-                 double j2000_to_instrument[3][3])
+                 double j2000_to_instrument[3][3],
+                 double position[3])
 {
     std::ifstream fin(sumfile.c_str());
 
@@ -72,6 +80,7 @@ void loadSumFile(const std::string& sumfile,
 
         std::string name;
         std::string dummy;
+        std::string str;
 
         std::getline(fin, name);
         trim(name);
@@ -84,22 +93,42 @@ void loadSumFile(const std::string& sumfile,
 
         for (int i=0; i<7; ++i) fin >> dummy;
         for (int i=0; i<5; ++i) fin >> dummy;
-        fin >> scpos[0];
-        fin >> scpos[1];
-        fin >> scpos[2];
+        fin >> str; myReplace(str, "D", "E"); myReplace(str, "d", "E");
+        scpos[0] = -atof(str.c_str());
+        fin >> str; myReplace(str, "D", "E"); myReplace(str, "d", "E");
+        scpos[1] = -atof(str.c_str());
+        fin >> str; myReplace(str, "D", "E"); myReplace(str, "d", "E");
+        scpos[2] = -atof(str.c_str());
+
         fin >> dummy;
-        fin >> cx[0];
-        fin >> cx[1];
-        fin >> cx[2];
+
+        fin >> str; myReplace(str, "D", "E"); myReplace(str, "d", "E");
+        cx[0] = atof(str.c_str());
+        fin >> str; myReplace(str, "D", "E"); myReplace(str, "d", "E");
+        cx[1] = atof(str.c_str());
+        fin >> str; myReplace(str, "D", "E"); myReplace(str, "d", "E");
+        cx[2] = atof(str.c_str());
+
         fin >> dummy;
-        fin >> cy[0];
-        fin >> cy[1];
-        fin >> cy[2];
+
+        fin >> str; myReplace(str, "D", "E"); myReplace(str, "d", "E");
+        cy[0] = atof(str.c_str());
+        fin >> str; myReplace(str, "D", "E"); myReplace(str, "d", "E");
+        cy[1] = atof(str.c_str());
+        fin >> str; myReplace(str, "D", "E"); myReplace(str, "d", "E");
+        cy[2] = atof(str.c_str());
+
         fin >> dummy;
-        fin >> cz[0];
-        fin >> cz[1];
-        fin >> cz[2];
+
+        fin >> str; myReplace(str, "D", "E"); myReplace(str, "d", "E");
+        cz[0] = atof(str.c_str());
+        fin >> str; myReplace(str, "D", "E"); myReplace(str, "d", "E");
+        cz[1] = atof(str.c_str());
+        fin >> str; myReplace(str, "D", "E"); myReplace(str, "d", "E");
+        cz[2] = atof(str.c_str());
+
         fin >> dummy;
+
         for (int i=0; i<4; ++i) fin >> dummy;
 
         utc2et_c(utc.c_str(), &et);
@@ -126,6 +155,10 @@ void loadSumFile(const std::string& sumfile,
         mxm_c(instrument_to_asteroid, asteroid_to_j2000, instrument_to_j2000);
 
         invert_c(instrument_to_j2000, j2000_to_instrument);
+
+        position[0] = scpos[0];
+        position[1] = scpos[1];
+        position[2] = scpos[2];
     }
     else
     {
@@ -165,6 +198,33 @@ void createMsopckInputDataFile(const std::vector<TimeMatrix>& data)
     }
 }
 
+void createSpkInputDataFile(const std::vector<TimeMatrix>& data)
+{
+    std::ofstream fout("mkspkinputdata");
+
+    if (!fout.is_open())
+    {
+        std::cerr << "Error: Unable to open file for writing" << std::endl;
+        exit(1);
+    }
+
+    fout.precision(16);
+
+    for (unsigned int i=0; i<data.size(); ++i)
+    {
+        const TimeMatrix& tm = data[i];
+        fout << tm.utc << " ";
+        fout << std::scientific << tm.pos[0] << " ";
+        fout << std::scientific << tm.pos[1] << " ";
+        fout << std::scientific << tm.pos[2] << " 0.0 0.0 0.0" << std::endl;
+    }
+}
+
+std::ifstream::pos_type filesize(const char* filename)
+{
+  std::ifstream in(filename, std::ifstream::ate | std::ifstream::binary);
+  return in.tellg(); 
+}
 
 int main(int argc, char** argv)
 {
@@ -188,14 +248,20 @@ int main(int argc, char** argv)
 
     for (unsigned int i=0; i<sumfiles.size(); ++i)
     {
+        if (filesize(sumfiles[i].c_str()) <= 1153)
+            continue;
+
         TimeMatrix tm;
 
-        loadSumFile(sumfiles[i], asteroidframe, tm.utc, tm.mat);
+        loadSumFile(sumfiles[i], asteroidframe, tm.utc, tm.mat, tm.pos);
+
+        std::cout << sumfiles[i] << " " << tm.utc << std::endl;
 
         data.push_back(tm);
     }
 
     createMsopckInputDataFile(data);
+    createSpkInputDataFile(data);
 
     return 0;
 }

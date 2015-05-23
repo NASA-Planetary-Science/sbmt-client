@@ -118,6 +118,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
     private float[] minValue = new float[1];
     private float[] maxValue = new float[1];
+    private int[] currentMask = new int[4];
 
     private IntensityRange displayedRange = new IntensityRange(1,0);
     private double imageOpacity = 1.0;
@@ -425,7 +426,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
 
     /**
-     * Return the mask sizes as a 4 element integer array where the:
+     * Return the default mask sizes as a 4 element integer array where the:
      * first  element is the top    mask size,
      * second element is the right  mask size,
      * third  element is the bottom mask size,
@@ -843,6 +844,8 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         int rightMask =  masking[1];
         int bottomMask = masking[2];
         int leftMask =   masking[3];
+        for (int i=0; i<masking.length; ++i)
+            currentMask[i] = masking[i];
 
         maskSource = new vtkImageCanvasSource2D();
         maskSource.SetScalarTypeToUnsignedChar();
@@ -2553,14 +2556,14 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         properties.put("Stop Time", getStopTime());
         properties.put("Spacecraft Distance", df.format(getSpacecraftDistance()) + " km");
         properties.put("Spacecraft Position",
-                df.format(spacecraftPosition[0]) + ", " + df.format(spacecraftPosition[1]) + ", " + df.format(spacecraftPosition[2]) + " km");
+                df.format(spacecraftPosition[currentSlice][0]) + ", " + df.format(spacecraftPosition[currentSlice][1]) + ", " + df.format(spacecraftPosition[currentSlice][2]) + " km");
         double[] quaternion = new double[4];
         double[] notused = new double[4];
         getCameraOrientation(notused, quaternion);
         properties.put("Spacecraft Orientation (quaternion)",
                 "(" + df.format(quaternion[0]) + ", [" + df.format(quaternion[1]) + ", " + df.format(quaternion[2]) + ", " + df.format(quaternion[3]) + "])");
         properties.put("Sun Vector",
-                df.format(sunVector[0]) + ", " + df.format(sunVector[1]) + ", " + df.format(sunVector[2]));
+                df.format(sunVector[currentSlice][0]) + ", " + df.format(sunVector[currentSlice][1]) + ", " + df.format(sunVector[currentSlice][2]));
         if (getCameraName() != null)
             properties.put("Camera", getCameraName());
         if (getFilterName() != null)
@@ -2591,5 +2594,31 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     public void firePropertyChange()
     {
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+    }
+
+    public void setCurrentMask(int[] masking)
+    {
+        int topMask =    masking[0];
+        int rightMask =  masking[1];
+        int bottomMask = masking[2];
+        int leftMask =   masking[3];
+        // Initialize the mask to black which masks out the image
+        maskSource.SetDrawColor(0.0, 0.0, 0.0, 0.0);
+        maskSource.FillBox(0, imageWidth-1, 0, imageHeight-1);
+        // Create a square inside mask which passes through the image.
+        maskSource.SetDrawColor(255.0, 255.0, 255.0, 255.0);
+        maskSource.FillBox(leftMask, imageWidth-1-rightMask, bottomMask, imageHeight-1-topMask);
+        maskSource.Update();
+
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+        setDisplayedImageRange(null);
+
+        for (int i=0; i<masking.length; ++i)
+            currentMask[i] = masking[i];
+    }
+
+    public int[] getCurrentMask()
+    {
+        return currentMask.clone();
     }
 }
