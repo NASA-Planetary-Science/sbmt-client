@@ -40,26 +40,29 @@ public class MVICQuadJupiterImage extends PerspectiveImage
         return new int[]{0, 0, 0, 0};
     }
 
-    @Override
-    protected String initializeFitFileFullPath()
+    public String[] getFitFilesFullPath()
     {
-        ImageKey key = getKey();
-        int band = getCurrentSlice();
+        String path = getFitFileFullPath();
 
-        String path = key.name;
         String[] pathArray = path.split("/");
         int size = pathArray.length;
-        String fileName = "mc" + band + "_" + pathArray[size-1];
+        String fileNameSuffix = pathArray[size-1].substring(4);
         String resultPath = "/";
         for (int i=0; i<size-1; i++)
             resultPath += pathArray[i] + "/";
 
-        return FileCache.getFileFromServer(resultPath + fileName + ".fit").getAbsolutePath();
+        String[] result = new String[4];
+        for (int i=0; i<4; i++)
+        {
+            String fileName = "mc" + i + "_" + fileNameSuffix;
+            result[i] = resultPath + fileName;
+        }
+        return result;
     }
 
-    public String[] getFitFilesFullPath()
+    public String[] getInfoFilesFullPath()
     {
-        String path = getFitFileFullPath();
+        String path = getInfoFileFullPath();
 
         String[] pathArray = path.split("/");
         int size = pathArray.length;
@@ -84,6 +87,22 @@ public class MVICQuadJupiterImage extends PerspectiveImage
     protected double getPixelHeight() { return 0.013; }   // in mm
 
     @Override
+    protected String initializeFitFileFullPath()
+    {
+        ImageKey key = getKey();
+        int band = getCurrentSlice();
+        String path = key.name;
+        String[] pathArray = path.split("/");
+        int size = pathArray.length;
+        String fileName = "mc" + band + "_" + pathArray[size-1];
+        String resultPath = "/";
+        for (int i=0; i<size-1; i++)
+            resultPath += pathArray[i] + "/";
+
+        return FileCache.getFileFromServer(resultPath + fileName + ".fit").getAbsolutePath();
+    }
+
+    @Override
     protected String initializeLabelFileFullPath()
     {
         ImageKey key = getKey();
@@ -96,11 +115,23 @@ public class MVICQuadJupiterImage extends PerspectiveImage
     @Override
     protected String initializeInfoFileFullPath()
     {
+//        ImageKey key = getKey();
+//        File keyFile = new File(key.name);
+//        int band = getCurrentSlice();
+//        String sumFilename = keyFile.getParentFile().getParent() + "/infofiles/" + "mc" + band + "_" + keyFile.getName() + ".INFO";
+//        return FileCache.getFileFromServer(sumFilename).getAbsolutePath();
+
         ImageKey key = getKey();
-        File keyFile = new File(key.name);
         int band = getCurrentSlice();
-        String sumFilename = keyFile.getParentFile().getParent() + "/infofiles/" + "mc" + band + "_" + keyFile.getName() + ".INFO";
-        return FileCache.getFileFromServer(sumFilename).getAbsolutePath();
+        String path = key.name;
+        String[] pathArray = path.split("/");
+        int size = pathArray.length;
+        String fileName = "mc" + band + "_" + pathArray[size-1];
+        String resultPath = "/";
+        for (int i=0; i<size-2; i++)
+            resultPath += pathArray[i] + "/";
+
+        return FileCache.getFileFromServer(resultPath + "infofiles/" + fileName + ".INFO").getAbsolutePath();
     }
 
     @Override

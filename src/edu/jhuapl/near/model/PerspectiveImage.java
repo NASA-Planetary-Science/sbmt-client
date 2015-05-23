@@ -241,6 +241,8 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
     protected void loadImageInfo(
             String infoFilename,
+            int startSlice,        // for loading multiple info files, the starting array index to put the info into
+            boolean pad,           // if true, will pad out the rest of the array with the same info
             String[] startTime,
             String[] stopTime,
             double[][] spacecraftPosition,
@@ -262,8 +264,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         BufferedReader in = new BufferedReader(isr);
 
         // for multispectral images, the image slice being currently parsed
-        int slice = -1;
-//        int slice = 0;
+        int slice = startSlice - 1;
 
         String str;
         while ((str = in.readLine()) != null)
@@ -380,40 +381,43 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         }
 
         // once we've read in all the frames, pad out any additional missing frames
-        int nslices = getNumberBands();
-        for (int i=slice+1; i<nslices; i++)
+        if (pad)
         {
-            spacecraftPosition[i][0] = spacecraftPosition[slice][0];
-            spacecraftPosition[i][1] = spacecraftPosition[slice][1];
-            spacecraftPosition[i][2] = spacecraftPosition[slice][2];
+            int nslices = getNumberBands();
+            for (int i=slice+1; i<nslices; i++)
+            {
+                spacecraftPosition[i][0] = spacecraftPosition[slice][0];
+                spacecraftPosition[i][1] = spacecraftPosition[slice][1];
+                spacecraftPosition[i][2] = spacecraftPosition[slice][2];
 
-            sunVector[i][0] = sunVector[slice][0];
-            sunVector[i][1] = sunVector[slice][1];
-            sunVector[i][2] = sunVector[slice][2];
+                sunVector[i][0] = sunVector[slice][0];
+                sunVector[i][1] = sunVector[slice][1];
+                sunVector[i][2] = sunVector[slice][2];
 
-            frustum1[i][0] = frustum1[slice][0];
-            frustum1[i][1] = frustum1[slice][1];
-            frustum1[i][2] = frustum1[slice][2];
+                frustum1[i][0] = frustum1[slice][0];
+                frustum1[i][1] = frustum1[slice][1];
+                frustum1[i][2] = frustum1[slice][2];
 
-            frustum2[i][0] = frustum2[slice][0];
-            frustum2[i][1] = frustum2[slice][1];
-            frustum2[i][2] = frustum2[slice][2];
+                frustum2[i][0] = frustum2[slice][0];
+                frustum2[i][1] = frustum2[slice][1];
+                frustum2[i][2] = frustum2[slice][2];
 
-            frustum3[i][0] = frustum3[slice][0];
-            frustum3[i][1] = frustum3[slice][1];
-            frustum3[i][2] = frustum3[slice][2];
+                frustum3[i][0] = frustum3[slice][0];
+                frustum3[i][1] = frustum3[slice][1];
+                frustum3[i][2] = frustum3[slice][2];
 
-            frustum4[i][0] = frustum4[slice][0];
-            frustum4[i][1] = frustum4[slice][1];
-            frustum4[i][2] = frustum4[slice][2];
+                frustum4[i][0] = frustum4[slice][0];
+                frustum4[i][1] = frustum4[slice][1];
+                frustum4[i][2] = frustum4[slice][2];
 
-            boresightDirection[i][0] = boresightDirection[slice][0];
-            boresightDirection[i][1] = boresightDirection[slice][1];
-            boresightDirection[i][2] = boresightDirection[slice][2];
+                boresightDirection[i][0] = boresightDirection[slice][0];
+                boresightDirection[i][1] = boresightDirection[slice][1];
+                boresightDirection[i][2] = boresightDirection[slice][2];
 
-            upVector[slice][0] = upVector[slice][0];
-            upVector[slice][1] = upVector[slice][1];
-            upVector[slice][2] = upVector[slice][2];
+                upVector[slice][0] = upVector[slice][0];
+                upVector[slice][1] = upVector[slice][1];
+                upVector[slice][2] = upVector[slice][2];
+            }
         }
 
         in.close();
@@ -601,6 +605,12 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     public String getInfoFileFullPath()
     {
         return infoFileFullPath;
+    }
+
+    public String[] getInfoFilesFullPath()
+    {
+        String[] result = { infoFileFullPath };
+        return result;
     }
 
     public String getSumfileFullPath()
@@ -1140,9 +1150,16 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
     private void loadImageInfo() throws NumberFormatException, IOException
     {
-        String infoFilename = getInfoFileFullPath();
+        String[] infoFileNames = getInfoFilesFullPath();
 
+        int nfiles = infoFileNames.length;
         int nslices = getNumberBands();
+//        if (depth != nslices)
+//        {
+//            System.err.println("Number of bands does not match the number of INFO files");
+//            return;
+//        }
+
         if (nslices > 1)
         {
             spacecraftPosition = new double[nslices][3];
@@ -1155,28 +1172,36 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
             upVector = new double[nslices][3];
         }
 
-        String[] start = new String[1];
-        String[] stop = new String[1];
-        loadImageInfo(
-                infoFilename,
-                start,
-                stop,
-                spacecraftPosition,
-                sunVector,
-                frustum1,
-                frustum2,
-                frustum3,
-                frustum4,
-                boresightDirection,
-                upVector);
+        boolean pad = nfiles > 1;
 
-        startTime = start[0];
-        stopTime = stop[0];
+        for (int k=0; k<nfiles; k++)
+        {
+            String[] start = new String[1];
+            String[] stop = new String[1];
+            loadImageInfo(
+                    infoFileNames[k],
+                    k,
+                    pad,
+                    start,
+                    stop,
+                    spacecraftPosition,
+                    sunVector,
+                    frustum1,
+                    frustum2,
+                    frustum3,
+                    frustum4,
+                    boresightDirection,
+                    upVector);
+
+            // should startTime and stopTime be an array? -turnerj1
+            startTime = start[0];
+            stopTime = stop[0];
 
 //        printpt(frustum1, "pds frustum1 ");
 //        printpt(frustum2, "pds frustum2 ");
 //        printpt(frustum3, "pds frustum3 ");
 //        printpt(frustum4, "pds frustum4 ");
+        }
     }
 
     /**
