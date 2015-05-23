@@ -123,7 +123,8 @@ public class View extends JPanel
             {
                 if (Configuration.isAPLVersion())
                 {
-                    JComponent component = new MultispectralImagingSearchPanel(smallBodyConfig, modelManager, infoPanelManager, pickManager, renderer, instrument).init();
+//                    JComponent component = new MultispectralImagingSearchPanel(smallBodyConfig, modelManager, infoPanelManager, pickManager, renderer, instrument).init();
+                    JComponent component = new QuadraspectralImagingSearchPanel(smallBodyConfig, modelManager, infoPanelManager, pickManager, renderer, instrument, SmallBodyConfig.MVIC_NBANDS).init();
                     controlPanel.addTab(instrument.instrumentName.toString(), component);
                 }
             }

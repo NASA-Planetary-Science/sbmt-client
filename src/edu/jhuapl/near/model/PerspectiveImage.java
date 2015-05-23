@@ -587,6 +587,12 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         return fitFileFullPath;
     }
 
+    public String[] getFitFilesFullPath()
+    {
+        String[] result = { fitFileFullPath };
+        return result;
+    }
+
     public String getLabelFileFullPath()
     {
         return labelFileFullPath;
@@ -677,64 +683,139 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
     protected void loadImage() throws FitsException, IOException
     {
-        String filename = getFitFileFullPath();
-
-        Fits f = new Fits(filename);
-        BasicHDU h = f.getHDU(0);
+        String[] filenames = getFitFilesFullPath();
+        String filename = filenames[0];
 
         float[][] array2D = null;
         float[][][] array3D = null;
-        fitsAxes = h.getAxes();
-        fitsNAxes = fitsAxes.length;
-        // height is axis 0
-        fitsHeight = fitsAxes[0];
-        // for 2D pixel arrays, width is axis 1, for 3D pixel arrays, width axis is 2
-        fitsWidth = fitsNAxes == 3 ? fitsAxes[2] : fitsAxes[1];
-        // for 2D pixel arrays, depth is 0, for 3D pixel arrays, depth axis is 1
-        fitsDepth = fitsNAxes == 3 ? fitsAxes[1] : 1;
-//        depth = 130;
 
-        Object data = h.getData().getData();
-
-        // for 3D arrays we consider the second axis the "spectral" axis
-        if (data instanceof float[][][])
+        // single file images
+        if (filenames.length == 1)
         {
-            array3D = (float[][][])data;
-            System.out.println("3D pixel array detected: " + array3D.length + "x" + array3D[0].length + "x" + array3D[0][0].length);
+            Fits f = new Fits(filename);
+            BasicHDU h = f.getHDU(0);
+
+            fitsAxes = h.getAxes();
+            fitsNAxes = fitsAxes.length;
+            // height is axis 0
+            fitsHeight = fitsAxes[0];
+            // for 2D pixel arrays, width is axis 1, for 3D pixel arrays, width axis is 2
+            fitsWidth = fitsNAxes == 3 ? fitsAxes[2] : fitsAxes[1];
+            // for 2D pixel arrays, depth is 0, for 3D pixel arrays, depth axis is 1
+            fitsDepth = fitsNAxes == 3 ? fitsAxes[1] : 1;
+
+            Object data = h.getData().getData();
+
+            // for 3D arrays we consider the second axis the "spectral" axis
+            if (data instanceof float[][][])
+            {
+                array3D = (float[][][])data;
+                System.out.println("3D pixel array detected: " + array3D.length + "x" + array3D[0].length + "x" + array3D[0][0].length);
+            }
+            else if (data instanceof float[][])
+            {
+                array2D = (float[][])data;
+            }
+            else if (data instanceof short[][])
+            {
+                short[][] arrayS = (short[][])data;
+                array2D = new float[fitsHeight][fitsWidth];
+
+                for (int i=0; i<fitsHeight; ++i)
+                    for (int j=0; j<fitsWidth; ++j)
+                    {
+                        array2D[i][j] = arrayS[i][j];
+                    }
+            }
+            else if (data instanceof byte[][])
+            {
+                byte[][] arrayB = (byte[][])data;
+                array2D = new float[fitsHeight][fitsWidth];
+
+                for (int i=0; i<fitsHeight; ++i)
+                    for (int j=0; j<fitsWidth; ++j)
+                    {
+                        array2D[i][j] = arrayB[i][j] & 0xFF;
+                    }
+            }
+            else
+            {
+                System.out.println("Data type not supported!");
+                return;
+            }
+
+            f.getStream().close();
         }
-        else if (data instanceof float[][])
+        // for multi-file images
+        else if (filenames.length > 1)
         {
-            array2D = (float[][])data;
-        }
-        else if (data instanceof short[][])
-        {
-            short[][] arrayS = (short[][])data;
-            array2D = new float[fitsHeight][fitsWidth];
+            fitsDepth = filenames.length;
+            fitsAxes = new int[3];
+            fitsAxes[2] = fitsDepth;
+            fitsNAxes = 3;
 
-            for (int i=0; i<fitsHeight; ++i)
-                for (int j=0; j<fitsWidth; ++j)
+            for (int k=0; k<fitsDepth; k++)
+            {
+                Fits f = new Fits(filenames[k]);
+                BasicHDU h = f.getHDU(0);
+
+                int[] multiImageAxes = h.getAxes();
+                int multiImageNAxes = multiImageAxes.length;
+
+                if (multiImageNAxes > 2)
                 {
-                    array2D[i][j] = arrayS[i][j];
+                    System.out.println("Multi-file images must be 2D.");
+                    return;
                 }
-        }
-        else if (data instanceof byte[][])
-        {
-            byte[][] arrayB = (byte[][])data;
-            array2D = new float[fitsHeight][fitsWidth];
 
-            for (int i=0; i<fitsHeight; ++i)
-                for (int j=0; j<fitsWidth; ++j)
+                // height is axis 0, width is axis 1
+                fitsHeight = fitsAxes[0] = multiImageAxes[0];
+                fitsWidth = fitsAxes[2] = multiImageAxes[1];
+
+                if (array3D == null)
+                    array3D = new float[fitsHeight][fitsDepth][fitsWidth];
+
+
+                Object data = h.getData().getData();
+
+                if (data instanceof float[][])
                 {
-                    array2D[i][j] = arrayB[i][j] & 0xFF;
+                    for (int i=0; i<fitsHeight; ++i)
+                        for (int j=0; j<fitsWidth; ++j)
+                        {
+                            array3D[i][k][j] = ((float[][])data)[i][j];
+                        }
                 }
-        }
-        else
-        {
-            System.out.println("Data type not supported!");
-            return;
+                else if (data instanceof short[][])
+                {
+                    short[][] arrayS = (short[][])data;
+
+                    for (int i=0; i<fitsHeight; ++i)
+                        for (int j=0; j<fitsWidth; ++j)
+                        {
+                            array3D[i][k][j] = arrayS[i][j];
+                        }
+                }
+                else if (data instanceof byte[][])
+                {
+                    byte[][] arrayB = (byte[][])data;
+
+                    for (int i=0; i<fitsHeight; ++i)
+                        for (int j=0; j<fitsWidth; ++j)
+                        {
+                            array3D[i][k][j] = arrayB[i][j] & 0xFF;
+                        }
+                }
+                else
+                {
+                    System.out.println("Data type not supported!");
+                    return;
+                }
+
+                f.getStream().close();
+            }
         }
 
-        f.getStream().close();
 
         rawImage = createRawImage(fitsHeight, fitsWidth, fitsDepth, array2D, array3D);
 
@@ -817,6 +898,11 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     public void setCurrentSlice(int slice)
     {
         this.currentSlice = slice;
+    }
+
+    public int getCurrentSlice()
+    {
+        return currentSlice;
     }
 
     public vtkTexture getTexture()

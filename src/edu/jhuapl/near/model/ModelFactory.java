@@ -26,7 +26,7 @@ import edu.jhuapl.near.model.itokawa.Itokawa;
 import edu.jhuapl.near.model.leisa.LEISAJupiterImage;
 import edu.jhuapl.near.model.lorri.LorriImage;
 import edu.jhuapl.near.model.mathilde.MSIMathildeImage;
-import edu.jhuapl.near.model.mvic.MVICJupiterImage;
+import edu.jhuapl.near.model.mvic.MVICQuadJupiterImage;
 import edu.jhuapl.near.model.phobos.PhobosImage;
 import edu.jhuapl.near.model.rosetta.CG;
 import edu.jhuapl.near.model.rosetta.Lutetia;
@@ -53,7 +53,8 @@ public class ModelFactory
             if (key.instrument.spectralMode == SpectralMode.MULTI)
             {
                 if (key.instrument.type == ImageType.MVIC_JUPITER_IMAGE)
-                    return new MVICJupiterImage(key, smallBodyModel, loadPointingOnly);
+//                    return new MVICJupiterImage(key, smallBodyModel, loadPointingOnly);
+                    return new MVICQuadJupiterImage(key, smallBodyModel, loadPointingOnly);
                 else
                     return null;
             }
