@@ -19,19 +19,22 @@ public class ColorImageCollection extends Model implements PropertyChangeListene
 {
     private SmallBodyModel smallBodyModel;
 
+    private ModelManager modelManager;
+
     private HashMap<ColorImage, ArrayList<vtkProp>> imageToActorsMap = new HashMap<ColorImage, ArrayList<vtkProp>>();
 
     private HashMap<vtkProp, ColorImage> actorToImageMap = new HashMap<vtkProp, ColorImage>();
 
-    public ColorImageCollection(SmallBodyModel smallBodyModel)
+    public ColorImageCollection(SmallBodyModel smallBodyModel, ModelManager modelManager)
     {
         this.smallBodyModel = smallBodyModel;
+        this.modelManager = modelManager;
     }
 
     protected ColorImage createImage(ColorImageKey key,
             SmallBodyModel smallBodyModel) throws FitsException, IOException, NoOverlapException
     {
-        return new ColorImage(key, smallBodyModel);
+        return new ColorImage(key, smallBodyModel, modelManager);
     }
 
     private boolean containsKey(ColorImageKey key)

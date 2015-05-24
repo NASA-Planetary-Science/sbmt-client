@@ -147,7 +147,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         images.addPropertyChangeListener(this);
 
         ColorImageCollection colorImages = (ColorImageCollection)modelManager.getModel(getColorImageCollectionModelName());
-        colorImagePopupMenu = new ColorImagePopupMenu(colorImages, infoPanelManager);
+        colorImagePopupMenu = new ColorImagePopupMenu(colorImages, infoPanelManager, modelManager);
 
         return this;
     }

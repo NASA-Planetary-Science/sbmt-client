@@ -100,14 +100,14 @@ public class ColorImage extends Model implements PropertyChangeListener
         }
     }
 
-    public ColorImage(ColorImageKey key, SmallBodyModel smallBodyModel) throws FitsException, IOException, NoOverlapException
+    public ColorImage(ColorImageKey key, SmallBodyModel smallBodyModel, ModelManager modelManager) throws FitsException, IOException, NoOverlapException
     {
         this.colorKey = key;
         this.smallBodyModel = smallBodyModel;
 
-        redImage = createImage(colorKey.redImageKey, smallBodyModel);
-        greenImage = createImage(colorKey.greenImageKey, smallBodyModel);
-        blueImage = createImage(colorKey.blueImageKey, smallBodyModel);
+        redImage = createImage(colorKey.redImageKey, smallBodyModel, modelManager);
+        greenImage = createImage(colorKey.greenImageKey, smallBodyModel, modelManager);
+        blueImage = createImage(colorKey.blueImageKey, smallBodyModel, modelManager);
 
         redPixelData = ImageDataUtil.vtkImageDataToArray2D(redImage.getRawImage());
         greenPixelData = ImageDataUtil.vtkImageDataToArray2D(greenImage.getRawImage());
@@ -125,9 +125,13 @@ public class ColorImage extends Model implements PropertyChangeListener
         computeFootprintAndColorImage();
     }
 
-    protected PerspectiveImage createImage(ImageKey key, SmallBodyModel smallBodyModel) throws FitsException, IOException
+    protected PerspectiveImage createImage(ImageKey key, SmallBodyModel smallBodyModel, ModelManager modelManager) throws FitsException, IOException
     {
-        return (PerspectiveImage)ModelFactory.createImage(key, smallBodyModel, false);
+        ImageCollection images = (ImageCollection)modelManager.getModel(ModelNames.IMAGES);
+        PerspectiveImage result = (PerspectiveImage)images.getImage(key);
+        if (result == null)
+            result = (PerspectiveImage)ModelFactory.createImage(key, smallBodyModel, false);
+        return result;
     }
 
     private void computeFootprintAndColorImage() throws NoOverlapException

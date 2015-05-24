@@ -18,12 +18,14 @@ import edu.jhuapl.near.model.ColorImage;
 import edu.jhuapl.near.model.ColorImage.ColorImageKey;
 import edu.jhuapl.near.model.ColorImage.NoOverlapException;
 import edu.jhuapl.near.model.ColorImageCollection;
+import edu.jhuapl.near.model.ModelManager;
 
 
 public class ColorImagePopupMenu extends PopupMenu
 {
     private ColorImageCollection imageCollection;
     private ColorImageKey imageKey;
+    private ModelManager modelManager;
     private JMenuItem showRemoveImageIn3DMenuItem;
     private JMenuItem showImageInfoMenuItem;
 //    private ModelInfoWindowManager infoPanelManager;
@@ -37,10 +39,12 @@ public class ColorImagePopupMenu extends PopupMenu
      */
     public ColorImagePopupMenu(
             ColorImageCollection imageCollection,
-            ModelInfoWindowManager infoPanelManager)
+            ModelInfoWindowManager infoPanelManager,
+            ModelManager modelManager)
     {
         this.imageCollection = imageCollection;
 //        this.infoPanelManager = infoPanelManager;
+        this.modelManager = modelManager;
 
         showRemoveImageIn3DMenuItem = new JCheckBoxMenuItem(new ShowRemoveIn3DAction());
         showRemoveImageIn3DMenuItem.setText("Show Color Image");
