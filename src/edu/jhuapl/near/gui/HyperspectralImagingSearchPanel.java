@@ -47,6 +47,11 @@ public class HyperspectralImagingSearchPanel extends ImagingSearchPanel implemen
     private BoundedRangeModel monoBoundedRangeModel;
 
     private int nbands;
+    private int currentSlice = 127;
+
+    public int getCurrentSlice() { return currentSlice; }
+
+    public String getCurrentBand() { return Integer.toString(currentSlice); }
 
     /** Creates new form ImagingSearchPanel */
     public HyperspectralImagingSearchPanel(SmallBodyConfig smallBodyConfig,
@@ -112,8 +117,8 @@ public class HyperspectralImagingSearchPanel extends ImagingSearchPanel implemen
     public void stateChanged(ChangeEvent e)
     {
         JSlider source = (JSlider)e.getSource();
-        int fps = (int)source.getValue();
-        bandValue.setText(Integer.toString(fps));
+        currentSlice = (int)source.getValue();
+        bandValue.setText(Integer.toString(currentSlice));
 
         ImageCollection images = (ImageCollection)getModelManager().getModel(getImageCollectionModelName());
 
@@ -130,7 +135,7 @@ public class HyperspectralImagingSearchPanel extends ImagingSearchPanel implemen
             {
                 if (image.isVisible())
                 {
-                   image.setCurrentSlice(fps);
+                   image.setCurrentSlice(currentSlice);
                    image.setDisplayedImageRange(null);
                    if (!source.getValueIsAdjusting())
                     {

@@ -106,6 +106,10 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     private ImagePopupMenu imagePopupMenu;
     private ColorImagePopupMenu colorImagePopupMenu;
 
+    public int getCurrentSlice() { return 0; }
+
+    public String getCurrentBand() { return "0"; }
+
     protected ModelManager getModelManager()
     {
         return modelManager;
@@ -513,7 +517,9 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
     protected ImageKey createImageKey(String imagePathName, ImageSource sourceOfLastQuery, ImagingInstrument instrument)
     {
-        return new ImageKey(imagePathName, sourceOfLastQuery, instrument);
+        int slice = this.getCurrentSlice();
+        String band = this.getCurrentBand();
+        return new ImageKey(imagePathName, sourceOfLastQuery, instrument, band, slice);
     }
 
     private void showImageBoundaries(IdPair idPair)
@@ -1919,9 +1925,8 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             String image = imageRawResults.get(index).get(0);
             String name = new File(image).getName();
             image = image.substring(0,image.length()-4);
-            redLabel.setText(name);
-//            selectedRedKey = new ImageKey(image, sourceOfLastQuery, instrument);
             selectedRedKey = createImageKey(image, sourceOfLastQuery, instrument);
+            redLabel.setText(selectedRedKey.band + ":" + name);
         }
     }//GEN-LAST:event_redButtonActionPerformed
 
@@ -1934,8 +1939,8 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             String name = new File(image).getName();
             image = image.substring(0,image.length()-4);
             greenLabel.setText(name);
-//            selectedGreenKey = new ImageKey(image, sourceOfLastQuery, instrument);
             selectedGreenKey = createImageKey(image, sourceOfLastQuery, instrument);
+            greenLabel.setText(selectedGreenKey.band + ":" + name);
         }
     }//GEN-LAST:event_greenButtonActionPerformed
 
@@ -1950,6 +1955,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             blueLabel.setText(name);
 //            selectedBlueKey = new ImageKey(image, sourceOfLastQuery, instrument);
             selectedBlueKey = createImageKey(image, sourceOfLastQuery, instrument);
+            blueLabel.setText(selectedBlueKey.band + ":" + name);
         }
     }//GEN-LAST:event_blueButtonActionPerformed
 
@@ -2346,12 +2352,6 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         }
    }
 
-//    protected void setImageVisibility(ImageKey key, ImageCollection images, boolean visible)
-//    {
-//        Image image = images.getImage(key);
-//        image.setVisible(visible);
-//    }
-//
     protected void setImageVisibility(String name, boolean visible)
     {
         List<ImageKey> keys = createImageKeys(name, sourceOfLastQuery, instrument);

@@ -16,6 +16,21 @@ public class MVICQuadJupiterImage extends PerspectiveImage
 {
     public static final int INITIAL_BAND = 3;
 
+    private static final String[] bandNames = { "Red", "Blue", "NIR", "MH4" };
+
+    public ImageKey getKey()
+    {
+        ImageKey key = super.getKey();
+        key.slice = getCurrentSlice();
+        key.band = getCurrentBand();
+        return key;
+    }
+
+    public String getCurrentBand()
+    {
+        return bandNames[getCurrentSlice()];
+    }
+
     public MVICQuadJupiterImage(ImageKey key, SmallBodyModel smallBodyModel,
             boolean loadPointingOnly) throws FitsException,
             IOException

@@ -142,10 +142,9 @@ public abstract class Image extends Model implements PropertyChangeListener
 
         public String band;
 
-//        public ImageKey()
-//        {
-//        }
-//
+        public int slice;
+
+
         public ImageKey(String name, ImageSource source)
         {
             this(name, source, null); // new ImagingInstrument());
@@ -153,15 +152,16 @@ public abstract class Image extends Model implements PropertyChangeListener
 
         public ImageKey(String name, ImageSource source, ImagingInstrument instrument)
         {
-            this(name, source, instrument, null);
+            this(name, source, instrument, null, 0);
         }
 
-        public ImageKey(String name, ImageSource source, ImagingInstrument instrument, String band)
+        public ImageKey(String name, ImageSource source, ImagingInstrument instrument, String band, int slice)
         {
             this.name = name;
             this.source = source;
             this.instrument = instrument;
             this.band = band;
+            this.slice = slice;
         }
 
         @Override

@@ -16,6 +16,14 @@ public class LEISAJupiterImage extends PerspectiveImage
 {
     public static final int INITIAL_BAND = 127;
 
+    public ImageKey getKey()
+    {
+        ImageKey key = super.getKey();
+        key.slice = getCurrentSlice();
+        key.band = getCurrentBand();
+        return key;
+    }
+
     public LEISAJupiterImage(ImageKey key, SmallBodyModel smallBodyModel,
             boolean loadPointingOnly) throws FitsException,
             IOException

@@ -79,15 +79,10 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
     private SmallBodyModel smallBodyModel;
 
-//    private vtkImageData raw3DImage;
     private vtkImageData rawImage;
     private vtkImageData displayedImage;
-//    private int[] fitsAxes;
-//    private int fitsNAxes = 0;
-//    private int fitsHeight;
-//    private int fitsWidth;
-//    private int fitsDepth;
     private int currentSlice = 0;
+    private String currentBand = "0";
 
     private vtkPolyData footprint;
     private vtkPolyData shiftedFootprint;
@@ -916,6 +911,11 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     public int getCurrentSlice()
     {
         return currentSlice;
+    }
+
+    public String getCurrentBand()
+    {
+        return Integer.toString(currentSlice);
     }
 
     public vtkTexture getTexture()

@@ -55,6 +55,10 @@ public class QuadraspectralImagingSearchPanel extends ImagingSearchPanel impleme
     private int currentBandIndex = 3;
     private Map<String, Integer> bandNamesToPrefixes = new HashMap<String, Integer>();
 
+    public int getCurrentSlice() { return currentBandIndex; }
+
+    public String getCurrentBand() { return bandNames[currentBandIndex]; }
+
     /** Creates new form ImagingSearchPanel */
     public QuadraspectralImagingSearchPanel(SmallBodyConfig smallBodyConfig,
             final ModelManager modelManager,
