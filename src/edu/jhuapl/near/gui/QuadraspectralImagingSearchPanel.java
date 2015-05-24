@@ -26,9 +26,6 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JSlider;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 import nom.tam.fits.FitsException;
 
@@ -42,17 +39,13 @@ import edu.jhuapl.near.model.SmallBodyConfig;
 import edu.jhuapl.near.pick.PickManager;
 
 
-public class QuadraspectralImagingSearchPanel extends ImagingSearchPanel implements ActionListener, ChangeListener
+public class QuadraspectralImagingSearchPanel extends ImagingSearchPanel implements ActionListener
 {
     private JPanel bandPanel;
     private JLabel bandValue;
 
     private JComboBox monoComboBox;
     private ComboBoxModel monoComboBoxModel;
-
-    private ComboBoxModel redComboBoxModel;
-    private ComboBoxModel greenComboBoxModel;
-    private ComboBoxModel blueComboBoxModel;
 
     private Set<ImageKey> mapped = new HashSet<ImageKey>();
     private Set<ImageKey> visible = new HashSet<ImageKey>();
@@ -73,10 +66,6 @@ public class QuadraspectralImagingSearchPanel extends ImagingSearchPanel impleme
     {
         super(smallBodyConfig, modelManager, infoPanelManager, pickManager, renderer, instrument);
 
-        redComboBoxModel = new DefaultComboBoxModel(bandNames);
-        greenComboBoxModel = new DefaultComboBoxModel(bandNames);
-        blueComboBoxModel = new DefaultComboBoxModel(bandNames);
-
         for (int i=0; i<bandNames.length; i++)
             bandNamesToPrefixes.put(bandNames[i], bandIndices[i]);
 
@@ -85,10 +74,6 @@ public class QuadraspectralImagingSearchPanel extends ImagingSearchPanel impleme
     public ImagingSearchPanel init()
     {
         super.init();
-
-        getRedComboBox().addActionListener(this);
-        getGreenComboBox().addActionListener(this);
-        getBlueComboBox().addActionListener(this);
 
         return this;
     }
@@ -107,22 +92,6 @@ public class QuadraspectralImagingSearchPanel extends ImagingSearchPanel impleme
         bandPanel.add(monoComboBox);
 
         panel.add(bandPanel, BorderLayout.WEST);
-    }
-
-
-    protected ComboBoxModel getRedComboBoxModel()
-    {
-        return redComboBoxModel;
-    }
-
-    protected ComboBoxModel getGreenComboBoxModel()
-    {
-        return greenComboBoxModel;
-    }
-
-    protected ComboBoxModel getBlueComboBoxModel()
-    {
-        return blueComboBoxModel;
     }
 
     @Override
@@ -156,6 +125,7 @@ public class QuadraspectralImagingSearchPanel extends ImagingSearchPanel impleme
 
         return results;
     }
+
     protected void loadImage(ImageKey key, ImageCollection images) throws FitsException, IOException
     {
         super.loadImage(key, images);
@@ -191,7 +161,7 @@ public class QuadraspectralImagingSearchPanel extends ImagingSearchPanel impleme
         String newBandName = (String)((JComboBox)arg0.getSource()).getSelectedItem();
         int newBandIndex = bandNamesToPrefixes.get(newBandName);
         currentBandIndex = newBandIndex;
-        System.out.println("ComboBox Value Changed: " + newBandName + "=" + newBandIndex);
+//        System.out.println("ComboBox Value Changed: " + newBandName + "=" + newBandIndex);
 
         ImageCollection images = (ImageCollection)getModelManager().getModel(getImageCollectionModelName());
         Set<Image> imageSet = images.getImages();
@@ -208,74 +178,7 @@ public class QuadraspectralImagingSearchPanel extends ImagingSearchPanel impleme
             }
         }
 
-//        ImageCollection images = (ImageCollection)getModelManager().getModel(getImageCollectionModelName());
-//
-//        if (!visible.isEmpty())
-//        {
-//            Set<ImageKey> currentVisibleKeys = new HashSet<ImageKey>(visible);
-//            for (ImageKey imageKey : currentVisibleKeys)
-//            {
-//               if (images.containsImage(imageKey))
-//               {
-//                 // set the previous band image to be invisible
-//                 Image image = images.getImage(imageKey);
-//                 setImageVisibility(imageKey, images, false);
-//
-//                 // find the new band image key
-//                 ImageKey newImageKey = createImageKey(imageKey, newBandName);
-//                 try
-//                     {
-//                         // if the new image hasn't been loaded in yet, do so
-//                         if (!mapped.contains(newImageKey))
-//                             loadImage(newImageKey, images);
-//
-//                         // make the new image visible
-//                         setImageVisibility(newImageKey, images, true);
-//                     }
-//                     catch (FitsException e1) {
-//                         e1.printStackTrace();
-//                     }
-//                     catch (IOException e1) {
-//                         e1.printStackTrace();
-//                     }
-//                 }
-//               }
-//            }
-//
-//        monoBandName = newBandName;
-//        monoImagePrefix = bandNamesToPrefixes.get(newBandName);
     }
 
-    @Override
-    public void stateChanged(ChangeEvent e)
-    {
-        JSlider source = (JSlider)e.getSource();
-        int fps = (int)source.getValue();
-        bandValue.setText(Integer.toString(fps));
-
-        ImageCollection images = (ImageCollection)getModelManager().getModel(getImageCollectionModelName());
-
-        Set<Image> imageSet = images.getImages();
-        for (Image i : imageSet)
-        {
-            String name = i.getImageName();
-            Boolean isVisible = i.isVisible();
-            PerspectiveImage image = (PerspectiveImage)i;
-
-            if (image.isVisible())
-            {
-               image.setCurrentSlice(fps);
-               image.setDisplayedImageRange(null);
-               if (!source.getValueIsAdjusting())
-                {
-//                    System.out.println("Recalculate footprint...");
-                    image.loadFootprint();
-                    image.firePropertyChange();
-                }
-            }
-        }
-
-//            System.out.println("State changed: " + fps);
-    }
 
 }
