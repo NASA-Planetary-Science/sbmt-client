@@ -14,11 +14,13 @@ import edu.jhuapl.near.util.ImageDataUtil;
 
 public class MVICQuadJupiterImage extends PerspectiveImage
 {
+    public static final int INITIAL_BAND = 3;
+
     public MVICQuadJupiterImage(ImageKey key, SmallBodyModel smallBodyModel,
             boolean loadPointingOnly) throws FitsException,
             IOException
     {
-        super(key, smallBodyModel, loadPointingOnly, 0);
+        super(key, smallBodyModel, loadPointingOnly, INITIAL_BAND);
     }
 
     @Override

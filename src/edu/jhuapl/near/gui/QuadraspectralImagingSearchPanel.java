@@ -21,9 +21,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import javax.swing.BoundedRangeModel;
 import javax.swing.ComboBoxModel;
-import javax.swing.DefaultBoundedRangeModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -48,8 +46,9 @@ public class QuadraspectralImagingSearchPanel extends ImagingSearchPanel impleme
 {
     private JPanel bandPanel;
     private JLabel bandValue;
-    private JSlider monoSlider;
-    private BoundedRangeModel monoBoundedRangeModel;
+
+    private JComboBox monoComboBox;
+    private ComboBoxModel monoComboBoxModel;
 
     private ComboBoxModel redComboBoxModel;
     private ComboBoxModel greenComboBoxModel;
@@ -58,11 +57,11 @@ public class QuadraspectralImagingSearchPanel extends ImagingSearchPanel impleme
     private Set<ImageKey> mapped = new HashSet<ImageKey>();
     private Set<ImageKey> visible = new HashSet<ImageKey>();
 
-    private int nbands;
-
-    private String[] bandNames = { "125", "126", "127", "128" };
-    private String[] bandPrefixes = { "125", "126", "127", "128" };
-    private Map<String, String> bandNamesToPrefixes = new HashMap<String, String>();
+    private String[] bandNames = { "Red", "Blue", "NIR", "MH4" };
+    private Integer[] bandIndices = { 0, 1, 2, 3 };
+    // set current slice to MH4 band
+    private int currentBandIndex = 3;
+    private Map<String, Integer> bandNamesToPrefixes = new HashMap<String, Integer>();
 
     /** Creates new form ImagingSearchPanel */
     public QuadraspectralImagingSearchPanel(SmallBodyConfig smallBodyConfig,
@@ -70,19 +69,16 @@ public class QuadraspectralImagingSearchPanel extends ImagingSearchPanel impleme
             ModelInfoWindowManager infoPanelManager,
             final PickManager pickManager,
             Renderer renderer,
-            ImagingInstrument instrument,
-            int nbands)
+            ImagingInstrument instrument)
     {
         super(smallBodyConfig, modelManager, infoPanelManager, pickManager, renderer, instrument);
-
-        this.nbands = nbands;
 
         redComboBoxModel = new DefaultComboBoxModel(bandNames);
         greenComboBoxModel = new DefaultComboBoxModel(bandNames);
         blueComboBoxModel = new DefaultComboBoxModel(bandNames);
 
         for (int i=0; i<bandNames.length; i++)
-            bandNamesToPrefixes.put(bandNames[i], bandPrefixes[i]);
+            bandNamesToPrefixes.put(bandNames[i], bandIndices[i]);
 
     }
 
@@ -101,15 +97,14 @@ public class QuadraspectralImagingSearchPanel extends ImagingSearchPanel impleme
     {
         panel.setLayout(new BorderLayout());
         bandPanel = new JPanel(new FlowLayout(FlowLayout.LEADING));
+
         bandPanel.add(new JLabel("Band:"));
-        int midband = nbands / 2;
-        String midbandString = Integer.toString(midband);
-        bandValue = new JLabel(midbandString);
-        bandPanel.add(bandValue);
-        monoBoundedRangeModel = new DefaultBoundedRangeModel(midband, 0, 0, nbands-1);
-        monoSlider = new JSlider(monoBoundedRangeModel);
-        monoSlider.addChangeListener(this);
-        bandPanel.add(monoSlider);
+        monoComboBoxModel = new DefaultComboBoxModel(bandNames);
+        monoComboBox = new JComboBox(monoComboBoxModel);
+        monoComboBox.addActionListener(this);
+        // initialize for the MH4 band
+        monoComboBox.setSelectedIndex(3);
+        bandPanel.add(monoComboBox);
 
         panel.add(bandPanel, BorderLayout.WEST);
     }
@@ -164,6 +159,12 @@ public class QuadraspectralImagingSearchPanel extends ImagingSearchPanel impleme
     protected void loadImage(ImageKey key, ImageCollection images) throws FitsException, IOException
     {
         super.loadImage(key, images);
+        PerspectiveImage image = (PerspectiveImage)images.getImage(key);
+        image.setCurrentSlice(currentBandIndex);
+        image.setDisplayedImageRange(null);
+        image.loadFootprint();
+        image.firePropertyChange();
+
         this.mapped.add(key);
         this.visible.add(key);
     }
@@ -188,7 +189,61 @@ public class QuadraspectralImagingSearchPanel extends ImagingSearchPanel impleme
     public void actionPerformed(ActionEvent arg0)
     {
         String newBandName = (String)((JComboBox)arg0.getSource()).getSelectedItem();
-        System.out.println("ComboBox Value Changed: " + newBandName);
+        int newBandIndex = bandNamesToPrefixes.get(newBandName);
+        currentBandIndex = newBandIndex;
+        System.out.println("ComboBox Value Changed: " + newBandName + "=" + newBandIndex);
+
+        ImageCollection images = (ImageCollection)getModelManager().getModel(getImageCollectionModelName());
+        Set<Image> imageSet = images.getImages();
+
+        for (Image i : imageSet)
+        {
+            PerspectiveImage image = (PerspectiveImage)i;
+            if (image.isVisible())
+            {
+               image.setCurrentSlice(newBandIndex);
+               image.setDisplayedImageRange(null);
+               image.loadFootprint();
+               image.firePropertyChange();
+            }
+        }
+
+//        ImageCollection images = (ImageCollection)getModelManager().getModel(getImageCollectionModelName());
+//
+//        if (!visible.isEmpty())
+//        {
+//            Set<ImageKey> currentVisibleKeys = new HashSet<ImageKey>(visible);
+//            for (ImageKey imageKey : currentVisibleKeys)
+//            {
+//               if (images.containsImage(imageKey))
+//               {
+//                 // set the previous band image to be invisible
+//                 Image image = images.getImage(imageKey);
+//                 setImageVisibility(imageKey, images, false);
+//
+//                 // find the new band image key
+//                 ImageKey newImageKey = createImageKey(imageKey, newBandName);
+//                 try
+//                     {
+//                         // if the new image hasn't been loaded in yet, do so
+//                         if (!mapped.contains(newImageKey))
+//                             loadImage(newImageKey, images);
+//
+//                         // make the new image visible
+//                         setImageVisibility(newImageKey, images, true);
+//                     }
+//                     catch (FitsException e1) {
+//                         e1.printStackTrace();
+//                     }
+//                     catch (IOException e1) {
+//                         e1.printStackTrace();
+//                     }
+//                 }
+//               }
+//            }
+//
+//        monoBandName = newBandName;
+//        monoImagePrefix = bandNamesToPrefixes.get(newBandName);
     }
 
     @Override
