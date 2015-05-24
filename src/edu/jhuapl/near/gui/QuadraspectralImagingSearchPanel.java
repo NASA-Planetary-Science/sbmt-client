@@ -36,6 +36,7 @@ import edu.jhuapl.near.model.ImageCollection;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.PerspectiveImage;
 import edu.jhuapl.near.model.SmallBodyConfig;
+import edu.jhuapl.near.model.SmallBodyConfig.ImageType;
 import edu.jhuapl.near.pick.PickManager;
 
 
@@ -47,12 +48,10 @@ public class QuadraspectralImagingSearchPanel extends ImagingSearchPanel impleme
     private JComboBox monoComboBox;
     private ComboBoxModel monoComboBoxModel;
 
-    private Set<ImageKey> mapped = new HashSet<ImageKey>();
-    private Set<ImageKey> visible = new HashSet<ImageKey>();
-
     private String[] bandNames = { "Red", "Blue", "NIR", "MH4" };
     private Integer[] bandIndices = { 0, 1, 2, 3 };
-    // set current slice to MH4 band
+
+    // set current band to MH4 band
     private int currentBandIndex = 3;
     private Map<String, Integer> bandNamesToPrefixes = new HashMap<String, Integer>();
 
@@ -134,25 +133,11 @@ public class QuadraspectralImagingSearchPanel extends ImagingSearchPanel impleme
         image.setDisplayedImageRange(null);
         image.loadFootprint();
         image.firePropertyChange();
-
-        this.mapped.add(key);
-        this.visible.add(key);
-    }
+   }
 
     protected void unloadImage(ImageKey key, ImageCollection images)
     {
         super.unloadImage(key, images);
-        this.mapped.remove(key);
-        this.visible.remove(key);
-    }
-
-    protected void setImageVisibility(ImageKey key, ImageCollection images, boolean isVisible)
-    {
-        super.setImageVisibility(key, images, isVisible);
-        if (isVisible)
-            this.visible.add(key);
-        else
-            this.visible.remove(key);
     }
 
     @Override
@@ -169,6 +154,10 @@ public class QuadraspectralImagingSearchPanel extends ImagingSearchPanel impleme
         for (Image i : imageSet)
         {
             PerspectiveImage image = (PerspectiveImage)i;
+            ImageKey key = image.getKey();
+            ImageType type = key.instrument.type;
+//            System.out.println(image.getImageName() + ", " + type + ", " + image.isVisible());
+            if (type == ImageType.MVIC_JUPITER_IMAGE) // this should not be specific to a given image type, should it? -turnerj1
             if (image.isVisible())
             {
                image.setCurrentSlice(newBandIndex);

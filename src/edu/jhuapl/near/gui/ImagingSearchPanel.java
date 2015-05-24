@@ -2291,16 +2291,16 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     }//GEN-LAST:event_loadImageListButtonActionPerformed
 
 
-    protected boolean imageVisible(ImageKey key)
-    {
-        return true;
-    }
+//    protected boolean imageVisible(ImageKey key)
+//    {
+//        return true;
+//    }
 
     protected void loadImage(ImageKey key, ImageCollection images) throws FitsException, IOException
     {
         images.addImage(key);
-        if (!imageVisible(key))
-            images.getImage(key).setVisible(false);
+//        if (!imageVisible(key))
+//        images.getImage(key).setVisible(false);
     }
 
     protected void loadImages(String name)
@@ -2346,12 +2346,12 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         }
    }
 
-    protected void setImageVisibility(ImageKey key, ImageCollection images, boolean visible)
-    {
-        Image image = images.getImage(key);
-        image.setVisible(visible);
-    }
-
+//    protected void setImageVisibility(ImageKey key, ImageCollection images, boolean visible)
+//    {
+//        Image image = images.getImage(key);
+//        image.setVisible(visible);
+//    }
+//
     protected void setImageVisibility(String name, boolean visible)
     {
         List<ImageKey> keys = createImageKeys(name, sourceOfLastQuery, instrument);
@@ -2361,10 +2361,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             if (images.containsImage(key))
             {
                 Image image = images.getImage(key);
-                if (imageVisible(key) && visible)
-                    setImageVisibility(key, images, true);
-                else
-                    setImageVisibility(key, images, false);
+                image.setVisible(visible);;
             }
         }
     }

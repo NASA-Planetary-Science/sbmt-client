@@ -14,11 +14,13 @@ import edu.jhuapl.near.util.ImageDataUtil;
 
 public class LEISAJupiterImage extends PerspectiveImage
 {
+    public static final int INITIAL_BAND = 127;
+
     public LEISAJupiterImage(ImageKey key, SmallBodyModel smallBodyModel,
             boolean loadPointingOnly) throws FitsException,
             IOException
     {
-        super(key, smallBodyModel, loadPointingOnly, 127);
+        super(key, smallBodyModel, loadPointingOnly, INITIAL_BAND);
     }
 
     @Override
