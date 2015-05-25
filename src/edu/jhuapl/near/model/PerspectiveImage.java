@@ -2354,6 +2354,11 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         return new Frustum(spacecraftPosition[currentSlice], frustum1[currentSlice], frustum3[currentSlice], frustum4[currentSlice], frustum2[currentSlice]);
     }
 
+    public Frustum getFrustum(int slice)
+    {
+        return new Frustum(spacecraftPosition[slice], frustum1[slice], frustum3[slice], frustum4[slice], frustum2[slice]);
+    }
+
     /**
      *  Get the maximum FOV angle in degrees of the image (the max of either
      *  the horizontal or vetical FOV). I.e., return the

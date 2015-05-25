@@ -53,7 +53,6 @@ public class ImageDataUtil
         for (int i=0; i < height; ++i)
             for (int j=0; j < width; ++j)
             {
-//                int index = i * width * depth + j * depth + slice;
                 int index = slice * width * height + j * height + i;
                 array[i][j] = (float)data.GetValue(index);
             }

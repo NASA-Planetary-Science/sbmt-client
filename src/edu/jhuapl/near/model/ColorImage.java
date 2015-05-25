@@ -31,6 +31,9 @@ public class ColorImage extends Model implements PropertyChangeListener
     private PerspectiveImage redImage;
     private PerspectiveImage greenImage;
     private PerspectiveImage blueImage;
+    private int redImageSlice;
+    private int greenImageSlice;
+    private int blueImageSlice;
     private vtkImageData colorImage;
     private vtkPolyData footprint;
     private vtkPolyData shiftedFootprint;
@@ -109,6 +112,10 @@ public class ColorImage extends Model implements PropertyChangeListener
         greenImage = createImage(colorKey.greenImageKey, smallBodyModel, modelManager);
         blueImage = createImage(colorKey.blueImageKey, smallBodyModel, modelManager);
 
+        redImageSlice = colorKey.redImageKey.slice;
+        greenImageSlice = colorKey.greenImageKey.slice;
+        blueImageSlice = colorKey.blueImageKey.slice;
+
         redPixelData = ImageDataUtil.vtkImageDataToArray2D(redImage.getRawImage(), colorKey.redImageKey.slice);
         greenPixelData = ImageDataUtil.vtkImageDataToArray2D(greenImage.getRawImage(), colorKey.greenImageKey.slice);
         bluePixelData = ImageDataUtil.vtkImageDataToArray2D(blueImage.getRawImage(), colorKey.blueImageKey.slice);
@@ -136,9 +143,9 @@ public class ColorImage extends Model implements PropertyChangeListener
 
     private void computeFootprintAndColorImage() throws NoOverlapException
     {
-        Frustum redFrustum = redImage.getFrustum();
-        Frustum greenFrustum = greenImage.getFrustum();
-        Frustum blueFrustum = blueImage.getFrustum();
+        Frustum redFrustum = redImage.getFrustum(redImageSlice);
+        Frustum greenFrustum = greenImage.getFrustum(greenImageSlice);
+        Frustum blueFrustum = blueImage.getFrustum(blueImageSlice);
 
         double[] redRange = redImage.getRawImage().GetScalarRange();
         double[] greenRange = greenImage.getRawImage().GetScalarRange();
