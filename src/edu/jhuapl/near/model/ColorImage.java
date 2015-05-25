@@ -147,9 +147,12 @@ public class ColorImage extends Model implements PropertyChangeListener
         Frustum greenFrustum = greenImage.getFrustum(greenImageSlice);
         Frustum blueFrustum = blueImage.getFrustum(blueImageSlice);
 
-        double[] redRange = redImage.getRawImage().GetScalarRange();
-        double[] greenRange = greenImage.getRawImage().GetScalarRange();
-        double[] blueRange = blueImage.getRawImage().GetScalarRange();
+        double[] redRange = redImage.getScalarRange(redImageSlice);
+        double[] greenRange = greenImage.getScalarRange(greenImageSlice);
+        double[] blueRange = blueImage.getScalarRange(blueImageSlice);
+//        double[] redRange = redImage.getRawImage().GetScalarRange();
+//        double[] greenRange = greenImage.getRawImage().GetScalarRange();
+//        double[] blueRange = blueImage.getRawImage().GetScalarRange();
 //        double redScalarExtent = redRange[1] - redRange[0];
 //        double greenScalarExtent = greenRange[1] - greenRange[0];
 //        double blueScalarExtent = blueRange[1] - blueRange[0];

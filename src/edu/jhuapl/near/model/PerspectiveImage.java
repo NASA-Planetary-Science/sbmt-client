@@ -114,6 +114,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
     private float[] minValue = new float[1];
     private float[] maxValue = new float[1];
+
     private int[] currentMask = new int[4];
 
     private IntensityRange displayedRange = new IntensityRange(1,0);
@@ -233,6 +234,12 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     public void setMaxValue(float maxValue)
     {
         this.maxValue[currentSlice] = maxValue;
+    }
+
+    public double[] getScalarRange(int slice)
+    {
+        double[] result = { minValue[slice], maxValue[slice] };
+        return result;
     }
 
     protected int getNumberBands()
