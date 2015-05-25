@@ -128,6 +128,8 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     private double[][] boresightDirection = new double[1][3];
     private double[][] upVector = new double[1][3];
 
+    private Frustum[] frusta = new Frustum[1];
+
     private boolean showFrustum = false;
 
     private String startTime = "";
@@ -1166,6 +1168,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
             sunVector = new double[nslices][3];
             boresightDirection = new double[nslices][3];
             upVector = new double[nslices][3];
+            frusta = new Frustum[nslices];
         }
 
         boolean pad = nfiles > 1;
@@ -2351,12 +2354,16 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
     public Frustum getFrustum()
     {
-        return new Frustum(spacecraftPosition[currentSlice], frustum1[currentSlice], frustum3[currentSlice], frustum4[currentSlice], frustum2[currentSlice]);
+        if (frusta[currentSlice] == null)
+            frusta[currentSlice] = new Frustum(spacecraftPosition[currentSlice], frustum1[currentSlice], frustum3[currentSlice], frustum4[currentSlice], frustum2[currentSlice]);
+        return frusta[currentSlice];
     }
 
     public Frustum getFrustum(int slice)
     {
-        return new Frustum(spacecraftPosition[slice], frustum1[slice], frustum3[slice], frustum4[slice], frustum2[slice]);
+        if (frusta[slice] == null)
+            frusta[slice] = new Frustum(spacecraftPosition[slice], frustum1[slice], frustum3[slice], frustum4[slice], frustum2[slice]);
+        return frusta[slice];
     }
 
     /**
