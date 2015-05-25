@@ -84,8 +84,9 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     private int currentSlice = 0;
     private String currentBand = "0";
 
-    private vtkPolyData footprint;
-    private vtkPolyData shiftedFootprint;
+    private vtkPolyData[] footprint = new vtkPolyData[1];
+    private vtkPolyData[] shiftedFootprint = new vtkPolyData[1];
+
     private vtkActor footprintActor;
     private ArrayList<vtkProp> footprintActors = new ArrayList<vtkProp>();
 
@@ -181,6 +182,8 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         this.currentSlice = currentSlice;
         this.smallBodyModel = smallBodyModel;
         this.offset = getDefaultOffset();
+        footprint[0] = new vtkPolyData();
+        shiftedFootprint[0] = new vtkPolyData();
 
         if (!loadPointingOnly)
         {
@@ -298,6 +301,9 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 //                        sunVector = new double[numberExposures][3];
 //                        boresightDirection = new double[numberExposures][3];
 //                        upVector = new double[numberExposures][3];
+//                        frusta = new Frustum[numberExposures];
+//                        footprint = new vtkPolyData[numberExposures];
+//                        shiftedFootprint = new vtkPolyData[numberExposures];
 //                    }
 //                }
                 // For backwards compatibility with MSI images we use the endsWith function
@@ -859,8 +865,8 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
         setDisplayedImageRange(new IntensityRange(0, 255));
 
-        footprint = new vtkPolyData();
-        shiftedFootprint = new vtkPolyData();
+        footprint[0] = new vtkPolyData();
+        shiftedFootprint[0] = new vtkPolyData();
         textureCoords = new vtkFloatArray();
         normalsFilter = new vtkPolyDataNormals();
     }
@@ -944,7 +950,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
             imageTexture.SetInput(displayedImage);
 
             vtkPolyDataMapper footprintMapper = new vtkPolyDataMapper();
-            footprintMapper.SetInput(shiftedFootprint);
+            footprintMapper.SetInput(shiftedFootprint[0]);
             footprintMapper.Update();
 
             footprintActor = new vtkActor();
@@ -1765,11 +1771,11 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
             tmp.GetCellData().SetScalars(null);
             tmp.GetPointData().SetScalars(null);
 
-            footprint.DeepCopy(tmp);
+            footprint[0].DeepCopy(tmp);
 
-            vtkPointData pointData = footprint.GetPointData();
+            vtkPointData pointData = footprint[0].GetPointData();
             pointData.SetTCoords(textureCoords);
-            PolyDataUtil.generateTextureCoordinates(getFrustum(), getImageWidth(), getImageHeight(), footprint);
+            PolyDataUtil.generateTextureCoordinates(getFrustum(), getImageWidth(), getImageHeight(), footprint[0]);
             pointData.Delete();
         }
         else
@@ -1797,12 +1803,12 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
             footprintReader.Update();
 
             vtkPolyData footprintReaderOutput = footprintReader.GetOutput();
-            footprint.DeepCopy(footprintReaderOutput);
+            footprint[0].DeepCopy(footprintReaderOutput);
         }
 
 
-        shiftedFootprint.DeepCopy(footprint);
-        PolyDataUtil.shiftPolyDataInNormalDirection(shiftedFootprint, offset);
+        shiftedFootprint[0].DeepCopy(footprint[0]);
+        PolyDataUtil.shiftPolyDataInNormalDirection(shiftedFootprint[0], offset);
 
         footprintGenerated = true;
     }
@@ -1811,11 +1817,11 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     {
         loadFootprint();
 
-        if (footprint.GetNumberOfPoints() == 0)
+        if (footprint[0].GetNumberOfPoints() == 0)
             return null;
 
         vtkFeatureEdges edgeExtracter = new vtkFeatureEdges();
-        edgeExtracter.SetInput(footprint);
+        edgeExtracter.SetInput(footprint[0]);
         edgeExtracter.BoundaryEdgesOn();
         edgeExtracter.FeatureEdgesOff();
         edgeExtracter.NonManifoldEdgesOff();
@@ -1878,14 +1884,14 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     {
         if (normalsGenerated == false)
         {
-            normalsFilter.SetInput(footprint);
+            normalsFilter.SetInput(footprint[0]);
             normalsFilter.SetComputeCellNormals(1);
             normalsFilter.SetComputePointNormals(0);
             normalsFilter.SplittingOff();
             normalsFilter.Update();
 
             vtkPolyData normalsFilterOutput = normalsFilter.GetOutput();
-            footprint.DeepCopy(normalsFilterOutput);
+            footprint[0].DeepCopy(normalsFilterOutput);
             normalsGenerated = true;
         }
     }
@@ -1920,10 +1926,10 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
         computeCellNormals();
 
-        int numberOfCells = footprint.GetNumberOfCells();
+        int numberOfCells = footprint[0].GetNumberOfCells();
 
-        vtkPoints points = footprint.GetPoints();
-        vtkCellData footprintCellData = footprint.GetCellData();
+        vtkPoints points = footprint[0].GetPoints();
+        vtkCellData footprintCellData = footprint[0].GetCellData();
         vtkDataArray normals = footprintCellData.GetNormals();
 
         this.minEmission  =  Double.MAX_VALUE;
@@ -1935,7 +1941,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
         for (int i=0; i<numberOfCells; ++i)
         {
-            vtkCell cell = footprint.GetCell(i);
+            vtkCell cell = footprint[0].GetCell(i);
             double[] pt0 = points.GetPoint( cell.GetPointId(0) );
             double[] pt1 = points.GetPoint( cell.GetPointId(1) );
             double[] pt2 = points.GetPoint( cell.GetPointId(2) );
@@ -1977,9 +1983,9 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         if (footprintGenerated == false)
             loadFootprint();
 
-        int numberOfPoints = footprint.GetNumberOfPoints();
+        int numberOfPoints = footprint[0].GetNumberOfPoints();
 
-        vtkPoints points = footprint.GetPoints();
+        vtkPoints points = footprint[0].GetPoints();
 
         minHorizontalPixelScale = Double.MAX_VALUE;
         maxHorizontalPixelScale = -Double.MAX_VALUE;
@@ -2262,7 +2268,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
      */
     public vtkPolyData getShiftedFootprint()
     {
-        return shiftedFootprint;
+        return shiftedFootprint[0];
     }
 
     /**
@@ -2272,15 +2278,19 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
      */
     public vtkPolyData getUnshiftedFootprint()
     {
-        return footprint;
+       return footprint[0];
     }
 
     public void Delete()
     {
         displayedImage.Delete();
         rawImage.Delete();
-        footprint.Delete();
-        shiftedFootprint.Delete();
+        for (int i=0; i<imageDepth; i++)
+        {
+            footprint[i].Delete();
+            shiftedFootprint[i].Delete();
+        }
+
         textureCoords.Delete();
         normalsFilter.Delete();
         maskSource.Delete();
@@ -2304,9 +2314,9 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
         if (cellId < 0)
         {
-            BoundingBox bb = new BoundingBox(footprint.GetBounds());
+            BoundingBox bb = new BoundingBox(footprint[0].GetBounds());
             double[] centerPoint = bb.getCenterPoint();
-            //double[] centerPoint = footprint.GetPoint(0);
+            //double[] centerPoint = footprint[0].GetPoint(0);
             double distanceToCenter = MathUtil.distanceBetween(spacecraftPosition, centerPoint);
 
             focalPoint[0] = spacecraftPosition[0] + distanceToCenter*direction[0];
@@ -2500,8 +2510,8 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     {
         this.offset = offset;
 
-        shiftedFootprint.DeepCopy(footprint);
-        PolyDataUtil.shiftPolyDataInNormalDirection(shiftedFootprint, offset);
+        shiftedFootprint[0].DeepCopy(footprint[0]);
+        PolyDataUtil.shiftPolyDataInNormalDirection(shiftedFootprint[0], offset);
 
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
@@ -2527,7 +2537,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
      */
     public double getSurfaceArea()
     {
-        return PolyDataUtil.getSurfaceArea(footprint);
+        return PolyDataUtil.getSurfaceArea(footprint[0]);
     }
 
     public double getImageOpacity()
