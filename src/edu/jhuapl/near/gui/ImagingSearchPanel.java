@@ -1926,7 +1926,9 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             String name = new File(image).getName();
             image = image.substring(0,image.length()-4);
             selectedRedKey = createImageKey(image, sourceOfLastQuery, instrument);
-            redLabel.setText(selectedRedKey.band + ":" + name);
+            if (!selectedRedKey.band.equals("0"))
+                name = selectedRedKey.band + ":" + name;
+            redLabel.setText(name);
         }
     }//GEN-LAST:event_redButtonActionPerformed
 
@@ -1940,7 +1942,9 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             image = image.substring(0,image.length()-4);
             greenLabel.setText(name);
             selectedGreenKey = createImageKey(image, sourceOfLastQuery, instrument);
-            greenLabel.setText(selectedGreenKey.band + ":" + name);
+            if (!selectedGreenKey.band.equals("0"))
+                name = selectedGreenKey.band + ":" + name;
+            greenLabel.setText(name);
         }
     }//GEN-LAST:event_greenButtonActionPerformed
 
@@ -1953,9 +1957,10 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             String name = new File(image).getName();
             image = image.substring(0,image.length()-4);
             blueLabel.setText(name);
-//            selectedBlueKey = new ImageKey(image, sourceOfLastQuery, instrument);
             selectedBlueKey = createImageKey(image, sourceOfLastQuery, instrument);
-            blueLabel.setText(selectedBlueKey.band + ":" + name);
+            if (!selectedBlueKey.band.equals("0"))
+                name = selectedBlueKey.band + ":" + name;
+            blueLabel.setText(name);
         }
     }//GEN-LAST:event_blueButtonActionPerformed
 

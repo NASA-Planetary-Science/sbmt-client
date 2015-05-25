@@ -37,6 +37,7 @@ import vtk.vtkTransform;
 import edu.jhuapl.near.model.Image;
 import edu.jhuapl.near.model.ImageCollection;
 import edu.jhuapl.near.model.Model;
+import edu.jhuapl.near.model.PerspectiveImage;
 import edu.jhuapl.near.model.PerspectiveImageBoundaryCollection;
 import edu.jhuapl.near.popupmenus.ImagePopupMenu;
 import edu.jhuapl.near.util.IntensityRange;
@@ -225,6 +226,16 @@ public class ImageInfoPanel extends ModelInfoWindow implements PropertyChangeLis
 
         // Finally make the frame visible
         String name = new File(image.getImageName()).getName();
+        if (image instanceof PerspectiveImage)
+        {
+            PerspectiveImage pimage = (PerspectiveImage)image;
+            int depth = pimage.getImageDepth();
+            if (depth > 1)
+            {
+                String band = pimage.getCurrentBand();
+                name = band + ":" + name;
+            }
+        }
         setTitle("Image " + name + " Properties");
 
         pack();
