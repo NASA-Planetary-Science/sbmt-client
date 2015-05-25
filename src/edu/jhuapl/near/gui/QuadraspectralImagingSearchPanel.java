@@ -166,6 +166,7 @@ public class QuadraspectralImagingSearchPanel extends ImagingSearchPanel impleme
             {
                image.setCurrentSlice(newBandIndex);
                image.setDisplayedImageRange(null);
+//               image.setDisplayedImageRange(image.getDisplayedRange());
                image.loadFootprint();
                image.firePropertyChange();
             }

@@ -136,13 +136,14 @@ public class HyperspectralImagingSearchPanel extends ImagingSearchPanel implemen
                 if (image.isVisible())
                 {
                    image.setCurrentSlice(currentSlice);
+//                   image.setDisplayedImageRange(image.getDisplayedRange());
                    image.setDisplayedImageRange(null);
                    if (!source.getValueIsAdjusting())
-                    {
+                   {
 //                        System.out.println("Recalculate footprint...");
                         image.loadFootprint();
                         image.firePropertyChange();
-                    }
+                   }
                 }
             }
         }

@@ -117,7 +117,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
     private int[] currentMask = new int[4];
 
-    private IntensityRange displayedRange = new IntensityRange(1,0);
+    private IntensityRange[] displayedRange = new IntensityRange[1];
     private double imageOpacity = 1.0;
 
     private double[][] spacecraftPosition = new double[1][3];
@@ -185,6 +185,8 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         this.offset = getDefaultOffset();
         footprint[0] = new vtkPolyData();
         shiftedFootprint[0] = new vtkPolyData();
+        displayedRange[0] = new IntensityRange(1,0);
+
 
         if (!loadPointingOnly)
         {
@@ -871,14 +873,19 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         maskSource.FillBox(leftMask, imageWidth-1-rightMask, bottomMask, imageHeight-1-topMask);
         maskSource.Update();
 
-        setDisplayedImageRange(new IntensityRange(0, 255));
-
         for (int k=0; k<imageDepth; k++)
+        {
             footprint[k] = new vtkPolyData();
+//            displayedRange[k] = new IntensityRange(1,0);
+            displayedRange[k] = new IntensityRange(0,255);
+        }
 
         shiftedFootprint[0] = new vtkPolyData();
         textureCoords = new vtkFloatArray();
         normalsFilter = new vtkPolyDataNormals();
+
+//        setDisplayedImageRange(new IntensityRange(0, 255));
+        setDisplayedImageRange(null);
     }
 
     protected void loadPointing() throws FitsException, IOException
@@ -1081,20 +1088,32 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
     public IntensityRange getDisplayedRange()
     {
-        return displayedRange;
+        return displayedRange[currentSlice];
+    }
+
+    public IntensityRange getDisplayedRange(int slice)
+    {
+        return displayedRange[slice];
+    }
+
+    public void setDisplayedImageRange()
+    {
+         setDisplayedImageRange(displayedRange[currentSlice]);
     }
 
     public void setDisplayedImageRange(IntensityRange range)
     {
-        if (range == null || displayedRange.min != range.min || displayedRange.max != range.max)
+        if (range == null || displayedRange[currentSlice].min != range.min || displayedRange[currentSlice].max != range.max)
         {
-            displayedRange = range != null ? range : new IntensityRange(0, 255);
+//            displayedRange[currentSlice] = range != null ? range : new IntensityRange(0, 255);
+            if (range != null)
+                displayedRange[currentSlice] = range;
 
             float minValue = getMinValue();
             float maxValue = getMaxValue();
             float dx = (maxValue-minValue)/255.0f;
-            float min = minValue + displayedRange.min*dx;
-            float max = minValue + displayedRange.max*dx;
+            float min = minValue + displayedRange[currentSlice].min*dx;
+            float max = minValue + displayedRange[currentSlice].max*dx;
 
             // Update the displayed image
             vtkLookupTable lut = new vtkLookupTable();
@@ -1187,6 +1206,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
             frusta = new Frustum[nslices];
             footprint = new vtkPolyData[nslices];
             footprintGenerated = new boolean[nslices];
+            displayedRange = new IntensityRange[nslices];
         }
 
         boolean pad = nfiles > 1;
