@@ -109,9 +109,9 @@ public class ColorImage extends Model implements PropertyChangeListener
         greenImage = createImage(colorKey.greenImageKey, smallBodyModel, modelManager);
         blueImage = createImage(colorKey.blueImageKey, smallBodyModel, modelManager);
 
-        redPixelData = ImageDataUtil.vtkImageDataToArray2D(redImage.getRawImage());
-        greenPixelData = ImageDataUtil.vtkImageDataToArray2D(greenImage.getRawImage());
-        bluePixelData = ImageDataUtil.vtkImageDataToArray2D(blueImage.getRawImage());
+        redPixelData = ImageDataUtil.vtkImageDataToArray2D(redImage.getRawImage(), colorKey.redImageKey.slice);
+        greenPixelData = ImageDataUtil.vtkImageDataToArray2D(greenImage.getRawImage(), colorKey.greenImageKey.slice);
+        bluePixelData = ImageDataUtil.vtkImageDataToArray2D(blueImage.getRawImage(), colorKey.blueImageKey.slice);
 
         colorImage = new vtkImageData();
         colorImage.SetScalarTypeToUnsignedChar();

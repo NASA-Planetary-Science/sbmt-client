@@ -21,16 +21,41 @@ public class ImageDataUtil
         int[] dims = image.GetDimensions();
         int height = dims[0];
         int width = dims[1];
-//        int depth = image.getCurrentSlice();
         vtkPointData pointdata = image.GetPointData();
         vtkFloatArray data = (vtkFloatArray)pointdata.GetScalars();
-      float[][] array = new float[height][width];
-//      float[][] array = new float[height][width][depth];
+        float[][] array = new float[height][width];
         int count = 0;
         for (int j=0; j < width; ++j)
             for (int i=0; i < height; ++i)
             {
                 array[i][j] = (float)data.GetValue(count++);
+            }
+
+        return array;
+    }
+
+    /**
+     * Version of vtkImageDataToArray2D for image cubes.
+     *
+     * @param image
+     * @param slice
+     * @return
+     */
+    static public float[][] vtkImageDataToArray2D(vtkImageData image, int slice)
+    {
+        int[] dims = image.GetDimensions();
+        int height = dims[0];
+        int width = dims[1];
+        int depth = dims[2];
+        vtkPointData pointdata = image.GetPointData();
+        vtkFloatArray data = (vtkFloatArray)pointdata.GetScalars();
+        float[][] array = new float[height][width];
+        for (int i=0; i < height; ++i)
+            for (int j=0; j < width; ++j)
+            {
+//                int index = i * width * depth + j * depth + slice;
+                int index = slice * width * height + j * height + i;
+                array[i][j] = (float)data.GetValue(index);
             }
 
         return array;
