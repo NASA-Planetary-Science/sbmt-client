@@ -90,9 +90,10 @@ public class HyperspectralImagingSearchPanel extends ImagingSearchPanel implemen
         monoBoundedRangeModel = new DefaultBoundedRangeModel(midband, 0, 0, nbands-1);
         monoSlider = new JSlider(monoBoundedRangeModel);
         monoSlider.addChangeListener(this);
-        bandPanel.add(monoSlider);
+//        bandPanel.add(monoSlider);
 
         panel.add(bandPanel, BorderLayout.WEST);
+        panel.add(monoSlider, BorderLayout.SOUTH);
     }
 
 
