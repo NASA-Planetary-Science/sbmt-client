@@ -41,8 +41,14 @@ public class ImageDataUtil
      * @param slice
      * @return
      */
-    static public float[][] vtkImageDataToArray2D(vtkImageData image, int slice)
+    static public float[][] vtkImageDataToArray2D(vtkImageData image, int slice, float minValue, float maxValue, IntensityRange range)
     {
+        float fullRange = maxValue - minValue;
+        float dx = fullRange / 255.0f;
+        float min = minValue + range.min*dx;
+        float max = minValue + range.max*dx;
+        float stretchRange = max - min;
+
         int[] dims = image.GetDimensions();
         int height = dims[0];
         int width = dims[1];
@@ -53,8 +59,18 @@ public class ImageDataUtil
         for (int i=0; i < height; ++i)
             for (int j=0; j < width; ++j)
             {
+                // calculate index
                 int index = slice * width * height + j * height + i;
-                array[i][j] = (float)data.GetValue(index);
+
+                // stretch image out between min and max
+                float rawValue = (float)data.GetValue(index);
+                if (rawValue < min)
+                    rawValue = min;
+                if (rawValue > max)
+                    rawValue = max;
+                float stretchedValue =  minValue + fullRange * (rawValue - min) / stretchRange;
+
+                array[i][j] = stretchedValue;
             }
 
         return array;

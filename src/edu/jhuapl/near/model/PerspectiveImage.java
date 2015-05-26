@@ -223,6 +223,11 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         return minValue[currentSlice];
     }
 
+    public float getMinValue(int slice)
+    {
+        return minValue[slice];
+    }
+
     public void setMinValue(float minValue)
     {
         this.minValue[currentSlice] = minValue;
@@ -231,6 +236,11 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     public float getMaxValue()
     {
         return maxValue[currentSlice];
+    }
+
+    public float getMaxValue(int slice)
+    {
+        return maxValue[slice];
     }
 
     public void setMaxValue(float maxValue)

@@ -21,6 +21,7 @@ import vtk.vtksbCellLocator;
 import edu.jhuapl.near.model.Image.ImageKey;
 import edu.jhuapl.near.util.Frustum;
 import edu.jhuapl.near.util.ImageDataUtil;
+import edu.jhuapl.near.util.IntensityRange;
 import edu.jhuapl.near.util.MathUtil;
 import edu.jhuapl.near.util.PolyDataUtil;
 import edu.jhuapl.near.util.Properties;
@@ -116,9 +117,24 @@ public class ColorImage extends Model implements PropertyChangeListener
         greenImageSlice = colorKey.greenImageKey.slice;
         blueImageSlice = colorKey.blueImageKey.slice;
 
-        redPixelData = ImageDataUtil.vtkImageDataToArray2D(redImage.getRawImage(), colorKey.redImageKey.slice);
-        greenPixelData = ImageDataUtil.vtkImageDataToArray2D(greenImage.getRawImage(), colorKey.greenImageKey.slice);
-        bluePixelData = ImageDataUtil.vtkImageDataToArray2D(blueImage.getRawImage(), colorKey.blueImageKey.slice);
+        int rslice = colorKey.redImageKey.slice;
+        float rmin = redImage.getMinValue(rslice);
+        float rmax = redImage.getMaxValue(rslice);
+        IntensityRange rrange = redImage.getDisplayedRange(rslice);
+        redPixelData = ImageDataUtil.vtkImageDataToArray2D(redImage.getRawImage(), rslice, rmin, rmax, rrange);
+
+        int gslice = colorKey.greenImageKey.slice;
+        float gmin = greenImage.getMinValue(gslice);
+        float gmax = greenImage.getMaxValue(gslice);
+        IntensityRange grange = greenImage.getDisplayedRange(gslice);
+        greenPixelData = ImageDataUtil.vtkImageDataToArray2D(greenImage.getRawImage(), gslice, gmin, gmax, grange);
+
+
+        int bslice = colorKey.blueImageKey.slice;
+        float bmin = blueImage.getMinValue(bslice);
+        float bmax = blueImage.getMaxValue(bslice);
+        IntensityRange brange = blueImage.getDisplayedRange(bslice);
+        bluePixelData = ImageDataUtil.vtkImageDataToArray2D(blueImage.getRawImage(), bslice, bmin, bmax, brange);
 
         colorImage = new vtkImageData();
         colorImage.SetScalarTypeToUnsignedChar();
