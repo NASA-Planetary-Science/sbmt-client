@@ -305,9 +305,12 @@ public class ColorImage extends Model implements PropertyChangeListener
                             uv[1],
                             uv[0]);
 
-                    colorImage.SetScalarComponentFromFloat(j, i, 0, 0, 255.0 * redValue / redScalarExtent);
-                    colorImage.SetScalarComponentFromFloat(j, i, 0, 1, 255.0 * greenValue / greenScalarExtent);
-                    colorImage.SetScalarComponentFromFloat(j, i, 0, 2, 255.0 * blueValue / blueScalarExtent);
+                    //colorImage.SetScalarComponentFromFloat(j, i, 0, 0, 255.0 * redValue / redScalarExtent);
+                    //colorImage.SetScalarComponentFromFloat(j, i, 0, 1, 255.0 * greenValue / greenScalarExtent);
+                    //colorImage.SetScalarComponentFromFloat(j, i, 0, 2, 255.0 * blueValue / blueScalarExtent);
+                    colorImage.SetScalarComponentFromFloat(j, i, 0, 0, redValue);
+                    colorImage.SetScalarComponentFromFloat(j, i, 0, 1, greenValue);
+                    colorImage.SetScalarComponentFromFloat(j, i, 0, 2, blueValue);
 
 //                    colorImage.SetScalarComponentFromFloat(j, i, 0, 0, 255.0 * redValue / redScalarExtent);
 //                    colorImage.SetScalarComponentFromFloat(j, i, 0, 1, 255.0 * redValue / redScalarExtent);

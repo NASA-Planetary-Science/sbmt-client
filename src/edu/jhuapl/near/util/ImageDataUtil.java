@@ -68,7 +68,7 @@ public class ImageDataUtil
                     rawValue = min;
                 if (rawValue > max)
                     rawValue = max;
-                float stretchedValue =  minValue + fullRange * (rawValue - min) / stretchRange;
+                float stretchedValue =  255.0f * (rawValue - min) / stretchRange;
 
                 array[i][j] = stretchedValue;
             }
