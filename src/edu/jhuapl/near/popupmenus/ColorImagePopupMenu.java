@@ -1,5 +1,6 @@
 package edu.jhuapl.near.popupmenus;
 
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
@@ -7,6 +8,7 @@ import java.io.IOException;
 import javax.swing.AbstractAction;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 
 import nom.tam.fits.FitsException;
 
@@ -14,6 +16,8 @@ import vtk.vtkActor;
 import vtk.vtkProp;
 
 import edu.jhuapl.near.gui.ModelInfoWindowManager;
+import edu.jhuapl.near.gui.NormalOffsetChangerDialog;
+import edu.jhuapl.near.gui.OpacityChanger;
 import edu.jhuapl.near.model.ColorImage;
 import edu.jhuapl.near.model.ColorImage.ColorImageKey;
 import edu.jhuapl.near.model.ColorImage.NoOverlapException;
@@ -23,12 +27,16 @@ import edu.jhuapl.near.model.ModelManager;
 
 public class ColorImagePopupMenu extends PopupMenu
 {
+    private Component invoker;
     private ColorImageCollection imageCollection;
     private ColorImageKey imageKey;
-    private ModelManager modelManager;
+    //private ModelManager modelManager;
     private JMenuItem showRemoveImageIn3DMenuItem;
     private JMenuItem showImageInfoMenuItem;
-//    private ModelInfoWindowManager infoPanelManager;
+    private JMenuItem changeNormalOffsetMenuItem;
+    private JMenuItem changeOpacityMenuItem;
+    private JMenuItem hideImageMenuItem;
+    private ModelInfoWindowManager infoPanelManager;
 
     /**
      *
@@ -40,23 +48,36 @@ public class ColorImagePopupMenu extends PopupMenu
     public ColorImagePopupMenu(
             ColorImageCollection imageCollection,
             ModelInfoWindowManager infoPanelManager,
-            ModelManager modelManager)
+            ModelManager modelManager,
+            Component invoker)
     {
         this.imageCollection = imageCollection;
-//        this.infoPanelManager = infoPanelManager;
-        this.modelManager = modelManager;
+        this.infoPanelManager = infoPanelManager;
+        //this.modelManager = modelManager;
+        this.invoker = invoker;
 
         showRemoveImageIn3DMenuItem = new JCheckBoxMenuItem(new ShowRemoveIn3DAction());
-        showRemoveImageIn3DMenuItem.setText("Show Color Image");
+        showRemoveImageIn3DMenuItem.setText("Map Color Image");
         this.add(showRemoveImageIn3DMenuItem);
 
-//        if (this.infoPanelManager != null)
-//        {
-//            showImageInfoMenuItem = new JMenuItem(new ShowInfoAction());
-//            showImageInfoMenuItem.setText("Properties...");
-//            this.add(showImageInfoMenuItem);
-//        }
+        if (this.infoPanelManager != null)
+        {
+            showImageInfoMenuItem = new JMenuItem(new ShowInfoAction());
+            showImageInfoMenuItem.setText("Properties...");
+            this.add(showImageInfoMenuItem);
+        }
 
+        changeNormalOffsetMenuItem = new JMenuItem(new ChangeNormalOffsetAction());
+        changeNormalOffsetMenuItem.setText("Change Normal Offset...");
+        this.add(changeNormalOffsetMenuItem);
+
+        changeOpacityMenuItem = new JMenuItem(new ChangeOpacityAction());
+        changeOpacityMenuItem.setText("Change Opacity...");
+        this.add(changeOpacityMenuItem);
+
+        hideImageMenuItem = new JCheckBoxMenuItem(new HideImageAction());
+        hideImageMenuItem.setText("Hide Image");
+        this.add(hideImageMenuItem);
     }
 
     public void setCurrentImage(ColorImageKey key)
@@ -74,6 +95,17 @@ public class ColorImagePopupMenu extends PopupMenu
 
         if (showImageInfoMenuItem != null)
             showImageInfoMenuItem.setEnabled(containsImage);
+
+        changeNormalOffsetMenuItem.setEnabled(containsImage);
+        changeOpacityMenuItem.setEnabled(containsImage);
+        hideImageMenuItem.setEnabled(containsImage);
+
+        ColorImage image = imageCollection.getImage(imageKey);
+        if (image != null)
+        {
+            boolean selectHideImage = !image.isVisible();
+            hideImageMenuItem.setSelected(selectHideImage);
+        }
     }
 
 
@@ -102,27 +134,73 @@ public class ColorImagePopupMenu extends PopupMenu
         }
     }
 
-//    private class ShowInfoAction extends AbstractAction
-//    {
-//        public void actionPerformed(ActionEvent e)
-//        {
-//            try
-//            {
-//                imageCollection.addImage(imageKey);
-//                infoPanelManager.addData(imageCollection.getImage(imageKey));
-//
-//                updateMenuItems();
-//            }
-//            catch (FitsException e1) {
-//                e1.printStackTrace();
-//            } catch (IOException e1) {
-//                e1.printStackTrace();
-//            } catch (Exception e1) {
-//                e1.printStackTrace();
-//            }
-//        }
-//    }
+    private class ShowInfoAction extends AbstractAction
+    {
+        public void actionPerformed(ActionEvent e)
+        {
+            try
+            {
+                imageCollection.addImage(imageKey);
+                infoPanelManager.addData(imageCollection.getImage(imageKey));
 
+                updateMenuItems();
+            }
+            catch (FitsException e1) {
+                e1.printStackTrace();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            } catch (Exception e1) {
+                e1.printStackTrace();
+            }
+        }
+    }
+
+    private class ChangeNormalOffsetAction extends AbstractAction
+    {
+        public void actionPerformed(ActionEvent e)
+        {
+            ColorImage image = imageCollection.getImage(imageKey);
+            if (image != null)
+            {
+                NormalOffsetChangerDialog changeOffsetDialog = new NormalOffsetChangerDialog(image);
+                changeOffsetDialog.setLocationRelativeTo(JOptionPane.getFrameForComponent(invoker));
+                changeOffsetDialog.setVisible(true);
+            }
+        }
+    }
+
+    private class ChangeOpacityAction extends AbstractAction
+    {
+        public void actionPerformed(ActionEvent e)
+        {
+            ColorImage image = imageCollection.getImage(imageKey);
+            if (image != null)
+            {
+                OpacityChanger opacityChanger = new OpacityChanger(image);
+                opacityChanger.setLocationRelativeTo(JOptionPane.getFrameForComponent(invoker));
+                opacityChanger.setVisible(true);
+            }
+        }
+    }
+
+    private class HideImageAction extends AbstractAction
+    {
+        public void actionPerformed(ActionEvent e)
+        {
+            try
+            {
+                imageCollection.addImage(imageKey);
+                ColorImage image = imageCollection.getImage(imageKey);
+                image.setVisible(!hideImageMenuItem.isSelected());
+            }
+            catch (Exception ex)
+            {
+                ex.printStackTrace();
+            }
+
+            updateMenuItems();
+        }
+    }
 
     public void showPopup(MouseEvent e, vtkProp pickedProp, int pickedCellId,
             double[] pickedPosition)

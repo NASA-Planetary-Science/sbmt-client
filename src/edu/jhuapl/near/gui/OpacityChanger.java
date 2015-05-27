@@ -17,30 +17,30 @@ import javax.swing.event.ChangeListener;
 
 import net.miginfocom.swing.MigLayout;
 
-import edu.jhuapl.near.model.Image;
+import edu.jhuapl.near.model.Model;
 
 public class OpacityChanger extends JDialog implements ChangeListener
 {
     private JLabel opacityLabel;
-    private JSpinner imageMapOpacitySpinner;
+    private JSpinner opacitySpinner;
     private JButton btnNewButton;
-    private Image image;
+    private Model model;
 
-    public OpacityChanger(Image image)
+    public OpacityChanger(Model model)
     {
-        this.image = image;
+        this.model = model;
 
         opacityLabel = new JLabel("Opacity");
-        imageMapOpacitySpinner = new JSpinner(new SpinnerNumberModel(image.getImageOpacity(), 0.0, 1.0, 0.1));
-        imageMapOpacitySpinner.setEditor(new JSpinner.NumberEditor(imageMapOpacitySpinner, "0.00"));
-        imageMapOpacitySpinner.setPreferredSize(new Dimension(80, 21));
-        imageMapOpacitySpinner.addChangeListener(this);
+        opacitySpinner = new JSpinner(new SpinnerNumberModel(model.getOpacity(), 0.0, 1.0, 0.1));
+        opacitySpinner.setEditor(new JSpinner.NumberEditor(opacitySpinner, "0.00"));
+        opacitySpinner.setPreferredSize(new Dimension(80, 21));
+        opacitySpinner.addChangeListener(this);
 
         JPanel panel = new JPanel();
         panel.setLayout(new MigLayout("", "[]", "[][][]"));
 
         panel.add(opacityLabel, "cell 0 0");
-        panel.add(imageMapOpacitySpinner, "cell 0 0");
+        panel.add(opacitySpinner, "cell 0 0");
 
         setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
 
@@ -60,8 +60,8 @@ public class OpacityChanger extends JDialog implements ChangeListener
 
     public void stateChanged(ChangeEvent e)
     {
-        double val = (Double)imageMapOpacitySpinner.getValue();
-        image.setImageOpacity(val);
+        double val = (Double)opacitySpinner.getValue();
+        model.setOpacity(val);
     }
 
 }

@@ -203,9 +203,6 @@ public abstract class Image extends Model implements PropertyChangeListener
     abstract public LinkedHashMap<String, String> getProperties() throws IOException;
     abstract public void setDisplayedImageRange(IntensityRange range);
 
-    abstract public double getImageOpacity();
-    abstract public void setImageOpacity(double imageOpacity);
-
 
     public void setInterpolate(boolean enable)
     {

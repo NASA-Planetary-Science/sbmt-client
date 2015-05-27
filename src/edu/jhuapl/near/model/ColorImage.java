@@ -44,6 +44,11 @@ public class ColorImage extends Model implements PropertyChangeListener
     private float[][] greenPixelData;
     private float[][] bluePixelData;
     private ColorImageKey colorKey;
+    private IntensityRange redIntensityRange = new IntensityRange(0, 255);
+    private IntensityRange greenIntensityRange = new IntensityRange(0, 255);
+    private IntensityRange blueIntensityRange = new IntensityRange(0, 255);
+    private double offset;
+    private double imageOpacity = 1.0;
 
     static public class NoOverlapException extends Exception
     {
@@ -109,6 +114,8 @@ public class ColorImage extends Model implements PropertyChangeListener
         this.colorKey = key;
         this.smallBodyModel = smallBodyModel;
 
+        this.offset = getDefaultOffset();
+
         redImage = createImage(colorKey.redImageKey, smallBodyModel, modelManager);
         greenImage = createImage(colorKey.greenImageKey, smallBodyModel, modelManager);
         blueImage = createImage(colorKey.blueImageKey, smallBodyModel, modelManager);
@@ -118,23 +125,13 @@ public class ColorImage extends Model implements PropertyChangeListener
         blueImageSlice = colorKey.blueImageKey.slice;
 
         int rslice = colorKey.redImageKey.slice;
-        float rmin = redImage.getMinValue(rslice);
-        float rmax = redImage.getMaxValue(rslice);
-        IntensityRange rrange = redImage.getDisplayedRange(rslice);
-        redPixelData = ImageDataUtil.vtkImageDataToArray2D(redImage.getRawImage(), rslice, rmin, rmax, rrange);
+        redPixelData = ImageDataUtil.vtkImageDataToArray2D(redImage.getRawImage(), rslice);
 
         int gslice = colorKey.greenImageKey.slice;
-        float gmin = greenImage.getMinValue(gslice);
-        float gmax = greenImage.getMaxValue(gslice);
-        IntensityRange grange = greenImage.getDisplayedRange(gslice);
-        greenPixelData = ImageDataUtil.vtkImageDataToArray2D(greenImage.getRawImage(), gslice, gmin, gmax, grange);
-
+        greenPixelData = ImageDataUtil.vtkImageDataToArray2D(greenImage.getRawImage(), gslice);
 
         int bslice = colorKey.blueImageKey.slice;
-        float bmin = blueImage.getMinValue(bslice);
-        float bmax = blueImage.getMaxValue(bslice);
-        IntensityRange brange = blueImage.getDisplayedRange(bslice);
-        bluePixelData = ImageDataUtil.vtkImageDataToArray2D(blueImage.getRawImage(), bslice, bmin, bmax, brange);
+        bluePixelData = ImageDataUtil.vtkImageDataToArray2D(blueImage.getRawImage(), bslice);
 
         colorImage = new vtkImageData();
         colorImage.SetScalarTypeToUnsignedChar();
@@ -166,12 +163,24 @@ public class ColorImage extends Model implements PropertyChangeListener
         double[] redRange = redImage.getScalarRange(redImageSlice);
         double[] greenRange = greenImage.getScalarRange(greenImageSlice);
         double[] blueRange = blueImage.getScalarRange(blueImageSlice);
-//        double redScalarExtent = redRange[1] - redRange[0];
-//        double greenScalarExtent = greenRange[1] - greenRange[0];
-//        double blueScalarExtent = blueRange[1] - blueRange[0];
-        double redScalarExtent = redRange[1] - 0.0;
-        double greenScalarExtent = greenRange[1] - 0.0;
-        double blueScalarExtent = blueRange[1] - 0.0;
+
+        double redfullRange = redRange[1] - redRange[0];
+        double reddx = redfullRange / 255.0f;
+        double redmin = redRange[0] + redIntensityRange.min*reddx;
+        double redmax = redRange[0] + redIntensityRange.max*reddx;
+        double redstretchRange = redmax - redmin;
+
+        double greenfullRange = greenRange[1] - greenRange[0];
+        double greendx = greenfullRange / 255.0f;
+        double greenmin = greenRange[0] + greenIntensityRange.min*greendx;
+        double greenmax = greenRange[0] + greenIntensityRange.max*greendx;
+        double greenstretchRange = greenmax - greenmin;
+
+        double bluefullRange = blueRange[1] - blueRange[0];
+        double bluedx = bluefullRange / 255.0f;
+        double bluemin = blueRange[0] + blueIntensityRange.min*bluedx;
+        double bluemax = blueRange[0] + blueIntensityRange.max*bluedx;
+        double bluestretchRange = bluemax - bluemin;
 
         ArrayList<Frustum> frustums = new ArrayList<Frustum>();
         frustums.add(redFrustum);
@@ -194,7 +203,7 @@ public class ColorImage extends Model implements PropertyChangeListener
         PolyDataUtil.generateTextureCoordinates(redFrustum, IMAGE_WIDTH, IMAGE_HEIGHT, footprint);
 
         shiftedFootprint.DeepCopy(footprint);
-        PolyDataUtil.shiftPolyDataInNormalDirection(shiftedFootprint, 2.0*smallBodyModel.getMinShiftAmount());
+        PolyDataUtil.shiftPolyDataInNormalDirection(shiftedFootprint, offset);
 
         // Now compute a color image with each channel one of these images.
         // To do that go through each pixel of the red image, and intersect a ray into the asteroid in
@@ -285,12 +294,12 @@ public class ColorImage extends Model implements PropertyChangeListener
 
                 if (result > 0)
                 {
-                    float redValue = redPixelData[j][i];
+                    double redValue = redPixelData[j][i];
 
                     double[] uv = new double[2];
 
                     greenFrustum.computeTextureCoordinates(x, IMAGE_WIDTH, IMAGE_HEIGHT, uv);
-                    float greenValue = ImageDataUtil.interpolateWithinImage(
+                    double greenValue = ImageDataUtil.interpolateWithinImage(
                             greenPixelData,
                             IMAGE_WIDTH,
                             IMAGE_HEIGHT,
@@ -298,33 +307,36 @@ public class ColorImage extends Model implements PropertyChangeListener
                             uv[0]);
 
                     blueFrustum.computeTextureCoordinates(x, IMAGE_WIDTH, IMAGE_HEIGHT, uv);
-                    float blueValue = ImageDataUtil.interpolateWithinImage(
+                    double blueValue = ImageDataUtil.interpolateWithinImage(
                             bluePixelData,
                             IMAGE_WIDTH,
                             IMAGE_HEIGHT,
                             uv[1],
                             uv[0]);
 
-                    //colorImage.SetScalarComponentFromFloat(j, i, 0, 0, 255.0 * redValue / redScalarExtent);
-                    //colorImage.SetScalarComponentFromFloat(j, i, 0, 1, 255.0 * greenValue / greenScalarExtent);
-                    //colorImage.SetScalarComponentFromFloat(j, i, 0, 2, 255.0 * blueValue / blueScalarExtent);
-                    colorImage.SetScalarComponentFromFloat(j, i, 0, 0, redValue);
-                    colorImage.SetScalarComponentFromFloat(j, i, 0, 1, greenValue);
-                    colorImage.SetScalarComponentFromFloat(j, i, 0, 2, blueValue);
+                    if (redValue < redmin)
+                        redValue = redmin;
+                    if (redValue > redmax)
+                        redValue = redmax;
 
-//                    colorImage.SetScalarComponentFromFloat(j, i, 0, 0, 255.0 * redValue / redScalarExtent);
-//                    colorImage.SetScalarComponentFromFloat(j, i, 0, 1, 255.0 * redValue / redScalarExtent);
-//                    colorImage.SetScalarComponentFromFloat(j, i, 0, 2, 255.0 * redValue / redScalarExtent);
-//                    colorImage.SetScalarComponentFromFloat(j, i, 0, 0, 255.0 * greenValue / greenScalarExtent);
-//                    colorImage.SetScalarComponentFromFloat(j, i, 0, 1, 255.0 * greenValue / greenScalarExtent);
-//                    colorImage.SetScalarComponentFromFloat(j, i, 0, 2, 255.0 * greenValue / greenScalarExtent);
-//                    colorImage.SetScalarComponentFromFloat(j, i, 0, 0, 255.0 * blueValue / blueScalarExtent);
-//                    colorImage.SetScalarComponentFromFloat(j, i, 0, 1, 255.0 * blueValue / blueScalarExtent);
-//                    colorImage.SetScalarComponentFromFloat(j, i, 0, 2, 255.0 * blueValue / blueScalarExtent);
+                    if (greenValue < greenmin)
+                        greenValue = greenmin;
+                    if (greenValue > greenmax)
+                        greenValue = greenmax;
 
+                    if (blueValue < bluemin)
+                        blueValue = bluemin;
+                    if (blueValue > bluemax)
+                        blueValue = bluemax;
+
+                    colorImage.SetScalarComponentFromFloat(j, i, 0, 0, 255.0 * (redValue - redmin) / redstretchRange);
+                    colorImage.SetScalarComponentFromFloat(j, i, 0, 1, 255.0 * (greenValue - greenmin) / greenstretchRange);
+                    colorImage.SetScalarComponentFromFloat(j, i, 0, 2, 255.0 * (blueValue - bluemin) / bluestretchRange);
                 }
             }
         }
+
+        colorImage.Modified();
     }
 
     @Override
@@ -373,6 +385,77 @@ public class ColorImage extends Model implements PropertyChangeListener
                 e.printStackTrace();
             }
         }
+    }
+
+    public PerspectiveImage getRedImage()
+    {
+        return redImage;
+    }
+
+    public PerspectiveImage getGreenImage()
+    {
+        return greenImage;
+    }
+
+    public PerspectiveImage getBlueImage()
+    {
+        return blueImage;
+    }
+
+    public void setDisplayedImageRange(IntensityRange redRange, IntensityRange greenRange, IntensityRange blueRange)
+    {
+        try
+        {
+            redIntensityRange = redRange;
+            greenIntensityRange = greenRange;
+            blueIntensityRange = blueRange;
+            computeFootprintAndColorImage();
+
+            this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+        }
+        catch (NoOverlapException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public double getOpacity()
+    {
+        return imageOpacity;
+    }
+
+    public void setOpacity(double imageOpacity)
+    {
+        this.imageOpacity  = imageOpacity;
+        vtkProperty smallBodyProperty = footprintActor.GetProperty();
+        smallBodyProperty.SetOpacity(imageOpacity);
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+    }
+
+    public void setVisible(boolean b)
+    {
+        footprintActor.SetVisibility(b ? 1 : 0);
+        super.setVisible(b);
+    }
+
+    public double getDefaultOffset()
+    {
+        return 4.0*smallBodyModel.getMinShiftAmount();
+    }
+
+    public void setOffset(double offset)
+    {
+        this.offset = offset;
+
+        shiftedFootprint.DeepCopy(footprint);
+        PolyDataUtil.shiftPolyDataInNormalDirection(shiftedFootprint, offset);
+
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+    }
+
+    public double getOffset()
+    {
+        return offset;
     }
 
 }

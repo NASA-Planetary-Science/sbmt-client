@@ -100,6 +100,17 @@ public abstract class Model
         return "";
     }
 
+    public void setOpacity(double opacity)
+    {
+        // Do nothing. Subclasses should redefine this if they support opacity.
+    }
+
+    public double getOpacity()
+    {
+        // Subclasses should redefine this if they support opacity.
+        return 1.0;
+    }
+
     /**
      * Some models have vertex values that overlap the SmallBodyModel and are thus obscured.
      * In these cases it may be helpful to shift the vertices slightly away from the shape model

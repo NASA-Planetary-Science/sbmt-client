@@ -2585,12 +2585,12 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         return PolyDataUtil.getSurfaceArea(footprint[currentSlice]);
     }
 
-    public double getImageOpacity()
+    public double getOpacity()
     {
         return imageOpacity;
     }
 
-    public void setImageOpacity(double imageOpacity)
+    public void setOpacity(double imageOpacity)
     {
         this.imageOpacity = imageOpacity;
         vtkProperty smallBodyProperty = footprintActor.GetProperty();

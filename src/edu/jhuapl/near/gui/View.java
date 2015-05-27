@@ -316,7 +316,7 @@ public class View extends JPanel
                 PopupMenu popupMenu = new ImagePopupMenu(images, boundaries, infoPanelManager, renderer, renderer);
                 popupManager.registerPopup(modelManager.getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES), popupMenu);
 
-                popupMenu = new ColorImagePopupMenu(colorImages, infoPanelManager, modelManager);
+                popupMenu = new ColorImagePopupMenu(colorImages, infoPanelManager, modelManager, renderer);
                 popupManager.registerPopup(modelManager.getModel(ModelNames.COLOR_IMAGES), popupMenu);
             }
 
@@ -329,7 +329,7 @@ public class View extends JPanel
                 PopupMenu popupMenu = new ImagePopupMenu(images, boundaries, infoPanelManager, renderer, renderer);
                 popupManager.registerPopup(modelManager.getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES), popupMenu);
 
-                popupMenu = new ColorImagePopupMenu(colorImages, infoPanelManager, modelManager);
+                popupMenu = new ColorImagePopupMenu(colorImages, infoPanelManager, modelManager, renderer);
                 popupManager.registerPopup(modelManager.getModel(ModelNames.COLOR_IMAGES), popupMenu);
             }
             else if (instrument.spectralMode == SpectralMode.HYPER)
@@ -341,7 +341,7 @@ public class View extends JPanel
                 PopupMenu popupMenu = new ImagePopupMenu(images, boundaries, infoPanelManager, renderer, renderer);
                 popupManager.registerPopup(modelManager.getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES), popupMenu);
 
-                popupMenu = new ColorImagePopupMenu(colorImages, infoPanelManager, modelManager);
+                popupMenu = new ColorImagePopupMenu(colorImages, infoPanelManager, modelManager, renderer);
                 popupManager.registerPopup(modelManager.getModel(ModelNames.COLOR_IMAGES), popupMenu);
             }
             }

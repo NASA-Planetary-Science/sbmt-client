@@ -7,6 +7,8 @@ import java.beans.PropertyChangeListener;
 import java.util.HashMap;
 
 import edu.jhuapl.near.gui.eros.NISSpectrumInfoPanel;
+import edu.jhuapl.near.model.ColorImage;
+import edu.jhuapl.near.model.ColorImageCollection;
 import edu.jhuapl.near.model.Image;
 import edu.jhuapl.near.model.ImageCollection;
 import edu.jhuapl.near.model.Model;
@@ -83,6 +85,11 @@ public class ModelInfoWindowManager implements PropertyChangeListener
             ImageCollection images = (ImageCollection)modelManager.getModel(ModelNames.IMAGES);
             PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES);
             return new ImageInfoPanel((Image)model, images, boundaries);
+        }
+        else if (model instanceof ColorImage)
+        {
+            ColorImageCollection images = (ColorImageCollection)modelManager.getModel(ModelNames.COLOR_IMAGES);
+            return new ColorImageInfoPanel((ColorImage)model, images);
         }
         else if (model instanceof NISSpectrum)
         {
