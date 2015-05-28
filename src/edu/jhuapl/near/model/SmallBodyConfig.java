@@ -1302,6 +1302,7 @@ public class SmallBodyConfig
             c.population = ShapeModelPopulation.NEO;
             c.dataUsed = ShapeModelDataUsed.ENHANCED;
             c.author = ShapeModelAuthor.GASKELL;
+            c.version = "V2";
             c.pathOnServer = "/GASKELL/RQ36";
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
             c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
@@ -1323,6 +1324,11 @@ public class SmallBodyConfig
             c.lidarBrowseBinaryRecordSize = 168;
             c.lidarOffsetScale = 0.0005;
             c.lidarInstrumentName = Instrument.OLA;
+            configArray.add(c);
+
+            c = c.clone();
+            c.version = "V3";
+            c.pathOnServer = "/GASKELL/RQ36_V3";
             configArray.add(c);
         }
 
@@ -1862,7 +1868,12 @@ public class SmallBodyConfig
          if (ShapeModelAuthor.CUSTOM == author)
              return author + "/" + customName;
          else if (author != null)
-             return author + "/" + body;
+         {
+             if (version == null)
+                 return author + "/" + body;
+             else
+                 return author + "/" + body + " (" + version + ")";
+         }
          else
              return body.toString();
      }
@@ -1882,8 +1893,10 @@ public class SmallBodyConfig
 
     /**
      * Get a SmallBodyConfig of a specific name and author.
-     * Note a SmallBodyConfig is uniquely described by its name and author.
-     * No two small body configs can have both the same.
+     * Note a SmallBodyConfig is uniquely described by its name, author, and version.
+     * No two small body configs can have all the same. This version of the function
+     * assumes the version is null (unlike the other version in which you can specify
+     * the version).
      *
      * @param name
      * @param author
@@ -1891,13 +1904,31 @@ public class SmallBodyConfig
      */
     static public SmallBodyConfig getSmallBodyConfig(ShapeModelBody name, ShapeModelAuthor author)
     {
+        return getSmallBodyConfig(name, author, null);
+    }
+
+    /**
+     * Get a SmallBodyConfig of a specific name, author, and version.
+     * Note a SmallBodyConfig is uniquely described by its name, author, and version.
+     * No two small body configs can have all the same.
+     *
+     * @param name
+     * @param author
+     * @param version
+     * @return
+     */
+    static public SmallBodyConfig getSmallBodyConfig(ShapeModelBody name, ShapeModelAuthor author, String version)
+    {
         for (SmallBodyConfig config : builtInSmallBodyConfigs)
         {
-            if (config.body == name && config.author == author)
+            if (config.body == name && config.author == author &&
+                    ((config.version == null && version == null) || (version != null && version.equals(config.version)))
+                    )
                 return config;
         }
 
-        System.err.println("Error: Cannot find SmallBodyConfig with name " + name + " and author " + author);
+        System.err.println("Error: Cannot find SmallBodyConfig with name " + name +
+                " and author " + author + " and version " + null);
 
         return null;
     }

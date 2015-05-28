@@ -27,11 +27,8 @@ import edu.jhuapl.near.model.AbstractEllipsePolygonModel;
 import edu.jhuapl.near.model.MapletBoundaryCollection;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
-import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.pick.PickManager;
 import edu.jhuapl.near.pick.PickManager.PickMode;
-import edu.jhuapl.near.util.gravity.Gravity.HowToEvaluate;
-import edu.jhuapl.near.util.gravity.GravityWerner;
 
 public class MapmakerPanel extends JPanel implements ActionListener
 {
@@ -43,11 +40,13 @@ public class MapmakerPanel extends JPanel implements ActionListener
     private JTextField pixelScaleTextField;
     private JTextField latitudeTextField;
     private JTextField longitudeTextField;
+    /*
     private JCheckBox runGravityCheckbox;
     private JTextField densityTextField;
     private JTextField rotationRateTextField;
     private JTextField referencePotentialTextField;
     private JTextField tiltRadiusTextField;
+    */
     private JButton submitButton;
     private JButton loadButton;
     private PickManager pickManager;
@@ -158,6 +157,7 @@ public class MapmakerPanel extends JPanel implements ActionListener
             }
         });
 
+        /*
         runGravityCheckbox = new JCheckBox("Calculate Gravity");
         runGravityCheckbox.setSelected(false);
 
@@ -211,6 +211,7 @@ public class MapmakerPanel extends JPanel implements ActionListener
                 tiltRadiusTextField.setEnabled(isSelected);
             }
         });
+        */
 
         final JButton outputFolderButton = new JButton("Output Folder...");
         outputFolderTextField = new JFormattedTextField();
@@ -399,6 +400,7 @@ public class MapmakerPanel extends JPanel implements ActionListener
         if (mapmakerWorker.isCancelled())
             return;
 
+        /*
         if (runGravityCheckbox.isSelected())
         {
             if (densityTextField.getText().isEmpty() || rotationRateTextField.getText().isEmpty() ||
@@ -442,6 +444,7 @@ public class MapmakerPanel extends JPanel implements ActionListener
                 return;
             }
         }
+        */
 
         try
         {
