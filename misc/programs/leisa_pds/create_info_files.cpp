@@ -86,6 +86,7 @@ void getFieldsFromFitsHeader(const string& labelfilename,
                              string& startmet,
                              string& stopmet,
                              string& duration,
+                             string& exptime,
                              string& target,
                              string& frame,
                              int& naxis1,
@@ -124,6 +125,10 @@ void getFieldsFromFitsHeader(const string& labelfilename,
             else if (key == "DURMET")
             {
                 duration = value;
+            }
+            else if (key == "EXPTIME")
+            {
+                exptime = value;
             }
             else if (key == "TARGET")
             {
@@ -409,13 +414,15 @@ int main(int argc, char** argv)
         double stopet;
         string durstr;
         double duration;
+        string expstr;
+        double exptime;
         double scposb[3];
         double boredir[3];
         double updir[3];
         double frustum[12];
         double sunPosition[3];
 
-        getFieldsFromFitsHeader(labelfiles[i], startmet, stopmet, durstr, target, frame, naxis1, naxis2);
+        getFieldsFromFitsHeader(labelfiles[i], startmet, stopmet, durstr, expstr, target, frame, naxis1, naxis2);
 
 	// ignore bodies other than the specified one
         if (target != body)
@@ -429,12 +436,19 @@ int main(int argc, char** argv)
 
 	// calculate duration
 	duration = strtod(durstr.c_str(), NULL);
+
+	// calculate exposure time
+	exptime = strtod(expstr.c_str(), NULL);
+
         // start and stop et are initially both set to the mid-observation time
-        // duration seems to be too long, guess a scale factor. -turnerj1
-        startet = startet - duration * 0.25;
-        stopet = stopet + duration * 0.25;
-//        startet = startet - duration / 4.0;
-//        stopet = stopet + duration / 4.0;
+
+        // calculate start and stop times using duration (seems to be too long)
+//        startet = startet - duration * 0.5;
+//        stopet = stopet + duration * 0.5;
+
+        // calculate start and stop times using exposure time
+        startet = startet - exptime * 127.5;
+        stopet = stopet + exptime * 127.5;
 
         string labelbasename = basename((char*)labelfiles[i].c_str());
         unsigned found = labelbasename.find_last_of(".");
