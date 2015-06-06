@@ -5,6 +5,7 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 
 import nom.tam.fits.FitsException;
 
@@ -18,7 +19,6 @@ import vtk.vtkProperty;
 import vtk.vtkTexture;
 import vtk.vtksbCellLocator;
 
-import edu.jhuapl.near.model.Image.ImageKey;
 import edu.jhuapl.near.util.Frustum;
 import edu.jhuapl.near.util.ImageDataUtil;
 import edu.jhuapl.near.util.IntensityRange;
@@ -26,7 +26,7 @@ import edu.jhuapl.near.util.MathUtil;
 import edu.jhuapl.near.util.PolyDataUtil;
 import edu.jhuapl.near.util.Properties;
 
-public class ColorImage extends Model implements PropertyChangeListener
+public class ColorImage extends Image implements PropertyChangeListener
 {
     private SmallBodyModel smallBodyModel;
     private PerspectiveImage redImage;
@@ -109,8 +109,10 @@ public class ColorImage extends Model implements PropertyChangeListener
         }
     }
 
+
     public ColorImage(ColorImageKey key, SmallBodyModel smallBodyModel, ModelManager modelManager) throws FitsException, IOException, NoOverlapException
     {
+        super(new ImageKey("FalseColorImage", ImageSource.FALSE_COLOR));
         this.colorKey = key;
         this.smallBodyModel = smallBodyModel;
 
@@ -370,7 +372,7 @@ public class ColorImage extends Model implements PropertyChangeListener
         return footprintActors;
     }
 
-    public ColorImageKey getKey()
+    public ColorImageKey getColorKey()
     {
         return colorKey;
     }
@@ -462,5 +464,41 @@ public class ColorImage extends Model implements PropertyChangeListener
     {
         return offset;
     }
+
+    @Override
+    public vtkTexture getTexture()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public LinkedHashMap<String, String> getProperties() throws IOException
+    {
+        LinkedHashMap<String, String> result = new LinkedHashMap<String, String>();
+        result.put("pi", Double.toString(Math.PI));
+        result.put("e", Double.toString(Math.E));
+        return null;
+    }
+
+    @Override
+    public void setDisplayedImageRange(IntensityRange range)
+    {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public int getNumberOfComponentsOfOriginalImage()
+    {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    /*
+     * Implement Image abstract methods
+     */
+
+
 
 }

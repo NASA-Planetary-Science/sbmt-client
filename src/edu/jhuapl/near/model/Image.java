@@ -64,6 +64,12 @@ public abstract class Image extends Model implements PropertyChangeListener
             {
                 return "LocalPerspective";
             }
+        },
+        FALSE_COLOR {
+            public String toString()
+            {
+                return "FalseColor";
+            }
         }
     }
 

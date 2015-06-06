@@ -41,7 +41,7 @@ public class ColorImageCollection extends Model implements PropertyChangeListene
     {
         for (ColorImage image : imageToActorsMap.keySet())
         {
-            if (image.getKey().equals(key))
+            if (image.getColorKey().equals(key))
                 return true;
         }
 
@@ -52,7 +52,7 @@ public class ColorImageCollection extends Model implements PropertyChangeListene
     {
         for (ColorImage image : imageToActorsMap.keySet())
         {
-            if (image.getKey().equals(key))
+            if (image.getColorKey().equals(key))
                 return image;
         }
 
@@ -104,7 +104,7 @@ public class ColorImageCollection extends Model implements PropertyChangeListene
     {
         HashMap<ColorImage, ArrayList<vtkProp>> map = (HashMap<ColorImage, ArrayList<vtkProp>>)imageToActorsMap.clone();
         for (ColorImage image : map.keySet())
-            removeImage(image.getKey());
+            removeImage(image.getColorKey());
     }
 
     public ArrayList<vtkProp> getProps()

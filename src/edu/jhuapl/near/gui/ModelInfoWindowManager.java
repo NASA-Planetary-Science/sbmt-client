@@ -80,16 +80,16 @@ public class ModelInfoWindowManager implements PropertyChangeListener
 
     public ModelInfoWindow createModelInfoWindow(Model model, ModelManager modelManager)
     {
-        if (model instanceof Image)
+        if (model instanceof ColorImage)
+        {
+            ColorImageCollection images = (ColorImageCollection)modelManager.getModel(ModelNames.COLOR_IMAGES);
+            return new ColorImageInfoPanel((ColorImage)model, images);
+        }
+        else if (model instanceof Image)
         {
             ImageCollection images = (ImageCollection)modelManager.getModel(ModelNames.IMAGES);
             PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES);
             return new ImageInfoPanel((Image)model, images, boundaries);
-        }
-        else if (model instanceof ColorImage)
-        {
-            ColorImageCollection images = (ColorImageCollection)modelManager.getModel(ModelNames.COLOR_IMAGES);
-            return new ColorImageInfoPanel((ColorImage)model, images);
         }
         else if (model instanceof NISSpectrum)
         {

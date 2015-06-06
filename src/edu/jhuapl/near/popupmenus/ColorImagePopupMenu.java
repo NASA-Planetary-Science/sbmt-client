@@ -210,7 +210,7 @@ public class ColorImagePopupMenu extends PopupMenu
             if (imageCollection.getImage((vtkActor)pickedProp) != null)
             {
                 ColorImage image = imageCollection.getImage((vtkActor)pickedProp);
-                setCurrentImage(image.getKey());
+                setCurrentImage(image.getColorKey());
                 show(e.getComponent(), e.getX(), e.getY());
             }
         }
