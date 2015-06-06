@@ -145,6 +145,11 @@ public class ColorImage extends Model implements PropertyChangeListener
         computeFootprintAndColorImage();
     }
 
+    public vtkImageData getImage()
+    {
+        return colorImage;
+    }
+
     protected PerspectiveImage createImage(ImageKey key, SmallBodyModel smallBodyModel, ModelManager modelManager) throws FitsException, IOException
     {
         ImageCollection images = (ImageCollection)modelManager.getModel(ModelNames.IMAGES);
