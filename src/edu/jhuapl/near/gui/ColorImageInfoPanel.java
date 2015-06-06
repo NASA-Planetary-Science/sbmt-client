@@ -10,18 +10,11 @@
  */
 package edu.jhuapl.near.gui;
 
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
-import edu.jhuapl.near.model.ColorImage;
-import edu.jhuapl.near.model.ColorImageCollection;
-import edu.jhuapl.near.model.Image;
-import edu.jhuapl.near.model.ImageCollection;
-import edu.jhuapl.near.model.Model;
-import edu.jhuapl.near.model.PerspectiveImageBoundaryCollection;
-import edu.jhuapl.near.util.IntensityRange;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import vtk.vtkImageActor;
 import vtk.vtkImageData;
 import vtk.vtkImageReslice;
@@ -29,6 +22,12 @@ import vtk.vtkInteractorStyleImage;
 import vtk.vtkPropCollection;
 import vtk.vtkPropPicker;
 import vtk.vtkTransform;
+
+import edu.jhuapl.near.model.ColorImage;
+import edu.jhuapl.near.model.ColorImageCollection;
+import edu.jhuapl.near.model.Model;
+import edu.jhuapl.near.model.PerspectiveImageBoundaryCollection;
+import edu.jhuapl.near.util.IntensityRange;
 
 
 public class ColorImageInfoPanel extends ModelInfoWindow implements PropertyChangeListener
@@ -74,8 +73,27 @@ public class ColorImageInfoPanel extends ModelInfoWindow implements PropertyChan
 
         vtkInteractorStyleImage style = new vtkInteractorStyleImage();
         renWin.setInteractorStyle(style);
-        
-        vtkImageData displayedImage = (vtkImageData)image.getImage();
+
+        vtkImageData displayedImage = (vtkImageData)image.getTexture().GetInput();
+//        vtkImageData displayedImage = (vtkImageData)image.getImage();
+
+        // Only allow contrast changing for images with exactly 1 channel
+        if (image.getNumberOfComponentsOfOriginalImage() > 1)
+        {
+            redSlider.setEnabled(false);
+            greenSlider.setEnabled(false);
+            blueSlider.setEnabled(false);
+            jLabel4.setEnabled(false);
+            jLabel5.setEnabled(false);
+            jLabel9.setEnabled(false);
+        }
+
+        int[] masking = image.getCurrentMask();
+        leftSpinner.setValue(masking[0]);
+        topSpinner.setValue(masking[1]);
+        rightSpinner.setValue(masking[2]);
+        bottomSpinner.setValue(masking[3]);
+
 
         double[] center = displayedImage.GetCenter();
         int[] dims = displayedImage.GetDimensions();
@@ -126,6 +144,8 @@ public class ColorImageInfoPanel extends ModelInfoWindow implements PropertyChan
 
         pack();
         setVisible(true);
+
+        initialized = true;
     }
 
 
@@ -139,8 +159,26 @@ public class ColorImageInfoPanel extends ModelInfoWindow implements PropertyChan
         return imageCollection;
     }
 
+    private void croppingChanged()
+    {
+        if (!initialized)
+            return;
+
+        Integer top = (Integer) leftSpinner.getValue();
+        Integer right = (Integer) topSpinner.getValue();
+        Integer bottom = (Integer) rightSpinner.getValue();
+        Integer left = (Integer) bottomSpinner.getValue();
+
+        int[] masking = {top, right, bottom, left};
+
+        image.setCurrentMask(masking);
+    }
+
     public void propertyChange(PropertyChangeEvent arg0)
     {
+        if (renWin.GetRenderWindow().GetNeverRendered() > 0)
+            return;
+        renWin.Render();
     }
 
     /** This method is called from within the constructor to
@@ -373,7 +411,7 @@ public class ColorImageInfoPanel extends ModelInfoWindow implements PropertyChan
         leftSpinner.setPreferredSize(new java.awt.Dimension(60, 28));
         leftSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
-//                leftSpinnerStateChanged(evt);
+                leftSpinnerStateChanged(evt);
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -387,7 +425,7 @@ public class ColorImageInfoPanel extends ModelInfoWindow implements PropertyChan
         bottomSpinner.setPreferredSize(new java.awt.Dimension(60, 28));
         bottomSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
-//                bottomSpinnerStateChanged(evt);
+                bottomSpinnerStateChanged(evt);
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -409,7 +447,7 @@ public class ColorImageInfoPanel extends ModelInfoWindow implements PropertyChan
         rightSpinner.setPreferredSize(new java.awt.Dimension(60, 28));
         rightSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
-//                rightSpinnerStateChanged(evt);
+                rightSpinnerStateChanged(evt);
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -423,7 +461,7 @@ public class ColorImageInfoPanel extends ModelInfoWindow implements PropertyChan
         topSpinner.setPreferredSize(new java.awt.Dimension(60, 28));
         topSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
-//                topSpinnerStateChanged(evt);
+                topSpinnerStateChanged(evt);
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -503,27 +541,27 @@ public class ColorImageInfoPanel extends ModelInfoWindow implements PropertyChan
         // TODO add your handling code here:
     }//GEN-LAST:event_jCheckBox3ActionPerformed
 
-//    private void interpolateCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_interpolateCheckBoxActionPerformed
-//        image.setInterpolate(interpolateCheckBox.isSelected());
-//        actor.SetInterpolate(interpolateCheckBox.isSelected() ? 1 : 0);
-//        renWin.Render();
-//    }//GEN-LAST:event_interpolateCheckBoxActionPerformed
-//
-//    private void leftSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_leftSpinnerStateChanged
-//        croppingChanged();
-//    }//GEN-LAST:event_leftSpinnerStateChanged
-//
-//    private void bottomSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_bottomSpinnerStateChanged
-//        croppingChanged();
-//    }//GEN-LAST:event_bottomSpinnerStateChanged
-//
-//    private void rightSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_rightSpinnerStateChanged
-//        croppingChanged();
-//    }//GEN-LAST:event_rightSpinnerStateChanged
-//
-//    private void topSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_topSpinnerStateChanged
-//        croppingChanged();
-//    }//GEN-LAST:event_topSpinnerStateChanged
+    private void interpolateCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_interpolateCheckBoxActionPerformed
+        image.setInterpolate(interpolateCheckBox.isSelected());
+        actor.SetInterpolate(interpolateCheckBox.isSelected() ? 1 : 0);
+        renWin.Render();
+    }//GEN-LAST:event_interpolateCheckBoxActionPerformed
+
+    private void leftSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_leftSpinnerStateChanged
+        croppingChanged();
+    }//GEN-LAST:event_leftSpinnerStateChanged
+
+    private void bottomSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_bottomSpinnerStateChanged
+        croppingChanged();
+    }//GEN-LAST:event_bottomSpinnerStateChanged
+
+    private void rightSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_rightSpinnerStateChanged
+        croppingChanged();
+    }//GEN-LAST:event_rightSpinnerStateChanged
+
+    private void topSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_topSpinnerStateChanged
+        croppingChanged();
+    }//GEN-LAST:event_topSpinnerStateChanged
 
     private void adjustContrast()
     {
@@ -533,10 +571,13 @@ public class ColorImageInfoPanel extends ModelInfoWindow implements PropertyChan
         int greenHighVal = greenSlider.getHighValue();
         int blueLowVal = blueSlider.getLowValue();
         int blueHighVal = blueSlider.getHighValue();
+
         image.setDisplayedImageRange(
                 new IntensityRange(redLowVal, redHighVal),
                 new IntensityRange(greenLowVal, greenHighVal),
                 new IntensityRange(blueLowVal, blueHighVal));
+
+        image.updateImageMask();
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

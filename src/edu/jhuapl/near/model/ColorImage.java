@@ -11,7 +11,9 @@ import nom.tam.fits.FitsException;
 
 import vtk.vtkActor;
 import vtk.vtkGenericCell;
+import vtk.vtkImageCanvasSource2D;
 import vtk.vtkImageData;
+import vtk.vtkImageMask;
 import vtk.vtkPolyData;
 import vtk.vtkPolyDataMapper;
 import vtk.vtkProp;
@@ -36,6 +38,8 @@ public class ColorImage extends Image implements PropertyChangeListener
     private int greenImageSlice;
     private int blueImageSlice;
     private vtkImageData colorImage;
+    private vtkImageData displayedImage;
+    private vtkTexture imageTexture;
     private vtkPolyData footprint;
     private vtkPolyData shiftedFootprint;
     private vtkActor footprintActor;
@@ -49,6 +53,12 @@ public class ColorImage extends Image implements PropertyChangeListener
     private IntensityRange blueIntensityRange = new IntensityRange(0, 255);
     private double offset;
     private double imageOpacity = 1.0;
+    private int imageWidth;
+    private int imageHeight;
+    private vtkImageCanvasSource2D maskSource;
+    private int[] currentMask = new int[4];
+
+
 
     static public class NoOverlapException extends Exception
     {
@@ -137,7 +147,9 @@ public class ColorImage extends Image implements PropertyChangeListener
 
         colorImage = new vtkImageData();
         colorImage.SetScalarTypeToUnsignedChar();
-        colorImage.SetDimensions(redImage.getImageWidth(), redImage.getImageHeight(), 1);
+        imageWidth = redImage.getImageWidth();
+        imageHeight = redImage.getImageHeight();
+        colorImage.SetDimensions(imageWidth, imageHeight, 1);
         colorImage.SetSpacing(1.0, 1.0, 1.0);
         colorImage.SetOrigin(0.0, 0.0, 0.0);
         colorImage.SetNumberOfScalarComponents(3);
@@ -145,11 +157,34 @@ public class ColorImage extends Image implements PropertyChangeListener
         shiftedFootprint = new vtkPolyData();
 
         computeFootprintAndColorImage();
+
+        int[] masking = getMaskSizes();
+        int topMask =    masking[0];
+        int rightMask =  masking[1];
+        int bottomMask = masking[2];
+        int leftMask =   masking[3];
+        for (int i=0; i<masking.length; ++i)
+            currentMask[i] = masking[i];
+
+        maskSource = new vtkImageCanvasSource2D();
+        maskSource.SetScalarTypeToUnsignedChar();
+        maskSource.SetNumberOfScalarComponents(1);
+//        maskSource.SetExtent(0, imageWidth-1, 0, imageHeight-1, 0, imageDepth-1);
+        maskSource.SetExtent(0, imageWidth-1, 0, imageHeight-1, 0, 0);
+        // Initialize the mask to black which masks out the image
+        maskSource.SetDrawColor(0.0, 0.0, 0.0, 0.0);
+        maskSource.FillBox(0, imageWidth-1, 0, imageHeight-1);
+        // Create a square inside mask which passes through the image.
+        maskSource.SetDrawColor(255.0, 255.0, 255.0, 255.0);
+        maskSource.FillBox(leftMask, imageWidth-1-rightMask, bottomMask, imageHeight-1-topMask);
+        maskSource.Update();
+
+        updateImageMask();
     }
 
     public vtkImageData getImage()
     {
-        return colorImage;
+        return displayedImage; // colorImage;
     }
 
     protected PerspectiveImage createImage(ImageKey key, SmallBodyModel smallBodyModel, ModelManager modelManager) throws FitsException, IOException
@@ -351,11 +386,12 @@ public class ColorImage extends Image implements PropertyChangeListener
     {
         if (footprintActor == null)
         {
-            vtkTexture texture = new vtkTexture();
-            texture.InterpolateOn();
-            texture.RepeatOff();
-            texture.EdgeClampOn();
-            texture.SetInput(colorImage);
+            imageTexture = new vtkTexture();
+            imageTexture.InterpolateOn();
+            imageTexture.RepeatOff();
+            imageTexture.EdgeClampOn();
+//            texture.SetInput(colorImage);
+            imageTexture.SetInput(displayedImage);
 
             vtkPolyDataMapper footprintMapper = new vtkPolyDataMapper();
             footprintMapper.SetInput(shiftedFootprint);
@@ -363,7 +399,7 @@ public class ColorImage extends Image implements PropertyChangeListener
 
             footprintActor = new vtkActor();
             footprintActor.SetMapper(footprintMapper);
-            footprintActor.SetTexture(texture);
+            footprintActor.SetTexture(imageTexture);
             vtkProperty footprintProperty = footprintActor.GetProperty();
             footprintProperty.LightingOff();
 
@@ -465,11 +501,42 @@ public class ColorImage extends Image implements PropertyChangeListener
         return offset;
     }
 
+    public void setCurrentMask(int[] masking)
+    {
+        int topMask =    masking[0];
+        int rightMask =  masking[1];
+        int bottomMask = masking[2];
+        int leftMask =   masking[3];
+        // Initialize the mask to black which masks out the image
+        maskSource.SetDrawColor(0.0, 0.0, 0.0, 0.0);
+        maskSource.FillBox(0, imageWidth-1, 0, imageHeight-1);
+        // Create a square inside mask which passes through the image.
+        maskSource.SetDrawColor(255.0, 255.0, 255.0, 255.0);
+        maskSource.FillBox(leftMask, imageWidth-1-rightMask, bottomMask, imageHeight-1-topMask);
+        maskSource.Update();
+
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+        updateImageMask();
+
+        for (int i=0; i<masking.length; ++i)
+            currentMask[i] = masking[i];
+    }
+
+    public int[] getCurrentMask()
+    {
+        return currentMask.clone();
+    }
+
+
+    protected int[] getMaskSizes()
+    {
+        return new int[]{0, 0, 0, 0};
+    }
+
     @Override
     public vtkTexture getTexture()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return imageTexture;
     }
 
     @Override
@@ -481,11 +548,42 @@ public class ColorImage extends Image implements PropertyChangeListener
         return null;
     }
 
+    /**
+     * Currently, just call updateImageMask
+     */
     @Override
     public void setDisplayedImageRange(IntensityRange range)
     {
-        // TODO Auto-generated method stub
+        if (range == null)
+        {
+            updateImageMask();
+        }
+    }
 
+    public void updateImageMask()
+    {
+        vtkImageData maskSourceOutput = maskSource.GetOutput();
+
+        vtkImageMask maskFilter = new vtkImageMask();
+        maskFilter.SetImageInput(colorImage);
+        maskFilter.SetMaskInput(maskSourceOutput);
+        maskFilter.Update();
+
+        if (displayedImage == null)
+            displayedImage = new vtkImageData();
+        vtkImageData maskFilterOutput = maskFilter.GetOutput();
+        displayedImage.DeepCopy(maskFilterOutput);
+
+        maskFilter.Delete();
+        maskSourceOutput.Delete();
+        maskFilterOutput.Delete();
+
+        //vtkPNGWriter writer = new vtkPNGWriter();
+        //writer.SetFileName("fit.png");
+        //writer.SetInput(displayedImage);
+        //writer.Write();
+
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
     @Override
