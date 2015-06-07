@@ -14,6 +14,11 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
+import java.io.IOException;
+import java.util.LinkedHashMap;
+
+import javax.swing.table.DefaultTableModel;
 
 import vtk.vtkImageActor;
 import vtk.vtkImageData;
@@ -24,22 +29,11 @@ import vtk.vtkPropPicker;
 import vtk.vtkTransform;
 
 import edu.jhuapl.near.model.ColorImage;
+import edu.jhuapl.near.model.ColorImage.Chromatism;
 import edu.jhuapl.near.model.ColorImageCollection;
 import edu.jhuapl.near.model.Model;
-import edu.jhuapl.near.model.PerspectiveImage;
 import edu.jhuapl.near.model.PerspectiveImageBoundaryCollection;
-import edu.jhuapl.near.popupmenus.ImagePopupMenu;
 import edu.jhuapl.near.util.IntensityRange;
-import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.io.File;
-import java.io.IOException;
-import java.util.LinkedHashMap;
-import javax.swing.AbstractAction;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.table.DefaultTableModel;
 
 
 public class ColorImageInfoPanel extends ModelInfoWindow implements PropertyChangeListener
@@ -250,7 +244,7 @@ public class ColorImageInfoPanel extends ModelInfoWindow implements PropertyChan
 //
 //        setJMenuBar(menuBar);
 //    }
-    
+
     public Model getModel()
     {
         return image;
@@ -297,18 +291,18 @@ public class ColorImageInfoPanel extends ModelInfoWindow implements PropertyChan
         blueSlider = new com.jidesoft.swing.RangeSlider();
         redSlider = new com.jidesoft.swing.RangeSlider();
         jLabel6 = new javax.swing.JLabel();
-        jSlider6 = new javax.swing.JSlider();
+        greenScaleSlider = new javax.swing.JSlider();
         jLabel3 = new javax.swing.JLabel();
-        jSlider5 = new javax.swing.JSlider();
+        redScaleSlider = new javax.swing.JSlider();
         jLabel4 = new javax.swing.JLabel();
-        jCheckBox1 = new javax.swing.JCheckBox();
+        greenMonoCheckbox = new javax.swing.JCheckBox();
         jLabel2 = new javax.swing.JLabel();
         greenSlider = new com.jidesoft.swing.RangeSlider();
-        jCheckBox2 = new javax.swing.JCheckBox();
-        jSlider4 = new javax.swing.JSlider();
+        blueMonoCheckbox = new javax.swing.JCheckBox();
+        blueScaleSlider = new javax.swing.JSlider();
         jLabel9 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
-        jCheckBox3 = new javax.swing.JCheckBox();
+        redMonoCheckbox = new javax.swing.JCheckBox();
         interpolateCheckBox = new javax.swing.JCheckBox();
         jScrollPane2 = new javax.swing.JScrollPane();
         table1 = new javax.swing.JTable();
@@ -370,13 +364,19 @@ public class ColorImageInfoPanel extends ModelInfoWindow implements PropertyChan
         gridBagConstraints.insets = new java.awt.Insets(3, 3, 0, 0);
         jPanel1.add(jLabel6, gridBagConstraints);
 
-        jSlider6.setMajorTickSpacing(50);
-        jSlider6.setMinorTickSpacing(10);
-        jSlider6.setPaintTicks(true);
+        greenScaleSlider.setMajorTickSpacing(50);
+        greenScaleSlider.setMinorTickSpacing(10);
+        greenScaleSlider.setPaintTicks(true);
+        greenScaleSlider.setValue(100);
+        greenScaleSlider.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                greenScaleSliderStateChanged(evt);
+            }
+        });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 2;
-        jPanel1.add(jSlider6, gridBagConstraints);
+        jPanel1.add(greenScaleSlider, gridBagConstraints);
 
         jLabel3.setText("Blue");
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -384,13 +384,19 @@ public class ColorImageInfoPanel extends ModelInfoWindow implements PropertyChan
         gridBagConstraints.gridy = 3;
         jPanel1.add(jLabel3, gridBagConstraints);
 
-        jSlider5.setMajorTickSpacing(50);
-        jSlider5.setMinorTickSpacing(10);
-        jSlider5.setPaintTicks(true);
+        redScaleSlider.setMajorTickSpacing(50);
+        redScaleSlider.setMinorTickSpacing(10);
+        redScaleSlider.setPaintTicks(true);
+        redScaleSlider.setValue(100);
+        redScaleSlider.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                redScaleSliderStateChanged(evt);
+            }
+        });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
-        jPanel1.add(jSlider5, gridBagConstraints);
+        jPanel1.add(redScaleSlider, gridBagConstraints);
 
         jLabel4.setText("Mono");
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -398,15 +404,15 @@ public class ColorImageInfoPanel extends ModelInfoWindow implements PropertyChan
         gridBagConstraints.gridy = 0;
         jPanel1.add(jLabel4, gridBagConstraints);
 
-        jCheckBox1.addActionListener(new java.awt.event.ActionListener() {
+        greenMonoCheckbox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jCheckBox1ActionPerformed(evt);
+                greenMonoCheckboxActionPerformed(evt);
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 2;
-        jPanel1.add(jCheckBox1, gridBagConstraints);
+        jPanel1.add(greenMonoCheckbox, gridBagConstraints);
 
         jLabel2.setText("Green:");
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -432,23 +438,29 @@ public class ColorImageInfoPanel extends ModelInfoWindow implements PropertyChan
         gridBagConstraints.insets = new java.awt.Insets(3, 3, 0, 0);
         jPanel1.add(greenSlider, gridBagConstraints);
 
-        jCheckBox2.addActionListener(new java.awt.event.ActionListener() {
+        blueMonoCheckbox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jCheckBox2ActionPerformed(evt);
+                blueMonoCheckboxActionPerformed(evt);
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 3;
-        jPanel1.add(jCheckBox2, gridBagConstraints);
+        jPanel1.add(blueMonoCheckbox, gridBagConstraints);
 
-        jSlider4.setMajorTickSpacing(50);
-        jSlider4.setMinorTickSpacing(10);
-        jSlider4.setPaintTicks(true);
+        blueScaleSlider.setMajorTickSpacing(50);
+        blueScaleSlider.setMinorTickSpacing(10);
+        blueScaleSlider.setPaintTicks(true);
+        blueScaleSlider.setValue(100);
+        blueScaleSlider.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                blueScaleSliderStateChanged(evt);
+            }
+        });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 3;
-        jPanel1.add(jSlider4, gridBagConstraints);
+        jPanel1.add(blueScaleSlider, gridBagConstraints);
 
         jLabel9.setText("Contrast");
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -456,21 +468,21 @@ public class ColorImageInfoPanel extends ModelInfoWindow implements PropertyChan
         gridBagConstraints.gridy = 0;
         jPanel1.add(jLabel9, gridBagConstraints);
 
-        jLabel5.setText("Intensity");
+        jLabel5.setText("Scale");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
         jPanel1.add(jLabel5, gridBagConstraints);
 
-        jCheckBox3.addActionListener(new java.awt.event.ActionListener() {
+        redMonoCheckbox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jCheckBox3ActionPerformed(evt);
+                redMonoCheckboxActionPerformed(evt);
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 1;
-        jPanel1.add(jCheckBox3, gridBagConstraints);
+        jPanel1.add(redMonoCheckbox, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -483,7 +495,7 @@ public class ColorImageInfoPanel extends ModelInfoWindow implements PropertyChan
         interpolateCheckBox.setText("Interpolate Image");
         interpolateCheckBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-//                interpolateCheckBoxActionPerformed(evt);
+                interpolateCheckBoxActionPerformed(evt);
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -631,17 +643,23 @@ public class ColorImageInfoPanel extends ModelInfoWindow implements PropertyChan
         adjustContrast();
     }//GEN-LAST:event_blueSliderStateChanged
 
-    private void jCheckBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jCheckBox1ActionPerformed
+    private void greenMonoCheckboxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_greenMonoCheckboxActionPerformed
+        blueMonoCheckbox.setSelected(false);
+        redMonoCheckbox.setSelected(false);
+        adjustContrast();
+    }//GEN-LAST:event_greenMonoCheckboxActionPerformed
 
-    private void jCheckBox2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox2ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jCheckBox2ActionPerformed
+    private void blueMonoCheckboxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_blueMonoCheckboxActionPerformed
+        greenMonoCheckbox.setSelected(false);
+        redMonoCheckbox.setSelected(false);
+        adjustContrast();
+    }//GEN-LAST:event_blueMonoCheckboxActionPerformed
 
-    private void jCheckBox3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox3ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jCheckBox3ActionPerformed
+    private void redMonoCheckboxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_redMonoCheckboxActionPerformed
+        blueMonoCheckbox.setSelected(false);
+        greenMonoCheckbox.setSelected(false);
+        adjustContrast();
+    }//GEN-LAST:event_redMonoCheckboxActionPerformed
 
     private void interpolateCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_interpolateCheckBoxActionPerformed
         image.setInterpolate(interpolateCheckBox.isSelected());
@@ -665,31 +683,62 @@ public class ColorImageInfoPanel extends ModelInfoWindow implements PropertyChan
         croppingChanged();
     }//GEN-LAST:event_topSpinnerStateChanged
 
+    private void redScaleSliderStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_redScaleSliderStateChanged
+//        System.out.println("redScale: " + redScaleSlider.getValue());
+       if (!redScaleSlider.getValueIsAdjusting())
+           adjustContrast();
+    }//GEN-LAST:event_redScaleSliderStateChanged
+
+    private void greenScaleSliderStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_greenScaleSliderStateChanged
+       if (!greenScaleSlider.getValueIsAdjusting())
+           adjustContrast();
+    }//GEN-LAST:event_greenScaleSliderStateChanged
+
+    private void blueScaleSliderStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_blueScaleSliderStateChanged
+       if (!blueScaleSlider.getValueIsAdjusting())
+           adjustContrast();
+    }//GEN-LAST:event_blueScaleSliderStateChanged
+
     private void adjustContrast()
     {
         int redLowVal = redSlider.getLowValue();
         int redHighVal = redSlider.getHighValue();
+        IntensityRange redRange = new IntensityRange(redLowVal, redHighVal);
+
         int greenLowVal = greenSlider.getLowValue();
         int greenHighVal = greenSlider.getHighValue();
+        IntensityRange greenRange = new IntensityRange(greenLowVal, greenHighVal);
+
         int blueLowVal = blueSlider.getLowValue();
         int blueHighVal = blueSlider.getHighValue();
+        IntensityRange blueRange = new IntensityRange(blueLowVal, blueHighVal);
 
-        image.setDisplayedImageRange(
-                new IntensityRange(redLowVal, redHighVal),
-                new IntensityRange(greenLowVal, greenHighVal),
-                new IntensityRange(blueLowVal, blueHighVal));
+        double redScale = redScaleSlider.getValue() / 100.0;
+        double greenScale = greenScaleSlider.getValue() / 100.0;
+        double blueScale = blueScaleSlider.getValue() / 100.0;
+
+        Chromatism chromatism = Chromatism.POLY;
+        if (redMonoCheckbox.isSelected())
+            chromatism = Chromatism.MONO_RED;
+        else if (greenMonoCheckbox.isSelected())
+            chromatism = Chromatism.MONO_GREEN;
+        else if (blueMonoCheckbox.isSelected())
+            chromatism = Chromatism.MONO_BLUE;
+
+        image.setDisplayedImageRange(redScale, redRange, greenScale, greenRange, blueScale, blueRange, chromatism);
 
         image.updateImageMask();
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JCheckBox blueMonoCheckbox;
+    private javax.swing.JSlider blueScaleSlider;
     private com.jidesoft.swing.RangeSlider blueSlider;
     private javax.swing.JSpinner bottomSpinner;
+    private javax.swing.JCheckBox greenMonoCheckbox;
+    private javax.swing.JSlider greenScaleSlider;
     private com.jidesoft.swing.RangeSlider greenSlider;
     private javax.swing.JCheckBox interpolateCheckBox;
-    private javax.swing.JCheckBox jCheckBox1;
-    private javax.swing.JCheckBox jCheckBox2;
-    private javax.swing.JCheckBox jCheckBox3;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel2;
@@ -703,10 +752,9 @@ public class ColorImageInfoPanel extends ModelInfoWindow implements PropertyChan
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JSlider jSlider4;
-    private javax.swing.JSlider jSlider5;
-    private javax.swing.JSlider jSlider6;
     private javax.swing.JSpinner leftSpinner;
+    private javax.swing.JCheckBox redMonoCheckbox;
+    private javax.swing.JSlider redScaleSlider;
     private com.jidesoft.swing.RangeSlider redSlider;
     private javax.swing.JSpinner rightSpinner;
     private javax.swing.JTable table1;

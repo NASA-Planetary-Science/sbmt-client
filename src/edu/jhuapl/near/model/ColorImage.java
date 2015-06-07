@@ -48,6 +48,10 @@ public class ColorImage extends Image implements PropertyChangeListener
     private float[][] greenPixelData;
     private float[][] bluePixelData;
     private ColorImageKey colorKey;
+    private Chromatism chromatism = Chromatism.POLY;
+    private double redScale = 1.0;
+    private double greenScale = 1.0;
+    private double blueScale = 1.0;
     private IntensityRange redIntensityRange = new IntensityRange(0, 255);
     private IntensityRange greenIntensityRange = new IntensityRange(0, 255);
     private IntensityRange blueIntensityRange = new IntensityRange(0, 255);
@@ -67,6 +71,8 @@ public class ColorImage extends Image implements PropertyChangeListener
             super("No overlap in 3 images");
         }
     }
+
+    public static enum Chromatism { POLY, MONO_RED, MONO_GREEN, MONO_BLUE };
 
     public static class ColorImageKey
     {
@@ -376,9 +382,20 @@ public class ColorImage extends Image implements PropertyChangeListener
                     if (blueValue > bluemax)
                         blueValue = bluemax;
 
-                    colorImage.SetScalarComponentFromFloat(j, i, 0, 0, 255.0 * (redValue - redmin) / redstretchRange);
-                    colorImage.SetScalarComponentFromFloat(j, i, 0, 1, 255.0 * (greenValue - greenmin) / greenstretchRange);
-                    colorImage.SetScalarComponentFromFloat(j, i, 0, 2, 255.0 * (blueValue - bluemin) / bluestretchRange);
+                    double redComponent = 255.0 * redScale * (redValue - redmin) / redstretchRange;
+                    double greenComponent = 255.0 * greenScale * (greenValue - greenmin) / greenstretchRange;
+                    double blueComponent = 255.0 * blueScale * (blueValue - bluemin) / bluestretchRange;
+
+                    if (this.chromatism == Chromatism.MONO_RED)
+                        greenComponent = blueComponent = redComponent;
+                    else if (this.chromatism == Chromatism.MONO_GREEN)
+                        blueComponent = redComponent = greenComponent;
+                    else if (this.chromatism == Chromatism.MONO_BLUE)
+                        greenComponent = redComponent = blueComponent;
+
+                    colorImage.SetScalarComponentFromFloat(j, i, 0, 0, redComponent);
+                    colorImage.SetScalarComponentFromFloat(j, i, 0, 1, greenComponent);
+                    colorImage.SetScalarComponentFromFloat(j, i, 0, 2, blueComponent);
                 }
             }
         }
@@ -450,13 +467,42 @@ public class ColorImage extends Image implements PropertyChangeListener
         return blueImage;
     }
 
+    /**
+     * Currently, just call updateImageMask
+     */
+    @Override
+    public void setDisplayedImageRange(IntensityRange range)
+    {
+        if (range == null)
+        {
+            updateImageMask();
+        }
+        else
+            setDisplayedImageRange(1.0, range);
+    }
+
+    public void setDisplayedImageRange(double scale, IntensityRange range)
+    {
+        setDisplayedImageRange(scale, range, scale, range, scale, range, Chromatism.POLY);
+    }
+
     public void setDisplayedImageRange(IntensityRange redRange, IntensityRange greenRange, IntensityRange blueRange)
     {
+        setDisplayedImageRange(1.0, redRange, 1.0, greenRange, 1.0, blueRange, Chromatism.POLY);
+    }
+
+    public void setDisplayedImageRange(double redScale, IntensityRange redRange, double greenScale, IntensityRange greenRange, double blueScale, IntensityRange blueRange, Chromatism chromatism)
+    {
+        this.chromatism = chromatism;
+        this.redScale = redScale;
+        this.greenScale = greenScale;
+        this.blueScale = blueScale;
+        redIntensityRange = redRange;
+        greenIntensityRange = greenRange;
+        blueIntensityRange = blueRange;
+
         try
         {
-            redIntensityRange = redRange;
-            greenIntensityRange = greenRange;
-            blueIntensityRange = blueRange;
             computeFootprintAndColorImage();
 
             this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
@@ -552,18 +598,6 @@ public class ColorImage extends Image implements PropertyChangeListener
 //        result.put("e", Double.toString(Math.E));
 //        return result;
         return redImage.getProperties();
-    }
-
-    /**
-     * Currently, just call updateImageMask
-     */
-    @Override
-    public void setDisplayedImageRange(IntensityRange range)
-    {
-        if (range == null)
-        {
-            updateImageMask();
-        }
     }
 
     public void updateImageMask()
