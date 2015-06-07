@@ -26,8 +26,20 @@ import vtk.vtkTransform;
 import edu.jhuapl.near.model.ColorImage;
 import edu.jhuapl.near.model.ColorImageCollection;
 import edu.jhuapl.near.model.Model;
+import edu.jhuapl.near.model.PerspectiveImage;
 import edu.jhuapl.near.model.PerspectiveImageBoundaryCollection;
+import edu.jhuapl.near.popupmenus.ImagePopupMenu;
 import edu.jhuapl.near.util.IntensityRange;
+import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.io.File;
+import java.io.IOException;
+import java.util.LinkedHashMap;
+import javax.swing.AbstractAction;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.table.DefaultTableModel;
 
 
 public class ColorImageInfoPanel extends ModelInfoWindow implements PropertyChangeListener
@@ -141,6 +153,48 @@ public class ColorImageInfoPanel extends ModelInfoWindow implements PropertyChan
         gridBagConstraints.weighty = 1.0;
         getContentPane().add(renWin, gridBagConstraints);
 
+        // Add a text box for showing information about the image
+        String[] columnNames = {"Property", "Value"};
+
+        LinkedHashMap<String, String> properties = null;
+        Object[][] data = { {"", ""} };
+        try
+        {
+            properties = image.getProperties();
+            int size = properties.size();
+            data = new Object[size][2];
+
+            int i=0;
+            for (String key : properties.keySet())
+            {
+                data[i][0] = key;
+                data[i][1] = properties.get(key);
+
+                ++i;
+            }
+        }
+
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+        DefaultTableModel model = new DefaultTableModel(data, columnNames)
+        {
+            @Override
+            public boolean isCellEditable(int row, int column)
+            {
+                return false;
+            }
+        };
+
+        table1.setModel(model);
+
+//        createMenus();
+
+        // Finally make the frame visible
+        String name = new File(image.getImageName()).getName();
+        setTitle("Color Image " + name + " Properties");
 
         pack();
         setVisible(true);
@@ -149,6 +203,54 @@ public class ColorImageInfoPanel extends ModelInfoWindow implements PropertyChan
     }
 
 
+//    private void createMenus()
+//    {
+//        JMenuBar menuBar = new JMenuBar();
+//
+//        JMenu fileMenu = new JMenu("File");
+//        JMenuItem mi = new JMenuItem(new AbstractAction("Export to Image...")
+//        {
+//            public void actionPerformed(ActionEvent e)
+//            {
+//                File file = ImageFileChooser.showSaveDialog(renWin, "Export to Image...");
+//                renWin.saveToFile(file);
+//            }
+//        });
+//        fileMenu.add(mi);
+//        fileMenu.setMnemonic('F');
+//        menuBar.add(fileMenu);
+//
+//        /**
+//         * The following is a bit of a hack. We want to reuse the PopupMenu
+//         * class, but instead of having a right-click popup menu, we want instead to use
+//         * it as an actual menu in a menu bar. Therefore we simply grab the menu items
+//         * from that class and put these in our new JMenu.
+//         */
+//        ImagePopupMenu imagesPopupMenu =
+//            new ImagePopupMenu(imageCollection, imageBoundaryCollection, null, null, this);
+//
+//        imagesPopupMenu.setCurrentImage(image.getKey());
+//
+//        JMenu menu = new JMenu("Options");
+//        menu.setMnemonic('O');
+//
+//        Component[] components = imagesPopupMenu.getComponents();
+//        for (Component item : components)
+//        {
+//            if (item instanceof JMenuItem)
+//            {
+//                // Do not show the "Show Image" option since that creates problems
+//                // since it's supposed to close this window also.
+//                if (!(((JMenuItem)item).getAction() instanceof ImagePopupMenu.MapImageAction))
+//                    menu.add(item);
+//            }
+//        }
+//
+//        menuBar.add(menu);
+//
+//        setJMenuBar(menuBar);
+//    }
+    
     public Model getModel()
     {
         return image;

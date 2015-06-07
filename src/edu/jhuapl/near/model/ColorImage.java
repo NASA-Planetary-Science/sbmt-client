@@ -120,6 +120,11 @@ public class ColorImage extends Image implements PropertyChangeListener
     }
 
 
+    public String getImageName()
+    {
+        return new File(colorKey.redImageKey.name).getName();
+    }
+
     public ColorImage(ColorImageKey key, SmallBodyModel smallBodyModel, ModelManager modelManager) throws FitsException, IOException, NoOverlapException
     {
         super(new ImageKey("FalseColorImage", ImageSource.FALSE_COLOR));
@@ -542,10 +547,11 @@ public class ColorImage extends Image implements PropertyChangeListener
     @Override
     public LinkedHashMap<String, String> getProperties() throws IOException
     {
-        LinkedHashMap<String, String> result = new LinkedHashMap<String, String>();
-        result.put("pi", Double.toString(Math.PI));
-        result.put("e", Double.toString(Math.E));
-        return null;
+//        LinkedHashMap<String, String> result = new LinkedHashMap<String, String>();
+//        result.put("pi", Double.toString(Math.PI));
+//        result.put("e", Double.toString(Math.E));
+//        return result;
+        return redImage.getProperties();
     }
 
     /**
