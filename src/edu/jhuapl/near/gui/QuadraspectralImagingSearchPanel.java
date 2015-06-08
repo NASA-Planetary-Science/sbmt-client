@@ -63,11 +63,12 @@ public class QuadraspectralImagingSearchPanel extends ImagingSearchPanel impleme
     public QuadraspectralImagingSearchPanel(SmallBodyConfig smallBodyConfig,
             final ModelManager modelManager,
             ModelInfoWindowManager infoPanelManager,
+            ModelSpectrumWindowManager spectrumPanelManager,
             final PickManager pickManager,
             Renderer renderer,
             ImagingInstrument instrument)
     {
-        super(smallBodyConfig, modelManager, infoPanelManager, pickManager, renderer, instrument);
+        super(smallBodyConfig, modelManager, infoPanelManager, spectrumPanelManager, pickManager, renderer, instrument);
 
         for (int i=0; i<bandNames.length; i++)
             bandNamesToPrefixes.put(bandNames[i], bandIndices[i]);

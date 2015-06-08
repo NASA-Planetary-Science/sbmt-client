@@ -115,7 +115,7 @@ public class MapmakerView extends JFrame
 
         renderer = new Renderer(modelManager);
 
-        PopupManager popupManager = new PopupManager(modelManager, null, renderer);
+        PopupManager popupManager = new PopupManager(modelManager, null, null, renderer);
         // The following replaces LinesPopupMenu with MapmakerLinesPopupMenu
         PopupMenu popupMenu = new MapmakerLinesPopupMenu(modelManager, parentSmallBodyModel, renderer);
         popupManager.registerPopup(lineModel, popupMenu);

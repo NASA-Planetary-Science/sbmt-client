@@ -86,6 +86,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     private SmallBodyConfig smallBodyConfig;
     private final ModelManager modelManager;
     private final ModelInfoWindowManager infoPanelManager;
+    private final ModelSpectrumWindowManager spectrumPanelManager;
     private final PickManager pickManager;
     private final Renderer renderer;
     private java.util.Date startDate = null;
@@ -119,6 +120,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     public ImagingSearchPanel(SmallBodyConfig smallBodyConfig,
             final ModelManager modelManager,
             ModelInfoWindowManager infoPanelManager,
+            ModelSpectrumWindowManager spectrumPanelManager,
             final PickManager pickManager,
             Renderer renderer,
             ImagingInstrument instrument)
@@ -126,6 +128,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         this.smallBodyConfig = smallBodyConfig;
         this.modelManager = modelManager;
         this.infoPanelManager = infoPanelManager;
+        this.spectrumPanelManager = spectrumPanelManager;
         this.renderer = renderer;
         this.pickManager = pickManager;
 
@@ -146,7 +149,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
         ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
         PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(getImageBoundaryCollectionModelName());
-        imagePopupMenu = new ImagePopupMenu(images, boundaries, infoPanelManager, renderer, this);
+        imagePopupMenu = new ImagePopupMenu(images, boundaries, infoPanelManager, spectrumPanelManager, renderer, this);
         boundaries.addPropertyChangeListener(this);
         images.addPropertyChangeListener(this);
 

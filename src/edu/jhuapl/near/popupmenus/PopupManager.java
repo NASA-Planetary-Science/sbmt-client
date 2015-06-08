@@ -6,6 +6,7 @@ import java.util.HashMap;
 import vtk.vtkProp;
 
 import edu.jhuapl.near.gui.ModelInfoWindowManager;
+import edu.jhuapl.near.gui.ModelSpectrumWindowManager;
 import edu.jhuapl.near.gui.Renderer;
 import edu.jhuapl.near.model.ImageCollection;
 import edu.jhuapl.near.model.LidarSearchDataCollection;
@@ -25,7 +26,7 @@ public class PopupManager
         new HashMap<Model, PopupMenu>();
 
 
-    public PopupManager(ModelManager modelManager, ModelInfoWindowManager infoPanelManager, Renderer renderer)
+    public PopupManager(ModelManager modelManager, ModelInfoWindowManager infoPanelManager, ModelSpectrumWindowManager spectrumPanelManager, Renderer renderer)
     {
         this.modelManager = modelManager;
 
@@ -51,7 +52,7 @@ public class PopupManager
                 (ImageCollection)modelManager.getModel(ModelNames.IMAGES);
         PerspectiveImageBoundaryCollection imageBoundaries =
                 (PerspectiveImageBoundaryCollection)modelManager.getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES);
-        popupMenu = new ImagePopupMenu(imageCollection, imageBoundaries, infoPanelManager, renderer, renderer);
+        popupMenu = new ImagePopupMenu(imageCollection, imageBoundaries, infoPanelManager, spectrumPanelManager, renderer, renderer);
         registerPopup(modelManager.getModel(ModelNames.IMAGES), popupMenu);
 
         LidarSearchDataCollection tracks = (LidarSearchDataCollection)modelManager.getModel(ModelNames.TRACKS);

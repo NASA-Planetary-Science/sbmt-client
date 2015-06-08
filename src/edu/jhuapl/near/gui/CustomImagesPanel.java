@@ -67,6 +67,7 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
     public CustomImagesPanel(
             final ModelManager modelManager,
             ModelInfoWindowManager infoPanelManager,
+            ModelSpectrumWindowManager spectrumPanelManager,
             final PickManager pickManager,
             Renderer renderer)
     {
@@ -80,7 +81,7 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
 
         ImageCollection images = (ImageCollection)modelManager.getModel(ModelNames.IMAGES);
         PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES);
-        imagePopupMenu = new ImagePopupMenu(images, boundaries, infoPanelManager, renderer, this);
+        imagePopupMenu = new ImagePopupMenu(images, boundaries, infoPanelManager, spectrumPanelManager, renderer, this);
 
         addComponentListener(new ComponentAdapter()
         {

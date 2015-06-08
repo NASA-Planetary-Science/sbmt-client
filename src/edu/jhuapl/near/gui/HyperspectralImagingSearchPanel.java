@@ -57,12 +57,13 @@ public class HyperspectralImagingSearchPanel extends ImagingSearchPanel implemen
     public HyperspectralImagingSearchPanel(SmallBodyConfig smallBodyConfig,
             final ModelManager modelManager,
             ModelInfoWindowManager infoPanelManager,
+            ModelSpectrumWindowManager spectrumPanelManager,
             final PickManager pickManager,
             Renderer renderer,
             ImagingInstrument instrument,
             int nbands)
     {
-        super(smallBodyConfig, modelManager, infoPanelManager, pickManager, renderer, instrument);
+        super(smallBodyConfig, modelManager, infoPanelManager, spectrumPanelManager, pickManager, renderer, instrument);
 
         this.nbands = nbands;
     }

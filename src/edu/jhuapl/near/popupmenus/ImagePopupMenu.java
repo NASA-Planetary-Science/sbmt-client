@@ -26,6 +26,7 @@ import vtk.vtkProp;
 import edu.jhuapl.near.gui.ColorChooser;
 import edu.jhuapl.near.gui.CustomFileChooser;
 import edu.jhuapl.near.gui.ModelInfoWindowManager;
+import edu.jhuapl.near.gui.ModelSpectrumWindowManager;
 import edu.jhuapl.near.gui.NormalOffsetChangerDialog;
 import edu.jhuapl.near.gui.OpacityChanger;
 import edu.jhuapl.near.gui.Renderer;
@@ -51,6 +52,7 @@ public class ImagePopupMenu extends PopupMenu
     private JMenuItem mapImageMenuItem;
     private JMenuItem mapBoundaryMenuItem;
     private JMenuItem showImageInfoMenuItem;
+    private JMenuItem showImageSpectrumMenuItem;
     private JMenuItem saveToDiskMenuItem;
     private JMenuItem saveBackplanesMenuItem;
     private JMenuItem centerImageMenuItem;
@@ -63,6 +65,7 @@ public class ImagePopupMenu extends PopupMenu
     private ArrayList<JCheckBoxMenuItem> colorMenuItems = new ArrayList<JCheckBoxMenuItem>();
     private JMenuItem customColorMenuItem;
     private ModelInfoWindowManager infoPanelManager;
+    private ModelSpectrumWindowManager spectrumPanelManager;
     private Renderer renderer;
 
     /**
@@ -76,12 +79,14 @@ public class ImagePopupMenu extends PopupMenu
             ImageCollection imageCollection,
             PerspectiveImageBoundaryCollection imageBoundaryCollection,
             ModelInfoWindowManager infoPanelManager,
+            ModelSpectrumWindowManager spectrumPanelManager,
             Renderer renderer,
             Component invoker)
     {
         this.imageCollection = imageCollection;
         this.imageBoundaryCollection = imageBoundaryCollection;
         this.infoPanelManager = infoPanelManager;
+        this.spectrumPanelManager = spectrumPanelManager;
         this.renderer = renderer;
         this.invoker = invoker;
 
@@ -98,6 +103,13 @@ public class ImagePopupMenu extends PopupMenu
             showImageInfoMenuItem = new JMenuItem(new ShowInfoAction());
             showImageInfoMenuItem.setText("Properties...");
             this.add(showImageInfoMenuItem);
+        }
+
+        if (this.spectrumPanelManager != null)
+        {
+            showImageSpectrumMenuItem = new JMenuItem(new ShowSpectrumAction());
+            showImageSpectrumMenuItem.setText("Spectrum...");
+            this.add(showImageSpectrumMenuItem);
         }
 
         saveToDiskMenuItem = new JMenuItem(new SaveImageAction());
@@ -373,6 +385,31 @@ public class ImagePopupMenu extends PopupMenu
             {
                 imageCollection.addImage(imageKey);
                 infoPanelManager.addData(imageCollection.getImage(imageKey));
+
+                updateMenuItems();
+            }
+            catch (FitsException e1) {
+                e1.printStackTrace();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            } catch (Exception e1) {
+                e1.printStackTrace();
+            }
+        }
+    }
+
+    private class ShowSpectrumAction extends AbstractAction
+    {
+        public void actionPerformed(ActionEvent e)
+        {
+            if (imageKeys.size() != 1)
+                return;
+            ImageKey imageKey = imageKeys.get(0);
+
+            try
+            {
+                imageCollection.addImage(imageKey);
+                spectrumPanelManager.addData(imageCollection.getImage(imageKey));
 
                 updateMenuItems();
             }

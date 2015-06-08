@@ -268,7 +268,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements PropertyChangeLis
          * from that class and put these in our new JMenu.
          */
         ImagePopupMenu imagesPopupMenu =
-            new ImagePopupMenu(imageCollection, imageBoundaryCollection, null, null, this);
+            new ImagePopupMenu(imageCollection, imageBoundaryCollection, null, null, null, this);
 
         imagesPopupMenu.setCurrentImage(image.getKey());
 
