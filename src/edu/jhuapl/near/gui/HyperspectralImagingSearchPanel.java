@@ -19,6 +19,7 @@ import java.util.Set;
 
 import javax.swing.BoundedRangeModel;
 import javax.swing.DefaultBoundedRangeModel;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -44,6 +45,7 @@ public class HyperspectralImagingSearchPanel extends ImagingSearchPanel implemen
     private JPanel bandPanel;
     private JLabel bandValue;
     private JSlider monoSlider;
+    private JCheckBox defaultFrustum;
     private BoundedRangeModel monoBoundedRangeModel;
 
     private int nbands;
@@ -91,9 +93,17 @@ public class HyperspectralImagingSearchPanel extends ImagingSearchPanel implemen
         monoBoundedRangeModel = new DefaultBoundedRangeModel(midband, 0, 0, nbands-1);
         monoSlider = new JSlider(monoBoundedRangeModel);
         monoSlider.addChangeListener(this);
-//        bandPanel.add(monoSlider);
 
-        panel.add(bandPanel, BorderLayout.WEST);
+        defaultFrustum = new JCheckBox("Default Frame");
+        defaultFrustum.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                defaultFrustumActionPerformed(evt);
+            }
+        });
+
+        bandPanel.add(defaultFrustum);
+
+        panel.add(bandPanel, BorderLayout.NORTH);
         panel.add(monoSlider, BorderLayout.SOUTH);
     }
 
@@ -114,6 +124,26 @@ public class HyperspectralImagingSearchPanel extends ImagingSearchPanel implemen
         String newBandName = (String)((JComboBox)arg0.getSource()).getSelectedItem();
         System.out.println("ComboBox Value Changed: " + newBandName);
     }
+
+    private void defaultFrustumActionPerformed(java.awt.event.ActionEvent evt)
+    {
+        ImageCollection images = (ImageCollection)getModelManager().getModel(getImageCollectionModelName());
+
+        Set<Image> imageSet = images.getImages();
+        for (Image i : imageSet)
+        {
+            PerspectiveImage image = (PerspectiveImage)i;
+            ImageKey key = image.getKey();
+            ImageType type = key.instrument.type;
+            if (type == ImageType.LEISA_JUPITER_IMAGE) // this should not be specific to a given image type, should it? -turnerj1
+            {
+                if (image instanceof PerspectiveImage)
+                {
+                   ((PerspectiveImage)image).setUseDefaultFootprint(defaultFrustum.isSelected());
+                }
+            }
+        }
+    }//GEN-LAST:event_greenMonoCheckboxActionPerformed
 
     @Override
     public void stateChanged(ChangeEvent e)

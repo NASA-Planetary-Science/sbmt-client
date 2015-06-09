@@ -82,8 +82,8 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     private vtkImageData rawImage;
     private vtkImageData displayedImage;
     private int currentSlice = 0;
-    private String currentBand = "0";
 
+    private boolean useDefaultFootprint = false;
     private vtkPolyData[] footprint = new vtkPolyData[1];
     private boolean[] footprintGenerated = new boolean[1];
     private vtkPolyData[] shiftedFootprint = new vtkPolyData[1];
@@ -948,6 +948,19 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         return currentSlice;
     }
 
+    public int getDefaultSlice() { return 0; }
+
+    public void setUseDefaultFootprint(boolean useDefaultFootprint)
+    {
+        this.useDefaultFootprint = useDefaultFootprint;
+        for (int i=0; i<getImageDepth(); i++)
+        {
+            footprintGenerated[i] = false;
+        }
+    }
+
+    public boolean useDefaultFootprint() { return useDefaultFootprint; }
+
     public String getCurrentBand()
     {
         return Integer.toString(currentSlice);
@@ -1802,18 +1815,44 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     {
         if (generateFootprint)
         {
+            vtkPolyData tmp = null;
+
             if (!footprintGenerated[currentSlice])
             {
-                vtkPolyData tmp = smallBodyModel.computeFrustumIntersection(spacecraftPosition[currentSlice],
-                        frustum1[currentSlice], frustum3[currentSlice], frustum4[currentSlice], frustum2[currentSlice]);
+                if (useDefaultFootprint())
+                {
+                    int defaultSlice = getDefaultSlice();
+                    if (footprintGenerated[defaultSlice] == false)
+                    {
+                        footprint[defaultSlice] = smallBodyModel.computeFrustumIntersection(spacecraftPosition[defaultSlice],
+                                frustum1[defaultSlice], frustum3[defaultSlice], frustum4[defaultSlice], frustum2[defaultSlice]);
+                        if (footprint[defaultSlice] == null)
+                            return;
 
-                if (tmp == null)
-                    return;
+                        // Need to clear out scalar data since if coloring data is being shown,
+                        // then the color might mix-in with the image.
+                        footprint[defaultSlice].GetCellData().SetScalars(null);
+                        footprint[defaultSlice].GetPointData().SetScalars(null);
 
-                // Need to clear out scalar data since if coloring data is being shown,
-                // then the color might mix-in with the image.
-                tmp.GetCellData().SetScalars(null);
-                tmp.GetPointData().SetScalars(null);
+                        footprintGenerated[defaultSlice] = true;
+                    }
+
+                    tmp = footprint[defaultSlice];
+
+                }
+                else
+                {
+                    tmp = smallBodyModel.computeFrustumIntersection(spacecraftPosition[currentSlice],
+                            frustum1[currentSlice], frustum3[currentSlice], frustum4[currentSlice], frustum2[currentSlice]);
+                    if (tmp == null)
+                        return;
+
+                    // Need to clear out scalar data since if coloring data is being shown,
+                    // then the color might mix-in with the image.
+                    tmp.GetCellData().SetScalars(null);
+                    tmp.GetPointData().SetScalars(null);
+                }
+
 
                 footprint[currentSlice].DeepCopy(tmp);
 
@@ -2407,18 +2446,24 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         return rotation;
     }
 
-    public Frustum getFrustum()
-    {
-        if (frusta[currentSlice] == null)
-            frusta[currentSlice] = new Frustum(spacecraftPosition[currentSlice], frustum1[currentSlice], frustum3[currentSlice], frustum4[currentSlice], frustum2[currentSlice]);
-        return frusta[currentSlice];
-    }
-
     public Frustum getFrustum(int slice)
     {
+        if (useDefaultFootprint())
+        {
+            int defaultSlice = getDefaultSlice();
+            if (frusta[defaultSlice] == null)
+                frusta[defaultSlice] = new Frustum(spacecraftPosition[defaultSlice], frustum1[defaultSlice], frustum3[defaultSlice], frustum4[defaultSlice], frustum2[defaultSlice]);
+            return frusta[defaultSlice];
+        }
+
         if (frusta[slice] == null)
             frusta[slice] = new Frustum(spacecraftPosition[slice], frustum1[slice], frustum3[slice], frustum4[slice], frustum2[slice]);
         return frusta[slice];
+    }
+
+    public Frustum getFrustum()
+    {
+        return getFrustum(currentSlice);
     }
 
     /**
