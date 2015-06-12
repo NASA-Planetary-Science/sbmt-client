@@ -416,15 +416,19 @@ int main(int argc, char** argv)
 
         getFieldsFromFitsHeader(labelfiles[i], startmet, stopmet, target, frame, naxis1, naxis2);
 
-	// ignore bodies other than the specified one
-        if (target != body)
-            continue;
-
         getEt(startmet, stopmet, startutc, startet, stoputc, stopet);
         if (failed_c())
             continue;
 
         et = startet + (stopet - startet) / 2.0;
+
+        // omit checking for target for pluto images
+        if (et < 473342467)
+        {
+            // ignore bodies other than the specified one
+            if (target != body)
+                continue;
+        }
 
         getScOrientation(et, body, frame, scposb, boredir, updir, frustum, naxis1, naxis2);
         if (failed_c())

@@ -424,10 +424,6 @@ int main(int argc, char** argv)
 
         getFieldsFromFitsHeader(labelfiles[i], startmet, stopmet, durstr, expstr, target, frame, naxis1, naxis2);
 
-	// ignore bodies other than the specified one
-        if (target != body)
-            continue;
-
         cout << "found:" << endl;
 
         getEt(startmet, stopmet, startutc, startet, stoputc, stopet);
@@ -449,6 +445,15 @@ int main(int argc, char** argv)
         // calculate start and stop times using exposure time
         startet = startet - exptime * 127.5;
         stopet = stopet + exptime * 127.5;
+
+        // omit checking for target for pluto images
+        if (startet < 473342467)
+        {
+            // ignore bodies other than the specified one
+            if (target != body)
+                continue;
+        }
+
 
         string labelbasename = basename((char*)labelfiles[i].c_str());
         unsigned found = labelbasename.find_last_of(".");
