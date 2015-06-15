@@ -107,16 +107,26 @@ public class MVICQuadJupiterImage extends PerspectiveImage
     protected String initializeFitFileFullPath()
     {
         ImageKey key = getKey();
-        int band = getCurrentSlice();
-        String path = key.name;
-        String[] pathArray = path.split("/");
-        int size = pathArray.length;
-        String fileName = "mc" + band + "_" + pathArray[size-1];
-        String resultPath = "/";
-        for (int i=0; i<size-1; i++)
-            resultPath += pathArray[i] + "/";
+        int defaultBand = getDefaultSlice();
+        int nbands = getNumberBands();
+        String result = null;
 
-        return FileCache.getFileFromServer(resultPath + fileName + ".fit").getAbsolutePath();
+        for (int band=0; band<nbands; band++)
+        {
+            String path = key.name;
+            String[] pathArray = path.split("/");
+            int size = pathArray.length;
+            String fileName = "mc" + band + "_" + pathArray[size-1];
+            String resultPath = "/";
+            for (int i=0; i<size-2; i++)
+                resultPath += pathArray[i] + "/";
+
+            String fullPath = FileCache.getFileFromServer(resultPath + "images/" + fileName + ".fit").getAbsolutePath();
+            if (band == defaultBand)
+                result = fullPath;
+        }
+
+        return result;
     }
 
     @Override
@@ -133,16 +143,26 @@ public class MVICQuadJupiterImage extends PerspectiveImage
     protected String initializeInfoFileFullPath()
     {
         ImageKey key = getKey();
-        int band = getCurrentSlice();
-        String path = key.name;
-        String[] pathArray = path.split("/");
-        int size = pathArray.length;
-        String fileName = "mc" + band + "_" + pathArray[size-1];
-        String resultPath = "/";
-        for (int i=0; i<size-2; i++)
-            resultPath += pathArray[i] + "/";
+        int defaultBand = getDefaultSlice();
+        int nbands = getNumberBands();
+        String result = null;
 
-        return FileCache.getFileFromServer(resultPath + "infofiles/" + fileName + ".INFO").getAbsolutePath();
+        for (int band=0; band<nbands; band++)
+        {
+            String path = key.name;
+            String[] pathArray = path.split("/");
+            int size = pathArray.length;
+            String fileName = "mc" + band + "_" + pathArray[size-1];
+            String resultPath = "/";
+            for (int i=0; i<size-2; i++)
+                resultPath += pathArray[i] + "/";
+
+            String fullPath = FileCache.getFileFromServer(resultPath + "infofiles/" + fileName + ".INFO").getAbsolutePath();
+            if (band == defaultBand)
+                result = fullPath;
+        }
+
+        return result;
     }
 
     @Override
