@@ -665,7 +665,6 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         return createRawImage(height, width, depth, true, array2D, array3D);
     }
 
-
     protected vtkImageData createRawImage(int height, int width, int depth, boolean transpose, float[][] array2D, float[][][] array3D)
     {
         vtkImageData image = new vtkImageData();
@@ -677,6 +676,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         image.SetSpacing(1.0, 1.0, 1.0);
         image.SetOrigin(0.0, 0.0, 0.0);
         image.SetNumberOfScalarComponents(1);
+        image.AllocateScalars();
 
         maxValue = new float[depth];
         minValue = new float[depth];
@@ -686,6 +686,11 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
             maxValue[k] = -Float.MAX_VALUE;
             minValue[k] = Float.MAX_VALUE;
         }
+
+        // For performance, flatten out the 2D or 3D array into a 1D array and call
+        // SetJavaArray directly on the pixel data since calling SetScalarComponentFromDouble
+        // for every pixel takes too long.
+        float[] array1D = new float[height * width * depth];
 
         for (int i=0; i<height; ++i)
             for (int j=0; j<width; ++j)
@@ -698,15 +703,19 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
                         value = array3D[i][k][j];
 
                     if (transpose)
-                        image.SetScalarComponentFromDouble(j, height-1-i, k, 0, value);
+                        //image.SetScalarComponentFromDouble(j, height-1-i, k, 0, value);
+                        array1D[(k * height + (height-1-i)) * width + j] = value;
                     else
-                        image.SetScalarComponentFromDouble(i, width-1-j, k, 0, value);
+                        //image.SetScalarComponentFromDouble(i, width-1-j, k, 0, value);
+                        array1D[(k * width + (width-1-j)) * height + i] = value;
 
                     if (value > maxValue[k])
                         maxValue[k] = value;
                     if (value < minValue[k])
                         minValue[k] = value;
                 }
+
+        ((vtkFloatArray)image.GetPointData().GetScalars()).SetJavaArray(array1D);
 
         return image;
     }
