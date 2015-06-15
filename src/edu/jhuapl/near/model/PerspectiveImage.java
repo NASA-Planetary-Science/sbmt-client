@@ -83,7 +83,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     private vtkImageData displayedImage;
     private int currentSlice = 0;
 
-    private boolean useDefaultFootprint = false;
+    private boolean useDefaultFootprint = true;
     private vtkPolyData[] footprint = new vtkPolyData[1];
     private boolean[] footprintGenerated = new boolean[1];
     private vtkPolyData[] shiftedFootprint = new vtkPolyData[1];
@@ -253,6 +253,8 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         double[] result = { minValue[slice], maxValue[slice] };
         return result;
     }
+
+    public boolean shiftBands() { return false; }
 
     protected int getNumberBands()
     {
@@ -744,8 +746,23 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
             // for 3D arrays we consider the second axis the "spectral" axis
             if (data instanceof float[][][])
             {
-                array3D = (float[][][])data;
-//                System.out.println("3D pixel array detected: " + array3D.length + "x" + array3D[0].length + "x" + array3D[0][0].length);
+                if (shiftBands())
+                {
+                    array3D = new float[fitsHeight][fitsWidth][fitsDepth];
+                    for (int i=0; i<fitsHeight; ++i)
+                        for (int j=0; j<fitsWidth; ++j)
+                            for (int k=0; k<fitsDepth; ++k)
+                            {
+                                int w = i + j - fitsDepth / 2;
+                                if (w >= 0 && w < fitsHeight)
+                                    array3D[w][j][k] = ((float[][][])data)[i][j][k];
+                            }
+
+                }
+                else
+                    array3D = (float[][][])data;
+
+              System.out.println("3D pixel array detected: " + array3D.length + "x" + array3D[0].length + "x" + array3D[0][0].length);
             }
             else if (data instanceof float[][])
             {
