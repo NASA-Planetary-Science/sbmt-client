@@ -449,6 +449,7 @@ public class LidarSearchDataCollection extends Model
             double time = 0;
             double[] target = {0.0, 0.0, 0.0};
             double[] scpos = {0.0, 0.0, 0.0};
+            boolean noise = false;
 
             try
             {
@@ -463,7 +464,10 @@ public class LidarSearchDataCollection extends Model
             {
                 skip(in, 17 + 8 + 24);
                 time = FileUtil.readDoubleAndSwap(in);
-                skip(in, 8 + 2 * 3 + 2 + 8 + 8 * 4);
+                skip(in, 8 + 2 * 3);
+                short flagStatus = MathUtil.swap(in.readShort());
+                noise = ((flagStatus == 0 || flagStatus == 1) ? false : true);
+                skip(in, 8 + 8 * 4);
                 target[0] = FileUtil.readDoubleAndSwap(in) / 1000.0;
                 target[1] = FileUtil.readDoubleAndSwap(in) / 1000.0;
                 target[2] = FileUtil.readDoubleAndSwap(in) / 1000.0;
@@ -478,7 +482,8 @@ public class LidarSearchDataCollection extends Model
                 throw e;
             }
 
-            originalPoints.add(new LidarPoint(target, scpos, time));
+            if (!noise)
+                originalPoints.add(new LidarPoint(target, scpos, time));
         }
 
         in.close();
