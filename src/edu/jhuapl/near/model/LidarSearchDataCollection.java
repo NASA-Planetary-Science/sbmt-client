@@ -331,11 +331,19 @@ public class LidarSearchDataCollection extends Model
             // greater than 7 columns, columns 8 or higher are ignored.
             if (vals.length == 4 || vals.length == 5 || vals.length >= 7)
             {
-                time = TimeUtil.str2et(vals[0]);
-                if (time == -Double.MIN_VALUE)
+                try
                 {
-                    in.close();
-                    throw new IOException("Error: Incorrect file format!");
+                    // First try to see if it's a double ET. Otherwise assume it's UTC.
+                    time = Double.parseDouble(vals[0]);
+                }
+                catch (NumberFormatException e)
+                {
+                    time = TimeUtil.str2et(vals[0]);
+                    if (time == -Double.MIN_VALUE)
+                    {
+                        in.close();
+                        throw new IOException("Error: Incorrect file format!");
+                    }
                 }
                 target[0] = Double.parseDouble(vals[1]);
                 target[1] = Double.parseDouble(vals[2]);
