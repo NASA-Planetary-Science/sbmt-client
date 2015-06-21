@@ -3,6 +3,8 @@ package edu.jhuapl.near.model.leisa;
 import java.io.File;
 import java.io.IOException;
 
+import nom.tam.fits.BasicHDU;
+import nom.tam.fits.Fits;
 import nom.tam.fits.FitsException;
 
 import vtk.vtkImageData;
@@ -16,9 +18,10 @@ public class LEISAJupiterImage extends PerspectiveImage
 {
     public static final int INITIAL_BAND = 127;
 
-    private double[][] spectrumWavelengths = null; // { 0.0, 100.0, 200.0, 300.0 };
-    private double[][] spectrumValues = null;      // { 0.0, 10.0, 14.1, 15.0 };
-    private double[][] spectrumRegion = null;      // { 0.0 };
+    private double[][] spectrumWavelengths;
+    private double[][] spectrumBandwidths;
+    private double[][] spectrumValues;
+    private double[][] spectrumRegion;
 
     public ImageKey getKey()
     {
@@ -33,45 +36,33 @@ public class LEISAJupiterImage extends PerspectiveImage
             IOException
     {
         super(key, smallBodyModel, loadPointingOnly, INITIAL_BAND);
+    }
 
-        // initialize the spectrum wavelengths, eventually this should be read from the fits image
+    protected void initialize() throws FitsException, IOException
+    {
+        // initialize the spectrum wavelengths
+        // note that spectrum segment 1 is 200 bands while spectrum segment 2 is 56 bands
         spectrumWavelengths = new double[2][];
-        spectrumWavelengths[0] = new double[256];
-        spectrumWavelengths[1] = new double[256];
+        spectrumWavelengths[0] = new double[200];
+        spectrumWavelengths[1] = new double[56];
+
+        // initialize the spectrum wavelength bandwidths
+        spectrumBandwidths = new double[2][];
+        spectrumBandwidths[0] = new double[200];
+        spectrumBandwidths[1] = new double[56];
 
         // initialize the spectrum values
-
         spectrumValues = new double[2][];
-        spectrumValues[0] = new double[256];
-        spectrumValues[1] = new double[256];
+        spectrumValues[0] = new double[200];
+        spectrumValues[1] = new double[56];
 
-        for (int i=0; i<256; i++)
-        {
-            spectrumWavelengths[0][i] = i;
-            spectrumValues[0][i] = i;
-        }
+        super.initialize();
 
-        for (int i=0; i<256; i++)
-        {
-            spectrumWavelengths[1][i] = i;
-            spectrumValues[1][i] = i + 10.0;
-        }
-
-//        for (int i=0; i<128; i++)
-//        {
-//            spectrumWavelengths[0][i] = 1.25 + i * (2.5 - 1.25) / 127.0;
-//            spectrumValues[0][i] = i;
-//        }
-//
-//        for (int i=0; i<128; i++)
-//        {
-//            spectrumWavelengths[1][i] = 2.1 + i * (2.25 - 2.1) / 127.0;
-//            spectrumValues[1][i] = i * 1.1;
-//        }
-
+        // calclulate image dimensions after the image has been loaded
         double centerI = (this.getImageHeight() - 1) / 2.0;
         double centerJ = (this.getImageWidth() - 1) / 2.0;
         double[][] region = { { centerI, centerJ } };
+
         this.setSpectrumRegion(region);
     }
 
@@ -93,14 +84,67 @@ public class LEISAJupiterImage extends PerspectiveImage
         return 256;
     }
 
-    public int getNumberSpectra() { return 2; }
+    public int getNumberOfSpectralSegments() { return 2; }
 
-    public double[] getSpectrumWavelengths(int spectrum) { return spectrumWavelengths[spectrum]; }
+    public double[] getSpectrumWavelengths(int segment) { return spectrumWavelengths[segment]; }
 
-    public double[] getSpectrumValues(int spectrum) { return spectrumValues[spectrum]; }
+    public double[] getSpectrumBandwidths(int segment) { return spectrumBandwidths[segment]; }
 
-    public String getSpectrumUnits() { return "micrometers"; }
+   public double[] getSpectrumValues(int segment) { return spectrumValues[segment]; }
 
+    public String getSpectrumWavelengthUnits() { return "micrometers"; }
+
+    public String getSpectrumValueUnits() { return "erg/s/cm^2/A/sr x 10^12"; }
+
+
+    protected void loadImageCalibrationData(Fits f) throws FitsException, IOException
+    {
+        // load in calibration info
+            BasicHDU wl = f.getHDU(1);
+
+            int wlAxes[] = wl.getAxes();
+            int wlNAxes = wlAxes.length;
+            int wlHeight = wlAxes[0];
+            int wlWidth = wlAxes[1];
+            int wlDepth = 2;
+
+            Object wldata = wl.getData().getData();
+            float[][][] wlarray = null;
+
+            // for 3D arrays we consider the second axis the "spectral" axis
+            if (wldata instanceof float[][][])
+            {
+                wlarray = (float[][][])wldata;
+
+//              System.out.println("Wavelength Center Image Detected: " + wlarray.length + "x" + wlarray[0].length + "x" + wlarray[0][0].length);
+              for (int i=0; i<256; i++)
+              {
+                  double averageWavelength = 0.0;
+                  double averageWavewidth = 0.0;
+                  for (int j=0; j<256; j++)
+                  {
+                      averageWavelength += wlarray[0][i][j];
+                      averageWavewidth += wlarray[1][i][j];
+                  }
+                  averageWavelength /= 256.0;
+                  averageWavewidth /= 256.0;
+
+                  // place wavelengths in either spectrum segment 1 or 2 depending on band
+                  if (i < 200)
+                  {
+                      spectrumWavelengths[0][i] = averageWavelength;
+                      spectrumBandwidths[0][i] = averageWavewidth;
+                  }
+                  else
+                  {
+                      spectrumWavelengths[1][i-200] = averageWavelength;
+                      spectrumBandwidths[1][i-200] = averageWavewidth;
+                  }
+
+//                  System.out.println("Band " + i  + ": " + averageWavelength + ", " + averageWavewidth);
+              }
+            }
+    }
 
     @Override
     public void setSpectrumRegion(double[][] spectrumRegion)
@@ -117,24 +161,15 @@ public class LEISAJupiterImage extends PerspectiveImage
             int y = (int)Math.round(spectrumRegion[0][1]);
             float[] pixelColumn = ImageDataUtil.vtkImageDataToArray1D(image, x, y);
 
-            for (int i=0; i<256; i++)
+            for (int i=0; i<200; i++)
             {
                 spectrumValues[0][i] = 1.0e-12 * (double)pixelColumn[i];
             }
 
-            for (int i=0; i<256; i++)
+            for (int i=200; i<256; i++)
             {
-                spectrumValues[1][i] = 2.0e-12 * (double)pixelColumn[i];
+                spectrumValues[1][i-200] = 1.0e-12 * (double)pixelColumn[i];
             }
-//            for (int i=0; i<128; i++)
-//            {
-//                spectrumValues[0][i] = 1.0e-12 * (double)pixelColumn[i];
-//            }
-//
-//            for (int i=0; i<128; i++)
-//            {
-//                spectrumValues[1][i] = 1.0e-12 * (double)pixelColumn[i + 128];
-//            }
         }
     }
 

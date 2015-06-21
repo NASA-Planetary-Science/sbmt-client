@@ -157,6 +157,8 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     // If false, then the footprint is downloaded from the server. This setting is used by the GUI.
     private static boolean generateFootprint = true;
 
+    private boolean loadPointingOnly;
+
     /**
      * If loadPointingOnly is true then only pointing information about this
      * image will be downloaded/loaded. The image itself will not be loaded.
@@ -179,10 +181,16 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
             boolean loadPointingOnly, int currentSlice) throws FitsException, IOException
     {
         super(key);
-
         this.currentSlice = currentSlice;
         this.smallBodyModel = smallBodyModel;
+        this.loadPointingOnly = loadPointingOnly;
         this.offset = getDefaultOffset();
+
+        initialize();
+    }
+
+    protected void initialize() throws FitsException, IOException
+    {
         footprint[0] = new vtkPolyData();
         shiftedFootprint[0] = new vtkPolyData();
         displayedRange[0] = new IntensityRange(1,0);
@@ -266,7 +274,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
      *
      * @return number of spectra
      */
-    public int getNumberSpectra() { return 0; }
+    public int getNumberOfSpectralSegments() { return 0; }
 
     /**
      * For a multispectral image, returns an array of doubles containing the wavelengths for each point
@@ -274,7 +282,15 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
      *
      * @return array of spectrum wavelengths
      */
-    public double[] getSpectrumWavelengths(int spectrum) { return null; }
+    public double[] getSpectrumWavelengths(int segment) { return null; }
+
+    /**
+     * For a multispectral image, returns an array of doubles containing the bandwidths for each point
+     * on the image's spectrum.
+     *
+     * @return array of spectrum wavelengths
+     */
+    public double[] getSpectrumBandwidths(int segment) { return null; }
 
     /**
      * For a multispectral image, returns an array of doubles containing the values for each point
@@ -282,9 +298,11 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
      *
      * @return array of spectrum values
      */
-    public double[] getSpectrumValues(int spectrum) { return null; }
+    public double[] getSpectrumValues(int segment) { return null; }
 
-    public String getSpectrumUnits() { return null; }
+    public String getSpectrumWavelengthUnits() { return null; }
+
+    public String getSpectrumValueUnits() { return null; }
 
     /**
      * For a multispectral image, specify a region in pixel space over which to calculate the spectrum values.
@@ -766,6 +784,11 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     }
 
 
+    protected void loadImageCalibrationData(Fits f) throws FitsException, IOException
+    {
+        // to be overridden by subclasses that load calibration data
+    }
+
     protected void loadImage() throws FitsException, IOException
     {
         String[] filenames = getFitFilesFullPath();
@@ -816,7 +839,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
                 else
                     array3D = (float[][][])data;
 
-              System.out.println("3D pixel array detected: " + array3D.length + "x" + array3D[0].length + "x" + array3D[0][0].length);
+//               System.out.println("3D pixel array detected: " + array3D.length + "x" + array3D[0].length + "x" + array3D[0][0].length);
             }
             else if (data instanceof float[][])
             {
@@ -849,6 +872,9 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
                 System.out.println("Data type not supported!");
                 return;
             }
+
+            // load in calibration info
+            loadImageCalibrationData(f);
 
             f.getStream().close();
         }

@@ -51,7 +51,7 @@ public class MultispectralSpectrumInfoPanel extends ModelInfoWindow implements P
 
 
 
-        int nspectra = perspectiveImage.getNumberSpectra();
+        int nspectra = perspectiveImage.getNumberOfSpectralSegments();
 
         XYSeriesCollection xyDataset = new XYSeriesCollection();
 
@@ -69,8 +69,9 @@ public class MultispectralSpectrumInfoPanel extends ModelInfoWindow implements P
             xyDataset.addSeries(series);
         }
 
-        String units = perspectiveImage.getSpectrumUnits();
-        JFreeChart chart = ChartFactory.createXYLineChart("Image Spectrum", "Wavelength (" + units + ")", "Intensity", xyDataset, PlotOrientation.VERTICAL, true, true, false);
+        String wavelengthUnits = perspectiveImage.getSpectrumWavelengthUnits();
+        String valueUnits = perspectiveImage.getSpectrumValueUnits();
+        JFreeChart chart = ChartFactory.createXYLineChart("LEISA Spectrum", "Wavelength (" + wavelengthUnits + ")", "Flux (" + valueUnits + ")", xyDataset, PlotOrientation.VERTICAL, true, true, false);
         ChartPanel chartPanel = new ChartPanel(chart);
         chartPanel.setMouseWheelEnabled(true);
 
@@ -94,8 +95,7 @@ public class MultispectralSpectrumInfoPanel extends ModelInfoWindow implements P
                 BoxLayout.PAGE_AXIS));
 
         // Add a text box for showing information about the image
-        String[] columnNames = {"Property",
-                "Value"};
+        String[] columnNames = {"Property", "Value"};
 
         HashMap<String, String> properties = null;
         Object[][] data = {    {"", ""} };
