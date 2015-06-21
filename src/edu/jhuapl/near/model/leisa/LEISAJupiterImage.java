@@ -16,6 +16,10 @@ public class LEISAJupiterImage extends PerspectiveImage
 {
     public static final int INITIAL_BAND = 127;
 
+    private double[][] spectrumWavelengths = null; // { 0.0, 100.0, 200.0, 300.0 };
+    private double[][] spectrumValues = null;      // { 0.0, 10.0, 14.1, 15.0 };
+    private double[][] spectrumRegion = null;      // { 0.0 };
+
     public ImageKey getKey()
     {
         ImageKey key = super.getKey();
@@ -29,6 +33,46 @@ public class LEISAJupiterImage extends PerspectiveImage
             IOException
     {
         super(key, smallBodyModel, loadPointingOnly, INITIAL_BAND);
+
+        // initialize the spectrum wavelengths, eventually this should be read from the fits image
+        spectrumWavelengths = new double[2][];
+        spectrumWavelengths[0] = new double[256];
+        spectrumWavelengths[1] = new double[256];
+
+        // initialize the spectrum values
+
+        spectrumValues = new double[2][];
+        spectrumValues[0] = new double[256];
+        spectrumValues[1] = new double[256];
+
+        for (int i=0; i<256; i++)
+        {
+            spectrumWavelengths[0][i] = i;
+            spectrumValues[0][i] = i;
+        }
+
+        for (int i=0; i<256; i++)
+        {
+            spectrumWavelengths[1][i] = i;
+            spectrumValues[1][i] = i + 10.0;
+        }
+
+//        for (int i=0; i<128; i++)
+//        {
+//            spectrumWavelengths[0][i] = 1.25 + i * (2.5 - 1.25) / 127.0;
+//            spectrumValues[0][i] = i;
+//        }
+//
+//        for (int i=0; i<128; i++)
+//        {
+//            spectrumWavelengths[1][i] = 2.1 + i * (2.25 - 2.1) / 127.0;
+//            spectrumValues[1][i] = i * 1.1;
+//        }
+
+        double centerI = (this.getImageHeight() - 1) / 2.0;
+        double centerJ = (this.getImageWidth() - 1) / 2.0;
+        double[][] region = { { centerI, centerJ } };
+        this.setSpectrumRegion(region);
     }
 
     @Override
@@ -47,6 +91,57 @@ public class LEISAJupiterImage extends PerspectiveImage
     protected int getNumberBands()
     {
         return 256;
+    }
+
+    public int getNumberSpectra() { return 2; }
+
+    public double[] getSpectrumWavelengths(int spectrum) { return spectrumWavelengths[spectrum]; }
+
+    public double[] getSpectrumValues(int spectrum) { return spectrumValues[spectrum]; }
+
+    public String getSpectrumUnits() { return "micrometers"; }
+
+
+    @Override
+    public void setSpectrumRegion(double[][] spectrumRegion)
+    {
+        System.out.println("Setting spectrum region: " + spectrumRegion[0][0] + ", " + spectrumRegion[0][1]);
+        this.spectrumRegion = spectrumRegion;
+
+        // calculate the spectrum values
+        vtkImageData image = this.getRawImage();
+
+        if (image != null)
+        {
+            int x = (int)Math.round(spectrumRegion[0][0]);
+            int y = (int)Math.round(spectrumRegion[0][1]);
+            float[] pixelColumn = ImageDataUtil.vtkImageDataToArray1D(image, x, y);
+
+            for (int i=0; i<256; i++)
+            {
+                spectrumValues[0][i] = 1.0e-12 * (double)pixelColumn[i];
+            }
+
+            for (int i=0; i<256; i++)
+            {
+                spectrumValues[1][i] = 2.0e-12 * (double)pixelColumn[i];
+            }
+//            for (int i=0; i<128; i++)
+//            {
+//                spectrumValues[0][i] = 1.0e-12 * (double)pixelColumn[i];
+//            }
+//
+//            for (int i=0; i<128; i++)
+//            {
+//                spectrumValues[1][i] = 1.0e-12 * (double)pixelColumn[i + 128];
+//            }
+        }
+    }
+
+    @Override
+    public double[][] getSpectrumRegion()
+    {
+        return this.spectrumRegion;
     }
 
     @Override

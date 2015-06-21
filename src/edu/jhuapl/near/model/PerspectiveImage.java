@@ -261,6 +261,51 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         return 1;
     }
 
+    /**
+     * Returns the number of spectra the image contains
+     *
+     * @return number of spectra
+     */
+    public int getNumberSpectra() { return 0; }
+
+    /**
+     * For a multispectral image, returns an array of doubles containing the wavelengths for each point
+     * on the image's spectrum.
+     *
+     * @return array of spectrum wavelengths
+     */
+    public double[] getSpectrumWavelengths(int spectrum) { return null; }
+
+    /**
+     * For a multispectral image, returns an array of doubles containing the values for each point
+     * on the image's spectrum.
+     *
+     * @return array of spectrum values
+     */
+    public double[] getSpectrumValues(int spectrum) { return null; }
+
+    public String getSpectrumUnits() { return null; }
+
+    /**
+     * For a multispectral image, specify a region in pixel space over which to calculate the spectrum values.
+     * The array is an Nx2 array of 2-dimensional vertices in pixel coordinates.
+     * First index indicates the vertex, the second index indicates which of the two pixel coordinates.
+     * A vertices array of height 1 will specify a single pixel region. An array of h 2 will specify a circular
+     * region where the first value is the center and the second value is a point the circle. An array of size
+     * 3 or more will specify a polygonal region.
+     *
+     * @param vertices of region
+     */
+    public void setSpectrumRegion(double[][] vertices) { }
+
+    /**
+     * Return the multispectral image's spectrum region in pixel space.
+     *
+     * @return array describing region over which the spectrum is calculated.
+     */
+    public double[][] getSpectrumRegion() { return null; }
+
+
     protected void loadImageInfo(
             String infoFilename,
             int startSlice,        // for loading multiple info files, the starting array index to put the info into

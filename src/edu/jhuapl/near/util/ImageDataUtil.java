@@ -35,7 +35,7 @@ public class ImageDataUtil
     }
 
     /**
-     * Version of vtkImageDataToArray2D for image cubes.
+     * Version of vtkImageDataToArray2D for image cubes, returns a slice through the depth axis.
      *
      * @param image
      * @param slice
@@ -56,6 +56,33 @@ public class ImageDataUtil
                 int index = slice * width * height + j * height + i;
                 array[i][j] = (float)data.GetValue(index);
             }
+
+        return array;
+    }
+
+    /**
+     * Version of vtkImageDataToArray2D for image cubes, returns a column along the depth axis.
+     *
+     * @param image
+     * @param x
+     * @param y
+     * @return
+     */
+    static public float[] vtkImageDataToArray1D(vtkImageData image, int j, int i)
+    {
+        int[] dims = image.GetDimensions();
+        int height = dims[0];
+        int width = dims[1];
+        int depth = dims[2];
+        vtkPointData pointdata = image.GetPointData();
+        vtkFloatArray data = (vtkFloatArray)pointdata.GetScalars();
+        float[] array = new float[depth];
+        for (int k=0; k < depth; ++k)
+        {
+            // calculate index
+            int index = k * width * height + j * height + i;
+            array[k] = (float)data.GetValue(index);
+        }
 
         return array;
     }

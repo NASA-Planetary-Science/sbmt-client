@@ -26,7 +26,6 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
-import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
@@ -51,20 +50,27 @@ public class MultispectralSpectrumInfoPanel extends ModelInfoWindow implements P
         JPanel panel = new JPanel(new BorderLayout());
 
 
-        // add the jfreechart graph
-        XYSeries series = new XYSeries("Spectrum");
 
-        double[] wavelengths = { 0.0, 100.0, 200.0, 300.0 };
-        double[] spectrum = { 0.0, 10.0, 14.1, 15.0 };
-//        double[] wavelengths = this.perspectiveImage.getBandCenters();
-//        double[] spectrum = this.perspectiveImage.getSpectrum();
+        int nspectra = perspectiveImage.getNumberSpectra();
 
-        for (int i=0; i<wavelengths.length; ++i)
-            series.add(wavelengths[i], spectrum[i]);
-        XYDataset xyDataset = new XYSeriesCollection(series);
-        JFreeChart chart = ChartFactory.createXYLineChart
-                ("Image Spectrum", "Wavelength (nm)", "Intensity",
-                        xyDataset, PlotOrientation.VERTICAL, true, true, false);
+        XYSeriesCollection xyDataset = new XYSeriesCollection();
+
+        for (int spectrum = 0; spectrum<nspectra; spectrum++)
+        {
+            double[] wavelengths = this.perspectiveImage.getSpectrumWavelengths(spectrum);
+            double[] values = this.perspectiveImage.getSpectrumValues(spectrum);
+
+            // add the jfreechart graph
+            XYSeries series = new XYSeries("Spectrum " + spectrum);
+
+            for (int i=0; i<wavelengths.length; ++i)
+                series.add(wavelengths[i], values[i]);
+
+            xyDataset.addSeries(series);
+        }
+
+        String units = perspectiveImage.getSpectrumUnits();
+        JFreeChart chart = ChartFactory.createXYLineChart("Image Spectrum", "Wavelength (" + units + ")", "Intensity", xyDataset, PlotOrientation.VERTICAL, true, true, false);
         ChartPanel chartPanel = new ChartPanel(chart);
         chartPanel.setMouseWheelEnabled(true);
 
