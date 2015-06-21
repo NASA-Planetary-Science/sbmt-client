@@ -331,11 +331,19 @@ public class LidarSearchDataCollection extends Model
             // greater than 7 columns, columns 8 or higher are ignored.
             if (vals.length == 4 || vals.length == 5 || vals.length >= 7)
             {
-                time = TimeUtil.str2et(vals[0]);
-                if (time == -Double.MIN_VALUE)
+                try
                 {
-                    in.close();
-                    throw new IOException("Error: Incorrect file format!");
+                    // First try to see if it's a double ET. Otherwise assume it's UTC.
+                    time = Double.parseDouble(vals[0]);
+                }
+                catch (NumberFormatException e)
+                {
+                    time = TimeUtil.str2et(vals[0]);
+                    if (time == -Double.MIN_VALUE)
+                    {
+                        in.close();
+                        throw new IOException("Error: Incorrect file format!");
+                    }
                 }
                 target[0] = Double.parseDouble(vals[1]);
                 target[1] = Double.parseDouble(vals[2]);
@@ -441,6 +449,7 @@ public class LidarSearchDataCollection extends Model
             double time = 0;
             double[] target = {0.0, 0.0, 0.0};
             double[] scpos = {0.0, 0.0, 0.0};
+            boolean noise = false;
 
             try
             {
@@ -455,7 +464,10 @@ public class LidarSearchDataCollection extends Model
             {
                 skip(in, 17 + 8 + 24);
                 time = FileUtil.readDoubleAndSwap(in);
-                skip(in, 8 + 2 * 3 + 2 + 8 + 8 * 4);
+                skip(in, 8 + 2 * 3);
+                short flagStatus = MathUtil.swap(in.readShort());
+                noise = ((flagStatus == 0 || flagStatus == 1) ? false : true);
+                skip(in, 8 + 8 * 4);
                 target[0] = FileUtil.readDoubleAndSwap(in) / 1000.0;
                 target[1] = FileUtil.readDoubleAndSwap(in) / 1000.0;
                 target[2] = FileUtil.readDoubleAndSwap(in) / 1000.0;
@@ -470,7 +482,8 @@ public class LidarSearchDataCollection extends Model
                 throw e;
             }
 
-            originalPoints.add(new LidarPoint(target, scpos, time));
+            if (!noise)
+                originalPoints.add(new LidarPoint(target, scpos, time));
         }
 
         in.close();
