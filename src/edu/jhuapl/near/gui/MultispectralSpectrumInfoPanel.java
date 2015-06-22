@@ -39,6 +39,8 @@ public class MultispectralSpectrumInfoPanel extends ModelInfoWindow implements P
 {
     private ModelManager modelManager;
     private PerspectiveImage perspectiveImage;
+    private XYSeriesCollection xyDataset;
+    private int nspectra;
 
     public MultispectralSpectrumInfoPanel(PerspectiveImage perspectiveImage, ModelManager modelManager)
     {
@@ -49,11 +51,9 @@ public class MultispectralSpectrumInfoPanel extends ModelInfoWindow implements P
 
         JPanel panel = new JPanel(new BorderLayout());
 
+        nspectra = perspectiveImage.getNumberOfSpectralSegments();
 
-
-        int nspectra = perspectiveImage.getNumberOfSpectralSegments();
-
-        XYSeriesCollection xyDataset = new XYSeriesCollection();
+        xyDataset = new XYSeriesCollection();
 
         for (int spectrum = 0; spectrum<nspectra; spectrum++)
         {
@@ -61,7 +61,7 @@ public class MultispectralSpectrumInfoPanel extends ModelInfoWindow implements P
             double[] values = this.perspectiveImage.getSpectrumValues(spectrum);
 
             // add the jfreechart graph
-            XYSeries series = new XYSeries("Spectrum " + spectrum);
+            XYSeries series = new XYSeries("Segment " + spectrum);
 
             for (int i=0; i<wavelengths.length; ++i)
                 series.add(wavelengths[i], values[i]);
@@ -197,5 +197,20 @@ public class MultispectralSpectrumInfoPanel extends ModelInfoWindow implements P
 
     public void propertyChange(PropertyChangeEvent arg0)
     {
+        xyDataset.removeAllSeries();
+
+        for (int spectrum = 0; spectrum<nspectra; spectrum++)
+        {
+            double[] wavelengths = this.perspectiveImage.getSpectrumWavelengths(spectrum);
+            double[] values = this.perspectiveImage.getSpectrumValues(spectrum);
+
+            // add the jfreechart graph
+            XYSeries series = new XYSeries("Spectrum " + spectrum);
+
+            for (int i=0; i<wavelengths.length; ++i)
+                series.add(wavelengths[i], values[i]);
+
+            xyDataset.addSeries(series);
+        }
     }
 }

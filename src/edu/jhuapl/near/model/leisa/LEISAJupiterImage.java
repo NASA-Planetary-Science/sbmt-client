@@ -13,6 +13,7 @@ import edu.jhuapl.near.model.PerspectiveImage;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.util.FileCache;
 import edu.jhuapl.near.util.ImageDataUtil;
+import edu.jhuapl.near.util.Properties;
 
 public class LEISAJupiterImage extends PerspectiveImage
 {
@@ -153,13 +154,13 @@ public class LEISAJupiterImage extends PerspectiveImage
         this.spectrumRegion = spectrumRegion;
 
         // calculate the spectrum values
-        vtkImageData image = this.getRawImage();
+        vtkImageData im = this.getRawImage();
 
-        if (image != null)
+        if (im != null)
         {
             int x = (int)Math.round(spectrumRegion[0][0]);
             int y = (int)Math.round(spectrumRegion[0][1]);
-            float[] pixelColumn = ImageDataUtil.vtkImageDataToArray1D(image, x, y);
+            float[] pixelColumn = ImageDataUtil.vtkImageDataToArray1D(im, x, y);
 
             for (int i=0; i<200; i++)
             {
@@ -170,6 +171,8 @@ public class LEISAJupiterImage extends PerspectiveImage
             {
                 spectrumValues[1][i-200] = 1.0e-12 * (double)pixelColumn[i];
             }
+
+            this.pcs.firePropertyChange(Properties.SPECTRUM_REGION_CHANGED, null, null);
         }
     }
 

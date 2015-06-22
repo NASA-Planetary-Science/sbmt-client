@@ -12,8 +12,9 @@ package edu.jhuapl.near.gui;
 
 import java.awt.Component;
 import java.awt.event.ActionEvent;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -43,7 +44,7 @@ import edu.jhuapl.near.popupmenus.ImagePopupMenu;
 import edu.jhuapl.near.util.IntensityRange;
 
 
-public class ImageInfoPanel extends ModelInfoWindow implements PropertyChangeListener
+public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, MouseMotionListener, PropertyChangeListener
 {
     private vtkEnhancedRenderWindowPanel renWin;
     private Image image;
@@ -54,23 +55,26 @@ public class ImageInfoPanel extends ModelInfoWindow implements PropertyChangeLis
     private vtkPropPicker imagePicker;
     private boolean initialized = false;
 
-    private class MouseListener extends MouseAdapter
-    {
-        @Override
-        public void mouseClicked(MouseEvent e)
-        {
-            renWin.lock();
-            int pickSucceeded = imagePicker.Pick(e.getX(), renWin.getHeight()-e.getY()-1, 0.0, renWin.GetRenderer());
-            renWin.unlock();
-            if (pickSucceeded == 1)
-            {
-                double[] p = imagePicker.GetPickPosition();
-                // Note we reverse x and y so that the pixel is in the form the camera
-                // position/orientation program expects.
-                System.out.println(p[1] + " " + p[0]);
-            }
-        }
-    }
+//    private class MouseListener extends MouseAdapter
+//    {
+//        @Override
+//        public void mouseClicked(MouseEvent e)
+//        {
+//            renWin.lock();
+//            int pickSucceeded = imagePicker.Pick(e.getX(), renWin.getHeight()-e.getY()-1, 0.0, renWin.GetRenderer());
+//            renWin.unlock();
+//            if (pickSucceeded == 1)
+//            {
+//                double[] p = imagePicker.GetPickPosition();
+//                // Note we reverse x and y so that the pixel is in the form the camera
+//                // position/orientation program expects.
+//                System.out.println(p[1] + " " + p[0]);
+//                double[][] spectrumRegion = { { p[1], p[2] } };
+//                if (this.image instanceof PerspectiveImage)
+//                    this.image.set
+//            }
+//        }
+//    }
 
     /** Creates new form ImageInfoPanel2 */
     public ImageInfoPanel(
@@ -171,7 +175,8 @@ public class ImageInfoPanel extends ModelInfoWindow implements PropertyChangeLis
         vtkPropCollection smallBodyPickList = imagePicker.GetPickList();
         smallBodyPickList.RemoveAllItems();
         imagePicker.AddPickList(actor);
-        renWin.addMouseListener(new MouseListener());
+        renWin.addMouseListener(this);
+        renWin.addMouseMotionListener(this);
 
         // Trying to add a vtkEnhancedRenderWindowPanel in the netbeans gui
         // does not seem to work so instead add it here.
@@ -300,6 +305,72 @@ public class ImageInfoPanel extends ModelInfoWindow implements PropertyChangeLis
     public Model getCollectionModel()
     {
         return imageCollection;
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent e)
+    {
+//        updateSpectrumRegion(e);
+    }
+
+
+
+    @Override
+    public void mouseEntered(MouseEvent e)
+    {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e)
+    {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e)
+    {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e)
+    {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void mouseDragged(MouseEvent e)
+    {
+        updateSpectrumRegion(e);
+    }
+
+    private void updateSpectrumRegion(MouseEvent e)
+    {
+        renWin.lock();
+        int pickSucceeded = imagePicker.Pick(e.getX(), renWin.getHeight()-e.getY()-1, 0.0, renWin.GetRenderer());
+        renWin.unlock();
+        if (pickSucceeded == 1)
+        {
+            double[] p = imagePicker.GetPickPosition();
+            // Note we reverse x and y so that the pixel is in the form the camera
+            // position/orientation program expects.
+            System.out.println(p[1] + " " + p[0]);
+            double[][] spectrumRegion = { { p[0], p[1] } };
+            if (image instanceof PerspectiveImage)
+                ((PerspectiveImage)image).setSpectrumRegion(spectrumRegion);
+        }
+    }
+
+    @Override
+    public void mouseMoved(MouseEvent arg0)
+    {
+        // TODO Auto-generated method stub
+
     }
 
     public void propertyChange(PropertyChangeEvent arg0)
