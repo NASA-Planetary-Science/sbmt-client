@@ -203,7 +203,7 @@ void getScOrientation(double et, string body, string frame, double scposb[3], do
 
     const char* target = "NEW HORIZONS";
     string ref = string("IAU_") + body.c_str();
-    const char* abcorr = "NONE";
+    const char* abcorr = "LT+S";
     const char* obs = body.c_str();
 
     spkpos_c(target, et, ref.c_str(), abcorr, obs, scposb, &lt);

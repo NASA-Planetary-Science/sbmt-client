@@ -181,7 +181,7 @@ void getScOrientation(double et, string body, double scposb[3], double boredir[3
     double xo,yo;
     const char* target = "NEW HORIZONS";
     string ref = string("IAU_") + body.c_str();
-    const char* abcorr = "NONE";
+    const char* abcorr = "LT+S";
     const char* obs = body.c_str();
     const char* frame = "NH_LORRI";
 
