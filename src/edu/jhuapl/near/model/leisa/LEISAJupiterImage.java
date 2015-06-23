@@ -147,10 +147,21 @@ public class LEISAJupiterImage extends PerspectiveImage
             }
     }
 
+
+    private double clamp(double value, double min, double max)
+    {
+        if (value < min)
+            return min;
+        else if (value > max)
+            return max;
+        else
+            return value;
+    }
+
     @Override
     public void setSpectrumRegion(double[][] spectrumRegion)
     {
-        System.out.println("Setting spectrum region: " + spectrumRegion[0][0] + ", " + spectrumRegion[0][1]);
+//        System.out.println("Setting spectrum region: " + spectrumRegion[0][0] + ", " + spectrumRegion[0][1]);
         this.spectrumRegion = spectrumRegion;
 
         // calculate the spectrum values
@@ -162,14 +173,15 @@ public class LEISAJupiterImage extends PerspectiveImage
             int y = (int)Math.round(spectrumRegion[0][1]);
             float[] pixelColumn = ImageDataUtil.vtkImageDataToArray1D(im, x, y);
 
+            // there are occasional garbage values (extremely large or negative) so I'm clamping these for now. -turnerj1
             for (int i=0; i<200; i++)
             {
-                spectrumValues[0][i] = 1.0e-12 * (double)pixelColumn[i];
+                spectrumValues[0][i] = clamp(1.0e-12 * (double)pixelColumn[i], 0.0, 1000.0);
             }
 
             for (int i=200; i<256; i++)
             {
-                spectrumValues[1][i-200] = 1.0e-12 * (double)pixelColumn[i];
+                spectrumValues[1][i-200] = clamp(1.0e-12 * (double)pixelColumn[i], 0.0, 1000.0);
             }
 
             this.pcs.firePropertyChange(Properties.SPECTRUM_REGION_CHANGED, null, null);

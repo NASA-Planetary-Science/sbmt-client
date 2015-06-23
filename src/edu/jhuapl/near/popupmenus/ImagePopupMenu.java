@@ -38,6 +38,8 @@ import edu.jhuapl.near.model.ImageCollection;
 import edu.jhuapl.near.model.PerspectiveImage;
 import edu.jhuapl.near.model.PerspectiveImageBoundary;
 import edu.jhuapl.near.model.PerspectiveImageBoundaryCollection;
+import edu.jhuapl.near.model.leisa.LEISAJupiterImage;
+import edu.jhuapl.near.model.mvic.MVICQuadJupiterImage;
 import edu.jhuapl.near.util.ColorUtil;
 import edu.jhuapl.near.util.FileCache;
 import edu.jhuapl.near.util.FileUtil;
@@ -409,7 +411,9 @@ public class ImagePopupMenu extends PopupMenu
             try
             {
                 imageCollection.addImage(imageKey);
-                spectrumPanelManager.addData(imageCollection.getImage(imageKey));
+                Image image = imageCollection.getImage(imageKey);
+                if (image instanceof LEISAJupiterImage || image instanceof MVICQuadJupiterImage)
+                    spectrumPanelManager.addData(imageCollection.getImage(imageKey));
 
                 updateMenuItems();
             }

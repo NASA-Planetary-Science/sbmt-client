@@ -323,6 +323,34 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
      */
     public double[][] getSpectrumRegion() { return null; }
 
+    public void setPickedPosition(double[] position)
+    {
+//        System.out.println("PerspectiveImage.setPickedPosition(): " + position[0] + ", " + position[1] + ", " + position[2]);
+        double[] pixelPosition = getPixelFromPoint(position);
+        double[][] region = { { pixelPosition[0], pixelPosition[1] } };
+        setSpectrumRegion(region);
+    }
+
+    public double[] getPixelFromPoint(double[] pt)
+    {
+        double[] uv = new double[2];
+        Frustum frustum = getFrustum();
+        frustum.computeTextureCoordinates(pt, getImageWidth(), getImageHeight(), uv);
+
+        double[] pixel = new double[2];
+        pixel[0] = uv[0] * getImageHeight();
+        pixel[1] = uv[1] * getImageWidth();
+
+        return pixel;
+    }
+
+    public double getPixelDistance(double[] pt1, double[] pt2)
+    {
+        double[] pixel1 = getPixelFromPoint(pt1);
+        double[] pixel2 = getPixelFromPoint(pt2);
+
+        return MathUtil.distanceBetween(pixel1, pixel2);
+    }
 
     protected void loadImageInfo(
             String infoFilename,

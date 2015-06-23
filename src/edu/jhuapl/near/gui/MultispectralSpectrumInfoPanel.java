@@ -40,7 +40,7 @@ public class MultispectralSpectrumInfoPanel extends ModelInfoWindow implements P
     private ModelManager modelManager;
     private PerspectiveImage perspectiveImage;
     private XYSeriesCollection xyDataset;
-    private int nspectra;
+    private int nsegments;
 
     public MultispectralSpectrumInfoPanel(PerspectiveImage perspectiveImage, ModelManager modelManager)
     {
@@ -51,11 +51,11 @@ public class MultispectralSpectrumInfoPanel extends ModelInfoWindow implements P
 
         JPanel panel = new JPanel(new BorderLayout());
 
-        nspectra = perspectiveImage.getNumberOfSpectralSegments();
+        nsegments = perspectiveImage.getNumberOfSpectralSegments();
 
         xyDataset = new XYSeriesCollection();
 
-        for (int spectrum = 0; spectrum<nspectra; spectrum++)
+        for (int spectrum = 0; spectrum<nsegments; spectrum++)
         {
             double[] wavelengths = this.perspectiveImage.getSpectrumWavelengths(spectrum);
             double[] values = this.perspectiveImage.getSpectrumValues(spectrum);
@@ -199,13 +199,13 @@ public class MultispectralSpectrumInfoPanel extends ModelInfoWindow implements P
     {
         xyDataset.removeAllSeries();
 
-        for (int spectrum = 0; spectrum<nspectra; spectrum++)
+        for (int segment = 0; segment<nsegments; segment++)
         {
-            double[] wavelengths = this.perspectiveImage.getSpectrumWavelengths(spectrum);
-            double[] values = this.perspectiveImage.getSpectrumValues(spectrum);
+            double[] wavelengths = this.perspectiveImage.getSpectrumWavelengths(segment);
+            double[] values = this.perspectiveImage.getSpectrumValues(segment);
 
             // add the jfreechart graph
-            XYSeries series = new XYSeries("Spectrum " + spectrum);
+            XYSeries series = new XYSeries("Segment " + segment);
 
             for (int i=0; i<wavelengths.length; ++i)
                 series.add(wavelengths[i], values[i]);

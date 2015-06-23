@@ -22,8 +22,11 @@ import vtk.vtkRenderer;
 import edu.jhuapl.near.gui.Renderer;
 import edu.jhuapl.near.gui.Renderer.AxisType;
 import edu.jhuapl.near.gui.StatusBar;
+import edu.jhuapl.near.model.Image;
+import edu.jhuapl.near.model.ImageCollection;
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelManager;
+import edu.jhuapl.near.model.PerspectiveImage;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.popupmenus.PopupManager;
 import edu.jhuapl.near.util.LatLon;
@@ -124,6 +127,16 @@ public class DefaultPicker extends Picker
 
             if (model != null)
             {
+//                System.out.println("Picked non-small body: " + model.getClass().getSimpleName());
+                if (model instanceof ImageCollection)
+                {
+                    ImageCollection imageCollection = (ImageCollection)model;
+                    Image firstImage = imageCollection.getImages().iterator().next();
+//                    System.out.println("Picked image: " + firstImage.getClass().getSimpleName());
+                    if (firstImage instanceof PerspectiveImage)
+                        setPositionInfoOnPerspectiveImage(e, (PerspectiveImage)firstImage);
+                }
+
                 int cellId = mousePressNonSmallBodyCellPicker.GetCellId();
                 double[] pickPosition = mousePressNonSmallBodyCellPicker.GetPickPosition();
                 String text = model.getClickStatusBarText(pickedActor, cellId, pickPosition);
@@ -146,6 +159,8 @@ public class DefaultPicker extends Picker
 
                 if (model != null)
                 {
+                    System.out.println("Picked small body: " + model.getClass().getSimpleName());
+
                     int cellId = smallBodyCellPicker.GetCellId();
                     double[] pickPosition = smallBodyCellPicker.GetPickPosition();
                     String text = model.getClickStatusBarText(pickedActor, cellId, pickPosition);
@@ -319,6 +334,25 @@ public class DefaultPicker extends Picker
         else
         {
             statusBar.setRightText("Distance: " + distanceStr + " ");
+        }
+    }
+
+    private void setPositionInfoOnPerspectiveImage(MouseEvent e, PerspectiveImage pi)
+    {
+//        System.out.println("Setting position on image" + pi.getImageName());
+
+        if (renWin.GetRenderWindow().GetNeverRendered() > 0)
+            return;
+
+        vtkCamera activeCamera = renWin.GetRenderer().GetActiveCamera();
+        double[] cameraPos = activeCamera.GetPosition();
+
+        int pickSucceeded = doPick(e, smallBodyCellPicker, renWin);
+
+        if (pickSucceeded == 1)
+        {
+            double[] pos = smallBodyCellPicker.GetPickPosition();
+            pi.setPickedPosition(pos);
         }
     }
 
