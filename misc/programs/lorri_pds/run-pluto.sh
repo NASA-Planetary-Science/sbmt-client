@@ -13,7 +13,7 @@ runCreateInfoFiles() {
     rm -f $INFO_DIR/*
     mkdir -p $INFO_DIR
     OUTPUT_FILE_LIST=/project/nearsdc/data/NEWHORIZONS/$1/IMAGING/imagelist.txt
-    CMD="./create_info_files $1 /project/lorri/kernels/nh_auto.mk $LORRI_LABEL_FILES $INFO_DIR $OUTPUT_FILE_LIST"
+    CMD="./create_info_files $1 ./nh_spice.mk $LORRI_LABEL_FILES $INFO_DIR $OUTPUT_FILE_LIST"
     $CMD
 }
 
