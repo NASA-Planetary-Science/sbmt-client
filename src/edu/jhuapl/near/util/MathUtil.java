@@ -1,5 +1,7 @@
 package edu.jhuapl.near.util;
 
+import java.util.Arrays;
+
 /**
  * This class contains miscellaneous geometry functions. Many of these functions
  * are from the SPICE toolkit that have been ported to Java.
@@ -678,4 +680,21 @@ public class MathUtil
         }
         System.out.println("]");
     }
+
+    static public double[] copy(double[] src)
+    {
+        double[] dst = Arrays.copyOf(src, src.length);
+        return dst;
+    }
+
+    static public double[][] copy(double[][] src)
+    {
+        double[][] dst = new double[src.length][];
+        for (int i = 0; i < src.length; i++) {
+            dst[i] = Arrays.copyOf(src[i], src[i].length);
+        }
+        return dst;
+    }
+
+
 }

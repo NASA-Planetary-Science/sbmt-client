@@ -44,7 +44,7 @@ public class Frustum
      * @param pt desired point to compute texture coordinates for
      * @param uv returned texture coordinates as a 2 element vector
      */
-    public void computeTextureCoordinates(double[] pt, int width, int height, double[] uv)
+    public void computeTextureCoordinatesFromPoint(double[] pt, int width, int height, double[] uv)
     {
         double[] vec = {
              pt[0] - origin[0],
@@ -81,6 +81,35 @@ public class Frustum
     }
 
     /**
+     * Given an offset point from the image center in texture coordinates, return an offset vector
+     * of the point from the image center in world coordinates assuming the frustum represents the
+     * field of the view of a camera.
+     * @param pt resulting offset vector in world coordinates as a 2 element vector
+     * @param uv texture coordinates offset from center of image as a 2 element vector
+     */
+    public void computeOffsetFromTextureCoordinates(double[] uv, int width, int height, double[] offset)
+    {
+//        readjustTextureCoordinates(width, height, uv);
+        double[] center = new double[3];
+        MathUtil.midpointBetween(ul, lr, center);
+        double[] hvec = new double[3];
+        MathUtil.vsub(ll, ul, hvec);
+        double[] wvec = new double[3];
+        MathUtil.vsub(ur, ul, wvec);
+        double[] hnorm = new double[3];
+        double[] wnorm = new double[3];
+        double hsize = MathUtil.unorm(hvec, hnorm);
+        double wsize = MathUtil.unorm(wvec, wnorm);
+        double dh = uv[1] * hsize / (height - 1);
+        double dw = uv[0] * wsize / (width - 1);
+        double[] hdir = new double[3];
+        double[] wdir = new double[3];
+        MathUtil.vscl(dh, hnorm, hdir);
+        MathUtil.vscl(dw, wnorm, wdir);
+        MathUtil.vadd(hdir, wdir, offset);
+    }
+
+    /**
      * This function adjusts the texture coordinates slightly. The reason for this is
      * that in opengl, a texture coordinate value of, say, 0 (or anywhere along the boundary)
      * corresponds to the outer boundary of the pixels along the image border, not the center of
@@ -109,5 +138,25 @@ public class Frustum
         // We need to map the [0, 1] interval into the [umin, umax] and [vmin, vmax] intervals
         uv[0] = (umax - umin) * uv[0] + umin;
         uv[1] = (vmax - vmin) * uv[1] + vmin;
+    }
+
+
+    /**
+     * Inverse of adjustTextureCoordinates()
+     *
+     * @param width
+     * @param height
+     * @param uv
+     */
+    public static void readjustTextureCoordinates(int width, int height, double[] uv)
+    {
+        final double umin = 1.0 / (2.0*height);
+        final double umax = 1.0 - umin;
+        final double vmin = 1.0 / (2.0*width);
+        final double vmax = 1.0 - vmin;
+
+        // We need to map the [0, 1] interval into the [umin, umax] and [vmin, vmax] intervals
+        uv[0] = (uv[0] - umin) / (umax - umin);
+        uv[1] = (uv[1] - vmin) / (vmax - vmin);
     }
 }

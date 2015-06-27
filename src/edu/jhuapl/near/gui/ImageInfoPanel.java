@@ -54,6 +54,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
     private vtkImageReslice reslice;
     private vtkPropPicker imagePicker;
     private boolean initialized = false;
+    private boolean centerFrustumMode = false;
 
 //    private class MouseListener extends MouseAdapter
 //    {
@@ -310,7 +311,11 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
     @Override
     public void mouseClicked(MouseEvent e)
     {
-//        updateSpectrumRegion(e);
+        if (centerFrustumMode)
+        {
+            centerFrustumOnPixel(e);
+            ((PerspectiveImage)image).firePropertyChange();
+        }
     }
 
 
@@ -366,6 +371,29 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
         }
     }
 
+    private void centerFrustumOnPixel(MouseEvent e)
+    {
+        System.out.println("Center Frustum");
+
+        renWin.lock();
+        int pickSucceeded = imagePicker.Pick(e.getX(), renWin.getHeight()-e.getY()-1, 0.0, renWin.GetRenderer());
+        renWin.unlock();
+        if (pickSucceeded == 1)
+        {
+            double[] p = imagePicker.GetPickPosition();
+            // Note we reverse x and y so that the pixel is in the form the camera
+            // position/orientation program expects.
+            if (image instanceof PerspectiveImage)
+            {
+                PerspectiveImage pi = (PerspectiveImage)image;
+                double centerI = pi.getImageHeight() / 2.0;
+                double centerJ = pi.getImageWidth() / 2.0;
+                double[] offset = { p[0] - centerI, p[1] - centerJ };
+                pi.setFrustumOffset(offset);
+            }
+        }
+    }
+
     @Override
     public void mouseMoved(MouseEvent arg0)
     {
@@ -392,7 +420,6 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
 
         slider = new com.jidesoft.swing.RangeSlider();
         jLabel1 = new javax.swing.JLabel();
-        interpolateCheckBox = new javax.swing.JCheckBox();
         jLabel7 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         table = new javax.swing.JTable();
@@ -405,6 +432,9 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
         jLabel6 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
+        jPanel2 = new javax.swing.JPanel();
+        interpolateCheckBox = new javax.swing.JCheckBox();
+        centerFrustumCheckBox = new javax.swing.JCheckBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         getContentPane().setLayout(new java.awt.GridBagLayout());
@@ -434,21 +464,6 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(3, 6, 3, 0);
         getContentPane().add(jLabel1, gridBagConstraints);
-
-        interpolateCheckBox.setSelected(true);
-        interpolateCheckBox.setText("Interpolate Image");
-        interpolateCheckBox.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                interpolateCheckBoxActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 3;
-        gridBagConstraints.gridwidth = 2;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 0);
-        getContentPane().add(interpolateCheckBox, gridBagConstraints);
 
         jLabel7.setText("Crop Image:");
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -567,6 +582,35 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         getContentPane().add(jPanel1, gridBagConstraints);
 
+        jPanel2.setLayout(new java.awt.GridBagLayout());
+
+        interpolateCheckBox.setSelected(true);
+        interpolateCheckBox.setText("Interpolate Image");
+        interpolateCheckBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                interpolateCheckBoxActionPerformed(evt);
+            }
+        });
+        jPanel2.add(interpolateCheckBox, new java.awt.GridBagConstraints());
+
+        centerFrustumCheckBox.setText("Center Frustum Mode");
+        centerFrustumCheckBox.setName(""); // NOI18N
+        centerFrustumCheckBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                centerFrustumCheckBoxActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        jPanel2.add(centerFrustumCheckBox, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.gridwidth = 2;
+        getContentPane().add(jPanel2, gridBagConstraints);
+
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
@@ -604,6 +648,11 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
         croppingChanged();
     }//GEN-LAST:event_bottomSpinnerStateChanged
 
+    private void centerFrustumCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_centerFrustumCheckBoxActionPerformed
+        System.out.println("Center Frustom Mode: " + centerFrustumCheckBox.isSelected());
+        centerFrustumMode = centerFrustumCheckBox.isSelected();
+    }//GEN-LAST:event_centerFrustumCheckBoxActionPerformed
+
     private void croppingChanged()
     {
         if (!initialized)
@@ -621,6 +670,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JSpinner bottomSpinner;
+    private javax.swing.JCheckBox centerFrustumCheckBox;
     private javax.swing.JCheckBox interpolateCheckBox;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel3;
@@ -629,6 +679,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSpinner leftSpinner;
     private javax.swing.JSpinner rightSpinner;
