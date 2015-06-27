@@ -311,9 +311,16 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
     @Override
     public void mouseClicked(MouseEvent e)
     {
-        if (centerFrustumMode)
+        if (centerFrustumMode && e.getButton() == 1)
         {
-            centerFrustumOnPixel(e);
+            if (e.isAltDown())
+            {
+                System.out.println("Resetting pointing...");
+                ((PerspectiveImage)image).resetSpacecraftState();
+            }
+            else
+                centerFrustumOnPixel(e);
+
             ((PerspectiveImage)image).firePropertyChange();
         }
     }
@@ -380,16 +387,17 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
         renWin.unlock();
         if (pickSucceeded == 1)
         {
-            double[] p = imagePicker.GetPickPosition();
+            double[] pickPosition = imagePicker.GetPickPosition();
             // Note we reverse x and y so that the pixel is in the form the camera
             // position/orientation program expects.
             if (image instanceof PerspectiveImage)
             {
                 PerspectiveImage pi = (PerspectiveImage)image;
-                double centerI = pi.getImageHeight() / 2.0;
-                double centerJ = pi.getImageWidth() / 2.0;
-                double[] offset = { p[0] - centerI, p[1] - centerJ };
-                pi.setFrustumOffset(offset);
+//                double centerI = pi.getImageHeight() / 2.0;
+//                double centerJ = pi.getImageWidth() / 2.0;
+//                double[] offset = { p[0] - centerI, p[1] - centerJ };
+//                pi.setFrustumOffset(offset);
+                pi.setFrustumCenter(pickPosition);
             }
         }
     }

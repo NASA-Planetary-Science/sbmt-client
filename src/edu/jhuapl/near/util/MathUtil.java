@@ -2,6 +2,9 @@ package edu.jhuapl.near.util;
 
 import java.util.Arrays;
 
+import org.apache.commons.math3.geometry.euclidean.threed.Rotation;
+import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
+
 /**
  * This class contains miscellaneous geometry functions. Many of these functions
  * are from the SPICE toolkit that have been ported to Java.
@@ -690,10 +693,21 @@ public class MathUtil
     static public double[][] copy(double[][] src)
     {
         double[][] dst = new double[src.length][];
-        for (int i = 0; i < src.length; i++) {
+        for (int i = 0; i < src.length; i++)
+        {
             dst[i] = Arrays.copyOf(src[i], src[i].length);
         }
         return dst;
+    }
+
+    static public void rotateVector(double[] vectorIn, Rotation rotation, double[] vectorOut)
+    {
+        Vector3D vector3DIn = new Vector3D(vectorIn);
+        Vector3D vector3DOut = rotation.applyTo(vector3DIn);
+        double[] result = vector3DOut.toArray();
+        for (int i=0; i<vectorOut.length; i++)
+            vectorOut[i] = result[i];
+//            System.arraycopy(result, 0, vectorOut, 0, vectorOut.length);
     }
 
 

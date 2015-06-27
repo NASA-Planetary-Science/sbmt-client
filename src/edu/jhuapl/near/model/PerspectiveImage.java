@@ -225,7 +225,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
             loadImage();
     }
 
-    public void resetSpacecraftState()
+    private void copySpacecraftState()
     {
         int nslices = getNumberBands();
         for (int i = 0; i<nslices; i++)
@@ -238,9 +238,20 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
             boresightDirectionAdjusted = MathUtil.copy(boresightDirectionOriginal);
             upVectorAdjusted = MathUtil.copy(upVectorOriginal);
             sunVectorAdjusted = MathUtil.copy(sunVectorOriginal);
+        }
+    }
 
+    public void resetSpacecraftState()
+    {
+        copySpacecraftState();
+        int nslices = getNumberBands();
+        for (int i = 0; i<nslices; i++)
+        {
             frusta[i] = null;
         }
+
+        loadFootprint();
+        calculateFrustum();
     }
 
     protected double getFocalLength() { return 0.0; }
@@ -345,37 +356,90 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
      */
     public void setSpectrumRegion(double[][] vertices) { }
 
-    public void setFrustumOffset(double[] pixelOffset)
+    public void setFrustumCenter(double[] pixelCenter)
     {
-        System.out.println("setFrustumOffset(): " + pixelOffset[1] + " " + pixelOffset[0]);
-//        Frustum frustum = this.getFrustum();
-//        int height = getImageHeight();
-//        int width = getImageWidth();
-//        frustum.computeOffsetFromTextureCoordinates(pixelOffset, width, height, frustumOffset);
-//        offsetFrustumBy(frustumOffset);
-//        loadFootprint();
+        System.out.println("setFrustumOffset(): " + pixelCenter[1] + " " + pixelCenter[0]);
+        int line = (int)Math.round(pixelCenter[0]);
+        int sample = (int)Math.round(pixelCenter[1]);
+
+        double[] newCenterDirection = getPixelDirection(sample, line);
+        // adjust wrt the original spacecraft pointing direction, not the previous adjusted one
+        copySpacecraftState();
+        adjustFrustumDirectionTo(newCenterDirection);
     }
 
-//    private void offsetFrustumBy(double[] frustumOffset)
-//    {
-//        int nslices = getNumberBands();
-//        for (int i = 0; i<nslices; i++)
-//        {
-//            MathUtil.vadd(frustum1Adjusted[i], frustumOffset, frustum1Adjusted[i]);
-//            MathUtil.vadd(frustum2Adjusted[i], frustumOffset, frustum2Adjusted[i]);
-//            MathUtil.vadd(frustum3Adjusted[i], frustumOffset, frustum3Adjusted[i]);
-//            MathUtil.vadd(frustum4Adjusted[i], frustumOffset, frustum4Adjusted[i]);
-//            MathUtil.vadd(boresightDirectionAdjusted[i], frustumOffset, boresightDirectionAdjusted[i]);
-//
-//            MathUtil.vhat(frustum1Adjusted[i], frustum1Adjusted[i]);
-//            MathUtil.vhat(frustum2Adjusted[i], frustum2Adjusted[i]);
-//            MathUtil.vhat(frustum3Adjusted[i], frustum3Adjusted[i]);
-//            MathUtil.vhat(frustum4Adjusted[i], frustum4Adjusted[i]);
-//            MathUtil.vhat(boresightDirectionAdjusted[i], boresightDirectionAdjusted[i]);
-//
-//            frusta[i] = null;
-//        }
-//    }
+    private void adjustFrustumDirectionTo(double[] newDirection)
+    {
+        Vector3D oldDirectionVector = new Vector3D(boresightDirectionOriginal[currentSlice]);
+        Vector3D newDirectionVector = new Vector3D(newDirection);
+
+        Rotation rotation = new Rotation(oldDirectionVector, newDirectionVector);
+//        Vector3D axis = new Vector3D(0.0, 0.0, 1.0);
+//        double angle = Math.PI / 4.0;
+//        Rotation rotation = new Rotation(axis, angle);
+
+        int nslices = getNumberBands();
+        for (int i = 0; i<nslices; i++)
+        {
+            MathUtil.rotateVector(frustum1Original[i], rotation, frustum1Adjusted[i]);
+            MathUtil.rotateVector(frustum2Original[i], rotation, frustum2Adjusted[i]);
+            MathUtil.rotateVector(frustum3Original[i], rotation, frustum3Adjusted[i]);
+            MathUtil.rotateVector(frustum4Original[i], rotation, frustum4Adjusted[i]);
+            MathUtil.rotateVector(boresightDirectionOriginal[i], rotation, boresightDirectionAdjusted[i]);
+
+            frusta[i] = null;
+        }
+
+        loadFootprint();
+        calculateFrustum();
+    }
+
+    private void calculateFrustum()
+    {
+        System.out.println("recalculateFrustum()");
+        vtkPolyData frus = new vtkPolyData();
+
+        vtkPoints points = new vtkPoints();
+        vtkCellArray lines = new vtkCellArray();
+
+        vtkIdList idList = new vtkIdList();
+        idList.SetNumberOfIds(2);
+
+        double dx = MathUtil.vnorm(spacecraftPositionAdjusted[currentSlice]) + smallBodyModel.getBoundingBoxDiagonalLength();
+        double[] origin = spacecraftPositionAdjusted[currentSlice];
+        double[] UL = {origin[0]+frustum1Adjusted[currentSlice][0]*dx, origin[1]+frustum1Adjusted[currentSlice][1]*dx, origin[2]+frustum1Adjusted[currentSlice][2]*dx};
+        double[] UR = {origin[0]+frustum2Adjusted[currentSlice][0]*dx, origin[1]+frustum2Adjusted[currentSlice][1]*dx, origin[2]+frustum2Adjusted[currentSlice][2]*dx};
+        double[] LL = {origin[0]+frustum3Adjusted[currentSlice][0]*dx, origin[1]+frustum3Adjusted[currentSlice][1]*dx, origin[2]+frustum3Adjusted[currentSlice][2]*dx};
+        double[] LR = {origin[0]+frustum4Adjusted[currentSlice][0]*dx, origin[1]+frustum4Adjusted[currentSlice][1]*dx, origin[2]+frustum4Adjusted[currentSlice][2]*dx};
+
+        points.InsertNextPoint(spacecraftPositionAdjusted[currentSlice]);
+        points.InsertNextPoint(UL);
+        points.InsertNextPoint(UR);
+        points.InsertNextPoint(LL);
+        points.InsertNextPoint(LR);
+
+        idList.SetId(0, 0);
+        idList.SetId(1, 1);
+        lines.InsertNextCell(idList);
+        idList.SetId(0, 0);
+        idList.SetId(1, 2);
+        lines.InsertNextCell(idList);
+        idList.SetId(0, 0);
+        idList.SetId(1, 3);
+        lines.InsertNextCell(idList);
+        idList.SetId(0, 0);
+        idList.SetId(1, 4);
+        lines.InsertNextCell(idList);
+
+        frus.SetPoints(points);
+        frus.SetLines(lines);
+
+
+        vtkPolyDataMapper frusMapper = new vtkPolyDataMapper();
+        frusMapper.SetInput(frus);
+
+        frustumActor.SetMapper(frusMapper);
+    }
 
     /**
      * Return the multispectral image's spectrum region in pixel space.
@@ -1114,7 +1178,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         }
 
         // copy loaded state values into the adjusted values
-        resetSpacecraftState();
+        copySpacecraftState();
     }
 
     public vtkImageData getRawImage()
@@ -1167,7 +1231,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
     public ArrayList<vtkProp> getProps()
     {
-//        System.out.println("getProps()");
+        System.out.println("getProps()");
         if (footprintActor == null)
         {
             loadFootprint();
@@ -1193,49 +1257,11 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
         if (frustumActor == null)
         {
-            vtkPolyData frus = new vtkPolyData();
-
-            vtkPoints points = new vtkPoints();
-            vtkCellArray lines = new vtkCellArray();
-
-            vtkIdList idList = new vtkIdList();
-            idList.SetNumberOfIds(2);
-
-            double dx = MathUtil.vnorm(spacecraftPositionAdjusted[currentSlice]) + smallBodyModel.getBoundingBoxDiagonalLength();
-            double[] origin = spacecraftPositionAdjusted[currentSlice];
-            double[] UL = {origin[0]+frustum1Adjusted[currentSlice][0]*dx, origin[1]+frustum1Adjusted[currentSlice][1]*dx, origin[2]+frustum1Adjusted[currentSlice][2]*dx};
-            double[] UR = {origin[0]+frustum2Adjusted[currentSlice][0]*dx, origin[1]+frustum2Adjusted[currentSlice][1]*dx, origin[2]+frustum2Adjusted[currentSlice][2]*dx};
-            double[] LL = {origin[0]+frustum3Adjusted[currentSlice][0]*dx, origin[1]+frustum3Adjusted[currentSlice][1]*dx, origin[2]+frustum3Adjusted[currentSlice][2]*dx};
-            double[] LR = {origin[0]+frustum4Adjusted[currentSlice][0]*dx, origin[1]+frustum4Adjusted[currentSlice][1]*dx, origin[2]+frustum4Adjusted[currentSlice][2]*dx};
-
-            points.InsertNextPoint(spacecraftPositionAdjusted[currentSlice]);
-            points.InsertNextPoint(UL);
-            points.InsertNextPoint(UR);
-            points.InsertNextPoint(LL);
-            points.InsertNextPoint(LR);
-
-            idList.SetId(0, 0);
-            idList.SetId(1, 1);
-            lines.InsertNextCell(idList);
-            idList.SetId(0, 0);
-            idList.SetId(1, 2);
-            lines.InsertNextCell(idList);
-            idList.SetId(0, 0);
-            idList.SetId(1, 3);
-            lines.InsertNextCell(idList);
-            idList.SetId(0, 0);
-            idList.SetId(1, 4);
-            lines.InsertNextCell(idList);
-
-            frus.SetPoints(points);
-            frus.SetLines(lines);
-
-
-            vtkPolyDataMapper frusMapper = new vtkPolyDataMapper();
-            frusMapper.SetInput(frus);
 
             frustumActor = new vtkActor();
-            frustumActor.SetMapper(frusMapper);
+
+            calculateFrustum();
+
             vtkProperty frustumProperty = frustumActor.GetProperty();
             frustumProperty.SetColor(0.0, 1.0, 0.0);
             frustumProperty.SetLineWidth(2.0);
