@@ -361,17 +361,17 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 //        int nslices = getNumberBands();
 //        for (int i = 0; i<nslices; i++)
 //        {
-//            MathUtil.vadd(frustum1Original[i], frustumOffset, frustum1Original[i]);
-//            MathUtil.vadd(frustum2Original[i], frustumOffset, frustum2Original[i]);
-//            MathUtil.vadd(frustum3Original[i], frustumOffset, frustum3Original[i]);
-//            MathUtil.vadd(frustum4Original[i], frustumOffset, frustum4Original[i]);
-//            MathUtil.vadd(boresightDirectionOriginal[i], frustumOffset, boresightDirectionOriginal[i]);
+//            MathUtil.vadd(frustum1Adjusted[i], frustumOffset, frustum1Adjusted[i]);
+//            MathUtil.vadd(frustum2Adjusted[i], frustumOffset, frustum2Adjusted[i]);
+//            MathUtil.vadd(frustum3Adjusted[i], frustumOffset, frustum3Adjusted[i]);
+//            MathUtil.vadd(frustum4Adjusted[i], frustumOffset, frustum4Adjusted[i]);
+//            MathUtil.vadd(boresightDirectionAdjusted[i], frustumOffset, boresightDirectionAdjusted[i]);
 //
-//            MathUtil.vhat(frustum1Original[i], frustum1Original[i]);
-//            MathUtil.vhat(frustum2Original[i], frustum2Original[i]);
-//            MathUtil.vhat(frustum3Original[i], frustum3Original[i]);
-//            MathUtil.vhat(frustum4Original[i], frustum4Original[i]);
-//            MathUtil.vhat(boresightDirectionOriginal[i], boresightDirectionOriginal[i]);
+//            MathUtil.vhat(frustum1Adjusted[i], frustum1Adjusted[i]);
+//            MathUtil.vhat(frustum2Adjusted[i], frustum2Adjusted[i]);
+//            MathUtil.vhat(frustum3Adjusted[i], frustum3Adjusted[i]);
+//            MathUtil.vhat(frustum4Adjusted[i], frustum4Adjusted[i]);
+//            MathUtil.vhat(boresightDirectionAdjusted[i], boresightDirectionAdjusted[i]);
 //
 //            frusta[i] = null;
 //        }
@@ -1201,14 +1201,14 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
             vtkIdList idList = new vtkIdList();
             idList.SetNumberOfIds(2);
 
-            double dx = MathUtil.vnorm(spacecraftPositionOriginal[currentSlice]) + smallBodyModel.getBoundingBoxDiagonalLength();
-            double[] origin = spacecraftPositionOriginal[currentSlice];
-            double[] UL = {origin[0]+frustum1Original[currentSlice][0]*dx, origin[1]+frustum1Original[currentSlice][1]*dx, origin[2]+frustum1Original[currentSlice][2]*dx};
-            double[] UR = {origin[0]+frustum2Original[currentSlice][0]*dx, origin[1]+frustum2Original[currentSlice][1]*dx, origin[2]+frustum2Original[currentSlice][2]*dx};
-            double[] LL = {origin[0]+frustum3Original[currentSlice][0]*dx, origin[1]+frustum3Original[currentSlice][1]*dx, origin[2]+frustum3Original[currentSlice][2]*dx};
-            double[] LR = {origin[0]+frustum4Original[currentSlice][0]*dx, origin[1]+frustum4Original[currentSlice][1]*dx, origin[2]+frustum4Original[currentSlice][2]*dx};
+            double dx = MathUtil.vnorm(spacecraftPositionAdjusted[currentSlice]) + smallBodyModel.getBoundingBoxDiagonalLength();
+            double[] origin = spacecraftPositionAdjusted[currentSlice];
+            double[] UL = {origin[0]+frustum1Adjusted[currentSlice][0]*dx, origin[1]+frustum1Adjusted[currentSlice][1]*dx, origin[2]+frustum1Adjusted[currentSlice][2]*dx};
+            double[] UR = {origin[0]+frustum2Adjusted[currentSlice][0]*dx, origin[1]+frustum2Adjusted[currentSlice][1]*dx, origin[2]+frustum2Adjusted[currentSlice][2]*dx};
+            double[] LL = {origin[0]+frustum3Adjusted[currentSlice][0]*dx, origin[1]+frustum3Adjusted[currentSlice][1]*dx, origin[2]+frustum3Adjusted[currentSlice][2]*dx};
+            double[] LR = {origin[0]+frustum4Adjusted[currentSlice][0]*dx, origin[1]+frustum4Adjusted[currentSlice][1]*dx, origin[2]+frustum4Adjusted[currentSlice][2]*dx};
 
-            points.InsertNextPoint(spacecraftPositionOriginal[currentSlice]);
+            points.InsertNextPoint(spacecraftPositionAdjusted[currentSlice]);
             points.InsertNextPoint(UL);
             points.InsertNextPoint(UR);
             points.InsertNextPoint(LL);
@@ -1397,6 +1397,22 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 //        System.out.println(s + " " + p[0] + " " + p[1] + " " + p[2]);
 //    }
 
+    private void initSpacecraftStateVariables()
+    {
+        int nslices = getNumberBands();
+        spacecraftPositionOriginal = new double[nslices][3];
+        frustum1Original = new double[nslices][3];
+        frustum2Original = new double[nslices][3];
+        frustum3Original = new double[nslices][3];
+        frustum4Original = new double[nslices][3];
+        sunVectorOriginal = new double[nslices][3];
+        boresightDirectionOriginal = new double[nslices][3];
+        upVectorOriginal = new double[nslices][3];
+        frusta = new Frustum[nslices];
+        footprint = new vtkPolyData[nslices];
+        footprintGenerated = new boolean[nslices];
+        displayedRange = new IntensityRange[nslices];
+    }
 
     private void loadImageInfo() throws NumberFormatException, IOException
     {
@@ -1406,20 +1422,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         int nslices = getNumberBands();
 
         if (nslices > 1)
-        {
-            spacecraftPositionOriginal = new double[nslices][3];
-            frustum1Original = new double[nslices][3];
-            frustum2Original = new double[nslices][3];
-            frustum3Original = new double[nslices][3];
-            frustum4Original = new double[nslices][3];
-            sunVectorOriginal = new double[nslices][3];
-            boresightDirectionOriginal = new double[nslices][3];
-            upVectorOriginal = new double[nslices][3];
-            frusta = new Frustum[nslices];
-            footprint = new vtkPolyData[nslices];
-            footprintGenerated = new boolean[nslices];
-            displayedRange = new IntensityRange[nslices];
-        }
+            initSpacecraftStateVariables();
 
         boolean pad = nfiles > 1;
 
@@ -2013,8 +2016,8 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
                     int defaultSlice = getDefaultSlice();
                     if (footprintGenerated[defaultSlice] == false)
                     {
-                        footprint[defaultSlice] = smallBodyModel.computeFrustumIntersection(spacecraftPositionOriginal[defaultSlice],
-                                frustum1Original[defaultSlice], frustum3Original[defaultSlice], frustum4Original[defaultSlice], frustum2Original[defaultSlice]);
+                        footprint[defaultSlice] = smallBodyModel.computeFrustumIntersection(spacecraftPositionAdjusted[defaultSlice],
+                                frustum1Adjusted[defaultSlice], frustum3Adjusted[defaultSlice], frustum4Adjusted[defaultSlice], frustum2Adjusted[defaultSlice]);
                         if (footprint[defaultSlice] == null)
                             return;
 
@@ -2031,8 +2034,8 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
                 }
                 else
                 {
-                    tmp = smallBodyModel.computeFrustumIntersection(spacecraftPositionOriginal[currentSlice],
-                            frustum1Original[currentSlice], frustum3Original[currentSlice], frustum4Original[currentSlice], frustum2Original[currentSlice]);
+                    tmp = smallBodyModel.computeFrustumIntersection(spacecraftPositionAdjusted[currentSlice],
+                            frustum1Adjusted[currentSlice], frustum3Adjusted[currentSlice], frustum4Adjusted[currentSlice], frustum2Adjusted[currentSlice]);
                     if (tmp == null)
                         return;
 
@@ -2150,7 +2153,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
     public double getSpacecraftDistance()
     {
-        return MathUtil.vnorm(spacecraftPositionOriginal[currentSlice]);
+        return MathUtil.vnorm(spacecraftPositionAdjusted[currentSlice]);
      }
 
     private void computeCellNormals()
@@ -2179,13 +2182,13 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
             double[] normal)
     {
         double[] scvec = {
-            spacecraftPositionOriginal[currentSlice][0] - pt[0],
-            spacecraftPositionOriginal[currentSlice][1] - pt[1],
-            spacecraftPositionOriginal[currentSlice][2] - pt[2]};
+            spacecraftPositionAdjusted[currentSlice][0] - pt[0],
+            spacecraftPositionAdjusted[currentSlice][1] - pt[1],
+            spacecraftPositionAdjusted[currentSlice][2] - pt[2]};
 
-        double incidence = MathUtil.vsep(normal, sunVectorOriginal[currentSlice]) * 180.0 / Math.PI;
+        double incidence = MathUtil.vsep(normal, sunVectorAdjusted[currentSlice]) * 180.0 / Math.PI;
         double emission = MathUtil.vsep(normal, scvec) * 180.0 / Math.PI;
-        double phase = MathUtil.vsep(sunVectorOriginal[currentSlice], scvec) * 180.0 / Math.PI;
+        double phase = MathUtil.vsep(sunVectorAdjusted[currentSlice], scvec) * 180.0 / Math.PI;
 
         double[] angles = {incidence, emission, phase};
 
@@ -2267,8 +2270,8 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         maxVerticalPixelScale = -Double.MAX_VALUE;
         meanVerticalPixelScale = 0.0;
 
-        double horizScaleFactor = 2.0 * Math.tan( MathUtil.vsep(frustum1Original[currentSlice], frustum3Original[currentSlice]) / 2.0 ) / imageHeight;
-        double vertScaleFactor = 2.0 * Math.tan( MathUtil.vsep(frustum1Original[currentSlice], frustum2Original[currentSlice]) / 2.0 ) / imageWidth;
+        double horizScaleFactor = 2.0 * Math.tan( MathUtil.vsep(frustum1Adjusted[currentSlice], frustum3Adjusted[currentSlice]) / 2.0 ) / imageHeight;
+        double vertScaleFactor = 2.0 * Math.tan( MathUtil.vsep(frustum1Adjusted[currentSlice], frustum2Adjusted[currentSlice]) / 2.0 ) / imageWidth;
 
         double[] vec = new double[3];
 
@@ -2276,9 +2279,9 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         {
             double[] pt = points.GetPoint(i);
 
-            vec[0] = pt[0] - spacecraftPositionOriginal[currentSlice][0];
-            vec[1] = pt[1] - spacecraftPositionOriginal[currentSlice][1];
-            vec[2] = pt[2] - spacecraftPositionOriginal[currentSlice][2];
+            vec[0] = pt[0] - spacecraftPositionAdjusted[currentSlice][0];
+            vec[1] = pt[1] - spacecraftPositionAdjusted[currentSlice][1];
+            vec[2] = pt[2] - spacecraftPositionAdjusted[currentSlice][2];
             double dist = MathUtil.vnorm(vec);
 
             double horizPixelScale = dist * horizScaleFactor;
@@ -2342,19 +2345,19 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         // the row use the two vectors from either side to compute
         // the vector of that pixel.
         double[] corner1 = {
-                spacecraftPositionOriginal[currentSlice][0] + frustum1Original[currentSlice][0],
-                spacecraftPositionOriginal[currentSlice][1] + frustum1Original[currentSlice][1],
-                spacecraftPositionOriginal[currentSlice][2] + frustum1Original[currentSlice][2]
+                spacecraftPositionAdjusted[currentSlice][0] + frustum1Adjusted[currentSlice][0],
+                spacecraftPositionAdjusted[currentSlice][1] + frustum1Adjusted[currentSlice][1],
+                spacecraftPositionAdjusted[currentSlice][2] + frustum1Adjusted[currentSlice][2]
         };
         double[] corner2 = {
-                spacecraftPositionOriginal[currentSlice][0] + frustum2Original[currentSlice][0],
-                spacecraftPositionOriginal[currentSlice][1] + frustum2Original[currentSlice][1],
-                spacecraftPositionOriginal[currentSlice][2] + frustum2Original[currentSlice][2]
+                spacecraftPositionAdjusted[currentSlice][0] + frustum2Adjusted[currentSlice][0],
+                spacecraftPositionAdjusted[currentSlice][1] + frustum2Adjusted[currentSlice][1],
+                spacecraftPositionAdjusted[currentSlice][2] + frustum2Adjusted[currentSlice][2]
         };
         double[] corner3 = {
-                spacecraftPositionOriginal[currentSlice][0] + frustum3Original[currentSlice][0],
-                spacecraftPositionOriginal[currentSlice][1] + frustum3Original[currentSlice][1],
-                spacecraftPositionOriginal[currentSlice][2] + frustum3Original[currentSlice][2]
+                spacecraftPositionAdjusted[currentSlice][0] + frustum3Adjusted[currentSlice][0],
+                spacecraftPositionAdjusted[currentSlice][1] + frustum3Adjusted[currentSlice][1],
+                spacecraftPositionAdjusted[currentSlice][2] + frustum3Adjusted[currentSlice][2]
         };
         double[] vec12 = {
                 corner2[0] - corner1[0],
@@ -2367,10 +2370,10 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
                 corner3[2] - corner1[2]
         };
 
-        double horizScaleFactor = 2.0 * Math.tan( MathUtil.vsep(frustum1Original[currentSlice], frustum3Original[currentSlice]) / 2.0 ) / imageHeight;
-        double vertScaleFactor = 2.0 * Math.tan( MathUtil.vsep(frustum1Original[currentSlice], frustum2Original[currentSlice]) / 2.0 ) / imageWidth;
+        double horizScaleFactor = 2.0 * Math.tan( MathUtil.vsep(frustum1Adjusted[currentSlice], frustum3Adjusted[currentSlice]) / 2.0 ) / imageHeight;
+        double vertScaleFactor = 2.0 * Math.tan( MathUtil.vsep(frustum1Adjusted[currentSlice], frustum2Adjusted[currentSlice]) / 2.0 ) / imageWidth;
 
-        double scdist = MathUtil.vnorm(spacecraftPositionOriginal[currentSlice]);
+        double scdist = MathUtil.vnorm(spacecraftPositionAdjusted[currentSlice]);
 
         for (int i=0; i<imageHeight; ++i)
         {
@@ -2402,15 +2405,15 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
                         left[1] + fracWidth*vec12[1],
                         left[2] + fracWidth*vec12[2]
                 };
-                vec[0] -= spacecraftPositionOriginal[currentSlice][0];
-                vec[1] -= spacecraftPositionOriginal[currentSlice][1];
-                vec[2] -= spacecraftPositionOriginal[currentSlice][2];
+                vec[0] -= spacecraftPositionAdjusted[currentSlice][0];
+                vec[1] -= spacecraftPositionAdjusted[currentSlice][1];
+                vec[2] -= spacecraftPositionAdjusted[currentSlice][2];
                 MathUtil.unorm(vec, vec);
 
                 double[] lookPt = {
-                        spacecraftPositionOriginal[currentSlice][0] + 2.0*scdist*vec[0],
-                        spacecraftPositionOriginal[currentSlice][1] + 2.0*scdist*vec[1],
-                        spacecraftPositionOriginal[currentSlice][2] + 2.0*scdist*vec[2]
+                        spacecraftPositionAdjusted[currentSlice][0] + 2.0*scdist*vec[0],
+                        spacecraftPositionAdjusted[currentSlice][1] + 2.0*scdist*vec[1],
+                        spacecraftPositionAdjusted[currentSlice][2] + 2.0*scdist*vec[2]
                 };
 
                 //cellLocator.IntersectWithLine(spacecraftPosition, lookPt, intersectPoints, intersectCells);
@@ -2420,7 +2423,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
                 double[] pcoords = new double[3];
                 int[] subId = new int[1];
                 int[] cellId = new int[1];
-                int result = cellLocator.IntersectWithLine(spacecraftPositionOriginal[currentSlice], lookPt, tol, t, x, pcoords, subId, cellId, cell);
+                int result = cellLocator.IntersectWithLine(spacecraftPositionAdjusted[currentSlice], lookPt, tol, t, x, pcoords, subId, cellId, cell);
 
                 //if (intersectPoints.GetNumberOfPoints() == 0)
                 //    System.out.println(i + " " + j + " " + intersectPoints.GetNumberOfPoints());
@@ -2439,7 +2442,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
                     //int closestCell = intersectCells.GetId(0);
                     double[] closestPoint = x;
                     int closestCell = cellId[0];
-                    double closestDist = MathUtil.distanceBetween(closestPoint, spacecraftPositionOriginal[currentSlice]);
+                    double closestDist = MathUtil.distanceBetween(closestPoint, spacecraftPositionAdjusted[currentSlice]);
 
                     /*
                     // compute the closest point to the spacecraft of all the intersecting points.
@@ -2575,13 +2578,13 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
         for (int i=0; i<3; ++i)
         {
-            spacecraftPosition[i] = this.spacecraftPositionOriginal[currentSlice][i];
-            upVector[i] = this.upVectorOriginal[currentSlice][i];
+            spacecraftPosition[i] = this.spacecraftPositionAdjusted[currentSlice][i];
+            upVector[i] = this.upVectorAdjusted[currentSlice][i];
         }
 
         // Normalize the direction vector
         double[] direction = new double[3];
-        MathUtil.unorm(boresightDirectionOriginal[currentSlice], direction);
+        MathUtil.unorm(boresightDirectionAdjusted[currentSlice], direction);
 
         int cellId = smallBodyModel.computeRayIntersection(spacecraftPosition, direction, focalPoint);
 
@@ -2609,9 +2612,9 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     public Rotation getCameraOrientation(double[] spacecraftPosition,
             double[] quaternion)
     {
-        double[] cx = upVectorOriginal[currentSlice];
+        double[] cx = upVectorAdjusted[currentSlice];
         double[] cz = new double[3];
-        MathUtil.unorm(boresightDirectionOriginal[currentSlice], cz);
+        MathUtil.unorm(boresightDirectionAdjusted[currentSlice], cz);
 
         double[] cy = new double[3];
         MathUtil.vcrss(cz, cx, cy);
@@ -2625,7 +2628,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         Rotation rotation = new Rotation(m, 1.0e-6);
 
         for (int i=0; i<3; ++i)
-            spacecraftPosition[i] = this.spacecraftPositionOriginal[currentSlice][i];
+            spacecraftPosition[i] = this.spacecraftPositionAdjusted[currentSlice][i];
 
         quaternion[0] = rotation.getQ0();
         quaternion[1] = rotation.getQ1();
@@ -2641,12 +2644,12 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         {
             int defaultSlice = getDefaultSlice();
             if (frusta[defaultSlice] == null)
-                frusta[defaultSlice] = new Frustum(spacecraftPositionOriginal[defaultSlice], frustum1Original[defaultSlice], frustum3Original[defaultSlice], frustum4Original[defaultSlice], frustum2Original[defaultSlice]);
+                frusta[defaultSlice] = new Frustum(spacecraftPositionAdjusted[defaultSlice], frustum1Adjusted[defaultSlice], frustum3Adjusted[defaultSlice], frustum4Adjusted[defaultSlice], frustum2Adjusted[defaultSlice]);
             return frusta[defaultSlice];
         }
 
         if (frusta[slice] == null)
-            frusta[slice] = new Frustum(spacecraftPositionOriginal[slice], frustum1Original[slice], frustum3Original[slice], frustum4Original[slice], frustum2Original[slice]);
+            frusta[slice] = new Frustum(spacecraftPositionAdjusted[slice], frustum1Adjusted[slice], frustum3Adjusted[slice], frustum4Adjusted[slice], frustum2Adjusted[slice]);
         return frusta[slice];
     }
 
@@ -2670,34 +2673,34 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
     public double getHorizontalFovAngle()
     {
-        double fovHoriz = MathUtil.vsep(frustum1Original[currentSlice], frustum3Original[currentSlice]) * 180.0 / Math.PI;
+        double fovHoriz = MathUtil.vsep(frustum1Adjusted[currentSlice], frustum3Adjusted[currentSlice]) * 180.0 / Math.PI;
         return fovHoriz;
     }
 
     public double getVerticalFovAngle()
     {
-        double fovVert = MathUtil.vsep(frustum1Original[currentSlice], frustum2Original[currentSlice]) * 180.0 / Math.PI;
+        double fovVert = MathUtil.vsep(frustum1Adjusted[currentSlice], frustum2Adjusted[currentSlice]) * 180.0 / Math.PI;
         return fovVert;
     }
 
     public double[] getSpacecraftPosition()
     {
-        return spacecraftPositionOriginal[currentSlice];
+        return spacecraftPositionAdjusted[currentSlice];
     }
 
     public double[] getSunVector()
     {
-        return sunVectorOriginal[currentSlice];
+        return sunVectorAdjusted[currentSlice];
     }
 
     public double[] getBoresightDirection()
     {
-        return boresightDirectionOriginal[currentSlice];
+        return boresightDirectionAdjusted[currentSlice];
     }
 
     public double[] getUpVector()
     {
-        return upVectorOriginal[currentSlice];
+        return upVectorAdjusted[currentSlice];
     }
 
     /**
@@ -2707,19 +2710,19 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     public double[] getPixelDirection(int sample, int line)
     {
         double[] corner1 = {
-                spacecraftPositionOriginal[currentSlice][0] + frustum1Original[currentSlice][0],
-                spacecraftPositionOriginal[currentSlice][1] + frustum1Original[currentSlice][1],
-                spacecraftPositionOriginal[currentSlice][2] + frustum1Original[currentSlice][2]
+                spacecraftPositionAdjusted[currentSlice][0] + frustum1Adjusted[currentSlice][0],
+                spacecraftPositionAdjusted[currentSlice][1] + frustum1Adjusted[currentSlice][1],
+                spacecraftPositionAdjusted[currentSlice][2] + frustum1Adjusted[currentSlice][2]
         };
         double[] corner2 = {
-                spacecraftPositionOriginal[currentSlice][0] + frustum2Original[currentSlice][0],
-                spacecraftPositionOriginal[currentSlice][1] + frustum2Original[currentSlice][1],
-                spacecraftPositionOriginal[currentSlice][2] + frustum2Original[currentSlice][2]
+                spacecraftPositionAdjusted[currentSlice][0] + frustum2Adjusted[currentSlice][0],
+                spacecraftPositionAdjusted[currentSlice][1] + frustum2Adjusted[currentSlice][1],
+                spacecraftPositionAdjusted[currentSlice][2] + frustum2Adjusted[currentSlice][2]
         };
         double[] corner3 = {
-                spacecraftPositionOriginal[currentSlice][0] + frustum3Original[currentSlice][0],
-                spacecraftPositionOriginal[currentSlice][1] + frustum3Original[currentSlice][1],
-                spacecraftPositionOriginal[currentSlice][2] + frustum3Original[currentSlice][2]
+                spacecraftPositionAdjusted[currentSlice][0] + frustum3Adjusted[currentSlice][0],
+                spacecraftPositionAdjusted[currentSlice][1] + frustum3Adjusted[currentSlice][1],
+                spacecraftPositionAdjusted[currentSlice][2] + frustum3Adjusted[currentSlice][2]
         };
         double[] vec12 = {
                 corner2[0] - corner1[0],
@@ -2746,9 +2749,9 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
                 left[1] + fracWidth*vec12[1],
                 left[2] + fracWidth*vec12[2]
         };
-        dir[0] -= spacecraftPositionOriginal[currentSlice][0];
-        dir[1] -= spacecraftPositionOriginal[currentSlice][1];
-        dir[2] -= spacecraftPositionOriginal[currentSlice][2];
+        dir[0] -= spacecraftPositionAdjusted[currentSlice][0];
+        dir[1] -= spacecraftPositionAdjusted[currentSlice][1];
+        dir[2] -= spacecraftPositionAdjusted[currentSlice][2];
         MathUtil.unorm(dir, dir);
 
         return dir;
@@ -2766,7 +2769,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
         double[] intersectPoint = new double[3];
 
-        int result = smallBodyModel.computeRayIntersection(spacecraftPositionOriginal[currentSlice], dir, intersectPoint);
+        int result = smallBodyModel.computeRayIntersection(spacecraftPositionAdjusted[currentSlice], dir, intersectPoint);
 
         if (result >= 0)
             return intersectPoint;
@@ -2850,14 +2853,14 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         properties.put("Stop Time", getStopTime());
         properties.put("Spacecraft Distance", df.format(getSpacecraftDistance()) + " km");
         properties.put("Spacecraft Position",
-                df.format(spacecraftPositionOriginal[currentSlice][0]) + ", " + df.format(spacecraftPositionOriginal[currentSlice][1]) + ", " + df.format(spacecraftPositionOriginal[currentSlice][2]) + " km");
+                df.format(spacecraftPositionAdjusted[currentSlice][0]) + ", " + df.format(spacecraftPositionAdjusted[currentSlice][1]) + ", " + df.format(spacecraftPositionAdjusted[currentSlice][2]) + " km");
         double[] quaternion = new double[4];
         double[] notused = new double[4];
         getCameraOrientation(notused, quaternion);
         properties.put("Spacecraft Orientation (quaternion)",
                 "(" + df.format(quaternion[0]) + ", [" + df.format(quaternion[1]) + ", " + df.format(quaternion[2]) + ", " + df.format(quaternion[3]) + "])");
         properties.put("Sun Vector",
-                df.format(sunVectorOriginal[currentSlice][0]) + ", " + df.format(sunVectorOriginal[currentSlice][1]) + ", " + df.format(sunVectorOriginal[currentSlice][2]));
+                df.format(sunVectorAdjusted[currentSlice][0]) + ", " + df.format(sunVectorAdjusted[currentSlice][1]) + ", " + df.format(sunVectorAdjusted[currentSlice][2]));
         if (getCameraName() != null)
             properties.put("Camera", getCameraName());
         if (getFilterName() != null)
