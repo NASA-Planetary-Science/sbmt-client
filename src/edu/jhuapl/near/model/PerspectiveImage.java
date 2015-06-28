@@ -364,12 +364,15 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         int line = (int)Math.round(pixelCenter[0]);
         int sample = (int)Math.round(width - 1 - pixelCenter[1]);
 
-        resetSpacecraftState();
+//        resetSpacecraftState();
+        copySpacecraftState();
 
 
         double[] newCenterDirection = getPixelDirection(sample, line);
         // adjust wrt the original spacecraft pointing direction, not the previous adjusted one
         adjustFrustumDirectionTo(newCenterDirection);
+//
+//        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
     private void adjustFrustumDirectionTo(double[] newDirection)

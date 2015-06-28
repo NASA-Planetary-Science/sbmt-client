@@ -49,6 +49,11 @@ public class PerspectiveImageBoundary extends Model implements PropertyChangeLis
         boundaryMapper = new vtkPolyDataMapper();
         actor = new vtkActor();
 
+        update();
+    }
+
+    public void update()
+    {
         spacecraftPosition = image.getSpacecraftPosition();
         Frustum frus = image.getFrustum();
         frustum1 = frus.ul;
@@ -196,6 +201,12 @@ public class PerspectiveImageBoundary extends Model implements PropertyChangeLis
         {
             initialize();
             this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+        }
+        if (Properties.MODEL_CHANGED.equals(evt.getPropertyName()))
+        {
+            System.out.println("Boundary model changed event: " + evt.getSource().getClass().getSimpleName());
+//            initialize();
+//            this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
         }
     }
 
