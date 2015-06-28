@@ -248,6 +248,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         for (int i = 0; i<nslices; i++)
         {
             frusta[i] = null;
+            footprintGenerated[i] = false;
         }
 
         loadFootprint();
@@ -392,6 +393,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
             MathUtil.rotateVector(boresightDirectionOriginal[i], rotation, boresightDirectionAdjusted[i]);
 
             frusta[i] = null;
+            footprintGenerated[i] = false;
         }
 
         loadFootprint();
