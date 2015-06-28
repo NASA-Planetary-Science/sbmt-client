@@ -359,12 +359,15 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     public void setFrustumCenter(double[] pixelCenter)
     {
         System.out.println("setFrustumOffset(): " + pixelCenter[1] + " " + pixelCenter[0]);
+        int width = getImageWidth();
         int line = (int)Math.round(pixelCenter[0]);
-        int sample = (int)Math.round(pixelCenter[1]);
+        int sample = (int)Math.round(width - 1 - pixelCenter[1]);
+
+        resetSpacecraftState();
+
 
         double[] newCenterDirection = getPixelDirection(sample, line);
         // adjust wrt the original spacecraft pointing direction, not the previous adjusted one
-        copySpacecraftState();
         adjustFrustumDirectionTo(newCenterDirection);
     }
 
@@ -374,6 +377,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         Vector3D newDirectionVector = new Vector3D(newDirection);
 
         Rotation rotation = new Rotation(oldDirectionVector, newDirectionVector);
+
 //        Vector3D axis = new Vector3D(0.0, 0.0, 1.0);
 //        double angle = Math.PI / 4.0;
 //        Rotation rotation = new Rotation(axis, angle);
