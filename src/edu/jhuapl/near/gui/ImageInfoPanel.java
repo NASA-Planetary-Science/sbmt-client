@@ -321,6 +321,9 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
             else
                 centerFrustumOnPixel(e);
 
+//            PerspectiveImageBoundary boundary = imageBoundaryCollection.getBoundary(image.getKey());
+//            boundary.update();
+
             ((PerspectiveImage)image).firePropertyChange();
         }
     }
@@ -442,7 +445,8 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
         jLabel5 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         interpolateCheckBox = new javax.swing.JCheckBox();
-        centerFrustumCheckBox = new javax.swing.JCheckBox();
+        selectViewpointCheckBox = new javax.swing.JCheckBox();
+        resetViewpointButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         getContentPane().setLayout(new java.awt.GridBagLayout());
@@ -601,17 +605,28 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
         });
         jPanel2.add(interpolateCheckBox, new java.awt.GridBagConstraints());
 
-        centerFrustumCheckBox.setText("Center Frustum Mode");
-        centerFrustumCheckBox.setName(""); // NOI18N
-        centerFrustumCheckBox.addActionListener(new java.awt.event.ActionListener() {
+        selectViewpointCheckBox.setText("Select Viewpoint");
+        selectViewpointCheckBox.setName(""); // NOI18N
+        selectViewpointCheckBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                centerFrustumCheckBoxActionPerformed(evt);
+                selectViewpointCheckBoxActionPerformed(evt);
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
-        jPanel2.add(centerFrustumCheckBox, gridBagConstraints);
+        jPanel2.add(selectViewpointCheckBox, gridBagConstraints);
+
+        resetViewpointButton.setText("Reset Viewpoint");
+        resetViewpointButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                resetViewpointButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 0;
+        jPanel2.add(resetViewpointButton, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -656,10 +671,15 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
         croppingChanged();
     }//GEN-LAST:event_bottomSpinnerStateChanged
 
-    private void centerFrustumCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_centerFrustumCheckBoxActionPerformed
-        System.out.println("Center Frustom Mode: " + centerFrustumCheckBox.isSelected());
-        centerFrustumMode = centerFrustumCheckBox.isSelected();
-    }//GEN-LAST:event_centerFrustumCheckBoxActionPerformed
+    private void selectViewpointCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectViewpointCheckBoxActionPerformed
+        System.out.println("Select Viewpoint Mode: " + selectViewpointCheckBox.isSelected());
+        centerFrustumMode = selectViewpointCheckBox.isSelected();
+    }//GEN-LAST:event_selectViewpointCheckBoxActionPerformed
+
+    private void resetViewpointButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetViewpointButtonActionPerformed
+                System.out.println("Resetting pointing...");
+                ((PerspectiveImage)image).resetSpacecraftState();
+    }//GEN-LAST:event_resetViewpointButtonActionPerformed
 
     private void croppingChanged()
     {
@@ -678,7 +698,6 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JSpinner bottomSpinner;
-    private javax.swing.JCheckBox centerFrustumCheckBox;
     private javax.swing.JCheckBox interpolateCheckBox;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel3;
@@ -690,7 +709,9 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSpinner leftSpinner;
+    private javax.swing.JButton resetViewpointButton;
     private javax.swing.JSpinner rightSpinner;
+    private javax.swing.JCheckBox selectViewpointCheckBox;
     private com.jidesoft.swing.RangeSlider slider;
     private javax.swing.JTable table;
     private javax.swing.JSpinner topSpinner;

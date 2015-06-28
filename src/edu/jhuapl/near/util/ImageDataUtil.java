@@ -61,7 +61,7 @@ public class ImageDataUtil
     }
 
     /**
-     * Version of vtkImageDataToArray2D for image cubes, returns a column along the depth axis.
+     * Version of vtkImageDataToArray1D for image cubes, returns a column along the depth axis.
      *
      * @param image
      * @param x
@@ -81,7 +81,8 @@ public class ImageDataUtil
         {
             // calculate index
             int index = k * width * height + j * height + i;
-            array[k] = (float)data.GetValue(index);
+            double value = data.GetValue(index);
+            array[k] = (float)value;
         }
 
         return array;
