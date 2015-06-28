@@ -17,7 +17,7 @@ runCreateInfoFiles() {
     mkdir -p $INFO_DIR
     OUTPUT_FILE_LIST=/project/nearsdc/data/NEWHORIZONS/$1/MVIC/imagelist.txt
 #    OUTPUT_FILE_LIST=./$1/MVIC/imagelist.txt
-    CMD="./create_info_files $1 /project/lorri/kernels/nh_auto.mk $MVIC_LABEL_FILES $INFO_DIR $OUTPUT_FILE_LIST"
+    CMD="./create_info_files $1 ./nh_spice.mk $MVIC_LABEL_FILES $INFO_DIR $OUTPUT_FILE_LIST"
     $CMD
 }
 

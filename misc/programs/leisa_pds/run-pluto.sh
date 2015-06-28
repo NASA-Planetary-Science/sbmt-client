@@ -16,7 +16,7 @@ runCreateInfoFiles() {
     mkdir -p $INFO_DIR
 #    OUTPUT_FILE_LIST=./imagelist.txt
     OUTPUT_FILE_LIST=/project/nearsdc/data/NEWHORIZONS/$1/LEISA/imagelist.txt
-    CMD="./create_info_files $1 /project/lorri/kernels/nh_auto.mk $LEISA_FIT_FILES $INFO_DIR $OUTPUT_FILE_LIST"
+    CMD="./create_info_files $1 ./nh_spice.mk $LEISA_FIT_FILES $INFO_DIR $OUTPUT_FILE_LIST"
     $CMD
 }
 
