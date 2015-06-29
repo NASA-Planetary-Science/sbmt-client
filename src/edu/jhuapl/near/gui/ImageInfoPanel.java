@@ -44,8 +44,10 @@ import edu.jhuapl.near.popupmenus.ImagePopupMenu;
 import edu.jhuapl.near.util.IntensityRange;
 
 
-public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, MouseMotionListener, PropertyChangeListener
+public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, MouseMotionListener, PropertyChangeListener //, KeyListener
 {
+    public static final double VIEWPOINT_DELTA = 1.0;
+
     private vtkEnhancedRenderWindowPanel renWin;
     private Image image;
     private ImageCollection imageCollection;
@@ -178,6 +180,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
         imagePicker.AddPickList(actor);
         renWin.addMouseListener(this);
         renWin.addMouseMotionListener(this);
+//        renWin.addKeyListener(this);
 
         // Trying to add a vtkEnhancedRenderWindowPanel in the netbeans gui
         // does not seem to work so instead add it here.
@@ -319,8 +322,12 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
                 ((PerspectiveImage)image).resetSpacecraftState();
             }
             else
+            {
                 centerFrustumOnPixel(e);
 
+                ((PerspectiveImage)image).loadFootprint();
+                ((PerspectiveImage)image).calculateFrustum();
+            }
 //            PerspectiveImageBoundary boundary = imageBoundaryCollection.getBoundary(image.getKey());
 //            boundary.update();
 
@@ -354,14 +361,29 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
     @Override
     public void mouseReleased(MouseEvent e)
     {
-        // TODO Auto-generated method stub
 
+        if (!e.isAltDown())
+        {
+            ((PerspectiveImage)image).calculateFrustum();
+            ((PerspectiveImage)image).firePropertyChange();
+        }
     }
 
     @Override
     public void mouseDragged(MouseEvent e)
     {
-        updateSpectrumRegion(e);
+        if (centerFrustumMode && e.getButton() == 1)
+        {
+            if (!e.isAltDown())
+            {
+                centerFrustumOnPixel(e);
+                ((PerspectiveImage)image).loadFootprint();
+            }
+
+            ((PerspectiveImage)image).firePropertyChange();
+        }
+        else
+            updateSpectrumRegion(e);
     }
 
     private void updateSpectrumRegion(MouseEvent e)
@@ -447,6 +469,10 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
         interpolateCheckBox = new javax.swing.JCheckBox();
         selectViewpointCheckBox = new javax.swing.JCheckBox();
         resetViewpointButton = new javax.swing.JButton();
+        leftButton = new javax.swing.JButton();
+        rightButton = new javax.swing.JButton();
+        upButton = new javax.swing.JButton();
+        downButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         getContentPane().setLayout(new java.awt.GridBagLayout());
@@ -617,16 +643,57 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
         gridBagConstraints.gridy = 0;
         jPanel2.add(selectViewpointCheckBox, gridBagConstraints);
 
-        resetViewpointButton.setText("Reset Viewpoint");
+        resetViewpointButton.setText("Reset");
         resetViewpointButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 resetViewpointButtonActionPerformed(evt);
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridx = 6;
         gridBagConstraints.gridy = 0;
         jPanel2.add(resetViewpointButton, gridBagConstraints);
+
+        leftButton.setText("<");
+        leftButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                leftButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 0;
+        jPanel2.add(leftButton, gridBagConstraints);
+
+        rightButton.setText(">");
+        rightButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rightButtonActionPerformed(evt);
+            }
+        });
+        jPanel2.add(rightButton, new java.awt.GridBagConstraints());
+
+        upButton.setText("^");
+        upButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                upButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 4;
+        gridBagConstraints.gridy = 0;
+        jPanel2.add(upButton, gridBagConstraints);
+
+        downButton.setText("v");
+        downButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                downButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 5;
+        gridBagConstraints.gridy = 0;
+        jPanel2.add(downButton, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -679,7 +746,44 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
     private void resetViewpointButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetViewpointButtonActionPerformed
                 System.out.println("Resetting pointing...");
                 ((PerspectiveImage)image).resetSpacecraftState();
+                ((PerspectiveImage)image).firePropertyChange();
     }//GEN-LAST:event_resetViewpointButtonActionPerformed
+
+    private void leftButtonActionPerformed(java.awt.event.ActionEvent evt){//GEN-FIRST:event_leftButtonActionPerformed
+        if (image instanceof PerspectiveImage)
+        {
+            double[] delta = { VIEWPOINT_DELTA, 0.0 };
+            ((PerspectiveImage)image).moveFrustumCenter(delta);
+            ((PerspectiveImage)image).firePropertyChange();
+        }
+    }//GEN-LAST:event_leftButtonActionPerformed
+
+    private void rightButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rightButtonActionPerformed
+        if (image instanceof PerspectiveImage)
+        {
+            double[] delta = { -VIEWPOINT_DELTA, 0.0 };
+            ((PerspectiveImage)image).moveFrustumCenter(delta);
+            ((PerspectiveImage)image).firePropertyChange();
+        }
+    }//GEN-LAST:event_rightButtonActionPerformed
+
+    private void upButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_upButtonActionPerformed
+        if (image instanceof PerspectiveImage)
+        {
+            double[] delta = { 0.0, -VIEWPOINT_DELTA };
+            ((PerspectiveImage)image).moveFrustumCenter(delta);
+            ((PerspectiveImage)image).firePropertyChange();
+        }
+    }//GEN-LAST:event_upButtonActionPerformed
+
+    private void downButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_downButtonActionPerformed
+        if (image instanceof PerspectiveImage)
+        {
+            double[] delta = { 0.0, VIEWPOINT_DELTA };
+            ((PerspectiveImage)image).moveFrustumCenter(delta);
+            ((PerspectiveImage)image).firePropertyChange();
+        }
+    }//GEN-LAST:event_downButtonActionPerformed
 
     private void croppingChanged()
     {
@@ -698,6 +802,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JSpinner bottomSpinner;
+    private javax.swing.JButton downButton;
     private javax.swing.JCheckBox interpolateCheckBox;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel3;
@@ -708,12 +813,30 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JButton leftButton;
     private javax.swing.JSpinner leftSpinner;
     private javax.swing.JButton resetViewpointButton;
+    private javax.swing.JButton rightButton;
     private javax.swing.JSpinner rightSpinner;
     private javax.swing.JCheckBox selectViewpointCheckBox;
     private com.jidesoft.swing.RangeSlider slider;
     private javax.swing.JTable table;
     private javax.swing.JSpinner topSpinner;
+    private javax.swing.JButton upButton;
     // End of variables declaration//GEN-END:variables
+
+//    @Override
+//    public void keyTyped(KeyEvent evt) {
+//        if (centerFrustumMode)
+//            System.out.println("Key pressed: " + evt.getKeyCode() + ", " + evt.getExtendedKeyCode() + ", " + evt.getKeyChar() + ", " + evt.getKeyLocation());
+//    }
+//
+//    @Override
+//    public void keyPressed(KeyEvent e) {
+//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+//    }
+//
+//    @Override
+//    public void keyReleased(KeyEvent e) {
+//     }
 }

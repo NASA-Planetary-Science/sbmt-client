@@ -139,7 +139,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     private double[][] sunVectorAdjusted = new double[1][3];
 
     // offset in world coordinates of the adjusted frustum from the loaded frustum
-    private double[] frustumOffset = new double[3];
+    private double[] frustumCenterPixel;
 
     private Frustum[] frusta = new Frustum[1];
 
@@ -357,21 +357,56 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
      */
     public void setSpectrumRegion(double[][] vertices) { }
 
-    public void setFrustumCenter(double[] pixelCenter)
+    public void setFrustumCenter(double[] frustumCenterPixel)
     {
-        System.out.println("setFrustumOffset(): " + pixelCenter[1] + " " + pixelCenter[0]);
+        System.out.println("setFrustumCenter(): " + frustumCenterPixel[1] + " " + frustumCenterPixel[0]);
+
+        if (this.frustumCenterPixel == null)
+            this.frustumCenterPixel = new double[2];
+        this.frustumCenterPixel[0] = frustumCenterPixel[0];
+        this.frustumCenterPixel[1] = frustumCenterPixel[1];
+
+        int height = getImageHeight();
         int width = getImageWidth();
-        int line = (int)Math.round(pixelCenter[0]);
-        int sample = (int)Math.round(width - 1 - pixelCenter[1]);
+        int line = (int)Math.round(height - 1 - frustumCenterPixel[0]);
+        int sample = (int)Math.round(frustumCenterPixel[1]);
 
-        // adjust wrt the original spacecraft pointing direction, not the previous adjusted one
-        copySpacecraftState();
+        if (line >= 0 && line < height && sample >= 0 && sample < width)
+        {
+            // adjust wrt the original spacecraft pointing direction, not the previous adjusted one
+            copySpacecraftState();
 
-        double[] newCenterDirection = getPixelDirection(sample, line);
-        adjustFrustumDirectionTo(newCenterDirection);
+            double[] newCenterDirection = getPixelDirection(sample, line);
+//            rotateBoresightDirectionTo(newCenterDirection);
+            rotateDirectionToOrigin(newCenterDirection);
+        }
     }
 
-    private void adjustFrustumDirectionTo(double[] newDirection)
+    public void moveFrustumCenter(double[] pixelDelta)
+    {
+        System.out.println("moveFrustumCenter(): " + pixelDelta[1] + " " + pixelDelta[0]);
+        if (frustumCenterPixel == null)
+        {
+            frustumCenterPixel = new double[2];
+            frustumCenterPixel[0] = getImageHeight() / 2.0;
+            frustumCenterPixel[1] = getImageWidth() / 2.0;
+        }
+
+        int height = getImageHeight();
+        int width = getImageWidth();
+        double line = this.frustumCenterPixel[0] + pixelDelta[0];
+        double sample = (double)Math.round(frustumCenterPixel[1] + pixelDelta[1]);
+        double[] newFrustumCenterPixel = { line, sample };
+
+        if (line >= 0.0 && line < height && sample >= 0.0 && sample < width)
+        {
+            setFrustumCenter(newFrustumCenterPixel);
+            loadFootprint();
+            calculateFrustum();
+        }
+    }
+
+    private void rotateBoresightDirectionTo(double[] newDirection)
     {
         Vector3D oldDirectionVector = new Vector3D(boresightDirectionOriginal[currentSlice]);
         Vector3D newDirectionVector = new Vector3D(newDirection);
@@ -391,11 +426,40 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
             footprintGenerated[i] = false;
         }
 
-        loadFootprint();
-        calculateFrustum();
+//        loadFootprint();
+//        calculateFrustum();
     }
 
-    private void calculateFrustum()
+    private static double[] origin = { 0.0, 0.0, 0.0 };
+
+    private void rotateDirectionToOrigin(double[] direction)
+    {
+        Vector3D directionVector = new Vector3D(direction);
+        Vector3D spacecraftPositionVector = new Vector3D(spacecraftPositionOriginal[currentSlice]);
+        Vector3D spacecraftToOriginVector = spacecraftPositionVector.scalarMultiply(-1.0);
+        Vector3D originPointingVector = spacecraftToOriginVector.normalize();
+
+        Rotation rotation = new Rotation(directionVector, originPointingVector);
+//        Rotation rotation = new Rotation(originPointingVector, directionVector);
+
+        int nslices = getNumberBands();
+        for (int i = 0; i<nslices; i++)
+        {
+            MathUtil.rotateVector(frustum1Original[i], rotation, frustum1Adjusted[i]);
+            MathUtil.rotateVector(frustum2Original[i], rotation, frustum2Adjusted[i]);
+            MathUtil.rotateVector(frustum3Original[i], rotation, frustum3Adjusted[i]);
+            MathUtil.rotateVector(frustum4Original[i], rotation, frustum4Adjusted[i]);
+            MathUtil.rotateVector(boresightDirectionOriginal[i], rotation, boresightDirectionAdjusted[i]);
+
+            frusta[i] = null;
+            footprintGenerated[i] = false;
+        }
+
+//        loadFootprint();
+//        calculateFrustum();
+    }
+
+    public void calculateFrustum()
     {
         System.out.println("recalculateFrustum()");
         vtkPolyData frus = new vtkPolyData();
