@@ -1,10 +1,15 @@
 #include <vector>
-#include <tr1/unordered_map>
+#include <unordered_map>
 #include "mathutil.h"
 #include "platemodel.h"
+#if defined(__APPLE__) && defined(_LIBCPP_VERSION)
+#include <unordered_map>
+#else
+#include <tr1/unordered_map>
+using namespace std::tr1;
+#endif
 
 using namespace std;
-using namespace std::tr1;
 
 struct EdgeKey
 {
