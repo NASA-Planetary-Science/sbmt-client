@@ -36,6 +36,7 @@ public class PerspectiveImageBoundary extends Model implements PropertyChangeLis
     private double[] upVector = new double[3];
     private PerspectiveImage image;
     private SmallBodyModel smallBodyModel;
+    private static vtkPolyData emptyPolyData;
 
     public PerspectiveImageBoundary(PerspectiveImage image, SmallBodyModel smallBodyModel) throws IOException
     {
@@ -48,6 +49,8 @@ public class PerspectiveImageBoundary extends Model implements PropertyChangeLis
 
         boundaryMapper = new vtkPolyDataMapper();
         actor = new vtkActor();
+
+        emptyPolyData = new vtkPolyData();
 
         update();
     }
@@ -72,10 +75,9 @@ public class PerspectiveImageBoundary extends Model implements PropertyChangeLis
         // Using the frustum, go around the boundary of the frustum and intersect with
         // the asteroid.
 
+        boundary.DeepCopy(emptyPolyData);
         vtkPoints points = boundary.GetPoints();
         vtkCellArray verts = boundary.GetVerts();
-        verts.Initialize();
-        points.SetNumberOfPoints(0);
 
         vtkIdList idList = new vtkIdList();
         idList.SetNumberOfIds(1);
@@ -190,11 +192,17 @@ public class PerspectiveImageBoundary extends Model implements PropertyChangeLis
                 smallBodyModel.getCellLocator(),
                 3.0*smallBodyModel.getMinShiftAmount());
 
+        boundary.Modified();
         boundaryMapper.SetInput(boundary);
 
         actor.SetMapper(boundaryMapper);
         actor.GetProperty().SetColor(1.0, 0.0, 0.0);
         actor.GetProperty().SetPointSize(1.0);
+    }
+
+    public void firePropertyChange()
+    {
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
     public void propertyChange(PropertyChangeEvent evt)
@@ -207,8 +215,8 @@ public class PerspectiveImageBoundary extends Model implements PropertyChangeLis
         if (Properties.MODEL_CHANGED.equals(evt.getPropertyName()))
         {
             System.out.println("Boundary MODEL_CHANGED event: " + evt.getSource().getClass().getSimpleName());
-//            initialize();
-//            this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+            initialize();
+            this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
         }
     }
 

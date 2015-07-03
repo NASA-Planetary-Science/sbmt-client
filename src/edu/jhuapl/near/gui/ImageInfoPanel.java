@@ -39,6 +39,7 @@ import edu.jhuapl.near.model.Image;
 import edu.jhuapl.near.model.ImageCollection;
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.PerspectiveImage;
+import edu.jhuapl.near.model.PerspectiveImageBoundary;
 import edu.jhuapl.near.model.PerspectiveImageBoundaryCollection;
 import edu.jhuapl.near.popupmenus.ImagePopupMenu;
 import edu.jhuapl.near.util.IntensityRange;
@@ -328,10 +329,11 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
                 ((PerspectiveImage)image).loadFootprint();
                 ((PerspectiveImage)image).calculateFrustum();
             }
-//            PerspectiveImageBoundary boundary = imageBoundaryCollection.getBoundary(image.getKey());
-//            boundary.update();
+            PerspectiveImageBoundary boundary = imageBoundaryCollection.getBoundary(image.getKey());
+            boundary.update();
 
-            ((PerspectiveImage)image).firePropertyChange();
+//            ((PerspectiveImage)image).firePropertyChange();
+            ((PerspectiveImageBoundary)boundary).firePropertyChange();
         }
     }
 
