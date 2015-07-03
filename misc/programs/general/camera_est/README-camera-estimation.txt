@@ -103,6 +103,10 @@ NEAR's MSI:       10407.030418092796
 Galileo's SSI:    98493.37270341207
 HRSC/SRC          109844.44444444444
 Viking VIS (all): 40349.1410917108
+(The following 3 focal lengths were estimated by Kirby Runyon)
+New Horizons LORRI: (2.63 m)/(13e-6 m/px) = 202308 px (pixels are 13 micrometers on a side)
+New Horizons MVIC: (0.6575 m)/(13e-6 m/px) = 50576.9 px
+New Horizons LEISA: (0.6575 m)/(40e-6 m/px) = 16437.5 px
 
 Vertical field of view for various cameras (in degrees):
 Hayabusa's AMICA: 5.839083

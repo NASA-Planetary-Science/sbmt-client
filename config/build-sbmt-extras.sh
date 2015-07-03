@@ -2,8 +2,7 @@
 
 # Run this script from the top level folder to build all java tools
 # and package them in an easy to use way. Include at least one
-# argument (can be anything) to also build the 'general' library and
-# generate a zip file.
+# argument (can be anything) to also build the 'general' library.
 
 set -e
 set -o pipefail
@@ -11,12 +10,10 @@ set -o pipefail
 INSTALL_DIR=`pwd`/build/sbmt-extras
 INSTALL_BIN_DIR=$INSTALL_DIR/bin
 INSTALL_LIB_DIR=$INSTALL_DIR/lib
-INSTALL_DOC_DIR=$INSTALL_DIR/doc
 
 mkdir -p $INSTALL_DIR
 mkdir -p $INSTALL_BIN_DIR
 mkdir -p $INSTALL_LIB_DIR
-mkdir -p $INSTALL_DOC_DIR
 
 ######################################################
 # Install Java tools
@@ -60,6 +57,7 @@ done
 ######################################################
 cp misc/scripts/* $INSTALL_BIN_DIR
 
+
 if [ "$#" -gt 0 ]; then
 ######################################################
 # Install general library
@@ -84,20 +82,4 @@ if [ "$#" -gt 0 ]; then
 
     cp $src_dir/lidar/lidar-opt.py $INSTALL_BIN_DIR
     cp $src_dir/lidar/lidar_opt_tile_eros.py $INSTALL_BIN_DIR
-    cp `find $src_dir -name "README*"` $INSTALL_DOC_DIR
-
-######################################################
-# Make zip file
-######################################################
-    (
-        cd `pwd`/build
-        version_number=`date +%Y.%m.%d`
-        platform=""
-        if [ "$(uname)" == "Darwin" ]; then
-            platform="macosx"
-        elif [ "$(uname)" == "Linux" ]; then
-            platform="linux"
-        fi
-        zip -q -r sbmt-extras-$version_number-$platform-x64.zip sbmt-extras
-    )
 fi
