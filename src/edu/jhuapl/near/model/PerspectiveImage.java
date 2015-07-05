@@ -3,11 +3,14 @@ package edu.jhuapl.near.model;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -77,6 +80,8 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     public static final String STOP_TIME = "STOP_TIME";
     public static final String SPACECRAFT_POSITION = "SPACECRAFT_POSITION";
     public static final String SUN_POSITION_LT = "SUN_POSITION_LT";
+    public static final String TARGET_PIXEL_COORD = "TARGET_PIXEL_COORD";
+    public static final String APPLY_TARGET_OFFSET = "APPLY_TARGET_OFFSET";
 
     private SmallBodyModel smallBodyModel;
 
@@ -140,7 +145,8 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     private double[][] sunVectorAdjusted = new double[1][3];
 
     // offset in world coordinates of the adjusted frustum from the loaded frustum
-    private double[] frustumCenterPixel;
+    private double[] targetPixelCoordinates;
+    private boolean applyTargetOffset = false;
 
     private Frustum[] frusta = new Frustum[1];
 
@@ -360,14 +366,14 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
      */
     public void setSpectrumRegion(double[][] vertices) { }
 
-    public void setFrustumCenter(double[] frustumCenterPixel)
+    public void setFrustumOffset(double[] frustumCenterPixel)
     {
-        System.out.println("setFrustumCenter(): " + frustumCenterPixel[1] + " " + frustumCenterPixel[0]);
+        System.out.println("setFrustumOffset(): " + frustumCenterPixel[1] + " " + frustumCenterPixel[0]);
 
-        if (this.frustumCenterPixel == null)
-            this.frustumCenterPixel = new double[2];
-        this.frustumCenterPixel[0] = frustumCenterPixel[0];
-        this.frustumCenterPixel[1] = frustumCenterPixel[1];
+        if (this.targetPixelCoordinates == null)
+            this.targetPixelCoordinates = new double[2];
+        this.targetPixelCoordinates[0] = frustumCenterPixel[0];
+        this.targetPixelCoordinates[1] = frustumCenterPixel[1];
 
         int height = getImageHeight();
         int width = getImageWidth();
@@ -381,31 +387,35 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
             double[] newCenterDirection = getPixelDirection(sample, line);
 //            rotateBoresightDirectionTo(newCenterDirection);
-            rotateDirectionToOrigin(newCenterDirection);
+            rotateDirectionToLocalOrigin(newCenterDirection);
+
+            saveImageInfo();
         }
     }
 
-    public void moveFrustumCenter(double[] pixelDelta)
+    public void moveTargetPixelCoordinates(double[] pixelDelta)
     {
-        System.out.println("moveFrustumCenter(): " + pixelDelta[1] + " " + pixelDelta[0]);
-        if (frustumCenterPixel == null)
+        System.out.println("moveFrustumOffset(): " + pixelDelta[1] + " " + pixelDelta[0]);
+        if (targetPixelCoordinates == null)
         {
-            frustumCenterPixel = new double[2];
-            frustumCenterPixel[0] = getImageHeight() / 2.0;
-            frustumCenterPixel[1] = getImageWidth() / 2.0;
+            targetPixelCoordinates = new double[2];
+            targetPixelCoordinates[0] = getImageHeight() / 2.0;
+            targetPixelCoordinates[1] = getImageWidth() / 2.0;
         }
 
         int height = getImageHeight();
         int width = getImageWidth();
-        double line = this.frustumCenterPixel[0] + pixelDelta[0];
-        double sample = (double)Math.round(frustumCenterPixel[1] + pixelDelta[1]);
+        double line = this.targetPixelCoordinates[0] + pixelDelta[0];
+        double sample = (double)Math.round(targetPixelCoordinates[1] + pixelDelta[1]);
         double[] newFrustumCenterPixel = { line, sample };
 
         if (line >= 0.0 && line < height && sample >= 0.0 && sample < width)
         {
-            setFrustumCenter(newFrustumCenterPixel);
+            setFrustumOffset(newFrustumCenterPixel);
             loadFootprint();
             calculateFrustum();
+
+            saveImageInfo();
         }
     }
 
@@ -435,7 +445,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
     private static double[] origin = { 0.0, 0.0, 0.0 };
 
-    private void rotateDirectionToOrigin(double[] direction)
+    private void rotateDirectionToLocalOrigin(double[] direction)
     {
         Vector3D directionVector = new Vector3D(direction);
         Vector3D spacecraftPositionVector = new Vector3D(spacecraftPositionOriginal[currentSlice]);
@@ -732,6 +742,53 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
         in.close();
     }
+
+
+
+    protected void saveImageInfo(
+            String infoFilename,
+            int slice,        // currently, we only support single-frame INFO files
+            String startTime,
+            String stopTime,
+            double[][] spacecraftPosition,
+            double[][] sunVector,
+            double[][] frustum1,
+            double[][] frustum2,
+            double[][] frustum3,
+            double[][] frustum4,
+            double[][] boresightDirection,
+            double[][] upVector,
+            double[] targetPixelCoordinates,
+            boolean applyTargetOffset) throws NumberFormatException, IOException
+    {
+        infoFilename = infoFilename + ".txt";
+        System.out.println("Saving infofile to: " + infoFilename);
+        FileOutputStream fs = null;
+        try {
+            fs = new FileOutputStream(infoFilename);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return;
+        }
+        OutputStreamWriter osw = new OutputStreamWriter(fs);
+        BufferedWriter out = new BufferedWriter(osw);
+
+        out.write(String.format("%-20s= %s\n", START_TIME, startTime));
+        out.write(String.format("%-20s= %s\n", STOP_TIME, stopTime));
+        out.write(String.format("%-20s= ( %1.16e , %1.16e , %1.16e )\n", SPACECRAFT_POSITION, spacecraftPosition[slice][0], spacecraftPosition[slice][1], spacecraftPosition[slice][2]));
+        out.write(String.format("%-20s= ( %1.16e , %1.16e , %1.16e )\n", BORESIGHT_DIRECTION, boresightDirection[slice][0], boresightDirection[slice][1], boresightDirection[slice][2]));
+        out.write(String.format("%-20s= ( %1.16e , %1.16e , %1.16e )\n", UP_DIRECTION, upVector[slice][0], upVector[slice][1], upVector[slice][2]));
+        out.write(String.format("%-20s= ( %1.16e , %1.16e , %1.16e )\n", FRUSTUM1, frustum1[slice][0], frustum1[slice][1], frustum1[slice][2]));
+        out.write(String.format("%-20s= ( %1.16e , %1.16e , %1.16e )\n", FRUSTUM2, frustum2[slice][0], frustum2[slice][1], frustum2[slice][2]));
+        out.write(String.format("%-20s= ( %1.16e , %1.16e , %1.16e )\n", FRUSTUM3, frustum3[slice][0], frustum3[slice][1], frustum3[slice][2]));
+        out.write(String.format("%-20s= ( %1.16e , %1.16e , %1.16e )\n", FRUSTUM4, frustum4[slice][0], frustum4[slice][1], frustum4[slice][2]));
+        out.write(String.format("%-20s= ( %1.16e , %1.16e , %1.16e )\n", SUN_POSITION_LT, sunVector[slice][0], sunVector[slice][1], sunVector[slice][2]));
+        out.write(String.format("%-20s= ( %1.16e , %1.16e )\n", TARGET_PIXEL_COORD, targetPixelCoordinates[0], targetPixelCoordinates[1]));
+        out.write(String.format("%-20s= %b\n", APPLY_TARGET_OFFSET, applyTargetOffset));
+
+        out.close();
+    }
+
 
 
     /**
@@ -1605,6 +1662,45 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 //        printpt(frustum2, "pds frustum2 ");
 //        printpt(frustum3, "pds frustum3 ");
 //        printpt(frustum4, "pds frustum4 ");
+        }
+    }
+
+
+    private void saveImageInfo()
+    {
+        String[] infoFileNames = getInfoFilesFullPath();
+
+        int nfiles = infoFileNames.length;
+        int nslices = getNumberBands();
+
+        try
+        {
+            for (int k=0; k<nfiles; k++)
+            {
+                saveImageInfo(
+                        infoFileNames[k],
+                        k,
+                        startTime,
+                        stopTime,
+                        spacecraftPositionOriginal,
+                        sunVectorOriginal,
+                        frustum1Original,
+                        frustum2Original,
+                        frustum3Original,
+                        frustum4Original,
+                        boresightDirectionOriginal,
+                        upVectorOriginal,
+                        targetPixelCoordinates,
+                        applyTargetOffset);
+            }
+        }
+        catch (NumberFormatException e)
+        {
+            e.printStackTrace();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
         }
     }
 

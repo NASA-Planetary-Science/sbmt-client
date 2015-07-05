@@ -423,7 +423,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
 //                double centerJ = pi.getImageWidth() / 2.0;
 //                double[] offset = { p[0] - centerI, p[1] - centerJ };
 //                pi.setFrustumOffset(offset);
-                pi.setFrustumCenter(pickPosition);
+                pi.setFrustumOffset(pickPosition);
             }
         }
     }
@@ -754,7 +754,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
         if (image instanceof PerspectiveImage)
         {
             double[] delta = { VIEWPOINT_DELTA, 0.0 };
-            ((PerspectiveImage)image).moveFrustumCenter(delta);
+            ((PerspectiveImage)image).moveTargetPixelCoordinates(delta);
             ((PerspectiveImage)image).firePropertyChange();
         }
     }//GEN-LAST:event_leftButtonActionPerformed
@@ -763,7 +763,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
         if (image instanceof PerspectiveImage)
         {
             double[] delta = { -VIEWPOINT_DELTA, 0.0 };
-            ((PerspectiveImage)image).moveFrustumCenter(delta);
+            ((PerspectiveImage)image).moveTargetPixelCoordinates(delta);
             ((PerspectiveImage)image).firePropertyChange();
         }
     }//GEN-LAST:event_rightButtonActionPerformed
@@ -772,7 +772,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
         if (image instanceof PerspectiveImage)
         {
             double[] delta = { 0.0, -VIEWPOINT_DELTA };
-            ((PerspectiveImage)image).moveFrustumCenter(delta);
+            ((PerspectiveImage)image).moveTargetPixelCoordinates(delta);
             ((PerspectiveImage)image).firePropertyChange();
         }
     }//GEN-LAST:event_upButtonActionPerformed
@@ -781,7 +781,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
         if (image instanceof PerspectiveImage)
         {
             double[] delta = { 0.0, VIEWPOINT_DELTA };
-            ((PerspectiveImage)image).moveFrustumCenter(delta);
+            ((PerspectiveImage)image).moveTargetPixelCoordinates(delta);
             ((PerspectiveImage)image).firePropertyChange();
         }
     }//GEN-LAST:event_downButtonActionPerformed
