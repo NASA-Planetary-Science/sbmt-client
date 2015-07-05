@@ -145,8 +145,9 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     private double[][] sunVectorAdjusted = new double[1][3];
 
     // offset in world coordinates of the adjusted frustum from the loaded frustum
-    private double[] targetPixelCoordinates;
-    private boolean applyTargetOffset = false;
+    private double[] targetPixelCoordinates = new double[2];
+;
+    private boolean applyTargetOffset = true;
 
     private Frustum[] frusta = new Frustum[1];
 
@@ -231,7 +232,10 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         loadPointing();
 
         if (!loadPointingOnly)
+        {
             loadImage();
+            updateFrustumOffset();
+        }
     }
 
     private void copySpacecraftState()
@@ -370,26 +374,31 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     {
         System.out.println("setFrustumOffset(): " + frustumCenterPixel[1] + " " + frustumCenterPixel[0]);
 
-        if (this.targetPixelCoordinates == null)
-            this.targetPixelCoordinates = new double[2];
         this.targetPixelCoordinates[0] = frustumCenterPixel[0];
         this.targetPixelCoordinates[1] = frustumCenterPixel[1];
 
-        int height = getImageHeight();
-        int width = getImageWidth();
-        int line = (int)Math.round(height - 1 - frustumCenterPixel[0]);
-        int sample = (int)Math.round(frustumCenterPixel[1]);
+        updateFrustumOffset();
+    }
 
-        if (line >= 0 && line < height && sample >= 0 && sample < width)
+    private void updateFrustumOffset()
+    {
+        if (applyTargetOffset)
         {
-            // adjust wrt the original spacecraft pointing direction, not the previous adjusted one
-            copySpacecraftState();
+            int height = getImageHeight();
+            int width = getImageWidth();
+            int line = (int)Math.round(height - 1 - targetPixelCoordinates[0]);
+            int sample = (int)Math.round(targetPixelCoordinates[1]);
 
-            double[] newCenterDirection = getPixelDirection(sample, line);
-//            rotateBoresightDirectionTo(newCenterDirection);
-            rotateDirectionToLocalOrigin(newCenterDirection);
+            if (line >= 0 && line < height && sample >= 0 && sample < width)
+            {
+                // adjust wrt the original spacecraft pointing direction, not the previous adjusted one
+                copySpacecraftState();
 
-            saveImageInfo();
+                double[] newTargetPixelDirection = getPixelDirection(sample, line);
+                rotateTargetPixelDirectionToLocalOrigin(newTargetPixelDirection);
+
+                saveImageInfo();
+            }
         }
     }
 
@@ -445,7 +454,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
     private static double[] origin = { 0.0, 0.0, 0.0 };
 
-    private void rotateDirectionToLocalOrigin(double[] direction)
+    private void rotateTargetPixelDirectionToLocalOrigin(double[] direction)
     {
         Vector3D directionVector = new Vector3D(direction);
         Vector3D spacecraftPositionVector = new Vector3D(spacecraftPositionOriginal[currentSlice]);
@@ -568,8 +577,12 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
             double[][] frustum3,
             double[][] frustum4,
             double[][] boresightDirection,
-            double[][] upVector) throws NumberFormatException, IOException
+            double[][] upVector,
+            double[] targetPixelCoordinates,
+            boolean[] applyTargetOffset) throws NumberFormatException, IOException
     {
+        boolean offset = true;
+
         FileInputStream fs = null;
         try {
             fs = new FileInputStream(infoFilename);
@@ -625,6 +638,23 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
                 // For backwards compatibility with MSI images we use the endsWith function
                 // rather than equals for FRUSTUM1, FRUSTUM2, FRUSTUM3, FRUSTUM4, BORESIGHT_DIRECTION
                 // and UP_DIRECTION since these are all prefixed with MSI_ in the info file.
+                if (token.endsWith(TARGET_PIXEL_COORD))
+                {
+                    st.nextToken();
+                    st.nextToken();
+                    double x = Double.parseDouble(st.nextToken());
+                    st.nextToken();
+                    double y = Double.parseDouble(st.nextToken());
+                    targetPixelCoordinates[0] = x;
+                    targetPixelCoordinates[1] = y;
+                }
+                if (token.endsWith(APPLY_TARGET_OFFSET))
+                {
+                    st.nextToken();
+                    offset = Boolean.parseBoolean(st.nextToken());
+                    applyTargetOffset[0] = offset;
+                }
+
                 if (SPACECRAFT_POSITION.equals(token) ||
                         SUN_POSITION_LT.equals(token) ||
                         token.endsWith(FRUSTUM1) ||
@@ -761,7 +791,8 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
             double[] targetPixelCoordinates,
             boolean applyTargetOffset) throws NumberFormatException, IOException
     {
-        infoFilename = infoFilename + ".txt";
+        // for testing purposes only:
+//        infoFilename = infoFilename + ".txt";
         System.out.println("Saving infofile to: " + infoFilename);
         FileOutputStream fs = null;
         try {
@@ -1639,6 +1670,9 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         {
             String[] start = new String[1];
             String[] stop = new String[1];
+            boolean[] ato = new boolean[1];
+            ato[0] = true;
+
             loadImageInfo(
                     infoFileNames[k],
                     k,
@@ -1652,11 +1686,16 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
                     frustum3Original,
                     frustum4Original,
                     boresightDirectionOriginal,
-                    upVectorOriginal);
+                    upVectorOriginal,
+                    targetPixelCoordinates,
+                    ato);
 
             // should startTime and stopTime be an array? -turnerj1
             startTime = start[0];
             stopTime = stop[0];
+            applyTargetOffset = ato[0];
+
+//            updateFrustumOffset();
 
 //        printpt(frustum1, "pds frustum1 ");
 //        printpt(frustum2, "pds frustum2 ");
