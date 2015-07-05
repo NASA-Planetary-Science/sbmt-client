@@ -228,7 +228,8 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
             {
                 // We save out the image using a new name that makes use of a UUID
 //                String newFilename = "image-" + uuid + ".fit";
-                String newFilename = "image-" + uuid + ".png";
+                String suffix = newImageInfo.imagefilename.endsWith(".png") ? ".png" : ".fit";
+                String newFilename = "image-" + uuid + suffix;
                 String newFilepath = getCustomDataFolder() + File.separator + newFilename;
                 FileUtil.copyFile(newImageInfo.imagefilename, newFilepath);
                 // Change newImageInfo.imagefilename to the new location of the file

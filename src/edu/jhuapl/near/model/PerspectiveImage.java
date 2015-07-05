@@ -1212,6 +1212,9 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         else if (getPngFileFullPath() != null)
             loadPngFile();
 
+        if (rawImage == null)
+            return;
+
         processRawImage(rawImage);
 
         int[] dims = rawImage.GetDimensions();

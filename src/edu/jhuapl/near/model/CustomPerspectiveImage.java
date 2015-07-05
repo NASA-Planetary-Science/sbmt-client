@@ -62,13 +62,13 @@ public class CustomPerspectiveImage extends PerspectiveImage
     @Override
     protected String initializePngFileFullPath()
     {
-        return getKey().name;
+        return getKey().name.endsWith(".png") ? getKey().name : null;
     }
 
     @Override
     protected String initializeFitFileFullPath()
     {
-        return null;
+        return getKey().name.endsWith(".png") ? null : getKey().name;
     }
 
     @Override
