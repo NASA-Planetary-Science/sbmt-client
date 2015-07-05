@@ -2,50 +2,56 @@
 #define __UTIL_H__
 
 #include <string>
+#include <sstream>
 #include <vector>
 
+// The following 3 functions were adapted from
+// http://stackoverflow.com/questions/479080/trim-is-not-part-of-the-standard-c-c-library?rq=1
+static const std::string whiteSpaces( " \f\n\r\t\v" );
+
 // Remove initial and trailing whitespace from string. Modifies string in-place
-inline void trim(std::string& s)
+inline void trimRight( std::string& str,
+                       const std::string& trimChars = whiteSpaces )
 {
-    const std::size_t si = s.find_first_not_of(" \t\r\n");
-    if (si != std::string::npos)
+   std::string::size_type pos = str.find_last_not_of( trimChars );
+   str.erase( pos + 1 );
+}
+
+inline void trimLeft( std::string& str,
+                      const std::string& trimChars = whiteSpaces )
+{
+   std::string::size_type pos = str.find_first_not_of( trimChars );
+   str.erase( 0, pos );
+}
+
+inline void trim( std::string& str,
+                  const std::string& trimChars = whiteSpaces )
+{
+   trimRight( str, trimChars );
+   trimLeft( str, trimChars );
+}
+
+
+// The following 2 functions were adapted from http://stackoverflow.com/questions/236129/how-to-split-a-string-in-c
+inline void
+split(const std::string &s, char delim, std::vector<std::string> &elems)
+{
+    std::stringstream ss(s);
+    std::string item;
+    while (std::getline(ss, item, delim))
     {
-        const std::size_t ei = s.find_last_not_of(" \t\r\n");
-        const std::size_t l = (ei == std::string::npos ? ei : ei - si + 1);
-        s = s.substr(si, l);
-    }
-    else
-    {
-        s = "";
+        if (item.length() > 0)
+            elems.push_back(item);
     }
 }
 
-inline std::vector<std::string>
-split(const std::string& s, const std::string& delim = " \t")
-{
-    typedef std::string::size_type size_type;
-    std::vector<std::string> tokens;
 
-    const size_type n = s.size();
-    size_type i = 0;
-    size_type e = 0;
-    while (i < n && e < n)
-    {
-        e = s.find_first_of(delim, i); // Find end of current word
-        if (e == std::string::npos)
-        {   // Found last word
-            tokens.push_back(s.substr(i, n - i));
-        }
-        else
-        {
-            if (i != e)
-            {
-                tokens.push_back(s.substr(i, e - i));
-            }
-            i = s.find_first_not_of(delim, e); // Find start of next word
-        }
-    }
-    return tokens;
+inline std::vector<std::string>
+split(const std::string &s, char delim = ' ')
+{
+    std::vector<std::string> elems;
+    split(s, delim, elems);
+    return elems;
 }
 
 #endif

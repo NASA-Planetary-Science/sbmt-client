@@ -83,6 +83,10 @@ public:
     }
 
 private:
+
+    void loadGaskell(std::string filename);
+    void loadOBJ(std::string filename);
+
     std::vector<Vertex> vertices;
     std::vector<Plate> plates;
 };
