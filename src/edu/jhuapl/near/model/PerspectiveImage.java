@@ -38,6 +38,7 @@ import vtk.vtkImageMapToColors;
 import vtk.vtkImageMask;
 import vtk.vtkImageReslice;
 import vtk.vtkLookupTable;
+import vtk.vtkPNGReader;
 import vtk.vtkPointData;
 import vtk.vtkPoints;
 import vtk.vtkPolyData;
@@ -154,7 +155,8 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     private int imageHeight;
     private int imageDepth;
 
-    private String fitFileFullPath; // The actual path of the image stored on the local disk (after downloading from the server)
+    private String pngFileFullPath; // The actual path of the PNG image stored on the local disk (after downloading from the server)
+    private String fitFileFullPath; // The actual path of the FITS image stored on the local disk (after downloading from the server)
     private String labelFileFullPath;
     private String infoFileFullPath;
     private String sumfileFullPath;
@@ -210,9 +212,10 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         if (!loadPointingOnly)
         {
             fitFileFullPath = initializeFitFileFullPath();
+            pngFileFullPath = initializePngFileFullPath();
         }
 
-        if (key.source.equals(ImageSource.SPICE))
+        if (key.source.equals(ImageSource.SPICE) || key.source.equals(ImageSource.LOCAL_PERSPECTIVE))
             infoFileFullPath = initializeInfoFileFullPath();
         else if (key.source.equals(ImageSource.LABEL))
             labelFileFullPath = initializeLabelFileFullPath();
@@ -742,6 +745,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     abstract protected int[] getMaskSizes();
 
     abstract protected String initializeFitFileFullPath();
+    protected String initializePngFileFullPath() { return null; }
     abstract protected String initializeLabelFileFullPath();
     abstract protected String initializeInfoFileFullPath();
     abstract protected String initializeSumfileFullPath();
@@ -893,9 +897,19 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         return imageDepth;
     }
 
+    public String getPngFileFullPath()
+    {
+        return pngFileFullPath;
+    }
+
     public String getFitFileFullPath()
     {
         return fitFileFullPath;
+    }
+
+    public String getImageFileFullPath()
+    {
+        return fitFileFullPath != null ? fitFileFullPath : pngFileFullPath;
     }
 
     public String[] getFitFilesFullPath()
@@ -1007,7 +1021,28 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         // to be overridden by subclasses that load calibration data
     }
 
-    protected void loadImage() throws FitsException, IOException
+    protected void loadPngFile()
+    {
+        String name = getPngFileFullPath();
+
+        String imageFile = null;
+        if (getKey().source == ImageSource.IMAGE_MAP)
+            imageFile = FileCache.getFileFromServer(name).getAbsolutePath();
+        else
+            imageFile = getKey().name;
+
+        if (rawImage == null)
+            rawImage = new vtkImageData();
+
+        vtkPNGReader reader = new vtkPNGReader();
+        reader.SetFileName(imageFile);
+        reader.Update();
+        rawImage.DeepCopy(reader.GetOutput());
+
+    }
+
+
+    protected void loadFitsFiles() throws FitsException, IOException
     {
         String[] filenames = getFitFilesFullPath();
         String filename = filenames[0];
@@ -1167,8 +1202,15 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
             }
         }
 
-
         rawImage = createRawImage(fitsHeight, fitsWidth, fitsDepth, array2D, array3D);
+    }
+
+    protected void loadImage() throws FitsException, IOException
+    {
+        if (getFitFileFullPath() != null)
+            loadFitsFiles();
+        else if (getPngFileFullPath() != null)
+            loadPngFile();
 
         processRawImage(rawImage);
 
@@ -1209,8 +1251,20 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         textureCoords = new vtkFloatArray();
         normalsFilter = new vtkPolyDataNormals();
 
+
+        if (getFitFileFullPath() != null)
+            setDisplayedImageRange(null);
+        else if (getPngFileFullPath() != null)
+        {
+            double[] scalarRange = rawImage.GetScalarRange();
+            minValue[0] = (float)scalarRange[0];
+            maxValue[0] = (float)scalarRange[1];
+//            setDisplayedImageRange(new IntensityRange(0, 255));
+            setDisplayedImageRange(null);
+        }
+
+
 //        setDisplayedImageRange(new IntensityRange(0, 255));
-        setDisplayedImageRange(null);
     }
 
     protected void loadPointing() throws FitsException, IOException
@@ -1229,6 +1283,10 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
             {
                 System.out.println("Label file not available");
             }
+        }
+        else if (key.source.equals(ImageSource.LOCAL_PERSPECTIVE))
+        {
+            loadImageInfo();
         }
         else
         {
@@ -2939,7 +2997,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
         DecimalFormat df = new DecimalFormat("#.######");
 
-        properties.put("Name", new File(getFitFileFullPath()).getName()); //TODO remove extension and possibly prefix
+        properties.put("Name", new File(getImageFileFullPath()).getName()); //TODO remove extension and possibly prefix
         properties.put("Start Time", getStartTime());
         properties.put("Stop Time", getStopTime());
         properties.put("Spacecraft Distance", df.format(getSpacecraftDistance()) + " km");

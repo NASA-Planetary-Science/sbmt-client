@@ -145,6 +145,7 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
             double[] urlats = configMap.getAsDoubleArray(CylindricalImage.UPPER_RIGHT_LATITUDES);
             double[] urlons = configMap.getAsDoubleArray(CylindricalImage.UPPER_RIGHT_LONGITUDES);
             String[] sumfileNames = configMap.getAsArray(CustomPerspectiveImage.SUMFILENAMES);
+            String[] infofileNames = configMap.getAsArray(CustomPerspectiveImage.INFOFILENAMES);
 
             int numImages = lllats != null ? lllats.length : (projectionTypes != null ? projectionTypes.length : 0);
             for (int i=0; i<numImages; ++i)
@@ -164,6 +165,7 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
                 else if (ProjectionType.PERSPECTIVE.toString().equals(projectionTypes[i]))
                 {
                     imageInfo.sumfilename = sumfileNames[i];
+                    imageInfo.infofilename = infofileNames[i];
                 }
 
                 ((DefaultListModel)imageList.getModel()).addElement(imageInfo);
@@ -225,27 +227,41 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
             else
             {
                 // We save out the image using a new name that makes use of a UUID
-                String newFilename = "image-" + uuid + ".fit";
+//                String newFilename = "image-" + uuid + ".fit";
+                String newFilename = "image-" + uuid + ".png";
                 String newFilepath = getCustomDataFolder() + File.separator + newFilename;
                 FileUtil.copyFile(newImageInfo.imagefilename, newFilepath);
                 // Change newImageInfo.imagefilename to the new location of the file
                 newImageInfo.imagefilename = newFilename;
             }
 
-            // If newImageInfo.sumfilename is null, that means we are in edit mode
+            // If newImageInfo.sumfilename and infofilename are both null, that means we are in edit mode
             // and should continue to use the existing sumfile
-            if (newImageInfo.sumfilename == null)
+            if (newImageInfo.sumfilename == null && newImageInfo.infofilename == null)
             {
                 newImageInfo.sumfilename = oldImageInfo.sumfilename;
+                newImageInfo.infofilename = oldImageInfo.infofilename;
             }
             else
             {
-                // We save out the sumfile using a new name that makes use of a UUID
-                String newFilename = "sumfile-" + uuid + ".SUM";
-                String newFilepath = getCustomDataFolder() + File.separator + newFilename;
-                FileUtil.copyFile(newImageInfo.sumfilename, newFilepath);
-                // Change newImageInfo.sumfilename to the new location of the file
-                newImageInfo.sumfilename = newFilename;
+                if (newImageInfo.sumfilename != null)
+                {
+                    // We save out the sumfile using a new name that makes use of a UUID
+                    String newFilename = "sumfile-" + uuid + ".SUM";
+                    String newFilepath = getCustomDataFolder() + File.separator + newFilename;
+                    FileUtil.copyFile(newImageInfo.sumfilename, newFilepath);
+                    // Change newImageInfo.sumfilename to the new location of the file
+                    newImageInfo.sumfilename = newFilename;
+                }
+                else if (newImageInfo.infofilename != null)
+                {
+                    // We save out the infofile using a new name that makes use of a UUID
+                    String newFilename = "infofile-" + uuid + ".INFO";
+                    String newFilepath = getCustomDataFolder() + File.separator + newFilename;
+                    FileUtil.copyFile(newImageInfo.infofilename, newFilepath);
+                    // Change newImageInfo.infofilename to the new location of the file
+                    newImageInfo.infofilename = newFilename;
+                }
             }
         }
 
@@ -307,8 +323,16 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
 
         if (imageInfo.projectionType == ProjectionType.PERSPECTIVE)
         {
-            filename = getCustomDataFolder() + File.separator + imageInfo.sumfilename;
-            new File(filename).delete();
+            if (imageInfo.sumfilename != null)
+            {
+                filename = getCustomDataFolder() + File.separator + imageInfo.sumfilename;
+                new File(filename).delete();
+            }
+            if (imageInfo.infofilename != null)
+            {
+                filename = getCustomDataFolder() + File.separator + imageInfo.infofilename;
+                new File(filename).delete();
+            }
         }
 
         ((DefaultListModel)imageList.getModel()).remove(index);
@@ -339,6 +363,7 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
         String urlats = "";
         String urlons = "";
         String sumfilenames = "";
+        String infofilenames = "";
 
         DefaultListModel imageListModel = (DefaultListModel)imageList.getModel();
         for (int i=0; i<imageListModel.size(); ++i)
@@ -353,6 +378,7 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
             urlats += String.valueOf(imageInfo.urlat);
             urlons += String.valueOf(imageInfo.urlon);
             sumfilenames += imageInfo.sumfilename;
+            infofilenames += imageInfo.infofilename;
 
             if (i < imageListModel.size()-1)
             {
@@ -364,6 +390,7 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
                 urlats += CustomShapeModel.LIST_SEPARATOR;
                 urlons += CustomShapeModel.LIST_SEPARATOR;
                 sumfilenames += CustomShapeModel.LIST_SEPARATOR;
+                infofilenames += CustomShapeModel.LIST_SEPARATOR;
             }
         }
 
@@ -377,6 +404,7 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
         newMap.put(CylindricalImage.UPPER_RIGHT_LATITUDES, urlats);
         newMap.put(CylindricalImage.UPPER_RIGHT_LONGITUDES, urlons);
         newMap.put(CustomPerspectiveImage.SUMFILENAMES, sumfilenames);
+        newMap.put(CustomPerspectiveImage.INFOFILENAMES, infofilenames);
 
         configMap.put(newMap);
     }

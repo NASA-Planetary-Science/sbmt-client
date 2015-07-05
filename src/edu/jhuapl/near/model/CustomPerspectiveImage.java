@@ -13,6 +13,7 @@ import edu.jhuapl.near.util.MapUtil;
 public class CustomPerspectiveImage extends PerspectiveImage
 {
     public static final String SUMFILENAMES = "SumfileNames";
+    public static final String INFOFILENAMES = "InfofileNames";
 
     private String imageName;
 
@@ -59,9 +60,15 @@ public class CustomPerspectiveImage extends PerspectiveImage
     }
 
     @Override
-    protected String initializeFitFileFullPath()
+    protected String initializePngFileFullPath()
     {
         return getKey().name;
+    }
+
+    @Override
+    protected String initializeFitFileFullPath()
+    {
+        return null;
     }
 
     @Override
@@ -73,6 +80,18 @@ public class CustomPerspectiveImage extends PerspectiveImage
     @Override
     protected String initializeInfoFileFullPath()
     {
+        String configFilename = new File(getKey().name).getParent() + File.separator + "config.txt";
+        MapUtil configMap = new MapUtil(configFilename);
+        String[] imageFilenames = configMap.getAsArray(IMAGE_FILENAMES);
+        for (int i=0; i<imageFilenames.length; ++i)
+        {
+            String filename = new File(getKey().name).getName();
+            if (filename.equals(imageFilenames[i]))
+            {
+                return new File(getKey().name).getParent() + File.separator + configMap.getAsArray(INFOFILENAMES)[i];
+            }
+        }
+
         return null;
     }
 
