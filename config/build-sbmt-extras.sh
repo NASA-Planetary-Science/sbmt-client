@@ -1,8 +1,7 @@
 #!/bin/bash
 
 # Run this script from the top level folder to build all java tools
-# and package them in an easy to use way. Include at least one
-# argument (can be anything) to also build the 'general' library.
+# and package them in an easy to use way.
 
 set -e
 set -o pipefail
@@ -14,6 +13,7 @@ INSTALL_LIB_DIR=$INSTALL_DIR/lib
 mkdir -p $INSTALL_DIR
 mkdir -p $INSTALL_BIN_DIR
 mkdir -p $INSTALL_LIB_DIR
+
 
 ######################################################
 # Install Java tools
@@ -52,34 +52,16 @@ for f in src/edu/jhuapl/near/tools/*.java ; do
     chmod +x $INSTALL_BIN_DIR/$f
 done
 
+
 ######################################################
 # Install Scripts
 ######################################################
 cp misc/scripts/* $INSTALL_BIN_DIR
 
 
-if [ "$#" -gt 0 ]; then
 ######################################################
-# Install general library
+# Install gravity
 ######################################################
-    build_dir=`pwd`/build/build-sbmt-general
-    src_dir=`pwd`/misc/programs/general
-    mkdir -p $build_dir
-    (
-        cd $build_dir
-        cmake $src_dir \
-            -DCMAKE_BUILD_TYPE:String=Release \
-            -DCMAKE_CXX_FLAGS_RELEASE:String="-O2 -DNDEBUG" \
-            -DCMAKE_C_FLAGS_RELEASE:String="-O2 -DNDEBUG"
-        make
-
-        for f in * ; do
-            if [[ -f "$f" && -x "$f" ]]; then
-                cp $f $INSTALL_BIN_DIR
-            fi
-        done
-    )
-
-    cp $src_dir/lidar/lidar-opt.py $INSTALL_BIN_DIR
-    cp $src_dir/lidar/lidar_opt_tile_eros.py $INSTALL_BIN_DIR
-fi
+cd misc/programs/gravity
+./compile.sh
+cp gravity elevation-slope $INSTALL_BIN_DIR
