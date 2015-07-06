@@ -380,7 +380,7 @@
         </Component>
         <Component class="javax.swing.JCheckBox" name="adjustFrameCheckBox3">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Adjust Frame"/>
+            <Property name="text" type="java.lang.String" value="Select Target Mode"/>
             <Property name="name" type="java.lang.String" value="" noResource="true"/>
           </Properties>
           <Events>

@@ -239,7 +239,10 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         if (!loadPointingOnly)
         {
             loadImage();
-            updateFrameAdjustments();
+
+//            updateFrameAdjustments();
+//            loadFootprint();
+//            calculateFrustum();
         }
     }
 
@@ -413,6 +416,25 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         saveImageInfo();
     }
 
+    public void setZoomFactor(double offset)
+    {
+        System.out.println("setZoomFactor(): " + offset);
+
+        if (zoomFactor == null)
+        {
+            zoomFactor = new double[1];
+            zoomFactor[0] = 1.0;
+        }
+
+        zoomFactor[0] = offset;
+
+        updateFrameAdjustments();
+
+        loadFootprint();
+        calculateFrustum();
+        saveImageInfo();
+    }
+
     private void updateFrameAdjustments()
     {
         // adjust wrt the original spacecraft pointing direction, not the previous adjusted one
@@ -437,6 +459,10 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
             {
                 rotateFrameAboutTarget(rotationOffset[0]);
             }
+            if (zoomFactor != null)
+            {
+                zoomFrame(zoomFactor[0]);
+            }
         }
 
 
@@ -445,6 +471,30 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 //
 //        saveImageInfo();
     }
+
+
+
+
+    private void zoomFrame(double zoomFactor)
+    {
+        System.out.println("zoomFrame(" + zoomFactor + ")");
+        Vector3D spacecraftPositionVector = new Vector3D(spacecraftPositionOriginal[currentSlice]);
+        Vector3D spacecraftToOriginVector = spacecraftPositionVector.scalarMultiply(-1.0);
+        Vector3D originPointingVector = spacecraftToOriginVector.normalize();
+        double distance = spacecraftToOriginVector.getNorm();
+        Vector3D deltaVector = originPointingVector.scalarMultiply(distance * (zoomFactor - 1.0));
+        double[] delta = { deltaVector.getX(), deltaVector.getY(), deltaVector.getZ() };
+
+        int nslices = getNumberBands();
+        for (int i = 0; i<nslices; i++)
+        {
+            MathUtil.vadd(spacecraftPositionOriginal[currentSlice], delta, spacecraftPositionAdjusted[currentSlice]);
+
+            frusta[i] = null;
+            footprintGenerated[i] = false;
+        }
+    }
+
 
     private void rotateFrameAboutTarget(double angleDegrees)
     {
@@ -499,6 +549,20 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         double newRotationOffset = rotationOffset[0] + rotationDelta;
 
         setRotationOffset(newRotationOffset);
+    }
+
+    public void moveZoomFactorBy(double zoomDelta)
+    {
+        System.out.println("moveZoomDeltaBy(): " + zoomDelta);
+        if (zoomFactor == null)
+        {
+            zoomFactor = new double[1];
+            zoomFactor[0] = 1.0;
+        }
+
+        double newZoomFactor = zoomFactor[0] * (1.0 + zoomDelta);
+
+        setZoomFactor(newZoomFactor);
     }
 
 //    private void rotateBoresightDirectionTo(double[] newDirection)
@@ -1548,10 +1612,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
         if (frustumActor == null)
         {
-
             frustumActor = new vtkActor();
-
-            calculateFrustum();
 
             vtkProperty frustumProperty = frustumActor.GetProperty();
             frustumProperty.SetColor(0.0, 1.0, 0.0);
@@ -1560,6 +1621,10 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
             footprintActors.add(frustumActor);
         }
+
+        updateFrameAdjustments();
+        calculateFrustum();
+        loadFootprint();
 
         return footprintActors;
     }

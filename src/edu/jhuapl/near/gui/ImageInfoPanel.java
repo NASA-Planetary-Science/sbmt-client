@@ -58,6 +58,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
     private vtkPropPicker imagePicker;
     private boolean initialized = false;
     private boolean centerFrustumMode = false;
+    private double adjustFactor = 1.0;
 
 //    private class MouseListener extends MouseAdapter
 //    {
@@ -756,7 +757,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
             gridBagConstraints.gridy = 0;
             jPanel3.add(resetFrameAdjustmentsButton, gridBagConstraints);
 
-            adjustFrameCheckBox3.setText("Adjust Frame");
+            adjustFrameCheckBox3.setText("Select Target Mode");
             adjustFrameCheckBox3.setName(""); // NOI18N
             adjustFrameCheckBox3.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -823,12 +824,17 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
 
     private void zoomInButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_zoomInButtonActionPerformed
         System.out.println("Zoom In");
+        if (image instanceof PerspectiveImage)
+        {
+            ((PerspectiveImage)image).moveZoomFactorBy(-0.05 * getAdjustFactor());
+            ((PerspectiveImage)image).firePropertyChange();
+        }
     }//GEN-LAST:event_zoomInButtonActionPerformed
 
     private void leftButtonActionPerformed(java.awt.event.ActionEvent evt){//GEN-FIRST:event_leftButtonActionPerformed
         if (image instanceof PerspectiveImage)
         {
-            double[] delta = { VIEWPOINT_DELTA, 0.0 };
+            double[] delta = { getAdjustFactor(), 0.0 };
             ((PerspectiveImage)image).moveTargetPixelCoordinates(delta);
             ((PerspectiveImage)image).firePropertyChange();
         }
@@ -837,7 +843,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
     private void rightButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rightButtonActionPerformed
         if (image instanceof PerspectiveImage)
         {
-            double[] delta = { -VIEWPOINT_DELTA, 0.0 };
+            double[] delta = { -getAdjustFactor(), 0.0 };
             ((PerspectiveImage)image).moveTargetPixelCoordinates(delta);
             ((PerspectiveImage)image).firePropertyChange();
         }
@@ -846,7 +852,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
     private void upButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_upButtonActionPerformed
         if (image instanceof PerspectiveImage)
         {
-            double[] delta = { 0.0, -VIEWPOINT_DELTA };
+            double[] delta = { 0.0, -getAdjustFactor() };
             ((PerspectiveImage)image).moveTargetPixelCoordinates(delta);
             ((PerspectiveImage)image).firePropertyChange();
         }
@@ -855,7 +861,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
     private void downButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_downButtonActionPerformed
         if (image instanceof PerspectiveImage)
         {
-            double[] delta = { 0.0, VIEWPOINT_DELTA };
+            double[] delta = { 0.0, getAdjustFactor() };
             ((PerspectiveImage)image).moveTargetPixelCoordinates(delta);
             ((PerspectiveImage)image).firePropertyChange();
         }
@@ -865,7 +871,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
         System.out.println("Rotate Left");
         if (image instanceof PerspectiveImage)
         {
-            ((PerspectiveImage)image).moveRotationAngleBy(-ROTATION_DELTA);
+            ((PerspectiveImage)image).moveRotationAngleBy(getAdjustFactor());
             ((PerspectiveImage)image).firePropertyChange();
         }
     }//GEN-LAST:event_rotateLeftButtonActionPerformed
@@ -874,13 +880,13 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
         System.out.println("Rotate Right");
         if (image instanceof PerspectiveImage)
         {
-            ((PerspectiveImage)image).moveRotationAngleBy(ROTATION_DELTA);
+            ((PerspectiveImage)image).moveRotationAngleBy(-getAdjustFactor());
             ((PerspectiveImage)image).firePropertyChange();
         }
     }//GEN-LAST:event_rotateRightButtonActionPerformed
 
     private void interpolateCheckBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_interpolateCheckBox1ActionPerformed
-        // TODO add your handling code here:
+        ((PerspectiveImage)image).setInterpolate(interpolateCheckBox1.isSelected());
     }//GEN-LAST:event_interpolateCheckBox1ActionPerformed
 
     private void applyAdjustmentsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_applyAdjustmentsButtonActionPerformed
@@ -900,11 +906,26 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
 
     private void zoomOutButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_zoomOutButtonActionPerformed
         System.out.println("Zoom Out");
+        if (image instanceof PerspectiveImage)
+        {
+            ((PerspectiveImage)image).moveZoomFactorBy(0.05 * getAdjustFactor());
+            ((PerspectiveImage)image).firePropertyChange();
+        }
     }//GEN-LAST:event_zoomOutButtonActionPerformed
 
     private void factorTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_factorTextFieldActionPerformed
-        System.out.println("Factor Text Field");
     }//GEN-LAST:event_factorTextFieldActionPerformed
+
+    private double getAdjustFactor()
+    {
+        double result = 1.0;
+        try {
+            double delta = 1.0 * Double.parseDouble(factorTextField.getText());
+            result = delta;
+        } catch (Exception e) { }
+
+        return result;
+    }
 
     private void croppingChanged()
     {
