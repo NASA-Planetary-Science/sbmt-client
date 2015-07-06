@@ -375,18 +375,18 @@ public class DatabaseGeneratorSql
         EROS(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.EROS, ShapeModelAuthor.GASKELL),
                 "/project/nearsdc/data/GASKELL/EROS/MSI/msiImageList.txt"),
         ITOKAWA(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.ITOKAWA, ShapeModelAuthor.GASKELL),
-                "/project/nearsdc/data/"),
+                "/project/nearsdc/data/GASKELL/ITOKAWA/AMICA/imagelist.txt", "amica"),
         VESTA(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.VESTA, ShapeModelAuthor.GASKELL),
-                "/project/nearsdc/data/GASKELL/VESTA/FC/uniqFcFiles.txt"),
-        DEIMOS(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.DEIMOS, ShapeModelAuthor.THOMAS),
-                "/project/nearsdc/data/"),
+                "/project/nearsdc/data/GASKELL/VESTA/FC/uniqFcFiles.txt", "fc"),
+        DEIMOSEXPERIMENTAL(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.DEIMOS, ShapeModelAuthor.THOMAS),
+                "/project/nearsdc/data/THOMAS/DEIMOSEXPERIMENTAL/IMAGING/imagelist-fullpath.txt", "deimos"),
         PHOBOS(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.PHOBOS, ShapeModelAuthor.GASKELL),
                 "/project/nearsdc/data/GASKELL/PHOBOS/IMAGING/pdsImageList.txt"),
         PHOBOSEXPERIMENTAL(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.PHOBOS, ShapeModelAuthor.EXPERIMENTAL),
                 "/project/nearsdc/data/GASKELL/PHOBOSEXPERIMENTAL/IMAGING/imagelist.txt", "phobosexp"),
-        _67P(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody._67P, ShapeModelAuthor.GASKELL),
+        _67P(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody._67P, ShapeModelAuthor.GASKELL, "SHAP5 V0.3"),
                 "/project/nearsdc/data/GASKELL/67P/IMAGING/imagelist-fullpath.txt", "67p"),
-        _67P_DLR(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody._67P, ShapeModelAuthor.DLR),
+        _67P_DLR(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody._67P, ShapeModelAuthor.DLR, "SHAP4S"),
                 "/project/nearsdc/data/DLR/67P/IMAGING/imagelist-fullpath.txt", "67p_dlr"),
         JUPITER(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.JUPITER, null),
                 "/project/nearsdc/data/NEWHORIZONS/JUPITER/IMAGING/imagelist-fullpath.txt"),
@@ -397,7 +397,9 @@ public class DatabaseGeneratorSql
         GANYMEDE(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.GANYMEDE, null),
                 "/project/nearsdc/data/NEWHORIZONS/GANYMEDE/IMAGING/imagelist-fullpath.txt"),
         IO(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.IO, null),
-                "/project/nearsdc/data/NEWHORIZONS/IO/IMAGING/imagelist-fullpath.txt");
+                "/project/nearsdc/data/NEWHORIZONS/IO/IMAGING/imagelist-fullpath.txt"),
+        RQ36(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelAuthor.GASKELL, "V2"),
+                "/project/nearsdc/data/GASKELL/RQ36_V3/OCAM/imagelist-fullpath.txt");
 
         public final SmallBodyConfig config;
         public final String pathToFileList;
@@ -418,6 +420,28 @@ public class DatabaseGeneratorSql
         }
     }
 
+    private static void usage()
+    {
+        String o = "This program generates tables in the MySQL database for a given body.\n\n"
+                + "Usage: DatabaseGeneratorSql [options] <mode> <shapemodel>\n\n"
+                + "Where:\n"
+                + "  <mode>\n"
+                + "          Must be either 0, 1, or 2. If 0, then both Gaskell and PDS (SPICE) tables\n"
+                + "          are generated. If 1, then only Gaskell tables are generated. If 2, then\n"
+                + "          only PDS (SPICE) tables are generated.\n"
+                + "  <shapemodel>\n"
+                + "          shape model to process. Must be one of the values in the RunInfo enumeration\n"
+                + "          such as EROS or ITOKAWA. If ALL is specified then the entire database is\n"
+                + "          regenerated\n"
+                + "Options:\n"
+                + "  --root-url <url>\n"
+                + "          Root URL from which to get data from. Should begin with file:// to load\n"
+                + "          data directly from file system rather than web server. Default value\n"
+                + "          is file:///disks/d0180/htdocs-sbmt/internal/sbmt.\n\n";
+        System.out.println(o);
+        System.exit(1);
+    }
+
     /**
      * @param args
      * @throws IOException
@@ -426,15 +450,38 @@ public class DatabaseGeneratorSql
     {
         System.setProperty("java.awt.headless", "true");
         Configuration.setAPLVersion(true);
-        Configuration.setRootURL("file:///disks/d0180/htdocs-sbmt/internal/sbmt");
+        String rootURL = "file:///disks/d0180/htdocs-sbmt/internal/sbmt";
+
+        int i = 0;
+        for (; i < args.length; ++i) {
+            if (args[i].equals("--root-url")) {
+                rootURL = args[++i];
+            }
+            else {
+                break;
+            }
+        }
+
+        // There must be numRequiredArgs arguments remaining after the options.
+        // Otherwise abort.
+        int numberRequiredArgs = 2;
+        if (args.length - i != numberRequiredArgs)
+            usage();
+
+        int mode = Integer.parseInt(args[i++]);
+        String body = args[i++];
+
+        RunInfo[] runInfos = null;
+        if (body.toUpperCase().equals("ALL"))
+            runInfos = RunInfo.values();
+        else
+            runInfos = new RunInfo[]{RunInfo.valueOf(body.toUpperCase())};
+
+        Configuration.setRootURL(rootURL);
         NativeLibraryLoader.loadVtkLibrariesHeadless();
 
-        int mode = Integer.parseInt(args[0]);
-
-        for (int i=1; i<args.length; ++i)
+        for (RunInfo ri : runInfos)
         {
-            String body = args[i];
-            RunInfo ri = RunInfo.valueOf(body.toUpperCase());
             DatabaseGeneratorSql generator = new DatabaseGeneratorSql(ri.config, ri.databasePrefix);
             generator.run(ri.pathToFileList, mode);
         }
