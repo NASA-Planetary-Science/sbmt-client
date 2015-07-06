@@ -145,7 +145,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     private double[][] sunPositionAdjusted = new double[1][3];
 
     // offset in world coordinates of the adjusted frustum from the loaded frustum
-    private double[] targetPixelCoordinates = new double[2];
+    private double[] targetPixelCoordinates = null;
 ;
     private boolean applyTargetOffset = true;
 
@@ -374,15 +374,20 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     {
         System.out.println("setFrustumOffset(): " + frustumCenterPixel[1] + " " + frustumCenterPixel[0]);
 
+        if (targetPixelCoordinates == null)
+            targetPixelCoordinates = new double[2];
+
         this.targetPixelCoordinates[0] = frustumCenterPixel[0];
         this.targetPixelCoordinates[1] = frustumCenterPixel[1];
 
         updateFrustumOffset();
+
+        saveImageInfo();
     }
 
     private void updateFrustumOffset()
     {
-        if (applyTargetOffset)
+        if (targetPixelCoordinates != null && applyTargetOffset)
         {
             int height = getImageHeight();
             int width = getImageWidth();
@@ -396,8 +401,6 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
                 double[] newTargetPixelDirection = getPixelDirection(sample, line);
                 rotateTargetPixelDirectionToLocalOrigin(newTargetPixelDirection);
-
-                saveImageInfo();
             }
         }
     }
@@ -814,8 +817,12 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         out.write(String.format("%-20s= ( %1.16e , %1.16e , %1.16e )\n", FRUSTUM3, frustum3[slice][0], frustum3[slice][1], frustum3[slice][2]));
         out.write(String.format("%-20s= ( %1.16e , %1.16e , %1.16e )\n", FRUSTUM4, frustum4[slice][0], frustum4[slice][1], frustum4[slice][2]));
         out.write(String.format("%-20s= ( %1.16e , %1.16e , %1.16e )\n", SUN_POSITION_LT, sunPosition[slice][0], sunPosition[slice][1], sunPosition[slice][2]));
-        out.write(String.format("%-20s= ( %1.16e , %1.16e )\n", TARGET_PIXEL_COORD, targetPixelCoordinates[0], targetPixelCoordinates[1]));
-        out.write(String.format("%-20s= %b\n", APPLY_TARGET_OFFSET, applyTargetOffset));
+        // only write out target pixel coordinates if the image info has been modified
+        if (targetPixelCoordinates != null)
+        {
+            out.write(String.format("%-20s= ( %1.16e , %1.16e )\n", TARGET_PIXEL_COORD, targetPixelCoordinates[0], targetPixelCoordinates[1]));
+            out.write(String.format("%-20s= %b\n", APPLY_TARGET_OFFSET, applyTargetOffset));
+        }
 
         out.close();
     }
