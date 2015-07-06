@@ -47,6 +47,7 @@ import edu.jhuapl.near.util.IntensityRange;
 public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, MouseMotionListener, PropertyChangeListener //, KeyListener
 {
     public static final double VIEWPOINT_DELTA = 1.0;
+    public static final double ROTATION_DELTA = 5.0;
 
     private vtkEnhancedRenderWindowPanel renWin;
     private Image image;
@@ -326,7 +327,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
                 centerFrustumOnPixel(e);
 
                 ((PerspectiveImage)image).loadFootprint();
-                ((PerspectiveImage)image).calculateFrustum();
+//                ((PerspectiveImage)image).calculateFrustum();
             }
 //            PerspectiveImageBoundary boundary = imageBoundaryCollection.getBoundary(image.getKey());
 //            boundary.update();
@@ -424,6 +425,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
 //                double[] offset = { p[0] - centerI, p[1] - centerJ };
 //                pi.setFrustumOffset(offset);
                 pi.setFrustumOffset(pickPosition);
+
             }
         }
     }
@@ -860,8 +862,22 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
     }//GEN-LAST:event_downButtonActionPerformed
 
     private void rotateLeftButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rotateLeftButtonActionPerformed
-        // TODO add your handling code here:
+        System.out.println("Rotate Left");
+        if (image instanceof PerspectiveImage)
+        {
+            ((PerspectiveImage)image).moveRotationAngleBy(-ROTATION_DELTA);
+            ((PerspectiveImage)image).firePropertyChange();
+        }
     }//GEN-LAST:event_rotateLeftButtonActionPerformed
+
+    private void rotateRightButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rotateRightButtonActionPerformed
+        System.out.println("Rotate Right");
+        if (image instanceof PerspectiveImage)
+        {
+            ((PerspectiveImage)image).moveRotationAngleBy(ROTATION_DELTA);
+            ((PerspectiveImage)image).firePropertyChange();
+        }
+    }//GEN-LAST:event_rotateRightButtonActionPerformed
 
     private void interpolateCheckBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_interpolateCheckBox1ActionPerformed
         // TODO add your handling code here:
@@ -885,10 +901,6 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
     private void zoomOutButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_zoomOutButtonActionPerformed
         System.out.println("Zoom Out");
     }//GEN-LAST:event_zoomOutButtonActionPerformed
-
-    private void rotateRightButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rotateRightButtonActionPerformed
-        System.out.println("Rotate Right");
-    }//GEN-LAST:event_rotateRightButtonActionPerformed
 
     private void factorTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_factorTextFieldActionPerformed
         System.out.println("Factor Text Field");
