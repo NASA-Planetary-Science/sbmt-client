@@ -59,6 +59,7 @@ public class ImagePopupMenu extends PopupMenu
     private JMenuItem saveBackplanesMenuItem;
     private JMenuItem centerImageMenuItem;
     private JMenuItem showFrustumMenuItem;
+    private JMenuItem exportInfofileMenuItem;
     private JMenuItem changeNormalOffsetMenuItem;
     private JMenuItem simulateLightingMenuItem;
     private JMenuItem changeOpacityMenuItem;
@@ -132,6 +133,10 @@ public class ImagePopupMenu extends PopupMenu
         showFrustumMenuItem = new JCheckBoxMenuItem(new ShowFrustumAction());
         showFrustumMenuItem.setText("Show Frustum");
         this.add(showFrustumMenuItem);
+
+        exportInfofileMenuItem = new JCheckBoxMenuItem(new ExportInfofileAction());
+        exportInfofileMenuItem.setText("Export INFO File...");
+        this.add(exportInfofileMenuItem);
 
         changeNormalOffsetMenuItem = new JMenuItem(new ChangeNormalOffsetAction());
         changeNormalOffsetMenuItem.setText("Change Normal Offset...");
@@ -612,6 +617,43 @@ public class ImagePopupMenu extends PopupMenu
             updateMenuItems();
         }
     }
+
+    private class ExportInfofileAction extends AbstractAction
+    {
+        public void actionPerformed(ActionEvent e)
+        {
+            for (ImageKey imageKey : imageKeys)
+            {
+                try
+                {
+                    imageCollection.addImage(imageKey);
+                    PerspectiveImage image = (PerspectiveImage)imageCollection.getImage(imageKey);
+
+
+                    File file = CustomFileChooser.showSaveDialog(invoker, "Save INFO file as...");
+                    if (file == null)
+                    {
+                        return;
+                    }
+
+                    String filename = file.getAbsolutePath();
+
+                    System.out.println("Exporting INFO file for " + image.getImageName() + " to " + filename);
+
+                    image.saveImageInfo(filename);
+                }
+                catch (Exception ex)
+                {
+                    ex.printStackTrace();
+                }
+            }
+
+            updateMenuItems();
+        }
+    }
+
+
+
 
     private class ChangeNormalOffsetAction extends AbstractAction
     {

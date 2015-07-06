@@ -133,7 +133,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     private double[][] frustum4Original = new double[1][3];
     private double[][] boresightDirectionOriginal = new double[1][3];
     private double[][] upVectorOriginal = new double[1][3];
-    private double[][] sunVectorOriginal = new double[1][3];
+    private double[][] sunPositionOriginal = new double[1][3];
 
     private double[][] spacecraftPositionAdjusted = new double[1][3];
     private double[][] frustum1Adjusted = new double[1][3];
@@ -142,7 +142,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     private double[][] frustum4Adjusted = new double[1][3];
     private double[][] boresightDirectionAdjusted = new double[1][3];
     private double[][] upVectorAdjusted = new double[1][3];
-    private double[][] sunVectorAdjusted = new double[1][3];
+    private double[][] sunPositionAdjusted = new double[1][3];
 
     // offset in world coordinates of the adjusted frustum from the loaded frustum
     private double[] targetPixelCoordinates = new double[2];
@@ -250,7 +250,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
             frustum4Adjusted = MathUtil.copy(frustum4Original);
             boresightDirectionAdjusted = MathUtil.copy(boresightDirectionOriginal);
             upVectorAdjusted = MathUtil.copy(upVectorOriginal);
-            sunVectorAdjusted = MathUtil.copy(sunVectorOriginal);
+            sunPositionAdjusted = MathUtil.copy(sunPositionOriginal);
         }
     }
 
@@ -571,7 +571,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
             String[] startTime,
             String[] stopTime,
             double[][] spacecraftPosition,
-            double[][] sunVector,
+            double[][] sunPosition,
             double[][] frustum1,
             double[][] frustum2,
             double[][] frustum3,
@@ -681,10 +681,10 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
                     }
                     if (SUN_POSITION_LT.equals(token))
                     {
-                        sunVector[slice][0] = x;
-                        sunVector[slice][1] = y;
-                        sunVector[slice][2] = z;
-                        MathUtil.vhat(sunVector[slice], sunVector[slice]);
+                        sunPosition[slice][0] = x;
+                        sunPosition[slice][1] = y;
+                        sunPosition[slice][2] = z;
+//                        MathUtil.vhat(sunPosition[slice], sunPosition[slice]);
                     }
                     else if (token.endsWith(FRUSTUM1))
                     {
@@ -740,9 +740,9 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
                 spacecraftPosition[i][1] = spacecraftPosition[slice][1];
                 spacecraftPosition[i][2] = spacecraftPosition[slice][2];
 
-                sunVector[i][0] = sunVector[slice][0];
-                sunVector[i][1] = sunVector[slice][1];
-                sunVector[i][2] = sunVector[slice][2];
+                sunPosition[i][0] = sunPosition[slice][0];
+                sunPosition[i][1] = sunPosition[slice][1];
+                sunPosition[i][2] = sunPosition[slice][2];
 
                 frustum1[i][0] = frustum1[slice][0];
                 frustum1[i][1] = frustum1[slice][1];
@@ -775,13 +775,13 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
 
 
-    protected void saveImageInfo(
+    public void saveImageInfo(
             String infoFilename,
             int slice,        // currently, we only support single-frame INFO files
             String startTime,
             String stopTime,
             double[][] spacecraftPosition,
-            double[][] sunVector,
+            double[][] sunPosition,
             double[][] frustum1,
             double[][] frustum2,
             double[][] frustum3,
@@ -813,7 +813,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         out.write(String.format("%-20s= ( %1.16e , %1.16e , %1.16e )\n", FRUSTUM2, frustum2[slice][0], frustum2[slice][1], frustum2[slice][2]));
         out.write(String.format("%-20s= ( %1.16e , %1.16e , %1.16e )\n", FRUSTUM3, frustum3[slice][0], frustum3[slice][1], frustum3[slice][2]));
         out.write(String.format("%-20s= ( %1.16e , %1.16e , %1.16e )\n", FRUSTUM4, frustum4[slice][0], frustum4[slice][1], frustum4[slice][2]));
-        out.write(String.format("%-20s= ( %1.16e , %1.16e , %1.16e )\n", SUN_POSITION_LT, sunVector[slice][0], sunVector[slice][1], sunVector[slice][2]));
+        out.write(String.format("%-20s= ( %1.16e , %1.16e , %1.16e )\n", SUN_POSITION_LT, sunPosition[slice][0], sunPosition[slice][1], sunPosition[slice][2]));
         out.write(String.format("%-20s= ( %1.16e , %1.16e )\n", TARGET_PIXEL_COORD, targetPixelCoordinates[0], targetPixelCoordinates[1]));
         out.write(String.format("%-20s= %b\n", APPLY_TARGET_OFFSET, applyTargetOffset));
 
@@ -1645,7 +1645,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         frustum2Original = new double[nslices][3];
         frustum3Original = new double[nslices][3];
         frustum4Original = new double[nslices][3];
-        sunVectorOriginal = new double[nslices][3];
+        sunPositionOriginal = new double[nslices][3];
         boresightDirectionOriginal = new double[nslices][3];
         upVectorOriginal = new double[nslices][3];
         frusta = new Frustum[nslices];
@@ -1680,7 +1680,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
                     start,
                     stop,
                     spacecraftPositionOriginal,
-                    sunVectorOriginal,
+                    sunPositionOriginal,
                     frustum1Original,
                     frustum2Original,
                     frustum3Original,
@@ -1722,7 +1722,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
                         startTime,
                         stopTime,
                         spacecraftPositionOriginal,
-                        sunVectorOriginal,
+                        sunPositionOriginal,
                         frustum1Original,
                         frustum2Original,
                         frustum3Original,
@@ -1732,6 +1732,37 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
                         targetPixelCoordinates,
                         applyTargetOffset);
             }
+        }
+        catch (NumberFormatException e)
+        {
+            e.printStackTrace();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+
+    public void saveImageInfo(String infoFileName)
+    {
+        try
+        {
+                saveImageInfo(
+                        infoFileName,
+                        0,
+                        startTime,
+                        stopTime,
+                        spacecraftPositionOriginal,
+                        sunPositionOriginal,
+                        frustum1Original,
+                        frustum2Original,
+                        frustum3Original,
+                        frustum4Original,
+                        boresightDirectionOriginal,
+                        upVectorOriginal,
+                        targetPixelCoordinates,
+                        applyTargetOffset);
         }
         catch (NumberFormatException e)
         {
@@ -2238,7 +2269,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
                 start,
                 stop,
                 spacecraftPositionOriginal,
-                sunVectorOriginal,
+                sunPositionOriginal,
                 frustum1Original,
                 frustum2Original,
                 frustum3Original,
@@ -2266,7 +2297,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
                 start,
                 stop,
                 spacecraftPositionOriginal,
-                sunVectorOriginal,
+                sunPositionOriginal,
                 frustum1Original,
                 frustum2Original,
                 frustum3Original,
@@ -2473,9 +2504,10 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
             spacecraftPositionAdjusted[currentSlice][1] - pt[1],
             spacecraftPositionAdjusted[currentSlice][2] - pt[2]};
 
-        double incidence = MathUtil.vsep(normal, sunVectorAdjusted[currentSlice]) * 180.0 / Math.PI;
+        double[] sunVectorAdjusted = getSunVector();
+        double incidence = MathUtil.vsep(normal, sunVectorAdjusted) * 180.0 / Math.PI;
         double emission = MathUtil.vsep(normal, scvec) * 180.0 / Math.PI;
-        double phase = MathUtil.vsep(sunVectorAdjusted[currentSlice], scvec) * 180.0 / Math.PI;
+        double phase = MathUtil.vsep(sunVectorAdjusted, scvec) * 180.0 / Math.PI;
 
         double[] angles = {incidence, emission, phase};
 
@@ -2975,9 +3007,16 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         return spacecraftPositionAdjusted[currentSlice];
     }
 
+    public double[] getSunPosition()
+    {
+        return sunPositionAdjusted[currentSlice];
+    }
+
     public double[] getSunVector()
     {
-        return sunVectorAdjusted[currentSlice];
+        double[] result = new double[3];
+        MathUtil.vhat(sunPositionAdjusted[currentSlice], result);
+        return result;
     }
 
     public double[] getBoresightDirection()
@@ -3146,8 +3185,9 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         getCameraOrientation(notused, quaternion);
         properties.put("Spacecraft Orientation (quaternion)",
                 "(" + df.format(quaternion[0]) + ", [" + df.format(quaternion[1]) + ", " + df.format(quaternion[2]) + ", " + df.format(quaternion[3]) + "])");
+        double[] sunVectorAdjusted = getSunVector();
         properties.put("Sun Vector",
-                df.format(sunVectorAdjusted[currentSlice][0]) + ", " + df.format(sunVectorAdjusted[currentSlice][1]) + ", " + df.format(sunVectorAdjusted[currentSlice][2]));
+                df.format(sunVectorAdjusted[0]) + ", " + df.format(sunVectorAdjusted[1]) + ", " + df.format(sunVectorAdjusted[2]));
         if (getCameraName() != null)
             properties.put("Camera", getCameraName());
         if (getFilterName() != null)
