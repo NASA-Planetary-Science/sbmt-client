@@ -643,6 +643,9 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
                 // and UP_DIRECTION since these are all prefixed with MSI_ in the info file.
                 if (token.endsWith(TARGET_PIXEL_COORD))
                 {
+                    if (targetPixelCoordinates == null)
+                        targetPixelCoordinates = new double[2];
+
                     st.nextToken();
                     st.nextToken();
                     double x = Double.parseDouble(st.nextToken());
