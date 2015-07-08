@@ -273,7 +273,9 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
         this.targetPixelCoordinates[0] = targetPixelCoordinates[1] = 0.0;
         this.rotationOffset[0] = 0.0;
-        this.zoomFactor[0] = 1.0;;
+        this.zoomFactor[0] = 1.0;
+
+        updateFrameAdjustments();
 
         loadFootprint();
         calculateFrustum();
@@ -385,9 +387,6 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     public void setFrustumOffset(double[] frustumCenterPixel)
     {
         System.out.println("setFrustumOffset(): " + frustumCenterPixel[1] + " " + frustumCenterPixel[0]);
-
-        if (targetPixelCoordinates == null)
-            targetPixelCoordinates = new double[2];
 
         this.targetPixelCoordinates[0] = frustumCenterPixel[0];
         this.targetPixelCoordinates[1] = frustumCenterPixel[1];
