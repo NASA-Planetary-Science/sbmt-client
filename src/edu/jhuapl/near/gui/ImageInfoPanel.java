@@ -108,6 +108,9 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
             jLabel1.setEnabled(false);
         }
 
+        if (image instanceof PerspectiveImage)
+            applyAdjustmentsButton.setSelected(((PerspectiveImage)image).getApplyFramedAdjustments());
+
         int[] masking = image.getCurrentMask();
         leftSpinner.setValue(masking[0]);
         topSpinner.setValue(masking[1]);
@@ -733,7 +736,8 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
             });
             jPanel3.add(interpolateCheckBox1, new java.awt.GridBagConstraints());
 
-            applyAdjustmentsButton.setSelected(true);
+            if (image instanceof PerspectiveImage)
+                applyAdjustmentsButton.setSelected(((PerspectiveImage)image).getApplyFramedAdjustments());
             applyAdjustmentsButton.setText("Apply Adjustments");
             applyAdjustmentsButton.setName(""); // NOI18N
             applyAdjustmentsButton.addActionListener(new java.awt.event.ActionListener() {
@@ -891,6 +895,11 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
 
     private void applyAdjustmentsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_applyAdjustmentsButtonActionPerformed
         System.out.println("Apply Adjustments");
+        if (image instanceof PerspectiveImage)
+        {
+            ((PerspectiveImage)image).setApplyFrameAdjustments(applyAdjustmentsButton.isSelected());
+            ((PerspectiveImage)image).firePropertyChange();
+        }
     }//GEN-LAST:event_applyAdjustmentsButtonActionPerformed
 
     private void resetFrameAdjustmentsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetFrameAdjustmentsButtonActionPerformed

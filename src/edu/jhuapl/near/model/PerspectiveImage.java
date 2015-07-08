@@ -81,6 +81,8 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     public static final String SPACECRAFT_POSITION = "SPACECRAFT_POSITION";
     public static final String SUN_POSITION_LT = "SUN_POSITION_LT";
     public static final String TARGET_PIXEL_COORD = "TARGET_PIXEL_COORD";
+    public static final String TARGET_ROTATION = "TARGET_ROTATION";
+    public static final String TARGET_ZOOM_FACTOR = "TARGET_ZOOM_FACTOR";
     public static final String APPLY_ADJUSTMENTS = "APPLY_ADJUSTMENTS";
 
     private SmallBodyModel smallBodyModel;
@@ -145,14 +147,14 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     private double[][] sunPositionAdjusted = new double[1][3];
 
     // offset in world coordinates of the adjusted frustum from the loaded frustum
-    private double[] targetPixelCoordinates = null;
+    private double[] targetPixelCoordinates = new double[2];
 
-    private double[] zoomFactor = null;
+    private double[] zoomFactor = { 1.0 };
 
-    private double[] rotationOffset = null;
+    private double[] rotationOffset = new double[1];
 
     // apply all frame adjustments if true
-    private boolean applyFrameAdjustments = true;
+    private boolean[] applyFrameAdjustments = { true };
 
     private Frustum[] frusta = new Frustum[1];
 
@@ -239,10 +241,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         if (!loadPointingOnly)
         {
             loadImage();
-
-//            updateFrameAdjustments();
-//            loadFootprint();
-//            calculateFrustum();
+            updateFrameAdjustments();
         }
     }
 
@@ -272,9 +271,9 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
             footprintGenerated[i] = false;
         }
 
-        this.targetPixelCoordinates = null;
-        this.rotationOffset = null;
-        this.zoomFactor = null;
+        this.targetPixelCoordinates[0] = targetPixelCoordinates[1] = 0.0;
+        this.rotationOffset[0] = 0.0;
+        this.zoomFactor[0] = 1.0;;
 
         loadFootprint();
         calculateFrustum();
@@ -435,12 +434,24 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         saveImageInfo();
     }
 
+    public void setApplyFrameAdjustments(boolean state)
+    {
+        System.out.println("setApplyFrameAdjustments(): " + state);
+        applyFrameAdjustments[0] = state;
+        updateFrameAdjustments();
+        loadFootprint();
+        calculateFrustum();
+        saveImageInfo();
+    }
+
+    public boolean getApplyFramedAdjustments() { return applyFrameAdjustments[0]; }
+
     private void updateFrameAdjustments()
     {
         // adjust wrt the original spacecraft pointing direction, not the previous adjusted one
         copySpacecraftState();
 
-        if (applyFrameAdjustments)
+        if (applyFrameAdjustments[0])
         {
             if (targetPixelCoordinates != null)
             {
@@ -465,11 +476,12 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
             }
         }
 
-
-//        loadFootprint();
-//        calculateFrustum();
-//
-//        saveImageInfo();
+        int nslices = getNumberBands();
+        for (int i = 0; i<nslices; i++)
+        {
+            frusta[i] = null;
+            footprintGenerated[i] = false;
+        }
     }
 
 
@@ -772,11 +784,8 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
                 // For backwards compatibility with MSI images we use the endsWith function
                 // rather than equals for FRUSTUM1, FRUSTUM2, FRUSTUM3, FRUSTUM4, BORESIGHT_DIRECTION
                 // and UP_DIRECTION since these are all prefixed with MSI_ in the info file.
-                if (token.endsWith(TARGET_PIXEL_COORD))
+                if (token.equals(TARGET_PIXEL_COORD))
                 {
-                    if (targetPixelCoordinates == null)
-                        targetPixelCoordinates = new double[2];
-
                     st.nextToken();
                     st.nextToken();
                     double x = Double.parseDouble(st.nextToken());
@@ -785,7 +794,19 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
                     targetPixelCoordinates[0] = x;
                     targetPixelCoordinates[1] = y;
                 }
-                if (token.endsWith(APPLY_ADJUSTMENTS))
+                if (token.equals(TARGET_ROTATION))
+                {
+                    st.nextToken();
+                    double x = Double.parseDouble(st.nextToken());
+                    rotationOffset[0] = x;
+                }
+                if (token.equals(TARGET_ZOOM_FACTOR))
+                {
+                    st.nextToken();
+                    double x = Double.parseDouble(st.nextToken());
+                    zoomFactor[0] = x;
+                }
+                if (token.equals(APPLY_ADJUSTMENTS))
                 {
                     st.nextToken();
                     offset = Boolean.parseBoolean(st.nextToken());
@@ -951,12 +972,30 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         out.write(String.format("%-20s= ( %1.16e , %1.16e , %1.16e )\n", FRUSTUM3, frustum3[slice][0], frustum3[slice][1], frustum3[slice][2]));
         out.write(String.format("%-20s= ( %1.16e , %1.16e , %1.16e )\n", FRUSTUM4, frustum4[slice][0], frustum4[slice][1], frustum4[slice][2]));
         out.write(String.format("%-20s= ( %1.16e , %1.16e , %1.16e )\n", SUN_POSITION_LT, sunPosition[slice][0], sunPosition[slice][1], sunPosition[slice][2]));
-        // only write out target pixel coordinates if the image info has been modified
-        if (targetPixelCoordinates != null)
+
+        boolean writeApplyAdustments = false;
+
+        if (targetPixelCoordinates[0] != 0.0 && targetPixelCoordinates[1] != 0.0)
         {
             out.write(String.format("%-20s= ( %1.16e , %1.16e )\n", TARGET_PIXEL_COORD, targetPixelCoordinates[0], targetPixelCoordinates[1]));
-            out.write(String.format("%-20s= %b\n", APPLY_ADJUSTMENTS, applyFrameAdjustments));
+            writeApplyAdustments = true;
         }
+
+        if (zoomFactor[0] != 0.0)
+        {
+            out.write(String.format("%-20s= %1.16e\n", TARGET_ZOOM_FACTOR, zoomFactor[0]));
+            writeApplyAdustments = true;
+        }
+
+        if (rotationOffset[0] != 0.0)
+        {
+            out.write(String.format("%-20s= %1.16e\n", TARGET_ROTATION, rotationOffset[0]));
+            writeApplyAdustments = true;
+        }
+
+        // only write out user-modified offsets if the image info has been modified
+        if (writeApplyAdustments)
+            out.write(String.format("%-20s= %b\n", APPLY_ADJUSTMENTS, applyFrameAdjustments));
 
         out.close();
     }
@@ -1614,6 +1653,8 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         {
             frustumActor = new vtkActor();
 
+            calculateFrustum();
+
             vtkProperty frustumProperty = frustumActor.GetProperty();
             frustumProperty.SetColor(0.0, 1.0, 0.0);
             frustumProperty.SetLineWidth(2.0);
@@ -1621,10 +1662,6 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
             footprintActors.add(frustumActor);
         }
-
-        updateFrameAdjustments();
-        calculateFrustum();
-        loadFootprint();
 
         return footprintActors;
     }
@@ -1835,7 +1872,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
             // should startTime and stopTime be an array? -turnerj1
             startTime = start[0];
             stopTime = stop[0];
-            applyFrameAdjustments = ato[0];
+            applyFrameAdjustments[0] = ato[0];
 
 //            updateFrustumOffset();
 
@@ -1872,7 +1909,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
                         boresightDirectionOriginal,
                         upVectorOriginal,
                         targetPixelCoordinates,
-                        applyFrameAdjustments);
+                        applyFrameAdjustments[0]);
             }
         }
         catch (NumberFormatException e)
@@ -1904,7 +1941,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
                         boresightDirectionOriginal,
                         upVectorOriginal,
                         targetPixelCoordinates,
-                        applyFrameAdjustments);
+                        applyFrameAdjustments[0]);
         }
         catch (NumberFormatException e)
         {
