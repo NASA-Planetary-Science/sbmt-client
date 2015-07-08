@@ -147,11 +147,11 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     private double[][] sunPositionAdjusted = new double[1][3];
 
     // offset in world coordinates of the adjusted frustum from the loaded frustum
-    private double[] targetPixelCoordinates = new double[2];
+    private double[] targetPixelCoordinates = { -1.0, -1.0 };
 
     private double[] zoomFactor = { 1.0 };
 
-    private double[] rotationOffset = new double[1];
+    private double[] rotationOffset = { 0.0 };
 
     // apply all frame adjustments if true
     private boolean[] applyFrameAdjustments = { true };
@@ -271,9 +271,10 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
             footprintGenerated[i] = false;
         }
 
-        this.targetPixelCoordinates[0] = targetPixelCoordinates[1] = 0.0;
-        this.rotationOffset[0] = 0.0;
-        this.zoomFactor[0] = 1.0;
+        targetPixelCoordinates[0] = -1.0;
+        targetPixelCoordinates[1] = -1.0;
+        rotationOffset[0] = 0.0;
+        zoomFactor[0] = 1.0;
 
         updateFrameAdjustments();
 
@@ -452,7 +453,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
         if (applyFrameAdjustments[0])
         {
-            if (targetPixelCoordinates != null)
+            if (targetPixelCoordinates[0] >= 0.0 && targetPixelCoordinates[1] >= 0.0)
             {
                 int height = getImageHeight();
                 int width = getImageWidth();
@@ -465,11 +466,11 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
                     rotateTargetPixelDirectionToLocalOrigin(newTargetPixelDirection);
                 }
             }
-            if (rotationOffset != null)
+            if (rotationOffset[0] != 0.0)
             {
                 rotateFrameAboutTarget(rotationOffset[0]);
             }
-            if (zoomFactor != null)
+            if (zoomFactor[0] != 1.0)
             {
                 zoomFrame(zoomFactor[0]);
             }
@@ -532,12 +533,6 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     public void moveTargetPixelCoordinates(double[] pixelDelta)
     {
         System.out.println("moveFrustumOffset(): " + pixelDelta[1] + " " + pixelDelta[0]);
-        if (targetPixelCoordinates == null)
-        {
-            targetPixelCoordinates = new double[2];
-            targetPixelCoordinates[0] = getImageHeight() / 2.0;
-            targetPixelCoordinates[1] = getImageWidth() / 2.0;
-        }
 
         int height = getImageHeight();
         int width = getImageWidth();
