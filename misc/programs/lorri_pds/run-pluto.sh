@@ -5,7 +5,10 @@ cd `dirname $0`
 
 # Tools
 MSOPCK=/project/nearsdc/software/spice/cspice/exe/msopck
+
+# add -a to force large pointing updates (> 500 microradians)
 CREATE_WCS_KERNELS=/project/lorri/bin/linux/lorri_astro_ck
+
 CREATE_INFO_FILES=./create_info_files
 
 # Create a list of all label files

@@ -28,7 +28,7 @@ cd $DIR/sbmt
 # Copy over any new LORRI fits data
 mkdir -p /project/nearsdc/data/NEWHORIZONS/LORRI/images2
 find /project/lorri/data/soc/pluto/level2/lor/current -name "*fit" | xargs cp -R -u -L -t /project/nearsdc/data/NEWHORIZONS/LORRI/images2
-# remove the 4x4 and 2x2 and other non-useful images
+# remove the 4x4 and other non-useful images
 rm -f /project/nearsdc/data/NEWHORIZONS/LORRI/images2/*_0x63{3,4,5,9,A,B}*.fit
 
 # Generate the lorri info files
@@ -66,5 +66,3 @@ cd $DIR/sbmt/misc/programs/leisa_pds/
 cp $DIR/nh_spice.mk .
 ./compile.sh
 ./run-pluto.sh
-
-
