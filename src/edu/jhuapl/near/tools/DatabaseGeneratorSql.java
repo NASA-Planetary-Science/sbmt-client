@@ -129,6 +129,7 @@ public class DatabaseGeneratorSql
             PerspectiveImage.ImageSource imageSource) throws IOException, SQLException, FitsException
     {
         smallBodyModel.setModelResolution(0);
+        SmallBodyConfig config = smallBodyModel.getSmallBodyConfig();
 
         PreparedStatement insertStatement = db.preparedStatement(
                 "insert into " + tableName + " values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
@@ -147,7 +148,7 @@ public class DatabaseGeneratorSql
             String keyName = filename;
             keyName = keyName.replace(".FIT", "");
             keyName = keyName.replace(".fit", "");
-            ImageKey key = new ImageKey(keyName, imageSource);
+            ImageKey key = new ImageKey(keyName, imageSource, config.imagingInstruments[0]);
             PerspectiveImage image = null;
 
             try
@@ -156,7 +157,7 @@ public class DatabaseGeneratorSql
                 boolean filesExist = checkIfAllFilesExist(image, imageSource);
                 if (filesExist == false)
                 {
-                    System.out.println("skipping image " + filename);
+                    System.out.println("file not fount, skipping image " + filename);
                     image.Delete();
                     System.gc();
                     System.out.println("deleted " + vtkGlobalJavaHash.GC());
@@ -165,7 +166,8 @@ public class DatabaseGeneratorSql
             }
             catch (Exception e)
             {
-                System.out.println("skipping image " + filename);
+                System.out.println("exception, skipping image " + filename);
+                e.printStackTrace();
                 continue;
             }
 
@@ -262,6 +264,7 @@ public class DatabaseGeneratorSql
     boolean checkIfAllFilesExist(PerspectiveImage image, PerspectiveImage.ImageSource source)
     {
         File fitfile = new File(image.getFitFileFullPath());
+        System.out.println("Fit file full path: " + fitfile.getAbsolutePath());
         if (!fitfile.exists())
             return false;
 
@@ -282,6 +285,7 @@ public class DatabaseGeneratorSql
         else
         {
             File infofile = new File(image.getInfoFileFullPath());
+            System.out.println("Infofile full path: " + infofile.getAbsolutePath());
             if (!infofile.exists())
                 return false;
         }
@@ -399,7 +403,9 @@ public class DatabaseGeneratorSql
         IO(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.IO, null),
                 "/project/nearsdc/data/NEWHORIZONS/IO/IMAGING/imagelist-fullpath.txt"),
         RQ36(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelAuthor.GASKELL, "V2"),
-                "/project/nearsdc/data/GASKELL/RQ36_V3/OCAM/imagelist-fullpath.txt");
+                "/project/nearsdc/data/GASKELL/RQ36_V3/OCAM/imagelist-fullpath.txt"),
+        PLUTO(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.PLUTO, null),
+                "/project/nearsdc/data/NEWHORIZONS/PLUTO/IMAGING/imagelist-fullpath.txt");
 
         public final SmallBodyConfig config;
         public final String pathToFileList;

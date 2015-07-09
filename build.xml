@@ -28,7 +28,7 @@
     </copy>
     <javac srcdir="${rootdir}/src"
 		   destdir="${rootdir}/build/classes"
-		   debug="off" >
+		   debug="on" >
       <classpath>
 		<pathelement location="${rootdir}/lib/vtksb.jar"/>
 		<pathelement location="${rootdir}/lib/vtk.jar"/>

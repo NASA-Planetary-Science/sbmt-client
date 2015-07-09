@@ -1607,7 +1607,7 @@ public class SmallBodyConfig
                             SpectralMode.MONO,
                             new FixedListQuery("/NEWHORIZONS/PLUTO/IMAGING"),
                             ImageType.LORRI_IMAGE,
-                            new ImageSource[]{ImageSource.SPICE},
+                            new ImageSource[]{ImageSource.SPICE, ImageSource.WCS_CORRECTED},
                             Instrument.LORRI
                             ),
 
@@ -1650,7 +1650,7 @@ public class SmallBodyConfig
                             SpectralMode.MONO,
                             new FixedListQuery("/NEWHORIZONS/CHARON/IMAGING"),
                             ImageType.LORRI_IMAGE,
-                            new ImageSource[]{ImageSource.SPICE},
+                            new ImageSource[]{ImageSource.SPICE, ImageSource.WCS_CORRECTED},
                             Instrument.LORRI
                             ),
 

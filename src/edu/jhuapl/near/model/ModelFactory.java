@@ -48,9 +48,10 @@ public class ModelFactory
         if (ImageSource.SPICE.equals(key.source) ||
                 ImageSource.GASKELL.equals(key.source) ||
                 ImageSource.LABEL.equals(key.source) ||
-                ImageSource.CORRECTED.equals(key.source))
+                ImageSource.CORRECTED.equals(key.source) ||
+                ImageSource.WCS_CORRECTED.equals(key.source))
         {
-            if (key.instrument.spectralMode == SpectralMode.MULTI)
+            if (key.instrument != null && key.instrument.spectralMode == SpectralMode.MULTI)
             {
                 if (key.instrument.type == ImageType.MVIC_JUPITER_IMAGE)
 //                    return new MVICJupiterImage(key, smallBodyModel, loadPointingOnly);
@@ -58,7 +59,7 @@ public class ModelFactory
                 else
                     return null;
             }
-            else if (key.instrument.spectralMode == SpectralMode.HYPER)
+            else if (key.instrument != null && key.instrument.spectralMode == SpectralMode.HYPER)
             {
                 if (key.instrument.type == ImageType.LEISA_JUPITER_IMAGE)
                     return new LEISAJupiterImage(key, smallBodyModel, loadPointingOnly);
