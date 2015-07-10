@@ -31,6 +31,13 @@ find /project/lorri/data/soc/pluto/level2/lor/current -name "*fit" | xargs cp -R
 # remove the 4x4 and other non-useful images
 rm -f /project/nearsdc/data/NEWHORIZONS/LORRI/images2/*_0x63{3,4,5,9,A,B}*.fit
 
+# copy over Simon Porter's WCS-corrected FITS files
+find /project/lorri/data/soc/porter/pwcs1 -name "*fits" | xargs cp -R -u -L -t /project/nearsdc/data/NEWHORIZONS/LORRI/images2
+for i in /project/nearsdc/data/NEWHORIZONS/LORRI/images2/*pwcs1.fits
+do
+   mv $i ${i%.fits}.fit
+done
+
 # Generate the lorri info files
 # Compile program for generating lorri infofiles
 cd $DIR/sbmt/misc/programs/lorri_pds/
