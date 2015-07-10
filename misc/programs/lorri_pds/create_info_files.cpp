@@ -397,7 +397,10 @@ int main(int argc, char** argv)
 
         getEt(startmet, stopmet, startutc, startet, stoputc, stopet);
         if (failed_c())
+        {
+            cerr << "Failed to get et: " << labelfiles[i] << endl;
             continue;
+        }
 
         et = startet + (stopet - startet) / 2.0;
 
@@ -405,21 +408,31 @@ int main(int argc, char** argv)
         if (et < 473342467)
         {
             if (target != body)
+            {
+                cerr << "Failed to get et: " << labelfiles[i] << endl;
                 continue;
+            }
         }
 
         getScOrientation(et, body, scposb, boredir, updir, frustum);
         if (failed_c())
+        {
+            cerr << "Failed to get SC orientation: " << labelfiles[i] << endl;
             continue;
+        }
 
         getSunPosition(et, body, sunPosition);
         if (failed_c())
+        {
+            cerr << "Failed to get sun position: " << labelfiles[i] << endl;
             continue;
+        }
 
         string labelbasename = basename((char*)labelfiles[i].c_str());
         unsigned found = labelbasename.find_last_of(".");
         string infofilename = outputfolder + "/" + labelbasename.substr(0, found) + ".INFO";
         saveInfoFile(infofilename, startutc, stoputc, scposb, boredir, updir, frustum, sunPosition);
+        cerr << "Infofile created successfully for " << labelfiles[i] << endl;
 
 	fout << labelbasename << " " << startutc << endl;
 

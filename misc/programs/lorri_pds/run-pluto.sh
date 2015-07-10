@@ -29,7 +29,7 @@ find -L $LORRI_DIR -name "*sci.fit" -type f | sort > $LORRI_IMAGE_FILES
 # Selects WCS-corrected files
 find -L $LORRI_DIR -name "*pwcs1.fit" -type f | sort > $LORRI_WCS_IMAGE_FILES
 
-$CREATE_WCS_KERNELS -l $LORRI_IMAGE_FILES -s $MSOPCK_SETUP_FILE -q $MSOPCK_DATA_FILE -m $SWRI_METAKERNEL
+$CREATE_WCS_KERNELS -l $LORRI_WCS_IMAGE_FILES -s $MSOPCK_SETUP_FILE -q $MSOPCK_DATA_FILE -m $SWRI_METAKERNEL
 
 # NOTE: should append a date suffix to the kernel and metakernel files to archive
 rm -f $WCS_CORRECTED_KERNEL
@@ -49,7 +49,7 @@ runCreateInfoFiles() {
 
     rm -f $INFO_DIR/*
     mkdir -p $INFO_DIR
-    CMD="./create_info_files $1 $SWRI_METAKERNEL $LORRI_IMAGE_FILES $INFO_DIR $STANDARD_FILE_LIST"
+    CMD="$CREATE_INFO_FILES $1 $SWRI_METAKERNEL $LORRI_IMAGE_FILES $INFO_DIR $STANDARD_FILE_LIST"
     $CMD
 
     WCS_CORRECTED_FILE_LIST=/project/nearsdc/data/NEWHORIZONS/$1/IMAGING/wcscorrectedimagelist.txt
