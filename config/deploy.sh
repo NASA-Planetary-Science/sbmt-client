@@ -10,7 +10,7 @@ DIR=`dirname "$0"`
 
 TODAYSDATE=`date "+%Y.%m.%d"`
 
-TARGETHOST=mirage
+TARGETHOST=kenny
 TARGETDIR=/disks/d0180/htdocs-sbmt
 # Uncomment to test in staging area
 #TARGETDIR=$TARGETDIR/internal/stage
