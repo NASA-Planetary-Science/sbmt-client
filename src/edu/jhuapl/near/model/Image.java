@@ -47,12 +47,6 @@ public abstract class Image extends Model implements PropertyChangeListener
                 return "Corrected";
             }
         },
-        WCS_CORRECTED {
-            public String toString()
-            {
-                return "WCS Corrected";
-            }
-        },
         IMAGE_MAP {
             public String toString()
             {

@@ -56,10 +56,7 @@ public class LorriImage extends PerspectiveImage
         File keyFile = new File(key.name);
         String pointingFileName = null;
 
-        if (key.source == ImageSource.WCS_CORRECTED)
-            pointingFileName = keyFile.getParentFile().getParent() + "/wcsinfofiles/" + keyFile.getName() + ".INFO";
-        else
-            pointingFileName = keyFile.getParentFile().getParent() + "/infofiles/" + keyFile.getName() + ".INFO";
+        pointingFileName = keyFile.getParentFile().getParent() + "/infofiles/" + keyFile.getName() + ".INFO";
 
         return FileCache.getFileFromServer(pointingFileName).getAbsolutePath();
     }

@@ -229,7 +229,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
             pngFileFullPath = initializePngFileFullPath();
         }
 
-        if (key.source.equals(ImageSource.SPICE) || key.source.equals(ImageSource.LOCAL_PERSPECTIVE) || key.source.equals(ImageSource.WCS_CORRECTED))
+        if (key.source.equals(ImageSource.SPICE) || key.source.equals(ImageSource.LOCAL_PERSPECTIVE))
             infoFileFullPath = initializeInfoFileFullPath();
         else if (key.source.equals(ImageSource.LABEL))
             labelFileFullPath = initializeLabelFileFullPath();
@@ -1534,7 +1534,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
     protected void loadPointing() throws FitsException, IOException
     {
-        if (key.source.equals(ImageSource.SPICE) || key.source.equals(ImageSource.WCS_CORRECTED))
+        if (key.source.equals(ImageSource.SPICE))
         {
             loadImageInfo();
         }

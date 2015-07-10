@@ -1608,7 +1608,7 @@ public class SmallBodyConfig
 //                            new GenericPhpQuery("/NEWHORIZONS/PLUTO/IMAGING", "PLUTO"),
                             new FixedListQuery("/NEWHORIZONS/PLUTO/IMAGING"),
                             ImageType.LORRI_IMAGE,
-                            new ImageSource[]{ImageSource.SPICE, ImageSource.WCS_CORRECTED},
+                            new ImageSource[]{ImageSource.SPICE},
                             Instrument.LORRI
                             ),
 
@@ -1651,7 +1651,7 @@ public class SmallBodyConfig
                             SpectralMode.MONO,
                             new FixedListQuery("/NEWHORIZONS/CHARON/IMAGING"),
                             ImageType.LORRI_IMAGE,
-                            new ImageSource[]{ImageSource.SPICE, ImageSource.WCS_CORRECTED},
+                            new ImageSource[]{ImageSource.SPICE},
                             Instrument.LORRI
                             ),
 
