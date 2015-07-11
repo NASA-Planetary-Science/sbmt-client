@@ -389,7 +389,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
     public void setFrustumOffset(double[] frustumCenterPixel)
     {
-        System.out.println("setFrustumOffset(): " + frustumCenterPixel[1] + " " + frustumCenterPixel[0]);
+//        System.out.println("setFrustumOffset(): " + frustumCenterPixel[1] + " " + frustumCenterPixel[0]);
 
         this.targetPixelCoordinates[0] = frustumCenterPixel[0];
         this.targetPixelCoordinates[1] = frustumCenterPixel[1];
@@ -403,7 +403,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
     public void setRotationOffset(double offset)
     {
-        System.out.println("setRotationOffset(): " + offset);
+//        System.out.println("setRotationOffset(): " + offset);
 
         if (rotationOffset == null)
             rotationOffset = new double[1];
@@ -419,7 +419,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
     public void setZoomFactor(double offset)
     {
-        System.out.println("setZoomFactor(): " + offset);
+//        System.out.println("setZoomFactor(): " + offset);
 
         if (zoomFactor == null)
         {
@@ -438,7 +438,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
     public void setApplyFrameAdjustments(boolean state)
     {
-        System.out.println("setApplyFrameAdjustments(): " + state);
+//        System.out.println("setApplyFrameAdjustments(): " + state);
         applyFrameAdjustments[0] = state;
         updateFrameAdjustments();
         loadFootprint();
@@ -492,7 +492,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
     private void zoomFrame(double zoomFactor)
     {
-        System.out.println("zoomFrame(" + zoomFactor + ")");
+//        System.out.println("zoomFrame(" + zoomFactor + ")");
         Vector3D spacecraftPositionVector = new Vector3D(spacecraftPositionOriginal[currentSlice]);
         Vector3D spacecraftToOriginVector = spacecraftPositionVector.scalarMultiply(-1.0);
         Vector3D originPointingVector = spacecraftToOriginVector.normalize();
@@ -537,7 +537,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
     public void moveTargetPixelCoordinates(double[] pixelDelta)
     {
-        System.out.println("moveFrustumOffset(): " + pixelDelta[1] + " " + pixelDelta[0]);
+//        System.out.println("moveFrustumOffset(): " + pixelDelta[1] + " " + pixelDelta[0]);
 
         double height = (double)getImageHeight();
         double width = (double)getImageWidth();
@@ -558,7 +558,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
     public void moveRotationAngleBy(double rotationDelta)
     {
-        System.out.println("moveRotationAngleBy(): " + rotationDelta);
+//        System.out.println("moveRotationAngleBy(): " + rotationDelta);
 
         double newRotationOffset = rotationOffset[0] + rotationDelta;
 
@@ -567,7 +567,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
     public void moveZoomFactorBy(double zoomDelta)
     {
-        System.out.println("moveZoomDeltaBy(): " + zoomDelta);
+//        System.out.println("moveZoomDeltaBy(): " + zoomDelta);
 
         double newZoomFactor = zoomFactor[0] * (1.0 + zoomDelta);
 
@@ -626,7 +626,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
     public void calculateFrustum()
     {
-        System.out.println("recalculateFrustum()");
+//        System.out.println("recalculateFrustum()");
         vtkPolyData frus = new vtkPolyData();
 
         vtkPoints points = new vtkPoints();
@@ -948,7 +948,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     {
         // for testing purposes only:
 //        infoFilename = infoFilename + ".txt";
-        System.out.println("Saving infofile to: " + infoFilename);
+//        System.out.println("Saving infofile to: " + infoFilename);
         FileOutputStream fs = null;
         try {
             fs = new FileOutputStream(infoFilename);
@@ -1622,7 +1622,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
     public ArrayList<vtkProp> getProps()
     {
-        System.out.println("getProps()");
+//        System.out.println("getProps()");
         if (footprintActor == null)
         {
             loadFootprint();
@@ -1889,7 +1889,8 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 //        System.out.println("Saving current slice: " + slice);
         try
         {
-            int nslices = getNumberBands();
+//            int nslices = getNumberBands();
+            int nslices = infoFileNames.length;
             for (int slice=0; slice<nslices; slice++)
             {
                 saveImageInfo(

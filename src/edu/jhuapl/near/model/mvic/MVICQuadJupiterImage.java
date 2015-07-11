@@ -54,11 +54,6 @@ public class MVICQuadJupiterImage extends PerspectiveImage
         ImageDataUtil.flipImageXAxis(rawImage);
     }
 
-//    public double[] getPixelDirection(double sample, double line)
-//    {
-//        return getPixelDirection((double)sample, (double)line, 0);
-//    }
-
     protected int getNumberBands()
     {
         return 4;

@@ -147,7 +147,7 @@ public class PerspectiveImageBoundaryCollection extends Model implements Propert
     {
         if (Properties.MODEL_CHANGED.equals(evt.getPropertyName()))
         {
-            System.out.println("BoundaryCollection MODEL_CHANGED event: " + evt.getSource().getClass().getSimpleName());
+//            System.out.println("BoundaryCollection MODEL_CHANGED event: " + evt.getSource().getClass().getSimpleName());
             this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
         }
     }
