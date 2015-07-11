@@ -58,7 +58,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
     private vtkPropPicker imagePicker;
     private boolean initialized = false;
     private boolean centerFrustumMode = false;
-    private double adjustFactor = 1.0;
+//    private double adjustFactor = 1.0;
 
 //    private class MouseListener extends MouseAdapter
 //    {
@@ -890,7 +890,16 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
     }//GEN-LAST:event_rotateRightButtonActionPerformed
 
     private void interpolateCheckBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_interpolateCheckBox1ActionPerformed
-        ((PerspectiveImage)image).setInterpolate(interpolateCheckBox1.isSelected());
+        if (image instanceof PerspectiveImage)
+        {
+            boolean interpolate = interpolateCheckBox1.isSelected();
+            ((PerspectiveImage)image).setInterpolate(interpolate);
+            if (interpolate)
+                actor.InterpolateOn();
+            else
+                actor.InterpolateOff();
+            ((PerspectiveImage)image).firePropertyChange();
+        }
     }//GEN-LAST:event_interpolateCheckBox1ActionPerformed
 
     private void applyAdjustmentsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_applyAdjustmentsButtonActionPerformed
