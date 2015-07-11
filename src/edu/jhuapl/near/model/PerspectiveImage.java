@@ -85,6 +85,8 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     public static final String TARGET_ZOOM_FACTOR = "TARGET_ZOOM_FACTOR";
     public static final String APPLY_ADJUSTMENTS = "APPLY_ADJUSTMENTS";
 
+    public static final double[] bodyOrigin = { 0.0, 0.0, 0.0 };
+
     private SmallBodyModel smallBodyModel;
 
     private vtkImageData rawImage;
@@ -538,8 +540,11 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         double width = (double)getImageWidth();
         if (targetPixelCoordinates[0] < 0.0 || targetPixelCoordinates[1] < 0.0)
         {
-            targetPixelCoordinates[0] = height / 2.0;
-            targetPixelCoordinates[1] = width / 2.0;
+            targetPixelCoordinates = getPixelFromPoint(bodyOrigin);
+            targetPixelCoordinates[0] = height - 1 - targetPixelCoordinates[0];
+//            targetPixelCoordinates[1] = width - 1 - targetPixelCoordinates[1];
+//          targetPixelCoordinates[0] = height / 2.0;
+//            targetPixelCoordinates[1] = width / 2.0;
         }
         double line = this.targetPixelCoordinates[0] + pixelDelta[0];
         double sample = targetPixelCoordinates[1] + pixelDelta[1];
