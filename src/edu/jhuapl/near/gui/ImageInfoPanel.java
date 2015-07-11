@@ -102,11 +102,11 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
         vtkImageData displayedImage = (vtkImageData)image.getTexture().GetInput();
 
         // Only allow contrast changing for images with exactly 1 channel
-        if (image.getNumberOfComponentsOfOriginalImage() > 1)
-        {
-            slider.setEnabled(false);
-            jLabel1.setEnabled(false);
-        }
+//        if (image.getNumberOfComponentsOfOriginalImage() > 1)
+//        {
+//            slider.setEnabled(false);
+//            jLabel1.setEnabled(false);
+//        }
 
         if (image instanceof PerspectiveImage)
             applyAdjustmentsButton.setSelected(((PerspectiveImage)image).getApplyFramedAdjustments());
@@ -830,7 +830,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
         System.out.println("Zoom In");
         if (image instanceof PerspectiveImage)
         {
-            ((PerspectiveImage)image).moveZoomFactorBy(-0.05 * getAdjustFactor());
+            ((PerspectiveImage)image).moveZoomFactorBy(-0.01 * getAdjustFactor());
             ((PerspectiveImage)image).firePropertyChange();
         }
     }//GEN-LAST:event_zoomInButtonActionPerformed
@@ -917,7 +917,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
         System.out.println("Zoom Out");
         if (image instanceof PerspectiveImage)
         {
-            ((PerspectiveImage)image).moveZoomFactorBy(0.05 * getAdjustFactor());
+            ((PerspectiveImage)image).moveZoomFactorBy(0.01 * getAdjustFactor());
             ((PerspectiveImage)image).firePropertyChange();
         }
     }//GEN-LAST:event_zoomOutButtonActionPerformed

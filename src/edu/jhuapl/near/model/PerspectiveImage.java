@@ -457,8 +457,8 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
             {
                 int height = getImageHeight();
                 int width = getImageWidth();
-                int line = (int)Math.round(height - 1 - targetPixelCoordinates[0]);
-                int sample = (int)Math.round(targetPixelCoordinates[1]);
+                double line = height - 1 - targetPixelCoordinates[0];
+                double sample = targetPixelCoordinates[1];
 
                 if (line >= 0 && line < height && sample >= 0 && sample < width)
                 {
@@ -534,10 +534,15 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     {
         System.out.println("moveFrustumOffset(): " + pixelDelta[1] + " " + pixelDelta[0]);
 
-        int height = getImageHeight();
-        int width = getImageWidth();
+        double height = (double)getImageHeight();
+        double width = (double)getImageWidth();
+        if (targetPixelCoordinates[0] < 0.0 || targetPixelCoordinates[1] < 0.0)
+        {
+            targetPixelCoordinates[0] = height / 2.0;
+            targetPixelCoordinates[1] = width / 2.0;
+        }
         double line = this.targetPixelCoordinates[0] + pixelDelta[0];
-        double sample = (double)Math.round(targetPixelCoordinates[1] + pixelDelta[1]);
+        double sample = targetPixelCoordinates[1] + pixelDelta[1];
         double[] newFrustumCenterPixel = { line, sample };
 
         if (line >= 0.0 && line < height && sample >= 0.0 && sample < width)
@@ -549,8 +554,6 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     public void moveRotationAngleBy(double rotationDelta)
     {
         System.out.println("moveRotationAngleBy(): " + rotationDelta);
-        if (rotationOffset == null)
-            rotationOffset = new double[1];
 
         double newRotationOffset = rotationOffset[0] + rotationDelta;
 
@@ -560,11 +563,6 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     public void moveZoomFactorBy(double zoomDelta)
     {
         System.out.println("moveZoomDeltaBy(): " + zoomDelta);
-        if (zoomFactor == null)
-        {
-            zoomFactor = new double[1];
-            zoomFactor[0] = 1.0;
-        }
 
         double newZoomFactor = zoomFactor[0] * (1.0 + zoomDelta);
 
@@ -3202,11 +3200,17 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         return upVectorAdjusted[currentSlice];
     }
 
+    public double[] getPixelDirection(int sample, int line)
+    {
+        return getPixelDirection((double)sample, (double)line);
+    }
+
+
     /**
      * Get the direction from the spacecraft of pixel with specified sample and line.
      * Note that sample is along image width and line is along image height.
      */
-    public double[] getPixelDirection(int sample, int line)
+    public double[] getPixelDirection(double sample, double line)
     {
         double[] corner1 = {
                 spacecraftPositionAdjusted[currentSlice][0] + frustum1Adjusted[currentSlice][0],

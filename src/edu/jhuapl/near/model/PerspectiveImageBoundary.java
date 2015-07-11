@@ -214,7 +214,7 @@ public class PerspectiveImageBoundary extends Model implements PropertyChangeLis
         }
         if (Properties.MODEL_CHANGED.equals(evt.getPropertyName()))
         {
-            System.out.println("Boundary MODEL_CHANGED event: " + evt.getSource().getClass().getSimpleName());
+//            System.out.println("Boundary MODEL_CHANGED event: " + evt.getSource().getClass().getSimpleName());
             initialize();
             this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
         }
