@@ -424,12 +424,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
             if (image instanceof PerspectiveImage)
             {
                 PerspectiveImage pi = (PerspectiveImage)image;
-//                double centerI = pi.getImageHeight() / 2.0;
-//                double centerJ = pi.getImageWidth() / 2.0;
-//                double[] offset = { p[0] - centerI, p[1] - centerJ };
-//                pi.setFrustumOffset(offset);
                 pi.setFrustumOffset(pickPosition);
-
             }
         }
     }

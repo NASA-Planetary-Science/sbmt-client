@@ -38,7 +38,14 @@ public class MVICQuadJupiterImage extends PerspectiveImage
         super(key, smallBodyModel, loadPointingOnly, INITIAL_BAND);
     }
 
-    @Override
+    protected void initialize() throws FitsException, IOException
+    {
+        super.initialize();
+        setUseDefaultFootprint(false);
+    }
+
+
+        @Override
     protected void processRawImage(vtkImageData rawImage)
     {
         // Flip image along y axis and y axis. For some reason we need to do
@@ -46,6 +53,11 @@ public class MVICQuadJupiterImage extends PerspectiveImage
         ImageDataUtil.flipImageYAxis(rawImage);
         ImageDataUtil.flipImageXAxis(rawImage);
     }
+
+//    public double[] getPixelDirection(double sample, double line)
+//    {
+//        return getPixelDirection((double)sample, (double)line, 0);
+//    }
 
     protected int getNumberBands()
     {

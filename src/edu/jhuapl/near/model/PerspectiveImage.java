@@ -478,11 +478,12 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
             }
         }
 
+//        int slice = getCurrentSlice();
         int nslices = getNumberBands();
-        for (int i = 0; i<nslices; i++)
+        for (int slice = 0; slice<nslices; slice++)
         {
-            frusta[i] = null;
-            footprintGenerated[i] = false;
+            frusta[slice] = null;
+            footprintGenerated[slice] = false;
         }
     }
 
@@ -499,13 +500,14 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         Vector3D deltaVector = originPointingVector.scalarMultiply(distance * (zoomFactor - 1.0));
         double[] delta = { deltaVector.getX(), deltaVector.getY(), deltaVector.getZ() };
 
+//        int slice = getCurrentSlice();
         int nslices = getNumberBands();
-        for (int i = 0; i<nslices; i++)
+        for (int slice = 0; slice<nslices; slice++)
         {
             MathUtil.vadd(spacecraftPositionOriginal[currentSlice], delta, spacecraftPositionAdjusted[currentSlice]);
 
-            frusta[i] = null;
-            footprintGenerated[i] = false;
+            frusta[slice] = null;
+            footprintGenerated[slice] = false;
         }
     }
 
@@ -518,17 +520,18 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         axis.negate();
         Rotation rotation = new Rotation(axis, Math.toRadians(angleDegrees));
 
+//        int slice = getCurrentSlice();
         int nslices = getNumberBands();
-        for (int i = 0; i<nslices; i++)
+        for (int slice = 0; slice<nslices; slice++)
         {
-            MathUtil.rotateVector(frustum1Adjusted[i], rotation, frustum1Adjusted[i]);
-            MathUtil.rotateVector(frustum2Adjusted[i], rotation, frustum2Adjusted[i]);
-            MathUtil.rotateVector(frustum3Adjusted[i], rotation, frustum3Adjusted[i]);
-            MathUtil.rotateVector(frustum4Adjusted[i], rotation, frustum4Adjusted[i]);
-            MathUtil.rotateVector(boresightDirectionAdjusted[i], rotation, boresightDirectionAdjusted[i]);
+            MathUtil.rotateVector(frustum1Adjusted[slice], rotation, frustum1Adjusted[slice]);
+            MathUtil.rotateVector(frustum2Adjusted[slice], rotation, frustum2Adjusted[slice]);
+            MathUtil.rotateVector(frustum3Adjusted[slice], rotation, frustum3Adjusted[slice]);
+            MathUtil.rotateVector(frustum4Adjusted[slice], rotation, frustum4Adjusted[slice]);
+            MathUtil.rotateVector(boresightDirectionAdjusted[slice], rotation, boresightDirectionAdjusted[slice]);
 
-            frusta[i] = null;
-            footprintGenerated[i] = false;
+            frusta[slice] = null;
+            footprintGenerated[slice] = false;
         }
     }
 
@@ -542,9 +545,6 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         {
             targetPixelCoordinates = getPixelFromPoint(bodyOrigin);
             targetPixelCoordinates[0] = height - 1 - targetPixelCoordinates[0];
-//            targetPixelCoordinates[1] = width - 1 - targetPixelCoordinates[1];
-//          targetPixelCoordinates[0] = height / 2.0;
-//            targetPixelCoordinates[1] = width / 2.0;
         }
         double line = this.targetPixelCoordinates[0] + pixelDelta[0];
         double sample = targetPixelCoordinates[1] + pixelDelta[1];
@@ -608,19 +608,19 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         Vector3D originPointingVector = spacecraftToOriginVector.normalize();
 
         Rotation rotation = new Rotation(directionVector, originPointingVector);
-//        Rotation rotation = new Rotation(originPointingVector, directionVector);
 
+//        int slice = getCurrentSlice();
         int nslices = getNumberBands();
-        for (int i = 0; i<nslices; i++)
+        for (int slice = 0; slice<nslices; slice++)
         {
-            MathUtil.rotateVector(frustum1Adjusted[i], rotation, frustum1Adjusted[i]);
-            MathUtil.rotateVector(frustum2Adjusted[i], rotation, frustum2Adjusted[i]);
-            MathUtil.rotateVector(frustum3Adjusted[i], rotation, frustum3Adjusted[i]);
-            MathUtil.rotateVector(frustum4Adjusted[i], rotation, frustum4Adjusted[i]);
-            MathUtil.rotateVector(boresightDirectionAdjusted[i], rotation, boresightDirectionAdjusted[i]);
+            MathUtil.rotateVector(frustum1Adjusted[slice], rotation, frustum1Adjusted[slice]);
+            MathUtil.rotateVector(frustum2Adjusted[slice], rotation, frustum2Adjusted[slice]);
+            MathUtil.rotateVector(frustum3Adjusted[slice], rotation, frustum3Adjusted[slice]);
+            MathUtil.rotateVector(frustum4Adjusted[slice], rotation, frustum4Adjusted[slice]);
+            MathUtil.rotateVector(boresightDirectionAdjusted[slice], rotation, boresightDirectionAdjusted[slice]);
 
-            frusta[i] = null;
-            footprintGenerated[i] = false;
+            frusta[slice] = null;
+            footprintGenerated[slice] = false;
         }
     }
 
@@ -1885,16 +1885,16 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     {
         String[] infoFileNames = getInfoFilesFullPath();
 
-        int nfiles = infoFileNames.length;
-        int nslices = getNumberBands();
-
+//        int slice = getCurrentSlice();
+//        System.out.println("Saving current slice: " + slice);
         try
         {
-            for (int k=0; k<nfiles; k++)
+            int nslices = getNumberBands();
+            for (int slice=0; slice<nslices; slice++)
             {
                 saveImageInfo(
-                        infoFileNames[k],
-                        k,
+                        infoFileNames[slice],
+                        slice,
                         startTime,
                         stopTime,
                         spacecraftPositionOriginal,
@@ -3207,7 +3207,12 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
     public double[] getPixelDirection(int sample, int line)
     {
-        return getPixelDirection((double)sample, (double)line);
+        return getPixelDirection((double)sample, (double)line, currentSlice);
+    }
+
+    public double[] getPixelDirection(double sample, double line)
+    {
+        return getPixelDirection((double)sample, (double)line, currentSlice);
     }
 
 
@@ -3215,22 +3220,22 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
      * Get the direction from the spacecraft of pixel with specified sample and line.
      * Note that sample is along image width and line is along image height.
      */
-    public double[] getPixelDirection(double sample, double line)
+    public double[] getPixelDirection(double sample, double line, int slice)
     {
         double[] corner1 = {
-                spacecraftPositionAdjusted[currentSlice][0] + frustum1Adjusted[currentSlice][0],
-                spacecraftPositionAdjusted[currentSlice][1] + frustum1Adjusted[currentSlice][1],
-                spacecraftPositionAdjusted[currentSlice][2] + frustum1Adjusted[currentSlice][2]
+                spacecraftPositionAdjusted[slice][0] + frustum1Adjusted[slice][0],
+                spacecraftPositionAdjusted[slice][1] + frustum1Adjusted[slice][1],
+                spacecraftPositionAdjusted[slice][2] + frustum1Adjusted[slice][2]
         };
         double[] corner2 = {
-                spacecraftPositionAdjusted[currentSlice][0] + frustum2Adjusted[currentSlice][0],
-                spacecraftPositionAdjusted[currentSlice][1] + frustum2Adjusted[currentSlice][1],
-                spacecraftPositionAdjusted[currentSlice][2] + frustum2Adjusted[currentSlice][2]
+                spacecraftPositionAdjusted[slice][0] + frustum2Adjusted[slice][0],
+                spacecraftPositionAdjusted[slice][1] + frustum2Adjusted[slice][1],
+                spacecraftPositionAdjusted[slice][2] + frustum2Adjusted[slice][2]
         };
         double[] corner3 = {
-                spacecraftPositionAdjusted[currentSlice][0] + frustum3Adjusted[currentSlice][0],
-                spacecraftPositionAdjusted[currentSlice][1] + frustum3Adjusted[currentSlice][1],
-                spacecraftPositionAdjusted[currentSlice][2] + frustum3Adjusted[currentSlice][2]
+                spacecraftPositionAdjusted[slice][0] + frustum3Adjusted[slice][0],
+                spacecraftPositionAdjusted[slice][1] + frustum3Adjusted[slice][1],
+                spacecraftPositionAdjusted[slice][2] + frustum3Adjusted[slice][2]
         };
         double[] vec12 = {
                 corner2[0] - corner1[0],
@@ -3257,9 +3262,9 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
                 left[1] + fracWidth*vec12[1],
                 left[2] + fracWidth*vec12[2]
         };
-        dir[0] -= spacecraftPositionAdjusted[currentSlice][0];
-        dir[1] -= spacecraftPositionAdjusted[currentSlice][1];
-        dir[2] -= spacecraftPositionAdjusted[currentSlice][2];
+        dir[0] -= spacecraftPositionAdjusted[slice][0];
+        dir[1] -= spacecraftPositionAdjusted[slice][1];
+        dir[2] -= spacecraftPositionAdjusted[slice][2];
         MathUtil.unorm(dir, dir);
 
         return dir;
