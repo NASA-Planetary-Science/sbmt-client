@@ -410,14 +410,10 @@ int main(int argc, char** argv)
 
         et = startet + (stopet - startet) / 2.0;
 
-        // omit checking for target for pluto images
-        if (et < 473342467)
+        if (target != body)
         {
-            if (target != body)
-            {
-                cerr << "Failed to get et: " << labelfiles[i] << endl;
-                continue;
-            }
+            cerr << "TARGET keyword is: " << target << " not " << body << endl;
+            continue;
         }
 
         getScOrientation(et, body, scposb, boredir, updir, frustum);
