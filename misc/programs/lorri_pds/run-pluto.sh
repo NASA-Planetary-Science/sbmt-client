@@ -69,7 +69,7 @@ runCreateInfoFiles() {
 
 runCreateInfoFiles PLUTO
 runCreateInfoFiles CHARON
-# runCreateInfoFiles HYDRA
-# runCreateInfoFiles KERBEROS
-# runCreateInfoFiles NIX
-# runCreateInfoFiles STYX
+runCreateInfoFiles HYDRA
+runCreateInfoFiles KERBEROS
+runCreateInfoFiles NIX
+runCreateInfoFiles STYX

@@ -404,7 +404,7 @@ int main(int argc, char** argv)
         getEt(startmet, stopmet, startutc, startet, stoputc, stopet);
         if (failed_c())
         {
-            cerr << "Failed to get et: " << labelfiles[i] << endl;
+            cerr << "Failed to get et for " << target << " in " << labelfiles[i] << endl;
             continue;
         }
 
@@ -412,21 +412,21 @@ int main(int argc, char** argv)
 
         if (target != body)
         {
-            cerr << "TARGET keyword is: " << target << " not " << body << endl;
+//            cerr << "TARGET keyword is: " << target << " not " << body << endl;
             continue;
         }
 
         getScOrientation(et, body, scposb, boredir, updir, frustum);
         if (failed_c())
         {
-            cerr << "Failed to get SC orientation: " << labelfiles[i] << endl;
+            cerr << "Failed to get SC orientation for " << target << " in " << labelfiles[i] << endl;
             continue;
         }
 
         getSunPosition(et, body, sunPosition);
         if (failed_c())
         {
-            cerr << "Failed to get sun position: " << labelfiles[i] << endl;
+            cerr << "Failed to get sun position for " << target << " in " << labelfiles[i] << endl;
             continue;
         }
 
@@ -434,7 +434,7 @@ int main(int argc, char** argv)
         unsigned found = labelbasename.find_last_of(".");
         string infofilename = outputfolder + "/" + labelbasename.substr(0, found) + ".INFO";
         saveInfoFile(infofilename, startutc, stoputc, scposb, boredir, updir, frustum, sunPosition);
-        cerr << "Infofile created successfully for " << labelfiles[i] << endl;
+        cerr << target << " infofile created successfully in " << infofilename << endl;
 
 	fout << labelbasename << " " << startutc << endl;
 
