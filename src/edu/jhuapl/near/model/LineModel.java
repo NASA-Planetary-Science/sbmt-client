@@ -216,16 +216,31 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
                 color = getCommonData().getSelectionColor();
 
             int size = lin.xyzPointList.size();
-            idList.SetNumberOfIds(size);
+            if (mode == Mode.CLOSED && size > 2)
+                idList.SetNumberOfIds(size + 1);
+            else
+                idList.SetNumberOfIds(size);
 
+            int startId = 0;
             for (int i=0;i<size;++i)
             {
+                if (i == 0)
+                    startId = c;
+
                 points.InsertNextPoint(lin.xyzPointList.get(i).xyz);
                 if (lin.hidden)
                     idList.SetId(i, 0); // set to degenerate line if hidden
                 else
                     idList.SetId(i, c);
                 ++c;
+            }
+
+            if (mode == Mode.CLOSED && size > 2)
+            {
+                if (lin.hidden)
+                    idList.SetId(size, 0);
+                else
+                    idList.SetId(size, startId);
             }
 
             lineCells.InsertNextCell(idList);
