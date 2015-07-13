@@ -141,7 +141,7 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
         activationPolyData.DeepCopy(emptyPolyData);
 
         lineActivationMapper = new vtkPolyDataMapper();
-        lineActivationMapper.SetInput(activationPolyData);
+        lineActivationMapper.SetInputData(activationPolyData);
         lineActivationMapper.Update();
 
         lineActivationActor.SetMapper(lineActivationMapper);
@@ -236,7 +236,7 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
 
         if (lineMapper == null)
             lineMapper = new vtkPolyDataMapper();
-        lineMapper.SetInput(linesPolyData);
+        lineMapper.SetInputData(linesPolyData);
         lineMapper.Update();
 
         if (!actors.contains(lineActor))

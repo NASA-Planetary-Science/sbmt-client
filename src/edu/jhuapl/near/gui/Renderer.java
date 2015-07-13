@@ -11,22 +11,29 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import vtk.vtkAxesActor;
+import vtk.vtkBMPWriter;
 import vtk.vtkCamera;
 import vtk.vtkCaptionActor2D;
 import vtk.vtkInteractorStyle;
 import vtk.vtkInteractorStyleImage;
 import vtk.vtkInteractorStyleJoystickCamera;
 import vtk.vtkInteractorStyleTrackballCamera;
+import vtk.vtkJPEGWriter;
 import vtk.vtkLight;
 import vtk.vtkLightKit;
 import vtk.vtkOrientationMarkerWidget;
+import vtk.vtkPNGWriter;
+import vtk.vtkPNMWriter;
+import vtk.vtkPostScriptWriter;
 import vtk.vtkProp;
 import vtk.vtkPropCollection;
 import vtk.vtkProperty;
-import vtk.vtkRenderWindowPanel;
 import vtk.vtkRenderer;
+import vtk.vtkTIFFWriter;
 import vtk.vtkTextProperty;
+import vtk.vtkWindowToImageFilter;
 
+import edu.jhuapl.near.gui.joglrendering.vtksbmtJoglCanvasComponent;
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.util.LatLon;
@@ -77,7 +84,7 @@ public class Renderer extends JPanel implements
         }
     }
 
-    private vtkEnhancedRenderWindowPanel renWin;
+    private vtksbmtJoglCanvasComponent renWin;
     private ModelManager modelManager;
     private vtkInteractorStyleTrackballCamera trackballCameraInteractorStyle;
     private vtkInteractorStyleJoystickCamera joystickCameraInteractorStyle;
@@ -97,7 +104,7 @@ public class Renderer extends JPanel implements
     {
         setLayout(new BorderLayout());
 
-        renWin = new vtkEnhancedRenderWindowPanel();
+        renWin = new vtksbmtJoglCanvasComponent();
 
         this.modelManager = modelManager;
 
@@ -116,11 +123,11 @@ public class Renderer extends JPanel implements
 
         setBackgroundColor(Preferences.getInstance().getAsIntArray(Preferences.BACKGROUND_COLOR, new int[]{0, 0, 0}));
 
-        headlight = renWin.GetRenderer().MakeLight();
+        headlight = renWin.getRenderer().MakeLight();
         headlight.SetLightTypeToHeadlight();
         headlight.SetConeAngle(180.0);
 
-        fixedLight = renWin.GetRenderer().MakeLight();
+        fixedLight = renWin.getRenderer().MakeLight();
         fixedLight.SetLightTypeToSceneLight();
         fixedLight.PositionalOn();
         fixedLight.SetConeAngle(180.0);
@@ -131,7 +138,7 @@ public class Renderer extends JPanel implements
         setFixedLightPosition(defaultPosition);
         setLightIntensity(Preferences.getInstance().getAsDouble(Preferences.LIGHT_INTENSITY, 1.0));
 
-        renWin.GetRenderer().AutomaticLightCreationOff();
+        renWin.getRenderer().AutomaticLightCreationOff();
         lightKit = new vtkLightKit();
         lightKit.SetKeyToFillRatio(1.0);
         lightKit.SetKeyToHeadRatio(20.0);
@@ -140,7 +147,7 @@ public class Renderer extends JPanel implements
                 Preferences.getInstance().get(Preferences.LIGHTING_TYPE, LightingType.LIGHT_KIT.toString()));
         setLighting(lightingType);
 
-        add(renWin, BorderLayout.CENTER);
+        add(renWin.getComponent(), BorderLayout.CENTER);
 
         axes = new vtkAxesActor();
 
@@ -173,7 +180,7 @@ public class Renderer extends JPanel implements
 
         orientationWidget = new vtkOrientationMarkerWidget();
         orientationWidget.SetOrientationMarker(axes);
-        orientationWidget.SetInteractor(renWin.getIren());
+        orientationWidget.SetInteractor(renWin.getRenderWindowInteractor());
         orientationWidget.SetTolerance(10);
         setAxesSize(Preferences.getInstance().getAsDouble(Preferences.AXES_SIZE, 0.2));
 
@@ -197,7 +204,7 @@ public class Renderer extends JPanel implements
         // in the renderer, remove it from the renderer.
 
         // First remove the props not in the specified list that are currently rendered.
-        vtkPropCollection propCollection = renWin.GetRenderer().GetViewProps();
+        vtkPropCollection propCollection = renWin.getRenderer().GetViewProps();
         int size = propCollection.GetNumberOfItems();
         HashSet<vtkProp> renderedProps = new HashSet<vtkProp>();
         for (int i=0; i<size; ++i)
@@ -205,24 +212,24 @@ public class Renderer extends JPanel implements
         renderedProps.removeAll(props);
         if (!renderedProps.isEmpty())
         {
-            renWin.lock();
+            renWin.getVTKLock().lock();
             for (vtkProp prop : renderedProps)
-                renWin.GetRenderer().RemoveViewProp(prop);
-            renWin.unlock();
+                renWin.getRenderer().RemoveViewProp(prop);
+            renWin.getVTKLock().unlock();
         }
 
         // Next add the new props.
         for (vtkProp prop : props)
         {
-            if (renWin.GetRenderer().HasViewProp(prop) == 0)
-                renWin.GetRenderer().AddViewProp(prop);
+            if (renWin.getRenderer().HasViewProp(prop) == 0)
+                renWin.getRenderer().AddViewProp(prop);
         }
 
         // If we are in 2D mode, then remove all props of models that
         // do not support 2D mode.
         if (modelManager.is2DMode())
         {
-            propCollection = renWin.GetRenderer().GetViewProps();
+            propCollection = renWin.getRenderer().GetViewProps();
             size = propCollection.GetNumberOfItems();
             for (int i=size-1; i>=0; --i)
             {
@@ -230,14 +237,14 @@ public class Renderer extends JPanel implements
                 Model model = modelManager.getModel(prop);
                 if (model != null && !model.supports2DMode())
                 {
-                    renWin.lock();
-                    renWin.GetRenderer().RemoveViewProp(prop);
-                    renWin.unlock();
+                    renWin.getVTKLock().lock();
+                    renWin.getRenderer().RemoveViewProp(prop);
+                    renWin.getVTKLock().unlock();
                 }
             }
         }
 
-        if (renWin.GetRenderWindow().GetNeverRendered() > 0)
+        if (renWin.getRenderWindow().GetNeverRendered() > 0)
             return;
         renWin.Render();
     }
@@ -245,9 +252,9 @@ public class Renderer extends JPanel implements
     /*
     public void addActor(vtkActor actor)
     {
-        if (renWin.GetRenderer().HasViewProp(actor) == 0)
+        if (renWin.getRenderer().HasViewProp(actor) == 0)
         {
-            renWin.GetRenderer().AddActor(actor);
+            renWin.getRenderer().AddActor(actor);
             renWin.Render();
         }
     }
@@ -257,9 +264,9 @@ public class Renderer extends JPanel implements
         boolean actorWasAdded = false;
         for (vtkActor act : actors)
         {
-            if (renWin.GetRenderer().HasViewProp(act) == 0)
+            if (renWin.getRenderer().HasViewProp(act) == 0)
             {
-                renWin.GetRenderer().AddActor(act);
+                renWin.getRenderer().AddActor(act);
                 actorWasAdded = true;
             }
         }
@@ -270,9 +277,9 @@ public class Renderer extends JPanel implements
 
     public void removeActor(vtkActor actor)
     {
-        if (renWin.GetRenderer().HasViewProp(actor) > 0)
+        if (renWin.getRenderer().HasViewProp(actor) > 0)
         {
-            renWin.GetRenderer().RemoveActor(actor);
+            renWin.getRenderer().RemoveActor(actor);
             renWin.Render();
         }
     }
@@ -282,9 +289,9 @@ public class Renderer extends JPanel implements
         boolean actorWasRemoved = false;
         for (vtkActor act : actors)
         {
-            if (renWin.GetRenderer().HasViewProp(act) > 0)
+            if (renWin.getRenderer().HasViewProp(act) > 0)
             {
-                renWin.GetRenderer().RemoveActor(act);
+                renWin.getRenderer().RemoveActor(act);
                 actorWasRemoved = true;
             }
         }
@@ -301,13 +308,13 @@ public class Renderer extends JPanel implements
 
     public void saveToFile()
     {
-        File file = ImageFileChooser.showSaveDialog(this, "Export to Image");
-        renWin.saveToFile(file);
+        File file = CustomFileChooser.showSaveDialog(this, "Export to PNG Image", "image.png", "png");
+        saveToFile(file, renWin);
     }
 
     public void save6ViewsToFile()
     {
-        File file = ImageFileChooser.showSaveDialog(this, "Export to Image", false);
+        File file = CustomFileChooser.showSaveDialog(this, "Export to PNG Image", "", "png");
         String path = file.getAbsolutePath();
         String base = path.substring(0, path.lastIndexOf('.'));
         String ext = path.substring(path.lastIndexOf('.'));
@@ -346,13 +353,13 @@ public class Renderer extends JPanel implements
         for (int i=0; i<axes.length; ++i)
         {
             setCameraOrientationInDirectionOfAxis(axes[i], true);
-            renWin.saveToFile(files[i]);
+            saveToFile(files[i], renWin);
         }
     }
 
     public void setCameraOrientationInDirectionOfAxis(AxisType axisType, boolean preserveCurrentDistance)
     {
-        vtkRenderer ren = renWin.GetRenderer();
+        vtkRenderer ren = renWin.getRenderer();
         if (ren.VisibleActorCount() == 0) return;
 
         double[] bounds = modelManager.getSmallBodyModel().getBoundingBox().getBounds();
@@ -363,7 +370,7 @@ public class Renderer extends JPanel implements
 
         double cameraDistance = getCameraDistance();
 
-        renWin.lock();
+        renWin.getVTKLock().lock();
         vtkCamera cam = ren.GetActiveCamera();
         cam.SetFocalPoint(0.0, 0.0, 0.0);
 
@@ -417,7 +424,7 @@ public class Renderer extends JPanel implements
             cam.SetPosition(pos);
         }
 
-        renWin.unlock();
+        renWin.getVTKLock().unlock();
 
         renWin.resetCameraClippingRange();
         renWin.Render();
@@ -429,13 +436,13 @@ public class Renderer extends JPanel implements
             double[] upVector,
             double viewAngle)
     {
-        renWin.lock();
-        vtkCamera cam = renWin.GetRenderer().GetActiveCamera();
+        renWin.getVTKLock().lock();
+        vtkCamera cam = renWin.getRenderer().GetActiveCamera();
         cam.SetPosition(position);
         cam.SetFocalPoint(focalPoint);
         cam.SetViewUp(upVector);
         cam.SetViewAngle(viewAngle);
-        renWin.unlock();
+        renWin.getVTKLock().unlock();
         renWin.resetCameraClippingRange();
         renWin.Render();
     }
@@ -443,17 +450,17 @@ public class Renderer extends JPanel implements
     public void setCameraViewAngle(
             double viewAngle)
     {
-        renWin.lock();
-        vtkCamera cam = renWin.GetRenderer().GetActiveCamera();
+        renWin.getVTKLock().lock();
+        vtkCamera cam = renWin.getRenderer().GetActiveCamera();
         cam.SetViewAngle(viewAngle);
-        renWin.unlock();
+        renWin.getVTKLock().unlock();
         renWin.resetCameraClippingRange();
         renWin.Render();
     }
 
     public double getCameraViewAngle()
     {
-        return renWin.GetRenderer().GetActiveCamera().GetViewAngle();
+        return renWin.getRenderer().GetActiveCamera().GetViewAngle();
     }
 
     public void resetToDefaultCameraViewAngle()
@@ -463,20 +470,20 @@ public class Renderer extends JPanel implements
 
     public void setProjectionType(ProjectionType projectionType)
     {
-        renWin.lock();
-        vtkCamera cam = renWin.GetRenderer().GetActiveCamera();
+        renWin.getVTKLock().lock();
+        vtkCamera cam = renWin.getRenderer().GetActiveCamera();
         if (projectionType == ProjectionType.ORTHOGRAPHIC)
             cam.ParallelProjectionOn();
         else
             cam.ParallelProjectionOff();
-        renWin.unlock();
+        renWin.getVTKLock().unlock();
         renWin.resetCameraClippingRange();
         renWin.Render();
     }
 
     public ProjectionType getProjectionType()
     {
-        vtkCamera cam = renWin.GetRenderer().GetActiveCamera();
+        vtkCamera cam = renWin.getRenderer().GetActiveCamera();
         if (cam.GetParallelProjection() != 0)
             return ProjectionType.ORTHOGRAPHIC;
         else
@@ -492,7 +499,7 @@ public class Renderer extends JPanel implements
      */
     public void setCameraDistance(double distance)
     {
-        vtkCamera cam = renWin.GetRenderer().GetActiveCamera();
+        vtkCamera cam = renWin.getRenderer().GetActiveCamera();
 
         double[] pos = cam.GetPosition();
 
@@ -502,16 +509,16 @@ public class Renderer extends JPanel implements
         pos[1] *= distance;
         pos[2] *= distance;
 
-        renWin.lock();
+        renWin.getVTKLock().lock();
         cam.SetPosition(pos);
-        renWin.unlock();
+        renWin.getVTKLock().unlock();
         renWin.resetCameraClippingRange();
         renWin.Render();
     }
 
     public double getCameraDistance()
     {
-        vtkCamera cam = renWin.GetRenderer().GetActiveCamera();
+        vtkCamera cam = renWin.getRenderer().GetActiveCamera();
 
         double[] pos = cam.GetPosition();
 
@@ -533,7 +540,7 @@ public class Renderer extends JPanel implements
             double[] cz,
             double[] viewAngle)
     {
-        vtkCamera cam = renWin.GetRenderer().GetActiveCamera();
+        vtkCamera cam = renWin.getRenderer().GetActiveCamera();
 
         double[] pos = cam.GetPosition();
         position[0] = pos[0];
@@ -559,7 +566,7 @@ public class Renderer extends JPanel implements
     }
 
 
-    public vtkRenderWindowPanel getRenderWindowPanel()
+    public vtksbmtJoglCanvasComponent getRenderWindowPanel()
     {
         return renWin;
     }
@@ -584,7 +591,7 @@ public class Renderer extends JPanel implements
             defaultInteractorStyle = trackballCameraInteractorStyle;
 
         // Change the interactor now unless it is currently null.
-        if (renWin.getIren().GetInteractorStyle() != null)
+        if (renWin.getRenderWindowInteractor().GetInteractorStyle() != null)
             setInteractorStyleToDefault();
     }
 
@@ -610,21 +617,21 @@ public class Renderer extends JPanel implements
     {
         if (type != currentLighting)
         {
-            renWin.GetRenderer().RemoveAllLights();
+            renWin.getRenderer().RemoveAllLights();
             if (type == LightingType.LIGHT_KIT)
             {
-                lightKit.AddLightsToRenderer(renWin.GetRenderer());
+                lightKit.AddLightsToRenderer(renWin.getRenderer());
             }
             else if (type == LightingType.HEADLIGHT)
             {
-                renWin.GetRenderer().AddLight(headlight);
+                renWin.getRenderer().AddLight(headlight);
             }
             else
             {
-                renWin.GetRenderer().AddLight(fixedLight);
+                renWin.getRenderer().AddLight(fixedLight);
             }
             currentLighting = type;
-            if (renWin.GetRenderWindow().GetNeverRendered() == 0)
+            if (renWin.getRenderWindow().GetNeverRendered() == 0)
                 renWin.Render();
         }
     }
@@ -640,7 +647,7 @@ public class Renderer extends JPanel implements
         {
             headlight.SetIntensity(percentage);
             fixedLight.SetIntensity(percentage);
-            if (renWin.GetRenderWindow().GetNeverRendered() == 0)
+            if (renWin.getRenderWindow().GetNeverRendered() == 0)
                 renWin.Render();
         }
     }
@@ -664,7 +671,7 @@ public class Renderer extends JPanel implements
     public void setFixedLightPosition(LatLon latLon)
     {
         fixedLight.SetPosition(MathUtil.latrec(latLon.toRadians()));
-        if (renWin.GetRenderWindow().GetNeverRendered() == 0)
+        if (renWin.getRenderWindow().GetNeverRendered() == 0)
             renWin.Render();
     }
 
@@ -684,7 +691,7 @@ public class Renderer extends JPanel implements
         dir[1] *= (1.0e5 * bbd);
         dir[2] *= (1.0e5 * bbd);
         fixedLight.SetPosition(dir);
-        if (renWin.GetRenderWindow().GetNeverRendered() == 0)
+        if (renWin.getRenderWindow().GetNeverRendered() == 0)
             renWin.Render();
     }
 
@@ -697,12 +704,12 @@ public class Renderer extends JPanel implements
     {
         if (getShowOrientationAxes() != show)
         {
-            renWin.lock();
+            renWin.getVTKLock().lock();
             orientationWidget.SetEnabled(show ? 1 : 0);
             if (show)
                 orientationWidget.SetInteractive(interactiveAxes ? 1 : 0);
-            renWin.unlock();
-            if (renWin.GetRenderWindow().GetNeverRendered() == 0)
+            renWin.getVTKLock().unlock();
+            if (renWin.getRenderWindow().GetNeverRendered() == 0)
                 renWin.Render();
         }
     }
@@ -718,10 +725,10 @@ public class Renderer extends JPanel implements
         if (getOrientationAxesInteractive() != interactive &&
             getShowOrientationAxes())
         {
-            renWin.lock();
+            renWin.getVTKLock().lock();
             orientationWidget.SetInteractive(interactive ? 1 : 0);
-            renWin.unlock();
-            if (renWin.GetRenderWindow().GetNeverRendered() == 0)
+            renWin.getVTKLock().unlock();
+            if (renWin.getRenderWindow().GetNeverRendered() == 0)
                 renWin.Render();
         }
         interactiveAxes = interactive;
@@ -745,14 +752,14 @@ public class Renderer extends JPanel implements
 
     public int[] getBackgroundColor()
     {
-        double[] bg = renWin.GetRenderer().GetBackground();
+        double[] bg = renWin.getRenderer().GetBackground();
         return new int[]{(int)(255.0*bg[0]), (int)(255.0*bg[1]), (int)(255.0*bg[2])};
     }
 
     public void setBackgroundColor(int[] color)
     {
-        renWin.GetRenderer().SetBackground(color[0]/255.0, color[1]/255.0, color[2]/255.0);
-        if (renWin.GetRenderWindow().GetNeverRendered() == 0)
+        renWin.getRenderer().SetBackground(color[0]/255.0, color[1]/255.0, color[2]/255.0);
+        if (renWin.getRenderWindow().GetNeverRendered() == 0)
             renWin.Render();
     }
 
@@ -762,18 +769,18 @@ public class Renderer extends JPanel implements
 
         if (enable)
         {
-            vtkCamera cam = renWin.GetRenderer().GetActiveCamera();
+            vtkCamera cam = renWin.getRenderer().GetActiveCamera();
             cam.ParallelProjectionOn();
             setCameraOrientationInDirectionOfAxis(AxisType.NEGATIVE_X, false);
-            renWin.lock();
+            renWin.getVTKLock().lock();
             cam.SetViewUp(0.0, 1.0, 0.0);
-            renWin.unlock();
+            renWin.getVTKLock().unlock();
             vtkInteractorStyleImage style = new vtkInteractorStyleImage();
             renWin.setInteractorStyle(style);
         }
         else
         {
-            renWin.GetRenderer().GetActiveCamera().ParallelProjectionOff();
+            renWin.getRenderer().GetActiveCamera().ParallelProjectionOff();
             renWin.resetCamera();
             setInteractorStyleToDefault();
         }
@@ -785,7 +792,7 @@ public class Renderer extends JPanel implements
     {
         this.axesSize = size;
         orientationWidget.SetViewport(0.0, 0.0, size, size);
-        if (renWin.GetRenderWindow().GetNeverRendered() == 0)
+        if (renWin.getRenderWindow().GetNeverRendered() == 0)
             renWin.Render();
     }
 
@@ -802,7 +809,7 @@ public class Renderer extends JPanel implements
         property.SetLineWidth(width);
         property = axes.GetZAxisShaftProperty();
         property.SetLineWidth(width);
-        if (renWin.GetRenderWindow().GetNeverRendered() == 0)
+        if (renWin.getRenderWindow().GetNeverRendered() == 0)
             renWin.Render();
     }
 
@@ -823,7 +830,7 @@ public class Renderer extends JPanel implements
         caption = axes.GetZAxisCaptionActor2D();
         textProperty = caption.GetCaptionTextProperty();
         textProperty.SetFontSize(size);
-        if (renWin.GetRenderWindow().GetNeverRendered() == 0)
+        if (renWin.getRenderWindow().GetNeverRendered() == 0)
             renWin.Render();
     }
 
@@ -845,7 +852,7 @@ public class Renderer extends JPanel implements
         caption = axes.GetZAxisCaptionActor2D();
         textProperty = caption.GetCaptionTextProperty();
         textProperty.SetColor(color[0]/255.0, color[1]/255.0, color[2]/255.0);
-        if (renWin.GetRenderWindow().GetNeverRendered() == 0)
+        if (renWin.getRenderWindow().GetNeverRendered() == 0)
             renWin.Render();
     }
 
@@ -863,7 +870,7 @@ public class Renderer extends JPanel implements
         property.SetColor(color[0]/255.0, color[1]/255.0, color[2]/255.0);
         property = axes.GetXAxisTipProperty();
         property.SetColor(color[0]/255.0, color[1]/255.0, color[2]/255.0);
-        if (renWin.GetRenderWindow().GetNeverRendered() == 0)
+        if (renWin.getRenderWindow().GetNeverRendered() == 0)
             renWin.Render();
     }
 
@@ -880,7 +887,7 @@ public class Renderer extends JPanel implements
         property.SetColor(color[0]/255.0, color[1]/255.0, color[2]/255.0);
         property = axes.GetYAxisTipProperty();
         property.SetColor(color[0]/255.0, color[1]/255.0, color[2]/255.0);
-        if (renWin.GetRenderWindow().GetNeverRendered() == 0)
+        if (renWin.getRenderWindow().GetNeverRendered() == 0)
             renWin.Render();
     }
 
@@ -897,7 +904,7 @@ public class Renderer extends JPanel implements
         property.SetColor(color[0]/255.0, color[1]/255.0, color[2]/255.0);
         property = axes.GetZAxisTipProperty();
         property.SetColor(color[0]/255.0, color[1]/255.0, color[2]/255.0);
-        if (renWin.GetRenderWindow().GetNeverRendered() == 0)
+        if (renWin.getRenderWindow().GetNeverRendered() == 0)
             renWin.Render();
     }
 
@@ -915,7 +922,7 @@ public class Renderer extends JPanel implements
         axes.SetNormalizedTipLength(size, size, size);
         // Change the shaft length also to fill in any space.
         axes.SetNormalizedShaftLength(1.0-size, 1.0-size, 1.0-size);
-        if (renWin.GetRenderWindow().GetNeverRendered() == 0)
+        if (renWin.getRenderWindow().GetNeverRendered() == 0)
             renWin.Render();
     }
 
@@ -927,12 +934,82 @@ public class Renderer extends JPanel implements
     public void setAxesConeRadius(double size)
     {
         axes.SetConeRadius(size);
-        if (renWin.GetRenderWindow().GetNeverRendered() == 0)
+        if (renWin.getRenderWindow().GetNeverRendered() == 0)
             renWin.Render();
     }
 
     public double getAxesConeRadius()
     {
         return axes.GetConeRadius();
+    }
+
+    public static void saveToFile(File file, vtksbmtJoglCanvasComponent renWin)
+    {
+        if (file != null)
+        {
+            try
+            {
+                // The following line is needed due to some weird threading
+                // issue with JOGL when saving out the pixel buffer. Note release
+                // needs to be called at the end.
+                renWin.getComponent().getContext().makeCurrent();
+
+                renWin.getVTKLock().lock();
+                vtkWindowToImageFilter windowToImage = new vtkWindowToImageFilter();
+                windowToImage.SetInput(renWin.getRenderWindow());
+
+                String filename = file.getAbsolutePath();
+                if (filename.toLowerCase().endsWith("bmp"))
+                {
+                    vtkBMPWriter writer = new vtkBMPWriter();
+                    writer.SetFileName(filename);
+                    writer.SetInputConnection(windowToImage.GetOutputPort());
+                    writer.Write();
+                }
+                else if (filename.toLowerCase().endsWith("jpg") ||
+                        filename.toLowerCase().endsWith("jpeg"))
+                {
+                    vtkJPEGWriter writer = new vtkJPEGWriter();
+                    writer.SetFileName(filename);
+                    writer.SetInputConnection(windowToImage.GetOutputPort());
+                    writer.Write();
+                }
+                else if (filename.toLowerCase().endsWith("png"))
+                {
+                    vtkPNGWriter writer = new vtkPNGWriter();
+                    writer.SetFileName(filename);
+                    writer.SetInputConnection(windowToImage.GetOutputPort());
+                    writer.Write();
+                }
+                else if (filename.toLowerCase().endsWith("pnm"))
+                {
+                    vtkPNMWriter writer = new vtkPNMWriter();
+                    writer.SetFileName(filename);
+                    writer.SetInputConnection(windowToImage.GetOutputPort());
+                    writer.Write();
+                }
+                else if (filename.toLowerCase().endsWith("ps"))
+                {
+                    vtkPostScriptWriter writer = new vtkPostScriptWriter();
+                    writer.SetFileName(filename);
+                    writer.SetInputConnection(windowToImage.GetOutputPort());
+                    writer.Write();
+                }
+                else if (filename.toLowerCase().endsWith("tif") ||
+                        filename.toLowerCase().endsWith("tiff"))
+                {
+                    vtkTIFFWriter writer = new vtkTIFFWriter();
+                    writer.SetFileName(filename);
+                    writer.SetInputConnection(windowToImage.GetOutputPort());
+                    writer.SetCompressionToNoCompression();
+                    writer.Write();
+                }
+                renWin.getVTKLock().unlock();
+            }
+            finally
+            {
+                renWin.getComponent().getContext().release();
+            }
+        }
     }
 }

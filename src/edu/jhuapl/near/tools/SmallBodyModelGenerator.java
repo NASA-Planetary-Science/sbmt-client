@@ -129,7 +129,7 @@ public class SmallBodyModelGenerator
                 grid.generateGrid(smallBodyPolyData);
 
                 writer = new vtkPolyDataWriter();
-                writer.SetInput(grid.getGridAsPolyData());
+                writer.SetInputData(grid.getGridAsPolyData());
                 writer.SetFileName(gridfile);
                 writer.SetFileTypeToBinary();
                 writer.Write();

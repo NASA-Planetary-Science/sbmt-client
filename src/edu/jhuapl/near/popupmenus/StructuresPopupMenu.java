@@ -14,7 +14,7 @@ import javax.swing.JOptionPane;
 
 import vtk.vtkCamera;
 import vtk.vtkProp;
-import vtk.vtkRenderWindowPanel;
+import vtk.rendering.vtkAbstractComponent;
 
 import edu.jhuapl.near.gui.ChangeLatLonDialog;
 import edu.jhuapl.near.gui.ColorChooser;
@@ -228,12 +228,12 @@ abstract public class StructuresPopupMenu extends PopupMenu
             double viewAngle = renderer.getCameraViewAngle();
             double[] focalPoint = model.getStructureCenter(selectedStructures[0]);
             double[] normal = model.getStructureNormal(selectedStructures[0]);
-            vtkRenderWindowPanel renWin = renderer.getRenderWindowPanel();
+            vtkAbstractComponent renWin = renderer.getRenderWindowPanel();
 
             double distanceToStructure = 0.0;
             if (preserveCurrentDistance)
             {
-                vtkCamera activeCamera = renWin.GetRenderer().GetActiveCamera();
+                vtkCamera activeCamera = renWin.getRenderer().GetActiveCamera();
                 double[] pos = activeCamera.GetPosition();
                 double[] closestPoint = smallBodyModel.findClosestPoint(pos);
                 distanceToStructure = MathUtil.distanceBetween(pos, closestPoint);

@@ -193,7 +193,7 @@ public abstract class Model
 
         vtkClipPolyData clipPolyData = new vtkClipPolyData();
         clipPolyData.SetClipFunction(planeZeroLon);
-        clipPolyData.SetInput(polydata);
+        clipPolyData.SetInputData(polydata);
         clipPolyData.GenerateClippedOutputOn();
         clipPolyData.Update();
         vtkAlgorithmOutput outputPort = clipPolyData.GetOutputPort();
@@ -225,8 +225,8 @@ public abstract class Model
 
         vtkAppendPolyData appendFilter = new vtkAppendPolyData();
         appendFilter.UserManagedInputsOff();
-        appendFilter.AddInput(lowerHalf);
-        appendFilter.AddInput(upperHalf);
+        appendFilter.AddInputData(lowerHalf);
+        appendFilter.AddInputData(upperHalf);
         appendFilter.Update();
 
         return appendFilter.GetOutputPort();

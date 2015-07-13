@@ -54,7 +54,7 @@ public class MapletBoundaryCollection extends Model implements PropertyChangeLis
                     erosModel.getCellLocator(),
                     0.003);
 
-            boundaryMapper.SetInput(boundary);
+            boundaryMapper.SetInputData(boundary);
 
             actor.SetMapper(boundaryMapper);
             actor.GetProperty().SetColor(0.0, 0.392, 0.0);

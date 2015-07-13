@@ -27,6 +27,7 @@ import edu.jhuapl.near.util.IntensityRange;
 import edu.jhuapl.near.util.MathUtil;
 import edu.jhuapl.near.util.PolyDataUtil;
 import edu.jhuapl.near.util.Properties;
+import edu.jhuapl.near.util.VtkDataTypes;
 
 public class ColorImage extends Image implements PropertyChangeListener
 {
@@ -157,13 +158,12 @@ public class ColorImage extends Image implements PropertyChangeListener
         bluePixelData = ImageDataUtil.vtkImageDataToArray2D(blueImage.getRawImage(), bslice);
 
         colorImage = new vtkImageData();
-        colorImage.SetScalarTypeToUnsignedChar();
         imageWidth = redImage.getImageWidth();
         imageHeight = redImage.getImageHeight();
         colorImage.SetDimensions(imageWidth, imageHeight, 1);
         colorImage.SetSpacing(1.0, 1.0, 1.0);
         colorImage.SetOrigin(0.0, 0.0, 0.0);
-        colorImage.SetNumberOfScalarComponents(3);
+        colorImage.AllocateScalars(VtkDataTypes.VTK_UNSIGNED_CHAR, 3);
 
         shiftedFootprint = new vtkPolyData();
 
@@ -413,10 +413,10 @@ public class ColorImage extends Image implements PropertyChangeListener
             imageTexture.RepeatOff();
             imageTexture.EdgeClampOn();
 //            texture.SetInput(colorImage);
-            imageTexture.SetInput(displayedImage);
+            imageTexture.SetInputData(displayedImage);
 
             vtkPolyDataMapper footprintMapper = new vtkPolyDataMapper();
-            footprintMapper.SetInput(shiftedFootprint);
+            footprintMapper.SetInputData(shiftedFootprint);
             footprintMapper.Update();
 
             footprintActor = new vtkActor();
@@ -605,8 +605,8 @@ public class ColorImage extends Image implements PropertyChangeListener
         vtkImageData maskSourceOutput = maskSource.GetOutput();
 
         vtkImageMask maskFilter = new vtkImageMask();
-        maskFilter.SetImageInput(colorImage);
-        maskFilter.SetMaskInput(maskSourceOutput);
+        maskFilter.SetImageInputData(colorImage);
+        maskFilter.SetMaskInputData(maskSourceOutput);
         maskFilter.Update();
 
         if (displayedImage == null)

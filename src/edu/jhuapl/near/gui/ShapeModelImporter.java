@@ -162,7 +162,7 @@ public class ShapeModelImporter
 
 
         vtkPolyDataWriter writer = new vtkPolyDataWriter();
-        writer.SetInput(shapePoly);
+        writer.SetInputData(shapePoly);
         writer.SetFileName(newModelDir.getAbsolutePath() + File.separator + "model.vtk");
         writer.SetFileTypeToBinary();
         writer.Write();
@@ -173,7 +173,7 @@ public class ShapeModelImporter
         grid.generateGrid(shapePoly);
 
         writer = new vtkPolyDataWriter();
-        writer.SetInput(grid.getGridAsPolyData());
+        writer.SetInputData(grid.getGridAsPolyData());
         writer.SetFileName(newModelDir.getAbsolutePath() + File.separator + "grid.vtk");
         writer.SetFileTypeToBinary();
         writer.Write();

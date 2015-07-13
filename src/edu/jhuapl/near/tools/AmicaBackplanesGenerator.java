@@ -18,7 +18,7 @@ import javax.imageio.ImageIO;
 
 import nom.tam.fits.FitsException;
 
-import vtk.vtkGlobalJavaHash;
+import vtk.vtkObject;
 
 import edu.jhuapl.near.model.Image.ImageKey;
 import edu.jhuapl.near.model.Image.ImageSource;
@@ -246,7 +246,7 @@ public class AmicaBackplanesGenerator
 
             image.Delete();
             System.gc();
-            System.out.println("deleted " + vtkGlobalJavaHash.GC());
+            System.out.println("deleted " + vtkObject.JAVA_OBJECT_MANAGER.gc(true));
             System.out.println("\n\n");
         }
 
@@ -297,7 +297,7 @@ public class AmicaBackplanesGenerator
                 System.out.println("skipping this image since no intersecting cells");
                 image.Delete();
                 System.gc();
-                System.out.println("deleted " + vtkGlobalJavaHash.GC());
+                System.out.println("deleted " + vtkObject.JAVA_OBJECT_MANAGER.gc(true));
                 System.out.println(" ");
                 System.out.println(" ");
                 continue;
@@ -338,7 +338,7 @@ public class AmicaBackplanesGenerator
 
             image.Delete();
             System.gc();
-            System.out.println("deleted " + vtkGlobalJavaHash.GC());
+            System.out.println("deleted " + vtkObject.JAVA_OBJECT_MANAGER.gc(true));
             System.out.println("\n\n");
         }
 

@@ -37,7 +37,7 @@ public class EllipseModel extends AbstractEllipsePolygonModel
         activationPolyData.SetVerts(cells);
 
         activationMapper = new vtkPolyDataMapper();
-        activationMapper.SetInput(activationPolyData);
+        activationMapper.SetInputData(activationPolyData);
         activationMapper.Update();
 
         activationActor = new vtkActor();

@@ -21,6 +21,7 @@ import vtk.vtkImageTranslateExtent;
 import edu.jhuapl.near.model.PerspectiveImage;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.util.FileCache;
+import edu.jhuapl.near.util.VtkDataTypes;
 
 public class AmicaImage extends PerspectiveImage
 {
@@ -71,11 +72,10 @@ public class AmicaImage extends PerspectiveImage
             f.getStream().close();
 
             vtkImageData flatImage = new vtkImageData();
-            flatImage.SetScalarTypeToFloat();
             flatImage.SetDimensions(originalWidth, originalHeight, 1);
             flatImage.SetSpacing(1.0, 1.0, 1.0);
             flatImage.SetOrigin(0.0, 0.0, 0.0);
-            flatImage.SetNumberOfScalarComponents(1);
+            flatImage.AllocateScalars(VtkDataTypes.VTK_FLOAT, 1);
 
             for (int i=0; i<originalHeight; ++i)
                 for (int j=0; j<originalWidth; ++j)
@@ -85,8 +85,8 @@ public class AmicaImage extends PerspectiveImage
 
             // Finally construct the ratio image
             vtkImageMathematics divideFilter = new vtkImageMathematics();
-            divideFilter.SetInput1(rawImage);
-            divideFilter.SetInput2(flatImage);
+            divideFilter.SetInput1Data(rawImage);
+            divideFilter.SetInput2Data(flatImage);
             divideFilter.SetOperationToDivide();
             divideFilter.Update();
 
@@ -175,7 +175,7 @@ public class AmicaImage extends PerspectiveImage
         }
 
         vtkImageTranslateExtent translateExtent = new vtkImageTranslateExtent();
-        translateExtent.SetInput(rawImage);
+        translateExtent.SetInputData(rawImage);
         translateExtent.SetTranslation(leftMask, bottomMask, 0);
         translateExtent.Update();
 
@@ -208,7 +208,7 @@ public class AmicaImage extends PerspectiveImage
                 rawImage.SetSpacing(8.0, 8.0, 1.0);
 
             vtkImageReslice resample = new vtkImageReslice();
-            resample.SetInput(rawImage);
+            resample.SetInputData(rawImage);
             resample.InterpolateOff();
             resample.SetOutputExtent(0, 1023, 0, 1023, 0, 0);
             resample.SetOutputOrigin(0.0, 0.0, 0.0);

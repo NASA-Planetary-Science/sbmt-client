@@ -177,7 +177,7 @@ abstract public class Gravity {
                 globalShapeModelPolyData.GetPointData().GetNormals() == null) {
             // Add normal vectors if not present
             vtkPolyDataNormals normalsFilter = new vtkPolyDataNormals();
-            normalsFilter.SetInput(globalShapeModelPolyData);
+            normalsFilter.SetInputData(globalShapeModelPolyData);
             normalsFilter.SetComputePointNormals(1);
             // If cell normals are already present, then turn this on
             normalsFilter.SetComputeCellNormals(globalShapeModelPolyData.GetCellData().GetNormals() == null ? 0 : 1);

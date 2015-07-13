@@ -39,7 +39,7 @@ public class MSIImage extends PerspectiveImage
         int originalHeight = dims[1];
 
         vtkImageReslice reslice = new vtkImageReslice();
-        reslice.SetInput(rawImage);
+        reslice.SetInputData(rawImage);
         reslice.SetInterpolationModeToLinear();
         reslice.SetOutputSpacing(1.0, (double)originalHeight/(double)RESAMPLED_IMAGE_HEIGHT, 1.0);
         reslice.SetOutputOrigin(0.0, 0.0, 0.0);

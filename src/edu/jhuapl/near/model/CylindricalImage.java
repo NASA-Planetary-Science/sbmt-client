@@ -167,7 +167,7 @@ public class CylindricalImage extends Image
         boolean needToGenerateTextures0To180 = true;
         vtkClipPolyData clipPolyData1 = new vtkClipPolyData();
         clipPolyData1.SetClipFunction(planeZeroLon);
-        clipPolyData1.SetInput(smallBodyPolyData);
+        clipPolyData1.SetInputData(smallBodyPolyData);
         clipPolyData1.SetInsideOut(1);
         clipPolyData1.Update();
         vtkPolyData clipPolyData1Output = clipPolyData1.GetOutput();
@@ -183,7 +183,7 @@ public class CylindricalImage extends Image
 
             clipPolyData1 = new vtkClipPolyData();
             clipPolyData1.SetClipFunction(plane1);
-            clipPolyData1.SetInput(clipPolyData1Output);
+            clipPolyData1.SetInputData(clipPolyData1Output);
             clipPolyData1.SetInsideOut(1);
             clipPolyData1.Update();
             clipPolyData1Output = clipPolyData1.GetOutput();
@@ -203,7 +203,7 @@ public class CylindricalImage extends Image
             {
                 clipPolyData1 = new vtkClipPolyData();
                 clipPolyData1.SetClipFunction(plane1);
-                clipPolyData1.SetInput(clipPolyData1Hemi);
+                clipPolyData1.SetInputData(clipPolyData1Hemi);
                 clipPolyData1.Update();
                 vtkPolyData clipOutput = clipPolyData1.GetOutput();
 
@@ -213,8 +213,8 @@ public class CylindricalImage extends Image
 
                 vtkAppendPolyData appendFilter = new vtkAppendPolyData();
                 appendFilter.UserManagedInputsOff();
-                appendFilter.AddInput(clipPolyData1Output);
-                appendFilter.AddInput(clipOutput);
+                appendFilter.AddInputData(clipPolyData1Output);
+                appendFilter.AddInputData(clipOutput);
                 appendFilter.Update();
                 clipPolyData1Output = appendFilter.GetOutput();
             }
@@ -222,7 +222,7 @@ public class CylindricalImage extends Image
             {
                 clipPolyData1 = new vtkClipPolyData();
                 clipPolyData1.SetClipFunction(plane1);
-                clipPolyData1.SetInput(clipPolyData1Output);
+                clipPolyData1.SetInputData(clipPolyData1Output);
                 clipPolyData1.Update();
                 clipPolyData1Output = clipPolyData1.GetOutput();
             }
@@ -233,7 +233,7 @@ public class CylindricalImage extends Image
         boolean needToGenerateTextures180To0 = true;
         vtkClipPolyData clipPolyData2 = new vtkClipPolyData();
         clipPolyData2.SetClipFunction(planeZeroLon);
-        clipPolyData2.SetInput(smallBodyPolyData);
+        clipPolyData2.SetInputData(smallBodyPolyData);
         clipPolyData2.Update();
         vtkPolyData clipPolyData2Output = clipPolyData2.GetOutput();
         vtkPolyData clipPolyData2Hemi = clipPolyData2Output;
@@ -248,7 +248,7 @@ public class CylindricalImage extends Image
 
             clipPolyData2 = new vtkClipPolyData();
             clipPolyData2.SetClipFunction(plane2);
-            clipPolyData2.SetInput(clipPolyData2Output);
+            clipPolyData2.SetInputData(clipPolyData2Output);
             clipPolyData2.SetInsideOut(1);
             clipPolyData2.Update();
             clipPolyData2Output = clipPolyData2.GetOutput();
@@ -268,7 +268,7 @@ public class CylindricalImage extends Image
             {
                 clipPolyData2 = new vtkClipPolyData();
                 clipPolyData2.SetClipFunction(plane2);
-                clipPolyData2.SetInput(clipPolyData2Hemi);
+                clipPolyData2.SetInputData(clipPolyData2Hemi);
                 clipPolyData2.Update();
                 vtkPolyData clipOutput = clipPolyData2.GetOutput();
 
@@ -278,8 +278,8 @@ public class CylindricalImage extends Image
 
                 vtkAppendPolyData appendFilter = new vtkAppendPolyData();
                 appendFilter.UserManagedInputsOff();
-                appendFilter.AddInput(clipPolyData2Output);
-                appendFilter.AddInput(clipOutput);
+                appendFilter.AddInputData(clipPolyData2Output);
+                appendFilter.AddInputData(clipOutput);
                 appendFilter.Update();
                 clipPolyData2Output = appendFilter.GetOutput();
             }
@@ -287,7 +287,7 @@ public class CylindricalImage extends Image
             {
                 clipPolyData2 = new vtkClipPolyData();
                 clipPolyData2.SetClipFunction(plane2);
-                clipPolyData2.SetInput(clipPolyData2Output);
+                clipPolyData2.SetInputData(clipPolyData2Output);
                 clipPolyData2.Update();
                 clipPolyData2Output = clipPolyData2.GetOutput();
             }
@@ -310,7 +310,7 @@ public class CylindricalImage extends Image
                     isOnRightSide = true;
                 generateTextureCoordinates(clipPolyData1Output, isOnLeftSide, isOnRightSide);
             }
-            appendFilter.AddInput(clipPolyData1Output);
+            appendFilter.AddInputData(clipPolyData1Output);
         }
         if (doLongitudeIntervalsIntersect(180.0, 0.0, lllon, urlon))
         {
@@ -324,7 +324,7 @@ public class CylindricalImage extends Image
                     isOnRightSide = true;
                 generateTextureCoordinates(clipPolyData2Output, isOnLeftSide, isOnRightSide);
             }
-            appendFilter.AddInput(clipPolyData2Output);
+            appendFilter.AddInputData(clipPolyData2Output);
         }
         appendFilter.Update();
         smallBodyPolyData = appendFilter.GetOutput();
@@ -355,7 +355,7 @@ public class CylindricalImage extends Image
 
         vtkClipPolyData clipPolyData2 = new vtkClipPolyData();
         clipPolyData2.SetClipFunction(plane3);
-        clipPolyData2.SetInput(smallBodyPolyData);
+        clipPolyData2.SetInputData(smallBodyPolyData);
         vtkAlgorithmOutput clipPolyData2Output = clipPolyData2.GetOutputPort();
 
 
@@ -403,7 +403,7 @@ public class CylindricalImage extends Image
         // Do northern hemisphere first
         vtkClipPolyData clipPolyDataNorth = new vtkClipPolyData();
         clipPolyDataNorth.SetClipFunction(planeZeroLat);
-        clipPolyDataNorth.SetInput(smallBodyPolyData);
+        clipPolyDataNorth.SetInputData(smallBodyPolyData);
         vtkAlgorithmOutput clipNorthOutput = clipPolyDataNorth.GetOutputPort();
         if (lllat > 0.0)
         {
@@ -432,7 +432,7 @@ public class CylindricalImage extends Image
         // Now do southern hemisphere
         vtkClipPolyData clipPolyDataSouth = new vtkClipPolyData();
         clipPolyDataSouth.SetClipFunction(planeZeroLat);
-        clipPolyDataSouth.SetInput(smallBodyPolyData);
+        clipPolyDataSouth.SetInputData(smallBodyPolyData);
         clipPolyDataSouth.SetInsideOut(1);
         vtkAlgorithmOutput clipSouthOutput = clipPolyDataSouth.GetOutputPort();
         if (lllat < 0.0)
@@ -669,14 +669,14 @@ public class CylindricalImage extends Image
             smallBodyMapper = new vtkPolyDataMapper();
             smallBodyMapper.ScalarVisibilityOff();
             smallBodyMapper.SetScalarModeToDefault();
-            smallBodyMapper.SetInput(shiftedImagePolyData);
+            smallBodyMapper.SetInputData(shiftedImagePolyData);
             smallBodyMapper.Update();
 
             imageTexture = new vtkTexture();
             imageTexture.InterpolateOn();
             imageTexture.RepeatOff();
             imageTexture.EdgeClampOn();
-            imageTexture.SetInput(displayedImage);
+            imageTexture.SetInputData(displayedImage);
 
             smallBodyActor = new vtkActor();
             smallBodyActor.SetMapper(smallBodyMapper);
@@ -836,7 +836,7 @@ public class CylindricalImage extends Image
              */
 
             vtkImageMapToColors mapToColors = new vtkImageMapToColors();
-            mapToColors.SetInput(rawImage);
+            mapToColors.SetInputData(rawImage);
             mapToColors.SetOutputFormatToRGBA();
             mapToColors.SetLookupTable(lut);
             mapToColors.Update();

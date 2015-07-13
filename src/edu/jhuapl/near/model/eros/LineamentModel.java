@@ -54,7 +54,7 @@ public class LineamentModel extends Model
                 createPolyData();
 
                 vtkPolyDataMapper lineamentMapper = new vtkPolyDataMapper();
-                lineamentMapper.SetInput(lineaments);
+                lineamentMapper.SetInputData(lineaments);
                 //lineamentMapper.SetResolveCoincidentTopologyToPolygonOffset();
                 //lineamentMapper.SetResolveCoincidentTopologyPolygonOffsetParameters(-1000.0, -1000.0);
 

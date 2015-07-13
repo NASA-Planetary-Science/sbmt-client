@@ -86,7 +86,7 @@ public class VectorField extends Model implements PropertyChangeListener
         vtkGlyph3D glyph3D = new vtkGlyph3D();
         glyph3D.SetSourceConnection(arrowSource.GetOutputPort());
         glyph3D.SetVectorModeToUseVector();
-        glyph3D.SetInput(polydata);
+        glyph3D.SetInputData(polydata);
         glyph3D.SetScaleFactor(.01);
         glyph3D.Update();
 

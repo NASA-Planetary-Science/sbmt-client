@@ -193,7 +193,7 @@ public class PerspectiveImageBoundary extends Model implements PropertyChangeLis
                 3.0*smallBodyModel.getMinShiftAmount());
 
         boundary.Modified();
-        boundaryMapper.SetInput(boundary);
+        boundaryMapper.SetInputData(boundary);
 
         actor.SetMapper(boundaryMapper);
         actor.GetProperty().SetColor(1.0, 0.0, 0.0);

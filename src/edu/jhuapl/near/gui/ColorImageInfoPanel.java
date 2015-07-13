@@ -10,6 +10,7 @@
  */
 package edu.jhuapl.near.gui;
 
+import java.awt.Dimension;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
@@ -20,14 +21,16 @@ import java.util.LinkedHashMap;
 
 import javax.swing.table.DefaultTableModel;
 
-import vtk.vtkImageActor;
 import vtk.vtkImageData;
 import vtk.vtkImageReslice;
+import vtk.vtkImageSlice;
+import vtk.vtkImageSliceMapper;
 import vtk.vtkInteractorStyleImage;
 import vtk.vtkPropCollection;
 import vtk.vtkPropPicker;
 import vtk.vtkTransform;
 
+import edu.jhuapl.near.gui.joglrendering.vtksbmtJoglCanvasComponent;
 import edu.jhuapl.near.model.ColorImage;
 import edu.jhuapl.near.model.ColorImage.Chromatism;
 import edu.jhuapl.near.model.ColorImageCollection;
@@ -41,9 +44,9 @@ public class ColorImageInfoPanel extends ModelInfoWindow implements PropertyChan
     private ColorImage image;
     private ColorImageCollection imageCollection;
 
-    private vtkEnhancedRenderWindowPanel renWin;
+    private vtksbmtJoglCanvasComponent renWin;
     private PerspectiveImageBoundaryCollection imageBoundaryCollection;
-    private vtkImageActor actor;
+    private vtkImageSlice actor;
     private vtkImageReslice reslice;
     private vtkPropPicker imagePicker;
     private boolean initialized = false;
@@ -53,9 +56,15 @@ public class ColorImageInfoPanel extends ModelInfoWindow implements PropertyChan
         @Override
         public void mouseClicked(MouseEvent e)
         {
-            renWin.lock();
-            int pickSucceeded = imagePicker.Pick(e.getX(), renWin.getHeight()-e.getY()-1, 0.0, renWin.GetRenderer());
-            renWin.unlock();
+            renWin.getVTKLock().lock();
+            // Note that on some displays, such as a retina display, the height used by
+            // OpenGL is different than the height used by Java. Therefore we need
+            // scale the mouse coordinates to get the right position for OpenGL.
+            double openGlHeight = renWin.getComponent().getSurfaceHeight();
+            double javaHeight = renWin.getComponent().getHeight();
+            double scale = openGlHeight / javaHeight;
+            int pickSucceeded = imagePicker.Pick(scale*e.getX(), scale*(javaHeight-e.getY()-1), 0.0, renWin.getRenderer());
+            renWin.getVTKLock().unlock();
             if (pickSucceeded == 1)
             {
                 double[] p = imagePicker.GetPickPosition();
@@ -75,7 +84,8 @@ public class ColorImageInfoPanel extends ModelInfoWindow implements PropertyChan
         this.image = image;
         this.imageCollection = imageCollection;
 
-        renWin = new vtkEnhancedRenderWindowPanel();
+        renWin = new vtksbmtJoglCanvasComponent();
+        renWin.getComponent().setPreferredSize(new Dimension(550, 550));
 
         vtkInteractorStyleImage style = new vtkInteractorStyleImage();
         renWin.setInteractorStyle(style);
@@ -112,7 +122,7 @@ public class ColorImageInfoPanel extends ModelInfoWindow implements PropertyChan
         imageTransform.Translate(-center[1], -center[0], 0.0);
 
         reslice = new vtkImageReslice();
-        reslice.SetInput(displayedImage);
+        reslice.SetInputData(displayedImage);
         reslice.SetResliceTransform(imageTransform);
         reslice.SetInterpolationModeToNearestNeighbor();
         reslice.SetOutputSpacing(1.0, 1.0, 1.0);
@@ -120,11 +130,15 @@ public class ColorImageInfoPanel extends ModelInfoWindow implements PropertyChan
         reslice.SetOutputExtent(0, dims[1]-1, 0, dims[0]-1, 0, 0);
         reslice.Update();
 
-        actor = new vtkImageActor();
-        actor.SetInput(reslice.GetOutput());
-        actor.InterpolateOn();
+        vtkImageSliceMapper imageSliceMapper = new vtkImageSliceMapper();
+        imageSliceMapper.SetInputConnection(reslice.GetOutputPort());
+        imageSliceMapper.Update();
 
-        renWin.GetRenderer().AddActor(actor);
+        actor = new vtkImageSlice();
+        actor.SetMapper(imageSliceMapper);
+        actor.GetProperty().SetInterpolationTypeToLinear();
+
+        renWin.getRenderer().AddActor(actor);
 
         renWin.setSize(550, 550);
 
@@ -134,7 +148,7 @@ public class ColorImageInfoPanel extends ModelInfoWindow implements PropertyChan
         vtkPropCollection smallBodyPickList = imagePicker.GetPickList();
         smallBodyPickList.RemoveAllItems();
         imagePicker.AddPickList(actor);
-        renWin.addMouseListener(new ColorImageInfoPanel.MouseListener());
+        renWin.getComponent().addMouseListener(new ColorImageInfoPanel.MouseListener());
 
         // Trying to add a vtkEnhancedRenderWindowPanel in the netbeans gui
         // does not seem to work so instead add it here.
@@ -145,7 +159,7 @@ public class ColorImageInfoPanel extends ModelInfoWindow implements PropertyChan
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
-        getContentPane().add(renWin, gridBagConstraints);
+        getContentPane().add(renWin.getComponent(), gridBagConstraints);
 
         // Add a text box for showing information about the image
         String[] columnNames = {"Property", "Value"};
@@ -194,6 +208,15 @@ public class ColorImageInfoPanel extends ModelInfoWindow implements PropertyChan
         setVisible(true);
 
         initialized = true;
+
+        javax.swing.SwingUtilities.invokeLater(new Runnable()
+        {
+            public void run()
+            {
+                renWin.resetCamera();
+                renWin.Render();
+            }
+        });
     }
 
 
@@ -272,7 +295,7 @@ public class ColorImageInfoPanel extends ModelInfoWindow implements PropertyChan
 
     public void propertyChange(PropertyChangeEvent arg0)
     {
-        if (renWin.GetRenderWindow().GetNeverRendered() > 0)
+        if (renWin.getRenderWindow().GetNeverRendered() > 0)
             return;
         renWin.Render();
     }
@@ -663,7 +686,10 @@ public class ColorImageInfoPanel extends ModelInfoWindow implements PropertyChan
 
     private void interpolateCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_interpolateCheckBoxActionPerformed
         image.setInterpolate(interpolateCheckBox.isSelected());
-        actor.SetInterpolate(interpolateCheckBox.isSelected() ? 1 : 0);
+        if (interpolateCheckBox.isSelected())
+            actor.GetProperty().SetInterpolationTypeToLinear();
+        else
+            actor.GetProperty().SetInterpolationTypeToNearest();
         renWin.Render();
     }//GEN-LAST:event_interpolateCheckBoxActionPerformed
 

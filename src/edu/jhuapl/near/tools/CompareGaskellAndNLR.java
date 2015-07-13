@@ -17,7 +17,7 @@ import nom.tam.fits.FitsException;
 
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
-import vtk.vtkGlobalJavaHash;
+import vtk.vtkObject;
 import vtk.vtkPolyData;
 
 import edu.jhuapl.near.model.Image.ImageKey;
@@ -470,7 +470,7 @@ public class CompareGaskellAndNLR
             {
                 smallBodyModel.delete();
                 System.gc();
-                vtkGlobalJavaHash.GC();
+                vtkObject.JAVA_OBJECT_MANAGER.gc(true);
                 System.out.println("Skipping -- no landmarks");
                 continue;
             }
@@ -538,7 +538,7 @@ public class CompareGaskellAndNLR
 
             smallBodyModel.delete();
             System.gc();
-            vtkGlobalJavaHash.GC();
+            vtkObject.JAVA_OBJECT_MANAGER.gc(true);
         }
 
         out.close();

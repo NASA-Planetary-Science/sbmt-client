@@ -156,7 +156,7 @@ public class PolyDataUtil
         // for each plane of the frustum rather than trying to use a single vtkClipPolyData
         // with an vtkImplicitBoolean or vtkPlanes that combines all the planes together.
         vtkClipPolyData clipPolyData1 = new vtkClipPolyData();
-        clipPolyData1.SetInput(polyData);
+        clipPolyData1.SetInputData(polyData);
         clipPolyData1.SetClipFunction(plane1);
         clipPolyData1.SetInsideOut(1);
         vtkAlgorithmOutput clipPolyData1OutputPort = clipPolyData1.GetOutputPort();
@@ -230,7 +230,7 @@ public class PolyDataUtil
         tmpPolyData.GetCellData().SetNormals(null);
 
         vtkCleanPolyData cleanPoly = new vtkCleanPolyData();
-        cleanPoly.SetInput(tmpPolyData);
+        cleanPoly.SetInputData(tmpPolyData);
         cleanPoly.Update();
         vtkPolyData cleanPolyOutput = cleanPoly.GetOutput();
 
@@ -324,7 +324,7 @@ public class PolyDataUtil
         tmpPolyData.RemoveDeletedCells();
 
         //cleanPoly = new vtkCleanPolyData();
-        cleanPoly.SetInput(tmpPolyData);
+        cleanPoly.SetInputData(tmpPolyData);
         cleanPoly.Update();
         cleanPolyOutput = cleanPoly.GetOutput();
 
@@ -626,7 +626,7 @@ public class PolyDataUtil
             extract.SetImplicitFunction(sphere);
             extract.SetExtractInside(1);
             extract.SetExtractBoundaryCells(1);
-            extract.SetInput(polyData);
+            extract.SetInputData(polyData);
             extract.Update();
             polyData = extract.GetOutput();
             d.add(polyData);
@@ -722,7 +722,7 @@ public class PolyDataUtil
             clipPolyData = new vtkClipPolyData();
             d.add(clipPolyData);
             if (i==0)
-                clipPolyData.SetInput(polyData);
+                clipPolyData.SetInputData(polyData);
             else
                 clipPolyData.SetInputConnection(nextInput);
             clipPolyData.SetClipFunction(plane);
@@ -818,7 +818,7 @@ public class PolyDataUtil
         extract1.SetImplicitFunction(cutPlane);
         extract1.SetExtractInside(1);
         extract1.SetExtractBoundaryCells(1);
-        extract1.SetInput(polyData);
+        extract1.SetInputData(polyData);
         extract1.Update();
 
 
@@ -1191,7 +1191,7 @@ public class PolyDataUtil
             clipPolyData = new vtkClipPolyData();
             d.add(clipPolyData);
             if (i==0)
-                clipPolyData.SetInput(polyData);
+                clipPolyData.SetInputData(polyData);
             else
                 clipPolyData.SetInputConnection(nextInput);
             clipPolyData.SetClipFunction(plane);
@@ -1390,7 +1390,7 @@ public class PolyDataUtil
         {
             vtkPolyData poly = triangles.get(i);
             if (poly != null)
-                appendFilter.SetInputByNumber(i, poly);
+                appendFilter.SetInputDataByNumber(i, poly);
         }
         appendFilter.Update();
         vtkAlgorithmOutput appendFilterOutput = appendFilter.GetOutputPort();
@@ -1463,7 +1463,7 @@ public class PolyDataUtil
             // Remove normals (which we don't need) as this causes an error
             // in the Append filter.
             poly.GetPointData().SetNormals(null);
-            appendFilter.AddInput(poly);
+            appendFilter.AddInputData(poly);
         }
         appendFilter.Update();
         vtkAlgorithmOutput appendFilterOutput = appendFilter.GetOutputPort();
@@ -1579,7 +1579,7 @@ public class PolyDataUtil
             clipPolyData = clipFilters.get(i);
             //            clipPolyData = new vtkClipPolyData();
             if (i == 0)
-                clipPolyData.SetInput(polyData);
+                clipPolyData.SetInputData(polyData);
             else
                 clipPolyData.SetInputConnection(nextInput);
             clipPolyData.SetClipFunction(plane);
@@ -1640,7 +1640,7 @@ public class PolyDataUtil
     public static void shiftPolyDataInNormalDirection(vtkPolyData polyData, double shiftAmount)
     {
         vtkPolyDataNormals normalsFilter = new vtkPolyDataNormals();
-        normalsFilter.SetInput(polyData);
+        normalsFilter.SetInputData(polyData);
         normalsFilter.SetComputeCellNormals(0);
         normalsFilter.SetComputePointNormals(1);
         normalsFilter.SplittingOff();
@@ -2423,7 +2423,7 @@ public class PolyDataUtil
     {
         // Compute the bounding edges of this surface
         vtkFeatureEdges edgeExtracter = new vtkFeatureEdges();
-        edgeExtracter.SetInput(polydata);
+        edgeExtracter.SetInputData(polydata);
         edgeExtracter.BoundaryEdgesOn();
         edgeExtracter.FeatureEdgesOff();
         edgeExtracter.NonManifoldEdgesOff();
@@ -3151,7 +3151,7 @@ public class PolyDataUtil
         {
             // Add normal vectors
             vtkPolyDataNormals normalsFilter = new vtkPolyDataNormals();
-            normalsFilter.SetInput(polydata);
+            normalsFilter.SetInputData(polydata);
             normalsFilter.SetComputeCellNormals(0);
             normalsFilter.SetComputePointNormals(1);
             normalsFilter.SplittingOff();
@@ -3247,7 +3247,7 @@ public class PolyDataUtil
 
         // regenerate point normals
         vtkPolyDataNormals normalsFilter = new vtkPolyDataNormals();
-        normalsFilter.SetInput(newpolydata);
+        normalsFilter.SetInputData(newpolydata);
         normalsFilter.SetComputeCellNormals(0);
         normalsFilter.SetComputePointNormals(1);
         normalsFilter.AutoOrientNormalsOn();
@@ -3270,7 +3270,7 @@ public class PolyDataUtil
         newpolydata.GetCellData().Reset();
 
         vtkSTLWriter writer = new vtkSTLWriter();
-        writer.SetInput(newpolydata);
+        writer.SetInputData(newpolydata);
         writer.SetFileName(filename);
         writer.SetFileTypeToBinary();
         writer.Write();
@@ -3284,7 +3284,7 @@ public class PolyDataUtil
         cleanFilter.ConvertLinesToPointsOff();
         cleanFilter.ConvertPolysToLinesOff();
         cleanFilter.ConvertStripsToPolysOff();
-        cleanFilter.SetInput(polydata);
+        cleanFilter.SetInputData(polydata);
         cleanFilter.Update();
         vtkPolyData cleanOutput = cleanFilter.GetOutput();
 
@@ -3294,7 +3294,7 @@ public class PolyDataUtil
     static public void decimatePolyData(vtkPolyData polydata, double targetReduction)
     {
         vtkDecimatePro dec = new vtkDecimatePro();
-        dec.SetInput(polydata);
+        dec.SetInputData(polydata);
         dec.SetTargetReduction(targetReduction);
         dec.PreserveTopologyOn();
         dec.SplittingOff();

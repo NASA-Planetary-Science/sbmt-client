@@ -318,7 +318,7 @@ public class NISSpectrum extends Model implements PropertyChangeListener
             generateFootprint();
 
             vtkPolyDataMapper footprintMapper = new vtkPolyDataMapper();
-            footprintMapper.SetInput(shiftedFootprint);
+            footprintMapper.SetInputData(shiftedFootprint);
             //footprintMapper.SetResolveCoincidentTopologyToPolygonOffset();
             //footprintMapper.SetResolveCoincidentTopologyPolygonOffsetParameters(-.002, -2.0);
             footprintMapper.Update();
@@ -400,7 +400,7 @@ public class NISSpectrum extends Model implements PropertyChangeListener
 
 
             vtkPolyDataMapper frusMapper = new vtkPolyDataMapper();
-            frusMapper.SetInput(frus);
+            frusMapper.SetInputData(frus);
 
             frustumActor = new vtkActor();
             frustumActor.SetMapper(frusMapper);

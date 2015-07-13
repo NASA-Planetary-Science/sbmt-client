@@ -225,7 +225,7 @@ public class LidarDataPerUnit extends Model
         originalPointsSc.DeepCopy(pointsSc);
 
         geometryFilter = new vtkGeometryFilter();
-        geometryFilter.SetInput(polydata);
+        geometryFilter.SetInputData(polydata);
         geometryFilter.PointClippingOn();
         geometryFilter.CellClippingOff();
         geometryFilter.ExtentClippingOff();
@@ -234,7 +234,7 @@ public class LidarDataPerUnit extends Model
         geometryFilter.SetPointMaximum(count);
 
         geometryFilterSc = new vtkGeometryFilter();
-        geometryFilterSc.SetInput(polydataSc);
+        geometryFilterSc.SetInputData(polydataSc);
         geometryFilterSc.PointClippingOn();
         geometryFilterSc.CellClippingOff();
         geometryFilterSc.ExtentClippingOff();

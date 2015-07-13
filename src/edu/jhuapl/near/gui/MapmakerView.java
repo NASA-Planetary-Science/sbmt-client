@@ -34,7 +34,7 @@ import nom.tam.fits.FitsException;
 
 import org.jfree.chart.plot.DefaultDrawingSupplier;
 
-import vtk.vtkGlobalJavaHash;
+import vtk.vtkObject;
 
 import edu.jhuapl.near.model.CircleModel;
 import edu.jhuapl.near.model.CircleSelectionModel;
@@ -153,7 +153,7 @@ public class MapmakerView extends JFrame
             {
                 MapmakerView.this.mapletBoundaries.removeBoundary(dem);
                 System.gc();
-                vtkGlobalJavaHash.GC();
+                vtkObject.JAVA_OBJECT_MANAGER.gc(true);
             }
         });
 

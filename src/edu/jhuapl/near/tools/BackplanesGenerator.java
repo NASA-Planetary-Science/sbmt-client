@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import nom.tam.fits.FitsException;
 
 import vtk.vtkDebugLeaks;
-import vtk.vtkGlobalJavaHash;
+import vtk.vtkObject;
 
 import edu.jhuapl.near.model.Image.ImageKey;
 import edu.jhuapl.near.model.Image.ImageSource;
@@ -88,7 +88,7 @@ public class BackplanesGenerator
                 System.out.println("skipping this image since no intersecting cells");
                 image.Delete();
                 System.gc();
-                System.out.println("deleted " + vtkGlobalJavaHash.GC());
+                System.out.println("deleted " + vtkObject.JAVA_OBJECT_MANAGER.gc(true));
                 System.out.println(" ");
                 System.out.println(" ");
                 continue;
@@ -134,7 +134,7 @@ public class BackplanesGenerator
 
             image.Delete();
             System.gc();
-            System.out.println("deleted " + vtkGlobalJavaHash.GC());
+            System.out.println("deleted " + vtkObject.JAVA_OBJECT_MANAGER.gc(true));
             debugLeaks.PrintCurrentLeaks();
             System.out.println("\n\n");
         }

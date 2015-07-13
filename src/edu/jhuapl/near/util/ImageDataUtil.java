@@ -127,7 +127,7 @@ public class ImageDataUtil
     {
         int[] dims = image.GetDimensions();
         vtkImageFlip flip = new vtkImageFlip();
-        flip.SetInput(image);
+        flip.SetInputData(image);
         flip.SetInterpolationModeToNearestNeighbor();
         flip.SetOutputSpacing(1.0, 1.0, 1.0);
         flip.SetOutputOrigin(0.0, 0.0, 0.0);
@@ -149,7 +149,7 @@ public class ImageDataUtil
     {
         int[] dims = image.GetDimensions();
         vtkImageFlip flip = new vtkImageFlip();
-        flip.SetInput(image);
+        flip.SetInputData(image);
         flip.SetInterpolationModeToNearestNeighbor();
         flip.SetOutputSpacing(1.0, 1.0, 1.0);
         flip.SetOutputOrigin(0.0, 0.0, 0.0);
@@ -179,7 +179,7 @@ public class ImageDataUtil
         imageTransform.Translate(center[1], center[0], 0.0);
 
         vtkImageReslice algo = new vtkImageReslice();
-        algo.SetInput(image);
+        algo.SetInputData(image);
         algo.SetInformationInput(image);
         algo.SetResliceTransform(imageTransform);
         algo.SetInterpolationModeToNearestNeighbor();

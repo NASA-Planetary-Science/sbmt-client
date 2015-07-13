@@ -16,12 +16,12 @@ import vtk.vtkCamera;
 import vtk.vtkCellPicker;
 import vtk.vtkProp;
 import vtk.vtkPropCollection;
-import vtk.vtkRenderWindowPanel;
 import vtk.vtkRenderer;
 
 import edu.jhuapl.near.gui.Renderer;
 import edu.jhuapl.near.gui.Renderer.AxisType;
 import edu.jhuapl.near.gui.StatusBar;
+import edu.jhuapl.near.gui.joglrendering.vtksbmtJoglCanvasComponent;
 import edu.jhuapl.near.model.Image;
 import edu.jhuapl.near.model.ImageCollection;
 import edu.jhuapl.near.model.Model;
@@ -39,7 +39,7 @@ import edu.jhuapl.near.util.Properties;
 public class DefaultPicker extends Picker
 {
     private Renderer renderer;
-    private vtkRenderWindowPanel renWin;
+    private vtksbmtJoglCanvasComponent renWin;
     private StatusBar statusBar;
     private ModelManager modelManager;
     private PopupManager popupManager;
@@ -95,8 +95,8 @@ public class DefaultPicker extends Picker
         // listener on the renderer panel as well to listen explicitly to resize events.
         // Note also that this functionality is in this class since picking is required
         // to compute the value of the scale bar.
-        renWin.GetRenderWindow().AddObserver("EndEvent", this, "updateScaleBarValue");
-        renWin.addComponentListener(new ComponentAdapter()
+        renWin.getRenderWindow().AddObserver("EndEvent", this, "updateScaleBarValue");
+        renWin.getComponent().addComponentListener(new ComponentAdapter()
         {
             @Override
             public void componentResized(ComponentEvent e)
@@ -114,7 +114,7 @@ public class DefaultPicker extends Picker
 
     public void mousePressed(MouseEvent e)
     {
-        if (renWin.GetRenderWindow().GetNeverRendered() > 0)
+        if (renWin.getRenderWindow().GetNeverRendered() > 0)
             return;
 
         // First try picking on the non-small-body picker. If that fails try the small body picker.
@@ -214,7 +214,7 @@ public class DefaultPicker extends Picker
 
     public void mouseMoved(MouseEvent e)
     {
-        if (renWin.GetRenderWindow().GetNeverRendered() > 0)
+        if (renWin.getRenderWindow().GetNeverRendered() > 0)
             return;
 
         showPositionInfoInStatusBar(e);
@@ -230,7 +230,7 @@ public class DefaultPicker extends Picker
         if (suppressPopups)
             return;
 
-        if (renWin.GetRenderWindow().GetNeverRendered() > 0)
+        if (renWin.getRenderWindow().GetNeverRendered() > 0)
             return;
 
         int pickSucceeded = doPick(e, mousePressNonSmallBodyCellPicker, renWin);
@@ -267,10 +267,10 @@ public class DefaultPicker extends Picker
 
     private void showPositionInfoInStatusBar(MouseEvent e)
     {
-        if (renWin.GetRenderWindow().GetNeverRendered() > 0)
+        if (renWin.getRenderWindow().GetNeverRendered() > 0)
             return;
 
-        vtkCamera activeCamera = renWin.GetRenderer().GetActiveCamera();
+        vtkCamera activeCamera = renWin.getRenderer().GetActiveCamera();
         double[] cameraPos = activeCamera.GetPosition();
         double distance = Math.sqrt(
                 cameraPos[0]*cameraPos[0] +
@@ -341,10 +341,10 @@ public class DefaultPicker extends Picker
     {
 //        System.out.println("Setting position on image" + pi.getImageName());
 
-        if (renWin.GetRenderWindow().GetNeverRendered() > 0)
+        if (renWin.getRenderWindow().GetNeverRendered() > 0)
             return;
 
-        vtkCamera activeCamera = renWin.GetRenderer().GetActiveCamera();
+        vtkCamera activeCamera = renWin.getRenderer().GetActiveCamera();
         double[] cameraPos = activeCamera.GetPosition();
 
         int pickSucceeded = doPick(e, smallBodyCellPicker, renWin);
@@ -367,8 +367,8 @@ public class DefaultPicker extends Picker
     {
         // Do a pick at each of the 4 corners of the renderer
         long currentTime = System.currentTimeMillis();
-        int width = renWin.getWidth();
-        int height = renWin.getHeight();
+        int width = renWin.getComponent().getWidth();
+        int height = renWin.getComponent().getHeight();
 
         int[][] corners = { {0, 0}, {width-1, 0}, {width-1, height-1}, {0, height-1} };
         double[][] points = new double[4][3];
@@ -411,21 +411,21 @@ public class DefaultPicker extends Picker
     public void updateScaleBarPosition()
     {
         SmallBodyModel smallBodyModel = modelManager.getSmallBodyModel();
-        smallBodyModel.updateScaleBarPosition(renWin.getWidth(), renWin.getHeight());
+        smallBodyModel.updateScaleBarPosition(renWin.getComponent().getWidth(), renWin.getComponent().getHeight());
     }
 
     public void keyPressed(KeyEvent e)
     {
-        vtkRenderer ren = renWin.GetRenderer();
+        vtkRenderer ren = renWin.getRenderer();
         if (ren.VisibleActorCount() == 0) return;
 
         int keyCode = e.getKeyCode();
 
         // Only repond to c, x, y, or z press if in the default interactor (e.g.
         // not when drawing structures)
-        if (keyCode == KeyEvent.VK_C && renWin.getIren().GetInteractorStyle() != null)
+        if (keyCode == KeyEvent.VK_C && renWin.getRenderWindowInteractor().GetInteractorStyle() != null)
         {
-            Point pt = renWin.getMousePosition();
+            Point pt = renWin.getComponent().getMousePosition();
             if (pt != null)
             {
                 // The call to doPick requires a MouseEvent, so create one here
@@ -439,10 +439,10 @@ public class DefaultPicker extends Picker
                 {
                     double[] pos = allPropsCellPicker.GetPickPosition();
 
-                    renWin.lock();
-                    vtkCamera activeCamera = renWin.GetRenderer().GetActiveCamera();
+                    renWin.getVTKLock().lock();
+                    vtkCamera activeCamera = renWin.getRenderer().GetActiveCamera();
                     activeCamera.SetFocalPoint(pos);
-                    renWin.unlock();
+                    renWin.getVTKLock().unlock();
 
                     renWin.resetCameraClippingRange();
                     renWin.Render();
@@ -452,7 +452,7 @@ public class DefaultPicker extends Picker
         else if ((keyCode == KeyEvent.VK_X ||
                   keyCode == KeyEvent.VK_Y ||
                   keyCode == KeyEvent.VK_Z) &&
-                 renWin.getIren().GetInteractorStyle() != null)
+                 renWin.getRenderWindowInteractor().GetInteractorStyle() != null)
         {
             char keyChar = e.getKeyChar();
 
@@ -470,11 +470,11 @@ public class DefaultPicker extends Picker
                 renderer.setCameraOrientationInDirectionOfAxis(AxisType.POSITIVE_Z, false);
         }
         else if (keyCode == KeyEvent.VK_N &&
-                 renWin.getIren().GetInteractorStyle() != null)
+                 renWin.getRenderWindowInteractor().GetInteractorStyle() != null)
       {
             // The following spins the view along the boresight of the current
             // camera so that the Z axis of the body is up.
-            vtkCamera activeCamera = renWin.GetRenderer().GetActiveCamera();
+            vtkCamera activeCamera = renWin.getRenderer().GetActiveCamera();
             double[] position = activeCamera.GetPosition();
             double[] focalPoint = activeCamera.GetFocalPoint();
             double viewAngle = renderer.getCameraViewAngle();

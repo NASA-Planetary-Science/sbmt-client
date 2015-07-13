@@ -147,10 +147,10 @@ public class LidarSearchDataCollection extends Model
 
         pointsMapper = new vtkPolyDataMapper();
         pointsMapper.SetScalarModeToUseCellData();
-        pointsMapper.SetInput(polydata);
+        pointsMapper.SetInputData(polydata);
 
         selectedPointMapper = new vtkPolyDataMapper();
-        selectedPointMapper.SetInput(selectedPointPolydata);
+        selectedPointMapper.SetInputData(selectedPointPolydata);
 
         actor = new vtkActor();
         actor.SetMapper(pointsMapper);

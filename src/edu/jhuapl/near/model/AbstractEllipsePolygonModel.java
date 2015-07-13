@@ -306,10 +306,10 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
             {
                 vtkPolyData poly = polygons.get(i).boundaryPolyData;
                 if (poly != null)
-                    boundaryAppendFilter.SetInputByNumber(i, poly);
+                    boundaryAppendFilter.SetInputDataByNumber(i, poly);
                 poly = polygons.get(i).interiorPolyData;
                 if (poly != null)
-                    interiorAppendFilter.SetInputByNumber(i, poly);
+                    interiorAppendFilter.SetInputDataByNumber(i, poly);
             }
 
             boundaryAppendFilter.Update();
@@ -362,9 +362,9 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
         }
 
 
-        boundaryMapper.SetInput(boundaryPolyData);
+        boundaryMapper.SetInputData(boundaryPolyData);
         boundaryMapper.Update();
-        interiorMapper.SetInput(interiorPolyData);
+        interiorMapper.SetInputData(interiorPolyData);
         interiorMapper.Update();
 
         boundaryActor.SetMapper(boundaryMapper);

@@ -18,8 +18,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
 import vtk.vtkCellPicker;
-import vtk.vtkRenderWindowPanel;
 
+import edu.jhuapl.near.gui.joglrendering.vtksbmtJoglCanvasComponent;
 import edu.jhuapl.near.util.Configuration;
 
 /**
@@ -154,59 +154,12 @@ public abstract class Picker implements
         return Cursor.DEFAULT_CURSOR;
     }
 
-/*
-// Old version:
-    protected int doPick(MouseEvent e, vtkCellPicker picker, vtkRenderWindowPanel renWin)
-    {
-        if (pickingEnabled == false)
-            return 0;
-
-        // Don't do a pick if the event is more than a third of a second old
-        final long currentTime = System.currentTimeMillis();
-        final long when = e.getWhen();
-
-        //System.err.println("elapsed time " + (currentTime - when));
-        if (currentTime - when > 333)
-            return 0;
-
-        // When picking, choosing the right tolerance is not simple. If it's too small, then
-        // the pick will only work well if we are zoomed in very close to the object. If it's
-        // too large, the pick will only work well when we are zoomed out a lot. To deal
-        // with this situation, do a series of picks starting out with a low tolerance
-        // and increase the tolerance after each new pick. Stop as soon as the pick succeeds
-        // or we reach the maximum tolerance.
-
-        int pickSucceeded = 0;
-        double tolerance = 0.0002;
-        final double originalTolerance = picker.GetTolerance();
-        final double maxTolerance = 0.004;
-        final double incr = 0.0002;
-        renWin.lock();
-        picker.SetTolerance(tolerance);
-        while (tolerance <= maxTolerance)
-        {
-            picker.SetTolerance(tolerance);
-
-            pickSucceeded = picker.Pick(e.getX(), renWin.getHeight()-e.getY()-1, 0.0, renWin.GetRenderer());
-
-            if (pickSucceeded == 1)
-                break;
-
-            tolerance += incr;
-        }
-        picker.SetTolerance(originalTolerance);
-        renWin.unlock();
-
-        return pickSucceeded;
-    }
-*/
-
-    protected int doPick(MouseEvent e, vtkCellPicker picker, vtkRenderWindowPanel renWin)
+    protected int doPick(MouseEvent e, vtkCellPicker picker, vtksbmtJoglCanvasComponent renWin)
     {
         return doPick(e.getWhen(), e.getX(), e.getY(), picker, renWin);
     }
 
-    protected int doPick(final long when, int x, int y, vtkCellPicker picker, vtkRenderWindowPanel renWin)
+    protected int doPick(final long when, int x, int y, vtkCellPicker picker, vtksbmtJoglCanvasComponent renWin)
     {
         if (pickingEnabled == false)
             return 0;
@@ -218,13 +171,19 @@ public abstract class Picker implements
         if (currentTime - when > 333)
             return 0;
 
-        renWin.lock();
+        renWin.getVTKLock().lock();
 
         picker.SetTolerance(pickTolerance);
 
-        int pickSucceeded = picker.Pick(x, renWin.getHeight()-y-1, 0.0, renWin.GetRenderer());
+        // Note that on some displays, such as a retina display, the height used by
+        // OpenGL is different than the height used by Java. Therefore we need
+        // scale the mouse coordinates to get the right position for OpenGL.
+        double openGlHeight = renWin.getComponent().getSurfaceHeight();
+        double javaHeight = renWin.getComponent().getHeight();
+        double scale = openGlHeight / javaHeight;
+        int pickSucceeded = picker.Pick(scale * x, scale * (javaHeight-y-1), 0.0, renWin.getRenderer());
 
-        renWin.unlock();
+        renWin.getVTKLock().unlock();
 
         return pickSucceeded;
     }

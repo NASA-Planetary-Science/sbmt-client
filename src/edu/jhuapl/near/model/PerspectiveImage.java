@@ -62,6 +62,7 @@ import edu.jhuapl.near.util.LatLon;
 import edu.jhuapl.near.util.MathUtil;
 import edu.jhuapl.near.util.PolyDataUtil;
 import edu.jhuapl.near.util.Properties;
+import edu.jhuapl.near.util.VtkDataTypes;
 
 /**
  * This class represents an absract image of a spacecraft imager instrument.
@@ -526,7 +527,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
 
         vtkPolyDataMapper frusMapper = new vtkPolyDataMapper();
-        frusMapper.SetInput(frus);
+        frusMapper.SetInputData(frus);
 
         frustumActor.SetMapper(frusMapper);
     }
@@ -1058,15 +1059,13 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     protected vtkImageData createRawImage(int height, int width, int depth, boolean transpose, float[][] array2D, float[][][] array3D)
     {
         vtkImageData image = new vtkImageData();
-        image.SetScalarTypeToFloat();
         if (transpose)
             image.SetDimensions(width, height, depth);
         else
             image.SetDimensions(height, width, depth);
         image.SetSpacing(1.0, 1.0, 1.0);
         image.SetOrigin(0.0, 0.0, 0.0);
-        image.SetNumberOfScalarComponents(1);
-        image.AllocateScalars();
+        image.AllocateScalars(VtkDataTypes.VTK_FLOAT, 1);
 
         maxValue = new float[depth];
         minValue = new float[depth];
@@ -1461,10 +1460,10 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
             imageTexture.InterpolateOn();
             imageTexture.RepeatOff();
             imageTexture.EdgeClampOn();
-            imageTexture.SetInput(displayedImage);
+            imageTexture.SetInputData(displayedImage);
 
             vtkPolyDataMapper footprintMapper = new vtkPolyDataMapper();
-            footprintMapper.SetInput(shiftedFootprint[0]);
+            footprintMapper.SetInputData(shiftedFootprint[0]);
             footprintMapper.Update();
 
             footprintActor = new vtkActor();
@@ -1589,7 +1588,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
             if (imageDepth > 1)
             {
                 vtkImageReslice slicer = new vtkImageReslice();
-                slicer.SetInput(rawImage);
+                slicer.SetInputData(rawImage);
                 slicer.SetOutputDimensionality(2);
                 slicer.SetInterpolationModeToNearestNeighbor();
                 slicer.SetOutputSpacing(1.0, 1.0, 1.0);
@@ -1605,7 +1604,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
             }
 
             vtkImageMapToColors mapToColors = new vtkImageMapToColors();
-            mapToColors.SetInput(image2D);
+            mapToColors.SetInputData(image2D);
             mapToColors.SetOutputFormatToRGBA();
             mapToColors.SetLookupTable(lut);
             mapToColors.Update();
@@ -1614,8 +1613,8 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
             vtkImageData maskSourceOutput = maskSource.GetOutput();
 
             vtkImageMask maskFilter = new vtkImageMask();
-            maskFilter.SetImageInput(mapToColorsOutput);
-            maskFilter.SetMaskInput(maskSourceOutput);
+            maskFilter.SetImageInputData(mapToColorsOutput);
+            maskFilter.SetMaskInputData(maskSourceOutput);
             maskFilter.Update();
 
             if (displayedImage == null)
@@ -2422,7 +2421,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
             return null;
 
         vtkFeatureEdges edgeExtracter = new vtkFeatureEdges();
-        edgeExtracter.SetInput(footprint[currentSlice]);
+        edgeExtracter.SetInputData(footprint[currentSlice]);
         edgeExtracter.BoundaryEdgesOn();
         edgeExtracter.FeatureEdgesOff();
         edgeExtracter.NonManifoldEdgesOff();
@@ -2485,7 +2484,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     {
         if (normalsGenerated == false)
         {
-            normalsFilter.SetInput(footprint[currentSlice]);
+            normalsFilter.SetInputData(footprint[currentSlice]);
             normalsFilter.SetComputeCellNormals(1);
             normalsFilter.SetComputePointNormals(0);
             normalsFilter.SplittingOff();

@@ -12,7 +12,7 @@ import nom.tam.fits.FitsException;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
-import vtk.vtkGlobalJavaHash;
+import vtk.vtkObject;
 import vtk.vtkPolyData;
 
 import edu.jhuapl.near.model.Image;
@@ -159,7 +159,7 @@ public class DatabaseGeneratorSql
                     System.out.println("skipping image " + filename);
                     image.Delete();
                     System.gc();
-                    System.out.println("deleted " + vtkGlobalJavaHash.GC());
+                    System.out.println("deleted " + vtkObject.JAVA_OBJECT_MANAGER.gc(true));
                     continue;
                 }
             }
@@ -175,7 +175,7 @@ public class DatabaseGeneratorSql
                 System.out.println("skipping this image since no intersecting cells");
                 image.Delete();
                 System.gc();
-                System.out.println("deleted " + vtkGlobalJavaHash.GC());
+                System.out.println("deleted " + vtkObject.JAVA_OBJECT_MANAGER.gc(true));
                 System.out.println(" ");
                 System.out.println(" ");
                 continue;
@@ -253,7 +253,7 @@ public class DatabaseGeneratorSql
 
             image.Delete();
             System.gc();
-            System.out.println("deleted " + vtkGlobalJavaHash.GC());
+            System.out.println("deleted " + vtkObject.JAVA_OBJECT_MANAGER.gc(true));
             System.out.println(" ");
             System.out.println(" ");
         }

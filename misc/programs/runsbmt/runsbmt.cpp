@@ -73,49 +73,14 @@ static size_t getMemorySize()
 
 int main(int argc, char *argv[])
 {
-    // See if a jre exists in the current folder or a few standard locations
-
-    string command;
-
-    // See if there's a jre in the current folder
-    if (command.empty())
-    {
-        string javaFile = ".\\jre7\\bin\\javaw.exe";
-        if (exists(javaFile))
-        {
-            command = javaFile;
-        }
-    }
-
-    // Try a default java 7 location
-    if (command.empty())
-    {
-        string javaFile = "C:\\Program Files\\Java\\jre7\\bin\\javaw.exe";
-        if (exists(javaFile))
-        {
-            command = "\"" + javaFile + "\"";
-        }
-    }
-
-    // Try a default java 6 location
-    if (command.empty())
-    {
-        string javaFile = "C:\\Program Files\\Java\\jre6\\bin\\javaw.exe";
-        if (exists(javaFile))
-        {
-            command = "\"" + javaFile + "\"";
-        }
-    }
-
-    // if command is still empty, just use what's on the path
-    if (command.empty())
-    {
-        command = "javaw";
-    }
+    string command = ".\\jre\\bin\\javaw.exe";
 
     size_t memory = getMemorySize();
     command += " -Xmx" + numberToString(memory) + "K";
     command += " -Djava.library.path=lib/win64 -Dsun.java2d.noddraw=true -jar lib/near.jar";
+
+    for (int i=1; i<argc; ++i)
+        command += string(" ") + argv[i];
 
     // change PATH environmental variable
     string path = getenv( "PATH" );

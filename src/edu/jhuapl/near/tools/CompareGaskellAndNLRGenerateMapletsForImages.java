@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import vtk.vtkGlobalJavaHash;
+import vtk.vtkObject;
 import vtk.vtkPolyData;
 
 import edu.jhuapl.near.model.Image.ImageKey;
@@ -52,7 +52,7 @@ public class CompareGaskellAndNLRGenerateMapletsForImages
 
         smallBodyModel.delete();
         System.gc();
-        vtkGlobalJavaHash.GC();
+        vtkObject.JAVA_OBJECT_MANAGER.gc(true);
     }
 
     static void doComparison(

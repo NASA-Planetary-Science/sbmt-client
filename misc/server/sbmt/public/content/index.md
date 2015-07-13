@@ -22,8 +22,7 @@ to the 'sbmt' folder and run the 'runsbmt' program.
 
    -  Mac: [sbmt-VERSIONXXXXXX-macosx-x64.zip](releases/sbmt-VERSIONXXXXXX-macosx-x64.zip)
    -  Linux: [sbmt-VERSIONXXXXXX-linux-x64.zip](releases/sbmt-VERSIONXXXXXX-linux-x64.zip)
-   -  Windows: [sbmt-VERSIONXXXXXX-windows-x64.zip](releases/sbmt-VERSIONXXXXXX-windows-x64.zip) (does not include Java)
-   -  Windows: [sbmt-VERSIONXXXXXX-windows-x64-with-java.zip](releases/sbmt-VERSIONXXXXXX-windows-x64-with-java.zip) (includes Java)
+   -  Windows: [sbmt-VERSIONXXXXXX-windows-x64.zip](releases/sbmt-VERSIONXXXXXX-windows-x64.zip)
 
 For more detailed installation instructions, including system requirements, click [here](installation.html).
 

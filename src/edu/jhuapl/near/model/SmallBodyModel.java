@@ -539,7 +539,7 @@ public class SmallBodyModel extends Model
         if (cellNormals == null)
         {
             vtkPolyDataNormals normalsFilter = new vtkPolyDataNormals();
-            normalsFilter.SetInput(smallBodyPolyData);
+            normalsFilter.SetInputData(smallBodyPolyData);
             normalsFilter.SetComputeCellNormals(1);
             normalsFilter.SetComputePointNormals(0);
             normalsFilter.SplittingOff();
@@ -873,7 +873,7 @@ public class SmallBodyModel extends Model
         if (smallBodyActor == null)
         {
             smallBodyMapper = new vtkPolyDataMapper();
-            smallBodyMapper.SetInput(smallBodyPolyData);
+            smallBodyMapper.SetInputData(smallBodyPolyData);
             vtkLookupTable lookupTable = new vtkLookupTable();
             smallBodyMapper.SetLookupTable(lookupTable);
             smallBodyMapper.UseLookupTableScalarRangeOn();
@@ -1054,7 +1054,7 @@ public class SmallBodyModel extends Model
     private void computeShapeModelStatistics()
     {
         vtkMassProperties massProp = new vtkMassProperties();
-        massProp.SetInput(smallBodyPolyData);
+        massProp.SetInputData(smallBodyPolyData);
         massProp.Update();
 
         surfaceArea = massProp.GetSurfaceArea();
@@ -1846,7 +1846,7 @@ public class SmallBodyModel extends Model
         polys.InsertNextCell(idList);
 
         scaleBarMapper = new vtkPolyDataMapper2D();
-        scaleBarMapper.SetInput(scaleBarPolydata);
+        scaleBarMapper.SetInputData(scaleBarPolydata);
 
         scaleBarActor = new vtkActor2D();
         scaleBarActor.SetMapper(scaleBarMapper);
@@ -2081,12 +2081,12 @@ public class SmallBodyModel extends Model
     {
         if (enable)
         {
-            smallBodyMapper.SetInput(null);
+            smallBodyMapper.SetInputData(null);
             smallBodyMapper.SetInputConnection(projectTo2D(smallBodyPolyData));
         }
         else
         {
-            smallBodyMapper.SetInput(smallBodyPolyData);
+            smallBodyMapper.SetInputData(smallBodyPolyData);
         }
 
         smallBodyMapper.Update();

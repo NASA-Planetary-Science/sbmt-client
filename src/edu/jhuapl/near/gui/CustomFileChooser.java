@@ -2,16 +2,16 @@ package edu.jhuapl.near.gui;
 
 
 import java.awt.Component;
+import java.awt.FileDialog;
 import java.io.File;
+import java.io.FilenameFilter;
 
-import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
-import javax.swing.filechooser.FileFilter;
 
 
 public class CustomFileChooser extends FileChooserBase
 {
-    private static class CustomExtensionFilter extends FileFilter
+    private static class CustomExtensionFilter implements FilenameFilter
     {
         private String extension;
 
@@ -24,8 +24,9 @@ public class CustomFileChooser extends FileChooserBase
         }
 
         //Accept all directories and all files with specified extension.
-        public boolean accept(File f)
+        public boolean accept(File dir, String filename)
         {
+            File f = new File(dir, filename);
             if (f.isDirectory() || (extension == null || extension.isEmpty()))
             {
                 return true;
@@ -45,15 +46,6 @@ public class CustomFileChooser extends FileChooserBase
             }
 
             return false;
-        }
-
-        //The description of this filter
-        public String getDescription()
-        {
-            if (extension == null || extension.isEmpty())
-                return "All Files";
-            else
-                return extension.toUpperCase() + " Files";
         }
 
         private String getExtension(File f)
@@ -86,21 +78,27 @@ public class CustomFileChooser extends FileChooserBase
 
     public static File[] showOpenDialog(Component parent, String title, String extension, boolean multiSelectionEnabled)
     {
-        JFileChooser fc = new JFileChooser();
-        fc.setAcceptAllFileFilterUsed(true);
-        fc.setMultiSelectionEnabled(multiSelectionEnabled);
-        fc.setDialogTitle(title);
+        FileDialog fc = new FileDialog(JOptionPane.getFrameForComponent(parent), title, FileDialog.LOAD);
+        //fc.setAcceptAllFileFilterUsed(true);
+        fc.setMultipleMode(multiSelectionEnabled);
         if (extension != null)
-            fc.addChoosableFileFilter(new CustomExtensionFilter(extension));
-        fc.setCurrentDirectory(getLastDirectory());
-        int returnVal = fc.showOpenDialog(JOptionPane.getFrameForComponent(parent));
-        if (returnVal == JFileChooser.APPROVE_OPTION)
+            fc.setFilenameFilter(new CustomExtensionFilter(extension));
+        if (getLastDirectory() != null)
+            fc.setDirectory(getLastDirectory().getAbsolutePath());
+        fc.setVisible(true);
+        String returnedFile = fc.getFile();
+        if (returnedFile != null)
         {
-            setLastDirectory(fc.getCurrentDirectory());
+            setLastDirectory(new File(fc.getDirectory()));
             if (multiSelectionEnabled)
-                return fc.getSelectedFiles();
+            {
+                return fc.getFiles();
+            }
             else
-                return new File[] {fc.getSelectedFile()};
+            {
+                File file = new File(fc.getDirectory(), fc.getFile());
+                return new File[] {file};
+            }
         }
         else
         {
@@ -120,19 +118,20 @@ public class CustomFileChooser extends FileChooserBase
 
     public static File showSaveDialog(Component parent, String title, String defaultFilename, String extension)
     {
-        JFileChooser fc = new JFileChooser();
-        fc.setAcceptAllFileFilterUsed(true);
-        fc.setDialogTitle(title);
+        FileDialog fc = new FileDialog(JOptionPane.getFrameForComponent(parent), title, FileDialog.SAVE);
+        //fc.setAcceptAllFileFilterUsed(true);
         if (extension != null)
-            fc.addChoosableFileFilter(new CustomExtensionFilter(extension));
-        fc.setCurrentDirectory(getLastDirectory());
+            fc.setFilenameFilter(new CustomExtensionFilter(extension));
+        if (getLastDirectory() != null)
+            fc.setDirectory(getLastDirectory().getAbsolutePath());
         if (defaultFilename != null)
-            fc.setSelectedFile(new File(defaultFilename));
-        int returnVal = fc.showSaveDialog(JOptionPane.getFrameForComponent(parent));
-        if (returnVal == JFileChooser.APPROVE_OPTION)
+            fc.setFile(defaultFilename);
+        fc.setVisible(true);
+        String returnedFile = fc.getFile();
+        if (returnedFile != null)
         {
-            setLastDirectory(fc.getCurrentDirectory());
-            File file = fc.getSelectedFile();
+            setLastDirectory(new File(fc.getDirectory()));
+            File file = new File(fc.getDirectory(), fc.getFile());
 
             String filename = file.getAbsolutePath();
             if (extension != null && !extension.isEmpty())
@@ -142,15 +141,15 @@ public class CustomFileChooser extends FileChooserBase
             }
             file = new File(filename);
 
-            if (file.exists())
-            {
-                int response = JOptionPane.showConfirmDialog (JOptionPane.getFrameForComponent(parent),
-                  "Overwrite existing file?","Confirm Overwrite",
-                   JOptionPane.OK_CANCEL_OPTION,
-                   JOptionPane.QUESTION_MESSAGE);
-                if (response == JOptionPane.CANCEL_OPTION)
-                    return null;
-            }
+            //if (file.exists())
+            //{
+            //    int response = JOptionPane.showConfirmDialog (JOptionPane.getFrameForComponent(parent),
+            //      "Overwrite existing file?","Confirm Overwrite",
+            //       JOptionPane.OK_CANCEL_OPTION,
+            //       JOptionPane.QUESTION_MESSAGE);
+            //    if (response == JOptionPane.CANCEL_OPTION)
+            //        return null;
+            //}
 
             return file;
         }

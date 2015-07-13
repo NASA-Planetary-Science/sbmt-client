@@ -165,7 +165,7 @@ public class DEMModel extends SmallBodyModel
             }
 
         vtkPolyDataNormals normalsFilter = new vtkPolyDataNormals();
-        normalsFilter.SetInput(dem);
+        normalsFilter.SetInputData(dem);
         normalsFilter.SetComputeCellNormals(0);
         normalsFilter.SetComputePointNormals(1);
         normalsFilter.SplittingOff();
@@ -203,7 +203,7 @@ public class DEMModel extends SmallBodyModel
         vtkFloatArray[] cellDataArrays = {null, null, null};
 
         vtkPointDataToCellData pointToCell = new vtkPointDataToCellData();
-        pointToCell.SetInput(dem);
+        pointToCell.SetInputData(dem);
 
         for (int i=0; i<dataArrays.length; ++i)
         {

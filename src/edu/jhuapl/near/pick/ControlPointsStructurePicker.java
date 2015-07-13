@@ -9,9 +9,9 @@ import vtk.vtkActor;
 import vtk.vtkCellPicker;
 import vtk.vtkProp;
 import vtk.vtkPropCollection;
-import vtk.vtkRenderWindowPanel;
 
 import edu.jhuapl.near.gui.Renderer;
+import edu.jhuapl.near.gui.joglrendering.vtksbmtJoglCanvasComponent;
 import edu.jhuapl.near.model.ControlPointsStructureModel;
 import edu.jhuapl.near.model.Line;
 import edu.jhuapl.near.model.Model;
@@ -30,7 +30,7 @@ import edu.jhuapl.near.model.SmallBodyModel;
 public class ControlPointsStructurePicker extends Picker
 {
     private ModelManager modelManager;
-    private vtkRenderWindowPanel renWin;
+    private vtksbmtJoglCanvasComponent renWin;
     private SmallBodyModel smallBodyModel;
     private ControlPointsStructureModel structureModel;
 
@@ -220,15 +220,15 @@ public class ControlPointsStructurePicker extends Picker
             structureActivationPicker.GetActor() == structureModel.getActivationActor() &&
             profileModeOkToDrag)
         {
-            if (renWin.getCursor().getType() != Cursor.HAND_CURSOR)
-                renWin.setCursor(new Cursor(Cursor.HAND_CURSOR));
+            if (renWin.getComponent().getCursor().getType() != Cursor.HAND_CURSOR)
+                renWin.getComponent().setCursor(new Cursor(Cursor.HAND_CURSOR));
 
             currentEditMode = EditMode.VERTEX_DRAG_OR_DELETE;
         }
         else
         {
-            if (renWin.getCursor().getType() != getDefaultCursor())
-                renWin.setCursor(new Cursor(getDefaultCursor()));
+            if (renWin.getComponent().getCursor().getType() != getDefaultCursor())
+                renWin.getComponent().setCursor(new Cursor(getDefaultCursor()));
 
             currentEditMode = EditMode.VERTEX_ADD;
         }

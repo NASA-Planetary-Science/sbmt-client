@@ -11,9 +11,9 @@ import vtk.vtkActor;
 import vtk.vtkCellPicker;
 import vtk.vtkProp;
 import vtk.vtkPropCollection;
-import vtk.vtkRenderWindowPanel;
 
 import edu.jhuapl.near.gui.Renderer;
+import edu.jhuapl.near.gui.joglrendering.vtksbmtJoglCanvasComponent;
 import edu.jhuapl.near.model.CircleModel;
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelManager;
@@ -23,7 +23,7 @@ import edu.jhuapl.near.model.SmallBodyModel;
 public class CirclePicker extends Picker
 {
     private ModelManager modelManager;
-    private vtkRenderWindowPanel renWin;
+    private vtksbmtJoglCanvasComponent renWin;
     private SmallBodyModel smallBodyModel;
     private CircleModel circleModel;
 
@@ -131,7 +131,7 @@ public class CirclePicker extends Picker
                     {
                         if (!circleModel.addCircumferencePoint(pos))
                         {
-                            JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(renWin),
+                            JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(renWin.getComponent()),
                                     "Could not fit circle to specified points.",
                                     "Error",
                                     JOptionPane.ERROR_MESSAGE);
@@ -177,15 +177,15 @@ public class CirclePicker extends Picker
                 pickSucceeded == 1 &&
                 circlePicker.GetActor() == circleModel.getBoundaryActor())
         {
-            if (renWin.getCursor().getType() != Cursor.HAND_CURSOR)
-                renWin.setCursor(new Cursor(Cursor.HAND_CURSOR));
+            if (renWin.getComponent().getCursor().getType() != Cursor.HAND_CURSOR)
+                renWin.getComponent().setCursor(new Cursor(Cursor.HAND_CURSOR));
 
             currentEditMode = EditMode.VERTEX_DRAG_OR_DELETE;
         }
         else
         {
-            if (renWin.getCursor().getType() != getDefaultCursor())
-                renWin.setCursor(new Cursor(getDefaultCursor()));
+            if (renWin.getComponent().getCursor().getType() != getDefaultCursor())
+                renWin.getComponent().setCursor(new Cursor(getDefaultCursor()));
 
             currentEditMode = EditMode.VERTEX_ADD;
         }

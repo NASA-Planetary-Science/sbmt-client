@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 import nom.tam.fits.FitsException;
 
-import vtk.vtkGlobalJavaHash;
+import vtk.vtkObject;
 import vtk.vtkPolyData;
 import vtk.vtkXMLPolyDataWriter;
 
@@ -123,7 +123,7 @@ public class MSIFootprintGenerator
 
             // Use a tmp name while saving the file in case we abort during the saving
             vtkXMLPolyDataWriter writer = new vtkXMLPolyDataWriter();
-            writer.SetInput(footprint);
+            writer.SetInputData(footprint);
             writer.SetFileName(vtkfile + "_tmp");
             writer.SetCompressorTypeToZLib();
             writer.SetDataModeToBinary();
@@ -137,7 +137,7 @@ public class MSIFootprintGenerator
             writer.Delete();
             image.Delete();
             System.gc();
-            System.out.println("deleted " + vtkGlobalJavaHash.GC());
+            System.out.println("deleted " + vtkObject.JAVA_OBJECT_MANAGER.gc(true));
 
             System.out.println("\n\n");
         }

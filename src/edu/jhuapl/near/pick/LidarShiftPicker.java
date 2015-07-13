@@ -8,9 +8,9 @@ import vtk.vtkActor;
 import vtk.vtkCellPicker;
 import vtk.vtkProp;
 import vtk.vtkPropCollection;
-import vtk.vtkRenderWindowPanel;
 
 import edu.jhuapl.near.gui.Renderer;
+import edu.jhuapl.near.gui.joglrendering.vtksbmtJoglCanvasComponent;
 import edu.jhuapl.near.model.LidarSearchDataCollection;
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelManager;
@@ -24,7 +24,7 @@ import edu.jhuapl.near.model.SmallBodyModel;
 public class LidarShiftPicker extends Picker
 {
     private ModelManager modelManager;
-    private vtkRenderWindowPanel renWin;
+    private vtksbmtJoglCanvasComponent renWin;
     private SmallBodyModel smallBodyModel;
     private LidarSearchDataCollection lidarModel;
     private vtkCellPicker smallBodyPicker;
@@ -98,13 +98,13 @@ public class LidarShiftPicker extends Picker
         if (pickSucceeded == 1 &&
                 pointPicker.GetActor() == lidarModel.getProps().get(0))
         {
-            if (renWin.getCursor().getType() != Cursor.HAND_CURSOR)
-                renWin.setCursor(new Cursor(Cursor.HAND_CURSOR));
+            if (renWin.getComponent().getCursor().getType() != Cursor.HAND_CURSOR)
+                renWin.getComponent().setCursor(new Cursor(Cursor.HAND_CURSOR));
         }
         else
         {
-            if (renWin.getCursor().getType() != getDefaultCursor())
-                renWin.setCursor(new Cursor(getDefaultCursor()));
+            if (renWin.getComponent().getCursor().getType() != getDefaultCursor())
+                renWin.getComponent().setCursor(new Cursor(getDefaultCursor()));
         }
     }
 

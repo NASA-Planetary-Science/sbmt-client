@@ -84,7 +84,7 @@ public class Graticule extends Model implements PropertyChangeListener
         appendFilter.SetNumberOfInputs(numberLatCircles + numberLonCircles);
         vtkPolyData[] tmps = new vtkPolyData[numberLatCircles + numberLonCircles];
 
-        cutPolyData.SetInput(smallBodyPolyData);
+        cutPolyData.SetInputData(smallBodyPolyData);
 
         // First do the longitudes.
         for (int i=0; i<numberLonCircles; ++i)
@@ -102,7 +102,7 @@ public class Graticule extends Model implements PropertyChangeListener
 
             tmps[i] = new vtkPolyData();
             tmps[i].DeepCopy(cutPolyData.GetOutput());
-            appendFilter.SetInputByNumber(i, tmps[i]);
+            appendFilter.SetInputDataByNumber(i, tmps[i]);
         }
 
         double[] yaxis = {0.0, 1.0, 0.0};
@@ -130,7 +130,7 @@ public class Graticule extends Model implements PropertyChangeListener
             int idx = numberLonCircles+i;
             tmps[idx] = new vtkPolyData();
             tmps[idx].DeepCopy(cutPolyData.GetOutput());
-            appendFilter.SetInputByNumber(idx, tmps[idx]);
+            appendFilter.SetInputDataByNumber(idx, tmps[idx]);
         }
 
         appendFilter.Update();
@@ -191,7 +191,7 @@ public class Graticule extends Model implements PropertyChangeListener
 
         if (mapper == null)
             mapper = new vtkPolyDataMapper();
-        mapper.SetInput(polyData);
+        mapper.SetInputData(polyData);
         mapper.Update();
 
         if (actor == null)

@@ -98,7 +98,7 @@ public class PolygonModel extends LineModel
                     poly = emptyPolyData;
 
                 if (poly != null)
-                    interiorAppendFilter.SetInputByNumber(i, poly);
+                    interiorAppendFilter.SetInputDataByNumber(i, poly);
             }
 
             interiorAppendFilter.Update();
@@ -132,7 +132,7 @@ public class PolygonModel extends LineModel
             interiorPolyData.DeepCopy(emptyPolyData);
         }
 
-        interiorMapper.SetInput(interiorPolyData);
+        interiorMapper.SetInputData(interiorPolyData);
         interiorMapper.Update();
 
         interiorActor.SetMapper(interiorMapper);

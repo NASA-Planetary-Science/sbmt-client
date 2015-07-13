@@ -3,12 +3,13 @@ package edu.jhuapl.near.tools;
 import vtk.vtkImageData;
 import vtk.vtkStructuredPointsWriter;
 
+import edu.jhuapl.near.model.ModelFactory;
 import edu.jhuapl.near.model.SmallBodyConfig;
 import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelAuthor;
 import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelBody;
-import edu.jhuapl.near.model.ModelFactory;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.util.NativeLibraryLoader;
+import edu.jhuapl.near.util.VtkDataTypes;
 
 public class ColoringImageMapGenerator
 {
@@ -27,24 +28,16 @@ public class ColoringImageMapGenerator
 
         vtkImageData slopeImage = new vtkImageData();
         slopeImage.SetDimensions(3600, 1800, 1);
-        slopeImage.SetScalarTypeToFloat();
-        slopeImage.SetNumberOfScalarComponents(1);
-        slopeImage.AllocateScalars();
+        slopeImage.AllocateScalars(VtkDataTypes.VTK_FLOAT, 1);
         vtkImageData elevImage = new vtkImageData();
         elevImage.SetDimensions(3600, 1800, 1);
-        elevImage.SetScalarTypeToFloat();
-        elevImage.SetNumberOfScalarComponents(1);
-        elevImage.AllocateScalars();
+        elevImage.AllocateScalars(VtkDataTypes.VTK_FLOAT, 1);
         vtkImageData gravAccImage = new vtkImageData();
         gravAccImage.SetDimensions(3600, 1800, 1);
-        gravAccImage.SetScalarTypeToFloat();
-        gravAccImage.SetNumberOfScalarComponents(1);
-        gravAccImage.AllocateScalars();
+        gravAccImage.AllocateScalars(VtkDataTypes.VTK_FLOAT, 1);
         vtkImageData gravPotImage = new vtkImageData();
         gravPotImage.SetDimensions(3600, 1800, 1);
-        gravPotImage.SetScalarTypeToFloat();
-        gravPotImage.SetNumberOfScalarComponents(1);
-        gravPotImage.AllocateScalars();
+        gravPotImage.AllocateScalars(VtkDataTypes.VTK_FLOAT, 1);
 
         double[] point = new double[3];
         int height = 1800;
@@ -84,19 +77,19 @@ public class ColoringImageMapGenerator
         writer.SetFileTypeToBinary();
 
         writer.SetFileName("DEIMOS_Slope_PointData.vtk");
-        writer.SetInput(slopeImage);
+        writer.SetInputData(slopeImage);
         writer.Write();
 
         writer.SetFileName("DEIMOS_Elevation_PointData.vtk");
-        writer.SetInput(elevImage);
+        writer.SetInputData(elevImage);
         writer.Write();
 
         writer.SetFileName("DEIMOS_GravitationalAcceleration_PointData.vtk");
-        writer.SetInput(gravAccImage);
+        writer.SetInputData(gravAccImage);
         writer.Write();
 
         writer.SetFileName("DEIMOS_GravitationalPotential_PointData.vtk");
-        writer.SetInput(gravPotImage);
+        writer.SetInputData(gravPotImage);
         writer.Write();
     }
 

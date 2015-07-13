@@ -1,6 +1,5 @@
 package edu.jhuapl.near.tools;
 
-import java.lang.reflect.Method;
 import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
@@ -8,7 +7,6 @@ import java.util.concurrent.TimeUnit;
 
 import javax.swing.ImageIcon;
 import javax.swing.JPopupMenu;
-import javax.swing.LookAndFeel;
 import javax.swing.ToolTipManager;
 import javax.swing.UIManager;
 
@@ -48,17 +46,7 @@ public class SmallBodyMappingTool
     {
         try
         {
-            if (Configuration.isMac())
-            {
-                System.setProperty("Quaqua.tabLayoutPolicy","wrap");
-
-                // Use reflection to load the quaqua look and feel
-                Class quaquaManagerClass = Class.forName("ch.randelshofer.quaqua.QuaquaManager");
-                Method getLookAndFeelMethod = quaquaManagerClass.getDeclaredMethod("getLookAndFeel", new Class[] { });
-                LookAndFeel lookAndFeel = (LookAndFeel)getLookAndFeelMethod.invoke(null, new Object[] { });
-                UIManager.setLookAndFeel(lookAndFeel);
-            }
-            else
+            if (!Configuration.isMac())
             {
                 UIManager.put("ClassLoader", LookUtils.class.getClassLoader());
                 UIManager.setLookAndFeel("com.jgoodies.looks.plastic.PlasticXPLookAndFeel");

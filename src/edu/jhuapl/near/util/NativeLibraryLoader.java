@@ -1,5 +1,7 @@
 package edu.jhuapl.near.util;
 
+import vtk.vtkNativeLibrary;
+
 
 public class NativeLibraryLoader
 {
@@ -24,91 +26,42 @@ public class NativeLibraryLoader
             }
         });
 
-        if (Configuration.isWindows())
-        {
-            // On windows, just load all the libraries
-            // manually rather than dealing with how to find dependent libraries.
-            // Note they must be loaded in the following order.
-
-            System.loadLibrary("jawt"); // For some reason this is not loaded automatically
-            System.loadLibrary("vtkzlib");
-            System.loadLibrary("vtkNetCDF");
-            System.loadLibrary("vtksys");
-            System.loadLibrary("vtkalglib");
-            System.loadLibrary("vtkexoIIc");
-            System.loadLibrary("vtkexpat");
-            System.loadLibrary("vtkfreetype");
-            System.loadLibrary("vtkftgl");
-            System.loadLibrary("vtkjpeg");
-            System.loadLibrary("vtklibxml2");
-            System.loadLibrary("vtkmetaio");
-            System.loadLibrary("vtkpng");
-            System.loadLibrary("vtkproj4");
-            System.loadLibrary("vtktiff");
-            System.loadLibrary("vtkverdict");
-            System.loadLibrary("vtkCommon");
-            System.loadLibrary("vtkCommonJava");
-            System.loadLibrary("vtkDICOMParser");
-            System.loadLibrary("vtkFiltering");
-            System.loadLibrary("vtkFilteringJava");
-            System.loadLibrary("vtkGraphics");
-            System.loadLibrary("vtkGraphicsJava");
-            System.loadLibrary("vtkGenericFiltering");
-            System.loadLibrary("vtkGenericFilteringJava");
-            System.loadLibrary("vtkIO");
-            System.loadLibrary("vtkIOJava");
-            System.loadLibrary("vtkImaging");
-            System.loadLibrary("vtkImagingJava");
-            System.loadLibrary("vtkRendering");
-            System.loadLibrary("vtkRenderingJava");
-            System.loadLibrary("vtkHybrid");
-            System.loadLibrary("vtkHybridJava");
-            System.loadLibrary("vtkWidgets");
-            System.loadLibrary("vtkWidgetsJava");
-            System.loadLibrary("vtkInfovis");
-            System.loadLibrary("vtkInfovisJava");
-            System.loadLibrary("vtkViews");
-            System.loadLibrary("vtkViewsJava");
-            System.loadLibrary("vtkGeovis");
-            System.loadLibrary("vtkGeovisJava");
-            System.loadLibrary("vtkVolumeRendering");
-            System.loadLibrary("vtkVolumeRenderingJava");
-            System.loadLibrary("vtksbUnsorted");
-            System.loadLibrary("vtksbUnsortedJava");
-        }
-        else
-        {
-            // On linux or mac the shared libraries must have
-            // $ORIGIN or @loader_path embedded in them so that
-            // the dependent libraries are found.
-
-            System.loadLibrary("jawt"); // For some reason this is not loaded automatically
-            System.loadLibrary("vtkCommonJava");
-            System.loadLibrary("vtkFilteringJava");
-            System.loadLibrary("vtkGraphicsJava");
-            System.loadLibrary("vtkGenericFilteringJava");
-            System.loadLibrary("vtkIOJava");
-            System.loadLibrary("vtkImagingJava");
-            System.loadLibrary("vtkRenderingJava");
-            System.loadLibrary("vtkHybridJava");
-            System.loadLibrary("vtkWidgetsJava");
-            System.loadLibrary("vtkInfovisJava");
-            System.loadLibrary("vtkViewsJava");
-            System.loadLibrary("vtkGeovisJava");
-            System.loadLibrary("vtkVolumeRenderingJava");
-            System.loadLibrary("vtksbUnsortedJava");
+        System.loadLibrary("jawt"); // For some reason this is not loaded automatically
+        for (vtkNativeLibrary lib : vtkNativeLibrary.values()) {
+            try {
+                if (lib.IsBuilt()) {
+                    lib.LoadLibrary();
+                }
+            }
+            catch (UnsatisfiedLinkError e) {
+                e.printStackTrace();
+            }
         }
     }
 
     static public void loadVtkLibrariesHeadless()
     {
-        System.loadLibrary("vtkCommonJava");
-        System.loadLibrary("vtkFilteringJava");
-        System.loadLibrary("vtkGraphicsJava");
-        System.loadLibrary("vtkGenericFilteringJava");
-        System.loadLibrary("vtkIOJava");
-        System.loadLibrary("vtkImagingJava");
-        System.loadLibrary("vtksbUnsortedJava");
+        for (vtkNativeLibrary lib : vtkNativeLibrary.values()) {
+            try {
+                if (lib.IsBuilt() && !lib.GetLibraryName().startsWith("vtkRendering")
+                        && !lib.GetLibraryName().startsWith("vtkViews")
+                        && !lib.GetLibraryName().startsWith("vtkInteraction")
+                        && !lib.GetLibraryName().startsWith("vtkCharts")
+                        && !lib.GetLibraryName().startsWith("vtkDomainsChemistry")
+                        && !lib.GetLibraryName().startsWith("vtkIOParallel")
+                        && !lib.GetLibraryName().startsWith("vtkIOExport")
+                        && !lib.GetLibraryName().startsWith("vtkIOImport")
+                        && !lib.GetLibraryName().startsWith("vtkIOMINC")
+                        && !lib.GetLibraryName().startsWith("vtkFiltersHybrid")
+                        && !lib.GetLibraryName().startsWith("vtkFiltersParallel")
+                        && !lib.GetLibraryName().startsWith("vtkGeovis")) {
+                    lib.LoadLibrary();
+                }
+            }
+            catch (UnsatisfiedLinkError e) {
+                e.printStackTrace();
+            }
+        }
     }
 
 }

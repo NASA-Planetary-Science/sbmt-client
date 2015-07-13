@@ -3,10 +3,9 @@ package edu.jhuapl.near.pick;
 import java.awt.Cursor;
 import java.util.HashMap;
 
-import vtk.vtkRenderWindowPanel;
-
 import edu.jhuapl.near.gui.Renderer;
 import edu.jhuapl.near.gui.StatusBar;
+import edu.jhuapl.near.gui.joglrendering.vtksbmtJoglCanvasComponent;
 import edu.jhuapl.near.model.LidarSearchDataCollection;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
@@ -29,7 +28,7 @@ public class PickManager extends Picker
 
     private PickMode pickMode = PickMode.DEFAULT;
     private Renderer renderer;
-    private vtkRenderWindowPanel renWin;
+    private vtksbmtJoglCanvasComponent renWin;
 
     private DefaultPicker defaultPicker;
 
@@ -83,7 +82,7 @@ public class PickManager extends Picker
                 removePicker(nondefaultPickers.get(pm));
             }
             defaultPicker.setSuppressPopups(false);
-            renWin.setCursor(new Cursor(defaultPicker.getDefaultCursor()));
+            renWin.getComponent().setCursor(new Cursor(defaultPicker.getDefaultCursor()));
         }
         else
         {
@@ -98,7 +97,7 @@ public class PickManager extends Picker
             Picker picker = nondefaultPickers.get(this.pickMode);
             addPicker(picker);
             defaultPicker.setSuppressPopups(true);
-            renWin.setCursor(new Cursor(picker.getDefaultCursor()));
+            renWin.getComponent().setCursor(new Cursor(picker.getDefaultCursor()));
         }
     }
 
@@ -109,18 +108,18 @@ public class PickManager extends Picker
 
     private void addPicker(Picker picker)
     {
-        renWin.addMouseListener(picker);
-        renWin.addMouseMotionListener(picker);
-        renWin.addMouseWheelListener(picker);
-        renWin.addKeyListener(picker);
+        renWin.getComponent().addMouseListener(picker);
+        renWin.getComponent().addMouseMotionListener(picker);
+        renWin.getComponent().addMouseWheelListener(picker);
+        renWin.getComponent().addKeyListener(picker);
     }
 
     private void removePicker(Picker picker)
     {
-        renWin.removeMouseListener(picker);
-        renWin.removeMouseMotionListener(picker);
-        renWin.removeMouseWheelListener(picker);
-        renWin.removeKeyListener(picker);
+        renWin.getComponent().removeMouseListener(picker);
+        renWin.getComponent().removeMouseMotionListener(picker);
+        renWin.getComponent().removeMouseWheelListener(picker);
+        renWin.getComponent().removeKeyListener(picker);
     }
 
     public double getPickTolerance()

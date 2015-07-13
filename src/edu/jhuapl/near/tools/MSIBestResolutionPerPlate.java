@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import nom.tam.fits.FitsException;
 
 import vtk.vtkFloatArray;
-import vtk.vtkGlobalJavaHash;
+import vtk.vtkObject;
 import vtk.vtkPoints;
 import vtk.vtkPolyData;
 import vtk.vtkTriangle;
@@ -234,7 +234,7 @@ public class MSIBestResolutionPerPlate
             System.out.println("num good plates: " + numGoodPlates);
             image.Delete();
             System.gc();
-            System.out.println("deleted " + vtkGlobalJavaHash.GC());
+            System.out.println("deleted " + vtkObject.JAVA_OBJECT_MANAGER.gc(true));
 
             System.out.println("\n\n");
 

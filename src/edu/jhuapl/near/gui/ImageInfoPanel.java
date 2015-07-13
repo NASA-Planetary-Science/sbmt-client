@@ -11,6 +11,7 @@
 package edu.jhuapl.near.gui;
 
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -27,14 +28,16 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.table.DefaultTableModel;
 
-import vtk.vtkImageActor;
 import vtk.vtkImageData;
 import vtk.vtkImageReslice;
+import vtk.vtkImageSlice;
+import vtk.vtkImageSliceMapper;
 import vtk.vtkInteractorStyleImage;
 import vtk.vtkPropCollection;
 import vtk.vtkPropPicker;
 import vtk.vtkTransform;
 
+import edu.jhuapl.near.gui.joglrendering.vtksbmtJoglCanvasComponent;
 import edu.jhuapl.near.model.Image;
 import edu.jhuapl.near.model.ImageCollection;
 import edu.jhuapl.near.model.Model;
@@ -48,11 +51,11 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
 {
     public static final double VIEWPOINT_DELTA = 1.0;
 
-    private vtkEnhancedRenderWindowPanel renWin;
+    private vtksbmtJoglCanvasComponent renWin;
     private Image image;
     private ImageCollection imageCollection;
     private PerspectiveImageBoundaryCollection imageBoundaryCollection;
-    private vtkImageActor actor;
+    private vtkImageSlice actor;
     private vtkImageReslice reslice;
     private vtkPropPicker imagePicker;
     private boolean initialized = false;
@@ -91,7 +94,8 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
         this.imageCollection = imageCollection;
         this.imageBoundaryCollection = imageBoundaryCollection;
 
-        renWin = new vtkEnhancedRenderWindowPanel();
+        renWin = new vtksbmtJoglCanvasComponent();
+        renWin.getComponent().setPreferredSize(new Dimension(550, 550));
 
         vtkInteractorStyleImage style =
             new vtkInteractorStyleImage();
@@ -123,7 +127,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
         imageTransform.Translate(-center[1], -center[0], 0.0);
 
         reslice = new vtkImageReslice();
-        reslice.SetInput(displayedImage);
+        reslice.SetInputData(displayedImage);
         reslice.SetResliceTransform(imageTransform);
         reslice.SetInterpolationModeToNearestNeighbor();
         reslice.SetOutputSpacing(1.0, 1.0, 1.0);
@@ -131,9 +135,13 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
         reslice.SetOutputExtent(0, dims[1]-1, 0, dims[0]-1, 0, 0);
         reslice.Update();
 
-        actor = new vtkImageActor();
-        actor.SetInput(reslice.GetOutput());
-        actor.InterpolateOn();
+        vtkImageSliceMapper imageSliceMapper = new vtkImageSliceMapper();
+        imageSliceMapper.SetInputConnection(reslice.GetOutputPort());
+        imageSliceMapper.Update();
+
+        actor = new vtkImageSlice();
+        actor.SetMapper(imageSliceMapper);
+        actor.GetProperty().SetInterpolationTypeToLinear();
 
 // for testing backplane generation
 //        {
@@ -168,7 +176,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
 //            actor.SetInput(plane);
 //        }
 
-        renWin.GetRenderer().AddActor(actor);
+        renWin.getRenderer().AddActor(actor);
 
         renWin.setSize(550, 550);
 
@@ -178,11 +186,11 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
         vtkPropCollection smallBodyPickList = imagePicker.GetPickList();
         smallBodyPickList.RemoveAllItems();
         imagePicker.AddPickList(actor);
-        renWin.addMouseListener(this);
-        renWin.addMouseMotionListener(this);
+        renWin.getComponent().addMouseListener(this);
+        renWin.getComponent().addMouseMotionListener(this);
 //        renWin.addKeyListener(this);
 
-        // Trying to add a vtkEnhancedRenderWindowPanel in the netbeans gui
+        // Trying to add a vtksbmtJoglCanvasComponent in the netbeans gui
         // does not seem to work so instead add it here.
         java.awt.GridBagConstraints gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -191,7 +199,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
-        getContentPane().add(renWin, gridBagConstraints);
+        getContentPane().add(renWin.getComponent(), gridBagConstraints);
 
 
         // Add a text box for showing information about the image
@@ -251,6 +259,15 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
         setVisible(true);
 
         initialized = true;
+
+        javax.swing.SwingUtilities.invokeLater(new Runnable()
+        {
+            public void run()
+            {
+                renWin.resetCamera();
+                renWin.Render();
+            }
+        });
     }
 
     private void createMenus()
@@ -262,8 +279,8 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
         {
             public void actionPerformed(ActionEvent e)
             {
-                File file = ImageFileChooser.showSaveDialog(renWin, "Export to Image...");
-                renWin.saveToFile(file);
+                File file = CustomFileChooser.showSaveDialog(renWin.getComponent(), "Export to PNG Image...", "image.png", "png");
+                Renderer.saveToFile(file, renWin);
             }
         });
         fileMenu.add(mi);
@@ -389,9 +406,15 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
 
     private void updateSpectrumRegion(MouseEvent e)
     {
-        renWin.lock();
-        int pickSucceeded = imagePicker.Pick(e.getX(), renWin.getHeight()-e.getY()-1, 0.0, renWin.GetRenderer());
-        renWin.unlock();
+        renWin.getVTKLock().lock();
+        // Note that on some displays, such as a retina display, the height used by
+        // OpenGL is different than the height used by Java. Therefore we need
+        // scale the mouse coordinates to get the right position for OpenGL.
+        double openGlHeight = renWin.getComponent().getSurfaceHeight();
+        double javaHeight = renWin.getComponent().getHeight();
+        double scale = openGlHeight / javaHeight;
+        int pickSucceeded = imagePicker.Pick(scale*e.getX(), scale*(javaHeight-e.getY()-1), 0.0, renWin.getRenderer());
+        renWin.getVTKLock().unlock();
         if (pickSucceeded == 1)
         {
             double[] p = imagePicker.GetPickPosition();
@@ -408,9 +431,15 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
     {
         System.out.println("Center Frustum");
 
-        renWin.lock();
-        int pickSucceeded = imagePicker.Pick(e.getX(), renWin.getHeight()-e.getY()-1, 0.0, renWin.GetRenderer());
-        renWin.unlock();
+        renWin.getVTKLock().lock();
+        // Note that on some displays, such as a retina display, the height used by
+        // OpenGL is different than the height used by Java. Therefore we need
+        // scale the mouse coordinates to get the right position for OpenGL.
+        double openGlHeight = renWin.getComponent().getSurfaceHeight();
+        double javaHeight = renWin.getComponent().getHeight();
+        double scale = openGlHeight / javaHeight;
+        int pickSucceeded = imagePicker.Pick(scale*e.getX(), scale*(javaHeight-e.getY()-1), 0.0, renWin.getRenderer());
+        renWin.getVTKLock().unlock();
         if (pickSucceeded == 1)
         {
             double[] pickPosition = imagePicker.GetPickPosition();
@@ -437,7 +466,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
 
     public void propertyChange(PropertyChangeEvent arg0)
     {
-        if (renWin.GetRenderWindow().GetNeverRendered() > 0)
+        if (renWin.getRenderWindow().GetNeverRendered() > 0)
             return;
         renWin.Render();
     }
@@ -719,7 +748,10 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
     private void interpolateCheckBoxActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_interpolateCheckBoxActionPerformed
     {//GEN-HEADEREND:event_interpolateCheckBoxActionPerformed
         image.setInterpolate(interpolateCheckBox.isSelected());
-        actor.SetInterpolate(interpolateCheckBox.isSelected() ? 1 : 0);
+        if (interpolateCheckBox.isSelected())
+            actor.GetProperty().SetInterpolationTypeToLinear();
+        else
+            actor.GetProperty().SetInterpolationTypeToNearest();
         renWin.Render();
     }//GEN-LAST:event_interpolateCheckBoxActionPerformed
 

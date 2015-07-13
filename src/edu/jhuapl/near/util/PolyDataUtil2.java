@@ -161,7 +161,7 @@ public class PolyDataUtil2 {
 
         // Add normal vectors
         vtkPolyDataNormals normalsFilter = new vtkPolyDataNormals();
-        normalsFilter.SetInput(body);
+        normalsFilter.SetInputData(body);
         normalsFilter.SetComputeCellNormals(0);
         normalsFilter.SetComputePointNormals(1);
         normalsFilter.SplittingOff();
@@ -254,7 +254,7 @@ public class PolyDataUtil2 {
             }
 
         vtkPolyDataNormals normalsFilter = new vtkPolyDataNormals();
-        normalsFilter.SetInput(dem);
+        normalsFilter.SetInputData(dem);
         normalsFilter.SetComputeCellNormals(0);
         normalsFilter.SetComputePointNormals(1);
         normalsFilter.SplittingOff();
@@ -427,7 +427,7 @@ public class PolyDataUtil2 {
         BufferedWriter out = new BufferedWriter(fstream);
 
         vtkPolyDataNormals normalsFilter = new vtkPolyDataNormals();
-        normalsFilter.SetInput(polydata);
+        normalsFilter.SetInputData(polydata);
         normalsFilter.SetComputeCellNormals(1);
         normalsFilter.SetComputePointNormals(0);
         normalsFilter.SplittingOff();

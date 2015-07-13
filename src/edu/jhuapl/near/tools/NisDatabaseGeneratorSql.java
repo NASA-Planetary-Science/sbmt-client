@@ -10,7 +10,7 @@ import java.util.TreeSet;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
-import vtk.vtkGlobalJavaHash;
+import vtk.vtkObject;
 import vtk.vtkPolyData;
 
 import edu.jhuapl.near.model.SmallBodyConfig;
@@ -232,7 +232,7 @@ public class NisDatabaseGeneratorSql
 
             nisSpectrum.Delete();
             //System.gc();
-            System.out.println("deleted " + vtkGlobalJavaHash.GC());
+            System.out.println("deleted " + vtkObject.JAVA_OBJECT_MANAGER.gc(true));
             System.out.println(" ");
             System.out.println(" ");
         }

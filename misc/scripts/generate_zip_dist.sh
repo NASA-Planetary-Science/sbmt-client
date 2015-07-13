@@ -24,17 +24,14 @@ top_level_dir=`pwd`
 mkdir -p $output_dir/mac64/sbmt/lib
 mkdir -p $output_dir/linux64/sbmt/lib
 mkdir -p $output_dir/win64/sbmt/lib
-mkdir -p $output_dir/win64-with-jre/sbmt/lib
 
 cp lib/*.jar $output_dir/mac64/sbmt/lib
 cp lib/*.jar $output_dir/linux64/sbmt/lib
 cp lib/*.jar $output_dir/win64/sbmt/lib
-cp lib/*.jar $output_dir/win64-with-jre/sbmt/lib
 
 cp src/edu/jhuapl/near/data/license.txt $output_dir/mac64/sbmt/lib
 cp src/edu/jhuapl/near/data/license.txt $output_dir/linux64/sbmt/lib
 cp src/edu/jhuapl/near/data/license.txt $output_dir/win64/sbmt/lib
-cp src/edu/jhuapl/near/data/license.txt $output_dir/win64-with-jre/sbmt/lib
 
 if [ "$version" == "-internal" ]
 then
@@ -42,25 +39,28 @@ then
     cp build/jar/near-apl.jar $output_dir/mac64/sbmt/lib/near.jar
     cp build/jar/near-apl.jar $output_dir/linux64/sbmt/lib/near.jar
     cp build/jar/near-apl.jar $output_dir/win64/sbmt/lib/near.jar
-    cp build/jar/near-apl.jar $output_dir/win64-with-jre/sbmt/lib/near.jar
 else
     echo "doing public"
     cp build/jar/near.jar $output_dir/mac64/sbmt/lib
     cp build/jar/near.jar $output_dir/linux64/sbmt/lib
     cp build/jar/near.jar $output_dir/win64/sbmt/lib
-    cp build/jar/near.jar $output_dir/win64-with-jre/sbmt/lib
 fi
 
 cp -R $vtk_dir/mac64 $output_dir/mac64/sbmt/lib
 cp -R $vtk_dir/linux64 $output_dir/linux64/sbmt/lib
 cp -R $vtk_dir/win64 $output_dir/win64/sbmt/lib
-cp -R $vtk_dir/win64 $output_dir/win64-with-jre/sbmt/lib
-cp -R $vtk_dir/jre7 $output_dir/win64-with-jre/sbmt
+
+cp -R $vtk_dir/jre-mac64 $output_dir/mac64/sbmt
+mv $output_dir/mac64/sbmt/jre-mac64 $output_dir/mac64/sbmt/jre
+
+cp -R $vtk_dir/jre-linux64 $output_dir/linux64/sbmt
+mv $output_dir/linux64/sbmt/jre-linux64 $output_dir/linux64/sbmt/jre
+
+cp -R $vtk_dir/jre-win64 $output_dir/win64/sbmt
+mv $output_dir/win64/sbmt/jre-win64 $output_dir/win64/sbmt/jre
 
 cp $vtk_dir/runsbmt.exe $output_dir/win64/sbmt
 chmod +x $output_dir/win64/sbmt/runsbmt.exe
-cp $vtk_dir/runsbmt.exe $output_dir/win64-with-jre/sbmt
-chmod +x $output_dir/win64-with-jre/sbmt/runsbmt.exe
 
 
 echo -n -e "#!/bin/sh
@@ -71,7 +71,7 @@ DIR=\`dirname \"\$0\"\`
 DIR=\"\`(cd \"\$DIR\"; pwd)\`\"
 export DYLD_LIBRARY_PATH=\"\$DIR/lib/mac64\":\$DYLD_LIBRARY_PATH
 MEMSIZE=\`sysctl hw.memsize | awk '{print int(\$2/1024)}'\`
-/usr/libexec/java_home -v 1.6 -a x86_64 -exec java -Xmx\${MEMSIZE}K -Djava.library.path=\"\$DIR/lib/mac64\" -Dcom.apple.mrj.application.apple.menu.about.name=\"Small Body Mapping Tool\" -jar \"\$DIR/lib/near.jar\" \$@
+\"\$DIR/jre/bin/java\" -Xmx\${MEMSIZE}K -Djava.library.path=\"\$DIR/lib/mac64\" -Dcom.apple.mrj.application.apple.menu.about.name=\"Small Body Mapping Tool\" -jar \"\$DIR/lib/near.jar\" \$@
 " > $output_dir/mac64/sbmt/runsbmt
 chmod +x $output_dir/mac64/sbmt/runsbmt
 
@@ -80,7 +80,7 @@ DIR=\`dirname \"\$0\"\`
 DIR=\"\`(cd \"\$DIR\"; pwd)\`\"
 export LD_LIBRARY_PATH=\"\$DIR/lib/linux64\":\$LD_LIBRARY_PATH
 MEMSIZE=\`grep MemTotal /proc/meminfo | awk '{print \$2}'\`
-java -Xmx\${MEMSIZE}K -Djava.library.path=\"\$DIR/lib/linux64\" -jar \"\$DIR/lib/near.jar\" \$@
+\"\$DIR/jre/bin/java\" -Xmx\${MEMSIZE}K -Djava.library.path=\"\$DIR/lib/linux64\" -jar \"\$DIR/lib/near.jar\" \$@
 " > $output_dir/linux64/sbmt/runsbmt
 chmod +x $output_dir/linux64/sbmt/runsbmt
 
@@ -95,7 +95,6 @@ cp $output_dir/mac64/sbmt/password.txt $output_dir/linux64/sbmt/
 echo -n -e "replace-with-username\r
 replace-with-password\r
 " > $output_dir/win64/sbmt/password.txt
-cp $output_dir/win64/sbmt/password.txt $output_dir/win64-with-jre/sbmt/
 fi
 
 
@@ -110,7 +109,3 @@ zip -q -r sbmt-$version_number-linux-x64.zip sbmt
 cd $output_dir/win64
 version_number=`date +%Y.%m.%d`
 zip -q -r sbmt-$version_number-windows-x64.zip sbmt
-
-cd $output_dir/win64-with-jre
-version_number=`date +%Y.%m.%d`
-zip -q -r sbmt-$version_number-windows-x64-with-java.zip sbmt
