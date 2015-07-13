@@ -340,7 +340,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
         {
             if (e.isAltDown())
             {
-                System.out.println("Resetting pointing...");
+//                System.out.println("Resetting pointing...");
                 ((PerspectiveImage)image).resetSpacecraftState();
             }
             else
@@ -434,7 +434,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
 
     private void centerFrustumOnPixel(MouseEvent e)
     {
-        System.out.println("Center Frustum");
+//        System.out.println("Center Frustum");
 
         renWin.getVTKLock().lock();
         // Note that on some displays, such as a retina display, the height used by
@@ -851,7 +851,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
     }//GEN-LAST:event_bottomSpinnerStateChanged
 
     private void zoomInButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_zoomInButtonActionPerformed
-        System.out.println("Zoom In");
+//        System.out.println("Zoom In");
         if (image instanceof PerspectiveImage)
         {
             ((PerspectiveImage)image).moveZoomFactorBy(-0.01 * getAdjustFactor());
@@ -896,7 +896,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
     }//GEN-LAST:event_downButtonActionPerformed
 
     private void rotateLeftButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rotateLeftButtonActionPerformed
-        System.out.println("Rotate Left");
+//        System.out.println("Rotate Left");
         if (image instanceof PerspectiveImage)
         {
             ((PerspectiveImage)image).moveRotationAngleBy(getAdjustFactor());
@@ -905,7 +905,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
     }//GEN-LAST:event_rotateLeftButtonActionPerformed
 
     private void rotateRightButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rotateRightButtonActionPerformed
-        System.out.println("Rotate Right");
+//        System.out.println("Rotate Right");
         if (image instanceof PerspectiveImage)
         {
             ((PerspectiveImage)image).moveRotationAngleBy(-getAdjustFactor());
@@ -927,7 +927,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
     }//GEN-LAST:event_interpolateCheckBox1ActionPerformed
 
     private void applyAdjustmentsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_applyAdjustmentsButtonActionPerformed
-        System.out.println("Apply Adjustments");
+//        System.out.println("Apply Adjustments");
         if (image instanceof PerspectiveImage)
         {
             ((PerspectiveImage)image).setApplyFrameAdjustments(applyAdjustmentsButton.isSelected());
@@ -936,18 +936,18 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
     }//GEN-LAST:event_applyAdjustmentsButtonActionPerformed
 
     private void resetFrameAdjustmentsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetFrameAdjustmentsButtonActionPerformed
-        System.out.println("Reset Frame Adjustments");
+//        System.out.println("Reset Frame Adjustments");
         ((PerspectiveImage)image).resetSpacecraftState();
         ((PerspectiveImage)image).firePropertyChange();
     }//GEN-LAST:event_resetFrameAdjustmentsButtonActionPerformed
 
     private void adjustFrameCheckBox3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_adjustFrameCheckBox3ActionPerformed
-        System.out.println("Adjust frame...");
+//        System.out.println("Adjust frame...");
         centerFrustumMode = adjustFrameCheckBox3.isSelected();
     }//GEN-LAST:event_adjustFrameCheckBox3ActionPerformed
 
     private void zoomOutButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_zoomOutButtonActionPerformed
-        System.out.println("Zoom Out");
+//        System.out.println("Zoom Out");
         if (image instanceof PerspectiveImage)
         {
             ((PerspectiveImage)image).moveZoomFactorBy(0.01 * getAdjustFactor());
