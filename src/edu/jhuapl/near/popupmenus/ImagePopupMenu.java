@@ -629,7 +629,11 @@ public class ImagePopupMenu extends PopupMenu
                     imageCollection.addImage(imageKey);
                     PerspectiveImage image = (PerspectiveImage)imageCollection.getImage(imageKey);
                     String imageFileName = image.getFitFileFullPath();
-                    String defaultFileName = imageFileName.substring(0, imageFileName.length()-3) + "INFO";
+                    if (imageFileName == null)
+                        imageFileName = image.getPngFileFullPath();
+                    String defaultFileName = null;
+                    if (imageFileName != null)
+                        defaultFileName = imageFileName.substring(0, imageFileName.length()-3) + "INFO";
 
                     File file = CustomFileChooser.showSaveDialog(invoker, "Save INFO file as...", defaultFileName);
                     if (file == null)
