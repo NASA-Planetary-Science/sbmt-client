@@ -64,6 +64,8 @@ public class LEISAJupiterImage extends PerspectiveImage
         double centerJ = (this.getImageWidth() - 1) / 2.0;
         double[][] region = { { centerI, centerJ } };
 
+        setUseDefaultFootprint(true);
+
         this.setSpectrumRegion(region);
     }
 
@@ -83,6 +85,11 @@ public class LEISAJupiterImage extends PerspectiveImage
     protected int getNumberBands()
     {
         return 256;
+    }
+
+    public double[] getPixelDirection(double sample, double line)
+    {
+        return getPixelDirection((double)sample, (double)line, 127);
     }
 
     public int getNumberOfSpectralSegments() { return 2; }

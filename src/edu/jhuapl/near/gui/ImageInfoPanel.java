@@ -50,6 +50,7 @@ import edu.jhuapl.near.util.IntensityRange;
 public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, MouseMotionListener, PropertyChangeListener //, KeyListener
 {
     public static final double VIEWPOINT_DELTA = 1.0;
+    public static final double ROTATION_DELTA = 5.0;
 
     private vtksbmtJoglCanvasComponent renWin;
     private Image image;
@@ -60,6 +61,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
     private vtkPropPicker imagePicker;
     private boolean initialized = false;
     private boolean centerFrustumMode = false;
+//    private double adjustFactor = 1.0;
 
 //    private class MouseListener extends MouseAdapter
 //    {
@@ -104,11 +106,14 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
         vtkImageData displayedImage = (vtkImageData)image.getTexture().GetInput();
 
         // Only allow contrast changing for images with exactly 1 channel
-        if (image.getNumberOfComponentsOfOriginalImage() > 1)
-        {
-            slider.setEnabled(false);
-            jLabel1.setEnabled(false);
-        }
+//        if (image.getNumberOfComponentsOfOriginalImage() > 1)
+//        {
+//            slider.setEnabled(false);
+//            jLabel1.setEnabled(false);
+//        }
+
+        if (image instanceof PerspectiveImage)
+            applyAdjustmentsButton.setSelected(((PerspectiveImage)image).getApplyFramedAdjustments());
 
         int[] masking = image.getCurrentMask();
         leftSpinner.setValue(masking[0]);
@@ -343,7 +348,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
                 centerFrustumOnPixel(e);
 
                 ((PerspectiveImage)image).loadFootprint();
-                ((PerspectiveImage)image).calculateFrustum();
+//                ((PerspectiveImage)image).calculateFrustum();
             }
 //            PerspectiveImageBoundary boundary = imageBoundaryCollection.getBoundary(image.getKey());
 //            boundary.update();
@@ -448,10 +453,6 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
             if (image instanceof PerspectiveImage)
             {
                 PerspectiveImage pi = (PerspectiveImage)image;
-//                double centerI = pi.getImageHeight() / 2.0;
-//                double centerJ = pi.getImageWidth() / 2.0;
-//                double[] offset = { p[0] - centerI, p[1] - centerJ };
-//                pi.setFrustumOffset(offset);
                 pi.setFrustumOffset(pickPosition);
             }
         }
@@ -496,13 +497,21 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
-        interpolateCheckBox = new javax.swing.JCheckBox();
-        selectViewpointCheckBox = new javax.swing.JCheckBox();
-        resetViewpointButton = new javax.swing.JButton();
         leftButton = new javax.swing.JButton();
         rightButton = new javax.swing.JButton();
         upButton = new javax.swing.JButton();
         downButton = new javax.swing.JButton();
+        rotateLeftButton = new javax.swing.JButton();
+        zoomOutButton = new javax.swing.JButton();
+        zoomInButton = new javax.swing.JButton();
+        rotateRightButton = new javax.swing.JButton();
+        jPanel3 = new javax.swing.JPanel();
+        interpolateCheckBox1 = new javax.swing.JCheckBox();
+        applyAdjustmentsButton = new javax.swing.JCheckBox();
+        resetFrameAdjustmentsButton = new javax.swing.JButton();
+        adjustFrameCheckBox3 = new javax.swing.JCheckBox();
+        factorTextField = new javax.swing.JTextField();
+        factorLabel = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         getContentPane().setLayout(new java.awt.GridBagLayout());
@@ -548,7 +557,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 4;
+        gridBagConstraints.gridy = 5;
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 1.0;
@@ -652,38 +661,6 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
 
         jPanel2.setLayout(new java.awt.GridBagLayout());
 
-        interpolateCheckBox.setSelected(true);
-        interpolateCheckBox.setText("Interpolate Image");
-        interpolateCheckBox.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                interpolateCheckBoxActionPerformed(evt);
-            }
-        });
-        jPanel2.add(interpolateCheckBox, new java.awt.GridBagConstraints());
-
-        selectViewpointCheckBox.setText("Select Viewpoint");
-        selectViewpointCheckBox.setName(""); // NOI18N
-        selectViewpointCheckBox.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                selectViewpointCheckBoxActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 0;
-        jPanel2.add(selectViewpointCheckBox, gridBagConstraints);
-
-        resetViewpointButton.setText("Reset");
-        resetViewpointButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                resetViewpointButtonActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 6;
-        gridBagConstraints.gridy = 0;
-        jPanel2.add(resetViewpointButton, gridBagConstraints);
-
         leftButton.setText("<");
         leftButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -691,7 +668,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
         jPanel2.add(leftButton, gridBagConstraints);
 
@@ -710,7 +687,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 4;
+        gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 0;
         jPanel2.add(upButton, gridBagConstraints);
 
@@ -721,18 +698,130 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 5;
+        gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 0;
         jPanel2.add(downButton, gridBagConstraints);
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 3;
-        gridBagConstraints.gridwidth = 2;
-        getContentPane().add(jPanel2, gridBagConstraints);
+        rotateLeftButton.setText("\\");
+            rotateLeftButton.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    rotateLeftButtonActionPerformed(evt);
+                }
+            });
+            gridBagConstraints = new java.awt.GridBagConstraints();
+            gridBagConstraints.gridx = 6;
+            gridBagConstraints.gridy = 0;
+            jPanel2.add(rotateLeftButton, gridBagConstraints);
 
-        pack();
-    }// </editor-fold>//GEN-END:initComponents
+            zoomOutButton.setText("-><-");
+            zoomOutButton.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    zoomOutButtonActionPerformed(evt);
+                }
+            });
+            gridBagConstraints = new java.awt.GridBagConstraints();
+            gridBagConstraints.gridx = 4;
+            gridBagConstraints.gridy = 0;
+            jPanel2.add(zoomOutButton, gridBagConstraints);
+
+            zoomInButton.setText("<-->");
+            zoomInButton.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    zoomInButtonActionPerformed(evt);
+                }
+            });
+            jPanel2.add(zoomInButton, new java.awt.GridBagConstraints());
+
+            rotateRightButton.setText("/");
+            rotateRightButton.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    rotateRightButtonActionPerformed(evt);
+                }
+            });
+            gridBagConstraints = new java.awt.GridBagConstraints();
+            gridBagConstraints.gridx = 7;
+            gridBagConstraints.gridy = 0;
+            jPanel2.add(rotateRightButton, gridBagConstraints);
+
+            gridBagConstraints = new java.awt.GridBagConstraints();
+            gridBagConstraints.gridx = 0;
+            gridBagConstraints.gridy = 4;
+            gridBagConstraints.gridwidth = 2;
+            getContentPane().add(jPanel2, gridBagConstraints);
+
+            jPanel3.setLayout(new java.awt.GridBagLayout());
+
+            interpolateCheckBox1.setSelected(true);
+            interpolateCheckBox1.setText("Interpolate Pixels");
+            interpolateCheckBox1.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    interpolateCheckBox1ActionPerformed(evt);
+                }
+            });
+            jPanel3.add(interpolateCheckBox1, new java.awt.GridBagConstraints());
+
+            if (image instanceof PerspectiveImage)
+                applyAdjustmentsButton.setSelected(((PerspectiveImage)image).getApplyFramedAdjustments());
+            applyAdjustmentsButton.setText("Apply Adjustments");
+            applyAdjustmentsButton.setName(""); // NOI18N
+            applyAdjustmentsButton.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    applyAdjustmentsButtonActionPerformed(evt);
+                }
+            });
+            gridBagConstraints = new java.awt.GridBagConstraints();
+            gridBagConstraints.gridx = 2;
+            gridBagConstraints.gridy = 0;
+            jPanel3.add(applyAdjustmentsButton, gridBagConstraints);
+
+            resetFrameAdjustmentsButton.setText("Reset Frame Adjustments");
+            resetFrameAdjustmentsButton.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    resetFrameAdjustmentsButtonActionPerformed(evt);
+                }
+            });
+            gridBagConstraints = new java.awt.GridBagConstraints();
+            gridBagConstraints.gridx = 5;
+            gridBagConstraints.gridy = 0;
+            jPanel3.add(resetFrameAdjustmentsButton, gridBagConstraints);
+
+            adjustFrameCheckBox3.setText("Select Target Mode");
+            adjustFrameCheckBox3.setName(""); // NOI18N
+            adjustFrameCheckBox3.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    adjustFrameCheckBox3ActionPerformed(evt);
+                }
+            });
+            gridBagConstraints = new java.awt.GridBagConstraints();
+            gridBagConstraints.gridx = 1;
+            gridBagConstraints.gridy = 0;
+            jPanel3.add(adjustFrameCheckBox3, gridBagConstraints);
+
+            factorTextField.setText("1.0");
+            factorTextField.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    factorTextFieldActionPerformed(evt);
+                }
+            });
+            gridBagConstraints = new java.awt.GridBagConstraints();
+            gridBagConstraints.gridx = 3;
+            gridBagConstraints.gridy = 0;
+            jPanel3.add(factorTextField, gridBagConstraints);
+
+            factorLabel.setText("Factor");
+            gridBagConstraints = new java.awt.GridBagConstraints();
+            gridBagConstraints.gridx = 4;
+            gridBagConstraints.gridy = 0;
+            jPanel3.add(factorLabel, gridBagConstraints);
+
+            gridBagConstraints = new java.awt.GridBagConstraints();
+            gridBagConstraints.gridx = 0;
+            gridBagConstraints.gridy = 3;
+            gridBagConstraints.gridwidth = 2;
+            getContentPane().add(jPanel3, gridBagConstraints);
+
+            pack();
+        }// </editor-fold>//GEN-END:initComponents
 
     private void sliderStateChanged(javax.swing.event.ChangeEvent evt)//GEN-FIRST:event_sliderStateChanged
     {//GEN-HEADEREND:event_sliderStateChanged
@@ -744,16 +833,6 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
         if (image != null)
             image.setDisplayedImageRange(new IntensityRange(lowVal, highVal));
     }//GEN-LAST:event_sliderStateChanged
-
-    private void interpolateCheckBoxActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_interpolateCheckBoxActionPerformed
-    {//GEN-HEADEREND:event_interpolateCheckBoxActionPerformed
-        image.setInterpolate(interpolateCheckBox.isSelected());
-        if (interpolateCheckBox.isSelected())
-            actor.GetProperty().SetInterpolationTypeToLinear();
-        else
-            actor.GetProperty().SetInterpolationTypeToNearest();
-        renWin.Render();
-    }//GEN-LAST:event_interpolateCheckBoxActionPerformed
 
     private void leftSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_leftSpinnerStateChanged
         croppingChanged();
@@ -771,21 +850,19 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
         croppingChanged();
     }//GEN-LAST:event_bottomSpinnerStateChanged
 
-    private void selectViewpointCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectViewpointCheckBoxActionPerformed
-        System.out.println("Select Viewpoint Mode: " + selectViewpointCheckBox.isSelected());
-        centerFrustumMode = selectViewpointCheckBox.isSelected();
-    }//GEN-LAST:event_selectViewpointCheckBoxActionPerformed
-
-    private void resetViewpointButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetViewpointButtonActionPerformed
-                System.out.println("Resetting pointing...");
-                ((PerspectiveImage)image).resetSpacecraftState();
-                ((PerspectiveImage)image).firePropertyChange();
-    }//GEN-LAST:event_resetViewpointButtonActionPerformed
+    private void zoomInButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_zoomInButtonActionPerformed
+        System.out.println("Zoom In");
+        if (image instanceof PerspectiveImage)
+        {
+            ((PerspectiveImage)image).moveZoomFactorBy(-0.01 * getAdjustFactor());
+            ((PerspectiveImage)image).firePropertyChange();
+        }
+    }//GEN-LAST:event_zoomInButtonActionPerformed
 
     private void leftButtonActionPerformed(java.awt.event.ActionEvent evt){//GEN-FIRST:event_leftButtonActionPerformed
         if (image instanceof PerspectiveImage)
         {
-            double[] delta = { VIEWPOINT_DELTA, 0.0 };
+            double[] delta = { getAdjustFactor(), 0.0 };
             ((PerspectiveImage)image).moveTargetPixelCoordinates(delta);
             ((PerspectiveImage)image).firePropertyChange();
         }
@@ -794,7 +871,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
     private void rightButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rightButtonActionPerformed
         if (image instanceof PerspectiveImage)
         {
-            double[] delta = { -VIEWPOINT_DELTA, 0.0 };
+            double[] delta = { -getAdjustFactor(), 0.0 };
             ((PerspectiveImage)image).moveTargetPixelCoordinates(delta);
             ((PerspectiveImage)image).firePropertyChange();
         }
@@ -803,7 +880,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
     private void upButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_upButtonActionPerformed
         if (image instanceof PerspectiveImage)
         {
-            double[] delta = { 0.0, -VIEWPOINT_DELTA };
+            double[] delta = { 0.0, -getAdjustFactor() };
             ((PerspectiveImage)image).moveTargetPixelCoordinates(delta);
             ((PerspectiveImage)image).firePropertyChange();
         }
@@ -812,11 +889,85 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
     private void downButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_downButtonActionPerformed
         if (image instanceof PerspectiveImage)
         {
-            double[] delta = { 0.0, VIEWPOINT_DELTA };
+            double[] delta = { 0.0, getAdjustFactor() };
             ((PerspectiveImage)image).moveTargetPixelCoordinates(delta);
             ((PerspectiveImage)image).firePropertyChange();
         }
     }//GEN-LAST:event_downButtonActionPerformed
+
+    private void rotateLeftButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rotateLeftButtonActionPerformed
+        System.out.println("Rotate Left");
+        if (image instanceof PerspectiveImage)
+        {
+            ((PerspectiveImage)image).moveRotationAngleBy(getAdjustFactor());
+            ((PerspectiveImage)image).firePropertyChange();
+        }
+    }//GEN-LAST:event_rotateLeftButtonActionPerformed
+
+    private void rotateRightButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rotateRightButtonActionPerformed
+        System.out.println("Rotate Right");
+        if (image instanceof PerspectiveImage)
+        {
+            ((PerspectiveImage)image).moveRotationAngleBy(-getAdjustFactor());
+            ((PerspectiveImage)image).firePropertyChange();
+        }
+    }//GEN-LAST:event_rotateRightButtonActionPerformed
+
+    private void interpolateCheckBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_interpolateCheckBox1ActionPerformed
+        if (image instanceof PerspectiveImage)
+        {
+            boolean interpolate = interpolateCheckBox1.isSelected();
+            ((PerspectiveImage)image).setInterpolate(interpolate);
+            if (interpolate)
+                actor.GetProperty().SetInterpolationTypeToLinear();
+            else
+                actor.GetProperty().SetInterpolationTypeToNearest();
+            ((PerspectiveImage)image).firePropertyChange();
+        }
+    }//GEN-LAST:event_interpolateCheckBox1ActionPerformed
+
+    private void applyAdjustmentsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_applyAdjustmentsButtonActionPerformed
+        System.out.println("Apply Adjustments");
+        if (image instanceof PerspectiveImage)
+        {
+            ((PerspectiveImage)image).setApplyFrameAdjustments(applyAdjustmentsButton.isSelected());
+            ((PerspectiveImage)image).firePropertyChange();
+        }
+    }//GEN-LAST:event_applyAdjustmentsButtonActionPerformed
+
+    private void resetFrameAdjustmentsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetFrameAdjustmentsButtonActionPerformed
+        System.out.println("Reset Frame Adjustments");
+        ((PerspectiveImage)image).resetSpacecraftState();
+        ((PerspectiveImage)image).firePropertyChange();
+    }//GEN-LAST:event_resetFrameAdjustmentsButtonActionPerformed
+
+    private void adjustFrameCheckBox3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_adjustFrameCheckBox3ActionPerformed
+        System.out.println("Adjust frame...");
+        centerFrustumMode = adjustFrameCheckBox3.isSelected();
+    }//GEN-LAST:event_adjustFrameCheckBox3ActionPerformed
+
+    private void zoomOutButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_zoomOutButtonActionPerformed
+        System.out.println("Zoom Out");
+        if (image instanceof PerspectiveImage)
+        {
+            ((PerspectiveImage)image).moveZoomFactorBy(0.01 * getAdjustFactor());
+            ((PerspectiveImage)image).firePropertyChange();
+        }
+    }//GEN-LAST:event_zoomOutButtonActionPerformed
+
+    private void factorTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_factorTextFieldActionPerformed
+    }//GEN-LAST:event_factorTextFieldActionPerformed
+
+    private double getAdjustFactor()
+    {
+        double result = 1.0;
+        try {
+            double delta = 1.0 * Double.parseDouble(factorTextField.getText());
+            result = delta;
+        } catch (Exception e) { }
+
+        return result;
+    }
 
     private void croppingChanged()
     {
@@ -834,9 +985,13 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JCheckBox adjustFrameCheckBox3;
+    private javax.swing.JCheckBox applyAdjustmentsButton;
     private javax.swing.JSpinner bottomSpinner;
     private javax.swing.JButton downButton;
-    private javax.swing.JCheckBox interpolateCheckBox;
+    private javax.swing.JLabel factorLabel;
+    private javax.swing.JTextField factorTextField;
+    private javax.swing.JCheckBox interpolateCheckBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -845,17 +1000,21 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
     private javax.swing.JLabel jLabel7;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JButton leftButton;
     private javax.swing.JSpinner leftSpinner;
-    private javax.swing.JButton resetViewpointButton;
+    private javax.swing.JButton resetFrameAdjustmentsButton;
     private javax.swing.JButton rightButton;
     private javax.swing.JSpinner rightSpinner;
-    private javax.swing.JCheckBox selectViewpointCheckBox;
+    private javax.swing.JButton rotateLeftButton;
+    private javax.swing.JButton rotateRightButton;
     private com.jidesoft.swing.RangeSlider slider;
     private javax.swing.JTable table;
     private javax.swing.JSpinner topSpinner;
     private javax.swing.JButton upButton;
+    private javax.swing.JButton zoomInButton;
+    private javax.swing.JButton zoomOutButton;
     // End of variables declaration//GEN-END:variables
 
 //    @Override

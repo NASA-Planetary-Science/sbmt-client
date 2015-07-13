@@ -38,7 +38,14 @@ public class MVICQuadJupiterImage extends PerspectiveImage
         super(key, smallBodyModel, loadPointingOnly, INITIAL_BAND);
     }
 
-    @Override
+    protected void initialize() throws FitsException, IOException
+    {
+        super.initialize();
+        setUseDefaultFootprint(false);
+    }
+
+
+        @Override
     protected void processRawImage(vtkImageData rawImage)
     {
         // Flip image along y axis and y axis. For some reason we need to do

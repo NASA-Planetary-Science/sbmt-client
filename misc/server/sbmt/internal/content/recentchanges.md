@@ -4,6 +4,10 @@
 
 # Recent Changes
 
+### July 10, 2015
+
+-   Added interactive pointing adjust capability
+-   [New Horizons team only] Added spectrum display for LEISA images
 
 ### February 26, 2015
 

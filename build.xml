@@ -28,7 +28,7 @@
     </copy>
     <javac srcdir="${rootdir}/src"
 		   destdir="${rootdir}/build/classes"
-		   debug="off" >
+		   debug="on" >
       <classpath>
         <fileset dir="${rootdir}/lib">
           <include name="**/*.jar" />
@@ -91,12 +91,12 @@
     <mkdir dir="${rootdir}/build/dist"/>
     <mkdir dir="${rootdir}/build/dist/internal"/>
     <mkdir dir="${rootdir}/build/dist/public"/>
-    <exec executable="misc/scripts/generate_zip_dist.sh">
+    <exec executable="config/generate_zip_dist.sh">
       <arg value="/project/nearsdc/software/vtk_all_platforms"/>
       <arg value="${rootdir}/build/dist/internal"/>
       <arg value="-internal"/>
     </exec>
-    <exec executable="misc/scripts/generate_zip_dist.sh">
+    <exec executable="config/generate_zip_dist.sh">
       <arg value="/project/nearsdc/software/vtk_all_platforms"/>
       <arg value="${rootdir}/build/dist/public"/>
       <arg value="-public"/>

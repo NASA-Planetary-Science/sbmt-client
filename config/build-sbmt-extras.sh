@@ -62,6 +62,6 @@ cp misc/scripts/* $INSTALL_BIN_DIR
 ######################################################
 # Install gravity
 ######################################################
-cd misc/programs/gravity
-./compile.sh
-cp gravity elevation-slope $INSTALL_BIN_DIR
+#cd misc/programs/gravity
+#./compile.sh
+#cp gravity elevation-slope $INSTALL_BIN_DIR

@@ -1605,6 +1605,7 @@ public class SmallBodyConfig
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
                             SpectralMode.MONO,
+//                            new GenericPhpQuery("/NEWHORIZONS/PLUTO/IMAGING", "PLUTO"),
                             new FixedListQuery("/NEWHORIZONS/PLUTO/IMAGING"),
                             ImageType.LORRI_IMAGE,
                             new ImageSource[]{ImageSource.SPICE},

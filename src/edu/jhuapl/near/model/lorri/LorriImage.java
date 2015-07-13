@@ -54,9 +54,11 @@ public class LorriImage extends PerspectiveImage
     {
         ImageKey key = getKey();
         File keyFile = new File(key.name);
-        String sumFilename = keyFile.getParentFile().getParent() + "/infofiles/"
-        + keyFile.getName() + ".INFO";
-        return FileCache.getFileFromServer(sumFilename).getAbsolutePath();
+        String pointingFileName = null;
+
+        pointingFileName = keyFile.getParentFile().getParent() + "/infofiles/" + keyFile.getName() + ".INFO";
+
+        return FileCache.getFileFromServer(pointingFileName).getAbsolutePath();
     }
 
     @Override

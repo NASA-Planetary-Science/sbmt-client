@@ -97,7 +97,7 @@ void getFieldsFromFitsHeader(const string& labelfilename,
         string str;
         string key;
         string value;
-        
+
         for (int i=0; i<100; ++i)
         {
             fin.read(buffer, 80);
@@ -187,14 +187,20 @@ void getScOrientation(double et, string body, double scposb[3], double boredir[3
 
     spkpos_c(target, et, ref.c_str(), abcorr, obs, scposb, &lt);
     if (failed_c())
+    {
+        cerr << "Failed spkpos" << endl;
         return;
+    }
 
     cout.precision(16);
     cout << "Spacecraft Position: " << scposb[0] << " " << scposb[1] << " " << scposb[2] << endl;
 
     pxform_c(frame, ref.c_str(), et, i2bmat);
     if (failed_c())
+    {
+        cerr << "Failed pxform" << endl;
         return;
+    }
 
     xo=-tan(0.2907*rpd_c()/2.0);
     yo=-tan(0.2907*rpd_c()/2.0);
@@ -343,7 +349,7 @@ void saveInfoFile(string filename,
   4. output folder - path to folder where infofiles should be saved to
   5. output file list - path to file in which all files for which an infofile was
                         created will be listed along with their start times.
-  
+
 */
 int main(int argc, char** argv)
 {
@@ -397,29 +403,38 @@ int main(int argc, char** argv)
 
         getEt(startmet, stopmet, startutc, startet, stoputc, stopet);
         if (failed_c())
+        {
+            cerr << "Failed to get et for " << target << " in " << labelfiles[i] << endl;
             continue;
+        }
 
         et = startet + (stopet - startet) / 2.0;
 
-        // omit checking for target for pluto images
-        if (et < 473342467)
+        if (target != body)
         {
-            if (target != body)
-                continue;
+//            cerr << "TARGET keyword is: " << target << " not " << body << endl;
+            continue;
         }
 
         getScOrientation(et, body, scposb, boredir, updir, frustum);
         if (failed_c())
+        {
+            cerr << "Failed to get SC orientation for " << target << " in " << labelfiles[i] << endl;
             continue;
+        }
 
         getSunPosition(et, body, sunPosition);
         if (failed_c())
+        {
+            cerr << "Failed to get sun position for " << target << " in " << labelfiles[i] << endl;
             continue;
+        }
 
         string labelbasename = basename((char*)labelfiles[i].c_str());
         unsigned found = labelbasename.find_last_of(".");
         string infofilename = outputfolder + "/" + labelbasename.substr(0, found) + ".INFO";
         saveInfoFile(infofilename, startutc, stoputc, scposb, boredir, updir, frustum, sunPosition);
+        cerr << target << " infofile created successfully in " << infofilename << endl;
 
 	fout << labelbasename << " " << startutc << endl;
 

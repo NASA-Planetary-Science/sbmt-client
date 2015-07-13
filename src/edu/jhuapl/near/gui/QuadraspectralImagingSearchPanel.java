@@ -23,6 +23,7 @@ import java.util.Set;
 
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -47,6 +48,8 @@ public class QuadraspectralImagingSearchPanel extends ImagingSearchPanel impleme
 
     private JComboBox monoComboBox;
     private ComboBoxModel monoComboBoxModel;
+
+    private JCheckBox defaultFrustum;
 
     private String[] bandNames = { "Red", "Blue", "NIR", "MH4" };
     private Integer[] bandIndices = { 0, 1, 2, 3 };
@@ -95,6 +98,14 @@ public class QuadraspectralImagingSearchPanel extends ImagingSearchPanel impleme
         monoComboBox.setSelectedIndex(3);
         bandPanel.add(monoComboBox);
 
+        defaultFrustum = new JCheckBox("Default Frame");
+        defaultFrustum.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                defaultFrustumActionPerformed(evt);
+            }
+        });
+
+        bandPanel.add(defaultFrustum);
         panel.add(bandPanel, BorderLayout.WEST);
     }
 
@@ -145,6 +156,26 @@ public class QuadraspectralImagingSearchPanel extends ImagingSearchPanel impleme
         super.unloadImage(key, images);
     }
 
+    private void defaultFrustumActionPerformed(java.awt.event.ActionEvent evt)
+    {
+        ImageCollection images = (ImageCollection)getModelManager().getModel(getImageCollectionModelName());
+
+        Set<Image> imageSet = images.getImages();
+        for (Image i : imageSet)
+        {
+            PerspectiveImage image = (PerspectiveImage)i;
+            ImageKey key = image.getKey();
+            ImageType type = key.instrument.type;
+            if (type == ImageType.MVIC_JUPITER_IMAGE) // this should not be specific to a given image type, should it? -turnerj1
+            {
+                if (image instanceof PerspectiveImage)
+                {
+                   ((PerspectiveImage)image).setUseDefaultFootprint(defaultFrustum.isSelected());
+                }
+            }
+        }
+    }//GEN-LAST:event_greenMonoCheckboxActionPerformed
+
     @Override
     public void actionPerformed(ActionEvent arg0)
     {
@@ -163,13 +194,15 @@ public class QuadraspectralImagingSearchPanel extends ImagingSearchPanel impleme
             ImageType type = key.instrument.type;
 //            System.out.println(image.getImageName() + ", " + type + ", " + image.isVisible());
             if (type == ImageType.MVIC_JUPITER_IMAGE) // this should not be specific to a given image type, should it? -turnerj1
-            if (image.isVisible())
             {
-               image.setCurrentSlice(newBandIndex);
-               image.setDisplayedImageRange(null);
-//               image.setDisplayedImageRange(image.getDisplayedRange());
-               image.loadFootprint();
-               image.firePropertyChange();
+                if (image.isVisible())
+                {
+                   image.setCurrentSlice(newBandIndex);
+                   image.setDisplayedImageRange(null);
+//                 image.setDisplayedImageRange(image.getDisplayedRange());
+                   image.loadFootprint();
+                   image.firePropertyChange();
+                }
             }
         }
 
