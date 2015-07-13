@@ -4,10 +4,27 @@
 
 # Recent Changes
 
+### July 13, 2015
+
+-   Modified image pointing information is now being saved with an "INFO.adjusted" suffix
+    in the local cache, so it is not overwritten when the backend pipeline is rerun.
+    These files can be copied directly from the cache directory into other user's cache
+    directories, and they can eventually be uploaded to the server.
+    
+-   INFO file import and export file names in dialog boxes now default to the image file
+    name with a ".INFO" suffix.
+    
+-   Panning, zooming and rotation pointing direction buttons scalable by scale factor.
+
 ### July 10, 2015
 
 -   Added interactive pointing adjust capability
 -   [New Horizons team only] Added spectrum display for LEISA images
+-   Added INFO file specification field for importing custom perspective images.
+-   Pointing information can now by adjusted manually using the "Select Target" mode.
+    or the pan, zoom and rotate buttons on the Image Info dialog.
+-   LEISA and MVIC instrument tabs added to Pluto bodies.
+-   Color image info dialog now has contrast and intensity sliders.
 
 ### February 26, 2015
 
