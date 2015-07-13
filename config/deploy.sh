@@ -43,8 +43,3 @@ nanoc
 sed -i "" "s/VERSIONXXXXXX/${TODAYSDATE}/g" output/index.html output/installation.html
 scp -r output/* ${TARGET}/
 )
-
-ssh ${TARGETHOST} rm -f ${TARGETDIR}/internal/releases/sbmt-latest-linux-x64.zip
-ssh ${TARGETHOST} "cd ${TARGETDIR}/internal/releases; ln -s sbmt-${TODAYSDATE}-linux-x64.zip sbmt-latest-linux-x64.zip"
-ssh ${TARGETHOST} rm -f ${TARGETDIR}/internal/releases/sbmt-latest-macosx-x64.zip
-ssh ${TARGETHOST} "cd ${TARGETDIR}/internal/releases; ln -s sbmt-${TODAYSDATE}-macosx-x64.zip sbmt-latest-macosx-x64.zip"
