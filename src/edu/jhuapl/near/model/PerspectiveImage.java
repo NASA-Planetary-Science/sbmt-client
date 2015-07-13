@@ -727,11 +727,24 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         boolean offset = true;
 
         FileInputStream fs = null;
+
+        // look for an adjusted file first
         try {
-            fs = new FileInputStream(infoFilename);
+            fs = new FileInputStream(infoFilename + ".adjusted");
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            fs = null;
         }
+
+        // if no adjusted file exists, then load in the original unadjusted file
+        if (fs == null)
+        {
+            try {
+                fs = new FileInputStream(infoFilename);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+
         InputStreamReader isr = new InputStreamReader(fs);
         BufferedReader in = new BufferedReader(isr);
 
@@ -948,10 +961,13 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     {
         // for testing purposes only:
 //        infoFilename = infoFilename + ".txt";
-//        System.out.println("Saving infofile to: " + infoFilename);
+//        System.out.println("Saving infofile to: " + infoFilename + ".adjusted");
+
         FileOutputStream fs = null;
+
+        // save out info file to cache with ".adjusted" appended to the name
         try {
-            fs = new FileOutputStream(infoFilename);
+            fs = new FileOutputStream(infoFilename + ".adjusted");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             return;
@@ -972,13 +988,13 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
         boolean writeApplyAdustments = false;
 
-        if (targetPixelCoordinates[0] != 0.0 && targetPixelCoordinates[1] != 0.0)
+        if (targetPixelCoordinates[0] >= 0.0 && targetPixelCoordinates[1] != 0.0)
         {
             out.write(String.format("%-20s= ( %1.16e , %1.16e )\n", TARGET_PIXEL_COORD, targetPixelCoordinates[0], targetPixelCoordinates[1]));
             writeApplyAdustments = true;
         }
 
-        if (zoomFactor[0] != 0.0)
+        if (zoomFactor[0] != 1.0)
         {
             out.write(String.format("%-20s= %1.16e\n", TARGET_ZOOM_FACTOR, zoomFactor[0]));
             writeApplyAdustments = true;
