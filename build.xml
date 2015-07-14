@@ -1,5 +1,6 @@
 <project default="generatezip">
 
+<!--
   <fail message="Unsupported Java version: ${ant.java.version}. Make sure that the Java version is 1.8.">
     <condition>
       <not>
@@ -7,6 +8,7 @@
       </not>
   </condition>
   </fail>
+-->
 
   <property name="rootdir" location="${basedir}"/>
   <property name="vtkrootdir" location="/home/kahneg1/src/near/vtk_all_platforms"/>
@@ -64,7 +66,7 @@
       <fileset dir="${rootdir}/lib">
         <include name="**/*.jar" />
       </fileset>
-    </path>    
+    </path>
     <pathconvert property="manifest.classpath" pathsep=" ">
       <path refid="build-classpath"/>
       <mapper>
