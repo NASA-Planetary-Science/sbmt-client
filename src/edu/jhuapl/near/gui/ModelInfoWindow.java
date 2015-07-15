@@ -1,10 +1,14 @@
 package edu.jhuapl.near.gui;
 
+import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeListener;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 
+import vtk.vtkPropPicker;
+
+import edu.jhuapl.near.gui.joglrendering.vtksbmtJoglCanvasComponent;
 import edu.jhuapl.near.model.Model;
 
 public abstract class ModelInfoWindow extends JFrame implements PropertyChangeListener
@@ -24,4 +28,28 @@ public abstract class ModelInfoWindow extends JFrame implements PropertyChangeLi
      * @return
      */
     public abstract Model getCollectionModel();
+
+    protected int doPick(MouseEvent e, vtkPropPicker picker, vtksbmtJoglCanvasComponent renWin)
+    {
+        int pickSucceeded = 0;
+        try
+        {
+            renWin.getComponent().getContext().makeCurrent();
+            renWin.getVTKLock().lock();
+            // Note that on some displays, such as a retina display, the height used by
+            // OpenGL is different than the height used by Java. Therefore we need
+            // scale the mouse coordinates to get the right position for OpenGL.
+            double openGlHeight = renWin.getComponent().getSurfaceHeight();
+            double javaHeight = renWin.getComponent().getHeight();
+            double scale = openGlHeight / javaHeight;
+            pickSucceeded = picker.Pick(scale*e.getX(), scale*(javaHeight-e.getY()-1), 0.0, renWin.getRenderer());
+            renWin.getVTKLock().unlock();
+        }
+        finally
+        {
+            renWin.getComponent().getContext().release();
+        }
+
+        return pickSucceeded;
+    }
 }

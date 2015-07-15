@@ -56,15 +56,7 @@ public class ColorImageInfoPanel extends ModelInfoWindow implements PropertyChan
         @Override
         public void mouseClicked(MouseEvent e)
         {
-            renWin.getVTKLock().lock();
-            // Note that on some displays, such as a retina display, the height used by
-            // OpenGL is different than the height used by Java. Therefore we need
-            // scale the mouse coordinates to get the right position for OpenGL.
-            double openGlHeight = renWin.getComponent().getSurfaceHeight();
-            double javaHeight = renWin.getComponent().getHeight();
-            double scale = openGlHeight / javaHeight;
-            int pickSucceeded = imagePicker.Pick(scale*e.getX(), scale*(javaHeight-e.getY()-1), 0.0, renWin.getRenderer());
-            renWin.getVTKLock().unlock();
+            int pickSucceeded = doPick(e, imagePicker, renWin);
             if (pickSucceeded == 1)
             {
                 double[] p = imagePicker.GetPickPosition();

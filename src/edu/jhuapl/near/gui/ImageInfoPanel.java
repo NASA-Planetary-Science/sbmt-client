@@ -68,9 +68,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
 //        @Override
 //        public void mouseClicked(MouseEvent e)
 //        {
-//            renWin.lock();
-//            int pickSucceeded = imagePicker.Pick(e.getX(), renWin.getHeight()-e.getY()-1, 0.0, renWin.GetRenderer());
-//            renWin.unlock();
+//            int pickSucceeded = doPick(e, imagePicker, renWin);
 //            if (pickSucceeded == 1)
 //            {
 //                double[] p = imagePicker.GetPickPosition();
@@ -411,15 +409,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
 
     private void updateSpectrumRegion(MouseEvent e)
     {
-        renWin.getVTKLock().lock();
-        // Note that on some displays, such as a retina display, the height used by
-        // OpenGL is different than the height used by Java. Therefore we need
-        // scale the mouse coordinates to get the right position for OpenGL.
-        double openGlHeight = renWin.getComponent().getSurfaceHeight();
-        double javaHeight = renWin.getComponent().getHeight();
-        double scale = openGlHeight / javaHeight;
-        int pickSucceeded = imagePicker.Pick(scale*e.getX(), scale*(javaHeight-e.getY()-1), 0.0, renWin.getRenderer());
-        renWin.getVTKLock().unlock();
+        int pickSucceeded = doPick(e, imagePicker, renWin);
         if (pickSucceeded == 1)
         {
             double[] p = imagePicker.GetPickPosition();
@@ -436,15 +426,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
     {
 //        System.out.println("Center Frustum");
 
-        renWin.getVTKLock().lock();
-        // Note that on some displays, such as a retina display, the height used by
-        // OpenGL is different than the height used by Java. Therefore we need
-        // scale the mouse coordinates to get the right position for OpenGL.
-        double openGlHeight = renWin.getComponent().getSurfaceHeight();
-        double javaHeight = renWin.getComponent().getHeight();
-        double scale = openGlHeight / javaHeight;
-        int pickSucceeded = imagePicker.Pick(scale*e.getX(), scale*(javaHeight-e.getY()-1), 0.0, renWin.getRenderer());
-        renWin.getVTKLock().unlock();
+        int pickSucceeded = doPick(e, imagePicker, renWin);
         if (pickSucceeded == 1)
         {
             double[] pickPosition = imagePicker.GetPickPosition();
