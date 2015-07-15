@@ -233,7 +233,10 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         }
 
         if (key.source.equals(ImageSource.SPICE) || key.source.equals(ImageSource.LOCAL_PERSPECTIVE))
+        {
             infoFileFullPath = initializeInfoFileFullPath();
+            sumfileFullPath = initializeSumfileFullPath();
+        }
         else if (key.source.equals(ImageSource.LABEL))
             labelFileFullPath = initializeLabelFileFullPath();
         else
@@ -723,27 +726,27 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
             double[][] boresightDirection,
             double[][] upVector,
             double[] targetPixelCoordinates,
-            boolean[] applyFrameAdjustments) throws NumberFormatException, IOException
+            boolean[] applyFrameAdjustments) throws NumberFormatException, IOException, FileNotFoundException
     {
         boolean offset = true;
 
         FileInputStream fs = null;
 
         // look for an adjusted file first
-        try {
+//        try {
             fs = new FileInputStream(infoFilename + ".adjusted");
-        } catch (FileNotFoundException e) {
-            fs = null;
-        }
+//        } catch (FileNotFoundException e) {
+//            fs = null;
+//        }
 
         // if no adjusted file exists, then load in the original unadjusted file
         if (fs == null)
         {
-            try {
+//            try {
                 fs = new FileInputStream(infoFilename);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
+//            } catch (FileNotFoundException e) {
+//                e.printStackTrace();
+//            }
         }
 
         InputStreamReader isr = new InputStreamReader(fs);
@@ -1569,7 +1572,17 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         }
         else if (key.source.equals(ImageSource.LOCAL_PERSPECTIVE))
         {
-            loadImageInfo();
+            boolean loaded = false;
+            try {
+                loadImageInfo();
+                loaded = true;
+            }
+            catch (FileNotFoundException e)
+            {
+                loaded = false;
+            }
+            if (!loaded)
+                this.loadSumfile();
         }
         else
         {
