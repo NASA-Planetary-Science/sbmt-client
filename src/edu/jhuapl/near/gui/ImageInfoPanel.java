@@ -63,27 +63,6 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
     private boolean centerFrustumMode = false;
 //    private double adjustFactor = 1.0;
 
-//    private class MouseListener extends MouseAdapter
-//    {
-//        @Override
-//        public void mouseClicked(MouseEvent e)
-//        {
-//            renWin.lock();
-//            int pickSucceeded = imagePicker.Pick(e.getX(), renWin.getHeight()-e.getY()-1, 0.0, renWin.GetRenderer());
-//            renWin.unlock();
-//            if (pickSucceeded == 1)
-//            {
-//                double[] p = imagePicker.GetPickPosition();
-//                // Note we reverse x and y so that the pixel is in the form the camera
-//                // position/orientation program expects.
-//                System.out.println(p[1] + " " + p[0]);
-//                double[][] spectrumRegion = { { p[1], p[2] } };
-//                if (this.image instanceof PerspectiveImage)
-//                    this.image.set
-//            }
-//        }
-//    }
-
     /** Creates new form ImageInfoPanel2 */
     public ImageInfoPanel(
             final Image image,
@@ -356,6 +335,16 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
 
             ((PerspectiveImage)image).firePropertyChange();
         }
+
+      int pickSucceeded = doPick(e, imagePicker, renWin);
+      if (pickSucceeded == 1)
+      {
+          double[] p = imagePicker.GetPickPosition();
+          // Note we reverse x and y so that the pixel is in the form the camera
+          // position/orientation program expects.
+          System.out.println(p[1] + " " + p[0]);
+      }
+
     }
 
 
@@ -411,21 +400,10 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
 
     private void updateSpectrumRegion(MouseEvent e)
     {
-        renWin.getVTKLock().lock();
-        // Note that on some displays, such as a retina display, the height used by
-        // OpenGL is different than the height used by Java. Therefore we need
-        // scale the mouse coordinates to get the right position for OpenGL.
-        double openGlHeight = renWin.getComponent().getSurfaceHeight();
-        double javaHeight = renWin.getComponent().getHeight();
-        double scale = openGlHeight / javaHeight;
-        int pickSucceeded = imagePicker.Pick(scale*e.getX(), scale*(javaHeight-e.getY()-1), 0.0, renWin.getRenderer());
-        renWin.getVTKLock().unlock();
+        int pickSucceeded = doPick(e, imagePicker, renWin);
         if (pickSucceeded == 1)
         {
             double[] p = imagePicker.GetPickPosition();
-            // Note we reverse x and y so that the pixel is in the form the camera
-            // position/orientation program expects.
-            System.out.println(p[1] + " " + p[0]);
             double[][] spectrumRegion = { { p[0], p[1] } };
             if (image instanceof PerspectiveImage)
                 ((PerspectiveImage)image).setSpectrumRegion(spectrumRegion);
@@ -436,15 +414,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
     {
 //        System.out.println("Center Frustum");
 
-        renWin.getVTKLock().lock();
-        // Note that on some displays, such as a retina display, the height used by
-        // OpenGL is different than the height used by Java. Therefore we need
-        // scale the mouse coordinates to get the right position for OpenGL.
-        double openGlHeight = renWin.getComponent().getSurfaceHeight();
-        double javaHeight = renWin.getComponent().getHeight();
-        double scale = openGlHeight / javaHeight;
-        int pickSucceeded = imagePicker.Pick(scale*e.getX(), scale*(javaHeight-e.getY()-1), 0.0, renWin.getRenderer());
-        renWin.getVTKLock().unlock();
+        int pickSucceeded = doPick(e, imagePicker, renWin);
         if (pickSucceeded == 1)
         {
             double[] pickPosition = imagePicker.GetPickPosition();
