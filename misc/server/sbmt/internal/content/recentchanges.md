@@ -4,6 +4,11 @@
 
 # Recent Changes
 
+### July 15, 2015
+
+-   Upgraded to latest version of VTK
+-   Fixed bug in loading of SUM pointing files in the custom "Image" tab
+
 ### July 13, 2015
 
 -   Modified image pointing information is now being saved with an "INFO.adjusted" suffix
