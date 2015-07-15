@@ -733,11 +733,11 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         FileInputStream fs = null;
 
         // look for an adjusted file first
-//        try {
+        try {
             fs = new FileInputStream(infoFilename + ".adjusted");
-//        } catch (FileNotFoundException e) {
-//            fs = null;
-//        }
+        } catch (FileNotFoundException e) {
+            fs = null;
+        }
 
         // if no adjusted file exists, then load in the original unadjusted file
         if (fs == null)

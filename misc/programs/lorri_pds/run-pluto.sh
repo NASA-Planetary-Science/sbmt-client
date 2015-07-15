@@ -73,7 +73,7 @@ runCreateInfoFiles() {
 
     # generate database tables
 #    pushd /project/nearsdc/data/NEWHORIZONS/$1/IMAGING/
-#    find `pwd` -name "*.fit" | sed 's,/project/nearsdc/data,,g' | sort > imagelist-fullpath.txt
+#    find -L `pwd` -name "*.fit" | sed 's,/project/nearsdc/data,,g' | sort > imagelist-fullpath.txt
 #    popd
 }
 
