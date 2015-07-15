@@ -1,3 +1,4 @@
+cat nh-sbmt-update.sh
 #!/bin/bash
 
 # This script is meant to be run as a daily cron job. It checks to see
@@ -6,7 +7,8 @@
 
 set -e
 set -o pipefail
-export JAVA_HOME=/project/nearsdc/software/java/x86_64/jdk1.6.0_35
+export JAVA_HOME=/project/nearsdc/software/java/x86_64/jdk1.8.0_45
+# export JAVA_HOME=/project/nearsdc/software/java/x86_64/jdk1.6.0_35
 export PATH=${JAVA_HOME}/bin:${PATH}
 export PATH=/project/nearsdc/software/apache-ant/latest/bin:${PATH}
 
@@ -21,16 +23,21 @@ cd $DIR
 cp /project/lorri/kernels/nh_auto.mk nh_spice.mk
 
 # run git clone on kenny since that machine has a decent version of git
-rm -rf $DIR/sbmt
-ssh kenny "cd $DIR; git clone http://hardin:8080/scm/git/sbmt"
 
-# Compile SBMT
-cd $DIR/sbmt
-./config/build-sbmt-extras.sh
+# Temporarily disable git clone because the repository is being upgraded to the new version of VTK
+# rm -rf $DIR/sbmt
+# ssh kenny "cd $DIR; git clone http://hardin:8080/scm/git/sbmt"
+
+# # Compile SBMT
+# cd $DIR/sbmt
+# ./config/build-sbmt-extras.sh
 
 # Copy over any new LORRI fits data
+echo "copying LORRI images"
+
 mkdir -p /project/nearsdc/data/NEWHORIZONS/LORRI/images2
-find /project/lorri/data/soc/pluto/level2/lor/current -name "*fit" | xargs cp -R -u -L -t /project/nearsdc/data/NEWHORIZONS/LORRI/images2
+#find /project/lorri/data/soc/pluto/level2/lor/current -name "*fit" | xargs cp -R -u -L -t /project/nearsdc/data/NEWHORIZONS/LORRI/images2
+find /project/lorri/data/soc/hicad/level2/lor -name "*fit" | xargs cp -R -u -L -t /project/nearsdc/data/NEWHORIZONS/LORRI/images2
 # remove the 4x4 and other non-useful images
 rm -f /project/nearsdc/data/NEWHORIZONS/LORRI/images2/*_0x63{3,4,5,9,A,B}*.fit
 
@@ -51,7 +58,8 @@ cp $DIR/nh_spice.mk .
 
 # Copy over any new MVIC fits data
 mkdir -p /project/nearsdc/data/NEWHORIZONS/MVIC/images2
-find /project/lorri/data/soc/pluto/level2/mvi/current -name "*fit" | xargs cp -R -u -L -t /project/nearsdc/data/NEWHORIZONS/MVIC/images2
+# find /project/lorri/data/soc/pluto/level2/mvi/current -name "*fit" | xargs cp -R -u -L -t /project/nearsdc/data/NEWHORIZONS/MVIC/images2
+find /project/lorri/data/soc/hicad/level2/mvi -name "*fit" | xargs cp -R -u -L -t /project/nearsdc/data/NEWHORIZONS/MVIC/images2
 # Remove and do not process bad images
 rm -f /project/nearsdc/data/NEWHORIZONS/MVIC/images2/m*0287692291*.fit
 rm -f /project/nearsdc/data/NEWHORIZONS/MVIC/images2/m*0287694091*.fit
@@ -67,7 +75,8 @@ cp $DIR/nh_spice.mk .
 
 # Copy over any new LEISA fits data
 mkdir -p /project/nearsdc/data/NEWHORIZONS/LEISA/images2
-find /project/lorri/data/soc/pluto/level2/lei/current -name "*fit" | xargs cp -R -u -L -t /project/nearsdc/data/NEWHORIZONS/LEISA/images2
+# find /project/lorri/data/soc/pluto/level2/lei/current -name "*fit" | xargs cp -R -u -L -t /project/nearsdc/data/NEWHORIZONS/LEISA/images2
+find /project/lorri/data/soc/hicad/level2/lei -name "*fit" | xargs cp -R -u -L -t /project/nearsdc/data/NEWHORIZONS/LEISA/images2
 # Remove and do not process bad images
 rm -f /project/nearsdc/data/NEWHORIZONS/LEISA/images2/lsb_028769*.fit
 
