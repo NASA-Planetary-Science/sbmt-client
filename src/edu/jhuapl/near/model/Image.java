@@ -96,6 +96,22 @@ public abstract class Image extends Model implements PropertyChangeListener
         },
     }
 
+    public enum FileType
+    {
+        SUM {
+            public String toString()
+            {
+                return "SUM";
+            }
+        },
+        INFO {
+            public String toString()
+            {
+                return "INFO";
+            }
+        },
+    }
+
 
     public static class ImagingInstrument
     {
@@ -144,6 +160,8 @@ public abstract class Image extends Model implements PropertyChangeListener
 
         public ImageSource source;
 
+        public FileType fileType;
+
         public ImagingInstrument instrument;
 
         public String band;
@@ -153,18 +171,29 @@ public abstract class Image extends Model implements PropertyChangeListener
 
         public ImageKey(String name, ImageSource source)
         {
-            this(name, source, null); // new ImagingInstrument());
+            this(name, source, null, null);
+        }
+
+        public ImageKey(String name, ImageSource source, FileType fileType)
+        {
+            this(name, source, fileType, null, null, 0);
         }
 
         public ImageKey(String name, ImageSource source, ImagingInstrument instrument)
         {
-            this(name, source, instrument, null, 0);
+            this(name, source, null, instrument, null, 0);
         }
 
-        public ImageKey(String name, ImageSource source, ImagingInstrument instrument, String band, int slice)
+        public ImageKey(String name, ImageSource source, FileType fileType, ImagingInstrument instrument)
+        {
+            this(name, source, fileType, instrument, null, 0);
+        }
+
+        public ImageKey(String name, ImageSource source, FileType fileType, ImagingInstrument instrument, String band, int slice)
         {
             this.name = name;
             this.source = source;
+            this.fileType = fileType;
             this.instrument = instrument;
             this.band = band;
             this.slice = slice;

@@ -53,6 +53,11 @@ public class LorriImage extends PerspectiveImage
     protected String initializeInfoFileFullPath()
     {
         ImageKey key = getKey();
+
+        // if the file type is SUM, then return a null
+        if (key.fileType != null && key.fileType == FileType.SUM)
+            return null;
+
         File keyFile = new File(key.name);
         String pointingFileName = null;
 
@@ -65,6 +70,11 @@ public class LorriImage extends PerspectiveImage
     protected String initializeSumfileFullPath()
     {
         ImageKey key = getKey();
+
+        // if the file type is not SUM, then return null
+        if (key.fileType == null || key.fileType != FileType.SUM)
+            return null;
+
         File keyFile = new File(key.name);
         String sumFilename = keyFile.getParentFile().getParent() + "/sumfiles/"
         + keyFile.getName() + ".SUM";

@@ -50,7 +50,8 @@ public class CustomPerspectiveImage extends PerspectiveImage
     {
         // Flip image along y axis. For some reason we need to do
         // this so the image is displayed properly.
-        ImageDataUtil.flipImageYAxis(rawImage);
+        if (getKey().source == ImageSource.LOCAL_CYLINDRICAL)
+            ImageDataUtil.flipImageYAxis(rawImage);
     }
 
     @Override
