@@ -4,10 +4,11 @@
 
 # Recent Changes
 
-### July 15, 2015
+### July 16, 2015
 
 -   Upgraded to latest version of VTK
 -   Fixed bug in loading of SUM pointing files in the custom "Image" tab
+-   Fixed bug in loading of custom perspective images where images were flipped
 
 ### July 13, 2015
 
