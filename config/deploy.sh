@@ -18,12 +18,10 @@ TARGET="${TARGETHOST}:${TARGETDIR}"
 
 scp build/dist/internal/linux64/sbmt-${TODAYSDATE}-linux-x64.zip                    ${TARGET}/internal/releases/
 scp build/dist/internal/mac64/sbmt-${TODAYSDATE}-macosx-x64.zip                     ${TARGET}/internal/releases/
-scp build/dist/internal/win64-with-jre/sbmt-${TODAYSDATE}-windows-x64-with-java.zip ${TARGET}/internal/releases/
 scp build/dist/internal/win64/sbmt-${TODAYSDATE}-windows-x64.zip                    ${TARGET}/internal/releases/
 
 scp build/dist/public/linux64/sbmt-${TODAYSDATE}-linux-x64.zip                     ${TARGET}/releases/
 scp build/dist/public/mac64/sbmt-${TODAYSDATE}-macosx-x64.zip                      ${TARGET}/releases/
-scp build/dist/public/win64-with-jre/sbmt-${TODAYSDATE}-windows-x64-with-java.zip  ${TARGET}/releases/
 scp build/dist/public/win64/sbmt-${TODAYSDATE}-windows-x64.zip                     ${TARGET}/releases/
 
 (
