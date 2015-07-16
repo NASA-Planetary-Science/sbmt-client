@@ -50,8 +50,25 @@ public class CustomPerspectiveImage extends PerspectiveImage
     {
         // Flip image along y axis. For some reason we need to do
         // this so the image is displayed properly.
-        if (getKey().source == ImageSource.LOCAL_CYLINDRICAL)
-            ImageDataUtil.flipImageYAxis(rawImage);
+        ImageKey key = getKey();
+        if (key.source == ImageSource.LOCAL_CYLINDRICAL)
+        {
+            ImageDataUtil.flipImageXAxis(rawImage);
+        }
+        else if (key.source == ImageSource.LOCAL_PERSPECTIVE)
+        {
+            // only rotate INFO files, not SUM files
+            if (key.fileType == FileType.INFO)
+            {
+                ImageDataUtil.rotateImage(rawImage, 270.0);
+            }
+            else if (key.fileType == FileType.SUM)
+
+            {
+                ImageDataUtil.flipImageXAxis(rawImage);
+//                ImageDataUtil.rotateImage(rawImage, 180.0);
+            }
+        }
     }
 
     @Override

@@ -435,9 +435,9 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
                 {
                     ImageInfo imageInfo = (ImageInfo)((DefaultListModel)imageList.getModel()).get(selectedIndex);
                     String name = getCustomDataFolder() + File.separator + imageInfo.imagefilename;
-                    ImageKey imageKey = new ImageKey(name,
-                            imageInfo.projectionType == ProjectionType.CYLINDRICAL? ImageSource.LOCAL_CYLINDRICAL : ImageSource.LOCAL_PERSPECTIVE,
-                            imageInfo.sumfilename != null ? FileType.SUM : FileType.INFO);
+                    ImageSource source = imageInfo.projectionType == ProjectionType.CYLINDRICAL ? ImageSource.LOCAL_CYLINDRICAL : ImageSource.LOCAL_PERSPECTIVE;
+                    FileType fileType = imageInfo.sumfilename != null && !imageInfo.sumfilename.equals("null") ? FileType.SUM : FileType.INFO;
+                    ImageKey imageKey = new ImageKey(name, source, fileType);
                     imageKeys.add(imageKey);
                 }
                 imagePopupMenu.setCurrentImages(imageKeys);
