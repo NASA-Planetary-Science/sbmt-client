@@ -566,7 +566,8 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
             String imageFileName =file.getName();
             String defaultInfoFileName = file.getParent() + System.getProperty("file.separator") + imageFileName.substring(0, imageFileName.length()-3) + "INFO";
             imageNameTextField.setText(imageFileName);
-            infofilePathTextField.setText(defaultInfoFileName);
+            // set default info file name
+//            infofilePathTextField.setText(defaultInfoFileName);
         }
     }//GEN-LAST:event_browseImageButtonActionPerformed
 
