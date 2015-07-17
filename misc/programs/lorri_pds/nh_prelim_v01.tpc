@@ -1,0 +1,56 @@
+\begintext
+
+Planetary Constants for Pluto's smaller moons as suggested by Olivier Barnouin
+
+NIX   902
+HYDRA 903
+
+Russell Turner
+2015-07-16
+Will be replaced when better information is available
+JHU/APL
+
+
+Temporary Frame definition for NIX to connect PCK and SPK.
+Arbitrarily selected a body id of 1500000.  Expect this to
+change once the project or the NAIF team releases an updated
+frame definition for this body.
+
+\begindata
+    FRAME_IAU_NIX          = 1500000
+    FRAME_1500000_NAME     = 'IAU_NIX'
+    FRAME_1500000_CLASS    = 2
+    FRAME_1500000_CLASS_ID = 902
+    FRAME_1500000_CENTER   = 902
+\begintext
+
+
+\begindata
+
+        BODY902_POLE_RA        = (  132.993   0.          0. )
+        BODY902_POLE_DEC       = (   -6.163   0.          0. )
+        BODY902_PM             = (    0.   24.85463 0. )
+        BODY902_LONG_AXIS      = (    0.                     )
+\begintext
+
+Temporary Frame definition for HYDRA to connect PCK and SPK.
+Arbitrarily selected a body id of 1500000.  Expect this to
+change once the project or the NAIF team releases an updated
+frame definition for this body.
+
+\begindata
+    FRAME_IAU_HYDRA          = 1500001
+    FRAME_1500001_NAME     = 'IAU_HYDRA'
+    FRAME_1500001_CLASS    = 2
+    FRAME_1500001_CLASS_ID = 903
+    FRAME_1500001_CENTER   = 903
+\begintext
+
+\begindata
+        BODY903_POLE_RA        = (  132.993   0.          0. )
+        BODY903_POLE_DEC       = (   -6.163   0.          0. )
+        BODY903_PM             = (    0.   38.20177 0. )
+        BODY903_LONG_AXIS      = (    0.                     )
+
+\begintext
+
