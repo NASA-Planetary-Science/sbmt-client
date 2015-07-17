@@ -9,6 +9,8 @@
 -   Upgraded to latest version of VTK
 -   Fixed bug in loading of SUM pointing files in the custom "Image" tab
 -   Fixed bug in loading of custom perspective images where images were flipped
+-   Added LORRI, MVIC and LEISA tabs for HYDRA and NIX moons of PLUTO
+-   Added HYDRA and NIX to the data pipeline
 
 ### July 13, 2015
 
