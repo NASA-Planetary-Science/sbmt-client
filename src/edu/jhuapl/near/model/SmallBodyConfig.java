@@ -1674,7 +1674,7 @@ public class SmallBodyConfig
 
             configArray.add(c);
 
-            c = new SmallBodyConfig();
+            c = c.clone();
             c.body = ShapeModelBody.HYDRA;
             c.type = ShapeModelType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.PLUTO;
@@ -1682,6 +1682,66 @@ public class SmallBodyConfig
             c.author = null;
             c.pathOnServer = "/NEWHORIZONS/HYDRA/shape_res0.vtk.gz";
             c.hasColoringData = false;
+            c.imagingInstruments = new ImagingInstrument[] {
+                    new ImagingInstrument(
+                            SpectralMode.MONO,
+                            new FixedListQuery("/NEWHORIZONS/HYDRA/IMAGING"),
+                            ImageType.LORRI_IMAGE,
+                            new ImageSource[]{ImageSource.SPICE},
+                            Instrument.LORRI
+                            ),
+
+                    new ImagingInstrument(
+                            SpectralMode.MULTI,
+                            new FixedListQuery("/NEWHORIZONS/HYDRA/MVIC"),
+                            ImageType.MVIC_JUPITER_IMAGE,
+                            new ImageSource[]{ImageSource.SPICE},
+                            Instrument.MVIC
+                            ),
+
+                    new ImagingInstrument(
+                            SpectralMode.HYPER,
+                            new FixedListQuery("/NEWHORIZONS/HYDRA/LEISA"),
+                            ImageType.LEISA_JUPITER_IMAGE,
+                            new ImageSource[]{ImageSource.SPICE},
+                            Instrument.LEISA
+                            )
+            };
+            configArray.add(c);
+
+            c = c.clone();
+            c.body = ShapeModelBody.NIX;
+            c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+            c.population = ShapeModelPopulation.PLUTO;
+            c.dataUsed = null;
+            c.author = null;
+            c.pathOnServer = "/NEWHORIZONS/NIX/shape_res0.vtk.gz";
+            c.hasColoringData = false;
+            c.imagingInstruments = new ImagingInstrument[] {
+                    new ImagingInstrument(
+                            SpectralMode.MONO,
+                            new FixedListQuery("/NEWHORIZONS/NIX/IMAGING"),
+                            ImageType.LORRI_IMAGE,
+                            new ImageSource[]{ImageSource.SPICE},
+                            Instrument.LORRI
+                            ),
+
+                    new ImagingInstrument(
+                            SpectralMode.MULTI,
+                            new FixedListQuery("/NEWHORIZONS/NIX/MVIC"),
+                            ImageType.MVIC_JUPITER_IMAGE,
+                            new ImageSource[]{ImageSource.SPICE},
+                            Instrument.MVIC
+                            ),
+
+                    new ImagingInstrument(
+                            SpectralMode.HYPER,
+                            new FixedListQuery("/NEWHORIZONS/NIX/LEISA"),
+                            ImageType.LEISA_JUPITER_IMAGE,
+                            new ImageSource[]{ImageSource.SPICE},
+                            Instrument.LEISA
+                            )
+            };
             configArray.add(c);
 
             c = new SmallBodyConfig();
@@ -1691,16 +1751,6 @@ public class SmallBodyConfig
             c.dataUsed = null;
             c.author = null;
             c.pathOnServer = "/NEWHORIZONS/KERBEROS/shape_res0.vtk.gz";
-            c.hasColoringData = false;
-            configArray.add(c);
-
-            c = new SmallBodyConfig();
-            c.body = ShapeModelBody.NIX;
-            c.type = ShapeModelType.PLANETS_AND_SATELLITES;
-            c.population = ShapeModelPopulation.PLUTO;
-            c.dataUsed = null;
-            c.author = null;
-            c.pathOnServer = "/NEWHORIZONS/NIX/shape_res0.vtk.gz";
             c.hasColoringData = false;
             configArray.add(c);
 
