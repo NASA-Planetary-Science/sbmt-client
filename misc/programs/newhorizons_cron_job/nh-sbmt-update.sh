@@ -1,4 +1,3 @@
-cat nh-sbmt-update.sh
 #!/bin/bash
 
 # This script is meant to be run as a daily cron job. It checks to see
