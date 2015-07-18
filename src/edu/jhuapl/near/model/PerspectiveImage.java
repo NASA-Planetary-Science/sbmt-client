@@ -1574,7 +1574,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         {
             boolean loaded = false;
             try {
-                loadImageInfo();
+                loadSumfile();
                 loaded = true;
             }
             catch (FileNotFoundException e)
@@ -1582,7 +1582,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
                 loaded = false;
             }
             if (!loaded)
-                this.loadSumfile();
+                this.loadImageInfo();
         }
         else
         {
