@@ -1,20 +1,36 @@
-\begintext
+KPL/PCK
 
-Planetary Constants for Pluto's smaller moons as suggested by Olivier Barnouin
+In the absense of verifiable values to put in place for the body
+constants for the moons of Pluto, this kernel was prepared to
+accommodate basic calculations that are made possible by the SPICE
+toolkit.  The values contained with this kernel will be replaced as
+better information is made available.
 
-NIX   902
-HYDRA 903
+The choices made for the constants were made by Hal Weaver and Olivier
+Barnouin in conjunction with the development of the Small Body Mapping
+Tool.
+
+The NAIF body ids of the moons of the Pluto system are repeated below
+as a benefit to the consumers of this kernel:
+
+CHARON      901
+NIX         902
+HYDRA       903
+KERBEROS    904
+STYX        905
 
 Russell Turner
-2015-07-16
-Will be replaced when better information is available
+Howard Taylor
 JHU/APL
+2015-07-16
 
 
-Temporary Frame definition for NIX to connect PCK and SPK.
-Arbitrarily selected a body id of 1500000.  Expect this to
-change once the project or the NAIF team releases an updated
-frame definition for this body.
+Temporary Frame definition for NIX to connect PCK and SPK data.
+The body id used was arbitrarily selected as 1500000. This is
+not visible generally and is only used to associate the specific
+frame with the source ephemeris and planetary constants. Expect
+this id to change once the project or the NAIF team release an
+updated frame definition for this body.
 
 \begindata
     FRAME_IAU_NIX          = 1500000
@@ -24,19 +40,34 @@ frame definition for this body.
     FRAME_1500000_CENTER   = 902
 \begintext
 
+The following direction has been provided from Hal Weaver in an email
+to Olivier Barnouin and Howard Taylor on 2015-07-17 at 3pm EDT.
+
+        As a first guess for the shape, you might choose body radii of
+        20 x 14 x 14 km, for both Nix and Hydra.
+
+        As a placeholder for the pole direction, use a vector that
+        points in the direction of Pluto's pole (despite the contrary
+        evidence presented in today's SPM).
+
+        As a placeholder for the rotational period, use 1.8 days for now.
+
+The values below have been computed with these intentions in mind.
 
 \begindata
-
-        BODY902_POLE_RA        = (  132.993   0.          0. )
-        BODY902_POLE_DEC       = (   -6.163   0.          0. )
-        BODY902_PM             = (    0.   24.85463 0. )
-        BODY902_LONG_AXIS      = (    0.                     )
+    BODY902_RADII          = (  20.    14.   14. )
+    BODY902_POLE_RA        = ( 132.993  0.    0. )
+    BODY902_POLE_DEC       = (  -6.163  0.    0. )
+    BODY902_PM             = (   0.     200.  0. )
+    BODY902_LONG_AXIS      = (   0.              )
 \begintext
 
-Temporary Frame definition for HYDRA to connect PCK and SPK.
-Arbitrarily selected a body id of 1500000.  Expect this to
-change once the project or the NAIF team releases an updated
-frame definition for this body.
+Temporary Frame definition for HYDRA to connect PCK and SPK data.
+The body id used was arbitrarily selected as 1500001. This is
+not visible generally and is only used to associate the specific
+frame with the source ephemeris and planetary constants. Expect
+this id to change once the project or the NAIF team release an
+updated frame definition for this body.
 
 \begindata
     FRAME_IAU_HYDRA          = 1500001
@@ -47,10 +78,10 @@ frame definition for this body.
 \begintext
 
 \begindata
-        BODY903_POLE_RA        = (  132.993   0.          0. )
-        BODY903_POLE_DEC       = (   -6.163   0.          0. )
-        BODY903_PM             = (    0.   38.20177 0. )
-        BODY903_LONG_AXIS      = (    0.                     )
-
+    BODY903_RADII          = (  20.    14.   14. )
+    BODY903_POLE_RA        = ( 132.993  0.    0. )
+    BODY903_POLE_DEC       = (  -6.163  0.    0. )
+    BODY903_PM             = (   0.     200.  0. )
+    BODY903_LONG_AXIS      = (   0.              )
 \begintext
 

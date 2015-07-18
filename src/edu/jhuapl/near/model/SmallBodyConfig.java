@@ -1599,7 +1599,8 @@ public class SmallBodyConfig
             c.population = ShapeModelPopulation.PLUTO;
             c.dataUsed = null;
             c.author = null;
-            c.pathOnServer = "/NEWHORIZONS/PLUTO/shape_res0.vtk.gz";
+//            c.pathOnServer = "/NEWHORIZONS/PLUTO/shape_res0.vtk.gz";
+            c.pathOnServer = "/NEWHORIZONS/PLUTO/shape_res0.obj.gz";
             c.hasColoringData = false;
 
             c.imagingInstruments = new ImagingInstrument[] {
@@ -1643,7 +1644,8 @@ public class SmallBodyConfig
             c.population = ShapeModelPopulation.PLUTO;
             c.dataUsed = null;
             c.author = null;
-            c.pathOnServer = "/NEWHORIZONS/CHARON/shape_res0.vtk.gz";
+//            c.pathOnServer = "/NEWHORIZONS/CHARON/shape_res0.vtk.gz";
+            c.pathOnServer = "/NEWHORIZONS/CHARON/shape_res0.obj.gz";
             c.hasColoringData = false;
 
             c.imagingInstruments = new ImagingInstrument[] {
@@ -1680,7 +1682,8 @@ public class SmallBodyConfig
             c.population = ShapeModelPopulation.PLUTO;
             c.dataUsed = null;
             c.author = null;
-            c.pathOnServer = "/NEWHORIZONS/HYDRA/shape_res0.vtk.gz";
+//            c.pathOnServer = "/NEWHORIZONS/HYDRA/shape_res0.vtk.gz";
+            c.pathOnServer = "/NEWHORIZONS/HYDRA/shape_res0.obj.gz";
             c.hasColoringData = false;
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
@@ -1715,7 +1718,8 @@ public class SmallBodyConfig
             c.population = ShapeModelPopulation.PLUTO;
             c.dataUsed = null;
             c.author = null;
-            c.pathOnServer = "/NEWHORIZONS/NIX/shape_res0.vtk.gz";
+//            c.pathOnServer = "/NEWHORIZONS/NIX/shape_res0.vtk.gz";
+            c.pathOnServer = "/NEWHORIZONS/NIX/shape_res0.obj.gz";
             c.hasColoringData = false;
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(

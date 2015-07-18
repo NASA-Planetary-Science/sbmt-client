@@ -131,84 +131,6 @@ void getEt(const string& startmet, const string& stopmet, string& startutc,
 }
 
 /*
- *  old way w/ incorrect calculation for scpos and no accounting
- *  for LT in the call to pxform
- */
-
-void getScOrientationSuperBroken(double et, string body, double scposb[3],
-        double boredir[3], double updir[3], double frustum[12]) {
-    double lt;
-    double i2bmat[3][3];
-    double vpxi[3];
-    double ci[3];
-    double xo, yo;
-    const char* target = "NEW HORIZONS";
-    string ref = string("IAU_") + body.c_str();
-    const char* abcorr = "LT+S";
-    const char* obs = body.c_str();
-    const char* frame = "NH_LORRI";
-
-    spkpos_c(target, et, ref.c_str(), abcorr, obs, scposb, &lt);
-    if (failed_c()) {
-        cerr << "Failed spkpos" << endl;
-        return;
-    }
-
-    cout.precision(16);
-    cout << "Spacecraft Position: " << scposb[0] << " " << scposb[1] << " "
-            << scposb[2] << endl;
-
-    pxform_c(frame, ref.c_str(), et, i2bmat);
-    if (failed_c()) {
-        cerr << "Failed pxform" << endl;
-        return;
-    }
-
-    xo = -tan(0.2907 * rpd_c() / 2.0);
-    yo = -tan(0.2907 * rpd_c() / 2.0);
-
-    /* First compute the direction of the center pixel */
-    /* Note for LORRI, the boresight points in the -Z direction, not +Z. */
-    vpxi[0] = 0.0;
-    vpxi[1] = 0.0;
-    vpxi[2] = -1.0;
-    vpack_c(vpxi[0], vpxi[1], vpxi[2], ci);
-    mxv_c(i2bmat, ci, boredir);
-
-    /* Then compute the up direction */
-    vpxi[0] = -1.0;
-    vpxi[1] = 0.0;
-    vpxi[2] = 0.0;
-    vpack_c(vpxi[0], vpxi[1], vpxi[2], ci);
-    mxv_c(i2bmat, ci, updir);
-
-    /* Now compute the frustum */
-    vpxi[0] = -xo;
-    vpxi[1] = -yo;
-    vpxi[2] = -1.0;
-    vpack_c(vpxi[0], vpxi[1], vpxi[2], ci);
-    mxv_c(i2bmat, ci, &frustum[0]);
-
-    vpxi[0] = xo;
-    vpxi[1] = -yo;
-    vpxi[2] = -1.0;
-    vpack_c(vpxi[0], vpxi[1], vpxi[2], ci);
-    mxv_c(i2bmat, ci, &frustum[3]);
-
-    vpxi[0] = -xo;
-    vpxi[1] = yo;
-    vpxi[2] = -1.0;
-    vpack_c(vpxi[0], vpxi[1], vpxi[2], ci);
-    mxv_c(i2bmat, ci, &frustum[6]);
-
-    vpxi[0] = xo;
-    vpxi[1] = yo;
-    vpxi[2] = -1.0;
-    vpack_c(vpxi[0], vpxi[1], vpxi[2], ci);
-    mxv_c(i2bmat, ci, &frustum[9]);
-}
-
-/*
  This function
 
  Input:
@@ -339,22 +261,6 @@ void getScOrientation(double et, string body, double scposbf[3],
  Output:
  sunpos:     The position of the sun in body coordinates
  */
-void getSunPositionSuperBroken(double et, string body, double sunpos[3]) {
-    double lt;
-    const char* target = "SUN";
-    string ref = string("IAU_") + body.c_str();
-    const char* abcorr = "LT+S";
-    const char* obs = body.c_str();
-
-    spkpos_c(target, et, ref.c_str(), abcorr, obs, sunpos, &lt);
-    if (failed_c())
-        return;
-
-    cout.precision(16);
-    cout << "Sun position: " << sunpos[0] << " " << sunpos[1] << " "
-            << sunpos[2] << endl;
-}
-
 void getSunPosition(double et, string body, double sunpos[3]) {
     double lt, inert2bf[3][3], targpos[3];
     const char *target = body.c_str();
@@ -512,11 +418,11 @@ int main(int argc, char** argv) {
         string stoputc;
         double stopet;
         double et;
-        double scposb[3], scposb_broken[3];
+        double scposb[3];
         double boredir[3];
         double updir[3];
         double frustum[12];
-        double sunPosition[3], sunPositionBroken[3];
+        double sunPosition[3];
 
         getFieldsFromFitsHeader(labelfiles[i], startmet, stopmet, target,
                 naxis1, naxis2);
@@ -535,11 +441,7 @@ int main(int argc, char** argv) {
             continue;
         }
 
-        // call super broken version first
-        getScOrientationSuperBroken(et, body, scposb_broken, boredir, updir,
-                frustum);
-
-        // correct previously used arguments
+        // compute the orientation of the spacecraft
         getScOrientation(et, body, scposb, boredir, updir, frustum);
         if (failed_c()) {
             cerr << "Failed to get SC orientation for " << target << " in "
@@ -547,25 +449,13 @@ int main(int argc, char** argv) {
             continue;
         }
 
-        // compute angular separation between broken and correct scpos vectors
-	double angle;
-	angle = 1.0e6 * vsep_c( scposb, scposb_broken );
-        cerr << "scpos diff (urad, pixels) = " << angle << ", " << angle / 5.0 << endl;
-
-        // call super broken version first
-        getSunPositionSuperBroken(et, body, sunPositionBroken);
-
-        // call the correct one now.
+        // Get position of Sun relative to pluto at time of obeservation
         getSunPosition(et, body, sunPosition);
         if (failed_c()) {
             cerr << "Failed to get sun position for " << target << " in "
                     << labelfiles[i] << endl;
             continue;
         }
-
-        // compute angular separation between sunpos and broken sunpos (deg)
-        cerr << "sunpos diff (deg) = "
-                << dpr_c() * vsep_c(sunPosition, sunPositionBroken) << endl;
 
         string labelbasename = basename((char*) labelfiles[i].c_str());
         unsigned found = labelbasename.find_last_of(".");
