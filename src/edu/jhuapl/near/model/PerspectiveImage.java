@@ -150,7 +150,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     private double[][] sunPositionAdjusted = new double[1][3];
 
     // offset in world coordinates of the adjusted frustum from the loaded frustum
-    private double[] targetPixelCoordinates = { -1.0, -1.0 };
+    private double[] targetPixelCoordinates = { Double.MAX_VALUE, Double.MAX_VALUE };
 
     private double[] zoomFactor = { 1.0 };
 
@@ -277,8 +277,8 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
             footprintGenerated[i] = false;
         }
 
-        targetPixelCoordinates[0] = -1.0;
-        targetPixelCoordinates[1] = -1.0;
+        targetPixelCoordinates[0] = Double.MAX_VALUE;
+        targetPixelCoordinates[1] = Double.MAX_VALUE;
         rotationOffset[0] = 0.0;
         zoomFactor[0] = 1.0;
 
@@ -459,18 +459,18 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
         if (applyFrameAdjustments[0])
         {
-            if (targetPixelCoordinates[0] >= 0.0 && targetPixelCoordinates[1] >= 0.0)
+            if (targetPixelCoordinates[0] != Double.MAX_VALUE && targetPixelCoordinates[1]  != Double.MAX_VALUE)
             {
                 int height = getImageHeight();
                 int width = getImageWidth();
                 double line = height - 1 - targetPixelCoordinates[0];
                 double sample = targetPixelCoordinates[1];
 
-                if (line >= 0 && line < height && sample >= 0 && sample < width)
-                {
+//                if (line >= 0 && line < height && sample >= 0 && sample < width)
+//                {
                     double[] newTargetPixelDirection = getPixelDirection(sample, line);
                     rotateTargetPixelDirectionToLocalOrigin(newTargetPixelDirection);
-                }
+//                }
             }
             if (rotationOffset[0] != 0.0)
             {
@@ -545,7 +545,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
         double height = (double)getImageHeight();
         double width = (double)getImageWidth();
-        if (targetPixelCoordinates[0] < 0.0 || targetPixelCoordinates[1] < 0.0)
+        if (targetPixelCoordinates[0] == Double.MAX_VALUE || targetPixelCoordinates[1] == Double.MAX_VALUE)
         {
             targetPixelCoordinates = getPixelFromPoint(bodyOrigin);
             targetPixelCoordinates[0] = height - 1 - targetPixelCoordinates[0];
@@ -554,10 +554,10 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         double sample = targetPixelCoordinates[1] + pixelDelta[1];
         double[] newFrustumCenterPixel = { line, sample };
 
-        if (line >= 0.0 && line < height && sample >= 0.0 && sample < width)
-        {
+//        if (line >= 0.0 && line < height && sample >= 0.0 && sample < width)
+//        {
             setFrustumOffset(newFrustumCenterPixel);
-        }
+//        }
     }
 
     public void moveRotationAngleBy(double rotationDelta)
@@ -694,7 +694,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     {
         double[] uv = new double[2];
         Frustum frustum = getFrustum();
-        frustum.computeTextureCoordinatesFromPoint(pt, getImageWidth(), getImageHeight(), uv);
+        frustum.computeTextureCoordinatesFromPoint(pt, getImageWidth(), getImageHeight(), uv, false);
 
         double[] pixel = new double[2];
         pixel[0] = uv[0] * getImageHeight();
@@ -995,7 +995,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
         boolean writeApplyAdustments = false;
 
-        if (targetPixelCoordinates[0] >= 0.0 && targetPixelCoordinates[1] != 0.0)
+        if (targetPixelCoordinates[0] != Double.MAX_VALUE && targetPixelCoordinates[1] != Double.MAX_VALUE)
         {
             out.write(String.format("%-20s= ( %1.16e , %1.16e )\n", TARGET_PIXEL_COORD, targetPixelCoordinates[0], targetPixelCoordinates[1]));
             writeApplyAdustments = true;

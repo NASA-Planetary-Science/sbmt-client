@@ -44,7 +44,7 @@ public class Frustum
      * @param pt desired point to compute texture coordinates for
      * @param uv returned texture coordinates as a 2 element vector
      */
-    public void computeTextureCoordinatesFromPoint(double[] pt, int width, int height, double[] uv)
+    public void computeTextureCoordinatesFromPoint(double[] pt, int width, int height, double[] uv, boolean clipToImage)
     {
         double[] vec = {
              pt[0] - origin[0],
@@ -68,11 +68,14 @@ public class Frustum
         v = v/b;
         u = u/a;
 
-        if (v < 0.0) v = 0.0;
-        else if (v > 1.0) v = 1.0;
+        if (clipToImage)
+        {
+            if (v < 0.0) v = 0.0;
+            else if (v > 1.0) v = 1.0;
 
-        if (u < 0.0) u = 0.0;
-        else if (u > 1.0) u = 1.0;
+            if (u < 0.0) u = 0.0;
+            else if (u > 1.0) u = 1.0;
+        }
 
         uv[0] = u;
         uv[1] = v;

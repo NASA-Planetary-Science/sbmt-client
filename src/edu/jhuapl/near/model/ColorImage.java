@@ -351,7 +351,7 @@ public class ColorImage extends Image implements PropertyChangeListener
 
                     double[] uv = new double[2];
 
-                    greenFrustum.computeTextureCoordinatesFromPoint(x, IMAGE_WIDTH, IMAGE_HEIGHT, uv);
+                    greenFrustum.computeTextureCoordinatesFromPoint(x, IMAGE_WIDTH, IMAGE_HEIGHT, uv, true);
                     double greenValue = ImageDataUtil.interpolateWithinImage(
                             greenPixelData,
                             IMAGE_WIDTH,
@@ -359,7 +359,7 @@ public class ColorImage extends Image implements PropertyChangeListener
                             uv[1],
                             uv[0]);
 
-                    blueFrustum.computeTextureCoordinatesFromPoint(x, IMAGE_WIDTH, IMAGE_HEIGHT, uv);
+                    blueFrustum.computeTextureCoordinatesFromPoint(x, IMAGE_WIDTH, IMAGE_HEIGHT, uv, true);
                     double blueValue = ImageDataUtil.interpolateWithinImage(
                             bluePixelData,
                             IMAGE_WIDTH,
