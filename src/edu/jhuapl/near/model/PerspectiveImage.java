@@ -728,6 +728,9 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
             double[] targetPixelCoordinates,
             boolean[] applyFrameAdjustments) throws NumberFormatException, IOException, FileNotFoundException
     {
+        if (infoFilename == null)
+            throw new FileNotFoundException();
+
         boolean offset = true;
 
         FileInputStream fs = null;
@@ -1557,7 +1560,17 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     {
         if (key.source.equals(ImageSource.SPICE))
         {
-            loadImageInfo();
+            boolean loaded = false;
+            try {
+                loadSumfile();
+                loaded = true;
+            }
+            catch (FileNotFoundException e)
+            {
+                loaded = false;
+            }
+            if (!loaded)
+                this.loadImageInfo();
         }
         else if (key.source.equals(ImageSource.LABEL))
         {
@@ -2005,6 +2018,9 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
             double[][] boresightDirection,
             double[][] upVector) throws IOException
     {
+        if (sumfilename == null)
+            throw new FileNotFoundException();
+
         FileInputStream fs = new FileInputStream(sumfilename);
         InputStreamReader isr = new InputStreamReader(fs);
         BufferedReader in = new BufferedReader(isr);

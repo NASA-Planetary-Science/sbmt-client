@@ -55,15 +55,22 @@ public class LorriImage extends PerspectiveImage
         ImageKey key = getKey();
 
         // if the file type is SUM, then return a null
-        if (key.fileType != null && key.fileType == FileType.SUM)
-            return null;
+//        if (key.fileType != null && key.fileType == FileType.SUM)
+//            return null;
 
         File keyFile = new File(key.name);
         String pointingFileName = null;
 
         pointingFileName = keyFile.getParentFile().getParent() + "/infofiles/" + keyFile.getName() + ".INFO";
 
-        return FileCache.getFileFromServer(pointingFileName).getAbsolutePath();
+        String result = null;
+        try {
+            result = FileCache.getFileFromServer(pointingFileName).getAbsolutePath();
+        } catch (Exception e) {
+            result = null;
+        }
+
+        return result;
     }
 
     @Override
@@ -72,12 +79,19 @@ public class LorriImage extends PerspectiveImage
         ImageKey key = getKey();
 
         // if the file type is not SUM, then return null
-        if (key.fileType == null || key.fileType != FileType.SUM)
-            return null;
+//        if (key.fileType == null || key.fileType != FileType.SUM)
+//            return null;
 
         File keyFile = new File(key.name);
         String sumFilename = keyFile.getParentFile().getParent() + "/sumfiles/"
         + keyFile.getName() + ".SUM";
-        return FileCache.getFileFromServer(sumFilename).getAbsolutePath();
+
+        String result = null;
+        try {
+            result = FileCache.getFileFromServer(sumFilename).getAbsolutePath();
+        } catch (Exception e) {
+            result = null;
+        }
+        return result;
     }
 }
