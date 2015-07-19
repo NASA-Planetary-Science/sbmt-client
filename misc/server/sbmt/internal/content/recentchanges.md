@@ -4,6 +4,19 @@
 
 # Recent Changes
 
+### July 18, 2015
+
+-   Pluto and its moons' models have all been modified to reflect lastest consensus radii
+-   SUM pointing files can now be placed manually in the local .neartool directory, or
+    submitted to an SBMT curator for upload to the server. These will override the INFO
+    pointing files.
+-   Bug in image pointing pan buttons, which made some closeup images impossible to 
+    adjust, has been fixed.
+-   Bug in x/X/y/Y/x/Z key commands, which caused the camera to zoom in close to the 
+    body, has been fixed.
+-   Bug in "Generate Backplanes..." image popup menu, which caused it to throw an
+    exception, has been fixed.
+
 ### July 16, 2015
 
 -   Upgraded to latest version of VTK
