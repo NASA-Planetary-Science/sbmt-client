@@ -3015,6 +3015,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
                     double vertPixelScale = closestDist * vertScaleFactor;
 
                     double[] coloringValues = smallBodyModel.getAllColoringValues(closestPoint);
+                    int colorValueSize = coloringValues.length;
 
                     data[index(j,i,0)]  = (float)rawImage.GetScalarComponentAsFloat(j, i, 0, 0);
                     data[index(j,i,1)]  = (float)closestPoint[0];
@@ -3028,10 +3029,10 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
                     data[index(j,i,9)]  = (float)illumAngles[2];
                     data[index(j,i,10)] = (float)horizPixelScale;
                     data[index(j,i,11)] = (float)vertPixelScale;
-                    data[index(j,i,12)] = (float)coloringValues[0]; // slope
-                    data[index(j,i,13)] = (float)coloringValues[1]; // elevation;
-                    data[index(j,i,14)] = (float)coloringValues[2]; // grav acc;
-                    data[index(j,i,15)] = (float)coloringValues[3]; // grav pot;
+                    data[index(j,i,12)] = colorValueSize > 0 ? (float)coloringValues[0] : 0.0F; // slope
+                    data[index(j,i,13)] = colorValueSize > 1 ? (float)coloringValues[1] : 0.0F; // elevation
+                    data[index(j,i,14)] = colorValueSize > 2 ? (float)coloringValues[2] : 0.0F; // grav acc;
+                    data[index(j,i,15)] = colorValueSize > 3 ? (float)coloringValues[3] : 0.0F; // grav pot
                 }
                 else
                 {

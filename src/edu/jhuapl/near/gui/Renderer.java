@@ -353,7 +353,17 @@ public class Renderer extends JPanel implements
         for (int i=0; i<axes.length; ++i)
         {
             setCameraOrientationInDirectionOfAxis(axes[i], true);
+            try {
+                Thread.sleep(1000L);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             saveToFile(files[i], renWin);
+            try {
+                Thread.sleep(1000L);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 

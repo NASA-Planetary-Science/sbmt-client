@@ -457,17 +457,17 @@ public class DefaultPicker extends Picker
             char keyChar = e.getKeyChar();
 
             if ('X' == keyChar)
-                renderer.setCameraOrientationInDirectionOfAxis(AxisType.NEGATIVE_X, false);
+                renderer.setCameraOrientationInDirectionOfAxis(AxisType.NEGATIVE_X, true);
             else if ('x' == keyChar)
-                renderer.setCameraOrientationInDirectionOfAxis(AxisType.POSITIVE_X, false);
+                renderer.setCameraOrientationInDirectionOfAxis(AxisType.POSITIVE_X, true);
             else if ('Y' == keyChar)
-                renderer.setCameraOrientationInDirectionOfAxis(AxisType.NEGATIVE_Y, false);
+                renderer.setCameraOrientationInDirectionOfAxis(AxisType.NEGATIVE_Y, true);
             else if ('y' == keyChar)
-                renderer.setCameraOrientationInDirectionOfAxis(AxisType.POSITIVE_Y, false);
+                renderer.setCameraOrientationInDirectionOfAxis(AxisType.POSITIVE_Y, true);
             else if ('Z' == keyChar)
-                renderer.setCameraOrientationInDirectionOfAxis(AxisType.NEGATIVE_Z, false);
+                renderer.setCameraOrientationInDirectionOfAxis(AxisType.NEGATIVE_Z, true);
             else if ('z' == keyChar)
-                renderer.setCameraOrientationInDirectionOfAxis(AxisType.POSITIVE_Z, false);
+                renderer.setCameraOrientationInDirectionOfAxis(AxisType.POSITIVE_Z, true);
         }
         else if (keyCode == KeyEvent.VK_N &&
                  renWin.getRenderWindowInteractor().GetInteractorStyle() != null)
