@@ -1,6 +1,8 @@
 package edu.jhuapl.near.gui;
 
 import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -9,6 +11,7 @@ import java.util.HashSet;
 
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.Timer;
 
 import vtk.vtkAxesActor;
 import vtk.vtkBMPWriter;
@@ -42,7 +45,7 @@ import edu.jhuapl.near.util.Preferences;
 import edu.jhuapl.near.util.Properties;
 
 public class Renderer extends JPanel implements
-            PropertyChangeListener
+            PropertyChangeListener, ActionListener
 {
     public enum LightingType
     {
@@ -60,6 +63,7 @@ public class Renderer extends JPanel implements
 
     public enum AxisType
     {
+        NONE,
         POSITIVE_X,
         NEGATIVE_X,
         POSITIVE_Y,
@@ -312,6 +316,15 @@ public class Renderer extends JPanel implements
         saveToFile(file, renWin);
     }
 
+    private File[] sixFiles = new File[6];
+
+    AxisType[] sixAxes = {
+            AxisType.POSITIVE_X, AxisType.NEGATIVE_X,
+            AxisType.POSITIVE_Y, AxisType.NEGATIVE_Y,
+            AxisType.POSITIVE_Z, AxisType.NEGATIVE_Z
+    };
+
+
     public void save6ViewsToFile()
     {
         File file = CustomFileChooser.showSaveDialog(this, "Export to PNG Image", "", "png");
@@ -319,17 +332,22 @@ public class Renderer extends JPanel implements
         String base = path.substring(0, path.lastIndexOf('.'));
         String ext = path.substring(path.lastIndexOf('.'));
 
-        File[] files = {
-                file = new File(base + "+x" + ext),
-                file = new File(base + "-x" + ext),
-                file = new File(base + "+y" + ext),
-                file = new File(base + "-y" + ext),
-                file = new File(base + "+z" + ext),
-                file = new File(base + "-z" + ext)
-        };
+        sixFiles[0] = new File(base + "+x" + ext);
+        sixFiles[1] = new File(base + "-x" + ext);
+        sixFiles[2] = new File(base + "+y" + ext);
+        sixFiles[3] = new File(base + "-y" + ext);
+        sixFiles[4] = new File(base + "+z" + ext);
+        sixFiles[5] = new File(base + "-z" + ext);
+
+        sixAxes[0] = AxisType.POSITIVE_X;
+        sixAxes[1] = AxisType.NEGATIVE_X;
+        sixAxes[2] = AxisType.POSITIVE_Y;
+        sixAxes[3] = AxisType.NEGATIVE_X;
+        sixAxes[4] = AxisType.POSITIVE_Z;
+        sixAxes[5] = AxisType.NEGATIVE_X;
 
         // Check if one of the files already exist and if so, prompt user.
-        for (File f : files)
+        for (File f : sixFiles)
         {
             if (f.exists())
             {
@@ -344,33 +362,17 @@ public class Renderer extends JPanel implements
             }
         }
 
-        AxisType[] axes = {
-                AxisType.POSITIVE_X, AxisType.NEGATIVE_X,
-                AxisType.POSITIVE_Y, AxisType.NEGATIVE_Y,
-                AxisType.POSITIVE_Z, AxisType.NEGATIVE_Z
-        };
+        // start off the timer
+        this.actionPerformed(null);
 
-        for (int i=0; i<axes.length; ++i)
-        {
-            setCameraOrientationInDirectionOfAxis(axes[i], true);
-            try {
-                Thread.sleep(1000L);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            saveToFile(files[i], renWin);
-            try {
-                Thread.sleep(1000L);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
     }
 
     public void setCameraOrientationInDirectionOfAxis(AxisType axisType, boolean preserveCurrentDistance)
     {
         vtkRenderer ren = renWin.getRenderer();
         if (ren.VisibleActorCount() == 0) return;
+
+        renWin.getVTKLock().lock();
 
         double[] bounds = modelManager.getSmallBodyModel().getBoundingBox().getBounds();
         double xSize = Math.abs(bounds[1] - bounds[0]);
@@ -380,7 +382,6 @@ public class Renderer extends JPanel implements
 
         double cameraDistance = getCameraDistance();
 
-        renWin.getVTKLock().lock();
         vtkCamera cam = ren.GetActiveCamera();
         cam.SetFocalPoint(0.0, 0.0, 0.0);
 
@@ -1022,4 +1023,34 @@ public class Renderer extends JPanel implements
             }
         }
     }
+
+    @Override
+    public void actionPerformed(ActionEvent e)
+    {
+      for (int i=0; i<sixAxes.length; ++i)
+      {
+          if (sixFiles[i] != null && sixAxes[i] == AxisType.NONE)
+          {
+              saveToFile(sixFiles[i], renWin);
+              sixFiles[i] = null;
+              break;
+          }
+          if (sixAxes[i] != AxisType.NONE)
+          {
+              setCameraOrientationInDirectionOfAxis(sixAxes[i], true);
+              sixAxes[i] = AxisType.NONE;
+              break;
+          }
+      }
+
+      if (sixFiles[5] != null)
+      {
+          Timer timer = new Timer(500, this);
+          timer.setRepeats(false);
+          timer.start();
+      }
+    }
+
+
+
 }
