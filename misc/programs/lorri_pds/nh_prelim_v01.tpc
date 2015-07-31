@@ -1,6 +1,6 @@
 KPL/PCK
 
-In the absense of verifiable values to put in place for the body
+In the absence of verifiable values to put in place for the body
 constants for the moons of Pluto, this kernel was prepared to
 accommodate basic calculations that are made possible by the SPICE
 toolkit.  The values contained with this kernel will be replaced as
