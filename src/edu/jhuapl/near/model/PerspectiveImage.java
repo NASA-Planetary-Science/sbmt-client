@@ -291,7 +291,8 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
         loadFootprint();
         calculateFrustum();
-        saveImageInfo();
+        deleteAdjustedImageInfo();
+//        saveImageInfo();
     }
 
     protected double getFocalLength() { return 0.0; }
@@ -772,6 +773,33 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         double[] pixel2 = getPixelFromPoint(pt2);
 
         return MathUtil.distanceBetween(pixel1, pixel2);
+    }
+
+    private void deleteAdjustedImageInfo(String filePath)
+    {
+        // Deletes for either SUM or INFO files with the following priority scheme:
+        // - if a SUM file is specified, look first for an adjusted INFO file, then look for the SUM file
+        // - if an INFO file is specified, look first for an adjusted INFO file, the the INFO file
+
+
+
+        if (filePath == null || filePath.endsWith("null"))
+        {
+            filePath = getSumfileFullPath();
+            if (filePath != null && filePath.endsWith("SUM"))
+                filePath = filePath.substring(0, filePath.length()-3) + "INFO";
+            else
+                filePath = "";
+        }
+
+        // look for an adjusted file first
+        try {
+            File f = new File(filePath + ".adjusted");
+            if (f.exists())
+                f.delete();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     protected void loadImageInfo(
@@ -1991,6 +2019,25 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 //        printpt(frustum2, "pds frustum2 ");
 //        printpt(frustum3, "pds frustum3 ");
 //        printpt(frustum4, "pds frustum4 ");
+        }
+    }
+
+    private void deleteAdjustedImageInfo()
+    {
+        String[] infoFileNames = getInfoFilesFullPath();
+
+        int nfiles = infoFileNames.length;
+
+        boolean pad = nfiles > 1;
+
+        for (int k=0; k<nfiles; k++)
+        {
+            String[] start = new String[1];
+            String[] stop = new String[1];
+            boolean[] ato = new boolean[1];
+            ato[0] = true;
+
+            deleteAdjustedImageInfo(infoFileNames[k]);
         }
     }
 

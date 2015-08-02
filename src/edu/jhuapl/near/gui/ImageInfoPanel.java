@@ -320,7 +320,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
             if (e.isAltDown())
             {
 //                System.out.println("Resetting pointing...");
-                ((PerspectiveImage)image).resetSpacecraftState();
+//                ((PerspectiveImage)image).resetSpacecraftState();
             }
             else
             {
@@ -744,7 +744,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
             gridBagConstraints.gridy = 0;
             jPanel3.add(applyAdjustmentsButton, gridBagConstraints);
 
-            resetFrameAdjustmentsButton.setText("Reset Frame Adjustments");
+            resetFrameAdjustmentsButton.setText("Delete Adjustments");
             resetFrameAdjustmentsButton.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(java.awt.event.ActionEvent evt) {
                     resetFrameAdjustmentsButtonActionPerformed(evt);
