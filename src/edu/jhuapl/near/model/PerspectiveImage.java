@@ -149,8 +149,11 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     private double[][] upVectorAdjusted = new double[1][3];
     private double[][] sunPositionAdjusted = new double[1][3];
 
-    // offset in world coordinates of the adjusted frustum from the loaded frustum
+    // location in pixel coordinates of the target origin for the adjusted frustum
     private double[] targetPixelCoordinates = { Double.MAX_VALUE, Double.MAX_VALUE };
+
+    // offset in world coordinates of the adjusted frustum from the loaded frustum
+    private double[] offsetPixelCoordinates = { Double.MAX_VALUE, Double.MAX_VALUE };
 
     private double[] zoomFactor = { 1.0 };
 
@@ -277,6 +280,8 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
             footprintGenerated[i] = false;
         }
 
+        offsetPixelCoordinates[0] = Double.MAX_VALUE;
+        offsetPixelCoordinates[1] = Double.MAX_VALUE;
         targetPixelCoordinates[0] = Double.MAX_VALUE;
         targetPixelCoordinates[1] = Double.MAX_VALUE;
         rotationOffset[0] = 0.0;
@@ -391,12 +396,26 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
      */
     public void setSpectrumRegion(double[][] vertices) { }
 
-    public void setFrustumOffset(double[] frustumCenterPixel)
+    public void setTargetPixelCoordinates(double[] frustumCenterPixel)
     {
 //        System.out.println("setFrustumOffset(): " + frustumCenterPixel[1] + " " + frustumCenterPixel[0]);
 
         this.targetPixelCoordinates[0] = frustumCenterPixel[0];
         this.targetPixelCoordinates[1] = frustumCenterPixel[1];
+
+        updateFrameAdjustments();
+
+        loadFootprint();
+        calculateFrustum();
+        saveImageInfo();
+    }
+
+    public void setPixelOffset(double[] pixelOffset)
+    {
+//        System.out.println("setFrustumOffset(): " + frustumCenterPixel[1] + " " + frustumCenterPixel[0]);
+
+        this.offsetPixelCoordinates[0] = pixelOffset[0];
+        this.offsetPixelCoordinates[1] = pixelOffset[1];
 
         updateFrameAdjustments();
 
@@ -466,12 +485,20 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
                 double line = height - 1 - targetPixelCoordinates[0];
                 double sample = targetPixelCoordinates[1];
 
-//                if (line >= 0 && line < height && sample >= 0 && sample < width)
-//                {
-                    double[] newTargetPixelDirection = getPixelDirection(sample, line);
-                    rotateTargetPixelDirectionToLocalOrigin(newTargetPixelDirection);
-//                }
+                double[] newTargetPixelDirection = getPixelDirection(sample, line);
+                rotateTargetPixelDirectionToLocalOrigin(newTargetPixelDirection);
             }
+            else if (offsetPixelCoordinates[0] != Double.MAX_VALUE && offsetPixelCoordinates[1]  != Double.MAX_VALUE)
+            {
+                int height = getImageHeight();
+                int width = getImageWidth();
+                double line = height - 1 - offsetPixelCoordinates[0];
+                double sample = offsetPixelCoordinates[1];
+
+                double[] newOffsetPixelDirection = getPixelDirection(sample, line);
+                rotateBoresightTo(newOffsetPixelDirection);
+            }
+
             if (rotationOffset[0] != 0.0)
             {
                 rotateFrameAboutTarget(rotationOffset[0]);
@@ -541,7 +568,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
     public void moveTargetPixelCoordinates(double[] pixelDelta)
     {
-//        System.out.println("moveFrustumOffset(): " + pixelDelta[1] + " " + pixelDelta[0]);
+//        System.out.println("moveTargetPixelCoordinates(): " + pixelDelta[1] + " " + pixelDelta[0]);
 
         double height = (double)getImageHeight();
         double width = (double)getImageWidth();
@@ -554,10 +581,25 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         double sample = targetPixelCoordinates[1] + pixelDelta[1];
         double[] newFrustumCenterPixel = { line, sample };
 
-//        if (line >= 0.0 && line < height && sample >= 0.0 && sample < width)
-//        {
-            setFrustumOffset(newFrustumCenterPixel);
-//        }
+        setTargetPixelCoordinates(newFrustumCenterPixel);
+    }
+
+    public void moveOffsetPixelCoordinates(double[] pixelDelta)
+    {
+//        System.out.println("moveOffsetPixelCoordinates(): " + pixelDelta[1] + " " + pixelDelta[0]);
+
+        double height = (double)getImageHeight();
+        double width = (double)getImageWidth();
+        if (offsetPixelCoordinates[0] == Double.MAX_VALUE || offsetPixelCoordinates[1] == Double.MAX_VALUE)
+        {
+            offsetPixelCoordinates[0] = 0.0;
+            offsetPixelCoordinates[1] = 0.0;
+        }
+        double line = offsetPixelCoordinates[0] + pixelDelta[0];
+        double sample = offsetPixelCoordinates[1] + pixelDelta[1];
+        double[] newPixelOffset = { line, sample };
+
+        setPixelOffset(newPixelOffset);
     }
 
     public void moveRotationAngleBy(double rotationDelta)
@@ -614,6 +656,27 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         Rotation rotation = new Rotation(directionVector, originPointingVector);
 
 //        int slice = getCurrentSlice();
+        int nslices = getNumberBands();
+        for (int slice = 0; slice<nslices; slice++)
+        {
+            MathUtil.rotateVector(frustum1Adjusted[slice], rotation, frustum1Adjusted[slice]);
+            MathUtil.rotateVector(frustum2Adjusted[slice], rotation, frustum2Adjusted[slice]);
+            MathUtil.rotateVector(frustum3Adjusted[slice], rotation, frustum3Adjusted[slice]);
+            MathUtil.rotateVector(frustum4Adjusted[slice], rotation, frustum4Adjusted[slice]);
+            MathUtil.rotateVector(boresightDirectionAdjusted[slice], rotation, boresightDirectionAdjusted[slice]);
+
+            frusta[slice] = null;
+            footprintGenerated[slice] = false;
+        }
+    }
+
+    private void rotateBoresightTo(double[] direction)
+    {
+        Vector3D directionVector = new Vector3D(direction);
+        Vector3D boresightVector = new Vector3D(getBoresightDirection());
+
+        Rotation rotation = new Rotation(boresightVector, directionVector);
+
         int nslices = getNumberBands();
         for (int slice = 0; slice<nslices; slice++)
         {
@@ -728,7 +791,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
             double[] targetPixelCoordinates,
             boolean[] applyFrameAdjustments) throws NumberFormatException, IOException, FileNotFoundException
     {
-        if (infoFilename == null)
+        if (infoFilename == null || infoFilename.endsWith("null"))
             throw new FileNotFoundException();
 
         boolean offset = true;
@@ -1569,8 +1632,9 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
             {
                 loaded = false;
             }
+
             if (!loaded)
-                this.loadImageInfo();
+                loadImageInfo();
         }
         else if (key.source.equals(ImageSource.LABEL))
         {
@@ -1587,12 +1651,21 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         {
             boolean loaded = false;
             try {
-                loadSumfile();
+                loadAdjustedSumfile();
                 loaded = true;
-            }
-            catch (FileNotFoundException e)
-            {
+            } catch (FileNotFoundException e) {
                 loaded = false;
+            }
+            if (!loaded)
+            {
+                try {
+                    loadSumfile();
+                    loaded = true;
+                }
+                catch (FileNotFoundException e)
+                {
+                    loaded = false;
+                }
             }
             if (!loaded)
                 this.loadImageInfo();
@@ -1921,21 +1994,63 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         }
     }
 
+    private void loadAdjustedSumfile() throws NumberFormatException, IOException
+    {
+        // Looks for either SUM or INFO files with the following priority scheme:
+        // - if a SUM file is specified, look first for an adjusted INFO file, then look for the SUM file
+        // - if an INFO file is specified, look first for an adjusted INFO file, the the INFO file
+        String filePath = getSumfileFullPath();
+        if (filePath != null && filePath.endsWith("SUM"))
+            filePath = filePath.substring(0, filePath.length()-3) + "INFO";
+        else
+            filePath = "";
+
+        String[] start = new String[1];
+        String[] stop = new String[1];
+        boolean[] ato = new boolean[1];
+        ato[0] = true;
+
+        loadImageInfo(
+                filePath,
+                0,
+                false,
+                start,
+                stop,
+                spacecraftPositionOriginal,
+                sunPositionOriginal,
+                frustum1Original,
+                frustum2Original,
+                frustum3Original,
+                frustum4Original,
+                boresightDirectionOriginal,
+                upVectorOriginal,
+                targetPixelCoordinates,
+                ato);
+
+        // should startTime and stopTime be an array? -turnerj1
+        startTime = start[0];
+        stopTime = stop[0];
+        applyFrameAdjustments[0] = ato[0];
+    }
 
     private void saveImageInfo()
     {
         String[] infoFileNames = getInfoFilesFullPath();
+        String sumFileName = this.getSumfileFullPath();
 
 //        int slice = getCurrentSlice();
 //        System.out.println("Saving current slice: " + slice);
         try
         {
-//            int nslices = getNumberBands();
             int nslices = infoFileNames.length;
             for (int slice=0; slice<nslices; slice++)
             {
+                String filename = infoFileNames[slice];
+                if (filename == null || filename.endsWith("/null"))
+                    filename = sumFileName.substring(0, sumFileName.length()-3) + "INFO";
+
                 saveImageInfo(
-                        infoFileNames[slice],
+                        filename,
                         slice,
                         startTime,
                         stopTime,
