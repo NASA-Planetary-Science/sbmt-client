@@ -153,7 +153,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     private double[] targetPixelCoordinates = { Double.MAX_VALUE, Double.MAX_VALUE };
 
     // offset in world coordinates of the adjusted frustum from the loaded frustum
-    private double[] offsetPixelCoordinates = { Double.MAX_VALUE, Double.MAX_VALUE };
+//    private double[] offsetPixelCoordinates = { Double.MAX_VALUE, Double.MAX_VALUE };
 
     private double[] zoomFactor = { 1.0 };
 
@@ -280,8 +280,8 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
             footprintGenerated[i] = false;
         }
 
-        offsetPixelCoordinates[0] = Double.MAX_VALUE;
-        offsetPixelCoordinates[1] = Double.MAX_VALUE;
+//        offsetPixelCoordinates[0] = Double.MAX_VALUE;
+//        offsetPixelCoordinates[1] = Double.MAX_VALUE;
         targetPixelCoordinates[0] = Double.MAX_VALUE;
         targetPixelCoordinates[1] = Double.MAX_VALUE;
         rotationOffset[0] = 0.0;
@@ -410,19 +410,19 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         saveImageInfo();
     }
 
-    public void setPixelOffset(double[] pixelOffset)
-    {
-//        System.out.println("setFrustumOffset(): " + frustumCenterPixel[1] + " " + frustumCenterPixel[0]);
-
-        this.offsetPixelCoordinates[0] = pixelOffset[0];
-        this.offsetPixelCoordinates[1] = pixelOffset[1];
-
-        updateFrameAdjustments();
-
-        loadFootprint();
-        calculateFrustum();
-        saveImageInfo();
-    }
+//    public void setPixelOffset(double[] pixelOffset)
+//    {
+////        System.out.println("setFrustumOffset(): " + frustumCenterPixel[1] + " " + frustumCenterPixel[0]);
+//
+//        this.offsetPixelCoordinates[0] = pixelOffset[0];
+//        this.offsetPixelCoordinates[1] = pixelOffset[1];
+//
+//        updateFrameAdjustments();
+//
+//        loadFootprint();
+//        calculateFrustum();
+//        saveImageInfo();
+//    }
 
     public void setRotationOffset(double offset)
     {
@@ -488,16 +488,16 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
                 double[] newTargetPixelDirection = getPixelDirection(sample, line);
                 rotateTargetPixelDirectionToLocalOrigin(newTargetPixelDirection);
             }
-            else if (offsetPixelCoordinates[0] != Double.MAX_VALUE && offsetPixelCoordinates[1]  != Double.MAX_VALUE)
-            {
-                int height = getImageHeight();
-                int width = getImageWidth();
-                double line = height - 1 - offsetPixelCoordinates[0];
-                double sample = offsetPixelCoordinates[1];
-
-                double[] newOffsetPixelDirection = getPixelDirection(sample, line);
-                rotateBoresightTo(newOffsetPixelDirection);
-            }
+//            else if (offsetPixelCoordinates[0] != Double.MAX_VALUE && offsetPixelCoordinates[1]  != Double.MAX_VALUE)
+//            {
+//                int height = getImageHeight();
+//                int width = getImageWidth();
+//                double line = height - 1 - offsetPixelCoordinates[0];
+//                double sample = offsetPixelCoordinates[1];
+//
+//                double[] newOffsetPixelDirection = getPixelDirection(sample, line);
+//                rotateBoresightTo(newOffsetPixelDirection);
+//            }
 
             if (rotationOffset[0] != 0.0)
             {
@@ -584,23 +584,23 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         setTargetPixelCoordinates(newFrustumCenterPixel);
     }
 
-    public void moveOffsetPixelCoordinates(double[] pixelDelta)
-    {
-//        System.out.println("moveOffsetPixelCoordinates(): " + pixelDelta[1] + " " + pixelDelta[0]);
-
-        double height = (double)getImageHeight();
-        double width = (double)getImageWidth();
-        if (offsetPixelCoordinates[0] == Double.MAX_VALUE || offsetPixelCoordinates[1] == Double.MAX_VALUE)
-        {
-            offsetPixelCoordinates[0] = 0.0;
-            offsetPixelCoordinates[1] = 0.0;
-        }
-        double line = offsetPixelCoordinates[0] + pixelDelta[0];
-        double sample = offsetPixelCoordinates[1] + pixelDelta[1];
-        double[] newPixelOffset = { line, sample };
-
-        setPixelOffset(newPixelOffset);
-    }
+//    public void moveOffsetPixelCoordinates(double[] pixelDelta)
+//    {
+////        System.out.println("moveOffsetPixelCoordinates(): " + pixelDelta[1] + " " + pixelDelta[0]);
+//
+//        double height = (double)getImageHeight();
+//        double width = (double)getImageWidth();
+//        if (offsetPixelCoordinates[0] == Double.MAX_VALUE || offsetPixelCoordinates[1] == Double.MAX_VALUE)
+//        {
+//            offsetPixelCoordinates[0] = 0.0;
+//            offsetPixelCoordinates[1] = 0.0;
+//        }
+//        double line = offsetPixelCoordinates[0] + pixelDelta[0];
+//        double sample = offsetPixelCoordinates[1] + pixelDelta[1];
+//        double[] newPixelOffset = { line, sample };
+//
+//        setPixelOffset(newPixelOffset);
+//    }
 
     public void moveRotationAngleBy(double rotationDelta)
     {
