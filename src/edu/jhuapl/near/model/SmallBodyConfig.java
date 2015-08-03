@@ -1609,7 +1609,7 @@ public class SmallBodyConfig
 //                            new GenericPhpQuery("/NEWHORIZONS/PLUTO/IMAGING", "PLUTO"),
                             new FixedListQuery("/NEWHORIZONS/PLUTO/IMAGING"),
                             ImageType.LORRI_IMAGE,
-                            new ImageSource[]{ImageSource.SPICE},
+                            new ImageSource[]{ImageSource.SPICE, ImageSource.CORRECTED, ImageSource.ADJUSTED},
                             Instrument.LORRI
                             ),
 

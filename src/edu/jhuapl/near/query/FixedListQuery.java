@@ -49,8 +49,16 @@ public class FixedListQuery extends QueryBase
             ImageSource imageSource,
             int limbType)
     {
-        return getResultsFromFileListOnServer(rootPath + "/imagelist.txt",
-                rootPath + "/images/");
+        String imageListPrefix = "";
+
+        if (imageSource == ImageSource.CORRECTED)
+            imageListPrefix = "sumfiles-corrected";
+        else if (imageSource == ImageSource.ADJUSTED)
+            imageListPrefix = "infofiles-adjusted";
+
+        ArrayList<ArrayList<String>> result = getResultsFromFileListOnServer(rootPath + "/" + imageListPrefix + "/imagelist.txt", rootPath + "/images/");
+
+        return result;
     }
 
 }

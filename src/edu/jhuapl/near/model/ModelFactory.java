@@ -48,6 +48,7 @@ public class ModelFactory
         if (ImageSource.SPICE.equals(key.source) ||
                 ImageSource.GASKELL.equals(key.source) ||
                 ImageSource.LABEL.equals(key.source) ||
+                ImageSource.ADJUSTED.equals(key.source) ||
                 ImageSource.CORRECTED.equals(key.source))
         {
             if (key.instrument != null && key.instrument.spectralMode == SpectralMode.MULTI)

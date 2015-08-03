@@ -235,7 +235,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
             pngFileFullPath = initializePngFileFullPath();
         }
 
-        if (key.source.equals(ImageSource.SPICE) || key.source.equals(ImageSource.LOCAL_PERSPECTIVE))
+        if (key.source.equals(ImageSource.SPICE) || key.source.equals(ImageSource.ADJUSTED) || key.source.equals(ImageSource.LOCAL_PERSPECTIVE))
         {
             infoFileFullPath = initializeInfoFileFullPath();
             sumfileFullPath = initializeSumfileFullPath();
@@ -1649,7 +1649,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
     protected void loadPointing() throws FitsException, IOException
     {
-        if (key.source.equals(ImageSource.SPICE))
+        if (key.source.equals(ImageSource.SPICE) || key.source.equals(ImageSource.ADJUSTED))
         {
             boolean loaded = false;
             try {
@@ -2764,7 +2764,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
             String footprintFilename = null;
             File file = null;
 
-            if (key.source == ImageSource.SPICE)
+            if (key.source == ImageSource.SPICE || key.source == ImageSource.ADJUSTED)
                 footprintFilename = key.name + "_FOOTPRINT_RES" + resolutionLevel + "_PDS.VTP";
             else
                 footprintFilename = key.name + "_FOOTPRINT_RES" + resolutionLevel + "_GASKELL.VTP";
