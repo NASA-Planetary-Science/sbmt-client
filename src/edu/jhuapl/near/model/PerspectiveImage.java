@@ -1700,13 +1700,23 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         }
         else
         {
-            try
-            {
-                loadSumfile();
+            boolean loaded = false;
+            try {
+                loadAdjustedSumfile();
+                loaded = true;
+            } catch (FileNotFoundException e) {
+                loaded = false;
             }
-            catch(IOException ex)
+            if (!loaded)
             {
-                System.out.println("Sumfile not available");
+                try {
+                    loadSumfile();
+                    loaded = true;
+                }
+                catch (FileNotFoundException e)
+                {
+                    System.out.println("Sumfile not available");
+                }
             }
         }
 
