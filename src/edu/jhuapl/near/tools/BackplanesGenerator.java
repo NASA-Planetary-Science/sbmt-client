@@ -87,7 +87,7 @@ public class BackplanesGenerator
                     {
                         try
                         {
-                            key = new ImageKey(filename.replace(".fit", ""), ImageSource.ADJUSTED);
+                            key = new ImageKey(filename.replace(".fit", ""), ImageSource.CORRECTED_SPICE);
                             image = (PerspectiveImage)ModelFactory.createImage(key, smallBodyModel, false);
                         }
                         catch (Exception e3)

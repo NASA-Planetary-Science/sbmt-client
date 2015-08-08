@@ -26,19 +26,19 @@ public abstract class Image extends Model implements PropertyChangeListener
         SPICE {
             public String toString()
             {
-                return "SPICE-derived";
+                return "SPICE Derived";
             }
         },
         GASKELL {
             public String toString()
             {
-                return "Gaskell-derived";
+                return "Gaskell Derived";
             }
         },
         LABEL {
             public String toString()
             {
-                return "Label-derived";
+                return "Label Derived";
             }
         },
         CORRECTED {
@@ -47,10 +47,10 @@ public abstract class Image extends Model implements PropertyChangeListener
                 return "Corrected";
             }
         },
-        ADJUSTED {
+        CORRECTED_SPICE {
             public String toString()
             {
-                return "Adjusted SPICE-derived";
+                return "Corrected SPICE Derived";
             }
         },
         IMAGE_MAP {

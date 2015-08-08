@@ -75,9 +75,8 @@ public class LorriImage extends PerspectiveImage
         else
         {
             File keyFile = new File(key.name);
-            String infodir = key.source == ImageSource.ADJUSTED ? "infofiles-adjusted" : "infofiles";
-            String suffix = key.source == ImageSource.ADJUSTED ? ".adjusted" : "";
-            String pointingFileName = keyFile.getParentFile().getParent() + "/" + infodir + "/" + keyFile.getName() + ".INFO" + suffix;
+            String infodir = key.source == ImageSource.CORRECTED_SPICE ? "infofiles-corrected" : "infofiles";
+            String pointingFileName = keyFile.getParentFile().getParent() + "/" + infodir + "/" + keyFile.getName() + ".INFO";
 
             try {
                 result = FileCache.getFileFromServer(pointingFileName).getAbsolutePath();
@@ -96,7 +95,7 @@ public class LorriImage extends PerspectiveImage
         String result = null;
 
         // if the source is SPICE, then return a null
-        if (key.source == null || key.source != null && (key.source == ImageSource.SPICE || key.source == ImageSource.ADJUSTED))
+        if (key.source == null || key.source != null && (key.source == ImageSource.SPICE || key.source == ImageSource.CORRECTED_SPICE))
             result = null;
         else
         {

@@ -1999,7 +1999,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         ImageCollection model = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
         model.removeImages(ImageSource.GASKELL);
         model.removeImages(ImageSource.SPICE);
-        model.removeImages(ImageSource.ADJUSTED);
+        model.removeImages(ImageSource.CORRECTED_SPICE);
         model.removeImages(ImageSource.CORRECTED);
     }//GEN-LAST:event_removeAllImagesButtonActionPerformed
 

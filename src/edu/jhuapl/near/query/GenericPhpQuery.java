@@ -62,9 +62,9 @@ public class GenericPhpQuery extends QueryBase
             return getResultsFromFileListOnServer(rootPath + "/sumfiles-corrected/imagelist.txt",
                     rootPath + "/images/");
         }
-        else if (imageSource == ImageSource.ADJUSTED)
+        else if (imageSource == ImageSource.CORRECTED_SPICE)
         {
-            return getResultsFromFileListOnServer(rootPath + "/infofiles-adjusted/imagelist.txt",
+            return getResultsFromFileListOnServer(rootPath + "/infofiles-corrected/imagelist.txt",
                     rootPath + "/images/");
         }
 

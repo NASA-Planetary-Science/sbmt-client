@@ -53,8 +53,8 @@ public class FixedListQuery extends QueryBase
 
         if (imageSource == ImageSource.CORRECTED)
             imageListPrefix = "sumfiles-corrected";
-        else if (imageSource == ImageSource.ADJUSTED)
-            imageListPrefix = "infofiles-adjusted";
+        else if (imageSource == ImageSource.CORRECTED_SPICE)
+            imageListPrefix = "infofiles-corrected";
 
         ArrayList<ArrayList<String>> result = getResultsFromFileListOnServer(rootPath + "/" + imageListPrefix + "/imagelist.txt", rootPath + "/images/");
 
