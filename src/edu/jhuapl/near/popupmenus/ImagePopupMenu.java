@@ -628,9 +628,12 @@ public class ImagePopupMenu extends PopupMenu
                 {
                     imageCollection.addImage(imageKey);
                     PerspectiveImage image = (PerspectiveImage)imageCollection.getImage(imageKey);
-                    String imageFileName = image.getFitFileFullPath();
-                    if (imageFileName == null)
-                        imageFileName = image.getPngFileFullPath();
+                    String fullPathName = image.getFitFileFullPath();
+                    if (fullPathName == null)
+                        fullPathName = image.getPngFileFullPath();
+                    String imageFileName = new File(fullPathName).getName();
+
+
                     String defaultFileName = null;
                     if (imageFileName != null)
                         defaultFileName = imageFileName.substring(0, imageFileName.length()-3) + "INFO";

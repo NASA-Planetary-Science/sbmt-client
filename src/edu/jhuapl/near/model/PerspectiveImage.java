@@ -1055,7 +1055,10 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
             double[][] boresightDirection,
             double[][] upVector,
             double[] targetPixelCoordinates,
-            boolean applyFrameAdjustments) throws NumberFormatException, IOException
+            double[] zoomFactor,
+            double[] rotationOffset,
+            boolean applyFrameAdjustments,
+            boolean flatten) throws NumberFormatException, IOException
     {
         // for testing purposes only:
 //        infoFilename = infoFilename + ".txt";
@@ -1064,8 +1067,9 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         FileOutputStream fs = null;
 
         // save out info file to cache with ".adjusted" appended to the name
+        String suffix = flatten ? "" : ".adjusted";
         try {
-            fs = new FileOutputStream(infoFilename + ".adjusted");
+            fs = new FileOutputStream(infoFilename + suffix);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             return;
@@ -1086,27 +1090,30 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
         boolean writeApplyAdustments = false;
 
-        if (targetPixelCoordinates[0] != Double.MAX_VALUE && targetPixelCoordinates[1] != Double.MAX_VALUE)
+        if (!flatten)
         {
-            out.write(String.format("%-20s= ( %1.16e , %1.16e )\n", TARGET_PIXEL_COORD, targetPixelCoordinates[0], targetPixelCoordinates[1]));
-            writeApplyAdustments = true;
-        }
+            if (targetPixelCoordinates[0] != Double.MAX_VALUE && targetPixelCoordinates[1] != Double.MAX_VALUE)
+            {
+                out.write(String.format("%-20s= ( %1.16e , %1.16e )\n", TARGET_PIXEL_COORD, targetPixelCoordinates[0], targetPixelCoordinates[1]));
+                writeApplyAdustments = true;
+            }
 
-        if (zoomFactor[0] != 1.0)
-        {
-            out.write(String.format("%-20s= %1.16e\n", TARGET_ZOOM_FACTOR, zoomFactor[0]));
-            writeApplyAdustments = true;
-        }
+            if (zoomFactor[0] != 1.0)
+            {
+                out.write(String.format("%-20s= %1.16e\n", TARGET_ZOOM_FACTOR, zoomFactor[0]));
+                writeApplyAdustments = true;
+            }
 
-        if (rotationOffset[0] != 0.0)
-        {
-            out.write(String.format("%-20s= %1.16e\n", TARGET_ROTATION, rotationOffset[0]));
-            writeApplyAdustments = true;
-        }
+            if (rotationOffset[0] != 0.0)
+            {
+                out.write(String.format("%-20s= %1.16e\n", TARGET_ROTATION, rotationOffset[0]));
+                writeApplyAdustments = true;
+            }
 
-        // only write out user-modified offsets if the image info has been modified
-        if (writeApplyAdustments)
-            out.write(String.format("%-20s= %b\n", APPLY_ADJUSTMENTS, applyFrameAdjustments));
+            // only write out user-modified offsets if the image info has been modified
+            if (writeApplyAdustments)
+                out.write(String.format("%-20s= %b\n", APPLY_ADJUSTMENTS, applyFrameAdjustments));
+        }
 
         out.close();
     }
@@ -2120,7 +2127,10 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
                         boresightDirectionOriginal,
                         upVectorOriginal,
                         targetPixelCoordinates,
-                        applyFrameAdjustments[0]);
+                        zoomFactor,
+                        rotationOffset,
+                        applyFrameAdjustments[0],
+                        false);
             }
         }
         catch (NumberFormatException e)
@@ -2134,6 +2144,11 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     }
 
 
+    /**
+     * Saves adjusted image info out to an INFO file, folding in the adjusted values, so no adjustment keywords appear.
+     *
+     * @param infoFileName
+     */
     public void saveImageInfo(String infoFileName)
     {
         try
@@ -2143,16 +2158,19 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
                         0,
                         startTime,
                         stopTime,
-                        spacecraftPositionOriginal,
-                        sunPositionOriginal,
-                        frustum1Original,
-                        frustum2Original,
-                        frustum3Original,
-                        frustum4Original,
-                        boresightDirectionOriginal,
-                        upVectorOriginal,
+                        spacecraftPositionAdjusted,
+                        sunPositionAdjusted,
+                        frustum1Adjusted,
+                        frustum2Adjusted,
+                        frustum3Adjusted,
+                        frustum4Adjusted,
+                        boresightDirectionAdjusted,
+                        upVectorAdjusted,
                         targetPixelCoordinates,
-                        applyFrameAdjustments[0]);
+                        zoomFactor,
+                        rotationOffset,
+                        applyFrameAdjustments[0],
+                        true);
         }
         catch (NumberFormatException e)
         {
