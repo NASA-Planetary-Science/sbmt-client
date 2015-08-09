@@ -350,6 +350,7 @@ public class ColorImageInfoPanel extends ModelInfoWindow implements PropertyChan
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 3;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(3, 3, 0, 0);
         jPanel1.add(blueSlider, gridBagConstraints);
@@ -368,6 +369,7 @@ public class ColorImageInfoPanel extends ModelInfoWindow implements PropertyChan
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 1;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(3, 3, 0, 0);
         jPanel1.add(redSlider, gridBagConstraints);
@@ -376,7 +378,9 @@ public class ColorImageInfoPanel extends ModelInfoWindow implements PropertyChan
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
-        gridBagConstraints.insets = new java.awt.Insets(3, 3, 0, 0);
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 0);
         jPanel1.add(jLabel6, gridBagConstraints);
 
         greenScaleSlider.setMajorTickSpacing(50);
@@ -391,12 +395,18 @@ public class ColorImageInfoPanel extends ModelInfoWindow implements PropertyChan
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.weightx = 1.0;
         jPanel1.add(greenScaleSlider, gridBagConstraints);
 
         jLabel3.setText("Blue");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 3;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 0);
         jPanel1.add(jLabel3, gridBagConstraints);
 
         redScaleSlider.setMajorTickSpacing(50);
@@ -411,6 +421,9 @@ public class ColorImageInfoPanel extends ModelInfoWindow implements PropertyChan
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.weightx = 1.0;
         jPanel1.add(redScaleSlider, gridBagConstraints);
 
         jLabel4.setText("Mono");
@@ -427,12 +440,17 @@ public class ColorImageInfoPanel extends ModelInfoWindow implements PropertyChan
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.weightx = 1.0;
         jPanel1.add(greenMonoCheckbox, gridBagConstraints);
 
         jLabel2.setText("Green:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 0);
         jPanel1.add(jLabel2, gridBagConstraints);
 
         greenSlider.setMajorTickSpacing(10);
@@ -449,6 +467,7 @@ public class ColorImageInfoPanel extends ModelInfoWindow implements PropertyChan
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(3, 3, 0, 0);
         jPanel1.add(greenSlider, gridBagConstraints);
@@ -461,6 +480,8 @@ public class ColorImageInfoPanel extends ModelInfoWindow implements PropertyChan
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 3;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.weightx = 1.0;
         jPanel1.add(blueMonoCheckbox, gridBagConstraints);
 
         blueScaleSlider.setMajorTickSpacing(50);
@@ -475,6 +496,9 @@ public class ColorImageInfoPanel extends ModelInfoWindow implements PropertyChan
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 3;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.weightx = 1.0;
         jPanel1.add(blueScaleSlider, gridBagConstraints);
 
         jLabel9.setText("Contrast");
@@ -497,6 +521,8 @@ public class ColorImageInfoPanel extends ModelInfoWindow implements PropertyChan
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.weightx = 1.0;
         jPanel1.add(redMonoCheckbox, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -504,6 +530,9 @@ public class ColorImageInfoPanel extends ModelInfoWindow implements PropertyChan
         gridBagConstraints.gridy = 1;
         gridBagConstraints.gridwidth = 6;
         gridBagConstraints.gridheight = 3;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.weightx = 1.0;
         getContentPane().add(jPanel1, gridBagConstraints);
 
         interpolateCheckBox.setSelected(true);
@@ -546,7 +575,9 @@ public class ColorImageInfoPanel extends ModelInfoWindow implements PropertyChan
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 7;
         gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 10);
         jPanel2.add(leftSpinner, gridBagConstraints);
 
@@ -560,7 +591,9 @@ public class ColorImageInfoPanel extends ModelInfoWindow implements PropertyChan
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 5;
         gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 10);
         jPanel2.add(bottomSpinner, gridBagConstraints);
 
@@ -568,7 +601,9 @@ public class ColorImageInfoPanel extends ModelInfoWindow implements PropertyChan
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 6;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 2);
         jPanel2.add(jLabel7, gridBagConstraints);
 
@@ -582,7 +617,9 @@ public class ColorImageInfoPanel extends ModelInfoWindow implements PropertyChan
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 10);
         jPanel2.add(rightSpinner, gridBagConstraints);
 
@@ -596,7 +633,9 @@ public class ColorImageInfoPanel extends ModelInfoWindow implements PropertyChan
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 10);
         jPanel2.add(topSpinner, gridBagConstraints);
 
@@ -604,7 +643,9 @@ public class ColorImageInfoPanel extends ModelInfoWindow implements PropertyChan
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 4;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 2);
         jPanel2.add(jLabel8, gridBagConstraints);
 
@@ -612,7 +653,9 @@ public class ColorImageInfoPanel extends ModelInfoWindow implements PropertyChan
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 2);
         jPanel2.add(jLabel10, gridBagConstraints);
 
@@ -620,7 +663,9 @@ public class ColorImageInfoPanel extends ModelInfoWindow implements PropertyChan
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 2);
         jPanel2.add(jLabel11, gridBagConstraints);
 
@@ -628,7 +673,9 @@ public class ColorImageInfoPanel extends ModelInfoWindow implements PropertyChan
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 4;
         gridBagConstraints.gridwidth = 6;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.weightx = 1.0;
         getContentPane().add(jPanel2, gridBagConstraints);
 
         pack();
