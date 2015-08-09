@@ -824,7 +824,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
 //        System.out.println("Zoom In");
         if (image instanceof PerspectiveImage)
         {
-            ((PerspectiveImage)image).moveZoomFactorBy(-0.01 * getAdjustFactor());
+            ((PerspectiveImage)image).moveZoomFactorBy(Math.pow(1.1, -getAdjustFactor()));
             ((PerspectiveImage)image).firePropertyChange();
         }
     }//GEN-LAST:event_zoomInButtonActionPerformed
@@ -920,7 +920,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
 //        System.out.println("Zoom Out");
         if (image instanceof PerspectiveImage)
         {
-            ((PerspectiveImage)image).moveZoomFactorBy(0.01 * getAdjustFactor());
+            ((PerspectiveImage)image).moveZoomFactorBy(Math.pow(1.01, getAdjustFactor()));
             ((PerspectiveImage)image).firePropertyChange();
         }
     }//GEN-LAST:event_zoomOutButtonActionPerformed

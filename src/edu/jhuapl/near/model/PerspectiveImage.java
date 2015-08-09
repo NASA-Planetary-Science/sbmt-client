@@ -525,19 +525,20 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     private void zoomFrame(double zoomFactor)
     {
 //        System.out.println("zoomFrame(" + zoomFactor + ")");
-        Vector3D spacecraftPositionVector = new Vector3D(spacecraftPositionOriginal[currentSlice]);
-        Vector3D spacecraftToOriginVector = spacecraftPositionVector.scalarMultiply(-1.0);
-        Vector3D originPointingVector = spacecraftToOriginVector.normalize();
-        double distance = spacecraftToOriginVector.getNorm();
-        Vector3D deltaVector = originPointingVector.scalarMultiply(distance * (zoomFactor - 1.0));
-        double[] delta = { deltaVector.getX(), deltaVector.getY(), deltaVector.getZ() };
+//        Vector3D spacecraftPositionVector = new Vector3D(spacecraftPositionOriginal[currentSlice]);
+//        Vector3D spacecraftToOriginVector = spacecraftPositionVector.scalarMultiply(-1.0);
+//        Vector3D originPointingVector = spacecraftToOriginVector.normalize();
+//        double distance = spacecraftToOriginVector.getNorm();
+//        Vector3D deltaVector = originPointingVector.scalarMultiply(distance * (zoomFactor - 1.0));
+//        double[] delta = { deltaVector.getX(), deltaVector.getY(), deltaVector.getZ() };
 
-//        int slice = getCurrentSlice();
+        double zoomRatio = 1.0 / zoomFactor;
+
         int nslices = getNumberBands();
         for (int slice = 0; slice<nslices; slice++)
         {
-            MathUtil.vadd(spacecraftPositionOriginal[currentSlice], delta, spacecraftPositionAdjusted[currentSlice]);
-
+            for (int i=0; i<3; i++)
+                spacecraftPositionAdjusted[currentSlice][i] = spacecraftPositionOriginal[currentSlice][i] * zoomRatio;
             frusta[slice] = null;
             footprintGenerated[slice] = false;
         }
@@ -616,7 +617,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     {
 //        System.out.println("moveZoomDeltaBy(): " + zoomDelta);
 
-        double newZoomFactor = zoomFactor[0] * (1.0 + zoomDelta);
+        double newZoomFactor = zoomFactor[0] * zoomDelta;
 
         setZoomFactor(newZoomFactor);
     }
@@ -2895,9 +2896,12 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
             normalsFilter.SplittingOff();
             normalsFilter.Update();
 
-            vtkPolyData normalsFilterOutput = normalsFilter.GetOutput();
-            footprint[currentSlice].DeepCopy(normalsFilterOutput);
-            normalsGenerated = true;
+            if (footprint != null && footprint[currentSlice] != null)
+            {
+                vtkPolyData normalsFilterOutput = normalsFilter.GetOutput();
+                footprint[currentSlice].DeepCopy(normalsFilterOutput);
+                normalsGenerated = true;
+            }
         }
     }
 
@@ -3588,6 +3592,8 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     public LinkedHashMap<String, String> getProperties() throws IOException
     {
         LinkedHashMap<String, String> properties = new LinkedHashMap<String, String>();
+        if (footprint == null || footprint[currentSlice] == null)
+            return properties;
 
         if (getMaxPhase() < getMinPhase())
         {
