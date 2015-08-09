@@ -235,10 +235,14 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
             pngFileFullPath = initializePngFileFullPath();
         }
 
-        if (key.source.equals(ImageSource.SPICE) || key.source.equals(ImageSource.CORRECTED_SPICE) || key.source.equals(ImageSource.LOCAL_PERSPECTIVE))
+        if (key.source.equals(ImageSource.LOCAL_PERSPECTIVE))
         {
             infoFileFullPath = initializeInfoFileFullPath();
             sumfileFullPath = initializeSumfileFullPath();
+        }
+        if (key.source.equals(ImageSource.SPICE) || key.source.equals(ImageSource.CORRECTED_SPICE))
+        {
+            infoFileFullPath = initializeInfoFileFullPath();
         }
         else if (key.source.equals(ImageSource.LABEL))
             labelFileFullPath = initializeLabelFileFullPath();
@@ -1659,17 +1663,6 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     {
         if (key.source.equals(ImageSource.SPICE) || key.source.equals(ImageSource.CORRECTED_SPICE))
         {
-//            boolean loaded = false;
-//            try {
-//                loadSumfile();
-//                loaded = true;
-//            }
-//            catch (FileNotFoundException e)
-//            {
-//                loaded = false;
-//            }
-//
-//            if (!loaded)
                 loadImageInfo();
         }
         else if (key.source.equals(ImageSource.LABEL))
