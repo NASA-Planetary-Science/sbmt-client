@@ -8,6 +8,8 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -316,6 +318,8 @@ public class Renderer extends JPanel implements
         saveToFile(file, renWin);
     }
 
+    private BlockingQueue<CameraFrame> cameraFrameQueue;
+
     private File[] sixFiles = new File[6];
 
     AxisType[] sixAxes = {
@@ -355,11 +359,24 @@ public class Renderer extends JPanel implements
                   "Overwrite file(s)?","Confirm Overwrite",
                    JOptionPane.OK_CANCEL_OPTION,
                    JOptionPane.QUESTION_MESSAGE);
+
                 if (response == JOptionPane.CANCEL_OPTION)
                     return;
                 else
+                {
                     break;
+                }
             }
+        }
+
+        cameraFrameQueue = new LinkedBlockingQueue<CameraFrame>();
+
+        for (int i=0; i<6; i++)
+        {
+            File f = sixFiles[i];
+            AxisType at = sixAxes[i];
+            CameraFrame frame = createCameraFrameInDirectionOfAxis(at, true, f, 500);
+            cameraFrameQueue.add(frame);
         }
 
         // start off the timer
@@ -434,6 +451,92 @@ public class Renderer extends JPanel implements
 
             cam.SetPosition(pos);
         }
+
+        renWin.getVTKLock().unlock();
+
+        renWin.resetCameraClippingRange();
+        renWin.Render();
+    }
+
+    public CameraFrame createCameraFrameInDirectionOfAxis(AxisType axisType, boolean preserveCurrentDistance, File file, int delayMilliseconds)
+    {
+        CameraFrame result = new CameraFrame();
+        result.file = file;
+        result.delay = delayMilliseconds;
+
+        double[] bounds = modelManager.getSmallBodyModel().getBoundingBox().getBounds();
+        double xSize = Math.abs(bounds[1] - bounds[0]);
+        double ySize = Math.abs(bounds[3] - bounds[2]);
+        double zSize = Math.abs(bounds[5] - bounds[4]);
+        double maxSize = Math.max(Math.max(xSize, ySize), zSize);
+
+        double cameraDistance = getCameraDistance();
+
+        result.focalPoint = new double[] {0.0, 0.0, 0.0};
+
+        if (axisType == AxisType.NEGATIVE_X)
+        {
+            double xpos = xSize / Math.tan(Math.PI/6.0) + 2.0*maxSize;
+            result.position = new double[] {xpos, 0.0, 0.0};
+            result.upDirection = new double[] {0.0, 0.0, 1.0};
+        }
+        else if (axisType == AxisType.POSITIVE_X)
+        {
+            double xpos = -xSize / Math.tan(Math.PI/6.0) - 2.0*maxSize;
+            result.position = new double[] {xpos, 0.0, 0.0};
+            result.upDirection = new double[] {0.0, 0.0, 1.0};
+        }
+        else if (axisType == AxisType.NEGATIVE_Y)
+        {
+            double ypos = ySize / Math.tan(Math.PI/6.0) + 2.0*maxSize;
+            result.position = new double[] {0.0, ypos, 0.0};
+            result.upDirection = new double[] {0.0, 0.0, 1.0};
+        }
+        else if (axisType == AxisType.POSITIVE_Y)
+        {
+            double ypos = -ySize / Math.tan(Math.PI/6.0) - 2.0*maxSize;
+            result.position = new double[] {0.0, ypos, 0.0};
+            result.upDirection = new double[] {0.0, 0.0, 1.0};
+        }
+        else if (axisType == AxisType.NEGATIVE_Z)
+        {
+            double zpos = zSize / Math.tan(Math.PI/6.0) + 2.0*maxSize;
+            result.position = new double[] {0.0, 0.0, zpos};
+            result.upDirection = new double[] {0.0, 1.0, 0.0};
+        }
+        else if (axisType == AxisType.POSITIVE_Z)
+        {
+            double zpos = -zSize / Math.tan(Math.PI/6.0) - 2.0*maxSize;
+            result.position = new double[] {0.0, 0.0, zpos};
+            result.upDirection = new double[] {0.0, 1.0, 0.0};
+        }
+
+        if (preserveCurrentDistance)
+        {
+            double[] poshat = new double[3];
+
+            MathUtil.unorm(result.position, poshat);
+
+            result.position[0] = poshat[0] * cameraDistance;
+            result.position[1] = poshat[1] * cameraDistance;
+            result.position[2] = poshat[2] * cameraDistance;
+        }
+
+        return result;
+    }
+
+    public void setCameraFrame(CameraFrame frame)
+    {
+        vtkRenderer ren = renWin.getRenderer();
+        if (ren.VisibleActorCount() == 0)
+            return;
+
+        renWin.getVTKLock().lock();
+
+        vtkCamera cam = ren.GetActiveCamera();
+        cam.SetFocalPoint(frame.focalPoint[0], frame.focalPoint[1], frame.focalPoint[2]);
+        cam.SetPosition(frame.position[0], frame.position[1], frame.position[2]);
+        cam.SetViewUp(frame.upDirection[0], frame.upDirection[1], frame.upDirection[2]);
 
         renWin.getVTKLock().unlock();
 
@@ -1027,30 +1130,35 @@ public class Renderer extends JPanel implements
     @Override
     public void actionPerformed(ActionEvent e)
     {
-      for (int i=0; i<sixAxes.length; ++i)
-      {
-          if (sixFiles[i] != null && sixAxes[i] == AxisType.NONE)
-          {
-              saveToFile(sixFiles[i], renWin);
-              sixFiles[i] = null;
-              break;
-          }
-          if (sixAxes[i] != AxisType.NONE)
-          {
-              setCameraOrientationInDirectionOfAxis(sixAxes[i], true);
-              sixAxes[i] = AxisType.NONE;
-              break;
-          }
-      }
+        CameraFrame frame = cameraFrameQueue.peek();
+        if (frame != null)
+        {
+            if (frame.staged && frame.file != null)
+            {
+                saveToFile(frame.file, renWin);
+                cameraFrameQueue.remove();
+            }
+            else
+            {
+                setCameraFrame(frame);
+                frame.staged = true;
+            }
 
-      if (sixFiles[5] != null)
-      {
-          Timer timer = new Timer(500, this);
-          timer.setRepeats(false);
-          timer.start();
-      }
+            Timer timer = new Timer(frame.delay, this);
+            timer.setRepeats(false);
+            timer.start();
+        }
+
     }
+}
 
-
-
+class CameraFrame
+{
+    public boolean staged;
+    public boolean saved;
+    public int delay;
+    public double[] position;
+    public double[] upDirection;
+    public double[] focalPoint;
+    public File file;
 }
