@@ -67,8 +67,8 @@ public class ShapeModelImporterDialog extends javax.swing.JDialog
 
         if (isEllipsoid)
         {
-            equRadiusFormattedTextField.setText(configMap.get(CustomShapeModel.EQUATORIAL_RADIUS));
-            polarRadiusFormattedTextField.setText(configMap.get(CustomShapeModel.POLAR_RADIUS));
+            equatorialRadiusXFormattedTextField.setText(configMap.get(CustomShapeModel.EQUATORIAL_RADIUS_X));
+            equatorialRadiusYFormattedTextField.setText(configMap.get(CustomShapeModel.POLAR_RADIUS));
             resolutionFormattedTextField.setText(configMap.get(CustomShapeModel.RESOLUTION));
         }
         else
@@ -90,10 +90,10 @@ public class ShapeModelImporterDialog extends javax.swing.JDialog
         pathLabel.setEnabled(!enabled);
         shapeModelFormatLabel.setEnabled(!enabled);
         shapeModelFormatComboBox.setEnabled(!enabled);
-        equRadiusLabel.setEnabled(enabled);
-        equRadiusFormattedTextField.setEnabled(enabled);
-        polarRadiusLabel.setEnabled(enabled);
-        polarRadiusFormattedTextField.setEnabled(enabled);
+        equatorialRadiusXLabel.setEnabled(enabled);
+        equatorialRadiusXFormattedTextField.setEnabled(enabled);
+        equatorialRadiusYLabel.setEnabled(enabled);
+        equatorialRadiusYFormattedTextField.setEnabled(enabled);
         resolutionLabel.setEnabled(enabled);
         resolutionFormattedTextField.setEnabled(enabled);
     }
@@ -115,18 +115,20 @@ public class ShapeModelImporterDialog extends javax.swing.JDialog
         ellipsoidRadioButton = new javax.swing.JRadioButton();
         shapeModelPathTextField = new javax.swing.JTextField();
         browseShapeModelButton = new javax.swing.JButton();
-        equRadiusLabel = new javax.swing.JLabel();
-        polarRadiusLabel = new javax.swing.JLabel();
+        equatorialRadiusXLabel = new javax.swing.JLabel();
+        equatorialRadiusYLabel = new javax.swing.JLabel();
         resolutionLabel = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
         cancelButton = new javax.swing.JButton();
         okButton = new javax.swing.JButton();
-        equRadiusFormattedTextField = new javax.swing.JFormattedTextField();
-        polarRadiusFormattedTextField = new javax.swing.JFormattedTextField();
+        equatorialRadiusXFormattedTextField = new javax.swing.JFormattedTextField();
+        equatorialRadiusYFormattedTextField = new javax.swing.JFormattedTextField();
         resolutionFormattedTextField = new javax.swing.JFormattedTextField();
         shapeModelFormatLabel = new javax.swing.JLabel();
         shapeModelFormatComboBox = new javax.swing.JComboBox();
         pathLabel = new javax.swing.JLabel();
+        polarRadiusLabel1 = new javax.swing.JLabel();
+        polarRadiusFormattedTextField1 = new javax.swing.JFormattedTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         getContentPane().setLayout(new java.awt.GridBagLayout());
@@ -155,7 +157,7 @@ public class ShapeModelImporterDialog extends javax.swing.JDialog
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 5;
+        gridBagConstraints.gridy = 6;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
         getContentPane().add(customShapeModelRadioButton, gridBagConstraints);
@@ -178,7 +180,7 @@ public class ShapeModelImporterDialog extends javax.swing.JDialog
         shapeModelPathTextField.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 6;
+        gridBagConstraints.gridy = 7;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 5, 4, 0);
@@ -193,31 +195,31 @@ public class ShapeModelImporterDialog extends javax.swing.JDialog
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 6;
+        gridBagConstraints.gridy = 7;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(0, 5, 4, 5);
         getContentPane().add(browseShapeModelButton, gridBagConstraints);
 
-        equRadiusLabel.setText("Equatorial Radius (km)");
+        equatorialRadiusXLabel.setText("Equatorial Radius - X (km)");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.insets = new java.awt.Insets(0, 25, 0, 0);
-        getContentPane().add(equRadiusLabel, gridBagConstraints);
+        getContentPane().add(equatorialRadiusXLabel, gridBagConstraints);
 
-        polarRadiusLabel.setText("Polar Radius (km)");
+        equatorialRadiusYLabel.setText("Equatorial Radius - Y (km)");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 25, 0, 0);
-        getContentPane().add(polarRadiusLabel, gridBagConstraints);
+        getContentPane().add(equatorialRadiusYLabel, gridBagConstraints);
 
         resolutionLabel.setText("Resolution");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 4;
+        gridBagConstraints.gridy = 5;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 25, 0, 0);
         getContentPane().add(resolutionLabel, gridBagConstraints);
@@ -252,38 +254,38 @@ public class ShapeModelImporterDialog extends javax.swing.JDialog
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 8;
+        gridBagConstraints.gridy = 9;
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.PAGE_END;
         gridBagConstraints.weighty = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(10, 0, 5, 0);
         getContentPane().add(jPanel1, gridBagConstraints);
 
-        equRadiusFormattedTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.########"))));
-        equRadiusFormattedTextField.setText("1000");
+        equatorialRadiusXFormattedTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.########"))));
+        equatorialRadiusXFormattedTextField.setText("1000");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.ipadx = 60;
         gridBagConstraints.insets = new java.awt.Insets(0, 5, 4, 0);
-        getContentPane().add(equRadiusFormattedTextField, gridBagConstraints);
+        getContentPane().add(equatorialRadiusXFormattedTextField, gridBagConstraints);
 
-        polarRadiusFormattedTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.########"))));
-        polarRadiusFormattedTextField.setText("1000");
+        equatorialRadiusYFormattedTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.########"))));
+        equatorialRadiusYFormattedTextField.setText("1000");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 3;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.ipadx = 60;
         gridBagConstraints.insets = new java.awt.Insets(0, 5, 4, 0);
-        getContentPane().add(polarRadiusFormattedTextField, gridBagConstraints);
+        getContentPane().add(equatorialRadiusYFormattedTextField, gridBagConstraints);
 
         resolutionFormattedTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0"))));
         resolutionFormattedTextField.setText("360");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 4;
+        gridBagConstraints.gridy = 5;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.ipadx = 60;
         gridBagConstraints.insets = new java.awt.Insets(0, 5, 4, 0);
@@ -293,7 +295,7 @@ public class ShapeModelImporterDialog extends javax.swing.JDialog
         shapeModelFormatLabel.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 7;
+        gridBagConstraints.gridy = 8;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 25, 0, 0);
         getContentPane().add(shapeModelFormatLabel, gridBagConstraints);
@@ -302,7 +304,7 @@ public class ShapeModelImporterDialog extends javax.swing.JDialog
         shapeModelFormatComboBox.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 7;
+        gridBagConstraints.gridy = 8;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(0, 5, 4, 0);
         getContentPane().add(shapeModelFormatComboBox, gridBagConstraints);
@@ -311,10 +313,28 @@ public class ShapeModelImporterDialog extends javax.swing.JDialog
         pathLabel.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 6;
+        gridBagConstraints.gridy = 7;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 25, 0, 0);
         getContentPane().add(pathLabel, gridBagConstraints);
+
+        polarRadiusLabel1.setText("Polar Radius - Z (km)");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 25, 0, 0);
+        getContentPane().add(polarRadiusLabel1, gridBagConstraints);
+
+        polarRadiusFormattedTextField1.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.########"))));
+        polarRadiusFormattedTextField1.setText("1000");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.ipadx = 60;
+        gridBagConstraints.insets = new java.awt.Insets(0, 5, 4, 0);
+        getContentPane().add(polarRadiusFormattedTextField1, gridBagConstraints);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -359,10 +379,12 @@ public class ShapeModelImporterDialog extends javax.swing.JDialog
 
         if (shapeModelType == ShapeModelType.ELLIPSOID)
         {
-            double equRadius = Double.parseDouble(equRadiusFormattedTextField.getText());
-            double polarRadius = Double.parseDouble(polarRadiusFormattedTextField.getText());
+            double equRadiusX = Double.parseDouble(equatorialRadiusXFormattedTextField.getText());
+            double equRadiusY = Double.parseDouble(equatorialRadiusYFormattedTextField.getText());
+            double polarRadius = Double.parseDouble(polarRadiusFormattedTextField1.getText());
             int resolution = Integer.parseInt(resolutionFormattedTextField.getText());
-            importer.setEquRadius(equRadius);
+            importer.setEquRadiusX(equRadiusX);
+            importer.setEquRadiusY(equRadiusY);
             importer.setPolarRadius(polarRadius);
             importer.setResolution(resolution);
         }
@@ -395,15 +417,17 @@ public class ShapeModelImporterDialog extends javax.swing.JDialog
     private javax.swing.JButton cancelButton;
     private javax.swing.JRadioButton customShapeModelRadioButton;
     private javax.swing.JRadioButton ellipsoidRadioButton;
-    private javax.swing.JFormattedTextField equRadiusFormattedTextField;
-    private javax.swing.JLabel equRadiusLabel;
+    private javax.swing.JFormattedTextField equatorialRadiusXFormattedTextField;
+    private javax.swing.JLabel equatorialRadiusXLabel;
+    private javax.swing.JFormattedTextField equatorialRadiusYFormattedTextField;
+    private javax.swing.JLabel equatorialRadiusYLabel;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JLabel nameLabel;
     private javax.swing.JTextField nameTextField;
     private javax.swing.JButton okButton;
     private javax.swing.JLabel pathLabel;
-    private javax.swing.JFormattedTextField polarRadiusFormattedTextField;
-    private javax.swing.JLabel polarRadiusLabel;
+    private javax.swing.JFormattedTextField polarRadiusFormattedTextField1;
+    private javax.swing.JLabel polarRadiusLabel1;
     private javax.swing.JFormattedTextField resolutionFormattedTextField;
     private javax.swing.JLabel resolutionLabel;
     private javax.swing.JComboBox shapeModelFormatComboBox;
