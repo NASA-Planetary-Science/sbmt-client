@@ -553,7 +553,9 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 7;
         gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 10);
         jPanel1.add(leftSpinner, gridBagConstraints);
 
@@ -567,7 +569,9 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 5;
         gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 10);
         jPanel1.add(bottomSpinner, gridBagConstraints);
 
@@ -589,7 +593,9 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 10);
         jPanel1.add(rightSpinner, gridBagConstraints);
 
@@ -603,7 +609,9 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 10);
         jPanel1.add(topSpinner, gridBagConstraints);
 
@@ -635,6 +643,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 8, 0, 0);
@@ -756,7 +765,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
             gridBagConstraints.weightx = 1.0;
             jPanel3.add(interpolateCheckBox1, gridBagConstraints);
 
-            resetFrameAdjustmentsButton.setText("Reset Frame ");
+            resetFrameAdjustmentsButton.setText("Reset Pointing");
             resetFrameAdjustmentsButton.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(java.awt.event.ActionEvent evt) {
                     resetFrameAdjustmentsButtonActionPerformed(evt);
