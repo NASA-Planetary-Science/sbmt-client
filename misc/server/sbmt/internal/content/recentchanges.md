@@ -4,6 +4,25 @@
 
 # Recent Changes
 
+### August 11, 2015
+
+-   Fixed bug in "Export Six Views" command
+-   Added "Corrected" and "Corrected Spice Derived" pointing sources for LORRI images.
+    Currently, only Pluto contains any corrected pointing information, but this will be
+    uploaded to the server when it becomes available.
+-   "Reset Pointing" button in ImageInfo dialog now deletes any adjusted pointing file
+-   Exported INFO files now contain the transformed pointing information without any
+    adjusted keywords, so the adjustments have been folded in.
+-   Fixed bug in zoom buttons of ImageInfo dialog that caused zooming to stop after a
+    certain amount.
+-   Fixed bug in ImageInfo dialog boxes where components were shrinking to minimum size.
+-   Improved resizing behavior of components in ImageInfo dialog boxes.
+-   Fixed bug in "Camera..." menu command causing camera position to freeze.
+-   Added three-axis ellipsoid model generation to Import Shape Models dialog.
+-   Updated radiuses of Charon, Hydra and Nix shape models. Currently, the Hydra and Nix
+    models are spheres, but we will update them to three-axis ellipsoids when data
+    becomes available.
+
 ### July 18, 2015
 
 -   Pluto and its moons' models have all been modified to reflect lastest consensus radii
