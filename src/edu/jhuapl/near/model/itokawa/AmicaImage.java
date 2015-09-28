@@ -49,9 +49,9 @@ public class AmicaImage extends PerspectiveImage
         // Download appropriate flat field depending on filter of current image
         ImageKey key = getKey();
         File keyFile = new File(key.name);
-        String imagesDir = keyFile.getParentFile().getAbsolutePath();
+        String imagesDir = keyFile.getParentFile().getPath();
         String flatFileName = "flat_" + getFilterName() + ".fit";
-        String flatfile = FileCache.getFileFromServer(imagesDir + "/" + flatFileName).getAbsolutePath();
+        String flatfile = FileCache.getFileFromServer(imagesDir + File.separator + flatFileName).getAbsolutePath();
 
         try
         {
