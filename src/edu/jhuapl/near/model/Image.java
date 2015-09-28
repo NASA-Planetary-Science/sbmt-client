@@ -26,25 +26,31 @@ public abstract class Image extends Model implements PropertyChangeListener
         SPICE {
             public String toString()
             {
-                return "SPICE derived";
+                return "SPICE Derived";
             }
         },
         GASKELL {
             public String toString()
             {
-                return "Gaskell derived";
+                return "Gaskell Derived";
             }
         },
         LABEL {
             public String toString()
             {
-                return "Label derived";
+                return "Label Derived";
             }
         },
         CORRECTED {
             public String toString()
             {
                 return "Corrected";
+            }
+        },
+        CORRECTED_SPICE {
+            public String toString()
+            {
+                return "Corrected SPICE Derived";
             }
         },
         IMAGE_MAP {

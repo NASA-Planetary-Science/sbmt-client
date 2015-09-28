@@ -45,7 +45,8 @@ public class ShapeModelImporter
 
     private String name;
     private ShapeModelType shapeModelType = ShapeModelType.FILE;
-    private double equRadius;
+    private double equatorialRadiusX;
+    private double equatorialRadiusY;
     private double polarRadius;
     private int resolution;
     private String modelPath;
@@ -71,7 +72,7 @@ public class ShapeModelImporter
         if (shapeModelType == ShapeModelType.ELLIPSOID)
         {
             vtkSphereSource sphereSource = new vtkSphereSource();
-            sphereSource.SetRadius(equRadius);
+            sphereSource.SetRadius(equatorialRadiusX);
             sphereSource.SetCenter(0.0, 0.0, 0.0);
             sphereSource.SetLatLongTessellation(0);
             sphereSource.SetThetaResolution(resolution);
@@ -79,14 +80,14 @@ public class ShapeModelImporter
             sphereSource.Update();
             shapePoly = sphereSource.GetOutput();
 
-            if (equRadius != polarRadius)
+            if (equatorialRadiusX != polarRadius || equatorialRadiusX != equatorialRadiusY)
             {
                 // Turn it into ellipsoid
                 vtkTransformPolyDataFilter filter = new vtkTransformPolyDataFilter();
                 filter.SetInputConnection(sphereSource.GetOutputPort());
 
                 vtkTransform transform = new vtkTransform();
-                transform.Scale(1.0, 1.0, polarRadius/equRadius);
+                transform.Scale(1.0, equatorialRadiusY/equatorialRadiusX, polarRadius/equatorialRadiusX);
 
                 filter.SetTransform(transform);
                 filter.Update();
@@ -96,7 +97,8 @@ public class ShapeModelImporter
             }
 
             configMap.put(CustomShapeModel.TYPE, CustomShapeModel.ELLIPSOID);
-            configMap.put(CustomShapeModel.EQUATORIAL_RADIUS, String.valueOf(equRadius));
+            configMap.put(CustomShapeModel.EQUATORIAL_RADIUS_X, String.valueOf(equatorialRadiusX));
+            configMap.put(CustomShapeModel.EQUATORIAL_RADIUS_Y, String.valueOf(equatorialRadiusY));
             configMap.put(CustomShapeModel.POLAR_RADIUS, String.valueOf(polarRadius));
             configMap.put(CustomShapeModel.RESOLUTION, String.valueOf(resolution));
         }
@@ -209,8 +211,10 @@ public class ShapeModelImporter
 
         if (shapeModelType == ShapeModelType.ELLIPSOID)
         {
-            if (equRadius <= 0.0)
-                return "Equatorial radius must be positive.";
+            if (equatorialRadiusX <= 0.0)
+                return "Equatorial radius X must be positive.";
+            if (equatorialRadiusY <= 0.0)
+                return "Equatorial radius Y must be positive.";
             if (polarRadius <= 0.0)
                 return "Polar radius must be positive.";
             if (resolution < 3 || resolution > 1024)
@@ -239,9 +243,14 @@ public class ShapeModelImporter
         this.shapeModelType = type;
     }
 
-    public void setEquRadius(double equRadius)
+    public void setEquRadiusX(double equRadiusX)
     {
-        this.equRadius = equRadius;
+        this.equatorialRadiusX = equRadiusX;
+    }
+
+    public void setEquRadiusY(double equRadiusY)
+    {
+        this.equatorialRadiusY = equRadiusY;
     }
 
     public void setPolarRadius(double polarRadius)

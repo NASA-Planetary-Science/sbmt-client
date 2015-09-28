@@ -1609,7 +1609,7 @@ public class SmallBodyConfig
 //                            new GenericPhpQuery("/NEWHORIZONS/PLUTO/IMAGING", "PLUTO"),
                             new FixedListQuery("/NEWHORIZONS/PLUTO/IMAGING"),
                             ImageType.LORRI_IMAGE,
-                            new ImageSource[]{ImageSource.SPICE},
+                            new ImageSource[]{ImageSource.SPICE, ImageSource.CORRECTED, ImageSource.CORRECTED_SPICE},
                             Instrument.LORRI
                             ),
 
@@ -1653,7 +1653,7 @@ public class SmallBodyConfig
                             SpectralMode.MONO,
                             new FixedListQuery("/NEWHORIZONS/CHARON/IMAGING"),
                             ImageType.LORRI_IMAGE,
-                            new ImageSource[]{ImageSource.SPICE},
+                            new ImageSource[]{ImageSource.SPICE, ImageSource.CORRECTED_SPICE},
                             Instrument.LORRI
                             ),
 
@@ -1690,7 +1690,7 @@ public class SmallBodyConfig
                             SpectralMode.MONO,
                             new FixedListQuery("/NEWHORIZONS/HYDRA/IMAGING"),
                             ImageType.LORRI_IMAGE,
-                            new ImageSource[]{ImageSource.SPICE},
+                            new ImageSource[]{ImageSource.SPICE, ImageSource.CORRECTED_SPICE},
                             Instrument.LORRI
                             ),
 
@@ -1726,7 +1726,7 @@ public class SmallBodyConfig
                             SpectralMode.MONO,
                             new FixedListQuery("/NEWHORIZONS/NIX/IMAGING"),
                             ImageType.LORRI_IMAGE,
-                            new ImageSource[]{ImageSource.SPICE},
+                            new ImageSource[]{ImageSource.SPICE, ImageSource.CORRECTED_SPICE},
                             Instrument.LORRI
                             ),
 

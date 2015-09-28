@@ -73,12 +73,28 @@ public class BackplanesGenerator
             {
                 try
                 {
-                    key = new ImageKey(filename.replace(".fit", ""), ImageSource.SPICE);
+                    key = new ImageKey(filename.replace(".fit", ""), ImageSource.CORRECTED);
                     image = (PerspectiveImage)ModelFactory.createImage(key, smallBodyModel, false);
                 }
                 catch (Exception e1)
                 {
-                    continue;
+                    try
+                    {
+                        key = new ImageKey(filename.replace(".fit", ""), ImageSource.SPICE);
+                        image = (PerspectiveImage)ModelFactory.createImage(key, smallBodyModel, false);
+                    }
+                    catch (Exception e2)
+                    {
+                        try
+                        {
+                            key = new ImageKey(filename.replace(".fit", ""), ImageSource.CORRECTED_SPICE);
+                            image = (PerspectiveImage)ModelFactory.createImage(key, smallBodyModel, false);
+                        }
+                        catch (Exception e3)
+                        {
+                            continue;
+                        }
+                    }
                 }
             }
 

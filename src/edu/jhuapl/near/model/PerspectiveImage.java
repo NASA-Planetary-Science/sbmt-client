@@ -235,10 +235,14 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
             pngFileFullPath = initializePngFileFullPath();
         }
 
-        if (key.source.equals(ImageSource.SPICE) || key.source.equals(ImageSource.LOCAL_PERSPECTIVE))
+        if (key.source.equals(ImageSource.LOCAL_PERSPECTIVE))
         {
             infoFileFullPath = initializeInfoFileFullPath();
             sumfileFullPath = initializeSumfileFullPath();
+        }
+        if (key.source.equals(ImageSource.SPICE) || key.source.equals(ImageSource.CORRECTED_SPICE))
+        {
+            infoFileFullPath = initializeInfoFileFullPath();
         }
         else if (key.source.equals(ImageSource.LABEL))
             labelFileFullPath = initializeLabelFileFullPath();
@@ -525,19 +529,20 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     private void zoomFrame(double zoomFactor)
     {
 //        System.out.println("zoomFrame(" + zoomFactor + ")");
-        Vector3D spacecraftPositionVector = new Vector3D(spacecraftPositionOriginal[currentSlice]);
-        Vector3D spacecraftToOriginVector = spacecraftPositionVector.scalarMultiply(-1.0);
-        Vector3D originPointingVector = spacecraftToOriginVector.normalize();
-        double distance = spacecraftToOriginVector.getNorm();
-        Vector3D deltaVector = originPointingVector.scalarMultiply(distance * (zoomFactor - 1.0));
-        double[] delta = { deltaVector.getX(), deltaVector.getY(), deltaVector.getZ() };
+//        Vector3D spacecraftPositionVector = new Vector3D(spacecraftPositionOriginal[currentSlice]);
+//        Vector3D spacecraftToOriginVector = spacecraftPositionVector.scalarMultiply(-1.0);
+//        Vector3D originPointingVector = spacecraftToOriginVector.normalize();
+//        double distance = spacecraftToOriginVector.getNorm();
+//        Vector3D deltaVector = originPointingVector.scalarMultiply(distance * (zoomFactor - 1.0));
+//        double[] delta = { deltaVector.getX(), deltaVector.getY(), deltaVector.getZ() };
 
-//        int slice = getCurrentSlice();
+        double zoomRatio = 1.0 / zoomFactor;
+
         int nslices = getNumberBands();
         for (int slice = 0; slice<nslices; slice++)
         {
-            MathUtil.vadd(spacecraftPositionOriginal[currentSlice], delta, spacecraftPositionAdjusted[currentSlice]);
-
+            for (int i=0; i<3; i++)
+                spacecraftPositionAdjusted[currentSlice][i] = spacecraftPositionOriginal[currentSlice][i] * zoomRatio;
             frusta[slice] = null;
             footprintGenerated[slice] = false;
         }
@@ -616,7 +621,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     {
 //        System.out.println("moveZoomDeltaBy(): " + zoomDelta);
 
-        double newZoomFactor = zoomFactor[0] * (1.0 + zoomDelta);
+        double newZoomFactor = zoomFactor[0] * zoomDelta;
 
         setZoomFactor(newZoomFactor);
     }
@@ -1055,7 +1060,10 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
             double[][] boresightDirection,
             double[][] upVector,
             double[] targetPixelCoordinates,
-            boolean applyFrameAdjustments) throws NumberFormatException, IOException
+            double[] zoomFactor,
+            double[] rotationOffset,
+            boolean applyFrameAdjustments,
+            boolean flatten) throws NumberFormatException, IOException
     {
         // for testing purposes only:
 //        infoFilename = infoFilename + ".txt";
@@ -1064,8 +1072,9 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         FileOutputStream fs = null;
 
         // save out info file to cache with ".adjusted" appended to the name
+        String suffix = flatten ? "" : ".adjusted";
         try {
-            fs = new FileOutputStream(infoFilename + ".adjusted");
+            fs = new FileOutputStream(infoFilename + suffix);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             return;
@@ -1086,27 +1095,30 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
         boolean writeApplyAdustments = false;
 
-        if (targetPixelCoordinates[0] != Double.MAX_VALUE && targetPixelCoordinates[1] != Double.MAX_VALUE)
+        if (!flatten)
         {
-            out.write(String.format("%-20s= ( %1.16e , %1.16e )\n", TARGET_PIXEL_COORD, targetPixelCoordinates[0], targetPixelCoordinates[1]));
-            writeApplyAdustments = true;
-        }
+            if (targetPixelCoordinates[0] != Double.MAX_VALUE && targetPixelCoordinates[1] != Double.MAX_VALUE)
+            {
+                out.write(String.format("%-20s= ( %1.16e , %1.16e )\n", TARGET_PIXEL_COORD, targetPixelCoordinates[0], targetPixelCoordinates[1]));
+                writeApplyAdustments = true;
+            }
 
-        if (zoomFactor[0] != 1.0)
-        {
-            out.write(String.format("%-20s= %1.16e\n", TARGET_ZOOM_FACTOR, zoomFactor[0]));
-            writeApplyAdustments = true;
-        }
+            if (zoomFactor[0] != 1.0)
+            {
+                out.write(String.format("%-20s= %1.16e\n", TARGET_ZOOM_FACTOR, zoomFactor[0]));
+                writeApplyAdustments = true;
+            }
 
-        if (rotationOffset[0] != 0.0)
-        {
-            out.write(String.format("%-20s= %1.16e\n", TARGET_ROTATION, rotationOffset[0]));
-            writeApplyAdustments = true;
-        }
+            if (rotationOffset[0] != 0.0)
+            {
+                out.write(String.format("%-20s= %1.16e\n", TARGET_ROTATION, rotationOffset[0]));
+                writeApplyAdustments = true;
+            }
 
-        // only write out user-modified offsets if the image info has been modified
-        if (writeApplyAdustments)
-            out.write(String.format("%-20s= %b\n", APPLY_ADJUSTMENTS, applyFrameAdjustments));
+            // only write out user-modified offsets if the image info has been modified
+            if (writeApplyAdustments)
+                out.write(String.format("%-20s= %b\n", APPLY_ADJUSTMENTS, applyFrameAdjustments));
+        }
 
         out.close();
     }
@@ -1649,19 +1661,8 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
     protected void loadPointing() throws FitsException, IOException
     {
-        if (key.source.equals(ImageSource.SPICE))
+        if (key.source.equals(ImageSource.SPICE) || key.source.equals(ImageSource.CORRECTED_SPICE))
         {
-            boolean loaded = false;
-            try {
-                loadSumfile();
-                loaded = true;
-            }
-            catch (FileNotFoundException e)
-            {
-                loaded = false;
-            }
-
-            if (!loaded)
                 loadImageInfo();
         }
         else if (key.source.equals(ImageSource.LABEL))
@@ -1700,13 +1701,23 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         }
         else
         {
-            try
-            {
-                loadSumfile();
+            boolean loaded = false;
+            try {
+                loadAdjustedSumfile();
+                loaded = true;
+            } catch (FileNotFoundException e) {
+                loaded = false;
             }
-            catch(IOException ex)
+            if (!loaded)
             {
-                System.out.println("Sumfile not available");
+                try {
+                    loadSumfile();
+                    loaded = true;
+                }
+                catch (FileNotFoundException e)
+                {
+                    System.out.println("Sumfile not available");
+                }
             }
         }
 
@@ -2110,7 +2121,10 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
                         boresightDirectionOriginal,
                         upVectorOriginal,
                         targetPixelCoordinates,
-                        applyFrameAdjustments[0]);
+                        zoomFactor,
+                        rotationOffset,
+                        applyFrameAdjustments[0],
+                        false);
             }
         }
         catch (NumberFormatException e)
@@ -2124,6 +2138,11 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     }
 
 
+    /**
+     * Saves adjusted image info out to an INFO file, folding in the adjusted values, so no adjustment keywords appear.
+     *
+     * @param infoFileName
+     */
     public void saveImageInfo(String infoFileName)
     {
         try
@@ -2133,16 +2152,19 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
                         0,
                         startTime,
                         stopTime,
-                        spacecraftPositionOriginal,
-                        sunPositionOriginal,
-                        frustum1Original,
-                        frustum2Original,
-                        frustum3Original,
-                        frustum4Original,
-                        boresightDirectionOriginal,
-                        upVectorOriginal,
+                        spacecraftPositionAdjusted,
+                        sunPositionAdjusted,
+                        frustum1Adjusted,
+                        frustum2Adjusted,
+                        frustum3Adjusted,
+                        frustum4Adjusted,
+                        boresightDirectionAdjusted,
+                        upVectorAdjusted,
                         targetPixelCoordinates,
-                        applyFrameAdjustments[0]);
+                        zoomFactor,
+                        rotationOffset,
+                        applyFrameAdjustments[0],
+                        true);
         }
         catch (NumberFormatException e)
         {
@@ -2764,7 +2786,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
             String footprintFilename = null;
             File file = null;
 
-            if (key.source == ImageSource.SPICE)
+            if (key.source == ImageSource.SPICE || key.source == ImageSource.CORRECTED_SPICE)
                 footprintFilename = key.name + "_FOOTPRINT_RES" + resolutionLevel + "_PDS.VTP";
             else
                 footprintFilename = key.name + "_FOOTPRINT_RES" + resolutionLevel + "_GASKELL.VTP";
@@ -2867,9 +2889,12 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
             normalsFilter.SplittingOff();
             normalsFilter.Update();
 
-            vtkPolyData normalsFilterOutput = normalsFilter.GetOutput();
-            footprint[currentSlice].DeepCopy(normalsFilterOutput);
-            normalsGenerated = true;
+            if (footprint != null && footprint[currentSlice] != null)
+            {
+                vtkPolyData normalsFilterOutput = normalsFilter.GetOutput();
+                footprint[currentSlice].DeepCopy(normalsFilterOutput);
+                normalsGenerated = true;
+            }
         }
     }
 
@@ -3560,6 +3585,8 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     public LinkedHashMap<String, String> getProperties() throws IOException
     {
         LinkedHashMap<String, String> properties = new LinkedHashMap<String, String>();
+        if (footprint == null || footprint[currentSlice] == null)
+            return properties;
 
         if (getMaxPhase() < getMinPhase())
         {

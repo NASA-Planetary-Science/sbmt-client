@@ -139,7 +139,8 @@ public class CameraDialog extends JDialog implements ActionListener
             {
             }
             // Reset the text field in case the requested change was not fulfilled.
-            fovField.setText(String.valueOf(renderer.getCameraViewAngle()));
+// REMOVED because it causes Renderer to freeze. -turnerj1
+//            fovField.setText(String.valueOf(renderer.getCameraViewAngle()));
 
             try
             {
@@ -150,14 +151,16 @@ public class CameraDialog extends JDialog implements ActionListener
             {
             }
             // Reset the text field in case the requested change was not fulfilled.
-            distanceField.setText(String.valueOf(renderer.getCameraDistance()));
+// REMOVED because it causes Renderer to freeze. -turnerj1
+//            distanceField.setText(String.valueOf(renderer.getCameraDistance()));
 
             renderer.setProjectionType((ProjectionType)projComboBox.getSelectedItem());
         }
         else if (e.getSource() == resetButton)
         {
             renderer.resetToDefaultCameraViewAngle();
-            fovField.setText(String.valueOf(renderer.getCameraViewAngle()));
+// REMOVED because it causes Renderer to freeze. -turnerj1
+//            fovField.setText(String.valueOf(renderer.getCameraViewAngle()));
         }
 
         if (e.getSource() == okayButton || e.getSource() == cancelButton)

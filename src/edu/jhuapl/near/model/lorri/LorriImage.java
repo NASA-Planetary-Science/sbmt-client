@@ -49,25 +49,40 @@ public class LorriImage extends PerspectiveImage
         return null;
     }
 
+//    protected String initializeInfoFileFullPath()
+//    {
+//        ImageKey key = getKey();
+//        File keyFile = new File(key.name);
+//        String pointingFileName = null;
+//
+//        if (key.source == ImageSource.WCS_CORRECTED)
+//            pointingFileName = keyFile.getParentFile().getParent() + "/wcsinfofiles/" + keyFile.getName() + ".INFO";
+//        else
+//            pointingFileName = keyFile.getParentFile().getParent() + "/infofiles/" + keyFile.getName() + ".INFO";
+//
+//        return FileCache.getFileFromServer(pointingFileName).getAbsolutePath();
+//    }
+
     @Override
     protected String initializeInfoFileFullPath()
     {
         ImageKey key = getKey();
-
-        // if the file type is SUM, then return a null
-//        if (key.fileType != null && key.fileType == FileType.SUM)
-//            return null;
-
-        File keyFile = new File(key.name);
-        String pointingFileName = null;
-
-        pointingFileName = keyFile.getParentFile().getParent() + "/infofiles/" + keyFile.getName() + ".INFO";
-
         String result = null;
-        try {
-            result = FileCache.getFileFromServer(pointingFileName).getAbsolutePath();
-        } catch (Exception e) {
+
+        // if the source is GASKELL, then return a null
+        if (key.source == null || key.source != null && (key.source == ImageSource.GASKELL || key.source == ImageSource.CORRECTED))
             result = null;
+        else
+        {
+            File keyFile = new File(key.name);
+            String infodir = key.source == ImageSource.CORRECTED_SPICE ? "infofiles-corrected" : "infofiles";
+            String pointingFileName = keyFile.getParentFile().getParent() + "/" + infodir + "/" + keyFile.getName() + ".INFO";
+
+            try {
+                result = FileCache.getFileFromServer(pointingFileName).getAbsolutePath();
+            } catch (Exception e) {
+                result = null;
+            }
         }
 
         return result;
@@ -77,21 +92,24 @@ public class LorriImage extends PerspectiveImage
     protected String initializeSumfileFullPath()
     {
         ImageKey key = getKey();
-
-        // if the file type is not SUM, then return null
-//        if (key.fileType == null || key.fileType != FileType.SUM)
-//            return null;
-
-        File keyFile = new File(key.name);
-        String sumFilename = keyFile.getParentFile().getParent() + "/sumfiles/"
-        + keyFile.getName() + ".SUM";
-
         String result = null;
-        try {
-            result = FileCache.getFileFromServer(sumFilename).getAbsolutePath();
-        } catch (Exception e) {
+
+        // if the source is SPICE, then return a null
+        if (key.source == null || key.source != null && (key.source == ImageSource.SPICE || key.source == ImageSource.CORRECTED_SPICE))
             result = null;
+        else
+        {
+            File keyFile = new File(key.name);
+            String sumdir = key.source == ImageSource.CORRECTED ? "sumfiles-corrected" : "sumfiles";
+            String sumFilename = keyFile.getParentFile().getParent() + "/" + sumdir + "/" + keyFile.getName() + ".SUM";
+
+            try {
+                result = FileCache.getFileFromServer(sumFilename).getAbsolutePath();
+            } catch (Exception e) {
+                result = null;
+            }
         }
+
         return result;
     }
 }
