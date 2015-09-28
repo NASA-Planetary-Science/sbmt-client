@@ -4,6 +4,10 @@
 
 # Recent Changes
 
+### September 28, 2015
+
+-   Fixed Windows bug loading AMICA image files
+
 ### August 11, 2015
 
 -   Fixed bug in "Export Six Views" command
