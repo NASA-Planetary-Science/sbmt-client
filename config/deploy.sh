@@ -10,19 +10,27 @@ DIR=`dirname "$0"`
 
 TODAYSDATE=`date "+%Y.%m.%d"`
 
-TARGETHOST=kenny
+TARGETHOST=bennu
 TARGETDIR=/disks/d0180/htdocs-sbmt
 # Uncomment to test in staging area
 #TARGETDIR=$TARGETDIR/internal/stage
 TARGET="${TARGETHOST}:${TARGETDIR}"
 
-scp build/dist/internal/linux64/sbmt-${TODAYSDATE}-linux-x64.zip                    ${TARGET}/internal/releases/
-scp build/dist/internal/mac64/sbmt-${TODAYSDATE}-macosx-x64.zip                     ${TARGET}/internal/releases/
-scp build/dist/internal/win64/sbmt-${TODAYSDATE}-windows-x64.zip                    ${TARGET}/internal/releases/
+chmod 664 build/dist/internal/linux64/sbmt-${TODAYSDATE}-linux-x64.zip 
+chmod 664 build/dist/internal/mac64/sbmt-${TODAYSDATE}-macosx-x64.zip 
+chmod 664 build/dist/internal/win64/sbmt-${TODAYSDATE}-windows-x64.zip 
 
-scp build/dist/public/linux64/sbmt-${TODAYSDATE}-linux-x64.zip                     ${TARGET}/releases/
-scp build/dist/public/mac64/sbmt-${TODAYSDATE}-macosx-x64.zip                      ${TARGET}/releases/
-scp build/dist/public/win64/sbmt-${TODAYSDATE}-windows-x64.zip                     ${TARGET}/releases/
+chmod 664 build/dist/public/linux64/sbmt-${TODAYSDATE}-linux-x64.zip 
+chmod 664 build/dist/public/mac64/sbmt-${TODAYSDATE}-macosx-x64.zip 
+chmod 664 build/dist/public/win64/sbmt-${TODAYSDATE}-windows-x64.zip 
+
+scp  build/dist/internal/linux64/sbmt-${TODAYSDATE}-linux-x64.zip                    ${TARGET}/internal/releases/
+scp  build/dist/internal/mac64/sbmt-${TODAYSDATE}-macosx-x64.zip                     ${TARGET}/internal/releases/
+scp  build/dist/internal/win64/sbmt-${TODAYSDATE}-windows-x64.zip                    ${TARGET}/internal/releases/
+
+scp  build/dist/public/linux64/sbmt-${TODAYSDATE}-linux-x64.zip                     ${TARGET}/releases/
+scp  build/dist/public/mac64/sbmt-${TODAYSDATE}-macosx-x64.zip                      ${TARGET}/releases/
+scp  build/dist/public/win64/sbmt-${TODAYSDATE}-windows-x64.zip                     ${TARGET}/releases/
 
 (
 cd misc/server/sbmt/internal
