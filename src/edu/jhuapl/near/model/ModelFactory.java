@@ -11,6 +11,8 @@ import edu.jhuapl.near.model.Image.SpectralMode;
 import edu.jhuapl.near.model.SmallBodyConfig.ImageType;
 import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelAuthor;
 import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelBody;
+import edu.jhuapl.near.model.bennu.MapCamImage;
+import edu.jhuapl.near.model.bennu.PolyCamImage;
 import edu.jhuapl.near.model.custom.CustomGraticule;
 import edu.jhuapl.near.model.custom.CustomShapeModel;
 import edu.jhuapl.near.model.deimos.DeimosImage;
@@ -90,6 +92,10 @@ public class ModelFactory
                     return new MSIMathildeImage(key, smallBodyModel, loadPointingOnly);
                 else if (key.instrument.type == ImageType.LORRI_IMAGE)
                     return new LorriImage(key, smallBodyModel, loadPointingOnly);
+                else if (key.instrument.type == ImageType.POLYCAM_IMAGE)
+                    return new PolyCamImage(key, smallBodyModel, loadPointingOnly);
+                else if (key.instrument.type == ImageType.MAPCAM_IMAGE)
+                    return new MapCamImage(key, smallBodyModel, loadPointingOnly);
                 else
                     return null;
             }

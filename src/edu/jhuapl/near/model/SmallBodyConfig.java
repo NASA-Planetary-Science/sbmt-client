@@ -216,6 +216,8 @@ public class SmallBodyConfig
         SSI("SSI"),
         OSIRIS("OSIRIS"),
         OLA("OLA"),
+        MAPCAM("MAPCAM"),
+        POLYCAM("POLYCAM"),
         IMAGING_DATA("Imaging Data"),
         MVIC("MVIC"),
         LEISA("LEISA"),
@@ -249,6 +251,8 @@ public class SmallBodyConfig
         MVIC_JUPITER_IMAGE,
         LEISA_JUPITER_IMAGE,
         LORRI_IMAGE,
+        POLYCAM_IMAGE,
+        MAPCAM_IMAGE,
     }
 
     static public final int LEISA_NBANDS = 256;
@@ -1329,6 +1333,42 @@ public class SmallBodyConfig
             c = c.clone();
             c.version = "V3";
             c.pathOnServer = "/GASKELL/RQ36_V3";
+            configArray.add(c);
+
+        }
+
+        //PolyCam, MapCam
+        if (Configuration.isAPLVersion())
+        {
+            c = new SmallBodyConfig();
+            c.body = ShapeModelBody.RQ36;
+            c.type = ShapeModelType.ASTEROID;
+            c.population = ShapeModelPopulation.NEO;
+            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.author = ShapeModelAuthor.GASKELL;
+            c.pathOnServer = "/GASKELL/RQ36";
+            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
+            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
+            c.imageSearchDefaultMaxSpacecraftDistance = 1.0e3;
+            c.imageSearchDefaultMaxResolution = 1.0e3;
+            c.imagingInstruments = new ImagingInstrument[] {
+                    new ImagingInstrument(
+                            SpectralMode.MONO,
+                            new FixedListQuery("/GASKELL/RQ36/POLYCAM"),
+                            ImageType.POLYCAM_IMAGE,
+                            new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE},
+                            Instrument.POLYCAM
+                            ),
+                    new ImagingInstrument(
+                            SpectralMode.MONO,
+                            new FixedListQuery("/GASKELL/RQ36/MAPCAM"),
+                            ImageType.MAPCAM_IMAGE,
+                            new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE},
+                            Instrument.MAPCAM
+                            )
+            };
             configArray.add(c);
         }
 
