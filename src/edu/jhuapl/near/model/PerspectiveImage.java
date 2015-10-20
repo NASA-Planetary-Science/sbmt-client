@@ -1663,7 +1663,14 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     {
         if (key.source.equals(ImageSource.SPICE) || key.source.equals(ImageSource.CORRECTED_SPICE))
         {
+            try
+            {
                 loadImageInfo();
+            }
+            catch(IOException ex)
+            {
+                System.out.println("INFO file not available");
+            }
         }
         else if (key.source.equals(ImageSource.LABEL))
         {
@@ -1673,7 +1680,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
             }
             catch(IOException ex)
             {
-                System.out.println("Label file not available");
+                System.out.println("LABEL file not available");
             }
         }
         else if (key.source.equals(ImageSource.LOCAL_PERSPECTIVE))
@@ -1716,7 +1723,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
                 }
                 catch (FileNotFoundException e)
                 {
-                    System.out.println("Sumfile not available");
+                    System.out.println("SUM file not available");
                 }
             }
         }
