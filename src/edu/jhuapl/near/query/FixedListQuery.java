@@ -60,6 +60,8 @@ public class FixedListQuery extends QueryBase
             ImageSource imageSource,
             int limbType)
     {
+        imageListPrefix = "";
+
         if (multiSource)
         {
             if (imageSource == ImageSource.GASKELL)
