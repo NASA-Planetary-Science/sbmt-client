@@ -1356,7 +1356,7 @@ public class SmallBodyConfig
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
                             SpectralMode.MONO,
-                            new FixedListQuery("/GASKELL/RQ36/POLYCAM"),
+                            new FixedListQuery("/GASKELL/RQ36/POLYCAM", true),
                             ImageType.POLYCAM_IMAGE,
                             new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE},
                             Instrument.POLYCAM
@@ -1647,7 +1647,7 @@ public class SmallBodyConfig
                     new ImagingInstrument(
                             SpectralMode.MONO,
 //                            new GenericPhpQuery("/NEWHORIZONS/PLUTO/IMAGING", "PLUTO"),
-                            new FixedListQuery("/NEWHORIZONS/PLUTO/IMAGING"),
+                            new FixedListQuery("/NEWHORIZONS/PLUTO/IMAGING", true),
                             ImageType.LORRI_IMAGE,
                             new ImageSource[]{ImageSource.SPICE, ImageSource.CORRECTED, ImageSource.CORRECTED_SPICE},
                             Instrument.LORRI
@@ -1691,7 +1691,7 @@ public class SmallBodyConfig
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
                             SpectralMode.MONO,
-                            new FixedListQuery("/NEWHORIZONS/CHARON/IMAGING"),
+                            new FixedListQuery("/NEWHORIZONS/CHARON/IMAGING", true),
                             ImageType.LORRI_IMAGE,
                             new ImageSource[]{ImageSource.SPICE, ImageSource.CORRECTED_SPICE},
                             Instrument.LORRI
@@ -1728,7 +1728,7 @@ public class SmallBodyConfig
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
                             SpectralMode.MONO,
-                            new FixedListQuery("/NEWHORIZONS/HYDRA/IMAGING"),
+                            new FixedListQuery("/NEWHORIZONS/HYDRA/IMAGING", true),
                             ImageType.LORRI_IMAGE,
                             new ImageSource[]{ImageSource.SPICE, ImageSource.CORRECTED_SPICE},
                             Instrument.LORRI
@@ -1764,7 +1764,7 @@ public class SmallBodyConfig
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
                             SpectralMode.MONO,
-                            new FixedListQuery("/NEWHORIZONS/NIX/IMAGING"),
+                            new FixedListQuery("/NEWHORIZONS/NIX/IMAGING", true),
                             ImageType.LORRI_IMAGE,
                             new ImageSource[]{ImageSource.SPICE, ImageSource.CORRECTED_SPICE},
                             Instrument.LORRI

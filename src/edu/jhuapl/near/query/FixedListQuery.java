@@ -14,10 +14,21 @@ import edu.jhuapl.near.model.Image.ImageSource;
 public class FixedListQuery extends QueryBase
 {
     private String rootPath;
+    private String imageListPrefix;
+    private boolean multiSource;
 
     public FixedListQuery(String rootPath)
     {
         this.rootPath = rootPath;
+        imageListPrefix = "";
+        this.multiSource = false;
+    }
+
+    public FixedListQuery(String rootPath, boolean multiSource)
+    {
+        this.rootPath = rootPath;
+        this.imageListPrefix = "";
+        this.multiSource = multiSource;
     }
 
     @Override
@@ -49,12 +60,15 @@ public class FixedListQuery extends QueryBase
             ImageSource imageSource,
             int limbType)
     {
-        String imageListPrefix = "";
-
-        if (imageSource == ImageSource.CORRECTED)
-            imageListPrefix = "sumfiles-corrected";
-        else if (imageSource == ImageSource.CORRECTED_SPICE)
-            imageListPrefix = "infofiles-corrected";
+        if (multiSource)
+        {
+            if (imageSource == ImageSource.GASKELL)
+                imageListPrefix = "sumfiles";
+            if (imageSource == ImageSource.CORRECTED)
+                imageListPrefix = "sumfiles-corrected";
+            else if (imageSource == ImageSource.CORRECTED_SPICE)
+                imageListPrefix = "infofiles-corrected";
+        }
 
         ArrayList<ArrayList<String>> result = getResultsFromFileListOnServer(rootPath + "/" + imageListPrefix + "/imagelist.txt", rootPath + "/images/");
 
