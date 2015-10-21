@@ -4,6 +4,10 @@
 
 # Recent Changes
 
+### October 20, 2015
+
+-   Added test image data for Bennu POLYCAM imager
+
 ### September 28, 2015
 
 -   Fixed Windows bug loading AMICA image files
