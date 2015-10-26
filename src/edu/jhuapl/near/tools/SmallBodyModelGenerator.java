@@ -47,7 +47,7 @@ public class SmallBodyModelGenerator
 
         try
         {
-            for (int i=0; i<4; ++i)
+            for (int i=0; i<pltfiles.length; ++i)
             {
                 String filename = datadir + "/" + pltfiles[i] + ".PLT";
 
