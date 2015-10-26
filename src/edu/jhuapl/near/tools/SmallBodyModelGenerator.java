@@ -40,7 +40,8 @@ public class SmallBodyModelGenerator
         String datadir = args[0];
         String outputdir = args[1];
 
-        String name = "Vesta"; // Change this to shape model name
+//        String name = "Vesta"; // Change this to shape model name
+        String name = args[2];
 
         String[] pltfiles = {"SHAPE64","SHAPE128","SHAPE256","SHAPE512"};
         String[] outfiles = {"ver64q","ver128q","ver256q","ver512q"};
