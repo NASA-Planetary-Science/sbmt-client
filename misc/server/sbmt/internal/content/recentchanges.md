@@ -4,6 +4,10 @@
 
 # Recent Changes
 
+### October 26, 2015
+
+-   Added CERES model and image files
+
 ### October 20, 2015
 
 -   Added test image data for Bennu POLYCAM imager
