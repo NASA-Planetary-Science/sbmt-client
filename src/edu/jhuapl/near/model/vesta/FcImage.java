@@ -60,7 +60,7 @@ public class FcImage extends PerspectiveImage
     {
         ImageKey key = getKey();
         File keyFile = new File(key.name);
-        String sumFilename = keyFile.getParentFile().getParent() + "/infofiles/"
+        String sumFilename = keyFile.getParentFile().getParent() + File.separator + "infofiles" + File.separator
         + keyFile.getName() + ".INFO";
         return FileCache.getFileFromServer(sumFilename).getAbsolutePath();
     }
@@ -70,8 +70,8 @@ public class FcImage extends PerspectiveImage
     {
         ImageKey key = getKey();
         File keyFile = new File(key.name);
-        String sumFilename = keyFile.getParentFile().getParent() + "/sumfiles/"
-        + keyFile.getName().substring(0, 12).replace('B', 'A') + ".SUM";
+        String sumFilename = keyFile.getParentFile().getParent() + File.separator + "sumfiles" + File.separator
+        + keyFile.getName() + ".SUM";
         return FileCache.getFileFromServer(sumFilename).getAbsolutePath();
     }
 
