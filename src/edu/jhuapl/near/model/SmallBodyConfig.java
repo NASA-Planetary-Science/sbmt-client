@@ -28,6 +28,7 @@ public class SmallBodyConfig
         EROS("Eros"),
         ITOKAWA("Itokawa"),
         VESTA("Vesta"),
+        CERES("Ceres"),
         MIMAS("Mimas"),
         PHOEBE("Phoebe"),
         PHOBOS("Phobos"),
@@ -771,6 +772,47 @@ public class SmallBodyConfig
         c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
         c.imageSearchDefaultMaxResolution = 4000.0;
         configArray.add(c);
+
+        if (Configuration.isAPLVersion())
+        {
+            c = new SmallBodyConfig();
+            c.body = ShapeModelBody.CERES;
+            c.type = ShapeModelType.ASTEROID;
+            c.population = ShapeModelPopulation.MAIN_BELT;
+            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.author = ShapeModelAuthor.GASKELL;
+            c.pathOnServer = "/GASKELL/CERES";
+            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
+            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
+            c.hasMapmaker = true;
+
+            c.imagingInstruments = new ImagingInstrument[] {
+                    new ImagingInstrument(
+                            SpectralMode.MONO,
+                            new FixedListQuery("/GASKELL/CERES/FC", true),
+                            ImageType.FC_IMAGE,
+                            new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE},
+                            Instrument.FC
+                            )
+            };
+
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2011, 4, 3, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2012, 7, 27, 0, 0, 0).getTime();
+            c.imageSearchFilterNames = new String[]{
+                    "Filter 1 (735 nm)",
+                    "Filter 2 (548 nm)",
+                    "Filter 3 (749 nm)",
+                    "Filter 4 (918 nm)",
+                    "Filter 5 (978 nm)",
+                    "Filter 6 (829 nm)",
+                    "Filter 7 (650 nm)",
+                    "Filter 8 (428 nm)"
+            };
+            c.imageSearchUserDefinedCheckBoxesNames = new String[]{"FC1", "FC2"};
+            c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
+            c.imageSearchDefaultMaxResolution = 4000.0;
+            configArray.add(c);
+        }
 
         if (Configuration.isAPLVersion())
         {
