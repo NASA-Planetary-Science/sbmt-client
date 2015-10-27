@@ -383,7 +383,7 @@ public class DatabaseGeneratorSql
         VESTA(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.VESTA, ShapeModelAuthor.GASKELL),
                 "/project/nearsdc/data/GASKELL/VESTA/FC/uniqFcFiles.txt", "fc"),
         CERES(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.CERES, ShapeModelAuthor.GASKELL),
-                "/project/nearsdc/data/GASKELL/CERES/FC/allFcFiles.txt", "fc"),
+                "/project/nearsdc/data/GASKELL/CERES/FC/uniqFcFiles.txt", "fc"),
         DEIMOSEXPERIMENTAL(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.DEIMOS, ShapeModelAuthor.THOMAS),
                 "/project/nearsdc/data/THOMAS/DEIMOSEXPERIMENTAL/IMAGING/imagelist-fullpath.txt", "deimos"),
         PHOBOS(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.PHOBOS, ShapeModelAuthor.GASKELL),
