@@ -1993,6 +1993,8 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     private void loadImageInfo() throws NumberFormatException, IOException
     {
         String[] infoFileNames = getInfoFilesFullPath();
+        if (infoFileNames == null)
+            System.out.println("infoFileNames is null");
 
         int nfiles = infoFileNames.length;
         int nslices = getNumberBands();
@@ -2008,6 +2010,8 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
             String[] stop = new String[1];
             boolean[] ato = new boolean[1];
             ato[0] = true;
+
+            System.out.println("Loading image: " + infoFileNames[k]);
 
             loadImageInfo(
                     infoFileNames[k],
