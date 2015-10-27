@@ -71,7 +71,7 @@ public class FcImage extends PerspectiveImage
         ImageKey key = getKey();
         File keyFile = new File(key.name);
         String sumFilename = keyFile.getParentFile().getParent() + File.separator + "sumfiles" + File.separator
-        + keyFile.getName() + ".SUM";
+        + keyFile.getName().substring(0, 12).replace('B', 'A') + ".SUM";
         return FileCache.getFileFromServer(sumFilename).getAbsolutePath();
     }
 

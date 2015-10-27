@@ -242,6 +242,7 @@ public class SmallBodyConfig
         MSI_IMAGE,
         AMICA_IMAGE,
         FC_IMAGE,
+        FCCERES_IMAGE,
         PHOBOS_IMAGE,
         DEIMOS_IMAGE,
         OSIRIS_IMAGE,
@@ -789,11 +790,11 @@ public class SmallBodyConfig
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
                             SpectralMode.MONO,
-                            new FixedListQuery("/GASKELL/CERES/FC", true),
-                            ImageType.FC_IMAGE,
+                            new GenericPhpQuery("/GASKELL/CERES/FC", "FCCeres"),
+                            ImageType.FCCERES_IMAGE,
                             new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE},
                             Instrument.FC
-                            )
+                    )
             };
 
             c.imageSearchDefaultStartDate = new GregorianCalendar(2011, 4, 3, 0, 0, 0).getTime();

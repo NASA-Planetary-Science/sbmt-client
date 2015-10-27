@@ -13,6 +13,7 @@ import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelAuthor;
 import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelBody;
 import edu.jhuapl.near.model.bennu.MapCamImage;
 import edu.jhuapl.near.model.bennu.PolyCamImage;
+import edu.jhuapl.near.model.ceres.FcCeresImage;
 import edu.jhuapl.near.model.custom.CustomGraticule;
 import edu.jhuapl.near.model.custom.CustomShapeModel;
 import edu.jhuapl.near.model.deimos.DeimosImage;
@@ -76,6 +77,8 @@ public class ModelFactory
                     return new AmicaImage(key, smallBodyModel, loadPointingOnly);
                 else if (key.instrument.type == ImageType.FC_IMAGE)
                     return new FcImage(key, smallBodyModel, loadPointingOnly);
+                else if (key.instrument.type == ImageType.FCCERES_IMAGE)
+                    return new FcCeresImage(key, smallBodyModel, loadPointingOnly);
                 else if (key.instrument.type == ImageType.PHOBOS_IMAGE)
                     return new PhobosImage(key, smallBodyModel, loadPointingOnly);
                 else if (key.instrument.type == ImageType.DEIMOS_IMAGE)
