@@ -1936,7 +1936,6 @@ public class SmallBodyConfig
 
         if (this.imagingInstruments != null && this.imagingInstruments.length > 0)
         {
-            c.imagingInstruments = this.imagingInstruments.clone();
             c.imageSearchDefaultStartDate = (Date)this.imageSearchDefaultStartDate.clone();
             c.imageSearchDefaultEndDate = (Date)this.imageSearchDefaultEndDate.clone();
             c.imageSearchFilterNames = this.imageSearchFilterNames.clone();
