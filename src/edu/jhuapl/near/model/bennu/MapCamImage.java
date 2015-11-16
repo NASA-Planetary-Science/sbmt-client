@@ -38,26 +38,6 @@ public class MapCamImage extends PerspectiveImage
         return null;
     }
 
-//    @Override
-//    protected String initializeInfoFileFullPath()
-//    {
-//        ImageKey key = getKey();
-//        File keyFile = new File(key.name);
-//        String infoFilename = keyFile.getParentFile().getParent()
-//        + "/infofiles/" + keyFile.getName() + ".INFO";
-//        return FileCache.getFileFromServer(infoFilename).getAbsolutePath();
-//    }
-//
-//    @Override
-//    protected String initializeSumfileFullPath()
-//    {
-//        ImageKey key = getKey();
-//        File keyFile = new File(key.name);
-//        String sumFilename = keyFile.getParentFile().getParent()
-//        + File.separator + "sumfiles" + File.separator + keyFile.getName().substring(0, 37) + ".SUM";
-//        return FileCache.getFileFromServer(sumFilename).getAbsolutePath();
-//    }
-
     @Override
     protected String initializeInfoFileFullPath()
     {
@@ -83,8 +63,6 @@ public class MapCamImage extends PerspectiveImage
         return result;
     }
 
-
-
     @Override
     protected String initializeSumfileFullPath()
     {
@@ -109,5 +87,4 @@ public class MapCamImage extends PerspectiveImage
 
         return result;
     }
-
 }
