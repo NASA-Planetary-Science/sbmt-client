@@ -3302,8 +3302,15 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         rawImage.Delete();
         for (int i=0; i<imageDepth; i++)
         {
-            footprint[i].Delete();
-            shiftedFootprint[i].Delete();
+            // Footprints can be null if no frustum intersection is found
+            if(footprint[i] != null)
+            {
+                footprint[i].Delete();
+            }
+            if(shiftedFootprint[i] != null)
+            {
+                shiftedFootprint[i].Delete();
+            }
         }
 
         textureCoords.Delete();

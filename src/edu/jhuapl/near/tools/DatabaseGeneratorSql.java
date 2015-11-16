@@ -172,7 +172,18 @@ public class DatabaseGeneratorSql
             }
 
             image.loadFootprint();
-            if (image.getUnshiftedFootprint().GetNumberOfCells() == 0)
+            if (image.getUnshiftedFootprint() == null)
+            {
+                // In this case if image.loadFootprint() finds no frustum intersection
+                System.out.println("skipping this image since no frustum intersection with body");
+                image.Delete();
+                System.gc();
+                System.out.println("deleted " + vtkObject.JAVA_OBJECT_MANAGER.gc(true));
+                System.out.println(" ");
+                System.out.println(" ");
+                continue;
+            }
+            else if (image.getUnshiftedFootprint().GetNumberOfCells() == 0)
             {
                 System.out.println("skipping this image since no intersecting cells");
                 image.Delete();
