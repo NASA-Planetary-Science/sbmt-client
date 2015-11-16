@@ -4,9 +4,13 @@
 
 # Recent Changes
 
+### October 28, 2015
+
+-   Added database query for new image files
+
 ### October 26, 2015
 
--   Added CERES model and image files
+-   Added new model and image files
 
 ### October 20, 2015
 

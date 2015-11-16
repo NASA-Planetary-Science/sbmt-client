@@ -172,7 +172,18 @@ public class DatabaseGeneratorSql
             }
 
             image.loadFootprint();
-            if (image.getUnshiftedFootprint().GetNumberOfCells() == 0)
+            if (image.getUnshiftedFootprint() == null)
+            {
+                // In this case if image.loadFootprint() finds no frustum intersection
+                System.out.println("skipping this image since no frustum intersection with body");
+                image.Delete();
+                System.gc();
+                System.out.println("deleted " + vtkObject.JAVA_OBJECT_MANAGER.gc(true));
+                System.out.println(" ");
+                System.out.println(" ");
+                continue;
+            }
+            else if (image.getUnshiftedFootprint().GetNumberOfCells() == 0)
             {
                 System.out.println("skipping this image since no intersecting cells");
                 image.Delete();
@@ -383,7 +394,7 @@ public class DatabaseGeneratorSql
         VESTA(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.VESTA, ShapeModelAuthor.GASKELL),
                 "/project/nearsdc/data/GASKELL/VESTA/FC/uniqFcFiles.txt", "fc"),
         CERES(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.CERES, ShapeModelAuthor.GASKELL),
-                "/project/nearsdc/data/GASKELL/CERES/FC/allFcFiles.txt", "fc"),
+                "/project/nearsdc/data/GASKELL/CERES/FC/uniqFcFiles.txt", "ceres"),
         DEIMOSEXPERIMENTAL(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.DEIMOS, ShapeModelAuthor.THOMAS),
                 "/project/nearsdc/data/THOMAS/DEIMOSEXPERIMENTAL/IMAGING/imagelist-fullpath.txt", "deimos"),
         PHOBOS(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.PHOBOS, ShapeModelAuthor.GASKELL),
@@ -394,6 +405,8 @@ public class DatabaseGeneratorSql
                 "/project/nearsdc/data/GASKELL/67P/IMAGING/imagelist-fullpath.txt", "67p"),
         _67P_DLR(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody._67P, ShapeModelAuthor.DLR, "SHAP4S"),
                 "/project/nearsdc/data/DLR/67P/IMAGING/imagelist-fullpath.txt", "67p_dlr"),
+        _67P_V2(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody._67P, ShapeModelAuthor.GASKELL, "V2"),
+                        "/project/nearsdc/data/GASKELL/67P_V2/IMAGING/imagelist-fullpath.txt", "67p_v2"),
         JUPITER(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.JUPITER, null),
                 "/project/nearsdc/data/NEWHORIZONS/JUPITER/IMAGING/imagelist-fullpath.txt"),
         CALLISTO(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.CALLISTO, null),

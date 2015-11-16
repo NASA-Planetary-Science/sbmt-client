@@ -1993,6 +1993,8 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     private void loadImageInfo() throws NumberFormatException, IOException
     {
         String[] infoFileNames = getInfoFilesFullPath();
+        if (infoFileNames == null)
+            System.out.println("infoFileNames is null");
 
         int nfiles = infoFileNames.length;
         int nslices = getNumberBands();
@@ -2008,6 +2010,8 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
             String[] stop = new String[1];
             boolean[] ato = new boolean[1];
             ato[0] = true;
+
+            System.out.println("Loading image: " + infoFileNames[k]);
 
             loadImageInfo(
                     infoFileNames[k],
@@ -3298,8 +3302,15 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         rawImage.Delete();
         for (int i=0; i<imageDepth; i++)
         {
-            footprint[i].Delete();
-            shiftedFootprint[i].Delete();
+            // Footprints can be null if no frustum intersection is found
+            if(footprint[i] != null)
+            {
+                footprint[i].Delete();
+            }
+            if(shiftedFootprint[i] != null)
+            {
+                shiftedFootprint[i].Delete();
+            }
         }
 
         textureCoords.Delete();
