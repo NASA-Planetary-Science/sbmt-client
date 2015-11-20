@@ -1662,14 +1662,15 @@ public class SmallBodyConfig
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
                             SpectralMode.MONO,
-                            new FixedListQuery("/GASKELL/67P_V2/IMAGING"),
+                            new GenericPhpQuery("/GASKELL/67P_V2/IMAGING", "67P_V2"),
+                            //new FixedListQuery("/GASKELL/67P_V2/IMAGING"),
                             ImageType.OSIRIS_IMAGE,
                             new ImageSource[]{ImageSource.GASKELL},
                             Instrument.OSIRIS
                             )
             };
             c.imageSearchDefaultStartDate = new GregorianCalendar(2014, 7, 1, 0, 0, 0).getTime();
-            c.imageSearchDefaultEndDate = new GregorianCalendar(2014, 11, 31, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2015, 10, 31, 0, 0, 0).getTime();
             c.imageSearchFilterNames = new String[]{
                     // If a name, begins with a star, it is not selected by default
                     "*Filter 12",
