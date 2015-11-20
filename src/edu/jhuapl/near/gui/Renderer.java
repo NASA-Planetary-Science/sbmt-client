@@ -346,9 +346,9 @@ public class Renderer extends JPanel implements
         sixAxes[0] = AxisType.POSITIVE_X;
         sixAxes[1] = AxisType.NEGATIVE_X;
         sixAxes[2] = AxisType.POSITIVE_Y;
-        sixAxes[3] = AxisType.NEGATIVE_X;
+        sixAxes[3] = AxisType.NEGATIVE_Y;
         sixAxes[4] = AxisType.POSITIVE_Z;
-        sixAxes[5] = AxisType.NEGATIVE_X;
+        sixAxes[5] = AxisType.NEGATIVE_Z;
 
         // Check if one of the files already exist and if so, prompt user.
         for (File f : sixFiles)
