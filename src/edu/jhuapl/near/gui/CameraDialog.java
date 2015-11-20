@@ -19,6 +19,7 @@ import org.apache.commons.math3.geometry.euclidean.threed.NotARotationMatrixExce
 import org.apache.commons.math3.geometry.euclidean.threed.Rotation;
 
 import edu.jhuapl.near.gui.Renderer.ProjectionType;
+import edu.jhuapl.near.util.LatLon;
 
 public class CameraDialog extends JDialog implements ActionListener
 {
@@ -28,11 +29,13 @@ public class CameraDialog extends JDialog implements ActionListener
     private JButton okayButton;
     private JButton cancelButton;
     private JTextField fovField;
-    private JLabel distanceLabel;
     private JTextField distanceField;
-    private JLabel kmLabel;
-    private JLabel projLabel;
     private JComboBox projComboBox;
+    private JTextField cameraLatitudeField;
+    private JTextField cameraLongitudeField;
+    private JTextField upXField;
+    private JTextField upYField;
+    private JTextField upZField;
 
     private void printCameraOrientation()
     {
@@ -74,15 +77,48 @@ public class CameraDialog extends JDialog implements ActionListener
         this.renderer = renderer;
 
         JPanel panel = new JPanel();
-        panel.setLayout(new MigLayout("", "[][grow][]", "[][][][]"));
+        panel.setLayout(new MigLayout("", "[][grow][]", "[][][][][][]"));
 
+        // Create "Vertical Field of View" text entry box and add to 1st row
         JLabel fovLabel = new JLabel("Vertical Field of View");
         fovField = new JTextField();
         fovField.setPreferredSize(new Dimension(125, 23));
         fovField.setInputVerifier(JTextFieldDoubleVerifier.getVerifier(fovField, 0.00000001, 179.0));
         JLabel degreesLabel = new JLabel("degrees");
+        panel.add(fovLabel, "cell 0 0");
+        panel.add(fovField, "cell 1 0,growx");
+        panel.add(degreesLabel, "cell 2 0");
 
+        // Create "Distance" text entry box and add to 2nd row
+        JLabel distanceLabel = new JLabel("Distance");
+        panel.add(distanceLabel, "cell 0 1,alignx trailing");
+        distanceField = new JTextField();
+        distanceField.setInputVerifier(JTextFieldDoubleVerifier.getVerifier(distanceField));
+        panel.add(distanceField, "cell 1 1,growx");
+        JLabel kmLabel = new JLabel("km");
+        panel.add(kmLabel, "cell 2 1");
 
+        // Create "Projection Type" combo box and add to 3rd row
+        JLabel projLabel = new JLabel("Projection Type");
+        projComboBox = new JComboBox(Renderer.ProjectionType.values());
+        panel.add(projLabel, "cell 0 2,alignx trailing");
+        panel.add(projComboBox, "cell 1 2,growx");
+
+        // Create "Camera Latitude" text entry box and add to 4th row
+        panel.add(new JLabel("Camera Latitude"), "cell 0 3,alignx trailing");
+        cameraLatitudeField = new JTextField();
+        cameraLatitudeField.setInputVerifier(JTextFieldDoubleVerifier.getVerifier(cameraLatitudeField, -90.0, 90.0));
+        panel.add(cameraLatitudeField, "cell 1 3,growx");
+        panel.add(new JLabel("degrees"), "cell 2 3");
+
+        // Create "Camera Longitude" text entry box and add to 5th row
+        panel.add(new JLabel("Camera Longitude"), "cell 0 4,alignx trailing");
+        cameraLongitudeField = new JTextField();
+        cameraLongitudeField.setInputVerifier(JTextFieldDoubleVerifier.getVerifier(cameraLongitudeField, -180.0, 180.0));
+        panel.add(cameraLongitudeField, "cell 1 4,growx");
+        panel.add(new JLabel("degrees"), "cell 2 4");
+
+        // Create "Apply", "Reset", "OK", and "Cancel" buttons and add to 6th row
         JPanel buttonPanel = new JPanel(new MigLayout());
         applyButton = new JButton("Apply");
         applyButton.addActionListener(this);
@@ -96,27 +132,7 @@ public class CameraDialog extends JDialog implements ActionListener
         buttonPanel.add(resetButton);
         buttonPanel.add(okayButton);
         buttonPanel.add(cancelButton);
-
-        panel.add(fovLabel, "cell 0 0");
-        panel.add(fovField, "cell 1 0,growx");
-        panel.add(degreesLabel, "cell 2 0");
-
-        distanceLabel = new JLabel("Distance");
-        panel.add(distanceLabel, "cell 0 1,alignx trailing");
-
-        distanceField = new JTextField();
-        distanceField.setInputVerifier(JTextFieldDoubleVerifier.getVerifier(distanceField));
-        panel.add(distanceField, "cell 1 1,growx");
-
-        kmLabel = new JLabel("km");
-        panel.add(kmLabel, "cell 2 1");
-
-        projLabel = new JLabel("Projection Type");
-        projComboBox = new JComboBox(Renderer.ProjectionType.values());
-        panel.add(projLabel, "cell 0 2,alignx trailing");
-        panel.add(projComboBox, "cell 1 2,growx");
-
-        panel.add(buttonPanel, "cell 0 3 3 1,alignx right");
+        panel.add(buttonPanel, "cell 0 5 3 1,alignx right");
 
         setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
 
@@ -155,6 +171,18 @@ public class CameraDialog extends JDialog implements ActionListener
 //            distanceField.setText(String.valueOf(renderer.getCameraDistance()));
 
             renderer.setProjectionType((ProjectionType)projComboBox.getSelectedItem());
+
+            // Set camera position latitude/longitude fields
+            try
+            {
+                double latitude = Double.parseDouble(cameraLatitudeField.getText());
+                double longitude = Double.parseDouble(cameraLongitudeField.getText());
+                renderer.setCameraLatLon(new LatLon(latitude,longitude));
+                renderer.setCameraPointNadir();
+            }
+            catch (NumberFormatException ex)
+            {
+            }
         }
         else if (e.getSource() == resetButton)
         {
@@ -176,6 +204,9 @@ public class CameraDialog extends JDialog implements ActionListener
         fovField.setText(String.valueOf(renderer.getCameraViewAngle()));
         distanceField.setText(String.valueOf(renderer.getCameraDistance()));
         projComboBox.setSelectedItem(renderer.getProjectionType());
+        LatLon cameraLatLon = renderer.getCameraLatLon();
+        cameraLatitudeField.setText(String.valueOf(cameraLatLon.lat));
+        cameraLongitudeField.setText(String.valueOf(cameraLatLon.lon));
 
         super.setVisible(b);
     }

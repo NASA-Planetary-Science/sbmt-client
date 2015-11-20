@@ -679,6 +679,43 @@ public class Renderer extends JPanel implements
         viewAngle[0] = cam.GetViewAngle();
     }
 
+    // Gets the current lat/lon (degrees) position of the camera
+    public LatLon getCameraLatLon(){
+        vtkCamera cam = renWin.getRenderer().GetActiveCamera();
+        return MathUtil.reclat(cam.GetPosition()).toDegrees();
+    }
+
+    // Sets the lat/lon (degrees) position of the camera
+    public void setCameraLatLon(LatLon latLon){
+        // Get active camera and current distance from origin
+        vtkCamera cam = renWin.getRenderer().GetActiveCamera();
+        double distance = getCameraDistance();
+
+        // Convert desired Lat/Lon to unit vector and scale to maintain same distance
+        double[] pos = MathUtil.latrec(latLon.toRadians());
+        MathUtil.unorm(pos, pos);
+        pos[0] *= distance;
+        pos[1] *= distance;
+        pos[2] *= distance;
+
+        // Set the new camera position
+        renWin.getVTKLock().lock();
+        cam.SetPosition(pos);
+        renWin.getVTKLock().unlock();
+        renWin.resetCameraClippingRange();
+        renWin.Render();
+    }
+
+    // Points camera towards Nadir (origin)
+    public void setCameraPointNadir(){
+        double[] origin = {0, 0, 0};
+        renWin.getVTKLock().lock();
+        vtkCamera cam = renWin.getRenderer().GetActiveCamera();
+        cam.SetFocalPoint(origin);
+        renWin.getVTKLock().unlock();
+        renWin.resetCameraClippingRange();
+        renWin.Render();
+    }
 
     public vtksbmtJoglCanvasComponent getRenderWindowPanel()
     {
