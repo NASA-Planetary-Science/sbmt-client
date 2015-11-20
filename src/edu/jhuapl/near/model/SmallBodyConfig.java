@@ -1646,6 +1646,49 @@ public class SmallBodyConfig
                     17442, 72770, 298442, 1214922, 4895631, 16745283
             };
             configArray.add(c);
+
+            // 67P_V2 Nov. 2015 entry
+            c = new SmallBodyConfig();
+            c.body = ShapeModelBody._67P;
+            c.type = ShapeModelType.COMETS;
+            c.population = null;
+            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.author = ShapeModelAuthor.GASKELL;
+            c.version = "V2";
+            c.pathOnServer = "/GASKELL/67P_V2";
+            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
+            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
+
+            c.imagingInstruments = new ImagingInstrument[] {
+                    new ImagingInstrument(
+                            SpectralMode.MONO,
+                            new FixedListQuery("/GASKELL/67P_V2/IMAGING"),
+                            ImageType.OSIRIS_IMAGE,
+                            new ImageSource[]{ImageSource.GASKELL},
+                            Instrument.OSIRIS
+                            )
+            };
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2014, 7, 1, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2014, 11, 31, 0, 0, 0).getTime();
+            c.imageSearchFilterNames = new String[]{
+                    // If a name, begins with a star, it is not selected by default
+                    "*Filter 12",
+                    "*Filter 16",
+                    "*Filter 18",
+                    "Filter 22",
+                    "*Filter 23",
+                    "*Filter 24",
+                    "*Filter 27",
+                    "*Filter 28",
+                    "*Filter 41",
+                    "*Filter 51",
+                    "*Filter 54",
+                    "*Filter 61"
+            };
+            c.imageSearchUserDefinedCheckBoxesNames = new String[]{"NAC", "*WAC"};
+            c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
+            c.imageSearchDefaultMaxResolution = 4000.0;
+            configArray.add(c);
         }
 
         c = new SmallBodyConfig();
