@@ -418,9 +418,9 @@ public class DatabaseGeneratorSql
         IO(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.IO, null),
                 "/project/nearsdc/data/NEWHORIZONS/IO/IMAGING/imagelist-fullpath.txt"),
         RQ36_MAP(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelAuthor.GASKELL, "V3"),
-                "/project/nearsdc/data/GASKELL/RQ36_V3/MAPCAM/allFitsFiles.txt"),
+                "/project/nearsdc/data/GASKELL/RQ36_V3/MAPCAM/imagelist-fullpath.txt"),
         RQ36_POLY(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelAuthor.GASKELL, "V3"),
-                "/project/nearsdc/data/GASKELL/RQ36_V3/POLYCAM/allFitsFiles.txt"),
+                "/project/nearsdc/data/GASKELL/RQ36_V3/POLYCAM/imagelist-fullpath.txt"),
         PLUTO(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.PLUTO, null),
                 "/project/nearsdc/data/NEWHORIZONS/PLUTO/IMAGING/imagelist-fullpath.txt");
 
