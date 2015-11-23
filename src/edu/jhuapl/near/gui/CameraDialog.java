@@ -33,9 +33,8 @@ public class CameraDialog extends JDialog implements ActionListener
     private JComboBox projComboBox;
     private JTextField cameraLatitudeField;
     private JTextField cameraLongitudeField;
-    private JTextField upXField;
-    private JTextField upYField;
-    private JTextField upZField;
+    private JTextField cameraRollField;
+
 
     private void printCameraOrientation()
     {
@@ -77,7 +76,7 @@ public class CameraDialog extends JDialog implements ActionListener
         this.renderer = renderer;
 
         JPanel panel = new JPanel();
-        panel.setLayout(new MigLayout("", "[][grow][]", "[][][][][][]"));
+        panel.setLayout(new MigLayout("", "[][grow][]", "[][][][][][][]"));
 
         // Create "Vertical Field of View" text entry box and add to 1st row
         JLabel fovLabel = new JLabel("Vertical Field of View");
@@ -118,7 +117,14 @@ public class CameraDialog extends JDialog implements ActionListener
         panel.add(cameraLongitudeField, "cell 1 4,growx");
         panel.add(new JLabel("degrees"), "cell 2 4");
 
-        // Create "Apply", "Reset", "OK", and "Cancel" buttons and add to 6th row
+        // Create "Camera Roll" text entry box and add to 6th row
+        panel.add(new JLabel("Camera Roll"), "cell 0 5,alignx trailing");
+        cameraRollField = new JTextField();
+        cameraRollField.setInputVerifier(JTextFieldDoubleVerifier.getVerifier(cameraRollField, -360.0, 360.0));
+        panel.add(cameraRollField, "cell 1 5,growx");
+        panel.add(new JLabel("degrees"), "cell 2 5");
+
+        // Create "Apply", "Reset", "OK", and "Cancel" buttons and add to 7th row
         JPanel buttonPanel = new JPanel(new MigLayout());
         applyButton = new JButton("Apply");
         applyButton.addActionListener(this);
@@ -132,7 +138,7 @@ public class CameraDialog extends JDialog implements ActionListener
         buttonPanel.add(resetButton);
         buttonPanel.add(okayButton);
         buttonPanel.add(cancelButton);
-        panel.add(buttonPanel, "cell 0 5 3 1,alignx right");
+        panel.add(buttonPanel, "cell 0 6 3 1,alignx right");
 
         setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
 
@@ -175,10 +181,22 @@ public class CameraDialog extends JDialog implements ActionListener
             // Set camera position latitude/longitude fields
             try
             {
+                // Compute camera position
                 double latitude = Double.parseDouble(cameraLatitudeField.getText());
                 double longitude = Double.parseDouble(cameraLongitudeField.getText());
-                renderer.setCameraLatLon(new LatLon(latitude,longitude));
-                renderer.setCameraPointNadir();
+                renderer.setCameraLatLon(new LatLon(latitude, longitude));
+            }
+            catch (NumberFormatException ex)
+            {
+            }
+
+            // Set camera attitude
+            try
+            {
+                // Point camera Nadir (toward origin) with specified roll angle
+                double roll = Double.parseDouble(cameraRollField.getText());
+                renderer.setCameraFocalPoint(new double[]{0,0,0});
+                renderer.setCameraRoll(roll);
             }
             catch (NumberFormatException ex)
             {
@@ -207,6 +225,7 @@ public class CameraDialog extends JDialog implements ActionListener
         LatLon cameraLatLon = renderer.getCameraLatLon();
         cameraLatitudeField.setText(String.valueOf(cameraLatLon.lat));
         cameraLongitudeField.setText(String.valueOf(cameraLatLon.lon));
+        cameraRollField.setText(String.valueOf(renderer.getCameraRoll()));
 
         super.setVisible(b);
     }

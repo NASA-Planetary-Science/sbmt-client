@@ -680,13 +680,15 @@ public class Renderer extends JPanel implements
     }
 
     // Gets the current lat/lon (degrees) position of the camera
-    public LatLon getCameraLatLon(){
+    public LatLon getCameraLatLon()
+    {
         vtkCamera cam = renWin.getRenderer().GetActiveCamera();
         return MathUtil.reclat(cam.GetPosition()).toDegrees();
     }
 
     // Sets the lat/lon (degrees) position of the camera
-    public void setCameraLatLon(LatLon latLon){
+    public void setCameraLatLon(LatLon latLon)
+    {
         // Get active camera and current distance from origin
         vtkCamera cam = renWin.getRenderer().GetActiveCamera();
         double distance = getCameraDistance();
@@ -706,15 +708,33 @@ public class Renderer extends JPanel implements
         renWin.Render();
     }
 
-    // Points camera towards Nadir (origin)
-    public void setCameraPointNadir(){
-        double[] origin = {0, 0, 0};
+    // Set camera's focal point
+    public void setCameraFocalPoint(double[] focalPoint)
+    {
+        // Obtain lock
         renWin.getVTKLock().lock();
         vtkCamera cam = renWin.getRenderer().GetActiveCamera();
-        cam.SetFocalPoint(origin);
+        cam.SetFocalPoint(focalPoint);
         renWin.getVTKLock().unlock();
         renWin.resetCameraClippingRange();
         renWin.Render();
+    }
+
+    // Sets the camera roll with roll as defined by vtkCamera
+    public void setCameraRoll(double angle)
+    {
+        renWin.getVTKLock().lock();
+        vtkCamera cam = renWin.getRenderer().GetActiveCamera();
+        cam.SetRoll(angle);
+        renWin.getVTKLock().unlock();
+        renWin.resetCameraClippingRange();
+        renWin.Render();
+    }
+
+    // Gets the camera roll with roll as defined by vtkCamera
+    public double getCameraRoll()
+    {
+        return renWin.getRenderer().GetActiveCamera().GetRoll();
     }
 
     public vtksbmtJoglCanvasComponent getRenderWindowPanel()
