@@ -1400,6 +1400,7 @@ public class SmallBodyConfig
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
                             SpectralMode.MONO,
+                            //new GenericPhpQuery("/GASKELL/RQ36_V3/POLYCAM", "RQ36_POLY"),
                             new FixedListQuery("/GASKELL/RQ36_V3/POLYCAM", true),
                             ImageType.POLYCAM_IMAGE,
                             new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE},
@@ -1407,6 +1408,7 @@ public class SmallBodyConfig
                             ),
                     new ImagingInstrument(
                             SpectralMode.MONO,
+                            //new GenericPhpQuery("/GASKELL/RQ36_V3/MAPCAM", "RQ36_MAP"),
                             new FixedListQuery("/GASKELL/RQ36_V3/MAPCAM"),
                             ImageType.MAPCAM_IMAGE,
                             new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE},
