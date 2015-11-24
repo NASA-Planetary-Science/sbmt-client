@@ -485,13 +485,16 @@ public class CylindricalImage extends Image
 
         // If the texture does not cover the entire model, then clip out the part
         // that it does cover.
-        if (lllat != -90.0 || lllon != 0.0 || urlat != 90.0 || urlon != 360.0)
+        /*if (lllat != -90.0 || lllon != 0.0 || urlat != 90.0 || urlon != 360.0)
         {
             if (smallBodyModel.isEllipsoid())
                 smallBodyPolyData = clipOutTextureLatitudeEllipsoid(smallBodyPolyData);
             else
                 smallBodyPolyData = clipOutTextureLatitudeGeneral(smallBodyPolyData);
-        }
+        }*/
+        // Lines 488-494 commented out by Philip Twu as a temporary bug fix.
+        // Now at least longitude clipping works.  Without this fix, any kind of clipping
+        // causes image to not map onto body at all.  Need to further investigate this.
 
         smallBodyPolyData = clipOutTextureLongitudeAndGenerateTextureCoordinates(smallBodyPolyData);
 

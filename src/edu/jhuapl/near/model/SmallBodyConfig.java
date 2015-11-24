@@ -1389,7 +1389,7 @@ public class SmallBodyConfig
             c.population = ShapeModelPopulation.NEO;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelAuthor.GASKELL;
-            c.version = "V3";
+            c.version = "V3 Image";
             c.pathOnServer = "/GASKELL/RQ36_V3";
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
             c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
@@ -1400,14 +1400,16 @@ public class SmallBodyConfig
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
                             SpectralMode.MONO,
-                            new FixedListQuery("/GASKELL/RQ36_V3/POLYCAM", true),
+                            new GenericPhpQuery("/GASKELL/RQ36_V3/POLYCAM", "RQ36_POLY"),
+                            //new FixedListQuery("/GASKELL/RQ36_V3/POLYCAM", true),
                             ImageType.POLYCAM_IMAGE,
                             new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE},
                             Instrument.POLYCAM
                             ),
                     new ImagingInstrument(
                             SpectralMode.MONO,
-                            new FixedListQuery("/GASKELL/RQ36_V3/MAPCAM"),
+                            new GenericPhpQuery("/GASKELL/RQ36_V3/MAPCAM", "RQ36_MAP"),
+                            //new FixedListQuery("/GASKELL/RQ36_V3/MAPCAM"),
                             ImageType.MAPCAM_IMAGE,
                             new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE},
                             Instrument.MAPCAM
@@ -1645,6 +1647,50 @@ public class SmallBodyConfig
             c.smallBodyNumberOfPlatesPerResolutionLevel = new int[]{
                     17442, 72770, 298442, 1214922, 4895631, 16745283
             };
+            configArray.add(c);
+
+            // 67P_V2 Nov. 2015 entry
+            c = new SmallBodyConfig();
+            c.body = ShapeModelBody._67P;
+            c.type = ShapeModelType.COMETS;
+            c.population = null;
+            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.author = ShapeModelAuthor.GASKELL;
+            c.version = "V2";
+            c.pathOnServer = "/GASKELL/67P_V2";
+            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
+            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
+
+            c.imagingInstruments = new ImagingInstrument[] {
+                    new ImagingInstrument(
+                            SpectralMode.MONO,
+                            new GenericPhpQuery("/GASKELL/67P_V2/IMAGING", "67P_V2"),
+                            //new FixedListQuery("/GASKELL/67P_V2/IMAGING"),
+                            ImageType.OSIRIS_IMAGE,
+                            new ImageSource[]{ImageSource.GASKELL},
+                            Instrument.OSIRIS
+                            )
+            };
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2014, 7, 1, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2015, 10, 31, 0, 0, 0).getTime();
+            c.imageSearchFilterNames = new String[]{
+                    // If a name, begins with a star, it is not selected by default
+                    "*Filter 12",
+                    "*Filter 16",
+                    "*Filter 18",
+                    "Filter 22",
+                    "*Filter 23",
+                    "*Filter 24",
+                    "*Filter 27",
+                    "*Filter 28",
+                    "*Filter 41",
+                    "*Filter 51",
+                    "*Filter 54",
+                    "*Filter 61"
+            };
+            c.imageSearchUserDefinedCheckBoxesNames = new String[]{"NAC", "*WAC"};
+            c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
+            c.imageSearchDefaultMaxResolution = 4000.0;
             configArray.add(c);
         }
 

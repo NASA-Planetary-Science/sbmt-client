@@ -346,9 +346,9 @@ public class Renderer extends JPanel implements
         sixAxes[0] = AxisType.POSITIVE_X;
         sixAxes[1] = AxisType.NEGATIVE_X;
         sixAxes[2] = AxisType.POSITIVE_Y;
-        sixAxes[3] = AxisType.NEGATIVE_X;
+        sixAxes[3] = AxisType.NEGATIVE_Y;
         sixAxes[4] = AxisType.POSITIVE_Z;
-        sixAxes[5] = AxisType.NEGATIVE_X;
+        sixAxes[5] = AxisType.NEGATIVE_Z;
 
         // Check if one of the files already exist and if so, prompt user.
         for (File f : sixFiles)
@@ -679,6 +679,63 @@ public class Renderer extends JPanel implements
         viewAngle[0] = cam.GetViewAngle();
     }
 
+    // Gets the current lat/lon (degrees) position of the camera
+    public LatLon getCameraLatLon()
+    {
+        vtkCamera cam = renWin.getRenderer().GetActiveCamera();
+        return MathUtil.reclat(cam.GetPosition()).toDegrees();
+    }
+
+    // Sets the lat/lon (degrees) position of the camera
+    public void setCameraLatLon(LatLon latLon)
+    {
+        // Get active camera and current distance from origin
+        vtkCamera cam = renWin.getRenderer().GetActiveCamera();
+        double distance = getCameraDistance();
+
+        // Convert desired Lat/Lon to unit vector and scale to maintain same distance
+        double[] pos = MathUtil.latrec(latLon.toRadians());
+        MathUtil.unorm(pos, pos);
+        pos[0] *= distance;
+        pos[1] *= distance;
+        pos[2] *= distance;
+
+        // Set the new camera position
+        renWin.getVTKLock().lock();
+        cam.SetPosition(pos);
+        renWin.getVTKLock().unlock();
+        renWin.resetCameraClippingRange();
+        renWin.Render();
+    }
+
+    // Set camera's focal point
+    public void setCameraFocalPoint(double[] focalPoint)
+    {
+        // Obtain lock
+        renWin.getVTKLock().lock();
+        vtkCamera cam = renWin.getRenderer().GetActiveCamera();
+        cam.SetFocalPoint(focalPoint);
+        renWin.getVTKLock().unlock();
+        renWin.resetCameraClippingRange();
+        renWin.Render();
+    }
+
+    // Sets the camera roll with roll as defined by vtkCamera
+    public void setCameraRoll(double angle)
+    {
+        renWin.getVTKLock().lock();
+        vtkCamera cam = renWin.getRenderer().GetActiveCamera();
+        cam.SetRoll(angle);
+        renWin.getVTKLock().unlock();
+        renWin.resetCameraClippingRange();
+        renWin.Render();
+    }
+
+    // Gets the camera roll with roll as defined by vtkCamera
+    public double getCameraRoll()
+    {
+        return renWin.getRenderer().GetActiveCamera().GetRoll();
+    }
 
     public vtksbmtJoglCanvasComponent getRenderWindowPanel()
     {

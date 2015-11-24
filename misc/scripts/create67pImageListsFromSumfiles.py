@@ -66,7 +66,7 @@ for f in files:
     monthLabel = convertMonthLabel(secondLine[1])
     
     # Write line to fixed query image list
-    fixedQueryFile.write(firstLine[0] + '.FIT ' + secondLine[0] + monthLabel + secondLine[$
+    fixedQueryFile.write(firstLine[0] + '.FIT ' + secondLine[0] + monthLabel + secondLine[2] + 'T' + secondLine[3] + '\n')
 
     # Write line for general query image list
     generalQueryFile.write(generalQueryPath + firstLine[0] + '.FIT' + '\n')

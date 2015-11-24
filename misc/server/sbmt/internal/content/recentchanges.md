@@ -4,6 +4,13 @@
 
 # Recent Changes
 
+### November 24, 2015
+
+-   Database queries now working for Bennu images
+-   File->Camera... dialog box now has lat, lon and roll parameters
+-   Fixed bug in "File->Export Six Views" command
+-   Partial fix of bug in importing cylindrical images covering less than the full surface
+
 ### October 28, 2015
 
 -   Added database query for new image files
