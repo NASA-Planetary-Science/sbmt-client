@@ -26,10 +26,10 @@ public class SmallBodyModelGenerator
      * In addition this program generates a coordinate grid and saves it to a
      * vtk file.
      *
-     * To run this program, 2 arguments are required:
+     * To run this program, 3 arguments are required:
      * - the folder containing the original .PLT or .tab files
      * - the folder where you want to save the generated files
-     *
+     * - the name of the model (e.g. "CERES")
      * @param args
     */
     public static void main(String[] args)
@@ -42,8 +42,8 @@ public class SmallBodyModelGenerator
 
         String name = args[2];
 
-        String[] pltfiles = {"SHAPE64","SHAPE128","SHAPE256","SHAPE512","SHAPE1024"};
-        String[] outfiles = {"ver64q","ver128q","ver256q","ver512q","ver1024q"};
+        String[] pltfiles = {"SHAPE64","SHAPE128","SHAPE256","SHAPE512"};
+        String[] outfiles = {"ver64q","ver128q","ver256q","ver512q"};
 
         try
         {
