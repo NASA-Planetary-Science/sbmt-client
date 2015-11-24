@@ -19,6 +19,5 @@
 	<classpathentry kind="lib" path="lib/jogl-all-2.1.5.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
 	<classpathentry kind="lib" path="lib"/>
-	<classpathentry kind="lib" path="C:/Users/nguyel1/Projects/SBMT/sbmt/lib/win64"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
