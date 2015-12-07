@@ -11,6 +11,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.channels.FileChannel;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -57,6 +60,7 @@ import edu.jhuapl.near.util.BoundingBox;
 import edu.jhuapl.near.util.DateTimeUtil;
 import edu.jhuapl.near.util.FileCache;
 import edu.jhuapl.near.util.Frustum;
+import edu.jhuapl.near.util.ImageDataUtil;
 import edu.jhuapl.near.util.IntensityRange;
 import edu.jhuapl.near.util.LatLon;
 import edu.jhuapl.near.util.MathUtil;
@@ -1044,7 +1048,123 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         in.close();
     }
 
+    public void exportAsEnvi(
+            String enviFilename, // no extensions
+            String interleaveType, // "bsq", "bil", or "bip"
+            boolean hostByteOrder
+            ) throws IOException
+    {
+        // Check if interleave type is recognized
+        switch(interleaveType){
+        case "bsq":
+        case "bil":
+        case "bip":
+            break;
+        default:
+            System.out.println("Interleave type " + interleaveType + " unrecognized, aborting exportAsEnvi()");
+            return;
+        }
 
+        // Create output stream for header (.hdr) file
+        FileOutputStream fs = null;
+        try {
+            fs = new FileOutputStream(enviFilename + ".hdr");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return;
+        }
+        OutputStreamWriter osw = new OutputStreamWriter(fs);
+        BufferedWriter out = new BufferedWriter(osw);
+
+        // Write the fields of the header
+        out.write("ENVI\n");
+        out.write("samples = " + imageWidth + "\n");
+        out.write("lines = " + imageHeight + "\n");
+        out.write("bands = " + imageDepth + "\n");
+        out.write("header offset = " + "0" + "\n");
+        out.write("data type = " + "4" + "\n"); // 1 = byte, 2 = int, 3 = signed int, 4 = float
+        out.write("interleave = " + interleaveType + "\n"); // bsq = band sequential, bil = band interleaved by line, bip = band interleaved by pixel
+        out.write("byte order = "); // 0 = host(intel, LSB first), 1 = network (IEEE, MSB first)
+        if(hostByteOrder){
+            // Host byte order
+            out.write("0" + "\n");
+        }else{
+            // Network byte order
+            out.write("1" + "\n");
+        }
+        out.close();
+
+        // Configure byte buffer & endianess
+        ByteBuffer bb = ByteBuffer.allocate(4*imageWidth*imageHeight*imageDepth); // 4 bytes per float
+        if(hostByteOrder){
+            // Little Endian = LSB stored first
+            bb.order(ByteOrder.LITTLE_ENDIAN);
+        }else{
+            // Big Endian = MSB stored first
+            bb.order(ByteOrder.BIG_ENDIAN);
+        }
+
+        // Write pixels to byte buffer
+        // Remember, VTK origin is at bottom left while ENVI origin is at top left
+        float[][][] imageData = ImageDataUtil.vtkImageDataToArray3D(rawImage);
+        switch(interleaveType)
+        {
+        case "bsq":
+            // Band sequential: col, then row, then depth
+            for(int depth = 0; depth < imageDepth; depth++)
+            {
+                //for(int row = imageHeight-1; row >= 0; row--)
+                for(int row=0; row < imageHeight; row ++)
+                {
+                    for(int col = 0; col < imageWidth; col++)
+                    {
+                        bb.putFloat(imageData[depth][row][col]);
+                    }
+                }
+            }
+            break;
+        case "bil":
+            // Band interleaved by line: col, then depth, then row
+            //for(int row=imageHeight-1; row >= 0; row--)
+            for(int row=0; row < imageHeight; row ++)
+            {
+                for(int depth=0; depth < imageDepth; depth++)
+                {
+                    for(int col=0; col < imageWidth; col++)
+                    {
+                        bb.putFloat(imageData[depth][row][col]);
+                    }
+                }
+            }
+            break;
+        case "bip":
+            // Band interleaved by pixel: depth, then col, then row
+            //for(int row=imageHeight-1; row >= 0; row--)
+            for(int row=0; row < imageHeight; row ++)
+            {
+                for(int col=0; col < imageWidth; col++)
+                {
+                    for(int depth=0; depth < imageDepth; depth++)
+                    {
+                        bb.putFloat(imageData[depth][row][col]);
+                    }
+                }
+            }
+            break;
+        }
+
+        // Create output stream and write contents of byte buffer
+        FileChannel fc = null;
+        try {
+            fc = new FileOutputStream(enviFilename).getChannel();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return;
+        }
+        bb.flip(); // flip() is a misleading name, nothing is being flipped.  Buffer end is set to curr pos and curr pos set to beginning.
+        fc.write(bb);
+        fc.close();
+    }
 
     public void saveImageInfo(
             String infoFilename,

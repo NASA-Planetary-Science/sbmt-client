@@ -12,6 +12,38 @@ public class ImageDataUtil
     /**
      * Accessing individual pixels of a vtkImageData is slow in java.
      * Therefore this function was written to allow converting a vtkImageData
+     * to a java 3d array.  Returned 3d array has dimensions [depth][row][col]
+     * @param image
+     * @return
+     */
+    static public float[][][] vtkImageDataToArray3D(vtkImageData image)
+    {
+        int[] dims = image.GetDimensions();
+        int width = dims[0];
+        int height = dims[1];
+        int depth = dims[2];
+        vtkPointData pointdata = image.GetPointData();
+        vtkFloatArray data = (vtkFloatArray)pointdata.GetScalars();
+        float[][][] array = new float[depth][height][width];
+        for(int k=0; k < depth; ++k)
+        {
+            for (int j=0; j < height; ++j)
+            {
+                for (int i=0; i < width; ++i)
+                {
+                    // calculate index
+                    int index = k * width * height + j * width + i;
+                    array[k][j][i] = (float)data.GetValue(index);
+                }
+            }
+        }
+
+        return array;
+    }
+
+    /**
+     * Accessing individual pixels of a vtkImageData is slow in java.
+     * Therefore this function was written to allow converting a vtkImageData
      * to a java 2d array.
      * @param image
      * @return
