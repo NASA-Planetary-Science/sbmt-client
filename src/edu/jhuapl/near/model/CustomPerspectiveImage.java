@@ -27,6 +27,12 @@ public class CustomPerspectiveImage extends PerspectiveImage
         loadImageInfoFromConfigFile();
     }
 
+    @Override
+    protected int getNumberBands()
+    {
+        return imageDepth;
+    }
+
     private void loadImageInfoFromConfigFile()
     {
         // Look in the config file and figure out which index this image

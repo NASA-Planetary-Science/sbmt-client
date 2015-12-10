@@ -21,23 +21,41 @@ import edu.jhuapl.near.util.ImageDataUtil;
 public class VtkENVIReader extends vtkImageReader2
 {
     // Internal storage
-    private String filename;
+    private String binaryFilename;
     private vtkImageData vtkData;
+    private HashMap<String, String> headerMap;
+    private float[] minValues;
+    private float[] maxValues;
+
+    public VtkENVIReader()
+    {
+        super();
+
+        // Make these null at first on purpose
+        vtkData = null;
+        headerMap = null;
+    }
 
     // Save filename
     @Override
     public void SetFileName(String filename){
-        this.filename = filename;
+        binaryFilename = getBinaryFilename(filename);
     }
 
     @Override
     public void Update()
     {
-        // Obtain the filename of the binary
-        String binaryFilename = getBinaryFilename(filename);
+        // Read the header if we have not done so already
+        if(headerMap == null)
+        {
+            headerMap = readEnviHeader();
+        }
 
-        // Read the ENVI file and store it
-        vtkData = readEnviFile(binaryFilename);
+        // Try reading the binary if we could read the header correctly
+        if(headerMap != null && vtkData == null)
+        {
+            vtkData = readEnviBinary(headerMap);
+        }
     }
 
     // Return a deep copy for user
@@ -49,15 +67,25 @@ public class VtkENVIReader extends vtkImageReader2
         return copiedData;
     }
 
-    // Helper function to read the ENVI file given the
-    // filename of the binary
-    private vtkImageData readEnviFile(String binaryFilename)
+    public int getNumBands()
+    {
+        // Read the header if we have not done so already
+        if(headerMap == null)
+        {
+            headerMap = readEnviHeader();
+        }
+
+        // Get the number of bands from it
+        return Integer.valueOf(headerMap.get("bands"));
+    }
+
+    public HashMap<String,String> readEnviHeader()
     {
         // Header file name is always binary + extension
         String headerFilename = binaryFilename + ".hdr";
 
         // Read the header file
-        HashMap<String, String> headerMap;
+        HashMap<String, String> headerMap = null;
         try
         {
             // Read in the header
@@ -70,49 +98,10 @@ public class VtkENVIReader extends vtkImageReader2
                     headerMap.containsKey("header offset") &&
                     headerMap.containsKey("data type") &&
                     headerMap.containsKey("interleave") &&
-                    headerMap.containsKey("byte order")){
-                // ENVI header contains all 7 required fields
-
-                // Parse the header fields
-                int samples = Integer.valueOf(headerMap.get("samples"));
-                int lines = Integer.valueOf(headerMap.get("lines"));
-                int bands = Integer.valueOf(headerMap.get("bands"));
-                int headerOffset = Integer.valueOf(headerMap.get("header offset"));
-                String interleave = headerMap.get("interleave");
-                int byteOrder = Integer.valueOf(headerMap.get("byte order"));
-
-                // Check if interleave type is recognized
-                switch(interleave){
-                case "bsq":
-                case "bil":
-                case "bip":
-                    break;
-                default:
-                    System.err.println("Interleave type " + interleave + " unrecognized");
-                    return null;
-                }
-
-                // We only support data type 4 (float) for now
-                float[][][] binaryData = null;
-                int dataType = Integer.valueOf(headerMap.get("data type"));
-                switch(dataType)
-                {
-                case 4:
-                    // float
-                    binaryData = readENVIBinary4(binaryFilename, samples, lines, bands,
-                            headerOffset, interleave, byteOrder);
-                    break;
-                default:
-                    // All others not supported for now
-                    System.err.println("Unsupported data type " + dataType);
-                    break;
-                }
-
-                // If successful at reading binary, create a rawImage out of it and return
-                if(binaryData != null)
-                {
-                    return ImageDataUtil.createRawImage(lines, samples, bands, true, null, binaryData);
-                }
+                    headerMap.containsKey("byte order"))
+            {
+                // If so then return findings
+                return headerMap;
             }
             else
             {
@@ -122,10 +111,68 @@ public class VtkENVIReader extends vtkImageReader2
                         "header offset, data type, interleave, byte order");
             }
         }
+        catch(Exception e)
+        {
+            // Print out error message
+            System.err.println("Error reading ENVI header: " + e.getMessage());
+        }
+
+        // If we reached this point then something went wrong, return null
+        return null;
+    }
+
+    // Helper function to read the ENVI file
+    private vtkImageData readEnviBinary(HashMap<String, String> headerMap)
+    {
+        try
+        {
+            // Parse the header fields
+            int samples = Integer.valueOf(headerMap.get("samples"));
+            int lines = Integer.valueOf(headerMap.get("lines"));
+            int bands = Integer.valueOf(headerMap.get("bands"));
+            int headerOffset = Integer.valueOf(headerMap.get("header offset"));
+            String interleave = headerMap.get("interleave");
+            int byteOrder = Integer.valueOf(headerMap.get("byte order"));
+
+            // Check if interleave type is recognized
+            switch(interleave){
+            case "bsq":
+            case "bil":
+            case "bip":
+                break;
+            default:
+                System.err.println("Interleave type " + interleave + " unrecognized");
+                return null;
+            }
+
+            // We only support data type 4 (float) for now
+            float[][][] binaryData = null;
+            int dataType = Integer.valueOf(headerMap.get("data type"));
+            switch(dataType)
+            {
+            case 4:
+                // float
+                binaryData = readENVIBinary4(binaryFilename, samples, lines, bands,
+                        headerOffset, interleave, byteOrder);
+                break;
+            default:
+                // All others not supported for now
+                System.err.println("Unsupported data type " + dataType);
+                break;
+            }
+
+            // If successful at reading binary, create a rawImage out of it and return
+            if(binaryData != null)
+            {
+                minValues = new float[bands];
+                maxValues = new float[bands];
+                return ImageDataUtil.createRawImage(lines, samples, bands, true, null, binaryData, minValues, maxValues);
+            }
+        }
         catch(IOException e)
         {
             // Something went wrong
-            System.err.println("Unable to read ENVI header: " + e.getMessage());
+            System.err.println("Error reading ENVI binary: " + e.getMessage());
         }
 
         // If we reached this point then something went wrong, return null
@@ -259,6 +306,16 @@ public class VtkENVIReader extends vtkImageReader2
 
         // Return the parsed data
         return parsedData;
+    }
+
+    public float[] getMinValues()
+    {
+        return minValues;
+    }
+
+    public float[] getMaxValues()
+    {
+        return maxValues;
     }
 
     // Whether a filename is consistent with that of an ENVI header

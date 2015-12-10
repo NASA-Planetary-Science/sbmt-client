@@ -69,7 +69,7 @@ import edu.jhuapl.near.util.PolyDataUtil;
 import edu.jhuapl.near.util.Properties;
 
 /**
- * This class represents an absract image of a spacecraft imager instrument.
+ * This class represents an abstract image of a spacecraft imager instrument.
  */
 abstract public class PerspectiveImage extends Image implements PropertyChangeListener
 {
@@ -177,7 +177,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
     private int imageWidth;
     private int imageHeight;
-    private int imageDepth;
+    protected int imageDepth;
 
     private String pngFileFullPath; // The actual path of the PNG image stored on the local disk (after downloading from the server)
     private String fitFileFullPath; // The actual path of the FITS image stored on the local disk (after downloading from the server)
@@ -253,6 +253,8 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
             labelFileFullPath = initializeLabelFileFullPath();
         else
             sumfileFullPath = initializeSumfileFullPath();
+
+        loadNumSlices();
 
         loadPointing();
 
@@ -1707,6 +1709,8 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         reader.SetFileName(imageFile);
         reader.Update();
         rawImage.DeepCopy(reader.GetOutput());
+        minValue = reader.getMinValues();
+        maxValue = reader.getMaxValues();
     }
 
     protected void loadImage() throws FitsException, IOException
@@ -1749,8 +1753,6 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         maskSource.FillBox(leftMask, imageWidth-1-rightMask, bottomMask, imageHeight-1-topMask);
         maskSource.Update();
 
-        footprint = new vtkPolyData[imageDepth];
-        displayedRange = new IntensityRange[imageDepth];
         for (int k=0; k<imageDepth; k++)
         {
             footprint[k] = new vtkPolyData();
@@ -1776,21 +1778,37 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         }
         else if (getEnviFileFullPath() != null)
         {
-            // Not sure if below code is correct
-            // but it gets us the images we expect to see
-            minValue = new float[imageDepth];
-            maxValue = new float[imageDepth];
-            double[] scalarRange = rawImage.GetScalarRange();
-            for(int i=0; i < imageDepth; i++)
-            {
-                minValue[i] = (float)scalarRange[0];
-                maxValue[i] = (float)scalarRange[1];
-            }
-
             setDisplayedImageRange(null);
         }
 
 //        setDisplayedImageRange(new IntensityRange(0, 255));
+    }
+
+    protected void loadNumSlices()
+    {
+        if (getFitFileFullPath() != null)
+        {
+            // Do nothing for now
+        }
+        else if (getPngFileFullPath() != null)
+        {
+            // Do nothing for now
+        }
+        else if (getEnviFileFullPath() != null)
+        {
+            // Get the number of bands from the ENVI header
+            String name = getEnviFileFullPath();
+
+            String imageFile = null;
+            if (getKey().source == ImageSource.IMAGE_MAP)
+                imageFile = FileCache.getFileFromServer(name).getAbsolutePath();
+            else
+                imageFile = getKey().name;
+
+            VtkENVIReader reader = new VtkENVIReader();
+            reader.SetFileName(imageFile);
+            imageDepth = reader.getNumBands();
+        }
     }
 
     protected void loadPointing() throws FitsException, IOException
