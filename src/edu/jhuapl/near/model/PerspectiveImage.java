@@ -1457,6 +1457,8 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
             fitsAxes = h.getAxes();
             fitsNAxes = fitsAxes.length;
             fitsHeight = fitsAxes[0];
+
+            // to support LEISA image cubes
             fitsWidth = fitsNAxes == 3 ? fitsAxes[2] : fitsAxes[1];
             fitsDepth = fitsNAxes == 3 ? fitsAxes[1] : 1;
 

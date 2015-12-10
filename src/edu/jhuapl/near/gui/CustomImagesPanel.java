@@ -10,7 +10,11 @@
  */
 package edu.jhuapl.near.gui;
 
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseEvent;
@@ -22,10 +26,20 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
+import javax.swing.BoundedRangeModel;
+import javax.swing.DefaultBoundedRangeModel;
 import javax.swing.DefaultListModel;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JSlider;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import nom.tam.fits.FitsException;
 
@@ -43,11 +57,14 @@ import edu.jhuapl.near.model.Image;
 import edu.jhuapl.near.model.Image.FileType;
 import edu.jhuapl.near.model.Image.ImageKey;
 import edu.jhuapl.near.model.Image.ImageSource;
+import edu.jhuapl.near.model.Image.ImagingInstrument;
 import edu.jhuapl.near.model.ImageCollection;
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
+import edu.jhuapl.near.model.PerspectiveImage;
 import edu.jhuapl.near.model.PerspectiveImageBoundaryCollection;
+import edu.jhuapl.near.model.SmallBodyConfig.ImageType;
 import edu.jhuapl.near.model.custom.CustomShapeModel;
 import edu.jhuapl.near.pick.PickEvent;
 import edu.jhuapl.near.pick.PickManager;
@@ -57,12 +74,45 @@ import edu.jhuapl.near.util.MapUtil;
 import edu.jhuapl.near.util.Properties;
 
 
-public class CustomImagesPanel extends javax.swing.JPanel implements PropertyChangeListener {
+public class CustomImagesPanel extends javax.swing.JPanel implements PropertyChangeListener, ActionListener, ChangeListener
+{
 
     private ModelManager modelManager;
     private ImagePopupMenu imagePopupMenu;
+    private ModelInfoWindowManager infoPanelManager;
+    private ModelSpectrumWindowManager spectrumPanelManager;
+    final PickManager pickManager;
+    Renderer renderer;
+
     private boolean initialized = false;
 
+    private JPanel bandPanel;
+    private JLabel bandValue;
+    private JSlider monoSlider;
+    private JCheckBox defaultFrustum;
+    private BoundedRangeModel monoBoundedRangeModel;
+
+    private int nbands = 2;
+    private int currentSlice = 127;
+
+    public int getCurrentSlice() { return currentSlice; }
+
+    public String getCurrentBand() { return Integer.toString(currentSlice); }
+
+    protected ModelManager getModelManager()
+    {
+        return modelManager;
+    }
+
+    protected ModelNames getImageCollectionModelName()
+    {
+        return ModelNames.IMAGES;
+    }
+
+    private ModelNames getImageBoundaryCollectionModelName()
+    {
+        return ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES;
+    }
 
     /** Creates new form CustomImageLoaderPanel */
     public CustomImagesPanel(
@@ -73,16 +123,69 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
             Renderer renderer)
     {
         this.modelManager = modelManager;
-
-        initComponents();
+        this.infoPanelManager = infoPanelManager;
+        this.spectrumPanelManager = spectrumPanelManager;
+        this.pickManager = pickManager;
+        this.renderer = renderer;
 
         pickManager.getDefaultPicker().addPropertyChangeListener(this);
 
-        imageList.setModel(new DefaultListModel());
+//        initComponents();
 
-        ImageCollection images = (ImageCollection)modelManager.getModel(ModelNames.IMAGES);
-        PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES);
+//        pickManager.getDefaultPicker().addPropertyChangeListener(this);
+//
+//        imageList.setModel(new DefaultListModel());
+//
+//        ImageCollection images = (ImageCollection)modelManager.getModel(ModelNames.IMAGES);
+//        PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES);
+//        imagePopupMenu = new ImagePopupMenu(images, boundaries, infoPanelManager, spectrumPanelManager, renderer, this);
+//
+//        addComponentListener(new ComponentAdapter()
+//        {
+//            @Override
+//            public void componentShown(ComponentEvent e)
+//            {
+//                try
+//                {
+//                    initializeImageList();
+//                }
+//                catch (IOException e1)
+//                {
+//                    e1.printStackTrace();
+//                }
+//            }
+//        });
+    }
+
+    protected void initExtraComponents()
+    {
+        imageList.setModel(new DefaultListModel());
+    }
+
+    public CustomImagesPanel init()
+    {
+//        pickManager.getDefaultPicker().addPropertyChangeListener(this);
+
+        initComponents();
+        initExtraComponents();
+        populateMonochromePanel(monochromePanel);
+
+//        ImageCollection images = (ImageCollection)modelManager.getModel(ModelNames.IMAGES);
+//        PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES);
+//        imagePopupMenu = new ImagePopupMenu(images, boundaries, infoPanelManager, spectrumPanelManager, renderer, this);
+
+//        postInitComponents(instrument);
+
+        ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
+        PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(getImageBoundaryCollectionModelName());
         imagePopupMenu = new ImagePopupMenu(images, boundaries, infoPanelManager, spectrumPanelManager, renderer, this);
+
+
+//        boundaries.addPropertyChangeListener(this);
+//        images.addPropertyChangeListener(this);
+//
+//        ColorImageCollection colorImages = (ColorImageCollection)modelManager.getModel(getColorImageCollectionModelName());
+//        colorImagePopupMenu = new ColorImagePopupMenu(colorImages, infoPanelManager, modelManager, this);
 
         addComponentListener(new ComponentAdapter()
         {
@@ -99,7 +202,60 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
                 }
             }
         });
+
+        return this;
     }
+
+    protected void populateMonochromePanel(JPanel panel)
+    {
+        panel.setLayout(new BorderLayout());
+        bandPanel = new JPanel(new FlowLayout(FlowLayout.LEADING));
+        bandPanel.add(new JLabel("Band:"));
+        int midband = nbands / 2;
+        String midbandString = Integer.toString(midband);
+        bandValue = new JLabel(midbandString);
+        bandPanel.add(bandValue);
+        monoBoundedRangeModel = new DefaultBoundedRangeModel(midband, 0, 0, nbands-1);
+        monoSlider = new JSlider(monoBoundedRangeModel);
+        monoSlider.addChangeListener(this);
+
+        defaultFrustum = new JCheckBox("Default Frame");
+        defaultFrustum.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                defaultFrustumActionPerformed(evt);
+            }
+        });
+
+        bandPanel.add(defaultFrustum);
+
+        panel.add(bandPanel, BorderLayout.NORTH);
+        panel.add(monoSlider, BorderLayout.SOUTH);
+    }
+
+    private void defaultFrustumActionPerformed(java.awt.event.ActionEvent evt)
+    {
+        ImageCollection images = (ImageCollection)getModelManager().getModel(getImageCollectionModelName());
+
+        Set<Image> imageSet = images.getImages();
+        for (Image i : imageSet)
+        {
+            PerspectiveImage image = (PerspectiveImage)i;
+            ImageKey key = image.getKey();
+            ImageType type = key.instrument.type;
+            if (type == ImageType.LEISA_JUPITER_IMAGE) // this should not be specific to a given image type, should it? -turnerj1
+            {
+                if (image instanceof PerspectiveImage)
+                {
+                   ((PerspectiveImage)image).setUseDefaultFootprint(defaultFrustum.isSelected());
+                }
+            }
+        }
+    }//GEN-LAST:event_greenMonoCheckboxActionPerformed
+
+    private void postInitComponents(ImagingInstrument instrument)
+    {
+    }
+
 
     private String getCustomDataFolder()
     {
@@ -505,6 +661,7 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
         jPanel1 = new javax.swing.JPanel();
         deleteButton = new javax.swing.JButton();
         removeAllButton = new javax.swing.JButton();
+        monochromePanel = new javax.swing.JPanel();
 
         setLayout(new java.awt.GridBagLayout());
 
@@ -543,7 +700,7 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridy = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(7, 0, 0, 0);
         add(newButton, gridBagConstraints);
@@ -557,7 +714,7 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridy = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(7, 6, 0, 0);
         add(editButton, gridBagConstraints);
@@ -581,7 +738,7 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridy = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(7, 6, 0, 0);
         add(moveUpButton, gridBagConstraints);
@@ -595,7 +752,7 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
-        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridy = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(7, 6, 0, 0);
         add(moveDownButton, gridBagConstraints);
@@ -633,10 +790,16 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 3;
+        gridBagConstraints.gridy = 4;
         gridBagConstraints.gridwidth = 6;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         add(jPanel1, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridwidth = 6;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        add(monochromePanel, gridBagConstraints);
     }// </editor-fold>//GEN-END:initComponents
 
     private void newButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newButtonActionPerformed
@@ -776,6 +939,52 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
         }
     }//GEN-LAST:event_imageListValueChanged
 
+    @Override
+    public void stateChanged(ChangeEvent e)
+    {
+        JSlider source = (JSlider)e.getSource();
+        currentSlice = (int)source.getValue();
+        bandValue.setText(Integer.toString(currentSlice));
+
+        ImageCollection images = (ImageCollection)getModelManager().getModel(getImageCollectionModelName());
+
+        Set<Image> imageSet = images.getImages();
+        for (Image i : imageSet)
+        {
+            PerspectiveImage image = (PerspectiveImage)i;
+            ImageKey key = image.getKey();
+            ImageType type = key.instrument.type;
+//            String name = i.getImageName();
+//            Boolean isVisible = i.isVisible();
+//            System.out.println(name + ", " + type + ", " + isVisible);
+            if (type == ImageType.LEISA_JUPITER_IMAGE) // this should not be specific to a given image type, should it? -turnerj1
+            {
+                if (image.isVisible())
+                {
+                   image.setCurrentSlice(currentSlice);
+//                   image.setDisplayedImageRange(image.getDisplayedRange());
+                   image.setDisplayedImageRange(null);
+                   if (!source.getValueIsAdjusting())
+                   {
+//                        System.out.println("Recalculate footprint...");
+                        image.loadFootprint();
+                        image.firePropertyChange();
+                   }
+                }
+            }
+        }
+
+//            System.out.println("State changed: " + fps);
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent arg0)
+    {
+        String newBandName = (String)((JComboBox)arg0.getSource()).getSelectedItem();
+        System.out.println("ComboBox Value Changed: " + newBandName);
+    }
+
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton deleteButton;
     private javax.swing.JButton editButton;
@@ -783,6 +992,7 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JPanel monochromePanel;
     private javax.swing.JButton moveDownButton;
     private javax.swing.JButton moveUpButton;
     private javax.swing.JButton newButton;
