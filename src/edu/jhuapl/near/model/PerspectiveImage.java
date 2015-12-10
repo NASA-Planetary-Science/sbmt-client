@@ -66,7 +66,6 @@ import edu.jhuapl.near.util.LatLon;
 import edu.jhuapl.near.util.MathUtil;
 import edu.jhuapl.near.util.PolyDataUtil;
 import edu.jhuapl.near.util.Properties;
-import edu.jhuapl.near.util.VtkDataTypes;
 
 /**
  * This class represents an absract image of a spacecraft imager instrument.
@@ -1473,57 +1472,13 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
     protected vtkImageData createRawImage(int height, int width, int depth, boolean transpose, float[][] array2D, float[][][] array3D)
     {
-        vtkImageData image = new vtkImageData();
-        if (transpose)
-            image.SetDimensions(width, height, depth);
-        else
-            image.SetDimensions(height, width, depth);
-        image.SetSpacing(1.0, 1.0, 1.0);
-        image.SetOrigin(0.0, 0.0, 0.0);
-        image.AllocateScalars(VtkDataTypes.VTK_FLOAT, 1);
-
+        // Allocate enough room to store min/max value at each layer
         maxValue = new float[depth];
         minValue = new float[depth];
 
-        for (int k=0; k<depth; k++)
-        {
-            maxValue[k] = -Float.MAX_VALUE;
-            minValue[k] = Float.MAX_VALUE;
-        }
-
-        // For performance, flatten out the 2D or 3D array into a 1D array and call
-        // SetJavaArray directly on the pixel data since calling SetScalarComponentFromDouble
-        // for every pixel takes too long.
-        float[] array1D = new float[height * width * depth];
-
-        for (int i=0; i<height; ++i)
-            for (int j=0; j<width; ++j)
-                for (int k=0; k<depth; k++)
-                {
-                    float value = 0.0f;
-                    if (array2D != null)
-                        value = array2D[i][j];
-                    else if (array3D != null)
-                        value = array3D[i][k][j];
-
-                    if (transpose)
-                        //image.SetScalarComponentFromDouble(j, height-1-i, k, 0, value);
-                        array1D[(k * height + (height-1-i)) * width + j] = value;
-                    else
-                        //image.SetScalarComponentFromDouble(i, width-1-j, k, 0, value);
-                        array1D[(k * width + (width-1-j)) * height + i] = value;
-
-                    if (value > maxValue[k])
-                        maxValue[k] = value;
-                    if (value < minValue[k])
-                        minValue[k] = value;
-                }
-
-        ((vtkFloatArray)image.GetPointData().GetScalars()).SetJavaArray(array1D);
-
-        return image;
+        // Call
+        return ImageDataUtil.createRawImage(height, width, depth, transpose, array2D, array3D, minValue, maxValue);
     }
-
 
     protected void loadImageCalibrationData(Fits f) throws FitsException, IOException
     {
@@ -1549,7 +1504,6 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         rawImage.DeepCopy(reader.GetOutput());
 
     }
-
 
     protected void loadFitsFiles() throws FitsException, IOException
     {

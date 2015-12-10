@@ -29,6 +29,8 @@ import javax.swing.JOptionPane;
 
 import nom.tam.fits.FitsException;
 
+import com.google.common.io.Files;
+
 import vtk.vtkActor;
 import vtk.vtkAlgorithmOutput;
 import vtk.vtkImageReader2;
@@ -52,6 +54,7 @@ import edu.jhuapl.near.model.custom.CustomShapeModel;
 import edu.jhuapl.near.pick.PickEvent;
 import edu.jhuapl.near.pick.PickManager;
 import edu.jhuapl.near.popupmenus.ImagePopupMenu;
+import edu.jhuapl.near.tools.VtkENVIReader;
 import edu.jhuapl.near.util.FileUtil;
 import edu.jhuapl.near.util.MapUtil;
 import edu.jhuapl.near.util.Properties;
@@ -193,28 +196,53 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
             }
             else
             {
-                vtkImageReader2Factory imageFactory = new vtkImageReader2Factory();
-                vtkImageReader2 imageReader = imageFactory.CreateImageReader2(newImageInfo.imagefilename);
-                if (imageReader == null)
+                // Check if this image is any of the supported formats
+                if(VtkENVIReader.isENVIFilename(newImageInfo.imagefilename)){
+                    // We were given an ENVI file (binary or header)
+                    // Can assume at this point that both binary + header files exist in the same directory
+
+                    // Get filenames of the binary and header files
+                    String enviBinaryFilename = VtkENVIReader.getBinaryFilename(newImageInfo.imagefilename);
+                    String enviHeaderFilename = VtkENVIReader.getHeaderFilename(newImageInfo.imagefilename);
+
+                    // Rename newImageInfo as that of the binary file
+                    newImageInfo.imagefilename = "image-" + uuid;
+
+                    // Copy over the binary file
+                    Files.copy(new File(enviBinaryFilename),
+                            new File(getCustomDataFolder() + File.separator
+                                    + newImageInfo.imagefilename));
+
+                    // Copy over the header file
+                    Files.copy(new File(enviHeaderFilename),
+                            new File(getCustomDataFolder() + File.separator
+                                    + VtkENVIReader.getHeaderFilename(newImageInfo.imagefilename)));
+                }
+                else
                 {
-                    JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
+                    // Convert native VTK supported image to PNG and save to cache
+                    vtkImageReader2Factory imageFactory = new vtkImageReader2Factory();
+                    vtkImageReader2 imageReader = imageFactory.CreateImageReader2(newImageInfo.imagefilename);
+                    if (imageReader == null)
+                    {
+                        JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
                             "The format of the specified file is not supported.",
                             "Error",
                             JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                    imageReader.SetFileName(newImageInfo.imagefilename);
+                    imageReader.Update();
 
-                    return;
+                    vtkAlgorithmOutput imageReaderOutput = imageReader.GetOutputPort();
+                    vtkPNGWriter imageWriter = new vtkPNGWriter();
+                    imageWriter.SetInputConnection(imageReaderOutput);
+                    // We save out the image using a new name that makes use of a UUID
+                    newImageInfo.imagefilename = "image-" + uuid + ".png";
+                    imageWriter.SetFileName(getCustomDataFolder() + File.separator + newImageInfo.imagefilename);
+                    //imageWriter.SetFileTypeToBinary();
+                    imageWriter.Write();
                 }
-                imageReader.SetFileName(newImageInfo.imagefilename);
-                imageReader.Update();
-
-                vtkAlgorithmOutput imageReaderOutput = imageReader.GetOutputPort();
-                vtkPNGWriter imageWriter = new vtkPNGWriter();
-                imageWriter.SetInputConnection(imageReaderOutput);
-                // We save out the image using a new name that makes use of a UUID
-                newImageInfo.imagefilename = "image-" + uuid + ".png";
-                imageWriter.SetFileName(getCustomDataFolder() + File.separator + newImageInfo.imagefilename);
-                //imageWriter.SetFileTypeToBinary();
-                imageWriter.Write();
             }
         }
         else if (newImageInfo.projectionType == ProjectionType.PERSPECTIVE)

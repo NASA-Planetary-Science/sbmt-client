@@ -19,6 +19,8 @@ import javax.swing.JOptionPane;
 import vtk.vtkImageReader2;
 import vtk.vtkImageReader2Factory;
 
+import edu.jhuapl.near.tools.VtkENVIReader;
+
 
 public class CustomImageImporterDialog extends javax.swing.JDialog
 {
@@ -176,10 +178,33 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         {
             if (!imagePath.isEmpty() && !imagePath.equals(LEAVE_UNMODIFIED))
             {
-                vtkImageReader2Factory imageFactory = new vtkImageReader2Factory();
-                vtkImageReader2 imageReader = imageFactory.CreateImageReader2(imagePath);
-                if (imageReader == null)
-                    return "The format of the specified image is not supported.";
+                // Check first to see if it is a natively supported image
+                boolean supportedCustomFormat = false;
+
+                // Check if this image is any of the custom supported formats
+                if(VtkENVIReader.isENVIFilename(imagePath))
+                {
+                    // Both header and binary files must exist
+                    if(VtkENVIReader.checkFilesExist(imagePath))
+                    {
+                        // SBMT supports ENVI
+                        supportedCustomFormat = true;
+                    }
+                    else
+                    {
+                        // Error message
+                        return "Was not able to locate a corresponding .hdr file for ENVI image binary";
+                    }
+                }
+
+                // Otherwise, try to see if VTK natively supports
+                if(!supportedCustomFormat)
+                {
+                    vtkImageReader2Factory imageFactory = new vtkImageReader2Factory();
+                    vtkImageReader2 imageReader = imageFactory.CreateImageReader2(imagePath);
+                    if (imageReader == null)
+                        return "The format of the specified image is not supported.";
+                }
             }
 
             try

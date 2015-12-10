@@ -25,6 +25,7 @@ import vtk.vtkProperty;
 import vtk.vtkTexture;
 import vtk.vtkTransform;
 
+import edu.jhuapl.near.tools.VtkENVIReader;
 import edu.jhuapl.near.util.FileCache;
 import edu.jhuapl.near.util.IntensityRange;
 import edu.jhuapl.near.util.LatLon;
@@ -292,7 +293,6 @@ public class CylindricalImage extends Image
                 clipPolyData2Output = clipPolyData2.GetOutput();
             }
         }
-
 
         vtkAppendPolyData appendFilter = new vtkAppendPolyData();
         appendFilter.UserManagedInputsOff();
@@ -725,10 +725,23 @@ public class CylindricalImage extends Image
         if (rawImage == null)
             rawImage = new vtkImageData();
 
-        vtkPNGReader reader = new vtkPNGReader();
-        reader.SetFileName(imageFile);
-        reader.Update();
-        rawImage.DeepCopy(reader.GetOutput());
+        // Check if image is a custom-supported one
+        if(VtkENVIReader.isENVIFilename(imageFile))
+        {
+            // Customized support for ENVI binary files
+            VtkENVIReader reader = new VtkENVIReader();
+            reader.SetFileName(imageFile);
+            reader.Update();
+            rawImage.DeepCopy(reader.GetOutput());
+        }
+        else
+        {
+            // Otherwise, try vtk's built in reader
+            vtkPNGReader reader = new vtkPNGReader();
+            reader.SetFileName(imageFile);
+            reader.Update();
+            rawImage.DeepCopy(reader.GetOutput());
+        }
 
         double[] scalarRange = rawImage.GetScalarRange();
         minValue = (float)scalarRange[0];
