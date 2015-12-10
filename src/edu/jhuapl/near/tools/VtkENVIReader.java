@@ -220,11 +220,9 @@ public class VtkENVIReader extends vtkImageReader2
             // Band sequential: col, then row, then depth
             for (int band=0; band < bands; band++)
             {
-                //for(int line=0; line < lines; line++)
-                for(int line=lines-1; line >= 0; line--)
+                for(int line=0; line < lines; line++)
                 {
-                    // for(int sample=0; sample<samples; sample++)
-                    for(int sample=samples-1; sample >= 0; sample--)
+                    for(int sample=0; sample<samples; sample++)
                     {
                         parsedData[line][band][sample] = fb.get(bufferIndex++);
                     }
@@ -233,13 +231,11 @@ public class VtkENVIReader extends vtkImageReader2
             break;
         case "bil":
             // Band interleaved by line: col, then depth, then row
-            //for(int line=0; line < lines; line++)
-            for(int line=lines-1; line >= 0; line--)
+            for(int line=0; line < lines; line++)
             {
                 for (int band=0; band < bands; band++)
                 {
-                    // for(int sample=0; sample<samples; sample++)
-                    for(int sample=samples-1; sample >= 0; sample--)
+                    for(int sample=0; sample<samples; sample++)
                     {
                         parsedData[line][band][sample] = fb.get(bufferIndex++);
                     }
@@ -248,11 +244,9 @@ public class VtkENVIReader extends vtkImageReader2
             break;
         case "bip":
             // Band interleaved by pixel: depth, then col, then row
-            //for(int line=0; line < lines; line++)
-            for(int line=lines-1; line >= 0; line--)
+            for(int line=0; line < lines; line++)
             {
-                // for(int sample=0; sample<samples; sample++)
-                for(int sample=samples-1; sample >= 0; sample--)
+                for(int sample=0; sample<samples; sample++)
                 {
                     for (int band=0; band < bands; band++)
                     {
