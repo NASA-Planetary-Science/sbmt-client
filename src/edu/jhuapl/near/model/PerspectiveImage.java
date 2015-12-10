@@ -56,6 +56,7 @@ import vtk.vtkTexture;
 import vtk.vtkXMLPolyDataReader;
 import vtk.vtksbCellLocator;
 
+import edu.jhuapl.near.tools.VtkENVIReader;
 import edu.jhuapl.near.util.BoundingBox;
 import edu.jhuapl.near.util.DateTimeUtil;
 import edu.jhuapl.near.util.FileCache;
@@ -180,6 +181,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
     private String pngFileFullPath; // The actual path of the PNG image stored on the local disk (after downloading from the server)
     private String fitFileFullPath; // The actual path of the FITS image stored on the local disk (after downloading from the server)
+    private String enviFileFullPath; // The actual path of the ENVI binary stored on the local disk (after downloading from the server)
     private String labelFileFullPath;
     private String infoFileFullPath;
     private String sumfileFullPath;
@@ -231,11 +233,11 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         shiftedFootprint[0] = new vtkPolyData();
         displayedRange[0] = new IntensityRange(1,0);
 
-
         if (!loadPointingOnly)
         {
             fitFileFullPath = initializeFitFileFullPath();
             pngFileFullPath = initializePngFileFullPath();
+            enviFileFullPath = initializeEnviFileFullPath();
         }
 
         if (key.source.equals(ImageSource.LOCAL_PERSPECTIVE))
@@ -1255,6 +1257,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     abstract protected int[] getMaskSizes();
 
     abstract protected String initializeFitFileFullPath();
+    protected String initializeEnviFileFullPath() {return null; }
     protected String initializePngFileFullPath() { return null; }
     abstract protected String initializeLabelFileFullPath();
     abstract protected String initializeInfoFileFullPath();
@@ -1417,9 +1420,29 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         return fitFileFullPath;
     }
 
+    public String getEnviFileFullPath()
+    {
+        return enviFileFullPath;
+    }
+
     public String getImageFileFullPath()
     {
-        return fitFileFullPath != null ? fitFileFullPath : pngFileFullPath;
+        if(fitFileFullPath != null)
+        {
+            return fitFileFullPath;
+        }
+        else if(pngFileFullPath != null)
+        {
+            return pngFileFullPath;
+        }
+        else if(enviFileFullPath != null)
+        {
+            return enviFileFullPath;
+        }
+        else
+        {
+            return null;
+        }
     }
 
     public String[] getFitFilesFullPath()
@@ -1502,7 +1525,6 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         reader.SetFileName(imageFile);
         reader.Update();
         rawImage.DeepCopy(reader.GetOutput());
-
     }
 
     protected void loadFitsFiles() throws FitsException, IOException
@@ -1668,12 +1690,33 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         rawImage = createRawImage(fitsHeight, fitsWidth, fitsDepth, array2D, array3D);
     }
 
+    protected void loadEnviFile()
+    {
+        String name = getEnviFileFullPath();
+
+        String imageFile = null;
+        if (getKey().source == ImageSource.IMAGE_MAP)
+            imageFile = FileCache.getFileFromServer(name).getAbsolutePath();
+        else
+            imageFile = getKey().name;
+
+        if (rawImage == null)
+            rawImage = new vtkImageData();
+
+        VtkENVIReader reader = new VtkENVIReader();
+        reader.SetFileName(imageFile);
+        reader.Update();
+        rawImage.DeepCopy(reader.GetOutput());
+    }
+
     protected void loadImage() throws FitsException, IOException
     {
         if (getFitFileFullPath() != null)
             loadFitsFiles();
         else if (getPngFileFullPath() != null)
             loadPngFile();
+        else if (getEnviFileFullPath() != null)
+            loadEnviFile();
 
         if (rawImage == null)
             return;
@@ -1706,6 +1749,8 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         maskSource.FillBox(leftMask, imageWidth-1-rightMask, bottomMask, imageHeight-1-topMask);
         maskSource.Update();
 
+        footprint = new vtkPolyData[imageDepth];
+        displayedRange = new IntensityRange[imageDepth];
         for (int k=0; k<imageDepth; k++)
         {
             footprint[k] = new vtkPolyData();
@@ -1717,9 +1762,10 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         textureCoords = new vtkFloatArray();
         normalsFilter = new vtkPolyDataNormals();
 
-
         if (getFitFileFullPath() != null)
+        {
             setDisplayedImageRange(null);
+        }
         else if (getPngFileFullPath() != null)
         {
             double[] scalarRange = rawImage.GetScalarRange();
@@ -1728,7 +1774,21 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 //            setDisplayedImageRange(new IntensityRange(0, 255));
             setDisplayedImageRange(null);
         }
+        else if (getEnviFileFullPath() != null)
+        {
+            // Not sure if below code is correct
+            // but it gets us the images we expect to see
+            minValue = new float[imageDepth];
+            maxValue = new float[imageDepth];
+            double[] scalarRange = rawImage.GetScalarRange();
+            for(int i=0; i < imageDepth; i++)
+            {
+                minValue[i] = (float)scalarRange[0];
+                maxValue[i] = (float)scalarRange[1];
+            }
 
+            setDisplayedImageRange(null);
+        }
 
 //        setDisplayedImageRange(new IntensityRange(0, 255));
     }

@@ -7,6 +7,7 @@ import nom.tam.fits.FitsException;
 
 import vtk.vtkImageData;
 
+import edu.jhuapl.near.tools.VtkENVIReader;
 import edu.jhuapl.near.util.ImageDataUtil;
 import edu.jhuapl.near.util.MapUtil;
 
@@ -60,10 +61,14 @@ public class CustomPerspectiveImage extends PerspectiveImage
             // only rotate INFO files, not SUM files
             if (key.fileType == FileType.INFO)
             {
-                ImageDataUtil.rotateImage(rawImage, 270.0);
+                // Originally was just this one rotate 270 transformation
+                //ImageDataUtil.rotateImage(rawImage, 270.0);
+
+                // Commented out above and put this in instead to make perspective image
+                // work with ENVI files
+                ImageDataUtil.flipImageYAxis(rawImage);
             }
             else if (key.fileType == FileType.SUM)
-
             {
                 ImageDataUtil.flipImageXAxis(rawImage);
 //                ImageDataUtil.rotateImage(rawImage, 180.0);
@@ -86,7 +91,23 @@ public class CustomPerspectiveImage extends PerspectiveImage
     @Override
     protected String initializeFitFileFullPath()
     {
-        return getKey().name.endsWith(".png") ? null : getKey().name;
+        String keyName = getKey().name;
+        if(keyName.endsWith(".fit") || keyName.endsWith(".fits") ||
+                keyName.endsWith(".FIT") || keyName.endsWith(".FITS"))
+        {
+            // Allowed fit file extensions for getKey().name
+            return keyName;
+        }
+        else
+        {
+            return null;
+        }
+    }
+
+    @Override
+    protected String initializeEnviFileFullPath()
+    {
+        return VtkENVIReader.isENVIFilename(getKey().name) ? getKey().name : null;
     }
 
     @Override

@@ -20,18 +20,17 @@ import edu.jhuapl.near.util.ImageDataUtil;
 // Note: ENVI format image = binary + .hdr file
 public class VtkENVIReader extends vtkImageReader2
 {
-    // ENVI information
-    public static String fileExtensionRegexPattern = "(.*)\\.[a-zA-Z0-9]*$";
-
     // Internal storage
     private String filename;
     private vtkImageData vtkData;
 
     // Save filename
+    @Override
     public void SetFileName(String filename){
         this.filename = filename;
     }
 
+    @Override
     public void Update()
     {
         // Obtain the filename of the binary
@@ -42,6 +41,7 @@ public class VtkENVIReader extends vtkImageReader2
     }
 
     // Return a deep copy for user
+    @Override
     public vtkImageData GetOutput()
     {
         vtkImageData copiedData = new vtkImageData();
@@ -269,7 +269,7 @@ public class VtkENVIReader extends vtkImageReader2
     // Whether a filename is consistent with that of an ENVI binary
     public static boolean isENVIBinary(String filename){
         // ENVI binaries do NOT have any file extension
-        return !filename.matches(fileExtensionRegexPattern);
+        return !filename.matches("(.*)\\.[a-zA-Z0-9]*$");
     }
 
     // Whether a filename is consistent with that of an ENVI binary or header file

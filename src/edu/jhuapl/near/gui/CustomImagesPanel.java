@@ -186,85 +186,76 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
     {
         String uuid = UUID.randomUUID().toString();
 
-        if (newImageInfo.projectionType == ProjectionType.CYLINDRICAL)
+        // If newImageInfo.imagefilename is null, that means we are in edit mode
+        // and should continue to use the existing image
+        if (newImageInfo.imagefilename == null)
         {
-            // If newImageInfo.imagefilename is null, that means we are in edit mode
-            // and should continue to use the existing image
-            if (newImageInfo.imagefilename == null)
-            {
-                newImageInfo.imagefilename = oldImageInfo.imagefilename;
-            }
-            else
-            {
-                // Check if this image is any of the supported formats
-                if(VtkENVIReader.isENVIFilename(newImageInfo.imagefilename)){
-                    // We were given an ENVI file (binary or header)
-                    // Can assume at this point that both binary + header files exist in the same directory
-
-                    // Get filenames of the binary and header files
-                    String enviBinaryFilename = VtkENVIReader.getBinaryFilename(newImageInfo.imagefilename);
-                    String enviHeaderFilename = VtkENVIReader.getHeaderFilename(newImageInfo.imagefilename);
-
-                    // Rename newImageInfo as that of the binary file
-                    newImageInfo.imagefilename = "image-" + uuid;
-
-                    // Copy over the binary file
-                    Files.copy(new File(enviBinaryFilename),
-                            new File(getCustomDataFolder() + File.separator
-                                    + newImageInfo.imagefilename));
-
-                    // Copy over the header file
-                    Files.copy(new File(enviHeaderFilename),
-                            new File(getCustomDataFolder() + File.separator
-                                    + VtkENVIReader.getHeaderFilename(newImageInfo.imagefilename)));
-                }
-                else
-                {
-                    // Convert native VTK supported image to PNG and save to cache
-                    vtkImageReader2Factory imageFactory = new vtkImageReader2Factory();
-                    vtkImageReader2 imageReader = imageFactory.CreateImageReader2(newImageInfo.imagefilename);
-                    if (imageReader == null)
-                    {
-                        JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
-                            "The format of the specified file is not supported.",
-                            "Error",
-                            JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-                    imageReader.SetFileName(newImageInfo.imagefilename);
-                    imageReader.Update();
-
-                    vtkAlgorithmOutput imageReaderOutput = imageReader.GetOutputPort();
-                    vtkPNGWriter imageWriter = new vtkPNGWriter();
-                    imageWriter.SetInputConnection(imageReaderOutput);
-                    // We save out the image using a new name that makes use of a UUID
-                    newImageInfo.imagefilename = "image-" + uuid + ".png";
-                    imageWriter.SetFileName(getCustomDataFolder() + File.separator + newImageInfo.imagefilename);
-                    //imageWriter.SetFileTypeToBinary();
-                    imageWriter.Write();
-                }
-            }
+            newImageInfo.imagefilename = oldImageInfo.imagefilename;
         }
-        else if (newImageInfo.projectionType == ProjectionType.PERSPECTIVE)
+        else
         {
-            // If newImageInfo.imagefilename is null, that means we are in edit mode
-            // and should continue to use the existing image
-            if (newImageInfo.imagefilename == null)
-            {
-                newImageInfo.imagefilename = oldImageInfo.imagefilename;
+            // Check if this image is any of the supported formats
+            if(VtkENVIReader.isENVIFilename(newImageInfo.imagefilename)){
+                // We were given an ENVI file (binary or header)
+                // Can assume at this point that both binary + header files exist in the same directory
+
+                // Get filenames of the binary and header files
+                String enviBinaryFilename = VtkENVIReader.getBinaryFilename(newImageInfo.imagefilename);
+                String enviHeaderFilename = VtkENVIReader.getHeaderFilename(newImageInfo.imagefilename);
+
+                // Rename newImageInfo as that of the binary file
+                newImageInfo.imagefilename = "image-" + uuid;
+
+                // Copy over the binary file
+                Files.copy(new File(enviBinaryFilename),
+                        new File(getCustomDataFolder() + File.separator
+                                + newImageInfo.imagefilename));
+
+                // Copy over the header file
+                Files.copy(new File(enviHeaderFilename),
+                        new File(getCustomDataFolder() + File.separator
+                                + VtkENVIReader.getHeaderFilename(newImageInfo.imagefilename)));
             }
-            else
+            else if(newImageInfo.imagefilename.endsWith(".fit") || newImageInfo.imagefilename.endsWith(".fits") ||
+                    newImageInfo.imagefilename.endsWith(".FIT") || newImageInfo.imagefilename.endsWith(".FITS"))
             {
-                // We save out the image using a new name that makes use of a UUID
-//                String newFilename = "image-" + uuid + ".fit";
-                String suffix = newImageInfo.imagefilename.endsWith(".png") ? ".png" : ".fit";
-                String newFilename = "image-" + uuid + suffix;
+                // Copy FIT file to cache
+                String newFilename = "image-" + uuid + ".fit";
                 String newFilepath = getCustomDataFolder() + File.separator + newFilename;
-                FileUtil.copyFile(newImageInfo.imagefilename, newFilepath);
+                FileUtil.copyFile(newImageInfo.imagefilename,  newFilepath);
                 // Change newImageInfo.imagefilename to the new location of the file
                 newImageInfo.imagefilename = newFilename;
             }
+            else
+            {
+                // Convert native VTK supported image to PNG and save to cache
+                vtkImageReader2Factory imageFactory = new vtkImageReader2Factory();
+                vtkImageReader2 imageReader = imageFactory.CreateImageReader2(newImageInfo.imagefilename);
+                if (imageReader == null)
+                {
+                    JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
+                        "The format of the specified file is not supported.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                imageReader.SetFileName(newImageInfo.imagefilename);
+                imageReader.Update();
 
+                vtkAlgorithmOutput imageReaderOutput = imageReader.GetOutputPort();
+                vtkPNGWriter imageWriter = new vtkPNGWriter();
+                imageWriter.SetInputConnection(imageReaderOutput);
+                // We save out the image using a new name that makes use of a UUID
+                newImageInfo.imagefilename = "image-" + uuid + ".png";
+                imageWriter.SetFileName(getCustomDataFolder() + File.separator + newImageInfo.imagefilename);
+                //imageWriter.SetFileTypeToBinary();
+                imageWriter.Write();
+            }
+        }
+
+        // Operations specific for perspective projection type
+        if (newImageInfo.projectionType == ProjectionType.PERSPECTIVE)
+        {
             // If newImageInfo.sumfilename and infofilename are both null, that means we are in edit mode
             // and should continue to use the existing sumfile
             if (newImageInfo.sumfilename == null && newImageInfo.infofilename == null)
