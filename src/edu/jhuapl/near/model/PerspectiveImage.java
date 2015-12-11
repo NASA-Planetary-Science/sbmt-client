@@ -2313,11 +2313,12 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
      */
     public void saveImageInfo(String infoFileName)
     {
+        int slice = (getNumberBands() - 1) / 2;
         try
         {
                 saveImageInfo(
                         infoFileName,
-                        0,
+                        slice,
                         startTime,
                         stopTime,
                         spacecraftPositionAdjusted,
