@@ -11,6 +11,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.channels.FileChannel;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -53,19 +56,20 @@ import vtk.vtkTexture;
 import vtk.vtkXMLPolyDataReader;
 import vtk.vtksbCellLocator;
 
+import edu.jhuapl.near.tools.VtkENVIReader;
 import edu.jhuapl.near.util.BoundingBox;
 import edu.jhuapl.near.util.DateTimeUtil;
 import edu.jhuapl.near.util.FileCache;
 import edu.jhuapl.near.util.Frustum;
+import edu.jhuapl.near.util.ImageDataUtil;
 import edu.jhuapl.near.util.IntensityRange;
 import edu.jhuapl.near.util.LatLon;
 import edu.jhuapl.near.util.MathUtil;
 import edu.jhuapl.near.util.PolyDataUtil;
 import edu.jhuapl.near.util.Properties;
-import edu.jhuapl.near.util.VtkDataTypes;
 
 /**
- * This class represents an absract image of a spacecraft imager instrument.
+ * This class represents an abstract image of a spacecraft imager instrument.
  */
 abstract public class PerspectiveImage extends Image implements PropertyChangeListener
 {
@@ -173,10 +177,11 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
     private int imageWidth;
     private int imageHeight;
-    private int imageDepth;
+    protected int imageDepth;
 
     private String pngFileFullPath; // The actual path of the PNG image stored on the local disk (after downloading from the server)
     private String fitFileFullPath; // The actual path of the FITS image stored on the local disk (after downloading from the server)
+    private String enviFileFullPath; // The actual path of the ENVI binary stored on the local disk (after downloading from the server)
     private String labelFileFullPath;
     private String infoFileFullPath;
     private String sumfileFullPath;
@@ -228,11 +233,11 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         shiftedFootprint[0] = new vtkPolyData();
         displayedRange[0] = new IntensityRange(1,0);
 
-
         if (!loadPointingOnly)
         {
             fitFileFullPath = initializeFitFileFullPath();
             pngFileFullPath = initializePngFileFullPath();
+            enviFileFullPath = initializeEnviFileFullPath();
         }
 
         if (key.source.equals(ImageSource.LOCAL_PERSPECTIVE))
@@ -248,6 +253,8 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
             labelFileFullPath = initializeLabelFileFullPath();
         else
             sumfileFullPath = initializeSumfileFullPath();
+
+        loadNumSlices();
 
         loadPointing();
 
@@ -1044,7 +1051,123 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         in.close();
     }
 
+    public void exportAsEnvi(
+            String enviFilename, // no extensions
+            String interleaveType, // "bsq", "bil", or "bip"
+            boolean hostByteOrder
+            ) throws IOException
+    {
+        // Check if interleave type is recognized
+        switch(interleaveType){
+        case "bsq":
+        case "bil":
+        case "bip":
+            break;
+        default:
+            System.out.println("Interleave type " + interleaveType + " unrecognized, aborting exportAsEnvi()");
+            return;
+        }
 
+        // Create output stream for header (.hdr) file
+        FileOutputStream fs = null;
+        try {
+            fs = new FileOutputStream(enviFilename + ".hdr");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return;
+        }
+        OutputStreamWriter osw = new OutputStreamWriter(fs);
+        BufferedWriter out = new BufferedWriter(osw);
+
+        // Write the fields of the header
+        out.write("ENVI\n");
+        out.write("samples = " + imageWidth + "\n");
+        out.write("lines = " + imageHeight + "\n");
+        out.write("bands = " + imageDepth + "\n");
+        out.write("header offset = " + "0" + "\n");
+        out.write("data type = " + "4" + "\n"); // 1 = byte, 2 = int, 3 = signed int, 4 = float
+        out.write("interleave = " + interleaveType + "\n"); // bsq = band sequential, bil = band interleaved by line, bip = band interleaved by pixel
+        out.write("byte order = "); // 0 = host(intel, LSB first), 1 = network (IEEE, MSB first)
+        if(hostByteOrder){
+            // Host byte order
+            out.write("0" + "\n");
+        }else{
+            // Network byte order
+            out.write("1" + "\n");
+        }
+        out.close();
+
+        // Configure byte buffer & endianess
+        ByteBuffer bb = ByteBuffer.allocate(4*imageWidth*imageHeight*imageDepth); // 4 bytes per float
+        if(hostByteOrder){
+            // Little Endian = LSB stored first
+            bb.order(ByteOrder.LITTLE_ENDIAN);
+        }else{
+            // Big Endian = MSB stored first
+            bb.order(ByteOrder.BIG_ENDIAN);
+        }
+
+        // Write pixels to byte buffer
+        // Remember, VTK origin is at bottom left while ENVI origin is at top left
+        float[][][] imageData = ImageDataUtil.vtkImageDataToArray3D(rawImage);
+        switch(interleaveType)
+        {
+        case "bsq":
+            // Band sequential: col, then row, then depth
+            for(int depth = 0; depth < imageDepth; depth++)
+            {
+                //for(int row = imageHeight-1; row >= 0; row--)
+                for(int row=0; row < imageHeight; row ++)
+                {
+                    for(int col = 0; col < imageWidth; col++)
+                    {
+                        bb.putFloat(imageData[depth][row][col]);
+                    }
+                }
+            }
+            break;
+        case "bil":
+            // Band interleaved by line: col, then depth, then row
+            //for(int row=imageHeight-1; row >= 0; row--)
+            for(int row=0; row < imageHeight; row ++)
+            {
+                for(int depth=0; depth < imageDepth; depth++)
+                {
+                    for(int col=0; col < imageWidth; col++)
+                    {
+                        bb.putFloat(imageData[depth][row][col]);
+                    }
+                }
+            }
+            break;
+        case "bip":
+            // Band interleaved by pixel: depth, then col, then row
+            //for(int row=imageHeight-1; row >= 0; row--)
+            for(int row=0; row < imageHeight; row ++)
+            {
+                for(int col=0; col < imageWidth; col++)
+                {
+                    for(int depth=0; depth < imageDepth; depth++)
+                    {
+                        bb.putFloat(imageData[depth][row][col]);
+                    }
+                }
+            }
+            break;
+        }
+
+        // Create output stream and write contents of byte buffer
+        FileChannel fc = null;
+        try {
+            fc = new FileOutputStream(enviFilename).getChannel();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return;
+        }
+        bb.flip(); // flip() is a misleading name, nothing is being flipped.  Buffer end is set to curr pos and curr pos set to beginning.
+        fc.write(bb);
+        fc.close();
+    }
 
     public void saveImageInfo(
             String infoFilename,
@@ -1136,6 +1259,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     abstract protected int[] getMaskSizes();
 
     abstract protected String initializeFitFileFullPath();
+    protected String initializeEnviFileFullPath() {return null; }
     protected String initializePngFileFullPath() { return null; }
     abstract protected String initializeLabelFileFullPath();
     abstract protected String initializeInfoFileFullPath();
@@ -1298,9 +1422,29 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         return fitFileFullPath;
     }
 
+    public String getEnviFileFullPath()
+    {
+        return enviFileFullPath;
+    }
+
     public String getImageFileFullPath()
     {
-        return fitFileFullPath != null ? fitFileFullPath : pngFileFullPath;
+        if(fitFileFullPath != null)
+        {
+            return fitFileFullPath;
+        }
+        else if(pngFileFullPath != null)
+        {
+            return pngFileFullPath;
+        }
+        else if(enviFileFullPath != null)
+        {
+            return enviFileFullPath;
+        }
+        else
+        {
+            return null;
+        }
     }
 
     public String[] getFitFilesFullPath()
@@ -1353,57 +1497,13 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
     protected vtkImageData createRawImage(int height, int width, int depth, boolean transpose, float[][] array2D, float[][][] array3D)
     {
-        vtkImageData image = new vtkImageData();
-        if (transpose)
-            image.SetDimensions(width, height, depth);
-        else
-            image.SetDimensions(height, width, depth);
-        image.SetSpacing(1.0, 1.0, 1.0);
-        image.SetOrigin(0.0, 0.0, 0.0);
-        image.AllocateScalars(VtkDataTypes.VTK_FLOAT, 1);
-
+        // Allocate enough room to store min/max value at each layer
         maxValue = new float[depth];
         minValue = new float[depth];
 
-        for (int k=0; k<depth; k++)
-        {
-            maxValue[k] = -Float.MAX_VALUE;
-            minValue[k] = Float.MAX_VALUE;
-        }
-
-        // For performance, flatten out the 2D or 3D array into a 1D array and call
-        // SetJavaArray directly on the pixel data since calling SetScalarComponentFromDouble
-        // for every pixel takes too long.
-        float[] array1D = new float[height * width * depth];
-
-        for (int i=0; i<height; ++i)
-            for (int j=0; j<width; ++j)
-                for (int k=0; k<depth; k++)
-                {
-                    float value = 0.0f;
-                    if (array2D != null)
-                        value = array2D[i][j];
-                    else if (array3D != null)
-                        value = array3D[i][k][j];
-
-                    if (transpose)
-                        //image.SetScalarComponentFromDouble(j, height-1-i, k, 0, value);
-                        array1D[(k * height + (height-1-i)) * width + j] = value;
-                    else
-                        //image.SetScalarComponentFromDouble(i, width-1-j, k, 0, value);
-                        array1D[(k * width + (width-1-j)) * height + i] = value;
-
-                    if (value > maxValue[k])
-                        maxValue[k] = value;
-                    if (value < minValue[k])
-                        minValue[k] = value;
-                }
-
-        ((vtkFloatArray)image.GetPointData().GetScalars()).SetJavaArray(array1D);
-
-        return image;
+        // Call
+        return ImageDataUtil.createRawImage(height, width, depth, transpose, array2D, array3D, minValue, maxValue);
     }
-
 
     protected void loadImageCalibrationData(Fits f) throws FitsException, IOException
     {
@@ -1427,9 +1527,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         reader.SetFileName(imageFile);
         reader.Update();
         rawImage.DeepCopy(reader.GetOutput());
-
     }
-
 
     protected void loadFitsFiles() throws FitsException, IOException
     {
@@ -1457,8 +1555,6 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
             fitsAxes = h.getAxes();
             fitsNAxes = fitsAxes.length;
             fitsHeight = fitsAxes[0];
-
-            // to support LEISA image cubes
             fitsWidth = fitsNAxes == 3 ? fitsAxes[2] : fitsAxes[1];
             fitsDepth = fitsNAxes == 3 ? fitsAxes[1] : 1;
 
@@ -1596,12 +1692,35 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         rawImage = createRawImage(fitsHeight, fitsWidth, fitsDepth, array2D, array3D);
     }
 
+    protected void loadEnviFile()
+    {
+        String name = getEnviFileFullPath();
+
+        String imageFile = null;
+        if (getKey().source == ImageSource.IMAGE_MAP)
+            imageFile = FileCache.getFileFromServer(name).getAbsolutePath();
+        else
+            imageFile = getKey().name;
+
+        if (rawImage == null)
+            rawImage = new vtkImageData();
+
+        VtkENVIReader reader = new VtkENVIReader();
+        reader.SetFileName(imageFile);
+        reader.Update();
+        rawImage.DeepCopy(reader.GetOutput());
+        minValue = reader.getMinValues();
+        maxValue = reader.getMaxValues();
+    }
+
     protected void loadImage() throws FitsException, IOException
     {
         if (getFitFileFullPath() != null)
             loadFitsFiles();
         else if (getPngFileFullPath() != null)
             loadPngFile();
+        else if (getEnviFileFullPath() != null)
+            loadEnviFile();
 
         if (rawImage == null)
             return;
@@ -1645,9 +1764,10 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         textureCoords = new vtkFloatArray();
         normalsFilter = new vtkPolyDataNormals();
 
-
         if (getFitFileFullPath() != null)
+        {
             setDisplayedImageRange(null);
+        }
         else if (getPngFileFullPath() != null)
         {
             double[] scalarRange = rawImage.GetScalarRange();
@@ -1656,9 +1776,42 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 //            setDisplayedImageRange(new IntensityRange(0, 255));
             setDisplayedImageRange(null);
         }
-
+        else if (getEnviFileFullPath() != null)
+        {
+            setDisplayedImageRange(null);
+        }
 
 //        setDisplayedImageRange(new IntensityRange(0, 255));
+    }
+
+    protected void loadNumSlices()
+    {
+        if (getFitFileFullPath() != null)
+        {
+            // Do nothing for now
+        }
+        else if (getPngFileFullPath() != null)
+        {
+            // Do nothing for now
+        }
+        else if (getEnviFileFullPath() != null)
+        {
+            // Get the number of bands from the ENVI header
+            String name = getEnviFileFullPath();
+
+            String imageFile = null;
+            if (getKey().source == ImageSource.IMAGE_MAP)
+                imageFile = FileCache.getFileFromServer(name).getAbsolutePath();
+            else
+                imageFile = getKey().name;
+
+            VtkENVIReader reader = new VtkENVIReader();
+            reader.SetFileName(imageFile);
+            imageDepth = reader.getNumBands();
+            // for multislice images, set slice to middle slice
+            if (imageDepth > 1)
+                setCurrentSlice(imageDepth / 2);
+        }
     }
 
     protected void loadPointing() throws FitsException, IOException
@@ -2113,12 +2266,14 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 //        System.out.println("Saving current slice: " + slice);
         try
         {
-            int nslices = infoFileNames.length;
-            for (int slice=0; slice<nslices; slice++)
+            int nfiles = infoFileNames.length;
+            for (int fileindex=0; fileindex<nfiles; fileindex++)
             {
-                String filename = infoFileNames[slice];
+                String filename = infoFileNames[fileindex];
                 if (filename == null || filename.endsWith("/null"))
                     filename = sumFileName.substring(0, sumFileName.length()-3) + "INFO";
+
+                int slice = this.getNumberBands() / 2;
 
                 saveImageInfo(
                         filename,

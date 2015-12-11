@@ -10,6 +10,111 @@ import vtk.vtkTransform;
 public class ImageDataUtil
 {
     /**
+     * Helper function to create raw vtkImageData from float array
+     *
+     * @param depth Must be >= 1
+     * @param array2D A matrix of floats with dimensions (height, width) or null
+     * @param array3D A matrix of floats with dimensions (height, depth, width) or null
+     * @param minValue Float array of length depth where min values at each layer will be stored
+     * @param maxValue Float array of length depth where max values at each layer will be stored
+     */
+    public static vtkImageData createRawImage(int height, int width, int depth, boolean transpose, float[][] array2D, float[][][] array3D, float[] minValue, float[] maxValue)
+    {
+        vtkImageData image = new vtkImageData();
+        if (transpose)
+            image.SetDimensions(width, height, depth);
+        else
+            image.SetDimensions(height, width, depth);
+        image.SetSpacing(1.0, 1.0, 1.0);
+        image.SetOrigin(0.0, 0.0, 0.0);
+        image.AllocateScalars(VtkDataTypes.VTK_FLOAT, 1);
+
+        for (int k=0; k<depth; k++)
+        {
+            maxValue[k] = -Float.MAX_VALUE;
+            minValue[k] = Float.MAX_VALUE;
+        }
+
+        // For performance, flatten out the 2D or 3D array into a 1D array and call
+        // SetJavaArray directly on the pixel data since calling SetScalarComponentFromDouble
+        // for every pixel takes too long.
+        float[] array1D = new float[height * width * depth];
+
+        for (int i=0; i<height; ++i)
+            for (int j=0; j<width; ++j)
+                for (int k=0; k<depth; k++)
+                {
+                    float value = 0.0f;
+                    if (array2D != null)
+                        value = array2D[i][j];
+                    else if (array3D != null)
+                        value = array3D[i][k][j];
+
+                    if (transpose)
+                        //image.SetScalarComponentFromDouble(j, height-1-i, k, 0, value);
+                        array1D[(k * height + (height-1-i)) * width + j] = value;
+                    else
+                        //image.SetScalarComponentFromDouble(i, width-1-j, k, 0, value);
+                        array1D[(k * width + (width-1-j)) * height + i] = value;
+
+                    if (value > maxValue[k])
+                        maxValue[k] = value;
+                    if (value < minValue[k])
+                        minValue[k] = value;
+                }
+
+        ((vtkFloatArray)image.GetPointData().GetScalars()).SetJavaArray(array1D);
+
+        return image;
+    }
+
+    /**
+     * Same as method above but without storing min and max values
+     */
+    public static vtkImageData createRawImage(int height, int width, int depth, boolean transpose, float[][] array2D, float[][][] array3D)
+    {
+        // Unused
+        float[] minValue = new float[depth];
+        float[] maxValue = new float[depth];
+
+        // Call helper
+        return createRawImage(height, width, depth, transpose, array2D, array3D, minValue, maxValue);
+    }
+
+
+    /**
+     * Accessing individual pixels of a vtkImageData is slow in java.
+     * Therefore this function was written to allow converting a vtkImageData
+     * to a java 3d array.  Returned 3d array has dimensions [depth][row][col]
+     * @param image
+     * @return
+     */
+    static public float[][][] vtkImageDataToArray3D(vtkImageData image)
+    {
+        int[] dims = image.GetDimensions();
+        int width = dims[0];
+        int height = dims[1];
+        int depth = dims[2];
+        vtkPointData pointdata = image.GetPointData();
+        vtkFloatArray data = (vtkFloatArray)pointdata.GetScalars();
+        float[][][] array = new float[depth][height][width];
+        for(int k=0; k < depth; ++k)
+        {
+            for (int j=0; j < height; ++j)
+            {
+                for (int i=0; i < width; ++i)
+                {
+                    // calculate index
+                    int index = k * width * height + j * width + i;
+                    array[k][j][i] = (float)data.GetValue(index);
+                }
+            }
+        }
+
+        return array;
+    }
+
+    /**
      * Accessing individual pixels of a vtkImageData is slow in java.
      * Therefore this function was written to allow converting a vtkImageData
      * to a java 2d array.

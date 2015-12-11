@@ -59,6 +59,7 @@ public class ImagePopupMenu extends PopupMenu
     private JMenuItem saveBackplanesMenuItem;
     private JMenuItem centerImageMenuItem;
     private JMenuItem showFrustumMenuItem;
+    private JMenuItem exportENVIImageMenuItem;
     private JMenuItem exportInfofileMenuItem;
     private JMenuItem changeNormalOffsetMenuItem;
     private JMenuItem simulateLightingMenuItem;
@@ -133,6 +134,10 @@ public class ImagePopupMenu extends PopupMenu
         showFrustumMenuItem = new JCheckBoxMenuItem(new ShowFrustumAction());
         showFrustumMenuItem.setText("Show Frustum");
         this.add(showFrustumMenuItem);
+
+        exportENVIImageMenuItem = new JMenuItem(new ExportENVIImageAction()); // twupy1
+        exportENVIImageMenuItem.setText("Export ENVI Image...");
+        this.add(exportENVIImageMenuItem);
 
         exportInfofileMenuItem = new JCheckBoxMenuItem(new ExportInfofileAction());
         exportInfofileMenuItem.setText("Export INFO File...");
@@ -321,13 +326,13 @@ public class ImagePopupMenu extends PopupMenu
         changeNormalOffsetMenuItem.setEnabled(enableChangeNormalOffset);
         showFrustumMenuItem.setSelected(selectShowFrustum);
         showFrustumMenuItem.setEnabled(enableShowFrustum);
+        exportENVIImageMenuItem.setEnabled(enableSaveToDisk);
         simulateLightingMenuItem.setEnabled(enableSimulateLighting);
         changeOpacityMenuItem.setEnabled(enableChangeOpacity);
         hideImageMenuItem.setSelected(selectHideImage);
         hideImageMenuItem.setEnabled(enableHideImage);
         colorMenu.setEnabled(enableBoundaryColor);
     }
-
 
     public class MapImageAction extends AbstractAction
     {
@@ -618,6 +623,53 @@ public class ImagePopupMenu extends PopupMenu
         }
     }
 
+    private class ExportENVIImageAction extends AbstractAction
+    {
+        public void actionPerformed(ActionEvent e)
+        {
+            // Only works for a single image (for now)
+            if (imageKeys.size() != 1)
+                return;
+            ImageKey imageKey = imageKeys.get(0);
+
+            File file = null;
+            try
+            {
+                // Get the PerspectiveImage
+                imageCollection.addImage(imageKey);
+                PerspectiveImage image = (PerspectiveImage)imageCollection.getImage(imageKey);
+
+                // Default name
+                String fullPathName = image.getFitFileFullPath();
+                if (fullPathName == null)
+                    fullPathName = image.getPngFileFullPath();
+                String imageFileName = new File(fullPathName).getName();
+
+                String defaultFileName = null;
+                if (imageFileName != null)
+                    defaultFileName = imageFileName.substring(0, imageFileName.length()-4);
+
+                // Open save dialog
+                file = CustomFileChooser.showSaveDialog(invoker, "Export ENVI image as", defaultFileName + ".hdr", "hdr");
+                if (file != null)
+                {
+                    String filename = file.getAbsolutePath();
+                    image.exportAsEnvi(filename.substring(0, filename.length()-4), "bsq", true);
+                }
+            }
+            catch(Exception ex)
+            {
+                // Something went wrong during the file conversion/export process
+                // (after save dialog has returned)
+                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(invoker),
+                        "Unable to export ENVI image as " + file.getAbsolutePath(),
+                        "Error Exporting ENVI Image",
+                        JOptionPane.ERROR_MESSAGE);
+                ex.printStackTrace();
+            }
+        }
+    }
+
     private class ExportInfofileAction extends AbstractAction
     {
         public void actionPerformed(ActionEvent e)
@@ -659,9 +711,6 @@ public class ImagePopupMenu extends PopupMenu
             updateMenuItems();
         }
     }
-
-
-
 
     private class ChangeNormalOffsetAction extends AbstractAction
     {

@@ -32,7 +32,6 @@ import java.util.UUID;
 import javax.swing.BoundedRangeModel;
 import javax.swing.DefaultBoundedRangeModel;
 import javax.swing.DefaultListModel;
-import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -42,6 +41,8 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import nom.tam.fits.FitsException;
+
+import com.google.common.io.Files;
 
 import vtk.vtkActor;
 import vtk.vtkAlgorithmOutput;
@@ -64,11 +65,11 @@ import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.PerspectiveImage;
 import edu.jhuapl.near.model.PerspectiveImageBoundaryCollection;
-import edu.jhuapl.near.model.SmallBodyConfig.ImageType;
 import edu.jhuapl.near.model.custom.CustomShapeModel;
 import edu.jhuapl.near.pick.PickEvent;
 import edu.jhuapl.near.pick.PickManager;
 import edu.jhuapl.near.popupmenus.ImagePopupMenu;
+import edu.jhuapl.near.tools.VtkENVIReader;
 import edu.jhuapl.near.util.FileUtil;
 import edu.jhuapl.near.util.MapUtil;
 import edu.jhuapl.near.util.Properties;
@@ -89,11 +90,11 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
     private JPanel bandPanel;
     private JLabel bandValue;
     private JSlider monoSlider;
-    private JCheckBox defaultFrustum;
+//    private JCheckBox defaultFrustum;
     private BoundedRangeModel monoBoundedRangeModel;
 
-    private int nbands = 2;
-    private int currentSlice = 127;
+    private int nbands = 256;
+    private int currentSlice = 0;
 
     public int getCurrentSlice() { return currentSlice; }
 
@@ -219,14 +220,14 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
         monoSlider = new JSlider(monoBoundedRangeModel);
         monoSlider.addChangeListener(this);
 
-        defaultFrustum = new JCheckBox("Default Frame");
-        defaultFrustum.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                defaultFrustumActionPerformed(evt);
-            }
-        });
-
-        bandPanel.add(defaultFrustum);
+//        defaultFrustum = new JCheckBox("Default Frame");
+//        defaultFrustum.addActionListener(new java.awt.event.ActionListener() {
+//            public void actionPerformed(java.awt.event.ActionEvent evt) {
+//                defaultFrustumActionPerformed(evt);
+//            }
+//        });
+//
+//        bandPanel.add(defaultFrustum);
 
         panel.add(bandPanel, BorderLayout.NORTH);
         panel.add(monoSlider, BorderLayout.SOUTH);
@@ -234,22 +235,22 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
 
     private void defaultFrustumActionPerformed(java.awt.event.ActionEvent evt)
     {
-        ImageCollection images = (ImageCollection)getModelManager().getModel(getImageCollectionModelName());
-
-        Set<Image> imageSet = images.getImages();
-        for (Image i : imageSet)
-        {
-            PerspectiveImage image = (PerspectiveImage)i;
-            ImageKey key = image.getKey();
-            ImageType type = key.instrument.type;
-            if (type == ImageType.LEISA_JUPITER_IMAGE) // this should not be specific to a given image type, should it? -turnerj1
-            {
-                if (image instanceof PerspectiveImage)
-                {
-                   ((PerspectiveImage)image).setUseDefaultFootprint(defaultFrustum.isSelected());
-                }
-            }
-        }
+//        ImageCollection images = (ImageCollection)getModelManager().getModel(getImageCollectionModelName());
+//
+//        Set<Image> imageSet = images.getImages();
+//        for (Image i : imageSet)
+//        {
+//            PerspectiveImage image = (PerspectiveImage)i;
+//            ImageKey key = image.getKey();
+//            ImageType type = key.instrument.type;
+//            if (type == ImageType.LEISA_JUPITER_IMAGE) // this should not be specific to a given image type, should it? -turnerj1
+//            {
+//                if (image instanceof PerspectiveImage)
+//                {
+//                   ((PerspectiveImage)image).setUseDefaultFootprint(defaultFrustum.isSelected());
+//                }
+//            }
+//        }
     }//GEN-LAST:event_greenMonoCheckboxActionPerformed
 
     private void postInitComponents(ImagingInstrument instrument)
@@ -339,25 +340,57 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
     {
         String uuid = UUID.randomUUID().toString();
 
-        if (newImageInfo.projectionType == ProjectionType.CYLINDRICAL)
+        // If newImageInfo.imagefilename is null, that means we are in edit mode
+        // and should continue to use the existing image
+        if (newImageInfo.imagefilename == null)
         {
-            // If newImageInfo.imagefilename is null, that means we are in edit mode
-            // and should continue to use the existing image
-            if (newImageInfo.imagefilename == null)
+            newImageInfo.imagefilename = oldImageInfo.imagefilename;
+        }
+        else
+        {
+            // Check if this image is any of the supported formats
+            if(VtkENVIReader.isENVIFilename(newImageInfo.imagefilename)){
+                // We were given an ENVI file (binary or header)
+                // Can assume at this point that both binary + header files exist in the same directory
+
+                // Get filenames of the binary and header files
+                String enviBinaryFilename = VtkENVIReader.getBinaryFilename(newImageInfo.imagefilename);
+                String enviHeaderFilename = VtkENVIReader.getHeaderFilename(newImageInfo.imagefilename);
+
+                // Rename newImageInfo as that of the binary file
+                newImageInfo.imagefilename = "image-" + uuid;
+
+                // Copy over the binary file
+                Files.copy(new File(enviBinaryFilename),
+                        new File(getCustomDataFolder() + File.separator
+                                + newImageInfo.imagefilename));
+
+                // Copy over the header file
+                Files.copy(new File(enviHeaderFilename),
+                        new File(getCustomDataFolder() + File.separator
+                                + VtkENVIReader.getHeaderFilename(newImageInfo.imagefilename)));
+            }
+            else if(newImageInfo.imagefilename.endsWith(".fit") || newImageInfo.imagefilename.endsWith(".fits") ||
+                    newImageInfo.imagefilename.endsWith(".FIT") || newImageInfo.imagefilename.endsWith(".FITS"))
             {
-                newImageInfo.imagefilename = oldImageInfo.imagefilename;
+                // Copy FIT file to cache
+                String newFilename = "image-" + uuid + ".fit";
+                String newFilepath = getCustomDataFolder() + File.separator + newFilename;
+                FileUtil.copyFile(newImageInfo.imagefilename,  newFilepath);
+                // Change newImageInfo.imagefilename to the new location of the file
+                newImageInfo.imagefilename = newFilename;
             }
             else
             {
+                // Convert native VTK supported image to PNG and save to cache
                 vtkImageReader2Factory imageFactory = new vtkImageReader2Factory();
                 vtkImageReader2 imageReader = imageFactory.CreateImageReader2(newImageInfo.imagefilename);
                 if (imageReader == null)
                 {
                     JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
-                            "The format of the specified file is not supported.",
-                            "Error",
-                            JOptionPane.ERROR_MESSAGE);
-
+                        "The format of the specified file is not supported.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
                     return;
                 }
                 imageReader.SetFileName(newImageInfo.imagefilename);
@@ -373,26 +406,10 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
                 imageWriter.Write();
             }
         }
-        else if (newImageInfo.projectionType == ProjectionType.PERSPECTIVE)
-        {
-            // If newImageInfo.imagefilename is null, that means we are in edit mode
-            // and should continue to use the existing image
-            if (newImageInfo.imagefilename == null)
-            {
-                newImageInfo.imagefilename = oldImageInfo.imagefilename;
-            }
-            else
-            {
-                // We save out the image using a new name that makes use of a UUID
-//                String newFilename = "image-" + uuid + ".fit";
-                String suffix = newImageInfo.imagefilename.endsWith(".png") ? ".png" : ".fit";
-                String newFilename = "image-" + uuid + suffix;
-                String newFilepath = getCustomDataFolder() + File.separator + newFilename;
-                FileUtil.copyFile(newImageInfo.imagefilename, newFilepath);
-                // Change newImageInfo.imagefilename to the new location of the file
-                newImageInfo.imagefilename = newFilename;
-            }
 
+        // Operations specific for perspective projection type
+        if (newImageInfo.projectionType == ProjectionType.PERSPECTIVE)
+        {
             // If newImageInfo.sumfilename and infofilename are both null, that means we are in edit mode
             // and should continue to use the existing sumfile
             if (newImageInfo.sumfilename == null && newImageInfo.infofilename == null)
@@ -951,25 +968,29 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
         Set<Image> imageSet = images.getImages();
         for (Image i : imageSet)
         {
-            PerspectiveImage image = (PerspectiveImage)i;
-            ImageKey key = image.getKey();
-            ImageType type = key.instrument.type;
-//            String name = i.getImageName();
-//            Boolean isVisible = i.isVisible();
-//            System.out.println(name + ", " + type + ", " + isVisible);
-            if (type == ImageType.LEISA_JUPITER_IMAGE) // this should not be specific to a given image type, should it? -turnerj1
+            if (i instanceof PerspectiveImage)
             {
-                if (image.isVisible())
+                PerspectiveImage image = (PerspectiveImage)i;
+                ImageKey key = image.getKey();
+//                ImageType type = key.instrument.type;
+                String name = i.getImageName();
+                Boolean isVisible = i.isVisible();
+//                System.out.println(name + ", " + type + ", " + isVisible);
+//                System.out.println(name + ", " + isVisible);
+                if (image.getImageDepth() > 1)
                 {
-                   image.setCurrentSlice(currentSlice);
-//                   image.setDisplayedImageRange(image.getDisplayedRange());
-                   image.setDisplayedImageRange(null);
-                   if (!source.getValueIsAdjusting())
-                   {
-//                        System.out.println("Recalculate footprint...");
-                        image.loadFootprint();
-                        image.firePropertyChange();
-                   }
+                    if (image.isVisible())
+                    {
+                       image.setCurrentSlice(currentSlice);
+//                       image.setDisplayedImageRange(image.getDisplayedRange());
+                       image.setDisplayedImageRange(null);
+                       if (!source.getValueIsAdjusting())
+                       {
+//                            System.out.println("Recalculate footprint...");
+                            image.loadFootprint();
+                            image.firePropertyChange();
+                       }
+                    }
                 }
             }
         }

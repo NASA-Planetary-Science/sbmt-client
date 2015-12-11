@@ -790,15 +790,15 @@ public class SmallBodyConfig
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
                             SpectralMode.MONO,
-                            new GenericPhpQuery("/GASKELL/CERES/FC", "FCCeres"),
+                            new GenericPhpQuery("/GASKELL/CERES/FC", "Ceres"),
                             ImageType.FCCERES_IMAGE,
                             new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE},
                             Instrument.FC
                     )
             };
 
-            c.imageSearchDefaultStartDate = new GregorianCalendar(2011, 4, 3, 0, 0, 0).getTime();
-            c.imageSearchDefaultEndDate = new GregorianCalendar(2012, 7, 27, 0, 0, 0).getTime();
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2015, GregorianCalendar.APRIL, 1, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2015, GregorianCalendar.JULY, 1, 0, 0, 0).getTime();
             c.imageSearchFilterNames = new String[]{
                     "Filter 1 (735 nm)",
                     "Filter 2 (548 nm)",

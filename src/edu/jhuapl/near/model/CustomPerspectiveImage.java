@@ -7,6 +7,7 @@ import nom.tam.fits.FitsException;
 
 import vtk.vtkImageData;
 
+import edu.jhuapl.near.tools.VtkENVIReader;
 import edu.jhuapl.near.util.ImageDataUtil;
 import edu.jhuapl.near.util.MapUtil;
 
@@ -17,13 +18,26 @@ public class CustomPerspectiveImage extends PerspectiveImage
 
     private String imageName;
 
-    public CustomPerspectiveImage(ImageKey key, SmallBodyModel smallBodyModel,
-            boolean loadPointingOnly) throws FitsException,
-            IOException
+    public CustomPerspectiveImage(ImageKey key, SmallBodyModel smallBodyModel, boolean loadPointingOnly) throws FitsException, IOException
     {
         super(key, smallBodyModel, loadPointingOnly);
 
         loadImageInfoFromConfigFile();
+    }
+
+    protected void initialize() throws FitsException, IOException
+    {
+
+        super.initialize();
+
+        setUseDefaultFootprint(true);
+    }
+
+
+    @Override
+    protected int getNumberBands()
+    {
+        return imageDepth;
     }
 
     private void loadImageInfoFromConfigFile()
@@ -60,10 +74,14 @@ public class CustomPerspectiveImage extends PerspectiveImage
             // only rotate INFO files, not SUM files
             if (key.fileType == FileType.INFO)
             {
-                ImageDataUtil.rotateImage(rawImage, 270.0);
+                // Originally was just this one rotate 270 transformation
+                //ImageDataUtil.rotateImage(rawImage, 270.0);
+
+                // Commented out above and put this in instead to make perspective image
+                // work with ENVI files
+                ImageDataUtil.flipImageYAxis(rawImage);
             }
             else if (key.fileType == FileType.SUM)
-
             {
                 ImageDataUtil.flipImageXAxis(rawImage);
 //                ImageDataUtil.rotateImage(rawImage, 180.0);
@@ -86,7 +104,23 @@ public class CustomPerspectiveImage extends PerspectiveImage
     @Override
     protected String initializeFitFileFullPath()
     {
-        return getKey().name.endsWith(".png") ? null : getKey().name;
+        String keyName = getKey().name;
+        if(keyName.endsWith(".fit") || keyName.endsWith(".fits") ||
+                keyName.endsWith(".FIT") || keyName.endsWith(".FITS"))
+        {
+            // Allowed fit file extensions for getKey().name
+            return keyName;
+        }
+        else
+        {
+            return null;
+        }
+    }
+
+    @Override
+    protected String initializeEnviFileFullPath()
+    {
+        return VtkENVIReader.isENVIFilename(getKey().name) ? getKey().name : null;
     }
 
     @Override
@@ -141,4 +175,8 @@ public class CustomPerspectiveImage extends PerspectiveImage
     {
         return imageName;
     }
+
+//    public int getDefaultSlice() { return this.imageDepth > 1 ? 127 : 0; }
+//
+//    public boolean shiftBands() { return this.imageDepth > 1 ? true : false; }
 }
