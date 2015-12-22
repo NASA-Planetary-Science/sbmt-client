@@ -7,7 +7,7 @@
 ### December 7, 2015
 
 -   Fixed bug with Ceres genericPhpQuery
--   Changed Ceres FS search default start/end dates to April 2015 – July 2015, 
+-   Changed Ceres FS search default start/end dates to April 2015 - July 2015, 
     which covers the entire span of dates for available images
 -   Users can now export a mapped image as an ENVI file
 
