@@ -6,7 +6,7 @@
    PATH_SYMBOLS = ( 'PATH'
                     )
 
-KERNELS_TO_LOAD = ('$PATH/lsk/naif0010.tls'
+KERNELS_TO_LOAD = ('$PATH/lsk/naif0011.tls'
 
                    '$PATH/pck/pck00010.tpc'
                    '$PATH/pck/dawn_ceres_v04.tpc'
