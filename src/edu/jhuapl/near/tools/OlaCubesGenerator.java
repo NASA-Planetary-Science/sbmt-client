@@ -5,6 +5,7 @@ import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelAuthor;
 import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelBody;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.bennu.Bennu;
+import edu.jhuapl.near.util.Configuration;
 
 /**
  * This program goes through all the OLA data and divides all the data
@@ -19,6 +20,7 @@ public class OlaCubesGenerator extends LidarCubesGenerator
 
     public static void main(String[] args)
     {
+        Configuration.setAPLVersion(true);
         new OlaCubesGenerator().run();
     }
 
@@ -27,7 +29,7 @@ public class OlaCubesGenerator extends LidarCubesGenerator
     {
         if (bennu == null)
         {
-            bennu = new Bennu(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelAuthor.GASKELL));
+            bennu = new Bennu(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelAuthor.GASKELL, "V3 Image"));
         }
 
         return bennu;
@@ -48,13 +50,14 @@ public class OlaCubesGenerator extends LidarCubesGenerator
     @Override
     protected String getFileListPath()
     {
-        return "/project/nearsdc/data/GASKELL/RQ36_V3/OLA/allOlaFiles.txt";
+//        return "C:/Users/nguyel1/Projects/workspace/sbmt/src/edu/jhuapl/near/data/allOlaFiles.txt";
+        return "/project/sbmtpipeline/processed/osirisrex/OLA/allOlaFiles.txt";
     }
 
     @Override
     protected String getOutputFolderPath()
     {
-        return "/project/nearsdc/data/GASKELL/RQ36_V3/OLA/cubes";
+        return "/project/sbmtpipeline/processed/osirisrex/OLA/cubes";
     }
 
     @Override
