@@ -356,6 +356,7 @@ public class CylindricalImage extends Image
         vtkClipPolyData clipPolyData2 = new vtkClipPolyData();
         clipPolyData2.SetClipFunction(plane3);
         clipPolyData2.SetInputData(smallBodyPolyData);
+        clipPolyData2.Update();
         vtkAlgorithmOutput clipPolyData2Output = clipPolyData2.GetOutputPort();
 
 
@@ -370,6 +371,7 @@ public class CylindricalImage extends Image
         clipPolyData3.SetClipFunction(plane4);
         clipPolyData3.SetInputConnection(clipPolyData2Output);
         clipPolyData3.SetInsideOut(1);
+        clipPolyData3.Update();
 
         smallBodyPolyData = clipPolyData3.GetOutput();
 
@@ -404,6 +406,7 @@ public class CylindricalImage extends Image
         vtkClipPolyData clipPolyDataNorth = new vtkClipPolyData();
         clipPolyDataNorth.SetClipFunction(planeZeroLat);
         clipPolyDataNorth.SetInputData(smallBodyPolyData);
+        clipPolyDataNorth.Update();
         vtkAlgorithmOutput clipNorthOutput = clipPolyDataNorth.GetOutputPort();
         if (lllat > 0.0)
         {
@@ -415,6 +418,7 @@ public class CylindricalImage extends Image
             clipPolyDataNorth.SetClipFunction(cone);
             clipPolyDataNorth.SetInputConnection(clipNorthOutput);
             clipPolyDataNorth.SetInsideOut(1);
+            clipPolyDataNorth.Update();
             clipNorthOutput = clipPolyDataNorth.GetOutputPort();
         }
         if (urlat > 0.0)
@@ -426,6 +430,7 @@ public class CylindricalImage extends Image
             clipPolyDataNorth = new vtkClipPolyData();
             clipPolyDataNorth.SetClipFunction(cone);
             clipPolyDataNorth.SetInputConnection(clipNorthOutput);
+            clipPolyDataNorth.Update();
             clipNorthOutput = clipPolyDataNorth.GetOutputPort();
         }
 
@@ -434,6 +439,7 @@ public class CylindricalImage extends Image
         clipPolyDataSouth.SetClipFunction(planeZeroLat);
         clipPolyDataSouth.SetInputData(smallBodyPolyData);
         clipPolyDataSouth.SetInsideOut(1);
+        clipPolyDataSouth.Update();
         vtkAlgorithmOutput clipSouthOutput = clipPolyDataSouth.GetOutputPort();
         if (lllat < 0.0)
         {
@@ -444,6 +450,7 @@ public class CylindricalImage extends Image
             clipPolyDataSouth = new vtkClipPolyData();
             clipPolyDataSouth.SetClipFunction(cone);
             clipPolyDataSouth.SetInputConnection(clipSouthOutput);
+            clipPolyDataSouth.Update();
             clipSouthOutput = clipPolyDataSouth.GetOutputPort();
         }
         if (urlat < 0.0)
@@ -456,6 +463,7 @@ public class CylindricalImage extends Image
             clipPolyDataSouth.SetClipFunction(cone);
             clipPolyDataSouth.SetInputConnection(clipSouthOutput);
             clipPolyDataSouth.SetInsideOut(1);
+            clipPolyDataSouth.Update();
             clipSouthOutput = clipPolyDataSouth.GetOutputPort();
         }
 
@@ -466,6 +474,7 @@ public class CylindricalImage extends Image
         if (lllat < 0.0)
             appendFilter.AddInputConnection(clipSouthOutput);
 
+        appendFilter.Update();
         smallBodyPolyData = appendFilter.GetOutput();
 
         return smallBodyPolyData;
@@ -485,16 +494,13 @@ public class CylindricalImage extends Image
 
         // If the texture does not cover the entire model, then clip out the part
         // that it does cover.
-        /*if (lllat != -90.0 || lllon != 0.0 || urlat != 90.0 || urlon != 360.0)
+        if (lllat != -90.0 || lllon != 0.0 || urlat != 90.0 || urlon != 360.0)
         {
             if (smallBodyModel.isEllipsoid())
                 smallBodyPolyData = clipOutTextureLatitudeEllipsoid(smallBodyPolyData);
             else
                 smallBodyPolyData = clipOutTextureLatitudeGeneral(smallBodyPolyData);
-        }*/
-        // Lines 488-494 commented out by Philip Twu as a temporary bug fix.
-        // Now at least longitude clipping works.  Without this fix, any kind of clipping
-        // causes image to not map onto body at all.  Need to further investigate this.
+        }
 
         smallBodyPolyData = clipOutTextureLongitudeAndGenerateTextureCoordinates(smallBodyPolyData);
 
