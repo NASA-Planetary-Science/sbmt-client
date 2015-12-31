@@ -10,8 +10,6 @@
  */
 package edu.jhuapl.near.gui;
 
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -30,7 +28,6 @@ import java.util.Set;
 import java.util.UUID;
 
 import javax.swing.BoundedRangeModel;
-import javax.swing.DefaultBoundedRangeModel;
 import javax.swing.DefaultListModel;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -209,28 +206,28 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
 
     protected void populateMonochromePanel(JPanel panel)
     {
-        panel.setLayout(new BorderLayout());
-        bandPanel = new JPanel(new FlowLayout(FlowLayout.LEADING));
-        bandPanel.add(new JLabel("Band:"));
-        int midband = nbands / 2;
-        String midbandString = Integer.toString(midband);
-        bandValue = new JLabel(midbandString);
-        bandPanel.add(bandValue);
-        monoBoundedRangeModel = new DefaultBoundedRangeModel(midband, 0, 0, nbands-1);
-        monoSlider = new JSlider(monoBoundedRangeModel);
-        monoSlider.addChangeListener(this);
-
-//        defaultFrustum = new JCheckBox("Default Frame");
-//        defaultFrustum.addActionListener(new java.awt.event.ActionListener() {
-//            public void actionPerformed(java.awt.event.ActionEvent evt) {
-//                defaultFrustumActionPerformed(evt);
-//            }
-//        });
+//        panel.setLayout(new BorderLayout());
+//        bandPanel = new JPanel(new FlowLayout(FlowLayout.LEADING));
+//        bandPanel.add(new JLabel("Band:"));
+//        int midband = nbands / 2;
+//        String midbandString = Integer.toString(midband);
+//        bandValue = new JLabel(midbandString);
+//        bandPanel.add(bandValue);
+//        monoBoundedRangeModel = new DefaultBoundedRangeModel(midband, 0, 0, nbands-1);
+//        monoSlider = new JSlider(monoBoundedRangeModel);
+//        monoSlider.addChangeListener(this);
 //
-//        bandPanel.add(defaultFrustum);
-
-        panel.add(bandPanel, BorderLayout.NORTH);
-        panel.add(monoSlider, BorderLayout.SOUTH);
+////        defaultFrustum = new JCheckBox("Default Frame");
+////        defaultFrustum.addActionListener(new java.awt.event.ActionListener() {
+////            public void actionPerformed(java.awt.event.ActionEvent evt) {
+////                defaultFrustumActionPerformed(evt);
+////            }
+////        });
+////
+////        bandPanel.add(defaultFrustum);
+//
+//        panel.add(bandPanel, BorderLayout.NORTH);
+//        panel.add(monoSlider, BorderLayout.SOUTH);
     }
 
     private void defaultFrustumActionPerformed(java.awt.event.ActionEvent evt)

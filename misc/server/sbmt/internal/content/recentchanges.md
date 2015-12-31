@@ -7,7 +7,6 @@
 ### December 31, 2015
 
 -   Full fix of clipping bug in imported cylindrical images
--   Added OLA tab to Bennu V3 body
 
 ### December 7, 2015
 
