@@ -1,5 +1,6 @@
 package edu.jhuapl.near.tools;
 
+import edu.jhuapl.near.model.LidarSearchDataCollection.TrackFileType;
 import edu.jhuapl.near.model.SmallBodyConfig;
 import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelAuthor;
 import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelBody;
@@ -17,6 +18,7 @@ import edu.jhuapl.near.util.Configuration;
 public class OlaCubesGenerator extends LidarCubesGenerator
 {
     private static Bennu bennu = null;
+    public static TrackFileType type = TrackFileType.OLA_LEVEL_2;
 
     public static void main(String[] args)
     {
@@ -50,14 +52,19 @@ public class OlaCubesGenerator extends LidarCubesGenerator
     @Override
     protected String getFileListPath()
     {
+//        //Use this to run locally in Eclipse:
 //        return "C:/Users/nguyel1/Projects/workspace/sbmt/src/edu/jhuapl/near/data/allOlaFiles.txt";
+        //To run on DMZ:
         return "/project/sbmtpipeline/processed/osirisrex/OLA/allOlaFiles.txt";
     }
 
     @Override
     protected String getOutputFolderPath()
     {
-        return "/project/sbmtpipeline/processed/osirisrex/OLA/cubes";
+//        //Use this to run locally in Eclipse:
+//        return "C:/Users/nguyel1/Projects/workspace/sbmt/src/edu/jhuapl/near/data/OLA";
+        //To run on DMZ:
+        return "/project/sbmtpipeline/processed/osirisrex/OLA";
     }
 
     @Override
@@ -94,5 +101,11 @@ public class OlaCubesGenerator extends LidarCubesGenerator
     protected int getPotentialIndex()
     {
         return -1;
+    }
+
+    @Override
+    protected LidarDataType getLidarDataType()
+    {
+        return LidarDataType.OLA_LEVEL_2;
     }
 }

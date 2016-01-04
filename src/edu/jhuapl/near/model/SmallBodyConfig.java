@@ -1419,13 +1419,13 @@ public class SmallBodyConfig
             c.lidarSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDataSourceMap = new LinkedHashMap<String, String>();
-            c.lidarSearchDataSourceMap.put("Default", "/GASKELL/RQ36/OLA/cubes");
+            c.lidarSearchDataSourceMap.put("Default", "/GASKELL/RQ36_V3/OLA/cubes");
             c.lidarBrowseXYZIndices = new int[]{96, 104, 112};
             c.lidarBrowseSpacecraftIndices = new int[]{144, 152, 160};
             c.lidarBrowseIsSpacecraftInSphericalCoordinates = false;
             c.lidarBrowseTimeIndex = 18;
             c.lidarBrowseNoiseIndex = -1;
-            c.lidarBrowseFileListResourcePath = "/edu/jhuapl/near/data/OlaLidarFiles.txt";
+            c.lidarBrowseFileListResourcePath = "allOlaFiles.txt";
             c.lidarBrowseNumberHeaderLines = 0;
             c.lidarBrowseIsInMeters = true;
             c.lidarBrowseIsBinary = true;
