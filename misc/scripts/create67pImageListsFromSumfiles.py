@@ -49,7 +49,8 @@ generalQueryFile = open('imagelist-fullpath.txt', 'w')
 for f in files:
 
     # Skip files that start w. ge for some reason, all the other imagelists do it too
-    if f.startswith('ge'):
+    basename = os.path.basename(f)
+    if basename.startswith('ge') or basename.startswith('GE'):
         continue
 
     # Read and split first three lines of the SUM file
@@ -58,8 +59,8 @@ for f in files:
     secondLine = fin.readline().split()
     thirdLine = fin.readline().split()
 
-    # Only do it for images of size 2048x2048
-    if thirdLine[0] != '2048' or thirdLine[1] != '2048':
+    # Only do for images of size 512x512, 1024x1024, or 2048x2048
+    if not(thirdLine[0] == '512' and thirdLine[1] == '512') and not(thirdLine[0] == '1024' and thirdLine[1] == '1024') and not(thirdLine[0] == '2048' and thirdLine[1] == '2048'):
         continue
 
     # Convert month label
