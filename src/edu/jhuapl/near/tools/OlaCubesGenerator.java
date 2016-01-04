@@ -64,7 +64,7 @@ public class OlaCubesGenerator extends LidarCubesGenerator
 //        //Use this to run locally in Eclipse:
 //        return "C:/Users/nguyel1/Projects/workspace/sbmt/src/edu/jhuapl/near/data/OLA";
         //To run on DMZ:
-        return "/project/sbmtpipeline/processed/osirisrex/OLA";
+        return "/project/sbmtpipeline/processed/osirisrex/OLA/cubes";
     }
 
     @Override
