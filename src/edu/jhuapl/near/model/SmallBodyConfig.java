@@ -1415,7 +1415,7 @@ public class SmallBodyConfig
                             Instrument.MAPCAM
                             )
             };
-            c.hasLidarData = true;
+            c.hasLidarData = false;
             c.lidarSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDataSourceMap = new LinkedHashMap<String, String>();
