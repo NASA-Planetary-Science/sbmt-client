@@ -9,8 +9,11 @@ import edu.jhuapl.near.model.bennu.Bennu;
 import edu.jhuapl.near.util.Configuration;
 
 /**
- * This program goes through all the OLA data and divides all the data
- * up into cubes and saves each cube to a separate file.
+ * This program goes through all the OLA L2 data and divides the data
+ * up into cubes and saves each cube to a separate file. The L2 file
+ * format can be found in
+ * /altwg/java-tools/src/altwg/util/LidarPoint.java and/or
+ * LidarSearchDataCollection.loadTrackOlaL2()
  *
  * This program also can generate a single vtk file containing all
  * the OLA data (see comments in code).
@@ -19,6 +22,8 @@ public class OlaCubesGenerator extends LidarCubesGenerator
 {
     private static Bennu bennu = null;
     public static TrackFileType type = TrackFileType.OLA_LEVEL_2;
+    public static int[] xyzIndices = new int[]{114, 114+8, 114+16};
+    public static int[] scIndices = new int[]{162, 162+8, 162+16};
 
     public static void main(String[] args)
     {
@@ -40,13 +45,13 @@ public class OlaCubesGenerator extends LidarCubesGenerator
     @Override
     protected int[] getXYZIndices()
     {
-        return new int[]{96, 104, 112};
+        return xyzIndices;
     }
 
     @Override
     protected int[] getSpacecraftIndices()
     {
-        return new int[]{144, 152, 160};
+        return scIndices;
     }
 
     @Override

@@ -119,9 +119,6 @@ abstract public class LidarCubesGenerator
                     System.err.println("Processing file " + filename);
                     DataInputStream in = new DataInputStream(new BufferedInputStream(new FileInputStream(new File(filename))));
 
-    //                Track track = new Track();
-    //                track.startId = originalPoints.size();
-
                     while (true)
                     {
                         double time = 0;

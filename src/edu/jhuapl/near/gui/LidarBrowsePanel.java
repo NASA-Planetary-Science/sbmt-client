@@ -6,6 +6,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -94,10 +95,19 @@ public class LidarBrowsePanel extends JPanel implements ListSelectionListener
 
         lidarResultListModel = new DefaultListModel();
 
-        ArrayList<LidarDataFileSpec> lidarPaths = lidarModel.getAllLidarPaths();
-        for (LidarDataFileSpec spec : lidarPaths)
+        ArrayList<LidarDataFileSpec> lidarPaths;
+        try
         {
-            lidarResultListModel.addElement(spec);
+            lidarPaths = lidarModel.getAllLidarPaths();
+            for (LidarDataFileSpec spec : lidarPaths)
+            {
+                lidarResultListModel.addElement(spec);
+            }
+        }
+        catch (FileNotFoundException e2)
+        {
+            // TODO Auto-generated catch block
+            e2.printStackTrace();
         }
 
         //Create the list and put it in a scroll pane.
