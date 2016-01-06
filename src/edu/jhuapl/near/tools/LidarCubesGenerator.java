@@ -20,6 +20,7 @@ import edu.jhuapl.near.util.FileUtil;
 import edu.jhuapl.near.util.LatLon;
 import edu.jhuapl.near.util.MathUtil;
 import edu.jhuapl.near.util.NativeLibraryLoader;
+import edu.jhuapl.near.util.TimeUtil;
 
 /**
  * This program goes through all the lidar data and divides all the data
@@ -176,10 +177,10 @@ abstract public class LidarCubesGenerator
                                 BufferedWriter out = new BufferedWriter(fstream);
 
                                 String record =
-                                        time + " " +
-                                    (float)target[0] + " " + (float)target[1] + " " + (float)target[2] + " " +
-                                    (float)scpos[0] + " " + (float)scpos[1] + " " + (float)scpos[1] + " " +
-                                    (float)potential + "\n";
+                                        TimeUtil.et2str(time) + " " +
+                                    (double)target[0] + " " + (double)target[1] + " " + (double)target[2] + " " +
+                                    (double)scpos[0] + " " + (double)scpos[1] + " " + (double)scpos[1] + " " +
+                                    (double)potential + "\n";
 
                                 out.write(record);
 
