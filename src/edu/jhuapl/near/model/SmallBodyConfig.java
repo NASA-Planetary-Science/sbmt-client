@@ -11,6 +11,7 @@ import edu.jhuapl.near.model.Image.ImagingInstrument;
 import edu.jhuapl.near.model.Image.SpectralMode;
 import edu.jhuapl.near.query.FixedListQuery;
 import edu.jhuapl.near.query.GenericPhpQuery;
+import edu.jhuapl.near.tools.OlaCubesGenerator;
 import edu.jhuapl.near.util.Configuration;
 
 /**
@@ -1419,17 +1420,17 @@ public class SmallBodyConfig
             c.lidarSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDataSourceMap = new LinkedHashMap<String, String>();
-            c.lidarSearchDataSourceMap.put("Default", "/GASKELL/RQ36/OLA/cubes");
-            c.lidarBrowseXYZIndices = new int[]{96, 104, 112};
-            c.lidarBrowseSpacecraftIndices = new int[]{144, 152, 160};
+            c.lidarSearchDataSourceMap.put("Default", "/GASKELL/RQ36_V3/OLA/cubes");
+            c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
+            c.lidarBrowseSpacecraftIndices = OlaCubesGenerator.scIndices;
             c.lidarBrowseIsSpacecraftInSphericalCoordinates = false;
-            c.lidarBrowseTimeIndex = 18;
-            c.lidarBrowseNoiseIndex = -1;
-            c.lidarBrowseFileListResourcePath = "/edu/jhuapl/near/data/OlaLidarFiles.txt";
+            c.lidarBrowseTimeIndex = 26;
+            c.lidarBrowseNoiseIndex = 62;
+            c.lidarBrowseFileListResourcePath = "/GASKELL/RQ36_V3/OLA/allOlaFiles.txt";
             c.lidarBrowseNumberHeaderLines = 0;
             c.lidarBrowseIsInMeters = true;
             c.lidarBrowseIsBinary = true;
-            c.lidarBrowseBinaryRecordSize = 168;
+            c.lidarBrowseBinaryRecordSize = 186;
             c.lidarOffsetScale = 0.0005;
             c.lidarInstrumentName = Instrument.OLA;
             configArray.add(c);

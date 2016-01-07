@@ -13,7 +13,7 @@ public class Bennu extends SmallBodyModel
     };
 
     static private final String[] modelFiles = {
-            "/edu/jhuapl/near/data/ver64q.vtk",
+            "/GASKELL/RQ36_V3/ver64q.vtk",
             "/GASKELL/RQ36_V3/ver128q.vtk.gz",
             "/GASKELL/RQ36_V3/ver256q.vtk.gz",
             "/GASKELL/RQ36_V3/ver512q.vtk.gz"
@@ -50,7 +50,7 @@ public class Bennu extends SmallBodyModel
                 null,
                 imageMap,
                 ColoringValueType.CELLDATA,
-                true);
+                false);
     }
 
 

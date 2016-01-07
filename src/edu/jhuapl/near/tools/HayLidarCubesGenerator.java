@@ -112,4 +112,11 @@ public class HayLidarCubesGenerator extends LidarCubesGenerator
     {
         return -1;
     }
+
+    @Override
+    protected LidarDataType getLidarDataType()
+    {
+        return LidarDataType.OTHER;
+    }
+
 }

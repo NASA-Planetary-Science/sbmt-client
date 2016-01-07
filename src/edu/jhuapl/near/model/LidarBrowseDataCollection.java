@@ -4,6 +4,8 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -13,6 +15,7 @@ import java.util.HashMap;
 import vtk.vtkActor;
 import vtk.vtkProp;
 
+import edu.jhuapl.near.util.FileCache;
 import edu.jhuapl.near.util.Properties;
 
 public class LidarBrowseDataCollection extends Model implements PropertyChangeListener
@@ -121,11 +124,19 @@ public class LidarBrowseDataCollection extends Model implements PropertyChangeLi
         return fileToLidarPerUnitMap.containsKey(file);
     }
 
-    public ArrayList<LidarDataFileSpec> getAllLidarPaths()
+    public ArrayList<LidarDataFileSpec> getAllLidarPaths() throws FileNotFoundException
     {
         ArrayList<LidarDataFileSpec> lidarSpecs = new ArrayList<LidarDataFileSpec>();
 
-        InputStream is = getClass().getResourceAsStream(smallBodyConfig.lidarBrowseFileListResourcePath);
+        InputStream is;
+        if (smallBodyConfig.lidarBrowseFileListResourcePath.startsWith("/edu"))
+        {
+            is = getClass().getResourceAsStream(smallBodyConfig.lidarBrowseFileListResourcePath);
+        }
+        else
+        {
+            is = new FileInputStream(FileCache.getFileFromServer(smallBodyConfig.lidarBrowseFileListResourcePath));
+        }
         InputStreamReader isr = new InputStreamReader(is);
         BufferedReader in = new BufferedReader(isr);
 
@@ -136,8 +147,16 @@ public class LidarBrowseDataCollection extends Model implements PropertyChangeLi
             {
                 LidarDataFileSpec lidarSpec = new LidarDataFileSpec();
                 int indexFirstSpace = line.indexOf(' ');
-                lidarSpec.path = line.substring(0,indexFirstSpace);
-                lidarSpec.comment = line.substring(indexFirstSpace+1);
+                if (indexFirstSpace == -1)
+                {
+                    lidarSpec.path = line;
+                    lidarSpec.comment = "";
+                }
+                else
+                {
+                    lidarSpec.path = line.substring(0,indexFirstSpace);
+                    lidarSpec.comment = line.substring(indexFirstSpace+1);
+                }
                 lidarSpec.name = new File(lidarSpec.path).getName();
                 if (lidarSpec.name.toLowerCase().endsWith(".gz"))
                     lidarSpec.name = lidarSpec.name.substring(0, lidarSpec.name.length()-3);

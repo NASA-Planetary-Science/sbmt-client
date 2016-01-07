@@ -92,4 +92,10 @@ public class NLRCubesGenerator extends LidarCubesGenerator
     {
         return 18;
     }
+
+    @Override
+    protected LidarDataType getLidarDataType()
+    {
+        return LidarDataType.OTHER;
+    }
 }
