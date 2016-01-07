@@ -148,24 +148,24 @@ public class DatabaseGeneratorSql
                 "insert into " + cubesTableName + " values (?, ?, ?)");
 
         int count = 0;
-        ArrayList<ArrayList<Object>> queryResult;
-
-        // Search table for next consecutive key to use, if no entries exist then start at 0
         int primaryKey = 0;
-        queryResult = db.query("SELECT MAX(id) FROM `" + tableName + "`");
-        if(queryResult != null && !queryResult.isEmpty() &&
-                queryResult.get(0) != null && !queryResult.get(0).isEmpty() &&
-                queryResult.get(0).get(0) != null){
-            primaryKey = (int)queryResult.get(0).get(0) + 1;
-        }
-
-        // Search cube table for next consecutive cube key to use, if no entries exist then start at 0
         int cubeTablePrimaryKey = 0;
-        queryResult = db.query("SELECT MAX(id) FROM `" + cubesTableName + "`");
-        if(queryResult != null && !queryResult.isEmpty() &&
-                queryResult.get(0) != null && !queryResult.get(0).isEmpty() &&
-                queryResult.get(0).get(0) != null){
-            cubeTablePrimaryKey = (int)queryResult.get(0).get(0) + 1;
+
+        // If appending, search table for next consecutive key to use, if no entries exist then start at 0
+        ArrayList<ArrayList<Object>> queryResult;
+        if(appendTables){
+            queryResult = db.query("SELECT MAX(id) FROM `" + tableName + "`");
+            if(queryResult != null && !queryResult.isEmpty() &&
+                    queryResult.get(0) != null && !queryResult.get(0).isEmpty() &&
+                    queryResult.get(0).get(0) != null){
+                primaryKey = (int)queryResult.get(0).get(0) + 1;
+            }
+            queryResult = db.query("SELECT MAX(id) FROM `" + cubesTableName + "`");
+            if(queryResult != null && !queryResult.isEmpty() &&
+                    queryResult.get(0) != null && !queryResult.get(0).isEmpty() &&
+                    queryResult.get(0).get(0) != null){
+                cubeTablePrimaryKey = (int)queryResult.get(0).get(0) + 1;
+            }
         }
 
         for (String filename : imageFiles)
@@ -173,14 +173,17 @@ public class DatabaseGeneratorSql
             // Increment image count (for status message purposes only)
             count++;
 
-            // If there is already an entry then skip this file
-            queryResult = db.query("SELECT * FROM `" + tableName + "` WHERE `filename` = \"" +
+            // If appending and there is already an entry for the filename then skip
+            if(appendTables){
+                queryResult = db.query("SELECT * FROM `" + tableName + "` WHERE `filename` = \"" +
                     new File(filename).getName() + "\"");
-            if(queryResult != null && !queryResult.isEmpty() &&
+                if(queryResult != null && !queryResult.isEmpty() &&
                     queryResult.get(0) != null && !queryResult.get(0).isEmpty() &&
                     queryResult.get(0).get(0) != null){
-                System.out.println("\n\nskipping image " + count + "  " + filename + ", already in table");
-                continue;
+
+                    System.out.println("\n\nskipping image " + count + "  " + filename + ", already in table");
+                    continue;
+                }
             }
 
             // If we got to this point, the image is not already in the table so we need to create a new entry
