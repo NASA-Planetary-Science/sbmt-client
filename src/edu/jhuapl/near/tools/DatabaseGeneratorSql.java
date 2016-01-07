@@ -35,51 +35,58 @@ public class DatabaseGeneratorSql
     private SmallBodyConfig smallBodyConfig;
     private String betaSuffix = "_beta";
     private String databasePrefix;
+    private boolean appendTables;
+    private boolean modifyMain;
 
 
-    public DatabaseGeneratorSql(SmallBodyConfig smallBodyConfig, String databasePrefix)
+    public DatabaseGeneratorSql(SmallBodyConfig smallBodyConfig, String databasePrefix, boolean appendTables, boolean modifyMain)
     {
         this.smallBodyConfig = smallBodyConfig;
         this.databasePrefix = databasePrefix;
+        this.appendTables = appendTables;
+        this.modifyMain = modifyMain;
     }
 
     private void createTables(String tableName)
     {
-        System.out.println("creating table " + tableName);
         try {
-
-            //make a table
-            try
-            {
-                db.dropTable(tableName);
+            // Check to see if we should append to existing or not
+            if(!appendTables){
+                // Not appending, drop existing (if applicable) table first
+                try
+                {
+                    db.dropTable(tableName);
+                }
+                catch(Exception e)
+                {
+                    e.printStackTrace();
+                }
             }
-            catch(Exception e)
-            {
-                e.printStackTrace();
-            }
 
+            // Then create a new table if one does not already exist
             db.update(
-                    "create table " + tableName + "(" +
-                    "id int PRIMARY KEY, " +
-                    "filename char(128), " +
-                    "starttime bigint, " +
-                    "stoptime bigint, " +
-                    "filter tinyint, " +
-                    "camera tinyint, " +
-                    "target_center_distance double," +
-                    "min_horizontal_pixel_scale double," +
-                    "max_horizontal_pixel_scale double," +
-                    "min_vertical_pixel_scale double," +
-                    "max_vertical_pixel_scale double," +
-                    "has_limb boolean," +
-                    "minincidence double," +
-                    "maxincidence double," +
-                    "minemission double," +
-                    "maxemission double," +
-                    "minphase double," +
-                    "maxphase double" +
-                    ")"
-                );
+                "CREATE TABLE IF NOT EXISTS " + tableName + "(" +
+                "id int PRIMARY KEY, " +
+                "filename char(128), " +
+                "starttime bigint, " +
+                "stoptime bigint, " +
+                "filter tinyint, " +
+                "camera tinyint, " +
+                "target_center_distance double," +
+                "min_horizontal_pixel_scale double," +
+                "max_horizontal_pixel_scale double," +
+                "min_vertical_pixel_scale double," +
+                "max_vertical_pixel_scale double," +
+                "has_limb boolean," +
+                "minincidence double," +
+                "maxincidence double," +
+                "minemission double," +
+                "maxemission double," +
+                "minphase double," +
+                "maxphase double" +
+                ")"
+            );
+
         } catch (SQLException ex2) {
 
             //ignore
@@ -94,23 +101,27 @@ public class DatabaseGeneratorSql
     private void createTablesCubes(String tableName)
     {
         try {
-
-            //make a table
-            try
-            {
-                db.dropTable(tableName);
+            // Check to see if we should append to existing or not
+            if(!appendTables){
+                // Not appending, drop existing (if applicable) table first
+                try
+                {
+                    db.dropTable(tableName);
+                }
+                catch(Exception e)
+                {
+                    e.printStackTrace();
+                }
             }
-            catch(Exception e)
-            {
-                e.printStackTrace();
-            }
 
+            // Then create a new table if one does not already exist
             db.update(
-                    "create table " + tableName + "(" +
-                    "id int PRIMARY KEY, " +
-                    "imageid int, " +
-                    "cubeid int)"
-                );
+                "CREATE TABLE IF NOT EXISTS " + tableName + "(" +
+                "id int PRIMARY KEY, " +
+                "imageid int, " +
+                "cubeid int)"
+            );
+
         } catch (SQLException ex2) {
 
             //ignore
@@ -137,13 +148,43 @@ public class DatabaseGeneratorSql
                 "insert into " + cubesTableName + " values (?, ?, ?)");
 
         int count = 0;
-        int cubeTablePrimaryKey = 0;
+        ArrayList<ArrayList<Object>> queryResult;
+
+        // Search table for next consecutive key to use, if no entries exist then start at 0
         int primaryKey = 0;
+        queryResult = db.query("SELECT MAX(id) FROM `" + tableName + "`");
+        if(queryResult != null && !queryResult.isEmpty() &&
+                queryResult.get(0) != null && !queryResult.get(0).isEmpty() &&
+                queryResult.get(0).get(0) != null){
+            primaryKey = (int)queryResult.get(0).get(0) + 1;
+        }
+
+        // Search cube table for next consecutive cube key to use, if no entries exist then start at 0
+        int cubeTablePrimaryKey = 0;
+        queryResult = db.query("SELECT MAX(id) FROM `" + cubesTableName + "`");
+        if(queryResult != null && !queryResult.isEmpty() &&
+                queryResult.get(0) != null && !queryResult.get(0).isEmpty() &&
+                queryResult.get(0).get(0) != null){
+            cubeTablePrimaryKey = (int)queryResult.get(0).get(0) + 1;
+        }
 
         for (String filename : imageFiles)
         {
+            // Increment image count (for status message purposes only)
+            count++;
 
-            System.out.println("\n\nstarting image " + count++ + "  " + filename);
+            // If there is already an entry then skip this file
+            queryResult = db.query("SELECT * FROM `" + tableName + "` WHERE `filename` = \"" +
+                    new File(filename).getName() + "\"");
+            if(queryResult != null && !queryResult.isEmpty() &&
+                    queryResult.get(0) != null && !queryResult.get(0).isEmpty() &&
+                    queryResult.get(0).get(0) != null){
+                System.out.println("\n\nskipping image " + count + "  " + filename + ", already in table");
+                continue;
+            }
+
+            // If we got to this point, the image is not already in the table so we need to create a new entry
+            System.out.println("\n\nstarting image " + count + "  " + filename);
 
             String keyName = filename;
             keyName = keyName.replace(".FIT", "");
@@ -157,7 +198,7 @@ public class DatabaseGeneratorSql
                 boolean filesExist = checkIfAllFilesExist(image, imageSource);
                 if (filesExist == false)
                 {
-                    System.out.println("file not fount, skipping image " + filename);
+                    System.out.println("file not found, skipping image " + filename);
                     image.Delete();
                     System.gc();
                     System.out.println("deleted " + vtkObject.JAVA_OBJECT_MANAGER.gc(true));
@@ -306,22 +347,38 @@ public class DatabaseGeneratorSql
 
     String getImagesGaskellTableNames()
     {
-        return databasePrefix.toLowerCase() + "images_gaskell" + betaSuffix;
+        if(modifyMain){
+            return databasePrefix.toLowerCase() + "images_gaskell";
+        }else{
+            return databasePrefix.toLowerCase() + "images_gaskell" + betaSuffix;
+        }
     }
 
     String getCubesGaskellTableNames()
     {
-        return databasePrefix.toLowerCase() + "cubes_gaskell" + betaSuffix;
+        if(modifyMain){
+            return databasePrefix.toLowerCase() + "cubes_gaskell";
+        }else{
+            return databasePrefix.toLowerCase() + "cubes_gaskell" + betaSuffix;
+        }
     }
 
     String getImagesPdsTableNames()
     {
-        return databasePrefix.toLowerCase() + "images_pds" + betaSuffix;
+        if(modifyMain){
+            return databasePrefix.toLowerCase() + "images_pds";
+        }else{
+            return databasePrefix.toLowerCase() + "images_pds" + betaSuffix;
+        }
     }
 
     String getCubesPdsTableNames()
     {
-        return databasePrefix.toLowerCase() + "cubes_pds" + betaSuffix;
+        if(modifyMain){
+            return databasePrefix.toLowerCase() + "cubes_pds";
+        }else{
+            return databasePrefix.toLowerCase() + "cubes_pds" + betaSuffix;
+        }
     }
 
     public void run(String fileList, int mode) throws IOException
@@ -455,8 +512,15 @@ public class DatabaseGeneratorSql
                 + "  <shapemodel>\n"
                 + "          shape model to process. Must be one of the values in the RunInfo enumeration\n"
                 + "          such as EROS or ITOKAWA. If ALL is specified then the entire database is\n"
-                + "          regenerated\n"
+                + "          regenerated.\n"
                 + "Options:\n"
+                + "  --append-tables\n"
+                + "          If specified, will check to see if database tables of the shape+mode already\n"
+                + "          exist, create one if necessary, and append entries to that table as opposed\n"
+                + "          to deleting existing tables and creating a new one from scratch.\n"
+                + "  --modify-main\n"
+                + "          If specified, will modify main tables directly instead of those with the\n"
+                + "          _beta suffix.  Be very careful when enabling this option.\n"
                 + "  --root-url <url>\n"
                 + "          Root URL from which to get data from. Should begin with file:// to load\n"
                 + "          data directly from file system rather than web server. Default value\n"
@@ -474,13 +538,22 @@ public class DatabaseGeneratorSql
         System.setProperty("java.awt.headless", "true");
         Configuration.setAPLVersion(true);
         String rootURL = "file:///disks/d0180/htdocs-sbmt/internal/sbmt";
+        boolean appendTables = false;
+        boolean modifyMain = false;
 
         int i = 0;
         for (; i < args.length; ++i) {
             if (args[i].equals("--root-url")) {
                 rootURL = args[++i];
             }
+            else if (args[i].equals("--append-tables")){
+                appendTables = true;
+            }
+            else if (args[i].equals("--modify-main")){
+                modifyMain = true;
+            }
             else {
+                // We've encountered something that is not an option, must be at the args
                 break;
             }
         }
@@ -505,7 +578,7 @@ public class DatabaseGeneratorSql
 
         for (RunInfo ri : runInfos)
         {
-            DatabaseGeneratorSql generator = new DatabaseGeneratorSql(ri.config, ri.databasePrefix);
+            DatabaseGeneratorSql generator = new DatabaseGeneratorSql(ri.config, ri.databasePrefix, appendTables, modifyMain);
             generator.run(ri.pathToFileList, mode);
         }
     }
