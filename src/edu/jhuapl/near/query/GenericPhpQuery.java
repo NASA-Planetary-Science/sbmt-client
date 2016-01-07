@@ -7,6 +7,7 @@ import java.util.TreeSet;
 import org.joda.time.DateTime;
 
 import edu.jhuapl.near.model.Image.ImageSource;
+import edu.jhuapl.near.tools.SmallBodyMappingTool;
 
 public class GenericPhpQuery extends QueryBase
 {
@@ -88,6 +89,11 @@ public class GenericPhpQuery extends QueryBase
         {
             imagesDatabase = tablePrefix + "images_pds";
             cubesDatabase = tablePrefix + "cubes_pds";
+        }
+
+        if(SmallBodyMappingTool.useBetaTables){
+            imagesDatabase += "_beta";
+            cubesDatabase += "_beta";
         }
 
         if (searchString != null)

@@ -32,6 +32,8 @@ public class SmallBodyMappingTool
 {
     private static vtkJavaGarbageCollector garbageCollector;
 
+    public static boolean useBetaTables = false;
+
     static
     {
         if (Configuration.isMac())
@@ -78,9 +80,22 @@ public class SmallBodyMappingTool
             {
                 public void run()
                 {
+                    // Parse options that come first
+                    int i = 0;
+                    for (; i < args.length; ++i) {
+                        if (args[i].equals("--beta-tables")) {
+                            useBetaTables = true;
+                        }else {
+                            // We've encountered something that is not an option, must be at the args
+                            break;
+                        }
+                    }
+
+                    // After options comes the args
                     String tempShapeModelPath = null;
-                    if (Configuration.isAPLVersion() && args.length > 0)
-                        tempShapeModelPath = args[0];
+                    if (Configuration.isAPLVersion() && args.length - i >= 1){
+                        tempShapeModelPath = args[i++];
+                    }
 
                     NativeLibraryLoader.loadVtkLibraries();
 
