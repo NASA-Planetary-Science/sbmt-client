@@ -58,7 +58,6 @@ void getEt(const string& fitfile,
     bodn2c_c("DAWN", &id, &found);
     if (failed_c()) 
     {
-        cout << "Failed bodn2c_c" << endl;
         return;
     }
         
@@ -78,19 +77,15 @@ void getEt(const string& fitfile,
                 scs2e_c(id, str.c_str(), &startet);
                 if (failed_c()) 
                 {
-                    cout << "Failed scs2e_c" << endl;
                     return;
                 }               
                 char utc[25];
                 et2utc_c ( startet , "ISOC", 3, 25, utc );
                 if (failed_c()) 
                 {
-                    cout << "Failed et2utc_c" << endl;
                     return;
                 } 
                 startutc = utc;
-            
-                cout << fitfile << " SPACECRAFT_CLOCK_START_COUNT " << str << " " << startutc << " " << startet << std::endl;
             }
             if (str == "SPACECRAFT_CLOCK_STOP_COUNT")
             {
@@ -101,19 +96,16 @@ void getEt(const string& fitfile,
                 scs2e_c(id, str.c_str(), &stopet);
                 if (failed_c()) 
                 {
-                    cout << "Failed scs2e_c" << endl;
                     return;
                 } 
                 char utc[25];
                 et2utc_c ( stopet , "ISOC", 3, 25, utc );
                 if (failed_c()) 
                 {
-                    cout << "Failed et2utc_c" << endl;
                     return;
                 } 
                 stoputc = utc;
                 
-                cout << fitfile << " SPACECRAFT_CLOCK_STOP_COUNT " << str << " " << stoputc << " " << stopet << std::endl;
                 break;
             }
         }
@@ -156,17 +148,15 @@ void getScOrientation(double et, int filter, string body, double scposb[3], doub
     spkpos_c(target, et, ref.c_str(), abcorr, body.c_str(), scposb, &lt);
     if (failed_c()) 
     {
-        cout << "Failed spkpos_c" << endl;
         return;
     } 
     
-    cout.precision(16);
-    cout << "Spacecraft Position: " << scposb[0] << " " << scposb[1] << " " << scposb[2] << endl;
+//    cout.precision(16);
+//    cout << "Spacecraft Position: " << scposb[0] << " " << scposb[1] << " " << scposb[2] << endl;
 
     pxform_c(frame, ref.c_str(), et, i2bmat);
     if (failed_c()) 
     {
-        cout << "Failed pxform_c" << endl;
         return;
     } 
 
@@ -271,12 +261,8 @@ void getSunPosition(double et, string body, double sunpos[3])
     spkpos_c(target, et, ref.c_str(), abcorr, body.c_str(), sunpos, &lt);
     if (failed_c()) 
     {
-        cout << "Failed spkpos_c" << endl;
         return;
     } 
-    
-    cout.precision(16);
-    cout << "Sun position: " << sunpos[0] << " " << sunpos[1] << " " << sunpos[2] << endl;
 }
 
 
@@ -357,7 +343,7 @@ int getFilter(string fitfilename)
 
   This program takes the following input arguments:
 
-  1. kernelfiles - a file containing the kernel files
+  1. kernelfiles - a metakernel file
   2. fit file list - a file containing a list of fit files to process, one per line
   3. output folder - path to folder where infofiles should be saved to
   4. bodyname - IAU name of target body, all caps
@@ -381,7 +367,8 @@ int main(int argc, char** argv)
     furnsh_c(kernelfiles.c_str());
     if (failed_c()) 
     {
-        cout << "Failed furnsh_c" << endl;
+        cout << "Error loading metakernel, exiting program." << endl;
+        exit(1);
     } 
 
     erract_c("SET", 1, (char*)"RETURN");
@@ -397,7 +384,6 @@ int main(int argc, char** argv)
 
     for (unsigned int i=0; i<fitfiles.size(); ++i)
     {
-        cout << "starting " << fitfiles[i] << endl;
         reset_c();
         
         string startutc;
@@ -410,37 +396,42 @@ int main(int argc, char** argv)
         double updir[3];
         double frustum[12];
         double sunPosition[3];
+        double cutoff;
         
         getEt(fitfiles[i], startutc, startet, stoputc, stopet);
         if (failed_c())
             continue;
 
         et = startet + (stopet - startet) / 2.0;
-
-        int filter = getFilter(fitfiles[i]);
-        getScOrientation(et, filter, body, scposb, boredir, updir, frustum);
-        if (failed_c())
-            continue;
-
-        getSunPosition(et, body, sunPosition);
-        if (failed_c())
-            continue;
-
-        string fitbasename = basename((char*)fitfiles[i].c_str());
-        int length = fitbasename.size();
-        string infofilename = outputfolder + "/" + fitbasename.substr(0, length-4) + ".INFO";
-        saveInfoFile(infofilename, startutc, stoputc, scposb, boredir, updir, frustum, sunPosition);
-
-        const size_t last_slash_idx = fitfiles[i].find_last_of("\\/");
-        if (std::string::npos != last_slash_idx)
+        //Get only images newer than 2015
+        str2et_c("2015-01-01T00:00:00", &cutoff);
+        if (et > cutoff)
         {
-          fitfiles[i].erase(0, last_slash_idx + 1);
+//        	cout << "Processing " << fitfiles[i] << endl;
+        	
+            int filter = getFilter(fitfiles[i]);
+            getScOrientation(et, filter, body, scposb, boredir, updir, frustum);
+            if (failed_c())
+                continue;
+    
+            getSunPosition(et, body, sunPosition);
+            if (failed_c())
+                continue;
+    
+            string fitbasename = basename((char*)fitfiles[i].c_str());
+            int length = fitbasename.size();
+            string infofilename = outputfolder + "/" + fitbasename.substr(0, length-4) + ".INFO";
+            saveInfoFile(infofilename, startutc, stoputc, scposb, boredir, updir, frustum, sunPosition);
+    
+            const size_t last_slash_idx = fitfiles[i].find_last_of("\\/");
+            if (std::string::npos != last_slash_idx)
+            {
+              fitfiles[i].erase(0, last_slash_idx + 1);
+            }
+            int fnameLen = fitfiles[i].size();
+            fout << fitfiles[i].substr(0, fnameLen) << " " << startutc << endl;
+//        	cout << "   finished " << infofilename << endl;
         }
-        int fnameLen = fitfiles[i].size();
-        cout << "WRITING TO IMAGE LIST: " << fitfiles[i].substr(0, fnameLen) << " " << startutc << endl;
-        fout << fitfiles[i].substr(0, fnameLen) << " " << startutc << endl;
-
-        cout << "finished " << infofilename << endl;
     }
 
     return 0;
