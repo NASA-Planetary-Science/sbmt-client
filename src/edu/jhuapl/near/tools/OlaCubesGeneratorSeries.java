@@ -60,18 +60,18 @@ public class OlaCubesGeneratorSeries extends LidarCubesGenerator
     protected String getFileListPath()
     {
 //        //Use this to run locally in Eclipse:
-        return "C:/Users/nguyel1/Projects/workspace/sbmt/src/edu/jhuapl/near/data/allOlaFiles.txt";
+//        return "C:/Users/nguyel1/Projects/workspace/sbmt/src/edu/jhuapl/near/data/allOlaFiles.txt";
         //To run on DMZ:
-//        return "/project/sbmtpipeline/processed/osirisrex/OLA/allOlaFiles.txt";
+        return "/project/sbmtpipeline/processed/osirisrex/OLA/allOlaFiles.txt";
     }
 
     @Override
     protected String getOutputFolderPath()
     {
 //        //Use this to run locally in Eclipse:
-        return "C:/Users/nguyel1/Projects/workspace/sbmt/src/edu/jhuapl/near/data/OLA";
+//        return "C:/Users/nguyel1/Projects/workspace/sbmt/src/edu/jhuapl/near/data/OLA";
         //To run on DMZ:
-//        return "/project/sbmtpipeline/processed/osirisrex/OLA/cubes";
+        return "/project/sbmtpipeline/processed/osirisrex/OLA/cubes";
     }
 
     @Override

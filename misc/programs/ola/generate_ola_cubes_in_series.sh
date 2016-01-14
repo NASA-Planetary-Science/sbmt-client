@@ -35,7 +35,7 @@ export LD_LIBRARY_PATH=$JAVA:JAVA/xawt:$VTK_PATH:$VTK_PATH/bin:$LD_LIBRARY_PATH
 
 JAVA_LIB=/disks/d0364/software/jdk1.8.0_51/jre/lib/amd64
 
-COMMAND="$JAVA -Djava.awt.headless=true -Djava.library.path=$VTK_PATH:$JAVA_LIB -Dfile.encoding=UTF-8 -classpath $SBMT_SRC_DIR/bin:$SBMT_SRC_DIR/lib/vtksb.jar:$SBMT_SRC_DIR/lib/spice-N0065.jar:$SBMT_SRC_DIR/lib/commons-io-2.0.jar:$SBMT_SRC_DIR/build/sbmt-extras/lib/vtk-6.2.jar:$SBMT_SRC_DIR/lib/jide-oss-2.7.3.jar:$SBMT_SRC_DIR/lib/joda-time-1.6.jar:$SBMT_SRC_DIR/lib/mysql-connector-java-5.1.10-bin.jar edu.jhuapl.near.tools.OlaCubesGeneratorSeries"
+COMMAND="$JAVA -Djava.awt.headless=true -Djava.library.path=$VTK_PATH:$JAVA_LIB -Dfile.encoding=UTF-8 -classpath $SBMT_SRC_DIR/build/classes:$SBMT_SRC_DIR/lib/vtksb.jar:$SBMT_SRC_DIR/lib/spice-N0065.jar:$SBMT_SRC_DIR/lib/commons-io-2.0.jar:$SBMT_SRC_DIR/build/sbmt-extras/lib/vtk-6.2.jar:$SBMT_SRC_DIR/lib/jide-oss-2.7.3.jar:$SBMT_SRC_DIR/lib/joda-time-1.6.jar:$SBMT_SRC_DIR/lib/mysql-connector-java-5.1.10-bin.jar edu.jhuapl.near.tools.OlaCubesGeneratorSeries"
 
 echo -e "$COMMAND \n"
 
