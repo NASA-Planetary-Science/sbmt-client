@@ -399,7 +399,6 @@ Body Mapping Tool and where they were obtained from.
     103P/HARTLEY 2 V1.0, DIF-C-HRIV/MRI-5-HARTLEY2-SHAPE-V1.0, NASA
     Planetary Data System, 2013.)
 
-
 ## Gravitational acceleration, gravitational potential, slope, and elevation
 
 Gravitational acceleration, gravitational potential, slope, and
@@ -425,10 +424,12 @@ shape model.
     the plate normal vector and the negative gravitational
     acceleration vector (computed as explained above) at each plate
     center.
--   Elevation data was computed as follows. First a reference potential,
-    R, was computed by averaging the potential (computed as explained
-    above) weighted by the plate area. I.e. R = SUM(P_i*A_i)/SUM(A_i)
-    where P_i is the potential at the center of the ith plate and A_i
-    is the area of the ith plate. The sum is over all plates. Then the
-    elevation, E, is computed as: E = (P_i-R)/g, where g is the
+-   Elevation data was computed as follows. First a reference potential
+    R was selected.  The reference potential was either chosen to be 
+    the minimum potential across all plates, or the average potential 
+    weighted by the plate area, i.e., R = SUM(P_i*A_i)/SUM(A_i)
+    where P_i is the potential at the center of the ith plate, A_i
+    is the area of the ith plate, and where the sum is over all plates. 
+    Having established the reference potential R, the elevation E was 
+    computed as: E = (P_i-R)/g, where g is the
     magnitude of the acceleration vector at the ith plate center.
