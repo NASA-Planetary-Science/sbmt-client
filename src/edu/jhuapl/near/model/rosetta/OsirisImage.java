@@ -142,7 +142,25 @@ public class OsirisImage extends PerspectiveImage
         case 54:
             return 11;
         case 61:
-            return 12;
+            return 12; // Everything below here was added on 12/24/2015, nothing above was touched for backwards compatibility
+        case 13:
+            return 13;
+        case 15:
+            return 14;
+        case 17:
+            return 15;
+        case 31:
+            return 16;
+        case 71:
+            return 17;
+        case 82:
+            return 18;
+        case 84:
+            return 19;
+        case 87:
+            return 20;
+        case 88:
+            return 21;
         }
 
         return 0;
