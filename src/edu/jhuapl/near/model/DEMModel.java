@@ -29,6 +29,8 @@ public class DEMModel extends SmallBodyModel
     private vtkPolyData dem;
     private vtkPolyData boundary;
     private vtkFloatArray heightsGravityPerPoint;
+    private vtkFloatArray heightsPlanePerPoint;
+    private vtkFloatArray slopesPerPoint;
     private vtkFloatArray heightsGravity; // per cell
     private vtkFloatArray heightsPlane; // per cell
     private vtkFloatArray slopes; // per cell
@@ -43,6 +45,8 @@ public class DEMModel extends SmallBodyModel
         dem = new vtkPolyData();
         boundary = new vtkPolyData();
         heightsGravityPerPoint = new vtkFloatArray();
+        heightsPlanePerPoint = new vtkFloatArray();
+        slopesPerPoint = new vtkFloatArray();
         heightsGravity = new vtkFloatArray();
         heightsPlane = new vtkFloatArray();
         slopes = new vtkFloatArray();
@@ -74,6 +78,8 @@ public class DEMModel extends SmallBodyModel
         dem.SetPolys(polys);
 
         heightsGravityPerPoint.SetNumberOfComponents(1);
+        heightsPlanePerPoint.SetNumberOfComponents(1);
+        slopesPerPoint.SetNumberOfComponents(1);
         heightsGravity.SetNumberOfComponents(1);
         heightsPlane.SetNumberOfComponents(1);
         slopes.SetNumberOfComponents(1);
@@ -179,9 +185,11 @@ public class DEMModel extends SmallBodyModel
         // Remove scalar data since it interferes with setting the boundary color
         boundary.GetCellData().SetScalars(null);
 
-        // Make a copy of heightsGravity per point since we need that later for
+        // Make a copy of  per point data structures since we need that later for
         // drawing profile plots.
         heightsGravityPerPoint.DeepCopy(heightsGravity);
+        heightsPlanePerPoint.DeepCopy(heightsPlane);
+        slopesPerPoint.DeepCopy(slopes);
         convertPointDataToCellData();
 
         int centerIndex = liveSize / 2;
@@ -231,19 +239,23 @@ public class DEMModel extends SmallBodyModel
     }
 
     public void generateProfile(ArrayList<Point3D> xyzPointList,
-            ArrayList<Double> profileHeights, ArrayList<Double> profileDistances)
+            ArrayList<Double> profileValues, ArrayList<Double> profileDistances, int coloringIndex)
     {
-        profileHeights.clear();
+        profileValues.clear();
         profileDistances.clear();
 
         // For each point in xyzPointList, find the cell containing that
         // point and then, using barycentric coordinates find the value
-        // of the height at that point
+        // of the dem at that point
         //
         // To compute the distance, assume we have a straight line connecting the first
         // and last points of xyzPointList. For each point, p, in xyzPointList, find the point
         // on the line closest to p. The distance from p to the start of the line is what
         // is placed in heights. Use SPICE's nplnpt function for this.
+        //
+        // coloringIndex = 0 : heightsGravityPerPoint
+        // coloringIndex = 1 : heightsPlanePerPoint
+        // coloringIndex = 2 : slopesPerPoint
 
         double[] first = xyzPointList.get(0).xyz;
         double[] last = xyzPointList.get(xyzPointList.size()-1).xyz;
@@ -259,23 +271,41 @@ public class DEMModel extends SmallBodyModel
         double[] notused = new double[1];
         vtkIdList idList = new vtkIdList();
 
-        for (Point3D p : xyzPointList)
+        // Figure out which data set to sample
+        vtkFloatArray valuePerPoint = null;
+        switch(coloringIndex){
+        case 0:
+            valuePerPoint = heightsGravityPerPoint;
+            break;
+        case 1:
+            valuePerPoint = heightsPlanePerPoint;
+            break;
+        case 2:
+            valuePerPoint = slopesPerPoint;
+            break;
+        }
+
+        // Sample
+        if(valuePerPoint != null)
         {
-            int cellId = findClosestCell(p.xyz);
-
-            double val = PolyDataUtil.interpolateWithinCell(dem, heightsGravityPerPoint, cellId, p.xyz, idList);
-
-            profileHeights.add(val);
-
-            if (zeroLineDir)
+            for (Point3D p : xyzPointList)
             {
-                profileDistances.add(0.0);
-            }
-            else
-            {
-                MathUtil.nplnpt(first, lindir, p.xyz, pnear, notused);
-                double dist = 1000.0f * MathUtil.distanceBetween(first, pnear);
-                profileDistances.add(dist);
+                int cellId = findClosestCell(p.xyz);
+
+                double val = PolyDataUtil.interpolateWithinCell(dem, valuePerPoint, cellId, p.xyz, idList);
+
+                profileValues.add(val);
+
+                if (zeroLineDir)
+                {
+                    profileDistances.add(0.0);
+                }
+                else
+                {
+                    MathUtil.nplnpt(first, lindir, p.xyz, pnear, notused);
+                    double dist = 1000.0f * MathUtil.distanceBetween(first, pnear);
+                    profileDistances.add(dist);
+                }
             }
         }
     }
@@ -372,6 +402,8 @@ public class DEMModel extends SmallBodyModel
         dem.Delete();
         boundary.Delete();
         heightsGravityPerPoint.Delete();
+        heightsPlanePerPoint.Delete();
+        slopesPerPoint.Delete();
         heightsGravity.Delete();
         heightsPlane.Delete();
         slopes.Delete();

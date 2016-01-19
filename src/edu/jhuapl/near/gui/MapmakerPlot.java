@@ -31,30 +31,32 @@ import edu.jhuapl.near.util.Properties;
 
 public class MapmakerPlot implements ChartMouseListener, PropertyChangeListener
 {
-    private XYDataset heightDistanceDataset;
+    private XYDataset valueDistanceDataset;
     private LineModel lineModel;
     private DEMModel demModel;
     private ChartPanel chartPanel;
+    private int coloringIndex;
 
     private int numberOfProfilesCreated = 0;
 
-    public MapmakerPlot(LineModel lineModel, DEMModel demModel)
+    public MapmakerPlot(LineModel lineModel, DEMModel demModel, int coloringIndex)
     {
         this.lineModel = lineModel;
         this.demModel = demModel;
+        this.coloringIndex = coloringIndex;
 
         lineModel.addPropertyChangeListener(this);
 
-        heightDistanceDataset = new XYSeriesCollection();
+        valueDistanceDataset = new XYSeriesCollection();
 
-        JFreeChart chart1 = ChartFactory.createXYLineChart
-        ("Elevation vs. Distance", "Distance (m)", "Elevation (m)",
-                heightDistanceDataset, PlotOrientation.VERTICAL, false, true, false);
+        JFreeChart chart1 = ChartFactory.createXYLineChart("", "", "",
+            valueDistanceDataset, PlotOrientation.VERTICAL, false, true, false);
 
         // add the jfreechart graph
         chartPanel = new ChartPanel(chart1);
         chartPanel.setMouseWheelEnabled(true);
         chartPanel.addChartMouseListener(this);
+        updateChartLabels();
 
         XYPlot plot = (XYPlot) chart1.getPlot();
         plot.setDomainPannable(true);
@@ -85,7 +87,7 @@ public class MapmakerPlot implements ChartMouseListener, PropertyChangeListener
     {
         int lineId = lineModel.getNumberOfStructures()-1;
         XYSeries series = new XYSeries("Profile " + numberOfProfilesCreated++);
-        ((XYSeriesCollection)heightDistanceDataset).addSeries(series);
+        ((XYSeriesCollection)valueDistanceDataset).addSeries(series);
         setSeriesColor(lineId);
         ((XYPlot)chartPanel.getChart().getPlot()).getRenderer().setSeriesStroke(
                 lineId, new BasicStroke(2.0f)); // set line thickness
@@ -94,33 +96,76 @@ public class MapmakerPlot implements ChartMouseListener, PropertyChangeListener
 
     private void updateProfile(int lineId)
     {
-        if (lineId >= ((XYSeriesCollection)heightDistanceDataset).getSeriesCount())
+        if (lineId >= ((XYSeriesCollection)valueDistanceDataset).getSeriesCount())
             return;
 
         Line line = (Line)lineModel.getStructure(lineId);
-        ArrayList<Double> height = new ArrayList<Double>();
+        ArrayList<Double> value= new ArrayList<Double>();
         ArrayList<Double> distance = new ArrayList<Double>();
-        demModel.generateProfile(line.xyzPointList, height, distance);
+        demModel.generateProfile(line.xyzPointList, value, distance, coloringIndex);
 
-        XYSeries series = ((XYSeriesCollection)heightDistanceDataset).getSeries(lineId);
+        XYSeries series = ((XYSeriesCollection)valueDistanceDataset).getSeries(lineId);
         series.clear();
-        int N = height.size();
+        int N = value.size();
         for (int i=0; i<N; ++i)
-            series.add(distance.get(i), height.get(i), false);
+            series.add(distance.get(i), value.get(i), false);
         series.fireSeriesChanged();
+    }
+
+    private void updateChartLabels(){
+        // Figure out labels to use
+        String title, domainLabel, rangeLabel;
+        switch(coloringIndex){
+        case 0:
+        case 1:
+            title = "Elevation vs. Distance";
+            domainLabel = "Distance (m)";
+            rangeLabel = "Elevation (m)";
+            break;
+        case 2:
+            title = "Slope vs. Distance";
+            domainLabel = "Distance (m)";
+            rangeLabel = "Slope (deg)";
+            break;
+        default:
+            title = "";
+            domainLabel = "";
+            rangeLabel = "";
+            break;
+        }
+
+        // Apply the labels to the chart
+        chartPanel.getChart().setTitle(title);;
+        chartPanel.getChart().getXYPlot().getDomainAxis().setLabel(domainLabel);
+        chartPanel.getChart().getXYPlot().getRangeAxis().setLabel(rangeLabel);
     }
 
     private void removeProfile(int lineId)
     {
-        if (lineId < ((XYSeriesCollection)heightDistanceDataset).getSeriesCount())
-            ((XYSeriesCollection)heightDistanceDataset).removeSeries(lineId);
+        if (lineId < ((XYSeriesCollection)valueDistanceDataset).getSeriesCount())
+            ((XYSeriesCollection)valueDistanceDataset).removeSeries(lineId);
     }
 
     public String getProfileAsString(int lineId)
     {
+        // Figure out what to label the range
+        String rangeLabel;
+        switch(coloringIndex){
+        case 0:
+        case 1:
+            rangeLabel = "Elevation";
+            break;
+        case 2:
+            rangeLabel = "Slope";
+            break;
+        default:
+            rangeLabel = "Value";
+            break;
+        }
+
         StringBuilder buffer = new StringBuilder();
 
-        XYSeries series = ((XYSeriesCollection)heightDistanceDataset).getSeries(lineId);
+        XYSeries series = ((XYSeriesCollection)valueDistanceDataset).getSeries(lineId);
 
         String eol = System.getProperty("line.separator");
 
@@ -132,13 +177,27 @@ public class MapmakerPlot implements ChartMouseListener, PropertyChangeListener
 
         buffer.append(eol);
 
-        buffer.append("Elevation=");
+        buffer.append(rangeLabel + "=");
         for (int i=0; i<N; ++i)
             buffer.append(series.getY(i) + " ");
 
         buffer.append(eol);
 
         return buffer.toString();
+    }
+
+    public void setColoringIndex(int index){
+        // Save value of index
+        coloringIndex = index;
+
+        // Update chart labels
+        updateChartLabels();
+
+        // Update all profiles
+        int numLines = ((XYSeriesCollection)valueDistanceDataset).getSeriesCount();
+        for(int i=0; i<numLines; i++){
+            updateProfile(i);
+        }
     }
 
     public void chartMouseClicked(ChartMouseEvent arg0)
@@ -177,7 +236,7 @@ public class MapmakerPlot implements ChartMouseListener, PropertyChangeListener
         }
         else if (Properties.ALL_STRUCTURES_REMOVED.equals(evt.getPropertyName()))
         {
-            ((XYSeriesCollection)heightDistanceDataset).removeAllSeries();
+            ((XYSeriesCollection)valueDistanceDataset).removeAllSeries();
         }
         else if (Properties.COLOR_CHANGED.equals(evt.getPropertyName()))
         {
