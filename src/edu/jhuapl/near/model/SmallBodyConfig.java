@@ -799,7 +799,7 @@ public class SmallBodyConfig
             };
 
             c.imageSearchDefaultStartDate = new GregorianCalendar(2015, GregorianCalendar.APRIL, 1, 0, 0, 0).getTime();
-            c.imageSearchDefaultEndDate = new GregorianCalendar(2015, GregorianCalendar.JULY, 1, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2016, GregorianCalendar.JULY, 1, 0, 0, 0).getTime();
             c.imageSearchFilterNames = new String[]{
                     "Filter 1 (735 nm)",
                     "Filter 2 (548 nm)",
