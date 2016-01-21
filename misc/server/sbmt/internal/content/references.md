@@ -225,6 +225,10 @@ from the people or teams producing them and are not listed below.
 
 -   [http://sbn.psi.edu/pds/resource/oshape.html](http://sbn.psi.edu/pds/resource/oshape.html)
     (EAR-A-5-DDR-SHAPE-MODELS-V2.1)
+    
+### Ceres
+
+-   Dawn images of Ceres are available at [http://dscws.igpp.ucla.edu, /data/DSDb/data/] 
 
 ### Ida (Thomas)
 
