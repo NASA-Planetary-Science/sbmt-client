@@ -130,7 +130,7 @@ public class MapmakerView extends JFrame
 
         JPanel panel = new JPanel(new BorderLayout());
 
-        plot = new MapmakerPlot(lineModel, dem);
+        plot = new MapmakerPlot(lineModel, dem, 0);
         plot.getChartPanel().setMinimumSize(new Dimension(100, 100));
         plot.getChartPanel().setPreferredSize(new Dimension(400, 400));
 
@@ -215,13 +215,17 @@ public class MapmakerView extends JFrame
                     int index = coloringTypeComboBox.getSelectedIndex();
                     if (index == 3)
                     {
+                        // No coloring
                         scaleColoringButton.setEnabled(false);
                         dem.setColoringIndex(-1);
+                        plot.setColoringIndex(-1);
                     }
                     else
                     {
+                        // Coloring
                         scaleColoringButton.setEnabled(true);
                         dem.setColoringIndex(index);
+                        plot.setColoringIndex(index);
                     }
                 }
                 catch (IOException e1)

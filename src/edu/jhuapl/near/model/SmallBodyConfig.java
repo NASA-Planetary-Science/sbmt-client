@@ -1635,18 +1635,18 @@ public class SmallBodyConfig
             c.imageSearchDefaultEndDate = new GregorianCalendar(2014, 11, 31, 0, 0, 0).getTime();
             c.imageSearchFilterNames = new String[]{
                     // If a name, begins with a star, it is not selected by default
-                    "*Filter 12",
-                    "*Filter 16",
-                    "*Filter 18",
-                    "Filter 22",
-                    "*Filter 23",
-                    "*Filter 24",
-                    "*Filter 27",
-                    "*Filter 28",
-                    "*Filter 41",
-                    "*Filter 51",
-                    "*Filter 54",
-                    "*Filter 61"
+                    "*Filter 1,2",
+                    "*Filter 1,6",
+                    "*Filter 1,8",
+                    "Filter 2,2",
+                    "*Filter 2,3",
+                    "*Filter 2,4",
+                    "*Filter 2,7",
+                    "*Filter 2,8",
+                    "*Filter 4,1",
+                    "*Filter 5,1",
+                    "*Filter 5,4",
+                    "*Filter 6,1"
             };
             c.imageSearchUserDefinedCheckBoxesNames = new String[]{"NAC", "*WAC"};
             c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
@@ -1693,18 +1693,27 @@ public class SmallBodyConfig
             c.imageSearchDefaultEndDate = new GregorianCalendar(2015, 10, 31, 0, 0, 0).getTime();
             c.imageSearchFilterNames = new String[]{
                     // If a name, begins with a star, it is not selected by default
-                    "*Filter 12",
-                    "*Filter 16",
-                    "*Filter 18",
-                    "Filter 22",
-                    "*Filter 23",
-                    "*Filter 24",
-                    "*Filter 27",
-                    "*Filter 28",
-                    "*Filter 41",
-                    "*Filter 51",
-                    "*Filter 54",
-                    "*Filter 61"
+                    "*Filter 1,2",
+                    "*Filter 1,6",
+                    "*Filter 1,8",
+                    "Filter 2,2",
+                    "*Filter 2,3",
+                    "*Filter 2,4",
+                    "*Filter 2,7",
+                    "*Filter 2,8",
+                    "*Filter 4,1",
+                    "*Filter 5,1",
+                    "*Filter 5,4",
+                    "*Filter 6,1",
+                    "*Filter 1,3",
+                    "*Filter 1,5",
+                    "*Filter 1,7",
+                    "*Filter 3,1",
+                    "*Filter 7,1",
+                    "*Filter 8,2",
+                    "*Filter 8,4",
+                    "*Filter 8,7",
+                    "*Filter 8,8"
             };
             c.imageSearchUserDefinedCheckBoxesNames = new String[]{"NAC", "*WAC"};
             c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;

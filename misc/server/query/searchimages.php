@@ -37,6 +37,16 @@ $filterType9=$_POST['filterType9'] + 0;
 $filterType10=$_POST['filterType10'] + 0;
 $filterType11=$_POST['filterType11'] + 0;
 $filterType12=$_POST['filterType12'] + 0;
+$filterType13=$_POST['filterType13'] + 0;
+$filterType14=$_POST['filterType14'] + 0;
+$filterType15=$_POST['filterType15'] + 0;
+$filterType16=$_POST['filterType16'] + 0;
+$filterType17=$_POST['filterType17'] + 0;
+$filterType18=$_POST['filterType18'] + 0;
+$filterType19=$_POST['filterType19'] + 0;
+$filterType20=$_POST['filterType20'] + 0;
+$filterType21=$_POST['filterType21'] + 0;
+$filterType22=$_POST['filterType22'] + 0;
 $cubesStr=$_POST['cubes'];
 $limbType=$_POST['limbType'] + 0;
 
@@ -65,6 +75,26 @@ if ($filterType11 == 1)
 	$filterTypes[] = 11;
 if ($filterType12 == 1)
 	$filterTypes[] = 12;
+if ($filterType13 == 1)
+	$filterTypes[] = 13;
+if ($filterType14 == 1)
+	$filterTypes[] = 14;
+if ($filterType15 == 1)
+	$filterTypes[] = 15;
+if ($filterType16 == 1)
+	$filterTypes[] = 16;
+if ($filterType17 == 1)
+	$filterTypes[] = 17;
+if ($filterType18 == 1)
+	$filterTypes[] = 18;
+if ($filterType19 == 1)
+	$filterTypes[] = 19;
+if ($filterType20 == 1)
+	$filterTypes[] = 20;
+if ($filterType21 == 1)
+	$filterTypes[] = 21;
+if ($filterType22 == 1)
+	$filterTypes[] = 22;
 
 $cameraTypes = array();
 if ($cameraType1 == 1)
