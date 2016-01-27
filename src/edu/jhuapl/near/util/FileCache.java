@@ -183,7 +183,7 @@ public class FileCache
         }
         catch (IOException e)
         {
-//            e.printStackTrace();
+            e.printStackTrace();
         }
 
         // If we reach here, simply return the file if it exists.
