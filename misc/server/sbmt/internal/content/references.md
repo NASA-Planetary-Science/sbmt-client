@@ -225,6 +225,13 @@ from the people or teams producing them and are not listed below.
 
 -   [http://sbn.psi.edu/pds/resource/oshape.html](http://sbn.psi.edu/pds/resource/oshape.html)
     (EAR-A-5-DDR-SHAPE-MODELS-V2.1)
+    
+### Ceres
+
+-   Shape model at [http://dscws.igpp.ucla.edu] 
+-   Images at [http://dscws.igpp.ucla.edu/data/DSDb/data/]
+-   Gaskell pointing at [http://dscws.igpp.ucla.edu/DSDb/data/spice/dsk/CERES_SURVEY_150828_
+    GRAVITY_SPC_SUMFILES.zip]
 
 ### Ida (Thomas)
 
