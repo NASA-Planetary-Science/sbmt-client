@@ -33,6 +33,7 @@ public class SmallBodyMappingTool
     private static vtkJavaGarbageCollector garbageCollector;
 
     public static boolean useBetaTables = false;
+    public static boolean useBetaSearchPhp = false;
 
     static
     {
@@ -85,6 +86,8 @@ public class SmallBodyMappingTool
                     for (; i < args.length; ++i) {
                         if (args[i].equals("--beta-tables")) {
                             useBetaTables = true;
+                        }else if (args[i].equals("--beta-search-php")){
+                            useBetaSearchPhp = true;
                         }else {
                             // We've encountered something that is not an option, must be at the args
                             break;
