@@ -189,11 +189,7 @@ public class GenericPhpQuery extends QueryBase
                 args.put("cubes", cubes);
             }
 
-            if(SmallBodyMappingTool.useBetaSearchPhp){
-                results = doQuery("searchimages_beta.php", constructUrlArguments(args));
-            }else{
-                results = doQuery("searchimages.php", constructUrlArguments(args));
-            }
+            results = doQuery("searchimages.php", constructUrlArguments(args));
 
             for (ArrayList<String> res : results)
             {
