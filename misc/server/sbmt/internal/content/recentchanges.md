@@ -4,6 +4,12 @@
 
 # Recent Changes
 
+### January 29, 2016
+
+-   Version 2 of 67p model with documentation
+-   Mapmaker profile plot now showing correct data for values besides gravity-derived elevation
+-   Updated content of references webpage
+
 ### December 31, 2015
 
 -   Full fix of clipping bug in imported cylindrical images

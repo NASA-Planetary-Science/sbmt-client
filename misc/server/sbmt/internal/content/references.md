@@ -500,8 +500,8 @@ shape model.
     magnitude of the acceleration vector at the ith plate center.
 
 
-The following table lists the density and rotation rate values used
-for each body in the gravity calculation.
+The following table lists the density, rotation rate, and method of
+computing reference potential used for each body in the gravity calculation.
 
 +-----------------------------+-----------------------------+----------------------------------------+---------------------+
 | Body                        | Density (g/cm^3)            | Rotation Rate (radians/sec)            | Reference Potential |
