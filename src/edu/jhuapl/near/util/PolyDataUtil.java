@@ -736,52 +736,58 @@ public class PolyDataUtil
             //clipOutputs.set(i, nextInput);
         }
 
-
-        vtkPolyDataConnectivityFilter connectivityFilter = new vtkPolyDataConnectivityFilter();
-        d.add(connectivityFilter);
-        vtkAlgorithmOutput clipPolyDataOutput = clipPolyData.GetOutputPort();
-        d.add(clipPolyDataOutput);
-        connectivityFilter.SetInputConnection(clipPolyDataOutput);
-        connectivityFilter.SetExtractionModeToClosestPointRegion();
-        connectivityFilter.SetClosestPoint(center);
-        connectivityFilter.Update();
-
-        //        polyData = new vtkPolyData();
-        //if (outputPolyData == null)
-        //    outputPolyData = new vtkPolyData();
-
-        if (outputInterior != null)
+        // Check if there is anything left after the clipping
+        clipPolyData.Update();
+        vtkPolyData clippedData = clipPolyData.GetOutput();
+        if(clippedData.GetNumberOfPoints() > 0)
         {
-            vtkPolyData connectivityFilterOutput = connectivityFilter.GetOutput();
-            d.add(connectivityFilterOutput);
-            outputInterior.DeepCopy(connectivityFilterOutput);
+            // Only do rest of processing if there is at least one point
+            vtkPolyDataConnectivityFilter connectivityFilter = new vtkPolyDataConnectivityFilter();
+            d.add(connectivityFilter);
+            vtkAlgorithmOutput clipPolyDataOutput = clipPolyData.GetOutputPort();
+            d.add(clipPolyDataOutput);
+
+            connectivityFilter.SetInputConnection(clipPolyDataOutput);
+            connectivityFilter.SetExtractionModeToClosestPointRegion();
+            connectivityFilter.SetClosestPoint(center);
+            connectivityFilter.Update();
+
+            //        polyData = new vtkPolyData();
+            //if (outputPolyData == null)
+            //    outputPolyData = new vtkPolyData();
+
+            if (outputInterior != null)
+            {
+                vtkPolyData connectivityFilterOutput = connectivityFilter.GetOutput();
+                d.add(connectivityFilterOutput);
+                outputInterior.DeepCopy(connectivityFilterOutput);
+            }
+
+            if (outputBoundary != null)
+            {
+                // Compute the bounding edges of this surface
+                vtkFeatureEdges edgeExtracter = new vtkFeatureEdges();
+                d.add(edgeExtracter);
+                vtkAlgorithmOutput connectivityFilterOutput = connectivityFilter.GetOutputPort();
+                d.add(connectivityFilterOutput);
+                edgeExtracter.SetInputConnection(connectivityFilterOutput);
+                edgeExtracter.BoundaryEdgesOn();
+                edgeExtracter.FeatureEdgesOff();
+                edgeExtracter.NonManifoldEdgesOff();
+                edgeExtracter.ManifoldEdgesOff();
+                edgeExtracter.Update();
+
+                vtkPolyData edgeExtracterOutput = edgeExtracter.GetOutput();
+                d.add(edgeExtracterOutput);
+                outputBoundary.DeepCopy(edgeExtracterOutput);
+            }
+
+            //vtkPolyDataWriter writer = new vtkPolyDataWriter();
+            //writer.SetInput(polygonSource.GetOutput());
+            //writer.SetFileName("/tmp/coneeros.vtk");
+            //writer.SetFileTypeToBinary();
+            //writer.Write();
         }
-
-        if (outputBoundary != null)
-        {
-            // Compute the bounding edges of this surface
-            vtkFeatureEdges edgeExtracter = new vtkFeatureEdges();
-            d.add(edgeExtracter);
-            vtkAlgorithmOutput connectivityFilterOutput = connectivityFilter.GetOutputPort();
-            d.add(connectivityFilterOutput);
-            edgeExtracter.SetInputConnection(connectivityFilterOutput);
-            edgeExtracter.BoundaryEdgesOn();
-            edgeExtracter.FeatureEdgesOff();
-            edgeExtracter.NonManifoldEdgesOff();
-            edgeExtracter.ManifoldEdgesOff();
-            edgeExtracter.Update();
-
-            vtkPolyData edgeExtracterOutput = edgeExtracter.GetOutput();
-            d.add(edgeExtracterOutput);
-            outputBoundary.DeepCopy(edgeExtracterOutput);
-        }
-
-
-        //vtkPolyDataWriter writer = new vtkPolyDataWriter();
-        //writer.SetInput(polygonSource.GetOutput());
-        //writer.SetFileName("/tmp/coneeros.vtk");
-        //writer.SetFileTypeToBinary();
-        //writer.Write();
 
         for (vtkObject o : d)
             o.Delete();
