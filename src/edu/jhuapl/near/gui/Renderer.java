@@ -45,6 +45,7 @@ import edu.jhuapl.near.util.LatLon;
 import edu.jhuapl.near.util.MathUtil;
 import edu.jhuapl.near.util.Preferences;
 import edu.jhuapl.near.util.Properties;
+import edu.jhuapl.near.util.SbmtLODActor;
 
 public class Renderer extends JPanel implements
             PropertyChangeListener, ActionListener
@@ -190,6 +191,10 @@ public class Renderer extends JPanel implements
         orientationWidget.SetTolerance(10);
         setAxesSize(Preferences.getInstance().getAsDouble(Preferences.AXES_SIZE, 0.2));
 
+        // Setup observers for start/stop interaction events
+        renWin.getRenderWindowInteractor().AddObserver("StartInteractionEvent", this, "onStartInteraction");
+        renWin.getRenderWindowInteractor().AddObserver("EndInteractionEvent", this, "onEndInteraction");
+
         javax.swing.SwingUtilities.invokeLater(new Runnable()
         {
             public void run()
@@ -253,6 +258,30 @@ public class Renderer extends JPanel implements
         if (renWin.getRenderWindow().GetNeverRendered() > 0)
             return;
         renWin.Render();
+    }
+
+    public void onStartInteraction(){
+        // LOD switching control for SbmtLODActor
+        if(modelManager != null){
+            ArrayList<vtkProp> props = modelManager.getProps();
+            for(vtkProp prop : props){
+                if(prop instanceof SbmtLODActor){
+                    ((SbmtLODActor)prop).SetEnableLOD(true);
+                }
+            }
+        }
+    }
+
+    public void onEndInteraction(){
+        // LOD switching control for SbmtLODActor
+        if(modelManager != null){
+            ArrayList<vtkProp> props = modelManager.getProps();
+            for(vtkProp prop : props){
+                if(prop instanceof SbmtLODActor){
+                    ((SbmtLODActor)prop).SetEnableLOD(false);
+                }
+            }
+        }
     }
 
     /*

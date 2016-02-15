@@ -25,6 +25,7 @@ import edu.jhuapl.near.util.FileCache;
 import edu.jhuapl.near.util.LatLon;
 import edu.jhuapl.near.util.MathUtil;
 import edu.jhuapl.near.util.Properties;
+import edu.jhuapl.near.util.SbmtLODActor;
 import edu.jhuapl.near.util.TimeUtil;
 
 public class LidarDataPerUnit extends Model
@@ -245,8 +246,9 @@ public class LidarDataPerUnit extends Model
         vtkPolyDataMapper pointsMapper = new vtkPolyDataMapper();
         pointsMapper.SetInputConnection(geometryFilter.GetOutputPort());
 
-        vtkActor actor = new vtkActor();
+        vtkActor actor = new SbmtLODActor();
         actor.SetMapper(pointsMapper);
+        ((SbmtLODActor)actor).SetQuadricDecimatedLODMapper();
         actor.GetProperty().SetColor(0.0, 0.0, 1.0);
         if (path.contains("_v2"))
             actor.GetProperty().SetColor(1.0, 1.0, 0.0);
@@ -257,8 +259,9 @@ public class LidarDataPerUnit extends Model
         vtkPolyDataMapper pointsMapperSc = new vtkPolyDataMapper();
         pointsMapperSc.SetInputConnection(geometryFilterSc.GetOutputPort());
 
-        actorSpacecraft = new vtkActor();
+        actorSpacecraft = new SbmtLODActor();
         actorSpacecraft.SetMapper(pointsMapperSc);
+        ((SbmtLODActor)actorSpacecraft).SetQuadricDecimatedLODMapper();
         actorSpacecraft.GetProperty().SetColor(0.0, 1.0, 0.0);
         // for Itokawa optimized lidar data, show in different color.
         if (path.contains("_v2"))
