@@ -107,6 +107,7 @@ public class Renderer extends JPanel implements
     // axes are enabled
     private boolean interactiveAxes = true;
     private double axesSize; // needed because java wrappers do not expose vtkOrientationMarkerWidget.GetViewport() function.
+    public static boolean enableLODs = true; // This is temporary to show off the LOD feature, very soon we will replace this with an actual menu
 
     public Renderer(final ModelManager modelManager)
     {
@@ -264,7 +265,7 @@ public class Renderer extends JPanel implements
     public void onStartInteraction()
     {
         // LOD switching control for SbmtLODActor
-        if(modelManager != null)
+        if(enableLODs && modelManager != null)
         {
             List<vtkProp> props = modelManager.getProps();
             for(vtkProp prop : props)
@@ -280,7 +281,7 @@ public class Renderer extends JPanel implements
     public void onEndInteraction()
     {
         // LOD switching control for SbmtLODActor
-        if(modelManager != null)
+        if(enableLODs && modelManager != null)
         {
             List<vtkProp> props = modelManager.getProps();
             for(vtkProp prop : props)

@@ -10,15 +10,17 @@ import java.util.Collections;
 import java.util.Comparator;
 
 import javax.swing.AbstractAction;
+import javax.swing.AbstractButton;
 import javax.swing.Action;
 import javax.swing.ButtonGroup;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JRadioButtonMenuItem;
 
-import edu.jhuapl.near.model.SmallBodyConfig;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
+import edu.jhuapl.near.model.SmallBodyConfig;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.util.Configuration;
 import edu.jhuapl.near.util.Properties;
@@ -51,9 +53,16 @@ public class ViewMenu extends JMenu implements PropertyChangeListener
             addMenuItem(mi, smallBodyConfig);
         }
 
+        // Enable LODs checkbox menu item
+        this.addSeparator();
+        JCheckBoxMenuItem cbmi = new JCheckBoxMenuItem(new EnableLODsAction());
+        cbmi.setSelected(true);
+        this.add(cbmi);
+
+        // Import shape models
         if (Configuration.isAPLVersion())
         {
-            this.addSeparator();
+            //this.addSeparator();
 
             JMenuItem mi = new JMenuItem(new ImportShapeModelsAction());
             this.add(mi);
@@ -283,6 +292,19 @@ public class ViewMenu extends JMenu implements PropertyChangeListener
 
             shapeModelImportedDialog.setLocationRelativeTo(rootPanel);
             shapeModelImportedDialog.setVisible(true);
+        }
+    }
+
+    private class EnableLODsAction extends AbstractAction
+    {
+        public EnableLODsAction()
+        {
+            super("Enable LODs");
+        }
+
+        public void actionPerformed(ActionEvent actionEvent)
+        {
+            Renderer.enableLODs = ((AbstractButton)actionEvent.getSource()).getModel().isSelected();
         }
     }
 }
