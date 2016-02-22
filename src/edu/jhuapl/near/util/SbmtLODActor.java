@@ -178,14 +178,14 @@ public class SbmtLODActor extends vtkActor
      * quadric clustering where the number of divisions is auto selected
      * @return
      */
-    public void addQuadricDecimatedLODMapper(vtkDataObject dataObject)
+    public vtkPolyDataMapper addQuadricDecimatedLODMapper(vtkDataObject dataObject)
     {
         // Set decimator input
         vtkQuadricClustering decimator = new vtkQuadricClustering();
         decimator.SetInputDataObject(dataObject);
 
         // Call helper
-        addQuadricDecimatedLODMapper(decimator);
+        return addQuadricDecimatedLODMapper(decimator);
     }
 
     /**
@@ -193,14 +193,14 @@ public class SbmtLODActor extends vtkActor
      * quadric clustering where the number of divisions is auto selected
      * @return
      */
-    public void addQuadricDecimatedLODMapper(vtkAlgorithmOutput algorithmOutput)
+    public vtkPolyDataMapper addQuadricDecimatedLODMapper(vtkAlgorithmOutput algorithmOutput)
     {
         // Set decimator input
         vtkQuadricClustering decimator = new vtkQuadricClustering();
         decimator.SetInputConnection(algorithmOutput);
 
         // Call helper
-        addQuadricDecimatedLODMapper(decimator);
+        return addQuadricDecimatedLODMapper(decimator);
     }
 
     /**
@@ -208,7 +208,7 @@ public class SbmtLODActor extends vtkActor
      * quadric clustering where the number of divisions is auto selected
      * @param decimator Assumed to already have input data/connection set
      */
-    private void addQuadricDecimatedLODMapper(vtkQuadricClustering decimator)
+    private vtkPolyDataMapper addQuadricDecimatedLODMapper(vtkQuadricClustering decimator)
     {
         // Decimate the input data
         decimator.CopyCellDataOn();
@@ -221,6 +221,7 @@ public class SbmtLODActor extends vtkActor
 
         // Add the mapper
         addMapper(lodMapper);
+        return lodMapper;
     }
 
     /**
@@ -229,7 +230,7 @@ public class SbmtLODActor extends vtkActor
      * @param numDivisions
      * @return
      */
-    public boolean addQuadricDecimatedLODMapper(vtkDataObject dataObject, int divX, int divY, int divZ)
+    public vtkPolyDataMapper addQuadricDecimatedLODMapper(vtkDataObject dataObject, int divX, int divY, int divZ)
     {
         // Set decimator input
         vtkQuadricClustering decimator = new vtkQuadricClustering();
@@ -245,7 +246,7 @@ public class SbmtLODActor extends vtkActor
      * @param numDivisions
      * @return
      */
-    public boolean addQuadricDecimatedLODMapper(vtkAlgorithmOutput algorithmOutput, int divX, int divY, int divZ)
+    public vtkPolyDataMapper addQuadricDecimatedLODMapper(vtkAlgorithmOutput algorithmOutput, int divX, int divY, int divZ)
     {
         // Set decimator input
         vtkQuadricClustering decimator = new vtkQuadricClustering();
@@ -264,7 +265,7 @@ public class SbmtLODActor extends vtkActor
      * @param divZ
      * @return
      */
-    private boolean addQuadricDecimatedLODMapper(vtkQuadricClustering decimator, int divX, int divY, int divZ)
+    private vtkPolyDataMapper addQuadricDecimatedLODMapper(vtkQuadricClustering decimator, int divX, int divY, int divZ)
     {
         if(divX > 1 && divY > 1 && divZ > 1)
         {
@@ -281,12 +282,12 @@ public class SbmtLODActor extends vtkActor
             addMapper(lodMapper);
 
             // Let user know we were successful
-            return true;
+            return lodMapper;
         }
         else
         {
             // Divisions are invalid
-            return false;
+            return null;
         }
     }
 }
