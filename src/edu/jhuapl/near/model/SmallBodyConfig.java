@@ -256,6 +256,7 @@ public class SmallBodyConfig
         LORRI_IMAGE,
         POLYCAM_IMAGE,
         MAPCAM_IMAGE,
+        GENERIC_IMAGE
     }
 
     static public final int LEISA_NBANDS = 256;

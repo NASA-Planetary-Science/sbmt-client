@@ -64,6 +64,7 @@ import edu.jhuapl.near.util.Frustum;
 import edu.jhuapl.near.util.ImageDataUtil;
 import edu.jhuapl.near.util.IntensityRange;
 import edu.jhuapl.near.util.LatLon;
+import edu.jhuapl.near.util.MapUtil;
 import edu.jhuapl.near.util.MathUtil;
 import edu.jhuapl.near.util.PolyDataUtil;
 import edu.jhuapl.near.util.Properties;
@@ -89,6 +90,9 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     public static final String TARGET_ROTATION = "TARGET_ROTATION";
     public static final String TARGET_ZOOM_FACTOR = "TARGET_ZOOM_FACTOR";
     public static final String APPLY_ADJUSTMENTS = "APPLY_ADJUSTMENTS";
+
+    public static final String SUMFILENAMES = "SumfileNames";
+    public static final String INFOFILENAMES = "InfofileNames";
 
     public static final double[] bodyOrigin = { 0.0, 0.0, 0.0 };
 
@@ -233,19 +237,33 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         shiftedFootprint[0] = new vtkPolyData();
         displayedRange[0] = new IntensityRange(1,0);
 
+        if (key.source.equals(ImageSource.LOCAL_PERSPECTIVE))
+        {
+            loadImageInfoFromConfigFile();
+        }
+
         if (!loadPointingOnly)
         {
-            fitFileFullPath = initializeFitFileFullPath();
-            pngFileFullPath = initializePngFileFullPath();
-            enviFileFullPath = initializeEnviFileFullPath();
+            if (key.source.equals(ImageSource.LOCAL_PERSPECTIVE))
+            {
+                fitFileFullPath = initLocalFitFileFullPath();
+                pngFileFullPath = initLocalPngFileFullPath();
+                enviFileFullPath = initLocalEnviFileFullPath();
+            }
+            else
+            {
+                fitFileFullPath = initializeFitFileFullPath();
+                pngFileFullPath = initializePngFileFullPath();
+                enviFileFullPath = initializeEnviFileFullPath();
+            }
         }
 
         if (key.source.equals(ImageSource.LOCAL_PERSPECTIVE))
         {
-            infoFileFullPath = initializeInfoFileFullPath();
-            sumfileFullPath = initializeSumfileFullPath();
+            infoFileFullPath = initLocalInfoFileFullPath();
+            sumfileFullPath = initLocalSumfileFullPath();
         }
-        if (key.source.equals(ImageSource.SPICE) || key.source.equals(ImageSource.CORRECTED_SPICE))
+        else if (key.source.equals(ImageSource.SPICE) || key.source.equals(ImageSource.CORRECTED_SPICE))
         {
             infoFileFullPath = initializeInfoFileFullPath();
         }
@@ -1258,12 +1276,113 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
      */
     abstract protected int[] getMaskSizes();
 
-    abstract protected String initializeFitFileFullPath();
-    protected String initializeEnviFileFullPath() {return null; }
-    protected String initializePngFileFullPath() { return null; }
-    abstract protected String initializeLabelFileFullPath();
-    abstract protected String initializeInfoFileFullPath();
-    abstract protected String initializeSumfileFullPath();
+    protected String initializeFitFileFullPath() { return initLocalFitFileFullPath(); }
+    protected String initializeEnviFileFullPath() {return initLocalEnviFileFullPath(); }
+    protected String initializePngFileFullPath() { return initializeLabelFileFullPath(); }
+
+    protected String initLocalPngFileFullPath()
+    {
+        return getKey().name.endsWith(".png") ? getKey().name : null;
+    }
+
+     protected String initLocalFitFileFullPath()
+    {
+        String keyName = getKey().name;
+        if(keyName.endsWith(".fit") || keyName.endsWith(".fits") ||
+                keyName.endsWith(".FIT") || keyName.endsWith(".FITS"))
+        {
+            // Allowed fit file extensions for getKey().name
+            return keyName;
+        }
+        else
+        {
+            return null;
+        }
+    }
+
+    protected String initLocalEnviFileFullPath()
+    {
+        return VtkENVIReader.isENVIFilename(getKey().name) ? getKey().name : null;
+    }
+
+    protected String initializeLabelFileFullPath() { return initLocalLabelFileFullPath(); }
+    protected String initializeInfoFileFullPath() { return initLocalInfoFileFullPath(); }
+    protected String initializeSumfileFullPath() { return initLocalSumfileFullPath(); }
+
+    protected String initLocalLabelFileFullPath()
+    {
+        return null;
+    }
+
+    protected String initLocalInfoFileFullPath()
+    {
+        String configFilename = new File(getKey().name).getParent() + File.separator + "config.txt";
+        MapUtil configMap = new MapUtil(configFilename);
+        String[] imageFilenames = configMap.getAsArray(IMAGE_FILENAMES);
+        for (int i=0; i<imageFilenames.length; ++i)
+        {
+            String filename = new File(getKey().name).getName();
+            if (filename.equals(imageFilenames[i]))
+            {
+                return new File(getKey().name).getParent() + File.separator + configMap.getAsArray(INFOFILENAMES)[i];
+            }
+        }
+
+        return null;
+    }
+
+    protected String initLocalSumfileFullPath()
+    {
+        // TODO this is bad in that we read from the config file 3 times in this class
+
+        // Look in the config file and figure out which index this image
+        // corresponds to. The config file is located in the same folder
+        // as the image file
+        String configFilename = new File(getKey().name).getParent() + File.separator + "config.txt";
+        MapUtil configMap = new MapUtil(configFilename);
+        String[] imageFilenames = configMap.getAsArray(IMAGE_FILENAMES);
+        for (int i=0; i<imageFilenames.length; ++i)
+        {
+            String filename = new File(getKey().name).getName();
+            if (filename.equals(imageFilenames[i]))
+            {
+                return new File(getKey().name).getParent() + File.separator + configMap.getAsArray(SUMFILENAMES)[i];
+            }
+        }
+
+        return null;
+    }
+
+    private String imageName;
+
+    @Override
+    public String getImageName()
+    {
+        if (imageName != null)
+            return imageName;
+        else
+            return super.getImageName();
+    }
+
+    private void loadImageInfoFromConfigFile()
+    {
+        // Look in the config file and figure out which index this image
+        // corresponds to. The config file is located in the same folder
+        // as the image file
+        String configFilename = new File(getKey().name).getParent() + File.separator + "config.txt";
+        MapUtil configMap = new MapUtil(configFilename);
+        String[] imageFilenames = configMap.getAsArray(IMAGE_FILENAMES);
+        for (int i=0; i<imageFilenames.length; ++i)
+        {
+            String filename = new File(getKey().name).getName();
+            if (filename.equals(imageFilenames[i]))
+            {
+                imageName = configMap.getAsArray(Image.IMAGE_NAMES)[i];
+                break;
+            }
+        }
+    }
+
 
     protected void appendWithPadding(StringBuffer strbuf, String str)
     {
