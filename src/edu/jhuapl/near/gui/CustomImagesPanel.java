@@ -62,6 +62,7 @@ import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.PerspectiveImage;
 import edu.jhuapl.near.model.PerspectiveImageBoundaryCollection;
+import edu.jhuapl.near.model.SmallBodyConfig.ImageType;
 import edu.jhuapl.near.model.custom.CustomShapeModel;
 import edu.jhuapl.near.pick.PickEvent;
 import edu.jhuapl.near.pick.PickManager;
@@ -278,17 +279,20 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
             String[] imageNames = configMap.getAsArray(Image.IMAGE_NAMES);
             String[] imageFilenames = configMap.getAsArray(Image.IMAGE_FILENAMES);
             String[] projectionTypes = configMap.getAsArray(Image.PROJECTION_TYPES);
+            String[] imageTypes = configMap.getAsArray(Image.IMAGE_TYPES);
             if (imageFilenames == null)
             {
                 // for backwards compatibility
                 imageFilenames = configMap.getAsArray(Image.IMAGE_MAP_PATHS);
                 imageNames = new String[imageFilenames.length];
                 projectionTypes = new String[imageFilenames.length];
+                imageTypes = new String[imageFilenames.length];
                 for (int i=0; i<imageFilenames.length; ++i)
                 {
                     imageNames[i] = new File(imageFilenames[i]).getName();
                     imageFilenames[i] = "image" + i + ".png";
                     projectionTypes[i] = ProjectionType.CYLINDRICAL.toString();
+                    imageTypes[i] = ImageType.GENERIC_IMAGE.toString();
                 }
 
                 // Mark that we need to upgrade config file to latest version
@@ -309,6 +313,7 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
                 imageInfo.name = imageNames[i];
                 imageInfo.imagefilename = imageFilenames[i];
                 imageInfo.projectionType = ProjectionType.valueOf(projectionTypes[i]);
+                imageInfo.imageType = ImageType.valueOf(imageTypes[i]);
 
                 if (projectionTypes == null || ProjectionType.CYLINDRICAL.toString().equals(projectionTypes[i]))
                 {
@@ -532,6 +537,7 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
         String imageNames = "";
         String imageFilenames = "";
         String projectionTypes = "";
+        String instrumentTypes = "";
         String lllats = "";
         String lllons = "";
         String urlats = "";
@@ -547,6 +553,7 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
             imageFilenames += imageInfo.imagefilename;
             imageNames += imageInfo.name;
             projectionTypes += imageInfo.projectionType;
+            instrumentTypes += imageInfo.imageType;
             lllats += String.valueOf(imageInfo.lllat);
             lllons += String.valueOf(imageInfo.lllon);
             urlats += String.valueOf(imageInfo.urlat);
@@ -573,6 +580,7 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
         newMap.put(Image.IMAGE_NAMES, imageNames);
         newMap.put(Image.IMAGE_FILENAMES, imageFilenames);
         newMap.put(Image.PROJECTION_TYPES, projectionTypes);
+        newMap.put(Image.IMAGE_TYPES, instrumentTypes);
         newMap.put(CylindricalImage.LOWER_LEFT_LATITUDES, lllats);
         newMap.put(CylindricalImage.LOWER_LEFT_LONGITUDES, lllons);
         newMap.put(CylindricalImage.UPPER_RIGHT_LATITUDES, urlats);
@@ -607,7 +615,8 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
                     String name = getCustomDataFolder() + File.separator + imageInfo.imagefilename;
                     ImageSource source = imageInfo.projectionType == ProjectionType.CYLINDRICAL ? ImageSource.LOCAL_CYLINDRICAL : ImageSource.LOCAL_PERSPECTIVE;
                     FileType fileType = imageInfo.sumfilename != null && !imageInfo.sumfilename.equals("null") ? FileType.SUM : FileType.INFO;
-                    ImageKey imageKey = new ImageKey(name, source, fileType);
+                    ImageType imageType = imageInfo.imageType;
+                    ImageKey imageKey = new ImageKey(name, source, fileType, imageType);
                     imageKeys.add(imageKey);
                 }
                 imagePopupMenu.setCurrentImages(imageKeys);

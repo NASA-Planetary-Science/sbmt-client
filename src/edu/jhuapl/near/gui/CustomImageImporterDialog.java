@@ -19,6 +19,7 @@ import javax.swing.JOptionPane;
 import vtk.vtkImageReader2;
 import vtk.vtkImageReader2Factory;
 
+import edu.jhuapl.near.model.SmallBodyConfig.ImageType;
 import edu.jhuapl.near.tools.VtkENVIReader;
 
 
@@ -40,6 +41,7 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         public String name = ""; // name to call this image for display purposes
         public String imagefilename = ""; // filename of image on disk
         public ProjectionType projectionType = ProjectionType.CYLINDRICAL;
+        public ImageType imageType = ImageType.GENERIC_IMAGE;
         public double lllat = -90.0;
         public double lllon = 0.0;
         public double urlat = 90.0;
@@ -62,7 +64,7 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
             }
             else
             {
-                return name + ", Perspective";
+                return name + ", Perspective" + ", " + imageType;
             }
         }
     }

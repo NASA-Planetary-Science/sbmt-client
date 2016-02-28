@@ -20,6 +20,7 @@ public abstract class Image extends Model implements PropertyChangeListener
     public static final String IMAGE_FILENAMES = "ImageFilenames"; // Filename of image on disk
     public static final String IMAGE_MAP_PATHS = "ImageMapPaths"; // For backwards compatibility, still read this in
     public static final String PROJECTION_TYPES = "ProjectionTypes";
+    public static final String IMAGE_TYPES = "ImageTypes";
 
     public enum ImageSource
     {
@@ -132,6 +133,11 @@ public abstract class Image extends Model implements PropertyChangeListener
             this(SpectralMode.MONO, null, null, null, null);
         }
 
+        public ImagingInstrument(ImageType type, Instrument instrumentName)
+        {
+            this(SpectralMode.MONO, null, type, null, instrumentName);
+        }
+
         public ImagingInstrument(SpectralMode spectralMode)
         {
             this(spectralMode, null, null, null, null);
@@ -174,6 +180,8 @@ public abstract class Image extends Model implements PropertyChangeListener
 
         public ImagingInstrument instrument;
 
+        public ImageType imageType;
+
         public String band;
 
         public int slice;
@@ -181,32 +189,40 @@ public abstract class Image extends Model implements PropertyChangeListener
 
         public ImageKey(String name, ImageSource source)
         {
-            this(name, source, null, null);
+            this(name, source, null, null, null, null, 0);
         }
 
         public ImageKey(String name, ImageSource source, FileType fileType)
         {
-            this(name, source, fileType, null, null, 0);
+            this(name, source, fileType, null, null, null, 0);
+        }
+
+        public ImageKey(String name, ImageSource source, FileType fileType, ImageType imageType)
+        {
+            this(name, source, fileType, imageType, null, null, 0);
         }
 
         public ImageKey(String name, ImageSource source, ImagingInstrument instrument)
         {
-            this(name, source, null, instrument, null, 0);
+            this(name, source, null, null, instrument, null, 0);
         }
 
         public ImageKey(String name, ImageSource source, FileType fileType, ImagingInstrument instrument)
         {
-            this(name, source, fileType, instrument, null, 0);
+            this(name, source, fileType, null, instrument, null, 0);
         }
 
-        public ImageKey(String name, ImageSource source, FileType fileType, ImagingInstrument instrument, String band, int slice)
+        public ImageKey(String name, ImageSource source, FileType fileType, ImageType imageType, ImagingInstrument instrument, String band, int slice)
         {
             this.name = name;
             this.source = source;
             this.fileType = fileType;
+            this.imageType = imageType;
             this.instrument = instrument;
             this.band = band;
             this.slice = slice;
+            if (instrument != null)
+                this.imageType = instrument.type;
         }
 
         @Override

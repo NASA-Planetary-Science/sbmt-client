@@ -223,7 +223,8 @@ public class SmallBodyConfig
         IMAGING_DATA("Imaging Data"),
         MVIC("MVIC"),
         LEISA("LEISA"),
-        LORRI("LORRI");
+        LORRI("LORRI"),
+        GENERIC("GENERIC");
 
         final private String str;
         private Instrument(String str)
