@@ -50,6 +50,7 @@ import edu.jhuapl.near.util.MathUtil;
 import edu.jhuapl.near.util.PolyDataUtil;
 import edu.jhuapl.near.util.Preferences;
 import edu.jhuapl.near.util.Properties;
+import edu.jhuapl.near.util.SbmtLODActor;
 import edu.jhuapl.near.util.SmallBodyCubes;
 
 public class SmallBodyModel extends Model
@@ -878,8 +879,13 @@ public class SmallBodyModel extends Model
             smallBodyMapper.SetLookupTable(lookupTable);
             smallBodyMapper.UseLookupTableScalarRangeOn();
 
-            smallBodyActor = new vtkActor();
+            //smallBodyActor = new vtkActor();
+            smallBodyActor = new SbmtLODActor();
             smallBodyActor.SetMapper(smallBodyMapper);
+            vtkPolyDataMapper decimatedMapper =
+                    ((SbmtLODActor)smallBodyActor).addQuadricDecimatedLODMapper(smallBodyPolyData);
+            decimatedMapper.SetLookupTable(lookupTable);
+            decimatedMapper.UseLookupTableScalarRangeOn();
             vtkProperty smallBodyProperty = smallBodyActor.GetProperty();
             smallBodyProperty.SetInterpolationToGouraud();
             //smallBodyProperty.SetSpecular(.1);

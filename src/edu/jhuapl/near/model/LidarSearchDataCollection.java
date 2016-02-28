@@ -155,14 +155,14 @@ public class LidarSearchDataCollection extends Model
 
         actor = new SbmtLODActor();
         actor.SetMapper(pointsMapper);
-        ((SbmtLODActor)actor).SetQuadricDecimatedLODMapper();
+        ((SbmtLODActor)actor).addQuadricDecimatedLODMapper(polydata);
         actor.GetProperty().SetPointSize(2.0);
 
         actors.add(actor);
 
         selectedPointActor = new SbmtLODActor();
         selectedPointActor.SetMapper(selectedPointMapper);
-        ((SbmtLODActor)selectedPointActor).SetQuadricDecimatedLODMapper();
+        ((SbmtLODActor)selectedPointActor).addQuadricDecimatedLODMapper(selectedPointPolydata);
         selectedPointActor.GetProperty().SetColor(0.1, 0.1, 1.0);
         selectedPointActor.GetProperty().SetPointSize(7.0);
 
