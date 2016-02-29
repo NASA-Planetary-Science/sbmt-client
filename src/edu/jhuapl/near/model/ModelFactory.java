@@ -57,7 +57,6 @@ public class ModelFactory
             if (key.instrument != null && key.instrument.spectralMode == SpectralMode.MULTI)
             {
                 if (key.instrument.type == ImageType.MVIC_JUPITER_IMAGE)
-//                    return new MVICJupiterImage(key, smallBodyModel, loadPointingOnly);
                     return new MVICQuadJupiterImage(key, smallBodyModel, loadPointingOnly);
                 else
                     return null;
@@ -137,6 +136,10 @@ public class ModelFactory
                 return new MapCamImage(key, smallBodyModel, loadPointingOnly);
             else if (key.imageType == ImageType.GENERIC_IMAGE)
                 return new CustomPerspectiveImage(key, smallBodyModel, loadPointingOnly);
+            else if (key.imageType == ImageType.MVIC_JUPITER_IMAGE)
+              return new MVICQuadJupiterImage(key, smallBodyModel, loadPointingOnly);
+            else if (key.imageType == ImageType.LEISA_JUPITER_IMAGE)
+                return new LEISAJupiterImage(key, smallBodyModel, loadPointingOnly);
             else
                 return null;
         }

@@ -63,6 +63,7 @@ import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.PerspectiveImage;
 import edu.jhuapl.near.model.PerspectiveImageBoundaryCollection;
 import edu.jhuapl.near.model.SmallBodyConfig.ImageType;
+import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.custom.CustomShapeModel;
 import edu.jhuapl.near.pick.PickEvent;
 import edu.jhuapl.near.pick.PickManager;
@@ -82,6 +83,7 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
     private ModelSpectrumWindowManager spectrumPanelManager;
     final PickManager pickManager;
     Renderer renderer;
+    private ImagingInstrument instrument;
 
     private boolean initialized = false;
 
@@ -108,6 +110,11 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
         return ModelNames.IMAGES;
     }
 
+    protected ModelNames getModelName()
+    {
+        return ModelNames.SMALL_BODY;
+    }
+
     private ModelNames getImageBoundaryCollectionModelName()
     {
         return ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES;
@@ -119,13 +126,15 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
             ModelInfoWindowManager infoPanelManager,
             ModelSpectrumWindowManager spectrumPanelManager,
             final PickManager pickManager,
-            Renderer renderer)
+            Renderer renderer,
+            ImagingInstrument instrument)
     {
         this.modelManager = modelManager;
         this.infoPanelManager = infoPanelManager;
         this.spectrumPanelManager = spectrumPanelManager;
         this.pickManager = pickManager;
         this.renderer = renderer;
+        this.instrument = instrument;
 
         pickManager.getDefaultPicker().addPropertyChangeListener(this);
 
@@ -313,7 +322,7 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
                 imageInfo.name = imageNames[i];
                 imageInfo.imagefilename = imageFilenames[i];
                 imageInfo.projectionType = ProjectionType.valueOf(projectionTypes[i]);
-                imageInfo.imageType = ImageType.valueOf(imageTypes[i]);
+                imageInfo.imageType = imageTypes == null ? ImageType.GENERIC_IMAGE : ImageType.valueOf(imageTypes[i]);
 
                 if (projectionTypes == null || ProjectionType.CYLINDRICAL.toString().equals(projectionTypes[i]))
                 {
@@ -537,7 +546,7 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
         String imageNames = "";
         String imageFilenames = "";
         String projectionTypes = "";
-        String instrumentTypes = "";
+        String imageTypes = "";
         String lllats = "";
         String lllons = "";
         String urlats = "";
@@ -553,7 +562,7 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
             imageFilenames += imageInfo.imagefilename;
             imageNames += imageInfo.name;
             projectionTypes += imageInfo.projectionType;
-            instrumentTypes += imageInfo.imageType;
+            imageTypes += imageInfo.imageType;
             lllats += String.valueOf(imageInfo.lllat);
             lllons += String.valueOf(imageInfo.lllon);
             urlats += String.valueOf(imageInfo.urlat);
@@ -566,6 +575,7 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
                 imageNames += CustomShapeModel.LIST_SEPARATOR;
                 imageFilenames += CustomShapeModel.LIST_SEPARATOR;
                 projectionTypes += CustomShapeModel.LIST_SEPARATOR;
+                imageTypes += CustomShapeModel.LIST_SEPARATOR;
                 lllats += CustomShapeModel.LIST_SEPARATOR;
                 lllons += CustomShapeModel.LIST_SEPARATOR;
                 urlats += CustomShapeModel.LIST_SEPARATOR;
@@ -580,7 +590,7 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
         newMap.put(Image.IMAGE_NAMES, imageNames);
         newMap.put(Image.IMAGE_FILENAMES, imageFilenames);
         newMap.put(Image.PROJECTION_TYPES, projectionTypes);
-        newMap.put(Image.IMAGE_TYPES, instrumentTypes);
+        newMap.put(Image.IMAGE_TYPES, imageTypes);
         newMap.put(CylindricalImage.LOWER_LEFT_LATITUDES, lllats);
         newMap.put(CylindricalImage.LOWER_LEFT_LONGITUDES, lllons);
         newMap.put(CylindricalImage.UPPER_RIGHT_LATITUDES, urlats);
@@ -827,7 +837,7 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
 
     private void newButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newButtonActionPerformed
         ImageInfo imageInfo = new ImageInfo();
-        CustomImageImporterDialog dialog = new CustomImageImporterDialog(null, false);
+        CustomImageImporterDialog dialog = new CustomImageImporterDialog(null, false, instrument);
         dialog.setImageInfo(imageInfo, modelManager.getSmallBodyModel().isEllipsoid());
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
@@ -836,6 +846,11 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
         if (dialog.getOkayPressed())
         {
             imageInfo = dialog.getImageInfo();
+
+            System.out.println("Image Type: " + imageInfo.imageType);
+            SmallBodyModel body = modelManager.getSmallBodyModel();
+            System.out.println("Instrument Type: " + instrument.type.toString());
+
             try
             {
                 saveImage(((DefaultListModel)imageList.getModel()).getSize(), null, imageInfo);
@@ -864,7 +879,7 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
         {
             ImageInfo oldImageInfo = (ImageInfo)((DefaultListModel)imageList.getModel()).get(selectedItem);
 
-            CustomImageImporterDialog dialog = new CustomImageImporterDialog(null, true);
+            CustomImageImporterDialog dialog = new CustomImageImporterDialog(null, true, instrument);
             dialog.setImageInfo(oldImageInfo, modelManager.getSmallBodyModel().isEllipsoid());
             dialog.setLocationRelativeTo(this);
             dialog.setVisible(true);
