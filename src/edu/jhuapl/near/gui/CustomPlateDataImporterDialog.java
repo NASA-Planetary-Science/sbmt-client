@@ -22,6 +22,7 @@ import java.io.InputStreamReader;
 import javax.swing.JOptionPane;
 
 import edu.jhuapl.near.model.SmallBodyModel.ColoringInfo;
+import edu.jhuapl.near.model.SmallBodyModel.Format;
 
 
 public class CustomPlateDataImporterDialog extends javax.swing.JDialog
@@ -65,6 +66,8 @@ public class CustomPlateDataImporterDialog extends javax.swing.JDialog
         ColoringInfo info = new ColoringInfo();
         info.builtIn = false;
         info.coloringFile = cellDataPathTextField.getText();
+        if (info.coloringFile.toLowerCase().endsWith(".fits") || info.coloringFile.toLowerCase().endsWith(".fit"))
+            info.format = Format.FITS;
 
         if (isEditMode &&
                 (LEAVE_UNMODIFIED.equals(info.coloringFile) || info.coloringFile == null || info.coloringFile.isEmpty()))
@@ -79,6 +82,8 @@ public class CustomPlateDataImporterDialog extends javax.swing.JDialog
 
     private String validateInput()
     {
+        String result = null;
+
         String cellDataPath = cellDataPathTextField.getText();
         if (cellDataPath == null)
             cellDataPath = "";
@@ -95,44 +100,13 @@ public class CustomPlateDataImporterDialog extends javax.swing.JDialog
             if (cellDataPath.contains(","))
                 return "Plate data path may not contain commas.";
 
-            InputStream fs;
-            try
-            {
-                fs = new FileInputStream(cellDataPath);
-            }
-            catch (FileNotFoundException e)
-            {
-                return "The file '" + cellDataPath + "' does not exist or is not readable.";
-            }
+            if (cellDataPath.toLowerCase().endsWith(".fits") || cellDataPath.toLowerCase().endsWith(".fits") )
+                result = validateFitsFile(cellDataPath);
+            else
+                result = validateTxtFile(cellDataPath);
 
-            InputStreamReader isr = new InputStreamReader(fs);
-            BufferedReader in = new BufferedReader(isr);
-
-            String line;
-            int lineCount = 0;
-            try
-            {
-                while ((line = in.readLine()) != null)
-                {
-                    Double.parseDouble(line);
-                    ++lineCount;
-                }
-
-                in.close();
-            }
-            catch (NumberFormatException e)
-            {
-                return "Numbers in file '" + cellDataPath + "' are malformatted.";
-            }
-            catch (IOException e)
-            {
-                return "An error occurred reading the file '" + cellDataPath + "'.";
-            }
-
-            if (lineCount != numCells)
-            {
-                return "Number of lines in file '" + cellDataPath + "' must equal number of plates in shape model.";
-            }
+            if (result != null)
+                return result;
         }
 
         String name = nameTextField.getText();
@@ -152,6 +126,57 @@ public class CustomPlateDataImporterDialog extends javax.swing.JDialog
             return "Fields may not contain commas.";
 
         return null;
+    }
+
+    private String validateTxtFile(String cellDataPath)
+    {
+        InputStream fs;
+        try
+        {
+            fs = new FileInputStream(cellDataPath);
+        }
+        catch (FileNotFoundException e)
+        {
+            return "The file '" + cellDataPath + "' does not exist or is not readable.";
+        }
+
+        InputStreamReader isr = new InputStreamReader(fs);
+        BufferedReader in = new BufferedReader(isr);
+
+        String line;
+        int lineCount = 0;
+        try
+        {
+            while ((line = in.readLine()) != null)
+            {
+                Double.parseDouble(line);
+                ++lineCount;
+            }
+
+            in.close();
+        }
+        catch (NumberFormatException e)
+        {
+            return "Numbers in file '" + cellDataPath + "' are malformatted.";
+        }
+        catch (IOException e)
+        {
+            return "An error occurred reading the file '" + cellDataPath + "'.";
+        }
+
+        if (lineCount != numCells)
+        {
+            return "Number of lines in file '" + cellDataPath + "' must equal number of plates in shape model.";
+        }
+
+        return null;
+    }
+
+    private String validateFitsFile(String cellDataPath)
+    {
+        String result = "Ancillary FITS file reading not implemented yet";
+
+        return result;
     }
 
     public boolean getOkayPressed()

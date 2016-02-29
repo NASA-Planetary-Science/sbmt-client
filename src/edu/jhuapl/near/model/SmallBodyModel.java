@@ -73,6 +73,11 @@ public class SmallBodyModel extends Model
         SMOOTH,
     }
 
+    public enum Format {
+        TXT,
+        FITS,
+    }
+
     static public final String SlopeStr = "Slope";
     static public final String ElevStr = "Elevation";
     static public final String GravAccStr = "Gravitational Acceleration";
@@ -97,6 +102,7 @@ public class SmallBodyModel extends Model
         public vtkFloatArray coloringValues = null;
         public String coloringFile = null;
         public boolean builtIn = true;
+        public Format format = Format.TXT;
 
         @Override
         public String toString()
@@ -104,6 +110,8 @@ public class SmallBodyModel extends Model
             String str = coloringName;
             if (coloringUnits != null && !coloringUnits.isEmpty())
                 str += ", " + coloringUnits;
+            if (format != Format.TXT)
+                str += ", " + format.toString();
             if (coloringHasNulls)
                 str += ", contains invalid data";
             if (builtIn)
@@ -1215,32 +1223,37 @@ public class SmallBodyModel extends Model
             if (file == null)
                 throw new IOException("Unable to download " + filename);
 
-            FileInputStream fs =  new FileInputStream(file);
-            InputStreamReader isr = new InputStreamReader(fs);
-            BufferedReader in = new BufferedReader(isr);
+            loadColoringDataTxt(file, info);
 
-            vtkFloatArray array = new vtkFloatArray();
-
-            array.SetNumberOfComponents(1);
-            if (coloringValueType == ColoringValueType.POINT_DATA)
-                array.SetNumberOfTuples(smallBodyPolyData.GetNumberOfPoints());
-            else
-                array.SetNumberOfTuples(smallBodyPolyData.GetNumberOfCells());
-
-            String line;
-            int j = 0;
-            while ((line = in.readLine()) != null)
-            {
-                array.SetTuple1(j, Float.parseFloat(line));
-                ++j;
-            }
-
-            in.close();
-
-            info.coloringValues = array;
         }
 
         initializeColoringRanges();
+    }
+
+    private void loadColoringDataTxt(File file, ColoringInfo info) throws IOException
+    {
+        FileInputStream fs =  new FileInputStream(file);
+        InputStreamReader isr = new InputStreamReader(fs);
+        BufferedReader in = new BufferedReader(isr);
+
+        vtkFloatArray array = new vtkFloatArray();
+
+        array.SetNumberOfComponents(1);
+        if (coloringValueType == ColoringValueType.POINT_DATA)
+            array.SetNumberOfTuples(smallBodyPolyData.GetNumberOfPoints());
+        else
+            array.SetNumberOfTuples(smallBodyPolyData.GetNumberOfCells());
+
+        String line;
+        int j = 0;
+        while ((line = in.readLine()) != null)
+        {
+            array.SetTuple1(j, Float.parseFloat(line));
+            ++j;
+        }
+        in.close();
+
+        info.coloringValues = array;
     }
 
     private void invertLookupTableCharArray(vtkUnsignedCharArray table)
