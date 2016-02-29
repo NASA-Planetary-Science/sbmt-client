@@ -481,12 +481,15 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
     private void remapImageToRenderer(int index) throws FitsException, IOException
     {
         ImageInfo imageInfo = (ImageInfo)((DefaultListModel)imageList.getModel()).get(index);
-        String filename = getCustomDataFolder() + File.separator + imageInfo.imagefilename;
 
         // Remove the image from the renderer
-        ImageKey imageKey = new ImageKey(filename,
-                imageInfo.projectionType == ProjectionType.CYLINDRICAL ? ImageSource.LOCAL_CYLINDRICAL : ImageSource.LOCAL_PERSPECTIVE,
-                imageInfo.sumfilename != null ? FileType.SUM : FileType.INFO);
+        String name = getCustomDataFolder() + File.separator + imageInfo.imagefilename;
+        ImageSource source = imageInfo.projectionType == ProjectionType.CYLINDRICAL ? ImageSource.LOCAL_CYLINDRICAL : ImageSource.LOCAL_PERSPECTIVE;
+        FileType fileType = imageInfo.sumfilename != null && !imageInfo.sumfilename.equals("null") ? FileType.SUM : FileType.INFO;
+        ImageType imageType = imageInfo.imageType;
+        ImagingInstrument instrument = imageType == ImageType.GENERIC_IMAGE ? new ImagingInstrument(imageInfo.rotation, imageInfo.flip) : null;
+        ImageKey imageKey = new ImageKey(name, source, fileType, imageType, instrument, null, 0);
+
         ImageCollection imageCollection = (ImageCollection)modelManager.getModel(ModelNames.IMAGES);
 
         if (imageCollection.containsImage(imageKey))
@@ -507,13 +510,16 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
     {
         ImageInfo imageInfo = (ImageInfo)((DefaultListModel)imageList.getModel()).get(index);
 
-        String filename = getCustomDataFolder() + File.separator + imageInfo.imagefilename;
-        new File(filename).delete();
+        String name = getCustomDataFolder() + File.separator + imageInfo.imagefilename;
+        new File(name).delete();
 
         // Remove the image from the renderer
-        ImageKey imageKey = new ImageKey(filename,
-                imageInfo.projectionType == ProjectionType.CYLINDRICAL ? ImageSource.LOCAL_CYLINDRICAL : ImageSource.LOCAL_PERSPECTIVE,
-                imageInfo.sumfilename != null ? FileType.SUM : FileType.INFO);
+        ImageSource source = imageInfo.projectionType == ProjectionType.CYLINDRICAL ? ImageSource.LOCAL_CYLINDRICAL : ImageSource.LOCAL_PERSPECTIVE;
+        FileType fileType = imageInfo.sumfilename != null && !imageInfo.sumfilename.equals("null") ? FileType.SUM : FileType.INFO;
+        ImageType imageType = imageInfo.imageType;
+        ImagingInstrument instrument = imageType == ImageType.GENERIC_IMAGE ? new ImagingInstrument(imageInfo.rotation, imageInfo.flip) : null;
+        ImageKey imageKey = new ImageKey(name, source, fileType, imageType, instrument, null, 0);
+
         ImageCollection imageCollection = (ImageCollection)modelManager.getModel(ModelNames.IMAGES);
         imageCollection.removeImage(imageKey);
 
@@ -521,13 +527,13 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
         {
             if (imageInfo.sumfilename != null)
             {
-                filename = getCustomDataFolder() + File.separator + imageInfo.sumfilename;
-                new File(filename).delete();
+                name = getCustomDataFolder() + File.separator + imageInfo.sumfilename;
+                new File(name).delete();
             }
             if (imageInfo.infofilename != null)
             {
-                filename = getCustomDataFolder() + File.separator + imageInfo.infofilename;
-                new File(filename).delete();
+                name = getCustomDataFolder() + File.separator + imageInfo.infofilename;
+                new File(name).delete();
             }
         }
 
