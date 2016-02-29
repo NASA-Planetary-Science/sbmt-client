@@ -1426,6 +1426,9 @@ public class SmallBodyConfig
             c.lidarBrowseIsSpacecraftInSphericalCoordinates = false;
             c.lidarBrowseTimeIndex = 26;
             c.lidarBrowseNoiseIndex = 62;
+            c.lidarBrowseOutgoingIntensityIndex = 98;
+            c.lidarBrowseReceivedIntensityIndex = 106;
+            c.lidarBrowseIntensityEnabled = true;
             c.lidarBrowseFileListResourcePath = "/GASKELL/RQ36_V3/OLA/allOlaFiles.txt";
             c.lidarBrowseNumberHeaderLines = 0;
             c.lidarBrowseIsInMeters = true;
@@ -1958,6 +1961,9 @@ public class SmallBodyConfig
     public Map<String, String> lidarSearchDataSourceMap;
     public int[] lidarBrowseXYZIndices;
     public int[] lidarBrowseSpacecraftIndices;
+    public int lidarBrowseOutgoingIntensityIndex;
+    public int lidarBrowseReceivedIntensityIndex;
+    public boolean lidarBrowseIntensityEnabled = false;
     public boolean lidarBrowseIsSpacecraftInSphericalCoordinates;
     public int lidarBrowseTimeIndex;
     public int lidarBrowseNoiseIndex;
@@ -2028,6 +2034,9 @@ public class SmallBodyConfig
             c.lidarBrowseIsSpacecraftInSphericalCoordinates = this.lidarBrowseIsSpacecraftInSphericalCoordinates;
             c.lidarBrowseTimeIndex = this.lidarBrowseTimeIndex;
             c.lidarBrowseNoiseIndex = this.lidarBrowseNoiseIndex;
+            c.lidarBrowseOutgoingIntensityIndex = this.lidarBrowseOutgoingIntensityIndex;
+            c.lidarBrowseReceivedIntensityIndex = this.lidarBrowseReceivedIntensityIndex;
+            c.lidarBrowseIntensityEnabled = this.lidarBrowseIntensityEnabled;
             c.lidarBrowseFileListResourcePath = this.lidarBrowseFileListResourcePath;
             c.lidarBrowseNumberHeaderLines = this.lidarBrowseNumberHeaderLines;
             c.lidarBrowseIsInMeters = this.lidarBrowseIsInMeters;
