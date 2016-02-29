@@ -44,6 +44,8 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         public String imagefilename = ""; // filename of image on disk
         public ProjectionType projectionType = ProjectionType.CYLINDRICAL;
         public ImageType imageType = ImageType.GENERIC_IMAGE;
+        public double rotation = 0.0;
+        public String flip = "None";
         public double lllat = -90.0;
         public double lllon = 0.0;
         public double urlat = 90.0;
@@ -66,7 +68,7 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
             }
             else
             {
-                return name + ", Perspective" + ", " + imageType;
+                return name + ", Perspective" + ", " + imageType + ", Rotate " + rotation + ", Flip " + flip;
             }
         }
     }
@@ -146,6 +148,8 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
 
         // If name is not provided, set name to filename
         info.imageType = ImageType.valueOf(imageTypeComboBox.getSelectedItem().toString());
+        info.rotation = imageRotateComboBox.getSelectedIndex() * 90.0;
+        info.flip = imageFlipComboBox.getSelectedItem().toString();
         info.name = imageNameTextField.getText();
         if ((info.name == null || info.name.isEmpty()) && info.imagefilename != null)
             info.name = new File(info.imagefilename).getName();
@@ -593,7 +597,7 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         gridBagConstraints.insets = new java.awt.Insets(0, 6, 0, 0);
         getContentPane().add(imageTypeLabel, gridBagConstraints);
 
-        imageTypeComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        imageTypeComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "GENERIC_IMAGE" }));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 2;
@@ -617,7 +621,7 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         gridBagConstraints.insets = new java.awt.Insets(0, 6, 0, 0);
         getContentPane().add(imageFlipLabel, gridBagConstraints);
 
-        imageRotateComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        imageRotateComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "0", "90", "180", "270" }));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 3;
@@ -625,7 +629,7 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         gridBagConstraints.insets = new java.awt.Insets(0, 6, 0, 0);
         getContentPane().add(imageRotateComboBox, gridBagConstraints);
 
-        imageFlipComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        imageFlipComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "None", "X", "Y" }));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 4;

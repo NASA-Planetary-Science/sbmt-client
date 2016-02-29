@@ -102,6 +102,12 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     private vtkImageData displayedImage;
     private int currentSlice = 0;
 
+    private double rotation = 0.0;
+    public double getRotation() { return rotation; }
+
+    private String flip = "None";
+    public String getFlip() { return flip; }
+
     private boolean useDefaultFootprint = true;
     private vtkPolyData[] footprint = new vtkPolyData[1];
     private boolean[] footprintGenerated = new boolean[1];
@@ -210,7 +216,18 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
             SmallBodyModel smallBodyModel,
             boolean loadPointingOnly) throws FitsException, IOException
     {
+            this(key, smallBodyModel, loadPointingOnly, 0.0, "None");
+            this.rotation = rotation;
+            this.flip = flip;
+    }
+
+    public PerspectiveImage(ImageKey key,
+            SmallBodyModel smallBodyModel,
+            boolean loadPointingOnly, double rotation, String flip) throws FitsException, IOException
+    {
             this(key, smallBodyModel, loadPointingOnly, 0);
+            this.rotation = rotation;
+            this.flip = flip;
     }
 
     /**
